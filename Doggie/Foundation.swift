@@ -978,7 +978,11 @@ public func tensorFormatter(data: (Double, String)...) -> String {
 public func hash<S : SequenceType where S.Generator.Element : Hashable>(val: S) -> Int {
     let _val = val.array
     switch _val.count {
-    case 0, 1, 2: return Set(_val).hashValue
+    case 0, 1: return Set(_val.lazy.map { $0.hashValue }).hashValue
+    case 2:
+        let a = _val[0].hashValue
+        let b = _val[1].hashValue
+        return Set([a &+ b, a &- b]).hashValue
     default: return hash(hash(_val.prefix(2)), hash(_val.dropFirst(2)))
     }
 }
