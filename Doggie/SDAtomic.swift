@@ -25,8 +25,9 @@
 
 import Foundation
 
-public class SDAtomicGraph<Value> : SequenceType {
+public class SDAtomicGraph<Value> : CollectionType {
     
+    public typealias Index = SDAtomicGraphIndex<Value>
     public typealias Generator = SDAtomicGraphGenerator<Value>
     public typealias NodeID = SDAtomicNode.Identifier
     
@@ -40,6 +41,22 @@ public class SDAtomicGraph<Value> : SequenceType {
     public init() {
         graph = Graph()
         lck = SDSpinLock()
+    }
+    
+    public var startIndex : Index {
+        return Index(base: graph.startIndex)
+    }
+    
+    public var endIndex : Index {
+        return Index(base: graph.endIndex)
+    }
+    
+    public var count: Int {
+        return graph.count
+    }
+    
+    public subscript(idx: Index) -> Generator.Element {
+        return graph[idx.base]
     }
     
     public subscript(from fromNode: NodeID, to toNode: NodeID) -> Value? {
@@ -85,6 +102,21 @@ public class SDAtomicGraph<Value> : SequenceType {
     public func generate() -> Generator {
         return Generator(base: graph.generate())
     }
+}
+
+public struct SDAtomicGraphIndex<Value> : ForwardIndexType {
+    
+    public typealias NodeID = SDAtomicNode.Identifier
+    
+    private let base: Graph<NodeID, Value>.Index
+    
+    public func successor() -> SDAtomicGraphIndex<Value> {
+        return SDAtomicGraphIndex(base: base.successor())
+    }
+}
+
+public func == <Value>(lhs: SDAtomicGraphIndex<Value>, rhs: SDAtomicGraphIndex<Value>) -> Bool {
+    return lhs.base == rhs.base
 }
 
 public struct SDAtomicGraphGenerator<Value> : GeneratorType {
