@@ -8,7 +8,7 @@ Doggie is a foundational support library for Apple's swift. It includes Function
 ```swift
 let arrayA = [1, 2, 3, 4]
 let arrayB = [5, 6, 7, 8]
-let concated = arrayA.concat(arrayB)
+let concated = arrayA.concat(arrayB)  // [1, 2, 3, 4, 5, 6, 7, 8]
 ```
 - complex number supports with transcendentals overloads such as sin(z), cos(z) etc.
 - polynomial library with operators.
@@ -17,4 +17,5 @@ let concated = arrayA.concat(arrayB)
 - rectangle, ellipse and path (graphic).
 
 ### License
+
 Doggie is licensed under the [MIT license](LICENSE).
