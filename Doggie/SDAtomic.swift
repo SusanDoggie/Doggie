@@ -95,7 +95,7 @@ public class SDAtomicGraph<Value> : CollectionType {
     public func nodes(from fromNode: NodeID) -> AnyForwardCollection<(NodeID, Value)> {
         return lck.synchronized { graph.nodes(from: fromNode) }
     }
-    public func nodes(to toNode: NodeID) -> LazyMapCollection<LazyFilterCollection<Graph<NodeID, Value>>, (NodeID, Value)> {
+    public func nodes(to toNode: NodeID) -> AnyForwardCollection<(NodeID, Value)> {
         return lck.synchronized { graph.nodes(to: toNode) }
     }
     

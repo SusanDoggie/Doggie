@@ -1135,8 +1135,8 @@ public struct Graph<Node : Hashable, Link> : CollectionType {
     }
     
     @warn_unused_result
-    public func nodes(to toNode: Node) -> LazyMapCollection<LazyFilterCollection<Graph<Node, Link>>, (Node, Link)> {
-        return self.lazy.filter { $0.to == toNode }.map { ($0.from, $0.2) }
+    public func nodes(to toNode: Node) -> AnyForwardCollection<(Node, Link)> {
+        return AnyForwardCollection(table.lazy.flatMap { from, to in to[toNode].map { (from, $0) } })
     }
 }
 
