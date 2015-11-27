@@ -436,11 +436,11 @@ public func bairstow(var buf: [Double], var eps: Double = 1e-14) -> [Double] {
             let dr = (b1 * c0 - b0 * c1) / d
             let ds = (b0 * c2 - b1 * c1) / d
             
+            r += dr
+            s += ds
             if abs(dr) < eps && abs(ds) < eps {
                 break
             }
-            r += dr
-            s += ds
             if ++iter % 500 == 0 {
                 if eps < 1e-06 {
                     eps *= 10
