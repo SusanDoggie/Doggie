@@ -25,6 +25,27 @@
 
 import Foundation
 
+public func DiscreteConvolve(signal_count: Int, _ signal: UnsafePointer<Float>, _ signal_stride: Int, _ kernel_count: Int, _ kernel: UnsafePointer<Float>, _ kernel_stride: Int, var _ output: UnsafeMutablePointer<Float>, _ out_stride: Int) {
+    
+    let size = signal_count + kernel_count - 1
+    var _kp = kernel
+    for t in 0..<size {
+        var temp: Float = 0.0
+        let begin = max(t - kernel_count + 1, 0)
+        let end = min(signal_count, t + 1)
+        var _sp = signal + begin * signal_stride
+        var _kp2 = _kp - begin * kernel_stride
+        for _ in begin..<end {
+            temp = fma(_sp.memory, _kp2.memory, temp)
+            _sp += signal_stride
+            _kp2 -= kernel_stride
+        }
+        output.memory = temp
+        output += out_stride
+        _kp += kernel_stride
+    }
+}
+
 public func DiscreteConvolve(signal_count: Int, _ signal: UnsafePointer<Double>, _ signal_stride: Int, _ kernel_count: Int, _ kernel: UnsafePointer<Double>, _ kernel_stride: Int, var _ output: UnsafeMutablePointer<Double>, _ out_stride: Int) {
     
     let size = signal_count + kernel_count - 1
