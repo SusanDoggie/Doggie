@@ -650,16 +650,6 @@ public func Resampling(count: Int, inout _ buffer: [Double]) {
     buffer.replace(with: _freq.lazy.map { $0.real * sqrt(Double(_freq.count) / Double(buffer.count)) })
 }
 
-public func OverlapConvolve(count: Int, signal: UnsafePointer<Double>, _ in_stride: Int, kernel: [Double], inout _ overlap: [Double], _ result: UnsafeMutablePointer<Double>, _ out_stride: Int) {
-    var buffer = [Double](count: count, repeatedValue: 0)
-    Move(count, signal, in_stride, &buffer, 1)
-    FFTConvolve(buffer, kernel, &buffer)
-    let min_count = min(buffer.count, overlap.count)
-    Add(min_count, buffer, 1, overlap, 1, &buffer, 1)
-    Move(count, buffer, 1, result, out_stride)
-    overlap.replace(with: buffer[count..<buffer.count].concat(overlap[min_count..<overlap.count]))
-}
-
 // MARK: Wrapper Function
 
 
