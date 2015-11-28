@@ -77,7 +77,7 @@ extension SDPath {
         var relative = Point()
         var lastbezier = 0
         
-        let commandsymbol = Set("MmLlHhVvCcSsQqTtAaZz".characters)
+        let commandsymbol = "MmLlHhVvCcSsQqTtAaZz".utf8.array
         
         g.next()
         while let command = g.current {
@@ -90,7 +90,7 @@ extension SDPath {
                     relative = move.point
                     lastbezier = 0
                     self.append(move)
-                } while g.next() != nil && !commandsymbol.contains(g.current.characters.first!)
+                } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
             case "m":
                 repeat {
                     let move = SDPath.Move(x: try toDouble(g.current) + relative.x, y: try toDouble(g.next()) + relative.y)
@@ -98,49 +98,49 @@ extension SDPath {
                     relative = move.point
                     lastbezier = 0
                     self.append(move)
-                } while g.next() != nil && !commandsymbol.contains(g.current.characters.first!)
+                } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
             case "L":
                 repeat {
                     let line = SDPath.Line(x: try toDouble(g.current), y: try toDouble(g.next()))
                     relative = line.point
                     lastbezier = 0
                     self.append(line)
-                } while g.next() != nil && !commandsymbol.contains(g.current.characters.first!)
+                } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
             case "l":
                 repeat {
                     let line = SDPath.Line(x: try toDouble(g.current) + relative.x, y: try toDouble(g.next()) + relative.y)
                     relative = line.point
                     lastbezier = 0
                     self.append(line)
-                } while g.next() != nil && !commandsymbol.contains(g.current.characters.first!)
+                } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
             case "H":
                 repeat {
                     let line = SDPath.Line(x: try toDouble(g.current), y: relative.y)
                     relative = line.point
                     lastbezier = 0
                     self.append(line)
-                } while g.next() != nil && !commandsymbol.contains(g.current.characters.first!)
+                } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
             case "h":
                 repeat {
                     let line = SDPath.Line(x: try toDouble(g.current) + relative.x, y: relative.y)
                     relative = line.point
                     lastbezier = 0
                     self.append(line)
-                } while g.next() != nil && !commandsymbol.contains(g.current.characters.first!)
+                } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
             case "V":
                 repeat {
                     let line = SDPath.Line(x: relative.x, y: try toDouble(g.current))
                     relative = line.point
                     lastbezier = 0
                     self.append(line)
-                } while g.next() != nil && !commandsymbol.contains(g.current.characters.first!)
+                } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
             case "v":
                 repeat {
                     let line = SDPath.Line(x: relative.x, y: try toDouble(g.current) + relative.y)
                     relative = line.point
                     lastbezier = 0
                     self.append(line)
-                } while g.next() != nil && !commandsymbol.contains(g.current.characters.first!)
+                } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
             case "C":
                 repeat {
                     let bezier = SDPath.CubicBezier(
@@ -150,7 +150,7 @@ extension SDPath {
                     relative = bezier.p3
                     lastbezier = 2
                     self.append(bezier)
-                } while g.next() != nil && !commandsymbol.contains(g.current.characters.first!)
+                } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
             case "c":
                 repeat {
                     let bezier = SDPath.CubicBezier(
@@ -160,7 +160,7 @@ extension SDPath {
                     relative = bezier.p3
                     lastbezier = 2
                     self.append(bezier)
-                } while g.next() != nil && !commandsymbol.contains(g.current.characters.first!)
+                } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
             case "S":
                 repeat {
                     let bezier: SDPath.CubicBezier
@@ -177,7 +177,7 @@ extension SDPath {
                     relative = bezier.p3
                     lastbezier = 2
                     self.append(bezier)
-                } while g.next() != nil && !commandsymbol.contains(g.current.characters.first!)
+                } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
             case "s":
                 repeat {
                     let bezier: SDPath.CubicBezier
@@ -194,7 +194,7 @@ extension SDPath {
                     relative = bezier.p3
                     lastbezier = 2
                     self.append(bezier)
-                } while g.next() != nil && !commandsymbol.contains(g.current.characters.first!)
+                } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
             case "Q":
                 repeat {
                     let bezier = SDPath.QuadBezier(
@@ -203,7 +203,7 @@ extension SDPath {
                     relative = bezier.p2
                     lastbezier = 1
                     self.append(bezier)
-                } while g.next() != nil && !commandsymbol.contains(g.current.characters.first!)
+                } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
             case "q":
                 repeat {
                     let bezier = SDPath.QuadBezier(
@@ -212,7 +212,7 @@ extension SDPath {
                     relative = bezier.p2
                     lastbezier = 1
                     self.append(bezier)
-                } while g.next() != nil && !commandsymbol.contains(g.current.characters.first!)
+                } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
             case "T":
                 repeat {
                     let bezier: SDPath.QuadBezier
@@ -224,7 +224,7 @@ extension SDPath {
                     relative = bezier.p2
                     lastbezier = 1
                     self.append(bezier)
-                } while g.next() != nil && !commandsymbol.contains(g.current.characters.first!)
+                } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
             case "t":
                 repeat {
                     let bezier: SDPath.QuadBezier
@@ -236,7 +236,7 @@ extension SDPath {
                     relative = bezier.p2
                     lastbezier = 1
                     self.append(bezier)
-                } while g.next() != nil && !commandsymbol.contains(g.current.characters.first!)
+                } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
             case "A":
                 repeat {
                     let rx = try toDouble(g.current)
@@ -250,7 +250,7 @@ extension SDPath {
                     relative = arc.point
                     lastbezier = 0
                     self.append(arc)
-                } while g.next() != nil && !commandsymbol.contains(g.current.characters.first!)
+                } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
             case "a":
                 repeat {
                     let rx = try toDouble(g.current)
@@ -264,7 +264,7 @@ extension SDPath {
                     relative = arc.point
                     lastbezier = 0
                     self.append(arc)
-                } while g.next() != nil && !commandsymbol.contains(g.current.characters.first!)
+                } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
             case "Z", "z":
                 let close = SDPath.ClosePath()
                 relative = start
