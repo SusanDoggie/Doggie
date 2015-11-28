@@ -764,13 +764,3 @@ public func DSTIV(buffer: [Double]) -> [Double] {
     DSTIV(buffer, &result)
     return result
 }
-public func SDSignalFilter(node: [Double]) -> [Double] {
-    var result = [Double]()
-    SDSignalFilter(node, &result)
-    return result
-}
-public func SDPrepareFilter(signal_size: Int, _ kernel: [Double]) -> [Complex] {
-    var result = [Complex]()
-    SDPrepareFilter(signal_size, kernel, &result)
-    return result
-}
