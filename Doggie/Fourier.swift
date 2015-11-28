@@ -650,30 +650,6 @@ public func Resampling(count: Int, inout _ buffer: [Double]) {
     buffer.replace(with: _freq.lazy.map { $0.real * sqrt(Double(_freq.count) / Double(buffer.count)) })
 }
 
-public func SDSignalFilter(node: [Double], inout _ result: [Double]) {
-    
-    var buffer = [Complex]()
-    Fourier(node + node[1..<node.count - 1].reverse(), &buffer)
-    var real = buffer.map { $0.real }
-    var _sqrt = sqrt(Double(real.count))
-    Div(real.count, real, 1, &_sqrt, 0, &real, 1)
-    result.replace(with: real.suffix(real.count >> 1))
-    result.appendContentsOf(real.prefix(real.count >> 1))
-}
-public func SDPrepareFilter(signal_size: Int, _ kernel: [Double], inout _ result: [Complex]) {
-    
-    let fft_length = FFTConvolveLength(signal_size, kernel.count)
-    let half = fft_length >> 1
-    let lv = log2(fft_length)
-    
-    if result.count != half {
-        result.replace(with: Repeat(count: half, repeatedValue: Complex(0)))
-    }
-    DispatchHalfRadix2CooleyTukey(lv, kernel + Repeat(count: fft_length - kernel.count, repeatedValue: 0.0), 1, &result, 1)
-    var _fft_length = Double(fft_length)
-    Div(half, result, 1, &_fft_length, 0, &result, 1)
-}
-
 public func OverlapConvolve(count: Int, signal: UnsafePointer<Double>, _ in_stride: Int, kernel: [Double], inout _ overlap: [Double], _ result: UnsafeMutablePointer<Double>, _ out_stride: Int) {
     var buffer = [Double](count: count, repeatedValue: 0)
     Move(count, signal, in_stride, &buffer, 1)
@@ -682,44 +658,6 @@ public func OverlapConvolve(count: Int, signal: UnsafePointer<Double>, _ in_stri
     Add(min_count, buffer, 1, overlap, 1, &buffer, 1)
     Move(count, buffer, 1, result, out_stride)
     overlap.replace(with: buffer[count..<buffer.count].concat(overlap[min_count..<overlap.count]))
-}
-
-public func SDApplyFilter(count: Int, signal: UnsafePointer<Double>, _ in_stride: Int, filter: [Complex], _ kernel_size: Int, inout _ overlap: [Double], _ result: UnsafeMutablePointer<Double>, _ out_stride: Int, inout _ temp: [Double]) {
-    
-    let convolve_length = count + kernel_size - 1
-    let fft_length = FFTConvolveLength(count, kernel_size)
-    let lv = log2(fft_length)
-    
-    if temp.count < fft_length << 1 {
-        temp.appendContentsOf(Repeat(count: fft_length << 1 - temp.count, repeatedValue: 0))
-    }
-    Move(count, signal, in_stride, &temp, 1)
-    memset(UnsafeMutablePointer<Double>(temp) + count, 0, (fft_length - count) * sizeof(Double))
-    
-    let ptr = UnsafeMutablePointer<Double>(temp)
-    DispatchRadix2FiniteImpulseFilter(lv, temp, 1, filter, 1, ptr, 1, ptr + fft_length, 1)
-    
-    let min_count = min(convolve_length, overlap.count)
-    Add(min_count, temp, 1, overlap, 1, &temp, 1)
-    Move(count, temp, 1, result, out_stride)
-    overlap.replace(with: temp[count..<convolve_length].concat(overlap[min_count..<overlap.count]))
-}
-public func SDApplyFilter(count: Int, signal: UnsafePointer<Double>, _ in_stride: Int, filter: [Complex], _ kernel_size: Int, inout _ overlap: [Double], _ result: UnsafeMutablePointer<Double>, _ out_stride: Int) {
-    
-    let convolve_length = count + kernel_size - 1
-    let fft_length = FFTConvolveLength(count, kernel_size)
-    let lv = log2(fft_length)
-    
-    var buffer = [Double](count: fft_length << 1, repeatedValue: 0)
-    Move(count, signal, in_stride, &buffer, 1)
-    
-    let ptr = UnsafeMutablePointer<Double>(buffer)
-    DispatchRadix2FiniteImpulseFilter(lv, buffer, 1, filter, 1, ptr, 1, ptr + fft_length, 1)
-    
-    let min_count = min(convolve_length, overlap.count)
-    Add(min_count, buffer, 1, overlap, 1, &buffer, 1)
-    Move(count, buffer, 1, result, out_stride)
-    overlap.replace(with: buffer[count..<convolve_length].concat(overlap[min_count..<overlap.count]))
 }
 
 // MARK: Wrapper Function
