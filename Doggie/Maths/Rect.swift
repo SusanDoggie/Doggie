@@ -164,10 +164,10 @@ extension Rect {
         return y + height
     }
     public var midX : Double {
-        return fma(0.5, width, x)
+        return 0.5 * width + x
     }
     public var midY : Double {
-        return fma(0.5, height, y)
+        return 0.5 * height + y
     }
     public var center : Point {
         get {

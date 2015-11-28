@@ -53,8 +53,8 @@ public func Radix2CircularConvolve(level: Int, _ signal: UnsafePointer<Float>, _
         let _si = _simag.memory
         let _kr = m * _kreal.memory
         let _ki = m * _kimag.memory
-        _sreal.memory = fma(_sr, _kr, -_si * _ki)
-        _simag.memory = fma(_sr, _ki, _si * _kr)
+        _sreal.memory = _sr * _kr - _si * _ki
+        _simag.memory = _sr * _ki + _si * _kr
     }
     
     HalfInverseRadix2CooleyTukey(level, temp, temp + temp_stride, k_stride, output, out_stride, temp, temp + temp_stride, k_stride)
@@ -88,8 +88,8 @@ public func Radix2CircularConvolve(level: Int, _ signal: UnsafePointer<Double>, 
         let _si = _simag.memory
         let _kr = m * _kreal.memory
         let _ki = m * _kimag.memory
-        _sreal.memory = fma(_sr, _kr, -_si * _ki)
-        _simag.memory = fma(_sr, _ki, _si * _kr)
+        _sreal.memory = _sr * _kr - _si * _ki
+        _simag.memory = _sr * _ki + _si * _kr
     }
     
     HalfInverseRadix2CooleyTukey(level, temp, temp + temp_stride, k_stride, output, out_stride, temp, temp + temp_stride, k_stride)
@@ -116,8 +116,8 @@ public func Radix2CircularConvolve(level: Int, _ sreal: UnsafePointer<Float>, _ 
         let _si = _simag.memory
         let _kr = m * _kreal.memory
         let _ki = m * _kimag.memory
-        _sreal.memory = fma(_sr, _kr, -_si * _ki)
-        _simag.memory = fma(_sr, _ki, _si * _kr)
+        _sreal.memory = _sr * _kr - _si * _ki
+        _simag.memory = _sr * _ki + _si * _kr
         _sreal += s_stride
         _simag += s_stride
         _kreal += k_stride
@@ -148,8 +148,8 @@ public func Radix2CircularConvolve(level: Int, _ sreal: UnsafePointer<Double>, _
         let _si = _simag.memory
         let _kr = m * _kreal.memory
         let _ki = m * _kimag.memory
-        _sreal.memory = fma(_sr, _kr, -_si * _ki)
-        _simag.memory = fma(_sr, _ki, _si * _kr)
+        _sreal.memory = _sr * _kr - _si * _ki
+        _simag.memory = _sr * _ki + _si * _kr
         _sreal += s_stride
         _simag += s_stride
         _kreal += k_stride
@@ -187,8 +187,8 @@ public func DispatchRadix2CircularConvolve(level: Int, _ signal: UnsafePointer<F
         let _si = _simag.memory
         let _kr = m * _kreal.memory
         let _ki = m * _kimag.memory
-        _sreal.memory = fma(_sr, _kr, -_si * _ki)
-        _simag.memory = fma(_sr, _ki, _si * _kr)
+        _sreal.memory = _sr * _kr - _si * _ki
+        _simag.memory = _sr * _ki + _si * _kr
     }
     
     DispatchHalfInverseRadix2CooleyTukey(level, temp, temp + temp_stride, k_stride, output, out_stride, temp, temp + temp_stride, k_stride)
@@ -222,8 +222,8 @@ public func DispatchRadix2CircularConvolve(level: Int, _ signal: UnsafePointer<D
         let _si = _simag.memory
         let _kr = m * _kreal.memory
         let _ki = m * _kimag.memory
-        _sreal.memory = fma(_sr, _kr, -_si * _ki)
-        _simag.memory = fma(_sr, _ki, _si * _kr)
+        _sreal.memory = _sr * _kr - _si * _ki
+        _simag.memory = _sr * _ki + _si * _kr
     }
     
     DispatchHalfInverseRadix2CooleyTukey(level, temp, temp + temp_stride, k_stride, output, out_stride, temp, temp + temp_stride, k_stride)
@@ -250,8 +250,8 @@ public func DispatchRadix2CircularConvolve(level: Int, _ sreal: UnsafePointer<Fl
         let _si = _simag.memory
         let _kr = m * _kreal.memory
         let _ki = m * _kimag.memory
-        _sreal.memory = fma(_sr, _kr, -_si * _ki)
-        _simag.memory = fma(_sr, _ki, _si * _kr)
+        _sreal.memory = _sr * _kr - _si * _ki
+        _simag.memory = _sr * _ki + _si * _kr
         _sreal += s_stride
         _simag += s_stride
         _kreal += k_stride
@@ -282,8 +282,8 @@ public func DispatchRadix2CircularConvolve(level: Int, _ sreal: UnsafePointer<Do
         let _si = _simag.memory
         let _kr = m * _kreal.memory
         let _ki = m * _kimag.memory
-        _sreal.memory = fma(_sr, _kr, -_si * _ki)
-        _simag.memory = fma(_sr, _ki, _si * _kr)
+        _sreal.memory = _sr * _kr - _si * _ki
+        _simag.memory = _sr * _ki + _si * _kr
         _sreal += s_stride
         _simag += s_stride
         _kreal += k_stride
@@ -311,7 +311,7 @@ public func Radix2PowerCircularConvolve(level: Int, _ input: UnsafePointer<Float
         _timag += t_stride
         let _r = _treal.memory
         let _i = _timag.memory
-        let _pow = m * pow(fma(_r, _r, _i * _i), 0.5 * n)
+        let _pow = m * pow(_r * _r + _i * _i, 0.5 * n)
         let _arg = n * atan2(_i, _r)
         _treal.memory = _pow * cos(_arg)
         _timag.memory = _pow * sin(_arg)
@@ -338,7 +338,7 @@ public func Radix2PowerCircularConvolve(level: Int, _ input: UnsafePointer<Doubl
         _timag += t_stride
         let _r = _treal.memory
         let _i = _timag.memory
-        let _pow = m * pow(fma(_r, _r, _i * _i), 0.5 * n)
+        let _pow = m * pow(_r * _r + _i * _i, 0.5 * n)
         let _arg = n * atan2(_i, _r)
         _treal.memory = _pow * cos(_arg)
         _timag.memory = _pow * sin(_arg)
@@ -359,7 +359,7 @@ public func Radix2PowerCircularConvolve(level: Int, _ real: UnsafePointer<Float>
     for _ in 0..<fft_length {
         let _r = _treal.memory
         let _i = _timag.memory
-        let _pow = m * pow(fma(_r, _r, _i * _i), 0.5 * n)
+        let _pow = m * pow(_r * _r + _i * _i, 0.5 * n)
         let _arg = n * atan2(_i, _r)
         _treal.memory = _pow * cos(_arg)
         _timag.memory = _pow * sin(_arg)
@@ -382,7 +382,7 @@ public func Radix2PowerCircularConvolve(level: Int, _ real: UnsafePointer<Double
     for _ in 0..<fft_length {
         let _r = _treal.memory
         let _i = _timag.memory
-        let _pow = m * pow(fma(_r, _r, _i * _i), 0.5 * n)
+        let _pow = m * pow(_r * _r + _i * _i, 0.5 * n)
         let _arg = n * atan2(_i, _r)
         _treal.memory = _pow * cos(_arg)
         _timag.memory = _pow * sin(_arg)
@@ -411,7 +411,7 @@ public func DispatchRadix2PowerCircularConvolve(level: Int, _ input: UnsafePoint
         _timag += t_stride
         let _r = _treal.memory
         let _i = _timag.memory
-        let _pow = m * pow(fma(_r, _r, _i * _i), 0.5 * n)
+        let _pow = m * pow(_r * _r + _i * _i, 0.5 * n)
         let _arg = n * atan2(_i, _r)
         _treal.memory = _pow * cos(_arg)
         _timag.memory = _pow * sin(_arg)
@@ -438,7 +438,7 @@ public func DispatchRadix2PowerCircularConvolve(level: Int, _ input: UnsafePoint
         _timag += t_stride
         let _r = _treal.memory
         let _i = _timag.memory
-        let _pow = m * pow(fma(_r, _r, _i * _i), 0.5 * n)
+        let _pow = m * pow(_r * _r + _i * _i, 0.5 * n)
         let _arg = n * atan2(_i, _r)
         _treal.memory = _pow * cos(_arg)
         _timag.memory = _pow * sin(_arg)
@@ -459,7 +459,7 @@ public func DispatchRadix2PowerCircularConvolve(level: Int, _ real: UnsafePointe
     for _ in 0..<fft_length {
         let _r = _treal.memory
         let _i = _timag.memory
-        let _pow = m * pow(fma(_r, _r, _i * _i), 0.5 * n)
+        let _pow = m * pow(_r * _r + _i * _i, 0.5 * n)
         let _arg = n * atan2(_i, _r)
         _treal.memory = _pow * cos(_arg)
         _timag.memory = _pow * sin(_arg)
@@ -482,7 +482,7 @@ public func DispatchRadix2PowerCircularConvolve(level: Int, _ real: UnsafePointe
     for _ in 0..<fft_length {
         let _r = _treal.memory
         let _i = _timag.memory
-        let _pow = m * pow(fma(_r, _r, _i * _i), 0.5 * n)
+        let _pow = m * pow(_r * _r + _i * _i, 0.5 * n)
         let _arg = n * atan2(_i, _r)
         _treal.memory = _pow * cos(_arg)
         _timag.memory = _pow * sin(_arg)

@@ -90,8 +90,8 @@ extension SDTransform : CustomStringConvertible, CustomDebugStringConvertible {
 extension SDTransform {
     
     public var inverse : SDTransform {
-        let det = fma(a, e, -b * d)
-        return SDTransform(a: e / det, b: -b / det, c: fma(b, f, -c * e) / det, d: -d / det, e: a / det, f: fma(c, d, -a * f) / det)
+        let det = a * e - b * d
+        return SDTransform(a: e / det, b: -b / det, c: b * f - c * e / det, d: -d / det, e: a / det, f: c * d - a * f / det)
     }
 }
 
@@ -541,12 +541,12 @@ public func != <S: SDTransformType, T: SDTransformType>(lhs: S, rhs: T) -> Bool 
 }
 
 public func * <S: SDTransformType, T: SDTransformType>(lhs: S, rhs: T) -> SDTransform {
-    let a = fma(lhs.a, rhs.a, lhs.b * rhs.d)
-    let b = fma(lhs.a, rhs.b, lhs.b * rhs.e)
-    let c = fma(lhs.a, rhs.c, fma(lhs.b, rhs.f, lhs.c))
-    let d = fma(lhs.d, rhs.a, lhs.e * rhs.d)
-    let e = fma(lhs.d, rhs.b, lhs.e * rhs.e)
-    let f = fma(lhs.d, rhs.c, fma(lhs.e, rhs.f, lhs.f))
+    let a = lhs.a * rhs.a + lhs.b * rhs.d
+    let b = lhs.a * rhs.b + lhs.b * rhs.e
+    let c = lhs.a * rhs.c + lhs.b * rhs.f + lhs.c
+    let d = lhs.d * rhs.a + lhs.e * rhs.d
+    let e = lhs.d * rhs.b + lhs.e * rhs.e
+    let f = lhs.d * rhs.c + lhs.e * rhs.f + lhs.f
     return SDTransform(a: a, b: b, c: c, d: d, e: e, f: f)
 }
 
@@ -555,5 +555,5 @@ public func *= <T: SDTransformType>(inout lhs: SDTransform, rhs: T) {
 }
 
 public func * <T: SDTransformType>(lhs: T, rhs: Point) -> Point {
-    return Point(x: fma(lhs.a, rhs.x, fma(lhs.b, rhs.y, lhs.c)), y: fma(lhs.d, rhs.x, fma(lhs.e, rhs.y, lhs.f)))
+    return Point(x: lhs.a * rhs.x + lhs.b * rhs.y + lhs.c, y: lhs.d * rhs.x + lhs.e * rhs.y + lhs.f)
 }

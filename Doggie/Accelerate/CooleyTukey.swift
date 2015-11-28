@@ -80,15 +80,15 @@ public func HalfRadix2CooleyTukey(level: Int, _ input: UnsafePointer<Float>, _ i
             let oddreal = op_i.memory + oph_i.memory
             let oddim = oph_r.memory - op_r.memory
             
-            op_r.memory = 0.5 * fma(oddreal, _cos1, fma(-oddim, _sin1, evenreal))
-            op_i.memory = 0.5 * fma(oddreal, _sin1, fma(oddim, _cos1, evenim))
-            oph_r.memory = 0.5 * fma(oddreal, _cos2, fma(oddim, _sin2, evenreal))
-            oph_i.memory = 0.5 * fma(oddreal, _sin2, fma(-oddim, _cos2, -evenim))
+            op_r.memory = 0.5 * (oddreal * _cos1 - oddim * _sin1 + evenreal)
+            op_i.memory = 0.5 * (oddreal * _sin1 + oddim * _cos1 + evenim)
+            oph_r.memory = 0.5 * (oddreal * _cos2 + oddim * _sin2 + evenreal)
+            oph_i.memory = 0.5 * (oddreal * _sin2 - oddim * _cos2 - evenim)
             
-            let _c1 = fma(_cos, _cos1, -_sin * _sin1)
-            let _s1 = fma(_cos, _sin1, _sin * _cos1)
-            let _c2 = fma(_cos2, _cos, _sin2 * _sin)
-            let _s2 = fma(_sin2, _cos, -_cos2 * _sin)
+            let _c1 = _cos * _cos1 - _sin * _sin1
+            let _s1 = _cos * _sin1 + _sin * _cos1
+            let _c2 = _cos2 * _cos + _sin2 * _sin
+            let _s2 = _sin2 * _cos - _cos2 * _sin
             _cos1 = _c1
             _sin1 = _s1
             _cos2 = _c2
@@ -157,15 +157,15 @@ public func HalfInverseRadix2CooleyTukey(level: Int, _ real: UnsafePointer<Float
             let oddreal = ip_i.memory + iph_i.memory
             let oddim = iph_r.memory - ip_r.memory
             
-            tp_r.memory = fma(-oddreal, _cos1, fma(-oddim, _sin1, evenreal))
-            tp_i.memory = fma(oddreal, _sin1, fma(-oddim, _cos1, evenim))
-            tph_r.memory = fma(-oddreal, _cos2, fma(oddim, _sin2, evenreal))
-            tph_i.memory = fma(oddreal, _sin2, fma(oddim, _cos2, -evenim))
+            tp_r.memory = -oddreal * _cos1 - oddim * _sin1 + evenreal
+            tp_i.memory = oddreal * _sin1 - oddim * _cos1 + evenim
+            tph_r.memory = -oddreal * _cos2 + oddim * _sin2 + evenreal
+            tph_i.memory = oddreal * _sin2 + oddim * _cos2 - evenim
             
-            let _c1 = fma(_cos, _cos1, -_sin * _sin1)
-            let _s1 = fma(_cos, _sin1, _sin * _cos1)
-            let _c2 = fma(_cos2, _cos, _sin2 * _sin)
-            let _s2 = fma(_sin2, _cos, -_cos2 * _sin)
+            let _c1 = _cos * _cos1 - _sin * _sin1
+            let _s1 = _cos * _sin1 + _sin * _cos1
+            let _c2 = _cos2 * _cos + _sin2 * _sin
+            let _s2 = _sin2 * _cos - _cos2 * _sin
             _cos1 = _c1
             _sin1 = _s1
             _cos2 = _c2
@@ -293,15 +293,15 @@ public func HalfRadix2CooleyTukey(level: Int, _ input: UnsafePointer<Double>, _ 
             let oddreal = op_i.memory + oph_i.memory
             let oddim = oph_r.memory - op_r.memory
             
-            op_r.memory = 0.5 * fma(oddreal, _cos1, fma(-oddim, _sin1, evenreal))
-            op_i.memory = 0.5 * fma(oddreal, _sin1, fma(oddim, _cos1, evenim))
-            oph_r.memory = 0.5 * fma(oddreal, _cos2, fma(oddim, _sin2, evenreal))
-            oph_i.memory = 0.5 * fma(oddreal, _sin2, fma(-oddim, _cos2, -evenim))
+            op_r.memory = 0.5 * (oddreal * _cos1 - oddim * _sin1 + evenreal)
+            op_i.memory = 0.5 * (oddreal * _sin1 + oddim * _cos1 + evenim)
+            oph_r.memory = 0.5 * (oddreal * _cos2 + oddim * _sin2 + evenreal)
+            oph_i.memory = 0.5 * (oddreal * _sin2 - oddim * _cos2 - evenim)
             
-            let _c1 = fma(_cos, _cos1, -_sin * _sin1)
-            let _s1 = fma(_cos, _sin1, _sin * _cos1)
-            let _c2 = fma(_cos2, _cos, _sin2 * _sin)
-            let _s2 = fma(_sin2, _cos, -_cos2 * _sin)
+            let _c1 = _cos * _cos1 - _sin * _sin1
+            let _s1 = _cos * _sin1 + _sin * _cos1
+            let _c2 = _cos2 * _cos + _sin2 * _sin
+            let _s2 = _sin2 * _cos - _cos2 * _sin
             _cos1 = _c1
             _sin1 = _s1
             _cos2 = _c2
@@ -370,15 +370,15 @@ public func HalfInverseRadix2CooleyTukey(level: Int, _ real: UnsafePointer<Doubl
             let oddreal = ip_i.memory + iph_i.memory
             let oddim = iph_r.memory - ip_r.memory
             
-            tp_r.memory = fma(-oddreal, _cos1, fma(-oddim, _sin1, evenreal))
-            tp_i.memory = fma(oddreal, _sin1, fma(-oddim, _cos1, evenim))
-            tph_r.memory = fma(-oddreal, _cos2, fma(oddim, _sin2, evenreal))
-            tph_i.memory = fma(oddreal, _sin2, fma(oddim, _cos2, -evenim))
+            tp_r.memory = -oddreal * _cos1 - oddim * _sin1 + evenreal
+            tp_i.memory = oddreal * _sin1 - oddim * _cos1 + evenim
+            tph_r.memory = -oddreal * _cos2 + oddim * _sin2 + evenreal
+            tph_i.memory = oddreal * _sin2 + oddim * _cos2 - evenim
             
-            let _c1 = fma(_cos, _cos1, -_sin * _sin1)
-            let _s1 = fma(_cos, _sin1, _sin * _cos1)
-            let _c2 = fma(_cos2, _cos, _sin2 * _sin)
-            let _s2 = fma(_sin2, _cos, -_cos2 * _sin)
+            let _c1 = _cos * _cos1 - _sin * _sin1
+            let _s1 = _cos * _sin1 + _sin * _cos1
+            let _c2 = _cos2 * _cos + _sin2 * _sin
+            let _s2 = _sin2 * _cos - _cos2 * _sin
             _cos1 = _c1
             _sin1 = _s1
             _cos2 = _c2
@@ -523,10 +523,10 @@ public func Radix2CooleyTukey(level: Int, _ input: UnsafePointer<Float>, _ in_st
             let oddreal = op_i.memory + oph_i.memory
             let oddim = oph_r.memory - op_r.memory
             
-            let _r1  = 0.5 * fma(oddreal, _cos1, fma(-oddim, _sin1, evenreal))
-            let _i1  = 0.5 * fma(oddreal, _sin1, fma(oddim, _cos1, evenim))
-            let _r2  = 0.5 * fma(oddreal, _cos2, fma(oddim, _sin2, evenreal))
-            let _i2  = 0.5 * fma(oddreal, _sin2, fma(-oddim, _cos2, -evenim))
+            let _r1 = 0.5 * (oddreal * _cos1 - oddim * _sin1 + evenreal)
+            let _i1 = 0.5 * (oddreal * _sin1 + oddim * _cos1 + evenim)
+            let _r2 = 0.5 * (oddreal * _cos2 + oddim * _sin2 + evenreal)
+            let _i2 = 0.5 * (oddreal * _sin2 - oddim * _cos2 - evenim)
             
             op_r.memory = _r1
             op_i.memory = _i1
@@ -537,10 +537,10 @@ public func Radix2CooleyTukey(level: Int, _ input: UnsafePointer<Float>, _ in_st
             opb_r.memory = _r1
             opb_i.memory = -_i1
             
-            let _c1 = fma(_cos, _cos1, -_sin * _sin1)
-            let _s1 = fma(_cos, _sin1, _sin * _cos1)
-            let _c2 = fma(_cos2, _cos, _sin2 * _sin)
-            let _s2 = fma(_sin2, _cos, -_cos2 * _sin)
+            let _c1 = _cos * _cos1 - _sin * _sin1
+            let _s1 = _cos * _sin1 + _sin * _cos1
+            let _c2 = _cos2 * _cos + _sin2 * _sin
+            let _s2 = _sin2 * _cos - _cos2 * _sin
             _cos1 = _c1
             _sin1 = _s1
             _cos2 = _c2
@@ -589,8 +589,8 @@ public func Radix2CooleyTukey(level: Int, _ real: UnsafePointer<Float>, _ imag: 
             let tphic = tphi * _cos1
             let tphrs = tphr * _sin1
             let tphis = tphi * _sin1
-            let _c = fma(_cos, _cos1, -_sin * _sin1)
-            let _s = fma(_cos, _sin1, _sin * _cos1)
+            let _c = _cos * _cos1 - _sin * _sin1
+            let _s = _cos * _sin1 + _sin * _cos1
             _cos1 = _c
             _sin1 = _s
             op_r.memory = tpr + tphrc - tphis
@@ -672,10 +672,10 @@ public func InverseRadix2CooleyTukey(level: Int, _ input: UnsafePointer<Float>, 
             let oddreal = op_i.memory + oph_i.memory
             let oddim = oph_r.memory - op_r.memory
             
-            let _r1  = 0.5 * fma(oddreal, _cos1, fma(-oddim, _sin1, evenreal))
-            let _i1  = 0.5 * fma(oddreal, _sin1, fma(oddim, _cos1, evenim))
-            let _r2  = 0.5 * fma(oddreal, _cos2, fma(oddim, _sin2, evenreal))
-            let _i2  = 0.5 * fma(oddreal, _sin2, fma(-oddim, _cos2, -evenim))
+            let _r1 = 0.5 * (oddreal * _cos1 - oddim * _sin1 + evenreal)
+            let _i1 = 0.5 * (oddreal * _sin1 + oddim * _cos1 + evenim)
+            let _r2 = 0.5 * (oddreal * _cos2 + oddim * _sin2 + evenreal)
+            let _i2 = 0.5 * (oddreal * _sin2 - oddim * _cos2 - evenim)
             
             op_r.memory = _r1
             op_i.memory = _i1
@@ -686,10 +686,10 @@ public func InverseRadix2CooleyTukey(level: Int, _ input: UnsafePointer<Float>, 
             opb_r.memory = _r1
             opb_i.memory = -_i1
             
-            let _c1 = fma(_cos, _cos1, -_sin * _sin1)
-            let _s1 = fma(_cos, _sin1, _sin * _cos1)
-            let _c2 = fma(_cos2, _cos, _sin2 * _sin)
-            let _s2 = fma(_sin2, _cos, -_cos2 * _sin)
+            let _c1 = _cos * _cos1 - _sin * _sin1
+            let _s1 = _cos * _sin1 + _sin * _cos1
+            let _c2 = _cos2 * _cos + _sin2 * _sin
+            let _s2 = _sin2 * _cos - _cos2 * _sin
             _cos1 = _c1
             _sin1 = _s1
             _cos2 = _c2
@@ -882,10 +882,10 @@ public func Radix2CooleyTukey(level: Int, _ input: UnsafePointer<Double>, _ in_s
             let oddreal = op_i.memory + oph_i.memory
             let oddim = oph_r.memory - op_r.memory
             
-            let _r1  = 0.5 * fma(oddreal, _cos1, fma(-oddim, _sin1, evenreal))
-            let _i1  = 0.5 * fma(oddreal, _sin1, fma(oddim, _cos1, evenim))
-            let _r2  = 0.5 * fma(oddreal, _cos2, fma(oddim, _sin2, evenreal))
-            let _i2  = 0.5 * fma(oddreal, _sin2, fma(-oddim, _cos2, -evenim))
+            let _r1 = 0.5 * (oddreal * _cos1 - oddim * _sin1 + evenreal)
+            let _i1 = 0.5 * (oddreal * _sin1 + oddim * _cos1 + evenim)
+            let _r2 = 0.5 * (oddreal * _cos2 + oddim * _sin2 + evenreal)
+            let _i2 = 0.5 * (oddreal * _sin2 - oddim * _cos2 - evenim)
             
             op_r.memory = _r1
             op_i.memory = _i1
@@ -896,10 +896,10 @@ public func Radix2CooleyTukey(level: Int, _ input: UnsafePointer<Double>, _ in_s
             opb_r.memory = _r1
             opb_i.memory = -_i1
             
-            let _c1 = fma(_cos, _cos1, -_sin * _sin1)
-            let _s1 = fma(_cos, _sin1, _sin * _cos1)
-            let _c2 = fma(_cos2, _cos, _sin2 * _sin)
-            let _s2 = fma(_sin2, _cos, -_cos2 * _sin)
+            let _c1 = _cos * _cos1 - _sin * _sin1
+            let _s1 = _cos * _sin1 + _sin * _cos1
+            let _c2 = _cos2 * _cos + _sin2 * _sin
+            let _s2 = _sin2 * _cos - _cos2 * _sin
             _cos1 = _c1
             _sin1 = _s1
             _cos2 = _c2
@@ -948,8 +948,8 @@ public func Radix2CooleyTukey(level: Int, _ real: UnsafePointer<Double>, _ imag:
             let tphic = tphi * _cos1
             let tphrs = tphr * _sin1
             let tphis = tphi * _sin1
-            let _c = fma(_cos, _cos1, -_sin * _sin1)
-            let _s = fma(_cos, _sin1, _sin * _cos1)
+            let _c = _cos * _cos1 - _sin * _sin1
+            let _s = _cos * _sin1 + _sin * _cos1
             _cos1 = _c
             _sin1 = _s
             op_r.memory = tpr + tphrc - tphis
@@ -1031,10 +1031,10 @@ public func InverseRadix2CooleyTukey(level: Int, _ input: UnsafePointer<Double>,
             let oddreal = op_i.memory + oph_i.memory
             let oddim = oph_r.memory - op_r.memory
             
-            let _r1  = 0.5 * fma(oddreal, _cos1, fma(-oddim, _sin1, evenreal))
-            let _i1  = 0.5 * fma(oddreal, _sin1, fma(oddim, _cos1, evenim))
-            let _r2  = 0.5 * fma(oddreal, _cos2, fma(oddim, _sin2, evenreal))
-            let _i2  = 0.5 * fma(oddreal, _sin2, fma(-oddim, _cos2, -evenim))
+            let _r1 = 0.5 * (oddreal * _cos1 - oddim * _sin1 + evenreal)
+            let _i1 = 0.5 * (oddreal * _sin1 + oddim * _cos1 + evenim)
+            let _r2 = 0.5 * (oddreal * _cos2 + oddim * _sin2 + evenreal)
+            let _i2 = 0.5 * (oddreal * _sin2 - oddim * _cos2 - evenim)
             
             op_r.memory = _r1
             op_i.memory = _i1
@@ -1045,10 +1045,10 @@ public func InverseRadix2CooleyTukey(level: Int, _ input: UnsafePointer<Double>,
             opb_r.memory = _r1
             opb_i.memory = -_i1
             
-            let _c1 = fma(_cos, _cos1, -_sin * _sin1)
-            let _s1 = fma(_cos, _sin1, _sin * _cos1)
-            let _c2 = fma(_cos2, _cos, _sin2 * _sin)
-            let _s2 = fma(_sin2, _cos, -_cos2 * _sin)
+            let _c1 = _cos * _cos1 - _sin * _sin1
+            let _s1 = _cos * _sin1 + _sin * _cos1
+            let _c2 = _cos2 * _cos + _sin2 * _sin
+            let _s2 = _sin2 * _cos - _cos2 * _sin
             _cos1 = _c1
             _sin1 = _s1
             _cos2 = _c2
@@ -1228,15 +1228,15 @@ public func DispatchHalfRadix2CooleyTukey(level: Int, _ input: UnsafePointer<Flo
             let oddreal = op_i.memory + oph_i.memory
             let oddim = oph_r.memory - op_r.memory
             
-            op_r.memory = 0.5 * fma(oddreal, _cos1, fma(-oddim, _sin1, evenreal))
-            op_i.memory = 0.5 * fma(oddreal, _sin1, fma(oddim, _cos1, evenim))
-            oph_r.memory = 0.5 * fma(oddreal, _cos2, fma(oddim, _sin2, evenreal))
-            oph_i.memory = 0.5 * fma(oddreal, _sin2, fma(-oddim, _cos2, -evenim))
+            op_r.memory = 0.5 * (oddreal * _cos1 - oddim * _sin1 + evenreal)
+            op_i.memory = 0.5 * (oddreal * _sin1 + oddim * _cos1 + evenim)
+            oph_r.memory = 0.5 * (oddreal * _cos2 + oddim * _sin2 + evenreal)
+            oph_i.memory = 0.5 * (oddreal * _sin2 - oddim * _cos2 - evenim)
             
-            let _c1 = fma(_cos, _cos1, -_sin * _sin1)
-            let _s1 = fma(_cos, _sin1, _sin * _cos1)
-            let _c2 = fma(_cos2, _cos, _sin2 * _sin)
-            let _s2 = fma(_sin2, _cos, -_cos2 * _sin)
+            let _c1 = _cos * _cos1 - _sin * _sin1
+            let _s1 = _cos * _sin1 + _sin * _cos1
+            let _c2 = _cos2 * _cos + _sin2 * _sin
+            let _s2 = _sin2 * _cos - _cos2 * _sin
             _cos1 = _c1
             _sin1 = _s1
             _cos2 = _c2
@@ -1305,15 +1305,15 @@ public func DispatchHalfInverseRadix2CooleyTukey(level: Int, _ real: UnsafePoint
             let oddreal = ip_i.memory + iph_i.memory
             let oddim = iph_r.memory - ip_r.memory
             
-            tp_r.memory = fma(-oddreal, _cos1, fma(-oddim, _sin1, evenreal))
-            tp_i.memory = fma(oddreal, _sin1, fma(-oddim, _cos1, evenim))
-            tph_r.memory = fma(-oddreal, _cos2, fma(oddim, _sin2, evenreal))
-            tph_i.memory = fma(oddreal, _sin2, fma(oddim, _cos2, -evenim))
+            tp_r.memory = -oddreal * _cos1 - oddim * _sin1 + evenreal
+            tp_i.memory = oddreal * _sin1 - oddim * _cos1 + evenim
+            tph_r.memory = -oddreal * _cos2 + oddim * _sin2 + evenreal
+            tph_i.memory = oddreal * _sin2 + oddim * _cos2 - evenim
             
-            let _c1 = fma(_cos, _cos1, -_sin * _sin1)
-            let _s1 = fma(_cos, _sin1, _sin * _cos1)
-            let _c2 = fma(_cos2, _cos, _sin2 * _sin)
-            let _s2 = fma(_sin2, _cos, -_cos2 * _sin)
+            let _c1 = _cos * _cos1 - _sin * _sin1
+            let _s1 = _cos * _sin1 + _sin * _cos1
+            let _c2 = _cos2 * _cos + _sin2 * _sin
+            let _s2 = _sin2 * _cos - _cos2 * _sin
             _cos1 = _c1
             _sin1 = _s1
             _cos2 = _c2
@@ -1455,15 +1455,15 @@ public func DispatchHalfRadix2CooleyTukey(level: Int, _ input: UnsafePointer<Dou
             let oddreal = op_i.memory + oph_i.memory
             let oddim = oph_r.memory - op_r.memory
             
-            op_r.memory = 0.5 * fma(oddreal, _cos1, fma(-oddim, _sin1, evenreal))
-            op_i.memory = 0.5 * fma(oddreal, _sin1, fma(oddim, _cos1, evenim))
-            oph_r.memory = 0.5 * fma(oddreal, _cos2, fma(oddim, _sin2, evenreal))
-            oph_i.memory = 0.5 * fma(oddreal, _sin2, fma(-oddim, _cos2, -evenim))
+            op_r.memory = 0.5 * (oddreal * _cos1 - oddim * _sin1 + evenreal)
+            op_i.memory = 0.5 * (oddreal * _sin1 + oddim * _cos1 + evenim)
+            oph_r.memory = 0.5 * (oddreal * _cos2 + oddim * _sin2 + evenreal)
+            oph_i.memory = 0.5 * (oddreal * _sin2 - oddim * _cos2 - evenim)
             
-            let _c1 = fma(_cos, _cos1, -_sin * _sin1)
-            let _s1 = fma(_cos, _sin1, _sin * _cos1)
-            let _c2 = fma(_cos2, _cos, _sin2 * _sin)
-            let _s2 = fma(_sin2, _cos, -_cos2 * _sin)
+            let _c1 = _cos * _cos1 - _sin * _sin1
+            let _s1 = _cos * _sin1 + _sin * _cos1
+            let _c2 = _cos2 * _cos + _sin2 * _sin
+            let _s2 = _sin2 * _cos - _cos2 * _sin
             _cos1 = _c1
             _sin1 = _s1
             _cos2 = _c2
@@ -1532,15 +1532,15 @@ public func DispatchHalfInverseRadix2CooleyTukey(level: Int, _ real: UnsafePoint
             let oddreal = ip_i.memory + iph_i.memory
             let oddim = iph_r.memory - ip_r.memory
             
-            tp_r.memory = fma(-oddreal, _cos1, fma(-oddim, _sin1, evenreal))
-            tp_i.memory = fma(oddreal, _sin1, fma(-oddim, _cos1, evenim))
-            tph_r.memory = fma(-oddreal, _cos2, fma(oddim, _sin2, evenreal))
-            tph_i.memory = fma(oddreal, _sin2, fma(oddim, _cos2, -evenim))
+            tp_r.memory = -oddreal * _cos1 - oddim * _sin1 + evenreal
+            tp_i.memory = oddreal * _sin1 - oddim * _cos1 + evenim
+            tph_r.memory = -oddreal * _cos2 + oddim * _sin2 + evenreal
+            tph_i.memory = oddreal * _sin2 + oddim * _cos2 - evenim
             
-            let _c1 = fma(_cos, _cos1, -_sin * _sin1)
-            let _s1 = fma(_cos, _sin1, _sin * _cos1)
-            let _c2 = fma(_cos2, _cos, _sin2 * _sin)
-            let _s2 = fma(_sin2, _cos, -_cos2 * _sin)
+            let _c1 = _cos * _cos1 - _sin * _sin1
+            let _s1 = _cos * _sin1 + _sin * _cos1
+            let _c2 = _cos2 * _cos + _sin2 * _sin
+            let _s2 = _sin2 * _cos - _cos2 * _sin
             _cos1 = _c1
             _sin1 = _s1
             _cos2 = _c2
@@ -1699,10 +1699,10 @@ public func DispatchRadix2CooleyTukey(level: Int, _ input: UnsafePointer<Float>,
             let oddreal = op_i.memory + oph_i.memory
             let oddim = oph_r.memory - op_r.memory
             
-            let _r1  = 0.5 * fma(oddreal, _cos1, fma(-oddim, _sin1, evenreal))
-            let _i1  = 0.5 * fma(oddreal, _sin1, fma(oddim, _cos1, evenim))
-            let _r2  = 0.5 * fma(oddreal, _cos2, fma(oddim, _sin2, evenreal))
-            let _i2  = 0.5 * fma(oddreal, _sin2, fma(-oddim, _cos2, -evenim))
+            let _r1 = 0.5 * (oddreal * _cos1 - oddim * _sin1 + evenreal)
+            let _i1 = 0.5 * (oddreal * _sin1 + oddim * _cos1 + evenim)
+            let _r2 = 0.5 * (oddreal * _cos2 + oddim * _sin2 + evenreal)
+            let _i2 = 0.5 * (oddreal * _sin2 - oddim * _cos2 - evenim)
             
             op_r.memory = _r1
             op_i.memory = _i1
@@ -1713,10 +1713,10 @@ public func DispatchRadix2CooleyTukey(level: Int, _ input: UnsafePointer<Float>,
             opb_r.memory = _r1
             opb_i.memory = -_i1
             
-            let _c1 = fma(_cos, _cos1, -_sin * _sin1)
-            let _s1 = fma(_cos, _sin1, _sin * _cos1)
-            let _c2 = fma(_cos2, _cos, _sin2 * _sin)
-            let _s2 = fma(_sin2, _cos, -_cos2 * _sin)
+            let _c1 = _cos * _cos1 - _sin * _sin1
+            let _s1 = _cos * _sin1 + _sin * _cos1
+            let _c2 = _cos2 * _cos + _sin2 * _sin
+            let _s2 = _sin2 * _cos - _cos2 * _sin
             _cos1 = _c1
             _sin1 = _s1
             _cos2 = _c2
@@ -1770,8 +1770,8 @@ public func DispatchRadix2CooleyTukey(level: Int, _ real: UnsafePointer<Float>, 
             let tphic = tphi * _cos1
             let tphrs = tphr * _sin1
             let tphis = tphi * _sin1
-            let _c = fma(_cos, _cos1, -_sin * _sin1)
-            let _s = fma(_cos, _sin1, _sin * _cos1)
+            let _c = _cos * _cos1 - _sin * _sin1
+            let _s = _cos * _sin1 + _sin * _cos1
             _cos1 = _c
             _sin1 = _s
             op_r.memory = tpr + tphrc - tphis
@@ -1853,10 +1853,10 @@ public func DispatchInverseRadix2CooleyTukey(level: Int, _ input: UnsafePointer<
             let oddreal = op_i.memory + oph_i.memory
             let oddim = oph_r.memory - op_r.memory
             
-            let _r1  = 0.5 * fma(oddreal, _cos1, fma(-oddim, _sin1, evenreal))
-            let _i1  = 0.5 * fma(oddreal, _sin1, fma(oddim, _cos1, evenim))
-            let _r2  = 0.5 * fma(oddreal, _cos2, fma(oddim, _sin2, evenreal))
-            let _i2  = 0.5 * fma(oddreal, _sin2, fma(-oddim, _cos2, -evenim))
+            let _r1 = 0.5 * (oddreal * _cos1 - oddim * _sin1 + evenreal)
+            let _i1 = 0.5 * (oddreal * _sin1 + oddim * _cos1 + evenim)
+            let _r2 = 0.5 * (oddreal * _cos2 + oddim * _sin2 + evenreal)
+            let _i2 = 0.5 * (oddreal * _sin2 - oddim * _cos2 - evenim)
             
             op_r.memory = _r1
             op_i.memory = _i1
@@ -1867,10 +1867,10 @@ public func DispatchInverseRadix2CooleyTukey(level: Int, _ input: UnsafePointer<
             opb_r.memory = _r1
             opb_i.memory = -_i1
             
-            let _c1 = fma(_cos, _cos1, -_sin * _sin1)
-            let _s1 = fma(_cos, _sin1, _sin * _cos1)
-            let _c2 = fma(_cos2, _cos, _sin2 * _sin)
-            let _s2 = fma(_sin2, _cos, -_cos2 * _sin)
+            let _c1 = _cos * _cos1 - _sin * _sin1
+            let _s1 = _cos * _sin1 + _sin * _cos1
+            let _c2 = _cos2 * _cos + _sin2 * _sin
+            let _s2 = _sin2 * _cos - _cos2 * _sin
             _cos1 = _c1
             _sin1 = _s1
             _cos2 = _c2
@@ -2069,10 +2069,10 @@ public func DispatchRadix2CooleyTukey(level: Int, _ input: UnsafePointer<Double>
             let oddreal = op_i.memory + oph_i.memory
             let oddim = oph_r.memory - op_r.memory
             
-            let _r1  = 0.5 * fma(oddreal, _cos1, fma(-oddim, _sin1, evenreal))
-            let _i1  = 0.5 * fma(oddreal, _sin1, fma(oddim, _cos1, evenim))
-            let _r2  = 0.5 * fma(oddreal, _cos2, fma(oddim, _sin2, evenreal))
-            let _i2  = 0.5 * fma(oddreal, _sin2, fma(-oddim, _cos2, -evenim))
+            let _r1 = 0.5 * (oddreal * _cos1 - oddim * _sin1 + evenreal)
+            let _i1 = 0.5 * (oddreal * _sin1 + oddim * _cos1 + evenim)
+            let _r2 = 0.5 * (oddreal * _cos2 + oddim * _sin2 + evenreal)
+            let _i2 = 0.5 * (oddreal * _sin2 - oddim * _cos2 - evenim)
             
             op_r.memory = _r1
             op_i.memory = _i1
@@ -2083,10 +2083,10 @@ public func DispatchRadix2CooleyTukey(level: Int, _ input: UnsafePointer<Double>
             opb_r.memory = _r1
             opb_i.memory = -_i1
             
-            let _c1 = fma(_cos, _cos1, -_sin * _sin1)
-            let _s1 = fma(_cos, _sin1, _sin * _cos1)
-            let _c2 = fma(_cos2, _cos, _sin2 * _sin)
-            let _s2 = fma(_sin2, _cos, -_cos2 * _sin)
+            let _c1 = _cos * _cos1 - _sin * _sin1
+            let _s1 = _cos * _sin1 + _sin * _cos1
+            let _c2 = _cos2 * _cos + _sin2 * _sin
+            let _s2 = _sin2 * _cos - _cos2 * _sin
             _cos1 = _c1
             _sin1 = _s1
             _cos2 = _c2
@@ -2140,8 +2140,8 @@ public func DispatchRadix2CooleyTukey(level: Int, _ real: UnsafePointer<Double>,
             let tphic = tphi * _cos1
             let tphrs = tphr * _sin1
             let tphis = tphi * _sin1
-            let _c = fma(_cos, _cos1, -_sin * _sin1)
-            let _s = fma(_cos, _sin1, _sin * _cos1)
+            let _c = _cos * _cos1 - _sin * _sin1
+            let _s = _cos * _sin1 + _sin * _cos1
             _cos1 = _c
             _sin1 = _s
             op_r.memory = tpr + tphrc - tphis
@@ -2223,10 +2223,10 @@ public func DispatchInverseRadix2CooleyTukey(level: Int, _ input: UnsafePointer<
             let oddreal = op_i.memory + oph_i.memory
             let oddim = oph_r.memory - op_r.memory
             
-            let _r1  = 0.5 * fma(oddreal, _cos1, fma(-oddim, _sin1, evenreal))
-            let _i1  = 0.5 * fma(oddreal, _sin1, fma(oddim, _cos1, evenim))
-            let _r2  = 0.5 * fma(oddreal, _cos2, fma(oddim, _sin2, evenreal))
-            let _i2  = 0.5 * fma(oddreal, _sin2, fma(-oddim, _cos2, -evenim))
+            let _r1 = 0.5 * (oddreal * _cos1 - oddim * _sin1 + evenreal)
+            let _i1 = 0.5 * (oddreal * _sin1 + oddim * _cos1 + evenim)
+            let _r2 = 0.5 * (oddreal * _cos2 + oddim * _sin2 + evenreal)
+            let _i2 = 0.5 * (oddreal * _sin2 - oddim * _cos2 - evenim)
             
             op_r.memory = _r1
             op_i.memory = _i1
@@ -2237,10 +2237,10 @@ public func DispatchInverseRadix2CooleyTukey(level: Int, _ input: UnsafePointer<
             opb_r.memory = _r1
             opb_i.memory = -_i1
             
-            let _c1 = fma(_cos, _cos1, -_sin * _sin1)
-            let _s1 = fma(_cos, _sin1, _sin * _cos1)
-            let _c2 = fma(_cos2, _cos, _sin2 * _sin)
-            let _s2 = fma(_sin2, _cos, -_cos2 * _sin)
+            let _c1 = _cos * _cos1 - _sin * _sin1
+            let _s1 = _cos * _sin1 + _sin * _cos1
+            let _c2 = _cos2 * _cos + _sin2 * _sin
+            let _s2 = _sin2 * _cos - _cos2 * _sin
             _cos1 = _c1
             _sin1 = _s1
             _cos2 = _c2

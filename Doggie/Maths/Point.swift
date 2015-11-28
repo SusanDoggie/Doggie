@@ -85,10 +85,10 @@ public func middle(p: Point ... ) -> Point {
 public func distance(lhs: Point, _ rhs: Point) -> Double {
     let dx = lhs.x - rhs.x
     let dy = lhs.y - rhs.y
-    return sqrt(fma(dx, dx, dy * dy))
+    return sqrt(dx * dx + dy * dy)
 }
 public func direction(lhs: Point, _ rhs:  Point) -> Double {
-    return fma(lhs.x, rhs.y, -lhs.y * rhs.x)
+    return lhs.x * rhs.y - lhs.y * rhs.x
 }
 public func direction(a: Point, _ b: Point, _ c: Point) -> Double {
     return direction(b - a, c - a)

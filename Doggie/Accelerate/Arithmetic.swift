@@ -117,7 +117,7 @@ public func Mod(count: Int, var _ left: UnsafePointer<Float>, _ left_stride: Int
 }
 public func MulAdd(count: Int, var _ a: UnsafePointer<Float>, _ a_stride: Int, var _ b: UnsafePointer<Float>, _ b_stride: Int, var _ c: UnsafePointer<Float>, _ c_stride: Int, var _ output: UnsafeMutablePointer<Float>, _ out_stride: Int) {
     for _ in 0..<count {
-        output.memory = fma(a.memory, b.memory, c.memory)
+        output.memory = a.memory * b.memory + c.memory
         a += a_stride
         b += b_stride
         c += c_stride
@@ -126,7 +126,7 @@ public func MulAdd(count: Int, var _ a: UnsafePointer<Float>, _ a_stride: Int, v
 }
 public func MulSub(count: Int, var _ a: UnsafePointer<Float>, _ a_stride: Int, var _ b: UnsafePointer<Float>, _ b_stride: Int, var _ c: UnsafePointer<Float>, _ c_stride: Int, var _ output: UnsafeMutablePointer<Float>, _ out_stride: Int) {
     for _ in 0..<count {
-        output.memory = fma(a.memory, b.memory, -c.memory)
+        output.memory = a.memory * b.memory - c.memory
         a += a_stride
         b += b_stride
         c += c_stride
@@ -183,8 +183,8 @@ public func MulAdd(count: Int, var _ a: UnsafePointer<Float>, _ a_stride: Int, v
         let _bimag = bimag.memory
         let _creal = creal.memory
         let _cimag = cimag.memory
-        _real.memory = fma(_areal, _breal, _creal)
-        _imag.memory = fma(_areal, _bimag, _cimag)
+        _real.memory = _areal * _breal + _creal
+        _imag.memory = _areal * _bimag + _cimag
         a += a_stride
         breal += b_stride
         bimag += b_stride
@@ -201,8 +201,8 @@ public func MulSub(count: Int, var _ a: UnsafePointer<Float>, _ a_stride: Int, v
         let _bimag = bimag.memory
         let _creal = creal.memory
         let _cimag = cimag.memory
-        _real.memory = fma(_areal, _breal, -_creal)
-        _imag.memory = fma(_areal, _bimag, -_cimag)
+        _real.memory = _areal * _breal - _creal
+        _imag.memory = _areal * _bimag - _cimag
         a += a_stride
         breal += b_stride
         bimag += b_stride
@@ -217,7 +217,7 @@ public func Div(count: Int, var _ left: UnsafePointer<Float>, _ left_stride: Int
         let _lreal = left.memory
         let _rreal = rreal.memory
         let _rimag = rimag.memory
-        let norm = fma(_rreal, _rreal, _rimag * _rimag)
+        let norm = _rreal * _rreal + _rimag * _rimag
         let real = _lreal * _rreal
         let imag = -_lreal * _rimag
         _real.memory = real / norm
@@ -278,8 +278,8 @@ public func MulAdd(count: Int, var _ areal: UnsafePointer<Float>, var _ aimag: U
         let _breal = b.memory
         let _creal = creal.memory
         let _cimag = cimag.memory
-        _real.memory = fma(_areal, _breal, _creal)
-        _imag.memory = fma(_aimag, _breal, _cimag)
+        _real.memory = _areal * _breal + _creal
+        _imag.memory = _aimag * _breal + _cimag
         areal += a_stride
         aimag += a_stride
         b += b_stride
@@ -296,8 +296,8 @@ public func MulSub(count: Int, var _ areal: UnsafePointer<Float>, var _ aimag: U
         let _breal = b.memory
         let _creal = creal.memory
         let _cimag = cimag.memory
-        _real.memory = fma(_areal, _breal, -_creal)
-        _imag.memory = fma(_aimag, _breal, -_cimag)
+        _real.memory = _areal * _breal - _creal
+        _imag.memory = _aimag * _breal - _cimag
         areal += a_stride
         aimag += a_stride
         b += b_stride
@@ -373,8 +373,8 @@ public func Mul(count: Int, var _ lreal: UnsafePointer<Float>, var _ limag: Unsa
         let _limag = limag.memory
         let _rreal = rreal.memory
         let _rimag = rimag.memory
-        _real.memory = fma(_lreal, _rreal, -_limag * _rimag)
-        _imag.memory = fma(_lreal, _rimag, _limag * _rreal)
+        _real.memory = _lreal * _rreal - _limag * _rimag
+        _imag.memory = _lreal * _rimag + _limag * _rreal
         lreal += left_stride
         limag += left_stride
         rreal += right_stride
@@ -391,8 +391,8 @@ public func MulAdd(count: Int, var _ areal: UnsafePointer<Float>, var _ aimag: U
         let _bimag = bimag.memory
         let _creal = creal.memory
         let _cimag = cimag.memory
-        _real.memory = fma(_areal, _breal, fma(-_aimag, _bimag, _creal))
-        _imag.memory = fma(_areal, _bimag, fma(_aimag, _breal, _cimag))
+        _real.memory = _areal * _breal - _aimag * _bimag + _creal
+        _imag.memory = _areal * _bimag + _aimag * _breal + _cimag
         areal += a_stride
         aimag += a_stride
         breal += b_stride
@@ -411,8 +411,8 @@ public func MulSub(count: Int, var _ areal: UnsafePointer<Float>, var _ aimag: U
         let _bimag = bimag.memory
         let _creal = creal.memory
         let _cimag = cimag.memory
-        _real.memory = fma(_areal, _breal, fma(-_aimag, _bimag, -_creal))
-        _imag.memory = fma(_areal, _bimag, fma(_aimag, _breal, -_cimag))
+        _real.memory = _areal * _breal - _aimag * _bimag - _creal
+        _imag.memory = _areal * _bimag + _aimag * _breal - _cimag
         areal += a_stride
         aimag += a_stride
         breal += b_stride
@@ -429,8 +429,8 @@ public func MulConj(count: Int, var _ lreal: UnsafePointer<Float>, var _ limag: 
         let _limag = limag.memory
         let _rreal = rreal.memory
         let _rimag = rimag.memory
-        _real.memory = fma(_lreal, _rreal, _limag * _rimag)
-        _imag.memory = fma(_lreal, _rimag, -_limag * _rreal)
+        _real.memory = _lreal * _rreal + _limag * _rimag
+        _imag.memory = _lreal * _rimag - _limag * _rreal
         lreal += left_stride
         limag += left_stride
         rreal += right_stride
@@ -445,9 +445,9 @@ public func Div(count: Int, var _ lreal: UnsafePointer<Float>, var _ limag: Unsa
         let _limag = limag.memory
         let _rreal = rreal.memory
         let _rimag = rimag.memory
-        let norm = fma(_rreal, _rreal, _rimag * _rimag)
-        let real = fma(_lreal, _rreal, _limag * _rimag)
-        let imag = fma(_limag, _rreal, -_lreal * _rimag)
+        let norm = _rreal * _rreal + _rimag * _rimag
+        let real = _lreal * _rreal + _limag * _rimag
+        let imag = _limag * _rreal - _lreal * _rimag
         _real.memory = real / norm
         _imag.memory = imag / norm
         lreal += left_stride
@@ -501,7 +501,7 @@ public func Mod(count: Int, var _ left: UnsafePointer<Double>, _ left_stride: In
 }
 public func MulAdd(count: Int, var _ a: UnsafePointer<Double>, _ a_stride: Int, var _ b: UnsafePointer<Double>, _ b_stride: Int, var _ c: UnsafePointer<Double>, _ c_stride: Int, var _ output: UnsafeMutablePointer<Double>, _ out_stride: Int) {
     for _ in 0..<count {
-        output.memory = fma(a.memory, b.memory, c.memory)
+        output.memory = a.memory * b.memory + c.memory
         a += a_stride
         b += b_stride
         c += c_stride
@@ -510,7 +510,7 @@ public func MulAdd(count: Int, var _ a: UnsafePointer<Double>, _ a_stride: Int, 
 }
 public func MulSub(count: Int, var _ a: UnsafePointer<Double>, _ a_stride: Int, var _ b: UnsafePointer<Double>, _ b_stride: Int, var _ c: UnsafePointer<Double>, _ c_stride: Int, var _ output: UnsafeMutablePointer<Double>, _ out_stride: Int) {
     for _ in 0..<count {
-        output.memory = fma(a.memory, b.memory, -c.memory)
+        output.memory = a.memory * b.memory - c.memory
         a += a_stride
         b += b_stride
         c += c_stride
@@ -567,8 +567,8 @@ public func MulAdd(count: Int, var _ a: UnsafePointer<Double>, _ a_stride: Int, 
         let _bimag = bimag.memory
         let _creal = creal.memory
         let _cimag = cimag.memory
-        _real.memory = fma(_areal, _breal, _creal)
-        _imag.memory = fma(_areal, _bimag, _cimag)
+        _real.memory = _areal * _breal + _creal
+        _imag.memory = _areal * _bimag + _cimag
         a += a_stride
         breal += b_stride
         bimag += b_stride
@@ -585,8 +585,8 @@ public func MulSub(count: Int, var _ a: UnsafePointer<Double>, _ a_stride: Int, 
         let _bimag = bimag.memory
         let _creal = creal.memory
         let _cimag = cimag.memory
-        _real.memory = fma(_areal, _breal, -_creal)
-        _imag.memory = fma(_areal, _bimag, -_cimag)
+        _real.memory = _areal * _breal - _creal
+        _imag.memory = _areal * _bimag - _cimag
         a += a_stride
         breal += b_stride
         bimag += b_stride
@@ -601,7 +601,7 @@ public func Div(count: Int, var _ left: UnsafePointer<Double>, _ left_stride: In
         let _lreal = left.memory
         let _rreal = rreal.memory
         let _rimag = rimag.memory
-        let norm = fma(_rreal, _rreal, _rimag * _rimag)
+        let norm = _rreal * _rreal + _rimag * _rimag
         let real = _lreal * _rreal
         let imag = -_lreal * _rimag
         _real.memory = real / norm
@@ -662,8 +662,8 @@ public func MulAdd(count: Int, var _ areal: UnsafePointer<Double>, var _ aimag: 
         let _breal = b.memory
         let _creal = creal.memory
         let _cimag = cimag.memory
-        _real.memory = fma(_areal, _breal, _creal)
-        _imag.memory = fma(_aimag, _breal, _cimag)
+        _real.memory = _areal * _breal + _creal
+        _imag.memory = _aimag * _breal + _cimag
         areal += a_stride
         aimag += a_stride
         b += b_stride
@@ -680,8 +680,8 @@ public func MulSub(count: Int, var _ areal: UnsafePointer<Double>, var _ aimag: 
         let _breal = b.memory
         let _creal = creal.memory
         let _cimag = cimag.memory
-        _real.memory = fma(_areal, _breal, -_creal)
-        _imag.memory = fma(_aimag, _breal, -_cimag)
+        _real.memory = _areal * _breal - _creal
+        _imag.memory = _aimag * _breal - _cimag
         areal += a_stride
         aimag += a_stride
         b += b_stride
@@ -757,8 +757,8 @@ public func Mul(count: Int, var _ lreal: UnsafePointer<Double>, var _ limag: Uns
         let _limag = limag.memory
         let _rreal = rreal.memory
         let _rimag = rimag.memory
-        _real.memory = fma(_lreal, _rreal, -_limag * _rimag)
-        _imag.memory = fma(_lreal, _rimag, _limag * _rreal)
+        _real.memory = _lreal * _rreal - _limag * _rimag
+        _imag.memory = _lreal * _rimag + _limag * _rreal
         lreal += left_stride
         limag += left_stride
         rreal += right_stride
@@ -775,8 +775,8 @@ public func MulAdd(count: Int, var _ areal: UnsafePointer<Double>, var _ aimag: 
         let _bimag = bimag.memory
         let _creal = creal.memory
         let _cimag = cimag.memory
-        _real.memory = fma(_areal, _breal, fma(-_aimag, _bimag, _creal))
-        _imag.memory = fma(_areal, _bimag, fma(_aimag, _breal, _cimag))
+        _real.memory = _areal * _breal - _aimag * _bimag + _creal
+        _imag.memory = _areal * _bimag + _aimag * _breal + _cimag
         areal += a_stride
         aimag += a_stride
         breal += b_stride
@@ -795,8 +795,8 @@ public func MulSub(count: Int, var _ areal: UnsafePointer<Double>, var _ aimag: 
         let _bimag = bimag.memory
         let _creal = creal.memory
         let _cimag = cimag.memory
-        _real.memory = fma(_areal, _breal, fma(-_aimag, _bimag, -_creal))
-        _imag.memory = fma(_areal, _bimag, fma(_aimag, _breal, -_cimag))
+        _real.memory = _areal * _breal - _aimag * _bimag - _creal
+        _imag.memory = _areal * _bimag + _aimag * _breal - _cimag
         areal += a_stride
         aimag += a_stride
         breal += b_stride
@@ -813,8 +813,8 @@ public func MulConj(count: Int, var _ lreal: UnsafePointer<Double>, var _ limag:
         let _limag = limag.memory
         let _rreal = rreal.memory
         let _rimag = rimag.memory
-        _real.memory = fma(_lreal, _rreal, _limag * _rimag)
-        _imag.memory = fma(_lreal, _rimag, -_limag * _rreal)
+        _real.memory = _lreal * _rreal + _limag * _rimag
+        _imag.memory = _lreal * _rimag - _limag * _rreal
         lreal += left_stride
         limag += left_stride
         rreal += right_stride
@@ -829,9 +829,9 @@ public func Div(count: Int, var _ lreal: UnsafePointer<Double>, var _ limag: Uns
         let _limag = limag.memory
         let _rreal = rreal.memory
         let _rimag = rimag.memory
-        let norm = fma(_rreal, _rreal, _rimag * _rimag)
-        let real = fma(_lreal, _rreal, _limag * _rimag)
-        let imag = fma(_limag, _rreal, -_lreal * _rimag)
+        let norm = _rreal * _rreal + _rimag * _rimag
+        let real = _lreal * _rreal + _limag * _rimag
+        let imag = _limag * _rreal - _lreal * _rimag
         _real.memory = real / norm
         _imag.memory = imag / norm
         lreal += left_stride
@@ -846,7 +846,7 @@ public func Div(count: Int, var _ lreal: UnsafePointer<Double>, var _ limag: Uns
 public func Dot(count: Int, var _ left: UnsafePointer<Float>, _ left_stride: Int, var _ right: UnsafePointer<Float>, _ right_stride: Int) -> Float {
     var result: Float = 0.0
     for _ in 0..<count {
-        result = fma(left.memory, right.memory, result)
+        result = left.memory * right.memory + result
         left += left_stride
         right += right_stride
     }
@@ -856,7 +856,7 @@ public func Dot(count: Int, var _ left: UnsafePointer<Float>, _ left_stride: Int
 public func Dot(count: Int, var _ left: UnsafePointer<Double>, _ left_stride: Int, var _ right: UnsafePointer<Double>, _ right_stride: Int) -> Double {
     var result: Double = 0.0
     for _ in 0..<count {
-        result = fma(left.memory, right.memory, result)
+        result = left.memory * right.memory + result
         left += left_stride
         right += right_stride
     }

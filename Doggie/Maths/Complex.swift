@@ -95,7 +95,7 @@ extension Double {
 }
 
 public func norm(value: Complex) -> Double {
-    return fma(value.real, value.real, value.imag * value.imag)
+    return value.real * value.real + value.imag * value.imag
 }
 public func abs(value: Complex) -> Double {
     return sqrt(norm(value))
@@ -216,7 +216,7 @@ public func log10(c: Complex) -> Complex {
 public func pow(a: Complex, _ b: Complex) -> Complex {
     let _norm = norm(a)
     let _arg = arg(a)
-    return pow(_norm, 0.5 * b.real) * exp(-b.imag * _arg) * cis(fma(b.real, _arg, 0.5 * b.imag * log(_norm)))
+    return pow(_norm, 0.5 * b.real) * exp(-b.imag * _arg) * cis(b.real * _arg + 0.5 * b.imag * log(_norm))
 }
 
 public func pow(c: Complex, _ n: Double) -> Complex {
@@ -265,8 +265,8 @@ public func *(lhs: Double, rhs:  Complex) -> Complex {
 }
 @warn_unused_result
 public func *(lhs: Complex, rhs:  Complex) -> Complex {
-    let _real = fma(lhs.real, rhs.real, -lhs.imag * rhs.imag)
-    let _imag = fma(lhs.real, rhs.imag, lhs.imag * rhs.real)
+    let _real = lhs.real * rhs.real - lhs.imag * rhs.imag
+    let _imag = lhs.real * rhs.imag + lhs.imag * rhs.real
     return Complex(real: _real, imag: _imag)
 }
 @warn_unused_result
@@ -283,8 +283,8 @@ public func /(lhs: Double, rhs:  Complex) -> Complex {
 @warn_unused_result
 public func /(lhs: Complex, rhs:  Complex) -> Complex {
     let _norm = norm(rhs)
-    let _real = fma(lhs.real, rhs.real, lhs.imag * rhs.imag)
-    let _imag = fma(lhs.imag, rhs.real, -lhs.real * rhs.imag)
+    let _real = lhs.real * rhs.real + lhs.imag * rhs.imag
+    let _imag = lhs.imag * rhs.real - lhs.real * rhs.imag
     return Complex(real: _real / _norm, imag: _imag / _norm)
 }
 @warn_unused_result
@@ -318,15 +318,15 @@ public func -=(inout lhs: Complex, rhs:  Complex) {
     lhs.imag -= rhs.imag
 }
 public func *=(inout lhs: Complex, rhs:  Complex) {
-    let _real = fma(lhs.real, rhs.real, -lhs.imag * rhs.imag)
-    let _imag = fma(lhs.real, rhs.imag, lhs.imag * rhs.real)
+    let _real = lhs.real * rhs.real - lhs.imag * rhs.imag
+    let _imag = lhs.real * rhs.imag + lhs.imag * rhs.real
     lhs.real = _real
     lhs.imag = _imag
 }
 public func /=(inout lhs: Complex, rhs:  Complex) {
     let _norm = norm(rhs)
-    let _real = fma(lhs.real, rhs.real, lhs.imag * rhs.imag)
-    let _imag = fma(lhs.imag, rhs.real, -lhs.real * rhs.imag)
+    let _real = lhs.real * rhs.real + lhs.imag * rhs.imag
+    let _imag = lhs.imag * rhs.real - lhs.real * rhs.imag
     lhs.real = _real / _norm
     lhs.imag = _imag / _norm
 }

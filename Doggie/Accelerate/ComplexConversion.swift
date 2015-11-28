@@ -49,7 +49,7 @@ public func ToPolar(count: Int, var _ real: UnsafePointer<Float>, var _ imag: Un
     for _ in 0..<count {
         let _real = real.memory
         let _imag = imag.memory
-        rho.memory = sqrt(fma(_real, _real, _imag * _imag))
+        rho.memory = sqrt(_real * _real + _imag * _imag)
         theta.memory = atan2(_imag, _real)
         real += in_stride
         imag += in_stride
@@ -74,7 +74,7 @@ public func ToPolar(count: Int, var _ real: UnsafePointer<Double>, var _ imag: U
     for _ in 0..<count {
         let _real = real.memory
         let _imag = imag.memory
-        rho.memory = sqrt(fma(_real, _real, _imag * _imag))
+        rho.memory = sqrt(_real * _real + _imag * _imag)
         theta.memory = atan2(_imag, _real)
         real += in_stride
         imag += in_stride

@@ -91,19 +91,19 @@ extension Vector3D: Hashable {
 }
 
 public func dot(lhs: Vector2D, _ rhs:  Vector2D) -> Double {
-    return fma(lhs.x, rhs.x, lhs.y * rhs.y)
+    return lhs.x * rhs.x + lhs.y * rhs.y
 }
 public func dot(lhs: Vector3D, _ rhs:  Vector3D) -> Double {
-    return fma(lhs.x, rhs.x, fma(lhs.y, rhs.y, lhs.z * rhs.z))
+    return lhs.x * rhs.x + lhs.y * rhs.y + lhs.z * rhs.z
 }
 public func direction(lhs: Vector2D, _ rhs:  Vector2D) -> Double {
-    return fma(lhs.x, rhs.y, -lhs.y * rhs.x)
+    return lhs.x * rhs.y - lhs.y * rhs.x
 }
 public func direction(a: Vector2D, _ b: Vector2D, _ c: Vector2D) -> Double {
     return direction(b - a, c - a)
 }
 public func cross(lhs: Vector3D, _ rhs:  Vector3D) -> Vector3D {
-    return Vector3D(x: fma(lhs.y, rhs.z, -lhs.z * rhs.y), y: fma(lhs.z, rhs.x, -lhs.x * rhs.z), z: fma(lhs.x, rhs.y, -lhs.y * rhs.x))
+    return Vector3D(x: lhs.y * rhs.z - lhs.z * rhs.y, y: lhs.z * rhs.x - lhs.x * rhs.z, z: lhs.x * rhs.y - lhs.y * rhs.x)
 }
 
 public func norm(value: Vector2D) -> Double {

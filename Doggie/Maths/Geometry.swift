@@ -66,7 +66,7 @@ public func == (lhs: Radius, rhs: Radius) -> Bool {
 }
 
 public func Ellipse(t: Double, _ p: Point, _ r: Radius) -> Point {
-    return Point(x: fma(r.x, cos(t), p.x), y: fma(r.y, sin(t), p.y))
+    return Point(x: r.x * cos(t) + p.x, y: r.y * sin(t) + p.y)
 }
 
 public func EllipseRadius(p0: Point, _ p1: Point, _ r: Radius, _ rotate: Double) -> Radius {
@@ -82,14 +82,14 @@ public func EllipseCenter(r: Radius, _ rotate: Double, _ a: Point, _ b: Point) -
     let _sin = sin(rotate)
     let _cos = cos(rotate)
     
-    let ax = fma(a.x, _cos, a.y * _sin) / r.x
-    let ay = fma(a.y, _cos, -a.x * _sin) / r.y
-    let bx = fma(b.x, _cos, b.y * _sin) / r.x
-    let by = fma(b.y, _cos, -b.x * _sin) / r.y
+    let ax = a.x * _cos + a.y * _sin / r.x
+    let ay = a.y * _cos - a.x * _sin / r.y
+    let bx = b.x * _cos + b.y * _sin / r.x
+    let by = b.y * _cos - b.x * _sin / r.y
     
     let dx = ax - bx
     let dy = ay - by
-    let d = fma(dx, dx, dy * dy)
+    let d = dx * dx + dy * dy
     
     if d == 4 {
         let _x = (ax + bx) * r.x * 0.5
@@ -105,8 +105,8 @@ public func EllipseCenter(r: Radius, _ rotate: Double, _ a: Point, _ b: Point) -
         let cx2 = _x - _t * (ay - by) * r.x
         let cy2 = _y - _t * (bx - ax) * r.y
         
-        return [Point(x: fma(cx1, _cos, -cy1 * _sin), y: fma(cx1, _sin, cy1 * _cos)),
-            Point(x: fma(cx2, _cos, -cy2 * _sin), y: fma(cx2, _sin, cy2 * _cos))]
+        return [Point(x: cx1 * _cos - cy1 * _sin, y: cx1 * _sin + cy1 * _cos),
+            Point(x: cx2 * _cos - cy2 * _sin, y: cx2 * _sin + cy2 * _cos)]
     }
     
     return []
@@ -146,10 +146,10 @@ public func EllipseBound<T: SDTransformType>(center: Point, _ r: Radius, _ matri
     let p2 = Ellipse(t2, center, r)
     let p3 = Ellipse(t2 + M_PI, center, r)
     
-    let _p0 = fma(matrix.a, p0.x, matrix.b * p0.y)
-    let _p1 = fma(matrix.a, p1.x, matrix.b * p1.y)
-    let _p2 = fma(matrix.d, p2.x, matrix.e * p2.y)
-    let _p3 = fma(matrix.d, p3.x, matrix.e * p3.y)
+    let _p0 = matrix.a * p0.x + matrix.b * p0.y
+    let _p1 = matrix.a * p1.x + matrix.b * p1.y
+    let _p2 = matrix.d * p2.x + matrix.e * p2.y
+    let _p3 = matrix.d * p3.x + matrix.e * p3.y
     
     let minX = min(_p0, _p1)
     let minY = min(_p2, _p3)
@@ -478,9 +478,9 @@ public func CubicBezierStationary(p0: Point, _ p1: Point, _ p2: Point, _ p3: Poi
     let _ay = 3 * (p3.y - p0.y) + 9 * (p1.y - p2.y)
     let _by = 6 * (p2.y + p0.y) - 12 * p1.y
     let _cy = 3 * (p1.y - p0.y)
-    let _a = fma(a, _ax, b * _ay)
-    let _b = fma(a, _bx, b * _by)
-    let _c = fma(a, _cx, b * _cy)
+    let _a = a * _ax + b * _ay
+    let _b = a * _bx + b * _by
+    let _c = a * _cx + b * _cy
     if _a.almostZero {
         if _b.almostZero {
             return []

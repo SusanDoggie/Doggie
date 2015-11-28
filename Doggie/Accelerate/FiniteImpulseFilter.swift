@@ -48,8 +48,8 @@ public func Radix2FiniteImpulseFilter(level: Int, _ signal: UnsafePointer<Double
         let _ti = _timag.memory
         let _kr = _kernel.memory.real
         let _ki = _kernel.memory.imag
-        _treal.memory = fma(_tr, _kr, -_ti * _ki)
-        _timag.memory = fma(_tr, _ki, _ti * _kr)
+        _treal.memory = _tr * _kr - _ti * _ki
+        _timag.memory = _tr * _ki + _ti * _kr
     }
     
     HalfInverseRadix2CooleyTukey(level, temp, temp + temp_stride, t_stride, output, out_stride, temp, temp + temp_stride, t_stride)
@@ -69,8 +69,8 @@ public func Radix2FiniteImpulseFilter(level: Int, _ signal: UnsafePointer<Comple
         let _timag = _temp.memory.imag
         let _kreal = _kernel.memory.real
         let _kimag = _kernel.memory.imag
-        _temp.memory.real = fma(_treal, _kreal, -_timag * _kimag)
-        _temp.memory.imag = fma(_treal, _kimag, _timag * _kreal)
+        _temp.memory.real = _treal * _kreal - _timag * _kimag
+        _temp.memory.imag = _treal * _kimag + _timag * _kreal
         _temp += temp_stride
         _kernel += kernel_stride
     }
@@ -101,8 +101,8 @@ public func DispatchRadix2FiniteImpulseFilter(level: Int, _ signal: UnsafePointe
         let _ti = _timag.memory
         let _kr = _kernel.memory.real
         let _ki = _kernel.memory.imag
-        _treal.memory = fma(_tr, _kr, -_ti * _ki)
-        _timag.memory = fma(_tr, _ki, _ti * _kr)
+        _treal.memory = _tr * _kr - _ti * _ki
+        _timag.memory = _tr * _ki + _ti * _kr
     }
     
     DispatchHalfInverseRadix2CooleyTukey(level, temp, temp + temp_stride, t_stride, output, out_stride, temp, temp + temp_stride, t_stride)
@@ -122,8 +122,8 @@ public func DispatchRadix2FiniteImpulseFilter(level: Int, _ signal: UnsafePointe
         let _timag = _temp.memory.imag
         let _kreal = _kernel.memory.real
         let _kimag = _kernel.memory.imag
-        _temp.memory.real = fma(_treal, _kreal, -_timag * _kimag)
-        _temp.memory.imag = fma(_treal, _kimag, _timag * _kreal)
+        _temp.memory.real = _treal * _kreal - _timag * _kimag
+        _temp.memory.imag = _treal * _kimag + _timag * _kreal
         _temp += temp_stride
         _kernel += kernel_stride
     }
