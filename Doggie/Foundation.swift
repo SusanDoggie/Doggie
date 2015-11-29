@@ -319,6 +319,16 @@ public extension SequenceType {
     }
 }
 
+public extension CollectionType where Index : BidirectionalIndexType {
+    
+    /// Return last of elements in `seq` satisfies `predicate`.
+    @warn_unused_result
+    func lastOf(@noescape predicate: (Generator.Element) throws -> Bool) rethrows -> Generator.Element? {
+        
+        return try self.reverse().firstOf(predicate)
+    }
+}
+
 public extension SequenceType {
     /// Returns an array containing the results of
     ///
