@@ -187,18 +187,10 @@ public extension COpaquePointer {
     }
 }
 
-public extension CollectionType {
-    
-    /// Returns sub-sequence of `self`.
-    var slice: Self.SubSequence {
-        return self as? Self.SubSequence ?? self[self.indices]
-    }
-}
-
 public extension GeneratorType {
     
     /// Returns the first element of `self`, or `nil` if `self` is empty.
-    var first: Self.Element? {
+    var first: Element? {
         var generator = self
         return generator.next()
     }
@@ -207,22 +199,84 @@ public extension GeneratorType {
 public extension SequenceType {
     
     /// Returns the first element of `self`, or `nil` if `self` is empty.
-    var first: Self.Generator.Element? {
+    var first: Generator.Element? {
         return self.generate().first
     }
 }
 
 public extension GeneratorType {
     
-    var array: [Self.Element] {
+    var array: [Element] {
         return Array(GeneratorSequence(self))
+    }
+    
+    var any: AnyGenerator<Element> {
+        return anyGenerator(self)
     }
 }
 
 public extension SequenceType {
     
-    var array: [Self.Generator.Element] {
-        return self as? [Self.Generator.Element] ?? Array(self)
+    var array: [Generator.Element] {
+        return self as? [Generator.Element] ?? Array(self)
+    }
+    
+    var any: AnySequence<Generator.Element> {
+        return AnySequence(self)
+    }
+}
+
+public extension CollectionType {
+    
+    /// Returns sub-sequence of `self`.
+    var slice: SubSequence {
+        return self as? SubSequence ?? self[self.indices]
+    }
+    
+    var any: AnyForwardCollection<Generator.Element> {
+        return AnyForwardCollection(self)
+    }
+}
+
+public extension CollectionType where Index : BidirectionalIndexType {
+    
+    var any: AnyBidirectionalCollection<Generator.Element> {
+        return AnyBidirectionalCollection(self)
+    }
+}
+
+public extension CollectionType where Index : RandomAccessIndexType {
+    
+    var any: AnyRandomAccessCollection<Generator.Element> {
+        return AnyRandomAccessCollection(self)
+    }
+}
+
+public extension LazySequenceType {
+    
+    var any: LazySequence<AnySequence<Elements.Generator.Element>> {
+        return AnySequence(self.elements).lazy
+    }
+}
+
+public extension LazyCollectionType {
+    
+    var any: LazyCollection<AnyForwardCollection<Elements.Generator.Element>> {
+        return AnyForwardCollection(self.elements).lazy
+    }
+}
+
+public extension LazyCollectionType where Elements.Index : BidirectionalIndexType {
+    
+    var any: LazyCollection<AnyBidirectionalCollection<Elements.Generator.Element>> {
+        return AnyBidirectionalCollection(self.elements).lazy
+    }
+}
+
+public extension LazyCollectionType where Elements.Index : RandomAccessIndexType {
+    
+    var any: LazyCollection<AnyRandomAccessCollection<Elements.Generator.Element>> {
+        return AnyRandomAccessCollection(self.elements).lazy
     }
 }
 
@@ -323,7 +377,7 @@ public extension LazySequenceType {
     ///
     /// - Complexity: O(1)
     @warn_unused_result
-    func scan<R>(initial: R, combine: (R, Elements.Generator.Element) -> R) -> LazyScanSequence<Self.Elements, R> {
+    func scan<R>(initial: R, combine: (R, Elements.Generator.Element) -> R) -> LazyScanSequence<Elements, R> {
         return LazyScanSequence(initial: initial, base: self.elements, combine: combine)
     }
 }
@@ -547,12 +601,12 @@ public extension CollectionType {
 public extension LazyCollectionType {
     
     @warn_unused_result
-    func collect<I : SequenceType where Elements.Index == I.Generator.Element>(indices: I) -> PermutationGenerator<Self.Elements, I> {
+    func collect<I : SequenceType where Elements.Index == I.Generator.Element>(indices: I) -> PermutationGenerator<Elements, I> {
         return PermutationGenerator(elements: self.elements, indices: indices)
     }
     
     @warn_unused_result
-    func collect<I : CollectionType where Elements.Index == I.Generator.Element>(indices: I) -> PermutationCollection<Self.Elements, I> {
+    func collect<I : CollectionType where Elements.Index == I.Generator.Element>(indices: I) -> PermutationCollection<Elements, I> {
         return PermutationCollection(_base: self.elements, _indices: indices)
     }
 }
@@ -575,7 +629,7 @@ public extension SequenceType where Generator.Element : Comparable {
     ///
     /// - Requires: `maxSplit >= 0`
     @warn_unused_result
-    func split<S: SequenceType where S.Generator.Element == Self.Generator.Element>(separator: S, maxSplit: Int = Int.max, allowEmptySlices: Bool = false) -> [Self.SubSequence] {
+    func split<S: SequenceType where S.Generator.Element == Generator.Element>(separator: S, maxSplit: Int = Int.max, allowEmptySlices: Bool = false) -> [SubSequence] {
         return self.split(maxSplit, allowEmptySlices: allowEmptySlices) { separator.contains($0) }
     }
 }
@@ -602,8 +656,8 @@ public extension SequenceType {
     
     /// Return an `Array` containing tuples satisfies `predicate` with each elements of two `sources`.
     @warn_unused_result
-    func merge<S : SequenceType>(with: S, @noescape predicate: (Self.Generator.Element, S.Generator.Element) throws -> Bool) rethrows -> [(Self.Generator.Element, S.Generator.Element)] {
-        var result: [(Self.Generator.Element, S.Generator.Element)] = []
+    func merge<S : SequenceType>(with: S, @noescape predicate: (Generator.Element, S.Generator.Element) throws -> Bool) rethrows -> [(Generator.Element, S.Generator.Element)] {
+        var result: [(Generator.Element, S.Generator.Element)] = []
         for lhs in self {
             for rhs in with where try predicate(lhs, rhs) {
                 result.append((lhs, rhs))
@@ -616,9 +670,9 @@ public extension SequenceType {
 public extension SequenceType {
     
     @warn_unused_result
-    func chunk<Key : Equatable>(@noescape by: (Self.Generator.Element) throws -> Key) rethrows -> [(Key, [Self.Generator.Element])] {
+    func chunk<Key : Equatable>(@noescape by: (Generator.Element) throws -> Key) rethrows -> [(Key, [Generator.Element])] {
         
-        var table: [(Key, [Self.Generator.Element])] = []
+        var table: [(Key, [Generator.Element])] = []
         var pass: Key?
         for item in self {
             let key = try by(item)
@@ -637,9 +691,9 @@ public extension SequenceType {
     
     /// Groups the elements of a sequence according to a specified key selector function.
     @warn_unused_result
-    func group<Key : Equatable>(@noescape by: (Self.Generator.Element) throws -> Key) rethrows -> [(Key, [Self.Generator.Element])] {
+    func group<Key : Equatable>(@noescape by: (Generator.Element) throws -> Key) rethrows -> [(Key, [Generator.Element])] {
         
-        var table: [(Key, [Self.Generator.Element])] = []
+        var table: [(Key, [Generator.Element])] = []
         for item in self {
             let key = try by(item)
             if let idx = table.indexOf({ $0.0 == key }) {
@@ -658,7 +712,7 @@ extension SequenceType {
     /// - Complexity: O(`elements.count`).
     ///
     @warn_unused_result
-    public func minElement<R : Comparable>(@noescape by: (Self.Generator.Element) throws -> R) rethrows -> Self.Generator.Element? {
+    public func minElement<R : Comparable>(@noescape by: (Generator.Element) throws -> R) rethrows -> Generator.Element? {
         return try self.minElement { try by($0) < by($1) }
     }
     /// Returns the maximum element in `self` or `nil` if the sequence is empty.
@@ -666,7 +720,7 @@ extension SequenceType {
     /// - Complexity: O(`elements.count`).
     ///
     @warn_unused_result
-    public func maxElement<R : Comparable>(@noescape by: (Self.Generator.Element) throws -> R) rethrows -> Self.Generator.Element? {
+    public func maxElement<R : Comparable>(@noescape by: (Generator.Element) throws -> R) rethrows -> Generator.Element? {
         return try self.maxElement { try by($0) < by($1) }
     }
 }
@@ -678,7 +732,7 @@ public extension MutableCollectionType {
     /// The sorting algorithm is not stable (can change the relative order of
     /// elements that compare equal).
     @warn_unused_result(mutable_variant="sortInPlace")
-    func sort<R : Comparable>(@noescape by: (Self.Generator.Element) -> R) -> [Self.Generator.Element] {
+    func sort<R : Comparable>(@noescape by: (Generator.Element) -> R) -> [Generator.Element] {
         return self.sort { by($0) < by($1) }
     }
 }
@@ -689,7 +743,7 @@ public extension MutableCollectionType where Self.Index : RandomAccessIndexType 
     ///
     /// The sorting algorithm is not stable (can change the relative order of
     /// elements that compare equal).
-    mutating func sortInPlace<R : Comparable>(@noescape by: (Self.Generator.Element) -> R) {
+    mutating func sortInPlace<R : Comparable>(@noescape by: (Generator.Element) -> R) {
         self.sortInPlace { by($0) < by($1) }
     }
 }
@@ -763,7 +817,7 @@ public extension ForwardIndexType where Self : Comparable {
 
 public extension RangeReplaceableCollectionType {
     
-    mutating func replace<C : CollectionType where Self.Generator.Element == C.Generator.Element>(with newElements: C) {
+    mutating func replace<C : CollectionType where Generator.Element == C.Generator.Element>(with newElements: C) {
         self.replaceRange(self.indices, with: newElements)
     }
 }
@@ -1123,15 +1177,12 @@ public struct Graph<Node : Hashable, Link> : CollectionType {
     
     @warn_unused_result
     public func nodes(from fromNode: Node) -> AnyForwardCollection<(Node, Link)> {
-        if let list = table[fromNode] {
-            return AnyForwardCollection(list)
-        }
-        return AnyForwardCollection(EmptyCollection())
+        return table[fromNode]?.any ?? EmptyCollection().any
     }
     
     @warn_unused_result
     public func nodes(to toNode: Node) -> AnyForwardCollection<(Node, Link)> {
-        return AnyForwardCollection(table.lazy.flatMap { from, to in to[toNode].map { (from, $0) } })
+        return table.lazy.flatMap { from, to in to[toNode].map { (from, $0) } }.any
     }
 }
 
