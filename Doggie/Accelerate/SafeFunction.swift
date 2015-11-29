@@ -139,12 +139,59 @@ public func mulSub(var a: [Double], _ b: [Double], _ c: [Double]) -> [Double] {
     return a
 }
 
+public func add(var lhs: [Float80], _ rhs: [Float80]) -> [Float80] {
+    assert(lhs.count == rhs.count, "mismatch count of inputs.")
+    Add(lhs.count, lhs, 1, rhs, 1, &lhs, 1)
+    return lhs
+}
+
+public func sub(var lhs: [Float80], _ rhs: [Float80]) -> [Float80] {
+    assert(lhs.count == rhs.count, "mismatch count of inputs.")
+    Sub(lhs.count, lhs, 1, rhs, 1, &lhs, 1)
+    return lhs
+}
+
+public func mul(var lhs: [Float80], _ rhs: [Float80]) -> [Float80] {
+    assert(lhs.count == rhs.count, "mismatch count of inputs.")
+    Mul(lhs.count, lhs, 1, rhs, 1, &lhs, 1)
+    return lhs
+}
+
+public func div(var lhs: [Float80], _ rhs: [Float80]) -> [Float80] {
+    assert(lhs.count == rhs.count, "mismatch count of inputs.")
+    Div(lhs.count, lhs, 1, rhs, 1, &lhs, 1)
+    return lhs
+}
+
+public func mod(var lhs: [Float80], _ rhs: [Float80]) -> [Float80] {
+    assert(lhs.count == rhs.count, "mismatch count of inputs.")
+    Mod(lhs.count, lhs, 1, rhs, 1, &lhs, 1)
+    return lhs
+}
+
+public func mulAdd(var a: [Float80], _ b: [Float80], _ c: [Float80]) -> [Float80] {
+    assert(a.count == b.count && a.count == c.count, "mismatch count of inputs.")
+    MulAdd(a.count, a, 1, b, 1, c, 1, &a, 1)
+    return a
+}
+
+public func mulSub(var a: [Float80], _ b: [Float80], _ c: [Float80]) -> [Float80] {
+    assert(a.count == b.count && a.count == c.count, "mismatch count of inputs.")
+    MulSub(a.count, a, 1, b, 1, c, 1, &a, 1)
+    return a
+}
+
 public func dot(a: [Float], _ b: [Float]) -> Float {
     assert(a.count == b.count, "mismatch count of inputs.")
     return Dot(a.count, a, 1, b, 1)
 }
 
 public func dot(a: [Double], _ b: [Double]) -> Double {
+    assert(a.count == b.count, "mismatch count of inputs.")
+    return Dot(a.count, a, 1, b, 1)
+}
+
+public func dot(a: [Float80], _ b: [Float80]) -> Float80 {
     assert(a.count == b.count, "mismatch count of inputs.")
     return Dot(a.count, a, 1, b, 1)
 }

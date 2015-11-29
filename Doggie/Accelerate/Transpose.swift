@@ -69,3 +69,16 @@ public func Transpose(row: Int, _ column: Int, var _ real: UnsafePointer<Double>
         _imag += _out_stride
     }
 }
+
+public func Transpose(row: Int, _ column: Int, var _ real: UnsafePointer<Float80>, var _ imag: UnsafePointer<Float80>, _ in_stride: Int, var _ _real: UnsafeMutablePointer<Float80>, var _ _imag: UnsafeMutablePointer<Float80>, _ out_stride: Int) {
+    
+    let _in_stride = in_stride * column
+    let _out_stride = out_stride * column
+    for _ in 0..<row {
+        Move(column, real, imag, _in_stride, _real, _imag, out_stride)
+        real += in_stride
+        imag += in_stride
+        _real += _out_stride
+        _imag += _out_stride
+    }
+}
