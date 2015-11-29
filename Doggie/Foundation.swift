@@ -1118,12 +1118,7 @@ public struct Graph<Node : Hashable, Link> : CollectionType {
     
     @warn_unused_result
     public func nodes(near nearNode: Node) -> Set<Node> {
-        let list = self.lazy.filter { $0.to == nearNode }
-        let _nodes = Set(list.map { $0.from })
-        if let list = table[nearNode]?.keys {
-            return _nodes.union(list)
-        }
-        return _nodes
+        return Set(self.nodes(from: nearNode).concat(self.nodes(to: nearNode)).lazy.map { $0.0 })
     }
     
     @warn_unused_result
