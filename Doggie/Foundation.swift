@@ -1124,16 +1124,20 @@ public struct Graph<Node : Hashable, Link> : CollectionType {
     }
     
     /// Return `true` iff it has link from `fromNode` to `toNode`.
+    ///
+    /// - Complexity: Amortized O(1).
     @warn_unused_result
     public func isLinked(from fromNode: Node, to toNode: Node) -> Bool {
         return linkValue(from: fromNode, to: toNode) != nil
     }
     
+    /// - Complexity: Amortized O(1).
     @warn_unused_result
     public func linkValue(from fromNode: Node, to toNode: Node) -> Link? {
         return table[fromNode]?[toNode]
     }
     
+    /// - Complexity: Amortized O(1).
     public mutating func updateLink(from fromNode: Node, to toNode: Node, with link: Link) -> Link? {
         if table[fromNode] == nil {
             table[fromNode] = [toNode: link]
@@ -1142,6 +1146,7 @@ public struct Graph<Node : Hashable, Link> : CollectionType {
         return table[fromNode]!.updateValue(link, forKey: toNode)
     }
     
+    /// - Complexity: Amortized O(1).
     public mutating func removeLink(from fromNode: Node, to toNode: Node) -> Link? {
         if var list = table[fromNode], let result = list[toNode] {
             list.removeValueForKey(toNode)
@@ -1155,6 +1160,9 @@ public struct Graph<Node : Hashable, Link> : CollectionType {
         return nil
     }
     
+    /// `true` iff `self` contains `node`.
+    ///
+    /// - Complexity: O(`count of nodes`).
     @warn_unused_result
     public func contains(node: Node) -> Bool {
         for (_node, list) in table where _node == node || list.keys.contains(node) {
@@ -1163,10 +1171,14 @@ public struct Graph<Node : Hashable, Link> : CollectionType {
         return false
     }
     
+    /// `true` iff `count == 0`.
     public var isEmpty: Bool {
         return table.isEmpty
     }
     
+    /// Remove a node with all connections with it.
+    ///
+    /// - Complexity: O(`count of nodes`).
     public mutating func removeNode(node: Node) {
         table[node] = nil
         for (fromNode, var list) in table {
@@ -1179,6 +1191,13 @@ public struct Graph<Node : Hashable, Link> : CollectionType {
         }
     }
     
+    /// Remove all elements.
+    ///
+    /// - parameter keepCapacity: If `true`, the operation preserves the
+    ///   storage capacity that the collection has, otherwise the underlying
+    ///   storage is released.  The default is `false`.
+    ///
+    /// - Complexity: O(`count of nodes`).
     public mutating func removeAll(keepCapacity: Bool = false) {
         table.removeAll(keepCapacity: keepCapacity)
     }
@@ -1189,6 +1208,8 @@ public struct Graph<Node : Hashable, Link> : CollectionType {
     }
     
     /// A set containing just the nodes of `self`.
+    ///
+    /// - Complexity: O(`count of nodes`).
     public var nodes: Set<Node> {
         var _nodes = Set<Node>()
         for (_node, list) in table {
@@ -1331,37 +1352,56 @@ public struct UndirectedGraph<Node : Hashable, Link> : CollectionType {
     }
     
     /// Return `true` iff it has link with `fromNode` and `toNode`.
+    ///
+    /// - Complexity: Amortized O(1).
     @warn_unused_result
     public func isLinked(fromNode: Node, _ toNode: Node) -> Bool {
         return linkValue(fromNode, toNode) != nil
     }
     
+    /// - Complexity: Amortized O(1).
     @warn_unused_result
     public func linkValue(fromNode: Node, _ toNode: Node) -> Link? {
         return graph.linkValue(from: fromNode, to: toNode) ?? graph.linkValue(from: toNode, to: fromNode)
     }
     
+    /// - Complexity: Amortized O(1).
     public mutating func updateLink(fromNode: Node, _ toNode: Node, with link: Link) -> Link? {
         return graph.updateLink(from: fromNode, to: toNode, with: link) ?? graph.removeLink(from: toNode, to: fromNode)
     }
     
+    /// - Complexity: Amortized O(1).
     public mutating func removeLink(fromNode: Node, _ toNode: Node) -> Link? {
         return graph.removeLink(from: fromNode, to: toNode) ?? graph.removeLink(from: toNode, to: fromNode)
     }
     
+    /// `true` iff `self` contains `node`.
+    ///
+    /// - Complexity: O(`count of nodes`).
     @warn_unused_result
     public func contains(node: Node) -> Bool {
         return graph.contains(node)
     }
     
+    /// `true` iff `count == 0`.
     public var isEmpty: Bool {
         return graph.isEmpty
     }
     
+    /// Remove a node with all connections with it.
+    ///
+    /// - Complexity: O(`count of nodes`).
     public mutating func removeNode(node: Node) {
         graph.removeNode(node)
     }
     
+    /// Remove all elements.
+    ///
+    /// - parameter keepCapacity: If `true`, the operation preserves the
+    ///   storage capacity that the collection has, otherwise the underlying
+    ///   storage is released.  The default is `false`.
+    ///
+    /// - Complexity: O(`count of nodes`).
     public mutating func removeAll(keepCapacity: Bool = false) {
         graph.removeAll(keepCapacity)
     }
@@ -1372,6 +1412,8 @@ public struct UndirectedGraph<Node : Hashable, Link> : CollectionType {
     }
     
     /// A set containing just the nodes of `self`.
+    ///
+    /// - Complexity: O(`count of nodes`).
     public var nodes: Set<Node> {
         return graph.nodes
     }
