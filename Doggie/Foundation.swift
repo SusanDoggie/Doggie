@@ -878,19 +878,16 @@ public func unsafeBitCast<T, U>(x: T) -> U {
     return unsafeBitCast(x, U.self)
 }
 
-public func SDTimer(@noescape block: () -> Void) -> NSTimeInterval {
-    return autoreleasepool {
-        let start = clock()
-        block()
-        return Double(clock() - start) / Double(CLOCKS_PER_SEC)
-    }
-}
-public func SDTimer(count count: Int, @noescape block: () -> Void) -> NSTimeInterval {
-    var time = 0.0
+public func SDTimer(count count: Int = 1, @noescape block: () -> Void) -> NSTimeInterval {
+    var time: clock_t = 0
     for _ in 0..<count {
-        time += SDTimer(block)
+        autoreleasepool {
+            let start = clock()
+            block()
+            time += clock() - start
+        }
     }
-    return time / Double(count)
+    return Double(time) / Double(count * Int(CLOCKS_PER_SEC))
 }
 
 public func timeFormat(time: Double) -> String {
