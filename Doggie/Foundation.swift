@@ -1109,6 +1109,7 @@ public struct Graph<Node : Hashable, Link> : CollectionType {
         return (from, to, val)
     }
     
+    /// - Complexity: Amortized O(1).
     public subscript(from fromNode: Node, to toNode: Node) -> Link? {
         get {
             return linkValue(from: fromNode, to: toNode)
@@ -1264,5 +1265,164 @@ extension GraphGenerator: CustomStringConvertible, CustomDebugStringConvertible 
     }
     public var debugDescription: String {
         return "GraphGenerator"
+    }
+}
+
+public struct UndirectedGraph<Node : Hashable, Link> : CollectionType {
+    
+    public typealias Generator = UndirectedGraphGenerator<Node, Link>
+    
+    private var graph: Graph<Node, Link>
+    
+    /// Create an empty graph.
+    public init() {
+        graph = Graph()
+    }
+    
+    /// The number of links in the graph.
+    ///
+    /// - Complexity: O(`count of from nodes`).
+    public var count: Int {
+        return graph.count
+    }
+    
+    /// - Complexity: O(1).
+    public func generate() -> Generator {
+        return Generator(base: graph.generate())
+    }
+    
+    /// The position of the first element in a non-empty dictionary.
+    ///
+    /// Identical to `endIndex` in an empty dictionary.
+    ///
+    /// - Complexity: Amortized O(1).
+    public var startIndex: UndirectedGraphIndex<Node, Link> {
+        return UndirectedGraphIndex(base: graph.startIndex)
+    }
+    
+    /// The collection's "past the end" position.
+    ///
+    /// `endIndex` is not a valid argument to `subscript`, and is always
+    /// reachable from `startIndex` by zero or more applications of
+    /// `successor()`.
+    ///
+    /// - Complexity: Amortized O(1).
+    public var endIndex: UndirectedGraphIndex<Node, Link> {
+        return UndirectedGraphIndex(base: graph.endIndex)
+    }
+    
+    /// - Complexity: Amortized O(1).
+    public subscript(idx: UndirectedGraphIndex<Node, Link>) -> Generator.Element {
+        return graph[idx.base]
+    }
+    
+    /// - Complexity: Amortized O(1).
+    public subscript(fromNode: Node, toNode: Node) -> Link? {
+        get {
+            return linkValue(fromNode, toNode)
+        }
+        set {
+            if newValue != nil {
+                updateLink(fromNode, toNode, with: newValue!)
+            } else {
+                removeLink(fromNode, toNode)
+            }
+        }
+    }
+    
+    /// Return `true` iff it has link from `fromNode` to `toNode`.
+    @warn_unused_result
+    public func isLinked(fromNode: Node, _ toNode: Node) -> Bool {
+        return linkValue(fromNode, toNode) != nil
+    }
+    
+    @warn_unused_result
+    public func linkValue(fromNode: Node, _ toNode: Node) -> Link? {
+        return graph.linkValue(from: fromNode, to: toNode) ?? graph.linkValue(from: toNode, to: fromNode)
+    }
+    
+    public mutating func updateLink(fromNode: Node, _ toNode: Node, with link: Link) -> Link? {
+        return graph.updateLink(from: fromNode, to: toNode, with: link) ?? graph.removeLink(from: toNode, to: fromNode)
+    }
+    
+    public mutating func removeLink(fromNode: Node, _ toNode: Node) -> Link? {
+        return graph.removeLink(from: fromNode, to: toNode) ?? graph.removeLink(from: toNode, to: fromNode)
+    }
+    
+    @warn_unused_result
+    public func contains(node: Node) -> Bool {
+        return graph.contains(node)
+    }
+    
+    public var isEmpty: Bool {
+        return graph.isEmpty
+    }
+    
+    public mutating func removeNode(node: Node) {
+        graph.removeNode(node)
+    }
+    
+    public mutating func removeAll(keepCapacity: Bool = false) {
+        graph.removeAll(keepCapacity)
+    }
+    
+    /// A collection containing just the links of `self`.
+    public var links: LazyMapCollection<UndirectedGraph<Node, Link>, Link> {
+        return self.lazy.map { $0.2 }
+    }
+    
+    /// A set containing just the nodes of `self`.
+    public var nodes: Set<Node> {
+        return graph.nodes
+    }
+    
+    /// A set of nodes which has connection with `nearNode`.
+    @warn_unused_result
+    public func nodes(near nearNode: Node) -> ConcatCollection<AnyForwardCollection<(Node, Link)>, AnyForwardCollection<(Node, Link)>> {
+        return graph.nodes(from: nearNode).concat(graph.nodes(to: nearNode))
+    }
+}
+
+extension UndirectedGraph: CustomStringConvertible, CustomDebugStringConvertible {
+    public var description: String {
+        
+        return "[\(self.map { "(\($0.0), \($0.1)): \($0.2)" }.joinWithSeparator(", "))]"
+    }
+    public var debugDescription: String {
+        
+        return "[\(self.map { "(\($0.0), \($0.1)): \($0.2)" }.joinWithSeparator(", "))]"
+    }
+}
+
+public struct UndirectedGraphIndex<Node : Hashable, Link> : ForwardIndexType {
+    
+    private let base: Graph<Node, Link>.Index
+    
+    public func successor() -> UndirectedGraphIndex<Node, Link> {
+        return UndirectedGraphIndex(base: base.successor())
+    }
+}
+
+public func == <Node : Hashable, Link>(lhs: UndirectedGraphIndex<Node, Link>, rhs: UndirectedGraphIndex<Node, Link>) -> Bool {
+    return lhs.base == rhs.base
+}
+
+public struct UndirectedGraphGenerator<Node : Hashable, Link> : GeneratorType {
+    
+    public typealias Element = (Node, Node, Link)
+    
+    private var base: Graph<Node, Link>.Generator
+    
+    public mutating func next() -> Element? {
+        return base.next()
+    }
+}
+
+extension UndirectedGraphGenerator: CustomStringConvertible, CustomDebugStringConvertible {
+    public var description: String {
+        return "UndirectedGraphGenerator"
+    }
+    public var debugDescription: String {
+        return "UndirectedGraphGenerator"
     }
 }
