@@ -836,7 +836,7 @@ public extension IntegerType {
     
     static func random() -> Self {
         var _r: Self = 0
-        arc4random_buf(&_r, Int(sizeof(Self)))
+        arc4random_buf(&_r, sizeof(Self))
         return _r
     }
 }
