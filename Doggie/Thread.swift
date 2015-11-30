@@ -146,10 +146,10 @@ extension SDLockGroup : Lockable {
 
 extension SDLockGroup: CustomStringConvertible, CustomDebugStringConvertible {
     public var description: String {
-        return "LockGroup"
+        return "SDLockGroup"
     }
     public var debugDescription: String {
-        return "LockGroup"
+        return "SDLockGroup"
     }
 }
 
