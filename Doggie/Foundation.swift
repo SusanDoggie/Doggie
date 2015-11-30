@@ -1101,9 +1101,9 @@ public struct Graph<Node : Hashable, Link> : CollectionType {
         return GraphIndex(base: _base, current: _base.endIndex)
     }
     
-    /// - Complexity: O(1).
+    /// - Complexity: Amortized O(1).
     public subscript(idx: GraphIndex<Node, Link>) -> Generator.Element {
-        let _idx = idx.base[idx.current]
+        let _idx = idx.index
         let (from, to_val) = table[_idx.0]
         let (to, val) = to_val[_idx.1]
         return (from, to, val)
@@ -1233,6 +1233,10 @@ public struct GraphIndex<Node : Hashable, Link> : ForwardIndexType {
     
     private let base: Base
     private let current: Base.Index
+    
+    private var index: Base.Generator.Element {
+        return base[current]
+    }
     
     public func successor() -> GraphIndex<Node, Link> {
         return GraphIndex(base: base, current: current.successor())
