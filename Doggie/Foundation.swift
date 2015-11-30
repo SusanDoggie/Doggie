@@ -1330,7 +1330,7 @@ public struct UndirectedGraph<Node : Hashable, Link> : CollectionType {
         }
     }
     
-    /// Return `true` iff it has link from `fromNode` to `toNode`.
+    /// Return `true` iff it has link with `fromNode` and `toNode`.
     @warn_unused_result
     public func isLinked(fromNode: Node, _ toNode: Node) -> Bool {
         return linkValue(fromNode, toNode) != nil
