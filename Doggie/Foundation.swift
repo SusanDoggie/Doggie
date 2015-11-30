@@ -1195,12 +1195,12 @@ public struct Graph<Node : Hashable, Link> : CollectionType {
 
 extension Graph: CustomStringConvertible, CustomDebugStringConvertible {
     public var description: String {
-        let str = self.map { "(from: \($0.from), to: \($0.to)): \($0.2)" }.joinWithSeparator(", ")
-        return "[\(str)]"
+        
+        return "[\(self.map { "(from: \($0.from), to: \($0.to)): \($0.2)" }.joinWithSeparator(", "))]"
     }
     public var debugDescription: String {
-        let str = self.map { "(from: \($0.from), to: \($0.to)): \($0.2)" }.joinWithSeparator(", ")
-        return "[\(str)]"
+        
+        return "[\(self.map { "(from: \($0.from), to: \($0.to)): \($0.2)" }.joinWithSeparator(", "))]"
     }
 }
 
