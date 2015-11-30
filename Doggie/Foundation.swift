@@ -1376,7 +1376,7 @@ public struct UndirectedGraph<Node : Hashable, Link> : CollectionType {
         return graph.nodes
     }
     
-    /// A set of nodes which has connection with `nearNode`.
+    /// A collection of nodes which has connection with `nearNode`.
     @warn_unused_result
     public func nodes(near nearNode: Node) -> ConcatCollection<AnyForwardCollection<(Node, Link)>, AnyForwardCollection<(Node, Link)>> {
         return graph.nodes(from: nearNode).concat(graph.nodes(to: nearNode))
