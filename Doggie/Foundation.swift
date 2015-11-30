@@ -1059,33 +1059,50 @@ public func == <T : Comparable>(lhs: T, rhs: T) -> Bool {
 public struct Graph<Node : Hashable, Link> : CollectionType {
     
     public typealias Generator = GraphGenerator<Node, Link>
-    public typealias Element = (from: Node, to: Node, Link)
     
     private var table: [Node:[Node:Link]]
     
+    /// Create an empty graph.
     public init() {
         table = Dictionary()
     }
     
+    /// The number of links in the graph.
+    ///
+    /// - Complexity: O(`count of from nodes`).
     public var count: Int {
         return table.reduce(0) { $0 + $1.1.count }
     }
     
+    /// - Complexity: O(1).
     public func generate() -> Generator {
         return Generator(_base: table.lazy.flatMap { from, to in to.lazy.map { (from, $0, $1) } }.generate())
     }
     
+    /// The position of the first element in a non-empty dictionary.
+    ///
+    /// Identical to `endIndex` in an empty dictionary.
+    ///
+    /// - Complexity: Amortized O(1).
     public var startIndex: GraphIndex<Node, Link> {
         let _base = table.indices.lazy.flatMap { from in self.table[from].1.indices.lazy.map { (from, $0) } }
         return GraphIndex(base: _base, current: _base.startIndex)
     }
     
+    /// The collection's "past the end" position.
+    ///
+    /// `endIndex` is not a valid argument to `subscript`, and is always
+    /// reachable from `startIndex` by zero or more applications of
+    /// `successor()`.
+    ///
+    /// - Complexity: Amortized O(1).
     public var endIndex: GraphIndex<Node, Link> {
         let _base = table.indices.lazy.flatMap { from in self.table[from].1.indices.lazy.map { (from, $0) } }
         return GraphIndex(base: _base, current: _base.endIndex)
     }
     
-    public subscript(idx: GraphIndex<Node, Link>) -> Element {
+    /// - Complexity: O(1).
+    public subscript(idx: GraphIndex<Node, Link>) -> Generator.Element {
         let _idx = idx.base[idx.current]
         let (from, to_val) = table[_idx.0]
         let (to, val) = to_val[_idx.1]
@@ -1105,6 +1122,7 @@ public struct Graph<Node : Hashable, Link> : CollectionType {
         }
     }
     
+    /// Return `true` iff it has link from `fromNode` to `toNode`.
     @warn_unused_result
     public func isLinked(from fromNode: Node, to toNode: Node) -> Bool {
         return linkValue(from: fromNode, to: toNode) != nil
@@ -1164,10 +1182,12 @@ public struct Graph<Node : Hashable, Link> : CollectionType {
         table.removeAll(keepCapacity: keepCapacity)
     }
     
+    /// A collection containing just the links of `self`.
     public var links: LazyMapCollection<Graph<Node, Link>, Link> {
         return self.lazy.map { $0.2 }
     }
     
+    /// A set containing just the nodes of `self`.
     public var nodes: Set<Node> {
         var _nodes = Set<Node>()
         for (_node, list) in table {
@@ -1177,16 +1197,19 @@ public struct Graph<Node : Hashable, Link> : CollectionType {
         return _nodes
     }
     
+    /// A set of nodes which has connection with `nearNode`.
     @warn_unused_result
     public func nodes(near nearNode: Node) -> Set<Node> {
         return Set(self.nodes(from: nearNode).concat(self.nodes(to: nearNode)).lazy.map { $0.0 })
     }
     
+    /// A collection of nodes which connected from `fromNode`.
     @warn_unused_result
     public func nodes(from fromNode: Node) -> AnyForwardCollection<(Node, Link)> {
         return table[fromNode]?.any ?? EmptyCollection().any
     }
     
+    /// A collection of nodes which connected to `toNode`.
     @warn_unused_result
     public func nodes(to toNode: Node) -> AnyForwardCollection<(Node, Link)> {
         return table.lazy.flatMap { from, to in to[toNode].map { (from, $0) } }.any
@@ -1222,9 +1245,11 @@ public func == <Node : Hashable, Link>(lhs: GraphIndex<Node, Link>, rhs: GraphIn
 
 public struct GraphGenerator<Node : Hashable, Link> : GeneratorType {
     
+    public typealias Element = (from: Node, to: Node, Link)
+    
     private var _base: FlattenGenerator<LazyMapGenerator<DictionaryGenerator<Node, [Node : Link]>, LazyMapCollection<[Node : Link], (Node, Node, Link)>>>
     
-    public mutating func next() -> Graph<Node, Link>.Element? {
+    public mutating func next() -> Element? {
         return _base.next()
     }
 }
