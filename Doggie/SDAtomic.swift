@@ -125,7 +125,7 @@ public struct SDAtomicGraphGenerator<Value> : GeneratorType {
     
     private var base: Graph<NodeID, Value>.Generator
     
-    public mutating func next() -> Graph<NodeID, Value>.Element? {
+    public mutating func next() -> Graph<NodeID, Value>.Generator.Element? {
         return base.next()
     }
 }
