@@ -176,21 +176,21 @@ func bound(a: Double, _ b: Double) -> ClosedInterval<Double> {
 extension SDPathSegmentLine {
     
     func split_check(point: Point) -> Int {
-        if (point.x - self.p0.x).almostZero && (point.y - self.p0.y).almostZero {
+        if (point.x - self.p0.x).almostZero {
             return 1
-        } else if (point.x - self.p1.x).almostZero && (point.y - self.p1.y).almostZero {
+        } else if (point.x - self.p1.x).almostZero {
             return 2
-        } else if bound(self.p0.x, self.p1.x).contains(point.x) && bound(self.p0.y, self.p1.y).contains(point.y) {
+        } else if bound(self.p0.x, self.p1.x).contains(point.x) {
             return 3
         }
         return 0
     }
     func split(point: Point) -> (SDPathSegmentLine?, SDPathSegmentLine?) {
-        if (point.x - self.p0.x).almostZero && (point.y - self.p0.y).almostZero {
+        if (point.x - self.p0.x).almostZero {
             return (nil, self)
-        } else if (point.x - self.p1.x).almostZero && (point.y - self.p1.y).almostZero {
+        } else if (point.x - self.p1.x).almostZero {
             return (self, nil)
-        } else if bound(self.p0.x, self.p1.x).contains(point.x) && bound(self.p0.y, self.p1.y).contains(point.y) {
+        } else if bound(self.p0.x, self.p1.x).contains(point.x) {
             return (SDPathSegmentLine(self.p0, point), SDPathSegmentLine(point, self.p1))
         }
         return (nil, nil)
