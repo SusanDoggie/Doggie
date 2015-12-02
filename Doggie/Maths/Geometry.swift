@@ -958,6 +958,10 @@ public func LineWinding(p0: Point, _ p1: Point) -> Double {
     let y0 = p0.y
     let y1 = p1.y - p0.y
     
+    if x1.almostZero && y1.almostZero {
+        return 0
+    }
+    
     let m = x1 * y0 - x0 * y1
     let a = x1 * x1 + y1 * y1
     let b = 2 * (x0 * x1 + y0 * y1)
