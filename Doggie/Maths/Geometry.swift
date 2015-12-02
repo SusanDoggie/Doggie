@@ -950,3 +950,32 @@ public func CubicBeziersIntersect(c0: Point, _ c1: Point, _ c2: Point, _ c3: Poi
     
     return det.roots
 }
+
+public func LineWinding(p0: Point, _ p1: Point) -> Double {
+    
+    let x0 = p0.x
+    let x1 = p1.x - p0.x
+    let y0 = p0.y
+    let y1 = p1.y - p0.y
+    
+    let m = x1 * y0 - x0 * y1
+    let a = x1 * x1 + y1 * y1
+    let b = 2 * (x0 * x1 + y0 * y1)
+    let c = x0 * x0 + y0 * y0
+    
+    let delta = b * b - 4 * a * c
+    
+    let _a = 2 * a + b
+    let _m = M_1_PI * m
+    
+    if delta.almostZero {
+        return -2 * _m * a / (_a * b)
+    }
+    if delta.isSignMinus {
+        let s = sqrt(-delta)
+        return _m / s * (atan2(s, _a) - atan2(s, b))
+    } else {
+        let s = sqrt(delta)
+        return -_m / s * (atanh(_a / s) - atanh(b / s))
+    }
+}
