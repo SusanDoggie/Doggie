@@ -312,9 +312,7 @@ private func SplitBezier(t: Double, _ p: [Point]) -> ([Point], [Point]) {
     var subpath = [Point]()
     var lastPoint = p.first!
     for current in p.dropFirst() {
-        let sx = _t * lastPoint.x + t * current.x
-        let sy = _t * lastPoint.y + t * current.y
-        subpath.append(Point(x: sx, y: sy))
+        subpath.append(_t * lastPoint + t * current)
         lastPoint = current
     }
     let split = SplitBezier(t, subpath)
@@ -369,9 +367,7 @@ private func BezierDerivative(p: [Point]) -> [Point] {
     var de = [Point]()
     var lastPoint = p.first!
     for current in p.dropFirst() {
-        let px = n * (current.x - lastPoint.x)
-        let py = n * (current.y - lastPoint.y)
-        de.append(Point(x: px, y: py))
+        de.append(n * (current - lastPoint))
         lastPoint = current
     }
     return de
