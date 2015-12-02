@@ -305,9 +305,8 @@ private func SplitBezier(t: Double, _ p: [Double]) -> ([Double], [Double]) {
 private func SplitBezier(t: Double, _ p: [Point]) -> ([Point], [Point]) {
     let _t = 1 - t
     if p.count == 2 {
-        let sx = _t * p.first!.x + t * p.last!.x
-        let sy = _t * p.first!.y + t * p.last!.y
-        return ([p.first!, Point(x: sx, y: sy)], [Point(x: sx, y: sy), p.last!])
+        let split = _t * p.first! + t * p.last!
+        return ([p.first!, split], [split, p.last!])
     }
     var subpath = [Point]()
     var lastPoint = p.first!
