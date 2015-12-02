@@ -25,6 +25,13 @@
 
 import Foundation
 
+extension Double {
+    
+    func between(a: Double, _ b : Double) -> Bool {
+        return a < b ? a <= self && self <= b : b <= self && self <= a
+    }
+}
+
 protocol SDPathSegmentComponent {
     
     var last: Point { get set }
@@ -180,7 +187,7 @@ extension SDPathSegmentLine {
             return 1
         } else if (point.x - self.p1.x).almostZero {
             return 2
-        } else if bound(self.p0.x, self.p1.x).contains(point.x) {
+        } else if point.x.between(self.p0.x, self.p1.x) {
             return 3
         }
         return 0
@@ -190,7 +197,7 @@ extension SDPathSegmentLine {
             return (nil, self)
         } else if (point.x - self.p1.x).almostZero {
             return (self, nil)
-        } else if bound(self.p0.x, self.p1.x).contains(point.x) {
+        } else if point.x.between(self.p0.x, self.p1.x) {
             return (SDPathSegmentLine(self.p0, point), SDPathSegmentLine(point, self.p1))
         }
         return (nil, nil)
