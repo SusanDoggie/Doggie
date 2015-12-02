@@ -100,20 +100,37 @@ public prefix func +(val: Point) -> Point {
 public prefix func -(val: Point) -> Point {
     return Point(x: -val.x, y: -val.y)
 }
-public func + (lhs : Point, rhs : Point) -> Point {
+public func +(lhs: Point, rhs:  Point) -> Point {
     return Point(x: lhs.x + rhs.x, y: lhs.y + rhs.y)
 }
-
-public func - (lhs : Point, rhs : Point) -> Point {
+public func -(lhs: Point, rhs:  Point) -> Point {
     return Point(x: lhs.x - rhs.x, y: lhs.y - rhs.y)
 }
 
-public func += (inout lhs : Point, rhs : Point) {
+public func *(lhs: Double, rhs:  Point) -> Point {
+    return Point(x: lhs * rhs.x, y: lhs * rhs.y)
+}
+public func *(lhs: Point, rhs:  Double) -> Point {
+    return Point(x: lhs.x * rhs, y: lhs.y * rhs)
+}
+
+public func /(lhs: Point, rhs:  Double) -> Point {
+    return Point(x: lhs.x / rhs, y: lhs.y / rhs)
+}
+
+public func *= (inout lhs: Point, rhs:  Double) {
+    lhs.x *= rhs
+    lhs.y *= rhs
+}
+public func /= (inout lhs: Point, rhs:  Double) {
+    lhs.x /= rhs
+    lhs.y /= rhs
+}
+public func += (inout lhs: Point, rhs:  Point) {
     lhs.x += rhs.x
     lhs.y += rhs.y
 }
-
-public func -= (inout lhs : Point, rhs : Point) {
+public func -= (inout lhs: Point, rhs:  Point) {
     lhs.x -= rhs.x
     lhs.y -= rhs.y
 }
