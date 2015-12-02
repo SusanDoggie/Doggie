@@ -68,8 +68,14 @@ extension Point: Hashable {
     }
 }
 
-public func == (lhs: Point, rhs: Point) -> Bool {
-    return lhs.x == rhs.x && lhs.y == rhs.y
+public func dot(lhs: Point, _ rhs:  Point) -> Double {
+    return lhs.x * rhs.x + lhs.y * rhs.y
+}
+public func norm(value: Point) -> Double {
+    return sqrt(dot(value, value))
+}
+public func arg(value: Point) -> Double {
+    return atan2(value.y, value.x)
 }
 
 public func middle(p: Point ... ) -> Point {
@@ -83,10 +89,9 @@ public func middle(p: Point ... ) -> Point {
     return Point(x: _x / count, y: _y / count)
 }
 public func distance(lhs: Point, _ rhs: Point) -> Double {
-    let dx = lhs.x - rhs.x
-    let dy = lhs.y - rhs.y
-    return sqrt(dx * dx + dy * dy)
+    return norm(lhs - rhs)
 }
+
 public func direction(lhs: Point, _ rhs:  Point) -> Double {
     return lhs.x * rhs.y - lhs.y * rhs.x
 }
@@ -133,4 +138,8 @@ public func += (inout lhs: Point, rhs:  Point) {
 public func -= (inout lhs: Point, rhs:  Point) {
     lhs.x -= rhs.x
     lhs.y -= rhs.y
+}
+
+public func == (lhs: Point, rhs: Point) -> Bool {
+    return lhs.x == rhs.x && lhs.y == rhs.y
 }

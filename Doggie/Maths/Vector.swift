@@ -110,6 +110,10 @@ public func norm(value: Vector2D) -> Double {
     return sqrt(dot(value, value))
 }
 
+public func arg(value: Vector2D) -> Double {
+    return atan2(value.y, value.x)
+}
+
 public func norm(value: Vector3D) -> Double {
     return sqrt(dot(value, value))
 }
