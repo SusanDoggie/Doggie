@@ -977,9 +977,76 @@ public func LineWinding(p0: Point, _ p1: Point) -> Double {
     }
     if delta.isSignMinus {
         let s = sqrt(-delta)
-        return _m / s * (atan2(s, _a) - atan2(s, b))
+        return _m * (atan2(s, _a) - atan2(s, b)) / s
     } else {
         let s = sqrt(delta)
-        return -_m / s * (atanh(_a / s) - atanh(b / s))
+        return -_m * (atanh(_a / s) - atanh(b / s)) / s
     }
+}
+
+public func QuadBezierWinding(p0: Point, _ p1: Point, _ p2: Point) -> Double {
+    
+    let x2 = p0.x - 2 * p1.x + p2.x
+    let x1 = 2 * (p1.x - p0.x)
+    let x0 = p0.x
+    
+    let y2 = p0.y - 2 * p1.y + p2.y
+    let y1 = 2 * (p1.y - p0.y)
+    let y0 = p0.y
+    
+    let _a = x2 * x2 + y2 * y2
+    if _a.almostZero {
+        return 0
+    }
+    
+    let _b = 2 * (x2 * x1 + y2 * y1)
+    let _c = 2 * (x2 * x0 + y2 * y0) + x1 * x1 + y1 * y1
+    let _d = 2 * (x1 * x0 + y1 * y0)
+    let _e = x0 * x0 + y0 * y0
+    
+    let ((a, b), (c, d)) = degree4decompose(_b / _a, _c / _a, _d / _a, _e / _a)
+    
+    let m = (x2 * y1 - x1 * y2) / _a
+    let n = 2 * (x2 * y0 - x0 * y2) / _a
+    let q = (x1 * y0 - x0 * y1) / _a
+    
+    let bm = b * m
+    let dm = d * m
+    let bn = b * n
+    let dn = d * n
+    let aq = a * q
+    let cq = c * q
+    let ac = a * c
+    let bq = b * q
+    let dq = d * q
+    let bm_dm = bm - dm
+    let cq_aq = cq - aq
+    let bq_dq = bq - dq
+    
+    let A = bm * c - dm * a - bn + dn + aq - cq
+    let B = b * (c * n + bm_dm) - a * (bn + cq_aq) - bq_dq
+    let C = -A
+    let D = d * (a * n - bm_dm) - c * (dn - cq_aq) + bq_dq
+    let det = d * (a * a - ac + d) + b * (c * c - ac + b) - 2 * d * b
+    
+    func integral(m: Double, _ n: Double, _ b: Double, _ c: Double) -> Double {
+        
+        let delta = b * b - 4 * c
+        
+        let s = 0.5 * m * (log(abs(b + c)) - log(abs(c)))
+        let t = 2 * n - b * m
+        
+        if delta.almostZero {
+            return s + 2 * t / (b * (2 + b))
+        }
+        if delta.isSignMinus {
+            let q = sqrt(-delta)
+            return s + t * (atan2(q, 2 + b) - atan2(q, b)) / q
+        } else {
+            let q = sqrt(delta)
+            return s - t * (atanh((2 + b) / q) - atanh(b / q)) / q
+        }
+    }
+    
+    return 0.5 * M_1_PI * (integral(A / det, B / det, a, b) + integral(C / det, D / det, c, d))
 }
