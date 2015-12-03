@@ -261,6 +261,47 @@ public func degree3decompose(b: Double, _ c: Double, _ d: Double) -> (Double, (D
     return ((-b - c3) / 3, ((2 * b - c3) / 3, (b2 - b * c3 + c3 * c3 - 3 * c1 * c2) / 9))
 }
 
+public func degree4decompose(b: Double, _ c: Double, _ d: Double, _ e: Double) -> ((Double, Double), (Double, Double)) {
+    if e.almostZero {
+        let z = degree3decompose(b, c, d)
+        return ((z.0, 0), z.1)
+    }
+    let b2 = b * b
+    let c2 = c * c
+    let d2 = d * d
+    let bd = b * d
+    let bc = b * c
+    let de0 = c2 - 3 * bd + 12 * e
+    let de1 = 2 * c * c2 - 9 * bd * c + 27 * (b2 * e + d2) - 72 * e * c
+    let _de0 = 4 * de0 * de0 * de0
+    let de2 = de1 * de1 - 4 * de0 * de0 * de0
+    let P = 8 * c - 3 * b2
+    let Q = b * b2 - 4 * bc + 8 * d
+    let p = 0.125 * P
+    let q = 0.125 * Q
+    let m = 0.25 * b
+    let S: Double
+    if de2.isSignMinus {
+        let phi = acos(de1 / sqrt(_de0))
+        let _S = -p + sqrt(de0) * cos(phi / 3)
+        S = 0.5 * sqrt(_S * 2 / 3)
+    } else {
+        let _S = de0.almostZero && !de2.almostZero ? cbrt(de1) : cbrt(0.5 * (de1 + sqrt(de2)))
+        if _S.almostZero {
+            let _b = 2 * m
+            let _c = m * m
+            return ((_b, _c), (_b, _c))
+        }
+        S = 0.5 * sqrt((_S + de0 / _S - 2 * p) / 3)
+    }
+    let _t = -4 * S * S - 2 * p
+    let t1 = _t + q / S
+    let t2 = _t - q / S
+    let k1 = m + S
+    let k2 = m - S
+    return ((2 * k1, k1 * k1 - 0.25 * t1), (2 * k2, k2 * k2 - 0.25 * t2))
+}
+
 public func degree3roots(b: Double, _ c: Double, _ d: Double) -> [Double] {
     if d.almostZero {
         let z = degree2roots(b, c)
@@ -340,107 +381,9 @@ public func degree4roots(b: Double, _ c: Double, _ d: Double, _ e: Double) -> [D
         }
         return result
     }
-    let b2 = b * b
-    let b4 = b2 * b2
-    let c2 = c * c
-    let d2 = d * d
-    let bd = b * d
-    let bc = b * c
-    let cb2 = bc * b
-    let de0 = c2 - 3 * bd + 12 * e
-    let de1 = 2 * c * c2 - 9 * bd * c + 27 * (b2 * e + d2) - 72 * e * c
-    let _de0 = 4 * de0 * de0 * de0
-    let de2 = de1 * de1 - _de0
-    let P = 8 * c - 3 * b2
-    let Q = b * b2 - 4 * bc + 8 * d
-    let D = 64 * e + 16 * (cb2 - c2 - bd) - 3 * b4
-    let p = 0.125 * P
-    let q = 0.125 * Q
-    let m = 0.25 * b
-    if de2.almostZero {
-        if D.almostZero {
-            if de0.almostZero {
-                return [-m] // repeated roots
-            }
-            if P < 0 { // special case of (x - u)^2 (x - v)^2
-                return degree2roots(0.5 * b, sqrt(e))
-            }
-            if P > 0 && Q.almostZero { // no real roots
-                return []
-            }
-        }
-        func find_true_root(u: [Double]) -> Double {
-            return u.lazy.minElement { u -> Double in
-                let u2 = u * u
-                let u3 = u * u2
-                let u4 = u * u3
-                let t = u4 + b * u3 + c * u2 + d * u + e
-                return abs(t)
-                }!
-        }
-        if de0.almostZero { // special case of (x - u)^3 (x - v)
-            let u = find_true_root(degree2roots(0.5 * b, c / 6))
-            let v = -b - 3 * u
-            return [u, v]
-        }
-        
-        // find double reals
-        let u = find_true_root(degree3roots(0.75 * b, 0.5 * c, 0.25 * d))
-        if P < 0 && D < 0 { // a double reals and two real simple roots
-            return [u] + degree2roots(b + 2 * u, e / (u * u))
-        }
-        return [u] //double reals only
-    }
-    if de2 < 0 {
-        if P < 0 && D < 0 { // four real roots
-            let phi = acos(de1 / sqrt(_de0))
-            let _S = -p + sqrt(de0) * cos(phi / 3)
-            let S = 0.5 * sqrt(_S * 2 / 3)
-            let S2 = S * S
-            let _t = -4 * S2 - 2 * p
-            let t0 = 0.5 * sqrt(_t + q / S)
-            let t1 = 0.5 * sqrt(_t - q / S)
-            return [-S + t0 - m, -S - t0 - m, S + t1 - m, S - t1 - m]
-        }
-        return []
-    }
     
-    //depressed quartic
-    let r = e - 0.25 * bd + 0.0625 * cb2 - 0.01171875 * b4
-    if q.almostZero { // biquadratic
-        var result = [Double]()
-        for z in degree2roots(p, r) {
-            if z > 0 {
-                result.append(sqrt(z) - m)
-                result.append(-sqrt(z) - m)
-            } else if z.almostZero {
-                result.append(-m)
-            }
-        }
-        return result
-    }
-    if r.almostZero {
-        let z = degree3roots(0, p, q)
-        return z.contains(0) ? z.map { $0 - m } : [-m] + z.map { $0 - m }
-    }
-    
-    let p2 = p * p
-    let fy = degree3roots(2.5 * p, 2 * p2 - r, 0.5 * (p * p2 - p * r - 0.25 * q * q))
-    for y in fy {
-        let _y = p + 2 * y
-        if _y > 0 {
-            let sqrt_y = sqrt(_y)
-            let x = -3 * p - 2 * y
-            let y = 2 * q / sqrt_y
-            if x - y > 0 {
-                let z = sqrt(x - y)
-                return [0.5 * (sqrt_y + z) - m, 0.5 * (sqrt_y - z) - m]
-            }
-            let z = sqrt(x + y)
-            return [0.5 * (-sqrt_y + z) - m, 0.5 * (-sqrt_y - z) - m]
-        }
-    }
-    return []
+    let _d2 = degree4decompose(b, c, d, e)
+    return Set(degree2roots(_d2.0).concat(degree2roots(_d2.1))).array
 }
 
 public func bairstow(var buf: [Double], var eps: Double = 1e-14) -> [Double] {
