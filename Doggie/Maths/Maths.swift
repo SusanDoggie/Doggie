@@ -312,36 +312,11 @@ public func degree3roots(b: Double, _ c: Double, _ d: Double) -> [Double] {
     let de0 = b2 - 3 * c
     let de1 = 2 * b3 - 9 * c * b + 27 * d
     let de2 = de1 * de1 - 4 * de0 * de0 * de0
-    let m = b / 3
-    if de2.almostZero {
-        if de0.almostZero {
-            return [-m] // repeated roots
-        }
-        let bc = b * c
-        let d9 = 9 * d
-        let x0 = (d9 - bc) / (2 * de0) // repeated roots
-        let x1 = (4 * bc - d9 - b3) / de0
-        return [x0, x1]
-    } else if de0.almostZero {
-        let C = cbrt(de1)
-        let x0 = -(b + C + de0 / C) / 3
-        let z = degree2roots((b + x0), c + b * x0 + x0 * x0)
-        return z.contains(x0) ? z : [x0] + z
-    }
     
-    //depressed cubic
-    let p = -de0 / 3
-    let q = de1 / 27
-    
-    if q.almostZero {
-        if p < 0 {
-            let _p = sqrt(-p)
-            return [-m, _p - m, -_p - m]
-        }
-        return [-m]
-    }
-    
-    if de2 < 0 { // delta > 0, three real roots
+    if de2.isSignMinus { // delta > 0, three real roots
+        let m = b / 3
+        let p = -de0 / 3
+        let q = de1 / 27
         let p_3 = p / 3
         let s = 2 * sqrt(-p_3)
         let t = acos(q / (p_3 * s)) / 3
@@ -349,19 +324,12 @@ public func degree3roots(b: Double, _ c: Double, _ d: Double) -> [Double] {
         return [s * cos(t) - m, s * cos(t - u) - m, s * cos(t - 2 * u) - m]
     }
     
-    // one real roots
-    if p > 0 {
-        let p_3 = p / 3
-        let s = 2 * sqrt(p_3)
-        let t = asinh(q / (p_3 * s)) / 3
-        return [-s * sinh(t) - m]
-    }
-    
-    let p_3 = p / 3
-    let s = 2 * sqrt(-p_3)
-    let abs_q = -abs(q)
-    let t = acosh(abs_q / (p_3 * s)) / 3
-    return [abs_q / q * s * cosh(t) - m]
+    let c1 = cbrt(0.5 * (de1 + sqrt(de2)))
+    let c2 = cbrt(0.5 * (de1 - sqrt(de2)))
+    let c3 = c1 + c2
+    var _d2 = degree2roots((2 * b - c3) / 3, (b2 - b * c3 + c3 * c3 - 3 * c1 * c2) / 9)
+    _d2.append((-b - c3) / 3)
+    return Array(Set(_d2))
 }
 
 public func degree4roots(b: Double, _ c: Double, _ d: Double, _ e: Double) -> [Double] {
@@ -383,7 +351,7 @@ public func degree4roots(b: Double, _ c: Double, _ d: Double, _ e: Double) -> [D
     }
     
     let _d2 = degree4decompose(b, c, d, e)
-    return Set(degree2roots(_d2.0).concat(degree2roots(_d2.1))).array
+    return Array(Set(degree2roots(_d2.0).concat(degree2roots(_d2.1))))
 }
 
 public func bairstow(var buf: [Double], var eps: Double = 1e-14) -> [Double] {
