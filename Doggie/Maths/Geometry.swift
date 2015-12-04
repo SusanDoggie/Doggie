@@ -226,8 +226,8 @@ public func BezierDerivative(p: Vector3D ... ) -> [Vector3D] {
 private func Bezier(t: Double, _ p: [Double]) -> Double {
     var result: Double = 0
     let _n = p.count - 1
-    for idx in 0..._n {
-        let b = Double(combination(UInt(_n), UInt(idx))) * pow(t, Double(idx)) * pow(1 - t, Double(_n - idx))
+    for (idx, k) in CombinationList(UInt(_n)).enumerate() {
+        let b = Double(k) * pow(t, Double(idx)) * pow(1 - t, Double(_n - idx))
         result += b * p[idx]
     }
     return result
@@ -236,10 +236,9 @@ private func Bezier(t: Double, _ p: [Double]) -> Double {
 private func Bezier(t: Double, _ p: [Point]) -> Point {
     var result = Point(x: 0, y: 0)
     let _n = p.count - 1
-    for idx in 0..._n {
-        let b = Double(combination(UInt(_n), UInt(idx))) * pow(t, Double(idx)) * pow(1 - t, Double(_n - idx))
-        result.x += b * p[idx].x
-        result.y += b * p[idx].y
+    for (idx, k) in CombinationList(UInt(_n)).enumerate() {
+        let b = Double(k) * pow(t, Double(idx)) * pow(1 - t, Double(_n - idx))
+        result += b * p[idx]
     }
     return result
 }
@@ -247,8 +246,8 @@ private func Bezier(t: Double, _ p: [Point]) -> Point {
 private func Bezier(t: Double, _ p: [Vector2D]) -> Vector2D {
     var result = Vector2D(x: 0, y: 0)
     let _n = p.count - 1
-    for idx in 0..._n {
-        let b = Double(combination(UInt(_n), UInt(idx))) * pow(t, Double(idx)) * pow(1 - t, Double(_n - idx))
+    for (idx, k) in CombinationList(UInt(_n)).enumerate() {
+        let b = Double(k) * pow(t, Double(idx)) * pow(1 - t, Double(_n - idx))
         result += b * p[idx]
     }
     return result
@@ -257,8 +256,8 @@ private func Bezier(t: Double, _ p: [Vector2D]) -> Vector2D {
 private func Bezier(t: Double, _ p: [Vector3D]) -> Vector3D {
     var result = Vector3D(x: 0, y: 0, z: 0)
     let _n = p.count - 1
-    for idx in 0..._n {
-        let b = Double(combination(UInt(_n), UInt(idx))) * pow(t, Double(idx)) * pow(1 - t, Double(_n - idx))
+    for (idx, k) in CombinationList(UInt(_n)).enumerate() {
+        let b = Double(k) * pow(t, Double(idx)) * pow(1 - t, Double(_n - idx))
         result += b * p[idx]
     }
     return result

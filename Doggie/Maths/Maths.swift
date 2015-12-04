@@ -145,6 +145,19 @@ public func combination<T: UnsignedIntegerType>(n: T, _ k: T) -> T {
     return permutation(n, k) / factorial(k)
 }
 
+public func FactorialList<T: UnsignedIntegerType>(n: T) -> LazyScanSequence<Range<T>, T> {
+    
+    return (0..<n).lazy.scan(1) { $0 * $1 + $0 }
+}
+public func PermutationList<T: UnsignedIntegerType>(n: T) -> LazyScanSequence<ReverseRandomAccessCollection<Range<T>>, T> {
+    
+    return (0..<n).lazy.reverse().scan(1) { $0 * $1 + $0 }
+}
+public func CombinationList<T: UnsignedIntegerType>(n: T) -> LazyMapSequence<Zip2Sequence<LazyScanSequence<ReverseRandomAccessCollection<Range<T>>, T>, LazyScanSequence<Range<T>, T>>, T> {
+    
+    return zip(PermutationList(n), FactorialList(n)).lazy.map(/)
+}
+
 public func pow<T: UnsignedIntegerType>(x: T, _ n: T, _ m: T) -> T {
     if n == 0 && m != 1 {
         return 1
