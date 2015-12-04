@@ -70,7 +70,6 @@ public func Transpose(row: Int, _ column: Int, var _ real: UnsafePointer<Double>
     }
 }
 
-#if os(OSX)
 public func Transpose(row: Int, _ column: Int, var _ real: UnsafePointer<Float80>, var _ imag: UnsafePointer<Float80>, _ in_stride: Int, var _ _real: UnsafeMutablePointer<Float80>, var _ _imag: UnsafeMutablePointer<Float80>, _ out_stride: Int) {
     
     let _in_stride = in_stride * column
@@ -83,4 +82,3 @@ public func Transpose(row: Int, _ column: Int, var _ real: UnsafePointer<Float80
         _imag += _out_stride
     }
 }
-#endif

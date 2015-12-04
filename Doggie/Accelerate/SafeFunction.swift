@@ -138,8 +138,6 @@ public func mulSub(var a: [Double], _ b: [Double], _ c: [Double]) -> [Double] {
     MulSub(a.count, a, 1, b, 1, c, 1, &a, 1)
     return a
 }
-
-#if os(OSX)
 public func add(var lhs: [Float80], _ rhs: [Float80]) -> [Float80] {
     assert(lhs.count == rhs.count, "mismatch count of inputs.")
     Add(lhs.count, lhs, 1, rhs, 1, &lhs, 1)
@@ -181,7 +179,6 @@ public func mulSub(var a: [Float80], _ b: [Float80], _ c: [Float80]) -> [Float80
     MulSub(a.count, a, 1, b, 1, c, 1, &a, 1)
     return a
 }
-#endif
 
 public func dot(a: [Float], _ b: [Float]) -> Float {
     assert(a.count == b.count, "mismatch count of inputs.")
@@ -193,12 +190,10 @@ public func dot(a: [Double], _ b: [Double]) -> Double {
     return Dot(a.count, a, 1, b, 1)
 }
 
-#if os(OSX)
 public func dot(a: [Float80], _ b: [Float80]) -> Float80 {
     assert(a.count == b.count, "mismatch count of inputs.")
     return Dot(a.count, a, 1, b, 1)
 }
-#endif
 
 public func add(var lhs: [Complex], _ rhs: [Complex]) -> [Complex] {
     assert(lhs.count == rhs.count, "mismatch count of inputs.")

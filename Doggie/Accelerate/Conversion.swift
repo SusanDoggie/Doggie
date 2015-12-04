@@ -49,8 +49,6 @@ public func Convert(count: Int, var _ input: UnsafePointer<Double>, _ in_stride:
         output += out_stride
     }
 }
-
-#if os(OSX)
 public func Convert(count: Int, var _ input: UnsafePointer<Float80>, _ in_stride: Int, var _ output: UnsafeMutablePointer<Double>, _ out_stride: Int) {
     
     for _ in 0..<count {
@@ -83,4 +81,3 @@ public func Convert(count: Int, var _ input: UnsafePointer<Float80>, _ in_stride
         output += out_stride
     }
 }
-#endif

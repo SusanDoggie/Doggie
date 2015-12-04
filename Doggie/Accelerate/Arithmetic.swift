@@ -843,7 +843,6 @@ public func Div(count: Int, var _ lreal: UnsafePointer<Double>, var _ limag: Uns
     }
 }
 
-#if os(OSX)
 public func Add(count: Int, var _ left: UnsafePointer<Float80>, _ left_stride: Int, var _ right: UnsafePointer<Float80>, _ right_stride: Int, var _ output: UnsafeMutablePointer<Float80>, _ out_stride: Int) {
     for _ in 0..<count {
         output.memory = left.memory + right.memory
@@ -1227,7 +1226,6 @@ public func Div(count: Int, var _ lreal: UnsafePointer<Float80>, var _ limag: Un
         _imag += out_stride
     }
 }
-#endif
 
 public func Dot(count: Int, var _ left: UnsafePointer<Float>, _ left_stride: Int, var _ right: UnsafePointer<Float>, _ right_stride: Int) -> Float {
     var result: Float = 0.0
@@ -1249,7 +1247,6 @@ public func Dot(count: Int, var _ left: UnsafePointer<Double>, _ left_stride: In
     return result
 }
 
-#if os(OSX)
 public func Dot(count: Int, var _ left: UnsafePointer<Float80>, _ left_stride: Int, var _ right: UnsafePointer<Float80>, _ right_stride: Int) -> Float80 {
     var result: Float80 = 0.0
     for _ in 0..<count {
@@ -1259,7 +1256,6 @@ public func Dot(count: Int, var _ left: UnsafePointer<Float80>, _ left_stride: I
     }
     return result
 }
-#endif
 
 public func Deconvolve(signal_count: Int, var _ signal: UnsafePointer<Float>, _ signal_stride: Int, _ kernel_count: Int, var _ kernel: UnsafePointer<Float>, _ kernel_stride: Int, var _ output: UnsafeMutablePointer<Float>, _ out_stride: Int) {
     let residue_size = kernel_count - 1
@@ -1309,8 +1305,6 @@ public func Deconvolve(signal_count: Int, var _ signal: UnsafePointer<Double>, _
         }
     }
 }
-
-#if os(OSX)
 public func Deconvolve(signal_count: Int, var _ signal: UnsafePointer<Float80>, _ signal_stride: Int, _ kernel_count: Int, var _ kernel: UnsafePointer<Float80>, _ kernel_stride: Int, var _ output: UnsafeMutablePointer<Float80>, _ out_stride: Int) {
     let residue_size = kernel_count - 1
     let quotient_size = signal_count - residue_size
@@ -1335,8 +1329,6 @@ public func Deconvolve(signal_count: Int, var _ signal: UnsafePointer<Float80>, 
         }
     }
 }
-#endif
-
 public func Deconvolve(signal_count: Int, var _ signal: UnsafePointer<Float>, _ signal_stride: Int, _ kernel_count: Int, var _ kernel: UnsafePointer<Float>, _ kernel_stride: Int, var _ output: UnsafeMutablePointer<Float>, _ out_stride: Int, var _ residue: UnsafeMutablePointer<Float>, _ residue_stride: Int) {
     let residue_size = kernel_count - 1
     let quotient_size = signal_count - residue_size
@@ -1428,8 +1420,6 @@ public func Deconvolve(signal_count: Int, var _ signal: UnsafePointer<Double>, _
         }
     }
 }
-
-#if os(OSX)
 public func Deconvolve(signal_count: Int, var _ signal: UnsafePointer<Float80>, _ signal_stride: Int, _ kernel_count: Int, var _ kernel: UnsafePointer<Float80>, _ kernel_stride: Int, var _ output: UnsafeMutablePointer<Float80>, _ out_stride: Int, var _ residue: UnsafeMutablePointer<Float80>, _ residue_stride: Int) {
     let residue_size = kernel_count - 1
     let quotient_size = signal_count - residue_size
@@ -1475,4 +1465,3 @@ public func Deconvolve(signal_count: Int, var _ signal: UnsafePointer<Float80>, 
         }
     }
 }
-#endif
