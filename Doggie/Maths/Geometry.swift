@@ -399,7 +399,7 @@ public func QuadBezierStationary(p0: Double, _ p1: Double, _ p2: Double) -> Doub
     if d.almostZero {
         return nil
     }
-    return ((p0 - p1) / d).clamp(0...1)
+    return ((p0 - p1) / d)
 }
 
 ///
@@ -417,7 +417,7 @@ public func QuadBezierStationary(p0: Point, _ p1: Point, _ p2: Point, _ a: Doubl
     if d.almostZero {
         return nil
     }
-    return ((a * (p0.x - p1.x) + b * (p0.y - p1.y)) / d).clamp(0...1)
+    return ((a * (p0.x - p1.x) + b * (p0.y - p1.y)) / d)
 }
 
 public func CubicBezierStationary(p0: Double, _ p1: Double, _ p2: Double, _ p3: Double) -> [Double] {
@@ -429,9 +429,7 @@ public func CubicBezierStationary(p0: Double, _ p1: Double, _ p2: Double, _ p3: 
             return []
         }
         let t = -_c / _b
-        if (0.0...1.0).contains(t) {
-            return [t]
-        }
+        return [t]
     } else {
         let delta = _b * _b - 4 * _a * _c
         let _a2 = 2 * _a
@@ -440,16 +438,8 @@ public func CubicBezierStationary(p0: Double, _ p1: Double, _ p2: Double, _ p3: 
             let sqrt_delta = sqrt(delta) / _a2
             let t1 = _b2 + sqrt_delta
             let t2 = _b2 - sqrt_delta
-            if (0.0...1.0).contains(t1) {
-                if (0.0...1.0).contains(t2) {
-                    return [t1, t2]
-                } else {
-                    return [t1]
-                }
-            } else if (0.0...1.0).contains(t2) {
-                return [t2]
-            }
-        } else if delta.almostZero && (0.0...1.0).contains(_b2) {
+            return [t1, t2]
+        } else if delta.almostZero {
             return [_b2]
         }
     }
@@ -481,9 +471,7 @@ public func CubicBezierStationary(p0: Point, _ p1: Point, _ p2: Point, _ p3: Poi
             return []
         }
         let t = -_c / _b
-        if (0.0...1.0).contains(t) {
-            return [t]
-        }
+        return [t]
     } else {
         let delta = _b * _b - 4 * _a * _c
         let _a2 = 2 * _a
@@ -492,16 +480,8 @@ public func CubicBezierStationary(p0: Point, _ p1: Point, _ p2: Point, _ p3: Poi
             let sqrt_delta = sqrt(delta) / _a2
             let t1 = _b2 + sqrt_delta
             let t2 = _b2 - sqrt_delta
-            if (0.0...1.0).contains(t1) {
-                if (0.0...1.0).contains(t2) {
-                    return [t1, t2]
-                } else {
-                    return [t1]
-                }
-            } else if (0.0...1.0).contains(t2) {
-                return [t2]
-            }
-        } else if delta.almostZero && (0.0...1.0).contains(_b2) {
+            return [t1, t2]
+        } else if delta.almostZero {
             return [_b2]
         }
     }
@@ -510,8 +490,8 @@ public func CubicBezierStationary(p0: Point, _ p1: Point, _ p2: Point, _ p3: Poi
 
 public func QuadBezierBound(p0: Point, _ p1: Point, _ p2: Point) -> Rect {
     
-    let tx = [0.0, QuadBezierStationary(p0.x, p1.x, p2.x) ?? 0.0, 1.0]
-    let ty = [0.0, QuadBezierStationary(p0.y, p1.y, p2.y) ?? 0.0, 1.0]
+    let tx = [0.0, QuadBezierStationary(p0.x, p1.x, p2.x).map { $0.clamp(0...1) } ?? 0.0, 1.0]
+    let ty = [0.0, QuadBezierStationary(p0.y, p1.y, p2.y).map { $0.clamp(0...1) } ?? 0.0, 1.0]
     
     let _x = tx.map { Bezier($0, p0.x, p1.x, p2.x) }
     let _y = ty.map { Bezier($0, p0.y, p1.y, p2.y) }
@@ -533,8 +513,8 @@ public func QuadBezierBound(p0: Point, _ p1: Point, _ p2: Point) -> Rect {
 ///
 public func QuadBezierBound<T: SDTransformType>(p0: Point, _ p1: Point, _ p2: Point, _ matrix: T) -> Rect {
     
-    let tx = [0.0, QuadBezierStationary(p0, p1, p2, matrix.a, matrix.b) ?? 0.0, 1.0]
-    let ty = [0.0, QuadBezierStationary(p0, p1, p2, matrix.d, matrix.e) ?? 0.0, 1.0]
+    let tx = [0.0, QuadBezierStationary(p0, p1, p2, matrix.a, matrix.b).map { $0.clamp(0...1) } ?? 0.0, 1.0]
+    let ty = [0.0, QuadBezierStationary(p0, p1, p2, matrix.d, matrix.e).map { $0.clamp(0...1) } ?? 0.0, 1.0]
     
     let _x = tx.map { t -> Double in
         let _p = Bezier(t, p0, p1, p2)
@@ -555,8 +535,8 @@ public func QuadBezierBound<T: SDTransformType>(p0: Point, _ p1: Point, _ p2: Po
 
 public func CubicBezierBound(p0: Point, _ p1: Point, _ p2: Point, _ p3: Point) -> Rect {
     
-    let tx = [0.0, 1.0] + CubicBezierStationary(p0.x, p1.x, p2.x, p3.x)
-    let ty = [0.0, 1.0] + CubicBezierStationary(p0.y, p1.y, p2.y, p3.y)
+    let tx = [0.0, 1.0] + CubicBezierStationary(p0.x, p1.x, p2.x, p3.x).lazy.map { $0.clamp(0...1) }
+    let ty = [0.0, 1.0] + CubicBezierStationary(p0.y, p1.y, p2.y, p3.y).lazy.map { $0.clamp(0...1) }
     
     let _x = tx.map { Bezier($0, p0.x, p1.x, p2.x, p3.x) }
     let _y = ty.map { Bezier($0, p0.y, p1.y, p2.y, p3.y) }
@@ -578,8 +558,8 @@ public func CubicBezierBound(p0: Point, _ p1: Point, _ p2: Point, _ p3: Point) -
 ///
 public func CubicBezierBound<T: SDTransformType>(p0: Point, _ p1: Point, _ p2: Point, _ p3: Point, _ matrix: T) -> Rect {
     
-    let tx = [0.0, 1.0] + CubicBezierStationary(p0, p1, p2, p3, matrix.a, matrix.b)
-    let ty = [0.0, 1.0] + CubicBezierStationary(p0, p1, p2, p3, matrix.d, matrix.e)
+    let tx = [0.0, 1.0] + CubicBezierStationary(p0, p1, p2, p3, matrix.a, matrix.b).lazy.map { $0.clamp(0...1) }
+    let ty = [0.0, 1.0] + CubicBezierStationary(p0, p1, p2, p3, matrix.d, matrix.e).lazy.map { $0.clamp(0...1) }
     
     let _x = tx.map { t -> Double in
         let _p = Bezier(t, p0, p1, p2, p3)

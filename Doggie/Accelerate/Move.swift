@@ -63,6 +63,8 @@ public func Move(count: Int, var _ real: UnsafePointer<Double>, var _ imag: Unsa
         _imag += out_stride
     }
 }
+
+#if os(OSX)
 public func Move(count: Int, var _ real: UnsafePointer<Float80>, var _ imag: UnsafePointer<Float80>, _ in_stride: Int, var _ _real: UnsafeMutablePointer<Float80>, var _ _imag: UnsafeMutablePointer<Float80>, _ out_stride: Int) {
     
     for _ in 0..<count {
@@ -74,3 +76,4 @@ public func Move(count: Int, var _ real: UnsafePointer<Float80>, var _ imag: Uns
         _imag += out_stride
     }
 }
+#endif
