@@ -82,7 +82,7 @@ public func exgcd<S: SignedIntegerType>(var a: S, var _ b: S) -> (gcd: S, x: S, 
         x = (x.1, x.0 - q * x.1)
         y = (y.1, y.0 - q * y.1)
         (a, b) = (b, a % b)
-        ++iter
+        iter += 1
     }
     if iter & 1 == 0 ? sign1 : sign2 {
         return (a, x.0, y.0)
@@ -98,7 +98,7 @@ public func modinv<U: UnsignedIntegerType>(var a: U, var _ b: U) -> U {
     while b != 0 {
         x = (x.1, x.0 + (a / b) * x.1)
         (a, b) = (b, a % b)
-        ++iter
+        iter += 1
     }
     if a != 1 {
         /* gcd(a, b) != 1, No inverse exists */
@@ -386,7 +386,8 @@ public func bairstow(var buf: [Double], var eps: Double = 1e-14) -> [Double] {
             if abs(dr) < eps && abs(ds) < eps {
                 break
             }
-            if ++iter % 500 == 0 {
+            iter += 1
+            if iter % 500 == 0 {
                 if eps < 1e-06 {
                     eps *= 10
                 }

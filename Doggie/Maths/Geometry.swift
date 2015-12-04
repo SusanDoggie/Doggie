@@ -641,7 +641,7 @@ public func BezierArc(angle: Double) -> [Point] {
             result[_d] = end
         }
         _angle -= M_PI_2
-        ++counter
+        counter += 1
     }
     return angle.isSignMinus ? result.map { Point(x: $0.x, y: -$0.y) } : result
 }

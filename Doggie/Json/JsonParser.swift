@@ -65,8 +65,9 @@ private struct CharacterScanner : GeneratorType {
     
     mutating func next() -> UInt8? {
         if pos < count {
-            ++pos
-            current = (bytes++).memory
+            current = bytes.memory
+            pos += 1
+            bytes += 1
             return current
         } else {
             return nil
@@ -90,7 +91,7 @@ private struct StringBuilder {
         } else {
             buf.append(x)
         }
-        ++pos
+        pos += 1
     }
     
     mutating func append(escape x: UInt8) -> Bool {

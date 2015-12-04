@@ -64,7 +64,7 @@ private func _trylock(lck: [Lockable]) -> Int {
     } else if lck.count > 1 {
         var count = 0
         while count < lck.count && lck[count].trylock() {
-            ++count
+            count += 1
         }
         if count != lck.count {
             for i in 0..<count {

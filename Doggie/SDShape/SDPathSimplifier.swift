@@ -721,7 +721,7 @@ extension SDPathSegment {
             if right < boundarys.count {
                 boundarys[idx] = boundarys[idx].union(boundarys[right])
             }
-            --idx
+            idx -= 1
         }
     }
     

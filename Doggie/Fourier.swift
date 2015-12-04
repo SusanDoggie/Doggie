@@ -46,7 +46,7 @@ public func SplitConvolveLength(x: Int, _ y: Int) -> Int {
     }
     
     let _y = log2(y)
-    for var i = _y; (1 << i) - y < x; ++i {
+    for var i = _y; (1 << i) - y < x; i += 1 {
         temp = SplitConvolveComplexity(x, y, (1 << i) - y)
         if _min_complexity > temp {
             _min_complexity = temp
