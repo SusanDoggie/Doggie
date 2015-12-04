@@ -273,8 +273,8 @@ public func degree4decompose(b: Double, _ c: Double, _ d: Double, _ e: Double) -
     let bc = b * c
     let de0 = c2 - 3 * bd + 12 * e
     let de1 = 2 * c * c2 - 9 * bd * c + 27 * (b2 * e + d2) - 72 * e * c
-    let _de0 = 4 * de0 * de0 * de0
-    let de2 = de1 * de1 - 4 * de0 * de0 * de0
+    let _4_de0_3 = 4 * de0 * de0 * de0
+    let de2 = de1 * de1 - _4_de0_3
     let P = 8 * c - 3 * b2
     let Q = b * b2 - 4 * bc + 8 * d
     let p = 0.125 * P
@@ -282,7 +282,7 @@ public func degree4decompose(b: Double, _ c: Double, _ d: Double, _ e: Double) -
     let m = 0.25 * b
     let S: Double
     if de2.isSignMinus {
-        let phi = acos(de1 / sqrt(_de0))
+        let phi = acos(de1 / sqrt(_4_de0_3))
         let _S = -p + sqrt(de0) * cos(phi / 3)
         S = 0.5 * sqrt(_S * 2 / 3)
     } else {
