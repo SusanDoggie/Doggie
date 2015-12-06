@@ -187,28 +187,16 @@ public extension COpaquePointer {
     }
 }
 
-public extension GeneratorType {
-    
-    /// Returns the first element of `self`, or `nil` if `self` is empty.
-    var first: Element? {
-        var generator = self
-        return generator.next()
-    }
-}
-
 public extension SequenceType {
     
     /// Returns the first element of `self`, or `nil` if `self` is empty.
     var first: Generator.Element? {
-        return self.generate().first
+        var generator = self.generate()
+        return generator.next()
     }
 }
 
 public extension GeneratorType {
-    
-    var array: [Element] {
-        return Array(GeneratorSequence(self))
-    }
     
     var any: AnyGenerator<Element> {
         return anyGenerator(self)
@@ -618,6 +606,22 @@ public extension LazyCollectionType {
     @warn_unused_result
     func collect<I : CollectionType where Elements.Index == I.Generator.Element>(indices: I) -> PermutationCollection<Elements, I> {
         return PermutationCollection(_base: self.elements, _indices: indices)
+    }
+}
+
+public extension CollectionType where Index : Strideable {
+    
+    @warn_unused_result
+    public func stride(by stride: Index.Stride) -> [Generator.Element] {
+        return Array(self.lazy.stride(by: stride))
+    }
+}
+
+public extension LazyCollectionType where Elements.Index : Strideable {
+    
+    @warn_unused_result
+    public func stride(by stride: Elements.Index.Stride) -> PermutationGenerator<Elements, StrideTo<Elements.Index>> {
+        return self.collect(self.elements.startIndex.stride(to: self.elements.endIndex, by: stride))
     }
 }
 
