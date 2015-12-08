@@ -317,6 +317,36 @@ public extension CollectionType where Index : BidirectionalIndexType {
     }
 }
 
+extension CollectionType where Generator.Element : Equatable {
+    
+    /// Returns a subsequence, until a element equal to `value`, containing the
+    /// initial elements.
+    ///
+    /// If none of elements equal to `value`, the result contains all
+    /// the elements of `self`.
+    ///
+    /// - Complexity: O(`self.count`)
+    @warn_unused_result
+    public func prefixUntil(element: Self.Generator.Element) -> Self.SubSequence {
+        return self.prefixUpTo(self.indexOf(element) ?? self.endIndex)
+    }
+}
+
+extension CollectionType {
+    
+    /// Returns a subsequence, until a element satisfying the predicate, containing the
+    /// initial elements.
+    ///
+    /// If none of elements satisfying the predicate, the result contains all
+    /// the elements of `self`.
+    ///
+    /// - Complexity: O(`self.count`)
+    @warn_unused_result
+    public func prefixUntil(@noescape predicate: (Self.Generator.Element) throws -> Bool) rethrows -> Self.SubSequence {
+        return self.prefixUpTo(try self.indexOf(predicate) ?? self.endIndex)
+    }
+}
+
 public extension SequenceType {
     /// Returns an array containing the results of
     ///
