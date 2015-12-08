@@ -271,6 +271,8 @@ public extension LazyCollectionType where Elements.Index : RandomAccessIndexType
 public extension SequenceType where Generator.Element : Equatable {
     
     /// Return `true` if all of elements in `seq` is `x`.
+    ///
+    /// - Complexity: O(`self.count`).
     @warn_unused_result
     func all(x: Generator.Element) -> Bool {
         
@@ -284,6 +286,8 @@ public extension SequenceType where Generator.Element : Equatable {
 public extension SequenceType {
     
     /// Return `true` if all of elements in `seq` satisfies `predicate`.
+    ///
+    /// - Complexity: O(`self.count`).
     @warn_unused_result
     func all(@noescape predicate: (Generator.Element) throws -> Bool) rethrows -> Bool {
         
@@ -297,6 +301,8 @@ public extension SequenceType {
 public extension SequenceType {
     
     /// Return first of elements in `seq` satisfies `predicate`.
+    ///
+    /// - Complexity: O(`self.count`).
     @warn_unused_result
     func firstOf(@noescape predicate: (Generator.Element) throws -> Bool) rethrows -> Generator.Element? {
         
@@ -310,9 +316,10 @@ public extension SequenceType {
 public extension CollectionType where Index : BidirectionalIndexType {
     
     /// Return last of elements in `seq` satisfies `predicate`.
+    ///
+    /// - Complexity: O(`self.count`).
     @warn_unused_result
     func lastOf(@noescape predicate: (Generator.Element) throws -> Bool) rethrows -> Generator.Element? {
-        
         return try self.reverse().firstOf(predicate)
     }
 }
