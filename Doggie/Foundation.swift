@@ -347,6 +347,34 @@ extension CollectionType {
     }
 }
 
+extension CollectionType where Generator.Element : Equatable, Index : BidirectionalIndexType {
+    /// Returns a subsequence, until a element equal to `value`, containing the
+    /// final elements of `self`.
+    ///
+    /// If none of elements equal to `value`, the result contains all
+    /// the elements of `self`.
+    ///
+    /// - Complexity: O(`self.count`)
+    @warn_unused_result
+    public func suffixUntil(element: Self.Generator.Element) -> Self.SubSequence {
+        return self.suffixFrom(self.reverse().indexOf(element)?.base ?? self.startIndex)
+    }
+}
+
+extension CollectionType where Index : BidirectionalIndexType {
+    /// Returns a subsequence, until a element satisfying the predicate, containing the
+    /// final elements of `self`.
+    ///
+    /// If none of elements satisfying the predicate, the result contains all
+    /// the elements of `self`.
+    ///
+    /// - Complexity: O(`self.count`)
+    @warn_unused_result
+    public func suffixUntil(@noescape predicate: (Self.Generator.Element) throws -> Bool) rethrows -> Self.SubSequence {
+        return self.suffixFrom(try self.reverse().indexOf(predicate)?.base ?? self.startIndex)
+    }
+}
+
 public extension SequenceType {
     /// Returns an array containing the results of
     ///
