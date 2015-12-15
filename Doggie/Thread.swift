@@ -419,6 +419,18 @@ public class SDTask<Result> {
     /// Create a SDTask and compute block with specific queue.
     public init(_ queue: dispatch_queue_t, _ block: () -> Result) {
         self.queue = queue
+        self.submit(block)
+    }
+    
+    /// Create a SDTask and compute block with default queue.
+    public convenience init(_ block: () -> Result) {
+        self.init(defaultSDTaskDispatchQueue, block)
+    }
+}
+
+extension SDTask {
+    
+    private func submit(block: () -> Result) {
         dispatch_group_async(group, queue) {
             defer { self.signal() }
             self._result = block()
@@ -430,15 +442,6 @@ public class SDTask<Result> {
             }
         }
     }
-    
-    /// Create a SDTask and compute block with default queue.
-    public convenience init(_ block: () -> Result) {
-        self.init(defaultSDTaskDispatchQueue, block)
-    }
-}
-
-extension SDTask {
-    
     private func signal() {
         dispatch_semaphore_signal(self.sem)
     }
@@ -474,18 +477,7 @@ extension SDTask {
                 return SDTask<R>(queue) { block(self.result) }
             }
             let task = SDTask<R>(queue)
-            _notify.append {
-                dispatch_group_async(task.group, queue) {
-                    defer { task.signal() }
-                    task._result = block(self.result)
-                }
-                dispatch_group_notify(task.group, queue) {
-                    task._lck.synchronized {
-                        task._notify.forEach { $0() }
-                        task._notify = []
-                    }
-                }
-            }
+            _notify.append { task.submit { block(self.result) } }
             return task
         }
     }
