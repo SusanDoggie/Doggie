@@ -430,8 +430,13 @@ public class SDTask<Result> {
     
     /// Result of task.
     public var result: Result {
-        dispatch_semaphore_wait(self.sem, DISPATCH_TIME_FOREVER)
-        return self._result
+        if let _result = self._result {
+            return _result
+        } else {
+            dispatch_semaphore_wait(self.sem, DISPATCH_TIME_FOREVER)
+            defer { dispatch_semaphore_signal(self.sem) }
+            return self._result
+        }
     }
 }
 
