@@ -414,12 +414,6 @@ public class SDTask<Result> {
     
     private init(_ queue: dispatch_queue_t) {
         self.queue = queue
-        dispatch_group_notify(group, queue) {
-            self._lck.synchronized {
-                self._notify.forEach { $0() }
-                self._notify = []
-            }
-        }
     }
     
     /// Create a SDTask and compute block with specific queue.
@@ -484,6 +478,12 @@ extension SDTask {
                 dispatch_group_async(task.group, queue) {
                     defer { task.signal() }
                     task._result = block(self.result)
+                }
+                dispatch_group_notify(task.group, queue) {
+                    task._lck.synchronized {
+                        task._notify.forEach { $0() }
+                        task._notify = []
+                    }
                 }
             }
             return task
