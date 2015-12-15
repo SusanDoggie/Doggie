@@ -403,7 +403,7 @@ private let defaultSDTaskDispatchQueue = dispatch_queue_create("com.SusanDoggie.
 public class SDTask<Result> {
     
     private let sem: dispatch_semaphore_t = dispatch_semaphore_create(0)
-    private let group: dispatch_group_t
+    private let group: dispatch_group_t = dispatch_group_create()
     private let queue: dispatch_queue_t
     
     private typealias NotifyType = () -> ()
@@ -412,8 +412,7 @@ public class SDTask<Result> {
     
     private var _result: Result! = nil
     
-    private init(_ group: dispatch_group_t, _ queue: dispatch_queue_t) {
-        self.group = group
+    private init(_ queue: dispatch_queue_t) {
         self.queue = queue
         dispatch_group_notify(group, queue) {
             self._lck.synchronized {
@@ -425,7 +424,6 @@ public class SDTask<Result> {
     
     /// Create a SDTask and compute block with specific queue.
     public init(_ queue: dispatch_queue_t, _ block: () -> Result) {
-        self.group = dispatch_group_create()
         self.queue = queue
         dispatch_group_async(group, queue) {
             defer { self.signal() }
@@ -481,9 +479,9 @@ extension SDTask {
             if completed {
                 return SDTask<R>(queue) { block(self.result) }
             }
-            let task = SDTask<R>(group, queue)
+            let task = SDTask<R>(queue)
             _notify.append {
-                dispatch_group_async(self.group, queue) {
+                dispatch_group_async(task.group, queue) {
                     defer { task.signal() }
                     task._result = block(self.result)
                 }
