@@ -466,12 +466,12 @@ extension SDTask {
 extension SDTask {
     
     /// Run `block` after `self` is completed.
-    public func complete<R>(block: (Result) -> R) -> SDTask<R> {
-        return self.complete(queue, block)
+    public func then<R>(block: (Result) -> R) -> SDTask<R> {
+        return self.then(queue, block)
     }
     
     /// Run `block` after `self` is completed with specific queue.
-    public func complete<R>(queue: dispatch_queue_t, _ block: (Result) -> R) -> SDTask<R> {
+    public func then<R>(queue: dispatch_queue_t, _ block: (Result) -> R) -> SDTask<R> {
         return _lck.synchronized {
             if completed {
                 return SDTask<R>(queue) { block(self.result) }
