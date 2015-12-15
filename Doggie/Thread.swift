@@ -423,6 +423,11 @@ public class SDTask<Result> {
         self.init(defaultSDTaskDispatchQueue, block)
     }
     
+    /// Return `true` iff task is completed.
+    public var completed: Bool {
+        return _result != nil
+    }
+    
     /// Result of task.
     public var result: Result {
         dispatch_semaphore_wait(self.sem, DISPATCH_TIME_FOREVER)
