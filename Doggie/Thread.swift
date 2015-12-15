@@ -402,18 +402,23 @@ private let defaultSDTaskDispatchQueue = dispatch_queue_create("com.SusanDoggie.
 
 public class SDTask<Result> {
     
-    private let sem: dispatch_semaphore_t
+    private let sem: dispatch_semaphore_t = dispatch_semaphore_create(0)
+    private let group: dispatch_group_t
     private let queue: dispatch_queue_t
     
-    private var _result: Result!
+    private var _result: Result! = nil
+    
+    private init(_ group: dispatch_group_t, _ queue: dispatch_queue_t) {
+        self.group = group
+        self.queue = queue
+    }
     
     /// Create a SDTask and compute block with specific queue.
     public init(_ queue: dispatch_queue_t, _ block: () -> Result) {
-        self._result = nil
-        self.sem = dispatch_semaphore_create(0)
+        self.group = dispatch_group_create()
         self.queue = queue
-        dispatch_async(queue) {
-            defer { dispatch_semaphore_signal(self.sem) }
+        dispatch_group_async(group, queue) {
+            defer { self.signal() }
             self._result = block()
         }
     }
@@ -421,6 +426,13 @@ public class SDTask<Result> {
     /// Create a SDTask and compute block with default queue.
     public convenience init(_ block: () -> Result) {
         self.init(defaultSDTaskDispatchQueue, block)
+    }
+}
+
+extension SDTask {
+    
+    private func signal() {
+        dispatch_semaphore_signal(self.sem)
     }
     
     /// Return `true` iff task is completed.
@@ -442,13 +454,18 @@ public class SDTask<Result> {
 
 extension SDTask {
     
-    /// Run `block` after `self` is completed with specific queue.
-    public func complete<R>(queue: dispatch_queue_t, _ block: (Result) -> R) -> SDTask<R> {
-        return SDTask<R>(queue) { block(self.result) }
-    }
-    
     /// Run `block` after `self` is completed.
     public func complete<R>(block: (Result) -> R) -> SDTask<R> {
         return self.complete(queue, block)
+    }
+    
+    /// Run `block` after `self` is completed with specific queue.
+    public func complete<R>(queue: dispatch_queue_t, _ block: (Result) -> R) -> SDTask<R> {
+        let task = SDTask<R>(group, queue)
+        dispatch_group_notify(group, queue) {
+            defer { task.signal() }
+            task._result = block(self.result)
+        }
+        return task
     }
 }
