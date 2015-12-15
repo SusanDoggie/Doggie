@@ -395,3 +395,50 @@ extension SDSignal: CustomStringConvertible, CustomDebugStringConvertible {
         return "SDSignal"
     }
 }
+
+// MARK: SDTask
+
+private let defaultSDTaskDispatchQueue = dispatch_queue_create("com.SusanDoggie.SDTask", DISPATCH_QUEUE_CONCURRENT)
+
+public class SDTask<Result> {
+    
+    private let sem: dispatch_semaphore_t
+    private let queue: dispatch_queue_t
+    
+    private var _result: Result!
+    
+    /// Create a SDTask and compute block with specific queue.
+    public init(_ queue: dispatch_queue_t, _ block: () -> Result) {
+        self._result = nil
+        self.sem = dispatch_semaphore_create(0)
+        self.queue = queue
+        dispatch_async(queue) {
+            self._result = block()
+            dispatch_semaphore_signal(self.sem)
+        }
+    }
+    
+    /// Create a SDTask and compute block with default queue.
+    public convenience init(_ block: () -> Result) {
+        self.init(defaultSDTaskDispatchQueue, block)
+    }
+    
+    /// Result of task.
+    public var result: Result {
+        dispatch_semaphore_wait(self.sem, DISPATCH_TIME_FOREVER)
+        return self._result
+    }
+}
+
+extension SDTask {
+    
+    /// Run `block` after `self` is completed with specific queue.
+    public func complete<R>(queue: dispatch_queue_t, _ block: (Result) -> R) -> SDTask<R> {
+        return SDTask<R>(queue) { block(self.result) }
+    }
+    
+    /// Run `block` after `self` is completed.
+    public func complete<R>(block: (Result) -> R) -> SDTask<R> {
+        return self.complete(queue, block)
+    }
+}
