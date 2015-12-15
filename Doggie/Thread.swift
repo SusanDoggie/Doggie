@@ -413,8 +413,8 @@ public class SDTask<Result> {
         self.sem = dispatch_semaphore_create(0)
         self.queue = queue
         dispatch_async(queue) {
+            defer { dispatch_semaphore_signal(self.sem) }
             self._result = block()
-            dispatch_semaphore_signal(self.sem)
         }
     }
     
