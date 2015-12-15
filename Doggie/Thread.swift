@@ -458,13 +458,13 @@ extension SDTask {
     
     /// Result of task.
     public var result: Result {
-        if let _result = self._result {
-            return _result
-        } else {
-            dispatch_semaphore_wait(self.sem, DISPATCH_TIME_FOREVER)
-            defer { dispatch_semaphore_signal(self.sem) }
-            return self._result
+        if self._result == nil {
+            do {
+                dispatch_semaphore_wait(self.sem, DISPATCH_TIME_FOREVER)
+                defer { dispatch_semaphore_signal(self.sem) }
+            }
         }
+        return self._result
     }
 }
 
