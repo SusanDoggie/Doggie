@@ -13,7 +13,7 @@ let concated = arrayA.concat(arrayB)  // [1, 2, 3, 4, 5, 6, 7, 8]
 - complex number supports with transcendentals overloads such as sin(z), cos(z) etc.
 - polynomial library with operators.
 - accelerate libraries.
-- SDTask (asynchronous task).
+- asynchronous task.
 ```swift
 let task = SDTask { () -> Int in
     sleep(2)
