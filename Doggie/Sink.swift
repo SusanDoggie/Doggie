@@ -36,13 +36,13 @@ public class Sink<Element> {
 
 extension Sink {
     
-    public func put(value: Element) {
+    public final func put(value: Element) {
         for sink in sinks {
             sink(value)
         }
     }
     
-    public func apply(body: (Element) -> ()) {
+    public final func apply(body: (Element) -> ()) {
         sinks.append(body)
     }
 }
