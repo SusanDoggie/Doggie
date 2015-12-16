@@ -398,7 +398,10 @@ extension SDSignal: CustomStringConvertible, CustomDebugStringConvertible {
 
 // MARK: SDTask
 
-private let defaultSDTaskDispatchQueue = dispatch_queue_create("com.SusanDoggie.SDTask", DISPATCH_QUEUE_CONCURRENT)
+public let DispatchMainQueue = dispatch_get_main_queue()
+public let DispatchGlobalQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)
+
+private let SDTaskDefaultDispatchQueue = dispatch_queue_create("com.SusanDoggie.SDTask", DISPATCH_QUEUE_CONCURRENT)
 
 public class SDTask<Result> {
     
@@ -424,7 +427,7 @@ public class SDTask<Result> {
     
     /// Create a SDTask and compute block with default queue.
     public convenience init(_ block: () -> Result) {
-        self.init(defaultSDTaskDispatchQueue, block)
+        self.init(SDTaskDefaultDispatchQueue, block)
     }
 }
 
