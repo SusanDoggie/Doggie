@@ -484,11 +484,11 @@ extension SDTask {
 }
 
 /// Create a SDTask and compute block with default queue.
-public func aysnc<Result>(block: () -> Result) -> SDTask<Result> {
+public func async<Result>(block: () -> Result) -> SDTask<Result> {
     return SDTask(block)
 }
 
 /// Create a SDTask and compute block with specific queue.
-public func aysnc<Result>(queue: dispatch_queue_t, _ block: () -> Result) -> SDTask<Result> {
+public func async<Result>(queue: dispatch_queue_t, _ block: () -> Result) -> SDTask<Result> {
     return SDTask(queue, block)
 }
