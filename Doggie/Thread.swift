@@ -361,7 +361,7 @@ extension SDConditionLock: CustomStringConvertible, CustomDebugStringConvertible
 
 // MARK: Signal
 
-public struct SDSignal {
+public class SDSignal {
     
     private let sem: dispatch_semaphore_t
     
