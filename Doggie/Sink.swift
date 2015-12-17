@@ -101,17 +101,17 @@ extension Sink {
         return _sink
     }
     
-    public func throttle<T>(sink: Sink<T>) -> Sink<(T, [Element])> {
-        let _throttle = Sink<(T, [Element])>()
-        var e: [Element] = []
+    public func throttle<T>(sink: Sink<T>) -> Sink<(Element, [T])> {
+        let _throttle = Sink<(Element, [T])>()
+        var e: [T] = []
         var lck = SDSpinLock()
-        sink.apply { val in
+        self.apply { val in
             lck.synchronized {
                 _throttle.put((val, e))
                 e.removeAll(keepCapacity: true)
             }
         }
-        self.apply { val in
+        sink.apply { val in
             lck.synchronized { e.append(val) }
         }
         return _throttle
