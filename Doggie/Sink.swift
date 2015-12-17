@@ -119,12 +119,12 @@ extension Sink {
 }
 
 /// Zip two sink
-public func zip<Element1, Element2>(Sink1: Sink<Element1>, _ Sink2: Sink<Element2>) -> Sink<(Element1, Element2)> {
+public func zip<Element1, Element2>(sink1: Sink<Element1>, _ sink2: Sink<Element2>) -> Sink<(Element1, Element2)> {
     let _zip = Sink<(Element1, Element2)>()
     var e1: [Element1] = []
     var e2: [Element2] = []
     var lck = SDSpinLock()
-    Sink1.apply { val in
+    sink1.apply { val in
         lck.synchronized {
             if let first = e2.first {
                 _zip.put(val, first)
@@ -134,7 +134,7 @@ public func zip<Element1, Element2>(Sink1: Sink<Element1>, _ Sink2: Sink<Element
             }
         }
     }
-    Sink2.apply { val in
+    sink2.apply { val in
         lck.synchronized {
             if let first = e1.first {
                 _zip.put(first, val)
