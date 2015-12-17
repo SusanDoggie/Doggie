@@ -220,6 +220,10 @@
 		0858DB491C055172007FA426 /* Fourier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DB451C055172007FA426 /* Fourier.swift */; };
 		087FE5BA1A372D97005A2E9E /* Doggie_Mac.h in Headers */ = {isa = PBXBuildFile; fileRef = 087FE5B91A372D97005A2E9E /* Doggie_Mac.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		087FE5C01A372D97005A2E9E /* Doggie_Mac.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 087FE5B51A372D97005A2E9E /* Doggie_Mac.framework */; settings = {ATTRIBUTES = (Required, ); }; };
+		08863CC81C22756F004C27E5 /* Observer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08863CC71C22756F004C27E5 /* Observer.swift */; };
+		08863CC91C22756F004C27E5 /* Observer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08863CC71C22756F004C27E5 /* Observer.swift */; };
+		08863CCA1C22756F004C27E5 /* Observer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08863CC71C22756F004C27E5 /* Observer.swift */; };
+		08863CCB1C22756F004C27E5 /* Observer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08863CC71C22756F004C27E5 /* Observer.swift */; };
 		08AA03141C219B9900609109 /* Sink.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08AA03131C219B9900609109 /* Sink.swift */; };
 		08AA03151C219B9900609109 /* Sink.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08AA03131C219B9900609109 /* Sink.swift */; };
 		08AA03161C219B9900609109 /* Sink.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08AA03131C219B9900609109 /* Sink.swift */; };
@@ -308,6 +312,7 @@
 		087FE5B91A372D97005A2E9E /* Doggie_Mac.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Doggie_Mac.h; sourceTree = "<group>"; };
 		087FE5BF1A372D97005A2E9E /* Doggie_MacTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Doggie_MacTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		087FE5C51A372D97005A2E9E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		08863CC71C22756F004C27E5 /* Observer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Observer.swift; sourceTree = "<group>"; };
 		08AA03131C219B9900609109 /* Sink.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Sink.swift; sourceTree = "<group>"; };
 		08AF77AF1A3A10510042491F /* EncryptionTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EncryptionTests.swift; sourceTree = "<group>"; };
 		08BFF9B91B0715ED00EC88CB /* FourierTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FourierTest.swift; sourceTree = "<group>"; };
@@ -364,6 +369,7 @@
 				0858DA6E1C0550B7007FA426 /* SDShape */,
 				0858DA761C0550B7007FA426 /* Serialization.swift */,
 				08AA03131C219B9900609109 /* Sink.swift */,
+				08863CC71C22756F004C27E5 /* Observer.swift */,
 				0858DA771C0550B7007FA426 /* Thread.swift */,
 				0858DA781C0550B7007FA426 /* UUID.swift */,
 			);
@@ -737,6 +743,7 @@
 				081322381C11D3600081B2B9 /* Fourier.swift in Sources */,
 				0813223A1C11D3600081B2B9 /* JsonParser.swift in Sources */,
 				0813223E1C11D3600081B2B9 /* Matrix.swift in Sources */,
+				08863CC81C22756F004C27E5 /* Observer.swift in Sources */,
 				081322251C11D3600081B2B9 /* CooleyTukey.swift in Sources */,
 				081322241C11D3600081B2B9 /* Conversion.swift in Sources */,
 				081322311C11D3600081B2B9 /* SecureBuffer.swift in Sources */,
@@ -811,6 +818,7 @@
 				0813221C1C11D3600081B2B9 /* SDShape.swift in Sources */,
 				081322181C11D3600081B2B9 /* SDPath.swift in Sources */,
 				081322041C11D3600081B2B9 /* Fourier.swift in Sources */,
+				08863CC91C22756F004C27E5 /* Observer.swift in Sources */,
 				081322031C11D3600081B2B9 /* Foundation.swift in Sources */,
 				081322191C11D3600081B2B9 /* SDPathCoder.swift in Sources */,
 				081321EE1C11D3600081B2B9 /* CircularConvolve.swift in Sources */,
@@ -859,6 +867,7 @@
 				0858DB481C055172007FA426 /* Fourier.swift in Sources */,
 				0858DAAB1C0550B7007FA426 /* Color.swift in Sources */,
 				0858DADB1C0550B7007FA426 /* Json.swift in Sources */,
+				08863CCA1C22756F004C27E5 /* Observer.swift in Sources */,
 				0858DA931C0550B7007FA426 /* DiscreteConvolve.swift in Sources */,
 				0858DA8F1C0550B7007FA426 /* CooleyTukey.swift in Sources */,
 				0858DA8B1C0550B7007FA426 /* Conversion.swift in Sources */,
@@ -933,6 +942,7 @@
 				0858DB401C0550B7007FA426 /* Thread.swift in Sources */,
 				0858DAE81C0550B7007FA426 /* Geometry.swift in Sources */,
 				0858DA981C0550B7007FA426 /* FiniteImpulseFilter.swift in Sources */,
+				08863CCB1C22756F004C27E5 /* Observer.swift in Sources */,
 				0858DAFC1C0550B7007FA426 /* Prime.swift in Sources */,
 				0858DB281C0550B7007FA426 /* SDPath.swift in Sources */,
 				0858DAB41C0550B7007FA426 /* HashWrapper.swift in Sources */,
