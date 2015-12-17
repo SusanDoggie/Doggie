@@ -100,6 +100,22 @@ extension Sink {
         }
         return _sink
     }
+    
+    public func throttle<T>(sink: Sink<T>) -> Sink<(T, [Element])> {
+        let _throttle = Sink<(T, [Element])>()
+        var e: [Element] = []
+        var lck = SDSpinLock()
+        sink.apply { val in
+            lck.synchronized {
+                _throttle.put((val, e))
+                e.removeAll(keepCapacity: true)
+            }
+        }
+        self.apply { val in
+            lck.synchronized { e.append(val) }
+        }
+        return _throttle
+    }
 }
 
 /// Zip two sink
@@ -107,20 +123,25 @@ public func zip<Element1, Element2>(Sink1: Sink<Element1>, _ Sink2: Sink<Element
     let _zip = Sink<(Element1, Element2)>()
     var e1: [Element1] = []
     var e2: [Element2] = []
-    Sink1.apply {
-        if let first = e2.first {
-            _zip.put($0, first)
-            e2.removeFirst()
-        } else {
-            e1.append($0)
+    var lck = SDSpinLock()
+    Sink1.apply { val in
+        lck.synchronized {
+            if let first = e2.first {
+                _zip.put(val, first)
+                e2.removeFirst()
+            } else {
+                e1.append(val)
+            }
         }
     }
-    Sink2.apply {
-        if let first = e1.first {
-            _zip.put(first, $0)
-            e1.removeFirst()
-        } else {
-            e2.append($0)
+    Sink2.apply { val in
+        lck.synchronized {
+            if let first = e1.first {
+                _zip.put(first, val)
+                e1.removeFirst()
+            } else {
+                e2.append(val)
+            }
         }
     }
     return _zip
