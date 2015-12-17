@@ -499,6 +499,11 @@ extension SDTask {
     
     /// Continue if the result satisfies `predicate`.
     public func filter(predicate: (Result) -> Bool) -> SDTask<Result> {
+        return self.filter(queue, predicate)
+    }
+    
+    /// Continue if the result satisfies `predicate` with specific queue.
+    public func filter(queue: dispatch_queue_t, _ predicate: (Result) -> Bool) -> SDTask<Result> {
         return _lck.synchronized {
             let task = SDTask<Result>(queue)
             if completed {
