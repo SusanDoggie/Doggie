@@ -484,6 +484,22 @@ extension SDTask {
             return task
         }
     }
+    
+    /// Continue if the result satisfies `predicate`.
+    public func filter(predicate: (Result) -> Bool) -> SDTask<Result> {
+        return _lck.synchronized {
+            if completed {
+                return predicate(self.result) ? SDTask<Result>(queue) { self.result } : SDTask<Result>(queue)
+            }
+            let task = SDTask<Result>(queue)
+            _notify.append {
+                if predicate(self.result) {
+                    task.submit { self.result }
+                }
+            }
+            return task
+        }
+    }
 }
 
 /// Create a SDTask and compute block with default queue.
