@@ -33,7 +33,7 @@ public class Observer<T> : NSObject {
     private let keyPath: String
     private var token = 0
     
-    public init(object: NSObject, keyPath: String, options: NSKeyValueObservingOptions) {
+    private init(object: NSObject, keyPath: String, options: NSKeyValueObservingOptions) {
         self.object = object
         self.keyPath = keyPath
         super.init()
