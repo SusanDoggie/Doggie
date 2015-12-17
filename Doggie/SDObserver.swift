@@ -72,7 +72,7 @@ public class SDObserver<T> : Sink<T> {
 
 public extension NSObject {
     
-    public func observe(keyPath: String) -> SDObserver<[String : AnyObject]> {
+    public func bind(keyPath: String) -> SDObserver<[String : AnyObject]> {
         
         class ChangeSDObserver : SDObserver<[String : AnyObject]> {
             
