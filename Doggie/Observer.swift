@@ -25,15 +25,15 @@
 
 import Foundation
 
-public class Observer<T> : NSObject {
+private class ObserverBase : NSObject {
     
-    public let sink = Sink<T>()
+    var callback: (([String : AnyObject]) -> Void)? = nil
     
-    private let object: NSObject
-    private let keyPath: String
-    private var token = 0
+    let object: NSObject
+    let keyPath: String
+    var token = 0
     
-    private init(object: NSObject, keyPath: String, options: NSKeyValueObservingOptions) {
+    init(object: NSObject, keyPath: String, options: NSKeyValueObservingOptions) {
         self.object = object
         self.keyPath = keyPath
         super.init()
@@ -44,17 +44,29 @@ public class Observer<T> : NSObject {
         object.removeObserver(self, forKeyPath: keyPath, context: &token)
     }
     
-    public override func observeValueForKeyPath(keyPath: String?, ofObject object: AnyObject?, change: [String : AnyObject]?, context: UnsafeMutablePointer<Void>) {
+    override func observeValueForKeyPath(keyPath: String?, ofObject object: AnyObject?, change: [String : AnyObject]?, context: UnsafeMutablePointer<Void>) {
         if context == &token {
             if change != nil {
-                self.put(change!)
+                callback?(change!)
             }
         } else {
             super.observeValueForKeyPath(keyPath, ofObject: object, change: change, context: context)
         }
     }
+}
+
+public class Observer<T> {
     
-    private func put(change: [String : AnyObject]) {
+    public let sink = Sink<T>()
+    
+    private let base: ObserverBase
+    
+    private init(object: NSObject, keyPath: String, options: NSKeyValueObservingOptions) {
+        self.base = ObserverBase(object: object, keyPath: keyPath, options: options)
+        self.base.callback = { [weak self] in self?.callback($0) }
+    }
+    
+    private func callback(change: [String : AnyObject]) {
         
     }
 }
@@ -69,7 +81,7 @@ public extension NSObject {
                 super.init(object: object, keyPath: keyPath, options: [.New, .Old, .Initial, .Prior])
             }
             
-            override func put(change: [String : AnyObject]) {
+            override func callback(change: [String : AnyObject]) {
                 self.sink.put(change)
             }
         }
@@ -85,7 +97,7 @@ public extension NSObject {
                 super.init(object: object, keyPath: keyPath, options: .Prior)
             }
             
-            override func put(change: [String : AnyObject]) {
+            override func callback(change: [String : AnyObject]) {
                 if let old = change[NSKeyValueChangeOldKey] {
                     self.sink.put(old)
                 }
@@ -103,7 +115,7 @@ public extension NSObject {
                 super.init(object: object, keyPath: keyPath, options: [.New, .Old])
             }
             
-            override func put(change: [String : AnyObject]) {
+            override func callback(change: [String : AnyObject]) {
                 if let old = change[NSKeyValueChangeOldKey], new = change[NSKeyValueChangeNewKey] {
                     self.sink.put(old: old, new: new)
                 }
