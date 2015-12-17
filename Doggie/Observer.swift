@@ -55,14 +55,13 @@ private class ObserverBase : NSObject {
     }
 }
 
-public class Observer<T> {
-    
-    public let sink = Sink<T>()
+public class Observer<T> : Sink<T> {
     
     private let base: ObserverBase
     
     private init(object: NSObject, keyPath: String, options: NSKeyValueObservingOptions) {
         self.base = ObserverBase(object: object, keyPath: keyPath, options: options)
+        super.init()
         self.base.callback = { [weak self] in self?.callback($0) }
     }
     
@@ -82,7 +81,7 @@ public extension NSObject {
             }
             
             override func callback(change: [String : AnyObject]) {
-                self.sink.put(change)
+                self.put(change)
             }
         }
         
@@ -99,7 +98,7 @@ public extension NSObject {
             
             override func callback(change: [String : AnyObject]) {
                 if let old = change[NSKeyValueChangeOldKey] {
-                    self.sink.put(old)
+                    self.put(old)
                 }
             }
         }
@@ -117,7 +116,7 @@ public extension NSObject {
             
             override func callback(change: [String : AnyObject]) {
                 if let old = change[NSKeyValueChangeOldKey], new = change[NSKeyValueChangeNewKey] {
-                    self.sink.put(old: old, new: new)
+                    self.put(old: old, new: new)
                 }
             }
         }
