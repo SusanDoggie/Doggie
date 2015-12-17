@@ -492,8 +492,10 @@ extension SDTask {
             self._result = result
             defer { self.signal() }
         }
-        if predicate(result) {
-            dispatch_async(queue, self.notify)
+        dispatch_async(queue) {
+            if predicate(result) {
+                self.notify()
+            }
         }
     }
     
