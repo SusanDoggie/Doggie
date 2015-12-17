@@ -37,11 +37,11 @@ private class SDObserverBase : NSObject {
         self.object = object
         self.keyPath = keyPath
         super.init()
-        object.addSDObserver(self, forKeyPath: keyPath, options: options, context: &token)
+        object.addObserver(self, forKeyPath: keyPath, options: options, context: &token)
     }
     
     deinit {
-        object.removeSDObserver(self, forKeyPath: keyPath, context: &token)
+        object.removeObserver(self, forKeyPath: keyPath, context: &token)
     }
     
     override func observeValueForKeyPath(keyPath: String?, ofObject object: AnyObject?, change: [String : AnyObject]?, context: UnsafeMutablePointer<Void>) {
