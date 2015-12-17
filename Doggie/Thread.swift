@@ -433,17 +433,18 @@ public class SDTask<Result> {
 
 extension SDTask {
     
+    private func notify() {
+        self._lck.synchronized {
+            self._notify.forEach { $0() }
+            self._notify = []
+        }
+    }
     private func submit(block: () -> Result) {
         dispatch_group_async(group, queue) {
-            defer { self.signal() }
             self._result = block()
+            defer { self.signal() }
         }
-        dispatch_group_notify(group, queue) {
-            self._lck.synchronized {
-                self._notify.forEach { $0() }
-                self._notify = []
-            }
-        }
+        dispatch_group_notify(group, queue, self.notify)
     }
     private func signal() {
         dispatch_semaphore_signal(self.sem)
@@ -457,10 +458,8 @@ extension SDTask {
     /// Result of task.
     public var result: Result {
         if self._result == nil {
-            do {
-                dispatch_semaphore_wait(self.sem, DISPATCH_TIME_FOREVER)
-                defer { dispatch_semaphore_signal(self.sem) }
-            }
+            dispatch_semaphore_wait(self.sem, DISPATCH_TIME_FOREVER)
+            defer { dispatch_semaphore_signal(self.sem) }
         }
         return self._result
     }
@@ -484,18 +483,28 @@ extension SDTask {
             return task
         }
     }
+}
+
+extension SDTask {
+    
+    private func filter_signal(result: Result, _ predicate: (Result) -> Bool) {
+        do {
+            self._result = result
+            defer { self.signal() }
+        }
+        if predicate(result) {
+            dispatch_async(queue, self.notify)
+        }
+    }
     
     /// Continue if the result satisfies `predicate`.
     public func filter(predicate: (Result) -> Bool) -> SDTask<Result> {
         return _lck.synchronized {
-            if completed {
-                return predicate(self.result) ? SDTask<Result>(queue) { self.result } : SDTask<Result>(queue)
-            }
             let task = SDTask<Result>(queue)
-            _notify.append {
-                if predicate(self.result) {
-                    task.submit { self.result }
-                }
+            if completed {
+                dispatch_async(queue) { task.filter_signal(self.result, predicate) }
+            } else {
+                _notify.append { task.filter_signal(self.result, predicate) }
             }
             return task
         }
