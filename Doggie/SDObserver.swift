@@ -1,5 +1,5 @@
 //
-//  Observer.swift
+//  SDObserver.swift
 //
 //  The MIT License
 //  Copyright (c) 2015 Susan Cheng. All rights reserved.
@@ -25,7 +25,7 @@
 
 import Foundation
 
-private class ObserverBase : NSObject {
+private class SDObserverBase : NSObject {
     
     var callback: (([String : AnyObject]) -> Void)? = nil
     
@@ -37,11 +37,11 @@ private class ObserverBase : NSObject {
         self.object = object
         self.keyPath = keyPath
         super.init()
-        object.addObserver(self, forKeyPath: keyPath, options: options, context: &token)
+        object.addSDObserver(self, forKeyPath: keyPath, options: options, context: &token)
     }
     
     deinit {
-        object.removeObserver(self, forKeyPath: keyPath, context: &token)
+        object.removeSDObserver(self, forKeyPath: keyPath, context: &token)
     }
     
     override func observeValueForKeyPath(keyPath: String?, ofObject object: AnyObject?, change: [String : AnyObject]?, context: UnsafeMutablePointer<Void>) {
@@ -55,12 +55,12 @@ private class ObserverBase : NSObject {
     }
 }
 
-public class Observer<T> : Sink<T> {
+public class SDObserver<T> : Sink<T> {
     
-    private let base: ObserverBase
+    private let base: SDObserverBase
     
     private init(object: NSObject, keyPath: String, options: NSKeyValueObservingOptions) {
-        self.base = ObserverBase(object: object, keyPath: keyPath, options: options)
+        self.base = SDObserverBase(object: object, keyPath: keyPath, options: options)
         super.init()
         self.base.callback = { [weak self] in self?.callback($0) }
     }
@@ -72,9 +72,9 @@ public class Observer<T> : Sink<T> {
 
 public extension NSObject {
     
-    public func observe(keyPath: String) -> Observer<[String : AnyObject]> {
+    public func observe(keyPath: String) -> SDObserver<[String : AnyObject]> {
         
-        class ChangeObserver : Observer<[String : AnyObject]> {
+        class ChangeSDObserver : SDObserver<[String : AnyObject]> {
             
             init(object: NSObject, keyPath: String) {
                 super.init(object: object, keyPath: keyPath, options: [.New, .Old, .Initial, .Prior])
@@ -85,12 +85,12 @@ public extension NSObject {
             }
         }
         
-        return ChangeObserver(object: self, keyPath: keyPath)
+        return ChangeSDObserver(object: self, keyPath: keyPath)
     }
     
-    public func willSet(keyPath: String) -> Observer<AnyObject> {
+    public func willSet(keyPath: String) -> SDObserver<AnyObject> {
         
-        class WillSetObserver : Observer<AnyObject> {
+        class WillSetSDObserver : SDObserver<AnyObject> {
             
             init(object: NSObject, keyPath: String) {
                 super.init(object: object, keyPath: keyPath, options: .Prior)
@@ -103,12 +103,12 @@ public extension NSObject {
             }
         }
         
-        return WillSetObserver(object: self, keyPath: keyPath)
+        return WillSetSDObserver(object: self, keyPath: keyPath)
     }
     
-    public func didSet(keyPath: String) -> Observer<(old: AnyObject, new: AnyObject)> {
+    public func didSet(keyPath: String) -> SDObserver<(old: AnyObject, new: AnyObject)> {
         
-        class DidSetObserver : Observer<(old: AnyObject, new: AnyObject)> {
+        class DidSetSDObserver : SDObserver<(old: AnyObject, new: AnyObject)> {
             
             init(object: NSObject, keyPath: String) {
                 super.init(object: object, keyPath: keyPath, options: [.New, .Old])
@@ -121,6 +121,6 @@ public extension NSObject {
             }
         }
         
-        return DidSetObserver(object: self, keyPath: keyPath)
+        return DidSetSDObserver(object: self, keyPath: keyPath)
     }
 }
