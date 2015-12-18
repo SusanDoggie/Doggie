@@ -979,7 +979,6 @@ public func timeFormat(time: Double) -> String {
     return String(format: "%d:%02d", minutes, seconds)
 }
 
-@warn_unused_result
 public func autoreleasepool<R>(@noescape code: () -> R) -> R {
     var result: R!
     autoreleasepool {
