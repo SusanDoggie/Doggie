@@ -576,7 +576,6 @@ public func * <S: SDTransformType, T: SDTransformType>(lhs: S, rhs: T) -> SDTran
     return SDTransform(a: a, b: b, c: c, d: d, e: e, f: f)
 }
 
-@warn_unused_result
 public func *= <T: SDTransformType>(inout lhs: SDTransform, rhs: T) {
     lhs = lhs * rhs
 }
