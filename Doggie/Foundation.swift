@@ -846,6 +846,7 @@ public extension Set {
 
 public extension GeneratorType where Element : Comparable {
     
+    @warn_unused_result
     func bound() -> (min: Element, max: Element) {
         var generator = self
         var min = generator.next()!
@@ -863,6 +864,7 @@ public extension GeneratorType where Element : Comparable {
 
 public extension SequenceType where Generator.Element : Comparable {
     
+    @warn_unused_result
     func bound() -> (min: Generator.Element, max: Generator.Element) {
         return self.generate().bound()
     }
@@ -870,6 +872,7 @@ public extension SequenceType where Generator.Element : Comparable {
 
 public extension Comparable {
     
+    @warn_unused_result
     func clamp(range: ClosedInterval<Self>) -> Self {
         if self <= range.start {
             return range.start
@@ -883,6 +886,7 @@ public extension Comparable {
 
 public extension ForwardIndexType where Self : Comparable {
     
+    @warn_unused_result
     func clamp(range: Range<Self>) -> Self {
         if self <= range.startIndex {
             return range.minElement()!
@@ -903,6 +907,7 @@ public extension RangeReplaceableCollectionType {
 
 public extension IntegerType {
     
+    @warn_unused_result
     static func random() -> Self {
         var _r: Self = 0
         arc4random_buf(&_r, sizeof(Self))
@@ -910,39 +915,47 @@ public extension IntegerType {
     }
 }
 
+@warn_unused_result
 public func random_bytes(count: Int) -> [UInt8] {
     var buffer = [UInt8](count: count, repeatedValue: 0)
     arc4random_buf(&buffer, buffer.count)
     return buffer
 }
 
+@warn_unused_result
 public func random(bound: UInt32) -> UInt32 {
     return arc4random_uniform(bound)
 }
+@warn_unused_result
 public func random(range: Range<Int32>) -> Int32 {
     return Int32(random(UInt32(range.endIndex - range.startIndex))) + range.startIndex
 }
+@warn_unused_result
 public func random(range: ClosedInterval<Double>) -> Double {
     let diff = range.end - range.start
     return ((Double(arc4random()) / Double(0x100000000 as UInt64)) * diff) + range.start
 }
+@warn_unused_result
 public func random(range: HalfOpenInterval<Double>) -> Double {
     let diff = range.end - range.start
     return ((Double(arc4random()) / Double(0xFFFFFFFF as UInt64)) * diff) + range.start
 }
 
+@warn_unused_result
 public func byteArray<T : IntegerType>(bytes: T ... ) -> [UInt8] {
     let count = bytes.count * sizeof(T)
     var buf = [UInt8](count: count, repeatedValue: 0)
     memcpy(&buf, bytes, count)
     return buf
 }
+@warn_unused_result
 public func byteArray(data: UnsafePointer<Void>, length: Int) -> [UInt8] {
     var buf = [UInt8](count: length, repeatedValue: 0)
     memcpy(&buf, data, length)
     return buf
 }
 
+@warn_unused_result
 public func unsafeBitCast<T, U>(x: T) -> U {
     return unsafeBitCast(x, U.self)
 }
@@ -959,12 +972,14 @@ public func SDTimer(count count: Int = 1, @noescape block: () -> Void) -> NSTime
     return Double(time) / Double(count * Int(CLOCKS_PER_SEC))
 }
 
+@warn_unused_result
 public func timeFormat(time: Double) -> String {
     let minutes = Int(floor(time / 60.0))
     let seconds = lround(time - Double(minutes * 60))
     return String(format: "%d:%02d", minutes, seconds)
 }
 
+@warn_unused_result
 public func autoreleasepool<R>(@noescape code: () -> R) -> R {
     var result: R!
     autoreleasepool {
@@ -974,9 +989,11 @@ public func autoreleasepool<R>(@noescape code: () -> R) -> R {
 }
 
 public extension String {
+    @warn_unused_result
     static func fromBytes(buffer: [UInt8]) -> String! {
         return String.fromCString(UnsafePointer(buffer + [0]))
     }
+    @warn_unused_result
     static func fromBytes(cs: UInt) -> String! {
         let buffer: [UInt8] = [
             UInt8((cs >> 56) & 0xFF),
@@ -991,6 +1008,7 @@ public extension String {
         ]
         return String.fromCString(UnsafePointer(buffer))
     }
+    @warn_unused_result
     static func fromBytes(cs: UInt64) -> String! {
         let buffer: [UInt8] = [
             UInt8((cs >> 56) & 0xFF),
@@ -1005,6 +1023,7 @@ public extension String {
         ]
         return String.fromCString(UnsafePointer(buffer))
     }
+    @warn_unused_result
     static func fromBytes(cs: UInt32) -> String! {
         let buffer: [UInt8] = [
             UInt8((cs >> 24) & 0xFF),
@@ -1015,6 +1034,7 @@ public extension String {
         ]
         return String.fromCString(UnsafePointer(buffer))
     }
+    @warn_unused_result
     static func fromBytes(cs: UInt16) -> String! {
         let buffer: [UInt8] = [
             UInt8((cs >> 8) & 0xFF),
@@ -1023,10 +1043,12 @@ public extension String {
         ]
         return String.fromCString(UnsafePointer(buffer))
     }
+    @warn_unused_result
     static func fromBytes(cs: UInt8) -> String! {
         let buffer: [UInt8] = [cs, 0]
         return String.fromCString(UnsafePointer(buffer))
     }
+    @warn_unused_result
     static func fromBytes(cs: Int) -> String! {
         let buffer: [UInt8] = [
             UInt8((cs >> 56) & 0xFF),
@@ -1041,6 +1063,7 @@ public extension String {
         ]
         return String.fromCString(UnsafePointer(buffer))
     }
+    @warn_unused_result
     static func fromBytes(cs: Int64) -> String! {
         let buffer: [UInt8] = [
             UInt8((cs >> 56) & 0xFF),
@@ -1055,6 +1078,7 @@ public extension String {
         ]
         return String.fromCString(UnsafePointer(buffer))
     }
+    @warn_unused_result
     static func fromBytes(cs: Int32) -> String! {
         let buffer: [UInt8] = [
             UInt8((cs >> 24) & 0xFF),
@@ -1065,6 +1089,7 @@ public extension String {
         ]
         return String.fromCString(UnsafePointer(buffer))
     }
+    @warn_unused_result
     static func fromBytes(cs: Int16) -> String! {
         let buffer: [UInt8] = [
             UInt8((cs >> 8) & 0xFF),
@@ -1073,12 +1098,14 @@ public extension String {
         ]
         return String.fromCString(UnsafePointer(buffer))
     }
+    @warn_unused_result
     static func fromBytes(cs: Int8) -> String! {
         let buffer: [UInt8] = [UInt8(cs), 0]
         return String.fromCString(UnsafePointer(buffer))
     }
 }
 
+@warn_unused_result
 public func tensorFormatter(data: (Double, String)...) -> String {
     var print = ""
     for val in data where val.0 != 0 {
@@ -1105,6 +1132,7 @@ public func tensorFormatter(data: (Double, String)...) -> String {
     return print
 }
 
+@warn_unused_result
 public func hash<S : SequenceType where S.Generator.Element : Hashable>(val: S) -> Int {
     let _val = val.array
     switch _val.count {
@@ -1117,10 +1145,12 @@ public func hash<S : SequenceType where S.Generator.Element : Hashable>(val: S) 
     }
 }
 
+@warn_unused_result
 public func hash<T: Hashable>(val: T ... ) -> Int {
     return hash(val)
 }
 
+@warn_unused_result
 public func == <T : Comparable>(lhs: T, rhs: T) -> Bool {
     return !(lhs < rhs || rhs < lhs)
 }
@@ -1144,6 +1174,7 @@ public struct Graph<Node : Hashable, Link> : CollectionType {
     }
     
     /// - Complexity: O(1).
+    @warn_unused_result
     public func generate() -> Generator {
         return Generator(_base: table.lazy.flatMap { from, to in to.lazy.map { (from, $0, $1) } }.generate())
     }
@@ -1329,6 +1360,7 @@ public struct GraphIndex<Node : Hashable, Link> : ForwardIndexType {
         return base[current]
     }
     
+    @warn_unused_result
     public func successor() -> GraphIndex<Node, Link> {
         return GraphIndex(base: base, current: current.successor())
     }
@@ -1344,6 +1376,7 @@ public struct GraphGenerator<Node : Hashable, Link> : GeneratorType {
     
     private var _base: FlattenGenerator<LazyMapGenerator<DictionaryGenerator<Node, [Node : Link]>, LazyMapCollection<[Node : Link], (Node, Node, Link)>>>
     
+    @warn_unused_result
     public mutating func next() -> Element? {
         return _base.next()
     }
@@ -1377,6 +1410,7 @@ public struct UndirectedGraph<Node : Hashable, Link> : CollectionType {
     }
     
     /// - Complexity: O(1).
+    @warn_unused_result
     public func generate() -> Generator {
         return Generator(base: graph.generate())
     }
@@ -1509,6 +1543,7 @@ public struct UndirectedGraphIndex<Node : Hashable, Link> : ForwardIndexType {
     
     private let base: Graph<Node, Link>.Index
     
+    @warn_unused_result
     public func successor() -> UndirectedGraphIndex<Node, Link> {
         return UndirectedGraphIndex(base: base.successor())
     }
@@ -1524,6 +1559,7 @@ public struct UndirectedGraphGenerator<Node : Hashable, Link> : GeneratorType {
     
     private var base: Graph<Node, Link>.Generator
     
+    @warn_unused_result
     public mutating func next() -> Element? {
         return base.next()
     }

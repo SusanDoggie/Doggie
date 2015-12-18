@@ -72,6 +72,7 @@ public class SDObserver<T> : Sink<T> {
 
 public extension NSObject {
     
+    @warn_unused_result
     public func bind(keyPath: String) -> SDObserver<[String : AnyObject]> {
         
         class ChangeSDObserver : SDObserver<[String : AnyObject]> {
@@ -88,6 +89,7 @@ public extension NSObject {
         return ChangeSDObserver(object: self, keyPath: keyPath)
     }
     
+    @warn_unused_result
     public func willSet(keyPath: String) -> SDObserver<AnyObject> {
         
         class WillSetSDObserver : SDObserver<AnyObject> {
@@ -106,6 +108,7 @@ public extension NSObject {
         return WillSetSDObserver(object: self, keyPath: keyPath)
     }
     
+    @warn_unused_result
     public func didSet(keyPath: String) -> SDObserver<(old: AnyObject, new: AnyObject)> {
         
         class DidSetSDObserver : SDObserver<(old: AnyObject, new: AnyObject)> {

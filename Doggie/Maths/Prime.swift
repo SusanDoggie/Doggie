@@ -25,6 +25,7 @@
 
 import Foundation
 
+@warn_unused_result
 public func phi(x: UInt32) -> UInt32 {
     return phi(x, hint: 0)
 }
@@ -45,6 +46,7 @@ private func phi(x: UInt32, hint: Int) -> UInt32 {
     }
     return x - 1
 }
+@warn_unused_result
 public func tetration(a: UInt, _ n: UInt, _ m: UInt32) -> UInt {
     if m == 1 || a % UInt(m) == 0 {
         return 0

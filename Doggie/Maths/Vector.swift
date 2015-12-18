@@ -90,30 +90,38 @@ extension Vector3D: Hashable {
     }
 }
 
+@warn_unused_result
 public func dot(lhs: Vector2D, _ rhs:  Vector2D) -> Double {
     return lhs.x * rhs.x + lhs.y * rhs.y
 }
+@warn_unused_result
 public func dot(lhs: Vector3D, _ rhs:  Vector3D) -> Double {
     return lhs.x * rhs.x + lhs.y * rhs.y + lhs.z * rhs.z
 }
+@warn_unused_result
 public func direction(lhs: Vector2D, _ rhs:  Vector2D) -> Double {
     return lhs.x * rhs.y - lhs.y * rhs.x
 }
+@warn_unused_result
 public func direction(a: Vector2D, _ b: Vector2D, _ c: Vector2D) -> Double {
     return direction(b - a, c - a)
 }
+@warn_unused_result
 public func cross(lhs: Vector3D, _ rhs:  Vector3D) -> Vector3D {
     return Vector3D(x: lhs.y * rhs.z - lhs.z * rhs.y, y: lhs.z * rhs.x - lhs.x * rhs.z, z: lhs.x * rhs.y - lhs.y * rhs.x)
 }
 
+@warn_unused_result
 public func norm(value: Vector2D) -> Double {
     return sqrt(dot(value, value))
 }
 
+@warn_unused_result
 public func arg(value: Vector2D) -> Double {
     return atan2(value.y, value.x)
 }
 
+@warn_unused_result
 public func norm(value: Vector3D) -> Double {
     return sqrt(dot(value, value))
 }
@@ -130,78 +138,98 @@ public prefix func -(val: Vector2D) -> Vector2D {
 public prefix func -(val: Vector3D) -> Vector3D {
     return Vector3D(x: -val.x, y: -val.y, z: -val.z)
 }
+@warn_unused_result
 public func +(lhs: Vector2D, rhs:  Vector2D) -> Vector2D {
     return Vector2D(x: lhs.x + rhs.x, y: lhs.y + rhs.y)
 }
+@warn_unused_result
 public func +(lhs: Vector3D, rhs:  Vector3D) -> Vector3D {
     return Vector3D(x: lhs.x + rhs.x, y: lhs.y + rhs.y, z: lhs.z + rhs.z)
 }
+@warn_unused_result
 public func -(lhs: Vector2D, rhs:  Vector2D) -> Vector2D {
     return Vector2D(x: lhs.x - rhs.x, y: lhs.y - rhs.y)
 }
+@warn_unused_result
 public func -(lhs: Vector3D, rhs:  Vector3D) -> Vector3D {
     return Vector3D(x: lhs.x - rhs.x, y: lhs.y - rhs.y, z: lhs.z - rhs.z)
 }
 
+@warn_unused_result
 public func *(lhs: Double, rhs:  Vector2D) -> Vector2D {
     return Vector2D(x: lhs * rhs.x, y: lhs * rhs.y)
 }
+@warn_unused_result
 public func *(lhs: Double, rhs:  Vector3D) -> Vector3D {
     return Vector3D(x: lhs * rhs.x, y: lhs * rhs.y, z: lhs * rhs.z)
 }
+@warn_unused_result
 public func *(lhs: Vector2D, rhs:  Double) -> Vector2D {
     return Vector2D(x: lhs.x * rhs, y: lhs.y * rhs)
 }
+@warn_unused_result
 public func *(lhs: Vector3D, rhs:  Double) -> Vector3D {
     return Vector3D(x: lhs.x * rhs, y: lhs.y * rhs, z: lhs.z * rhs)
 }
 
+@warn_unused_result
 public func /(lhs: Vector2D, rhs:  Double) -> Vector2D {
     return Vector2D(x: lhs.x / rhs, y: lhs.y / rhs)
 }
+@warn_unused_result
 public func /(lhs: Vector3D, rhs:  Double) -> Vector3D {
     return Vector3D(x: lhs.x / rhs, y: lhs.y / rhs, z: lhs.z / rhs)
 }
 
+@warn_unused_result
 public func *= (inout lhs: Vector2D, rhs:  Double) {
     lhs.x *= rhs
     lhs.y *= rhs
 }
+@warn_unused_result
 public func *= (inout lhs: Vector3D, rhs:  Double) {
     lhs.x *= rhs
     lhs.y *= rhs
     lhs.z *= rhs
 }
+@warn_unused_result
 public func /= (inout lhs: Vector2D, rhs:  Double) {
     lhs.x /= rhs
     lhs.y /= rhs
 }
+@warn_unused_result
 public func /= (inout lhs: Vector3D, rhs:  Double) {
     lhs.x /= rhs
     lhs.y /= rhs
     lhs.z /= rhs
 }
+@warn_unused_result
 public func += (inout lhs: Vector2D, rhs:  Vector2D) {
     lhs.x += rhs.x
     lhs.y += rhs.y
 }
+@warn_unused_result
 public func -= (inout lhs: Vector2D, rhs:  Vector2D) {
     lhs.x -= rhs.x
     lhs.y -= rhs.y
 }
+@warn_unused_result
 public func += (inout lhs: Vector3D, rhs:  Vector3D) {
     lhs.x += rhs.x
     lhs.y += rhs.y
     lhs.z += rhs.z
 }
+@warn_unused_result
 public func -= (inout lhs: Vector3D, rhs:  Vector3D) {
     lhs.x -= rhs.x
     lhs.y -= rhs.y
     lhs.z -= rhs.z
 }
+@warn_unused_result
 public func ==(lhs: Vector2D, rhs: Vector2D) -> Bool {
     return lhs.x == rhs.x && lhs.y == rhs.y
 }
+@warn_unused_result
 public func ==(lhs: Vector3D, rhs: Vector3D) -> Bool {
     return lhs.x == rhs.x && lhs.y == rhs.y && lhs.z == rhs.z
 }

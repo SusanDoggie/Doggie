@@ -115,6 +115,7 @@ extension Polynomial {
         return max(coeffs.count - 1, 0)
     }
     
+    @warn_unused_result
     public func eval(x: Double) -> Double {
         let _x = Repeat(count: degree, repeatedValue: x).lazy.scan(1, combine: *)
         return zip(coeffs, _x).reduce(0) { $1.0 * $1.1 + $0 }
@@ -241,42 +242,52 @@ extension Polynomial {
     }
 }
 
+@warn_unused_result
 public func += (inout lhs: Polynomial, rhs: Polynomial) {
     lhs = lhs + rhs
 }
 
+@warn_unused_result
 public func += (inout lhs: Polynomial, rhs: Double) {
     lhs[0] += rhs
 }
 
+@warn_unused_result
 public func -= (inout lhs: Polynomial, rhs: Polynomial) {
     lhs = lhs - rhs
 }
 
+@warn_unused_result
 public func -= (inout lhs: Polynomial, rhs: Double) {
     lhs[0] -= rhs
 }
 
+@warn_unused_result
 public func *= (inout lhs: Polynomial, rhs: Double) {
     lhs = lhs * rhs
 }
 
+@warn_unused_result
 public func *= (inout lhs: Polynomial, rhs: Polynomial) {
     lhs = lhs * rhs
 }
 
+@warn_unused_result
 public func /= (inout lhs: Polynomial, rhs: Double) {
     lhs = lhs / rhs
 }
 
+@warn_unused_result
 public func /= (inout lhs: Polynomial, rhs: Polynomial) {
     lhs = lhs / rhs
 }
 
+@warn_unused_result
 public func %= (inout lhs: Polynomial, rhs: Double) {
     lhs = []
 }
 
+@warn_unused_result
 public func %= (inout lhs: Polynomial, rhs: Polynomial) {
     lhs = lhs % rhs
 }

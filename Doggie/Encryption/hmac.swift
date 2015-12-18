@@ -37,50 +37,62 @@ private func hmac(hash: ([UInt8]) -> [UInt8], _ block_size: Int, var _ key: [UIn
     return hash(o_key + hash(i_key + message))
 }
 
+@warn_unused_result
 public func hmac_md5(key: [UInt8], _ message: [UInt8]) -> [UInt8] {
     return hmac(md5, 64, key, message, opad: 0x5c, ipad: 0x36)
 }
 
+@warn_unused_result
 public func hmac_sha1(key: [UInt8], _ message: [UInt8]) -> [UInt8] {
     return hmac(sha1, 64, key, message, opad: 0x5c, ipad: 0x36)
 }
 
+@warn_unused_result
 public func hmac_sha224(key: [UInt8], _ message: [UInt8]) -> [UInt8] {
     return hmac(sha224, 64, key, message, opad: 0x5c, ipad: 0x36)
 }
 
+@warn_unused_result
 public func hmac_sha256(key: [UInt8], _ message: [UInt8]) -> [UInt8] {
     return hmac(sha256, 64, key, message, opad: 0x5c, ipad: 0x36)
 }
 
+@warn_unused_result
 public func hmac_sha384(key: [UInt8], _ message: [UInt8]) -> [UInt8] {
     return hmac(sha384, 128, key, message, opad: 0x5c, ipad: 0x36)
 }
 
+@warn_unused_result
 public func hmac_sha512(key: [UInt8], _ message: [UInt8]) -> [UInt8] {
     return hmac(sha512, 128, key, message, opad: 0x5c, ipad: 0x36)
 }
 
+@warn_unused_result
 public func hmac_md5(key: [UInt8], _ message: [UInt8], opad: UInt8, ipad: UInt8) -> [UInt8] {
     return hmac(md5, 64, key, message, opad: opad, ipad: ipad)
 }
 
+@warn_unused_result
 public func hmac_sha1(key: [UInt8], _ message: [UInt8], opad: UInt8, ipad: UInt8) -> [UInt8] {
     return hmac(sha1, 64, key, message, opad: opad, ipad: ipad)
 }
 
+@warn_unused_result
 public func hmac_sha224(key: [UInt8], _ message: [UInt8], opad: UInt8, ipad: UInt8) -> [UInt8] {
     return hmac(sha224, 64, key, message, opad: opad, ipad: ipad)
 }
 
+@warn_unused_result
 public func hmac_sha256(key: [UInt8], _ message: [UInt8], opad: UInt8, ipad: UInt8) -> [UInt8] {
     return hmac(sha256, 64, key, message, opad: opad, ipad: ipad)
 }
 
+@warn_unused_result
 public func hmac_sha384(key: [UInt8], _ message: [UInt8], opad: UInt8, ipad: UInt8) -> [UInt8] {
     return hmac(sha384, 128, key, message, opad: opad, ipad: ipad)
 }
 
+@warn_unused_result
 public func hmac_sha512(key: [UInt8], _ message: [UInt8], opad: UInt8, ipad: UInt8) -> [UInt8] {
     return hmac(sha512, 128, key, message, opad: opad, ipad: ipad)
 }

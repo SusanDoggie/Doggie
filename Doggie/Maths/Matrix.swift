@@ -58,6 +58,7 @@ public let MatrixIdentity = Matrix(
 
 // MARK: Transformation matrix
 
+@warn_unused_result
 public func Rotate(x angle: Double) -> Matrix {
     let _cos = cos(angle)
     let _sin = sin(angle)
@@ -68,6 +69,7 @@ public func Rotate(x angle: Double) -> Matrix {
         0.0, 0.0,  0.0,   1.0
     )
 }
+@warn_unused_result
 public func Rotate(y angle: Double) -> Matrix {
     let _cos = cos(angle)
     let _sin = sin(angle)
@@ -78,6 +80,7 @@ public func Rotate(y angle: Double) -> Matrix {
         0.0,   0.0, 0.0,  1.0
     )
 }
+@warn_unused_result
 public func Rotate(z angle: Double) -> Matrix {
     let _cos = cos(angle)
     let _sin = sin(angle)
@@ -88,9 +91,11 @@ public func Rotate(z angle: Double) -> Matrix {
         0.0,  0.0,   0.0, 1.0
     )
 }
+@warn_unused_result
 public func Rotate(roll x: Double, pitch y: Double, yaw z: Double) -> Matrix {
     return Rotate(z: z) * Rotate(y: y) * Rotate(x: x)
 }
+@warn_unused_result
 public func Rotate(radian: Double, x: Double, y: Double, z: Double) -> Matrix {
     let _abs = sqrt(x * x + y * y + z * z)
     let vx = x / _abs
@@ -118,6 +123,7 @@ public func Rotate(radian: Double, x: Double, y: Double, z: Double) -> Matrix {
         1.0
     )
 }
+@warn_unused_result
 public func Scale(ratio r: Double) -> Matrix {
     if r > 1 {
         return Matrix(
@@ -135,6 +141,7 @@ public func Scale(ratio r: Double) -> Matrix {
         )
     }
 }
+@warn_unused_result
 public func Scale(x: Double, _ y: Double, _ z: Double) -> Matrix {
     return Matrix(
         x,   0.0, 0.0, 0.0,
@@ -143,6 +150,7 @@ public func Scale(x: Double, _ y: Double, _ z: Double) -> Matrix {
         0.0, 0.0, 0.0, 1.0
     )
 }
+@warn_unused_result
 public func Translate(x: Double, _ y: Double, _ z: Double) -> Matrix {
     return Matrix(
         1.0, 0.0, 0.0, x,
@@ -151,6 +159,7 @@ public func Translate(x: Double, _ y: Double, _ z: Double) -> Matrix {
         0.0, 0.0, 0.0, 1.0
     )
 }
+@warn_unused_result
 public func PerspectiveProject(alpha: Double, aspect: Double, nearZ: Double, farZ: Double) -> Matrix {
     let cotan = 1.0 / tan(alpha * 0.5)
     return Matrix(
@@ -173,10 +182,12 @@ public func PerspectiveProject(alpha: Double, aspect: Double, nearZ: Double, far
     )
 }
 
+@warn_unused_result
 public func CameraTransform(position tx: Double, _ ty: Double, _ tz: Double, rotate ax: Double, _ ay: Double, _ az: Double) -> Matrix {
     return Rotate(x: -ax) * Rotate(y: -ay) * Rotate(z: -az) * Translate(-tx, -ty, -tz)
 }
 
+@warn_unused_result
 public func + (lhs: Matrix, rhs: Matrix) -> Matrix {
     return Matrix(
         lhs.m00 + rhs.m00, lhs.m01 + rhs.m01, lhs.m02 + rhs.m02, lhs.m03 + rhs.m03,
@@ -185,6 +196,7 @@ public func + (lhs: Matrix, rhs: Matrix) -> Matrix {
         lhs.m30 + rhs.m30, lhs.m31 + rhs.m31, lhs.m32 + rhs.m32, lhs.m33 + rhs.m33
     )
 }
+@warn_unused_result
 public func - (lhs: Matrix, rhs: Matrix) -> Matrix {
     return Matrix(
         lhs.m00 - rhs.m00, lhs.m01 - rhs.m01, lhs.m02 - rhs.m02, lhs.m03 - rhs.m03,
@@ -193,6 +205,7 @@ public func - (lhs: Matrix, rhs: Matrix) -> Matrix {
         lhs.m30 - rhs.m30, lhs.m31 - rhs.m31, lhs.m32 - rhs.m32, lhs.m33 - rhs.m33
     )
 }
+@warn_unused_result
 public func * (lhs: Double, rhs: Matrix) -> Matrix {
     return Matrix(
         lhs * rhs.m00, lhs * rhs.m01, lhs * rhs.m02, lhs * rhs.m03,
@@ -201,6 +214,7 @@ public func * (lhs: Double, rhs: Matrix) -> Matrix {
         lhs * rhs.m30, lhs * rhs.m31, lhs * rhs.m32, lhs * rhs.m33
     )
 }
+@warn_unused_result
 public func * (lhs: Matrix, rhs: Double) -> Matrix {
     return Matrix(
         lhs.m00 * rhs, lhs.m01 * rhs, lhs.m02 * rhs, lhs.m03 * rhs,
@@ -209,6 +223,7 @@ public func * (lhs: Matrix, rhs: Double) -> Matrix {
         lhs.m30 * rhs, lhs.m31 * rhs, lhs.m32 * rhs, lhs.m33 * rhs
     )
 }
+@warn_unused_result
 public func * (lhs: Matrix, rhs: Matrix) -> Matrix {
     return Matrix(
         lhs.m00 * rhs.m00 + lhs.m01 * rhs.m10 + lhs.m02 * rhs.m20 + lhs.m03 * rhs.m30,
@@ -229,18 +244,23 @@ public func * (lhs: Matrix, rhs: Matrix) -> Matrix {
         lhs.m30 * rhs.m03 + lhs.m31 * rhs.m13 + lhs.m32 * rhs.m23 + lhs.m33 * rhs.m33
     )
 }
+@warn_unused_result
 public func += (inout lhs: Matrix, rhs:  Matrix) {
     lhs = lhs + rhs
 }
+@warn_unused_result
 public func -= (inout lhs: Matrix, rhs:  Matrix) {
     lhs = lhs - rhs
 }
+@warn_unused_result
 public func *= (inout lhs: Matrix, rhs:  Double) {
     lhs = lhs * rhs
 }
+@warn_unused_result
 public func *= (inout lhs: Matrix, rhs:  Matrix) {
     lhs = lhs * rhs
 }
+@warn_unused_result
 public func ==(lhs: Matrix, rhs: Matrix) -> Bool {
     return lhs.m00 == rhs.m00 && lhs.m01 == rhs.m01 && lhs.m02 == rhs.m02 && lhs.m03 == rhs.m03
         && lhs.m10 == rhs.m10 && lhs.m11 == rhs.m11 && lhs.m12 == rhs.m12 && lhs.m13 == rhs.m13

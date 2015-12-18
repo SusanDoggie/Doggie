@@ -25,6 +25,7 @@
 
 import Foundation
 
+@warn_unused_result
 public func normal_distribution(mean mean: Double, variance: Double) -> Double {
     let u: Double = 1 - random(0.0..<1.0)
     let v: Double = 1 - random(0.0..<1.0)
@@ -34,6 +35,7 @@ public func normal_distribution(mean mean: Double, variance: Double) -> Double {
     
     return sqrt(variance * r) * cos(theta) + mean
 }
+@warn_unused_result
 public func normal_distribution(mean mean: Complex, variance: Double) -> Complex {
     let u: Double = 1 - random(0.0..<1.0)
     let v: Double = 1 - random(0.0..<1.0)

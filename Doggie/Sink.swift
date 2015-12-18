@@ -50,6 +50,7 @@ extension Sink {
 extension Sink {
     
     /// Mapping the elements by `transform`.
+    @warn_unused_result
     public func map<T>(transform: (Element) -> T) -> Sink<T> {
         let _sink = Sink<T>()
         self.apply {
@@ -59,6 +60,7 @@ extension Sink {
     }
     
     /// Filter the elements that satisfy `predicate`.
+    @warn_unused_result
     public func filter(includeElement: (Element) -> Bool) -> Sink<Element> {
         let _sink = Sink<Element>()
         self.apply {
@@ -70,6 +72,7 @@ extension Sink {
     }
     
     /// Mapping the elements by `transform` and fill the elements of `Sequence` to resulted sink.
+    @warn_unused_result
     public func flatMap<S : SequenceType>(transform: (Element) -> S) -> Sink<S.Generator.Element> {
         let _sink = Sink<S.Generator.Element>()
         self.apply {
@@ -81,6 +84,7 @@ extension Sink {
     }
     
     /// Mapping the elements by `transform` and fill the non-nil elements to resulted sink.
+    @warn_unused_result
     public func flatMap<T>(transform: (Element) -> T?) -> Sink<T> {
         let _sink = Sink<T>()
         self.apply {
@@ -91,6 +95,7 @@ extension Sink {
         return _sink
     }
     
+    @warn_unused_result
     public func scan<T>(var initial: T, combine: (T, Element)-> T) -> Sink<T> {
         let _sink = Sink<T>()
         _sink.put(initial)
@@ -101,6 +106,7 @@ extension Sink {
         return _sink
     }
     
+    @warn_unused_result
     public func throttle<T>(sink: Sink<T>) -> Sink<(Element, [T])> {
         let _throttle = Sink<(Element, [T])>()
         var e: [T] = []
@@ -119,6 +125,7 @@ extension Sink {
 }
 
 /// Zip two sink
+@warn_unused_result
 public func zip<Element1, Element2>(sink1: Sink<Element1>, _ sink2: Sink<Element2>) -> Sink<(Element1, Element2)> {
     let _zip = Sink<(Element1, Element2)>()
     var e1: [Element1] = []
