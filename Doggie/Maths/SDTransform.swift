@@ -279,11 +279,9 @@ public func * <S: SDTransformType>(lhs: S, rhs: SDTransform.Identity) -> S {
     return lhs
 }
 
-@warn_unused_result
 public func *= (inout _: SDTransform.Identity, _: SDTransform.Identity) {
 }
 
-@warn_unused_result
 public func *= <S: SDTransformType>(inout lhs: S, _: SDTransform.Identity) {
 }
 
@@ -323,7 +321,6 @@ public func * (lhs: SDTransform.Rotate, rhs: SDTransform.Rotate) -> SDTransform.
     return SDTransform.Rotate(lhs.angle + rhs.angle)
 }
 
-@warn_unused_result
 public func *= (inout lhs: SDTransform.Rotate, rhs: SDTransform.Rotate) {
     return lhs.angle += rhs.angle
 }
@@ -364,7 +361,6 @@ public func * (lhs: SDTransform.SkewX, rhs: SDTransform.SkewX) -> SDTransform.Sk
     return SDTransform.SkewX(atan(tan(lhs.angle) + tan(rhs.angle)))
 }
 
-@warn_unused_result
 public func *= (inout lhs: SDTransform.SkewX, rhs: SDTransform.SkewX) {
     return lhs.angle = atan(tan(lhs.angle) + tan(rhs.angle))
 }
@@ -405,7 +401,6 @@ public func * (lhs: SDTransform.SkewY, rhs: SDTransform.SkewY) -> SDTransform.Sk
     return SDTransform.SkewY(atan(tan(lhs.angle) + tan(rhs.angle)))
 }
 
-@warn_unused_result
 public func *= (inout lhs: SDTransform.SkewY, rhs: SDTransform.SkewY) {
     return lhs.angle = atan(tan(lhs.angle) + tan(rhs.angle))
 }
@@ -446,7 +441,6 @@ public func * (lhs: SDTransform.Scale, rhs: SDTransform.Scale) -> SDTransform.Sc
     return SDTransform.Scale(x: lhs.x * rhs.x, y: lhs.y * rhs.y)
 }
 
-@warn_unused_result
 public func *= (inout lhs: SDTransform.Scale, rhs: SDTransform.Scale) {
     lhs.x *= rhs.x
     lhs.y *= rhs.y
@@ -488,7 +482,6 @@ public func * (lhs: SDTransform.Translate, rhs: SDTransform.Translate) -> SDTran
     return SDTransform.Translate(x: lhs.x + rhs.x, y: lhs.y + rhs.y)
 }
 
-@warn_unused_result
 public func *= (inout lhs: SDTransform.Translate, rhs: SDTransform.Translate) {
     lhs.x += rhs.x
     lhs.y += rhs.y

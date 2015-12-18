@@ -244,19 +244,15 @@ public func * (lhs: Matrix, rhs: Matrix) -> Matrix {
         lhs.m30 * rhs.m03 + lhs.m31 * rhs.m13 + lhs.m32 * rhs.m23 + lhs.m33 * rhs.m33
     )
 }
-@warn_unused_result
 public func += (inout lhs: Matrix, rhs:  Matrix) {
     lhs = lhs + rhs
 }
-@warn_unused_result
 public func -= (inout lhs: Matrix, rhs:  Matrix) {
     lhs = lhs - rhs
 }
-@warn_unused_result
 public func *= (inout lhs: Matrix, rhs:  Double) {
     lhs = lhs * rhs
 }
-@warn_unused_result
 public func *= (inout lhs: Matrix, rhs:  Matrix) {
     lhs = lhs * rhs
 }
