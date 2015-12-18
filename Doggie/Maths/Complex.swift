@@ -327,42 +327,34 @@ public prefix func + (value: Complex) -> Complex {
 public prefix func -(value:  Complex) -> Complex {
     return Complex(real: -value.real, imag: -value.imag)
 }
-@warn_unused_result
 public func +=(inout lhs: Complex, rhs:  Double) {
     lhs.real += rhs
 }
-@warn_unused_result
 public func -=(inout lhs: Complex, rhs:  Double) {
     lhs.real -= rhs
 }
-@warn_unused_result
 public func *=(inout lhs: Complex, rhs:  Double) {
     lhs.real *= rhs
     lhs.imag *= rhs
 }
-@warn_unused_result
 public func /=(inout lhs: Complex, rhs:  Double) {
     lhs.real /= rhs
     lhs.imag /= rhs
 }
-@warn_unused_result
 public func +=(inout lhs: Complex, rhs:  Complex) {
     lhs.real += rhs.real
     lhs.imag += rhs.imag
 }
-@warn_unused_result
 public func -=(inout lhs: Complex, rhs:  Complex) {
     lhs.real -= rhs.real
     lhs.imag -= rhs.imag
 }
-@warn_unused_result
 public func *=(inout lhs: Complex, rhs:  Complex) {
     let _real = lhs.real * rhs.real - lhs.imag * rhs.imag
     let _imag = lhs.real * rhs.imag + lhs.imag * rhs.real
     lhs.real = _real
     lhs.imag = _imag
 }
-@warn_unused_result
 public func /=(inout lhs: Complex, rhs:  Complex) {
     let _norm = norm(rhs)
     let _real = lhs.real * rhs.real + lhs.imag * rhs.imag

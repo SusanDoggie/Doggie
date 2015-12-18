@@ -242,52 +242,42 @@ extension Polynomial {
     }
 }
 
-@warn_unused_result
 public func += (inout lhs: Polynomial, rhs: Polynomial) {
     lhs = lhs + rhs
 }
 
-@warn_unused_result
 public func += (inout lhs: Polynomial, rhs: Double) {
     lhs[0] += rhs
 }
 
-@warn_unused_result
 public func -= (inout lhs: Polynomial, rhs: Polynomial) {
     lhs = lhs - rhs
 }
 
-@warn_unused_result
 public func -= (inout lhs: Polynomial, rhs: Double) {
     lhs[0] -= rhs
 }
 
-@warn_unused_result
 public func *= (inout lhs: Polynomial, rhs: Double) {
     lhs = lhs * rhs
 }
 
-@warn_unused_result
 public func *= (inout lhs: Polynomial, rhs: Polynomial) {
     lhs = lhs * rhs
 }
 
-@warn_unused_result
 public func /= (inout lhs: Polynomial, rhs: Double) {
     lhs = lhs / rhs
 }
 
-@warn_unused_result
 public func /= (inout lhs: Polynomial, rhs: Polynomial) {
     lhs = lhs / rhs
 }
 
-@warn_unused_result
 public func %= (inout lhs: Polynomial, rhs: Double) {
     lhs = []
 }
 
-@warn_unused_result
 public func %= (inout lhs: Polynomial, rhs: Polynomial) {
     lhs = lhs % rhs
 }

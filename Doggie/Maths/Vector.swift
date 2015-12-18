@@ -181,45 +181,37 @@ public func /(lhs: Vector3D, rhs:  Double) -> Vector3D {
     return Vector3D(x: lhs.x / rhs, y: lhs.y / rhs, z: lhs.z / rhs)
 }
 
-@warn_unused_result
 public func *= (inout lhs: Vector2D, rhs:  Double) {
     lhs.x *= rhs
     lhs.y *= rhs
 }
-@warn_unused_result
 public func *= (inout lhs: Vector3D, rhs:  Double) {
     lhs.x *= rhs
     lhs.y *= rhs
     lhs.z *= rhs
 }
-@warn_unused_result
 public func /= (inout lhs: Vector2D, rhs:  Double) {
     lhs.x /= rhs
     lhs.y /= rhs
 }
-@warn_unused_result
 public func /= (inout lhs: Vector3D, rhs:  Double) {
     lhs.x /= rhs
     lhs.y /= rhs
     lhs.z /= rhs
 }
-@warn_unused_result
 public func += (inout lhs: Vector2D, rhs:  Vector2D) {
     lhs.x += rhs.x
     lhs.y += rhs.y
 }
-@warn_unused_result
 public func -= (inout lhs: Vector2D, rhs:  Vector2D) {
     lhs.x -= rhs.x
     lhs.y -= rhs.y
 }
-@warn_unused_result
 public func += (inout lhs: Vector3D, rhs:  Vector3D) {
     lhs.x += rhs.x
     lhs.y += rhs.y
     lhs.z += rhs.z
 }
-@warn_unused_result
 public func -= (inout lhs: Vector3D, rhs:  Vector3D) {
     lhs.x -= rhs.x
     lhs.y -= rhs.y

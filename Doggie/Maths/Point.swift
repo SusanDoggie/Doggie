@@ -136,22 +136,18 @@ public func /(lhs: Point, rhs:  Double) -> Point {
     return Point(x: lhs.x / rhs, y: lhs.y / rhs)
 }
 
-@warn_unused_result
 public func *= (inout lhs: Point, rhs:  Double) {
     lhs.x *= rhs
     lhs.y *= rhs
 }
-@warn_unused_result
 public func /= (inout lhs: Point, rhs:  Double) {
     lhs.x /= rhs
     lhs.y /= rhs
 }
-@warn_unused_result
 public func += (inout lhs: Point, rhs:  Point) {
     lhs.x += rhs.x
     lhs.y += rhs.y
 }
-@warn_unused_result
 public func -= (inout lhs: Point, rhs:  Point) {
     lhs.x -= rhs.x
     lhs.y -= rhs.y

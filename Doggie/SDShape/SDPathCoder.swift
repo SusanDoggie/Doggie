@@ -313,6 +313,7 @@ private func getPathDataString(command: Character?, _ x: Double ...) -> String {
 
 public extension SDPath {
     
+    @warn_unused_result
     public func encode() -> String {
         
         var data = ""

@@ -498,10 +498,12 @@ extension SDPath {
 
 extension SDPath.Line {
     
+    @warn_unused_result
     public func bound(last: Point) -> Rect {
         return Rect.bound([last, self.point])
     }
     
+    @warn_unused_result
     public func bound<T: SDTransformType>(last: Point, _ transform: T) -> Rect {
         return Rect.bound([transform * last, transform * self.point])
     }
@@ -509,6 +511,7 @@ extension SDPath.Line {
 
 extension SDPath.QuadBezier {
     
+    @warn_unused_result
     public func firstControl(last: Point, _ lastControl: Point?) -> Point {
         if let p1 = self.p1 {
             return p1
@@ -519,10 +522,12 @@ extension SDPath.QuadBezier {
         return last
     }
     
+    @warn_unused_result
     public func bound(last: Point, _ lastControl: Point?) -> Rect {
         return QuadBezierBound(last, self.firstControl(last, lastControl), self.p2)
     }
     
+    @warn_unused_result
     public func bound<T: SDTransformType>(last: Point, _ lastControl: Point?, _ transform: T) -> Rect {
         return QuadBezierBound(last, self.firstControl(last, lastControl), self.p2, transform)
     }
@@ -530,6 +535,7 @@ extension SDPath.QuadBezier {
 
 extension SDPath.CubicBezier {
     
+    @warn_unused_result
     public func firstControl(last: Point, _ lastControl: Point?) -> Point {
         if let p1 = self.p1 {
             return p1
@@ -540,10 +546,12 @@ extension SDPath.CubicBezier {
         return last
     }
     
+    @warn_unused_result
     public func bound(last: Point, _ lastControl: Point?) -> Rect {
         return CubicBezierBound(last, self.firstControl(last, lastControl), self.p2, self.p3)
     }
     
+    @warn_unused_result
     public func bound<T: SDTransformType>(last: Point, _ lastControl: Point?, _ transform: T) -> Rect {
         return CubicBezierBound(last, self.firstControl(last, lastControl), self.p2, self.p3, transform)
     }
@@ -551,9 +559,11 @@ extension SDPath.CubicBezier {
 
 extension SDPath.Arc {
     
+    @warn_unused_result
     public func contains(lastPoint: Point, _ testPoint: Point) -> Bool {
         return !direction(lastPoint, testPoint, self.point).isSignMinus == self.sweep
     }
+    @warn_unused_result
     public func details(lastPoint: Point) -> (Point, Radius) {
         let centers = EllipseCenter(self.radius, self.rotate, lastPoint, self.point)
         if centers.count == 0 {
@@ -564,6 +574,7 @@ extension SDPath.Arc {
             return (centers[1], radius)
         }
     }
+    @warn_unused_result
     public func bound(last: Point) -> Rect {
         var list: [Point] = [last, self.point]
         
@@ -592,6 +603,7 @@ extension SDPath.Arc {
         }
         return Rect.bound(list)
     }
+    @warn_unused_result
     public func bound<T: SDTransformType>(last: Point, _ transform: T) -> Rect {
         var list: [Point] = [transform * last, transform * self.point]
         

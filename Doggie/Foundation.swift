@@ -1376,7 +1376,6 @@ public struct GraphGenerator<Node : Hashable, Link> : GeneratorType {
     
     private var _base: FlattenGenerator<LazyMapGenerator<DictionaryGenerator<Node, [Node : Link]>, LazyMapCollection<[Node : Link], (Node, Node, Link)>>>
     
-    @warn_unused_result
     public mutating func next() -> Element? {
         return _base.next()
     }
@@ -1559,7 +1558,6 @@ public struct UndirectedGraphGenerator<Node : Hashable, Link> : GeneratorType {
     
     private var base: Graph<Node, Link>.Generator
     
-    @warn_unused_result
     public mutating func next() -> Element? {
         return base.next()
     }
