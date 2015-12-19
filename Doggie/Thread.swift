@@ -483,35 +483,45 @@ extension SDTask {
             return task
         }
     }
+    
+    /// Return `result` if it satisfies `predicate`.
+    public func filter(predicate: (Result) -> Bool) -> SDTask<Result?> {
+        return self.filter(queue, predicate)
+    }
+    
+    /// Return `result` if it satisfies `predicate` with specific queue.
+    public func filter(queue: dispatch_queue_t, _ predicate: (Result) -> Bool) -> SDTask<Result?> {
+        return self.then(queue) { predicate($0) ? $0 : nil }
+    }
 }
 
 extension SDTask {
     
-    private func filter_signal(result: Result, _ predicate: (Result) -> Bool) {
+    private func suspend_signal(result: Result, _ predicate: (Result) -> Bool) {
         do {
             self._result = result
             defer { self.signal() }
         }
         dispatch_async(queue) {
-            if predicate(result) {
+            if !predicate(result) {
                 self.notify()
             }
         }
     }
     
-    /// Continue if the result satisfies `predicate`.
-    public func filter(predicate: (Result) -> Bool) -> SDTask<Result> {
-        return self.filter(queue, predicate)
+    /// Suspend if `result` satisfies `predicate`.
+    public func suspend(predicate: (Result) -> Bool) -> SDTask<Result> {
+        return self.suspend(queue, predicate)
     }
     
-    /// Continue if the result satisfies `predicate` with specific queue.
-    public func filter(queue: dispatch_queue_t, _ predicate: (Result) -> Bool) -> SDTask<Result> {
+    /// Suspend if `result` satisfies `predicate` with specific queue.
+    public func suspend(queue: dispatch_queue_t, _ predicate: (Result) -> Bool) -> SDTask<Result> {
         return _lck.synchronized {
             let task = SDTask<Result>(queue)
             if completed {
-                dispatch_async(queue) { task.filter_signal(self.result, predicate) }
+                dispatch_async(queue) { task.suspend_signal(self.result, predicate) }
             } else {
-                _notify.append { task.filter_signal(self.result, predicate) }
+                _notify.append { task.suspend_signal(self.result, predicate) }
             }
             return task
         }
