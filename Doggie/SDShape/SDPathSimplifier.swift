@@ -280,7 +280,7 @@ extension SDPathSegmentQuadBezier {
             return 1
         } else if (t - 1).almostZero {
             return 2
-        } else if (0...1).contains(t) {
+        } else if case 0...1 = t {
             return 3
         }
         return 0
@@ -290,7 +290,7 @@ extension SDPathSegmentQuadBezier {
             return (nil, self)
         } else if (t - 1).almostZero {
             return (self, nil)
-        } else if (0...1).contains(t) {
+        } else if case 0...1 = t {
             let (b1, b2) = SplitBezier(t, self.p0, self.p1, self.p2)
             return (SDPathSegmentQuadBezier(b1[0], b1[1], b1[2]), SDPathSegmentQuadBezier(b2[0], b2[1], b2[2]))
         }
@@ -378,7 +378,7 @@ extension SDPathSegmentCubicBezier {
             return 1
         } else if (t - 1).almostZero {
             return 2
-        } else if (0...1).contains(t) {
+        } else if case 0...1 = t {
             return 3
         }
         return 0
@@ -388,7 +388,7 @@ extension SDPathSegmentCubicBezier {
             return (nil, self)
         } else if (t - 1).almostZero {
             return (self, nil)
-        } else if (0...1).contains(t) {
+        } else if case 0...1 = t {
             let (b1, b2) = SplitBezier(t, self.p0, self.p1, self.p2, self.p3)
             return (SDPathSegmentCubicBezier(b1[0], b1[1], b1[2], b1[3]), SDPathSegmentCubicBezier(b2[0], b2[1], b2[2], b2[3]))
         }
