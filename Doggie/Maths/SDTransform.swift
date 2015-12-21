@@ -170,6 +170,15 @@ extension SDTransform {
         public var x: Double
         public var y: Double
         
+        public init(ratio: Double) {
+            if ratio > 1 {
+                self.x = 1 / ratio
+                self.y = 1
+            } else {
+                self.x = 1
+                self.y = ratio
+            }
+        }
         public init(x: Double, y: Double) {
             self.x = x
             self.y = y
