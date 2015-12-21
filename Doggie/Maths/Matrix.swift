@@ -49,142 +49,150 @@ extension Matrix: Hashable {
     }
 }
 
-public let MatrixIdentity = Matrix(
-    1.0, 0.0, 0.0, 0.0,
-    0.0, 1.0, 0.0, 0.0,
-    0.0, 0.0, 1.0, 0.0,
-    0.0, 0.0, 0.0, 1.0
-)
-
-// MARK: Transformation matrix
-
-@warn_unused_result
-public func Rotate(x angle: Double) -> Matrix {
-    let _cos = cos(angle)
-    let _sin = sin(angle)
-    return Matrix(
-        1.0, 0.0,  0.0,   0.0,
-        0.0, _cos, -_sin, 0.0,
-        0.0, _sin, _cos,  0.0,
-        0.0, 0.0,  0.0,   1.0
-    )
-}
-@warn_unused_result
-public func Rotate(y angle: Double) -> Matrix {
-    let _cos = cos(angle)
-    let _sin = sin(angle)
-    return Matrix(
-        _cos,  0.0, _sin, 0.0,
-        0.0,   1.0, 0.0,  0.0,
-        -_sin, 0.0, _cos, 0.0,
-        0.0,   0.0, 0.0,  1.0
-    )
-}
-@warn_unused_result
-public func Rotate(z angle: Double) -> Matrix {
-    let _cos = cos(angle)
-    let _sin = sin(angle)
-    return Matrix(
-        _cos, -_sin, 0.0, 0.0,
-        _sin, _cos,  0.0, 0.0,
-        0.0,  0.0,   1.0, 0.0,
-        0.0,  0.0,   0.0, 1.0
-    )
-}
-@warn_unused_result
-public func Rotate(roll x: Double, pitch y: Double, yaw z: Double) -> Matrix {
-    return Rotate(z: z) * Rotate(y: y) * Rotate(x: x)
-}
-@warn_unused_result
-public func Rotate(radian: Double, x: Double, y: Double, z: Double) -> Matrix {
-    let _abs = sqrt(x * x + y * y + z * z)
-    let vx = x / _abs
-    let vy = y / _abs
-    let vz = z / _abs
-    let _cos = cos(radian)
-    let _cosp = 1.0 - _cos
-    let _sin = sin(radian)
-    return Matrix(
-        _cos + _cosp * vx * vx,
-        _cosp * vx * vy - vz * _sin,
-        _cosp * vx * vz + vy * _sin,
-        0.0,
-        _cosp * vy * vx + vz * _sin,
-        _cos + _cosp * vy * vy,
-        _cosp * vy * vz - vx * _sin,
-        0.0,
-        _cosp * vz * vx - vy * _sin,
-        _cosp * vz * vy + vx * _sin,
-        _cos + _cosp * vz * vz,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        1.0
-    )
-}
-@warn_unused_result
-public func Scale(ratio r: Double) -> Matrix {
-    if r > 1 {
-        return Matrix(
-            1.0 / r, 0.0, 0.0, 0.0,
-            0.0,     1.0, 0.0, 0.0,
-            0.0,     0.0, 1.0, 0.0,
-            0.0,     0.0, 0.0, 1.0
-        )
-    } else {
+extension Matrix {
+    
+    public static var Identity: Matrix {
         return Matrix(
             1.0, 0.0, 0.0, 0.0,
-            0.0, r,   0.0, 0.0,
+            0.0, 1.0, 0.0, 0.0,
             0.0, 0.0, 1.0, 0.0,
             0.0, 0.0, 0.0, 1.0
         )
     }
 }
-@warn_unused_result
-public func Scale(x: Double, _ y: Double, _ z: Double) -> Matrix {
-    return Matrix(
-        x,   0.0, 0.0, 0.0,
-        0.0, y,   0.0, 0.0,
-        0.0, 0.0, z,   0.0,
-        0.0, 0.0, 0.0, 1.0
-    )
-}
-@warn_unused_result
-public func Translate(x: Double, _ y: Double, _ z: Double) -> Matrix {
-    return Matrix(
-        1.0, 0.0, 0.0, x,
-        0.0, 1.0, 0.0, y,
-        0.0, 0.0, 1.0, z,
-        0.0, 0.0, 0.0, 1.0
-    )
-}
-@warn_unused_result
-public func PerspectiveProject(alpha: Double, aspect: Double, nearZ: Double, farZ: Double) -> Matrix {
-    let cotan = 1.0 / tan(alpha * 0.5)
-    return Matrix(
-        cotan / aspect,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        cotan,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        (farZ + nearZ) / (nearZ - farZ),
-        (2.0 * farZ * nearZ) / (nearZ - farZ),
-        0.0,
-        0.0,
-        -1.0,
-        0.0
-    )
-}
 
-@warn_unused_result
-public func CameraTransform(position tx: Double, _ ty: Double, _ tz: Double, rotate ax: Double, _ ay: Double, _ az: Double) -> Matrix {
-    return Rotate(x: -ax) * Rotate(y: -ay) * Rotate(z: -az) * Translate(-tx, -ty, -tz)
+// MARK: Transformation matrix
+
+extension Matrix {
+    
+    @warn_unused_result
+    public static func Rotate(x angle: Double) -> Matrix {
+        let _cos = cos(angle)
+        let _sin = sin(angle)
+        return Matrix(
+            1.0, 0.0,  0.0,   0.0,
+            0.0, _cos, -_sin, 0.0,
+            0.0, _sin, _cos,  0.0,
+            0.0, 0.0,  0.0,   1.0
+        )
+    }
+    @warn_unused_result
+    public static func Rotate(y angle: Double) -> Matrix {
+        let _cos = cos(angle)
+        let _sin = sin(angle)
+        return Matrix(
+            _cos,  0.0, _sin, 0.0,
+            0.0,   1.0, 0.0,  0.0,
+            -_sin, 0.0, _cos, 0.0,
+            0.0,   0.0, 0.0,  1.0
+        )
+    }
+    @warn_unused_result
+    public static func Rotate(z angle: Double) -> Matrix {
+        let _cos = cos(angle)
+        let _sin = sin(angle)
+        return Matrix(
+            _cos, -_sin, 0.0, 0.0,
+            _sin, _cos,  0.0, 0.0,
+            0.0,  0.0,   1.0, 0.0,
+            0.0,  0.0,   0.0, 1.0
+        )
+    }
+    @warn_unused_result
+    public static func Rotate(roll x: Double, pitch y: Double, yaw z: Double) -> Matrix {
+        return Rotate(z: z) * Rotate(y: y) * Rotate(x: x)
+    }
+    @warn_unused_result
+    public static func Rotate(radian: Double, x: Double, y: Double, z: Double) -> Matrix {
+        let _abs = sqrt(x * x + y * y + z * z)
+        let vx = x / _abs
+        let vy = y / _abs
+        let vz = z / _abs
+        let _cos = cos(radian)
+        let _cosp = 1.0 - _cos
+        let _sin = sin(radian)
+        return Matrix(
+            _cos + _cosp * vx * vx,
+            _cosp * vx * vy - vz * _sin,
+            _cosp * vx * vz + vy * _sin,
+            0.0,
+            _cosp * vy * vx + vz * _sin,
+            _cos + _cosp * vy * vy,
+            _cosp * vy * vz - vx * _sin,
+            0.0,
+            _cosp * vz * vx - vy * _sin,
+            _cosp * vz * vy + vx * _sin,
+            _cos + _cosp * vz * vz,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0
+        )
+    }
+    @warn_unused_result
+    public static func Scale(ratio r: Double) -> Matrix {
+        if r > 1 {
+            return Matrix(
+                1.0 / r, 0.0, 0.0, 0.0,
+                0.0,     1.0, 0.0, 0.0,
+                0.0,     0.0, 1.0, 0.0,
+                0.0,     0.0, 0.0, 1.0
+            )
+        } else {
+            return Matrix(
+                1.0, 0.0, 0.0, 0.0,
+                0.0, r,   0.0, 0.0,
+                0.0, 0.0, 1.0, 0.0,
+                0.0, 0.0, 0.0, 1.0
+            )
+        }
+    }
+    @warn_unused_result
+    public static func Scale(x: Double, _ y: Double, _ z: Double) -> Matrix {
+        return Matrix(
+            x,   0.0, 0.0, 0.0,
+            0.0, y,   0.0, 0.0,
+            0.0, 0.0, z,   0.0,
+            0.0, 0.0, 0.0, 1.0
+        )
+    }
+    @warn_unused_result
+    public static func Translate(x: Double, _ y: Double, _ z: Double) -> Matrix {
+        return Matrix(
+            1.0, 0.0, 0.0, x,
+            0.0, 1.0, 0.0, y,
+            0.0, 0.0, 1.0, z,
+            0.0, 0.0, 0.0, 1.0
+        )
+    }
+    @warn_unused_result
+    public static func PerspectiveProject(alpha: Double, aspect: Double, nearZ: Double, farZ: Double) -> Matrix {
+        let cotan = 1.0 / tan(alpha * 0.5)
+        return Matrix(
+            cotan / aspect,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            cotan,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            (farZ + nearZ) / (nearZ - farZ),
+            (2.0 * farZ * nearZ) / (nearZ - farZ),
+            0.0,
+            0.0,
+            -1.0,
+            0.0
+        )
+    }
+    
+    @warn_unused_result
+    public static func CameraTransform(position tx: Double, _ ty: Double, _ tz: Double, rotate ax: Double, _ ay: Double, _ az: Double) -> Matrix {
+        return Rotate(x: -ax) * Rotate(y: -ay) * Rotate(z: -az) * Translate(-tx, -ty, -tz)
+    }
 }
 
 @warn_unused_result
