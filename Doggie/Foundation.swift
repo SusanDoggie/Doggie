@@ -1271,7 +1271,10 @@ public struct Graph<Node : Hashable, Link> : CollectionType {
     /// - Complexity: O(`count of nodes`).
     @warn_unused_result
     public func contains(node: Node) -> Bool {
-        for (_node, list) in table where _node == node || list.keys.contains(node) {
+        if table[node] != nil {
+            return true
+        }
+        for (_node, list) in table where list.keys.contains(node) {
             return true
         }
         return false
