@@ -154,6 +154,8 @@ extension IntegerType {
     public var isPower2 : Bool {
         return 0 < self && self & (self - 1) == 0
     }
+    
+    @warn_unused_result
     public func align(s: Self) -> Self {
         assert(s.isPower2, "alignment is not power of 2.")
         let MASK = s - 1
