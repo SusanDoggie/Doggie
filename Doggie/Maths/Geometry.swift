@@ -423,7 +423,7 @@ public func QuadBezierStationary(p0: Double, _ p1: Double, _ p2: Double) -> Doub
     if d.almostZero {
         return nil
     }
-    return ((p0 - p1) / d)
+    return (p0 - p1) / d
 }
 
 ///
@@ -442,7 +442,7 @@ public func QuadBezierStationary(p0: Point, _ p1: Point, _ p2: Point, _ a: Doubl
     if d.almostZero {
         return nil
     }
-    return ((a * (p0.x - p1.x) + b * (p0.y - p1.y)) / d)
+    return (a * (p0.x - p1.x) + b * (p0.y - p1.y)) / d
 }
 
 @warn_unused_result
