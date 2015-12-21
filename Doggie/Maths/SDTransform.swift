@@ -288,9 +288,6 @@ public func * <S: SDTransformType>(lhs: S, rhs: SDTransform.Identity) -> S {
     return lhs
 }
 
-public func *= (inout _: SDTransform.Identity, _: SDTransform.Identity) {
-}
-
 public func *= <S: SDTransformType>(inout lhs: S, _: SDTransform.Identity) {
 }
 

@@ -374,9 +374,6 @@ public func * <S: MatrixType>(lhs: S, rhs: Matrix.Identity) -> S {
     return lhs
 }
 
-public func *= (inout _: Matrix.Identity, _: Matrix.Identity) {
-}
-
 public func *= <S: MatrixType>(inout lhs: S, _: Matrix.Identity) {
 }
 
