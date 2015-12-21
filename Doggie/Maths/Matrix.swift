@@ -355,26 +355,26 @@ extension Matrix.Identity {
 }
 
 @warn_unused_result
-public func == (lhs: Matrix.Identity, rhs: Matrix.Identity) -> Bool {
+public func == (_: Matrix.Identity, _: Matrix.Identity) -> Bool {
     return true
 }
 
 @warn_unused_result
-public func * (lhs: Matrix.Identity, rhs: Matrix.Identity) -> Matrix.Identity {
+public func * (_: Matrix.Identity, _: Matrix.Identity) -> Matrix.Identity {
     return Matrix.Identity()
 }
 
 @warn_unused_result
-public func * <T: MatrixType>(lhs: Matrix.Identity, rhs: T) -> T {
+public func * <T: MatrixType>(_: Matrix.Identity, rhs: T) -> T {
     return rhs
 }
 
 @warn_unused_result
-public func * <S: MatrixType>(lhs: S, rhs: Matrix.Identity) -> S {
+public func * <S: MatrixType>(lhs: S, _: Matrix.Identity) -> S {
     return lhs
 }
 
-public func *= <S: MatrixType>(inout lhs: S, _: Matrix.Identity) {
+public func *= <S: MatrixType>(inout _: S, _: Matrix.Identity) {
 }
 
 extension Matrix.RotateX {

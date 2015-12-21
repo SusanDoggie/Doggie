@@ -269,26 +269,26 @@ extension SDTransform.Identity {
 }
 
 @warn_unused_result
-public func == (lhs: SDTransform.Identity, rhs: SDTransform.Identity) -> Bool {
+public func == (_: SDTransform.Identity, _: SDTransform.Identity) -> Bool {
     return true
 }
 
 @warn_unused_result
-public func * (lhs: SDTransform.Identity, rhs: SDTransform.Identity) -> SDTransform.Identity {
+public func * (_: SDTransform.Identity, _: SDTransform.Identity) -> SDTransform.Identity {
     return SDTransform.Identity()
 }
 
 @warn_unused_result
-public func * <T: SDTransformType>(lhs: SDTransform.Identity, rhs: T) -> T {
+public func * <T: SDTransformType>(_: SDTransform.Identity, rhs: T) -> T {
     return rhs
 }
 
 @warn_unused_result
-public func * <S: SDTransformType>(lhs: S, rhs: SDTransform.Identity) -> S {
+public func * <S: SDTransformType>(lhs: S, _: SDTransform.Identity) -> S {
     return lhs
 }
 
-public func *= <S: SDTransformType>(inout lhs: S, _: SDTransform.Identity) {
+public func *= <S: SDTransformType>(inout _: S, _: SDTransform.Identity) {
 }
 
 extension SDTransform.Rotate {
