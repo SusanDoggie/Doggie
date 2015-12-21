@@ -658,36 +658,41 @@ public struct PermutationCollection<C : CollectionType, I : CollectionType where
 public extension CollectionType {
     
     @warn_unused_result
-    func collect<I : SequenceType where Index == I.Generator.Element>(indices: I) -> [Generator.Element] {
-        return Array(PermutationGenerator(elements: self, indices: indices))
+    func collect<I : SequenceType where Index == I.Generator.Element>(indices: I) -> PermutationGenerator<Self, I> {
+        return PermutationGenerator(elements: self, indices: indices)
+    }
+    
+    @warn_unused_result
+    func collect<I : CollectionType where Index == I.Generator.Element>(indices: I) -> PermutationCollection<Self, I> {
+        return PermutationCollection(_base: self, _indices: indices)
     }
 }
 
 public extension LazyCollectionType {
     
     @warn_unused_result
-    func collect<I : SequenceType where Elements.Index == I.Generator.Element>(indices: I) -> PermutationGenerator<Elements, I> {
-        return PermutationGenerator(elements: self.elements, indices: indices)
+    func collect<I : SequenceType where Elements.Index == I.Generator.Element>(indices: I) -> LazySequence<PermutationGenerator<Elements, I>> {
+        return self.elements.collect(indices).lazy
     }
     
     @warn_unused_result
-    func collect<I : CollectionType where Elements.Index == I.Generator.Element>(indices: I) -> PermutationCollection<Elements, I> {
-        return PermutationCollection(_base: self.elements, _indices: indices)
+    func collect<I : CollectionType where Elements.Index == I.Generator.Element>(indices: I) -> LazyCollection<PermutationCollection<Elements, I>> {
+        return self.elements.collect(indices).lazy
     }
 }
 
 public extension CollectionType where Index : Strideable {
     
     @warn_unused_result
-    public func stride(by stride: Index.Stride) -> [Generator.Element] {
-        return Array(self.lazy.stride(by: stride))
+    public func stride(by stride: Index.Stride) -> PermutationGenerator<Self, StrideTo<Self.Index>> {
+        return self.collect(self.startIndex.stride(to: self.endIndex, by: stride))
     }
 }
 
 public extension LazyCollectionType where Elements.Index : Strideable {
     
     @warn_unused_result
-    public func stride(by stride: Elements.Index.Stride) -> PermutationGenerator<Elements, StrideTo<Elements.Index>> {
+    public func stride(by stride: Elements.Index.Stride) -> LazySequence<PermutationGenerator<Elements, StrideTo<Elements.Index>>> {
         return self.collect(self.elements.startIndex.stride(to: self.elements.endIndex, by: stride))
     }
 }
