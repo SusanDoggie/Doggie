@@ -130,9 +130,9 @@ extension Matrix {
         let _l = _i * d - _j * h + _k * l
         let det = _c * i - _g * j + _k * k
         return Matrix(
-            a: _a / det, b: _b / det, c: _c / det, d: _d / det,
-            e: _e / det, f: _f / det, g: _g / det, h: _h / det,
-            i: _i / det, j: _j / det, k: _k / det, l: _l / det
+            a:  _a / det, b: -_b / det, c:  _c / det, d: -_d / det,
+            e: -_e / det, f:  _f / det, g: -_g / det, h:  _h / det,
+            i:  _i / det, j: -_j / det, k:  _k / det, l: -_l / det
         )
     }
 }
