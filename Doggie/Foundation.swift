@@ -751,9 +751,9 @@ public extension SequenceType {
 public extension SequenceType {
     
     @warn_unused_result
-    func chunk<Key : Equatable>(@noescape by: (Generator.Element) throws -> Key) rethrows -> [(Key, [Generator.Element])] {
+    func chunk<Key : Equatable>(@noescape by: (Generator.Element) throws -> Key) rethrows -> [(key: Key, elements: [Generator.Element])] {
         
-        var table: [(Key, [Generator.Element])] = []
+        var table: [(key: Key, elements: [Generator.Element])] = []
         var pass: Key?
         for item in self {
             let key = try by(item)
@@ -772,9 +772,9 @@ public extension SequenceType {
     
     /// Groups the elements of a sequence according to a specified key selector function.
     @warn_unused_result
-    func group<Key : Equatable>(@noescape by: (Generator.Element) throws -> Key) rethrows -> [(Key, [Generator.Element])] {
+    func group<Key : Equatable>(@noescape by: (Generator.Element) throws -> Key) rethrows -> [(key: Key, elements: [Generator.Element])] {
         
-        var table: [(Key, [Generator.Element])] = []
+        var table: [(key: Key, elements: [Generator.Element])] = []
         for item in self {
             let key = try by(item)
             if let idx = table.indexOf({ $0.0 == key }) {
