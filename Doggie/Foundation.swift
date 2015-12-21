@@ -1475,7 +1475,7 @@ public struct UndirectedGraph<Node : Hashable, Link> : CollectionType {
     
     /// - Complexity: Amortized O(1).
     public mutating func updateLink(fromNode: Node, _ toNode: Node, with link: Link) -> Link? {
-        return graph.updateLink(from: fromNode, to: toNode, with: link) ?? graph.removeLink(from: toNode, to: fromNode)
+        return graph.updateLink(from: fromNode, to: toNode, with: link) ?? (fromNode != toNode ? graph.removeLink(from: toNode, to: fromNode) : nil)
     }
     
     /// - Complexity: Amortized O(1).
@@ -1528,8 +1528,8 @@ public struct UndirectedGraph<Node : Hashable, Link> : CollectionType {
     
     /// A collection of nodes which has connection with `nearNode`.
     @warn_unused_result
-    public func nodes(near nearNode: Node) -> ConcatCollection<AnyForwardCollection<(Node, Link)>, AnyForwardCollection<(Node, Link)>> {
-        return graph.nodes(from: nearNode).concat(graph.nodes(to: nearNode))
+    public func nodes(near nearNode: Node) -> AnyForwardCollection<(Node, Link)> {
+        return graph.nodes(from: nearNode).concat(graph.table.lazy.flatMap { from, to in from != nearNode ? to[nearNode].map { (from, $0) } : nil }).any
     }
 }
 
