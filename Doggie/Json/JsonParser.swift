@@ -78,32 +78,25 @@ private struct CharacterScanner : GeneratorType {
 private struct StringBuilder {
     
     var buf: [UInt8]
-    var pos: Int
     
     init() {
-        buf = [UInt8]()
-        pos = 0
+        self.buf = [UInt8]()
     }
     
     mutating func append(x: UInt8) {
-        if pos < buf.count {
-            buf[pos] = x
-        } else {
-            buf.append(x)
-        }
-        pos += 1
+        buf.append(x)
     }
     
     mutating func append(escape x: UInt8) -> Bool {
         switch x {
         case 34, 39, 47, 92:
-            self.append(x)
+            buf.append(x)
         case 116:
-            self.append(9)
+            buf.append(9)
         case 114:
-            self.append(13)
+            buf.append(13)
         case 110:
-            self.append(10)
+            buf.append(10)
         default:
             return false
         }
@@ -111,11 +104,11 @@ private struct StringBuilder {
     }
     
     mutating func clear() {
-        pos = 0
+        buf.removeAll(keepCapacity: true)
     }
     
     mutating func getString() -> String? {
-        self.append(0)
+        buf.append(0)
         return String.fromCString(UnsafePointer(buf))
     }
 }
