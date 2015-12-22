@@ -272,7 +272,7 @@ extension Json {
         get {
             switch self.value {
             case .Array(let x): return idx < x.count ? x[idx] : nil
-            default: return nil
+            default: fatalError("Not an array.")
             }
         }
         set {
@@ -288,7 +288,7 @@ extension Json {
         get {
             switch self.value {
             case .Object(let x): return x[key] ?? nil
-            default: return nil
+            default: fatalError("Not an object.")
             }
         }
         set {
