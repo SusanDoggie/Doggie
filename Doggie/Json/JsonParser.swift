@@ -75,51 +75,36 @@ private struct CharacterScanner : GeneratorType {
     }
 }
 
-private struct StringBuilder {
-    
-    var buf: [UInt8]
-    
-    init() {
-        self.buf = [UInt8]()
-    }
+private extension String {
     
     mutating func append(x: UInt8) {
-        buf.append(x)
+        self.append(UnicodeScalar(x))
     }
     
     mutating func append(escape x: UInt8) -> Bool {
         switch x {
         case 34, 39, 47, 92:
-            buf.append(x)
+            self.append(x)
         case 116:
-            buf.append(9)
+            self.append(9)
         case 114:
-            buf.append(13)
+            self.append(13)
         case 110:
-            buf.append(10)
+            self.append(10)
         default:
             return false
         }
         return true
     }
-    
-    mutating func clear() {
-        buf.removeAll(keepCapacity: true)
-    }
-    
-    mutating func getString() -> String? {
-        buf.append(0)
-        return String.fromCString(UnsafePointer(buf))
-    }
 }
 
 private struct JsonParser {
     
-    var strbuf: StringBuilder
+    var strbuf: String
     var scanner: CharacterScanner
     
     init(bytes: UnsafePointer<UInt8>, count: Int) {
-        self.strbuf = StringBuilder()
+        self.strbuf = String()
         self.scanner = CharacterScanner(bytes: bytes, count: count)
         self.scanner.next()
     }
@@ -129,8 +114,11 @@ private struct JsonParser {
     }
     
     mutating func skipWhitespaces() throws {
-        while currentChar != nil && [9, 10, 13, 32].contains(currentChar!) {
-            scanner.next()
+        Loop: while currentChar != nil {
+            switch currentChar! {
+            case 9, 10, 13, 32: scanner.next()
+            default: break Loop
+            }
         }
         if currentChar == nil {
             throw JsonParseError.UnexpectedEndOfToken
@@ -195,42 +183,23 @@ private struct JsonParser {
     }
     
     mutating func parseNumber() throws -> Json {
-        strbuf.clear()
-        var isFloat = false
-        Loop: while currentChar != nil {
-            switch currentChar! {
-            case 43, 45, 48...57:
-                strbuf.append(currentChar!)
-                scanner.next()
-            case 46, 69, 101:
-                strbuf.append(currentChar!)
-                scanner.next()
-                isFloat = true
-            default: break Loop
-            }
+        let start: UnsafeMutablePointer<Int8> = UnsafeMutablePointer(scanner.bytes - 1)
+        var end: UnsafeMutablePointer<Int8> = start
+        let val = strtod(start, &end)
+        if start == end {
+            throw JsonParseError.UnexpectedToken(position: scanner.pos)
         }
-        strbuf.append(0)
-        if isFloat {
-            var error: UnsafeMutablePointer<Int8> = nil
-            let val = strtod(UnsafePointer(strbuf.buf), &error)
-            if error.memory == 0 {
-                return Json(val)
-            }
-        } else {
-            var error: UnsafeMutablePointer<Int8> = nil
-            let val = strtol(UnsafePointer(strbuf.buf), &error, 10)
-            if error.memory == 0 {
-                return Json(val)
-            }
-        }
-        throw JsonParseError.UnexpectedToken(position: scanner.pos)
+        scanner.bytes = UnsafePointer(end)
+        scanner.pos += abs(end - start) - 1
+        scanner.next()
+        return Json(val)
     }
     
     mutating func parseString() throws -> Json {
         if scanner.next() == nil {
             throw JsonParseError.UnexpectedEndOfToken
         }
-        strbuf.clear()
+        strbuf.removeAll(keepCapacity: true)
         Loop: while currentChar != nil {
             switch currentChar! {
             case 92:
@@ -251,10 +220,7 @@ private struct JsonParser {
                 scanner.next()
             }
         }
-        if let val = strbuf.getString() {
-            return Json(val)
-        }
-        throw JsonParseError.UnexpectedToken(position: scanner.pos)
+        return Json(strbuf)
     }
     
     mutating func parseArray() throws -> Json {
@@ -285,7 +251,7 @@ private struct JsonParser {
         if scanner.next() == nil {
             return nil
         }
-        strbuf.clear()
+        strbuf.removeAll(keepCapacity: true)
         Loop: while currentChar != nil {
             switch currentChar! {
             case 92:
@@ -302,7 +268,7 @@ private struct JsonParser {
                 scanner.next()
             }
         }
-        return strbuf.getString()
+        return strbuf
     }
     
     mutating func parseObject() throws -> Json {
