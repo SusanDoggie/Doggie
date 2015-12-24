@@ -880,7 +880,7 @@ public extension MutableCollectionType where Self.Index : RandomAccessIndexType 
     }
 }
 
-extension CollectionType {
+public extension CollectionType {
     
     /// Return an `Array` containing the shuffled elements of `source`.
     func shuffle() -> [Generator.Element] {
@@ -890,7 +890,7 @@ extension CollectionType {
     }
 }
 
-extension MutableCollectionType where Index == Int {
+public extension MutableCollectionType where Index == Int {
     
     /// Shuffle `self` in-place.
     mutating func shuffleInPlace() {
