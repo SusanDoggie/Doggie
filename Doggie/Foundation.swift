@@ -681,6 +681,51 @@ public extension LazyCollectionType {
     }
 }
 
+public struct LazyStrideSequence<S : SequenceType> : LazySequenceType {
+    
+    private let base: S
+    private let stride: Int
+    
+    public func generate() -> LazyStrideGenerator<S.Generator> {
+        return LazyStrideGenerator(base: base.generate(), stride: stride)
+    }
+}
+
+public struct LazyStrideGenerator<G : GeneratorType> : GeneratorType {
+    
+    private var base: G
+    private let stride: Int
+    
+    public mutating func next() -> G.Element? {
+        if let result = base.next() {
+            for _ in 1..<stride {
+                if base.next() == nil {
+                    return result
+                }
+            }
+            return result
+        } else {
+            return nil
+        }
+    }
+}
+
+public extension SequenceType {
+    
+    @warn_unused_result
+    public func stride(by stride: Int) -> [Generator.Element] {
+        return Array(LazyStrideSequence(base: self, stride: stride))
+    }
+}
+
+public extension LazySequenceType {
+    
+    @warn_unused_result
+    public func stride(by stride: Int) -> LazyStrideSequence<Elements> {
+        return LazyStrideSequence(base: self.elements, stride: stride)
+    }
+}
+
 public extension CollectionType where Index : Strideable {
     
     @warn_unused_result
