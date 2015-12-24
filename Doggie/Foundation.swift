@@ -883,6 +883,7 @@ public extension MutableCollectionType where Self.Index : RandomAccessIndexType 
 public extension CollectionType {
     
     /// Return an `Array` containing the shuffled elements of `source`.
+    @warn_unused_result(mutable_variant="shuffleInPlace")
     func shuffle() -> [Generator.Element] {
         var list = self.array
         list.shuffleInPlace()
