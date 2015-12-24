@@ -859,6 +859,7 @@ extension SequenceType {
 public extension MutableCollectionType {
     
     /// Return an `Array` containing the sorted elements of `source`.
+    /// according to `by`.
     ///
     /// The sorting algorithm is not stable (can change the relative order of
     /// elements that compare equal).
@@ -870,12 +871,35 @@ public extension MutableCollectionType {
 
 public extension MutableCollectionType where Self.Index : RandomAccessIndexType {
     
-    /// Return an `Array` containing the sorted elements of `source`.
+    /// Sort `self` in-place according to `by`.
     ///
     /// The sorting algorithm is not stable (can change the relative order of
     /// elements that compare equal).
     mutating func sortInPlace<R : Comparable>(@noescape by: (Generator.Element) -> R) {
         self.sortInPlace { by($0) < by($1) }
+    }
+}
+
+extension CollectionType {
+    
+    /// Return an `Array` containing the shuffled elements of `source`.
+    func shuffle() -> [Generator.Element] {
+        var list = self.array
+        list.shuffleInPlace()
+        return list
+    }
+}
+
+extension MutableCollectionType where Index == Int {
+    
+    /// Shuffle `self` in-place.
+    mutating func shuffleInPlace() {
+        for i in self.indices.dropLast() {
+            let j = Int(arc4random_uniform(UInt32(count - i))) + i
+            if i != j {
+                swap(&self[i], &self[j])
+            }
+        }
     }
 }
 
