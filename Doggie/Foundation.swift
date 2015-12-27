@@ -687,7 +687,7 @@ public struct LazyStrideSequence<S : SequenceType> : LazySequenceType {
     private let stride: Int
     
     public func generate() -> LazyStrideGenerator<S.Generator> {
-        return LazyStrideGenerator(base: base.generate(), stride: stride)
+        return LazyStrideGenerator(base: base.generate(), stride: stride, flag: true)
     }
 }
 
@@ -695,16 +695,19 @@ public struct LazyStrideGenerator<G : GeneratorType> : GeneratorType {
     
     private var base: G
     private let stride: Int
+    private var flag: Bool
     
     public mutating func next() -> G.Element? {
-        if let result = base.next() {
+        if flag, let result = base.next() {
             for _ in 1..<stride {
                 if base.next() == nil {
+                    flag = false
                     return result
                 }
             }
             return result
         } else {
+            flag = false
             return nil
         }
     }
