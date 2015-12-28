@@ -334,9 +334,9 @@ public func ClosestBezier(point: Point, _ b0: Point, _ b1: Point, _ b2: Point, _
 }
 
 @warn_unused_result
-public func ClosestBezier(point: Point, _ b0: Point, _ b1: Point, _ b2: Point, _ b3: Point, _ b4: Point ... ) -> Double {
+public func ClosestBezier(point: Point, _ b0: Point, _ b1: Point, _ b2: Point, _ b3: Point, _ b4: Point , _ b5: Point ... ) -> Double {
     
-    let list = [b0, b1, b2, b3] + b4
+    let list = [b0, b1, b2, b3, b4] + b5
     
     let x = Polynomial(BezierPolynomial(list.map { $0.x }))
     let y = Polynomial(BezierPolynomial(list.map { $0.y }))
