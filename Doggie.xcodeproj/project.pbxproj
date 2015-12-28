@@ -56,7 +56,6 @@
 		081322171C11D3600081B2B9 /* SDGraphic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA701C0550B7007FA426 /* SDGraphic.swift */; };
 		081322181C11D3600081B2B9 /* SDPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA711C0550B7007FA426 /* SDPath.swift */; };
 		081322191C11D3600081B2B9 /* SDPathCoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA721C0550B7007FA426 /* SDPathCoder.swift */; };
-		0813221A1C11D3600081B2B9 /* SDPathSimplifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA731C0550B7007FA426 /* SDPathSimplifier.swift */; };
 		0813221B1C11D3600081B2B9 /* SDRectangle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA741C0550B7007FA426 /* SDRectangle.swift */; };
 		0813221C1C11D3600081B2B9 /* SDShape.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA751C0550B7007FA426 /* SDShape.swift */; };
 		0813221D1C11D3600081B2B9 /* Serialization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA761C0550B7007FA426 /* Serialization.swift */; };
@@ -108,7 +107,6 @@
 		0813224B1C11D3600081B2B9 /* SDGraphic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA701C0550B7007FA426 /* SDGraphic.swift */; };
 		0813224C1C11D3600081B2B9 /* SDPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA711C0550B7007FA426 /* SDPath.swift */; };
 		0813224D1C11D3600081B2B9 /* SDPathCoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA721C0550B7007FA426 /* SDPathCoder.swift */; };
-		0813224E1C11D3600081B2B9 /* SDPathSimplifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA731C0550B7007FA426 /* SDPathSimplifier.swift */; };
 		0813224F1C11D3600081B2B9 /* SDRectangle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA741C0550B7007FA426 /* SDRectangle.swift */; };
 		081322501C11D3600081B2B9 /* SDShape.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA751C0550B7007FA426 /* SDShape.swift */; };
 		081322511C11D3600081B2B9 /* Serialization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA761C0550B7007FA426 /* Serialization.swift */; };
@@ -204,8 +202,6 @@
 		0858DB281C0550B7007FA426 /* SDPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA711C0550B7007FA426 /* SDPath.swift */; };
 		0858DB2B1C0550B7007FA426 /* SDPathCoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA721C0550B7007FA426 /* SDPathCoder.swift */; };
 		0858DB2C1C0550B7007FA426 /* SDPathCoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA721C0550B7007FA426 /* SDPathCoder.swift */; };
-		0858DB2F1C0550B7007FA426 /* SDPathSimplifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA731C0550B7007FA426 /* SDPathSimplifier.swift */; };
-		0858DB301C0550B7007FA426 /* SDPathSimplifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA731C0550B7007FA426 /* SDPathSimplifier.swift */; };
 		0858DB331C0550B7007FA426 /* SDRectangle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA741C0550B7007FA426 /* SDRectangle.swift */; };
 		0858DB341C0550B7007FA426 /* SDRectangle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA741C0550B7007FA426 /* SDRectangle.swift */; };
 		0858DB371C0550B7007FA426 /* SDShape.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA751C0550B7007FA426 /* SDShape.swift */; };
@@ -297,7 +293,6 @@
 		0858DA701C0550B7007FA426 /* SDGraphic.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SDGraphic.swift; sourceTree = "<group>"; };
 		0858DA711C0550B7007FA426 /* SDPath.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SDPath.swift; sourceTree = "<group>"; };
 		0858DA721C0550B7007FA426 /* SDPathCoder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SDPathCoder.swift; sourceTree = "<group>"; };
-		0858DA731C0550B7007FA426 /* SDPathSimplifier.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SDPathSimplifier.swift; sourceTree = "<group>"; };
 		0858DA741C0550B7007FA426 /* SDRectangle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SDRectangle.swift; sourceTree = "<group>"; };
 		0858DA751C0550B7007FA426 /* SDShape.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SDShape.swift; sourceTree = "<group>"; };
 		0858DA761C0550B7007FA426 /* Serialization.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Serialization.swift; sourceTree = "<group>"; };
@@ -446,7 +441,6 @@
 				0858DA701C0550B7007FA426 /* SDGraphic.swift */,
 				0858DA711C0550B7007FA426 /* SDPath.swift */,
 				0858DA721C0550B7007FA426 /* SDPathCoder.swift */,
-				0858DA731C0550B7007FA426 /* SDPathSimplifier.swift */,
 				0858DA741C0550B7007FA426 /* SDRectangle.swift */,
 				0858DA751C0550B7007FA426 /* SDShape.swift */,
 			);
@@ -731,7 +725,6 @@
 				081322231C11D3600081B2B9 /* ComplexConversion.swift in Sources */,
 				081322401C11D3600081B2B9 /* Polynomial.swift in Sources */,
 				0813223C1C11D3600081B2B9 /* Geometry.swift in Sources */,
-				0813224E1C11D3600081B2B9 /* SDPathSimplifier.swift in Sources */,
 				0813224F1C11D3600081B2B9 /* SDRectangle.swift in Sources */,
 				081322351C11D3600081B2B9 /* sha384.swift in Sources */,
 				0813224A1C11D3600081B2B9 /* SDEllipse.swift in Sources */,
@@ -812,7 +805,6 @@
 				081321FD1C11D3600081B2B9 /* SecureBuffer.swift in Sources */,
 				081322151C11D3600081B2B9 /* SDAtomic.swift in Sources */,
 				081321F51C11D3600081B2B9 /* NumberTheoreticTransform.swift in Sources */,
-				0813221A1C11D3600081B2B9 /* SDPathSimplifier.swift in Sources */,
 				081321FF1C11D3600081B2B9 /* sha224.swift in Sources */,
 				081322011C11D3600081B2B9 /* sha384.swift in Sources */,
 				0813221C1C11D3600081B2B9 /* SDShape.swift in Sources */,
@@ -861,7 +853,6 @@
 				0858DA9B1C0550B7007FA426 /* Move.swift in Sources */,
 				0858DB3F1C0550B7007FA426 /* Thread.swift in Sources */,
 				0858DB1B1C0550B7007FA426 /* SDAtomic.swift in Sources */,
-				0858DB2F1C0550B7007FA426 /* SDPathSimplifier.swift in Sources */,
 				0858DA871C0550B7007FA426 /* ComplexConversion.swift in Sources */,
 				0858DACF1C0550B7007FA426 /* sha384.swift in Sources */,
 				0858DB481C055172007FA426 /* Fourier.swift in Sources */,
@@ -920,7 +911,6 @@
 				08BFF9BC1B07161E00EC88CB /* FourierTest.swift in Sources */,
 				0858DA941C0550B7007FA426 /* DiscreteConvolve.swift in Sources */,
 				0858DB241C0550B7007FA426 /* SDGraphic.swift in Sources */,
-				0858DB301C0550B7007FA426 /* SDPathSimplifier.swift in Sources */,
 				0858DB101C0550B7007FA426 /* Memory.swift in Sources */,
 				0858DB491C055172007FA426 /* Fourier.swift in Sources */,
 				0858DB001C0550B7007FA426 /* Random.swift in Sources */,
