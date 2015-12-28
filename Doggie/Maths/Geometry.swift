@@ -653,7 +653,13 @@ public func CubicBezierBound<T: SDTransformType>(p0: Point, _ p1: Point, _ p2: P
 @warn_unused_result
 public func BezierArc(angle: Double) -> [Point] {
     
-    let c = 0.551915024494
+    //
+    // root of 18225 x^12 + 466560 x^11 - 28977264 x^10 + 63288000 x^9 + 96817248 x^8
+    //         - 515232000 x^7 + 883891456 x^6 - 921504768 x^5 + 668905728 x^4
+    //         - 342814720 x^3 + 117129216 x^2 - 23592960 x + 2097152
+    // reference: http://spencermortensen.com/articles/bezier-circle/
+    //
+    let c = 0.5519150244935105707435627227925666423361803947243089
     
     var counter = 0
     var _angle = abs(angle)
