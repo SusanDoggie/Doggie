@@ -285,6 +285,30 @@ private func Bezier(t: Double, _ p: [Vector3D]) -> Vector3D {
     return result
 }
 
+private func BezierPolynomial(p: [Double]) -> [Double] {
+    
+    var result = PermutationList(UInt(p.count - 1)).map(Double.init) as Array
+    for i in result.indices {
+        var sum = 0.0
+        let fact = Array(FactorialList(UInt(i)))
+        for (j, f) in zip(fact, fact.reverse()).map(*).enumerate() {
+            if (i + j) & 1 == 0 {
+                sum += p[j] / Double(f)
+            } else {
+                sum -= p[j] / Double(f)
+            }
+        }
+        result[i] *= sum
+    }
+    return result
+}
+
+@warn_unused_result
+public func BezierPolynomial(p: Double ... ) -> [Double] {
+    
+    return BezierPolynomial(p)
+}
+
 @warn_unused_result
 public func ClosestBezier(point: Point, _ b0: Point, _ b1: Point, _ b2: Point) -> Double {
     
@@ -302,6 +326,20 @@ public func ClosestBezier(point: Point, _ b0: Point, _ b1: Point, _ b2: Point, _
     
     let x: Polynomial = [b0.x - point.x, 3 * (b1.x - b0.x), 3 * (b2.x + b0.x) - 6 * b1.x, b3.x + 3 * (b1.x - b2.x) - b0.x]
     let y: Polynomial = [b0.y - point.y, 3 * (b1.y - b0.y), 3 * (b2.y + b0.y) - 6 * b1.y, b3.y + 3 * (b1.y - b2.y) - b0.y]
+    
+    let dot = x * x + y * y
+    let _dot = dot.derivative
+    
+    return _dot.roots.minElement { dot.eval($0) }!
+}
+
+@warn_unused_result
+public func ClosestBezier(point: Point, _ b0: Point, _ b1: Point, _ b2: Point, _ b3: Point, _ b4: Point ... ) -> Double {
+    
+    let list = [b0, b1, b2, b3] + b4
+    
+    let x = Polynomial(BezierPolynomial(list.map { $0.x }))
+    let y = Polynomial(BezierPolynomial(list.map { $0.y }))
     
     let dot = x * x + y * y
     let _dot = dot.derivative
