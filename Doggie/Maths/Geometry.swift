@@ -338,8 +338,11 @@ public func ClosestBezier(point: Point, _ b0: Point, _ b1: Point, _ b2: Point, _
     
     let list = [b0, b1, b2, b3, b4] + b5
     
-    let x = Polynomial(BezierPolynomial(list.map { $0.x }))
-    let y = Polynomial(BezierPolynomial(list.map { $0.y }))
+    var x = Polynomial(BezierPolynomial(list.map { $0.x }))
+    var y = Polynomial(BezierPolynomial(list.map { $0.y }))
+    
+    x[0] -= point.x
+    y[0] -= point.y
     
     let dot = x * x + y * y
     let _dot = dot.derivative
