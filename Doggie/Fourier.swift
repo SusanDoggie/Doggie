@@ -26,7 +26,7 @@
 import Foundation
 
 public func FFTConvolveLength(x: Int, _ y: Int) -> Int {
-    return Int(UInt64(x + y - 1).hibit) << 1
+    return Int(UInt64(x + y - 2).hibit) << 1
 }
 public func FFTConvolveComplexity(x: Int, _ y: Int) -> Int {
     let length = FFTConvolveLength(x, y)

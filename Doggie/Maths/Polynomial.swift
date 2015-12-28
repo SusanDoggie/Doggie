@@ -351,7 +351,7 @@ public func * (lhs: Polynomial, rhs: Polynomial) -> Polynomial {
         return Polynomial()
     }
     let count = lhs.count + rhs.count - 1
-    let pad = Int(UInt64(count).hibit) << 1
+    let pad = Int(UInt64(count - 1).hibit) << 1
     let _lhs = lhs.coeffs + Repeat(count: pad - lhs.count, repeatedValue: 0)
     let _rhs = rhs.coeffs + Repeat(count: pad - rhs.count, repeatedValue: 0)
     return Polynomial(Radix2CircularConvolve(_lhs, _rhs)[0..<count])
