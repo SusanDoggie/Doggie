@@ -285,7 +285,7 @@ private func Bezier(t: Double, _ p: [Vector3D]) -> Vector3D {
     return result
 }
 
-private func BezierPolynomial(p: [Double]) -> [Double] {
+private func BezierPolynomial(p: [Double]) -> Polynomial {
     
     var result = PermutationList(UInt(p.count - 1)).map(Double.init) as Array
     for i in result.indices {
@@ -300,11 +300,11 @@ private func BezierPolynomial(p: [Double]) -> [Double] {
         }
         result[i] *= sum
     }
-    return result
+    return Polynomial(result)
 }
 
 @warn_unused_result
-public func BezierPolynomial(p: Double ... ) -> [Double] {
+public func BezierPolynomial(p: Double ... ) -> Polynomial {
     
     return BezierPolynomial(p)
 }
@@ -338,8 +338,8 @@ public func ClosestBezier(point: Point, _ b0: Point, _ b1: Point, _ b2: Point, _
     
     let list = [b0, b1, b2, b3, b4] + b5
     
-    var x = Polynomial(BezierPolynomial(list.map { $0.x }))
-    var y = Polynomial(BezierPolynomial(list.map { $0.y }))
+    var x = BezierPolynomial(list.map { $0.x })
+    var y = BezierPolynomial(list.map { $0.y })
     
     x[0] -= point.x
     y[0] -= point.y
