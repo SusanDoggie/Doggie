@@ -205,47 +205,6 @@ public func pow(x: UInt8, _ n: UInt8) -> UInt8 {
     return pow(x, n, UInt8.max)
 }
 
-@warn_unused_result
-public func log2(x: Int) -> Int {
-    return Int(flsl(x)) - 1
-}
-@warn_unused_result
-public func log2(x: Int8) -> Int8 {
-    return Int8(fls(Int32(x) & 0xFF)) - 1
-}
-@warn_unused_result
-public func log2(x: Int16) -> Int16 {
-    return Int16(fls(Int32(x) & 0xFFFF)) - 1
-}
-@warn_unused_result
-public func log2(x: Int32) -> Int32 {
-    return fls(x) - 1
-}
-@warn_unused_result
-public func log2(x: Int64) -> Int64 {
-    return Int64(flsll(x)) - 1
-}
-@warn_unused_result
-public func log2(x: UInt) -> UInt {
-    return UInt(log2(Int(bitPattern: x)))
-}
-@warn_unused_result
-public func log2(x: UInt8) -> UInt8 {
-    return UInt8(log2(Int8(bitPattern: x)))
-}
-@warn_unused_result
-public func log2(x: UInt16) -> UInt16 {
-    return UInt16(log2(Int16(bitPattern: x)))
-}
-@warn_unused_result
-public func log2(x: UInt32) -> UInt32 {
-    return UInt32(log2(Int32(bitPattern: x)))
-}
-@warn_unused_result
-public func log2(x: UInt64) -> UInt64 {
-    return UInt64(log2(Int64(bitPattern: x)))
-}
-
 // MARK: Polynomial
 
 @warn_unused_result

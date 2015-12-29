@@ -49,17 +49,6 @@ public extension UInt64 {
         let _h = UInt64(_bits_reverse_table[Int((self >> 56) & 0xFF)])
         return _a | _b | _c | _d | _e | _f | _g | _h
     }
-    
-    var hibit: UInt64 {
-        var n = self
-        n |= n >> 1
-        n |= n >> 2
-        n |= n >> 4
-        n |= n >> 8
-        n |= n >> 16
-        n |= n >> 32
-        return n - (n >> 1)
-    }
 }
 public extension UInt32 {
     
@@ -70,16 +59,6 @@ public extension UInt32 {
         let _d = UInt32(_bits_reverse_table[Int((self >> 24) & 0xFF)])
         return _a | _b | _c | _d
     }
-    
-    var hibit: UInt32 {
-        var n = self
-        n |= n >> 1
-        n |= n >> 2
-        n |= n >> 4
-        n |= n >> 8
-        n |= n >> 16
-        return n - (n >> 1)
-    }
 }
 public extension UInt16 {
     
@@ -88,28 +67,11 @@ public extension UInt16 {
         let _b = UInt16(_bits_reverse_table[Int((self >> 8) & 0xFF)])
         return _a | _b
     }
-    
-    var hibit: UInt16 {
-        var n = self
-        n |= n >> 1
-        n |= n >> 2
-        n |= n >> 4
-        n |= n >> 8
-        return n - (n >> 1)
-    }
 }
 public extension UInt8 {
     
     var reverse: UInt8 {
         return _bits_reverse_table[Int(self)]
-    }
-    
-    var hibit: UInt8 {
-        var n = self
-        n |= n >> 1
-        n |= n >> 2
-        n |= n >> 4
-        return n - (n >> 1)
     }
 }
 public extension Int64 {
@@ -117,17 +79,11 @@ public extension Int64 {
     var reverse: Int64 {
         return Int64(bitPattern: UInt64(bitPattern: self).reverse)
     }
-    var hibit: Int64 {
-        return Int64(bitPattern: UInt64(bitPattern: self).hibit)
-    }
 }
 public extension Int32 {
     
     var reverse: Int32 {
         return Int32(bitPattern: UInt32(bitPattern: self).reverse)
-    }
-    var hibit: Int32 {
-        return Int32(bitPattern: UInt32(bitPattern: self).hibit)
     }
 }
 public extension Int16 {
@@ -135,17 +91,113 @@ public extension Int16 {
     var reverse: Int16 {
         return Int16(bitPattern: UInt16(bitPattern: self).reverse)
     }
-    var hibit: Int16 {
-        return Int16(bitPattern: UInt16(bitPattern: self).hibit)
-    }
 }
 public extension Int8 {
     
     var reverse: Int8 {
         return Int8(bitPattern: UInt8(bitPattern: self).reverse)
     }
+}
+
+@warn_unused_result
+public func log2(x: Int) -> Int {
+    return Int(flsl(x)) - 1
+}
+@warn_unused_result
+public func log2(x: Int8) -> Int8 {
+    return Int8(fls(Int32(x) & 0xFF)) - 1
+}
+@warn_unused_result
+public func log2(x: Int16) -> Int16 {
+    return Int16(fls(Int32(x) & 0xFFFF)) - 1
+}
+@warn_unused_result
+public func log2(x: Int32) -> Int32 {
+    return fls(x) - 1
+}
+@warn_unused_result
+public func log2(x: Int64) -> Int64 {
+    return Int64(flsll(x)) - 1
+}
+@warn_unused_result
+public func log2(x: UInt) -> UInt {
+    return UInt(log2(Int(bitPattern: x)))
+}
+@warn_unused_result
+public func log2(x: UInt8) -> UInt8 {
+    return UInt8(log2(Int8(bitPattern: x)))
+}
+@warn_unused_result
+public func log2(x: UInt16) -> UInt16 {
+    return UInt16(log2(Int16(bitPattern: x)))
+}
+@warn_unused_result
+public func log2(x: UInt32) -> UInt32 {
+    return UInt32(log2(Int32(bitPattern: x)))
+}
+@warn_unused_result
+public func log2(x: UInt64) -> UInt64 {
+    return UInt64(log2(Int64(bitPattern: x)))
+}
+
+public extension UInt64 {
+    
+    var hibit: UInt64 {
+        return self == 0 ? 0 : 1 << log2(self)
+    }
+}
+public extension UInt32 {
+    
+    var hibit: UInt32 {
+        return self == 0 ? 0 : 1 << log2(self)
+    }
+}
+public extension UInt16 {
+    
+    var hibit: UInt16 {
+        return self == 0 ? 0 : 1 << log2(self)
+    }
+}
+public extension UInt8 {
+    
+    var hibit: UInt8 {
+        return self == 0 ? 0 : 1 << log2(self)
+    }
+}
+public extension UInt {
+    
+    var hibit: UInt {
+        return self == 0 ? 0 : 1 << log2(self)
+    }
+}
+public extension Int64 {
+    
+    var hibit: Int64 {
+        return self == 0 ? 0 : 1 << log2(self)
+    }
+}
+public extension Int32 {
+    
+    var hibit: Int32 {
+        return self == 0 ? 0 : 1 << log2(self)
+    }
+}
+public extension Int16 {
+    
+    var hibit: Int16 {
+        return self == 0 ? 0 : 1 << log2(self)
+    }
+}
+public extension Int8 {
+    
     var hibit: Int8 {
-        return Int8(bitPattern: UInt8(bitPattern: self).hibit)
+        return self == 0 ? 0 : 1 << log2(self)
+    }
+}
+public extension Int {
+    
+    var hibit: Int {
+        return self == 0 ? 0 : 1 << log2(self)
     }
 }
 
