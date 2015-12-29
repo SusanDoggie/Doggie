@@ -976,32 +976,6 @@ public extension Set {
     }
 }
 
-public extension GeneratorType where Element : Comparable {
-    
-    @warn_unused_result
-    func bound() -> (min: Element, max: Element) {
-        var generator = self
-        var min = generator.next()!
-        var max = min
-        while let val = generator.next() {
-            if val < min {
-                min = val
-            } else if max < val {
-                max = val
-            }
-        }
-        return (min, max)
-    }
-}
-
-public extension SequenceType where Generator.Element : Comparable {
-    
-    @warn_unused_result
-    func bound() -> (min: Generator.Element, max: Generator.Element) {
-        return self.generate().bound()
-    }
-}
-
 public extension Comparable {
     
     @warn_unused_result
@@ -1011,20 +985,6 @@ public extension Comparable {
         }
         if self >= range.end {
             return range.end
-        }
-        return self
-    }
-}
-
-public extension ForwardIndexType where Self : Comparable {
-    
-    @warn_unused_result
-    func clamp(range: Range<Self>) -> Self {
-        if self <= range.startIndex {
-            return range.minElement()!
-        }
-        if self >= range.endIndex {
-            return range.maxElement()!
         }
         return self
     }
