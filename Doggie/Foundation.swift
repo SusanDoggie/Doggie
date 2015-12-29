@@ -980,13 +980,7 @@ public extension Comparable {
     
     @warn_unused_result
     func clamp(range: ClosedInterval<Self>) -> Self {
-        if self <= range.start {
-            return range.start
-        }
-        if self >= range.end {
-            return range.end
-        }
-        return self
+        return min(max(self, range.start), range.end)
     }
 }
 
