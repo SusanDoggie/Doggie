@@ -100,44 +100,44 @@ public extension Int8 {
 }
 
 @warn_unused_result
-public func log2(x: Int) -> Int {
-    return Int(flsl(x)) - 1
-}
-@warn_unused_result
-public func log2(x: Int8) -> Int8 {
-    return Int8(fls(Int32(x) & 0xFF)) - 1
-}
-@warn_unused_result
-public func log2(x: Int16) -> Int16 {
-    return Int16(fls(Int32(x) & 0xFFFF)) - 1
+public func log2(x: Int64) -> Int64 {
+    return Int64(flsll(x)) - 1
 }
 @warn_unused_result
 public func log2(x: Int32) -> Int32 {
     return fls(x) - 1
 }
 @warn_unused_result
-public func log2(x: Int64) -> Int64 {
-    return Int64(flsll(x)) - 1
+public func log2(x: Int16) -> Int16 {
+    return Int16(truncatingBitPattern: log2(Int32(x) & 0xFFFF))
 }
 @warn_unused_result
-public func log2(x: UInt) -> UInt {
-    return UInt(log2(Int(bitPattern: x)))
+public func log2(x: Int8) -> Int8 {
+    return Int8(truncatingBitPattern: log2(Int32(x) & 0xFF))
 }
 @warn_unused_result
-public func log2(x: UInt8) -> UInt8 {
-    return UInt8(log2(Int8(bitPattern: x)))
-}
-@warn_unused_result
-public func log2(x: UInt16) -> UInt16 {
-    return UInt16(log2(Int16(bitPattern: x)))
-}
-@warn_unused_result
-public func log2(x: UInt32) -> UInt32 {
-    return UInt32(log2(Int32(bitPattern: x)))
+public func log2(x: Int) -> Int {
+    return Int(flsl(x)) - 1
 }
 @warn_unused_result
 public func log2(x: UInt64) -> UInt64 {
-    return UInt64(log2(Int64(bitPattern: x)))
+    return UInt64(bitPattern: log2(Int64(bitPattern: x)))
+}
+@warn_unused_result
+public func log2(x: UInt32) -> UInt32 {
+    return UInt32(bitPattern: log2(Int32(bitPattern: x)))
+}
+@warn_unused_result
+public func log2(x: UInt16) -> UInt16 {
+    return UInt16(bitPattern: log2(Int16(bitPattern: x)))
+}
+@warn_unused_result
+public func log2(x: UInt8) -> UInt8 {
+    return UInt8(bitPattern: log2(Int8(bitPattern: x)))
+}
+@warn_unused_result
+public func log2(x: UInt) -> UInt {
+    return UInt(bitPattern: log2(Int(bitPattern: x)))
 }
 
 public extension UInt64 {
