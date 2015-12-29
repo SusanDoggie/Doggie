@@ -204,7 +204,7 @@ public extension Int {
 extension IntegerType {
     
     public var isPower2 : Bool {
-        return 0 < self && self & (self - 1) == 0
+        return 0 < self && self & (self &- 1) == 0
     }
     
     @warn_unused_result
