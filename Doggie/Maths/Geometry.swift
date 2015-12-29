@@ -755,33 +755,31 @@ public func LinesIntersect(p0: Point, _ p1: Point, _ p2: Point, _ p3: Point) -> 
 @warn_unused_result
 public func EllipseLineIntersect<T: SDTransformType>(center: Point, _ radius: Radius, _ matrix: T, _ p0: Point, _ p1: Point) -> [Point]? {
     
-    let transform = matrix * SDTransform.Scale(x: radius.x, y: radius.y)
+    let transform = matrix * SDTransform.Translate(x: center.x, y: center.y) * SDTransform.Scale(x: radius.x, y: radius.y)
     let inverse = transform.inverse
-    let _center = inverse * center
     let _p0 = inverse * p0
     let _p1 = inverse * p1
-    
-    if (_p1.x - _p0.x).almostZero {
+    let dx = _p1.x - _p0.x
+    let dy = _p1.y - _p0.y
+    let dr = dx * dx + dy * dy
+    if dr.almostZero {
         return nil
     }
-    let m = (_p1.y - _p0.y) / (_p1.x - _p0.x)
-    let n = _p0.y - m * _p0.x
-    let a = m * m + 1
-    let b = 2 * (m * n - m * _center.y - _center.x)
-    let c = _center.y * _center.y - 1 + _center.x * _center.x - 2 * n * _center.y + n * n
-    let delta = b * b - 4 * a * c
-    if delta > 0 {
-        let a_2 = 2 * a
-        let x1 = (sqrt(delta) - b) / a_2
-        let y1 = m * x1 + n
-        let x2 = (-sqrt(delta) - b) / a_2
-        let y2 = m * x2 + n
-        return [transform * Point(x: x1, y: y1), transform * Point(x: x2, y: y2)]
-    } else if delta.almostZero {
-        let a_2 = 2 * a
-        let x = -b / a_2
-        let y = m * x + n
-        return [transform * Point(x: x, y: y)]
+    let D = _p0.x * _p1.y - _p1.x * _p0.y
+    let delta = dr - D * D
+    if delta.almostZero {
+        
+        return [transform * Point(x: D * dy / dr, y: -D * dx / dr)]
+        
+    } else if delta > 0 {
+        
+        let _sqrt = sqrt(delta)
+        let s_x = dx * _sqrt
+        let s_y = dy * _sqrt
+        let t_x = D * dy
+        let t_y = -D * dx
+        
+        return [transform * Point(x: (t_x - s_x) / dr, y: (t_y - s_y) / dr), transform * Point(x: (t_x + s_x) / dr, y: (t_y + s_y) / dr)]
     }
     return []
 }
