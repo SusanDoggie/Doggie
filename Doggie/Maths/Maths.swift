@@ -361,51 +361,6 @@ public func degree4roots(b: Double, _ c: Double, _ d: Double, _ e: Double) -> [D
     return Array(Set(degree2roots(_d2.0).concat(degree2roots(_d2.1))))
 }
 
-@warn_unused_result
-public func bairstow(var buf: [Double], var eps: Double = 1e-14) -> [Double] {
-    
-    switch buf.count {
-    case 0: return []
-    case 1: return [-buf[0]]
-    case 2: return degree2roots(buf[0], buf[1])
-    case 3: return degree3roots(buf[0], buf[1], buf[2])
-    case 4: return degree4roots(buf[0], buf[1], buf[2], buf[3])
-    default:
-        var r = buf[1] / buf[0]
-        var s = buf[2] / buf[0]
-        var iter = 0
-        while true {
-            var b0 = 1.0
-            var c0 = 0.0
-            var c1 = 0.0
-            var c2 = 1.0
-            var b1 = buf[0] - r
-            var c3 = b1 - r
-            for a in buf.dropFirst() {
-                (b0, b1) = (b1, a - r * b1 - s * b0)
-                (c0, c1, c2, c3) = (c1, c2, c3, b1 - r * c3 - s * c2)
-            }
-            let d = c2 * c0 - c1 * c1
-            let dr = (b1 * c0 - b0 * c1) / d
-            let ds = (b0 * c2 - b1 * c1) / d
-            
-            r += dr
-            s += ds
-            if abs(dr) < eps && abs(ds) < eps {
-                break
-            }
-            iter += 1
-            if iter % 500 == 0 {
-                if eps < 1e-06 {
-                    eps *= 10
-                }
-            }
-        }
-        Deconvolve(buf.count + 1, [1] + buf, 1, 3, [1, r, s], 1, &buf, 1)
-        return degree2roots(r, s) + bairstow(buf[1...buf.count - 2].array, eps: eps)
-    }
-}
-
 // MARK: Others
 
 @warn_unused_result
