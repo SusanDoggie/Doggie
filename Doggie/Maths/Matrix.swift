@@ -286,28 +286,20 @@ extension Matrix {
     }
     
     @warn_unused_result
-    public static func PerspectiveProject(alpha: Double, aspect: Double, nearZ: Double, farZ: Double) -> Matrix {
-        let cotan = 1.0 / tan(alpha * 0.5)
-        return Matrix(
-            a: cotan / aspect,
-            b: 0.0,
-            c: 0.0,
-            d: 0.0,
-            e: 0.0,
-            f: cotan,
-            g: 0.0,
-            h: 0.0,
-            i: 0.0,
-            j: 0.0,
-            k: (farZ + nearZ) / (nearZ - farZ),
-            l: (2.0 * farZ * nearZ) / (nearZ - farZ)
-        )
-    }
-    
-    @warn_unused_result
     public static func CameraTransform(position tx: Double, _ ty: Double, _ tz: Double, rotate ax: Double, _ ay: Double, _ az: Double) -> Matrix {
         return RotateX(-ax) * RotateY(-ay) * RotateZ(-az) * Translate(x: -tx, y: -ty, z: -tz)
     }
+}
+
+@warn_unused_result
+public func PerspectiveProjectMatrix(alpha alpha: Double, aspect: Double, nearZ: Double, farZ: Double) -> [Double] {
+    let cotan = 1.0 / tan(alpha * 0.5)
+    return [
+        cotan / aspect, 0.0, 0.0, 0.0,
+        0.0, cotan, 0.0, 0.0,
+        0.0, 0.0, (farZ + nearZ) / (nearZ - farZ), (2.0 * farZ * nearZ) / (nearZ - farZ),
+        0.0, 0.0, -1.0, 0.0
+    ]
 }
 
 extension Matrix.Identity {
