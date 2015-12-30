@@ -107,9 +107,11 @@ public func direction(a: Point, _ b: Point, _ c: Point) -> Double {
     return direction(b - a, c - a)
 }
 
+@warn_unused_result
 public prefix func +(val: Point) -> Point {
     return val
 }
+@warn_unused_result
 public prefix func -(val: Point) -> Point {
     return Point(x: -val.x, y: -val.y)
 }

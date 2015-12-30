@@ -126,15 +126,19 @@ public func norm(value: Vector3D) -> Double {
     return sqrt(dot(value, value))
 }
 
+@warn_unused_result
 public prefix func +(val: Vector2D) -> Vector2D {
     return val
 }
+@warn_unused_result
 public prefix func +(val: Vector3D) -> Vector3D {
     return val
 }
+@warn_unused_result
 public prefix func -(val: Vector2D) -> Vector2D {
     return Vector2D(x: -val.x, y: -val.y)
 }
+@warn_unused_result
 public prefix func -(val: Vector3D) -> Vector3D {
     return Vector3D(x: -val.x, y: -val.y, z: -val.z)
 }
