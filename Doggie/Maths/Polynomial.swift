@@ -349,11 +349,9 @@ public func * (lhs: Polynomial, rhs: Polynomial) -> Polynomial {
     if lhs.count == 0 || rhs.count == 0 {
         return Polynomial()
     }
-    let count = lhs.count + rhs.count - 1
-    let pad = Int(UInt64(count - 1).hibit) << 1
-    let _lhs = lhs.coeffs + Repeat(count: pad - lhs.count, repeatedValue: 0)
-    let _rhs = rhs.coeffs + Repeat(count: pad - rhs.count, repeatedValue: 0)
-    return Polynomial(Radix2CircularConvolve(_lhs, _rhs)[0..<count])
+    var result = [Double](count: lhs.count + rhs.count - 1, repeatedValue: 0)
+    DiscreteConvolve(lhs.count, lhs.coeffs, 1, rhs.count, rhs.coeffs, 1, &result, 1)
+    return Polynomial(result)
 }
 
 @warn_unused_result
