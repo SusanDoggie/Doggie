@@ -846,7 +846,7 @@ public func Div(count: Int, var _ lreal: UnsafePointer<Double>, var _ limag: Uns
 public func Dot(count: Int, var _ left: UnsafePointer<Float>, _ left_stride: Int, var _ right: UnsafePointer<Float>, _ right_stride: Int) -> Float {
     var result: Float = 0.0
     for _ in 0..<count {
-        result = left.memory * right.memory + result
+        result += left.memory * right.memory
         left += left_stride
         right += right_stride
     }
@@ -856,7 +856,7 @@ public func Dot(count: Int, var _ left: UnsafePointer<Float>, _ left_stride: Int
 public func Dot(count: Int, var _ left: UnsafePointer<Double>, _ left_stride: Int, var _ right: UnsafePointer<Double>, _ right_stride: Int) -> Double {
     var result: Double = 0.0
     for _ in 0..<count {
-        result = left.memory * right.memory + result
+        result += left.memory * right.memory
         left += left_stride
         right += right_stride
     }
