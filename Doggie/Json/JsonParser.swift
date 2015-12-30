@@ -133,8 +133,8 @@ private struct JsonParser {
         case 102: return try parseFalse()
         case 45, 48...57: return try parseNumber()
         case 34: return try parseString()
-        case 91: return try parseArray()
         case 123: return try parseObject()
+        case 91: return try parseArray()
         default: throw JsonParseError.UnexpectedToken(position: scanner.pos)
         }
     }
