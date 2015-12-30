@@ -177,7 +177,7 @@ extension SDFile {
         return try View(parent: self, offset: offset, size: size)
     }
     
-    public class View {
+    public final class View {
         
         private let parent: SDFile
         

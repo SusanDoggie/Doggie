@@ -115,7 +115,7 @@ public func unlock(lck: Lockable ... ) {
     _unlock(lck)
 }
 
-public class SDLockGroup : ArrayLiteralConvertible {
+public final class SDLockGroup : ArrayLiteralConvertible {
     
     private let lck: [Lockable]
     
@@ -130,15 +130,15 @@ public class SDLockGroup : ArrayLiteralConvertible {
 
 extension SDLockGroup : Lockable {
     
-    public final func lock() {
+    public func lock() {
         _lock(self.lck)
     }
     
-    public final func unlock() {
+    public func unlock() {
         _unlock(self.lck)
     }
     
-    public final func trylock() -> Bool {
+    public func trylock() -> Bool {
         return _trylock(self.lck) == self.lck.count
     }
     
@@ -155,7 +155,7 @@ extension SDLockGroup: CustomStringConvertible, CustomDebugStringConvertible {
 
 // MARK: Lock
 
-public class SDLock {
+public final class SDLock {
     
     private var _mtx = pthread_mutex_t()
     
@@ -174,13 +174,13 @@ public class SDLock {
 
 extension SDLock : Lockable {
     
-    public final func lock() {
+    public func lock() {
         pthread_mutex_lock(&_mtx)
     }
-    public final func unlock() {
+    public func unlock() {
         pthread_mutex_unlock(&_mtx)
     }
-    public final func trylock() -> Bool {
+    public func trylock() -> Bool {
         return pthread_mutex_trylock(&_mtx) == 0
     }
 }
@@ -235,7 +235,7 @@ extension SDSpinLock: CustomStringConvertible, CustomDebugStringConvertible {
 
 // MARK: Condition Variable
 
-public class SDCondition {
+public final class SDCondition {
     
     private var _cond = pthread_cond_t()
     
@@ -250,18 +250,18 @@ public class SDCondition {
 
 extension SDCondition {
     
-    public final func wait(lck: SDLock, @autoclosure predicate: () -> Bool) {
+    public func wait(lck: SDLock, @autoclosure predicate: () -> Bool) {
         while !predicate() {
             pthread_cond_wait(&_cond, &lck._mtx)
         }
     }
-    public final func wait_for(lck: SDLock, time: NSTimeInterval, @autoclosure predicate: () -> Bool) -> Bool {
+    public func wait_for(lck: SDLock, time: NSTimeInterval, @autoclosure predicate: () -> Bool) -> Bool {
         if time == 0 {
             return predicate()
         }
         return wait_until(lck, date: NSDate(timeIntervalSinceNow: time), predicate: predicate)
     }
-    public final func wait_until(lck: SDLock, date: NSDate, @autoclosure predicate: () -> Bool) -> Bool {
+    public func wait_until(lck: SDLock, date: NSDate, @autoclosure predicate: () -> Bool) -> Bool {
         let _abs_time = date.timeIntervalSince1970
         let sec = __darwin_time_t(_abs_time)
         let nsec = Int((_abs_time - Double(sec)) * 1000000000.0)
@@ -273,10 +273,10 @@ extension SDCondition {
         }
         return true
     }
-    public final func signal() {
+    public func signal() {
         pthread_cond_signal(&_cond)
     }
-    public final func broadcast() {
+    public func broadcast() {
         pthread_cond_broadcast(&_cond)
     }
 }
@@ -292,7 +292,7 @@ extension SDCondition: CustomStringConvertible, CustomDebugStringConvertible {
 
 // MARK: Condition Lock
 
-public class SDConditionLock {
+public final class SDConditionLock {
     
     private let lck: SDLock
     private let cv: SDCondition
@@ -305,35 +305,35 @@ public class SDConditionLock {
 
 extension SDConditionLock : Lockable {
     
-    public final func lock() {
+    public func lock() {
         lck.lock()
     }
-    public final func unlock() {
+    public func unlock() {
         cv.signal()
         lck.unlock()
     }
-    public final func trylock() -> Bool {
+    public func trylock() -> Bool {
         return lck.trylock()
     }
 }
 
 extension SDConditionLock {
     
-    public final func signal() {
+    public func signal() {
         lck.synchronized {
             cv.signal()
         }
     }
-    public final func broadcast() {
+    public func broadcast() {
         lck.synchronized {
             cv.broadcast()
         }
     }
-    public final func lock(@autoclosure predicate: () -> Bool) {
+    public func lock(@autoclosure predicate: () -> Bool) {
         lck.lock()
         cv.wait(lck, predicate: predicate)
     }
-    public final func trylock(@autoclosure predicate: () -> Bool) -> Bool {
+    public func trylock(@autoclosure predicate: () -> Bool) -> Bool {
         if lck.trylock() {
             if predicate() {
                 return true
@@ -361,7 +361,7 @@ extension SDConditionLock: CustomStringConvertible, CustomDebugStringConvertible
 
 // MARK: Signal
 
-public class SDSignal {
+public final class SDSignal {
     
     private let sem: dispatch_semaphore_t
     
@@ -403,7 +403,7 @@ public let DispatchGlobalQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORI
 
 private let SDTaskDefaultDispatchQueue = dispatch_queue_create("com.SusanDoggie.SDTask", DISPATCH_QUEUE_CONCURRENT)
 
-public class SDTask<Result> {
+public final class SDTask<Result> {
     
     private let sem: dispatch_semaphore_t = dispatch_semaphore_create(0)
     private let group: dispatch_group_t = dispatch_group_create()

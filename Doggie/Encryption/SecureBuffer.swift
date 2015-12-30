@@ -25,7 +25,7 @@
 
 import Foundation
 
-private class SecureBufferBase {
+private final class SecureBufferBase {
     
     let size: Int
     let ptr: UnsafeMutablePointer<UInt8>

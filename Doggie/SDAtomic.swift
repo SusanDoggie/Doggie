@@ -167,7 +167,7 @@ public class SDAtomicNode {
 
 extension SDAtomicNode {
     
-    public func signal() {
+    public final func signal() {
         lck.synchronized {
             _signal = true
             if !_flag && activate {

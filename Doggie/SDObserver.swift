@@ -25,7 +25,7 @@
 
 import Foundation
 
-private class SDObserverBase : NSObject {
+private final class SDObserverBase : NSObject {
     
     var callback: (([String : AnyObject]) -> Void)? = nil
     
@@ -75,7 +75,7 @@ public extension NSObject {
     @warn_unused_result
     public func bind(keyPath: String) -> SDObserver<[String : AnyObject]> {
         
-        class ChangeSDObserver : SDObserver<[String : AnyObject]> {
+        final class ChangeSDObserver : SDObserver<[String : AnyObject]> {
             
             init(object: NSObject, keyPath: String) {
                 super.init(object: object, keyPath: keyPath, options: [.New, .Old, .Initial, .Prior])
@@ -92,7 +92,7 @@ public extension NSObject {
     @warn_unused_result
     public func willSet(keyPath: String) -> SDObserver<AnyObject> {
         
-        class WillSetSDObserver : SDObserver<AnyObject> {
+        final class WillSetSDObserver : SDObserver<AnyObject> {
             
             init(object: NSObject, keyPath: String) {
                 super.init(object: object, keyPath: keyPath, options: .Prior)
@@ -111,7 +111,7 @@ public extension NSObject {
     @warn_unused_result
     public func didSet(keyPath: String) -> SDObserver<(old: AnyObject, new: AnyObject)> {
         
-        class DidSetSDObserver : SDObserver<(old: AnyObject, new: AnyObject)> {
+        final class DidSetSDObserver : SDObserver<(old: AnyObject, new: AnyObject)> {
             
             init(object: NSObject, keyPath: String) {
                 super.init(object: object, keyPath: keyPath, options: [.New, .Old])
