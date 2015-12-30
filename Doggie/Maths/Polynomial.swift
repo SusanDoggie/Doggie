@@ -117,8 +117,7 @@ extension Polynomial {
     
     @warn_unused_result
     public func eval(x: Double) -> Double {
-        let _x = Repeat(count: degree, repeatedValue: x).lazy.scan(1, combine: *)
-        return zip(coeffs, _x).reduce(0) { $1.0 * $1.1 + $0 }
+        return coeffs.reverse().reduce(0) { x * $0 + $1 }
     }
 }
 
