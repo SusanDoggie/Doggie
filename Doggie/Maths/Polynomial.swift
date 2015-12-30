@@ -147,36 +147,23 @@ extension Polynomial {
 
 private func _root(p: Polynomial) -> [Double] {
     
-    let expectedSignOnPositiveInfinity: Double
-    let expectedSignOnNegativeInfinity: Double
-    
-    if p.coeffs.last! > 0 {
-        expectedSignOnPositiveInfinity = 1
-        if p.coeffs.count % 2 == 0 {
-            expectedSignOnNegativeInfinity = -1
-        } else {
-            expectedSignOnNegativeInfinity = 1
-        }
-    } else {
-        expectedSignOnPositiveInfinity = -1
-        if p.coeffs.count % 2 == 0 {
-            expectedSignOnNegativeInfinity = 1
-        }
-        else {
-            expectedSignOnNegativeInfinity = -1
-        }
-    }
-    
     var extrema = p.derivative.roots.sort()
     
     var probe = max(extrema.last ?? 1, 1)
-    while p.eval(probe) * expectedSignOnPositiveInfinity < 0 {
+    while p.eval(probe) < 0 {
         probe *= 2
     }
     extrema.append(probe)
+    
     probe = min(extrema.first!, -1)
-    while p.eval(probe) * expectedSignOnNegativeInfinity < 0 {
-        probe *= 2
+    if p.coeffs.count % 2 == 0 {
+        while p.eval(probe) > 0 {
+            probe *= 2
+        }
+    } else {
+        while p.eval(probe) < 0 {
+            probe *= 2
+        }
     }
     extrema.insert(probe, atIndex: 0)
     
