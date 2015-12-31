@@ -524,6 +524,10 @@ public struct ConcatSequence<S1 : SequenceType, S2 : SequenceType where S1.Gener
     public func generate() -> ConcatGenerator<S1.Generator, S2.Generator> {
         return ConcatGenerator(base1: base1.generate(), base2: base2.generate(), flag: true)
     }
+    
+    public func underestimateCount() -> Int {
+        return base1.underestimateCount() + base2.underestimateCount()
+    }
 }
 
 public struct ConcatCollection<S1 : CollectionType, S2 : CollectionType where S1.Generator.Element == S2.Generator.Element> : CollectionType {
@@ -547,6 +551,10 @@ public struct ConcatCollection<S1 : CollectionType, S2 : CollectionType where S1
     
     public func generate() -> ConcatGenerator<S1.Generator, S2.Generator> {
         return ConcatGenerator(base1: base1.generate(), base2: base2.generate(), flag: true)
+    }
+    
+    public func underestimateCount() -> Int {
+        return base1.underestimateCount() + base2.underestimateCount()
     }
 }
 
@@ -593,6 +601,10 @@ public struct ConcatBidirectionalCollection<S1 : CollectionType, S2 : Collection
     
     public func generate() -> ConcatGenerator<S1.Generator, S2.Generator> {
         return ConcatGenerator(base1: base1.generate(), base2: base2.generate(), flag: true)
+    }
+    
+    public func underestimateCount() -> Int {
+        return base1.underestimateCount() + base2.underestimateCount()
     }
 }
 
@@ -704,6 +716,10 @@ public struct PermutationCollection<C : CollectionType, I : CollectionType where
     
     public func generate() -> Generator {
         return PermutationGenerator(elements: _base, indices: _indices)
+    }
+    
+    public func underestimateCount() -> Int {
+        return _indices.underestimateCount()
     }
 }
 
