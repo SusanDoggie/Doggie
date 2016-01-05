@@ -255,8 +255,8 @@ public func degree3decompose(b: Double, _ c: Double, _ d: Double) -> (Double, (D
         let s_cos1 = s * cos1
         let s_cos2 = s * cos2
         let s_cos3 = s * cos3
-        let k = m - s_cos1 * cos2
-        return (s_cos2 - m, (2 * k, s_cos1 * s_cos3 + m * k))
+        let k = m - s_cos1 - s_cos3
+        return (s_cos2 - m, (m + k, s_cos1 * s_cos3 + m * k))
     }
     
     let c1 = cbrt(0.5 * (de1 + sqrt(de2)))
