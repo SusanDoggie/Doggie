@@ -308,6 +308,81 @@ public func degree4decompose(b: Double, _ c: Double, _ d: Double, _ e: Double) -
 }
 
 @warn_unused_result
+public func degree5decompose(b: Double, _ c: Double, _ d: Double, _ e: Double, _ f: Double, eps: Double = 1e-14) -> (Double, (Double, Double), (Double, Double)) {
+    
+    var r = c / b
+    var s = d / b
+    while true {
+        
+        let b1 = b - r
+        let b2 = c - r * b1 - s
+        let b3 = d - r * b2 - s * b1
+        let b4 = e - r * b3 - s * b2
+        let b5 = f - r * b4 - s * b3
+        
+        let c1 = b1 - r
+        let c2 = b2 - r * c1 - s
+        let c3 = b3 - r * c2 - s * c1
+        let c4 = b4 - r * c3 - s * c2
+        
+        let d = c4 * c2 - c3 * c3
+        let dr = (b5 * c2 - b4 * c3) / d
+        let ds = (b4 * c4 - b5 * c3) / d
+        
+        r += dr
+        s += ds
+        
+        if abs(dr) < eps && abs(ds) < eps {
+            break
+        }
+    }
+    let b1 = b - r
+    let b2 = c - r * b1 - s
+    let b3 = d - r * b2 - s * b1
+    let degree3result = degree3decompose(b1, b2, b3)
+    return (degree3result.0, (r, s), degree3result.1)
+}
+
+@warn_unused_result
+public func degree6decompose(b: Double, _ c: Double, _ d: Double, _ e: Double, _ f: Double, _ g: Double, eps: Double = 1e-14) -> ((Double, Double), (Double, Double), (Double, Double)) {
+    
+    var r = c / b
+    var s = d / b
+    while true {
+        
+        let b1 = b - r
+        let b2 = c - r * b1 - s
+        let b3 = d - r * b2 - s * b1
+        let b4 = e - r * b3 - s * b2
+        let b5 = f - r * b4 - s * b3
+        let b6 = g - r * b5 - s * b4
+        
+        let c1 = b1 - r
+        let c2 = b2 - r * c1 - s
+        let c3 = b3 - r * c2 - s * c1
+        let c4 = b4 - r * c3 - s * c2
+        let c5 = b5 - r * c4 - s * c3
+        
+        let d = c5 * c3 - c4 * c4
+        let dr = (b6 * c3 - b5 * c4) / d
+        let ds = (b5 * c5 - b6 * c4) / d
+        
+        r += dr
+        s += ds
+        
+        if abs(dr) < eps && abs(ds) < eps {
+            break
+        }
+    }
+    let b1 = b - r
+    let b2 = c - r * b1 - s
+    let b3 = d - r * b2 - s * b1
+    let b4 = e - r * b3 - s * b2
+    let degree4result = degree4decompose(b1, b2, b3, b4)
+    return ((r, s), degree4result.0, degree4result.1)
+}
+
+@warn_unused_result
 public func degree3roots(b: Double, _ c: Double, _ d: Double) -> [Double] {
     if d.almostZero {
         let z = degree2roots(b, c)
