@@ -233,6 +233,36 @@ extension Polynomial {
     }
 }
 
+@warn_unused_result
+public func remquo(lhs: Double, _ rhs: Polynomial) -> (quo: Polynomial, rem: Polynomial) {
+    switch rhs.count {
+    case 0: fatalError("Divide by zero.")
+    case 1: return ([lhs / rhs[0]], [])
+    default: return ([], [lhs])
+    }
+}
+
+@warn_unused_result
+public func remquo(lhs: Polynomial, _ rhs: Double) -> (quo: Polynomial, rem: Polynomial) {
+    return (Polynomial(lhs.coeffs.map { $0 / rhs }), [])
+}
+
+@warn_unused_result
+public func remquo(lhs: Polynomial, _ rhs: Polynomial) -> (quo: Polynomial, rem: Polynomial) {
+    if lhs.count < rhs.count {
+        return ([], lhs)
+    }
+    switch rhs.count {
+    case 0: fatalError("Divide by zero.")
+    case 1: return (lhs / rhs[0], [])
+    default:
+        var quotient = [Double](count: lhs.count - rhs.count + 1, repeatedValue: 0)
+        var residue = [Double](count: rhs.count - 1, repeatedValue: 0)
+        Deconvolve(lhs.count, lhs.coeffs.reverse(), 1, rhs.count, rhs.coeffs.reverse(), 1, &quotient, 1, &residue, 1)
+        return (Polynomial(quotient.reverse()), Polynomial(residue.reverse()))
+    }
+}
+
 public func += (inout lhs: Polynomial, rhs: Polynomial) {
     lhs = lhs + rhs
 }
@@ -351,8 +381,7 @@ public func / (lhs: Double, rhs: Polynomial) -> Polynomial {
     switch rhs.count {
     case 0: fatalError("Divide by zero.")
     case 1: return [lhs / rhs[0]]
-    default:
-        return []
+    default: return []
     }
 }
 
@@ -381,8 +410,7 @@ public func % (lhs: Double, rhs: Polynomial) -> Polynomial {
     switch rhs.count {
     case 0: fatalError("Divide by zero.")
     case 1: return []
-    default:
-        return [lhs]
+    default: return [lhs]
     }
 }
 
