@@ -226,6 +226,11 @@ extension Polynomial {
     public var derivative : Polynomial {
         return count > 1 ? Polynomial(coeffs.enumerate().dropFirst().lazy.map { Double($0) * $1 }) : Polynomial()
     }
+    
+    public var integral : Polynomial {
+        let _coeffs = coeffs.enumerate().lazy.map { $1 / Double($0 + 1) }
+        return Polynomial(CollectionOfOne(0).concat(_coeffs))
+    }
 }
 
 public func += (inout lhs: Polynomial, rhs: Polynomial) {
