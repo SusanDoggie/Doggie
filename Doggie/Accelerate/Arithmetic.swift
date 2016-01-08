@@ -133,6 +133,15 @@ public func MulSub(count: Int, var _ a: UnsafePointer<Float>, _ a_stride: Int, v
         output += out_stride
     }
 }
+public func SubMul(count: Int, var _ a: UnsafePointer<Float>, _ a_stride: Int, var _ b: UnsafePointer<Float>, _ b_stride: Int, var _ c: UnsafePointer<Float>, _ c_stride: Int, var _ output: UnsafeMutablePointer<Float>, _ out_stride: Int) {
+    for _ in 0..<count {
+        output.memory = a.memory - b.memory * c.memory
+        a += a_stride
+        b += b_stride
+        c += c_stride
+        output += out_stride
+    }
+}
 
 public func Add(count: Int, var _ left: UnsafePointer<Float>, _ left_stride: Int, var _ rreal: UnsafePointer<Float>, var _ rimag: UnsafePointer<Float>, _ right_stride: Int, var _ _real: UnsafeMutablePointer<Float>, var _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int) {
     for _ in 0..<count {
@@ -206,6 +215,24 @@ public func MulSub(count: Int, var _ a: UnsafePointer<Float>, _ a_stride: Int, v
         a += a_stride
         breal += b_stride
         bimag += b_stride
+        creal += c_stride
+        cimag += c_stride
+        _real += out_stride
+        _imag += out_stride
+    }
+}
+public func SubMul(count: Int, var _ areal: UnsafePointer<Float>, var _ aimag: UnsafePointer<Float>, _ a_stride: Int, var _ b: UnsafePointer<Float>, _ b_stride: Int, var _ creal: UnsafePointer<Float>, var _ cimag: UnsafePointer<Float>, _ c_stride: Int, var _ _real: UnsafeMutablePointer<Float>, var _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int) {
+    for _ in 0..<count {
+        let _areal = areal.memory
+        let _aimag = aimag.memory
+        let _breal = b.memory
+        let _creal = creal.memory
+        let _cimag = cimag.memory
+        _real.memory = _areal - _breal * _creal
+        _imag.memory = _aimag - _breal * _cimag
+        areal += a_stride
+        aimag += a_stride
+        b += b_stride
         creal += c_stride
         cimag += c_stride
         _real += out_stride
@@ -303,6 +330,24 @@ public func MulSub(count: Int, var _ areal: UnsafePointer<Float>, var _ aimag: U
         b += b_stride
         creal += c_stride
         cimag += c_stride
+        _real += out_stride
+        _imag += out_stride
+    }
+}
+public func SubMul(count: Int, var _ areal: UnsafePointer<Float>, var _ aimag: UnsafePointer<Float>, _ a_stride: Int, var _ breal: UnsafePointer<Float>, var _ bimag: UnsafePointer<Float>, _ b_stride: Int, var _ c: UnsafePointer<Float>, _ c_stride: Int, var _ _real: UnsafeMutablePointer<Float>, var _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int) {
+    for _ in 0..<count {
+        let _areal = areal.memory
+        let _aimag = aimag.memory
+        let _breal = breal.memory
+        let _bimag = bimag.memory
+        let _creal = c.memory
+        _real.memory = _areal - _breal * _creal
+        _imag.memory = _aimag - _bimag * _creal
+        areal += a_stride
+        aimag += a_stride
+        breal += b_stride
+        bimag += b_stride
+        c += c_stride
         _real += out_stride
         _imag += out_stride
     }
@@ -423,6 +468,26 @@ public func MulSub(count: Int, var _ areal: UnsafePointer<Float>, var _ aimag: U
         _imag += out_stride
     }
 }
+public func SubMul(count: Int, var _ areal: UnsafePointer<Float>, var _ aimag: UnsafePointer<Float>, _ a_stride: Int, var _ breal: UnsafePointer<Float>, var _ bimag: UnsafePointer<Float>, _ b_stride: Int, var _ creal: UnsafePointer<Float>, var _ cimag: UnsafePointer<Float>, _ c_stride: Int, var _ _real: UnsafeMutablePointer<Float>, var _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int) {
+    for _ in 0..<count {
+        let _areal = areal.memory
+        let _aimag = aimag.memory
+        let _breal = breal.memory
+        let _bimag = bimag.memory
+        let _creal = creal.memory
+        let _cimag = cimag.memory
+        _real.memory = _areal - (_breal * _creal - _bimag * _cimag)
+        _imag.memory = _aimag - (_breal * _cimag + _bimag * _creal)
+        areal += a_stride
+        aimag += a_stride
+        breal += b_stride
+        bimag += b_stride
+        creal += c_stride
+        cimag += c_stride
+        _real += out_stride
+        _imag += out_stride
+    }
+}
 public func MulConj(count: Int, var _ lreal: UnsafePointer<Float>, var _ limag: UnsafePointer<Float>, _ left_stride: Int, var _ rreal: UnsafePointer<Float>, var _ rimag: UnsafePointer<Float>, _ right_stride: Int, var _ _real: UnsafeMutablePointer<Float>, var _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int) {
     for _ in 0..<count {
         let _lreal = lreal.memory
@@ -517,6 +582,15 @@ public func MulSub(count: Int, var _ a: UnsafePointer<Double>, _ a_stride: Int, 
         output += out_stride
     }
 }
+public func SubMul(count: Int, var _ a: UnsafePointer<Double>, _ a_stride: Int, var _ b: UnsafePointer<Double>, _ b_stride: Int, var _ c: UnsafePointer<Double>, _ c_stride: Int, var _ output: UnsafeMutablePointer<Double>, _ out_stride: Int) {
+    for _ in 0..<count {
+        output.memory = a.memory - b.memory * c.memory
+        a += a_stride
+        b += b_stride
+        c += c_stride
+        output += out_stride
+    }
+}
 
 public func Add(count: Int, var _ left: UnsafePointer<Double>, _ left_stride: Int, var _ rreal: UnsafePointer<Double>, var _ rimag: UnsafePointer<Double>, _ right_stride: Int, var _ _real: UnsafeMutablePointer<Double>, var _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int) {
     for _ in 0..<count {
@@ -590,6 +664,24 @@ public func MulSub(count: Int, var _ a: UnsafePointer<Double>, _ a_stride: Int, 
         a += a_stride
         breal += b_stride
         bimag += b_stride
+        creal += c_stride
+        cimag += c_stride
+        _real += out_stride
+        _imag += out_stride
+    }
+}
+public func SubMul(count: Int, var _ areal: UnsafePointer<Double>, var _ aimag: UnsafePointer<Double>, _ a_stride: Int, var _ b: UnsafePointer<Double>, _ b_stride: Int, var _ creal: UnsafePointer<Double>, var _ cimag: UnsafePointer<Double>, _ c_stride: Int, var _ _real: UnsafeMutablePointer<Double>, var _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int) {
+    for _ in 0..<count {
+        let _areal = areal.memory
+        let _aimag = aimag.memory
+        let _breal = b.memory
+        let _creal = creal.memory
+        let _cimag = cimag.memory
+        _real.memory = _areal - _breal * _creal
+        _imag.memory = _aimag - _breal * _cimag
+        areal += a_stride
+        aimag += a_stride
+        b += b_stride
         creal += c_stride
         cimag += c_stride
         _real += out_stride
@@ -687,6 +779,24 @@ public func MulSub(count: Int, var _ areal: UnsafePointer<Double>, var _ aimag: 
         b += b_stride
         creal += c_stride
         cimag += c_stride
+        _real += out_stride
+        _imag += out_stride
+    }
+}
+public func SubMul(count: Int, var _ areal: UnsafePointer<Double>, var _ aimag: UnsafePointer<Double>, _ a_stride: Int, var _ breal: UnsafePointer<Double>, var _ bimag: UnsafePointer<Double>, _ b_stride: Int, var _ c: UnsafePointer<Double>, _ c_stride: Int, var _ _real: UnsafeMutablePointer<Double>, var _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int) {
+    for _ in 0..<count {
+        let _areal = areal.memory
+        let _aimag = aimag.memory
+        let _breal = breal.memory
+        let _bimag = bimag.memory
+        let _creal = c.memory
+        _real.memory = _areal - _breal * _creal
+        _imag.memory = _aimag - _bimag * _creal
+        areal += a_stride
+        aimag += a_stride
+        breal += b_stride
+        bimag += b_stride
+        c += c_stride
         _real += out_stride
         _imag += out_stride
     }
@@ -797,6 +907,26 @@ public func MulSub(count: Int, var _ areal: UnsafePointer<Double>, var _ aimag: 
         let _cimag = cimag.memory
         _real.memory = _areal * _breal - _aimag * _bimag - _creal
         _imag.memory = _areal * _bimag + _aimag * _breal - _cimag
+        areal += a_stride
+        aimag += a_stride
+        breal += b_stride
+        bimag += b_stride
+        creal += c_stride
+        cimag += c_stride
+        _real += out_stride
+        _imag += out_stride
+    }
+}
+public func SubMul(count: Int, var _ areal: UnsafePointer<Double>, var _ aimag: UnsafePointer<Double>, _ a_stride: Int, var _ breal: UnsafePointer<Double>, var _ bimag: UnsafePointer<Double>, _ b_stride: Int, var _ creal: UnsafePointer<Double>, var _ cimag: UnsafePointer<Double>, _ c_stride: Int, var _ _real: UnsafeMutablePointer<Double>, var _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int) {
+    for _ in 0..<count {
+        let _areal = areal.memory
+        let _aimag = aimag.memory
+        let _breal = breal.memory
+        let _bimag = bimag.memory
+        let _creal = creal.memory
+        let _cimag = cimag.memory
+        _real.memory = _areal - (_breal * _creal - _bimag * _cimag)
+        _imag.memory = _aimag - (_breal * _cimag + _bimag * _creal)
         areal += a_stride
         aimag += a_stride
         breal += b_stride

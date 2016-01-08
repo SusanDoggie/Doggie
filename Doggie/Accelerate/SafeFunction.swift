@@ -110,6 +110,13 @@ public func mulSub(var a: [Float], _ b: [Float], _ c: [Float]) -> [Float] {
 }
 
 @warn_unused_result
+public func subMul(var a: [Float], _ b: [Float], _ c: [Float]) -> [Float] {
+    assert(a.count == b.count && a.count == c.count, "mismatch count of inputs.")
+    SubMul(a.count, a, 1, b, 1, c, 1, &a, 1)
+    return a
+}
+
+@warn_unused_result
 public func add(var lhs: [Double], _ rhs: [Double]) -> [Double] {
     assert(lhs.count == rhs.count, "mismatch count of inputs.")
     Add(lhs.count, lhs, 1, rhs, 1, &lhs, 1)
@@ -159,6 +166,13 @@ public func mulSub(var a: [Double], _ b: [Double], _ c: [Double]) -> [Double] {
 }
 
 @warn_unused_result
+public func subMul(var a: [Double], _ b: [Double], _ c: [Double]) -> [Double] {
+    assert(a.count == b.count && a.count == c.count, "mismatch count of inputs.")
+    SubMul(a.count, a, 1, b, 1, c, 1, &a, 1)
+    return a
+}
+
+@warn_unused_result
 public func dot(a: [Float], _ b: [Float]) -> Float {
     assert(a.count == b.count, "mismatch count of inputs.")
     return Dot(a.count, a, 1, b, 1)
@@ -202,6 +216,13 @@ public func mulAdd(var a: [Complex], _ b: [Complex], _ c: [Complex]) -> [Complex
 public func mulSub(var a: [Complex], _ b: [Complex], _ c: [Complex]) -> [Complex] {
     assert(a.count == b.count && a.count == c.count, "mismatch count of inputs.")
     MulSub(a.count, a, 1, b, 1, c, 1, &a, 1)
+    return a
+}
+
+@warn_unused_result
+public func subMul(var a: [Complex], _ b: [Complex], _ c: [Complex]) -> [Complex] {
+    assert(a.count == b.count && a.count == c.count, "mismatch count of inputs.")
+    SubMul(a.count, a, 1, b, 1, c, 1, &a, 1)
     return a
 }
 

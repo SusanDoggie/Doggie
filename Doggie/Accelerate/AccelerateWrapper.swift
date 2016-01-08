@@ -137,6 +137,13 @@ public func MulSub(count: Int, _ a: UnsafePointer<Complex>, _ a_stride: Int, _ b
     let _output = UnsafeMutablePointer<Double>(output)
     MulSub(count, _a, _a + 1, a_stride << 1, _b + 1, b_stride << 1, _c, _c + 1, c_stride << 1, _output, _output + 1, out_stride << 1)
 }
+public func SubMul(count: Int, _ a: UnsafePointer<Complex>, _ a_stride: Int, _ b: UnsafePointer<Complex>, _ b_stride: Int, _ c: UnsafePointer<Complex>, _ c_stride: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int) {
+    let _a = UnsafePointer<Double>(a)
+    let _b = UnsafePointer<Double>(b)
+    let _c = UnsafePointer<Double>(c)
+    let _output = UnsafeMutablePointer<Double>(output)
+    SubMul(count, _a, _a + 1, a_stride << 1, _b + 1, b_stride << 1, _c, _c + 1, c_stride << 1, _output, _output + 1, out_stride << 1)
+}
 public func MulConj(count: Int, _ left: UnsafePointer<Complex>, _ left_stride: Int, _ right: UnsafePointer<Complex>, _ right_stride: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int) {
     let _left = UnsafePointer<Double>(left)
     let _right = UnsafePointer<Double>(right)
