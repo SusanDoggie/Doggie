@@ -1038,7 +1038,9 @@ private func _integral(n: Double, _ b: Double, _ c: Double) -> Double {
         return -2 * n * (atan2(q, 2 + b) - atan2(q, b)) / q
     } else {
         let q = sqrt(delta)
-        return -2 * n * (atanh((2 + b) / q) - atanh(b / q)) / q
+        let s = (2 + b - q) * (b + q)
+        let t = (2 + b + q) * (b - q)
+        return n * (log(abs(s / t))) / q
     }
 }
 
