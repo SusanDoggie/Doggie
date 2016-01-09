@@ -696,11 +696,6 @@ public func *= <T: MatrixType>(inout lhs: Matrix, rhs: T) {
 }
 
 @warn_unused_result
-public func * <T: SDTransformType>(lhs: T, rhs: Vector2D) -> Vector2D {
-    return Vector2D(x: lhs.a * rhs.x + lhs.b * rhs.y + lhs.c, y: lhs.d * rhs.x + lhs.e * rhs.y + lhs.f)
-}
-
-@warn_unused_result
-public func * <T: MatrixType>(lhs: T, rhs: Vector3D) -> Vector3D {
-    return Vector3D(x: lhs.a * rhs.x + lhs.b * rhs.y + lhs.c * rhs.z + lhs.d, y: lhs.e * rhs.x + lhs.f * rhs.y + lhs.g * rhs.z + lhs.h, z: lhs.i * rhs.x + lhs.j * rhs.y + lhs.k * rhs.z + lhs.l)
+public func * <T: MatrixType>(lhs: T, rhs: Vector) -> Vector {
+    return Vector(x: lhs.a * rhs.x + lhs.b * rhs.y + lhs.c * rhs.z + lhs.d, y: lhs.e * rhs.x + lhs.f * rhs.y + lhs.g * rhs.z + lhs.h, z: lhs.i * rhs.x + lhs.j * rhs.y + lhs.k * rhs.z + lhs.l)
 }
