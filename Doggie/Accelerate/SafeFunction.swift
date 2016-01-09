@@ -248,6 +248,22 @@ public func transpose<T>(row: Int, _ column: Int, var _ data: [T]) -> [T] {
 }
 
 @warn_unused_result
+public func MatrixElimination(row: Int, inout _ matrix: [Float]) -> Bool {
+    let column = matrix.count / row
+    assert(matrix.count % row == 0, "count of matrix is not multiples of row.")
+    assert(column > row, "count of column of matrix is less than or equal to row.")
+    return MatrixElimination(row, column, &matrix, 1, 1)
+}
+
+@warn_unused_result
+public func MatrixElimination(row: Int, inout _ matrix: [Double]) -> Bool {
+    let column = matrix.count / row
+    assert(matrix.count % row == 0, "count of matrix is not multiples of row.")
+    assert(column > row, "count of column of matrix is less than or equal to row.")
+    return MatrixElimination(row, column, &matrix, 1, 1)
+}
+
+@warn_unused_result
 public func Radix2CooleyTukey(var buffer: [Complex]) -> [Complex] {
     assert(buffer.count.isPower2, "size of buffer must be power of 2.")
     let _sqrt = sqrt(Double(buffer.count))

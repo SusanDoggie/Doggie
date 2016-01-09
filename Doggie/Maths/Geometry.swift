@@ -1220,7 +1220,7 @@ private func degree6RationalIntegral(p: Polynomial, _ q: Polynomial) -> Double {
             matrix.appendContentsOf(m.map { $0.eval(0) })
             m = m.map { $0.derivative }
         }
-        if MatrixElimination(_q.degree, _q.degree + 1, &matrix, 1, 1) {
+        if MatrixElimination(_q.degree, &matrix) {
             var c = matrix.collect(_q.degree.stride(to: matrix.count, by: _q.degree + 1)).generate()
             for part in partials {
                 switch part {

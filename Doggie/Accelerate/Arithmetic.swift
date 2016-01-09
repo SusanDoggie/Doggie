@@ -1133,6 +1133,41 @@ public func Deconvolve(signal_count: Int, var _ signal: UnsafePointer<Double>, _
     }
 }
 
+public func MatrixElimination(row: Int, _ column: Int, _ matrix: UnsafeMutablePointer<Float>, _ stride_row: Int, _ stride_col: Int) -> Bool {
+    
+    let row_offset = stride_row * stride_col * column
+    let endptr = matrix + row_offset * row
+    
+    var current_row = matrix
+    var i_offset = 0
+    while current_row != endptr {
+        var m = (current_row + i_offset).memory
+        if m == 0 {
+            var swap_ptr = current_row + row_offset
+            repeat {
+                if swap_ptr == endptr {
+                    return false
+                }
+                swap_ptr += row_offset
+                m = (swap_ptr + i_offset).memory
+            } while m == 0
+            Swap(column, current_row, stride_col, swap_ptr, stride_col)
+        }
+        Div(column, current_row, stride_col, &m, 0, current_row, stride_col)
+        var scan = matrix
+        while scan != endptr {
+            if scan != current_row {
+                var n = (scan + i_offset).memory
+                SubMul(column, scan, stride_col, current_row, stride_col, &n, 0, scan, stride_col)
+            }
+            scan += row_offset
+        }
+        i_offset += stride_col
+        current_row += row_offset
+    }
+    return true
+}
+
 public func MatrixElimination(row: Int, _ column: Int, _ matrix: UnsafeMutablePointer<Double>, _ stride_row: Int, _ stride_col: Int) -> Bool {
     
     let row_offset = stride_row * stride_col * column
