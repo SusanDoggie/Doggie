@@ -26,7 +26,16 @@
 import Foundation
 
 public struct Vector {
-    public var x, y, z: Double
+    
+    public var x: Double
+    public var y: Double
+    public var z: Double
+    
+    public init() {
+        self.x = 0
+        self.y = 0
+        self.z = 0
+    }
     
     public init(x: Double, y: Double, z: Double) {
         self.x = x

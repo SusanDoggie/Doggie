@@ -26,7 +26,9 @@
 import Foundation
 
 public struct Complex {
-    public var real = 0.0, imag = 0.0
+    
+    public var real: Double
+    public var imag: Double
     
     public init(_ real: Double) {
         self.real = real

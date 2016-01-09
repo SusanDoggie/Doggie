@@ -39,10 +39,6 @@ public struct Point {
         self.x = x
         self.y = y
     }
-    public init(x: Int, y: Int) {
-        self.x = Double(x)
-        self.y = Double(y)
-    }
 }
 
 extension Point {
