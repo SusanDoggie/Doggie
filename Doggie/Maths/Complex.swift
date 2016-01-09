@@ -39,11 +39,36 @@ public struct Complex {
 }
 
 extension Complex: CustomStringConvertible, CustomDebugStringConvertible {
+    
     public var description: String {
-        return tensorFormatter((self.real, ""), (self.imag, "𝒊"))
+        
+        var print = ""
+        
+        switch real {
+        case 0: break
+        case 1: print += "1.0"
+        case -1: print += "-1.0"
+        default: print += String(format: "%.2f", real)
+        }
+        
+        if print != "" && !imag.isSignMinus {
+            print += "+"
+        }
+        switch imag {
+        case 0: break
+        case 1: print += "𝒊"
+        case -1: print += "-𝒊"
+        default: print += String(format: "%.2f𝒊", imag)
+        }
+        
+        if print == "" {
+            print = "0.0"
+        }
+        return print
     }
+    
     public var debugDescription: String {
-        return tensorFormatter((self.real, ""), (self.imag, "𝒊"))
+        return self.description
     }
 }
 

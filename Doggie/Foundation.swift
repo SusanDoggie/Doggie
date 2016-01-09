@@ -1207,33 +1207,6 @@ public extension String {
 }
 
 @warn_unused_result
-public func tensorFormatter(data: (Double, String)...) -> String {
-    var print = ""
-    for val in data where val.0 != 0 {
-        if print != "" && !val.0.isSignMinus {
-            print += "+"
-        }
-        switch val {
-        case (1.0, ""):
-            print += "1.0"
-        case (1.0, _):
-            print += "\(val.1)"
-        case (-1.0, ""):
-            print += "-1.0"
-        case (-1.0, _):
-            print += "-\(val.1)"
-        default:
-            let _val = String(format: "%.2f", val.0)
-            print += "\(_val)\(val.1)"
-        }
-    }
-    if print == "" {
-        print = "0.0"
-    }
-    return print
-}
-
-@warn_unused_result
 public func hash<S : SequenceType where S.Generator.Element : Hashable>(val: S) -> Int {
     let _val = val.array
     switch _val.count {

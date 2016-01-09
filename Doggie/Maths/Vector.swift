@@ -36,11 +36,46 @@ public struct Vector {
 }
 
 extension Vector: CustomStringConvertible, CustomDebugStringConvertible {
+    
     public var description: String {
-        return tensorFormatter((self.x, "𝒊"), (self.y, "𝒋"), (self.z, "𝒌"))
+        
+        var print = ""
+        
+        switch x {
+        case 0: break
+        case 1: print += "𝒊"
+        case -1: print += "-𝒊"
+        default: print += String(format: "%.2f𝒊", x)
+        }
+        
+        if print != "" && !y.isSignMinus {
+            print += "+"
+        }
+        switch y {
+        case 0: break
+        case 1: print += "𝒋"
+        case -1: print += "-𝒋"
+        default: print += String(format: "%.2f𝒋", x)
+        }
+        
+        if print != "" && !z.isSignMinus {
+            print += "+"
+        }
+        switch z {
+        case 0: break
+        case 1: print += "𝒌"
+        case -1: print += "-𝒌"
+        default: print += String(format: "%.2f𝒌", x)
+        }
+        
+        if print == "" {
+            print = "0.0"
+        }
+        return print
     }
+    
     public var debugDescription: String {
-        return tensorFormatter((self.x, "𝒊"), (self.y, "𝒋"), (self.z, "𝒌"))
+        return self.description
     }
 }
 
