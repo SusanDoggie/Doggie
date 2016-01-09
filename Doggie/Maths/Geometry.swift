@@ -25,6 +25,8 @@
 
 import Foundation
 
+// MARK: Ellipse
+
 public struct Radius {
     
     public var x: Double
@@ -164,6 +166,8 @@ public func EllipseBound<T: SDTransformType>(center: Point, _ r: Radius, _ matri
     
     return Rect(x: minX + matrix.c, y: minY + matrix.f, width: maxX - minX, height: maxY - minY)
 }
+
+// MARK: Bézier Curve
 
 @warn_unused_result
 public func Bezier(t: Double, _ p: Double ... ) -> Double {
@@ -401,6 +405,8 @@ private func BezierDerivative(p: [Vector]) -> [Vector] {
     return de
 }
 
+// MARK: Stationary Points
+
 @warn_unused_result
 public func QuadBezierStationary(p0: Double, _ p1: Double, _ p2: Double) -> Double? {
     let d = p0 + p2 - 2 * p1
@@ -498,6 +504,8 @@ public func CubicBezierStationary(p0: Point, _ p1: Point, _ p2: Point, _ p3: Poi
     }
     return []
 }
+
+// MARK: Boundary
 
 @warn_unused_result
 public func QuadBezierBound(p0: Point, _ p1: Point, _ p2: Point) -> Rect {
@@ -647,6 +655,8 @@ public func BezierArc(angle: Double) -> [Point] {
     }
     return angle.isSignMinus ? result.map { Point(x: $0.x, y: -$0.y) } : result
 }
+
+// MARK: Path Intersection
 
 @warn_unused_result
 public func CubicBezierSelfIntersect(p0: Point, _ p1: Point, _ p2: Point, _ p3: Point) -> (Double, Double)? {
