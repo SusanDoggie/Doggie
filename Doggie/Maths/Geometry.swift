@@ -1024,6 +1024,47 @@ public func CubicBeziersIntersect(c0: Point, _ c1: Point, _ c2: Point, _ c3: Poi
     return det.all({ $0.almostZero }) ? nil : det.roots
 }
 
+// MARK: Winding Number
+
+private func _integral(n: Double, _ b: Double, _ c: Double) -> Double {
+    
+    let delta = b * b - 4 * c
+    
+    if delta.almostZero {
+        return 4 * n / (b * (2 + b))
+    }
+    if delta.isSignMinus {
+        let q = sqrt(-delta)
+        return -2 * n * (atan2(q, 2 + b) - atan2(q, b)) / q
+    } else {
+        let q = sqrt(delta)
+        return -2 * n * (atanh((2 + b) / q) - atanh(b / q)) / q
+    }
+}
+
+private func _integral(m: Double, _ n: Double, _ b: Double, _ c: Double) -> Double {
+    
+    let _m = 0.5 * m
+    return _m * log(abs(1 + (1 + b) / c)) + _integral(n - _m * b, b, c)
+}
+
+private func _integral(m: Double, _ n: Double, _ b: Double, _ c: Double, _ r: Int) -> Double {
+    
+    if r == 1 {
+        return _integral(m, n, b, c)
+    }
+    
+    let _r = r - 1
+    let s = Double(_r) * (4 * c - b * b)
+    
+    let t = (2 + b) * n - (b + 2 * c) * m
+    let u = s * pow(1 + b + c, Double(_r))
+    let v = b * n - 2 * c * m
+    let w = s * pow(c, Double(_r))
+    
+    return t / u - v / w + _integral(0, Double(2 * r - 3) * (2 * n - b * m) / s, b, c, _r)
+}
+
 @warn_unused_result
 public func LineWinding(p0: Point, _ p1: Point) -> Double {
     
@@ -1036,92 +1077,185 @@ public func LineWinding(p0: Point, _ p1: Point) -> Double {
         return 0
     }
     
-    let m = x1 * y0 - x0 * y1
+    let m = x0 * y1 - x1 * y0
     let a = x1 * x1 + y1 * y1
     let b = 2 * (x0 * x1 + y0 * y1)
     let c = x0 * x0 + y0 * y0
     
-    let delta = b * b - 4 * a * c
+    return a.almostZero ? 0 : 0.5 * M_1_PI * _integral(m / a, b / a, c / a)
+}
+
+private enum PartialPolynomial {
     
-    let _a = 2 * a + b
-    let _m = M_1_PI * m
+    case One(Double, Int)
+    case Two(Double, Double, Int)
+}
+
+extension PartialPolynomial {
     
+    var degree : Int {
+        switch self {
+        case One: return 1
+        case Two: return 2
+        }
+    }
+    var power : Int {
+        switch self {
+        case One(_, let p): return p
+        case Two(_, _, let p): return p
+        }
+    }
+    var polynomial : Polynomial {
+        switch self {
+        case One(let a, _): return [a, 1]
+        case Two(let a, let b, _): return [a, b, 1]
+        }
+    }
+}
+
+extension PartialPolynomial {
+    
+    var a : Double {
+        switch self {
+        case One(let a, _): return a
+        case Two(let a, _, _): return a
+        }
+    }
+    func almostEqual(p: Double) -> Bool {
+        switch self {
+        case One(let a, _): return (p - a).almostZero
+        case Two(_, _, _): return false
+        }
+    }
+    func almostEqual(p: (Double, Double)) -> Bool {
+        switch self {
+        case One(_, _): return false
+        case Two(let a, let b, _): return (p.0 - a).almostZero && (p.1 - b).almostZero
+        }
+    }
+}
+
+private func appendPartialPolynomial(inout p: [PartialPolynomial], _ poly: Double) {
+    let power = p.lazy.filter { $0.almostEqual(poly) }.maxElement { $0.power }?.power ?? 0
+    p.append(.One(poly, power + 1))
+}
+
+private func appendPartialPolynomial(inout p: [PartialPolynomial], _ poly: (Double, Double)) {
+    let delta = poly.1 * poly.1 - 4 * poly.0
     if delta.almostZero {
-        return -2 * _m * a / (_a * b)
-    }
-    if delta.isSignMinus {
-        let s = sqrt(-delta)
-        return _m * (atan2(s, _a) - atan2(s, b)) / s
+        appendPartialPolynomial(&p, 0.5 * poly.1)
+        appendPartialPolynomial(&p, 0.5 * poly.1)
+    } else if delta > 0 {
+        let _sqrt = sqrt(delta)
+        appendPartialPolynomial(&p, 0.5 * (poly.1 - _sqrt))
+        appendPartialPolynomial(&p, 0.5 * (poly.1 + _sqrt))
     } else {
-        let s = sqrt(delta)
-        return -_m * (atanh(_a / s) - atanh(b / s)) / s
+        let power = p.lazy.filter { $0.almostEqual(poly) }.maxElement { $0.power }?.power ?? 0
+        p.append(.Two(poly.0, poly.1, power + 1))
     }
+}
+
+private func degree6RationalIntegral(p: Polynomial, _ q: Polynomial) -> Double {
+    
+    var partials: [PartialPolynomial] = []
+    
+    let _p = p / q.last!
+    let _q = q / q.last!
+    let (quo, rem) = remquo(_p, _q)
+    let _quo_integral = quo.integral
+    
+    var result = _quo_integral.eval(1) - _quo_integral.eval(0)
+    
+    switch _q.degree {
+    case 0: return result
+    case 1:
+        appendPartialPolynomial(&partials, _q[0])
+    case 2:
+        appendPartialPolynomial(&partials, (_q[0], _q[1]))
+    case 3:
+        let d = degree3decompose(_q[2], _q[1], _q[0])
+        appendPartialPolynomial(&partials, -d.0)
+        appendPartialPolynomial(&partials, (d.1.1, d.1.0))
+    case 4:
+        let d = degree4decompose(_q[3], _q[2], _q[1], _q[0])
+        appendPartialPolynomial(&partials, (d.0.1, d.0.0))
+        appendPartialPolynomial(&partials, (d.1.1, d.1.0))
+    case 5:
+        let d = degree5decompose(_q[4], _q[3], _q[2], _q[1], _q[0])
+        appendPartialPolynomial(&partials, -d.0)
+        appendPartialPolynomial(&partials, (d.1.1, d.1.0))
+        appendPartialPolynomial(&partials, (d.2.1, d.2.0))
+    case 6:
+        let d = degree6decompose(_q[5], _q[4], _q[3], _q[2], _q[1], _q[0])
+        appendPartialPolynomial(&partials, (d.0.1, d.0.0))
+        appendPartialPolynomial(&partials, (d.1.1, d.1.0))
+        appendPartialPolynomial(&partials, (d.2.1, d.2.0))
+    default: fatalError()
+    }
+    
+    if partials.all({ $0.degree == 1 && $0.power == 1 }) {
+        
+        let derivative = _q.derivative
+        for item in partials {
+            let c = rem.eval(-item.a) / derivative.eval(-item.a)
+            result += c * log(abs(1 + 1 / item.a))
+        }
+        
+    } else {
+        
+        var m: [Polynomial] = []
+        for item in partials {
+            let poly = item.power == 1 ? _q / item.polynomial : _q / pow(item.polynomial, item.power)
+            m.append(poly)
+            if item.degree == 2 {
+                m.append(Polynomial(CollectionOfOne(0).concat(poly)))
+            }
+        }
+        m.append(rem)
+        
+        var matrix: [Double] = []
+        for _ in 0..<_q.degree {
+            matrix.appendContentsOf(m.map { $0.eval(0) })
+            m = m.map { $0.derivative }
+        }
+        if MatrixElimination(_q.degree, _q.degree + 1, &matrix, 1, 1) {
+            var c = matrix.collect(_q.degree.stride(to: matrix.count, by: _q.degree + 1)).generate()
+            for part in partials {
+                switch part {
+                case .One(let a, let n):
+                    let s = c.next()!
+                    if n == 1 {
+                        result += s * log(abs(1 + 1 / a))
+                    } else {
+                        let _n = Double(1 - n)
+                        result += s * pow(a + 1, _n) * pow(a, _n) / _n
+                    }
+                case .Two(let a, let b, let n):
+                    let s = c.next()!
+                    let t = c.next()!
+                    result += _integral(t, s, b, a, n)
+                }
+            }
+        }
+    }
+    
+    return result
 }
 
 @warn_unused_result
 public func QuadBezierWinding(p0: Point, _ p1: Point, _ p2: Point) -> Double {
     
-    let x2 = p0.x - 2 * p1.x + p2.x
-    let x1 = 2 * (p1.x - p0.x)
-    let x0 = p0.x
+    let x: Polynomial = [p0.x, 2 * (p1.x - p0.x), p0.x - 2 * p1.x + p2.x]
+    let y: Polynomial = [p0.y, 2 * (p1.y - p0.y), p0.y - 2 * p1.y + p2.y]
     
-    let y2 = p0.y - 2 * p1.y + p2.y
-    let y1 = 2 * (p1.y - p0.y)
-    let y0 = p0.y
+    return 0.5 * M_1_PI * degree6RationalIntegral(x * y.derivative - x.derivative * y, x * x + y * y)
+}
+
+@warn_unused_result
+public func CubicBezierWinding(p0: Point, _ p1: Point, _ p2: Point, _ p3: Point) -> Double {
     
-    let _a = x2 * x2 + y2 * y2
-    if _a.almostZero {
-        return 0
-    }
+    let x: Polynomial = [p0.x, 3 * (p1.x - p0.x), 3 * (p2.x + p0.x) - 6 * p1.x, p3.x - p0.x + 3 * (p1.x - p2.x)]
+    let y: Polynomial = [p0.y, 3 * (p1.y - p0.y), 3 * (p2.y + p0.y) - 6 * p1.y, p3.y - p0.y + 3 * (p1.y - p2.y)]
     
-    let _b = 2 * (x2 * x1 + y2 * y1)
-    let _c = 2 * (x2 * x0 + y2 * y0) + x1 * x1 + y1 * y1
-    let _d = 2 * (x1 * x0 + y1 * y0)
-    let _e = x0 * x0 + y0 * y0
-    
-    let ((a, b), (c, d)) = degree4decompose(_b / _a, _c / _a, _d / _a, _e / _a)
-    
-    let m = (x2 * y1 - x1 * y2) / _a
-    let n = 2 * (x2 * y0 - x0 * y2) / _a
-    let q = (x1 * y0 - x0 * y1) / _a
-    
-    let bm = b * m
-    let dm = d * m
-    let bn = b * n
-    let dn = d * n
-    let aq = a * q
-    let cq = c * q
-    let ac = a * c
-    let bq = b * q
-    let dq = d * q
-    let bm_dm = bm - dm
-    let cq_aq = cq - aq
-    let bq_dq = bq - dq
-    
-    let A = bm * c - dm * a - bn + dn + aq - cq
-    let B = b * (c * n + bm_dm) - a * (bn + cq_aq) - bq_dq
-    let C = -A
-    let D = d * (a * n - bm_dm) - c * (dn - cq_aq) + bq_dq
-    let det = d * (a * a - ac + d) + b * (c * c - ac + b) - 2 * d * b
-    
-    func integral(m: Double, _ n: Double, _ b: Double, _ c: Double) -> Double {
-        
-        let delta = b * b - 4 * c
-        
-        let s = 0.5 * m * (log(abs(b + c)) - log(abs(c)))
-        let t = 2 * n - b * m
-        
-        if delta.almostZero {
-            return s + 2 * t / (b * (2 + b))
-        }
-        if delta.isSignMinus {
-            let q = sqrt(-delta)
-            return s + t * (atan2(q, 2 + b) - atan2(q, b)) / q
-        } else {
-            let q = sqrt(delta)
-            return s - t * (atanh((2 + b) / q) - atanh(b / q)) / q
-        }
-    }
-    
-    return 0.5 * M_1_PI * (integral(A / det, B / det, a, b) + integral(C / det, D / det, c, d))
+    return 0.5 * M_1_PI * degree6RationalIntegral(x * y.derivative - x.derivative * y, x * x + y * y)
 }
