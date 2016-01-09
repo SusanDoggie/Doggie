@@ -240,7 +240,7 @@ private func Bezier(t: Double, _ p: [Double]) -> Double {
 }
 
 private func Bezier(t: Double, _ p: [Point]) -> Point {
-    var result = Point(x: 0, y: 0)
+    var result = Point()
     let _n = p.count - 1
     for (idx, k) in CombinationList(UInt(_n)).enumerate() {
         let b = Double(k) * pow(t, Double(idx)) * pow(1 - t, Double(_n - idx))
@@ -250,7 +250,7 @@ private func Bezier(t: Double, _ p: [Point]) -> Point {
 }
 
 private func Bezier(t: Double, _ p: [Vector]) -> Vector {
-    var result = Vector(x: 0, y: 0, z: 0)
+    var result = Vector()
     let _n = p.count - 1
     for (idx, k) in CombinationList(UInt(_n)).enumerate() {
         let b = Double(k) * pow(t, Double(idx)) * pow(1 - t, Double(_n - idx))
@@ -614,26 +614,26 @@ public func BezierArc(angle: Double) -> [Point] {
     
     var counter = 0
     var _angle = abs(angle)
-    var result = [Point(x: 1, y: 0)]
+    var result = [Point(x: 1.0, y: 0.0)]
     
     while _angle > 0 {
         switch counter & 3 {
         case 0:
-            result.append(Point(x: 1, y: c))
-            result.append(Point(x: c, y: 1))
-            result.append(Point(x: 0, y: 1))
+            result.append(Point(x: 1.0, y: c))
+            result.append(Point(x: c, y: 1.0))
+            result.append(Point(x: 0.0, y: 1.0))
         case 1:
-            result.append(Point(x: -c, y: 1))
-            result.append(Point(x: -1, y: c))
-            result.append(Point(x: -1, y: 0))
+            result.append(Point(x: -c, y: 1.0))
+            result.append(Point(x: -1.0, y: c))
+            result.append(Point(x: -1.0, y: 0.0))
         case 2:
-            result.append(Point(x: -1, y: -c))
-            result.append(Point(x: -c, y: -1))
-            result.append(Point(x: 0, y: -1))
+            result.append(Point(x: -1.0, y: -c))
+            result.append(Point(x: -c, y: -1.0))
+            result.append(Point(x: 0.0, y: -1.0))
         case 3:
-            result.append(Point(x: c, y: -1))
-            result.append(Point(x: 1, y: -c))
-            result.append(Point(x: 1, y: 0))
+            result.append(Point(x: c, y: -1.0))
+            result.append(Point(x: 1.0, y: -c))
+            result.append(Point(x: 1.0, y: 0.0))
         default: break
         }
         if _angle < M_PI_2 {
