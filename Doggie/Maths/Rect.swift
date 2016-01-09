@@ -85,10 +85,6 @@ public struct Rect {
         self.origin = Point(x: x, y: y)
         self.size = Size(width: width, height: height)
     }
-    public init(x: Int, y: Int, width: Int, height: Int) {
-        self.origin = Point(x: x, y: y)
-        self.size = Size(width: width, height: height)
-    }
 }
 
 extension Rect: CustomStringConvertible, CustomDebugStringConvertible {
