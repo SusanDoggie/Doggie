@@ -1038,9 +1038,11 @@ private func _integral(n: Double, _ b: Double, _ c: Double) -> Double {
         return -2 * n * (atan2(q, 2 + b) - atan2(q, b)) / q
     } else {
         let q = sqrt(delta)
-        let s = (2 + b - q) * (b + q)
-        let t = (2 + b + q) * (b - q)
-        return n * (log(abs(s / t))) / q
+        let s = b - q
+        let t = b + q
+        let u = t * (s + 2)
+        let v = s * (t + 2)
+        return n * (log(abs(u / v))) / q
     }
 }
 
@@ -1170,10 +1172,8 @@ private func degree6RationalIntegral(p: Polynomial, _ q: Polynomial) -> Double {
     
     switch _q.degree {
     case 0: return result
-    case 1:
-        appendPartialPolynomial(&partials, _q[0])
-    case 2:
-        appendPartialPolynomial(&partials, (_q[0], _q[1]))
+    case 1: return result + rem[0] * log(abs(1 + 1 / _q[0]))
+    case 2: return result + _integral(rem[1], rem[0], _q[1], _q[0])
     case 3:
         let d = degree3decompose(_q[2], _q[1], _q[0])
         appendPartialPolynomial(&partials, -d.0)
