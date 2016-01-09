@@ -297,6 +297,10 @@ public func degree4decompose(b: Double, _ c: Double, _ d: Double, _ e: Double) -
             let _c = m * m
             return ((_b, _c), (_b, _c))
         }
+        if _S.isSignMinus {
+            let S = 0.25 * (_S + de0 / _S - 2 * p) / 3
+            return ((2 * m, m * m - S), (2 * m, m * m - S))
+        }
         S = 0.5 * sqrt((_S + de0 / _S - 2 * p) / 3)
     }
     let _t = -4 * S * S - 2 * p
