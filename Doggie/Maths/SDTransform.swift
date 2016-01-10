@@ -272,6 +272,10 @@ extension SDTransform.Identity {
 public func == (_: SDTransform.Identity, _: SDTransform.Identity) -> Bool {
     return true
 }
+@warn_unused_result
+public func != (_: SDTransform.Identity, _: SDTransform.Identity) -> Bool {
+    return false
+}
 
 @warn_unused_result
 public func * (_: SDTransform.Identity, _: SDTransform.Identity) -> SDTransform.Identity {
@@ -321,6 +325,10 @@ extension SDTransform.Rotate {
 public func == (lhs: SDTransform.Rotate, rhs: SDTransform.Rotate) -> Bool {
     return lhs.angle == rhs.angle
 }
+@warn_unused_result
+public func != (lhs: SDTransform.Rotate, rhs: SDTransform.Rotate) -> Bool {
+    return lhs.angle != rhs.angle
+}
 
 @warn_unused_result
 public func * (lhs: SDTransform.Rotate, rhs: SDTransform.Rotate) -> SDTransform.Rotate {
@@ -360,6 +368,10 @@ extension SDTransform.SkewX {
 @warn_unused_result
 public func == (lhs: SDTransform.SkewX, rhs: SDTransform.SkewX) -> Bool {
     return lhs.angle == rhs.angle
+}
+@warn_unused_result
+public func != (lhs: SDTransform.SkewX, rhs: SDTransform.SkewX) -> Bool {
+    return lhs.angle != rhs.angle
 }
 
 @warn_unused_result
@@ -401,6 +413,10 @@ extension SDTransform.SkewY {
 public func == (lhs: SDTransform.SkewY, rhs: SDTransform.SkewY) -> Bool {
     return lhs.angle == rhs.angle
 }
+@warn_unused_result
+public func != (lhs: SDTransform.SkewY, rhs: SDTransform.SkewY) -> Bool {
+    return lhs.angle != rhs.angle
+}
 
 @warn_unused_result
 public func * (lhs: SDTransform.SkewY, rhs: SDTransform.SkewY) -> SDTransform.SkewY {
@@ -440,6 +456,10 @@ extension SDTransform.Scale {
 @warn_unused_result
 public func == (lhs: SDTransform.Scale, rhs: SDTransform.Scale) -> Bool {
     return lhs.x == rhs.x && lhs.y == rhs.y
+}
+@warn_unused_result
+public func != (lhs: SDTransform.Scale, rhs: SDTransform.Scale) -> Bool {
+    return lhs.x != rhs.x || lhs.y != rhs.y
 }
 
 @warn_unused_result
@@ -482,6 +502,10 @@ extension SDTransform.Translate {
 public func == (lhs: SDTransform.Translate, rhs: SDTransform.Translate) -> Bool {
     return lhs.x == rhs.x && lhs.y == rhs.y
 }
+@warn_unused_result
+public func != (lhs: SDTransform.Translate, rhs: SDTransform.Translate) -> Bool {
+    return lhs.x != rhs.x || lhs.y != rhs.y
+}
 
 @warn_unused_result
 public func * (lhs: SDTransform.Translate, rhs: SDTransform.Translate) -> SDTransform.Translate {
@@ -523,6 +547,10 @@ extension SDTransform.ReflectX {
 public func == (lhs: SDTransform.ReflectX, rhs: SDTransform.ReflectX) -> Bool {
     return lhs.x == rhs.x
 }
+@warn_unused_result
+public func != (lhs: SDTransform.ReflectX, rhs: SDTransform.ReflectX) -> Bool {
+    return lhs.x != rhs.x
+}
 
 extension SDTransform.ReflectY {
     
@@ -554,6 +582,10 @@ extension SDTransform.ReflectY {
 public func == (lhs: SDTransform.ReflectY, rhs: SDTransform.ReflectY) -> Bool {
     return lhs.y == rhs.y
 }
+@warn_unused_result
+public func != (lhs: SDTransform.ReflectY, rhs: SDTransform.ReflectY) -> Bool {
+    return lhs.y != rhs.y
+}
 
 @warn_unused_result
 public func == <S: SDTransformType, T: SDTransformType>(lhs: S, rhs: T) -> Bool {
@@ -561,7 +593,7 @@ public func == <S: SDTransformType, T: SDTransformType>(lhs: S, rhs: T) -> Bool 
 }
 @warn_unused_result
 public func != <S: SDTransformType, T: SDTransformType>(lhs: S, rhs: T) -> Bool {
-    return !(lhs == rhs)
+    return lhs.a != rhs.a || lhs.b != rhs.b || lhs.c != rhs.c || lhs.d != rhs.d || lhs.e != rhs.e || lhs.f != rhs.f
 }
 
 @warn_unused_result

@@ -164,3 +164,7 @@ public func -= (inout lhs: Vector, rhs:  Vector) {
 public func ==(lhs: Vector, rhs: Vector) -> Bool {
     return lhs.x == rhs.x && lhs.y == rhs.y && lhs.z == rhs.z
 }
+@warn_unused_result
+public func !=(lhs: Vector, rhs: Vector) -> Bool {
+    return lhs.x != rhs.x || lhs.y != rhs.y || lhs.z != rhs.z
+}

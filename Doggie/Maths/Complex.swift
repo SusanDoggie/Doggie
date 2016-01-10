@@ -409,4 +409,8 @@ public func !=(lhs: Complex, rhs: Double) -> Bool {
 public func ==(lhs: Complex, rhs: Complex) -> Bool {
     return lhs.real == rhs.real && lhs.imag == rhs.imag
 }
+@warn_unused_result
+public func !=(lhs: Complex, rhs: Complex) -> Bool {
+    return lhs.real != rhs.real || lhs.imag != rhs.imag
+}
 

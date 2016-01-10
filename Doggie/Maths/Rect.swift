@@ -65,6 +65,10 @@ extension Size: Hashable {
 public func == (lhs: Size, rhs: Size) -> Bool {
     return lhs.width == rhs.width && lhs.height == rhs.height
 }
+@warn_unused_result
+public func != (lhs: Size, rhs: Size) -> Bool {
+    return lhs.width != rhs.width || lhs.height != rhs.height
+}
 
 public struct Rect {
     
@@ -106,6 +110,10 @@ extension Rect: Hashable {
 @warn_unused_result
 public func == (lhs: Rect, rhs: Rect) -> Bool {
     return lhs.origin == rhs.origin && lhs.size == rhs.size
+}
+@warn_unused_result
+public func != (lhs: Rect, rhs: Rect) -> Bool {
+    return lhs.origin != rhs.origin || lhs.size != rhs.size
 }
 
 extension Rect {

@@ -67,6 +67,10 @@ extension Radius: Hashable {
 public func == (lhs: Radius, rhs: Radius) -> Bool {
     return lhs.x == rhs.x && lhs.y == rhs.y
 }
+@warn_unused_result
+public func != (lhs: Radius, rhs: Radius) -> Bool {
+    return lhs.x != rhs.x || lhs.y != rhs.y
+}
 
 @warn_unused_result
 public func Ellipse(t: Double, _ p: Point, _ r: Radius) -> Point {

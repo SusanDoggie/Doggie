@@ -155,3 +155,7 @@ public func -= (inout lhs: Point, rhs:  Point) {
 public func == (lhs: Point, rhs: Point) -> Bool {
     return lhs.x == rhs.x && lhs.y == rhs.y
 }
+@warn_unused_result
+public func != (lhs: Point, rhs: Point) -> Bool {
+    return lhs.x != rhs.x || lhs.y != rhs.y
+}

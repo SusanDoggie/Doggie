@@ -350,6 +350,10 @@ extension Matrix.Identity {
 public func == (_: Matrix.Identity, _: Matrix.Identity) -> Bool {
     return true
 }
+@warn_unused_result
+public func != (lhs: Matrix.Identity, rhs: Matrix.Identity) -> Bool {
+    return false
+}
 
 @warn_unused_result
 public func * (_: Matrix.Identity, _: Matrix.Identity) -> Matrix.Identity {
@@ -417,6 +421,10 @@ extension Matrix.RotateX {
 public func == (lhs: Matrix.RotateX, rhs: Matrix.RotateX) -> Bool {
     return lhs.angle == rhs.angle
 }
+@warn_unused_result
+public func != (lhs: Matrix.RotateX, rhs: Matrix.RotateX) -> Bool {
+    return lhs.angle != rhs.angle
+}
 
 @warn_unused_result
 public func * (lhs: Matrix.RotateX, rhs: Matrix.RotateX) -> Matrix.RotateX {
@@ -474,6 +482,10 @@ extension Matrix.RotateY {
 @warn_unused_result
 public func == (lhs: Matrix.RotateY, rhs: Matrix.RotateY) -> Bool {
     return lhs.angle == rhs.angle
+}
+@warn_unused_result
+public func != (lhs: Matrix.RotateY, rhs: Matrix.RotateY) -> Bool {
+    return lhs.angle != rhs.angle
 }
 
 @warn_unused_result
@@ -533,6 +545,10 @@ extension Matrix.RotateZ {
 public func == (lhs: Matrix.RotateZ, rhs: Matrix.RotateZ) -> Bool {
     return lhs.angle == rhs.angle
 }
+@warn_unused_result
+public func != (lhs: Matrix.RotateZ, rhs: Matrix.RotateZ) -> Bool {
+    return lhs.angle != rhs.angle
+}
 
 @warn_unused_result
 public func * (lhs: Matrix.RotateZ, rhs: Matrix.RotateZ) -> Matrix.RotateZ {
@@ -590,6 +606,10 @@ extension Matrix.Scale {
 @warn_unused_result
 public func == (lhs: Matrix.Scale, rhs: Matrix.Scale) -> Bool {
     return lhs.x == rhs.x && lhs.y == rhs.y && lhs.z == rhs.z
+}
+@warn_unused_result
+public func != (lhs: Matrix.Scale, rhs: Matrix.Scale) -> Bool {
+    return lhs.x != rhs.x || lhs.y != rhs.y || lhs.z != rhs.z
 }
 
 @warn_unused_result
@@ -651,6 +671,10 @@ extension Matrix.Translate {
 public func == (lhs: Matrix.Translate, rhs: Matrix.Translate) -> Bool {
     return lhs.x == rhs.x && lhs.y == rhs.y && lhs.z == rhs.z
 }
+@warn_unused_result
+public func != (lhs: Matrix.Translate, rhs: Matrix.Translate) -> Bool {
+    return lhs.x != rhs.x || lhs.y != rhs.y || lhs.z != rhs.z
+}
 
 @warn_unused_result
 public func * (lhs: Matrix.Translate, rhs: Matrix.Translate) -> Matrix.Translate {
@@ -671,7 +695,9 @@ public func == <S: MatrixType, T: MatrixType>(lhs: S, rhs: T) -> Bool {
 }
 @warn_unused_result
 public func != <S: MatrixType, T: MatrixType>(lhs: S, rhs: T) -> Bool {
-    return !(lhs == rhs)
+    return lhs.a != rhs.a || lhs.b != rhs.b || lhs.c != rhs.c || lhs.d != rhs.d
+        || lhs.e != rhs.e || lhs.f != rhs.f || lhs.g != rhs.g || lhs.h != rhs.h
+        || lhs.i != rhs.i || lhs.j != rhs.j || lhs.k != rhs.k || lhs.l != rhs.l
 }
 
 @warn_unused_result
