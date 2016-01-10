@@ -91,11 +91,10 @@ extension Vector: CustomStringConvertible, CustomDebugStringConvertible {
 extension Vector: Hashable {
     
     public var hashValue: Int {
-        let a = x.hashValue
-        let b = y.hashValue
-        let c = a ^ b ^ (a &+ b) ^ (a &- b)
-        let d = z.hashValue
-        return c ^ d ^ (c &+ d) ^ (c &- d)
+        var a = x.hashValue
+        var b = y.hashValue
+        (a, b) = (a ^ b ^ (a &+ b) ^ (a &- b), z.hashValue)
+        return a ^ b ^ (a &+ b) ^ (a &- b)
     }
 }
 

@@ -145,39 +145,23 @@ extension UUID: CustomStringConvertible, CustomDebugStringConvertible {
 extension UUID: Hashable, Comparable {
     
     public var hashValue: Int {
-        let a = byte0.hashValue
-        let b = byte1.hashValue
-        var c = a ^ b ^ (a &+ b) ^ (a &- b)
-        var d = byte2.hashValue
-        
-        c = a ^ b ^ (a &+ b) ^ (a &- b)
-        d = byte3.hashValue
-        c = a ^ b ^ (a &+ b) ^ (a &- b)
-        d = byte4.hashValue
-        c = a ^ b ^ (a &+ b) ^ (a &- b)
-        d = byte5.hashValue
-        c = a ^ b ^ (a &+ b) ^ (a &- b)
-        d = byte6.hashValue
-        c = a ^ b ^ (a &+ b) ^ (a &- b)
-        d = byte7.hashValue
-        c = a ^ b ^ (a &+ b) ^ (a &- b)
-        d = byte8.hashValue
-        c = a ^ b ^ (a &+ b) ^ (a &- b)
-        d = byte9.hashValue
-        c = a ^ b ^ (a &+ b) ^ (a &- b)
-        d = byte10.hashValue
-        c = a ^ b ^ (a &+ b) ^ (a &- b)
-        d = byte11.hashValue
-        c = a ^ b ^ (a &+ b) ^ (a &- b)
-        d = byte12.hashValue
-        c = a ^ b ^ (a &+ b) ^ (a &- b)
-        d = byte13.hashValue
-        c = a ^ b ^ (a &+ b) ^ (a &- b)
-        d = byte14.hashValue
-        c = a ^ b ^ (a &+ b) ^ (a &- b)
-        d = byte15.hashValue
-        
-        return c ^ d ^ (c &+ d) ^ (c &- d)
+        var a = byte0.hashValue
+        var b = byte1.hashValue
+        (a, b) = (a ^ b ^ (a &+ b) ^ (a &- b), byte2.hashValue)
+        (a, b) = (a ^ b ^ (a &+ b) ^ (a &- b), byte3.hashValue)
+        (a, b) = (a ^ b ^ (a &+ b) ^ (a &- b), byte4.hashValue)
+        (a, b) = (a ^ b ^ (a &+ b) ^ (a &- b), byte5.hashValue)
+        (a, b) = (a ^ b ^ (a &+ b) ^ (a &- b), byte6.hashValue)
+        (a, b) = (a ^ b ^ (a &+ b) ^ (a &- b), byte7.hashValue)
+        (a, b) = (a ^ b ^ (a &+ b) ^ (a &- b), byte8.hashValue)
+        (a, b) = (a ^ b ^ (a &+ b) ^ (a &- b), byte9.hashValue)
+        (a, b) = (a ^ b ^ (a &+ b) ^ (a &- b), byte10.hashValue)
+        (a, b) = (a ^ b ^ (a &+ b) ^ (a &- b), byte11.hashValue)
+        (a, b) = (a ^ b ^ (a &+ b) ^ (a &- b), byte12.hashValue)
+        (a, b) = (a ^ b ^ (a &+ b) ^ (a &- b), byte13.hashValue)
+        (a, b) = (a ^ b ^ (a &+ b) ^ (a &- b), byte14.hashValue)
+        (a, b) = (a ^ b ^ (a &+ b) ^ (a &- b), byte15.hashValue)
+        return a ^ b ^ (a &+ b) ^ (a &- b)
     }
 }
 
