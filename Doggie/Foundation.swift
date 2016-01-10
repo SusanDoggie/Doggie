@@ -1210,24 +1210,6 @@ public extension String {
 }
 
 @warn_unused_result
-public func hash<S : SequenceType where S.Generator.Element : Hashable>(val: S) -> Int {
-    let _val = val.array
-    switch _val.count {
-    case 0, 1: return Set(_val.lazy.map { $0.hashValue }).hashValue
-    case 2:
-        let a = _val[0].hashValue
-        let b = _val[1].hashValue
-        return Set([a &+ b, a &- b]).hashValue
-    default: return hash(hash(_val.prefix(2)), hash(_val.dropFirst(2)))
-    }
-}
-
-@warn_unused_result
-public func hash<T: Hashable>(val: T ... ) -> Int {
-    return hash(val)
-}
-
-@warn_unused_result
 public func == <T : Comparable>(lhs: T, rhs: T) -> Bool {
     return !(lhs < rhs || rhs < lhs)
 }

@@ -59,7 +59,9 @@ extension Radius: CustomStringConvertible, CustomDebugStringConvertible {
 extension Radius: Hashable {
     
     public var hashValue: Int {
-        return hash(x, y)
+        let a = x.hashValue
+        let b = y.hashValue
+        return a ^ b ^ (a &+ b) ^ (a &- b)
     }
 }
 

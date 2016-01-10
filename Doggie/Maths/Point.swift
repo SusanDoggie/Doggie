@@ -61,7 +61,9 @@ extension Point: CustomStringConvertible, CustomDebugStringConvertible {
 extension Point: Hashable {
     
     public var hashValue: Int {
-        return hash(x, y)
+        let a = x.hashValue
+        let b = y.hashValue
+        return a ^ b ^ (a &+ b) ^ (a &- b)
     }
 }
 
