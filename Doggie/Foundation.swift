@@ -962,12 +962,15 @@ public extension CollectionType {
     }
 }
 
-public extension MutableCollectionType where Index == Int {
+public extension MutableCollectionType where Index : RandomAccessIndexType {
     
     /// Shuffle `self` in-place.
     mutating func shuffleInPlace() {
-        for i in self.indices.dropLast() {
-            let j = Int(arc4random_uniform(UInt32(count - i))) + i
+        let _count: Int = numericCast(self.count)
+        let _startIndex = self.startIndex
+        for (_i, i) in self.indices.enumerate().dropLast() {
+            let rand = arc4random_uniform(UInt32(_count - _i)) + UInt32(_i)
+            let j = _startIndex.advancedBy(numericCast(rand))
             if i != j {
                 swap(&self[i], &self[j])
             }
