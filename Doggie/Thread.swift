@@ -398,8 +398,6 @@ extension SDSignal: CustomStringConvertible, CustomDebugStringConvertible {
 
 // MARK: Parallel
 
-private let CollectionTypeParallelDispatchQueue = dispatch_queue_create("com.SusanDoggie.CollectionType.Parallel", DISPATCH_QUEUE_CONCURRENT)
-
 extension CollectionType where Index : RandomAccessIndexType {
     
     /// Call `body` on each element in `self` in parallel
@@ -410,7 +408,8 @@ extension CollectionType where Index : RandomAccessIndexType {
     ///   exit from the current call to `body`, not any outer scope, and won't
     ///   skip subsequent calls.
     public func parallel(body: (Self.Generator.Element) -> ()) {
-        self.parallel(CollectionTypeParallelDispatchQueue, body: body)
+        let queue = dispatch_queue_create("com.SusanDoggie.CollectionType.Parallel", DISPATCH_QUEUE_CONCURRENT)
+        self.parallel(queue, body: body)
     }
     
     /// Call `body` on each element in `self` in parallel with specific queue
