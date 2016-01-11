@@ -620,26 +620,26 @@ public func BezierArc(angle: Double) -> [Point] {
     
     var counter = 0
     var _angle = abs(angle)
-    var result = [Point(x: 1.0, y: 0.0)]
+    var result = [Point(x: 1, y: 0)]
     
     while _angle > 0 {
         switch counter & 3 {
         case 0:
-            result.append(Point(x: 1.0, y: c))
-            result.append(Point(x: c, y: 1.0))
-            result.append(Point(x: 0.0, y: 1.0))
+            result.append(Point(x: 1, y: c))
+            result.append(Point(x: c, y: 1))
+            result.append(Point(x: 0, y: 1))
         case 1:
-            result.append(Point(x: -c, y: 1.0))
-            result.append(Point(x: -1.0, y: c))
-            result.append(Point(x: -1.0, y: 0.0))
+            result.append(Point(x: -c, y: 1))
+            result.append(Point(x: -1, y: c))
+            result.append(Point(x: -1, y: 0))
         case 2:
-            result.append(Point(x: -1.0, y: -c))
-            result.append(Point(x: -c, y: -1.0))
-            result.append(Point(x: 0.0, y: -1.0))
+            result.append(Point(x: -1, y: -c))
+            result.append(Point(x: -c, y: -1))
+            result.append(Point(x: 0, y: -1))
         case 3:
-            result.append(Point(x: c, y: -1.0))
-            result.append(Point(x: 1.0, y: -c))
-            result.append(Point(x: 1.0, y: 0.0))
+            result.append(Point(x: c, y: -1))
+            result.append(Point(x: 1, y: -c))
+            result.append(Point(x: 1, y: 0))
         default: break
         }
         if _angle < M_PI_2 {

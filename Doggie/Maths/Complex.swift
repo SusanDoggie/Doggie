@@ -38,6 +38,14 @@ public struct Complex {
         self.real = real
         self.imag = imag
     }
+    public init(_ real: Int) {
+        self.real = Double(real)
+        self.imag = 0.0
+    }
+    public init(real: Int, imag: Int) {
+        self.real = Double(real)
+        self.imag = Double(imag)
+    }
 }
 
 extension Complex: CustomStringConvertible, CustomDebugStringConvertible {

@@ -42,6 +42,11 @@ public struct Vector {
         self.y = y
         self.z = z
     }
+    public init(x: Int, y: Int, z: Int) {
+        self.x = Double(x)
+        self.y = Double(y)
+        self.z = Double(z)
+    }
 }
 
 extension Vector: CustomStringConvertible, CustomDebugStringConvertible {
