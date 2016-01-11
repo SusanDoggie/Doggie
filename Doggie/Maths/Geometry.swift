@@ -1189,7 +1189,7 @@ private func degree6RationalIntegral(p: Polynomial, _ q: Polynomial) -> Double {
                         result += s * log(abs(1 + 1 / a))
                     } else {
                         let _n = Double(1 - n)
-                        result += s * pow(a + 1, _n) * pow(a, _n) / _n
+                        result += s * (pow(a + 1, _n) - pow(a, _n)) / _n
                     }
                 case .Two(let a, let b, let n):
                     let s = c.next()!
