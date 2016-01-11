@@ -1010,6 +1010,63 @@ public extension RangeReplaceableCollectionType {
     }
 }
 
+public extension SequenceType where Self : Indexable {
+    
+    /// The position of the first element in a non-empty collection.
+    ///
+    /// In an empty collection, `startIndex == endIndex`.
+    ///
+    /// - Complexity: O(1)
+    var startIndex: MultipassIndex<Generator> {
+        var g = self.enumerate().generate()
+        if let (idx, val) = g.next() {
+            return MultipassIndex(reachEnd: false, index: idx, buffer: val, generator: g)
+        }
+        return MultipassIndex(reachEnd: true, index: nil, buffer: nil, generator: g)
+    }
+    /// The collection's "past the end" position.
+    ///
+    /// `endIndex` is not a valid argument to `subscript`, and is always
+    /// reachable from `startIndex` by zero or more applications of
+    /// `successor()`.
+    ///
+    /// - Complexity: O(1)
+    var endIndex: MultipassIndex<Generator> {
+        return MultipassIndex(reachEnd: true, index: nil, buffer: nil, generator: self.enumerate().generate())
+    }
+    /// Return specific value with index.
+    ///
+    /// - Requires: `Self` supports multiple passes (traversing it does not
+    ///   consume the sequence), and `Self.Generator` has value semantics
+    subscript(position: MultipassIndex<Generator>) -> Generator.Element {
+        return position.buffer!
+    }
+}
+
+/// Requires G has value semantics
+public struct MultipassIndex<G: GeneratorType> : ForwardIndexType {
+    public func successor() -> MultipassIndex {
+        var r = self
+        if !reachEnd, let (idx, val) = r.generator.next() {
+            r.index = idx
+            r.buffer = val
+        } else {
+            r.reachEnd = true
+            r.index = nil
+            r.buffer = nil
+        }
+        return r
+    }
+    var reachEnd: Bool
+    var index: Int?
+    var buffer: G.Element?
+    var generator: EnumerateGenerator<G>
+}
+
+public func == <T>(x: MultipassIndex<T>, y: MultipassIndex<T>) -> Bool {
+    return x.index == y.index
+}
+
 public extension IntegerType {
     
     @warn_unused_result
