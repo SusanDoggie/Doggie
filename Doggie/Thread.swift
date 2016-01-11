@@ -396,6 +396,38 @@ extension SDSignal: CustomStringConvertible, CustomDebugStringConvertible {
     }
 }
 
+// MARK: Parallel
+
+private let CollectionTypeParallelDispatchQueue = dispatch_queue_create("com.SusanDoggie.CollectionType.Parallel", DISPATCH_QUEUE_CONCURRENT)
+
+extension CollectionType where Index : RandomAccessIndexType {
+    
+    /// Call `body` on each element in `self` in parallel
+    ///
+    /// - Note: You cannot use the `break` or `continue` statement to exit the
+    ///   current call of the `body` closure or skip subsequent calls.
+    /// - Note: Using the `return` statement in the `body` closure will only
+    ///   exit from the current call to `body`, not any outer scope, and won't
+    ///   skip subsequent calls.
+    public func parallel(body: (Self.Generator.Element) -> ()) {
+        self.parallel(CollectionTypeParallelDispatchQueue, body: body)
+    }
+    
+    /// Call `body` on each element in `self` in parallel with specific queue
+    ///
+    /// - Note: You cannot use the `break` or `continue` statement to exit the
+    ///   current call of the `body` closure or skip subsequent calls.
+    /// - Note: Using the `return` statement in the `body` closure will only
+    ///   exit from the current call to `body`, not any outer scope, and won't
+    ///   skip subsequent calls.
+    public func parallel(queue: dispatch_queue_t, body: (Self.Generator.Element) -> ()) {
+        let _startIndex = self.startIndex
+        dispatch_apply(numericCast(self.count), queue) {
+            body(self[_startIndex.advancedBy(numericCast($0))])
+        }
+    }
+}
+
 // MARK: SDTask
 
 public let DispatchMainQueue = dispatch_get_main_queue()
