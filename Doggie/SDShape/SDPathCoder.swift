@@ -429,16 +429,7 @@ extension SDPath.Line : SDPathComponentSerializableShortFormType {
 extension SDPath.QuadBezier : SDPathComponentSerializableShortFormType {
     
     private func serialize1(var currentState: Int, _ start: Point, _ relative: Point, _ lastControl: Point?) -> (String, Int, Point, Point, Point?) {
-        let p1: Point
-        if self.p1 == nil {
-            if lastControl != nil {
-                p1 = relative + relative - lastControl!
-            } else {
-                p1 = relative
-            }
-        } else {
-            p1 = self.p1!
-        }
+        let p1 = self.firstControl(start, lastControl)
         let str: String
         if self.p1 == nil && (8...11).contains(currentState) {
             if currentState == 8 {
@@ -458,16 +449,7 @@ extension SDPath.QuadBezier : SDPathComponentSerializableShortFormType {
         return (str, currentState, start, self.point, p1)
     }
     private func serialize2(var currentState: Int, _ start: Point, _ relative: Point, _ lastControl: Point?) -> (String, Int, Point, Point, Point?) {
-        let p1: Point
-        if self.p1 == nil {
-            if lastControl != nil {
-                p1 = relative + relative - lastControl!
-            } else {
-                p1 = relative
-            }
-        } else {
-            p1 = self.p1!
-        }
+        let p1 = self.firstControl(start, lastControl)
         let str: String
         if self.p1 == nil && (8...11).contains(currentState) {
             if currentState == 9 {
@@ -500,16 +482,7 @@ extension SDPath.CubicBezier : SDPathComponentSerializableShortFormType {
             }
             currentState = 12
         } else {
-            let p1: Point
-            if self.p1 == nil {
-                if lastControl != nil {
-                    p1 = relative + relative - lastControl!
-                } else {
-                    p1 = relative
-                }
-            } else {
-                p1 = self.p1!
-            }
+            let p1 = self.firstControl(start, lastControl)
             if currentState == 14 {
                 str = getPathDataString(nil, p1.x, p1.y, self.p2.x, self.p2.y, self.p3.x, self.p3.y)
             } else {
@@ -529,16 +502,7 @@ extension SDPath.CubicBezier : SDPathComponentSerializableShortFormType {
             }
             currentState = 13
         } else {
-            let p1: Point
-            if self.p1 == nil {
-                if lastControl != nil {
-                    p1 = relative + relative - lastControl!
-                } else {
-                    p1 = relative
-                }
-            } else {
-                p1 = self.p1!
-            }
+            let p1 = self.firstControl(start, lastControl)
             if currentState == 15 {
                 str = getPathDataString(nil, p1.x - relative.x, p1.y - relative.y, self.p2.x - relative.x, self.p2.y - relative.y, self.p3.x - relative.x, self.p3.y - relative.y)
             } else {
