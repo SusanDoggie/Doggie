@@ -1220,3 +1220,14 @@ public func CubicBezierWinding(p0: Point, _ p1: Point, _ p2: Point, _ p3: Point)
     
     return 0.5 * M_1_PI * degree6RationalIntegral(x * y.derivative - x.derivative * y, x * x + y * y)
 }
+
+// MARK: Area
+
+@warn_unused_result
+public func BezierSignedArea(p: Point ...) -> Double {
+    
+    let x = BezierPolynomial(p.map { $0.x })
+    let y = BezierPolynomial(p.map { $0.y })
+    let t = x * y.derivative - x.derivative * y
+    return 0.5 * t.integral.eval(1)
+}
