@@ -1274,5 +1274,5 @@ public func ArcSignedArea(startAngle: Double, _ endAngle: Double, _ center: Poin
     let cos2 = cos(endAngle)
     let _sin = sin2 - sin1
     let _cos = cos2 - cos1
-    return 0.5 * radius.x * radius.y * diffAngle - radius.x * center.y * _cos + radius.y * center.x * _sin
+    return 0.5 * (radius.x * radius.y * diffAngle - radius.x * center.y * _cos + radius.y * center.x * _sin)
 }
