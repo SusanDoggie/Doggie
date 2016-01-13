@@ -1231,3 +1231,35 @@ public func BezierSignedArea(p: Point ...) -> Double {
     let t = x * y.derivative - x.derivative * y
     return 0.5 * t.integral.eval(1)
 }
+
+@warn_unused_result
+public func LineSignedArea(p0: Point, _ p1: Point) -> Double {
+    
+    return 0.5 * (p0.x * p1.y - p0.y * p1.x)
+}
+
+@warn_unused_result
+public func QuadBezierSignedArea(p0: Point, _ p1: Point, _ p2: Point) -> Double {
+    
+    let a = p0.x - 2 * p1.x + p2.x
+    let b = 2 * (p1.x - p0.x)
+    
+    let c = p0.y - 2 * p1.y + p2.y
+    let d = 2 * (p1.y - p0.y)
+    
+    return (b * c - a * d) / 6 + 0.5 * (p0.x * p2.y - p2.x * p0.y)
+}
+
+@warn_unused_result
+public func CubicBezierSignedArea(p0: Point, _ p1: Point, _ p2: Point, _ p3: Point) -> Double {
+    
+    let a = p3.x - p0.x + 3 * (p1.x - p2.x)
+    let b = 3 * (p2.x + p0.x) - 6 * p1.x
+    let c = 3 * (p1.x - p0.x)
+    
+    let d = p3.y - p0.y + 3 * (p1.y - p2.y)
+    let e = 3 * (p2.y + p0.y) - 6 * p1.y
+    let f = 3 * (p1.y - p0.y)
+    
+    return 0.1 * (b * d - a * e) + 0.25 * (c * d - a * f) + (c * e - b * f) / 6 + 0.5 * (p0.x * p3.y - p3.x * p0.y)
+}
