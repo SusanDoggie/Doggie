@@ -1247,7 +1247,7 @@ public func QuadBezierSignedArea(p0: Point, _ p1: Point, _ p2: Point) -> Double 
     let c = p0.y - 2 * p1.y + p2.y
     let d = 2 * (p1.y - p0.y)
     
-    return (b * c - a * d) / 6 + 0.5 * (p0.x * p2.y - p2.x * p0.y)
+    return 0.5 * (p0.x * p2.y - p2.x * p0.y) + (b * c - a * d) / 6
 }
 
 @warn_unused_result
@@ -1261,7 +1261,7 @@ public func CubicBezierSignedArea(p0: Point, _ p1: Point, _ p2: Point, _ p3: Poi
     let e = 3 * (p2.y + p0.y) - 6 * p1.y
     let f = 3 * (p1.y - p0.y)
     
-    return 0.1 * (b * d - a * e) + 0.25 * (c * d - a * f) + (c * e - b * f) / 6 + 0.5 * (p0.x * p3.y - p3.x * p0.y)
+    return 0.5 * (p0.x * p3.y - p3.x * p0.y) + 0.1 * (b * d - a * e) + 0.25 * (c * d - a * f) + (c * e - b * f) / 6
 }
 
 @warn_unused_result
@@ -1274,5 +1274,5 @@ public func ArcSignedArea(startAngle: Double, _ endAngle: Double, _ center: Poin
     let cos2 = cos(endAngle)
     let _sin = sin2 - sin1
     let _cos = cos2 - cos1
-    return radius.x * radius.y * diffAngle - radius.x * center.y * _cos + radius.y * center.x * _sin
+    return 0.5 * radius.x * radius.y * diffAngle - radius.x * center.y * _cos + radius.y * center.x * _sin
 }
