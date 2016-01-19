@@ -749,67 +749,76 @@ public extension LazyCollectionType {
     }
 }
 
-public struct LazyStrideSequence<S : SequenceType> : LazySequenceType {
+private struct LazyStrideMapper<S: SequenceType> : SequenceType {
     
-    private let base: S
-    private let stride: Int
+    let base: S
     
-    public func generate() -> LazyStrideGenerator<S.Generator> {
-        return LazyStrideGenerator(base: base.generate(), stride: stride, flag: true)
-    }
-}
-
-public struct LazyStrideGenerator<G : GeneratorType> : GeneratorType {
-    
-    private var base: G
-    private let stride: Int
-    private var flag: Bool
-    
-    public mutating func next() -> G.Element? {
-        if flag, let result = base.next() {
-            for _ in 1..<stride {
-                if base.next() == nil {
-                    flag = false
-                    return result
-                }
-            }
-            return result
-        } else {
-            flag = false
-            return nil
+    func generate() -> LazyStrideMapperGenerator<S.Generator> {
+        var g = base.generate()
+        if let first = g.next() {
+            return LazyStrideMapperGenerator(base: g, old: first, flag: true)
         }
+        return LazyStrideMapperGenerator(base: g, old: nil, flag: false)
     }
 }
 
-public extension SequenceType {
+private struct LazyStrideMapperGenerator<G: GeneratorType> : GeneratorType {
     
-    @warn_unused_result
-    public func stride(by stride: Int) -> [Generator.Element] {
-        return Array(LazyStrideSequence(base: self, stride: stride))
+    var base: G
+    var old: G.Element!
+    var flag: Bool
+    
+    mutating func next() -> (G.Element, G.Element)? {
+        if flag, let new = base.next() {
+            let _old = old
+            old = new
+            return (_old, new)
+        }
+        flag = false
+        return nil
     }
 }
 
-public extension LazySequenceType {
+public struct LazyStrideSequence<C: CollectionType where C.Index : Strideable> : SequenceType {
     
-    @warn_unused_result
-    public func stride(by stride: Int) -> LazyStrideSequence<Elements> {
-        return LazyStrideSequence(base: self.elements, stride: stride)
+    private let base: C
+    private let mapper: LazyStrideMapper<ConcatSequence<StrideTo<C.Index>, CollectionOfOne<C.Index>>>
+    
+    private init(base: C, stride: C.Index.Stride) {
+        self.base = base
+        let startIndex = base.startIndex
+        let endIndex = base.endIndex
+        self.mapper = LazyStrideMapper(base: startIndex.stride(to: endIndex, by: stride).concat(CollectionOfOne(endIndex)))
+    }
+    
+    public func generate() -> LazyStrideGenerator<C> {
+        return LazyStrideGenerator(base: base, mapper: mapper.generate())
+    }
+}
+
+public struct LazyStrideGenerator<C: CollectionType where C.Index : Strideable> : GeneratorType {
+    
+    private let base: C
+    private var mapper: LazyStrideMapperGenerator<ConcatGenerator<StrideToGenerator<C.Index>, GeneratorOfOne<C.Index>>>
+    
+    public mutating func next() -> C.SubSequence? {
+        return mapper.next().map { base[$0..<$1] }
     }
 }
 
 public extension CollectionType where Index : Strideable {
     
     @warn_unused_result
-    public func stride(by stride: Index.Stride) -> PermutationGenerator<Self, StrideTo<Self.Index>> {
-        return self.collect(self.startIndex.stride(to: self.endIndex, by: stride))
+    public func stride(by stride: Index.Stride) -> [SubSequence] {
+        return Array(self.lazy.stride(by: stride))
     }
 }
 
 public extension LazyCollectionType where Elements.Index : Strideable {
     
     @warn_unused_result
-    public func stride(by stride: Elements.Index.Stride) -> LazySequence<PermutationGenerator<Elements, StrideTo<Elements.Index>>> {
-        return self.collect(self.elements.startIndex.stride(to: self.elements.endIndex, by: stride))
+    public func stride(by stride: Elements.Index.Stride) -> LazyStrideSequence<Self.Elements> {
+        return LazyStrideSequence(base: self.elements, stride: stride)
     }
 }
 
