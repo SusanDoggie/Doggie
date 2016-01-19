@@ -772,7 +772,7 @@ private struct LazyStrideMapper<G: GeneratorType> : GeneratorType {
     }
 }
 
-public struct LazyStrideSequence<C: CollectionType where C.Index : Strideable> : SequenceType {
+public struct LazyStrideSequence<C: CollectionType where C.Index : Strideable> : LazySequenceType {
     
     private let base: C
     private let stride: C.Index.Stride
