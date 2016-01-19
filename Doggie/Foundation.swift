@@ -749,24 +749,17 @@ public extension LazyCollectionType {
     }
 }
 
-private struct LazyStrideMapper<S: SequenceType> : SequenceType {
-    
-    let base: S
-    
-    func generate() -> LazyStrideMapperGenerator<S.Generator> {
-        var g = base.generate()
-        if let first = g.next() {
-            return LazyStrideMapperGenerator(base: g, old: first, flag: true)
-        }
-        return LazyStrideMapperGenerator(base: g, old: nil, flag: false)
-    }
-}
-
-private struct LazyStrideMapperGenerator<G: GeneratorType> : GeneratorType {
+private struct LazyStrideMapper<G: GeneratorType> : GeneratorType {
     
     var base: G
     var old: G.Element!
     var flag: Bool
+    
+    init(_ base: G) {
+        self.base = base
+        self.old = self.base.next()
+        self.flag = self.old != nil
+    }
     
     mutating func next() -> (G.Element, G.Element)? {
         if flag, let new = base.next() {
@@ -782,24 +775,25 @@ private struct LazyStrideMapperGenerator<G: GeneratorType> : GeneratorType {
 public struct LazyStrideSequence<C: CollectionType where C.Index : Strideable> : SequenceType {
     
     private let base: C
-    private let mapper: LazyStrideMapper<ConcatSequence<StrideTo<C.Index>, CollectionOfOne<C.Index>>>
+    private let stride: C.Index.Stride
     
     private init(base: C, stride: C.Index.Stride) {
         self.base = base
-        let startIndex = base.startIndex
-        let endIndex = base.endIndex
-        self.mapper = LazyStrideMapper(base: startIndex.stride(to: endIndex, by: stride).concat(CollectionOfOne(endIndex)))
+        self.stride = stride
     }
     
     public func generate() -> LazyStrideGenerator<C> {
-        return LazyStrideGenerator(base: base, mapper: mapper.generate())
+        let startIndex = base.startIndex
+        let endIndex = base.endIndex
+        let mapper = startIndex.stride(to: endIndex, by: stride).concat(CollectionOfOne(endIndex))
+        return LazyStrideGenerator(base: base, mapper: LazyStrideMapper(mapper.generate()))
     }
 }
 
 public struct LazyStrideGenerator<C: CollectionType where C.Index : Strideable> : GeneratorType {
     
     private let base: C
-    private var mapper: LazyStrideMapperGenerator<ConcatGenerator<StrideToGenerator<C.Index>, GeneratorOfOne<C.Index>>>
+    private var mapper: LazyStrideMapper<ConcatGenerator<StrideToGenerator<C.Index>, GeneratorOfOne<C.Index>>>
     
     public mutating func next() -> C.SubSequence? {
         return mapper.next().map { base[$0..<$1] }
