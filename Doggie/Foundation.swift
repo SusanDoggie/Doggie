@@ -1066,15 +1066,18 @@ public func unsafeBitCast<T, U>(x: T) -> U {
 }
 
 public func SDTimer(count count: Int = 1, @noescape block: () -> Void) -> NSTimeInterval {
-    var time: clock_t = 0
+    var time: UInt64 = 0
     for _ in 0..<count {
         autoreleasepool {
-            let start = clock()
+            let start = mach_absolute_time()
             block()
-            time += clock() - start
+            time += mach_absolute_time() - start
         }
     }
-    return Double(time) / Double(count * Int(CLOCKS_PER_SEC))
+    var timebaseInfo = mach_timebase_info()
+    mach_timebase_info(&timebaseInfo)
+    let frac = Double(timebaseInfo.numer) / Double(timebaseInfo.denom)
+    return 1e-9 * Double(time) * frac / Double(count)
 }
 
 @warn_unused_result
