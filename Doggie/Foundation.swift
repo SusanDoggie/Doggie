@@ -754,11 +754,6 @@ public struct LazyStrideSequence<C: CollectionType where C.Index : Strideable> :
     private let base: C
     private let stride: C.Index.Stride
     
-    private init(base: C, stride: C.Index.Stride) {
-        self.base = base
-        self.stride = stride
-    }
-    
     public func generate() -> LazyStrideGenerator<C> {
         return LazyStrideGenerator(base: base, stride: stride)
     }
