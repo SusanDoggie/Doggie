@@ -803,16 +803,16 @@ public struct LazyStrideGenerator<C: CollectionType where C.Index : Strideable> 
 public extension CollectionType where Index : Strideable {
     
     @warn_unused_result
-    public func stride(by stride: Index.Stride) -> [SubSequence] {
-        return Array(self.lazy.stride(by: stride))
+    public func stride(by maxLength: Index.Stride) -> [SubSequence] {
+        return Array(self.lazy.stride(by: maxLength))
     }
 }
 
 public extension LazyCollectionType where Elements.Index : Strideable {
     
     @warn_unused_result
-    public func stride(by stride: Elements.Index.Stride) -> LazyStrideSequence<Self.Elements> {
-        return LazyStrideSequence(base: self.elements, stride: stride)
+    public func stride(by maxLength: Elements.Index.Stride) -> LazyStrideSequence<Self.Elements> {
+        return LazyStrideSequence(base: self.elements, stride: maxLength)
     }
 }
 
