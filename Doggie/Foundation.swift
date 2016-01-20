@@ -749,29 +749,6 @@ public extension LazyCollectionType {
     }
 }
 
-private struct LazyStrideMapper<G: GeneratorType> : GeneratorType {
-    
-    var base: G
-    var old: G.Element!
-    var flag: Bool
-    
-    init(_ base: G) {
-        self.base = base
-        self.old = self.base.next()
-        self.flag = self.old != nil
-    }
-    
-    mutating func next() -> (G.Element, G.Element)? {
-        if flag, let new = base.next() {
-            let _old = old
-            old = new
-            return (_old, new)
-        }
-        flag = false
-        return nil
-    }
-}
-
 public struct LazyStrideSequence<C: CollectionType where C.Index : Strideable> : LazySequenceType {
     
     private let base: C
@@ -783,20 +760,31 @@ public struct LazyStrideSequence<C: CollectionType where C.Index : Strideable> :
     }
     
     public func generate() -> LazyStrideGenerator<C> {
-        let startIndex = base.startIndex
-        let endIndex = base.endIndex
-        let mapper = startIndex.stride(to: endIndex, by: stride).concat(CollectionOfOne(endIndex))
-        return LazyStrideGenerator(base: base, mapper: LazyStrideMapper(mapper.generate()))
+        return LazyStrideGenerator(base: base, stride: stride)
     }
 }
 
 public struct LazyStrideGenerator<C: CollectionType where C.Index : Strideable> : GeneratorType {
     
     private let base: C
-    private var mapper: LazyStrideMapper<ConcatGenerator<StrideToGenerator<C.Index>, GeneratorOfOne<C.Index>>>
+    private var left: C.Index?
+    private var mapper: ConcatGenerator<StrideToGenerator<C.Index>, GeneratorOfOne<C.Index>>
+    
+    private init(base: C, stride: C.Index.Stride) {
+        self.base = base
+        let startIndex = base.startIndex
+        let endIndex = base.endIndex
+        self.mapper = startIndex.stride(to: endIndex, by: stride).concat(CollectionOfOne(endIndex)).generate()
+        self.left = self.mapper.next()
+    }
     
     public mutating func next() -> C.SubSequence? {
-        return mapper.next().map { base[$0..<$1] }
+        if let left = self.left, let right = mapper.next() {
+            self.left = right
+            return base[left..<right]
+        }
+        self.left = nil
+        return nil
     }
 }
 
