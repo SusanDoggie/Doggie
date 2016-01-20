@@ -94,28 +94,28 @@ public func EllipseCenter(r: Radius, _ rotate: Double, _ a: Point, _ b: Point) -
     let _sin = sin(rotate)
     let _cos = cos(rotate)
     
-    let ax = a.x * _cos + a.y * _sin / r.x
-    let ay = a.y * _cos - a.x * _sin / r.y
-    let bx = b.x * _cos + b.y * _sin / r.x
-    let by = b.y * _cos - b.x * _sin / r.y
+    let ax = a.x * _cos + a.y * _sin
+    let ay = a.y * _cos - a.x * _sin
+    let bx = b.x * _cos + b.y * _sin
+    let by = b.y * _cos - b.x * _sin
     
-    let dx = ax - bx
-    let dy = ay - by
+    let dx = (ax - bx) / r.x
+    let dy = (ay - by) / r.y
     let d = dx * dx + dy * dy
     
     if d == 4 {
-        let _x = (ax + bx) * r.x * 0.5
-        let _y = (ay + by) * r.y * 0.5
+        let _x = 0.5 * (ax + bx)
+        let _y = 0.5 * (ay + by)
         return [Point(x: _x * _cos - _y * _sin, y: _x * _sin + _y * _cos)]
     } else if d < 4 {
-        let _x = (ax + bx) * r.x * 0.5
-        let _y = (ay + by) * r.y * 0.5
+        let _x = 0.5 * (ax + bx)
+        let _y = 0.5 * (ay + by)
         let _t = sqrt((1 - d * 0.25) / d)
         
-        let cx1 = _x + _t * (ay - by) * r.x
-        let cy1 = _y + _t * (bx - ax) * r.y
-        let cx2 = _x - _t * (ay - by) * r.x
-        let cy2 = _y - _t * (bx - ax) * r.y
+        let cx1 = _x + _t * dy * r.x
+        let cy1 = _y - _t * dx * r.y
+        let cx2 = _x - _t * dy * r.x
+        let cy2 = _y + _t * dx * r.y
         
         return [Point(x: cx1 * _cos - cy1 * _sin, y: cx1 * _sin + cy1 * _cos),
             Point(x: cx2 * _cos - cy2 * _sin, y: cx2 * _sin + cy2 * _cos)]
