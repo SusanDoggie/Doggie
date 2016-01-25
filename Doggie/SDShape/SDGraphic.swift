@@ -144,11 +144,11 @@ extension SDPath {
                 
             case let quad as SDPath.QuadBezier:
                 
-                CGPathAddQuadCurveToPoint(path, nil, CGFloat(state.firstControl!.x), CGFloat(state.firstControl!.y), CGFloat(quad.p2.x), CGFloat(quad.p2.y))
+                CGPathAddQuadCurveToPoint(path, nil, CGFloat(quad.p1.x), CGFloat(quad.p1.y), CGFloat(quad.p2.x), CGFloat(quad.p2.y))
                 
             case let cubic as SDPath.CubicBezier:
                 
-                CGPathAddCurveToPoint(path, nil, CGFloat(state.firstControl!.x), CGFloat(state.firstControl!.y), CGFloat(cubic.p2.x), CGFloat(cubic.p2.y), CGFloat(cubic.p3.x), CGFloat(cubic.p3.y))
+                CGPathAddCurveToPoint(path, nil, CGFloat(cubic.p1.x), CGFloat(cubic.p1.y), CGFloat(cubic.p2.x), CGFloat(cubic.p2.y), CGFloat(cubic.p3.x), CGFloat(cubic.p3.y))
                 
             case let arc as SDPath.Arc:
                 

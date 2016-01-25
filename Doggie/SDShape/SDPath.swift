@@ -138,7 +138,7 @@ public struct SDPath : SDShape, MutableCollectionType, ArrayLiteralConvertible {
     
     public struct QuadBezier : SDPathComponent {
         
-        public var p1: Point?
+        public var p1: Point
         public var p2: Point
         
         public init(x1: Double, y1: Double, x2: Double, y2: Double) {
@@ -146,16 +146,8 @@ public struct SDPath : SDShape, MutableCollectionType, ArrayLiteralConvertible {
             p2 = Point(x: x2, y: y2)
         }
         
-        public init(x2: Double, y2: Double) {
-            p2 = Point(x: x2, y: y2)
-        }
-        
         public init(_ p1: Point, _ p2: Point) {
             self.p1 = p1
-            self.p2 = p2
-        }
-        
-        public init(_ p2: Point) {
             self.p2 = p2
         }
         
@@ -171,7 +163,7 @@ public struct SDPath : SDShape, MutableCollectionType, ArrayLiteralConvertible {
     
     public struct CubicBezier : SDPathComponent {
         
-        public var p1: Point?
+        public var p1: Point
         public var p2: Point
         public var p3: Point
         
@@ -181,18 +173,8 @@ public struct SDPath : SDShape, MutableCollectionType, ArrayLiteralConvertible {
             p3 = Point(x: x3, y: y3)
         }
         
-        public init(x2: Double, y2: Double, x3: Double, y3: Double) {
-            p2 = Point(x: x2, y: y2)
-            p3 = Point(x: x3, y: y3)
-        }
-        
         public init(_ p1: Point, _ p2: Point, _ p3: Point) {
             self.p1 = p1
-            self.p2 = p2
-            self.p3 = p3
-        }
-        
-        public init(_ p2: Point, _ p3: Point) {
             self.p2 = p2
             self.p3 = p3
         }
@@ -282,16 +264,16 @@ public struct SDPath : SDShape, MutableCollectionType, ArrayLiteralConvertible {
                 
             case let quad as SDPath.QuadBezier:
                 if bound == nil {
-                    bound = quad.bound(state.last, state.lastControl)
+                    bound = quad.bound(state.last)
                 } else {
-                    bound = bound!.union(quad.bound(state.last, state.lastControl))
+                    bound = bound!.union(quad.bound(state.last))
                 }
                 
             case let cubic as SDPath.CubicBezier:
                 if bound == nil {
-                    bound = cubic.bound(state.last, state.lastControl)
+                    bound = cubic.bound(state.last)
                 } else {
-                    bound = bound!.union(cubic.bound(state.last, state.lastControl))
+                    bound = bound!.union(cubic.bound(state.last))
                 }
                 
             case let arc as SDPath.Arc:
@@ -320,16 +302,16 @@ public struct SDPath : SDShape, MutableCollectionType, ArrayLiteralConvertible {
                 
             case let quad as SDPath.QuadBezier:
                 if bound == nil {
-                    bound = quad.bound(state.last, state.lastControl, transform)
+                    bound = quad.bound(state.last, transform)
                 } else {
-                    bound = bound!.union(quad.bound(state.last, state.lastControl, transform))
+                    bound = bound!.union(quad.bound(state.last, transform))
                 }
                 
             case let cubic as SDPath.CubicBezier:
                 if bound == nil {
-                    bound = cubic.bound(state.last, state.lastControl, transform)
+                    bound = cubic.bound(state.last, transform)
                 } else {
-                    bound = bound!.union(cubic.bound(state.last, state.lastControl, transform))
+                    bound = bound!.union(cubic.bound(state.last, transform))
                 }
                 
             case let arc as SDPath.Arc:
@@ -426,8 +408,6 @@ extension SDPath {
         
         public let start : Point
         public let last : Point
-        public let lastControl : Point?
-        public let firstControl : Point?
     }
     
     public struct ComputeStateGenerator : SequenceType, GeneratorType {
@@ -435,8 +415,6 @@ extension SDPath {
         private var base : SDPath.Generator
         private var start : Point = Point()
         private var last : Point = Point()
-        private var lastControl : Point? = nil
-        private var firstControl : Point? = nil
         
         public init(_ base: SDPath) {
             self.base = base.generate()
@@ -447,41 +425,29 @@ extension SDPath {
             if let item = base.next() {
                 switch item {
                 case let move as SDPath.Move:
-                    result = (move, ComputeState(start: move.point, last: move.point, lastControl: nil, firstControl: nil))
+                    result = (move, ComputeState(start: move.point, last: move.point))
                     start = move.point
                     last = move.point
-                    lastControl = nil
-                    firstControl = nil
                     
                 case let line as SDPath.Line:
-                    result = (line, ComputeState(start: start, last: last, lastControl: nil, firstControl: nil))
+                    result = (line, ComputeState(start: start, last: last))
                     last = line.point
-                    lastControl = nil
-                    firstControl = nil
                     
                 case let quad as SDPath.QuadBezier:
-                    firstControl = quad.firstControl(last, lastControl)
-                    result = (quad, ComputeState(start: start, last: last, lastControl: lastControl, firstControl: firstControl))
+                    result = (quad, ComputeState(start: start, last: last))
                     last = quad.point
-                    lastControl = firstControl
                     
                 case let cubic as SDPath.CubicBezier:
-                    firstControl = cubic.firstControl(last, lastControl)
-                    result = (cubic, ComputeState(start: start, last: last, lastControl: lastControl, firstControl: firstControl))
+                    result = (cubic, ComputeState(start: start, last: last))
                     last = cubic.point
-                    lastControl = cubic.p2
                     
                 case let arc as SDPath.Arc:
-                    result = (arc, ComputeState(start: start, last: last, lastControl: nil, firstControl: nil))
+                    result = (arc, ComputeState(start: start, last: last))
                     last = arc.point
-                    lastControl = nil
-                    firstControl = nil
                     
                 case let close as SDPath.ClosePath:
-                    result = (close, ComputeState(start: start, last: last, lastControl: nil, firstControl: nil))
+                    result = (close, ComputeState(start: start, last: last))
                     last = start
-                    lastControl = nil
-                    firstControl = nil
                     
                 default: break
                 }
@@ -512,48 +478,26 @@ extension SDPath.Line {
 extension SDPath.QuadBezier {
     
     @warn_unused_result
-    public func firstControl(last: Point, _ lastControl: Point?) -> Point {
-        if let p1 = self.p1 {
-            return p1
-        }
-        if let lastControl = lastControl {
-            return last + last - lastControl
-        }
-        return last
+    public func bound(last: Point) -> Rect {
+        return QuadBezierBound(last, self.p1, self.p2)
     }
     
     @warn_unused_result
-    public func bound(last: Point, _ lastControl: Point?) -> Rect {
-        return QuadBezierBound(last, self.firstControl(last, lastControl), self.p2)
-    }
-    
-    @warn_unused_result
-    public func bound<T: SDTransformType>(last: Point, _ lastControl: Point?, _ transform: T) -> Rect {
-        return QuadBezierBound(last, self.firstControl(last, lastControl), self.p2, transform)
+    public func bound<T: SDTransformType>(last: Point, _ transform: T) -> Rect {
+        return QuadBezierBound(last, self.p1, self.p2, transform)
     }
 }
 
 extension SDPath.CubicBezier {
     
     @warn_unused_result
-    public func firstControl(last: Point, _ lastControl: Point?) -> Point {
-        if let p1 = self.p1 {
-            return p1
-        }
-        if let lastControl = lastControl {
-            return last + last - lastControl
-        }
-        return last
+    public func bound(last: Point) -> Rect {
+        return CubicBezierBound(last, self.p1, self.p2, self.p3)
     }
     
     @warn_unused_result
-    public func bound(last: Point, _ lastControl: Point?) -> Rect {
-        return CubicBezierBound(last, self.firstControl(last, lastControl), self.p2, self.p3)
-    }
-    
-    @warn_unused_result
-    public func bound<T: SDTransformType>(last: Point, _ lastControl: Point?, _ transform: T) -> Rect {
-        return CubicBezierBound(last, self.firstControl(last, lastControl), self.p2, self.p3, transform)
+    public func bound<T: SDTransformType>(last: Point, _ transform: T) -> Rect {
+        return CubicBezierBound(last, self.p1, self.p2, self.p3, transform)
     }
 }
 
@@ -654,19 +598,11 @@ extension SDPath {
                 
             case let quad as SDPath.QuadBezier:
                 
-                if let p1 = quad.p1 {
-                    _path.append(SDPath.QuadBezier(transform * p1, transform * quad.p2))
-                } else {
-                    _path.append(SDPath.QuadBezier(transform * quad.p2))
-                }
+                _path.append(SDPath.QuadBezier(transform * quad.p1, transform * quad.p2))
                 
             case let cubic as SDPath.CubicBezier:
                 
-                if let p1 = cubic.p1 {
-                    _path.append(SDPath.CubicBezier(transform * p1, transform * cubic.p2, transform * cubic.p3))
-                } else {
-                    _path.append(SDPath.CubicBezier(transform * cubic.p2, transform * cubic.p3))
-                }
+                _path.append(SDPath.CubicBezier(transform * cubic.p1, transform * cubic.p2, transform * cubic.p3))
                 
             case let arc as SDPath.Arc:
                 

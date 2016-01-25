@@ -75,6 +75,7 @@ extension SDPath {
         var g = PathDataScanner(code.match(pathDataMatcher))
         var start = Point()
         var relative = Point()
+        var lastcontrol = Point()
         var lastbezier = 0
         
         let commandsymbol = "MmLlHhVvCcSsQqTtAaZz".utf8.array
@@ -88,6 +89,7 @@ extension SDPath {
                     let move = SDPath.Move(x: try toDouble(g.current), y: try toDouble(g.next()))
                     start = move.point
                     relative = move.point
+                    lastcontrol = move.point
                     lastbezier = 0
                     self.append(move)
                 } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
@@ -96,6 +98,7 @@ extension SDPath {
                     let move = SDPath.Move(x: try toDouble(g.current) + relative.x, y: try toDouble(g.next()) + relative.y)
                     start = move.point
                     relative = move.point
+                    lastcontrol = move.point
                     lastbezier = 0
                     self.append(move)
                 } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
@@ -103,6 +106,7 @@ extension SDPath {
                 repeat {
                     let line = SDPath.Line(x: try toDouble(g.current), y: try toDouble(g.next()))
                     relative = line.point
+                    lastcontrol = line.point
                     lastbezier = 0
                     self.append(line)
                 } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
@@ -110,6 +114,7 @@ extension SDPath {
                 repeat {
                     let line = SDPath.Line(x: try toDouble(g.current) + relative.x, y: try toDouble(g.next()) + relative.y)
                     relative = line.point
+                    lastcontrol = line.point
                     lastbezier = 0
                     self.append(line)
                 } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
@@ -117,6 +122,7 @@ extension SDPath {
                 repeat {
                     let line = SDPath.Line(x: try toDouble(g.current), y: relative.y)
                     relative = line.point
+                    lastcontrol = line.point
                     lastbezier = 0
                     self.append(line)
                 } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
@@ -124,6 +130,7 @@ extension SDPath {
                 repeat {
                     let line = SDPath.Line(x: try toDouble(g.current) + relative.x, y: relative.y)
                     relative = line.point
+                    lastcontrol = line.point
                     lastbezier = 0
                     self.append(line)
                 } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
@@ -131,6 +138,7 @@ extension SDPath {
                 repeat {
                     let line = SDPath.Line(x: relative.x, y: try toDouble(g.current))
                     relative = line.point
+                    lastcontrol = line.point
                     lastbezier = 0
                     self.append(line)
                 } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
@@ -138,6 +146,7 @@ extension SDPath {
                 repeat {
                     let line = SDPath.Line(x: relative.x, y: try toDouble(g.current) + relative.y)
                     relative = line.point
+                    lastcontrol = line.point
                     lastbezier = 0
                     self.append(line)
                 } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
@@ -148,6 +157,7 @@ extension SDPath {
                         x2: try toDouble(g.next()), y2: try toDouble(g.next()),
                         x3: try toDouble(g.next()), y3: try toDouble(g.next()))
                     relative = bezier.p3
+                    lastcontrol = bezier.p2
                     lastbezier = 2
                     self.append(bezier)
                 } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
@@ -158,6 +168,7 @@ extension SDPath {
                         x2: try toDouble(g.next()) + relative.x, y2: try toDouble(g.next()) + relative.y,
                         x3: try toDouble(g.next()) + relative.x, y3: try toDouble(g.next()) + relative.y)
                     relative = bezier.p3
+                    lastcontrol = bezier.p2
                     lastbezier = 2
                     self.append(bezier)
                 } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
@@ -165,7 +176,9 @@ extension SDPath {
                 repeat {
                     let bezier: SDPath.CubicBezier
                     if lastbezier == 2 {
+                        let p1 = 2 * relative - lastcontrol
                         bezier = SDPath.CubicBezier(
+                            x1: p1.x, y1: p1.y,
                             x2: try toDouble(g.current), y2: try toDouble(g.next()),
                             x3: try toDouble(g.next()), y3: try toDouble(g.next()))
                     } else {
@@ -175,6 +188,7 @@ extension SDPath {
                             x3: try toDouble(g.next()), y3: try toDouble(g.next()))
                     }
                     relative = bezier.p3
+                    lastcontrol = bezier.p2
                     lastbezier = 2
                     self.append(bezier)
                 } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
@@ -182,7 +196,9 @@ extension SDPath {
                 repeat {
                     let bezier: SDPath.CubicBezier
                     if lastbezier == 2 {
+                        let p1 = 2 * relative - lastcontrol
                         bezier = SDPath.CubicBezier(
+                            x1: p1.x, y1: p1.y,
                             x2: try toDouble(g.current) + relative.x, y2: try toDouble(g.next()) + relative.y,
                             x3: try toDouble(g.next()) + relative.x, y3: try toDouble(g.next()) + relative.y)
                     } else {
@@ -192,6 +208,7 @@ extension SDPath {
                             x3: try toDouble(g.next()) + relative.x, y3: try toDouble(g.next()) + relative.y)
                     }
                     relative = bezier.p3
+                    lastcontrol = bezier.p2
                     lastbezier = 2
                     self.append(bezier)
                 } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
@@ -201,6 +218,7 @@ extension SDPath {
                         x1: try toDouble(g.current), y1: try toDouble(g.next()),
                         x2: try toDouble(g.next()), y2: try toDouble(g.next()))
                     relative = bezier.p2
+                    lastcontrol = bezier.p1
                     lastbezier = 1
                     self.append(bezier)
                 } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
@@ -210,6 +228,7 @@ extension SDPath {
                         x1: try toDouble(g.current) + relative.x, y1: try toDouble(g.next()) + relative.y,
                         x2: try toDouble(g.next()) + relative.x, y2: try toDouble(g.next()) + relative.y)
                     relative = bezier.p2
+                    lastcontrol = bezier.p1
                     lastbezier = 1
                     self.append(bezier)
                 } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
@@ -217,11 +236,13 @@ extension SDPath {
                 repeat {
                     let bezier: SDPath.QuadBezier
                     if lastbezier == 1 {
-                        bezier = SDPath.QuadBezier(x2: try toDouble(g.current), y2: try toDouble(g.next()))
+                        let p1 = 2 * relative - lastcontrol
+                        bezier = SDPath.QuadBezier(x1: p1.x, y1: p1.y, x2: try toDouble(g.current), y2: try toDouble(g.next()))
                     } else {
                         bezier = SDPath.QuadBezier(x1: relative.x, y1: relative.y, x2: try toDouble(g.current), y2: try toDouble(g.next()))
                     }
                     relative = bezier.p2
+                    lastcontrol = bezier.p1
                     lastbezier = 1
                     self.append(bezier)
                 } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
@@ -229,11 +250,13 @@ extension SDPath {
                 repeat {
                     let bezier: SDPath.QuadBezier
                     if lastbezier == 1 {
-                        bezier = SDPath.QuadBezier(x2: try toDouble(g.current) + relative.x, y2: try toDouble(g.next()) + relative.y)
+                        let p1 = 2 * relative - lastcontrol
+                        bezier = SDPath.QuadBezier(x1: p1.x, y1: p1.y, x2: try toDouble(g.current) + relative.x, y2: try toDouble(g.next()) + relative.y)
                     } else {
                         bezier = SDPath.QuadBezier(x1: relative.x, y1: relative.y, x2: try toDouble(g.current) + relative.x, y2: try toDouble(g.next()) + relative.y)
                     }
                     relative = bezier.p2
+                    lastcontrol = bezier.p1
                     lastbezier = 1
                     self.append(bezier)
                 } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
@@ -248,6 +271,7 @@ extension SDPath {
                     let y = try toDouble(g.next())
                     let arc = SDPath.Arc(x: x, y: y, rx: rx, ry: ry, rotate: rotate, largeArc: largeArc, sweep: sweep)
                     relative = arc.point
+                    lastcontrol = arc.point
                     lastbezier = 0
                     self.append(arc)
                 } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
@@ -262,12 +286,14 @@ extension SDPath {
                     let y = try toDouble(g.next()) + relative.y
                     let arc = SDPath.Arc(x: x, y: y, rx: rx, ry: ry, rotate: rotate, largeArc: largeArc, sweep: sweep)
                     relative = arc.point
+                    lastcontrol = arc.point
                     lastbezier = 0
                     self.append(arc)
                 } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
             case "Z", "z":
                 let close = SDPath.ClosePath()
                 relative = start
+                lastcontrol = start
                 lastbezier = 0
                 self.append(close)
             default:
@@ -428,10 +454,18 @@ extension SDPath.Line : SDPathComponentSerializableShortFormType {
 
 extension SDPath.QuadBezier : SDPathComponentSerializableShortFormType {
     
+    private func isSmooth(relative: Point, _ lastControl: Point?) -> Bool {
+        
+        if let lastControl = lastControl {
+            let d = self.p1 + lastControl - 2 * relative
+            return _round(d.x) == 0 && _round(d.y) == 0
+        }
+        return false
+    }
+    
     private func serialize1(var currentState: Int, _ start: Point, _ relative: Point, _ lastControl: Point?) -> (String, Int, Point, Point, Point?) {
-        let p1 = self.firstControl(start, lastControl)
         let str: String
-        if self.p1 == nil && (8...11).contains(currentState) {
+        if self.isSmooth(relative, lastControl) && (8...11).contains(currentState) {
             if currentState == 8 {
                 str = getPathDataString(nil, self.p2.x, self.p2.y)
             } else {
@@ -440,18 +474,17 @@ extension SDPath.QuadBezier : SDPathComponentSerializableShortFormType {
             currentState = 8
         } else {
             if currentState == 10 {
-                str = getPathDataString(nil, p1.x, p1.y, self.p2.x, self.p2.y)
+                str = getPathDataString(nil, self.p1.x, self.p1.y, self.p2.x, self.p2.y)
             } else {
-                str = getPathDataString("Q", p1.x, p1.y, self.p2.x, self.p2.y)
+                str = getPathDataString("Q", self.p1.x, self.p1.y, self.p2.x, self.p2.y)
             }
             currentState = 10
         }
-        return (str, currentState, start, self.point, p1)
+        return (str, currentState, start, self.point, self.p1)
     }
     private func serialize2(var currentState: Int, _ start: Point, _ relative: Point, _ lastControl: Point?) -> (String, Int, Point, Point, Point?) {
-        let p1 = self.firstControl(start, lastControl)
         let str: String
-        if self.p1 == nil && (8...11).contains(currentState) {
+        if self.isSmooth(relative, lastControl) && (8...11).contains(currentState) {
             if currentState == 9 {
                 str = getPathDataString(nil, self.p2.x - relative.x, self.p2.y - relative.y)
             } else {
@@ -460,21 +493,30 @@ extension SDPath.QuadBezier : SDPathComponentSerializableShortFormType {
             currentState = 9
         } else {
             if currentState == 11 {
-                str = getPathDataString(nil, p1.x - relative.x, p1.y - relative.y, self.p2.x - relative.x, self.p2.y - relative.y)
+                str = getPathDataString(nil, self.p1.x - relative.x, self.p1.y - relative.y, self.p2.x - relative.x, self.p2.y - relative.y)
             } else {
-                str = getPathDataString("q", p1.x - relative.x, p1.y - relative.y, self.p2.x - relative.x, self.p2.y - relative.y)
+                str = getPathDataString("q", self.p1.x - relative.x, self.p1.y - relative.y, self.p2.x - relative.x, self.p2.y - relative.y)
             }
             currentState = 11
         }
-        return (str, currentState, start, self.point, p1)
+        return (str, currentState, start, self.point, self.p1)
     }
 }
 
 extension SDPath.CubicBezier : SDPathComponentSerializableShortFormType {
     
+    private func isSmooth(relative: Point, _ lastControl: Point?) -> Bool {
+        
+        if let lastControl = lastControl {
+            let d = self.p1 + lastControl - 2 * relative
+            return _round(d.x) == 0 && _round(d.y) == 0
+        }
+        return false
+    }
+    
     private func serialize1(var currentState: Int, _ start: Point, _ relative: Point, _ lastControl: Point?) -> (String, Int, Point, Point, Point?) {
         let str: String
-        if self.p1 == nil && (12...15).contains(currentState) {
+        if self.isSmooth(relative, lastControl) && (12...15).contains(currentState) {
             if currentState == 12 {
                 str = getPathDataString(nil, self.p2.x, self.p2.y, self.p3.x, self.p3.y)
             } else {
@@ -482,11 +524,10 @@ extension SDPath.CubicBezier : SDPathComponentSerializableShortFormType {
             }
             currentState = 12
         } else {
-            let p1 = self.firstControl(start, lastControl)
             if currentState == 14 {
-                str = getPathDataString(nil, p1.x, p1.y, self.p2.x, self.p2.y, self.p3.x, self.p3.y)
+                str = getPathDataString(nil, self.p1.x, self.p1.y, self.p2.x, self.p2.y, self.p3.x, self.p3.y)
             } else {
-                str = getPathDataString("C", p1.x, p1.y, self.p2.x, self.p2.y, self.p3.x, self.p3.y)
+                str = getPathDataString("C", self.p1.x, self.p1.y, self.p2.x, self.p2.y, self.p3.x, self.p3.y)
             }
             currentState = 14
         }
@@ -494,7 +535,7 @@ extension SDPath.CubicBezier : SDPathComponentSerializableShortFormType {
     }
     private func serialize2(var currentState: Int, _ start: Point, _ relative: Point, _ lastControl: Point?) -> (String, Int, Point, Point, Point?) {
         let str: String
-        if self.p1 == nil && (12...15).contains(currentState) {
+        if self.isSmooth(relative, lastControl) && (12...15).contains(currentState) {
             if currentState == 13 {
                 str = getPathDataString(nil, self.p2.x - relative.x, self.p2.y - relative.y, self.p3.x - relative.x, self.p3.y - relative.y)
             } else {
@@ -502,11 +543,10 @@ extension SDPath.CubicBezier : SDPathComponentSerializableShortFormType {
             }
             currentState = 13
         } else {
-            let p1 = self.firstControl(start, lastControl)
             if currentState == 15 {
-                str = getPathDataString(nil, p1.x - relative.x, p1.y - relative.y, self.p2.x - relative.x, self.p2.y - relative.y, self.p3.x - relative.x, self.p3.y - relative.y)
+                str = getPathDataString(nil, self.p1.x - relative.x, self.p1.y - relative.y, self.p2.x - relative.x, self.p2.y - relative.y, self.p3.x - relative.x, self.p3.y - relative.y)
             } else {
-                str = getPathDataString("c", p1.x - relative.x, p1.y - relative.y, self.p2.x - relative.x, self.p2.y - relative.y, self.p3.x - relative.x, self.p3.y - relative.y)
+                str = getPathDataString("c", self.p1.x - relative.x, self.p1.y - relative.y, self.p2.x - relative.x, self.p2.y - relative.y, self.p3.x - relative.x, self.p3.y - relative.y)
             }
             currentState = 15
         }
