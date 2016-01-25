@@ -112,6 +112,7 @@
 		081322511C11D3600081B2B9 /* Serialization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA761C0550B7007FA426 /* Serialization.swift */; };
 		081322521C11D3600081B2B9 /* Thread.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA771C0550B7007FA426 /* Thread.swift */; };
 		081322531C11D3600081B2B9 /* UUID.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA781C0550B7007FA426 /* UUID.swift */; };
+		082516261C51C60A00F8F9B0 /* Doggie_iOS.h in Headers */ = {isa = PBXBuildFile; fileRef = 087FE59B1A372D5B005A2E9E /* Doggie_iOS.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		0858DA7B1C0550B7007FA426 /* AccelerateWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA421C0550B7007FA426 /* AccelerateWrapper.swift */; };
 		0858DA7C1C0550B7007FA426 /* AccelerateWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA421C0550B7007FA426 /* AccelerateWrapper.swift */; };
 		0858DA7F1C0550B7007FA426 /* Arithmetic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA431C0550B7007FA426 /* Arithmetic.swift */; };
@@ -553,6 +554,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				082516261C51C60A00F8F9B0 /* Doggie_iOS.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
