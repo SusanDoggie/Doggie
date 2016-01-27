@@ -239,7 +239,7 @@ public struct GraphIndex<Node : Hashable, Link> : ForwardIndexType {
     }
 }
 
-public func == <Node : Hashable, Link>(lhs: GraphIndex<Node, Link>, rhs: GraphIndex<Node, Link>) -> Bool {
+public func == <Node, Link>(lhs: GraphIndex<Node, Link>, rhs: GraphIndex<Node, Link>) -> Bool {
     return lhs.current == rhs.current
 }
 
@@ -421,7 +421,7 @@ public struct UndirectedGraphIndex<Node : Hashable, Link> : ForwardIndexType {
     }
 }
 
-public func == <Node : Hashable, Link>(lhs: UndirectedGraphIndex<Node, Link>, rhs: UndirectedGraphIndex<Node, Link>) -> Bool {
+public func == <Node, Link>(lhs: UndirectedGraphIndex<Node, Link>, rhs: UndirectedGraphIndex<Node, Link>) -> Bool {
     return lhs.base == rhs.base
 }
 

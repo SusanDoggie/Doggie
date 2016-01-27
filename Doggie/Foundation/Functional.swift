@@ -360,7 +360,7 @@ public struct ConcatCollectionIndex<S1 : CollectionType, S2 : CollectionType whe
     }
 }
 
-public func == <S1 : CollectionType, S2 : CollectionType where S1.Generator.Element == S2.Generator.Element>(lhs: ConcatCollectionIndex<S1, S2>, rhs: ConcatCollectionIndex<S1, S2>) -> Bool {
+public func == <S1, S2>(lhs: ConcatCollectionIndex<S1, S2>, rhs: ConcatCollectionIndex<S1, S2>) -> Bool {
     return lhs.currect1 == rhs.currect1 && lhs.currect2 == rhs.currect2
 }
 
@@ -421,7 +421,7 @@ public struct ConcatBidirectionalCollectionIndex<S1 : CollectionType, S2 : Colle
     }
 }
 
-public func == <S1 : CollectionType, S2 : CollectionType where S1.Generator.Element == S2.Generator.Element, S1.Index : BidirectionalIndexType, S2.Index : BidirectionalIndexType>(lhs: ConcatBidirectionalCollectionIndex<S1, S2>, rhs: ConcatBidirectionalCollectionIndex<S1, S2>) -> Bool {
+public func == <S1, S2>(lhs: ConcatBidirectionalCollectionIndex<S1, S2>, rhs: ConcatBidirectionalCollectionIndex<S1, S2>) -> Bool {
     return lhs.currect1 == rhs.currect1 && lhs.currect2 == rhs.currect2
 }
 
