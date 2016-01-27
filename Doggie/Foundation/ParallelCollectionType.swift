@@ -94,7 +94,7 @@ public struct ParallelCollection<Base: CollectionType where Base.Index : RandomA
     
     private let base: Base
     
-    public typealias Generator = IndexingGenerator<ParallelCollection>
+    public typealias Generator = ParallelCollectionGenerator<Base.Generator>
     
     public typealias Index = Base.Index
     
@@ -116,6 +116,19 @@ public struct ParallelCollection<Base: CollectionType where Base.Index : RandomA
     public subscript(position: Index) -> Base.Generator.Element {
         return base[position]
     }
+    
+    public func generate() -> Generator {
+        return ParallelCollectionGenerator(base: base.generate())
+    }
+}
+
+public struct ParallelCollectionGenerator<Base: GeneratorType> : GeneratorType, SequenceType {
+    
+    private var base: Base
+    
+    public mutating func next() -> Base.Element? {
+        return base.next()
+    }
 }
 
 public struct ParallelMapCollection<Base: CollectionType, Element where Base.Index : RandomAccessIndexType> : ParallelCollectionType {
@@ -123,7 +136,7 @@ public struct ParallelMapCollection<Base: CollectionType, Element where Base.Ind
     private let base: Base
     private let transform: (Base.Generator.Element) -> Element
     
-    public typealias Generator = IndexingGenerator<ParallelMapCollection>
+    public typealias Generator = ParallelMapCollectionGenerator<Base.Generator, Element>
     
     public typealias Index = Base.Index
     
@@ -145,6 +158,20 @@ public struct ParallelMapCollection<Base: CollectionType, Element where Base.Ind
     
     public subscript(position: Index) -> Element {
         return transform(base[position])
+    }
+    
+    public func generate() -> Generator {
+        return ParallelMapCollectionGenerator(base: base.generate(), transform: transform)
+    }
+}
+
+public struct ParallelMapCollectionGenerator<Base: GeneratorType, Element> : GeneratorType, SequenceType {
+    
+    private var base: Base
+    private let transform: (Base.Element) -> Element
+    
+    public mutating func next() -> Element? {
+        return base.next().map(transform)
     }
 }
 
