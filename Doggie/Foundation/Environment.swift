@@ -75,18 +75,19 @@ public extension UnsignedIntegerType {
     
     @warn_unused_result
     static func random(bound: Self) -> Self {
-        if bound == 0 {
-            return 0
+        switch bound {
+        case 0, 1: return 0
+        default:
+            if bound.isPower2 {
+                return Self.random() & (bound &- 1)
+            }
+            let limit = (~Self.allZeros / bound) * bound
+            var rand = Self.random()
+            while rand >= limit {
+                rand = Self.random()
+            }
+            return rand % bound
         }
-        if bound.isPower2 {
-            return Self.random() & (bound - 1)
-        }
-        let limit = (~Self.allZeros / bound) * bound
-        var rand = Self.random()
-        while rand >= limit {
-            rand = Self.random()
-        }
-        return rand % bound
     }
 }
 
