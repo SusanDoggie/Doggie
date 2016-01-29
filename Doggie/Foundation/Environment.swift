@@ -71,7 +71,26 @@ public extension IntegerType {
     }
 }
 
-extension UInt32 {
+public extension UnsignedIntegerType {
+    
+    @warn_unused_result
+    static func random(bound: Self) -> Self {
+        if bound == 0 {
+            return 0
+        }
+        if bound.isPower2 {
+            return Self.random() & (bound - 1)
+        }
+        let limit = (~Self.allZeros / bound) * bound
+        var rand = Self.random()
+        while rand >= limit {
+            rand = Self.random()
+        }
+        return rand % bound
+    }
+}
+
+public extension UInt32 {
     
     @warn_unused_result
     static func random(bound: UInt32) -> UInt32 {
@@ -79,7 +98,7 @@ extension UInt32 {
     }
 }
 
-extension Float32 {
+public extension Float32 {
     
     @warn_unused_result
     static func random() -> Float32 {
@@ -87,7 +106,7 @@ extension Float32 {
     }
 }
 
-extension Float64 {
+public extension Float64 {
     
     @warn_unused_result
     static func random() -> Float64 {
@@ -102,8 +121,14 @@ public func random_bytes(count: Int) -> [UInt8] {
     return buffer
 }
 @warn_unused_result
-public func random(range: Range<Int32>) -> Int32 {
-    return Int32(UInt32.random(UInt32(range.endIndex - range.startIndex))) + range.startIndex
+public func random<S: SignedIntegerType>(range: Range<S>) -> S {
+    let diff: UIntMax = numericCast(range.endIndex - range.startIndex)
+    return numericCast(UIntMax.random(diff)) + range.startIndex
+}
+@warn_unused_result
+public func random<U: UnsignedIntegerType>(range: Range<U>) -> U {
+    let diff = range.endIndex - range.startIndex
+    return U.random(diff) + range.startIndex
 }
 @warn_unused_result
 public func random(range: ClosedInterval<Float>) -> Float {
@@ -113,7 +138,7 @@ public func random(range: ClosedInterval<Float>) -> Float {
 @warn_unused_result
 public func random(range: ClosedInterval<Double>) -> Double {
     let diff = range.end - range.start
-    return ((Double(UInt64.random()) / Double(UInt64.max)) * diff) + range.start
+    return ((unsafeBitCast(UInt64.random(0x10000000000000) + 0x3FF0000000000000, Float64.self) - 1) * diff) + range.start
 }
 @warn_unused_result
 public func random(range: HalfOpenInterval<Float>) -> Float {
