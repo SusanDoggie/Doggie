@@ -61,14 +61,15 @@ extension Complex: CustomStringConvertible, CustomDebugStringConvertible {
         default: print += String(format: "%.2f", real)
         }
         
-        if print != "" && !imag.isSignMinus {
-            print += "+"
-        }
-        switch imag {
-        case 0: break
-        case 1: print += "𝒊"
-        case -1: print += "-𝒊"
-        default: print += String(format: "%.2f𝒊", imag)
+        if imag != 0 {
+            if print != "" && !imag.isSignMinus {
+                print += "+"
+            }
+            switch imag {
+            case 1: print += "𝒊"
+            case -1: print += "-𝒊"
+            default: print += String(format: "%.2f𝒊", imag)
+            }
         }
         
         if print == "" {

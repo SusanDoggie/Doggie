@@ -62,24 +62,26 @@ extension Vector: CustomStringConvertible, CustomDebugStringConvertible {
         default: print += String(format: "%.2f𝒊", x)
         }
         
-        if print != "" && !y.isSignMinus {
-            print += "+"
-        }
-        switch y {
-        case 0: break
-        case 1: print += "𝒋"
-        case -1: print += "-𝒋"
-        default: print += String(format: "%.2f𝒋", x)
+        if y != 0 {
+            if print != "" && !y.isSignMinus {
+                print += "+"
+            }
+            switch y {
+            case 1: print += "𝒋"
+            case -1: print += "-𝒋"
+            default: print += String(format: "%.2f𝒋", x)
+            }
         }
         
-        if print != "" && !z.isSignMinus {
-            print += "+"
-        }
-        switch z {
-        case 0: break
-        case 1: print += "𝒌"
-        case -1: print += "-𝒌"
-        default: print += String(format: "%.2f𝒌", x)
+        if z != 0 {
+            if print != "" && !z.isSignMinus {
+                print += "+"
+            }
+            switch z {
+            case 1: print += "𝒌"
+            case -1: print += "-𝒌"
+            default: print += String(format: "%.2f𝒌", x)
+            }
         }
         
         if print == "" {
