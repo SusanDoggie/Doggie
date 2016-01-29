@@ -71,6 +71,22 @@ public extension IntegerType {
     }
 }
 
+extension Float32 {
+    
+    @warn_unused_result
+    static func random() -> Float32 {
+        return unsafeBitCast(UInt32.random() & 0x7FFFFF | 0x3F800000, Float32.self) - 1
+    }
+}
+
+extension Float64 {
+    
+    @warn_unused_result
+    static func random() -> Float64 {
+        return unsafeBitCast(UInt64.random() & 0xFFFFFFFFFFFFF | 0x3FF0000000000000, Float64.self) - 1
+    }
+}
+
 @warn_unused_result
 public func random_bytes(count: Int) -> [UInt8] {
     var buffer = [UInt8](count: count, repeatedValue: 0)
@@ -87,14 +103,24 @@ public func random(range: Range<Int32>) -> Int32 {
     return Int32(random(UInt32(range.endIndex - range.startIndex))) + range.startIndex
 }
 @warn_unused_result
+public func random(range: ClosedInterval<Float>) -> Float {
+    let diff = range.end - range.start
+    return ((Float(UInt32.random()) / Float(UInt32.max)) * diff) + range.start
+}
+@warn_unused_result
 public func random(range: ClosedInterval<Double>) -> Double {
     let diff = range.end - range.start
-    return ((Double(arc4random()) / Double(0x100000000 as UInt64)) * diff) + range.start
+    return ((Double(UInt64.random()) / Double(UInt64.max)) * diff) + range.start
+}
+@warn_unused_result
+public func random(range: HalfOpenInterval<Float>) -> Float {
+    let diff = range.end - range.start
+    return (Float.random() * diff) + range.start
 }
 @warn_unused_result
 public func random(range: HalfOpenInterval<Double>) -> Double {
     let diff = range.end - range.start
-    return ((Double(arc4random()) / Double(0xFFFFFFFF as UInt64)) * diff) + range.start
+    return (Double.random() * diff) + range.start
 }
 
 @warn_unused_result
