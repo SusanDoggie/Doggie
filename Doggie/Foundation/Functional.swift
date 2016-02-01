@@ -738,7 +738,8 @@ public extension CollectionType where Index : RandomAccessIndexType {
             if _count.isPower2 {
                 _rand &= _count &- 1
             } else {
-                let limit = (~0 / _count) * _count
+                let RANDMAX: UIntMax = ~0
+                let limit = RANDMAX - RANDMAX % _count
                 while _rand >= limit {
                     _rand = UIntMax.random()
                 }
