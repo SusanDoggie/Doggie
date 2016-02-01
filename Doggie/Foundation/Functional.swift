@@ -721,6 +721,30 @@ public extension MutableCollectionType where Self.Index : RandomAccessIndexType 
     }
 }
 
+public extension CollectionType where Index : RandomAccessIndexType {
+    
+    @warn_unused_result
+    func random() -> Generator.Element? {
+        let _count = UIntMax(self.count.toIntMax())
+        switch _count {
+        case 0: return nil
+        case 1: return self[self.startIndex]
+        default:
+            var _rand = UIntMax.random()
+            if _count.isPower2 {
+                _rand &= _count &- 1
+            } else {
+                let limit = (~0 / _count) * _count
+                while _rand >= limit {
+                    _rand = UIntMax.random()
+                }
+                _rand %= _count
+            }
+            return self[self.startIndex.advancedBy(numericCast(_rand))]
+        }
+    }
+}
+
 public extension CollectionType {
     
     /// Return an `Array` containing the shuffled elements of `source`.
@@ -740,7 +764,7 @@ public extension MutableCollectionType where Index : RandomAccessIndexType {
         let _startIndex = self.startIndex
         for i in self.indices.dropLast() {
             let _i = _startIndex.distanceTo(i).toIntMax()
-            let j = _startIndex.advancedBy(Index.Distance(random(_i..<_count)))
+            let j = _startIndex.advancedBy(Index.Distance((_i..<_count).random()!))
             if i != j {
                 swap(&self[i], &self[j])
             }
