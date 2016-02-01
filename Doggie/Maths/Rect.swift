@@ -162,29 +162,60 @@ extension Rect {
 extension Rect {
     
     public var minX : Double {
-        return x
+        get {
+            return x
+        }
+        set {
+            x = newValue
+        }
     }
     public var minY : Double {
-        return y
+        get {
+            return y
+        }
+        set {
+            y = newValue
+        }
     }
     public var maxX : Double {
-        return x + width
+        get {
+            return x + width
+        }
+        set {
+            width = newValue - x
+        }
     }
     public var maxY : Double {
-        return y + height
+        get {
+            return y + height
+        }
+        set {
+            height = newValue - y
+        }
     }
     public var midX : Double {
-        return 0.5 * width + x
+        get {
+            return 0.5 * width + x
+        }
+        set {
+            x = newValue - 0.5 * width
+        }
     }
     public var midY : Double {
-        return 0.5 * height + y
+        get {
+            return 0.5 * height + y
+        }
+        set {
+            y = newValue - 0.5 * height
+        }
     }
     public var center : Point {
         get {
             return Point(x: midX, y: midY)
         }
         set {
-            origin += newValue - center
+            midX = newValue.x
+            midY = newValue.y
         }
     }
 }
