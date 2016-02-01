@@ -723,6 +723,10 @@ public extension MutableCollectionType where Self.Index : RandomAccessIndexType 
 
 public extension CollectionType where Index : RandomAccessIndexType {
     
+    /// Returns a random element in `self` or `nil` if the sequence is empty.
+    ///
+    /// - Complexity: O(1).
+    ///
     @warn_unused_result
     func random() -> Generator.Element? {
         let _count = UIntMax(self.count.toIntMax())
