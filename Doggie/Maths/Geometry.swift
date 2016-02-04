@@ -103,13 +103,12 @@ public func EllipseCenter(r: Radius, _ rotate: Double, _ a: Point, _ b: Point) -
     let dy = (ay - by) / r.y
     let d = dx * dx + dy * dy
     
+    let _x = 0.5 * (ax + bx)
+    let _y = 0.5 * (ay + by)
+    
     if d == 4 {
-        let _x = 0.5 * (ax + bx)
-        let _y = 0.5 * (ay + by)
         return [Point(x: _x * _cos - _y * _sin, y: _x * _sin + _y * _cos)]
     } else if d < 4 {
-        let _x = 0.5 * (ax + bx)
-        let _y = 0.5 * (ay + by)
         let _t = sqrt((1 - d * 0.25) / d)
         
         let cx1 = _x + _t * dy * r.x
