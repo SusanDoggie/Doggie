@@ -429,10 +429,12 @@ extension SDAtomic {
 
 extension SDAtomic {
     
+    /// Return current value.
     public var value : T {
         return UnsafePointer(ptr).memory
     }
     
+    /// `body` called repeatedly until `value` successful replaced. Return old value.
     public func apply(body: (T) -> T) -> T {
         while true {
             let oldPtr = UnsafeMutablePointer<T>(ptr)
