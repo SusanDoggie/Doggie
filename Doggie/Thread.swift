@@ -399,7 +399,7 @@ extension SDSignal: CustomStringConvertible, CustomDebugStringConvertible {
 // MARK: SDAtomic
 
 /// lock free atomic variable
-public class SDAtomic<T> {
+public final class SDAtomic<T> {
     
     private var ptr: UnsafeMutablePointer<Void>
     
