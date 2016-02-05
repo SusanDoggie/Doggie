@@ -396,60 +396,6 @@ extension SDSignal: CustomStringConvertible, CustomDebugStringConvertible {
     }
 }
 
-// MARK: SDAtomic
-
-/// lock free atomic variable
-public final class SDAtomic<T> {
-    
-    private var ptr: UnsafeMutablePointer<Void>
-    
-    public init(_ value: T) {
-        self.ptr = SDAtomic.alloc(value)
-    }
-    
-    deinit {
-        SDAtomic.destroy(self.ptr)
-    }
-}
-
-extension SDAtomic {
-    
-    private static func alloc(value: T) -> UnsafeMutablePointer<Void> {
-        let ptr = UnsafeMutablePointer<T>.alloc(1)
-        ptr.initialize(value)
-        return UnsafeMutablePointer(ptr)
-    }
-    
-    private static func destroy(pointer: UnsafeMutablePointer<Void>) {
-        let ptr = UnsafeMutablePointer<T>(pointer)
-        ptr.destroy()
-        ptr.destroy(1)
-    }
-}
-
-extension SDAtomic {
-    
-    /// Return current value.
-    public var value : T {
-        return UnsafePointer(ptr).memory
-    }
-    
-    /// `body` called repeatedly until `value` successful replaced. Return old value.
-    public func apply(body: (T) -> T) -> T {
-        while true {
-            let oldPtr = UnsafeMutablePointer<T>(ptr)
-            let newPtr = SDAtomic.alloc(body(oldPtr.memory))
-            if OSAtomicCompareAndSwapPtr(oldPtr, newPtr, &ptr) {
-                let oldVal = oldPtr.memory
-                SDAtomic.destroy(oldPtr)
-                return oldVal
-            } else {
-                SDAtomic.destroy(newPtr)
-            }
-        }
-    }
-}
-
 // MARK: SDTask
 
 public let DispatchMainQueue = dispatch_get_main_queue()
