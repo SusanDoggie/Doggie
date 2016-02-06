@@ -473,6 +473,138 @@ extension LazyCollectionType where Elements.Index : BidirectionalIndexType {
     }
 }
 
+public struct LazyAppendGenerator<Base: GeneratorType> : GeneratorType {
+    
+    private var base: ConcatGenerator<Base, GeneratorOfOne<Base.Element>>
+    
+    public mutating func next() -> Base.Element? {
+        return base.next()
+    }
+}
+
+public struct LazyAppendSequence<Base: SequenceType> : LazySequenceType {
+    
+    private let base: ConcatSequence<Base, CollectionOfOne<Base.Generator.Element>>
+    
+    private init(elements: Base, newElement: Base.Generator.Element) {
+        self.base = elements.concat(CollectionOfOne(newElement))
+    }
+    
+    public func generate() -> LazyAppendGenerator<Base.Generator> {
+        return LazyAppendGenerator(base: base.generate())
+    }
+    
+    public func underestimateCount() -> Int {
+        return base.underestimateCount()
+    }
+}
+
+public struct LazyAppendCollection<Base: CollectionType> : LazyCollectionType {
+    
+    private let base: ConcatCollection<Base, CollectionOfOne<Base.Generator.Element>>
+    
+    private init(elements: Base, _ newValue: Base.Generator.Element) {
+        self.base = elements.concat(CollectionOfOne(newValue))
+    }
+    
+    public var startIndex : LazyAppendCollectionIndex<Base> {
+        return LazyAppendCollectionIndex(base: base.startIndex)
+    }
+    public var endIndex : LazyAppendCollectionIndex<Base> {
+        return LazyAppendCollectionIndex(base: base.endIndex)
+    }
+    
+    public subscript(index: LazyAppendCollectionIndex<Base>) -> Base.Generator.Element {
+        return base[index.base]
+    }
+    
+    public func generate() -> LazyAppendGenerator<Base.Generator> {
+        return LazyAppendGenerator(base: base.generate())
+    }
+    
+    public func underestimateCount() -> Int {
+        return base.underestimateCount()
+    }
+}
+
+public struct LazyAppendCollectionIndex<Base: CollectionType> : ForwardIndexType {
+    
+    private let base: ConcatCollectionIndex<Base, CollectionOfOne<Base.Generator.Element>>
+    
+    public func successor() -> LazyAppendCollectionIndex {
+        return LazyAppendCollectionIndex(base: base.successor())
+    }
+}
+
+public func ==<Base>(lhs: LazyAppendCollectionIndex<Base>, rhs: LazyAppendCollectionIndex<Base>) -> Bool {
+    return lhs.base == rhs.base
+}
+
+public struct LazyAppendBidirectionalCollection<Base: CollectionType where Base.Index : BidirectionalIndexType> : LazyCollectionType {
+    
+    private let base: ConcatBidirectionalCollection<Base, CollectionOfOne<Base.Generator.Element>>
+    
+    private init(elements: Base, _ newValue: Base.Generator.Element) {
+        self.base = elements.concat(CollectionOfOne(newValue))
+    }
+    
+    public var startIndex : LazyAppendBidirectionalCollectionIndex<Base> {
+        return LazyAppendBidirectionalCollectionIndex(base: base.startIndex)
+    }
+    public var endIndex : LazyAppendBidirectionalCollectionIndex<Base> {
+        return LazyAppendBidirectionalCollectionIndex(base: base.endIndex)
+    }
+    
+    public subscript(index: LazyAppendBidirectionalCollectionIndex<Base>) -> Base.Generator.Element {
+        return base[index.base]
+    }
+    
+    public func generate() -> LazyAppendGenerator<Base.Generator> {
+        return LazyAppendGenerator(base: base.generate())
+    }
+    
+    public func underestimateCount() -> Int {
+        return base.underestimateCount()
+    }
+}
+
+public struct LazyAppendBidirectionalCollectionIndex<Base: CollectionType where Base.Index : BidirectionalIndexType> : BidirectionalIndexType {
+    
+    private let base: ConcatBidirectionalCollectionIndex<Base, CollectionOfOne<Base.Generator.Element>>
+    
+    public func successor() -> LazyAppendBidirectionalCollectionIndex {
+        return LazyAppendBidirectionalCollectionIndex(base: base.successor())
+    }
+    public func predecessor() -> LazyAppendBidirectionalCollectionIndex {
+        return LazyAppendBidirectionalCollectionIndex(base: base.predecessor())
+    }
+}
+
+public func ==<Base>(lhs: LazyAppendBidirectionalCollectionIndex<Base>, rhs: LazyAppendBidirectionalCollectionIndex<Base>) -> Bool {
+    return lhs.base == rhs.base
+}
+
+extension LazySequenceType {
+    
+    func append(newElement: Elements.Generator.Element) -> LazyAppendSequence<Elements> {
+        return LazyAppendSequence(elements: self.elements, newElement: newElement)
+    }
+}
+
+extension LazyCollectionType {
+    
+    func append(newElement: Elements.Generator.Element) -> LazyAppendSequence<Elements> {
+        return LazyAppendSequence(elements: self.elements, newElement: newElement)
+    }
+}
+
+extension LazyCollectionType where Elements.Index : BidirectionalIndexType {
+    
+    func append(newElement: Elements.Generator.Element) -> LazyAppendSequence<Elements> {
+        return LazyAppendSequence(elements: self.elements, newElement: newElement)
+    }
+}
+
 public struct PermutationCollection<C : CollectionType, I : CollectionType where C.Index == I.Generator.Element> : CollectionType {
     
     public typealias Generator = PermutationGenerator<C, I>
