@@ -444,6 +444,31 @@ public func == (lhs: Polynomial, rhs: Polynomial) -> Bool {
 }
 
 @warn_unused_result
+public func == (lhs: Double, rhs: Polynomial) -> Bool {
+    return rhs.degree == 0 && lhs == rhs[0]
+}
+
+@warn_unused_result
+public func == (lhs: Polynomial, rhs: Double) -> Bool {
+    return lhs.degree == 0 && lhs[0] == rhs
+}
+
+@warn_unused_result
+public func != (lhs: Polynomial, rhs: Polynomial) -> Bool {
+    return lhs.coeffs != rhs.coeffs
+}
+
+@warn_unused_result
+public func != (lhs: Double, rhs: Polynomial) -> Bool {
+    return rhs.degree != 0 || lhs != rhs[0]
+}
+
+@warn_unused_result
+public func != (lhs: Polynomial, rhs: Double) -> Bool {
+    return lhs.degree != 0 || lhs[0] != rhs
+}
+
+@warn_unused_result
 public func pow(p: Polynomial, _ n: Int) -> Polynomial {
     if p.count == 0 {
         return Polynomial()
