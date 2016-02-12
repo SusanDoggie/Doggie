@@ -269,7 +269,7 @@ extension SDPath {
                     let sweep = try toInt(g.next()) != 0
                     let x = try toDouble(g.next())
                     let y = try toDouble(g.next())
-                    let arc = bezierArc(relative, Point(x: x, y: y), Radius(x: rx, y: ry), rotate, largeArc, sweep)
+                    let arc = bezierArc(relative, Point(x: x, y: y), Radius(x: rx, y: ry), M_PI * rotate / 180, largeArc, sweep)
                     relative = Point(x: x, y: y)
                     lastcontrol = Point(x: x, y: y)
                     lastbezier = 0
@@ -284,7 +284,7 @@ extension SDPath {
                     let sweep = try toInt(g.next()) != 0
                     let x = try toDouble(g.next()) + relative.x
                     let y = try toDouble(g.next()) + relative.y
-                    let arc = bezierArc(relative, Point(x: x, y: y), Radius(x: rx, y: ry), rotate, largeArc, sweep)
+                    let arc = bezierArc(relative, Point(x: x, y: y), Radius(x: rx, y: ry), M_PI * rotate / 180, largeArc, sweep)
                     relative = Point(x: x, y: y)
                     lastcontrol = Point(x: x, y: y)
                     lastbezier = 0
@@ -303,14 +303,11 @@ extension SDPath {
     }
 }
 
-private func arcContains(start: Point, _ end: Point, _ testPoint: Point, _ sweep: Bool) -> Bool {
-    return !direction(start, testPoint, end).isSignMinus == sweep
-}
 private func arcDetails(start: Point, _ end: Point, _ radius: Radius, _ rotate: Double, _ largeArc: Bool, _ sweep: Bool) -> (Point, Radius) {
     let centers = EllipseCenter(radius, rotate, start, end)
     if centers.count == 0 {
         return (middle(end, start), EllipseRadius(start, end, radius, rotate))
-    } else if centers.count == 1 || (arcContains(start, end, centers[0], sweep) ? largeArc : !largeArc) {
+    } else if centers.count == 1 || (!direction(start, centers[0], end).isSignMinus == sweep ? largeArc : !largeArc) {
         return (centers[0], radius)
     } else {
         return (centers[1], radius)
@@ -318,29 +315,23 @@ private func arcDetails(start: Point, _ end: Point, _ radius: Radius, _ rotate: 
 }
 private func bezierArc(start: Point, _ end: Point, _ radius: Radius, _ rotate: Double, _ largeArc: Bool, _ sweep: Bool) -> [SDPathCommand] {
     let (center, radius) = arcDetails(start, end, radius, rotate, largeArc, sweep)
-    
-    let _arc_transform = SDTransform.Translate(x: center.x, y: center.y) * SDTransform.Rotate(rotate) * SDTransform.Scale(x: radius.x, y: radius.y)
+    let _arc_transform = SDTransform.Rotate(rotate) * SDTransform.Scale(x: radius.x, y: radius.y)
     let _arc_transform_inverse = _arc_transform.inverse
-    
-    let _2_M_PI = 2 * M_PI
-    
-    let _begin = _arc_transform_inverse * start
-    let _end = _arc_transform_inverse * end
+    let _begin = _arc_transform_inverse * (start - center)
+    let _end = _arc_transform_inverse * (end - center)
     let startAngle = atan2(_begin.y, _begin.x)
     var endAngle = atan2(_end.y, _end.x)
     if sweep {
         while endAngle < startAngle {
-            endAngle += _2_M_PI
+            endAngle += 2 * M_PI
         }
     } else {
         while endAngle > startAngle {
-            endAngle -= _2_M_PI
+            endAngle -= 2 * M_PI
         }
     }
-    
     let _transform = _arc_transform * SDTransform.Rotate(startAngle)
-    
-    let point = BezierArc(endAngle - startAngle).lazy.map { _transform * $0 }
+    let point = BezierArc(endAngle - startAngle).lazy.map { _transform * $0 + center }
     var result: [SDPathCommand] = []
     if point.count > 1 {
         result.append(SDPath.CubicBezier(point[1], point[2], point[3]))
