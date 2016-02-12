@@ -85,6 +85,7 @@ extension Regex: CustomStringConvertible, CustomDebugStringConvertible {
 public protocol RegularExpressionMatchable {
     
     typealias Matching
+    typealias Replacement
     
     /// Returns an array containing all the matches of the regular expression.
     @warn_unused_result
@@ -92,7 +93,7 @@ public protocol RegularExpressionMatchable {
     
     /// Returns a new string containing matching regular expressions replaced with the template.
     @warn_unused_result
-    func replace(regex: Regex, template: Self) -> Self
+    func replace(regex: Regex, template: Replacement) -> Replacement
     
     /// Returns the number of matches of the regular expression.
     @warn_unused_result
@@ -177,6 +178,43 @@ extension String: RegularExpressionMatchable {
         let nsstring = NSString(string: self)
         let range = NSRange(location: 0, length: nsstring.length)
         return regex.matcher.stringByReplacingMatchesInString(self, options: [], range: range, withTemplate: template)
+    }
+}
+
+extension StaticString: RegularExpressionMatchable {
+    
+    /// Returns the number of matches of the regular expression in the string.
+    @warn_unused_result
+    public func count(regex: Regex) -> Int {
+        return self.stringValue.count(regex)
+    }
+    
+    /// Returns true if any match of the regular expression in the string.
+    @warn_unused_result
+    public func isMatch(regex: Regex) -> Bool {
+        return self.stringValue.isMatch(regex)
+    }
+    
+    /// Returns the first match of the regular expression in the string.
+    @warn_unused_result
+    public func firstMatch(regex: Regex) -> String? {
+        return self.stringValue.firstMatch(regex)
+    }
+    
+    /// Returns an array containing all the matches of the regular expression in the string.
+    @warn_unused_result
+    public func match(regex: Regex) -> [String] {
+        return self.stringValue.match(regex)
+    }
+    
+    /// Returns a new string containing matching regular expressions replaced with the template string.
+    ///
+    /// The replacement is treated as a template, with $0 being replaced by the contents of the matched range, $1 by the contents of the first capture group, and so on.
+    /// Additional digits beyond the maximum required to represent the number of capture groups will be treated as ordinary characters, as will a $ not followed by digits.
+    /// Backslash will escape both $ and itself.
+    @warn_unused_result
+    public func replace(regex: Regex, template: String) -> String {
+        return self.stringValue.replace(regex, template: template)
     }
 }
 
