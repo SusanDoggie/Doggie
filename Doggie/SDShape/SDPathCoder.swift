@@ -291,10 +291,11 @@ extension SDPath {
                     self.appendContentsOf(arc)
                 } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
             case "Z", "z":
+                let close = SDPath.ClosePath()
                 relative = start
                 lastcontrol = start
                 lastbezier = 0
-                self.append(.Close)
+                self.append(close)
             default:
                 throw DecoderError(command: command)
             }
@@ -348,9 +349,9 @@ private func bezierArc(start: Point, _ end: Point, _ radius: Radius, _ rotate: D
     let point = BezierArc(endAngle - startAngle).lazy.map { _transform * $0 }
     var result: [SDPathCommand] = []
     if point.count > 1 {
-        result.append(.Cubic(point[1], point[2], point[3]))
+        result.append(SDPath.CubicBezier(point[1], point[2], point[3]))
         for i in 1..<point.count / 3 {
-            result.append(.Cubic(point[i * 3 + 1], point[i * 3 + 2], point[i * 3 + 3]))
+            result.append(SDPath.CubicBezier(point[i * 3 + 1], point[i * 3 + 2], point[i * 3 + 3]))
         }
     }
     return result
