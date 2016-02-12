@@ -189,61 +189,6 @@ public struct SDPath : SDShape, MutableCollectionType, ArrayLiteralConvertible {
         }
     }
     
-    public struct Arc : SDPathCommand {
-        
-        public var x: Double
-        public var y: Double
-        
-        public var rx: Double
-        public var ry: Double
-        
-        public var rotate : Double
-        
-        public var largeArc : Bool
-        
-        ///  draw with positive direction
-        public var sweep : Bool
-        
-        public init(x: Double, y: Double, rx: Double, ry: Double, rotate: Double, largeArc : Bool, sweep : Bool) {
-            self.x = x
-            self.y = y
-            self.rx = rx
-            self.ry = ry
-            self.rotate = rotate
-            self.largeArc = largeArc
-            self.sweep = sweep
-        }
-        
-        public init(point: Point, radius: Radius, rotate: Double, largeArc : Bool, sweep : Bool) {
-            self.x = point.x
-            self.y = point.y
-            self.rx = radius.x
-            self.ry = radius.y
-            self.rotate = rotate
-            self.largeArc = largeArc
-            self.sweep = sweep
-        }
-        
-        public var point: Point {
-            get {
-                return Point(x: x, y: y)
-            }
-            set {
-                self.x = newValue.x
-                self.y = newValue.y
-            }
-        }
-        public var radius: Radius {
-            get {
-                return Radius(x: rx, y: ry)
-            }
-            set {
-                self.rx = newValue.x
-                self.ry = newValue.y
-            }
-        }
-    }
-    
     public struct ClosePath : SDPathCommand {
         
         public init() {
@@ -274,13 +219,6 @@ public struct SDPath : SDShape, MutableCollectionType, ArrayLiteralConvertible {
                     bound = cubic.bound(state.last)
                 } else {
                     bound = bound!.union(cubic.bound(state.last))
-                }
-                
-            case let arc as SDPath.Arc:
-                if bound == nil {
-                    bound = arc.bound(state.last)
-                } else {
-                    bound = bound!.union(arc.bound(state.last))
                 }
                 
             default: break
@@ -314,13 +252,6 @@ public struct SDPath : SDShape, MutableCollectionType, ArrayLiteralConvertible {
                     bound = bound!.union(cubic.bound(state.last, transform))
                 }
                 
-            case let arc as SDPath.Arc:
-                if bound == nil {
-                    bound = arc.bound(state.last, transform)
-                } else {
-                    bound = bound!.union(arc.bound(state.last, transform))
-                }
-                
             default: break
             }
         }
@@ -344,13 +275,18 @@ extension SDPath {
     }
     
     public init(_ ellipse: SDEllipse) {
-        let a = Point(x: ellipse.x + ellipse.rx, y: ellipse.y)
-        let b = Point(x: ellipse.x - ellipse.rx, y: ellipse.y)
-        self.init(arrayLiteral: SDPath.Move(a),
-            SDPath.Arc(point: b, radius: ellipse.radius, rotate: 0, largeArc: true, sweep: true),
-            SDPath.Arc(point: a, radius: ellipse.radius, rotate: 0, largeArc: true, sweep: true),
-            SDPath.ClosePath()
-        )
+        self.init()
+        let _arc_transform = SDTransform.Translate(x: ellipse.position.x, y: ellipse.position.y) * SDTransform.Scale(x: ellipse.radius.x, y: ellipse.radius.y)
+        let _transform = _arc_transform
+        
+        let point = BezierArc(2 * M_PI).lazy.map { _transform * $0 }
+        if point.count > 1 {
+            self.append(SDPath.CubicBezier(point[1], point[2], point[3]))
+            for i in 1..<point.count / 3 {
+                self.append(SDPath.CubicBezier(point[i * 3 + 1], point[i * 3 + 2], point[i * 3 + 3]))
+            }
+        }
+        self.append(SDPath.ClosePath())
         self.transform = ellipse.transform
     }
 }
@@ -441,10 +377,6 @@ extension SDPath {
                     result = (cubic, ComputeState(start: start, last: last))
                     last = cubic.point
                     
-                case let arc as SDPath.Arc:
-                    result = (arc, ComputeState(start: start, last: last))
-                    last = arc.point
-                    
                 case let close as SDPath.ClosePath:
                     result = (close, ComputeState(start: start, last: last))
                     last = start
@@ -501,84 +433,6 @@ extension SDPath.CubicBezier {
     }
 }
 
-extension SDPath.Arc {
-    
-    @warn_unused_result
-    public func contains(lastPoint: Point, _ testPoint: Point) -> Bool {
-        return !direction(lastPoint, testPoint, self.point).isSignMinus == self.sweep
-    }
-    @warn_unused_result
-    public func details(lastPoint: Point) -> (Point, Radius) {
-        let centers = EllipseCenter(self.radius, self.rotate, lastPoint, self.point)
-        if centers.count == 0 {
-            return (middle(self.point, lastPoint), EllipseRadius(lastPoint, self.point, self.radius, self.rotate))
-        } else if centers.count == 1 || (self.contains(lastPoint, centers[0]) ? self.largeArc : !self.largeArc) {
-            return (centers[0], radius)
-        } else {
-            return (centers[1], radius)
-        }
-    }
-    @warn_unused_result
-    public func bound(last: Point) -> Rect {
-        var list: [Point] = [last, self.point]
-        
-        let rotate = SDTransform.Rotate(self.rotate)
-        let (center, radius) = self.details(last)
-        
-        let t1 = EllipseStationary(radius, rotate.a, rotate.b)
-        let t2 = EllipseStationary(radius, rotate.d, rotate.e)
-        
-        let a = rotate * Ellipse(t1, Point(), radius) + center
-        let b = rotate * Ellipse(t1 + M_PI, Point(), radius) + center
-        let c = rotate * Ellipse(t2, Point(), radius) + center
-        let d = rotate * Ellipse(t2 + M_PI, Point(), radius) + center
-        
-        if self.contains(last, a) {
-            list.append(a)
-        }
-        if self.contains(last, b) {
-            list.append(b)
-        }
-        if self.contains(last, c) {
-            list.append(c)
-        }
-        if self.contains(last, d) {
-            list.append(d)
-        }
-        return Rect.bound(list)
-    }
-    @warn_unused_result
-    public func bound<T: SDTransformType>(last: Point, _ transform: T) -> Rect {
-        var list: [Point] = [transform * last, transform * self.point]
-        
-        let rotate = SDTransform.Rotate(self.rotate)
-        let (center, radius) = self.details(last)
-        let _transform = transform * rotate
-        
-        let t1 = EllipseStationary(radius, _transform.a, _transform.b)
-        let t2 = EllipseStationary(radius, _transform.d, _transform.e)
-        
-        let a = rotate * Ellipse(t1, Point(), radius) + center
-        let b = rotate * Ellipse(t1 + M_PI, Point(), radius) + center
-        let c = rotate * Ellipse(t2, Point(), radius) + center
-        let d = rotate * Ellipse(t2 + M_PI, Point(), radius) + center
-        
-        if self.contains(last, a) {
-            list.append(transform * a)
-        }
-        if self.contains(last, b) {
-            list.append(transform * b)
-        }
-        if self.contains(last, c) {
-            list.append(transform * c)
-        }
-        if self.contains(last, d) {
-            list.append(transform * d)
-        }
-        return Rect.bound(list)
-    }
-}
-
 extension SDPath {
     
     public var identity : SDPath {
@@ -603,45 +457,6 @@ extension SDPath {
             case let cubic as SDPath.CubicBezier:
                 
                 _path.append(SDPath.CubicBezier(transform * cubic.p1, transform * cubic.p2, transform * cubic.p3))
-                
-            case let arc as SDPath.Arc:
-                
-                let (center, radius) = arc.details(state.last)
-                
-                let _arc_transform = SDTransform.Translate(x: center.x, y: center.y) * SDTransform.Rotate(arc.rotate) * SDTransform.Scale(x: radius.x, y: radius.y)
-                let _arc_transform_inverse = _arc_transform.inverse
-                
-                let _2_M_PI = 2 * M_PI
-                
-                let _begin = _arc_transform_inverse * state.last
-                let _end = _arc_transform_inverse * arc.point
-                var startAngle = atan2(_begin.y, _begin.x)
-                var endAngle = atan2(_end.y, _end.x)
-                while startAngle < 0 {
-                    startAngle += _2_M_PI
-                }
-                while startAngle > _2_M_PI {
-                    startAngle -= _2_M_PI
-                }
-                if arc.sweep {
-                    while endAngle < startAngle {
-                        endAngle += _2_M_PI
-                    }
-                } else {
-                    while endAngle > startAngle {
-                        endAngle -= _2_M_PI
-                    }
-                }
-                
-                let _transform = transform * _arc_transform * SDTransform.Rotate(startAngle)
-                
-                var point = BezierArc(endAngle - startAngle).map { _transform * $0 }
-                if point.count > 1 {
-                    _path.append(SDPath.CubicBezier(point[1], point[2], point[3]))
-                    for i in 1..<point.count / 3 {
-                        _path.append(SDPath.CubicBezier(point[i * 3 + 1], point[i * 3 + 2], point[i * 3 + 3]))
-                    }
-                }
                 
             case let close as SDPath.ClosePath:
                 

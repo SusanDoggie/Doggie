@@ -269,11 +269,11 @@ extension SDPath {
                     let sweep = try toInt(g.next()) != 0
                     let x = try toDouble(g.next())
                     let y = try toDouble(g.next())
-                    let arc = SDPath.Arc(x: x, y: y, rx: rx, ry: ry, rotate: rotate, largeArc: largeArc, sweep: sweep)
-                    relative = arc.point
-                    lastcontrol = arc.point
+                    let arc = bezierArc(relative, Point(x: x, y: y), Radius(x: rx, y: ry), rotate, largeArc, sweep)
+                    relative = Point(x: x, y: y)
+                    lastcontrol = Point(x: x, y: y)
                     lastbezier = 0
-                    self.append(arc)
+                    self.appendContentsOf(arc)
                 } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
             case "a":
                 repeat {
@@ -284,23 +284,76 @@ extension SDPath {
                     let sweep = try toInt(g.next()) != 0
                     let x = try toDouble(g.next()) + relative.x
                     let y = try toDouble(g.next()) + relative.y
-                    let arc = SDPath.Arc(x: x, y: y, rx: rx, ry: ry, rotate: rotate, largeArc: largeArc, sweep: sweep)
-                    relative = arc.point
-                    lastcontrol = arc.point
+                    let arc = bezierArc(relative, Point(x: x, y: y), Radius(x: rx, y: ry), rotate, largeArc, sweep)
+                    relative = Point(x: x, y: y)
+                    lastcontrol = Point(x: x, y: y)
                     lastbezier = 0
-                    self.append(arc)
+                    self.appendContentsOf(arc)
                 } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
             case "Z", "z":
-                let close = SDPath.ClosePath()
                 relative = start
                 lastcontrol = start
                 lastbezier = 0
-                self.append(close)
+                self.append(.Close)
             default:
                 throw DecoderError(command: command)
             }
         }
     }
+}
+
+private func arcContains(start: Point, _ end: Point, _ testPoint: Point, _ sweep: Bool) -> Bool {
+    return !direction(start, testPoint, end).isSignMinus == sweep
+}
+private func arcDetails(start: Point, _ end: Point, _ radius: Radius, _ rotate: Double, _ largeArc: Bool, _ sweep: Bool) -> (Point, Radius) {
+    let centers = EllipseCenter(radius, rotate, start, end)
+    if centers.count == 0 {
+        return (middle(end, start), EllipseRadius(start, end, radius, rotate))
+    } else if centers.count == 1 || (arcContains(start, end, centers[0], sweep) ? largeArc : !largeArc) {
+        return (centers[0], radius)
+    } else {
+        return (centers[1], radius)
+    }
+}
+private func bezierArc(start: Point, _ end: Point, _ radius: Radius, _ rotate: Double, _ largeArc: Bool, _ sweep: Bool) -> [SDPathCommand] {
+    let (center, radius) = arcDetails(start, end, radius, rotate, largeArc, sweep)
+    
+    let _arc_transform = SDTransform.Translate(x: center.x, y: center.y) * SDTransform.Rotate(rotate) * SDTransform.Scale(x: radius.x, y: radius.y)
+    let _arc_transform_inverse = _arc_transform.inverse
+    
+    let _2_M_PI = 2 * M_PI
+    
+    let _begin = _arc_transform_inverse * start
+    let _end = _arc_transform_inverse * end
+    var startAngle = atan2(_begin.y, _begin.x)
+    var endAngle = atan2(_end.y, _end.x)
+    while startAngle < 0 {
+        startAngle += _2_M_PI
+    }
+    while startAngle > _2_M_PI {
+        startAngle -= _2_M_PI
+    }
+    if sweep {
+        while endAngle < startAngle {
+            endAngle += _2_M_PI
+        }
+    } else {
+        while endAngle > startAngle {
+            endAngle -= _2_M_PI
+        }
+    }
+    
+    let _transform = _arc_transform * SDTransform.Rotate(startAngle)
+    
+    let point = BezierArc(endAngle - startAngle).lazy.map { _transform * $0 }
+    var result: [SDPathCommand] = []
+    if point.count > 1 {
+        result.append(.Cubic(point[1], point[2], point[3]))
+        for i in 1..<point.count / 3 {
+            result.append(.Cubic(point[i * 3 + 1], point[i * 3 + 2], point[i * 3 + 3]))
+        }
+    }
+    return result
 }
 
 private let dataFormatter: NSNumberFormatter = {
@@ -551,28 +604,6 @@ extension SDPath.CubicBezier : SDPathCommandSerializableShortFormType {
             currentState = 15
         }
         return (str, currentState, start, self.point, self.p2)
-    }
-}
-
-extension SDPath.Arc : SDPathCommandSerializableShortFormType {
-    
-    private func serialize1(currentState: Int, _ start: Point, _ relative: Point, _ lastControl: Point?) -> (String, Int, Point, Point, Point?) {
-        let str: String
-        if currentState == 16 {
-            str = getPathDataString(nil, self.rx, self.ry, self.rotate, self.largeArc ? 1 : 0, self.sweep ? 1 : 0, self.x, self.y)
-        } else {
-            str = getPathDataString("A", self.rx, self.ry, self.rotate, self.largeArc ? 1 : 0, self.sweep ? 1 : 0, self.x, self.y)
-        }
-        return (str, 16, start, self.point, nil)
-    }
-    private func serialize2(currentState: Int, _ start: Point, _ relative: Point, _ lastControl: Point?) -> (String, Int, Point, Point, Point?) {
-        let str: String
-        if currentState == 17 {
-            str = getPathDataString(nil, self.rx, self.ry, self.rotate, self.largeArc ? 1 : 0, self.sweep ? 1 : 0, self.x - relative.x, self.y - relative.y)
-        } else {
-            str = getPathDataString("a", self.rx, self.ry, self.rotate, self.largeArc ? 1 : 0, self.sweep ? 1 : 0, self.x - relative.x, self.y - relative.y)
-        }
-        return (str, 17, start, self.point, nil)
     }
 }
 

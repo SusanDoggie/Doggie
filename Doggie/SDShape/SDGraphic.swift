@@ -134,41 +134,11 @@ extension SDPath {
         let path = CGPathCreateMutable()
         self.apply { component, state in
             switch component {
-            case let move as SDPath.Move:
-                
-                CGPathMoveToPoint(path, nil, CGFloat(move.x), CGFloat(move.y))
-                
-            case let line as SDPath.Line:
-                
-                CGPathAddLineToPoint(path, nil, CGFloat(line.x), CGFloat(line.y))
-                
-            case let quad as SDPath.QuadBezier:
-                
-                CGPathAddQuadCurveToPoint(path, nil, CGFloat(quad.p1.x), CGFloat(quad.p1.y), CGFloat(quad.p2.x), CGFloat(quad.p2.y))
-                
-            case let cubic as SDPath.CubicBezier:
-                
-                CGPathAddCurveToPoint(path, nil, CGFloat(cubic.p1.x), CGFloat(cubic.p1.y), CGFloat(cubic.p2.x), CGFloat(cubic.p2.y), CGFloat(cubic.p3.x), CGFloat(cubic.p3.y))
-                
-            case let arc as SDPath.Arc:
-                
-                let (center, radius) = arc.details(state.last)
-                
-                let _transform = SDTransform.Rotate(arc.rotate) * SDTransform.Scale(x: radius.x, y: radius.y)
-                let _transformInverse = _transform.inverse
-                
-                let _center = _transformInverse * center
-                let _start = _transformInverse * (state.last - center)
-                let _end = _transformInverse * (arc.point - center)
-                
-                var _arctransform = CGAffineTransform(_transform)
-                CGPathAddArc(path, &_arctransform, CGFloat(_center.x), CGFloat(_center.y), 1.0, CGFloat(atan2(_start.y, _start.x)), CGFloat(atan2(_end.y, _end.x)), !arc.sweep)
-                
-            case _ as SDPath.ClosePath:
-                
-                CGPathCloseSubpath(path)
-                
-            default: break
+            case let .Move(p): CGPathMoveToPoint(path, nil, CGFloat(p.x), CGFloat(p.y))
+            case let .Line(p): CGPathAddLineToPoint(path, nil, CGFloat(p.x), CGFloat(p.y))
+            case let .Quad(p1, p2): CGPathAddQuadCurveToPoint(path, nil, CGFloat(p1.x), CGFloat(p1.y), CGFloat(p2.x), CGFloat(p2.y))
+            case let .Cubic(p1, p2, p3): CGPathAddCurveToPoint(path, nil, CGFloat(p1.x), CGFloat(p1.y), CGFloat(p2.x), CGFloat(p2.y), CGFloat(p3.x), CGFloat(p3.y))
+            case .Close: CGPathCloseSubpath(path)
             }
         }
         var _transform = CGAffineTransform(transform)
@@ -186,11 +156,11 @@ extension SDPath {
             let points = element.memory.points
             
             switch element.memory.type {
-            case .MoveToPoint: path.memory.append(SDPath.Move(Point(points[0])))
-            case .AddLineToPoint: path.memory.append(SDPath.Line(Point(points[0])))
-            case .AddQuadCurveToPoint: path.memory.append(SDPath.QuadBezier(Point(points[0]), Point(points[1])))
-            case .AddCurveToPoint: path.memory.append(SDPath.CubicBezier(Point(points[0]), Point(points[1]), Point(points[2])))
-            case .CloseSubpath: path.memory.append(SDPath.ClosePath())
+            case .MoveToPoint: path.memory.append(.Move(Point(points[0])))
+            case .AddLineToPoint: path.memory.append(.Line(Point(points[0])))
+            case .AddQuadCurveToPoint: path.memory.append(.Quad(Point(points[0]), Point(points[1])))
+            case .AddCurveToPoint: path.memory.append(.Cubic(Point(points[0]), Point(points[1]), Point(points[2])))
+            case .CloseSubpath: path.memory.append(.Close)
             }
             
         }

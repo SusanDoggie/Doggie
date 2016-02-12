@@ -27,53 +27,6 @@ import Foundation
 
 // MARK: Ellipse
 
-public struct Radius {
-    
-    public var x: Double
-    public var y: Double
-    
-    public init() {
-        self.x = 0
-        self.y = 0
-    }
-    
-    public init(x: Double, y: Double) {
-        self.x = x
-        self.y = y
-    }
-    public init(x: Int, y: Int) {
-        self.x = Double(x)
-        self.y = Double(y)
-    }
-}
-
-extension Radius: CustomStringConvertible, CustomDebugStringConvertible {
-    public var description: String {
-        return "{x: \(x), y: \(y)}"
-    }
-    public var debugDescription: String {
-        return "{x: \(x), y: \(y)}"
-    }
-}
-
-extension Radius: Hashable {
-    
-    public var hashValue: Int {
-        let a = x.hashValue
-        let b = y.hashValue
-        return a ^ b ^ (a &+ b) ^ (a &- b)
-    }
-}
-
-@warn_unused_result
-public func == (lhs: Radius, rhs: Radius) -> Bool {
-    return lhs.x == rhs.x && lhs.y == rhs.y
-}
-@warn_unused_result
-public func != (lhs: Radius, rhs: Radius) -> Bool {
-    return lhs.x != rhs.x || lhs.y != rhs.y
-}
-
 @warn_unused_result
 public func Ellipse(t: Double, _ p: Point, _ r: Radius) -> Point {
     return Point(x: r.x * cos(t) + p.x, y: r.y * sin(t) + p.y)
@@ -711,72 +664,6 @@ public func LinesIntersect(p0: Point, _ p1: Point, _ p2: Point, _ p3: Point) -> 
 }
 
 @warn_unused_result
-public func EllipseLineIntersect<T: SDTransformType>(center: Point, _ radius: Radius, _ matrix: T, _ p0: Point, _ p1: Point) -> [Point]? {
-    
-    let transform = matrix * SDTransform.Translate(x: center.x, y: center.y) * SDTransform.Scale(x: radius.x, y: radius.y)
-    let inverse = transform.inverse
-    let _p0 = inverse * p0
-    let _p1 = inverse * p1
-    let dx = _p1.x - _p0.x
-    let dy = _p1.y - _p0.y
-    let dr = dx * dx + dy * dy
-    if dr.almostZero {
-        return nil
-    }
-    let D = _p0.x * _p1.y - _p1.x * _p0.y
-    let delta = dr - D * D
-    if delta.almostZero {
-        
-        return [transform * Point(x: D * dy / dr, y: -D * dx / dr)]
-        
-    } else if delta > 0 {
-        
-        let _sqrt = sqrt(delta)
-        let s_x = dx * _sqrt
-        let s_y = dy * _sqrt
-        let t_x = D * dy
-        let t_y = -D * dx
-        
-        return [transform * Point(x: (t_x - s_x) / dr, y: (t_y - s_y) / dr), transform * Point(x: (t_x + s_x) / dr, y: (t_y + s_y) / dr)]
-    }
-    return []
-}
-
-@warn_unused_result
-public func EllipsesIntersect<T1: SDTransformType, T2: SDTransformType>(c1: Point, _ r1: Radius, _ m1: T1, _ c2: Point, _ r2: Radius, _ m2: T2) -> [Point]? {
-    
-    let _m1 = m1 * SDTransform.Translate(x: c1.x, y: c1.y) * SDTransform.Scale(x: r1.x, y: r1.y)
-    let _m2 = m2 * SDTransform.Translate(x: c2.x, y: c2.y) * SDTransform.Scale(x: r2.x, y: r2.y)
-    let inverse = _m2.inverse * _m1
-    
-    let a = inverse.a
-    let b = inverse.b
-    let c = inverse.c
-    let d = inverse.d
-    let e = inverse.e
-    let f = inverse.f
-    
-    let A = a * a + d * d
-    let B = 2 * a * b + 2 * d * e
-    let C = b * b + e * e
-    let D = 2 * a * c + 2 * d * f
-    let E = 2 * b * c + 2 * e * f
-    let F = c * c + f * f - 1
-    
-    let _a = A - D + F
-    let _b = 2 * (E - B)
-    let _c = 4 * C - 2 * (A - F)
-    let _d = 2 * (B + E)
-    let _e = A + D + F
-    
-    let poly = Polynomial(_e, _d, _c, _b, _a)
-    return poly.all({ $0.almostZero }) ? nil : poly.roots.map { t in
-        let t2 = t * t
-        return _m1 * Point(x: (1 - t2) / (t2 + 1), y: 2 * t / (t2 + 1))
-    }
-}
-
-@warn_unused_result
 public func QuadBezierLineIntersect(b0: Point, _ b1: Point, _ b2: Point, _ l0: Point, _ l1: Point) -> [Double]? {
     
     let u0: Polynomial = [
@@ -821,34 +708,6 @@ public func CubicBezierLineIntersect(b0: Point, _ b1: Point, _ b2: Point, _ b3: 
 }
 
 @warn_unused_result
-public func QuadBezierEllipseIntersect<T: SDTransformType>(b0: Point, _ b1: Point, _ b2: Point, _ center: Point, _ radius: Radius, _ matrix: T) -> [Double]? {
-    
-    let _m = matrix * SDTransform.Translate(x: center.x, y: center.y) * SDTransform.Scale(x: radius.x, y: radius.y)
-    
-    let inverse = _m.inverse
-    let _b0 = inverse * b0
-    let _b1 = inverse * b1
-    let _b2 = inverse * b2
-    
-    let x2 = _b0.x - 2 * _b1.x + _b2.x
-    let x1 = 2 * (_b1.x - _b0.x)
-    let x0 = _b0.x
-    
-    let y2 = _b0.y - 2 * _b1.y + _b2.y
-    let y1 = 2 * (_b1.y - _b0.y)
-    let y0 = _b0.y
-    
-    let _a = x2 * x2 + y2 * y2
-    let _b = 2 * (x2 * x1 + y2 * y1)
-    let _c = x1 * x1 + y1 * y1 + 2 * (x2 * x0 + y2 * y0)
-    let _d = 2 * (x1 * x0 + y1 * y0)
-    let _e = x0 * x0 + y0 * y0 - 1
-    
-    let poly = Polynomial(_e, _d, _c, _b, _a)
-    return poly.all({ $0.almostZero }) ? nil : poly.roots
-}
-
-@warn_unused_result
 public func QuadBeziersIntersect(b0: Point, _ b1: Point, _ b2: Point, _ b3: Point, _ b4: Point, _ b5: Point) -> [Double]? {
     
     let u0: Polynomial = [
@@ -875,39 +734,6 @@ public func QuadBeziersIntersect(b0: Point, _ b1: Point, _ b2: Point, _ b3: Poin
     
     let det = m00 * m11 - m01 * m10
     return det.all({ $0.almostZero }) ? nil : det.roots
-}
-
-@warn_unused_result
-public func CubicBezierEllipseIntersect<T: SDTransformType>(b0: Point, _ b1: Point, _ b2: Point, _ b3: Point, _ center: Point, _ radius: Radius, _ matrix: T) -> [Double]? {
-    
-    let _m = matrix * SDTransform.Translate(x: center.x, y: center.y) * SDTransform.Scale(x: radius.x, y: radius.y)
-    
-    let inverse = _m.inverse
-    let _b0 = inverse * b0
-    let _b1 = inverse * b1
-    let _b2 = inverse * b2
-    let _b3 = inverse * b3
-    
-    let x3 = _b3.x - _b0.x + 3 * (_b1.x - _b2.x)
-    let x2 = 3 * (_b2.x + _b0.x) - 6 * _b1.x
-    let x1 = 3 * (_b1.x - _b0.x)
-    let x0 = _b0.x
-    
-    let y3 = _b3.y - _b0.y + 3 * (_b1.y - _b2.y)
-    let y2 = 3 * (_b2.y + _b0.y) - 6 * _b1.y
-    let y1 = 3 * (_b1.y - _b0.y)
-    let y0 = _b0.y
-    
-    let _a = x3 * x3 + y3 * y3
-    let _b = 2 * (x3 * x2 + y3 * y2)
-    let _c = 2 * (x3 * x1 + y3 * y1) + x2 * x2 + y2 * y2
-    let _d = 2 * (x3 * x0 + x2 * x1 + y3 * y0 + y2 * y1)
-    let _e = 2 * (x2 * x0 + y2 * y0) + x1 * x1 + y1 * y1
-    let _f = 2 * (x1 * x0 + y1 * y0)
-    let _g = x0 * x0 + y0 * y0 - 1
-    
-    let poly = Polynomial(_g, _f, _e, _d, _c, _b, _a)
-    return poly.all({ $0.almostZero }) ? nil : poly.roots
 }
 
 @warn_unused_result
