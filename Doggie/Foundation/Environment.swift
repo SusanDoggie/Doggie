@@ -74,7 +74,10 @@ public extension IntegerType {
 public extension Float32 {
     
     @warn_unused_result
-    static func random() -> Float32 {
+    static func random(includeOne includeOne: Bool = false) -> Float32 {
+        if includeOne {
+            return unsafeBitCast(arc4random_uniform(0x800000) + 0x3F800000, Float32.self) - 1
+        }
         return unsafeBitCast(arc4random_uniform(0x7FFFFF) | 0x3F800000, Float32.self) - 1
     }
 }
@@ -82,7 +85,10 @@ public extension Float32 {
 public extension Float64 {
     
     @warn_unused_result
-    static func random() -> Float64 {
+    static func random(includeOne includeOne: Bool = false) -> Float64 {
+        if includeOne {
+            return unsafeBitCast((0..<0x10000000000000).random()! + 0x3FF0000000000000 as UInt64, Float64.self) - 1
+        }
         return unsafeBitCast(UInt64.random() & 0xFFFFFFFFFFFFF | 0x3FF0000000000000, Float64.self) - 1
     }
 }
@@ -97,12 +103,12 @@ public func random_bytes(count: Int) -> [UInt8] {
 @warn_unused_result
 public func random(range: ClosedInterval<Float>) -> Float {
     let diff = range.end - range.start
-    return ((unsafeBitCast(arc4random_uniform(0x800000) + 0x3F800000, Float32.self) - 1) * diff) + range.start
+    return (Float.random(includeOne: true) * diff) + range.start
 }
 @warn_unused_result
 public func random(range: ClosedInterval<Double>) -> Double {
     let diff = range.end - range.start
-    return ((unsafeBitCast((0..<0x10000000000000).random()! + 0x3FF0000000000000, Float64.self) - 1) * diff) + range.start
+    return (Double.random(includeOne: true) * diff) + range.start
 }
 @warn_unused_result
 public func random(range: HalfOpenInterval<Float>) -> Float {
