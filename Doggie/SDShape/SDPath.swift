@@ -33,23 +33,23 @@ public struct SDPath : SDShape, MutableCollectionType, ArrayLiteralConvertible {
     
     public typealias Generator = IndexingGenerator<SDPath>
     
-    private var segment: [SDPathCommand]
+    private var commands: [SDPathCommand]
     
     public var transform : SDTransform
     
     public init() {
-        segment = []
-        transform = SDTransform(SDTransform.Identity())
+        self.commands = []
+        self.transform = SDTransform(SDTransform.Identity())
     }
     
     public init(arrayLiteral elements: SDPathCommand ...) {
-        segment = elements
-        transform = SDTransform(SDTransform.Identity())
+        self.commands = elements
+        self.transform = SDTransform(SDTransform.Identity())
     }
     
-    public init<S : SequenceType where S.Generator.Element == SDPathCommand>(_ segments: S) {
-        segment = segments.array
-        transform = SDTransform(SDTransform.Identity())
+    public init<S : SequenceType where S.Generator.Element == SDPathCommand>(_ commands: S) {
+        self.commands = commands.array
+        self.transform = SDTransform(SDTransform.Identity())
     }
     
     public var center : Point {
@@ -64,23 +64,23 @@ public struct SDPath : SDShape, MutableCollectionType, ArrayLiteralConvertible {
     
     public subscript(index : Int) -> SDPathCommand {
         get {
-            return segment[index]
+            return commands[index]
         }
         set {
-            segment[index] = newValue
+            commands[index] = newValue
         }
     }
     
     public var count : Int {
-        return segment.count
+        return commands.count
     }
     
     public var startIndex: Int {
-        return segment.startIndex
+        return commands.startIndex
     }
     
     public var endIndex: Int {
-        return segment.endIndex
+        return commands.endIndex
     }
     
     
@@ -198,8 +198,8 @@ public struct SDPath : SDShape, MutableCollectionType, ArrayLiteralConvertible {
     
     public var boundary : Rect {
         var bound: Rect? = nil
-        self.apply { segment, state in
-            switch segment {
+        self.apply { commands, state in
+            switch commands {
             case let line as SDPath.Line:
                 if bound == nil {
                     bound = line.bound(state.last)
@@ -229,8 +229,8 @@ public struct SDPath : SDShape, MutableCollectionType, ArrayLiteralConvertible {
     
     public var frame : Rect {
         var bound: Rect? = nil
-        self.apply { segment, state in
-            switch segment {
+        self.apply { commands, state in
+            switch commands {
             case let line as SDPath.Line:
                 if bound == nil {
                     bound = line.bound(state.last, transform)
@@ -264,13 +264,13 @@ extension SDPath {
     
     public init(_ rect: Rect) {
         let points = rect.points
-        segment = [Move(points[0]), Line(points[1]), Line(points[2]), Line(points[3]), ClosePath()]
+        commands = [Move(points[0]), Line(points[1]), Line(points[2]), Line(points[3]), ClosePath()]
         transform = SDTransform(SDTransform.Identity())
     }
     
     public init(_ rect: SDRectangle) {
         let points = rect.points
-        segment = [Move(points[0]), Line(points[1]), Line(points[2]), Line(points[3]), ClosePath()]
+        commands = [Move(points[0]), Line(points[1]), Line(points[2]), Line(points[3]), ClosePath()]
         transform = SDTransform(SDTransform.Identity())
     }
     
@@ -292,47 +292,47 @@ extension SDPath {
 extension SDPath : RangeReplaceableCollectionType {
     
     public mutating func append(x: SDPathCommand) {
-        segment.append(x)
+        commands.append(x)
     }
     
     public mutating func appendContentsOf<S : SequenceType where S.Generator.Element == SDPathCommand>(newElements: S) {
-        segment.appendContentsOf(newElements)
+        commands.appendContentsOf(newElements)
     }
     
     public mutating func removeLast() -> SDPathCommand {
-        return segment.removeLast()
+        return commands.removeLast()
     }
     
     public mutating func popLast() -> SDPathCommand? {
-        return segment.popLast()
+        return commands.popLast()
     }
     
     public mutating func reserveCapacity(minimumCapacity: Int) {
-        segment.reserveCapacity(minimumCapacity)
+        commands.reserveCapacity(minimumCapacity)
     }
     
     public mutating func removeAll(keepCapacity keepCapacity: Bool = false) {
-        segment.removeAll(keepCapacity: keepCapacity)
+        commands.removeAll(keepCapacity: keepCapacity)
     }
     
     public mutating func replaceRange<C : CollectionType where C.Generator.Element == SDPathCommand>(subRange: Range<Int>, with newElements: C) {
-        segment.replaceRange(subRange, with: newElements)
+        commands.replaceRange(subRange, with: newElements)
     }
     
     public mutating func insert(newElement: SDPathCommand, atIndex i: Int) {
-        segment.insert(newElement, atIndex: i)
+        commands.insert(newElement, atIndex: i)
     }
     
     public mutating func insertContentsOf<S : CollectionType where S.Generator.Element == SDPathCommand>(newElements: S, at i: Int) {
-        segment.insertContentsOf(newElements, at: i)
+        commands.insertContentsOf(newElements, at: i)
     }
     
     public mutating func removeAtIndex(i: Int) -> SDPathCommand {
-        return segment.removeAtIndex(i)
+        return commands.removeAtIndex(i)
     }
     
     public mutating func removeRange(subRange: Range<Int>) {
-        segment.removeRange(subRange)
+        commands.removeRange(subRange)
     }
 }
 
@@ -438,28 +438,13 @@ extension SDPath {
             return self
         }
         var _path = SDPath()
-        self.apply { segment, state in
-            switch segment {
-            case let move as SDPath.Move:
-                
-                _path.append(SDPath.Move(transform * move.point))
-                
-            case let line as SDPath.Line:
-                
-                _path.append(SDPath.Line(transform * line.point))
-                
-            case let quad as SDPath.QuadBezier:
-                
-                _path.append(SDPath.QuadBezier(transform * quad.p1, transform * quad.p2))
-                
-            case let cubic as SDPath.CubicBezier:
-                
-                _path.append(SDPath.CubicBezier(transform * cubic.p1, transform * cubic.p2, transform * cubic.p3))
-                
-            case let close as SDPath.ClosePath:
-                
-                _path.append(close)
-                
+        for commands in self.commands {
+            switch commands {
+            case let move as SDPath.Move: _path.append(SDPath.Move(transform * move.point))
+            case let line as SDPath.Line: _path.append(SDPath.Line(transform * line.point))
+            case let quad as SDPath.QuadBezier: _path.append(SDPath.QuadBezier(transform * quad.p1, transform * quad.p2))
+            case let cubic as SDPath.CubicBezier: _path.append(SDPath.CubicBezier(transform * cubic.p1, transform * cubic.p2, transform * cubic.p3))
+            case let close as SDPath.ClosePath: _path.append(close)
             default: break
             }
         }
