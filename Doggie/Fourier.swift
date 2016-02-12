@@ -26,35 +26,7 @@
 import Foundation
 
 public func FFTConvolveLength(x: Int, _ y: Int) -> Int {
-    return Int(UInt64(x + y - 2).hibit) << 1
-}
-public func FFTConvolveComplexity(x: Int, _ y: Int) -> Int {
-    let length = FFTConvolveLength(x, y)
-    return 3 * length * log2(length)
-}
-public func SplitConvolveComplexity(x: Int, _ y: Int, _ _x: Int) -> Int {
-    return (x / _x) * FFTConvolveComplexity(_x, y) + (x % _x != 0 ? FFTConvolveComplexity(x % _x, y) : 0)
-}
-public func SplitConvolveLength(x: Int, _ y: Int) -> Int {
-    var _split_length = 1
-    var _min_complexity = x * y
-    
-    var temp = FFTConvolveComplexity(x, y)
-    if temp < _min_complexity {
-        _min_complexity = temp
-        _split_length = x
-    }
-    
-    let _y = log2(y)
-    for var i = _y; (1 << i) - y < x; i += 1 {
-        temp = SplitConvolveComplexity(x, y, (1 << i) - y)
-        if _min_complexity > temp {
-            _min_complexity = temp
-            _split_length = (1 << i) - y
-        }
-    }
-    
-    return _split_length
+    return (x + y - 2).hibit << 1
 }
 
 // MARK: Fourier
