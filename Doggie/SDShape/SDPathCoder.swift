@@ -348,25 +348,25 @@ public extension SDPath {
         var relative = Point()
         var lastControl: Point?
         for item in self {
-            data += (item as? SDPathSegmentSerializableType)?.serialize(&currentState, start: &start, relative: &relative, lastControl: &lastControl) ?? ""
+            data += (item as? SDPathCommandSerializableType)?.serialize(&currentState, start: &start, relative: &relative, lastControl: &lastControl) ?? ""
         }
         return data
     }
 }
 
-private protocol SDPathSegmentSerializableType {
+private protocol SDPathCommandSerializableType {
     
     func serialize(inout currentState: Int, inout start: Point, inout relative: Point, inout lastControl: Point?) -> String
 }
 
-private protocol SDPathSegmentSerializableShortFormType : SDPathSegmentSerializableType {
+private protocol SDPathCommandSerializableShortFormType : SDPathCommandSerializableType {
     
     func serialize1(currentState: Int, _ start: Point, _ relative: Point, _ lastControl: Point?) -> (String, Int, Point, Point, Point?)
     func serialize2(currentState: Int, _ start: Point, _ relative: Point, _ lastControl: Point?) -> (String, Int, Point, Point, Point?)
     
 }
 
-extension SDPathSegmentSerializableShortFormType {
+extension SDPathCommandSerializableShortFormType {
     
     func serialize(inout currentState: Int, inout start: Point, inout relative: Point, inout lastControl: Point?) -> String {
         let _serialize1 = serialize1(currentState, start, relative, lastControl)
@@ -386,7 +386,7 @@ extension SDPathSegmentSerializableShortFormType {
     }
 }
 
-extension SDPath.Move : SDPathSegmentSerializableShortFormType {
+extension SDPath.Move : SDPathCommandSerializableShortFormType {
     
     private func serialize1(_: Int, _: Point, _: Point, _ lastControl: Point?) -> (String, Int, Point, Point, Point?) {
         return (getPathDataString("M", self.x, self.y), 0, self.point, self.point, nil)
@@ -396,7 +396,7 @@ extension SDPath.Move : SDPathSegmentSerializableShortFormType {
     }
 }
 
-extension SDPath.Line : SDPathSegmentSerializableShortFormType {
+extension SDPath.Line : SDPathCommandSerializableShortFormType {
     
     private func serialize1(var currentState: Int, _ start: Point, _ relative: Point, _ lastControl: Point?) -> (String, Int, Point, Point, Point?) {
         let str: String
@@ -452,7 +452,7 @@ extension SDPath.Line : SDPathSegmentSerializableShortFormType {
     }
 }
 
-extension SDPath.QuadBezier : SDPathSegmentSerializableShortFormType {
+extension SDPath.QuadBezier : SDPathCommandSerializableShortFormType {
     
     private func isSmooth(relative: Point, _ lastControl: Point?) -> Bool {
         
@@ -503,7 +503,7 @@ extension SDPath.QuadBezier : SDPathSegmentSerializableShortFormType {
     }
 }
 
-extension SDPath.CubicBezier : SDPathSegmentSerializableShortFormType {
+extension SDPath.CubicBezier : SDPathCommandSerializableShortFormType {
     
     private func isSmooth(relative: Point, _ lastControl: Point?) -> Bool {
         
@@ -554,7 +554,7 @@ extension SDPath.CubicBezier : SDPathSegmentSerializableShortFormType {
     }
 }
 
-extension SDPath.Arc : SDPathSegmentSerializableShortFormType {
+extension SDPath.Arc : SDPathCommandSerializableShortFormType {
     
     private func serialize1(currentState: Int, _ start: Point, _ relative: Point, _ lastControl: Point?) -> (String, Int, Point, Point, Point?) {
         let str: String
@@ -576,7 +576,7 @@ extension SDPath.Arc : SDPathSegmentSerializableShortFormType {
     }
 }
 
-extension SDPath.ClosePath : SDPathSegmentSerializableType {
+extension SDPath.ClosePath : SDPathCommandSerializableType {
     
     private func serialize(inout currentState: Int, inout start: Point, inout relative: Point, inout lastControl: Point?) -> String {
         let str = currentState != 18 ? "z" : ""
