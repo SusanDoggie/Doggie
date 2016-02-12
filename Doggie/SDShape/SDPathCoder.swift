@@ -326,14 +326,8 @@ private func bezierArc(start: Point, _ end: Point, _ radius: Radius, _ rotate: D
     
     let _begin = _arc_transform_inverse * start
     let _end = _arc_transform_inverse * end
-    var startAngle = atan2(_begin.y, _begin.x)
+    let startAngle = atan2(_begin.y, _begin.x)
     var endAngle = atan2(_end.y, _end.x)
-    while startAngle < 0 {
-        startAngle += _2_M_PI
-    }
-    while startAngle > _2_M_PI {
-        startAngle -= _2_M_PI
-    }
     if sweep {
         while endAngle < startAngle {
             endAngle += _2_M_PI
