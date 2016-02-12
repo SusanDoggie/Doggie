@@ -91,7 +91,7 @@ extension SDTransform {
     
     public var inverse : SDTransform {
         let det = a * e - b * d
-        return SDTransform(a: e / det, b: -b / det, c: b * f - c * e / det, d: -d / det, e: a / det, f: c * d - a * f / det)
+        return SDTransform(a: e / det, b: -b / det, c: (b * f - c * e) / det, d: -d / det, e: a / det, f: (c * d - a * f) / det)
     }
 }
 
