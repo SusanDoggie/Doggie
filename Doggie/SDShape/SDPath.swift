@@ -276,9 +276,7 @@ extension SDPath {
     
     public init(_ ellipse: SDEllipse) {
         self.init()
-        let _arc_transform = SDTransform.Translate(x: ellipse.position.x, y: ellipse.position.y) * SDTransform.Scale(x: ellipse.radius.x, y: ellipse.radius.y)
-        let _transform = _arc_transform
-        
+        let _transform = SDTransform.Translate(x: ellipse.position.x, y: ellipse.position.y) * SDTransform.Scale(x: ellipse.radius.x, y: ellipse.radius.y)
         let point = BezierArc(2 * M_PI).lazy.map { _transform * $0 }
         if point.count > 1 {
             self.append(SDPath.CubicBezier(point[1], point[2], point[3]))
