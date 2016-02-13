@@ -55,7 +55,7 @@ private final class SDObserverBase : NSObject {
     }
 }
 
-public class SDObserver<T> : Sink<T> {
+public class SDObserver<T> : SDSink<T> {
     
     private let base: SDObserverBase
     

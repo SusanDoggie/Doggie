@@ -1,5 +1,5 @@
 //
-//  Sink.swift
+//  SDSink.swift
 //
 //  The MIT License
 //  Copyright (c) 2015 - 2016 Susan Cheng. All rights reserved.
@@ -25,7 +25,7 @@
 
 import Foundation
 
-public class Sink<Element> {
+public class SDSink<Element> {
     
     private var sinks: [(Element) -> ()]
     
@@ -34,7 +34,7 @@ public class Sink<Element> {
     }
 }
 
-extension Sink {
+extension SDSink {
     
     public final func put(value: Element) {
         for sink in sinks {
@@ -47,12 +47,12 @@ extension Sink {
     }
 }
 
-extension Sink {
+extension SDSink {
     
     /// Mapping the elements by `transform`.
     @warn_unused_result
-    public func map<T>(transform: (Element) -> T) -> Sink<T> {
-        let _sink = Sink<T>()
+    public func map<T>(transform: (Element) -> T) -> SDSink<T> {
+        let _sink = SDSink<T>()
         self.apply {
             _sink.put(transform($0))
         }
@@ -61,8 +61,8 @@ extension Sink {
     
     /// Filter the elements that satisfy `predicate`.
     @warn_unused_result
-    public func filter(includeElement: (Element) -> Bool) -> Sink<Element> {
-        let _sink = Sink<Element>()
+    public func filter(includeElement: (Element) -> Bool) -> SDSink<Element> {
+        let _sink = SDSink<Element>()
         self.apply {
             if includeElement($0) {
                 _sink.put($0)
@@ -73,8 +73,8 @@ extension Sink {
     
     /// Mapping the elements by `transform` and fill the elements of `Sequence` to resulted sink.
     @warn_unused_result
-    public func flatMap<S : SequenceType>(transform: (Element) -> S) -> Sink<S.Generator.Element> {
-        let _sink = Sink<S.Generator.Element>()
+    public func flatMap<S : SequenceType>(transform: (Element) -> S) -> SDSink<S.Generator.Element> {
+        let _sink = SDSink<S.Generator.Element>()
         self.apply {
             for item in transform($0) {
                 _sink.put(item)
@@ -85,8 +85,8 @@ extension Sink {
     
     /// Mapping the elements by `transform` and fill the non-nil elements to resulted sink.
     @warn_unused_result
-    public func flatMap<T>(transform: (Element) -> T?) -> Sink<T> {
-        let _sink = Sink<T>()
+    public func flatMap<T>(transform: (Element) -> T?) -> SDSink<T> {
+        let _sink = SDSink<T>()
         self.apply {
             if let val = transform($0) {
                 _sink.put(val)
@@ -96,8 +96,8 @@ extension Sink {
     }
     
     @warn_unused_result
-    public func scan<T>(var initial: T, combine: (T, Element)-> T) -> Sink<T> {
-        let _sink = Sink<T>()
+    public func scan<T>(var initial: T, combine: (T, Element)-> T) -> SDSink<T> {
+        let _sink = SDSink<T>()
         _sink.put(initial)
         self.apply {
             initial = combine(initial, $0)
@@ -107,8 +107,8 @@ extension Sink {
     }
     
     @warn_unused_result
-    public func throttle<T>(sink: Sink<T>) -> Sink<(Element, [T])> {
-        let _throttle = Sink<(Element, [T])>()
+    public func throttle<T>(sink: SDSink<T>) -> SDSink<(Element, [T])> {
+        let _throttle = SDSink<(Element, [T])>()
         var e: [T] = []
         var lck = SDSpinLock()
         self.apply { val in
@@ -126,8 +126,8 @@ extension Sink {
 
 /// Zip two sink
 @warn_unused_result
-public func zip<Element1, Element2>(sink1: Sink<Element1>, _ sink2: Sink<Element2>) -> Sink<(Element1, Element2)> {
-    let _zip = Sink<(Element1, Element2)>()
+public func zip<Element1, Element2>(sink1: SDSink<Element1>, _ sink2: SDSink<Element2>) -> SDSink<(Element1, Element2)> {
+    let _zip = SDSink<(Element1, Element2)>()
     var e1: [Element1] = []
     var e2: [Element2] = []
     var lck = SDSpinLock()
