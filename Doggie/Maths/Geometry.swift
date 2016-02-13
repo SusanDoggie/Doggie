@@ -128,18 +128,66 @@ public func EllipseBound<T: SDTransformType>(center: Point, _ r: Radius, _ matri
 // MARK: Bézier Curve
 
 @warn_unused_result
-public func Bezier(t: Double, _ p: Double ... ) -> Double {
-    return Bezier(t, p)
+public func Bezier(t: Double, _ p0: Double, _ p1: Double) -> Double {
+    return (1 - t) * p0 + t * p1
+}
+@warn_unused_result
+public func Bezier(t: Double, _ p0: Double, _ p1: Double, _ p2: Double) -> Double {
+    let _t = 1 - t
+    return _t * _t * p0 + 2 * _t * t * p1 + t * t * p2
+}
+@warn_unused_result
+public func Bezier(t: Double, _ p0: Double, _ p1: Double, _ p2: Double, _ p3: Double) -> Double {
+    let t2 = t * t
+    let _t = 1 - t
+    let _t2 = _t * _t
+    return _t * _t2 * p0 + 3 * _t2 * t * p1 + 3 * _t * t2 * p2 + t * t2 * p3
+}
+@warn_unused_result
+public func Bezier(t: Double, _ p0: Point, _ p1: Point) -> Point {
+    return (1 - t) * p0 + t * p1
+}
+@warn_unused_result
+public func Bezier(t: Double, _ p0: Point, _ p1: Point, _ p2: Point) -> Point {
+    let _t = 1 - t
+    return _t * _t * p0 + 2 * _t * t * p1 + t * t * p2
+}
+@warn_unused_result
+public func Bezier(t: Double, _ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point) -> Point {
+    let t2 = t * t
+    let _t = 1 - t
+    let _t2 = _t * _t
+    return _t * _t2 * p0 + 3 * _t2 * t * p1 + 3 * _t * t2 * p2 + t * t2 * p3
+}
+@warn_unused_result
+public func Bezier(t: Double, _ p0: Vector, _ p1: Vector) -> Vector {
+    return (1 - t) * p0 + t * p1
+}
+@warn_unused_result
+public func Bezier(t: Double, _ p0: Vector, _ p1: Vector, _ p2: Vector) -> Vector {
+    let _t = 1 - t
+    return _t * _t * p0 + 2 * _t * t * p1 + t * t * p2
+}
+@warn_unused_result
+public func Bezier(t: Double, _ p0: Vector, _ p1: Vector, _ p2: Vector, _ p3: Vector) -> Vector {
+    let t2 = t * t
+    let _t = 1 - t
+    let _t2 = _t * _t
+    return _t * _t2 * p0 + 3 * _t2 * t * p1 + 3 * _t * t2 * p2 + t * t2 * p3
+}
+@warn_unused_result
+public func Bezier(t: Double, _ p0: Double, _ p1: Double, _ p2: Double, _ p3: Double, _ p4: Double, _ rest: Double ... ) -> Double {
+    return Bezier(t, [p0, p1, p2, p3, p4] + rest)
 }
 
 @warn_unused_result
-public func Bezier(t: Double, _ p: Point ... ) -> Point {
-    return Bezier(t, p)
+public func Bezier(t: Double, _ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point, _ p4: Point, _ rest: Point ... ) -> Point {
+    return Bezier(t, [p0, p1, p2, p3, p4] + rest)
 }
 
 @warn_unused_result
-public func Bezier(t: Double, _ p: Vector ... ) -> Vector {
-    return Bezier(t, p)
+public func Bezier(t: Double, _ p0: Vector, _ p1: Vector, _ p2: Vector, _ p3: Vector, _ p4: Vector, _ rest: Vector ... ) -> Vector {
+    return Bezier(t, [p0, p1, p2, p3, p4] + rest)
 }
 
 @warn_unused_result
