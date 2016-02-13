@@ -78,7 +78,7 @@ private struct CharacterScanner : GeneratorType {
 private extension String {
     
     mutating func append(x: UInt8) {
-        self.append(UnicodeScalar(x))
+        UnicodeScalar(x).writeTo(&self)
     }
     
     mutating func append(escape x: UInt8) -> Bool {

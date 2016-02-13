@@ -352,11 +352,10 @@ private let dataFormatter: NSNumberFormatter = {
 private func getDataString(x: [Double]) -> String {
     var str = ""
     for _x in x.map({ dataFormatter.stringFromNumber($0) ?? "0" }) {
-        if str != "" && _x.characters.first != "-" {
-            str += " " + _x
-        } else {
-            str += _x
+        if !str.isEmpty && _x.characters.first != "-" {
+            " ".writeTo(&str)
         }
+        _x.writeTo(&str)
     }
     return str
 }
@@ -366,14 +365,14 @@ private func _round(x: Double) -> Double {
 }
 
 private func getPathDataString(command: Character?, _ x: Double ...) -> String {
-    if command != nil {
-        return String(command!) + getDataString(x)
-    }
+    var result = ""
+    command?.writeTo(&result)
     let dataStr = getDataString(x)
-    if dataStr.characters.first != "-" {
-        return " " + dataStr
+    if result.isEmpty && !dataStr.isEmpty && dataStr.characters.first != "-" {
+        " ".writeTo(&result)
     }
-    return dataStr
+    dataStr.writeTo(&result)
+    return result
 }
 
 public extension SDPath {
@@ -387,7 +386,7 @@ public extension SDPath {
         var relative = Point()
         var lastControl: Point?
         for item in self {
-            data += (item as? SDPathCommandSerializableType)?.serialize(&currentState, start: &start, relative: &relative, lastControl: &lastControl) ?? ""
+            (item as? SDPathCommandSerializableType)?.serialize(&currentState, start: &start, relative: &relative, lastControl: &lastControl).writeTo(&data)
         }
         return data
     }

@@ -56,23 +56,23 @@ extension Complex: CustomStringConvertible, CustomDebugStringConvertible {
         
         switch real {
         case 0: break
-        case 1: print += "1.0"
-        case -1: print += "-1.0"
-        default: print += String(format: "%.2f", real)
+        case 1: "1.0".writeTo(&print)
+        case -1: "-1.0".writeTo(&print)
+        default: String(format: "%.2f", real).writeTo(&print)
         }
         
         if imag != 0 {
-            if print != "" && !imag.isSignMinus {
-                print += "+"
+            if !print.isEmpty && !imag.isSignMinus {
+                "+".writeTo(&print)
             }
             switch imag {
-            case 1: print += "𝒊"
-            case -1: print += "-𝒊"
-            default: print += String(format: "%.2f𝒊", imag)
+            case 1: "𝒊".writeTo(&print)
+            case -1: "-𝒊".writeTo(&print)
+            default: String(format: "%.2f𝒊", imag).writeTo(&print)
             }
         }
         
-        if print == "" {
+        if print.isEmpty {
             print = "0.0"
         }
         return print

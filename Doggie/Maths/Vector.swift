@@ -57,34 +57,34 @@ extension Vector: CustomStringConvertible, CustomDebugStringConvertible {
         
         switch x {
         case 0: break
-        case 1: print += "𝒊"
-        case -1: print += "-𝒊"
-        default: print += String(format: "%.2f𝒊", x)
+        case 1: "𝒊".writeTo(&print)
+        case -1: "-𝒊".writeTo(&print)
+        default: String(format: "%.2f𝒊", x).writeTo(&print)
         }
         
         if y != 0 {
-            if print != "" && !y.isSignMinus {
-                print += "+"
+            if !print.isEmpty && !y.isSignMinus {
+                "+".writeTo(&print)
             }
             switch y {
-            case 1: print += "𝒋"
-            case -1: print += "-𝒋"
-            default: print += String(format: "%.2f𝒋", x)
+            case 1: "𝒋".writeTo(&print)
+            case -1: "-𝒋".writeTo(&print)
+            default: String(format: "%.2f𝒋", x).writeTo(&print)
             }
         }
         
         if z != 0 {
-            if print != "" && !z.isSignMinus {
-                print += "+"
+            if !print.isEmpty && !z.isSignMinus {
+                "+".writeTo(&print)
             }
             switch z {
-            case 1: print += "𝒌"
-            case -1: print += "-𝒌"
-            default: print += String(format: "%.2f𝒌", x)
+            case 1: "𝒌".writeTo(&print)
+            case -1: "-𝒌".writeTo(&print)
+            default: String(format: "%.2f𝒌", x).writeTo(&print)
             }
         }
         
-        if print == "" {
+        if print.isEmpty {
             print = "0.0"
         }
         return print
