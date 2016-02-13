@@ -138,7 +138,7 @@ public struct Graph<Node : Hashable, Link> : CollectionType {
         if table[node] != nil {
             return true
         }
-        for list in table.values where list.keys.contains(node) {
+        for list in table.values where list[node] != nil {
             return true
         }
         return false
