@@ -83,7 +83,6 @@ public struct SDPath : SDShape, MutableCollectionType, ArrayLiteralConvertible {
         return commands.endIndex
     }
     
-    
     public struct Move : SDPathCommand {
         
         public var x: Double
@@ -278,6 +277,7 @@ extension SDPath {
         self.init()
         let scale = SDTransform.Scale(x: ellipse.radius.x, y: ellipse.radius.y)
         let point = BezierArc(2 * M_PI).lazy.map { scale * $0 + ellipse.position }
+        self.reserveCapacity(point.count / 3 + 2)
         if point.count > 1 {
             self.append(SDPath.Move(point[0]))
             self.append(SDPath.CubicBezier(point[1], point[2], point[3]))
@@ -439,8 +439,9 @@ extension SDPath {
             return self
         }
         var _path = SDPath()
-        for commands in self.commands {
-            switch commands {
+        _path.reserveCapacity(self.commands.count)
+        for command in self.commands {
+            switch command {
             case let move as SDPath.Move: _path.append(SDPath.Move(transform * move.point))
             case let line as SDPath.Line: _path.append(SDPath.Line(transform * line.point))
             case let quad as SDPath.QuadBezier: _path.append(SDPath.QuadBezier(transform * quad.p1, transform * quad.p2))
