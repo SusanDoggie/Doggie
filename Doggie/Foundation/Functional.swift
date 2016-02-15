@@ -829,6 +829,50 @@ extension SequenceType {
     }
 }
 
+public extension CollectionType {
+    
+    /// Remove the indicated `subRange` of elements.
+    ///
+    /// Invalidates all indices with respect to `self`.
+    @warn_unused_result
+    func dropRange(subRange: Range<Self.Index>) -> ConcatSequence<Self.SubSequence, Self.SubSequence> {
+        return self.prefixUpTo(subRange.startIndex).concat(self.suffixFrom(subRange.endIndex))
+    }
+}
+
+public extension CollectionType where SubSequence : CollectionType {
+    
+    /// Remove the indicated `subRange` of elements.
+    ///
+    /// Invalidates all indices with respect to `self`.
+    @warn_unused_result
+    func dropRange(subRange: Range<Self.Index>) -> ConcatCollection<Self.SubSequence, Self.SubSequence> {
+        return self.prefixUpTo(subRange.startIndex).concat(self.suffixFrom(subRange.endIndex))
+    }
+}
+
+public extension LazyCollectionType {
+    
+    /// Replace the given `subRange` of elements with `newElements`.
+    ///
+    /// Invalidates all indices with respect to `self`.
+    @warn_unused_result
+    func replaceRange<S : SequenceType where S.Generator.Element == Elements.SubSequence.Generator.Element>(subRange: Range<Elements.Index>, with newElements: S) -> LazySequence<ConcatSequence<ConcatSequence<Self.Elements.SubSequence, S>, Self.Elements.SubSequence>> {
+        return elements.prefixUpTo(subRange.startIndex).concat(newElements).concat(elements.suffixFrom(subRange.endIndex)).lazy
+    }
+}
+
+public extension LazyCollectionType where Elements.SubSequence : CollectionType {
+    
+    /// Replace the given `subRange` of elements with `newElements`.
+    ///
+    /// Invalidates all indices with respect to `self`.
+    @warn_unused_result
+    func replaceRange<C : CollectionType where C.Generator.Element == Elements.SubSequence.Generator.Element>(subRange: Range<Elements.Index>, with newElements: C) -> LazyCollection<ConcatCollection<ConcatCollection<Self.Elements.SubSequence, C>, Self.Elements.SubSequence>> {
+        return elements.prefixUpTo(subRange.startIndex).concat(newElements).concat(elements.suffixFrom(subRange.endIndex)).lazy
+    }
+}
+
 public extension MutableCollectionType {
     
     /// Return an `Array` containing the sorted elements of `source`.
