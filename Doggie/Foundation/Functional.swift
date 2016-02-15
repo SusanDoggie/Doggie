@@ -220,6 +220,42 @@ extension CollectionType where Index : BidirectionalIndexType {
     }
 }
 
+public struct OptionOneGenerator<T> : GeneratorType {
+    
+    private var value: T?
+    
+    public mutating func next() -> T? {
+        let _value = value
+        value = nil
+        return _value
+    }
+}
+
+public struct OptionOneCollection<T> : CollectionType {
+    
+    public typealias Generator = OptionOneGenerator<T>
+    
+    private let value: T?
+    
+    public init(_ value: T?) {
+        self.value = value
+    }
+    
+    public var startIndex : Bit {
+        return .Zero
+    }
+    public var endIndex : Bit {
+        return value == nil ? .Zero : .One
+    }
+    public subscript(idx: Bit) -> T {
+        return value!
+    }
+    
+    public func generate() -> OptionOneGenerator<T> {
+        return OptionOneGenerator(value: value)
+    }
+}
+
 public extension SequenceType {
     /// Returns an array containing the results of
     ///
