@@ -751,11 +751,11 @@ public extension LazyCollectionType where Elements.Index : Strideable {
     }
 }
 
-public struct DropRangeGenerator<C : CollectionType> : GeneratorType {
+public struct DropRangeGenerator<G : GeneratorType> : GeneratorType {
     
-    private var base: ConcatGenerator<C.SubSequence.Generator, C.SubSequence.Generator>
+    private var base: ConcatGenerator<G, G>
     
-    public mutating func next() -> C.SubSequence.Generator.Element? {
+    public mutating func next() -> G.Element? {
         return base.next()
     }
 }
@@ -767,7 +767,7 @@ public struct DropRangeSequence<C : CollectionType> : SequenceType {
         self.base = base.prefixUpTo(subRange.startIndex).concat(base.suffixFrom(subRange.endIndex))
     }
     
-    public func generate() -> DropRangeGenerator<C> {
+    public func generate() -> DropRangeGenerator<C.SubSequence.Generator> {
         return DropRangeGenerator(base: base.generate())
     }
     
@@ -778,7 +778,7 @@ public struct DropRangeSequence<C : CollectionType> : SequenceType {
 
 public struct DropRangeCollection<C : CollectionType where C.SubSequence : CollectionType> : CollectionType {
     
-    public typealias Generator = DropRangeGenerator<C>
+    public typealias Generator = DropRangeGenerator<C.SubSequence.Generator>
     
     private let base: ConcatCollection<C.SubSequence, C.SubSequence>
     
@@ -796,7 +796,7 @@ public struct DropRangeCollection<C : CollectionType where C.SubSequence : Colle
         return base[index.base]
     }
     
-    public func generate() -> DropRangeGenerator<C> {
+    public func generate() -> DropRangeGenerator<C.SubSequence.Generator> {
         return DropRangeGenerator(base: base.generate())
     }
     
@@ -820,7 +820,7 @@ public func == <C>(lhs: DropRangeCollectionIndex<C>, rhs: DropRangeCollectionInd
 
 public struct DropRangeBidirectionalCollection<C : CollectionType where C.SubSequence : CollectionType, C.SubSequence.Index : BidirectionalIndexType> : CollectionType {
     
-    public typealias Generator = DropRangeGenerator<C>
+    public typealias Generator = DropRangeGenerator<C.SubSequence.Generator>
     
     private let base: ConcatBidirectionalCollection<C.SubSequence, C.SubSequence>
     
@@ -838,7 +838,7 @@ public struct DropRangeBidirectionalCollection<C : CollectionType where C.SubSeq
         return base[index.base]
     }
     
-    public func generate() -> DropRangeGenerator<C> {
+    public func generate() -> DropRangeGenerator<C.SubSequence.Generator> {
         return DropRangeGenerator(base: base.generate())
     }
     
@@ -929,24 +929,24 @@ public extension LazyCollectionType where Elements.SubSequence : CollectionType,
     }
 }
 
-public struct LazyReplaceRangeGenerator<C : CollectionType, S : SequenceType where C.SubSequence.Generator.Element == S.Generator.Element> : GeneratorType {
+public struct LazyReplaceRangeGenerator<G1 : GeneratorType, G2 : GeneratorType where G1.Element == G2.Element> : GeneratorType {
     
-    private var base: ConcatGenerator<ConcatGenerator<C.SubSequence.Generator, S.Generator>, C.SubSequence.Generator>
+    private var base: ConcatGenerator<ConcatGenerator<G1, G2>, G1>
     
-    public mutating func next() -> C.SubSequence.Generator.Element? {
+    public mutating func next() -> G1.Element? {
         return base.next()
     }
 }
 
 public struct LazyReplaceRangeSequence<C : CollectionType, S : SequenceType where C.SubSequence.Generator.Element == S.Generator.Element> : LazySequenceType {
     
-    private var base : ConcatSequence<ConcatSequence<C.SubSequence, S>, C.SubSequence>
+    private let base : ConcatSequence<ConcatSequence<C.SubSequence, S>, C.SubSequence>
     
     private init(base: C, subRange: Range<C.Index>, with newElements: S) {
         self.base = base.prefixUpTo(subRange.startIndex).concat(newElements).concat(base.suffixFrom(subRange.endIndex))
     }
     
-    public func generate() -> LazyReplaceRangeGenerator<C, S> {
+    public func generate() -> LazyReplaceRangeGenerator<C.SubSequence.Generator, S.Generator> {
         return LazyReplaceRangeGenerator(base: base.generate())
     }
     
@@ -957,9 +957,9 @@ public struct LazyReplaceRangeSequence<C : CollectionType, S : SequenceType wher
 
 public struct LazyReplaceRangeCollection<C : CollectionType, S : CollectionType where C.SubSequence : CollectionType, C.SubSequence.Generator.Element == S.Generator.Element> : LazyCollectionType {
     
-    public typealias Generator = LazyReplaceRangeGenerator<C, S>
+    public typealias Generator = LazyReplaceRangeGenerator<C.SubSequence.Generator, S.Generator>
     
-    private var base : ConcatCollection<ConcatCollection<C.SubSequence, S>, C.SubSequence>
+    private let base : ConcatCollection<ConcatCollection<C.SubSequence, S>, C.SubSequence>
     
     private init(base: C, subRange: Range<C.Index>, with newElements: S) {
         self.base = base.prefixUpTo(subRange.startIndex).concat(newElements).concat(base.suffixFrom(subRange.endIndex))
@@ -975,7 +975,7 @@ public struct LazyReplaceRangeCollection<C : CollectionType, S : CollectionType 
         return base[index.base]
     }
     
-    public func generate() -> LazyReplaceRangeGenerator<C, S> {
+    public func generate() -> LazyReplaceRangeGenerator<C.SubSequence.Generator, S.Generator> {
         return LazyReplaceRangeGenerator(base: base.generate())
     }
     
@@ -999,9 +999,9 @@ public func == <C, S>(lhs: LazyReplaceRangeCollectionIndex<C, S>, rhs: LazyRepla
 
 public struct LazyReplaceRangeBidirectionalCollection<C : CollectionType, S : CollectionType where C.SubSequence : CollectionType, C.SubSequence.Index : BidirectionalIndexType, S.Index : BidirectionalIndexType, C.SubSequence.Generator.Element == S.Generator.Element> : LazyCollectionType {
     
-    public typealias Generator = LazyReplaceRangeGenerator<C, S>
+    public typealias Generator = LazyReplaceRangeGenerator<C.SubSequence.Generator, S.Generator>
     
-    private var base : ConcatBidirectionalCollection<ConcatBidirectionalCollection<C.SubSequence, S>, C.SubSequence>
+    private let base : ConcatBidirectionalCollection<ConcatBidirectionalCollection<C.SubSequence, S>, C.SubSequence>
     
     private init(base: C, subRange: Range<C.Index>, with newElements: S) {
         self.base = base.prefixUpTo(subRange.startIndex).concat(newElements).concat(base.suffixFrom(subRange.endIndex))
@@ -1017,7 +1017,7 @@ public struct LazyReplaceRangeBidirectionalCollection<C : CollectionType, S : Co
         return base[index.base]
     }
     
-    public func generate() -> LazyReplaceRangeGenerator<C, S> {
+    public func generate() -> LazyReplaceRangeGenerator<C.SubSequence.Generator, S.Generator> {
         return LazyReplaceRangeGenerator(base: base.generate())
     }
     
