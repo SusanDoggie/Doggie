@@ -469,7 +469,7 @@ public func != (lhs: Polynomial, rhs: Double) -> Bool {
 }
 @warn_unused_result
 public func gcd(var a: Polynomial, var _ b: Polynomial) -> Polynomial {
-    while b != 0 {
+    while !b.all({ $0.almostZero }) {
         (a, b) = (b, a % b)
     }
     return a
@@ -478,7 +478,7 @@ public func gcd(var a: Polynomial, var _ b: Polynomial) -> Polynomial {
 public func exgcd(var a: Polynomial, var _ b: Polynomial) -> (gcd: Polynomial, x: Polynomial, y: Polynomial) {
     var x: (Polynomial, Polynomial) = ([1], [0])
     var y: (Polynomial, Polynomial) = ([0], [1])
-    while b != 0 {
+    while !b.all({ $0.almostZero }) {
         let (quo, rem) = remquo(a, b)
         x = (x.1, x.0 - quo * x.1)
         y = (y.1, y.0 - quo * y.1)
