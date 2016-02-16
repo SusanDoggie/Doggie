@@ -355,14 +355,15 @@ private func SplitBezier(t: Double, _ p: [Double]) -> ([Double], [Double]) {
 private func SplitBezier(t: [Double], _ p: [Double]) -> [[Double]] {
     var result: [[Double]] = []
     var remain = p
-    var last_t = 1.0
-    for _t in t.sort().reverse() {
-        let split = SplitBezier(_t / last_t, remain)
-        result.append(split.1)
-        remain = split.0
+    var last_t = 0.0
+    for _t in t.sort() {
+        let split = SplitBezier((_t - last_t) / (1 - last_t), remain)
+        result.append(split.0)
+        remain = split.1
         last_t = _t
     }
-    return [remain] + result.reverse()
+    result.append(remain)
+    return result
 }
 
 private func SplitBezier(t: Double, _ p: [Point]) -> ([Point], [Point]) {
@@ -383,14 +384,15 @@ private func SplitBezier(t: Double, _ p: [Point]) -> ([Point], [Point]) {
 private func SplitBezier(t: [Double], _ p: [Point]) -> [[Point]] {
     var result: [[Point]] = []
     var remain = p
-    var last_t = 1.0
-    for _t in t.sort().reverse() {
-        let split = SplitBezier(_t / last_t, remain)
-        result.append(split.1)
-        remain = split.0
+    var last_t = 0.0
+    for _t in t.sort() {
+        let split = SplitBezier((_t - last_t) / (1 - last_t), remain)
+        result.append(split.0)
+        remain = split.1
         last_t = _t
     }
-    return [remain] + result.reverse()
+    result.append(remain)
+    return result
 }
 
 private func SplitBezier(t: Double, _ p: [Vector]) -> ([Vector], [Vector]) {
@@ -411,14 +413,15 @@ private func SplitBezier(t: Double, _ p: [Vector]) -> ([Vector], [Vector]) {
 private func SplitBezier(t: [Double], _ p: [Vector]) -> [[Vector]] {
     var result: [[Vector]] = []
     var remain = p
-    var last_t = 1.0
-    for _t in t.sort().reverse() {
-        let split = SplitBezier(_t / last_t, remain)
-        result.append(split.1)
-        remain = split.0
+    var last_t = 0.0
+    for _t in t.sort() {
+        let split = SplitBezier((_t - last_t) / (1 - last_t), remain)
+        result.append(split.0)
+        remain = split.1
         last_t = _t
     }
-    return [remain] + result.reverse()
+    result.append(remain)
+    return result
 }
 
 private func BezierDerivative(p: [Double]) -> [Double] {
