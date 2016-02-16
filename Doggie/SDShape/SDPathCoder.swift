@@ -334,8 +334,7 @@ private func bezierArc(start: Point, _ end: Point, _ radius: Radius, _ rotate: D
     let point = BezierArc(endAngle - startAngle).lazy.map { _transform * $0 + center }
     var result: [SDPathCommand] = []
     if point.count > 1 {
-        result.append(SDPath.CubicBezier(point[1], point[2], point[3]))
-        for i in 1..<point.count / 3 {
+        for i in 0..<point.count / 3 {
             result.append(SDPath.CubicBezier(point[i * 3 + 1], point[i * 3 + 2], point[i * 3 + 3]))
         }
     }

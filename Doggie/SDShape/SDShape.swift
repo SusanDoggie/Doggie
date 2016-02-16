@@ -31,4 +31,6 @@ public protocol SDShape {
     var frame : Rect { get }
     var transform : SDTransform { get set }
     var center : Point { get set }
+    
+    var path: SDPath { get }
 }

@@ -176,4 +176,19 @@ public struct SDEllipse : SDShape {
             ry = newValue * 0.5
         }
     }
+    
+    public var path: SDPath {
+        let scale = SDTransform.Scale(x: self.radius.x, y: self.radius.y)
+        let point = BezierCircle.lazy.map { scale * $0 + self.position }
+        var path: SDPath = [
+            SDPath.Move(point[0]),
+            SDPath.CubicBezier(point[1], point[2], point[3]),
+            SDPath.CubicBezier(point[4], point[5], point[6]),
+            SDPath.CubicBezier(point[7], point[8], point[9]),
+            SDPath.CubicBezier(point[10], point[11], point[12]),
+            SDPath.ClosePath()
+        ]
+        path.transform = self.transform
+        return path
+    }
 }

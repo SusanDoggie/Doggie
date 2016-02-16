@@ -257,6 +257,9 @@ public struct SDPath : SDShape, MutableCollectionType, ArrayLiteralConvertible {
         return bound ?? Rect()
     }
     
+    public var path: SDPath {
+        return self
+    }
 }
 
 extension SDPath {
@@ -267,26 +270,8 @@ extension SDPath {
         transform = SDTransform(SDTransform.Identity())
     }
     
-    public init(_ rect: SDRectangle) {
-        let points = rect.points
-        commands = [Move(points[0]), Line(points[1]), Line(points[2]), Line(points[3]), ClosePath()]
-        transform = SDTransform(SDTransform.Identity())
-    }
-    
-    public init(_ ellipse: SDEllipse) {
-        self.init()
-        let scale = SDTransform.Scale(x: ellipse.radius.x, y: ellipse.radius.y)
-        let point = BezierArc(2 * M_PI).lazy.map { scale * $0 + ellipse.position }
-        self.reserveCapacity(point.count / 3 + 2)
-        if point.count > 1 {
-            self.append(SDPath.Move(point[0]))
-            self.append(SDPath.CubicBezier(point[1], point[2], point[3]))
-            for i in 1..<point.count / 3 {
-                self.append(SDPath.CubicBezier(point[i * 3 + 1], point[i * 3 + 2], point[i * 3 + 3]))
-            }
-            self.append(SDPath.ClosePath())
-        }
-        self.transform = ellipse.transform
+    public init<S: SDShape>(_ shape: S) {
+        self = shape.path
     }
 }
 

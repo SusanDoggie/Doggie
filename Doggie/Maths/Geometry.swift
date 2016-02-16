@@ -599,6 +599,32 @@ public func CubicBezierBound<T: SDTransformType>(p0: Point, _ p1: Point, _ p2: P
     return Rect(x: minX + matrix.c, y: minY + matrix.f, width: maxX - minX, height: maxY - minY)
 }
 
+public var BezierCircle: [Point] {
+    
+    //
+    // root of 18225 x^12 + 466560 x^11 - 28977264 x^10 + 63288000 x^9 + 96817248 x^8
+    //         - 515232000 x^7 + 883891456 x^6 - 921504768 x^5 + 668905728 x^4
+    //         - 342814720 x^3 + 117129216 x^2 - 23592960 x + 2097152
+    // reference: http://spencermortensen.com/articles/bezier-circle/
+    //
+    let c = 0.5519150244935105707435627227925666423361803947243089
+    
+    return [
+        Point(x: 1, y: 0),
+        Point(x: 1, y: c),
+        Point(x: c, y: 1),
+        Point(x: 0, y: 1),
+        Point(x: -c, y: 1),
+        Point(x: -1, y: c),
+        Point(x: -1, y: 0),
+        Point(x: -1, y: -c),
+        Point(x: -c, y: -1),
+        Point(x: 0, y: -1),
+        Point(x: c, y: -1),
+        Point(x: 1, y: -c),
+        Point(x: 1, y: 0)
+    ]
+}
 @warn_unused_result
 public func BezierArc(angle: Double) -> [Point] {
     
@@ -614,7 +640,7 @@ public func BezierArc(angle: Double) -> [Point] {
     var _angle = abs(angle)
     var result = [Point(x: 1, y: 0)]
     
-    while _angle > 0 {
+    while _angle > 0 && !_angle.almostZero {
         switch counter & 3 {
         case 0:
             result.append(Point(x: 1, y: c))

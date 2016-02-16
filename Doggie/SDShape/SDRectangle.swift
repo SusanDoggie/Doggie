@@ -97,4 +97,12 @@ public struct SDRectangle : SDShape {
             rect.height = newValue
         }
     }
+    
+    public var path: SDPath {
+        let points = self.points
+        var path: SDPath = [SDPath.Move(points[0]), SDPath.Line(points[1]), SDPath.Line(points[2]), SDPath.Line(points[3]), SDPath.ClosePath()]
+        path.transform = self.transform
+        return path
+    }
+    
 }
