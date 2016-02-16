@@ -467,7 +467,25 @@ public func != (lhs: Double, rhs: Polynomial) -> Bool {
 public func != (lhs: Polynomial, rhs: Double) -> Bool {
     return lhs.degree != 0 || lhs[0] != rhs
 }
-
+@warn_unused_result
+public func gcd(var a: Polynomial, var _ b: Polynomial) -> Polynomial {
+    while b != 0 {
+        (a, b) = (b, a % b)
+    }
+    return a
+}
+@warn_unused_result
+public func exgcd(var a: Polynomial, var _ b: Polynomial) -> (gcd: Polynomial, x: Polynomial, y: Polynomial) {
+    var x: (Polynomial, Polynomial) = ([1], [0])
+    var y: (Polynomial, Polynomial) = ([0], [1])
+    while b != 0 {
+        let (quo, rem) = remquo(a, b)
+        x = (x.1, x.0 - quo * x.1)
+        y = (y.1, y.0 - quo * y.1)
+        (a, b) = (b, rem)
+    }
+    return (a, x.0, y.0)
+}
 @warn_unused_result
 public func pow(p: Polynomial, _ n: Int) -> Polynomial {
     if p.count == 0 {
