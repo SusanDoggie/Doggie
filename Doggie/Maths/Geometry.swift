@@ -355,13 +355,12 @@ private func SplitBezier(t: Double, _ p: [Double]) -> ([Double], [Double]) {
 private func SplitBezier(t: [Double], _ p: [Double]) -> [[Double]] {
     var result: [[Double]] = []
     var remain = p
-    var m = 1.0
+    var last_t = 1.0
     for _t in t.sort().reverse() {
-        let s = _t / m
-        let split = SplitBezier(s, remain)
+        let split = SplitBezier(_t / last_t, remain)
         result.append(split.1)
         remain = split.0
-        m *= s
+        last_t = _t
     }
     return [remain] + result.reverse()
 }
@@ -384,13 +383,12 @@ private func SplitBezier(t: Double, _ p: [Point]) -> ([Point], [Point]) {
 private func SplitBezier(t: [Double], _ p: [Point]) -> [[Point]] {
     var result: [[Point]] = []
     var remain = p
-    var m = 1.0
+    var last_t = 1.0
     for _t in t.sort().reverse() {
-        let s = _t / m
-        let split = SplitBezier(s, remain)
+        let split = SplitBezier(_t / last_t, remain)
         result.append(split.1)
         remain = split.0
-        m *= s
+        last_t = _t
     }
     return [remain] + result.reverse()
 }
@@ -413,13 +411,12 @@ private func SplitBezier(t: Double, _ p: [Vector]) -> ([Vector], [Vector]) {
 private func SplitBezier(t: [Double], _ p: [Vector]) -> [[Vector]] {
     var result: [[Vector]] = []
     var remain = p
-    var m = 1.0
+    var last_t = 1.0
     for _t in t.sort().reverse() {
-        let s = _t / m
-        let split = SplitBezier(s, remain)
+        let split = SplitBezier(_t / last_t, remain)
         result.append(split.1)
         remain = split.0
-        m *= s
+        last_t = _t
     }
     return [remain] + result.reverse()
 }
