@@ -1066,13 +1066,13 @@ public func Deconvolve(signal_count: Int, var _ signal: UnsafePointer<Float>, _ 
     }
     if residue_size > quotient_size {
         for _ in 0..<residue_size - quotient_size {
-            residue.memory = signal.memory - Dot(residue_size, output - out_stride, -out_stride, kernel, kernel_stride)
+            residue.memory = signal.memory - Dot(quotient_size, output - out_stride, -out_stride, kernel, kernel_stride)
             signal += signal_stride
             kernel += kernel_stride
             residue += residue_stride
         }
         for i in 0..<quotient_size {
-            residue.memory = signal.memory - Dot(residue_size - i, output - out_stride, -out_stride, kernel, kernel_stride)
+            residue.memory = signal.memory - Dot(quotient_size - i, output - out_stride, -out_stride, kernel, kernel_stride)
             signal += signal_stride
             kernel += kernel_stride
             residue += residue_stride
@@ -1112,13 +1112,13 @@ public func Deconvolve(signal_count: Int, var _ signal: UnsafePointer<Double>, _
     }
     if residue_size > quotient_size {
         for _ in 0..<residue_size - quotient_size {
-            residue.memory = signal.memory - Dot(residue_size, output - out_stride, -out_stride, kernel, kernel_stride)
+            residue.memory = signal.memory - Dot(quotient_size, output - out_stride, -out_stride, kernel, kernel_stride)
             signal += signal_stride
             kernel += kernel_stride
             residue += residue_stride
         }
         for i in 0..<quotient_size {
-            residue.memory = signal.memory - Dot(residue_size - i, output - out_stride, -out_stride, kernel, kernel_stride)
+            residue.memory = signal.memory - Dot(quotient_size - i, output - out_stride, -out_stride, kernel, kernel_stride)
             signal += signal_stride
             kernel += kernel_stride
             residue += residue_stride
