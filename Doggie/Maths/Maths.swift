@@ -52,30 +52,6 @@ public func gcd<S: SignedIntegerType>(var a: S, var _ b: S) -> S {
 }
 
 @warn_unused_result
-public func exgcd<U: UnsignedIntegerType>(var a: U, var _ b: U) -> (gcd: U, x: U, y: U) {
-    var x: (U, U) = (1, 0)
-    var y: (U, U) = (0, 1)
-    while b != 0 {
-        let q = a / b
-        x = (x.1, x.0 + q * x.1)
-        y = (y.1, y.0 + q * y.1)
-        (a, b) = (b, a % b)
-    }
-    return (a, x.0, y.0)
-}
-@warn_unused_result
-public func exgcd<U: UnsignedIntegerType, S: SignedIntegerType>(var a: U, var _ b: U) -> (gcd: U, x: S, y: S) {
-    var x: (S, S) = (1, 0)
-    var y: (S, S) = (0, 1)
-    while b != 0 {
-        let q: S = numericCast(a / b)
-        x = (x.1, x.0 - q * x.1)
-        y = (y.1, y.0 - q * y.1)
-        (a, b) = (b, a % b)
-    }
-    return (a, x.0, y.0)
-}
-@warn_unused_result
 public func exgcd<S: SignedIntegerType>(var a: S, var _ b: S) -> (gcd: S, x: S, y: S) {
     var iter = 0
     let sign1 = a >= 0 || b < 0
