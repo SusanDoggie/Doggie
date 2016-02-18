@@ -337,6 +337,17 @@ public func BezierPolynomial(p: Double ... ) -> Polynomial {
 }
 
 @warn_unused_result
+public func BezierPolynomial(poly: Polynomial) -> [Double] {
+    let de = (0..<poly.degree).scan(poly) { p, _ in p.derivative / Double(p.degree) }
+    var result: [Double] = []
+    for n in de.indices {
+        let s = zip(CombinationList(UInt(n)), de)
+        result.append(s.reduce(0) { $0 + Double($1.0) * $1.1[0] })
+    }
+    return result
+}
+
+@warn_unused_result
 public func ClosestBezier(point: Point, _ b0: Point, _ b1: Point) -> [Double] {
     let x: Polynomial = [b0.x - point.x, b1.x - b0.x]
     let y: Polynomial = [b0.y - point.y, b1.y - b0.y]
