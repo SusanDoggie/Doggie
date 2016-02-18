@@ -268,21 +268,6 @@ public func SplitBezier(t: [Double], _ p: Vector ... ) -> [[Vector]] {
 }
 
 @warn_unused_result
-public func BezierDerivative(t: Double, _ p: Double ... ) -> Double {
-    return Bezier(t, BezierDerivative(p))
-}
-
-@warn_unused_result
-public func BezierDerivative(t: Double, _ p: Point ... ) -> Point {
-    return Bezier(t, BezierDerivative(p))
-}
-
-@warn_unused_result
-public func BezierDerivative(t: Double, _ p: Vector ... ) -> Vector {
-    return Bezier(t, BezierDerivative(p))
-}
-
-@warn_unused_result
 public func BezierDerivative(p: Double ... ) -> [Double] {
     return BezierDerivative(p)
 }
@@ -472,7 +457,7 @@ private func SplitBezier(t: [Double], _ p: [Vector]) -> [[Vector]] {
 }
 
 private func BezierDerivative(p: [Double]) -> [Double] {
-    let n = Double(p.count)
+    let n = Double(p.count - 1)
     var de = [Double]()
     var lastPoint = p.first!
     for current in p.dropFirst() {
@@ -483,7 +468,7 @@ private func BezierDerivative(p: [Double]) -> [Double] {
 }
 
 private func BezierDerivative(p: [Point]) -> [Point] {
-    let n = Double(p.count)
+    let n = Double(p.count - 1)
     var de = [Point]()
     var lastPoint = p.first!
     for current in p.dropFirst() {
@@ -494,7 +479,7 @@ private func BezierDerivative(p: [Point]) -> [Point] {
 }
 
 private func BezierDerivative(p: [Vector]) -> [Vector] {
-    let n = Double(p.count)
+    let n = Double(p.count - 1)
     var de = [Vector]()
     var lastPoint = p.first!
     for current in p.dropFirst() {
