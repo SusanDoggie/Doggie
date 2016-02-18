@@ -305,36 +305,36 @@ public func BezierPolynomial(p: Double ... ) -> Polynomial {
 }
 
 @warn_unused_result
-public func ClosestBezier(point: Point, _ b0: Point, _ b1: Point) -> Double {
+public func ClosestBezier(point: Point, _ b0: Point, _ b1: Point) -> [Double] {
     let x: Polynomial = [b0.x - point.x, b1.x - b0.x]
     let y: Polynomial = [b0.y - point.y, b1.y - b0.y]
     let dot = x * x + y * y
-    return dot.derivative.roots.minElement { dot.eval($0) }!
+    return dot.derivative.roots.sort { dot.eval($0) }
 }
 
 @warn_unused_result
-public func ClosestBezier(point: Point, _ b0: Point, _ b1: Point, _ b2: Point) -> Double {
+public func ClosestBezier(point: Point, _ b0: Point, _ b1: Point, _ b2: Point) -> [Double] {
     let x: Polynomial = [b0.x - point.x, 2 * (b1.x - b0.x), b0.x - 2 * b1.x + b2.x]
     let y: Polynomial = [b0.y - point.y, 2 * (b1.y - b0.y), b0.y - 2 * b1.y + b2.y]
     let dot = x * x + y * y
-    return dot.derivative.roots.minElement { dot.eval($0) }!
+    return dot.derivative.roots.sort { dot.eval($0) }
 }
 
 @warn_unused_result
-public func ClosestBezier(point: Point, _ b0: Point, _ b1: Point, _ b2: Point, _ b3: Point) -> Double {
+public func ClosestBezier(point: Point, _ b0: Point, _ b1: Point, _ b2: Point, _ b3: Point) -> [Double] {
     let x: Polynomial = [b0.x - point.x, 3 * (b1.x - b0.x), 3 * (b2.x + b0.x) - 6 * b1.x, b3.x + 3 * (b1.x - b2.x) - b0.x]
     let y: Polynomial = [b0.y - point.y, 3 * (b1.y - b0.y), 3 * (b2.y + b0.y) - 6 * b1.y, b3.y + 3 * (b1.y - b2.y) - b0.y]
     let dot = x * x + y * y
-    return dot.derivative.roots.minElement { dot.eval($0) }!
+    return dot.derivative.roots.sort { dot.eval($0) }
 }
 
 @warn_unused_result
-public func ClosestBezier(point: Point, _ b0: Point, _ b1: Point, _ b2: Point, _ b3: Point, _ b4: Point , _ b5: Point ... ) -> Double {
+public func ClosestBezier(point: Point, _ b0: Point, _ b1: Point, _ b2: Point, _ b3: Point, _ b4: Point , _ b5: Point ... ) -> [Double] {
     let list = [b0, b1, b2, b3, b4] + b5
     let x = BezierPolynomial(list.map { $0.x }) - point.x
     let y = BezierPolynomial(list.map { $0.y }) - point.y
     let dot = x * x + y * y
-    return dot.derivative.roots.minElement { dot.eval($0) }!
+    return dot.derivative.roots.sort { dot.eval($0) }
 }
 
 private func SplitBezier(t: Double, _ p: [Double]) -> ([Double], [Double]) {
@@ -722,7 +722,7 @@ public func BezierArc(angle: Double) -> [Point] {
             let _c = result.count - 2
             let _d = result.count - 1
             let end = Point(x: cos(s), y: sin(s))
-            let t = ClosestBezier(end, result[_a], result[_b], result[_c], result[_d])
+            let t = ClosestBezier(end, result[_a], result[_b], result[_c], result[_d]).first!
             let split = SplitBezier(t, result[_a], result[_b], result[_c], result[_d]).0
             result[_b] = split[1]
             result[_c] = split[2]
