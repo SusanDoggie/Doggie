@@ -25,53 +25,6 @@
 
 import Foundation
 
-public struct Radius {
-    
-    public var x: Double
-    public var y: Double
-    
-    public init() {
-        self.x = 0
-        self.y = 0
-    }
-    
-    public init(x: Double, y: Double) {
-        self.x = x
-        self.y = y
-    }
-    public init(x: Int, y: Int) {
-        self.x = Double(x)
-        self.y = Double(y)
-    }
-}
-
-extension Radius: CustomStringConvertible, CustomDebugStringConvertible {
-    public var description: String {
-        return "{x: \(x), y: \(y)}"
-    }
-    public var debugDescription: String {
-        return "{x: \(x), y: \(y)}"
-    }
-}
-
-extension Radius: Hashable {
-    
-    public var hashValue: Int {
-        let a = x.hashValue
-        let b = y.hashValue
-        return a ^ b ^ (a &+ b) ^ (a &- b)
-    }
-}
-
-@warn_unused_result
-public func == (lhs: Radius, rhs: Radius) -> Bool {
-    return lhs.x == rhs.x && lhs.y == rhs.y
-}
-@warn_unused_result
-public func != (lhs: Radius, rhs: Radius) -> Bool {
-    return lhs.x != rhs.x || lhs.y != rhs.y
-}
-
 public struct SDEllipse : SDShape {
     
     public var transform : SDTransform
