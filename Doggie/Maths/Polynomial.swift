@@ -177,12 +177,12 @@ private func _root(p: Polynomial) -> [Double] {
         let left = p.eval(extrema[idx])
         let right = p.eval(extrema[idx + 1])
         
-        if left.almostZero() {
+        if left.almostZero(reference: extrema[idx]) {
             if !result.contains(extrema[idx]) {
                 result.append(extrema[idx])
             }
             
-        } else if !right.almostZero() && left.isSignMinus != right.isSignMinus {
+        } else if !right.almostZero(reference: extrema[idx + 1]) && left.isSignMinus != right.isSignMinus {
             var neg: Double
             var pos: Double
             if left > 0 {
@@ -203,7 +203,7 @@ private func _root(p: Polynomial) -> [Double] {
                     mid = 0.5 * (neg + pos)
                 }
                 let midVal = p.eval(mid)
-                if midVal.almostZero(reference: midVal) || pos.almostEqual(neg) {
+                if midVal.almostZero(reference: mid) || pos.almostEqual(neg) {
                     result.append(mid)
                     break
                 }
@@ -218,7 +218,7 @@ private func _root(p: Polynomial) -> [Double] {
             }
         }
     }
-    if let last = extrema.last where p.eval(last).almostZero() {
+    if let last = extrema.last where p.eval(last).almostZero(reference: last) {
         result.append(last)
     }
     return result
