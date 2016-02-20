@@ -131,10 +131,10 @@ extension Polynomial {
         if degree == 0 {
             return []
         }
-        if coeffs.last!.almostZero {
+        if coeffs.last!.almostZero() {
             return Polynomial(coeffs.dropLast()).roots
         }
-        if coeffs.first!.almostZero {
+        if coeffs.first!.almostZero() {
             let z = Polynomial(coeffs.dropFirst()).roots
             return z.contains(0) ? z : [0] + z
         }
@@ -177,12 +177,12 @@ private func _root(p: Polynomial) -> [Double] {
         let left = p.eval(extrema[idx])
         let right = p.eval(extrema[idx + 1])
         
-        if left.almostZero {
+        if left.almostZero() {
             if !result.contains(extrema[idx]) {
                 result.append(extrema[idx])
             }
             
-        } else if !right.almostZero && left.isSignMinus != right.isSignMinus {
+        } else if !right.almostZero() && left.isSignMinus != right.isSignMinus {
             var neg: Double
             var pos: Double
             if left > 0 {
@@ -203,7 +203,7 @@ private func _root(p: Polynomial) -> [Double] {
                     mid = 0.5 * (neg + pos)
                 }
                 let midVal = p.eval(mid)
-                if midVal.almostZero || (pos - neg).almostZero {
+                if midVal.almostZero(reference: midVal) || pos.almostEqual(neg) {
                     result.append(mid)
                     break
                 }
@@ -218,7 +218,7 @@ private func _root(p: Polynomial) -> [Double] {
             }
         }
     }
-    if let last = extrema.last where p.eval(last).almostZero {
+    if let last = extrema.last where p.eval(last).almostZero() {
         result.append(last)
     }
     return result
@@ -469,7 +469,7 @@ public func != (lhs: Polynomial, rhs: Double) -> Bool {
 }
 @warn_unused_result
 public func gcd(var a: Polynomial, var _ b: Polynomial) -> Polynomial {
-    while !b.all({ $0.almostZero }) {
+    while !b.all({ $0.almostZero() }) {
         (a, b) = (b, a % b)
     }
     return a
@@ -478,7 +478,7 @@ public func gcd(var a: Polynomial, var _ b: Polynomial) -> Polynomial {
 public func exgcd(var a: Polynomial, var _ b: Polynomial) -> (gcd: Polynomial, x: Polynomial, y: Polynomial) {
     var x: (Polynomial, Polynomial) = ([1], [0])
     var y: (Polynomial, Polynomial) = ([0], [1])
-    while !b.all({ $0.almostZero }) {
+    while !b.all({ $0.almostZero() }) {
         let (quo, rem) = remquo(a, b)
         x = (x.1, x.0 - quo * x.1)
         y = (y.1, y.0 - quo * y.1)

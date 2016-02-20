@@ -30,8 +30,12 @@ public let M_SQRT5 = 2.2360679774997896964091736687312762354406183596115257
 
 extension Double {
     
-    public var almostZero : Bool {
-        return abs(self) < 1e-9
+    public func almostZero(epsilon: Double = 1e-9, reference: Double = 0) -> Bool {
+        return abs(self) < abs(epsilon) * max(1, reference)
+    }
+    
+    public func almostEqual(other: Double, epsilon: Double = 1e-9) -> Bool {
+        return abs(self - other).almostZero(epsilon, reference: self)
     }
 }
 
@@ -185,19 +189,19 @@ public func pow(x: UInt8, _ n: UInt8) -> UInt8 {
 
 @warn_unused_result
 public func degree2roots(b: Double, _ c: Double) -> [Double] {
-    if b.almostZero {
+    if b.almostZero() {
         if c < 0 {
             let _c = sqrt(-c)
             return [_c, -_c]
-        } else if c.almostZero {
+        } else if c.almostZero() {
             return [0]
         }
     }
-    if c.almostZero {
+    if c.almostZero() {
         return [0, -b]
     }
     let del = b * b - 4 * c
-    if del.almostZero {
+    if del.almostZero() {
         return [-0.5 * b]
     } else if del > 0 {
         let sqrt_del = sqrt(del)
@@ -208,7 +212,7 @@ public func degree2roots(b: Double, _ c: Double) -> [Double] {
 
 @warn_unused_result
 public func degree3decompose(b: Double, _ c: Double, _ d: Double) -> (Double, (Double, Double)) {
-    if d.almostZero {
+    if d.almostZero() {
         return (0, (b, c))
     }
     let b2 = b * b
@@ -243,7 +247,7 @@ public func degree3decompose(b: Double, _ c: Double, _ d: Double) -> (Double, (D
 
 @warn_unused_result
 public func degree4decompose(b: Double, _ c: Double, _ d: Double, _ e: Double) -> ((Double, Double), (Double, Double)) {
-    if e.almostZero {
+    if e.almostZero() {
         let z = degree3decompose(b, c, d)
         return ((z.0, 0), z.1)
     }
@@ -267,8 +271,8 @@ public func degree4decompose(b: Double, _ c: Double, _ d: Double, _ e: Double) -
         let _S = -p + sqrt(de0) * cos(phi / 3)
         S = 0.5 * sqrt(_S * 2 / 3)
     } else {
-        let _S = de0.almostZero && !de2.almostZero ? cbrt(de1) : cbrt(0.5 * (de1 + sqrt(de2)))
-        if _S.almostZero {
+        let _S = de0.almostZero() && !de2.almostZero() ? cbrt(de1) : cbrt(0.5 * (de1 + sqrt(de2)))
+        if _S.almostZero() {
             let _b = 2 * m
             let _c = m * m
             return ((_b, _c), (_b, _c))
@@ -312,7 +316,7 @@ public func degree5decompose(b: Double, _ c: Double, _ d: Double, _ e: Double, _
         r += dr
         s += ds
         
-        if abs(dr) < eps && abs(ds) < eps {
+        if dr.almostZero(eps, reference: r) && ds.almostZero(eps, reference: s) {
             break
         }
     }
@@ -350,7 +354,7 @@ public func degree6decompose(b: Double, _ c: Double, _ d: Double, _ e: Double, _
         r += dr
         s += ds
         
-        if abs(dr) < eps && abs(ds) < eps {
+        if dr.almostZero(eps, reference: r) && ds.almostZero(eps, reference: s) {
             break
         }
     }
@@ -364,7 +368,7 @@ public func degree6decompose(b: Double, _ c: Double, _ d: Double, _ e: Double, _
 
 @warn_unused_result
 public func degree3roots(b: Double, _ c: Double, _ d: Double) -> [Double] {
-    if d.almostZero {
+    if d.almostZero() {
         let z = degree2roots(b, c)
         return z.contains(0) ? z : [0] + z
     }
@@ -395,17 +399,17 @@ public func degree3roots(b: Double, _ c: Double, _ d: Double) -> [Double] {
 
 @warn_unused_result
 public func degree4roots(b: Double, _ c: Double, _ d: Double, _ e: Double) -> [Double] {
-    if e.almostZero {
+    if e.almostZero() {
         let z = degree3roots(b, c, d)
         return z.contains(0) ? z : [0] + z
     }
-    if b.almostZero && d.almostZero { // biquadratic
+    if b.almostZero() && d.almostZero() { // biquadratic
         var result = [Double]()
         for z in degree2roots(c, e) {
             if z > 0 {
                 result.append(sqrt(z))
                 result.append(-sqrt(z))
-            } else if z.almostZero {
+            } else if z.almostZero() {
                 result.append(0)
             }
         }

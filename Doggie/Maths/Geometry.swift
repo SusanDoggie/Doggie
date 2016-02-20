@@ -505,7 +505,7 @@ private func BezierDerivative(p: [Vector]) -> [Vector] {
 @warn_unused_result
 public func QuadBezierStationary(p0: Double, _ p1: Double, _ p2: Double) -> Double? {
     let d = p0 + p2 - 2 * p1
-    if d.almostZero {
+    if d.almostZero() {
         return nil
     }
     return (p0 - p1) / d
@@ -524,7 +524,7 @@ public func QuadBezierStationary(p0: Double, _ p1: Double, _ p2: Double) -> Doub
 @warn_unused_result
 public func QuadBezierStationary(p0: Point, _ p1: Point, _ p2: Point, _ a: Double, _ b: Double) -> Double? {
     let d = a * (p0.x + p2.x - 2 * p1.x) + b * (p0.y + p2.y - 2 * p1.y)
-    if d.almostZero {
+    if d.almostZero() {
         return nil
     }
     return (a * (p0.x - p1.x) + b * (p0.y - p1.y)) / d
@@ -535,8 +535,8 @@ public func CubicBezierStationary(p0: Double, _ p1: Double, _ p2: Double, _ p3: 
     let _a = 3 * (p3 - p0) + 9 * (p1 - p2)
     let _b = 6 * (p2 + p0) - 12 * p1
     let _c = 3 * (p1 - p0)
-    if _a.almostZero {
-        if _b.almostZero {
+    if _a.almostZero() {
+        if _b.almostZero() {
             return []
         }
         let t = -_c / _b
@@ -550,7 +550,7 @@ public func CubicBezierStationary(p0: Double, _ p1: Double, _ p2: Double, _ p3: 
             let t1 = _b2 + sqrt_delta
             let t2 = _b2 - sqrt_delta
             return [t1, t2]
-        } else if delta.almostZero {
+        } else if delta.almostZero() {
             return [_b2]
         }
     }
@@ -578,8 +578,8 @@ public func CubicBezierStationary(p0: Point, _ p1: Point, _ p2: Point, _ p3: Poi
     let _a = a * _ax + b * _ay
     let _b = a * _bx + b * _by
     let _c = a * _cx + b * _cy
-    if _a.almostZero {
-        if _b.almostZero {
+    if _a.almostZero() {
+        if _b.almostZero() {
             return []
         }
         let t = -_c / _b
@@ -593,7 +593,7 @@ public func CubicBezierStationary(p0: Point, _ p1: Point, _ p2: Point, _ p3: Poi
             let t1 = _b2 + sqrt_delta
             let t2 = _b2 - sqrt_delta
             return [t1, t2]
-        } else if delta.almostZero {
+        } else if delta.almostZero() {
             return [_b2]
         }
     }
@@ -737,7 +737,7 @@ public func BezierArc(angle: Double) -> [Point] {
     var _angle = abs(angle)
     var result = [Point(x: 1, y: 0)]
     
-    while _angle > 0 && !_angle.almostZero {
+    while _angle > 0 && !_angle.almostZero() {
         switch counter & 3 {
         case 0:
             result.append(Point(x: 1, y: c))
@@ -783,7 +783,7 @@ public func BezierArc(angle: Double) -> [Point] {
 public func CubicBezierSelfIntersect(p0: Point, _ p1: Point, _ p2: Point, _ p3: Point) -> (Double, Double)? {
     
     let a = p3.x - p0.x + 3 * (p1.x - p2.x)
-    if a.almostZero {
+    if a.almostZero() {
         return nil
     }
     
@@ -791,7 +791,7 @@ public func CubicBezierSelfIntersect(p0: Point, _ p1: Point, _ p2: Point, _ p3: 
     let c = (3 * (p1.x - p0.x)) / a
     
     let d = p3.y - p0.y + 3 * (p1.y - p2.y)
-    if d.almostZero {
+    if d.almostZero() {
         return nil
     }
     let e = (3 * (p0.y + p2.y) - 6 * p1.y) / d
@@ -818,7 +818,7 @@ public func CubicBezierSelfIntersect(p0: Point, _ p1: Point, _ p2: Point, _ p3: 
 public func LinesIntersect(p0: Point, _ p1: Point, _ p2: Point, _ p3: Point) -> Point? {
     
     let d = (p0.x - p1.x) * (p2.y - p3.y) - (p0.y - p1.y) * (p2.x - p3.x)
-    if d.almostZero {
+    if d.almostZero() {
         return nil
     }
     let a = (p0.x * p1.y - p0.y * p1.x) / d
@@ -844,7 +844,7 @@ public func QuadBezierLineIntersect(b0: Point, _ b1: Point, _ b2: Point, _ l0: P
     let v1 = l0.y - l1.y
     
     let poly = u1 * v0 - u0 * v1
-    return poly.all({ $0.almostZero }) ? nil : poly.roots
+    return poly.all({ $0.almostZero() }) ? nil : poly.roots
 }
 
 @warn_unused_result
@@ -867,7 +867,7 @@ public func CubicBezierLineIntersect(b0: Point, _ b1: Point, _ b2: Point, _ b3: 
     let v1 = l0.y - l1.y
     
     let poly = u1 * v0 - u0 * v1
-    return poly.all({ $0.almostZero }) ? nil : poly.roots
+    return poly.all({ $0.almostZero() }) ? nil : poly.roots
 }
 
 @warn_unused_result
@@ -896,7 +896,7 @@ public func QuadBeziersIntersect(b0: Point, _ b1: Point, _ b2: Point, _ b3: Poin
     let m11 = u1 * v0 - u0 * v1
     
     let det = m00 * m11 - m01 * m10
-    return det.all({ $0.almostZero }) ? nil : det.roots
+    return det.all({ $0.almostZero() }) ? nil : det.roots
 }
 
 @warn_unused_result
@@ -927,7 +927,7 @@ public func CubicQuadBezierIntersect(c0: Point, _ c1: Point, _ c2: Point, _ c3: 
     let m11 = u1 * v0 - u0 * v1
     
     let det = m00 * m11 - m01 * m10
-    return det.all({ $0.almostZero }) ? nil : det.roots
+    return det.all({ $0.almostZero() }) ? nil : det.roots
 }
 
 @warn_unused_result
@@ -968,7 +968,7 @@ public func CubicBeziersIntersect(c0: Point, _ c1: Point, _ c2: Point, _ c3: Poi
     let b = m12 * m20 - m10 * m22
     let c = m10 * m21 - m11 * m20
     let det = m00 * a + m01 * b + m02 * c
-    return det.all({ $0.almostZero }) ? nil : det.roots
+    return det.all({ $0.almostZero() }) ? nil : det.roots
 }
 
 // MARK: Winding Number
@@ -977,7 +977,7 @@ private func _integral(n: Double, _ b: Double, _ c: Double) -> Double {
     
     let delta = b * b - 4 * c
     
-    if delta.almostZero {
+    if delta.almostZero() {
         return 4 * n / (b * (2 + b))
     }
     if delta.isSignMinus {
@@ -1024,7 +1024,7 @@ public func LineWinding(p0: Point, _ p1: Point) -> Double {
     let y0 = p0.y
     let y1 = p1.y - p0.y
     
-    if x1.almostZero && y1.almostZero {
+    if x1.almostZero() && y1.almostZero() {
         return 0
     }
     
@@ -1033,7 +1033,7 @@ public func LineWinding(p0: Point, _ p1: Point) -> Double {
     let b = 2 * (x0 * x1 + y0 * y1)
     let c = x0 * x0 + y0 * y0
     
-    return a.almostZero ? 0 : 0.5 * M_1_PI * _integral(m / a, b / a, c / a)
+    return a.almostZero() ? 0 : 0.5 * M_1_PI * _integral(m / a, b / a, c / a)
 }
 
 private enum PartialPolynomial {
@@ -1074,14 +1074,14 @@ extension PartialPolynomial {
     }
     func almostEqual(p: Double) -> Bool {
         switch self {
-        case One(let a, _): return (p - a).almostZero
+        case One(let a, _): return p.almostEqual(a)
         case Two(_, _, _): return false
         }
     }
     func almostEqual(p: (Double, Double)) -> Bool {
         switch self {
         case One(_, _): return false
-        case Two(let a, let b, _): return (p.0 - a).almostZero && (p.1 - b).almostZero
+        case Two(let a, let b, _): return p.0.almostEqual(a) && p.1.almostEqual(b)
         }
     }
 }
@@ -1093,7 +1093,7 @@ private func appendPartialPolynomial(inout p: [PartialPolynomial], _ poly: Doubl
 
 private func appendPartialPolynomial(inout p: [PartialPolynomial], _ poly: (Double, Double)) {
     let delta = poly.1 * poly.1 - 4 * poly.0
-    if delta.almostZero {
+    if delta.almostZero() {
         appendPartialPolynomial(&p, 0.5 * poly.1)
         appendPartialPolynomial(&p, 0.5 * poly.1)
     } else if delta > 0 {
