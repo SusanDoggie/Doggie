@@ -197,13 +197,16 @@ private func _root(p: Polynomial) -> [Double] {
             var posVal = p.eval(pos)
             var previous = extrema[idx + 1]
             
+            var eps = 1e-14
+            var iter = 0
+            
             while true {
                 var mid = (pos * negVal - neg * posVal) / (negVal - posVal)
                 if 3 * abs(mid - previous) < abs(neg - pos) {
                     mid = 0.5 * (neg + pos)
                 }
                 let midVal = p.eval(mid)
-                if midVal.almostZero(reference: mid) || pos.almostEqual(neg) {
+                if midVal.almostZero(eps, reference: mid) || pos.almostEqual(neg, epsilon: eps) {
                     result.append(mid)
                     break
                 }
@@ -214,6 +217,11 @@ private func _root(p: Polynomial) -> [Double] {
                 } else {
                     pos = mid
                     posVal = midVal
+                }
+                
+                iter += 1
+                if iter % 5000 == 0 {
+                    eps *= 2
                 }
             }
         }

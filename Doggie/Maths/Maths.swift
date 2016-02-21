@@ -292,7 +292,9 @@ public func degree4decompose(b: Double, _ c: Double, _ d: Double, _ e: Double) -
 }
 
 @warn_unused_result
-public func degree5decompose(b: Double, _ c: Double, _ d: Double, _ e: Double, _ f: Double, eps: Double = 1e-14) -> (Double, (Double, Double), (Double, Double)) {
+public func degree5decompose(b: Double, _ c: Double, _ d: Double, _ e: Double, _ f: Double, var eps: Double = 1e-14) -> (Double, (Double, Double), (Double, Double)) {
+    
+    var iter = 0
     
     var r = c / b
     var s = d / b
@@ -319,6 +321,11 @@ public func degree5decompose(b: Double, _ c: Double, _ d: Double, _ e: Double, _
         if dr.almostZero(eps, reference: r) && ds.almostZero(eps, reference: s) {
             break
         }
+        
+        iter += 1
+        if iter % 5000 == 0 {
+            eps *= 2
+        }
     }
     let b1 = b - r
     let b2 = c - r * b1 - s
@@ -328,7 +335,9 @@ public func degree5decompose(b: Double, _ c: Double, _ d: Double, _ e: Double, _
 }
 
 @warn_unused_result
-public func degree6decompose(b: Double, _ c: Double, _ d: Double, _ e: Double, _ f: Double, _ g: Double, eps: Double = 1e-14) -> ((Double, Double), (Double, Double), (Double, Double)) {
+public func degree6decompose(b: Double, _ c: Double, _ d: Double, _ e: Double, _ f: Double, _ g: Double, var eps: Double = 1e-14) -> ((Double, Double), (Double, Double), (Double, Double)) {
+    
+    var iter = 0
     
     var r = c / b
     var s = d / b
@@ -356,6 +365,11 @@ public func degree6decompose(b: Double, _ c: Double, _ d: Double, _ e: Double, _
         
         if dr.almostZero(eps, reference: r) && ds.almostZero(eps, reference: s) {
             break
+        }
+        
+        iter += 1
+        if iter % 5000 == 0 {
+            eps *= 2
         }
     }
     let b1 = b - r
