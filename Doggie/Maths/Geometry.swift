@@ -337,6 +337,42 @@ public func BezierPolynomial(p: Double ... ) -> Polynomial {
 }
 
 @warn_unused_result
+public func BezierDegreeElevation(p: Double ... ) -> [Double] {
+    let n = Double(p.count)
+    var result = [p[0]]
+    for (k, points) in zip(p, p.dropFirst()).enumerate() {
+        let t = Double(k + 1) / n
+        result.append(t * points.0 + (1 - t) * points.1)
+    }
+    result.append(p.last!)
+    return result
+}
+
+@warn_unused_result
+public func BezierDegreeElevation(p: Point ... ) -> [Point] {
+    let n = Double(p.count)
+    var result = [p[0]]
+    for (k, points) in zip(p, p.dropFirst()).enumerate() {
+        let t = Double(k + 1) / n
+        result.append(t * points.0 + (1 - t) * points.1)
+    }
+    result.append(p.last!)
+    return result
+}
+
+@warn_unused_result
+public func BezierDegreeElevation(p: Vector ... ) -> [Vector] {
+    let n = Double(p.count)
+    var result = [p[0]]
+    for (k, points) in zip(p, p.dropFirst()).enumerate() {
+        let t = Double(k + 1) / n
+        result.append(t * points.0 + (1 - t) * points.1)
+    }
+    result.append(p.last!)
+    return result
+}
+
+@warn_unused_result
 public func BezierPolynomial(poly: Polynomial) -> [Double] {
     let de = (0..<poly.degree).scan(poly) { p, _ in p.derivative / Double(p.degree) }
     var result: [Double] = []
