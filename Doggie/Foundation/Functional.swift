@@ -884,7 +884,7 @@ public extension CollectionType where Index : RandomAccessIndexType {
     /// - Complexity: O(1).
     ///
     @warn_unused_result
-    func random() -> Generator.Element? {
+    func randomElement() -> Generator.Element? {
         let _count = UIntMax(self.count.toIntMax())
         switch _count {
         case 0: return nil
@@ -923,7 +923,7 @@ public extension MutableCollectionType where Index : RandomAccessIndexType {
     mutating func shuffleInPlace() {
         let _endIndex = self.endIndex
         for i in self.indices.dropLast() {
-            let j = (i..<_endIndex).random()!
+            let j = (i..<_endIndex).randomElement()!
             if i != j {
                 swap(&self[i], &self[j])
             }

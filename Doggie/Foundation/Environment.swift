@@ -87,7 +87,7 @@ public extension Float64 {
     @warn_unused_result
     static func random(includeOne includeOne: Bool = false) -> Float64 {
         if includeOne {
-            return unsafeBitCast((0..<0x10000000000000).random()! + 0x3FF0000000000000 as UInt64, Float64.self) - 1
+            return unsafeBitCast((0..<0x10000000000000).randomElement()! + 0x3FF0000000000000 as UInt64, Float64.self) - 1
         }
         return unsafeBitCast(UInt64.random() & 0xFFFFFFFFFFFFF | 0x3FF0000000000000, Float64.self) - 1
     }
