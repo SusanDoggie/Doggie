@@ -296,8 +296,8 @@ public func degree5decompose(b: Double, _ c: Double, _ d: Double, _ e: Double, _
     
     var iter = 0
     
-    var r = c / b
-    var s = d / b
+    var r = b.almostZero() ? c : c / b
+    var s = b.almostZero() ? d : d / b
     while true {
         
         let b1 = b - r
@@ -339,8 +339,8 @@ public func degree6decompose(b: Double, _ c: Double, _ d: Double, _ e: Double, _
     
     var iter = 0
     
-    var r = c / b
-    var s = d / b
+    var r = b.almostZero() ? c : c / b
+    var s = b.almostZero() ? d : d / b
     while true {
         
         let b1 = b - r
