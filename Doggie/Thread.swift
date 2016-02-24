@@ -295,9 +295,10 @@ extension SDConditionLock {
             if pthread_cond_timedwait(&_cond, &lck._mtx, &_timespec) != 0 {
                 if predicate() {
                     return true
+                } else {
+                    lck.unlock()
+                    return false
                 }
-                lck.unlock()
-                return false
             }
         }
         return true
