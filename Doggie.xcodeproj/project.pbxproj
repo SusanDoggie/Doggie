@@ -47,7 +47,6 @@
 		0813220F1C11D3600081B2B9 /* Rect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA671C0550B7007FA426 /* Rect.swift */; };
 		081322101C11D3600081B2B9 /* SDTransform.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA681C0550B7007FA426 /* SDTransform.swift */; };
 		081322111C11D3600081B2B9 /* Vector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA691C0550B7007FA426 /* Vector.swift */; };
-		081322121C11D3600081B2B9 /* Memory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA6A1C0550B7007FA426 /* Memory.swift */; };
 		081322131C11D3600081B2B9 /* Regex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA6B1C0550B7007FA426 /* Regex.swift */; };
 		081322141C11D3600081B2B9 /* SDAspects.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA6C1C0550B7007FA426 /* SDAspects.swift */; };
 		081322151C11D3600081B2B9 /* SDAtomic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA6D1C0550B7007FA426 /* SDAtomic.swift */; };
@@ -97,7 +96,6 @@
 		081322431C11D3600081B2B9 /* Rect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA671C0550B7007FA426 /* Rect.swift */; };
 		081322441C11D3600081B2B9 /* SDTransform.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA681C0550B7007FA426 /* SDTransform.swift */; };
 		081322451C11D3600081B2B9 /* Vector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA691C0550B7007FA426 /* Vector.swift */; };
-		081322461C11D3600081B2B9 /* Memory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA6A1C0550B7007FA426 /* Memory.swift */; };
 		081322471C11D3600081B2B9 /* Regex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA6B1C0550B7007FA426 /* Regex.swift */; };
 		081322481C11D3600081B2B9 /* SDAspects.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA6C1C0550B7007FA426 /* SDAspects.swift */; };
 		081322491C11D3600081B2B9 /* SDAtomic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA6D1C0550B7007FA426 /* SDAtomic.swift */; };
@@ -183,8 +181,6 @@
 		0858DB081C0550B7007FA426 /* SDTransform.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA681C0550B7007FA426 /* SDTransform.swift */; };
 		0858DB0B1C0550B7007FA426 /* Vector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA691C0550B7007FA426 /* Vector.swift */; };
 		0858DB0C1C0550B7007FA426 /* Vector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA691C0550B7007FA426 /* Vector.swift */; };
-		0858DB0F1C0550B7007FA426 /* Memory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA6A1C0550B7007FA426 /* Memory.swift */; };
-		0858DB101C0550B7007FA426 /* Memory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA6A1C0550B7007FA426 /* Memory.swift */; };
 		0858DB131C0550B7007FA426 /* Regex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA6B1C0550B7007FA426 /* Regex.swift */; };
 		0858DB141C0550B7007FA426 /* Regex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA6B1C0550B7007FA426 /* Regex.swift */; };
 		0858DB171C0550B7007FA426 /* SDAspects.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA6C1C0550B7007FA426 /* SDAspects.swift */; };
@@ -301,7 +297,6 @@
 		0858DA671C0550B7007FA426 /* Rect.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Rect.swift; sourceTree = "<group>"; };
 		0858DA681C0550B7007FA426 /* SDTransform.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SDTransform.swift; sourceTree = "<group>"; };
 		0858DA691C0550B7007FA426 /* Vector.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Vector.swift; sourceTree = "<group>"; };
-		0858DA6A1C0550B7007FA426 /* Memory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Memory.swift; sourceTree = "<group>"; };
 		0858DA6B1C0550B7007FA426 /* Regex.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Regex.swift; sourceTree = "<group>"; };
 		0858DA6C1C0550B7007FA426 /* SDAspects.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SDAspects.swift; sourceTree = "<group>"; };
 		0858DA6D1C0550B7007FA426 /* SDAtomic.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SDAtomic.swift; sourceTree = "<group>"; };
@@ -378,7 +373,6 @@
 				0858DB451C055172007FA426 /* Fourier.swift */,
 				0858DA5B1C0550B7007FA426 /* Json */,
 				0858DA5E1C0550B7007FA426 /* Maths */,
-				0858DA6A1C0550B7007FA426 /* Memory.swift */,
 				0858DA6B1C0550B7007FA426 /* Regex.swift */,
 				0858DA6C1C0550B7007FA426 /* SDAspects.swift */,
 				0858DA6D1C0550B7007FA426 /* SDAtomic.swift */,
@@ -787,7 +781,6 @@
 				081322221C11D3600081B2B9 /* CircularConvolve.swift in Sources */,
 				0813222E1C11D3600081B2B9 /* HashWrapper.swift in Sources */,
 				081322341C11D3600081B2B9 /* sha256.swift in Sources */,
-				081322461C11D3600081B2B9 /* Memory.swift in Sources */,
 				081322201C11D3600081B2B9 /* AccelerateWrapper.swift in Sources */,
 				081322321C11D3600081B2B9 /* sha1.swift in Sources */,
 				0813222B1C11D3600081B2B9 /* Transpose.swift in Sources */,
@@ -833,7 +826,6 @@
 				0813221D1C11D3600081B2B9 /* Serialization.swift in Sources */,
 				081321ED1C11D3600081B2B9 /* Arithmetic.swift in Sources */,
 				081322101C11D3600081B2B9 /* SDTransform.swift in Sources */,
-				081322121C11D3600081B2B9 /* Memory.swift in Sources */,
 				0ACE1DFD1C570F6A00106D1F /* Environment.swift in Sources */,
 				0813220E1C11D3600081B2B9 /* Random.swift in Sources */,
 				081321FE1C11D3600081B2B9 /* sha1.swift in Sources */,
@@ -930,7 +922,6 @@
 				0858DAD31C0550B7007FA426 /* sha512.swift in Sources */,
 				0ACE1E1C1C5711D300106D1F /* Graph.swift in Sources */,
 				0858DAB71C0550B7007FA426 /* hmac.swift in Sources */,
-				0858DB0F1C0550B7007FA426 /* Memory.swift in Sources */,
 				0858DB071C0550B7007FA426 /* SDTransform.swift in Sources */,
 				0858DAEF1C0550B7007FA426 /* Matrix.swift in Sources */,
 				0ACE1E081C57104300106D1F /* ParallelCollectionType.swift in Sources */,
@@ -957,7 +948,6 @@
 				08BFF9BC1B07161E00EC88CB /* FourierTest.swift in Sources */,
 				0858DA941C0550B7007FA426 /* DiscreteConvolve.swift in Sources */,
 				0858DB241C0550B7007FA426 /* SDGraphic.swift in Sources */,
-				0858DB101C0550B7007FA426 /* Memory.swift in Sources */,
 				0ACE1E1D1C5711D300106D1F /* Graph.swift in Sources */,
 				0858DB491C055172007FA426 /* Fourier.swift in Sources */,
 				0858DB001C0550B7007FA426 /* Random.swift in Sources */,
