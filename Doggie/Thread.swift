@@ -115,7 +115,7 @@ public func unlock(lck: Lockable ... ) {
     _unlock(lck)
 }
 
-public final class SDLockGroup : ArrayLiteralConvertible {
+public class SDLockGroup : ArrayLiteralConvertible {
     
     private let lck: [Lockable]
     
@@ -130,32 +130,23 @@ public final class SDLockGroup : ArrayLiteralConvertible {
 
 extension SDLockGroup : Lockable {
     
-    public func lock() {
+    public final func lock() {
         _lock(self.lck)
     }
     
-    public func unlock() {
+    public final func unlock() {
         _unlock(self.lck)
     }
     
-    public func trylock() -> Bool {
+    public final func trylock() -> Bool {
         return _trylock(self.lck) == self.lck.count
     }
     
 }
 
-extension SDLockGroup: CustomStringConvertible, CustomDebugStringConvertible {
-    public var description: String {
-        return "SDLockGroup"
-    }
-    public var debugDescription: String {
-        return "SDLockGroup"
-    }
-}
-
 // MARK: Lock
 
-public final class SDLock {
+public class SDLock {
     
     private var _mtx = pthread_mutex_t()
     
@@ -174,23 +165,14 @@ public final class SDLock {
 
 extension SDLock : Lockable {
     
-    public func lock() {
+    public final func lock() {
         pthread_mutex_lock(&_mtx)
     }
-    public func unlock() {
+    public final func unlock() {
         pthread_mutex_unlock(&_mtx)
     }
-    public func trylock() -> Bool {
+    public final func trylock() -> Bool {
         return pthread_mutex_trylock(&_mtx) == 0
-    }
-}
-
-extension SDLock: CustomStringConvertible, CustomDebugStringConvertible {
-    public var description: String {
-        return "SDLock"
-    }
-    public var debugDescription: String {
-        return "SDLock"
     }
 }
 
@@ -224,24 +206,14 @@ extension SDSpinLock {
     }
 }
 
-extension SDSpinLock: CustomStringConvertible, CustomDebugStringConvertible {
-    public var description: String {
-        return "SDSpinLock"
-    }
-    public var debugDescription: String {
-        return "SDSpinLock"
-    }
-}
-
 // MARK: Condition Lock
 
-public final class SDConditionLock {
+public class SDConditionLock : SDLock {
     
-    private let lck: SDLock
     private var _cond = pthread_cond_t()
     
-    public init() {
-        lck = SDLock()
+    public override init() {
+        super.init()
         pthread_cond_init(&_cond, nil)
     }
     
@@ -250,53 +222,39 @@ public final class SDConditionLock {
     }
 }
 
-extension SDConditionLock : Lockable {
-    
-    public func lock() {
-        lck.lock()
-    }
-    public func unlock() {
-        pthread_cond_signal(&_cond)
-        lck.unlock()
-    }
-    public func trylock() -> Bool {
-        return lck.trylock()
-    }
-}
-
 extension SDConditionLock {
     
-    public func signal() {
-        lck.synchronized {
+    public final func signal() {
+        super.synchronized {
             pthread_cond_signal(&_cond)
         }
     }
-    public func broadcast() {
-        lck.synchronized {
+    public final func broadcast() {
+        super.synchronized {
             pthread_cond_broadcast(&_cond)
         }
     }
-    public func lock(@autoclosure predicate: () -> Bool) {
-        lck.lock()
+    public final func lock(@autoclosure predicate: () -> Bool) {
+        super.lock()
         while !predicate() {
-            pthread_cond_wait(&_cond, &lck._mtx)
+            pthread_cond_wait(&_cond, &_mtx)
         }
     }
-    public func lock(@autoclosure predicate: () -> Bool, time: Double) -> Bool {
+    public final func lock(@autoclosure predicate: () -> Bool, time: Double) -> Bool {
         return lock(predicate, date: NSDate(timeIntervalSinceNow: time))
     }
-    public func lock(@autoclosure predicate: () -> Bool, date: NSDate) -> Bool {
-        lck.lock()
+    public final func lock(@autoclosure predicate: () -> Bool, date: NSDate) -> Bool {
+        super.lock()
         let _abs_time = date.timeIntervalSince1970
         let sec = __darwin_time_t(_abs_time)
         let nsec = Int((_abs_time - Double(sec)) * 1000000000.0)
         var _timespec = timespec(tv_sec: sec, tv_nsec: nsec)
         while !predicate() {
-            if pthread_cond_timedwait(&_cond, &lck._mtx, &_timespec) != 0 {
+            if pthread_cond_timedwait(&_cond, &_mtx, &_timespec) != 0 {
                 if predicate() {
                     return true
                 } else {
-                    lck.unlock()
+                    super.unlock()
                     return false
                 }
             }
@@ -320,18 +278,9 @@ extension SDConditionLock {
     }
 }
 
-extension SDConditionLock: CustomStringConvertible, CustomDebugStringConvertible {
-    public var description: String {
-        return "SDConditionLock"
-    }
-    public var debugDescription: String {
-        return "SDConditionLock"
-    }
-}
-
 // MARK: Signal
 
-public final class SDSignal {
+public class SDSignal {
     
     private let sem: dispatch_semaphore_t
     
@@ -342,27 +291,18 @@ public final class SDSignal {
 
 extension SDSignal {
     
-    public func wait() {
+    public final func wait() {
         dispatch_semaphore_wait(sem, DISPATCH_TIME_FOREVER)
     }
     
-    public func wait(time: Double) -> Bool {
+    public final func wait(time: Double) -> Bool {
         return dispatch_semaphore_wait(sem, dispatch_time(DISPATCH_TIME_NOW, Int64(time * 1000000000.0))) == 0
     }
-    public func wait(date: NSDate) -> Bool {
+    public final func wait(date: NSDate) -> Bool {
         return dispatch_semaphore_wait(sem, dispatch_time(DISPATCH_TIME_NOW, Int64(date.timeIntervalSinceNow * 1000000000.0))) == 0
     }
-    public func signal() {
+    public final func signal() {
         dispatch_semaphore_signal(sem)
-    }
-}
-
-extension SDSignal: CustomStringConvertible, CustomDebugStringConvertible {
-    public var description: String {
-        return "SDSignal"
-    }
-    public var debugDescription: String {
-        return "SDSignal"
     }
 }
 
@@ -373,7 +313,7 @@ public let DispatchGlobalQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORI
 
 private let SDTaskDefaultDispatchQueue = dispatch_queue_create("com.SusanDoggie.SDTask", DISPATCH_QUEUE_CONCURRENT)
 
-public final class SDTask<Result> {
+public class SDTask<Result> {
     
     private let sem: dispatch_semaphore_t = dispatch_semaphore_create(0)
     private let group: dispatch_group_t = dispatch_group_create()
@@ -421,12 +361,12 @@ extension SDTask {
     }
     
     /// Return `true` iff task is completed.
-    public var completed: Bool {
+    public final var completed: Bool {
         return _result != nil
     }
     
     /// Result of task.
-    public var result: Result {
+    public final var result: Result {
         if self._result == nil {
             dispatch_semaphore_wait(self.sem, DISPATCH_TIME_FOREVER)
             defer { dispatch_semaphore_signal(self.sem) }
@@ -438,12 +378,12 @@ extension SDTask {
 extension SDTask {
     
     /// Run `block` after `self` is completed.
-    public func then<R>(block: (Result) -> R) -> SDTask<R> {
+    public final func then<R>(block: (Result) -> R) -> SDTask<R> {
         return self.then(queue, block)
     }
     
     /// Run `block` after `self` is completed with specific queue.
-    public func then<R>(queue: dispatch_queue_t, _ block: (Result) -> R) -> SDTask<R> {
+    public final func then<R>(queue: dispatch_queue_t, _ block: (Result) -> R) -> SDTask<R> {
         return _lck.synchronized {
             if completed {
                 return SDTask<R>(queue) { block(self.result) }
@@ -455,12 +395,12 @@ extension SDTask {
     }
     
     /// Return `result` if it satisfies `predicate`.
-    public func filter(predicate: (Result) -> Bool) -> SDTask<Result?> {
+    public final func filter(predicate: (Result) -> Bool) -> SDTask<Result?> {
         return self.filter(queue, predicate)
     }
     
     /// Return `result` if it satisfies `predicate` with specific queue.
-    public func filter(queue: dispatch_queue_t, _ predicate: (Result) -> Bool) -> SDTask<Result?> {
+    public final func filter(queue: dispatch_queue_t, _ predicate: (Result) -> Bool) -> SDTask<Result?> {
         return self.then(queue) { predicate($0) ? $0 : nil }
     }
 }
@@ -480,12 +420,12 @@ extension SDTask {
     }
     
     /// Suspend if `result` satisfies `predicate`.
-    public func suspend(predicate: (Result) -> Bool) -> SDTask<Result> {
+    public final func suspend(predicate: (Result) -> Bool) -> SDTask<Result> {
         return self.suspend(queue, predicate)
     }
     
     /// Suspend if `result` satisfies `predicate` with specific queue.
-    public func suspend(queue: dispatch_queue_t, _ predicate: (Result) -> Bool) -> SDTask<Result> {
+    public final func suspend(queue: dispatch_queue_t, _ predicate: (Result) -> Bool) -> SDTask<Result> {
         return _lck.synchronized {
             let task = SDTask<Result>(queue)
             if completed {
