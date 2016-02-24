@@ -54,10 +54,10 @@ public struct SDPath : SDShape, MutableCollectionType, ArrayLiteralConvertible {
     
     public var center : Point {
         get {
-            return frame.center
+            return transform * boundary.center
         }
         set {
-            let offset = newValue - frame.center
+            let offset = newValue - transform * boundary.center
             transform = SDTransform.Translate(x: offset.x, y: offset.y) * transform
         }
     }
