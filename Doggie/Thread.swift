@@ -293,7 +293,11 @@ extension SDConditionLock {
         var _timespec = timespec(tv_sec: sec, tv_nsec: nsec)
         while !predicate() {
             if pthread_cond_timedwait(&_cond, &lck._mtx, &_timespec) != 0 {
-                return predicate()
+                if predicate() {
+                    return true
+                }
+                lck.unlock()
+                return false
             }
         }
         return true
