@@ -61,14 +61,20 @@ public extension Comparable {
     }
 }
 
-public extension IntegerType {
-    
-    @warn_unused_result
-    static func random() -> Self {
-        var _r: Self = 0
-        arc4random_buf(&_r, sizeof(Self))
-        return _r
+public func arc4random_uniform(bound: UIntMax) -> UIntMax {
+    let RANDMAX: UIntMax = ~0
+    var _rand: UIntMax = 0
+    arc4random_buf(&_rand, sizeof(UIntMax))
+    if bound.isPower2 {
+        _rand &= bound &- 1
+    } else {
+        let limit = RANDMAX - RANDMAX % bound
+        while _rand >= limit {
+            arc4random_buf(&_rand, sizeof(UIntMax))
+        }
+        _rand %= bound
     }
+    return _rand
 }
 
 public extension Float32 {
@@ -76,9 +82,9 @@ public extension Float32 {
     @warn_unused_result
     static func random(includeOne includeOne: Bool = false) -> Float32 {
         if includeOne {
-            return unsafeBitCast(arc4random_uniform(0x800000) + 0x3F800000, Float32.self) - 1
+            return unsafeBitCast(arc4random_uniform(0x800000) + 0x3F800000 as UInt32, Float32.self) - 1
         }
-        return unsafeBitCast(arc4random_uniform(0x7FFFFF) | 0x3F800000, Float32.self) - 1
+        return unsafeBitCast(arc4random_uniform(0x7FFFFF) | 0x3F800000 as UInt32, Float32.self) - 1
     }
 }
 
@@ -89,7 +95,7 @@ public extension Float64 {
         if includeOne {
             return unsafeBitCast((0..<0x10000000000000).randomElement()! + 0x3FF0000000000000 as UInt64, Float64.self) - 1
         }
-        return unsafeBitCast(UInt64.random() & 0xFFFFFFFFFFFFF | 0x3FF0000000000000, Float64.self) - 1
+        return unsafeBitCast((0..<0xFFFFFFFFFFFFF).randomElement()! | 0x3FF0000000000000, Float64.self) - 1
     }
 }
 

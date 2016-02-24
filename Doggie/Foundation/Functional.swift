@@ -889,19 +889,7 @@ public extension CollectionType where Index : RandomAccessIndexType {
         switch _count {
         case 0: return nil
         case 1: return self[self.startIndex]
-        default:
-            var _rand = UIntMax.random()
-            if _count.isPower2 {
-                _rand &= _count &- 1
-            } else {
-                let RANDMAX: UIntMax = ~0
-                let limit = RANDMAX - RANDMAX % _count
-                while _rand >= limit {
-                    _rand = UIntMax.random()
-                }
-                _rand %= _count
-            }
-            return self[self.startIndex.advancedBy(numericCast(_rand))]
+        default: return self[self.startIndex.advancedBy(numericCast(arc4random_uniform(_count)))]
         }
     }
 }
