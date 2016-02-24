@@ -308,6 +308,16 @@ extension SDConditionLock {
         defer { self.unlock() }
         return block()
     }
+    public func synchronized<R>(time: Double, @autoclosure predicate: () -> Bool, @noescape block: () -> R) -> R? {
+        return synchronized(NSDate(timeIntervalSinceNow: time), predicate: predicate, block: block)
+    }
+    public func synchronized<R>(date: NSDate, @autoclosure predicate: () -> Bool, @noescape block: () -> R) -> R? {
+        if self.lock(date, predicate: predicate) {
+            defer { self.unlock() }
+            return block()
+        }
+        return nil
+    }
 }
 
 extension SDConditionLock: CustomStringConvertible, CustomDebugStringConvertible {
