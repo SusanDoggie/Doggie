@@ -282,10 +282,10 @@ extension SDConditionLock {
             pthread_cond_wait(&_cond, &lck._mtx)
         }
     }
-    public func lock(time: Double, @autoclosure predicate: () -> Bool) -> Bool {
-        return lock(NSDate(timeIntervalSinceNow: time), predicate: predicate)
+    public func lock(@autoclosure predicate: () -> Bool, time: Double) -> Bool {
+        return lock(predicate, date: NSDate(timeIntervalSinceNow: time))
     }
-    public func lock(date: NSDate, @autoclosure predicate: () -> Bool) -> Bool {
+    public func lock(@autoclosure predicate: () -> Bool, date: NSDate) -> Bool {
         lck.lock()
         let _abs_time = date.timeIntervalSince1970
         let sec = __darwin_time_t(_abs_time)
@@ -308,11 +308,11 @@ extension SDConditionLock {
         defer { self.unlock() }
         return block()
     }
-    public func synchronized<R>(time: Double, @autoclosure predicate: () -> Bool, @noescape block: () -> R) -> R? {
-        return synchronized(NSDate(timeIntervalSinceNow: time), predicate: predicate, block: block)
+    public func synchronized<R>(@autoclosure predicate: () -> Bool, time: Double, @noescape block: () -> R) -> R? {
+        return synchronized(predicate, date: NSDate(timeIntervalSinceNow: time), block: block)
     }
-    public func synchronized<R>(date: NSDate, @autoclosure predicate: () -> Bool, @noescape block: () -> R) -> R? {
-        if self.lock(date, predicate: predicate) {
+    public func synchronized<R>(@autoclosure predicate: () -> Bool, date: NSDate, @noescape block: () -> R) -> R? {
+        if self.lock(predicate, date: date) {
             defer { self.unlock() }
             return block()
         }
