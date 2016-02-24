@@ -53,8 +53,7 @@ public class SDFile {
     
     private let path: String
     private let fd: Int32
-    private let lck = SDLock()
-    private let cond = SDCondition()
+    private let cond = SDConditionLock()
     
     private var lock_table: [HalfOpenInterval<Int64>] = []
     
@@ -250,36 +249,33 @@ extension SDFile.View : Lockable {
             }
             return false
         }
-        parent.lck.lock()
         while true {
-            if parent.cond.wait_for(parent.lck, time: 0.0005, predicate: __trylock()) {
+            if parent.cond.wait(0.0005, predicate: __trylock()) {
                 parent.lock_table.append(lockRange)
-                parent.lck.unlock()
+                parent.cond.unlock()
                 return
             }
         }
     }
     
     public func unlock() {
-        parent.lck.lock()
         lseek(parent.fd, lck_offset, SEEK_SET)
         lockf(parent.fd, F_ULOCK, lck_length)
         parent.lock_table.removeAtIndex(parent.lock_table.indexOf(lockRange)!)
         parent.cond.signal()
-        parent.lck.unlock()
     }
     
     public func trylock() -> Bool {
-        if parent.lck.trylock() {
+        if parent.cond.trylock() {
             if !parent.lock_table.contains({ $0.overlaps(lockRange) }) {
                 lseek(parent.fd, lck_offset, SEEK_SET)
                 if lockf(parent.fd, F_TLOCK, lck_length) == 0 {
                     parent.lock_table.append(lockRange)
-                    parent.lck.unlock()
+                    parent.cond.unlock()
                     return true
                 }
             }
-            parent.lck.unlock()
+            parent.cond.unlock()
         }
         return false
     }

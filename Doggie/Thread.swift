@@ -233,73 +233,20 @@ extension SDSpinLock: CustomStringConvertible, CustomDebugStringConvertible {
     }
 }
 
-// MARK: Condition Variable
-
-public final class SDCondition {
-    
-    private var _cond = pthread_cond_t()
-    
-    public init() {
-        pthread_cond_init(&_cond, nil)
-    }
-    
-    deinit {
-        pthread_cond_destroy(&_cond)
-    }
-}
-
-extension SDCondition {
-    
-    public func wait(lck: SDLock, @autoclosure predicate: () -> Bool) {
-        while !predicate() {
-            pthread_cond_wait(&_cond, &lck._mtx)
-        }
-    }
-    public func wait_for(lck: SDLock, time: NSTimeInterval, @autoclosure predicate: () -> Bool) -> Bool {
-        if time == 0 {
-            return predicate()
-        }
-        return wait_until(lck, date: NSDate(timeIntervalSinceNow: time), predicate: predicate)
-    }
-    public func wait_until(lck: SDLock, date: NSDate, @autoclosure predicate: () -> Bool) -> Bool {
-        let _abs_time = date.timeIntervalSince1970
-        let sec = __darwin_time_t(_abs_time)
-        let nsec = Int((_abs_time - Double(sec)) * 1000000000.0)
-        var _timespec = timespec(tv_sec: sec, tv_nsec: nsec)
-        while !predicate() {
-            if pthread_cond_timedwait(&_cond, &lck._mtx, &_timespec) != 0 {
-                return predicate()
-            }
-        }
-        return true
-    }
-    public func signal() {
-        pthread_cond_signal(&_cond)
-    }
-    public func broadcast() {
-        pthread_cond_broadcast(&_cond)
-    }
-}
-
-extension SDCondition: CustomStringConvertible, CustomDebugStringConvertible {
-    public var description: String {
-        return "SDCondition"
-    }
-    public var debugDescription: String {
-        return "SDCondition"
-    }
-}
-
 // MARK: Condition Lock
 
 public final class SDConditionLock {
     
     private let lck: SDLock
-    private let cv: SDCondition
+    private var _cond = pthread_cond_t()
     
     public init() {
         lck = SDLock()
-        cv = SDCondition()
+        pthread_cond_init(&_cond, nil)
+    }
+    
+    deinit {
+        pthread_cond_destroy(&_cond)
     }
 }
 
@@ -309,7 +256,7 @@ extension SDConditionLock : Lockable {
         lck.lock()
     }
     public func unlock() {
-        cv.signal()
+        pthread_cond_signal(&_cond)
         lck.unlock()
     }
     public func trylock() -> Bool {
@@ -321,30 +268,38 @@ extension SDConditionLock {
     
     public func signal() {
         lck.synchronized {
-            cv.signal()
+            pthread_cond_signal(&_cond)
         }
     }
     public func broadcast() {
         lck.synchronized {
-            cv.broadcast()
+            pthread_cond_broadcast(&_cond)
         }
     }
-    public func lock(@autoclosure predicate: () -> Bool) {
+    public func wait(@autoclosure predicate: () -> Bool) {
         lck.lock()
-        cv.wait(lck, predicate: predicate)
-    }
-    public func trylock(@autoclosure predicate: () -> Bool) -> Bool {
-        if lck.trylock() {
-            if predicate() {
-                return true
-            }
-            lck.unlock()
+        while !predicate() {
+            pthread_cond_wait(&_cond, &lck._mtx)
         }
-        return false
     }
-    
+    public func wait(time: Double, @autoclosure predicate: () -> Bool) -> Bool {
+        return wait(NSDate(timeIntervalSinceNow: time), predicate: predicate)
+    }
+    public func wait(date: NSDate, @autoclosure predicate: () -> Bool) -> Bool {
+        lck.lock()
+        let _abs_time = date.timeIntervalSince1970
+        let sec = __darwin_time_t(_abs_time)
+        let nsec = Int((_abs_time - Double(sec)) * 1000000000.0)
+        var _timespec = timespec(tv_sec: sec, tv_nsec: nsec)
+        while !predicate() {
+            if pthread_cond_timedwait(&_cond, &lck._mtx, &_timespec) != 0 {
+                return predicate()
+            }
+        }
+        return true
+    }
     public func synchronized<R>(@autoclosure predicate: () -> Bool, @noescape block: () -> R) -> R {
-        self.lock(predicate)
+        self.wait(predicate)
         defer { self.unlock() }
         return block()
     }
@@ -376,10 +331,10 @@ extension SDSignal {
         dispatch_semaphore_wait(sem, DISPATCH_TIME_FOREVER)
     }
     
-    public func wait_for(time: NSTimeInterval) -> Bool {
+    public func wait(time: Double) -> Bool {
         return dispatch_semaphore_wait(sem, dispatch_time(DISPATCH_TIME_NOW, Int64(time * 1000000000.0))) == 0
     }
-    public func wait_until(date: NSDate) -> Bool {
+    public func wait(date: NSDate) -> Bool {
         return dispatch_semaphore_wait(sem, dispatch_time(DISPATCH_TIME_NOW, Int64(date.timeIntervalSinceNow * 1000000000.0))) == 0
     }
     public func signal() {
