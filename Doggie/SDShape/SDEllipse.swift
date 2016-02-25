@@ -148,6 +148,9 @@ public struct SDEllipse : SDShape {
             SDPath.CubicBezier(point[10], point[11], point[12]),
             SDPath.ClosePath()
         ]
+        path.rotate = self.rotate
+        path.xScale = self.xScale
+        path.yScale = self.yScale
         path.transform = self.transform
         return path
     }

@@ -37,5 +37,4 @@ public protocol SDShape {
     var rotate: Double { get set }
     var xScale: Double { get set }
     var yScale: Double { get set }
-    
 }
