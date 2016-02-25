@@ -429,7 +429,7 @@ extension SDPath.CubicBezier {
 extension SDPath {
     
     public var identity : SDPath {
-        if self.transform == SDTransform.Identity() {
+        if rotate == 0 && xScale == 1 && yScale == 1 && self.transform == SDTransform.Identity() {
             return self
         }
         var _path = SDPath()
