@@ -434,6 +434,7 @@ extension SDPath {
         }
         var _path = SDPath()
         _path.reserveCapacity(self.commands.count)
+        let transform = self.transform
         for command in self.commands {
             switch command {
             case let move as SDPath.Move: _path.append(SDPath.Move(transform * move.point))
