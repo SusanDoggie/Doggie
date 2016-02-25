@@ -237,6 +237,7 @@ public struct SDPath : SDShape, MutableCollectionType, ArrayLiteralConvertible {
     
     public var frame : Rect {
         var bound: Rect? = nil
+        let transform = self.transform
         self.apply { commands, state in
             switch commands {
             case let line as SDPath.Line:
@@ -276,7 +277,6 @@ extension SDPath {
     public init(_ rect: Rect) {
         let points = rect.points
         commands = [Move(points[0]), Line(points[1]), Line(points[2]), Line(points[3]), ClosePath()]
-        transform = SDTransform(SDTransform.Identity())
     }
     
     public init<S: SDShape>(_ shape: S) {
