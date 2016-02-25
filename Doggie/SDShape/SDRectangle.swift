@@ -27,7 +27,19 @@ import Foundation
 
 public struct SDRectangle : SDShape {
     
-    public var transform : SDTransform
+    private var _transform : SDTransform = SDTransform(SDTransform.Identity())
+    public var rotate: Double = 0
+    public var xScale: Double = 1
+    public var yScale: Double = 1
+    
+    public var transform : SDTransform {
+        get {
+            return SDTransform.Rotate(rotate) * SDTransform.Scale(x: xScale, y: yScale) * _transform
+        }
+        set {
+            _transform = SDTransform.Scale(x: xScale, y: yScale).inverse * SDTransform.Rotate(rotate).inverse * newValue
+        }
+    }
     
     public var boundary : Rect {
         return rect
@@ -44,12 +56,10 @@ public struct SDRectangle : SDShape {
     private var rect : Rect
     
     public init(x: Double, y: Double, width: Double, height: Double) {
-        transform = SDTransform(SDTransform.Identity())
         rect = Rect(x: x, y: y, width: width, height: height)
     }
     
     public init(_ rect : Rect) {
-        transform = SDTransform(SDTransform.Identity())
         self.rect = rect
     }
     

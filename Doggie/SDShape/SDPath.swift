@@ -35,21 +35,30 @@ public struct SDPath : SDShape, MutableCollectionType, ArrayLiteralConvertible {
     
     private var commands: [SDPathCommand]
     
-    public var transform : SDTransform
+    private var _transform : SDTransform = SDTransform(SDTransform.Identity())
+    public var rotate: Double = 0
+    public var xScale: Double = 1
+    public var yScale: Double = 1
+    
+    public var transform : SDTransform {
+        get {
+            return SDTransform.Rotate(rotate) * SDTransform.Scale(x: xScale, y: yScale) * _transform
+        }
+        set {
+            _transform = SDTransform.Scale(x: xScale, y: yScale).inverse * SDTransform.Rotate(rotate).inverse * newValue
+        }
+    }
     
     public init() {
         self.commands = []
-        self.transform = SDTransform(SDTransform.Identity())
     }
     
     public init(arrayLiteral elements: SDPathCommand ...) {
         self.commands = elements
-        self.transform = SDTransform(SDTransform.Identity())
     }
     
     public init<S : SequenceType where S.Generator.Element == SDPathCommand>(_ commands: S) {
         self.commands = commands.array
-        self.transform = SDTransform(SDTransform.Identity())
     }
     
     public var center : Point {
@@ -57,8 +66,8 @@ public struct SDPath : SDShape, MutableCollectionType, ArrayLiteralConvertible {
             return transform * boundary.center
         }
         set {
-            let offset = newValue - transform * boundary.center
-            transform = SDTransform.Translate(x: offset.x, y: offset.y) * transform
+            let offset = SDTransform.Scale(x: xScale, y: yScale).inverse * SDTransform.Rotate(rotate).inverse * newValue - _transform * boundary.center
+            _transform = SDTransform.Translate(x: offset.x, y: offset.y) * _transform
         }
     }
     

@@ -30,7 +30,12 @@ public protocol SDShape {
     var boundary : Rect { get }
     var frame : Rect { get }
     var transform : SDTransform { get set }
-    var center : Point { get set }
     
     var path: SDPath { get }
+    
+    var center : Point { get set }
+    var rotate: Double { get set }
+    var xScale: Double { get set }
+    var yScale: Double { get set }
+    
 }

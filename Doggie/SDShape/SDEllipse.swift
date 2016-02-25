@@ -27,7 +27,19 @@ import Foundation
 
 public struct SDEllipse : SDShape {
     
-    public var transform : SDTransform
+    private var _transform : SDTransform = SDTransform(SDTransform.Identity())
+    public var rotate: Double = 0
+    public var xScale: Double = 1
+    public var yScale: Double = 1
+    
+    public var transform : SDTransform {
+        get {
+            return SDTransform.Rotate(rotate) * SDTransform.Scale(x: xScale, y: yScale) * _transform
+        }
+        set {
+            _transform = SDTransform.Scale(x: xScale, y: yScale).inverse * SDTransform.Rotate(rotate).inverse * newValue
+        }
+    }
     
     public var x: Double
     public var y: Double
@@ -63,7 +75,6 @@ public struct SDEllipse : SDShape {
     }
     
     public init(center: Point, radius: Double) {
-        transform = SDTransform(SDTransform.Identity())
         self.x = center.x
         self.y = center.y
         self.rx = radius
@@ -71,7 +82,6 @@ public struct SDEllipse : SDShape {
     }
     
     public init(x: Double, y: Double, radius: Double) {
-        transform = SDTransform(SDTransform.Identity())
         self.x = x
         self.y = y
         self.rx = radius
@@ -79,7 +89,6 @@ public struct SDEllipse : SDShape {
     }
     
     public init(center: Point, radius: Radius) {
-        transform = SDTransform(SDTransform.Identity())
         self.x = center.x
         self.y = center.y
         self.rx = radius.x
@@ -87,7 +96,6 @@ public struct SDEllipse : SDShape {
     }
     
     public init(x: Double, y: Double, rx: Double, ry: Double) {
-        transform = SDTransform(SDTransform.Identity())
         self.x = x
         self.y = y
         self.rx = rx
@@ -95,7 +103,6 @@ public struct SDEllipse : SDShape {
     }
     
     public init(inRect: Rect) {
-        transform = SDTransform(SDTransform.Identity())
         let center = inRect.center
         self.x = center.x
         self.y = center.y
