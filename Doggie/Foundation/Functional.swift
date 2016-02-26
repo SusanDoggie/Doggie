@@ -590,16 +590,6 @@ public extension LazyCollectionType {
     }
 }
 
-public struct LazyStrideSequence<C: CollectionType where C.Index : Strideable> : LazySequenceType {
-    
-    private let base: C
-    private let stride: C.Index.Stride
-    
-    public func generate() -> LazyStrideGenerator<C> {
-        return LazyStrideGenerator(base: base, stride: stride)
-    }
-}
-
 public struct LazyStrideGenerator<C: CollectionType where C.Index : Strideable> : GeneratorType {
     
     private let base: C
@@ -624,6 +614,63 @@ public struct LazyStrideGenerator<C: CollectionType where C.Index : Strideable> 
     }
 }
 
+public struct LazyStrideCollection<C: CollectionType where C.Index : Strideable> : LazyCollectionType {
+    
+    private let base: C
+    private let stride: C.Index.Stride
+    
+    public var startIndex : LazyStrideCollectionIndex<C> {
+        return LazyStrideCollectionIndex(base: base, stride: stride)
+    }
+    public var endIndex : LazyStrideCollectionIndex<C> {
+        let startIndex = base.startIndex
+        let endIndex = base.endIndex
+        let left = startIndex.stride(to: endIndex, by: stride)
+        let right = startIndex.advancedBy(stride).stride(to: endIndex, by: stride)
+        return LazyStrideCollectionIndex(bound: nil, mapper: zip(left, right.concat(CollectionOfOne(endIndex))).generate())
+    }
+    public subscript(index: LazyStrideCollectionIndex<C>) -> C.SubSequence {
+        return base[index.bound!.0..<index.bound!.1]
+    }
+    
+    public func generate() -> LazyStrideGenerator<C> {
+        return LazyStrideGenerator(base: base, stride: stride)
+    }
+}
+
+public struct LazyStrideCollectionIndex<C: CollectionType where C.Index : Strideable> : ForwardIndexType {
+    
+    private let bound: (C.Index, C.Index)?
+    private let mapper: Zip2Generator<StrideToGenerator<C.Index>, ConcatGenerator<StrideToGenerator<C.Index>, GeneratorOfOne<C.Index>>>
+    
+    private init(bound: (C.Index, C.Index)?, mapper: Zip2Generator<StrideToGenerator<C.Index>, ConcatGenerator<StrideToGenerator<C.Index>, GeneratorOfOne<C.Index>>>) {
+        self.bound = bound
+        self.mapper = mapper
+    }
+    
+    private init(base: C, stride: C.Index.Stride) {
+        let startIndex = base.startIndex
+        let endIndex = base.endIndex
+        let left = startIndex.stride(to: endIndex, by: stride)
+        let right = startIndex.advancedBy(stride).stride(to: endIndex, by: stride)
+        var _mapper = zip(left, right.concat(CollectionOfOne(endIndex))).generate()
+        self.bound = _mapper.next()
+        self.mapper = _mapper
+    }
+    
+    public func successor() -> LazyStrideCollectionIndex {
+        var mapper = self.mapper
+        if self.bound != nil, let bound = mapper.next() {
+            return LazyStrideCollectionIndex(bound: bound, mapper: mapper)
+        }
+        return LazyStrideCollectionIndex(bound: nil, mapper: mapper)
+    }
+}
+
+public func == <C>(lhs: LazyStrideCollectionIndex<C>, rhs: LazyStrideCollectionIndex<C>) -> Bool {
+    return lhs.bound?.0 == rhs.bound?.0 && lhs.bound?.1 == rhs.bound?.1
+}
+
 public extension CollectionType where Index : Strideable {
     
     @warn_unused_result
@@ -635,8 +682,8 @@ public extension CollectionType where Index : Strideable {
 public extension LazyCollectionType where Elements.Index : Strideable {
     
     @warn_unused_result
-    public func stride(by maxLength: Elements.Index.Stride) -> LazyStrideSequence<Elements> {
-        return LazyStrideSequence(base: self.elements, stride: maxLength)
+    public func stride(by maxLength: Elements.Index.Stride) -> LazyStrideCollection<Elements> {
+        return LazyStrideCollection(base: self.elements, stride: maxLength)
     }
 }
 
