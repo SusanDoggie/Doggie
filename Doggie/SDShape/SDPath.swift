@@ -35,17 +35,17 @@ public struct SDPath : SDShape, MutableCollectionType, ArrayLiteralConvertible {
     
     private var commands: [SDPathCommand]
     
-    private var _transform : SDTransform = SDTransform(SDTransform.Identity())
+    public var baseTransform : SDTransform = SDTransform(SDTransform.Identity())
     public var rotate: Double = 0
     public var xScale: Double = 1
     public var yScale: Double = 1
     
     public var transform : SDTransform {
         get {
-            return SDTransform.Rotate(rotate) * SDTransform.Scale(x: xScale, y: yScale) * _transform
+            return SDTransform.Rotate(rotate) * SDTransform.Scale(x: xScale, y: yScale) * baseTransform
         }
         set {
-            _transform = SDTransform.Scale(x: xScale, y: yScale).inverse * SDTransform.Rotate(rotate).inverse * newValue
+            baseTransform = SDTransform.Scale(x: xScale, y: yScale).inverse * SDTransform.Rotate(rotate).inverse * newValue
         }
     }
     
@@ -66,8 +66,8 @@ public struct SDPath : SDShape, MutableCollectionType, ArrayLiteralConvertible {
             return transform * boundary.center
         }
         set {
-            let offset = SDTransform.Scale(x: xScale, y: yScale).inverse * SDTransform.Rotate(rotate).inverse * newValue - _transform * boundary.center
-            _transform = SDTransform.Translate(x: offset.x, y: offset.y) * _transform
+            let offset = SDTransform.Scale(x: xScale, y: yScale).inverse * SDTransform.Rotate(rotate).inverse * newValue - baseTransform * boundary.center
+            baseTransform = SDTransform.Translate(x: offset.x, y: offset.y) * baseTransform
         }
     }
     
@@ -429,7 +429,7 @@ extension SDPath.CubicBezier {
 extension SDPath {
     
     public var identity : SDPath {
-        if rotate == 0 && xScale == 1 && yScale == 1 && _transform == SDTransform.Identity() {
+        if rotate == 0 && xScale == 1 && yScale == 1 && baseTransform == SDTransform.Identity() {
             return self
         }
         let transform = self.transform

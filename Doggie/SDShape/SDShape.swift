@@ -29,6 +29,7 @@ public protocol SDShape {
     
     var boundary : Rect { get }
     var frame : Rect { get }
+    var baseTransform : SDTransform { get set }
     var transform : SDTransform { get set }
     
     var path: SDPath { get }

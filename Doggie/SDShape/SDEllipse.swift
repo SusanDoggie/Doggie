@@ -27,17 +27,17 @@ import Foundation
 
 public struct SDEllipse : SDShape {
     
-    private var _transform : SDTransform = SDTransform(SDTransform.Identity())
+    public var baseTransform : SDTransform = SDTransform(SDTransform.Identity())
     public var rotate: Double = 0
     public var xScale: Double = 1
     public var yScale: Double = 1
     
     public var transform : SDTransform {
         get {
-            return SDTransform.Rotate(rotate) * SDTransform.Scale(x: xScale, y: yScale) * _transform
+            return SDTransform.Rotate(rotate) * SDTransform.Scale(x: xScale, y: yScale) * baseTransform
         }
         set {
-            _transform = SDTransform.Scale(x: xScale, y: yScale).inverse * SDTransform.Rotate(rotate).inverse * newValue
+            baseTransform = SDTransform.Scale(x: xScale, y: yScale).inverse * SDTransform.Rotate(rotate).inverse * newValue
         }
     }
     
