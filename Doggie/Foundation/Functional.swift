@@ -511,21 +511,24 @@ extension LazyCollectionType where Elements.Index : BidirectionalIndexType {
 
 extension LazySequenceType {
     
-    func append(newElement: Elements.Generator.Element) -> LazySequence<ConcatSequence<Elements, CollectionOfOne<Elements.Generator.Element>>> {
+    @warn_unused_result
+    public func append(newElement: Elements.Generator.Element) -> LazySequence<ConcatSequence<Elements, CollectionOfOne<Elements.Generator.Element>>> {
         return self.concat(CollectionOfOne(newElement))
     }
 }
 
 extension LazyCollectionType {
     
-    func append(newElement: Elements.Generator.Element) -> LazyCollection<ConcatCollection<Elements, CollectionOfOne<Elements.Generator.Element>>> {
+    @warn_unused_result
+    public func append(newElement: Elements.Generator.Element) -> LazyCollection<ConcatCollection<Elements, CollectionOfOne<Elements.Generator.Element>>> {
         return self.concat(CollectionOfOne(newElement))
     }
 }
 
 extension LazyCollectionType where Elements.Index : BidirectionalIndexType {
     
-    func append(newElement: Elements.Generator.Element) -> LazyCollection<ConcatBidirectionalCollection<Elements, CollectionOfOne<Elements.Generator.Element>>> {
+    @warn_unused_result
+    public func append(newElement: Elements.Generator.Element) -> LazyCollection<ConcatBidirectionalCollection<Elements, CollectionOfOne<Elements.Generator.Element>>> {
         return self.concat(CollectionOfOne(newElement))
     }
 }
@@ -674,7 +677,7 @@ public func == <C>(lhs: LazyStrideCollectionIndex<C>, rhs: LazyStrideCollectionI
 public extension CollectionType where Index : Strideable {
     
     @warn_unused_result
-    public func stride(by maxLength: Index.Stride) -> [SubSequence] {
+    func stride(by maxLength: Index.Stride) -> [SubSequence] {
         return Array(self.lazy.stride(by: maxLength))
     }
 }
@@ -682,7 +685,7 @@ public extension CollectionType where Index : Strideable {
 public extension LazyCollectionType where Elements.Index : Strideable {
     
     @warn_unused_result
-    public func stride(by maxLength: Elements.Index.Stride) -> LazyStrideCollection<Elements> {
+    func stride(by maxLength: Elements.Index.Stride) -> LazyStrideCollection<Elements> {
         return LazyStrideCollection(base: self.elements, stride: maxLength)
     }
 }
