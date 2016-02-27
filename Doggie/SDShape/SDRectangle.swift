@@ -28,10 +28,22 @@ import Foundation
 public struct SDRectangle : SDShape {
     
     public var baseTransform : SDTransform = SDTransform(SDTransform.Identity())
-    public var rotate: Double = 0
-    public var xScale: Double = 1
-    public var yScale: Double = 1
     
+    public var rotate: Double = 0 {
+        didSet {
+            center = SDTransform.Rotate(oldValue) * SDTransform.Scale(x: xScale, y: yScale) * baseTransform * rect.center
+        }
+    }
+    public var xScale: Double = 1 {
+        didSet {
+            center = SDTransform.Rotate(rotate) * SDTransform.Scale(x: oldValue, y: yScale) * baseTransform * rect.center
+        }
+    }
+    public var yScale: Double = 1 {
+        didSet {
+            center = SDTransform.Rotate(rotate) * SDTransform.Scale(x: xScale, y: oldValue) * baseTransform * rect.center
+        }
+    }
     public var transform : SDTransform {
         get {
             return SDTransform.Rotate(rotate) * SDTransform.Scale(x: xScale, y: yScale) * baseTransform
