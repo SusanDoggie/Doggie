@@ -33,6 +33,12 @@ public struct SDPath : SDShape, MutableCollectionType, ArrayLiteralConvertible {
     
     public typealias Generator = IndexingGenerator<SDPath>
     
+    private class BoundaryCache {
+        
+        var boundary: Rect? = nil
+    }
+    
+    private var cache = BoundaryCache()
     private var commands: [SDPathCommand]
     
     public var baseTransform : SDTransform = SDTransform(SDTransform.Identity())
@@ -88,6 +94,7 @@ public struct SDPath : SDShape, MutableCollectionType, ArrayLiteralConvertible {
             return commands[index]
         }
         set {
+            cache = BoundaryCache()
             commands[index] = newValue
         }
     }
@@ -217,34 +224,37 @@ public struct SDPath : SDShape, MutableCollectionType, ArrayLiteralConvertible {
     }
     
     public var boundary : Rect {
-        var bound: Rect? = nil
-        self.apply { commands, state in
-            switch commands {
-            case let line as SDPath.Line:
-                if bound == nil {
-                    bound = line.bound(state.last)
-                } else {
-                    bound = bound!.union(line.bound(state.last))
+        if cache.boundary == nil {
+            var bound: Rect? = nil
+            self.apply { commands, state in
+                switch commands {
+                case let line as SDPath.Line:
+                    if bound == nil {
+                        bound = line.bound(state.last)
+                    } else {
+                        bound = bound!.union(line.bound(state.last))
+                    }
+                    
+                case let quad as SDPath.QuadBezier:
+                    if bound == nil {
+                        bound = quad.bound(state.last)
+                    } else {
+                        bound = bound!.union(quad.bound(state.last))
+                    }
+                    
+                case let cubic as SDPath.CubicBezier:
+                    if bound == nil {
+                        bound = cubic.bound(state.last)
+                    } else {
+                        bound = bound!.union(cubic.bound(state.last))
+                    }
+                    
+                default: break
                 }
-                
-            case let quad as SDPath.QuadBezier:
-                if bound == nil {
-                    bound = quad.bound(state.last)
-                } else {
-                    bound = bound!.union(quad.bound(state.last))
-                }
-                
-            case let cubic as SDPath.CubicBezier:
-                if bound == nil {
-                    bound = cubic.bound(state.last)
-                } else {
-                    bound = bound!.union(cubic.bound(state.last))
-                }
-                
-            default: break
             }
+            cache.boundary = bound ?? Rect()
         }
-        return bound ?? Rect()
+        return cache.boundary!
     }
     
     public var frame : Rect {
@@ -299,18 +309,22 @@ extension SDPath {
 extension SDPath : RangeReplaceableCollectionType {
     
     public mutating func append(x: SDPathCommand) {
+        cache = BoundaryCache()
         commands.append(x)
     }
     
     public mutating func appendContentsOf<S : SequenceType where S.Generator.Element == SDPathCommand>(newElements: S) {
+        cache = BoundaryCache()
         commands.appendContentsOf(newElements)
     }
     
     public mutating func removeLast() -> SDPathCommand {
+        cache = BoundaryCache()
         return commands.removeLast()
     }
     
     public mutating func popLast() -> SDPathCommand? {
+        cache = BoundaryCache()
         return commands.popLast()
     }
     
@@ -319,26 +333,32 @@ extension SDPath : RangeReplaceableCollectionType {
     }
     
     public mutating func removeAll(keepCapacity keepCapacity: Bool = false) {
+        cache = BoundaryCache()
         commands.removeAll(keepCapacity: keepCapacity)
     }
     
     public mutating func replaceRange<C : CollectionType where C.Generator.Element == SDPathCommand>(subRange: Range<Int>, with newElements: C) {
+        cache = BoundaryCache()
         commands.replaceRange(subRange, with: newElements)
     }
     
     public mutating func insert(newElement: SDPathCommand, atIndex i: Int) {
+        cache = BoundaryCache()
         commands.insert(newElement, atIndex: i)
     }
     
     public mutating func insertContentsOf<S : CollectionType where S.Generator.Element == SDPathCommand>(newElements: S, at i: Int) {
+        cache = BoundaryCache()
         commands.insertContentsOf(newElements, at: i)
     }
     
     public mutating func removeAtIndex(i: Int) -> SDPathCommand {
+        cache = BoundaryCache()
         return commands.removeAtIndex(i)
     }
     
     public mutating func removeRange(subRange: Range<Int>) {
+        cache = BoundaryCache()
         commands.removeRange(subRange)
     }
 }
