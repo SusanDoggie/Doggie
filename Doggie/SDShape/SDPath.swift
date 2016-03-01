@@ -282,7 +282,8 @@ public struct SDPath : SDShape, MutableCollectionType, ArrayLiteralConvertible {
     }
     
     public var frame : [Point] {
-        return _frame.points.map { self.transform * $0 }
+        let _transform = self.transform
+        return _frame.points.map { _transform * $0 }
     }
     
     public var path: SDPath {
