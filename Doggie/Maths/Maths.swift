@@ -137,17 +137,17 @@ public func combination<T: UnsignedIntegerType>(n: T, _ k: T) -> T {
 }
 
 @warn_unused_result
-public func FactorialList<T: UnsignedIntegerType>(n: T) -> LazyScanSequence<Range<T>, T> {
+public func FactorialList<T: UnsignedIntegerType>(n: T) -> LazyScanSequence<Slice<Range<T>>, T> {
     
-    return (0..<n).lazy.scan(1) { $0 * $1 + $0 }
+    return (0...n).dropFirst().lazy.scan(1) { $0 * $1 }
 }
 @warn_unused_result
-public func PermutationList<T: UnsignedIntegerType>(n: T) -> LazyScanSequence<ReverseRandomAccessCollection<Range<T>>, T> {
+public func PermutationList<T: UnsignedIntegerType>(n: T) -> LazyScanSequence<ReverseRandomAccessCollection<Slice<Range<T>>>, T> {
     
-    return (0..<n).lazy.reverse().scan(1) { $0 * $1 + $0 }
+    return (0...n).dropFirst().lazy.reverse().scan(1) { $0 * $1 }
 }
 @warn_unused_result
-public func CombinationList<T: UnsignedIntegerType>(n: T) -> LazyMapSequence<Zip2Sequence<LazyScanSequence<ReverseRandomAccessCollection<Range<T>>, T>, LazyScanSequence<Range<T>, T>>, T> {
+public func CombinationList<T: UnsignedIntegerType>(n: T) -> LazyMapSequence<Zip2Sequence<LazyScanSequence<ReverseRandomAccessCollection<Slice<Range<T>>>, T>, LazyScanSequence<Slice<Range<T>>, T>>, T> {
     
     return zip(PermutationList(n), FactorialList(n)).lazy.map(/)
 }
@@ -161,7 +161,7 @@ public func pow<T: UnsignedIntegerType>(x: T, _ n: T, _ m: T) -> T {
         return 0
     }
     let _x = x % m
-    let p = pow((_x * _x) % m, T(n.toUIntMax() >> 1), m)
+    let p = pow((_x * _x) % m, n / 2, m)
     return n & 1 == 1 ? (_x * p) % m : p
 }
 @warn_unused_result
