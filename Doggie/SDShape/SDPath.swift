@@ -58,14 +58,6 @@ public struct SDPath : SDShape, MutableCollectionType, ArrayLiteralConvertible {
             center = SDTransform.Rotate(rotate) * SDTransform.Scale(x: xScale, y: oldValue) * baseTransform * boundary.center
         }
     }
-    public var transform : SDTransform {
-        get {
-            return SDTransform.Rotate(rotate) * SDTransform.Scale(x: xScale, y: yScale) * baseTransform
-        }
-        set {
-            baseTransform = SDTransform.Scale(x: xScale, y: yScale).inverse * SDTransform.Rotate(rotate).inverse * newValue
-        }
-    }
     
     public init() {
         self.commands = []

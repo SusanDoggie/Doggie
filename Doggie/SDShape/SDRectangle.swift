@@ -44,14 +44,6 @@ public struct SDRectangle : SDShape {
             center = SDTransform.Rotate(rotate) * SDTransform.Scale(x: xScale, y: oldValue) * baseTransform * rect.center
         }
     }
-    public var transform : SDTransform {
-        get {
-            return SDTransform.Rotate(rotate) * SDTransform.Scale(x: xScale, y: yScale) * baseTransform
-        }
-        set {
-            baseTransform = SDTransform.Scale(x: xScale, y: yScale).inverse * SDTransform.Rotate(rotate).inverse * newValue
-        }
-    }
     
     public var boundary : Rect {
         return rect

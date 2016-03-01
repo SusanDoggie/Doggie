@@ -39,3 +39,15 @@ public protocol SDShape {
     var xScale: Double { get set }
     var yScale: Double { get set }
 }
+
+public extension SDShape {
+    
+    public var transform : SDTransform {
+        get {
+            return SDTransform.Rotate(rotate) * SDTransform.Scale(x: xScale, y: yScale) * baseTransform
+        }
+        set {
+            baseTransform = SDTransform.Scale(x: xScale, y: yScale).inverse * SDTransform.Rotate(rotate).inverse * newValue
+        }
+    }
+}

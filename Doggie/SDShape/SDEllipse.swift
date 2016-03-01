@@ -44,14 +44,6 @@ public struct SDEllipse : SDShape {
             center = SDTransform.Rotate(rotate) * SDTransform.Scale(x: xScale, y: oldValue) * baseTransform * position
         }
     }
-    public var transform : SDTransform {
-        get {
-            return SDTransform.Rotate(rotate) * SDTransform.Scale(x: xScale, y: yScale) * baseTransform
-        }
-        set {
-            baseTransform = SDTransform.Scale(x: xScale, y: yScale).inverse * SDTransform.Rotate(rotate).inverse * newValue
-        }
-    }
     
     public var x: Double
     public var y: Double
