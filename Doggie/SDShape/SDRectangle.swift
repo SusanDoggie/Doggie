@@ -46,7 +46,7 @@ public struct SDRectangle : SDShape {
     }
     
     public var boundary : Rect {
-        return rect
+        return Rect.bound(points)
     }
     
     public var points : [Point] {

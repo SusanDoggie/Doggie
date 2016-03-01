@@ -45,17 +45,17 @@ public struct SDPath : SDShape, MutableCollectionType, ArrayLiteralConvertible {
     
     public var rotate: Double = 0 {
         didSet {
-            center = SDTransform.Rotate(oldValue) * SDTransform.Scale(x: xScale, y: yScale) * baseTransform * boundary.center
+            center = SDTransform.Rotate(oldValue) * SDTransform.Scale(x: xScale, y: yScale) * baseTransform * _frame.center
         }
     }
     public var xScale: Double = 1 {
         didSet {
-            center = SDTransform.Rotate(rotate) * SDTransform.Scale(x: oldValue, y: yScale) * baseTransform * boundary.center
+            center = SDTransform.Rotate(rotate) * SDTransform.Scale(x: oldValue, y: yScale) * baseTransform * _frame.center
         }
     }
     public var yScale: Double = 1 {
         didSet {
-            center = SDTransform.Rotate(rotate) * SDTransform.Scale(x: xScale, y: oldValue) * baseTransform * boundary.center
+            center = SDTransform.Rotate(rotate) * SDTransform.Scale(x: xScale, y: oldValue) * baseTransform * _frame.center
         }
     }
     
@@ -73,10 +73,10 @@ public struct SDPath : SDShape, MutableCollectionType, ArrayLiteralConvertible {
     
     public var center : Point {
         get {
-            return transform * boundary.center
+            return transform * _frame.center
         }
         set {
-            let offset = SDTransform.Scale(x: xScale, y: yScale).inverse * SDTransform.Rotate(rotate).inverse * newValue - baseTransform * boundary.center
+            let offset = SDTransform.Scale(x: xScale, y: yScale).inverse * SDTransform.Rotate(rotate).inverse * newValue - baseTransform * _frame.center
             baseTransform = SDTransform.Translate(x: offset.x, y: offset.y) * baseTransform
         }
     }
@@ -216,6 +216,38 @@ public struct SDPath : SDShape, MutableCollectionType, ArrayLiteralConvertible {
     }
     
     public var boundary : Rect {
+        var bound: Rect? = nil
+        let transform = self.transform
+        self.apply { commands, state in
+            switch commands {
+            case let line as SDPath.Line:
+                if bound == nil {
+                    bound = line.bound(state.last, transform)
+                } else {
+                    bound = bound!.union(line.bound(state.last, transform))
+                }
+                
+            case let quad as SDPath.QuadBezier:
+                if bound == nil {
+                    bound = quad.bound(state.last, transform)
+                } else {
+                    bound = bound!.union(quad.bound(state.last, transform))
+                }
+                
+            case let cubic as SDPath.CubicBezier:
+                if bound == nil {
+                    bound = cubic.bound(state.last, transform)
+                } else {
+                    bound = bound!.union(cubic.bound(state.last, transform))
+                }
+                
+            default: break
+            }
+        }
+        return bound ?? Rect()
+    }
+    
+    private var _frame : Rect {
         if cache.boundary == nil {
             var bound: Rect? = nil
             self.apply { commands, state in
@@ -250,35 +282,7 @@ public struct SDPath : SDShape, MutableCollectionType, ArrayLiteralConvertible {
     }
     
     public var frame : Rect {
-        var bound: Rect? = nil
-        let transform = self.transform
-        self.apply { commands, state in
-            switch commands {
-            case let line as SDPath.Line:
-                if bound == nil {
-                    bound = line.bound(state.last, transform)
-                } else {
-                    bound = bound!.union(line.bound(state.last, transform))
-                }
-                
-            case let quad as SDPath.QuadBezier:
-                if bound == nil {
-                    bound = quad.bound(state.last, transform)
-                } else {
-                    bound = bound!.union(quad.bound(state.last, transform))
-                }
-                
-            case let cubic as SDPath.CubicBezier:
-                if bound == nil {
-                    bound = cubic.bound(state.last, transform)
-                } else {
-                    bound = bound!.union(cubic.bound(state.last, transform))
-                }
-                
-            default: break
-            }
-        }
-        return bound ?? Rect()
+        return Rect.bound(_frame.points.map { self.transform * $0 })
     }
     
     public var path: SDPath {

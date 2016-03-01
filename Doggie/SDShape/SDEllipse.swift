@@ -71,11 +71,11 @@ public struct SDEllipse : SDShape {
     }
     
     public var boundary : Rect {
-        return Rect(x: x - rx, y: y - ry, width: 2 * rx, height: 2 * ry)
+        return EllipseBound(position, radius, transform)
     }
     
     public var frame : Rect {
-        return EllipseBound(position, radius, transform)
+        return Rect.bound(Rect(x: x - rx, y: y - ry, width: 2 * rx, height: 2 * ry).points.map { self.transform * $0 })
     }
     
     public init(center: Point, radius: Double) {
