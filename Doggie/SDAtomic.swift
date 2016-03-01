@@ -82,7 +82,7 @@ public class SDAtomicGraph<Value> : CollectionType {
         lck.synchronized { graph.removeNode(node) }
     }
     
-    public func removeAll(keepCapacity: Bool = false) {
+    public func removeAll(keepCapacity keepCapacity: Bool = false) {
         lck.synchronized { graph.removeAll(keepCapacity) }
     }
     

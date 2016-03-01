@@ -171,7 +171,7 @@ public struct Graph<Node : Hashable, Link> : CollectionType {
     ///   storage is released.  The default is `false`.
     ///
     /// - Complexity: O(`count of nodes`).
-    public mutating func removeAll(keepCapacity: Bool = false) {
+    public mutating func removeAll(keepCapacity keepCapacity: Bool = false) {
         table.removeAll(keepCapacity: keepCapacity)
     }
     
@@ -377,7 +377,7 @@ public struct UndirectedGraph<Node : Hashable, Link> : CollectionType {
     ///   storage is released.  The default is `false`.
     ///
     /// - Complexity: O(`count of nodes`).
-    public mutating func removeAll(keepCapacity: Bool = false) {
+    public mutating func removeAll(keepCapacity keepCapacity: Bool = false) {
         graph.removeAll(keepCapacity)
     }
     
