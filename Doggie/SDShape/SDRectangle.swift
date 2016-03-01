@@ -50,7 +50,8 @@ public struct SDRectangle : SDShape {
     }
     
     public var points : [Point] {
-        return rect.points.map { self.transform * $0 }
+        let _transform = self.transform
+        return rect.points.map { _transform * $0 }
     }
     
     public var frame : [Point] {
