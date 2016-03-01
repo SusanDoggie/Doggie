@@ -281,8 +281,8 @@ public struct SDPath : SDShape, MutableCollectionType, ArrayLiteralConvertible {
         return cache.boundary!
     }
     
-    public var frame : Rect {
-        return Rect.bound(_frame.points.map { self.transform * $0 })
+    public var frame : [Point] {
+        return _frame.points.map { self.transform * $0 }
     }
     
     public var path: SDPath {

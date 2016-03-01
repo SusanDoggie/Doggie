@@ -74,8 +74,8 @@ public struct SDEllipse : SDShape {
         return EllipseBound(position, radius, transform)
     }
     
-    public var frame : Rect {
-        return Rect.bound(Rect(x: x - rx, y: y - ry, width: 2 * rx, height: 2 * ry).points.map { self.transform * $0 })
+    public var frame : [Point] {
+        return Rect(x: x - rx, y: y - ry, width: 2 * rx, height: 2 * ry).points.map { self.transform * $0 }
     }
     
     public init(center: Point, radius: Double) {

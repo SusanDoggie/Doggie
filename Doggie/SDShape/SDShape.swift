@@ -28,7 +28,7 @@ import Foundation
 public protocol SDShape {
     
     var boundary : Rect { get }
-    var frame : Rect { get }
+    var frame : [Point] { get }
     var baseTransform : SDTransform { get set }
     var transform : SDTransform { get set }
     
