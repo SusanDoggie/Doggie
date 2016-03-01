@@ -378,7 +378,7 @@ public struct UndirectedGraph<Node : Hashable, Link> : CollectionType {
     ///
     /// - Complexity: O(`count of nodes`).
     public mutating func removeAll(keepCapacity keepCapacity: Bool = false) {
-        graph.removeAll(keepCapacity)
+        graph.removeAll(keepCapacity: keepCapacity)
     }
     
     /// A collection containing just the links of `self`.
