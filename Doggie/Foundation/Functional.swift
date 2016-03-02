@@ -992,3 +992,29 @@ public extension RangeReplaceableCollectionType {
         self.replaceRange(self.indices, with: newElements)
     }
 }
+
+public extension MutableCollectionType where Self : RangeReplaceableCollectionType, Index : BidirectionalIndexType, Index : Comparable, Generator.Element : Comparable, SubSequence : CollectionType, SubSequence.Index : BidirectionalIndexType, SubSequence.Generator.Element == Generator.Element {
+    
+    @warn_unused_result
+    func next_permutation() -> Self {
+        
+        var _self = self
+        
+        if !self.isEmpty {
+            
+            if let k = self.indices.dropLast().lazy.filter({ self[$0] < self[$0.successor()] }).maxElement() {
+                
+                let range = k.successor() ..< self.endIndex
+                let l = range.lazy.filter({ self[k] < self[$0] }).maxElement()!
+                
+                swap(&_self[k], &_self[l])
+                
+                _self.replaceRange(range, with: _self[range].reverse())
+                
+            } else {
+                _self.replace(with: self.reverse())
+            }
+        }
+        return _self
+    }
+}
