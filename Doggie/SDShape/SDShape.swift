@@ -42,12 +42,17 @@ public protocol SDShape {
 
 public extension SDShape {
     
-    public var transform : SDTransform {
+    var transform : SDTransform {
         get {
             return SDTransform.Rotate(rotate) * SDTransform.Scale(x: xScale, y: yScale) * baseTransform
         }
         set {
             baseTransform = SDTransform.Scale(x: xScale, y: yScale).inverse * SDTransform.Rotate(rotate).inverse * newValue
         }
+    }
+    
+    mutating func setScale(scale: Double) {
+        self.xScale = scale
+        self.yScale = scale
     }
 }
