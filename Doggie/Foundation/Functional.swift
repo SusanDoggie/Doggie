@@ -997,19 +997,21 @@ public extension MutableCollectionType where Index : BidirectionalIndexType, Ind
     
     @warn_unused_result
     func next_permutation() -> Self {
-        
         var _self = self
         if !self.isEmpty {
             let range: Range<Self.Index>
             if let k = self.indices.dropLast().lazy.filter({ self[$0] < self[$0.successor()] }).maxElement() {
-                
-                range = k.successor() ..< self.endIndex
+                range = k.successor()..<self.endIndex
                 swap(&_self[k], &_self[range.lazy.filter({ self[k] < self[$0] }).maxElement()!])
             } else {
                 range = self.indices
             }
-            for (idx, val) in zip(range, _self.collect(range.reverse())) {
-                _self[idx] = val
+            for (lhs, rhs) in zip(range, range.reverse()) {
+                if lhs < rhs {
+                    swap(&_self[lhs], &_self[rhs])
+                } else {
+                    break
+                }
             }
         }
         return _self
