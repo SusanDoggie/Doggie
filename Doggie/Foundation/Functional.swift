@@ -993,7 +993,7 @@ public extension RangeReplaceableCollectionType {
     }
 }
 
-public extension MutableCollectionType where Index : BidirectionalIndexType, Index : Comparable, Generator.Element : Comparable, SubSequence : CollectionType, SubSequence.Index : BidirectionalIndexType, SubSequence.Generator.Element == Generator.Element {
+public extension MutableCollectionType where Index : BidirectionalIndexType, Index : Comparable, Generator.Element : Comparable {
     
     @warn_unused_result
     func next_permutation() -> Self {
@@ -1008,7 +1008,7 @@ public extension MutableCollectionType where Index : BidirectionalIndexType, Ind
             } else {
                 range = self.indices
             }
-            for (idx, val) in zip(range, _self[range].reverse()) {
+            for (idx, val) in zip(range, _self.collect(range.reverse())) {
                 _self[idx] = val
             }
         }
