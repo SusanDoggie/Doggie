@@ -993,7 +993,7 @@ public extension RangeReplaceableCollectionType {
     }
 }
 
-public extension MutableCollectionType where Index : BidirectionalIndexType, Index : Comparable, Generator.Element : Comparable, SubSequence.Index : BidirectionalIndexType, SubSequence.Generator.Element == Generator.Element {
+public extension MutableCollectionType where Index : BidirectionalIndexType, Index : Comparable, Generator.Element : Comparable, SubSequence : CollectionType, SubSequence.Index : BidirectionalIndexType, SubSequence.Generator.Element == Generator.Element {
     
     @warn_unused_result
     func next_permutation() -> Self {
