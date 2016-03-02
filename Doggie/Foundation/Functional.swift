@@ -993,26 +993,35 @@ public extension RangeReplaceableCollectionType {
     }
 }
 
-public extension MutableCollectionType where Index : BidirectionalIndexType, Index : Comparable, Generator.Element : Comparable {
+public extension MutableCollectionType where Index : BidirectionalIndexType {
+    
+    mutating func reverseInPlace() {
+        var temp: Index?
+        for (lhs, rhs) in zip(self.indices, self.indices.reverse()) {
+            if lhs != rhs && temp != rhs {
+                swap(&self[lhs], &self[rhs])
+                temp = lhs
+            } else {
+                break
+            }
+        }
+    }
+}
+
+public extension MutableCollectionType where Index : BidirectionalIndexType, Generator.Element : Comparable {
     
     @warn_unused_result
     func next_permutation() -> Self {
         var _self = self
         if !self.isEmpty {
-            let range: Range<Self.Index>
-            if let k = self.indices.dropLast().lazy.filter({ self[$0] < self[$0.successor()] }).maxElement() {
+            let range: Range<Index>
+            if let k = self.indices.dropLast().lastOf({ self[$0] < self[$0.successor()] }) {
                 range = k.successor()..<self.endIndex
-                swap(&_self[k], &_self[range.lazy.filter({ self[k] < self[$0] }).maxElement()!])
+                swap(&_self[k], &_self[range.lastOf { self[k] < self[$0] }!])
             } else {
                 range = self.indices
             }
-            for (lhs, rhs) in zip(range, range.reverse()) {
-                if lhs < rhs {
-                    swap(&_self[lhs], &_self[rhs])
-                } else {
-                    break
-                }
-            }
+            _self[range].reverseInPlace()
         }
         return _self
     }
