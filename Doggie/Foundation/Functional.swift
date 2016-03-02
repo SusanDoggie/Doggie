@@ -1011,17 +1011,16 @@ public extension MutableCollectionType where Index : BidirectionalIndexType {
 public extension MutableCollectionType where Index : BidirectionalIndexType, Generator.Element : Comparable {
     
     @warn_unused_result
-    func next_permutation() -> Self {
+    func nextPermute() -> Self {
         var _self = self
         if !self.isEmpty {
-            let range: Range<Index>
             if let k = self.indices.dropLast().lastOf({ self[$0] < self[$0.successor()] }) {
-                range = k.successor()..<self.endIndex
+                let range = k.successor()..<self.endIndex
                 swap(&_self[k], &_self[range.lastOf { self[k] < self[$0] }!])
+                _self[range].reverseInPlace()
             } else {
-                range = self.indices
+                _self.reverseInPlace()
             }
-            _self[range].reverseInPlace()
         }
         return _self
     }
