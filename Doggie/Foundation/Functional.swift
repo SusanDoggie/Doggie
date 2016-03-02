@@ -995,9 +995,9 @@ public extension RangeReplaceableCollectionType {
 
 public extension MutableCollectionType where Index : BidirectionalIndexType {
     
-    mutating func reverseInPlace() {
+    private mutating func reverseInPlace(range: Range<Index>) {
         var temp: Index?
-        for (lhs, rhs) in zip(self.indices, self.indices.reverse()) {
+        for (lhs, rhs) in zip(range, range.reverse()) {
             if lhs != rhs && temp != rhs {
                 swap(&self[lhs], &self[rhs])
                 temp = lhs
@@ -1005,6 +1005,10 @@ public extension MutableCollectionType where Index : BidirectionalIndexType {
                 break
             }
         }
+    }
+    
+    mutating func reverseInPlace() {
+        self.reverseInPlace(self.indices)
     }
 }
 
@@ -1017,7 +1021,7 @@ public extension MutableCollectionType where Index : BidirectionalIndexType, Gen
             if let k = self.indices.dropLast().lastOf({ self[$0] < self[$0.successor()] }) {
                 let range = k.successor()..<self.endIndex
                 swap(&_self[k], &_self[range.lastOf { self[k] < self[$0] }!])
-                _self[range].reverseInPlace()
+                _self.reverseInPlace(range)
             } else {
                 _self.reverseInPlace()
             }
