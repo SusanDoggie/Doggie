@@ -1017,10 +1017,10 @@ public extension MutableCollectionType where Index : BidirectionalIndexType, Gen
     @warn_unused_result
     func nextPermute() -> Self {
         var _self = self
-        if !self.isEmpty {
-            if let k = self.indices.dropLast().lastOf({ self[$0] < self[$0.successor()] }) {
-                let range = k.successor()..<self.endIndex
-                swap(&_self[k], &_self[range.lastOf { self[k] < self[$0] }!])
+        if !_self.isEmpty {
+            if let k = _self.indices.dropLast().lastOf({ _self[$0] < _self[$0.successor()] }) {
+                let range = k.successor()..<_self.endIndex
+                swap(&_self[k], &_self[range.lastOf { _self[k] < _self[$0] }!])
                 _self.reverseInPlace(range)
             } else {
                 _self.reverseInPlace()
