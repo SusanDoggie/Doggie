@@ -362,3 +362,22 @@ public func autoreleasepool<R>(@noescape code: () -> R) -> R {
 public func == <T : Comparable>(lhs: T, rhs: T) -> Bool {
     return !(lhs < rhs || rhs < lhs)
 }
+
+private let _hash_phi = 0.6180339887498948482045868343656381177203091798057628
+private let _hash_seed = Int(bitPattern: UInt(round(_hash_phi * Double(UInt.max))))
+
+@warn_unused_result
+public func hash_combine<T: Hashable>(seed: Int, _ value: T) -> Int {
+    let a = seed << 6
+    let b = seed >> 2
+    let c = value.hashValue &+ _hash_seed &+ a &+ b
+    return seed ^ c
+}
+@warn_unused_result
+public func hash_combine<S: SequenceType where S.Generator.Element : Hashable>(seed: Int, _ values: S) -> Int {
+    return values.reduce(seed, combine: hash_combine)
+}
+@warn_unused_result
+public func hash_combine<T: Hashable>(seed: Int, _ a: T, _ b: T, _ res: T ... ) -> Int {
+    return hash_combine(seed, CollectionOfOne(a).concat(CollectionOfOne(b)).concat(res))
+}

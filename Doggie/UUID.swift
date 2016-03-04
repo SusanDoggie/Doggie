@@ -145,23 +145,7 @@ extension UUID: CustomStringConvertible, CustomDebugStringConvertible {
 extension UUID: Hashable, Comparable {
     
     public var hashValue: Int {
-        var a = byte0.hashValue
-        var b = byte1.hashValue
-        (a, b) = (a ^ b ^ (a &+ b) ^ (a &- b), byte2.hashValue)
-        (a, b) = (a ^ b ^ (a &+ b) ^ (a &- b), byte3.hashValue)
-        (a, b) = (a ^ b ^ (a &+ b) ^ (a &- b), byte4.hashValue)
-        (a, b) = (a ^ b ^ (a &+ b) ^ (a &- b), byte5.hashValue)
-        (a, b) = (a ^ b ^ (a &+ b) ^ (a &- b), byte6.hashValue)
-        (a, b) = (a ^ b ^ (a &+ b) ^ (a &- b), byte7.hashValue)
-        (a, b) = (a ^ b ^ (a &+ b) ^ (a &- b), byte8.hashValue)
-        (a, b) = (a ^ b ^ (a &+ b) ^ (a &- b), byte9.hashValue)
-        (a, b) = (a ^ b ^ (a &+ b) ^ (a &- b), byte10.hashValue)
-        (a, b) = (a ^ b ^ (a &+ b) ^ (a &- b), byte11.hashValue)
-        (a, b) = (a ^ b ^ (a &+ b) ^ (a &- b), byte12.hashValue)
-        (a, b) = (a ^ b ^ (a &+ b) ^ (a &- b), byte13.hashValue)
-        (a, b) = (a ^ b ^ (a &+ b) ^ (a &- b), byte14.hashValue)
-        (a, b) = (a ^ b ^ (a &+ b) ^ (a &- b), byte15.hashValue)
-        return a ^ b ^ (a &+ b) ^ (a &- b)
+        return hash_combine(0, byte0, byte1, byte2, byte3, byte4, byte5, byte6, byte7, byte8, byte9, byte10, byte11, byte12, byte13, byte14, byte15)
     }
 }
 

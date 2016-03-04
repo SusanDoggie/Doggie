@@ -57,9 +57,7 @@ extension Size: CustomStringConvertible, CustomDebugStringConvertible {
 extension Size: Hashable {
     
     public var hashValue: Int {
-        let a = width.hashValue
-        let b = height.hashValue
-        return a ^ b ^ (a &+ b) ^ (a &- b)
+        return hash_combine(0, width, height)
     }
 }
 
@@ -105,9 +103,7 @@ extension Rect: CustomStringConvertible, CustomDebugStringConvertible {
 extension Rect: Hashable {
     
     public var hashValue: Int {
-        let a = origin.hashValue
-        let b = size.hashValue
-        return a ^ b ^ (a &+ b) ^ (a &- b)
+        return hash_combine(0, origin.hashValue, size.hashValue)
     }
 }
 

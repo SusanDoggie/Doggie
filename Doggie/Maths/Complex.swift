@@ -86,9 +86,7 @@ extension Complex: CustomStringConvertible, CustomDebugStringConvertible {
 extension Complex: Hashable {
     
     public var hashValue: Int {
-        let a = real.hashValue
-        let b = imag.hashValue
-        return a ^ b ^ (a &+ b) ^ (a &- b)
+        return hash_combine(0, real, imag)
     }
 }
 

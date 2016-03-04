@@ -105,10 +105,7 @@ extension Polynomial : MutableCollectionType {
 extension Polynomial : Hashable {
     
     public var hashValue: Int {
-        return coeffs.reduce(Int64(bitPattern: 0xB2B24F688DC4164D).hashValue) {
-            let b = $1.hashValue
-            return $0 ^ b ^ ($0 &+ b) ^ ($0 &- b)
-        }
+        return hash_combine(0, coeffs)
     }
 }
 
