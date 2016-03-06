@@ -50,7 +50,7 @@ extension Json {
     }
 }
 
-private struct CharacterScanner : GeneratorType {
+private struct CharacterScanner : GeneratorType, SequenceType {
     
     let count: Int
     var pos: Int

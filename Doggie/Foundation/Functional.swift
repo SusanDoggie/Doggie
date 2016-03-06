@@ -220,7 +220,7 @@ extension CollectionType where Index : BidirectionalIndexType {
     }
 }
 
-public struct OptionOneGenerator<T> : GeneratorType {
+public struct OptionOneGenerator<T> : GeneratorType, SequenceType {
     
     private var value: T?
     
@@ -277,7 +277,7 @@ public extension SequenceType {
     }
 }
 
-public struct LazyScanGenerator<Base: GeneratorType, Element> : GeneratorType {
+public struct LazyScanGenerator<Base: GeneratorType, Element> : GeneratorType, SequenceType {
     
     private var nextElement: Element?
     private var base: Base
@@ -319,7 +319,7 @@ public extension LazySequenceType {
     }
 }
 
-public struct ConcatGenerator<G1: GeneratorType, G2: GeneratorType where G1.Element == G2.Element> : GeneratorType {
+public struct ConcatGenerator<G1: GeneratorType, G2: GeneratorType where G1.Element == G2.Element> : GeneratorType, SequenceType {
     
     private var base1: G1
     private var base2: G2
@@ -533,15 +533,50 @@ extension LazyCollectionType where Elements.Index : BidirectionalIndexType {
     }
 }
 
-public struct PermutationCollection<C : CollectionType, I : CollectionType where C.Index == I.Generator.Element> : CollectionType {
+public struct GatherGenerator<C: CollectionType, Indices: GeneratorType where C.Index == Indices.Element> : GeneratorType, SequenceType {
     
-    public typealias Generator = PermutationGenerator<C, I>
+    private var seq : C
+    private var indices : Indices
     
-    public typealias Index = I.Index
+    /// The type of element returned by `next()`.
+    public typealias Element = C.Generator.Element
+    
+    /// Advance to the next element and return it, or `nil` if no next
+    /// element exists.
+    ///
+    /// - Requires: No preceding call to `self.next()` has returned `nil`.
+    public mutating func next() -> Element? {
+        return indices.next().map { seq[$0] }
+    }
+}
+
+public struct GatherSequence<C : CollectionType, Indices : SequenceType where C.Index == Indices.Generator.Element> : SequenceType {
+    
+    public typealias Generator = GatherGenerator<C, Indices.Generator>
+    
     public typealias Element = C.Generator.Element
     
     private let _base: C
-    private let _indices: I
+    private let _indices: Indices
+    
+    public func generate() -> Generator {
+        return GatherGenerator(seq: _base, indices: _indices.generate())
+    }
+    
+    public func underestimateCount() -> Int {
+        return _indices.underestimateCount()
+    }
+}
+
+public struct GatherCollection<C : CollectionType, Indices : CollectionType where C.Index == Indices.Generator.Element> : CollectionType {
+    
+    public typealias Generator = GatherGenerator<C, Indices.Generator>
+    
+    public typealias Index = Indices.Index
+    public typealias Element = C.Generator.Element
+    
+    private let _base: C
+    private let _indices: Indices
     
     public subscript(idx: Index) -> Element {
         return _base[_indices[idx]]
@@ -559,7 +594,7 @@ public struct PermutationCollection<C : CollectionType, I : CollectionType where
     }
     
     public func generate() -> Generator {
-        return PermutationGenerator(elements: _base, indices: _indices)
+        return GatherGenerator(seq: _base, indices: _indices.generate())
     }
     
     public func underestimateCount() -> Int {
@@ -570,30 +605,30 @@ public struct PermutationCollection<C : CollectionType, I : CollectionType where
 public extension CollectionType {
     
     @warn_unused_result
-    func collect<I : SequenceType where Index == I.Generator.Element>(indices: I) -> PermutationGenerator<Self, I> {
-        return PermutationGenerator(elements: self, indices: indices)
+    func collect<Indices : SequenceType where Index == Indices.Generator.Element>(indices: Indices) -> GatherSequence<Self, Indices> {
+        return GatherSequence(_base: self, _indices: indices)
     }
     
     @warn_unused_result
-    func collect<I : CollectionType where Index == I.Generator.Element>(indices: I) -> PermutationCollection<Self, I> {
-        return PermutationCollection(_base: self, _indices: indices)
+    func collect<Indices : CollectionType where Index == Indices.Generator.Element>(indices: Indices) -> GatherCollection<Self, Indices> {
+        return GatherCollection(_base: self, _indices: indices)
     }
 }
 
 public extension LazyCollectionType {
     
     @warn_unused_result
-    func collect<I : SequenceType where Elements.Index == I.Generator.Element>(indices: I) -> LazySequence<PermutationGenerator<Elements, I>> {
+    func collect<Indices : SequenceType where Elements.Index == Indices.Generator.Element>(indices: Indices) -> LazySequence<GatherSequence<Elements, Indices>> {
         return self.elements.collect(indices).lazy
     }
     
     @warn_unused_result
-    func collect<I : CollectionType where Elements.Index == I.Generator.Element>(indices: I) -> LazyCollection<PermutationCollection<Elements, I>> {
+    func collect<Indices : CollectionType where Elements.Index == Indices.Generator.Element>(indices: Indices) -> LazyCollection<GatherCollection<Elements, Indices>> {
         return self.elements.collect(indices).lazy
     }
 }
 
-public struct LazyStrideGenerator<C: CollectionType where C.Index : Strideable> : GeneratorType {
+public struct LazyStrideGenerator<C: CollectionType where C.Index : Strideable> : GeneratorType, SequenceType {
     
     private let base: C
     private var left: C.Index?

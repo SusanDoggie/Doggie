@@ -243,7 +243,7 @@ public func == <Node, Link>(lhs: GraphIndex<Node, Link>, rhs: GraphIndex<Node, L
     return lhs.current == rhs.current
 }
 
-public struct GraphGenerator<Node : Hashable, Link> : GeneratorType {
+public struct GraphGenerator<Node : Hashable, Link> : GeneratorType, SequenceType {
     
     public typealias Element = (from: Node, to: Node, Link)
     
@@ -425,7 +425,7 @@ public func == <Node, Link>(lhs: UndirectedGraphIndex<Node, Link>, rhs: Undirect
     return lhs.base == rhs.base
 }
 
-public struct UndirectedGraphGenerator<Node : Hashable, Link> : GeneratorType {
+public struct UndirectedGraphGenerator<Node : Hashable, Link> : GeneratorType, SequenceType {
     
     public typealias Element = (Node, Node, Link)
     

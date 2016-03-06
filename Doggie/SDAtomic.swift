@@ -119,7 +119,7 @@ public func == <Value>(lhs: SDAtomicGraphIndex<Value>, rhs: SDAtomicGraphIndex<V
     return lhs.base == rhs.base
 }
 
-public struct SDAtomicGraphGenerator<Value> : GeneratorType {
+public struct SDAtomicGraphGenerator<Value> : GeneratorType, SequenceType {
     
     public typealias NodeID = SDAtomicNode.Identifier
     
