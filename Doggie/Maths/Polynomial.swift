@@ -117,7 +117,11 @@ extension Polynomial {
     
     @warn_unused_result
     public func eval(x: Double) -> Double {
-        return coeffs.reverse().reduce(0) { x * $0 + $1 }
+        switch x {
+        case 0: return self[0]
+        case 1: return coeffs.reduce(0, combine: +)
+        default: return coeffs.reverse().reduce(0) { x * $0 + $1 }
+        }
     }
 }
 

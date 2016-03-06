@@ -1198,7 +1198,7 @@ private func degree6RationalIntegral(p: Polynomial, _ q: Polynomial) -> Double {
         
         var matrix: [Double] = []
         for _ in 0..<_q.degree {
-            matrix.appendContentsOf(m.map { $0.eval(0) })
+            matrix.appendContentsOf(m.lazy.map { $0[0] })
             m = m.map { $0.derivative }
         }
         if MatrixElimination(_q.degree, &matrix) {
