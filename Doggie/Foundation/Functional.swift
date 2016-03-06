@@ -533,7 +533,7 @@ extension LazyCollectionType where Elements.Index : BidirectionalIndexType {
     }
 }
 
-public struct GatherGenerator<C: CollectionType, Indices: GeneratorType where C.Index == Indices.Element> : GeneratorType, SequenceType {
+public struct LazyGatherGenerator<C: CollectionType, Indices: GeneratorType where C.Index == Indices.Element> : GeneratorType, SequenceType {
     
     private var seq : C
     private var indices : Indices
@@ -550,9 +550,9 @@ public struct GatherGenerator<C: CollectionType, Indices: GeneratorType where C.
     }
 }
 
-public struct GatherSequence<C : CollectionType, Indices : SequenceType where C.Index == Indices.Generator.Element> : SequenceType {
+public struct LazyGatherSequence<C : CollectionType, Indices : SequenceType where C.Index == Indices.Generator.Element> : LazySequenceType {
     
-    public typealias Generator = GatherGenerator<C, Indices.Generator>
+    public typealias Generator = LazyGatherGenerator<C, Indices.Generator>
     
     public typealias Element = C.Generator.Element
     
@@ -560,7 +560,7 @@ public struct GatherSequence<C : CollectionType, Indices : SequenceType where C.
     private let _indices: Indices
     
     public func generate() -> Generator {
-        return GatherGenerator(seq: _base, indices: _indices.generate())
+        return LazyGatherGenerator(seq: _base, indices: _indices.generate())
     }
     
     public func underestimateCount() -> Int {
@@ -568,9 +568,9 @@ public struct GatherSequence<C : CollectionType, Indices : SequenceType where C.
     }
 }
 
-public struct GatherCollection<C : CollectionType, Indices : CollectionType where C.Index == Indices.Generator.Element> : CollectionType {
+public struct LazyGatherCollection<C : CollectionType, Indices : CollectionType where C.Index == Indices.Generator.Element> : LazyCollectionType {
     
-    public typealias Generator = GatherGenerator<C, Indices.Generator>
+    public typealias Generator = LazyGatherGenerator<C, Indices.Generator>
     
     public typealias Index = Indices.Index
     public typealias Element = C.Generator.Element
@@ -594,7 +594,7 @@ public struct GatherCollection<C : CollectionType, Indices : CollectionType wher
     }
     
     public func generate() -> Generator {
-        return GatherGenerator(seq: _base, indices: _indices.generate())
+        return LazyGatherGenerator(seq: _base, indices: _indices.generate())
     }
     
     public func underestimateCount() -> Int {
@@ -605,26 +605,21 @@ public struct GatherCollection<C : CollectionType, Indices : CollectionType wher
 public extension CollectionType {
     
     @warn_unused_result
-    func collect<Indices : SequenceType where Index == Indices.Generator.Element>(indices: Indices) -> GatherSequence<Self, Indices> {
-        return GatherSequence(_base: self, _indices: indices)
-    }
-    
-    @warn_unused_result
-    func collect<Indices : CollectionType where Index == Indices.Generator.Element>(indices: Indices) -> GatherCollection<Self, Indices> {
-        return GatherCollection(_base: self, _indices: indices)
+    func collect<Indices : SequenceType where Index == Indices.Generator.Element>(indices: Indices) -> [Generator.Element] {
+        return Array(self.lazy.collect(indices))
     }
 }
 
 public extension LazyCollectionType {
     
     @warn_unused_result
-    func collect<Indices : SequenceType where Elements.Index == Indices.Generator.Element>(indices: Indices) -> LazySequence<GatherSequence<Elements, Indices>> {
-        return self.elements.collect(indices).lazy
+    func collect<Indices : SequenceType where Elements.Index == Indices.Generator.Element>(indices: Indices) -> LazyGatherSequence<Elements, Indices> {
+        return LazyGatherSequence(_base: self.elements, _indices: indices)
     }
     
     @warn_unused_result
-    func collect<Indices : CollectionType where Elements.Index == Indices.Generator.Element>(indices: Indices) -> LazyCollection<GatherCollection<Elements, Indices>> {
-        return self.elements.collect(indices).lazy
+    func collect<Indices : CollectionType where Elements.Index == Indices.Generator.Element>(indices: Indices) -> LazyGatherCollection<Elements, Indices> {
+        return LazyGatherCollection(_base: self.elements, _indices: indices)
     }
 }
 
