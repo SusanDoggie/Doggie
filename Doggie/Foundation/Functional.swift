@@ -533,6 +533,14 @@ extension LazyCollectionType where Elements.Index : BidirectionalIndexType {
     }
 }
 
+public extension CollectionType {
+    
+    @warn_unused_result
+    func collect<Indices : SequenceType where Index == Indices.Generator.Element>(indices: Indices) -> [Generator.Element] {
+        return indices.map { self[$0] }
+    }
+}
+
 public struct LazyGatherGenerator<C: CollectionType, Indices: GeneratorType where C.Index == Indices.Element> : GeneratorType, SequenceType {
     
     private var seq : C
@@ -599,14 +607,6 @@ public struct LazyGatherCollection<C : CollectionType, Indices : CollectionType 
     
     public func underestimateCount() -> Int {
         return _indices.underestimateCount()
-    }
-}
-
-public extension CollectionType {
-    
-    @warn_unused_result
-    func collect<Indices : SequenceType where Index == Indices.Generator.Element>(indices: Indices) -> [Generator.Element] {
-        return Array(self.lazy.collect(indices))
     }
 }
 
