@@ -116,7 +116,7 @@ extension SDRectangle {
     
     public var CGPath : CoreGraphics.CGPath {
         var _transform = CGAffineTransform(transform)
-        return CGPathCreateWithRect(CGRect(boundary), &_transform)
+        return CGPathCreateWithRect(CGRect(Rect(x: x, y: y, width: width, height: height)), &_transform)
     }
 }
 
@@ -124,7 +124,7 @@ extension SDEllipse {
     
     public var CGPath : CoreGraphics.CGPath {
         var _transform = CGAffineTransform(transform)
-        return CGPathCreateWithEllipseInRect(CGRect(boundary), &_transform)
+        return CGPathCreateWithEllipseInRect(CGRect(Rect(x: x - rx, y: y - ry, width: 2 * rx, height: 2 * ry)), &_transform)
     }
 }
 
