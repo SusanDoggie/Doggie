@@ -136,6 +136,23 @@ public extension SequenceType {
     }
 }
 
+public extension Set {
+    
+    /// Return `true` if all of elements in `seq` is `x`.
+    @warn_unused_result
+    func all(x: Element) -> Bool {
+        
+        switch self.count {
+        case 0:
+            return true
+        case 1:
+            return self.first == x
+        default:
+            return false
+        }
+    }
+}
+
 public extension SequenceType {
     
     /// Return first of elements in `seq` satisfies `predicate`.
@@ -162,7 +179,7 @@ public extension CollectionType where Index : BidirectionalIndexType {
     }
 }
 
-extension CollectionType where Generator.Element : Equatable {
+public extension CollectionType where Generator.Element : Equatable {
     
     /// Returns a subsequence, until a element equal to `value`, containing the
     /// initial elements.
@@ -172,12 +189,12 @@ extension CollectionType where Generator.Element : Equatable {
     ///
     /// - Complexity: O(`self.count`)
     @warn_unused_result
-    public func prefixUntil(element: Self.Generator.Element) -> Self.SubSequence {
+    func prefixUntil(element: Self.Generator.Element) -> Self.SubSequence {
         return self.prefixUpTo(self.indexOf(element) ?? self.endIndex)
     }
 }
 
-extension CollectionType {
+public extension CollectionType {
     
     /// Returns a subsequence, until a element satisfying the predicate, containing the
     /// initial elements.
@@ -187,12 +204,12 @@ extension CollectionType {
     ///
     /// - Complexity: O(`self.count`)
     @warn_unused_result
-    public func prefixUntil(@noescape predicate: (Self.Generator.Element) throws -> Bool) rethrows -> Self.SubSequence {
+    func prefixUntil(@noescape predicate: (Self.Generator.Element) throws -> Bool) rethrows -> Self.SubSequence {
         return self.prefixUpTo(try self.indexOf(predicate) ?? self.endIndex)
     }
 }
 
-extension CollectionType where Generator.Element : Equatable, Index : BidirectionalIndexType {
+public extension CollectionType where Generator.Element : Equatable, Index : BidirectionalIndexType {
     /// Returns a subsequence, until a element equal to `value`, containing the
     /// final elements of `self`.
     ///
@@ -201,12 +218,12 @@ extension CollectionType where Generator.Element : Equatable, Index : Bidirectio
     ///
     /// - Complexity: O(`self.count`)
     @warn_unused_result
-    public func suffixUntil(element: Self.Generator.Element) -> Self.SubSequence {
+    func suffixUntil(element: Self.Generator.Element) -> Self.SubSequence {
         return self.suffixFrom(self.reverse().indexOf(element)?.base ?? self.startIndex)
     }
 }
 
-extension CollectionType where Index : BidirectionalIndexType {
+public extension CollectionType where Index : BidirectionalIndexType {
     /// Returns a subsequence, until a element satisfying the predicate, containing the
     /// final elements of `self`.
     ///
@@ -215,8 +232,17 @@ extension CollectionType where Index : BidirectionalIndexType {
     ///
     /// - Complexity: O(`self.count`)
     @warn_unused_result
-    public func suffixUntil(@noescape predicate: (Self.Generator.Element) throws -> Bool) rethrows -> Self.SubSequence {
+    func suffixUntil(@noescape predicate: (Self.Generator.Element) throws -> Bool) rethrows -> Self.SubSequence {
         return self.suffixFrom(try self.reverse().indexOf(predicate)?.base ?? self.startIndex)
+    }
+}
+
+public extension MutableCollectionType {
+    
+    mutating func mutateEach(@noescape body: (inout Generator.Element) throws -> ()) rethrows {
+        for idx in self.indices {
+            try body(&self[idx])
+        }
     }
 }
 
@@ -461,74 +487,74 @@ public func == <S1, S2>(lhs: ConcatBidirectionalCollectionIndex<S1, S2>, rhs: Co
     return lhs.currect1 == rhs.currect1 && lhs.currect2 == rhs.currect2
 }
 
-extension SequenceType {
+public extension SequenceType {
     
     @warn_unused_result
-    public func concat<S : SequenceType where Generator.Element == S.Generator.Element>(with: S) -> ConcatSequence<Self, S> {
+    func concat<S : SequenceType where Generator.Element == S.Generator.Element>(with: S) -> ConcatSequence<Self, S> {
         return ConcatSequence(base1: self, base2: with)
     }
 }
 
-extension CollectionType {
+public extension CollectionType {
     
     @warn_unused_result
-    public func concat<S : CollectionType where Generator.Element == S.Generator.Element>(with: S) -> ConcatCollection<Self, S> {
+    func concat<S : CollectionType where Generator.Element == S.Generator.Element>(with: S) -> ConcatCollection<Self, S> {
         return ConcatCollection(base1: self, base2: with)
     }
 }
 
-extension CollectionType where Index : BidirectionalIndexType {
+public extension CollectionType where Index : BidirectionalIndexType {
     
     @warn_unused_result
-    public func concat<S : CollectionType where Generator.Element == S.Generator.Element, S.Index : BidirectionalIndexType>(with: S) -> ConcatBidirectionalCollection<Self, S> {
+    func concat<S : CollectionType where Generator.Element == S.Generator.Element, S.Index : BidirectionalIndexType>(with: S) -> ConcatBidirectionalCollection<Self, S> {
         return ConcatBidirectionalCollection(base1: self, base2: with)
     }
 }
 
-extension LazySequenceType {
+public extension LazySequenceType {
     
     @warn_unused_result
-    public func concat<S : SequenceType where Elements.Generator.Element == S.Generator.Element>(with: S) -> LazySequence<ConcatSequence<Elements, S>> {
+    func concat<S : SequenceType where Elements.Generator.Element == S.Generator.Element>(with: S) -> LazySequence<ConcatSequence<Elements, S>> {
         return ConcatSequence(base1: self.elements, base2: with).lazy
     }
 }
 
-extension LazyCollectionType {
+public extension LazyCollectionType {
     
     @warn_unused_result
-    public func concat<S : CollectionType where Elements.Generator.Element == S.Generator.Element>(with: S) -> LazyCollection<ConcatCollection<Elements, S>> {
+    func concat<S : CollectionType where Elements.Generator.Element == S.Generator.Element>(with: S) -> LazyCollection<ConcatCollection<Elements, S>> {
         return ConcatCollection(base1: self.elements, base2: with).lazy
     }
 }
 
-extension LazyCollectionType where Elements.Index : BidirectionalIndexType {
+public extension LazyCollectionType where Elements.Index : BidirectionalIndexType {
     
     @warn_unused_result
-    public func concat<S : CollectionType where Elements.Generator.Element == S.Generator.Element, S.Index : BidirectionalIndexType>(with: S) -> LazyCollection<ConcatBidirectionalCollection<Elements, S>> {
+    func concat<S : CollectionType where Elements.Generator.Element == S.Generator.Element, S.Index : BidirectionalIndexType>(with: S) -> LazyCollection<ConcatBidirectionalCollection<Elements, S>> {
         return ConcatBidirectionalCollection(base1: self.elements, base2: with).lazy
     }
 }
 
-extension LazySequenceType {
+public extension LazySequenceType {
     
     @warn_unused_result
-    public func append(newElement: Elements.Generator.Element) -> LazySequence<ConcatSequence<Elements, CollectionOfOne<Elements.Generator.Element>>> {
+    func append(newElement: Elements.Generator.Element) -> LazySequence<ConcatSequence<Elements, CollectionOfOne<Elements.Generator.Element>>> {
         return self.concat(CollectionOfOne(newElement))
     }
 }
 
-extension LazyCollectionType {
+public extension LazyCollectionType {
     
     @warn_unused_result
-    public func append(newElement: Elements.Generator.Element) -> LazyCollection<ConcatCollection<Elements, CollectionOfOne<Elements.Generator.Element>>> {
+    func append(newElement: Elements.Generator.Element) -> LazyCollection<ConcatCollection<Elements, CollectionOfOne<Elements.Generator.Element>>> {
         return self.concat(CollectionOfOne(newElement))
     }
 }
 
-extension LazyCollectionType where Elements.Index : BidirectionalIndexType {
+public extension LazyCollectionType where Elements.Index : BidirectionalIndexType {
     
     @warn_unused_result
-    public func append(newElement: Elements.Generator.Element) -> LazyCollection<ConcatBidirectionalCollection<Elements, CollectionOfOne<Elements.Generator.Element>>> {
+    func append(newElement: Elements.Generator.Element) -> LazyCollection<ConcatBidirectionalCollection<Elements, CollectionOfOne<Elements.Generator.Element>>> {
         return self.concat(CollectionOfOne(newElement))
     }
 }
@@ -914,13 +940,13 @@ public extension SequenceType {
     }
 }
 
-extension SequenceType {
+public extension SequenceType {
     /// Returns the minimum element in `self` or `nil` if the sequence is empty.
     ///
     /// - Complexity: O(`elements.count`).
     ///
     @warn_unused_result
-    public func minElement<R : Comparable>(@noescape by: (Generator.Element) throws -> R) rethrows -> Generator.Element? {
+    func minElement<R : Comparable>(@noescape by: (Generator.Element) throws -> R) rethrows -> Generator.Element? {
         return try self.minElement { try by($0) < by($1) }
     }
     /// Returns the maximum element in `self` or `nil` if the sequence is empty.
@@ -928,7 +954,7 @@ extension SequenceType {
     /// - Complexity: O(`elements.count`).
     ///
     @warn_unused_result
-    public func maxElement<R : Comparable>(@noescape by: (Generator.Element) throws -> R) rethrows -> Generator.Element? {
+    func maxElement<R : Comparable>(@noescape by: (Generator.Element) throws -> R) rethrows -> Generator.Element? {
         return try self.maxElement { try by($0) < by($1) }
     }
 }
@@ -995,23 +1021,6 @@ public extension MutableCollectionType where Index : RandomAccessIndexType {
             if i != j {
                 swap(&self[i], &self[j])
             }
-        }
-    }
-}
-
-public extension Set {
-    
-    /// Return `true` if all of elements in `seq` is `x`.
-    @warn_unused_result
-    func all(x: Element) -> Bool {
-        
-        switch self.count {
-        case 0:
-            return true
-        case 1:
-            return self.first == x
-        default:
-            return false
         }
     }
 }
