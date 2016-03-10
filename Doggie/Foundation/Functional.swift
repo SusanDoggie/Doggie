@@ -34,10 +34,52 @@ public extension SequenceType {
     }
 }
 
+public extension Array {
+    
+    var array: [Generator.Element] {
+        return self
+    }
+}
+
+public extension AnyGenerator {
+    
+    var any: AnyGenerator<Element> {
+        return self
+    }
+}
+
+public extension AnySequence {
+    
+    var any: AnySequence<Element> {
+        return self
+    }
+}
+
+public extension AnyForwardCollection {
+    
+    var any: AnyForwardCollection<Element> {
+        return self
+    }
+}
+
+public extension AnyBidirectionalCollection {
+    
+    var any: AnyBidirectionalCollection<Element> {
+        return self
+    }
+}
+
+public extension AnyRandomAccessCollection {
+    
+    var any: AnyRandomAccessCollection<Element> {
+        return self
+    }
+}
+
 public extension GeneratorType {
     
     var any: AnyGenerator<Element> {
-        return anyGenerator(self)
+        return self as? AnyGenerator ?? anyGenerator(self)
     }
 }
 
@@ -48,7 +90,7 @@ public extension SequenceType {
     }
     
     var any: AnySequence<Generator.Element> {
-        return AnySequence(self)
+        return self as? AnySequence ?? AnySequence(self)
     }
 }
 
@@ -60,49 +102,49 @@ public extension CollectionType {
     }
     
     var any: AnyForwardCollection<Generator.Element> {
-        return AnyForwardCollection(self)
+        return self as? AnyForwardCollection ?? AnyForwardCollection(self)
     }
 }
 
 public extension CollectionType where Index : BidirectionalIndexType {
     
     var any: AnyBidirectionalCollection<Generator.Element> {
-        return AnyBidirectionalCollection(self)
+        return self as? AnyBidirectionalCollection ?? AnyBidirectionalCollection(self)
     }
 }
 
 public extension CollectionType where Index : RandomAccessIndexType {
     
     var any: AnyRandomAccessCollection<Generator.Element> {
-        return AnyRandomAccessCollection(self)
+        return self as? AnyRandomAccessCollection ?? AnyRandomAccessCollection(self)
     }
 }
 
 public extension LazySequenceType {
     
     var any: LazySequence<AnySequence<Elements.Generator.Element>> {
-        return AnySequence(self.elements).lazy
+        return self.elements.any.lazy
     }
 }
 
 public extension LazyCollectionType {
     
     var any: LazyCollection<AnyForwardCollection<Elements.Generator.Element>> {
-        return AnyForwardCollection(self.elements).lazy
+        return self.elements.any.lazy
     }
 }
 
 public extension LazyCollectionType where Elements.Index : BidirectionalIndexType {
     
     var any: LazyCollection<AnyBidirectionalCollection<Elements.Generator.Element>> {
-        return AnyBidirectionalCollection(self.elements).lazy
+        return self.elements.any.lazy
     }
 }
 
 public extension LazyCollectionType where Elements.Index : RandomAccessIndexType {
     
     var any: LazyCollection<AnyRandomAccessCollection<Elements.Generator.Element>> {
-        return AnyRandomAccessCollection(self.elements).lazy
+        return self.elements.any.lazy
     }
 }
 
