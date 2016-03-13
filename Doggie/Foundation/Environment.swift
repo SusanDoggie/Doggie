@@ -207,6 +207,97 @@ public extension Int {
     }
 }
 
+public extension UInt64 {
+    
+    var bitCount: UInt64 {
+        var x = self
+        var c: UInt64 = 0
+        while x != 0 {
+            x &= x - 1
+            c += 1
+        }
+        return c
+    }
+}
+public extension UInt32 {
+    
+    var bitCount: UInt32 {
+        var x = self
+        var c: UInt32 = 0
+        while x != 0 {
+            x &= x - 1
+            c += 1
+        }
+        return c
+    }
+}
+public extension UInt16 {
+    
+    var bitCount: UInt16 {
+        var x = self
+        var c: UInt16 = 0
+        while x != 0 {
+            x &= x - 1
+            c += 1
+        }
+        return c
+    }
+}
+public extension UInt8 {
+    
+    var bitCount: UInt8 {
+        var x = self
+        var c: UInt8 = 0
+        while x != 0 {
+            x &= x - 1
+            c += 1
+        }
+        return c
+    }
+}
+public extension UInt {
+    
+    var bitCount: UInt {
+        var x = self
+        var c: UInt = 0
+        while x != 0 {
+            x &= x - 1
+            c += 1
+        }
+        return c
+    }
+}
+public extension Int64 {
+    
+    var bitCount: Int64 {
+        return Int64(bitPattern: UInt64(bitPattern: self).bitCount)
+    }
+}
+public extension Int32 {
+    
+    var bitCount: Int32 {
+        return Int32(bitPattern: UInt32(bitPattern: self).bitCount)
+    }
+}
+public extension Int16 {
+    
+    var bitCount: Int16 {
+        return Int16(bitPattern: UInt16(bitPattern: self).bitCount)
+    }
+}
+public extension Int8 {
+    
+    var bitCount: Int8 {
+        return Int8(bitPattern: UInt8(bitPattern: self).bitCount)
+    }
+}
+public extension Int {
+    
+    var bitCount: Int {
+        return Int(bitPattern: UInt(bitPattern: self).bitCount)
+    }
+}
+
 extension IntegerType {
     
     public var isPower2 : Bool {
