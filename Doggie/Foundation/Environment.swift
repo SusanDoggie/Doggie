@@ -179,90 +179,42 @@ public extension UInt {
 public extension Int64 {
     
     var hibit: Int64 {
-        return self == 0 ? 0 : 1 << log2(self)
+        return Int64(bitPattern: UInt64(bitPattern: self).hibit)
     }
 }
 public extension Int32 {
     
     var hibit: Int32 {
-        return self == 0 ? 0 : 1 << log2(self)
+        return Int32(bitPattern: UInt32(bitPattern: self).hibit)
     }
 }
 public extension Int16 {
     
     var hibit: Int16 {
-        return self == 0 ? 0 : 1 << log2(self)
+        return Int16(bitPattern: UInt16(bitPattern: self).hibit)
     }
 }
 public extension Int8 {
     
     var hibit: Int8 {
-        return self == 0 ? 0 : 1 << log2(self)
+        return Int8(bitPattern: UInt8(bitPattern: self).hibit)
     }
 }
 public extension Int {
     
     var hibit: Int {
-        return self == 0 ? 0 : 1 << log2(self)
+        return Int(bitPattern: UInt(bitPattern: self).hibit)
     }
 }
 
-public extension UInt64 {
+public extension UnsignedIntegerType {
     
-    var bitCount: UInt64 {
+    var bitCount: Self {
         var x = self
-        var c: UInt64 = 0
+        var c: Self = 0
         while x != 0 {
             x &= x - 1
-            c += 1
-        }
-        return c
-    }
-}
-public extension UInt32 {
-    
-    var bitCount: UInt32 {
-        var x = self
-        var c: UInt32 = 0
-        while x != 0 {
-            x &= x - 1
-            c += 1
-        }
-        return c
-    }
-}
-public extension UInt16 {
-    
-    var bitCount: UInt16 {
-        var x = self
-        var c: UInt16 = 0
-        while x != 0 {
-            x &= x - 1
-            c += 1
-        }
-        return c
-    }
-}
-public extension UInt8 {
-    
-    var bitCount: UInt8 {
-        var x = self
-        var c: UInt8 = 0
-        while x != 0 {
-            x &= x - 1
-            c += 1
-        }
-        return c
-    }
-}
-public extension UInt {
-    
-    var bitCount: UInt {
-        var x = self
-        var c: UInt = 0
-        while x != 0 {
-            x &= x - 1
-            c += 1
+            c += 1 as Self
         }
         return c
     }
