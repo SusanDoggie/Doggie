@@ -185,6 +185,29 @@ public func pow(x: UInt8, _ n: UInt8) -> UInt8 {
     return pow(x, n, UInt8.max)
 }
 
+@warn_unused_result
+public func fibonacci<T: UnsignedIntegerType>(n: T) -> T {
+    func fib(n: T) -> (T, T) {
+        switch n {
+        case 0: return (1, 1)
+        case 1: return (1, 2)
+        default:
+            let i = n / 2
+            let (b, a) = fib(i - 1)
+            let a2 = a * a
+            let c = a2 + b * b
+            let d = a2 + 2 * a * b
+            return n & 1 == 0 ? (c, d) : (d, c + d)
+        }
+    }
+    return fib(n).0
+}
+@warn_unused_result
+public func FibonacciList<T: UnsignedIntegerType>(n: T) -> LazyMapSequence<LazyScanSequence<Slice<Range<T>>, (Int, Int)>, Int> {
+    
+    return (0..<n).dropLast().lazy.scan((1, 1)) { ($0.0.1, $0.0.0 + $0.0.1) }.map { $0.0 }
+}
+
 // MARK: Polynomial
 
 @warn_unused_result
