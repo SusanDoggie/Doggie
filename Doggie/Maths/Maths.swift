@@ -192,11 +192,10 @@ public func fibonacci<T: UnsignedIntegerType>(n: T) -> T {
         case 0: return (1, 1)
         case 1: return (1, 2)
         default:
-            let i = n / 2
-            let (b, a) = fib(i - 1)
-            let a2 = a * a
-            let c = a2 + b * b
-            let d = a2 + 2 * a * b
+            let (a, b) = fib(n / 2 - 1)
+            let b2 = b * b
+            let c = a * a + b2
+            let d = 2 * a * b + b2
             return n & 1 == 0 ? (c, d) : (d, c + d)
         }
     }
