@@ -402,7 +402,9 @@ public func ClosestBezier(point: Point, _ b0: Point, _ b1: Point, _ b2: Point, _
     let x: Polynomial = [b0.x - point.x, 3 * (b1.x - b0.x), 3 * (b2.x + b0.x) - 6 * b1.x, b3.x + 3 * (b1.x - b2.x) - b0.x]
     let y: Polynomial = [b0.y - point.y, 3 * (b1.y - b0.y), 3 * (b2.y + b0.y) - 6 * b1.y, b3.y + 3 * (b1.y - b2.y) - b0.y]
     let dot = x * x + y * y
-    return dot.derivative.roots.sort { dot.eval($0) }
+    let y_roots = y.roots
+    let roots = x.roots.filter { x in y_roots.contains { x.almostEqual($0) } }
+    return roots.count != 0 ? roots.sort { dot.eval($0) } : dot.derivative.roots.sort { dot.eval($0) }
 }
 
 @warn_unused_result
