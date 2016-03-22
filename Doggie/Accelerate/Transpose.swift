@@ -33,7 +33,10 @@ import Foundation
 //
 //
 
-public func Transpose<T>(row: Int, _ column: Int, var _ input: UnsafePointer<T>, _ in_stride: Int, var _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
+public func Transpose<T>(row: Int, _ column: Int, _ input: UnsafePointer<T>, _ in_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
+    
+    var input = input
+    var output = output
     
     let _in_stride = in_stride * column
     let _out_stride = out_stride * column
@@ -44,7 +47,12 @@ public func Transpose<T>(row: Int, _ column: Int, var _ input: UnsafePointer<T>,
     }
 }
 
-public func Transpose(row: Int, _ column: Int, var _ real: UnsafePointer<Float>, var _ imag: UnsafePointer<Float>, _ in_stride: Int, var _ _real: UnsafeMutablePointer<Float>, var _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int) {
+public func Transpose(row: Int, _ column: Int, _ real: UnsafePointer<Float>, _ imag: UnsafePointer<Float>, _ in_stride: Int, _ _real: UnsafeMutablePointer<Float>, _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int) {
+    
+    var real = real
+    var imag = imag
+    var _real = _real
+    var _imag = _imag
     
     let _in_stride = in_stride * column
     let _out_stride = out_stride * column
@@ -57,7 +65,12 @@ public func Transpose(row: Int, _ column: Int, var _ real: UnsafePointer<Float>,
     }
 }
 
-public func Transpose(row: Int, _ column: Int, var _ real: UnsafePointer<Double>, var _ imag: UnsafePointer<Double>, _ in_stride: Int, var _ _real: UnsafeMutablePointer<Double>, var _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int) {
+public func Transpose(row: Int, _ column: Int, _ real: UnsafePointer<Double>, _ imag: UnsafePointer<Double>, _ in_stride: Int, _ _real: UnsafeMutablePointer<Double>, _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int) {
+    
+    var real = real
+    var imag = imag
+    var _real = _real
+    var _imag = _imag
     
     let _in_stride = in_stride * column
     let _out_stride = out_stride * column

@@ -33,7 +33,10 @@ import Foundation
 //
 //
 
-public func Move<T>(count: Int, var _ input: UnsafePointer<T>, _ in_stride: Int, var _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
+public func Move<T>(count: Int, _ input: UnsafePointer<T>, _ in_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
+    
+    var input = input
+    var output = output
     
     for _ in 0..<count {
         output.memory = input.memory
@@ -41,7 +44,12 @@ public func Move<T>(count: Int, var _ input: UnsafePointer<T>, _ in_stride: Int,
         output += out_stride
     }
 }
-public func Move(count: Int, var _ real: UnsafePointer<Float>, var _ imag: UnsafePointer<Float>, _ in_stride: Int, var _ _real: UnsafeMutablePointer<Float>, var _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int) {
+public func Move(count: Int, _ real: UnsafePointer<Float>, _ imag: UnsafePointer<Float>, _ in_stride: Int, _ _real: UnsafeMutablePointer<Float>, _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int) {
+    
+    var real = real
+    var imag = imag
+    var _real = _real
+    var _imag = _imag
     
     for _ in 0..<count {
         _real.memory = real.memory
@@ -52,7 +60,12 @@ public func Move(count: Int, var _ real: UnsafePointer<Float>, var _ imag: Unsaf
         _imag += out_stride
     }
 }
-public func Move(count: Int, var _ real: UnsafePointer<Double>, var _ imag: UnsafePointer<Double>, _ in_stride: Int, var _ _real: UnsafeMutablePointer<Double>, var _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int) {
+public func Move(count: Int, _ real: UnsafePointer<Double>, _ imag: UnsafePointer<Double>, _ in_stride: Int, _ _real: UnsafeMutablePointer<Double>, _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int) {
+    
+    var real = real
+    var imag = imag
+    var _real = _real
+    var _imag = _imag
     
     for _ in 0..<count {
         _real.memory = real.memory
@@ -64,7 +77,10 @@ public func Move(count: Int, var _ real: UnsafePointer<Double>, var _ imag: Unsa
     }
 }
 
-public func Swap<T>(count: Int, var _ left: UnsafeMutablePointer<T>, _ l_stride: Int, var _ right: UnsafeMutablePointer<T>, _ r_stride: Int) {
+public func Swap<T>(count: Int, _ left: UnsafeMutablePointer<T>, _ l_stride: Int, _ right: UnsafeMutablePointer<T>, _ r_stride: Int) {
+    
+    var left = left
+    var right = right
     
     for _ in 0..<count {
         (left.memory, right.memory) = (right.memory, left.memory)
@@ -72,7 +88,12 @@ public func Swap<T>(count: Int, var _ left: UnsafeMutablePointer<T>, _ l_stride:
         right += r_stride
     }
 }
-public func Swap(count: Int, var _ lreal: UnsafeMutablePointer<Float>, var _ limag: UnsafeMutablePointer<Float>, _ l_stride: Int, var _ rreal: UnsafeMutablePointer<Float>, var _ rimag: UnsafeMutablePointer<Float>, _ r_stride: Int) {
+public func Swap(count: Int, _ lreal: UnsafeMutablePointer<Float>, _ limag: UnsafeMutablePointer<Float>, _ l_stride: Int, _ rreal: UnsafeMutablePointer<Float>, _ rimag: UnsafeMutablePointer<Float>, _ r_stride: Int) {
+    
+    var lreal = lreal
+    var limag = limag
+    var rreal = rreal
+    var rimag = rimag
     
     for _ in 0..<count {
         (lreal.memory, rreal.memory) = (rreal.memory, lreal.memory)
@@ -83,7 +104,12 @@ public func Swap(count: Int, var _ lreal: UnsafeMutablePointer<Float>, var _ lim
         rimag += r_stride
     }
 }
-public func Swap(count: Int, var _ lreal: UnsafeMutablePointer<Double>, var _ limag: UnsafeMutablePointer<Double>, _ l_stride: Int, var _ rreal: UnsafeMutablePointer<Double>, var _ rimag: UnsafeMutablePointer<Double>, _ r_stride: Int) {
+public func Swap(count: Int, _ lreal: UnsafeMutablePointer<Double>, _ limag: UnsafeMutablePointer<Double>, _ l_stride: Int, _ rreal: UnsafeMutablePointer<Double>, _ rimag: UnsafeMutablePointer<Double>, _ r_stride: Int) {
+    
+    var lreal = lreal
+    var limag = limag
+    var rreal = rreal
+    var rimag = rimag
     
     for _ in 0..<count {
         (lreal.memory, rreal.memory) = (rreal.memory, lreal.memory)

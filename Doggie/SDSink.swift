@@ -96,7 +96,8 @@ extension SDSink {
     }
     
     @warn_unused_result
-    public func scan<T>(var initial: T, combine: (T, Element)-> T) -> SDSink<T> {
+    public func scan<T>(initial: T, combine: (T, Element)-> T) -> SDSink<T> {
+        var initial = initial
         let _sink = SDSink<T>()
         _sink.put(initial)
         self.apply {

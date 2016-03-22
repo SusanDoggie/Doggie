@@ -40,14 +40,18 @@ extension Double {
 }
 
 @warn_unused_result
-public func gcd<U: UnsignedIntegerType>(var a: U, var _ b: U) -> U {
+public func gcd<U: UnsignedIntegerType>(a: U, _ b: U) -> U {
+    var a = a
+    var b = b
     while b != 0 {
         (a, b) = (b, a % b)
     }
     return a
 }
 @warn_unused_result
-public func gcd<S: SignedIntegerType>(var a: S, var _ b: S) -> S {
+public func gcd<S: SignedIntegerType>(a: S, _ b: S) -> S {
+    var a = a
+    var b = b
     let sign = a >= 0 || b >= 0
     while b != 0 {
         (a, b) = (b, a % b)
@@ -56,7 +60,9 @@ public func gcd<S: SignedIntegerType>(var a: S, var _ b: S) -> S {
 }
 
 @warn_unused_result
-public func exgcd<S: SignedIntegerType>(var a: S, var _ b: S) -> (gcd: S, x: S, y: S) {
+public func exgcd<S: SignedIntegerType>(a: S, _ b: S) -> (gcd: S, x: S, y: S) {
+    var a = a
+    var b = b
     var iter = 0
     let sign1 = a >= 0 || b < 0
     let sign2 = a < 0 || b >= 0
@@ -77,7 +83,9 @@ public func exgcd<S: SignedIntegerType>(var a: S, var _ b: S) -> (gcd: S, x: S, 
 }
 
 @warn_unused_result
-public func modinv<U: UnsignedIntegerType>(var a: U, var _ b: U) -> U {
+public func modinv<U: UnsignedIntegerType>(a: U, _ b: U) -> U {
+    var a = a
+    var b = b
     let _b = b
     var iter = 0
     var x: (U, U) = (1, 0)
@@ -314,8 +322,9 @@ public func degree4decompose(b: Double, _ c: Double, _ d: Double, _ e: Double) -
 }
 
 @warn_unused_result
-public func degree5decompose(b: Double, _ c: Double, _ d: Double, _ e: Double, _ f: Double, var eps: Double = 1e-14) -> (Double, (Double, Double), (Double, Double)) {
+public func degree5decompose(b: Double, _ c: Double, _ d: Double, _ e: Double, _ f: Double, eps: Double = 1e-14) -> (Double, (Double, Double), (Double, Double)) {
     
+    var eps = eps
     var iter = 0
     
     var r = b.almostZero(reference: c) ? c : c / b
@@ -357,8 +366,9 @@ public func degree5decompose(b: Double, _ c: Double, _ d: Double, _ e: Double, _
 }
 
 @warn_unused_result
-public func degree6decompose(b: Double, _ c: Double, _ d: Double, _ e: Double, _ f: Double, _ g: Double, var eps: Double = 1e-14) -> ((Double, Double), (Double, Double), (Double, Double)) {
+public func degree6decompose(b: Double, _ c: Double, _ d: Double, _ e: Double, _ f: Double, _ g: Double, eps: Double = 1e-14) -> ((Double, Double), (Double, Double), (Double, Double)) {
     
+    var eps = eps
     var iter = 0
     
     var r = b.almostZero(reference: c) ? c : c / b
@@ -453,7 +463,7 @@ public func degree4roots(b: Double, _ c: Double, _ d: Double, _ e: Double) -> [D
     }
     
     let _d2 = degree4decompose(b, c, d, e)
-    return Array(Set(degree2roots(_d2.0).concat(degree2roots(_d2.1))))
+    return Array(Set(degree2roots(_d2.0.0, _d2.0.1).concat(degree2roots(_d2.1.0, _d2.1.1))))
 }
 
 // MARK: Others

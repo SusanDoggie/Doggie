@@ -84,8 +84,8 @@ extension Regex: CustomStringConvertible, CustomDebugStringConvertible {
 
 public protocol RegularExpressionMatchable {
     
-    typealias Matching
-    typealias Replacement
+    associatedtype Matching
+    associatedtype Replacement
     
     /// Returns an array containing all the matches of the regular expression.
     @warn_unused_result

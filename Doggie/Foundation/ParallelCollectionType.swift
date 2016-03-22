@@ -34,7 +34,7 @@ extension CollectionType where Index : RandomAccessIndexType {
 
 public protocol ParallelCollectionType : CollectionType {
     
-    typealias Index : RandomAccessIndexType
+    associatedtype Index : RandomAccessIndexType
 }
 
 extension ParallelCollectionType {

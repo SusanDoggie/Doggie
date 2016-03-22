@@ -33,7 +33,13 @@ import Foundation
 //
 //
 
-public func ToRect(count: Int, var _ rho: UnsafePointer<Float>, var _ theta: UnsafePointer<Float>, _ in_stride: Int, var _ real: UnsafeMutablePointer<Float>, var _ imag: UnsafeMutablePointer<Float>, _ out_stride: Int) {
+public func ToRect(count: Int, _ rho: UnsafePointer<Float>, _ theta: UnsafePointer<Float>, _ in_stride: Int, _ real: UnsafeMutablePointer<Float>, _ imag: UnsafeMutablePointer<Float>, _ out_stride: Int) {
+    
+    var rho = rho
+    var theta = theta
+    var real = real
+    var imag = imag
+    
     for _ in 0..<count {
         let _rho = rho.memory
         let _theta = theta.memory
@@ -45,7 +51,13 @@ public func ToRect(count: Int, var _ rho: UnsafePointer<Float>, var _ theta: Uns
         imag += out_stride
     }
 }
-public func ToPolar(count: Int, var _ real: UnsafePointer<Float>, var _ imag: UnsafePointer<Float>, _ in_stride: Int, var _ rho: UnsafeMutablePointer<Float>, var _ theta: UnsafeMutablePointer<Float>, _ out_stride: Int) {
+public func ToPolar(count: Int, _ real: UnsafePointer<Float>, _ imag: UnsafePointer<Float>, _ in_stride: Int, _ rho: UnsafeMutablePointer<Float>, _ theta: UnsafeMutablePointer<Float>, _ out_stride: Int) {
+    
+    var real = real
+    var imag = imag
+    var rho = rho
+    var theta = theta
+    
     for _ in 0..<count {
         let _real = real.memory
         let _imag = imag.memory
@@ -58,7 +70,13 @@ public func ToPolar(count: Int, var _ real: UnsafePointer<Float>, var _ imag: Un
     }
 }
 
-public func ToRect(count: Int, var _ rho: UnsafePointer<Double>, var _ theta: UnsafePointer<Double>, _ in_stride: Int, var _ real: UnsafeMutablePointer<Double>, var _ imag: UnsafeMutablePointer<Double>, _ out_stride: Int) {
+public func ToRect(count: Int, _ rho: UnsafePointer<Double>, _ theta: UnsafePointer<Double>, _ in_stride: Int, _ real: UnsafeMutablePointer<Double>, _ imag: UnsafeMutablePointer<Double>, _ out_stride: Int) {
+    
+    var rho = rho
+    var theta = theta
+    var real = real
+    var imag = imag
+    
     for _ in 0..<count {
         let _rho = rho.memory
         let _theta = theta.memory
@@ -70,7 +88,13 @@ public func ToRect(count: Int, var _ rho: UnsafePointer<Double>, var _ theta: Un
         imag += out_stride
     }
 }
-public func ToPolar(count: Int, var _ real: UnsafePointer<Double>, var _ imag: UnsafePointer<Double>, _ in_stride: Int, var _ rho: UnsafeMutablePointer<Double>, var _ theta: UnsafeMutablePointer<Double>, _ out_stride: Int) {
+public func ToPolar(count: Int, _ real: UnsafePointer<Double>, _ imag: UnsafePointer<Double>, _ in_stride: Int, _ rho: UnsafeMutablePointer<Double>, _ theta: UnsafeMutablePointer<Double>, _ out_stride: Int) {
+    
+    var real = real
+    var imag = imag
+    var rho = rho
+    var theta = theta
+    
     for _ in 0..<count {
         let _real = real.memory
         let _imag = imag.memory

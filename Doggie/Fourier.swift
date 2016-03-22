@@ -226,7 +226,8 @@ public func InverseBluestein(buffer: [Complex], inout _ result: [Complex]) {
 
 // MARK: Radix-2 Cooley-Tukey
 
-public func Radix2CooleyTukey(var buffer: [Double], inout _ result: [Complex]) {
+public func Radix2CooleyTukey(buffer: [Double], inout _ result: [Complex]) {
+    var buffer = buffer
     switch buffer.count {
     case 0:
         result = []
@@ -241,7 +242,8 @@ public func Radix2CooleyTukey(var buffer: [Double], inout _ result: [Complex]) {
         DispatchRadix2CooleyTukey(log2(buffer.count), buffer.map { $0 / _sqrt }, 1, &result, 1)
     }
 }
-public func InverseRadix2CooleyTukey(var buffer: [Double], inout _ result: [Complex]) {
+public func InverseRadix2CooleyTukey(buffer: [Double], inout _ result: [Complex]) {
+    var buffer = buffer
     switch buffer.count {
     case 0:
         result = []

@@ -26,147 +26,168 @@
 import Foundation
 
 @warn_unused_result
-public func add<T: IntegerType>(var lhs: [T], _ rhs: [T]) -> [T] {
+public func add<T: IntegerType>(lhs: [T], _ rhs: [T]) -> [T] {
+    var lhs = lhs
     assert(lhs.count == rhs.count, "mismatch count of inputs.")
     Add(lhs.count, lhs, 1, rhs, 1, &lhs, 1)
     return lhs
 }
 
 @warn_unused_result
-public func sub<T: IntegerType>(var lhs: [T], _ rhs: [T]) -> [T] {
+public func sub<T: IntegerType>(lhs: [T], _ rhs: [T]) -> [T] {
+    var lhs = lhs
     assert(lhs.count == rhs.count, "mismatch count of inputs.")
     Sub(lhs.count, lhs, 1, rhs, 1, &lhs, 1)
     return lhs
 }
 
 @warn_unused_result
-public func mul<T: IntegerType>(var lhs: [T], _ rhs: [T]) -> [T] {
+public func mul<T: IntegerType>(lhs: [T], _ rhs: [T]) -> [T] {
+    var lhs = lhs
     assert(lhs.count == rhs.count, "mismatch count of inputs.")
     Mul(lhs.count, lhs, 1, rhs, 1, &lhs, 1)
     return lhs
 }
 
 @warn_unused_result
-public func div<T: IntegerType>(var lhs: [T], _ rhs: [T]) -> [T] {
+public func div<T: IntegerType>(lhs: [T], _ rhs: [T]) -> [T] {
+    var lhs = lhs
     assert(lhs.count == rhs.count, "mismatch count of inputs.")
     Div(lhs.count, lhs, 1, rhs, 1, &lhs, 1)
     return lhs
 }
 
 @warn_unused_result
-public func mod<T: IntegerType>(var lhs: [T], _ rhs: [T]) -> [T] {
+public func mod<T: IntegerType>(lhs: [T], _ rhs: [T]) -> [T] {
+    var lhs = lhs
     assert(lhs.count == rhs.count, "mismatch count of inputs.")
     Mod(lhs.count, lhs, 1, rhs, 1, &lhs, 1)
     return lhs
 }
 
 @warn_unused_result
-public func add(var lhs: [Float], _ rhs: [Float]) -> [Float] {
+public func add(lhs: [Float], _ rhs: [Float]) -> [Float] {
+    var lhs = lhs
     assert(lhs.count == rhs.count, "mismatch count of inputs.")
     Add(lhs.count, lhs, 1, rhs, 1, &lhs, 1)
     return lhs
 }
 
 @warn_unused_result
-public func sub(var lhs: [Float], _ rhs: [Float]) -> [Float] {
+public func sub(lhs: [Float], _ rhs: [Float]) -> [Float] {
+    var lhs = lhs
     assert(lhs.count == rhs.count, "mismatch count of inputs.")
     Sub(lhs.count, lhs, 1, rhs, 1, &lhs, 1)
     return lhs
 }
 
 @warn_unused_result
-public func mul(var lhs: [Float], _ rhs: [Float]) -> [Float] {
+public func mul(lhs: [Float], _ rhs: [Float]) -> [Float] {
+    var lhs = lhs
     assert(lhs.count == rhs.count, "mismatch count of inputs.")
     Mul(lhs.count, lhs, 1, rhs, 1, &lhs, 1)
     return lhs
 }
 
 @warn_unused_result
-public func div(var lhs: [Float], _ rhs: [Float]) -> [Float] {
+public func div(lhs: [Float], _ rhs: [Float]) -> [Float] {
+    var lhs = lhs
     assert(lhs.count == rhs.count, "mismatch count of inputs.")
     Div(lhs.count, lhs, 1, rhs, 1, &lhs, 1)
     return lhs
 }
 
 @warn_unused_result
-public func mod(var lhs: [Float], _ rhs: [Float]) -> [Float] {
+public func mod(lhs: [Float], _ rhs: [Float]) -> [Float] {
+    var lhs = lhs
     assert(lhs.count == rhs.count, "mismatch count of inputs.")
     Mod(lhs.count, lhs, 1, rhs, 1, &lhs, 1)
     return lhs
 }
 
 @warn_unused_result
-public func mulAdd(var a: [Float], _ b: [Float], _ c: [Float]) -> [Float] {
+public func mulAdd(a: [Float], _ b: [Float], _ c: [Float]) -> [Float] {
+    var a = a
     assert(a.count == b.count && a.count == c.count, "mismatch count of inputs.")
     MulAdd(a.count, a, 1, b, 1, c, 1, &a, 1)
     return a
 }
 
 @warn_unused_result
-public func mulSub(var a: [Float], _ b: [Float], _ c: [Float]) -> [Float] {
+public func mulSub(a: [Float], _ b: [Float], _ c: [Float]) -> [Float] {
+    var a = a
     assert(a.count == b.count && a.count == c.count, "mismatch count of inputs.")
     MulSub(a.count, a, 1, b, 1, c, 1, &a, 1)
     return a
 }
 
 @warn_unused_result
-public func subMul(var a: [Float], _ b: [Float], _ c: [Float]) -> [Float] {
+public func subMul(a: [Float], _ b: [Float], _ c: [Float]) -> [Float] {
+    var a = a
     assert(a.count == b.count && a.count == c.count, "mismatch count of inputs.")
     SubMul(a.count, a, 1, b, 1, c, 1, &a, 1)
     return a
 }
 
 @warn_unused_result
-public func add(var lhs: [Double], _ rhs: [Double]) -> [Double] {
+public func add(lhs: [Double], _ rhs: [Double]) -> [Double] {
+    var lhs = lhs
     assert(lhs.count == rhs.count, "mismatch count of inputs.")
     Add(lhs.count, lhs, 1, rhs, 1, &lhs, 1)
     return lhs
 }
 
 @warn_unused_result
-public func sub(var lhs: [Double], _ rhs: [Double]) -> [Double] {
+public func sub(lhs: [Double], _ rhs: [Double]) -> [Double] {
+    var lhs = lhs
     assert(lhs.count == rhs.count, "mismatch count of inputs.")
     Sub(lhs.count, lhs, 1, rhs, 1, &lhs, 1)
     return lhs
 }
 
 @warn_unused_result
-public func mul(var lhs: [Double], _ rhs: [Double]) -> [Double] {
+public func mul(lhs: [Double], _ rhs: [Double]) -> [Double] {
+    var lhs = lhs
     assert(lhs.count == rhs.count, "mismatch count of inputs.")
     Mul(lhs.count, lhs, 1, rhs, 1, &lhs, 1)
     return lhs
 }
 
 @warn_unused_result
-public func div(var lhs: [Double], _ rhs: [Double]) -> [Double] {
+public func div(lhs: [Double], _ rhs: [Double]) -> [Double] {
+    var lhs = lhs
     assert(lhs.count == rhs.count, "mismatch count of inputs.")
     Div(lhs.count, lhs, 1, rhs, 1, &lhs, 1)
     return lhs
 }
 
 @warn_unused_result
-public func mod(var lhs: [Double], _ rhs: [Double]) -> [Double] {
+public func mod(lhs: [Double], _ rhs: [Double]) -> [Double] {
+    var lhs = lhs
     assert(lhs.count == rhs.count, "mismatch count of inputs.")
     Mod(lhs.count, lhs, 1, rhs, 1, &lhs, 1)
     return lhs
 }
 
 @warn_unused_result
-public func mulAdd(var a: [Double], _ b: [Double], _ c: [Double]) -> [Double] {
+public func mulAdd(a: [Double], _ b: [Double], _ c: [Double]) -> [Double] {
+    var a = a
     assert(a.count == b.count && a.count == c.count, "mismatch count of inputs.")
     MulAdd(a.count, a, 1, b, 1, c, 1, &a, 1)
     return a
 }
 
 @warn_unused_result
-public func mulSub(var a: [Double], _ b: [Double], _ c: [Double]) -> [Double] {
+public func mulSub(a: [Double], _ b: [Double], _ c: [Double]) -> [Double] {
+    var a = a
     assert(a.count == b.count && a.count == c.count, "mismatch count of inputs.")
     MulSub(a.count, a, 1, b, 1, c, 1, &a, 1)
     return a
 }
 
 @warn_unused_result
-public func subMul(var a: [Double], _ b: [Double], _ c: [Double]) -> [Double] {
+public func subMul(a: [Double], _ b: [Double], _ c: [Double]) -> [Double] {
+    var a = a
     assert(a.count == b.count && a.count == c.count, "mismatch count of inputs.")
     SubMul(a.count, a, 1, b, 1, c, 1, &a, 1)
     return a
@@ -185,63 +206,72 @@ public func dot(a: [Double], _ b: [Double]) -> Double {
 }
 
 @warn_unused_result
-public func add(var lhs: [Complex], _ rhs: [Complex]) -> [Complex] {
+public func add(lhs: [Complex], _ rhs: [Complex]) -> [Complex] {
+    var lhs = lhs
     assert(lhs.count == rhs.count, "mismatch count of inputs.")
     Add(lhs.count, lhs, 1, rhs, 1, &lhs, 1)
     return lhs
 }
 
 @warn_unused_result
-public func sub(var lhs: [Complex], _ rhs: [Complex]) -> [Complex] {
+public func sub(lhs: [Complex], _ rhs: [Complex]) -> [Complex] {
+    var lhs = lhs
     assert(lhs.count == rhs.count, "mismatch count of inputs.")
     Sub(lhs.count, lhs, 1, rhs, 1, &lhs, 1)
     return lhs
 }
 
 @warn_unused_result
-public func mul(var lhs: [Complex], _ rhs: [Complex]) -> [Complex] {
+public func mul(lhs: [Complex], _ rhs: [Complex]) -> [Complex] {
+    var lhs = lhs
     assert(lhs.count == rhs.count, "mismatch count of inputs.")
     Mul(lhs.count, lhs, 1, rhs, 1, &lhs, 1)
     return lhs
 }
 
 @warn_unused_result
-public func mulAdd(var a: [Complex], _ b: [Complex], _ c: [Complex]) -> [Complex] {
+public func mulAdd(a: [Complex], _ b: [Complex], _ c: [Complex]) -> [Complex] {
+    var a = a
     assert(a.count == b.count && a.count == c.count, "mismatch count of inputs.")
     MulAdd(a.count, a, 1, b, 1, c, 1, &a, 1)
     return a
 }
 
 @warn_unused_result
-public func mulSub(var a: [Complex], _ b: [Complex], _ c: [Complex]) -> [Complex] {
+public func mulSub(a: [Complex], _ b: [Complex], _ c: [Complex]) -> [Complex] {
+    var a = a
     assert(a.count == b.count && a.count == c.count, "mismatch count of inputs.")
     MulSub(a.count, a, 1, b, 1, c, 1, &a, 1)
     return a
 }
 
 @warn_unused_result
-public func subMul(var a: [Complex], _ b: [Complex], _ c: [Complex]) -> [Complex] {
+public func subMul(a: [Complex], _ b: [Complex], _ c: [Complex]) -> [Complex] {
+    var a = a
     assert(a.count == b.count && a.count == c.count, "mismatch count of inputs.")
     SubMul(a.count, a, 1, b, 1, c, 1, &a, 1)
     return a
 }
 
 @warn_unused_result
-public func mulConj(var lhs: [Complex], _ rhs: [Complex]) -> [Complex] {
+public func mulConj(lhs: [Complex], _ rhs: [Complex]) -> [Complex] {
+    var lhs = lhs
     assert(lhs.count == rhs.count, "mismatch count of inputs.")
     MulConj(lhs.count, lhs, 1, rhs, 1, &lhs, 1)
     return lhs
 }
 
 @warn_unused_result
-public func div(var lhs: [Complex], _ rhs: [Complex]) -> [Complex] {
+public func div(lhs: [Complex], _ rhs: [Complex]) -> [Complex] {
+    var lhs = lhs
     assert(lhs.count == rhs.count, "mismatch count of inputs.")
     Div(lhs.count, lhs, 1, rhs, 1, &lhs, 1)
     return lhs
 }
 
 @warn_unused_result
-public func transpose<T>(row: Int, _ column: Int, var _ data: [T]) -> [T] {
+public func transpose<T>(row: Int, _ column: Int,  _ data: [T]) -> [T] {
+    var data = data
     assert(data.count == row * column, "mismatch count of input.")
     Transpose(row, column, data, 1, &data, 1)
     return data
@@ -264,7 +294,8 @@ public func MatrixElimination(row: Int, inout _ matrix: [Double]) -> Bool {
 }
 
 @warn_unused_result
-public func Radix2CooleyTukey(var buffer: [Complex]) -> [Complex] {
+public func Radix2CooleyTukey(buffer: [Complex]) -> [Complex] {
+    var buffer = buffer
     assert(buffer.count.isPower2, "size of buffer must be power of 2.")
     let _sqrt = sqrt(Double(buffer.count))
     if buffer.count == 1 {
@@ -274,7 +305,8 @@ public func Radix2CooleyTukey(var buffer: [Complex]) -> [Complex] {
     return buffer
 }
 @warn_unused_result
-public func InverseRadix2CooleyTukey(var buffer: [Complex]) -> [Complex] {
+public func InverseRadix2CooleyTukey(buffer: [Complex]) -> [Complex] {
+    var buffer = buffer
     assert(buffer.count.isPower2, "size of buffer must be power of 2.")
     let _sqrt = sqrt(Double(buffer.count))
     if buffer.count == 1 {
@@ -285,7 +317,9 @@ public func InverseRadix2CooleyTukey(var buffer: [Complex]) -> [Complex] {
 }
 
 @warn_unused_result
-public func Radix2FiniteImpulseFilter(var signal: [Complex], var _ kernel: [Complex]) -> [Complex] {
+public func Radix2FiniteImpulseFilter(signal: [Complex],  _ kernel: [Complex]) -> [Complex] {
+    var signal = signal
+    var kernel = kernel
     assert(signal.count.isPower2, "size of signal must be power of 2.")
     assert(signal.count == kernel.count, "mismatch count of inputs.")
     DispatchRadix2FiniteImpulseFilter(log2(signal.count), signal, 1, kernel, 1, &signal, 1, &kernel, 1)
@@ -293,7 +327,9 @@ public func Radix2FiniteImpulseFilter(var signal: [Complex], var _ kernel: [Comp
 }
 
 @warn_unused_result
-public func Radix2CircularConvolve(var signal: [Double], var _ kernel: [Double]) -> [Double] {
+public func Radix2CircularConvolve(signal: [Double],  _ kernel: [Double]) -> [Double] {
+    var signal = signal
+    var kernel = kernel
     assert(signal.count.isPower2, "size of signal must be power of 2.")
     assert(signal.count == kernel.count, "mismatch count of inputs.")
     if signal.count == 1 {
@@ -304,7 +340,9 @@ public func Radix2CircularConvolve(var signal: [Double], var _ kernel: [Double])
 }
 
 @warn_unused_result
-public func Radix2CircularConvolve(var signal: [Complex], var _ kernel: [Complex]) -> [Complex] {
+public func Radix2CircularConvolve(signal: [Complex],  _ kernel: [Complex]) -> [Complex] {
+    var signal = signal
+    var kernel = kernel
     assert(signal.count.isPower2, "size of signal must be power of 2.")
     assert(signal.count == kernel.count, "mismatch count of inputs.")
     if signal.count == 1 {
@@ -315,7 +353,8 @@ public func Radix2CircularConvolve(var signal: [Complex], var _ kernel: [Complex
 }
 
 @warn_unused_result
-public func Radix2PowerCircularConvolve(var signal: [Double], _ n: Double) -> [Double] {
+public func Radix2PowerCircularConvolve(signal: [Double], _ n: Double) -> [Double] {
+    var signal = signal
     assert(signal.count.isPower2, "size of signal must be power of 2.")
     if signal.count == 1 {
         return signal.map { pow($0, n) }
@@ -326,7 +365,8 @@ public func Radix2PowerCircularConvolve(var signal: [Double], _ n: Double) -> [D
 }
 
 @warn_unused_result
-public func Radix2PowerCircularConvolve(var signal: [Complex], _ n: Double) -> [Complex] {
+public func Radix2PowerCircularConvolve(signal: [Complex], _ n: Double) -> [Complex] {
+    var signal = signal
     assert(signal.count.isPower2, "size of signal must be power of 2.")
     if signal.count == 1 {
         return signal.map { pow($0, n) }
@@ -337,7 +377,8 @@ public func Radix2PowerCircularConvolve(var signal: [Complex], _ n: Double) -> [
 }
 
 @warn_unused_result
-public func NumberTheoreticTransform(var buffer: [UInt32]) -> [UInt32] {
+public func NumberTheoreticTransform(buffer: [UInt32]) -> [UInt32] {
+    var buffer = buffer
     switch buffer.count {
     case 2:
         NumberTheoreticTransform_2(buffer, 1, &buffer, 1)
@@ -360,7 +401,8 @@ public func NumberTheoreticTransform(var buffer: [UInt32]) -> [UInt32] {
 }
 
 @warn_unused_result
-public func InverseNumberTheoreticTransform(var buffer: [UInt32]) -> [UInt32] {
+public func InverseNumberTheoreticTransform(buffer: [UInt32]) -> [UInt32] {
+    var buffer = buffer
     switch buffer.count {
     case 2:
         InverseNumberTheoreticTransform_2(buffer, 1, &buffer, 1)
@@ -383,7 +425,9 @@ public func InverseNumberTheoreticTransform(var buffer: [UInt32]) -> [UInt32] {
 }
 
 @warn_unused_result
-public func Radix2CircularConvolve(var signal: [UInt32], var _ kernel: [UInt32]) -> [UInt32] {
+public func Radix2CircularConvolve(signal: [UInt32],  _ kernel: [UInt32]) -> [UInt32] {
+    var signal = signal
+    var kernel = kernel
     assert(signal.count == kernel.count, "mismatch count of inputs.")
     switch signal.count {
     case 2:

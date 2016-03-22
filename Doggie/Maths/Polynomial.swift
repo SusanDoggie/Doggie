@@ -326,7 +326,8 @@ public prefix func - (p: Polynomial) -> Polynomial {
 }
 
 @warn_unused_result
-public func + (var lhs: Polynomial, rhs: Polynomial) -> Polynomial {
+public func + (lhs: Polynomial, rhs: Polynomial) -> Polynomial {
+    var lhs = lhs
     var buf = [Double](count: max(lhs.count, rhs.count), repeatedValue: 0)
     for idx in buf.indices {
         buf[idx] = lhs[idx] + rhs[idx]
@@ -335,19 +336,22 @@ public func + (var lhs: Polynomial, rhs: Polynomial) -> Polynomial {
 }
 
 @warn_unused_result
-public func + (lhs: Double, var rhs: Polynomial) -> Polynomial {
+public func + (lhs: Double, rhs: Polynomial) -> Polynomial {
+    var rhs = rhs
     rhs[0] += lhs
     return rhs
 }
 
 @warn_unused_result
-public func + (var lhs: Polynomial, rhs: Double) -> Polynomial {
+public func + (lhs: Polynomial, rhs: Double) -> Polynomial {
+    var lhs = lhs
     lhs[0] += rhs
     return lhs
 }
 
 @warn_unused_result
-public func - (var lhs: Polynomial, rhs: Polynomial) -> Polynomial {
+public func - (lhs: Polynomial, rhs: Polynomial) -> Polynomial {
+    var lhs = lhs
     var buf = [Double](count: max(lhs.count, rhs.count), repeatedValue: 0)
     for idx in buf.indices {
         buf[idx] = lhs[idx] - rhs[idx]
@@ -363,7 +367,8 @@ public func - (lhs: Double, rhs: Polynomial) -> Polynomial {
 }
 
 @warn_unused_result
-public func - (var lhs: Polynomial, rhs: Double) -> Polynomial {
+public func - (lhs: Polynomial, rhs: Double) -> Polynomial {
+    var lhs = lhs
     lhs[0] -= rhs
     return lhs
 }
@@ -477,14 +482,18 @@ public func != (lhs: Polynomial, rhs: Double) -> Bool {
     return lhs.degree != 0 || lhs[0] != rhs
 }
 @warn_unused_result
-public func gcd(var a: Polynomial, var _ b: Polynomial) -> Polynomial {
+public func gcd(a: Polynomial, _ b: Polynomial) -> Polynomial {
+    var a = a
+    var b = b
     while !b.all({ $0.almostZero() }) {
         (a, b) = (b, a % b)
     }
     return a
 }
 @warn_unused_result
-public func exgcd(var a: Polynomial, var _ b: Polynomial) -> (gcd: Polynomial, x: Polynomial, y: Polynomial) {
+public func exgcd(a: Polynomial, _ b: Polynomial) -> (gcd: Polynomial, x: Polynomial, y: Polynomial) {
+    var a = a
+    var b = b
     var x: (Polynomial, Polynomial) = ([1], [0])
     var y: (Polynomial, Polynomial) = ([0], [1])
     while !b.all({ $0.almostZero() }) {

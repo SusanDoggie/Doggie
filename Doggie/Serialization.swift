@@ -55,7 +55,7 @@ public func SDJSONSerialization(data: AnyObject) throws -> String {
     if NSJSONSerialization.isValidJSONObject(data) {
         return String(data: try NSJSONSerialization.dataWithJSONObject(data, options: .PrettyPrinted), encoding: NSUTF8StringEncoding)!
     }
-    throw NSError(domain: __FUNCTION__, code: 1, userInfo: ["Message": "Invalid JSON Object"])
+    throw NSError(domain: #function, code: 1, userInfo: ["Message": "Invalid JSON Object"])
 }
 public func SDJSONSerialization(data: AnyObject, toStream stream: NSOutputStream) throws -> Int {
     if NSJSONSerialization.isValidJSONObject(data) {
@@ -66,7 +66,7 @@ public func SDJSONSerialization(data: AnyObject, toStream stream: NSOutputStream
         }
         return count
     }
-    print("Error in \(__FUNCTION__): Invalid JSON Object")
+    print("Error in \(#function): Invalid JSON Object")
     return 0
 }
 

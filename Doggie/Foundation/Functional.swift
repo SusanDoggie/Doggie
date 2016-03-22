@@ -79,7 +79,7 @@ public extension AnyRandomAccessCollection {
 public extension GeneratorType {
     
     var any: AnyGenerator<Element> {
-        return self as? AnyGenerator ?? anyGenerator(self)
+        return self as? AnyGenerator ?? AnyGenerator(self)
     }
 }
 
@@ -88,6 +88,13 @@ public extension SequenceType {
     var array: [Generator.Element] {
         return self as? [Generator.Element] ?? Array(self)
     }
+    
+    var any: AnySequence<Generator.Element> {
+        return self as? AnySequence ?? AnySequence(self.generate)
+    }
+}
+
+public extension SequenceType where SubSequence : SequenceType, SubSequence.Generator.Element == Generator.Element, SubSequence.SubSequence == SubSequence {
     
     var any: AnySequence<Generator.Element> {
         return self as? AnySequence ?? AnySequence(self)
@@ -121,6 +128,13 @@ public extension CollectionType where Index : RandomAccessIndexType {
 }
 
 public extension LazySequenceType {
+    
+    var any: LazySequence<AnySequence<Elements.Generator.Element>> {
+        return self.elements.any.lazy
+    }
+}
+
+public extension LazySequenceType where Elements.SubSequence : SequenceType, Elements.SubSequence.Generator.Element == Elements.Generator.Element, Elements.SubSequence.SubSequence == Elements.SubSequence {
     
     var any: LazySequence<AnySequence<Elements.Generator.Element>> {
         return self.elements.any.lazy
@@ -309,13 +323,13 @@ public struct OptionOneCollection<T> : CollectionType {
         self.value = value
     }
     
-    public var startIndex : Bit {
-        return .Zero
+    public var startIndex : Int {
+        return 0
     }
-    public var endIndex : Bit {
-        return value == nil ? .Zero : .One
+    public var endIndex : Int {
+        return value == nil ? 0 : 1
     }
-    public subscript(idx: Bit) -> T {
+    public subscript(idx: Int) -> T {
         return value!
     }
     

@@ -35,7 +35,10 @@ private func mul_mod(a: UInt32, _ b: UInt32, _ m: UInt32) -> UInt32 {
     return UInt32((UInt64(a) * UInt64(b)) % UInt64(m))
 }
 
-public func NumberTheoreticTransform_2(var input: UnsafePointer<UInt32>, _ in_stride: Int, var _ output: UnsafeMutablePointer<UInt32>, _ out_stride: Int) {
+public func NumberTheoreticTransform_2(input: UnsafePointer<UInt32>, _ in_stride: Int, _ output: UnsafeMutablePointer<UInt32>, _ out_stride: Int) {
+    
+    var input = input
+    var output = output
     
     let a = input.memory % 65537
     input += in_stride
@@ -48,7 +51,10 @@ public func NumberTheoreticTransform_2(var input: UnsafePointer<UInt32>, _ in_st
     output.memory = (a + left_shift_mod(b, 16, 65537)) % 65537
 }
 
-public func NumberTheoreticTransform_4(var input: UnsafePointer<UInt32>, _ in_stride: Int, var _ output: UnsafeMutablePointer<UInt32>, _ out_stride: Int) {
+public func NumberTheoreticTransform_4(input: UnsafePointer<UInt32>, _ in_stride: Int, _ output: UnsafeMutablePointer<UInt32>, _ out_stride: Int) {
+    
+    var input = input
+    var output = output
     
     let a = input.memory % 65537
     input += in_stride
@@ -216,7 +222,10 @@ public func DispatchNumberTheoreticTransform_32(input: UnsafePointer<UInt32>, _ 
     }
 }
 
-public func InverseNumberTheoreticTransform_2(var input: UnsafePointer<UInt32>, _ in_stride: Int, var _ output: UnsafeMutablePointer<UInt32>, _ out_stride: Int) {
+public func InverseNumberTheoreticTransform_2(input: UnsafePointer<UInt32>, _ in_stride: Int, _ output: UnsafeMutablePointer<UInt32>, _ out_stride: Int) {
+    
+    var input = input
+    var output = output
     
     let a = input.memory % 65537
     input += in_stride
@@ -229,7 +238,10 @@ public func InverseNumberTheoreticTransform_2(var input: UnsafePointer<UInt32>, 
     output.memory = (a + left_shift_mod(b, 16, 65537)) % 65537
 }
 
-public func InverseNumberTheoreticTransform_4(var input: UnsafePointer<UInt32>, _ in_stride: Int, var _ output: UnsafeMutablePointer<UInt32>, _ out_stride: Int) {
+public func InverseNumberTheoreticTransform_4(input: UnsafePointer<UInt32>, _ in_stride: Int, _ output: UnsafeMutablePointer<UInt32>, _ out_stride: Int) {
+    
+    var input = input
+    var output = output
     
     let a = input.memory % 65537
     input += in_stride
@@ -551,7 +563,10 @@ public func DispatchRadix2CircularConvolve_32(signal: UnsafePointer<UInt32>, _ s
     DispatchInverseNumberTheoreticTransform_32(temp, temp_stride, output, out_stride)
 }
 
-public func NumberTheoreticTransform_2<U: UnsignedIntegerType>(var input: UnsafePointer<U>, _ in_stride: Int, _ alpha: U, _ mod: U, var _ output: UnsafeMutablePointer<U>, _ out_stride: Int) {
+public func NumberTheoreticTransform_2<U: UnsignedIntegerType>(input: UnsafePointer<U>, _ in_stride: Int, _ alpha: U, _ mod: U, _ output: UnsafeMutablePointer<U>, _ out_stride: Int) {
+    
+    var input = input
+    var output = output
     
     let a = input.memory % mod
     input += in_stride
@@ -640,7 +655,10 @@ public func DispatchNumberTheoreticTransform<U: UnsignedIntegerType>(level: Int,
     }
 }
 
-public func InverseNumberTheoreticTransform_2<U: UnsignedIntegerType>(var input: UnsafePointer<U>, _ in_stride: Int, _ alpha: U, _ mod: U, var _ output: UnsafeMutablePointer<U>, _ out_stride: Int) {
+public func InverseNumberTheoreticTransform_2<U: UnsignedIntegerType>(input: UnsafePointer<U>, _ in_stride: Int, _ alpha: U, _ mod: U, _ output: UnsafeMutablePointer<U>, _ out_stride: Int) {
+    
+    var input = input
+    var output = output
     
     let a = input.memory % mod
     input += in_stride

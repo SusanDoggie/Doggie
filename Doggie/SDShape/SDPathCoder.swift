@@ -435,7 +435,8 @@ extension SDPath.Move : SDPathCommandSerializableShortFormType {
 
 extension SDPath.Line : SDPathCommandSerializableShortFormType {
     
-    private func serialize1(var currentState: Int, _ start: Point, _ relative: Point, _ lastControl: Point?) -> (String, Int, Point, Point, Point?) {
+    private func serialize1(currentState: Int, _ start: Point, _ relative: Point, _ lastControl: Point?) -> (String, Int, Point, Point, Point?) {
+        var currentState = currentState
         let str: String
         if _round(relative.x) == _round(self.x) {
             if currentState == 2 {
@@ -461,7 +462,8 @@ extension SDPath.Line : SDPathCommandSerializableShortFormType {
         }
         return (str, currentState, start, self.point, nil)
     }
-    private func serialize2(var currentState: Int, _ start: Point, _ relative: Point, _ lastControl: Point?) -> (String, Int, Point, Point, Point?) {
+    private func serialize2(currentState: Int, _ start: Point, _ relative: Point, _ lastControl: Point?) -> (String, Int, Point, Point, Point?) {
+        var currentState = currentState
         let str: String
         if _round(relative.x) == _round(self.x) {
             if currentState == 3 {
@@ -500,7 +502,8 @@ extension SDPath.QuadBezier : SDPathCommandSerializableShortFormType {
         return false
     }
     
-    private func serialize1(var currentState: Int, _ start: Point, _ relative: Point, _ lastControl: Point?) -> (String, Int, Point, Point, Point?) {
+    private func serialize1(currentState: Int, _ start: Point, _ relative: Point, _ lastControl: Point?) -> (String, Int, Point, Point, Point?) {
+        var currentState = currentState
         let str: String
         if self.isSmooth(relative, lastControl) && (8...11).contains(currentState) {
             if currentState == 8 {
@@ -519,7 +522,8 @@ extension SDPath.QuadBezier : SDPathCommandSerializableShortFormType {
         }
         return (str, currentState, start, self.point, self.p1)
     }
-    private func serialize2(var currentState: Int, _ start: Point, _ relative: Point, _ lastControl: Point?) -> (String, Int, Point, Point, Point?) {
+    private func serialize2(currentState: Int, _ start: Point, _ relative: Point, _ lastControl: Point?) -> (String, Int, Point, Point, Point?) {
+        var currentState = currentState
         let str: String
         if self.isSmooth(relative, lastControl) && (8...11).contains(currentState) {
             if currentState == 9 {
@@ -551,7 +555,8 @@ extension SDPath.CubicBezier : SDPathCommandSerializableShortFormType {
         return false
     }
     
-    private func serialize1(var currentState: Int, _ start: Point, _ relative: Point, _ lastControl: Point?) -> (String, Int, Point, Point, Point?) {
+    private func serialize1(currentState: Int, _ start: Point, _ relative: Point, _ lastControl: Point?) -> (String, Int, Point, Point, Point?) {
+        var currentState = currentState
         let str: String
         if self.isSmooth(relative, lastControl) && (12...15).contains(currentState) {
             if currentState == 12 {
@@ -570,7 +575,8 @@ extension SDPath.CubicBezier : SDPathCommandSerializableShortFormType {
         }
         return (str, currentState, start, self.point, self.p2)
     }
-    private func serialize2(var currentState: Int, _ start: Point, _ relative: Point, _ lastControl: Point?) -> (String, Int, Point, Point, Point?) {
+    private func serialize2(currentState: Int, _ start: Point, _ relative: Point, _ lastControl: Point?) -> (String, Int, Point, Point, Point?) {
+        var currentState = currentState
         let str: String
         if self.isSmooth(relative, lastControl) && (12...15).contains(currentState) {
             if currentState == 13 {

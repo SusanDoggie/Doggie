@@ -75,7 +75,8 @@ extension Color {
         self.init(r: white, g: white, b: white, a: alpha)
     }
     
-    public static func Hex(var colorCode: String) -> Color? {
+    public static func Hex(colorCode: String) -> Color? {
+        var colorCode = colorCode
         if colorCode[colorCode.startIndex] == "#" {
             colorCode.removeAtIndex(colorCode.startIndex)
         }
@@ -93,7 +94,8 @@ extension Color {
 
 extension Color {
     
-    private init (var h: Double, c: Double, m: Double, a: Double) {
+    private init (h: Double, c: Double, m: Double, a: Double) {
+        var h = h
         h = h.isSignMinus ? fmod(h * 3.0 / M_PI, 6.0) + 6.0 : fmod(h * 3.0 / M_PI, 6.0)
         let x = c * (1.0 - abs(fmod(h, 2.0) - 1.0))
         self.init(r: m, g: m, b: m, a: a)

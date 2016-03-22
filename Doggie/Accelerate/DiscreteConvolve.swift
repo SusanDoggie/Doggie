@@ -25,7 +25,9 @@
 
 import Foundation
 
-public func DiscreteConvolve(signal_count: Int, _ signal: UnsafePointer<Float>, _ signal_stride: Int, _ kernel_count: Int, _ kernel: UnsafePointer<Float>, _ kernel_stride: Int, var _ output: UnsafeMutablePointer<Float>, _ out_stride: Int) {
+public func DiscreteConvolve(signal_count: Int, _ signal: UnsafePointer<Float>, _ signal_stride: Int, _ kernel_count: Int, _ kernel: UnsafePointer<Float>, _ kernel_stride: Int, _ output: UnsafeMutablePointer<Float>, _ out_stride: Int) {
+    
+    var output = output
     
     let size = signal_count + kernel_count - 1
     var _kp = kernel
@@ -46,7 +48,9 @@ public func DiscreteConvolve(signal_count: Int, _ signal: UnsafePointer<Float>, 
     }
 }
 
-public func DiscreteConvolve(signal_count: Int, _ signal: UnsafePointer<Double>, _ signal_stride: Int, _ kernel_count: Int, _ kernel: UnsafePointer<Double>, _ kernel_stride: Int, var _ output: UnsafeMutablePointer<Double>, _ out_stride: Int) {
+public func DiscreteConvolve(signal_count: Int, _ signal: UnsafePointer<Double>, _ signal_stride: Int, _ kernel_count: Int, _ kernel: UnsafePointer<Double>, _ kernel_stride: Int, _ output: UnsafeMutablePointer<Double>, _ out_stride: Int) {
+    
+    var output = output
     
     let size = signal_count + kernel_count - 1
     var _kp = kernel
@@ -67,7 +71,9 @@ public func DiscreteConvolve(signal_count: Int, _ signal: UnsafePointer<Double>,
     }
 }
 
-public func DiscreteConvolve(signal_count: Int, _ signal: UnsafePointer<Complex>, _ signal_stride: Int, _ kernel_count: Int, _ kernel: UnsafePointer<Complex>, _ kernel_stride: Int, var _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int) {
+public func DiscreteConvolve(signal_count: Int, _ signal: UnsafePointer<Complex>, _ signal_stride: Int, _ kernel_count: Int, _ kernel: UnsafePointer<Complex>, _ kernel_stride: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int) {
+    
+    var output = output
     
     let size = signal_count + kernel_count - 1
     var _kp = kernel
