@@ -41,6 +41,29 @@ public extension Array {
     }
 }
 
+public extension SequenceType {
+    
+    var array: [Generator.Element] {
+        return self as? [Generator.Element] ?? Array(self)
+    }
+}
+
+public extension CollectionType where Self == SubSequence {
+    
+    /// Returns sub-sequence of `self`.
+    var slice: SubSequence {
+        return self
+    }
+}
+
+public extension CollectionType {
+    
+    /// Returns sub-sequence of `self`.
+    var slice: SubSequence {
+        return self as? SubSequence ?? self[self.indices]
+    }
+}
+
 public extension AnyGenerator {
     
     var any: AnyGenerator<Element> {
@@ -85,10 +108,6 @@ public extension GeneratorType {
 
 public extension SequenceType {
     
-    var array: [Generator.Element] {
-        return self as? [Generator.Element] ?? Array(self)
-    }
-    
     var any: AnySequence<Generator.Element> {
         return self as? AnySequence ?? AnySequence(self.generate)
     }
@@ -102,11 +121,6 @@ public extension SequenceType where SubSequence : SequenceType, SubSequence.Gene
 }
 
 public extension CollectionType {
-    
-    /// Returns sub-sequence of `self`.
-    var slice: SubSequence {
-        return self as? SubSequence ?? self[self.indices]
-    }
     
     var any: AnyForwardCollection<Generator.Element> {
         return self as? AnyForwardCollection ?? AnyForwardCollection(self)
