@@ -57,64 +57,6 @@ public func synchronized<R>(obj: AnyObject, @noescape block: () -> R) -> R {
 
 // MARK: LockGroup
 
-/// returns count of locks if successful. Otherwise, returns the index of the lock which failed to be locked.
-private func _trylock(lck: [Lockable]) -> Int {
-    if lck.count == 1 {
-        return lck[0].trylock() ? 1 : 0
-    } else if lck.count > 1 {
-        var count = 0
-        while count < lck.count && lck[count].trylock() {
-            count += 1
-        }
-        if count != lck.count {
-            for i in 0..<count {
-                lck[i].unlock()
-            }
-        }
-        return count
-    }
-    return 0
-}
-
-private func _lock(lck: [Lockable]) {
-    if lck.count == 1 {
-        lck[0].lock()
-    } else if lck.count > 1 {
-        var first_lock = 0
-        while true {
-            lck[first_lock].lock()
-            var list = lck
-            list.removeAtIndex(first_lock)
-            var _r = _trylock(list)
-            _r = _r < first_lock ? _r : _r + 1
-            if _r == lck.count {
-                return
-            }
-            lck[first_lock].unlock()
-            first_lock = _r
-        }
-    }
-}
-
-private func _unlock(lck: [Lockable]) {
-    for item in lck {
-        item.unlock()
-    }
-}
-
-/// returns count of locks if successful. Otherwise, returns the index of the lock which failed to be locked.
-public func trylock(lck: Lockable ... ) -> Int {
-    return _trylock(lck)
-}
-
-public func lock(lck: Lockable ... ) {
-    _lock(lck)
-}
-
-public func unlock(lck: Lockable ... ) {
-    _unlock(lck)
-}
-
 public class SDLockGroup : ArrayLiteralConvertible {
     
     private let lck: [Lockable]
@@ -130,12 +72,48 @@ public class SDLockGroup : ArrayLiteralConvertible {
 
 extension SDLockGroup : Lockable {
     
+    private final func _trylock(lck: [Lockable]) -> Int {
+        if lck.count == 1 {
+            return lck[0].trylock() ? 1 : 0
+        } else if lck.count > 1 {
+            var count = 0
+            while count < lck.count && lck[count].trylock() {
+                count += 1
+            }
+            if count != lck.count {
+                for i in 0..<count {
+                    lck[i].unlock()
+                }
+            }
+            return count
+        }
+        return 0
+    }
+
     public final func lock() {
-        _lock(self.lck)
+        if lck.count == 1 {
+            lck[0].lock()
+        } else if lck.count > 1 {
+            var first_lock = 0
+            while true {
+                lck[first_lock].lock()
+                var list = lck
+                list.removeAtIndex(first_lock)
+                var _r = _trylock(list)
+                _r = _r < first_lock ? _r : _r + 1
+                if _r == lck.count {
+                    return
+                }
+                lck[first_lock].unlock()
+                first_lock = _r
+            }
+        }
     }
     
     public final func unlock() {
-        _unlock(self.lck)
+        for item in lck {
+            item.unlock()
+        }
     }
     
     public final func trylock() -> Bool {
