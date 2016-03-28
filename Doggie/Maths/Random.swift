@@ -27,21 +27,21 @@ import Foundation
 
 @warn_unused_result
 public func normal_distribution(mean mean: Double, variance: Double) -> Double {
-    let u: Double = 1 - random(0.0..<1.0)
-    let v: Double = 1 - random(0.0..<1.0)
+    let u = 1 - Double.random(includeOne: false)
+    let v = 1 - Double.random(includeOne: false)
     
-    let r: Double = -2 * log(u)
-    let theta: Double = 2 * M_PI * v
+    let r = -2 * log(u)
+    let theta = 2 * M_PI * v
     
     return sqrt(variance * r) * cos(theta) + mean
 }
 @warn_unused_result
 public func normal_distribution(mean mean: Complex, variance: Double) -> Complex {
-    let u: Double = 1 - random(0.0..<1.0)
-    let v: Double = 1 - random(0.0..<1.0)
+    let u = 1 - Double.random(includeOne: false)
+    let v = 1 - Double.random(includeOne: false)
     
-    let r: Double = -2 * log(u)
-    let theta: Double = 2 * M_PI * v
+    let r = -2 * log(u)
+    let theta = 2 * M_PI * v
     
     return polar(rho: sqrt(variance * r), theta: theta) + mean
 }
