@@ -264,25 +264,6 @@ extension IntegerType {
     }
 }
 
-public extension UnsafePointer {
-    
-    var bitPattern: Int {
-        return unsafeBitCast(self)
-    }
-}
-public extension UnsafeMutablePointer {
-    
-    var bitPattern: Int {
-        return unsafeBitCast(self)
-    }
-}
-public extension COpaquePointer {
-    
-    var bitPattern: Int {
-        return unsafeBitCast(self)
-    }
-}
-
 public extension Comparable {
     
     @warn_unused_result
