@@ -292,9 +292,9 @@ public func pow(x: UInt8, _ n: UInt8) -> UInt8 {
 }
 
 private func sec_random(buffer: UnsafeMutablePointer<Void>, _ size: Int) {
-    let _rand_file = fopen("/dev/random", "rb")
-    fread(buffer, 1, size, _rand_file)
-    fclose(_rand_file)
+    let _rand_file = open("/dev/random", O_RDONLY)
+    read(_rand_file, buffer, size)
+    close(_rand_file)
 }
 
 public func random_uniform(bound: UIntMax) -> UIntMax {
