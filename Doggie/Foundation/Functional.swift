@@ -1053,6 +1053,57 @@ public extension MutableCollectionType where Self.Index : RandomAccessIndexType 
     }
 }
 
+public extension Comparable {
+    
+    @warn_unused_result
+    func clamp(range: ClosedInterval<Self>) -> Self {
+        return min(max(self, range.start), range.end)
+    }
+}
+
+public extension Float32 {
+    
+    @warn_unused_result
+    static func random(includeOne includeOne: Bool = false) -> Float32 {
+        if includeOne {
+            return unsafeBitCast((0..<0x800000).randomElement()! + 0x3F800000 as UInt32, Float32.self) - 1
+        }
+        return unsafeBitCast((0..<0x7FFFFF).randomElement()! | 0x3F800000 as UInt32, Float32.self) - 1
+    }
+}
+
+public extension Float64 {
+    
+    @warn_unused_result
+    static func random(includeOne includeOne: Bool = false) -> Float64 {
+        if includeOne {
+            return unsafeBitCast((0..<0x10000000000000).randomElement()! + 0x3FF0000000000000 as UInt64, Float64.self) - 1
+        }
+        return unsafeBitCast((0..<0xFFFFFFFFFFFFF).randomElement()! | 0x3FF0000000000000 as UInt64, Float64.self) - 1
+    }
+}
+
+@warn_unused_result
+public func random(range: ClosedInterval<Float>) -> Float {
+    let diff = range.end - range.start
+    return (Float.random(includeOne: true) * diff) + range.start
+}
+@warn_unused_result
+public func random(range: ClosedInterval<Double>) -> Double {
+    let diff = range.end - range.start
+    return (Double.random(includeOne: true) * diff) + range.start
+}
+@warn_unused_result
+public func random(range: HalfOpenInterval<Float>) -> Float {
+    let diff = range.end - range.start
+    return (Float.random() * diff) + range.start
+}
+@warn_unused_result
+public func random(range: HalfOpenInterval<Double>) -> Double {
+    let diff = range.end - range.start
+    return (Double.random() * diff) + range.start
+}
+
 public extension CollectionType where Index : RandomAccessIndexType {
     
     /// Returns a random element in `self` or `nil` if the sequence is empty.
@@ -1065,7 +1116,7 @@ public extension CollectionType where Index : RandomAccessIndexType {
         switch _count {
         case 0: return nil
         case 1: return self[self.startIndex]
-        default: return self[self.startIndex.advancedBy(numericCast(arc4random_uniform(_count)))]
+        default: return self[self.startIndex.advancedBy(numericCast(random_uniform(_count)))]
         }
     }
 }

@@ -207,6 +207,10 @@
 		0858DB441C0550B7007FA426 /* UUID.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA781C0550B7007FA426 /* UUID.swift */; };
 		0858DB481C055172007FA426 /* Fourier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DB451C055172007FA426 /* Fourier.swift */; };
 		0858DB491C055172007FA426 /* Fourier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DB451C055172007FA426 /* Fourier.swift */; };
+		085EB5551CA96D9300EBC12C /* Integer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 085EB5541CA96D9300EBC12C /* Integer.swift */; };
+		085EB5561CA96D9300EBC12C /* Integer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 085EB5541CA96D9300EBC12C /* Integer.swift */; };
+		085EB5571CA96D9300EBC12C /* Integer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 085EB5541CA96D9300EBC12C /* Integer.swift */; };
+		085EB5581CA96D9300EBC12C /* Integer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 085EB5541CA96D9300EBC12C /* Integer.swift */; };
 		087FE5BA1A372D97005A2E9E /* Doggie_Mac.h in Headers */ = {isa = PBXBuildFile; fileRef = 087FE5B91A372D97005A2E9E /* Doggie_Mac.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		087FE5C01A372D97005A2E9E /* Doggie_Mac.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 087FE5B51A372D97005A2E9E /* Doggie_Mac.framework */; settings = {ATTRIBUTES = (Required, ); }; };
 		08863CC81C22756F004C27E5 /* SDObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08863CC71C22756F004C27E5 /* SDObserver.swift */; };
@@ -310,6 +314,7 @@
 		0858DA771C0550B7007FA426 /* Thread.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Thread.swift; sourceTree = "<group>"; };
 		0858DA781C0550B7007FA426 /* UUID.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UUID.swift; sourceTree = "<group>"; };
 		0858DB451C055172007FA426 /* Fourier.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Fourier.swift; sourceTree = "<group>"; };
+		085EB5541CA96D9300EBC12C /* Integer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Integer.swift; sourceTree = "<group>"; };
 		087FE59A1A372D5B005A2E9E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		087FE59B1A372D5B005A2E9E /* Doggie_iOS.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Doggie_iOS.h; sourceTree = "<group>"; };
 		087FE5A71A372D5B005A2E9E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -567,6 +572,7 @@
 				0ACE1DFB1C570F6A00106D1F /* Environment.swift */,
 				0ACE1E141C57114A00106D1F /* Functional.swift */,
 				0ACE1E191C5711D300106D1F /* Graph.swift */,
+				085EB5541CA96D9300EBC12C /* Integer.swift */,
 				0ACE1E051C57104300106D1F /* ParallelCollectionType.swift */,
 				0ACE1E0F1C57110D00106D1F /* String.swift */,
 			);
@@ -791,6 +797,7 @@
 				081322441C11D3600081B2B9 /* SDTransform.swift in Sources */,
 				0813224C1C11D3600081B2B9 /* SDPath.swift in Sources */,
 				081322361C11D3600081B2B9 /* sha512.swift in Sources */,
+				085EB5551CA96D9300EBC12C /* Integer.swift in Sources */,
 				0ACE1E1A1C5711D300106D1F /* Graph.swift in Sources */,
 				081322531C11D3600081B2B9 /* UUID.swift in Sources */,
 				0813222F1C11D3600081B2B9 /* hmac.swift in Sources */,
@@ -828,6 +835,7 @@
 				081322101C11D3600081B2B9 /* SDTransform.swift in Sources */,
 				0ACE1DFD1C570F6A00106D1F /* Environment.swift in Sources */,
 				0813220E1C11D3600081B2B9 /* Random.swift in Sources */,
+				085EB5561CA96D9300EBC12C /* Integer.swift in Sources */,
 				081321FE1C11D3600081B2B9 /* sha1.swift in Sources */,
 				0813221F1C11D3600081B2B9 /* UUID.swift in Sources */,
 				081321EB1C11D2C60081B2B9 /* FourierTest.swift in Sources */,
@@ -919,6 +927,7 @@
 				0858DB271C0550B7007FA426 /* SDPath.swift in Sources */,
 				0858DB171C0550B7007FA426 /* SDAspects.swift in Sources */,
 				0858DB031C0550B7007FA426 /* Rect.swift in Sources */,
+				085EB5571CA96D9300EBC12C /* Integer.swift in Sources */,
 				0858DAD31C0550B7007FA426 /* sha512.swift in Sources */,
 				0ACE1E1C1C5711D300106D1F /* Graph.swift in Sources */,
 				0858DAB71C0550B7007FA426 /* hmac.swift in Sources */,
@@ -956,6 +965,7 @@
 				0858DAA01C0550B7007FA426 /* NumberTheoreticTransform.swift in Sources */,
 				0ACE1DFF1C570F6A00106D1F /* Environment.swift in Sources */,
 				0858DB341C0550B7007FA426 /* SDRectangle.swift in Sources */,
+				085EB5581CA96D9300EBC12C /* Integer.swift in Sources */,
 				0858DAC81C0550B7007FA426 /* sha224.swift in Sources */,
 				0858DAD01C0550B7007FA426 /* sha384.swift in Sources */,
 				0858DA841C0550B7007FA426 /* CircularConvolve.swift in Sources */,
