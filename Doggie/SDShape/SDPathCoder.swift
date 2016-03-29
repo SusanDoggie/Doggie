@@ -265,8 +265,33 @@ extension SDPath {
                     let rx = try toDouble(g.current)
                     let ry = try toDouble(g.next())
                     let rotate = try toDouble(g.next())
-                    let largeArc = try toInt(g.next()) != 0
-                    let sweep = try toInt(g.next()) != 0
+                    let largeArc: Bool
+                    let sweep: Bool
+                    if let val = g.next() {
+                        switch val {
+                        case "0":
+                            largeArc = false
+                            sweep = try toInt(g.next()) != 0
+                        case "1":
+                            largeArc = true
+                            sweep = try toInt(g.next()) != 0
+                        case "00":
+                            largeArc = false
+                            sweep = false
+                        case "01":
+                            largeArc = false
+                            sweep = true
+                        case "10":
+                            largeArc = true
+                            sweep = false
+                        case "11":
+                            largeArc = true
+                            sweep = true
+                        default: throw DecoderError(command: val)
+                        }
+                    } else {
+                        throw DecoderError(command: nil)
+                    }
                     let x = try toDouble(g.next())
                     let y = try toDouble(g.next())
                     let arc = bezierArc(relative, Point(x: x, y: y), Radius(x: rx, y: ry), M_PI * rotate / 180, largeArc, sweep)
