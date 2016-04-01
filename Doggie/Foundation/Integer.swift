@@ -27,6 +27,7 @@ import Foundation
 
 public extension UInt64 {
     
+    @_transparent
     var reverse: UInt64 {
         var x = self
         x = ((x & 0x5555555555555555) << 1) | ((x & 0xAAAAAAAAAAAAAAAA) >> 1)
@@ -40,6 +41,7 @@ public extension UInt64 {
 }
 public extension UInt32 {
     
+    @_transparent
     var reverse: UInt32 {
         var x = self
         x = ((x & 0x55555555) << 1) | ((x & 0xAAAAAAAA) >> 1)
@@ -52,6 +54,7 @@ public extension UInt32 {
 }
 public extension UInt16 {
     
+    @_transparent
     var reverse: UInt16 {
         var x = self
         x = ((x & 0x5555) << 1) | ((x & 0xAAAA) >> 1)
@@ -63,6 +66,7 @@ public extension UInt16 {
 }
 public extension UInt8 {
     
+    @_transparent
     var reverse: UInt8 {
         var x = self
         x = ((x & 0x55) << 1) | ((x & 0xAA) >> 1)
@@ -73,126 +77,150 @@ public extension UInt8 {
 }
 public extension Int64 {
     
+    @_transparent
     var reverse: Int64 {
         return Int64(bitPattern: UInt64(bitPattern: self).reverse)
     }
 }
 public extension Int32 {
     
+    @_transparent
     var reverse: Int32 {
         return Int32(bitPattern: UInt32(bitPattern: self).reverse)
     }
 }
 public extension Int16 {
     
+    @_transparent
     var reverse: Int16 {
         return Int16(bitPattern: UInt16(bitPattern: self).reverse)
     }
 }
 public extension Int8 {
     
+    @_transparent
     var reverse: Int8 {
         return Int8(bitPattern: UInt8(bitPattern: self).reverse)
     }
 }
 
 @warn_unused_result
+@_transparent
 public func log2(x: Int64) -> Int64 {
     return Int64(flsll(x)) - 1
 }
 @warn_unused_result
+@_transparent
 public func log2(x: Int32) -> Int32 {
     return fls(x) - 1
 }
 @warn_unused_result
+@_transparent
 public func log2(x: Int16) -> Int16 {
     return Int16(truncatingBitPattern: log2(Int32(x) & 0xFFFF))
 }
 @warn_unused_result
+@_transparent
 public func log2(x: Int8) -> Int8 {
     return Int8(truncatingBitPattern: log2(Int32(x) & 0xFF))
 }
 @warn_unused_result
+@_transparent
 public func log2(x: Int) -> Int {
     return Int(flsl(x)) - 1
 }
 @warn_unused_result
+@_transparent
 public func log2(x: UInt64) -> UInt64 {
     return UInt64(bitPattern: log2(Int64(bitPattern: x)))
 }
 @warn_unused_result
+@_transparent
 public func log2(x: UInt32) -> UInt32 {
     return UInt32(bitPattern: log2(Int32(bitPattern: x)))
 }
 @warn_unused_result
+@_transparent
 public func log2(x: UInt16) -> UInt16 {
     return UInt16(bitPattern: log2(Int16(bitPattern: x)))
 }
 @warn_unused_result
+@_transparent
 public func log2(x: UInt8) -> UInt8 {
     return UInt8(bitPattern: log2(Int8(bitPattern: x)))
 }
 @warn_unused_result
+@_transparent
 public func log2(x: UInt) -> UInt {
     return UInt(bitPattern: log2(Int(bitPattern: x)))
 }
 
 public extension UInt64 {
     
+    @_transparent
     var hibit: UInt64 {
         return self == 0 ? 0 : 1 << log2(self)
     }
 }
 public extension UInt32 {
     
+    @_transparent
     var hibit: UInt32 {
         return self == 0 ? 0 : 1 << log2(self)
     }
 }
 public extension UInt16 {
     
+    @_transparent
     var hibit: UInt16 {
         return self == 0 ? 0 : 1 << log2(self)
     }
 }
 public extension UInt8 {
     
+    @_transparent
     var hibit: UInt8 {
         return self == 0 ? 0 : 1 << log2(self)
     }
 }
 public extension UInt {
     
+    @_transparent
     var hibit: UInt {
         return self == 0 ? 0 : 1 << log2(self)
     }
 }
 public extension Int64 {
     
+    @_transparent
     var hibit: Int64 {
         return Int64(bitPattern: UInt64(bitPattern: self).hibit)
     }
 }
 public extension Int32 {
     
+    @_transparent
     var hibit: Int32 {
         return Int32(bitPattern: UInt32(bitPattern: self).hibit)
     }
 }
 public extension Int16 {
     
+    @_transparent
     var hibit: Int16 {
         return Int16(bitPattern: UInt16(bitPattern: self).hibit)
     }
 }
 public extension Int8 {
     
+    @_transparent
     var hibit: Int8 {
         return Int8(bitPattern: UInt8(bitPattern: self).hibit)
     }
 }
 public extension Int {
     
+    @_transparent
     var hibit: Int {
         return Int(bitPattern: UInt(bitPattern: self).hibit)
     }
@@ -200,6 +228,7 @@ public extension Int {
 
 public extension UnsignedIntegerType {
     
+    @_transparent
     var bitCount: Self {
         var x = self
         var c: Self = 0
@@ -212,30 +241,35 @@ public extension UnsignedIntegerType {
 }
 public extension Int64 {
     
+    @_transparent
     var bitCount: Int64 {
         return Int64(bitPattern: UInt64(bitPattern: self).bitCount)
     }
 }
 public extension Int32 {
     
+    @_transparent
     var bitCount: Int32 {
         return Int32(bitPattern: UInt32(bitPattern: self).bitCount)
     }
 }
 public extension Int16 {
     
+    @_transparent
     var bitCount: Int16 {
         return Int16(bitPattern: UInt16(bitPattern: self).bitCount)
     }
 }
 public extension Int8 {
     
+    @_transparent
     var bitCount: Int8 {
         return Int8(bitPattern: UInt8(bitPattern: self).bitCount)
     }
 }
 public extension Int {
     
+    @_transparent
     var bitCount: Int {
         return Int(bitPattern: UInt(bitPattern: self).bitCount)
     }
@@ -243,6 +277,7 @@ public extension Int {
 
 public extension IntegerType {
     
+    @_transparent
     var isPower2 : Bool {
         return 0 < self && self & (self &- 1) == 0
     }
@@ -251,6 +286,7 @@ public extension IntegerType {
 public extension IntegerType {
     
     @warn_unused_result
+    @_transparent
     func align(s: Self) -> Self {
         assert(s.isPower2, "alignment is not power of 2.")
         let MASK = s - 1
@@ -271,22 +307,27 @@ public func pow<T: UnsignedIntegerType>(x: T, _ n: T, _ m: T) -> T {
     return n & 1 == 1 ? (_x * p) % m : p
 }
 @warn_unused_result
+@inline(__always)
 public func pow(x: UInt, _ n: UInt) -> UInt {
     return pow(x, n, UInt.max)
 }
 @warn_unused_result
+@inline(__always)
 public func pow(x: UInt64, _ n: UInt64) -> UInt64 {
     return pow(x, n, UInt64.max)
 }
 @warn_unused_result
+@inline(__always)
 public func pow(x: UInt32, _ n: UInt32) -> UInt32 {
     return pow(x, n, UInt32.max)
 }
 @warn_unused_result
+@inline(__always)
 public func pow(x: UInt16, _ n: UInt16) -> UInt16 {
     return pow(x, n, UInt16.max)
 }
 @warn_unused_result
+@inline(__always)
 public func pow(x: UInt8, _ n: UInt8) -> UInt8 {
     return pow(x, n, UInt8.max)
 }
@@ -314,6 +355,7 @@ public func random_uniform(bound: UIntMax) -> UIntMax {
 }
 
 @warn_unused_result
+@_transparent
 public func gcd<U: UnsignedIntegerType>(a: U, _ b: U) -> U {
     var a = a
     var b = b
@@ -323,6 +365,7 @@ public func gcd<U: UnsignedIntegerType>(a: U, _ b: U) -> U {
     return a
 }
 @warn_unused_result
+@_transparent
 public func gcd<S: SignedIntegerType>(a: S, _ b: S) -> S {
     var a = a
     var b = b
@@ -334,6 +377,7 @@ public func gcd<S: SignedIntegerType>(a: S, _ b: S) -> S {
 }
 
 @warn_unused_result
+@_transparent
 public func exgcd<S: SignedIntegerType>(a: S, _ b: S) -> (gcd: S, x: S, y: S) {
     var a = a
     var b = b
@@ -357,6 +401,7 @@ public func exgcd<S: SignedIntegerType>(a: S, _ b: S) -> (gcd: S, x: S, y: S) {
 }
 
 @warn_unused_result
+@_transparent
 public func modinv<U: UnsignedIntegerType>(a: U, _ b: U) -> U {
     var a = a
     var b = b
@@ -380,15 +425,18 @@ public func modinv<U: UnsignedIntegerType>(a: U, _ b: U) -> U {
 }
 
 @warn_unused_result
+@_transparent
 public func lcm<T: UnsignedIntegerType>(a: T, _ b: T) -> T {
     return a * b / gcd(a, b)
 }
 @warn_unused_result
+@_transparent
 public func lcm<T: SignedIntegerType>(a: T, _ b: T) -> T {
     return a * b / gcd(a, b)
 }
 
 @warn_unused_result
+@_transparent
 public func factorial<T: UnsignedIntegerType>(x: T) -> T {
     if x == 0 || x == 1 {
         return 1
@@ -401,6 +449,7 @@ public func factorial<T: UnsignedIntegerType>(x: T) -> T {
 }
 
 @warn_unused_result
+@_transparent
 public func permutation<T: UnsignedIntegerType>(n: T, _ k: T) -> T {
     if k == 0 {
         return 1
@@ -415,11 +464,13 @@ public func permutation<T: UnsignedIntegerType>(n: T, _ k: T) -> T {
     return _a
 }
 @warn_unused_result
+@_transparent
 public func combination<T: UnsignedIntegerType>(n: T, _ k: T) -> T {
     return permutation(n, k) / factorial(k)
 }
 
 @warn_unused_result
+@_transparent
 public func fibonacci<T: UnsignedIntegerType>(n: T) -> T {
     func fib(n: T) -> (T, T) {
         switch n {

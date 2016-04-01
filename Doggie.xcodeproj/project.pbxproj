@@ -223,6 +223,10 @@
 		08AA03171C219B9900609109 /* SDSink.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08AA03131C219B9900609109 /* SDSink.swift */; };
 		08B76CBE1A810FEC00ED9583 /* EncryptionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08AF77AF1A3A10510042491F /* EncryptionTests.swift */; };
 		08BFF9BC1B07161E00EC88CB /* FourierTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08BFF9B91B0715ED00EC88CB /* FourierTest.swift */; };
+		0A3F4DC31CAE0C7400699FF7 /* Atomic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3F4DC21CAE0C7400699FF7 /* Atomic.swift */; };
+		0A3F4DC41CAE0C7400699FF7 /* Atomic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3F4DC21CAE0C7400699FF7 /* Atomic.swift */; };
+		0A3F4DC51CAE0C7400699FF7 /* Atomic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3F4DC21CAE0C7400699FF7 /* Atomic.swift */; };
+		0A3F4DC61CAE0C7400699FF7 /* Atomic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3F4DC21CAE0C7400699FF7 /* Atomic.swift */; };
 		0ACE1DFC1C570F6A00106D1F /* Environment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ACE1DFB1C570F6A00106D1F /* Environment.swift */; };
 		0ACE1DFD1C570F6A00106D1F /* Environment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ACE1DFB1C570F6A00106D1F /* Environment.swift */; };
 		0ACE1DFE1C570F6A00106D1F /* Environment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ACE1DFB1C570F6A00106D1F /* Environment.swift */; };
@@ -327,6 +331,7 @@
 		08AA03131C219B9900609109 /* SDSink.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SDSink.swift; sourceTree = "<group>"; };
 		08AF77AF1A3A10510042491F /* EncryptionTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EncryptionTests.swift; sourceTree = "<group>"; };
 		08BFF9B91B0715ED00EC88CB /* FourierTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FourierTest.swift; sourceTree = "<group>"; };
+		0A3F4DC21CAE0C7400699FF7 /* Atomic.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Atomic.swift; sourceTree = "<group>"; };
 		0ACE1DFB1C570F6A00106D1F /* Environment.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Environment.swift; sourceTree = "<group>"; };
 		0ACE1E051C57104300106D1F /* ParallelCollectionType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ParallelCollectionType.swift; sourceTree = "<group>"; };
 		0ACE1E0F1C57110D00106D1F /* String.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = String.swift; sourceTree = "<group>"; };
@@ -569,6 +574,7 @@
 		0ACE1DFA1C570F4F00106D1F /* Foundation */ = {
 			isa = PBXGroup;
 			children = (
+				0A3F4DC21CAE0C7400699FF7 /* Atomic.swift */,
 				0ACE1DFB1C570F6A00106D1F /* Environment.swift */,
 				0ACE1E141C57114A00106D1F /* Functional.swift */,
 				0ACE1E191C5711D300106D1F /* Graph.swift */,
@@ -800,6 +806,7 @@
 				085EB5551CA96D9300EBC12C /* Integer.swift in Sources */,
 				0ACE1E1A1C5711D300106D1F /* Graph.swift in Sources */,
 				081322531C11D3600081B2B9 /* UUID.swift in Sources */,
+				0A3F4DC31CAE0C7400699FF7 /* Atomic.swift in Sources */,
 				0813222F1C11D3600081B2B9 /* hmac.swift in Sources */,
 				0813223B1C11D3600081B2B9 /* Complex.swift in Sources */,
 				081322481C11D3600081B2B9 /* SDAspects.swift in Sources */,
@@ -820,6 +827,7 @@
 				081321EC1C11D3600081B2B9 /* AccelerateWrapper.swift in Sources */,
 				081322061C11D3600081B2B9 /* JsonParser.swift in Sources */,
 				081322111C11D3600081B2B9 /* Vector.swift in Sources */,
+				0A3F4DC41CAE0C7400699FF7 /* Atomic.swift in Sources */,
 				081322021C11D3600081B2B9 /* sha512.swift in Sources */,
 				081322091C11D3600081B2B9 /* Maths.swift in Sources */,
 				081321FC1C11D3600081B2B9 /* md5.swift in Sources */,
@@ -930,6 +938,7 @@
 				085EB5571CA96D9300EBC12C /* Integer.swift in Sources */,
 				0858DAD31C0550B7007FA426 /* sha512.swift in Sources */,
 				0ACE1E1C1C5711D300106D1F /* Graph.swift in Sources */,
+				0A3F4DC51CAE0C7400699FF7 /* Atomic.swift in Sources */,
 				0858DAB71C0550B7007FA426 /* hmac.swift in Sources */,
 				0858DB071C0550B7007FA426 /* SDTransform.swift in Sources */,
 				0858DAEF1C0550B7007FA426 /* Matrix.swift in Sources */,
@@ -950,6 +959,7 @@
 				0858DB441C0550B7007FA426 /* UUID.swift in Sources */,
 				0858DAD41C0550B7007FA426 /* sha512.swift in Sources */,
 				0858DABC1C0550B7007FA426 /* md5.swift in Sources */,
+				0A3F4DC61CAE0C7400699FF7 /* Atomic.swift in Sources */,
 				0858DA901C0550B7007FA426 /* CooleyTukey.swift in Sources */,
 				0858DA801C0550B7007FA426 /* Arithmetic.swift in Sources */,
 				0858DAC41C0550B7007FA426 /* sha1.swift in Sources */,

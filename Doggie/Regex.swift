@@ -112,18 +112,21 @@ public extension RegularExpressionMatchable {
     
     /// Returns the number of matches of the regular expression.
     @warn_unused_result
+    @_transparent
     func count(regex: Regex) -> Int {
         return self.match(regex).count
     }
     
     /// Returns the first match of the regular expression.
     @warn_unused_result
+    @_transparent
     func firstMatch(regex: Regex) -> Matching? {
         return self.match(regex).first
     }
     
     /// Returns true if any match of the regular expression.
     @warn_unused_result
+    @_transparent
     func isMatch(regex: Regex) -> Bool {
         return self.firstMatch(regex) != nil
     }
@@ -185,24 +188,28 @@ extension StaticString: RegularExpressionMatchable {
     
     /// Returns the number of matches of the regular expression in the string.
     @warn_unused_result
+    @_transparent
     public func count(regex: Regex) -> Int {
         return self.stringValue.count(regex)
     }
     
     /// Returns true if any match of the regular expression in the string.
     @warn_unused_result
+    @_transparent
     public func isMatch(regex: Regex) -> Bool {
         return self.stringValue.isMatch(regex)
     }
     
     /// Returns the first match of the regular expression in the string.
     @warn_unused_result
+    @_transparent
     public func firstMatch(regex: Regex) -> String? {
         return self.stringValue.firstMatch(regex)
     }
     
     /// Returns an array containing all the matches of the regular expression in the string.
     @warn_unused_result
+    @_transparent
     public func match(regex: Regex) -> [String] {
         return self.stringValue.match(regex)
     }
@@ -213,17 +220,20 @@ extension StaticString: RegularExpressionMatchable {
     /// Additional digits beyond the maximum required to represent the number of capture groups will be treated as ordinary characters, as will a $ not followed by digits.
     /// Backslash will escape both $ and itself.
     @warn_unused_result
+    @_transparent
     public func replace(regex: Regex, template: String) -> String {
         return self.stringValue.replace(regex, template: template)
     }
 }
 
 @warn_unused_result
+@_transparent
 public func ~=<T: RegularExpressionMatchable> (lhs: Regex, rhs: T) -> Bool {
     return rhs.isMatch(lhs)
 }
 
 @warn_unused_result
+@_transparent
 public func ==(lhs: Regex, rhs: Regex) -> Bool {
     return lhs.pattern == rhs.pattern && lhs.options == rhs.options
 }

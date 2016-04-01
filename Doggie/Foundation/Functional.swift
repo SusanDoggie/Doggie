@@ -28,6 +28,7 @@ import Foundation
 public extension SequenceType {
     
     /// Returns the first element of `self`, or `nil` if `self` is empty.
+    @_transparent
     var first: Generator.Element? {
         var generator = self.generate()
         return generator.next()
@@ -36,6 +37,7 @@ public extension SequenceType {
 
 public extension Array {
     
+    @_transparent
     var array: [Generator.Element] {
         return self
     }
@@ -43,6 +45,7 @@ public extension Array {
 
 public extension SequenceType {
     
+    @_transparent
     var array: [Generator.Element] {
         return self as? [Generator.Element] ?? Array(self)
     }
@@ -51,6 +54,7 @@ public extension SequenceType {
 public extension CollectionType where Self == SubSequence {
     
     /// Returns sub-sequence of `self`.
+    @_transparent
     var slice: SubSequence {
         return self
     }
@@ -59,6 +63,7 @@ public extension CollectionType where Self == SubSequence {
 public extension CollectionType {
     
     /// Returns sub-sequence of `self`.
+    @_transparent
     var slice: SubSequence {
         return self as? SubSequence ?? self[self.indices]
     }
@@ -66,6 +71,7 @@ public extension CollectionType {
 
 public extension AnyGenerator {
     
+    @_transparent
     var any: AnyGenerator<Element> {
         return self
     }
@@ -73,6 +79,7 @@ public extension AnyGenerator {
 
 public extension AnySequence {
     
+    @_transparent
     var any: AnySequence<Element> {
         return self
     }
@@ -80,6 +87,7 @@ public extension AnySequence {
 
 public extension AnyForwardCollection {
     
+    @_transparent
     var any: AnyForwardCollection<Element> {
         return self
     }
@@ -87,6 +95,7 @@ public extension AnyForwardCollection {
 
 public extension AnyBidirectionalCollection {
     
+    @_transparent
     var any: AnyBidirectionalCollection<Element> {
         return self
     }
@@ -94,6 +103,7 @@ public extension AnyBidirectionalCollection {
 
 public extension AnyRandomAccessCollection {
     
+    @_transparent
     var any: AnyRandomAccessCollection<Element> {
         return self
     }
@@ -101,6 +111,7 @@ public extension AnyRandomAccessCollection {
 
 public extension GeneratorType {
     
+    @_transparent
     var any: AnyGenerator<Element> {
         return self as? AnyGenerator ?? AnyGenerator(self)
     }
@@ -108,6 +119,7 @@ public extension GeneratorType {
 
 public extension SequenceType {
     
+    @_transparent
     var any: AnySequence<Generator.Element> {
         return self as? AnySequence ?? AnySequence(self.generate)
     }
@@ -115,6 +127,7 @@ public extension SequenceType {
 
 public extension SequenceType where SubSequence : SequenceType, SubSequence.Generator.Element == Generator.Element, SubSequence.SubSequence == SubSequence {
     
+    @_transparent
     var any: AnySequence<Generator.Element> {
         return self as? AnySequence ?? AnySequence(self)
     }
@@ -122,6 +135,7 @@ public extension SequenceType where SubSequence : SequenceType, SubSequence.Gene
 
 public extension CollectionType {
     
+    @_transparent
     var any: AnyForwardCollection<Generator.Element> {
         return self as? AnyForwardCollection ?? AnyForwardCollection(self)
     }
@@ -129,6 +143,7 @@ public extension CollectionType {
 
 public extension CollectionType where Index : BidirectionalIndexType {
     
+    @_transparent
     var any: AnyBidirectionalCollection<Generator.Element> {
         return self as? AnyBidirectionalCollection ?? AnyBidirectionalCollection(self)
     }
@@ -136,6 +151,7 @@ public extension CollectionType where Index : BidirectionalIndexType {
 
 public extension CollectionType where Index : RandomAccessIndexType {
     
+    @_transparent
     var any: AnyRandomAccessCollection<Generator.Element> {
         return self as? AnyRandomAccessCollection ?? AnyRandomAccessCollection(self)
     }
@@ -143,6 +159,7 @@ public extension CollectionType where Index : RandomAccessIndexType {
 
 public extension LazySequenceType {
     
+    @_transparent
     var any: LazySequence<AnySequence<Elements.Generator.Element>> {
         return self.elements.any.lazy
     }
@@ -150,6 +167,7 @@ public extension LazySequenceType {
 
 public extension LazySequenceType where Elements.SubSequence : SequenceType, Elements.SubSequence.Generator.Element == Elements.Generator.Element, Elements.SubSequence.SubSequence == Elements.SubSequence {
     
+    @_transparent
     var any: LazySequence<AnySequence<Elements.Generator.Element>> {
         return self.elements.any.lazy
     }
@@ -157,6 +175,7 @@ public extension LazySequenceType where Elements.SubSequence : SequenceType, Ele
 
 public extension LazyCollectionType {
     
+    @_transparent
     var any: LazyCollection<AnyForwardCollection<Elements.Generator.Element>> {
         return self.elements.any.lazy
     }
@@ -164,6 +183,7 @@ public extension LazyCollectionType {
 
 public extension LazyCollectionType where Elements.Index : BidirectionalIndexType {
     
+    @_transparent
     var any: LazyCollection<AnyBidirectionalCollection<Elements.Generator.Element>> {
         return self.elements.any.lazy
     }
@@ -171,6 +191,7 @@ public extension LazyCollectionType where Elements.Index : BidirectionalIndexTyp
 
 public extension LazyCollectionType where Elements.Index : RandomAccessIndexType {
     
+    @_transparent
     var any: LazyCollection<AnyRandomAccessCollection<Elements.Generator.Element>> {
         return self.elements.any.lazy
     }
@@ -182,6 +203,7 @@ public extension SequenceType where Generator.Element : Equatable {
     ///
     /// - Complexity: O(`self.count`).
     @warn_unused_result
+    @_transparent
     func all(x: Generator.Element) -> Bool {
         
         for item in self where item != x {
@@ -197,6 +219,7 @@ public extension SequenceType {
     ///
     /// - Complexity: O(`self.count`).
     @warn_unused_result
+    @_transparent
     func all(@noescape predicate: (Generator.Element) throws -> Bool) rethrows -> Bool {
         
         for item in self where try !predicate(item) {
@@ -210,6 +233,7 @@ public extension Set {
     
     /// Return `true` if all of elements in `seq` is `x`.
     @warn_unused_result
+    @_transparent
     func all(x: Element) -> Bool {
         
         switch self.count {
@@ -229,6 +253,7 @@ public extension SequenceType {
     ///
     /// - Complexity: O(`self.count`).
     @warn_unused_result
+    @_transparent
     func firstOf(@noescape predicate: (Generator.Element) throws -> Bool) rethrows -> Generator.Element? {
         
         for item in self where try predicate(item) {
@@ -244,6 +269,7 @@ public extension CollectionType where Index : BidirectionalIndexType {
     ///
     /// - Complexity: O(`self.count`).
     @warn_unused_result
+    @_transparent
     func lastOf(@noescape predicate: (Generator.Element) throws -> Bool) rethrows -> Generator.Element? {
         return try self.reverse().firstOf(predicate)
     }
@@ -259,6 +285,7 @@ public extension CollectionType where Generator.Element : Equatable {
     ///
     /// - Complexity: O(`self.count`)
     @warn_unused_result
+    @_transparent
     func prefixUntil(element: Self.Generator.Element) -> Self.SubSequence {
         return self.prefixUpTo(self.indexOf(element) ?? self.endIndex)
     }
@@ -274,6 +301,7 @@ public extension CollectionType {
     ///
     /// - Complexity: O(`self.count`)
     @warn_unused_result
+    @_transparent
     func prefixUntil(@noescape predicate: (Self.Generator.Element) throws -> Bool) rethrows -> Self.SubSequence {
         return self.prefixUpTo(try self.indexOf(predicate) ?? self.endIndex)
     }
@@ -288,6 +316,7 @@ public extension CollectionType where Generator.Element : Equatable, Index : Bid
     ///
     /// - Complexity: O(`self.count`)
     @warn_unused_result
+    @_transparent
     func suffixUntil(element: Self.Generator.Element) -> Self.SubSequence {
         return self.suffixFrom(self.reverse().indexOf(element)?.base ?? self.startIndex)
     }
@@ -302,6 +331,7 @@ public extension CollectionType where Index : BidirectionalIndexType {
     ///
     /// - Complexity: O(`self.count`)
     @warn_unused_result
+    @_transparent
     func suffixUntil(@noescape predicate: (Self.Generator.Element) throws -> Bool) rethrows -> Self.SubSequence {
         return self.suffixFrom(try self.reverse().indexOf(predicate)?.base ?? self.startIndex)
     }
@@ -309,6 +339,7 @@ public extension CollectionType where Index : BidirectionalIndexType {
 
 public extension MutableCollectionType {
     
+    @_transparent
     mutating func mutateEach(@noescape body: (inout Generator.Element) throws -> ()) rethrows {
         for idx in self.indices {
             try body(&self[idx])
@@ -364,6 +395,7 @@ public extension SequenceType {
     ///
     /// - Complexity: O(N)
     @warn_unused_result
+    @_transparent
     func scan<R>(initial: R, @noescape combine: (R, Generator.Element) throws -> R) rethrows -> [R] {
         var result = [initial]
         for x in self {
@@ -410,6 +442,7 @@ public extension LazySequenceType {
     ///
     /// - Complexity: O(1)
     @warn_unused_result
+    @_transparent
     func scan<R>(initial: R, combine: (R, Elements.Generator.Element) -> R) -> LazyScanSequence<Elements, R> {
         return LazyScanSequence(initial: initial, base: self.elements, combine: combine)
     }
@@ -560,6 +593,7 @@ public func == <S1, S2>(lhs: ConcatBidirectionalCollectionIndex<S1, S2>, rhs: Co
 public extension SequenceType {
     
     @warn_unused_result
+    @_transparent
     func concat<S : SequenceType where Generator.Element == S.Generator.Element>(with: S) -> ConcatSequence<Self, S> {
         return ConcatSequence(base1: self, base2: with)
     }
@@ -568,6 +602,7 @@ public extension SequenceType {
 public extension CollectionType {
     
     @warn_unused_result
+    @_transparent
     func concat<S : CollectionType where Generator.Element == S.Generator.Element>(with: S) -> ConcatCollection<Self, S> {
         return ConcatCollection(base1: self, base2: with)
     }
@@ -576,6 +611,7 @@ public extension CollectionType {
 public extension CollectionType where Index : BidirectionalIndexType {
     
     @warn_unused_result
+    @_transparent
     func concat<S : CollectionType where Generator.Element == S.Generator.Element, S.Index : BidirectionalIndexType>(with: S) -> ConcatBidirectionalCollection<Self, S> {
         return ConcatBidirectionalCollection(base1: self, base2: with)
     }
@@ -584,6 +620,7 @@ public extension CollectionType where Index : BidirectionalIndexType {
 public extension LazySequenceType {
     
     @warn_unused_result
+    @_transparent
     func concat<S : SequenceType where Elements.Generator.Element == S.Generator.Element>(with: S) -> LazySequence<ConcatSequence<Elements, S>> {
         return ConcatSequence(base1: self.elements, base2: with).lazy
     }
@@ -592,6 +629,7 @@ public extension LazySequenceType {
 public extension LazyCollectionType {
     
     @warn_unused_result
+    @_transparent
     func concat<S : CollectionType where Elements.Generator.Element == S.Generator.Element>(with: S) -> LazyCollection<ConcatCollection<Elements, S>> {
         return ConcatCollection(base1: self.elements, base2: with).lazy
     }
@@ -600,6 +638,7 @@ public extension LazyCollectionType {
 public extension LazyCollectionType where Elements.Index : BidirectionalIndexType {
     
     @warn_unused_result
+    @_transparent
     func concat<S : CollectionType where Elements.Generator.Element == S.Generator.Element, S.Index : BidirectionalIndexType>(with: S) -> LazyCollection<ConcatBidirectionalCollection<Elements, S>> {
         return ConcatBidirectionalCollection(base1: self.elements, base2: with).lazy
     }
@@ -608,6 +647,7 @@ public extension LazyCollectionType where Elements.Index : BidirectionalIndexTyp
 public extension LazySequenceType {
     
     @warn_unused_result
+    @_transparent
     func append(newElement: Elements.Generator.Element) -> LazySequence<ConcatSequence<Elements, CollectionOfOne<Elements.Generator.Element>>> {
         return self.concat(CollectionOfOne(newElement))
     }
@@ -616,6 +656,7 @@ public extension LazySequenceType {
 public extension LazyCollectionType {
     
     @warn_unused_result
+    @_transparent
     func append(newElement: Elements.Generator.Element) -> LazyCollection<ConcatCollection<Elements, CollectionOfOne<Elements.Generator.Element>>> {
         return self.concat(CollectionOfOne(newElement))
     }
@@ -624,6 +665,7 @@ public extension LazyCollectionType {
 public extension LazyCollectionType where Elements.Index : BidirectionalIndexType {
     
     @warn_unused_result
+    @_transparent
     func append(newElement: Elements.Generator.Element) -> LazyCollection<ConcatBidirectionalCollection<Elements, CollectionOfOne<Elements.Generator.Element>>> {
         return self.concat(CollectionOfOne(newElement))
     }
@@ -632,6 +674,7 @@ public extension LazyCollectionType where Elements.Index : BidirectionalIndexTyp
 public extension CollectionType {
     
     @warn_unused_result
+    @_transparent
     func collect<Indices : SequenceType where Index == Indices.Generator.Element>(indices: Indices) -> [Generator.Element] {
         return indices.map { self[$0] }
     }
@@ -709,11 +752,13 @@ public struct LazyGatherCollection<C : CollectionType, Indices : CollectionType 
 public extension LazyCollectionType {
     
     @warn_unused_result
+    @_transparent
     func collect<Indices : SequenceType where Elements.Index == Indices.Generator.Element>(indices: Indices) -> LazyGatherSequence<Elements, Indices> {
         return LazyGatherSequence(_base: self.elements, _indices: indices)
     }
     
     @warn_unused_result
+    @_transparent
     func collect<Indices : CollectionType where Elements.Index == Indices.Generator.Element>(indices: Indices) -> LazyGatherCollection<Elements, Indices> {
         return LazyGatherCollection(_base: self.elements, _indices: indices)
     }
@@ -803,6 +848,7 @@ public func == <C>(lhs: LazyStrideCollectionIndex<C>, rhs: LazyStrideCollectionI
 public extension CollectionType where Index : Strideable {
     
     @warn_unused_result
+    @_transparent
     func stride(by maxLength: Index.Stride) -> [SubSequence] {
         return Array(self.lazy.stride(by: maxLength))
     }
@@ -811,6 +857,7 @@ public extension CollectionType where Index : Strideable {
 public extension LazyCollectionType where Elements.Index : Strideable {
     
     @warn_unused_result
+    @_transparent
     func stride(by maxLength: Elements.Index.Stride) -> LazyStrideCollection<Elements> {
         return LazyStrideCollection(base: self.elements, stride: maxLength)
     }
@@ -822,6 +869,7 @@ public extension CollectionType {
     ///
     /// Invalidates all indices with respect to `self`.
     @warn_unused_result
+    @_transparent
     func dropRange(subRange: Range<Self.Index>) -> ConcatSequence<SubSequence, SubSequence> {
         return self.prefixUpTo(subRange.startIndex).concat(self.suffixFrom(subRange.endIndex))
     }
@@ -833,6 +881,7 @@ public extension CollectionType where SubSequence : CollectionType {
     ///
     /// Invalidates all indices with respect to `self`.
     @warn_unused_result
+    @_transparent
     func dropRange(subRange: Range<Self.Index>) -> ConcatCollection<SubSequence, SubSequence> {
         return self.prefixUpTo(subRange.startIndex).concat(self.suffixFrom(subRange.endIndex))
     }
@@ -844,6 +893,7 @@ public extension CollectionType where SubSequence : CollectionType, SubSequence.
     ///
     /// Invalidates all indices with respect to `self`.
     @warn_unused_result
+    @_transparent
     func dropRange(subRange: Range<Self.Index>) -> ConcatBidirectionalCollection<SubSequence, SubSequence> {
         return self.prefixUpTo(subRange.startIndex).concat(self.suffixFrom(subRange.endIndex))
     }
@@ -855,6 +905,7 @@ public extension LazyCollectionType {
     ///
     /// Invalidates all indices with respect to `self`.
     @warn_unused_result
+    @_transparent
     func dropRange(subRange: Range<Elements.Index>) -> LazySequence<ConcatSequence<Elements.SubSequence, Elements.SubSequence>> {
         return self.elements.dropRange(subRange).lazy
     }
@@ -866,6 +917,7 @@ public extension LazyCollectionType where Elements.SubSequence : CollectionType 
     ///
     /// Invalidates all indices with respect to `self`.
     @warn_unused_result
+    @_transparent
     func dropRange(subRange: Range<Elements.Index>) -> LazyCollection<ConcatCollection<Elements.SubSequence, Elements.SubSequence>> {
         return self.elements.dropRange(subRange).lazy
     }
@@ -877,6 +929,7 @@ public extension LazyCollectionType where Elements.SubSequence : CollectionType,
     ///
     /// Invalidates all indices with respect to `self`.
     @warn_unused_result
+    @_transparent
     func dropRange(subRange: Range<Elements.Index>) -> LazyCollection<ConcatBidirectionalCollection<Elements.SubSequence, Elements.SubSequence>> {
         return self.elements.dropRange(subRange).lazy
     }
@@ -888,6 +941,7 @@ public extension LazyCollectionType {
     ///
     /// Invalidates all indices with respect to `self`.
     @warn_unused_result
+    @_transparent
     func replaceRange<S : SequenceType where S.Generator.Element == Elements.SubSequence.Generator.Element>(subRange: Range<Elements.Index>, with newElements: S) -> LazySequence<ConcatSequence<ConcatSequence<Elements.SubSequence, S>, Elements.SubSequence>> {
         return self.elements.prefixUpTo(subRange.startIndex).concat(newElements).concat(self.elements.suffixFrom(subRange.endIndex)).lazy
     }
@@ -899,6 +953,7 @@ public extension LazyCollectionType where Elements.SubSequence : CollectionType 
     ///
     /// Invalidates all indices with respect to `self`.
     @warn_unused_result
+    @_transparent
     func replaceRange<C : CollectionType where C.Generator.Element == Elements.SubSequence.Generator.Element>(subRange: Range<Elements.Index>, with newElements: C) -> LazyCollection<ConcatCollection<ConcatCollection<Elements.SubSequence, C>, Elements.SubSequence>> {
         return self.elements.prefixUpTo(subRange.startIndex).concat(newElements).concat(self.elements.suffixFrom(subRange.endIndex)).lazy
     }
@@ -910,6 +965,7 @@ public extension LazyCollectionType where Elements.SubSequence : CollectionType,
     ///
     /// Invalidates all indices with respect to `self`.
     @warn_unused_result
+    @_transparent
     func replaceRange<C : CollectionType where C.Index : BidirectionalIndexType, C.Generator.Element == Elements.SubSequence.Generator.Element>(subRange: Range<Elements.Index>, with newElements: C) -> LazyCollection<ConcatBidirectionalCollection<ConcatBidirectionalCollection<Elements.SubSequence, C>, Elements.SubSequence>> {
         return self.elements.prefixUpTo(subRange.startIndex).concat(newElements).concat(self.elements.suffixFrom(subRange.endIndex)).lazy
     }
@@ -933,6 +989,7 @@ public extension SequenceType where Generator.Element : Comparable {
     ///
     /// - Requires: `maxSplit >= 0`
     @warn_unused_result
+    @_transparent
     func split<S: SequenceType where S.Generator.Element == Generator.Element>(separator: S, maxSplit: Int = Int.max, allowEmptySlices: Bool = false) -> [SubSequence] {
         return self.split(maxSplit, allowEmptySlices: allowEmptySlices) { separator.contains($0) }
     }
@@ -942,6 +999,7 @@ public extension LazySequenceType {
     
     /// Return a `Sequence` containing tuples satisfies `predicate` with each elements of two `sources`.
     @warn_unused_result
+    @_transparent
     func merge<S : SequenceType>(with: S, predicate: (Elements.Generator.Element, S.Generator.Element) -> Bool) -> LazySequence<FlattenSequence<LazyMapSequence<Elements, LazyMapSequence<LazyFilterSequence<S>, (Elements.Generator.Element, S.Generator.Element)>>>> {
         return self.flatMap { lhs in with.lazy.filter { rhs in predicate(lhs, rhs) }.map { (lhs, $0) } }
     }
@@ -951,6 +1009,7 @@ public extension LazyCollectionType {
     
     /// Return a `Collection` containing tuples satisfies `predicate` with each elements of two `sources`.
     @warn_unused_result
+    @_transparent
     func merge<C : CollectionType>(with: C, predicate: (Elements.Generator.Element, C.Generator.Element) -> Bool) -> LazyCollection<FlattenCollection<LazyMapCollection<Elements, LazyMapCollection<LazyFilterCollection<C>, (Elements.Generator.Element, C.Generator.Element)>>>> {
         return self.flatMap { lhs in with.lazy.filter { rhs in predicate(lhs, rhs) }.map { (lhs, $0) } }
     }
@@ -960,6 +1019,7 @@ public extension SequenceType {
     
     /// Return an `Array` containing tuples satisfies `predicate` with each elements of two `sources`.
     @warn_unused_result
+    @_transparent
     func merge<S : SequenceType>(with: S, @noescape predicate: (Generator.Element, S.Generator.Element) throws -> Bool) rethrows -> [(Generator.Element, S.Generator.Element)] {
         var result: [(Generator.Element, S.Generator.Element)] = []
         for lhs in self {
@@ -974,6 +1034,7 @@ public extension SequenceType {
 public extension SequenceType {
     
     @warn_unused_result
+    @_transparent
     func chunk<Key : Equatable>(@noescape by: (Generator.Element) throws -> Key) rethrows -> [(key: Key, elements: [Generator.Element])] {
         
         var table: [(key: Key, elements: [Generator.Element])] = []
@@ -995,6 +1056,7 @@ public extension SequenceType {
     
     /// Groups the elements of a sequence according to a specified key selector function.
     @warn_unused_result
+    @_transparent
     func group<Key : Equatable>(@noescape by: (Generator.Element) throws -> Key) rethrows -> [(key: Key, elements: [Generator.Element])] {
         
         var table: [(key: Key, elements: [Generator.Element])] = []
@@ -1016,6 +1078,7 @@ public extension SequenceType {
     /// - Complexity: O(`elements.count`).
     ///
     @warn_unused_result
+    @_transparent
     func minElement<R : Comparable>(@noescape by: (Generator.Element) throws -> R) rethrows -> Generator.Element? {
         return try self.minElement { try by($0) < by($1) }
     }
@@ -1024,6 +1087,7 @@ public extension SequenceType {
     /// - Complexity: O(`elements.count`).
     ///
     @warn_unused_result
+    @_transparent
     func maxElement<R : Comparable>(@noescape by: (Generator.Element) throws -> R) rethrows -> Generator.Element? {
         return try self.maxElement { try by($0) < by($1) }
     }
@@ -1037,6 +1101,7 @@ public extension MutableCollectionType {
     /// The sorting algorithm is not stable (can change the relative order of
     /// elements that compare equal).
     @warn_unused_result(mutable_variant="sortInPlace")
+    @_transparent
     func sort<R : Comparable>(@noescape by: (Generator.Element) -> R) -> [Generator.Element] {
         return self.sort { by($0) < by($1) }
     }
@@ -1048,6 +1113,7 @@ public extension MutableCollectionType where Self.Index : RandomAccessIndexType 
     ///
     /// The sorting algorithm is not stable (can change the relative order of
     /// elements that compare equal).
+    @_transparent
     mutating func sortInPlace<R : Comparable>(@noescape by: (Generator.Element) -> R) {
         self.sortInPlace { by($0) < by($1) }
     }
@@ -1056,6 +1122,7 @@ public extension MutableCollectionType where Self.Index : RandomAccessIndexType 
 public extension Comparable {
     
     @warn_unused_result
+    @_transparent
     func clamp(range: ClosedInterval<Self>) -> Self {
         return min(max(self, range.start), range.end)
     }
@@ -1064,6 +1131,7 @@ public extension Comparable {
 public extension Float32 {
     
     @warn_unused_result
+    @_transparent
     static func random(includeOne includeOne: Bool = false) -> Float32 {
         if includeOne {
             return unsafeBitCast((0..<0x800000).randomElement()! + 0x3F800000 as UInt32, Float32.self) - 1
@@ -1075,6 +1143,7 @@ public extension Float32 {
 public extension Float64 {
     
     @warn_unused_result
+    @_transparent
     static func random(includeOne includeOne: Bool = false) -> Float64 {
         if includeOne {
             return unsafeBitCast((0..<0x10000000000000).randomElement()! + 0x3FF0000000000000 as UInt64, Float64.self) - 1
@@ -1111,6 +1180,7 @@ public extension CollectionType where Index : RandomAccessIndexType {
     /// - Complexity: O(1).
     ///
     @warn_unused_result
+    @_transparent
     func randomElement() -> Generator.Element? {
         let _count = UIntMax(self.count.toIntMax())
         switch _count {
@@ -1125,6 +1195,7 @@ public extension CollectionType {
     
     /// Return an `Array` containing the shuffled elements of `source`.
     @warn_unused_result(mutable_variant="shuffleInPlace")
+    @_transparent
     func shuffle() -> [Generator.Element] {
         var list = self.array
         list.shuffleInPlace()
@@ -1135,6 +1206,7 @@ public extension CollectionType {
 public extension MutableCollectionType where Index : RandomAccessIndexType {
     
     /// Shuffle `self` in-place.
+    @_transparent
     mutating func shuffleInPlace() {
         let _endIndex = self.endIndex
         for i in self.indices.dropLast() {
@@ -1148,6 +1220,7 @@ public extension MutableCollectionType where Index : RandomAccessIndexType {
 
 public extension RangeReplaceableCollectionType {
     
+    @_transparent
     mutating func replace<C : CollectionType where Generator.Element == C.Generator.Element>(with newElements: C) {
         self.replaceRange(self.indices, with: newElements)
     }
@@ -1155,6 +1228,7 @@ public extension RangeReplaceableCollectionType {
 
 public extension MutableCollectionType where Index : BidirectionalIndexType {
     
+    @_transparent
     private mutating func reverseInPlace(range: Range<Index>) {
         var temp: Index?
         for (lhs, rhs) in zip(range, range.reverse()) {
@@ -1167,6 +1241,7 @@ public extension MutableCollectionType where Index : BidirectionalIndexType {
         }
     }
     
+    @_transparent
     mutating func reverseInPlace() {
         self.reverseInPlace(self.indices)
     }
@@ -1175,6 +1250,7 @@ public extension MutableCollectionType where Index : BidirectionalIndexType {
 public extension MutableCollectionType where Index : BidirectionalIndexType, Generator.Element : Comparable {
     
     @warn_unused_result
+    @_transparent
     func nextPermute() -> Self {
         var _self = self
         if !_self.isEmpty {

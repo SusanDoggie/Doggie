@@ -62,10 +62,12 @@ extension Size: Hashable {
 }
 
 @warn_unused_result
+@_transparent
 public func == (lhs: Size, rhs: Size) -> Bool {
     return lhs.width == rhs.width && lhs.height == rhs.height
 }
 @warn_unused_result
+@_transparent
 public func != (lhs: Size, rhs: Size) -> Bool {
     return lhs.width != rhs.width || lhs.height != rhs.height
 }
@@ -108,16 +110,19 @@ extension Rect: Hashable {
 }
 
 @warn_unused_result
+@_transparent
 public func == (lhs: Rect, rhs: Rect) -> Bool {
     return lhs.origin == rhs.origin && lhs.size == rhs.size
 }
 @warn_unused_result
+@_transparent
 public func != (lhs: Rect, rhs: Rect) -> Bool {
     return lhs.origin != rhs.origin || lhs.size != rhs.size
 }
 
 extension Rect {
     
+    @_transparent
     public var x : Double {
         get {
             return origin.x
@@ -127,6 +132,7 @@ extension Rect {
         }
     }
     
+    @_transparent
     public var y : Double {
         get {
             return origin.y
@@ -136,6 +142,7 @@ extension Rect {
         }
     }
     
+    @_transparent
     public var width : Double {
         get {
             return size.width
@@ -145,6 +152,7 @@ extension Rect {
         }
     }
     
+    @_transparent
     public var height : Double {
         get {
             return size.height
@@ -157,6 +165,7 @@ extension Rect {
 
 extension Rect {
     
+    @_transparent
     public var minX : Double {
         get {
             return x
@@ -165,6 +174,7 @@ extension Rect {
             x = newValue
         }
     }
+    @_transparent
     public var minY : Double {
         get {
             return y
@@ -173,6 +183,7 @@ extension Rect {
             y = newValue
         }
     }
+    @_transparent
     public var maxX : Double {
         get {
             return x + width
@@ -181,6 +192,7 @@ extension Rect {
             width = newValue - x
         }
     }
+    @_transparent
     public var maxY : Double {
         get {
             return y + height
@@ -189,6 +201,7 @@ extension Rect {
             height = newValue - y
         }
     }
+    @_transparent
     public var midX : Double {
         get {
             return 0.5 * width + x
@@ -197,6 +210,7 @@ extension Rect {
             x = newValue - 0.5 * width
         }
     }
+    @_transparent
     public var midY : Double {
         get {
             return 0.5 * height + y
@@ -205,6 +219,7 @@ extension Rect {
             y = newValue - 0.5 * height
         }
     }
+    @_transparent
     public var center : Point {
         get {
             return Point(x: midX, y: midY)
@@ -218,6 +233,7 @@ extension Rect {
 
 extension Rect {
     
+    @_transparent
     public var points : [Point] {
         let a = Point(x: self.minX, y: self.minY)
         let b = Point(x: self.maxX, y: self.minY)
@@ -226,6 +242,7 @@ extension Rect {
         return [a, b, c, d]
     }
     
+    @_transparent
     public static func bound(points: [Point]) -> Rect {
         if points.count == 0 {
             return Rect()
@@ -243,6 +260,7 @@ extension Rect {
 extension Rect {
     
     @warn_unused_result
+    @_transparent
     public func union(other : Rect) -> Rect {
         let minX = min(self.minX, other.minX)
         let minY = min(self.minY, other.minY)
@@ -251,6 +269,7 @@ extension Rect {
         return Rect(x: minX, y: minY, width: maxX - minX, height: maxY - minY)
     }
     @warn_unused_result
+    @_transparent
     public func intersect(other : Rect) -> Rect {
         let minX = max(self.minX, other.minX)
         let minY = max(self.minY, other.minY)
@@ -259,24 +278,29 @@ extension Rect {
         return Rect(x: minX, y: minY, width: _width, height: _height)
     }
     @warn_unused_result
+    @_transparent
     public func inset(dx dx: Double, dy: Double) -> Rect {
         return Rect(x: self.x + dx, y: self.y + dy, width: self.width - 2 * dx, height: self.height - 2 * dy)
     }
     @warn_unused_result
+    @_transparent
     public func offset(dx dx: Double, dy: Double) -> Rect {
         return Rect(x: self.x + dx, y: self.y + dy, width: self.width, height: self.height)
     }
     @warn_unused_result
+    @_transparent
     public func contains(point: Point) -> Bool {
         return (minX...maxX).contains(point.x) && (minY...maxY).contains(point.y)
     }
     @warn_unused_result
+    @_transparent
     public func contains(rect: Rect) -> Bool {
         let a = Point(x: rect.minX, y: rect.minY)
         let b = Point(x: rect.maxX, y: rect.maxY)
         return self.contains(a) && self.contains(b)
     }
     @warn_unused_result
+    @_transparent
     public func isIntersect(rect: Rect) -> Bool {
         return self.minX < rect.maxX && self.maxX > rect.minX && self.minY < rect.maxY && self.maxY > rect.minY
     }

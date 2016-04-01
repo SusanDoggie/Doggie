@@ -89,6 +89,7 @@ extension SDTransform : CustomStringConvertible, CustomDebugStringConvertible {
 
 extension SDTransform {
     
+    @_transparent
     public var inverse : SDTransform {
         let det = a * e - b * d
         return SDTransform(a: e / det, b: -b / det, c: (b * f - c * e) / det, d: -d / det, e: a / det, f: (c * d - a * f) / det)
@@ -244,229 +245,286 @@ extension SDTransform {
 
 extension SDTransform.Identity {
     
+    @_transparent
     public var a: Double {
         return 1
     }
+    @_transparent
     public var b: Double {
         return 0
     }
+    @_transparent
     public var c: Double {
         return 0
     }
+    @_transparent
     public var d: Double {
         return 0
     }
+    @_transparent
     public var e: Double {
         return 1
     }
+    @_transparent
     public var f: Double {
         return 0
     }
     
+    @_transparent
     public var inverse : SDTransform.Identity {
         return self
     }
 }
 
 @warn_unused_result
+@_transparent
 public func == (_: SDTransform.Identity, _: SDTransform.Identity) -> Bool {
     return true
 }
 @warn_unused_result
+@_transparent
 public func != (_: SDTransform.Identity, _: SDTransform.Identity) -> Bool {
     return false
 }
 
 @warn_unused_result
+@_transparent
 public func * (_: SDTransform.Identity, _: SDTransform.Identity) -> SDTransform.Identity {
     return SDTransform.Identity()
 }
 
 @warn_unused_result
+@_transparent
 public func * <T: SDTransformType>(_: SDTransform.Identity, rhs: T) -> T {
     return rhs
 }
 
 @warn_unused_result
+@_transparent
 public func * <S: SDTransformType>(lhs: S, _: SDTransform.Identity) -> S {
     return lhs
 }
 
+@_transparent
 public func *= <S: SDTransformType>(inout _: S, _: SDTransform.Identity) {
 }
 
 extension SDTransform.Rotate {
     
+    @_transparent
     public var a: Double {
         return cos(angle)
     }
+    @_transparent
     public var b: Double {
         return -sin(angle)
     }
+    @_transparent
     public var c: Double {
         return 0
     }
+    @_transparent
     public var d: Double {
         return sin(angle)
     }
+    @_transparent
     public var e: Double {
         return cos(angle)
     }
+    @_transparent
     public var f: Double {
         return 0
     }
     
+    @_transparent
     public var inverse : SDTransform.Rotate {
         return SDTransform.Rotate(-angle)
     }
 }
 
 @warn_unused_result
+@_transparent
 public func == (lhs: SDTransform.Rotate, rhs: SDTransform.Rotate) -> Bool {
     return lhs.angle == rhs.angle
 }
 @warn_unused_result
+@_transparent
 public func != (lhs: SDTransform.Rotate, rhs: SDTransform.Rotate) -> Bool {
     return lhs.angle != rhs.angle
 }
 
 @warn_unused_result
+@_transparent
 public func * (lhs: SDTransform.Rotate, rhs: SDTransform.Rotate) -> SDTransform.Rotate {
     return SDTransform.Rotate(lhs.angle + rhs.angle)
 }
 
+@_transparent
 public func *= (inout lhs: SDTransform.Rotate, rhs: SDTransform.Rotate) {
     return lhs.angle += rhs.angle
 }
 
 extension SDTransform.SkewX {
     
+    @_transparent
     public var a: Double {
         return 1
     }
+    @_transparent
     public var b: Double {
         return tan(angle)
     }
+    @_transparent
     public var c: Double {
         return 0
     }
+    @_transparent
     public var d: Double {
         return 0
     }
+    @_transparent
     public var e: Double {
         return 1
     }
+    @_transparent
     public var f: Double {
         return 0
     }
     
+    @_transparent
     public var inverse : SDTransform.SkewX {
         return SDTransform.SkewX(-angle)
     }
 }
 
 @warn_unused_result
+@_transparent
 public func == (lhs: SDTransform.SkewX, rhs: SDTransform.SkewX) -> Bool {
     return lhs.angle == rhs.angle
 }
 @warn_unused_result
+@_transparent
 public func != (lhs: SDTransform.SkewX, rhs: SDTransform.SkewX) -> Bool {
     return lhs.angle != rhs.angle
 }
 
 @warn_unused_result
+@_transparent
 public func * (lhs: SDTransform.SkewX, rhs: SDTransform.SkewX) -> SDTransform.SkewX {
     return SDTransform.SkewX(atan(tan(lhs.angle) + tan(rhs.angle)))
 }
 
+@_transparent
 public func *= (inout lhs: SDTransform.SkewX, rhs: SDTransform.SkewX) {
     return lhs.angle = atan(tan(lhs.angle) + tan(rhs.angle))
 }
 
 extension SDTransform.SkewY {
     
+    @_transparent
     public var a: Double {
         return 1
     }
+    @_transparent
     public var b: Double {
         return 0
     }
+    @_transparent
     public var c: Double {
         return 0
     }
+    @_transparent
     public var d: Double {
         return tan(angle)
     }
+    @_transparent
     public var e: Double {
         return 1
     }
+    @_transparent
     public var f: Double {
         return 0
     }
     
+    @_transparent
     public var inverse : SDTransform.SkewY {
         return SDTransform.SkewY(-angle)
     }
 }
 
 @warn_unused_result
+@_transparent
 public func == (lhs: SDTransform.SkewY, rhs: SDTransform.SkewY) -> Bool {
     return lhs.angle == rhs.angle
 }
 @warn_unused_result
+@_transparent
 public func != (lhs: SDTransform.SkewY, rhs: SDTransform.SkewY) -> Bool {
     return lhs.angle != rhs.angle
 }
 
 @warn_unused_result
+@_transparent
 public func * (lhs: SDTransform.SkewY, rhs: SDTransform.SkewY) -> SDTransform.SkewY {
     return SDTransform.SkewY(atan(tan(lhs.angle) + tan(rhs.angle)))
 }
 
+@_transparent
 public func *= (inout lhs: SDTransform.SkewY, rhs: SDTransform.SkewY) {
     return lhs.angle = atan(tan(lhs.angle) + tan(rhs.angle))
 }
 
 extension SDTransform.Scale {
     
+    @_transparent
     public var a: Double {
         return x
     }
+    @_transparent
     public var b: Double {
         return 0
     }
+    @_transparent
     public var c: Double {
         return 0
     }
+    @_transparent
     public var d: Double {
         return 0
     }
+    @_transparent
     public var e: Double {
         return y
     }
+    @_transparent
     public var f: Double {
         return 0
     }
     
+    @_transparent
     public var inverse : SDTransform.Scale {
         return SDTransform.Scale(x: 1 / x, y: 1 / y)
     }
 }
 
 @warn_unused_result
+@_transparent
 public func == (lhs: SDTransform.Scale, rhs: SDTransform.Scale) -> Bool {
     return lhs.x == rhs.x && lhs.y == rhs.y
 }
 @warn_unused_result
+@_transparent
 public func != (lhs: SDTransform.Scale, rhs: SDTransform.Scale) -> Bool {
     return lhs.x != rhs.x || lhs.y != rhs.y
 }
 
 @warn_unused_result
+@_transparent
 public func * (lhs: SDTransform.Scale, rhs: SDTransform.Scale) -> SDTransform.Scale {
     return SDTransform.Scale(x: lhs.x * rhs.x, y: lhs.y * rhs.y)
 }
 
+@_transparent
 public func *= (inout lhs: SDTransform.Scale, rhs: SDTransform.Scale) {
     lhs.x *= rhs.x
     lhs.y *= rhs.y
@@ -474,44 +532,55 @@ public func *= (inout lhs: SDTransform.Scale, rhs: SDTransform.Scale) {
 
 extension SDTransform.Translate {
     
+    @_transparent
     public var a: Double {
         return 1
     }
+    @_transparent
     public var b: Double {
         return 0
     }
+    @_transparent
     public var c: Double {
         return x
     }
+    @_transparent
     public var d: Double {
         return 0
     }
+    @_transparent
     public var e: Double {
         return 1
     }
+    @_transparent
     public var f: Double {
         return y
     }
     
+    @_transparent
     public var inverse : SDTransform.Translate {
         return SDTransform.Translate(x: -x, y: -y)
     }
 }
 
 @warn_unused_result
+@_transparent
 public func == (lhs: SDTransform.Translate, rhs: SDTransform.Translate) -> Bool {
     return lhs.x == rhs.x && lhs.y == rhs.y
 }
 @warn_unused_result
+@_transparent
 public func != (lhs: SDTransform.Translate, rhs: SDTransform.Translate) -> Bool {
     return lhs.x != rhs.x || lhs.y != rhs.y
 }
 
 @warn_unused_result
+@_transparent
 public func * (lhs: SDTransform.Translate, rhs: SDTransform.Translate) -> SDTransform.Translate {
     return SDTransform.Translate(x: lhs.x + rhs.x, y: lhs.y + rhs.y)
 }
 
+@_transparent
 public func *= (inout lhs: SDTransform.Translate, rhs: SDTransform.Translate) {
     lhs.x += rhs.x
     lhs.y += rhs.y
@@ -519,84 +588,105 @@ public func *= (inout lhs: SDTransform.Translate, rhs: SDTransform.Translate) {
 
 extension SDTransform.ReflectX {
     
+    @_transparent
     public var a: Double {
         return -1
     }
+    @_transparent
     public var b: Double {
         return 0
     }
+    @_transparent
     public var c: Double {
         return 2 * x
     }
+    @_transparent
     public var d: Double {
         return 0
     }
+    @_transparent
     public var e: Double {
         return 1
     }
+    @_transparent
     public var f: Double {
         return 0
     }
     
+    @_transparent
     public var inverse : SDTransform.ReflectX {
         return self
     }
 }
 
 @warn_unused_result
+@_transparent
 public func == (lhs: SDTransform.ReflectX, rhs: SDTransform.ReflectX) -> Bool {
     return lhs.x == rhs.x
 }
 @warn_unused_result
+@_transparent
 public func != (lhs: SDTransform.ReflectX, rhs: SDTransform.ReflectX) -> Bool {
     return lhs.x != rhs.x
 }
 
 extension SDTransform.ReflectY {
     
+    @_transparent
     public var a: Double {
         return 1
     }
+    @_transparent
     public var b: Double {
         return 0
     }
+    @_transparent
     public var c: Double {
         return 0
     }
+    @_transparent
     public var d: Double {
         return 0
     }
+    @_transparent
     public var e: Double {
         return -1
     }
+    @_transparent
     public var f: Double {
         return 2 * y
     }
     
+    @_transparent
     public var inverse : SDTransform.ReflectY {
         return self
     }
 }
 
 @warn_unused_result
+@_transparent
 public func == (lhs: SDTransform.ReflectY, rhs: SDTransform.ReflectY) -> Bool {
     return lhs.y == rhs.y
 }
 @warn_unused_result
+@_transparent
 public func != (lhs: SDTransform.ReflectY, rhs: SDTransform.ReflectY) -> Bool {
     return lhs.y != rhs.y
 }
 
 @warn_unused_result
+@_transparent
 public func == <S: SDTransformType, T: SDTransformType>(lhs: S, rhs: T) -> Bool {
     return lhs.a == rhs.a && lhs.b == rhs.b && lhs.c == rhs.c && lhs.d == rhs.d && lhs.e == rhs.e && lhs.f == rhs.f
 }
 @warn_unused_result
+@_transparent
 public func != <S: SDTransformType, T: SDTransformType>(lhs: S, rhs: T) -> Bool {
     return lhs.a != rhs.a || lhs.b != rhs.b || lhs.c != rhs.c || lhs.d != rhs.d || lhs.e != rhs.e || lhs.f != rhs.f
 }
 
 @warn_unused_result
+@_transparent
 public func * <S: SDTransformType, T: SDTransformType>(lhs: S, rhs: T) -> SDTransform {
     let a = lhs.a * rhs.a + lhs.b * rhs.d
     let b = lhs.a * rhs.b + lhs.b * rhs.e
@@ -607,11 +697,13 @@ public func * <S: SDTransformType, T: SDTransformType>(lhs: S, rhs: T) -> SDTran
     return SDTransform(a: a, b: b, c: c, d: d, e: e, f: f)
 }
 
+@_transparent
 public func *= <T: SDTransformType>(inout lhs: SDTransform, rhs: T) {
     lhs = lhs * rhs
 }
 
 @warn_unused_result
+@_transparent
 public func * <T: SDTransformType>(lhs: T, rhs: Point) -> Point {
     return Point(x: lhs.a * rhs.x + lhs.b * rhs.y + lhs.c, y: lhs.d * rhs.x + lhs.e * rhs.y + lhs.f)
 }

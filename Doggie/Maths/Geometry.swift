@@ -64,10 +64,12 @@ extension Radius: Hashable {
 }
 
 @warn_unused_result
+@_transparent
 public func == (lhs: Radius, rhs: Radius) -> Bool {
     return lhs.x == rhs.x && lhs.y == rhs.y
 }
 @warn_unused_result
+@_transparent
 public func != (lhs: Radius, rhs: Radius) -> Bool {
     return lhs.x != rhs.x || lhs.y != rhs.y
 }

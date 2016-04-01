@@ -27,6 +27,7 @@ import Foundation
 
 extension CollectionType where Index : RandomAccessIndexType {
     
+    @_transparent
     public var parallel: ParallelCollection<Self> {
         return ParallelCollection(self)
     }
@@ -39,6 +40,7 @@ public protocol ParallelCollectionType : CollectionType {
 
 extension ParallelCollectionType {
     /// Identical to `self`.
+    @_transparent
     public var parallel: Self {
         return self
     }
@@ -53,6 +55,7 @@ extension ParallelCollectionType {
     /// - Note: Using the `return` statement in the `body` closure will only
     ///   exit from the current call to `body`, not any outer scope, and won't
     ///   skip subsequent calls.
+    @_transparent
     public func forEach(body: (Generator.Element) -> ()) {
         let queue = dispatch_queue_create("com.SusanDoggie.CollectionType.Parallel", DISPATCH_QUEUE_CONCURRENT)
         self.forEach(queue, body: body)
@@ -65,6 +68,7 @@ extension ParallelCollectionType {
     /// - Note: Using the `return` statement in the `body` closure will only
     ///   exit from the current call to `body`, not any outer scope, and won't
     ///   skip subsequent calls.
+    @_transparent
     public func forEach(queue: dispatch_queue_t, body: (Generator.Element) -> ()) {
         let _startIndex = self.startIndex
         dispatch_apply(numericCast(self.count), queue) {
@@ -75,6 +79,7 @@ extension ParallelCollectionType {
 
 extension ParallelCollectionType {
     
+    @_transparent
     public var array : [Generator.Element] {
         let count: Int = numericCast(self.count)
         let buffer = UnsafeMutablePointer<Generator.Element>.alloc(count)
@@ -177,6 +182,8 @@ public struct ParallelMapCollectionGenerator<Base: GeneratorType, Element> : Gen
 
 extension ParallelCollectionType {
     
+    @warn_unused_result
+    @_transparent
     public func map<T>(transform: (Generator.Element) -> T) -> ParallelMapCollection<Self, T> {
         return ParallelMapCollection(self, transform: transform)
     }
