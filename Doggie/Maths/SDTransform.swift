@@ -59,6 +59,7 @@ public struct SDTransform: SDTransformType {
     public var e: Double
     public var f: Double
     
+    @_transparent
     public init<T: SDTransformType>(_ m: T) {
         self.a = m.a
         self.b = m.b
@@ -68,6 +69,7 @@ public struct SDTransform: SDTransformType {
         self.f = m.f
     }
     
+    @_transparent
     public init(a: Double, b: Double, c: Double, d: Double, e: Double, f: Double) {
         self.a = a
         self.b = b
@@ -107,6 +109,7 @@ extension SDTransform {
     ///
     public struct Identity: SDTransformType {
         
+        @_transparent
         public init() {
         }
     }
@@ -122,6 +125,7 @@ extension SDTransform {
         
         public var angle: Double
         
+        @_transparent
         public init(_ angle: Double) {
             self.angle = angle
         }
@@ -138,6 +142,7 @@ extension SDTransform {
         
         public var angle: Double
         
+        @_transparent
         public init(_ angle: Double) {
             self.angle = angle
         }
@@ -154,6 +159,7 @@ extension SDTransform {
         
         public var angle: Double
         
+        @_transparent
         public init(_ angle: Double) {
             self.angle = angle
         }
@@ -171,6 +177,7 @@ extension SDTransform {
         public var x: Double
         public var y: Double
         
+        @_transparent
         public init(ratio: Double) {
             if ratio > 1 {
                 self.x = 1 / ratio
@@ -180,6 +187,7 @@ extension SDTransform {
                 self.y = ratio
             }
         }
+        @_transparent
         public init(x: Double, y: Double) {
             self.x = x
             self.y = y
@@ -198,6 +206,7 @@ extension SDTransform {
         public var x: Double
         public var y: Double
         
+        @_transparent
         public init(x: Double, y: Double) {
             self.x = x
             self.y = y
@@ -215,9 +224,11 @@ extension SDTransform {
         
         public var x: Double
         
+        @_transparent
         public init() {
             self.x = 0
         }
+        @_transparent
         public init(_ x: Double) {
             self.x = x
         }
@@ -234,9 +245,11 @@ extension SDTransform {
         
         public var y: Double
         
+        @_transparent
         public init() {
             self.y = 0
         }
+        @_transparent
         public init(_ y: Double) {
             self.y = y
         }

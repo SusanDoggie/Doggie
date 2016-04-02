@@ -30,18 +30,22 @@ public struct Complex {
     public var real: Double
     public var imag: Double
     
+    @_transparent
     public init(_ real: Double) {
         self.real = real
         self.imag = 0.0
     }
+    @_transparent
     public init(real: Double, imag: Double) {
         self.real = real
         self.imag = imag
     }
+    @_transparent
     public init(_ real: Int) {
         self.real = Double(real)
         self.imag = 0.0
     }
+    @_transparent
     public init(real: Int, imag: Int) {
         self.real = Double(real)
         self.imag = Double(imag)
@@ -85,6 +89,7 @@ extension Complex: CustomStringConvertible, CustomDebugStringConvertible {
 
 extension Complex: Hashable {
     
+    @_transparent
     public var hashValue: Int {
         return hash_combine(0, real, imag)
     }

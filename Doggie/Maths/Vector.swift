@@ -31,17 +31,20 @@ public struct Vector {
     public var y: Double
     public var z: Double
     
+    @_transparent
     public init() {
         self.x = 0
         self.y = 0
         self.z = 0
     }
     
+    @_transparent
     public init(x: Double, y: Double, z: Double) {
         self.x = x
         self.y = y
         self.z = z
     }
+    @_transparent
     public init(x: Int, y: Int, z: Int) {
         self.x = Double(x)
         self.y = Double(y)
@@ -97,6 +100,7 @@ extension Vector: CustomStringConvertible, CustomDebugStringConvertible {
 
 extension Vector: Hashable {
     
+    @_transparent
     public var hashValue: Int {
         return hash_combine(0, x, y, z)
     }

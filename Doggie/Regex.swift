@@ -60,14 +60,17 @@ extension Regex: StringLiteralConvertible {
     public typealias ExtendedGraphemeClusterLiteralType = StringLiteralType
     public typealias UnicodeScalarLiteralType = StringLiteralType
     
+    @_transparent
     public init(stringLiteral value: StringLiteralType) {
         try! self.init(pattern: value)
     }
     
+    @_transparent
     public init(extendedGraphemeClusterLiteral value: ExtendedGraphemeClusterLiteralType) {
         try! self.init(pattern: value)
     }
     
+    @_transparent
     public init(unicodeScalarLiteral value: UnicodeScalarLiteralType) {
         try! self.init(pattern: value)
     }

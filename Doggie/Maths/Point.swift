@@ -30,15 +30,18 @@ public struct Point {
     public var x: Double
     public var y: Double
     
+    @_transparent
     public init() {
         self.x = 0
         self.y = 0
     }
     
+    @_transparent
     public init(x: Double, y: Double) {
         self.x = x
         self.y = y
     }
+    @_transparent
     public init(x: Int, y: Int) {
         self.x = Double(x)
         self.y = Double(y)
@@ -65,6 +68,7 @@ extension Point: CustomStringConvertible, CustomDebugStringConvertible {
 
 extension Point: Hashable {
     
+    @_transparent
     public var hashValue: Int {
         return hash_combine(0, x, y)
     }

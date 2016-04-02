@@ -30,15 +30,18 @@ public struct Size {
     public var width: Double
     public var height: Double
     
+    @_transparent
     public init() {
         self.width = 0
         self.height = 0
     }
     
+    @_transparent
     public init(width: Double, height: Double) {
         self.width = width
         self.height = height
     }
+    @_transparent
     public init(width: Int, height: Int) {
         self.width = Double(width)
         self.height = Double(height)
@@ -56,6 +59,7 @@ extension Size: CustomStringConvertible, CustomDebugStringConvertible {
 
 extension Size: Hashable {
     
+    @_transparent
     public var hashValue: Int {
         return hash_combine(0, width, height)
     }
@@ -77,16 +81,19 @@ public struct Rect {
     public var origin : Point
     public var size : Size
     
+    @_transparent
     public init() {
         self.origin = Point()
         self.size = Size()
     }
     
+    @_transparent
     public init(origin: Point, size: Size) {
         self.origin = origin
         self.size = size
     }
     
+    @_transparent
     public init(x: Double, y: Double, width: Double, height: Double) {
         self.origin = Point(x: x, y: y)
         self.size = Size(width: width, height: height)
@@ -104,6 +111,7 @@ extension Rect: CustomStringConvertible, CustomDebugStringConvertible {
 
 extension Rect: Hashable {
     
+    @_transparent
     public var hashValue: Int {
         return hash_combine(0, origin.hashValue, size.hashValue)
     }
