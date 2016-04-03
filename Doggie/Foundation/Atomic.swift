@@ -25,11 +25,13 @@
 
 import Foundation
 
+
+
 public extension Int32 {
     
     /// Sets the value, and returns the previous value.
     @_transparent
-    mutating func set(value: Int32) -> Int32 {
+    mutating func atomicSet(value: Int32) -> Int32 {
         while true {
             let oldVal = self
             if self.compareAndSet(oldVal, value) {
@@ -43,13 +45,55 @@ public extension Int32 {
     mutating func compareAndSet(oldVal: Int32, _ newVal: Int32) -> Bool {
         return OSAtomicCompareAndSwap32Barrier(oldVal, newVal, &self)
     }
+    
+    @_transparent
+    mutating func atomicAdd(amount: Int32) {
+        OSAtomicAdd32Barrier(amount, &self)
+    }
+    
+    @_transparent
+    mutating func atomicIncrement() {
+        OSAtomicIncrement32Barrier(&self)
+    }
+    
+    @_transparent
+    mutating func atomicDecrement() {
+        OSAtomicDecrement32Barrier(&self)
+    }
+    
+    @_transparent
+    mutating func atomicOr(mask: Int32) -> Int32 {
+        @inline(__always)
+        func or(mask: Int32, _ theVal: UnsafeMutablePointer<Int32>) -> Int32 {
+            return OSAtomicOr32OrigBarrier(UInt32(bitPattern: mask), UnsafeMutablePointer(theVal))
+        }
+        return or(mask, &self)
+    }
+    
+    @_transparent
+    mutating func atomicAnd(mask: Int32) -> Int32 {
+        @inline(__always)
+        func and(mask: Int32, _ theVal: UnsafeMutablePointer<Int32>) -> Int32 {
+            return OSAtomicAnd32OrigBarrier(UInt32(bitPattern: mask), UnsafeMutablePointer(theVal))
+        }
+        return and(mask, &self)
+    }
+    
+    @_transparent
+    mutating func atomicXor(mask: Int32) -> Int32 {
+        @inline(__always)
+        func xor(mask: Int32, _ theVal: UnsafeMutablePointer<Int32>) -> Int32 {
+            return OSAtomicXor32OrigBarrier(UInt32(bitPattern: mask), UnsafeMutablePointer(theVal))
+        }
+        return xor(mask, &self)
+    }
 }
 
 public extension Int64 {
     
     /// Sets the value, and returns the previous value.
     @_transparent
-    mutating func set(value: Int64) -> Int64 {
+    mutating func atomicSet(value: Int64) -> Int64 {
         while true {
             let oldVal = self
             if self.compareAndSet(oldVal, value) {
@@ -63,13 +107,28 @@ public extension Int64 {
     mutating func compareAndSet(oldVal: Int64, _ newVal: Int64) -> Bool {
         return OSAtomicCompareAndSwap64Barrier(oldVal, newVal, &self)
     }
+    
+    @_transparent
+    mutating func atomicAdd(amount: Int64) {
+        OSAtomicAdd64Barrier(amount, &self)
+    }
+    
+    @_transparent
+    mutating func atomicIncrement() {
+        OSAtomicIncrement64Barrier(&self)
+    }
+    
+    @_transparent
+    mutating func atomicDecrement() {
+        OSAtomicDecrement64Barrier(&self)
+    }
 }
 
 public extension Int {
     
     /// Sets the value, and returns the previous value.
     @_transparent
-    mutating func set(value: Int) -> Int {
+    mutating func atomicSet(value: Int) -> Int {
         while true {
             let oldVal = self
             if self.compareAndSet(oldVal, value) {
@@ -89,7 +148,7 @@ public extension UInt32 {
     
     /// Sets the value, and returns the previous value.
     @_transparent
-    mutating func set(value: UInt32) -> UInt32 {
+    mutating func atomicSet(value: UInt32) -> UInt32 {
         while true {
             let oldVal = self
             if self.compareAndSet(oldVal, value) {
@@ -107,13 +166,53 @@ public extension UInt32 {
         }
         return cas(Int32(bitPattern: oldVal), Int32(bitPattern: newVal), &self)
     }
+    
+    @_transparent
+    mutating func atomicAdd(amount: UInt32) {
+        @inline(__always)
+        func add(amount: UInt32, _ theVal: UnsafeMutablePointer<UInt32>) {
+            OSAtomicAdd32Barrier(Int32(bitPattern: amount), UnsafeMutablePointer(theVal))
+        }
+        add(amount, &self)
+    }
+    
+    @_transparent
+    mutating func atomicIncrement() {
+        @inline(__always)
+        func increment(theVal: UnsafeMutablePointer<UInt32>) {
+            OSAtomicIncrement32Barrier(UnsafeMutablePointer(theVal))
+        }
+        increment(&self)
+    }
+    
+    @_transparent
+    mutating func atomicDecrement() {
+        @inline(__always)
+        func decrement(theVal: UnsafeMutablePointer<UInt32>) {
+            OSAtomicDecrement32Barrier(UnsafeMutablePointer(theVal))
+        }
+        decrement(&self)
+    }
+    
+    @_transparent
+    mutating func atomicOr(mask: UInt32) -> UInt32 {
+        return UInt32(bitPattern: OSAtomicOr32OrigBarrier(mask, &self))
+    }
+    @_transparent
+    mutating func atomicAnd(mask: UInt32) -> UInt32 {
+        return UInt32(bitPattern: OSAtomicAnd32OrigBarrier(mask, &self))
+    }
+    @_transparent
+    mutating func atomicXor(mask: UInt32) -> UInt32 {
+        return UInt32(bitPattern: OSAtomicXor32OrigBarrier(mask, &self))
+    }
 }
 
 public extension UInt64 {
     
     /// Sets the value, and returns the previous value.
     @_transparent
-    mutating func set(value: UInt64) -> UInt64 {
+    mutating func atomicSet(value: UInt64) -> UInt64 {
         while true {
             let oldVal = self
             if self.compareAndSet(oldVal, value) {
@@ -131,13 +230,40 @@ public extension UInt64 {
         }
         return cas(Int64(bitPattern: oldVal), Int64(bitPattern: newVal), &self)
     }
+    
+    @_transparent
+    mutating func atomicAdd(amount: UInt64) {
+        @inline(__always)
+        func add(amount: UInt64, _ theVal: UnsafeMutablePointer<UInt64>) {
+            OSAtomicAdd64Barrier(Int64(bitPattern: amount), UnsafeMutablePointer(theVal))
+        }
+        add(amount, &self)
+    }
+    
+    @_transparent
+    mutating func atomicIncrement() {
+        @inline(__always)
+        func increment(theVal: UnsafeMutablePointer<UInt64>) {
+            OSAtomicIncrement64Barrier(UnsafeMutablePointer(theVal))
+        }
+        increment(&self)
+    }
+    
+    @_transparent
+    mutating func atomicDecrement() {
+        @inline(__always)
+        func decrement(theVal: UnsafeMutablePointer<UInt64>) {
+            OSAtomicDecrement64Barrier(UnsafeMutablePointer(theVal))
+        }
+        decrement(&self)
+    }
 }
 
 public extension UInt {
     
     /// Sets the value, and returns the previous value.
     @_transparent
-    mutating func set(value: UInt) -> UInt {
+    mutating func atomicSet(value: UInt) -> UInt {
         while true {
             let oldVal = self
             if self.compareAndSet(oldVal, value) {
@@ -161,7 +287,7 @@ public extension UnsafeMutablePointer {
     
     /// Sets the value, and returns the previous value.
     @_transparent
-    mutating func set(value: UnsafeMutablePointer) -> UnsafeMutablePointer {
+    mutating func atomicSet(value: UnsafeMutablePointer) -> UnsafeMutablePointer {
         while true {
             let oldVal = self
             if self.compareAndSet(oldVal, value) {
@@ -184,19 +310,32 @@ public extension UnsafeMutablePointer {
 public struct AtomicBoolean {
     
     private var val: Int32
+    
+    public init() {
+        self.init(false)
+    }
 }
 
-extension AtomicBoolean : BooleanLiteralConvertible, BooleanType {
+extension AtomicBoolean : BooleanLiteralConvertible {
     
     @_transparent
     public init(booleanLiteral value: Bool) {
-        self.val = value ? 0x80 : 0
+        self.init(value)
     }
+}
+
+extension AtomicBoolean : BooleanType {
     
     /// Returns the current value of the boolean.
     @_transparent
     public var boolValue: Bool {
         return val != 0
+    }
+    /// Construct an instance representing the same logical value as
+    /// `value`.
+    @_transparent
+    public init<T : BooleanType>(_ value: T) {
+        self.val = value ? 0x80 : 0
     }
 }
 
@@ -204,142 +343,30 @@ public extension AtomicBoolean {
     
     /// Sets the value, and returns the previous value.
     @_transparent
-    mutating func set<Boolean: BooleanType>(value: Boolean) -> Bool {
+    mutating func set<T: BooleanType>(value: T) -> Bool {
         return value ? OSAtomicTestAndSet(0, &val) : OSAtomicTestAndClear(0, &val)
     }
     
     /// Compare and set Bool with barrier.
     @_transparent
-    mutating func compareAndSet<Boolean: BooleanType>(oldVal: Boolean, _ newVal: Boolean) -> Bool {
+    mutating func compareAndSet<T: BooleanType>(oldVal: T, _ newVal: T) -> Bool {
         return self.val.compareAndSet(oldVal ? 0x80 : 0, newVal ? 0x80 : 0)
     }
 }
 
-/// Atomically adds two 32-bit values with a barrier.
-@_transparent
-public func AtomicAdd(amount: Int32, inout _ theVal: Int32) {
-    OSAtomicAdd32Barrier(amount, &theVal)
-}
-/// Atomically adds two 64-bit values with a barrier.
-@_transparent
-public func AtomicAdd(amount: Int64, inout _ theVal: Int64) {
-    OSAtomicAdd64Barrier(amount, &theVal)
-}
-/// Atomically increments a 32-bit value with a barrier.
-@_transparent
-public func AtomicIncrement(inout theVal: Int32) {
-    OSAtomicIncrement32Barrier(&theVal)
-}
-/// Atomically increments a 64-bit value with a barrier.
-@_transparent
-public func AtomicIncrement(inout theVal: Int64) {
-    OSAtomicIncrement64Barrier(&theVal)
-}
-/// Atomically increments a 32-bit value with a barrier.
-@_transparent
-public func AtomicDecrement(inout theVal: Int32) {
-    OSAtomicDecrement32Barrier(&theVal)
-}
-/// Atomically increments a 64-bit value with a barrier.
-@_transparent
-public func AtomicDecrement(inout theVal: Int64) {
-    OSAtomicDecrement64Barrier(&theVal)
-}
-/// Atomically adds two 32-bit values with a barrier.
-@_transparent
-public func AtomicAdd(amount: UInt32, inout _ theVal: UInt32) {
-    @inline(__always)
-    func add(amount: UInt32, _ theVal: UnsafeMutablePointer<UInt32>) {
-        OSAtomicAdd32Barrier(Int32(bitPattern: amount), UnsafeMutablePointer(theVal))
+extension AtomicBoolean : Equatable, Hashable {
+    /// The hash value.
+    ///
+    /// **Axiom:** `x == y` implies `x.hashValue == y.hashValue`.
+    ///
+    /// - Note: the hash value is not guaranteed to be stable across
+    ///   different invocations of the same program.  Do not persist the
+    ///   hash value across program runs.
+    public var hashValue: Int {
+        return boolValue.hashValue
     }
-    add(amount, &theVal)
-}
-/// Atomically adds two 64-bit values with a barrier.
-@_transparent
-public func AtomicAdd(amount: UInt64, inout _ theVal: UInt64) {
-    @inline(__always)
-    func add(amount: UInt64, _ theVal: UnsafeMutablePointer<UInt64>) {
-        OSAtomicAdd64Barrier(Int64(bitPattern: amount), UnsafeMutablePointer(theVal))
-    }
-    add(amount, &theVal)
-}
-/// Atomically increments a 32-bit value with a barrier.
-@_transparent
-public func AtomicIncrement(inout theVal: UInt32) {
-    @inline(__always)
-    func inc(theVal: UnsafeMutablePointer<UInt32>) {
-        OSAtomicIncrement32Barrier(UnsafeMutablePointer(theVal))
-    }
-    inc(&theVal)
-}
-/// Atomically increments a 64-bit value with a barrier.
-@_transparent
-public func AtomicIncrement(inout theVal: UInt64) {
-    @inline(__always)
-    func inc(theVal: UnsafeMutablePointer<UInt64>) {
-        OSAtomicIncrement64Barrier(UnsafeMutablePointer(theVal))
-    }
-    inc(&theVal)
-}
-/// Atomically increments a 32-bit value with a barrier.
-@_transparent
-public func AtomicDecrement(inout theVal: UInt32) {
-    @inline(__always)
-    func inc(theVal: UnsafeMutablePointer<UInt32>) {
-        OSAtomicDecrement32Barrier(UnsafeMutablePointer(theVal))
-    }
-    inc(&theVal)
-}
-/// Atomically increments a 64-bit value with a barrier.
-@_transparent
-public func AtomicDecrement(inout theVal: UInt64) {
-    @inline(__always)
-    func inc(theVal: UnsafeMutablePointer<UInt64>) {
-        OSAtomicDecrement64Barrier(UnsafeMutablePointer(theVal))
-    }
-    inc(&theVal)
 }
 
-/// Atomic bitwise OR of two 32-bit values returning original with barrier.
-@_transparent
-public func AtomicOr(mask: Int32, inout _ theVal: Int32) -> Int32 {
-    @inline(__always)
-    func or(mask: Int32, _ theVal: UnsafeMutablePointer<Int32>) -> Int32 {
-        return OSAtomicOr32OrigBarrier(UInt32(bitPattern: mask), UnsafeMutablePointer(theVal))
-    }
-    return or(mask, &theVal)
-}
-/// Atomic bitwise AND of two 32-bit values returning original with barrier.
-@_transparent
-public func AtomicAnd(mask: Int32, inout _ theVal: Int32) -> Int32 {
-    @inline(__always)
-    func and(mask: Int32, _ theVal: UnsafeMutablePointer<Int32>) -> Int32 {
-        return OSAtomicAnd32OrigBarrier(UInt32(bitPattern: mask), UnsafeMutablePointer(theVal))
-    }
-    return and(mask, &theVal)
-}
-/// Atomic bitwise XOR of two 32-bit values returning original with barrier.
-@_transparent
-public func AtomicXor(mask: Int32, inout _ theVal: Int32) -> Int32 {
-    @inline(__always)
-    func xor(mask: Int32, _ theVal: UnsafeMutablePointer<Int32>) -> Int32 {
-        return OSAtomicXor32OrigBarrier(UInt32(bitPattern: mask), UnsafeMutablePointer(theVal))
-    }
-    return xor(mask, &theVal)
-}
-
-/// Atomic bitwise OR of two 32-bit values returning original with barrier.
-@_transparent
-public func AtomicOr(mask: UInt32, inout _ theVal: UInt32) -> UInt32 {
-    return UInt32(bitPattern: OSAtomicOr32OrigBarrier(mask, &theVal))
-}
-/// Atomic bitwise AND of two 32-bit values returning original with barrier.
-@_transparent
-public func AtomicAnd(mask: UInt32, inout _ theVal: UInt32) -> UInt32 {
-    return UInt32(bitPattern: OSAtomicAnd32OrigBarrier(mask, &theVal))
-}
-/// Atomic bitwise XOR of two 32-bit values returning original with barrier.
-@_transparent
-public func AtomicXor(mask: UInt32, inout _ theVal: UInt32) -> UInt32 {
-    return UInt32(bitPattern: OSAtomicXor32OrigBarrier(mask, &theVal))
+public func == (lhs: AtomicBoolean, rhs: AtomicBoolean) -> Bool {
+    return lhs.boolValue == rhs.boolValue
 }

@@ -41,7 +41,7 @@ public class SDAtomic {
 extension SDAtomic {
     
     public final func signal() {
-        if flag.set(2) == 0 {
+        if flag.atomicSet(2) == 0 {
             dispatch_async(SDAtomic.dispatchQueue, dispatchRunloop)
         }
     }
