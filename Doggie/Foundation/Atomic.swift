@@ -25,6 +25,111 @@
 
 import Foundation
 
+public extension Int32 {
+    
+    /// Compare and set Int32 with barrier.
+    @_transparent
+    mutating func compareAndSet(oldVal: Int32, _ newVal: Int32) -> Bool {
+        return OSAtomicCompareAndSwap32Barrier(oldVal, newVal, &self)
+    }
+}
+
+public extension Int64 {
+    
+    /// Compare and set Int64 with barrier.
+    @_transparent
+    mutating func compareAndSet(oldVal: Int64, _ newVal: Int64) -> Bool {
+        return OSAtomicCompareAndSwap64Barrier(oldVal, newVal, &self)
+    }
+}
+
+public extension Int {
+    
+    /// Compare and set Int with barrier.
+    @_transparent
+    mutating func compareAndSet(oldVal: Int, _ newVal: Int) -> Bool {
+        return OSAtomicCompareAndSwapLongBarrier(oldVal, newVal, &self)
+    }
+}
+
+public extension UInt32 {
+    
+    /// Compare and set UInt32 with barrier.
+    @_transparent
+    mutating func compareAndSet(oldVal: UInt32, _ newVal: UInt32) -> Bool {
+        @inline(__always)
+        func cas(oldVal: Int32, _ newVal: Int32, _ theVal: UnsafeMutablePointer<UInt32>) -> Bool {
+            return OSAtomicCompareAndSwap32Barrier(oldVal, newVal, UnsafeMutablePointer(theVal))
+        }
+        return cas(Int32(bitPattern: oldVal), Int32(bitPattern: newVal), &self)
+    }
+}
+
+public extension UInt64 {
+    
+    /// Compare and set UInt64 with barrier.
+    @_transparent
+    mutating func compareAndSet(oldVal: UInt64, _ newVal: UInt64) -> Bool {
+        @inline(__always)
+        func cas(oldVal: Int64, _ newVal: Int64, _ theVal: UnsafeMutablePointer<UInt64>) -> Bool {
+            return OSAtomicCompareAndSwap64Barrier(oldVal, newVal, UnsafeMutablePointer(theVal))
+        }
+        return cas(Int64(bitPattern: oldVal), Int64(bitPattern: newVal), &self)
+    }
+}
+
+public extension UInt {
+    
+    /// Compare and set UInt with barrier.
+    @_transparent
+    mutating func compareAndSet(oldVal: UInt, _ newVal: UInt) -> Bool {
+        @inline(__always)
+        func cas(oldVal: Int, _ newVal: Int, _ theVal: UnsafeMutablePointer<UInt>) -> Bool {
+            return OSAtomicCompareAndSwapLongBarrier(oldVal, newVal, UnsafeMutablePointer(theVal))
+        }
+        return cas(Int(bitPattern: oldVal), Int(bitPattern: newVal), &self)
+    }
+}
+
+public extension UnsafeMutablePointer {
+    
+    /// Compare and set pointers with barrier.
+    @_transparent
+    mutating func compareAndSet(oldVal: UnsafeMutablePointer, _ newVal: UnsafeMutablePointer) -> Bool {
+        @inline(__always)
+        func cas(oldVal: UnsafeMutablePointer<Void>, _ newVal: UnsafeMutablePointer<Void>, _ theVal: UnsafeMutablePointer<UnsafeMutablePointer<Memory>>) -> Bool {
+            return OSAtomicCompareAndSwapPtrBarrier(oldVal, newVal, UnsafeMutablePointer<UnsafeMutablePointer<Void>>(theVal))
+        }
+        return cas(oldVal, newVal, &self)
+    }
+}
+
+public struct AtomicBoolean : BooleanLiteralConvertible, BooleanType {
+    
+    private var val: UInt8
+    
+    @_transparent
+    public init(booleanLiteral value: Bool) {
+        self.val = value ? 0x80 : 0
+    }
+    
+    /// Sets the value, and returns the previous value.
+    @_transparent
+    public mutating func set(value: Bool) -> Bool {
+        if value {
+            return OSAtomicTestAndSet(0, &val)
+        } else {
+            return OSAtomicTestAndClear(0, &val)
+        }
+    }
+    
+    /// Returns the current value of the boolean.
+    @_transparent
+    public var boolValue: Bool {
+        return val != 0
+    }
+}
+
 /// Atomically adds two 32-bit values with a barrier.
 @_transparent
 public func AtomicAdd(amount: Int32, inout _ theVal: Int32) {
@@ -108,59 +213,6 @@ public func AtomicDecrement(inout theVal: UInt64) {
         OSAtomicDecrement64Barrier(UnsafeMutablePointer(theVal))
     }
     inc(&theVal)
-}
-/// Compare and swap pointers with Int32.
-@_transparent
-public func AtomicCompareAndSwap(oldVal: Int32, _ newVal: Int32, inout _ theVal: Int32) -> Bool {
-    return OSAtomicCompareAndSwap32Barrier(oldVal, newVal, &theVal)
-}
-/// Compare and swap pointers with Int64.
-@_transparent
-public func AtomicCompareAndSwap(oldVal: Int64, _ newVal: Int64, inout _ theVal: Int64) -> Bool {
-    return OSAtomicCompareAndSwap64Barrier(oldVal, newVal, &theVal)
-}
-/// Compare and swap pointers with Int.
-@_transparent
-public func AtomicCompareAndSwap(oldVal: Int, _ newVal: Int, inout _ theVal: Int) -> Bool {
-    return OSAtomicCompareAndSwapLongBarrier(oldVal, newVal, &theVal)
-}
-/// Compare and swap pointers with barrier.
-@_transparent
-public func AtomicCompareAndSwap<T>(oldVal: UnsafeMutablePointer<T>, _ newVal: UnsafeMutablePointer<T>, inout _ theVal: UnsafeMutablePointer<T>) -> Bool {
-    @inline(__always)
-    func cas(oldVal: UnsafeMutablePointer<Void>, _ newVal: UnsafeMutablePointer<Void>, _ theVal: UnsafeMutablePointer<UnsafeMutablePointer<T>>) -> Bool {
-        return OSAtomicCompareAndSwapPtrBarrier(oldVal, newVal, UnsafeMutablePointer(theVal))
-    }
-    return cas(oldVal, newVal, &theVal)
-}
-
-/// Atomic test and set with barrier
-@_transparent
-public func AtomicTestAndSet(val: Int32, inout _ theVal: Int32) -> Bool {
-    @inline(__always)
-    func tas(val: Int32, _ theVal: UnsafeMutablePointer<Int32>) -> Bool {
-        return OSAtomicTestAndSetBarrier(UInt32(bitPattern: val), UnsafeMutablePointer(theVal))
-    }
-    return tas(val, &theVal)
-}
-/// Atomic test and clear
-@_transparent
-public func AtomicTestAndClear(val: Int32, inout _ theVal: Int32) -> Bool {
-    @inline(__always)
-    func tac(val: Int32, _ theVal: UnsafeMutablePointer<Int32>) -> Bool {
-        return OSAtomicTestAndClearBarrier(UInt32(bitPattern: val), UnsafeMutablePointer(theVal))
-    }
-    return tac(val, &theVal)
-}
-/// Atomic test and set with barrier
-@_transparent
-public func AtomicTestAndSet(val: UInt32, inout _ theVal: UInt32) -> Bool {
-    return OSAtomicTestAndSetBarrier(val, &theVal)
-}
-/// Atomic test and clear
-@_transparent
-public func AtomicTestAndClear(val: UInt32, inout _ theVal: UInt32) -> Bool {
-    return OSAtomicTestAndClearBarrier(val, &theVal)
 }
 
 /// Atomic bitwise OR of two 32-bit values returning original with barrier.
