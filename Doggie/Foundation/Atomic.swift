@@ -104,18 +104,30 @@ public extension UnsafeMutablePointer {
     }
 }
 
-public struct AtomicBoolean : BooleanLiteralConvertible, BooleanType {
+public struct AtomicBoolean {
     
-    private var val: UInt8
+    private var val: Int32
+}
+
+extension AtomicBoolean : BooleanLiteralConvertible, BooleanType {
     
     @_transparent
     public init(booleanLiteral value: Bool) {
         self.val = value ? 0x80 : 0
     }
     
+    /// Returns the current value of the boolean.
+    @_transparent
+    public var boolValue: Bool {
+        return val != 0
+    }
+}
+
+public extension AtomicBoolean {
+    
     /// Sets the value, and returns the previous value.
     @_transparent
-    public mutating func set(value: Bool) -> Bool {
+    mutating func set(value: Bool) -> Bool {
         if value {
             return OSAtomicTestAndSet(0, &val)
         } else {
@@ -123,10 +135,10 @@ public struct AtomicBoolean : BooleanLiteralConvertible, BooleanType {
         }
     }
     
-    /// Returns the current value of the boolean.
+    /// Compare and set Int32 with barrier.
     @_transparent
-    public var boolValue: Bool {
-        return val != 0
+    mutating func compareAndSet(oldVal: Bool, _ newVal: Bool) -> Bool {
+        return self.val.compareAndSet(oldVal ? 0x80 : 0, newVal ? 0x80 : 0)
     }
 }
 
