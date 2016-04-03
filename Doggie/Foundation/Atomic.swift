@@ -129,6 +129,23 @@ extension UnsafeMutablePointer : SDAtomicType {
     }
 }
 
+@_transparent
+public func compareAndSwap<T: AnyObject>(oldVal: T, _ newVal: T, inout _ theVal: T) -> Bool {
+    let _oldVal = Unmanaged.passUnretained(oldVal)
+    let _newVal = Unmanaged.passRetained(newVal)
+    @inline(__always)
+    func cas(theVal: UnsafeMutablePointer<T>) -> Bool {
+        return OSAtomicCompareAndSwapPtrBarrier(UnsafeMutablePointer(_oldVal.toOpaque()), UnsafeMutablePointer(_newVal.toOpaque()), UnsafeMutablePointer<UnsafeMutablePointer<Void>>(theVal))
+    }
+    let result = cas(&theVal)
+    if result {
+        _oldVal.release()
+    } else {
+        _newVal.release()
+    }
+    return result
+}
+
 public struct AtomicBoolean {
     
     private var val: Int32
