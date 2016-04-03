@@ -127,17 +127,13 @@ public extension AtomicBoolean {
     
     /// Sets the value, and returns the previous value.
     @_transparent
-    mutating func set(value: Bool) -> Bool {
-        if value {
-            return OSAtomicTestAndSet(0, &val)
-        } else {
-            return OSAtomicTestAndClear(0, &val)
-        }
+    mutating func set<Boolean: BooleanType>(value: Boolean) -> Bool {
+        return value ? OSAtomicTestAndSet(0, &val) : OSAtomicTestAndClear(0, &val)
     }
     
-    /// Compare and set Int32 with barrier.
+    /// Compare and set Bool with barrier.
     @_transparent
-    mutating func compareAndSet(oldVal: Bool, _ newVal: Bool) -> Bool {
+    mutating func compareAndSet<Boolean: BooleanType>(oldVal: Boolean, _ newVal: Boolean) -> Bool {
         return self.val.compareAndSet(oldVal ? 0x80 : 0, newVal ? 0x80 : 0)
     }
 }
