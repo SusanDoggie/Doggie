@@ -27,6 +27,17 @@ import Foundation
 
 public extension Int32 {
     
+    /// Sets the value, and returns the previous value.
+    @_transparent
+    mutating func set(value: Int32) -> Int32 {
+        while true {
+            let oldVal = self
+            if self.compareAndSet(oldVal, value) {
+                return oldVal
+            }
+        }
+    }
+    
     /// Compare and set Int32 with barrier.
     @_transparent
     mutating func compareAndSet(oldVal: Int32, _ newVal: Int32) -> Bool {
@@ -35,6 +46,17 @@ public extension Int32 {
 }
 
 public extension Int64 {
+    
+    /// Sets the value, and returns the previous value.
+    @_transparent
+    mutating func set(value: Int64) -> Int64 {
+        while true {
+            let oldVal = self
+            if self.compareAndSet(oldVal, value) {
+                return oldVal
+            }
+        }
+    }
     
     /// Compare and set Int64 with barrier.
     @_transparent
@@ -45,6 +67,17 @@ public extension Int64 {
 
 public extension Int {
     
+    /// Sets the value, and returns the previous value.
+    @_transparent
+    mutating func set(value: Int) -> Int {
+        while true {
+            let oldVal = self
+            if self.compareAndSet(oldVal, value) {
+                return oldVal
+            }
+        }
+    }
+    
     /// Compare and set Int with barrier.
     @_transparent
     mutating func compareAndSet(oldVal: Int, _ newVal: Int) -> Bool {
@@ -53,6 +86,17 @@ public extension Int {
 }
 
 public extension UInt32 {
+    
+    /// Sets the value, and returns the previous value.
+    @_transparent
+    mutating func set(value: UInt32) -> UInt32 {
+        while true {
+            let oldVal = self
+            if self.compareAndSet(oldVal, value) {
+                return oldVal
+            }
+        }
+    }
     
     /// Compare and set UInt32 with barrier.
     @_transparent
@@ -67,6 +111,17 @@ public extension UInt32 {
 
 public extension UInt64 {
     
+    /// Sets the value, and returns the previous value.
+    @_transparent
+    mutating func set(value: UInt64) -> UInt64 {
+        while true {
+            let oldVal = self
+            if self.compareAndSet(oldVal, value) {
+                return oldVal
+            }
+        }
+    }
+    
     /// Compare and set UInt64 with barrier.
     @_transparent
     mutating func compareAndSet(oldVal: UInt64, _ newVal: UInt64) -> Bool {
@@ -80,6 +135,17 @@ public extension UInt64 {
 
 public extension UInt {
     
+    /// Sets the value, and returns the previous value.
+    @_transparent
+    mutating func set(value: UInt) -> UInt {
+        while true {
+            let oldVal = self
+            if self.compareAndSet(oldVal, value) {
+                return oldVal
+            }
+        }
+    }
+    
     /// Compare and set UInt with barrier.
     @_transparent
     mutating func compareAndSet(oldVal: UInt, _ newVal: UInt) -> Bool {
@@ -92,6 +158,17 @@ public extension UInt {
 }
 
 public extension UnsafeMutablePointer {
+    
+    /// Sets the value, and returns the previous value.
+    @_transparent
+    mutating func set(value: UnsafeMutablePointer) -> UnsafeMutablePointer {
+        while true {
+            let oldVal = self
+            if self.compareAndSet(oldVal, value) {
+                return oldVal
+            }
+        }
+    }
     
     /// Compare and set pointers with barrier.
     @_transparent

@@ -25,6 +25,38 @@
 
 import Foundation
 
+public class SDAtomic {
+    
+    private static let dispatchQueue = dispatch_queue_create("com.SusanDoggie.Atomic", DISPATCH_QUEUE_CONCURRENT)
+    
+    private var _callback: ((SDAtomic) -> Void)
+    private var flag: Int32
+    
+    public init(callback: ((SDAtomic) -> Void)) {
+        self._callback = callback
+        self.flag = 0
+    }
+}
+
+extension SDAtomic {
+    
+    public final func signal() {
+        if flag.set(2) == 0 {
+            dispatch_async(SDAtomic.dispatchQueue, dispatchRunloop)
+        }
+    }
+    
+    private func dispatchRunloop() {
+        while true {
+            flag = 1
+            self._callback(self)
+            if flag.compareAndSet(1, 0) {
+                return
+            }
+        }
+    }
+}
+
 public class SDAtomicGraph<Value> : CollectionType {
     
     public typealias Index = SDAtomicGraphIndex<Value>
@@ -130,15 +162,9 @@ public struct SDAtomicGraphGenerator<Value> : GeneratorType, SequenceType {
     }
 }
 
-public class SDAtomicNode {
-    
-    private static let dispatchQueue = dispatch_queue_create("com.SusanDoggie.Atomic", DISPATCH_QUEUE_CONCURRENT)
+public class SDAtomicNode : SDAtomic {
     
     private let graphID: ObjectIdentifier
-    private var lck: SDSpinLock
-    
-    private var _signal: Bool = false
-    private var _flag: Bool = false
     
     public var activate: Bool = false {
         didSet {
@@ -152,43 +178,20 @@ public class SDAtomicNode {
     
     public init<Value>(graph: SDAtomicGraph<Value>) {
         self.graphID = graph.identifier
-        self.lck = SDSpinLock()
+        super.init {
+            if let _self = $0 as? SDAtomicNode where _self.activate {
+                _self.callback?(_self)
+            }
+        }
     }
     public init<Value>(graph: SDAtomicGraph<Value>, callback: ((SDAtomicNode) -> Void)) {
         self.graphID = graph.identifier
-        self.lck = SDSpinLock()
         self.callback = callback
-    }
-    
-    deinit {
-        self.activate = false
-    }
-}
-
-extension SDAtomicNode {
-    
-    public final func signal() {
-        lck.synchronized {
-            _signal = true
-            if !_flag && activate {
-                _flag = true
-                dispatch_async(SDAtomicNode.dispatchQueue, dispatchRunloop)
+        super.init {
+            if let _self = $0 as? SDAtomicNode where _self.activate {
+                _self.callback?(_self)
             }
         }
-    }
-    
-    private func dispatchRunloop() {
-        lck.lock()
-        while _signal && activate {
-            _signal = false
-            lck.unlock()
-            autoreleasepool {
-                self.callback?(self)
-            }
-            lck.lock()
-        }
-        _flag = false
-        lck.unlock()
     }
 }
 
