@@ -41,7 +41,7 @@ public class SDAtomic {
 extension SDAtomic {
     
     public final func signal() {
-        if flag.set(2) == 0 {
+        if flag.fetchStore(2) == 0 {
             dispatch_async(SDAtomic.dispatchQueue, dispatchRunloop)
         }
     }
@@ -50,7 +50,7 @@ extension SDAtomic {
         while true {
             flag = 1
             self._callback(self)
-            if flag.compareAndSet(1, 0) {
+            if flag.compareSet(1, 0) {
                 return
             }
         }
