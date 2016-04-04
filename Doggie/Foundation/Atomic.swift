@@ -226,7 +226,12 @@ public struct Atomic<Instance> {
     }
     
     public var value : Instance {
-        return base.value
+        get {
+            return base.value
+        }
+        set {
+            base = AtomicBase(value: newValue)
+        }
     }
 }
 
