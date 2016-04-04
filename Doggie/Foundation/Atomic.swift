@@ -27,7 +27,7 @@ import Foundation
 
 public protocol SDAtomicType {
     
-    /// Sets the value.
+    /// Compare and set the value.
     mutating func compareSet(oldVal: Self, _ newVal: Self) -> Bool
     
     /// Sets the value, and returns the previous value.
@@ -221,9 +221,6 @@ public struct Atomic<Instance> {
     
     private var base: AtomicBase<Instance>
     
-    private init(base: AtomicBase<Instance>) {
-        self.base = base
-    }
     public init(value: Instance) {
         self.base = AtomicBase(value: value)
     }
