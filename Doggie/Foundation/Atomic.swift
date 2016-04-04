@@ -210,14 +210,14 @@ public func == (lhs: AtomicBoolean, rhs: AtomicBoolean) -> Bool {
 
 private final class AtomicBase<Instance> {
     
-    var value: Instance
+    let value: Instance
     
     init(value: Instance) {
         self.value = value
     }
 }
 
-public final class Atomic<Instance> {
+public struct Atomic<Instance> {
     
     private var base: AtomicBase<Instance>
     
@@ -233,10 +233,10 @@ public final class Atomic<Instance> {
     }
 }
 
-extension Atomic {
+extension Atomic : SDAtomicType {
     
     @_transparent
-    private func compareSet(oldVal: AtomicBase<Instance>, _ newVal: AtomicBase<Instance>) -> Bool {
+    private mutating func compareSet(oldVal: AtomicBase<Instance>, _ newVal: AtomicBase<Instance>) -> Bool {
         let _oldVal = Unmanaged.passUnretained(oldVal)
         let _newVal = Unmanaged.passRetained(newVal)
         @inline(__always)
@@ -254,7 +254,7 @@ extension Atomic {
     
     /// Compare and set Object with barrier.
     @_transparent
-    public func compareSet(oldVal: Atomic, _ newVal: Atomic) -> Bool {
+    public mutating func compareSet(oldVal: Atomic, _ newVal: Atomic) -> Bool {
         return compareSet(oldVal.base, newVal.base)
     }
 }
@@ -263,7 +263,7 @@ extension Atomic {
     
     /// Sets the value.
     @_transparent
-    public func setValue(@noescape block: (Instance) throws -> Instance) rethrows -> Instance {
+    public mutating func setValue(@noescape block: (Instance) throws -> Instance) rethrows -> Instance {
         while true {
             let oldVal = self.base
             if self.compareSet(oldVal, AtomicBase(value: try block(oldVal.value))) {
@@ -274,7 +274,7 @@ extension Atomic {
     
     /// Sets the value, and returns the previous value.
     @_transparent
-    public func fetchStore(value: Instance) -> Instance {
+    public mutating func fetchStore(value: Instance) -> Instance {
         return self.setValue { _ in value }
     }
 }
@@ -293,7 +293,7 @@ extension Atomic: CustomStringConvertible, CustomDebugStringConvertible {
 extension Atomic : Equatable, Hashable {
     
     private var identifier: ObjectIdentifier {
-        return ObjectIdentifier(self)
+        return ObjectIdentifier(base)
     }
     
     /// The hash value.
