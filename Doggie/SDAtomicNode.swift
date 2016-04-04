@@ -25,38 +25,6 @@
 
 import Foundation
 
-public class SDAtomic {
-    
-    private static let dispatchQueue = dispatch_queue_create("com.SusanDoggie.Atomic", DISPATCH_QUEUE_CONCURRENT)
-    
-    private var _callback: ((SDAtomic) -> Void)
-    private var flag: Int32
-    
-    public init(callback: ((SDAtomic) -> Void)) {
-        self._callback = callback
-        self.flag = 0
-    }
-}
-
-extension SDAtomic {
-    
-    public final func signal() {
-        if flag.fetchStore(2) == 0 {
-            dispatch_async(SDAtomic.dispatchQueue, dispatchRunloop)
-        }
-    }
-    
-    private func dispatchRunloop() {
-        while true {
-            flag = 1
-            self._callback(self)
-            if flag.compareSet(1, 0) {
-                return
-            }
-        }
-    }
-}
-
 public class SDAtomicGraph<Value> : CollectionType {
     
     public typealias Index = SDAtomicGraphIndex<Value>

@@ -25,6 +25,11 @@
 
 import Foundation
 
+public let DispatchMainQueue = dispatch_get_main_queue()
+public let DispatchGlobalQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)
+
+private let SDThreadDefaultDispatchQueue = dispatch_queue_create("com.SusanDoggie.Thread", DISPATCH_QUEUE_CONCURRENT)
+
 public typealias thread_id_t = mach_port_t
 
 public func threadID() -> thread_id_t {
@@ -284,12 +289,46 @@ extension SDSignal {
     }
 }
 
+// MARK: SDAtomic
+
+public class SDAtomic {
+    
+    private let queue: dispatch_queue_t
+    private let block: ((SDAtomic) -> Void)
+    private var flag: Int32
+    
+    public init(queue: dispatch_queue_t, block: ((SDAtomic) -> Void)) {
+        self.queue = queue
+        self.block = block
+        self.flag = 0
+    }
+    public init(block: ((SDAtomic) -> Void)) {
+        self.queue = SDThreadDefaultDispatchQueue
+        self.block = block
+        self.flag = 0
+    }
+}
+
+extension SDAtomic {
+    
+    public final func signal() {
+        if flag.fetchStore(2) == 0 {
+            dispatch_async(queue, dispatchRunloop)
+        }
+    }
+    
+    private func dispatchRunloop() {
+        while true {
+            flag = 1
+            self.block(self)
+            if flag.compareSet(1, 0) {
+                return
+            }
+        }
+    }
+}
+
 // MARK: SDTask
-
-public let DispatchMainQueue = dispatch_get_main_queue()
-public let DispatchGlobalQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)
-
-private let SDTaskDefaultDispatchQueue = dispatch_queue_create("com.SusanDoggie.SDTask", DISPATCH_QUEUE_CONCURRENT)
 
 public class SDTask<Result> {
     
@@ -308,14 +347,15 @@ public class SDTask<Result> {
     }
     
     /// Create a SDTask and compute block with specific queue.
-    public init(_ queue: dispatch_queue_t, _ block: () -> Result) {
+    public init(queue: dispatch_queue_t, block: () -> Result) {
         self.queue = queue
         self.submit(block)
     }
     
     /// Create a SDTask and compute block with default queue.
-    public convenience init(_ block: () -> Result) {
-        self.init(SDTaskDefaultDispatchQueue, block)
+    public init(block: () -> Result) {
+        self.queue = SDThreadDefaultDispatchQueue
+        self.submit(block)
     }
 }
 
@@ -364,7 +404,7 @@ extension SDTask {
     public final func then<R>(queue: dispatch_queue_t, _ block: (Result) -> R) -> SDTask<R> {
         return _lck.synchronized {
             if completed {
-                return SDTask<R>(queue) { block(self.result) }
+                return SDTask<R>(queue: queue) { block(self.result) }
             }
             let task = SDTask<R>(queue)
             _notify.append { task.submit { block(self.result) } }
@@ -418,10 +458,10 @@ extension SDTask {
 
 /// Create a SDTask and compute block with default queue.
 public func async<Result>(block: () -> Result) -> SDTask<Result> {
-    return SDTask(block)
+    return SDTask(block: block)
 }
 
 /// Create a SDTask and compute block with specific queue.
 public func async<Result>(queue: dispatch_queue_t, _ block: () -> Result) -> SDTask<Result> {
-    return SDTask(queue, block)
+    return SDTask(queue: queue, block: block)
 }
