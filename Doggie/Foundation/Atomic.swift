@@ -136,6 +136,7 @@ public struct AtomicBoolean {
     
     private var val: Int32
     
+    @_transparent
     public init() {
         self.init(false)
     }
@@ -204,6 +205,7 @@ extension AtomicBoolean : Equatable, Hashable {
     }
 }
 
+@_transparent
 public func == (lhs: AtomicBoolean, rhs: AtomicBoolean) -> Bool {
     return lhs.boolValue == rhs.boolValue
 }
@@ -221,10 +223,12 @@ public struct Atomic<Instance> {
     
     private var base: AtomicBase<Instance>
     
+    @_transparent
     public init(value: Instance) {
         self.base = AtomicBase(value: value)
     }
     
+    @_transparent
     public var value : Instance {
         get {
             return base.value
@@ -311,6 +315,7 @@ extension Atomic : Equatable, Hashable {
     }
 }
 
+@_transparent
 public func == <Instance>(lhs: Atomic<Instance>, rhs: Atomic<Instance>) -> Bool {
     return lhs.identifier == rhs.identifier
 }
