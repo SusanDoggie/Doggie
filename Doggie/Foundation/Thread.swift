@@ -47,17 +47,17 @@ public protocol Lockable : class {
 
 public extension Lockable {
     
-    func synchronized<R>(@noescape block: () -> R) -> R {
+    func synchronized<R>(@noescape block: () throws -> R) rethrows -> R {
         self.lock()
         defer { self.unlock() }
-        return block()
+        return try block()
     }
 }
 
-public func synchronized<R>(obj: AnyObject, @noescape block: () -> R) -> R {
+public func synchronized<R>(obj: AnyObject, @noescape block: () throws -> R) rethrows -> R {
     objc_sync_enter(obj)
     defer { objc_sync_exit(obj) }
-    return block()
+    return try block()
 }
 
 // MARK: LockGroup
@@ -182,10 +182,10 @@ extension SDSpinLock {
         return OSSpinLockTry(&_lck)
     }
     
-    public mutating func synchronized<R>(@noescape block: () -> R) -> R {
+    public mutating func synchronized<R>(@noescape block: () throws -> R) rethrows -> R {
         self.lock()
         defer { self.unlock() }
-        return block()
+        return try block()
     }
 }
 
@@ -244,18 +244,18 @@ extension SDConditionLock {
         }
         return true
     }
-    public func synchronized<R>(@autoclosure predicate: () -> Bool, @noescape block: () -> R) -> R {
+    public func synchronized<R>(@autoclosure predicate: () -> Bool, @noescape block: () throws -> R) rethrows -> R {
         self.lock(predicate)
         defer { self.unlock() }
-        return block()
+        return try block()
     }
-    public func synchronized<R>(@autoclosure predicate: () -> Bool, time: Double, @noescape block: () -> R) -> R? {
-        return synchronized(predicate, date: NSDate(timeIntervalSinceNow: time), block: block)
+    public func synchronized<R>(@autoclosure predicate: () -> Bool, time: Double, @noescape block: () throws -> R) rethrows -> R? {
+        return try synchronized(predicate, date: NSDate(timeIntervalSinceNow: time), block: block)
     }
-    public func synchronized<R>(@autoclosure predicate: () -> Bool, date: NSDate, @noescape block: () -> R) -> R? {
+    public func synchronized<R>(@autoclosure predicate: () -> Bool, date: NSDate, @noescape block: () throws -> R) rethrows -> R? {
         if self.lock(predicate, date: date) {
             defer { self.unlock() }
-            return block()
+            return try block()
         }
         return nil
     }
