@@ -293,7 +293,7 @@ extension Atomic: CustomStringConvertible, CustomDebugStringConvertible {
 extension Atomic : Equatable, Hashable {
     
     private var identifier: ObjectIdentifier {
-        return ObjectIdentifier(base)
+        return ObjectIdentifier(self)
     }
     
     /// The hash value.
