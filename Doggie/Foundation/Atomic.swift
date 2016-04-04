@@ -27,8 +27,11 @@ import Foundation
 
 public protocol SDAtomicType {
     
-    mutating func fetchStore(newVal: Self) -> Self
+    /// Sets the value.
     mutating func compareSet(oldVal: Self, _ newVal: Self) -> Bool
+    
+    /// Sets the value, and returns the previous value.
+    mutating func fetchStore(newVal: Self) -> Self
 }
 
 public extension SDAtomicType {
@@ -129,23 +132,6 @@ extension UnsafeMutablePointer : SDAtomicType {
     }
 }
 
-@_transparent
-public func compareAndSwap<T: AnyObject>(oldVal: T, _ newVal: T, inout _ theVal: T) -> Bool {
-    let _oldVal = Unmanaged.passUnretained(oldVal)
-    let _newVal = Unmanaged.passRetained(newVal)
-    @inline(__always)
-    func cas(theVal: UnsafeMutablePointer<T>) -> Bool {
-        return OSAtomicCompareAndSwapPtrBarrier(UnsafeMutablePointer(_oldVal.toOpaque()), UnsafeMutablePointer(_newVal.toOpaque()), UnsafeMutablePointer<UnsafeMutablePointer<Void>>(theVal))
-    }
-    let result = cas(&theVal)
-    if result {
-        _oldVal.release()
-    } else {
-        _newVal.release()
-    }
-    return result
-}
-
 public struct AtomicBoolean {
     
     private var val: Int32
@@ -208,6 +194,62 @@ extension AtomicBoolean : Equatable, Hashable {
 
 public func == (lhs: AtomicBoolean, rhs: AtomicBoolean) -> Bool {
     return lhs.boolValue == rhs.boolValue
+}
+
+public final class Atomic<T: AnyObject> {
+    
+    public private(set) var value: T
+    
+    public init(value: T) {
+        self.value = value
+    }
+}
+
+extension Atomic {
+    
+    /// Compare and set Object with barrier.
+    @_transparent
+    public func compareSet(oldVal: T, _ newVal: T) -> Bool {
+        let _oldVal = Unmanaged.passUnretained(oldVal)
+        let _newVal = Unmanaged.passRetained(newVal)
+        @inline(__always)
+        func cas(theVal: UnsafeMutablePointer<T>) -> Bool {
+            return OSAtomicCompareAndSwapPtrBarrier(UnsafeMutablePointer(_oldVal.toOpaque()), UnsafeMutablePointer(_newVal.toOpaque()), UnsafeMutablePointer<UnsafeMutablePointer<Void>>(theVal))
+        }
+        let result = cas(&value)
+        if result {
+            _oldVal.release()
+        } else {
+            _newVal.release()
+        }
+        return result
+    }
+    
+    /// Sets the value.
+    @_transparent
+    public func setValue(@noescape block: (T) throws -> T) rethrows -> T {
+        while true {
+            let oldVal = value
+            if self.compareSet(oldVal, try block(oldVal)) {
+                return oldVal
+            }
+        }
+    }
+    
+    /// Sets the value, and returns the previous value.
+    @_transparent
+    public func fetchStore(value: T) -> T {
+        return self.setValue { _ in value }
+    }
+}
+
+extension Atomic : SDAtomicType {
+    
+    /// Compare and set Object with barrier.
+    @_transparent
+    public func compareSet(oldVal: Atomic, _ newVal: Atomic) -> Bool {
+        return compareSet(oldVal.value, newVal.value)
+    }
 }
 
 public extension Int32 {
