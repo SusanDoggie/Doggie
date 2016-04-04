@@ -73,10 +73,15 @@ public func HalfRadix2CooleyTukey(level: Int, _ input: UnsafePointer<Float>, _ i
             oph_r -= out_stride
             oph_i -= out_stride
             
-            let evenreal = op_r.memory + oph_r.memory
-            let evenim = op_i.memory - oph_i.memory
-            let oddreal = op_i.memory + oph_i.memory
-            let oddim = oph_r.memory - op_r.memory
+            let or = op_r.memory
+            let oi = op_i.memory
+            let ohr = oph_r.memory
+            let ohi = oph_i.memory
+            
+            let evenreal = or + ohr
+            let evenim = oi - ohi
+            let oddreal = oi + ohi
+            let oddim = ohr - or
             
             let _r = oddreal * _cos1 - oddim * _sin1
             let _i = oddreal * _sin1 + oddim * _cos1
@@ -147,10 +152,15 @@ public func HalfInverseRadix2CooleyTukey(level: Int, _ real: UnsafePointer<Float
             tph_r -= tp_stride
             tph_i -= tp_stride
             
-            let evenreal = ip_r.memory + iph_r.memory
-            let evenim = ip_i.memory - iph_i.memory
-            let oddreal = ip_i.memory + iph_i.memory
-            let oddim = iph_r.memory - ip_r.memory
+            let ir = ip_r.memory
+            let ii = ip_i.memory
+            let ihr = iph_r.memory
+            let ihi = iph_i.memory
+            
+            let evenreal = ir + ihr
+            let evenim = ii - ihi
+            let oddreal = ii + ihi
+            let oddim = ihr - ir
             
             let _r = oddreal * _cos1 + oddim * _sin1
             let _i = oddreal * _sin1 - oddim * _cos1
@@ -280,10 +290,15 @@ public func HalfRadix2CooleyTukey(level: Int, _ input: UnsafePointer<Double>, _ 
             oph_r -= out_stride
             oph_i -= out_stride
             
-            let evenreal = op_r.memory + oph_r.memory
-            let evenim = op_i.memory - oph_i.memory
-            let oddreal = op_i.memory + oph_i.memory
-            let oddim = oph_r.memory - op_r.memory
+            let or = op_r.memory
+            let oi = op_i.memory
+            let ohr = oph_r.memory
+            let ohi = oph_i.memory
+            
+            let evenreal = or + ohr
+            let evenim = oi - ohi
+            let oddreal = oi + ohi
+            let oddim = ohr - or
             
             let _r = oddreal * _cos1 - oddim * _sin1
             let _i = oddreal * _sin1 + oddim * _cos1
@@ -354,10 +369,15 @@ public func HalfInverseRadix2CooleyTukey(level: Int, _ real: UnsafePointer<Doubl
             tph_r -= tp_stride
             tph_i -= tp_stride
             
-            let evenreal = ip_r.memory + iph_r.memory
-            let evenim = ip_i.memory - iph_i.memory
-            let oddreal = ip_i.memory + iph_i.memory
-            let oddim = iph_r.memory - ip_r.memory
+            let ir = ip_r.memory
+            let ii = ip_i.memory
+            let ihr = iph_r.memory
+            let ihi = iph_i.memory
+            
+            let evenreal = ir + ihr
+            let evenim = ii - ihi
+            let oddreal = ii + ihi
+            let oddim = ihr - ir
             
             let _r = oddreal * _cos1 + oddim * _sin1
             let _i = oddreal * _sin1 - oddim * _cos1
@@ -504,10 +524,15 @@ public func Radix2CooleyTukey(level: Int, _ input: UnsafePointer<Float>, _ in_st
             opb_r -= out_stride
             opb_i -= out_stride
             
-            let evenreal = op_r.memory + oph_r.memory
-            let evenim = op_i.memory - oph_i.memory
-            let oddreal = op_i.memory + oph_i.memory
-            let oddim = oph_r.memory - op_r.memory
+            let or = op_r.memory
+            let oi = op_i.memory
+            let ohr = oph_r.memory
+            let ohi = oph_i.memory
+            
+            let evenreal = or + ohr
+            let evenim = oi - ohi
+            let oddreal = oi + ohi
+            let oddim = ohr - or
             
             let _r = oddreal * _cos1 - oddim * _sin1
             let _i = oddreal * _sin1 + oddim * _cos1
@@ -650,10 +675,15 @@ public func InverseRadix2CooleyTukey(level: Int, _ input: UnsafePointer<Float>, 
             opb_r -= out_stride
             opb_i -= out_stride
             
-            let evenreal = op_r.memory + oph_r.memory
-            let evenim = op_i.memory - oph_i.memory
-            let oddreal = op_i.memory + oph_i.memory
-            let oddim = oph_r.memory - op_r.memory
+            let or = op_r.memory
+            let oi = op_i.memory
+            let ohr = oph_r.memory
+            let ohi = oph_i.memory
+            
+            let evenreal = or + ohr
+            let evenim = oi - ohi
+            let oddreal = oi + ohi
+            let oddim = ohr - or
             
             let _r = oddreal * _cos1 - oddim * _sin1
             let _i = oddreal * _sin1 + oddim * _cos1
@@ -857,10 +887,15 @@ public func Radix2CooleyTukey(level: Int, _ input: UnsafePointer<Double>, _ in_s
             opb_r -= out_stride
             opb_i -= out_stride
             
-            let evenreal = op_r.memory + oph_r.memory
-            let evenim = op_i.memory - oph_i.memory
-            let oddreal = op_i.memory + oph_i.memory
-            let oddim = oph_r.memory - op_r.memory
+            let or = op_r.memory
+            let oi = op_i.memory
+            let ohr = oph_r.memory
+            let ohi = oph_i.memory
+            
+            let evenreal = or + ohr
+            let evenim = oi - ohi
+            let oddreal = oi + ohi
+            let oddim = ohr - or
             
             let _r = oddreal * _cos1 - oddim * _sin1
             let _i = oddreal * _sin1 + oddim * _cos1
@@ -1003,10 +1038,15 @@ public func InverseRadix2CooleyTukey(level: Int, _ input: UnsafePointer<Double>,
             opb_r -= out_stride
             opb_i -= out_stride
             
-            let evenreal = op_r.memory + oph_r.memory
-            let evenim = op_i.memory - oph_i.memory
-            let oddreal = op_i.memory + oph_i.memory
-            let oddim = oph_r.memory - op_r.memory
+            let or = op_r.memory
+            let oi = op_i.memory
+            let ohr = oph_r.memory
+            let ohi = oph_i.memory
+            
+            let evenreal = or + ohr
+            let evenim = oi - ohi
+            let oddreal = oi + ohi
+            let oddim = ohr - or
             
             let _r = oddreal * _cos1 - oddim * _sin1
             let _i = oddreal * _sin1 + oddim * _cos1
@@ -1197,10 +1237,15 @@ public func DispatchHalfRadix2CooleyTukey(level: Int, _ input: UnsafePointer<Flo
             oph_r -= out_stride
             oph_i -= out_stride
             
-            let evenreal = op_r.memory + oph_r.memory
-            let evenim = op_i.memory - oph_i.memory
-            let oddreal = op_i.memory + oph_i.memory
-            let oddim = oph_r.memory - op_r.memory
+            let or = op_r.memory
+            let oi = op_i.memory
+            let ohr = oph_r.memory
+            let ohi = oph_i.memory
+            
+            let evenreal = or + ohr
+            let evenim = oi - ohi
+            let oddreal = oi + ohi
+            let oddim = ohr - or
             
             let _r = oddreal * _cos1 - oddim * _sin1
             let _i = oddreal * _sin1 + oddim * _cos1
@@ -1271,10 +1316,15 @@ public func DispatchHalfInverseRadix2CooleyTukey(level: Int, _ real: UnsafePoint
             tph_r -= tp_stride
             tph_i -= tp_stride
             
-            let evenreal = ip_r.memory + iph_r.memory
-            let evenim = ip_i.memory - iph_i.memory
-            let oddreal = ip_i.memory + iph_i.memory
-            let oddim = iph_r.memory - ip_r.memory
+            let ir = ip_r.memory
+            let ii = ip_i.memory
+            let ihr = iph_r.memory
+            let ihi = iph_i.memory
+            
+            let evenreal = ir + ihr
+            let evenim = ii - ihi
+            let oddreal = ii + ihi
+            let oddim = ihr - ir
             
             let _r = oddreal * _cos1 + oddim * _sin1
             let _i = oddreal * _sin1 - oddim * _cos1
@@ -1418,10 +1468,15 @@ public func DispatchHalfRadix2CooleyTukey(level: Int, _ input: UnsafePointer<Dou
             oph_r -= out_stride
             oph_i -= out_stride
             
-            let evenreal = op_r.memory + oph_r.memory
-            let evenim = op_i.memory - oph_i.memory
-            let oddreal = op_i.memory + oph_i.memory
-            let oddim = oph_r.memory - op_r.memory
+            let or = op_r.memory
+            let oi = op_i.memory
+            let ohr = oph_r.memory
+            let ohi = oph_i.memory
+            
+            let evenreal = or + ohr
+            let evenim = oi - ohi
+            let oddreal = oi + ohi
+            let oddim = ohr - or
             
             let _r = oddreal * _cos1 - oddim * _sin1
             let _i = oddreal * _sin1 + oddim * _cos1
@@ -1492,10 +1547,15 @@ public func DispatchHalfInverseRadix2CooleyTukey(level: Int, _ real: UnsafePoint
             tph_r -= tp_stride
             tph_i -= tp_stride
             
-            let evenreal = ip_r.memory + iph_r.memory
-            let evenim = ip_i.memory - iph_i.memory
-            let oddreal = ip_i.memory + iph_i.memory
-            let oddim = iph_r.memory - ip_r.memory
+            let ir = ip_r.memory
+            let ii = ip_i.memory
+            let ihr = iph_r.memory
+            let ihi = iph_i.memory
+            
+            let evenreal = ir + ihr
+            let evenim = ii - ihi
+            let oddreal = ii + ihi
+            let oddim = ihr - ir
             
             let _r = oddreal * _cos1 + oddim * _sin1
             let _i = oddreal * _sin1 - oddim * _cos1
@@ -1656,10 +1716,15 @@ public func DispatchRadix2CooleyTukey(level: Int, _ input: UnsafePointer<Float>,
             opb_r -= out_stride
             opb_i -= out_stride
             
-            let evenreal = op_r.memory + oph_r.memory
-            let evenim = op_i.memory - oph_i.memory
-            let oddreal = op_i.memory + oph_i.memory
-            let oddim = oph_r.memory - op_r.memory
+            let or = op_r.memory
+            let oi = op_i.memory
+            let ohr = oph_r.memory
+            let ohi = oph_i.memory
+            
+            let evenreal = or + ohr
+            let evenim = oi - ohi
+            let oddreal = oi + ohi
+            let oddim = ohr - or
             
             let _r = oddreal * _cos1 - oddim * _sin1
             let _i = oddreal * _sin1 + oddim * _cos1
@@ -1807,10 +1872,15 @@ public func DispatchInverseRadix2CooleyTukey(level: Int, _ input: UnsafePointer<
             opb_r -= out_stride
             opb_i -= out_stride
             
-            let evenreal = op_r.memory + oph_r.memory
-            let evenim = op_i.memory - oph_i.memory
-            let oddreal = op_i.memory + oph_i.memory
-            let oddim = oph_r.memory - op_r.memory
+            let or = op_r.memory
+            let oi = op_i.memory
+            let ohr = oph_r.memory
+            let ohi = oph_i.memory
+            
+            let evenreal = or + ohr
+            let evenim = oi - ohi
+            let oddreal = oi + ohi
+            let oddim = ohr - or
             
             let _r = oddreal * _cos1 - oddim * _sin1
             let _i = oddreal * _sin1 + oddim * _cos1
@@ -2020,10 +2090,15 @@ public func DispatchRadix2CooleyTukey(level: Int, _ input: UnsafePointer<Double>
             opb_r -= out_stride
             opb_i -= out_stride
             
-            let evenreal = op_r.memory + oph_r.memory
-            let evenim = op_i.memory - oph_i.memory
-            let oddreal = op_i.memory + oph_i.memory
-            let oddim = oph_r.memory - op_r.memory
+            let or = op_r.memory
+            let oi = op_i.memory
+            let ohr = oph_r.memory
+            let ohi = oph_i.memory
+            
+            let evenreal = or + ohr
+            let evenim = oi - ohi
+            let oddreal = oi + ohi
+            let oddim = ohr - or
             
             let _r = oddreal * _cos1 - oddim * _sin1
             let _i = oddreal * _sin1 + oddim * _cos1
@@ -2171,10 +2246,15 @@ public func DispatchInverseRadix2CooleyTukey(level: Int, _ input: UnsafePointer<
             opb_r -= out_stride
             opb_i -= out_stride
             
-            let evenreal = op_r.memory + oph_r.memory
-            let evenim = op_i.memory - oph_i.memory
-            let oddreal = op_i.memory + oph_i.memory
-            let oddim = oph_r.memory - op_r.memory
+            let or = op_r.memory
+            let oi = op_i.memory
+            let ohr = oph_r.memory
+            let ohi = oph_i.memory
+            
+            let evenreal = or + ohr
+            let evenim = oi - ohi
+            let oddreal = oi + ohi
+            let oddim = ohr - or
             
             let _r = oddreal * _cos1 - oddim * _sin1
             let _i = oddreal * _sin1 + oddim * _cos1
