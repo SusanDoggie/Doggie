@@ -290,6 +290,29 @@ extension Atomic: CustomStringConvertible, CustomDebugStringConvertible {
     }
 }
 
+extension Atomic : Equatable, Hashable {
+    
+    private var identifier: ObjectIdentifier {
+        return ObjectIdentifier(base)
+    }
+    
+    /// The hash value.
+    ///
+    /// **Axiom:** `x == y` implies `x.hashValue == y.hashValue`.
+    ///
+    /// - Note: the hash value is not guaranteed to be stable across
+    ///   different invocations of the same program.  Do not persist the
+    ///   hash value across program runs.
+    @_transparent
+    public var hashValue: Int {
+        return identifier.hashValue
+    }
+}
+
+public func == <Instance>(lhs: Atomic<Instance>, rhs: Atomic<Instance>) -> Bool {
+    return lhs.identifier == rhs.identifier
+}
+
 public extension Int32 {
     
     @_transparent
