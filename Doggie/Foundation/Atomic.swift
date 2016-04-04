@@ -179,6 +179,17 @@ extension AtomicBoolean : SDAtomicType {
     }
 }
 
+extension AtomicBoolean: CustomStringConvertible, CustomDebugStringConvertible {
+    
+    public var description: String {
+        return self ? "true" : "false"
+    }
+    
+    public var debugDescription: String {
+        return self ? "true" : "false"
+    }
+}
+
 extension AtomicBoolean : Equatable, Hashable {
     /// The hash value.
     ///
@@ -187,6 +198,7 @@ extension AtomicBoolean : Equatable, Hashable {
     /// - Note: the hash value is not guaranteed to be stable across
     ///   different invocations of the same program.  Do not persist the
     ///   hash value across program runs.
+    @_transparent
     public var hashValue: Int {
         return boolValue.hashValue
     }
@@ -196,27 +208,42 @@ public func == (lhs: AtomicBoolean, rhs: AtomicBoolean) -> Bool {
     return lhs.boolValue == rhs.boolValue
 }
 
-public final class Atomic<T: AnyObject> {
+private final class AtomicBase<Instance> {
     
-    public private(set) var value: T
+    var value: Instance
     
-    public init(value: T) {
+    init(value: Instance) {
         self.value = value
+    }
+}
+
+public final class Atomic<Instance> {
+    
+    private var base: AtomicBase<Instance>
+    
+    private init(base: AtomicBase<Instance>) {
+        self.base = base
+    }
+    public init(value: Instance) {
+        self.base = AtomicBase(value: value)
+    }
+    
+    public var value : Instance {
+        return base.value
     }
 }
 
 extension Atomic {
     
-    /// Compare and set Object with barrier.
     @_transparent
-    public func compareSet(oldVal: T, _ newVal: T) -> Bool {
+    private func compareSet(oldVal: AtomicBase<Instance>, _ newVal: AtomicBase<Instance>) -> Bool {
         let _oldVal = Unmanaged.passUnretained(oldVal)
         let _newVal = Unmanaged.passRetained(newVal)
         @inline(__always)
-        func cas(theVal: UnsafeMutablePointer<T>) -> Bool {
+        func cas(theVal: UnsafeMutablePointer<AtomicBase<Instance>>) -> Bool {
             return OSAtomicCompareAndSwapPtrBarrier(UnsafeMutablePointer(_oldVal.toOpaque()), UnsafeMutablePointer(_newVal.toOpaque()), UnsafeMutablePointer<UnsafeMutablePointer<Void>>(theVal))
         }
-        let result = cas(&value)
+        let result = cas(&base)
         if result {
             _oldVal.release()
         } else {
@@ -225,30 +252,41 @@ extension Atomic {
         return result
     }
     
+    /// Compare and set Object with barrier.
+    @_transparent
+    public func compareSet(oldVal: Atomic, _ newVal: Atomic) -> Bool {
+        return compareSet(oldVal.base, newVal.base)
+    }
+}
+
+extension Atomic {
+    
     /// Sets the value.
     @_transparent
-    public func setValue(@noescape block: (T) throws -> T) rethrows -> T {
+    public func setValue(@noescape block: (Instance) throws -> Instance) rethrows -> Instance {
         while true {
-            let oldVal = value
-            if self.compareSet(oldVal, try block(oldVal)) {
-                return oldVal
+            let oldVal = self.base
+            if self.compareSet(oldVal, AtomicBase(value: try block(oldVal.value))) {
+                return oldVal.value
             }
         }
     }
     
     /// Sets the value, and returns the previous value.
     @_transparent
-    public func fetchStore(value: T) -> T {
+    public func fetchStore(value: Instance) -> Instance {
         return self.setValue { _ in value }
     }
 }
 
-extension Atomic : SDAtomicType {
+extension Atomic: CustomStringConvertible, CustomDebugStringConvertible {
     
-    /// Compare and set Object with barrier.
-    @_transparent
-    public func compareSet(oldVal: Atomic, _ newVal: Atomic) -> Bool {
-        return compareSet(oldVal.value, newVal.value)
+    public var description: String {
+        return "Atomic(\(value))"
+    }
+    
+    public var debugDescription: String {
+        return "Atomic(\(value))"
     }
 }
 
