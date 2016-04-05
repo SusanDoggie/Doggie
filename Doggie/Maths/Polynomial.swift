@@ -510,7 +510,6 @@ public func pow(p: Polynomial, _ n: Int) -> Polynomial {
         return Polynomial()
     }
     let count = n * p.count - n + 1
-    let pad = Int(UInt64(count).hibit) << 1
-    let _p = p.coeffs + Repeat(count: pad - p.count, repeatedValue: 0)
+    let _p = p.coeffs + Repeat(count: (count.hibit << 1) - p.count, repeatedValue: 0)
     return Polynomial(Radix2PowerCircularConvolve(_p, Double(n))[0..<count])
 }
