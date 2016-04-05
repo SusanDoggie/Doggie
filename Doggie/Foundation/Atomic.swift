@@ -32,24 +32,28 @@ public protocol SDAtomicType {
     
     /// Sets the value, and returns the previous value.
     mutating func fetchStore(newVal: Self) -> Self
+    
+    /// Sets the value, and returns the previous value. `block` is called repeatedly until result accepted.
+    mutating func fetchStore(@noescape block: (Self) throws -> Self) rethrows -> Self
 }
 
 public extension SDAtomicType {
     
-    /// Sets the value.
+    /// Sets the value, and returns the previous value.
     @_transparent
-    public mutating func setValue(@noescape block: (Self) throws -> Self) rethrows -> Self {
+    public mutating func fetchStore(value: Self) -> Self {
+        return self.fetchStore { _ in value }
+    }
+    
+    /// Sets the value, and returns the previous value. `block` is called repeatedly until result accepted.
+    @_transparent
+    public mutating func fetchStore(@noescape block: (Self) throws -> Self) rethrows -> Self {
         while true {
             let oldVal = self
             if self.compareSet(oldVal, try block(oldVal)) {
                 return oldVal
             }
         }
-    }
-    /// Sets the value, and returns the previous value.
-    @_transparent
-    public mutating func fetchStore(value: Self) -> Self {
-        return self.setValue { _ in value }
     }
 }
 
@@ -167,16 +171,16 @@ extension AtomicBoolean : BooleanType {
 
 extension AtomicBoolean : SDAtomicType {
     
-    /// Sets the value, and returns the previous value.
-    @_transparent
-    public mutating func fetchStore<T: BooleanType>(value: T) -> Bool {
-        return value ? OSAtomicTestAndSet(0, &val) : OSAtomicTestAndClear(0, &val)
-    }
-    
     /// Compare and set Bool with barrier.
     @_transparent
     public mutating func compareSet<T: BooleanType>(oldVal: T, _ newVal: T) -> Bool {
         return self.val.compareSet(oldVal ? 0x80 : 0, newVal ? 0x80 : 0)
+    }
+    
+    /// Sets the value, and returns the previous value.
+    @_transparent
+    public mutating func fetchStore<T: BooleanType>(value: T) -> Bool {
+        return value ? OSAtomicTestAndSet(0, &val) : OSAtomicTestAndClear(0, &val)
     }
 }
 
@@ -267,21 +271,21 @@ extension Atomic : SDAtomicType {
 
 extension Atomic {
     
+    /// Sets the value, and returns the previous value.
+    @_transparent
+    public mutating func fetchStore(value: Instance) -> Instance {
+        return self.fetchStore { _ in value }
+    }
+    
     /// Sets the value.
     @_transparent
-    public mutating func setValue(@noescape block: (Instance) throws -> Instance) rethrows -> Instance {
+    public mutating func fetchStore(@noescape block: (Instance) throws -> Instance) rethrows -> Instance {
         while true {
             let oldVal = self.base
             if self.compareSet(oldVal, AtomicBase(value: try block(oldVal.value))) {
                 return oldVal.value
             }
         }
-    }
-    
-    /// Sets the value, and returns the previous value.
-    @_transparent
-    public mutating func fetchStore(value: Instance) -> Instance {
-        return self.setValue { _ in value }
     }
 }
 
@@ -318,110 +322,4 @@ extension Atomic : Equatable, Hashable {
 @_transparent
 public func == <Instance>(lhs: Atomic<Instance>, rhs: Atomic<Instance>) -> Bool {
     return lhs.identifier == rhs.identifier
-}
-
-public extension Int32 {
-    
-    @_transparent
-    mutating func atomicAdd(amount: Int32) -> Int32 {
-        return OSAtomicAdd32Barrier(amount, &self) - amount
-    }
-    
-    @_transparent
-    mutating func atomicSub(amount: Int32) -> Int32 {
-        return self.atomicAdd(-amount)
-    }
-}
-
-public extension Int64 {
-    
-    @_transparent
-    mutating func atomicAdd(amount: Int64) -> Int64 {
-        return OSAtomicAdd64Barrier(amount, &self) - amount
-    }
-    
-    @_transparent
-    mutating func atomicSub(amount: Int64) -> Int64 {
-        return self.atomicAdd(-amount)
-    }
-}
-
-public extension UInt32 {
-    
-    @_transparent
-    mutating func atomicAdd(amount: UInt32) -> UInt32 {
-        @inline(__always)
-        func add(theVal: UnsafeMutablePointer<UInt32>) -> UInt32 {
-            return UInt32(bitPattern: OSAtomicAdd32Barrier(Int32(bitPattern: amount), UnsafeMutablePointer(theVal)) - Int32(bitPattern: amount))
-        }
-        return add(&self)
-    }
-    
-    @_transparent
-    mutating func atomicSub(amount: UInt32) -> UInt32 {
-        return self.atomicAdd(UInt32(bitPattern: -Int32(bitPattern: amount)))
-    }
-}
-
-public extension UInt64 {
-    
-    @_transparent
-    mutating func atomicAdd(amount: UInt64) -> UInt64 {
-        @inline(__always)
-        func add(theVal: UnsafeMutablePointer<UInt64>) -> UInt64 {
-            return UInt64(bitPattern: OSAtomicAdd64Barrier(Int64(bitPattern: amount), UnsafeMutablePointer(theVal)) - Int64(bitPattern: amount))
-        }
-        return add(&self)
-    }
-    
-    @_transparent
-    mutating func atomicSub(amount: UInt64) -> UInt64 {
-        return self.atomicAdd(UInt64(bitPattern: -Int64(bitPattern: amount)))
-    }
-}
-
-public extension Int32 {
-    
-    @_transparent
-    mutating func atomicOr(mask: Int32) -> Int32 {
-        @inline(__always)
-        func or(theVal: UnsafeMutablePointer<Int32>) -> Int32 {
-            return OSAtomicOr32OrigBarrier(UInt32(bitPattern: mask), UnsafeMutablePointer(theVal))
-        }
-        return or(&self)
-    }
-    
-    @_transparent
-    mutating func atomicAnd(mask: Int32) -> Int32 {
-        @inline(__always)
-        func and(theVal: UnsafeMutablePointer<Int32>) -> Int32 {
-            return OSAtomicAnd32OrigBarrier(UInt32(bitPattern: mask), UnsafeMutablePointer(theVal))
-        }
-        return and(&self)
-    }
-    
-    @_transparent
-    mutating func atomicXor(mask: Int32) -> Int32 {
-        @inline(__always)
-        func xor(theVal: UnsafeMutablePointer<Int32>) -> Int32 {
-            return OSAtomicXor32OrigBarrier(UInt32(bitPattern: mask), UnsafeMutablePointer(theVal))
-        }
-        return xor(&self)
-    }
-}
-
-public extension UInt32 {
-    
-    @_transparent
-    mutating func atomicOr(mask: UInt32) -> UInt32 {
-        return UInt32(bitPattern: OSAtomicOr32OrigBarrier(mask, &self))
-    }
-    @_transparent
-    mutating func atomicAnd(mask: UInt32) -> UInt32 {
-        return UInt32(bitPattern: OSAtomicAnd32OrigBarrier(mask, &self))
-    }
-    @_transparent
-    mutating func atomicXor(mask: UInt32) -> UInt32 {
-        return UInt32(bitPattern: OSAtomicXor32OrigBarrier(mask, &self))
-    }
 }
