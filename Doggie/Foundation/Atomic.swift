@@ -165,7 +165,7 @@ extension AtomicBoolean : BooleanType {
     /// `value`.
     @_transparent
     public init<T : BooleanType>(_ value: T) {
-        self.val = value ? 0x80 : 0
+        self.val = value ? ~0 : 0
     }
 }
 
@@ -174,13 +174,13 @@ extension AtomicBoolean : SDAtomicType {
     /// Compare and set Bool with barrier.
     @_transparent
     public mutating func compareSet<T: BooleanType>(oldVal: T, _ newVal: T) -> Bool {
-        return self.val.compareSet(oldVal ? 0x80 : 0, newVal ? 0x80 : 0)
+        return val.compareSet(oldVal ? ~0 : 0, newVal ? ~0 : 0)
     }
     
     /// Sets the value, and returns the previous value.
     @_transparent
     public mutating func fetchStore<T: BooleanType>(value: T) -> Bool {
-        return value ? OSAtomicTestAndSet(0, &val) : OSAtomicTestAndClear(0, &val)
+        return val.fetchStore(value ? ~0 : 0) != 0
     }
 }
 
