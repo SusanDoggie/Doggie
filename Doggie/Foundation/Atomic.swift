@@ -216,7 +216,7 @@ public func == (lhs: AtomicBoolean, rhs: AtomicBoolean) -> Bool {
 
 private final class AtomicBase<Instance> {
     
-    let value: Instance
+    var value: Instance
     
     init(value: Instance) {
         self.value = value
@@ -238,7 +238,11 @@ public struct Atomic<Instance> {
             return base.value
         }
         set {
-            base = AtomicBase(value: newValue)
+            if isUniquelyReferencedNonObjC(&base) {
+                base.value = newValue
+            } else {
+                base = AtomicBase(value: newValue)
+            }
         }
     }
 }
