@@ -28,7 +28,7 @@ let task2 = task.then { a -> Int in
 print(task.result)   // 5
 print(task2.result)  // 6
 ```
-- lockable class (threading).
+- atomic and lockable class (threading).
 - aspect-oriented programming.
 - key-value observing and functional reactive programming.
 - rectangle, ellipse and path (graphic).
