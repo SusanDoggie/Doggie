@@ -95,8 +95,7 @@ extension Color {
 extension Color {
     
     private init (h: Double, c: Double, m: Double, a: Double) {
-        var h = h
-        h = h.isSignMinus ? fmod(h * 3.0 / M_PI, 6.0) + 6.0 : fmod(h * 3.0 / M_PI, 6.0)
+        let h = h.isSignMinus ? fmod(fmod(h * 3.0 / M_PI, 6.0) + 6.0, 6.0) : fmod(h * 3.0 / M_PI, 6.0)
         let x = c * (1.0 - abs(fmod(h, 2.0) - 1.0))
         self.init(r: m, g: m, b: m, a: a)
         switch floor(h) {
