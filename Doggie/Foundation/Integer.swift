@@ -226,6 +226,14 @@ public extension Int {
     }
 }
 
+public extension IntegerType {
+    
+    @_transparent
+    var lowbit: Self {
+        return self & (~self &+ 1)
+    }
+}
+
 public extension UnsignedIntegerType {
     
     @_transparent
