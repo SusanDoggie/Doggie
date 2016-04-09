@@ -294,15 +294,15 @@ extension SDSignal {
 public class SDAtomic {
     
     private let queue: dispatch_queue_t
-    private let block: ((SDAtomic) -> Void)
+    private let block: (SDAtomic) -> Void
     private var flag: Int32
     
-    public init(queue: dispatch_queue_t, block: ((SDAtomic) -> Void)) {
+    public init(queue: dispatch_queue_t, block: (SDAtomic) -> Void) {
         self.queue = queue
         self.block = block
         self.flag = 0
     }
-    public init(block: ((SDAtomic) -> Void)) {
+    public init(block: (SDAtomic) -> Void) {
         self.queue = SDThreadDefaultDispatchQueue
         self.block = block
         self.flag = 0
