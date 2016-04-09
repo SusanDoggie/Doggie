@@ -339,55 +339,63 @@ public class SDTask<Result> : SDAtomic {
     private var _lck: SDSpinLock = SDSpinLock()
     private var _result: Result?
     
-    private let _block: () -> Result
-    private var _suspend: (Result) -> Bool
-    
     /// Create a SDTask and compute block with specific queue.
-    private init(queue: dispatch_queue_t, suspend: (Result) -> Bool, block: () -> Result) {
-        self._block = block
-        self._suspend = suspend
+    private init(queue: dispatch_queue_t, suspend: ((Result) -> Bool)?, block: () -> Result) {
         super.init(queue: queue) { atomic in
             let _self = atomic as! SDTask<Result>
-            _self._lck.synchronized(_self.action)
+            _self._lck.synchronized {
+                if _self._result == nil {
+                    _self._result = block()
+                    _self.signal()
+                } else if let suspend = suspend {
+                    if !suspend(_self._result!) {
+                        _self._notify.forEach { $0.signal() }
+                    }
+                    _self._notify = []
+                } else {
+                    _self._notify.forEach { $0.signal() }
+                    _self._notify = []
+                }
+            }
         }
     }
     
     /// Create a SDTask and compute block with specific queue.
     public init(queue: dispatch_queue_t, block: () -> Result) {
-        self._block = block
-        self._suspend = { _ in false }
         super.init(queue: queue) { atomic in
             let _self = atomic as! SDTask<Result>
-            _self._lck.synchronized(_self.action)
+            _self._lck.synchronized {
+                if _self._result == nil {
+                    _self._result = block()
+                    _self.signal()
+                } else {
+                    _self._notify.forEach { $0.signal() }
+                    _self._notify = []
+                }
+            }
         }
         self.signal()
     }
     
     /// Create a SDTask and compute block with default queue.
     public init(block: () -> Result) {
-        self._block = block
-        self._suspend = { _ in false }
         super.init { atomic in
             let _self = atomic as! SDTask<Result>
-            _self._lck.synchronized(_self.action)
+            _self._lck.synchronized {
+                if _self._result == nil {
+                    _self._result = block()
+                    _self.signal()
+                } else {
+                    _self._notify.forEach { $0.signal() }
+                    _self._notify = []
+                }
+            }
         }
         self.signal()
     }
 }
 
 extension SDTask {
-    
-    private func action() {
-        if _result == nil {
-            _result = _block()
-            self.signal()
-        } else {
-            if !_suspend(_result!) {
-                _notify.forEach { $0.signal() }
-            }
-            _notify = []
-        }
-    }
     
     /// Return `true` iff task is completed.
     public final var completed: Bool {
@@ -413,8 +421,8 @@ extension SDTask {
     
     /// Run `block` after `self` is completed with specific queue.
     public final func then<R>(queue: dispatch_queue_t, _ block: (Result) -> R) -> SDTask<R> {
+        let task = SDTask<R>(queue: queue, suspend: nil) { block(self.result) }
         return _lck.synchronized {
-            let task = SDTask<R>(queue: queue, suspend: { _ in false }) { block(self.result) }
             if _result == nil {
                 _notify.append(task)
             } else {
@@ -444,8 +452,8 @@ extension SDTask {
     
     /// Suspend if `result` satisfies `predicate` with specific queue.
     public final func suspend(queue: dispatch_queue_t, _ predicate: (Result) -> Bool) -> SDTask<Result> {
+        let task = SDTask<Result>(queue: queue, suspend: predicate) { self.result }
         return _lck.synchronized {
-            let task = SDTask<Result>(queue: queue, suspend: predicate) { self.result }
             if _result == nil {
                 _notify.append(task)
             } else {
