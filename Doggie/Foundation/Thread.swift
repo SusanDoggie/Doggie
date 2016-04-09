@@ -380,12 +380,12 @@ extension SDTask {
     
     /// Return `true` iff task is completed.
     public final var completed: Bool {
-        return _result != nil
+        return _lck.synchronized { _result != nil }
     }
     
     /// Result of task.
     public final var result: Result {
-        if self._result == nil {
+        if !completed {
             dispatch_semaphore_wait(self.sem, DISPATCH_TIME_FOREVER)
             defer { dispatch_semaphore_signal(self.sem) }
         }
@@ -403,7 +403,7 @@ extension SDTask {
     /// Run `block` after `self` is completed with specific queue.
     public final func then<R>(queue: dispatch_queue_t, _ block: (Result) -> R) -> SDTask<R> {
         return _lck.synchronized {
-            if completed {
+            if _result != nil {
                 return SDTask<R>(queue: queue) { block(self.result) }
             }
             let task = SDTask<R>(queue)
@@ -446,7 +446,7 @@ extension SDTask {
     public final func suspend(queue: dispatch_queue_t, _ predicate: (Result) -> Bool) -> SDTask<Result> {
         return _lck.synchronized {
             let task = SDTask<Result>(queue)
-            if completed {
+            if _result != nil {
                 dispatch_async(queue) { task.suspend_signal(self.result, predicate) }
             } else {
                 _notify.append { task.suspend_signal(self.result, predicate) }
