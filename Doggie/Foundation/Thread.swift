@@ -330,52 +330,63 @@ extension SDAtomic {
 
 // MARK: SDTask
 
-public class SDTask<Result> {
+public class SDTask<Result> : SDAtomic {
     
     private let sem: dispatch_semaphore_t = dispatch_semaphore_create(0)
-    private let group: dispatch_group_t = dispatch_group_create()
-    private let queue: dispatch_queue_t
     
-    private typealias NotifyType = () -> ()
+    private var _notify: [SDAtomic] = []
+    
     private var _lck: SDSpinLock = SDSpinLock()
-    private var _notify: [NotifyType] = []
+    private var _result: Result?
     
-    private var _result: Result! = nil
+    private let _block: () -> Result
+    private var _suspend: (Result) -> Bool
     
-    private init(_ queue: dispatch_queue_t) {
-        self.queue = queue
+    /// Create a SDTask and compute block with specific queue.
+    private init(queue: dispatch_queue_t, suspend: (Result) -> Bool, block: () -> Result) {
+        self._block = block
+        self._suspend = suspend
+        super.init(queue: queue) { atomic in
+            let _self = atomic as! SDTask<Result>
+            _self._lck.synchronized(_self.action)
+        }
     }
     
     /// Create a SDTask and compute block with specific queue.
     public init(queue: dispatch_queue_t, block: () -> Result) {
-        self.queue = queue
-        self.submit(block)
+        self._block = block
+        self._suspend = { _ in false }
+        super.init(queue: queue) { atomic in
+            let _self = atomic as! SDTask<Result>
+            _self._lck.synchronized(_self.action)
+        }
+        self.signal()
     }
     
     /// Create a SDTask and compute block with default queue.
     public init(block: () -> Result) {
-        self.queue = SDThreadDefaultDispatchQueue
-        self.submit(block)
+        self._block = block
+        self._suspend = { _ in false }
+        super.init { atomic in
+            let _self = atomic as! SDTask<Result>
+            _self._lck.synchronized(_self.action)
+        }
+        self.signal()
     }
 }
 
 extension SDTask {
     
-    private func notify() {
-        self._lck.synchronized {
-            self._notify.forEach { $0() }
-            self._notify = []
+    private func action() {
+        if _result == nil {
+            _result = _block()
+            self.signal()
+        } else {
+            if !_suspend(_result!) {
+                _notify.forEach { $0.signal() }
+            }
+            _notify = []
         }
-    }
-    private func submit(block: () -> Result) {
-        dispatch_group_async(group, queue) {
-            self._result = block()
-            defer { self.signal() }
-        }
-        dispatch_group_notify(group, queue, self.notify)
-    }
-    private func signal() {
-        dispatch_semaphore_signal(self.sem)
     }
     
     /// Return `true` iff task is completed.
@@ -389,7 +400,7 @@ extension SDTask {
             dispatch_semaphore_wait(self.sem, DISPATCH_TIME_FOREVER)
             defer { dispatch_semaphore_signal(self.sem) }
         }
-        return self._result
+        return self._result!
     }
 }
 
@@ -403,11 +414,12 @@ extension SDTask {
     /// Run `block` after `self` is completed with specific queue.
     public final func then<R>(queue: dispatch_queue_t, _ block: (Result) -> R) -> SDTask<R> {
         return _lck.synchronized {
-            if _result != nil {
-                return SDTask<R>(queue: queue) { block(self.result) }
+            let task = SDTask<R>(queue: queue, suspend: { _ in false }) { block(self.result) }
+            if _result == nil {
+                _notify.append(task)
+            } else {
+                task.signal()
             }
-            let task = SDTask<R>(queue)
-            _notify.append { task.submit { block(self.result) } }
             return task
         }
     }
@@ -425,18 +437,6 @@ extension SDTask {
 
 extension SDTask {
     
-    private func suspend_signal(result: Result, _ predicate: (Result) -> Bool) {
-        do {
-            self._result = result
-            defer { self.signal() }
-        }
-        dispatch_async(queue) {
-            if !predicate(result) {
-                self.notify()
-            }
-        }
-    }
-    
     /// Suspend if `result` satisfies `predicate`.
     public final func suspend(predicate: (Result) -> Bool) -> SDTask<Result> {
         return self.suspend(queue, predicate)
@@ -445,11 +445,11 @@ extension SDTask {
     /// Suspend if `result` satisfies `predicate` with specific queue.
     public final func suspend(queue: dispatch_queue_t, _ predicate: (Result) -> Bool) -> SDTask<Result> {
         return _lck.synchronized {
-            let task = SDTask<Result>(queue)
-            if _result != nil {
-                dispatch_async(queue) { task.suspend_signal(self.result, predicate) }
+            let task = SDTask<Result>(queue: queue, suspend: predicate) { self.result }
+            if _result == nil {
+                _notify.append(task)
             } else {
-                _notify.append { task.suspend_signal(self.result, predicate) }
+                task.signal()
             }
             return task
         }
