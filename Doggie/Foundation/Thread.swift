@@ -343,35 +343,28 @@ public class SDTask<Result> : SDAtomic {
     private init(queue: dispatch_queue_t, suspend: ((Result) -> Bool)?, block: () -> Result) {
         super.init(queue: queue) { atomic in
             let _self = atomic as! SDTask<Result>
-            _self._lck.synchronized {
-                if _self._result == nil {
-                    _self._result = block()
-                    _self.signal()
-                } else if let suspend = suspend {
-                    if !suspend(_self._result!) {
-                        _self._notify.forEach { $0.signal() }
-                    }
-                    _self._notify = []
-                } else {
+            if _self._result == nil {
+                _self._lck.synchronized { _self._result = block() }
+                _self.signal()
+            } else {
+                if suspend == nil || !suspend!(_self._result!) {
                     _self._notify.forEach { $0.signal() }
-                    _self._notify = []
                 }
+                _self._notify = []
             }
         }
     }
-    
+
     /// Create a SDTask and compute block with specific queue.
     public init(queue: dispatch_queue_t, block: () -> Result) {
         super.init(queue: queue) { atomic in
             let _self = atomic as! SDTask<Result>
-            _self._lck.synchronized {
-                if _self._result == nil {
-                    _self._result = block()
-                    _self.signal()
-                } else {
-                    _self._notify.forEach { $0.signal() }
-                    _self._notify = []
-                }
+            if _self._result == nil {
+                _self._lck.synchronized { _self._result = block() }
+                _self.signal()
+            } else {
+                _self._notify.forEach { $0.signal() }
+                _self._notify = []
             }
         }
         self.signal()
@@ -381,14 +374,12 @@ public class SDTask<Result> : SDAtomic {
     public init(block: () -> Result) {
         super.init { atomic in
             let _self = atomic as! SDTask<Result>
-            _self._lck.synchronized {
-                if _self._result == nil {
-                    _self._result = block()
-                    _self.signal()
-                } else {
-                    _self._notify.forEach { $0.signal() }
-                    _self._notify = []
-                }
+            if _self._result == nil {
+                _self._lck.synchronized { _self._result = block() }
+                _self.signal()
+            } else {
+                _self._notify.forEach { $0.signal() }
+                _self._notify = []
             }
         }
         self.signal()
