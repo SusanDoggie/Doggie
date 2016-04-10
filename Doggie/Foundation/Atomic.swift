@@ -123,6 +123,19 @@ extension UInt : SDAtomicType {
     }
 }
 
+extension UnsafePointer : SDAtomicType {
+    
+    /// Compare and set pointers with barrier.
+    @_transparent
+    public mutating func compareSet(oldVal: UnsafePointer, _ newVal: UnsafePointer) -> Bool {
+        @inline(__always)
+        func cas(theVal: UnsafeMutablePointer<UnsafePointer<Memory>>) -> Bool {
+            return OSAtomicCompareAndSwapPtrBarrier(UnsafeMutablePointer(oldVal), UnsafeMutablePointer(newVal), UnsafeMutablePointer<UnsafeMutablePointer<Void>>(theVal))
+        }
+        return cas(&self)
+    }
+}
+
 extension UnsafeMutablePointer : SDAtomicType {
     
     /// Compare and set pointers with barrier.
@@ -131,6 +144,19 @@ extension UnsafeMutablePointer : SDAtomicType {
         @inline(__always)
         func cas(theVal: UnsafeMutablePointer<UnsafeMutablePointer<Memory>>) -> Bool {
             return OSAtomicCompareAndSwapPtrBarrier(oldVal, newVal, UnsafeMutablePointer<UnsafeMutablePointer<Void>>(theVal))
+        }
+        return cas(&self)
+    }
+}
+
+extension COpaquePointer : SDAtomicType {
+    
+    /// Compare and set pointers with barrier.
+    @_transparent
+    public mutating func compareSet(oldVal: COpaquePointer, _ newVal: COpaquePointer) -> Bool {
+        @inline(__always)
+        func cas(theVal: UnsafeMutablePointer<COpaquePointer>) -> Bool {
+            return OSAtomicCompareAndSwapPtrBarrier(UnsafeMutablePointer(oldVal), UnsafeMutablePointer(newVal), UnsafeMutablePointer<UnsafeMutablePointer<Void>>(theVal))
         }
         return cas(&self)
     }
