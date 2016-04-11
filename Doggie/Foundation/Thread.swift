@@ -337,7 +337,7 @@ public class SDSingleton<Instance> : SDAtomic {
     private var _lck: SDSpinLock = SDSpinLock()
     private var _value: Instance?
     
-    /// Create a SDTask and compute block with specific queue.
+    /// Create a SDSingleton and compute block with specific queue.
     public init(queue: dispatch_queue_t, block: () -> Instance) {
         super.init(queue: queue) { singleton in
             let _self = singleton as! SDSingleton<Instance>
@@ -349,7 +349,7 @@ public class SDSingleton<Instance> : SDAtomic {
         }
     }
     
-    /// Create a SDTask and compute block with default queue.
+    /// Create a SDSingleton and compute block with default queue.
     public init(block: () -> Instance) {
         super.init { singleton in
             let _self = singleton as! SDSingleton<Instance>
@@ -364,7 +364,6 @@ public class SDSingleton<Instance> : SDAtomic {
 
 extension SDSingleton {
     
-    /// Result of task.
     public final var value: Instance {
         if _lck.synchronized({ _value == nil }) {
             self.signal()
