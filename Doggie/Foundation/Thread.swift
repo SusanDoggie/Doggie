@@ -346,6 +346,7 @@ public class SDTask<Result> : SDAtomic {
             if _self._result == nil {
                 let result = block()
                 _self._lck.synchronized { _self._result = result }
+                dispatch_semaphore_signal(_self.sem)
                 _self.signal()
             } else {
                 if suspend == nil || !suspend!(_self._result!) {
@@ -363,6 +364,7 @@ public class SDTask<Result> : SDAtomic {
             if _self._result == nil {
                 let result = block()
                 _self._lck.synchronized { _self._result = result }
+                dispatch_semaphore_signal(_self.sem)
                 _self.signal()
             } else {
                 _self._notify.forEach { $0.signal() }
@@ -379,6 +381,7 @@ public class SDTask<Result> : SDAtomic {
             if _self._result == nil {
                 let result = block()
                 _self._lck.synchronized { _self._result = result }
+                dispatch_semaphore_signal(_self.sem)
                 _self.signal()
             } else {
                 _self._notify.forEach { $0.signal() }
