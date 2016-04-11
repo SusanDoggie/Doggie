@@ -330,45 +330,23 @@ extension SDAtomic {
 
 // MARK: SDSingleton
 
-public class SDSingleton<Instance> : SDAtomic {
+public class SDSingleton<Instance> {
     
-    private let sem: dispatch_semaphore_t = dispatch_semaphore_create(0)
-    
-    private var _lck: SDSpinLock = SDSpinLock()
+    private var token: dispatch_once_t = 0
     private var _value: Instance?
+    private let block: () -> Instance
     
-    /// Create a SDSingleton and compute block with specific queue.
-    public init(queue: dispatch_queue_t, block: () -> Instance) {
-        super.init(queue: queue) { singleton in
-            let _self = singleton as! SDSingleton<Instance>
-            if _self._value == nil {
-                let result = block()
-                _self._lck.synchronized { _self._value = result }
-                dispatch_semaphore_signal(_self.sem)
-            }
-        }
-    }
-    
-    /// Create a SDSingleton and compute block with default queue.
+    /// Create a SDSingleton.
     public init(block: () -> Instance) {
-        super.init { singleton in
-            let _self = singleton as! SDSingleton<Instance>
-            if _self._value == nil {
-                let result = block()
-                _self._lck.synchronized { _self._value = result }
-                dispatch_semaphore_signal(_self.sem)
-            }
-        }
+        self.block = block
     }
 }
 
 extension SDSingleton {
     
     public final var value: Instance {
-        if _lck.synchronized({ _value == nil }) {
-            self.signal()
-            dispatch_semaphore_wait(self.sem, DISPATCH_TIME_FOREVER)
-            defer { dispatch_semaphore_signal(self.sem) }
+        dispatch_once(&token) {
+            self._value = self.block()
         }
         return self._value!
     }
