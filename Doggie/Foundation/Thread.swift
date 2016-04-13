@@ -452,16 +452,6 @@ extension SDTask {
             return task
         }
     }
-    
-    /// Return `result` if it satisfies `predicate`.
-    public final func filter(predicate: (Result) -> Bool) -> SDTask<Result?> {
-        return self.filter(queue, predicate)
-    }
-    
-    /// Return `result` if it satisfies `predicate` with specific queue.
-    public final func filter(queue: dispatch_queue_t, _ predicate: (Result) -> Bool) -> SDTask<Result?> {
-        return self.then(queue) { predicate($0) ? $0 : nil }
-    }
 }
 
 extension SDTask {
