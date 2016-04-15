@@ -376,16 +376,16 @@ public extension CollectionType where Index : RandomAccessIndexType {
             return endIndex.advancedBy(numericCast(-pattern_count))
         }
         
-        var curser = startIndex.advancedBy(numericCast(pattern_count - 1))
-        while curser < endIndex {
-            let left = startIndex..<curser
+        var cursor = startIndex.advancedBy(numericCast(pattern_count - 1))
+        while cursor < endIndex {
+            let left = startIndex..<cursor
             guard let not_match = try zip(left.reverse(), pattern.indices.reverse()).firstOf({ try !isEquivalent(self[$0], pattern[$1]) }) else {
-                return curser.advancedBy(numericCast(-pattern_count))
+                return cursor.advancedBy(numericCast(-pattern_count))
             }
             if let pos = try pattern.reverse().dropFirst().indexOf({ try isEquivalent(self[not_match.0], $0) })?.base {
-                curser = curser.advancedBy(numericCast(pattern_count - pattern.startIndex.distanceTo(pos).toIntMax()))
+                cursor = cursor.advancedBy(numericCast(pattern_count - pattern.startIndex.distanceTo(pos).toIntMax()))
             } else {
-                curser = curser.advancedBy(numericCast(pattern_count - 1))
+                cursor = cursor.advancedBy(numericCast(pattern_count - 1))
             }
         }
         return nil
