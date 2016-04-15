@@ -337,21 +337,18 @@ public extension CollectionType where Index : BidirectionalIndexType {
     }
 }
 
-public extension CollectionType where Generator.Element : Equatable {
-    /// Returns `true` iff `self` begins with `prefix`.
-    @warn_unused_result
-    @_transparent
-    func hasPrefix<C : CollectionType where C.Generator.Element == Generator.Element>(prefix: C) -> Bool {
-        return zip(indices, prefix.indices).all({ self[$0] == prefix[$1] })
-    }
-}
-
 public extension CollectionType where Index : BidirectionalIndexType, Generator.Element : Equatable {
     /// Returns `true` iff `self` ends with `suffix`.
     @warn_unused_result
     @_transparent
-    func hasSuffix<C : CollectionType where C.Generator.Element == Generator.Element, C.Index : BidirectionalIndexType>(suffix: C) -> Bool {
-        return self.reverse().hasPrefix(suffix.reverse())
+    func endsWith<C : CollectionType where C.Generator.Element == Generator.Element, C.Index : BidirectionalIndexType>(suffix: C, @noescape isEquivalent: (Generator.Element, Generator.Element) throws -> Bool) rethrows -> Bool {
+        return try self.reverse().startsWith(suffix.reverse(), isEquivalent: isEquivalent)
+    }
+    /// Returns `true` iff `self` ends with `suffix`.
+    @warn_unused_result
+    @_transparent
+    func endsWith<C : CollectionType where C.Generator.Element == Generator.Element, C.Index : BidirectionalIndexType>(suffix: C) -> Bool {
+        return self.reverse().startsWith(suffix.reverse())
     }
 }
 
@@ -361,13 +358,13 @@ public extension CollectionType where Index : RandomAccessIndexType, Generator.E
     @_transparent
     func search<C : CollectionType where C.Generator.Element == Generator.Element, C.Index : RandomAccessIndexType>(pattern: C) -> Index? {
         
-        if self.hasPrefix(pattern) {
+        if self.startsWith(pattern) {
             return self.startIndex
         }
         
         let pattern_count = pattern.count.toIntMax()
         
-        if self.hasSuffix(pattern) {
+        if self.endsWith(pattern) {
             return endIndex.advancedBy(numericCast(-pattern_count))
         }
         
