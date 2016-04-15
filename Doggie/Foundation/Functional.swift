@@ -364,7 +364,7 @@ public extension CollectionType where Index : RandomAccessIndexType {
     
     @warn_unused_result
     @_transparent
-    func search<C : CollectionType where C.Index : RandomAccessIndexType, C.Generator.Element == Generator.Element>(pattern: C, @noescape isEquivalent: (Generator.Element, Generator.Element) throws -> Bool) rethrows -> Index? {
+    func matchWith<C : CollectionType where C.Index : RandomAccessIndexType, C.Generator.Element == Generator.Element>(pattern: C, @noescape isEquivalent: (Generator.Element, Generator.Element) throws -> Bool) rethrows -> Index? {
         
         if try self.startsWith(pattern, isEquivalent: isEquivalent) {
             return self.startIndex
@@ -396,8 +396,8 @@ public extension CollectionType where Index : RandomAccessIndexType, Generator.E
     
     @warn_unused_result
     @_transparent
-    func search<C : CollectionType where C.Generator.Element == Generator.Element, C.Index : RandomAccessIndexType>(pattern: C) -> Index? {
-        return self.search(pattern, isEquivalent: ==)
+    func matchWith<C : CollectionType where C.Generator.Element == Generator.Element, C.Index : RandomAccessIndexType>(pattern: C) -> Index? {
+        return self.matchWith(pattern) { $0 == $1 }
     }
 }
 
