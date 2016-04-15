@@ -371,7 +371,7 @@ public extension CollectionType where Index : RandomAccessIndexType {
             return nil
         }
         let reverse_pattern = pattern.reverse()
-        var cursor = startIndex.advancedBy(numericCast(pattern_count - 1), limit: endIndex)
+        var cursor = startIndex.advancedBy(numericCast(pattern_count - 1))
         while cursor < endIndex {
             let left = startIndex..<cursor
             let pair = zip(left.reverse(), reverse_pattern)
