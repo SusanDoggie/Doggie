@@ -286,7 +286,7 @@ public extension CollectionType where Generator.Element : Equatable {
     /// - Complexity: O(`self.count`)
     @warn_unused_result
     @_transparent
-    func prefixUntil(element: Self.Generator.Element) -> Self.SubSequence {
+    func prefixUntil(element: Generator.Element) -> SubSequence {
         return self.prefixUpTo(self.indexOf(element) ?? self.endIndex)
     }
 }
@@ -302,7 +302,7 @@ public extension CollectionType {
     /// - Complexity: O(`self.count`)
     @warn_unused_result
     @_transparent
-    func prefixUntil(@noescape predicate: (Self.Generator.Element) throws -> Bool) rethrows -> Self.SubSequence {
+    func prefixUntil(@noescape predicate: (Generator.Element) throws -> Bool) rethrows -> SubSequence {
         return self.prefixUpTo(try self.indexOf(predicate) ?? self.endIndex)
     }
 }
@@ -317,7 +317,7 @@ public extension CollectionType where Generator.Element : Equatable, Index : Bid
     /// - Complexity: O(`self.count`)
     @warn_unused_result
     @_transparent
-    func suffixUntil(element: Self.Generator.Element) -> Self.SubSequence {
+    func suffixUntil(element: Generator.Element) -> SubSequence {
         return self.suffixFrom(self.reverse().indexOf(element)?.base ?? self.startIndex)
     }
 }
@@ -332,26 +332,31 @@ public extension CollectionType where Index : BidirectionalIndexType {
     /// - Complexity: O(`self.count`)
     @warn_unused_result
     @_transparent
-    func suffixUntil(@noescape predicate: (Self.Generator.Element) throws -> Bool) rethrows -> Self.SubSequence {
+    func suffixUntil(@noescape predicate: (Generator.Element) throws -> Bool) rethrows -> SubSequence {
         return self.suffixFrom(try self.reverse().indexOf(predicate)?.base ?? self.startIndex)
     }
 }
 
 public extension CollectionType where Index : BidirectionalIndexType {
-    /// Returns `true` iff `self` ends with `suffix`.
+    /// Returns `true` iff `self` ends with `other`.
+    /// Returns `true` if `other` is empty.
+    ///
+    /// - Requires: `isEquivalent` is an
+    ///   [equivalence relation](http://en.wikipedia.org/wiki/Equivalence_relation).
     @warn_unused_result
     @_transparent
-    func endsWith<C : CollectionType where C.Generator.Element == Generator.Element, C.Index : BidirectionalIndexType>(suffix: C, @noescape isEquivalent: (Generator.Element, Generator.Element) throws -> Bool) rethrows -> Bool {
-        return try self.reverse().startsWith(suffix.reverse(), isEquivalent: isEquivalent)
+    func endsWith<C : CollectionType where C.Index : BidirectionalIndexType, C.Generator.Element == Generator.Element>(other: C, @noescape isEquivalent: (Generator.Element, Generator.Element) throws -> Bool) rethrows -> Bool {
+        return try self.reverse().startsWith(other.reverse(), isEquivalent: isEquivalent)
     }
 }
 
 public extension CollectionType where Index : BidirectionalIndexType, Generator.Element : Equatable {
-    /// Returns `true` iff `self` ends with `suffix`.
+    /// Returns `true` iff `self` ends with `other`.
+    /// Returns `true` if `other` is empty.
     @warn_unused_result
     @_transparent
-    func endsWith<C : CollectionType where C.Generator.Element == Generator.Element, C.Index : BidirectionalIndexType>(suffix: C) -> Bool {
-        return self.reverse().startsWith(suffix.reverse())
+    func endsWith<C : CollectionType where C.Index : BidirectionalIndexType, C.Generator.Element == Generator.Element>(other: C) -> Bool {
+        return self.reverse().startsWith(other.reverse())
     }
 }
 
@@ -359,7 +364,7 @@ public extension CollectionType where Index : RandomAccessIndexType {
     
     @warn_unused_result
     @_transparent
-    func search<C : CollectionType where C.Generator.Element == Generator.Element, C.Index : RandomAccessIndexType>(pattern: C, @noescape isEquivalent: (Generator.Element, Generator.Element) throws -> Bool) rethrows -> Index? {
+    func search<C : CollectionType where C.Index : RandomAccessIndexType, C.Generator.Element == Generator.Element>(pattern: C, @noescape isEquivalent: (Generator.Element, Generator.Element) throws -> Bool) rethrows -> Index? {
         
         if try self.startsWith(pattern, isEquivalent: isEquivalent) {
             return self.startIndex
@@ -377,7 +382,7 @@ public extension CollectionType where Index : RandomAccessIndexType {
             guard let not_match = try zip(left.reverse(), pattern.indices.reverse()).firstOf({ try !isEquivalent(self[$0], pattern[$1]) }) else {
                 return curser.advancedBy(numericCast(-pattern_count))
             }
-            if let pos = try pattern.reverse().dropFirst().indexOf({ try isEquivalent($0, self[not_match.0]) })?.base {
+            if let pos = try pattern.reverse().dropFirst().indexOf({ try isEquivalent(self[not_match.0], $0) })?.base {
                 curser = curser.advancedBy(numericCast(pattern_count - pattern.startIndex.distanceTo(pos).toIntMax()))
             } else {
                 curser = curser.advancedBy(numericCast(pattern_count - 1))
