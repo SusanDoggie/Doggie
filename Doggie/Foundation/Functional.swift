@@ -366,21 +366,23 @@ public extension CollectionType where Index : RandomAccessIndexType {
     @_transparent
     func matchWith<C : CollectionType where C.Index : RandomAccessIndexType, C.Generator.Element == Generator.Element>(pattern: C, @noescape isEquivalent: (Generator.Element, Generator.Element) throws -> Bool) rethrows -> Index? {
         
-        if try self.startsWith(pattern, isEquivalent: isEquivalent) {
-            return self.startIndex
-        }
-        
         let pattern_count = pattern.count.toIntMax()
-        var cursor = startIndex.advancedBy(numericCast(pattern_count - 1))
+        if count.toIntMax() < pattern_count {
+            return nil
+        }
+        let reverse_pattern = pattern.reverse()
+        var cursor = startIndex.advancedBy(numericCast(pattern_count - 1), limit: endIndex)
         while cursor < endIndex {
             let left = startIndex..<cursor
-            guard let not_match = try zip(left.reverse(), pattern.indices.reverse()).firstOf({ try !isEquivalent(self[$0], pattern[$1]) }) else {
+            let pair = zip(left.reverse(), reverse_pattern)
+            guard let not_match = try pair.firstOf({ try !isEquivalent(self[$0], $1) }) else {
                 return cursor.advancedBy(numericCast(-pattern_count))
             }
-            if let pos = try pattern.reverse().dropFirst().indexOf({ try isEquivalent(self[not_match.0], $0) })?.base {
-                cursor = cursor.advancedBy(numericCast(pattern_count - pattern.startIndex.distanceTo(pos).toIntMax()))
+            if let pos = try reverse_pattern.dropFirst().indexOf({ try isEquivalent(self[not_match.0], $0) }) {
+                let offset = reverse_pattern.startIndex.distanceTo(pos).toIntMax()
+                cursor = cursor.advancedBy(numericCast(offset), limit: endIndex)
             } else {
-                cursor = cursor.advancedBy(numericCast(pattern_count - 1))
+                cursor = cursor.advancedBy(numericCast(pattern_count - 1), limit: endIndex)
             }
         }
         if try self.endsWith(pattern, isEquivalent: isEquivalent) {
@@ -396,6 +398,15 @@ public extension CollectionType where Index : RandomAccessIndexType, Generator.E
     @_transparent
     func matchWith<C : CollectionType where C.Generator.Element == Generator.Element, C.Index : RandomAccessIndexType>(pattern: C) -> Index? {
         return self.matchWith(pattern) { $0 == $1 }
+    }
+}
+
+public extension String {
+    
+    @warn_unused_result
+    @_transparent
+    func hasPattern(pattern: String) -> Bool {
+        return Array(characters).matchWith(Array(pattern.characters)) != nil
     }
 }
 
