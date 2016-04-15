@@ -337,13 +337,16 @@ public extension CollectionType where Index : BidirectionalIndexType {
     }
 }
 
-public extension CollectionType where Index : BidirectionalIndexType, Generator.Element : Equatable {
+public extension CollectionType where Index : BidirectionalIndexType {
     /// Returns `true` iff `self` ends with `suffix`.
     @warn_unused_result
     @_transparent
     func endsWith<C : CollectionType where C.Generator.Element == Generator.Element, C.Index : BidirectionalIndexType>(suffix: C, @noescape isEquivalent: (Generator.Element, Generator.Element) throws -> Bool) rethrows -> Bool {
         return try self.reverse().startsWith(suffix.reverse(), isEquivalent: isEquivalent)
     }
+}
+
+public extension CollectionType where Index : BidirectionalIndexType, Generator.Element : Equatable {
     /// Returns `true` iff `self` ends with `suffix`.
     @warn_unused_result
     @_transparent
@@ -352,35 +355,44 @@ public extension CollectionType where Index : BidirectionalIndexType, Generator.
     }
 }
 
-public extension CollectionType where Index : RandomAccessIndexType, Generator.Element : Equatable {
+public extension CollectionType where Index : RandomAccessIndexType {
     
     @warn_unused_result
     @_transparent
-    func search<C : CollectionType where C.Generator.Element == Generator.Element, C.Index : RandomAccessIndexType>(pattern: C) -> Index? {
+    func search<C : CollectionType where C.Generator.Element == Generator.Element, C.Index : RandomAccessIndexType>(pattern: C, @noescape isEquivalent: (Generator.Element, Generator.Element) throws -> Bool) rethrows -> Index? {
         
-        if self.startsWith(pattern) {
+        if try self.startsWith(pattern, isEquivalent: isEquivalent) {
             return self.startIndex
         }
         
         let pattern_count = pattern.count.toIntMax()
         
-        if self.endsWith(pattern) {
+        if try self.endsWith(pattern, isEquivalent: isEquivalent) {
             return endIndex.advancedBy(numericCast(-pattern_count))
         }
         
         var curser = startIndex.advancedBy(numericCast(pattern_count - 1))
         while curser < endIndex {
             let left = startIndex..<curser
-            guard let not_match = zip(left.reverse(), pattern.indices.reverse()).firstOf({ self[$0] != pattern[$1] }) else {
+            guard let not_match = try zip(left.reverse(), pattern.indices.reverse()).firstOf({ try !isEquivalent(self[$0], pattern[$1]) }) else {
                 return curser.advancedBy(numericCast(-pattern_count))
             }
-            if let pos = pattern.reverse().dropFirst().indexOf(self[not_match.0])?.base {
+            if let pos = try pattern.reverse().dropFirst().indexOf({ try isEquivalent($0, self[not_match.0]) })?.base {
                 curser = curser.advancedBy(numericCast(pattern_count - pattern.startIndex.distanceTo(pos).toIntMax()))
             } else {
                 curser = curser.advancedBy(numericCast(pattern_count - 1))
             }
         }
         return nil
+    }
+}
+
+public extension CollectionType where Index : RandomAccessIndexType, Generator.Element : Equatable {
+    
+    @warn_unused_result
+    @_transparent
+    func search<C : CollectionType where C.Generator.Element == Generator.Element, C.Index : RandomAccessIndexType>(pattern: C) -> Index? {
+        return self.search(pattern, isEquivalent: ==)
     }
 }
 
