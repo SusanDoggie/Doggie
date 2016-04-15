@@ -371,11 +371,6 @@ public extension CollectionType where Index : RandomAccessIndexType {
         }
         
         let pattern_count = pattern.count.toIntMax()
-        
-        if try self.endsWith(pattern, isEquivalent: isEquivalent) {
-            return endIndex.advancedBy(numericCast(-pattern_count))
-        }
-        
         var cursor = startIndex.advancedBy(numericCast(pattern_count - 1))
         while cursor < endIndex {
             let left = startIndex..<cursor
@@ -387,6 +382,9 @@ public extension CollectionType where Index : RandomAccessIndexType {
             } else {
                 cursor = cursor.advancedBy(numericCast(pattern_count - 1))
             }
+        }
+        if try self.endsWith(pattern, isEquivalent: isEquivalent) {
+            return endIndex.advancedBy(numericCast(-pattern_count))
         }
         return nil
     }
