@@ -337,29 +337,6 @@ public extension CollectionType where Index : BidirectionalIndexType {
     }
 }
 
-public extension CollectionType where Index : BidirectionalIndexType {
-    /// Returns `true` iff `self` ends with `other`.
-    /// Returns `true` if `other` is empty.
-    ///
-    /// - Requires: `isEquivalent` is an
-    ///   [equivalence relation](http://en.wikipedia.org/wiki/Equivalence_relation).
-    @warn_unused_result
-    @_transparent
-    func endsWith<C : CollectionType where C.Index : BidirectionalIndexType, C.Generator.Element == Generator.Element>(other: C, @noescape isEquivalent: (Generator.Element, Generator.Element) throws -> Bool) rethrows -> Bool {
-        return try self.reverse().startsWith(other.reverse(), isEquivalent: isEquivalent)
-    }
-}
-
-public extension CollectionType where Index : BidirectionalIndexType, Generator.Element : Equatable {
-    /// Returns `true` iff `self` ends with `other`.
-    /// Returns `true` if `other` is empty.
-    @warn_unused_result
-    @_transparent
-    func endsWith<C : CollectionType where C.Index : BidirectionalIndexType, C.Generator.Element == Generator.Element>(other: C) -> Bool {
-        return self.reverse().startsWith(other.reverse())
-    }
-}
-
 public extension CollectionType where Index : RandomAccessIndexType {
     
     @warn_unused_result
@@ -385,7 +362,7 @@ public extension CollectionType where Index : RandomAccessIndexType {
                 cursor = cursor.advancedBy(numericCast(pattern_count - 1), limit: endIndex)
             }
         }
-        if try self.endsWith(pattern, isEquivalent: isEquivalent) {
+        if try self.reverse().startsWith(pattern.reverse(), isEquivalent: isEquivalent) {
             return endIndex.advancedBy(numericCast(-pattern_count))
         }
         return nil
