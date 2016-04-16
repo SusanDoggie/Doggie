@@ -362,7 +362,7 @@ public extension CollectionType where Index : RandomAccessIndexType {
                 cursor = cursor.advancedBy(numericCast(pattern_count - 1), limit: endIndex)
             }
         }
-        if try self.reverse().startsWith(pattern.reverse(), isEquivalent: isEquivalent) {
+        if try self.reverse().startsWith(reverse_pattern, isEquivalent: isEquivalent) {
             return endIndex.advancedBy(numericCast(-pattern_count))
         }
         return nil
