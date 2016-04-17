@@ -26,6 +26,7 @@
 import Foundation
 
 public struct UUID {
+    
     public var byte0, byte1, byte2, byte3: UInt8
     public var byte4, byte5: UInt8
     public var byte6, byte7: UInt8
@@ -35,105 +36,47 @@ public struct UUID {
 
 extension UUID {
     
+    @_transparent
     public static var zero : UUID {
-        return UUID(byte0: 0, byte1: 0, byte2: 0, byte3: 0, byte4: 0, byte5: 0, byte6: 0, byte7: 0, byte8: 0, byte9: 0, byte10: 0, byte11: 0, byte12: 0, byte13: 0, byte14: 0, byte15: 0)
-    }
-}
-
-extension UUID {
-    
-    public var uuid: NSUUID {
-        get {
-            return NSUUID(UUIDBytes: [byte0, byte1, byte2, byte3, byte4, byte5, byte6, byte7, byte8, byte9, byte10, byte11, byte12, byte13, byte14, byte15])
-        }
-        set {
-            withUnsafeMutablePointer(&self) { newValue.getUUIDBytes(UnsafeMutablePointer($0)) }
-        }
+        return UUID(byte0: 0, byte1: 0, byte2: 0, byte3: 0,
+                    byte4: 0, byte5: 0, byte6: 0, byte7: 0,
+                    byte8: 0, byte9: 0, byte10: 0, byte11: 0,
+                    byte12: 0, byte13: 0, byte14: 0, byte15: 0)
     }
     
-    public var cfuuid: CFUUID {
-        get {
-            return CFUUIDCreateWithBytes(nil, byte0, byte1, byte2, byte3, byte4, byte5, byte6, byte7, byte8, byte9, byte10, byte11, byte12, byte13, byte14, byte15)
-        }
-        set {
-            let _cfuuid = CFUUIDGetUUIDBytes(newValue)
-            byte0 = _cfuuid.byte0
-            byte1 = _cfuuid.byte1
-            byte2 = _cfuuid.byte2
-            byte3 = _cfuuid.byte3
-            byte4 = _cfuuid.byte4
-            byte5 = _cfuuid.byte5
-            byte6 = _cfuuid.byte6
-            byte7 = _cfuuid.byte7
-            byte8 = _cfuuid.byte8
-            byte9 = _cfuuid.byte9
-            byte10 = _cfuuid.byte10
-            byte11 = _cfuuid.byte11
-            byte12 = _cfuuid.byte12
-            byte13 = _cfuuid.byte13
-            byte14 = _cfuuid.byte14
-            byte15 = _cfuuid.byte15
-        }
-    }
-    
-    public var string: String {
-        return uuid.UUIDString
-    }
-    
+    @_transparent
     public init() {
-        self.init(uuid: NSUUID())
+        (byte0, byte1, byte2, byte3) = (0, 0, 0, 0)
+        (byte4, byte5, byte6, byte7) = (0, 0, 0, 0)
+        (byte8, byte9, byte10, byte11) = (0, 0, 0, 0)
+        (byte12, byte13, byte14, byte15) = (0, 0, 0, 0)
+        withUnsafeMutablePointer(&self) { uuid_generate_random(UnsafeMutablePointer($0)) }
     }
     
-    public init(uuid: NSUUID) {
-        byte0 = 0
-        byte1 = 0
-        byte2 = 0
-        byte3 = 0
-        byte4 = 0
-        byte5 = 0
-        byte6 = 0
-        byte7 = 0
-        byte8 = 0
-        byte9 = 0
-        byte10 = 0
-        byte11 = 0
-        byte12 = 0
-        byte13 = 0
-        byte14 = 0
-        byte15 = 0
-        withUnsafeMutablePointer(&self) { uuid.getUUIDBytes(UnsafeMutablePointer($0)) }
-    }
-    public init(cfuuid: CFUUID) {
-        self.init(CFUUIDBytes: CFUUIDGetUUIDBytes(cfuuid))
-    }
-    public init(CFUUIDBytes _cfuuid: CFUUIDBytes) {
-        byte0 = _cfuuid.byte0
-        byte1 = _cfuuid.byte1
-        byte2 = _cfuuid.byte2
-        byte3 = _cfuuid.byte3
-        byte4 = _cfuuid.byte4
-        byte5 = _cfuuid.byte5
-        byte6 = _cfuuid.byte6
-        byte7 = _cfuuid.byte7
-        byte8 = _cfuuid.byte8
-        byte9 = _cfuuid.byte9
-        byte10 = _cfuuid.byte10
-        byte11 = _cfuuid.byte11
-        byte12 = _cfuuid.byte12
-        byte13 = _cfuuid.byte13
-        byte14 = _cfuuid.byte14
-        byte15 = _cfuuid.byte15
-    }
-    public init!(uuid: String) {
-        if let _uuid = NSUUID(UUIDString: uuid) {
-            self.init(uuid: _uuid)
-        } else {
+    @_transparent
+    public init?(_ uuid: String) {
+        (byte0, byte1, byte2, byte3) = (0, 0, 0, 0)
+        (byte4, byte5, byte6, byte7) = (0, 0, 0, 0)
+        (byte8, byte9, byte10, byte11) = (0, 0, 0, 0)
+        (byte12, byte13, byte14, byte15) = (0, 0, 0, 0)
+        guard uuid.withCString({ str in withUnsafeMutablePointer(&self, { uuid_parse(UnsafePointer(str), UnsafeMutablePointer($0)) }) }) == 0 else {
             return nil
         }
+    }
+    
+    @_transparent
+    public var string: String {
+        var buf = [Int8](count: 37, repeatedValue: 0)
+        uuid_unparse_upper([byte0, byte1, byte2, byte3,
+            byte4, byte5, byte6, byte7,
+            byte8, byte9, byte10, byte11,
+            byte12, byte13, byte14, byte15], &buf)
+        return String.fromCString(buf)!
     }
 }
 
 extension UUID: CustomStringConvertible, CustomDebugStringConvertible {
+    
     public var description: String {
         return self.string
     }
@@ -144,11 +87,17 @@ extension UUID: CustomStringConvertible, CustomDebugStringConvertible {
 
 extension UUID: Hashable, Comparable {
     
+    @_transparent
     public var hashValue: Int {
-        return hash_combine(0, byte0, byte1, byte2, byte3, byte4, byte5, byte6, byte7, byte8, byte9, byte10, byte11, byte12, byte13, byte14, byte15)
+        return hash_combine(0, byte0, byte1, byte2, byte3,
+                            byte4, byte5, byte6, byte7,
+                            byte8, byte9, byte10, byte11,
+                            byte12, byte13, byte14, byte15)
     }
 }
 
+@warn_unused_result
+@_transparent
 public func ==(lhs: UUID, rhs: UUID) -> Bool {
     return lhs.byte0 == rhs.byte0
         && lhs.byte1 == rhs.byte1
@@ -168,6 +117,8 @@ public func ==(lhs: UUID, rhs: UUID) -> Bool {
         && lhs.byte15 == rhs.byte15
 }
 
+@warn_unused_result
+@_transparent
 public func <(lhs: UUID, rhs: UUID) -> Bool {
     
     if lhs.byte0 < rhs.byte0 {

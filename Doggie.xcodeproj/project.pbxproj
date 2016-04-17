@@ -390,7 +390,6 @@
 				0858DA761C0550B7007FA426 /* Serialization.swift */,
 				08AA03131C219B9900609109 /* SDSink.swift */,
 				08863CC71C22756F004C27E5 /* SDObserver.swift */,
-				0858DA781C0550B7007FA426 /* UUID.swift */,
 			);
 			path = Doggie;
 			sourceTree = "<group>";
@@ -581,6 +580,7 @@
 				0ACE1E051C57104300106D1F /* ParallelCollectionType.swift */,
 				0ACE1E0F1C57110D00106D1F /* String.swift */,
 				088C0C3C1CB227F5003B1BCE /* Thread.swift */,
+				0858DA781C0550B7007FA426 /* UUID.swift */,
 			);
 			path = Foundation;
 			sourceTree = "<group>";
