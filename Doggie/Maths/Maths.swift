@@ -67,6 +67,73 @@ public func FibonacciList<T: UnsignedIntegerType>(n: T) -> LazyMapSequence<LazyS
     return (0..<n).dropLast().lazy.scan((1, 1)) { ($0.0.1, $0.0.0 + $0.0.1) }.map { $0.0 }
 }
 
+// MARK: Prime
+
+@warn_unused_result
+@_transparent
+public func isPrime(n: UInt8) -> Bool {
+    return isPrime(UInt32(n))
+}
+@warn_unused_result
+@_transparent
+public func isPrime(n: UInt16) -> Bool {
+    return isPrime(UInt32(n))
+}
+@warn_unused_result
+@_transparent
+public func isPrime(n: UInt32) -> Bool {
+    let list: [UInt32] = [2, 7, 61]
+    let _n = n - 1
+    let s = log2(_n.lowbit)
+    let d = _n >> s
+    for a in list where a < n && pow(a, d, n) != 1 {
+        var flag = true
+        for r in 0..<s where pow(a, d << r, n) == _n {
+            flag = false
+        }
+        if flag {
+            return false
+        }
+    }
+    return true
+}
+@warn_unused_result
+@_transparent
+public func isPrime(n: UInt64) -> Bool {
+    let list: [UInt64] = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37]
+    let _n = n - 1
+    let s = log2(_n.lowbit)
+    let d = _n >> s
+    for a in list where a < n && pow(a, d, n) != 1 {
+        var flag = true
+        for r in 0..<s where pow(a, d << r, n) == _n {
+            flag = false
+        }
+        if flag {
+            return false
+        }
+    }
+    return true
+}
+@warn_unused_result
+@_transparent
+public func isPrime(n: UInt) -> Bool {
+    let list: [UInt] = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37]
+    let _n = n - 1
+    let s = log2(_n.lowbit)
+    let d = _n >> s
+    for a in list where a < n && pow(a, d, n) != 1 {
+        var flag = true
+        for r in 0..<s where pow(a, d << r, n) == _n {
+            flag = false
+        }
+        if flag {
+            return false
+        }
+    }
+    return true
+}
+
 // MARK: Polynomial
 
 @warn_unused_result
