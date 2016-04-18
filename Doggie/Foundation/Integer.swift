@@ -314,11 +314,56 @@ public func >> <T: UnsignedIntegerType>(lhs: T, rhs: T) -> T {
 }
 
 @warn_unused_result
+@_transparent
+public func >>= <T: UnsignedIntegerType>(inout lhs: T, rhs: T) {
+    lhs = lhs >> rhs
+}
+@warn_unused_result
+@_transparent
+public func <<= <T: UnsignedIntegerType>(inout lhs: T, rhs: T) {
+    lhs = lhs << rhs
+}
+
+@warn_unused_result
 public func addmod<T: UnsignedIntegerType>(a: T, _ b: T, _ m: T) -> T {
     let _a = a % m
     let _b = b % m
     let _c = m - _b
     return _a < _c ? _a + _b : _a - _c
+}
+
+@warn_unused_result
+private func mulmod<T: UnsignedIntegerType>(a: T, _ b: T, _ m: T) -> T {
+    
+    let a = a % m
+    let b = b % m
+    
+    let offset = T(UIntMax(sizeof(T).toIntMax()) << 2)
+    let mask = ~0 << offset
+    
+    if a & mask == 0 && b & mask == 0 {
+        return (a * b) % m
+    }
+    
+    let a_high = ((a & mask) >> offset) % m
+    let a_low = (a & ~mask) % m
+    let b_high = ((b & mask) >> offset) % m
+    let b_low = (b & ~mask) % m
+    
+    let s = (a_high * b_high) % m
+    let t = (a_high * b_low) % m
+    let u = (a_low * b_high) % m
+    let v = (a_low * b_low) % m
+    
+    let w = addmod(t, u, m)
+    
+    let w_high = ((w & mask) >> offset) % m
+    let w_low = (w & ~mask) % m
+    
+    let high = addmod(w_high, s, m)
+    let low = addmod(w_low << offset, v, m)
+    
+    fatalError("unimplemented")
 }
 
 @warn_unused_result
@@ -330,7 +375,7 @@ public func pow<T: UnsignedIntegerType>(x: T, _ n: T, _ m: T) -> T {
         return 0
     }
     let _x = x % m
-    let p = pow((_x * _x) % m, n / 2, m)
+    let p = pow(mulmod(_x, _x, m), n / 2, m)
     return n & 1 == 1 ? (_x * p) % m : p
 }
 @warn_unused_result
