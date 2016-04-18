@@ -303,6 +303,25 @@ public extension IntegerType {
 }
 
 @warn_unused_result
+@_transparent
+public func << <T: UnsignedIntegerType>(lhs: T, rhs: T) -> T {
+    return T((lhs.toUIntMax() << rhs.toUIntMax()) & (~T.allZeros).toUIntMax())
+}
+@warn_unused_result
+@_transparent
+public func >> <T: UnsignedIntegerType>(lhs: T, rhs: T) -> T {
+    return T(lhs.toUIntMax() >> rhs.toUIntMax())
+}
+
+@warn_unused_result
+public func addmod<T: UnsignedIntegerType>(a: T, _ b: T, _ m: T) -> T {
+    let _a = a % m
+    let _b = b % m
+    let _c = m - _b
+    return _a < _c ? _a + _b : _a - _c
+}
+
+@warn_unused_result
 public func pow<T: UnsignedIntegerType>(x: T, _ n: T, _ m: T) -> T {
     if n == 0 && m != 1 {
         return 1
