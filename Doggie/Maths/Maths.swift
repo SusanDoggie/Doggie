@@ -82,7 +82,7 @@ public func isPrime(n: UInt16) -> Bool {
 @warn_unused_result
 @_transparent
 public func isPrime(n: UInt32) -> Bool {
-    let list: [UInt32] = [2, 7, 61]
+    let list: [UInt32] = n < 2047 ? [2] : n < 1373653 ? [2, 3] : [2, 7, 61]
     let _n = n - 1
     let s = log2(_n.lowbit)
     let d = _n >> s
