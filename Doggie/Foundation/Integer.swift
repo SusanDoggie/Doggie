@@ -326,17 +326,21 @@ public func <<= <T: UnsignedIntegerType>(inout lhs: T, rhs: T) {
 
 @warn_unused_result
 public func addmod<T: UnsignedIntegerType>(a: T, _ b: T, _ m: T) -> T {
-    let _a = a % m
-    let _b = b % m
-    let _c = m - _b
-    return _a < _c ? _a + _b : _a - _c
+    let a = a < m ? a : a % m
+    let b = b < m ? b : b % m
+    let c = m - b
+    return a < c ? a + b : a - c
 }
 
 @warn_unused_result
-private func mulmod<T: UnsignedIntegerType>(a: T, _ b: T, _ m: T) -> T {
+public func mulmod<T: UnsignedIntegerType>(a: T, _ b: T, _ m: T) -> T {
     
-    let a = a % m
-    let b = b % m
+    let a = a < m ? a : a % m
+    let b = b < m ? b : b % m
+    
+    if a == 0 || b == 0 || m == 1 {
+        return 0
+    }
     
     let offset = T(UIntMax(sizeof(T).toIntMax()) << 2)
     let mask = ~0 << offset
@@ -344,40 +348,26 @@ private func mulmod<T: UnsignedIntegerType>(a: T, _ b: T, _ m: T) -> T {
     if a & mask == 0 && b & mask == 0 {
         return (a * b) % m
     }
-    
-    let a_high = ((a & mask) >> offset) % m
-    let a_low = (a & ~mask) % m
-    let b_high = ((b & mask) >> offset) % m
-    let b_low = (b & ~mask) % m
-    
-    let s = (a_high * b_high) % m
-    let t = (a_high * b_low) % m
-    let u = (a_low * b_high) % m
-    let v = (a_low * b_low) % m
-    
-    let w = addmod(t, u, m)
-    
-    let w_high = ((w & mask) >> offset) % m
-    let w_low = (w & ~mask) % m
-    
-    let high = addmod(w_high, s, m)
-    let low = addmod(w_low << offset, v, m)
-    
-    fatalError("unimplemented")
+    let c = mulmod(addmod(a, a, m), b / 2, m)
+    return b & 1 == 1 ? addmod(a, c, m) : c
 }
 
 @warn_unused_result
 public func pow<T: UnsignedIntegerType>(x: T, _ n: T, _ m: T) -> T {
-    if n == 0 && m != 1 {
-        return 1
-    }
-    if x == 0 || m == 1 || x % m == 0 {
+    
+    let x = x < m ? x : x % m
+    
+    if x == 0 || m == 1 {
         return 0
     }
-    let _x = x % m
-    let p = pow(mulmod(_x, _x, m), n / 2, m)
-    return n & 1 == 1 ? (_x * p) % m : p
+    if n == 0 {
+        return 1
+    }
+    
+    let p = pow(mulmod(x, x, m), n / 2, m)
+    return n & 1 == 1 ? mulmod(x, p, m) : p
 }
+
 @warn_unused_result
 @inline(__always)
 public func pow(x: UInt, _ n: UInt) -> UInt {
