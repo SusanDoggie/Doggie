@@ -349,23 +349,16 @@ public func addmod<T: UnsignedIntegerType>(a: T, _ b: T, _ m: T) -> T {
 @warn_unused_result
 @_transparent
 public func mulmod(a: UInt8, _ b: UInt8, _ m: UInt8) -> UInt8 {
-    
-    let a = a < m ? a : a % m
-    let b = b < m ? b : b % m
     return UInt8((UInt16(a) * UInt16(b)) % UInt16(m))
 }
 @warn_unused_result
 @_transparent
 public func mulmod(a: UInt16, _ b: UInt16, _ m: UInt16) -> UInt16 {
-    let a = a < m ? a : a % m
-    let b = b < m ? b : b % m
     return UInt16(truncatingBitPattern: (UInt32(a) * UInt32(b)) % UInt32(m))
 }
 @warn_unused_result
 @_transparent
 public func mulmod(a: UInt32, _ b: UInt32, _ m: UInt32) -> UInt32 {
-    let a = a < m ? a : a % m
-    let b = b < m ? b : b % m
     return UInt32(truncatingBitPattern: (UInt64(a) * UInt64(b)) % UInt64(m))
 }
 
