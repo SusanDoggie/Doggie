@@ -347,6 +347,29 @@ public func addmod<T: UnsignedIntegerType>(a: T, _ b: T, _ m: T) -> T {
 }
 
 @warn_unused_result
+@_transparent
+public func mulmod(a: UInt8, _ b: UInt8, _ m: UInt8) -> UInt8 {
+    
+    let a = a < m ? a : a % m
+    let b = b < m ? b : b % m
+    return UInt8((UInt16(a) * UInt16(b)) % UInt16(m))
+}
+@warn_unused_result
+@_transparent
+public func mulmod(a: UInt16, _ b: UInt16, _ m: UInt16) -> UInt16 {
+    let a = a < m ? a : a % m
+    let b = b < m ? b : b % m
+    return UInt16(truncatingBitPattern: (UInt32(a) * UInt32(b)) % UInt32(m))
+}
+@warn_unused_result
+@_transparent
+public func mulmod(a: UInt32, _ b: UInt32, _ m: UInt32) -> UInt32 {
+    let a = a < m ? a : a % m
+    let b = b < m ? b : b % m
+    return UInt32(truncatingBitPattern: (UInt64(a) * UInt64(b)) % UInt64(m))
+}
+
+@warn_unused_result
 public func mulmod<T: UnsignedIntegerType>(a: T, _ b: T, _ m: T) -> T {
     
     let a = a < m ? a : a % m
@@ -362,10 +385,57 @@ public func mulmod<T: UnsignedIntegerType>(a: T, _ b: T, _ m: T) -> T {
     if a & mask == 0 && b & mask == 0 {
         return (a * b) % m
     }
-    let c = mulmod(addmod(a, a, m), b / 2, m)
+    let c = mulmod(addmod(a, a, m), b >> 1, m)
     return b & 1 == 1 ? addmod(a, c, m) : c
 }
 
+@warn_unused_result
+public func pow(x: UInt8, _ n: UInt8, _ m: UInt8) -> UInt8 {
+    
+    let x = x < m ? x : x % m
+    
+    if x == 0 || m == 1 {
+        return 0
+    }
+    if n == 0 {
+        return 1
+    }
+    
+    let p = pow(mulmod(x, x, m), n >> 1, m)
+    return n & 1 == 1 ? mulmod(x, p, m) : p
+}
+
+@warn_unused_result
+public func pow(x: UInt16, _ n: UInt16, _ m: UInt16) -> UInt16 {
+    
+    let x = x < m ? x : x % m
+    
+    if x == 0 || m == 1 {
+        return 0
+    }
+    if n == 0 {
+        return 1
+    }
+    
+    let p = pow(mulmod(x, x, m), n >> 1, m)
+    return n & 1 == 1 ? mulmod(x, p, m) : p
+}
+
+@warn_unused_result
+public func pow(x: UInt32, _ n: UInt32, _ m: UInt32) -> UInt32 {
+    
+    let x = x < m ? x : x % m
+    
+    if x == 0 || m == 1 {
+        return 0
+    }
+    if n == 0 {
+        return 1
+    }
+    
+    let p = pow(mulmod(x, x, m), n >> 1, m)
+    return n & 1 == 1 ? mulmod(x, p, m) : p
+}
 @warn_unused_result
 public func pow<T: UnsignedIntegerType>(x: T, _ n: T, _ m: T) -> T {
     
@@ -378,32 +448,32 @@ public func pow<T: UnsignedIntegerType>(x: T, _ n: T, _ m: T) -> T {
         return 1
     }
     
-    let p = pow(mulmod(x, x, m), n / 2, m)
+    let p = pow(mulmod(x, x, m), n >> 1, m)
     return n & 1 == 1 ? mulmod(x, p, m) : p
 }
 
 @warn_unused_result
-@inline(__always)
+@_transparent
 public func pow(x: UInt, _ n: UInt) -> UInt {
     return pow(x, n, UInt.max)
 }
 @warn_unused_result
-@inline(__always)
+@_transparent
 public func pow(x: UInt64, _ n: UInt64) -> UInt64 {
     return pow(x, n, UInt64.max)
 }
 @warn_unused_result
-@inline(__always)
+@_transparent
 public func pow(x: UInt32, _ n: UInt32) -> UInt32 {
     return pow(x, n, UInt32.max)
 }
 @warn_unused_result
-@inline(__always)
+@_transparent
 public func pow(x: UInt16, _ n: UInt16) -> UInt16 {
     return pow(x, n, UInt16.max)
 }
 @warn_unused_result
-@inline(__always)
+@_transparent
 public func pow(x: UInt8, _ n: UInt8) -> UInt8 {
     return pow(x, n, UInt8.max)
 }
