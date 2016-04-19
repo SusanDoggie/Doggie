@@ -160,7 +160,7 @@ private func _root(p: Polynomial) -> [Double] {
     extrema.append(probe)
     
     probe = min(extrema.first!, -1)
-    if p.coeffs.count % 2 == 0 {
+    if p.coeffs.count & 1 == 0 {
         while p.eval(probe) > 0 {
             probe *= 2
         }
