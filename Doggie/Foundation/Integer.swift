@@ -305,12 +305,26 @@ public extension IntegerType {
 @warn_unused_result
 @_transparent
 public func << <T: UnsignedIntegerType>(lhs: T, rhs: T) -> T {
-    return T((lhs.toUIntMax() << rhs.toUIntMax()) & (~T.allZeros).toUIntMax())
+    switch lhs {
+    case let lhs as UInt8: return (lhs << (rhs as! UInt8)) as! T
+    case let lhs as UInt16: return (lhs << (rhs as! UInt16)) as! T
+    case let lhs as UInt32: return (lhs << (rhs as! UInt32)) as! T
+    case let lhs as UInt64: return (lhs << (rhs as! UInt64)) as! T
+    case let lhs as UInt: return (lhs << (rhs as! UInt)) as! T
+    default: return T((lhs.toUIntMax() << rhs.toUIntMax()) & (~T.allZeros).toUIntMax())
+    }
 }
 @warn_unused_result
 @_transparent
 public func >> <T: UnsignedIntegerType>(lhs: T, rhs: T) -> T {
-    return T(lhs.toUIntMax() >> rhs.toUIntMax())
+    switch lhs {
+    case let lhs as UInt8: return (lhs >> (rhs as! UInt8)) as! T
+    case let lhs as UInt16: return (lhs >> (rhs as! UInt16)) as! T
+    case let lhs as UInt32: return (lhs >> (rhs as! UInt32)) as! T
+    case let lhs as UInt64: return (lhs >> (rhs as! UInt64)) as! T
+    case let lhs as UInt: return (lhs >> (rhs as! UInt)) as! T
+    default: return T((lhs.toUIntMax() >> rhs.toUIntMax()) & (~T.allZeros).toUIntMax())
+    }
 }
 
 @warn_unused_result
