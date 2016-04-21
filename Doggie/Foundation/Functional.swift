@@ -1106,6 +1106,8 @@ public struct ChunkElementsSequence<Key : Equatable, Base : SequenceType> : Sequ
 
 public struct ChunkElementsCollection<Key : Equatable, Base : CollectionType> : CollectionType {
     
+    public typealias Generator = ChunkElementsGenerator<Base.Generator>
+    
     public let key: Key
     private let base: Base
     
@@ -1193,6 +1195,8 @@ public struct GroupElementsGenerator<Element> : GeneratorType, SequenceType {
 }
 
 public struct GroupElementsCollection<Key : Equatable, Element> : CollectionType {
+    
+    public typealias Generator = GroupElementsGenerator<Element>
     
     public let key: Key
     private var elements: [Element]
