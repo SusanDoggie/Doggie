@@ -1081,7 +1081,7 @@ public extension SequenceType {
     }
 }
 
-public struct ChunkElementsGenerator<Base : GeneratorType> : GeneratorType, SequenceType {
+public struct LazyChunkElementsGenerator<Base : GeneratorType> : GeneratorType, SequenceType {
     
     private var base: Base
     
@@ -1090,23 +1090,27 @@ public struct ChunkElementsGenerator<Base : GeneratorType> : GeneratorType, Sequ
     }
 }
 
-public struct ChunkElementsSequence<Key : Equatable, Base : SequenceType> : SequenceType {
+public struct LazyChunkElementsSequence<Key : Equatable, Base : SequenceType> : LazySequenceType {
     
     public let key: Key
     private let base: Base
     
-    public func generate() -> ChunkElementsGenerator<Base.Generator> {
-        return ChunkElementsGenerator(base: base.generate())
+    public func generate() -> LazyChunkElementsGenerator<Base.Generator> {
+        return LazyChunkElementsGenerator(base: base.generate())
     }
     
     public func underestimateCount() -> Int {
         return base.underestimateCount()
     }
+    
+    public var elements: Base {
+        return base
+    }
 }
 
-public struct ChunkElementsCollection<Key : Equatable, Base : CollectionType> : CollectionType {
+public struct LazyChunkElementsCollection<Key : Equatable, Base : CollectionType> : LazyCollectionType {
     
-    public typealias Generator = ChunkElementsGenerator<Base.Generator>
+    public typealias Generator = LazyChunkElementsGenerator<Base.Generator>
     
     public let key: Key
     private let base: Base
@@ -1126,12 +1130,16 @@ public struct ChunkElementsCollection<Key : Equatable, Base : CollectionType> : 
         return base.count
     }
     
-    public func generate() -> ChunkElementsGenerator<Base.Generator> {
-        return ChunkElementsGenerator(base: base.generate())
+    public func generate() -> LazyChunkElementsGenerator<Base.Generator> {
+        return LazyChunkElementsGenerator(base: base.generate())
     }
     
     public func underestimateCount() -> Int {
         return base.underestimateCount()
+    }
+    
+    public var elements: Base {
+        return base
     }
 }
 
@@ -1139,9 +1147,9 @@ public extension CollectionType {
     
     @warn_unused_result
     @_transparent
-    func chunk<Key : Equatable>(@noescape by: (Generator.Element) throws -> Key) rethrows -> [ChunkElementsSequence<Key, SubSequence>] {
+    func chunk<Key : Equatable>(@noescape by: (Generator.Element) throws -> Key) rethrows -> [LazyChunkElementsSequence<Key, SubSequence>] {
         
-        var table: [ChunkElementsSequence<Key, SubSequence>] = []
+        var table: [LazyChunkElementsSequence<Key, SubSequence>] = []
         var key: Key?
         var start = startIndex
         var scanner = startIndex
@@ -1150,7 +1158,7 @@ public extension CollectionType {
             if key == nil {
                 key = _key
             } else if key != _key {
-                table.append(ChunkElementsSequence(key: key!, base: self[start..<scanner]))
+                table.append(LazyChunkElementsSequence(key: key!, base: self[start..<scanner]))
                 key = _key
                 start = scanner
             }
@@ -1164,9 +1172,9 @@ public extension CollectionType where SubSequence : CollectionType {
     
     @warn_unused_result
     @_transparent
-    func chunk<Key : Equatable>(@noescape by: (Generator.Element) throws -> Key) rethrows -> [ChunkElementsCollection<Key, SubSequence>] {
+    func chunk<Key : Equatable>(@noescape by: (Generator.Element) throws -> Key) rethrows -> [LazyChunkElementsCollection<Key, SubSequence>] {
         
-        var table: [ChunkElementsCollection<Key, SubSequence>] = []
+        var table: [LazyChunkElementsCollection<Key, SubSequence>] = []
         var key: Key?
         var start = startIndex
         var scanner = startIndex
@@ -1175,7 +1183,7 @@ public extension CollectionType where SubSequence : CollectionType {
             if key == nil {
                 key = _key
             } else if key != _key {
-                table.append(ChunkElementsCollection(key: key!, base: self[start..<scanner]))
+                table.append(LazyChunkElementsCollection(key: key!, base: self[start..<scanner]))
                 key = _key
                 start = scanner
             }
@@ -1199,29 +1207,33 @@ public struct GroupElementsCollection<Key : Equatable, Element> : CollectionType
     public typealias Generator = GroupElementsGenerator<Element>
     
     public let key: Key
-    private var elements: [Element]
+    private var base: [Element]
     
     public var startIndex : Int {
-        return elements.startIndex
+        return base.startIndex
     }
     public var endIndex : Int {
-        return elements.endIndex
+        return base.endIndex
     }
     
     public subscript(index: Int) -> Element {
-        return elements[index]
+        return base[index]
     }
     
     public var count : Int {
-        return elements.count
+        return base.count
     }
     
     public func generate() -> GroupElementsGenerator<Element> {
-        return GroupElementsGenerator(base: elements.generate())
+        return GroupElementsGenerator(base: base.generate())
     }
     
     public func underestimateCount() -> Int {
-        return elements.underestimateCount()
+        return base.underestimateCount()
+    }
+    
+    public var elements: [Element] {
+        return base
     }
 }
 
@@ -1236,9 +1248,9 @@ public extension SequenceType {
         for item in self {
             let key = try by(item)
             if let idx = table.indexOf({ $0.key == key }) {
-                table[idx].elements.append(item)
+                table[idx].base.append(item)
             } else {
-                table.append(GroupElementsCollection(key: key, elements: [item]))
+                table.append(GroupElementsCollection(key: key, base: [item]))
             }
         }
         return table
