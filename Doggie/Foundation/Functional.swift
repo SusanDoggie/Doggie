@@ -1081,24 +1081,143 @@ public extension SequenceType {
     }
 }
 
-public extension SequenceType {
+public struct ChunkElementsGenerator<Base : GeneratorType> : GeneratorType, SequenceType {
+    
+    private var base: Base
+    
+    public mutating func next() -> Base.Element? {
+        return base.next()
+    }
+}
+
+public struct ChunkElementsSequence<Key : Equatable, Base : SequenceType> : SequenceType {
+    
+    public let key: Key
+    private let base: Base
+    
+    public func generate() -> ChunkElementsGenerator<Base.Generator> {
+        return ChunkElementsGenerator(base: base.generate())
+    }
+    
+    public func underestimateCount() -> Int {
+        return base.underestimateCount()
+    }
+}
+
+public struct ChunkElementsCollection<Key : Equatable, Base : CollectionType> : CollectionType {
+    
+    public let key: Key
+    private let base: Base
+    
+    public var startIndex : Base.Index {
+        return base.startIndex
+    }
+    public var endIndex : Base.Index {
+        return base.endIndex
+    }
+    
+    public subscript(index: Base.Index) -> Base.Generator.Element {
+        return base[index]
+    }
+    
+    public var count : Base.Index.Distance {
+        return base.count
+    }
+    
+    public func generate() -> ChunkElementsGenerator<Base.Generator> {
+        return ChunkElementsGenerator(base: base.generate())
+    }
+    
+    public func underestimateCount() -> Int {
+        return base.underestimateCount()
+    }
+}
+
+public extension CollectionType {
     
     @warn_unused_result
     @_transparent
-    func chunk<Key : Equatable>(@noescape by: (Generator.Element) throws -> Key) rethrows -> [(key: Key, elements: [Generator.Element])] {
+    func chunk<Key : Equatable>(@noescape by: (Generator.Element) throws -> Key) rethrows -> [ChunkElementsSequence<Key, SubSequence>] {
         
-        var table: [(key: Key, elements: [Generator.Element])] = []
-        var pass: Key?
-        for item in self {
-            let key = try by(item)
-            if pass == key {
-                table[table.endIndex - 1].1.append(item)
-            } else {
-                table.append((key, [item]))
+        var table: [ChunkElementsSequence<Key, SubSequence>] = []
+        var key: Key?
+        var start = startIndex
+        var scanner = startIndex
+        while scanner != endIndex {
+            let _key = try by(self[scanner])
+            if key == nil {
+                key = _key
+            } else if key != _key {
+                table.append(ChunkElementsSequence(key: key!, base: self[start..<scanner]))
+                key = _key
+                start = scanner
             }
-            pass = key
+            scanner = scanner.successor()
         }
         return table
+    }
+}
+
+public extension CollectionType where SubSequence : CollectionType {
+    
+    @warn_unused_result
+    @_transparent
+    func chunk<Key : Equatable>(@noescape by: (Generator.Element) throws -> Key) rethrows -> [ChunkElementsCollection<Key, SubSequence>] {
+        
+        var table: [ChunkElementsCollection<Key, SubSequence>] = []
+        var key: Key?
+        var start = startIndex
+        var scanner = startIndex
+        while scanner != endIndex {
+            let _key = try by(self[scanner])
+            if key == nil {
+                key = _key
+            } else if key != _key {
+                table.append(ChunkElementsCollection(key: key!, base: self[start..<scanner]))
+                key = _key
+                start = scanner
+            }
+            scanner = scanner.successor()
+        }
+        return table
+    }
+}
+
+public struct GroupElementsGenerator<Element> : GeneratorType, SequenceType {
+    
+    private var base: IndexingGenerator<[Element]>
+    
+    public mutating func next() -> Element? {
+        return base.next()
+    }
+}
+
+public struct GroupElementsCollection<Key : Equatable, Element> : CollectionType {
+    
+    public let key: Key
+    private var elements: [Element]
+    
+    public var startIndex : Int {
+        return elements.startIndex
+    }
+    public var endIndex : Int {
+        return elements.endIndex
+    }
+    
+    public subscript(index: Int) -> Element {
+        return elements[index]
+    }
+    
+    public var count : Int {
+        return elements.count
+    }
+    
+    public func generate() -> GroupElementsGenerator<Element> {
+        return GroupElementsGenerator(base: elements.generate())
+    }
+    
+    public func underestimateCount() -> Int {
+        return elements.underestimateCount()
     }
 }
 
@@ -1107,15 +1226,15 @@ public extension SequenceType {
     /// Groups the elements of a sequence according to a specified key selector function.
     @warn_unused_result
     @_transparent
-    func group<Key : Equatable>(@noescape by: (Generator.Element) throws -> Key) rethrows -> [(key: Key, elements: [Generator.Element])] {
+    func group<Key : Equatable>(@noescape by: (Generator.Element) throws -> Key) rethrows -> [GroupElementsCollection<Key, Generator.Element>] {
         
-        var table: [(key: Key, elements: [Generator.Element])] = []
+        var table: [GroupElementsCollection<Key, Generator.Element>] = []
         for item in self {
             let key = try by(item)
-            if let idx = table.indexOf({ $0.0 == key }) {
-                table[idx].1.append(item)
+            if let idx = table.indexOf({ $0.key == key }) {
+                table[idx].elements.append(item)
             } else {
-                table.append((key, [item]))
+                table.append(GroupElementsCollection(key: key, elements: [item]))
             }
         }
         return table
