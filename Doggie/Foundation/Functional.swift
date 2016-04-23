@@ -1257,6 +1257,32 @@ public extension SequenceType {
     }
 }
 
+extension SequenceType where Generator.Element : Equatable {
+    
+    @warn_unused_result
+    @_transparent
+    func unique() -> [Generator.Element] {
+        var result: [Generator.Element] = []
+        for item in self where !result.contains(item) {
+            result.append(item)
+        }
+        return result
+    }
+}
+
+extension SequenceType {
+    
+    @warn_unused_result
+    @_transparent
+    func unique(@noescape isEquivalent: (Generator.Element, Generator.Element) throws -> Bool) rethrows -> [Generator.Element] {
+        var result: [Generator.Element] = []
+        for item in self where try !result.contains({ try isEquivalent($0, item) }) {
+            result.append(item)
+        }
+        return result
+    }
+}
+
 public extension SequenceType {
     /// Returns the minimum element in `self` or `nil` if the sequence is empty.
     ///
