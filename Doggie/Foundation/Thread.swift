@@ -279,10 +279,10 @@ extension SDSignal {
     }
     
     public final func wait(time: Double) -> Bool {
-        return dispatch_semaphore_wait(sem, dispatch_time(DISPATCH_TIME_NOW, Int64(time * 1000000000.0))) == 0
+        return dispatch_semaphore_wait(sem, dispatch_time(DISPATCH_TIME_NOW, max(0, Int64(time * 1000000000.0)))) == 0
     }
     public final func wait(date: NSDate) -> Bool {
-        return dispatch_semaphore_wait(sem, dispatch_time(DISPATCH_TIME_NOW, Int64(date.timeIntervalSinceNow * 1000000000.0))) == 0
+        return wait(date.timeIntervalSinceNow)
     }
     public final func signal() {
         dispatch_semaphore_signal(sem)
