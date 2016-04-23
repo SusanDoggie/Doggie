@@ -1210,7 +1210,7 @@ private func degree6RationalIntegral(p: Polynomial, _ q: Polynomial) -> Double {
             m = m.map { $0.derivative }
         }
         if MatrixElimination(_q.degree, &matrix) {
-            var c = matrix.lazy.stride(by: _q.degree + 1).map { $0.last! }.generate()
+            var c = matrix.lazy.slice(by: _q.degree + 1).map { $0.last! }.generate()
             for part in partials {
                 switch part {
                 case .One(let a, let n):

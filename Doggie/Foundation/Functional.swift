@@ -814,7 +814,7 @@ public extension LazyCollectionType {
     }
 }
 
-public struct LazyStrideGenerator<C: CollectionType where C.Index : Strideable> : GeneratorType, SequenceType {
+public struct LazySliceGenerator<C: CollectionType where C.Index : Strideable> : GeneratorType, SequenceType {
     
     private let base: C
     private var left: C.Index?
@@ -838,31 +838,31 @@ public struct LazyStrideGenerator<C: CollectionType where C.Index : Strideable> 
     }
 }
 
-public struct LazyStrideCollection<C: CollectionType where C.Index : Strideable> : LazyCollectionType {
+public struct LazySliceCollection<C: CollectionType where C.Index : Strideable> : LazyCollectionType {
     
     private let base: C
     private let stride: C.Index.Stride
     
-    public var startIndex : LazyStrideCollectionIndex<C> {
-        return LazyStrideCollectionIndex(base: base, stride: stride)
+    public var startIndex : LazySliceCollectionIndex<C> {
+        return LazySliceCollectionIndex(base: base, stride: stride)
     }
-    public var endIndex : LazyStrideCollectionIndex<C> {
+    public var endIndex : LazySliceCollectionIndex<C> {
         let startIndex = base.startIndex
         let endIndex = base.endIndex
         let left = startIndex.stride(to: endIndex, by: stride)
         let right = startIndex.advancedBy(stride).stride(to: endIndex, by: stride)
-        return LazyStrideCollectionIndex(bound: nil, mapper: zip(left, right.concat(CollectionOfOne(endIndex))).generate())
+        return LazySliceCollectionIndex(bound: nil, mapper: zip(left, right.concat(CollectionOfOne(endIndex))).generate())
     }
-    public subscript(index: LazyStrideCollectionIndex<C>) -> C.SubSequence {
+    public subscript(index: LazySliceCollectionIndex<C>) -> C.SubSequence {
         return base[index.bound!.0..<index.bound!.1]
     }
     
-    public func generate() -> LazyStrideGenerator<C> {
-        return LazyStrideGenerator(base: base, stride: stride)
+    public func generate() -> LazySliceGenerator<C> {
+        return LazySliceGenerator(base: base, stride: stride)
     }
 }
 
-public struct LazyStrideCollectionIndex<C: CollectionType where C.Index : Strideable> : ForwardIndexType {
+public struct LazySliceCollectionIndex<C: CollectionType where C.Index : Strideable> : ForwardIndexType {
     
     private let bound: (C.Index, C.Index)?
     private let mapper: Zip2Generator<StrideToGenerator<C.Index>, ConcatGenerator<StrideToGenerator<C.Index>, GeneratorOfOne<C.Index>>>
@@ -882,16 +882,16 @@ public struct LazyStrideCollectionIndex<C: CollectionType where C.Index : Stride
         self.mapper = _mapper
     }
     
-    public func successor() -> LazyStrideCollectionIndex {
+    public func successor() -> LazySliceCollectionIndex {
         var mapper = self.mapper
         if self.bound != nil, let bound = mapper.next() {
-            return LazyStrideCollectionIndex(bound: bound, mapper: mapper)
+            return LazySliceCollectionIndex(bound: bound, mapper: mapper)
         }
-        return LazyStrideCollectionIndex(bound: nil, mapper: mapper)
+        return LazySliceCollectionIndex(bound: nil, mapper: mapper)
     }
 }
 
-public func == <C>(lhs: LazyStrideCollectionIndex<C>, rhs: LazyStrideCollectionIndex<C>) -> Bool {
+public func == <C>(lhs: LazySliceCollectionIndex<C>, rhs: LazySliceCollectionIndex<C>) -> Bool {
     return lhs.bound?.0 == rhs.bound?.0 && lhs.bound?.1 == rhs.bound?.1
 }
 
@@ -899,8 +899,8 @@ public extension CollectionType where Index : Strideable {
     
     @warn_unused_result
     @_transparent
-    func stride(by maxLength: Index.Stride) -> [SubSequence] {
-        return Array(self.lazy.stride(by: maxLength))
+    func slice(by maxLength: Index.Stride) -> [SubSequence] {
+        return Array(self.lazy.slice(by: maxLength))
     }
 }
 
@@ -908,8 +908,8 @@ public extension LazyCollectionType where Elements.Index : Strideable {
     
     @warn_unused_result
     @_transparent
-    func stride(by maxLength: Elements.Index.Stride) -> LazyStrideCollection<Elements> {
-        return LazyStrideCollection(base: self.elements, stride: maxLength)
+    func slice(by maxLength: Elements.Index.Stride) -> LazySliceCollection<Elements> {
+        return LazySliceCollection(base: self.elements, stride: maxLength)
     }
 }
 
