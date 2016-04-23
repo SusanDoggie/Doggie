@@ -365,7 +365,26 @@ public class SDTask<Result> : SDAtomic {
     
     /// Create a SDTask and compute block with specific queue.
     private init(queue: dispatch_queue_t, suspend: ((Result) -> Bool)?, block: () -> Result) {
-        super.init(queue: queue) { atomic in
+        super.init(queue: queue, block: SDTask.createBlock(block, suspend: suspend))
+    }
+
+    /// Create a SDTask and compute block with specific queue.
+    public init(queue: dispatch_queue_t, block: () -> Result) {
+        super.init(queue: queue, block: SDTask.createBlock(block, suspend: nil))
+        self.signal()
+    }
+    
+    /// Create a SDTask and compute block with default queue.
+    public init(block: () -> Result) {
+        super.init(block: SDTask.createBlock(block, suspend: nil))
+        self.signal()
+    }
+}
+
+private extension SDTask {
+    
+    static func createBlock(block: () -> Result, suspend: ((Result) -> Bool)?) -> (SDAtomic) -> Void {
+        return { atomic in
             let _self = atomic as! SDTask<Result>
             if _self._result == nil {
                 let result = block()
@@ -379,40 +398,6 @@ public class SDTask<Result> : SDAtomic {
                 _self._notify = []
             }
         }
-    }
-
-    /// Create a SDTask and compute block with specific queue.
-    public init(queue: dispatch_queue_t, block: () -> Result) {
-        super.init(queue: queue) { atomic in
-            let _self = atomic as! SDTask<Result>
-            if _self._result == nil {
-                let result = block()
-                _self._lck.synchronized { _self._result = result }
-                dispatch_semaphore_signal(_self.sem)
-                _self.signal()
-            } else {
-                _self._notify.forEach { $0.signal() }
-                _self._notify = []
-            }
-        }
-        self.signal()
-    }
-    
-    /// Create a SDTask and compute block with default queue.
-    public init(block: () -> Result) {
-        super.init { atomic in
-            let _self = atomic as! SDTask<Result>
-            if _self._result == nil {
-                let result = block()
-                _self._lck.synchronized { _self._result = result }
-                dispatch_semaphore_signal(_self.sem)
-                _self.signal()
-            } else {
-                _self._notify.forEach { $0.signal() }
-                _self._notify = []
-            }
-        }
-        self.signal()
     }
 }
 
