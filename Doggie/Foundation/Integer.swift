@@ -363,6 +363,7 @@ public func mulmod(a: UInt32, _ b: UInt32, _ m: UInt32) -> UInt32 {
 }
 
 @warn_unused_result
+@_transparent
 public func mulmod<T: UnsignedIntegerType>(a: T, _ b: T, _ m: T) -> T {
     
     let a = a < m ? a : a % m
@@ -388,7 +389,7 @@ public func mulmod<T: UnsignedIntegerType>(a: T, _ b: T, _ m: T) -> T {
     let q = ~m + 1
     let e = (high >> offset) * q
     let f = (high & mask) * q
-    let g = ((e & ~mask) >> offset) * q
+    let g = (e >> offset) * q
     let h = (e & mask) << offset
     return addmod(addmod(f, g, m), addmod(h, low, m), m)
 }
