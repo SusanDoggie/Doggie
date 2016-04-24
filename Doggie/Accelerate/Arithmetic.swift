@@ -34,6 +34,23 @@ import Foundation
 //
 //
 
+@_transparent
+public func AddMod<T: UnsignedIntegerType>(count: Int,  _ left: UnsafePointer<T>, _ left_stride: Int,  _ right: UnsafePointer<T>, _ right_stride: Int,  _ mod: UnsafePointer<T>, _ mod_stride: Int,  _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
+    
+    var left = left
+    var right = right
+    var mod = mod
+    var output = output
+    
+    for _ in 0..<count {
+        output.memory = addmod(left.memory, right.memory, mod.memory)
+        left += left_stride
+        right += right_stride
+        mod += mod_stride
+        output += out_stride
+    }
+}
+@_transparent
 public func Add<T: IntegerType>(count: Int,  _ left: UnsafePointer<T>, _ left_stride: Int,  _ right: UnsafePointer<T>, _ right_stride: Int,  _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var left = left
@@ -47,6 +64,7 @@ public func Add<T: IntegerType>(count: Int,  _ left: UnsafePointer<T>, _ left_st
         output += out_stride
     }
 }
+@_transparent
 public func Sub<T: IntegerType>(count: Int,  _ left: UnsafePointer<T>, _ left_stride: Int,  _ right: UnsafePointer<T>, _ right_stride: Int,  _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var left = left
@@ -60,6 +78,7 @@ public func Sub<T: IntegerType>(count: Int,  _ left: UnsafePointer<T>, _ left_st
         output += out_stride
     }
 }
+@_transparent
 public func Mul<T: IntegerType>(count: Int,  _ left: UnsafePointer<T>, _ left_stride: Int,  _ right: UnsafePointer<T>, _ right_stride: Int,  _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var left = left
@@ -73,6 +92,7 @@ public func Mul<T: IntegerType>(count: Int,  _ left: UnsafePointer<T>, _ left_st
         output += out_stride
     }
 }
+@_transparent
 public func Div<T: IntegerType>(count: Int,  _ left: UnsafePointer<T>, _ left_stride: Int,  _ right: UnsafePointer<T>, _ right_stride: Int,  _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var left = left
@@ -86,6 +106,7 @@ public func Div<T: IntegerType>(count: Int,  _ left: UnsafePointer<T>, _ left_st
         output += out_stride
     }
 }
+@_transparent
 public func Mod<T: IntegerType>(count: Int,  _ left: UnsafePointer<T>, _ left_stride: Int,  _ right: UnsafePointer<T>, _ right_stride: Int,  _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var left = left
@@ -100,6 +121,7 @@ public func Mod<T: IntegerType>(count: Int,  _ left: UnsafePointer<T>, _ left_st
     }
 }
 
+@_transparent
 public func Add(count: Int,  _ left: UnsafePointer<Float>, _ left_stride: Int,  _ right: UnsafePointer<Float>, _ right_stride: Int,  _ output: UnsafeMutablePointer<Float>, _ out_stride: Int) {
     
     var left = left
@@ -113,6 +135,7 @@ public func Add(count: Int,  _ left: UnsafePointer<Float>, _ left_stride: Int,  
         output += out_stride
     }
 }
+@_transparent
 public func Sub(count: Int,  _ left: UnsafePointer<Float>, _ left_stride: Int,  _ right: UnsafePointer<Float>, _ right_stride: Int,  _ output: UnsafeMutablePointer<Float>, _ out_stride: Int) {
     
     var left = left
@@ -126,6 +149,7 @@ public func Sub(count: Int,  _ left: UnsafePointer<Float>, _ left_stride: Int,  
         output += out_stride
     }
 }
+@_transparent
 public func Mul(count: Int,  _ left: UnsafePointer<Float>, _ left_stride: Int,  _ right: UnsafePointer<Float>, _ right_stride: Int,  _ output: UnsafeMutablePointer<Float>, _ out_stride: Int) {
     
     var left = left
@@ -139,6 +163,7 @@ public func Mul(count: Int,  _ left: UnsafePointer<Float>, _ left_stride: Int,  
         output += out_stride
     }
 }
+@_transparent
 public func Div(count: Int,  _ left: UnsafePointer<Float>, _ left_stride: Int,  _ right: UnsafePointer<Float>, _ right_stride: Int,  _ output: UnsafeMutablePointer<Float>, _ out_stride: Int) {
     
     var left = left
@@ -152,6 +177,7 @@ public func Div(count: Int,  _ left: UnsafePointer<Float>, _ left_stride: Int,  
         output += out_stride
     }
 }
+@_transparent
 public func Mod(count: Int,  _ left: UnsafePointer<Float>, _ left_stride: Int,  _ right: UnsafePointer<Float>, _ right_stride: Int,  _ output: UnsafeMutablePointer<Float>, _ out_stride: Int) {
     
     var left = left
@@ -165,6 +191,7 @@ public func Mod(count: Int,  _ left: UnsafePointer<Float>, _ left_stride: Int,  
         output += out_stride
     }
 }
+@_transparent
 public func MulAdd(count: Int,  _ a: UnsafePointer<Float>, _ a_stride: Int,  _ b: UnsafePointer<Float>, _ b_stride: Int,  _ c: UnsafePointer<Float>, _ c_stride: Int,  _ output: UnsafeMutablePointer<Float>, _ out_stride: Int) {
     
     var a = a
@@ -180,6 +207,7 @@ public func MulAdd(count: Int,  _ a: UnsafePointer<Float>, _ a_stride: Int,  _ b
         output += out_stride
     }
 }
+@_transparent
 public func MulSub(count: Int,  _ a: UnsafePointer<Float>, _ a_stride: Int,  _ b: UnsafePointer<Float>, _ b_stride: Int,  _ c: UnsafePointer<Float>, _ c_stride: Int,  _ output: UnsafeMutablePointer<Float>, _ out_stride: Int) {
     
     var a = a
@@ -195,6 +223,7 @@ public func MulSub(count: Int,  _ a: UnsafePointer<Float>, _ a_stride: Int,  _ b
         output += out_stride
     }
 }
+@_transparent
 public func SubMul(count: Int,  _ a: UnsafePointer<Float>, _ a_stride: Int,  _ b: UnsafePointer<Float>, _ b_stride: Int,  _ c: UnsafePointer<Float>, _ c_stride: Int,  _ output: UnsafeMutablePointer<Float>, _ out_stride: Int) {
     
     var a = a
@@ -211,6 +240,7 @@ public func SubMul(count: Int,  _ a: UnsafePointer<Float>, _ a_stride: Int,  _ b
     }
 }
 
+@_transparent
 public func Add(count: Int,  _ left: UnsafePointer<Float>, _ left_stride: Int,  _ rreal: UnsafePointer<Float>,  _ rimag: UnsafePointer<Float>, _ right_stride: Int,  _ _real: UnsafeMutablePointer<Float>,  _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int) {
     
     var left = left
@@ -232,6 +262,7 @@ public func Add(count: Int,  _ left: UnsafePointer<Float>, _ left_stride: Int,  
         _imag += out_stride
     }
 }
+@_transparent
 public func Sub(count: Int,  _ left: UnsafePointer<Float>, _ left_stride: Int,  _ rreal: UnsafePointer<Float>,  _ rimag: UnsafePointer<Float>, _ right_stride: Int,  _ _real: UnsafeMutablePointer<Float>,  _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int) {
     
     var left = left
@@ -253,6 +284,7 @@ public func Sub(count: Int,  _ left: UnsafePointer<Float>, _ left_stride: Int,  
         _imag += out_stride
     }
 }
+@_transparent
 public func Mul(count: Int,  _ left: UnsafePointer<Float>, _ left_stride: Int,  _ rreal: UnsafePointer<Float>,  _ rimag: UnsafePointer<Float>, _ right_stride: Int,  _ _real: UnsafeMutablePointer<Float>,  _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int) {
     
     var left = left
@@ -274,6 +306,7 @@ public func Mul(count: Int,  _ left: UnsafePointer<Float>, _ left_stride: Int,  
         _imag += out_stride
     }
 }
+@_transparent
 public func MulAdd(count: Int,  _ a: UnsafePointer<Float>, _ a_stride: Int,  _ breal: UnsafePointer<Float>,  _ bimag: UnsafePointer<Float>, _ b_stride: Int,  _ creal: UnsafePointer<Float>,  _ cimag: UnsafePointer<Float>, _ c_stride: Int,  _ _real: UnsafeMutablePointer<Float>,  _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int) {
     
     var a = a
@@ -301,6 +334,7 @@ public func MulAdd(count: Int,  _ a: UnsafePointer<Float>, _ a_stride: Int,  _ b
         _imag += out_stride
     }
 }
+@_transparent
 public func MulSub(count: Int,  _ a: UnsafePointer<Float>, _ a_stride: Int,  _ breal: UnsafePointer<Float>,  _ bimag: UnsafePointer<Float>, _ b_stride: Int,  _ creal: UnsafePointer<Float>,  _ cimag: UnsafePointer<Float>, _ c_stride: Int,  _ _real: UnsafeMutablePointer<Float>,  _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int) {
     
     var a = a
@@ -328,6 +362,7 @@ public func MulSub(count: Int,  _ a: UnsafePointer<Float>, _ a_stride: Int,  _ b
         _imag += out_stride
     }
 }
+@_transparent
 public func SubMul(count: Int,  _ areal: UnsafePointer<Float>,  _ aimag: UnsafePointer<Float>, _ a_stride: Int,  _ b: UnsafePointer<Float>, _ b_stride: Int,  _ creal: UnsafePointer<Float>,  _ cimag: UnsafePointer<Float>, _ c_stride: Int,  _ _real: UnsafeMutablePointer<Float>,  _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int) {
     
     var areal = areal
@@ -355,6 +390,7 @@ public func SubMul(count: Int,  _ areal: UnsafePointer<Float>,  _ aimag: UnsafeP
         _imag += out_stride
     }
 }
+@_transparent
 public func Div(count: Int,  _ left: UnsafePointer<Float>, _ left_stride: Int,  _ rreal: UnsafePointer<Float>,  _ rimag: UnsafePointer<Float>, _ right_stride: Int,  _ _real: UnsafeMutablePointer<Float>,  _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int) {
     
     var left = left
@@ -379,6 +415,7 @@ public func Div(count: Int,  _ left: UnsafePointer<Float>, _ left_stride: Int,  
         _imag += out_stride
     }
 }
+@_transparent
 public func Add(count: Int,  _ lreal: UnsafePointer<Float>,  _ limag: UnsafePointer<Float>, _ left_stride: Int,  _ right: UnsafePointer<Float>, _ right_stride: Int,  _ _real: UnsafeMutablePointer<Float>,  _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int) {
     
     var lreal = lreal
@@ -400,6 +437,7 @@ public func Add(count: Int,  _ lreal: UnsafePointer<Float>,  _ limag: UnsafePoin
         _imag += out_stride
     }
 }
+@_transparent
 public func Sub(count: Int,  _ lreal: UnsafePointer<Float>,  _ limag: UnsafePointer<Float>, _ left_stride: Int,  _ right: UnsafePointer<Float>, _ right_stride: Int,  _ _real: UnsafeMutablePointer<Float>,  _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int) {
     
     var lreal = lreal
@@ -421,6 +459,7 @@ public func Sub(count: Int,  _ lreal: UnsafePointer<Float>,  _ limag: UnsafePoin
         _imag += out_stride
     }
 }
+@_transparent
 public func Mul(count: Int,  _ lreal: UnsafePointer<Float>,  _ limag: UnsafePointer<Float>, _ left_stride: Int,  _ right: UnsafePointer<Float>, _ right_stride: Int,  _ _real: UnsafeMutablePointer<Float>,  _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int) {
     
     var lreal = lreal
@@ -442,6 +481,7 @@ public func Mul(count: Int,  _ lreal: UnsafePointer<Float>,  _ limag: UnsafePoin
         _imag += out_stride
     }
 }
+@_transparent
 public func MulAdd(count: Int,  _ areal: UnsafePointer<Float>,  _ aimag: UnsafePointer<Float>, _ a_stride: Int,  _ b: UnsafePointer<Float>, _ b_stride: Int,  _ creal: UnsafePointer<Float>,  _ cimag: UnsafePointer<Float>, _ c_stride: Int,  _ _real: UnsafeMutablePointer<Float>,  _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int) {
     
     var areal = areal
@@ -469,6 +509,7 @@ public func MulAdd(count: Int,  _ areal: UnsafePointer<Float>,  _ aimag: UnsafeP
         _imag += out_stride
     }
 }
+@_transparent
 public func MulSub(count: Int,  _ areal: UnsafePointer<Float>,  _ aimag: UnsafePointer<Float>, _ a_stride: Int,  _ b: UnsafePointer<Float>, _ b_stride: Int,  _ creal: UnsafePointer<Float>,  _ cimag: UnsafePointer<Float>, _ c_stride: Int,  _ _real: UnsafeMutablePointer<Float>,  _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int) {
     
     var areal = areal
@@ -496,6 +537,7 @@ public func MulSub(count: Int,  _ areal: UnsafePointer<Float>,  _ aimag: UnsafeP
         _imag += out_stride
     }
 }
+@_transparent
 public func SubMul(count: Int,  _ areal: UnsafePointer<Float>,  _ aimag: UnsafePointer<Float>, _ a_stride: Int,  _ breal: UnsafePointer<Float>,  _ bimag: UnsafePointer<Float>, _ b_stride: Int,  _ c: UnsafePointer<Float>, _ c_stride: Int,  _ _real: UnsafeMutablePointer<Float>,  _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int) {
     
     var areal = areal
@@ -523,6 +565,7 @@ public func SubMul(count: Int,  _ areal: UnsafePointer<Float>,  _ aimag: UnsafeP
         _imag += out_stride
     }
 }
+@_transparent
 public func MulConj(count: Int,  _ lreal: UnsafePointer<Float>,  _ limag: UnsafePointer<Float>, _ left_stride: Int,  _ right: UnsafePointer<Float>, _ right_stride: Int,  _ _real: UnsafeMutablePointer<Float>,  _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int) {
     
     var lreal = lreal
@@ -544,6 +587,7 @@ public func MulConj(count: Int,  _ lreal: UnsafePointer<Float>,  _ limag: Unsafe
         _imag += out_stride
     }
 }
+@_transparent
 public func Div(count: Int,  _ lreal: UnsafePointer<Float>,  _ limag: UnsafePointer<Float>, _ left_stride: Int,  _ right: UnsafePointer<Float>, _ right_stride: Int,  _ _real: UnsafeMutablePointer<Float>,  _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int) {
     
     var lreal = lreal
@@ -565,6 +609,7 @@ public func Div(count: Int,  _ lreal: UnsafePointer<Float>,  _ limag: UnsafePoin
         _imag += out_stride
     }
 }
+@_transparent
 public func Add(count: Int,  _ lreal: UnsafePointer<Float>,  _ limag: UnsafePointer<Float>, _ left_stride: Int,  _ rreal: UnsafePointer<Float>,  _ rimag: UnsafePointer<Float>, _ right_stride: Int,  _ _real: UnsafeMutablePointer<Float>,  _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int) {
     
     var lreal = lreal
@@ -589,6 +634,7 @@ public func Add(count: Int,  _ lreal: UnsafePointer<Float>,  _ limag: UnsafePoin
         _imag += out_stride
     }
 }
+@_transparent
 public func Sub(count: Int,  _ lreal: UnsafePointer<Float>,  _ limag: UnsafePointer<Float>, _ left_stride: Int,  _ rreal: UnsafePointer<Float>,  _ rimag: UnsafePointer<Float>, _ right_stride: Int,  _ _real: UnsafeMutablePointer<Float>,  _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int) {
     
     var lreal = lreal
@@ -613,6 +659,7 @@ public func Sub(count: Int,  _ lreal: UnsafePointer<Float>,  _ limag: UnsafePoin
         _imag += out_stride
     }
 }
+@_transparent
 public func Mul(count: Int,  _ lreal: UnsafePointer<Float>,  _ limag: UnsafePointer<Float>, _ left_stride: Int,  _ rreal: UnsafePointer<Float>,  _ rimag: UnsafePointer<Float>, _ right_stride: Int,  _ _real: UnsafeMutablePointer<Float>,  _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int) {
     
     var lreal = lreal
@@ -637,6 +684,7 @@ public func Mul(count: Int,  _ lreal: UnsafePointer<Float>,  _ limag: UnsafePoin
         _imag += out_stride
     }
 }
+@_transparent
 public func MulAdd(count: Int,  _ areal: UnsafePointer<Float>,  _ aimag: UnsafePointer<Float>, _ a_stride: Int,  _ breal: UnsafePointer<Float>,  _ bimag: UnsafePointer<Float>, _ b_stride: Int,  _ creal: UnsafePointer<Float>,  _ cimag: UnsafePointer<Float>, _ c_stride: Int,  _ _real: UnsafeMutablePointer<Float>,  _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int) {
     
     var areal = areal
@@ -667,6 +715,7 @@ public func MulAdd(count: Int,  _ areal: UnsafePointer<Float>,  _ aimag: UnsafeP
         _imag += out_stride
     }
 }
+@_transparent
 public func MulSub(count: Int,  _ areal: UnsafePointer<Float>,  _ aimag: UnsafePointer<Float>, _ a_stride: Int,  _ breal: UnsafePointer<Float>,  _ bimag: UnsafePointer<Float>, _ b_stride: Int,  _ creal: UnsafePointer<Float>,  _ cimag: UnsafePointer<Float>, _ c_stride: Int,  _ _real: UnsafeMutablePointer<Float>,  _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int) {
     
     var areal = areal
@@ -697,6 +746,7 @@ public func MulSub(count: Int,  _ areal: UnsafePointer<Float>,  _ aimag: UnsafeP
         _imag += out_stride
     }
 }
+@_transparent
 public func SubMul(count: Int,  _ areal: UnsafePointer<Float>,  _ aimag: UnsafePointer<Float>, _ a_stride: Int,  _ breal: UnsafePointer<Float>,  _ bimag: UnsafePointer<Float>, _ b_stride: Int,  _ creal: UnsafePointer<Float>,  _ cimag: UnsafePointer<Float>, _ c_stride: Int,  _ _real: UnsafeMutablePointer<Float>,  _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int) {
     
     var areal = areal
@@ -727,6 +777,7 @@ public func SubMul(count: Int,  _ areal: UnsafePointer<Float>,  _ aimag: UnsafeP
         _imag += out_stride
     }
 }
+@_transparent
 public func MulConj(count: Int,  _ lreal: UnsafePointer<Float>,  _ limag: UnsafePointer<Float>, _ left_stride: Int,  _ rreal: UnsafePointer<Float>,  _ rimag: UnsafePointer<Float>, _ right_stride: Int,  _ _real: UnsafeMutablePointer<Float>,  _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int) {
     
     var lreal = lreal
@@ -751,6 +802,7 @@ public func MulConj(count: Int,  _ lreal: UnsafePointer<Float>,  _ limag: Unsafe
         _imag += out_stride
     }
 }
+@_transparent
 public func Div(count: Int,  _ lreal: UnsafePointer<Float>,  _ limag: UnsafePointer<Float>, _ left_stride: Int,  _ rreal: UnsafePointer<Float>,  _ rimag: UnsafePointer<Float>, _ right_stride: Int,  _ _real: UnsafeMutablePointer<Float>,  _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int) {
     
     var lreal = lreal
@@ -779,6 +831,7 @@ public func Div(count: Int,  _ lreal: UnsafePointer<Float>,  _ limag: UnsafePoin
     }
 }
 
+@_transparent
 public func Add(count: Int,  _ left: UnsafePointer<Double>, _ left_stride: Int,  _ right: UnsafePointer<Double>, _ right_stride: Int,  _ output: UnsafeMutablePointer<Double>, _ out_stride: Int) {
     
     var left = left
@@ -792,6 +845,7 @@ public func Add(count: Int,  _ left: UnsafePointer<Double>, _ left_stride: Int, 
         output += out_stride
     }
 }
+@_transparent
 public func Sub(count: Int,  _ left: UnsafePointer<Double>, _ left_stride: Int,  _ right: UnsafePointer<Double>, _ right_stride: Int,  _ output: UnsafeMutablePointer<Double>, _ out_stride: Int) {
     
     var left = left
@@ -805,6 +859,7 @@ public func Sub(count: Int,  _ left: UnsafePointer<Double>, _ left_stride: Int, 
         output += out_stride
     }
 }
+@_transparent
 public func Mul(count: Int,  _ left: UnsafePointer<Double>, _ left_stride: Int,  _ right: UnsafePointer<Double>, _ right_stride: Int,  _ output: UnsafeMutablePointer<Double>, _ out_stride: Int) {
     
     var left = left
@@ -818,6 +873,7 @@ public func Mul(count: Int,  _ left: UnsafePointer<Double>, _ left_stride: Int, 
         output += out_stride
     }
 }
+@_transparent
 public func Div(count: Int,  _ left: UnsafePointer<Double>, _ left_stride: Int,  _ right: UnsafePointer<Double>, _ right_stride: Int,  _ output: UnsafeMutablePointer<Double>, _ out_stride: Int) {
     
     var left = left
@@ -831,6 +887,7 @@ public func Div(count: Int,  _ left: UnsafePointer<Double>, _ left_stride: Int, 
         output += out_stride
     }
 }
+@_transparent
 public func Mod(count: Int,  _ left: UnsafePointer<Double>, _ left_stride: Int,  _ right: UnsafePointer<Double>, _ right_stride: Int,  _ output: UnsafeMutablePointer<Double>, _ out_stride: Int) {
     
     var left = left
@@ -844,6 +901,7 @@ public func Mod(count: Int,  _ left: UnsafePointer<Double>, _ left_stride: Int, 
         output += out_stride
     }
 }
+@_transparent
 public func MulAdd(count: Int,  _ a: UnsafePointer<Double>, _ a_stride: Int,  _ b: UnsafePointer<Double>, _ b_stride: Int,  _ c: UnsafePointer<Double>, _ c_stride: Int,  _ output: UnsafeMutablePointer<Double>, _ out_stride: Int) {
     
     var a = a
@@ -859,6 +917,7 @@ public func MulAdd(count: Int,  _ a: UnsafePointer<Double>, _ a_stride: Int,  _ 
         output += out_stride
     }
 }
+@_transparent
 public func MulSub(count: Int,  _ a: UnsafePointer<Double>, _ a_stride: Int,  _ b: UnsafePointer<Double>, _ b_stride: Int,  _ c: UnsafePointer<Double>, _ c_stride: Int,  _ output: UnsafeMutablePointer<Double>, _ out_stride: Int) {
     
     var a = a
@@ -874,6 +933,7 @@ public func MulSub(count: Int,  _ a: UnsafePointer<Double>, _ a_stride: Int,  _ 
         output += out_stride
     }
 }
+@_transparent
 public func SubMul(count: Int,  _ a: UnsafePointer<Double>, _ a_stride: Int,  _ b: UnsafePointer<Double>, _ b_stride: Int,  _ c: UnsafePointer<Double>, _ c_stride: Int,  _ output: UnsafeMutablePointer<Double>, _ out_stride: Int) {
     
     var a = a
@@ -890,6 +950,7 @@ public func SubMul(count: Int,  _ a: UnsafePointer<Double>, _ a_stride: Int,  _ 
     }
 }
 
+@_transparent
 public func Add(count: Int,  _ left: UnsafePointer<Double>, _ left_stride: Int,  _ rreal: UnsafePointer<Double>,  _ rimag: UnsafePointer<Double>, _ right_stride: Int,  _ _real: UnsafeMutablePointer<Double>,  _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int) {
     
     var left = left
@@ -911,6 +972,7 @@ public func Add(count: Int,  _ left: UnsafePointer<Double>, _ left_stride: Int, 
         _imag += out_stride
     }
 }
+@_transparent
 public func Sub(count: Int,  _ left: UnsafePointer<Double>, _ left_stride: Int,  _ rreal: UnsafePointer<Double>,  _ rimag: UnsafePointer<Double>, _ right_stride: Int,  _ _real: UnsafeMutablePointer<Double>,  _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int) {
     
     var left = left
@@ -932,6 +994,7 @@ public func Sub(count: Int,  _ left: UnsafePointer<Double>, _ left_stride: Int, 
         _imag += out_stride
     }
 }
+@_transparent
 public func Mul(count: Int,  _ left: UnsafePointer<Double>, _ left_stride: Int,  _ rreal: UnsafePointer<Double>,  _ rimag: UnsafePointer<Double>, _ right_stride: Int,  _ _real: UnsafeMutablePointer<Double>,  _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int) {
     
     var left = left
@@ -953,6 +1016,7 @@ public func Mul(count: Int,  _ left: UnsafePointer<Double>, _ left_stride: Int, 
         _imag += out_stride
     }
 }
+@_transparent
 public func MulAdd(count: Int,  _ a: UnsafePointer<Double>, _ a_stride: Int,  _ breal: UnsafePointer<Double>,  _ bimag: UnsafePointer<Double>, _ b_stride: Int,  _ creal: UnsafePointer<Double>,  _ cimag: UnsafePointer<Double>, _ c_stride: Int,  _ _real: UnsafeMutablePointer<Double>,  _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int) {
     
     var a = a
@@ -980,6 +1044,7 @@ public func MulAdd(count: Int,  _ a: UnsafePointer<Double>, _ a_stride: Int,  _ 
         _imag += out_stride
     }
 }
+@_transparent
 public func MulSub(count: Int,  _ a: UnsafePointer<Double>, _ a_stride: Int,  _ breal: UnsafePointer<Double>,  _ bimag: UnsafePointer<Double>, _ b_stride: Int,  _ creal: UnsafePointer<Double>,  _ cimag: UnsafePointer<Double>, _ c_stride: Int,  _ _real: UnsafeMutablePointer<Double>,  _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int) {
     
     var a = a
@@ -1007,6 +1072,7 @@ public func MulSub(count: Int,  _ a: UnsafePointer<Double>, _ a_stride: Int,  _ 
         _imag += out_stride
     }
 }
+@_transparent
 public func SubMul(count: Int,  _ areal: UnsafePointer<Double>,  _ aimag: UnsafePointer<Double>, _ a_stride: Int,  _ b: UnsafePointer<Double>, _ b_stride: Int,  _ creal: UnsafePointer<Double>,  _ cimag: UnsafePointer<Double>, _ c_stride: Int,  _ _real: UnsafeMutablePointer<Double>,  _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int) {
     
     var areal = areal
@@ -1034,6 +1100,7 @@ public func SubMul(count: Int,  _ areal: UnsafePointer<Double>,  _ aimag: Unsafe
         _imag += out_stride
     }
 }
+@_transparent
 public func Div(count: Int,  _ left: UnsafePointer<Double>, _ left_stride: Int,  _ rreal: UnsafePointer<Double>,  _ rimag: UnsafePointer<Double>, _ right_stride: Int,  _ _real: UnsafeMutablePointer<Double>,  _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int) {
     
     var left = left
@@ -1058,6 +1125,7 @@ public func Div(count: Int,  _ left: UnsafePointer<Double>, _ left_stride: Int, 
         _imag += out_stride
     }
 }
+@_transparent
 public func Add(count: Int,  _ lreal: UnsafePointer<Double>,  _ limag: UnsafePointer<Double>, _ left_stride: Int,  _ right: UnsafePointer<Double>, _ right_stride: Int,  _ _real: UnsafeMutablePointer<Double>,  _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int) {
     
     var lreal = lreal
@@ -1079,6 +1147,7 @@ public func Add(count: Int,  _ lreal: UnsafePointer<Double>,  _ limag: UnsafePoi
         _imag += out_stride
     }
 }
+@_transparent
 public func Sub(count: Int,  _ lreal: UnsafePointer<Double>,  _ limag: UnsafePointer<Double>, _ left_stride: Int,  _ right: UnsafePointer<Double>, _ right_stride: Int,  _ _real: UnsafeMutablePointer<Double>,  _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int) {
     
     var lreal = lreal
@@ -1100,6 +1169,7 @@ public func Sub(count: Int,  _ lreal: UnsafePointer<Double>,  _ limag: UnsafePoi
         _imag += out_stride
     }
 }
+@_transparent
 public func Mul(count: Int,  _ lreal: UnsafePointer<Double>,  _ limag: UnsafePointer<Double>, _ left_stride: Int,  _ right: UnsafePointer<Double>, _ right_stride: Int,  _ _real: UnsafeMutablePointer<Double>,  _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int) {
     
     var lreal = lreal
@@ -1121,6 +1191,7 @@ public func Mul(count: Int,  _ lreal: UnsafePointer<Double>,  _ limag: UnsafePoi
         _imag += out_stride
     }
 }
+@_transparent
 public func MulAdd(count: Int,  _ areal: UnsafePointer<Double>,  _ aimag: UnsafePointer<Double>, _ a_stride: Int,  _ b: UnsafePointer<Double>, _ b_stride: Int,  _ creal: UnsafePointer<Double>,  _ cimag: UnsafePointer<Double>, _ c_stride: Int,  _ _real: UnsafeMutablePointer<Double>,  _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int) {
     
     var areal = areal
@@ -1148,6 +1219,7 @@ public func MulAdd(count: Int,  _ areal: UnsafePointer<Double>,  _ aimag: Unsafe
         _imag += out_stride
     }
 }
+@_transparent
 public func MulSub(count: Int,  _ areal: UnsafePointer<Double>,  _ aimag: UnsafePointer<Double>, _ a_stride: Int,  _ b: UnsafePointer<Double>, _ b_stride: Int,  _ creal: UnsafePointer<Double>,  _ cimag: UnsafePointer<Double>, _ c_stride: Int,  _ _real: UnsafeMutablePointer<Double>,  _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int) {
     
     var areal = areal
@@ -1175,6 +1247,7 @@ public func MulSub(count: Int,  _ areal: UnsafePointer<Double>,  _ aimag: Unsafe
         _imag += out_stride
     }
 }
+@_transparent
 public func SubMul(count: Int,  _ areal: UnsafePointer<Double>,  _ aimag: UnsafePointer<Double>, _ a_stride: Int,  _ breal: UnsafePointer<Double>,  _ bimag: UnsafePointer<Double>, _ b_stride: Int,  _ c: UnsafePointer<Double>, _ c_stride: Int,  _ _real: UnsafeMutablePointer<Double>,  _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int) {
     
     var areal = areal
@@ -1202,6 +1275,7 @@ public func SubMul(count: Int,  _ areal: UnsafePointer<Double>,  _ aimag: Unsafe
         _imag += out_stride
     }
 }
+@_transparent
 public func MulConj(count: Int,  _ lreal: UnsafePointer<Double>,  _ limag: UnsafePointer<Double>, _ left_stride: Int,  _ right: UnsafePointer<Double>, _ right_stride: Int,  _ _real: UnsafeMutablePointer<Double>,  _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int) {
     
     var lreal = lreal
@@ -1223,6 +1297,7 @@ public func MulConj(count: Int,  _ lreal: UnsafePointer<Double>,  _ limag: Unsaf
         _imag += out_stride
     }
 }
+@_transparent
 public func Div(count: Int,  _ lreal: UnsafePointer<Double>,  _ limag: UnsafePointer<Double>, _ left_stride: Int,  _ right: UnsafePointer<Double>, _ right_stride: Int,  _ _real: UnsafeMutablePointer<Double>,  _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int) {
     
     var lreal = lreal
@@ -1244,6 +1319,7 @@ public func Div(count: Int,  _ lreal: UnsafePointer<Double>,  _ limag: UnsafePoi
         _imag += out_stride
     }
 }
+@_transparent
 public func Add(count: Int,  _ lreal: UnsafePointer<Double>,  _ limag: UnsafePointer<Double>, _ left_stride: Int,  _ rreal: UnsafePointer<Double>,  _ rimag: UnsafePointer<Double>, _ right_stride: Int,  _ _real: UnsafeMutablePointer<Double>,  _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int) {
     
     var lreal = lreal
@@ -1268,6 +1344,7 @@ public func Add(count: Int,  _ lreal: UnsafePointer<Double>,  _ limag: UnsafePoi
         _imag += out_stride
     }
 }
+@_transparent
 public func Sub(count: Int,  _ lreal: UnsafePointer<Double>,  _ limag: UnsafePointer<Double>, _ left_stride: Int,  _ rreal: UnsafePointer<Double>,  _ rimag: UnsafePointer<Double>, _ right_stride: Int,  _ _real: UnsafeMutablePointer<Double>,  _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int) {
     
     var lreal = lreal
@@ -1292,6 +1369,7 @@ public func Sub(count: Int,  _ lreal: UnsafePointer<Double>,  _ limag: UnsafePoi
         _imag += out_stride
     }
 }
+@_transparent
 public func Mul(count: Int,  _ lreal: UnsafePointer<Double>,  _ limag: UnsafePointer<Double>, _ left_stride: Int,  _ rreal: UnsafePointer<Double>,  _ rimag: UnsafePointer<Double>, _ right_stride: Int,  _ _real: UnsafeMutablePointer<Double>,  _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int) {
     
     var lreal = lreal
@@ -1316,6 +1394,7 @@ public func Mul(count: Int,  _ lreal: UnsafePointer<Double>,  _ limag: UnsafePoi
         _imag += out_stride
     }
 }
+@_transparent
 public func MulAdd(count: Int,  _ areal: UnsafePointer<Double>,  _ aimag: UnsafePointer<Double>, _ a_stride: Int,  _ breal: UnsafePointer<Double>,  _ bimag: UnsafePointer<Double>, _ b_stride: Int,  _ creal: UnsafePointer<Double>,  _ cimag: UnsafePointer<Double>, _ c_stride: Int,  _ _real: UnsafeMutablePointer<Double>,  _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int) {
     
     var areal = areal
@@ -1346,6 +1425,7 @@ public func MulAdd(count: Int,  _ areal: UnsafePointer<Double>,  _ aimag: Unsafe
         _imag += out_stride
     }
 }
+@_transparent
 public func MulSub(count: Int,  _ areal: UnsafePointer<Double>,  _ aimag: UnsafePointer<Double>, _ a_stride: Int,  _ breal: UnsafePointer<Double>,  _ bimag: UnsafePointer<Double>, _ b_stride: Int,  _ creal: UnsafePointer<Double>,  _ cimag: UnsafePointer<Double>, _ c_stride: Int,  _ _real: UnsafeMutablePointer<Double>,  _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int) {
     
     var areal = areal
@@ -1376,6 +1456,7 @@ public func MulSub(count: Int,  _ areal: UnsafePointer<Double>,  _ aimag: Unsafe
         _imag += out_stride
     }
 }
+@_transparent
 public func SubMul(count: Int,  _ areal: UnsafePointer<Double>,  _ aimag: UnsafePointer<Double>, _ a_stride: Int,  _ breal: UnsafePointer<Double>,  _ bimag: UnsafePointer<Double>, _ b_stride: Int,  _ creal: UnsafePointer<Double>,  _ cimag: UnsafePointer<Double>, _ c_stride: Int,  _ _real: UnsafeMutablePointer<Double>,  _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int) {
     
     var areal = areal
@@ -1406,6 +1487,7 @@ public func SubMul(count: Int,  _ areal: UnsafePointer<Double>,  _ aimag: Unsafe
         _imag += out_stride
     }
 }
+@_transparent
 public func MulConj(count: Int,  _ lreal: UnsafePointer<Double>,  _ limag: UnsafePointer<Double>, _ left_stride: Int,  _ rreal: UnsafePointer<Double>,  _ rimag: UnsafePointer<Double>, _ right_stride: Int,  _ _real: UnsafeMutablePointer<Double>,  _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int) {
     
     var lreal = lreal
@@ -1430,6 +1512,7 @@ public func MulConj(count: Int,  _ lreal: UnsafePointer<Double>,  _ limag: Unsaf
         _imag += out_stride
     }
 }
+@_transparent
 public func Div(count: Int,  _ lreal: UnsafePointer<Double>,  _ limag: UnsafePointer<Double>, _ left_stride: Int,  _ rreal: UnsafePointer<Double>,  _ rimag: UnsafePointer<Double>, _ right_stride: Int,  _ _real: UnsafeMutablePointer<Double>,  _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int) {
     
     var lreal = lreal
@@ -1458,6 +1541,7 @@ public func Div(count: Int,  _ lreal: UnsafePointer<Double>,  _ limag: UnsafePoi
     }
 }
 
+@_transparent
 public func Dot(count: Int,  _ left: UnsafePointer<Float>, _ left_stride: Int,  _ right: UnsafePointer<Float>, _ right_stride: Int) -> Float {
     
     var left = left
@@ -1472,6 +1556,7 @@ public func Dot(count: Int,  _ left: UnsafePointer<Float>, _ left_stride: Int,  
     return result
 }
 
+@_transparent
 public func Dot(count: Int,  _ left: UnsafePointer<Double>, _ left_stride: Int,  _ right: UnsafePointer<Double>, _ right_stride: Int) -> Double {
     
     var left = left
@@ -1486,6 +1571,7 @@ public func Dot(count: Int,  _ left: UnsafePointer<Double>, _ left_stride: Int, 
     return result
 }
 
+@_transparent
 public func Deconvolve(signal_count: Int,  _ signal: UnsafePointer<Float>, _ signal_stride: Int, _ kernel_count: Int,  _ kernel: UnsafePointer<Float>, _ kernel_stride: Int,  _ output: UnsafeMutablePointer<Float>, _ out_stride: Int) {
     
     var signal = signal
@@ -1515,6 +1601,7 @@ public func Deconvolve(signal_count: Int,  _ signal: UnsafePointer<Float>, _ sig
         }
     }
 }
+@_transparent
 public func Deconvolve(signal_count: Int,  _ signal: UnsafePointer<Double>, _ signal_stride: Int, _ kernel_count: Int,  _ kernel: UnsafePointer<Double>, _ kernel_stride: Int,  _ output: UnsafeMutablePointer<Double>, _ out_stride: Int) {
     
     var signal = signal
@@ -1544,6 +1631,7 @@ public func Deconvolve(signal_count: Int,  _ signal: UnsafePointer<Double>, _ si
         }
     }
 }
+@_transparent
 public func Deconvolve(signal_count: Int,  _ signal: UnsafePointer<Float>, _ signal_stride: Int, _ kernel_count: Int,  _ kernel: UnsafePointer<Float>, _ kernel_stride: Int,  _ output: UnsafeMutablePointer<Float>, _ out_stride: Int,  _ residue: UnsafeMutablePointer<Float>, _ residue_stride: Int) {
     
     var signal = signal
@@ -1596,6 +1684,7 @@ public func Deconvolve(signal_count: Int,  _ signal: UnsafePointer<Float>, _ sig
     }
 }
 
+@_transparent
 public func Deconvolve(signal_count: Int,  _ signal: UnsafePointer<Double>, _ signal_stride: Int, _ kernel_count: Int,  _ kernel: UnsafePointer<Double>, _ kernel_stride: Int,  _ output: UnsafeMutablePointer<Double>, _ out_stride: Int,  _ residue: UnsafeMutablePointer<Double>, _ residue_stride: Int) {
     
     var signal = signal
@@ -1648,6 +1737,7 @@ public func Deconvolve(signal_count: Int,  _ signal: UnsafePointer<Double>, _ si
     }
 }
 
+@_transparent
 public func MatrixElimination(row: Int, _ column: Int, _ matrix: UnsafeMutablePointer<Float>, _ stride_row: Int, _ stride_col: Int) -> Bool {
     
     let row_offset = stride_row * stride_col * column
@@ -1683,6 +1773,7 @@ public func MatrixElimination(row: Int, _ column: Int, _ matrix: UnsafeMutablePo
     return true
 }
 
+@_transparent
 public func MatrixElimination(row: Int, _ column: Int, _ matrix: UnsafeMutablePointer<Double>, _ stride_row: Int, _ stride_col: Int) -> Bool {
     
     let row_offset = stride_row * stride_col * column

@@ -25,6 +25,7 @@
 
 import Foundation
 
+@_transparent
 public func Radix2FiniteImpulseFilter(level: Int, _ signal: UnsafePointer<Double>, _ signal_stride: Int, _ kernel: UnsafePointer<Complex>, _ kernel_stride: Int, _ output: UnsafeMutablePointer<Double>, _ out_stride: Int, _ temp: UnsafeMutablePointer<Double>, _ temp_stride: Int) {
     
     var _treal = temp
@@ -55,6 +56,7 @@ public func Radix2FiniteImpulseFilter(level: Int, _ signal: UnsafePointer<Double
     HalfInverseRadix2CooleyTukey(level, temp, temp + temp_stride, t_stride, output, out_stride, temp, temp + temp_stride, t_stride)
 }
 
+@_transparent
 public func Radix2FiniteImpulseFilter(level: Int, _ signal: UnsafePointer<Complex>, _ signal_stride: Int, _ kernel: UnsafePointer<Complex>, _ kernel_stride: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int, _ temp: UnsafeMutablePointer<Complex>, _ temp_stride: Int) {
     
     var _temp = temp
@@ -78,6 +80,7 @@ public func Radix2FiniteImpulseFilter(level: Int, _ signal: UnsafePointer<Comple
     InverseRadix2CooleyTukey(level, temp, temp_stride, output, out_stride)
 }
 
+@_transparent
 public func DispatchRadix2FiniteImpulseFilter(level: Int, _ signal: UnsafePointer<Double>, _ signal_stride: Int, _ kernel: UnsafePointer<Complex>, _ kernel_stride: Int, _ output: UnsafeMutablePointer<Double>, _ out_stride: Int, _ temp: UnsafeMutablePointer<Double>, _ temp_stride: Int) {
     
     var _treal = temp
@@ -108,6 +111,7 @@ public func DispatchRadix2FiniteImpulseFilter(level: Int, _ signal: UnsafePointe
     DispatchHalfInverseRadix2CooleyTukey(level, temp, temp + temp_stride, t_stride, output, out_stride, temp, temp + temp_stride, t_stride)
 }
 
+@_transparent
 public func DispatchRadix2FiniteImpulseFilter(level: Int, _ signal: UnsafePointer<Complex>, _ signal_stride: Int, _ kernel: UnsafePointer<Complex>, _ kernel_stride: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int, _ temp: UnsafeMutablePointer<Complex>, _ temp_stride: Int) {
     
     var _temp = temp

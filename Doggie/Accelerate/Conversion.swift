@@ -33,6 +33,7 @@ import Foundation
 //
 //
 
+@_transparent
 public func Convert(count: Int, _ input: UnsafePointer<Float>, _ in_stride: Int, _ output: UnsafeMutablePointer<Double>, _ out_stride: Int) {
     
     var input = input
@@ -44,6 +45,7 @@ public func Convert(count: Int, _ input: UnsafePointer<Float>, _ in_stride: Int,
         output += out_stride
     }
 }
+@_transparent
 public func Convert(count: Int, _ input: UnsafePointer<Double>, _ in_stride: Int, _ output: UnsafeMutablePointer<Float>, _ out_stride: Int) {
     
     var input = input

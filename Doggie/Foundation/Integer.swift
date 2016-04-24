@@ -342,24 +342,24 @@ public func <<= <T: UnsignedIntegerType>(inout lhs: T, rhs: T) {
 public func addmod<T: UnsignedIntegerType>(a: T, _ b: T, _ m: T) -> T {
     let a = a < m ? a : a % m
     let b = b < m ? b : b % m
-    let c = m - b
-    return a < c ? a + b : a - c
+    let c = m &- b
+    return a < c ? a &+ b : a &- c
 }
 
 @warn_unused_result
 @_transparent
 public func mulmod(a: UInt8, _ b: UInt8, _ m: UInt8) -> UInt8 {
-    return UInt8((UInt16(a) * UInt16(b)) % UInt16(m))
+    return UInt8((UInt16(a) &* UInt16(b)) % UInt16(m))
 }
 @warn_unused_result
 @_transparent
 public func mulmod(a: UInt16, _ b: UInt16, _ m: UInt16) -> UInt16 {
-    return UInt16(truncatingBitPattern: (UInt32(a) * UInt32(b)) % UInt32(m))
+    return UInt16(truncatingBitPattern: (UInt32(a) &* UInt32(b)) % UInt32(m))
 }
 @warn_unused_result
 @_transparent
 public func mulmod(a: UInt32, _ b: UInt32, _ m: UInt32) -> UInt32 {
-    return UInt32(truncatingBitPattern: (UInt64(a) * UInt64(b)) % UInt64(m))
+    return UInt32(truncatingBitPattern: (UInt64(a) &* UInt64(b)) % UInt64(m))
 }
 
 @warn_unused_result
@@ -376,7 +376,7 @@ public func mulmod<T: UnsignedIntegerType>(a: T, _ b: T, _ m: T) -> T {
     let mask = ~0 << offset
     
     if a & mask == 0 && b & mask == 0 {
-        return (a * b) % m
+        return (a &* b) % m
     }
     let c = mulmod(addmod(a, a, m), b >> 1, m)
     return b & 1 == 1 ? addmod(a, c, m) : c

@@ -33,6 +33,7 @@ import Foundation
 //
 //
 
+@_transparent
 public func ToRect(count: Int, _ rho: UnsafePointer<Float>, _ theta: UnsafePointer<Float>, _ in_stride: Int, _ real: UnsafeMutablePointer<Float>, _ imag: UnsafeMutablePointer<Float>, _ out_stride: Int) {
     
     var rho = rho
@@ -51,6 +52,7 @@ public func ToRect(count: Int, _ rho: UnsafePointer<Float>, _ theta: UnsafePoint
         imag += out_stride
     }
 }
+@_transparent
 public func ToPolar(count: Int, _ real: UnsafePointer<Float>, _ imag: UnsafePointer<Float>, _ in_stride: Int, _ rho: UnsafeMutablePointer<Float>, _ theta: UnsafeMutablePointer<Float>, _ out_stride: Int) {
     
     var real = real
@@ -70,6 +72,7 @@ public func ToPolar(count: Int, _ real: UnsafePointer<Float>, _ imag: UnsafePoin
     }
 }
 
+@_transparent
 public func ToRect(count: Int, _ rho: UnsafePointer<Double>, _ theta: UnsafePointer<Double>, _ in_stride: Int, _ real: UnsafeMutablePointer<Double>, _ imag: UnsafeMutablePointer<Double>, _ out_stride: Int) {
     
     var rho = rho
@@ -88,6 +91,7 @@ public func ToRect(count: Int, _ rho: UnsafePointer<Double>, _ theta: UnsafePoin
         imag += out_stride
     }
 }
+@_transparent
 public func ToPolar(count: Int, _ real: UnsafePointer<Double>, _ imag: UnsafePointer<Double>, _ in_stride: Int, _ rho: UnsafeMutablePointer<Double>, _ theta: UnsafeMutablePointer<Double>, _ out_stride: Int) {
     
     var real = real

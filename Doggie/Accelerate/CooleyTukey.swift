@@ -27,6 +27,7 @@ import Foundation
 
 // MARK: Half Radix-2 Cooley-Tukey
 
+@_transparent
 public func HalfRadix2CooleyTukey(level: Int, _ input: UnsafePointer<Float>, _ in_stride: Int, _ _real: UnsafeMutablePointer<Float>, _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int) {
     
     switch level {
@@ -98,6 +99,7 @@ public func HalfRadix2CooleyTukey(level: Int, _ input: UnsafePointer<Float>, _ i
         }
     }
 }
+@_transparent
 public func HalfInverseRadix2CooleyTukey(level: Int, _ real: UnsafePointer<Float>, _ imag: UnsafePointer<Float>, _ in_stride: Int, _ output: UnsafeMutablePointer<Float>, _ out_stride: Int, _ treal: UnsafeMutablePointer<Float>, _ timag: UnsafeMutablePointer<Float>, _ tp_stride: Int) {
     
     switch level {
@@ -180,6 +182,7 @@ public func HalfInverseRadix2CooleyTukey(level: Int, _ real: UnsafePointer<Float
     }
 }
 
+@_transparent
 public func HalfRadix2CooleyTukey(levelRow: Int, _ levelCol: Int, _ input: UnsafePointer<Float>, _ in_stride_row: Int, _ in_stride_col: Int, _ _real: UnsafeMutablePointer<Float>, _ _imag: UnsafeMutablePointer<Float>, _ out_stride_row: Int, _ out_stride_col: Int, _ treal: UnsafeMutablePointer<Float>, _ timag: UnsafeMutablePointer<Float>, _ temp_stride_row: Int, _ temp_stride_col: Int) {
     
     let row_count = 1 << levelRow
@@ -210,6 +213,7 @@ public func HalfRadix2CooleyTukey(levelRow: Int, _ levelCol: Int, _ input: Unsaf
     }
 }
 
+@_transparent
 public func HalfInverseRadix2CooleyTukey(levelRow: Int, _ levelCol: Int, _ real: UnsafePointer<Float>, _ imag: UnsafePointer<Float>, _ in_stride_row: Int, _ in_stride_col: Int, _ output: UnsafeMutablePointer<Float>, _ out_stride_row: Int, _ out_stride_col: Int, _ treal: UnsafeMutablePointer<Float>, _ timag: UnsafeMutablePointer<Float>, _ temp_stride_row: Int, _ temp_stride_col: Int) {
     
     let row_count = 1 << levelRow
@@ -244,6 +248,7 @@ public func HalfInverseRadix2CooleyTukey(levelRow: Int, _ levelCol: Int, _ real:
     }
 }
 
+@_transparent
 public func HalfRadix2CooleyTukey(level: Int, _ input: UnsafePointer<Double>, _ in_stride: Int, _ _real: UnsafeMutablePointer<Double>, _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int) {
     
     switch level {
@@ -315,6 +320,7 @@ public func HalfRadix2CooleyTukey(level: Int, _ input: UnsafePointer<Double>, _ 
         }
     }
 }
+@_transparent
 public func HalfInverseRadix2CooleyTukey(level: Int, _ real: UnsafePointer<Double>, _ imag: UnsafePointer<Double>, _ in_stride: Int, _ output: UnsafeMutablePointer<Double>, _ out_stride: Int, _ treal: UnsafeMutablePointer<Double>, _ timag: UnsafeMutablePointer<Double>, _ tp_stride: Int) {
     
     switch level {
@@ -397,6 +403,7 @@ public func HalfInverseRadix2CooleyTukey(level: Int, _ real: UnsafePointer<Doubl
     }
 }
 
+@_transparent
 public func HalfRadix2CooleyTukey(levelRow: Int, _ levelCol: Int, _ input: UnsafePointer<Double>, _ in_stride_row: Int, _ in_stride_col: Int, _ _real: UnsafeMutablePointer<Double>, _ _imag: UnsafeMutablePointer<Double>, _ out_stride_row: Int, _ out_stride_col: Int, _ treal: UnsafeMutablePointer<Double>, _ timag: UnsafeMutablePointer<Double>, _ temp_stride_row: Int, _ temp_stride_col: Int) {
     
     let row_count = 1 << levelRow
@@ -427,6 +434,7 @@ public func HalfRadix2CooleyTukey(levelRow: Int, _ levelCol: Int, _ input: Unsaf
     }
 }
 
+@_transparent
 public func HalfInverseRadix2CooleyTukey(levelRow: Int, _ levelCol: Int, _ real: UnsafePointer<Double>, _ imag: UnsafePointer<Double>, _ in_stride_row: Int, _ in_stride_col: Int, _ output: UnsafeMutablePointer<Double>, _ out_stride_row: Int, _ out_stride_col: Int, _ treal: UnsafeMutablePointer<Double>, _ timag: UnsafeMutablePointer<Double>, _ temp_stride_row: Int, _ temp_stride_col: Int) {
     
     let row_count = 1 << levelRow
@@ -463,6 +471,7 @@ public func HalfInverseRadix2CooleyTukey(levelRow: Int, _ levelCol: Int, _ real:
 
 // MARK: Radix-2 Cooley-Tukey
 
+@_transparent
 public func Radix2CooleyTukey(level: Int, _ input: UnsafePointer<Float>, _ in_stride: Int, _ _real: UnsafeMutablePointer<Float>, _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int) {
     
     switch level {
@@ -615,6 +624,7 @@ public func Radix2CooleyTukey(level: Int, _ real: UnsafePointer<Float>, _ imag: 
     }
 }
 
+@_transparent
 public func InverseRadix2CooleyTukey(level: Int, _ input: UnsafePointer<Float>, _ in_stride: Int, _ _real: UnsafeMutablePointer<Float>, _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int) {
     
     switch level {
@@ -710,11 +720,13 @@ public func InverseRadix2CooleyTukey(level: Int, _ input: UnsafePointer<Float>, 
     }
 }
 
+@_transparent
 public func InverseRadix2CooleyTukey(level: Int, _ real: UnsafePointer<Float>, _ imag: UnsafePointer<Float>, _ in_stride: Int, _ _real: UnsafeMutablePointer<Float>, _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int) {
     
     Radix2CooleyTukey(level, imag, real, in_stride, _imag, _real, out_stride)
 }
 
+@_transparent
 public func Radix2CooleyTukey(levelRow: Int, _ levelCol: Int, _ input: UnsafePointer<Float>, _ in_stride_row: Int, _ in_stride_col: Int, _ _real: UnsafeMutablePointer<Float>, _ _imag: UnsafeMutablePointer<Float>, _ out_stride_row: Int, _ out_stride_col: Int, _ treal: UnsafeMutablePointer<Float>, _ timag: UnsafeMutablePointer<Float>, _ temp_stride_row: Int, _ temp_stride_col: Int) {
     
     let row_count = 1 << levelRow
@@ -774,6 +786,7 @@ public func Radix2CooleyTukey(levelRow: Int, _ levelCol: Int, _ input: UnsafePoi
     }
 }
 
+@_transparent
 public func Radix2CooleyTukey(levelRow: Int, _ levelCol: Int, _ real: UnsafePointer<Float>, _ imag: UnsafePointer<Float>, _ in_stride_row: Int, _ in_stride_col: Int, _ _real: UnsafeMutablePointer<Float>, _ _imag: UnsafeMutablePointer<Float>, _ out_stride_row: Int, _ out_stride_col: Int, _ treal: UnsafeMutablePointer<Float>, _ timag: UnsafeMutablePointer<Float>, _ temp_stride_row: Int, _ temp_stride_col: Int) {
     
     let row_count = 1 << levelRow
@@ -800,6 +813,7 @@ public func Radix2CooleyTukey(levelRow: Int, _ levelCol: Int, _ real: UnsafePoin
     }
 }
 
+@_transparent
 public func InverseRadix2CooleyTukey(levelRow: Int, _ levelCol: Int, _ real: UnsafePointer<Float>, _ imag: UnsafePointer<Float>, _ in_stride_row: Int, _ in_stride_col: Int, _ _real: UnsafeMutablePointer<Float>, _ _imag: UnsafeMutablePointer<Float>, _ out_stride_row: Int, _ out_stride_col: Int, _ treal: UnsafeMutablePointer<Float>, _ timag: UnsafeMutablePointer<Float>, _ temp_stride_row: Int, _ temp_stride_col: Int) {
     
     let row_count = 1 << levelRow
@@ -826,6 +840,7 @@ public func InverseRadix2CooleyTukey(levelRow: Int, _ levelCol: Int, _ real: Uns
     }
 }
 
+@_transparent
 public func Radix2CooleyTukey(level: Int, _ input: UnsafePointer<Double>, _ in_stride: Int, _ _real: UnsafeMutablePointer<Double>, _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int) {
     
     switch level {
@@ -978,6 +993,7 @@ public func Radix2CooleyTukey(level: Int, _ real: UnsafePointer<Double>, _ imag:
     }
 }
 
+@_transparent
 public func InverseRadix2CooleyTukey(level: Int, _ input: UnsafePointer<Double>, _ in_stride: Int, _ _real: UnsafeMutablePointer<Double>, _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int) {
     
     switch level {
@@ -1073,11 +1089,13 @@ public func InverseRadix2CooleyTukey(level: Int, _ input: UnsafePointer<Double>,
     }
 }
 
+@_transparent
 public func InverseRadix2CooleyTukey(level: Int, _ real: UnsafePointer<Double>, _ imag: UnsafePointer<Double>, _ in_stride: Int, _ _real: UnsafeMutablePointer<Double>, _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int) {
     
     Radix2CooleyTukey(level, imag, real, in_stride, _imag, _real, out_stride)
 }
 
+@_transparent
 public func Radix2CooleyTukey(levelRow: Int, _ levelCol: Int, _ input: UnsafePointer<Double>, _ in_stride_row: Int, _ in_stride_col: Int, _ _real: UnsafeMutablePointer<Double>, _ _imag: UnsafeMutablePointer<Double>, _ out_stride_row: Int, _ out_stride_col: Int, _ treal: UnsafeMutablePointer<Double>, _ timag: UnsafeMutablePointer<Double>, _ temp_stride_row: Int, _ temp_stride_col: Int) {
     
     let row_count = 1 << levelRow
@@ -1137,6 +1155,7 @@ public func Radix2CooleyTukey(levelRow: Int, _ levelCol: Int, _ input: UnsafePoi
     }
 }
 
+@_transparent
 public func Radix2CooleyTukey(levelRow: Int, _ levelCol: Int, _ real: UnsafePointer<Double>, _ imag: UnsafePointer<Double>, _ in_stride_row: Int, _ in_stride_col: Int, _ _real: UnsafeMutablePointer<Double>, _ _imag: UnsafeMutablePointer<Double>, _ out_stride_row: Int, _ out_stride_col: Int, _ treal: UnsafeMutablePointer<Double>, _ timag: UnsafeMutablePointer<Double>, _ temp_stride_row: Int, _ temp_stride_col: Int) {
     
     let row_count = 1 << levelRow
@@ -1163,6 +1182,7 @@ public func Radix2CooleyTukey(levelRow: Int, _ levelCol: Int, _ real: UnsafePoin
     }
 }
 
+@_transparent
 public func InverseRadix2CooleyTukey(levelRow: Int, _ levelCol: Int, _ real: UnsafePointer<Double>, _ imag: UnsafePointer<Double>, _ in_stride_row: Int, _ in_stride_col: Int, _ _real: UnsafeMutablePointer<Double>, _ _imag: UnsafeMutablePointer<Double>, _ out_stride_row: Int, _ out_stride_col: Int, _ treal: UnsafeMutablePointer<Double>, _ timag: UnsafeMutablePointer<Double>, _ temp_stride_row: Int, _ temp_stride_col: Int) {
     
     let row_count = 1 << levelRow
@@ -1191,6 +1211,7 @@ public func InverseRadix2CooleyTukey(levelRow: Int, _ levelCol: Int, _ real: Uns
 
 // MARK: Dispatch Half Radix-2 Cooley-Tukey
 
+@_transparent
 public func DispatchHalfRadix2CooleyTukey(level: Int, _ input: UnsafePointer<Float>, _ in_stride: Int, _ _real: UnsafeMutablePointer<Float>, _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int) {
     
     switch level {
@@ -1262,6 +1283,7 @@ public func DispatchHalfRadix2CooleyTukey(level: Int, _ input: UnsafePointer<Flo
         }
     }
 }
+@_transparent
 public func DispatchHalfInverseRadix2CooleyTukey(level: Int, _ real: UnsafePointer<Float>, _ imag: UnsafePointer<Float>, _ in_stride: Int, _ output: UnsafeMutablePointer<Float>, _ out_stride: Int, _ treal: UnsafeMutablePointer<Float>, _ timag: UnsafeMutablePointer<Float>, _ tp_stride: Int) {
     
     switch level {
@@ -1344,6 +1366,7 @@ public func DispatchHalfInverseRadix2CooleyTukey(level: Int, _ real: UnsafePoint
     }
 }
 
+@_transparent
 public func DispatchHalfRadix2CooleyTukey(levelRow: Int, _ levelCol: Int, _ input: UnsafePointer<Float>, _ in_stride_row: Int, _ in_stride_col: Int, _ _real: UnsafeMutablePointer<Float>, _ _imag: UnsafeMutablePointer<Float>, _ out_stride_row: Int, _ out_stride_col: Int, _ treal: UnsafeMutablePointer<Float>, _ timag: UnsafeMutablePointer<Float>, _ temp_stride_row: Int, _ temp_stride_col: Int) {
     
     let row_count = 1 << levelRow
@@ -1381,6 +1404,7 @@ public func DispatchHalfRadix2CooleyTukey(levelRow: Int, _ levelCol: Int, _ inpu
     }
 }
 
+@_transparent
 public func DispatchHalfInverseRadix2CooleyTukey(levelRow: Int, _ levelCol: Int, _ real: UnsafePointer<Float>, _ imag: UnsafePointer<Float>, _ in_stride_row: Int, _ in_stride_col: Int, _ output: UnsafeMutablePointer<Float>, _ out_stride_row: Int, _ out_stride_col: Int, _ treal: UnsafeMutablePointer<Float>, _ timag: UnsafeMutablePointer<Float>, _ temp_stride_row: Int, _ temp_stride_col: Int) {
     
     let row_count = 1 << levelRow
@@ -1422,6 +1446,7 @@ public func DispatchHalfInverseRadix2CooleyTukey(levelRow: Int, _ levelCol: Int,
     }
 }
 
+@_transparent
 public func DispatchHalfRadix2CooleyTukey(level: Int, _ input: UnsafePointer<Double>, _ in_stride: Int, _ _real: UnsafeMutablePointer<Double>, _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int) {
     
     switch level {
@@ -1493,6 +1518,7 @@ public func DispatchHalfRadix2CooleyTukey(level: Int, _ input: UnsafePointer<Dou
         }
     }
 }
+@_transparent
 public func DispatchHalfInverseRadix2CooleyTukey(level: Int, _ real: UnsafePointer<Double>, _ imag: UnsafePointer<Double>, _ in_stride: Int, _ output: UnsafeMutablePointer<Double>, _ out_stride: Int, _ treal: UnsafeMutablePointer<Double>, _ timag: UnsafeMutablePointer<Double>, _ tp_stride: Int) {
     
     switch level {
@@ -1575,6 +1601,7 @@ public func DispatchHalfInverseRadix2CooleyTukey(level: Int, _ real: UnsafePoint
     }
 }
 
+@_transparent
 public func DispatchHalfRadix2CooleyTukey(levelRow: Int, _ levelCol: Int, _ input: UnsafePointer<Double>, _ in_stride_row: Int, _ in_stride_col: Int, _ _real: UnsafeMutablePointer<Double>, _ _imag: UnsafeMutablePointer<Double>, _ out_stride_row: Int, _ out_stride_col: Int, _ treal: UnsafeMutablePointer<Double>, _ timag: UnsafeMutablePointer<Double>, _ temp_stride_row: Int, _ temp_stride_col: Int) {
     
     let row_count = 1 << levelRow
@@ -1612,6 +1639,7 @@ public func DispatchHalfRadix2CooleyTukey(levelRow: Int, _ levelCol: Int, _ inpu
     }
 }
 
+@_transparent
 public func DispatchHalfInverseRadix2CooleyTukey(levelRow: Int, _ levelCol: Int, _ real: UnsafePointer<Double>, _ imag: UnsafePointer<Double>, _ in_stride_row: Int, _ in_stride_col: Int, _ output: UnsafeMutablePointer<Double>, _ out_stride_row: Int, _ out_stride_col: Int, _ treal: UnsafeMutablePointer<Double>, _ timag: UnsafeMutablePointer<Double>, _ temp_stride_row: Int, _ temp_stride_col: Int) {
     
     let row_count = 1 << levelRow
@@ -1655,6 +1683,7 @@ public func DispatchHalfInverseRadix2CooleyTukey(levelRow: Int, _ levelCol: Int,
 
 // MARK: Dispatch Radix-2 Cooley-Tukey
 
+@_transparent
 public func DispatchRadix2CooleyTukey(level: Int, _ input: UnsafePointer<Float>, _ in_stride: Int, _ _real: UnsafeMutablePointer<Float>, _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int) {
     
     switch level {
@@ -1750,6 +1779,7 @@ public func DispatchRadix2CooleyTukey(level: Int, _ input: UnsafePointer<Float>,
         }
     }
 }
+@_transparent
 public func DispatchRadix2CooleyTukey(level: Int, _ real: UnsafePointer<Float>, _ imag: UnsafePointer<Float>, _ in_stride: Int, _ _real: UnsafeMutablePointer<Float>, _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int) {
     
     switch level {
@@ -1812,6 +1842,7 @@ public func DispatchRadix2CooleyTukey(level: Int, _ real: UnsafePointer<Float>, 
     }
 }
 
+@_transparent
 public func DispatchInverseRadix2CooleyTukey(level: Int, _ input: UnsafePointer<Float>, _ in_stride: Int, _ _real: UnsafeMutablePointer<Float>, _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int) {
     
     switch level {
@@ -1906,11 +1937,13 @@ public func DispatchInverseRadix2CooleyTukey(level: Int, _ input: UnsafePointer<
         }
     }
 }
+@_transparent
 public func DispatchInverseRadix2CooleyTukey(level: Int, _ real: UnsafePointer<Float>, _ imag: UnsafePointer<Float>, _ in_stride: Int, _ _real: UnsafeMutablePointer<Float>, _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int) {
     
     DispatchRadix2CooleyTukey(level, imag, real, in_stride, _imag, _real, out_stride)
 }
 
+@_transparent
 public func DispatchRadix2CooleyTukey(levelRow: Int, _ levelCol: Int, _ input: UnsafePointer<Float>, _ in_stride_row: Int, _ in_stride_col: Int, _ _real: UnsafeMutablePointer<Float>, _ _imag: UnsafeMutablePointer<Float>, _ out_stride_row: Int, _ out_stride_col: Int, _ treal: UnsafeMutablePointer<Float>, _ timag: UnsafeMutablePointer<Float>, _ temp_stride_row: Int, _ temp_stride_col: Int) {
     
     let row_count = 1 << levelRow
@@ -1977,6 +2010,7 @@ public func DispatchRadix2CooleyTukey(levelRow: Int, _ levelCol: Int, _ input: U
     }
 }
 
+@_transparent
 public func DispatchRadix2CooleyTukey(levelRow: Int, _ levelCol: Int, _ real: UnsafePointer<Float>, _ imag: UnsafePointer<Float>, _ in_stride_row: Int, _ in_stride_col: Int, _ _real: UnsafeMutablePointer<Float>, _ _imag: UnsafeMutablePointer<Float>, _ out_stride_row: Int, _ out_stride_col: Int, _ treal: UnsafeMutablePointer<Float>, _ timag: UnsafeMutablePointer<Float>, _ temp_stride_row: Int, _ temp_stride_col: Int) {
     
     let row_count = 1 << levelRow
@@ -2003,6 +2037,7 @@ public func DispatchRadix2CooleyTukey(levelRow: Int, _ levelCol: Int, _ real: Un
     }
 }
 
+@_transparent
 public func DispatchInverseRadix2CooleyTukey(levelRow: Int, _ levelCol: Int, _ real: UnsafePointer<Float>, _ imag: UnsafePointer<Float>, _ in_stride_row: Int, _ in_stride_col: Int, _ _real: UnsafeMutablePointer<Float>, _ _imag: UnsafeMutablePointer<Float>, _ out_stride_row: Int, _ out_stride_col: Int, _ treal: UnsafeMutablePointer<Float>, _ timag: UnsafeMutablePointer<Float>, _ temp_stride_row: Int, _ temp_stride_col: Int) {
     
     let row_count = 1 << levelRow
@@ -2029,6 +2064,7 @@ public func DispatchInverseRadix2CooleyTukey(levelRow: Int, _ levelCol: Int, _ r
     }
 }
 
+@_transparent
 public func DispatchRadix2CooleyTukey(level: Int, _ input: UnsafePointer<Double>, _ in_stride: Int, _ _real: UnsafeMutablePointer<Double>, _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int) {
     
     switch level {
@@ -2124,6 +2160,7 @@ public func DispatchRadix2CooleyTukey(level: Int, _ input: UnsafePointer<Double>
         }
     }
 }
+@_transparent
 public func DispatchRadix2CooleyTukey(level: Int, _ real: UnsafePointer<Double>, _ imag: UnsafePointer<Double>, _ in_stride: Int, _ _real: UnsafeMutablePointer<Double>, _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int) {
     
     switch level {
@@ -2186,6 +2223,7 @@ public func DispatchRadix2CooleyTukey(level: Int, _ real: UnsafePointer<Double>,
     }
 }
 
+@_transparent
 public func DispatchInverseRadix2CooleyTukey(level: Int, _ input: UnsafePointer<Double>, _ in_stride: Int, _ _real: UnsafeMutablePointer<Double>, _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int) {
     
     switch level {
@@ -2280,11 +2318,13 @@ public func DispatchInverseRadix2CooleyTukey(level: Int, _ input: UnsafePointer<
         }
     }
 }
+@_transparent
 public func DispatchInverseRadix2CooleyTukey(level: Int, _ real: UnsafePointer<Double>, _ imag: UnsafePointer<Double>, _ in_stride: Int, _ _real: UnsafeMutablePointer<Double>, _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int) {
     
     DispatchRadix2CooleyTukey(level, imag, real, in_stride, _imag, _real, out_stride)
 }
 
+@_transparent
 public func DispatchRadix2CooleyTukey(levelRow: Int, _ levelCol: Int, _ input: UnsafePointer<Double>, _ in_stride_row: Int, _ in_stride_col: Int, _ _real: UnsafeMutablePointer<Double>, _ _imag: UnsafeMutablePointer<Double>, _ out_stride_row: Int, _ out_stride_col: Int, _ treal: UnsafeMutablePointer<Double>, _ timag: UnsafeMutablePointer<Double>, _ temp_stride_row: Int, _ temp_stride_col: Int) {
     
     let row_count = 1 << levelRow
@@ -2351,6 +2391,7 @@ public func DispatchRadix2CooleyTukey(levelRow: Int, _ levelCol: Int, _ input: U
     }
 }
 
+@_transparent
 public func DispatchRadix2CooleyTukey(levelRow: Int, _ levelCol: Int, _ real: UnsafePointer<Double>, _ imag: UnsafePointer<Double>, _ in_stride_row: Int, _ in_stride_col: Int, _ _real: UnsafeMutablePointer<Double>, _ _imag: UnsafeMutablePointer<Double>, _ out_stride_row: Int, _ out_stride_col: Int, _ treal: UnsafeMutablePointer<Double>, _ timag: UnsafeMutablePointer<Double>, _ temp_stride_row: Int, _ temp_stride_col: Int) {
     
     let row_count = 1 << levelRow
@@ -2377,6 +2418,7 @@ public func DispatchRadix2CooleyTukey(levelRow: Int, _ levelCol: Int, _ real: Un
     }
 }
 
+@_transparent
 public func DispatchInverseRadix2CooleyTukey(levelRow: Int, _ levelCol: Int, _ real: UnsafePointer<Double>, _ imag: UnsafePointer<Double>, _ in_stride_row: Int, _ in_stride_col: Int, _ _real: UnsafeMutablePointer<Double>, _ _imag: UnsafeMutablePointer<Double>, _ out_stride_row: Int, _ out_stride_col: Int, _ treal: UnsafeMutablePointer<Double>, _ timag: UnsafeMutablePointer<Double>, _ temp_stride_row: Int, _ temp_stride_col: Int) {
     
     let row_count = 1 << levelRow
@@ -2407,6 +2449,7 @@ public func DispatchInverseRadix2CooleyTukey(levelRow: Int, _ levelCol: Int, _ r
 
 private let CooleyTukeyDispatchQueue = dispatch_queue_create("com.SusanDoggie.Algorithm.CooleyTukey", DISPATCH_QUEUE_CONCURRENT)
 
+@_transparent
 public func ParallelHalfRadix2CooleyTukey(rows: Int, _ level: Int, _ input: UnsafePointer<Float>, _ in_stride: Int, _ in_rows_stride: Int, _ _real: UnsafeMutablePointer<Float>, _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int, _ out_rows_stride: Int) {
     
     for i in 0..<rows {
@@ -2415,6 +2458,7 @@ public func ParallelHalfRadix2CooleyTukey(rows: Int, _ level: Int, _ input: Unsa
         HalfRadix2CooleyTukey(level, input + _in_row_offset, in_stride, _real + _out_row_offset, _imag + _out_row_offset, out_stride)
     }
 }
+@_transparent
 public func ParallelHalfInverseRadix2CooleyTukey(rows: Int, _ level: Int, _ real: UnsafePointer<Float>, _ imag: UnsafePointer<Float>, _ in_stride: Int, _ in_rows_stride: Int, _ output: UnsafeMutablePointer<Float>, _ out_stride: Int, _ out_rows_stride: Int, _ treal: UnsafeMutablePointer<Float>, _ timag: UnsafeMutablePointer<Float>, _ tp_stride: Int, _ tp_rows_stride: Int) {
     
     for i in 0..<rows {
@@ -2424,6 +2468,7 @@ public func ParallelHalfInverseRadix2CooleyTukey(rows: Int, _ level: Int, _ real
         HalfInverseRadix2CooleyTukey(level, real + _in_row_offset, imag + _in_row_offset, in_stride, output + _out_row_offset, out_stride, treal + _tp_row_offset, timag + _tp_row_offset, tp_stride)
     }
 }
+@_transparent
 public func ParallelRadix2CooleyTukey(rows: Int, _ level: Int, _ input: UnsafePointer<Float>, _ in_stride: Int, _ in_rows_stride: Int, _ _real: UnsafeMutablePointer<Float>, _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int, _ out_rows_stride: Int) {
     
     for i in 0..<rows {
@@ -2432,6 +2477,7 @@ public func ParallelRadix2CooleyTukey(rows: Int, _ level: Int, _ input: UnsafePo
         Radix2CooleyTukey(level, input + _in_row_offset, in_stride, _real + _out_row_offset, _imag + _out_row_offset, out_stride)
     }
 }
+@_transparent
 public func ParallelRadix2CooleyTukey(rows: Int, _ level: Int, _ real: UnsafePointer<Float>, _ imag: UnsafePointer<Float>, _ in_stride: Int, _ in_rows_stride: Int, _ _real: UnsafeMutablePointer<Float>, _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int, _ out_rows_stride: Int) {
     
     for i in 0..<rows {
@@ -2440,6 +2486,7 @@ public func ParallelRadix2CooleyTukey(rows: Int, _ level: Int, _ real: UnsafePoi
         Radix2CooleyTukey(level, real + _in_row_offset, imag + _in_row_offset, in_stride, _real + _out_row_offset, _imag + _out_row_offset, out_stride)
     }
 }
+@_transparent
 public func ParallelInverseRadix2CooleyTukey(rows: Int, _ level: Int, _ input: UnsafePointer<Float>, _ in_stride: Int, _ in_rows_stride: Int, _ _real: UnsafeMutablePointer<Float>, _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int, _ out_rows_stride: Int) {
     
     for i in 0..<rows {
@@ -2448,6 +2495,7 @@ public func ParallelInverseRadix2CooleyTukey(rows: Int, _ level: Int, _ input: U
         InverseRadix2CooleyTukey(level, input + _in_row_offset, in_stride, _real + _out_row_offset, _imag + _out_row_offset, out_stride)
     }
 }
+@_transparent
 public func ParallelInverseRadix2CooleyTukey(rows: Int, _ level: Int, _ real: UnsafePointer<Float>, _ imag: UnsafePointer<Float>, _ in_stride: Int, _ in_rows_stride: Int, _ _real: UnsafeMutablePointer<Float>, _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int, _ out_rows_stride: Int) {
     
     for i in 0..<rows {
@@ -2456,6 +2504,7 @@ public func ParallelInverseRadix2CooleyTukey(rows: Int, _ level: Int, _ real: Un
         InverseRadix2CooleyTukey(level, real + _in_row_offset, imag + _in_row_offset, in_stride, _real + _out_row_offset, _imag + _out_row_offset, out_stride)
     }
 }
+@_transparent
 public func DispatchParallelHalfRadix2CooleyTukey(rows: Int, _ level: Int, _ input: UnsafePointer<Float>, _ in_stride: Int, _ in_rows_stride: Int, _ _real: UnsafeMutablePointer<Float>, _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int, _ out_rows_stride: Int) {
     
     dispatch_apply(rows, CooleyTukeyDispatchQueue) {
@@ -2464,6 +2513,7 @@ public func DispatchParallelHalfRadix2CooleyTukey(rows: Int, _ level: Int, _ inp
         HalfRadix2CooleyTukey(level, input + _in_row_offset, in_stride, _real + _out_row_offset, _imag + _out_row_offset, out_stride)
     }
 }
+@_transparent
 public func DispatchParallelHalfInverseRadix2CooleyTukey(rows: Int, _ level: Int, _ real: UnsafePointer<Float>, _ imag: UnsafePointer<Float>, _ in_stride: Int, _ in_rows_stride: Int, _ output: UnsafeMutablePointer<Float>, _ out_stride: Int, _ out_rows_stride: Int, _ treal: UnsafeMutablePointer<Float>, _ timag: UnsafeMutablePointer<Float>, _ tp_stride: Int, _ tp_rows_stride: Int) {
     
     dispatch_apply(rows, CooleyTukeyDispatchQueue) {
@@ -2473,6 +2523,7 @@ public func DispatchParallelHalfInverseRadix2CooleyTukey(rows: Int, _ level: Int
         HalfInverseRadix2CooleyTukey(level, real + _in_row_offset, imag + _in_row_offset, in_stride, output + _out_row_offset, out_stride, treal + _tp_row_offset, timag + _tp_row_offset, tp_stride)
     }
 }
+@_transparent
 public func DispatchParallelRadix2CooleyTukey(rows: Int, _ level: Int, _ input: UnsafePointer<Float>, _ in_stride: Int, _ in_rows_stride: Int, _ _real: UnsafeMutablePointer<Float>, _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int, _ out_rows_stride: Int) {
     
     dispatch_apply(rows, CooleyTukeyDispatchQueue) {
@@ -2481,6 +2532,7 @@ public func DispatchParallelRadix2CooleyTukey(rows: Int, _ level: Int, _ input: 
         Radix2CooleyTukey(level, input + _in_row_offset, in_stride, _real + _out_row_offset, _imag + _out_row_offset, out_stride)
     }
 }
+@_transparent
 public func DispatchParallelRadix2CooleyTukey(rows: Int, _ level: Int, _ real: UnsafePointer<Float>, _ imag: UnsafePointer<Float>, _ in_stride: Int, _ in_rows_stride: Int, _ _real: UnsafeMutablePointer<Float>, _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int, _ out_rows_stride: Int) {
     
     dispatch_apply(rows, CooleyTukeyDispatchQueue) {
@@ -2489,6 +2541,7 @@ public func DispatchParallelRadix2CooleyTukey(rows: Int, _ level: Int, _ real: U
         Radix2CooleyTukey(level, real + _in_row_offset, imag + _in_row_offset, in_stride, _real + _out_row_offset, _imag + _out_row_offset, out_stride)
     }
 }
+@_transparent
 public func DispatchParallelInverseRadix2CooleyTukey(rows: Int, _ level: Int, _ input: UnsafePointer<Float>, _ in_stride: Int, _ in_rows_stride: Int, _ _real: UnsafeMutablePointer<Float>, _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int, _ out_rows_stride: Int) {
     
     dispatch_apply(rows, CooleyTukeyDispatchQueue) {
@@ -2497,6 +2550,7 @@ public func DispatchParallelInverseRadix2CooleyTukey(rows: Int, _ level: Int, _ 
         InverseRadix2CooleyTukey(level, input + _in_row_offset, in_stride, _real + _out_row_offset, _imag + _out_row_offset, out_stride)
     }
 }
+@_transparent
 public func DispatchParallelInverseRadix2CooleyTukey(rows: Int, _ level: Int, _ real: UnsafePointer<Float>, _ imag: UnsafePointer<Float>, _ in_stride: Int, _ in_rows_stride: Int, _ _real: UnsafeMutablePointer<Float>, _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int, _ out_rows_stride: Int) {
     
     dispatch_apply(rows, CooleyTukeyDispatchQueue) {
@@ -2506,6 +2560,7 @@ public func DispatchParallelInverseRadix2CooleyTukey(rows: Int, _ level: Int, _ 
     }
 }
 
+@_transparent
 public func ParallelHalfRadix2CooleyTukey(rows: Int, _ level: Int, _ input: UnsafePointer<Double>, _ in_stride: Int, _ in_rows_stride: Int, _ _real: UnsafeMutablePointer<Double>, _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int, _ out_rows_stride: Int) {
     
     for i in 0..<rows {
@@ -2514,6 +2569,7 @@ public func ParallelHalfRadix2CooleyTukey(rows: Int, _ level: Int, _ input: Unsa
         HalfRadix2CooleyTukey(level, input + _in_row_offset, in_stride, _real + _out_row_offset, _imag + _out_row_offset, out_stride)
     }
 }
+@_transparent
 public func ParallelHalfInverseRadix2CooleyTukey(rows: Int, _ level: Int, _ real: UnsafePointer<Double>, _ imag: UnsafePointer<Double>, _ in_stride: Int, _ in_rows_stride: Int, _ output: UnsafeMutablePointer<Double>, _ out_stride: Int, _ out_rows_stride: Int, _ treal: UnsafeMutablePointer<Double>, _ timag: UnsafeMutablePointer<Double>, _ tp_stride: Int, _ tp_rows_stride: Int) {
     
     for i in 0..<rows {
@@ -2523,6 +2579,7 @@ public func ParallelHalfInverseRadix2CooleyTukey(rows: Int, _ level: Int, _ real
         HalfInverseRadix2CooleyTukey(level, real + _in_row_offset, imag + _in_row_offset, in_stride, output + _out_row_offset, out_stride, treal + _tp_row_offset, timag + _tp_row_offset, tp_stride)
     }
 }
+@_transparent
 public func ParallelRadix2CooleyTukey(rows: Int, _ level: Int, _ input: UnsafePointer<Double>, _ in_stride: Int, _ in_rows_stride: Int, _ _real: UnsafeMutablePointer<Double>, _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int, _ out_rows_stride: Int) {
     
     for i in 0..<rows {
@@ -2531,6 +2588,7 @@ public func ParallelRadix2CooleyTukey(rows: Int, _ level: Int, _ input: UnsafePo
         Radix2CooleyTukey(level, input + _in_row_offset, in_stride, _real + _out_row_offset, _imag + _out_row_offset, out_stride)
     }
 }
+@_transparent
 public func ParallelRadix2CooleyTukey(rows: Int, _ level: Int, _ real: UnsafePointer<Double>, _ imag: UnsafePointer<Double>, _ in_stride: Int, _ in_rows_stride: Int, _ _real: UnsafeMutablePointer<Double>, _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int, _ out_rows_stride: Int) {
     
     for i in 0..<rows {
@@ -2539,6 +2597,7 @@ public func ParallelRadix2CooleyTukey(rows: Int, _ level: Int, _ real: UnsafePoi
         Radix2CooleyTukey(level, real + _in_row_offset, imag + _in_row_offset, in_stride, _real + _out_row_offset, _imag + _out_row_offset, out_stride)
     }
 }
+@_transparent
 public func ParallelInverseRadix2CooleyTukey(rows: Int, _ level: Int, _ input: UnsafePointer<Double>, _ in_stride: Int, _ in_rows_stride: Int, _ _real: UnsafeMutablePointer<Double>, _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int, _ out_rows_stride: Int) {
     
     for i in 0..<rows {
@@ -2547,6 +2606,7 @@ public func ParallelInverseRadix2CooleyTukey(rows: Int, _ level: Int, _ input: U
         InverseRadix2CooleyTukey(level, input + _in_row_offset, in_stride, _real + _out_row_offset, _imag + _out_row_offset, out_stride)
     }
 }
+@_transparent
 public func ParallelInverseRadix2CooleyTukey(rows: Int, _ level: Int, _ real: UnsafePointer<Double>, _ imag: UnsafePointer<Double>, _ in_stride: Int, _ in_rows_stride: Int, _ _real: UnsafeMutablePointer<Double>, _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int, _ out_rows_stride: Int) {
     
     for i in 0..<rows {
@@ -2555,6 +2615,7 @@ public func ParallelInverseRadix2CooleyTukey(rows: Int, _ level: Int, _ real: Un
         InverseRadix2CooleyTukey(level, real + _in_row_offset, imag + _in_row_offset, in_stride, _real + _out_row_offset, _imag + _out_row_offset, out_stride)
     }
 }
+@_transparent
 public func DispatchParallelHalfRadix2CooleyTukey(rows: Int, _ level: Int, _ input: UnsafePointer<Double>, _ in_stride: Int, _ in_rows_stride: Int, _ _real: UnsafeMutablePointer<Double>, _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int, _ out_rows_stride: Int) {
     
     dispatch_apply(rows, CooleyTukeyDispatchQueue) {
@@ -2563,6 +2624,7 @@ public func DispatchParallelHalfRadix2CooleyTukey(rows: Int, _ level: Int, _ inp
         HalfRadix2CooleyTukey(level, input + _in_row_offset, in_stride, _real + _out_row_offset, _imag + _out_row_offset, out_stride)
     }
 }
+@_transparent
 public func DispatchParallelHalfInverseRadix2CooleyTukey(rows: Int, _ level: Int, _ real: UnsafePointer<Double>, _ imag: UnsafePointer<Double>, _ in_stride: Int, _ in_rows_stride: Int, _ output: UnsafeMutablePointer<Double>, _ out_stride: Int, _ out_rows_stride: Int, _ treal: UnsafeMutablePointer<Double>, _ timag: UnsafeMutablePointer<Double>, _ tp_stride: Int, _ tp_rows_stride: Int) {
     
     dispatch_apply(rows, CooleyTukeyDispatchQueue) {
@@ -2572,6 +2634,7 @@ public func DispatchParallelHalfInverseRadix2CooleyTukey(rows: Int, _ level: Int
         HalfInverseRadix2CooleyTukey(level, real + _in_row_offset, imag + _in_row_offset, in_stride, output + _out_row_offset, out_stride, treal + _tp_row_offset, timag + _tp_row_offset, tp_stride)
     }
 }
+@_transparent
 public func DispatchParallelRadix2CooleyTukey(rows: Int, _ level: Int, _ input: UnsafePointer<Double>, _ in_stride: Int, _ in_rows_stride: Int, _ _real: UnsafeMutablePointer<Double>, _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int, _ out_rows_stride: Int) {
     
     dispatch_apply(rows, CooleyTukeyDispatchQueue) {
@@ -2580,6 +2643,7 @@ public func DispatchParallelRadix2CooleyTukey(rows: Int, _ level: Int, _ input: 
         Radix2CooleyTukey(level, input + _in_row_offset, in_stride, _real + _out_row_offset, _imag + _out_row_offset, out_stride)
     }
 }
+@_transparent
 public func DispatchParallelRadix2CooleyTukey(rows: Int, _ level: Int, _ real: UnsafePointer<Double>, _ imag: UnsafePointer<Double>, _ in_stride: Int, _ in_rows_stride: Int, _ _real: UnsafeMutablePointer<Double>, _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int, _ out_rows_stride: Int) {
     
     dispatch_apply(rows, CooleyTukeyDispatchQueue) {
@@ -2588,6 +2652,7 @@ public func DispatchParallelRadix2CooleyTukey(rows: Int, _ level: Int, _ real: U
         Radix2CooleyTukey(level, real + _in_row_offset, imag + _in_row_offset, in_stride, _real + _out_row_offset, _imag + _out_row_offset, out_stride)
     }
 }
+@_transparent
 public func DispatchParallelInverseRadix2CooleyTukey(rows: Int, _ level: Int, _ input: UnsafePointer<Double>, _ in_stride: Int, _ in_rows_stride: Int, _ _real: UnsafeMutablePointer<Double>, _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int, _ out_rows_stride: Int) {
     
     dispatch_apply(rows, CooleyTukeyDispatchQueue) {
@@ -2596,6 +2661,7 @@ public func DispatchParallelInverseRadix2CooleyTukey(rows: Int, _ level: Int, _ 
         InverseRadix2CooleyTukey(level, input + _in_row_offset, in_stride, _real + _out_row_offset, _imag + _out_row_offset, out_stride)
     }
 }
+@_transparent
 public func DispatchParallelInverseRadix2CooleyTukey(rows: Int, _ level: Int, _ real: UnsafePointer<Double>, _ imag: UnsafePointer<Double>, _ in_stride: Int, _ in_rows_stride: Int, _ _real: UnsafeMutablePointer<Double>, _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int, _ out_rows_stride: Int) {
     
     dispatch_apply(rows, CooleyTukeyDispatchQueue) {
@@ -2607,6 +2673,7 @@ public func DispatchParallelInverseRadix2CooleyTukey(rows: Int, _ level: Int, _ 
 
 // MARK: Fixed Length Cooley-Tukey
 
+@_transparent
 public func HalfRadix2CooleyTukey_2(input: UnsafePointer<Float>, _ in_stride: Int, _ _real: UnsafeMutablePointer<Float>, _ _imag: UnsafeMutablePointer<Float>) {
     
     var input = input
@@ -2619,6 +2686,7 @@ public func HalfRadix2CooleyTukey_2(input: UnsafePointer<Float>, _ in_stride: In
     _real.memory = a + b
     _imag.memory = a - b
 }
+@_transparent
 public func HalfRadix2CooleyTukey_4(input: UnsafePointer<Float>, _ in_stride: Int,  _ _real: UnsafeMutablePointer<Float>,  _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int) {
     
     var input = input
@@ -2647,6 +2715,7 @@ public func HalfRadix2CooleyTukey_4(input: UnsafePointer<Float>, _ in_stride: In
     _real.memory = a - c
     _imag.memory = d - b
 }
+@_transparent
 public func HalfInverseRadix2CooleyTukey_2(real: UnsafePointer<Float>, _ imag: UnsafePointer<Float>,  _ output: UnsafeMutablePointer<Float>, _ out_stride: Int) {
     
     var output = output
@@ -2659,6 +2728,7 @@ public func HalfInverseRadix2CooleyTukey_2(real: UnsafePointer<Float>, _ imag: U
     
     output.memory = a - b
 }
+@_transparent
 public func HalfInverseRadix2CooleyTukey_4(real: UnsafePointer<Float>,  _ imag: UnsafePointer<Float>, _ in_stride: Int,  _ output: UnsafeMutablePointer<Float>, _ out_stride: Int) {
     
     var real = real
@@ -2689,6 +2759,7 @@ public func HalfInverseRadix2CooleyTukey_4(real: UnsafePointer<Float>,  _ imag: 
     
     output.memory = f + h
 }
+@_transparent
 public func Radix2CooleyTukey_2(input: UnsafePointer<Float>, _ in_stride: Int,  _ _real: UnsafeMutablePointer<Float>,  _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int) {
     
     var input = input
@@ -2709,6 +2780,7 @@ public func Radix2CooleyTukey_2(input: UnsafePointer<Float>, _ in_stride: Int,  
     _imag.memory = 0
     
 }
+@_transparent
 public func Radix2CooleyTukey_2(real: UnsafePointer<Float>,  _ imag: UnsafePointer<Float>, _ in_stride: Int,  _ _real: UnsafeMutablePointer<Float>,  _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int) {
     
     var real = real
@@ -2733,6 +2805,7 @@ public func Radix2CooleyTukey_2(real: UnsafePointer<Float>,  _ imag: UnsafePoint
     _imag.memory = b - d
     
 }
+@_transparent
 public func InverseRadix2CooleyTukey_2(input: UnsafePointer<Float>, _ in_stride: Int,  _ _real: UnsafeMutablePointer<Float>,  _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int) {
     
     var input = input
@@ -2753,6 +2826,7 @@ public func InverseRadix2CooleyTukey_2(input: UnsafePointer<Float>, _ in_stride:
     _imag.memory = 0
     
 }
+@_transparent
 public func Radix2CooleyTukey_4(input: UnsafePointer<Float>, _ in_stride: Int,  _ _real: UnsafeMutablePointer<Float>,  _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int) {
     
     var input = input
@@ -2794,6 +2868,7 @@ public func Radix2CooleyTukey_4(input: UnsafePointer<Float>, _ in_stride: Int,  
     _imag.memory = h
 }
 
+@_transparent
 public func Radix2CooleyTukey_4(real: UnsafePointer<Float>,  _ imag: UnsafePointer<Float>, _ in_stride: Int,  _ _real: UnsafeMutablePointer<Float>,  _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int) {
     
     var real = real
@@ -2847,6 +2922,7 @@ public func Radix2CooleyTukey_4(real: UnsafePointer<Float>,  _ imag: UnsafePoint
     _imag.memory = l + o
 }
 
+@_transparent
 public func InverseRadix2CooleyTukey_4(input: UnsafePointer<Float>, _ in_stride: Int,  _ _real: UnsafeMutablePointer<Float>,  _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int) {
     
     var input = input
@@ -2888,6 +2964,7 @@ public func InverseRadix2CooleyTukey_4(input: UnsafePointer<Float>, _ in_stride:
     _imag.memory = -h
 }
 
+@_transparent
 public func HalfRadix2CooleyTukey_2(input: UnsafePointer<Double>, _ in_stride: Int, _ _real: UnsafeMutablePointer<Double>, _ _imag: UnsafeMutablePointer<Double>) {
     
     var input = input
@@ -2900,6 +2977,7 @@ public func HalfRadix2CooleyTukey_2(input: UnsafePointer<Double>, _ in_stride: I
     _real.memory = a + b
     _imag.memory = a - b
 }
+@_transparent
 public func HalfRadix2CooleyTukey_4(input: UnsafePointer<Double>, _ in_stride: Int,  _ _real: UnsafeMutablePointer<Double>,  _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int) {
     
     var input = input
@@ -2928,6 +3006,7 @@ public func HalfRadix2CooleyTukey_4(input: UnsafePointer<Double>, _ in_stride: I
     _real.memory = a - c
     _imag.memory = d - b
 }
+@_transparent
 public func HalfInverseRadix2CooleyTukey_2(real: UnsafePointer<Double>, _ imag: UnsafePointer<Double>,  _ output: UnsafeMutablePointer<Double>, _ out_stride: Int) {
     
     var output = output
@@ -2940,6 +3019,7 @@ public func HalfInverseRadix2CooleyTukey_2(real: UnsafePointer<Double>, _ imag: 
     
     output.memory = a - b
 }
+@_transparent
 public func HalfInverseRadix2CooleyTukey_4(real: UnsafePointer<Double>,  _ imag: UnsafePointer<Double>, _ in_stride: Int,  _ output: UnsafeMutablePointer<Double>, _ out_stride: Int) {
     
     var real = real
@@ -2970,6 +3050,7 @@ public func HalfInverseRadix2CooleyTukey_4(real: UnsafePointer<Double>,  _ imag:
     
     output.memory = f + h
 }
+@_transparent
 public func Radix2CooleyTukey_2(input: UnsafePointer<Double>, _ in_stride: Int,  _ _real: UnsafeMutablePointer<Double>,  _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int) {
     
     var input = input
@@ -2990,6 +3071,7 @@ public func Radix2CooleyTukey_2(input: UnsafePointer<Double>, _ in_stride: Int, 
     _imag.memory = 0
     
 }
+@_transparent
 public func Radix2CooleyTukey_2(real: UnsafePointer<Double>,  _ imag: UnsafePointer<Double>, _ in_stride: Int,  _ _real: UnsafeMutablePointer<Double>,  _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int) {
     
     var real = real
@@ -3014,6 +3096,7 @@ public func Radix2CooleyTukey_2(real: UnsafePointer<Double>,  _ imag: UnsafePoin
     _imag.memory = b - d
     
 }
+@_transparent
 public func InverseRadix2CooleyTukey_2(input: UnsafePointer<Double>, _ in_stride: Int,  _ _real: UnsafeMutablePointer<Double>,  _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int) {
     
     var input = input
@@ -3034,6 +3117,7 @@ public func InverseRadix2CooleyTukey_2(input: UnsafePointer<Double>, _ in_stride
     _imag.memory = 0
     
 }
+@_transparent
 public func Radix2CooleyTukey_4(input: UnsafePointer<Double>, _ in_stride: Int,  _ _real: UnsafeMutablePointer<Double>,  _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int) {
     
     var input = input
@@ -3075,6 +3159,7 @@ public func Radix2CooleyTukey_4(input: UnsafePointer<Double>, _ in_stride: Int, 
     _imag.memory = h
 }
 
+@_transparent
 public func Radix2CooleyTukey_4(real: UnsafePointer<Double>,  _ imag: UnsafePointer<Double>, _ in_stride: Int,  _ _real: UnsafeMutablePointer<Double>,  _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int) {
     
     var real = real
@@ -3128,6 +3213,7 @@ public func Radix2CooleyTukey_4(real: UnsafePointer<Double>,  _ imag: UnsafePoin
     _imag.memory = l + o
 }
 
+@_transparent
 public func InverseRadix2CooleyTukey_4(input: UnsafePointer<Double>, _ in_stride: Int,  _ _real: UnsafeMutablePointer<Double>,  _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int) {
     
     var input = input
