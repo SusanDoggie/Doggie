@@ -46,6 +46,25 @@ public func addmod<T: UnsignedIntegerType>(lhs: [T], _ rhs: [T], _ mod: [T]) -> 
 
 @warn_unused_result
 @_transparent
+public func mulmod<T: UnsignedIntegerType>(lhs: [T], _ rhs: [T], _ mod: T) -> [T] {
+    var result = lhs
+    assert(lhs.count == rhs.count, "mismatch count of inputs.")
+    MulMod(lhs.count, lhs, 1, rhs, 1, [mod], 0, &result, 1)
+    return result
+}
+
+@warn_unused_result
+@_transparent
+public func mulmod<T: UnsignedIntegerType>(lhs: [T], _ rhs: [T], _ mod: [T]) -> [T] {
+    var result = lhs
+    assert(lhs.count == rhs.count, "mismatch count of inputs.")
+    assert(lhs.count == mod.count, "mismatch count of inputs.")
+    MulMod(lhs.count, lhs, 1, rhs, 1, mod, 1, &result, 1)
+    return result
+}
+
+@warn_unused_result
+@_transparent
 public func add<T: IntegerType>(lhs: [T], _ rhs: [T]) -> [T] {
     var result = lhs
     assert(lhs.count == rhs.count, "mismatch count of inputs.")
