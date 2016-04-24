@@ -365,8 +365,8 @@ public func mulmod(a: UInt32, _ b: UInt32, _ m: UInt32) -> UInt32 {
 @warn_unused_result
 public func mulmod<T: UnsignedIntegerType>(a: T, _ b: T, _ m: T) -> T {
     
-    let a = a % m
-    let b = b % m
+    let a = a < m ? a : a % m
+    let b = b < m ? b : b % m
     
     let offset = T(UIntMax(sizeof(T).toIntMax()) << 2)
     if a >> offset == 0 && b >> offset == 0 {
