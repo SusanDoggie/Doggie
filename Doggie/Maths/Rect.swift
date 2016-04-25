@@ -78,6 +78,7 @@ public func != (lhs: Size, rhs: Size) -> Bool {
 
 extension Size {
     
+    @warn_unused_result
     @_transparent
     public func aspectFit(bound: Size) -> Size {
         let ratio = width / height
@@ -88,6 +89,7 @@ extension Size {
         }
     }
     
+    @warn_unused_result
     @_transparent
     public func aspectFill(bound: Size) -> Size {
         let ratio = width / height

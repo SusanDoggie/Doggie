@@ -365,10 +365,10 @@ private func arcDetails(start: Point, _ end: Point, _ radius: Radius, _ rotate: 
 }
 private func bezierArc(start: Point, _ end: Point, _ radius: Radius, _ rotate: Double, _ largeArc: Bool, _ sweep: Bool) -> [SDPathCommand] {
     let (center, radius) = arcDetails(start, end, radius, rotate, largeArc, sweep)
-    let _arc_transform = SDTransform.Rotate(rotate) * SDTransform.Scale(x: radius.x, y: radius.y)
+    let _arc_transform = SDTransform.Scale(x: radius.x, y: radius.y) * SDTransform.Rotate(rotate)
     let _arc_transform_inverse = _arc_transform.inverse
-    let _begin = _arc_transform_inverse * (start - center)
-    let _end = _arc_transform_inverse * (end - center)
+    let _begin = (start - center) * _arc_transform_inverse
+    let _end = (end - center) * _arc_transform_inverse
     let startAngle = atan2(_begin.y, _begin.x)
     var endAngle = atan2(_end.y, _end.x)
     if sweep {
@@ -380,8 +380,8 @@ private func bezierArc(start: Point, _ end: Point, _ radius: Radius, _ rotate: D
             endAngle -= 2 * M_PI
         }
     }
-    let _transform = _arc_transform * SDTransform.Rotate(startAngle)
-    let point = BezierArc(endAngle - startAngle).lazy.map { _transform * $0 + center }
+    let _transform = SDTransform.Rotate(startAngle) * _arc_transform
+    let point = BezierArc(endAngle - startAngle).lazy.map { $0 * _transform + center }
     var result: [SDPathCommand] = []
     if point.count > 1 {
         for i in 0..<point.count / 3 {

@@ -45,17 +45,17 @@ public struct SDPath : SDShape, MutableCollectionType, ArrayLiteralConvertible {
     
     public var rotate: Double = 0 {
         didSet {
-            center = SDTransform.Rotate(oldValue) * SDTransform.Scale(x: xScale, y: yScale) * baseTransform * _frame.center
+            center = _frame.center * baseTransform * SDTransform.Scale(x: xScale, y: yScale) * SDTransform.Rotate(oldValue)
         }
     }
     public var xScale: Double = 1 {
         didSet {
-            center = SDTransform.Rotate(rotate) * SDTransform.Scale(x: oldValue, y: yScale) * baseTransform * _frame.center
+            center = _frame.center * baseTransform * SDTransform.Scale(x: oldValue, y: yScale) * SDTransform.Rotate(rotate)
         }
     }
     public var yScale: Double = 1 {
         didSet {
-            center = SDTransform.Rotate(rotate) * SDTransform.Scale(x: xScale, y: oldValue) * baseTransform * _frame.center
+            center = _frame.center * baseTransform * SDTransform.Scale(x: xScale, y: oldValue) * SDTransform.Rotate(rotate)
         }
     }
     
@@ -73,11 +73,11 @@ public struct SDPath : SDShape, MutableCollectionType, ArrayLiteralConvertible {
     
     public var center : Point {
         get {
-            return transform * _frame.center
+            return _frame.center * transform
         }
         set {
-            let offset = SDTransform.Scale(x: xScale, y: yScale).inverse * SDTransform.Rotate(rotate).inverse * newValue - baseTransform * _frame.center
-            baseTransform = SDTransform.Translate(x: offset.x, y: offset.y) * baseTransform
+            let offset = newValue * SDTransform.Rotate(rotate).inverse * SDTransform.Scale(x: xScale, y: yScale).inverse - _frame.center * baseTransform
+            baseTransform *= SDTransform.Translate(x: offset.x, y: offset.y)
         }
     }
     
@@ -283,7 +283,7 @@ public struct SDPath : SDShape, MutableCollectionType, ArrayLiteralConvertible {
     
     public var frame : [Point] {
         let _transform = self.transform
-        return _frame.points.map { _transform * $0 }
+        return _frame.points.map { $0 * _transform }
     }
     
     public var path: SDPath {
@@ -425,7 +425,7 @@ extension SDPath.Line {
     
     @warn_unused_result
     public func bound<T: SDTransformType>(last: Point, _ transform: T) -> Rect {
-        return Rect.bound([transform * last, transform * self.point])
+        return Rect.bound([last * transform, self.point * transform])
     }
 }
 
@@ -469,10 +469,10 @@ extension SDPath {
         _path.reserveCapacity(self.commands.count)
         for command in self.commands {
             switch command {
-            case let move as SDPath.Move: _path.append(SDPath.Move(transform * move.point))
-            case let line as SDPath.Line: _path.append(SDPath.Line(transform * line.point))
-            case let quad as SDPath.QuadBezier: _path.append(SDPath.QuadBezier(transform * quad.p1, transform * quad.p2))
-            case let cubic as SDPath.CubicBezier: _path.append(SDPath.CubicBezier(transform * cubic.p1, transform * cubic.p2, transform * cubic.p3))
+            case let move as SDPath.Move: _path.append(SDPath.Move(move.point * transform))
+            case let line as SDPath.Line: _path.append(SDPath.Line(line.point * transform))
+            case let quad as SDPath.QuadBezier: _path.append(SDPath.QuadBezier(quad.p1 * transform, quad.p2 * transform))
+            case let cubic as SDPath.CubicBezier: _path.append(SDPath.CubicBezier(cubic.p1 * transform, cubic.p2 * transform, cubic.p3 * transform))
             case let close as SDPath.ClosePath: _path.append(close)
             default: break
             }

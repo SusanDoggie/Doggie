@@ -31,17 +31,17 @@ public struct SDRectangle : SDShape {
     
     public var rotate: Double = 0 {
         didSet {
-            center = SDTransform.Rotate(oldValue) * SDTransform.Scale(x: xScale, y: yScale) * baseTransform * rect.center
+            center = rect.center * baseTransform * SDTransform.Scale(x: xScale, y: yScale) * SDTransform.Rotate(oldValue)
         }
     }
     public var xScale: Double = 1 {
         didSet {
-            center = SDTransform.Rotate(rotate) * SDTransform.Scale(x: oldValue, y: yScale) * baseTransform * rect.center
+            center = rect.center * baseTransform * SDTransform.Scale(x: oldValue, y: yScale) * SDTransform.Rotate(rotate)
         }
     }
     public var yScale: Double = 1 {
         didSet {
-            center = SDTransform.Rotate(rotate) * SDTransform.Scale(x: xScale, y: oldValue) * baseTransform * rect.center
+            center = rect.center * baseTransform * SDTransform.Scale(x: xScale, y: oldValue) * SDTransform.Rotate(rotate)
         }
     }
     
@@ -51,7 +51,7 @@ public struct SDRectangle : SDShape {
     
     public var points : [Point] {
         let _transform = self.transform
-        return rect.points.map { _transform * $0 }
+        return rect.points.map { $0 * _transform }
     }
     
     public var frame : [Point] {
@@ -70,10 +70,10 @@ public struct SDRectangle : SDShape {
     
     public var center : Point {
         get {
-            return transform * rect.center
+            return rect.center * transform
         }
         set {
-            rect.center = transform.inverse * newValue
+            rect.center = newValue * transform.inverse
         }
     }
     

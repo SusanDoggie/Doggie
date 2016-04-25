@@ -31,17 +31,17 @@ public struct SDEllipse : SDShape {
     
     public var rotate: Double = 0 {
         didSet {
-            center = SDTransform.Rotate(oldValue) * SDTransform.Scale(x: xScale, y: yScale) * baseTransform * position
+            center = position * baseTransform * SDTransform.Scale(x: xScale, y: yScale) * SDTransform.Rotate(oldValue)
         }
     }
     public var xScale: Double = 1 {
         didSet {
-            center = SDTransform.Rotate(rotate) * SDTransform.Scale(x: oldValue, y: yScale) * baseTransform * position
+            center = position * baseTransform * SDTransform.Scale(x: oldValue, y: yScale) * SDTransform.Rotate(rotate)
         }
     }
     public var yScale: Double = 1 {
         didSet {
-            center = SDTransform.Rotate(rotate) * SDTransform.Scale(x: xScale, y: oldValue) * baseTransform * position
+            center = position * baseTransform * SDTransform.Scale(x: xScale, y: oldValue) * SDTransform.Rotate(rotate)
         }
     }
     
@@ -76,7 +76,7 @@ public struct SDEllipse : SDShape {
     
     public var frame : [Point] {
         let _transform = self.transform
-        return Rect(x: x - rx, y: y - ry, width: 2 * rx, height: 2 * ry).points.map { _transform * $0 }
+        return Rect(x: x - rx, y: y - ry, width: 2 * rx, height: 2 * ry).points.map { $0 * _transform }
     }
     
     public init(center: Point, radius: Double) {
@@ -117,10 +117,10 @@ public struct SDEllipse : SDShape {
     
     public var center : Point {
         get {
-            return transform * position
+            return position * transform
         }
         set {
-            position = transform.inverse * newValue
+            position = newValue * transform.inverse
         }
     }
     
@@ -144,7 +144,7 @@ public struct SDEllipse : SDShape {
     
     public var path: SDPath {
         let scale = SDTransform.Scale(x: self.radius.x, y: self.radius.y)
-        let point = BezierCircle.lazy.map { scale * $0 + self.position }
+        let point = BezierCircle.lazy.map { $0 * scale + self.position }
         var path: SDPath = [
             SDPath.Move(point[0]),
             SDPath.CubicBezier(point[1], point[2], point[3]),

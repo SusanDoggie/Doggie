@@ -28,10 +28,10 @@ import Foundation
 ///
 /// Transformation Matrix:
 ///
-///     ⎛ a b c d ⎞
-///     ⎜ e f g h ⎟
-///     ⎜ i j k l ⎟
-///     ⎝ 0 0 0 1 ⎠
+///     ⎛ a e i 0 ⎞
+///     ⎜ b f j 0 ⎟
+///     ⎜ c g k 0 ⎟
+///     ⎝ d h l 1 ⎠
 ///
 public protocol MatrixType {
     
@@ -50,13 +50,31 @@ public protocol MatrixType {
     var inverse : Self { get }
 }
 
+extension MatrixType {
+    
+    @_transparent
+    public var tx: Double {
+        return d
+    }
+    
+    @_transparent
+    public var ty: Double {
+        return h
+    }
+    
+    @_transparent
+    public var tz: Double {
+        return l
+    }
+}
+
 ///
 /// Transformation Matrix:
 ///
-///     ⎛ a b c d ⎞
-///     ⎜ e f g h ⎟
-///     ⎜ i j k l ⎟
-///     ⎝ 0 0 0 1 ⎠
+///     ⎛ a e i 0 ⎞
+///     ⎜ b f j 0 ⎟
+///     ⎜ c g k 0 ⎟
+///     ⎝ d h l 1 ⎠
 ///
 public struct Matrix: MatrixType {
     
@@ -140,6 +158,39 @@ extension Matrix {
 
 extension Matrix {
     
+    @_transparent
+    public var tx: Double {
+        get {
+            return d
+        }
+        set {
+            d = newValue
+        }
+    }
+    
+    @_transparent
+    public var ty: Double {
+        get {
+            return h
+        }
+        set {
+            h = newValue
+        }
+    }
+    
+    @_transparent
+    public var tz: Double {
+        get {
+            return l
+        }
+        set {
+            l = newValue
+        }
+    }
+}
+
+extension Matrix {
+    
     ///
     /// Transformation Matrix:
     ///
@@ -157,10 +208,10 @@ extension Matrix {
     ///
     /// Transformation Matrix:
     ///
-    ///     ⎛ 1   0       0    0 ⎞
-    ///     ⎜ 0 cos(a) -sin(a) 0 ⎟
-    ///     ⎜ 0 sin(a)  cos(a) 0 ⎟
-    ///     ⎝ 0   0       0    1 ⎠
+    ///     ⎛ 1    0      0    0 ⎞
+    ///     ⎜ 0  cos(a) sin(a) 0 ⎟
+    ///     ⎜ 0 -sin(a) cos(a) 0 ⎟
+    ///     ⎝ 0    0      0    1 ⎠
     ///
     public struct RotateX: MatrixType {
         
@@ -174,10 +225,10 @@ extension Matrix {
     ///
     /// Transformation Matrix:
     ///
-    ///     ⎛  cos(a) 0 sin(a) 0 ⎞
-    ///     ⎜    0    1   0    0 ⎟
-    ///     ⎜ -sin(a) 0 cos(a) 0 ⎟
-    ///     ⎝    0    0   0    1 ⎠
+    ///     ⎛ cos(a) 0 -sin(a) 0 ⎞
+    ///     ⎜   0    1    0    0 ⎟
+    ///     ⎜ sin(a) 0  cos(a) 0 ⎟
+    ///     ⎝   0    0    0    1 ⎠
     ///
     public struct RotateY: MatrixType {
         
@@ -191,10 +242,10 @@ extension Matrix {
     ///
     /// Transformation Matrix:
     ///
-    ///     ⎛ cos(a) -sin(a) 0 0 ⎞
-    ///     ⎜ sin(a)  cos(a) 0 0 ⎟
-    ///     ⎜   0       0    1 0 ⎟
-    ///     ⎝   0       0    0 1 ⎠
+    ///     ⎛  cos(a) sin(a) 0 0 ⎞
+    ///     ⎜ -sin(a) cos(a) 0 0 ⎟
+    ///     ⎜    0      0    1 0 ⎟
+    ///     ⎝    0      0    0 1 ⎠
     ///
     public struct RotateZ: MatrixType {
         
@@ -239,10 +290,10 @@ extension Matrix {
     ///
     /// Transformation Matrix:
     ///
-    ///     ⎛ 1 0 0 x ⎞
-    ///     ⎜ 0 1 0 y ⎟
-    ///     ⎜ 0 0 1 z ⎟
-    ///     ⎝ 0 0 0 1 ⎠
+    ///     ⎛ 1 0 0 0 ⎞
+    ///     ⎜ 0 1 0 0 ⎟
+    ///     ⎜ 0 0 1 0 ⎟
+    ///     ⎝ x y z 1 ⎠
     ///
     public struct Translate: MatrixType {
         
@@ -259,7 +310,7 @@ extension Matrix {
     
     @warn_unused_result
     public static func Rotate(roll x: Double, pitch y: Double, yaw z: Double) -> Matrix {
-        return RotateZ(z) * RotateY(y) * RotateX(x)
+        return RotateX(x) * RotateY(y) * RotateZ(z)
     }
     @warn_unused_result
     public static func Rotate(radian: Double, x: Double, y: Double, z: Double) -> Matrix {
@@ -288,7 +339,7 @@ extension Matrix {
     
     @warn_unused_result
     public static func CameraTransform(position tx: Double, _ ty: Double, _ tz: Double, rotate ax: Double, _ ay: Double, _ az: Double) -> Matrix {
-        return RotateX(-ax) * RotateY(-ay) * RotateZ(-az) * Translate(x: -tx, y: -ty, z: -tz)
+        return Translate(x: -tx, y: -ty, z: -tz) * RotateZ(-az) * RotateY(-ay) * RotateX(-ax)
     }
 }
 
@@ -810,19 +861,19 @@ public func != <S: MatrixType, T: MatrixType>(lhs: S, rhs: T) -> Bool {
 @warn_unused_result
 @_transparent
 public func * <S: MatrixType, T: MatrixType>(lhs: S, rhs: T) -> Matrix {
-    let _a = lhs.a * rhs.a + lhs.b * rhs.e + lhs.c * rhs.i
-    let _b = lhs.a * rhs.b + lhs.b * rhs.f + lhs.c * rhs.j
-    let _c = lhs.a * rhs.c + lhs.b * rhs.g + lhs.c * rhs.k
-    let _d = lhs.a * rhs.d + lhs.b * rhs.h + lhs.c * rhs.l + lhs.d
-    let _e = lhs.e * rhs.a + lhs.f * rhs.e + lhs.g * rhs.i
-    let _f = lhs.e * rhs.b + lhs.f * rhs.f + lhs.g * rhs.j
-    let _g = lhs.e * rhs.c + lhs.f * rhs.g + lhs.g * rhs.k
-    let _h = lhs.e * rhs.d + lhs.f * rhs.h + lhs.g * rhs.l + lhs.h
-    let _i = lhs.i * rhs.a + lhs.j * rhs.e + lhs.k * rhs.i
-    let _j = lhs.i * rhs.b + lhs.j * rhs.f + lhs.k * rhs.j
-    let _k = lhs.i * rhs.c + lhs.j * rhs.g + lhs.k * rhs.k
-    let _l = lhs.i * rhs.d + lhs.j * rhs.h + lhs.k * rhs.l + lhs.l
-    return Matrix(a: _a, b: _b, c: _c, d: _d, e: _e, f: _f, g: _g, h: _h, i: _i, j: _j, k: _k, l: _l)
+    let a = rhs.a * lhs.a + rhs.b * lhs.e + rhs.c * lhs.i
+    let b = rhs.a * lhs.b + rhs.b * lhs.f + rhs.c * lhs.j
+    let c = rhs.a * lhs.c + rhs.b * lhs.g + rhs.c * lhs.k
+    let d = rhs.a * lhs.d + rhs.b * lhs.h + rhs.c * lhs.l + rhs.d
+    let e = rhs.e * lhs.a + rhs.f * lhs.e + rhs.g * lhs.i
+    let f = rhs.e * lhs.b + rhs.f * lhs.f + rhs.g * lhs.j
+    let g = rhs.e * lhs.c + rhs.f * lhs.g + rhs.g * lhs.k
+    let h = rhs.e * lhs.d + rhs.f * lhs.h + rhs.g * lhs.l + rhs.h
+    let i = rhs.i * lhs.a + rhs.j * lhs.e + rhs.k * lhs.i
+    let j = rhs.i * lhs.b + rhs.j * lhs.f + rhs.k * lhs.j
+    let k = rhs.i * lhs.c + rhs.j * lhs.g + rhs.k * lhs.k
+    let l = rhs.i * lhs.d + rhs.j * lhs.h + rhs.k * lhs.l + rhs.l
+    return Matrix(a: a, b: b, c: c, d: d, e: e, f: f, g: g, h: h, i: i, j: j, k: k, l: l)
 }
 
 @_transparent
@@ -832,6 +883,6 @@ public func *= <T: MatrixType>(inout lhs: Matrix, rhs: T) {
 
 @warn_unused_result
 @_transparent
-public func * <T: MatrixType>(lhs: T, rhs: Vector) -> Vector {
-    return Vector(x: lhs.a * rhs.x + lhs.b * rhs.y + lhs.c * rhs.z + lhs.d, y: lhs.e * rhs.x + lhs.f * rhs.y + lhs.g * rhs.z + lhs.h, z: lhs.i * rhs.x + lhs.j * rhs.y + lhs.k * rhs.z + lhs.l)
+public func * <T: MatrixType>(lhs: Vector, rhs: T) -> Vector {
+    return Vector(x: rhs.a * lhs.x + rhs.b * lhs.y + rhs.c * lhs.z + rhs.d, y: rhs.e * lhs.x + rhs.f * lhs.y + rhs.g * lhs.z + rhs.h, z: rhs.i * lhs.x + rhs.j * lhs.y + rhs.k * lhs.z + rhs.l)
 }

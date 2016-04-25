@@ -28,9 +28,9 @@ import Foundation
 ///
 /// Transformation Matrix:
 ///
-///     ⎛ a b c ⎞
-///     ⎜ d e f ⎟
-///     ⎝ 0 0 1 ⎠
+///     ⎛ a d 0 ⎞
+///     ⎜ b e 0 ⎟
+///     ⎝ c f 1 ⎠
 ///
 public protocol SDTransformType {
     
@@ -43,12 +43,25 @@ public protocol SDTransformType {
     var inverse : Self { get }
 }
 
+extension SDTransformType {
+    
+    @_transparent
+    public var tx: Double {
+        return c
+    }
+    
+    @_transparent
+    public var ty: Double {
+        return f
+    }
+}
+
 ///
 /// Transformation Matrix:
 ///
-///     ⎛ a b c ⎞
-///     ⎜ d e f ⎟
-///     ⎝ 0 0 1 ⎠
+///     ⎛ a d 0 ⎞
+///     ⎜ b e 0 ⎟
+///     ⎝ c f 1 ⎠
 ///
 public struct SDTransform: SDTransformType {
     
@@ -100,6 +113,29 @@ extension SDTransform {
 
 extension SDTransform {
     
+    @_transparent
+    public var tx: Double {
+        get {
+            return c
+        }
+        set {
+            c = newValue
+        }
+    }
+    
+    @_transparent
+    public var ty: Double {
+        get {
+            return f
+        }
+        set {
+            f = newValue
+        }
+    }
+}
+
+extension SDTransform {
+    
     ///
     /// Transformation Matrix:
     ///
@@ -117,8 +153,8 @@ extension SDTransform {
     ///
     /// Transformation Matrix:
     ///
-    ///     ⎛ cos(a) -sin(a) 0 ⎞
-    ///     ⎜ sin(a)  cos(a) 0 ⎟
+    ///     ⎛ cos(a) sin(a) 0 ⎞
+    ///     ⎜ -sin(a)  cos(a) 0 ⎟
     ///     ⎝   0       0    1 ⎠
     ///
     public struct Rotate: SDTransformType {
@@ -134,9 +170,9 @@ extension SDTransform {
     ///
     /// Transformation Matrix:
     ///
-    ///     ⎛ 1 tan(a) 0 ⎞
-    ///     ⎜ 0   1    0 ⎟
-    ///     ⎝ 0   0    1 ⎠
+    ///     ⎛   1    0 0 ⎞
+    ///     ⎜ tan(a) 1 0 ⎟
+    ///     ⎝   0    0 1 ⎠
     ///
     public struct SkewX: SDTransformType {
         
@@ -151,9 +187,9 @@ extension SDTransform {
     ///
     /// Transformation Matrix:
     ///
-    ///     ⎛   1    0 0 ⎞
-    ///     ⎜ tan(a) 1 0 ⎟
-    ///     ⎝   0    0 1 ⎠
+    ///     ⎛ 1 tan(a) 0 ⎞
+    ///     ⎜ 0   1    0 ⎟
+    ///     ⎝ 0   0    1 ⎠
     ///
     public struct SkewY: SDTransformType {
         
@@ -197,9 +233,9 @@ extension SDTransform {
     ///
     /// Transformation Matrix:
     ///
-    ///     ⎛ 1 0 x ⎞
-    ///     ⎜ 0 1 y ⎟
-    ///     ⎝ 0 0 1 ⎠
+    ///     ⎛ 1 0 0 ⎞
+    ///     ⎜ 0 1 0 ⎟
+    ///     ⎝ x y 1 ⎠
     ///
     public struct Translate: SDTransformType {
         
@@ -216,9 +252,9 @@ extension SDTransform {
     ///
     /// Transformation Matrix:
     ///
-    ///     ⎛ -1 0 2x ⎞
-    ///     ⎜  0 1  0 ⎟
-    ///     ⎝  0 0  1 ⎠
+    ///     ⎛ -1 0 0 ⎞
+    ///     ⎜  0 1 0 ⎟
+    ///     ⎝ 2x 0 1 ⎠
     ///
     public struct ReflectX: SDTransformType {
         
@@ -237,9 +273,9 @@ extension SDTransform {
     ///
     /// Transformation Matrix:
     ///
-    ///     ⎛ 1  0  0 ⎞
-    ///     ⎜ 0 -1 2y ⎟
-    ///     ⎝ 0  0  1 ⎠
+    ///     ⎛ 1  0 0 ⎞
+    ///     ⎜ 0 -1 0 ⎟
+    ///     ⎝ 0 2y 1 ⎠
     ///
     public struct ReflectY: SDTransformType {
         
@@ -701,12 +737,12 @@ public func != <S: SDTransformType, T: SDTransformType>(lhs: S, rhs: T) -> Bool 
 @warn_unused_result
 @_transparent
 public func * <S: SDTransformType, T: SDTransformType>(lhs: S, rhs: T) -> SDTransform {
-    let a = lhs.a * rhs.a + lhs.b * rhs.d
-    let b = lhs.a * rhs.b + lhs.b * rhs.e
-    let c = lhs.a * rhs.c + lhs.b * rhs.f + lhs.c
-    let d = lhs.d * rhs.a + lhs.e * rhs.d
-    let e = lhs.d * rhs.b + lhs.e * rhs.e
-    let f = lhs.d * rhs.c + lhs.e * rhs.f + lhs.f
+    let a = rhs.a * lhs.a + rhs.b * lhs.d
+    let b = rhs.a * lhs.b + rhs.b * lhs.e
+    let c = rhs.a * lhs.c + rhs.b * lhs.f + rhs.c
+    let d = rhs.d * lhs.a + rhs.e * lhs.d
+    let e = rhs.d * lhs.b + rhs.e * lhs.e
+    let f = rhs.d * lhs.c + rhs.e * lhs.f + rhs.f
     return SDTransform(a: a, b: b, c: c, d: d, e: e, f: f)
 }
 
@@ -717,6 +753,6 @@ public func *= <T: SDTransformType>(inout lhs: SDTransform, rhs: T) {
 
 @warn_unused_result
 @_transparent
-public func * <T: SDTransformType>(lhs: T, rhs: Point) -> Point {
-    return Point(x: lhs.a * rhs.x + lhs.b * rhs.y + lhs.c, y: lhs.d * rhs.x + lhs.e * rhs.y + lhs.f)
+public func * <T: SDTransformType>(lhs: Point, rhs: T) -> Point {
+    return Point(x: rhs.a * lhs.x + rhs.b * lhs.y + rhs.c, y: rhs.d * lhs.x + rhs.e * lhs.y + rhs.f)
 }
