@@ -737,12 +737,12 @@ public func != <S: SDTransformType, T: SDTransformType>(lhs: S, rhs: T) -> Bool 
 @warn_unused_result
 @_transparent
 public func * <S: SDTransformType, T: SDTransformType>(lhs: S, rhs: T) -> SDTransform {
-    let a = rhs.a * lhs.a + rhs.b * lhs.d
-    let b = rhs.a * lhs.b + rhs.b * lhs.e
-    let c = rhs.a * lhs.c + rhs.b * lhs.f + rhs.c
-    let d = rhs.d * lhs.a + rhs.e * lhs.d
-    let e = rhs.d * lhs.b + rhs.e * lhs.e
-    let f = rhs.d * lhs.c + rhs.e * lhs.f + rhs.f
+    let a = lhs.a * rhs.a + lhs.d * rhs.b
+    let b = lhs.b * rhs.a + lhs.e * rhs.b
+    let c = lhs.c * rhs.a + lhs.f * rhs.b + rhs.c
+    let d = lhs.a * rhs.d + lhs.d * rhs.e
+    let e = lhs.b * rhs.d + lhs.e * rhs.e
+    let f = lhs.c * rhs.d + lhs.f * rhs.e + rhs.f
     return SDTransform(a: a, b: b, c: c, d: d, e: e, f: f)
 }
 
@@ -754,7 +754,7 @@ public func *= <T: SDTransformType>(inout lhs: SDTransform, rhs: T) {
 @warn_unused_result
 @_transparent
 public func * <T: SDTransformType>(lhs: Point, rhs: T) -> Point {
-    return Point(x: rhs.a * lhs.x + rhs.b * lhs.y + rhs.c, y: rhs.d * lhs.x + rhs.e * lhs.y + rhs.f)
+    return Point(x: lhs.x * rhs.a + lhs.y * rhs.b + rhs.c, y: lhs.x * rhs.d + lhs.y * rhs.e + rhs.f)
 }
 
 @_transparent

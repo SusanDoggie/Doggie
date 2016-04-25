@@ -861,18 +861,18 @@ public func != <S: MatrixType, T: MatrixType>(lhs: S, rhs: T) -> Bool {
 @warn_unused_result
 @_transparent
 public func * <S: MatrixType, T: MatrixType>(lhs: S, rhs: T) -> Matrix {
-    let a = rhs.a * lhs.a + rhs.b * lhs.e + rhs.c * lhs.i
-    let b = rhs.a * lhs.b + rhs.b * lhs.f + rhs.c * lhs.j
-    let c = rhs.a * lhs.c + rhs.b * lhs.g + rhs.c * lhs.k
-    let d = rhs.a * lhs.d + rhs.b * lhs.h + rhs.c * lhs.l + rhs.d
-    let e = rhs.e * lhs.a + rhs.f * lhs.e + rhs.g * lhs.i
-    let f = rhs.e * lhs.b + rhs.f * lhs.f + rhs.g * lhs.j
-    let g = rhs.e * lhs.c + rhs.f * lhs.g + rhs.g * lhs.k
-    let h = rhs.e * lhs.d + rhs.f * lhs.h + rhs.g * lhs.l + rhs.h
-    let i = rhs.i * lhs.a + rhs.j * lhs.e + rhs.k * lhs.i
-    let j = rhs.i * lhs.b + rhs.j * lhs.f + rhs.k * lhs.j
-    let k = rhs.i * lhs.c + rhs.j * lhs.g + rhs.k * lhs.k
-    let l = rhs.i * lhs.d + rhs.j * lhs.h + rhs.k * lhs.l + rhs.l
+    let a = lhs.a * rhs.a + lhs.e * rhs.b + lhs.i * rhs.c
+    let b = lhs.b * rhs.a + lhs.f * rhs.b + lhs.j * rhs.c
+    let c = lhs.c * rhs.a + lhs.g * rhs.b + lhs.k * rhs.c
+    let d = lhs.d * rhs.a + lhs.h * rhs.b + lhs.l * rhs.c + rhs.d
+    let e = lhs.a * rhs.e + lhs.e * rhs.f + lhs.i * rhs.g
+    let f = lhs.b * rhs.e + lhs.f * rhs.f + lhs.j * rhs.g
+    let g = lhs.c * rhs.e + lhs.g * rhs.f + lhs.k * rhs.g
+    let h = lhs.d * rhs.e + lhs.h * rhs.f + lhs.l * rhs.g + rhs.h
+    let i = lhs.a * rhs.i + lhs.e * rhs.j + lhs.i * rhs.k
+    let j = lhs.b * rhs.i + lhs.f * rhs.j + lhs.j * rhs.k
+    let k = lhs.c * rhs.i + lhs.g * rhs.j + lhs.k * rhs.k
+    let l = lhs.d * rhs.i + lhs.h * rhs.j + lhs.l * rhs.k + rhs.l
     return Matrix(a: a, b: b, c: c, d: d, e: e, f: f, g: g, h: h, i: i, j: j, k: k, l: l)
 }
 
@@ -884,7 +884,7 @@ public func *= <T: MatrixType>(inout lhs: Matrix, rhs: T) {
 @warn_unused_result
 @_transparent
 public func * <T: MatrixType>(lhs: Vector, rhs: T) -> Vector {
-    return Vector(x: rhs.a * lhs.x + rhs.b * lhs.y + rhs.c * lhs.z + rhs.d, y: rhs.e * lhs.x + rhs.f * lhs.y + rhs.g * lhs.z + rhs.h, z: rhs.i * lhs.x + rhs.j * lhs.y + rhs.k * lhs.z + rhs.l)
+    return Vector(x: lhs.x * rhs.a + lhs.y * rhs.b + lhs.z * rhs.c + rhs.d, y: lhs.x * rhs.e + lhs.y * rhs.f + lhs.z * rhs.g + rhs.h, z: lhs.x * rhs.i + lhs.y * rhs.j + lhs.z * rhs.k + rhs.l)
 }
 
 @_transparent
