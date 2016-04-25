@@ -886,3 +886,8 @@ public func *= <T: MatrixType>(inout lhs: Matrix, rhs: T) {
 public func * <T: MatrixType>(lhs: Vector, rhs: T) -> Vector {
     return Vector(x: rhs.a * lhs.x + rhs.b * lhs.y + rhs.c * lhs.z + rhs.d, y: rhs.e * lhs.x + rhs.f * lhs.y + rhs.g * lhs.z + rhs.h, z: rhs.i * lhs.x + rhs.j * lhs.y + rhs.k * lhs.z + rhs.l)
 }
+
+@_transparent
+public func *= <T: MatrixType>(inout lhs: Vector, rhs: T) {
+    lhs = lhs * rhs
+}

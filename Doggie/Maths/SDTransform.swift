@@ -756,3 +756,8 @@ public func *= <T: SDTransformType>(inout lhs: SDTransform, rhs: T) {
 public func * <T: SDTransformType>(lhs: Point, rhs: T) -> Point {
     return Point(x: rhs.a * lhs.x + rhs.b * lhs.y + rhs.c, y: rhs.d * lhs.x + rhs.e * lhs.y + rhs.f)
 }
+
+@_transparent
+public func *= <T: SDTransformType>(inout lhs: Point, rhs: T) {
+    lhs = lhs * rhs
+}
