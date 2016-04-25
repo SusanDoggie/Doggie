@@ -76,6 +76,29 @@ public func != (lhs: Size, rhs: Size) -> Bool {
     return lhs.width != rhs.width || lhs.height != rhs.height
 }
 
+extension Size {
+    
+    @_transparent
+    public func aspectFit(bound: Size) -> Size {
+        let ratio = width / height
+        if ratio < bound.width / bound.height {
+            return Size(width: bound.height * ratio, height: bound.height)
+        } else {
+            return Size(width: bound.width, height: bound.width / ratio)
+        }
+    }
+    
+    @_transparent
+    public func aspectFill(bound: Size) -> Size {
+        let ratio = width / height
+        if ratio < bound.width / bound.height {
+            return Size(width: bound.width, height: bound.width / ratio)
+        } else {
+            return Size(width: bound.height * ratio, height: bound.height)
+        }
+    }
+}
+
 public struct Rect {
     
     public var origin : Point
