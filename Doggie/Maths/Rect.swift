@@ -101,6 +101,63 @@ extension Size {
     }
 }
 
+@warn_unused_result
+public prefix func +(val: Size) -> Size {
+    return val
+}
+@warn_unused_result
+public prefix func -(val: Size) -> Size {
+    return Size(width: -val.width, height: -val.height)
+}
+@warn_unused_result
+@_transparent
+public func +(lhs: Size, rhs:  Size) -> Size {
+    return Size(width: lhs.width + rhs.width, height: lhs.height + rhs.height)
+}
+@warn_unused_result
+@_transparent
+public func -(lhs: Size, rhs:  Size) -> Size {
+    return Size(width: lhs.width - rhs.width, height: lhs.height - rhs.height)
+}
+
+@warn_unused_result
+@_transparent
+public func *(lhs: Double, rhs:  Size) -> Size {
+    return Size(width: lhs * rhs.width, height: lhs * rhs.height)
+}
+@warn_unused_result
+@_transparent
+public func *(lhs: Size, rhs:  Double) -> Size {
+    return Size(width: lhs.width * rhs, height: lhs.height * rhs)
+}
+
+@warn_unused_result
+@_transparent
+public func /(lhs: Size, rhs:  Double) -> Size {
+    return Size(width: lhs.width / rhs, height: lhs.height / rhs)
+}
+
+@_transparent
+public func *= (inout lhs: Size, rhs:  Double) {
+    lhs.width *= rhs
+    lhs.height *= rhs
+}
+@_transparent
+public func /= (inout lhs: Size, rhs:  Double) {
+    lhs.width /= rhs
+    lhs.height /= rhs
+}
+@_transparent
+public func += (inout lhs: Size, rhs:  Size) {
+    lhs.width += rhs.width
+    lhs.height += rhs.height
+}
+@_transparent
+public func -= (inout lhs: Size, rhs:  Size) {
+    lhs.width -= rhs.width
+    lhs.height -= rhs.height
+}
+
 public struct Rect {
     
     public var origin : Point
