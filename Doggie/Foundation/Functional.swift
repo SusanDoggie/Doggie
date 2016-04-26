@@ -814,87 +814,6 @@ public extension LazyCollectionType {
     }
 }
 
-public struct LazySliceGenerator<C: CollectionType where C.Index : Strideable> : GeneratorType, SequenceType {
-    
-    private let base: C
-    private var left: C.Index?
-    private var mapper: ConcatGenerator<StrideToGenerator<C.Index>, GeneratorOfOne<C.Index>>
-    
-    private init(base: C, stride: C.Index.Stride) {
-        self.base = base
-        let startIndex = base.startIndex
-        let endIndex = base.endIndex
-        self.mapper = startIndex.stride(to: endIndex, by: stride).concat(CollectionOfOne(endIndex)).generate()
-        self.left = self.mapper.next()
-    }
-    
-    public mutating func next() -> C.SubSequence? {
-        if let left = self.left, let right = mapper.next() {
-            self.left = right
-            return base[left..<right]
-        }
-        self.left = nil
-        return nil
-    }
-}
-
-public struct LazySliceCollection<C: CollectionType where C.Index : Strideable> : LazyCollectionType {
-    
-    private let base: C
-    private let stride: C.Index.Stride
-    
-    public var startIndex : LazySliceCollectionIndex<C> {
-        return LazySliceCollectionIndex(base: base, stride: stride)
-    }
-    public var endIndex : LazySliceCollectionIndex<C> {
-        let startIndex = base.startIndex
-        let endIndex = base.endIndex
-        let left = startIndex.stride(to: endIndex, by: stride)
-        let right = startIndex.advancedBy(stride).stride(to: endIndex, by: stride)
-        return LazySliceCollectionIndex(bound: nil, mapper: zip(left, right.concat(CollectionOfOne(endIndex))).generate())
-    }
-    public subscript(index: LazySliceCollectionIndex<C>) -> C.SubSequence {
-        return base[index.bound!.0..<index.bound!.1]
-    }
-    
-    public func generate() -> LazySliceGenerator<C> {
-        return LazySliceGenerator(base: base, stride: stride)
-    }
-}
-
-public struct LazySliceCollectionIndex<C: CollectionType where C.Index : Strideable> : ForwardIndexType {
-    
-    private let bound: (C.Index, C.Index)?
-    private let mapper: Zip2Generator<StrideToGenerator<C.Index>, ConcatGenerator<StrideToGenerator<C.Index>, GeneratorOfOne<C.Index>>>
-    
-    private init(bound: (C.Index, C.Index)?, mapper: Zip2Generator<StrideToGenerator<C.Index>, ConcatGenerator<StrideToGenerator<C.Index>, GeneratorOfOne<C.Index>>>) {
-        self.bound = bound
-        self.mapper = mapper
-    }
-    
-    private init(base: C, stride: C.Index.Stride) {
-        let startIndex = base.startIndex
-        let endIndex = base.endIndex
-        let left = startIndex.stride(to: endIndex, by: stride)
-        let right = startIndex.advancedBy(stride).stride(to: endIndex, by: stride)
-        var _mapper = zip(left, right.concat(CollectionOfOne(endIndex))).generate()
-        self.bound = _mapper.next()
-        self.mapper = _mapper
-    }
-    
-    public func successor() -> LazySliceCollectionIndex {
-        var mapper = self.mapper
-        if self.bound != nil, let bound = mapper.next() {
-            return LazySliceCollectionIndex(bound: bound, mapper: mapper)
-        }
-        return LazySliceCollectionIndex(bound: nil, mapper: mapper)
-    }
-}
-
-public func == <C>(lhs: LazySliceCollectionIndex<C>, rhs: LazySliceCollectionIndex<C>) -> Bool {
-    return lhs.bound?.0 == rhs.bound?.0 && lhs.bound?.1 == rhs.bound?.1
-}
-
 public extension CollectionType where Index : Strideable {
     
     @warn_unused_result
@@ -908,8 +827,13 @@ public extension LazyCollectionType where Elements.Index : Strideable {
     
     @warn_unused_result
     @_transparent
-    func slice(by maxLength: Elements.Index.Stride) -> LazySliceCollection<Elements> {
-        return LazySliceCollection(base: self.elements, stride: maxLength)
+    func slice(by maxLength: Elements.Index.Stride) -> LazyMapSequence<Zip2Sequence<StrideTo<Elements.Index>, ConcatSequence<StrideTo<Elements.Index>, CollectionOfOne<Elements.Index>>>, Elements.SubSequence> {
+        let startIndex = self.elements.startIndex
+        let endIndex = self.elements.endIndex
+        let left = startIndex.stride(to: endIndex, by: maxLength)
+        let right = startIndex.advancedBy(maxLength).stride(to: endIndex, by: maxLength)
+        let mapper = zip(left, right.concat(CollectionOfOne(endIndex)))
+        return mapper.lazy.map { self.elements[$0..<$1] }
     }
 }
 
