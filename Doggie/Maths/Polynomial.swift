@@ -246,7 +246,7 @@ extension Polynomial {
 }
 
 @warn_unused_result
-public func remquo(lhs: Double, _ rhs: Polynomial) -> (quo: Polynomial, rem: Polynomial) {
+public func quorem(lhs: Double, _ rhs: Polynomial) -> (quo: Polynomial, rem: Polynomial) {
     switch rhs.count {
     case 0: fatalError("Divide by zero.")
     case 1: return ([lhs / rhs[0]], [])
@@ -255,12 +255,12 @@ public func remquo(lhs: Double, _ rhs: Polynomial) -> (quo: Polynomial, rem: Pol
 }
 
 @warn_unused_result
-public func remquo(lhs: Polynomial, _ rhs: Double) -> (quo: Polynomial, rem: Polynomial) {
+public func quorem(lhs: Polynomial, _ rhs: Double) -> (quo: Polynomial, rem: Polynomial) {
     return (Polynomial(lhs.coeffs.map { $0 / rhs }), [])
 }
 
 @warn_unused_result
-public func remquo(lhs: Polynomial, _ rhs: Polynomial) -> (quo: Polynomial, rem: Polynomial) {
+public func quorem(lhs: Polynomial, _ rhs: Polynomial) -> (quo: Polynomial, rem: Polynomial) {
     if lhs.count < rhs.count {
         return ([], lhs)
     }
@@ -497,7 +497,7 @@ public func exgcd(a: Polynomial, _ b: Polynomial) -> (gcd: Polynomial, x: Polyno
     var x: (Polynomial, Polynomial) = ([1], [0])
     var y: (Polynomial, Polynomial) = ([0], [1])
     while !b.all({ $0.almostZero() }) {
-        let (quo, rem) = remquo(a, b)
+        let (quo, rem) = quorem(a, b)
         x = (x.1, x.0 - quo * x.1)
         y = (y.1, y.0 - quo * y.1)
         (a, b) = (b, rem)

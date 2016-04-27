@@ -1154,7 +1154,7 @@ private func degree6RationalIntegral(p: Polynomial, _ q: Polynomial) -> Double {
     
     let _p = p / q.last!
     let _q = q / q.last!
-    let (quo, rem) = remquo(_p, _q)
+    let (quo, rem) = quorem(_p, _q)
     let _quo_integral = quo.integral
     
     var result = _quo_integral.eval(1) - _quo_integral.eval(0)
