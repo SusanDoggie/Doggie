@@ -1181,6 +1181,33 @@ public extension SequenceType {
     }
 }
 
+public struct LazyUniqueGenerator<Base : GeneratorType> : GeneratorType, SequenceType {
+    
+    private var pass: [Base.Element]
+    private var base: Base
+    private let isEquivalent: (Base.Element, Base.Element) -> Bool
+    
+    public mutating func next() -> Base.Element? {
+        while let val = base.next() {
+            if !pass.contains({ isEquivalent($0, val) }) {
+                pass.append(val)
+                return val
+            }
+        }
+        return nil
+    }
+}
+
+public struct LazyUniqueSequence<Base : SequenceType> : LazySequenceType {
+    
+    private let base: Base
+    private let isEquivalent: (Base.Generator.Element, Base.Generator.Element) -> Bool
+    
+    public func generate() -> LazyUniqueGenerator<Base.Generator> {
+        return LazyUniqueGenerator(pass: [], base: base.generate(), isEquivalent: isEquivalent)
+    }
+}
+
 extension SequenceType where Generator.Element : Equatable {
     
     @warn_unused_result
@@ -1204,6 +1231,24 @@ extension SequenceType {
             result.append(item)
         }
         return result
+    }
+}
+
+extension LazySequenceType where Elements.Generator.Element : Equatable {
+    
+    @warn_unused_result
+    @_transparent
+    func unique() -> LazyUniqueSequence<Elements> {
+        return LazyUniqueSequence(base: elements, isEquivalent: ==)
+    }
+}
+
+extension LazySequenceType {
+    
+    @warn_unused_result
+    @_transparent
+    func unique(isEquivalent: (Elements.Generator.Element, Elements.Generator.Element) -> Bool) -> LazyUniqueSequence<Elements> {
+        return LazyUniqueSequence(base: elements, isEquivalent: isEquivalent)
     }
 }
 
