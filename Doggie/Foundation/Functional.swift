@@ -1208,7 +1208,7 @@ public struct LazyUniqueSequence<Base : SequenceType> : LazySequenceType {
     }
 }
 
-extension SequenceType where Generator.Element : Equatable {
+public extension SequenceType where Generator.Element : Equatable {
     
     @warn_unused_result
     @_transparent
@@ -1221,7 +1221,7 @@ extension SequenceType where Generator.Element : Equatable {
     }
 }
 
-extension SequenceType {
+public extension SequenceType {
     
     @warn_unused_result
     @_transparent
@@ -1234,7 +1234,7 @@ extension SequenceType {
     }
 }
 
-extension LazySequenceType where Elements.Generator.Element : Equatable {
+public extension LazySequenceType where Elements.Generator.Element : Equatable {
     
     @warn_unused_result
     @_transparent
@@ -1243,7 +1243,7 @@ extension LazySequenceType where Elements.Generator.Element : Equatable {
     }
 }
 
-extension LazySequenceType {
+public extension LazySequenceType {
     
     @warn_unused_result
     @_transparent
