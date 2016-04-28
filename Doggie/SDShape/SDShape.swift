@@ -42,6 +42,7 @@ public protocol SDShape {
 
 public extension SDShape {
     
+    @_transparent
     var transform : SDTransform {
         get {
             return baseTransform * SDTransform.Scale(x: xScale, y: yScale) * SDTransform.Rotate(rotate)
@@ -51,6 +52,7 @@ public extension SDShape {
         }
     }
     
+    @_transparent
     mutating func setScale(scale: Double) {
         self.xScale = scale
         self.yScale = scale

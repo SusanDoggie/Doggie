@@ -45,29 +45,35 @@ public struct SDRectangle : SDShape {
         }
     }
     
+    @_transparent
     public var boundary : Rect {
         return Rect.bound(points)
     }
     
+    @_transparent
     public var points : [Point] {
         let _transform = self.transform
         return rect.points.map { $0 * _transform }
     }
     
+    @_transparent
     public var frame : [Point] {
         return points
     }
     
     private var rect : Rect
     
+    @_transparent
     public init(x: Double, y: Double, width: Double, height: Double) {
         rect = Rect(x: x, y: y, width: width, height: height)
     }
     
+    @_transparent
     public init(_ rect : Rect) {
         self.rect = rect
     }
     
+    @_transparent
     public var center : Point {
         get {
             return rect.center * transform
@@ -77,6 +83,7 @@ public struct SDRectangle : SDShape {
         }
     }
     
+    @_transparent
     public var x : Double {
         get {
             return rect.x
@@ -86,6 +93,7 @@ public struct SDRectangle : SDShape {
         }
     }
     
+    @_transparent
     public var y : Double {
         get {
             return rect.y
@@ -95,6 +103,7 @@ public struct SDRectangle : SDShape {
         }
     }
     
+    @_transparent
     public var width : Double {
         get {
             return rect.width
@@ -104,6 +113,7 @@ public struct SDRectangle : SDShape {
         }
     }
     
+    @_transparent
     public var height : Double {
         get {
             return rect.height
@@ -113,6 +123,7 @@ public struct SDRectangle : SDShape {
         }
     }
     
+    @_transparent
     public var path: SDPath {
         let points = self.rect.points
         var path: SDPath = [SDPath.Move(points[0]), SDPath.Line(points[1]), SDPath.Line(points[2]), SDPath.Line(points[3]), SDPath.ClosePath()]

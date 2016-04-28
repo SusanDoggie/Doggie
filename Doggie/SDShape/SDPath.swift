@@ -59,18 +59,22 @@ public struct SDPath : SDShape, MutableCollectionType, ArrayLiteralConvertible {
         }
     }
     
+    @_transparent
     public init() {
         self.commands = []
     }
     
+    @_transparent
     public init(arrayLiteral elements: SDPathCommand ...) {
         self.commands = elements
     }
     
+    @_transparent
     public init<S : SequenceType where S.Generator.Element == SDPathCommand>(_ commands: S) {
         self.commands = commands.array
     }
     
+    @_transparent
     public var center : Point {
         get {
             return _frame.center * transform
@@ -91,14 +95,17 @@ public struct SDPath : SDShape, MutableCollectionType, ArrayLiteralConvertible {
         }
     }
     
+    @_transparent
     public var count : Int {
         return commands.count
     }
     
+    @_transparent
     public var startIndex: Int {
         return commands.startIndex
     }
     
+    @_transparent
     public var endIndex: Int {
         return commands.endIndex
     }
@@ -108,16 +115,19 @@ public struct SDPath : SDShape, MutableCollectionType, ArrayLiteralConvertible {
         public var x: Double
         public var y: Double
         
+        @_transparent
         public init(x: Double, y: Double) {
             self.x = x
             self.y = y
         }
         
+        @_transparent
         public init(_ point: Point) {
             self.x = point.x
             self.y = point.y
         }
         
+        @_transparent
         public var point: Point {
             get {
                 return Point(x: x, y: y)
@@ -134,16 +144,19 @@ public struct SDPath : SDShape, MutableCollectionType, ArrayLiteralConvertible {
         public var x: Double
         public var y: Double
         
+        @_transparent
         public init(x: Double, y: Double) {
             self.x = x
             self.y = y
         }
         
+        @_transparent
         public init(_ point: Point) {
             self.x = point.x
             self.y = point.y
         }
         
+        @_transparent
         public var point: Point {
             get {
                 return Point(x: x, y: y)
@@ -160,16 +173,19 @@ public struct SDPath : SDShape, MutableCollectionType, ArrayLiteralConvertible {
         public var p1: Point
         public var p2: Point
         
+        @_transparent
         public init(x1: Double, y1: Double, x2: Double, y2: Double) {
             p1 = Point(x: x1, y: y1)
             p2 = Point(x: x2, y: y2)
         }
         
+        @_transparent
         public init(_ p1: Point, _ p2: Point) {
             self.p1 = p1
             self.p2 = p2
         }
         
+        @_transparent
         public var point: Point {
             get {
                 return p2
@@ -186,18 +202,21 @@ public struct SDPath : SDShape, MutableCollectionType, ArrayLiteralConvertible {
         public var p2: Point
         public var p3: Point
         
+        @_transparent
         public init(x1: Double, y1: Double, x2: Double, y2: Double, x3: Double, y3: Double) {
             p1 = Point(x: x1, y: y1)
             p2 = Point(x: x2, y: y2)
             p3 = Point(x: x3, y: y3)
         }
         
+        @_transparent
         public init(_ p1: Point, _ p2: Point, _ p3: Point) {
             self.p1 = p1
             self.p2 = p2
             self.p3 = p3
         }
         
+        @_transparent
         public var point: Point {
             get {
                 return p3
@@ -210,6 +229,7 @@ public struct SDPath : SDShape, MutableCollectionType, ArrayLiteralConvertible {
     
     public struct ClosePath : SDPathCommand {
         
+        @_transparent
         public init() {
             
         }
@@ -281,11 +301,13 @@ public struct SDPath : SDShape, MutableCollectionType, ArrayLiteralConvertible {
         return cache.boundary!
     }
     
+    @_transparent
     public var frame : [Point] {
         let _transform = self.transform
         return _frame.points.map { $0 * _transform }
     }
     
+    @_transparent
     public var path: SDPath {
         return self
     }
@@ -293,11 +315,13 @@ public struct SDPath : SDShape, MutableCollectionType, ArrayLiteralConvertible {
 
 extension SDPath {
     
+    @_transparent
     public init(_ rect: Rect) {
         let points = rect.points
         commands = [Move(points[0]), Line(points[1]), Line(points[2]), Line(points[3]), ClosePath()]
     }
     
+    @_transparent
     public init<S: SDShape>(_ shape: S) {
         self = shape.path
     }
@@ -305,55 +329,66 @@ extension SDPath {
 
 extension SDPath : RangeReplaceableCollectionType {
     
+    @_transparent
     public mutating func append(x: SDPathCommand) {
         cache = BoundaryCache()
         commands.append(x)
     }
     
+    @_transparent
     public mutating func appendContentsOf<S : SequenceType where S.Generator.Element == SDPathCommand>(newElements: S) {
         cache = BoundaryCache()
         commands.appendContentsOf(newElements)
     }
     
+    @_transparent
     public mutating func removeLast() -> SDPathCommand {
         cache = BoundaryCache()
         return commands.removeLast()
     }
     
+    @_transparent
     public mutating func popLast() -> SDPathCommand? {
         cache = BoundaryCache()
         return commands.popLast()
     }
     
+    @_transparent
     public mutating func reserveCapacity(minimumCapacity: Int) {
         commands.reserveCapacity(minimumCapacity)
     }
     
+    @_transparent
     public mutating func removeAll(keepCapacity keepCapacity: Bool = false) {
         cache = BoundaryCache()
         commands.removeAll(keepCapacity: keepCapacity)
     }
     
+    @_transparent
     public mutating func replaceRange<C : CollectionType where C.Generator.Element == SDPathCommand>(subRange: Range<Int>, with newElements: C) {
         cache = BoundaryCache()
         commands.replaceRange(subRange, with: newElements)
     }
     
+    @_transparent
     public mutating func insert(newElement: SDPathCommand, atIndex i: Int) {
         cache = BoundaryCache()
         commands.insert(newElement, atIndex: i)
     }
     
+    @_transparent
     public mutating func insertContentsOf<S : CollectionType where S.Generator.Element == SDPathCommand>(newElements: S, at i: Int) {
         cache = BoundaryCache()
         commands.insertContentsOf(newElements, at: i)
     }
     
+    @_transparent
     public mutating func removeAtIndex(i: Int) -> SDPathCommand {
         cache = BoundaryCache()
         return commands.removeAtIndex(i)
     }
     
+    @_transparent
     public mutating func removeRange(subRange: Range<Int>) {
         cache = BoundaryCache()
         commands.removeRange(subRange)
@@ -410,6 +445,7 @@ extension SDPath {
         }
     }
     
+    @_transparent
     public func apply(@noescape body: (SDPathCommand, ComputeState) throws -> Void) rethrows {
         
         try ComputeStateGenerator(self).forEach(body)
@@ -419,11 +455,13 @@ extension SDPath {
 extension SDPath.Line {
     
     @warn_unused_result
+    @_transparent
     public func bound(last: Point) -> Rect {
         return Rect.bound([last, self.point])
     }
     
     @warn_unused_result
+    @_transparent
     public func bound<T: SDTransformType>(last: Point, _ transform: T) -> Rect {
         return Rect.bound([last * transform, self.point * transform])
     }
@@ -432,11 +470,13 @@ extension SDPath.Line {
 extension SDPath.QuadBezier {
     
     @warn_unused_result
+    @_transparent
     public func bound(last: Point) -> Rect {
         return QuadBezierBound(last, self.p1, self.p2)
     }
     
     @warn_unused_result
+    @_transparent
     public func bound<T: SDTransformType>(last: Point, _ transform: T) -> Rect {
         return QuadBezierBound(last, self.p1, self.p2, transform)
     }
@@ -445,11 +485,13 @@ extension SDPath.QuadBezier {
 extension SDPath.CubicBezier {
     
     @warn_unused_result
+    @_transparent
     public func bound(last: Point) -> Rect {
         return CubicBezierBound(last, self.p1, self.p2, self.p3)
     }
     
     @warn_unused_result
+    @_transparent
     public func bound<T: SDTransformType>(last: Point, _ transform: T) -> Rect {
         return CubicBezierBound(last, self.p1, self.p2, self.p3, transform)
     }

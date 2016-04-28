@@ -55,7 +55,6 @@ extension ParallelCollectionType {
     /// - Note: Using the `return` statement in the `body` closure will only
     ///   exit from the current call to `body`, not any outer scope, and won't
     ///   skip subsequent calls.
-    @_transparent
     public func forEach(body: (Generator.Element) -> ()) {
         let queue = dispatch_queue_create("com.SusanDoggie.CollectionType.Parallel", DISPATCH_QUEUE_CONCURRENT)
         self.forEach(queue, body: body)
@@ -68,7 +67,6 @@ extension ParallelCollectionType {
     /// - Note: Using the `return` statement in the `body` closure will only
     ///   exit from the current call to `body`, not any outer scope, and won't
     ///   skip subsequent calls.
-    @_transparent
     public func forEach(queue: dispatch_queue_t, body: (Generator.Element) -> ()) {
         let _startIndex = self.startIndex
         dispatch_apply(numericCast(self.count), queue) {
@@ -79,7 +77,6 @@ extension ParallelCollectionType {
 
 extension ParallelCollectionType {
     
-    @_transparent
     public var array : [Generator.Element] {
         let count: Int = numericCast(self.count)
         let buffer = UnsafeMutablePointer<Generator.Element>.alloc(count)
@@ -103,17 +100,21 @@ public struct ParallelCollection<Base: CollectionType where Base.Index : RandomA
     
     public typealias Index = Base.Index
     
+    @_transparent
     public init(_ base: Base) {
         self.base = base
     }
     
+    @_transparent
     public var startIndex : Index {
         return base.startIndex
     }
+    @_transparent
     public var endIndex : Index {
         return base.endIndex
     }
     
+    @_transparent
     public var count : Index.Distance {
         return self.base.count
     }
@@ -122,6 +123,7 @@ public struct ParallelCollection<Base: CollectionType where Base.Index : RandomA
         return base[position]
     }
     
+    @_transparent
     public func generate() -> Generator {
         return ParallelCollectionGenerator(base: base.generate())
     }
@@ -131,6 +133,7 @@ public struct ParallelCollectionGenerator<Base: GeneratorType> : GeneratorType, 
     
     private var base: Base
     
+    @_transparent
     public mutating func next() -> Base.Element? {
         return base.next()
     }
@@ -145,18 +148,22 @@ public struct ParallelMapCollection<Base: CollectionType, Element where Base.Ind
     
     public typealias Index = Base.Index
     
+    @_transparent
     public init(_ base: Base, transform: (Base.Generator.Element) -> Element) {
         self.base = base
         self.transform = transform
     }
     
+    @_transparent
     public var startIndex : Index {
         return base.startIndex
     }
+    @_transparent
     public var endIndex : Index {
         return base.endIndex
     }
     
+    @_transparent
     public var count : Index.Distance {
         return self.base.count
     }
@@ -165,6 +172,7 @@ public struct ParallelMapCollection<Base: CollectionType, Element where Base.Ind
         return transform(base[position])
     }
     
+    @_transparent
     public func generate() -> Generator {
         return ParallelMapCollectionGenerator(base: base.generate(), transform: transform)
     }
@@ -175,6 +183,7 @@ public struct ParallelMapCollectionGenerator<Base: GeneratorType, Element> : Gen
     private var base: Base
     private let transform: (Base.Element) -> Element
     
+    @_transparent
     public mutating func next() -> Element? {
         return base.next().map(transform)
     }

@@ -401,6 +401,7 @@ public struct OptionOneGenerator<T> : GeneratorType, SequenceType {
     
     private var value: T?
     
+    @_transparent
     public mutating func next() -> T? {
         let _value = value
         value = nil
@@ -414,13 +415,16 @@ public struct OptionOneCollection<T> : CollectionType {
     
     private let value: T?
     
+    @_transparent
     public init(_ value: T?) {
         self.value = value
     }
     
+    @_transparent
     public var startIndex : Int {
         return 0
     }
+    @_transparent
     public var endIndex : Int {
         return value == nil ? 0 : 1
     }
@@ -428,6 +432,7 @@ public struct OptionOneCollection<T> : CollectionType {
         return value!
     }
     
+    @_transparent
     public func generate() -> OptionOneGenerator<T> {
         return OptionOneGenerator(value: value)
     }
@@ -461,6 +466,7 @@ public struct LazyScanGenerator<Base: GeneratorType, Element> : GeneratorType, S
     private var base: Base
     private let combine: (Element, Base.Element) -> Element
     
+    @_transparent
     public mutating func next() -> Element? {
         return nextElement.map { result in
             nextElement = base.next().map { combine(result, $0) }
@@ -475,6 +481,7 @@ public struct LazyScanSequence<Base: SequenceType, Element> : LazySequenceType {
     private let base: Base
     private let combine: (Element, Base.Generator.Element) -> Element
     
+    @_transparent
     public func generate() -> LazyScanGenerator<Base.Generator, Element> {
         return LazyScanGenerator(nextElement: initial, base: base.generate(), combine: combine)
     }
@@ -504,6 +511,7 @@ public struct ConcatGenerator<G1: GeneratorType, G2: GeneratorType where G1.Elem
     private var base2: G2
     private var flag: Bool
     
+    @_transparent
     public mutating func next() -> G1.Element? {
         if flag {
             if let val = base1.next() {
@@ -520,10 +528,12 @@ public struct ConcatSequence<S1 : SequenceType, S2 : SequenceType where S1.Gener
     private let base1: S1
     private let base2: S2
     
+    @_transparent
     public func generate() -> ConcatGenerator<S1.Generator, S2.Generator> {
         return ConcatGenerator(base1: base1.generate(), base2: base2.generate(), flag: true)
     }
     
+    @_transparent
     public func underestimateCount() -> Int {
         return base1.underestimateCount() + base2.underestimateCount()
     }
@@ -536,10 +546,12 @@ public struct ConcatCollection<S1 : CollectionType, S2 : CollectionType where S1
     private let base1: S1
     private let base2: S2
     
+    @_transparent
     public var startIndex : ConcatCollectionIndex<S1, S2> {
         return ConcatCollectionIndex(endIndex1: base1.endIndex, endIndex2: base2.endIndex, currect1: base1.startIndex, currect2: base2.startIndex)
     }
     
+    @_transparent
     public var endIndex : ConcatCollectionIndex<S1, S2> {
         return ConcatCollectionIndex(endIndex1: base1.endIndex, endIndex2: base2.endIndex, currect1: base1.endIndex, currect2: base2.endIndex)
     }
@@ -548,10 +560,12 @@ public struct ConcatCollection<S1 : CollectionType, S2 : CollectionType where S1
         return index.currect1 != base1.endIndex ? base1[index.currect1] : base2[index.currect2]
     }
     
+    @_transparent
     public func generate() -> ConcatGenerator<S1.Generator, S2.Generator> {
         return ConcatGenerator(base1: base1.generate(), base2: base2.generate(), flag: true)
     }
     
+    @_transparent
     public func underestimateCount() -> Int {
         return base1.underestimateCount() + base2.underestimateCount()
     }
@@ -564,6 +578,7 @@ public struct ConcatCollectionIndex<S1 : CollectionType, S2 : CollectionType whe
     private let currect1: S1.Index
     private let currect2: S2.Index
     
+    @_transparent
     public func successor() -> ConcatCollectionIndex<S1, S2> {
         if currect1 != endIndex1 {
             return ConcatCollectionIndex(endIndex1: endIndex1, endIndex2: endIndex2, currect1: currect1.successor(), currect2: currect2)
@@ -575,6 +590,7 @@ public struct ConcatCollectionIndex<S1 : CollectionType, S2 : CollectionType whe
     }
 }
 
+@_transparent
 public func == <S1, S2>(lhs: ConcatCollectionIndex<S1, S2>, rhs: ConcatCollectionIndex<S1, S2>) -> Bool {
     return lhs.currect1 == rhs.currect1 && lhs.currect2 == rhs.currect2
 }
@@ -586,10 +602,12 @@ public struct ConcatBidirectionalCollection<S1 : CollectionType, S2 : Collection
     private let base1: S1
     private let base2: S2
     
+    @_transparent
     public var startIndex : ConcatBidirectionalCollectionIndex<S1, S2> {
         return ConcatBidirectionalCollectionIndex(startIndex1: base1.startIndex, startIndex2: base2.startIndex, endIndex1: base1.endIndex, endIndex2: base2.endIndex, currect1: base1.startIndex, currect2: base2.startIndex)
     }
     
+    @_transparent
     public var endIndex : ConcatBidirectionalCollectionIndex<S1, S2> {
         return ConcatBidirectionalCollectionIndex(startIndex1: base1.startIndex, startIndex2: base2.startIndex, endIndex1: base1.endIndex, endIndex2: base2.endIndex, currect1: base1.endIndex, currect2: base2.endIndex)
     }
@@ -598,10 +616,12 @@ public struct ConcatBidirectionalCollection<S1 : CollectionType, S2 : Collection
         return index.currect1 != base1.endIndex ? base1[index.currect1] : base2[index.currect2]
     }
     
+    @_transparent
     public func generate() -> ConcatGenerator<S1.Generator, S2.Generator> {
         return ConcatGenerator(base1: base1.generate(), base2: base2.generate(), flag: true)
     }
     
+    @_transparent
     public func underestimateCount() -> Int {
         return base1.underestimateCount() + base2.underestimateCount()
     }
@@ -616,6 +636,7 @@ public struct ConcatBidirectionalCollectionIndex<S1 : CollectionType, S2 : Colle
     private let currect1: S1.Index
     private let currect2: S2.Index
     
+    @_transparent
     public func successor() -> ConcatBidirectionalCollectionIndex<S1, S2> {
         if currect1 != endIndex1 {
             return ConcatBidirectionalCollectionIndex(startIndex1: startIndex1, startIndex2: startIndex2, endIndex1: endIndex1, endIndex2: endIndex2, currect1: currect1.successor(), currect2: currect2)
@@ -625,6 +646,7 @@ public struct ConcatBidirectionalCollectionIndex<S1 : CollectionType, S2 : Colle
         }
         return self
     }
+    @_transparent
     public func predecessor() -> ConcatBidirectionalCollectionIndex<S1, S2> {
         if currect2 != startIndex2 {
             return ConcatBidirectionalCollectionIndex(startIndex1: startIndex1, startIndex2: startIndex2, endIndex1: endIndex1, endIndex2: endIndex2, currect1: currect1, currect2: currect2.predecessor())
@@ -636,6 +658,7 @@ public struct ConcatBidirectionalCollectionIndex<S1 : CollectionType, S2 : Colle
     }
 }
 
+@_transparent
 public func == <S1, S2>(lhs: ConcatBidirectionalCollectionIndex<S1, S2>, rhs: ConcatBidirectionalCollectionIndex<S1, S2>) -> Bool {
     return lhs.currect1 == rhs.currect1 && lhs.currect2 == rhs.currect2
 }
@@ -742,6 +765,7 @@ public struct LazyGatherGenerator<C: CollectionType, Indices: GeneratorType wher
     /// element exists.
     ///
     /// - Requires: No preceding call to `self.next()` has returned `nil`.
+    @_transparent
     public mutating func next() -> Element? {
         return indices.next().map { seq[$0] }
     }
@@ -756,10 +780,12 @@ public struct LazyGatherSequence<C : CollectionType, Indices : SequenceType wher
     private let _base: C
     private let _indices: Indices
     
+    @_transparent
     public func generate() -> Generator {
         return LazyGatherGenerator(seq: _base, indices: _indices.generate())
     }
     
+    @_transparent
     public func underestimateCount() -> Int {
         return _indices.underestimateCount()
     }
@@ -779,21 +805,26 @@ public struct LazyGatherCollection<C : CollectionType, Indices : CollectionType 
         return _base[_indices[idx]]
     }
     
+    @_transparent
     public var startIndex : Index {
         return _indices.startIndex
     }
+    @_transparent
     public var endIndex : Index {
         return _indices.endIndex
     }
     
+    @_transparent
     public var count : Index.Distance {
         return _indices.count
     }
     
+    @_transparent
     public func generate() -> Generator {
         return LazyGatherGenerator(seq: _base, indices: _indices.generate())
     }
     
+    @_transparent
     public func underestimateCount() -> Int {
         return _indices.underestimateCount()
     }
@@ -1009,6 +1040,7 @@ public struct LazyChunkElementsGenerator<Base : GeneratorType> : GeneratorType, 
     
     private var base: Base
     
+    @_transparent
     public mutating func next() -> Base.Element? {
         return base.next()
     }
@@ -1019,14 +1051,17 @@ public struct LazyChunkElementsSequence<Key : Equatable, Base : SequenceType> : 
     public let key: Key
     private let base: Base
     
+    @_transparent
     public func generate() -> LazyChunkElementsGenerator<Base.Generator> {
         return LazyChunkElementsGenerator(base: base.generate())
     }
     
+    @_transparent
     public func underestimateCount() -> Int {
         return base.underestimateCount()
     }
     
+    @_transparent
     public var elements: Base {
         return base
     }
@@ -1039,9 +1074,11 @@ public struct LazyChunkElementsCollection<Key : Equatable, Base : CollectionType
     public let key: Key
     private let base: Base
     
+    @_transparent
     public var startIndex : Base.Index {
         return base.startIndex
     }
+    @_transparent
     public var endIndex : Base.Index {
         return base.endIndex
     }
@@ -1050,18 +1087,22 @@ public struct LazyChunkElementsCollection<Key : Equatable, Base : CollectionType
         return base[index]
     }
     
+    @_transparent
     public var count : Base.Index.Distance {
         return base.count
     }
     
+    @_transparent
     public func generate() -> LazyChunkElementsGenerator<Base.Generator> {
         return LazyChunkElementsGenerator(base: base.generate())
     }
     
+    @_transparent
     public func underestimateCount() -> Int {
         return base.underestimateCount()
     }
     
+    @_transparent
     public var elements: Base {
         return base
     }
@@ -1121,6 +1162,7 @@ public struct GroupElementsGenerator<Element> : GeneratorType, SequenceType {
     
     private var base: IndexingGenerator<[Element]>
     
+    @_transparent
     public mutating func next() -> Element? {
         return base.next()
     }
@@ -1133,9 +1175,11 @@ public struct GroupElementsCollection<Key : Equatable, Element> : CollectionType
     public let key: Key
     private var base: [Element]
     
+    @_transparent
     public var startIndex : Int {
         return base.startIndex
     }
+    @_transparent
     public var endIndex : Int {
         return base.endIndex
     }
@@ -1144,18 +1188,22 @@ public struct GroupElementsCollection<Key : Equatable, Element> : CollectionType
         return base[index]
     }
     
+    @_transparent
     public var count : Int {
         return base.count
     }
+    @_transparent
     
     public func generate() -> GroupElementsGenerator<Element> {
         return GroupElementsGenerator(base: base.generate())
     }
     
+    @_transparent
     public func underestimateCount() -> Int {
         return base.underestimateCount()
     }
     
+    @_transparent
     public var elements: [Element] {
         return base
     }
@@ -1187,6 +1235,7 @@ public struct LazyUniqueGenerator<Base : GeneratorType> : GeneratorType, Sequenc
     private var base: Base
     private let isEquivalent: (Base.Element, Base.Element) -> Bool
     
+    @_transparent
     public mutating func next() -> Base.Element? {
         while let val = base.next() {
             if !pass.contains({ isEquivalent($0, val) }) {
@@ -1203,6 +1252,7 @@ public struct LazyUniqueSequence<Base : SequenceType> : LazySequenceType {
     private let base: Base
     private let isEquivalent: (Base.Generator.Element, Base.Generator.Element) -> Bool
     
+    @_transparent
     public func generate() -> LazyUniqueGenerator<Base.Generator> {
         return LazyUniqueGenerator(pass: [], base: base.generate(), isEquivalent: isEquivalent)
     }
@@ -1333,21 +1383,25 @@ public extension Float64 {
 }
 
 @warn_unused_result
+@_transparent
 public func random(range: ClosedInterval<Float>) -> Float {
     let diff = range.end - range.start
     return (Float.random(includeOne: true) * diff) + range.start
 }
 @warn_unused_result
+@_transparent
 public func random(range: ClosedInterval<Double>) -> Double {
     let diff = range.end - range.start
     return (Double.random(includeOne: true) * diff) + range.start
 }
 @warn_unused_result
+@_transparent
 public func random(range: HalfOpenInterval<Float>) -> Float {
     let diff = range.end - range.start
     return (Float.random() * diff) + range.start
 }
 @warn_unused_result
+@_transparent
 public func random(range: HalfOpenInterval<Double>) -> Double {
     let diff = range.end - range.start
     return (Double.random() * diff) + range.start
