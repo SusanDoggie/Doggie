@@ -342,6 +342,12 @@ extension SDPath : RangeReplaceableCollectionType {
     }
     
     @_transparent
+    public mutating func appendContentsOf<C : CollectionType where C.Generator.Element == SDPathCommand>(newElements: C) {
+        cache = BoundaryCache()
+        commands.appendContentsOf(newElements)
+    }
+    
+    @_transparent
     public mutating func removeLast() -> SDPathCommand {
         cache = BoundaryCache()
         return commands.removeLast()
