@@ -1383,25 +1383,21 @@ public extension Float64 {
 }
 
 @warn_unused_result
-@_transparent
 public func random(range: ClosedInterval<Float>) -> Float {
     let diff = range.end - range.start
     return (Float.random(includeOne: true) * diff) + range.start
 }
 @warn_unused_result
-@_transparent
 public func random(range: ClosedInterval<Double>) -> Double {
     let diff = range.end - range.start
     return (Double.random(includeOne: true) * diff) + range.start
 }
 @warn_unused_result
-@_transparent
 public func random(range: HalfOpenInterval<Float>) -> Float {
     let diff = range.end - range.start
     return (Float.random() * diff) + range.start
 }
 @warn_unused_result
-@_transparent
 public func random(range: HalfOpenInterval<Double>) -> Double {
     let diff = range.end - range.start
     return (Double.random() * diff) + range.start
