@@ -31,17 +31,12 @@ public struct SDRectangle : SDShape {
     
     public var rotate: Double = 0 {
         didSet {
-            center = rect.center * baseTransform * SDTransform.Scale(x: xScale, y: yScale) * SDTransform.Rotate(oldValue)
+            center = rect.center * baseTransform * SDTransform.Scale(x: scale, y: scale) * SDTransform.Rotate(oldValue)
         }
     }
-    public var xScale: Double = 1 {
+    public var scale: Double = 1 {
         didSet {
-            center = rect.center * baseTransform * SDTransform.Scale(x: oldValue, y: yScale) * SDTransform.Rotate(rotate)
-        }
-    }
-    public var yScale: Double = 1 {
-        didSet {
-            center = rect.center * baseTransform * SDTransform.Scale(x: xScale, y: oldValue) * SDTransform.Rotate(rotate)
+            center = rect.center * baseTransform * SDTransform.Scale(x: oldValue, y: oldValue) * SDTransform.Rotate(rotate)
         }
     }
     
@@ -128,8 +123,7 @@ public struct SDRectangle : SDShape {
         let points = self.rect.points
         var path: SDPath = [SDPath.Move(points[0]), SDPath.Line(points[1]), SDPath.Line(points[2]), SDPath.Line(points[3]), SDPath.ClosePath()]
         path.rotate = self.rotate
-        path.xScale = self.xScale
-        path.yScale = self.yScale
+        path.scale = self.scale
         path.transform = self.transform
         return path
     }

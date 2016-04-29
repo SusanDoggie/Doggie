@@ -36,8 +36,7 @@ public protocol SDShape {
     
     var center : Point { get set }
     var rotate: Double { get set }
-    var xScale: Double { get set }
-    var yScale: Double { get set }
+    var scale: Double { get set }
 }
 
 public extension SDShape {
@@ -45,16 +44,10 @@ public extension SDShape {
     @_transparent
     var transform : SDTransform {
         get {
-            return baseTransform * SDTransform.Scale(x: xScale, y: yScale) * SDTransform.Rotate(rotate)
+            return baseTransform * SDTransform.Scale(x: scale, y: scale) * SDTransform.Rotate(rotate)
         }
         set {
-            baseTransform = newValue * SDTransform.Rotate(rotate).inverse * SDTransform.Scale(x: xScale, y: yScale).inverse
+            baseTransform = newValue * SDTransform.Rotate(rotate).inverse * SDTransform.Scale(x: scale, y: scale).inverse
         }
-    }
-    
-    @_transparent
-    mutating func setScale(scale: Double) {
-        self.xScale = scale
-        self.yScale = scale
     }
 }

@@ -45,17 +45,12 @@ public struct SDPath : SDShape, MutableCollectionType, ArrayLiteralConvertible {
     
     public var rotate: Double = 0 {
         didSet {
-            center = _frame.center * baseTransform * SDTransform.Scale(x: xScale, y: yScale) * SDTransform.Rotate(oldValue)
+            center = _frame.center * baseTransform * SDTransform.Scale(x: scale, y: scale) * SDTransform.Rotate(oldValue)
         }
     }
-    public var xScale: Double = 1 {
+    public var scale: Double = 1 {
         didSet {
-            center = _frame.center * baseTransform * SDTransform.Scale(x: oldValue, y: yScale) * SDTransform.Rotate(rotate)
-        }
-    }
-    public var yScale: Double = 1 {
-        didSet {
-            center = _frame.center * baseTransform * SDTransform.Scale(x: xScale, y: oldValue) * SDTransform.Rotate(rotate)
+            center = _frame.center * baseTransform * SDTransform.Scale(x: oldValue, y: oldValue) * SDTransform.Rotate(rotate)
         }
     }
     
@@ -80,7 +75,7 @@ public struct SDPath : SDShape, MutableCollectionType, ArrayLiteralConvertible {
             return _frame.center * transform
         }
         set {
-            let offset = newValue * SDTransform.Rotate(rotate).inverse * SDTransform.Scale(x: xScale, y: yScale).inverse - _frame.center * baseTransform
+            let offset = newValue * SDTransform.Rotate(rotate).inverse * SDTransform.Scale(x: scale, y: scale).inverse - _frame.center * baseTransform
             baseTransform *= SDTransform.Translate(x: offset.x, y: offset.y)
         }
     }
@@ -506,7 +501,7 @@ extension SDPath.CubicBezier {
 extension SDPath {
     
     public var identity : SDPath {
-        if rotate == 0 && xScale == 1 && yScale == 1 && baseTransform == SDTransform.Identity() {
+        if rotate == 0 && scale == 1 && baseTransform == SDTransform.Identity() {
             return self
         }
         let transform = self.transform
