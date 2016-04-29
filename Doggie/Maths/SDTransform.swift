@@ -214,16 +214,6 @@ extension SDTransform {
         public var y: Double
         
         @_transparent
-        public init(ratio: Double) {
-            if ratio > 1 {
-                self.x = 1 / ratio
-                self.y = 1
-            } else {
-                self.x = 1
-                self.y = ratio
-            }
-        }
-        @_transparent
         public init(x: Double, y: Double) {
             self.x = x
             self.y = y

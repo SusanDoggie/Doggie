@@ -270,16 +270,6 @@ extension Matrix {
         public var y: Double
         public var z: Double
         
-        public init(ratio: Double) {
-            if ratio > 1 {
-                self.x = 1 / ratio
-                self.y = 1
-            } else {
-                self.x = 1
-                self.y = ratio
-            }
-            self.z = 1
-        }
         public init(x: Double, y: Double, z: Double) {
             self.x = x
             self.y = y
