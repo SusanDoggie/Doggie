@@ -86,6 +86,9 @@ extension SDPath {
             switch command {
             case "M":
                 repeat {
+                    if self.last is SDPath.Move {
+                        self.removeLast()
+                    }
                     let move = SDPath.Move(x: try toDouble(g.current), y: try toDouble(g.next()))
                     start = move.point
                     relative = move.point
@@ -95,6 +98,9 @@ extension SDPath {
                 } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
             case "m":
                 repeat {
+                    if self.last is SDPath.Move {
+                        self.removeLast()
+                    }
                     let move = SDPath.Move(x: try toDouble(g.current) + relative.x, y: try toDouble(g.next()) + relative.y)
                     start = move.point
                     relative = move.point
@@ -341,11 +347,15 @@ extension SDPath {
                     self.appendContentsOf(arc)
                 } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
             case "Z", "z":
-                let close = SDPath.ClosePath()
-                relative = start
-                lastcontrol = start
-                lastbezier = 0
-                self.append(close)
+                if self.last is SDPath.Move {
+                    self.removeLast()
+                } else if self.count != 0 {
+                    let close = SDPath.ClosePath()
+                    relative = start
+                    lastcontrol = start
+                    lastbezier = 0
+                    self.append(close)
+                }
             default:
                 throw DecoderError(command: command)
             }
