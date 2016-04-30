@@ -31,20 +31,17 @@ public struct Vector {
     public var y: Double
     public var z: Double
     
-    @_transparent
     public init() {
         self.x = 0
         self.y = 0
         self.z = 0
     }
     
-    @_transparent
     public init(x: Double, y: Double, z: Double) {
         self.x = x
         self.y = y
         self.z = z
     }
-    @_transparent
     public init(x: Int, y: Int, z: Int) {
         self.x = Double(x)
         self.y = Double(y)
@@ -100,25 +97,21 @@ extension Vector: CustomStringConvertible, CustomDebugStringConvertible {
 
 extension Vector: Hashable {
     
-    @_transparent
     public var hashValue: Int {
         return hash_combine(0, x, y, z)
     }
 }
 
 @warn_unused_result
-@_transparent
 public func dot(lhs: Vector, _ rhs:  Vector) -> Double {
     return lhs.x * rhs.x + lhs.y * rhs.y + lhs.z * rhs.z
 }
 @warn_unused_result
-@_transparent
 public func cross(lhs: Vector, _ rhs:  Vector) -> Vector {
     return Vector(x: lhs.y * rhs.z - lhs.z * rhs.y, y: lhs.z * rhs.x - lhs.x * rhs.z, z: lhs.x * rhs.y - lhs.y * rhs.x)
 }
 
 @warn_unused_result
-@_transparent
 public func norm(value: Vector) -> Double {
     return sqrt(dot(value, value))
 }
@@ -132,64 +125,53 @@ public prefix func -(val: Vector) -> Vector {
     return Vector(x: -val.x, y: -val.y, z: -val.z)
 }
 @warn_unused_result
-@_transparent
 public func +(lhs: Vector, rhs:  Vector) -> Vector {
     return Vector(x: lhs.x + rhs.x, y: lhs.y + rhs.y, z: lhs.z + rhs.z)
 }
 @warn_unused_result
-@_transparent
 public func -(lhs: Vector, rhs:  Vector) -> Vector {
     return Vector(x: lhs.x - rhs.x, y: lhs.y - rhs.y, z: lhs.z - rhs.z)
 }
 
 @warn_unused_result
-@_transparent
 public func *(lhs: Double, rhs:  Vector) -> Vector {
     return Vector(x: lhs * rhs.x, y: lhs * rhs.y, z: lhs * rhs.z)
 }
 @warn_unused_result
-@_transparent
 public func *(lhs: Vector, rhs:  Double) -> Vector {
     return Vector(x: lhs.x * rhs, y: lhs.y * rhs, z: lhs.z * rhs)
 }
 
 @warn_unused_result
-@_transparent
 public func /(lhs: Vector, rhs:  Double) -> Vector {
     return Vector(x: lhs.x / rhs, y: lhs.y / rhs, z: lhs.z / rhs)
 }
 
-@_transparent
 public func *= (inout lhs: Vector, rhs:  Double) {
     lhs.x *= rhs
     lhs.y *= rhs
     lhs.z *= rhs
 }
-@_transparent
 public func /= (inout lhs: Vector, rhs:  Double) {
     lhs.x /= rhs
     lhs.y /= rhs
     lhs.z /= rhs
 }
-@_transparent
 public func += (inout lhs: Vector, rhs:  Vector) {
     lhs.x += rhs.x
     lhs.y += rhs.y
     lhs.z += rhs.z
 }
-@_transparent
 public func -= (inout lhs: Vector, rhs:  Vector) {
     lhs.x -= rhs.x
     lhs.y -= rhs.y
     lhs.z -= rhs.z
 }
 @warn_unused_result
-@_transparent
 public func ==(lhs: Vector, rhs: Vector) -> Bool {
     return lhs.x == rhs.x && lhs.y == rhs.y && lhs.z == rhs.z
 }
 @warn_unused_result
-@_transparent
 public func !=(lhs: Vector, rhs: Vector) -> Bool {
     return lhs.x != rhs.x || lhs.y != rhs.y || lhs.z != rhs.z
 }

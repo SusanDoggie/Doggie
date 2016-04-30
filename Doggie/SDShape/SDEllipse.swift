@@ -46,7 +46,6 @@ public struct SDEllipse : SDShape {
     public var rx: Double
     public var ry: Double
     
-    @_transparent
     public var position: Point {
         get {
             return Point(x: x, y: y)
@@ -56,7 +55,6 @@ public struct SDEllipse : SDShape {
             self.y = newValue.y
         }
     }
-    @_transparent
     public var radius: Radius {
         get {
             return Radius(x: rx, y: ry)
@@ -67,18 +65,15 @@ public struct SDEllipse : SDShape {
         }
     }
     
-    @_transparent
     public var boundary : Rect {
         return EllipseBound(position, radius, transform)
     }
     
-    @_transparent
     public var frame : [Point] {
         let _transform = self.transform
         return Rect(x: x - rx, y: y - ry, width: 2 * rx, height: 2 * ry).points.map { $0 * _transform }
     }
     
-    @_transparent
     public init(center: Point, radius: Double) {
         self.x = center.x
         self.y = center.y
@@ -86,7 +81,6 @@ public struct SDEllipse : SDShape {
         self.ry = radius
     }
     
-    @_transparent
     public init(x: Double, y: Double, radius: Double) {
         self.x = x
         self.y = y
@@ -94,7 +88,6 @@ public struct SDEllipse : SDShape {
         self.ry = radius
     }
     
-    @_transparent
     public init(center: Point, radius: Radius) {
         self.x = center.x
         self.y = center.y
@@ -102,7 +95,6 @@ public struct SDEllipse : SDShape {
         self.ry = radius.y
     }
     
-    @_transparent
     public init(x: Double, y: Double, rx: Double, ry: Double) {
         self.x = x
         self.y = y
@@ -110,7 +102,6 @@ public struct SDEllipse : SDShape {
         self.ry = ry
     }
     
-    @_transparent
     public init(inRect: Rect) {
         let center = inRect.center
         self.x = center.x
@@ -119,7 +110,6 @@ public struct SDEllipse : SDShape {
         self.ry = inRect.height * 0.5
     }
     
-    @_transparent
     public var center : Point {
         get {
             return position * transform
@@ -129,7 +119,6 @@ public struct SDEllipse : SDShape {
         }
     }
     
-    @_transparent
     public var width : Double {
         get {
             return 2 * rx
@@ -139,7 +128,6 @@ public struct SDEllipse : SDShape {
         }
     }
     
-    @_transparent
     public var height : Double {
         get {
             return 2 * ry
@@ -149,7 +137,6 @@ public struct SDEllipse : SDShape {
         }
     }
     
-    @_transparent
     public var path: SDPath {
         let scale = SDTransform.Scale(x: self.radius.x, y: self.radius.y)
         let point = BezierCircle.lazy.map { $0 * scale + self.position }

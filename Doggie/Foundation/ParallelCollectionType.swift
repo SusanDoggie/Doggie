@@ -27,7 +27,6 @@ import Foundation
 
 extension CollectionType where Index : RandomAccessIndexType {
     
-    @_transparent
     public var parallel: ParallelCollection<Self> {
         return ParallelCollection(self)
     }
@@ -40,7 +39,6 @@ public protocol ParallelCollectionType : CollectionType {
 
 extension ParallelCollectionType {
     /// Identical to `self`.
-    @_transparent
     public var parallel: Self {
         return self
     }
@@ -100,21 +98,17 @@ public struct ParallelCollection<Base: CollectionType where Base.Index : RandomA
     
     public typealias Index = Base.Index
     
-    @_transparent
     public init(_ base: Base) {
         self.base = base
     }
     
-    @_transparent
     public var startIndex : Index {
         return base.startIndex
     }
-    @_transparent
     public var endIndex : Index {
         return base.endIndex
     }
     
-    @_transparent
     public var count : Index.Distance {
         return self.base.count
     }
@@ -123,7 +117,6 @@ public struct ParallelCollection<Base: CollectionType where Base.Index : RandomA
         return base[position]
     }
     
-    @_transparent
     public func generate() -> Generator {
         return ParallelCollectionGenerator(base: base.generate())
     }
@@ -133,7 +126,6 @@ public struct ParallelCollectionGenerator<Base: GeneratorType> : GeneratorType, 
     
     private var base: Base
     
-    @_transparent
     public mutating func next() -> Base.Element? {
         return base.next()
     }
@@ -148,22 +140,18 @@ public struct ParallelMapCollection<Base: CollectionType, Element where Base.Ind
     
     public typealias Index = Base.Index
     
-    @_transparent
     public init(_ base: Base, transform: (Base.Generator.Element) -> Element) {
         self.base = base
         self.transform = transform
     }
     
-    @_transparent
     public var startIndex : Index {
         return base.startIndex
     }
-    @_transparent
     public var endIndex : Index {
         return base.endIndex
     }
     
-    @_transparent
     public var count : Index.Distance {
         return self.base.count
     }
@@ -172,7 +160,6 @@ public struct ParallelMapCollection<Base: CollectionType, Element where Base.Ind
         return transform(base[position])
     }
     
-    @_transparent
     public func generate() -> Generator {
         return ParallelMapCollectionGenerator(base: base.generate(), transform: transform)
     }
@@ -183,7 +170,6 @@ public struct ParallelMapCollectionGenerator<Base: GeneratorType, Element> : Gen
     private var base: Base
     private let transform: (Base.Element) -> Element
     
-    @_transparent
     public mutating func next() -> Element? {
         return base.next().map(transform)
     }
@@ -192,7 +178,6 @@ public struct ParallelMapCollectionGenerator<Base: GeneratorType, Element> : Gen
 extension ParallelCollectionType {
     
     @warn_unused_result
-    @_transparent
     public func map<T>(transform: (Generator.Element) -> T) -> ParallelMapCollection<Self, T> {
         return ParallelMapCollection(self, transform: transform)
     }

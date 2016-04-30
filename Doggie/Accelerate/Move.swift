@@ -33,7 +33,6 @@ import Foundation
 //
 //
 
-@_transparent
 public func Move<T>(count: Int, _ input: UnsafePointer<T>, _ in_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var input = input
@@ -45,7 +44,6 @@ public func Move<T>(count: Int, _ input: UnsafePointer<T>, _ in_stride: Int, _ o
         output += out_stride
     }
 }
-@_transparent
 public func Move(count: Int, _ real: UnsafePointer<Float>, _ imag: UnsafePointer<Float>, _ in_stride: Int, _ _real: UnsafeMutablePointer<Float>, _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int) {
     
     var real = real
@@ -62,7 +60,6 @@ public func Move(count: Int, _ real: UnsafePointer<Float>, _ imag: UnsafePointer
         _imag += out_stride
     }
 }
-@_transparent
 public func Move(count: Int, _ real: UnsafePointer<Double>, _ imag: UnsafePointer<Double>, _ in_stride: Int, _ _real: UnsafeMutablePointer<Double>, _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int) {
     
     var real = real
@@ -80,7 +77,6 @@ public func Move(count: Int, _ real: UnsafePointer<Double>, _ imag: UnsafePointe
     }
 }
 
-@_transparent
 public func Swap<T>(count: Int, _ left: UnsafeMutablePointer<T>, _ l_stride: Int, _ right: UnsafeMutablePointer<T>, _ r_stride: Int) {
     
     var left = left
@@ -92,7 +88,6 @@ public func Swap<T>(count: Int, _ left: UnsafeMutablePointer<T>, _ l_stride: Int
         right += r_stride
     }
 }
-@_transparent
 public func Swap(count: Int, _ lreal: UnsafeMutablePointer<Float>, _ limag: UnsafeMutablePointer<Float>, _ l_stride: Int, _ rreal: UnsafeMutablePointer<Float>, _ rimag: UnsafeMutablePointer<Float>, _ r_stride: Int) {
     
     var lreal = lreal
@@ -109,7 +104,6 @@ public func Swap(count: Int, _ lreal: UnsafeMutablePointer<Float>, _ limag: Unsa
         rimag += r_stride
     }
 }
-@_transparent
 public func Swap(count: Int, _ lreal: UnsafeMutablePointer<Double>, _ limag: UnsafeMutablePointer<Double>, _ l_stride: Int, _ rreal: UnsafeMutablePointer<Double>, _ rimag: UnsafeMutablePointer<Double>, _ r_stride: Int) {
     
     var lreal = lreal

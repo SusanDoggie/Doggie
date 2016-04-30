@@ -28,7 +28,6 @@ import CoreGraphics
 
 extension CGPoint {
     
-    @_transparent
     public init(_ p: Point) {
         self.x = CGFloat(p.x)
         self.y = CGFloat(p.y)
@@ -37,7 +36,6 @@ extension CGPoint {
 
 extension CGSize {
     
-    @_transparent
     public init(_ s: Size) {
         self.width = CGFloat(s.width)
         self.height = CGFloat(s.height)
@@ -46,7 +44,6 @@ extension CGSize {
 
 extension CGRect {
     
-    @_transparent
     public init(_ r: Rect) {
         self.origin = CGPoint(r.origin)
         self.size = CGSize(r.size)
@@ -55,12 +52,10 @@ extension CGRect {
 
 extension Point {
     
-    @_transparent
     public init(_ p: CGPoint) {
         self.x = Double(p.x)
         self.y = Double(p.y)
     }
-    @_transparent
     public init(x: CGFloat, y: CGFloat) {
         self.x = Double(x)
         self.y = Double(y)
@@ -69,12 +64,10 @@ extension Point {
 
 extension Size {
     
-    @_transparent
     public init(_ s: CGSize) {
         self.width = Double(s.width)
         self.height = Double(s.height)
     }
-    @_transparent
     public init(width: CGFloat, height: CGFloat) {
         self.width = Double(width)
         self.height = Double(height)
@@ -83,12 +76,10 @@ extension Size {
 
 extension Rect {
     
-    @_transparent
     public init(_ r: CGRect) {
         self.origin = Point(r.origin)
         self.size = Size(r.size)
     }
-    @_transparent
     public init(x: CGFloat, y: CGFloat, width: CGFloat, height: CGFloat) {
         self.origin = Point(x: x, y: y)
         self.size = Size(width: width, height: height)
@@ -97,7 +88,6 @@ extension Rect {
 
 extension CGAffineTransform {
     
-    @_transparent
     public init<T: SDTransformType>(_ m: T) {
         self.a = CGFloat(m.a)
         self.b = CGFloat(m.d)
@@ -110,7 +100,6 @@ extension CGAffineTransform {
 
 extension SDTransform {
     
-    @_transparent
     public init(_ m: CGAffineTransform) {
         self.a = Double(m.a)
         self.b = Double(m.c)
@@ -125,7 +114,6 @@ extension SDTransform {
 
 extension SDRectangle {
     
-    @_transparent
     public var CGPath : CoreGraphics.CGPath {
         var _transform = CGAffineTransform(transform)
         return CGPathCreateWithRect(CGRect(Rect(x: x, y: y, width: width, height: height)), &_transform)
@@ -134,7 +122,6 @@ extension SDRectangle {
 
 extension SDEllipse {
     
-    @_transparent
     public var CGPath : CoreGraphics.CGPath {
         var _transform = CGAffineTransform(transform)
         return CGPathCreateWithEllipseInRect(CGRect(Rect(x: x - rx, y: y - ry, width: 2 * rx, height: 2 * ry)), &_transform)

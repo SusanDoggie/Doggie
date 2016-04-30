@@ -41,7 +41,6 @@ public protocol SDShape {
 
 public extension SDShape {
     
-    @_transparent
     var transform : SDTransform {
         get {
             return baseTransform * SDTransform.Scale(x: scale, y: scale) * SDTransform.Rotate(rotate)

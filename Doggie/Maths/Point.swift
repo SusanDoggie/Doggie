@@ -30,18 +30,15 @@ public struct Point {
     public var x: Double
     public var y: Double
     
-    @_transparent
     public init() {
         self.x = 0
         self.y = 0
     }
     
-    @_transparent
     public init(x: Double, y: Double) {
         self.x = x
         self.y = y
     }
-    @_transparent
     public init(x: Int, y: Int) {
         self.x = Double(x)
         self.y = Double(y)
@@ -51,7 +48,6 @@ public struct Point {
 extension Point {
     
     @warn_unused_result
-    @_transparent
     public func offset(dx dx: Double, dy: Double) -> Point {
         return Point(x: self.x + dx, y: self.x + dy)
     }
@@ -68,30 +64,25 @@ extension Point: CustomStringConvertible, CustomDebugStringConvertible {
 
 extension Point: Hashable {
     
-    @_transparent
     public var hashValue: Int {
         return hash_combine(0, x, y)
     }
 }
 
 @warn_unused_result
-@_transparent
 public func dot(lhs: Point, _ rhs:  Point) -> Double {
     return lhs.x * rhs.x + lhs.y * rhs.y
 }
 @warn_unused_result
-@_transparent
 public func norm(value: Point) -> Double {
     return sqrt(dot(value, value))
 }
 @warn_unused_result
-@_transparent
 public func arg(value: Point) -> Double {
     return atan2(value.y, value.x)
 }
 
 @warn_unused_result
-@_transparent
 public func middle(p: Point ... ) -> Point {
     let count = Double(p.count)
     var _x = 0.0
@@ -103,18 +94,15 @@ public func middle(p: Point ... ) -> Point {
     return Point(x: _x / count, y: _y / count)
 }
 @warn_unused_result
-@_transparent
 public func distance(lhs: Point, _ rhs: Point) -> Double {
     return norm(lhs - rhs)
 }
 
 @warn_unused_result
-@_transparent
 public func direction(lhs: Point, _ rhs:  Point) -> Double {
     return lhs.x * rhs.y - lhs.y * rhs.x
 }
 @warn_unused_result
-@_transparent
 public func direction(a: Point, _ b: Point, _ c: Point) -> Double {
     return direction(b - a, c - a)
 }
@@ -128,61 +116,50 @@ public prefix func -(val: Point) -> Point {
     return Point(x: -val.x, y: -val.y)
 }
 @warn_unused_result
-@_transparent
 public func +(lhs: Point, rhs:  Point) -> Point {
     return Point(x: lhs.x + rhs.x, y: lhs.y + rhs.y)
 }
 @warn_unused_result
-@_transparent
 public func -(lhs: Point, rhs:  Point) -> Point {
     return Point(x: lhs.x - rhs.x, y: lhs.y - rhs.y)
 }
 
 @warn_unused_result
-@_transparent
 public func *(lhs: Double, rhs:  Point) -> Point {
     return Point(x: lhs * rhs.x, y: lhs * rhs.y)
 }
 @warn_unused_result
-@_transparent
 public func *(lhs: Point, rhs:  Double) -> Point {
     return Point(x: lhs.x * rhs, y: lhs.y * rhs)
 }
 
 @warn_unused_result
-@_transparent
 public func /(lhs: Point, rhs:  Double) -> Point {
     return Point(x: lhs.x / rhs, y: lhs.y / rhs)
 }
 
-@_transparent
 public func *= (inout lhs: Point, rhs:  Double) {
     lhs.x *= rhs
     lhs.y *= rhs
 }
-@_transparent
 public func /= (inout lhs: Point, rhs:  Double) {
     lhs.x /= rhs
     lhs.y /= rhs
 }
-@_transparent
 public func += (inout lhs: Point, rhs:  Point) {
     lhs.x += rhs.x
     lhs.y += rhs.y
 }
-@_transparent
 public func -= (inout lhs: Point, rhs:  Point) {
     lhs.x -= rhs.x
     lhs.y -= rhs.y
 }
 
 @warn_unused_result
-@_transparent
 public func == (lhs: Point, rhs: Point) -> Bool {
     return lhs.x == rhs.x && lhs.y == rhs.y
 }
 @warn_unused_result
-@_transparent
 public func != (lhs: Point, rhs: Point) -> Bool {
     return lhs.x != rhs.x || lhs.y != rhs.y
 }

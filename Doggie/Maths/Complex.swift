@@ -30,22 +30,18 @@ public struct Complex {
     public var real: Double
     public var imag: Double
     
-    @_transparent
     public init(_ real: Double) {
         self.real = real
         self.imag = 0.0
     }
-    @_transparent
     public init(real: Double, imag: Double) {
         self.real = real
         self.imag = imag
     }
-    @_transparent
     public init(_ real: Int) {
         self.real = Double(real)
         self.imag = 0.0
     }
-    @_transparent
     public init(real: Int, imag: Int) {
         self.real = Double(real)
         self.imag = Double(imag)
@@ -89,120 +85,96 @@ extension Complex: CustomStringConvertible, CustomDebugStringConvertible {
 
 extension Complex: Hashable {
     
-    @_transparent
     public var hashValue: Int {
         return hash_combine(0, real, imag)
     }
 }
 
 extension Int8 {
-    @_transparent
     public var i: Complex { return Complex(real: 0, imag: Double(self)) }
 }
 extension Int16 {
-    @_transparent
     public var i: Complex { return Complex(real: 0, imag: Double(self)) }
 }
 extension Int32 {
-    @_transparent
     public var i: Complex { return Complex(real: 0, imag: Double(self)) }
 }
 extension Int64 {
-    @_transparent
     public var i: Complex { return Complex(real: 0, imag: Double(self)) }
 }
 extension Int {
-    @_transparent
     public var i: Complex { return Complex(real: 0, imag: Double(self)) }
 }
 
 extension UInt8 {
-    @_transparent
     public var i: Complex { return Complex(real: 0, imag: Double(self)) }
 }
 extension UInt16 {
-    @_transparent
     public var i: Complex { return Complex(real: 0, imag: Double(self)) }
 }
 extension UInt32 {
-    @_transparent
     public var i: Complex { return Complex(real: 0, imag: Double(self)) }
 }
 extension UInt64 {
-    @_transparent
     public var i: Complex { return Complex(real: 0, imag: Double(self)) }
 }
 extension UInt {
-    @_transparent
     public var i: Complex { return Complex(real: 0, imag: Double(self)) }
 }
 
 extension Float {
-    @_transparent
     public var i: Complex { return Complex(real: 0, imag: Double(self)) }
 }
 
 extension Double {
-    @_transparent
     public var i: Complex { return Complex(real: 0, imag: self) }
 }
 
 @warn_unused_result
-@_transparent
 public func norm(value: Complex) -> Double {
     return value.real * value.real + value.imag * value.imag
 }
 @warn_unused_result
-@_transparent
 public func abs(value: Complex) -> Double {
     return sqrt(norm(value))
 }
 @warn_unused_result
-@_transparent
 public func arg(value: Complex) -> Double {
     return atan2(value.imag, value.real)
 }
 @warn_unused_result
-@_transparent
 public func conj(value: Complex) -> Complex {
     return Complex(real: value.real, imag: -value.imag)
 }
 @warn_unused_result
-@_transparent
 public func polar(rho rho: Double, theta: Double) -> Complex {
     return rho * cis(theta)
 }
 
 @warn_unused_result
-@_transparent
 public func exp(value: Complex) -> Complex {
     return exp(value.real) * cis(value.imag)
 }
 @warn_unused_result
-@_transparent
 public func cis(theta: Double) -> Complex {
     return Complex(real: cos(theta), imag: sin(theta))
 }
 
 @warn_unused_result
-@_transparent
 public func cocis(theta: Double) -> Complex {
     return Complex(real: sin(theta), imag: cos(theta))
 }
 
 @warn_unused_result
-@_transparent
 public func sin(x: Complex) -> Complex {
     return Complex(real: sin(x.real) * cosh(x.imag), imag: cos(x.real) * sinh(x.imag))
 }
 @warn_unused_result
-@_transparent
 public func cos(x: Complex) -> Complex {
     return Complex(real: cos(x.real) * cosh(x.imag), imag: -sin(x.real) * sinh(x.imag))
 }
 
 @warn_unused_result
-@_transparent
 public func tan(x: Complex) -> Complex {
     let _real = x.real * 2
     let _imag = x.imag * 2
@@ -211,7 +183,6 @@ public func tan(x: Complex) -> Complex {
 }
 
 @warn_unused_result
-@_transparent
 public func cot(x: Complex) -> Complex {
     let _real = x.real * 2
     let _imag = x.imag * 2
@@ -220,33 +191,28 @@ public func cot(x: Complex) -> Complex {
 }
 
 @warn_unused_result
-@_transparent
 public func sec(x: Complex) -> Complex {
     let d = cos(x.real * 2) + cosh(x.imag * 2)
     return Complex(real: 2 * cos(x.real) * cosh(x.imag) / d, imag: 2 * sin(x.real) * sinh(x.imag) / d)
 }
 
 @warn_unused_result
-@_transparent
 public func csc(x: Complex) -> Complex {
     let d = cos(x.real * 2) - cosh(x.imag * 2)
     return Complex(real: -2 * sin(x.real) * cosh(x.imag) / d, imag: 2 * cos(x.real) * sinh(x.imag) / d)
 }
 
 @warn_unused_result
-@_transparent
 public func sinh(x: Complex) -> Complex {
     return Complex(real: sinh(x.real) * cos(x.imag), imag: cosh(x.real) * sin(x.imag))
 }
 
 @warn_unused_result
-@_transparent
 public func cosh(x: Complex) -> Complex {
     return Complex(real: cosh(x.real) * cos(x.imag), imag: sinh(x.real) * sin(x.imag))
 }
 
 @warn_unused_result
-@_transparent
 public func tanh(x: Complex) -> Complex {
     let _real = x.real * 2
     let _imag = x.imag * 2
@@ -255,75 +221,63 @@ public func tanh(x: Complex) -> Complex {
 }
 
 @warn_unused_result
-@_transparent
 public func asin(x: Complex) -> Complex {
     let z = asinh(Complex(real: x.imag, imag: -x.real))
     return Complex(real: -z.imag, imag: z.real)
 }
 
 @warn_unused_result
-@_transparent
 public func acos(x: Complex) -> Complex {
     return M_PI_2 - asin(x)
 }
 
 @warn_unused_result
-@_transparent
 public func atan(x: Complex) -> Complex {
     let z = atanh(Complex(real: -x.imag, imag: x.real))
     return Complex(real: z.imag, imag: -z.real)
 }
 
 @warn_unused_result
-@_transparent
 public func asec(x: Complex) -> Complex {
     return M_PI_2 - acsc(x)
 }
 
 @warn_unused_result
-@_transparent
 public func acsc(x: Complex) -> Complex {
     return asin(1 / x)
 }
 
 @warn_unused_result
-@_transparent
 public func acot(x: Complex) -> Complex {
     return atan(1 / x)
 }
 
 @warn_unused_result
-@_transparent
 public func asinh(x: Complex) -> Complex {
     return log(x + sqrt(x * x + 1))
 }
 
 @warn_unused_result
-@_transparent
 public func acosh(x: Complex) -> Complex {
     return log(x + sqrt(x * x - 1))
 }
 
 @warn_unused_result
-@_transparent
 public func atanh(x: Complex) -> Complex {
     return (log(1 + x) - log(1 - x)) * 0.5
 }
 
 @warn_unused_result
-@_transparent
 public func log(c: Complex) -> Complex {
     return Complex(real: log(abs(c)), imag: arg(c))
 }
 
 @warn_unused_result
-@_transparent
 public func log10(c: Complex) -> Complex {
     return log(c) / M_LN10
 }
 
 @warn_unused_result
-@_transparent
 public func pow(a: Complex, _ b: Complex) -> Complex {
     let _norm = norm(a)
     let _arg = arg(a)
@@ -331,77 +285,63 @@ public func pow(a: Complex, _ b: Complex) -> Complex {
 }
 
 @warn_unused_result
-@_transparent
 public func pow(c: Complex, _ n: Double) -> Complex {
     return pow(norm(c), 0.5 * n) * cis(arg(c) * n)
 }
 
 @warn_unused_result
-@_transparent
 public func sqrt(c: Complex) -> Complex {
     return sqrt(abs(c)) * cis(0.5 * arg(c))
 }
 
 @warn_unused_result
-@_transparent
 public func cbrt(c: Complex) -> Complex {
     return cbrt(abs(c)) * cis(arg(c) / 3)
 }
 
 @warn_unused_result
-@_transparent
 public func +(lhs: Complex, rhs:  Double) -> Complex {
     return Complex(real: lhs.real + rhs, imag: lhs.imag)
 }
 @warn_unused_result
-@_transparent
 public func -(lhs: Complex, rhs:  Double) -> Complex {
     return Complex(real: lhs.real - rhs, imag: lhs.imag)
 }
 @warn_unused_result
-@_transparent
 public func +(lhs: Double, rhs:  Complex) -> Complex {
     return Complex(real: lhs + rhs.real, imag: rhs.imag)
 }
 @warn_unused_result
-@_transparent
 public func -(lhs: Double, rhs:  Complex) -> Complex {
     return Complex(real: lhs - rhs.real, imag: -rhs.imag)
 }
 @warn_unused_result
-@_transparent
 public func +(lhs: Complex, rhs:  Complex) -> Complex {
     return Complex(real: lhs.real + rhs.real, imag: lhs.imag + rhs.imag)
 }
 @warn_unused_result
-@_transparent
 public func -(lhs: Complex, rhs:  Complex) -> Complex {
     return Complex(real: lhs.real - rhs.real, imag: lhs.imag - rhs.imag)
 }
 @warn_unused_result
-@_transparent
 public func *(lhs: Complex, rhs:  Double) -> Complex {
     return Complex(real: lhs.real * rhs, imag: lhs.imag * rhs)
 }
 @warn_unused_result
-@_transparent
 public func *(lhs: Double, rhs:  Complex) -> Complex {
     return Complex(real: lhs * rhs.real, imag: lhs * rhs.imag)
 }
 @warn_unused_result
-@_transparent
 public func *(lhs: Complex, rhs:  Complex) -> Complex {
     let _real = lhs.real * rhs.real - lhs.imag * rhs.imag
     let _imag = lhs.real * rhs.imag + lhs.imag * rhs.real
     return Complex(real: _real, imag: _imag)
 }
 @warn_unused_result
-@_transparent
 public func /(lhs: Complex, rhs:  Double) -> Complex {
     return Complex(real: lhs.real / rhs, imag: lhs.imag / rhs)
 }
 @warn_unused_result
-@_transparent
 public func /(lhs: Double, rhs:  Complex) -> Complex {
     let _norm = norm(rhs)
     let _real = lhs * rhs.real / _norm
@@ -409,7 +349,6 @@ public func /(lhs: Double, rhs:  Complex) -> Complex {
     return Complex(real: _real, imag: _imag)
 }
 @warn_unused_result
-@_transparent
 public func /(lhs: Complex, rhs:  Complex) -> Complex {
     let _norm = norm(rhs)
     let _real = lhs.real * rhs.real + lhs.imag * rhs.imag
@@ -424,42 +363,34 @@ public prefix func + (value: Complex) -> Complex {
 public prefix func -(value:  Complex) -> Complex {
     return Complex(real: -value.real, imag: -value.imag)
 }
-@_transparent
 public func +=(inout lhs: Complex, rhs:  Double) {
     lhs.real += rhs
 }
-@_transparent
 public func -=(inout lhs: Complex, rhs:  Double) {
     lhs.real -= rhs
 }
-@_transparent
 public func *=(inout lhs: Complex, rhs:  Double) {
     lhs.real *= rhs
     lhs.imag *= rhs
 }
-@_transparent
 public func /=(inout lhs: Complex, rhs:  Double) {
     lhs.real /= rhs
     lhs.imag /= rhs
 }
-@_transparent
 public func +=(inout lhs: Complex, rhs:  Complex) {
     lhs.real += rhs.real
     lhs.imag += rhs.imag
 }
-@_transparent
 public func -=(inout lhs: Complex, rhs:  Complex) {
     lhs.real -= rhs.real
     lhs.imag -= rhs.imag
 }
-@_transparent
 public func *=(inout lhs: Complex, rhs:  Complex) {
     let _real = lhs.real * rhs.real - lhs.imag * rhs.imag
     let _imag = lhs.real * rhs.imag + lhs.imag * rhs.real
     lhs.real = _real
     lhs.imag = _imag
 }
-@_transparent
 public func /=(inout lhs: Complex, rhs:  Complex) {
     let _norm = norm(rhs)
     let _real = lhs.real * rhs.real + lhs.imag * rhs.imag
@@ -468,32 +399,26 @@ public func /=(inout lhs: Complex, rhs:  Complex) {
     lhs.imag = _imag / _norm
 }
 @warn_unused_result
-@_transparent
 public func ==(lhs: Double, rhs: Complex) -> Bool {
     return lhs == rhs.real && rhs.imag == 0.0
 }
 @warn_unused_result
-@_transparent
 public func !=(lhs: Double, rhs: Complex) -> Bool {
     return lhs != rhs.real || rhs.imag != 0.0
 }
 @warn_unused_result
-@_transparent
 public func ==(lhs: Complex, rhs: Double) -> Bool {
     return lhs.real == rhs && lhs.imag == 0.0
 }
 @warn_unused_result
-@_transparent
 public func !=(lhs: Complex, rhs: Double) -> Bool {
     return lhs.real != rhs || lhs.imag != 0.0
 }
 @warn_unused_result
-@_transparent
 public func ==(lhs: Complex, rhs: Complex) -> Bool {
     return lhs.real == rhs.real && lhs.imag == rhs.imag
 }
 @warn_unused_result
-@_transparent
 public func !=(lhs: Complex, rhs: Complex) -> Bool {
     return lhs.real != rhs.real || lhs.imag != rhs.imag
 }

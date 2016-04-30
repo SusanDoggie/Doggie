@@ -52,17 +52,14 @@ public protocol MatrixType {
 
 extension MatrixType {
     
-    @_transparent
     public var tx: Double {
         return d
     }
     
-    @_transparent
     public var ty: Double {
         return h
     }
     
-    @_transparent
     public var tz: Double {
         return l
     }
@@ -133,7 +130,6 @@ extension Matrix : CustomStringConvertible, CustomDebugStringConvertible {
 
 extension Matrix {
     
-    @_transparent
     public var inverse : Matrix {
         let _a = g * j - f * k
         let _b = c * j - b * k
@@ -158,7 +154,6 @@ extension Matrix {
 
 extension Matrix {
     
-    @_transparent
     public var tx: Double {
         get {
             return d
@@ -168,7 +163,6 @@ extension Matrix {
         }
     }
     
-    @_transparent
     public var ty: Double {
         get {
             return h
@@ -178,7 +172,6 @@ extension Matrix {
         }
     }
     
-    @_transparent
     public var tz: Double {
         get {
             return l
@@ -346,406 +339,319 @@ public func PerspectiveProjectMatrix(alpha alpha: Double, aspect: Double, nearZ:
 
 extension Matrix.Identity {
     
-    @_transparent
     public var a: Double {
         return 1
     }
-    @_transparent
     public var b: Double {
         return 0
     }
-    @_transparent
     public var c: Double {
         return 0
     }
-    @_transparent
     public var d: Double {
         return 0
     }
-    @_transparent
     public var e: Double {
         return 0
     }
-    @_transparent
     public var f: Double {
         return 1
     }
-    @_transparent
     public var g: Double {
         return 0
     }
-    @_transparent
     public var h: Double {
         return 0
     }
-    @_transparent
     public var i: Double {
         return 0
     }
-    @_transparent
     public var j: Double {
         return 0
     }
-    @_transparent
     public var k: Double {
         return 1
     }
-    @_transparent
     public var l: Double {
         return 0
     }
     
-    @_transparent
     public var inverse : Matrix.Identity {
         return self
     }
 }
 
 @warn_unused_result
-@_transparent
 public func == (_: Matrix.Identity, _: Matrix.Identity) -> Bool {
     return true
 }
 @warn_unused_result
-@_transparent
 public func != (lhs: Matrix.Identity, rhs: Matrix.Identity) -> Bool {
     return false
 }
 
 @warn_unused_result
-@_transparent
 public func * (_: Matrix.Identity, _: Matrix.Identity) -> Matrix.Identity {
     return Matrix.Identity()
 }
 
 @warn_unused_result
-@_transparent
 public func * <T: MatrixType>(_: Matrix.Identity, rhs: T) -> T {
     return rhs
 }
 
 @warn_unused_result
-@_transparent
 public func * <S: MatrixType>(lhs: S, _: Matrix.Identity) -> S {
     return lhs
 }
 
-@_transparent
 public func *= <S: MatrixType>(inout _: S, _: Matrix.Identity) {
 }
 
 extension Matrix.RotateX {
     
-    @_transparent
     public var a: Double {
         return 1
     }
-    @_transparent
     public var b: Double {
         return 0
     }
-    @_transparent
     public var c: Double {
         return 0
     }
-    @_transparent
     public var d: Double {
         return 0
     }
-    @_transparent
     public var e: Double {
         return 0
     }
-    @_transparent
     public var f: Double {
         return cos(angle)
     }
-    @_transparent
     public var g: Double {
         return -sin(angle)
     }
-    @_transparent
     public var h: Double {
         return 0
     }
-    @_transparent
     public var i: Double {
         return 0
     }
-    @_transparent
     public var j: Double {
         return sin(angle)
     }
-    @_transparent
     public var k: Double {
         return cos(angle)
     }
-    @_transparent
     public var l: Double {
         return 0
     }
     
-    @_transparent
     public var inverse : Matrix.RotateX {
         return Matrix.RotateX(-angle)
     }
 }
 
 @warn_unused_result
-@_transparent
 public func == (lhs: Matrix.RotateX, rhs: Matrix.RotateX) -> Bool {
     return lhs.angle == rhs.angle
 }
 @warn_unused_result
-@_transparent
 public func != (lhs: Matrix.RotateX, rhs: Matrix.RotateX) -> Bool {
     return lhs.angle != rhs.angle
 }
 
 @warn_unused_result
-@_transparent
 public func * (lhs: Matrix.RotateX, rhs: Matrix.RotateX) -> Matrix.RotateX {
     return Matrix.RotateX(lhs.angle + rhs.angle)
 }
 
-@_transparent
 public func *= (inout lhs: Matrix.RotateX, rhs: Matrix.RotateX) {
     return lhs.angle += rhs.angle
 }
 
 extension Matrix.RotateY {
     
-    @_transparent
     public var a: Double {
         return cos(angle)
     }
-    @_transparent
     public var b: Double {
         return 0
     }
-    @_transparent
     public var c: Double {
         return sin(angle)
     }
-    @_transparent
     public var d: Double {
         return 0
     }
-    @_transparent
     public var e: Double {
         return 0
     }
-    @_transparent
     public var f: Double {
         return 1
     }
-    @_transparent
     public var g: Double {
         return 0
     }
-    @_transparent
     public var h: Double {
         return 0
     }
-    @_transparent
     public var i: Double {
         return -sin(angle)
     }
-    @_transparent
     public var j: Double {
         return 0
     }
-    @_transparent
     public var k: Double {
         return cos(angle)
     }
-    @_transparent
     public var l: Double {
         return 0
     }
     
-    @_transparent
     public var inverse : Matrix.RotateY {
         return Matrix.RotateY(-angle)
     }
 }
 
 @warn_unused_result
-@_transparent
 public func == (lhs: Matrix.RotateY, rhs: Matrix.RotateY) -> Bool {
     return lhs.angle == rhs.angle
 }
 @warn_unused_result
-@_transparent
 public func != (lhs: Matrix.RotateY, rhs: Matrix.RotateY) -> Bool {
     return lhs.angle != rhs.angle
 }
 
 @warn_unused_result
-@_transparent
 public func * (lhs: Matrix.RotateY, rhs: Matrix.RotateY) -> Matrix.RotateY {
     return Matrix.RotateY(lhs.angle + rhs.angle)
 }
 
-@_transparent
 public func *= (inout lhs: Matrix.RotateY, rhs: Matrix.RotateY) {
     return lhs.angle += rhs.angle
 }
 
 extension Matrix.RotateZ {
     
-    @_transparent
     public var a: Double {
         return cos(angle)
     }
-    @_transparent
     public var b: Double {
         return -sin(angle)
     }
-    @_transparent
     public var c: Double {
         return 0
     }
-    @_transparent
     public var d: Double {
         return 0
     }
-    @_transparent
     public var e: Double {
         return sin(angle)
     }
-    @_transparent
     public var f: Double {
         return cos(angle)
     }
-    @_transparent
     public var g: Double {
         return 0
     }
-    @_transparent
     public var h: Double {
         return 0
     }
-    @_transparent
     public var i: Double {
         return 0
     }
-    @_transparent
     public var j: Double {
         return 0
     }
-    @_transparent
     public var k: Double {
         return 1
     }
-    @_transparent
     public var l: Double {
         return 0
     }
     
-    @_transparent
     public var inverse : Matrix.RotateZ {
         return Matrix.RotateZ(-angle)
     }
 }
 
 @warn_unused_result
-@_transparent
 public func == (lhs: Matrix.RotateZ, rhs: Matrix.RotateZ) -> Bool {
     return lhs.angle == rhs.angle
 }
 @warn_unused_result
-@_transparent
 public func != (lhs: Matrix.RotateZ, rhs: Matrix.RotateZ) -> Bool {
     return lhs.angle != rhs.angle
 }
 
 @warn_unused_result
-@_transparent
 public func * (lhs: Matrix.RotateZ, rhs: Matrix.RotateZ) -> Matrix.RotateZ {
     return Matrix.RotateZ(lhs.angle + rhs.angle)
 }
 
-@_transparent
 public func *= (inout lhs: Matrix.RotateZ, rhs: Matrix.RotateZ) {
     return lhs.angle += rhs.angle
 }
 
 extension Matrix.Scale {
     
-    @_transparent
     public var a: Double {
         return x
     }
-    @_transparent
     public var b: Double {
         return 0
     }
-    @_transparent
     public var c: Double {
         return 0
     }
-    @_transparent
     public var d: Double {
         return 0
     }
-    @_transparent
     public var e: Double {
         return 0
     }
-    @_transparent
     public var f: Double {
         return y
     }
-    @_transparent
     public var g: Double {
         return 0
     }
-    @_transparent
     public var h: Double {
         return 0
     }
-    @_transparent
     public var i: Double {
         return 0
     }
-    @_transparent
     public var j: Double {
         return 0
     }
-    @_transparent
     public var k: Double {
         return z
     }
-    @_transparent
     public var l: Double {
         return 0
     }
     
-    @_transparent
     public var inverse : Matrix.Scale {
         return Matrix.Scale(x: 1 / x, y: 1 / y, z: 1 / z)
     }
 }
 
 @warn_unused_result
-@_transparent
 public func == (lhs: Matrix.Scale, rhs: Matrix.Scale) -> Bool {
     return lhs.x == rhs.x && lhs.y == rhs.y && lhs.z == rhs.z
 }
 @warn_unused_result
-@_transparent
 public func != (lhs: Matrix.Scale, rhs: Matrix.Scale) -> Bool {
     return lhs.x != rhs.x || lhs.y != rhs.y || lhs.z != rhs.z
 }
 
 @warn_unused_result
-@_transparent
 public func * (lhs: Matrix.Scale, rhs: Matrix.Scale) -> Matrix.Scale {
     return Matrix.Scale(x: lhs.x * rhs.x, y: lhs.y * rhs.y, z: lhs.z * rhs.z)
 }
 
-@_transparent
 public func *= (inout lhs: Matrix.Scale, rhs: Matrix.Scale) {
     lhs.x *= rhs.x
     lhs.y *= rhs.y
@@ -754,79 +660,62 @@ public func *= (inout lhs: Matrix.Scale, rhs: Matrix.Scale) {
 
 extension Matrix.Translate {
     
-    @_transparent
     public var a: Double {
         return 1
     }
-    @_transparent
     public var b: Double {
         return 0
     }
-    @_transparent
     public var c: Double {
         return 0
     }
-    @_transparent
     public var d: Double {
         return x
     }
-    @_transparent
     public var e: Double {
         return 0
     }
-    @_transparent
     public var f: Double {
         return 1
     }
-    @_transparent
     public var g: Double {
         return 0
     }
-    @_transparent
     public var h: Double {
         return y
     }
-    @_transparent
     public var i: Double {
         return 0
     }
-    @_transparent
     public var j: Double {
         return 0
     }
-    @_transparent
     public var k: Double {
         return 1
     }
-    @_transparent
     public var l: Double {
         return z
     }
     
-    @_transparent
     public var inverse : Matrix.Translate {
         return Matrix.Translate(x: -x, y: -y, z: -z)
     }
 }
 
 @warn_unused_result
-@_transparent
 public func == (lhs: Matrix.Translate, rhs: Matrix.Translate) -> Bool {
     return lhs.x == rhs.x && lhs.y == rhs.y && lhs.z == rhs.z
 }
 @warn_unused_result
-@_transparent
 public func != (lhs: Matrix.Translate, rhs: Matrix.Translate) -> Bool {
     return lhs.x != rhs.x || lhs.y != rhs.y || lhs.z != rhs.z
 }
 
 @warn_unused_result
-@_transparent
 public func * (lhs: Matrix.Translate, rhs: Matrix.Translate) -> Matrix.Translate {
     return Matrix.Translate(x: lhs.x + rhs.x, y: lhs.y + rhs.y, z: lhs.z + rhs.z)
 }
 
-@_transparent
 public func *= (inout lhs: Matrix.Translate, rhs: Matrix.Translate) {
     lhs.x += rhs.x
     lhs.y += rhs.y
@@ -834,14 +723,12 @@ public func *= (inout lhs: Matrix.Translate, rhs: Matrix.Translate) {
 }
 
 @warn_unused_result
-@_transparent
 public func == <S: MatrixType, T: MatrixType>(lhs: S, rhs: T) -> Bool {
     return lhs.a == rhs.a && lhs.b == rhs.b && lhs.c == rhs.c && lhs.d == rhs.d
         && lhs.e == rhs.e && lhs.f == rhs.f && lhs.g == rhs.g && lhs.h == rhs.h
         && lhs.i == rhs.i && lhs.j == rhs.j && lhs.k == rhs.k && lhs.l == rhs.l
 }
 @warn_unused_result
-@_transparent
 public func != <S: MatrixType, T: MatrixType>(lhs: S, rhs: T) -> Bool {
     return lhs.a != rhs.a || lhs.b != rhs.b || lhs.c != rhs.c || lhs.d != rhs.d
         || lhs.e != rhs.e || lhs.f != rhs.f || lhs.g != rhs.g || lhs.h != rhs.h
@@ -849,7 +736,6 @@ public func != <S: MatrixType, T: MatrixType>(lhs: S, rhs: T) -> Bool {
 }
 
 @warn_unused_result
-@_transparent
 public func * <S: MatrixType, T: MatrixType>(lhs: S, rhs: T) -> Matrix {
     let a = lhs.a * rhs.a + lhs.e * rhs.b + lhs.i * rhs.c
     let b = lhs.b * rhs.a + lhs.f * rhs.b + lhs.j * rhs.c
@@ -866,18 +752,15 @@ public func * <S: MatrixType, T: MatrixType>(lhs: S, rhs: T) -> Matrix {
     return Matrix(a: a, b: b, c: c, d: d, e: e, f: f, g: g, h: h, i: i, j: j, k: k, l: l)
 }
 
-@_transparent
 public func *= <T: MatrixType>(inout lhs: Matrix, rhs: T) {
     lhs = lhs * rhs
 }
 
 @warn_unused_result
-@_transparent
 public func * <T: MatrixType>(lhs: Vector, rhs: T) -> Vector {
     return Vector(x: lhs.x * rhs.a + lhs.y * rhs.b + lhs.z * rhs.c + rhs.d, y: lhs.x * rhs.e + lhs.y * rhs.f + lhs.z * rhs.g + rhs.h, z: lhs.x * rhs.i + lhs.y * rhs.j + lhs.z * rhs.k + rhs.l)
 }
 
-@_transparent
 public func *= <T: MatrixType>(inout lhs: Vector, rhs: T) {
     lhs = lhs * rhs
 }

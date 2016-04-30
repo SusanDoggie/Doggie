@@ -32,18 +32,15 @@ public struct Radius {
     public var x: Double
     public var y: Double
     
-    @_transparent
     public init() {
         self.x = 0
         self.y = 0
     }
     
-    @_transparent
     public init(x: Double, y: Double) {
         self.x = x
         self.y = y
     }
-    @_transparent
     public init(x: Int, y: Int) {
         self.x = Double(x)
         self.y = Double(y)
@@ -61,19 +58,16 @@ extension Radius: CustomStringConvertible, CustomDebugStringConvertible {
 
 extension Radius: Hashable {
     
-    @_transparent
     public var hashValue: Int {
         return hash_combine(0, x, y)
     }
 }
 
 @warn_unused_result
-@_transparent
 public func == (lhs: Radius, rhs: Radius) -> Bool {
     return lhs.x == rhs.x && lhs.y == rhs.y
 }
 @warn_unused_result
-@_transparent
 public func != (lhs: Radius, rhs: Radius) -> Bool {
     return lhs.x != rhs.x || lhs.y != rhs.y
 }

@@ -36,7 +36,6 @@ public struct UUID {
 
 extension UUID {
     
-    @_transparent
     public static var zero : UUID {
         return UUID(byte0: 0, byte1: 0, byte2: 0, byte3: 0,
                     byte4: 0, byte5: 0, byte6: 0, byte7: 0,
@@ -44,7 +43,6 @@ extension UUID {
                     byte12: 0, byte13: 0, byte14: 0, byte15: 0)
     }
     
-    @_transparent
     public init() {
         (byte0, byte1, byte2, byte3) = (0, 0, 0, 0)
         (byte4, byte5, byte6, byte7) = (0, 0, 0, 0)
@@ -53,7 +51,6 @@ extension UUID {
         withUnsafeMutablePointer(&self) { uuid_generate_random(UnsafeMutablePointer($0)) }
     }
     
-    @_transparent
     public init?(_ uuid: String) {
         (byte0, byte1, byte2, byte3) = (0, 0, 0, 0)
         (byte4, byte5, byte6, byte7) = (0, 0, 0, 0)
@@ -64,7 +61,6 @@ extension UUID {
         }
     }
     
-    @_transparent
     public var string: String {
         var buf = [Int8](count: 37, repeatedValue: 0)
         uuid_unparse_upper([byte0, byte1, byte2, byte3,
@@ -87,7 +83,6 @@ extension UUID: CustomStringConvertible, CustomDebugStringConvertible {
 
 extension UUID: Hashable, Comparable {
     
-    @_transparent
     public var hashValue: Int {
         return hash_combine(0, byte0, byte1, byte2, byte3,
                             byte4, byte5, byte6, byte7,
@@ -97,7 +92,6 @@ extension UUID: Hashable, Comparable {
 }
 
 @warn_unused_result
-@_transparent
 public func ==(lhs: UUID, rhs: UUID) -> Bool {
     return lhs.byte0 == rhs.byte0
         && lhs.byte1 == rhs.byte1
@@ -118,7 +112,6 @@ public func ==(lhs: UUID, rhs: UUID) -> Bool {
 }
 
 @warn_unused_result
-@_transparent
 public func <(lhs: UUID, rhs: UUID) -> Bool {
     
     if lhs.byte0 < rhs.byte0 {

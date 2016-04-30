@@ -40,13 +40,11 @@ public protocol SDAtomicType {
 public extension SDAtomicType {
     
     /// Sets the value, and returns the previous value.
-    @_transparent
     public mutating func fetchStore(value: Self) -> Self {
         return self.fetchStore { _ in value }
     }
     
     /// Sets the value, and returns the previous value. `block` is called repeatedly until result accepted.
-    @_transparent
     public mutating func fetchStore(@noescape block: (Self) throws -> Self) rethrows -> Self {
         while true {
             let oldVal = self
@@ -60,7 +58,6 @@ public extension SDAtomicType {
 extension Int32 : SDAtomicType {
     
     /// Compare and set Int32 with barrier.
-    @_transparent
     public mutating func compareSet(oldVal: Int32, _ newVal: Int32) -> Bool {
         return OSAtomicCompareAndSwap32Barrier(oldVal, newVal, &self)
     }
@@ -69,7 +66,6 @@ extension Int32 : SDAtomicType {
 extension Int64 : SDAtomicType {
     
     /// Compare and set Int64 with barrier.
-    @_transparent
     public mutating func compareSet(oldVal: Int64, _ newVal: Int64) -> Bool {
         return OSAtomicCompareAndSwap64Barrier(oldVal, newVal, &self)
     }
@@ -78,7 +74,6 @@ extension Int64 : SDAtomicType {
 extension Int : SDAtomicType {
     
     /// Compare and set Int with barrier.
-    @_transparent
     public mutating func compareSet(oldVal: Int, _ newVal: Int) -> Bool {
         return OSAtomicCompareAndSwapLongBarrier(oldVal, newVal, &self)
     }
@@ -87,7 +82,6 @@ extension Int : SDAtomicType {
 extension UInt32 : SDAtomicType {
     
     /// Compare and set UInt32 with barrier.
-    @_transparent
     public mutating func compareSet(oldVal: UInt32, _ newVal: UInt32) -> Bool {
         @inline(__always)
         func cas(theVal: UnsafeMutablePointer<UInt32>) -> Bool {
@@ -100,7 +94,6 @@ extension UInt32 : SDAtomicType {
 extension UInt64 : SDAtomicType {
     
     /// Compare and set UInt64 with barrier.
-    @_transparent
     public mutating func compareSet(oldVal: UInt64, _ newVal: UInt64) -> Bool {
         @inline(__always)
         func cas(theVal: UnsafeMutablePointer<UInt64>) -> Bool {
@@ -113,7 +106,6 @@ extension UInt64 : SDAtomicType {
 extension UInt : SDAtomicType {
     
     /// Compare and set UInt with barrier.
-    @_transparent
     public mutating func compareSet(oldVal: UInt, _ newVal: UInt) -> Bool {
         @inline(__always)
         func cas(theVal: UnsafeMutablePointer<UInt>) -> Bool {
@@ -126,7 +118,6 @@ extension UInt : SDAtomicType {
 extension UnsafePointer : SDAtomicType {
     
     /// Compare and set pointers with barrier.
-    @_transparent
     public mutating func compareSet(oldVal: UnsafePointer, _ newVal: UnsafePointer) -> Bool {
         @inline(__always)
         func cas(theVal: UnsafeMutablePointer<UnsafePointer<Memory>>) -> Bool {
@@ -139,7 +130,6 @@ extension UnsafePointer : SDAtomicType {
 extension UnsafeMutablePointer : SDAtomicType {
     
     /// Compare and set pointers with barrier.
-    @_transparent
     public mutating func compareSet(oldVal: UnsafeMutablePointer, _ newVal: UnsafeMutablePointer) -> Bool {
         @inline(__always)
         func cas(theVal: UnsafeMutablePointer<UnsafeMutablePointer<Memory>>) -> Bool {
@@ -152,7 +142,6 @@ extension UnsafeMutablePointer : SDAtomicType {
 extension COpaquePointer : SDAtomicType {
     
     /// Compare and set pointers with barrier.
-    @_transparent
     public mutating func compareSet(oldVal: COpaquePointer, _ newVal: COpaquePointer) -> Bool {
         @inline(__always)
         func cas(theVal: UnsafeMutablePointer<COpaquePointer>) -> Bool {
@@ -166,7 +155,6 @@ public struct AtomicBoolean {
     
     private var val: Int32
     
-    @_transparent
     public init() {
         self.val = 0
     }
@@ -174,7 +162,6 @@ public struct AtomicBoolean {
 
 extension AtomicBoolean : BooleanLiteralConvertible {
     
-    @_transparent
     public init(booleanLiteral value: Bool) {
         self.val = value ? 0x80 : 0
     }
@@ -183,13 +170,11 @@ extension AtomicBoolean : BooleanLiteralConvertible {
 extension AtomicBoolean : BooleanType {
     
     /// Returns the current value of the boolean.
-    @_transparent
     public var boolValue: Bool {
         return val == 0x80
     }
     /// Construct an instance representing the same logical value as
     /// `value`.
-    @_transparent
     public init<T : BooleanType>(_ value: T) {
         self.val = value ? 0x80 : 0
     }
@@ -198,13 +183,11 @@ extension AtomicBoolean : BooleanType {
 extension AtomicBoolean : SDAtomicType {
     
     /// Compare and set Bool with barrier.
-    @_transparent
     public mutating func compareSet<T: BooleanType>(oldVal: T, _ newVal: T) -> Bool {
         return OSAtomicCompareAndSwap32Barrier(oldVal ? 0x80 : 0, newVal ? 0x80 : 0, &val)
     }
     
     /// Sets the value, and returns the previous value.
-    @_transparent
     public mutating func fetchStore<T: BooleanType>(value: T) -> Bool {
         return value ? OSAtomicTestAndSet(0, &val) : OSAtomicTestAndClear(0, &val)
     }
@@ -229,13 +212,11 @@ extension AtomicBoolean : Equatable, Hashable {
     /// - Note: the hash value is not guaranteed to be stable across
     ///   different invocations of the same program.  Do not persist the
     ///   hash value across program runs.
-    @_transparent
     public var hashValue: Int {
         return boolValue.hashValue
     }
 }
 
-@_transparent
 public func == (lhs: AtomicBoolean, rhs: AtomicBoolean) -> Bool {
     return lhs.boolValue == rhs.boolValue
 }
@@ -253,12 +234,10 @@ public struct Atomic<Instance> {
     
     private var base: AtomicBase<Instance>
     
-    @_transparent
     public init(value: Instance) {
         self.base = AtomicBase(value: value)
     }
     
-    @_transparent
     public var value : Instance {
         get {
             return base.value
@@ -271,7 +250,6 @@ public struct Atomic<Instance> {
 
 extension Atomic : SDAtomicType {
     
-    @_transparent
     private mutating func compareSet(oldVal: AtomicBase<Instance>, _ newVal: AtomicBase<Instance>) -> Bool {
         let _oldVal = Unmanaged.passUnretained(oldVal)
         let _newVal = Unmanaged.passRetained(newVal)
@@ -289,7 +267,6 @@ extension Atomic : SDAtomicType {
     }
     
     /// Compare and set Object with barrier.
-    @_transparent
     public mutating func compareSet(oldVal: Atomic, _ newVal: Atomic) -> Bool {
         return compareSet(oldVal.base, newVal.base)
     }
@@ -298,13 +275,11 @@ extension Atomic : SDAtomicType {
 extension Atomic {
     
     /// Sets the value, and returns the previous value.
-    @_transparent
     public mutating func fetchStore(value: Instance) -> Instance {
         return self.fetchStore { _ in value }
     }
     
     /// Sets the value.
-    @_transparent
     public mutating func fetchStore(@noescape block: (Instance) throws -> Instance) rethrows -> Instance {
         while true {
             let oldVal = self.base
@@ -339,13 +314,11 @@ extension Atomic : Equatable, Hashable {
     /// - Note: the hash value is not guaranteed to be stable across
     ///   different invocations of the same program.  Do not persist the
     ///   hash value across program runs.
-    @_transparent
     public var hashValue: Int {
         return identifier.hashValue
     }
 }
 
-@_transparent
 public func == <Instance>(lhs: Atomic<Instance>, rhs: Atomic<Instance>) -> Bool {
     return lhs.identifier == rhs.identifier
 }

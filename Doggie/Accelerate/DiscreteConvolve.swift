@@ -25,7 +25,6 @@
 
 import Foundation
 
-@_transparent
 public func DiscreteConvolve(signal_count: Int, _ signal: UnsafePointer<Float>, _ signal_stride: Int, _ kernel_count: Int, _ kernel: UnsafePointer<Float>, _ kernel_stride: Int, _ output: UnsafeMutablePointer<Float>, _ out_stride: Int) {
     
     var output = output
@@ -49,7 +48,6 @@ public func DiscreteConvolve(signal_count: Int, _ signal: UnsafePointer<Float>, 
     }
 }
 
-@_transparent
 public func DiscreteConvolve(signal_count: Int, _ signal: UnsafePointer<Double>, _ signal_stride: Int, _ kernel_count: Int, _ kernel: UnsafePointer<Double>, _ kernel_stride: Int, _ output: UnsafeMutablePointer<Double>, _ out_stride: Int) {
     
     var output = output
@@ -73,7 +71,6 @@ public func DiscreteConvolve(signal_count: Int, _ signal: UnsafePointer<Double>,
     }
 }
 
-@_transparent
 public func DiscreteConvolve(signal_count: Int, _ signal: UnsafePointer<Complex>, _ signal_stride: Int, _ kernel_count: Int, _ kernel: UnsafePointer<Complex>, _ kernel_stride: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int) {
     
     var output = output
