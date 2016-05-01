@@ -23,8 +23,6 @@
 //  THE SOFTWARE.
 //
 
-import Foundation
-
 public func ToRect(count: Int, _ rho: UnsafePointer<Double>, _ theta: UnsafePointer<Double>, _ in_stride: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int) {
     let _output = UnsafeMutablePointer<Double>(output)
     ToRect(count, rho, theta, in_stride, _output, _output + 1, out_stride << 1)

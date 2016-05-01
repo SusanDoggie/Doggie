@@ -23,16 +23,6 @@
 //  THE SOFTWARE.
 //
 
-import Foundation
-
-//
-// MARK: Fast Operations
-//
-// Swift with optimization Level -Ofast can be much more faster than any Accelerate framework.
-// Just do it in simple looping.
-//
-//
-
 public func Convert(count: Int, _ input: UnsafePointer<Float>, _ in_stride: Int, _ output: UnsafeMutablePointer<Double>, _ out_stride: Int) {
     
     var input = input

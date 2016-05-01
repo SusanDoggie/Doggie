@@ -23,8 +23,6 @@
 //  THE SOFTWARE.
 //
 
-import Foundation
-
 public struct SDEllipse : SDShape {
     
     public var baseTransform : SDTransform = SDTransform(SDTransform.Identity())

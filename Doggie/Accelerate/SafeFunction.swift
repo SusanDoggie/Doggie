@@ -304,7 +304,7 @@ public func div(lhs: [Complex], _ rhs: [Complex]) -> [Complex] {
 }
 
 @warn_unused_result
-public func transpose<T>(row: Int, _ column: Int,  _ data: [T]) -> [T] {
+public func transpose<T>(row: Int, _ column: Int, _ data: [T]) -> [T] {
     var result = data
     assert(data.count == row * column, "mismatch count of input.")
     Transpose(row, column, data, 1, &result, 1)
@@ -351,7 +351,7 @@ public func InverseRadix2CooleyTukey(buffer: [Complex]) -> [Complex] {
 }
 
 @warn_unused_result
-public func Radix2FiniteImpulseFilter(signal: [Complex],  _ kernel: [Complex]) -> [Complex] {
+public func Radix2FiniteImpulseFilter(signal: [Complex], _ kernel: [Complex]) -> [Complex] {
     var result = signal
     var temp = signal
     assert(signal.count.isPower2, "size of signal must be power of 2.")
@@ -361,7 +361,7 @@ public func Radix2FiniteImpulseFilter(signal: [Complex],  _ kernel: [Complex]) -
 }
 
 @warn_unused_result
-public func Radix2CircularConvolve(signal: [Double],  _ kernel: [Double]) -> [Double] {
+public func Radix2CircularConvolve(signal: [Double], _ kernel: [Double]) -> [Double] {
     assert(signal.count.isPower2, "size of signal must be power of 2.")
     assert(signal.count == kernel.count, "mismatch count of inputs.")
     if signal.count == 1 {
@@ -374,7 +374,7 @@ public func Radix2CircularConvolve(signal: [Double],  _ kernel: [Double]) -> [Do
 }
 
 @warn_unused_result
-public func Radix2CircularConvolve(signal: [Complex],  _ kernel: [Complex]) -> [Complex] {
+public func Radix2CircularConvolve(signal: [Complex], _ kernel: [Complex]) -> [Complex] {
     assert(signal.count.isPower2, "size of signal must be power of 2.")
     assert(signal.count == kernel.count, "mismatch count of inputs.")
     if signal.count == 1 {
@@ -459,7 +459,7 @@ public func InverseNumberTheoreticTransform(buffer: [UInt32]) -> [UInt32] {
 }
 
 @warn_unused_result
-public func Radix2CircularConvolve(signal: [UInt32],  _ kernel: [UInt32]) -> [UInt32] {
+public func Radix2CircularConvolve(signal: [UInt32], _ kernel: [UInt32]) -> [UInt32] {
     var result = signal
     var temp = signal
     assert(signal.count == kernel.count, "mismatch count of inputs.")

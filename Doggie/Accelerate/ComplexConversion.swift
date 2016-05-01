@@ -25,14 +25,6 @@
 
 import Foundation
 
-//
-// MARK: Fast Operations
-//
-// Swift with optimization Level -Ofast can be much more faster than any Accelerate framework.
-// Just do it in simple looping.
-//
-//
-
 public func ToRect(count: Int, _ rho: UnsafePointer<Float>, _ theta: UnsafePointer<Float>, _ in_stride: Int, _ real: UnsafeMutablePointer<Float>, _ imag: UnsafeMutablePointer<Float>, _ out_stride: Int) {
     
     var rho = rho

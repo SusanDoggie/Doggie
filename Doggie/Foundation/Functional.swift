@@ -23,8 +23,6 @@
 //  THE SOFTWARE.
 //
 
-import Foundation
-
 public extension SequenceType {
     
     /// Returns the first element of `self`, or `nil` if `self` is empty.

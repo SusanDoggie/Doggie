@@ -23,8 +23,6 @@
 //  THE SOFTWARE.
 //
 
-import Foundation
-
 public func sha1(count: Int, _ bytes: UnsafePointer<UInt8>, _ digest: UnsafeMutablePointer<UInt8>) {
     
     var d0: UInt32 = 0x67452301

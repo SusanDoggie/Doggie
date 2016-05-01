@@ -23,8 +23,6 @@
 //  THE SOFTWARE.
 //
 
-import Foundation
-
 func left_rotate(v: UInt8, _ n: UInt8) -> UInt8 {
     return (v << n) | (v >> (8 - n))
 }

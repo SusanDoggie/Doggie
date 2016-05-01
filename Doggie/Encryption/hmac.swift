@@ -23,8 +23,6 @@
 //  THE SOFTWARE.
 //
 
-import Foundation
-
 private func hmac(hash: ([UInt8]) -> [UInt8], _ block_size: Int, _ key: [UInt8], _ message: [UInt8], opad: UInt8, ipad: UInt8) -> [UInt8] {
     
     var key = key

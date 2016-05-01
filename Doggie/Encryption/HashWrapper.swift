@@ -23,8 +23,6 @@
 //  THE SOFTWARE.
 //
 
-import Foundation
-
 @warn_unused_result
 public func md5(bytes: [UInt8]) -> [UInt8] {
     var digest = [UInt8](count: 16, repeatedValue: 0)

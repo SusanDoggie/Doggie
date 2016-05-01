@@ -23,8 +23,6 @@
 //  THE SOFTWARE.
 //
 
-import Foundation
-
 public class SDAtomicGraph<Value> : CollectionType {
     
     public typealias Index = SDAtomicGraphIndex<Value>

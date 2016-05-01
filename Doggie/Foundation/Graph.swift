@@ -23,8 +23,6 @@
 //  THE SOFTWARE.
 //
 
-import Foundation
-
 public struct Graph<Node : Hashable, Link> : CollectionType {
     
     public typealias Generator = GraphGenerator<Node, Link>
