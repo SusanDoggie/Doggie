@@ -363,7 +363,6 @@ public class SDTask<Result> : SDAtomic {
     private var _lck: SDSpinLock = SDSpinLock()
     private var _result: Result?
     
-    /// Create a SDTask and compute block with specific queue.
     private init(queue: dispatch_queue_t, suspend: ((Result) -> Bool)?, block: () -> Result) {
         super.init(queue: queue, block: SDTask.createBlock(block, suspend: suspend))
     }
@@ -400,7 +399,7 @@ private extension SDTask {
         }
     }
     
-    final func apply<R>(queue: dispatch_queue_t, _ suspend: ((R) -> Bool)?, _ block: (Result) -> R) -> SDTask<R> {
+    func _apply<R>(queue: dispatch_queue_t, _ suspend: ((R) -> Bool)?, _ block: (Result) -> R) -> SDTask<R> {
         var storage: Result!
         let task = SDTask<R>(queue: queue, suspend: suspend) { block(storage) }
         return _lck.synchronized {
@@ -444,7 +443,7 @@ extension SDTask {
     
     /// Run `block` after `self` is completed with specific queue.
     public final func then<R>(queue: dispatch_queue_t, _ block: (Result) -> R) -> SDTask<R> {
-        return apply(queue, nil, block)
+        return self._apply(queue, nil, block)
     }
 }
 
@@ -457,7 +456,7 @@ extension SDTask {
     
     /// Suspend if `result` satisfies `predicate` with specific queue.
     public final func suspend(queue: dispatch_queue_t, _ predicate: (Result) -> Bool) -> SDTask<Result> {
-        return apply(queue, predicate) { $0 }
+        return self._apply(queue, predicate) { $0 }
     }
 }
 

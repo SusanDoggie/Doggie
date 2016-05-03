@@ -27,6 +27,38 @@ public protocol SDPathCommand {
     
 }
 
+private enum PathCommand {
+    case move(Point)
+    case line(Point)
+    case quad(Point, Point)
+    case cubic(Point, Point, Point)
+    case close
+}
+
+extension PathCommand {
+    
+    init(command: SDPathCommand) {
+        switch command {
+        case let move as SDPath.Move: self = .move(move.point)
+        case let line as SDPath.Line: self = .line(line.point)
+        case let quad as SDPath.QuadBezier: self = .quad(quad.p1, quad.p2)
+        case let cubic as SDPath.CubicBezier: self = .cubic(cubic.p1, cubic.p2, cubic.p3)
+        case _ as SDPath.ClosePath: self = .close
+        default: fatalError()
+        }
+    }
+    
+    var command: SDPathCommand {
+        switch self {
+        case let move(point): return SDPath.Move(point)
+        case let line(point): return SDPath.Line(point)
+        case let quad(p1, p2): return SDPath.QuadBezier(p1, p2)
+        case let cubic(p1, p2, p3): return SDPath.CubicBezier(p1, p2, p3)
+        case close: return SDPath.ClosePath()
+        }
+    }
+}
+
 public struct SDPath : SDShape, MutableCollectionType, ArrayLiteralConvertible {
     
     public typealias Generator = IndexingGenerator<SDPath>
@@ -47,7 +79,7 @@ public struct SDPath : SDShape, MutableCollectionType, ArrayLiteralConvertible {
     }
     
     private var cache = BoundaryCache()
-    private var commands: [SDPathCommand]
+    private var commands: [PathCommand]
     
     public var baseTransform : SDTransform = SDTransform(SDTransform.Identity()) {
         didSet {
@@ -71,10 +103,14 @@ public struct SDPath : SDShape, MutableCollectionType, ArrayLiteralConvertible {
     }
     
     public init(arrayLiteral elements: SDPathCommand ...) {
-        self.commands = elements
+        self.commands = elements.map { PathCommand(command: $0) }
     }
     
     public init<S : SequenceType where S.Generator.Element == SDPathCommand>(_ commands: S) {
+        self.commands = commands.map { PathCommand(command: $0) }
+    }
+    
+    private init<S : SequenceType where S.Generator.Element == PathCommand>(_ commands: S) {
         self.commands = commands.array
     }
     
@@ -90,11 +126,11 @@ public struct SDPath : SDShape, MutableCollectionType, ArrayLiteralConvertible {
     
     public subscript(index : Int) -> SDPathCommand {
         get {
-            return commands[index]
+            return commands[index].command
         }
         set {
             cache = BoundaryCache()
-            commands[index] = newValue
+            commands[index] = PathCommand(command: newValue)
         }
     }
     
@@ -267,11 +303,6 @@ public struct SDPath : SDShape, MutableCollectionType, ArrayLiteralConvertible {
 
 extension SDPath {
     
-    public init(_ rect: Rect) {
-        let points = rect.points
-        commands = [Move(points[0]), Line(points[1]), Line(points[2]), Line(points[3]), ClosePath()]
-    }
-    
     public init<S: SDShape>(_ shape: S) {
         self = shape.path
     }
@@ -281,27 +312,27 @@ extension SDPath : RangeReplaceableCollectionType {
     
     public mutating func append(x: SDPathCommand) {
         cache = BoundaryCache()
-        commands.append(x)
+        commands.append(PathCommand(command: x))
     }
     
     public mutating func appendContentsOf<S : SequenceType where S.Generator.Element == SDPathCommand>(newElements: S) {
         cache = BoundaryCache()
-        commands.appendContentsOf(newElements)
+        commands.appendContentsOf(newElements.lazy.map { PathCommand(command: $0) } as LazyMapSequence)
     }
     
     public mutating func appendContentsOf<C : CollectionType where C.Generator.Element == SDPathCommand>(newElements: C) {
         cache = BoundaryCache()
-        commands.appendContentsOf(newElements)
+        commands.appendContentsOf(newElements.lazy.map { PathCommand(command: $0) } as LazyMapCollection)
     }
     
     public mutating func removeLast() -> SDPathCommand {
         cache = BoundaryCache()
-        return commands.removeLast()
+        return commands.removeLast().command
     }
     
     public mutating func popLast() -> SDPathCommand? {
         cache = BoundaryCache()
-        return commands.popLast()
+        return commands.popLast()?.command
     }
     
     public mutating func reserveCapacity(minimumCapacity: Int) {
@@ -315,22 +346,22 @@ extension SDPath : RangeReplaceableCollectionType {
     
     public mutating func replaceRange<C : CollectionType where C.Generator.Element == SDPathCommand>(subRange: Range<Int>, with newElements: C) {
         cache = BoundaryCache()
-        commands.replaceRange(subRange, with: newElements)
+        commands.replaceRange(subRange, with: newElements.lazy.map { PathCommand(command: $0) } as LazyMapCollection)
     }
     
     public mutating func insert(newElement: SDPathCommand, atIndex i: Int) {
         cache = BoundaryCache()
-        commands.insert(newElement, atIndex: i)
+        commands.insert(PathCommand(command: newElement), atIndex: i)
     }
     
     public mutating func insertContentsOf<S : CollectionType where S.Generator.Element == SDPathCommand>(newElements: S, at i: Int) {
         cache = BoundaryCache()
-        commands.insertContentsOf(newElements, at: i)
+        commands.insertContentsOf(newElements.lazy.map { PathCommand(command: $0) } as LazyMapCollection, at: i)
     }
     
     public mutating func removeAtIndex(i: Int) -> SDPathCommand {
         cache = BoundaryCache()
-        return commands.removeAtIndex(i)
+        return commands.removeAtIndex(i).command
     }
     
     public mutating func removeRange(subRange: Range<Int>) {
@@ -395,41 +426,32 @@ extension SDPath {
     }
 }
 
-extension SDPath.Line {
+private extension SDPath.Line {
     
-    @warn_unused_result
-    public func bound(last: Point) -> Rect {
+    func bound(last: Point) -> Rect {
         return Rect.bound([last, self.point])
     }
-    
-    @warn_unused_result
-    public func bound<T: SDTransformType>(last: Point, _ transform: T) -> Rect {
+    func bound<T: SDTransformType>(last: Point, _ transform: T) -> Rect {
         return Rect.bound([last * transform, self.point * transform])
     }
 }
 
-extension SDPath.QuadBezier {
+private extension SDPath.QuadBezier {
     
-    @warn_unused_result
-    public func bound(last: Point) -> Rect {
+    func bound(last: Point) -> Rect {
         return QuadBezierBound(last, self.p1, self.p2)
     }
-    
-    @warn_unused_result
-    public func bound<T: SDTransformType>(last: Point, _ transform: T) -> Rect {
+    func bound<T: SDTransformType>(last: Point, _ transform: T) -> Rect {
         return QuadBezierBound(last, self.p1, self.p2, transform)
     }
 }
 
-extension SDPath.CubicBezier {
+private extension SDPath.CubicBezier {
     
-    @warn_unused_result
-    public func bound(last: Point) -> Rect {
+    func bound(last: Point) -> Rect {
         return CubicBezierBound(last, self.p1, self.p2, self.p3)
     }
-    
-    @warn_unused_result
-    public func bound<T: SDTransformType>(last: Point, _ transform: T) -> Rect {
+    func bound<T: SDTransformType>(last: Point, _ transform: T) -> Rect {
         return CubicBezierBound(last, self.p1, self.p2, self.p3, transform)
     }
 }
@@ -448,12 +470,11 @@ extension SDPath {
         _path.reserveCapacity(self.commands.count)
         for command in self.commands {
             switch command {
-            case let move as SDPath.Move: _path.append(SDPath.Move(move.point * transform))
-            case let line as SDPath.Line: _path.append(SDPath.Line(line.point * transform))
-            case let quad as SDPath.QuadBezier: _path.append(SDPath.QuadBezier(quad.p1 * transform, quad.p2 * transform))
-            case let cubic as SDPath.CubicBezier: _path.append(SDPath.CubicBezier(cubic.p1 * transform, cubic.p2 * transform, cubic.p3 * transform))
-            case let close as SDPath.ClosePath: _path.append(close)
-            default: break
+            case let .move(point): _path.commands.append(.move(point * transform))
+            case let .line(point): _path.commands.append(.line(point * transform))
+            case let .quad(p1, p2): _path.commands.append(.quad(p1 * transform, p2 * transform))
+            case let .cubic(p1, p2, p3): _path.commands.append(.cubic(p1 * transform, p2 * transform, p3 * transform))
+            case .close: _path.commands.append(.close)
             }
         }
         return _path

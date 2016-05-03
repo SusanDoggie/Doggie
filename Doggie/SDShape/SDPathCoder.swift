@@ -23,6 +23,8 @@
 //  THE SOFTWARE.
 //
 
+import Foundation
+
 private struct PathDataScanner<G : GeneratorType where G.Element == String> : GeneratorType, SequenceType {
     
     var generator: G
