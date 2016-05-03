@@ -358,7 +358,7 @@ public class SDTask<Result> : SDAtomic {
     
     private let sem: dispatch_semaphore_t = dispatch_semaphore_create(0)
     
-    private var _notify: [SDAtomic] = []
+    private var _notify: [(Result) -> Void] = []
     
     private var _lck: SDSpinLock = SDSpinLock()
     private var _result: Result?
@@ -367,7 +367,7 @@ public class SDTask<Result> : SDAtomic {
     private init(queue: dispatch_queue_t, suspend: ((Result) -> Bool)?, block: () -> Result) {
         super.init(queue: queue, block: SDTask.createBlock(block, suspend: suspend))
     }
-
+    
     /// Create a SDTask and compute block with specific queue.
     public init(queue: dispatch_queue_t, block: () -> Result) {
         super.init(queue: queue, block: SDTask.createBlock(block, suspend: nil))
@@ -386,16 +386,16 @@ private extension SDTask {
     static func createBlock(block: () -> Result, suspend: ((Result) -> Bool)?) -> (SDAtomic) -> Void {
         return { atomic in
             let _self = atomic as! SDTask<Result>
-            if _self._result == nil {
+            if let result = _self._result {
+                if suspend?(result) != true {
+                    _self._notify.forEach { $0(result) }
+                }
+                _self._notify = []
+            } else {
                 let result = block()
                 _self._lck.synchronized { _self._result = result }
                 dispatch_semaphore_signal(_self.sem)
                 _self.signal()
-            } else {
-                if suspend == nil || !suspend!(_self._result!) {
-                    _self._notify.forEach { $0.signal() }
-                }
-                _self._notify = []
             }
         }
     }
@@ -427,11 +427,16 @@ extension SDTask {
     
     /// Run `block` after `self` is completed with specific queue.
     public final func then<R>(queue: dispatch_queue_t, _ block: (Result) -> R) -> SDTask<R> {
-        let task = SDTask<R>(queue: queue, suspend: nil) { block(self.result) }
+        var storage: Result!
+        let task = SDTask<R>(queue: queue, suspend: nil) { block(storage) }
         return _lck.synchronized {
             if _result == nil {
-                _notify.append(task)
+                _notify.append {
+                    storage = $0
+                    task.signal()
+                }
             } else {
+                storage = _result
                 task.signal()
             }
             return task
@@ -448,11 +453,16 @@ extension SDTask {
     
     /// Suspend if `result` satisfies `predicate` with specific queue.
     public final func suspend(queue: dispatch_queue_t, _ predicate: (Result) -> Bool) -> SDTask<Result> {
-        let task = SDTask<Result>(queue: queue, suspend: predicate) { self.result }
+        var storage: Result!
+        let task = SDTask<Result>(queue: queue, suspend: predicate) { storage }
         return _lck.synchronized {
             if _result == nil {
-                _notify.append(task)
+                _notify.append {
+                    storage = $0
+                    task.signal()
+                }
             } else {
+                storage = _result
                 task.signal()
             }
             return task
