@@ -399,6 +399,23 @@ private extension SDTask {
             }
         }
     }
+    
+    final func apply<R>(queue: dispatch_queue_t, _ suspend: ((R) -> Bool)?, _ block: (Result) -> R) -> SDTask<R> {
+        var storage: Result!
+        let task = SDTask<R>(queue: queue, suspend: suspend) { block(storage) }
+        return _lck.synchronized {
+            if _result == nil {
+                _notify.append {
+                    storage = $0
+                    task.signal()
+                }
+            } else {
+                storage = _result
+                task.signal()
+            }
+            return task
+        }
+    }
 }
 
 extension SDTask {
@@ -427,20 +444,7 @@ extension SDTask {
     
     /// Run `block` after `self` is completed with specific queue.
     public final func then<R>(queue: dispatch_queue_t, _ block: (Result) -> R) -> SDTask<R> {
-        var storage: Result!
-        let task = SDTask<R>(queue: queue, suspend: nil) { block(storage) }
-        return _lck.synchronized {
-            if _result == nil {
-                _notify.append {
-                    storage = $0
-                    task.signal()
-                }
-            } else {
-                storage = _result
-                task.signal()
-            }
-            return task
-        }
+        return apply(queue, nil, block)
     }
 }
 
@@ -453,20 +457,7 @@ extension SDTask {
     
     /// Suspend if `result` satisfies `predicate` with specific queue.
     public final func suspend(queue: dispatch_queue_t, _ predicate: (Result) -> Bool) -> SDTask<Result> {
-        var storage: Result!
-        let task = SDTask<Result>(queue: queue, suspend: predicate) { storage }
-        return _lck.synchronized {
-            if _result == nil {
-                _notify.append {
-                    storage = $0
-                    task.signal()
-                }
-            } else {
-                storage = _result
-                task.signal()
-            }
-            return task
-        }
+        return apply(queue, predicate) { $0 }
     }
 }
 
