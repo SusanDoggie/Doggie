@@ -228,27 +228,9 @@ public struct SDPath : SDShape, MutableCollectionType, ArrayLiteralConvertible {
             let transform = self.transform
             self.apply { commands, state in
                 switch commands {
-                case let line as SDPath.Line:
-                    if bound == nil {
-                        bound = line.bound(state.last, transform)
-                    } else {
-                        bound = bound!.union(line.bound(state.last, transform))
-                    }
-                    
-                case let quad as SDPath.QuadBezier:
-                    if bound == nil {
-                        bound = quad.bound(state.last, transform)
-                    } else {
-                        bound = bound!.union(quad.bound(state.last, transform))
-                    }
-                    
-                case let cubic as SDPath.CubicBezier:
-                    if bound == nil {
-                        bound = cubic.bound(state.last, transform)
-                    } else {
-                        bound = bound!.union(cubic.bound(state.last, transform))
-                    }
-                    
+                case let line as SDPath.Line: bound = bound?.union(line.bound(state.last, transform)) ?? line.bound(state.last, transform)
+                case let quad as SDPath.QuadBezier: bound = bound?.union(quad.bound(state.last, transform)) ?? quad.bound(state.last, transform)
+                case let cubic as SDPath.CubicBezier: bound = bound?.union(cubic.bound(state.last, transform)) ?? cubic.bound(state.last, transform)
                 default: break
                 }
             }
@@ -262,27 +244,9 @@ public struct SDPath : SDShape, MutableCollectionType, ArrayLiteralConvertible {
             var bound: Rect? = nil
             self.apply { commands, state in
                 switch commands {
-                case let line as SDPath.Line:
-                    if bound == nil {
-                        bound = line.bound(state.last)
-                    } else {
-                        bound = bound!.union(line.bound(state.last))
-                    }
-                    
-                case let quad as SDPath.QuadBezier:
-                    if bound == nil {
-                        bound = quad.bound(state.last)
-                    } else {
-                        bound = bound!.union(quad.bound(state.last))
-                    }
-                    
-                case let cubic as SDPath.CubicBezier:
-                    if bound == nil {
-                        bound = cubic.bound(state.last)
-                    } else {
-                        bound = bound!.union(cubic.bound(state.last))
-                    }
-                    
+                case let line as SDPath.Line: bound = bound?.union(line.bound(state.last)) ?? line.bound(state.last)
+                case let quad as SDPath.QuadBezier: bound = bound?.union(quad.bound(state.last)) ?? quad.bound(state.last)
+                case let cubic as SDPath.CubicBezier: bound = bound?.union(cubic.bound(state.last)) ?? cubic.bound(state.last)
                 default: break
                 }
             }
