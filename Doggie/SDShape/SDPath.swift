@@ -33,13 +33,27 @@ public struct SDPath : SDShape, MutableCollectionType, ArrayLiteralConvertible {
     
     private class BoundaryCache {
         
-        var boundary: Rect? = nil
+        var frame: Rect?
+        var boundary: Rect?
+        
+        init() {
+            self.frame = nil
+            self.boundary = nil
+        }
+        init(frame: Rect?) {
+            self.frame = frame
+            self.boundary = nil
+        }
     }
     
     private var cache = BoundaryCache()
     private var commands: [SDPathCommand]
     
-    public var baseTransform : SDTransform = SDTransform(SDTransform.Identity())
+    public var baseTransform : SDTransform = SDTransform(SDTransform.Identity()) {
+        didSet {
+            cache = BoundaryCache(frame: cache.frame)
+        }
+    }
     
     public var rotate: Double = 0 {
         didSet {
@@ -209,39 +223,42 @@ public struct SDPath : SDShape, MutableCollectionType, ArrayLiteralConvertible {
     }
     
     public var boundary : Rect {
-        var bound: Rect? = nil
-        let transform = self.transform
-        self.apply { commands, state in
-            switch commands {
-            case let line as SDPath.Line:
-                if bound == nil {
-                    bound = line.bound(state.last, transform)
-                } else {
-                    bound = bound!.union(line.bound(state.last, transform))
+        if cache.boundary == nil {
+            var bound: Rect? = nil
+            let transform = self.transform
+            self.apply { commands, state in
+                switch commands {
+                case let line as SDPath.Line:
+                    if bound == nil {
+                        bound = line.bound(state.last, transform)
+                    } else {
+                        bound = bound!.union(line.bound(state.last, transform))
+                    }
+                    
+                case let quad as SDPath.QuadBezier:
+                    if bound == nil {
+                        bound = quad.bound(state.last, transform)
+                    } else {
+                        bound = bound!.union(quad.bound(state.last, transform))
+                    }
+                    
+                case let cubic as SDPath.CubicBezier:
+                    if bound == nil {
+                        bound = cubic.bound(state.last, transform)
+                    } else {
+                        bound = bound!.union(cubic.bound(state.last, transform))
+                    }
+                    
+                default: break
                 }
-                
-            case let quad as SDPath.QuadBezier:
-                if bound == nil {
-                    bound = quad.bound(state.last, transform)
-                } else {
-                    bound = bound!.union(quad.bound(state.last, transform))
-                }
-                
-            case let cubic as SDPath.CubicBezier:
-                if bound == nil {
-                    bound = cubic.bound(state.last, transform)
-                } else {
-                    bound = bound!.union(cubic.bound(state.last, transform))
-                }
-                
-            default: break
             }
+            cache.boundary = bound ?? Rect()
         }
-        return bound ?? Rect()
+        return cache.boundary!
     }
     
     private var _frame : Rect {
-        if cache.boundary == nil {
+        if cache.frame == nil {
             var bound: Rect? = nil
             self.apply { commands, state in
                 switch commands {
@@ -269,9 +286,9 @@ public struct SDPath : SDShape, MutableCollectionType, ArrayLiteralConvertible {
                 default: break
                 }
             }
-            cache.boundary = bound ?? Rect()
+            cache.frame = bound ?? Rect()
         }
-        return cache.boundary!
+        return cache.frame!
     }
     
     public var frame : [Point] {
