@@ -378,51 +378,29 @@ extension SDPath {
         public let last : Point
     }
     
-    public struct ComputeStateGenerator : SequenceType, GeneratorType {
-        
-        private var base : SDPath.Generator
-        private var start : Point = Point()
-        private var last : Point = Point()
-        
-        public init(_ base: SDPath) {
-            self.base = base.generate()
-        }
-        
-        public mutating func next() -> (SDPathCommand, ComputeState)? {
-            var result: (SDPathCommand, ComputeState)? = nil
-            if let item = base.next() {
-                switch item {
-                case let move as SDPath.Move:
-                    result = (move, ComputeState(start: move.point, last: move.point))
-                    start = move.point
-                    last = move.point
-                    
-                case let line as SDPath.Line:
-                    result = (line, ComputeState(start: start, last: last))
-                    last = line.point
-                    
-                case let quad as SDPath.QuadBezier:
-                    result = (quad, ComputeState(start: start, last: last))
-                    last = quad.point
-                    
-                case let cubic as SDPath.CubicBezier:
-                    result = (cubic, ComputeState(start: start, last: last))
-                    last = cubic.point
-                    
-                case let close as SDPath.ClosePath:
-                    result = (close, ComputeState(start: start, last: last))
-                    last = start
-                    
-                default: break
-                }
-            }
-            return result
-        }
-    }
-    
     public func apply(@noescape body: (SDPathCommand, ComputeState) throws -> Void) rethrows {
-        
-        try ComputeStateGenerator(self).forEach(body)
+        var start : Point = Point()
+        var last : Point = Point()
+        for item in self.commands {
+            switch item {
+            case let .move(point):
+                try body(SDPath.Move(point), ComputeState(start: point, last: point))
+                start = point
+                last = point
+            case let .line(point):
+                try body(SDPath.Line(point), ComputeState(start: start, last: last))
+                last = point
+            case let .quad(p1, p2):
+                try body(SDPath.QuadBezier(p1, p2), ComputeState(start: start, last: last))
+                last = p2
+            case let .cubic(p1, p2, p3):
+                try body(SDPath.CubicBezier(p1, p2, p3), ComputeState(start: start, last: last))
+                last = p3
+            case .close:
+                try body(SDPath.ClosePath(), ComputeState(start: start, last: last))
+                last = start
+            }
+        }
     }
 }
 
