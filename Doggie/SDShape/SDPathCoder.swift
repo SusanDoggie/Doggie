@@ -468,7 +468,7 @@ extension SDPath {
             case "Z", "z":
                 if self.lastMove {
                     self.removeLast()
-                } else if self.count != 0 && !(self.lastClose) {
+                } else if self.count != 0 && !self.lastClose {
                     let close = SDPath.ClosePath()
                     relative = start
                     lastcontrol = start
