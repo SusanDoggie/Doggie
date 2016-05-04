@@ -63,15 +63,6 @@ public func timeFormat(time: Double) -> String {
 }
 
 @warn_unused_result
-public func autoreleasepool<R>(@noescape code: () -> R) -> R {
-    var result: R!
-    autoreleasepool {
-        result = code()
-    }
-    return result
-}
-
-@warn_unused_result
 public func == <T : Comparable>(lhs: T, rhs: T) -> Bool {
     return !(lhs < rhs || rhs < lhs)
 }

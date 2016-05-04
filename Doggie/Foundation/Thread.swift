@@ -320,7 +320,7 @@ extension SDAtomic {
     private func dispatchRunloop() {
         while true {
             flag = 1
-            self.block(self)
+            autoreleasepool { self.block(self) }
             if flag.compareSet(1, 0) {
                 return
             }
@@ -399,7 +399,7 @@ private extension SDTask {
         }
     }
     
-    func _apply<R>(queue: dispatch_queue_t, _ suspend: ((R) -> Bool)?, _ block: (Result) -> R) -> SDTask<R> {
+    func _apply<R>(queue: dispatch_queue_t, suspend: ((R) -> Bool)?, block: (Result) -> R) -> SDTask<R> {
         var storage: Result!
         let task = SDTask<R>(queue: queue, suspend: suspend) { block(storage) }
         return _lck.synchronized {
@@ -438,12 +438,12 @@ extension SDTask {
     
     /// Run `block` after `self` is completed.
     public final func then<R>(block: (Result) -> R) -> SDTask<R> {
-        return self.then(queue, block)
+        return self.then(queue, block: block)
     }
     
     /// Run `block` after `self` is completed with specific queue.
-    public final func then<R>(queue: dispatch_queue_t, _ block: (Result) -> R) -> SDTask<R> {
-        return self._apply(queue, nil, block)
+    public final func then<R>(queue: dispatch_queue_t, block: (Result) -> R) -> SDTask<R> {
+        return self._apply(queue, suspend: nil, block: block)
     }
 }
 
@@ -451,12 +451,12 @@ extension SDTask {
     
     /// Suspend if `result` satisfies `predicate`.
     public final func suspend(predicate: (Result) -> Bool) -> SDTask<Result> {
-        return self.suspend(queue, predicate)
+        return self.suspend(queue, predicate: predicate)
     }
     
     /// Suspend if `result` satisfies `predicate` with specific queue.
-    public final func suspend(queue: dispatch_queue_t, _ predicate: (Result) -> Bool) -> SDTask<Result> {
-        return self._apply(queue, predicate) { $0 }
+    public final func suspend(queue: dispatch_queue_t, predicate: (Result) -> Bool) -> SDTask<Result> {
+        return self._apply(queue, suspend: predicate) { $0 }
     }
 }
 
