@@ -318,6 +318,23 @@ public struct SDPath : SDShape, MutableCollectionType, ArrayLiteralConvertible {
 
 extension SDPath {
     
+    public var lastMove: Bool {
+        if let command = self.commands.last, case .move = command {
+            return true
+        }
+        return false
+    }
+    
+    public var lastClose: Bool {
+        if let command = self.commands.last, case .close = command {
+            return true
+        }
+        return false
+    }
+}
+
+extension SDPath {
+    
     public init<S: SDShape>(_ shape: S) {
         self = shape.path
     }

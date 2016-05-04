@@ -86,7 +86,7 @@ extension SDPath {
             switch command {
             case "M":
                 repeat {
-                    if self.last is SDPath.Move {
+                    if self.lastMove {
                         self.removeLast()
                     }
                     let move = SDPath.Move(x: try toDouble(g.current), y: try toDouble(g.next()))
@@ -98,7 +98,7 @@ extension SDPath {
                 } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
             case "m":
                 repeat {
-                    if self.last is SDPath.Move {
+                    if self.lastMove {
                         self.removeLast()
                     }
                     let move = SDPath.Move(x: try toDouble(g.current) + relative.x, y: try toDouble(g.next()) + relative.y)
@@ -109,7 +109,7 @@ extension SDPath {
                     self.appendCommand(move)
                 } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
             case "L":
-                if self.count == 0 || self.last is SDPath.ClosePath {
+                if self.count == 0 || self.lastClose {
                     let move = SDPath.Move(start)
                     relative = move.point
                     lastcontrol = move.point
@@ -124,7 +124,7 @@ extension SDPath {
                     self.appendCommand(line)
                 } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
             case "l":
-                if self.count == 0 || self.last is SDPath.ClosePath {
+                if self.count == 0 || self.lastClose {
                     let move = SDPath.Move(start)
                     relative = move.point
                     lastcontrol = move.point
@@ -139,7 +139,7 @@ extension SDPath {
                     self.appendCommand(line)
                 } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
             case "H":
-                if self.count == 0 || self.last is SDPath.ClosePath {
+                if self.count == 0 || self.lastClose {
                     let move = SDPath.Move(start)
                     relative = move.point
                     lastcontrol = move.point
@@ -154,7 +154,7 @@ extension SDPath {
                     self.appendCommand(line)
                 } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
             case "h":
-                if self.count == 0 || self.last is SDPath.ClosePath {
+                if self.count == 0 || self.lastClose {
                     let move = SDPath.Move(start)
                     relative = move.point
                     lastcontrol = move.point
@@ -169,7 +169,7 @@ extension SDPath {
                     self.appendCommand(line)
                 } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
             case "V":
-                if self.count == 0 || self.last is SDPath.ClosePath {
+                if self.count == 0 || self.lastClose {
                     let move = SDPath.Move(start)
                     relative = move.point
                     lastcontrol = move.point
@@ -184,7 +184,7 @@ extension SDPath {
                     self.appendCommand(line)
                 } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
             case "v":
-                if self.count == 0 || self.last is SDPath.ClosePath {
+                if self.count == 0 || self.lastClose {
                     let move = SDPath.Move(start)
                     relative = move.point
                     lastcontrol = move.point
@@ -192,7 +192,7 @@ extension SDPath {
                     self.appendCommand(move)
                 }
                 repeat {
-                    if self.count == 0 || self.last is SDPath.ClosePath {
+                    if self.count == 0 || self.lastClose {
                         let move = SDPath.Move(start)
                         relative = move.point
                         lastcontrol = move.point
@@ -206,7 +206,7 @@ extension SDPath {
                     self.appendCommand(line)
                 } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
             case "C":
-                if self.count == 0 || self.last is SDPath.ClosePath {
+                if self.count == 0 || self.lastClose {
                     let move = SDPath.Move(start)
                     relative = move.point
                     lastcontrol = move.point
@@ -224,7 +224,7 @@ extension SDPath {
                     self.appendCommand(bezier)
                 } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
             case "c":
-                if self.count == 0 || self.last is SDPath.ClosePath {
+                if self.count == 0 || self.lastClose {
                     let move = SDPath.Move(start)
                     relative = move.point
                     lastcontrol = move.point
@@ -242,7 +242,7 @@ extension SDPath {
                     self.appendCommand(bezier)
                 } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
             case "S":
-                if self.count == 0 || self.last is SDPath.ClosePath {
+                if self.count == 0 || self.lastClose {
                     let move = SDPath.Move(start)
                     relative = move.point
                     lastcontrol = move.point
@@ -269,7 +269,7 @@ extension SDPath {
                     self.appendCommand(bezier)
                 } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
             case "s":
-                if self.count == 0 || self.last is SDPath.ClosePath {
+                if self.count == 0 || self.lastClose {
                     let move = SDPath.Move(start)
                     relative = move.point
                     lastcontrol = move.point
@@ -296,7 +296,7 @@ extension SDPath {
                     self.appendCommand(bezier)
                 } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
             case "Q":
-                if self.count == 0 || self.last is SDPath.ClosePath {
+                if self.count == 0 || self.lastClose {
                     let move = SDPath.Move(start)
                     relative = move.point
                     lastcontrol = move.point
@@ -313,7 +313,7 @@ extension SDPath {
                     self.appendCommand(bezier)
                 } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
             case "q":
-                if self.count == 0 || self.last is SDPath.ClosePath {
+                if self.count == 0 || self.lastClose {
                     let move = SDPath.Move(start)
                     relative = move.point
                     lastcontrol = move.point
@@ -330,7 +330,7 @@ extension SDPath {
                     self.appendCommand(bezier)
                 } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
             case "T":
-                if self.count == 0 || self.last is SDPath.ClosePath {
+                if self.count == 0 || self.lastClose {
                     let move = SDPath.Move(start)
                     relative = move.point
                     lastcontrol = move.point
@@ -351,7 +351,7 @@ extension SDPath {
                     self.appendCommand(bezier)
                 } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
             case "t":
-                if self.count == 0 || self.last is SDPath.ClosePath {
+                if self.count == 0 || self.lastClose {
                     let move = SDPath.Move(start)
                     relative = move.point
                     lastcontrol = move.point
@@ -372,7 +372,7 @@ extension SDPath {
                     self.appendCommand(bezier)
                 } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
             case "A":
-                if self.count == 0 || self.last is SDPath.ClosePath {
+                if self.count == 0 || self.lastClose {
                     let move = SDPath.Move(start)
                     relative = move.point
                     lastcontrol = move.point
@@ -419,7 +419,7 @@ extension SDPath {
                     self.appendContentsOf(arc)
                 } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
             case "a":
-                if self.count == 0 || self.last is SDPath.ClosePath {
+                if self.count == 0 || self.lastClose {
                     let move = SDPath.Move(start)
                     relative = move.point
                     lastcontrol = move.point
@@ -466,9 +466,9 @@ extension SDPath {
                     self.appendContentsOf(arc)
                 } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
             case "Z", "z":
-                if self.last is SDPath.Move {
+                if self.lastMove {
                     self.removeLast()
-                } else if self.count != 0 && !(self.last is SDPath.ClosePath) {
+                } else if self.count != 0 && !(self.lastClose) {
                     let close = SDPath.ClosePath()
                     relative = start
                     lastcontrol = start
