@@ -110,8 +110,6 @@ extension SDTransform {
     }
 }
 
-
-
 extension SDRectangle {
     
     public var CGPath : CoreGraphics.CGPath {
@@ -132,13 +130,13 @@ extension SDPath {
     
     public var CGPath : CoreGraphics.CGPath {
         let path = CGPathCreateMutable()
-        self.apply { component, state in
+        self._apply { component, state in
             switch component {
-            case let move as SDPath.Move: CGPathMoveToPoint(path, nil, CGFloat(move.x), CGFloat(move.y))
-            case let line as SDPath.Line: CGPathAddLineToPoint(path, nil, CGFloat(line.x), CGFloat(line.y))
-            case let quad as SDPath.QuadBezier: CGPathAddQuadCurveToPoint(path, nil, CGFloat(quad.p1.x), CGFloat(quad.p1.y), CGFloat(quad.p2.x), CGFloat(quad.p2.y))
-            case let cubic as SDPath.CubicBezier: CGPathAddCurveToPoint(path, nil, CGFloat(cubic.p1.x), CGFloat(cubic.p1.y), CGFloat(cubic.p2.x), CGFloat(cubic.p2.y), CGFloat(cubic.p3.x), CGFloat(cubic.p3.y))
-            case _ as SDPath.ClosePath: CGPathCloseSubpath(path)
+            case let .move(point): CGPathMoveToPoint(path, nil, CGFloat(point.x), CGFloat(point.y))
+            case let .line(point): CGPathAddLineToPoint(path, nil, CGFloat(point.x), CGFloat(point.y))
+            case let .quad(p1, p2): CGPathAddQuadCurveToPoint(path, nil, CGFloat(p1.x), CGFloat(p1.y), CGFloat(p2.x), CGFloat(p2.y))
+            case let .cubic(p1, p2, p3): CGPathAddCurveToPoint(path, nil, CGFloat(p1.x), CGFloat(p1.y), CGFloat(p2.x), CGFloat(p2.y), CGFloat(p3.x), CGFloat(p3.y))
+            case .close: CGPathCloseSubpath(path)
             default: break
             }
         }

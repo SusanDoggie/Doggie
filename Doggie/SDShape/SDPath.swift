@@ -27,7 +27,7 @@ public protocol SDPathCommand {
     
 }
 
-private enum PathCommand {
+enum PathCommand {
     case move(Point)
     case line(Point)
     case quad(Point, Point)
@@ -35,7 +35,7 @@ private enum PathCommand {
     case close
 }
 
-extension PathCommand {
+private extension PathCommand {
     
     init(_ command: SDPathCommand) {
         switch command {
@@ -443,7 +443,7 @@ extension SDPath {
         public let last : Point
     }
     
-    private func _apply(@noescape body: (PathCommand, ComputeState) throws -> Void) rethrows {
+    func _apply(@noescape body: (PathCommand, ComputeState) throws -> Void) rethrows {
         var start : Point = Point()
         var last : Point = Point()
         for item in self.commands {
