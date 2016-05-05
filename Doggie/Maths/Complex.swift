@@ -139,6 +139,10 @@ public func abs(value: Complex) -> Double {
     return sqrt(norm(value))
 }
 @warn_unused_result
+public func sgn(value: Complex) -> Complex {
+    return value / abs(value)
+}
+@warn_unused_result
 public func arg(value: Complex) -> Double {
     return atan2(value.imag, value.real)
 }
