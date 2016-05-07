@@ -23,6 +23,8 @@
 //  THE SOFTWARE.
 //
 
+import Foundation
+
 public enum JsonParseError : ErrorType {
     
     case UnexpectedEndOfToken

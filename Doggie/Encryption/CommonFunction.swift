@@ -52,16 +52,7 @@ func right_rotate(x: UInt64, _ n: UInt64) -> UInt64 {
 }
 
 func hash_prepare(msg: UnsafePointer<UInt8>, _ len: Int, _ block: Int) -> SecureBuffer {
-    let len_mod = len % block
-    let count: Int
-    if block > len_mod + 8 {
-        count = block - len_mod
-    } else if block < len_mod + 8 {
-        count = block + 64 - len_mod
-    } else {
-        count = 8
-    }
-    var d = SecureBuffer(size: len + count)
+    var d = SecureBuffer(size: (len + 8).align(block))
     d.copyFrom(msg, count: len)
     d[len] = UInt8(0x80)
     return d

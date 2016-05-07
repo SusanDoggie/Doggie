@@ -137,7 +137,6 @@ extension SDPath {
             case let .quad(p1, p2): CGPathAddQuadCurveToPoint(path, nil, CGFloat(p1.x), CGFloat(p1.y), CGFloat(p2.x), CGFloat(p2.y))
             case let .cubic(p1, p2, p3): CGPathAddCurveToPoint(path, nil, CGFloat(p1.x), CGFloat(p1.y), CGFloat(p2.x), CGFloat(p2.y), CGFloat(p3.x), CGFloat(p3.y))
             case .close: CGPathCloseSubpath(path)
-            default: break
             }
         }
         var _transform = CGAffineTransform(transform)

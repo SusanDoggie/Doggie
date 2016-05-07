@@ -23,6 +23,8 @@
 //  THE SOFTWARE.
 //
 
+import Foundation
+
 private final class SDObserverBase : NSObject {
     
     var callback: (([String : AnyObject]) -> Void)? = nil
