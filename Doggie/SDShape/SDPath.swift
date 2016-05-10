@@ -74,27 +74,30 @@ public struct SDPath : SDShape, MutableCollectionType, ArrayLiteralConvertible {
     
     public typealias Generator = IndexingGenerator<SDPath>
     
-    private class BoundaryCache {
+    private class Cache {
         
         var frame: Rect?
         var boundary: Rect?
+        var identity : SDPath?
         
         init() {
             self.frame = nil
             self.boundary = nil
+            self.identity = nil
         }
         init(frame: Rect?) {
             self.frame = frame
             self.boundary = nil
+            self.identity = nil
         }
     }
     
-    private var cache = BoundaryCache()
+    private var cache = Cache()
     private var commands: [PathCommand]
     
     public var baseTransform : SDTransform = SDTransform(SDTransform.Identity()) {
-        didSet {
-            cache = BoundaryCache(frame: cache.frame)
+        willSet {
+            cache = Cache(frame: cache.frame)
         }
     }
     
@@ -144,7 +147,7 @@ public struct SDPath : SDShape, MutableCollectionType, ArrayLiteralConvertible {
             return commands[index].command
         }
         set {
-            cache = BoundaryCache()
+            cache = Cache()
             commands[index] = PathCommand(newValue)
         }
     }
@@ -343,32 +346,32 @@ extension SDPath {
 extension SDPath {
     
     public mutating func appendCommand<T : SDPathCommand>(x: T) {
-        cache = BoundaryCache()
+        cache = Cache()
         commands.append(PathCommand(command: x))
     }
     
     public mutating func appendContentsOf<S : SequenceType where S.Generator.Element : SDPathCommand>(newElements: S) {
-        cache = BoundaryCache()
+        cache = Cache()
         commands.appendContentsOf(newElements.lazy.map { PathCommand(command: $0) } as LazyMapSequence)
     }
     
     public mutating func appendContentsOf<C : CollectionType where C.Generator.Element : SDPathCommand>(newElements: C) {
-        cache = BoundaryCache()
+        cache = Cache()
         commands.appendContentsOf(newElements.lazy.map { PathCommand(command: $0) } as LazyMapCollection)
     }
     
     public mutating func replaceRange<C : CollectionType where C.Generator.Element : SDPathCommand>(subRange: Range<Int>, with newElements: C) {
-        cache = BoundaryCache()
+        cache = Cache()
         commands.replaceRange(subRange, with: newElements.lazy.map { PathCommand(command: $0) } as LazyMapCollection)
     }
     
     public mutating func insertCommand<T : SDPathCommand>(newElement: T, atIndex i: Int) {
-        cache = BoundaryCache()
+        cache = Cache()
         commands.insert(PathCommand(command: newElement), atIndex: i)
     }
     
     public mutating func insertContentsOf<S : CollectionType where S.Generator.Element : SDPathCommand>(newElements: S, at i: Int) {
-        cache = BoundaryCache()
+        cache = Cache()
         commands.insertContentsOf(newElements.lazy.map { PathCommand(command: $0) } as LazyMapCollection, at: i)
     }
 }
@@ -376,27 +379,27 @@ extension SDPath {
 extension SDPath : RangeReplaceableCollectionType {
     
     public mutating func append(x: SDPathCommand) {
-        cache = BoundaryCache()
+        cache = Cache()
         commands.append(PathCommand(x))
     }
     
     public mutating func appendContentsOf<S : SequenceType where S.Generator.Element == SDPathCommand>(newElements: S) {
-        cache = BoundaryCache()
+        cache = Cache()
         commands.appendContentsOf(newElements.lazy.map { PathCommand($0) } as LazyMapSequence)
     }
     
     public mutating func appendContentsOf<C : CollectionType where C.Generator.Element == SDPathCommand>(newElements: C) {
-        cache = BoundaryCache()
+        cache = Cache()
         commands.appendContentsOf(newElements.lazy.map { PathCommand($0) } as LazyMapCollection)
     }
     
     public mutating func removeLast() -> SDPathCommand {
-        cache = BoundaryCache()
+        cache = Cache()
         return commands.removeLast().command
     }
     
     public mutating func popLast() -> SDPathCommand? {
-        cache = BoundaryCache()
+        cache = Cache()
         return commands.popLast()?.command
     }
     
@@ -405,32 +408,32 @@ extension SDPath : RangeReplaceableCollectionType {
     }
     
     public mutating func removeAll(keepCapacity keepCapacity: Bool = false) {
-        cache = BoundaryCache()
+        cache = Cache()
         commands.removeAll(keepCapacity: keepCapacity)
     }
     
     public mutating func replaceRange<C : CollectionType where C.Generator.Element == SDPathCommand>(subRange: Range<Int>, with newElements: C) {
-        cache = BoundaryCache()
+        cache = Cache()
         commands.replaceRange(subRange, with: newElements.lazy.map { PathCommand($0) } as LazyMapCollection)
     }
     
     public mutating func insert(newElement: SDPathCommand, atIndex i: Int) {
-        cache = BoundaryCache()
+        cache = Cache()
         commands.insert(PathCommand(newElement), atIndex: i)
     }
     
     public mutating func insertContentsOf<S : CollectionType where S.Generator.Element == SDPathCommand>(newElements: S, at i: Int) {
-        cache = BoundaryCache()
+        cache = Cache()
         commands.insertContentsOf(newElements.lazy.map { PathCommand($0) } as LazyMapCollection, at: i)
     }
     
     public mutating func removeAtIndex(i: Int) -> SDPathCommand {
-        cache = BoundaryCache()
+        cache = Cache()
         return commands.removeAtIndex(i).command
     }
     
     public mutating func removeRange(subRange: Range<Int>) {
-        cache = BoundaryCache()
+        cache = Cache()
         commands.removeRange(subRange)
     }
 }
@@ -483,7 +486,7 @@ extension SDPath {
 
 extension SDPath {
     
-    public var identity : SDPath {
+    private var _identity : SDPath {
         if rotate == 0 && scale == 1 && baseTransform == SDTransform.Identity() {
             return self
         }
@@ -503,5 +506,12 @@ extension SDPath {
             }
         }
         return _path
+    }
+    
+    public var identity : SDPath {
+        if cache.identity == nil {
+            cache.identity = _identity
+        }
+        return cache.identity!
     }
 }
