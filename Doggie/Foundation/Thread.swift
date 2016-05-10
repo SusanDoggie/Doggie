@@ -361,32 +361,32 @@ public class SDTask<Result> : SDAtomic {
     private var _lck: SDSpinLock = SDSpinLock()
     
     private var token: dispatch_once_t = 0
+    private let _set: (SDTask) -> Void
     private var _result: Result?
     
-    private func setValue(block: () -> Result) {
-        dispatch_once(&self.token) { self._result = block() }
-    }
-    
     private init(queue: dispatch_queue_t, suspend: ((Result) -> Bool)?, block: () -> Result) {
-        super.init(queue: queue, block: SDTask.createBlock({ $0.setValue(block) }, suspend: suspend))
+        self._set = { _self in dispatch_once(&_self.token) { _self._result = block() } }
+        super.init(queue: queue, block: SDTask.createBlock(suspend))
     }
     
     /// Create a SDTask and compute block with specific queue.
     public init(queue: dispatch_queue_t, block: () -> Result) {
-        super.init(queue: queue, block: SDTask.createBlock({ $0.setValue(block) }, suspend: nil))
+        self._set = { _self in dispatch_once(&_self.token) { _self._result = block() } }
+        super.init(queue: queue, block: SDTask.createBlock(nil))
         self.signal()
     }
     
     /// Create a SDTask and compute block with default queue.
     public init(block: () -> Result) {
-        super.init(block: SDTask.createBlock({ $0.setValue(block) }, suspend: nil))
+        self._set = { _self in dispatch_once(&_self.token) { _self._result = block() } }
+        super.init(block: SDTask.createBlock(nil))
         self.signal()
     }
 }
 
 private extension SDTask {
     
-    static func createBlock(block: (SDTask) -> Void, suspend: ((Result) -> Bool)?) -> (SDAtomic) -> Void {
+    static func createBlock(suspend: ((Result) -> Bool)?) -> (SDAtomic) -> Void {
         return { atomic in
             let _self = atomic as! SDTask<Result>
             if let result = _self._result {
@@ -395,7 +395,7 @@ private extension SDTask {
                 }
                 _self._notify = []
             } else {
-                block(_self)
+                _self._set(_self)
                 _self.signal()
             }
         }
@@ -428,7 +428,7 @@ extension SDTask {
     
     /// Result of task.
     public final var result: Result {
-        dispatch_once(&token) { self.block(self) }
+        self._set(self)
         return self._result!
     }
 }
