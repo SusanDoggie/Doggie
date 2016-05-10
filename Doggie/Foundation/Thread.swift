@@ -363,26 +363,30 @@ public class SDTask<Result> : SDAtomic {
     private var token: dispatch_once_t = 0
     private var _result: Result?
     
+    private func setValue(block: () -> Result) {
+        dispatch_once(&self.token) { self._result = block() }
+    }
+    
     private init(queue: dispatch_queue_t, suspend: ((Result) -> Bool)?, block: () -> Result) {
-        super.init(queue: queue, block: SDTask.createBlock(block, suspend: suspend))
+        super.init(queue: queue, block: SDTask.createBlock({ $0.setValue(block) }, suspend: suspend))
     }
     
     /// Create a SDTask and compute block with specific queue.
     public init(queue: dispatch_queue_t, block: () -> Result) {
-        super.init(queue: queue, block: SDTask.createBlock(block, suspend: nil))
+        super.init(queue: queue, block: SDTask.createBlock({ $0.setValue(block) }, suspend: nil))
         self.signal()
     }
     
     /// Create a SDTask and compute block with default queue.
     public init(block: () -> Result) {
-        super.init(block: SDTask.createBlock(block, suspend: nil))
+        super.init(block: SDTask.createBlock({ $0.setValue(block) }, suspend: nil))
         self.signal()
     }
 }
 
 private extension SDTask {
     
-    static func createBlock(block: () -> Result, suspend: ((Result) -> Bool)?) -> (SDAtomic) -> Void {
+    static func createBlock(block: (SDTask) -> Void, suspend: ((Result) -> Bool)?) -> (SDAtomic) -> Void {
         return { atomic in
             let _self = atomic as! SDTask<Result>
             if let result = _self._result {
@@ -391,8 +395,7 @@ private extension SDTask {
                 }
                 _self._notify = []
             } else {
-                let result = block()
-                dispatch_once(&_self.token) { _self._result = result }
+                block(_self)
                 _self.signal()
             }
         }
