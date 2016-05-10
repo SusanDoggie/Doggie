@@ -356,11 +356,11 @@ extension SDSingleton {
 
 public class SDTask<Result> : SDAtomic {
     
-    private let sem: dispatch_semaphore_t = dispatch_semaphore_create(0)
-    
     private var _notify: [(Result) -> Void] = []
     
     private var _lck: SDSpinLock = SDSpinLock()
+    
+    private var token: dispatch_once_t = 0
     private var _result: Result?
     
     private init(queue: dispatch_queue_t, suspend: ((Result) -> Bool)?, block: () -> Result) {
@@ -392,8 +392,7 @@ private extension SDTask {
                 _self._notify = []
             } else {
                 let result = block()
-                _self._lck.synchronized { _self._result = result }
-                dispatch_semaphore_signal(_self.sem)
+                dispatch_once(&_self.token) { _self._result = result }
                 _self.signal()
             }
         }
@@ -426,10 +425,7 @@ extension SDTask {
     
     /// Result of task.
     public final var result: Result {
-        if !completed {
-            dispatch_semaphore_wait(self.sem, DISPATCH_TIME_FOREVER)
-            defer { dispatch_semaphore_signal(self.sem) }
-        }
+        dispatch_once(&token) { self.block(self) }
         return self._result!
     }
 }
