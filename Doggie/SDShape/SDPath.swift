@@ -90,9 +90,9 @@ public struct SDPath : SDShape, MutableCollectionType, ArrayLiteralConvertible {
             self.table = [:]
             self.transformedTable = [:]
         }
-        init(frame: Rect?, table: [String : Any]) {
+        init(frame: Rect?, boundary: Rect?, table: [String : Any]) {
             self.frame = frame
-            self.boundary = nil
+            self.boundary = boundary
             self.identity = nil
             self.table = table
             self.transformedTable = [:]
@@ -104,18 +104,24 @@ public struct SDPath : SDShape, MutableCollectionType, ArrayLiteralConvertible {
     
     public var baseTransform : SDTransform = SDTransform(SDTransform.Identity()) {
         willSet {
-            cache = Cache(frame: cache.frame, table: cache.table)
+            cache = Cache(frame: cache.frame, boundary: nil, table: cache.table)
         }
     }
     
     public var rotate: Double = 0 {
         didSet {
+            cache = Cache(frame: cache.frame, boundary: nil, table: cache.table)
             center = _frame.center * baseTransform * SDTransform.Scale(x: scale, y: scale) * SDTransform.Rotate(oldValue)
         }
     }
     public var scale: Double = 1 {
         didSet {
+            let boundary = cache.boundary
             center = _frame.center * baseTransform * SDTransform.Scale(x: oldValue, y: oldValue) * SDTransform.Rotate(rotate)
+            if boundary != nil {
+                let _center = center
+                cache = Cache(frame: cache.frame, boundary: Rect.bound(boundary!.points.map { ($0 - _center) * scale + _center }), table: cache.table)
+            }
         }
     }
     
@@ -144,8 +150,11 @@ public struct SDPath : SDShape, MutableCollectionType, ArrayLiteralConvertible {
             return _frame.center * transform
         }
         set {
+            var boundary = cache.boundary
+            boundary?.origin += newValue - center
             let offset = newValue * SDTransform.Rotate(rotate).inverse * SDTransform.Scale(x: scale, y: scale).inverse - _frame.center * baseTransform
             baseTransform *= SDTransform.Translate(x: offset.x, y: offset.y)
+            cache = Cache(frame: cache.frame, boundary: boundary, table: cache.table)
         }
     }
     
