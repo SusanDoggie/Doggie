@@ -174,5 +174,6 @@ extension SDPath {
             case .CloseSubpath: path.memory.appendCommand(SDPath.ClosePath())
             }
         }
+        self.setCache(SDPathCacheCGPathKey, value: path, type: .regular)
     }
 }
