@@ -125,7 +125,7 @@ public struct SDPath : SDShape, MutableCollectionType, ArrayLiteralConvertible {
                 let _center = _frame.center * baseTransform * SDTransform.Scale(x: oldValue, y: oldValue) * SDTransform.Rotate(rotate)
                 center = _center
                 if boundary != nil {
-                    cache = Cache(frame: cache.frame, boundary: Rect.bound(boundary!.points.map { ($0 - _center) * scale + _center }), table: cache.table)
+                    cache = Cache(frame: cache.frame, boundary: Rect.bound(boundary!.points.map { ($0 - _center) * scale / oldValue + _center }), table: cache.table)
                 }
             }
         }
