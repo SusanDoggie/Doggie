@@ -104,23 +104,29 @@ public struct SDPath : SDShape, MutableCollectionType, ArrayLiteralConvertible {
     
     public var baseTransform : SDTransform = SDTransform(SDTransform.Identity()) {
         willSet {
-            cache = Cache(frame: cache.frame, boundary: nil, table: cache.table)
+            if baseTransform != newValue {
+                cache = Cache(frame: cache.frame, boundary: nil, table: cache.table)
+            }
         }
     }
     
     public var rotate: Double = 0 {
         didSet {
-            cache = Cache(frame: cache.frame, boundary: nil, table: cache.table)
-            center = _frame.center * baseTransform * SDTransform.Scale(x: scale, y: scale) * SDTransform.Rotate(oldValue)
+            if rotate != oldValue {
+                cache = Cache(frame: cache.frame, boundary: nil, table: cache.table)
+                center = _frame.center * baseTransform * SDTransform.Scale(x: scale, y: scale) * SDTransform.Rotate(oldValue)
+            }
         }
     }
     public var scale: Double = 1 {
         didSet {
-            let boundary = cache.boundary
-            center = _frame.center * baseTransform * SDTransform.Scale(x: oldValue, y: oldValue) * SDTransform.Rotate(rotate)
-            if boundary != nil {
-                let _center = center
-                cache = Cache(frame: cache.frame, boundary: Rect.bound(boundary!.points.map { ($0 - _center) * scale + _center }), table: cache.table)
+            if scale != oldValue {
+                let boundary = cache.boundary
+                let _center = _frame.center * baseTransform * SDTransform.Scale(x: oldValue, y: oldValue) * SDTransform.Rotate(rotate)
+                center = _center
+                if boundary != nil {
+                    cache = Cache(frame: cache.frame, boundary: Rect.bound(boundary!.points.map { ($0 - _center) * scale + _center }), table: cache.table)
+                }
             }
         }
     }
@@ -150,11 +156,14 @@ public struct SDPath : SDShape, MutableCollectionType, ArrayLiteralConvertible {
             return _frame.center * transform
         }
         set {
-            var boundary = cache.boundary
-            boundary?.origin += newValue - center
-            let offset = newValue * SDTransform.Rotate(rotate).inverse * SDTransform.Scale(x: scale, y: scale).inverse - _frame.center * baseTransform
-            baseTransform *= SDTransform.Translate(x: offset.x, y: offset.y)
-            cache = Cache(frame: cache.frame, boundary: boundary, table: cache.table)
+            let _center = center
+            if _center != newValue {
+                var boundary = cache.boundary
+                boundary?.origin += newValue - _center
+                let offset = newValue * SDTransform.Rotate(rotate).inverse * SDTransform.Scale(x: scale, y: scale).inverse - _frame.center * baseTransform
+                baseTransform *= SDTransform.Translate(x: offset.x, y: offset.y)
+                cache = Cache(frame: cache.frame, boundary: boundary, table: cache.table)
+            }
         }
     }
     
