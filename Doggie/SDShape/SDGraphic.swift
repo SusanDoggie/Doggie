@@ -126,21 +126,36 @@ extension SDEllipse {
     }
 }
 
+private let SDPathCacheCGPathKey = "SDPathCacheCGPathKey"
+
 extension SDPath {
     
     public var CGPath : CoreGraphics.CGPath {
-        let path = CGPathCreateMutable()
-        self._apply { component, state in
-            switch component {
-            case let .move(point): CGPathMoveToPoint(path, nil, CGFloat(point.x), CGFloat(point.y))
-            case let .line(point): CGPathAddLineToPoint(path, nil, CGFloat(point.x), CGFloat(point.y))
-            case let .quad(p1, p2): CGPathAddQuadCurveToPoint(path, nil, CGFloat(p1.x), CGFloat(p1.y), CGFloat(p2.x), CGFloat(p2.y))
-            case let .cubic(p1, p2, p3): CGPathAddCurveToPoint(path, nil, CGFloat(p1.x), CGFloat(p1.y), CGFloat(p2.x), CGFloat(p2.y), CGFloat(p3.x), CGFloat(p3.y))
-            case .close: CGPathCloseSubpath(path)
+        let _path: CoreGraphics.CGPath
+        if let path = self.getCache(SDPathCacheCGPathKey, type: .regular).map({ $0 as! CoreGraphics.CGPath }) {
+            _path = path
+        } else {
+            let path = CGPathCreateMutable()
+            self._apply { component, state in
+                switch component {
+                case let .move(point): CGPathMoveToPoint(path, nil, CGFloat(point.x), CGFloat(point.y))
+                case let .line(point): CGPathAddLineToPoint(path, nil, CGFloat(point.x), CGFloat(point.y))
+                case let .quad(p1, p2): CGPathAddQuadCurveToPoint(path, nil, CGFloat(p1.x), CGFloat(p1.y), CGFloat(p2.x), CGFloat(p2.y))
+                case let .cubic(p1, p2, p3): CGPathAddCurveToPoint(path, nil, CGFloat(p1.x), CGFloat(p1.y), CGFloat(p2.x), CGFloat(p2.y), CGFloat(p3.x), CGFloat(p3.y))
+                case .close: CGPathCloseSubpath(path)
+                }
             }
+            self.setCache(SDPathCacheCGPathKey, value: path, type: .regular)
+            _path = path
         }
-        var _transform = CGAffineTransform(transform)
-        return CGPathCreateCopyByTransformingPath(path, &_transform) ?? path
+        if let path = self.getCache(SDPathCacheCGPathKey, type: .transformed).map({ $0 as! CoreGraphics.CGPath }) {
+            return path
+        } else {
+            var _transform = CGAffineTransform(transform)
+            let path = CGPathCreateCopyByTransformingPath(_path, &_transform) ?? _path
+            self.setCache(SDPathCacheCGPathKey, value: path, type: .transformed)
+            return path
+        }
     }
 }
 

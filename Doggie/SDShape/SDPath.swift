@@ -80,15 +80,22 @@ public struct SDPath : SDShape, MutableCollectionType, ArrayLiteralConvertible {
         var boundary: Rect?
         var identity : SDPath?
         
+        var table: [String : Any]
+        var transformedTable: [String : Any]
+        
         init() {
             self.frame = nil
             self.boundary = nil
             self.identity = nil
+            self.table = [:]
+            self.transformedTable = [:]
         }
-        init(frame: Rect?) {
+        init(frame: Rect?, table: [String : Any]) {
             self.frame = frame
             self.boundary = nil
             self.identity = nil
+            self.table = table
+            self.transformedTable = [:]
         }
     }
     
@@ -97,7 +104,7 @@ public struct SDPath : SDShape, MutableCollectionType, ArrayLiteralConvertible {
     
     public var baseTransform : SDTransform = SDTransform(SDTransform.Identity()) {
         willSet {
-            cache = Cache(frame: cache.frame)
+            cache = Cache(frame: cache.frame, table: cache.table)
         }
     }
     
@@ -316,6 +323,34 @@ public struct SDPath : SDShape, MutableCollectionType, ArrayLiteralConvertible {
     
     public var path: SDPath {
         return self
+    }
+}
+
+extension SDPath {
+    
+    enum CacheType {
+        case regular
+        case transformed
+    }
+    
+    func setCache(name: String, value: Any, type: CacheType) {
+        switch type {
+        case .regular: cache.table[name] = value
+        case .transformed: cache.transformedTable[name] = value
+        }
+    }
+    func getCache(name: String, type: CacheType) -> Any? {
+        switch type {
+        case .regular: return cache.table[name]
+        case .transformed:
+            if rotate == 0 && scale == 1 && baseTransform == SDTransform.Identity() {
+                return cache.transformedTable[name] ?? cache.table[name]
+            }
+            if transform == SDTransform.Identity() {
+                return cache.transformedTable[name] ?? cache.table[name]
+            }
+            return cache.transformedTable[name]
+        }
     }
 }
 

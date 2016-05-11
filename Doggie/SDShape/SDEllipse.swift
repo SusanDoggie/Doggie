@@ -148,7 +148,7 @@ public struct SDEllipse : SDShape {
         ]
         path.rotate = self.rotate
         path.scale = self.scale
-        path.transform = self.transform
+        path.baseTransform = self.baseTransform
         return path
     }
 }
