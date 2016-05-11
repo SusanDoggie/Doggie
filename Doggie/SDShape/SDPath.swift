@@ -343,13 +343,16 @@ extension SDPath {
         switch type {
         case .regular: return cache.table[name]
         case .transformed:
+            if let value = cache.transformedTable[name] {
+                return value
+            }
             if rotate == 0 && scale == 1 && baseTransform == SDTransform.Identity() {
-                return cache.transformedTable[name] ?? cache.table[name]
+                return cache.table[name]
             }
             if transform == SDTransform.Identity() {
-                return cache.transformedTable[name] ?? cache.table[name]
+                return cache.table[name]
             }
-            return cache.transformedTable[name]
+            return nil
         }
     }
 }
