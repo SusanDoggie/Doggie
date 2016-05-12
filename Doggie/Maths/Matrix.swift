@@ -263,6 +263,11 @@ extension Matrix {
         public var y: Double
         public var z: Double
         
+        public init(_ scale: Double) {
+            self.x = scale
+            self.y = scale
+            self.z = scale
+        }
         public init(x: Double, y: Double, z: Double) {
             self.x = x
             self.y = y

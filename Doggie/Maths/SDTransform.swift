@@ -202,6 +202,10 @@ extension SDTransform {
         public var x: Double
         public var y: Double
         
+        public init(_ scale: Double) {
+            self.x = scale
+            self.y = scale
+        }
         public init(x: Double, y: Double) {
             self.x = x
             self.y = y
