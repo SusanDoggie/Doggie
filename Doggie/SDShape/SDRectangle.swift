@@ -29,12 +29,12 @@ public struct SDRectangle : SDShape {
     
     public var rotate: Double = 0 {
         didSet {
-            center = rect.center * baseTransform * SDTransform.Scale(x: scale, y: scale) * SDTransform.Rotate(oldValue)
+            center = rect.center * baseTransform * SDTransform.Scale(scale) * SDTransform.Rotate(oldValue)
         }
     }
     public var scale: Double = 1 {
         didSet {
-            center = rect.center * baseTransform * SDTransform.Scale(x: oldValue, y: oldValue) * SDTransform.Rotate(rotate)
+            center = rect.center * baseTransform * SDTransform.Scale(oldValue) * SDTransform.Rotate(rotate)
         }
     }
     

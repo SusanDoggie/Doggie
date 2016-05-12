@@ -114,7 +114,7 @@ public struct SDPath : SDShape, MutableCollectionType, ArrayLiteralConvertible {
         didSet {
             if rotate != oldValue {
                 cache = Cache(frame: cache.frame, boundary: nil, table: cache.table)
-                center = _frame.center * baseTransform * SDTransform.Scale(x: scale, y: scale) * SDTransform.Rotate(oldValue)
+                center = _frame.center * baseTransform * SDTransform.Scale(scale) * SDTransform.Rotate(oldValue)
             }
         }
     }
@@ -122,7 +122,7 @@ public struct SDPath : SDShape, MutableCollectionType, ArrayLiteralConvertible {
         didSet {
             if scale != oldValue {
                 let boundary = cache.boundary
-                let _center = _frame.center * baseTransform * SDTransform.Scale(x: oldValue, y: oldValue) * SDTransform.Rotate(rotate)
+                let _center = _frame.center * baseTransform * SDTransform.Scale(oldValue) * SDTransform.Rotate(rotate)
                 center = _center
                 if boundary != nil {
                     cache = Cache(frame: cache.frame, boundary: Rect.bound(boundary!.points.map { ($0 - _center) * scale / oldValue + _center }), table: cache.table)
@@ -160,7 +160,7 @@ public struct SDPath : SDShape, MutableCollectionType, ArrayLiteralConvertible {
             if _center != newValue {
                 var boundary = cache.boundary
                 boundary?.origin += newValue - _center
-                let offset = newValue * SDTransform.Rotate(rotate).inverse * SDTransform.Scale(x: scale, y: scale).inverse - _frame.center * baseTransform
+                let offset = newValue * SDTransform.Rotate(rotate).inverse * SDTransform.Scale(scale).inverse - _frame.center * baseTransform
                 baseTransform *= SDTransform.Translate(x: offset.x, y: offset.y)
                 cache = Cache(frame: cache.frame, boundary: boundary, table: cache.table)
             }
