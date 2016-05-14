@@ -324,9 +324,9 @@ public extension CollectionType where Index : RandomAccessIndexType {
             }
             if let pos = try reverse_pattern.dropFirst().indexOf({ try isEquivalent(self[not_match.0], $0) }) {
                 let offset = reverse_pattern.startIndex.distanceTo(pos).toIntMax()
-                cursor = cursor.advancedBy(numericCast(offset), limit: endIndex)
+                cursor = not_match.0.advancedBy(numericCast(offset), limit: endIndex)
             } else {
-                cursor = cursor.advancedBy(numericCast(pattern_count), limit: endIndex)
+                cursor = not_match.0.advancedBy(numericCast(pattern_count), limit: endIndex)
             }
         }
         if try self.reverse().startsWith(reverse_pattern, isEquivalent: isEquivalent) {
