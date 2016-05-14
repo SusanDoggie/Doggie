@@ -308,7 +308,7 @@ public extension CollectionType where Index : BidirectionalIndexType {
 public extension CollectionType where Index : RandomAccessIndexType {
     
     @warn_unused_result
-    func matchWith<C : CollectionType where C.Index : RandomAccessIndexType, C.Generator.Element == Generator.Element>(pattern: C, @noescape isEquivalent: (Generator.Element, Generator.Element) throws -> Bool) rethrows -> Index? {
+    func matchWith<C : CollectionType where C.Index : BidirectionalIndexType, C.Generator.Element == Generator.Element>(pattern: C, @noescape isEquivalent: (Generator.Element, Generator.Element) throws -> Bool) rethrows -> Index? {
         
         let pattern_count = pattern.count.toIntMax()
         if count.toIntMax() < pattern_count {
@@ -317,16 +317,16 @@ public extension CollectionType where Index : RandomAccessIndexType {
         let reverse_pattern = pattern.reverse()
         var cursor = startIndex.advancedBy(numericCast(pattern_count - 1))
         while cursor < endIndex {
-            let left = startIndex..<cursor
+            let left = startIndex...cursor
             let pair = zip(left.reverse(), reverse_pattern)
             guard let not_match = try pair.firstOf({ try !isEquivalent(self[$0], $1) }) else {
-                return cursor.advancedBy(numericCast(-pattern_count))
+                return cursor.advancedBy(numericCast(1 - pattern_count))
             }
             if let pos = try reverse_pattern.dropFirst().indexOf({ try isEquivalent(self[not_match.0], $0) }) {
                 let offset = reverse_pattern.startIndex.distanceTo(pos).toIntMax()
                 cursor = cursor.advancedBy(numericCast(offset), limit: endIndex)
             } else {
-                cursor = cursor.advancedBy(numericCast(pattern_count - 1), limit: endIndex)
+                cursor = cursor.advancedBy(numericCast(pattern_count), limit: endIndex)
             }
         }
         if try self.reverse().startsWith(reverse_pattern, isEquivalent: isEquivalent) {
@@ -339,7 +339,7 @@ public extension CollectionType where Index : RandomAccessIndexType {
 public extension CollectionType where Index : RandomAccessIndexType, Generator.Element : Equatable {
     
     @warn_unused_result
-    func matchWith<C : CollectionType where C.Generator.Element == Generator.Element, C.Index : RandomAccessIndexType>(pattern: C) -> Index? {
+    func matchWith<C : CollectionType where C.Index : BidirectionalIndexType, C.Generator.Element == Generator.Element>(pattern: C) -> Index? {
         return self.matchWith(pattern) { $0 == $1 }
     }
 }
