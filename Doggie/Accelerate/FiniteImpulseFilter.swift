@@ -25,6 +25,18 @@
 
 public func Radix2FiniteImpulseFilter(level: Int, _ signal: UnsafePointer<Double>, _ signal_stride: Int, _ signal_count: Int, _ kernel: UnsafePointer<Complex>, _ kernel_stride: Int, _ output: UnsafeMutablePointer<Double>, _ out_stride: Int, _ temp: UnsafeMutablePointer<Double>, _ temp_stride: Int) {
     
+    let length = 1 << level
+    let half = length >> 1
+    
+    if signal_count == 0 {
+        var output = output
+        for _ in 0..<length {
+            output.memory = 0
+            output += out_stride
+        }
+        return
+    }
+    
     var _treal = temp
     var _timag = temp + temp_stride
     var _kernel = kernel
@@ -32,9 +44,6 @@ public func Radix2FiniteImpulseFilter(level: Int, _ signal: UnsafePointer<Double
     let t_stride = temp_stride << 1
     
     HalfRadix2CooleyTukey(level, signal, signal_stride, signal_count, _treal, _timag, t_stride)
-    
-    let length = 1 << level
-    let half = length >> 1
     
     _treal.memory *= _kernel.memory.real
     _timag.memory *= _kernel.memory.imag
@@ -55,12 +64,21 @@ public func Radix2FiniteImpulseFilter(level: Int, _ signal: UnsafePointer<Double
 
 public func Radix2FiniteImpulseFilter(level: Int, _ signal: UnsafePointer<Complex>, _ signal_stride: Int, _ signal_count: Int, _ kernel: UnsafePointer<Complex>, _ kernel_stride: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int, _ temp: UnsafeMutablePointer<Complex>, _ temp_stride: Int) {
     
+    let length = 1 << level
+    
+    if signal_count == 0 {
+        var output = output
+        for _ in 0..<length {
+            output.memory = Complex(0)
+            output += out_stride
+        }
+        return
+    }
+    
     var _temp = temp
     var _kernel = kernel
     
     Radix2CooleyTukey(level, signal, signal_stride, signal_count, _temp, out_stride)
-    
-    let length = 1 << level
     
     for _ in 0..<length {
         let _treal = _temp.memory.real
@@ -78,6 +96,18 @@ public func Radix2FiniteImpulseFilter(level: Int, _ signal: UnsafePointer<Comple
 
 public func DispatchRadix2FiniteImpulseFilter(level: Int, _ signal: UnsafePointer<Double>, _ signal_stride: Int, _ signal_count: Int, _ kernel: UnsafePointer<Complex>, _ kernel_stride: Int, _ output: UnsafeMutablePointer<Double>, _ out_stride: Int, _ temp: UnsafeMutablePointer<Double>, _ temp_stride: Int) {
     
+    let length = 1 << level
+    let half = length >> 1
+    
+    if signal_count == 0 {
+        var output = output
+        for _ in 0..<length {
+            output.memory = 0
+            output += out_stride
+        }
+        return
+    }
+    
     var _treal = temp
     var _timag = temp + temp_stride
     var _kernel = kernel
@@ -85,9 +115,6 @@ public func DispatchRadix2FiniteImpulseFilter(level: Int, _ signal: UnsafePointe
     let t_stride = temp_stride << 1
     
     DispatchHalfRadix2CooleyTukey(level, signal, signal_stride, signal_count, _treal, _timag, t_stride)
-    
-    let length = 1 << level
-    let half = length >> 1
     
     _treal.memory *= _kernel.memory.real
     _timag.memory *= _kernel.memory.imag
@@ -108,12 +135,21 @@ public func DispatchRadix2FiniteImpulseFilter(level: Int, _ signal: UnsafePointe
 
 public func DispatchRadix2FiniteImpulseFilter(level: Int, _ signal: UnsafePointer<Complex>, _ signal_stride: Int, _ signal_count: Int, _ kernel: UnsafePointer<Complex>, _ kernel_stride: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int, _ temp: UnsafeMutablePointer<Complex>, _ temp_stride: Int) {
     
+    let length = 1 << level
+    
+    if signal_count == 0 {
+        var output = output
+        for _ in 0..<length {
+            output.memory = Complex(0)
+            output += out_stride
+        }
+        return
+    }
+    
     var _temp = temp
     var _kernel = kernel
     
     DispatchRadix2CooleyTukey(level, signal, signal_stride, signal_count, _temp, out_stride)
-    
-    let length = 1 << level
     
     for _ in 0..<length {
         let _treal = _temp.memory.real
