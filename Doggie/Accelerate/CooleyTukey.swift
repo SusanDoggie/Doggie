@@ -27,25 +27,27 @@ import Foundation
 
 // MARK: Half Radix-2 Cooley-Tukey
 
-public func HalfRadix2CooleyTukey(level: Int, _ input: UnsafePointer<Float>, _ in_stride: Int, _ _real: UnsafeMutablePointer<Float>, _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int) {
+public func HalfRadix2CooleyTukey(level: Int, _ input: UnsafePointer<Float>, _ in_stride: Int, _ in_count: Int, _ _real: UnsafeMutablePointer<Float>, _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int) {
+    
+    assert(in_count & 1 == 0, "size of input must be multiple of 2.")
     
     switch level {
         
     case 0:
-        _real.memory = input.memory
+        _real.memory = in_count == 0 ? 0 : input.memory
         _imag.memory = 0.0
         
     case 1:
-        HalfRadix2CooleyTukey_2(input, in_stride, _real, _imag)
+        HalfRadix2CooleyTukey_2(input, in_stride, in_count, _real, _imag)
     case 2:
-        HalfRadix2CooleyTukey_4(input, in_stride, _real, _imag, out_stride)
+        HalfRadix2CooleyTukey_4(input, in_stride, in_count, _real, _imag, out_stride)
         
     default:
         let length = 1 << level
         let half = length >> 1
         let fourth = length >> 2
         
-        Radix2CooleyTukey(level - 1, input, input + in_stride, in_stride << 1, _real, _imag, out_stride)
+        Radix2CooleyTukey(level - 1, input, input + in_stride, in_stride << 1, in_count >> 1, _real, _imag, out_stride)
         
         let _out_stride = half * out_stride
         var op_r = _real
@@ -106,9 +108,9 @@ public func HalfInverseRadix2CooleyTukey(level: Int, _ real: UnsafePointer<Float
         output.memory = real.memory
         
     case 1:
-        HalfInverseRadix2CooleyTukey_2(real, imag, output, out_stride)
+        HalfInverseRadix2CooleyTukey_2(real, imag, 1, output, out_stride)
     case 2:
-        HalfInverseRadix2CooleyTukey_4(real, imag, in_stride, output, out_stride)
+        HalfInverseRadix2CooleyTukey_4(real, imag, in_stride, 2, output, out_stride)
         
     default:
         let length = 1 << level
@@ -176,93 +178,31 @@ public func HalfInverseRadix2CooleyTukey(level: Int, _ real: UnsafePointer<Float
             _sin1 = _s1
         }
         
-        InverseRadix2CooleyTukey(level - 1, treal, timag, tp_stride, output, output + out_stride, out_stride << 1)
+        InverseRadix2CooleyTukey(level - 1, treal, timag, tp_stride, length, output, output + out_stride, out_stride << 1)
     }
 }
 
-public func HalfRadix2CooleyTukey(levelRow: Int, _ levelCol: Int, _ input: UnsafePointer<Float>, _ in_stride_row: Int, _ in_stride_col: Int, _ _real: UnsafeMutablePointer<Float>, _ _imag: UnsafeMutablePointer<Float>, _ out_stride_row: Int, _ out_stride_col: Int, _ treal: UnsafeMutablePointer<Float>, _ timag: UnsafeMutablePointer<Float>, _ temp_stride_row: Int, _ temp_stride_col: Int) {
+public func HalfRadix2CooleyTukey(level: Int, _ input: UnsafePointer<Double>, _ in_stride: Int, _ in_count: Int, _ _real: UnsafeMutablePointer<Double>, _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int) {
     
-    let row_count = 1 << levelRow
-    let col_count = (1 << levelCol) >> 1
-    
-    let in_row_length = in_stride_col << levelCol
-    let out_row_length = (out_stride_col << levelCol) >> 1
-    let temp_row_length = (temp_stride_col << levelCol) >> 1
-    
-    let in_row_offset = in_row_length * in_stride_row
-    let out_row_offset = out_row_length * out_stride_row
-    let temp_row_offset = temp_row_length * temp_stride_row
-    
-    for i in 0..<row_count {
-        let _in_row_offset = i * in_row_offset
-        let _temp_row_offset = i * temp_row_offset
-        HalfRadix2CooleyTukey(levelCol, input + _in_row_offset, in_stride_col, treal + _temp_row_offset, timag + _temp_row_offset, temp_stride_col)
-    }
-    
-    HalfRadix2CooleyTukey(levelRow, treal, temp_row_offset, _real, _real + out_row_offset, out_row_offset << 1)
-    HalfRadix2CooleyTukey(levelRow, timag, temp_row_offset, _imag, _imag + out_row_offset, out_row_offset << 1)
-    if col_count > 1 {
-        for i in 1..<col_count {
-            let _temp_col_offset = i * temp_stride_col
-            let _out_col_offset = i * out_stride_col
-            Radix2CooleyTukey(levelRow, treal + _temp_col_offset, timag + _temp_col_offset, temp_row_offset, _real + _out_col_offset, _imag + _out_col_offset, out_row_offset)
-        }
-    }
-}
-
-public func HalfInverseRadix2CooleyTukey(levelRow: Int, _ levelCol: Int, _ real: UnsafePointer<Float>, _ imag: UnsafePointer<Float>, _ in_stride_row: Int, _ in_stride_col: Int, _ output: UnsafeMutablePointer<Float>, _ out_stride_row: Int, _ out_stride_col: Int, _ treal: UnsafeMutablePointer<Float>, _ timag: UnsafeMutablePointer<Float>, _ temp_stride_row: Int, _ temp_stride_col: Int) {
-    
-    let row_count = 1 << levelRow
-    let col_count = (1 << levelCol) >> 1
-    
-    let in_row_length = (in_stride_col << levelCol) >> 1
-    let out_row_length = out_stride_col << levelCol
-    let temp_row_length = (temp_stride_col << levelCol) >> 1
-    
-    let in_row_offset = in_row_length * in_stride_row
-    let out_row_offset = out_row_length * out_stride_row
-    let temp_row_offset = temp_row_length * temp_stride_row
-    
-    let treal2 = output
-    let timag2 = output + out_stride_col
-    let temp2_row_offset = (out_row_length * out_stride_row) >> 1
-    
-    HalfInverseRadix2CooleyTukey(levelRow, real, real + in_row_offset, in_row_offset << 1, treal, temp_row_offset, treal2, treal2 + temp2_row_offset, temp2_row_offset << 1)
-    HalfInverseRadix2CooleyTukey(levelRow, imag, imag + in_row_offset, in_row_offset << 1, timag, temp_row_offset, timag2, timag2 + temp2_row_offset, temp2_row_offset << 1)
-    if col_count > 1 {
-        for i in 1..<col_count {
-            let _in_col_offset = i * in_stride_col
-            let _temp_col_offset = i * temp_stride_col
-            InverseRadix2CooleyTukey(levelRow, real + _in_col_offset, imag + _in_col_offset, in_row_offset, treal + _temp_col_offset, timag + _temp_col_offset, temp_row_offset)
-        }
-    }
-    
-    for i in 0..<row_count {
-        let _temp_row_offset = i * temp_row_offset
-        let _out_row_offset = i * out_row_offset
-        HalfInverseRadix2CooleyTukey(levelCol, treal + _temp_row_offset, timag + _temp_row_offset, temp_stride_col, output + _out_row_offset, out_stride_col, treal + _temp_row_offset, timag + _temp_row_offset, temp_stride_col)
-    }
-}
-
-public func HalfRadix2CooleyTukey(level: Int, _ input: UnsafePointer<Double>, _ in_stride: Int, _ _real: UnsafeMutablePointer<Double>, _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int) {
+    assert(in_count & 1 == 0, "size of input must be multiple of 2.")
     
     switch level {
         
     case 0:
-        _real.memory = input.memory
+        _real.memory = in_count == 0 ? 0 : input.memory
         _imag.memory = 0.0
         
     case 1:
-        HalfRadix2CooleyTukey_2(input, in_stride, _real, _imag)
+        HalfRadix2CooleyTukey_2(input, in_stride, in_count, _real, _imag)
     case 2:
-        HalfRadix2CooleyTukey_4(input, in_stride, _real, _imag, out_stride)
+        HalfRadix2CooleyTukey_4(input, in_stride, in_count, _real, _imag, out_stride)
         
     default:
         let length = 1 << level
         let half = length >> 1
         let fourth = length >> 2
         
-        Radix2CooleyTukey(level - 1, input, input + in_stride, in_stride << 1, _real, _imag, out_stride)
+        Radix2CooleyTukey(level - 1, input, input + in_stride, in_stride << 1, in_count >> 1, _real, _imag, out_stride)
         
         let _out_stride = half * out_stride
         var op_r = _real
@@ -323,9 +263,9 @@ public func HalfInverseRadix2CooleyTukey(level: Int, _ real: UnsafePointer<Doubl
         output.memory = real.memory
         
     case 1:
-        HalfInverseRadix2CooleyTukey_2(real, imag, output, out_stride)
+        HalfInverseRadix2CooleyTukey_2(real, imag, 1, output, out_stride)
     case 2:
-        HalfInverseRadix2CooleyTukey_4(real, imag, in_stride, output, out_stride)
+        HalfInverseRadix2CooleyTukey_4(real, imag, in_stride, 2, output, out_stride)
         
     default:
         let length = 1 << level
@@ -393,95 +333,33 @@ public func HalfInverseRadix2CooleyTukey(level: Int, _ real: UnsafePointer<Doubl
             _sin1 = _s1
         }
         
-        InverseRadix2CooleyTukey(level - 1, treal, timag, tp_stride, output, output + out_stride, out_stride << 1)
-    }
-}
-
-public func HalfRadix2CooleyTukey(levelRow: Int, _ levelCol: Int, _ input: UnsafePointer<Double>, _ in_stride_row: Int, _ in_stride_col: Int, _ _real: UnsafeMutablePointer<Double>, _ _imag: UnsafeMutablePointer<Double>, _ out_stride_row: Int, _ out_stride_col: Int, _ treal: UnsafeMutablePointer<Double>, _ timag: UnsafeMutablePointer<Double>, _ temp_stride_row: Int, _ temp_stride_col: Int) {
-    
-    let row_count = 1 << levelRow
-    let col_count = (1 << levelCol) >> 1
-    
-    let in_row_length = in_stride_col << levelCol
-    let out_row_length = (out_stride_col << levelCol) >> 1
-    let temp_row_length = (temp_stride_col << levelCol) >> 1
-    
-    let in_row_offset = in_row_length * in_stride_row
-    let out_row_offset = out_row_length * out_stride_row
-    let temp_row_offset = temp_row_length * temp_stride_row
-    
-    for i in 0..<row_count {
-        let _in_row_offset = i * in_row_offset
-        let _temp_row_offset = i * temp_row_offset
-        HalfRadix2CooleyTukey(levelCol, input + _in_row_offset, in_stride_col, treal + _temp_row_offset, timag + _temp_row_offset, temp_stride_col)
-    }
-    
-    HalfRadix2CooleyTukey(levelRow, treal, temp_row_offset, _real, _real + out_row_offset, out_row_offset << 1)
-    HalfRadix2CooleyTukey(levelRow, timag, temp_row_offset, _imag, _imag + out_row_offset, out_row_offset << 1)
-    if col_count > 1 {
-        for i in 1..<col_count {
-            let _temp_col_offset = i * temp_stride_col
-            let _out_col_offset = i * out_stride_col
-            Radix2CooleyTukey(levelRow, treal + _temp_col_offset, timag + _temp_col_offset, temp_row_offset, _real + _out_col_offset, _imag + _out_col_offset, out_row_offset)
-        }
-    }
-}
-
-public func HalfInverseRadix2CooleyTukey(levelRow: Int, _ levelCol: Int, _ real: UnsafePointer<Double>, _ imag: UnsafePointer<Double>, _ in_stride_row: Int, _ in_stride_col: Int, _ output: UnsafeMutablePointer<Double>, _ out_stride_row: Int, _ out_stride_col: Int, _ treal: UnsafeMutablePointer<Double>, _ timag: UnsafeMutablePointer<Double>, _ temp_stride_row: Int, _ temp_stride_col: Int) {
-    
-    let row_count = 1 << levelRow
-    let col_count = (1 << levelCol) >> 1
-    
-    let in_row_length = (in_stride_col << levelCol) >> 1
-    let out_row_length = out_stride_col << levelCol
-    let temp_row_length = (temp_stride_col << levelCol) >> 1
-    
-    let in_row_offset = in_row_length * in_stride_row
-    let out_row_offset = out_row_length * out_stride_row
-    let temp_row_offset = temp_row_length * temp_stride_row
-    
-    let treal2 = output
-    let timag2 = output + out_stride_col
-    let temp2_row_offset = (out_row_length * out_stride_row) >> 1
-    
-    HalfInverseRadix2CooleyTukey(levelRow, real, real + in_row_offset, in_row_offset << 1, treal, temp_row_offset, treal2, treal2 + temp2_row_offset, temp2_row_offset << 1)
-    HalfInverseRadix2CooleyTukey(levelRow, imag, imag + in_row_offset, in_row_offset << 1, timag, temp_row_offset, timag2, timag2 + temp2_row_offset, temp2_row_offset << 1)
-    if col_count > 1 {
-        for i in 1..<col_count {
-            let _in_col_offset = i * in_stride_col
-            let _temp_col_offset = i * temp_stride_col
-            InverseRadix2CooleyTukey(levelRow, real + _in_col_offset, imag + _in_col_offset, in_row_offset, treal + _temp_col_offset, timag + _temp_col_offset, temp_row_offset)
-        }
-    }
-    
-    for i in 0..<row_count {
-        let _temp_row_offset = i * temp_row_offset
-        let _out_row_offset = i * out_row_offset
-        HalfInverseRadix2CooleyTukey(levelCol, treal + _temp_row_offset, timag + _temp_row_offset, temp_stride_col, output + _out_row_offset, out_stride_col, treal + _temp_row_offset, timag + _temp_row_offset, temp_stride_col)
+        InverseRadix2CooleyTukey(level - 1, treal, timag, tp_stride, length, output, output + out_stride, out_stride << 1)
     }
 }
 
 // MARK: Radix-2 Cooley-Tukey
 
-public func Radix2CooleyTukey(level: Int, _ input: UnsafePointer<Float>, _ in_stride: Int, _ _real: UnsafeMutablePointer<Float>, _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int) {
+public func Radix2CooleyTukey(level: Int, _ input: UnsafePointer<Float>, _ in_stride: Int, _ in_count: Int, _ _real: UnsafeMutablePointer<Float>, _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int) {
+    
+    assert(in_count & 1 == 0, "size of input must be multiple of 2.")
     
     switch level {
         
     case 0:
-        _real.memory = input.memory
+        _real.memory = in_count == 0 ? 0 : input.memory
         _imag.memory = 0.0
         
     case 1:
-        Radix2CooleyTukey_2(input, in_stride, _real, _imag, out_stride)
+        Radix2CooleyTukey_2(input, in_stride, in_count, _real, _imag, out_stride)
     case 2:
-        Radix2CooleyTukey_4(input, in_stride, _real, _imag, out_stride)
+        Radix2CooleyTukey_4(input, in_stride, in_count, _real, _imag, out_stride)
         
     default:
         let length = 1 << level
         let half = length >> 1
         let fourth = length >> 2
         
-        Radix2CooleyTukey(level - 1, input, input + in_stride, in_stride << 1, _real, _imag, out_stride)
+        Radix2CooleyTukey(level - 1, input, input + in_stride, in_stride << 1, in_count >> 1, _real, _imag, out_stride)
         
         let _out_stride = half * out_stride
         var op_r = _real
@@ -559,18 +437,18 @@ public func Radix2CooleyTukey(level: Int, _ input: UnsafePointer<Float>, _ in_st
     }
 }
 
-public func Radix2CooleyTukey(level: Int, _ real: UnsafePointer<Float>, _ imag: UnsafePointer<Float>, _ in_stride: Int, _ _real: UnsafeMutablePointer<Float>, _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int) {
+public func Radix2CooleyTukey(level: Int, _ real: UnsafePointer<Float>, _ imag: UnsafePointer<Float>, _ in_stride: Int, _ in_count: Int, _ _real: UnsafeMutablePointer<Float>, _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int) {
     
     switch level {
         
     case 0:
-        _real.memory = real.memory
-        _imag.memory = imag.memory
+        _real.memory = in_count == 0 ? 0 : real.memory
+        _imag.memory = in_count == 0 ? 0 : imag.memory
         
     case 1:
-        Radix2CooleyTukey_2(real, imag, in_stride, _real, _imag, out_stride)
+        Radix2CooleyTukey_2(real, imag, in_stride, in_count, _real, _imag, out_stride)
     case 2:
-        Radix2CooleyTukey_4(real, imag, in_stride, _real, _imag, out_stride)
+        Radix2CooleyTukey_4(real, imag, in_stride, in_count, _real, _imag, out_stride)
         
     default:
         let length = 1 << level
@@ -582,8 +460,8 @@ public func Radix2CooleyTukey(level: Int, _ real: UnsafePointer<Float>, _ imag: 
         var oph_r = _real + oph_stride
         var oph_i = _imag + oph_stride
         
-        Radix2CooleyTukey(level - 1, real, imag, in_stride << 1, op_r, op_i, out_stride)
-        Radix2CooleyTukey(level - 1, real + in_stride, imag + in_stride, in_stride << 1, oph_r, oph_i, out_stride)
+        Radix2CooleyTukey(level - 1, real, imag, in_stride << 1, in_count - in_count >> 1, op_r, op_i, out_stride)
+        Radix2CooleyTukey(level - 1, real + in_stride, imag + in_stride, in_stride << 1, in_count >> 1, oph_r, oph_i, out_stride)
         
         let angle = -Float(M_PI) / Float(half)
         let _cos = cos(angle)
@@ -615,25 +493,27 @@ public func Radix2CooleyTukey(level: Int, _ real: UnsafePointer<Float>, _ imag: 
     }
 }
 
-public func InverseRadix2CooleyTukey(level: Int, _ input: UnsafePointer<Float>, _ in_stride: Int, _ _real: UnsafeMutablePointer<Float>, _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int) {
+public func InverseRadix2CooleyTukey(level: Int, _ input: UnsafePointer<Float>, _ in_stride: Int, _ in_count: Int, _ _real: UnsafeMutablePointer<Float>, _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int) {
+    
+    assert(in_count & 1 == 0, "size of input must be multiple of 2.")
     
     switch level {
         
     case 0:
-        _real.memory = input.memory
+        _real.memory = in_count == 0 ? 0 : input.memory
         _imag.memory = 0.0
         
     case 1:
-        InverseRadix2CooleyTukey_2(input, in_stride, _real, _imag, out_stride)
+        InverseRadix2CooleyTukey_2(input, in_stride, in_count, _real, _imag, out_stride)
     case 2:
-        InverseRadix2CooleyTukey_4(input, in_stride, _real, _imag, out_stride)
+        InverseRadix2CooleyTukey_4(input, in_stride, in_count, _real, _imag, out_stride)
         
     default:
         let length = 1 << level
         let half = length >> 1
         let fourth = length >> 2
         
-        InverseRadix2CooleyTukey(level - 1, input, input + in_stride, in_stride << 1, _real, _imag, out_stride)
+        InverseRadix2CooleyTukey(level - 1, input, input + in_stride, in_stride << 1, in_count >> 1, _real, _imag, out_stride)
         
         let _out_stride = half * out_stride
         var op_r = _real
@@ -710,141 +590,32 @@ public func InverseRadix2CooleyTukey(level: Int, _ input: UnsafePointer<Float>, 
     }
 }
 
-public func InverseRadix2CooleyTukey(level: Int, _ real: UnsafePointer<Float>, _ imag: UnsafePointer<Float>, _ in_stride: Int, _ _real: UnsafeMutablePointer<Float>, _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int) {
+public func InverseRadix2CooleyTukey(level: Int, _ real: UnsafePointer<Float>, _ imag: UnsafePointer<Float>, _ in_stride: Int, _ in_count: Int, _ _real: UnsafeMutablePointer<Float>, _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int) {
     
-    Radix2CooleyTukey(level, imag, real, in_stride, _imag, _real, out_stride)
+    Radix2CooleyTukey(level, imag, real, in_stride, in_count, _imag, _real, out_stride)
 }
 
-public func Radix2CooleyTukey(levelRow: Int, _ levelCol: Int, _ input: UnsafePointer<Float>, _ in_stride_row: Int, _ in_stride_col: Int, _ _real: UnsafeMutablePointer<Float>, _ _imag: UnsafeMutablePointer<Float>, _ out_stride_row: Int, _ out_stride_col: Int, _ treal: UnsafeMutablePointer<Float>, _ timag: UnsafeMutablePointer<Float>, _ temp_stride_row: Int, _ temp_stride_col: Int) {
+public func Radix2CooleyTukey(level: Int, _ input: UnsafePointer<Double>, _ in_stride: Int, _ in_count: Int, _ _real: UnsafeMutablePointer<Double>, _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int) {
     
-    let row_count = 1 << levelRow
-    let col_count = (1 << levelCol) >> 1
-    
-    let in_row_length = in_stride_col << levelCol
-    let out_row_length = out_stride_col << levelCol
-    let temp_row_length = temp_stride_col << levelCol
-    
-    let in_row_offset = in_row_length * in_stride_row
-    let out_row_offset = out_row_length * out_stride_row
-    let temp_row_offset = temp_row_length * temp_stride_row
-    
-    for i in 0..<row_count {
-        let _in_row_offset = i * in_row_offset
-        let _temp_row_offset = i * temp_row_offset
-        HalfRadix2CooleyTukey(levelCol, input + _in_row_offset, in_stride_col, treal + _temp_row_offset, timag + _temp_row_offset, temp_stride_col)
-    }
-    
-    let out_row_offset_2 = out_row_offset >> 1
-    
-    Radix2CooleyTukey(levelRow, treal, temp_row_offset, _real, _imag, out_row_offset)
-    Radix2CooleyTukey(levelRow, timag, temp_row_offset, _real + out_row_offset_2, _imag + out_row_offset_2, out_row_offset)
-    if col_count > 1 {
-        for i in 1..<col_count {
-            let _temp_col_offset = i * temp_stride_col
-            let _out_col_offset = i * out_stride_col
-            Radix2CooleyTukey(levelRow, treal + _temp_col_offset, timag + _temp_col_offset, temp_row_offset, _real + _out_col_offset, _imag + _out_col_offset, out_row_offset)
-        }
-    }
-    
-    let block = row_count * out_row_offset
-    
-    var op_r = _real
-    var op_i = _imag
-    var opb_r = _real + out_row_length
-    var opb_i = _imag + out_row_length
-    for _ in 0..<col_count - 1 {
-        op_r += out_stride_col
-        op_i += out_stride_col
-        opb_r -= out_stride_col
-        opb_i -= out_stride_col
-        opb_r.memory = op_r.memory
-        opb_i.memory = -op_i.memory
-        var _op_r = op_r
-        var _op_i = op_i
-        var _opb_r = opb_r + block
-        var _opb_i = opb_i + block
-        for _ in 0..<row_count - 1 {
-            _op_r += out_row_offset
-            _op_i += out_row_offset
-            _opb_r -= out_row_offset
-            _opb_i -= out_row_offset
-            _opb_r.memory = _op_r.memory
-            _opb_i.memory = -_op_i.memory
-        }
-    }
-}
-
-public func Radix2CooleyTukey(levelRow: Int, _ levelCol: Int, _ real: UnsafePointer<Float>, _ imag: UnsafePointer<Float>, _ in_stride_row: Int, _ in_stride_col: Int, _ _real: UnsafeMutablePointer<Float>, _ _imag: UnsafeMutablePointer<Float>, _ out_stride_row: Int, _ out_stride_col: Int, _ treal: UnsafeMutablePointer<Float>, _ timag: UnsafeMutablePointer<Float>, _ temp_stride_row: Int, _ temp_stride_col: Int) {
-    
-    let row_count = 1 << levelRow
-    let col_count = 1 << levelCol
-    
-    let in_row_length = in_stride_col << levelCol
-    let out_row_length = out_stride_col << levelCol
-    let temp_row_length = temp_stride_col << levelCol
-    
-    let in_row_offset = in_row_length * in_stride_row
-    let out_row_offset = out_row_length * out_stride_row
-    let temp_row_offset = temp_row_length * temp_stride_row
-    
-    for i in 0..<row_count {
-        let _in_row_offset = i * in_row_offset
-        let _temp_row_offset = i * temp_row_offset
-        Radix2CooleyTukey(levelCol, real + _in_row_offset, imag + _in_row_offset, in_stride_col, treal + _temp_row_offset, timag + _temp_row_offset, temp_stride_col)
-    }
-    
-    for i in 0..<col_count {
-        let _temp_col_offset = i * temp_stride_col
-        let _out_col_offset = i * out_stride_col
-        Radix2CooleyTukey(levelRow, treal + _temp_col_offset, timag + _temp_col_offset, temp_row_offset, _real + _out_col_offset, _imag + _out_col_offset, out_row_offset)
-    }
-}
-
-public func InverseRadix2CooleyTukey(levelRow: Int, _ levelCol: Int, _ real: UnsafePointer<Float>, _ imag: UnsafePointer<Float>, _ in_stride_row: Int, _ in_stride_col: Int, _ _real: UnsafeMutablePointer<Float>, _ _imag: UnsafeMutablePointer<Float>, _ out_stride_row: Int, _ out_stride_col: Int, _ treal: UnsafeMutablePointer<Float>, _ timag: UnsafeMutablePointer<Float>, _ temp_stride_row: Int, _ temp_stride_col: Int) {
-    
-    let row_count = 1 << levelRow
-    let col_count = 1 << levelCol
-    
-    let in_row_length = in_stride_col << levelCol
-    let out_row_length = out_stride_col << levelCol
-    let temp_row_length = temp_stride_col << levelCol
-    
-    let in_row_offset = in_row_length * in_stride_row
-    let out_row_offset = out_row_length * out_stride_row
-    let temp_row_offset = temp_row_length * temp_stride_row
-    
-    for i in 0..<row_count {
-        let _in_row_offset = i * in_row_offset
-        let _temp_row_offset = i * temp_row_offset
-        InverseRadix2CooleyTukey(levelCol, real + _in_row_offset, imag + _in_row_offset, in_stride_col, treal + _temp_row_offset, timag + _temp_row_offset, temp_stride_col)
-    }
-    
-    for i in 0..<col_count {
-        let _temp_col_offset = i * temp_stride_col
-        let _out_col_offset = i * out_stride_col
-        InverseRadix2CooleyTukey(levelRow, treal + _temp_col_offset, timag + _temp_col_offset, temp_row_offset, _real + _out_col_offset, _imag + _out_col_offset, out_row_offset)
-    }
-}
-
-public func Radix2CooleyTukey(level: Int, _ input: UnsafePointer<Double>, _ in_stride: Int, _ _real: UnsafeMutablePointer<Double>, _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int) {
+    assert(in_count & 1 == 0, "size of input must be multiple of 2.")
     
     switch level {
         
     case 0:
-        _real.memory = input.memory
+        _real.memory = in_count == 0 ? 0 : input.memory
         _imag.memory = 0.0
         
     case 1:
-        Radix2CooleyTukey_2(input, in_stride, _real, _imag, out_stride)
+        Radix2CooleyTukey_2(input, in_stride, in_count, _real, _imag, out_stride)
     case 2:
-        Radix2CooleyTukey_4(input, in_stride, _real, _imag, out_stride)
+        Radix2CooleyTukey_4(input, in_stride, in_count, _real, _imag, out_stride)
         
     default:
         let length = 1 << level
         let half = length >> 1
         let fourth = length >> 2
         
-        Radix2CooleyTukey(level - 1, input, input + in_stride, in_stride << 1, _real, _imag, out_stride)
+        Radix2CooleyTukey(level - 1, input, input + in_stride, in_stride << 1, in_count >> 1, _real, _imag, out_stride)
         
         let _out_stride = half * out_stride
         var op_r = _real
@@ -922,18 +693,18 @@ public func Radix2CooleyTukey(level: Int, _ input: UnsafePointer<Double>, _ in_s
     }
 }
 
-public func Radix2CooleyTukey(level: Int, _ real: UnsafePointer<Double>, _ imag: UnsafePointer<Double>, _ in_stride: Int, _ _real: UnsafeMutablePointer<Double>, _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int) {
+public func Radix2CooleyTukey(level: Int, _ real: UnsafePointer<Double>, _ imag: UnsafePointer<Double>, _ in_stride: Int, _ in_count: Int, _ _real: UnsafeMutablePointer<Double>, _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int) {
     
     switch level {
         
     case 0:
-        _real.memory = real.memory
-        _imag.memory = imag.memory
+        _real.memory = in_count == 0 ? 0 : real.memory
+        _imag.memory = in_count == 0 ? 0 : imag.memory
         
     case 1:
-        Radix2CooleyTukey_2(real, imag, in_stride, _real, _imag, out_stride)
+        Radix2CooleyTukey_2(real, imag, in_stride, in_count, _real, _imag, out_stride)
     case 2:
-        Radix2CooleyTukey_4(real, imag, in_stride, _real, _imag, out_stride)
+        Radix2CooleyTukey_4(real, imag, in_stride, in_count, _real, _imag, out_stride)
         
     default:
         let length = 1 << level
@@ -945,8 +716,8 @@ public func Radix2CooleyTukey(level: Int, _ real: UnsafePointer<Double>, _ imag:
         var oph_r = _real + oph_stride
         var oph_i = _imag + oph_stride
         
-        Radix2CooleyTukey(level - 1, real, imag, in_stride << 1, op_r, op_i, out_stride)
-        Radix2CooleyTukey(level - 1, real + in_stride, imag + in_stride, in_stride << 1, oph_r, oph_i, out_stride)
+        Radix2CooleyTukey(level - 1, real, imag, in_stride << 1, in_count - in_count >> 1, op_r, op_i, out_stride)
+        Radix2CooleyTukey(level - 1, real + in_stride, imag + in_stride, in_stride << 1, in_count >> 1, oph_r, oph_i, out_stride)
         
         let angle = -M_PI / Double(half)
         let _cos = cos(angle)
@@ -978,25 +749,27 @@ public func Radix2CooleyTukey(level: Int, _ real: UnsafePointer<Double>, _ imag:
     }
 }
 
-public func InverseRadix2CooleyTukey(level: Int, _ input: UnsafePointer<Double>, _ in_stride: Int, _ _real: UnsafeMutablePointer<Double>, _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int) {
+public func InverseRadix2CooleyTukey(level: Int, _ input: UnsafePointer<Double>, _ in_stride: Int, _ in_count: Int, _ _real: UnsafeMutablePointer<Double>, _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int) {
+    
+    assert(in_count & 1 == 0, "size of input must be multiple of 2.")
     
     switch level {
         
     case 0:
-        _real.memory = input.memory
+        _real.memory = in_count == 0 ? 0 : input.memory
         _imag.memory = 0.0
         
     case 1:
-        InverseRadix2CooleyTukey_2(input, in_stride, _real, _imag, out_stride)
+        InverseRadix2CooleyTukey_2(input, in_stride, in_count, _real, _imag, out_stride)
     case 2:
-        InverseRadix2CooleyTukey_4(input, in_stride, _real, _imag, out_stride)
+        InverseRadix2CooleyTukey_4(input, in_stride, in_count, _real, _imag, out_stride)
         
     default:
         let length = 1 << level
         let half = length >> 1
         let fourth = length >> 2
         
-        InverseRadix2CooleyTukey(level - 1, input, input + in_stride, in_stride << 1, _real, _imag, out_stride)
+        InverseRadix2CooleyTukey(level - 1, input, input + in_stride, in_stride << 1, in_count >> 1, _real, _imag, out_stride)
         
         let _out_stride = half * out_stride
         var op_r = _real
@@ -1073,143 +846,34 @@ public func InverseRadix2CooleyTukey(level: Int, _ input: UnsafePointer<Double>,
     }
 }
 
-public func InverseRadix2CooleyTukey(level: Int, _ real: UnsafePointer<Double>, _ imag: UnsafePointer<Double>, _ in_stride: Int, _ _real: UnsafeMutablePointer<Double>, _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int) {
+public func InverseRadix2CooleyTukey(level: Int, _ real: UnsafePointer<Double>, _ imag: UnsafePointer<Double>, _ in_stride: Int, _ in_count: Int, _ _real: UnsafeMutablePointer<Double>, _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int) {
     
-    Radix2CooleyTukey(level, imag, real, in_stride, _imag, _real, out_stride)
-}
-
-public func Radix2CooleyTukey(levelRow: Int, _ levelCol: Int, _ input: UnsafePointer<Double>, _ in_stride_row: Int, _ in_stride_col: Int, _ _real: UnsafeMutablePointer<Double>, _ _imag: UnsafeMutablePointer<Double>, _ out_stride_row: Int, _ out_stride_col: Int, _ treal: UnsafeMutablePointer<Double>, _ timag: UnsafeMutablePointer<Double>, _ temp_stride_row: Int, _ temp_stride_col: Int) {
-    
-    let row_count = 1 << levelRow
-    let col_count = (1 << levelCol) >> 1
-    
-    let in_row_length = in_stride_col << levelCol
-    let out_row_length = out_stride_col << levelCol
-    let temp_row_length = temp_stride_col << levelCol
-    
-    let in_row_offset = in_row_length * in_stride_row
-    let out_row_offset = out_row_length * out_stride_row
-    let temp_row_offset = temp_row_length * temp_stride_row
-    
-    for i in 0..<row_count {
-        let _in_row_offset = i * in_row_offset
-        let _temp_row_offset = i * temp_row_offset
-        HalfRadix2CooleyTukey(levelCol, input + _in_row_offset, in_stride_col, treal + _temp_row_offset, timag + _temp_row_offset, temp_stride_col)
-    }
-    
-    let out_row_offset_2 = out_row_offset >> 1
-    
-    Radix2CooleyTukey(levelRow, treal, temp_row_offset, _real, _imag, out_row_offset)
-    Radix2CooleyTukey(levelRow, timag, temp_row_offset, _real + out_row_offset_2, _imag + out_row_offset_2, out_row_offset)
-    if col_count > 1 {
-        for i in 1..<col_count {
-            let _temp_col_offset = i * temp_stride_col
-            let _out_col_offset = i * out_stride_col
-            Radix2CooleyTukey(levelRow, treal + _temp_col_offset, timag + _temp_col_offset, temp_row_offset, _real + _out_col_offset, _imag + _out_col_offset, out_row_offset)
-        }
-    }
-    
-    let block = row_count * out_row_offset
-    
-    var op_r = _real
-    var op_i = _imag
-    var opb_r = _real + out_row_length
-    var opb_i = _imag + out_row_length
-    for _ in 0..<col_count - 1 {
-        op_r += out_stride_col
-        op_i += out_stride_col
-        opb_r -= out_stride_col
-        opb_i -= out_stride_col
-        opb_r.memory = op_r.memory
-        opb_i.memory = -op_i.memory
-        var _op_r = op_r
-        var _op_i = op_i
-        var _opb_r = opb_r + block
-        var _opb_i = opb_i + block
-        for _ in 0..<row_count - 1 {
-            _op_r += out_row_offset
-            _op_i += out_row_offset
-            _opb_r -= out_row_offset
-            _opb_i -= out_row_offset
-            _opb_r.memory = _op_r.memory
-            _opb_i.memory = -_op_i.memory
-        }
-    }
-}
-
-public func Radix2CooleyTukey(levelRow: Int, _ levelCol: Int, _ real: UnsafePointer<Double>, _ imag: UnsafePointer<Double>, _ in_stride_row: Int, _ in_stride_col: Int, _ _real: UnsafeMutablePointer<Double>, _ _imag: UnsafeMutablePointer<Double>, _ out_stride_row: Int, _ out_stride_col: Int, _ treal: UnsafeMutablePointer<Double>, _ timag: UnsafeMutablePointer<Double>, _ temp_stride_row: Int, _ temp_stride_col: Int) {
-    
-    let row_count = 1 << levelRow
-    let col_count = 1 << levelCol
-    
-    let in_row_length = in_stride_col << levelCol
-    let out_row_length = out_stride_col << levelCol
-    let temp_row_length = temp_stride_col << levelCol
-    
-    let in_row_offset = in_row_length * in_stride_row
-    let out_row_offset = out_row_length * out_stride_row
-    let temp_row_offset = temp_row_length * temp_stride_row
-    
-    for i in 0..<row_count {
-        let _in_row_offset = i * in_row_offset
-        let _temp_row_offset = i * temp_row_offset
-        Radix2CooleyTukey(levelCol, real + _in_row_offset, imag + _in_row_offset, in_stride_col, treal + _temp_row_offset, timag + _temp_row_offset, temp_stride_col)
-    }
-    
-    for i in 0..<col_count {
-        let _temp_col_offset = i * temp_stride_col
-        let _out_col_offset = i * out_stride_col
-        Radix2CooleyTukey(levelRow, treal + _temp_col_offset, timag + _temp_col_offset, temp_row_offset, _real + _out_col_offset, _imag + _out_col_offset, out_row_offset)
-    }
-}
-
-public func InverseRadix2CooleyTukey(levelRow: Int, _ levelCol: Int, _ real: UnsafePointer<Double>, _ imag: UnsafePointer<Double>, _ in_stride_row: Int, _ in_stride_col: Int, _ _real: UnsafeMutablePointer<Double>, _ _imag: UnsafeMutablePointer<Double>, _ out_stride_row: Int, _ out_stride_col: Int, _ treal: UnsafeMutablePointer<Double>, _ timag: UnsafeMutablePointer<Double>, _ temp_stride_row: Int, _ temp_stride_col: Int) {
-    
-    let row_count = 1 << levelRow
-    let col_count = 1 << levelCol
-    
-    let in_row_length = in_stride_col << levelCol
-    let out_row_length = out_stride_col << levelCol
-    let temp_row_length = temp_stride_col << levelCol
-    
-    let in_row_offset = in_row_length * in_stride_row
-    let out_row_offset = out_row_length * out_stride_row
-    let temp_row_offset = temp_row_length * temp_stride_row
-    
-    for i in 0..<row_count {
-        let _in_row_offset = i * in_row_offset
-        let _temp_row_offset = i * temp_row_offset
-        InverseRadix2CooleyTukey(levelCol, real + _in_row_offset, imag + _in_row_offset, in_stride_col, treal + _temp_row_offset, timag + _temp_row_offset, temp_stride_col)
-    }
-    
-    for i in 0..<col_count {
-        let _temp_col_offset = i * temp_stride_col
-        let _out_col_offset = i * out_stride_col
-        InverseRadix2CooleyTukey(levelRow, treal + _temp_col_offset, timag + _temp_col_offset, temp_row_offset, _real + _out_col_offset, _imag + _out_col_offset, out_row_offset)
-    }
+    Radix2CooleyTukey(level, imag, real, in_stride, in_count, _imag, _real, out_stride)
 }
 
 // MARK: Dispatch Half Radix-2 Cooley-Tukey
 
-public func DispatchHalfRadix2CooleyTukey(level: Int, _ input: UnsafePointer<Float>, _ in_stride: Int, _ _real: UnsafeMutablePointer<Float>, _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int) {
+public func DispatchHalfRadix2CooleyTukey(level: Int, _ input: UnsafePointer<Float>, _ in_stride: Int, _ in_count: Int, _ _real: UnsafeMutablePointer<Float>, _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int) {
+    
+    assert(in_count & 1 == 0, "size of input must be multiple of 2.")
     
     switch level {
         
     case 0:
-        _real.memory = input.memory
+        _real.memory = in_count == 0 ? 0 : input.memory
         _imag.memory = 0.0
         
     case 1:
-        HalfRadix2CooleyTukey_2(input, in_stride, _real, _imag)
+        HalfRadix2CooleyTukey_2(input, in_stride, in_count, _real, _imag)
     case 2:
-        HalfRadix2CooleyTukey_4(input, in_stride, _real, _imag, out_stride)
+        HalfRadix2CooleyTukey_4(input, in_stride, in_count, _real, _imag, out_stride)
         
     default:
         let length = 1 << level
         let half = length >> 1
         let fourth = length >> 2
         
-        DispatchRadix2CooleyTukey(level - 1, input, input + in_stride, in_stride << 1, _real, _imag, out_stride)
+        DispatchRadix2CooleyTukey(level - 1, input, input + in_stride, in_stride << 1, in_count >> 1, _real, _imag, out_stride)
         
         let _out_stride = half * out_stride
         var op_r = _real
@@ -1270,9 +934,9 @@ public func DispatchHalfInverseRadix2CooleyTukey(level: Int, _ real: UnsafePoint
         output.memory = real.memory
         
     case 1:
-        HalfInverseRadix2CooleyTukey_2(real, imag, output, out_stride)
+        HalfInverseRadix2CooleyTukey_2(real, imag, 1, output, out_stride)
     case 2:
-        HalfInverseRadix2CooleyTukey_4(real, imag, in_stride, output, out_stride)
+        HalfInverseRadix2CooleyTukey_4(real, imag, in_stride, 2, output, out_stride)
         
     default:
         let length = 1 << level
@@ -1340,107 +1004,31 @@ public func DispatchHalfInverseRadix2CooleyTukey(level: Int, _ real: UnsafePoint
             _sin1 = _s1
         }
         
-        DispatchInverseRadix2CooleyTukey(level - 1, treal, timag, tp_stride, output, output + out_stride, out_stride << 1)
+        DispatchInverseRadix2CooleyTukey(level - 1, treal, timag, tp_stride, length, output, output + out_stride, out_stride << 1)
     }
 }
 
-public func DispatchHalfRadix2CooleyTukey(levelRow: Int, _ levelCol: Int, _ input: UnsafePointer<Float>, _ in_stride_row: Int, _ in_stride_col: Int, _ _real: UnsafeMutablePointer<Float>, _ _imag: UnsafeMutablePointer<Float>, _ out_stride_row: Int, _ out_stride_col: Int, _ treal: UnsafeMutablePointer<Float>, _ timag: UnsafeMutablePointer<Float>, _ temp_stride_row: Int, _ temp_stride_col: Int) {
+public func DispatchHalfRadix2CooleyTukey(level: Int, _ input: UnsafePointer<Double>, _ in_stride: Int, _ in_count: Int, _ _real: UnsafeMutablePointer<Double>, _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int) {
     
-    let row_count = 1 << levelRow
-    let col_count = (1 << levelCol) >> 1
-    
-    let in_row_length = in_stride_col << levelCol
-    let out_row_length = (out_stride_col << levelCol) >> 1
-    let temp_row_length = (temp_stride_col << levelCol) >> 1
-    
-    let in_row_offset = in_row_length * in_stride_row
-    let out_row_offset = out_row_length * out_stride_row
-    let temp_row_offset = temp_row_length * temp_stride_row
-    
-    dispatch_apply(row_count, CooleyTukeyDispatchQueue) {
-        let _in_row_offset = $0 * in_row_offset
-        let _temp_row_offset = $0 * temp_row_offset
-        HalfRadix2CooleyTukey(levelCol, input + _in_row_offset, in_stride_col, treal + _temp_row_offset, timag + _temp_row_offset, temp_stride_col)
-    }
-    
-    dispatch_apply(2, CooleyTukeyDispatchQueue) {
-        switch $0 {
-        case 0:
-            HalfRadix2CooleyTukey(levelRow, treal, temp_row_offset, _real, _real + out_row_offset, out_row_offset << 1)
-        default:
-            HalfRadix2CooleyTukey(levelRow, timag, temp_row_offset, _imag, _imag + out_row_offset, out_row_offset << 1)
-        }
-    }
-    if col_count > 1 {
-        dispatch_apply(col_count - 1, CooleyTukeyDispatchQueue) {
-            let i = $0 + 1
-            let _temp_col_offset = i * temp_stride_col
-            let _out_col_offset = i * out_stride_col
-            Radix2CooleyTukey(levelRow, treal + _temp_col_offset, timag + _temp_col_offset, temp_row_offset, _real + _out_col_offset, _imag + _out_col_offset, out_row_offset)
-        }
-    }
-}
-
-public func DispatchHalfInverseRadix2CooleyTukey(levelRow: Int, _ levelCol: Int, _ real: UnsafePointer<Float>, _ imag: UnsafePointer<Float>, _ in_stride_row: Int, _ in_stride_col: Int, _ output: UnsafeMutablePointer<Float>, _ out_stride_row: Int, _ out_stride_col: Int, _ treal: UnsafeMutablePointer<Float>, _ timag: UnsafeMutablePointer<Float>, _ temp_stride_row: Int, _ temp_stride_col: Int) {
-    
-    let row_count = 1 << levelRow
-    let col_count = (1 << levelCol) >> 1
-    
-    let in_row_length = (in_stride_col << levelCol) >> 1
-    let out_row_length = out_stride_col << levelCol
-    let temp_row_length = (temp_stride_col << levelCol) >> 1
-    
-    let in_row_offset = in_row_length * in_stride_row
-    let out_row_offset = out_row_length * out_stride_row
-    let temp_row_offset = temp_row_length * temp_stride_row
-    
-    let treal2 = output
-    let timag2 = output + out_stride_col
-    let temp2_row_offset = (out_row_length * out_stride_row) >> 1
-    
-    dispatch_apply(2, CooleyTukeyDispatchQueue) {
-        switch $0 {
-        case 0:
-            HalfInverseRadix2CooleyTukey(levelRow, real, real + in_row_offset, in_row_offset << 1, treal, temp_row_offset, treal2, treal2 + temp2_row_offset, temp2_row_offset << 1)
-        default:
-            HalfInverseRadix2CooleyTukey(levelRow, imag, imag + in_row_offset, in_row_offset << 1, timag, temp_row_offset, timag2, timag2 + temp2_row_offset, temp2_row_offset << 1)
-        }
-    }
-    if col_count > 1 {
-        dispatch_apply(col_count - 1, CooleyTukeyDispatchQueue) {
-            let i = $0 + 1
-            let _in_col_offset = i * in_stride_col
-            let _temp_col_offset = i * temp_stride_col
-            InverseRadix2CooleyTukey(levelRow, real + _in_col_offset, imag + _in_col_offset, in_row_offset, treal + _temp_col_offset, timag + _temp_col_offset, temp_row_offset)
-        }
-    }
-    
-    dispatch_apply(row_count, CooleyTukeyDispatchQueue) {
-        let _temp_row_offset = $0 * temp_row_offset
-        let _out_row_offset = $0 * out_row_offset
-        HalfInverseRadix2CooleyTukey(levelCol, treal + _temp_row_offset, timag + _temp_row_offset, temp_stride_col, output + _out_row_offset, out_stride_col, treal + _temp_row_offset, timag + _temp_row_offset, temp_stride_col)
-    }
-}
-
-public func DispatchHalfRadix2CooleyTukey(level: Int, _ input: UnsafePointer<Double>, _ in_stride: Int, _ _real: UnsafeMutablePointer<Double>, _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int) {
+    assert(in_count & 1 == 0, "size of input must be multiple of 2.")
     
     switch level {
         
     case 0:
-        _real.memory = input.memory
+        _real.memory = in_count == 0 ? 0 : input.memory
         _imag.memory = 0.0
         
     case 1:
-        HalfRadix2CooleyTukey_2(input, in_stride, _real, _imag)
+        HalfRadix2CooleyTukey_2(input, in_stride, in_count, _real, _imag)
     case 2:
-        HalfRadix2CooleyTukey_4(input, in_stride, _real, _imag, out_stride)
+        HalfRadix2CooleyTukey_4(input, in_stride, in_count, _real, _imag, out_stride)
         
     default:
         let length = 1 << level
         let half = length >> 1
         let fourth = length >> 2
         
-        DispatchRadix2CooleyTukey(level - 1, input, input + in_stride, in_stride << 1, _real, _imag, out_stride)
+        DispatchRadix2CooleyTukey(level - 1, input, input + in_stride, in_stride << 1, in_count >> 1, _real, _imag, out_stride)
         
         let _out_stride = half * out_stride
         var op_r = _real
@@ -1501,9 +1089,9 @@ public func DispatchHalfInverseRadix2CooleyTukey(level: Int, _ real: UnsafePoint
         output.memory = real.memory
         
     case 1:
-        HalfInverseRadix2CooleyTukey_2(real, imag, output, out_stride)
+        HalfInverseRadix2CooleyTukey_2(real, imag, 1, output, out_stride)
     case 2:
-        HalfInverseRadix2CooleyTukey_4(real, imag, in_stride, output, out_stride)
+        HalfInverseRadix2CooleyTukey_4(real, imag, in_stride, 2, output, out_stride)
         
     default:
         let length = 1 << level
@@ -1571,109 +1159,33 @@ public func DispatchHalfInverseRadix2CooleyTukey(level: Int, _ real: UnsafePoint
             _sin1 = _s1
         }
         
-        DispatchInverseRadix2CooleyTukey(level - 1, treal, timag, tp_stride, output, output + out_stride, out_stride << 1)
-    }
-}
-
-public func DispatchHalfRadix2CooleyTukey(levelRow: Int, _ levelCol: Int, _ input: UnsafePointer<Double>, _ in_stride_row: Int, _ in_stride_col: Int, _ _real: UnsafeMutablePointer<Double>, _ _imag: UnsafeMutablePointer<Double>, _ out_stride_row: Int, _ out_stride_col: Int, _ treal: UnsafeMutablePointer<Double>, _ timag: UnsafeMutablePointer<Double>, _ temp_stride_row: Int, _ temp_stride_col: Int) {
-    
-    let row_count = 1 << levelRow
-    let col_count = (1 << levelCol) >> 1
-    
-    let in_row_length = in_stride_col << levelCol
-    let out_row_length = (out_stride_col << levelCol) >> 1
-    let temp_row_length = (temp_stride_col << levelCol) >> 1
-    
-    let in_row_offset = in_row_length * in_stride_row
-    let out_row_offset = out_row_length * out_stride_row
-    let temp_row_offset = temp_row_length * temp_stride_row
-    
-    dispatch_apply(row_count, CooleyTukeyDispatchQueue) {
-        let _in_row_offset = $0 * in_row_offset
-        let _temp_row_offset = $0 * temp_row_offset
-        HalfRadix2CooleyTukey(levelCol, input + _in_row_offset, in_stride_col, treal + _temp_row_offset, timag + _temp_row_offset, temp_stride_col)
-    }
-    
-    dispatch_apply(2, CooleyTukeyDispatchQueue) {
-        switch $0 {
-        case 0:
-            HalfRadix2CooleyTukey(levelRow, treal, temp_row_offset, _real, _real + out_row_offset, out_row_offset << 1)
-        default:
-            HalfRadix2CooleyTukey(levelRow, timag, temp_row_offset, _imag, _imag + out_row_offset, out_row_offset << 1)
-        }
-    }
-    if col_count > 1 {
-        dispatch_apply(col_count - 1, CooleyTukeyDispatchQueue) {
-            let i = $0 + 1
-            let _temp_col_offset = i * temp_stride_col
-            let _out_col_offset = i * out_stride_col
-            Radix2CooleyTukey(levelRow, treal + _temp_col_offset, timag + _temp_col_offset, temp_row_offset, _real + _out_col_offset, _imag + _out_col_offset, out_row_offset)
-        }
-    }
-}
-
-public func DispatchHalfInverseRadix2CooleyTukey(levelRow: Int, _ levelCol: Int, _ real: UnsafePointer<Double>, _ imag: UnsafePointer<Double>, _ in_stride_row: Int, _ in_stride_col: Int, _ output: UnsafeMutablePointer<Double>, _ out_stride_row: Int, _ out_stride_col: Int, _ treal: UnsafeMutablePointer<Double>, _ timag: UnsafeMutablePointer<Double>, _ temp_stride_row: Int, _ temp_stride_col: Int) {
-    
-    let row_count = 1 << levelRow
-    let col_count = (1 << levelCol) >> 1
-    
-    let in_row_length = (in_stride_col << levelCol) >> 1
-    let out_row_length = out_stride_col << levelCol
-    let temp_row_length = (temp_stride_col << levelCol) >> 1
-    
-    let in_row_offset = in_row_length * in_stride_row
-    let out_row_offset = out_row_length * out_stride_row
-    let temp_row_offset = temp_row_length * temp_stride_row
-    
-    let treal2 = output
-    let timag2 = output + out_stride_col
-    let temp2_row_offset = (out_row_length * out_stride_row) >> 1
-    
-    dispatch_apply(2, CooleyTukeyDispatchQueue) {
-        switch $0 {
-        case 0:
-            HalfInverseRadix2CooleyTukey(levelRow, real, real + in_row_offset, in_row_offset << 1, treal, temp_row_offset, treal2, treal2 + temp2_row_offset, temp2_row_offset << 1)
-        default:
-            HalfInverseRadix2CooleyTukey(levelRow, imag, imag + in_row_offset, in_row_offset << 1, timag, temp_row_offset, timag2, timag2 + temp2_row_offset, temp2_row_offset << 1)
-        }
-    }
-    if col_count > 1 {
-        dispatch_apply(col_count - 1, CooleyTukeyDispatchQueue) {
-            let i = $0 + 1
-            let _in_col_offset = i * in_stride_col
-            let _temp_col_offset = i * temp_stride_col
-            InverseRadix2CooleyTukey(levelRow, real + _in_col_offset, imag + _in_col_offset, in_row_offset, treal + _temp_col_offset, timag + _temp_col_offset, temp_row_offset)
-        }
-    }
-    
-    dispatch_apply(row_count, CooleyTukeyDispatchQueue) {
-        let _temp_row_offset = $0 * temp_row_offset
-        let _out_row_offset = $0 * out_row_offset
-        HalfInverseRadix2CooleyTukey(levelCol, treal + _temp_row_offset, timag + _temp_row_offset, temp_stride_col, output + _out_row_offset, out_stride_col, treal + _temp_row_offset, timag + _temp_row_offset, temp_stride_col)
+        DispatchInverseRadix2CooleyTukey(level - 1, treal, timag, tp_stride, length, output, output + out_stride, out_stride << 1)
     }
 }
 
 // MARK: Dispatch Radix-2 Cooley-Tukey
 
-public func DispatchRadix2CooleyTukey(level: Int, _ input: UnsafePointer<Float>, _ in_stride: Int, _ _real: UnsafeMutablePointer<Float>, _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int) {
+public func DispatchRadix2CooleyTukey(level: Int, _ input: UnsafePointer<Float>, _ in_stride: Int, _ in_count: Int, _ _real: UnsafeMutablePointer<Float>, _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int) {
+    
+    assert(in_count & 1 == 0, "size of input must be multiple of 2.")
     
     switch level {
         
     case 0:
-        _real.memory = input.memory
+        _real.memory = in_count == 0 ? 0 : input.memory
         _imag.memory = 0.0
         
     case 1:
-        Radix2CooleyTukey_2(input, in_stride, _real, _imag, out_stride)
+        Radix2CooleyTukey_2(input, in_stride, in_count, _real, _imag, out_stride)
     case 2:
-        Radix2CooleyTukey_4(input, in_stride, _real, _imag, out_stride)
+        Radix2CooleyTukey_4(input, in_stride, in_count, _real, _imag, out_stride)
         
     default:
         let length = 1 << level
         let half = length >> 1
         let fourth = length >> 2
         
-        DispatchRadix2CooleyTukey(level - 1, input, input + in_stride, in_stride << 1, _real, _imag, out_stride)
+        DispatchRadix2CooleyTukey(level - 1, input, input + in_stride, in_stride << 1, in_count >> 1, _real, _imag, out_stride)
         
         let _out_stride = half * out_stride
         var op_r = _real
@@ -1750,18 +1262,18 @@ public func DispatchRadix2CooleyTukey(level: Int, _ input: UnsafePointer<Float>,
         }
     }
 }
-public func DispatchRadix2CooleyTukey(level: Int, _ real: UnsafePointer<Float>, _ imag: UnsafePointer<Float>, _ in_stride: Int, _ _real: UnsafeMutablePointer<Float>, _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int) {
+public func DispatchRadix2CooleyTukey(level: Int, _ real: UnsafePointer<Float>, _ imag: UnsafePointer<Float>, _ in_stride: Int, _ in_count: Int, _ _real: UnsafeMutablePointer<Float>, _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int) {
     
     switch level {
         
     case 0:
-        _real.memory = real.memory
-        _imag.memory = imag.memory
+        _real.memory = in_count == 0 ? 0 : real.memory
+        _imag.memory = in_count == 0 ? 0 : imag.memory
         
     case 1:
-        Radix2CooleyTukey_2(real, imag, in_stride, _real, _imag, out_stride)
+        Radix2CooleyTukey_2(real, imag, in_stride, in_count, _real, _imag, out_stride)
     case 2:
-        Radix2CooleyTukey_4(real, imag, in_stride, _real, _imag, out_stride)
+        Radix2CooleyTukey_4(real, imag, in_stride, in_count, _real, _imag, out_stride)
         
     default:
         let length = 1 << level
@@ -1776,9 +1288,9 @@ public func DispatchRadix2CooleyTukey(level: Int, _ real: UnsafePointer<Float>, 
         dispatch_apply(2, CooleyTukeyDispatchQueue) {
             switch $0 {
             case 0:
-                Radix2CooleyTukey(level - 1, real, imag, in_stride << 1, op_r, op_i, out_stride)
+                Radix2CooleyTukey(level - 1, real, imag, in_stride << 1, in_count - in_count >> 1, op_r, op_i, out_stride)
             default:
-                Radix2CooleyTukey(level - 1, real + in_stride, imag + in_stride, in_stride << 1, oph_r, oph_i, out_stride)
+                Radix2CooleyTukey(level - 1, real + in_stride, imag + in_stride, in_stride << 1, in_count >> 1, oph_r, oph_i, out_stride)
             }
         }
         
@@ -1812,25 +1324,27 @@ public func DispatchRadix2CooleyTukey(level: Int, _ real: UnsafePointer<Float>, 
     }
 }
 
-public func DispatchInverseRadix2CooleyTukey(level: Int, _ input: UnsafePointer<Float>, _ in_stride: Int, _ _real: UnsafeMutablePointer<Float>, _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int) {
+public func DispatchInverseRadix2CooleyTukey(level: Int, _ input: UnsafePointer<Float>, _ in_stride: Int, _ in_count: Int, _ _real: UnsafeMutablePointer<Float>, _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int) {
+    
+    assert(in_count & 1 == 0, "size of input must be multiple of 2.")
     
     switch level {
         
     case 0:
-        _real.memory = input.memory
+        _real.memory = in_count == 0 ? 0 : input.memory
         _imag.memory = 0.0
         
     case 1:
-        InverseRadix2CooleyTukey_2(input, in_stride, _real, _imag, out_stride)
+        InverseRadix2CooleyTukey_2(input, in_stride, in_count, _real, _imag, out_stride)
     case 2:
-        InverseRadix2CooleyTukey_4(input, in_stride, _real, _imag, out_stride)
+        InverseRadix2CooleyTukey_4(input, in_stride, in_count, _real, _imag, out_stride)
         
     default:
         let length = 1 << level
         let half = length >> 1
         let fourth = length >> 2
         
-        DispatchInverseRadix2CooleyTukey(level - 1, input, input + in_stride, in_stride << 1, _real, _imag, out_stride)
+        DispatchInverseRadix2CooleyTukey(level - 1, input, input + in_stride, in_stride << 1, in_count >> 1, _real, _imag, out_stride)
         
         let _out_stride = half * out_stride
         var op_r = _real
@@ -1906,148 +1420,32 @@ public func DispatchInverseRadix2CooleyTukey(level: Int, _ input: UnsafePointer<
         }
     }
 }
-public func DispatchInverseRadix2CooleyTukey(level: Int, _ real: UnsafePointer<Float>, _ imag: UnsafePointer<Float>, _ in_stride: Int, _ _real: UnsafeMutablePointer<Float>, _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int) {
+public func DispatchInverseRadix2CooleyTukey(level: Int, _ real: UnsafePointer<Float>, _ imag: UnsafePointer<Float>, _ in_stride: Int, _ in_count: Int, _ _real: UnsafeMutablePointer<Float>, _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int) {
     
-    DispatchRadix2CooleyTukey(level, imag, real, in_stride, _imag, _real, out_stride)
+    DispatchRadix2CooleyTukey(level, imag, real, in_stride, in_count, _imag, _real, out_stride)
 }
 
-public func DispatchRadix2CooleyTukey(levelRow: Int, _ levelCol: Int, _ input: UnsafePointer<Float>, _ in_stride_row: Int, _ in_stride_col: Int, _ _real: UnsafeMutablePointer<Float>, _ _imag: UnsafeMutablePointer<Float>, _ out_stride_row: Int, _ out_stride_col: Int, _ treal: UnsafeMutablePointer<Float>, _ timag: UnsafeMutablePointer<Float>, _ temp_stride_row: Int, _ temp_stride_col: Int) {
+public func DispatchRadix2CooleyTukey(level: Int, _ input: UnsafePointer<Double>, _ in_stride: Int, _ in_count: Int, _ _real: UnsafeMutablePointer<Double>, _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int) {
     
-    let row_count = 1 << levelRow
-    let col_count = (1 << levelCol) >> 1
-    
-    let in_row_length = in_stride_col << levelCol
-    let out_row_length = out_stride_col << levelCol
-    let temp_row_length = temp_stride_col << levelCol
-    
-    let in_row_offset = in_row_length * in_stride_row
-    let out_row_offset = out_row_length * out_stride_row
-    let temp_row_offset = temp_row_length * temp_stride_row
-    
-    dispatch_apply(row_count, CooleyTukeyDispatchQueue) {
-        let _in_row_offset = $0 * in_row_offset
-        let _temp_row_offset = $0 * temp_row_offset
-        HalfRadix2CooleyTukey(levelCol, input + _in_row_offset, in_stride_col, treal + _temp_row_offset, timag + _temp_row_offset, temp_stride_col)
-    }
-    
-    let out_row_offset_2 = out_row_offset >> 1
-    
-    dispatch_apply(2, CooleyTukeyDispatchQueue) {
-        switch $0 {
-        case 0:
-            Radix2CooleyTukey(levelRow, treal, temp_row_offset, _real, _imag, out_row_offset)
-        default:
-            Radix2CooleyTukey(levelRow, timag, temp_row_offset, _real + out_row_offset_2, _imag + out_row_offset_2, out_row_offset)
-        }
-    }
-    if col_count > 1 {
-        dispatch_apply(col_count - 1, CooleyTukeyDispatchQueue) {
-            let i = $0 + 1
-            let _temp_col_offset = i * temp_stride_col
-            let _out_col_offset = i * out_stride_col
-            Radix2CooleyTukey(levelRow, treal + _temp_col_offset, timag + _temp_col_offset, temp_row_offset, _real + _out_col_offset, _imag + _out_col_offset, out_row_offset)
-        }
-    }
-    
-    let block = row_count * out_row_offset
-    
-    var op_r = _real
-    var op_i = _imag
-    var opb_r = _real + out_row_length
-    var opb_i = _imag + out_row_length
-    for _ in 0..<col_count - 1 {
-        op_r += out_stride_col
-        op_i += out_stride_col
-        opb_r -= out_stride_col
-        opb_i -= out_stride_col
-        opb_r.memory = op_r.memory
-        opb_i.memory = -op_i.memory
-        var _op_r = op_r
-        var _op_i = op_i
-        var _opb_r = opb_r + block
-        var _opb_i = opb_i + block
-        for _ in 0..<row_count - 1 {
-            _op_r += out_row_offset
-            _op_i += out_row_offset
-            _opb_r -= out_row_offset
-            _opb_i -= out_row_offset
-            _opb_r.memory = _op_r.memory
-            _opb_i.memory = -_op_i.memory
-        }
-    }
-}
-
-public func DispatchRadix2CooleyTukey(levelRow: Int, _ levelCol: Int, _ real: UnsafePointer<Float>, _ imag: UnsafePointer<Float>, _ in_stride_row: Int, _ in_stride_col: Int, _ _real: UnsafeMutablePointer<Float>, _ _imag: UnsafeMutablePointer<Float>, _ out_stride_row: Int, _ out_stride_col: Int, _ treal: UnsafeMutablePointer<Float>, _ timag: UnsafeMutablePointer<Float>, _ temp_stride_row: Int, _ temp_stride_col: Int) {
-    
-    let row_count = 1 << levelRow
-    let col_count = 1 << levelCol
-    
-    let in_row_length = in_stride_col << levelCol
-    let out_row_length = out_stride_col << levelCol
-    let temp_row_length = temp_stride_col << levelCol
-    
-    let in_row_offset = in_row_length * in_stride_row
-    let out_row_offset = out_row_length * out_stride_row
-    let temp_row_offset = temp_row_length * temp_stride_row
-    
-    dispatch_apply(row_count, CooleyTukeyDispatchQueue) {
-        let _in_row_offset = $0 * in_row_offset
-        let _temp_row_offset = $0 * temp_row_offset
-        Radix2CooleyTukey(levelCol, real + _in_row_offset, imag + _in_row_offset, in_stride_col, treal + _temp_row_offset, timag + _temp_row_offset, temp_stride_col)
-    }
-    
-    dispatch_apply(col_count, CooleyTukeyDispatchQueue) {
-        let _temp_col_offset = $0 * temp_stride_col
-        let _out_col_offset = $0 * out_stride_col
-        Radix2CooleyTukey(levelRow, treal + _temp_col_offset, timag + _temp_col_offset, temp_row_offset, _real + _out_col_offset, _imag + _out_col_offset, out_row_offset)
-    }
-}
-
-public func DispatchInverseRadix2CooleyTukey(levelRow: Int, _ levelCol: Int, _ real: UnsafePointer<Float>, _ imag: UnsafePointer<Float>, _ in_stride_row: Int, _ in_stride_col: Int, _ _real: UnsafeMutablePointer<Float>, _ _imag: UnsafeMutablePointer<Float>, _ out_stride_row: Int, _ out_stride_col: Int, _ treal: UnsafeMutablePointer<Float>, _ timag: UnsafeMutablePointer<Float>, _ temp_stride_row: Int, _ temp_stride_col: Int) {
-    
-    let row_count = 1 << levelRow
-    let col_count = 1 << levelCol
-    
-    let in_row_length = in_stride_col << levelCol
-    let out_row_length = out_stride_col << levelCol
-    let temp_row_length = temp_stride_col << levelCol
-    
-    let in_row_offset = in_row_length * in_stride_row
-    let out_row_offset = out_row_length * out_stride_row
-    let temp_row_offset = temp_row_length * temp_stride_row
-    
-    dispatch_apply(row_count, CooleyTukeyDispatchQueue) {
-        let _in_row_offset = $0 * in_row_offset
-        let _temp_row_offset = $0 * temp_row_offset
-        InverseRadix2CooleyTukey(levelCol, real + _in_row_offset, imag + _in_row_offset, in_stride_col, treal + _temp_row_offset, timag + _temp_row_offset, temp_stride_col)
-    }
-    
-    dispatch_apply(col_count, CooleyTukeyDispatchQueue) {
-        let _temp_col_offset = $0 * temp_stride_col
-        let _out_col_offset = $0 * out_stride_col
-        InverseRadix2CooleyTukey(levelRow, treal + _temp_col_offset, timag + _temp_col_offset, temp_row_offset, _real + _out_col_offset, _imag + _out_col_offset, out_row_offset)
-    }
-}
-
-public func DispatchRadix2CooleyTukey(level: Int, _ input: UnsafePointer<Double>, _ in_stride: Int, _ _real: UnsafeMutablePointer<Double>, _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int) {
+    assert(in_count & 1 == 0, "size of input must be multiple of 2.")
     
     switch level {
         
     case 0:
-        _real.memory = input.memory
+        _real.memory = in_count == 0 ? 0 : input.memory
         _imag.memory = 0.0
         
     case 1:
-        Radix2CooleyTukey_2(input, in_stride, _real, _imag, out_stride)
+        Radix2CooleyTukey_2(input, in_stride, in_count, _real, _imag, out_stride)
     case 2:
-        Radix2CooleyTukey_4(input, in_stride, _real, _imag, out_stride)
+        Radix2CooleyTukey_4(input, in_stride, in_count, _real, _imag, out_stride)
         
     default:
         let length = 1 << level
         let half = length >> 1
         let fourth = length >> 2
         
-        DispatchRadix2CooleyTukey(level - 1, input, input + in_stride, in_stride << 1, _real, _imag, out_stride)
+        DispatchRadix2CooleyTukey(level - 1, input, input + in_stride, in_stride << 1, in_count >> 1, _real, _imag, out_stride)
         
         let _out_stride = half * out_stride
         var op_r = _real
@@ -2124,18 +1522,18 @@ public func DispatchRadix2CooleyTukey(level: Int, _ input: UnsafePointer<Double>
         }
     }
 }
-public func DispatchRadix2CooleyTukey(level: Int, _ real: UnsafePointer<Double>, _ imag: UnsafePointer<Double>, _ in_stride: Int, _ _real: UnsafeMutablePointer<Double>, _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int) {
+public func DispatchRadix2CooleyTukey(level: Int, _ real: UnsafePointer<Double>, _ imag: UnsafePointer<Double>, _ in_stride: Int, _ in_count: Int, _ _real: UnsafeMutablePointer<Double>, _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int) {
     
     switch level {
         
     case 0:
-        _real.memory = real.memory
-        _imag.memory = imag.memory
+        _real.memory = in_count == 0 ? 0 : real.memory
+        _imag.memory = in_count == 0 ? 0 : imag.memory
         
     case 1:
-        Radix2CooleyTukey_2(real, imag, in_stride, _real, _imag, out_stride)
+        Radix2CooleyTukey_2(real, imag, in_stride, in_count, _real, _imag, out_stride)
     case 2:
-        Radix2CooleyTukey_4(real, imag, in_stride, _real, _imag, out_stride)
+        Radix2CooleyTukey_4(real, imag, in_stride, in_count, _real, _imag, out_stride)
         
     default:
         let length = 1 << level
@@ -2150,9 +1548,9 @@ public func DispatchRadix2CooleyTukey(level: Int, _ real: UnsafePointer<Double>,
         dispatch_apply(2, CooleyTukeyDispatchQueue) {
             switch $0 {
             case 0:
-                Radix2CooleyTukey(level - 1, real, imag, in_stride << 1, op_r, op_i, out_stride)
+                Radix2CooleyTukey(level - 1, real, imag, in_stride << 1, in_count - in_count >> 1, op_r, op_i, out_stride)
             default:
-                Radix2CooleyTukey(level - 1, real + in_stride, imag + in_stride, in_stride << 1, oph_r, oph_i, out_stride)
+                Radix2CooleyTukey(level - 1, real + in_stride, imag + in_stride, in_stride << 1, in_count >> 1, oph_r, oph_i, out_stride)
             }
         }
         
@@ -2186,25 +1584,27 @@ public func DispatchRadix2CooleyTukey(level: Int, _ real: UnsafePointer<Double>,
     }
 }
 
-public func DispatchInverseRadix2CooleyTukey(level: Int, _ input: UnsafePointer<Double>, _ in_stride: Int, _ _real: UnsafeMutablePointer<Double>, _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int) {
+public func DispatchInverseRadix2CooleyTukey(level: Int, _ input: UnsafePointer<Double>, _ in_stride: Int, _ in_count: Int, _ _real: UnsafeMutablePointer<Double>, _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int) {
+    
+    assert(in_count & 1 == 0, "size of input must be multiple of 2.")
     
     switch level {
         
     case 0:
-        _real.memory = input.memory
+        _real.memory = in_count == 0 ? 0 : input.memory
         _imag.memory = 0.0
         
     case 1:
-        InverseRadix2CooleyTukey_2(input, in_stride, _real, _imag, out_stride)
+        InverseRadix2CooleyTukey_2(input, in_stride, in_count, _real, _imag, out_stride)
     case 2:
-        InverseRadix2CooleyTukey_4(input, in_stride, _real, _imag, out_stride)
+        InverseRadix2CooleyTukey_4(input, in_stride, in_count, _real, _imag, out_stride)
         
     default:
         let length = 1 << level
         let half = length >> 1
         let fourth = length >> 2
         
-        DispatchInverseRadix2CooleyTukey(level - 1, input, input + in_stride, in_stride << 1, _real, _imag, out_stride)
+        DispatchInverseRadix2CooleyTukey(level - 1, input, input + in_stride, in_stride << 1, in_count >> 1, _real, _imag, out_stride)
         
         let _out_stride = half * out_stride
         var op_r = _real
@@ -2280,127 +1680,9 @@ public func DispatchInverseRadix2CooleyTukey(level: Int, _ input: UnsafePointer<
         }
     }
 }
-public func DispatchInverseRadix2CooleyTukey(level: Int, _ real: UnsafePointer<Double>, _ imag: UnsafePointer<Double>, _ in_stride: Int, _ _real: UnsafeMutablePointer<Double>, _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int) {
+public func DispatchInverseRadix2CooleyTukey(level: Int, _ real: UnsafePointer<Double>, _ imag: UnsafePointer<Double>, _ in_stride: Int, _ in_count: Int, _ _real: UnsafeMutablePointer<Double>, _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int) {
     
-    DispatchRadix2CooleyTukey(level, imag, real, in_stride, _imag, _real, out_stride)
-}
-
-public func DispatchRadix2CooleyTukey(levelRow: Int, _ levelCol: Int, _ input: UnsafePointer<Double>, _ in_stride_row: Int, _ in_stride_col: Int, _ _real: UnsafeMutablePointer<Double>, _ _imag: UnsafeMutablePointer<Double>, _ out_stride_row: Int, _ out_stride_col: Int, _ treal: UnsafeMutablePointer<Double>, _ timag: UnsafeMutablePointer<Double>, _ temp_stride_row: Int, _ temp_stride_col: Int) {
-    
-    let row_count = 1 << levelRow
-    let col_count = (1 << levelCol) >> 1
-    
-    let in_row_length = in_stride_col << levelCol
-    let out_row_length = out_stride_col << levelCol
-    let temp_row_length = temp_stride_col << levelCol
-    
-    let in_row_offset = in_row_length * in_stride_row
-    let out_row_offset = out_row_length * out_stride_row
-    let temp_row_offset = temp_row_length * temp_stride_row
-    
-    dispatch_apply(row_count, CooleyTukeyDispatchQueue) {
-        let _in_row_offset = $0 * in_row_offset
-        let _temp_row_offset = $0 * temp_row_offset
-        HalfRadix2CooleyTukey(levelCol, input + _in_row_offset, in_stride_col, treal + _temp_row_offset, timag + _temp_row_offset, temp_stride_col)
-    }
-    
-    let out_row_offset_2 = out_row_offset >> 1
-    
-    dispatch_apply(2, CooleyTukeyDispatchQueue) {
-        switch $0 {
-        case 0:
-            Radix2CooleyTukey(levelRow, treal, temp_row_offset, _real, _imag, out_row_offset)
-        default:
-            Radix2CooleyTukey(levelRow, timag, temp_row_offset, _real + out_row_offset_2, _imag + out_row_offset_2, out_row_offset)
-        }
-    }
-    if col_count > 1 {
-        dispatch_apply(col_count - 1, CooleyTukeyDispatchQueue) {
-            let i = $0 + 1
-            let _temp_col_offset = i * temp_stride_col
-            let _out_col_offset = i * out_stride_col
-            Radix2CooleyTukey(levelRow, treal + _temp_col_offset, timag + _temp_col_offset, temp_row_offset, _real + _out_col_offset, _imag + _out_col_offset, out_row_offset)
-        }
-    }
-    
-    let block = row_count * out_row_offset
-    
-    var op_r = _real
-    var op_i = _imag
-    var opb_r = _real + out_row_length
-    var opb_i = _imag + out_row_length
-    for _ in 0..<col_count - 1 {
-        op_r += out_stride_col
-        op_i += out_stride_col
-        opb_r -= out_stride_col
-        opb_i -= out_stride_col
-        opb_r.memory = op_r.memory
-        opb_i.memory = -op_i.memory
-        var _op_r = op_r
-        var _op_i = op_i
-        var _opb_r = opb_r + block
-        var _opb_i = opb_i + block
-        for _ in 0..<row_count - 1 {
-            _op_r += out_row_offset
-            _op_i += out_row_offset
-            _opb_r -= out_row_offset
-            _opb_i -= out_row_offset
-            _opb_r.memory = _op_r.memory
-            _opb_i.memory = -_op_i.memory
-        }
-    }
-}
-
-public func DispatchRadix2CooleyTukey(levelRow: Int, _ levelCol: Int, _ real: UnsafePointer<Double>, _ imag: UnsafePointer<Double>, _ in_stride_row: Int, _ in_stride_col: Int, _ _real: UnsafeMutablePointer<Double>, _ _imag: UnsafeMutablePointer<Double>, _ out_stride_row: Int, _ out_stride_col: Int, _ treal: UnsafeMutablePointer<Double>, _ timag: UnsafeMutablePointer<Double>, _ temp_stride_row: Int, _ temp_stride_col: Int) {
-    
-    let row_count = 1 << levelRow
-    let col_count = 1 << levelCol
-    
-    let in_row_length = in_stride_col << levelCol
-    let out_row_length = out_stride_col << levelCol
-    let temp_row_length = temp_stride_col << levelCol
-    
-    let in_row_offset = in_row_length * in_stride_row
-    let out_row_offset = out_row_length * out_stride_row
-    let temp_row_offset = temp_row_length * temp_stride_row
-    
-    dispatch_apply(row_count, CooleyTukeyDispatchQueue) {
-        let _in_row_offset = $0 * in_row_offset
-        let _temp_row_offset = $0 * temp_row_offset
-        Radix2CooleyTukey(levelCol, real + _in_row_offset, imag + _in_row_offset, in_stride_col, treal + _temp_row_offset, timag + _temp_row_offset, temp_stride_col)
-    }
-    
-    dispatch_apply(col_count, CooleyTukeyDispatchQueue) {
-        let _temp_col_offset = $0 * temp_stride_col
-        let _out_col_offset = $0 * out_stride_col
-        Radix2CooleyTukey(levelRow, treal + _temp_col_offset, timag + _temp_col_offset, temp_row_offset, _real + _out_col_offset, _imag + _out_col_offset, out_row_offset)
-    }
-}
-
-public func DispatchInverseRadix2CooleyTukey(levelRow: Int, _ levelCol: Int, _ real: UnsafePointer<Double>, _ imag: UnsafePointer<Double>, _ in_stride_row: Int, _ in_stride_col: Int, _ _real: UnsafeMutablePointer<Double>, _ _imag: UnsafeMutablePointer<Double>, _ out_stride_row: Int, _ out_stride_col: Int, _ treal: UnsafeMutablePointer<Double>, _ timag: UnsafeMutablePointer<Double>, _ temp_stride_row: Int, _ temp_stride_col: Int) {
-    
-    let row_count = 1 << levelRow
-    let col_count = 1 << levelCol
-    
-    let in_row_length = in_stride_col << levelCol
-    let out_row_length = out_stride_col << levelCol
-    let temp_row_length = temp_stride_col << levelCol
-    
-    let in_row_offset = in_row_length * in_stride_row
-    let out_row_offset = out_row_length * out_stride_row
-    let temp_row_offset = temp_row_length * temp_stride_row
-    
-    dispatch_apply(row_count, CooleyTukeyDispatchQueue) {
-        let _in_row_offset = $0 * in_row_offset
-        let _temp_row_offset = $0 * temp_row_offset
-        InverseRadix2CooleyTukey(levelCol, real + _in_row_offset, imag + _in_row_offset, in_stride_col, treal + _temp_row_offset, timag + _temp_row_offset, temp_stride_col)
-    }
-    
-    dispatch_apply(col_count, CooleyTukeyDispatchQueue) {
-        let _temp_col_offset = $0 * temp_stride_col
-        let _out_col_offset = $0 * out_stride_col
-        InverseRadix2CooleyTukey(levelRow, treal + _temp_col_offset, timag + _temp_col_offset, temp_row_offset, _real + _out_col_offset, _imag + _out_col_offset, out_row_offset)
-    }
+    DispatchRadix2CooleyTukey(level, imag, real, in_stride, in_count, _imag, _real, out_stride)
 }
 
 // MARK: Parallel
@@ -2412,7 +1694,7 @@ public func ParallelHalfRadix2CooleyTukey(rows: Int, _ level: Int, _ input: Unsa
     for i in 0..<rows {
         let _in_row_offset = i * in_rows_stride
         let _out_row_offset = i * out_rows_stride
-        HalfRadix2CooleyTukey(level, input + _in_row_offset, in_stride, _real + _out_row_offset, _imag + _out_row_offset, out_stride)
+        HalfRadix2CooleyTukey(level, input + _in_row_offset, in_stride, 1 << level, _real + _out_row_offset, _imag + _out_row_offset, out_stride)
     }
 }
 public func ParallelHalfInverseRadix2CooleyTukey(rows: Int, _ level: Int, _ real: UnsafePointer<Float>, _ imag: UnsafePointer<Float>, _ in_stride: Int, _ in_rows_stride: Int, _ output: UnsafeMutablePointer<Float>, _ out_stride: Int, _ out_rows_stride: Int, _ treal: UnsafeMutablePointer<Float>, _ timag: UnsafeMutablePointer<Float>, _ tp_stride: Int, _ tp_rows_stride: Int) {
@@ -2429,7 +1711,7 @@ public func ParallelRadix2CooleyTukey(rows: Int, _ level: Int, _ input: UnsafePo
     for i in 0..<rows {
         let _in_row_offset = i * in_rows_stride
         let _out_row_offset = i * out_rows_stride
-        Radix2CooleyTukey(level, input + _in_row_offset, in_stride, _real + _out_row_offset, _imag + _out_row_offset, out_stride)
+        Radix2CooleyTukey(level, input + _in_row_offset, in_stride, 1 << level, _real + _out_row_offset, _imag + _out_row_offset, out_stride)
     }
 }
 public func ParallelRadix2CooleyTukey(rows: Int, _ level: Int, _ real: UnsafePointer<Float>, _ imag: UnsafePointer<Float>, _ in_stride: Int, _ in_rows_stride: Int, _ _real: UnsafeMutablePointer<Float>, _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int, _ out_rows_stride: Int) {
@@ -2437,7 +1719,7 @@ public func ParallelRadix2CooleyTukey(rows: Int, _ level: Int, _ real: UnsafePoi
     for i in 0..<rows {
         let _in_row_offset = i * in_rows_stride
         let _out_row_offset = i * out_rows_stride
-        Radix2CooleyTukey(level, real + _in_row_offset, imag + _in_row_offset, in_stride, _real + _out_row_offset, _imag + _out_row_offset, out_stride)
+        Radix2CooleyTukey(level, real + _in_row_offset, imag + _in_row_offset, in_stride, 1 << level, _real + _out_row_offset, _imag + _out_row_offset, out_stride)
     }
 }
 public func ParallelInverseRadix2CooleyTukey(rows: Int, _ level: Int, _ input: UnsafePointer<Float>, _ in_stride: Int, _ in_rows_stride: Int, _ _real: UnsafeMutablePointer<Float>, _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int, _ out_rows_stride: Int) {
@@ -2445,7 +1727,7 @@ public func ParallelInverseRadix2CooleyTukey(rows: Int, _ level: Int, _ input: U
     for i in 0..<rows {
         let _in_row_offset = i * in_rows_stride
         let _out_row_offset = i * out_rows_stride
-        InverseRadix2CooleyTukey(level, input + _in_row_offset, in_stride, _real + _out_row_offset, _imag + _out_row_offset, out_stride)
+        InverseRadix2CooleyTukey(level, input + _in_row_offset, in_stride, 1 << level, _real + _out_row_offset, _imag + _out_row_offset, out_stride)
     }
 }
 public func ParallelInverseRadix2CooleyTukey(rows: Int, _ level: Int, _ real: UnsafePointer<Float>, _ imag: UnsafePointer<Float>, _ in_stride: Int, _ in_rows_stride: Int, _ _real: UnsafeMutablePointer<Float>, _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int, _ out_rows_stride: Int) {
@@ -2453,7 +1735,7 @@ public func ParallelInverseRadix2CooleyTukey(rows: Int, _ level: Int, _ real: Un
     for i in 0..<rows {
         let _in_row_offset = i * in_rows_stride
         let _out_row_offset = i * out_rows_stride
-        InverseRadix2CooleyTukey(level, real + _in_row_offset, imag + _in_row_offset, in_stride, _real + _out_row_offset, _imag + _out_row_offset, out_stride)
+        InverseRadix2CooleyTukey(level, real + _in_row_offset, imag + _in_row_offset, in_stride, 1 << level, _real + _out_row_offset, _imag + _out_row_offset, out_stride)
     }
 }
 public func DispatchParallelHalfRadix2CooleyTukey(rows: Int, _ level: Int, _ input: UnsafePointer<Float>, _ in_stride: Int, _ in_rows_stride: Int, _ _real: UnsafeMutablePointer<Float>, _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int, _ out_rows_stride: Int) {
@@ -2461,7 +1743,7 @@ public func DispatchParallelHalfRadix2CooleyTukey(rows: Int, _ level: Int, _ inp
     dispatch_apply(rows, CooleyTukeyDispatchQueue) {
         let _in_row_offset = $0 * in_rows_stride
         let _out_row_offset = $0 * out_rows_stride
-        HalfRadix2CooleyTukey(level, input + _in_row_offset, in_stride, _real + _out_row_offset, _imag + _out_row_offset, out_stride)
+        HalfRadix2CooleyTukey(level, input + _in_row_offset, in_stride, 1 << level, _real + _out_row_offset, _imag + _out_row_offset, out_stride)
     }
 }
 public func DispatchParallelHalfInverseRadix2CooleyTukey(rows: Int, _ level: Int, _ real: UnsafePointer<Float>, _ imag: UnsafePointer<Float>, _ in_stride: Int, _ in_rows_stride: Int, _ output: UnsafeMutablePointer<Float>, _ out_stride: Int, _ out_rows_stride: Int, _ treal: UnsafeMutablePointer<Float>, _ timag: UnsafeMutablePointer<Float>, _ tp_stride: Int, _ tp_rows_stride: Int) {
@@ -2478,7 +1760,7 @@ public func DispatchParallelRadix2CooleyTukey(rows: Int, _ level: Int, _ input: 
     dispatch_apply(rows, CooleyTukeyDispatchQueue) {
         let _in_row_offset = $0 * in_rows_stride
         let _out_row_offset = $0 * out_rows_stride
-        Radix2CooleyTukey(level, input + _in_row_offset, in_stride, _real + _out_row_offset, _imag + _out_row_offset, out_stride)
+        Radix2CooleyTukey(level, input + _in_row_offset, in_stride, 1 << level, _real + _out_row_offset, _imag + _out_row_offset, out_stride)
     }
 }
 public func DispatchParallelRadix2CooleyTukey(rows: Int, _ level: Int, _ real: UnsafePointer<Float>, _ imag: UnsafePointer<Float>, _ in_stride: Int, _ in_rows_stride: Int, _ _real: UnsafeMutablePointer<Float>, _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int, _ out_rows_stride: Int) {
@@ -2486,7 +1768,7 @@ public func DispatchParallelRadix2CooleyTukey(rows: Int, _ level: Int, _ real: U
     dispatch_apply(rows, CooleyTukeyDispatchQueue) {
         let _in_row_offset = $0 * in_rows_stride
         let _out_row_offset = $0 * out_rows_stride
-        Radix2CooleyTukey(level, real + _in_row_offset, imag + _in_row_offset, in_stride, _real + _out_row_offset, _imag + _out_row_offset, out_stride)
+        Radix2CooleyTukey(level, real + _in_row_offset, imag + _in_row_offset, in_stride, 1 << level, _real + _out_row_offset, _imag + _out_row_offset, out_stride)
     }
 }
 public func DispatchParallelInverseRadix2CooleyTukey(rows: Int, _ level: Int, _ input: UnsafePointer<Float>, _ in_stride: Int, _ in_rows_stride: Int, _ _real: UnsafeMutablePointer<Float>, _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int, _ out_rows_stride: Int) {
@@ -2494,7 +1776,7 @@ public func DispatchParallelInverseRadix2CooleyTukey(rows: Int, _ level: Int, _ 
     dispatch_apply(rows, CooleyTukeyDispatchQueue) {
         let _in_row_offset = $0 * in_rows_stride
         let _out_row_offset = $0 * out_rows_stride
-        InverseRadix2CooleyTukey(level, input + _in_row_offset, in_stride, _real + _out_row_offset, _imag + _out_row_offset, out_stride)
+        InverseRadix2CooleyTukey(level, input + _in_row_offset, in_stride, 1 << level, _real + _out_row_offset, _imag + _out_row_offset, out_stride)
     }
 }
 public func DispatchParallelInverseRadix2CooleyTukey(rows: Int, _ level: Int, _ real: UnsafePointer<Float>, _ imag: UnsafePointer<Float>, _ in_stride: Int, _ in_rows_stride: Int, _ _real: UnsafeMutablePointer<Float>, _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int, _ out_rows_stride: Int) {
@@ -2502,7 +1784,7 @@ public func DispatchParallelInverseRadix2CooleyTukey(rows: Int, _ level: Int, _ 
     dispatch_apply(rows, CooleyTukeyDispatchQueue) {
         let _in_row_offset = $0 * in_rows_stride
         let _out_row_offset = $0 * out_rows_stride
-        InverseRadix2CooleyTukey(level, real + _in_row_offset, imag + _in_row_offset, in_stride, _real + _out_row_offset, _imag + _out_row_offset, out_stride)
+        InverseRadix2CooleyTukey(level, real + _in_row_offset, imag + _in_row_offset, in_stride, 1 << level, _real + _out_row_offset, _imag + _out_row_offset, out_stride)
     }
 }
 
@@ -2511,7 +1793,7 @@ public func ParallelHalfRadix2CooleyTukey(rows: Int, _ level: Int, _ input: Unsa
     for i in 0..<rows {
         let _in_row_offset = i * in_rows_stride
         let _out_row_offset = i * out_rows_stride
-        HalfRadix2CooleyTukey(level, input + _in_row_offset, in_stride, _real + _out_row_offset, _imag + _out_row_offset, out_stride)
+        HalfRadix2CooleyTukey(level, input + _in_row_offset, in_stride, 1 << level, _real + _out_row_offset, _imag + _out_row_offset, out_stride)
     }
 }
 public func ParallelHalfInverseRadix2CooleyTukey(rows: Int, _ level: Int, _ real: UnsafePointer<Double>, _ imag: UnsafePointer<Double>, _ in_stride: Int, _ in_rows_stride: Int, _ output: UnsafeMutablePointer<Double>, _ out_stride: Int, _ out_rows_stride: Int, _ treal: UnsafeMutablePointer<Double>, _ timag: UnsafeMutablePointer<Double>, _ tp_stride: Int, _ tp_rows_stride: Int) {
@@ -2528,7 +1810,7 @@ public func ParallelRadix2CooleyTukey(rows: Int, _ level: Int, _ input: UnsafePo
     for i in 0..<rows {
         let _in_row_offset = i * in_rows_stride
         let _out_row_offset = i * out_rows_stride
-        Radix2CooleyTukey(level, input + _in_row_offset, in_stride, _real + _out_row_offset, _imag + _out_row_offset, out_stride)
+        Radix2CooleyTukey(level, input + _in_row_offset, in_stride, 1 << level, _real + _out_row_offset, _imag + _out_row_offset, out_stride)
     }
 }
 public func ParallelRadix2CooleyTukey(rows: Int, _ level: Int, _ real: UnsafePointer<Double>, _ imag: UnsafePointer<Double>, _ in_stride: Int, _ in_rows_stride: Int, _ _real: UnsafeMutablePointer<Double>, _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int, _ out_rows_stride: Int) {
@@ -2536,7 +1818,7 @@ public func ParallelRadix2CooleyTukey(rows: Int, _ level: Int, _ real: UnsafePoi
     for i in 0..<rows {
         let _in_row_offset = i * in_rows_stride
         let _out_row_offset = i * out_rows_stride
-        Radix2CooleyTukey(level, real + _in_row_offset, imag + _in_row_offset, in_stride, _real + _out_row_offset, _imag + _out_row_offset, out_stride)
+        Radix2CooleyTukey(level, real + _in_row_offset, imag + _in_row_offset, in_stride, 1 << level, _real + _out_row_offset, _imag + _out_row_offset, out_stride)
     }
 }
 public func ParallelInverseRadix2CooleyTukey(rows: Int, _ level: Int, _ input: UnsafePointer<Double>, _ in_stride: Int, _ in_rows_stride: Int, _ _real: UnsafeMutablePointer<Double>, _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int, _ out_rows_stride: Int) {
@@ -2544,7 +1826,7 @@ public func ParallelInverseRadix2CooleyTukey(rows: Int, _ level: Int, _ input: U
     for i in 0..<rows {
         let _in_row_offset = i * in_rows_stride
         let _out_row_offset = i * out_rows_stride
-        InverseRadix2CooleyTukey(level, input + _in_row_offset, in_stride, _real + _out_row_offset, _imag + _out_row_offset, out_stride)
+        InverseRadix2CooleyTukey(level, input + _in_row_offset, in_stride, 1 << level, _real + _out_row_offset, _imag + _out_row_offset, out_stride)
     }
 }
 public func ParallelInverseRadix2CooleyTukey(rows: Int, _ level: Int, _ real: UnsafePointer<Double>, _ imag: UnsafePointer<Double>, _ in_stride: Int, _ in_rows_stride: Int, _ _real: UnsafeMutablePointer<Double>, _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int, _ out_rows_stride: Int) {
@@ -2552,7 +1834,7 @@ public func ParallelInverseRadix2CooleyTukey(rows: Int, _ level: Int, _ real: Un
     for i in 0..<rows {
         let _in_row_offset = i * in_rows_stride
         let _out_row_offset = i * out_rows_stride
-        InverseRadix2CooleyTukey(level, real + _in_row_offset, imag + _in_row_offset, in_stride, _real + _out_row_offset, _imag + _out_row_offset, out_stride)
+        InverseRadix2CooleyTukey(level, real + _in_row_offset, imag + _in_row_offset, in_stride, 1 << level, _real + _out_row_offset, _imag + _out_row_offset, out_stride)
     }
 }
 public func DispatchParallelHalfRadix2CooleyTukey(rows: Int, _ level: Int, _ input: UnsafePointer<Double>, _ in_stride: Int, _ in_rows_stride: Int, _ _real: UnsafeMutablePointer<Double>, _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int, _ out_rows_stride: Int) {
@@ -2560,7 +1842,7 @@ public func DispatchParallelHalfRadix2CooleyTukey(rows: Int, _ level: Int, _ inp
     dispatch_apply(rows, CooleyTukeyDispatchQueue) {
         let _in_row_offset = $0 * in_rows_stride
         let _out_row_offset = $0 * out_rows_stride
-        HalfRadix2CooleyTukey(level, input + _in_row_offset, in_stride, _real + _out_row_offset, _imag + _out_row_offset, out_stride)
+        HalfRadix2CooleyTukey(level, input + _in_row_offset, in_stride, 1 << level, _real + _out_row_offset, _imag + _out_row_offset, out_stride)
     }
 }
 public func DispatchParallelHalfInverseRadix2CooleyTukey(rows: Int, _ level: Int, _ real: UnsafePointer<Double>, _ imag: UnsafePointer<Double>, _ in_stride: Int, _ in_rows_stride: Int, _ output: UnsafeMutablePointer<Double>, _ out_stride: Int, _ out_rows_stride: Int, _ treal: UnsafeMutablePointer<Double>, _ timag: UnsafeMutablePointer<Double>, _ tp_stride: Int, _ tp_rows_stride: Int) {
@@ -2577,7 +1859,7 @@ public func DispatchParallelRadix2CooleyTukey(rows: Int, _ level: Int, _ input: 
     dispatch_apply(rows, CooleyTukeyDispatchQueue) {
         let _in_row_offset = $0 * in_rows_stride
         let _out_row_offset = $0 * out_rows_stride
-        Radix2CooleyTukey(level, input + _in_row_offset, in_stride, _real + _out_row_offset, _imag + _out_row_offset, out_stride)
+        Radix2CooleyTukey(level, input + _in_row_offset, in_stride, 1 << level, _real + _out_row_offset, _imag + _out_row_offset, out_stride)
     }
 }
 public func DispatchParallelRadix2CooleyTukey(rows: Int, _ level: Int, _ real: UnsafePointer<Double>, _ imag: UnsafePointer<Double>, _ in_stride: Int, _ in_rows_stride: Int, _ _real: UnsafeMutablePointer<Double>, _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int, _ out_rows_stride: Int) {
@@ -2585,7 +1867,7 @@ public func DispatchParallelRadix2CooleyTukey(rows: Int, _ level: Int, _ real: U
     dispatch_apply(rows, CooleyTukeyDispatchQueue) {
         let _in_row_offset = $0 * in_rows_stride
         let _out_row_offset = $0 * out_rows_stride
-        Radix2CooleyTukey(level, real + _in_row_offset, imag + _in_row_offset, in_stride, _real + _out_row_offset, _imag + _out_row_offset, out_stride)
+        Radix2CooleyTukey(level, real + _in_row_offset, imag + _in_row_offset, in_stride, 1 << level, _real + _out_row_offset, _imag + _out_row_offset, out_stride)
     }
 }
 public func DispatchParallelInverseRadix2CooleyTukey(rows: Int, _ level: Int, _ input: UnsafePointer<Double>, _ in_stride: Int, _ in_rows_stride: Int, _ _real: UnsafeMutablePointer<Double>, _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int, _ out_rows_stride: Int) {
@@ -2593,7 +1875,7 @@ public func DispatchParallelInverseRadix2CooleyTukey(rows: Int, _ level: Int, _ 
     dispatch_apply(rows, CooleyTukeyDispatchQueue) {
         let _in_row_offset = $0 * in_rows_stride
         let _out_row_offset = $0 * out_rows_stride
-        InverseRadix2CooleyTukey(level, input + _in_row_offset, in_stride, _real + _out_row_offset, _imag + _out_row_offset, out_stride)
+        InverseRadix2CooleyTukey(level, input + _in_row_offset, in_stride, 1 << level, _real + _out_row_offset, _imag + _out_row_offset, out_stride)
     }
 }
 public func DispatchParallelInverseRadix2CooleyTukey(rows: Int, _ level: Int, _ real: UnsafePointer<Double>, _ imag: UnsafePointer<Double>, _ in_stride: Int, _ in_rows_stride: Int, _ _real: UnsafeMutablePointer<Double>, _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int, _ out_rows_stride: Int) {
@@ -2601,40 +1883,40 @@ public func DispatchParallelInverseRadix2CooleyTukey(rows: Int, _ level: Int, _ 
     dispatch_apply(rows, CooleyTukeyDispatchQueue) {
         let _in_row_offset = $0 * in_rows_stride
         let _out_row_offset = $0 * out_rows_stride
-        InverseRadix2CooleyTukey(level, real + _in_row_offset, imag + _in_row_offset, in_stride, _real + _out_row_offset, _imag + _out_row_offset, out_stride)
+        InverseRadix2CooleyTukey(level, real + _in_row_offset, imag + _in_row_offset, in_stride, 1 << level, _real + _out_row_offset, _imag + _out_row_offset, out_stride)
     }
 }
 
 // MARK: Fixed Length Cooley-Tukey
 
-public func HalfRadix2CooleyTukey_2(input: UnsafePointer<Float>, _ in_stride: Int, _ _real: UnsafeMutablePointer<Float>, _ _imag: UnsafeMutablePointer<Float>) {
+public func HalfRadix2CooleyTukey_2(input: UnsafePointer<Float>, _ in_stride: Int, _ in_count: Int, _ _real: UnsafeMutablePointer<Float>, _ _imag: UnsafeMutablePointer<Float>) {
     
     var input = input
     
-    let a = input.memory
+    let a = in_count > 0 ? input.memory : 0
     input += in_stride
     
-    let b = input.memory
+    let b = in_count > 1 ? input.memory : 0
     
     _real.memory = a + b
     _imag.memory = a - b
 }
-public func HalfRadix2CooleyTukey_4(input: UnsafePointer<Float>, _ in_stride: Int, _ _real: UnsafeMutablePointer<Float>, _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int) {
+public func HalfRadix2CooleyTukey_4(input: UnsafePointer<Float>, _ in_stride: Int, _ in_count: Int, _ _real: UnsafeMutablePointer<Float>, _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int) {
     
     var input = input
     var _real = _real
     var _imag = _imag
     
-    let a = input.memory
+    let a = in_count > 0 ? input.memory : 0
     input += in_stride
     
-    let b = input.memory
+    let b = in_count > 1 ? input.memory : 0
     input += in_stride
     
-    let c = input.memory
+    let c = in_count > 2 ? input.memory : 0
     input += in_stride
     
-    let d = input.memory
+    let d = in_count > 3 ? input.memory : 0
     
     let e = a + c
     let f = b + d
@@ -2647,31 +1929,31 @@ public func HalfRadix2CooleyTukey_4(input: UnsafePointer<Float>, _ in_stride: In
     _real.memory = a - c
     _imag.memory = d - b
 }
-public func HalfInverseRadix2CooleyTukey_2(real: UnsafePointer<Float>, _ imag: UnsafePointer<Float>, _ output: UnsafeMutablePointer<Float>, _ out_stride: Int) {
+public func HalfInverseRadix2CooleyTukey_2(real: UnsafePointer<Float>, _ imag: UnsafePointer<Float>, _ in_count: Int, _ output: UnsafeMutablePointer<Float>, _ out_stride: Int) {
     
     var output = output
     
-    let a = real.memory
-    let b = imag.memory
+    let a = in_count > 0 ? real.memory : 0
+    let b = in_count > 0 ? imag.memory : 0
     
     output.memory = a + b
     output += out_stride
     
     output.memory = a - b
 }
-public func HalfInverseRadix2CooleyTukey_4(real: UnsafePointer<Float>, _ imag: UnsafePointer<Float>, _ in_stride: Int, _ output: UnsafeMutablePointer<Float>, _ out_stride: Int) {
+public func HalfInverseRadix2CooleyTukey_4(real: UnsafePointer<Float>, _ imag: UnsafePointer<Float>, _ in_stride: Int, _ in_count: Int, _ output: UnsafeMutablePointer<Float>, _ out_stride: Int) {
     
     var real = real
     var imag = imag
     var output = output
     
-    let a = real.memory
-    let b = imag.memory
+    let a = in_count > 0 ? real.memory : 0
+    let b = in_count > 0 ? imag.memory : 0
     real += in_stride
     imag += in_stride
     
-    let c = real.memory
-    let d = imag.memory
+    let c = in_count > 1 ? real.memory : 0
+    let d = in_count > 1 ? imag.memory : 0
     
     let e = a + b
     let f = a - b
@@ -2689,16 +1971,16 @@ public func HalfInverseRadix2CooleyTukey_4(real: UnsafePointer<Float>, _ imag: U
     
     output.memory = f + h
 }
-public func Radix2CooleyTukey_2(input: UnsafePointer<Float>, _ in_stride: Int, _ _real: UnsafeMutablePointer<Float>, _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int) {
+public func Radix2CooleyTukey_2(input: UnsafePointer<Float>, _ in_stride: Int, _ in_count: Int, _ _real: UnsafeMutablePointer<Float>, _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int) {
     
     var input = input
     var _real = _real
     var _imag = _imag
     
-    let a = input.memory
+    let a = in_count > 0 ? input.memory : 0
     input += in_stride
     
-    let b = input.memory
+    let b = in_count > 1 ? input.memory : 0
     
     _real.memory = a + b
     _imag.memory = 0
@@ -2709,20 +1991,20 @@ public func Radix2CooleyTukey_2(input: UnsafePointer<Float>, _ in_stride: Int, _
     _imag.memory = 0
     
 }
-public func Radix2CooleyTukey_2(real: UnsafePointer<Float>, _ imag: UnsafePointer<Float>, _ in_stride: Int, _ _real: UnsafeMutablePointer<Float>, _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int) {
+public func Radix2CooleyTukey_2(real: UnsafePointer<Float>, _ imag: UnsafePointer<Float>, _ in_stride: Int, _ in_count: Int, _ _real: UnsafeMutablePointer<Float>, _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int) {
     
     var real = real
     var imag = imag
     var _real = _real
     var _imag = _imag
     
-    let a = real.memory
-    let b = imag.memory
+    let a = in_count > 0 ? real.memory : 0
+    let b = in_count > 0 ? imag.memory : 0
     real += in_stride
     imag += in_stride
     
-    let c = real.memory
-    let d = imag.memory
+    let c = in_count > 1 ? real.memory : 0
+    let d = in_count > 1 ? imag.memory : 0
     
     _real.memory = a + c
     _imag.memory = b + d
@@ -2733,16 +2015,16 @@ public func Radix2CooleyTukey_2(real: UnsafePointer<Float>, _ imag: UnsafePointe
     _imag.memory = b - d
     
 }
-public func InverseRadix2CooleyTukey_2(input: UnsafePointer<Float>, _ in_stride: Int, _ _real: UnsafeMutablePointer<Float>, _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int) {
+public func InverseRadix2CooleyTukey_2(input: UnsafePointer<Float>, _ in_stride: Int, _ in_count: Int, _ _real: UnsafeMutablePointer<Float>, _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int) {
     
     var input = input
     var _real = _real
     var _imag = _imag
     
-    let a = input.memory
+    let a = in_count > 0 ? input.memory : 0
     input += in_stride
     
-    let b = input.memory
+    let b = in_count > 1 ? input.memory : 0
     
     _real.memory = a + b
     _imag.memory = 0
@@ -2753,22 +2035,22 @@ public func InverseRadix2CooleyTukey_2(input: UnsafePointer<Float>, _ in_stride:
     _imag.memory = 0
     
 }
-public func Radix2CooleyTukey_4(input: UnsafePointer<Float>, _ in_stride: Int, _ _real: UnsafeMutablePointer<Float>, _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int) {
+public func Radix2CooleyTukey_4(input: UnsafePointer<Float>, _ in_stride: Int, _ in_count: Int, _ _real: UnsafeMutablePointer<Float>, _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int) {
     
     var input = input
     var _real = _real
     var _imag = _imag
     
-    let a = input.memory
+    let a = in_count > 0 ? input.memory : 0
     input += in_stride
     
-    let b = input.memory
+    let b = in_count > 1 ? input.memory : 0
     input += in_stride
     
-    let c = input.memory
+    let c = in_count > 2 ? input.memory : 0
     input += in_stride
     
-    let d = input.memory
+    let d = in_count > 3 ? input.memory : 0
     
     let e = a + c
     let f = a - c
@@ -2794,30 +2076,30 @@ public func Radix2CooleyTukey_4(input: UnsafePointer<Float>, _ in_stride: Int, _
     _imag.memory = h
 }
 
-public func Radix2CooleyTukey_4(real: UnsafePointer<Float>, _ imag: UnsafePointer<Float>, _ in_stride: Int, _ _real: UnsafeMutablePointer<Float>, _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int) {
+public func Radix2CooleyTukey_4(real: UnsafePointer<Float>, _ imag: UnsafePointer<Float>, _ in_stride: Int, _ in_count: Int, _ _real: UnsafeMutablePointer<Float>, _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int) {
     
     var real = real
     var imag = imag
     var _real = _real
     var _imag = _imag
     
-    let a = real.memory
-    let b = imag.memory
+    let a = in_count > 0 ? real.memory : 0
+    let b = in_count > 0 ? imag.memory : 0
     real += in_stride
     imag += in_stride
     
-    let c = real.memory
-    let d = imag.memory
+    let c = in_count > 1 ? real.memory : 0
+    let d = in_count > 1 ? imag.memory : 0
     real += in_stride
     imag += in_stride
     
-    let e = real.memory
-    let f = imag.memory
+    let e = in_count > 2 ? real.memory : 0
+    let f = in_count > 2 ? imag.memory : 0
     real += in_stride
     imag += in_stride
     
-    let g = real.memory
-    let h = imag.memory
+    let g = in_count > 3 ? real.memory : 0
+    let h = in_count > 3 ? imag.memory : 0
     
     let i = a + e
     let j = b + f
@@ -2847,22 +2129,22 @@ public func Radix2CooleyTukey_4(real: UnsafePointer<Float>, _ imag: UnsafePointe
     _imag.memory = l + o
 }
 
-public func InverseRadix2CooleyTukey_4(input: UnsafePointer<Float>, _ in_stride: Int, _ _real: UnsafeMutablePointer<Float>, _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int) {
+public func InverseRadix2CooleyTukey_4(input: UnsafePointer<Float>, _ in_stride: Int, _ in_count: Int, _ _real: UnsafeMutablePointer<Float>, _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int) {
     
     var input = input
     var _real = _real
     var _imag = _imag
     
-    let a = input.memory
+    let a = in_count > 0 ? input.memory : 0
     input += in_stride
     
-    let b = input.memory
+    let b = in_count > 1 ? input.memory : 0
     input += in_stride
     
-    let c = input.memory
+    let c = in_count > 2 ? input.memory : 0
     input += in_stride
     
-    let d = input.memory
+    let d = in_count > 3 ? input.memory : 0
     
     let e = a + c
     let f = a - c
@@ -2888,34 +2170,34 @@ public func InverseRadix2CooleyTukey_4(input: UnsafePointer<Float>, _ in_stride:
     _imag.memory = -h
 }
 
-public func HalfRadix2CooleyTukey_2(input: UnsafePointer<Double>, _ in_stride: Int, _ _real: UnsafeMutablePointer<Double>, _ _imag: UnsafeMutablePointer<Double>) {
+public func HalfRadix2CooleyTukey_2(input: UnsafePointer<Double>, _ in_stride: Int, _ in_count: Int, _ _real: UnsafeMutablePointer<Double>, _ _imag: UnsafeMutablePointer<Double>) {
     
     var input = input
     
-    let a = input.memory
+    let a = in_count > 0 ? input.memory : 0
     input += in_stride
     
-    let b = input.memory
+    let b = in_count > 1 ? input.memory : 0
     
     _real.memory = a + b
     _imag.memory = a - b
 }
-public func HalfRadix2CooleyTukey_4(input: UnsafePointer<Double>, _ in_stride: Int, _ _real: UnsafeMutablePointer<Double>, _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int) {
+public func HalfRadix2CooleyTukey_4(input: UnsafePointer<Double>, _ in_stride: Int, _ in_count: Int, _ _real: UnsafeMutablePointer<Double>, _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int) {
     
     var input = input
     var _real = _real
     var _imag = _imag
     
-    let a = input.memory
+    let a = in_count > 0 ? input.memory : 0
     input += in_stride
     
-    let b = input.memory
+    let b = in_count > 1 ? input.memory : 0
     input += in_stride
     
-    let c = input.memory
+    let c = in_count > 2 ? input.memory : 0
     input += in_stride
     
-    let d = input.memory
+    let d = in_count > 3 ? input.memory : 0
     
     let e = a + c
     let f = b + d
@@ -2928,31 +2210,31 @@ public func HalfRadix2CooleyTukey_4(input: UnsafePointer<Double>, _ in_stride: I
     _real.memory = a - c
     _imag.memory = d - b
 }
-public func HalfInverseRadix2CooleyTukey_2(real: UnsafePointer<Double>, _ imag: UnsafePointer<Double>, _ output: UnsafeMutablePointer<Double>, _ out_stride: Int) {
+public func HalfInverseRadix2CooleyTukey_2(real: UnsafePointer<Double>, _ imag: UnsafePointer<Double>, _ in_count: Int, _ output: UnsafeMutablePointer<Double>, _ out_stride: Int) {
     
     var output = output
     
-    let a = real.memory
-    let b = imag.memory
+    let a = in_count > 0 ? real.memory : 0
+    let b = in_count > 0 ? imag.memory : 0
     
     output.memory = a + b
     output += out_stride
     
     output.memory = a - b
 }
-public func HalfInverseRadix2CooleyTukey_4(real: UnsafePointer<Double>, _ imag: UnsafePointer<Double>, _ in_stride: Int, _ output: UnsafeMutablePointer<Double>, _ out_stride: Int) {
+public func HalfInverseRadix2CooleyTukey_4(real: UnsafePointer<Double>, _ imag: UnsafePointer<Double>, _ in_stride: Int, _ in_count: Int, _ output: UnsafeMutablePointer<Double>, _ out_stride: Int) {
     
     var real = real
     var imag = imag
     var output = output
     
-    let a = real.memory
-    let b = imag.memory
+    let a = in_count > 0 ? real.memory : 0
+    let b = in_count > 0 ? imag.memory : 0
     real += in_stride
     imag += in_stride
     
-    let c = real.memory
-    let d = imag.memory
+    let c = in_count > 1 ? real.memory : 0
+    let d = in_count > 1 ? imag.memory : 0
     
     let e = a + b
     let f = a - b
@@ -2970,16 +2252,16 @@ public func HalfInverseRadix2CooleyTukey_4(real: UnsafePointer<Double>, _ imag: 
     
     output.memory = f + h
 }
-public func Radix2CooleyTukey_2(input: UnsafePointer<Double>, _ in_stride: Int, _ _real: UnsafeMutablePointer<Double>, _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int) {
+public func Radix2CooleyTukey_2(input: UnsafePointer<Double>, _ in_stride: Int, _ in_count: Int, _ _real: UnsafeMutablePointer<Double>, _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int) {
     
     var input = input
     var _real = _real
     var _imag = _imag
     
-    let a = input.memory
+    let a = in_count > 0 ? input.memory : 0
     input += in_stride
     
-    let b = input.memory
+    let b = in_count > 1 ? input.memory : 0
     
     _real.memory = a + b
     _imag.memory = 0
@@ -2990,20 +2272,20 @@ public func Radix2CooleyTukey_2(input: UnsafePointer<Double>, _ in_stride: Int, 
     _imag.memory = 0
     
 }
-public func Radix2CooleyTukey_2(real: UnsafePointer<Double>, _ imag: UnsafePointer<Double>, _ in_stride: Int, _ _real: UnsafeMutablePointer<Double>, _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int) {
+public func Radix2CooleyTukey_2(real: UnsafePointer<Double>, _ imag: UnsafePointer<Double>, _ in_stride: Int, _ in_count: Int, _ _real: UnsafeMutablePointer<Double>, _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int) {
     
     var real = real
     var imag = imag
     var _real = _real
     var _imag = _imag
     
-    let a = real.memory
-    let b = imag.memory
+    let a = in_count > 0 ? real.memory : 0
+    let b = in_count > 0 ? imag.memory : 0
     real += in_stride
     imag += in_stride
     
-    let c = real.memory
-    let d = imag.memory
+    let c = in_count > 1 ? real.memory : 0
+    let d = in_count > 1 ? imag.memory : 0
     
     _real.memory = a + c
     _imag.memory = b + d
@@ -3014,16 +2296,16 @@ public func Radix2CooleyTukey_2(real: UnsafePointer<Double>, _ imag: UnsafePoint
     _imag.memory = b - d
     
 }
-public func InverseRadix2CooleyTukey_2(input: UnsafePointer<Double>, _ in_stride: Int, _ _real: UnsafeMutablePointer<Double>, _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int) {
+public func InverseRadix2CooleyTukey_2(input: UnsafePointer<Double>, _ in_stride: Int, _ in_count: Int, _ _real: UnsafeMutablePointer<Double>, _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int) {
     
     var input = input
     var _real = _real
     var _imag = _imag
     
-    let a = input.memory
+    let a = in_count > 0 ? input.memory : 0
     input += in_stride
     
-    let b = input.memory
+    let b = in_count > 1 ? input.memory : 0
     
     _real.memory = a + b
     _imag.memory = 0
@@ -3034,22 +2316,22 @@ public func InverseRadix2CooleyTukey_2(input: UnsafePointer<Double>, _ in_stride
     _imag.memory = 0
     
 }
-public func Radix2CooleyTukey_4(input: UnsafePointer<Double>, _ in_stride: Int, _ _real: UnsafeMutablePointer<Double>, _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int) {
+public func Radix2CooleyTukey_4(input: UnsafePointer<Double>, _ in_stride: Int, _ in_count: Int, _ _real: UnsafeMutablePointer<Double>, _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int) {
     
     var input = input
     var _real = _real
     var _imag = _imag
     
-    let a = input.memory
+    let a = in_count > 0 ? input.memory : 0
     input += in_stride
     
-    let b = input.memory
+    let b = in_count > 1 ? input.memory : 0
     input += in_stride
     
-    let c = input.memory
+    let c = in_count > 2 ? input.memory : 0
     input += in_stride
     
-    let d = input.memory
+    let d = in_count > 3 ? input.memory : 0
     
     let e = a + c
     let f = a - c
@@ -3075,30 +2357,30 @@ public func Radix2CooleyTukey_4(input: UnsafePointer<Double>, _ in_stride: Int, 
     _imag.memory = h
 }
 
-public func Radix2CooleyTukey_4(real: UnsafePointer<Double>, _ imag: UnsafePointer<Double>, _ in_stride: Int, _ _real: UnsafeMutablePointer<Double>, _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int) {
+public func Radix2CooleyTukey_4(real: UnsafePointer<Double>, _ imag: UnsafePointer<Double>, _ in_stride: Int, _ in_count: Int, _ _real: UnsafeMutablePointer<Double>, _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int) {
     
     var real = real
     var imag = imag
     var _real = _real
     var _imag = _imag
     
-    let a = real.memory
-    let b = imag.memory
+    let a = in_count > 0 ? real.memory : 0
+    let b = in_count > 0 ? imag.memory : 0
     real += in_stride
     imag += in_stride
     
-    let c = real.memory
-    let d = imag.memory
+    let c = in_count > 1 ? real.memory : 0
+    let d = in_count > 1 ? imag.memory : 0
     real += in_stride
     imag += in_stride
     
-    let e = real.memory
-    let f = imag.memory
+    let e = in_count > 2 ? real.memory : 0
+    let f = in_count > 2 ? imag.memory : 0
     real += in_stride
     imag += in_stride
     
-    let g = real.memory
-    let h = imag.memory
+    let g = in_count > 3 ? real.memory : 0
+    let h = in_count > 3 ? imag.memory : 0
     
     let i = a + e
     let j = b + f
@@ -3128,22 +2410,22 @@ public func Radix2CooleyTukey_4(real: UnsafePointer<Double>, _ imag: UnsafePoint
     _imag.memory = l + o
 }
 
-public func InverseRadix2CooleyTukey_4(input: UnsafePointer<Double>, _ in_stride: Int, _ _real: UnsafeMutablePointer<Double>, _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int) {
+public func InverseRadix2CooleyTukey_4(input: UnsafePointer<Double>, _ in_stride: Int, _ in_count: Int, _ _real: UnsafeMutablePointer<Double>, _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int) {
     
     var input = input
     var _real = _real
     var _imag = _imag
     
-    let a = input.memory
+    let a = in_count > 0 ? input.memory : 0
     input += in_stride
     
-    let b = input.memory
+    let b = in_count > 1 ? input.memory : 0
     input += in_stride
     
-    let c = input.memory
+    let c = in_count > 2 ? input.memory : 0
     input += in_stride
     
-    let d = input.memory
+    let d = in_count > 3 ? input.memory : 0
     
     let e = a + c
     let f = a - c

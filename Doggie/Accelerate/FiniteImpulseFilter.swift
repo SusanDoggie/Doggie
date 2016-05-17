@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-public func Radix2FiniteImpulseFilter(level: Int, _ signal: UnsafePointer<Double>, _ signal_stride: Int, _ kernel: UnsafePointer<Complex>, _ kernel_stride: Int, _ output: UnsafeMutablePointer<Double>, _ out_stride: Int, _ temp: UnsafeMutablePointer<Double>, _ temp_stride: Int) {
+public func Radix2FiniteImpulseFilter(level: Int, _ signal: UnsafePointer<Double>, _ signal_stride: Int, _ signal_count: Int, _ kernel: UnsafePointer<Complex>, _ kernel_stride: Int, _ output: UnsafeMutablePointer<Double>, _ out_stride: Int, _ temp: UnsafeMutablePointer<Double>, _ temp_stride: Int) {
     
     var _treal = temp
     var _timag = temp + temp_stride
@@ -31,10 +31,10 @@ public func Radix2FiniteImpulseFilter(level: Int, _ signal: UnsafePointer<Double
     
     let t_stride = temp_stride << 1
     
-    HalfRadix2CooleyTukey(level, signal, signal_stride, _treal, _timag, t_stride)
+    HalfRadix2CooleyTukey(level, signal, signal_stride, signal_count, _treal, _timag, t_stride)
     
-    let fft_length = 1 << level
-    let half = fft_length >> 1
+    let length = 1 << level
+    let half = length >> 1
     
     _treal.memory *= _kernel.memory.real
     _timag.memory *= _kernel.memory.imag
@@ -53,16 +53,16 @@ public func Radix2FiniteImpulseFilter(level: Int, _ signal: UnsafePointer<Double
     HalfInverseRadix2CooleyTukey(level, temp, temp + temp_stride, t_stride, output, out_stride, temp, temp + temp_stride, t_stride)
 }
 
-public func Radix2FiniteImpulseFilter(level: Int, _ signal: UnsafePointer<Complex>, _ signal_stride: Int, _ kernel: UnsafePointer<Complex>, _ kernel_stride: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int, _ temp: UnsafeMutablePointer<Complex>, _ temp_stride: Int) {
+public func Radix2FiniteImpulseFilter(level: Int, _ signal: UnsafePointer<Complex>, _ signal_stride: Int, _ signal_count: Int, _ kernel: UnsafePointer<Complex>, _ kernel_stride: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int, _ temp: UnsafeMutablePointer<Complex>, _ temp_stride: Int) {
     
     var _temp = temp
     var _kernel = kernel
     
-    Radix2CooleyTukey(level, signal, signal_stride, _temp, out_stride)
+    Radix2CooleyTukey(level, signal, signal_stride, signal_count, _temp, out_stride)
     
-    let fft_length = 1 << level
+    let length = 1 << level
     
-    for _ in 0..<fft_length {
+    for _ in 0..<length {
         let _treal = _temp.memory.real
         let _timag = _temp.memory.imag
         let _kreal = _kernel.memory.real
@@ -73,10 +73,10 @@ public func Radix2FiniteImpulseFilter(level: Int, _ signal: UnsafePointer<Comple
         _kernel += kernel_stride
     }
     
-    InverseRadix2CooleyTukey(level, temp, temp_stride, output, out_stride)
+    InverseRadix2CooleyTukey(level, temp, temp_stride, length, output, out_stride)
 }
 
-public func DispatchRadix2FiniteImpulseFilter(level: Int, _ signal: UnsafePointer<Double>, _ signal_stride: Int, _ kernel: UnsafePointer<Complex>, _ kernel_stride: Int, _ output: UnsafeMutablePointer<Double>, _ out_stride: Int, _ temp: UnsafeMutablePointer<Double>, _ temp_stride: Int) {
+public func DispatchRadix2FiniteImpulseFilter(level: Int, _ signal: UnsafePointer<Double>, _ signal_stride: Int, _ signal_count: Int, _ kernel: UnsafePointer<Complex>, _ kernel_stride: Int, _ output: UnsafeMutablePointer<Double>, _ out_stride: Int, _ temp: UnsafeMutablePointer<Double>, _ temp_stride: Int) {
     
     var _treal = temp
     var _timag = temp + temp_stride
@@ -84,10 +84,10 @@ public func DispatchRadix2FiniteImpulseFilter(level: Int, _ signal: UnsafePointe
     
     let t_stride = temp_stride << 1
     
-    DispatchHalfRadix2CooleyTukey(level, signal, signal_stride, _treal, _timag, t_stride)
+    DispatchHalfRadix2CooleyTukey(level, signal, signal_stride, signal_count, _treal, _timag, t_stride)
     
-    let fft_length = 1 << level
-    let half = fft_length >> 1
+    let length = 1 << level
+    let half = length >> 1
     
     _treal.memory *= _kernel.memory.real
     _timag.memory *= _kernel.memory.imag
@@ -106,16 +106,16 @@ public func DispatchRadix2FiniteImpulseFilter(level: Int, _ signal: UnsafePointe
     DispatchHalfInverseRadix2CooleyTukey(level, temp, temp + temp_stride, t_stride, output, out_stride, temp, temp + temp_stride, t_stride)
 }
 
-public func DispatchRadix2FiniteImpulseFilter(level: Int, _ signal: UnsafePointer<Complex>, _ signal_stride: Int, _ kernel: UnsafePointer<Complex>, _ kernel_stride: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int, _ temp: UnsafeMutablePointer<Complex>, _ temp_stride: Int) {
+public func DispatchRadix2FiniteImpulseFilter(level: Int, _ signal: UnsafePointer<Complex>, _ signal_stride: Int, _ signal_count: Int, _ kernel: UnsafePointer<Complex>, _ kernel_stride: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int, _ temp: UnsafeMutablePointer<Complex>, _ temp_stride: Int) {
     
     var _temp = temp
     var _kernel = kernel
     
-    DispatchRadix2CooleyTukey(level, signal, signal_stride, _temp, out_stride)
+    DispatchRadix2CooleyTukey(level, signal, signal_stride, signal_count, _temp, out_stride)
     
-    let fft_length = 1 << level
+    let length = 1 << level
     
-    for _ in 0..<fft_length {
+    for _ in 0..<length {
         let _treal = _temp.memory.real
         let _timag = _temp.memory.imag
         let _kreal = _kernel.memory.real
@@ -126,5 +126,5 @@ public func DispatchRadix2FiniteImpulseFilter(level: Int, _ signal: UnsafePointe
         _kernel += kernel_stride
     }
     
-    DispatchInverseRadix2CooleyTukey(level, temp, temp_stride, output, out_stride)
+    DispatchInverseRadix2CooleyTukey(level, temp, temp_stride, length, output, out_stride)
 }
