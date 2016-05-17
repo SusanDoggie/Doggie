@@ -29,8 +29,6 @@ import Foundation
 
 public func HalfRadix2CooleyTukey(level: Int, _ input: UnsafePointer<Float>, _ in_stride: Int, _ in_count: Int, _ _real: UnsafeMutablePointer<Float>, _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int) {
     
-    assert(in_count & 1 == 0, "size of input must be multiple of 2.")
-    
     switch level {
         
     case 0:
@@ -46,6 +44,8 @@ public func HalfRadix2CooleyTukey(level: Int, _ input: UnsafePointer<Float>, _ i
         let length = 1 << level
         let half = length >> 1
         let fourth = length >> 2
+        
+        assert(in_count & 1 == 0, "size of input must be multiple of 2.")
         
         Radix2CooleyTukey(level - 1, input, input + in_stride, in_stride << 1, in_count >> 1, _real, _imag, out_stride)
         
@@ -184,8 +184,6 @@ public func HalfInverseRadix2CooleyTukey(level: Int, _ real: UnsafePointer<Float
 
 public func HalfRadix2CooleyTukey(level: Int, _ input: UnsafePointer<Double>, _ in_stride: Int, _ in_count: Int, _ _real: UnsafeMutablePointer<Double>, _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int) {
     
-    assert(in_count & 1 == 0, "size of input must be multiple of 2.")
-    
     switch level {
         
     case 0:
@@ -201,6 +199,8 @@ public func HalfRadix2CooleyTukey(level: Int, _ input: UnsafePointer<Double>, _ 
         let length = 1 << level
         let half = length >> 1
         let fourth = length >> 2
+        
+        assert(in_count & 1 == 0, "size of input must be multiple of 2.")
         
         Radix2CooleyTukey(level - 1, input, input + in_stride, in_stride << 1, in_count >> 1, _real, _imag, out_stride)
         
@@ -341,8 +341,6 @@ public func HalfInverseRadix2CooleyTukey(level: Int, _ real: UnsafePointer<Doubl
 
 public func Radix2CooleyTukey(level: Int, _ input: UnsafePointer<Float>, _ in_stride: Int, _ in_count: Int, _ _real: UnsafeMutablePointer<Float>, _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int) {
     
-    assert(in_count & 1 == 0, "size of input must be multiple of 2.")
-    
     switch level {
         
     case 0:
@@ -358,6 +356,8 @@ public func Radix2CooleyTukey(level: Int, _ input: UnsafePointer<Float>, _ in_st
         let length = 1 << level
         let half = length >> 1
         let fourth = length >> 2
+        
+        assert(in_count & 1 == 0, "size of input must be multiple of 2.")
         
         Radix2CooleyTukey(level - 1, input, input + in_stride, in_stride << 1, in_count >> 1, _real, _imag, out_stride)
         
@@ -495,8 +495,6 @@ public func Radix2CooleyTukey(level: Int, _ real: UnsafePointer<Float>, _ imag: 
 
 public func InverseRadix2CooleyTukey(level: Int, _ input: UnsafePointer<Float>, _ in_stride: Int, _ in_count: Int, _ _real: UnsafeMutablePointer<Float>, _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int) {
     
-    assert(in_count & 1 == 0, "size of input must be multiple of 2.")
-    
     switch level {
         
     case 0:
@@ -512,6 +510,8 @@ public func InverseRadix2CooleyTukey(level: Int, _ input: UnsafePointer<Float>, 
         let length = 1 << level
         let half = length >> 1
         let fourth = length >> 2
+        
+        assert(in_count & 1 == 0, "size of input must be multiple of 2.")
         
         InverseRadix2CooleyTukey(level - 1, input, input + in_stride, in_stride << 1, in_count >> 1, _real, _imag, out_stride)
         
@@ -597,8 +597,6 @@ public func InverseRadix2CooleyTukey(level: Int, _ real: UnsafePointer<Float>, _
 
 public func Radix2CooleyTukey(level: Int, _ input: UnsafePointer<Double>, _ in_stride: Int, _ in_count: Int, _ _real: UnsafeMutablePointer<Double>, _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int) {
     
-    assert(in_count & 1 == 0, "size of input must be multiple of 2.")
-    
     switch level {
         
     case 0:
@@ -614,6 +612,8 @@ public func Radix2CooleyTukey(level: Int, _ input: UnsafePointer<Double>, _ in_s
         let length = 1 << level
         let half = length >> 1
         let fourth = length >> 2
+        
+        assert(in_count & 1 == 0, "size of input must be multiple of 2.")
         
         Radix2CooleyTukey(level - 1, input, input + in_stride, in_stride << 1, in_count >> 1, _real, _imag, out_stride)
         
@@ -751,8 +751,6 @@ public func Radix2CooleyTukey(level: Int, _ real: UnsafePointer<Double>, _ imag:
 
 public func InverseRadix2CooleyTukey(level: Int, _ input: UnsafePointer<Double>, _ in_stride: Int, _ in_count: Int, _ _real: UnsafeMutablePointer<Double>, _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int) {
     
-    assert(in_count & 1 == 0, "size of input must be multiple of 2.")
-    
     switch level {
         
     case 0:
@@ -768,6 +766,8 @@ public func InverseRadix2CooleyTukey(level: Int, _ input: UnsafePointer<Double>,
         let length = 1 << level
         let half = length >> 1
         let fourth = length >> 2
+        
+        assert(in_count & 1 == 0, "size of input must be multiple of 2.")
         
         InverseRadix2CooleyTukey(level - 1, input, input + in_stride, in_stride << 1, in_count >> 1, _real, _imag, out_stride)
         
@@ -855,8 +855,6 @@ public func InverseRadix2CooleyTukey(level: Int, _ real: UnsafePointer<Double>, 
 
 public func DispatchHalfRadix2CooleyTukey(level: Int, _ input: UnsafePointer<Float>, _ in_stride: Int, _ in_count: Int, _ _real: UnsafeMutablePointer<Float>, _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int) {
     
-    assert(in_count & 1 == 0, "size of input must be multiple of 2.")
-    
     switch level {
         
     case 0:
@@ -872,6 +870,8 @@ public func DispatchHalfRadix2CooleyTukey(level: Int, _ input: UnsafePointer<Flo
         let length = 1 << level
         let half = length >> 1
         let fourth = length >> 2
+        
+        assert(in_count & 1 == 0, "size of input must be multiple of 2.")
         
         DispatchRadix2CooleyTukey(level - 1, input, input + in_stride, in_stride << 1, in_count >> 1, _real, _imag, out_stride)
         
@@ -1010,8 +1010,6 @@ public func DispatchHalfInverseRadix2CooleyTukey(level: Int, _ real: UnsafePoint
 
 public func DispatchHalfRadix2CooleyTukey(level: Int, _ input: UnsafePointer<Double>, _ in_stride: Int, _ in_count: Int, _ _real: UnsafeMutablePointer<Double>, _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int) {
     
-    assert(in_count & 1 == 0, "size of input must be multiple of 2.")
-    
     switch level {
         
     case 0:
@@ -1027,6 +1025,8 @@ public func DispatchHalfRadix2CooleyTukey(level: Int, _ input: UnsafePointer<Dou
         let length = 1 << level
         let half = length >> 1
         let fourth = length >> 2
+        
+        assert(in_count & 1 == 0, "size of input must be multiple of 2.")
         
         DispatchRadix2CooleyTukey(level - 1, input, input + in_stride, in_stride << 1, in_count >> 1, _real, _imag, out_stride)
         
@@ -1167,8 +1167,6 @@ public func DispatchHalfInverseRadix2CooleyTukey(level: Int, _ real: UnsafePoint
 
 public func DispatchRadix2CooleyTukey(level: Int, _ input: UnsafePointer<Float>, _ in_stride: Int, _ in_count: Int, _ _real: UnsafeMutablePointer<Float>, _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int) {
     
-    assert(in_count & 1 == 0, "size of input must be multiple of 2.")
-    
     switch level {
         
     case 0:
@@ -1184,6 +1182,8 @@ public func DispatchRadix2CooleyTukey(level: Int, _ input: UnsafePointer<Float>,
         let length = 1 << level
         let half = length >> 1
         let fourth = length >> 2
+        
+        assert(in_count & 1 == 0, "size of input must be multiple of 2.")
         
         DispatchRadix2CooleyTukey(level - 1, input, input + in_stride, in_stride << 1, in_count >> 1, _real, _imag, out_stride)
         
@@ -1326,8 +1326,6 @@ public func DispatchRadix2CooleyTukey(level: Int, _ real: UnsafePointer<Float>, 
 
 public func DispatchInverseRadix2CooleyTukey(level: Int, _ input: UnsafePointer<Float>, _ in_stride: Int, _ in_count: Int, _ _real: UnsafeMutablePointer<Float>, _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int) {
     
-    assert(in_count & 1 == 0, "size of input must be multiple of 2.")
-    
     switch level {
         
     case 0:
@@ -1343,6 +1341,8 @@ public func DispatchInverseRadix2CooleyTukey(level: Int, _ input: UnsafePointer<
         let length = 1 << level
         let half = length >> 1
         let fourth = length >> 2
+        
+        assert(in_count & 1 == 0, "size of input must be multiple of 2.")
         
         DispatchInverseRadix2CooleyTukey(level - 1, input, input + in_stride, in_stride << 1, in_count >> 1, _real, _imag, out_stride)
         
@@ -1427,8 +1427,6 @@ public func DispatchInverseRadix2CooleyTukey(level: Int, _ real: UnsafePointer<F
 
 public func DispatchRadix2CooleyTukey(level: Int, _ input: UnsafePointer<Double>, _ in_stride: Int, _ in_count: Int, _ _real: UnsafeMutablePointer<Double>, _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int) {
     
-    assert(in_count & 1 == 0, "size of input must be multiple of 2.")
-    
     switch level {
         
     case 0:
@@ -1444,6 +1442,8 @@ public func DispatchRadix2CooleyTukey(level: Int, _ input: UnsafePointer<Double>
         let length = 1 << level
         let half = length >> 1
         let fourth = length >> 2
+        
+        assert(in_count & 1 == 0, "size of input must be multiple of 2.")
         
         DispatchRadix2CooleyTukey(level - 1, input, input + in_stride, in_stride << 1, in_count >> 1, _real, _imag, out_stride)
         
@@ -1586,8 +1586,6 @@ public func DispatchRadix2CooleyTukey(level: Int, _ real: UnsafePointer<Double>,
 
 public func DispatchInverseRadix2CooleyTukey(level: Int, _ input: UnsafePointer<Double>, _ in_stride: Int, _ in_count: Int, _ _real: UnsafeMutablePointer<Double>, _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int) {
     
-    assert(in_count & 1 == 0, "size of input must be multiple of 2.")
-    
     switch level {
         
     case 0:
@@ -1603,6 +1601,8 @@ public func DispatchInverseRadix2CooleyTukey(level: Int, _ input: UnsafePointer<
         let length = 1 << level
         let half = length >> 1
         let fourth = length >> 2
+        
+        assert(in_count & 1 == 0, "size of input must be multiple of 2.")
         
         DispatchInverseRadix2CooleyTukey(level - 1, input, input + in_stride, in_stride << 1, in_count >> 1, _real, _imag, out_stride)
         
