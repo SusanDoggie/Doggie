@@ -45,10 +45,10 @@ public func NumberTheoreticTransform_2(input: UnsafePointer<UInt32>, _ in_stride
     
     let b = input.memory % 65537
     
-    output.memory = (a + b) % 65537
+    output.memory = addmod(a, b, 65537)
     output += out_stride
     
-    output.memory = (a + left_shift_mod(b, 16, 65537)) % 65537
+    output.memory = addmod(a, left_shift_mod(b, 16, 65537), 65537)
 }
 
 public func NumberTheoreticTransform_4(input: UnsafePointer<UInt32>, _ in_stride: Int, _ output: UnsafeMutablePointer<UInt32>, _ out_stride: Int) {
@@ -67,21 +67,21 @@ public func NumberTheoreticTransform_4(input: UnsafePointer<UInt32>, _ in_stride
     
     let d = input.memory % 65537
     
-    let e = a + c
-    let f = (a + left_shift_mod(c, 16, 65537)) % 65537
-    let g = b + d
-    let h = (((b + left_shift_mod(d, 16, 65537)) % 65537) << 8) % 65537
+    let e = addmod(a, c, 65537)
+    let f = addmod(a, left_shift_mod(c, 16, 65537), 65537)
+    let g = addmod(b, d, 65537)
+    let h = ((addmod(b, left_shift_mod(d, 16, 65537), 65537)) << 8) % 65537
     
-    output.memory = (e + g) % 65537
+    output.memory = addmod(e, g, 65537)
     output += out_stride
     
-    output.memory = (f + h) % 65537
+    output.memory = addmod(f, h, 65537)
     output += out_stride
     
-    output.memory = (e + left_shift_mod(g, 16, 65537)) % 65537
+    output.memory = addmod(e, left_shift_mod(g, 16, 65537), 65537)
     output += out_stride
     
-    output.memory = (f + left_shift_mod(h, 16, 65537)) % 65537
+    output.memory = addmod(f, left_shift_mod(h, 16, 65537), 65537)
 }
 
 public func NumberTheoreticTransform_8(input: UnsafePointer<UInt32>, _ in_stride: Int, _ output: UnsafeMutablePointer<UInt32>, _ out_stride: Int) {
@@ -96,8 +96,8 @@ public func NumberTheoreticTransform_8(input: UnsafePointer<UInt32>, _ in_stride
     for _ in 0..<4 {
         let tpr = op.memory
         let tphr = (_alpha * oph.memory) % 65537
-        op.memory = (tpr + tphr) % 65537
-        oph.memory = (tpr + left_shift_mod(tphr, 16, 65537)) % 65537
+        op.memory = addmod(tpr, tphr, 65537)
+        oph.memory = addmod(tpr, left_shift_mod(tphr, 16, 65537), 65537)
         _alpha <<= 4
         op += out_stride
         oph += out_stride
@@ -116,8 +116,8 @@ public func NumberTheoreticTransform_16(input: UnsafePointer<UInt32>, _ in_strid
     for _ in 0..<8 {
         let tpr = op.memory
         let tphr = (_alpha * oph.memory) % 65537
-        op.memory = (tpr + tphr) % 65537
-        oph.memory = (tpr + left_shift_mod(tphr, 16, 65537)) % 65537
+        op.memory = addmod(tpr, tphr, 65537)
+        oph.memory = addmod(tpr, left_shift_mod(tphr, 16, 65537), 65537)
         _alpha <<= 2
         op += out_stride
         oph += out_stride
@@ -136,8 +136,8 @@ public func NumberTheoreticTransform_32(input: UnsafePointer<UInt32>, _ in_strid
     for _ in 0..<16 {
         let tpr = op.memory
         let tphr = (_alpha * oph.memory) % 65537
-        op.memory = (tpr + tphr) % 65537
-        oph.memory = (tpr + left_shift_mod(tphr, 16, 65537)) % 65537
+        op.memory = addmod(tpr, tphr, 65537)
+        oph.memory = addmod(tpr, left_shift_mod(tphr, 16, 65537), 65537)
         _alpha <<= 1
         op += out_stride
         oph += out_stride
@@ -162,8 +162,8 @@ public func DispatchNumberTheoreticTransform_8(input: UnsafePointer<UInt32>, _ i
     for _ in 0..<4 {
         let tpr = op.memory
         let tphr = (_alpha * oph.memory) % 65537
-        op.memory = (tpr + tphr) % 65537
-        oph.memory = (tpr + left_shift_mod(tphr, 16, 65537)) % 65537
+        op.memory = addmod(tpr, tphr, 65537)
+        oph.memory = addmod(tpr, left_shift_mod(tphr, 16, 65537), 65537)
         _alpha <<= 4
         op += out_stride
         oph += out_stride
@@ -188,8 +188,8 @@ public func DispatchNumberTheoreticTransform_16(input: UnsafePointer<UInt32>, _ 
     for _ in 0..<8 {
         let tpr = op.memory
         let tphr = (_alpha * oph.memory) % 65537
-        op.memory = (tpr + tphr) % 65537
-        oph.memory = (tpr + left_shift_mod(tphr, 16, 65537)) % 65537
+        op.memory = addmod(tpr, tphr, 65537)
+        oph.memory = addmod(tpr, left_shift_mod(tphr, 16, 65537), 65537)
         _alpha <<= 2
         op += out_stride
         oph += out_stride
@@ -214,8 +214,8 @@ public func DispatchNumberTheoreticTransform_32(input: UnsafePointer<UInt32>, _ 
     for _ in 0..<16 {
         let tpr = op.memory
         let tphr = (_alpha * oph.memory) % 65537
-        op.memory = (tpr + tphr) % 65537
-        oph.memory = (tpr + left_shift_mod(tphr, 16, 65537)) % 65537
+        op.memory = addmod(tpr, tphr, 65537)
+        oph.memory = addmod(tpr, left_shift_mod(tphr, 16, 65537), 65537)
         _alpha <<= 1
         op += out_stride
         oph += out_stride
@@ -232,10 +232,10 @@ public func InverseNumberTheoreticTransform_2(input: UnsafePointer<UInt32>, _ in
     
     let b = input.memory % 65537
     
-    output.memory = (a + b) % 65537
+    output.memory = addmod(a, b, 65537)
     output += out_stride
     
-    output.memory = (a + left_shift_mod(b, 16, 65537)) % 65537
+    output.memory = addmod(a, left_shift_mod(b, 16, 65537), 65537)
 }
 
 public func InverseNumberTheoreticTransform_4(input: UnsafePointer<UInt32>, _ in_stride: Int, _ output: UnsafeMutablePointer<UInt32>, _ out_stride: Int) {
@@ -254,21 +254,21 @@ public func InverseNumberTheoreticTransform_4(input: UnsafePointer<UInt32>, _ in
     
     let d = input.memory % 65537
     
-    let e = a + c
-    let f = (a + left_shift_mod(c, 16, 65537)) % 65537
-    let g = b + d
-    let h = (((b + left_shift_mod(d, 16, 65537)) % 65537) * 65281) % 65537
+    let e = addmod(a, c, 65537)
+    let f = addmod(a, left_shift_mod(c, 16, 65537), 65537)
+    let g = addmod(b, d, 65537)
+    let h = ((addmod(b, left_shift_mod(d, 16, 65537), 65537)) * 65281) % 65537
     
-    output.memory = (e + g) % 65537
+    output.memory = addmod(e, g, 65537)
     output += out_stride
     
-    output.memory = (f + h) % 65537
+    output.memory = addmod(f, h, 65537)
     output += out_stride
     
-    output.memory = (e + left_shift_mod(g, 16, 65537)) % 65537
+    output.memory = addmod(e, left_shift_mod(g, 16, 65537), 65537)
     output += out_stride
     
-    output.memory = (f + left_shift_mod(h, 16, 65537)) % 65537
+    output.memory = addmod(f, left_shift_mod(h, 16, 65537), 65537)
 }
 
 public func InverseNumberTheoreticTransform_8(input: UnsafePointer<UInt32>, _ in_stride: Int, _ output: UnsafeMutablePointer<UInt32>, _ out_stride: Int) {
@@ -283,8 +283,8 @@ public func InverseNumberTheoreticTransform_8(input: UnsafePointer<UInt32>, _ in
     for _ in 0..<4 {
         let tpr = op.memory
         let tphr = (_alpha * oph.memory) % 65537
-        op.memory = (tpr + tphr) % 65537
-        oph.memory = (tpr + left_shift_mod(tphr, 16, 65537)) % 65537
+        op.memory = addmod(tpr, tphr, 65537)
+        oph.memory = addmod(tpr, left_shift_mod(tphr, 16, 65537), 65537)
         _alpha = (_alpha * 61441) % 65537
         op += out_stride
         oph += out_stride
@@ -303,8 +303,8 @@ public func InverseNumberTheoreticTransform_16(input: UnsafePointer<UInt32>, _ i
     for _ in 0..<8 {
         let tpr = op.memory
         let tphr = (_alpha * oph.memory) % 65537
-        op.memory = (tpr + tphr) % 65537
-        oph.memory = (tpr + left_shift_mod(tphr, 16, 65537)) % 65537
+        op.memory = addmod(tpr, tphr, 65537)
+        oph.memory = addmod(tpr, left_shift_mod(tphr, 16, 65537), 65537)
         _alpha = (_alpha * 49153) % 65537
         op += out_stride
         oph += out_stride
@@ -323,8 +323,8 @@ public func InverseNumberTheoreticTransform_32(input: UnsafePointer<UInt32>, _ i
     for _ in 0..<16 {
         let tpr = op.memory
         let tphr = (_alpha * oph.memory) % 65537
-        op.memory = (tpr + tphr) % 65537
-        oph.memory = (tpr + left_shift_mod(tphr, 16, 65537)) % 65537
+        op.memory = addmod(tpr, tphr, 65537)
+        oph.memory = addmod(tpr, left_shift_mod(tphr, 16, 65537), 65537)
         _alpha = (_alpha * 32769) % 65537
         op += out_stride
         oph += out_stride
@@ -349,8 +349,8 @@ public func DispatchInverseNumberTheoreticTransform_8(input: UnsafePointer<UInt3
     for _ in 0..<4 {
         let tpr = op.memory
         let tphr = (_alpha * oph.memory) % 65537
-        op.memory = (tpr + tphr) % 65537
-        oph.memory = (tpr + left_shift_mod(tphr, 16, 65537)) % 65537
+        op.memory = addmod(tpr, tphr, 65537)
+        oph.memory = addmod(tpr, left_shift_mod(tphr, 16, 65537), 65537)
         _alpha = (_alpha * 61441) % 65537
         op += out_stride
         oph += out_stride
@@ -375,8 +375,8 @@ public func DispatchInverseNumberTheoreticTransform_16(input: UnsafePointer<UInt
     for _ in 0..<8 {
         let tpr = op.memory
         let tphr = (_alpha * oph.memory) % 65537
-        op.memory = (tpr + tphr) % 65537
-        oph.memory = (tpr + left_shift_mod(tphr, 16, 65537)) % 65537
+        op.memory = addmod(tpr, tphr, 65537)
+        oph.memory = addmod(tpr, left_shift_mod(tphr, 16, 65537), 65537)
         _alpha = (_alpha * 49153) % 65537
         op += out_stride
         oph += out_stride
@@ -401,8 +401,8 @@ public func DispatchInverseNumberTheoreticTransform_32(input: UnsafePointer<UInt
     for _ in 0..<16 {
         let tpr = op.memory
         let tphr = (_alpha * oph.memory) % 65537
-        op.memory = (tpr + tphr) % 65537
-        oph.memory = (tpr + left_shift_mod(tphr, 16, 65537)) % 65537
+        op.memory = addmod(tpr, tphr, 65537)
+        oph.memory = addmod(tpr, left_shift_mod(tphr, 16, 65537), 65537)
         _alpha = (_alpha * 32769) % 65537
         op += out_stride
         oph += out_stride
@@ -573,10 +573,10 @@ public func NumberTheoreticTransform_2<U: UnsignedIntegerType>(input: UnsafePoin
     
     let b = input.memory % mod
     
-    output.memory = (a + b) % mod
+    output.memory = addmod(a, b, mod)
     output += out_stride
     
-    output.memory = (a + ((alpha % mod) * b) % mod) % mod
+    output.memory = addmod(a, ((alpha % mod) * b) % mod, mod)
 }
 
 public func NumberTheoreticTransform<U: UnsignedIntegerType>(level: Int, _ input: UnsafePointer<U>, _ in_stride: Int, _ alpha: U, _ mod: U, _ output: UnsafeMutablePointer<U>, _ out_stride: Int) {
@@ -605,8 +605,8 @@ public func NumberTheoreticTransform<U: UnsignedIntegerType>(level: Int, _ input
         for _ in 0..<half {
             let tpr = op.memory
             let tphr = (_alpha * oph.memory) % mod
-            op.memory = (tpr + tphr) % mod
-            oph.memory = (tpr + (_alpha_k * tphr) % mod) % mod
+            op.memory = addmod(tpr, tphr, mod)
+            oph.memory = addmod(tpr, (_alpha_k * tphr) % mod, mod)
             _alpha = (_alpha * alpha) % mod
             op += out_stride
             oph += out_stride
@@ -646,8 +646,8 @@ public func DispatchNumberTheoreticTransform<U: UnsignedIntegerType>(level: Int,
         for _ in 0..<half {
             let tpr = op.memory
             let tphr = (_alpha * oph.memory) % mod
-            op.memory = (tpr + tphr) % mod
-            oph.memory = (tpr + (_alpha_k * tphr) % mod) % mod
+            op.memory = addmod(tpr, tphr, mod)
+            oph.memory = addmod(tpr, (_alpha_k * tphr) % mod, mod)
             _alpha = (_alpha * alpha) % mod
             op += out_stride
             oph += out_stride
@@ -665,10 +665,10 @@ public func InverseNumberTheoreticTransform_2<U: UnsignedIntegerType>(input: Uns
     
     let b = input.memory % mod
     
-    output.memory = (a + b) % mod
+    output.memory = addmod(a, b, mod)
     output += out_stride
     
-    output.memory = (a + (modinv(alpha, mod) * b) % mod) % mod
+    output.memory = addmod(a, (modinv(alpha, mod) * b) % mod, mod)
 }
 
 public func InverseNumberTheoreticTransform<U: UnsignedIntegerType>(level: Int, _ input: UnsafePointer<U>, _ in_stride: Int, _ alpha: U, _ mod: U, _ output: UnsafeMutablePointer<U>, _ out_stride: Int) {
@@ -698,8 +698,8 @@ public func InverseNumberTheoreticTransform<U: UnsignedIntegerType>(level: Int, 
         for _ in 0..<half {
             let tpr = op.memory
             let tphr = (_alpha * oph.memory) % mod
-            op.memory = (tpr + tphr) % mod
-            oph.memory = (tpr + (_alpha_k * tphr) % mod) % mod
+            op.memory = addmod(tpr, tphr, mod)
+            oph.memory = addmod(tpr, (_alpha_k * tphr) % mod, mod)
             _alpha = (_alpha * _inverse_alpha) % mod
             op += out_stride
             oph += out_stride
@@ -740,8 +740,8 @@ public func DispatchInverseNumberTheoreticTransform<U: UnsignedIntegerType>(leve
         for _ in 0..<half {
             let tpr = op.memory
             let tphr = (_alpha * oph.memory) % mod
-            op.memory = (tpr + tphr) % mod
-            oph.memory = (tpr + (_alpha_k * tphr) % mod) % mod
+            op.memory = addmod(tpr, tphr, mod)
+            oph.memory = addmod(tpr, (_alpha_k * tphr) % mod, mod)
             _alpha = (_alpha * _inverse_alpha) % mod
             op += out_stride
             oph += out_stride
