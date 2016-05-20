@@ -318,15 +318,15 @@ public func addmod<T: UnsignedIntegerType>(a: T, _ b: T, _ m: T) -> T {
 
 @warn_unused_result
 public func mulmod(a: UInt8, _ b: UInt8, _ m: UInt8) -> UInt8 {
-    return UInt8((UInt16(a) &* UInt16(b)) % UInt16(m))
+    return UInt8(truncatingBitPattern: mod(UInt16(a) &* UInt16(b), UInt16(m)))
 }
 @warn_unused_result
 public func mulmod(a: UInt16, _ b: UInt16, _ m: UInt16) -> UInt16 {
-    return UInt16(truncatingBitPattern: (UInt32(a) &* UInt32(b)) % UInt32(m))
+    return UInt16(truncatingBitPattern: mod(UInt32(a) &* UInt32(b), UInt32(m)))
 }
 @warn_unused_result
 public func mulmod(a: UInt32, _ b: UInt32, _ m: UInt32) -> UInt32 {
-    return UInt32(truncatingBitPattern: (UInt64(a) &* UInt64(b)) % UInt64(m))
+    return UInt32(truncatingBitPattern: mod(UInt64(a) &* UInt64(b), UInt64(m)))
 }
 
 @warn_unused_result
@@ -432,11 +432,11 @@ public func random_uniform(bound: UIntMax) -> UIntMax {
     if bound.isPower2 {
         _rand &= bound &- 1
     } else {
-        let limit = RANDMAX - RANDMAX % bound
+        let limit = RANDMAX - mod(RANDMAX, bound)
         while _rand >= limit {
             sec_random(&_rand, sizeof(UIntMax))
         }
-        _rand %= bound
+        _rand = mod(_rand, bound)
     }
     return _rand
 }
@@ -446,7 +446,7 @@ public func gcd<U: UnsignedIntegerType>(a: U, _ b: U) -> U {
     var a = a
     var b = b
     while b != 0 {
-        (a, b) = (b, a % b)
+        (a, b) = (b, mod(a, b))
     }
     return a
 }
@@ -493,7 +493,7 @@ public func modinv<U: UnsignedIntegerType>(a: U, _ b: U) -> U {
     var x: (U, U) = (1, 0)
     while b != 0 {
         x = (x.1, x.0 + (a / b) * x.1)
-        (a, b) = (b, a % b)
+        (a, b) = (b, mod(a, b))
         iter += 1
     }
     if a != 1 {
