@@ -298,9 +298,20 @@ public func <<= <T: UnsignedIntegerType>(inout lhs: T, rhs: T) {
 }
 
 @warn_unused_result
+public func mod<T: UnsignedIntegerType>(x: T, _ m: T) -> T {
+    if x < m {
+        return x
+    }
+    if m.isPower2 {
+        return x & (m - 1)
+    }
+    return x % m
+}
+
+@warn_unused_result
 public func addmod<T: UnsignedIntegerType>(a: T, _ b: T, _ m: T) -> T {
-    let a = a < m ? a : a % m
-    let b = b < m ? b : b % m
+    let a = mod(a, m)
+    let b = mod(b, m)
     let c = m &- b
     return a < c ? a &+ b : a &- c
 }
@@ -320,8 +331,8 @@ public func mulmod(a: UInt32, _ b: UInt32, _ m: UInt32) -> UInt32 {
 
 @warn_unused_result
 public func mulmod<T: UnsignedIntegerType>(a: T, _ b: T, _ m: T) -> T {
-    let a = a < m ? a : a % m
-    let b = b < m ? b : b % m
+    let a = mod(a, m)
+    let b = mod(b, m)
     if a == 0 || b == 0 || m == 1 {
         return 0
     }
@@ -338,63 +349,51 @@ public func mulmod<T: UnsignedIntegerType>(a: T, _ b: T, _ m: T) -> T {
 
 @warn_unused_result
 public func pow(x: UInt8, _ n: UInt8, _ m: UInt8) -> UInt8 {
-    
-    let x = x < m ? x : x % m
-    
+    let x = mod(x, m)
     if x == 0 || m == 1 {
         return 0
     }
     if n == 0 {
         return 1
     }
-    
     let p = pow(mulmod(x, x, m), n >> 1, m)
     return n & 1 == 1 ? mulmod(x, p, m) : p
 }
 
 @warn_unused_result
 public func pow(x: UInt16, _ n: UInt16, _ m: UInt16) -> UInt16 {
-    
-    let x = x < m ? x : x % m
-    
+    let x = mod(x, m)
     if x == 0 || m == 1 {
         return 0
     }
     if n == 0 {
         return 1
     }
-    
     let p = pow(mulmod(x, x, m), n >> 1, m)
     return n & 1 == 1 ? mulmod(x, p, m) : p
 }
 
 @warn_unused_result
 public func pow(x: UInt32, _ n: UInt32, _ m: UInt32) -> UInt32 {
-    
-    let x = x < m ? x : x % m
-    
+    let x = mod(x, m)
     if x == 0 || m == 1 {
         return 0
     }
     if n == 0 {
         return 1
     }
-    
     let p = pow(mulmod(x, x, m), n >> 1, m)
     return n & 1 == 1 ? mulmod(x, p, m) : p
 }
 @warn_unused_result
 public func pow<T: UnsignedIntegerType>(x: T, _ n: T, _ m: T) -> T {
-    
-    let x = x < m ? x : x % m
-    
+    let x = mod(x, m)
     if x == 0 || m == 1 {
         return 0
     }
     if n == 0 {
         return 1
     }
-    
     let p = pow(mulmod(x, x, m), n >> 1, m)
     return n & 1 == 1 ? mulmod(x, p, m) : p
 }
