@@ -328,12 +328,13 @@ public func mulmod<T: UnsignedIntegerType>(a: T, _ b: T, _ m: T) -> T {
         return 0
     }
     
-    let offset = T(UIntMax(sizeof(T).toIntMax()) << 2)
-    if a >> offset == 0 && b >> offset == 0 {
-        return (a &* b) % m
+    let (mul, overflow) = T.multiplyWithOverflow(a, b)
+    
+    if overflow {
+        let c = mulmod(addmod(a, a, m), b >> 1, m)
+        return b & 1 == 1 ? addmod(a, c, m) : c
     }
-    let c = mulmod(addmod(a, a, m), b >> 1, m)
-    return b & 1 == 1 ? addmod(a, c, m) : c
+    return mul % m
 }
 
 @warn_unused_result
