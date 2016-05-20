@@ -320,16 +320,15 @@ public func mulmod(a: UInt32, _ b: UInt32, _ m: UInt32) -> UInt32 {
 
 @warn_unused_result
 public func mulmod<T: UnsignedIntegerType>(a: T, _ b: T, _ m: T) -> T {
-    
     let a = a < m ? a : a % m
     let b = b < m ? b : b % m
-    
     if a == 0 || b == 0 || m == 1 {
         return 0
     }
-    
     let (mul, overflow) = T.multiplyWithOverflow(a, b)
-    
+    if m.isPower2 {
+        return mul & (m - 1)
+    }
     if overflow {
         let c = mulmod(addmod(a, a, m), b >> 1, m)
         return b & 1 == 1 ? addmod(a, c, m) : c
