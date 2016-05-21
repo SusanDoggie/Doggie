@@ -660,3 +660,65 @@ public func DispatchRadix2PowerCircularConvolve(level: Int, _ real: UnsafePointe
     
     DispatchInverseRadix2CooleyTukey(level, treal, timag, temp_stride, length, _real, _imag, out_stride)
 }
+
+public func Radix2CircularConvolve<U: UnsignedIntegerType>(level: Int, _ signal: UnsafePointer<U>, _ signal_stride: Int, _ signal_count: Int, _ kernel: UnsafePointer<U>, _ kernel_stride: Int, _ kernel_count: Int, _ alpha: U, _ mod: U, _ output: UnsafeMutablePointer<U>, _ out_stride: Int, _ temp: UnsafeMutablePointer<U>, _ temp_stride: Int) {
+    
+    let length = 1 << level
+    
+    if signal_count == 0 || kernel_count == 0 {
+        var output = output
+        for _ in 0..<length {
+            output.memory = 0
+            output += out_stride
+        }
+        return
+    }
+    
+    var _signal = output
+    var _kernel = temp
+    
+    Radix2CooleyTukey(level, signal, signal_stride, signal_count, alpha, mod, _signal, out_stride)
+    Radix2CooleyTukey(level, kernel, kernel_stride, kernel_count, alpha, mod, _kernel, temp_stride)
+    
+    let _n = modinv(U(UIntMax(length)), mod)
+    for _ in 0..<length {
+        let _s = _signal.memory
+        let _k = mulmod(_kernel.memory, _n, mod)
+        _kernel.memory = mulmod(_s, _k, mod)
+        _signal += out_stride
+        _kernel += temp_stride
+    }
+    
+    InverseRadix2CooleyTukey(level, temp, temp_stride, length, alpha, mod, output, out_stride)
+}
+
+public func DispatchRadix2CircularConvolve<U: UnsignedIntegerType>(level: Int, _ signal: UnsafePointer<U>, _ signal_stride: Int, _ signal_count: Int, _ kernel: UnsafePointer<U>, _ kernel_stride: Int, _ kernel_count: Int, _ alpha: U, _ mod: U, _ output: UnsafeMutablePointer<U>, _ out_stride: Int, _ temp: UnsafeMutablePointer<U>, _ temp_stride: Int) {
+    
+    let length = 1 << level
+    
+    if signal_count == 0 || kernel_count == 0 {
+        var output = output
+        for _ in 0..<length {
+            output.memory = 0
+            output += out_stride
+        }
+        return
+    }
+    
+    var _signal = output
+    var _kernel = temp
+    
+    DispatchRadix2CooleyTukey(level, signal, signal_stride, signal_count, alpha, mod, _signal, out_stride)
+    DispatchRadix2CooleyTukey(level, kernel, kernel_stride, kernel_count, alpha, mod, _kernel, temp_stride)
+    
+    let _n = modinv(U(UIntMax(length)), mod)
+    for _ in 0..<length {
+        let _s = _signal.memory
+        let _k = mulmod(_kernel.memory, _n, mod)
+        _kernel.memory = mulmod(_s, _k, mod)
+        _signal += out_stride
+        _kernel += temp_stride
+    }
+    
+    DispatchInverseRadix2CooleyTukey(level, temp, temp_stride, length, alpha, mod, output, out_stride)
+}

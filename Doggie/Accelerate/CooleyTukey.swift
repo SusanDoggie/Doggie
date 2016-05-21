@@ -2079,6 +2079,186 @@ public func DispatchParallelInverseRadix2CooleyTukey(rows: Int, _ level: Int, _ 
     }
 }
 
+// MARK: Number Theoretic Transform
+
+public func Radix2CooleyTukey<U: UnsignedIntegerType>(level: Int, _ input: UnsafePointer<U>, _ in_stride: Int, _ in_count: Int, _ alpha: U, _ m: U, _ output: UnsafeMutablePointer<U>, _ out_stride: Int) {
+    
+    switch level {
+        
+    case 0:
+        output.memory = in_count == 0 ? 0 : mod(input.memory, m)
+        
+    default:
+        let length = 1 << level
+        let half = length >> 1
+        
+        if in_count == 0 {
+            var output = output
+            for _ in 0..<length {
+                output.memory = 0
+                output += out_stride
+            }
+            return
+        }
+        
+        var op = output
+        var oph = output + half * out_stride
+        
+        let _alpha_2 = alpha * alpha
+        Radix2CooleyTukey(level - 1, input, in_stride << 1, in_count - in_count >> 1, _alpha_2, m, op, out_stride)
+        Radix2CooleyTukey(level - 1, input + in_stride, in_stride << 1, in_count >> 1, _alpha_2, m, oph, out_stride)
+        
+        var _alpha: U = 1
+        let _alpha_k = pow(alpha, U(UIntMax(half)), m)
+        for _ in 0..<half {
+            let tpr = op.memory
+            let tphr = mulmod(_alpha, oph.memory, m)
+            op.memory = addmod(tpr, tphr, m)
+            oph.memory = addmod(tpr, mulmod(_alpha_k, tphr, m), m)
+            _alpha = mulmod(_alpha, alpha, m)
+            op += out_stride
+            oph += out_stride
+        }
+    }
+}
+
+public func DispatchRadix2CooleyTukey<U: UnsignedIntegerType>(level: Int, _ input: UnsafePointer<U>, _ in_stride: Int, _ in_count: Int, _ alpha: U, _ m: U, _ output: UnsafeMutablePointer<U>, _ out_stride: Int) {
+    
+    switch level {
+        
+    case 0:
+        output.memory = in_count == 0 ? 0 : mod(input.memory, m)
+        
+    default:
+        let length = 1 << level
+        let half = length >> 1
+        
+        if in_count == 0 {
+            var output = output
+            for _ in 0..<length {
+                output.memory = 0
+                output += out_stride
+            }
+            return
+        }
+        
+        var op = output
+        var oph = output + half * out_stride
+        
+        let _alpha_2 = alpha * alpha
+        dispatch_apply(2, CooleyTukeyDispatchQueue) {
+            switch $0 {
+            case 0:
+                Radix2CooleyTukey(level - 1, input, in_stride << 1, in_count - in_count >> 1, _alpha_2, m, op, out_stride)
+            default:
+                Radix2CooleyTukey(level - 1, input + in_stride, in_stride << 1, in_count >> 1, _alpha_2, m, oph, out_stride)
+            }
+        }
+        
+        var _alpha: U = 1
+        let _alpha_k = pow(alpha, U(UIntMax(half)), m)
+        for _ in 0..<half {
+            let tpr = op.memory
+            let tphr = mulmod(_alpha, oph.memory, m)
+            op.memory = addmod(tpr, tphr, m)
+            oph.memory = addmod(tpr, mulmod(_alpha_k, tphr, m), m)
+            _alpha = mulmod(_alpha, alpha, m)
+            op += out_stride
+            oph += out_stride
+        }
+    }
+}
+
+public func InverseRadix2CooleyTukey<U: UnsignedIntegerType>(level: Int, _ input: UnsafePointer<U>, _ in_stride: Int, _ in_count: Int, _ alpha: U, _ m: U, _ output: UnsafeMutablePointer<U>, _ out_stride: Int) {
+    
+    switch level {
+        
+    case 0:
+        output.memory = in_count == 0 ? 0 : mod(input.memory, m)
+        
+    default:
+        let length = 1 << level
+        let half = length >> 1
+        
+        if in_count == 0 {
+            var output = output
+            for _ in 0..<length {
+                output.memory = 0
+                output += out_stride
+            }
+            return
+        }
+        
+        var op = output
+        var oph = output + half * out_stride
+        
+        let _alpha_2 = alpha * alpha
+        InverseRadix2CooleyTukey(level - 1, input, in_stride << 1, in_count - in_count >> 1, _alpha_2, m, op, out_stride)
+        InverseRadix2CooleyTukey(level - 1, input + in_stride, in_stride << 1, in_count >> 1, _alpha_2, m, oph, out_stride)
+        
+        let _inverse_alpha = modinv(alpha, m)
+        var _alpha: U = 1
+        let _alpha_k = modinv(pow(alpha, U(UIntMax(half)), m), m)
+        for _ in 0..<half {
+            let tpr = op.memory
+            let tphr = mulmod(_alpha, oph.memory, m)
+            op.memory = addmod(tpr, tphr, m)
+            oph.memory = addmod(tpr, mulmod(_alpha_k, tphr, m), m)
+            _alpha = mulmod(_alpha, _inverse_alpha, m)
+            op += out_stride
+            oph += out_stride
+        }
+    }
+}
+
+public func DispatchInverseRadix2CooleyTukey<U: UnsignedIntegerType>(level: Int, _ input: UnsafePointer<U>, _ in_stride: Int, _ in_count: Int, _ alpha: U, _ m: U, _ output: UnsafeMutablePointer<U>, _ out_stride: Int) {
+    
+    switch level {
+        
+    case 0:
+        output.memory = in_count == 0 ? 0 : mod(input.memory, m)
+        
+    default:
+        let length = 1 << level
+        let half = length >> 1
+        
+        if in_count == 0 {
+            var output = output
+            for _ in 0..<length {
+                output.memory = 0
+                output += out_stride
+            }
+            return
+        }
+        
+        var op = output
+        var oph = output + half * out_stride
+        
+        let _alpha_2 = alpha * alpha
+        dispatch_apply(2, CooleyTukeyDispatchQueue) {
+            switch $0 {
+            case 0:
+                InverseRadix2CooleyTukey(level - 1, input, in_stride << 1, in_count - in_count >> 1, _alpha_2, m, op, out_stride)
+            default:
+                InverseRadix2CooleyTukey(level - 1, input + in_stride, in_stride << 1, in_count >> 1, _alpha_2, m, oph, out_stride)
+            }
+        }
+        
+        let _inverse_alpha = modinv(alpha, m)
+        var _alpha: U = 1
+        let _alpha_k = modinv(pow(alpha, U(UIntMax(half)), m), m)
+        for _ in 0..<half {
+            let tpr = op.memory
+            let tphr = mulmod(_alpha, oph.memory, m)
+            op.memory = addmod(tpr, tphr, m)
+            oph.memory = addmod(tpr, mulmod(_alpha_k, tphr, m), m)
+            _alpha = mulmod(_alpha, _inverse_alpha, m)
+            op += out_stride
+            oph += out_stride
+        }
+    }
+}
+
 // MARK: Fixed Length Cooley-Tukey
 
 private func HalfRadix2CooleyTukey_2(input: UnsafePointer<Float>, _ in_stride: Int, _ in_count: Int, _ _real: UnsafeMutablePointer<Float>, _ _imag: UnsafeMutablePointer<Float>) {

@@ -411,75 +411,34 @@ public func Radix2PowerCircularConvolve(signal: [Complex], _ n: Double) -> [Comp
 }
 
 @warn_unused_result
-public func NumberTheoreticTransform(buffer: [UInt32]) -> [UInt32] {
-    var result = buffer
-    switch buffer.count {
-    case 2:
-        NumberTheoreticTransform_2(buffer, 1, &result, 1)
-        return result
-    case 4:
-        NumberTheoreticTransform_4(buffer, 1, &result, 1)
-        return result
-    case 8:
-        DispatchNumberTheoreticTransform_8(buffer, 1, &result, 1)
-        return result
-    case 16:
-        DispatchNumberTheoreticTransform_16(buffer, 1, &result, 1)
-        return result
-    case 32:
-        DispatchNumberTheoreticTransform_32(buffer, 1, &result, 1)
-        return result
-    default:
-        fatalError("size of buffer must be 2, 4, 8, 16 or 32.")
+public func Radix2CooleyTukey<U: UnsignedIntegerType>(buffer: [U], _ alpha: U, _ mod: U) -> [U] {
+    assert(buffer.count.isPower2, "size of buffer must be power of 2.")
+    if buffer.count == 1 {
+        return buffer
     }
-}
-
-@warn_unused_result
-public func InverseNumberTheoreticTransform(buffer: [UInt32]) -> [UInt32] {
     var result = buffer
-    switch buffer.count {
-    case 2:
-        InverseNumberTheoreticTransform_2(buffer, 1, &result, 1)
-        return result
-    case 4:
-        InverseNumberTheoreticTransform_4(buffer, 1, &result, 1)
-        return result
-    case 8:
-        DispatchInverseNumberTheoreticTransform_8(buffer, 1, &result, 1)
-        return result
-    case 16:
-        DispatchInverseNumberTheoreticTransform_16(buffer, 1, &result, 1)
-        return result
-    case 32:
-        DispatchInverseNumberTheoreticTransform_32(buffer, 1, &result, 1)
-        return result
-    default:
-        fatalError("size of buffer must be 2, 4, 8, 16 or 32.")
-    }
+    DispatchRadix2CooleyTukey(log2(buffer.count), buffer, 1, buffer.count, alpha, mod, &result, 1)
+    return result
 }
-
 @warn_unused_result
-public func Radix2CircularConvolve(signal: [UInt32], _ kernel: [UInt32]) -> [UInt32] {
+public func InverseRadix2CooleyTukey<U: UnsignedIntegerType>(buffer: [U], _ alpha: U, _ mod: U) -> [U] {
+    assert(buffer.count.isPower2, "size of buffer must be power of 2.")
+    if buffer.count == 1 {
+        return buffer
+    }
+    var result = buffer
+    DispatchInverseRadix2CooleyTukey(log2(buffer.count), buffer, 1, buffer.count, alpha, mod, &result, 1)
+    return result
+}
+@warn_unused_result
+public func Radix2CircularConvolve<U: UnsignedIntegerType>(signal: [U], _ kernel: [U], _ alpha: U, _ mod: U) -> [U] {
+    assert(signal.count.isPower2, "size of signal must be power of 2.")
+    assert(signal.count == kernel.count, "mismatch count of inputs.")
+    if signal.count == 1 {
+        return [signal[0] * kernel[0]]
+    }
     var result = signal
     var temp = signal
-    assert(signal.count == kernel.count, "mismatch count of inputs.")
-    switch signal.count {
-    case 2:
-        Radix2CircularConvolve_2(signal, 1, kernel, 1, &result, 1, &temp, 1)
-        return result
-    case 4:
-        Radix2CircularConvolve_4(signal, 1, kernel, 1, &result, 1, &temp, 1)
-        return result
-    case 8:
-        DispatchRadix2CircularConvolve_8(signal, 1, kernel, 1, &result, 1, &temp, 1)
-        return result
-    case 16:
-        DispatchRadix2CircularConvolve_16(signal, 1, kernel, 1, &result, 1, &temp, 1)
-        return result
-    case 32:
-        DispatchRadix2CircularConvolve_32(signal, 1, kernel, 1, &result, 1, &temp, 1)
-        return result
-    default:
-        fatalError("size of buffer must be 2, 4, 8, 16 or 32.")
-    }
+    DispatchRadix2CircularConvolve(log2(signal.count), signal, 1, signal.count, kernel, 1, kernel.count, alpha, mod, &result, 1, &temp, 1)
+    return result
 }
