@@ -220,60 +220,6 @@ public func DispatchInverseRadix2CooleyTukey(level: Int, _ input: UnsafePointer<
     let _output = UnsafeMutablePointer<Double>(output)
     DispatchInverseRadix2CooleyTukey(level, _input, _input + 1, in_stride << 1, in_count, _output, _output + 1, out_stride << 1)
 }
-public func ParallelHalfRadix2CooleyTukey(rows: Int, _ level: Int, _ input: UnsafePointer<Double>, _ in_stride: Int, in_rows_stride: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int, out_rows_stride: Int) {
-    let _output = UnsafeMutablePointer<Double>(output)
-    ParallelHalfRadix2CooleyTukey(rows, level, input, in_stride, in_rows_stride, _output, _output + 1, out_stride << 1, out_rows_stride << 1)
-}
-public func ParallelHalfInverseRadix2CooleyTukey(rows: Int, _ level: Int, _ input: UnsafePointer<Complex>, _ in_stride: Int, in_rows_stride: Int, _ output: UnsafeMutablePointer<Double>, _ out_stride: Int, out_rows_stride: Int, temp: UnsafePointer<Complex>, tp_stride: Int, tp_rows_stride: Int) {
-    let _input = UnsafePointer<Double>(input)
-    let _temp = UnsafeMutablePointer<Double>(temp)
-    ParallelHalfInverseRadix2CooleyTukey(rows, level, _input, _input + 1, in_stride << 1, in_rows_stride << 1, output, out_stride, out_rows_stride, _temp, _temp + 1, tp_stride << 1, tp_rows_stride << 1)
-}
-public func ParallelRadix2CooleyTukey(rows: Int, _ level: Int, _ input: UnsafePointer<Double>, _ in_stride: Int, in_rows_stride: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int, out_rows_stride: Int) {
-    let _output = UnsafeMutablePointer<Double>(output)
-    ParallelRadix2CooleyTukey(rows, level, input, in_stride, in_rows_stride, _output, _output + 1, out_stride << 1, out_rows_stride << 1)
-}
-public func ParallelRadix2CooleyTukey(rows: Int, _ level: Int, _ input: UnsafePointer<Complex>, _ in_stride: Int, in_rows_stride: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int, out_rows_stride: Int) {
-    let _input = UnsafePointer<Double>(input)
-    let _output = UnsafeMutablePointer<Double>(output)
-    ParallelRadix2CooleyTukey(rows, level, _input, _input + 1, in_stride << 1, in_rows_stride << 1, _output, _output + 1, out_stride << 1, out_rows_stride << 1)
-}
-public func ParallelInverseRadix2CooleyTukey(rows: Int, _ level: Int, _ input: UnsafePointer<Double>, _ in_stride: Int, in_rows_stride: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int, out_rows_stride: Int) {
-    let _output = UnsafeMutablePointer<Double>(output)
-    ParallelInverseRadix2CooleyTukey(rows, level, input, in_stride, in_rows_stride, _output, _output + 1, out_stride << 1, out_rows_stride << 1)
-}
-public func ParallelInverseRadix2CooleyTukey(rows: Int, _ level: Int, _ input: UnsafePointer<Complex>, _ in_stride: Int, in_rows_stride: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int, out_rows_stride: Int) {
-    let _input = UnsafePointer<Double>(input)
-    let _output = UnsafeMutablePointer<Double>(output)
-    ParallelInverseRadix2CooleyTukey(rows, level, _input, _input + 1, in_stride << 1, in_rows_stride << 1, _output, _output + 1, out_stride << 1, out_rows_stride << 1)
-}
-public func DispatchParallelHalfRadix2CooleyTukey(rows: Int, _ level: Int, _ input: UnsafePointer<Double>, _ in_stride: Int, in_rows_stride: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int, out_rows_stride: Int) {
-    let _output = UnsafeMutablePointer<Double>(output)
-    DispatchParallelHalfRadix2CooleyTukey(rows, level, input, in_stride, in_rows_stride, _output, _output + 1, out_stride << 1, out_rows_stride << 1)
-}
-public func DispatchParallelHalfInverseRadix2CooleyTukey(rows: Int, _ level: Int, _ input: UnsafePointer<Complex>, _ in_stride: Int, in_rows_stride: Int, _ output: UnsafeMutablePointer<Double>, _ out_stride: Int, out_rows_stride: Int, temp: UnsafePointer<Complex>, tp_stride: Int, tp_rows_stride: Int) {
-    let _input = UnsafePointer<Double>(input)
-    let _temp = UnsafeMutablePointer<Double>(temp)
-    DispatchParallelHalfInverseRadix2CooleyTukey(rows, level, _input, _input + 1, in_stride << 1, in_rows_stride << 1, output, out_stride, out_rows_stride, _temp, _temp + 1, tp_stride << 1, tp_rows_stride << 1)
-}
-public func DispatchParallelRadix2CooleyTukey(rows: Int, _ level: Int, _ input: UnsafePointer<Double>, _ in_stride: Int, in_rows_stride: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int, out_rows_stride: Int) {
-    let _output = UnsafeMutablePointer<Double>(output)
-    DispatchParallelRadix2CooleyTukey(rows, level, input, in_stride, in_rows_stride, _output, _output + 1, out_stride << 1, out_rows_stride << 1)
-}
-public func DispatchParallelRadix2CooleyTukey(rows: Int, _ level: Int, _ input: UnsafePointer<Complex>, _ in_stride: Int, in_rows_stride: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int, out_rows_stride: Int) {
-    let _input = UnsafePointer<Double>(input)
-    let _output = UnsafeMutablePointer<Double>(output)
-    DispatchParallelRadix2CooleyTukey(rows, level, _input, _input + 1, in_stride << 1, in_rows_stride << 1, _output, _output + 1, out_stride << 1, out_rows_stride << 1)
-}
-public func DispatchParallelInverseRadix2CooleyTukey(rows: Int, _ level: Int, _ input: UnsafePointer<Double>, _ in_stride: Int, in_rows_stride: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int, out_rows_stride: Int) {
-    let _output = UnsafeMutablePointer<Double>(output)
-    DispatchParallelInverseRadix2CooleyTukey(rows, level, input, in_stride, in_rows_stride, _output, _output + 1, out_stride << 1, out_rows_stride << 1)
-}
-public func DispatchParallelInverseRadix2CooleyTukey(rows: Int, _ level: Int, _ input: UnsafePointer<Complex>, _ in_stride: Int, in_rows_stride: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int, out_rows_stride: Int) {
-    let _input = UnsafePointer<Double>(input)
-    let _output = UnsafeMutablePointer<Double>(output)
-    DispatchParallelInverseRadix2CooleyTukey(rows, level, _input, _input + 1, in_stride << 1, in_rows_stride << 1, _output, _output + 1, out_stride << 1, out_rows_stride << 1)
-}
 public func Radix2CircularConvolve(level: Int, _ signal: UnsafePointer<Complex>, _ signal_stride: Int, _ signal_count: Int, _ kernel: UnsafePointer<Complex>, _ kernel_stride: Int, _ kernel_count: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int, _ temp: UnsafeMutablePointer<Complex>, _ temp_stride: Int) {
     let _signal = UnsafePointer<Double>(signal)
     let _kernel = UnsafePointer<Double>(kernel)

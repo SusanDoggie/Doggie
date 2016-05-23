@@ -17,7 +17,6 @@
 		081321F01C11D3600081B2B9 /* Conversion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA461C0550B7007FA426 /* Conversion.swift */; };
 		081321F11C11D3600081B2B9 /* CooleyTukey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA471C0550B7007FA426 /* CooleyTukey.swift */; };
 		081321F21C11D3600081B2B9 /* DiscreteConvolve.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA481C0550B7007FA426 /* DiscreteConvolve.swift */; };
-		081321F31C11D3600081B2B9 /* FiniteImpulseFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA491C0550B7007FA426 /* FiniteImpulseFilter.swift */; };
 		081321F41C11D3600081B2B9 /* Move.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA4A1C0550B7007FA426 /* Move.swift */; };
 		081321F61C11D3600081B2B9 /* SafeFunction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA4C1C0550B7007FA426 /* SafeFunction.swift */; };
 		081321F71C11D3600081B2B9 /* Transpose.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA4D1C0550B7007FA426 /* Transpose.swift */; };
@@ -64,7 +63,6 @@
 		081322241C11D3600081B2B9 /* Conversion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA461C0550B7007FA426 /* Conversion.swift */; };
 		081322251C11D3600081B2B9 /* CooleyTukey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA471C0550B7007FA426 /* CooleyTukey.swift */; };
 		081322261C11D3600081B2B9 /* DiscreteConvolve.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA481C0550B7007FA426 /* DiscreteConvolve.swift */; };
-		081322271C11D3600081B2B9 /* FiniteImpulseFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA491C0550B7007FA426 /* FiniteImpulseFilter.swift */; };
 		081322281C11D3600081B2B9 /* Move.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA4A1C0550B7007FA426 /* Move.swift */; };
 		0813222A1C11D3600081B2B9 /* SafeFunction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA4C1C0550B7007FA426 /* SafeFunction.swift */; };
 		0813222B1C11D3600081B2B9 /* Transpose.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA4D1C0550B7007FA426 /* Transpose.swift */; };
@@ -119,8 +117,6 @@
 		0858DA901C0550B7007FA426 /* CooleyTukey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA471C0550B7007FA426 /* CooleyTukey.swift */; };
 		0858DA931C0550B7007FA426 /* DiscreteConvolve.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA481C0550B7007FA426 /* DiscreteConvolve.swift */; };
 		0858DA941C0550B7007FA426 /* DiscreteConvolve.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA481C0550B7007FA426 /* DiscreteConvolve.swift */; };
-		0858DA971C0550B7007FA426 /* FiniteImpulseFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA491C0550B7007FA426 /* FiniteImpulseFilter.swift */; };
-		0858DA981C0550B7007FA426 /* FiniteImpulseFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA491C0550B7007FA426 /* FiniteImpulseFilter.swift */; };
 		0858DA9B1C0550B7007FA426 /* Move.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA4A1C0550B7007FA426 /* Move.swift */; };
 		0858DA9C1C0550B7007FA426 /* Move.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA4A1C0550B7007FA426 /* Move.swift */; };
 		0858DAA31C0550B7007FA426 /* SafeFunction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA4C1C0550B7007FA426 /* SafeFunction.swift */; };
@@ -272,7 +268,6 @@
 		0858DA461C0550B7007FA426 /* Conversion.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Conversion.swift; sourceTree = "<group>"; };
 		0858DA471C0550B7007FA426 /* CooleyTukey.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CooleyTukey.swift; sourceTree = "<group>"; };
 		0858DA481C0550B7007FA426 /* DiscreteConvolve.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DiscreteConvolve.swift; sourceTree = "<group>"; };
-		0858DA491C0550B7007FA426 /* FiniteImpulseFilter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FiniteImpulseFilter.swift; sourceTree = "<group>"; };
 		0858DA4A1C0550B7007FA426 /* Move.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Move.swift; sourceTree = "<group>"; };
 		0858DA4C1C0550B7007FA426 /* SafeFunction.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SafeFunction.swift; sourceTree = "<group>"; };
 		0858DA4D1C0550B7007FA426 /* Transpose.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Transpose.swift; sourceTree = "<group>"; };
@@ -399,7 +394,6 @@
 				0858DA461C0550B7007FA426 /* Conversion.swift */,
 				0858DA471C0550B7007FA426 /* CooleyTukey.swift */,
 				0858DA481C0550B7007FA426 /* DiscreteConvolve.swift */,
-				0858DA491C0550B7007FA426 /* FiniteImpulseFilter.swift */,
 				0858DA4A1C0550B7007FA426 /* Move.swift */,
 				0858DA4C1C0550B7007FA426 /* SafeFunction.swift */,
 				0858DA4D1C0550B7007FA426 /* Transpose.swift */,
@@ -753,7 +747,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				0ACE1E101C57110D00106D1F /* String.swift in Sources */,
-				081322271C11D3600081B2B9 /* FiniteImpulseFilter.swift in Sources */,
 				081322471C11D3600081B2B9 /* Regex.swift in Sources */,
 				081322281C11D3600081B2B9 /* Move.swift in Sources */,
 				081322231C11D3600081B2B9 /* ComplexConversion.swift in Sources */,
@@ -860,7 +853,6 @@
 				081321FB1C11D3600081B2B9 /* hmac.swift in Sources */,
 				0ACE1E111C57110D00106D1F /* String.swift in Sources */,
 				0813220B1C11D3600081B2B9 /* Point.swift in Sources */,
-				081321F31C11D3600081B2B9 /* FiniteImpulseFilter.swift in Sources */,
 				081321FA1C11D3600081B2B9 /* HashWrapper.swift in Sources */,
 				081321F61C11D3600081B2B9 /* SafeFunction.swift in Sources */,
 				0ACE1E071C57104300106D1F /* ParallelCollectionType.swift in Sources */,
@@ -887,7 +879,6 @@
 				0858DB331C0550B7007FA426 /* SDRectangle.swift in Sources */,
 				0858DB3B1C0550B7007FA426 /* Serialization.swift in Sources */,
 				0858DAF31C0550B7007FA426 /* Point.swift in Sources */,
-				0858DA971C0550B7007FA426 /* FiniteImpulseFilter.swift in Sources */,
 				0858DAE71C0550B7007FA426 /* Geometry.swift in Sources */,
 				0858DB0B1C0550B7007FA426 /* Vector.swift in Sources */,
 				0858DAE31C0550B7007FA426 /* Complex.swift in Sources */,
@@ -978,7 +969,6 @@
 				0858DADC1C0550B7007FA426 /* Json.swift in Sources */,
 				088C0C3E1CB22842003B1BCE /* Thread.swift in Sources */,
 				0858DAE81C0550B7007FA426 /* Geometry.swift in Sources */,
-				0858DA981C0550B7007FA426 /* FiniteImpulseFilter.swift in Sources */,
 				08863CCB1C22756F004C27E5 /* SDObserver.swift in Sources */,
 				0858DAFC1C0550B7007FA426 /* Prime.swift in Sources */,
 				0858DB281C0550B7007FA426 /* SDPath.swift in Sources */,
