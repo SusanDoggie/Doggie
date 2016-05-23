@@ -864,3 +864,30 @@ public func DispatchRadix2FiniteImpulseFilter(level: Int, _ signal: UnsafePointe
     
     DispatchInverseRadix2CooleyTukey(level, temp, temp_stride, length, output, out_stride)
 }
+
+public func Radix2CircularConvolve(level: Int, _ signal: UnsafePointer<Complex>, _ signal_stride: Int, _ signal_count: Int, _ kernel: UnsafePointer<Complex>, _ kernel_stride: Int, _ kernel_count: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int, _ temp: UnsafeMutablePointer<Complex>, _ temp_stride: Int) {
+    let _signal = UnsafePointer<Double>(signal)
+    let _kernel = UnsafePointer<Double>(kernel)
+    let _output = UnsafeMutablePointer<Double>(output)
+    let _temp = UnsafeMutablePointer<Double>(temp)
+    Radix2CircularConvolve(level, _signal, _signal + 1, signal_stride << 1, signal_count, _kernel, _kernel + 1, kernel_stride << 1, kernel_count, _output, _output + 1, out_stride << 1, _temp, _temp + 1, temp_stride << 1)
+}
+public func DispatchRadix2CircularConvolve(level: Int, _ signal: UnsafePointer<Complex>, _ signal_stride: Int, _ signal_count: Int, _ kernel: UnsafePointer<Complex>, _ kernel_stride: Int, _ kernel_count: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int, _ temp: UnsafeMutablePointer<Complex>, _ temp_stride: Int) {
+    let _signal = UnsafePointer<Double>(signal)
+    let _kernel = UnsafePointer<Double>(kernel)
+    let _output = UnsafeMutablePointer<Double>(output)
+    let _temp = UnsafeMutablePointer<Double>(temp)
+    DispatchRadix2CircularConvolve(level, _signal, _signal + 1, signal_stride << 1, signal_count, _kernel, _kernel + 1, kernel_stride << 1, kernel_count, _output, _output + 1, out_stride << 1, _temp, _temp + 1, temp_stride << 1)
+}
+public func Radix2PowerCircularConvolve(level: Int, _ input: UnsafePointer<Complex>, _ in_stride: Int, _ in_count: Int, _ n: Double, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int, _ temp: UnsafeMutablePointer<Complex>, _ temp_stride: Int) {
+    let _input = UnsafePointer<Double>(input)
+    let _output = UnsafeMutablePointer<Double>(output)
+    let _temp = UnsafeMutablePointer<Double>(temp)
+    Radix2PowerCircularConvolve(level, _input, _input + 1, in_stride << 1, in_count, n, _output, _output + 1, out_stride << 1, _temp, _temp + 1, temp_stride << 1)
+}
+public func DispatchRadix2PowerCircularConvolve(level: Int, _ input: UnsafePointer<Complex>, _ in_stride: Int, _ in_count: Int, _ n: Double, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int, _ temp: UnsafeMutablePointer<Complex>, _ temp_stride: Int) {
+    let _input = UnsafePointer<Double>(input)
+    let _output = UnsafeMutablePointer<Double>(output)
+    let _temp = UnsafeMutablePointer<Double>(temp)
+    DispatchRadix2PowerCircularConvolve(level, _input, _input + 1, in_stride << 1, in_count, n, _output, _output + 1, out_stride << 1, _temp, _temp + 1, temp_stride << 1)
+}

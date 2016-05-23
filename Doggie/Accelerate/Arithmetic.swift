@@ -1494,6 +1494,140 @@ public func Div(count: Int, _ lreal: UnsafePointer<Double>, _ limag: UnsafePoint
         _imag += out_stride
     }
 }
+public func Add(count: Int, _ left: UnsafePointer<Double>, _ left_stride: Int, _ right: UnsafePointer<Complex>, _ right_stride: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int) {
+    let _right = UnsafePointer<Double>(right)
+    let _output = UnsafeMutablePointer<Double>(output)
+    Add(count, left, left_stride, _right, _right + 1, right_stride << 1, _output, _output + 1, out_stride << 1)
+}
+public func Sub(count: Int, _ left: UnsafePointer<Double>, _ left_stride: Int, _ right: UnsafePointer<Complex>, _ right_stride: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int) {
+    let _right = UnsafePointer<Double>(right)
+    let _output = UnsafeMutablePointer<Double>(output)
+    Sub(count, left, left_stride, _right, _right + 1, right_stride << 1, _output, _output + 1, out_stride << 1)
+}
+public func Mul(count: Int, _ left: UnsafePointer<Double>, _ left_stride: Int, _ right: UnsafePointer<Complex>, _ right_stride: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int) {
+    let _right = UnsafePointer<Double>(right)
+    let _output = UnsafeMutablePointer<Double>(output)
+    Mul(count, left, left_stride, _right, _right + 1, right_stride << 1, _output, _output + 1, out_stride << 1)
+}
+public func MulAdd(count: Int, _ a: UnsafePointer<Double>, _ a_stride: Int, _ b: UnsafePointer<Complex>, _ b_stride: Int, _ c: UnsafePointer<Complex>, _ c_stride: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int) {
+    let _b = UnsafePointer<Double>(b)
+    let _c = UnsafePointer<Double>(c)
+    let _output = UnsafeMutablePointer<Double>(output)
+    MulAdd(count, a, a_stride, _b, _b + 1, b_stride << 1, _c, _c + 1, c_stride << 1, _output, _output + 1, out_stride << 1)
+}
+public func MulSub(count: Int, _ a: UnsafePointer<Double>, _ a_stride: Int, _ b: UnsafePointer<Complex>, _ b_stride: Int, _ c: UnsafePointer<Complex>, _ c_stride: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int) {
+    let _b = UnsafePointer<Double>(b)
+    let _c = UnsafePointer<Double>(c)
+    let _output = UnsafeMutablePointer<Double>(output)
+    MulSub(count, a, a_stride, _b, _b + 1, b_stride << 1, _c, _c + 1, c_stride << 1, _output, _output + 1, out_stride << 1)
+}
+public func SubMul(count: Int, _ a: UnsafePointer<Complex>, _ a_stride: Int, _ b: UnsafePointer<Double>, _ b_stride: Int, _ c: UnsafePointer<Complex>, _ c_stride: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int) {
+    let _a = UnsafePointer<Double>(a)
+    let _c = UnsafePointer<Double>(c)
+    let _output = UnsafeMutablePointer<Double>(output)
+    SubMul(count, _a, _a + 1, a_stride << 1, b, b_stride, _c, _c + 1, c_stride << 1, _output, _output + 1, out_stride << 1)
+}
+public func Div(count: Int, _ left: UnsafePointer<Double>, _ left_stride: Int, _ right: UnsafePointer<Complex>, _ right_stride: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int) {
+    let _right = UnsafePointer<Double>(right)
+    let _output = UnsafeMutablePointer<Double>(output)
+    Div(count, left, left_stride, _right, _right + 1, right_stride << 1, _output, _output + 1, out_stride << 1)
+}
+
+public func Add(count: Int, _ left: UnsafePointer<Complex>, _ left_stride: Int, _ right: UnsafePointer<Double>, _ right_stride: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int) {
+    let _left = UnsafePointer<Double>(left)
+    let _output = UnsafeMutablePointer<Double>(output)
+    Add(count, _left, _left + 1, left_stride << 1, right, right_stride, _output, _output + 1, out_stride << 1)
+}
+public func Sub(count: Int, _ left: UnsafePointer<Complex>, _ left_stride: Int, _ right: UnsafePointer<Double>, _ right_stride: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int) {
+    let _left = UnsafePointer<Double>(left)
+    let _output = UnsafeMutablePointer<Double>(output)
+    Sub(count, _left, _left + 1, left_stride << 1, right, right_stride, _output, _output + 1, out_stride << 1)
+}
+public func Mul(count: Int, _ left: UnsafePointer<Complex>, _ left_stride: Int, _ right: UnsafePointer<Double>, _ right_stride: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int) {
+    let _left = UnsafePointer<Double>(left)
+    let _output = UnsafeMutablePointer<Double>(output)
+    Mul(count, _left, _left + 1, left_stride << 1, right, right_stride, _output, _output + 1, out_stride << 1)
+}
+public func MulAdd(count: Int, _ a: UnsafePointer<Complex>, _ a_stride: Int, _ b: UnsafePointer<Double>, _ b_stride: Int, _ c: UnsafePointer<Complex>, _ c_stride: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int) {
+    let _a = UnsafePointer<Double>(a)
+    let _c = UnsafePointer<Double>(c)
+    let _output = UnsafeMutablePointer<Double>(output)
+    MulAdd(count, _a, _a + 1, a_stride << 1, b, b_stride, _c, _c + 1, c_stride << 1, _output, _output + 1, out_stride << 1)
+}
+public func MulSub(count: Int, _ a: UnsafePointer<Complex>, _ a_stride: Int, _ b: UnsafePointer<Double>, _ b_stride: Int, _ c: UnsafePointer<Complex>, _ c_stride: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int) {
+    let _a = UnsafePointer<Double>(a)
+    let _c = UnsafePointer<Double>(c)
+    let _output = UnsafeMutablePointer<Double>(output)
+    MulSub(count, _a, _a + 1, a_stride << 1, b, b_stride, _c, _c + 1, c_stride << 1, _output, _output + 1, out_stride << 1)
+}
+public func SubMul(count: Int, _ a: UnsafePointer<Complex>, _ a_stride: Int, _ b: UnsafePointer<Complex>, _ b_stride: Int, _ c: UnsafePointer<Double>, _ c_stride: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int) {
+    let _a = UnsafePointer<Double>(a)
+    let _b = UnsafePointer<Double>(b)
+    let _output = UnsafeMutablePointer<Double>(output)
+    SubMul(count, _a, _a + 1, a_stride << 1, _b, _b + 1, b_stride << 1, c, c_stride, _output, _output + 1, out_stride << 1)
+}
+public func MulConj(count: Int, _ left: UnsafePointer<Complex>, _ left_stride: Int, _ right: UnsafePointer<Double>, _ right_stride: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int) {
+    let _left = UnsafePointer<Double>(left)
+    let _output = UnsafeMutablePointer<Double>(output)
+    MulConj(count, _left, _left + 1, left_stride << 1, right, right_stride, _output, _output + 1, out_stride << 1)
+}
+public func Div(count: Int, _ left: UnsafePointer<Complex>, _ left_stride: Int, _ right: UnsafePointer<Double>, _ right_stride: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int) {
+    let _left = UnsafePointer<Double>(left)
+    let _output = UnsafeMutablePointer<Double>(output)
+    Div(count, _left, _left + 1, left_stride << 1, right, right_stride, _output, _output + 1, out_stride << 1)
+}
+
+public func Add(count: Int, _ left: UnsafePointer<Complex>, _ left_stride: Int, _ right: UnsafePointer<Complex>, _ right_stride: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int) {
+    let _left = UnsafePointer<Double>(left)
+    let _right = UnsafePointer<Double>(right)
+    let _output = UnsafeMutablePointer<Double>(output)
+    Add(count, _left, _left + 1, left_stride << 1, _right, _right + 1, right_stride << 1, _output, _output + 1, out_stride << 1)
+}
+public func Sub(count: Int, _ left: UnsafePointer<Complex>, _ left_stride: Int, _ right: UnsafePointer<Complex>, _ right_stride: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int) {
+    let _left = UnsafePointer<Double>(left)
+    let _right = UnsafePointer<Double>(right)
+    let _output = UnsafeMutablePointer<Double>(output)
+    Sub(count, _left, _left + 1, left_stride << 1, _right, _right + 1, right_stride << 1, _output, _output + 1, out_stride << 1)
+}
+public func Mul(count: Int, _ left: UnsafePointer<Complex>, _ left_stride: Int, _ right: UnsafePointer<Complex>, _ right_stride: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int) {
+    let _left = UnsafePointer<Double>(left)
+    let _right = UnsafePointer<Double>(right)
+    let _output = UnsafeMutablePointer<Double>(output)
+    Mul(count, _left, _left + 1, left_stride << 1, _right, _right + 1, right_stride << 1, _output, _output + 1, out_stride << 1)
+}
+public func MulAdd(count: Int, _ a: UnsafePointer<Complex>, _ a_stride: Int, _ b: UnsafePointer<Complex>, _ b_stride: Int, _ c: UnsafePointer<Complex>, _ c_stride: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int) {
+    let _a = UnsafePointer<Double>(a)
+    let _b = UnsafePointer<Double>(b)
+    let _c = UnsafePointer<Double>(c)
+    let _output = UnsafeMutablePointer<Double>(output)
+    MulAdd(count, _a, _a + 1, a_stride << 1, _b + 1, b_stride << 1, _c, _c + 1, c_stride << 1, _output, _output + 1, out_stride << 1)
+}
+public func MulSub(count: Int, _ a: UnsafePointer<Complex>, _ a_stride: Int, _ b: UnsafePointer<Complex>, _ b_stride: Int, _ c: UnsafePointer<Complex>, _ c_stride: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int) {
+    let _a = UnsafePointer<Double>(a)
+    let _b = UnsafePointer<Double>(b)
+    let _c = UnsafePointer<Double>(c)
+    let _output = UnsafeMutablePointer<Double>(output)
+    MulSub(count, _a, _a + 1, a_stride << 1, _b + 1, b_stride << 1, _c, _c + 1, c_stride << 1, _output, _output + 1, out_stride << 1)
+}
+public func SubMul(count: Int, _ a: UnsafePointer<Complex>, _ a_stride: Int, _ b: UnsafePointer<Complex>, _ b_stride: Int, _ c: UnsafePointer<Complex>, _ c_stride: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int) {
+    let _a = UnsafePointer<Double>(a)
+    let _b = UnsafePointer<Double>(b)
+    let _c = UnsafePointer<Double>(c)
+    let _output = UnsafeMutablePointer<Double>(output)
+    SubMul(count, _a, _a + 1, a_stride << 1, _b + 1, b_stride << 1, _c, _c + 1, c_stride << 1, _output, _output + 1, out_stride << 1)
+}
+public func MulConj(count: Int, _ left: UnsafePointer<Complex>, _ left_stride: Int, _ right: UnsafePointer<Complex>, _ right_stride: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int) {
+    let _left = UnsafePointer<Double>(left)
+    let _right = UnsafePointer<Double>(right)
+    let _output = UnsafeMutablePointer<Double>(output)
+    MulConj(count, _left, _left + 1, left_stride << 1, _right, _right + 1, right_stride << 1, _output, _output + 1, out_stride << 1)
+}
+public func Div(count: Int, _ left: UnsafePointer<Complex>, _ left_stride: Int, _ right: UnsafePointer<Complex>, _ right_stride: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int) {
+    let _left = UnsafePointer<Double>(left)
+    let _right = UnsafePointer<Double>(right)
+    let _output = UnsafeMutablePointer<Double>(output)
+    Div(count, _left, _left + 1, left_stride << 1, _right, _right + 1, right_stride << 1, _output, _output + 1, out_stride << 1)
+}
 
 public func Dot(count: Int, _ left: UnsafePointer<Float>, _ left_stride: Int, _ right: UnsafePointer<Float>, _ right_stride: Int) -> Float {
     

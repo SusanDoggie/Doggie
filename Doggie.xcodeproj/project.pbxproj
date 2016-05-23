@@ -10,7 +10,6 @@
 		081321DD1C11D1850081B2B9 /* Doggie_iOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 081321D31C11D1840081B2B9 /* Doggie_iOS.framework */; };
 		081321EA1C11D2C40081B2B9 /* EncryptionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08AF77AF1A3A10510042491F /* EncryptionTests.swift */; };
 		081321EB1C11D2C60081B2B9 /* FourierTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08BFF9B91B0715ED00EC88CB /* FourierTest.swift */; };
-		081321EC1C11D3600081B2B9 /* AccelerateWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA421C0550B7007FA426 /* AccelerateWrapper.swift */; };
 		081321ED1C11D3600081B2B9 /* Arithmetic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA431C0550B7007FA426 /* Arithmetic.swift */; };
 		081321EE1C11D3600081B2B9 /* CircularConvolve.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA441C0550B7007FA426 /* CircularConvolve.swift */; };
 		081321EF1C11D3600081B2B9 /* ComplexConversion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA451C0550B7007FA426 /* ComplexConversion.swift */; };
@@ -56,7 +55,6 @@
 		0813221C1C11D3600081B2B9 /* SDShape.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA751C0550B7007FA426 /* SDShape.swift */; };
 		0813221D1C11D3600081B2B9 /* Serialization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA761C0550B7007FA426 /* Serialization.swift */; };
 		0813221F1C11D3600081B2B9 /* UUID.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA781C0550B7007FA426 /* UUID.swift */; };
-		081322201C11D3600081B2B9 /* AccelerateWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA421C0550B7007FA426 /* AccelerateWrapper.swift */; };
 		081322211C11D3600081B2B9 /* Arithmetic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA431C0550B7007FA426 /* Arithmetic.swift */; };
 		081322221C11D3600081B2B9 /* CircularConvolve.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA441C0550B7007FA426 /* CircularConvolve.swift */; };
 		081322231C11D3600081B2B9 /* ComplexConversion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA451C0550B7007FA426 /* ComplexConversion.swift */; };
@@ -103,8 +101,6 @@
 		081322511C11D3600081B2B9 /* Serialization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA761C0550B7007FA426 /* Serialization.swift */; };
 		081322531C11D3600081B2B9 /* UUID.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA781C0550B7007FA426 /* UUID.swift */; };
 		082516261C51C60A00F8F9B0 /* Doggie_iOS.h in Headers */ = {isa = PBXBuildFile; fileRef = 087FE59B1A372D5B005A2E9E /* Doggie_iOS.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		0858DA7B1C0550B7007FA426 /* AccelerateWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA421C0550B7007FA426 /* AccelerateWrapper.swift */; };
-		0858DA7C1C0550B7007FA426 /* AccelerateWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA421C0550B7007FA426 /* AccelerateWrapper.swift */; };
 		0858DA7F1C0550B7007FA426 /* Arithmetic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA431C0550B7007FA426 /* Arithmetic.swift */; };
 		0858DA801C0550B7007FA426 /* Arithmetic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA431C0550B7007FA426 /* Arithmetic.swift */; };
 		0858DA831C0550B7007FA426 /* CircularConvolve.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA441C0550B7007FA426 /* CircularConvolve.swift */; };
@@ -261,7 +257,6 @@
 /* Begin PBXFileReference section */
 		081321D31C11D1840081B2B9 /* Doggie_iOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Doggie_iOS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		081321DC1C11D1850081B2B9 /* Doggie_iOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Doggie_iOSTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		0858DA421C0550B7007FA426 /* AccelerateWrapper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccelerateWrapper.swift; sourceTree = "<group>"; };
 		0858DA431C0550B7007FA426 /* Arithmetic.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Arithmetic.swift; sourceTree = "<group>"; };
 		0858DA441C0550B7007FA426 /* CircularConvolve.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CircularConvolve.swift; sourceTree = "<group>"; };
 		0858DA451C0550B7007FA426 /* ComplexConversion.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ComplexConversion.swift; sourceTree = "<group>"; };
@@ -387,7 +382,6 @@
 		0858DA411C0550B7007FA426 /* Accelerate */ = {
 			isa = PBXGroup;
 			children = (
-				0858DA421C0550B7007FA426 /* AccelerateWrapper.swift */,
 				0858DA431C0550B7007FA426 /* Arithmetic.swift */,
 				0858DA441C0550B7007FA426 /* CircularConvolve.swift */,
 				0858DA451C0550B7007FA426 /* ComplexConversion.swift */,
@@ -778,7 +772,6 @@
 				081322221C11D3600081B2B9 /* CircularConvolve.swift in Sources */,
 				0813222E1C11D3600081B2B9 /* HashWrapper.swift in Sources */,
 				081322341C11D3600081B2B9 /* sha256.swift in Sources */,
-				081322201C11D3600081B2B9 /* AccelerateWrapper.swift in Sources */,
 				081322321C11D3600081B2B9 /* sha1.swift in Sources */,
 				0813222B1C11D3600081B2B9 /* Transpose.swift in Sources */,
 				0813224B1C11D3600081B2B9 /* SDGraphic.swift in Sources */,
@@ -810,7 +803,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				081322141C11D3600081B2B9 /* SDAspects.swift in Sources */,
-				081321EC1C11D3600081B2B9 /* AccelerateWrapper.swift in Sources */,
 				081322061C11D3600081B2B9 /* JsonParser.swift in Sources */,
 				081322111C11D3600081B2B9 /* Vector.swift in Sources */,
 				0A3F4DC41CAE0C7400699FF7 /* Atomic.swift in Sources */,
@@ -908,7 +900,6 @@
 				0858DB431C0550B7007FA426 /* UUID.swift in Sources */,
 				0858DACB1C0550B7007FA426 /* sha256.swift in Sources */,
 				0858DB2B1C0550B7007FA426 /* SDPathCoder.swift in Sources */,
-				0858DA7B1C0550B7007FA426 /* AccelerateWrapper.swift in Sources */,
 				0858DAC31C0550B7007FA426 /* sha1.swift in Sources */,
 				0858DAEB1C0550B7007FA426 /* Maths.swift in Sources */,
 				0858DAA71C0550B7007FA426 /* Transpose.swift in Sources */,
@@ -937,7 +928,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0858DA7C1C0550B7007FA426 /* AccelerateWrapper.swift in Sources */,
 				0858DB441C0550B7007FA426 /* UUID.swift in Sources */,
 				0858DAD41C0550B7007FA426 /* sha512.swift in Sources */,
 				0858DABC1C0550B7007FA426 /* md5.swift in Sources */,

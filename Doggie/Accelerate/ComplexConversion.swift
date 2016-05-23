@@ -98,3 +98,12 @@ public func ToPolar(count: Int, _ real: UnsafePointer<Double>, _ imag: UnsafePoi
         theta += out_stride
     }
 }
+
+public func ToRect(count: Int, _ rho: UnsafePointer<Double>, _ theta: UnsafePointer<Double>, _ in_stride: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int) {
+    let _output = UnsafeMutablePointer<Double>(output)
+    ToRect(count, rho, theta, in_stride, _output, _output + 1, out_stride << 1)
+}
+public func ToPolar(count: Int, _ input: UnsafePointer<Complex>, _ in_stride: Int, rho: UnsafeMutablePointer<Double>, theta: UnsafeMutablePointer<Double>, _ out_stride: Int) {
+    let _input = UnsafePointer<Double>(input)
+    ToPolar(count, _input, _input + 1, in_stride << 1, rho, theta, out_stride)
+}

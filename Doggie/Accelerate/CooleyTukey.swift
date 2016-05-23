@@ -2858,3 +2858,60 @@ private func InverseRadix2CooleyTukey_4(input: UnsafePointer<Double>, _ in_strid
     _real.memory = f
     _imag.memory = -h
 }
+
+// MARK: Wrapper
+
+public func HalfRadix2CooleyTukey(level: Int, _ input: UnsafePointer<Double>, _ in_stride: Int, _ in_count: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int) {
+    let _output = UnsafeMutablePointer<Double>(output)
+    HalfRadix2CooleyTukey(level, input, in_stride, in_count, _output, _output + 1, out_stride << 1)
+}
+public func HalfInverseRadix2CooleyTukey(level: Int, _ input: UnsafePointer<Complex>, _ in_stride: Int, _ output: UnsafeMutablePointer<Double>, _ out_stride: Int, temp: UnsafePointer<Complex>, tp_stride: Int) {
+    let _input = UnsafePointer<Double>(input)
+    let _temp = UnsafeMutablePointer<Double>(temp)
+    HalfInverseRadix2CooleyTukey(level, _input, _input + 1, in_stride << 1, output, out_stride, _temp, _temp + 1, tp_stride << 1)
+}
+public func Radix2CooleyTukey(level: Int, _ input: UnsafePointer<Double>, _ in_stride: Int, _ in_count: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int) {
+    let _output = UnsafeMutablePointer<Double>(output)
+    Radix2CooleyTukey(level, input, in_stride, in_count, _output, _output + 1, out_stride << 1)
+}
+public func Radix2CooleyTukey(level: Int, _ input: UnsafePointer<Complex>, _ in_stride: Int, _ in_count: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int) {
+    let _input = UnsafePointer<Double>(input)
+    let _output = UnsafeMutablePointer<Double>(output)
+    Radix2CooleyTukey(level, _input, _input + 1, in_stride << 1, in_count, _output, _output + 1, out_stride << 1)
+}
+public func InverseRadix2CooleyTukey(level: Int, _ input: UnsafePointer<Double>, _ in_stride: Int, _ in_count: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int) {
+    let _output = UnsafeMutablePointer<Double>(output)
+    InverseRadix2CooleyTukey(level, input, in_stride, in_count, _output, _output + 1, out_stride << 1)
+}
+public func InverseRadix2CooleyTukey(level: Int, _ input: UnsafePointer<Complex>, _ in_stride: Int, _ in_count: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int) {
+    let _input = UnsafePointer<Double>(input)
+    let _output = UnsafeMutablePointer<Double>(output)
+    InverseRadix2CooleyTukey(level, _input, _input + 1, in_stride << 1, in_count, _output, _output + 1, out_stride << 1)
+}
+public func DispatchHalfRadix2CooleyTukey(level: Int, _ input: UnsafePointer<Double>, _ in_stride: Int, _ in_count: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int) {
+    let _output = UnsafeMutablePointer<Double>(output)
+    DispatchHalfRadix2CooleyTukey(level, input, in_stride, in_count, _output, _output + 1, out_stride << 1)
+}
+public func DispatchHalfInverseRadix2CooleyTukey(level: Int, _ input: UnsafePointer<Complex>, _ in_stride: Int, _ output: UnsafeMutablePointer<Double>, _ out_stride: Int, temp: UnsafePointer<Complex>, tp_stride: Int) {
+    let _input = UnsafePointer<Double>(input)
+    let _temp = UnsafeMutablePointer<Double>(temp)
+    DispatchHalfInverseRadix2CooleyTukey(level, _input, _input + 1, in_stride << 1, output, out_stride, _temp, _temp + 1, tp_stride << 1)
+}
+public func DispatchRadix2CooleyTukey(level: Int, _ input: UnsafePointer<Double>, _ in_stride: Int, _ in_count: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int) {
+    let _output = UnsafeMutablePointer<Double>(output)
+    DispatchRadix2CooleyTukey(level, input, in_stride, in_count, _output, _output + 1, out_stride << 1)
+}
+public func DispatchRadix2CooleyTukey(level: Int, _ input: UnsafePointer<Complex>, _ in_stride: Int, _ in_count: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int) {
+    let _input = UnsafePointer<Double>(input)
+    let _output = UnsafeMutablePointer<Double>(output)
+    DispatchRadix2CooleyTukey(level, _input, _input + 1, in_stride << 1, in_count, _output, _output + 1, out_stride << 1)
+}
+public func DispatchInverseRadix2CooleyTukey(level: Int, _ input: UnsafePointer<Double>, _ in_stride: Int, _ in_count: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int) {
+    let _output = UnsafeMutablePointer<Double>(output)
+    DispatchInverseRadix2CooleyTukey(level, input, in_stride, in_count, _output, _output + 1, out_stride << 1)
+}
+public func DispatchInverseRadix2CooleyTukey(level: Int, _ input: UnsafePointer<Complex>, _ in_stride: Int, _ in_count: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int) {
+    let _input = UnsafePointer<Double>(input)
+    let _output = UnsafeMutablePointer<Double>(output)
+    DispatchInverseRadix2CooleyTukey(level, _input, _input + 1, in_stride << 1, in_count, _output, _output + 1, out_stride << 1)
+}
