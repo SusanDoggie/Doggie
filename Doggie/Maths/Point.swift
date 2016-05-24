@@ -49,7 +49,7 @@ extension Point {
     
     @warn_unused_result
     public func offset(dx dx: Double, dy: Double) -> Point {
-        return Point(x: self.x + dx, y: self.x + dy)
+        return Point(x: self.x + dx, y: self.y + dy)
     }
 }
 
