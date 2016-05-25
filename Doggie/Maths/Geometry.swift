@@ -174,7 +174,7 @@ public func EllipseBound<T: SDTransformType>(center: Point, _ r: Radius, _ matri
 
 @warn_unused_result
 public func Bezier(t: Double, _ p0: Double, _ p1: Double) -> Double {
-    return (1 - t) * p0 + t * p1
+    return p0 + t * (p1 - p0)
 }
 @warn_unused_result
 public func Bezier(t: Double, _ p0: Double, _ p1: Double, _ p2: Double) -> Double {
@@ -190,7 +190,7 @@ public func Bezier(t: Double, _ p0: Double, _ p1: Double, _ p2: Double, _ p3: Do
 }
 @warn_unused_result
 public func Bezier(t: Double, _ p0: Point, _ p1: Point) -> Point {
-    return (1 - t) * p0 + t * p1
+    return p0 + t * (p1 - p0)
 }
 @warn_unused_result
 public func Bezier(t: Double, _ p0: Point, _ p1: Point, _ p2: Point) -> Point {
@@ -206,7 +206,7 @@ public func Bezier(t: Double, _ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point
 }
 @warn_unused_result
 public func Bezier(t: Double, _ p0: Vector, _ p1: Vector) -> Vector {
-    return (1 - t) * p0 + t * p1
+    return p0 + t * (p1 - p0)
 }
 @warn_unused_result
 public func Bezier(t: Double, _ p0: Vector, _ p1: Vector, _ p2: Vector) -> Vector {

@@ -404,7 +404,7 @@ public func LogarithmicDynamicRangeCompression(x: Double, _ m: Double) -> Double
 
 @warn_unused_result
 public func LinearInterpolate(t: Double, _ a: Double, _ b: Double) -> Double {
-    return a * (1.0 - t) + b * t
+    return a + t * (b - a)
 }
 
 @warn_unused_result
@@ -426,10 +426,8 @@ public func CubicInterpolate(t: Double, _ a: Double, _ b: Double, _ c: Double, _
 public func HermiteInterpolate(t: Double, _ a: Double, _ b: Double, _ c: Double, _ d: Double, _ s: Double, _ e: Double) -> Double {
     let t2 = t * t
     let t3 = t2 * t
-    var m0 = (b - a) * (1.0 + e) * (1.0 - s) * 0.5
-    m0 += (c - b) * (1.0 - e) * (1.0 - s) * 0.5
-    var m1 = (c - b) * (1.0 + e) * (1.0 - s) * 0.5
-    m1 += (d - c) * (1.0 - e) * (1.0 - s) * 0.5
+    let m0 = ((b - a) * (1.0 + e) + (c - b) * (1.0 - e)) * (1.0 - s) * 0.5
+    let m1 = ((c - b) * (1.0 + e) + (d - c) * (1.0 - e)) * (1.0 - s) * 0.5
     let a0 = 2.0 * t3 - 3.0 * t2 + 1.0
     let a1 = t3 - 2.0 * t2 + t
     let a2 = t3 - t2
