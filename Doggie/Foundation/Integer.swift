@@ -425,7 +425,7 @@ private func sec_random(buffer: UnsafeMutablePointer<Void>, _ size: Int) {
     close(_rand_file)
 }
 
-public func random_uniform(bound: UIntMax) -> UIntMax {
+public func sec_random_uniform(bound: UIntMax) -> UIntMax {
     let RANDMAX: UIntMax = ~0
     var _rand: UIntMax = 0
     sec_random(&_rand, sizeof(UIntMax))
@@ -435,6 +435,22 @@ public func random_uniform(bound: UIntMax) -> UIntMax {
         let limit = RANDMAX - mod(RANDMAX, bound)
         while _rand >= limit {
             sec_random(&_rand, sizeof(UIntMax))
+        }
+        _rand = mod(_rand, bound)
+    }
+    return _rand
+}
+
+public func random_uniform(bound: UIntMax) -> UIntMax {
+    let RANDMAX: UIntMax = ~0
+    var _rand: UIntMax = 0
+    sec_random(&_rand, sizeof(UIntMax))
+    if bound.isPower2 {
+        _rand &= bound &- 1
+    } else {
+        let limit = RANDMAX - mod(RANDMAX, bound)
+        while _rand >= limit {
+            arc4random_buf(&_rand, sizeof(UIntMax))
         }
         _rand = mod(_rand, bound)
     }
