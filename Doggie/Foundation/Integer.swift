@@ -444,7 +444,7 @@ public func sec_random_uniform(bound: UIntMax) -> UIntMax {
 public func random_uniform(bound: UIntMax) -> UIntMax {
     let RANDMAX: UIntMax = ~0
     var _rand: UIntMax = 0
-    sec_random(&_rand, sizeof(UIntMax))
+    arc4random_buf(&_rand, sizeof(UIntMax))
     if bound.isPower2 {
         _rand &= bound &- 1
     } else {
