@@ -31,11 +31,11 @@ public let M_SQRT5 = 2.2360679774997896964091736687312762354406183596115257
 extension Double {
     
     public func almostZero(epsilon: Double = 1e-9, reference: Double = 0) -> Bool {
-        return abs(self) < abs(epsilon) * max(1, abs(reference))
+        return self == 0 || abs(self) < abs(epsilon) * max(1, abs(reference))
     }
     
     public func almostEqual(other: Double, epsilon: Double = 1e-9) -> Bool {
-        return abs(self - other).almostZero(epsilon, reference: self)
+        return self == other || abs(self - other).almostZero(epsilon, reference: self)
     }
 }
 
