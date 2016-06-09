@@ -333,7 +333,7 @@ extension SDAtomic {
 public class SDSingleton<Instance> {
     
     private var token: dispatch_once_t = 0
-    private var _value: Instance?
+    private var _value: Instance!
     private let block: () -> Instance
     
     /// Create a SDSingleton.
@@ -344,11 +344,19 @@ public class SDSingleton<Instance> {
 
 extension SDSingleton {
     
-    public final var value: Instance {
+    public final func setValue() {
         dispatch_once(&token) {
             self._value = self.block()
         }
-        return self._value!
+    }
+    
+    public final var isValue : Bool {
+        return self._value != nil
+    }
+    
+    public final var value: Instance {
+        self.setValue()
+        return self._value
     }
 }
 
