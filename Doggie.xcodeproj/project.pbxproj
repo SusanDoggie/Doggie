@@ -173,6 +173,10 @@
 		0A3F4DC41CAE0C7400699FF7 /* Atomic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3F4DC21CAE0C7400699FF7 /* Atomic.swift */; };
 		0A3F4DC51CAE0C7400699FF7 /* Atomic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3F4DC21CAE0C7400699FF7 /* Atomic.swift */; };
 		0A3F4DC61CAE0C7400699FF7 /* Atomic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3F4DC21CAE0C7400699FF7 /* Atomic.swift */; };
+		0A64C6441D0BB851001F5E4E /* OrderedSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A64C6431D0BB851001F5E4E /* OrderedSet.swift */; };
+		0A64C6451D0BB851001F5E4E /* OrderedSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A64C6431D0BB851001F5E4E /* OrderedSet.swift */; };
+		0A64C6461D0BB851001F5E4E /* OrderedSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A64C6431D0BB851001F5E4E /* OrderedSet.swift */; };
+		0A64C6471D0BB851001F5E4E /* OrderedSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A64C6431D0BB851001F5E4E /* OrderedSet.swift */; };
 		0ACE1DFC1C570F6A00106D1F /* Environment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ACE1DFB1C570F6A00106D1F /* Environment.swift */; };
 		0ACE1DFD1C570F6A00106D1F /* Environment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ACE1DFB1C570F6A00106D1F /* Environment.swift */; };
 		0ACE1DFE1C570F6A00106D1F /* Environment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ACE1DFB1C570F6A00106D1F /* Environment.swift */; };
@@ -264,6 +268,7 @@
 		08AA03131C219B9900609109 /* SDSink.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SDSink.swift; sourceTree = "<group>"; };
 		08BFF9B91B0715ED00EC88CB /* FourierTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FourierTest.swift; sourceTree = "<group>"; };
 		0A3F4DC21CAE0C7400699FF7 /* Atomic.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Atomic.swift; sourceTree = "<group>"; };
+		0A64C6431D0BB851001F5E4E /* OrderedSet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OrderedSet.swift; sourceTree = "<group>"; };
 		0ACE1DFB1C570F6A00106D1F /* Environment.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Environment.swift; sourceTree = "<group>"; };
 		0ACE1E051C57104300106D1F /* ParallelCollectionType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ParallelCollectionType.swift; sourceTree = "<group>"; };
 		0ACE1E0F1C57110D00106D1F /* String.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = String.swift; sourceTree = "<group>"; };
@@ -486,6 +491,7 @@
 				0ACE1DFB1C570F6A00106D1F /* Environment.swift */,
 				0ACE1E141C57114A00106D1F /* Functional.swift */,
 				0ACE1E191C5711D300106D1F /* Graph.swift */,
+				0A64C6431D0BB851001F5E4E /* OrderedSet.swift */,
 				085EB5541CA96D9300EBC12C /* Integer.swift */,
 				0ACE1E051C57104300106D1F /* ParallelCollectionType.swift */,
 				0ACE1E0F1C57110D00106D1F /* String.swift */,
@@ -694,6 +700,7 @@
 				081322391C11D3600081B2B9 /* Json.swift in Sources */,
 				0813223F1C11D3600081B2B9 /* Point.swift in Sources */,
 				081322431C11D3600081B2B9 /* Rect.swift in Sources */,
+				0A64C6441D0BB851001F5E4E /* OrderedSet.swift in Sources */,
 				081322221C11D3600081B2B9 /* CircularConvolve.swift in Sources */,
 				0813222B1C11D3600081B2B9 /* Transpose.swift in Sources */,
 				0813224B1C11D3600081B2B9 /* SDGraphic.swift in Sources */,
@@ -744,6 +751,7 @@
 				081322131C11D3600081B2B9 /* Regex.swift in Sources */,
 				081321F21C11D3600081B2B9 /* DiscreteConvolve.swift in Sources */,
 				081322151C11D3600081B2B9 /* SDAtomicNode.swift in Sources */,
+				0A64C6451D0BB851001F5E4E /* OrderedSet.swift in Sources */,
 				088C0C401CB22842003B1BCE /* Thread.swift in Sources */,
 				0813221C1C11D3600081B2B9 /* SDShape.swift in Sources */,
 				081322181C11D3600081B2B9 /* SDPath.swift in Sources */,
@@ -799,6 +807,7 @@
 				0858DADF1C0550B7007FA426 /* JsonParser.swift in Sources */,
 				0858DA831C0550B7007FA426 /* CircularConvolve.swift in Sources */,
 				0858DAFB1C0550B7007FA426 /* Prime.swift in Sources */,
+				0A64C6461D0BB851001F5E4E /* OrderedSet.swift in Sources */,
 				0858DAFF1C0550B7007FA426 /* Random.swift in Sources */,
 				0858DB431C0550B7007FA426 /* UUID.swift in Sources */,
 				0858DB2B1C0550B7007FA426 /* SDPathCoder.swift in Sources */,
@@ -849,6 +858,7 @@
 				0858DADC1C0550B7007FA426 /* Json.swift in Sources */,
 				088C0C3E1CB22842003B1BCE /* Thread.swift in Sources */,
 				0858DAE81C0550B7007FA426 /* Geometry.swift in Sources */,
+				0A64C6471D0BB851001F5E4E /* OrderedSet.swift in Sources */,
 				08863CCB1C22756F004C27E5 /* SDObserver.swift in Sources */,
 				0858DAFC1C0550B7007FA426 /* Prime.swift in Sources */,
 				0858DB281C0550B7007FA426 /* SDPath.swift in Sources */,
