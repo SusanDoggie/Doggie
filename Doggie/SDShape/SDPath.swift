@@ -302,9 +302,15 @@ public struct SDPath : SDShape, MutableCollectionType, ArrayLiteralConvertible {
     }
     
     public var boundary : Rect {
+        if rotate == 0 && scale == 1 && baseTransform == SDTransform.Identity() {
+            return _frame
+        }
+        let transform = self.transform
+        if transform == SDTransform.Identity() {
+            return _frame
+        }
         if cache.boundary == nil {
             var bound: Rect? = nil
-            let transform = self.transform
             self._apply { commands, state in
                 switch commands {
                 case let .line(p1): bound = bound?.union(Rect.bound([state.last * transform, p1 * transform])) ?? Rect.bound([state.last * transform, p1 * transform])
