@@ -344,7 +344,7 @@ public class SDSingleton<Instance> {
 
 extension SDSingleton {
     
-    public final func setValue() {
+    public final func signal() {
         dispatch_once(&token) {
             self._value = self.block()
         }
@@ -355,8 +355,14 @@ extension SDSingleton {
     }
     
     public final var value: Instance {
-        self.setValue()
-        return self._value
+        get {
+            self.signal()
+            return self._value
+        }
+        set {
+            dispatch_once(&token) { /* do nothing. */ }
+            self._value = newValue
+        }
     }
 }
 
