@@ -247,7 +247,7 @@ extension Rect {
             return x + width
         }
         set {
-            width = newValue - x
+            x = newValue - width
         }
     }
     public var maxY : Double {
@@ -255,7 +255,7 @@ extension Rect {
             return y + height
         }
         set {
-            height = newValue - y
+            y = newValue - height
         }
     }
     public var midX : Double {
