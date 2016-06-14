@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-public func Transpose<T>(row: Int, _ column: Int, _ input: UnsafePointer<T>, _ in_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
+public func Transpose<T>(_ row: Int, _ column: Int, _ input: UnsafePointer<T>, _ in_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var input = input
     var output = output
@@ -37,7 +37,7 @@ public func Transpose<T>(row: Int, _ column: Int, _ input: UnsafePointer<T>, _ i
     }
 }
 
-public func Transpose(row: Int, _ column: Int, _ real: UnsafePointer<Float>, _ imag: UnsafePointer<Float>, _ in_stride: Int, _ _real: UnsafeMutablePointer<Float>, _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int) {
+public func Transpose(_ row: Int, _ column: Int, _ real: UnsafePointer<Float>, _ imag: UnsafePointer<Float>, _ in_stride: Int, _ _real: UnsafeMutablePointer<Float>, _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int) {
     
     var real = real
     var imag = imag
@@ -55,7 +55,7 @@ public func Transpose(row: Int, _ column: Int, _ real: UnsafePointer<Float>, _ i
     }
 }
 
-public func Transpose(row: Int, _ column: Int, _ real: UnsafePointer<Double>, _ imag: UnsafePointer<Double>, _ in_stride: Int, _ _real: UnsafeMutablePointer<Double>, _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int) {
+public func Transpose(_ row: Int, _ column: Int, _ real: UnsafePointer<Double>, _ imag: UnsafePointer<Double>, _ in_stride: Int, _ _real: UnsafeMutablePointer<Double>, _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int) {
     
     var real = real
     var imag = imag

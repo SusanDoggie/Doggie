@@ -62,12 +62,12 @@ extension UUID {
     }
     
     public var string: String {
-        var buf = [Int8](count: 37, repeatedValue: 0)
+        var buf = [Int8](repeating: 0, count: 37)
         uuid_unparse_upper([byte0, byte1, byte2, byte3,
             byte4, byte5, byte6, byte7,
             byte8, byte9, byte10, byte11,
             byte12, byte13, byte14, byte15], &buf)
-        return String.fromCString(buf)!
+        return String(cString: buf)
     }
 }
 
@@ -84,14 +84,13 @@ extension UUID: CustomStringConvertible, CustomDebugStringConvertible {
 extension UUID: Hashable, Comparable {
     
     public var hashValue: Int {
-        return hash_combine(0, byte0, byte1, byte2, byte3,
+        return hash_combine(seed: 0, byte0, byte1, byte2, byte3,
                             byte4, byte5, byte6, byte7,
                             byte8, byte9, byte10, byte11,
                             byte12, byte13, byte14, byte15)
     }
 }
 
-@warn_unused_result
 public func ==(lhs: UUID, rhs: UUID) -> Bool {
     return lhs.byte0 == rhs.byte0
         && lhs.byte1 == rhs.byte1
@@ -111,7 +110,6 @@ public func ==(lhs: UUID, rhs: UUID) -> Bool {
         && lhs.byte15 == rhs.byte15
 }
 
-@warn_unused_result
 public func <(lhs: UUID, rhs: UUID) -> Bool {
     
     if lhs.byte0 < rhs.byte0 {

@@ -34,7 +34,7 @@ public class SDSink<Element> {
 
 extension SDSink {
     
-    public final func put(value: Element) {
+    public final func put(_ value: Element) {
         for sink in sinks {
             sink(value)
         }
@@ -48,7 +48,6 @@ extension SDSink {
 extension SDSink {
     
     /// Mapping the elements by `transform`.
-    @warn_unused_result
     public func map<T>(transform: (Element) -> T) -> SDSink<T> {
         let _sink = SDSink<T>()
         self.apply {
@@ -58,7 +57,6 @@ extension SDSink {
     }
     
     /// Filter the elements that satisfy `predicate`.
-    @warn_unused_result
     public func filter(includeElement: (Element) -> Bool) -> SDSink<Element> {
         let _sink = SDSink<Element>()
         self.apply {
@@ -70,9 +68,8 @@ extension SDSink {
     }
     
     /// Mapping the elements by `transform` and fill the elements of `Sequence` to resulted sink.
-    @warn_unused_result
-    public func flatMap<S : SequenceType>(transform: (Element) -> S) -> SDSink<S.Generator.Element> {
-        let _sink = SDSink<S.Generator.Element>()
+    public func flatMap<S : Sequence>(transform: (Element) -> S) -> SDSink<S.Iterator.Element> {
+        let _sink = SDSink<S.Iterator.Element>()
         self.apply {
             for item in transform($0) {
                 _sink.put(item)
@@ -82,7 +79,6 @@ extension SDSink {
     }
     
     /// Mapping the elements by `transform` and fill the non-nil elements to resulted sink.
-    @warn_unused_result
     public func flatMap<T>(transform: (Element) -> T?) -> SDSink<T> {
         let _sink = SDSink<T>()
         self.apply {
@@ -93,7 +89,6 @@ extension SDSink {
         return _sink
     }
     
-    @warn_unused_result
     public func scan<T>(initial: T, combine: (T, Element)-> T) -> SDSink<T> {
         var initial = initial
         let _sink = SDSink<T>()
@@ -105,15 +100,14 @@ extension SDSink {
         return _sink
     }
     
-    @warn_unused_result
-    public func throttle<T>(sink: SDSink<T>) -> SDSink<(Element, [T])> {
+    public func throttle<T>(_ sink: SDSink<T>) -> SDSink<(Element, [T])> {
         let _throttle = SDSink<(Element, [T])>()
         var e: [T] = []
         var lck = SDSpinLock()
         self.apply { val in
             lck.synchronized {
                 _throttle.put((val, e))
-                e.removeAll(keepCapacity: true)
+                e.removeAll(keepingCapacity: true)
             }
         }
         sink.apply { val in
@@ -124,8 +118,7 @@ extension SDSink {
 }
 
 /// Zip two sink
-@warn_unused_result
-public func zip<Element1, Element2>(sink1: SDSink<Element1>, _ sink2: SDSink<Element2>) -> SDSink<(Element1, Element2)> {
+public func zip<Element1, Element2>(_ sink1: SDSink<Element1>, _ sink2: SDSink<Element2>) -> SDSink<(Element1, Element2)> {
     let _zip = SDSink<(Element1, Element2)>()
     var e1: [Element1] = []
     var e2: [Element2] = []

@@ -1,5 +1,5 @@
 //
-//  ParallelCollectionType.swift
+//  ParallelCollection.swift
 //
 //  The MIT License
 //  Copyright (c) 2015 - 2016 Susan Cheng. All rights reserved.
@@ -25,26 +25,25 @@
 
 import Foundation
 
-extension CollectionType where Index : RandomAccessIndexType {
+extension RandomAccessCollection {
     
     public var parallel: ParallelCollection<Self> {
         return ParallelCollection(self)
     }
 }
 
-public protocol ParallelCollectionType : CollectionType {
+public protocol ParallelCollectionProtocol : RandomAccessCollection {
     
-    associatedtype Index : RandomAccessIndexType
 }
 
-extension ParallelCollectionType {
+extension ParallelCollectionProtocol {
     /// Identical to `self`.
     public var parallel: Self {
         return self
     }
 }
 
-extension ParallelCollectionType {
+extension ParallelCollectionProtocol {
     
     /// Call `body` on each element in `self` in parallel
     ///
@@ -53,48 +52,33 @@ extension ParallelCollectionType {
     /// - Note: Using the `return` statement in the `body` closure will only
     ///   exit from the current call to `body`, not any outer scope, and won't
     ///   skip subsequent calls.
-    public func forEach(body: (Generator.Element) -> ()) {
-        let queue = dispatch_queue_create("com.SusanDoggie.CollectionType.Parallel", DISPATCH_QUEUE_CONCURRENT)
-        self.forEach(queue, body: body)
-    }
-    
-    /// Call `body` on each element in `self` in parallel with specific queue
-    ///
-    /// - Note: You cannot use the `break` or `continue` statement to exit the
-    ///   current call of the `body` closure or skip subsequent calls.
-    /// - Note: Using the `return` statement in the `body` closure will only
-    ///   exit from the current call to `body`, not any outer scope, and won't
-    ///   skip subsequent calls.
-    public func forEach(queue: dispatch_queue_t, body: (Generator.Element) -> ()) {
-        let _startIndex = self.startIndex
-        dispatch_apply(numericCast(self.count), queue) {
-            body(self[_startIndex.advancedBy(numericCast($0))])
+    public func forEach(body: (Iterator.Element) -> ()) {
+        DispatchQueue.concurrentPerform(iterations: numericCast(self.count)) {
+            body(self[self.index(startIndex, offsetBy: numericCast($0))])
         }
     }
 }
 
-extension ParallelCollectionType {
+extension ParallelCollectionProtocol {
     
-    public var array : [Generator.Element] {
+    public var array : [Iterator.Element] {
         let count: Int = numericCast(self.count)
-        let buffer = UnsafeMutablePointer<Generator.Element>.alloc(count)
-        let queue = dispatch_queue_create("com.SusanDoggie.CollectionType.Parallel", DISPATCH_QUEUE_CONCURRENT)
-        let _startIndex = self.startIndex
-        dispatch_apply(numericCast(self.count), queue) {
-            (buffer + $0).initialize(self[_startIndex.advancedBy(numericCast($0))])
+        let buffer = UnsafeMutablePointer<Iterator.Element>(allocatingCapacity: count)
+        DispatchQueue.concurrentPerform(iterations: numericCast(self.count)) {
+            (buffer + $0).initialize(with: self[self.index(startIndex, offsetBy: numericCast($0))])
         }
         let result = Array(UnsafeMutableBufferPointer(start: buffer, count: count))
-        buffer.destroy(count)
-        buffer.dealloc(count)
+        buffer.deinitialize(count: count)
+        buffer.deallocateCapacity(count)
         return result
     }
 }
 
-public struct ParallelCollection<Base: CollectionType where Base.Index : RandomAccessIndexType> : ParallelCollectionType {
+public struct ParallelCollection<Base: RandomAccessCollection> : ParallelCollectionProtocol {
     
     private let base: Base
     
-    public typealias Generator = ParallelCollectionGenerator<Base.Generator>
+    public typealias Iterator = ParallelCollectionIterator<Base.Iterator>
     
     public typealias Index = Base.Index
     
@@ -109,20 +93,28 @@ public struct ParallelCollection<Base: CollectionType where Base.Index : RandomA
         return base.endIndex
     }
     
-    public var count : Index.Distance {
+    public var count : Base.IndexDistance {
         return self.base.count
     }
     
-    public subscript(position: Index) -> Base.Generator.Element {
+    public func index(after i: Index) -> Index {
+        return self.base.index(after: i)
+    }
+    
+    public func index(before i: Index) -> Index {
+        return self.base.index(before: i)
+    }
+    
+    public subscript(position: Index) -> Base.Iterator.Element {
         return base[position]
     }
     
-    public func generate() -> Generator {
-        return ParallelCollectionGenerator(base: base.generate())
+    public func makeIterator() -> Iterator {
+        return ParallelCollectionIterator(base: base.makeIterator())
     }
 }
 
-public struct ParallelCollectionGenerator<Base: GeneratorType> : GeneratorType, SequenceType {
+public struct ParallelCollectionIterator<Base: IteratorProtocol> : IteratorProtocol, Sequence {
     
     private var base: Base
     
@@ -131,16 +123,16 @@ public struct ParallelCollectionGenerator<Base: GeneratorType> : GeneratorType, 
     }
 }
 
-public struct ParallelMapCollection<Base: CollectionType, Element where Base.Index : RandomAccessIndexType> : ParallelCollectionType {
+public struct ParallelMapCollection<Base: RandomAccessCollection, Element> : ParallelCollectionProtocol {
     
     private let base: Base
-    private let transform: (Base.Generator.Element) -> Element
+    private let transform: (Base.Iterator.Element) -> Element
     
-    public typealias Generator = ParallelMapCollectionGenerator<Base.Generator, Element>
+    public typealias Iterator = ParallelMapCollectionIterator<Base.Iterator, Element>
     
     public typealias Index = Base.Index
     
-    public init(_ base: Base, transform: (Base.Generator.Element) -> Element) {
+    public init(_ base: Base, transform: (Base.Iterator.Element) -> Element) {
         self.base = base
         self.transform = transform
     }
@@ -152,20 +144,28 @@ public struct ParallelMapCollection<Base: CollectionType, Element where Base.Ind
         return base.endIndex
     }
     
-    public var count : Index.Distance {
+    public var count : Base.IndexDistance {
         return self.base.count
+    }
+    
+    public func index(after i: Index) -> Index {
+        return self.base.index(after: i)
+    }
+    
+    public func index(before i: Index) -> Index {
+        return self.base.index(before: i)
     }
     
     public subscript(position: Index) -> Element {
         return transform(base[position])
     }
     
-    public func generate() -> Generator {
-        return ParallelMapCollectionGenerator(base: base.generate(), transform: transform)
+    public func makeIterator() -> Iterator {
+        return ParallelMapCollectionIterator(base: base.makeIterator(), transform: transform)
     }
 }
 
-public struct ParallelMapCollectionGenerator<Base: GeneratorType, Element> : GeneratorType, SequenceType {
+public struct ParallelMapCollectionIterator<Base: IteratorProtocol, Element> : IteratorProtocol, Sequence {
     
     private var base: Base
     private let transform: (Base.Element) -> Element
@@ -175,10 +175,9 @@ public struct ParallelMapCollectionGenerator<Base: GeneratorType, Element> : Gen
     }
 }
 
-extension ParallelCollectionType {
+extension ParallelCollectionProtocol {
     
-    @warn_unused_result
-    public func map<T>(transform: (Generator.Element) -> T) -> ParallelMapCollection<Self, T> {
+    public func map<T>(transform: (Iterator.Element) -> T) -> ParallelMapCollection<Self, T> {
         return ParallelMapCollection(self, transform: transform)
     }
 }

@@ -59,19 +59,16 @@ extension Size: Hashable {
     }
 }
 
-@warn_unused_result
 public func == (lhs: Size, rhs: Size) -> Bool {
     return lhs.width == rhs.width && lhs.height == rhs.height
 }
-@warn_unused_result
 public func != (lhs: Size, rhs: Size) -> Bool {
     return lhs.width != rhs.width || lhs.height != rhs.height
 }
 
 extension Size {
     
-    @warn_unused_result
-    public func aspectFit(bound: Size) -> Size {
+    public func aspectFit(_ bound: Size) -> Size {
         let ratio = width / height
         if ratio < bound.width / bound.height {
             return Size(width: bound.height * ratio, height: bound.height)
@@ -80,8 +77,7 @@ extension Size {
         }
     }
     
-    @warn_unused_result
-    public func aspectFill(bound: Size) -> Size {
+    public func aspectFill(_ bound: Size) -> Size {
         let ratio = width / height
         if ratio < bound.width / bound.height {
             return Size(width: bound.width, height: bound.width / ratio)
@@ -91,50 +87,43 @@ extension Size {
     }
 }
 
-@warn_unused_result
 public prefix func +(val: Size) -> Size {
     return val
 }
-@warn_unused_result
 public prefix func -(val: Size) -> Size {
     return Size(width: -val.width, height: -val.height)
 }
-@warn_unused_result
 public func +(lhs: Size, rhs:  Size) -> Size {
     return Size(width: lhs.width + rhs.width, height: lhs.height + rhs.height)
 }
-@warn_unused_result
 public func -(lhs: Size, rhs:  Size) -> Size {
     return Size(width: lhs.width - rhs.width, height: lhs.height - rhs.height)
 }
 
-@warn_unused_result
 public func *(lhs: Double, rhs:  Size) -> Size {
     return Size(width: lhs * rhs.width, height: lhs * rhs.height)
 }
-@warn_unused_result
 public func *(lhs: Size, rhs:  Double) -> Size {
     return Size(width: lhs.width * rhs, height: lhs.height * rhs)
 }
 
-@warn_unused_result
 public func /(lhs: Size, rhs:  Double) -> Size {
     return Size(width: lhs.width / rhs, height: lhs.height / rhs)
 }
 
-public func *= (inout lhs: Size, rhs:  Double) {
+public func *= (lhs: inout Size, rhs:  Double) {
     lhs.width *= rhs
     lhs.height *= rhs
 }
-public func /= (inout lhs: Size, rhs:  Double) {
+public func /= (lhs: inout Size, rhs:  Double) {
     lhs.width /= rhs
     lhs.height /= rhs
 }
-public func += (inout lhs: Size, rhs:  Size) {
+public func += (lhs: inout Size, rhs:  Size) {
     lhs.width += rhs.width
     lhs.height += rhs.height
 }
-public func -= (inout lhs: Size, rhs:  Size) {
+public func -= (lhs: inout Size, rhs:  Size) {
     lhs.width -= rhs.width
     lhs.height -= rhs.height
 }
@@ -176,11 +165,9 @@ extension Rect: Hashable {
     }
 }
 
-@warn_unused_result
 public func == (lhs: Rect, rhs: Rect) -> Bool {
     return lhs.origin == rhs.origin && lhs.size == rhs.size
 }
-@warn_unused_result
 public func != (lhs: Rect, rhs: Rect) -> Bool {
     return lhs.origin != rhs.origin || lhs.size != rhs.size
 }
@@ -295,58 +282,51 @@ extension Rect {
         return [a, b, c, d]
     }
     
-    public static func bound(points: [Point]) -> Rect {
+    public static func bound(_ points: [Point]) -> Rect {
         if points.count == 0 {
             return Rect()
         }
         let _x = points.map { $0.x }
         let _y = points.map { $0.y }
-        let minX = _x.minElement()!
-        let minY = _y.minElement()!
-        let maxX = _x.maxElement()!
-        let maxY = _y.maxElement()!
+        let minX = _x.min()!
+        let minY = _y.min()!
+        let maxX = _x.max()!
+        let maxY = _y.max()!
         return Rect(x: minX, y: minY, width: maxX - minX, height: maxY - minY)
     }
 }
 
 extension Rect {
     
-    @warn_unused_result
-    public func union(other : Rect) -> Rect {
+    public func union(_ other : Rect) -> Rect {
         let minX = min(self.minX, other.minX)
         let minY = min(self.minY, other.minY)
         let maxX = max(self.maxX, other.maxX)
         let maxY = max(self.maxY, other.maxY)
         return Rect(x: minX, y: minY, width: maxX - minX, height: maxY - minY)
     }
-    @warn_unused_result
-    public func intersect(other : Rect) -> Rect {
+    public func intersect(_ other : Rect) -> Rect {
         let minX = max(self.minX, other.minX)
         let minY = max(self.minY, other.minY)
         let _width = max(0, min(self.maxX, other.maxX) - minX)
         let _height = max(0, min(self.maxY, other.maxY) - minY)
         return Rect(x: minX, y: minY, width: _width, height: _height)
     }
-    @warn_unused_result
-    public func inset(dx dx: Double, dy: Double) -> Rect {
+    public func inset(dx: Double, dy: Double) -> Rect {
         return Rect(x: self.x + dx, y: self.y + dy, width: self.width - 2 * dx, height: self.height - 2 * dy)
     }
-    @warn_unused_result
-    public func offset(dx dx: Double, dy: Double) -> Rect {
+    public func offset(dx: Double, dy: Double) -> Rect {
         return Rect(x: self.x + dx, y: self.y + dy, width: self.width, height: self.height)
     }
-    @warn_unused_result
-    public func contains(point: Point) -> Bool {
+    public func contains(_ point: Point) -> Bool {
         return (minX...maxX).contains(point.x) && (minY...maxY).contains(point.y)
     }
-    @warn_unused_result
-    public func contains(rect: Rect) -> Bool {
+    public func contains(_ rect: Rect) -> Bool {
         let a = Point(x: rect.minX, y: rect.minY)
         let b = Point(x: rect.maxX, y: rect.maxY)
         return self.contains(a) && self.contains(b)
     }
-    @warn_unused_result
-    public func isIntersect(rect: Rect) -> Bool {
+    public func isIntersect(_ rect: Rect) -> Bool {
         return self.minX < rect.maxX && self.maxX > rect.minX && self.minY < rect.maxY && self.maxY > rect.minY
     }
 }

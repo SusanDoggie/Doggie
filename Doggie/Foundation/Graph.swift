@@ -23,9 +23,9 @@
 //  THE SOFTWARE.
 //
 
-public struct Graph<Node : Hashable, Link> : CollectionType {
+public struct Graph<Node : Hashable, Link> : Collection {
     
-    public typealias Generator = GraphGenerator<Node, Link>
+    public typealias Iterator = GraphIterator<Node, Link>
     
     private var table: [Node:[Node:Link]]
     
@@ -42,9 +42,8 @@ public struct Graph<Node : Hashable, Link> : CollectionType {
     }
     
     /// - Complexity: O(1).
-    @warn_unused_result
-    public func generate() -> Generator {
-        return Generator(_base: table.lazy.flatMap { from, to in to.lazy.map { (from, $0, $1) } }.generate())
+    public func makeIterator() -> Iterator {
+        return Iterator(_base: table.lazy.flatMap { from, to in to.lazy.map { (from, $0, $1) } }.makeIterator())
     }
     
     /// The position of the first element in a non-empty dictionary.
@@ -53,8 +52,7 @@ public struct Graph<Node : Hashable, Link> : CollectionType {
     ///
     /// - Complexity: Amortized O(1).
     public var startIndex: GraphIndex<Node, Link> {
-        let _base = table.indices.lazy.flatMap { from in self.table[from].1.indices.lazy.map { (from, $0) } }
-        return GraphIndex(base: _base, current: _base.startIndex)
+        return GraphIndex(index1: table.startIndex, index2: table.first?.value.startIndex)
     }
     
     /// The collection's "past the end" position.
@@ -65,15 +63,28 @@ public struct Graph<Node : Hashable, Link> : CollectionType {
     ///
     /// - Complexity: Amortized O(1).
     public var endIndex: GraphIndex<Node, Link> {
-        let _base = table.indices.lazy.flatMap { from in self.table[from].1.indices.lazy.map { (from, $0) } }
-        return GraphIndex(base: _base, current: _base.endIndex)
+        return GraphIndex(index1: table.endIndex, index2: nil)
+    }
+    
+    public func index(after i: GraphIndex<Node, Link>) -> GraphIndex<Node, Link> {
+        if i.index2 != nil {
+            let _to = table[i.index1].value
+            let next = _to.index(alfer: i.index2!)
+            if next != _to.endIndex {
+                return GraphIndex(base: i.index1, current: next)
+            } else {
+                let _next = table.index(alfer: i.index1)
+                return GraphIndex(base: _next, current: _next == table.endIndex ? nil : table[_next].value.startIndex)
+            }
+        } else {
+            return GraphIndex(index1: table.endIndex, index2: nil)
+        }
     }
     
     /// - Complexity: Amortized O(1).
-    public subscript(idx: GraphIndex<Node, Link>) -> Generator.Element {
-        let _idx = idx.index
-        let (from, to_val) = table[_idx.0]
-        let (to, val) = to_val[_idx.1]
+    public subscript(idx: GraphIndex<Node, Link>) -> Iterator.Element {
+        let (from, to_val) = table[idx.index1]
+        let (to, val) = to_val[idx.index2!]
         return (from, to, val)
     }
     
@@ -94,18 +105,17 @@ public struct Graph<Node : Hashable, Link> : CollectionType {
     /// Return `true` iff it has link from `fromNode` to `toNode`.
     ///
     /// - Complexity: Amortized O(1).
-    @warn_unused_result
     public func isLinked(from fromNode: Node, to toNode: Node) -> Bool {
         return linkValue(from: fromNode, to: toNode) != nil
     }
     
     /// - Complexity: Amortized O(1).
-    @warn_unused_result
     public func linkValue(from fromNode: Node, to toNode: Node) -> Link? {
         return table[fromNode]?[toNode]
     }
     
     /// - Complexity: Amortized O(1).
+    @discardableResult
     public mutating func updateLink(from fromNode: Node, to toNode: Node, with link: Link) -> Link? {
         if table[fromNode] == nil {
             table[fromNode] = [toNode: link]
@@ -115,13 +125,14 @@ public struct Graph<Node : Hashable, Link> : CollectionType {
     }
     
     /// - Complexity: Amortized O(1).
+    @discardableResult
     public mutating func removeLink(from fromNode: Node, to toNode: Node) -> Link? {
         if var list = table[fromNode], let result = list[toNode] {
-            list.removeValueForKey(toNode)
+            list.removeValue(forKey: toNode)
             if list.count != 0 {
                 table.updateValue(list, forKey: fromNode)
             } else {
-                table.removeValueForKey(fromNode)
+                table.removeValue(forKey: fromNode)
             }
             return result
         }
@@ -131,8 +142,7 @@ public struct Graph<Node : Hashable, Link> : CollectionType {
     /// `true` iff `self` contains `node`.
     ///
     /// - Complexity: O(`count of nodes`).
-    @warn_unused_result
-    public func contains(node: Node) -> Bool {
+    public func contains(_ node: Node) -> Bool {
         if table[node] != nil {
             return true
         }
@@ -150,27 +160,27 @@ public struct Graph<Node : Hashable, Link> : CollectionType {
     /// Remove a node with all connections with it.
     ///
     /// - Complexity: O(`count of nodes`).
-    public mutating func removeNode(node: Node) {
+    public mutating func removeNode(_ node: Node) {
         table[node] = nil
         for (fromNode, var list) in table {
-            list.removeValueForKey(node)
+            list.removeValue(forKey: node)
             if list.count != 0 {
                 table.updateValue(list, forKey: fromNode)
             } else {
-                table.removeValueForKey(fromNode)
+                table.removeValue(forKey: fromNode)
             }
         }
     }
     
     /// Remove all elements.
     ///
-    /// - parameter keepCapacity: If `true`, the operation preserves the
+    /// - parameter keepingCapacity: If `true`, the operation preserves the
     ///   storage capacity that the collection has, otherwise the underlying
     ///   storage is released.  The default is `false`.
     ///
     /// - Complexity: O(`count of nodes`).
-    public mutating func removeAll(keepCapacity keepCapacity: Bool = false) {
-        table.removeAll(keepCapacity: keepCapacity)
+    public mutating func removeAll(keepingCapacity: Bool = false) {
+        table.removeAll(keepingCapacity: keepingCapacity)
     }
     
     /// A collection containing just the links of `self`.
@@ -185,85 +195,78 @@ public struct Graph<Node : Hashable, Link> : CollectionType {
         var _nodes = Set<Node>()
         for (_node, list) in table {
             _nodes.insert(_node)
-            _nodes.unionInPlace(list.keys)
+            _nodes.formUnion(list.keys)
         }
         return _nodes
     }
     
     /// A set of nodes which has connection with `nearNode`.
-    @warn_unused_result
     public func nodes(near nearNode: Node) -> Set<Node> {
-        return Set(self.nodes(from: nearNode).concat(self.nodes(to: nearNode)).lazy.map { $0.0 })
+        return Set(self.nodes(from: nearNode).concat(with: self.nodes(to: nearNode)).lazy.map { $0.0 })
     }
     
     /// A collection of nodes which connected from `fromNode`.
-    @warn_unused_result
-    public func nodes(from fromNode: Node) -> AnyForwardCollection<(Node, Link)> {
-        return table[fromNode]?.any ?? EmptyCollection().any
+    public func nodes(from fromNode: Node) -> AnyCollection<(Node, Link)> {
+        return table[fromNode]?.lazy.map { ($0.key, $0.value) }.any ?? EmptyCollection().any
     }
     
     /// A collection of nodes which connected to `toNode`.
-    @warn_unused_result
-    public func nodes(to toNode: Node) -> AnyForwardCollection<(Node, Link)> {
+    public func nodes(to toNode: Node) -> AnyCollection<(Node, Link)> {
         return table.lazy.flatMap { from, to in to[toNode].map { (from, $0) } }.any
     }
 }
 
 extension Graph: CustomStringConvertible, CustomDebugStringConvertible {
+    
     public var description: String {
-        
-        return "[\(self.map { "(from: \($0.from), to: \($0.to)): \($0.2)" }.joinWithSeparator(", "))]"
+        return "[\(self.map { "(from: \($0.from), to: \($0.to)): \($0.2)" }.joined(separator: ", "))]"
     }
+    
     public var debugDescription: String {
-        
-        return "[\(self.map { "(from: \($0.from), to: \($0.to)): \($0.2)" }.joinWithSeparator(", "))]"
+        return "[\(self.map { "(from: \($0.from), to: \($0.to)): \($0.2)" }.joined(separator: ", "))]"
     }
 }
 
-public struct GraphIndex<Node : Hashable, Link> : ForwardIndexType {
-    
-    private typealias Base = LazyCollection<FlattenCollection<LazyMapCollection<Range<DictionaryIndex<Node, [Node : Link]>>, LazyMapCollection<Range<DictionaryIndex<Node, Link>>, (DictionaryIndex<Node, [Node : Link]>, DictionaryIndex<Node, Link>)>>>>
-    
-    private let base: Base
-    private let current: Base.Index
-    
-    private var index: Base.Generator.Element {
-        return base[current]
-    }
-    
-    @warn_unused_result
-    public func successor() -> GraphIndex<Node, Link> {
-        return GraphIndex(base: base, current: current.successor())
-    }
+public struct GraphIndex<Node : Hashable, Link> : Comparable {
+    private let index1: DictionaryIndex<Node, [Node:Link]>
+    private let index2: DictionaryIndex<Node, Link>?
 }
 
 public func == <Node, Link>(lhs: GraphIndex<Node, Link>, rhs: GraphIndex<Node, Link>) -> Bool {
-    return lhs.current == rhs.current
+    return lhs.index1 == rhs.index1 && lhs.index2 == rhs.index2
+}
+public func < <Node, Link>(lhs: GraphIndex<Node, Link>, rhs: GraphIndex<Node, Link>) -> Bool {
+    if lhs.index1 < rhs.index1 {
+        return true
+    } else if lhs.index1 == rhs.index1 && lhs.index2 != nil && rhs.index2 != nil && lhs.index2 < rhs.index2 {
+        return true
+    }
+    return false
 }
 
-public struct GraphGenerator<Node : Hashable, Link> : GeneratorType, SequenceType {
+public struct GraphIterator<Node : Hashable, Link> : IteratorProtocol, Sequence {
     
     public typealias Element = (from: Node, to: Node, Link)
     
-    private var _base: FlattenGenerator<LazyMapGenerator<DictionaryGenerator<Node, [Node : Link]>, LazyMapCollection<[Node : Link], (Node, Node, Link)>>>
+    private var _base: FlattenIterator<LazyMapIterator<DictionaryIterator<Node, [Node : Link]>, LazyMapCollection<[Node : Link], (Node, Node, Link)>>>
     
     public mutating func next() -> Element? {
         return _base.next()
     }
 }
 
-extension GraphGenerator: CustomStringConvertible, CustomDebugStringConvertible {
+extension GraphIterator: CustomStringConvertible, CustomDebugStringConvertible {
     public var description: String {
-        return "GraphGenerator"
+        return "GraphIterator"
     }
     public var debugDescription: String {
-        return "GraphGenerator"
+        return "GraphIterator"
     }
 }
 
-public struct UndirectedGraph<Node : Hashable, Link> : CollectionType {
+public struct UndirectedGraph<Node : Hashable, Link> : Collection {
     
-    public typealias Generator = UndirectedGraphGenerator<Node, Link>
+    public typealias Iterator = UndirectedGraphIterator<Node, Link>
     
     private var graph: Graph<Node, Link>
     
@@ -280,9 +283,8 @@ public struct UndirectedGraph<Node : Hashable, Link> : CollectionType {
     }
     
     /// - Complexity: O(1).
-    @warn_unused_result
-    public func generate() -> Generator {
-        return Generator(base: graph.generate())
+    public func makeIterator() -> Iterator {
+        return Iterator(base: graph.makeIterator())
     }
     
     /// The position of the first element in a non-empty dictionary.
@@ -305,8 +307,12 @@ public struct UndirectedGraph<Node : Hashable, Link> : CollectionType {
         return UndirectedGraphIndex(base: graph.endIndex)
     }
     
+    public func index(after i: UndirectedGraphIndex<Node, Link>) -> UndirectedGraphIndex<Node, Link> {
+        return UndirectedGraphIndex(base: graph.index(after: i.base))
+    }
+    
     /// - Complexity: Amortized O(1).
-    public subscript(idx: UndirectedGraphIndex<Node, Link>) -> Generator.Element {
+    public subscript(idx: UndirectedGraphIndex<Node, Link>) -> Iterator.Element {
         return graph[idx.base]
     }
     
@@ -327,32 +333,31 @@ public struct UndirectedGraph<Node : Hashable, Link> : CollectionType {
     /// Return `true` iff it has link with `fromNode` and `toNode`.
     ///
     /// - Complexity: Amortized O(1).
-    @warn_unused_result
-    public func isLinked(fromNode: Node, _ toNode: Node) -> Bool {
+    public func isLinked(_ fromNode: Node, _ toNode: Node) -> Bool {
         return linkValue(fromNode, toNode) != nil
     }
     
     /// - Complexity: Amortized O(1).
-    @warn_unused_result
-    public func linkValue(fromNode: Node, _ toNode: Node) -> Link? {
+    public func linkValue(_ fromNode: Node, _ toNode: Node) -> Link? {
         return graph.linkValue(from: fromNode, to: toNode) ?? graph.linkValue(from: toNode, to: fromNode)
     }
     
     /// - Complexity: Amortized O(1).
-    public mutating func updateLink(fromNode: Node, _ toNode: Node, with link: Link) -> Link? {
+    @discardableResult
+    public mutating func updateLink(_ fromNode: Node, _ toNode: Node, with link: Link) -> Link? {
         return graph.updateLink(from: fromNode, to: toNode, with: link) ?? (fromNode != toNode ? graph.removeLink(from: toNode, to: fromNode) : nil)
     }
     
     /// - Complexity: Amortized O(1).
-    public mutating func removeLink(fromNode: Node, _ toNode: Node) -> Link? {
+    @discardableResult
+    public mutating func removeLink(_ fromNode: Node, _ toNode: Node) -> Link? {
         return graph.removeLink(from: fromNode, to: toNode) ?? graph.removeLink(from: toNode, to: fromNode)
     }
     
     /// `true` iff `self` contains `node`.
     ///
     /// - Complexity: O(`count of nodes`).
-    @warn_unused_result
-    public func contains(node: Node) -> Bool {
+    public func contains(_ node: Node) -> Bool {
         return graph.contains(node)
     }
     
@@ -364,19 +369,19 @@ public struct UndirectedGraph<Node : Hashable, Link> : CollectionType {
     /// Remove a node with all connections with it.
     ///
     /// - Complexity: O(`count of nodes`).
-    public mutating func removeNode(node: Node) {
+    public mutating func removeNode(_ node: Node) {
         graph.removeNode(node)
     }
     
     /// Remove all elements.
     ///
-    /// - parameter keepCapacity: If `true`, the operation preserves the
+    /// - parameter keepingCapacity: If `true`, the operation preserves the
     ///   storage capacity that the collection has, otherwise the underlying
     ///   storage is released.  The default is `false`.
     ///
     /// - Complexity: O(`count of nodes`).
-    public mutating func removeAll(keepCapacity keepCapacity: Bool = false) {
-        graph.removeAll(keepCapacity: keepCapacity)
+    public mutating func removeAll(keepingCapacity: Bool = false) {
+        graph.removeAll(keepingCapacity: keepingCapacity)
     }
     
     /// A collection containing just the links of `self`.
@@ -392,53 +397,50 @@ public struct UndirectedGraph<Node : Hashable, Link> : CollectionType {
     }
     
     /// A collection of nodes which has connection with `nearNode`.
-    @warn_unused_result
-    public func nodes(near nearNode: Node) -> AnyForwardCollection<(Node, Link)> {
-        return graph.nodes(from: nearNode).concat(graph.table.lazy.flatMap { from, to in from != nearNode ? to[nearNode].map { (from, $0) } : nil }).any
+    public func nodes(near nearNode: Node) -> AnyCollection<(Node, Link)> {
+        return graph.nodes(from: nearNode).concat(with: graph.table.lazy.flatMap { from, to in from != nearNode ? to[nearNode].map { (from, $0) } : nil }).any
     }
 }
 
 extension UndirectedGraph: CustomStringConvertible, CustomDebugStringConvertible {
+    
     public var description: String {
-        
-        return "[\(self.map { "(\($0.0), \($0.1)): \($0.2)" }.joinWithSeparator(", "))]"
+        return "[\(self.map { "(\($0.0), \($0.1)): \($0.2)" }.joined(separator: ", "))]"
     }
+    
     public var debugDescription: String {
-        
-        return "[\(self.map { "(\($0.0), \($0.1)): \($0.2)" }.joinWithSeparator(", "))]"
+        return "[\(self.map { "(\($0.0), \($0.1)): \($0.2)" }.joined(separator: ", "))]"
     }
 }
 
-public struct UndirectedGraphIndex<Node : Hashable, Link> : ForwardIndexType {
+public struct UndirectedGraphIndex<Node : Hashable, Link> : Comparable {
     
     private let base: Graph<Node, Link>.Index
-    
-    @warn_unused_result
-    public func successor() -> UndirectedGraphIndex<Node, Link> {
-        return UndirectedGraphIndex(base: base.successor())
-    }
 }
 
 public func == <Node, Link>(lhs: UndirectedGraphIndex<Node, Link>, rhs: UndirectedGraphIndex<Node, Link>) -> Bool {
     return lhs.base == rhs.base
 }
+public func < <Node, Link>(lhs: UndirectedGraphIndex<Node, Link>, rhs: UndirectedGraphIndex<Node, Link>) -> Bool {
+    return lhs.base < rhs.base
+}
 
-public struct UndirectedGraphGenerator<Node : Hashable, Link> : GeneratorType, SequenceType {
+public struct UndirectedGraphIterator<Node : Hashable, Link> : IteratorProtocol, Sequence {
     
     public typealias Element = (Node, Node, Link)
     
-    private var base: Graph<Node, Link>.Generator
+    private var base: Graph<Node, Link>.Iterator
     
     public mutating func next() -> Element? {
         return base.next()
     }
 }
 
-extension UndirectedGraphGenerator: CustomStringConvertible, CustomDebugStringConvertible {
+extension UndirectedGraphIterator: CustomStringConvertible, CustomDebugStringConvertible {
     public var description: String {
-        return "UndirectedGraphGenerator"
+        return "UndirectedGraphIterator"
     }
     public var debugDescription: String {
-        return "UndirectedGraphGenerator"
+        return "UndirectedGraphIterator"
     }
 }

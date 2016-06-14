@@ -25,32 +25,32 @@
 
 import Foundation
 
-public enum JsonParseError : ErrorType {
+public enum JsonParseError : ErrorProtocol {
     
-    case UnexpectedEndOfToken
-    case UnexpectedToken(position: Int)
-    case InvalidEscapeCharacter(position: Int)
+    case unexpectedEndOfToken
+    case unexpectedToken(position: Int)
+    case invalidEscapeCharacter(position: Int)
 }
 
 extension Json {
     
-    public static func Parse(bytes bytes: UnsafePointer<UInt8>, count: Int) throws -> Json {
+    public static func Parse(bytes: UnsafePointer<UInt8>, count: Int) throws -> Json {
         var parser = JsonParser(bytes: bytes, count: count)
         return try parser.parseValue()
     }
-    public static func Parse(str: String) throws -> Json {
-        return try Parse(str.dataUsingEncoding(NSUTF8StringEncoding)!)
+    public static func Parse(string: String) throws -> Json {
+        return try Parse(data: string.data(using: .utf8)!)
     }
 }
 
 extension Json {
     
-    public static func Parse(data: NSData) throws -> Json {
-        return try Parse(bytes: UnsafePointer(data.bytes), count: data.length)
+    public static func Parse(data: Data) throws -> Json {
+        return try data.withUnsafeBytes { try Parse(bytes: $0, count: data.count) }
     }
 }
 
-private struct CharacterScanner : GeneratorType, SequenceType {
+private struct CharacterScanner : IteratorProtocol, Sequence {
     
     let count: Int
     var pos: Int
@@ -63,9 +63,10 @@ private struct CharacterScanner : GeneratorType, SequenceType {
         self.pos = 0
     }
     
+    @discardableResult
     mutating func next() -> UInt8? {
         if pos < count {
-            current = bytes.memory
+            current = bytes.pointee
             pos += 1
             bytes += 1
             return current
@@ -77,8 +78,8 @@ private struct CharacterScanner : GeneratorType, SequenceType {
 
 private extension String {
     
-    mutating func append(x: UInt8) {
-        UnicodeScalar(x).writeTo(&self)
+    mutating func append(_ x: UInt8) {
+        UnicodeScalar(x).write(to: &self)
     }
     
     mutating func append(escape x: UInt8) -> Bool {
@@ -135,48 +136,48 @@ private struct JsonParser {
         case 34: return try parseString()
         case 123: return try parseObject()
         case 91: return try parseArray()
-        default: throw JsonParseError.UnexpectedToken(position: scanner.pos)
+        default: throw JsonParseError.unexpectedToken(position: scanner.pos)
         }
     }
     
     mutating func parseNull() throws -> Json {
         if scanner.next() != 117 {
-            throw JsonParseError.UnexpectedToken(position: scanner.pos)
+            throw JsonParseError.unexpectedToken(position: scanner.pos)
         }
         if scanner.next() != 108 {
-            throw JsonParseError.UnexpectedToken(position: scanner.pos)
+            throw JsonParseError.unexpectedToken(position: scanner.pos)
         }
         if scanner.next() != 108 {
-            throw JsonParseError.UnexpectedToken(position: scanner.pos)
+            throw JsonParseError.unexpectedToken(position: scanner.pos)
         }
         scanner.next()
         return nil
     }
     mutating func parseTrue() throws -> Json {
         if scanner.next() != 114 {
-            throw JsonParseError.UnexpectedToken(position: scanner.pos)
+            throw JsonParseError.unexpectedToken(position: scanner.pos)
         }
         if scanner.next() != 117 {
-            throw JsonParseError.UnexpectedToken(position: scanner.pos)
+            throw JsonParseError.unexpectedToken(position: scanner.pos)
         }
         if scanner.next() != 101 {
-            throw JsonParseError.UnexpectedToken(position: scanner.pos)
+            throw JsonParseError.unexpectedToken(position: scanner.pos)
         }
         scanner.next()
         return true
     }
     mutating func parseFalse() throws -> Json {
         if scanner.next() != 97 {
-            throw JsonParseError.UnexpectedToken(position: scanner.pos)
+            throw JsonParseError.unexpectedToken(position: scanner.pos)
         }
         if scanner.next() != 108 {
-            throw JsonParseError.UnexpectedToken(position: scanner.pos)
+            throw JsonParseError.unexpectedToken(position: scanner.pos)
         }
         if scanner.next() != 115 {
-            throw JsonParseError.UnexpectedToken(position: scanner.pos)
+            throw JsonParseError.unexpectedToken(position: scanner.pos)
         }
         if scanner.next() != 101 {
-            throw JsonParseError.UnexpectedToken(position: scanner.pos)
+            throw JsonParseError.unexpectedToken(position: scanner.pos)
         }
         scanner.next()
         return false
@@ -184,13 +185,13 @@ private struct JsonParser {
     
     mutating func parseNumber() throws -> Json {
         let start: UnsafeMutablePointer<Int8> = UnsafeMutablePointer(scanner.bytes - 1)
-        var end: UnsafeMutablePointer<Int8> = start
+        var end: UnsafeMutablePointer<Int8>? = start
         let val = strtod(start, &end)
         if start == end {
-            throw JsonParseError.UnexpectedToken(position: scanner.pos)
+            throw JsonParseError.unexpectedToken(position: scanner.pos)
         }
-        scanner.bytes = UnsafePointer(end)
-        scanner.pos += abs(end - start) - 1
+        scanner.bytes = UnsafePointer(end!)
+        scanner.pos += abs(end! - start) - 1
         scanner.next()
         return Json(val)
     }
@@ -199,7 +200,7 @@ private struct JsonParser {
         if scanner.next() == nil {
             throw JsonParseError.UnexpectedEndOfToken
         }
-        strbuf.removeAll(keepCapacity: true)
+        strbuf.removeAll(keepingCapacity: true)
         Loop: while currentChar != nil {
             switch currentChar! {
             case 92:
@@ -207,7 +208,7 @@ private struct JsonParser {
                     if strbuf.append(escape: current) {
                         scanner.next()
                     } else {
-                        throw JsonParseError.InvalidEscapeCharacter(position: scanner.pos)
+                        throw JsonParseError.invalidEscapeCharacter(position: scanner.pos)
                     }
                 } else {
                     throw JsonParseError.UnexpectedEndOfToken
@@ -251,7 +252,7 @@ private struct JsonParser {
         if scanner.next() == nil {
             return nil
         }
-        strbuf.removeAll(keepCapacity: true)
+        strbuf.removeAll(keepingCapacity: true)
         Loop: while currentChar != nil {
             switch currentChar! {
             case 92:
@@ -291,7 +292,7 @@ private struct JsonParser {
                 if let key = parseKey() {
                     try skipWhitespaces()
                     if currentChar != 58 {
-                        throw JsonParseError.UnexpectedToken(position: scanner.pos)
+                        throw JsonParseError.unexpectedToken(position: scanner.pos)
                     }
                     if scanner.next() == nil {
                         throw JsonParseError.UnexpectedEndOfToken
@@ -299,9 +300,9 @@ private struct JsonParser {
                     dict[key] = try parseValue()
                     try skipWhitespaces()
                 } else {
-                    throw JsonParseError.UnexpectedToken(position: scanner.pos)
+                    throw JsonParseError.unexpectedToken(position: scanner.pos)
                 }
-            default: throw JsonParseError.UnexpectedToken(position: scanner.pos)
+            default: throw JsonParseError.unexpectedToken(position: scanner.pos)
             }
         }
         return Json(dict)

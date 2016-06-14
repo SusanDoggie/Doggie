@@ -78,11 +78,11 @@ extension Color {
     public static func Hex(colorCode: String) -> Color? {
         var colorCode = colorCode
         if colorCode[colorCode.startIndex] == "#" {
-            colorCode.removeAtIndex(colorCode.startIndex)
+            colorCode = String(colorCode.characters.dropFirst())
         }
-        let scanner = NSScanner(string: colorCode)
+        let scanner = Scanner(string: colorCode)
         var color: UInt32 = 0
-        if scanner.scanHexInt(&color) {
+        if scanner.scanHexInt32(&color) {
             let r = UInt8((color >> 16) & 0xFF)
             let g = UInt8((color >> 8) & 0xFF)
             let b = UInt8(color & 0xFF)
@@ -95,7 +95,7 @@ extension Color {
 extension Color {
     
     private init (h: Double, c: Double, m: Double, a: Double) {
-        let h = h.isSignMinus ? fmod(fmod(h * 3.0 / M_PI, 6.0) + 6.0, 6.0) : fmod(h * 3.0 / M_PI, 6.0)
+        let h = h.sign == .minus ? fmod(fmod(h * 3.0 / M_PI, 6.0) + 6.0, 6.0) : fmod(h * 3.0 / M_PI, 6.0)
         let x = c * (1.0 - abs(fmod(h, 2.0) - 1.0))
         self.init(r: m, g: m, b: m, a: a)
         switch floor(h) {
@@ -153,7 +153,7 @@ extension Color {
             let h = fmod(atan2(beta, alpha), 2.0 * M_PI)
             let c = sqrt(alpha * alpha + beta * beta) / 2.0
             let m = min(r, g, b)
-            return (h.isSignMinus ? h + 2.0 * M_PI : h, c, m)
+            return (h.sign == .minus ? h + 2.0 * M_PI : h, c, m)
         }
         mutating set {
             self = Color(h: newValue.0, c: newValue.1, m: newValue.2, a: self.a)

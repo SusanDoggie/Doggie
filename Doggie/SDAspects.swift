@@ -33,43 +33,43 @@ public extension NSObject {
     
     static var methods : [Selector] {
         var count: UInt32 = 0
-        let list = class_copyMethodList(self, &count)
-        let _list = [Selector]((list ..< list + Int(count)).map { return method_getName($0.memory) })
+        let list = class_copyMethodList(self, &count)!
+        let _list = [Selector]((list ..< list + Int(count)).map { return method_getName($0.pointee) })
         free(list)
         return _list
     }
     
-    static func exchangeInstanceMethodImplementations(from: Selector, to: Selector) {
-        assert(self.instancesRespondToSelector(from), "\(self) is not responds to selector: \(from)")
-        assert(self.instancesRespondToSelector(to), "\(self) is not responds to selector: \(to)")
+    static func exchangeInstanceMethodImplementations(_ from: Selector, to: Selector) {
+        assert(self.instancesRespond(to: from), "\(self) is not responds to selector: \(from)")
+        assert(self.instancesRespond(to: to), "\(self) is not responds to selector: \(to)")
         let _from = class_getInstanceMethod(self, from)
         let _to = class_getInstanceMethod(self, to)
         method_exchangeImplementations(_from, _to)
     }
-    static func exchangeClassMethodImplementations(from: Selector, to: Selector) {
-        assert(self.respondsToSelector(from), "\(self) is not responds to selector: \(from)")
-        assert(self.respondsToSelector(to), "\(self) is not responds to selector: \(to)")
+    static func exchangeClassMethodImplementations(_ from: Selector, to: Selector) {
+        assert(self.responds(to: from), "\(self) is not responds to selector: \(from)")
+        assert(self.responds(to: to), "\(self) is not responds to selector: \(to)")
         let _from = class_getClassMethod(self, from)
         let _to = class_getClassMethod(self, to)
         method_exchangeImplementations(_from, _to)
     }
     
-    static func setInstanceMethodImplementations(sel: Selector, block: (AnyObject) -> AnyObject) {
+    static func setInstanceMethodImplementations(_ sel: Selector, block: (AnyObject) -> AnyObject) {
         
         let objcBlock : @convention(block) (AnyObject) -> AnyObject = { block($0) }
-        let imp = imp_implementationWithBlock(unsafeBitCast(objcBlock, AnyObject.self))
-        if self.instancesRespondToSelector(sel) {
+        let imp = imp_implementationWithBlock(unsafeBitCast(objcBlock, to: AnyObject.self))
+        if self.instancesRespond(to: sel) {
             let method = class_getInstanceMethod(self, sel)
             method_setImplementation(method, imp)
         } else {
             class_addMethod(self, sel, imp, "@:")
         }
     }
-    static func setClassMethodImplementations(sel: Selector, block: (AnyClass) -> AnyObject) {
+    static func setClassMethodImplementations(_ sel: Selector, block: (AnyClass) -> AnyObject) {
         
         let objcBlock : @convention(block) (AnyClass) -> AnyObject = { block($0) }
-        let imp = imp_implementationWithBlock(unsafeBitCast(objcBlock, AnyObject.self))
-        if self.respondsToSelector(sel) {
+        let imp = imp_implementationWithBlock(unsafeBitCast(objcBlock, to: AnyObject.self))
+        if self.responds(to: sel) {
             let method = class_getClassMethod(self, sel)
             method_setImplementation(method, imp)
         }

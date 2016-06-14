@@ -41,7 +41,7 @@ public struct Polynomial {
     }
     /// Construct from an arbitrary sequence of coeffs.
     /// a + b x + c x^2 + d x^3 + ...
-    public init<S : SequenceType where S.Generator.Element == Double>(_ s: S) {
+    public init<S : Sequence where S.Iterator.Element == Double>(_ s: S) {
         self.coeffs = s.array
         while self.coeffs.last == 0 {
             self.coeffs.removeLast()
@@ -69,9 +69,9 @@ extension Polynomial : CustomStringConvertible, CustomDebugStringConvertible {
     }
 }
 
-extension Polynomial : MutableCollectionType {
+extension Polynomial : RandomAccessCollection, MutableCollection {
     
-    public typealias Generator = IndexingGenerator<Polynomial>
+    public typealias Iterator = IndexingIterator<Polynomial>
     
     public var startIndex : Int {
         return coeffs.startIndex
@@ -81,6 +81,12 @@ extension Polynomial : MutableCollectionType {
     }
     public var count : Int {
         return coeffs.count
+    }
+    public func index(after i: Int) -> Int {
+        return coeffs.index(after: i)
+    }
+    public func index(before i: Int) -> Int {
+        return coeffs.index(before: i)
     }
     public subscript(n: Int) -> Double {
         get {
@@ -93,7 +99,7 @@ extension Polynomial : MutableCollectionType {
                     coeffs.removeLast()
                 }
             } else if newValue != 0 {
-                coeffs.appendContentsOf(Repeat(count: n - coeffs.count, repeatedValue: 0))
+                coeffs.append(repeatElement(0, count: n - coeffs.count))
                 coeffs.append(newValue)
             }
         }
@@ -103,7 +109,7 @@ extension Polynomial : MutableCollectionType {
 extension Polynomial : Hashable {
     
     public var hashValue: Int {
-        return hash_combine(0, coeffs)
+        return hash_combine(seed: 0, coeffs)
     }
 }
 
@@ -113,12 +119,11 @@ extension Polynomial {
         return max(coeffs.count - 1, 0)
     }
     
-    @warn_unused_result
-    public func eval(x: Double) -> Double {
+    public func eval(_ x: Double) -> Double {
         switch x {
         case 0: return self[0]
         case 1: return coeffs.reduce(0, combine: +)
-        default: return coeffs.reverse().reduce(0) { x * $0 + $1 }
+        default: return coeffs.reversed().reduce(0) { x * $0 + $1 }
         }
     }
 }
@@ -147,9 +152,9 @@ extension Polynomial {
     }
 }
 
-private func _root(p: Polynomial) -> [Double] {
+private func _root(_ p: Polynomial) -> [Double] {
     
-    var extrema = p.derivative.roots.sort()
+    var extrema = p.derivative.roots.sorted()
     
     var probe = max(extrema.last ?? 1, 1)
     while p.eval(probe) < 0 {
@@ -167,7 +172,7 @@ private func _root(p: Polynomial) -> [Double] {
             probe *= 2
         }
     }
-    extrema.insert(probe, atIndex: 0)
+    extrema.insert(probe, at: 0)
     
     var result = [Double]()
     
@@ -181,7 +186,7 @@ private func _root(p: Polynomial) -> [Double] {
                 result.append(extrema[idx])
             }
             
-        } else if !right.almostZero(reference: extrema[idx + 1]) && left.isSignMinus != right.isSignMinus {
+        } else if !right.almostZero(reference: extrema[idx + 1]) && left.sign != right.sign {
             var neg: Double
             var pos: Double
             if left > 0 {
@@ -210,7 +215,7 @@ private func _root(p: Polynomial) -> [Double] {
                     break
                 }
                 previous = mid
-                if midVal.isSignMinus {
+                if midVal.sign == .minus {
                     neg = mid
                     negVal = midVal
                 } else {
@@ -234,17 +239,16 @@ private func _root(p: Polynomial) -> [Double] {
 extension Polynomial {
     
     public var derivative : Polynomial {
-        return count > 1 ? Polynomial(coeffs.enumerate().dropFirst().lazy.map { Double($0) * $1 }) : Polynomial()
+        return count > 1 ? Polynomial(coeffs.enumerated().dropFirst().lazy.map { Double($0) * $1 }) : Polynomial()
     }
     
     public var integral : Polynomial {
-        let _coeffs = coeffs.enumerate().lazy.map { $1 / Double($0 + 1) }
-        return Polynomial(CollectionOfOne(0).concat(_coeffs))
+        let _coeffs = coeffs.enumerated().lazy.map { $1 / Double($0 + 1) }
+        return Polynomial(CollectionOfOne(0).concat(with: _coeffs))
     }
 }
 
-@warn_unused_result
-public func quorem(lhs: Double, _ rhs: Polynomial) -> (quo: Polynomial, rem: Polynomial) {
+public func quorem(_ lhs: Double, _ rhs: Polynomial) -> (quo: Polynomial, rem: Polynomial) {
     switch rhs.count {
     case 0: fatalError("Divide by zero.")
     case 1: return ([lhs / rhs[0]], [])
@@ -252,13 +256,11 @@ public func quorem(lhs: Double, _ rhs: Polynomial) -> (quo: Polynomial, rem: Pol
     }
 }
 
-@warn_unused_result
-public func quorem(lhs: Polynomial, _ rhs: Double) -> (quo: Polynomial, rem: Polynomial) {
+public func quorem(_ lhs: Polynomial, _ rhs: Double) -> (quo: Polynomial, rem: Polynomial) {
     return (Polynomial(lhs.coeffs.map { $0 / rhs }), [])
 }
 
-@warn_unused_result
-public func quorem(lhs: Polynomial, _ rhs: Polynomial) -> (quo: Polynomial, rem: Polynomial) {
+public func quorem(_ lhs: Polynomial, _ rhs: Polynomial) -> (quo: Polynomial, rem: Polynomial) {
     if lhs.count < rhs.count {
         return ([], lhs)
     }
@@ -266,132 +268,120 @@ public func quorem(lhs: Polynomial, _ rhs: Polynomial) -> (quo: Polynomial, rem:
     case 0: fatalError("Divide by zero.")
     case 1: return (lhs / rhs[0], [])
     default:
-        var quotient = [Double](count: lhs.count - rhs.count + 1, repeatedValue: 0)
-        var residue = [Double](count: rhs.count - 1, repeatedValue: 0)
-        Deconvolve(lhs.count, lhs.coeffs.reverse(), 1, rhs.count, rhs.coeffs.reverse(), 1, &quotient, 1, &residue, 1)
-        return (Polynomial(quotient.reverse()), Polynomial(residue.reverse()))
+        var quotient = [Double](repeating: 0, count: lhs.count - rhs.count + 1)
+        var residue = [Double](repeating: 0, count: rhs.count - 1)
+        Deconvolve(lhs.count, lhs.coeffs.reversed(), 1, rhs.count, rhs.coeffs.reversed(), 1, &quotient, 1, &residue, 1)
+        return (Polynomial(quotient.reversed()), Polynomial(residue.reversed()))
     }
 }
 
-public func += (inout lhs: Polynomial, rhs: Polynomial) {
+public func += (lhs: inout Polynomial, rhs: Polynomial) {
     lhs = lhs + rhs
 }
 
-public func += (inout lhs: Polynomial, rhs: Double) {
+public func += (lhs: inout Polynomial, rhs: Double) {
     lhs[0] += rhs
 }
 
-public func -= (inout lhs: Polynomial, rhs: Polynomial) {
+public func -= (lhs: inout Polynomial, rhs: Polynomial) {
     lhs = lhs - rhs
 }
 
-public func -= (inout lhs: Polynomial, rhs: Double) {
+public func -= (lhs: inout Polynomial, rhs: Double) {
     lhs[0] -= rhs
 }
 
-public func *= (inout lhs: Polynomial, rhs: Double) {
+public func *= (lhs: inout Polynomial, rhs: Double) {
     lhs = lhs * rhs
 }
 
-public func *= (inout lhs: Polynomial, rhs: Polynomial) {
+public func *= (lhs: inout Polynomial, rhs: Polynomial) {
     lhs = lhs * rhs
 }
 
-public func /= (inout lhs: Polynomial, rhs: Double) {
+public func /= (lhs: inout Polynomial, rhs: Double) {
     lhs = lhs / rhs
 }
 
-public func /= (inout lhs: Polynomial, rhs: Polynomial) {
+public func /= (lhs: inout Polynomial, rhs: Polynomial) {
     lhs = lhs / rhs
 }
 
-public func %= (inout lhs: Polynomial, rhs: Double) {
+public func %= (lhs: inout Polynomial, rhs: Double) {
     lhs = []
 }
 
-public func %= (inout lhs: Polynomial, rhs: Polynomial) {
+public func %= (lhs: inout Polynomial, rhs: Polynomial) {
     lhs = lhs % rhs
 }
 
-@warn_unused_result
 public prefix func + (p: Polynomial) -> Polynomial {
     return p
 }
 
-@warn_unused_result
 public prefix func - (p: Polynomial) -> Polynomial {
     return Polynomial(p.coeffs.map { -$0 })
 }
 
-@warn_unused_result
 public func + (lhs: Polynomial, rhs: Polynomial) -> Polynomial {
     var lhs = lhs
-    var buf = [Double](count: max(lhs.count, rhs.count), repeatedValue: 0)
+    var buf = [Double](repeating: 0, count: max(lhs.count, rhs.count))
     for idx in buf.indices {
         buf[idx] = lhs[idx] + rhs[idx]
     }
     return Polynomial(buf)
 }
 
-@warn_unused_result
 public func + (lhs: Double, rhs: Polynomial) -> Polynomial {
     var rhs = rhs
     rhs[0] += lhs
     return rhs
 }
 
-@warn_unused_result
 public func + (lhs: Polynomial, rhs: Double) -> Polynomial {
     var lhs = lhs
     lhs[0] += rhs
     return lhs
 }
 
-@warn_unused_result
 public func - (lhs: Polynomial, rhs: Polynomial) -> Polynomial {
     var lhs = lhs
-    var buf = [Double](count: max(lhs.count, rhs.count), repeatedValue: 0)
+    var buf = [Double](repeating: 0, count: max(lhs.count, rhs.count))
     for idx in buf.indices {
         buf[idx] = lhs[idx] - rhs[idx]
     }
     return Polynomial(buf)
 }
 
-@warn_unused_result
 public func - (lhs: Double, rhs: Polynomial) -> Polynomial {
     var buf = rhs.map { -$0 }
     buf[0] += lhs
     return Polynomial(buf)
 }
 
-@warn_unused_result
 public func - (lhs: Polynomial, rhs: Double) -> Polynomial {
     var lhs = lhs
     lhs[0] -= rhs
     return lhs
 }
 
-@warn_unused_result
 public func * (lhs: Double, rhs: Polynomial) -> Polynomial {
     return Polynomial(rhs.coeffs.map { lhs * $0 })
 }
 
-@warn_unused_result
 public func * (lhs: Polynomial, rhs: Double) -> Polynomial {
     return Polynomial(lhs.coeffs.map { $0 * rhs })
 }
 
-@warn_unused_result
 public func * (lhs: Polynomial, rhs: Polynomial) -> Polynomial {
     if lhs.count == 0 || rhs.count == 0 {
         return Polynomial()
     }
-    var result = [Double](count: lhs.count + rhs.count - 1, repeatedValue: 0)
+    var result = [Double](repeating: 0, count: lhs.count + rhs.count - 1)
     DiscreteConvolve(lhs.count, lhs.coeffs, 1, rhs.count, rhs.coeffs, 1, &result, 1)
     return Polynomial(result)
 }
 
-@warn_unused_result
 public func / (lhs: Double, rhs: Polynomial) -> Polynomial {
     switch rhs.count {
     case 0: fatalError("Divide by zero.")
@@ -400,12 +390,10 @@ public func / (lhs: Double, rhs: Polynomial) -> Polynomial {
     }
 }
 
-@warn_unused_result
 public func / (lhs: Polynomial, rhs: Double) -> Polynomial {
     return Polynomial(lhs.coeffs.map { $0 / rhs })
 }
 
-@warn_unused_result
 public func / (lhs: Polynomial, rhs: Polynomial) -> Polynomial {
     if lhs.count < rhs.count {
         return []
@@ -414,13 +402,12 @@ public func / (lhs: Polynomial, rhs: Polynomial) -> Polynomial {
     case 0: fatalError("Divide by zero.")
     case 1: return lhs / rhs[0]
     default:
-        var result = [Double](count: lhs.count - rhs.count + 1, repeatedValue: 0)
-        Deconvolve(lhs.count, lhs.coeffs.reverse(), 1, rhs.count, rhs.coeffs.reverse(), 1, &result, 1)
-        return Polynomial(result.reverse())
+        var result = [Double](repeating: 0, count: lhs.count - rhs.count + 1)
+        Deconvolve(lhs.count, lhs.coeffs.reversed(), 1, rhs.count, rhs.coeffs.reversed(), 1, &result, 1)
+        return Polynomial(result.reversed())
     }
 }
 
-@warn_unused_result
 public func % (lhs: Double, rhs: Polynomial) -> Polynomial {
     switch rhs.count {
     case 0: fatalError("Divide by zero.")
@@ -429,12 +416,10 @@ public func % (lhs: Double, rhs: Polynomial) -> Polynomial {
     }
 }
 
-@warn_unused_result
 public func % (lhs: Polynomial, rhs: Double) -> Polynomial {
     return []
 }
 
-@warn_unused_result
 public func % (lhs: Polynomial, rhs: Polynomial) -> Polynomial {
     if lhs.count < rhs.count {
         return lhs
@@ -443,58 +428,50 @@ public func % (lhs: Polynomial, rhs: Polynomial) -> Polynomial {
     case 0: fatalError("Divide by zero.")
     case 1: return []
     default:
-        var quotient = [Double](count: lhs.count - rhs.count + 1, repeatedValue: 0)
-        var result = [Double](count: rhs.count - 1, repeatedValue: 0)
-        Deconvolve(lhs.count, lhs.coeffs.reverse(), 1, rhs.count, rhs.coeffs.reverse(), 1, &quotient, 1, &result, 1)
-        return Polynomial(result.reverse())
+        var quotient = [Double](repeating: 0, count: lhs.count - rhs.count + 1)
+        var result = [Double](repeating: 0, count: rhs.count - 1)
+        Deconvolve(lhs.count, lhs.coeffs.reversed(), 1, rhs.count, rhs.coeffs.reversed(), 1, &quotient, 1, &result, 1)
+        return Polynomial(result.reversed())
     }
 }
 
-@warn_unused_result
 public func == (lhs: Polynomial, rhs: Polynomial) -> Bool {
     return lhs.coeffs == rhs.coeffs
 }
 
-@warn_unused_result
 public func == (lhs: Double, rhs: Polynomial) -> Bool {
     return rhs.degree == 0 && lhs == rhs[0]
 }
 
-@warn_unused_result
 public func == (lhs: Polynomial, rhs: Double) -> Bool {
     return lhs.degree == 0 && lhs[0] == rhs
 }
 
-@warn_unused_result
 public func != (lhs: Polynomial, rhs: Polynomial) -> Bool {
     return lhs.coeffs != rhs.coeffs
 }
 
-@warn_unused_result
 public func != (lhs: Double, rhs: Polynomial) -> Bool {
     return rhs.degree != 0 || lhs != rhs[0]
 }
 
-@warn_unused_result
 public func != (lhs: Polynomial, rhs: Double) -> Bool {
     return lhs.degree != 0 || lhs[0] != rhs
 }
-@warn_unused_result
-public func gcd(a: Polynomial, _ b: Polynomial) -> Polynomial {
+public func gcd(_ a: Polynomial, _ b: Polynomial) -> Polynomial {
     var a = a
     var b = b
-    while !b.all({ $0.almostZero() }) {
+    while !b.all(where: { $0.almostZero() }) {
         (a, b) = (b, a % b)
     }
     return a
 }
-@warn_unused_result
-public func exgcd(a: Polynomial, _ b: Polynomial) -> (gcd: Polynomial, x: Polynomial, y: Polynomial) {
+public func exgcd(_ a: Polynomial, _ b: Polynomial) -> (gcd: Polynomial, x: Polynomial, y: Polynomial) {
     var a = a
     var b = b
     var x: (Polynomial, Polynomial) = ([1], [0])
     var y: (Polynomial, Polynomial) = ([0], [1])
-    while !b.all({ $0.almostZero() }) {
+    while !b.all(where: { $0.almostZero() }) {
         let (quo, rem) = quorem(a, b)
         x = (x.1, x.0 - quo * x.1)
         y = (y.1, y.0 - quo * y.1)
@@ -502,12 +479,11 @@ public func exgcd(a: Polynomial, _ b: Polynomial) -> (gcd: Polynomial, x: Polyno
     }
     return (a, x.0, y.0)
 }
-@warn_unused_result
-public func pow(p: Polynomial, _ n: Int) -> Polynomial {
+public func pow(_ p: Polynomial, _ n: Int) -> Polynomial {
     if p.count == 0 {
         return Polynomial()
     }
     let count = n * p.count - n + 1
-    let _p = p.coeffs + Repeat(count: (count.hibit << 1) - p.count, repeatedValue: 0)
+    let _p = p.coeffs + repeatElement(0, count: (count.hibit << 1) - p.count)
     return Polynomial(Radix2PowerCircularConvolve(_p, Double(n))[0..<count])
 }

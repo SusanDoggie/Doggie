@@ -25,13 +25,13 @@
 
 import Foundation
 
-public func FFTConvolveLength(x: Int, _ y: Int) -> Int {
+public func FFTConvolveLength(_ x: Int, _ y: Int) -> Int {
     return (x + y - 2).hibit << 1
 }
 
 // MARK: Fourier
 
-public func Fourier(buffer: [Double], inout _ result: [Complex]) {
+public func Fourier(_ buffer: [Double], _ result: inout [Complex]) {
     switch buffer.count {
     case 0:
         result = [Complex]()
@@ -49,7 +49,7 @@ public func Fourier(buffer: [Double], inout _ result: [Complex]) {
         }
     }
 }
-public func Fourier(buffer: [Complex], inout _ result: [Complex]) {
+public func Fourier(_ buffer: [Complex], _ result: inout [Complex]) {
     switch buffer.count {
     case 0, 1:
         result = buffer
@@ -65,7 +65,7 @@ public func Fourier(buffer: [Complex], inout _ result: [Complex]) {
         }
     }
 }
-public func InverseFourier(buffer: [Double], inout _ result: [Complex]) {
+public func InverseFourier(_ buffer: [Double], _ result: inout [Complex]) {
     switch buffer.count {
     case 0:
         result = [Complex]()
@@ -83,7 +83,7 @@ public func InverseFourier(buffer: [Double], inout _ result: [Complex]) {
         }
     }
 }
-public func InverseFourier(buffer: [Complex], inout _ result: [Complex]) {
+public func InverseFourier(_ buffer: [Complex], _ result: inout [Complex]) {
     switch buffer.count {
     case 0, 1:
         result = buffer
@@ -99,10 +99,10 @@ public func InverseFourier(buffer: [Complex], inout _ result: [Complex]) {
         }
     }
 }
-public func BluesteinKernel(count: Int, inout _ kernel: [Complex]) {
+public func BluesteinKernel(_ count: Int, _ kernel: inout [Complex]) {
     
     if kernel.count != count {
-        kernel.replace(with: Repeat(count: count, repeatedValue: Complex(0)))
+        kernel.replace(with: repeatElement(Complex(0), count: count))
     }
     kernel[0].real = 1
     kernel[0].imag = 0
@@ -123,10 +123,10 @@ public func BluesteinKernel(count: Int, inout _ kernel: [Complex]) {
         twiddle2.imag = _i2
     }
 }
-public func InverseBluesteinKernel(count: Int, inout _ kernel: [Complex]) {
+public func InverseBluesteinKernel(_ count: Int, _ kernel: inout [Complex]) {
     
     if kernel.count != count {
-        kernel.replace(with: Repeat(count: count, repeatedValue: Complex(0)))
+        kernel.replace(with: repeatElement(Complex(0), count: count))
     }
     kernel[0].real = 1
     kernel[0].imag = 0
@@ -147,12 +147,12 @@ public func InverseBluesteinKernel(count: Int, inout _ kernel: [Complex]) {
         twiddle2.imag = _i2
     }
 }
-public func Bluestein(buffer: [Double], inout _ result: [Complex]) {
+public func Bluestein(_ buffer: [Double], _ result: inout [Complex]) {
     var _kernel: [Complex] = []
     BluesteinKernel(buffer.count, &_kernel)
     
     if result.count != buffer.count {
-        result.replace(with: Repeat(count: buffer.count, repeatedValue: Complex(0)))
+        result.replace(with: repeatElement(Complex(0), count: buffer.count))
     }
     MulConj(buffer.count, _kernel, 1, buffer, 1, &result, 1)
     
@@ -166,12 +166,12 @@ public func Bluestein(buffer: [Double], inout _ result: [Complex]) {
     var _sqrt = sqrt(Double(buffer.count))
     Div(buffer.count, result, 1, &_sqrt, 0, &result, 1)
 }
-public func Bluestein(buffer: [Complex], inout _ result: [Complex]) {
+public func Bluestein(_ buffer: [Complex], _ result: inout [Complex]) {
     var _kernel: [Complex] = []
     BluesteinKernel(buffer.count, &_kernel)
     
     if result.count != buffer.count {
-        result.replace(with: Repeat(count: buffer.count, repeatedValue: Complex(0)))
+        result.replace(with: repeatElement(Complex(0), count: buffer.count))
     }
     MulConj(buffer.count, _kernel, 1, buffer, 1, &result, 1)
     
@@ -185,12 +185,12 @@ public func Bluestein(buffer: [Complex], inout _ result: [Complex]) {
     var _sqrt = sqrt(Double(buffer.count))
     Div(buffer.count, result, 1, &_sqrt, 0, &result, 1)
 }
-public func InverseBluestein(buffer: [Double], inout _ result: [Complex]) {
+public func InverseBluestein(_ buffer: [Double], _ result: inout [Complex]) {
     var _kernel: [Complex] = []
     InverseBluesteinKernel(buffer.count, &_kernel)
     
     if result.count != buffer.count {
-        result.replace(with: Repeat(count: buffer.count, repeatedValue: Complex(0)))
+        result.replace(with: repeatElement(Complex(0), count: buffer.count))
     }
     MulConj(buffer.count, _kernel, 1, buffer, 1, &result, 1)
     
@@ -204,12 +204,12 @@ public func InverseBluestein(buffer: [Double], inout _ result: [Complex]) {
     var _sqrt = sqrt(Double(buffer.count))
     Div(buffer.count, result, 1, &_sqrt, 0, &result, 1)
 }
-public func InverseBluestein(buffer: [Complex], inout _ result: [Complex]) {
+public func InverseBluestein(_ buffer: [Complex], _ result: inout [Complex]) {
     var _kernel: [Complex] = []
     InverseBluesteinKernel(buffer.count, &_kernel)
     
     if result.count != buffer.count {
-        result.replace(with: Repeat(count: buffer.count, repeatedValue: Complex(0)))
+        result.replace(with: repeatElement(Complex(0), count: buffer.count))
     }
     MulConj(buffer.count, _kernel, 1, buffer, 1, &result, 1)
     
@@ -226,7 +226,7 @@ public func InverseBluestein(buffer: [Complex], inout _ result: [Complex]) {
 
 // MARK: Radix-2 Cooley-Tukey
 
-public func Radix2CooleyTukey(buffer: [Double], inout _ result: [Complex]) {
+public func Radix2CooleyTukey(_ buffer: [Double], _ result: inout [Complex]) {
     var buffer = buffer
     switch buffer.count {
     case 0:
@@ -236,13 +236,13 @@ public func Radix2CooleyTukey(buffer: [Double], inout _ result: [Complex]) {
     default:
         assert(buffer.count.isPower2, "size of buffer must be power of 2.")
         if result.count != buffer.count {
-            result.replace(with: Repeat(count: buffer.count, repeatedValue: Complex(0)))
+            result.replace(with: repeatElement(Complex(0), count: buffer.count))
         }
         let _sqrt = sqrt(Double(buffer.count))
         DispatchRadix2CooleyTukey(log2(buffer.count), buffer.map { $0 / _sqrt }, 1, buffer.count, &result, 1)
     }
 }
-public func InverseRadix2CooleyTukey(buffer: [Double], inout _ result: [Complex]) {
+public func InverseRadix2CooleyTukey(_ buffer: [Double], _ result: inout [Complex]) {
     var buffer = buffer
     switch buffer.count {
     case 0:
@@ -252,7 +252,7 @@ public func InverseRadix2CooleyTukey(buffer: [Double], inout _ result: [Complex]
     default:
         assert(buffer.count.isPower2, "size of buffer must be power of 2.")
         if result.count != buffer.count {
-            result.replace(with: Repeat(count: buffer.count, repeatedValue: Complex(0)))
+            result.replace(with: repeatElement(Complex(0), count: buffer.count))
         }
         let _sqrt = sqrt(Double(buffer.count))
         DispatchInverseRadix2CooleyTukey(log2(buffer.count), buffer.map { $0 / _sqrt }, 1, buffer.count, &result, 1)
@@ -261,22 +261,22 @@ public func InverseRadix2CooleyTukey(buffer: [Double], inout _ result: [Complex]
 
 // MARK: Convolution
 
-public func Convolve(signal: [Double], _ kernel: [Double], inout _ result: [Double]) {
+public func Convolve(_ signal: [Double], _ kernel: [Double], _ result: inout [Double]) {
     FFTConvolve(signal, kernel, &result)
 }
-public func Convolve(signal: [Complex], _ kernel: [Complex], inout _ result: [Complex]) {
+public func Convolve(_ signal: [Complex], _ kernel: [Complex], _ result: inout [Complex]) {
     FFTConvolve(signal, kernel, &result)
 }
-public func CircularConvolve(signal: [Double], _ kernel: [Double], inout _ result: [Double]) {
+public func CircularConvolve(_ signal: [Double], _ kernel: [Double], _ result: inout [Double]) {
     if signal.count == 0 || kernel.count == 0 {
-        result.removeAll(keepCapacity: true)
+        result.removeAll(keepingCapacity: true)
     }
     if signal.count >= kernel.count && signal.count.isPower2 {
         
-        var temp = [Double](count: signal.count, repeatedValue: 0.0)
+        var temp = [Double](repeating: 0, count: signal.count)
         
         if result.count != signal.count {
-            result.replace(with: Repeat(count: signal.count, repeatedValue: 0))
+            result.replace(with: repeatElement(0, count: signal.count))
         }
         
         let lv = log2(signal.count)
@@ -295,19 +295,19 @@ public func CircularConvolve(signal: [Double], _ kernel: [Double], inout _ resul
             Add(block, result, 1, UnsafePointer(result) + idx * block, 1, &result, 1)
         }
         Add(result.count % block, result, 1, UnsafePointer(result) + count * block, 1, &result, 1)
-        result.removeRange(block..<result.count)
+        result.removeSubrange(block..<result.count)
     }
 }
-public func CircularConvolve(signal: [Complex], _ kernel: [Complex], inout _ result: [Complex]) {
+public func CircularConvolve(_ signal: [Complex], _ kernel: [Complex], _ result: inout [Complex]) {
     if signal.count == 0 || kernel.count == 0 {
-        result.removeAll(keepCapacity: true)
+        result.removeAll(keepingCapacity: true)
     }
     if signal.count >= kernel.count && signal.count.isPower2 {
         
-        var temp = [Complex](count: signal.count, repeatedValue: Complex(0))
+        var temp = [Complex](repeating: Complex(0), count: signal.count)
         
         if result.count != signal.count {
-            result.replace(with: Repeat(count: signal.count, repeatedValue: Complex(0)))
+            result.replace(with: repeatElement(Complex(0), count: signal.count))
         }
         
         let lv = log2(signal.count)
@@ -326,34 +326,34 @@ public func CircularConvolve(signal: [Complex], _ kernel: [Complex], inout _ res
             Add(block, result, 1, UnsafePointer<Complex>(result) + idx * block, 1, &result, 1)
         }
         Add(result.count % block, result, 1, UnsafePointer<Complex>(result) + count * block, 1, &result, 1)
-        result.removeRange(block..<result.count)
+        result.removeSubrange(block..<result.count)
     }
 }
-public func NegacyclicConvolve(signal: [Double], _ kernel: [Double], inout _ result: [Double]) {
+public func NegacyclicConvolve(_ signal: [Double], _ kernel: [Double], _ result: inout [Double]) {
     Convolve(signal, kernel, &result)
     let count = signal.count
     for idx in 0..<kernel.count - 1 {
         result[idx] -= result[idx + count]
     }
-    result.removeRange(signal.count..<result.count)
+    result.removeSubrange(signal.count..<result.count)
 }
-public func NegacyclicConvolve(signal: [Complex], _ kernel: [Complex], inout _ result: [Complex]) {
+public func NegacyclicConvolve(_ signal: [Complex], _ kernel: [Complex], _ result: inout [Complex]) {
     Convolve(signal, kernel, &result)
     let count = signal.count
     for idx in 0..<kernel.count - 1 {
         result[idx].real -= result[idx + count].real
         result[idx].imag -= result[idx + count].imag
     }
-    result.removeRange(signal.count..<result.count)
+    result.removeSubrange(signal.count..<result.count)
 }
 
-public func FFTConvolve(signal: [Double], _ kernel: [Double], inout _ result: [Double]) {
+public func FFTConvolve(_ signal: [Double], _ kernel: [Double], _ result: inout [Double]) {
     
     let convolve_length = signal.count + kernel.count - 1
     let fft_length = FFTConvolveLength(signal.count, kernel.count)
     let lv = log2(fft_length)
     
-    let buffer = [Double](count: fft_length << 1, repeatedValue: 0.0)
+    let buffer = [Double](repeating: 0, count: fft_length << 1)
     let _output = UnsafeMutablePointer<Double>(buffer)
     let _temp = UnsafeMutablePointer<Double>(buffer) + fft_length
     
@@ -363,13 +363,13 @@ public func FFTConvolve(signal: [Double], _ kernel: [Double], inout _ result: [D
     
     result.replace(with: buffer.prefix(convolve_length))
 }
-public func FFTConvolve(signal: [Complex], _ kernel: [Complex], inout _ result: [Complex]) {
+public func FFTConvolve(_ signal: [Complex], _ kernel: [Complex], _ result: inout [Complex]) {
     
     let convolve_length = signal.count + kernel.count - 1
     let fft_length = FFTConvolveLength(signal.count, kernel.count)
     let lv = log2(fft_length)
     
-    let buffer = [Complex](count: fft_length << 1, repeatedValue: Complex(0))
+    let buffer = [Complex](repeating: Complex(0), count: fft_length << 1)
     let _output = UnsafeMutablePointer<Complex>(buffer)
     let _temp = UnsafeMutablePointer<Complex>(buffer) + fft_length
     
@@ -377,26 +377,26 @@ public func FFTConvolve(signal: [Complex], _ kernel: [Complex], inout _ result: 
     
     result.replace(with: buffer.prefix(convolve_length))
 }
-public func OverlapConvolve(signal signal: [Double], kernel: [Double], inout _ overlap: [Double], inout _ result: [Double]) {
+public func OverlapConvolve(signal: [Double], kernel: [Double], _ overlap: inout [Double], _ result: inout [Double]) {
     FFTConvolve(signal, kernel, &result)
     let count = min(result.count, overlap.count)
     Add(count, result, 1, overlap, 1, &result, 1)
-    overlap.replace(with: result[signal.count..<result.count].concat(overlap[count..<overlap.count]))
-    result.removeRange(signal.count..<result.count)
+    overlap.replace(with: result[signal.count..<result.count].concat(with: overlap[count..<overlap.count]))
+    result.removeSubrange(signal.count..<result.count)
 }
-public func OverlapConvolve(signal signal: [Complex], kernel: [Complex], inout _ overlap: [Complex], inout _ result: [Complex]) {
+public func OverlapConvolve(signal: [Complex], kernel: [Complex], _ overlap: inout [Complex], _ result: inout [Complex]) {
     FFTConvolve(signal, kernel, &result)
     let count = min(result.count, overlap.count)
     Add(count, result, 1, overlap, 1, &result, 1)
-    overlap.replace(with: result[signal.count..<result.count].concat(overlap[count..<overlap.count]))
-    result.removeRange(signal.count..<result.count)
+    overlap.replace(with: result[signal.count..<result.count].concat(with: overlap[count..<overlap.count]))
+    result.removeSubrange(signal.count..<result.count)
 }
 
 // MARK: Discrete function
 
-public func DiscreteFourier(buffer: [Double], inout _ result: [Complex]) {
+public func DiscreteFourier(_ buffer: [Double], _ result: inout [Complex]) {
     if result.count != buffer.count {
-        result.replace(with: Repeat(count: buffer.count, repeatedValue: Complex(0)))
+        result.replace(with: repeatElement(Complex(0), count: buffer.count))
     }
     let angle: Double = -2 * M_PI / Double(buffer.count)
     let sqrt_length = sqrt(Double(buffer.count))
@@ -408,9 +408,9 @@ public func DiscreteFourier(buffer: [Double], inout _ result: [Complex]) {
         result[k] = tp / sqrt_length
     }
 }
-public func DiscreteFourier(buffer: [Complex], inout _ result: [Complex]) {
+public func DiscreteFourier(_ buffer: [Complex], _ result: inout [Complex]) {
     if result.count != buffer.count {
-        result.replace(with: Repeat(count: buffer.count, repeatedValue: Complex(0)))
+        result.replace(with: repeatElement(Complex(0), count: buffer.count))
     }
     let angle: Double = -2 * M_PI / Double(buffer.count)
     let sqrt_length = sqrt(Double(buffer.count))
@@ -422,9 +422,9 @@ public func DiscreteFourier(buffer: [Complex], inout _ result: [Complex]) {
         result[k] = tp / sqrt_length
     }
 }
-public func InverseDiscreteFourier(buffer: [Double], inout _ result: [Complex]) {
+public func InverseDiscreteFourier(_ buffer: [Double], _ result: inout [Complex]) {
     if result.count != buffer.count {
-        result.replace(with: Repeat(count: buffer.count, repeatedValue: Complex(0)))
+        result.replace(with: repeatElement(Complex(0), count: buffer.count))
     }
     let angle: Double = 2 * M_PI / Double(buffer.count)
     let sqrt_length = sqrt(Double(buffer.count))
@@ -436,9 +436,9 @@ public func InverseDiscreteFourier(buffer: [Double], inout _ result: [Complex]) 
         result[k] = tp / sqrt_length
     }
 }
-public func InverseDiscreteFourier(buffer: [Complex], inout _ result: [Complex]) {
+public func InverseDiscreteFourier(_ buffer: [Complex], _ result: inout [Complex]) {
     if result.count != buffer.count {
-        result.replace(with: Repeat(count: buffer.count, repeatedValue: Complex(0)))
+        result.replace(with: repeatElement(Complex(0), count: buffer.count))
     }
     let angle: Double = 2 * M_PI / Double(buffer.count)
     let sqrt_length = sqrt(Double(buffer.count))
@@ -450,26 +450,26 @@ public func InverseDiscreteFourier(buffer: [Complex], inout _ result: [Complex])
         result[k] = tp / sqrt_length
     }
 }
-public func DiscreteConvolve(signal: [Double], _ kernel: [Double], inout _ result: [Double]) {
+public func DiscreteConvolve(_ signal: [Double], _ kernel: [Double], _ result: inout [Double]) {
     let size = signal.count + kernel.count - 1
     if result.count != size {
-        result.replace(with: Repeat(count: size, repeatedValue: 0))
+        result.replace(with: repeatElement(0, count: size))
     }
     DiscreteConvolve(signal.count, signal, 1, kernel.count, kernel, 1, &result, 1)
 }
-public func DiscreteConvolve(signal: [Complex], _ kernel: [Complex], inout _ result: [Complex]) {
+public func DiscreteConvolve(_ signal: [Complex], _ kernel: [Complex], _ result: inout [Complex]) {
     let size = signal.count + kernel.count - 1
     if result.count != size {
-        result.replace(with: Repeat(count: size, repeatedValue: Complex(0)))
+        result.replace(with: repeatElement(Complex(0), count: size))
     }
     DiscreteConvolve(signal.count, signal, 1, kernel.count, kernel, 1, &result, 1)
 }
 
 // MARK: Other Transform
 
-public func DCTII(buffer: [Double], inout _ result: [Double]) {
+public func DCTII(_ buffer: [Double], _ result: inout [Double]) {
     let N = buffer.count
-    var temp = [Double](count: N, repeatedValue: 0)
+    var temp = [Double](repeating: 0, count: N)
     for i in 0..<N >> 1 {
         temp[i] = buffer[i << 1]
         temp[N - i - 1] = buffer[(i << 1) + 1]
@@ -479,16 +479,16 @@ public func DCTII(buffer: [Double], inout _ result: [Double]) {
     }
     var _temp = [Complex]()
     Fourier(temp, &_temp)
-    result = [Double](count: N, repeatedValue: 0)
+    result = [Double](repeating: 0, count: N)
     result[0] = _temp[0].real
     let _angle = -M_PI_2 / Double(N)
     for i in 1..<N {
         result[i] = (_temp[i] * polar(rho: M_SQRT2, theta: _angle * Double(i))).real
     }
 }
-public func DCTIII(buffer: [Double], inout _ result: [Double]) {
+public func DCTIII(_ buffer: [Double], _ result: inout [Double]) {
     let N = buffer.count
-    var temp = [Complex](count: N, repeatedValue: Complex(0))
+    var temp = [Complex](repeating: Complex(0), count: N)
     temp[0] = Complex(buffer[0])
     let _angle = -M_PI_2 / Double(N)
     for i in 1..<N {
@@ -496,7 +496,7 @@ public func DCTIII(buffer: [Double], inout _ result: [Double]) {
     }
     var _temp = [Complex]()
     Fourier(temp, &_temp)
-    result = [Double](count: N, repeatedValue: 0)
+    result = [Double](repeating: 0, count: N)
     for i in 0..<N >> 1 {
         result[i << 1] = _temp[i].real
         result[(i << 1) + 1] = _temp[N - i - 1].real
@@ -505,9 +505,9 @@ public func DCTIII(buffer: [Double], inout _ result: [Double]) {
         result[N - 1] = _temp[N >> 1].real
     }
 }
-public func DCTIV(buffer: [Double], inout _ result: [Double]) {
+public func DCTIV(_ buffer: [Double], _ result: inout [Double]) {
     let N = buffer.count
-    var temp = [Double](count: N, repeatedValue: 0)
+    var temp = [Double](repeating: 0, count: N)
     for i in 0..<N >> 1 {
         temp[i] = buffer[i << 1]
         temp[N - i - 1] = -buffer[(i << 1) + 1]
@@ -515,22 +515,22 @@ public func DCTIV(buffer: [Double], inout _ result: [Double]) {
     if N & 1 == 1 {
         temp[N >> 1] = buffer[N - 1]
     }
-    var _temp = [Complex](count: N, repeatedValue: Complex(0))
+    var _temp = [Complex](repeating: Complex(0), count: N)
     _temp[0] = Complex(temp[0])
     let _angle = -M_PI / Double(N)
     for i in 1..<N {
         _temp[i] = polar(rho: temp[i], theta: _angle * Double(i))
     }
     Fourier(_temp, &_temp)
-    result = [Double](count: N, repeatedValue: 0)
+    result = [Double](repeating: 0, count: N)
     let _angle2 = -M_PI_4 / Double(N)
     for i in 0..<N {
         result[i] = (_temp[i] * polar(rho: M_SQRT2, theta: _angle2 * Double((i << 1) + 1))).real
     }
 }
-public func DSTII(buffer: [Double], inout _ result: [Double]) {
+public func DSTII(_ buffer: [Double], _ result: inout [Double]) {
     let N = buffer.count
-    var temp = [Double](count: N, repeatedValue: 0)
+    var temp = [Double](repeating: 0, count: N)
     for i in 0..<N >> 1 {
         temp[i] = -buffer[i << 1]
         temp[N - i - 1] = buffer[(i << 1) + 1]
@@ -538,23 +538,23 @@ public func DSTII(buffer: [Double], inout _ result: [Double]) {
     if N & 1 == 1 {
         temp[N >> 1] = -buffer[N - 1]
     }
-    var _temp = [Complex](count: N, repeatedValue: Complex(0))
+    var _temp = [Complex](repeating: Complex(0), count: N)
     _temp[0] = Complex(temp[0])
     let _angle: Double = -2 * M_PI / Double(N)
     for i in 1..<N {
         _temp[i] = polar(rho: temp[i], theta: _angle * Double(i))
     }
     Fourier(_temp, &_temp)
-    result = [Double](count: N, repeatedValue: 0)
+    result = [Double](repeating: 0, count: N)
     let _angle2 = -M_PI_2 / Double(N)
     for i in 0..<N - 1 {
         result[i] = (_temp[i] * polar(rho: M_SQRT2, theta: _angle2 * Double(i + 1))).imag
     }
     result[N - 1] = (_temp[N - 1] * polar(rho: 1, theta: -M_PI_2)).imag
 }
-public func DSTIII(buffer: [Double], inout _ result: [Double]) {
+public func DSTIII(_ buffer: [Double], _ result: inout [Double]) {
     let N = buffer.count
-    var temp = [Complex](count: N, repeatedValue: Complex(0))
+    var temp = [Complex](repeating: Complex(0), count: N)
     temp[0] = Complex(buffer[0])
     let _angle = -M_PI_2 / Double(N)
     for i in 0..<N - 1 {
@@ -567,7 +567,7 @@ public func DSTIII(buffer: [Double], inout _ result: [Double]) {
     for i in 1..<N {
         _temp[i] *= polar(rho: 1, theta: _angle2 * Double(i))
     }
-    result = [Double](count: N, repeatedValue: 0)
+    result = [Double](repeating: 0, count: N)
     for i in 0..<N >> 1 {
         result[i << 1] = -_temp[i].imag
         result[(i << 1) + 1] = _temp[N - i - 1].imag
@@ -576,9 +576,9 @@ public func DSTIII(buffer: [Double], inout _ result: [Double]) {
         result[N - 1] = -_temp[N >> 1].imag
     }
 }
-public func DSTIV(buffer: [Double], inout _ result: [Double]) {
+public func DSTIV(_ buffer: [Double], _ result: inout [Double]) {
     let N = buffer.count
-    var temp = [Double](count: N, repeatedValue: 0)
+    var temp = [Double](repeating: 0, count: N)
     for i in 0..<N >> 1 {
         temp[i] = -buffer[i << 1]
         temp[N - i - 1] = -buffer[(i << 1) + 1]
@@ -586,14 +586,14 @@ public func DSTIV(buffer: [Double], inout _ result: [Double]) {
     if N & 1 == 1 {
         temp[N >> 1] = -buffer[N - 1]
     }
-    var _temp = [Complex](count: N, repeatedValue: Complex(0))
+    var _temp = [Complex](repeating: Complex(0), count: N)
     _temp[0] = Complex(temp[0])
     let _angle = -M_PI / Double(N)
     for i in 1..<N {
         _temp[i] = polar(rho: temp[i], theta: _angle * Double(i))
     }
     Fourier(_temp, &_temp)
-    result = [Double](count: N, repeatedValue: 0)
+    result = [Double](repeating: 0, count: N)
     let _angle2 = -M_PI_4 / Double(N)
     for i in 0..<N {
         result[i] = (_temp[i] * polar(rho: M_SQRT2, theta: _angle2 * Double((i << 1) + 1))).imag
@@ -602,7 +602,7 @@ public func DSTIV(buffer: [Double], inout _ result: [Double]) {
 
 // MARK: Signal Processing
 
-public func Resampling(count: Int, inout _ buffer: [Double]) {
+public func Resampling(_ count: Int, _ buffer: inout [Double]) {
     var _freq = Fourier(buffer)
     if count > _freq.count {
         let half = _freq.count >> 1
@@ -610,16 +610,16 @@ public func Resampling(count: Int, inout _ buffer: [Double]) {
             _freq[0..<half].append(_freq[half])
         }
         if count > _freq.count {
-            _freq[0...half].appendContentsOf(Repeat(count: count - _freq.count, repeatedValue: Complex(0)))
+            _freq[0...half].append(contentsOf: repeatElement(Complex(0), count: count - _freq.count))
         }
     } else if count < _freq.count {
         let half = count >> 1
         let start = half + 1
         let end = _freq.count - half
         if count & 1 == 0 {
-            _freq.removeRange(start...end)
+            _freq.removeSubrange(start...end)
         } else {
-            _freq.removeRange(start..<end)
+            _freq.removeSubrange(start..<end)
         }
     }
     InverseFourier(_freq, &_freq)
@@ -629,113 +629,113 @@ public func Resampling(count: Int, inout _ buffer: [Double]) {
 // MARK: Wrapper Function
 
 
-public func DiscreteFourier(buffer: [Double]) -> [Complex] {
+public func DiscreteFourier(_ buffer: [Double]) -> [Complex] {
     var result: [Complex] = []
     DiscreteFourier(buffer, &result)
     return result
 }
-public func DiscreteFourier(buffer: [Complex]) -> [Complex] {
+public func DiscreteFourier(_ buffer: [Complex]) -> [Complex] {
     var result: [Complex] = []
     DiscreteFourier(buffer, &result)
     return result
 }
-public func InverseDiscreteFourier(buffer: [Double]) -> [Complex] {
+public func InverseDiscreteFourier(_ buffer: [Double]) -> [Complex] {
     var result: [Complex] = []
     InverseDiscreteFourier(buffer, &result)
     return result
 }
-public func InverseDiscreteFourier(buffer: [Complex]) -> [Complex] {
+public func InverseDiscreteFourier(_ buffer: [Complex]) -> [Complex] {
     var result: [Complex] = []
     InverseDiscreteFourier(buffer, &result)
     return result
 }
-public func Fourier(buffer: [Double]) -> [Complex] {
+public func Fourier(_ buffer: [Double]) -> [Complex] {
     var result: [Complex] = []
     Fourier(buffer, &result)
     return result
 }
-public func Fourier(buffer: [Complex]) -> [Complex] {
+public func Fourier(_ buffer: [Complex]) -> [Complex] {
     var result: [Complex] = []
     Fourier(buffer, &result)
     return result
 }
-public func InverseFourier(buffer: [Double]) -> [Complex] {
+public func InverseFourier(_ buffer: [Double]) -> [Complex] {
     var result: [Complex] = []
     InverseFourier(buffer, &result)
     return result
 }
-public func InverseFourier(buffer: [Complex]) -> [Complex] {
+public func InverseFourier(_ buffer: [Complex]) -> [Complex] {
     var result: [Complex] = []
     InverseFourier(buffer, &result)
     return result
 }
-public func Convolve(signal: [Double], _ kernel: [Double]) -> [Double] {
+public func Convolve(_ signal: [Double], _ kernel: [Double]) -> [Double] {
     var result = [Double]()
     Convolve(signal, kernel, &result)
     return result
 }
-public func Convolve(signal: [Complex], _ kernel: [Complex]) -> [Complex] {
+public func Convolve(_ signal: [Complex], _ kernel: [Complex]) -> [Complex] {
     var result = [Complex]()
     Convolve(signal, kernel, &result)
     return result
 }
-public func CircularConvolve(signal: [Double], _ kernel: [Double]) -> [Double] {
+public func CircularConvolve(_ signal: [Double], _ kernel: [Double]) -> [Double] {
     var result = [Double]()
     CircularConvolve(signal, kernel, &result)
     return result
 }
-public func CircularConvolve(signal: [Complex], _ kernel: [Complex]) -> [Complex] {
+public func CircularConvolve(_ signal: [Complex], _ kernel: [Complex]) -> [Complex] {
     var result = [Complex]()
     CircularConvolve(signal, kernel, &result)
     return result
 }
-public func NegacyclicConvolve(signal: [Double], _ kernel: [Double]) -> [Double] {
+public func NegacyclicConvolve(_ signal: [Double], _ kernel: [Double]) -> [Double] {
     var result = [Double]()
     NegacyclicConvolve(signal, kernel, &result)
     return result
 }
-public func NegacyclicConvolve(signal: [Complex], _ kernel: [Complex]) -> [Complex] {
+public func NegacyclicConvolve(_ signal: [Complex], _ kernel: [Complex]) -> [Complex] {
     var result = [Complex]()
     NegacyclicConvolve(signal, kernel, &result)
     return result
 }
-public func OverlapConvolve(signal signal: [Double], kernel: [Double], inout _ overlap: [Double]) -> [Double] {
+public func OverlapConvolve(signal: [Double], kernel: [Double], _ overlap: inout [Double]) -> [Double] {
     var result = [Double]()
     OverlapConvolve(signal: signal, kernel: kernel, &overlap, &result)
     return result
 }
-public func OverlapConvolve(signal signal: [Complex], kernel: [Complex], inout _ overlap: [Complex]) -> [Complex] {
+public func OverlapConvolve(signal: [Complex], kernel: [Complex], _ overlap: inout [Complex]) -> [Complex] {
     var result = [Complex]()
     OverlapConvolve(signal: signal, kernel: kernel, &overlap, &result)
     return result
 }
 
-public func DCTII(buffer: [Double]) -> [Double] {
+public func DCTII(_ buffer: [Double]) -> [Double] {
     var result = [Double]()
     DCTII(buffer, &result)
     return result
 }
-public func DCTIII(buffer: [Double]) -> [Double] {
+public func DCTIII(_ buffer: [Double]) -> [Double] {
     var result = [Double]()
     DCTIII(buffer, &result)
     return result
 }
-public func DCTIV(buffer: [Double]) -> [Double] {
+public func DCTIV(_ buffer: [Double]) -> [Double] {
     var result = [Double]()
     DCTIV(buffer, &result)
     return result
 }
-public func DSTII(buffer: [Double]) -> [Double] {
+public func DSTII(_ buffer: [Double]) -> [Double] {
     var result = [Double]()
     DSTII(buffer, &result)
     return result
 }
-public func DSTIII(buffer: [Double]) -> [Double] {
+public func DSTIII(_ buffer: [Double]) -> [Double] {
     var result = [Double]()
     DSTIII(buffer, &result)
     return result
 }
-public func DSTIV(buffer: [Double]) -> [Double] {
+public func DSTIV(_ buffer: [Double]) -> [Double] {
     var result = [Double]()
     DSTIV(buffer, &result)
     return result

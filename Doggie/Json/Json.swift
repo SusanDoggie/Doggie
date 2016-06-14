@@ -25,13 +25,13 @@
 
 private enum jValue {
     
-    case Null
-    case Bool(Swift.Bool)
-    case Integer(Swift.IntMax)
-    case Float(Swift.Double)
-    case String(Swift.String)
-    case Array([Json])
-    case Object([Swift.String: Json])
+    case null
+    case bool(Swift.Bool)
+    case integer(Swift.IntMax)
+    case float(Swift.Double)
+    case string(Swift.String)
+    case array([Json])
+    case object([Swift.String: Json])
 }
 
 public struct Json {
@@ -39,32 +39,32 @@ public struct Json {
     private var value: jValue
     
     public init(_ val: Bool) {
-        self.value = .Bool(val)
+        self.value = .bool(val)
     }
-    public init<S : SignedIntegerType>(_ val: S) {
+    public init<S : SignedInteger>(_ val: S) {
         self.value = .Integer(val.toIntMax())
     }
     public init(_ val: Float) {
-        self.value = .Float(Double(val))
+        self.value = .float(Double(val))
     }
     public init(_ val: Double) {
-        self.value = .Float(val)
+        self.value = .float(val)
     }
     public init(_ val: String) {
-        self.value = .String(val)
+        self.value = .string(val)
     }
     public init(_ val: [Json]) {
-        self.value = .Array(val)
+        self.value = .array(val)
     }
     public init(_ val: [String: Json]) {
-        self.value = .Object(val)
+        self.value = .object(val)
     }
 }
 
 extension Json: NilLiteralConvertible {
     
     public init(nilLiteral value: Void) {
-        self.value = .Null
+        self.value = .null
     }
 }
 
@@ -129,24 +129,24 @@ extension Json: CustomStringConvertible, CustomDebugStringConvertible {
     
     public var description: String {
         switch self.value {
-        case .Null: return "nil"
-        case .Bool(let x): return x.description
-        case .Integer(let x): return x.description
-        case .Float(let x): return x.description
-        case .String(let x): return x
-        case .Array(let x): return x.description
-        case .Object(let x): return x.description
+        case .null: return "nil"
+        case .bool(let x): return x.description
+        case .integer(let x): return x.description
+        case .float(let x): return x.description
+        case .string(let x): return x
+        case .array(let x): return x.description
+        case .object(let x): return x.description
         }
     }
     public var debugDescription: String {
         switch self.value {
-        case .Null: return "nil"
-        case .Bool(let x): return x.description
-        case .Integer(let x): return x.description
-        case .Float(let x): return x.description
-        case .String(let x): return x.debugDescription
-        case .Array(let x): return x.debugDescription
-        case .Object(let x): return x.debugDescription
+        case .null: return "nil"
+        case .bool(let x): return x.description
+        case .integer(let x): return x.description
+        case .float(let x): return x.description
+        case .string(let x): return x.debugDescription
+        case .array(let x): return x.debugDescription
+        case .object(let x): return x.debugDescription
         }
     }
 }
@@ -155,42 +155,42 @@ extension Json {
     
     public var isNull : Bool {
         switch self.value {
-        case .Null: return true
+        case .null: return true
         default: return false
         }
     }
     
     public var isBool : Bool {
         switch self.value {
-        case .Bool: return true
+        case .bool: return true
         default: return false
         }
     }
     
     public var isNumber : Bool {
         switch self.value {
-        case .Integer, .Float: return true
+        case .integer, .float: return true
         default: return false
         }
     }
     
     public var isString : Bool {
         switch self.value {
-        case .String: return true
+        case .string: return true
         default: return false
         }
     }
     
     public var isArray : Bool {
         switch self.value {
-        case .Array: return true
+        case .array: return true
         default: return false
         }
     }
     
     public var isObject : Bool {
         switch self.value {
-        case .Object: return true
+        case .object: return true
         default: return false
         }
     }
@@ -200,15 +200,15 @@ extension Json {
     
     var isInteger: Bool {
         switch self.value {
-        case .Integer: return true
-        case .Float: return false
+        case .integer: return true
+        case .float: return false
         default: return false
         }
     }
     var isFloat: Bool {
         switch self.value {
-        case .Integer: return false
-        case .Float: return true
+        case .integer: return false
+        case .float: return true
         default: return false
         }
     }
@@ -218,39 +218,39 @@ extension Json {
     
     public var boolValue: Bool! {
         switch self.value {
-        case .Bool(let x): return x
-        case .Integer(let x): return x != 0
-        case .Float(let x): return x != 0
+        case .bool(let x): return x
+        case .integer(let x): return x != 0
+        case .float(let x): return x != 0
         default: return nil
         }
     }
     public var intValue: Int! {
         switch self.value {
-        case .Bool(let x): return x ? 1 : 0
-        case .Integer(let x): return Int(truncatingBitPattern: x)
-        case .Float(let x): return Int(x)
+        case .bool(let x): return x ? 1 : 0
+        case .integer(let x): return Int(truncatingBitPattern: x)
+        case .float(let x): return Int(x)
         default: return nil
         }
     }
     public var longIntValue: IntMax! {
         switch self.value {
-        case .Bool(let x): return x ? 1 : 0
-        case .Integer(let x): return x
-        case .Float(let x): return IntMax(x)
+        case .bool(let x): return x ? 1 : 0
+        case .integer(let x): return x
+        case .float(let x): return IntMax(x)
         default: return nil
         }
     }
     public var doubleValue: Double! {
         switch self.value {
-        case .Bool(let x): return x ? 1 : 0
-        case .Integer(let x): return Double(x)
-        case .Float(let x): return x
+        case .bool(let x): return x ? 1 : 0
+        case .integer(let x): return Double(x)
+        case .float(let x): return x
         default: return nil
         }
     }
     public var stringValue: String! {
         switch self.value {
-        case .String(let x): return x
+        case .string(let x): return x
         default: return nil
         }
     }
@@ -260,8 +260,8 @@ extension Json {
     
     public var count: Int {
         switch self.value {
-        case .Array(let x): return x.count
-        case .Object(let x): return x.count
+        case .array(let x): return x.count
+        case .object(let x): return x.count
         default: fatalError("Not an array or object.")
         }
     }
@@ -269,15 +269,15 @@ extension Json {
     public subscript(idx: Int) -> Json {
         get {
             switch self.value {
-            case .Array(let x): return idx < x.count ? x[idx] : nil
+            case .array(let x): return idx < x.count ? x[idx] : nil
             default: fatalError("Not an array.")
             }
         }
         set {
             switch self.value {
-            case .Array(var x):
+            case .array(var x):
                 x[idx] = newValue
-                self.value = .Array(x)
+                self.value = .array(x)
             default: fatalError("Not an array.")
             }
         }
@@ -285,15 +285,15 @@ extension Json {
     public subscript(key: String) -> Json {
         get {
             switch self.value {
-            case .Object(let x): return x[key] ?? nil
+            case .object(let x): return x[key] ?? nil
             default: fatalError("Not an object.")
             }
         }
         set {
             switch self.value {
-            case .Object(var x):
+            case .object(var x):
                 x[key] = newValue
-                self.value = .Object(x)
+                self.value = .object(x)
             default: fatalError("Not an object.")
             }
         }
@@ -304,19 +304,19 @@ extension Json {
     
     public var array: [Json]! {
         switch self.value {
-        case .Array(let x): return x
+        case .array(let x): return x
         default: return nil
         }
     }
     public var dictionary: [String: Json]! {
         switch self.value {
-        case .Object(let x): return x
+        case .object(let x): return x
         default: return nil
         }
     }
 }
 
-private func escapeString(source : String, inout _ result: [UInt8]) {
+private func escapeString(_ source : String, _ result: inout [UInt8]) {
     result.append(34)
     for c in source.utf8 {
         switch c {
@@ -340,14 +340,14 @@ private func escapeString(source : String, inout _ result: [UInt8]) {
 
 extension Json {
     
-    public func write(inout data: [UInt8]) {
+    public func write(_ data: inout [UInt8]) {
         switch self.value {
-        case .Null:
+        case .null:
             data.append(110)
             data.append(117)
             data.append(108)
             data.append(108)
-        case .Bool(let x):
+        case .bool(let x):
             if x {
                 data.append(116)
                 data.append(114)
@@ -360,10 +360,10 @@ extension Json {
                 data.append(115)
                 data.append(101)
             }
-        case .Integer(let x): data.appendContentsOf(String(x).utf8)
-        case .Float(let x): data.appendContentsOf(String(x).utf8)
-        case .String(let x): escapeString(x, &data)
-        case .Array(let x):
+        case .integer(let x): data.append(contentsOf: String(x).utf8)
+        case .float(let x): data.append(contentsOf: String(x).utf8)
+        case .string(let x): escapeString(x, &data)
+        case .array(let x):
             data.append(91)
             var flag = false
             for item in x {
@@ -374,7 +374,7 @@ extension Json {
                 flag = true
             }
             data.append(93)
-        case .Object(let x):
+        case .object(let x):
             data.append(123)
             var flag = false
             for (key, item) in x {
@@ -398,7 +398,7 @@ extension Json {
     public var string: String {
         var _data = self.data
         _data.append(0)
-        return String.fromCString(UnsafePointer(_data)) ?? ""
+        return String(cString: UnsafePointer(_data)) ?? ""
     }
 }
 
@@ -408,37 +408,37 @@ extension Json : Equatable {
 
 public func == (lhs: Json, rhs: Json) -> Bool {
     switch lhs.value {
-    case .Null: return rhs.isNull
-    case .Bool(let l):
+    case .null: return rhs.isNull
+    case .bool(let l):
         switch rhs.value {
-        case .Bool(let r): return l == r
+        case .bool(let r): return l == r
         default: return false
         }
-    case .Integer(let l):
+    case .integer(let l):
         switch rhs.value {
-        case .Integer(let r): return l == r
-        case .Float(let r): return Double(l) == r
+        case .integer(let r): return l == r
+        case .float(let r): return Double(l) == r
         default: return false
         }
-    case .Float(let l):
+    case .float(let l):
         switch rhs.value {
-        case .Integer(let r): return l == Double(r)
-        case .Float(let r): return l == r
+        case .integer(let r): return l == Double(r)
+        case .float(let r): return l == r
         default: return false
         }
-    case .String(let l):
+    case .string(let l):
         switch rhs.value {
-        case .String(let r): return l == r
+        case .string(let r): return l == r
         default: return false
         }
-    case .Array(let l):
+    case .array(let l):
         switch rhs.value {
-        case .Array(let r): return l == r
+        case .array(let r): return l == r
         default: return false
         }
-    case .Object(let l):
+    case .object(let l):
         switch rhs.value {
-        case .Object(let r): return l == r
+        case .object(let r): return l == r
         default: return false
         }
     }

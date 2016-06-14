@@ -25,13 +25,13 @@
 
 import Foundation
 
-public func SDPropertyListWithData(data: NSData) throws -> AnyObject {
+public func SDPropertyListWithData(data: Data) throws -> AnyObject {
     return try NSPropertyListSerialization.propertyListWithData(data, options: NSPropertyListMutabilityOptions.MutableContainersAndLeaves, format: nil)
 }
 public func SDPropertyListWithStream(stream: NSInputStream) throws -> AnyObject {
     return try NSPropertyListSerialization.propertyListWithStream(stream, options: NSPropertyListMutabilityOptions.MutableContainersAndLeaves, format: nil)
 }
-public func SDPropertyListSerializationBinary(data: AnyObject) throws -> NSData {
+public func SDPropertyListSerializationBinary(data: AnyObject) throws -> Data {
     return try NSPropertyListSerialization.dataWithPropertyList(data, format: .BinaryFormat_v1_0, options: 0)
 }
 public func SDPropertyListSerialization(data: AnyObject) throws -> String {
@@ -39,13 +39,13 @@ public func SDPropertyListSerialization(data: AnyObject) throws -> String {
 }
 public func SDPropertyListSerialization(data: AnyObject, toStream stream: NSOutputStream) throws -> Int {
     var error: NSError? = nil
-    let count = NSPropertyListSerialization.writePropertyList(data, toStream: stream, format: .XMLFormat_v1_0, options: 0, error: &error)
+    let count = PropertyListSerialization.writePropertyList(data, to: stream, format: .xmlFormat_v1_0, options: 0, error: &error)
     if error != nil {
         throw error!
     }
     return count
 }
-public func SDJSONWithData(data: NSData) throws -> AnyObject {
+public func SDJSONWithData(data: Data) throws -> AnyObject {
     return try NSJSONSerialization.JSONObjectWithData(data, options: [.MutableContainers, .MutableLeaves])
 }
 public func SDJSONWithStream(stream: NSInputStream) throws -> AnyObject {
@@ -60,7 +60,7 @@ public func SDJSONSerialization(data: AnyObject) throws -> String {
 public func SDJSONSerialization(data: AnyObject, toStream stream: NSOutputStream) throws -> Int {
     if NSJSONSerialization.isValidJSONObject(data) {
         var error: NSError? = nil
-        let count = NSJSONSerialization.writeJSONObject(data, toStream: stream, options: .PrettyPrinted, error: &error)
+        let count = JSONSerialization.writeJSONObject(data, to: stream, options: .prettyPrinted, error: &error)
         if error != nil {
             throw error!
         }

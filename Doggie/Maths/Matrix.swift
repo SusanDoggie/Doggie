@@ -296,11 +296,9 @@ extension Matrix {
         }
     }
     
-    @warn_unused_result
     public static func Rotate(roll x: Double, pitch y: Double, yaw z: Double) -> Matrix {
         return RotateX(x) * RotateY(y) * RotateZ(z)
     }
-    @warn_unused_result
     public static func Rotate(radian: Double, x: Double, y: Double, z: Double) -> Matrix {
         let _abs = sqrt(x * x + y * y + z * z)
         let vx = x / _abs
@@ -325,14 +323,12 @@ extension Matrix {
         )
     }
     
-    @warn_unused_result
     public static func CameraTransform(position tx: Double, _ ty: Double, _ tz: Double, rotate ax: Double, _ ay: Double, _ az: Double) -> Matrix {
         return Translate(x: -tx, y: -ty, z: -tz) * RotateZ(-az) * RotateY(-ay) * RotateX(-ax)
     }
 }
 
-@warn_unused_result
-public func PerspectiveProjectMatrix(alpha alpha: Double, aspect: Double, nearZ: Double, farZ: Double) -> [Double] {
+public func PerspectiveProjectMatrix(alpha: Double, aspect: Double, nearZ: Double, farZ: Double) -> [Double] {
     let cotan = 1.0 / tan(alpha * 0.5)
     return [
         cotan / aspect, 0.0, 0.0, 0.0,
@@ -386,31 +382,26 @@ extension Matrix.Identity {
     }
 }
 
-@warn_unused_result
 public func == (_: Matrix.Identity, _: Matrix.Identity) -> Bool {
     return true
 }
-@warn_unused_result
 public func != (lhs: Matrix.Identity, rhs: Matrix.Identity) -> Bool {
     return false
 }
 
-@warn_unused_result
 public func * (_: Matrix.Identity, _: Matrix.Identity) -> Matrix.Identity {
     return Matrix.Identity()
 }
 
-@warn_unused_result
 public func * <T: MatrixType>(_: Matrix.Identity, rhs: T) -> T {
     return rhs
 }
 
-@warn_unused_result
 public func * <S: MatrixType>(lhs: S, _: Matrix.Identity) -> S {
     return lhs
 }
 
-public func *= <S: MatrixType>(inout _: S, _: Matrix.Identity) {
+public func *= <S: MatrixType>(_: inout S, _: Matrix.Identity) {
 }
 
 extension Matrix.RotateX {
@@ -457,21 +448,18 @@ extension Matrix.RotateX {
     }
 }
 
-@warn_unused_result
 public func == (lhs: Matrix.RotateX, rhs: Matrix.RotateX) -> Bool {
     return lhs.angle == rhs.angle
 }
-@warn_unused_result
 public func != (lhs: Matrix.RotateX, rhs: Matrix.RotateX) -> Bool {
     return lhs.angle != rhs.angle
 }
 
-@warn_unused_result
 public func * (lhs: Matrix.RotateX, rhs: Matrix.RotateX) -> Matrix.RotateX {
     return Matrix.RotateX(lhs.angle + rhs.angle)
 }
 
-public func *= (inout lhs: Matrix.RotateX, rhs: Matrix.RotateX) {
+public func *= (lhs: inout Matrix.RotateX, rhs: Matrix.RotateX) {
     return lhs.angle += rhs.angle
 }
 
@@ -519,21 +507,18 @@ extension Matrix.RotateY {
     }
 }
 
-@warn_unused_result
 public func == (lhs: Matrix.RotateY, rhs: Matrix.RotateY) -> Bool {
     return lhs.angle == rhs.angle
 }
-@warn_unused_result
 public func != (lhs: Matrix.RotateY, rhs: Matrix.RotateY) -> Bool {
     return lhs.angle != rhs.angle
 }
 
-@warn_unused_result
 public func * (lhs: Matrix.RotateY, rhs: Matrix.RotateY) -> Matrix.RotateY {
     return Matrix.RotateY(lhs.angle + rhs.angle)
 }
 
-public func *= (inout lhs: Matrix.RotateY, rhs: Matrix.RotateY) {
+public func *= (lhs: inout Matrix.RotateY, rhs: Matrix.RotateY) {
     return lhs.angle += rhs.angle
 }
 
@@ -581,21 +566,18 @@ extension Matrix.RotateZ {
     }
 }
 
-@warn_unused_result
 public func == (lhs: Matrix.RotateZ, rhs: Matrix.RotateZ) -> Bool {
     return lhs.angle == rhs.angle
 }
-@warn_unused_result
 public func != (lhs: Matrix.RotateZ, rhs: Matrix.RotateZ) -> Bool {
     return lhs.angle != rhs.angle
 }
 
-@warn_unused_result
 public func * (lhs: Matrix.RotateZ, rhs: Matrix.RotateZ) -> Matrix.RotateZ {
     return Matrix.RotateZ(lhs.angle + rhs.angle)
 }
 
-public func *= (inout lhs: Matrix.RotateZ, rhs: Matrix.RotateZ) {
+public func *= (lhs: inout Matrix.RotateZ, rhs: Matrix.RotateZ) {
     return lhs.angle += rhs.angle
 }
 
@@ -643,21 +625,18 @@ extension Matrix.Scale {
     }
 }
 
-@warn_unused_result
 public func == (lhs: Matrix.Scale, rhs: Matrix.Scale) -> Bool {
     return lhs.x == rhs.x && lhs.y == rhs.y && lhs.z == rhs.z
 }
-@warn_unused_result
 public func != (lhs: Matrix.Scale, rhs: Matrix.Scale) -> Bool {
     return lhs.x != rhs.x || lhs.y != rhs.y || lhs.z != rhs.z
 }
 
-@warn_unused_result
 public func * (lhs: Matrix.Scale, rhs: Matrix.Scale) -> Matrix.Scale {
     return Matrix.Scale(x: lhs.x * rhs.x, y: lhs.y * rhs.y, z: lhs.z * rhs.z)
 }
 
-public func *= (inout lhs: Matrix.Scale, rhs: Matrix.Scale) {
+public func *= (lhs: inout Matrix.Scale, rhs: Matrix.Scale) {
     lhs.x *= rhs.x
     lhs.y *= rhs.y
     lhs.z *= rhs.z
@@ -707,40 +686,34 @@ extension Matrix.Translate {
     }
 }
 
-@warn_unused_result
 public func == (lhs: Matrix.Translate, rhs: Matrix.Translate) -> Bool {
     return lhs.x == rhs.x && lhs.y == rhs.y && lhs.z == rhs.z
 }
-@warn_unused_result
 public func != (lhs: Matrix.Translate, rhs: Matrix.Translate) -> Bool {
     return lhs.x != rhs.x || lhs.y != rhs.y || lhs.z != rhs.z
 }
 
-@warn_unused_result
 public func * (lhs: Matrix.Translate, rhs: Matrix.Translate) -> Matrix.Translate {
     return Matrix.Translate(x: lhs.x + rhs.x, y: lhs.y + rhs.y, z: lhs.z + rhs.z)
 }
 
-public func *= (inout lhs: Matrix.Translate, rhs: Matrix.Translate) {
+public func *= (lhs: inout Matrix.Translate, rhs: Matrix.Translate) {
     lhs.x += rhs.x
     lhs.y += rhs.y
     lhs.z += rhs.z
 }
 
-@warn_unused_result
 public func == <S: MatrixType, T: MatrixType>(lhs: S, rhs: T) -> Bool {
     return lhs.a == rhs.a && lhs.b == rhs.b && lhs.c == rhs.c && lhs.d == rhs.d
         && lhs.e == rhs.e && lhs.f == rhs.f && lhs.g == rhs.g && lhs.h == rhs.h
         && lhs.i == rhs.i && lhs.j == rhs.j && lhs.k == rhs.k && lhs.l == rhs.l
 }
-@warn_unused_result
 public func != <S: MatrixType, T: MatrixType>(lhs: S, rhs: T) -> Bool {
     return lhs.a != rhs.a || lhs.b != rhs.b || lhs.c != rhs.c || lhs.d != rhs.d
         || lhs.e != rhs.e || lhs.f != rhs.f || lhs.g != rhs.g || lhs.h != rhs.h
         || lhs.i != rhs.i || lhs.j != rhs.j || lhs.k != rhs.k || lhs.l != rhs.l
 }
 
-@warn_unused_result
 public func * <S: MatrixType, T: MatrixType>(lhs: S, rhs: T) -> Matrix {
     let a = lhs.a * rhs.a + lhs.e * rhs.b + lhs.i * rhs.c
     let b = lhs.b * rhs.a + lhs.f * rhs.b + lhs.j * rhs.c
@@ -757,15 +730,14 @@ public func * <S: MatrixType, T: MatrixType>(lhs: S, rhs: T) -> Matrix {
     return Matrix(a: a, b: b, c: c, d: d, e: e, f: f, g: g, h: h, i: i, j: j, k: k, l: l)
 }
 
-public func *= <T: MatrixType>(inout lhs: Matrix, rhs: T) {
+public func *= <T: MatrixType>(lhs: inout Matrix, rhs: T) {
     lhs = lhs * rhs
 }
 
-@warn_unused_result
 public func * <T: MatrixType>(lhs: Vector, rhs: T) -> Vector {
     return Vector(x: lhs.x * rhs.a + lhs.y * rhs.b + lhs.z * rhs.c + rhs.d, y: lhs.x * rhs.e + lhs.y * rhs.f + lhs.z * rhs.g + rhs.h, z: lhs.x * rhs.i + lhs.y * rhs.j + lhs.z * rhs.k + rhs.l)
 }
 
-public func *= <T: MatrixType>(inout lhs: Vector, rhs: T) {
+public func *= <T: MatrixType>(lhs: inout Vector, rhs: T) {
     lhs = lhs * rhs
 }

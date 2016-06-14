@@ -25,10 +25,7 @@
 
 import Foundation
 
-public let DispatchMainQueue = dispatch_get_main_queue()
-public let DispatchGlobalQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)
-
-private let SDThreadDefaultDispatchQueue = dispatch_queue_create("com.SusanDoggie.Thread", DISPATCH_QUEUE_CONCURRENT)
+private let SDThreadDefaultDispatchQueue = DispatchQueue(label: "com.SusanDoggie.Thread", attributes: .concurrent)
 
 public typealias thread_id_t = mach_port_t
 
@@ -47,14 +44,16 @@ public protocol Lockable : class {
 
 public extension Lockable {
     
-    func synchronized<R>(@noescape block: () throws -> R) rethrows -> R {
+    @discardableResult
+    func synchronized<R>(block: @noescape () throws -> R) rethrows -> R {
         self.lock()
         defer { self.unlock() }
         return try block()
     }
 }
 
-public func synchronized<R>(obj: AnyObject, @noescape block: () throws -> R) rethrows -> R {
+@discardableResult
+public func synchronized<R>(obj: AnyObject, block: @noescape () throws -> R) rethrows -> R {
     objc_sync_enter(obj)
     defer { objc_sync_exit(obj) }
     return try block()
@@ -77,7 +76,7 @@ public class SDLockGroup : ArrayLiteralConvertible {
 
 extension SDLockGroup : Lockable {
     
-    private final func _trylock(lck: [Lockable]) -> Int {
+    private final func _trylock(_ lck: [Lockable]) -> Int {
         if lck.count == 1 {
             return lck[0].trylock() ? 1 : 0
         } else if lck.count > 1 {
@@ -94,7 +93,7 @@ extension SDLockGroup : Lockable {
         }
         return 0
     }
-
+    
     public final func lock() {
         if lck.count == 1 {
             lck[0].lock()
@@ -103,7 +102,7 @@ extension SDLockGroup : Lockable {
             while true {
                 lck[first_lock].lock()
                 var list = lck
-                list.removeAtIndex(first_lock)
+                list.remove(at: first_lock)
                 var _r = _trylock(list)
                 _r = _r < first_lock ? _r : _r + 1
                 if _r == lck.count {
@@ -182,7 +181,7 @@ extension SDSpinLock {
         return OSSpinLockTry(&_lck)
     }
     
-    public mutating func synchronized<R>(@noescape block: () throws -> R) rethrows -> R {
+    public mutating func synchronized<R>(block: @noescape () throws -> R) rethrows -> R {
         self.lock()
         defer { self.unlock() }
         return try block()
@@ -217,16 +216,18 @@ extension SDConditionLock {
             pthread_cond_broadcast(&_cond)
         }
     }
-    public final func lock(@autoclosure predicate: () -> Bool) {
+    public final func lock(where predicate: @autoclosure () -> Bool) {
         super.lock()
         while !predicate() {
             pthread_cond_wait(&_cond, &_mtx)
         }
     }
-    public final func lock(@autoclosure predicate: () -> Bool, time: Double) -> Bool {
-        return lock(predicate, date: NSDate(timeIntervalSinceNow: time))
+    @discardableResult
+    public final func lock(where predicate: @autoclosure () -> Bool, time: Double) -> Bool {
+        return lock(where: predicate, date: Date(timeIntervalSinceNow: time))
     }
-    public final func lock(@autoclosure predicate: () -> Bool, date: NSDate) -> Bool {
+    @discardableResult
+    public final func lock(where predicate: @autoclosure () -> Bool, date: Date) -> Bool {
         super.lock()
         let _abs_time = date.timeIntervalSince1970
         let sec = __darwin_time_t(_abs_time)
@@ -244,16 +245,19 @@ extension SDConditionLock {
         }
         return true
     }
-    public func synchronized<R>(@autoclosure predicate: () -> Bool, @noescape block: () throws -> R) rethrows -> R {
+    @discardableResult
+    public func synchronized<R>(where predicate: @autoclosure () -> Bool, block: @noescape () throws -> R) rethrows -> R {
         self.lock(predicate)
         defer { self.unlock() }
         return try block()
     }
-    public func synchronized<R>(@autoclosure predicate: () -> Bool, time: Double, @noescape block: () throws -> R) rethrows -> R? {
-        return try synchronized(predicate, date: NSDate(timeIntervalSinceNow: time), block: block)
+    @discardableResult
+    public func synchronized<R>(where predicate: @autoclosure () -> Bool, time: Double, block: @noescape () throws -> R) rethrows -> R? {
+        return try synchronized(where: predicate, date: Date(timeIntervalSinceNow: time), block: block)
     }
-    public func synchronized<R>(@autoclosure predicate: () -> Bool, date: NSDate, @noescape block: () throws -> R) rethrows -> R? {
-        if self.lock(predicate, date: date) {
+    @discardableResult
+    public func synchronized<R>(where predicate: @autoclosure () -> Bool, date: Date, block: @noescape () throws -> R) rethrows -> R? {
+        if self.lock(where: predicate, date: date) {
             defer { self.unlock() }
             return try block()
         }
@@ -265,27 +269,27 @@ extension SDConditionLock {
 
 public class SDSignal {
     
-    private let sem: dispatch_semaphore_t
+    private let sem: DispatchSemaphore
     
     public init(_ value: Int) {
-        sem = dispatch_semaphore_create(value)
+        sem = DispatchSemaphore(value: value)
     }
 }
 
 extension SDSignal {
     
     public final func wait() {
-        dispatch_semaphore_wait(sem, DISPATCH_TIME_FOREVER)
+        sem.wait()
     }
     
     public final func wait(time: Double) -> Bool {
-        return dispatch_semaphore_wait(sem, dispatch_time(DISPATCH_TIME_NOW, max(0, Int64(time * 1000000000.0)))) == 0
+        return sem.wait(timeout: DispatchTime.now() + time) == .Success
     }
-    public final func wait(date: NSDate) -> Bool {
-        return wait(date.timeIntervalSinceNow)
+    public final func wait(date: Date) -> Bool {
+        return wait(time: date.timeIntervalSinceNow)
     }
     public final func signal() {
-        dispatch_semaphore_signal(sem)
+        sem.signal()
     }
 }
 
@@ -293,11 +297,11 @@ extension SDSignal {
 
 public class SDAtomic {
     
-    private let queue: dispatch_queue_t
+    private let queue: DispatchQueue
     private let block: (SDAtomic) -> Void
     private var flag: Int32
     
-    public init(queue: dispatch_queue_t, block: (SDAtomic) -> Void) {
+    public init(queue: DispatchQueue, block: (SDAtomic) -> Void) {
         self.queue = queue
         self.block = block
         self.flag = 0
@@ -312,8 +316,8 @@ public class SDAtomic {
 extension SDAtomic {
     
     public final func signal() {
-        if flag.fetchStore(2) == 0 {
-            dispatch_async(queue, dispatchRunloop)
+        if flag.fetchStore(new: 2) == 0 {
+            queue.async(execute: dispatchRunloop)
         }
     }
     
@@ -321,7 +325,7 @@ extension SDAtomic {
         while true {
             flag = 1
             autoreleasepool { self.block(self) }
-            if flag.compareSet(1, 0) {
+            if flag.compareSet(old: 1, new: 0) {
                 return
             }
         }
@@ -332,7 +336,7 @@ extension SDAtomic {
 
 public class SDSingleton<Instance> {
     
-    private var token: dispatch_once_t = 0
+    private var token: Int = 0
     private var _value: Instance!
     private let block: () -> Instance
     
@@ -374,17 +378,17 @@ public class SDTask<Result> : SDAtomic {
     
     private var _lck: SDSpinLock = SDSpinLock()
     
-    private var token: dispatch_once_t = 0
+    private var token: Int = 0
     private let _set: (SDTask) -> Void
     private var _result: Result?
     
-    private init(queue: dispatch_queue_t, suspend: ((Result) -> Bool)?, block: () -> Result) {
+    private init(queue: DispatchQueue, suspend: ((Result) -> Bool)?, block: () -> Result) {
         self._set = SDTask.createBlock(block)
         super.init(queue: queue, block: SDTask.createSignalBlock(suspend))
     }
     
     /// Create a SDTask and compute block with specific queue.
-    public init(queue: dispatch_queue_t, block: () -> Result) {
+    public init(queue: DispatchQueue, block: () -> Result) {
         self._set = SDTask.createBlock(block)
         super.init(queue: queue, block: SDTask.createSignalBlock(nil))
         self.signal()
@@ -400,7 +404,7 @@ public class SDTask<Result> : SDAtomic {
 
 private extension SDTask {
     
-    static func createBlock(block: () -> Result) -> (SDTask) -> Void {
+    static func createBlock(_ block: () -> Result) -> (SDTask) -> Void {
         return { _self in
             dispatch_once(&_self.token) {
                 let result = block()
@@ -409,7 +413,7 @@ private extension SDTask {
         }
     }
     
-    static func createSignalBlock(suspend: ((Result) -> Bool)?) -> (SDAtomic) -> Void {
+    static func createSignalBlock(_ suspend: ((Result) -> Bool)?) -> (SDAtomic) -> Void {
         return { atomic in
             let _self = atomic as! SDTask<Result>
             if let result = _self._result {
@@ -424,7 +428,7 @@ private extension SDTask {
         }
     }
     
-    func _apply<R>(queue: dispatch_queue_t, suspend: ((R) -> Bool)?, block: (Result) -> R) -> SDTask<R> {
+    func _apply<R>(_ queue: DispatchQueue, suspend: ((R) -> Bool)?, block: (Result) -> R) -> SDTask<R> {
         var storage: Result!
         let task = SDTask<R>(queue: queue, suspend: suspend) { block(storage) }
         return _lck.synchronized {
@@ -460,34 +464,36 @@ extension SDTask {
     
     /// Run `block` after `self` is completed.
     public final func then<R>(block: (Result) -> R) -> SDTask<R> {
-        return self.then(queue, block: block)
+        return self.then(queue: queue, block: block)
     }
     
     /// Run `block` after `self` is completed with specific queue.
-    public final func then<R>(queue: dispatch_queue_t, block: (Result) -> R) -> SDTask<R> {
-        return self._apply(queue, suspend: nil, block: block)
+    public final func then<R>(queue: DispatchQueue, block: (Result) -> R) -> SDTask<R> {
+        return self._apply(queue: queue, suspend: nil, block: block)
     }
 }
 
 extension SDTask {
     
     /// Suspend if `result` satisfies `predicate`.
-    public final func suspend(predicate: (Result) -> Bool) -> SDTask<Result> {
-        return self.suspend(queue, predicate: predicate)
+    public final func suspend(where predicate: (Result) -> Bool) -> SDTask<Result> {
+        return self.suspend(queue: queue, predicate: predicate)
     }
     
     /// Suspend if `result` satisfies `predicate` with specific queue.
-    public final func suspend(queue: dispatch_queue_t, predicate: (Result) -> Bool) -> SDTask<Result> {
-        return self._apply(queue, suspend: predicate) { $0 }
+    public final func suspend(queue: DispatchQueue, predicate: (Result) -> Bool) -> SDTask<Result> {
+        return self._apply(queue: queue, suspend: predicate) { $0 }
     }
 }
 
 /// Create a SDTask and compute block with default queue.
+@discardableResult
 public func async<Result>(block: () -> Result) -> SDTask<Result> {
     return SDTask(block: block)
 }
 
 /// Create a SDTask and compute block with specific queue.
-public func async<Result>(queue: dispatch_queue_t, _ block: () -> Result) -> SDTask<Result> {
+@discardableResult
+public func async<Result>(queue: DispatchQueue, _ block: () -> Result) -> SDTask<Result> {
     return SDTask(queue: queue, block: block)
 }

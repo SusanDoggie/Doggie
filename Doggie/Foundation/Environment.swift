@@ -28,19 +28,17 @@ import Foundation
 public let isLittleEndian = TARGET_RT_LITTLE_ENDIAN == 1
 public let isBigEndian = TARGET_RT_BIG_ENDIAN == 1
 
-public let Progname = String.fromCString(getprogname())!
+public let Progname = String(cString: getprogname())
 
 public func Environment(name: String) -> String? {
-    return String.fromCString(getenv(name))
+    return String(cString: getenv(name))
 }
 
-@warn_unused_result
-public func unsafeBitCast<T, U>(x: T) -> U {
-    return unsafeBitCast(x, U.self)
+public func unsafeBitCast<T, U>(_ x: T) -> U {
+    return unsafeBitCast(x, to: U.self)
 }
 
-@warn_unused_result
-public func SDTimer(count count: Int = 1, @noescape block: () -> Void) -> NSTimeInterval {
+public func SDTimer(count: Int = 1, block: @noescape () -> Void) -> TimeInterval {
     var time: UInt64 = 0
     for _ in 0..<count {
         autoreleasepool {
@@ -55,14 +53,12 @@ public func SDTimer(count count: Int = 1, @noescape block: () -> Void) -> NSTime
     return 1e-9 * Double(time) * frac / Double(count)
 }
 
-@warn_unused_result
 public func timeFormat(time: Double) -> String {
     let minutes = Int(floor(time / 60.0))
     let seconds = lround(time - Double(minutes * 60))
     return String(format: "%d:%02d", minutes, seconds)
 }
 
-@warn_unused_result
 public func == <T : Comparable>(lhs: T, rhs: T) -> Bool {
     return !(lhs < rhs || rhs < lhs)
 }
@@ -70,18 +66,15 @@ public func == <T : Comparable>(lhs: T, rhs: T) -> Bool {
 private let _hash_phi = 0.6180339887498948482045868343656381177203091798057628
 private let _hash_seed = Int(bitPattern: UInt(round(_hash_phi * Double(UInt.max))))
 
-@warn_unused_result
 public func hash_combine<T: Hashable>(seed: Int, _ value: T) -> Int {
     let a = seed << 6
     let b = seed >> 2
     let c = value.hashValue &+ _hash_seed &+ a &+ b
     return seed ^ c
 }
-@warn_unused_result
-public func hash_combine<S: SequenceType where S.Generator.Element : Hashable>(seed: Int, _ values: S) -> Int {
+public func hash_combine<S: Sequence where S.Iterator.Element : Hashable>(seed: Int, _ values: S) -> Int {
     return values.reduce(seed, combine: hash_combine)
 }
-@warn_unused_result
 public func hash_combine<T: Hashable>(seed: Int, _ a: T, _ b: T, _ res: T ... ) -> Int {
     return hash_combine(seed, CollectionOfOne(a).concat(CollectionOfOne(b)).concat(res))
 }

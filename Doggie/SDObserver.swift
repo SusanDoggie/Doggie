@@ -44,13 +44,13 @@ private final class SDObserverBase : NSObject {
         object.removeObserver(self, forKeyPath: keyPath, context: &token)
     }
     
-    override func observeValueForKeyPath(keyPath: String?, ofObject object: AnyObject?, change: [String : AnyObject]?, context: UnsafeMutablePointer<Void>) {
+    override func observeValue(forKeyPath keyPath: String?, of object: AnyObject?, change: [NSKeyValueChangeKey : AnyObject]?, context: UnsafeMutablePointer<Void>?) {
         if context == &token {
             if change != nil {
                 callback?(change!)
             }
         } else {
-            super.observeValueForKeyPath(keyPath, ofObject: object, change: change, context: context)
+            super.observeValue(forKeyPath: keyPath, of: object, change: change, context: context)
         }
     }
 }
@@ -65,23 +65,22 @@ public class SDObserver<T> : SDSink<T> {
         self.base.callback = { [weak self] in self?.callback($0) }
     }
     
-    private func callback(change: [String : AnyObject]) {
+    private func callback(_ change: [String : AnyObject]) {
         
     }
 }
 
 public extension NSObject {
     
-    @warn_unused_result
     public func bind(keyPath: String) -> SDObserver<[String : AnyObject]> {
         
         final class ChangeSDObserver : SDObserver<[String : AnyObject]> {
             
             init(object: NSObject, keyPath: String) {
-                super.init(object: object, keyPath: keyPath, options: [.New, .Old, .Initial, .Prior])
+                super.init(object: object, keyPath: keyPath, options: [.new, .old, .initial, .prior])
             }
             
-            override func callback(change: [String : AnyObject]) {
+            override func callback(_ change: [String : AnyObject]) {
                 self.put(change)
             }
         }
@@ -89,17 +88,16 @@ public extension NSObject {
         return ChangeSDObserver(object: self, keyPath: keyPath)
     }
     
-    @warn_unused_result
     public func willSet(keyPath: String) -> SDObserver<AnyObject> {
         
         final class WillSetSDObserver : SDObserver<AnyObject> {
             
             init(object: NSObject, keyPath: String) {
-                super.init(object: object, keyPath: keyPath, options: .Prior)
+                super.init(object: object, keyPath: keyPath, options: .prior)
             }
             
-            override func callback(change: [String : AnyObject]) {
-                if let old = change[NSKeyValueChangeOldKey] {
+            override func callback(_ change: [String : AnyObject]) {
+                if let old = change[NSKeyValueChangeKey.oldKey] {
                     self.put(old)
                 }
             }
@@ -108,17 +106,16 @@ public extension NSObject {
         return WillSetSDObserver(object: self, keyPath: keyPath)
     }
     
-    @warn_unused_result
     public func didSet(keyPath: String) -> SDObserver<(old: AnyObject, new: AnyObject)> {
         
         final class DidSetSDObserver : SDObserver<(old: AnyObject, new: AnyObject)> {
             
             init(object: NSObject, keyPath: String) {
-                super.init(object: object, keyPath: keyPath, options: [.New, .Old])
+                super.init(object: object, keyPath: keyPath, options: [.new, .old])
             }
             
-            override func callback(change: [String : AnyObject]) {
-                if let old = change[NSKeyValueChangeOldKey], new = change[NSKeyValueChangeNewKey] {
+            override func callback(_ change: [String : AnyObject]) {
+                if let old = change[NSKeyValueChangeKey.oldKey], new = change[NSKeyValueChangeKey.newKey] {
                     self.put(old: old, new: new)
                 }
             }

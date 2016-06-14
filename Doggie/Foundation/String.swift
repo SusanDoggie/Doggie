@@ -28,17 +28,15 @@ import Foundation
 public extension String {
     
     var trim: String {
-        return self.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceAndNewlineCharacterSet())
+        return self.trimmingCharacters(in: .whitespacesAndNewlines)
     }
 }
 
 public extension String {
-    @warn_unused_result
-    static func fromBytes(buffer: [UInt8]) -> String! {
-        return String.fromCString(UnsafePointer(buffer + [0]))
+    static func fromBytes(_ buffer: [UInt8]) -> String! {
+        return String(cString: UnsafePointer(buffer + [0]))
     }
-    @warn_unused_result
-    static func fromBytes(cs: UInt) -> String! {
+    static func fromBytes(_ cs: UInt) -> String! {
         let buffer: [UInt8] = [
             UInt8((cs >> 56) & 0xFF),
             UInt8((cs >> 48) & 0xFF),
@@ -50,10 +48,9 @@ public extension String {
             UInt8(cs & 0xFF),
             0
         ]
-        return String.fromCString(UnsafePointer(buffer))
+        return String(cString: UnsafePointer(buffer))
     }
-    @warn_unused_result
-    static func fromBytes(cs: UInt64) -> String! {
+    static func fromBytes(_ cs: UInt64) -> String! {
         let buffer: [UInt8] = [
             UInt8((cs >> 56) & 0xFF),
             UInt8((cs >> 48) & 0xFF),
@@ -65,10 +62,9 @@ public extension String {
             UInt8(cs & 0xFF),
             0
         ]
-        return String.fromCString(UnsafePointer(buffer))
+        return String(cString: UnsafePointer(buffer))
     }
-    @warn_unused_result
-    static func fromBytes(cs: UInt32) -> String! {
+    static func fromBytes(_ cs: UInt32) -> String! {
         let buffer: [UInt8] = [
             UInt8((cs >> 24) & 0xFF),
             UInt8((cs >> 16) & 0xFF),
@@ -76,24 +72,21 @@ public extension String {
             UInt8(cs & 0xFF),
             0
         ]
-        return String.fromCString(UnsafePointer(buffer))
+        return String(cString: UnsafePointer(buffer))
     }
-    @warn_unused_result
-    static func fromBytes(cs: UInt16) -> String! {
+    static func fromBytes(_ cs: UInt16) -> String! {
         let buffer: [UInt8] = [
             UInt8((cs >> 8) & 0xFF),
             UInt8(cs & 0xFF),
             0
         ]
-        return String.fromCString(UnsafePointer(buffer))
+        return String(cString: UnsafePointer(buffer))
     }
-    @warn_unused_result
-    static func fromBytes(cs: UInt8) -> String! {
+    static func fromBytes(_ cs: UInt8) -> String! {
         let buffer: [UInt8] = [cs, 0]
-        return String.fromCString(UnsafePointer(buffer))
+        return String(cString: UnsafePointer(buffer))
     }
-    @warn_unused_result
-    static func fromBytes(cs: Int) -> String! {
+    static func fromBytes(_ cs: Int) -> String! {
         let buffer: [UInt8] = [
             UInt8((cs >> 56) & 0xFF),
             UInt8((cs >> 48) & 0xFF),
@@ -105,10 +98,9 @@ public extension String {
             UInt8(cs & 0xFF),
             0
         ]
-        return String.fromCString(UnsafePointer(buffer))
+        return String(cString: UnsafePointer(buffer))
     }
-    @warn_unused_result
-    static func fromBytes(cs: Int64) -> String! {
+    static func fromBytes(_ cs: Int64) -> String! {
         let buffer: [UInt8] = [
             UInt8((cs >> 56) & 0xFF),
             UInt8((cs >> 48) & 0xFF),
@@ -120,10 +112,9 @@ public extension String {
             UInt8(cs & 0xFF),
             0
         ]
-        return String.fromCString(UnsafePointer(buffer))
+        return String(cString: UnsafePointer(buffer))
     }
-    @warn_unused_result
-    static func fromBytes(cs: Int32) -> String! {
+    static func fromBytes(_ cs: Int32) -> String! {
         let buffer: [UInt8] = [
             UInt8((cs >> 24) & 0xFF),
             UInt8((cs >> 16) & 0xFF),
@@ -131,20 +122,18 @@ public extension String {
             UInt8(cs & 0xFF),
             0
         ]
-        return String.fromCString(UnsafePointer(buffer))
+        return String(cString: UnsafePointer(buffer))
     }
-    @warn_unused_result
-    static func fromBytes(cs: Int16) -> String! {
+    static func fromBytes(_ cs: Int16) -> String! {
         let buffer: [UInt8] = [
             UInt8((cs >> 8) & 0xFF),
             UInt8(cs & 0xFF),
             0
         ]
-        return String.fromCString(UnsafePointer(buffer))
+        return String(cString: UnsafePointer(buffer))
     }
-    @warn_unused_result
-    static func fromBytes(cs: Int8) -> String! {
+    static func fromBytes(_ cs: Int8) -> String! {
         let buffer: [UInt8] = [UInt8(cs), 0]
-        return String.fromCString(UnsafePointer(buffer))
+        return String(cString: UnsafePointer(buffer))
     }
 }

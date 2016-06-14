@@ -30,49 +30,42 @@ public let M_SQRT5 = 2.2360679774997896964091736687312762354406183596115257
 
 extension Double {
     
-    public func almostZero(epsilon: Double = 1e-9, reference: Double = 0) -> Bool {
+    public func almostZero(_ epsilon: Double = 1e-9, reference: Double = 0) -> Bool {
         return self == 0 || abs(self) < abs(epsilon) * max(1, abs(reference))
     }
     
-    public func almostEqual(other: Double, epsilon: Double = 1e-9) -> Bool {
+    public func almostEqual(_ other: Double, epsilon: Double = 1e-9) -> Bool {
         return self == other || abs(self - other).almostZero(epsilon, reference: self)
     }
 }
 
-@warn_unused_result
-public func FactorialList<T: UnsignedIntegerType>(n: T) -> LazyScanSequence<Slice<Range<T>>, T> {
+public func FactorialList<T: UnsignedInteger>(_ n: T) -> LazyScanSequence<Slice<Range<T>>, T> {
     
     return (0...n).dropFirst().lazy.scan(1) { $0 * $1 }
 }
-@warn_unused_result
-public func PermutationList<T: UnsignedIntegerType>(n: T) -> LazyScanSequence<ReverseRandomAccessCollection<Slice<Range<T>>>, T> {
+public func PermutationList<T: UnsignedInteger>(_ n: T) -> LazyScanSequence<ReverseRandomAccessCollection<Slice<Range<T>>>, T> {
     
     return (0...n).dropFirst().lazy.reverse().scan(1) { $0 * $1 }
 }
-@warn_unused_result
-public func CombinationList<T: UnsignedIntegerType>(n: T) -> LazyMapSequence<Zip2Sequence<LazyScanSequence<ReverseRandomAccessCollection<Slice<Range<T>>>, T>, LazyScanSequence<Slice<Range<T>>, T>>, T> {
+public func CombinationList<T: UnsignedInteger>(_ n: T) -> LazyMapSequence<Zip2Sequence<LazyScanSequence<ReverseRandomAccessCollection<Slice<Range<T>>>, T>, LazyScanSequence<Slice<Range<T>>, T>>, T> {
     
     return zip(PermutationList(n), FactorialList(n)).lazy.map(/)
 }
 
-@warn_unused_result
-public func FibonacciList<T: UnsignedIntegerType>(n: T) -> LazyMapSequence<LazyScanSequence<Slice<Range<T>>, (Int, Int)>, Int> {
+public func FibonacciList<T: UnsignedInteger>(_ n: T) -> LazyMapSequence<LazyScanSequence<Slice<Range<T>>, (Int, Int)>, Int> {
     
     return (0..<n).dropLast().lazy.scan((1, 1)) { ($0.0.1, $0.0.0 + $0.0.1) }.map { $0.0 }
 }
 
 // MARK: Prime
 
-@warn_unused_result
-public func isPrime(n: UInt8) -> Bool {
+public func isPrime(_ n: UInt8) -> Bool {
     return isPrime(UInt32(n))
 }
-@warn_unused_result
-public func isPrime(n: UInt16) -> Bool {
+public func isPrime(_ n: UInt16) -> Bool {
     return isPrime(UInt32(n))
 }
-@warn_unused_result
-public func isPrime(n: UInt32) -> Bool {
+public func isPrime(_ n: UInt32) -> Bool {
     let list: [UInt32] = n < 2047 ? [2] : n < 1373653 ? [2, 3] : [2, 7, 61]
     let _n = n - 1
     let s = log2(_n.lowbit)
@@ -88,8 +81,7 @@ public func isPrime(n: UInt32) -> Bool {
     }
     return true
 }
-@warn_unused_result
-public func isPrime(n: UInt64) -> Bool {
+public func isPrime(_ n: UInt64) -> Bool {
     let list: [UInt64] = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37]
     let _n = n - 1
     let s = log2(_n.lowbit)
@@ -105,8 +97,7 @@ public func isPrime(n: UInt64) -> Bool {
     }
     return true
 }
-@warn_unused_result
-public func isPrime(n: UInt) -> Bool {
+public func isPrime(_ n: UInt) -> Bool {
     let list: [UInt] = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37]
     let _n = n - 1
     let s = log2(_n.lowbit)
@@ -125,8 +116,7 @@ public func isPrime(n: UInt) -> Bool {
 
 // MARK: Polynomial
 
-@warn_unused_result
-public func degree2roots(b: Double, _ c: Double) -> [Double] {
+public func degree2roots(_ b: Double, _ c: Double) -> [Double] {
     if b.almostZero() {
         if c < 0 {
             let _c = sqrt(-c)
@@ -148,8 +138,7 @@ public func degree2roots(b: Double, _ c: Double) -> [Double] {
     return []
 }
 
-@warn_unused_result
-public func degree3decompose(b: Double, _ c: Double, _ d: Double) -> (Double, (Double, Double)) {
+public func degree3decompose(_ b: Double, _ c: Double, _ d: Double) -> (Double, (Double, Double)) {
     if d.almostZero() {
         return (0, (b, c))
     }
@@ -159,7 +148,7 @@ public func degree3decompose(b: Double, _ c: Double, _ d: Double) -> (Double, (D
     let de1 = 2 * b3 - 9 * c * b + 27 * d
     let de2 = de1 * de1 - 4 * de0 * de0 * de0
     
-    if de2.isSignMinus { // delta > 0, three real roots
+    if de2.sign == .minus { // delta > 0, three real roots
         let m = b / 3
         let p = -de0 / 3
         let q = de1 / 27
@@ -183,8 +172,7 @@ public func degree3decompose(b: Double, _ c: Double, _ d: Double) -> (Double, (D
     return ((-b - c3) / 3, ((2 * b - c3) / 3, (b2 - b * c3 + c3 * c3 - 3 * c1 * c2) / 9))
 }
 
-@warn_unused_result
-public func degree4decompose(b: Double, _ c: Double, _ d: Double, _ e: Double) -> ((Double, Double), (Double, Double)) {
+public func degree4decompose(_ b: Double, _ c: Double, _ d: Double, _ e: Double) -> ((Double, Double), (Double, Double)) {
     if e.almostZero() {
         let z = degree3decompose(b, c, d)
         return ((z.0, 0), z.1)
@@ -204,7 +192,7 @@ public func degree4decompose(b: Double, _ c: Double, _ d: Double, _ e: Double) -
     let q = 0.125 * Q
     let m = 0.25 * b
     let S: Double
-    if de2.isSignMinus {
+    if de2.sign == .minus {
         let phi = acos(de1 / sqrt(_4_de0_3))
         let _S = -p + sqrt(de0) * cos(phi / 3)
         S = 0.5 * sqrt(_S * 2 / 3)
@@ -215,7 +203,7 @@ public func degree4decompose(b: Double, _ c: Double, _ d: Double, _ e: Double) -
             let _c = m * m
             return ((_b, _c), (_b, _c))
         }
-        if _S.isSignMinus {
+        if _S.sign == .minus {
             let S = 0.25 * (_S + de0 / _S - 2 * p) / 3
             return ((2 * m, m * m - S), (2 * m, m * m - S))
         }
@@ -229,8 +217,7 @@ public func degree4decompose(b: Double, _ c: Double, _ d: Double, _ e: Double) -
     return ((2 * k1, k1 * k1 - 0.25 * t1), (2 * k2, k2 * k2 - 0.25 * t2))
 }
 
-@warn_unused_result
-public func degree5decompose(b: Double, _ c: Double, _ d: Double, _ e: Double, _ f: Double, eps: Double = 1e-14) -> (Double, (Double, Double), (Double, Double)) {
+public func degree5decompose(_ b: Double, _ c: Double, _ d: Double, _ e: Double, _ f: Double, eps: Double = 1e-14) -> (Double, (Double, Double), (Double, Double)) {
     
     var eps = eps
     var iter = 0
@@ -273,8 +260,7 @@ public func degree5decompose(b: Double, _ c: Double, _ d: Double, _ e: Double, _
     return (degree3result.0, (r, s), degree3result.1)
 }
 
-@warn_unused_result
-public func degree6decompose(b: Double, _ c: Double, _ d: Double, _ e: Double, _ f: Double, _ g: Double, eps: Double = 1e-14) -> ((Double, Double), (Double, Double), (Double, Double)) {
+public func degree6decompose(_ b: Double, _ c: Double, _ d: Double, _ e: Double, _ f: Double, _ g: Double, eps: Double = 1e-14) -> ((Double, Double), (Double, Double), (Double, Double)) {
     
     var eps = eps
     var iter = 0
@@ -320,8 +306,7 @@ public func degree6decompose(b: Double, _ c: Double, _ d: Double, _ e: Double, _
     return ((r, s), degree4result.0, degree4result.1)
 }
 
-@warn_unused_result
-public func degree3roots(b: Double, _ c: Double, _ d: Double) -> [Double] {
+public func degree3roots(_ b: Double, _ c: Double, _ d: Double) -> [Double] {
     if d.almostZero() {
         let z = degree2roots(b, c)
         return z.contains(0) ? z : [0] + z
@@ -332,7 +317,7 @@ public func degree3roots(b: Double, _ c: Double, _ d: Double) -> [Double] {
     let de1 = 2 * b3 - 9 * c * b + 27 * d
     let de2 = de1 * de1 - 4 * de0 * de0 * de0
     
-    if de2.isSignMinus { // delta > 0, three real roots
+    if de2.sign == .minus { // delta > 0, three real roots
         let m = b / 3
         let p = -de0 / 3
         let q = de1 / 27
@@ -351,8 +336,7 @@ public func degree3roots(b: Double, _ c: Double, _ d: Double) -> [Double] {
     return Array(Set(_d2))
 }
 
-@warn_unused_result
-public func degree4roots(b: Double, _ c: Double, _ d: Double, _ e: Double) -> [Double] {
+public func degree4roots(_ b: Double, _ c: Double, _ d: Double, _ e: Double) -> [Double] {
     if e.almostZero() {
         let z = degree3roots(b, c, d)
         return z.contains(0) ? z : [0] + z
@@ -376,44 +360,36 @@ public func degree4roots(b: Double, _ c: Double, _ d: Double, _ e: Double) -> [D
 
 // MARK: Others
 
-@warn_unused_result
-public func linearScale(f: UInt, _ x: UInt) -> Double {
+public func linearScale(_ f: UInt, _ x: UInt) -> Double {
     return log(Double(x + 1)) / log(Double(f))
 }
-@warn_unused_result
-public func logScale(f: UInt, _ x: Double) -> UInt {
+public func logScale(_ f: UInt, _ x: Double) -> UInt {
     return UInt(lround(pow(Double(f), x))) - 1
 }
 
-@warn_unused_result
-public func degreesToRad(alpha: Float) -> Float {
+public func degreesToRad(_ alpha: Float) -> Float {
     return alpha * Float(M_PI) / 180.0
 }
-@warn_unused_result
-public func degreesToRad(alpha: Double) -> Double {
+public func degreesToRad(_ alpha: Double) -> Double {
     return alpha * M_PI / 180.0
 }
 
-@warn_unused_result
-public func LogarithmicDynamicRangeCompression(x: Double, _ m: Double) -> Double {
+public func LogarithmicDynamicRangeCompression(_ x: Double, _ m: Double) -> Double {
     let alpha = 2.5128624172523393539654752332184326538328336634026474
     let alpha_2 = 0.7959050946318330895721191440438390881317432367303995
     let re = log(1.0 + alpha * abs(x) / m) * alpha_2
-    return x.isSignMinus ? -re : re
+    return x.sign == .minus ? -re : re
 }
 
-@warn_unused_result
-public func LinearInterpolate(t: Double, _ a: Double, _ b: Double) -> Double {
+public func LinearInterpolate(_ t: Double, _ a: Double, _ b: Double) -> Double {
     return a + t * (b - a)
 }
 
-@warn_unused_result
-public func CosineInterpolate(t: Double, _ a: Double, _ b: Double) -> Double {
+public func CosineInterpolate(_ t: Double, _ a: Double, _ b: Double) -> Double {
     return LinearInterpolate((1.0 - cos(t * M_PI)) * 0.5, a, b)
 }
 
-@warn_unused_result
-public func CubicInterpolate(t: Double, _ a: Double, _ b: Double, _ c: Double, _ d: Double) -> Double {
+public func CubicInterpolate(_ t: Double, _ a: Double, _ b: Double, _ c: Double, _ d: Double) -> Double {
     let t2 = t * t
     let m0 = d - c - a + b
     let m1 = a - b - m0
@@ -422,8 +398,7 @@ public func CubicInterpolate(t: Double, _ a: Double, _ b: Double, _ c: Double, _
     return m0 * t * t2 + m1 * t2 + m2 * t + m3
 }
 
-@warn_unused_result
-public func HermiteInterpolate(t: Double, _ a: Double, _ b: Double, _ c: Double, _ d: Double, _ s: Double, _ e: Double) -> Double {
+public func HermiteInterpolate(_ t: Double, _ a: Double, _ b: Double, _ c: Double, _ d: Double, _ s: Double, _ e: Double) -> Double {
     let t2 = t * t
     let t3 = t2 * t
     let m0 = ((b - a) * (1.0 + e) + (c - b) * (1.0 - e)) * (1.0 - s) * 0.5
@@ -435,24 +410,19 @@ public func HermiteInterpolate(t: Double, _ a: Double, _ b: Double, _ c: Double,
     return a0 * b + a1 * m0 + a2 * m1 + a3 * c
 }
 
-@warn_unused_result
-public func Phase(x: Double, _ shift: Double, _ frequency: Double, _ maxFrequency: Double) -> Double {
-    return abs((x / maxFrequency + shift) * frequency) % 1.0
+public func Phase(_ x: Double, _ shift: Double, _ frequency: Double, _ maxFrequency: Double) -> Double {
+    return abs((x / maxFrequency + shift) * frequency).truncatingRemainder(dividingBy: 1.0)
 }
-@warn_unused_result
-public func SineWave(phase: Double) -> Double {
+public func SineWave(_ phase: Double) -> Double {
     return sin(2 * M_PI * phase)
 }
-@warn_unused_result
-public func SquareWave(phase: Double) -> Double {
+public func SquareWave(_ phase: Double) -> Double {
     return phase < 0.5 ? 1 : -1
 }
-@warn_unused_result
-public func SawtoothWave(phase: Double) -> Double {
+public func SawtoothWave(_ phase: Double) -> Double {
     return phase * 2 - 1.0
 }
-@warn_unused_result
-public func TriangleWave(phase: Double) -> Double {
+public func TriangleWave(_ phase: Double) -> Double {
     return phase < 0.5 ? phase * 4 - 1.0 : 3.0 - phase * 4
 }
 

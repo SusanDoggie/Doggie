@@ -25,7 +25,7 @@
 
 import Foundation
 
-public func Radix2CircularConvolve(level: Int, _ signal: UnsafePointer<Float>, _ signal_stride: Int, _ signal_count: Int, _ kernel: UnsafePointer<Float>, _ kernel_stride: Int, _ kernel_count: Int, _ output: UnsafeMutablePointer<Float>, _ out_stride: Int, _ temp: UnsafeMutablePointer<Float>, _ temp_stride: Int) {
+public func Radix2CircularConvolve(_ level: Int, _ signal: UnsafePointer<Float>, _ signal_stride: Int, _ signal_count: Int, _ kernel: UnsafePointer<Float>, _ kernel_stride: Int, _ kernel_count: Int, _ output: UnsafeMutablePointer<Float>, _ out_stride: Int, _ temp: UnsafeMutablePointer<Float>, _ temp_stride: Int) {
     
     let length = 1 << level
     let half = length >> 1
@@ -33,7 +33,7 @@ public func Radix2CircularConvolve(level: Int, _ signal: UnsafePointer<Float>, _
     if signal_count == 0 || kernel_count == 0 {
         var output = output
         for _ in 0..<length {
-            output.memory = 0
+            output.pointee = 0
             output += out_stride
         }
         return
@@ -51,25 +51,25 @@ public func Radix2CircularConvolve(level: Int, _ signal: UnsafePointer<Float>, _
     HalfRadix2CooleyTukey(level, kernel, kernel_stride, kernel_count, _kreal, _kimag, k_stride)
     
     let m = 1 / Float(length)
-    _sreal.memory *= m * _kreal.memory
-    _simag.memory *= m * _kimag.memory
+    _sreal.pointee *= m * _kreal.pointee
+    _simag.pointee *= m * _kimag.pointee
     for _ in 1..<half {
         _sreal += s_stride
         _simag += s_stride
         _kreal += k_stride
         _kimag += k_stride
-        let _sr = _sreal.memory
-        let _si = _simag.memory
-        let _kr = m * _kreal.memory
-        let _ki = m * _kimag.memory
-        _sreal.memory = _sr * _kr - _si * _ki
-        _simag.memory = _sr * _ki + _si * _kr
+        let _sr = _sreal.pointee
+        let _si = _simag.pointee
+        let _kr = m * _kreal.pointee
+        let _ki = m * _kimag.pointee
+        _sreal.pointee = _sr * _kr - _si * _ki
+        _simag.pointee = _sr * _ki + _si * _kr
     }
     
     HalfInverseRadix2CooleyTukey(level, temp, temp + temp_stride, k_stride, output, out_stride, temp, temp + temp_stride, k_stride)
 }
 
-public func Radix2CircularConvolve(level: Int, _ signal: UnsafePointer<Double>, _ signal_stride: Int, _ signal_count: Int, _ kernel: UnsafePointer<Double>, _ kernel_stride: Int, _ kernel_count: Int, _ output: UnsafeMutablePointer<Double>, _ out_stride: Int, _ temp: UnsafeMutablePointer<Double>, _ temp_stride: Int) {
+public func Radix2CircularConvolve(_ level: Int, _ signal: UnsafePointer<Double>, _ signal_stride: Int, _ signal_count: Int, _ kernel: UnsafePointer<Double>, _ kernel_stride: Int, _ kernel_count: Int, _ output: UnsafeMutablePointer<Double>, _ out_stride: Int, _ temp: UnsafeMutablePointer<Double>, _ temp_stride: Int) {
     
     let length = 1 << level
     let half = length >> 1
@@ -77,7 +77,7 @@ public func Radix2CircularConvolve(level: Int, _ signal: UnsafePointer<Double>, 
     if signal_count == 0 || kernel_count == 0 {
         var output = output
         for _ in 0..<length {
-            output.memory = 0
+            output.pointee = 0
             output += out_stride
         }
         return
@@ -95,25 +95,25 @@ public func Radix2CircularConvolve(level: Int, _ signal: UnsafePointer<Double>, 
     HalfRadix2CooleyTukey(level, kernel, kernel_stride, kernel_count, _kreal, _kimag, k_stride)
     
     let m = 1 / Double(length)
-    _sreal.memory *= m * _kreal.memory
-    _simag.memory *= m * _kimag.memory
+    _sreal.pointee *= m * _kreal.pointee
+    _simag.pointee *= m * _kimag.pointee
     for _ in 1..<half {
         _sreal += s_stride
         _simag += s_stride
         _kreal += k_stride
         _kimag += k_stride
-        let _sr = _sreal.memory
-        let _si = _simag.memory
-        let _kr = m * _kreal.memory
-        let _ki = m * _kimag.memory
-        _sreal.memory = _sr * _kr - _si * _ki
-        _simag.memory = _sr * _ki + _si * _kr
+        let _sr = _sreal.pointee
+        let _si = _simag.pointee
+        let _kr = m * _kreal.pointee
+        let _ki = m * _kimag.pointee
+        _sreal.pointee = _sr * _kr - _si * _ki
+        _simag.pointee = _sr * _ki + _si * _kr
     }
     
     HalfInverseRadix2CooleyTukey(level, temp, temp + temp_stride, k_stride, output, out_stride, temp, temp + temp_stride, k_stride)
 }
 
-public func Radix2CircularConvolve(level: Int, _ sreal: UnsafePointer<Float>, _ simag: UnsafePointer<Float>, _ signal_stride: Int, _ signal_count: Int, _ kreal: UnsafePointer<Float>, _ kimag: UnsafePointer<Float>, _ kernel_stride: Int, _ kernel_count: Int, _ _real: UnsafeMutablePointer<Float>, _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int, _ treal: UnsafeMutablePointer<Float>, _ timag: UnsafeMutablePointer<Float>, _ temp_stride: Int) {
+public func Radix2CircularConvolve(_ level: Int, _ sreal: UnsafePointer<Float>, _ simag: UnsafePointer<Float>, _ signal_stride: Int, _ signal_count: Int, _ kreal: UnsafePointer<Float>, _ kimag: UnsafePointer<Float>, _ kernel_stride: Int, _ kernel_count: Int, _ _real: UnsafeMutablePointer<Float>, _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int, _ treal: UnsafeMutablePointer<Float>, _ timag: UnsafeMutablePointer<Float>, _ temp_stride: Int) {
     
     let length = 1 << level
     
@@ -121,8 +121,8 @@ public func Radix2CircularConvolve(level: Int, _ sreal: UnsafePointer<Float>, _ 
         var _real = _real
         var _imag = _imag
         for _ in 0..<length {
-            _real.memory = 0
-            _imag.memory = 0
+            _real.pointee = 0
+            _imag.pointee = 0
             _real += out_stride
             _imag += out_stride
         }
@@ -142,12 +142,12 @@ public func Radix2CircularConvolve(level: Int, _ sreal: UnsafePointer<Float>, _ 
     
     let m = 1 / Float(length)
     for _ in 0..<length {
-        let _sr = _sreal.memory
-        let _si = _simag.memory
-        let _kr = m * _kreal.memory
-        let _ki = m * _kimag.memory
-        _sreal.memory = _sr * _kr - _si * _ki
-        _simag.memory = _sr * _ki + _si * _kr
+        let _sr = _sreal.pointee
+        let _si = _simag.pointee
+        let _kr = m * _kreal.pointee
+        let _ki = m * _kimag.pointee
+        _sreal.pointee = _sr * _kr - _si * _ki
+        _simag.pointee = _sr * _ki + _si * _kr
         _sreal += s_stride
         _simag += s_stride
         _kreal += k_stride
@@ -157,7 +157,7 @@ public func Radix2CircularConvolve(level: Int, _ sreal: UnsafePointer<Float>, _ 
     InverseRadix2CooleyTukey(level, treal, timag, temp_stride, length, _real, _imag, out_stride)
 }
 
-public func Radix2CircularConvolve(level: Int, _ sreal: UnsafePointer<Double>, _ simag: UnsafePointer<Double>, _ signal_stride: Int, _ signal_count: Int, _ kreal: UnsafePointer<Double>, _ kimag: UnsafePointer<Double>, _ kernel_stride: Int, _ kernel_count: Int, _ _real: UnsafeMutablePointer<Double>, _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int, _ treal: UnsafeMutablePointer<Double>, _ timag: UnsafeMutablePointer<Double>, _ temp_stride: Int) {
+public func Radix2CircularConvolve(_ level: Int, _ sreal: UnsafePointer<Double>, _ simag: UnsafePointer<Double>, _ signal_stride: Int, _ signal_count: Int, _ kreal: UnsafePointer<Double>, _ kimag: UnsafePointer<Double>, _ kernel_stride: Int, _ kernel_count: Int, _ _real: UnsafeMutablePointer<Double>, _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int, _ treal: UnsafeMutablePointer<Double>, _ timag: UnsafeMutablePointer<Double>, _ temp_stride: Int) {
     
     let length = 1 << level
     
@@ -165,8 +165,8 @@ public func Radix2CircularConvolve(level: Int, _ sreal: UnsafePointer<Double>, _
         var _real = _real
         var _imag = _imag
         for _ in 0..<length {
-            _real.memory = 0
-            _imag.memory = 0
+            _real.pointee = 0
+            _imag.pointee = 0
             _real += out_stride
             _imag += out_stride
         }
@@ -186,12 +186,12 @@ public func Radix2CircularConvolve(level: Int, _ sreal: UnsafePointer<Double>, _
     
     let m = 1 / Double(length)
     for _ in 0..<length {
-        let _sr = _sreal.memory
-        let _si = _simag.memory
-        let _kr = m * _kreal.memory
-        let _ki = m * _kimag.memory
-        _sreal.memory = _sr * _kr - _si * _ki
-        _simag.memory = _sr * _ki + _si * _kr
+        let _sr = _sreal.pointee
+        let _si = _simag.pointee
+        let _kr = m * _kreal.pointee
+        let _ki = m * _kimag.pointee
+        _sreal.pointee = _sr * _kr - _si * _ki
+        _simag.pointee = _sr * _ki + _si * _kr
         _sreal += s_stride
         _simag += s_stride
         _kreal += k_stride
@@ -201,7 +201,7 @@ public func Radix2CircularConvolve(level: Int, _ sreal: UnsafePointer<Double>, _
     InverseRadix2CooleyTukey(level, treal, timag, temp_stride, length, _real, _imag, out_stride)
 }
 
-public func DispatchRadix2CircularConvolve(level: Int, _ signal: UnsafePointer<Float>, _ signal_stride: Int, _ signal_count: Int, _ kernel: UnsafePointer<Float>, _ kernel_stride: Int, _ kernel_count: Int, _ output: UnsafeMutablePointer<Float>, _ out_stride: Int, _ temp: UnsafeMutablePointer<Float>, _ temp_stride: Int) {
+public func DispatchRadix2CircularConvolve(_ level: Int, _ signal: UnsafePointer<Float>, _ signal_stride: Int, _ signal_count: Int, _ kernel: UnsafePointer<Float>, _ kernel_stride: Int, _ kernel_count: Int, _ output: UnsafeMutablePointer<Float>, _ out_stride: Int, _ temp: UnsafeMutablePointer<Float>, _ temp_stride: Int) {
     
     let length = 1 << level
     let half = length >> 1
@@ -209,7 +209,7 @@ public func DispatchRadix2CircularConvolve(level: Int, _ signal: UnsafePointer<F
     if signal_count == 0 || kernel_count == 0 {
         var output = output
         for _ in 0..<length {
-            output.memory = 0
+            output.pointee = 0
             output += out_stride
         }
         return
@@ -227,25 +227,25 @@ public func DispatchRadix2CircularConvolve(level: Int, _ signal: UnsafePointer<F
     DispatchHalfRadix2CooleyTukey(level, kernel, kernel_stride, kernel_count, _kreal, _kimag, k_stride)
     
     let m = 1 / Float(length)
-    _sreal.memory *= m * _kreal.memory
-    _simag.memory *= m * _kimag.memory
+    _sreal.pointee *= m * _kreal.pointee
+    _simag.pointee *= m * _kimag.pointee
     for _ in 1..<half {
         _sreal += s_stride
         _simag += s_stride
         _kreal += k_stride
         _kimag += k_stride
-        let _sr = _sreal.memory
-        let _si = _simag.memory
-        let _kr = m * _kreal.memory
-        let _ki = m * _kimag.memory
-        _sreal.memory = _sr * _kr - _si * _ki
-        _simag.memory = _sr * _ki + _si * _kr
+        let _sr = _sreal.pointee
+        let _si = _simag.pointee
+        let _kr = m * _kreal.pointee
+        let _ki = m * _kimag.pointee
+        _sreal.pointee = _sr * _kr - _si * _ki
+        _simag.pointee = _sr * _ki + _si * _kr
     }
     
     DispatchHalfInverseRadix2CooleyTukey(level, temp, temp + temp_stride, k_stride, output, out_stride, temp, temp + temp_stride, k_stride)
 }
 
-public func DispatchRadix2CircularConvolve(level: Int, _ signal: UnsafePointer<Double>, _ signal_stride: Int, _ signal_count: Int, _ kernel: UnsafePointer<Double>, _ kernel_stride: Int, _ kernel_count: Int, _ output: UnsafeMutablePointer<Double>, _ out_stride: Int, _ temp: UnsafeMutablePointer<Double>, _ temp_stride: Int) {
+public func DispatchRadix2CircularConvolve(_ level: Int, _ signal: UnsafePointer<Double>, _ signal_stride: Int, _ signal_count: Int, _ kernel: UnsafePointer<Double>, _ kernel_stride: Int, _ kernel_count: Int, _ output: UnsafeMutablePointer<Double>, _ out_stride: Int, _ temp: UnsafeMutablePointer<Double>, _ temp_stride: Int) {
     
     let length = 1 << level
     let half = length >> 1
@@ -253,7 +253,7 @@ public func DispatchRadix2CircularConvolve(level: Int, _ signal: UnsafePointer<D
     if signal_count == 0 || kernel_count == 0 {
         var output = output
         for _ in 0..<length {
-            output.memory = 0
+            output.pointee = 0
             output += out_stride
         }
         return
@@ -271,25 +271,25 @@ public func DispatchRadix2CircularConvolve(level: Int, _ signal: UnsafePointer<D
     DispatchHalfRadix2CooleyTukey(level, kernel, kernel_stride, kernel_count, _kreal, _kimag, k_stride)
     
     let m = 1 / Double(length)
-    _sreal.memory *= m * _kreal.memory
-    _simag.memory *= m * _kimag.memory
+    _sreal.pointee *= m * _kreal.pointee
+    _simag.pointee *= m * _kimag.pointee
     for _ in 1..<half {
         _sreal += s_stride
         _simag += s_stride
         _kreal += k_stride
         _kimag += k_stride
-        let _sr = _sreal.memory
-        let _si = _simag.memory
-        let _kr = m * _kreal.memory
-        let _ki = m * _kimag.memory
-        _sreal.memory = _sr * _kr - _si * _ki
-        _simag.memory = _sr * _ki + _si * _kr
+        let _sr = _sreal.pointee
+        let _si = _simag.pointee
+        let _kr = m * _kreal.pointee
+        let _ki = m * _kimag.pointee
+        _sreal.pointee = _sr * _kr - _si * _ki
+        _simag.pointee = _sr * _ki + _si * _kr
     }
     
     DispatchHalfInverseRadix2CooleyTukey(level, temp, temp + temp_stride, k_stride, output, out_stride, temp, temp + temp_stride, k_stride)
 }
 
-public func DispatchRadix2CircularConvolve(level: Int, _ sreal: UnsafePointer<Float>, _ simag: UnsafePointer<Float>, _ signal_stride: Int, _ signal_count: Int, _ kreal: UnsafePointer<Float>, _ kimag: UnsafePointer<Float>, _ kernel_stride: Int, _ kernel_count: Int, _ _real: UnsafeMutablePointer<Float>, _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int, _ treal: UnsafeMutablePointer<Float>, _ timag: UnsafeMutablePointer<Float>, _ temp_stride: Int) {
+public func DispatchRadix2CircularConvolve(_ level: Int, _ sreal: UnsafePointer<Float>, _ simag: UnsafePointer<Float>, _ signal_stride: Int, _ signal_count: Int, _ kreal: UnsafePointer<Float>, _ kimag: UnsafePointer<Float>, _ kernel_stride: Int, _ kernel_count: Int, _ _real: UnsafeMutablePointer<Float>, _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int, _ treal: UnsafeMutablePointer<Float>, _ timag: UnsafeMutablePointer<Float>, _ temp_stride: Int) {
     
     let length = 1 << level
     
@@ -297,8 +297,8 @@ public func DispatchRadix2CircularConvolve(level: Int, _ sreal: UnsafePointer<Fl
         var _real = _real
         var _imag = _imag
         for _ in 0..<length {
-            _real.memory = 0
-            _imag.memory = 0
+            _real.pointee = 0
+            _imag.pointee = 0
             _real += out_stride
             _imag += out_stride
         }
@@ -318,12 +318,12 @@ public func DispatchRadix2CircularConvolve(level: Int, _ sreal: UnsafePointer<Fl
     
     let m = 1 / Float(length)
     for _ in 0..<length {
-        let _sr = _sreal.memory
-        let _si = _simag.memory
-        let _kr = m * _kreal.memory
-        let _ki = m * _kimag.memory
-        _sreal.memory = _sr * _kr - _si * _ki
-        _simag.memory = _sr * _ki + _si * _kr
+        let _sr = _sreal.pointee
+        let _si = _simag.pointee
+        let _kr = m * _kreal.pointee
+        let _ki = m * _kimag.pointee
+        _sreal.pointee = _sr * _kr - _si * _ki
+        _simag.pointee = _sr * _ki + _si * _kr
         _sreal += s_stride
         _simag += s_stride
         _kreal += k_stride
@@ -333,7 +333,7 @@ public func DispatchRadix2CircularConvolve(level: Int, _ sreal: UnsafePointer<Fl
     DispatchInverseRadix2CooleyTukey(level, treal, timag, temp_stride, length, _real, _imag, out_stride)
 }
 
-public func DispatchRadix2CircularConvolve(level: Int, _ sreal: UnsafePointer<Double>, _ simag: UnsafePointer<Double>, _ signal_stride: Int, _ signal_count: Int, _ kreal: UnsafePointer<Double>, _ kimag: UnsafePointer<Double>, _ kernel_stride: Int, _ kernel_count: Int, _ _real: UnsafeMutablePointer<Double>, _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int, _ treal: UnsafeMutablePointer<Double>, _ timag: UnsafeMutablePointer<Double>, _ temp_stride: Int) {
+public func DispatchRadix2CircularConvolve(_ level: Int, _ sreal: UnsafePointer<Double>, _ simag: UnsafePointer<Double>, _ signal_stride: Int, _ signal_count: Int, _ kreal: UnsafePointer<Double>, _ kimag: UnsafePointer<Double>, _ kernel_stride: Int, _ kernel_count: Int, _ _real: UnsafeMutablePointer<Double>, _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int, _ treal: UnsafeMutablePointer<Double>, _ timag: UnsafeMutablePointer<Double>, _ temp_stride: Int) {
     
     let length = 1 << level
     
@@ -341,8 +341,8 @@ public func DispatchRadix2CircularConvolve(level: Int, _ sreal: UnsafePointer<Do
         var _real = _real
         var _imag = _imag
         for _ in 0..<length {
-            _real.memory = 0
-            _imag.memory = 0
+            _real.pointee = 0
+            _imag.pointee = 0
             _real += out_stride
             _imag += out_stride
         }
@@ -362,12 +362,12 @@ public func DispatchRadix2CircularConvolve(level: Int, _ sreal: UnsafePointer<Do
     
     let m = 1 / Double(length)
     for _ in 0..<length {
-        let _sr = _sreal.memory
-        let _si = _simag.memory
-        let _kr = m * _kreal.memory
-        let _ki = m * _kimag.memory
-        _sreal.memory = _sr * _kr - _si * _ki
-        _simag.memory = _sr * _ki + _si * _kr
+        let _sr = _sreal.pointee
+        let _si = _simag.pointee
+        let _kr = m * _kreal.pointee
+        let _ki = m * _kimag.pointee
+        _sreal.pointee = _sr * _kr - _si * _ki
+        _simag.pointee = _sr * _ki + _si * _kr
         _sreal += s_stride
         _simag += s_stride
         _kreal += k_stride
@@ -377,7 +377,7 @@ public func DispatchRadix2CircularConvolve(level: Int, _ sreal: UnsafePointer<Do
     DispatchInverseRadix2CooleyTukey(level, treal, timag, temp_stride, length, _real, _imag, out_stride)
 }
 
-public func Radix2PowerCircularConvolve(level: Int, _ input: UnsafePointer<Float>, _ in_stride: Int, _ in_count: Int, _ n: Float, _ output: UnsafeMutablePointer<Float>, _ out_stride: Int, _ temp: UnsafeMutablePointer<Float>, _ temp_stride: Int) {
+public func Radix2PowerCircularConvolve(_ level: Int, _ input: UnsafePointer<Float>, _ in_stride: Int, _ in_count: Int, _ n: Float, _ output: UnsafeMutablePointer<Float>, _ out_stride: Int, _ temp: UnsafeMutablePointer<Float>, _ temp_stride: Int) {
     
     let length = 1 << level
     let half = length >> 1
@@ -385,7 +385,7 @@ public func Radix2PowerCircularConvolve(level: Int, _ input: UnsafePointer<Float
     if in_count == 0 {
         var output = output
         for _ in 0..<length {
-            output.memory = 0
+            output.pointee = 0
             output += out_stride
         }
         return
@@ -397,23 +397,23 @@ public func Radix2PowerCircularConvolve(level: Int, _ input: UnsafePointer<Float
     HalfRadix2CooleyTukey(level, input, in_stride, in_count, _treal, _timag, t_stride)
     
     let m = 1 / Float(length)
-    _treal.memory = m * pow(_treal.memory, n)
-    _timag.memory = m * pow(_timag.memory, n)
+    _treal.pointee = m * pow(_treal.pointee, n)
+    _timag.pointee = m * pow(_timag.pointee, n)
     for _ in 1..<half {
         _treal += t_stride
         _timag += t_stride
-        let _r = _treal.memory
-        let _i = _timag.memory
+        let _r = _treal.pointee
+        let _i = _timag.pointee
         let _pow = m * pow(_r * _r + _i * _i, 0.5 * n)
         let _arg = n * atan2(_i, _r)
-        _treal.memory = _pow * cos(_arg)
-        _timag.memory = _pow * sin(_arg)
+        _treal.pointee = _pow * cos(_arg)
+        _timag.pointee = _pow * sin(_arg)
     }
     
     HalfInverseRadix2CooleyTukey(level, temp, temp + temp_stride, t_stride, output, out_stride, temp, temp + temp_stride, t_stride)
 }
 
-public func Radix2PowerCircularConvolve(level: Int, _ input: UnsafePointer<Double>, _ in_stride: Int, _ in_count: Int, _ n: Double, _ output: UnsafeMutablePointer<Double>, _ out_stride: Int, _ temp: UnsafeMutablePointer<Double>, _ temp_stride: Int) {
+public func Radix2PowerCircularConvolve(_ level: Int, _ input: UnsafePointer<Double>, _ in_stride: Int, _ in_count: Int, _ n: Double, _ output: UnsafeMutablePointer<Double>, _ out_stride: Int, _ temp: UnsafeMutablePointer<Double>, _ temp_stride: Int) {
     
     let length = 1 << level
     let half = length >> 1
@@ -421,7 +421,7 @@ public func Radix2PowerCircularConvolve(level: Int, _ input: UnsafePointer<Doubl
     if in_count == 0 {
         var output = output
         for _ in 0..<length {
-            output.memory = 0
+            output.pointee = 0
             output += out_stride
         }
         return
@@ -433,23 +433,23 @@ public func Radix2PowerCircularConvolve(level: Int, _ input: UnsafePointer<Doubl
     HalfRadix2CooleyTukey(level, input, in_stride, in_count, _treal, _timag, t_stride)
     
     let m = 1 / Double(length)
-    _treal.memory = m * pow(_treal.memory, n)
-    _timag.memory = m * pow(_timag.memory, n)
+    _treal.pointee = m * pow(_treal.pointee, n)
+    _timag.pointee = m * pow(_timag.pointee, n)
     for _ in 1..<half {
         _treal += t_stride
         _timag += t_stride
-        let _r = _treal.memory
-        let _i = _timag.memory
+        let _r = _treal.pointee
+        let _i = _timag.pointee
         let _pow = m * pow(_r * _r + _i * _i, 0.5 * n)
         let _arg = n * atan2(_i, _r)
-        _treal.memory = _pow * cos(_arg)
-        _timag.memory = _pow * sin(_arg)
+        _treal.pointee = _pow * cos(_arg)
+        _timag.pointee = _pow * sin(_arg)
     }
     
     HalfInverseRadix2CooleyTukey(level, temp, temp + temp_stride, t_stride, output, out_stride, temp, temp + temp_stride, t_stride)
 }
 
-public func Radix2PowerCircularConvolve(level: Int, _ real: UnsafePointer<Float>, _ imag: UnsafePointer<Float>, _ in_stride: Int, _ in_count: Int, _ n: Float, _ _real: UnsafeMutablePointer<Float>, _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int, _ treal: UnsafeMutablePointer<Float>, _ timag: UnsafeMutablePointer<Float>, _ temp_stride: Int) {
+public func Radix2PowerCircularConvolve(_ level: Int, _ real: UnsafePointer<Float>, _ imag: UnsafePointer<Float>, _ in_stride: Int, _ in_count: Int, _ n: Float, _ _real: UnsafeMutablePointer<Float>, _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int, _ treal: UnsafeMutablePointer<Float>, _ timag: UnsafeMutablePointer<Float>, _ temp_stride: Int) {
     
     let length = 1 << level
     
@@ -457,8 +457,8 @@ public func Radix2PowerCircularConvolve(level: Int, _ real: UnsafePointer<Float>
         var _real = _real
         var _imag = _imag
         for _ in 0..<length {
-            _real.memory = 0
-            _imag.memory = 0
+            _real.pointee = 0
+            _imag.pointee = 0
             _real += out_stride
             _imag += out_stride
         }
@@ -471,12 +471,12 @@ public func Radix2PowerCircularConvolve(level: Int, _ real: UnsafePointer<Float>
     var _timag = timag
     let m = 1 / Float(length)
     for _ in 0..<length {
-        let _r = _treal.memory
-        let _i = _timag.memory
+        let _r = _treal.pointee
+        let _i = _timag.pointee
         let _pow = m * pow(_r * _r + _i * _i, 0.5 * n)
         let _arg = n * atan2(_i, _r)
-        _treal.memory = _pow * cos(_arg)
-        _timag.memory = _pow * sin(_arg)
+        _treal.pointee = _pow * cos(_arg)
+        _timag.pointee = _pow * sin(_arg)
         _treal += temp_stride
         _timag += temp_stride
     }
@@ -484,7 +484,7 @@ public func Radix2PowerCircularConvolve(level: Int, _ real: UnsafePointer<Float>
     InverseRadix2CooleyTukey(level, treal, timag, temp_stride, length, _real, _imag, out_stride)
 }
 
-public func Radix2PowerCircularConvolve(level: Int, _ real: UnsafePointer<Double>, _ imag: UnsafePointer<Double>, _ in_stride: Int, _ in_count: Int, _ n: Double, _ _real: UnsafeMutablePointer<Double>, _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int, _ treal: UnsafeMutablePointer<Double>, _ timag: UnsafeMutablePointer<Double>, _ temp_stride: Int) {
+public func Radix2PowerCircularConvolve(_ level: Int, _ real: UnsafePointer<Double>, _ imag: UnsafePointer<Double>, _ in_stride: Int, _ in_count: Int, _ n: Double, _ _real: UnsafeMutablePointer<Double>, _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int, _ treal: UnsafeMutablePointer<Double>, _ timag: UnsafeMutablePointer<Double>, _ temp_stride: Int) {
     
     let length = 1 << level
     
@@ -492,8 +492,8 @@ public func Radix2PowerCircularConvolve(level: Int, _ real: UnsafePointer<Double
         var _real = _real
         var _imag = _imag
         for _ in 0..<length {
-            _real.memory = 0
-            _imag.memory = 0
+            _real.pointee = 0
+            _imag.pointee = 0
             _real += out_stride
             _imag += out_stride
         }
@@ -506,12 +506,12 @@ public func Radix2PowerCircularConvolve(level: Int, _ real: UnsafePointer<Double
     var _timag = timag
     let m = 1 / Double(length)
     for _ in 0..<length {
-        let _r = _treal.memory
-        let _i = _timag.memory
+        let _r = _treal.pointee
+        let _i = _timag.pointee
         let _pow = m * pow(_r * _r + _i * _i, 0.5 * n)
         let _arg = n * atan2(_i, _r)
-        _treal.memory = _pow * cos(_arg)
-        _timag.memory = _pow * sin(_arg)
+        _treal.pointee = _pow * cos(_arg)
+        _timag.pointee = _pow * sin(_arg)
         _treal += temp_stride
         _timag += temp_stride
     }
@@ -519,7 +519,7 @@ public func Radix2PowerCircularConvolve(level: Int, _ real: UnsafePointer<Double
     InverseRadix2CooleyTukey(level, treal, timag, temp_stride, length, _real, _imag, out_stride)
 }
 
-public func DispatchRadix2PowerCircularConvolve(level: Int, _ input: UnsafePointer<Float>, _ in_stride: Int, _ in_count: Int, _ n: Float, _ output: UnsafeMutablePointer<Float>, _ out_stride: Int, _ temp: UnsafeMutablePointer<Float>, _ temp_stride: Int) {
+public func DispatchRadix2PowerCircularConvolve(_ level: Int, _ input: UnsafePointer<Float>, _ in_stride: Int, _ in_count: Int, _ n: Float, _ output: UnsafeMutablePointer<Float>, _ out_stride: Int, _ temp: UnsafeMutablePointer<Float>, _ temp_stride: Int) {
     
     let length = 1 << level
     let half = length >> 1
@@ -527,7 +527,7 @@ public func DispatchRadix2PowerCircularConvolve(level: Int, _ input: UnsafePoint
     if in_count == 0 {
         var output = output
         for _ in 0..<length {
-            output.memory = 0
+            output.pointee = 0
             output += out_stride
         }
         return
@@ -539,23 +539,23 @@ public func DispatchRadix2PowerCircularConvolve(level: Int, _ input: UnsafePoint
     DispatchHalfRadix2CooleyTukey(level, input, in_stride, in_count, _treal, _timag, t_stride)
     
     let m = 1 / Float(length)
-    _treal.memory = m * pow(_treal.memory, n)
-    _timag.memory = m * pow(_timag.memory, n)
+    _treal.pointee = m * pow(_treal.pointee, n)
+    _timag.pointee = m * pow(_timag.pointee, n)
     for _ in 1..<half {
         _treal += t_stride
         _timag += t_stride
-        let _r = _treal.memory
-        let _i = _timag.memory
+        let _r = _treal.pointee
+        let _i = _timag.pointee
         let _pow = m * pow(_r * _r + _i * _i, 0.5 * n)
         let _arg = n * atan2(_i, _r)
-        _treal.memory = _pow * cos(_arg)
-        _timag.memory = _pow * sin(_arg)
+        _treal.pointee = _pow * cos(_arg)
+        _timag.pointee = _pow * sin(_arg)
     }
     
     DispatchHalfInverseRadix2CooleyTukey(level, temp, temp + temp_stride, t_stride, output, out_stride, temp, temp + temp_stride, t_stride)
 }
 
-public func DispatchRadix2PowerCircularConvolve(level: Int, _ input: UnsafePointer<Double>, _ in_stride: Int, _ in_count: Int, _ n: Double, _ output: UnsafeMutablePointer<Double>, _ out_stride: Int, _ temp: UnsafeMutablePointer<Double>, _ temp_stride: Int) {
+public func DispatchRadix2PowerCircularConvolve(_ level: Int, _ input: UnsafePointer<Double>, _ in_stride: Int, _ in_count: Int, _ n: Double, _ output: UnsafeMutablePointer<Double>, _ out_stride: Int, _ temp: UnsafeMutablePointer<Double>, _ temp_stride: Int) {
     
     let length = 1 << level
     let half = length >> 1
@@ -563,7 +563,7 @@ public func DispatchRadix2PowerCircularConvolve(level: Int, _ input: UnsafePoint
     if in_count == 0 {
         var output = output
         for _ in 0..<length {
-            output.memory = 0
+            output.pointee = 0
             output += out_stride
         }
         return
@@ -575,23 +575,23 @@ public func DispatchRadix2PowerCircularConvolve(level: Int, _ input: UnsafePoint
     DispatchHalfRadix2CooleyTukey(level, input, in_stride, in_count, _treal, _timag, t_stride)
     
     let m = 1 / Double(length)
-    _treal.memory = m * pow(_treal.memory, n)
-    _timag.memory = m * pow(_timag.memory, n)
+    _treal.pointee = m * pow(_treal.pointee, n)
+    _timag.pointee = m * pow(_timag.pointee, n)
     for _ in 1..<half {
         _treal += t_stride
         _timag += t_stride
-        let _r = _treal.memory
-        let _i = _timag.memory
+        let _r = _treal.pointee
+        let _i = _timag.pointee
         let _pow = m * pow(_r * _r + _i * _i, 0.5 * n)
         let _arg = n * atan2(_i, _r)
-        _treal.memory = _pow * cos(_arg)
-        _timag.memory = _pow * sin(_arg)
+        _treal.pointee = _pow * cos(_arg)
+        _timag.pointee = _pow * sin(_arg)
     }
     
     DispatchHalfInverseRadix2CooleyTukey(level, temp, temp + temp_stride, t_stride, output, out_stride, temp, temp + temp_stride, t_stride)
 }
 
-public func DispatchRadix2PowerCircularConvolve(level: Int, _ real: UnsafePointer<Float>, _ imag: UnsafePointer<Float>, _ in_stride: Int, _ in_count: Int, _ n: Float, _ _real: UnsafeMutablePointer<Float>, _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int, _ treal: UnsafeMutablePointer<Float>, _ timag: UnsafeMutablePointer<Float>, _ temp_stride: Int) {
+public func DispatchRadix2PowerCircularConvolve(_ level: Int, _ real: UnsafePointer<Float>, _ imag: UnsafePointer<Float>, _ in_stride: Int, _ in_count: Int, _ n: Float, _ _real: UnsafeMutablePointer<Float>, _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int, _ treal: UnsafeMutablePointer<Float>, _ timag: UnsafeMutablePointer<Float>, _ temp_stride: Int) {
     
     let length = 1 << level
     
@@ -599,8 +599,8 @@ public func DispatchRadix2PowerCircularConvolve(level: Int, _ real: UnsafePointe
         var _real = _real
         var _imag = _imag
         for _ in 0..<length {
-            _real.memory = 0
-            _imag.memory = 0
+            _real.pointee = 0
+            _imag.pointee = 0
             _real += out_stride
             _imag += out_stride
         }
@@ -613,12 +613,12 @@ public func DispatchRadix2PowerCircularConvolve(level: Int, _ real: UnsafePointe
     var _timag = timag
     let m = 1 / Float(length)
     for _ in 0..<length {
-        let _r = _treal.memory
-        let _i = _timag.memory
+        let _r = _treal.pointee
+        let _i = _timag.pointee
         let _pow = m * pow(_r * _r + _i * _i, 0.5 * n)
         let _arg = n * atan2(_i, _r)
-        _treal.memory = _pow * cos(_arg)
-        _timag.memory = _pow * sin(_arg)
+        _treal.pointee = _pow * cos(_arg)
+        _timag.pointee = _pow * sin(_arg)
         _treal += temp_stride
         _timag += temp_stride
     }
@@ -626,7 +626,7 @@ public func DispatchRadix2PowerCircularConvolve(level: Int, _ real: UnsafePointe
     DispatchInverseRadix2CooleyTukey(level, treal, timag, temp_stride, length, _real, _imag, out_stride)
 }
 
-public func DispatchRadix2PowerCircularConvolve(level: Int, _ real: UnsafePointer<Double>, _ imag: UnsafePointer<Double>, _ in_stride: Int, _ in_count: Int, _ n: Double, _ _real: UnsafeMutablePointer<Double>, _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int, _ treal: UnsafeMutablePointer<Double>, _ timag: UnsafeMutablePointer<Double>, _ temp_stride: Int) {
+public func DispatchRadix2PowerCircularConvolve(_ level: Int, _ real: UnsafePointer<Double>, _ imag: UnsafePointer<Double>, _ in_stride: Int, _ in_count: Int, _ n: Double, _ _real: UnsafeMutablePointer<Double>, _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int, _ treal: UnsafeMutablePointer<Double>, _ timag: UnsafeMutablePointer<Double>, _ temp_stride: Int) {
     
     let length = 1 << level
     
@@ -634,8 +634,8 @@ public func DispatchRadix2PowerCircularConvolve(level: Int, _ real: UnsafePointe
         var _real = _real
         var _imag = _imag
         for _ in 0..<length {
-            _real.memory = 0
-            _imag.memory = 0
+            _real.pointee = 0
+            _imag.pointee = 0
             _real += out_stride
             _imag += out_stride
         }
@@ -648,12 +648,12 @@ public func DispatchRadix2PowerCircularConvolve(level: Int, _ real: UnsafePointe
     var _timag = timag
     let m = 1 / Double(length)
     for _ in 0..<length {
-        let _r = _treal.memory
-        let _i = _timag.memory
+        let _r = _treal.pointee
+        let _i = _timag.pointee
         let _pow = m * pow(_r * _r + _i * _i, 0.5 * n)
         let _arg = n * atan2(_i, _r)
-        _treal.memory = _pow * cos(_arg)
-        _timag.memory = _pow * sin(_arg)
+        _treal.pointee = _pow * cos(_arg)
+        _timag.pointee = _pow * sin(_arg)
         _treal += temp_stride
         _timag += temp_stride
     }
@@ -661,14 +661,14 @@ public func DispatchRadix2PowerCircularConvolve(level: Int, _ real: UnsafePointe
     DispatchInverseRadix2CooleyTukey(level, treal, timag, temp_stride, length, _real, _imag, out_stride)
 }
 
-public func Radix2CircularConvolve<U: UnsignedIntegerType>(level: Int, _ signal: UnsafePointer<U>, _ signal_stride: Int, _ signal_count: Int, _ kernel: UnsafePointer<U>, _ kernel_stride: Int, _ kernel_count: Int, _ alpha: U, _ mod: U, _ output: UnsafeMutablePointer<U>, _ out_stride: Int, _ temp: UnsafeMutablePointer<U>, _ temp_stride: Int) {
+public func Radix2CircularConvolve<U: UnsignedInteger>(_ level: Int, _ signal: UnsafePointer<U>, _ signal_stride: Int, _ signal_count: Int, _ kernel: UnsafePointer<U>, _ kernel_stride: Int, _ kernel_count: Int, _ alpha: U, _ mod: U, _ output: UnsafeMutablePointer<U>, _ out_stride: Int, _ temp: UnsafeMutablePointer<U>, _ temp_stride: Int) {
     
     let length = 1 << level
     
     if signal_count == 0 || kernel_count == 0 {
         var output = output
         for _ in 0..<length {
-            output.memory = 0
+            output.pointee = 0
             output += out_stride
         }
         return
@@ -682,9 +682,9 @@ public func Radix2CircularConvolve<U: UnsignedIntegerType>(level: Int, _ signal:
     
     let _n = modinv(U(UIntMax(length)), mod)
     for _ in 0..<length {
-        let _s = _signal.memory
-        let _k = mulmod(_kernel.memory, _n, mod)
-        _kernel.memory = mulmod(_s, _k, mod)
+        let _s = _signal.pointee
+        let _k = mulmod(_kernel.pointee, _n, mod)
+        _kernel.pointee = mulmod(_s, _k, mod)
         _signal += out_stride
         _kernel += temp_stride
     }
@@ -692,14 +692,14 @@ public func Radix2CircularConvolve<U: UnsignedIntegerType>(level: Int, _ signal:
     InverseRadix2CooleyTukey(level, temp, temp_stride, length, alpha, mod, output, out_stride)
 }
 
-public func DispatchRadix2CircularConvolve<U: UnsignedIntegerType>(level: Int, _ signal: UnsafePointer<U>, _ signal_stride: Int, _ signal_count: Int, _ kernel: UnsafePointer<U>, _ kernel_stride: Int, _ kernel_count: Int, _ alpha: U, _ mod: U, _ output: UnsafeMutablePointer<U>, _ out_stride: Int, _ temp: UnsafeMutablePointer<U>, _ temp_stride: Int) {
+public func DispatchRadix2CircularConvolve<U: UnsignedInteger>(_ level: Int, _ signal: UnsafePointer<U>, _ signal_stride: Int, _ signal_count: Int, _ kernel: UnsafePointer<U>, _ kernel_stride: Int, _ kernel_count: Int, _ alpha: U, _ mod: U, _ output: UnsafeMutablePointer<U>, _ out_stride: Int, _ temp: UnsafeMutablePointer<U>, _ temp_stride: Int) {
     
     let length = 1 << level
     
     if signal_count == 0 || kernel_count == 0 {
         var output = output
         for _ in 0..<length {
-            output.memory = 0
+            output.pointee = 0
             output += out_stride
         }
         return
@@ -713,9 +713,9 @@ public func DispatchRadix2CircularConvolve<U: UnsignedIntegerType>(level: Int, _
     
     let _n = modinv(U(UIntMax(length)), mod)
     for _ in 0..<length {
-        let _s = _signal.memory
-        let _k = mulmod(_kernel.memory, _n, mod)
-        _kernel.memory = mulmod(_s, _k, mod)
+        let _s = _signal.pointee
+        let _k = mulmod(_kernel.pointee, _n, mod)
+        _kernel.pointee = mulmod(_s, _k, mod)
         _signal += out_stride
         _kernel += temp_stride
     }
@@ -723,7 +723,7 @@ public func DispatchRadix2CircularConvolve<U: UnsignedIntegerType>(level: Int, _
     DispatchInverseRadix2CooleyTukey(level, temp, temp_stride, length, alpha, mod, output, out_stride)
 }
 
-public func Radix2FiniteImpulseFilter(level: Int, _ signal: UnsafePointer<Double>, _ signal_stride: Int, _ signal_count: Int, _ kernel: UnsafePointer<Complex>, _ kernel_stride: Int, _ output: UnsafeMutablePointer<Double>, _ out_stride: Int, _ temp: UnsafeMutablePointer<Double>, _ temp_stride: Int) {
+public func Radix2FiniteImpulseFilter(_ level: Int, _ signal: UnsafePointer<Double>, _ signal_stride: Int, _ signal_count: Int, _ kernel: UnsafePointer<Complex>, _ kernel_stride: Int, _ output: UnsafeMutablePointer<Double>, _ out_stride: Int, _ temp: UnsafeMutablePointer<Double>, _ temp_stride: Int) {
     
     let length = 1 << level
     let half = length >> 1
@@ -731,7 +731,7 @@ public func Radix2FiniteImpulseFilter(level: Int, _ signal: UnsafePointer<Double
     if signal_count == 0 {
         var output = output
         for _ in 0..<length {
-            output.memory = 0
+            output.pointee = 0
             output += out_stride
         }
         return
@@ -745,31 +745,31 @@ public func Radix2FiniteImpulseFilter(level: Int, _ signal: UnsafePointer<Double
     
     HalfRadix2CooleyTukey(level, signal, signal_stride, signal_count, _treal, _timag, t_stride)
     
-    _treal.memory *= _kernel.memory.real
-    _timag.memory *= _kernel.memory.imag
+    _treal.pointee *= _kernel.pointee.real
+    _timag.pointee *= _kernel.pointee.imag
     for _ in 1..<half {
         _treal += t_stride
         _timag += t_stride
         _kernel += kernel_stride
-        let _tr = _treal.memory
-        let _ti = _timag.memory
-        let _kr = _kernel.memory.real
-        let _ki = _kernel.memory.imag
-        _treal.memory = _tr * _kr - _ti * _ki
-        _timag.memory = _tr * _ki + _ti * _kr
+        let _tr = _treal.pointee
+        let _ti = _timag.pointee
+        let _kr = _kernel.pointee.real
+        let _ki = _kernel.pointee.imag
+        _treal.pointee = _tr * _kr - _ti * _ki
+        _timag.pointee = _tr * _ki + _ti * _kr
     }
     
     HalfInverseRadix2CooleyTukey(level, temp, temp + temp_stride, t_stride, output, out_stride, temp, temp + temp_stride, t_stride)
 }
 
-public func Radix2FiniteImpulseFilter(level: Int, _ signal: UnsafePointer<Complex>, _ signal_stride: Int, _ signal_count: Int, _ kernel: UnsafePointer<Complex>, _ kernel_stride: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int, _ temp: UnsafeMutablePointer<Complex>, _ temp_stride: Int) {
+public func Radix2FiniteImpulseFilter(_ level: Int, _ signal: UnsafePointer<Complex>, _ signal_stride: Int, _ signal_count: Int, _ kernel: UnsafePointer<Complex>, _ kernel_stride: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int, _ temp: UnsafeMutablePointer<Complex>, _ temp_stride: Int) {
     
     let length = 1 << level
     
     if signal_count == 0 {
         var output = output
         for _ in 0..<length {
-            output.memory = Complex(0)
+            output.pointee = Complex(0)
             output += out_stride
         }
         return
@@ -781,12 +781,12 @@ public func Radix2FiniteImpulseFilter(level: Int, _ signal: UnsafePointer<Comple
     Radix2CooleyTukey(level, signal, signal_stride, signal_count, _temp, out_stride)
     
     for _ in 0..<length {
-        let _treal = _temp.memory.real
-        let _timag = _temp.memory.imag
-        let _kreal = _kernel.memory.real
-        let _kimag = _kernel.memory.imag
-        _temp.memory.real = _treal * _kreal - _timag * _kimag
-        _temp.memory.imag = _treal * _kimag + _timag * _kreal
+        let _treal = _temp.pointee.real
+        let _timag = _temp.pointee.imag
+        let _kreal = _kernel.pointee.real
+        let _kimag = _kernel.pointee.imag
+        _temp.pointee.real = _treal * _kreal - _timag * _kimag
+        _temp.pointee.imag = _treal * _kimag + _timag * _kreal
         _temp += temp_stride
         _kernel += kernel_stride
     }
@@ -794,7 +794,7 @@ public func Radix2FiniteImpulseFilter(level: Int, _ signal: UnsafePointer<Comple
     InverseRadix2CooleyTukey(level, temp, temp_stride, length, output, out_stride)
 }
 
-public func DispatchRadix2FiniteImpulseFilter(level: Int, _ signal: UnsafePointer<Double>, _ signal_stride: Int, _ signal_count: Int, _ kernel: UnsafePointer<Complex>, _ kernel_stride: Int, _ output: UnsafeMutablePointer<Double>, _ out_stride: Int, _ temp: UnsafeMutablePointer<Double>, _ temp_stride: Int) {
+public func DispatchRadix2FiniteImpulseFilter(_ level: Int, _ signal: UnsafePointer<Double>, _ signal_stride: Int, _ signal_count: Int, _ kernel: UnsafePointer<Complex>, _ kernel_stride: Int, _ output: UnsafeMutablePointer<Double>, _ out_stride: Int, _ temp: UnsafeMutablePointer<Double>, _ temp_stride: Int) {
     
     let length = 1 << level
     let half = length >> 1
@@ -802,7 +802,7 @@ public func DispatchRadix2FiniteImpulseFilter(level: Int, _ signal: UnsafePointe
     if signal_count == 0 {
         var output = output
         for _ in 0..<length {
-            output.memory = 0
+            output.pointee = 0
             output += out_stride
         }
         return
@@ -816,31 +816,31 @@ public func DispatchRadix2FiniteImpulseFilter(level: Int, _ signal: UnsafePointe
     
     DispatchHalfRadix2CooleyTukey(level, signal, signal_stride, signal_count, _treal, _timag, t_stride)
     
-    _treal.memory *= _kernel.memory.real
-    _timag.memory *= _kernel.memory.imag
+    _treal.pointee *= _kernel.pointee.real
+    _timag.pointee *= _kernel.pointee.imag
     for _ in 1..<half {
         _treal += t_stride
         _timag += t_stride
         _kernel += kernel_stride
-        let _tr = _treal.memory
-        let _ti = _timag.memory
-        let _kr = _kernel.memory.real
-        let _ki = _kernel.memory.imag
-        _treal.memory = _tr * _kr - _ti * _ki
-        _timag.memory = _tr * _ki + _ti * _kr
+        let _tr = _treal.pointee
+        let _ti = _timag.pointee
+        let _kr = _kernel.pointee.real
+        let _ki = _kernel.pointee.imag
+        _treal.pointee = _tr * _kr - _ti * _ki
+        _timag.pointee = _tr * _ki + _ti * _kr
     }
     
     DispatchHalfInverseRadix2CooleyTukey(level, temp, temp + temp_stride, t_stride, output, out_stride, temp, temp + temp_stride, t_stride)
 }
 
-public func DispatchRadix2FiniteImpulseFilter(level: Int, _ signal: UnsafePointer<Complex>, _ signal_stride: Int, _ signal_count: Int, _ kernel: UnsafePointer<Complex>, _ kernel_stride: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int, _ temp: UnsafeMutablePointer<Complex>, _ temp_stride: Int) {
+public func DispatchRadix2FiniteImpulseFilter(_ level: Int, _ signal: UnsafePointer<Complex>, _ signal_stride: Int, _ signal_count: Int, _ kernel: UnsafePointer<Complex>, _ kernel_stride: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int, _ temp: UnsafeMutablePointer<Complex>, _ temp_stride: Int) {
     
     let length = 1 << level
     
     if signal_count == 0 {
         var output = output
         for _ in 0..<length {
-            output.memory = Complex(0)
+            output.pointee = Complex(0)
             output += out_stride
         }
         return
@@ -852,12 +852,12 @@ public func DispatchRadix2FiniteImpulseFilter(level: Int, _ signal: UnsafePointe
     DispatchRadix2CooleyTukey(level, signal, signal_stride, signal_count, _temp, out_stride)
     
     for _ in 0..<length {
-        let _treal = _temp.memory.real
-        let _timag = _temp.memory.imag
-        let _kreal = _kernel.memory.real
-        let _kimag = _kernel.memory.imag
-        _temp.memory.real = _treal * _kreal - _timag * _kimag
-        _temp.memory.imag = _treal * _kimag + _timag * _kreal
+        let _treal = _temp.pointee.real
+        let _timag = _temp.pointee.imag
+        let _kreal = _kernel.pointee.real
+        let _kimag = _kernel.pointee.imag
+        _temp.pointee.real = _treal * _kreal - _timag * _kimag
+        _temp.pointee.imag = _treal * _kimag + _timag * _kreal
         _temp += temp_stride
         _kernel += kernel_stride
     }
@@ -865,27 +865,27 @@ public func DispatchRadix2FiniteImpulseFilter(level: Int, _ signal: UnsafePointe
     DispatchInverseRadix2CooleyTukey(level, temp, temp_stride, length, output, out_stride)
 }
 
-public func Radix2CircularConvolve(level: Int, _ signal: UnsafePointer<Complex>, _ signal_stride: Int, _ signal_count: Int, _ kernel: UnsafePointer<Complex>, _ kernel_stride: Int, _ kernel_count: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int, _ temp: UnsafeMutablePointer<Complex>, _ temp_stride: Int) {
+public func Radix2CircularConvolve(_ level: Int, _ signal: UnsafePointer<Complex>, _ signal_stride: Int, _ signal_count: Int, _ kernel: UnsafePointer<Complex>, _ kernel_stride: Int, _ kernel_count: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int, _ temp: UnsafeMutablePointer<Complex>, _ temp_stride: Int) {
     let _signal = UnsafePointer<Double>(signal)
     let _kernel = UnsafePointer<Double>(kernel)
     let _output = UnsafeMutablePointer<Double>(output)
     let _temp = UnsafeMutablePointer<Double>(temp)
     Radix2CircularConvolve(level, _signal, _signal + 1, signal_stride << 1, signal_count, _kernel, _kernel + 1, kernel_stride << 1, kernel_count, _output, _output + 1, out_stride << 1, _temp, _temp + 1, temp_stride << 1)
 }
-public func DispatchRadix2CircularConvolve(level: Int, _ signal: UnsafePointer<Complex>, _ signal_stride: Int, _ signal_count: Int, _ kernel: UnsafePointer<Complex>, _ kernel_stride: Int, _ kernel_count: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int, _ temp: UnsafeMutablePointer<Complex>, _ temp_stride: Int) {
+public func DispatchRadix2CircularConvolve(_ level: Int, _ signal: UnsafePointer<Complex>, _ signal_stride: Int, _ signal_count: Int, _ kernel: UnsafePointer<Complex>, _ kernel_stride: Int, _ kernel_count: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int, _ temp: UnsafeMutablePointer<Complex>, _ temp_stride: Int) {
     let _signal = UnsafePointer<Double>(signal)
     let _kernel = UnsafePointer<Double>(kernel)
     let _output = UnsafeMutablePointer<Double>(output)
     let _temp = UnsafeMutablePointer<Double>(temp)
     DispatchRadix2CircularConvolve(level, _signal, _signal + 1, signal_stride << 1, signal_count, _kernel, _kernel + 1, kernel_stride << 1, kernel_count, _output, _output + 1, out_stride << 1, _temp, _temp + 1, temp_stride << 1)
 }
-public func Radix2PowerCircularConvolve(level: Int, _ input: UnsafePointer<Complex>, _ in_stride: Int, _ in_count: Int, _ n: Double, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int, _ temp: UnsafeMutablePointer<Complex>, _ temp_stride: Int) {
+public func Radix2PowerCircularConvolve(_ level: Int, _ input: UnsafePointer<Complex>, _ in_stride: Int, _ in_count: Int, _ n: Double, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int, _ temp: UnsafeMutablePointer<Complex>, _ temp_stride: Int) {
     let _input = UnsafePointer<Double>(input)
     let _output = UnsafeMutablePointer<Double>(output)
     let _temp = UnsafeMutablePointer<Double>(temp)
     Radix2PowerCircularConvolve(level, _input, _input + 1, in_stride << 1, in_count, n, _output, _output + 1, out_stride << 1, _temp, _temp + 1, temp_stride << 1)
 }
-public func DispatchRadix2PowerCircularConvolve(level: Int, _ input: UnsafePointer<Complex>, _ in_stride: Int, _ in_count: Int, _ n: Double, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int, _ temp: UnsafeMutablePointer<Complex>, _ temp_stride: Int) {
+public func DispatchRadix2PowerCircularConvolve(_ level: Int, _ input: UnsafePointer<Complex>, _ in_stride: Int, _ in_count: Int, _ n: Double, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int, _ temp: UnsafeMutablePointer<Complex>, _ temp_stride: Int) {
     let _input = UnsafePointer<Double>(input)
     let _output = UnsafeMutablePointer<Double>(output)
     let _temp = UnsafeMutablePointer<Double>(temp)

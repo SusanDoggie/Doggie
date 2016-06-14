@@ -126,7 +126,7 @@ extension OrderedSetNode {
 
 extension OrderedSetNode {
     
-    mutating func insertOrUpdate(newElement: Element) {
+    mutating func insertOrUpdate(_ newElement: Element) {
         if value == newElement {
             value = newElement
         } else if value > newElement {
@@ -160,7 +160,7 @@ extension OrderedSet {
         return root?.array ?? []
     }
     
-    public mutating func insert(member: Element) {
+    public mutating func insert(_ member: Element) {
         
         if root == nil {
             root = OrderedSetNode(member)

@@ -114,7 +114,7 @@ extension SDRectangle {
     
     public var CGPath : CoreGraphics.CGPath {
         var _transform = CGAffineTransform(transform)
-        return CGPathCreateWithRect(CGRect(Rect(x: x, y: y, width: width, height: height)), &_transform)
+        return CGPath(rect: CGRect(Rect(x: x, y: y, width: width, height: height)), transform: &_transform)
     }
 }
 
@@ -122,7 +122,7 @@ extension SDEllipse {
     
     public var CGPath : CoreGraphics.CGPath {
         var _transform = CGAffineTransform(transform)
-        return CGPathCreateWithEllipseInRect(CGRect(Rect(x: x - rx, y: y - ry, width: 2 * rx, height: 2 * ry)), &_transform)
+        return CGPath(ellipseIn: CGRect(Rect(x: x - rx, y: y - ry, width: 2 * rx, height: 2 * ry)), transform: &_transform)
     }
 }
 
@@ -138,21 +138,21 @@ extension SDPath {
             if let path = self.getCache(SDPathCacheCGPathKey, type: .regular).map({ $0 as! CoreGraphics.CGPath }) {
                 _path = path
             } else {
-                let path = CGPathCreateMutable()
+                let path = CGMutablePath()
                 self._apply { component, state in
                     switch component {
-                    case let .move(point): CGPathMoveToPoint(path, nil, CGFloat(point.x), CGFloat(point.y))
-                    case let .line(point): CGPathAddLineToPoint(path, nil, CGFloat(point.x), CGFloat(point.y))
-                    case let .quad(p1, p2): CGPathAddQuadCurveToPoint(path, nil, CGFloat(p1.x), CGFloat(p1.y), CGFloat(p2.x), CGFloat(p2.y))
-                    case let .cubic(p1, p2, p3): CGPathAddCurveToPoint(path, nil, CGFloat(p1.x), CGFloat(p1.y), CGFloat(p2.x), CGFloat(p2.y), CGFloat(p3.x), CGFloat(p3.y))
-                    case .close: CGPathCloseSubpath(path)
+                    case let .move(point): path.moveTo(nil, x: CGFloat(point.x), y: CGFloat(point.y))
+                    case let .line(point): path.addLineTo(nil, x: CGFloat(point.x), y: CGFloat(point.y))
+                    case let .quad(p1, p2): path.addQuadCurve(nil, cpx: CGFloat(p1.x), cpy: CGFloat(p1.y), endingAtX: CGFloat(p2.x), y: CGFloat(p2.y))
+                    case let .cubic(p1, p2, p3): path.addCurve(nil, cp1x: CGFloat(p1.x), cp1y: CGFloat(p1.y), cp2x: CGFloat(p2.x), cp2y: CGFloat(p2.y), endingAtX: CGFloat(p3.x), y: CGFloat(p3.y))
+                    case .close: path.closeSubpath()
                     }
                 }
                 self.setCache(SDPathCacheCGPathKey, value: path, type: .regular)
                 _path = path
             }
             var _transform = CGAffineTransform(transform)
-            let path = CGPathCreateCopyByTransformingPath(_path, &_transform) ?? _path
+            let path = _path.copy(using: &_transform) ?? _path
             self.setCache(SDPathCacheCGPathKey, value: path, type: .transformed)
             return path
         }
@@ -163,17 +163,17 @@ extension SDPath {
     
     public init(_ path: CoreGraphics.CGPath) {
         self.init()
-        CGPathApply(path, &self) { buf, element in
-            let path = UnsafeMutablePointer<SDPath>(buf)
-            let points = element.memory.points
-            switch element.memory.type {
-            case .MoveToPoint: path.memory.appendCommand(SDPath.Move(Point(points[0])))
-            case .AddLineToPoint: path.memory.appendCommand(SDPath.Line(Point(points[0])))
-            case .AddQuadCurveToPoint: path.memory.appendCommand(SDPath.QuadBezier(Point(points[0]), Point(points[1])))
-            case .AddCurveToPoint: path.memory.appendCommand(SDPath.CubicBezier(Point(points[0]), Point(points[1]), Point(points[2])))
-            case .CloseSubpath: path.memory.appendCommand(SDPath.ClosePath())
+        path.apply(info: &self) { buf, element in
+            let path = UnsafeMutablePointer<SDPath>(buf)!
+            let points = element.pointee.points
+            switch element.pointee.type {
+            case .moveToPoint: path.pointee.appendCommand(SDPath.Move(Point(points[0])))
+            case .addLineToPoint: path.pointee.appendCommand(SDPath.Line(Point(points[0])))
+            case .addQuadCurveToPoint: path.pointee.appendCommand(SDPath.QuadBezier(Point(points[0]), Point(points[1])))
+            case .addCurveToPoint: path.pointee.appendCommand(SDPath.CubicBezier(Point(points[0]), Point(points[1]), Point(points[2])))
+            case .closeSubpath: path.pointee.appendCommand(SDPath.ClosePath())
             }
         }
-        self.setCache(SDPathCacheCGPathKey, value: CGPathCreateCopy(path)!, type: .regular)
+        self.setCache(SDPathCacheCGPathKey, value: path.copy()!, type: .regular)
     }
 }

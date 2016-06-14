@@ -96,44 +96,34 @@ public extension Int8 {
     }
 }
 
-@warn_unused_result
-public func log2(x: Int64) -> Int64 {
+public func log2(_ x: Int64) -> Int64 {
     return Int64(flsll(x)) - 1
 }
-@warn_unused_result
-public func log2(x: Int32) -> Int32 {
+public func log2(_ x: Int32) -> Int32 {
     return fls(x) - 1
 }
-@warn_unused_result
-public func log2(x: Int16) -> Int16 {
+public func log2(_ x: Int16) -> Int16 {
     return Int16(truncatingBitPattern: log2(Int32(x) & 0xFFFF))
 }
-@warn_unused_result
-public func log2(x: Int8) -> Int8 {
+public func log2(_ x: Int8) -> Int8 {
     return Int8(truncatingBitPattern: log2(Int32(x) & 0xFF))
 }
-@warn_unused_result
-public func log2(x: Int) -> Int {
+public func log2(_ x: Int) -> Int {
     return Int(flsl(x)) - 1
 }
-@warn_unused_result
-public func log2(x: UInt64) -> UInt64 {
+public func log2(_ x: UInt64) -> UInt64 {
     return UInt64(bitPattern: log2(Int64(bitPattern: x)))
 }
-@warn_unused_result
-public func log2(x: UInt32) -> UInt32 {
+public func log2(_ x: UInt32) -> UInt32 {
     return UInt32(bitPattern: log2(Int32(bitPattern: x)))
 }
-@warn_unused_result
-public func log2(x: UInt16) -> UInt16 {
+public func log2(_ x: UInt16) -> UInt16 {
     return UInt16(bitPattern: log2(Int16(bitPattern: x)))
 }
-@warn_unused_result
-public func log2(x: UInt8) -> UInt8 {
+public func log2(_ x: UInt8) -> UInt8 {
     return UInt8(bitPattern: log2(Int8(bitPattern: x)))
 }
-@warn_unused_result
-public func log2(x: UInt) -> UInt {
+public func log2(_ x: UInt) -> UInt {
     return UInt(bitPattern: log2(Int(bitPattern: x)))
 }
 
@@ -198,14 +188,14 @@ public extension Int {
     }
 }
 
-public extension IntegerType {
+public extension Integer {
     
     var lowbit: Self {
         return self & (~self &+ 1)
     }
 }
 
-public extension UnsignedIntegerType {
+public extension UnsignedInteger {
     
     var bitCount: Self {
         var x = self
@@ -248,25 +238,23 @@ public extension Int {
     }
 }
 
-public extension IntegerType {
+public extension Integer {
     
     var isPower2 : Bool {
         return 0 < self && self & (self &- 1) == 0
     }
 }
 
-public extension IntegerType {
+public extension Integer {
     
-    @warn_unused_result
-    func align(s: Self) -> Self {
+    func align(_ s: Self) -> Self {
         assert(s.isPower2, "alignment is not power of 2.")
         let MASK = s - 1
         return (self + MASK) & ~MASK
     }
 }
 
-@warn_unused_result
-public func << <T: UnsignedIntegerType>(lhs: T, rhs: T) -> T {
+public func << <T: UnsignedInteger>(lhs: T, rhs: T) -> T {
     switch lhs {
     case let lhs as UInt8: return (lhs << (rhs as! UInt8)) as! T
     case let lhs as UInt16: return (lhs << (rhs as! UInt16)) as! T
@@ -276,8 +264,7 @@ public func << <T: UnsignedIntegerType>(lhs: T, rhs: T) -> T {
     default: return T((lhs.toUIntMax() << rhs.toUIntMax()) & (~T.allZeros).toUIntMax())
     }
 }
-@warn_unused_result
-public func >> <T: UnsignedIntegerType>(lhs: T, rhs: T) -> T {
+public func >> <T: UnsignedInteger>(lhs: T, rhs: T) -> T {
     switch lhs {
     case let lhs as UInt8: return (lhs >> (rhs as! UInt8)) as! T
     case let lhs as UInt16: return (lhs >> (rhs as! UInt16)) as! T
@@ -288,17 +275,14 @@ public func >> <T: UnsignedIntegerType>(lhs: T, rhs: T) -> T {
     }
 }
 
-@warn_unused_result
-public func >>= <T: UnsignedIntegerType>(inout lhs: T, rhs: T) {
+public func >>= <T: UnsignedInteger>(lhs: inout T, rhs: T) {
     lhs = lhs >> rhs
 }
-@warn_unused_result
-public func <<= <T: UnsignedIntegerType>(inout lhs: T, rhs: T) {
+public func <<= <T: UnsignedInteger>(lhs: inout T, rhs: T) {
     lhs = lhs << rhs
 }
 
-@warn_unused_result
-public func mod<T: UnsignedIntegerType>(x: T, _ m: T) -> T {
+public func mod<T: UnsignedInteger>(_ x: T, _ m: T) -> T {
     if x < m {
         return x
     }
@@ -308,29 +292,24 @@ public func mod<T: UnsignedIntegerType>(x: T, _ m: T) -> T {
     return x % m
 }
 
-@warn_unused_result
-public func addmod<T: UnsignedIntegerType>(a: T, _ b: T, _ m: T) -> T {
+public func addmod<T: UnsignedInteger>(_ a: T, _ b: T, _ m: T) -> T {
     let a = mod(a, m)
     let b = mod(b, m)
     let c = m &- b
     return a < c ? a &+ b : a &- c
 }
 
-@warn_unused_result
-public func mulmod(a: UInt8, _ b: UInt8, _ m: UInt8) -> UInt8 {
+public func mulmod(_ a: UInt8, _ b: UInt8, _ m: UInt8) -> UInt8 {
     return UInt8(truncatingBitPattern: mod(UInt16(a) &* UInt16(b), UInt16(m)))
 }
-@warn_unused_result
-public func mulmod(a: UInt16, _ b: UInt16, _ m: UInt16) -> UInt16 {
+public func mulmod(_ a: UInt16, _ b: UInt16, _ m: UInt16) -> UInt16 {
     return UInt16(truncatingBitPattern: mod(UInt32(a) &* UInt32(b), UInt32(m)))
 }
-@warn_unused_result
-public func mulmod(a: UInt32, _ b: UInt32, _ m: UInt32) -> UInt32 {
+public func mulmod(_ a: UInt32, _ b: UInt32, _ m: UInt32) -> UInt32 {
     return UInt32(truncatingBitPattern: mod(UInt64(a) &* UInt64(b), UInt64(m)))
 }
 
-@warn_unused_result
-public func mulmod<T: UnsignedIntegerType>(a: T, _ b: T, _ m: T) -> T {
+public func mulmod<T: UnsignedInteger>(_ a: T, _ b: T, _ m: T) -> T {
     let a = mod(a, m)
     let b = mod(b, m)
     if a == 0 || b == 0 || m == 1 {
@@ -347,8 +326,7 @@ public func mulmod<T: UnsignedIntegerType>(a: T, _ b: T, _ m: T) -> T {
     return mul % m
 }
 
-@warn_unused_result
-public func pow(x: UInt8, _ n: UInt8, _ m: UInt8) -> UInt8 {
+public func pow(_ x: UInt8, _ n: UInt8, _ m: UInt8) -> UInt8 {
     let x = mod(x, m)
     if x == 0 || m == 1 {
         return 0
@@ -360,8 +338,7 @@ public func pow(x: UInt8, _ n: UInt8, _ m: UInt8) -> UInt8 {
     return n & 1 == 1 ? mulmod(x, p, m) : p
 }
 
-@warn_unused_result
-public func pow(x: UInt16, _ n: UInt16, _ m: UInt16) -> UInt16 {
+public func pow(_ x: UInt16, _ n: UInt16, _ m: UInt16) -> UInt16 {
     let x = mod(x, m)
     if x == 0 || m == 1 {
         return 0
@@ -373,8 +350,7 @@ public func pow(x: UInt16, _ n: UInt16, _ m: UInt16) -> UInt16 {
     return n & 1 == 1 ? mulmod(x, p, m) : p
 }
 
-@warn_unused_result
-public func pow(x: UInt32, _ n: UInt32, _ m: UInt32) -> UInt32 {
+public func pow(_ x: UInt32, _ n: UInt32, _ m: UInt32) -> UInt32 {
     let x = mod(x, m)
     if x == 0 || m == 1 {
         return 0
@@ -385,8 +361,7 @@ public func pow(x: UInt32, _ n: UInt32, _ m: UInt32) -> UInt32 {
     let p = pow(mulmod(x, x, m), n >> 1, m)
     return n & 1 == 1 ? mulmod(x, p, m) : p
 }
-@warn_unused_result
-public func pow<T: UnsignedIntegerType>(x: T, _ n: T, _ m: T) -> T {
+public func pow<T: UnsignedInteger>(_ x: T, _ n: T, _ m: T) -> T {
     let x = mod(x, m)
     if x == 0 || m == 1 {
         return 0
@@ -398,50 +373,45 @@ public func pow<T: UnsignedIntegerType>(x: T, _ n: T, _ m: T) -> T {
     return n & 1 == 1 ? mulmod(x, p, m) : p
 }
 
-@warn_unused_result
-public func pow(x: UInt, _ n: UInt) -> UInt {
+public func pow(_ x: UInt, _ n: UInt) -> UInt {
     return pow(x, n, UInt.max)
 }
-@warn_unused_result
-public func pow(x: UInt64, _ n: UInt64) -> UInt64 {
+public func pow(_ x: UInt64, _ n: UInt64) -> UInt64 {
     return pow(x, n, UInt64.max)
 }
-@warn_unused_result
-public func pow(x: UInt32, _ n: UInt32) -> UInt32 {
+public func pow(_ x: UInt32, _ n: UInt32) -> UInt32 {
     return pow(x, n, UInt32.max)
 }
-@warn_unused_result
-public func pow(x: UInt16, _ n: UInt16) -> UInt16 {
+public func pow(_ x: UInt16, _ n: UInt16) -> UInt16 {
     return pow(x, n, UInt16.max)
 }
-@warn_unused_result
-public func pow(x: UInt8, _ n: UInt8) -> UInt8 {
+public func pow(_ x: UInt8, _ n: UInt8) -> UInt8 {
     return pow(x, n, UInt8.max)
 }
 
-public func sec_random(buffer: UnsafeMutablePointer<Void>, _ size: Int) {
+public func sec_random(_ buffer: UnsafeMutablePointer<Void>, size: Int) {
     let _rand_file = open("/dev/random", O_RDONLY)
     read(_rand_file, buffer, size)
     close(_rand_file)
 }
 
-public func sec_random_uniform(bound: UIntMax) -> UIntMax {
+public func sec_random_uniform(_ bound: UIntMax) -> UIntMax {
     let RANDMAX: UIntMax = ~0
     var _rand: UIntMax = 0
-    sec_random(&_rand, sizeof(UIntMax))
+    sec_random(&_rand, size: sizeof(UIntMax))
     if bound.isPower2 {
         _rand &= bound &- 1
     } else {
         let limit = RANDMAX - mod(RANDMAX, bound)
         while _rand >= limit {
-            sec_random(&_rand, sizeof(UIntMax))
+            sec_random(&_rand, size: sizeof(UIntMax))
         }
         _rand = mod(_rand, bound)
     }
     return _rand
 }
 
-public func random_uniform(bound: UIntMax) -> UIntMax {
+public func random_uniform(_ bound: UIntMax) -> UIntMax {
     let RANDMAX: UIntMax = ~0
     var _rand: UIntMax = 0
     arc4random_buf(&_rand, sizeof(UIntMax))
@@ -457,8 +427,7 @@ public func random_uniform(bound: UIntMax) -> UIntMax {
     return _rand
 }
 
-@warn_unused_result
-public func gcd<U: UnsignedIntegerType>(a: U, _ b: U) -> U {
+public func gcd<U: UnsignedInteger>(_ a: U, _ b: U) -> U {
     var a = a
     var b = b
     while b != 0 {
@@ -466,8 +435,7 @@ public func gcd<U: UnsignedIntegerType>(a: U, _ b: U) -> U {
     }
     return a
 }
-@warn_unused_result
-public func gcd<S: SignedIntegerType>(a: S, _ b: S) -> S {
+public func gcd<S: SignedInteger>(_ a: S, _ b: S) -> S {
     var a = a
     var b = b
     let sign = a >= 0 || b >= 0
@@ -477,8 +445,7 @@ public func gcd<S: SignedIntegerType>(a: S, _ b: S) -> S {
     return sign ? abs(a) : -abs(a)
 }
 
-@warn_unused_result
-public func exgcd<S: SignedIntegerType>(a: S, _ b: S) -> (gcd: S, x: S, y: S) {
+public func exgcd<S: SignedInteger>(_ a: S, _ b: S) -> (gcd: S, x: S, y: S) {
     var a = a
     var b = b
     var iter = 0
@@ -500,8 +467,7 @@ public func exgcd<S: SignedIntegerType>(a: S, _ b: S) -> (gcd: S, x: S, y: S) {
     }
 }
 
-@warn_unused_result
-public func modinv<U: UnsignedIntegerType>(a: U, _ b: U) -> U {
+public func modinv<U: UnsignedInteger>(_ a: U, _ b: U) -> U {
     var a = a
     var b = b
     let _b = b
@@ -523,17 +489,14 @@ public func modinv<U: UnsignedIntegerType>(a: U, _ b: U) -> U {
     }
 }
 
-@warn_unused_result
-public func lcm<T: UnsignedIntegerType>(a: T, _ b: T) -> T {
+public func lcm<T: UnsignedInteger>(_ a: T, _ b: T) -> T {
     return a * b / gcd(a, b)
 }
-@warn_unused_result
-public func lcm<T: SignedIntegerType>(a: T, _ b: T) -> T {
+public func lcm<T: SignedInteger>(_ a: T, _ b: T) -> T {
     return a * b / gcd(a, b)
 }
 
-@warn_unused_result
-public func factorial<T: UnsignedIntegerType>(x: T) -> T {
+public func factorial<T: UnsignedInteger>(_ x: T) -> T {
     if x == 0 || x == 1 {
         return 1
     }
@@ -544,8 +507,7 @@ public func factorial<T: UnsignedIntegerType>(x: T) -> T {
     return _a
 }
 
-@warn_unused_result
-public func permutation<T: UnsignedIntegerType>(n: T, _ k: T) -> T {
+public func permutation<T: UnsignedInteger>(_ n: T, _ k: T) -> T {
     if k == 0 {
         return 1
     }
@@ -558,14 +520,12 @@ public func permutation<T: UnsignedIntegerType>(n: T, _ k: T) -> T {
     }
     return _a
 }
-@warn_unused_result
-public func combination<T: UnsignedIntegerType>(n: T, _ k: T) -> T {
+public func combination<T: UnsignedInteger>(_ n: T, _ k: T) -> T {
     return permutation(n, k) / factorial(k)
 }
 
-@warn_unused_result
-public func fibonacci<T: UnsignedIntegerType>(n: T) -> T {
-    func fib(n: T) -> (T, T) {
+public func fibonacci<T: UnsignedInteger>(_ n: T) -> T {
+    func fib(_ n: T) -> (T, T) {
         switch n {
         case 0: return (1, 1)
         case 1: return (1, 2)

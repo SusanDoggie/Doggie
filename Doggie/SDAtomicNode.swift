@@ -23,10 +23,10 @@
 //  THE SOFTWARE.
 //
 
-public class SDAtomicGraph<Value> : CollectionType {
+public class SDAtomicGraph<Value> : Collection {
     
     public typealias Index = SDAtomicGraphIndex<Value>
-    public typealias Generator = SDAtomicGraphGenerator<Value>
+    public typealias Iterator = SDAtomicGraphIterator<Value>
     public typealias NodeID = SDAtomicNode.Identifier
     
     private var graph: Graph<NodeID, Value>
@@ -53,7 +53,11 @@ public class SDAtomicGraph<Value> : CollectionType {
         return graph.count
     }
     
-    public subscript(idx: Index) -> Generator.Element {
+    public func index(after i: Index) -> Index {
+        return Index(base: graph.index(after: i.base))
+    }
+    
+    public subscript(idx: Index) -> (from: NodeID, to: NodeID, Value) {
         return graph[idx.base]
     }
     
@@ -68,7 +72,7 @@ public class SDAtomicGraph<Value> : CollectionType {
         }
     }
     
-    public func contains(node: NodeID) -> Bool {
+    public func contains(_ node: NodeID) -> Bool {
         return lck.synchronized { graph.contains(node) }
     }
     
@@ -76,12 +80,12 @@ public class SDAtomicGraph<Value> : CollectionType {
         return lck.synchronized { graph.isEmpty }
     }
     
-    public func removeNode(node: NodeID) {
+    public func removeNode(_ node: NodeID) {
         lck.synchronized { graph.removeNode(node) }
     }
     
-    public func removeAll(keepCapacity keepCapacity: Bool = false) {
-        lck.synchronized { graph.removeAll(keepCapacity: keepCapacity) }
+    public func removeAll(keepingCapacity: Bool = false) {
+        lck.synchronized { graph.removeAll(keepingCapacity: keepingCapacity) }
     }
     
     public var nodes: Set<NodeID> {
@@ -90,40 +94,39 @@ public class SDAtomicGraph<Value> : CollectionType {
     public func nodes(near nearNode: NodeID) -> Set<NodeID> {
         return lck.synchronized { graph.nodes(near: nearNode) }
     }
-    public func nodes(from fromNode: NodeID) -> AnyForwardCollection<(NodeID, Value)> {
+    public func nodes(from fromNode: NodeID) -> AnyCollection<(NodeID, Value)> {
         return lck.synchronized { graph.nodes(from: fromNode) }
     }
-    public func nodes(to toNode: NodeID) -> AnyForwardCollection<(NodeID, Value)> {
+    public func nodes(to toNode: NodeID) -> AnyCollection<(NodeID, Value)> {
         return lck.synchronized { graph.nodes(to: toNode) }
     }
     
-    public func generate() -> Generator {
-        return Generator(base: graph.generate())
+    public func makeIterator() -> Iterator {
+        return Iterator(base: graph.makeIterator())
     }
 }
 
-public struct SDAtomicGraphIndex<Value> : ForwardIndexType {
+public struct SDAtomicGraphIndex<Value> : Comparable {
     
     public typealias NodeID = SDAtomicNode.Identifier
     
     private let base: Graph<NodeID, Value>.Index
-    
-    public func successor() -> SDAtomicGraphIndex<Value> {
-        return SDAtomicGraphIndex(base: base.successor())
-    }
 }
 
 public func == <Value>(lhs: SDAtomicGraphIndex<Value>, rhs: SDAtomicGraphIndex<Value>) -> Bool {
     return lhs.base == rhs.base
 }
+public func < <Value>(lhs: SDAtomicGraphIndex<Value>, rhs: SDAtomicGraphIndex<Value>) -> Bool {
+    return lhs.base < rhs.base
+}
 
-public struct SDAtomicGraphGenerator<Value> : GeneratorType, SequenceType {
+public struct SDAtomicGraphIterator<Value> : IteratorProtocol, Sequence {
     
     public typealias NodeID = SDAtomicNode.Identifier
     
-    private var base: Graph<NodeID, Value>.Generator
+    private var base: Graph<NodeID, Value>.Iterator
     
-    public mutating func next() -> Graph<NodeID, Value>.Generator.Element? {
+    public mutating func next() -> Graph<NodeID, Value>.Iterator.Element? {
         return base.next()
     }
 }

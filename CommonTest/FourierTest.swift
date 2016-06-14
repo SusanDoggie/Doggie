@@ -44,7 +44,7 @@ class FourierTest: XCTestCase {
     
     func testRadix2CooleyTukeyA() {
         // This is an example of a functional test case.
-        var sample = [Double](count: 4, repeatedValue: 0)
+        var sample = [Double](repeating: 0, count: 4)
         for i in sample.indices {
             sample[i] = random(0.0..<1.0)
         }
@@ -62,7 +62,7 @@ class FourierTest: XCTestCase {
     }
     func testRadix2CooleyTukeyB() {
         // This is an example of a functional test case.
-        var sample = [Double](count: 8, repeatedValue: 0)
+        var sample = [Double](repeating: 0, count: 8)
         for i in sample.indices {
             sample[i] = random(0.0..<1.0)
         }
@@ -80,7 +80,7 @@ class FourierTest: XCTestCase {
     }
     func testRadix2CooleyTukeyC() {
         // This is an example of a functional test case.
-        var sample = [Double](count: 16, repeatedValue: 0)
+        var sample = [Double](repeating: 0, count: 16)
         for i in sample.indices {
             sample[i] = random(0.0..<1.0)
         }
@@ -98,7 +98,7 @@ class FourierTest: XCTestCase {
     }
     func testRadix2CooleyTukeyD() {
         // This is an example of a functional test case.
-        var sample = [Double](count: 32, repeatedValue: 0)
+        var sample = [Double](repeating: 0, count: 32)
         for i in sample.indices {
             sample[i] = random(0.0..<1.0)
         }
@@ -116,7 +116,7 @@ class FourierTest: XCTestCase {
     }
     func testRadix2CooleyTukeyE() {
         // This is an example of a functional test case.
-        var sample = [Double](count: 512, repeatedValue: 0)
+        var sample = [Double](repeating: 0, count: 512)
         for i in sample.indices {
             sample[i] = random(0.0..<1.0)
         }
@@ -134,7 +134,7 @@ class FourierTest: XCTestCase {
     }
     func testRadix2CooleyTukeyComplexA() {
         // This is an example of a functional test case.
-        var sample = [Complex](count: 4, repeatedValue: Complex(0))
+        var sample = [Complex](repeating: Complex(0), count: 4)
         for i in sample.indices {
             sample[i] = Complex(real: random(0.0..<1.0), imag: random(0.0..<1.0))
         }
@@ -150,7 +150,7 @@ class FourierTest: XCTestCase {
     }
     func testRadix2CooleyTukeyComplexB() {
         // This is an example of a functional test case.
-        var sample = [Complex](count: 8, repeatedValue: Complex(0))
+        var sample = [Complex](repeating: Complex(0), count: 8)
         for i in sample.indices {
             sample[i] = Complex(real: random(0.0..<1.0), imag: random(0.0..<1.0))
         }
@@ -166,7 +166,7 @@ class FourierTest: XCTestCase {
     }
     func testRadix2CooleyTukeyComplexC() {
         // This is an example of a functional test case.
-        var sample = [Complex](count: 16, repeatedValue: Complex(0))
+        var sample = [Complex](repeating: Complex(0), count: 16)
         for i in sample.indices {
             sample[i] = Complex(real: random(0.0..<1.0), imag: random(0.0..<1.0))
         }
@@ -182,7 +182,7 @@ class FourierTest: XCTestCase {
     }
     func testRadix2CooleyTukeyComplexD() {
         // This is an example of a functional test case.
-        var sample = [Complex](count: 32, repeatedValue: Complex(0))
+        var sample = [Complex](repeating: Complex(0), count: 32)
         for i in sample.indices {
             sample[i] = Complex(real: random(0.0..<1.0), imag: random(0.0..<1.0))
         }
@@ -198,7 +198,7 @@ class FourierTest: XCTestCase {
     }
     func testRadix2CooleyTukeyComplexE() {
         // This is an example of a functional test case.
-        var sample = [Complex](count: 512, repeatedValue: Complex(0))
+        var sample = [Complex](repeating: Complex(0), count: 512)
         for i in sample.indices {
             sample[i] = Complex(real: random(0.0..<1.0), imag: random(0.0..<1.0))
         }
@@ -214,7 +214,7 @@ class FourierTest: XCTestCase {
     }
     func testInverseRadix2CooleyTukeyA() {
         // This is an example of a functional test case.
-        var sample = [Double](count: 4, repeatedValue: 0)
+        var sample = [Double](repeating: 0, count: 4)
         for i in sample.indices {
             sample[i] = random(0.0..<1.0)
         }
@@ -232,7 +232,7 @@ class FourierTest: XCTestCase {
     }
     func testInverseRadix2CooleyTukeyB() {
         // This is an example of a functional test case.
-        var sample = [Double](count: 8, repeatedValue: 0)
+        var sample = [Double](repeating: 0, count: 8)
         for i in sample.indices {
             sample[i] = random(0.0..<1.0)
         }
@@ -250,7 +250,7 @@ class FourierTest: XCTestCase {
     }
     func testInverseRadix2CooleyTukeyC() {
         // This is an example of a functional test case.
-        var sample = [Double](count: 16, repeatedValue: 0)
+        var sample = [Double](repeating: 0, count: 16)
         for i in sample.indices {
             sample[i] = random(0.0..<1.0)
         }
@@ -268,7 +268,7 @@ class FourierTest: XCTestCase {
     }
     func testInverseRadix2CooleyTukeyD() {
         // This is an example of a functional test case.
-        var sample = [Double](count: 32, repeatedValue: 0)
+        var sample = [Double](repeating: 0, count: 32)
         for i in sample.indices {
             sample[i] = random(0.0..<1.0)
         }
@@ -286,7 +286,7 @@ class FourierTest: XCTestCase {
     }
     func testInverseRadix2CooleyTukeyE() {
         // This is an example of a functional test case.
-        var sample = [Double](count: 512, repeatedValue: 0)
+        var sample = [Double](repeating: 0, count: 512)
         for i in sample.indices {
             sample[i] = random(0.0..<1.0)
         }
@@ -304,7 +304,7 @@ class FourierTest: XCTestCase {
     }
     func testInverseRadix2CooleyTukeyComplexA() {
         // This is an example of a functional test case.
-        var sample = [Complex](count: 4, repeatedValue: Complex(0))
+        var sample = [Complex](repeating: Complex(0), count: 4)
         for i in sample.indices {
             sample[i] = Complex(real: random(0.0..<1.0), imag: random(0.0..<1.0))
         }
@@ -320,7 +320,7 @@ class FourierTest: XCTestCase {
     }
     func testInverseRadix2CooleyTukeyComplexB() {
         // This is an example of a functional test case.
-        var sample = [Complex](count: 8, repeatedValue: Complex(0))
+        var sample = [Complex](repeating: Complex(0), count: 8)
         for i in sample.indices {
             sample[i] = Complex(real: random(0.0..<1.0), imag: random(0.0..<1.0))
         }
@@ -336,7 +336,7 @@ class FourierTest: XCTestCase {
     }
     func testInverseRadix2CooleyTukeyComplexC() {
         // This is an example of a functional test case.
-        var sample = [Complex](count: 16, repeatedValue: Complex(0))
+        var sample = [Complex](repeating: Complex(0), count: 16)
         for i in sample.indices {
             sample[i] = Complex(real: random(0.0..<1.0), imag: random(0.0..<1.0))
         }
@@ -352,7 +352,7 @@ class FourierTest: XCTestCase {
     }
     func testInverseRadix2CooleyTukeyComplexD() {
         // This is an example of a functional test case.
-        var sample = [Complex](count: 32, repeatedValue: Complex(0))
+        var sample = [Complex](repeating: Complex(0), count: 32)
         for i in sample.indices {
             sample[i] = Complex(real: random(0.0..<1.0), imag: random(0.0..<1.0))
         }
@@ -368,7 +368,7 @@ class FourierTest: XCTestCase {
     }
     func testInverseRadix2CooleyTukeyComplexE() {
         // This is an example of a functional test case.
-        var sample = [Complex](count: 512, repeatedValue: Complex(0))
+        var sample = [Complex](repeating: Complex(0), count: 512)
         for i in sample.indices {
             sample[i] = Complex(real: random(0.0..<1.0), imag: random(0.0..<1.0))
         }
@@ -384,7 +384,7 @@ class FourierTest: XCTestCase {
     }
     func testFourier() {
         // This is an example of a functional test case.
-        var sample = [Double](count: 10, repeatedValue: 0)
+        var sample = [Double](repeating: 0, count: 10)
         for i in sample.indices {
             sample[i] = random(0.0..<1.0)
         }
@@ -402,7 +402,7 @@ class FourierTest: XCTestCase {
     }
     func testFourierComplex() {
         // This is an example of a functional test case.
-        var sample = [Complex](count: 10, repeatedValue: Complex(0))
+        var sample = [Complex](repeating: Complex(0), count: 10)
         for i in sample.indices {
             sample[i] = Complex(real: random(0.0..<1.0), imag: random(0.0..<1.0))
         }
@@ -420,7 +420,7 @@ class FourierTest: XCTestCase {
     }
     func testRadix2CooleyTukey() {
         // This is an example of a functional test case.
-        var sample = [Double](count: 8, repeatedValue: 0)
+        var sample = [Double](repeating: 0, count: 8)
         for i in sample.indices {
             sample[i] = random(0.0..<1.0)
         }
@@ -438,7 +438,7 @@ class FourierTest: XCTestCase {
     }
     func testRadix2CooleyTukeyComplex() {
         // This is an example of a functional test case.
-        var sample = [Complex](count: 8, repeatedValue: Complex(0))
+        var sample = [Complex](repeating: Complex(0), count: 8)
         for i in sample.indices {
             sample[i] = Complex(real: random(0.0..<1.0), imag: random(0.0..<1.0))
         }
@@ -456,7 +456,7 @@ class FourierTest: XCTestCase {
     }
     func testBluestein() {
         // This is an example of a functional test case.
-        var sample = [Double](count: 10, repeatedValue: 0)
+        var sample = [Double](repeating: 0, count: 10)
         for i in sample.indices {
             sample[i] = random(0.0..<1.0)
         }
@@ -474,7 +474,7 @@ class FourierTest: XCTestCase {
     }
     func testBluesteinComplex() {
         // This is an example of a functional test case.
-        var sample = [Complex](count: 10, repeatedValue: Complex(0))
+        var sample = [Complex](repeating: Complex(0), count: 10)
         for i in sample.indices {
             sample[i] = Complex(real: random(0.0..<1.0), imag: random(0.0..<1.0))
         }
@@ -492,7 +492,7 @@ class FourierTest: XCTestCase {
     }
     func testBluesteinO() {
         // This is an example of a functional test case.
-        var sample = [Double](count: 9, repeatedValue: 0)
+        var sample = [Double](repeating: 0, count: 9)
         for i in sample.indices {
             sample[i] = random(0.0..<1.0)
         }
@@ -510,7 +510,7 @@ class FourierTest: XCTestCase {
     }
     func testBluesteinOComplex() {
         // This is an example of a functional test case.
-        var sample = [Complex](count: 9, repeatedValue: Complex(0))
+        var sample = [Complex](repeating: Complex(0), count: 9)
         for i in sample.indices {
             sample[i] = Complex(real: random(0.0..<1.0), imag: random(0.0..<1.0))
         }
@@ -529,7 +529,7 @@ class FourierTest: XCTestCase {
     
     func testInverseFourier() {
         // This is an example of a functional test case.
-        var sample = [Double](count: 10, repeatedValue: 0)
+        var sample = [Double](repeating: 0, count: 10)
         for i in sample.indices {
             sample[i] = random(0.0..<1.0)
         }
@@ -547,7 +547,7 @@ class FourierTest: XCTestCase {
     }
     func testInverseFourierComplex() {
         // This is an example of a functional test case.
-        var sample = [Complex](count: 10, repeatedValue: Complex(0))
+        var sample = [Complex](repeating: Complex(0), count: 10)
         for i in sample.indices {
             sample[i] = Complex(real: random(0.0..<1.0), imag: random(0.0..<1.0))
         }
@@ -565,7 +565,7 @@ class FourierTest: XCTestCase {
     }
     func testInverseRadix2CooleyTukeyComplex() {
         // This is an example of a functional test case.
-        var sample = [Complex](count: 8, repeatedValue: Complex(0))
+        var sample = [Complex](repeating: Complex(0), count: 8)
         for i in sample.indices {
             sample[i] = Complex(real: random(0.0..<1.0), imag: random(0.0..<1.0))
         }
@@ -583,7 +583,7 @@ class FourierTest: XCTestCase {
     }
     func testInverseBluestein() {
         // This is an example of a functional test case.
-        var sample = [Double](count: 10, repeatedValue: 0)
+        var sample = [Double](repeating: 0, count: 10)
         for i in sample.indices {
             sample[i] = random(0.0..<1.0)
         }
@@ -601,7 +601,7 @@ class FourierTest: XCTestCase {
     }
     func testInverseBluesteinComplex() {
         // This is an example of a functional test case.
-        var sample = [Complex](count: 10, repeatedValue: Complex(0))
+        var sample = [Complex](repeating: Complex(0), count: 10)
         for i in sample.indices {
             sample[i] = Complex(real: random(0.0..<1.0), imag: random(0.0..<1.0))
         }
@@ -619,7 +619,7 @@ class FourierTest: XCTestCase {
     }
     func testInverseBluesteinO() {
         // This is an example of a functional test case.
-        var sample = [Double](count: 9, repeatedValue: 0)
+        var sample = [Double](repeating: 0, count: 9)
         for i in sample.indices {
             sample[i] = random(0.0..<1.0)
         }
@@ -637,7 +637,7 @@ class FourierTest: XCTestCase {
     }
     func testInverseBluesteinOComplex() {
         // This is an example of a functional test case.
-        var sample = [Complex](count: 9, repeatedValue: Complex(0))
+        var sample = [Complex](repeating: Complex(0), count: 9)
         for i in sample.indices {
             sample[i] = Complex(real: random(0.0..<1.0), imag: random(0.0..<1.0))
         }
@@ -656,8 +656,8 @@ class FourierTest: XCTestCase {
     
     func testConvolve() {
         // This is an example of a functional test case.
-        var a = [Double](count: 10, repeatedValue: 0)
-        var b = [Double](count: 10, repeatedValue: 0)
+        var a = [Double](repeating: 0, count: 10)
+        var b = [Double](repeating: 0, count: 10)
         for i in 0..<a.count {
             a[i] = random(0.0..<1.0)
         }
@@ -677,8 +677,8 @@ class FourierTest: XCTestCase {
     }
     func testConvolveO() {
         // This is an example of a functional test case.
-        var a = [Double](count: 9, repeatedValue: 0)
-        var b = [Double](count: 9, repeatedValue: 0)
+        var a = [Double](repeating: 0, count: 9)
+        var b = [Double](repeating: 0, count: 9)
         for i in 0..<a.count {
             a[i] = random(0.0..<1.0)
         }
@@ -698,8 +698,8 @@ class FourierTest: XCTestCase {
     }
     func testConvolveComplex() {
         // This is an example of a functional test case.
-        var a = [Complex](count: 10, repeatedValue: Complex(0))
-        var b = [Complex](count: 10, repeatedValue: Complex(0))
+        var a = [Complex](repeating: Complex(0), count: 10)
+        var b = [Complex](repeating: Complex(0), count: 10)
         for i in 0..<a.count {
             a[i] = Complex(real: random(0.0..<1.0), imag: random(0.0..<1.0))
         }
@@ -720,8 +720,8 @@ class FourierTest: XCTestCase {
     }
     func testCircularConvolve() {
         // This is an example of a functional test case.
-        var a = [Double](count: 10, repeatedValue: 0)
-        var b = [Double](count: 10, repeatedValue: 0)
+        var a = [Double](repeating: 0, count: 10)
+        var b = [Double](repeating: 0, count: 10)
         for i in 0..<a.count {
             a[i] = random(0.0..<1.0)
         }
@@ -746,8 +746,8 @@ class FourierTest: XCTestCase {
     }
     func testCircularConvolveComplex() {
         // This is an example of a functional test case.
-        var a = [Complex](count: 10, repeatedValue: Complex(0))
-        var b = [Complex](count: 10, repeatedValue: Complex(0))
+        var a = [Complex](repeating: Complex(0), count: 10)
+        var b = [Complex](repeating: Complex(0), count: 10)
         for i in 0..<a.count {
             a[i] = Complex(real: random(0.0..<1.0), imag: random(0.0..<1.0))
         }
@@ -773,8 +773,8 @@ class FourierTest: XCTestCase {
     }
     func testNegacyclicConvolve() {
         // This is an example of a functional test case.
-        var a = [Double](count: 10, repeatedValue: 0)
-        var b = [Double](count: 10, repeatedValue: 0)
+        var a = [Double](repeating: 0, count: 10)
+        var b = [Double](repeating: 0, count: 10)
         for i in 0..<a.count {
             a[i] = random(0.0..<1.0)
         }
@@ -799,8 +799,8 @@ class FourierTest: XCTestCase {
     }
     func testNegacyclicConvolveComplex() {
         // This is an example of a functional test case.
-        var a = [Complex](count: 10, repeatedValue: Complex(0))
-        var b = [Complex](count: 10, repeatedValue: Complex(0))
+        var a = [Complex](repeating: Complex(0), count: 10)
+        var b = [Complex](repeating: Complex(0), count: 10)
         for i in 0..<a.count {
             a[i] = Complex(real: random(0.0..<1.0), imag: random(0.0..<1.0))
         }
@@ -827,7 +827,7 @@ class FourierTest: XCTestCase {
     
     func testDCTII() {
         // This is an example of a functional test case.
-        var sample = [Double](count: 10, repeatedValue: 0)
+        var sample = [Double](repeating: 0, count: 10)
         for i in sample.indices {
             sample[i] = random(0.0..<1.0)
         }
@@ -844,7 +844,7 @@ class FourierTest: XCTestCase {
     }
     func testDCTIII() {
         // This is an example of a functional test case.
-        var sample = [Double](count: 10, repeatedValue: 0)
+        var sample = [Double](repeating: 0, count: 10)
         for i in sample.indices {
             sample[i] = random(0.0..<1.0)
         }
@@ -861,7 +861,7 @@ class FourierTest: XCTestCase {
     }
     func testDCTIV() {
         // This is an example of a functional test case.
-        var sample = [Double](count: 10, repeatedValue: 0)
+        var sample = [Double](repeating: 0, count: 10)
         for i in sample.indices {
             sample[i] = random(0.0..<1.0)
         }
@@ -878,7 +878,7 @@ class FourierTest: XCTestCase {
     }
     func testDSTII() {
         // This is an example of a functional test case.
-        var sample = [Double](count: 10, repeatedValue: 0)
+        var sample = [Double](repeating: 0, count: 10)
         for i in sample.indices {
             sample[i] = random(0.0..<1.0)
         }
@@ -895,7 +895,7 @@ class FourierTest: XCTestCase {
     }
     func testDSTIII() {
         // This is an example of a functional test case.
-        var sample = [Double](count: 10, repeatedValue: 0)
+        var sample = [Double](repeating: 0, count: 10)
         for i in sample.indices {
             sample[i] = random(0.0..<1.0)
         }
@@ -912,7 +912,7 @@ class FourierTest: XCTestCase {
     }
     func testDSTIV() {
         // This is an example of a functional test case.
-        var sample = [Double](count: 10, repeatedValue: 0)
+        var sample = [Double](repeating: 0, count: 10)
         for i in sample.indices {
             sample[i] = random(0.0..<1.0)
         }
@@ -930,88 +930,88 @@ class FourierTest: XCTestCase {
     
     func testFourierBPerformance() {
         // This is an example of a performance test case.
-        let sample = [Double](count: 32700, repeatedValue: 0)
+        let sample = [Double](repeating: 0, count: 32700)
         var result = [Complex]()
         Fourier(sample, &result)
-        self.measureBlock() {
+        self.measure() {
             // Put the code you want to measure the time of here.
             Fourier(sample, &result)
         }
     }
     func testFourierCPerformance() {
         // This is an example of a performance test case.
-        let sample = [Double](count: 32768, repeatedValue: 0)
+        let sample = [Double](repeating: 0, count: 32768)
         var result = [Complex]()
         Fourier(sample, &result)
-        self.measureBlock() {
+        self.measure() {
             // Put the code you want to measure the time of here.
             Fourier(sample, &result)
         }
     }
     func testFourierBPerformanceX2() {
         // This is an example of a performance test case.
-        let sample = [Double](count: 65500, repeatedValue: 0)
+        let sample = [Double](repeating: 0, count: 65500)
         var result = [Complex]()
         Fourier(sample, &result)
-        self.measureBlock() {
+        self.measure() {
             // Put the code you want to measure the time of here.
             Fourier(sample, &result)
         }
     }
     func testFourierCPerformanceX2() {
         // This is an example of a performance test case.
-        let sample = [Double](count: 65536, repeatedValue: 0)
+        let sample = [Double](repeating: 0, count: 65536)
         var result = [Complex]()
         Fourier(sample, &result)
-        self.measureBlock() {
+        self.measure() {
             // Put the code you want to measure the time of here.
             Fourier(sample, &result)
         }
     }
     func testFourierCPerformanceX3() {
         // This is an example of a performance test case.
-        let sample = [Double](count: 131072, repeatedValue: 0)
+        let sample = [Double](repeating: 0, count: 131072)
         var result = [Complex]()
         Fourier(sample, &result)
-        self.measureBlock() {
+        self.measure() {
             // Put the code you want to measure the time of here.
             Fourier(sample, &result)
         }
     }
     func testCircularConvolvePerformance() {
         // This is an example of a performance test case.
-        let sample = [Double](count: 44100, repeatedValue: 0)
+        let sample = [Double](repeating: 0, count: 44100)
         var result = [Double]()
         CircularConvolve(sample, sample, &result)
-        self.measureBlock() {
+        self.measure() {
             // Put the code you want to measure the time of here.
             CircularConvolve(sample, sample, &result)
         }
     }
     func testCircularConvolvePerformanceX2() {
         // This is an example of a performance test case.
-        let sample = [Double](count: 96000, repeatedValue: 0)
+        let sample = [Double](repeating: 0, count: 96000)
         var result = [Double]()
         CircularConvolve(sample, sample, &result)
-        self.measureBlock() {
+        self.measure() {
             // Put the code you want to measure the time of here.
             CircularConvolve(sample, sample, &result)
         }
     }
     func testCircularConvolvePerformanceX3() {
         // This is an example of a performance test case.
-        let sample = [Double](count: 192000, repeatedValue: 0)
+        let sample = [Double](repeating: 0, count: 192000)
         var result = [Double]()
         CircularConvolve(sample, sample, &result)
-        self.measureBlock() {
+        self.measure() {
             // Put the code you want to measure the time of here.
             CircularConvolve(sample, sample, &result)
         }
     }
 }
 
-func _DCTII(buffer: [Double], inout result: [Double]) {
-    result = [Double](count: buffer.count, repeatedValue: 0)
+func _DCTII(_ buffer: [Double], result: inout [Double]) {
+    result = [Double](repeating: 0, count: buffer.count)
     let angle = M_PI / Double(buffer.count)
     let _sqrt_length = sqrt(Double(buffer.count))
     for k in buffer.indices {
@@ -1022,8 +1022,8 @@ func _DCTII(buffer: [Double], inout result: [Double]) {
     }
     result[0] *= M_SQRT1_2
 }
-func _DCTIII(buffer: [Double], inout result: [Double]) {
-    result = [Double](count: buffer.count, repeatedValue: 0)
+func _DCTIII(_ buffer: [Double], result: inout [Double]) {
+    result = [Double](repeating: 0, count: buffer.count)
     let angle = M_PI / Double(buffer.count)
     let _sqrt_length = sqrt(Double(buffer.count))
     for k in buffer.indices {
@@ -1037,8 +1037,8 @@ func _DCTIII(buffer: [Double], inout result: [Double]) {
         result[k] *= M_SQRT2 / _sqrt_length
     }
 }
-func _DCTIV(buffer: [Double], inout result: [Double]) {
-    result = [Double](count: buffer.count, repeatedValue: 0)
+func _DCTIV(_ buffer: [Double], result: inout [Double]) {
+    result = [Double](repeating: 0, count: buffer.count)
     let angle = M_PI / Double(buffer.count)
     let _sqrt_length = sqrt(Double(buffer.count))
     for k in buffer.indices {
@@ -1048,8 +1048,8 @@ func _DCTIV(buffer: [Double], inout result: [Double]) {
         result[k] *= M_SQRT2 / _sqrt_length
     }
 }
-func _DSTII(buffer: [Double], inout result: [Double]) {
-    result = [Double](count: buffer.count, repeatedValue: 0)
+func _DSTII(_ buffer: [Double], result: inout [Double]) {
+    result = [Double](repeating: 0, count: buffer.count)
     let angle = M_PI / Double(buffer.count)
     let _sqrt_length = sqrt(Double(buffer.count))
     for k in buffer.indices {
@@ -1060,8 +1060,8 @@ func _DSTII(buffer: [Double], inout result: [Double]) {
     }
     result[buffer.count - 1] *= M_SQRT1_2
 }
-func _DSTIII(buffer: [Double], inout result: [Double]) {
-    result = [Double](count: buffer.count, repeatedValue: 0)
+func _DSTIII(_ buffer: [Double], result: inout [Double]) {
+    result = [Double](repeating: 0, count: buffer.count)
     let angle = M_PI / Double(buffer.count)
     let _sqrt_length = sqrt(Double(buffer.count))
     for k in buffer.indices {
@@ -1075,8 +1075,8 @@ func _DSTIII(buffer: [Double], inout result: [Double]) {
         result[k] *= M_SQRT2 / _sqrt_length
     }
 }
-func _DSTIV(buffer: [Double], inout result: [Double]) {
-    result = [Double](count: buffer.count, repeatedValue: 0)
+func _DSTIV(_ buffer: [Double], result: inout [Double]) {
+    result = [Double](repeating: 0, count: buffer.count)
     let angle = M_PI / Double(buffer.count)
     let _sqrt_length = sqrt(Double(buffer.count))
     for k in buffer.indices {

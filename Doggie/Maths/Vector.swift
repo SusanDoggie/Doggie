@@ -57,30 +57,30 @@ extension Vector: CustomStringConvertible, CustomDebugStringConvertible {
         
         switch x {
         case 0: break
-        case 1: "𝒊".writeTo(&print)
-        case -1: "-𝒊".writeTo(&print)
-        default: String(format: "%.2f𝒊", x).writeTo(&print)
+        case 1: "𝒊".write(to: &print)
+        case -1: "-𝒊".write(to: &print)
+        default: String(format: "%.2f𝒊", x).write(to: &print)
         }
         
         if y != 0 {
-            if !print.isEmpty && !y.isSignMinus {
-                "+".writeTo(&print)
+            if !print.isEmpty && y.sign == .plus {
+                "+".write(to: &print)
             }
             switch y {
-            case 1: "𝒋".writeTo(&print)
-            case -1: "-𝒋".writeTo(&print)
-            default: String(format: "%.2f𝒋", x).writeTo(&print)
+            case 1: "𝒋".write(to: &print)
+            case -1: "-𝒋".write(to: &print)
+            default: String(format: "%.2f𝒋", x).write(to: &print)
             }
         }
         
         if z != 0 {
-            if !print.isEmpty && !z.isSignMinus {
-                "+".writeTo(&print)
+            if !print.isEmpty && z.sign == .plus {
+                "+".write(to: &print)
             }
             switch z {
-            case 1: "𝒌".writeTo(&print)
-            case -1: "-𝒌".writeTo(&print)
-            default: String(format: "%.2f𝒌", x).writeTo(&print)
+            case 1: "𝒌".write(to: &print)
+            case -1: "-𝒌".write(to: &print)
+            default: String(format: "%.2f𝒌", x).write(to: &print)
             }
         }
         
@@ -98,80 +98,68 @@ extension Vector: CustomStringConvertible, CustomDebugStringConvertible {
 extension Vector: Hashable {
     
     public var hashValue: Int {
-        return hash_combine(0, x, y, z)
+        return hash_combine(seed: 0, x, y, z)
     }
 }
 
-@warn_unused_result
-public func dot(lhs: Vector, _ rhs:  Vector) -> Double {
+public func dot(_ lhs: Vector, _ rhs:  Vector) -> Double {
     return lhs.x * rhs.x + lhs.y * rhs.y + lhs.z * rhs.z
 }
-@warn_unused_result
-public func cross(lhs: Vector, _ rhs:  Vector) -> Vector {
+public func cross(_ lhs: Vector, _ rhs:  Vector) -> Vector {
     return Vector(x: lhs.y * rhs.z - lhs.z * rhs.y, y: lhs.z * rhs.x - lhs.x * rhs.z, z: lhs.x * rhs.y - lhs.y * rhs.x)
 }
 
-@warn_unused_result
-public func norm(value: Vector) -> Double {
+public func norm(_ value: Vector) -> Double {
     return sqrt(dot(value, value))
 }
 
-@warn_unused_result
 public prefix func +(val: Vector) -> Vector {
     return val
 }
-@warn_unused_result
 public prefix func -(val: Vector) -> Vector {
     return Vector(x: -val.x, y: -val.y, z: -val.z)
 }
-@warn_unused_result
 public func +(lhs: Vector, rhs:  Vector) -> Vector {
     return Vector(x: lhs.x + rhs.x, y: lhs.y + rhs.y, z: lhs.z + rhs.z)
 }
-@warn_unused_result
 public func -(lhs: Vector, rhs:  Vector) -> Vector {
     return Vector(x: lhs.x - rhs.x, y: lhs.y - rhs.y, z: lhs.z - rhs.z)
 }
 
-@warn_unused_result
 public func *(lhs: Double, rhs:  Vector) -> Vector {
     return Vector(x: lhs * rhs.x, y: lhs * rhs.y, z: lhs * rhs.z)
 }
-@warn_unused_result
 public func *(lhs: Vector, rhs:  Double) -> Vector {
     return Vector(x: lhs.x * rhs, y: lhs.y * rhs, z: lhs.z * rhs)
 }
 
-@warn_unused_result
 public func /(lhs: Vector, rhs:  Double) -> Vector {
     return Vector(x: lhs.x / rhs, y: lhs.y / rhs, z: lhs.z / rhs)
 }
 
-public func *= (inout lhs: Vector, rhs:  Double) {
+public func *= (lhs: inout Vector, rhs:  Double) {
     lhs.x *= rhs
     lhs.y *= rhs
     lhs.z *= rhs
 }
-public func /= (inout lhs: Vector, rhs:  Double) {
+public func /= (lhs: inout Vector, rhs:  Double) {
     lhs.x /= rhs
     lhs.y /= rhs
     lhs.z /= rhs
 }
-public func += (inout lhs: Vector, rhs:  Vector) {
+public func += (lhs: inout Vector, rhs:  Vector) {
     lhs.x += rhs.x
     lhs.y += rhs.y
     lhs.z += rhs.z
 }
-public func -= (inout lhs: Vector, rhs:  Vector) {
+public func -= (lhs: inout Vector, rhs:  Vector) {
     lhs.x -= rhs.x
     lhs.y -= rhs.y
     lhs.z -= rhs.z
 }
-@warn_unused_result
 public func ==(lhs: Vector, rhs: Vector) -> Bool {
     return lhs.x == rhs.x && lhs.y == rhs.y && lhs.z == rhs.z
 }
-@warn_unused_result
 public func !=(lhs: Vector, rhs: Vector) -> Bool {
     return lhs.x != rhs.x || lhs.y != rhs.y || lhs.z != rhs.z
 }

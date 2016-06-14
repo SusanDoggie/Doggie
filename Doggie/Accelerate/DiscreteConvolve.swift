@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-public func DiscreteConvolve(signal_count: Int, _ signal: UnsafePointer<Float>, _ signal_stride: Int, _ kernel_count: Int, _ kernel: UnsafePointer<Float>, _ kernel_stride: Int, _ output: UnsafeMutablePointer<Float>, _ out_stride: Int) {
+public func DiscreteConvolve(_ signal_count: Int, _ signal: UnsafePointer<Float>, _ signal_stride: Int, _ kernel_count: Int, _ kernel: UnsafePointer<Float>, _ kernel_stride: Int, _ output: UnsafeMutablePointer<Float>, _ out_stride: Int) {
     
     var output = output
     
@@ -36,17 +36,17 @@ public func DiscreteConvolve(signal_count: Int, _ signal: UnsafePointer<Float>, 
         var _sp = signal + begin * signal_stride
         var _kp2 = _kp - begin * kernel_stride
         for _ in begin..<end {
-            temp += _sp.memory * _kp2.memory
+            temp += _sp.pointee * _kp2.pointee
             _sp += signal_stride
             _kp2 -= kernel_stride
         }
-        output.memory = temp
+        output.pointee = temp
         output += out_stride
         _kp += kernel_stride
     }
 }
 
-public func DiscreteConvolve(signal_count: Int, _ signal: UnsafePointer<Double>, _ signal_stride: Int, _ kernel_count: Int, _ kernel: UnsafePointer<Double>, _ kernel_stride: Int, _ output: UnsafeMutablePointer<Double>, _ out_stride: Int) {
+public func DiscreteConvolve(_ signal_count: Int, _ signal: UnsafePointer<Double>, _ signal_stride: Int, _ kernel_count: Int, _ kernel: UnsafePointer<Double>, _ kernel_stride: Int, _ output: UnsafeMutablePointer<Double>, _ out_stride: Int) {
     
     var output = output
     
@@ -59,17 +59,17 @@ public func DiscreteConvolve(signal_count: Int, _ signal: UnsafePointer<Double>,
         var _sp = signal + begin * signal_stride
         var _kp2 = _kp - begin * kernel_stride
         for _ in begin..<end {
-            temp += _sp.memory * _kp2.memory
+            temp += _sp.pointee * _kp2.pointee
             _sp += signal_stride
             _kp2 -= kernel_stride
         }
-        output.memory = temp
+        output.pointee = temp
         output += out_stride
         _kp += kernel_stride
     }
 }
 
-public func DiscreteConvolve(signal_count: Int, _ signal: UnsafePointer<Complex>, _ signal_stride: Int, _ kernel_count: Int, _ kernel: UnsafePointer<Complex>, _ kernel_stride: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int) {
+public func DiscreteConvolve(_ signal_count: Int, _ signal: UnsafePointer<Complex>, _ signal_stride: Int, _ kernel_count: Int, _ kernel: UnsafePointer<Complex>, _ kernel_stride: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int) {
     
     var output = output
     
@@ -82,11 +82,11 @@ public func DiscreteConvolve(signal_count: Int, _ signal: UnsafePointer<Complex>
         var _sp = signal + begin * signal_stride
         var _kp2 = _kp - begin * kernel_stride
         for _ in begin..<end {
-            temp += _sp.memory * _kp2.memory
+            temp += _sp.pointee * _kp2.pointee
             _sp += signal_stride
             _kp2 -= kernel_stride
         }
-        output.memory = temp
+        output.pointee = temp
         output += out_stride
         _kp += kernel_stride
     }

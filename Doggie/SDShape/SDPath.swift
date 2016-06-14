@@ -70,9 +70,9 @@ private extension PathCommand {
     }
 }
 
-public struct SDPath : SDShape, MutableCollectionType, ArrayLiteralConvertible {
+public struct SDPath : SDShape, RandomAccessCollection, MutableCollection, ArrayLiteralConvertible {
     
-    public typealias Generator = IndexingGenerator<SDPath>
+    public typealias Iterator = IndexingIterator<SDPath>
     
     private class Cache {
         
@@ -139,15 +139,15 @@ public struct SDPath : SDShape, MutableCollectionType, ArrayLiteralConvertible {
         self.commands = elements.map { PathCommand($0) }
     }
     
-    public init<S : SequenceType where S.Generator.Element : SDPathCommand>(_ commands: S) {
+    public init<S : Sequence where S.Iterator.Element : SDPathCommand>(_ commands: S) {
         self.commands = commands.map { PathCommand($0) }
     }
     
-    public init<S : SequenceType where S.Generator.Element == SDPathCommand>(_ commands: S) {
+    public init<S : Sequence where S.Iterator.Element == SDPathCommand>(_ commands: S) {
         self.commands = commands.map { PathCommand($0) }
     }
     
-    private init<S : SequenceType where S.Generator.Element == PathCommand>(_ commands: S) {
+    private init<S : Sequence where S.Iterator.Element == PathCommand>(_ commands: S) {
         self.commands = commands.array
     }
     
@@ -407,52 +407,52 @@ extension SDPath {
 
 extension SDPath {
     
-    public mutating func appendCommand<T : SDPathCommand>(x: T) {
+    public mutating func appendCommand<T : SDPathCommand>(_ x: T) {
         cache = Cache()
         commands.append(PathCommand(command: x))
     }
     
-    public mutating func appendContentsOf<S : SequenceType where S.Generator.Element : SDPathCommand>(newElements: S) {
+    public mutating func append<S : Sequence where S.Iterator.Element : SDPathCommand>(contentsOf newElements: S) {
         cache = Cache()
-        commands.appendContentsOf(newElements.lazy.map { PathCommand(command: $0) } as LazyMapSequence)
+        commands.append(contentsOf: newElements.lazy.map { PathCommand(command: $0) } as LazyMapSequence)
     }
     
-    public mutating func appendContentsOf<C : CollectionType where C.Generator.Element : SDPathCommand>(newElements: C) {
+    public mutating func append<C : Collection where C.Iterator.Element : SDPathCommand>(contentsOf newElements: C) {
         cache = Cache()
-        commands.appendContentsOf(newElements.lazy.map { PathCommand(command: $0) } as LazyMapCollection)
+        commands.append(contentsOf: newElements.lazy.map { PathCommand(command: $0) } as LazyMapCollection)
     }
     
-    public mutating func replaceRange<C : CollectionType where C.Generator.Element : SDPathCommand>(subRange: Range<Int>, with newElements: C) {
+    public mutating func replaceSubrange<C : Collection where C.Iterator.Element : SDPathCommand>(_ subRange: Range<Int>, with newElements: C) {
         cache = Cache()
-        commands.replaceRange(subRange, with: newElements.lazy.map { PathCommand(command: $0) } as LazyMapCollection)
+        commands.replaceSubrange(subRange, with: newElements.lazy.map { PathCommand(command: $0) } as LazyMapCollection)
     }
     
-    public mutating func insertCommand<T : SDPathCommand>(newElement: T, atIndex i: Int) {
+    public mutating func insertCommand<T : SDPathCommand>(_ newElement: T, atIndex i: Int) {
         cache = Cache()
-        commands.insert(PathCommand(command: newElement), atIndex: i)
+        commands.insert(PathCommand(command: newElement), at: i)
     }
     
-    public mutating func insertContentsOf<S : CollectionType where S.Generator.Element : SDPathCommand>(newElements: S, at i: Int) {
+    public mutating func insert<S : Collection where S.Iterator.Element : SDPathCommand>(contentsOf newElements: S, at i: Int) {
         cache = Cache()
-        commands.insertContentsOf(newElements.lazy.map { PathCommand(command: $0) } as LazyMapCollection, at: i)
+        commands.insert(contentsOf: newElements.lazy.map { PathCommand(command: $0) } as LazyMapCollection, at: i)
     }
 }
 
-extension SDPath : RangeReplaceableCollectionType {
+extension SDPath : RangeReplaceableCollection {
     
-    public mutating func append(x: SDPathCommand) {
+    public mutating func append(_ x: SDPathCommand) {
         cache = Cache()
         commands.append(PathCommand(x))
     }
     
-    public mutating func appendContentsOf<S : SequenceType where S.Generator.Element == SDPathCommand>(newElements: S) {
+    public mutating func append<S : Sequence where S.Iterator.Element == SDPathCommand>(contentsOf newElements: S) {
         cache = Cache()
-        commands.appendContentsOf(newElements.lazy.map { PathCommand($0) } as LazyMapSequence)
+        commands.append(contentsOf: newElements.lazy.map { PathCommand($0) } as LazyMapSequence)
     }
     
-    public mutating func appendContentsOf<C : CollectionType where C.Generator.Element == SDPathCommand>(newElements: C) {
+    public mutating func append<C : Collection where C.Iterator.Element == SDPathCommand>(contentsOf newElements: C) {
         cache = Cache()
-        commands.appendContentsOf(newElements.lazy.map { PathCommand($0) } as LazyMapCollection)
+        commands.append(contentsOf: newElements.lazy.map { PathCommand($0) } as LazyMapCollection)
     }
     
     public mutating func removeLast() -> SDPathCommand {
@@ -465,38 +465,38 @@ extension SDPath : RangeReplaceableCollectionType {
         return commands.popLast()?.command
     }
     
-    public mutating func reserveCapacity(minimumCapacity: Int) {
+    public mutating func reserveCapacity(_ minimumCapacity: Int) {
         commands.reserveCapacity(minimumCapacity)
     }
     
-    public mutating func removeAll(keepCapacity keepCapacity: Bool = false) {
+    public mutating func removeAll(_ keepingCapacity: Bool = false) {
         cache = Cache()
-        commands.removeAll(keepCapacity: keepCapacity)
+        commands.removeAll(keepingCapacity: keepingCapacity)
     }
     
-    public mutating func replaceRange<C : CollectionType where C.Generator.Element == SDPathCommand>(subRange: Range<Int>, with newElements: C) {
+    public mutating func replaceSubrange<C : Collection where C.Iterator.Element == SDPathCommand>(_ subRange: Range<Int>, with newElements: C) {
         cache = Cache()
-        commands.replaceRange(subRange, with: newElements.lazy.map { PathCommand($0) } as LazyMapCollection)
+        commands.replaceSubrange(subRange, with: newElements.lazy.map { PathCommand($0) } as LazyMapCollection)
     }
     
-    public mutating func insert(newElement: SDPathCommand, atIndex i: Int) {
+    public mutating func insert(_ newElement: SDPathCommand, atIndex i: Int) {
         cache = Cache()
-        commands.insert(PathCommand(newElement), atIndex: i)
+        commands.insert(PathCommand(newElement), at: i)
     }
     
-    public mutating func insertContentsOf<S : CollectionType where S.Generator.Element == SDPathCommand>(newElements: S, at i: Int) {
+    public mutating func insert<S : Collection where S.Iterator.Element == SDPathCommand>(contentsOf newElements: S, at i: Int) {
         cache = Cache()
-        commands.insertContentsOf(newElements.lazy.map { PathCommand($0) } as LazyMapCollection, at: i)
+        commands.insert(contentsOf: newElements.lazy.map { PathCommand($0) } as LazyMapCollection, at: i)
     }
     
-    public mutating func removeAtIndex(i: Int) -> SDPathCommand {
+    public mutating func remove(at i: Int) -> SDPathCommand {
         cache = Cache()
-        return commands.removeAtIndex(i).command
+        return commands.remove(at: i).command
     }
     
-    public mutating func removeRange(subRange: Range<Int>) {
+    public mutating func removeSubrange(_ subRange: Range<Int>) {
         cache = Cache()
-        commands.removeRange(subRange)
+        commands.removeSubrange(subRange)
     }
 }
 

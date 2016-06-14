@@ -25,7 +25,7 @@
 
 import Foundation
 
-private struct PathDataScanner<G : GeneratorType where G.Element == String> : GeneratorType, SequenceType {
+private struct PathDataScanner<G : IteratorProtocol where G.Element == String> : IteratorProtocol, Sequence {
     
     var generator: G
     var current: String!
@@ -34,7 +34,7 @@ private struct PathDataScanner<G : GeneratorType where G.Element == String> : Ge
         self.generator = generator
     }
     
-    init<S : SequenceType where S.Generator == G>(_ sequence: S) {
+    init<S : Sequence where S.Iterator == G>(_ sequence: S) {
         self.generator = sequence.generate()
     }
     
@@ -48,12 +48,12 @@ private let pathDataMatcher: Regex = "[MmLlHhVvCcSsQqTtAaZz]|[+-]?(\\d+\\.?\\d*|
 
 extension SDPath {
     
-    public struct DecoderError : ErrorType {
+    public struct DecoderError : ErrorProtocol {
         
         var command: String?
     }
     
-    private func toDouble(str: String?) throws -> Double {
+    private func toDouble(_ str: String?) throws -> Double {
         
         if str != nil, let val = Double(str!) {
             return val
@@ -61,7 +61,7 @@ extension SDPath {
         throw DecoderError(command: str)
     }
     
-    private func toInt(str: String?) throws -> Int {
+    private func toInt(_ str: String?) throws -> Int {
         
         if str != nil, let val = Int(str!) {
             return val
@@ -482,17 +482,17 @@ extension SDPath {
     }
 }
 
-private func arcDetails(start: Point, _ end: Point, _ radius: Radius, _ rotate: Double, _ largeArc: Bool, _ sweep: Bool) -> (Point, Radius) {
+private func arcDetails(_ start: Point, _ end: Point, _ radius: Radius, _ rotate: Double, _ largeArc: Bool, _ sweep: Bool) -> (Point, Radius) {
     let centers = EllipseCenter(radius, rotate, start, end)
     if centers.count == 0 {
         return (middle(end, start), EllipseRadius(start, end, radius, rotate))
-    } else if centers.count == 1 || (!direction(start, centers[0], end).isSignMinus == sweep ? largeArc : !largeArc) {
+    } else if centers.count == 1 || (!direction(start, centers[0], end).sign == sweep ? largeArc : !largeArc) {
         return (centers[0], radius)
     } else {
         return (centers[1], radius)
     }
 }
-private func bezierArc(start: Point, _ end: Point, _ radius: Radius, _ rotate: Double, _ largeArc: Bool, _ sweep: Bool) -> [SDPath.CubicBezier] {
+private func bezierArc(_ start: Point, _ end: Point, _ radius: Radius, _ rotate: Double, _ largeArc: Bool, _ sweep: Bool) -> [SDPath.CubicBezier] {
     let (center, radius) = arcDetails(start, end, radius, rotate, largeArc, sweep)
     let _arc_transform = SDTransform.Scale(x: radius.x, y: radius.y) * SDTransform.Rotate(rotate)
     let _arc_transform_inverse = _arc_transform.inverse
@@ -521,42 +521,41 @@ private func bezierArc(start: Point, _ end: Point, _ radius: Radius, _ rotate: D
     return result
 }
 
-private let dataFormatter: NSNumberFormatter = {
-    let formatter = NSNumberFormatter()
+private let dataFormatter: NumberFormatter = {
+    let formatter = NumberFormatter()
     formatter.negativeFormat = "#.#########"
     formatter.positiveFormat = "#.#########"
     return formatter
     }()
 
-private func getDataString(x: [Double]) -> String {
+private func getDataString(_ x: [Double]) -> String {
     var str = ""
-    for _x in x.map({ dataFormatter.stringFromNumber($0) ?? "0" }) {
+    for _x in x.map({ dataFormatter.string(from: $0) ?? "0" }) {
         if !str.isEmpty && _x.characters.first != "-" {
-            " ".writeTo(&str)
+            " ".write(to: &str)
         }
-        _x.writeTo(&str)
+        _x.write(to: &str)
     }
     return str
 }
 
-private func _round(x: Double) -> Double {
+private func _round(_ x: Double) -> Double {
     return round(x * 1000000000) / 1000000000
 }
 
-private func getPathDataString(command: Character?, _ x: Double ...) -> String {
+private func getPathDataString(_ command: Character?, _ x: Double ...) -> String {
     var result = ""
-    command?.writeTo(&result)
+    command?.write(to: &result)
     let dataStr = getDataString(x)
     if result.isEmpty && !dataStr.isEmpty && dataStr.characters.first != "-" {
-        " ".writeTo(&result)
+        " ".write(to: &result)
     }
-    dataStr.writeTo(&result)
+    dataStr.write(to: &result)
     return result
 }
 
 public extension SDPath {
     
-    @warn_unused_result
     public func encode() -> String {
         
         var data = ""
@@ -565,7 +564,7 @@ public extension SDPath {
         var relative = Point()
         var lastControl: Point?
         for item in self {
-            (item as? SDPathCommandSerializableType)?.serialize(&currentState, start: &start, relative: &relative, lastControl: &lastControl).writeTo(&data)
+            (item as? SDPathCommandSerializableType)?.serialize(&currentState, start: &start, relative: &relative, lastControl: &lastControl).write(to: &data)
         }
         return data
     }
@@ -573,19 +572,19 @@ public extension SDPath {
 
 private protocol SDPathCommandSerializableType {
     
-    func serialize(inout currentState: Int, inout start: Point, inout relative: Point, inout lastControl: Point?) -> String
+    func serialize(_ currentState: inout Int, start: inout Point, relative: inout Point, lastControl: inout Point?) -> String
 }
 
 private protocol SDPathCommandSerializableShortFormType : SDPathCommandSerializableType {
     
-    func serialize1(currentState: Int, _ start: Point, _ relative: Point, _ lastControl: Point?) -> (String, Int, Point, Point, Point?)
-    func serialize2(currentState: Int, _ start: Point, _ relative: Point, _ lastControl: Point?) -> (String, Int, Point, Point, Point?)
+    func serialize1(_ currentState: Int, _ start: Point, _ relative: Point, _ lastControl: Point?) -> (String, Int, Point, Point, Point?)
+    func serialize2(_ currentState: Int, _ start: Point, _ relative: Point, _ lastControl: Point?) -> (String, Int, Point, Point, Point?)
     
 }
 
 extension SDPathCommandSerializableShortFormType {
     
-    func serialize(inout currentState: Int, inout start: Point, inout relative: Point, inout lastControl: Point?) -> String {
+    func serialize(_ currentState: inout Int, start: inout Point, relative: inout Point, lastControl: inout Point?) -> String {
         let _serialize1 = serialize1(currentState, start, relative, lastControl)
         let _serialize2 = serialize2(currentState, start, relative, lastControl)
         if _serialize1.0.characters.count <= _serialize2.0.characters.count {
@@ -615,7 +614,7 @@ extension SDPath.Move : SDPathCommandSerializableShortFormType {
 
 extension SDPath.Line : SDPathCommandSerializableShortFormType {
     
-    private func serialize1(currentState: Int, _ start: Point, _ relative: Point, _ lastControl: Point?) -> (String, Int, Point, Point, Point?) {
+    private func serialize1(_ currentState: Int, _ start: Point, _ relative: Point, _ lastControl: Point?) -> (String, Int, Point, Point, Point?) {
         var currentState = currentState
         let str: String
         if _round(relative.x) == _round(self.x) {
@@ -642,7 +641,7 @@ extension SDPath.Line : SDPathCommandSerializableShortFormType {
         }
         return (str, currentState, start, self.point, nil)
     }
-    private func serialize2(currentState: Int, _ start: Point, _ relative: Point, _ lastControl: Point?) -> (String, Int, Point, Point, Point?) {
+    private func serialize2(_ currentState: Int, _ start: Point, _ relative: Point, _ lastControl: Point?) -> (String, Int, Point, Point, Point?) {
         var currentState = currentState
         let str: String
         if _round(relative.x) == _round(self.x) {
@@ -673,7 +672,7 @@ extension SDPath.Line : SDPathCommandSerializableShortFormType {
 
 extension SDPath.QuadBezier : SDPathCommandSerializableShortFormType {
     
-    private func isSmooth(relative: Point, _ lastControl: Point?) -> Bool {
+    private func isSmooth(_ relative: Point, _ lastControl: Point?) -> Bool {
         
         if let lastControl = lastControl {
             let d = self.p1 + lastControl - 2 * relative
@@ -682,7 +681,7 @@ extension SDPath.QuadBezier : SDPathCommandSerializableShortFormType {
         return false
     }
     
-    private func serialize1(currentState: Int, _ start: Point, _ relative: Point, _ lastControl: Point?) -> (String, Int, Point, Point, Point?) {
+    private func serialize1(_ currentState: Int, _ start: Point, _ relative: Point, _ lastControl: Point?) -> (String, Int, Point, Point, Point?) {
         var currentState = currentState
         let str: String
         if self.isSmooth(relative, lastControl) && (8...11).contains(currentState) {
@@ -702,7 +701,7 @@ extension SDPath.QuadBezier : SDPathCommandSerializableShortFormType {
         }
         return (str, currentState, start, self.point, self.p1)
     }
-    private func serialize2(currentState: Int, _ start: Point, _ relative: Point, _ lastControl: Point?) -> (String, Int, Point, Point, Point?) {
+    private func serialize2(_ currentState: Int, _ start: Point, _ relative: Point, _ lastControl: Point?) -> (String, Int, Point, Point, Point?) {
         var currentState = currentState
         let str: String
         if self.isSmooth(relative, lastControl) && (8...11).contains(currentState) {
@@ -726,7 +725,7 @@ extension SDPath.QuadBezier : SDPathCommandSerializableShortFormType {
 
 extension SDPath.CubicBezier : SDPathCommandSerializableShortFormType {
     
-    private func isSmooth(relative: Point, _ lastControl: Point?) -> Bool {
+    private func isSmooth(_ relative: Point, _ lastControl: Point?) -> Bool {
         
         if let lastControl = lastControl {
             let d = self.p1 + lastControl - 2 * relative
@@ -735,7 +734,7 @@ extension SDPath.CubicBezier : SDPathCommandSerializableShortFormType {
         return false
     }
     
-    private func serialize1(currentState: Int, _ start: Point, _ relative: Point, _ lastControl: Point?) -> (String, Int, Point, Point, Point?) {
+    private func serialize1(_ currentState: Int, _ start: Point, _ relative: Point, _ lastControl: Point?) -> (String, Int, Point, Point, Point?) {
         var currentState = currentState
         let str: String
         if self.isSmooth(relative, lastControl) && (12...15).contains(currentState) {
@@ -755,7 +754,7 @@ extension SDPath.CubicBezier : SDPathCommandSerializableShortFormType {
         }
         return (str, currentState, start, self.point, self.p2)
     }
-    private func serialize2(currentState: Int, _ start: Point, _ relative: Point, _ lastControl: Point?) -> (String, Int, Point, Point, Point?) {
+    private func serialize2(_ currentState: Int, _ start: Point, _ relative: Point, _ lastControl: Point?) -> (String, Int, Point, Point, Point?) {
         var currentState = currentState
         let str: String
         if self.isSmooth(relative, lastControl) && (12...15).contains(currentState) {
@@ -779,7 +778,7 @@ extension SDPath.CubicBezier : SDPathCommandSerializableShortFormType {
 
 extension SDPath.ClosePath : SDPathCommandSerializableType {
     
-    private func serialize(inout currentState: Int, inout start: Point, inout relative: Point, inout lastControl: Point?) -> String {
+    private func serialize(_ currentState: inout Int, start: inout Point, relative: inout Point, lastControl: inout Point?) -> String {
         let str = currentState != 18 ? "z" : ""
         relative = start
         currentState = 18
