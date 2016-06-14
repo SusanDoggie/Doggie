@@ -69,12 +69,12 @@ public struct Graph<Node : Hashable, Link> : Collection {
     public func index(after i: GraphIndex<Node, Link>) -> GraphIndex<Node, Link> {
         if i.index2 != nil {
             let _to = table[i.index1].value
-            let next = _to.index(alfer: i.index2!)
+            let next = _to.index(after: i.index2!)
             if next != _to.endIndex {
-                return GraphIndex(base: i.index1, current: next)
+                return GraphIndex(index1: i.index1, index2: next)
             } else {
-                let _next = table.index(alfer: i.index1)
-                return GraphIndex(base: _next, current: _next == table.endIndex ? nil : table[_next].value.startIndex)
+                let _next = table.index(after: i.index1)
+                return GraphIndex(index1: _next, index2: _next == table.endIndex ? nil : table[_next].value.startIndex)
             }
         } else {
             return GraphIndex(index1: table.endIndex, index2: nil)
