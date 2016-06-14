@@ -189,6 +189,14 @@ public struct SDPath : SDShape, RandomAccessCollection, MutableCollection, Array
         return commands.endIndex
     }
     
+    public func index(after i: Int) -> Int {
+        return commands.index(after: i)
+    }
+    
+    public func index(before i: Int) -> Int {
+        return commands.index(before: i)
+    }
+    
     public struct Move : SDPathCommand {
         
         public var x: Double
