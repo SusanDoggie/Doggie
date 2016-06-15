@@ -23,23 +23,12 @@
 //  THE SOFTWARE.
 //
 
-public struct OptionOneIterator<T> : IteratorProtocol, Sequence {
-    
-    private var value: T?
-    
-    public mutating func next() -> T? {
-        let _value = value
-        value = nil
-        return _value
-    }
-}
-
 public struct OptionOneCollection<T> : RandomAccessCollection {
     
     public typealias Indices = CountableRange<Int>
     public typealias Index = Int
     
-    public typealias Iterator = OptionOneIterator<T>
+    public typealias Iterator = IndexingIterator<OptionOneCollection>
     
     private let value: T?
     
@@ -55,9 +44,5 @@ public struct OptionOneCollection<T> : RandomAccessCollection {
     }
     public subscript(idx: Int) -> T {
         return value!
-    }
-    
-    public func makeIterator() -> OptionOneIterator<T> {
-        return OptionOneIterator(value: value)
     }
 }

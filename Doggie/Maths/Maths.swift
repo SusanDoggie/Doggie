@@ -39,22 +39,22 @@ extension Double {
     }
 }
 
-public func FactorialList<T: UnsignedInteger>(_ n: T) -> LazyScanSequence<Slice<Range<T>>, T> {
+public func FactorialList<T: UnsignedInteger where T.Stride : SignedInteger>(_ n: T) -> LazyScanSequence<RandomAccessSlice<CountableClosedRange<T>>, T> {
     
-    return (0...n).dropFirst().lazy.scan(1) { $0 * $1 }
+    return (0...n).dropFirst().lazy.scan(initial: 1, combine: *)
 }
-public func PermutationList<T: UnsignedInteger>(_ n: T) -> LazyScanSequence<ReverseRandomAccessCollection<Slice<Range<T>>>, T> {
+public func PermutationList<T: UnsignedInteger where T.Stride : SignedInteger>(_ n: T) -> LazyScanSequence<ReversedRandomAccessCollection<RandomAccessSlice<CountableClosedRange<T>>>, T> {
     
-    return (0...n).dropFirst().lazy.reverse().scan(1) { $0 * $1 }
+    return (0...n).dropFirst().reversed().lazy.scan(initial: 1, combine: *)
 }
-public func CombinationList<T: UnsignedInteger>(_ n: T) -> LazyMapSequence<Zip2Sequence<LazyScanSequence<ReverseRandomAccessCollection<Slice<Range<T>>>, T>, LazyScanSequence<Slice<Range<T>>, T>>, T> {
+public func CombinationList<T: UnsignedInteger where T.Stride : SignedInteger>(_ n: T) -> LazyMapSequence<Zip2Sequence<LazyScanSequence<ReversedRandomAccessCollection<RandomAccessSlice<CountableClosedRange<T>>>, T>, LazyScanSequence<RandomAccessSlice<CountableClosedRange<T>>, T>>, T> {
     
     return zip(PermutationList(n), FactorialList(n)).lazy.map(/)
 }
 
-public func FibonacciList<T: UnsignedInteger>(_ n: T) -> LazyMapSequence<LazyScanSequence<Slice<Range<T>>, (Int, Int)>, Int> {
+public func FibonacciList<T: UnsignedInteger where T.Stride : SignedInteger>(_ n: T) -> LazyMapSequence<LazyScanSequence<CountableRange<T>, (T, T)>, T> {
     
-    return (0..<n).dropLast().lazy.scan((1, 1)) { ($0.0.1, $0.0.0 + $0.0.1) }.map { $0.0 }
+    return (0..<n).dropLast().lazy.scan(initial: (1, 1)) { ($0.0.1, $0.0.0 + $0.0.1) }.map { $0.0 }
 }
 
 // MARK: Prime

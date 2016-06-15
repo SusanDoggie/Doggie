@@ -156,23 +156,23 @@ public extension BidirectionalCollection {
     }
 }
 
-public extension LazySequence {
+public extension LazySequenceProtocol {
     
-    func concat<S : Sequence where Base.Iterator.Element == S.Iterator.Element>(with: S) -> LazySequence<ConcatSequence<Base, S>> {
+    func concat<S : Sequence where Elements.Iterator.Element == S.Iterator.Element>(with: S) -> LazySequence<ConcatSequence<Elements, S>> {
         return ConcatSequence(base1: self.elements, base2: with).lazy
     }
 }
 
-public extension LazyCollection {
+public extension LazyCollectionProtocol {
     
-    func concat<S : Collection where Base.Iterator.Element == S.Iterator.Element>(with: S) -> LazyCollection<ConcatCollection<Base, S>> {
+    func concat<S : Collection where Elements.Iterator.Element == S.Iterator.Element>(with: S) -> LazyCollection<ConcatCollection<Elements, S>> {
         return ConcatCollection(base1: self.elements, base2: with).lazy
     }
 }
 
-public extension LazyBidirectionalCollection {
+public extension LazyCollectionProtocol where Elements : BidirectionalCollection {
     
-    func concat<S : BidirectionalCollection where Base.Iterator.Element == S.Iterator.Element>(with: S) -> LazyCollection<ConcatBidirectionalCollection<Base, S>> {
+    func concat<S : BidirectionalCollection where Elements.Iterator.Element == S.Iterator.Element>(with: S) -> LazyCollection<ConcatBidirectionalCollection<Elements, S>> {
         return ConcatBidirectionalCollection(base1: self.elements, base2: with).lazy
     }
 }

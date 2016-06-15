@@ -48,9 +48,9 @@ public struct LazySliceSequence<Base : RandomAccessCollection> : IteratorProtoco
     }
 }
 
-public extension LazyCollection where Base : RandomAccessCollection {
+public extension LazyCollectionProtocol where Elements : RandomAccessCollection {
     
-    func slice(by maxLength: Base.IndexDistance) -> LazySliceSequence<Base> {
+    func slice(by maxLength: Elements.IndexDistance) -> LazySliceSequence<Elements> {
         return LazySliceSequence(base: elements, maxLength: maxLength, currentIndex: elements.startIndex)
     }
 }

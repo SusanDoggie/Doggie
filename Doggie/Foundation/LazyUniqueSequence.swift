@@ -72,16 +72,16 @@ public extension Sequence {
     }
 }
 
-public extension LazySequence where Base.Iterator.Element : Equatable {
+public extension LazySequenceProtocol where Elements.Iterator.Element : Equatable {
     
-    func unique() -> LazyUniqueSequence<Base> {
+    func unique() -> LazyUniqueSequence<Elements> {
         return LazyUniqueSequence(base: elements, isEquivalent: ==)
     }
 }
 
-public extension LazySequence {
+public extension LazySequenceProtocol {
     
-    func unique(isEquivalent: (Base.Iterator.Element, Base.Iterator.Element) -> Bool) -> LazyUniqueSequence<Base> {
+    func unique(isEquivalent: (Elements.Iterator.Element, Elements.Iterator.Element) -> Bool) -> LazyUniqueSequence<Elements> {
         return LazyUniqueSequence(base: elements, isEquivalent: isEquivalent)
     }
 }

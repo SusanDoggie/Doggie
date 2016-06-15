@@ -68,7 +68,7 @@ public struct LazyScanSequence<Base: Sequence, Element> : LazySequenceProtocol {
     }
 }
 
-public extension LazySequence {
+public extension LazySequenceProtocol {
     /// Returns a sequence containing the results of
     ///
     ///   p.reduce(initial, combine: combine)
