@@ -72,7 +72,12 @@ private extension PathCommand {
 
 public struct SDPath : SDShape, RandomAccessCollection, MutableCollection, ArrayLiteralConvertible {
     
+    public typealias Indices = CountableRange<Int>
+    public typealias Index = Int
+    
     public typealias Iterator = IndexingIterator<SDPath>
+    
+    public typealias SubSequence = MutableRangeReplaceableRandomAccessSlice<SDPath>
     
     private class Cache {
         
@@ -187,14 +192,6 @@ public struct SDPath : SDShape, RandomAccessCollection, MutableCollection, Array
     
     public var endIndex: Int {
         return commands.endIndex
-    }
-    
-    public func index(after i: Int) -> Int {
-        return commands.index(after: i)
-    }
-    
-    public func index(before i: Int) -> Int {
-        return commands.index(before: i)
     }
     
     public struct Move : SDPathCommand {
@@ -453,26 +450,6 @@ extension SDPath : RangeReplaceableCollection {
         commands.append(PathCommand(x))
     }
     
-    public mutating func append<S : Sequence where S.Iterator.Element == SDPathCommand>(contentsOf newElements: S) {
-        cache = Cache()
-        commands.append(contentsOf: newElements.lazy.map { PathCommand($0) } as LazyMapSequence)
-    }
-    
-    public mutating func append<C : Collection where C.Iterator.Element == SDPathCommand>(contentsOf newElements: C) {
-        cache = Cache()
-        commands.append(contentsOf: newElements.lazy.map { PathCommand($0) } as LazyMapCollection)
-    }
-    
-    public mutating func removeLast() -> SDPathCommand {
-        cache = Cache()
-        return commands.removeLast().command
-    }
-    
-    public mutating func popLast() -> SDPathCommand? {
-        cache = Cache()
-        return commands.popLast()?.command
-    }
-    
     public mutating func reserveCapacity(_ minimumCapacity: Int) {
         commands.reserveCapacity(minimumCapacity)
     }
@@ -486,26 +463,6 @@ extension SDPath : RangeReplaceableCollection {
         cache = Cache()
         commands.replaceSubrange(subRange, with: newElements.lazy.map { PathCommand($0) } as LazyMapCollection)
     }
-    
-    public mutating func insert(_ newElement: SDPathCommand, atIndex i: Int) {
-        cache = Cache()
-        commands.insert(PathCommand(newElement), at: i)
-    }
-    
-    public mutating func insert<S : Collection where S.Iterator.Element == SDPathCommand>(contentsOf newElements: S, at i: Int) {
-        cache = Cache()
-        commands.insert(contentsOf: newElements.lazy.map { PathCommand($0) } as LazyMapCollection, at: i)
-    }
-    
-    public mutating func remove(at i: Int) -> SDPathCommand {
-        cache = Cache()
-        return commands.remove(at: i).command
-    }
-    
-    public mutating func removeSubrange(_ subRange: Range<Int>) {
-        cache = Cache()
-        commands.removeSubrange(subRange)
-    }
 }
 
 extension SDPath {
@@ -516,7 +473,7 @@ extension SDPath {
         public let last : Point
     }
     
-    func _apply(@noescape body: (PathCommand, ComputeState) throws -> Void) rethrows {
+    func _apply(body: @noescape (PathCommand, ComputeState) throws -> Void) rethrows {
         var start : Point = Point()
         var last : Point = Point()
         for item in self.commands {
@@ -541,7 +498,7 @@ extension SDPath {
         }
     }
     
-    public func apply(@noescape body: (SDPathCommand, ComputeState) throws -> Void) rethrows {
+    public func apply(body: @noescape (SDPathCommand, ComputeState) throws -> Void) rethrows {
         try self._apply { commands, state in
             switch commands {
             case let .move(point): try body(SDPath.Move(point), state)

@@ -120,7 +120,7 @@ extension OrderedSetNode {
     var array: [Element] {
         let _left = OptionOneCollection(left?.array).flatten()
         let _right = OptionOneCollection(right?.array).flatten()
-        return Array(_left.concat(CollectionOfOne(value)).concat(_right))
+        return Array(_left.concat(with: CollectionOfOne(value)).concat(_right))
     }
 }
 

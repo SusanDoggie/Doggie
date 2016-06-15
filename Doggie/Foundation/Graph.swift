@@ -34,9 +34,6 @@ public struct Graph<Node : Hashable, Link> : Collection {
         table = Dictionary()
     }
     
-    /// The number of links in the graph.
-    ///
-    /// - Complexity: O(`count of from nodes`).
     public var count: Int {
         return table.reduce(0) { $0 + $1.1.count }
     }
@@ -46,22 +43,10 @@ public struct Graph<Node : Hashable, Link> : Collection {
         return Iterator(_base: table.lazy.flatMap { from, to in to.lazy.map { (from, $0, $1) } }.makeIterator())
     }
     
-    /// The position of the first element in a non-empty dictionary.
-    ///
-    /// Identical to `endIndex` in an empty dictionary.
-    ///
-    /// - Complexity: Amortized O(1).
     public var startIndex: GraphIndex<Node, Link> {
         return GraphIndex(index1: table.startIndex, index2: table.first?.value.startIndex)
     }
     
-    /// The collection's "past the end" position.
-    ///
-    /// `endIndex` is not a valid argument to `subscript`, and is always
-    /// reachable from `startIndex` by zero or more applications of
-    /// `successor()`.
-    ///
-    /// - Complexity: Amortized O(1).
     public var endIndex: GraphIndex<Node, Link> {
         return GraphIndex(index1: table.endIndex, index2: nil)
     }
@@ -81,7 +66,6 @@ public struct Graph<Node : Hashable, Link> : Collection {
         }
     }
     
-    /// - Complexity: Amortized O(1).
     public subscript(idx: GraphIndex<Node, Link>) -> Iterator.Element {
         let (from, to_val) = table[idx.index1]
         let (to, val) = to_val[idx.index2!]
@@ -152,7 +136,6 @@ public struct Graph<Node : Hashable, Link> : Collection {
         return false
     }
     
-    /// `true` iff `count == 0`.
     public var isEmpty: Bool {
         return table.isEmpty
     }
@@ -275,9 +258,6 @@ public struct UndirectedGraph<Node : Hashable, Link> : Collection {
         graph = Graph()
     }
     
-    /// The number of links in the graph.
-    ///
-    /// - Complexity: O(`count of from nodes`).
     public var count: Int {
         return graph.count
     }
@@ -287,22 +267,10 @@ public struct UndirectedGraph<Node : Hashable, Link> : Collection {
         return Iterator(base: graph.makeIterator())
     }
     
-    /// The position of the first element in a non-empty dictionary.
-    ///
-    /// Identical to `endIndex` in an empty dictionary.
-    ///
-    /// - Complexity: Amortized O(1).
     public var startIndex: UndirectedGraphIndex<Node, Link> {
         return UndirectedGraphIndex(base: graph.startIndex)
     }
     
-    /// The collection's "past the end" position.
-    ///
-    /// `endIndex` is not a valid argument to `subscript`, and is always
-    /// reachable from `startIndex` by zero or more applications of
-    /// `successor()`.
-    ///
-    /// - Complexity: Amortized O(1).
     public var endIndex: UndirectedGraphIndex<Node, Link> {
         return UndirectedGraphIndex(base: graph.endIndex)
     }
@@ -311,7 +279,6 @@ public struct UndirectedGraph<Node : Hashable, Link> : Collection {
         return UndirectedGraphIndex(base: graph.index(after: i.base))
     }
     
-    /// - Complexity: Amortized O(1).
     public subscript(idx: UndirectedGraphIndex<Node, Link>) -> Iterator.Element {
         return graph[idx.base]
     }

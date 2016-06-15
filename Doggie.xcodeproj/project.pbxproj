@@ -177,6 +177,38 @@
 		0A64C6451D0BB851001F5E4E /* OrderedSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A64C6431D0BB851001F5E4E /* OrderedSet.swift */; };
 		0A64C6461D0BB851001F5E4E /* OrderedSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A64C6431D0BB851001F5E4E /* OrderedSet.swift */; };
 		0A64C6471D0BB851001F5E4E /* OrderedSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A64C6431D0BB851001F5E4E /* OrderedSet.swift */; };
+		0AADD11A1D10E6E100087247 /* OptionOneCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AADD1191D10E6E100087247 /* OptionOneCollection.swift */; };
+		0AADD11B1D10E6E100087247 /* OptionOneCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AADD1191D10E6E100087247 /* OptionOneCollection.swift */; };
+		0AADD11C1D10E6E100087247 /* OptionOneCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AADD1191D10E6E100087247 /* OptionOneCollection.swift */; };
+		0AADD11D1D10E6E100087247 /* OptionOneCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AADD1191D10E6E100087247 /* OptionOneCollection.swift */; };
+		0AADD11F1D10E75300087247 /* LazyScanSequence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AADD11E1D10E75300087247 /* LazyScanSequence.swift */; };
+		0AADD1201D10E75300087247 /* LazyScanSequence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AADD11E1D10E75300087247 /* LazyScanSequence.swift */; };
+		0AADD1211D10E75300087247 /* LazyScanSequence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AADD11E1D10E75300087247 /* LazyScanSequence.swift */; };
+		0AADD1221D10E75300087247 /* LazyScanSequence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AADD11E1D10E75300087247 /* LazyScanSequence.swift */; };
+		0AADD1241D10E77100087247 /* ConcatCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AADD1231D10E77100087247 /* ConcatCollection.swift */; };
+		0AADD1251D10E77100087247 /* ConcatCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AADD1231D10E77100087247 /* ConcatCollection.swift */; };
+		0AADD1261D10E77100087247 /* ConcatCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AADD1231D10E77100087247 /* ConcatCollection.swift */; };
+		0AADD1271D10E77100087247 /* ConcatCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AADD1231D10E77100087247 /* ConcatCollection.swift */; };
+		0AADD1291D10E79A00087247 /* LazyGatherCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AADD1281D10E79A00087247 /* LazyGatherCollection.swift */; };
+		0AADD12A1D10E79A00087247 /* LazyGatherCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AADD1281D10E79A00087247 /* LazyGatherCollection.swift */; };
+		0AADD12B1D10E79A00087247 /* LazyGatherCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AADD1281D10E79A00087247 /* LazyGatherCollection.swift */; };
+		0AADD12C1D10E79A00087247 /* LazyGatherCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AADD1281D10E79A00087247 /* LazyGatherCollection.swift */; };
+		0AADD12E1D10E7C100087247 /* LazySliceSequence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AADD12D1D10E7C100087247 /* LazySliceSequence.swift */; };
+		0AADD12F1D10E7C100087247 /* LazySliceSequence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AADD12D1D10E7C100087247 /* LazySliceSequence.swift */; };
+		0AADD1301D10E7C100087247 /* LazySliceSequence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AADD12D1D10E7C100087247 /* LazySliceSequence.swift */; };
+		0AADD1311D10E7C100087247 /* LazySliceSequence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AADD12D1D10E7C100087247 /* LazySliceSequence.swift */; };
+		0AADD1331D10E7E700087247 /* LazyChunkElementsCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AADD1321D10E7E700087247 /* LazyChunkElementsCollection.swift */; };
+		0AADD1341D10E7E700087247 /* LazyChunkElementsCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AADD1321D10E7E700087247 /* LazyChunkElementsCollection.swift */; };
+		0AADD1351D10E7E700087247 /* LazyChunkElementsCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AADD1321D10E7E700087247 /* LazyChunkElementsCollection.swift */; };
+		0AADD1361D10E7E700087247 /* LazyChunkElementsCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AADD1321D10E7E700087247 /* LazyChunkElementsCollection.swift */; };
+		0AADD1381D10E80A00087247 /* GroupElementsCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AADD1371D10E80A00087247 /* GroupElementsCollection.swift */; };
+		0AADD1391D10E80A00087247 /* GroupElementsCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AADD1371D10E80A00087247 /* GroupElementsCollection.swift */; };
+		0AADD13A1D10E80A00087247 /* GroupElementsCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AADD1371D10E80A00087247 /* GroupElementsCollection.swift */; };
+		0AADD13B1D10E80A00087247 /* GroupElementsCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AADD1371D10E80A00087247 /* GroupElementsCollection.swift */; };
+		0AADD13D1D10E82600087247 /* LazyUniqueSequence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AADD13C1D10E82600087247 /* LazyUniqueSequence.swift */; };
+		0AADD13E1D10E82600087247 /* LazyUniqueSequence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AADD13C1D10E82600087247 /* LazyUniqueSequence.swift */; };
+		0AADD13F1D10E82600087247 /* LazyUniqueSequence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AADD13C1D10E82600087247 /* LazyUniqueSequence.swift */; };
+		0AADD1401D10E82600087247 /* LazyUniqueSequence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AADD13C1D10E82600087247 /* LazyUniqueSequence.swift */; };
 		0ACE1DFC1C570F6A00106D1F /* Environment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ACE1DFB1C570F6A00106D1F /* Environment.swift */; };
 		0ACE1DFD1C570F6A00106D1F /* Environment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ACE1DFB1C570F6A00106D1F /* Environment.swift */; };
 		0ACE1DFE1C570F6A00106D1F /* Environment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ACE1DFB1C570F6A00106D1F /* Environment.swift */; };
@@ -189,10 +221,10 @@
 		0ACE1E111C57110D00106D1F /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ACE1E0F1C57110D00106D1F /* String.swift */; };
 		0ACE1E121C57110D00106D1F /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ACE1E0F1C57110D00106D1F /* String.swift */; };
 		0ACE1E131C57110D00106D1F /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ACE1E0F1C57110D00106D1F /* String.swift */; };
-		0ACE1E151C57114A00106D1F /* Functional.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ACE1E141C57114A00106D1F /* Functional.swift */; };
-		0ACE1E161C57114A00106D1F /* Functional.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ACE1E141C57114A00106D1F /* Functional.swift */; };
-		0ACE1E171C57114A00106D1F /* Functional.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ACE1E141C57114A00106D1F /* Functional.swift */; };
-		0ACE1E181C57114A00106D1F /* Functional.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ACE1E141C57114A00106D1F /* Functional.swift */; };
+		0ACE1E151C57114A00106D1F /* CollectionExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ACE1E141C57114A00106D1F /* CollectionExtension.swift */; };
+		0ACE1E161C57114A00106D1F /* CollectionExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ACE1E141C57114A00106D1F /* CollectionExtension.swift */; };
+		0ACE1E171C57114A00106D1F /* CollectionExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ACE1E141C57114A00106D1F /* CollectionExtension.swift */; };
+		0ACE1E181C57114A00106D1F /* CollectionExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ACE1E141C57114A00106D1F /* CollectionExtension.swift */; };
 		0ACE1E1A1C5711D300106D1F /* Graph.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ACE1E191C5711D300106D1F /* Graph.swift */; };
 		0ACE1E1B1C5711D300106D1F /* Graph.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ACE1E191C5711D300106D1F /* Graph.swift */; };
 		0ACE1E1C1C5711D300106D1F /* Graph.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ACE1E191C5711D300106D1F /* Graph.swift */; };
@@ -269,10 +301,18 @@
 		08BFF9B91B0715ED00EC88CB /* FourierTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FourierTest.swift; sourceTree = "<group>"; };
 		0A3F4DC21CAE0C7400699FF7 /* Atomic.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Atomic.swift; sourceTree = "<group>"; };
 		0A64C6431D0BB851001F5E4E /* OrderedSet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OrderedSet.swift; sourceTree = "<group>"; };
+		0AADD1191D10E6E100087247 /* OptionOneCollection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OptionOneCollection.swift; sourceTree = "<group>"; };
+		0AADD11E1D10E75300087247 /* LazyScanSequence.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LazyScanSequence.swift; sourceTree = "<group>"; };
+		0AADD1231D10E77100087247 /* ConcatCollection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConcatCollection.swift; sourceTree = "<group>"; };
+		0AADD1281D10E79A00087247 /* LazyGatherCollection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LazyGatherCollection.swift; sourceTree = "<group>"; };
+		0AADD12D1D10E7C100087247 /* LazySliceSequence.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LazySliceSequence.swift; sourceTree = "<group>"; };
+		0AADD1321D10E7E700087247 /* LazyChunkElementsCollection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LazyChunkElementsCollection.swift; sourceTree = "<group>"; };
+		0AADD1371D10E80A00087247 /* GroupElementsCollection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupElementsCollection.swift; sourceTree = "<group>"; };
+		0AADD13C1D10E82600087247 /* LazyUniqueSequence.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LazyUniqueSequence.swift; sourceTree = "<group>"; };
 		0ACE1DFB1C570F6A00106D1F /* Environment.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Environment.swift; sourceTree = "<group>"; };
 		0ACE1E051C57104300106D1F /* ParallelCollectionType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ParallelCollectionType.swift; sourceTree = "<group>"; };
 		0ACE1E0F1C57110D00106D1F /* String.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = String.swift; sourceTree = "<group>"; };
-		0ACE1E141C57114A00106D1F /* Functional.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Functional.swift; sourceTree = "<group>"; };
+		0ACE1E141C57114A00106D1F /* CollectionExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CollectionExtension.swift; sourceTree = "<group>"; };
 		0ACE1E191C5711D300106D1F /* Graph.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Graph.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -484,16 +524,32 @@
 			path = CommonTest;
 			sourceTree = "<group>";
 		};
+		0AADD1131D10E65900087247 /* Functional */ = {
+			isa = PBXGroup;
+			children = (
+				0ACE1E191C5711D300106D1F /* Graph.swift */,
+				0ACE1E051C57104300106D1F /* ParallelCollectionType.swift */,
+				0ACE1E141C57114A00106D1F /* CollectionExtension.swift */,
+				0AADD13C1D10E82600087247 /* LazyUniqueSequence.swift */,
+				0AADD1371D10E80A00087247 /* GroupElementsCollection.swift */,
+				0AADD1321D10E7E700087247 /* LazyChunkElementsCollection.swift */,
+				0AADD12D1D10E7C100087247 /* LazySliceSequence.swift */,
+				0AADD1281D10E79A00087247 /* LazyGatherCollection.swift */,
+				0AADD11E1D10E75300087247 /* LazyScanSequence.swift */,
+				0AADD1191D10E6E100087247 /* OptionOneCollection.swift */,
+				0AADD1231D10E77100087247 /* ConcatCollection.swift */,
+			);
+			name = Functional;
+			sourceTree = "<group>";
+		};
 		0ACE1DFA1C570F4F00106D1F /* Foundation */ = {
 			isa = PBXGroup;
 			children = (
 				0A3F4DC21CAE0C7400699FF7 /* Atomic.swift */,
 				0ACE1DFB1C570F6A00106D1F /* Environment.swift */,
-				0ACE1E141C57114A00106D1F /* Functional.swift */,
-				0ACE1E191C5711D300106D1F /* Graph.swift */,
+				0AADD1131D10E65900087247 /* Functional */,
 				0A64C6431D0BB851001F5E4E /* OrderedSet.swift */,
 				085EB5541CA96D9300EBC12C /* Integer.swift */,
-				0ACE1E051C57104300106D1F /* ParallelCollectionType.swift */,
 				0ACE1E0F1C57110D00106D1F /* String.swift */,
 				088C0C3C1CB227F5003B1BCE /* Thread.swift */,
 				0858DA781C0550B7007FA426 /* UUID.swift */,
@@ -682,6 +738,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0AADD1381D10E80A00087247 /* GroupElementsCollection.swift in Sources */,
+				0AADD1331D10E7E700087247 /* LazyChunkElementsCollection.swift in Sources */,
 				0ACE1E101C57110D00106D1F /* String.swift in Sources */,
 				081322471C11D3600081B2B9 /* Regex.swift in Sources */,
 				081322281C11D3600081B2B9 /* Move.swift in Sources */,
@@ -698,17 +756,21 @@
 				081322381C11D3600081B2B9 /* Fourier.swift in Sources */,
 				0813223A1C11D3600081B2B9 /* JsonParser.swift in Sources */,
 				0813223E1C11D3600081B2B9 /* Matrix.swift in Sources */,
+				0AADD11F1D10E75300087247 /* LazyScanSequence.swift in Sources */,
 				08863CC81C22756F004C27E5 /* SDObserver.swift in Sources */,
 				081322251C11D3600081B2B9 /* CooleyTukey.swift in Sources */,
 				081322241C11D3600081B2B9 /* Conversion.swift in Sources */,
 				0813223D1C11D3600081B2B9 /* Maths.swift in Sources */,
 				081322501C11D3600081B2B9 /* SDShape.swift in Sources */,
-				0ACE1E151C57114A00106D1F /* Functional.swift in Sources */,
+				0AADD1291D10E79A00087247 /* LazyGatherCollection.swift in Sources */,
+				0ACE1E151C57114A00106D1F /* CollectionExtension.swift in Sources */,
 				08AA03141C219B9900609109 /* SDSink.swift in Sources */,
 				081322391C11D3600081B2B9 /* Json.swift in Sources */,
 				0813223F1C11D3600081B2B9 /* Point.swift in Sources */,
 				081322431C11D3600081B2B9 /* Rect.swift in Sources */,
+				0AADD11A1D10E6E100087247 /* OptionOneCollection.swift in Sources */,
 				0A64C6441D0BB851001F5E4E /* OrderedSet.swift in Sources */,
+				0AADD12E1D10E7C100087247 /* LazySliceSequence.swift in Sources */,
 				081322221C11D3600081B2B9 /* CircularConvolve.swift in Sources */,
 				0813222B1C11D3600081B2B9 /* Transpose.swift in Sources */,
 				0813224B1C11D3600081B2B9 /* SDGraphic.swift in Sources */,
@@ -716,9 +778,11 @@
 				081322421C11D3600081B2B9 /* Random.swift in Sources */,
 				081322511C11D3600081B2B9 /* Serialization.swift in Sources */,
 				081322441C11D3600081B2B9 /* SDTransform.swift in Sources */,
+				0AADD1241D10E77100087247 /* ConcatCollection.swift in Sources */,
 				0813224C1C11D3600081B2B9 /* SDPath.swift in Sources */,
 				085EB5551CA96D9300EBC12C /* Integer.swift in Sources */,
 				088C0C3D1CB227F5003B1BCE /* Thread.swift in Sources */,
+				0AADD13D1D10E82600087247 /* LazyUniqueSequence.swift in Sources */,
 				0ACE1E1A1C5711D300106D1F /* Graph.swift in Sources */,
 				081322531C11D3600081B2B9 /* UUID.swift in Sources */,
 				0A3F4DC31CAE0C7400699FF7 /* Atomic.swift in Sources */,
@@ -747,9 +811,12 @@
 				0813220D1C11D3600081B2B9 /* Prime.swift in Sources */,
 				0ACE1E1B1C5711D300106D1F /* Graph.swift in Sources */,
 				081322081C11D3600081B2B9 /* Geometry.swift in Sources */,
+				0AADD12F1D10E7C100087247 /* LazySliceSequence.swift in Sources */,
 				0813221D1C11D3600081B2B9 /* Serialization.swift in Sources */,
 				081321ED1C11D3600081B2B9 /* Arithmetic.swift in Sources */,
 				081322101C11D3600081B2B9 /* SDTransform.swift in Sources */,
+				0AADD1201D10E75300087247 /* LazyScanSequence.swift in Sources */,
+				0AADD12A1D10E79A00087247 /* LazyGatherCollection.swift in Sources */,
 				0ACE1DFD1C570F6A00106D1F /* Environment.swift in Sources */,
 				0813220E1C11D3600081B2B9 /* Random.swift in Sources */,
 				085EB5561CA96D9300EBC12C /* Integer.swift in Sources */,
@@ -759,11 +826,15 @@
 				081322131C11D3600081B2B9 /* Regex.swift in Sources */,
 				081321F21C11D3600081B2B9 /* DiscreteConvolve.swift in Sources */,
 				081322151C11D3600081B2B9 /* SDAtomicNode.swift in Sources */,
+				0AADD1391D10E80A00087247 /* GroupElementsCollection.swift in Sources */,
 				0A64C6451D0BB851001F5E4E /* OrderedSet.swift in Sources */,
 				088C0C401CB22842003B1BCE /* Thread.swift in Sources */,
 				0813221C1C11D3600081B2B9 /* SDShape.swift in Sources */,
 				081322181C11D3600081B2B9 /* SDPath.swift in Sources */,
+				0AADD1251D10E77100087247 /* ConcatCollection.swift in Sources */,
+				0AADD11B1D10E6E100087247 /* OptionOneCollection.swift in Sources */,
 				081322041C11D3600081B2B9 /* Fourier.swift in Sources */,
+				0AADD1341D10E7E700087247 /* LazyChunkElementsCollection.swift in Sources */,
 				08863CC91C22756F004C27E5 /* SDObserver.swift in Sources */,
 				081322191C11D3600081B2B9 /* SDPathCoder.swift in Sources */,
 				081321EE1C11D3600081B2B9 /* CircularConvolve.swift in Sources */,
@@ -778,9 +849,10 @@
 				0813221B1C11D3600081B2B9 /* SDRectangle.swift in Sources */,
 				0813220C1C11D3600081B2B9 /* Polynomial.swift in Sources */,
 				081322171C11D3600081B2B9 /* SDGraphic.swift in Sources */,
+				0AADD13E1D10E82600087247 /* LazyUniqueSequence.swift in Sources */,
 				081321F71C11D3600081B2B9 /* Transpose.swift in Sources */,
 				0813220F1C11D3600081B2B9 /* Rect.swift in Sources */,
-				0ACE1E161C57114A00106D1F /* Functional.swift in Sources */,
+				0ACE1E161C57114A00106D1F /* CollectionExtension.swift in Sources */,
 				081322071C11D3600081B2B9 /* Complex.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -789,6 +861,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0AADD13A1D10E80A00087247 /* GroupElementsCollection.swift in Sources */,
+				0AADD1351D10E7E700087247 /* LazyChunkElementsCollection.swift in Sources */,
 				0ACE1E121C57110D00106D1F /* String.swift in Sources */,
 				0858DB371C0550B7007FA426 /* SDShape.swift in Sources */,
 				0858DB331C0550B7007FA426 /* SDRectangle.swift in Sources */,
@@ -805,17 +879,21 @@
 				0858DAAB1C0550B7007FA426 /* Color.swift in Sources */,
 				0858DADB1C0550B7007FA426 /* Json.swift in Sources */,
 				08863CCA1C22756F004C27E5 /* SDObserver.swift in Sources */,
+				0AADD1211D10E75300087247 /* LazyScanSequence.swift in Sources */,
 				0858DA931C0550B7007FA426 /* DiscreteConvolve.swift in Sources */,
 				0858DA8F1C0550B7007FA426 /* CooleyTukey.swift in Sources */,
 				0858DA8B1C0550B7007FA426 /* Conversion.swift in Sources */,
 				0858DB231C0550B7007FA426 /* SDGraphic.swift in Sources */,
-				0ACE1E171C57114A00106D1F /* Functional.swift in Sources */,
+				0ACE1E171C57114A00106D1F /* CollectionExtension.swift in Sources */,
+				0AADD12B1D10E79A00087247 /* LazyGatherCollection.swift in Sources */,
 				08AA03161C219B9900609109 /* SDSink.swift in Sources */,
 				0858DAF71C0550B7007FA426 /* Polynomial.swift in Sources */,
 				0858DADF1C0550B7007FA426 /* JsonParser.swift in Sources */,
 				0858DA831C0550B7007FA426 /* CircularConvolve.swift in Sources */,
 				0858DAFB1C0550B7007FA426 /* Prime.swift in Sources */,
+				0AADD11C1D10E6E100087247 /* OptionOneCollection.swift in Sources */,
 				0A64C6461D0BB851001F5E4E /* OrderedSet.swift in Sources */,
+				0AADD1301D10E7C100087247 /* LazySliceSequence.swift in Sources */,
 				0858DAFF1C0550B7007FA426 /* Random.swift in Sources */,
 				0858DB431C0550B7007FA426 /* UUID.swift in Sources */,
 				0858DB2B1C0550B7007FA426 /* SDPathCoder.swift in Sources */,
@@ -823,9 +901,11 @@
 				0858DAA71C0550B7007FA426 /* Transpose.swift in Sources */,
 				0858DAA31C0550B7007FA426 /* SafeFunction.swift in Sources */,
 				0858DB271C0550B7007FA426 /* SDPath.swift in Sources */,
+				0AADD1261D10E77100087247 /* ConcatCollection.swift in Sources */,
 				0858DB171C0550B7007FA426 /* SDAspects.swift in Sources */,
 				0858DB031C0550B7007FA426 /* Rect.swift in Sources */,
 				085EB5571CA96D9300EBC12C /* Integer.swift in Sources */,
+				0AADD13F1D10E82600087247 /* LazyUniqueSequence.swift in Sources */,
 				088C0C3F1CB22842003B1BCE /* Thread.swift in Sources */,
 				0ACE1E1C1C5711D300106D1F /* Graph.swift in Sources */,
 				0A3F4DC51CAE0C7400699FF7 /* Atomic.swift in Sources */,
@@ -854,9 +934,12 @@
 				0858DB491C055172007FA426 /* Fourier.swift in Sources */,
 				0858DB001C0550B7007FA426 /* Random.swift in Sources */,
 				0858DB081C0550B7007FA426 /* SDTransform.swift in Sources */,
+				0AADD1311D10E7C100087247 /* LazySliceSequence.swift in Sources */,
 				0ACE1DFF1C570F6A00106D1F /* Environment.swift in Sources */,
 				0858DB341C0550B7007FA426 /* SDRectangle.swift in Sources */,
 				085EB5581CA96D9300EBC12C /* Integer.swift in Sources */,
+				0AADD1221D10E75300087247 /* LazyScanSequence.swift in Sources */,
+				0AADD12C1D10E79A00087247 /* LazyGatherCollection.swift in Sources */,
 				0858DA841C0550B7007FA426 /* CircularConvolve.swift in Sources */,
 				0858DA8C1C0550B7007FA426 /* Conversion.swift in Sources */,
 				0858DAAC1C0550B7007FA426 /* Color.swift in Sources */,
@@ -866,11 +949,15 @@
 				0858DADC1C0550B7007FA426 /* Json.swift in Sources */,
 				088C0C3E1CB22842003B1BCE /* Thread.swift in Sources */,
 				0858DAE81C0550B7007FA426 /* Geometry.swift in Sources */,
+				0AADD13B1D10E80A00087247 /* GroupElementsCollection.swift in Sources */,
 				0A64C6471D0BB851001F5E4E /* OrderedSet.swift in Sources */,
 				08863CCB1C22756F004C27E5 /* SDObserver.swift in Sources */,
 				0858DAFC1C0550B7007FA426 /* Prime.swift in Sources */,
 				0858DB281C0550B7007FA426 /* SDPath.swift in Sources */,
+				0AADD1271D10E77100087247 /* ConcatCollection.swift in Sources */,
+				0AADD11D1D10E6E100087247 /* OptionOneCollection.swift in Sources */,
 				0858DAA41C0550B7007FA426 /* SafeFunction.swift in Sources */,
+				0AADD1361D10E7E700087247 /* LazyChunkElementsCollection.swift in Sources */,
 				0858DB181C0550B7007FA426 /* SDAspects.swift in Sources */,
 				0858DAE41C0550B7007FA426 /* Complex.swift in Sources */,
 				0ACE1E131C57110D00106D1F /* String.swift in Sources */,
@@ -885,9 +972,10 @@
 				0858DAF01C0550B7007FA426 /* Matrix.swift in Sources */,
 				0858DB0C1C0550B7007FA426 /* Vector.swift in Sources */,
 				0858DAF41C0550B7007FA426 /* Point.swift in Sources */,
+				0AADD1401D10E82600087247 /* LazyUniqueSequence.swift in Sources */,
 				0858DAA81C0550B7007FA426 /* Transpose.swift in Sources */,
 				0858DAE01C0550B7007FA426 /* JsonParser.swift in Sources */,
-				0ACE1E181C57114A00106D1F /* Functional.swift in Sources */,
+				0ACE1E181C57114A00106D1F /* CollectionExtension.swift in Sources */,
 				0858DB3C1C0550B7007FA426 /* Serialization.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
