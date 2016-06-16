@@ -34,23 +34,7 @@ public func Move<T>(_ count: Int, _ input: UnsafePointer<T>, _ in_stride: Int, _
         output += out_stride
     }
 }
-public func Move(_ count: Int, _ real: UnsafePointer<Float>, _ imag: UnsafePointer<Float>, _ in_stride: Int, _ _real: UnsafeMutablePointer<Float>, _ _imag: UnsafeMutablePointer<Float>, _ out_stride: Int) {
-    
-    var real = real
-    var imag = imag
-    var _real = _real
-    var _imag = _imag
-    
-    for _ in 0..<count {
-        _real.pointee = real.pointee
-        _imag.pointee = imag.pointee
-        real += in_stride
-        imag += in_stride
-        _real += out_stride
-        _imag += out_stride
-    }
-}
-public func Move(_ count: Int, _ real: UnsafePointer<Double>, _ imag: UnsafePointer<Double>, _ in_stride: Int, _ _real: UnsafeMutablePointer<Double>, _ _imag: UnsafeMutablePointer<Double>, _ out_stride: Int) {
+public func Move<T: FloatingPoint>(_ count: Int, _ real: UnsafePointer<T>, _ imag: UnsafePointer<T>, _ in_stride: Int, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var real = real
     var imag = imag
@@ -78,23 +62,7 @@ public func Swap<T>(_ count: Int, _ left: UnsafeMutablePointer<T>, _ l_stride: I
         right += r_stride
     }
 }
-public func Swap(_ count: Int, _ lreal: UnsafeMutablePointer<Float>, _ limag: UnsafeMutablePointer<Float>, _ l_stride: Int, _ rreal: UnsafeMutablePointer<Float>, _ rimag: UnsafeMutablePointer<Float>, _ r_stride: Int) {
-    
-    var lreal = lreal
-    var limag = limag
-    var rreal = rreal
-    var rimag = rimag
-    
-    for _ in 0..<count {
-        (lreal.pointee, rreal.pointee) = (rreal.pointee, lreal.pointee)
-        (limag.pointee, rimag.pointee) = (rimag.pointee, limag.pointee)
-        lreal += l_stride
-        limag += l_stride
-        rreal += r_stride
-        rimag += r_stride
-    }
-}
-public func Swap(_ count: Int, _ lreal: UnsafeMutablePointer<Double>, _ limag: UnsafeMutablePointer<Double>, _ l_stride: Int, _ rreal: UnsafeMutablePointer<Double>, _ rimag: UnsafeMutablePointer<Double>, _ r_stride: Int) {
+public func Swap<T: FloatingPoint>(_ count: Int, _ lreal: UnsafeMutablePointer<T>, _ limag: UnsafeMutablePointer<T>, _ l_stride: Int, _ rreal: UnsafeMutablePointer<T>, _ rimag: UnsafeMutablePointer<T>, _ r_stride: Int) {
     
     var lreal = lreal
     var limag = limag

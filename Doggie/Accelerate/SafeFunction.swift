@@ -90,124 +90,63 @@ public func mod<T: Integer>(_ lhs: [T], _ rhs: [T]) -> [T] {
     return result
 }
 
-public func add(_ lhs: [Float], _ rhs: [Float]) -> [Float] {
+public func add<T: FloatingPoint>(_ lhs: [T], _ rhs: [T]) -> [T] {
     var result = lhs
     assert(lhs.count == rhs.count, "mismatch count of inputs.")
     Add(lhs.count, lhs, 1, rhs, 1, &result, 1)
     return result
 }
 
-public func sub(_ lhs: [Float], _ rhs: [Float]) -> [Float] {
+public func sub<T: FloatingPoint>(_ lhs: [T], _ rhs: [T]) -> [T] {
     var result = lhs
     assert(lhs.count == rhs.count, "mismatch count of inputs.")
     Sub(lhs.count, lhs, 1, rhs, 1, &result, 1)
     return result
 }
 
-public func mul(_ lhs: [Float], _ rhs: [Float]) -> [Float] {
+public func mul<T: FloatingPoint>(_ lhs: [T], _ rhs: [T]) -> [T] {
     var result = lhs
     assert(lhs.count == rhs.count, "mismatch count of inputs.")
     Mul(lhs.count, lhs, 1, rhs, 1, &result, 1)
     return result
 }
 
-public func div(_ lhs: [Float], _ rhs: [Float]) -> [Float] {
+public func div<T: FloatingPoint>(_ lhs: [T], _ rhs: [T]) -> [T] {
     var result = lhs
     assert(lhs.count == rhs.count, "mismatch count of inputs.")
     Div(lhs.count, lhs, 1, rhs, 1, &result, 1)
     return result
 }
 
-public func mod(_ lhs: [Float], _ rhs: [Float]) -> [Float] {
+public func mod<T: FloatingPoint>(_ lhs: [T], _ rhs: [T]) -> [T] {
     var result = lhs
     assert(lhs.count == rhs.count, "mismatch count of inputs.")
     Mod(lhs.count, lhs, 1, rhs, 1, &result, 1)
     return result
 }
 
-public func mulAdd(_ a: [Float], _ b: [Float], _ c: [Float]) -> [Float] {
+public func mulAdd<T: FloatingPoint>(_ a: [T], _ b: [T], _ c: [T]) -> [T] {
     var result = a
     assert(a.count == b.count && a.count == c.count, "mismatch count of inputs.")
     MulAdd(a.count, a, 1, b, 1, c, 1, &result, 1)
     return result
 }
 
-public func mulSub(_ a: [Float], _ b: [Float], _ c: [Float]) -> [Float] {
+public func mulSub<T: FloatingPoint>(_ a: [T], _ b: [T], _ c: [T]) -> [T] {
     var result = a
     assert(a.count == b.count && a.count == c.count, "mismatch count of inputs.")
     MulSub(a.count, a, 1, b, 1, c, 1, &result, 1)
     return result
 }
 
-public func subMul(_ a: [Float], _ b: [Float], _ c: [Float]) -> [Float] {
+public func subMul<T: FloatingPoint>(_ a: [T], _ b: [T], _ c: [T]) -> [T] {
     var result = a
     assert(a.count == b.count && a.count == c.count, "mismatch count of inputs.")
     SubMul(a.count, a, 1, b, 1, c, 1, &result, 1)
     return result
 }
 
-public func add(_ lhs: [Double], _ rhs: [Double]) -> [Double] {
-    var result = lhs
-    assert(lhs.count == rhs.count, "mismatch count of inputs.")
-    Add(lhs.count, lhs, 1, rhs, 1, &result, 1)
-    return result
-}
-
-public func sub(_ lhs: [Double], _ rhs: [Double]) -> [Double] {
-    var result = lhs
-    assert(lhs.count == rhs.count, "mismatch count of inputs.")
-    Sub(lhs.count, lhs, 1, rhs, 1, &result, 1)
-    return result
-}
-
-public func mul(_ lhs: [Double], _ rhs: [Double]) -> [Double] {
-    var result = lhs
-    assert(lhs.count == rhs.count, "mismatch count of inputs.")
-    Mul(lhs.count, lhs, 1, rhs, 1, &result, 1)
-    return result
-}
-
-public func div(_ lhs: [Double], _ rhs: [Double]) -> [Double] {
-    var result = lhs
-    assert(lhs.count == rhs.count, "mismatch count of inputs.")
-    Div(lhs.count, lhs, 1, rhs, 1, &result, 1)
-    return result
-}
-
-public func mod(_ lhs: [Double], _ rhs: [Double]) -> [Double] {
-    var result = lhs
-    assert(lhs.count == rhs.count, "mismatch count of inputs.")
-    Mod(lhs.count, lhs, 1, rhs, 1, &result, 1)
-    return result
-}
-
-public func mulAdd(_ a: [Double], _ b: [Double], _ c: [Double]) -> [Double] {
-    var result = a
-    assert(a.count == b.count && a.count == c.count, "mismatch count of inputs.")
-    MulAdd(a.count, a, 1, b, 1, c, 1, &result, 1)
-    return result
-}
-
-public func mulSub(_ a: [Double], _ b: [Double], _ c: [Double]) -> [Double] {
-    var result = a
-    assert(a.count == b.count && a.count == c.count, "mismatch count of inputs.")
-    MulSub(a.count, a, 1, b, 1, c, 1, &result, 1)
-    return result
-}
-
-public func subMul(_ a: [Double], _ b: [Double], _ c: [Double]) -> [Double] {
-    var result = a
-    assert(a.count == b.count && a.count == c.count, "mismatch count of inputs.")
-    SubMul(a.count, a, 1, b, 1, c, 1, &result, 1)
-    return result
-}
-
-public func dot(_ a: [Float], _ b: [Float]) -> Float {
-    assert(a.count == b.count, "mismatch count of inputs.")
-    return Dot(a.count, a, 1, b, 1)
-}
-
-public func dot(_ a: [Double], _ b: [Double]) -> Double {
+public func dot<T: FloatingPoint>(_ a: [T], _ b: [T]) -> T {
     assert(a.count == b.count, "mismatch count of inputs.")
     return Dot(a.count, a, 1, b, 1)
 }
@@ -275,14 +214,7 @@ public func transpose<T>(_ row: Int, _ column: Int, _ data: [T]) -> [T] {
     return result
 }
 
-public func MatrixElimination(_ row: Int, _ matrix: inout [Float]) -> Bool {
-    let column = matrix.count / row
-    assert(matrix.count % row == 0, "count of matrix is not multiples of row.")
-    assert(column > row, "count of column of matrix is less than or equal to row.")
-    return MatrixElimination(row, column, &matrix, 1, 1)
-}
-
-public func MatrixElimination(_ row: Int, _ matrix: inout [Double]) -> Bool {
+public func MatrixElimination<T: FloatingPoint>(_ row: Int, _ matrix: inout [T]) -> Bool {
     let column = matrix.count / row
     assert(matrix.count % row == 0, "count of matrix is not multiples of row.")
     assert(column > row, "count of column of matrix is less than or equal to row.")
