@@ -532,41 +532,27 @@ public extension Comparable {
     }
 }
 
-public extension Float32 {
+extension BinaryFloatingPoint {
     
-    static func random(includeOne: Bool = false) -> Float32 {
-        if includeOne {
-            return unsafeBitCast((0..<0x800000).random()! + 0x3F800000 as UInt32, to: Float32.self) - 1
-        }
-        return unsafeBitCast((0..<0x7FFFFF).random()! | 0x3F800000 as UInt32, to: Float32.self) - 1
+    static func random(includeOne: Bool = false) -> Self {
+        let significandBitCount = Self.significandBitCount.toIntMax()
+        let exponentBitPattern = numericCast((1 as Self).exponentBitPattern) << significandBitCount
+        let maxsignificand = 1 << significandBitCount
+        let rand = includeOne ? (0...maxsignificand).random()! : (0..<maxsignificand).random()!
+        let pattern = exponentBitPattern + rand
+        let exponent = pattern >> significandBitCount
+        let significand = pattern & (maxsignificand - 1)
+        return Self(sign: .plus, exponentBitPattern: numericCast(exponent), significandBitPattern: numericCast(significand)) - 1
     }
 }
 
-public extension Float64 {
-    
-    static func random(includeOne: Bool = false) -> Float64 {
-        if includeOne {
-            return unsafeBitCast((0..<0x10000000000000).random()! + 0x3FF0000000000000 as UInt64, to: Float64.self) - 1
-        }
-        return unsafeBitCast((0..<0xFFFFFFFFFFFFF).random()! | 0x3FF0000000000000 as UInt64, to: Float64.self) - 1
-    }
-}
-
-public func random(_ range: ClosedRange<Float>) -> Float {
+public func random<T : BinaryFloatingPoint>(_ range: ClosedRange<T>) -> T {
     let diff = range.upperBound - range.lowerBound
-    return (Float.random(includeOne: true) * diff) + range.lowerBound
+    return (T.random(includeOne: true) * diff) + range.lowerBound
 }
-public func random(_ range: ClosedRange<Double>) -> Double {
+public func random<T : BinaryFloatingPoint>(_ range: Range<T>) -> T {
     let diff = range.upperBound - range.lowerBound
-    return (Double.random(includeOne: true) * diff) + range.lowerBound
-}
-public func random(_ range: Range<Float>) -> Float {
-    let diff = range.upperBound - range.lowerBound
-    return (Float.random() * diff) + range.lowerBound
-}
-public func random(_ range: Range<Double>) -> Double {
-    let diff = range.upperBound - range.lowerBound
-    return (Double.random() * diff) + range.lowerBound
+    return (T.random() * diff) + range.lowerBound
 }
 
 public extension RandomAccessCollection {
