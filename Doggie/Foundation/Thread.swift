@@ -247,7 +247,7 @@ extension SDConditionLock {
     }
     @discardableResult
     public func synchronized<R>(where predicate: @autoclosure () -> Bool, block: @noescape () throws -> R) rethrows -> R {
-        self.lock(predicate)
+        self.lock(where: predicate)
         defer { self.unlock() }
         return try block()
     }
@@ -469,7 +469,7 @@ extension SDTask {
     
     /// Run `block` after `self` is completed with specific queue.
     public final func then<R>(queue: DispatchQueue, block: (Result) -> R) -> SDTask<R> {
-        return self._apply(queue: queue, suspend: nil, block: block)
+        return self._apply(queue, suspend: nil, block: block)
     }
 }
 
@@ -482,7 +482,7 @@ extension SDTask {
     
     /// Suspend if `result` satisfies `predicate` with specific queue.
     public final func suspend(queue: DispatchQueue, predicate: (Result) -> Bool) -> SDTask<Result> {
-        return self._apply(queue: queue, suspend: predicate) { $0 }
+        return self._apply(queue, suspend: predicate) { $0 }
     }
 }
 

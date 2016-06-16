@@ -43,7 +43,6 @@
 		0813221B1C11D3600081B2B9 /* SDRectangle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA741C0550B7007FA426 /* SDRectangle.swift */; };
 		0813221C1C11D3600081B2B9 /* SDShape.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA751C0550B7007FA426 /* SDShape.swift */; };
 		0813221D1C11D3600081B2B9 /* Serialization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA761C0550B7007FA426 /* Serialization.swift */; };
-		0813221F1C11D3600081B2B9 /* UUID.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA781C0550B7007FA426 /* UUID.swift */; };
 		081322211C11D3600081B2B9 /* Arithmetic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA431C0550B7007FA426 /* Arithmetic.swift */; };
 		081322221C11D3600081B2B9 /* CircularConvolve.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA441C0550B7007FA426 /* CircularConvolve.swift */; };
 		081322231C11D3600081B2B9 /* ComplexConversion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA451C0550B7007FA426 /* ComplexConversion.swift */; };
@@ -78,7 +77,6 @@
 		0813224F1C11D3600081B2B9 /* SDRectangle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA741C0550B7007FA426 /* SDRectangle.swift */; };
 		081322501C11D3600081B2B9 /* SDShape.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA751C0550B7007FA426 /* SDShape.swift */; };
 		081322511C11D3600081B2B9 /* Serialization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA761C0550B7007FA426 /* Serialization.swift */; };
-		081322531C11D3600081B2B9 /* UUID.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA781C0550B7007FA426 /* UUID.swift */; };
 		082516261C51C60A00F8F9B0 /* Doggie_iOS.h in Headers */ = {isa = PBXBuildFile; fileRef = 087FE59B1A372D5B005A2E9E /* Doggie_iOS.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		0858DA7F1C0550B7007FA426 /* Arithmetic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA431C0550B7007FA426 /* Arithmetic.swift */; };
 		0858DA801C0550B7007FA426 /* Arithmetic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA431C0550B7007FA426 /* Arithmetic.swift */; };
@@ -146,8 +144,6 @@
 		0858DB381C0550B7007FA426 /* SDShape.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA751C0550B7007FA426 /* SDShape.swift */; };
 		0858DB3B1C0550B7007FA426 /* Serialization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA761C0550B7007FA426 /* Serialization.swift */; };
 		0858DB3C1C0550B7007FA426 /* Serialization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA761C0550B7007FA426 /* Serialization.swift */; };
-		0858DB431C0550B7007FA426 /* UUID.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA781C0550B7007FA426 /* UUID.swift */; };
-		0858DB441C0550B7007FA426 /* UUID.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA781C0550B7007FA426 /* UUID.swift */; };
 		0858DB481C055172007FA426 /* Fourier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DB451C055172007FA426 /* Fourier.swift */; };
 		0858DB491C055172007FA426 /* Fourier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DB451C055172007FA426 /* Fourier.swift */; };
 		085EB5551CA96D9300EBC12C /* Integer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 085EB5541CA96D9300EBC12C /* Integer.swift */; };
@@ -284,7 +280,6 @@
 		0858DA741C0550B7007FA426 /* SDRectangle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SDRectangle.swift; sourceTree = "<group>"; };
 		0858DA751C0550B7007FA426 /* SDShape.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SDShape.swift; sourceTree = "<group>"; };
 		0858DA761C0550B7007FA426 /* Serialization.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Serialization.swift; sourceTree = "<group>"; };
-		0858DA781C0550B7007FA426 /* UUID.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UUID.swift; sourceTree = "<group>"; };
 		0858DB451C055172007FA426 /* Fourier.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Fourier.swift; sourceTree = "<group>"; };
 		085EB5541CA96D9300EBC12C /* Integer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Integer.swift; sourceTree = "<group>"; };
 		087FE59A1A372D5B005A2E9E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -552,7 +547,6 @@
 				085EB5541CA96D9300EBC12C /* Integer.swift */,
 				0ACE1E0F1C57110D00106D1F /* String.swift */,
 				088C0C3C1CB227F5003B1BCE /* Thread.swift */,
-				0858DA781C0550B7007FA426 /* UUID.swift */,
 			);
 			path = Foundation;
 			sourceTree = "<group>";
@@ -784,7 +778,6 @@
 				088C0C3D1CB227F5003B1BCE /* Thread.swift in Sources */,
 				0AADD13D1D10E82600087247 /* LazyUniqueSequence.swift in Sources */,
 				0ACE1E1A1C5711D300106D1F /* Graph.swift in Sources */,
-				081322531C11D3600081B2B9 /* UUID.swift in Sources */,
 				0A3F4DC31CAE0C7400699FF7 /* Atomic.swift in Sources */,
 				0813223B1C11D3600081B2B9 /* Complex.swift in Sources */,
 				081322481C11D3600081B2B9 /* SDAspects.swift in Sources */,
@@ -820,7 +813,6 @@
 				0ACE1DFD1C570F6A00106D1F /* Environment.swift in Sources */,
 				0813220E1C11D3600081B2B9 /* Random.swift in Sources */,
 				085EB5561CA96D9300EBC12C /* Integer.swift in Sources */,
-				0813221F1C11D3600081B2B9 /* UUID.swift in Sources */,
 				081321EB1C11D2C60081B2B9 /* FourierTest.swift in Sources */,
 				081322051C11D3600081B2B9 /* Json.swift in Sources */,
 				081322131C11D3600081B2B9 /* Regex.swift in Sources */,
@@ -895,7 +887,6 @@
 				0A64C6461D0BB851001F5E4E /* OrderedSet.swift in Sources */,
 				0AADD1301D10E7C100087247 /* LazySliceSequence.swift in Sources */,
 				0858DAFF1C0550B7007FA426 /* Random.swift in Sources */,
-				0858DB431C0550B7007FA426 /* UUID.swift in Sources */,
 				0858DB2B1C0550B7007FA426 /* SDPathCoder.swift in Sources */,
 				0858DAEB1C0550B7007FA426 /* Maths.swift in Sources */,
 				0858DAA71C0550B7007FA426 /* Transpose.swift in Sources */,
@@ -922,7 +913,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0858DB441C0550B7007FA426 /* UUID.swift in Sources */,
 				0A3F4DC61CAE0C7400699FF7 /* Atomic.swift in Sources */,
 				0858DA901C0550B7007FA426 /* CooleyTukey.swift in Sources */,
 				0858DA801C0550B7007FA426 /* Arithmetic.swift in Sources */,
