@@ -535,7 +535,7 @@ public extension Comparable {
 extension BinaryFloatingPoint {
     
     static func random(includeOne: Bool = false) -> Self {
-        let significandBitCount = Self.significandBitCount.toIntMax()
+        let significandBitCount: UIntMax = numericCast(Self.significandBitCount)
         let exponentBitPattern = numericCast((1 as Self).exponentBitPattern) << significandBitCount
         let maxsignificand = 1 << significandBitCount
         let rand = includeOne ? (0...maxsignificand).random()! : (0..<maxsignificand).random()!
