@@ -27,7 +27,7 @@ import Foundation
 
 private final class SDObserverBase : NSObject {
     
-    var callback: (([String : AnyObject]) -> Void)? = nil
+    var callback: (([NSKeyValueChangeKey : AnyObject]) -> Void)? = nil
     
     let object: NSObject
     let keyPath: String
@@ -65,22 +65,22 @@ public class SDObserver<T> : SDSink<T> {
         self.base.callback = { [weak self] in self?.callback($0) }
     }
     
-    private func callback(_ change: [String : AnyObject]) {
+    private func callback(_ change: [NSKeyValueChangeKey : AnyObject]) {
         
     }
 }
 
 public extension NSObject {
     
-    public func bind(keyPath: String) -> SDObserver<[String : AnyObject]> {
+    public func bind(keyPath: String) -> SDObserver<[NSKeyValueChangeKey : AnyObject]> {
         
-        final class ChangeSDObserver : SDObserver<[String : AnyObject]> {
+        final class ChangeSDObserver : SDObserver<[NSKeyValueChangeKey : AnyObject]> {
             
             init(object: NSObject, keyPath: String) {
                 super.init(object: object, keyPath: keyPath, options: [.new, .old, .initial, .prior])
             }
             
-            override func callback(_ change: [String : AnyObject]) {
+            override func callback(_ change: [NSKeyValueChangeKey : AnyObject]) {
                 self.put(change)
             }
         }
@@ -96,8 +96,8 @@ public extension NSObject {
                 super.init(object: object, keyPath: keyPath, options: .prior)
             }
             
-            override func callback(_ change: [String : AnyObject]) {
-                if let old = change[NSKeyValueChangeKey.oldKey] {
+            override func callback(_ change: [NSKeyValueChangeKey : AnyObject]) {
+                if let old = change[.oldKey] {
                     self.put(old)
                 }
             }
@@ -114,8 +114,8 @@ public extension NSObject {
                 super.init(object: object, keyPath: keyPath, options: [.new, .old])
             }
             
-            override func callback(_ change: [String : AnyObject]) {
-                if let old = change[NSKeyValueChangeKey.oldKey], new = change[NSKeyValueChangeKey.newKey] {
+            override func callback(_ change: [NSKeyValueChangeKey : AnyObject]) {
+                if let old = change[.oldKey], new = change[.newKey] {
                     self.put(old: old, new: new)
                 }
             }
