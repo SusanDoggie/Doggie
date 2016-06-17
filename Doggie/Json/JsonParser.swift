@@ -122,7 +122,7 @@ private struct JsonParser {
             }
         }
         if currentChar == nil {
-            throw JsonParseError.UnexpectedEndOfToken
+            throw JsonParseError.unexpectedEndOfToken
         }
     }
     
@@ -198,7 +198,7 @@ private struct JsonParser {
     
     mutating func parseString() throws -> Json {
         if scanner.next() == nil {
-            throw JsonParseError.UnexpectedEndOfToken
+            throw JsonParseError.unexpectedEndOfToken
         }
         strbuf.removeAll(keepingCapacity: true)
         Loop: while currentChar != nil {
@@ -211,7 +211,7 @@ private struct JsonParser {
                         throw JsonParseError.invalidEscapeCharacter(position: scanner.pos)
                     }
                 } else {
-                    throw JsonParseError.UnexpectedEndOfToken
+                    throw JsonParseError.unexpectedEndOfToken
                 }
             case 34:
                 scanner.next()
@@ -226,7 +226,7 @@ private struct JsonParser {
     
     mutating func parseArray() throws -> Json {
         if scanner.next() == nil {
-            throw JsonParseError.UnexpectedEndOfToken
+            throw JsonParseError.unexpectedEndOfToken
         }
         try skipWhitespaces()
         var array = [Json]()
@@ -234,7 +234,7 @@ private struct JsonParser {
             switch currentChar! {
             case 44:
                 if scanner.next() == nil {
-                    throw JsonParseError.UnexpectedEndOfToken
+                    throw JsonParseError.unexpectedEndOfToken
                 }
                 try skipWhitespaces()
             case 93:
@@ -274,7 +274,7 @@ private struct JsonParser {
     
     mutating func parseObject() throws -> Json {
         if scanner.next() == nil {
-            throw JsonParseError.UnexpectedEndOfToken
+            throw JsonParseError.unexpectedEndOfToken
         }
         try skipWhitespaces()
         var dict = [String: Json]()
@@ -282,7 +282,7 @@ private struct JsonParser {
             switch currentChar! {
             case 44:
                 if scanner.next() == nil {
-                    throw JsonParseError.UnexpectedEndOfToken
+                    throw JsonParseError.unexpectedEndOfToken
                 }
                 try skipWhitespaces()
             case 125:
@@ -295,7 +295,7 @@ private struct JsonParser {
                         throw JsonParseError.unexpectedToken(position: scanner.pos)
                     }
                     if scanner.next() == nil {
-                        throw JsonParseError.UnexpectedEndOfToken
+                        throw JsonParseError.unexpectedEndOfToken
                     }
                     dict[key] = try parseValue()
                     try skipWhitespaces()

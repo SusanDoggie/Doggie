@@ -42,7 +42,7 @@ public struct Json {
         self.value = .bool(val)
     }
     public init<S : SignedInteger>(_ val: S) {
-        self.value = .Integer(val.toIntMax())
+        self.value = .integer(val.toIntMax())
     }
     public init(_ val: Float) {
         self.value = .float(Double(val))
