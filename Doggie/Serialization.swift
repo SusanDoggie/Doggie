@@ -26,41 +26,41 @@
 import Foundation
 
 public func SDPropertyListWithData(data: Data) throws -> AnyObject {
-    return try NSPropertyListSerialization.propertyListWithData(data, options: NSPropertyListMutabilityOptions.MutableContainersAndLeaves, format: nil)
+    return try PropertyListSerialization.propertyList(from: data, options: .mutableContainersAndLeaves, format: nil)
 }
-public func SDPropertyListWithStream(stream: NSInputStream) throws -> AnyObject {
-    return try NSPropertyListSerialization.propertyListWithStream(stream, options: NSPropertyListMutabilityOptions.MutableContainersAndLeaves, format: nil)
+public func SDPropertyListWithStream(stream: InputStream) throws -> AnyObject {
+    return try PropertyListSerialization.propertyList(with: stream, options: .mutableContainersAndLeaves, format: nil)
 }
 public func SDPropertyListSerializationBinary(data: AnyObject) throws -> Data {
-    return try NSPropertyListSerialization.dataWithPropertyList(data, format: .BinaryFormat_v1_0, options: 0)
+    return try PropertyListSerialization.data(fromPropertyList: data, format: .binaryFormat_v1_0, options: 0)
 }
-public func SDPropertyListSerialization(data: AnyObject) throws -> String {
-    return String(data: try NSPropertyListSerialization.dataWithPropertyList(data, format: .XMLFormat_v1_0, options: 0), encoding: NSUTF8StringEncoding)!
+public func SDPropertyListSerialization(object: AnyObject) throws -> String {
+    return String(data: try PropertyListSerialization.data(fromPropertyList: object, format: .xmlFormat_v1_0, options: 0), encoding: String.Encoding.utf8)!
 }
-public func SDPropertyListSerialization(data: AnyObject, toStream stream: NSOutputStream) throws -> Int {
+public func SDPropertyListSerialization(object: AnyObject, toStream stream: NSOutputStream) throws -> Int {
     var error: NSError? = nil
-    let count = PropertyListSerialization.writePropertyList(data, to: stream, format: .xmlFormat_v1_0, options: 0, error: &error)
+    let count = PropertyListSerialization.writePropertyList(object, to: stream, format: .xmlFormat_v1_0, options: 0, error: &error)
     if error != nil {
         throw error!
     }
     return count
 }
 public func SDJSONWithData(data: Data) throws -> AnyObject {
-    return try NSJSONSerialization.JSONObjectWithData(data, options: [.MutableContainers, .MutableLeaves])
+    return try JSONSerialization.jsonObject(with: data, options: [.mutableContainers, .mutableLeaves])
 }
-public func SDJSONWithStream(stream: NSInputStream) throws -> AnyObject {
-    return try NSJSONSerialization.JSONObjectWithStream(stream, options: [.MutableContainers, .MutableLeaves])
+public func SDJSONWithStream(stream: InputStream) throws -> AnyObject {
+    return try JSONSerialization.jsonObject(with: stream, options: [.mutableContainers, .mutableLeaves])
 }
-public func SDJSONSerialization(data: AnyObject) throws -> String {
-    if NSJSONSerialization.isValidJSONObject(data) {
-        return String(data: try NSJSONSerialization.dataWithJSONObject(data, options: .PrettyPrinted), encoding: NSUTF8StringEncoding)!
+public func SDJSONSerialization(object: AnyObject) throws -> String {
+    if JSONSerialization.isValidJSONObject(object) {
+        return String(data: try JSONSerialization.data(withJSONObject: object, options: .prettyPrinted), encoding: String.Encoding.utf8)!
     }
     throw NSError(domain: #function, code: 1, userInfo: ["Message": "Invalid JSON Object"])
 }
-public func SDJSONSerialization(data: AnyObject, toStream stream: NSOutputStream) throws -> Int {
-    if NSJSONSerialization.isValidJSONObject(data) {
+public func SDJSONSerialization(object: AnyObject, toStream stream: NSOutputStream) throws -> Int {
+    if JSONSerialization.isValidJSONObject(object) {
         var error: NSError? = nil
-        let count = JSONSerialization.writeJSONObject(data, to: stream, options: .prettyPrinted, error: &error)
+        let count = JSONSerialization.writeJSONObject(object, to: stream, options: .prettyPrinted, error: &error)
         if error != nil {
             throw error!
         }
@@ -73,20 +73,20 @@ public func SDJSONSerialization(data: AnyObject, toStream stream: NSOutputStream
 extension NSArray {
     
     public var plist: String? {
-        return try? SDPropertyListSerialization(self)
+        return try? SDPropertyListSerialization(object: self)
     }
     
     public var json: String? {
-        return try? SDJSONSerialization(self)
+        return try? SDJSONSerialization(object: self)
     }
 }
 extension NSDictionary {
     
     public var plist: String? {
-        return try? SDPropertyListSerialization(self)
+        return try? SDPropertyListSerialization(object: self)
     }
     
     public var json: String? {
-        return try? SDJSONSerialization(self)
+        return try? SDJSONSerialization(object: self)
     }
 }
