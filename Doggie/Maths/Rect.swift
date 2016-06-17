@@ -55,7 +55,7 @@ extension Size: CustomStringConvertible, CustomDebugStringConvertible {
 extension Size: Hashable {
     
     public var hashValue: Int {
-        return hash_combine(0, width, height)
+        return hash_combine(seed: 0, width, height)
     }
 }
 
