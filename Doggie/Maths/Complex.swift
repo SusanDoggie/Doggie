@@ -90,46 +90,6 @@ extension Complex: Hashable {
     }
 }
 
-extension Int8 {
-    public var i: Complex { return Complex(real: 0, imag: Double(self)) }
-}
-extension Int16 {
-    public var i: Complex { return Complex(real: 0, imag: Double(self)) }
-}
-extension Int32 {
-    public var i: Complex { return Complex(real: 0, imag: Double(self)) }
-}
-extension Int64 {
-    public var i: Complex { return Complex(real: 0, imag: Double(self)) }
-}
-extension Int {
-    public var i: Complex { return Complex(real: 0, imag: Double(self)) }
-}
-
-extension UInt8 {
-    public var i: Complex { return Complex(real: 0, imag: Double(self)) }
-}
-extension UInt16 {
-    public var i: Complex { return Complex(real: 0, imag: Double(self)) }
-}
-extension UInt32 {
-    public var i: Complex { return Complex(real: 0, imag: Double(self)) }
-}
-extension UInt64 {
-    public var i: Complex { return Complex(real: 0, imag: Double(self)) }
-}
-extension UInt {
-    public var i: Complex { return Complex(real: 0, imag: Double(self)) }
-}
-
-extension Float {
-    public var i: Complex { return Complex(real: 0, imag: Double(self)) }
-}
-
-extension Double {
-    public var i: Complex { return Complex(real: 0, imag: self) }
-}
-
 public func norm(_ value: Complex) -> Double {
     return value.real * value.real + value.imag * value.imag
 }
