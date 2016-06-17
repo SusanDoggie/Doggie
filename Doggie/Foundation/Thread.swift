@@ -181,6 +181,7 @@ extension SDSpinLock {
         return OSSpinLockTry(&_lck)
     }
     
+    @discardableResult
     public mutating func synchronized<R>(block: @noescape () throws -> R) rethrows -> R {
         self.lock()
         defer { self.unlock() }
@@ -336,8 +337,8 @@ extension SDAtomic {
 
 public class SDSingleton<Instance> {
     
-    private var token: Int = 0
     private var _value: Instance!
+    private let lck = SDLock()
     private let block: () -> Instance
     
     /// Create a SDSingleton.
@@ -349,9 +350,7 @@ public class SDSingleton<Instance> {
 extension SDSingleton {
     
     public final func signal() {
-        dispatch_once(&token) {
-            self._value = self.block()
-        }
+        lck.synchronized { self._value = self._value ?? self.block() }
     }
     
     public final var isValue : Bool {
@@ -364,8 +363,7 @@ extension SDSingleton {
             return self._value
         }
         set {
-            dispatch_once(&token) { /* do nothing. */ }
-            self._value = newValue
+            lck.synchronized { self._value = newValue }
         }
     }
 }
@@ -376,9 +374,9 @@ public class SDTask<Result> : SDAtomic {
     
     private var _notify: [(Result) -> Void] = []
     
-    private var _lck: SDSpinLock = SDSpinLock()
+    private let lck = SDLock()
+    private var spinlck: SDSpinLock = SDSpinLock()
     
-    private var token: Int = 0
     private let _set: (SDTask) -> Void
     private var _result: Result?
     
@@ -406,9 +404,11 @@ private extension SDTask {
     
     static func createBlock(_ block: () -> Result) -> (SDTask) -> Void {
         return { _self in
-            dispatch_once(&_self.token) {
-                let result = block()
-                _self._lck.synchronized { _self._result = result }
+            _self.lck.synchronized {
+                if !_self.completed {
+                    let result = block()
+                    _self.spinlck.synchronized { _self._result = _self._result ?? result }
+                }
             }
         }
     }
@@ -431,7 +431,7 @@ private extension SDTask {
     func _apply<R>(_ queue: DispatchQueue, suspend: ((R) -> Bool)?, block: (Result) -> R) -> SDTask<R> {
         var storage: Result!
         let task = SDTask<R>(queue: queue, suspend: suspend) { block(storage) }
-        return _lck.synchronized {
+        return spinlck.synchronized {
             if _result == nil {
                 _notify.append {
                     storage = $0
@@ -450,7 +450,7 @@ extension SDTask {
     
     /// Return `true` iff task is completed.
     public final var completed: Bool {
-        return _lck.synchronized { _result != nil }
+        return spinlck.synchronized { _result != nil }
     }
     
     /// Result of task.
@@ -463,11 +463,13 @@ extension SDTask {
 extension SDTask {
     
     /// Run `block` after `self` is completed.
+    @discardableResult
     public final func then<R>(block: (Result) -> R) -> SDTask<R> {
         return self.then(queue: queue, block: block)
     }
     
     /// Run `block` after `self` is completed with specific queue.
+    @discardableResult
     public final func then<R>(queue: DispatchQueue, block: (Result) -> R) -> SDTask<R> {
         return self._apply(queue, suspend: nil, block: block)
     }
@@ -476,12 +478,14 @@ extension SDTask {
 extension SDTask {
     
     /// Suspend if `result` satisfies `predicate`.
+    @discardableResult
     public final func suspend(where predicate: (Result) -> Bool) -> SDTask<Result> {
-        return self.suspend(queue: queue, predicate: predicate)
+        return self.suspend(queue: queue, where: predicate)
     }
     
     /// Suspend if `result` satisfies `predicate` with specific queue.
-    public final func suspend(queue: DispatchQueue, predicate: (Result) -> Bool) -> SDTask<Result> {
+    @discardableResult
+    public final func suspend(queue: DispatchQueue, where predicate: (Result) -> Bool) -> SDTask<Result> {
         return self._apply(queue, suspend: predicate) { $0 }
     }
 }
