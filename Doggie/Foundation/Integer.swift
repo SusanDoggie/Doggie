@@ -286,7 +286,7 @@ public func mulmod<T: UnsignedInteger>(_ a: T, _ b: T, _ m: T) -> T {
             return mul & (m - 1)
         }
         if overflow {
-            let c = mulmod(addmod(a, a, m), b >> 1, m)
+            let c = _mulmod(addmod(a, a, m), b >> 1, m)
             return b & 1 == 1 ? addmod(a, c, m) : c
         }
         return mul % m
@@ -306,7 +306,7 @@ public func pow<T: UnsignedInteger>(_ x: T, _ n: T, _ m: T) -> T {
         if n == 0 {
             return 1
         }
-        let p = pow(mulmod(x, x, m), n >> 1, m)
+        let p = _pow(mulmod(x, x, m), n >> 1, m)
         return n & 1 == 1 ? mulmod(x, p, m) : p
     }
     
