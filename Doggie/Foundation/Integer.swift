@@ -254,35 +254,8 @@ public extension Integer {
     }
 }
 
-public func << <T: UnsignedInteger>(lhs: T, rhs: T) -> T {
-    switch lhs {
-    case let lhs as UInt8: return (lhs << (rhs as! UInt8)) as! T
-    case let lhs as UInt16: return (lhs << (rhs as! UInt16)) as! T
-    case let lhs as UInt32: return (lhs << (rhs as! UInt32)) as! T
-    case let lhs as UInt64: return (lhs << (rhs as! UInt64)) as! T
-    case let lhs as UInt: return (lhs << (rhs as! UInt)) as! T
-    default: return T((lhs.toUIntMax() << rhs.toUIntMax()) & (~T.allZeros).toUIntMax())
-    }
-}
-public func >> <T: UnsignedInteger>(lhs: T, rhs: T) -> T {
-    switch lhs {
-    case let lhs as UInt8: return (lhs >> (rhs as! UInt8)) as! T
-    case let lhs as UInt16: return (lhs >> (rhs as! UInt16)) as! T
-    case let lhs as UInt32: return (lhs >> (rhs as! UInt32)) as! T
-    case let lhs as UInt64: return (lhs >> (rhs as! UInt64)) as! T
-    case let lhs as UInt: return (lhs >> (rhs as! UInt)) as! T
-    default: return T((lhs.toUIntMax() >> rhs.toUIntMax()) & (~T.allZeros).toUIntMax())
-    }
-}
-
-public func >>= <T: UnsignedInteger>(lhs: inout T, rhs: T) {
-    lhs = lhs >> rhs
-}
-public func <<= <T: UnsignedInteger>(lhs: inout T, rhs: T) {
-    lhs = lhs << rhs
-}
-
 public func mod<T: UnsignedInteger>(_ x: T, _ m: T) -> T {
+    assert(m != 0, "divide by zero")
     if x < m {
         return x
     }
@@ -293,84 +266,52 @@ public func mod<T: UnsignedInteger>(_ x: T, _ m: T) -> T {
 }
 
 public func addmod<T: UnsignedInteger>(_ a: T, _ b: T, _ m: T) -> T {
+    assert(m != 0, "divide by zero")
     let a = mod(a, m)
     let b = mod(b, m)
     let c = m &- b
     return a < c ? a &+ b : a &- c
 }
 
-public func mulmod(_ a: UInt8, _ b: UInt8, _ m: UInt8) -> UInt8 {
-    return UInt8(truncatingBitPattern: mod(UInt16(a) &* UInt16(b), UInt16(m)))
-}
-public func mulmod(_ a: UInt16, _ b: UInt16, _ m: UInt16) -> UInt16 {
-    return UInt16(truncatingBitPattern: mod(UInt32(a) &* UInt32(b), UInt32(m)))
-}
-public func mulmod(_ a: UInt32, _ b: UInt32, _ m: UInt32) -> UInt32 {
-    return UInt32(truncatingBitPattern: mod(UInt64(a) &* UInt64(b), UInt64(m)))
-}
-
 public func mulmod<T: UnsignedInteger>(_ a: T, _ b: T, _ m: T) -> T {
-    let a = mod(a, m)
-    let b = mod(b, m)
-    if a == 0 || b == 0 || m == 1 {
-        return 0
+    
+    func _mulmod(_ a: UIntMax, _ b: UIntMax, _ m: UIntMax) -> UIntMax {
+        let a = mod(a, m)
+        let b = mod(b, m)
+        if a == 0 || b == 0 || m == 1 {
+            return 0
+        }
+        let (mul, overflow) = UIntMax.multiplyWithOverflow(a, b)
+        if m.isPower2 {
+            return mul & (m - 1)
+        }
+        if overflow {
+            let c = mulmod(addmod(a, a, m), b >> 1, m)
+            return b & 1 == 1 ? addmod(a, c, m) : c
+        }
+        return mul % m
     }
-    let (mul, overflow) = T.multiplyWithOverflow(a, b)
-    if m.isPower2 {
-        return mul & (m - 1)
-    }
-    if overflow {
-        let c = mulmod(addmod(a, a, m), b >> 1, m)
-        return b & 1 == 1 ? addmod(a, c, m) : c
-    }
-    return mul % m
+    
+    assert(m != 0, "divide by zero")
+    return T(_mulmod(a.toUIntMax(), b.toUIntMax(), m.toUIntMax()))
 }
 
-public func pow(_ x: UInt8, _ n: UInt8, _ m: UInt8) -> UInt8 {
-    let x = mod(x, m)
-    if x == 0 || m == 1 {
-        return 0
-    }
-    if n == 0 {
-        return 1
-    }
-    let p = pow(mulmod(x, x, m), n >> 1, m)
-    return n & 1 == 1 ? mulmod(x, p, m) : p
-}
-
-public func pow(_ x: UInt16, _ n: UInt16, _ m: UInt16) -> UInt16 {
-    let x = mod(x, m)
-    if x == 0 || m == 1 {
-        return 0
-    }
-    if n == 0 {
-        return 1
-    }
-    let p = pow(mulmod(x, x, m), n >> 1, m)
-    return n & 1 == 1 ? mulmod(x, p, m) : p
-}
-
-public func pow(_ x: UInt32, _ n: UInt32, _ m: UInt32) -> UInt32 {
-    let x = mod(x, m)
-    if x == 0 || m == 1 {
-        return 0
-    }
-    if n == 0 {
-        return 1
-    }
-    let p = pow(mulmod(x, x, m), n >> 1, m)
-    return n & 1 == 1 ? mulmod(x, p, m) : p
-}
 public func pow<T: UnsignedInteger>(_ x: T, _ n: T, _ m: T) -> T {
-    let x = mod(x, m)
-    if x == 0 || m == 1 {
-        return 0
+    
+    func _pow(_ x: UIntMax, _ n: UIntMax, _ m: UIntMax) -> UIntMax {
+        let x = mod(x, m)
+        if x == 0 || m == 1 {
+            return 0
+        }
+        if n == 0 {
+            return 1
+        }
+        let p = pow(mulmod(x, x, m), n >> 1, m)
+        return n & 1 == 1 ? mulmod(x, p, m) : p
     }
-    if n == 0 {
-        return 1
-    }
-    let p = pow(mulmod(x, x, m), n >> 1, m)
-    return n & 1 == 1 ? mulmod(x, p, m) : p
+    
+    assert(m != 0, "divide by zero")
+    return T(_pow(x.toUIntMax(), n.toUIntMax(), m.toUIntMax()))
 }
 
 public func pow(_ x: UInt, _ n: UInt) -> UInt {
