@@ -656,23 +656,28 @@
 				TargetAttributes = {
 					081321D21C11D1840081B2B9 = {
 						CreatedOnToolsVersion = 7.1.1;
-						DevelopmentTeam = 7H68MPF8KL;
-						DevelopmentTeamName = "Cloud Design and Technology Limited";
+						DevelopmentTeam = MPZ83Y3AFN;
+						DevelopmentTeamName = "Chai Fung Cheng";
 						LastSwiftMigration = 0800;
 					};
 					081321DB1C11D1850081B2B9 = {
 						CreatedOnToolsVersion = 7.1.1;
+						DevelopmentTeam = MPZ83Y3AFN;
+						DevelopmentTeamName = "Chai Fung Cheng";
 						LastSwiftMigration = 0800;
 					};
 					087FE5B41A372D97005A2E9E = {
 						CreatedOnToolsVersion = 6.1.1;
-						DevelopmentTeam = 7H68MPF8KL;
-						DevelopmentTeamName = "Cloud Design and Technology Limited";
+						DevelopmentTeam = MPZ83Y3AFN;
+						DevelopmentTeamName = "Chai Fung Cheng";
 						LastSwiftMigration = 0800;
 					};
 					087FE5BE1A372D97005A2E9E = {
 						CreatedOnToolsVersion = 6.1.1;
+						DevelopmentTeam = MPZ83Y3AFN;
+						DevelopmentTeamName = "Chai Fung Cheng";
 						LastSwiftMigration = 0800;
+						ProvisioningStyle = Automatic;
 					};
 				};
 			};
@@ -1001,7 +1006,6 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = dwarf;
@@ -1053,7 +1057,6 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
@@ -1102,7 +1105,6 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -1145,7 +1147,6 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
@@ -1243,7 +1244,6 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
@@ -1295,7 +1295,6 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "3rd Party Mac Developer Application";
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = YES;
 				CURRENT_PROJECT_VERSION = 1;
