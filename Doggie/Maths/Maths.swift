@@ -30,7 +30,7 @@ public let M_SQRT5 = 2.2360679774997896964091736687312762354406183596115257
 
 extension Double {
     
-    public func almostZero(_ epsilon: Double = 1e-9, reference: Double = 0) -> Bool {
+    public func almostZero(epsilon: Double = 1e-9, reference: Double = 0) -> Bool {
         return self == 0 || abs(self) < abs(epsilon) * max(1, abs(reference))
     }
     

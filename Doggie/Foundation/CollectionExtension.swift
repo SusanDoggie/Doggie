@@ -603,6 +603,7 @@ public extension RangeReplaceableCollection {
 
 public extension BidirectionalCollection where Self : MutableCollection, Index : Strideable, Index.Stride : SignedInteger {
     
+    @_transparent
     private mutating func reverseInPlace(_ range: CountableRange<Index>) {
         var temp: Index?
         for (lhs, rhs) in zip(range, range.reversed()) {

@@ -37,6 +37,7 @@ enum PathCommand {
 
 private extension PathCommand {
     
+    @_transparent
     init(_ command: SDPathCommand) {
         switch command {
         case let move as SDPath.Move: self = .move(move.point)
@@ -48,6 +49,7 @@ private extension PathCommand {
         }
     }
     
+    @_transparent
     init<T : SDPathCommand>(command: T) {
         switch command {
         case let move as SDPath.Move: self = .move(move.point)
@@ -59,6 +61,7 @@ private extension PathCommand {
         }
     }
     
+    @_transparent
     var command: SDPathCommand {
         switch self {
         case let move(point): return SDPath.Move(point)
@@ -329,6 +332,7 @@ public struct SDPath : SDShape, RandomAccessCollection, MutableCollection, Array
         return cache.boundary!
     }
     
+    @_transparent
     private var _frame : Rect {
         if cache.frame == nil {
             var bound: Rect? = nil
@@ -362,12 +366,14 @@ extension SDPath {
         case transformed
     }
     
+    @_transparent
     func setCache(name: String, value: Any, type: CacheType) {
         switch type {
         case .regular: cache.table[name] = value
         case .transformed: cache.transformedTable[name] = value
         }
     }
+    @_transparent
     func getCache(name: String, type: CacheType) -> Any? {
         switch type {
         case .regular: return cache.table[name]
@@ -473,6 +479,7 @@ extension SDPath {
         public let last : Point
     }
     
+    @_transparent
     func _apply(body: @noescape (PathCommand, ComputeState) throws -> Void) rethrows {
         var start : Point = Point()
         var last : Point = Point()
@@ -513,6 +520,7 @@ extension SDPath {
 
 extension SDPath {
     
+    @_transparent
     private var _identity : SDPath {
         if rotate == 0 && scale == 1 && baseTransform == SDTransform.Identity() {
             return self

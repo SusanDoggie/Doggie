@@ -402,6 +402,7 @@ public class SDTask<Result> : SDAtomic {
 
 private extension SDTask {
     
+    @_transparent
     static func createBlock(_ block: () -> Result) -> (SDTask) -> Void {
         return { _self in
             _self.lck.synchronized {
@@ -413,6 +414,7 @@ private extension SDTask {
         }
     }
     
+    @_transparent
     static func createSignalBlock(_ suspend: ((Result) -> Bool)?) -> (SDAtomic) -> Void {
         return { atomic in
             let _self = atomic as! SDTask<Result>
@@ -428,6 +430,7 @@ private extension SDTask {
         }
     }
     
+    @_transparent
     func _apply<R>(_ queue: DispatchQueue, suspend: ((R) -> Bool)?, block: (Result) -> R) -> SDTask<R> {
         var storage: Result!
         let task = SDTask<R>(queue: queue, suspend: suspend) { block(storage) }

@@ -83,7 +83,7 @@ extension UInt32 : SDAtomicType {
     
     /// Compare and set UInt32 with barrier.
     public mutating func compareSet(old: UInt32, new: UInt32) -> Bool {
-        @inline(__always)
+        @_transparent
         func cas(_ theVal: UnsafeMutablePointer<UInt32>) -> Bool {
             return OSAtomicCompareAndSwap32Barrier(Int32(bitPattern: old), Int32(bitPattern: new), UnsafeMutablePointer(theVal))
         }
@@ -95,7 +95,7 @@ extension UInt64 : SDAtomicType {
     
     /// Compare and set UInt64 with barrier.
     public mutating func compareSet(old: UInt64, new: UInt64) -> Bool {
-        @inline(__always)
+        @_transparent
         func cas(_ theVal: UnsafeMutablePointer<UInt64>) -> Bool {
             return OSAtomicCompareAndSwap64Barrier(Int64(bitPattern: old), Int64(bitPattern: new), UnsafeMutablePointer(theVal))
         }
@@ -107,7 +107,7 @@ extension UInt : SDAtomicType {
     
     /// Compare and set UInt with barrier.
     public mutating func compareSet(old: UInt, new: UInt) -> Bool {
-        @inline(__always)
+        @_transparent
         func cas(_ theVal: UnsafeMutablePointer<UInt>) -> Bool {
             return OSAtomicCompareAndSwapLongBarrier(Int(bitPattern: old), Int(bitPattern: new), UnsafeMutablePointer(theVal))
         }
@@ -119,7 +119,7 @@ extension UnsafePointer : SDAtomicType {
     
     /// Compare and set pointers with barrier.
     public mutating func compareSet(old: UnsafePointer, new: UnsafePointer) -> Bool {
-        @inline(__always)
+        @_transparent
         func cas(_ theVal: UnsafeMutablePointer<UnsafePointer<Pointee>>) -> Bool {
             return OSAtomicCompareAndSwapPtrBarrier(UnsafeMutablePointer(old), UnsafeMutablePointer(new), UnsafeMutablePointer<UnsafeMutablePointer<Void>?>(theVal))
         }
@@ -131,7 +131,7 @@ extension UnsafeMutablePointer : SDAtomicType {
     
     /// Compare and set pointers with barrier.
     public mutating func compareSet(old: UnsafeMutablePointer, new: UnsafeMutablePointer) -> Bool {
-        @inline(__always)
+        @_transparent
         func cas(_ theVal: UnsafeMutablePointer<UnsafeMutablePointer<Pointee>>) -> Bool {
             return OSAtomicCompareAndSwapPtrBarrier(old, new, UnsafeMutablePointer<UnsafeMutablePointer<Void>?>(theVal))
         }
@@ -143,7 +143,7 @@ extension OpaquePointer : SDAtomicType {
     
     /// Compare and set pointers with barrier.
     public mutating func compareSet(old: OpaquePointer, new: OpaquePointer) -> Bool {
-        @inline(__always)
+        @_transparent
         func cas(_ theVal: UnsafeMutablePointer<OpaquePointer>) -> Bool {
             return OSAtomicCompareAndSwapPtrBarrier(UnsafeMutablePointer(old), UnsafeMutablePointer(new), UnsafeMutablePointer<UnsafeMutablePointer<Void>?>(theVal))
         }
@@ -250,10 +250,11 @@ public struct Atomic<Instance> {
 
 extension Atomic : SDAtomicType {
     
+    @_transparent
     private mutating func compareSet(old: AtomicBase<Instance>, new: AtomicBase<Instance>) -> Bool {
         let _old = Unmanaged.passUnretained(old)
         let _new = Unmanaged.passRetained(new)
-        @inline(__always)
+        @_transparent
         func cas(theVal: UnsafeMutablePointer<AtomicBase<Instance>>) -> Bool {
             return OSAtomicCompareAndSwapPtrBarrier(UnsafeMutablePointer(OpaquePointer(bitPattern: _old)), UnsafeMutablePointer(OpaquePointer(bitPattern: _new)), UnsafeMutablePointer<UnsafeMutablePointer<Void>?>(theVal))
         }
@@ -303,6 +304,7 @@ extension Atomic: CustomStringConvertible, CustomDebugStringConvertible {
 
 extension Atomic : Equatable, Hashable {
     
+    @_transparent
     private var identifier: ObjectIdentifier {
         return ObjectIdentifier(base)
     }

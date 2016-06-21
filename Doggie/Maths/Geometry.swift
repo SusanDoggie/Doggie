@@ -252,6 +252,7 @@ public func BezierDerivative(_ p: Vector ... ) -> [Vector] {
     return BezierDerivative(p)
 }
 
+@_transparent
 private func Bezier(_ t: Double, _ p: [Double]) -> Double {
     var result: Double = 0
     let _n = p.count - 1
@@ -262,6 +263,7 @@ private func Bezier(_ t: Double, _ p: [Double]) -> Double {
     return result
 }
 
+@_transparent
 private func Bezier(_ t: Double, _ p: [Point]) -> Point {
     var result = Point()
     let _n = p.count - 1
@@ -272,6 +274,7 @@ private func Bezier(_ t: Double, _ p: [Point]) -> Point {
     return result
 }
 
+@_transparent
 private func Bezier(_ t: Double, _ p: [Vector]) -> Vector {
     var result = Vector()
     let _n = p.count - 1
@@ -282,6 +285,7 @@ private func Bezier(_ t: Double, _ p: [Vector]) -> Vector {
     return result
 }
 
+@_transparent
 private func BezierPolynomial(_ p: [Double]) -> Polynomial {
     
     var result = PermutationList(UInt(p.count - 1)).map(Double.init) as Array
@@ -379,6 +383,7 @@ public func ClosestBezier(_ point: Point, _ b0: Point, _ b1: Point, _ b2: Point,
     return dot.derivative.roots.sort { dot.eval($0) }
 }
 
+@_transparent
 private func SplitBezier(_ t: Double, _ p: [Double]) -> ([Double], [Double]) {
     let _t = 1 - t
     if p.count == 2 {
@@ -394,6 +399,7 @@ private func SplitBezier(_ t: Double, _ p: [Double]) -> ([Double], [Double]) {
     let split = SplitBezier(t, subpath)
     return ([p.first!] + split.0, split.1 + [p.last!])
 }
+@_transparent
 private func SplitBezier(_ t: [Double], _ p: [Double]) -> [[Double]] {
     var result: [[Double]] = []
     var remain = p
@@ -408,6 +414,7 @@ private func SplitBezier(_ t: [Double], _ p: [Double]) -> [[Double]] {
     return result
 }
 
+@_transparent
 private func SplitBezier(_ t: Double, _ p: [Point]) -> ([Point], [Point]) {
     let _t = 1 - t
     if p.count == 2 {
@@ -423,6 +430,7 @@ private func SplitBezier(_ t: Double, _ p: [Point]) -> ([Point], [Point]) {
     let split = SplitBezier(t, subpath)
     return ([p.first!] + split.0, split.1 + [p.last!])
 }
+@_transparent
 private func SplitBezier(_ t: [Double], _ p: [Point]) -> [[Point]] {
     var result: [[Point]] = []
     var remain = p
@@ -437,6 +445,7 @@ private func SplitBezier(_ t: [Double], _ p: [Point]) -> [[Point]] {
     return result
 }
 
+@_transparent
 private func SplitBezier(_ t: Double, _ p: [Vector]) -> ([Vector], [Vector]) {
     let _t = 1 - t
     if p.count == 2 {
@@ -452,6 +461,7 @@ private func SplitBezier(_ t: Double, _ p: [Vector]) -> ([Vector], [Vector]) {
     let split = SplitBezier(t, subpath)
     return ([p.first!] + split.0, split.1 + [p.last!])
 }
+@_transparent
 private func SplitBezier(_ t: [Double], _ p: [Vector]) -> [[Vector]] {
     var result: [[Vector]] = []
     var remain = p
@@ -466,6 +476,7 @@ private func SplitBezier(_ t: [Double], _ p: [Vector]) -> [[Vector]] {
     return result
 }
 
+@_transparent
 private func BezierDerivative(_ p: [Double]) -> [Double] {
     let n = Double(p.count - 1)
     var de = [Double]()
@@ -477,6 +488,7 @@ private func BezierDerivative(_ p: [Double]) -> [Double] {
     return de
 }
 
+@_transparent
 private func BezierDerivative(_ p: [Point]) -> [Point] {
     let n = Double(p.count - 1)
     var de = [Point]()
@@ -488,6 +500,7 @@ private func BezierDerivative(_ p: [Point]) -> [Point] {
     return de
 }
 
+@_transparent
 private func BezierDerivative(_ p: [Vector]) -> [Vector] {
     let n = Double(p.count - 1)
     var de = [Vector]()
@@ -956,6 +969,7 @@ public func CubicBeziersIntersect(_ c0: Point, _ c1: Point, _ c2: Point, _ c3: P
 
 // MARK: Winding Number
 
+@_transparent
 private func _integral(_ n: Double, _ b: Double, _ c: Double) -> Double {
     
     let delta = b * b - 4 * c
@@ -976,12 +990,14 @@ private func _integral(_ n: Double, _ b: Double, _ c: Double) -> Double {
     }
 }
 
+@_transparent
 private func _integral(_ m: Double, _ n: Double, _ b: Double, _ c: Double) -> Double {
     
     let _m = 0.5 * m
     return _m * log(abs(1 + (1 + b) / c)) + _integral(n - _m * b, b, c)
 }
 
+@_transparent
 private func _integral(_ m: Double, _ n: Double, _ b: Double, _ c: Double, _ r: Int) -> Double {
     
     if r == 1 {
