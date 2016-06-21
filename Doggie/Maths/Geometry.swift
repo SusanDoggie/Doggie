@@ -1148,7 +1148,7 @@ private func degree6RationalIntegral(_ p: Polynomial, _ q: Polynomial) -> Double
     default: fatalError()
     }
     
-    if partials.all(where: { $0.degree == 1 && $0.power == 1 }) {
+    if partials.all({ $0.degree == 1 && $0.power == 1 }) {
         
         let derivative = _q.derivative
         for item in partials {

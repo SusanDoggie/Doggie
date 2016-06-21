@@ -191,7 +191,7 @@ public extension Sequence {
     /// Return `true` if all of elements in `seq` satisfies `predicate`.
     ///
     /// - Complexity: O(`self.count`).
-    func all(where predicate: @noescape (Iterator.Element) throws -> Bool) rethrows -> Bool {
+    func all(_ predicate: @noescape (Iterator.Element) throws -> Bool) rethrows -> Bool {
         
         for item in self where try !predicate(item) {
             return false
@@ -232,7 +232,7 @@ public extension Collection where Iterator.Element : Equatable {
     /// the elements of `self`.
     ///
     /// - Complexity: O(`self.count`)
-    func prefixUntil(_ element: Iterator.Element) -> SubSequence {
+    func prefix(until element: Iterator.Element) -> SubSequence {
         return self.prefix(upTo: self.index(of: element) ?? self.endIndex)
     }
 }
@@ -246,7 +246,7 @@ public extension Collection {
     /// the elements of `self`.
     ///
     /// - Complexity: O(`self.count`)
-    func prefixUntil(where predicate: @noescape (Iterator.Element) throws -> Bool) rethrows -> SubSequence {
+    func prefix(until predicate: @noescape (Iterator.Element) throws -> Bool) rethrows -> SubSequence {
         return self.prefix(upTo: try self.index(where: predicate) ?? self.endIndex)
     }
 }
@@ -259,7 +259,7 @@ public extension RandomAccessCollection where Iterator.Element : Equatable {
     /// the elements of `self`.
     ///
     /// - Complexity: O(`self.count`)
-    func suffixUntil(_ element: Iterator.Element) -> SubSequence {
+    func suffix(until element: Iterator.Element) -> SubSequence {
         return self.suffix(from: self.reversed().index(of: element)?.base ?? self.startIndex)
     }
 }
@@ -272,14 +272,14 @@ public extension RandomAccessCollection {
     /// the elements of `self`.
     ///
     /// - Complexity: O(`self.count`)
-    func suffixUntil(where predicate: @noescape (Iterator.Element) throws -> Bool) rethrows -> SubSequence {
+    func suffix(until predicate: @noescape (Iterator.Element) throws -> Bool) rethrows -> SubSequence {
         return self.suffix(from: try self.reversed().index(where: predicate)?.base ?? self.startIndex)
     }
 }
 
 public extension RandomAccessCollection where Index : Strideable, Index.Stride : SignedInteger {
     
-    func matchWith<C : BidirectionalCollection where C.Iterator.Element == Iterator.Element, C.IndexDistance == IndexDistance>(pattern: C, isEquivalent: @noescape (Iterator.Element, Iterator.Element) throws -> Bool) rethrows -> Index? {
+    func match<C : BidirectionalCollection where C.Iterator.Element == Iterator.Element, C.IndexDistance == IndexDistance>(with pattern: C, isEquivalent: @noescape (Iterator.Element, Iterator.Element) throws -> Bool) rethrows -> Index? {
         
         let pattern_count = pattern.count
         if count < pattern_count {
@@ -310,8 +310,8 @@ public extension RandomAccessCollection where Index : Strideable, Index.Stride :
 
 public extension RandomAccessCollection where Index : Strideable, Index.Stride : SignedInteger, Iterator.Element : Equatable {
     
-    func matchWith<C : BidirectionalCollection where C.Iterator.Element == Iterator.Element, C.IndexDistance == IndexDistance>(pattern: C) -> Index? {
-        return self.matchWith(pattern: pattern, isEquivalent: ==)
+    func match<C : BidirectionalCollection where C.Iterator.Element == Iterator.Element, C.IndexDistance == IndexDistance>(with pattern: C) -> Index? {
+        return self.match(with: pattern, isEquivalent: ==)
     }
 }
 
@@ -501,14 +501,14 @@ public extension Sequence {
     ///
     /// - Complexity: O(`elements.count`).
     ///
-    func minElement<R : Comparable>(by: @noescape (Iterator.Element) throws -> R) rethrows -> Iterator.Element? {
+    func min<R : Comparable>(by: @noescape (Iterator.Element) throws -> R) rethrows -> Iterator.Element? {
         return try self.min { try by($0) < by($1) }
     }
     /// Returns the maximum element in `self` or `nil` if the sequence is empty.
     ///
     /// - Complexity: O(`elements.count`).
     ///
-    func maxElement<R : Comparable>(by: @noescape (Iterator.Element) throws -> R) rethrows -> Iterator.Element? {
+    func max<R : Comparable>(by: @noescape (Iterator.Element) throws -> R) rethrows -> Iterator.Element? {
         return try self.max { try by($0) < by($1) }
     }
 }
