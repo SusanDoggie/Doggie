@@ -59,7 +59,7 @@ extension Radius: CustomStringConvertible, CustomDebugStringConvertible {
 extension Radius: Hashable {
     
     public var hashValue: Int {
-        return hash_combine(0, x, y)
+        return hash_combine(seed: 0, x, y)
     }
 }
 
@@ -256,7 +256,7 @@ public func BezierDerivative(_ p: Vector ... ) -> [Vector] {
 private func Bezier(_ t: Double, _ p: [Double]) -> Double {
     var result: Double = 0
     let _n = p.count - 1
-    for (idx, k) in CombinationList(UInt(_n)).enumerate() {
+    for (idx, k) in CombinationList(UInt(_n)).enumerated() {
         let b = Double(k) * pow(t, Double(idx)) * pow(1 - t, Double(_n - idx))
         result += b * p[idx]
     }
@@ -267,7 +267,7 @@ private func Bezier(_ t: Double, _ p: [Double]) -> Double {
 private func Bezier(_ t: Double, _ p: [Point]) -> Point {
     var result = Point()
     let _n = p.count - 1
-    for (idx, k) in CombinationList(UInt(_n)).enumerate() {
+    for (idx, k) in CombinationList(UInt(_n)).enumerated() {
         let b = Double(k) * pow(t, Double(idx)) * pow(1 - t, Double(_n - idx))
         result += b * p[idx]
     }
@@ -278,7 +278,7 @@ private func Bezier(_ t: Double, _ p: [Point]) -> Point {
 private func Bezier(_ t: Double, _ p: [Vector]) -> Vector {
     var result = Vector()
     let _n = p.count - 1
-    for (idx, k) in CombinationList(UInt(_n)).enumerate() {
+    for (idx, k) in CombinationList(UInt(_n)).enumerated() {
         let b = Double(k) * pow(t, Double(idx)) * pow(1 - t, Double(_n - idx))
         result += b * p[idx]
     }
@@ -292,7 +292,7 @@ private func BezierPolynomial(_ p: [Double]) -> Polynomial {
     for i in result.indices {
         var sum = 0.0
         let fact = Array(FactorialList(UInt(i)))
-        for (j, f) in zip(fact, fact.reverse()).map(*).enumerate() {
+        for (j, f) in zip(fact, fact.reversed()).map(*).enumerated() {
             if (i + j) & 1 == 0 {
                 sum += p[j] / Double(f)
             } else {
@@ -343,7 +343,7 @@ public func BezierDegreeElevation(_ p: Vector ... ) -> [Vector] {
 }
 
 public func BezierPolynomial(_ poly: Polynomial) -> [Double] {
-    let de = (0..<poly.degree).scan(poly) { p, _ in p.derivative / Double(p.degree) }
+    let de = (0..<poly.degree).scan(initial: poly) { p, _ in p.derivative / Double(p.degree) }
     var result: [Double] = []
     for n in de.indices {
         let s = zip(CombinationList(UInt(n)), de)
@@ -618,10 +618,10 @@ public func QuadBezierBound(_ p0: Point, _ p1: Point, _ p2: Point) -> Rect {
     let _x = tx.map { Bezier($0, p0.x, p1.x, p2.x) }
     let _y = ty.map { Bezier($0, p0.y, p1.y, p2.y) }
     
-    let minX = _x.minElement()!
-    let minY = _y.minElement()!
-    let maxX = _x.maxElement()!
-    let maxY = _y.maxElement()!
+    let minX = _x.min()!
+    let minY = _y.min()!
+    let maxX = _x.max()!
+    let maxY = _y.max()!
     
     return Rect(x: minX, y: minY, width: maxX - minX, height: maxY - minY)
 }
@@ -647,10 +647,10 @@ public func QuadBezierBound<T: SDTransformType>(_ p0: Point, _ p1: Point, _ p2: 
         return matrix.d * _p.x + matrix.e * _p.y
     }
     
-    let minX = _x.minElement()!
-    let minY = _y.minElement()!
-    let maxX = _x.maxElement()!
-    let maxY = _y.maxElement()!
+    let minX = _x.min()!
+    let minY = _y.min()!
+    let maxX = _x.max()!
+    let maxY = _y.max()!
     
     return Rect(x: minX + matrix.c, y: minY + matrix.f, width: maxX - minX, height: maxY - minY)
 }
@@ -663,10 +663,10 @@ public func CubicBezierBound(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point)
     let _x = tx.map { Bezier($0, p0.x, p1.x, p2.x, p3.x) }
     let _y = ty.map { Bezier($0, p0.y, p1.y, p2.y, p3.y) }
     
-    let minX = _x.minElement()!
-    let minY = _y.minElement()!
-    let maxX = _x.maxElement()!
-    let maxY = _y.maxElement()!
+    let minX = _x.min()!
+    let minY = _y.min()!
+    let maxX = _x.max()!
+    let maxY = _y.max()!
     
     return Rect(x: minX, y: minY, width: maxX - minX, height: maxY - minY)
 }
@@ -692,10 +692,10 @@ public func CubicBezierBound<T: SDTransformType>(_ p0: Point, _ p1: Point, _ p2:
         return matrix.d * _p.x + matrix.e * _p.y
     }
     
-    let minX = _x.minElement()!
-    let minY = _y.minElement()!
-    let maxX = _x.maxElement()!
-    let maxY = _y.maxElement()!
+    let minX = _x.min()!
+    let minY = _y.min()!
+    let maxX = _x.max()!
+    let maxY = _y.max()!
     
     return Rect(x: minX + matrix.c, y: minY + matrix.f, width: maxX - minX, height: maxY - minY)
 }
@@ -1042,18 +1042,21 @@ private enum PartialPolynomial {
 
 extension PartialPolynomial {
     
+    @_transparent
     var degree : Int {
         switch self {
         case one: return 1
         case two: return 2
         }
     }
+    @_transparent
     var power : Int {
         switch self {
         case one(_, let p): return p
         case two(_, _, let p): return p
         }
     }
+    @_transparent
     var polynomial : Polynomial {
         switch self {
         case one(let a, _): return [a, 1]
@@ -1064,18 +1067,21 @@ extension PartialPolynomial {
 
 extension PartialPolynomial {
     
+    @_transparent
     var a : Double {
         switch self {
         case one(let a, _): return a
         case two(let a, _, _): return a
         }
     }
+    @_transparent
     func almostEqual(_ p: Double) -> Bool {
         switch self {
         case one(let a, _): return p.almostEqual(a)
         case two(_, _, _): return false
         }
     }
+    @_transparent
     func almostEqual(_ p: (Double, Double)) -> Bool {
         switch self {
         case one(_, _): return false
@@ -1084,11 +1090,13 @@ extension PartialPolynomial {
     }
 }
 
+@_transparent
 private func appendPartialPolynomial(_ p: inout [PartialPolynomial], _ poly: Double) {
     let power = p.lazy.filter { $0.almostEqual(poly) }.maxElement { $0.power }?.power ?? 0
-    p.append(.One(poly, power + 1))
+    p.append(.one(poly, power + 1))
 }
 
+@_transparent
 private func appendPartialPolynomial(_ p: inout [PartialPolynomial], _ poly: (Double, Double)) {
     let delta = poly.1 * poly.1 - 4 * poly.0
     if delta.almostZero() {
@@ -1100,7 +1108,7 @@ private func appendPartialPolynomial(_ p: inout [PartialPolynomial], _ poly: (Do
         appendPartialPolynomial(&p, 0.5 * (poly.1 + _sqrt))
     } else {
         let power = p.lazy.filter { $0.almostEqual(poly) }.maxElement { $0.power }?.power ?? 0
-        p.append(.Two(poly.0, poly.1, power + 1))
+        p.append(.two(poly.0, poly.1, power + 1))
     }
 }
 
@@ -1140,7 +1148,7 @@ private func degree6RationalIntegral(_ p: Polynomial, _ q: Polynomial) -> Double
     default: fatalError()
     }
     
-    if partials.all({ $0.degree == 1 && $0.power == 1 }) {
+    if partials.all(where: { $0.degree == 1 && $0.power == 1 }) {
         
         let derivative = _q.derivative
         for item in partials {
@@ -1155,18 +1163,18 @@ private func degree6RationalIntegral(_ p: Polynomial, _ q: Polynomial) -> Double
             let poly = item.power == 1 ? _q / item.polynomial : _q / pow(item.polynomial, item.power)
             m.append(poly)
             if item.degree == 2 {
-                m.append(Polynomial(CollectionOfOne(0).concat(poly)))
+                m.append(Polynomial(CollectionOfOne(0).concat(with: poly)))
             }
         }
         m.append(rem)
         
         var matrix: [Double] = []
         for _ in 0..<_q.degree {
-            matrix.appendContentsOf(m.lazy.map { $0[0] })
+            matrix.append(contentsOf: m.lazy.map { $0[0] })
             m = m.map { $0.derivative }
         }
         if MatrixElimination(_q.degree, &matrix) {
-            var c = matrix.lazy.slice(by: _q.degree + 1).map { $0.last! }.generate()
+            var c = matrix.lazy.slice(by: _q.degree + 1).map { $0.last! }.makeIterator()
             for part in partials {
                 switch part {
                 case .one(let a, let n):
