@@ -48,19 +48,14 @@ public class SDStream {
         close(self.fd)
     }
     
-    public func readByte<Target : OutputStreamType>(target: inout Target) -> Bool {
+    public func readByte() -> UInt8? {
         var byte: UInt8 = 0
-        let count = posix_read(fd, &byte, 1)
-        if count == 0 {
-            return false
-        }
-        UnicodeScalar(byte).writeTo(&target)
-        return true
+        return posix_read(fd, &byte, 1) == 0 ? nil : byte
     }
     
     public func writeByte(byte: UInt8) {
         var _byte = byte
-        posix_write(fd, &_byte, 1)
+        _ = posix_write(fd, &_byte, 1)
     }
     
     public func seek(offset: Int, option: Origin) -> Int {
@@ -70,18 +65,20 @@ public class SDStream {
 
 extension SDStream : Streamable {
     
-    public func writeTo<Target : OutputStreamType>(target: inout Target) {
-        while readByte(&target) {}
+    public func write<Target : OutputStream>(to target: inout Target) {
+        while let byte = readByte() {
+            UnicodeScalar(byte).write(to: &target)
+        }
     }
 }
 
-extension SDStream : OutputStreamType {
+extension SDStream : OutputStream {
     
-    public func write(string: String) {
+    public func write(_ string: String) {
         string.withCString {
             var chars = $0
-            while chars.memory != 0 {
-                writeByte(UInt8(bitPattern: chars.memory))
+            while chars.pointee != 0 {
+                writeByte(byte: UInt8(bitPattern: chars.pointee))
                 chars += 1
             }
         }
@@ -110,7 +107,7 @@ private extension SDStream.Origin {
 
 extension SDStream {
     
-    public struct Option : OptionSetType {
+    public struct Option : OptionSet {
         
         public var rawValue: Int32
         
@@ -132,7 +129,7 @@ extension SDStream {
 
 extension SDStream {
     
-    public struct Mode : OptionSetType {
+    public struct Mode : OptionSet {
         
         public var rawValue: UInt16
         
