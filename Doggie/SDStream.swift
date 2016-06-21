@@ -37,7 +37,7 @@ public class SDStream {
     
     private let fd: CInt
     
-    public init?(path: String, option: Option = [], mode: Mode = [.OwnerRead, .OwnerWrite, .GroupRead, .OtherRead]) {
+    public init?(path: String, option: Option = [], mode: Mode = [.ownerRead, .ownerWrite, .groupRead, .otherRead]) {
         self.fd = path.withCString { open($0, O_RDONLY | option.rawValue, mode.rawValue) }
         if fd == -1 {
             return nil
@@ -91,9 +91,9 @@ extension SDStream : OutputStreamType {
 extension SDStream {
     
     public enum Origin {
-        case Begin
-        case Current
-        case End
+        case begin
+        case current
+        case end
     }
 }
 
@@ -101,9 +101,9 @@ private extension SDStream.Origin {
     
     var rawValue: Int32 {
         switch self {
-        case .Begin: return SEEK_SET
-        case .Current: return SEEK_CUR
-        case .End: return SEEK_END
+        case .begin: return SEEK_SET
+        case .current: return SEEK_CUR
+        case .end: return SEEK_END
         }
     }
 }
@@ -118,13 +118,13 @@ extension SDStream {
             self.rawValue = rawValue
         }
         
-        public static var Write: Option {
+        public static var write: Option {
             return Option(rawValue: O_WRONLY)
         }
-        public static var Create: Option {
+        public static var create: Option {
             return Option(rawValue: O_CREAT)
         }
-        public static var Truncate: Option {
+        public static var truncate: Option {
             return Option(rawValue: O_TRUNC)
         }
     }
@@ -140,31 +140,31 @@ extension SDStream {
             self.rawValue = rawValue
         }
         
-        public static var OwnerRead: Mode {
+        public static var ownerRead: Mode {
             return Mode(rawValue: S_IRUSR)
         }
-        public static var OwnerWrite: Mode {
+        public static var ownerWrite: Mode {
             return Mode(rawValue: S_IWUSR)
         }
-        public static var OwnerExecute: Mode {
+        public static var ownerExecute: Mode {
             return Mode(rawValue: S_IXUSR)
         }
-        public static var GroupRead: Mode {
+        public static var groupRead: Mode {
             return Mode(rawValue: S_IRGRP)
         }
-        public static var GroupWrite: Mode {
+        public static var groupWrite: Mode {
             return Mode(rawValue: S_IWGRP)
         }
-        public static var GroupExecute: Mode {
+        public static var groupExecute: Mode {
             return Mode(rawValue: S_IXGRP)
         }
-        public static var OtherRead: Mode {
+        public static var otherRead: Mode {
             return Mode(rawValue: S_IROTH)
         }
-        public static var OtherWrite: Mode {
+        public static var otherWrite: Mode {
             return Mode(rawValue: S_IWOTH)
         }
-        public static var OtherExecute: Mode {
+        public static var otherExecute: Mode {
             return Mode(rawValue: S_IXOTH)
         }
     }
