@@ -48,7 +48,7 @@ public class SDStream {
         close(self.fd)
     }
     
-    public func readByte<Target : OutputStreamType>(inout target: Target) -> Bool {
+    public func readByte<Target : OutputStreamType>(target: inout Target) -> Bool {
         var byte: UInt8 = 0
         let count = posix_read(fd, &byte, 1)
         if count == 0 {
@@ -70,7 +70,7 @@ public class SDStream {
 
 extension SDStream : Streamable {
     
-    public func writeTo<Target : OutputStreamType>(inout target: Target) {
+    public func writeTo<Target : OutputStreamType>(target: inout Target) {
         while readByte(&target) {}
     }
 }
