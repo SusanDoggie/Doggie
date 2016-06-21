@@ -356,14 +356,14 @@ public func ClosestBezier(_ point: Point, _ b0: Point, _ b1: Point) -> [Double] 
     let x: Polynomial = [b0.x - point.x, b1.x - b0.x]
     let y: Polynomial = [b0.y - point.y, b1.y - b0.y]
     let dot = x * x + y * y
-    return dot.derivative.roots.sort { dot.eval($0) }
+    return dot.derivative.roots.sorted(by: { dot.eval($0) })
 }
 
 public func ClosestBezier(_ point: Point, _ b0: Point, _ b1: Point, _ b2: Point) -> [Double] {
     let x: Polynomial = [b0.x - point.x, 2 * (b1.x - b0.x), b0.x - 2 * b1.x + b2.x]
     let y: Polynomial = [b0.y - point.y, 2 * (b1.y - b0.y), b0.y - 2 * b1.y + b2.y]
     let dot = x * x + y * y
-    return dot.derivative.roots.sort { dot.eval($0) }
+    return dot.derivative.roots.sorted(by: { dot.eval($0) })
 }
 
 public func ClosestBezier(_ point: Point, _ b0: Point, _ b1: Point, _ b2: Point, _ b3: Point) -> [Double] {
@@ -372,7 +372,7 @@ public func ClosestBezier(_ point: Point, _ b0: Point, _ b1: Point, _ b2: Point,
     let dot = x * x + y * y
     let y_roots = y.roots
     var roots = x.roots.filter { x in y_roots.contains { x.almostEqual($0) } }
-    return roots.count != 0 ? roots.sort { dot.eval($0) } : dot.derivative.roots.sort { dot.eval($0) }
+    return roots.count != 0 ? roots.sorted(by: { dot.eval($0) }) : dot.derivative.roots.sorted(by: { dot.eval($0) })
 }
 
 public func ClosestBezier(_ point: Point, _ b0: Point, _ b1: Point, _ b2: Point, _ b3: Point, _ b4: Point , _ b5: Point ... ) -> [Double] {
@@ -380,7 +380,7 @@ public func ClosestBezier(_ point: Point, _ b0: Point, _ b1: Point, _ b2: Point,
     let x = BezierPolynomial(list.map { $0.x }) - point.x
     let y = BezierPolynomial(list.map { $0.y }) - point.y
     let dot = x * x + y * y
-    return dot.derivative.roots.sort { dot.eval($0) }
+    return dot.derivative.roots.sorted(by: { dot.eval($0) })
 }
 
 @_transparent
@@ -1092,7 +1092,7 @@ extension PartialPolynomial {
 
 @_transparent
 private func appendPartialPolynomial(_ p: inout [PartialPolynomial], _ poly: Double) {
-    let power = p.lazy.filter { $0.almostEqual(poly) }.maxElement { $0.power }?.power ?? 0
+    let power = p.lazy.filter { $0.almostEqual(poly) }.max(by: { $0.power })?.power ?? 0
     p.append(.one(poly, power + 1))
 }
 
@@ -1107,7 +1107,7 @@ private func appendPartialPolynomial(_ p: inout [PartialPolynomial], _ poly: (Do
         appendPartialPolynomial(&p, 0.5 * (poly.1 - _sqrt))
         appendPartialPolynomial(&p, 0.5 * (poly.1 + _sqrt))
     } else {
-        let power = p.lazy.filter { $0.almostEqual(poly) }.maxElement { $0.power }?.power ?? 0
+        let power = p.lazy.filter { $0.almostEqual(poly) }.max(by: { $0.power })?.power ?? 0
         p.append(.two(poly.0, poly.1, power + 1))
     }
 }
