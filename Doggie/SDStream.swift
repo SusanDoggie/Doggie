@@ -1,0 +1,172 @@
+//
+//  SDStream.swift
+//
+//  The MIT License
+//  Copyright (c) 2015 - 2016 Susan Cheng. All rights reserved.
+//
+//  Permission is hereby granted, free of charge, to any person obtaining a copy
+//  of this software and associated documentation files (the "Software"), to deal
+//  in the Software without restriction, including without limitation the rights
+//  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+//  copies of the Software, and to permit persons to whom the Software is
+//  furnished to do so, subject to the following conditions:
+//
+//  The above copyright notice and this permission notice shall be included in
+//  all copies or substantial portions of the Software.
+//
+//  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+//  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+//  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
+//  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+//  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+//  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+//  THE SOFTWARE.
+//
+
+import Foundation
+
+#if os(Linux)
+let posix_read = Glibc.read
+let posix_write = Glibc.write
+#else
+let posix_read = Darwin.read
+let posix_write = Darwin.write
+#endif
+
+public class SDStream {
+    
+    private let fd: CInt
+    
+    public init?(path: String, option: Option = [], mode: Mode = [.OwnerRead, .OwnerWrite, .GroupRead, .OtherRead]) {
+        self.fd = path.withCString { open($0, O_RDONLY | option.rawValue, mode.rawValue) }
+        if fd == -1 {
+            return nil
+        }
+    }
+    
+    deinit {
+        close(self.fd)
+    }
+    
+    public func readByte<Target : OutputStreamType>(inout target: Target) -> Bool {
+        var byte: UInt8 = 0
+        let count = posix_read(fd, &byte, 1)
+        if count == 0 {
+            return false
+        }
+        UnicodeScalar(byte).writeTo(&target)
+        return true
+    }
+    
+    public func writeByte(byte: UInt8) {
+        var _byte = byte
+        posix_write(fd, &_byte, 1)
+    }
+    
+    public func seek(offset: Int, option: Origin) -> Int {
+        return Int(lseek(fd, off_t(offset), option.rawValue))
+    }
+}
+
+extension SDStream : Streamable {
+    
+    public func writeTo<Target : OutputStreamType>(inout target: Target) {
+        while readByte(&target) {}
+    }
+}
+
+extension SDStream : OutputStreamType {
+    
+    public func write(string: String) {
+        string.withCString {
+            var chars = $0
+            while chars.memory != 0 {
+                writeByte(UInt8(bitPattern: chars.memory))
+                chars += 1
+            }
+        }
+    }
+}
+
+extension SDStream {
+    
+    public enum Origin {
+        case Begin
+        case Current
+        case End
+    }
+}
+
+private extension SDStream.Origin {
+    
+    var rawValue: Int32 {
+        switch self {
+        case .Begin: return SEEK_SET
+        case .Current: return SEEK_CUR
+        case .End: return SEEK_END
+        }
+    }
+}
+
+extension SDStream {
+    
+    public struct Option : OptionSetType {
+        
+        public var rawValue: Int32
+        
+        public init(rawValue: Int32) {
+            self.rawValue = rawValue
+        }
+        
+        public static var Write: Option {
+            return Option(rawValue: O_WRONLY)
+        }
+        public static var Create: Option {
+            return Option(rawValue: O_CREAT)
+        }
+        public static var Truncate: Option {
+            return Option(rawValue: O_TRUNC)
+        }
+    }
+}
+
+extension SDStream {
+    
+    public struct Mode : OptionSetType {
+        
+        public var rawValue: UInt16
+        
+        public init(rawValue: UInt16) {
+            self.rawValue = rawValue
+        }
+        
+        public static var OwnerRead: Mode {
+            return Mode(rawValue: S_IRUSR)
+        }
+        public static var OwnerWrite: Mode {
+            return Mode(rawValue: S_IWUSR)
+        }
+        public static var OwnerExecute: Mode {
+            return Mode(rawValue: S_IXUSR)
+        }
+        public static var GroupRead: Mode {
+            return Mode(rawValue: S_IRGRP)
+        }
+        public static var GroupWrite: Mode {
+            return Mode(rawValue: S_IWGRP)
+        }
+        public static var GroupExecute: Mode {
+            return Mode(rawValue: S_IXGRP)
+        }
+        public static var OtherRead: Mode {
+            return Mode(rawValue: S_IROTH)
+        }
+        public static var OtherWrite: Mode {
+            return Mode(rawValue: S_IWOTH)
+        }
+        public static var OtherExecute: Mode {
+            return Mode(rawValue: S_IXOTH)
+        }
+    }
+    
+}
