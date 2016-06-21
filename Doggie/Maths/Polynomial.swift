@@ -73,6 +73,9 @@ extension Polynomial : RandomAccessCollection, MutableCollection {
     
     public typealias Iterator = IndexingIterator<Polynomial>
     
+    public typealias Indices = CountableRange<Int>
+    public typealias Index = Int
+    
     public var startIndex : Int {
         return coeffs.startIndex
     }
@@ -102,6 +105,30 @@ extension Polynomial : RandomAccessCollection, MutableCollection {
                 coeffs.append(repeatElement(0, count: n - coeffs.count))
                 coeffs.append(newValue)
             }
+        }
+    }
+}
+
+extension Polynomial : RangeReplaceableCollection {
+    
+    public mutating func append(_ x: Double) {
+        if x != 0 {
+            coeffs.append(x)
+        }
+    }
+    
+    public mutating func reserveCapacity(_ minimumCapacity: Int) {
+        coeffs.reserveCapacity(minimumCapacity)
+    }
+    
+    public mutating func removeAll(_ keepingCapacity: Bool = false) {
+        coeffs.removeAll(keepingCapacity: keepingCapacity)
+    }
+    
+    public mutating func replaceSubrange<C : Collection where C.Iterator.Element == Double>(_ subRange: Range<Int>, with newElements: C) {
+        coeffs.replaceSubrange(subRange, with: newElements)
+        while coeffs.last == 0 {
+            coeffs.removeLast()
         }
     }
 }
@@ -210,7 +237,7 @@ private func _root(_ p: Polynomial) -> [Double] {
                     mid = 0.5 * (neg + pos)
                 }
                 let midVal = p.eval(mid)
-                if midVal.almostZero(eps, reference: mid) || pos.almostEqual(neg, epsilon: eps) {
+                if midVal.almostZero(epsilon: eps, reference: mid) || pos.almostEqual(neg, epsilon: eps) {
                     result.append(mid)
                     break
                 }
