@@ -318,7 +318,7 @@ public extension RandomAccessCollection where Index : Strideable, Index.Stride :
 public extension String {
     
     func hasPattern(pattern: String) -> Bool {
-        return Array(characters).matchWith(pattern: Array(pattern.characters)) != nil
+        return Array(characters).match(with: Array(pattern.characters)) != nil
     }
 }
 

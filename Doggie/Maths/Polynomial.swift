@@ -76,6 +76,8 @@ extension Polynomial : RandomAccessCollection, MutableCollection {
     public typealias Indices = CountableRange<Int>
     public typealias Index = Int
     
+    public typealias SubSequence = MutableRangeReplaceableRandomAccessSlice<Polynomial>
+    
     public var startIndex : Int {
         return coeffs.startIndex
     }
@@ -85,24 +87,19 @@ extension Polynomial : RandomAccessCollection, MutableCollection {
     public var count : Int {
         return coeffs.count
     }
-    public func index(after i: Int) -> Int {
-        return coeffs.index(after: i)
-    }
-    public func index(before i: Int) -> Int {
-        return coeffs.index(before: i)
-    }
-    public subscript(n: Int) -> Double {
+    
+    public subscript(position: Int) -> Double {
         get {
-            return n < coeffs.count ? coeffs[n] : 0
+            return position < coeffs.count ? coeffs[position] : 0
         }
         set {
-            if n < coeffs.count {
-                coeffs[n] = newValue
+            if position < coeffs.count {
+                coeffs[position] = newValue
                 while coeffs.last == 0 {
                     coeffs.removeLast()
                 }
             } else if newValue != 0 {
-                coeffs.append(repeatElement(0, count: n - coeffs.count))
+                coeffs.append(repeatElement(0, count: position - coeffs.count))
                 coeffs.append(newValue)
             }
         }
@@ -143,7 +140,7 @@ extension Polynomial : Hashable {
 extension Polynomial {
     
     public var degree : Int {
-        return max(coeffs.count - 1, 0)
+        return Swift.max(coeffs.count - 1, 0)
     }
     
     public func eval(_ x: Double) -> Double {

@@ -146,6 +146,14 @@ public struct LazyGatherRandomAccessCollection<C : Collection, Indices : RandomA
         return _indices.index(before: i)
     }
     
+    public func index(_ i: Indices.Index, offsetBy n: Indices.IndexDistance) -> Indices.Index {
+        return _indices.index(i, offsetBy: n)
+    }
+    
+    public func distance(from start: Indices.Index, to end: Indices.Index) -> Indices.IndexDistance {
+        return _indices.distance(from: start, to: end)
+    }
+    
     public var count : Indices.IndexDistance {
         return _indices.count
     }

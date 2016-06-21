@@ -81,6 +81,7 @@ public struct ParallelCollection<Base: RandomAccessCollection> : ParallelCollect
     public typealias Iterator = ParallelCollectionIterator<Base.Iterator>
     
     public typealias Index = Base.Index
+    public typealias IndexDistance = Base.IndexDistance
     
     public init(_ base: Base) {
         self.base = base
@@ -103,6 +104,14 @@ public struct ParallelCollection<Base: RandomAccessCollection> : ParallelCollect
     
     public func index(before i: Index) -> Index {
         return self.base.index(before: i)
+    }
+    
+    public func index(_ i: Index, offsetBy n: IndexDistance) -> Index {
+        return self.base.index(i, offsetBy: n)
+    }
+    
+    public func distance(from start: Index, to end: Index) -> IndexDistance {
+        return self.base.distance(from: start, to: end)
     }
     
     public subscript(position: Index) -> Base.Iterator.Element {
@@ -131,6 +140,7 @@ public struct ParallelMapCollection<Base: RandomAccessCollection, Element> : Par
     public typealias Iterator = ParallelMapCollectionIterator<Base.Iterator, Element>
     
     public typealias Index = Base.Index
+    public typealias IndexDistance = Base.IndexDistance
     
     public init(_ base: Base, transform: (Base.Iterator.Element) -> Element) {
         self.base = base
@@ -154,6 +164,14 @@ public struct ParallelMapCollection<Base: RandomAccessCollection, Element> : Par
     
     public func index(before i: Index) -> Index {
         return self.base.index(before: i)
+    }
+    
+    public func index(_ i: Index, offsetBy n: IndexDistance) -> Index {
+        return self.base.index(i, offsetBy: n)
+    }
+    
+    public func distance(from start: Index, to end: Index) -> IndexDistance {
+        return self.base.distance(from: start, to: end)
     }
     
     public subscript(position: Index) -> Element {

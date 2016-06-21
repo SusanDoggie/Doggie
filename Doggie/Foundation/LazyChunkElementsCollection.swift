@@ -142,6 +142,14 @@ public struct LazyChunkElementsRandomAccessCollection<Key : Equatable, Base : Ra
         return base.index(before: i)
     }
     
+    public func index(_ i: Base.Index, offsetBy n: Base.IndexDistance) -> Base.Index {
+        return base.index(i, offsetBy: n)
+    }
+    
+    public func distance(from start: Base.Index, to end: Base.Index) -> Base.IndexDistance {
+        return base.distance(from: start, to: end)
+    }
+    
     public subscript(index: Base.Index) -> Base.Iterator.Element {
         return base[index]
     }
