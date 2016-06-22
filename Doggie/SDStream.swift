@@ -48,24 +48,64 @@ public class SDStream {
         close(self.fd)
     }
     
-    public func readByte() -> UInt8? {
+    public final func readByte() -> UInt8? {
         var byte: UInt8 = 0
-        return posix_read(fd, &byte, 1) == 0 ? nil : byte
+        repeat {
+            let size = posix_read(fd, &byte, 1)
+            if size == 0 {
+                return nil // EOF
+            }
+            if size > 0 {
+                return byte
+            }
+        } while errno == EINTR // retry
+        
+        return nil // error
     }
     
-    public func writeByte(byte: UInt8) {
+    public final func writeByte(byte: UInt8) {
         var _byte = byte
-        _ = posix_write(fd, &_byte, 1)
+        repeat {
+            let size = posix_write(fd, &_byte, 1)
+            if size > 0 {
+                return
+            }
+        } while errno == EINTR // retry
     }
     
-    public func seek(offset: Int, option: Origin) -> Int {
+    public final func seek(offset: Int, option: Origin) -> Int {
         return Int(lseek(fd, off_t(offset), option.rawValue))
+    }
+}
+
+extension SDStream {
+    
+    public final func wait() {
+        var _pollfd = pollfd(fd: self.fd, events: Int16(POLLIN | POLLOUT), revents: 0)
+        repeat {
+            let ready = poll(&_pollfd, 1, -1)
+            if ready >= 0 {
+                return
+            }
+        } while errno == EINTR // retry
+    }
+    
+    public final func wait(time: Double) -> Bool {
+        var _pollfd = pollfd(fd: self.fd, events: Int16(POLLIN | POLLOUT), revents: 0)
+        repeat {
+            let ready = poll(&_pollfd, 1, Int32(time * 1000))
+            if ready >= 0 {
+                return ready > 0
+            }
+        } while errno == EINTR // retry
+        
+        return false
     }
 }
 
 extension SDStream : Streamable {
     
-    public func write<Target : OutputStream>(to target: inout Target) {
+    public final func write<Target : OutputStream>(to target: inout Target) {
         while let byte = readByte() {
             UnicodeScalar(byte).write(to: &target)
         }
@@ -74,7 +114,7 @@ extension SDStream : Streamable {
 
 extension SDStream : OutputStream {
     
-    public func write(_ string: String) {
+    public final func write(_ string: String) {
         string.withCString {
             var chars = $0
             while chars.pointee != 0 {
