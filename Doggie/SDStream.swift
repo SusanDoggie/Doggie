@@ -80,26 +80,24 @@ public class SDStream {
 
 extension SDStream {
     
-    public final func wait() {
+    private func _wait(timeout: Int32) -> Bool {
         var _pollfd = pollfd(fd: self.fd, events: Int16(POLLIN | POLLOUT), revents: 0)
         repeat {
-            let ready = poll(&_pollfd, 1, -1)
-            if ready >= 0 {
-                return
-            }
-        } while errno == EINTR // retry
-    }
-    
-    public final func wait(time: Double) -> Bool {
-        var _pollfd = pollfd(fd: self.fd, events: Int16(POLLIN | POLLOUT), revents: 0)
-        repeat {
-            let ready = poll(&_pollfd, 1, Int32(time * 1000))
+            let ready = poll(&_pollfd, 1, timeout)
             if ready >= 0 {
                 return ready > 0
             }
         } while errno == EINTR // retry
         
         return false
+    }
+    
+    public final func wait() {
+        _ = _wait(timeout: -1)
+    }
+    
+    public final func wait(time: Double) -> Bool {
+        return _wait(timeout: Int32(time * 1000))
     }
 }
 
