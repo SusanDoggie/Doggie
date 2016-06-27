@@ -12,7 +12,6 @@
 		081321ED1C11D3600081B2B9 /* Arithmetic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA431C0550B7007FA426 /* Arithmetic.swift */; };
 		081321EE1C11D3600081B2B9 /* CircularConvolve.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA441C0550B7007FA426 /* CircularConvolve.swift */; };
 		081321EF1C11D3600081B2B9 /* ComplexConversion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA451C0550B7007FA426 /* ComplexConversion.swift */; };
-		081321F01C11D3600081B2B9 /* Conversion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA461C0550B7007FA426 /* Conversion.swift */; };
 		081321F11C11D3600081B2B9 /* CooleyTukey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA471C0550B7007FA426 /* CooleyTukey.swift */; };
 		081321F21C11D3600081B2B9 /* DiscreteConvolve.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA481C0550B7007FA426 /* DiscreteConvolve.swift */; };
 		081321F41C11D3600081B2B9 /* Move.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA4A1C0550B7007FA426 /* Move.swift */; };
@@ -46,7 +45,6 @@
 		081322211C11D3600081B2B9 /* Arithmetic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA431C0550B7007FA426 /* Arithmetic.swift */; };
 		081322221C11D3600081B2B9 /* CircularConvolve.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA441C0550B7007FA426 /* CircularConvolve.swift */; };
 		081322231C11D3600081B2B9 /* ComplexConversion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA451C0550B7007FA426 /* ComplexConversion.swift */; };
-		081322241C11D3600081B2B9 /* Conversion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA461C0550B7007FA426 /* Conversion.swift */; };
 		081322251C11D3600081B2B9 /* CooleyTukey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA471C0550B7007FA426 /* CooleyTukey.swift */; };
 		081322261C11D3600081B2B9 /* DiscreteConvolve.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA481C0550B7007FA426 /* DiscreteConvolve.swift */; };
 		081322281C11D3600081B2B9 /* Move.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA4A1C0550B7007FA426 /* Move.swift */; };
@@ -84,8 +82,6 @@
 		0858DA841C0550B7007FA426 /* CircularConvolve.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA441C0550B7007FA426 /* CircularConvolve.swift */; };
 		0858DA871C0550B7007FA426 /* ComplexConversion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA451C0550B7007FA426 /* ComplexConversion.swift */; };
 		0858DA881C0550B7007FA426 /* ComplexConversion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA451C0550B7007FA426 /* ComplexConversion.swift */; };
-		0858DA8B1C0550B7007FA426 /* Conversion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA461C0550B7007FA426 /* Conversion.swift */; };
-		0858DA8C1C0550B7007FA426 /* Conversion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA461C0550B7007FA426 /* Conversion.swift */; };
 		0858DA8F1C0550B7007FA426 /* CooleyTukey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA471C0550B7007FA426 /* CooleyTukey.swift */; };
 		0858DA901C0550B7007FA426 /* CooleyTukey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA471C0550B7007FA426 /* CooleyTukey.swift */; };
 		0858DA931C0550B7007FA426 /* DiscreteConvolve.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA481C0550B7007FA426 /* DiscreteConvolve.swift */; };
@@ -254,7 +250,6 @@
 		0858DA431C0550B7007FA426 /* Arithmetic.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Arithmetic.swift; sourceTree = "<group>"; };
 		0858DA441C0550B7007FA426 /* CircularConvolve.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CircularConvolve.swift; sourceTree = "<group>"; };
 		0858DA451C0550B7007FA426 /* ComplexConversion.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ComplexConversion.swift; sourceTree = "<group>"; };
-		0858DA461C0550B7007FA426 /* Conversion.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Conversion.swift; sourceTree = "<group>"; };
 		0858DA471C0550B7007FA426 /* CooleyTukey.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CooleyTukey.swift; sourceTree = "<group>"; };
 		0858DA481C0550B7007FA426 /* DiscreteConvolve.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DiscreteConvolve.swift; sourceTree = "<group>"; };
 		0858DA4A1C0550B7007FA426 /* Move.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Move.swift; sourceTree = "<group>"; };
@@ -377,7 +372,6 @@
 				0858DA431C0550B7007FA426 /* Arithmetic.swift */,
 				0858DA441C0550B7007FA426 /* CircularConvolve.swift */,
 				0858DA451C0550B7007FA426 /* ComplexConversion.swift */,
-				0858DA461C0550B7007FA426 /* Conversion.swift */,
 				0858DA471C0550B7007FA426 /* CooleyTukey.swift */,
 				0858DA481C0550B7007FA426 /* DiscreteConvolve.swift */,
 				0858DA4A1C0550B7007FA426 /* Move.swift */,
@@ -765,7 +759,6 @@
 				0AADD11F1D10E75300087247 /* LazyScanSequence.swift in Sources */,
 				08863CC81C22756F004C27E5 /* SDObserver.swift in Sources */,
 				081322251C11D3600081B2B9 /* CooleyTukey.swift in Sources */,
-				081322241C11D3600081B2B9 /* Conversion.swift in Sources */,
 				0813223D1C11D3600081B2B9 /* Maths.swift in Sources */,
 				081322501C11D3600081B2B9 /* SDShape.swift in Sources */,
 				0AADD1291D10E79A00087247 /* LazyGatherCollection.swift in Sources */,
@@ -843,7 +836,6 @@
 				08863CC91C22756F004C27E5 /* SDObserver.swift in Sources */,
 				081322191C11D3600081B2B9 /* SDPathCoder.swift in Sources */,
 				081321EE1C11D3600081B2B9 /* CircularConvolve.swift in Sources */,
-				081321F01C11D3600081B2B9 /* Conversion.swift in Sources */,
 				081321F81C11D3600081B2B9 /* Color.swift in Sources */,
 				081321EF1C11D3600081B2B9 /* ComplexConversion.swift in Sources */,
 				0ACE1E111C57110D00106D1F /* String.swift in Sources */,
@@ -888,7 +880,6 @@
 				0AADD1211D10E75300087247 /* LazyScanSequence.swift in Sources */,
 				0858DA931C0550B7007FA426 /* DiscreteConvolve.swift in Sources */,
 				0858DA8F1C0550B7007FA426 /* CooleyTukey.swift in Sources */,
-				0858DA8B1C0550B7007FA426 /* Conversion.swift in Sources */,
 				0858DB231C0550B7007FA426 /* SDGraphic.swift in Sources */,
 				0ACE1E171C57114A00106D1F /* CollectionExtension.swift in Sources */,
 				0AADD12B1D10E79A00087247 /* LazyGatherCollection.swift in Sources */,
@@ -945,7 +936,6 @@
 				0AADD1221D10E75300087247 /* LazyScanSequence.swift in Sources */,
 				0AADD12C1D10E79A00087247 /* LazyGatherCollection.swift in Sources */,
 				0858DA841C0550B7007FA426 /* CircularConvolve.swift in Sources */,
-				0858DA8C1C0550B7007FA426 /* Conversion.swift in Sources */,
 				0858DAAC1C0550B7007FA426 /* Color.swift in Sources */,
 				0858DA881C0550B7007FA426 /* ComplexConversion.swift in Sources */,
 				0858DB381C0550B7007FA426 /* SDShape.swift in Sources */,
