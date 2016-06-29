@@ -337,35 +337,12 @@ extension SDAtomic {
 
 public class SDSingleton<Instance> {
     
-    private var _value: Instance!
-    private let lck = SDLock()
     private let block: () -> Instance
     public lazy var value: Instance = { [unowned self] in self.block() }()
     
     /// Create a SDSingleton.
     public init(block: () -> Instance) {
         self.block = block
-    }
-}
-
-extension SDSingleton {
-    
-    public final func signal() {
-        lck.synchronized { self._value = self._value ?? self.block() }
-    }
-    
-    public final var isValue : Bool {
-        return self._value != nil
-    }
-    
-    public final var value: Instance {
-        get {
-            self.signal()
-            return self._value
-        }
-        set {
-            lck.synchronized { self._value = newValue }
-        }
     }
 }
 
