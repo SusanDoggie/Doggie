@@ -340,6 +340,7 @@ public class SDSingleton<Instance> {
     private var _value: Instance!
     private let lck = SDLock()
     private let block: () -> Instance
+    public lazy var value: Instance = { [unowned self] in self.block() }()
     
     /// Create a SDSingleton.
     public init(block: () -> Instance) {
