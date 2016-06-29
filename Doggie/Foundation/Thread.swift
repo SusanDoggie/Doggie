@@ -337,12 +337,37 @@ extension SDAtomic {
 
 public class SDSingleton<Instance> {
     
+    private var token: dispatch_once_t = 0
+    private var _value: Instance!
     private let block: () -> Instance
-    public lazy var value: Instance = { [unowned self] in self.block() }()
     
     /// Create a SDSingleton.
     public init(block: () -> Instance) {
         self.block = block
+    }
+}
+
+extension SDSingleton {
+    
+    public final func signal() {
+        dispatch_once(&token) {
+            self._value = self.block()
+        }
+    }
+    
+    public final var isValue : Bool {
+        return self._value != nil
+    }
+    
+    public final var value: Instance {
+        get {
+            self.signal()
+            return self._value
+        }
+        set {
+            dispatch_once(&token) { /* do nothing. */ }
+            self._value = newValue
+        }
     }
 }
 
