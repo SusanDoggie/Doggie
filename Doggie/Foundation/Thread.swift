@@ -337,7 +337,7 @@ extension SDAtomic {
 
 public class SDSingleton<Instance> {
     
-    private var _value: Instance!
+    private var _value: Instance?
     private var spinlck: SDSpinLock = SDSpinLock()
     private let block: () -> Instance
     
@@ -350,7 +350,12 @@ public class SDSingleton<Instance> {
 extension SDSingleton {
     
     public final func signal() {
-        synchronized(self) { self.value = self._value ?? self.block() }
+        if !isValue {
+            synchronized(self) {
+                let result = self._value ?? self.block()
+                self.spinlck.synchronized { self._value = result }
+            }
+        }
     }
     
     public final var isValue : Bool {
@@ -358,13 +363,8 @@ extension SDSingleton {
     }
     
     public final var value: Instance {
-        get {
-            self.signal()
-            return spinlck.synchronized { self._value }
-        }
-        set {
-            spinlck.synchronized { self._value = newValue }
-        }
+        self.signal()
+        return self._value!
     }
 }
 
@@ -404,10 +404,10 @@ private extension SDTask {
     @_transparent
     static func createBlock(_ block: () -> Result) -> (SDTask) -> Void {
         return { _self in
-            synchronized(_self) {
-                if !_self.completed {
-                    let result = block()
-                    _self.spinlck.synchronized { _self._result = _self._result ?? result }
+            if !_self.completed {
+                synchronized(_self) {
+                    let result = _self._result ?? block()
+                    _self.spinlck.synchronized { _self._result = result }
                 }
             }
         }
