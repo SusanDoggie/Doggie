@@ -53,7 +53,7 @@ public extension Lockable {
 }
 
 @discardableResult
-public func synchronized<R>(obj: AnyObject, block: @noescape () throws -> R) rethrows -> R {
+public func synchronized<R>(_ obj: AnyObject, block: @noescape () throws -> R) rethrows -> R {
     objc_sync_enter(obj)
     defer { objc_sync_exit(obj) }
     return try block()
@@ -338,7 +338,7 @@ extension SDAtomic {
 public class SDSingleton<Instance> {
     
     private var _value: Instance!
-    private let lck = SDLock()
+    private var spinlck: SDSpinLock = SDSpinLock()
     private let block: () -> Instance
     
     /// Create a SDSingleton.
@@ -350,20 +350,20 @@ public class SDSingleton<Instance> {
 extension SDSingleton {
     
     public final func signal() {
-        lck.synchronized { self._value = self._value ?? self.block() }
+        synchronized(self) { self.value = self._value ?? self.block() }
     }
     
     public final var isValue : Bool {
-        return self._value != nil
+        return spinlck.synchronized { self._value != nil }
     }
     
     public final var value: Instance {
         get {
             self.signal()
-            return self._value
+            return spinlck.synchronized { self._value }
         }
         set {
-            lck.synchronized { self._value = newValue }
+            spinlck.synchronized { self._value = newValue }
         }
     }
 }
@@ -374,7 +374,6 @@ public class SDTask<Result> : SDAtomic {
     
     private var _notify: [(Result) -> Void] = []
     
-    private let lck = SDLock()
     private var spinlck: SDSpinLock = SDSpinLock()
     
     private let _set: (SDTask) -> Void
@@ -405,7 +404,7 @@ private extension SDTask {
     @_transparent
     static func createBlock(_ block: () -> Result) -> (SDTask) -> Void {
         return { _self in
-            _self.lck.synchronized {
+            synchronized(_self) {
                 if !_self.completed {
                     let result = block()
                     _self.spinlck.synchronized { _self._result = _self._result ?? result }
