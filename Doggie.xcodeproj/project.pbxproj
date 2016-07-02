@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		081321DD1C11D1850081B2B9 /* Doggie_iOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 081321D31C11D1840081B2B9 /* Doggie_iOS.framework */; };
+		081321DD1C11D1850081B2B9 /* Doggie.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 081321D31C11D1840081B2B9 /* Doggie.framework */; };
 		081321EB1C11D2C60081B2B9 /* FourierTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08BFF9B91B0715ED00EC88CB /* FourierTest.swift */; };
 		081321ED1C11D3600081B2B9 /* Arithmetic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA431C0550B7007FA426 /* Arithmetic.swift */; };
 		081321EE1C11D3600081B2B9 /* CircularConvolve.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA441C0550B7007FA426 /* CircularConvolve.swift */; };
@@ -147,7 +147,7 @@
 		085EB5571CA96D9300EBC12C /* Integer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 085EB5541CA96D9300EBC12C /* Integer.swift */; };
 		085EB5581CA96D9300EBC12C /* Integer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 085EB5541CA96D9300EBC12C /* Integer.swift */; };
 		087FE5BA1A372D97005A2E9E /* Doggie_Mac.h in Headers */ = {isa = PBXBuildFile; fileRef = 087FE5B91A372D97005A2E9E /* Doggie_Mac.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		087FE5C01A372D97005A2E9E /* Doggie_Mac.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 087FE5B51A372D97005A2E9E /* Doggie_Mac.framework */; settings = {ATTRIBUTES = (Required, ); }; };
+		087FE5C01A372D97005A2E9E /* Doggie.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 087FE5B51A372D97005A2E9E /* Doggie.framework */; settings = {ATTRIBUTES = (Required, ); }; };
 		08863CC81C22756F004C27E5 /* SDObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08863CC71C22756F004C27E5 /* SDObserver.swift */; };
 		08863CC91C22756F004C27E5 /* SDObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08863CC71C22756F004C27E5 /* SDObserver.swift */; };
 		08863CCA1C22756F004C27E5 /* SDObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08863CC71C22756F004C27E5 /* SDObserver.swift */; };
@@ -245,7 +245,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		081321D31C11D1840081B2B9 /* Doggie_iOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Doggie_iOS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		081321D31C11D1840081B2B9 /* Doggie.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Doggie.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		081321DC1C11D1850081B2B9 /* Doggie_iOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Doggie_iOSTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		0858DA431C0550B7007FA426 /* Arithmetic.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Arithmetic.swift; sourceTree = "<group>"; };
 		0858DA441C0550B7007FA426 /* CircularConvolve.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CircularConvolve.swift; sourceTree = "<group>"; };
@@ -284,7 +284,7 @@
 		087FE59A1A372D5B005A2E9E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		087FE59B1A372D5B005A2E9E /* Doggie_iOS.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Doggie_iOS.h; sourceTree = "<group>"; };
 		087FE5A71A372D5B005A2E9E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		087FE5B51A372D97005A2E9E /* Doggie_Mac.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Doggie_Mac.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		087FE5B51A372D97005A2E9E /* Doggie.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Doggie.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		087FE5B81A372D97005A2E9E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		087FE5B91A372D97005A2E9E /* Doggie_Mac.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Doggie_Mac.h; sourceTree = "<group>"; };
 		087FE5BF1A372D97005A2E9E /* Doggie_MacTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Doggie_MacTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -323,7 +323,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				081321DD1C11D1850081B2B9 /* Doggie_iOS.framework in Frameworks */,
+				081321DD1C11D1850081B2B9 /* Doggie.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -338,7 +338,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				087FE5C01A372D97005A2E9E /* Doggie_Mac.framework in Frameworks */,
+				087FE5C01A372D97005A2E9E /* Doggie.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -437,9 +437,9 @@
 		087FE5971A372D5B005A2E9E /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				087FE5B51A372D97005A2E9E /* Doggie_Mac.framework */,
+				087FE5B51A372D97005A2E9E /* Doggie.framework */,
 				087FE5BF1A372D97005A2E9E /* Doggie_MacTests.xctest */,
-				081321D31C11D1840081B2B9 /* Doggie_iOS.framework */,
+				081321D31C11D1840081B2B9 /* Doggie.framework */,
 				081321DC1C11D1850081B2B9 /* Doggie_iOSTests.xctest */,
 			);
 			name = Products;
@@ -588,7 +588,7 @@
 			);
 			name = Doggie_iOS;
 			productName = Doggie_iOS;
-			productReference = 081321D31C11D1840081B2B9 /* Doggie_iOS.framework */;
+			productReference = 081321D31C11D1840081B2B9 /* Doggie.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		081321DB1C11D1850081B2B9 /* Doggie_iOSTests */ = {
@@ -624,7 +624,7 @@
 			);
 			name = Doggie_Mac;
 			productName = Doggie_Mac;
-			productReference = 087FE5B51A372D97005A2E9E /* Doggie_Mac.framework */;
+			productReference = 087FE5B51A372D97005A2E9E /* Doggie.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		087FE5BE1A372D97005A2E9E /* Doggie_MacTests */ = {
@@ -1031,8 +1031,7 @@
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MTL_ENABLE_DEBUG_INFO = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.SusanDoggie.Doggie-iOS";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_BUNDLE_IDENTIFIER = com.SusanDoggie.Doggie;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_VERSION = 3.0;
@@ -1078,8 +1077,7 @@
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MTL_ENABLE_DEBUG_INFO = NO;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.SusanDoggie.Doggie-iOS";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_BUNDLE_IDENTIFIER = com.SusanDoggie.Doggie;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_VERSION = 3.0;
@@ -1198,6 +1196,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = Doggie;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
@@ -1227,6 +1226,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				PRODUCT_NAME = Doggie;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 			};
 			name = Release;
@@ -1273,7 +1273,6 @@
 				LLVM_LTO = YES;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.SusanDoggie.$(PRODUCT_NAME:rfc1034identifier)";
-				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
 				SWIFT_VERSION = 3.0;
@@ -1322,7 +1321,6 @@
 				LLVM_LTO = YES;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.SusanDoggie.$(PRODUCT_NAME:rfc1034identifier)";
-				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
 				SWIFT_VERSION = 3.0;
