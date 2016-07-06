@@ -24,6 +24,7 @@
 //
 
 import Foundation
+import Doggie
 import XCTest
 
 class FourierTest: XCTestCase {
