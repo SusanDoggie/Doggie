@@ -310,7 +310,7 @@ public extension RandomAccessCollection where Indices.SubSequence.Iterator.Eleme
 
 public extension RandomAccessCollection where Indices.SubSequence.Iterator.Element == Index, Indices.Index == Index, Iterator.Element : Equatable {
     
-    func match<C : BidirectionalCollection where C.Iterator.Element == Iterator.Element, C.IndexDistance == IndexDistance>(with pattern: C) -> Index? {
+    func match<C : BidirectionalCollection where C.Iterator.Element == Iterator.Element>(with pattern: C) -> Index? {
         return self.match(with: pattern, isEquivalent: ==)
     }
 }
