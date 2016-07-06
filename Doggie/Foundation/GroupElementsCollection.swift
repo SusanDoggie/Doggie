@@ -26,9 +26,6 @@
 public struct GroupElementsCollection<Key : Equatable, Element> : RandomAccessCollection {
     
     public typealias Indices = CountableRange<Int>
-    public typealias Index = Int
-    
-    public typealias Iterator = IndexingIterator<GroupElementsCollection>
     
     public let key: Key
     private var base: [Element]
