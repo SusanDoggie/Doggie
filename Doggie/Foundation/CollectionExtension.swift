@@ -277,7 +277,7 @@ public extension RandomAccessCollection {
     }
 }
 
-public extension RandomAccessCollection where Index : Strideable, Index.Stride : SignedInteger {
+public extension RandomAccessCollection where Indices.SubSequence.Iterator.Element == Index, Indices.Index == Index {
     
     func match<C : BidirectionalCollection where C.Iterator.Element == Iterator.Element, C.IndexDistance == IndexDistance>(with pattern: C, isEquivalent: @noescape (Iterator.Element, Iterator.Element) throws -> Bool) rethrows -> Index? {
         
@@ -288,7 +288,7 @@ public extension RandomAccessCollection where Index : Strideable, Index.Stride :
         let reverse_pattern = pattern.reversed()
         var cursor = self.index(startIndex, offsetBy: pattern_count - 1, limitedBy: endIndex) ?? endIndex
         while cursor < endIndex {
-            let left = startIndex...cursor
+            let left = self.indices.prefix(through: cursor)
             let pair = zip(left.reversed(), reverse_pattern)
             guard let not_match = try pair.first(where: { try !isEquivalent(self[$0], $1) }) else {
                 return self.index(cursor, offsetBy: 1 - pattern_count)
@@ -308,7 +308,7 @@ public extension RandomAccessCollection where Index : Strideable, Index.Stride :
     }
 }
 
-public extension RandomAccessCollection where Index : Strideable, Index.Stride : SignedInteger, Iterator.Element : Equatable {
+public extension RandomAccessCollection where Indices.SubSequence.Iterator.Element == Index, Indices.Index == Index, Iterator.Element : Equatable {
     
     func match<C : BidirectionalCollection where C.Iterator.Element == Iterator.Element, C.IndexDistance == IndexDistance>(with pattern: C) -> Index? {
         return self.match(with: pattern, isEquivalent: ==)
