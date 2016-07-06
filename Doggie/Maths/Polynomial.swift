@@ -72,7 +72,6 @@ extension Polynomial : CustomStringConvertible, CustomDebugStringConvertible {
 extension Polynomial : RandomAccessCollection, MutableCollection {
     
     public typealias Indices = CountableRange<Int>
-    public typealias Index = Int
     
     public var startIndex : Int {
         return coeffs.startIndex

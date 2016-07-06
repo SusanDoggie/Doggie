@@ -76,7 +76,6 @@ private extension PathCommand {
 public struct SDPath : SDShape, RandomAccessCollection, MutableCollection, ArrayLiteralConvertible {
     
     public typealias Indices = CountableRange<Int>
-    public typealias Index = Int
     
     private class Cache {
         
