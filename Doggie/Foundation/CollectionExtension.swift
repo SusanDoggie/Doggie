@@ -288,15 +288,12 @@ public extension RandomAccessCollection where Indices.SubSequence.Iterator.Eleme
         let reverse_pattern = pattern.reversed()
         var cursor = self.index(startIndex, offsetBy: pattern_count - 1, limitedBy: endIndex) ?? endIndex
         while cursor < endIndex {
-            let left = self.indices.prefix(through: cursor)
-            let pair = zip(left.reversed(), reverse_pattern)
-            guard let not_match = try pair.first(where: { try !isEquivalent(self[$0], $1) }) else {
+            guard let not_match = try zip(self.indices.prefix(through: cursor).reversed(), reverse_pattern).first(where: { try !isEquivalent(self[$0], $1) }) else {
                 return self.index(cursor, offsetBy: 1 - pattern_count)
             }
             let notMatchValue = self[not_match.0]
             if let pos = try reverse_pattern.dropFirst().index(where: { try isEquivalent(notMatchValue, $0) }) {
-                let offset = reverse_pattern.distance(from: reverse_pattern.startIndex, to: pos)
-                cursor = self.index(not_match.0, offsetBy: numericCast(offset), limitedBy: endIndex) ?? endIndex
+                cursor = self.index(not_match.0, offsetBy: numericCast(reverse_pattern.distance(from: reverse_pattern.startIndex, to: pos)), limitedBy: endIndex) ?? endIndex
             } else {
                 cursor = self.index(not_match.0, offsetBy: pattern_count, limitedBy: endIndex) ?? endIndex
             }
