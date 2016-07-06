@@ -601,10 +601,10 @@ public extension RangeReplaceableCollection {
     }
 }
 
-public extension BidirectionalCollection where Self : MutableCollection, Index : Strideable, Index.Stride : SignedInteger {
+public extension BidirectionalCollection where Self : MutableCollection, Indices.SubSequence : BidirectionalCollection, Iterator.Element : Comparable, Indices.SubSequence.Iterator.Element == Index, Indices.Index == Index {
     
     @_transparent
-    private mutating func reverseInPlace(_ range: CountableRange<Index>) {
+    private mutating func reverseInPlace(_ range: Indices.SubSequence) {
         var temp: Index?
         for (lhs, rhs) in zip(range, range.reversed()) {
             if lhs != rhs && temp != rhs {
@@ -615,23 +615,15 @@ public extension BidirectionalCollection where Self : MutableCollection, Index :
             }
         }
     }
-    
-    mutating func reverseInPlace() {
-        self.reverseInPlace(startIndex..<endIndex)
-    }
-}
-
-public extension BidirectionalCollection where Self : MutableCollection, Indices.SubSequence : BidirectionalCollection, Iterator.Element : Comparable, Indices.SubSequence.Iterator.Element == Index, Index : Strideable, Index.Stride : SignedInteger {
-    
     func nextPermute() -> Self {
         var _self = self
         if !_self.isEmpty {
             if let k = _self.indices.dropLast().last(where: { _self[$0] < _self[_self.index(after: $0)] }) {
-                let range = _self.index(after: k)..<_self.endIndex
+                let range = _self.indices.suffix(from: _self.index(after: k))
                 swap(&_self[k], &_self[range.last { _self[k] < _self[$0] }!])
                 _self.reverseInPlace(range)
             } else {
-                _self.reverseInPlace()
+                _self.reverseInPlace(_self.indices.slice)
             }
         }
         return _self
