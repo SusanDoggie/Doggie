@@ -86,8 +86,8 @@ public struct ConcatCollection<S1 : Collection, S2 : Collection where S1.Iterato
         return ConcatCollectionIndex(currect1: i.currect1, currect2: base2.index(after: i.currect2))
     }
     
-    public subscript(index: Index) -> S1.Iterator.Element {
-        return index.currect1 != base1.endIndex ? base1[index.currect1] : base2[index.currect2]
+    public subscript(position: Index) -> S1.Iterator.Element {
+        return position.currect1 != base1.endIndex ? base1[position.currect1] : base2[position.currect2]
     }
     
     public func makeIterator() -> ConcatIterator<S1.Iterator, S2.Iterator> {
@@ -126,8 +126,8 @@ public struct ConcatBidirectionalCollection<S1 : BidirectionalCollection, S2 : B
         return ConcatCollectionIndex(currect1: base1.index(before: i.currect1), currect2: i.currect2)
     }
     
-    public subscript(index: Index) -> S1.Iterator.Element {
-        return index.currect1 != base1.endIndex ? base1[index.currect1] : base2[index.currect2]
+    public subscript(position: Index) -> S1.Iterator.Element {
+        return position.currect1 != base1.endIndex ? base1[position.currect1] : base2[position.currect2]
     }
     
     public func makeIterator() -> ConcatIterator<S1.Iterator, S2.Iterator> {

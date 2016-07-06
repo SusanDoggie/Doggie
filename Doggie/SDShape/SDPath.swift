@@ -78,10 +78,6 @@ public struct SDPath : SDShape, RandomAccessCollection, MutableCollection, Array
     public typealias Indices = CountableRange<Int>
     public typealias Index = Int
     
-    public typealias Iterator = IndexingIterator<SDPath>
-    
-    public typealias SubSequence = MutableRangeReplaceableRandomAccessSlice<SDPath>
-    
     private class Cache {
         
         var frame: Rect?
@@ -175,13 +171,13 @@ public struct SDPath : SDShape, RandomAccessCollection, MutableCollection, Array
         }
     }
     
-    public subscript(index : Int) -> SDPathCommand {
+    public subscript(position : Int) -> SDPathCommand {
         get {
-            return commands[index].command
+            return commands[position].command
         }
         set {
             cache = Cache()
-            commands[index] = PathCommand(newValue)
+            commands[position] = PathCommand(newValue)
         }
     }
     

@@ -64,8 +64,8 @@ public struct LazyChunkElementsCollection<Key : Equatable, Base : Collection> : 
         return base.index(after: i)
     }
     
-    public subscript(index: Base.Index) -> Base.Iterator.Element {
-        return base[index]
+    public subscript(position: Base.Index) -> Base.Iterator.Element {
+        return base[position]
     }
     
     public var count : Base.IndexDistance {
@@ -103,8 +103,8 @@ public struct LazyChunkElementsBidirectionalCollection<Key : Equatable, Base : B
         return base.index(before: i)
     }
     
-    public subscript(index: Base.Index) -> Base.Iterator.Element {
-        return base[index]
+    public subscript(position: Base.Index) -> Base.Iterator.Element {
+        return base[position]
     }
     
     public var count : Base.IndexDistance {
@@ -150,8 +150,8 @@ public struct LazyChunkElementsRandomAccessCollection<Key : Equatable, Base : Ra
         return base.distance(from: start, to: end)
     }
     
-    public subscript(index: Base.Index) -> Base.Iterator.Element {
-        return base[index]
+    public subscript(position: Base.Index) -> Base.Iterator.Element {
+        return base[position]
     }
     
     public var count : Base.IndexDistance {

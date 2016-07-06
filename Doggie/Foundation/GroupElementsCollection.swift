@@ -40,8 +40,8 @@ public struct GroupElementsCollection<Key : Equatable, Element> : RandomAccessCo
         return base.endIndex
     }
     
-    public subscript(index: Int) -> Element {
-        return base[index]
+    public subscript(position: Int) -> Element {
+        return base[position]
     }
     
     public var count : Int {

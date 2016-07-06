@@ -57,8 +57,8 @@ public class SDAtomicGraph<Value> : Collection {
         return Index(base: graph.index(after: i.base))
     }
     
-    public subscript(idx: Index) -> (from: NodeID, to: NodeID, Value) {
-        return graph[idx.base]
+    public subscript(position: Index) -> (from: NodeID, to: NodeID, Value) {
+        return graph[position.base]
     }
     
     public subscript(from fromNode: NodeID, to toNode: NodeID) -> Value? {

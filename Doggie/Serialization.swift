@@ -32,14 +32,14 @@ public func SDPropertyListWithStream(stream: InputStream) throws -> AnyObject {
     return try PropertyListSerialization.propertyList(with: stream, options: .mutableContainersAndLeaves, format: nil)
 }
 public func SDPropertyListSerializationBinary(data: AnyObject) throws -> Data {
-    return try PropertyListSerialization.data(fromPropertyList: data, format: .binaryFormat_v1_0, options: 0)
+    return try PropertyListSerialization.data(fromPropertyList: data, format: .binary, options: 0)
 }
 public func SDPropertyListSerialization(object: AnyObject) throws -> String {
-    return String(data: try PropertyListSerialization.data(fromPropertyList: object, format: .xmlFormat_v1_0, options: 0), encoding: String.Encoding.utf8)!
+    return String(data: try PropertyListSerialization.data(fromPropertyList: object, format: .xml, options: 0), encoding: String.Encoding.utf8)!
 }
 public func SDPropertyListSerialization(object: AnyObject, toStream stream: NSOutputStream) throws -> Int {
     var error: NSError? = nil
-    let count = PropertyListSerialization.writePropertyList(object, to: stream, format: .xmlFormat_v1_0, options: 0, error: &error)
+    let count = PropertyListSerialization.writePropertyList(object, to: stream, format: .xml, options: 0, error: &error)
     if error != nil {
         throw error!
     }

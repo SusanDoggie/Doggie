@@ -66,7 +66,7 @@ public struct Graph<Node : Hashable, Link> : Collection {
         }
     }
     
-    public subscript(idx: GraphIndex<Node, Link>) -> Iterator.Element {
+    public subscript(position: GraphIndex<Node, Link>) -> Iterator.Element {
         let (from, to_val) = table[idx.index1]
         let (to, val) = to_val[idx.index2!]
         return (from, to, val)
@@ -279,7 +279,7 @@ public struct UndirectedGraph<Node : Hashable, Link> : Collection {
         return UndirectedGraphIndex(base: graph.index(after: i.base))
     }
     
-    public subscript(idx: UndirectedGraphIndex<Node, Link>) -> Iterator.Element {
+    public subscript(position: UndirectedGraphIndex<Node, Link>) -> Iterator.Element {
         return graph[idx.base]
     }
     

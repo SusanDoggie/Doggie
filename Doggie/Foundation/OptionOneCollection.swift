@@ -42,7 +42,7 @@ public struct OptionOneCollection<T> : RandomAccessCollection {
     public var endIndex : Int {
         return value == nil ? 0 : 1
     }
-    public subscript(idx: Int) -> T {
+    public subscript(position: Int) -> T {
         return value!
     }
 }

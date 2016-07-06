@@ -61,8 +61,8 @@ public struct LazyGatherCollection<C : Collection, I : Collection where C.Index 
     private let _base: C
     private let _indices: I
     
-    public subscript(idx: I.Index) -> C.Iterator.Element {
-        return _base[_indices[idx]]
+    public subscript(position: I.Index) -> C.Iterator.Element {
+        return _base[_indices[position]]
     }
     
     public var startIndex : I.Index {
@@ -92,8 +92,8 @@ public struct LazyGatherBidirectionalCollection<C : Collection, I : Bidirectiona
     private let _base: C
     private let _indices: I
     
-    public subscript(idx: I.Index) -> C.Iterator.Element {
-        return _base[_indices[idx]]
+    public subscript(position: I.Index) -> C.Iterator.Element {
+        return _base[_indices[position]]
     }
     
     public var startIndex : I.Index {
@@ -127,8 +127,8 @@ public struct LazyGatherRandomAccessCollection<C : Collection, I : RandomAccessC
     private let _base: C
     private let _indices: I
     
-    public subscript(idx: I.Index) -> C.Iterator.Element {
-        return _base[_indices[idx]]
+    public subscript(position: I.Index) -> C.Iterator.Element {
+        return _base[_indices[position]]
     }
     
     public var startIndex : I.Index {

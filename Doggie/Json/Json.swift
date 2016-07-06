@@ -266,17 +266,17 @@ extension Json {
         }
     }
     
-    public subscript(idx: Int) -> Json {
+    public subscript(position: Int) -> Json {
         get {
             switch self.value {
-            case .array(let x): return idx < x.count ? x[idx] : nil
+            case .array(let x): return position < x.count ? x[position] : nil
             default: fatalError("Not an array.")
             }
         }
         set {
             switch self.value {
             case .array(var x):
-                x[idx] = newValue
+                x[position] = newValue
                 self.value = .array(x)
             default: fatalError("Not an array.")
             }

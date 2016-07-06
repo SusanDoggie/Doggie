@@ -623,7 +623,8 @@ public func Resampling(_ count: Int, _ buffer: inout [Double]) {
         }
     }
     InverseFourier(_freq, &_freq)
-    buffer.replace(with: _freq.lazy.map { $0.real * sqrt(Double(_freq.count) / Double(buffer.count)) })
+    let _count = buffer.count
+    buffer.replace(with: _freq.lazy.map { $0.real * sqrt(Double(_freq.count) / Double(_count)) })
 }
 
 // MARK: Wrapper Function
