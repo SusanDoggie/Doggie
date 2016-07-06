@@ -95,7 +95,7 @@ extension Polynomial : RandomAccessCollection, MutableCollection {
                     coeffs.removeLast()
                 }
             } else if newValue != 0 {
-                coeffs.append(repeatElement(0, count: position - coeffs.count))
+                coeffs.append(contentsOf: repeatElement(0, count: position - coeffs.count))
                 coeffs.append(newValue)
             }
         }
