@@ -67,8 +67,8 @@ public struct Graph<Node : Hashable, Link> : Collection {
     }
     
     public subscript(position: GraphIndex<Node, Link>) -> Iterator.Element {
-        let (from, to_val) = table[idx.index1]
-        let (to, val) = to_val[idx.index2!]
+        let (from, to_val) = table[position.index1]
+        let (to, val) = to_val[position.index2!]
         return (from, to, val)
     }
     
@@ -280,7 +280,7 @@ public struct UndirectedGraph<Node : Hashable, Link> : Collection {
     }
     
     public subscript(position: UndirectedGraphIndex<Node, Link>) -> Iterator.Element {
-        return graph[idx.base]
+        return graph[position.base]
     }
     
     /// - Complexity: Amortized O(1).
