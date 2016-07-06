@@ -26,9 +26,6 @@
 public struct OptionOneCollection<T> : RandomAccessCollection {
     
     public typealias Indices = CountableRange<Int>
-    public typealias Index = Int
-    
-    public typealias Iterator = IndexingIterator<OptionOneCollection>
     
     private let value: T?
     
