@@ -79,9 +79,6 @@ extension Polynomial : RandomAccessCollection, MutableCollection {
     public var endIndex : Int {
         return coeffs.endIndex
     }
-    public var count : Int {
-        return coeffs.count
-    }
     
     public subscript(position: Int) -> Double {
         get {

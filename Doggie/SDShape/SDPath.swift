@@ -180,10 +180,6 @@ public struct SDPath : SDShape, RandomAccessCollection, MutableCollection, Array
         }
     }
     
-    public var count : Int {
-        return commands.count
-    }
-    
     public var startIndex: Int {
         return commands.startIndex
     }

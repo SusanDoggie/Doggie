@@ -41,10 +41,6 @@ public struct GroupElementsCollection<Key : Equatable, Element> : RandomAccessCo
         return base[position]
     }
     
-    public var count : Int {
-        return base.count
-    }
-    
     public var elements: [Element] {
         return base
     }
