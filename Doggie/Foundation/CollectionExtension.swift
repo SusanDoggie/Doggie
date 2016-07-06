@@ -279,9 +279,9 @@ public extension RandomAccessCollection {
 
 public extension RandomAccessCollection where Indices.SubSequence.Iterator.Element == Index, Indices.Index == Index {
     
-    func match<C : BidirectionalCollection where C.Iterator.Element == Iterator.Element, C.IndexDistance == IndexDistance>(with pattern: C, isEquivalent: @noescape (Iterator.Element, Iterator.Element) throws -> Bool) rethrows -> Index? {
+    func match<C : BidirectionalCollection where C.Iterator.Element == Iterator.Element>(with pattern: C, isEquivalent: @noescape (Iterator.Element, Iterator.Element) throws -> Bool) rethrows -> Index? {
         
-        let pattern_count = pattern.count
+        let pattern_count: IndexDistance = numericCast(pattern.count)
         if count < pattern_count {
             return nil
         }
@@ -296,7 +296,7 @@ public extension RandomAccessCollection where Indices.SubSequence.Iterator.Eleme
             let notMatchValue = self[not_match.0]
             if let pos = try reverse_pattern.dropFirst().index(where: { try isEquivalent(notMatchValue, $0) }) {
                 let offset = reverse_pattern.distance(from: reverse_pattern.startIndex, to: pos)
-                cursor = self.index(not_match.0, offsetBy: offset, limitedBy: endIndex) ?? endIndex
+                cursor = self.index(not_match.0, offsetBy: numericCast(offset), limitedBy: endIndex) ?? endIndex
             } else {
                 cursor = self.index(not_match.0, offsetBy: pattern_count, limitedBy: endIndex) ?? endIndex
             }
