@@ -40,6 +40,14 @@ public protocol SDShape {
 
 public extension SDShape {
     
+    var frame : [Point] {
+        let _transform = self.transform
+        return originalBoundary.points.map { $0 * _transform }
+    }
+}
+
+public extension SDShape {
+    
     var transform : SDTransform {
         get {
             return baseTransform * SDTransform.Scale(scale) * SDTransform.Rotate(rotate)

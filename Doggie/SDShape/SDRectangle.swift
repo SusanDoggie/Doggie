@@ -46,12 +46,7 @@ public struct SDRectangle : SDShape {
     }
     
     public var points : [Point] {
-        let _transform = self.transform
-        return rect.points.map { $0 * _transform }
-    }
-    
-    public var frame : [Point] {
-        return points
+        return frame
     }
     
     private var rect : Rect
