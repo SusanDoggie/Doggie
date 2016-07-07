@@ -117,7 +117,7 @@ public struct SDPath : SDShape, RandomAccessCollection, MutableCollection, Array
         didSet {
             if rotate != oldValue {
                 cache = Cache(frame: cache.frame, boundary: nil, table: cache.table)
-                center = _frame.center * baseTransform * SDTransform.Scale(scale) * SDTransform.Rotate(oldValue)
+                center = originalBoundary.center * baseTransform * SDTransform.Scale(scale) * SDTransform.Rotate(oldValue)
             }
         }
     }
@@ -125,7 +125,7 @@ public struct SDPath : SDShape, RandomAccessCollection, MutableCollection, Array
         didSet {
             if scale != oldValue {
                 let boundary = cache.boundary
-                let _center = _frame.center * baseTransform * SDTransform.Scale(oldValue) * SDTransform.Rotate(rotate)
+                let _center = originalBoundary.center * baseTransform * SDTransform.Scale(oldValue) * SDTransform.Rotate(rotate)
                 center = _center
                 if boundary != nil {
                     cache = Cache(frame: cache.frame, boundary: Rect.bound(boundary!.points.map { ($0 - _center) * scale / oldValue + _center }), table: cache.table)
@@ -156,14 +156,14 @@ public struct SDPath : SDShape, RandomAccessCollection, MutableCollection, Array
     
     public var center : Point {
         get {
-            return _frame.center * transform
+            return originalBoundary.center * transform
         }
         set {
             let _center = center
             if _center != newValue {
                 var boundary = cache.boundary
                 boundary?.origin += newValue - _center
-                let offset = newValue * SDTransform.Rotate(rotate).inverse * SDTransform.Scale(scale).inverse - _frame.center * baseTransform
+                let offset = newValue * SDTransform.Rotate(rotate).inverse * SDTransform.Scale(scale).inverse - originalBoundary.center * baseTransform
                 baseTransform *= SDTransform.Translate(x: offset.x, y: offset.y)
                 cache = Cache(frame: cache.frame, boundary: boundary, table: cache.table)
             }
@@ -302,11 +302,11 @@ public struct SDPath : SDShape, RandomAccessCollection, MutableCollection, Array
     
     public var boundary : Rect {
         if rotate == 0 && scale == 1 && baseTransform == SDTransform.Identity() {
-            return _frame
+            return originalBoundary
         }
         let transform = self.transform
         if transform == SDTransform.Identity() {
-            return _frame
+            return originalBoundary
         }
         if cache.boundary == nil {
             var bound: Rect? = nil
@@ -342,7 +342,7 @@ public struct SDPath : SDShape, RandomAccessCollection, MutableCollection, Array
     
     public var frame : [Point] {
         let _transform = self.transform
-        return _frame.points.map { $0 * _transform }
+        return originalBoundary.points.map { $0 * _transform }
     }
     
     public var path: SDPath {

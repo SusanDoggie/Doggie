@@ -38,6 +38,9 @@ public struct SDRectangle : SDShape {
         }
     }
     
+    public var originalBoundary : Rect {
+        return rect
+    }
     public var boundary : Rect {
         return Rect.bound(points)
     }
