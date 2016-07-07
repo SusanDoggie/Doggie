@@ -339,11 +339,6 @@ public struct SDPath : SDShape, RandomAccessCollection, MutableCollection, Array
         return cache.frame!
     }
     
-    public var frame : [Point] {
-        let _transform = self.transform
-        return originalBoundary.points.map { $0 * _transform }
-    }
-    
     public var path: SDPath {
         return self
     }
