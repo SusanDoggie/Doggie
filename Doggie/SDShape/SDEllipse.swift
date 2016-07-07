@@ -63,6 +63,9 @@ public struct SDEllipse : SDShape {
         }
     }
     
+    public var originalBoundary : Rect {
+        return Rect(x: x - rx, y: y - ry, width: 2 * rx, height: 2 * ry)
+    }
     public var boundary : Rect {
         return EllipseBound(position, radius, transform)
     }

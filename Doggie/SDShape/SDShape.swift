@@ -25,6 +25,7 @@
 
 public protocol SDShape {
     
+    var originalBoundary : Rect { get }
     var boundary : Rect { get }
     var frame : [Point] { get }
     var baseTransform : SDTransform { get set }
