@@ -323,8 +323,7 @@ public struct SDPath : SDShape, RandomAccessCollection, MutableCollection, Array
         return cache.boundary!
     }
     
-    @_transparent
-    private var _frame : Rect {
+    public var originalBoundary : Rect {
         if cache.frame == nil {
             var bound: Rect? = nil
             self._apply { commands, state in
