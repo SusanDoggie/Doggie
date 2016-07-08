@@ -198,4 +198,9 @@ extension ParallelCollectionProtocol {
     public func map<T>(transform: (Iterator.Element) -> T) -> ParallelMapCollection<Self, T> {
         return ParallelMapCollection(self, transform: transform)
     }
+    
+    public func filter(includeElement: (Iterator.Element) -> Bool) -> ParallelCollection<[Iterator.Element]> {
+        let _filter: [Iterator.Element?] = self.map { includeElement($0) ? $0 : nil }.array
+        return _filter.flatMap { $0 }.parallel
+    }
 }
