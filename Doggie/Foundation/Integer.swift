@@ -339,13 +339,13 @@ public func sec_random(_ buffer: UnsafeMutablePointer<Void>, size: Int) {
 public func sec_random_uniform(_ bound: UIntMax) -> UIntMax {
     let RANDMAX: UIntMax = ~0
     var _rand: UIntMax = 0
-    sec_random(&_rand, size: sizeof(UIntMax))
+    sec_random(&_rand, size: sizeof(UIntMax.self))
     if bound.isPower2 {
         _rand &= bound &- 1
     } else {
         let limit = RANDMAX - mod(RANDMAX, bound)
         while _rand >= limit {
-            sec_random(&_rand, size: sizeof(UIntMax))
+            sec_random(&_rand, size: sizeof(UIntMax.self))
         }
         _rand = mod(_rand, bound)
     }
@@ -355,13 +355,13 @@ public func sec_random_uniform(_ bound: UIntMax) -> UIntMax {
 public func random_uniform(_ bound: UIntMax) -> UIntMax {
     let RANDMAX: UIntMax = ~0
     var _rand: UIntMax = 0
-    arc4random_buf(&_rand, sizeof(UIntMax))
+    arc4random_buf(&_rand, sizeof(UIntMax.self))
     if bound.isPower2 {
         _rand &= bound &- 1
     } else {
         let limit = RANDMAX - mod(RANDMAX, bound)
         while _rand >= limit {
-            arc4random_buf(&_rand, sizeof(UIntMax))
+            arc4random_buf(&_rand, sizeof(UIntMax.self))
         }
         _rand = mod(_rand, bound)
     }
