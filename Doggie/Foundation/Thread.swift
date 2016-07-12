@@ -205,6 +205,16 @@ public class SDConditionLock : SDLock {
     }
 }
 
+private extension Date {
+    
+    var timespec : timespec {
+        let _abs_time = self.timeIntervalSince1970
+        let sec = __darwin_time_t(_abs_time)
+        let nsec = Int((_abs_time - Double(sec)) * 1000000000.0)
+        return Foundation.timespec(tv_sec: sec, tv_nsec: nsec)
+    }
+}
+
 extension SDConditionLock {
     
     public final func signal() {
@@ -224,10 +234,7 @@ extension SDConditionLock {
     @discardableResult
     public final func wait(until date: Date) -> Bool {
         super.lock()
-        let _abs_time = date.timeIntervalSince1970
-        let sec = __darwin_time_t(_abs_time)
-        let nsec = Int((_abs_time - Double(sec)) * 1000000000.0)
-        var _timespec = timespec(tv_sec: sec, tv_nsec: nsec)
+        var _timespec = date.timespec
         return pthread_cond_timedwait(&_cond, &_mtx, &_timespec) == 0
     }
     public final func lock(where predicate: @autoclosure () -> Bool) {
@@ -243,10 +250,7 @@ extension SDConditionLock {
     @discardableResult
     public final func lock(where predicate: @autoclosure () -> Bool, until date: Date) -> Bool {
         super.lock()
-        let _abs_time = date.timeIntervalSince1970
-        let sec = __darwin_time_t(_abs_time)
-        let nsec = Int((_abs_time - Double(sec)) * 1000000000.0)
-        var _timespec = timespec(tv_sec: sec, tv_nsec: nsec)
+        var _timespec = date.timespec
         while !predicate() {
             if pthread_cond_timedwait(&_cond, &_mtx, &_timespec) != 0 {
                 if predicate() {
