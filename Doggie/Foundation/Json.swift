@@ -23,9 +23,10 @@
 //  THE SOFTWARE.
 //
 
+import Foundation
+
 private enum jValue {
     
-    case null
     case bool(Swift.Bool)
     case integer(Swift.IntMax)
     case float(Swift.Double)
@@ -58,13 +59,6 @@ public struct Json {
     }
     public init(_ val: [String: Json]) {
         self.value = .object(val)
-    }
-}
-
-extension Json: NilLiteralConvertible {
-    
-    public init(nilLiteral value: Void) {
-        self.value = .null
     }
 }
 
@@ -129,7 +123,6 @@ extension Json: CustomStringConvertible, CustomDebugStringConvertible {
     
     public var description: String {
         switch self.value {
-        case .null: return "nil"
         case .bool(let x): return x.description
         case .integer(let x): return x.description
         case .float(let x): return x.description
@@ -140,7 +133,6 @@ extension Json: CustomStringConvertible, CustomDebugStringConvertible {
     }
     public var debugDescription: String {
         switch self.value {
-        case .null: return "nil"
         case .bool(let x): return x.description
         case .integer(let x): return x.description
         case .float(let x): return x.description
@@ -152,13 +144,6 @@ extension Json: CustomStringConvertible, CustomDebugStringConvertible {
 }
 
 extension Json {
-    
-    public var isNull : Bool {
-        switch self.value {
-        case .null: return true
-        default: return false
-        }
-    }
     
     public var isBool : Bool {
         switch self.value {
@@ -269,7 +254,7 @@ extension Json {
     public subscript(position: Int) -> Json {
         get {
             switch self.value {
-            case .array(let x): return position < x.count ? x[position] : nil
+            case .array(let x): return x[position]
             default: fatalError("Not an array.")
             }
         }
@@ -282,7 +267,7 @@ extension Json {
             }
         }
     }
-    public subscript(key: String) -> Json {
+    public subscript(key: String) -> Json? {
         get {
             switch self.value {
             case .object(let x): return x[key] ?? nil
@@ -342,11 +327,6 @@ extension Json {
     
     public func write(_ data: inout [UInt8]) {
         switch self.value {
-        case .null:
-            data.append(110)
-            data.append(117)
-            data.append(108)
-            data.append(108)
         case .bool(let x):
             if x {
                 data.append(116)
@@ -408,7 +388,6 @@ extension Json : Equatable {
 
 public func == (lhs: Json, rhs: Json) -> Bool {
     switch lhs.value {
-    case .null: return rhs.isNull
     case .bool(let l):
         switch rhs.value {
         case .bool(let r): return l == r
@@ -449,22 +428,23 @@ public enum JsonParseError : ErrorProtocol {
     case unexpectedEndOfToken
     case unexpectedToken(position: Int)
     case invalidEscapeCharacter(position: Int)
+    case invalidArrayStructure(position: Int)
 }
 
 extension Json {
     
-    public static func Parse(bytes: UnsafePointer<UInt8>, count: Int) throws -> Json {
+    public static func Parse(bytes: UnsafePointer<UInt8>, count: Int) throws -> Json? {
         var parser = JsonParser(bytes: bytes, count: count)
         return try parser.parseValue()
     }
-    public static func Parse(string: String) throws -> Json {
+    public static func Parse(string: String) throws -> Json? {
         return try Parse(data: string.data(using: .utf8)!)
     }
 }
 
 extension Json {
     
-    public static func Parse(data: Data) throws -> Json {
+    public static func Parse(data: Data) throws -> Json? {
         return try data.withUnsafeBytes { try Parse(bytes: $0, count: data.count) }
     }
 }
@@ -545,10 +525,11 @@ private struct JsonParser {
         }
     }
     
-    mutating func parseValue() throws -> Json {
+    mutating func parseValue() throws -> Json? {
         try skipWhitespaces()
         switch currentChar! {
-        case 110: return try parseNull()
+        case 110: try parseNull()
+            return nil
         case 116: return try parseTrue()
         case 102: return try parseFalse()
         case 45, 48...57: return try parseNumber()
@@ -559,7 +540,7 @@ private struct JsonParser {
         }
     }
     
-    mutating func parseNull() throws -> Json {
+    mutating func parseNull() throws {
         if scanner.next() != 117 {
             throw JsonParseError.unexpectedToken(position: scanner.pos)
         }
@@ -570,7 +551,6 @@ private struct JsonParser {
             throw JsonParseError.unexpectedToken(position: scanner.pos)
         }
         scanner.next()
-        return nil
     }
     mutating func parseTrue() throws -> Json {
         if scanner.next() != 114 {
@@ -660,7 +640,11 @@ private struct JsonParser {
                 scanner.next()
                 break Loop
             default:
-                array.append(try parseValue())
+                if let val = try parseValue() {
+                    array.append(val)
+                } else {
+                    throw JsonParseError.invalidArrayStructure(position: scanner.pos)
+                }
                 try skipWhitespaces()
             }
         }
