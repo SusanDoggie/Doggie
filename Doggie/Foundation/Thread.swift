@@ -245,7 +245,7 @@ extension SDConditionLock {
     }
     @discardableResult
     public final func wait(where predicate: @autoclosure () -> Bool, for time: Double) -> Bool {
-        return lock(where: predicate, until: Date(timeIntervalSinceNow: time))
+        return wait(where: predicate, until: Date(timeIntervalSinceNow: time))
     }
     @discardableResult
     public final func wait(where predicate: @autoclosure () -> Bool, until date: Date) -> Bool {
@@ -265,7 +265,7 @@ extension SDConditionLock {
     }
     @discardableResult
     public func synchronized<R>(where predicate: @autoclosure () -> Bool, block: @noescape () throws -> R) rethrows -> R {
-        self.lock(where: predicate)
+        self.wait(where: predicate)
         defer { self.unlock() }
         return try block()
     }
@@ -275,7 +275,7 @@ extension SDConditionLock {
     }
     @discardableResult
     public func synchronized<R>(where predicate: @autoclosure () -> Bool, until date: Date, block: @noescape () throws -> R) rethrows -> R? {
-        if self.lock(where: predicate, until: date) {
+        if self.wait(where: predicate, until: date) {
             defer { self.unlock() }
             return try block()
         }
