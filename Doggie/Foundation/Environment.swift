@@ -49,16 +49,6 @@ public func SDTimer(count: Int = 1, block: @noescape () -> Void) -> TimeInterval
     return 1e-9 * Double(time) * frac / Double(count)
 }
 
-public func timeFormat(time: Double) -> String {
-    let minutes = Int(floor(time / 60.0))
-    let seconds = lround(time - Double(minutes * 60))
-    return String(format: "%d:%02d", minutes, seconds)
-}
-
-public func == <T : Comparable>(lhs: T, rhs: T) -> Bool {
-    return !(lhs < rhs || rhs < lhs)
-}
-
 private let _hash_phi = 0.6180339887498948482045868343656381177203091798057628
 private let _hash_seed = Int(bitPattern: UInt(round(_hash_phi * Double(UInt.max))))
 
