@@ -217,6 +217,19 @@ extension SDConditionLock {
             pthread_cond_broadcast(&_cond)
         }
     }
+    @discardableResult
+    public final func wait(for time: Double) -> Bool {
+        return wait(until: Date(timeIntervalSinceNow: time))
+    }
+    @discardableResult
+    public final func wait(until date: Date) -> Bool {
+        super.lock()
+        let _abs_time = date.timeIntervalSince1970
+        let sec = __darwin_time_t(_abs_time)
+        let nsec = Int((_abs_time - Double(sec)) * 1000000000.0)
+        var _timespec = timespec(tv_sec: sec, tv_nsec: nsec)
+        return pthread_cond_timedwait(&_cond, &_mtx, &_timespec) == 0
+    }
     public final func lock(where predicate: @autoclosure () -> Bool) {
         super.lock()
         while !predicate() {
@@ -224,11 +237,11 @@ extension SDConditionLock {
         }
     }
     @discardableResult
-    public final func lock(where predicate: @autoclosure () -> Bool, time: Double) -> Bool {
-        return lock(where: predicate, date: Date(timeIntervalSinceNow: time))
+    public final func lock(where predicate: @autoclosure () -> Bool, for time: Double) -> Bool {
+        return lock(where: predicate, until: Date(timeIntervalSinceNow: time))
     }
     @discardableResult
-    public final func lock(where predicate: @autoclosure () -> Bool, date: Date) -> Bool {
+    public final func lock(where predicate: @autoclosure () -> Bool, until date: Date) -> Bool {
         super.lock()
         let _abs_time = date.timeIntervalSince1970
         let sec = __darwin_time_t(_abs_time)
@@ -253,12 +266,12 @@ extension SDConditionLock {
         return try block()
     }
     @discardableResult
-    public func synchronized<R>(where predicate: @autoclosure () -> Bool, time: Double, block: @noescape () throws -> R) rethrows -> R? {
-        return try synchronized(where: predicate, date: Date(timeIntervalSinceNow: time), block: block)
+    public func synchronized<R>(where predicate: @autoclosure () -> Bool, for time: Double, block: @noescape () throws -> R) rethrows -> R? {
+        return try synchronized(where: predicate, until: Date(timeIntervalSinceNow: time), block: block)
     }
     @discardableResult
-    public func synchronized<R>(where predicate: @autoclosure () -> Bool, date: Date, block: @noescape () throws -> R) rethrows -> R? {
-        if self.lock(where: predicate, date: date) {
+    public func synchronized<R>(where predicate: @autoclosure () -> Bool, until date: Date, block: @noescape () throws -> R) rethrows -> R? {
+        if self.lock(where: predicate, until: date) {
             defer { self.unlock() }
             return try block()
         }
@@ -283,11 +296,11 @@ extension SDSignal {
         sem.wait()
     }
     
-    public final func wait(time: Double) -> Bool {
+    public final func wait(for time: Double) -> Bool {
         return sem.wait(timeout: DispatchTime.now() + time) == .Success
     }
-    public final func wait(date: Date) -> Bool {
-        return wait(time: date.timeIntervalSinceNow)
+    public final func wait(until date: Date) -> Bool {
+        return wait(for: date.timeIntervalSinceNow)
     }
     public final func signal() {
         sem.signal()
