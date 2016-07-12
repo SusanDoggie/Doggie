@@ -34,10 +34,6 @@ public func Environment(name: String) -> String? {
     return String(cString: getenv(name))
 }
 
-public func unsafeBitCast<T, U>(_ x: T) -> U {
-    return unsafeBitCast(x, to: U.self)
-}
-
 public func SDTimer(count: Int = 1, block: @noescape () -> Void) -> TimeInterval {
     var time: UInt64 = 0
     for _ in 0..<count {
