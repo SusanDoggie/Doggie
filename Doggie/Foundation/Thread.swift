@@ -237,18 +237,18 @@ extension SDConditionLock {
         var _timespec = date.timespec
         return pthread_cond_timedwait(&_cond, &_mtx, &_timespec) == 0
     }
-    public final func lock(where predicate: @autoclosure () -> Bool) {
+    public final func wait(where predicate: @autoclosure () -> Bool) {
         super.lock()
         while !predicate() {
             pthread_cond_wait(&_cond, &_mtx)
         }
     }
     @discardableResult
-    public final func lock(where predicate: @autoclosure () -> Bool, for time: Double) -> Bool {
+    public final func wait(where predicate: @autoclosure () -> Bool, for time: Double) -> Bool {
         return lock(where: predicate, until: Date(timeIntervalSinceNow: time))
     }
     @discardableResult
-    public final func lock(where predicate: @autoclosure () -> Bool, until date: Date) -> Bool {
+    public final func wait(where predicate: @autoclosure () -> Bool, until date: Date) -> Bool {
         super.lock()
         var _timespec = date.timespec
         while !predicate() {
