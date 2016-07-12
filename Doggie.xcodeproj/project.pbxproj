@@ -20,7 +20,6 @@
 		0813222C1C11D3600081B2B9 /* Color.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA4E1C0550B7007FA426 /* Color.swift */; };
 		081322381C11D3600081B2B9 /* Fourier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DB451C055172007FA426 /* Fourier.swift */; };
 		081322391C11D3600081B2B9 /* Json.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA5C1C0550B7007FA426 /* Json.swift */; };
-		0813223A1C11D3600081B2B9 /* JsonParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA5D1C0550B7007FA426 /* JsonParser.swift */; };
 		0813223B1C11D3600081B2B9 /* Complex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA5F1C0550B7007FA426 /* Complex.swift */; };
 		0813223C1C11D3600081B2B9 /* Geometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA601C0550B7007FA426 /* Geometry.swift */; };
 		0813223D1C11D3600081B2B9 /* Maths.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA611C0550B7007FA426 /* Maths.swift */; };
@@ -53,7 +52,6 @@
 		0858DAA71C0550B7007FA426 /* Transpose.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA4D1C0550B7007FA426 /* Transpose.swift */; };
 		0858DAAB1C0550B7007FA426 /* Color.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA4E1C0550B7007FA426 /* Color.swift */; };
 		0858DADB1C0550B7007FA426 /* Json.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA5C1C0550B7007FA426 /* Json.swift */; };
-		0858DADF1C0550B7007FA426 /* JsonParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA5D1C0550B7007FA426 /* JsonParser.swift */; };
 		0858DAE31C0550B7007FA426 /* Complex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA5F1C0550B7007FA426 /* Complex.swift */; };
 		0858DAE71C0550B7007FA426 /* Geometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA601C0550B7007FA426 /* Geometry.swift */; };
 		0858DAEB1C0550B7007FA426 /* Maths.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA611C0550B7007FA426 /* Maths.swift */; };
@@ -147,7 +145,6 @@
 		0858DA4D1C0550B7007FA426 /* Transpose.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Transpose.swift; sourceTree = "<group>"; };
 		0858DA4E1C0550B7007FA426 /* Color.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Color.swift; sourceTree = "<group>"; };
 		0858DA5C1C0550B7007FA426 /* Json.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Json.swift; sourceTree = "<group>"; };
-		0858DA5D1C0550B7007FA426 /* JsonParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JsonParser.swift; sourceTree = "<group>"; };
 		0858DA5F1C0550B7007FA426 /* Complex.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Complex.swift; sourceTree = "<group>"; };
 		0858DA601C0550B7007FA426 /* Geometry.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Geometry.swift; sourceTree = "<group>"; };
 		0858DA611C0550B7007FA426 /* Maths.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Maths.swift; sourceTree = "<group>"; };
@@ -240,7 +237,6 @@
 				0858DA4E1C0550B7007FA426 /* Color.swift */,
 				0ACE1DFA1C570F4F00106D1F /* Foundation */,
 				0858DB451C055172007FA426 /* Fourier.swift */,
-				0858DA5B1C0550B7007FA426 /* Json */,
 				0858DA5E1C0550B7007FA426 /* Maths */,
 				0858DA6B1C0550B7007FA426 /* Regex.swift */,
 				0858DA6C1C0550B7007FA426 /* SDAspects.swift */,
@@ -266,15 +262,6 @@
 				0858DA4D1C0550B7007FA426 /* Transpose.swift */,
 			);
 			path = Accelerate;
-			sourceTree = "<group>";
-		};
-		0858DA5B1C0550B7007FA426 /* Json */ = {
-			isa = PBXGroup;
-			children = (
-				0858DA5C1C0550B7007FA426 /* Json.swift */,
-				0858DA5D1C0550B7007FA426 /* JsonParser.swift */,
-			);
-			path = Json;
 			sourceTree = "<group>";
 		};
 		0858DA5E1C0550B7007FA426 /* Maths */ = {
@@ -433,6 +420,7 @@
 				0A64C6431D0BB851001F5E4E /* OrderedSet.swift */,
 				085EB5541CA96D9300EBC12C /* Integer.swift */,
 				088C0C3C1CB227F5003B1BCE /* Thread.swift */,
+				0858DA5C1C0550B7007FA426 /* Json.swift */,
 			);
 			path = Foundation;
 			sourceTree = "<group>";
@@ -638,7 +626,6 @@
 				081322411C11D3600081B2B9 /* Prime.swift in Sources */,
 				081322491C11D3600081B2B9 /* SDAtomicNode.swift in Sources */,
 				081322381C11D3600081B2B9 /* Fourier.swift in Sources */,
-				0813223A1C11D3600081B2B9 /* JsonParser.swift in Sources */,
 				0813223E1C11D3600081B2B9 /* Matrix.swift in Sources */,
 				0AADD11F1D10E75300087247 /* LazyScanSequence.swift in Sources */,
 				08863CC81C22756F004C27E5 /* SDObserver.swift in Sources */,
@@ -714,7 +701,6 @@
 				0AADD12B1D10E79A00087247 /* LazyGatherCollection.swift in Sources */,
 				08AA03161C219B9900609109 /* SDSink.swift in Sources */,
 				0858DAF71C0550B7007FA426 /* Polynomial.swift in Sources */,
-				0858DADF1C0550B7007FA426 /* JsonParser.swift in Sources */,
 				0858DA831C0550B7007FA426 /* CircularConvolve.swift in Sources */,
 				0858DAFB1C0550B7007FA426 /* Prime.swift in Sources */,
 				0AADD11C1D10E6E100087247 /* OptionOneCollection.swift in Sources */,
