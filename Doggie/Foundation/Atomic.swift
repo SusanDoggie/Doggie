@@ -256,7 +256,7 @@ extension Atomic : SDAtomicType {
         let _new = Unmanaged.passRetained(new)
         @_transparent
         func cas(theVal: UnsafeMutablePointer<AtomicBase<Instance>>) -> Bool {
-            return OSAtomicCompareAndSwapPtrBarrier(UnsafeMutablePointer(OpaquePointer(bitPattern: _old)), UnsafeMutablePointer(OpaquePointer(bitPattern: _new)), UnsafeMutablePointer<UnsafeMutablePointer<Void>?>(theVal))
+            return OSAtomicCompareAndSwapPtrBarrier(_old.toOpaque(), _new.toOpaque(), UnsafeMutablePointer<UnsafeMutablePointer<Void>?>(theVal))
         }
         let result = cas(theVal: &base)
         if result {
