@@ -60,13 +60,12 @@ public func synchronized<R>(_ obj: AnyObject, block: @noescape () throws -> R) r
 }
 
 private func _lock(_ lcks: [Lockable]) {
-    let _enumerated = Array(lcks.enumerated())
     if lcks.count > 1 {
         var waiting = 0
         while true {
             lcks[waiting].lock()
-            if let failed = _enumerated.index(where: { $0 != waiting && !$1.trylock() }) {
-                for item in lcks.prefix(upTo: failed) {
+            if let failed = lcks.enumerated().first(where: { $0 != waiting && !$1.trylock() })?.0 {
+                for (index, item) in lcks.prefix(upTo: failed).enumerated() where index != waiting {
                     item.unlock()
                 }
                 lcks[waiting].unlock()
