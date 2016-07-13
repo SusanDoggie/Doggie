@@ -69,6 +69,7 @@ private func _lock(_ lcks: [Lockable]) {
                 for item in lcks.prefix(upTo: failed) {
                     item.unlock()
                 }
+                lcks[waiting].unlock()
                 waiting = failed
             } else {
                 return
