@@ -59,54 +59,15 @@ public func synchronized<R>(_ obj: AnyObject, block: @noescape () throws -> R) r
     return try block()
 }
 
-// MARK: LockGroup
-
-public class SDLockGroup : ArrayLiteralConvertible {
-    
-    private let lck: [Lockable]
-    
-    public init(_ lck: Lockable ... ) {
-        self.lck = lck
-    }
-    
-    public required init(arrayLiteral elements: Lockable ... ) {
-        self.lck = elements
-    }
-}
-
-extension SDLockGroup : Lockable {
-    
-    private final func _trylock(_ lck: [Lockable]) -> Int {
-        if lck.count == 1 {
-            return lck[0].trylock() ? 1 : 0
-        } else if lck.count > 1 {
-            var count = 0
-            while count < lck.count && lck[count].trylock() {
-                count += 1
-            }
-            if count != lck.count {
-                for i in 0..<count {
-                    lck[i].unlock()
-                }
-            }
-            return count
-        }
-        return 0
-    }
-    
-    public final func lock() {
-        if lck.count == 1 {
-            lck[0].lock()
-        } else if lck.count > 1 {
-            var first_lock = 0
-            while true {
-                lck[first_lock].lock()
-                var list = lck
-                list.remove(at: first_lock)
-                var _r = _trylock(list)
-                _r = _r < first_lock ? _r : _r + 1
-                if _r == lck.count {
-                    return
+private func _lock(_ lcks: [Lockable]) {
+    let _enumerated = Array(lcks.enumerated())
+    if lcks.count > 1 {
+        var waiting = 0
+        while true {
+            lcks[waiting].lock()
+            if let failed = _enumerated.index(where: { $0 != waiting && !$1.trylock() }) {
+                for item in lcks.prefix(upTo: failed) {
+                    item.unlock()
                 }
                 waiting = failed
             } else {
@@ -117,7 +78,7 @@ extension SDLockGroup : Lockable {
         lcks.first?.lock()
     }
 }
-public func synchronized<R>(lcks: Lockable ... , @noescape block: () throws -> R) rethrows -> R {
+public func synchronized<R>(_ lcks: Lockable ... , block: @noescape () throws -> R) rethrows -> R {
     _lock(lcks)
     defer {
         for item in lcks {
