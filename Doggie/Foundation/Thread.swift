@@ -72,7 +72,7 @@ public func synchronized<R>(lcks: Lockable ... , @noescape block: () throws -> R
                 lcks[waiting].unlock()
                 waiting = failed
             } else {
-                return
+                break
             }
         }
     } else {
