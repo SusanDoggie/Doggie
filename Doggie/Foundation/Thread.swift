@@ -372,62 +372,53 @@ public class SDTask<Result> : SDAtomic {
     
     private var _notify: [(Result) -> Void] = []
     
-    private var _lck: SDSpinLock = SDSpinLock()
+    private var spinlck = SDSpinLock()
+    private let condition = SDConditionLock()
     
-    private var token: dispatch_once_t = 0
-    private let _set: (SDTask) -> Void
     private var _result: Result?
     
     private init(queue: dispatch_queue_t, suspend: ((Result) -> Bool)?, block: () -> Result) {
-        self._set = SDTask.createBlock(block)
-        super.init(queue: queue, block: SDTask.createSignalBlock(suspend))
+        super.init(queue: queue, block: SDTask.createBlock(suspend, block))
     }
     
     /// Create a SDTask and compute block with specific queue.
     public init(queue: dispatch_queue_t, block: () -> Result) {
-        self._set = SDTask.createBlock(block)
-        super.init(queue: queue, block: SDTask.createSignalBlock(nil))
+        super.init(queue: queue, block: SDTask.createBlock(nil, block))
         self.signal()
     }
     
     /// Create a SDTask and compute block with default queue.
     public init(block: () -> Result) {
-        self._set = SDTask.createBlock(block)
-        super.init(block: SDTask.createSignalBlock(nil))
+        super.init(block: SDTask.createBlock(nil, block))
         self.signal()
     }
 }
 
 private extension SDTask {
     
-    static func createBlock(block: () -> Result) -> (SDTask) -> Void {
-        return { _self in
-            dispatch_once(&_self.token) {
-                let result = block()
-                _self._lck.synchronized { _self._result = result }
-            }
-        }
-    }
-    
-    static func createSignalBlock(suspend: ((Result) -> Bool)?) -> (SDAtomic) -> Void {
+    @_transparent
+    static func createBlock(suspend: ((Result) -> Bool)?, _ block: () -> Result) -> (SDAtomic) -> Void {
         return { atomic in
             let _self = atomic as! SDTask<Result>
-            if let result = _self._result {
-                if suspend?(result) != true {
-                    _self._notify.forEach { $0(result) }
+            if !_self.completed {
+                _self.condition.synchronized {
+                    let result = _self._result ?? block()
+                    _self.spinlck.synchronized { _self._result = result }
+                    _self.condition.broadcast()
                 }
-                _self._notify = []
-            } else {
-                _self._set(_self)
-                _self.signal()
             }
+            if suspend?(_self._result!) != true {
+                _self._notify.forEach { $0(_self._result!) }
+            }
+            _self._notify = []
         }
     }
     
+    @_transparent
     func _apply<R>(queue: dispatch_queue_t, suspend: ((R) -> Bool)?, block: (Result) -> R) -> SDTask<R> {
         var storage: Result!
         let task = SDTask<R>(queue: queue, suspend: suspend) { block(storage) }
-        return _lck.synchronized {
+        return spinlck.synchronized {
             if _result == nil {
                 _notify.append {
                     storage = $0
@@ -446,13 +437,12 @@ extension SDTask {
     
     /// Return `true` iff task is completed.
     public final var completed: Bool {
-        return _lck.synchronized { _result != nil }
+        return spinlck.synchronized { _result != nil }
     }
     
     /// Result of task.
     public final var result: Result {
-        self._set(self)
-        return self._result!
+        return condition.synchronized(self.completed) { self._result! }
     }
 }
 
