@@ -108,22 +108,23 @@ extension SDLockGroup : Lockable {
                 if _r == lck.count {
                     return
                 }
-                lck[first_lock].unlock()
-                first_lock = _r
+                waiting = failed
+            } else {
+                return
             }
         }
+    } else {
+        lcks.first?.lock()
     }
-    
-    public final func unlock() {
-        for item in lck {
+}
+public func synchronized<R>(lcks: Lockable ... , @noescape block: () throws -> R) rethrows -> R {
+    _lock(lcks)
+    defer {
+        for item in lcks {
             item.unlock()
         }
     }
-    
-    public final func trylock() -> Bool {
-        return _trylock(self.lck) == self.lck.count
-    }
-    
+    return try block()
 }
 
 // MARK: Lock
