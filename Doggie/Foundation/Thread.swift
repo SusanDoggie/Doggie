@@ -374,8 +374,7 @@ public class SDTask<Result> : SDAtomic {
     
     /// Create a SDTask and compute block with default queue.
     public init(block: () -> Result) {
-        self._set = SDTask.createBlock(block)
-        super.init(block: SDTask.createSignalBlock(nil))
+        super.init(block: SDTask.createBlock(nil, block))
         self.signal()
     }
 }
@@ -398,15 +397,17 @@ private extension SDTask {
     static func createSignalBlock(_ suspend: ((Result) -> Bool)?) -> (SDAtomic) -> Void {
         return { atomic in
             let _self = atomic as! SDTask<Result>
-            if let result = _self._result {
-                if suspend?(result) != true {
-                    _self._notify.forEach { $0(result) }
+            if !_self.completed {
+                _self.condition.synchronized {
+                    let result = _self._result ?? block()
+                    _self.spinlck.synchronized { _self._result = result }
+                    _self.condition.broadcast()
                 }
-                _self._notify = []
-            } else {
-                _self._set(_self)
-                _self.signal()
             }
+            if suspend?(_self._result!) != true {
+                _self._notify.forEach { $0(_self._result!) }
+            }
+            _self._notify = []
         }
     }
     
@@ -438,8 +439,7 @@ extension SDTask {
     
     /// Result of task.
     public final var result: Result {
-        self._set(self)
-        return self._result!
+        return condition.synchronized(self.completed) { self._result! }
     }
 }
 
