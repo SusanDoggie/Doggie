@@ -355,20 +355,18 @@ public class SDTask<Result> : SDAtomic {
     
     private var _notify: [(Result) -> Void] = []
     
-    private var spinlck: SDSpinLock = SDSpinLock()
+    private var spinlck = SDSpinLock()
+    private let condition = SDConditionLock()
     
-    private let _set: (SDTask) -> Void
     private var _result: Result?
     
     private init(queue: DispatchQueue, suspend: ((Result) -> Bool)?, block: () -> Result) {
-        self._set = SDTask.createBlock(block)
-        super.init(queue: queue, block: SDTask.createSignalBlock(suspend))
+        super.init(queue: queue, block: SDTask.createBlock(suspend, block))
     }
     
     /// Create a SDTask and compute block with specific queue.
     public init(queue: DispatchQueue, block: () -> Result) {
-        self._set = SDTask.createBlock(block)
-        super.init(queue: queue, block: SDTask.createSignalBlock(nil))
+        super.init(queue: queue, block: SDTask.createBlock(nil, block))
         self.signal()
     }
     
@@ -382,19 +380,7 @@ public class SDTask<Result> : SDAtomic {
 private extension SDTask {
     
     @_transparent
-    static func createBlock(_ block: () -> Result) -> (SDTask) -> Void {
-        return { _self in
-            if !_self.completed {
-                synchronized(_self) {
-                    let result = _self._result ?? block()
-                    _self.spinlck.synchronized { _self._result = result }
-                }
-            }
-        }
-    }
-    
-    @_transparent
-    static func createSignalBlock(_ suspend: ((Result) -> Bool)?) -> (SDAtomic) -> Void {
+    static func createBlock(_ suspend: ((Result) -> Bool)?, _ block: () -> Result) -> (SDAtomic) -> Void {
         return { atomic in
             let _self = atomic as! SDTask<Result>
             if !_self.completed {
@@ -439,7 +425,7 @@ extension SDTask {
     
     /// Result of task.
     public final var result: Result {
-        return condition.synchronized(self.completed) { self._result! }
+        return condition.synchronized(where: self.completed) { self._result! }
     }
 }
 
