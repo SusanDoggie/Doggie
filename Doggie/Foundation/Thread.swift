@@ -59,7 +59,8 @@ public func synchronized<R>(_ obj: AnyObject, block: @noescape () throws -> R) r
     return try block()
 }
 
-private func _lock(_ lcks: [Lockable]) {
+@discardableResult
+public func synchronized<R>(_ lcks: Lockable ... , block: @noescape () throws -> R) rethrows -> R {
     if lcks.count > 1 {
         var waiting = 0
         while true {
@@ -77,9 +78,6 @@ private func _lock(_ lcks: [Lockable]) {
     } else {
         lcks.first?.lock()
     }
-}
-public func synchronized<R>(_ lcks: Lockable ... , block: @noescape () throws -> R) rethrows -> R {
-    _lock(lcks)
     defer {
         for item in lcks {
             item.unlock()
