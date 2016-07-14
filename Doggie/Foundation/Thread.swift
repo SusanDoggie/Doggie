@@ -216,10 +216,6 @@ extension SDConditionLock {
         }
         return true
     }
-    @discardableResult
-    public final func trylock(where predicate: @autoclosure () -> Bool) -> Bool {
-        return lock(where: predicate, until: Date.distantPast)
-    }
 }
 
 extension SDConditionLock {
