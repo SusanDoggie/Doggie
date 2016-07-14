@@ -400,13 +400,14 @@ public extension Sequence {
     }
 }
 
-public extension MutableCollection {
+public extension MutableCollection where Self : RandomAccessCollection {
     
-    /// Return an `Array` containing the sorted elements of `source`.
-    /// according to `by`.
-    ///
-    /// The sorting algorithm is not stable (can change the relative order of
-    /// elements that compare equal).(mutable_variant:"sortInPlace")
+    mutating func sort<R : Comparable>(by: @noescape (Iterator.Element) -> R) {
+        self.sort { by($0) < by($1) }
+    }
+}
+public extension Sequence {
+    
     func sorted<R : Comparable>(by: @noescape (Iterator.Element) -> R) -> [Iterator.Element] {
         return self.sorted { by($0) < by($1) }
     }
@@ -458,26 +459,25 @@ public extension RandomAccessCollection {
     }
 }
 
-public extension Collection {
-    
-    /// Return an `Array` containing the shuffled elements of `source`.(mutable_variant:"shuffleInPlace")
-    func shuffled() -> [Iterator.Element] {
-        var list = self.array
-        list.shuffleInPlace()
-        return list
-    }
-}
-
-public extension RandomAccessCollection where Self : MutableCollection, Indices.Index == Index, Indices.SubSequence : RandomAccessCollection, Indices.SubSequence.Iterator.Element == Index {
+public extension MutableCollection where Self : RandomAccessCollection, Indices.Index == Index, Indices.SubSequence : RandomAccessCollection, Indices.SubSequence.Iterator.Element == Index {
     
     /// Shuffle `self` in-place.
-    mutating func shuffleInPlace() {
+    mutating func shuffle() {
         for i in self.indices.dropLast() {
             let j = self.indices.suffix(from: i).random()!
             if i != j {
                 swap(&self[i], &self[j])
             }
         }
+    }
+}
+public extension Sequence {
+    
+    /// Return an `Array` containing the shuffled elements of `source`.
+    func shuffled() -> [Iterator.Element] {
+        var list = self.array
+        list.shuffle()
+        return list
     }
 }
 
