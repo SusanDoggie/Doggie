@@ -402,6 +402,9 @@ extension SDTask {
     
     /// Result of task.
     public final var result: Result {
+        if self.completed {
+            return self._result!
+        }
         return condition.synchronized(for: self.completed) { self._result! }
     }
 }
