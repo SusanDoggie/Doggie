@@ -190,12 +190,12 @@ public struct Graph<Node : Hashable, Link> : Collection {
     
     /// A collection of nodes which connected from `fromNode`.
     public func nodes(from fromNode: Node) -> AnyCollection<(Node, Link)> {
-        return table[fromNode]?.lazy.map { ($0.key, $0.value) }.any ?? EmptyCollection().any
+        return (table[fromNode]?.lazy.map { ($0.key, $0.value) }).map(AnyCollection.init) ?? AnyCollection(EmptyCollection())
     }
     
     /// A collection of nodes which connected to `toNode`.
     public func nodes(to toNode: Node) -> AnyCollection<(Node, Link)> {
-        return table.lazy.flatMap { from, to in to[toNode].map { (from, $0) } }.any
+        return AnyCollection(table.lazy.flatMap { from, to in to[toNode].map { (from, $0) } })
     }
 }
 
@@ -365,7 +365,7 @@ public struct UndirectedGraph<Node : Hashable, Link> : Collection {
     
     /// A collection of nodes which has connection with `nearNode`.
     public func nodes(near nearNode: Node) -> AnyCollection<(Node, Link)> {
-        return graph.nodes(from: nearNode).concat(with: graph.table.lazy.flatMap { from, to in from != nearNode ? to[nearNode].map { (from, $0) } : nil }).any
+        return AnyCollection(graph.nodes(from: nearNode).concat(with: graph.table.lazy.flatMap { from, to in from != nearNode ? to[nearNode].map { (from, $0) } : nil }))
     }
 }
 
