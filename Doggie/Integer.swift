@@ -330,44 +330,6 @@ public func pow(_ x: UInt8, _ n: UInt8) -> UInt8 {
     return pow(x, n, UInt8.max)
 }
 
-public func sec_random(_ buffer: UnsafeMutablePointer<Void>, size: Int) {
-    let _rand_file = open("/dev/random", O_RDONLY)
-    read(_rand_file, buffer, size)
-    close(_rand_file)
-}
-
-public func sec_random_uniform(_ bound: UIntMax) -> UIntMax {
-    let RANDMAX: UIntMax = ~0
-    var _rand: UIntMax = 0
-    sec_random(&_rand, size: sizeof(UIntMax.self))
-    if bound.isPower2 {
-        _rand &= bound &- 1
-    } else {
-        let limit = RANDMAX - mod(RANDMAX, bound)
-        while _rand >= limit {
-            sec_random(&_rand, size: sizeof(UIntMax.self))
-        }
-        _rand = mod(_rand, bound)
-    }
-    return _rand
-}
-
-public func random_uniform(_ bound: UIntMax) -> UIntMax {
-    let RANDMAX: UIntMax = ~0
-    var _rand: UIntMax = 0
-    arc4random_buf(&_rand, sizeof(UIntMax.self))
-    if bound.isPower2 {
-        _rand &= bound &- 1
-    } else {
-        let limit = RANDMAX - mod(RANDMAX, bound)
-        while _rand >= limit {
-            arc4random_buf(&_rand, sizeof(UIntMax.self))
-        }
-        _rand = mod(_rand, bound)
-    }
-    return _rand
-}
-
 public func gcd<U: UnsignedInteger>(_ a: U, _ b: U) -> U {
     var a = a
     var b = b

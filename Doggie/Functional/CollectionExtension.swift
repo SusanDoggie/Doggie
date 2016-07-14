@@ -420,29 +420,6 @@ public extension Comparable {
     }
 }
 
-extension BinaryFloatingPoint {
-    
-    static func random(includeOne: Bool = false) -> Self {
-        let significandBitCount: UIntMax = numericCast(Self.significandBitCount)
-        let exponentBitPattern = numericCast((1 as Self).exponentBitPattern) << significandBitCount
-        let maxsignificand = 1 << significandBitCount
-        let rand = includeOne ? (0...maxsignificand).random()! : (0..<maxsignificand).random()!
-        let pattern = exponentBitPattern + rand
-        let exponent = pattern >> significandBitCount
-        let significand = pattern & (maxsignificand - 1)
-        return Self(sign: .plus, exponentBitPattern: numericCast(exponent), significandBitPattern: numericCast(significand)) - 1
-    }
-}
-
-public func random<T : BinaryFloatingPoint>(_ range: ClosedRange<T>) -> T {
-    let diff = range.upperBound - range.lowerBound
-    return (T.random(includeOne: true) * diff) + range.lowerBound
-}
-public func random<T : BinaryFloatingPoint>(_ range: Range<T>) -> T {
-    let diff = range.upperBound - range.lowerBound
-    return (T.random() * diff) + range.lowerBound
-}
-
 public extension RandomAccessCollection {
     
     /// Returns a random element in `self` or `nil` if the sequence is empty.

@@ -35,7 +35,7 @@ extension Double {
     }
     
     public func almostEqual(_ other: Double, epsilon: Double = 1e-9) -> Bool {
-        return self == other || abs(self - other).almostZero(epsilon, reference: self)
+        return self == other || abs(self - other).almostZero(epsilon: epsilon, reference: self)
     }
 }
 
