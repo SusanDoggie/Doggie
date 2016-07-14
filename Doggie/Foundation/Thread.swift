@@ -140,6 +140,9 @@ extension SDSpinLock {
     public mutating func trylock() -> Bool {
         return OSSpinLockTry(&_lck)
     }
+}
+
+extension SDSpinLock {
     
     @discardableResult
     public mutating func synchronized<R>(block: @noescape () throws -> R) rethrows -> R {
@@ -187,21 +190,15 @@ extension SDConditionLock {
             pthread_cond_broadcast(&_cond)
         }
     }
-    @discardableResult
-    public final func lock(until date: Date) -> Bool {
-        super.lock()
-        var _timespec = date.timespec
-        return pthread_cond_timedwait(&_cond, &_mtx, &_timespec) == 0
-    }
+}
+
+extension SDConditionLock {
+    
     public final func lock(where predicate: @autoclosure () -> Bool) {
         super.lock()
         while !predicate() {
             pthread_cond_wait(&_cond, &_mtx)
         }
-    }
-    @discardableResult
-    public final func trylock(where predicate: @autoclosure () -> Bool) -> Bool {
-        return lock(where: predicate, until: Date.distantPast)
     }
     @discardableResult
     public final func lock(where predicate: @autoclosure () -> Bool, until date: Date) -> Bool {
@@ -219,6 +216,14 @@ extension SDConditionLock {
         }
         return true
     }
+    @discardableResult
+    public final func trylock(where predicate: @autoclosure () -> Bool) -> Bool {
+        return lock(where: predicate, until: Date.distantPast)
+    }
+}
+
+extension SDConditionLock {
+    
     @discardableResult
     public func synchronized<R>(where predicate: @autoclosure () -> Bool, block: @noescape () throws -> R) rethrows -> R {
         self.lock(where: predicate)
