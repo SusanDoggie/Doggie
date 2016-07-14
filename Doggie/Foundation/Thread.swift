@@ -190,28 +190,17 @@ extension SDConditionLock {
             pthread_cond_broadcast(&_cond)
         }
     }
-}
-
-extension SDConditionLock {
-    
-    public final func lock(where predicate: @autoclosure () -> Bool) {
-        super.lock()
+    public final func wait(for predicate: @autoclosure () -> Bool) {
         while !predicate() {
             pthread_cond_wait(&_cond, &_mtx)
         }
     }
     @discardableResult
-    public final func lock(where predicate: @autoclosure () -> Bool, until date: Date) -> Bool {
-        super.lock()
+    public final func wait(for predicate: @autoclosure () -> Bool, until date: Date) -> Bool {
         var _timespec = date.timespec
         while !predicate() {
             if pthread_cond_timedwait(&_cond, &_mtx, &_timespec) != 0 {
-                if predicate() {
-                    return true
-                } else {
-                    super.unlock()
-                    return false
-                }
+                return predicate()
             }
         }
         return true
@@ -220,15 +209,42 @@ extension SDConditionLock {
 
 extension SDConditionLock {
     
+    public final func lock(for predicate: @autoclosure () -> Bool) {
+        super.lock()
+        self.wait(for: predicate)
+    }
     @discardableResult
-    public func synchronized<R>(where predicate: @autoclosure () -> Bool, block: @noescape () throws -> R) rethrows -> R {
-        self.lock(where: predicate)
+    public final func lock(for predicate: @autoclosure () -> Bool, until date: Date) -> Bool {
+        super.lock()
+        if self.wait(for: predicate, until: date) {
+            return true
+        }
+        super.unlock()
+        return false
+    }
+    @discardableResult
+    public final func trylock(for predicate: @autoclosure () -> Bool) -> Bool {
+        if super.trylock() {
+            if self.wait(for: predicate, until: Date.distantPast) {
+                return true
+            }
+            super.unlock()
+        }
+        return false
+    }
+}
+
+extension SDConditionLock {
+    
+    @discardableResult
+    public func synchronized<R>(for predicate: @autoclosure () -> Bool, block: @noescape () throws -> R) rethrows -> R {
+        self.lock(for: predicate)
         defer { self.unlock() }
         return try block()
     }
     @discardableResult
-    public func synchronized<R>(where predicate: @autoclosure () -> Bool, until date: Date, block: @noescape () throws -> R) rethrows -> R? {
-        if self.lock(where: predicate, until: date) {
+    public func synchronized<R>(for predicate: @autoclosure () -> Bool, until date: Date, block: @noescape () throws -> R) rethrows -> R? {
+        if self.lock(for: predicate, until: date) {
             defer { self.unlock() }
             return try block()
         }
