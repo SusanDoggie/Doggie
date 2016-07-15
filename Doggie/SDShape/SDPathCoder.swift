@@ -421,7 +421,7 @@ extension SDPath {
                     relative = Point(x: x, y: y)
                     lastcontrol = Point(x: x, y: y)
                     lastbezier = 0
-                    self.appendContentsOf(arc)
+                    self.append(contentsOf: arc)
                 } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
             case "a":
                 if self.count == 0 || self.lastClose {
@@ -468,7 +468,7 @@ extension SDPath {
                     relative = Point(x: x, y: y)
                     lastcontrol = Point(x: x, y: y)
                     lastbezier = 0
-                    self.appendContentsOf(arc)
+                    self.append(contentsOf: arc)
                 } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
             case "Z", "z":
                 if self.lastMove {
@@ -492,7 +492,7 @@ private func arcDetails(_ start: Point, _ end: Point, _ radius: Radius, _ rotate
     let centers = EllipseCenter(radius, rotate, start, end)
     if centers.count == 0 {
         return (middle(end, start), EllipseRadius(start, end, radius, rotate))
-    } else if centers.count == 1 || (!direction(start, centers[0], end).sign == sweep ? largeArc : !largeArc) {
+    } else if centers.count == 1 || (direction(start, centers[0], end).sign == (sweep ? .plus : .minus) ? largeArc : !largeArc) {
         return (centers[0], radius)
     } else {
         return (centers[1], radius)
