@@ -53,6 +53,17 @@ public func MulMod<T: UnsignedInteger>(_ count: Int, _ left: UnsafePointer<T>, _
         output += out_stride
     }
 }
+/// Adds the elements of two integer vectors.
+///
+/// - Parameters:
+///   - count: Number of elements to process in the input and output vectors.
+///   - left: Integer input vector.
+///   - left_stride: Stride for `left`.
+///   - right: Integer input vector.
+///   - right_stride: Stride for `right`.
+///   - output: Integer result vector.
+///   - out_stride: Stride for `output`.
+/// - Remark: `output[n] = left[n] + right[n], 0 <= n < count`
 public func Add<T: Integer>(_ count: Int, _ left: UnsafePointer<T>, _ left_stride: Int, _ right: UnsafePointer<T>, _ right_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var left = left
@@ -66,6 +77,17 @@ public func Add<T: Integer>(_ count: Int, _ left: UnsafePointer<T>, _ left_strid
         output += out_stride
     }
 }
+/// Subtracts the elements of two integer vectors.
+///
+/// - Parameters:
+///   - count: Number of elements to process in the input and output vectors.
+///   - left: Integer input vector.
+///   - left_stride: Stride for `left`.
+///   - right: Integer input vector.
+///   - right_stride: Stride for `right`.
+///   - output: Integer result vector.
+///   - out_stride: Stride for `output`.
+/// - Remark: `output[n] = left[n] - right[n], 0 <= n < count`
 public func Sub<T: Integer>(_ count: Int, _ left: UnsafePointer<T>, _ left_stride: Int, _ right: UnsafePointer<T>, _ right_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var left = left
@@ -79,6 +101,17 @@ public func Sub<T: Integer>(_ count: Int, _ left: UnsafePointer<T>, _ left_strid
         output += out_stride
     }
 }
+/// Multiplies the elements of two integer vectors.
+///
+/// - Parameters:
+///   - count: Number of elements to process in the input and output vectors.
+///   - left: Integer input vector.
+///   - left_stride: Stride for `left`.
+///   - right: Integer input vector.
+///   - right_stride: Stride for `right`.
+///   - output: Integer result vector.
+///   - out_stride: Stride for `output`.
+/// - Remark: `output[n] = left[n] * right[n], 0 <= n < count`
 public func Mul<T: Integer>(_ count: Int, _ left: UnsafePointer<T>, _ left_stride: Int, _ right: UnsafePointer<T>, _ right_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var left = left
@@ -92,6 +125,17 @@ public func Mul<T: Integer>(_ count: Int, _ left: UnsafePointer<T>, _ left_strid
         output += out_stride
     }
 }
+/// Divides the elements of two integer vectors.
+///
+/// - Parameters:
+///   - count: Number of elements to process in the input and output vectors.
+///   - left: Integer input vector.
+///   - left_stride: Stride for `left`.
+///   - right: Integer input vector.
+///   - right_stride: Stride for `right`.
+///   - output: Integer result vector.
+///   - out_stride: Stride for `output`.
+/// - Remark: `output[n] = left[n] / right[n], 0 <= n < count`
 public func Div<T: Integer>(_ count: Int, _ left: UnsafePointer<T>, _ left_stride: Int, _ right: UnsafePointer<T>, _ right_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var left = left
@@ -137,6 +181,17 @@ public func QuoRem<T: Integer>(_ count: Int, _ left: UnsafePointer<T>, _ left_st
     }
 }
 
+/// Adds the elements of two real vectors.
+///
+/// - Parameters:
+///   - count: Number of elements to process in the input and output vectors.
+///   - left: Real input vector.
+///   - left_stride: Stride for `left`.
+///   - right: Real input vector.
+///   - right_stride: Stride for `right`.
+///   - output: Real result vector.
+///   - out_stride: Stride for `output`.
+/// - Remark: `output[n] = left[n] + right[n], 0 <= n < count`
 public func Add<T: FloatingPoint>(_ count: Int, _ left: UnsafePointer<T>, _ left_stride: Int, _ right: UnsafePointer<T>, _ right_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var left = left
@@ -150,6 +205,17 @@ public func Add<T: FloatingPoint>(_ count: Int, _ left: UnsafePointer<T>, _ left
         output += out_stride
     }
 }
+/// Subtracts the elements of two real vectors.
+///
+/// - Parameters:
+///   - count: Number of elements to process in the input and output vectors.
+///   - left: Real input vector.
+///   - left_stride: Stride for `left`.
+///   - right: Real input vector.
+///   - right_stride: Stride for `right`.
+///   - output: Real result vector.
+///   - out_stride: Stride for `output`.
+/// - Remark: `output[n] = left[n] - right[n], 0 <= n < count`
 public func Sub<T: FloatingPoint>(_ count: Int, _ left: UnsafePointer<T>, _ left_stride: Int, _ right: UnsafePointer<T>, _ right_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var left = left
@@ -163,6 +229,17 @@ public func Sub<T: FloatingPoint>(_ count: Int, _ left: UnsafePointer<T>, _ left
         output += out_stride
     }
 }
+/// Multiplies the elements of two real vectors.
+///
+/// - Parameters:
+///   - count: Number of elements to process in the input and output vectors.
+///   - left: Real input vector.
+///   - left_stride: Stride for `left`.
+///   - right: Real input vector.
+///   - right_stride: Stride for `right`.
+///   - output: Real result vector.
+///   - out_stride: Stride for `output`.
+/// - Remark: `output[n] = left[n] * right[n], 0 <= n < count`
 public func Mul<T: FloatingPoint>(_ count: Int, _ left: UnsafePointer<T>, _ left_stride: Int, _ right: UnsafePointer<T>, _ right_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var left = left
@@ -176,6 +253,17 @@ public func Mul<T: FloatingPoint>(_ count: Int, _ left: UnsafePointer<T>, _ left
         output += out_stride
     }
 }
+/// Divides the elements of two real vectors.
+///
+/// - Parameters:
+///   - count: Number of elements to process in the input and output vectors.
+///   - left: Real input vector.
+///   - left_stride: Stride for `left`.
+///   - right: Real input vector.
+///   - right_stride: Stride for `right`.
+///   - output: Real result vector.
+///   - out_stride: Stride for `output`.
+/// - Remark: `output[n] = left[n] / right[n], 0 <= n < count`
 public func Div<T: FloatingPoint>(_ count: Int, _ left: UnsafePointer<T>, _ left_stride: Int, _ right: UnsafePointer<T>, _ right_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var left = left
@@ -899,18 +987,51 @@ public func Div(_ count: Int, _ left: UnsafePointer<Complex>, _ left_stride: Int
     Div(count, _left, _left + 1, left_stride << 1, right, right_stride, _output, _output + 1, out_stride << 1)
 }
 
+/// Adds the elements of two complex vectors.
+///
+/// - Parameters:
+///   - count: Number of elements to process in the input and output vectors.
+///   - left: Complex input vector.
+///   - left_stride: Stride for `left`.
+///   - right: Complex input vector.
+///   - right_stride: Stride for `right`.
+///   - output: Complex result vector.
+///   - out_stride: Stride for `output`.
+/// - Remark: `output[n] = left[n] + right[n], 0 <= n < count`
 public func Add(_ count: Int, _ left: UnsafePointer<Complex>, _ left_stride: Int, _ right: UnsafePointer<Complex>, _ right_stride: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int) {
     let _left = UnsafePointer<Double>(left)
     let _right = UnsafePointer<Double>(right)
     let _output = UnsafeMutablePointer<Double>(output)
     Add(count, _left, _left + 1, left_stride << 1, _right, _right + 1, right_stride << 1, _output, _output + 1, out_stride << 1)
 }
+/// Subtracts the elements of two complex vectors.
+///
+/// - Parameters:
+///   - count: Number of elements to process in the input and output vectors.
+///   - left: Complex input vector.
+///   - left_stride: Stride for `left`.
+///   - right: Complex input vector.
+///   - right_stride: Stride for `right`.
+///   - output: Complex result vector.
+///   - out_stride: Stride for `output`.
+/// - Remark: `output[n] = left[n] - right[n], 0 <= n < count`
 public func Sub(_ count: Int, _ left: UnsafePointer<Complex>, _ left_stride: Int, _ right: UnsafePointer<Complex>, _ right_stride: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int) {
     let _left = UnsafePointer<Double>(left)
     let _right = UnsafePointer<Double>(right)
     let _output = UnsafeMutablePointer<Double>(output)
     Sub(count, _left, _left + 1, left_stride << 1, _right, _right + 1, right_stride << 1, _output, _output + 1, out_stride << 1)
 }
+/// Multiplies the elements of two complex vectors.
+///
+/// - Parameters:
+///   - count: Number of elements to process in the input and output vectors.
+///   - left: Complex input vector.
+///   - left_stride: Stride for `left`.
+///   - right: Complex input vector.
+///   - right_stride: Stride for `right`.
+///   - output: Complex result vector.
+///   - out_stride: Stride for `output`.
+/// - Remark: `output[n] = left[n] * right[n], 0 <= n < count`
 public func Mul(_ count: Int, _ left: UnsafePointer<Complex>, _ left_stride: Int, _ right: UnsafePointer<Complex>, _ right_stride: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int) {
     let _left = UnsafePointer<Double>(left)
     let _right = UnsafePointer<Double>(right)
@@ -944,6 +1065,17 @@ public func MulConj(_ count: Int, _ left: UnsafePointer<Complex>, _ left_stride:
     let _output = UnsafeMutablePointer<Double>(output)
     MulConj(count, _left, _left + 1, left_stride << 1, _right, _right + 1, right_stride << 1, _output, _output + 1, out_stride << 1)
 }
+/// Divides the elements of two complex vectors.
+///
+/// - Parameters:
+///   - count: Number of elements to process in the input and output vectors.
+///   - left: Complex input vector.
+///   - left_stride: Stride for `left`.
+///   - right: Complex input vector.
+///   - right_stride: Stride for `right`.
+///   - output: Complex result vector.
+///   - out_stride: Stride for `output`.
+/// - Remark: `output[n] = left[n] / right[n], 0 <= n < count`
 public func Div(_ count: Int, _ left: UnsafePointer<Complex>, _ left_stride: Int, _ right: UnsafePointer<Complex>, _ right_stride: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int) {
     let _left = UnsafePointer<Double>(left)
     let _right = UnsafePointer<Double>(right)

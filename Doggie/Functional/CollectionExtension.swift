@@ -356,20 +356,19 @@ public extension Sequence where Iterator.Element : Comparable {
     /// Returns the maximal `SubSequence`s of `self`, in order, around elements
     /// match in `separator`.
     ///
-    /// - Parameter maxSplits: The maximum number of `SubSequence`s to
-    ///   return, minus 1.
-    ///   If `maxSplit + 1` `SubSequence`s are returned, the last one is
-    ///   a suffix of `self` containing the remaining elements.
-    ///   The default value is `Int.max`.
-    ///
-    /// - omittingEmptySubsequences: If `false`, an empty subsequence is
-    ///   returned in the result for each pair of consecutive elements
-    ///   satisfying the `isSeparator` predicate and for each element at the
-    ///   start or end of the sequence satisfying the `isSeparator` predicate.
-    ///   If `true`, only nonempty subsequences are returned. The default
-    ///   value is `true`.
-    ///
-    /// - Requires: `maxSplit >= 0`
+    /// - Parameters:
+    ///   - maxSplits: The maximum number of times to split the sequence, or one
+    ///     less than the number of subsequences to return. If `maxSplits + 1`
+    ///     subsequences are returned, the last one is a suffix of the original
+    ///     sequence containing the remaining elements. `maxSplits` must be
+    ///     greater than or equal to zero. The default value is `Int.max`.
+    ///   - omittingEmptySubsequences: If `false`, an empty subsequence is
+    ///     returned in the result for each pair of consecutive elements
+    ///     satisfying the `isSeparator` predicate and for each element at the
+    ///     start or end of the sequence satisfying the `isSeparator` predicate.
+    ///     If `true`, only nonempty subsequences are returned. The default
+    ///     value is `true`.
+    /// - Returns: An array of subsequences, split from this sequence's elements.
     func split<S: Sequence where S.Iterator.Element == Iterator.Element>(separator: S, maxSplit: Int = Int.max, omittingEmptySubsequences: Bool = true) -> [SubSequence] {
         return self.split(maxSplits: maxSplit, omittingEmptySubsequences: omittingEmptySubsequences) { separator.contains($0) }
     }
@@ -409,14 +408,12 @@ public extension Sequence {
     /// Returns the minimum element in `self` or `nil` if the sequence is empty.
     ///
     /// - Complexity: O(`elements.count`).
-    ///
     func min<R : Comparable>(by: @noescape (Iterator.Element) throws -> R) rethrows -> Iterator.Element? {
         return try self.min { try by($0) < by($1) }
     }
     /// Returns the maximum element in `self` or `nil` if the sequence is empty.
     ///
     /// - Complexity: O(`elements.count`).
-    ///
     func max<R : Comparable>(by: @noescape (Iterator.Element) throws -> R) rethrows -> Iterator.Element? {
         return try self.max { try by($0) < by($1) }
     }
