@@ -244,7 +244,7 @@ public func degree5decompose(_ b: Double, _ c: Double, _ d: Double, _ e: Double,
         r += dr
         s += ds
         
-        if dr.almostZero(eps, reference: r) && ds.almostZero(eps, reference: s) {
+        if dr.almostZero(epsilon: eps, reference: r) && ds.almostZero(eps, reference: s) {
             break
         }
         
@@ -289,7 +289,7 @@ public func degree6decompose(_ b: Double, _ c: Double, _ d: Double, _ e: Double,
         r += dr
         s += ds
         
-        if dr.almostZero(eps, reference: r) && ds.almostZero(eps, reference: s) {
+        if dr.almostZero(epsilon: eps, reference: r) && ds.almostZero(eps, reference: s) {
             break
         }
         
@@ -355,7 +355,7 @@ public func degree4roots(_ b: Double, _ c: Double, _ d: Double, _ e: Double) -> 
     }
     
     let _d2 = degree4decompose(b, c, d, e)
-    return Array(Set(degree2roots(_d2.0.0, _d2.0.1).concat(degree2roots(_d2.1.0, _d2.1.1))))
+    return Array(Set(degree2roots(_d2.0.0, _d2.0.1).concat(with: degree2roots(_d2.1.0, _d2.1.1))))
 }
 
 // MARK: Others
