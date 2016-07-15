@@ -508,6 +508,27 @@ extension SDTransform.Translate {
     }
 }
 
+extension SDTransform.Translate {
+    
+    public var tx: Double {
+        get {
+            return x
+        }
+        set {
+            x = newValue
+        }
+    }
+    
+    public var ty: Double {
+        get {
+            return y
+        }
+        set {
+            y = newValue
+        }
+    }
+}
+
 public func == (lhs: SDTransform.Translate, rhs: SDTransform.Translate) -> Bool {
     return lhs.x == rhs.x && lhs.y == rhs.y
 }
