@@ -52,46 +52,11 @@ public struct Vector {
 extension Vector: CustomStringConvertible, CustomDebugStringConvertible {
     
     public var description: String {
-        
-        var print = ""
-        
-        switch x {
-        case 0: break
-        case 1: "𝒊".write(to: &print)
-        case -1: "-𝒊".write(to: &print)
-        default: String(format: "%.2f𝒊", x).write(to: &print)
-        }
-        
-        if y != 0 {
-            if !print.isEmpty && y.sign == .plus {
-                "+".write(to: &print)
-            }
-            switch y {
-            case 1: "𝒋".write(to: &print)
-            case -1: "-𝒋".write(to: &print)
-            default: String(format: "%.2f𝒋", x).write(to: &print)
-            }
-        }
-        
-        if z != 0 {
-            if !print.isEmpty && z.sign == .plus {
-                "+".write(to: &print)
-            }
-            switch z {
-            case 1: "𝒌".write(to: &print)
-            case -1: "-𝒌".write(to: &print)
-            default: String(format: "%.2f𝒌", x).write(to: &print)
-            }
-        }
-        
-        if print.isEmpty {
-            print = "0.0"
-        }
-        return print
+        return "{x: \(x), y: \(y), z: \(z)}"
     }
     
     public var debugDescription: String {
-        return self.description
+        return "{x: \(x), y: \(y), z: \(z)}"
     }
 }
 
