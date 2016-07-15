@@ -274,14 +274,12 @@ extension Rect {
 
 extension Rect {
     
-    @warn_unused_result
     public func aspectFit(bound: Rect) -> Rect {
         var rect = Rect(origin: Point(), size: self.size.aspectFit(bound.size))
         rect.center = bound.center
         return rect
     }
     
-    @warn_unused_result
     public func aspectFill(bound: Rect) -> Rect {
         var rect = Rect(origin: Point(), size: self.size.aspectFill(bound.size))
         rect.center = bound.center
