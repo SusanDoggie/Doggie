@@ -25,16 +25,23 @@
 
 public protocol SDShape {
     
+    /// Boundary of shape without transform.
     var originalBoundary : Rect { get }
+    /// Boundary of transformed shape.
     var boundary : Rect { get }
+    /// Transformed points of `originalBoundary`.
     var frame : [Point] { get }
     var baseTransform : SDTransform { get set }
+    /// Transformation of shape
     var transform : SDTransform { get set }
     
     var path: SDPath { get }
     
+    /// Center of shape.
     var center : Point { get set }
+    /// Rotation of shape.
     var rotate: Double { get set }
+    /// Scaling of shape.
     var scale: Double { get set }
 }
 

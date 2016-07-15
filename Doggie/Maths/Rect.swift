@@ -161,7 +161,7 @@ extension Rect: CustomStringConvertible, CustomDebugStringConvertible {
 extension Rect: Hashable {
     
     public var hashValue: Int {
-        return hash_combine(0, origin.hashValue, size.hashValue)
+        return hash_combine(seed: 0, origin.hashValue, size.hashValue)
     }
 }
 
