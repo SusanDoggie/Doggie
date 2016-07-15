@@ -34,6 +34,7 @@ public extension Sequence {
 
 public extension Array {
     
+    /// Returns `self`
     var array: [Iterator.Element] {
         return self
     }
@@ -41,6 +42,7 @@ public extension Array {
 
 public extension Sequence {
     
+    /// Returns an `Array` contains all elements of `self`
     var array: [Iterator.Element] {
         return self as? [Iterator.Element] ?? Array(self)
     }
@@ -93,6 +95,8 @@ public extension Sequence {
 public extension Set {
     
     /// Return `true` if all of elements in `seq` is `x`.
+    ///
+    /// - Complexity: O(1).
     func all(_ x: Element) -> Bool {
         
         switch self.count {
@@ -108,6 +112,13 @@ public extension Set {
 
 public extension BidirectionalCollection {
     
+    /// Returns the last element of the sequence that satisfies the given
+    /// predicate or nil if no such element is found.
+    ///
+    /// - Parameter where: A closure that takes an element of the
+    ///   sequence as its argument and returns a Boolean value indicating
+    ///   whether the element is a match.
+    /// - Returns: The last match or `nil` if there was no match.
     public func last(where predicate: @noescape (Iterator.Element) throws -> Bool) rethrows -> Iterator.Element? {
         return try self.reversed().first(where: predicate)
     }
@@ -142,6 +153,7 @@ public extension Collection {
 }
 
 public extension RandomAccessCollection where Iterator.Element : Equatable {
+    
     /// Returns a subsequence, until a element equal to `value`, containing the
     /// final elements of `self`.
     ///
@@ -155,6 +167,7 @@ public extension RandomAccessCollection where Iterator.Element : Equatable {
 }
 
 public extension RandomAccessCollection {
+    
     /// Returns a subsequence, until a element satisfying the predicate, containing the
     /// final elements of `self`.
     ///
@@ -169,6 +182,9 @@ public extension RandomAccessCollection {
 
 public extension RandomAccessCollection where Indices.SubSequence.Iterator.Element == Index, Indices.Index == Index {
     
+    /// Returns first position of `pattern` appear in `self`, or `nil` if not match.
+    ///
+    /// - Complexity: Amortized O(`self.count`)
     func match<C : BidirectionalCollection where C.Iterator.Element == Iterator.Element>(with pattern: C, isEquivalent: @noescape (Iterator.Element, Iterator.Element) throws -> Bool) rethrows -> Index? {
         
         let pattern_count: IndexDistance = numericCast(pattern.count)
@@ -197,6 +213,9 @@ public extension RandomAccessCollection where Indices.SubSequence.Iterator.Eleme
 
 public extension RandomAccessCollection where Indices.SubSequence.Iterator.Element == Index, Indices.Index == Index, Iterator.Element : Equatable {
     
+    /// Returns first position of `pattern` appear in `self`, or `nil` if not match.
+    ///
+    /// - Complexity: Amortized O(`self.count`)
     func match<C : BidirectionalCollection where C.Iterator.Element == Iterator.Element>(with pattern: C) -> Index? {
         return self.match(with: pattern, isEquivalent: ==)
     }
@@ -204,6 +223,9 @@ public extension RandomAccessCollection where Indices.SubSequence.Iterator.Eleme
 
 public extension String {
     
+    /// Returns true `pattern` appear in `self`.
+    ///
+    /// - Complexity: Amortized O(`self.count`)
     func hasPattern(pattern: String) -> Bool {
         return Array(characters).match(with: Array(pattern.characters)) != nil
     }
@@ -439,7 +461,6 @@ public extension RandomAccessCollection {
     /// Returns a random element in `self` or `nil` if the sequence is empty.
     ///
     /// - Complexity: O(1).
-    ///
     func random() -> Iterator.Element? {
         let _count = UIntMax(self.count.toIntMax())
         switch _count {
@@ -464,7 +485,7 @@ public extension MutableCollection where Self : RandomAccessCollection, Indices.
 }
 public extension Sequence {
     
-    /// Return an `Array` containing the shuffled elements of `source`.
+    /// Return an `Array` containing the shuffled elements of `self`.
     func shuffled() -> [Iterator.Element] {
         var list = self.array
         list.shuffle()

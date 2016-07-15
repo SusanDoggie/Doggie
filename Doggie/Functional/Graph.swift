@@ -71,7 +71,7 @@ public struct Graph<Node : Hashable, Link> : Collection {
         return (from, to, val)
     }
     
-    /// - Complexity: Amortized O(1).
+    /// - Complexity: Amortized O(1)
     public subscript(from fromNode: Node, to toNode: Node) -> Link? {
         get {
             return linkValue(from: fromNode, to: toNode)
@@ -87,17 +87,17 @@ public struct Graph<Node : Hashable, Link> : Collection {
     
     /// Return `true` iff it has link from `fromNode` to `toNode`.
     ///
-    /// - Complexity: Amortized O(1).
+    /// - Complexity: Amortized O(1)
     public func isLinked(from fromNode: Node, to toNode: Node) -> Bool {
         return linkValue(from: fromNode, to: toNode) != nil
     }
     
-    /// - Complexity: Amortized O(1).
+    /// - Complexity: Amortized O(1)
     public func linkValue(from fromNode: Node, to toNode: Node) -> Link? {
         return table[fromNode]?[toNode]
     }
     
-    /// - Complexity: Amortized O(1).
+    /// - Complexity: Amortized O(1)
     @discardableResult
     public mutating func updateLink(from fromNode: Node, to toNode: Node, with link: Link) -> Link? {
         if table[fromNode] == nil {
@@ -107,7 +107,7 @@ public struct Graph<Node : Hashable, Link> : Collection {
         return table[fromNode]!.updateValue(link, forKey: toNode)
     }
     
-    /// - Complexity: Amortized O(1).
+    /// - Complexity: Amortized O(1)
     @discardableResult
     public mutating func removeLink(from fromNode: Node, to toNode: Node) -> Link? {
         if var list = table[fromNode], let result = list[toNode] {
@@ -281,7 +281,7 @@ public struct UndirectedGraph<Node : Hashable, Link> : Collection {
         return graph[position.base]
     }
     
-    /// - Complexity: Amortized O(1).
+    /// - Complexity: Amortized O(1)
     public subscript(fromNode: Node, toNode: Node) -> Link? {
         get {
             return linkValue(fromNode, toNode)
@@ -297,23 +297,23 @@ public struct UndirectedGraph<Node : Hashable, Link> : Collection {
     
     /// Return `true` iff it has link with `fromNode` and `toNode`.
     ///
-    /// - Complexity: Amortized O(1).
+    /// - Complexity: Amortized O(1)
     public func isLinked(_ fromNode: Node, _ toNode: Node) -> Bool {
         return linkValue(fromNode, toNode) != nil
     }
     
-    /// - Complexity: Amortized O(1).
+    /// - Complexity: Amortized O(1)
     public func linkValue(_ fromNode: Node, _ toNode: Node) -> Link? {
         return graph.linkValue(from: fromNode, to: toNode) ?? graph.linkValue(from: toNode, to: fromNode)
     }
     
-    /// - Complexity: Amortized O(1).
+    /// - Complexity: Amortized O(1)
     @discardableResult
     public mutating func updateLink(_ fromNode: Node, _ toNode: Node, with link: Link) -> Link? {
         return graph.updateLink(from: fromNode, to: toNode, with: link) ?? (fromNode != toNode ? graph.removeLink(from: toNode, to: fromNode) : nil)
     }
     
-    /// - Complexity: Amortized O(1).
+    /// - Complexity: Amortized O(1)
     @discardableResult
     public mutating func removeLink(_ fromNode: Node, _ toNode: Node) -> Link? {
         return graph.removeLink(from: fromNode, to: toNode) ?? graph.removeLink(from: toNode, to: fromNode)
