@@ -77,6 +77,8 @@ public struct SDPath : SDShape, RandomAccessCollection, MutableCollection, Array
     
     public typealias Indices = CountableRange<Int>
     
+    public typealias SubSequence = MutableRangeReplaceableRandomAccessSlice<SDPath>
+    
     private class Cache {
         
         var frame: Rect?
