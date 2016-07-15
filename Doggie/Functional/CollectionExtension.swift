@@ -420,6 +420,20 @@ public extension Comparable {
     }
 }
 
+public extension Range where Bound : BinaryFloatingPoint {
+    
+    func random() -> Bound {
+        let diff = upperBound - lowerBound
+        return (Bound.random() * diff) + lowerBound
+    }
+}
+public extension ClosedRange where Bound : BinaryFloatingPoint {
+    
+    func random() -> Bound {
+        let diff = upperBound - lowerBound
+        return (Bound.random(includeOne: true) * diff) + lowerBound
+    }
+}
 public extension RandomAccessCollection {
     
     /// Returns a random element in `self` or `nil` if the sequence is empty.

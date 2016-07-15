@@ -77,15 +77,6 @@ public extension BinaryFloatingPoint {
     }
 }
 
-public func random<T : BinaryFloatingPoint>(_ range: ClosedRange<T>) -> T {
-    let diff = range.upperBound - range.lowerBound
-    return (T.random(includeOne: true) * diff) + range.lowerBound
-}
-public func random<T : BinaryFloatingPoint>(_ range: Range<T>) -> T {
-    let diff = range.upperBound - range.lowerBound
-    return (T.random() * diff) + range.lowerBound
-}
-
 public func normal_distribution(mean: Double, variance: Double) -> Double {
     let u = 1 - Double.random(includeOne: false)
     let v = 1 - Double.random(includeOne: false)
