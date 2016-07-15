@@ -114,7 +114,7 @@ extension SDRectangle {
     
     public var CGPath : CoreGraphics.CGPath {
         var _transform = CGAffineTransform(transform)
-        return CGPath(rect: CGRect(Rect(x: x, y: y, width: width, height: height)), transform: &_transform)
+        return CoreGraphics.CGPath(rect: CGRect(Rect(x: x, y: y, width: width, height: height)), transform: &_transform)
     }
 }
 
@@ -122,7 +122,7 @@ extension SDEllipse {
     
     public var CGPath : CoreGraphics.CGPath {
         var _transform = CGAffineTransform(transform)
-        return CGPath(ellipseIn: CGRect(Rect(x: x - rx, y: y - ry, width: 2 * rx, height: 2 * ry)), transform: &_transform)
+        return CoreGraphics.CGPath(ellipseIn: CGRect(Rect(x: x - rx, y: y - ry, width: 2 * rx, height: 2 * ry)), transform: &_transform)
     }
 }
 
@@ -131,11 +131,11 @@ private let SDPathCacheCGPathKey = "SDPathCacheCGPathKey"
 extension SDPath {
     
     public var CGPath : CoreGraphics.CGPath {
-        if let path = self.getCache(SDPathCacheCGPathKey, type: .transformed).map({ $0 as! CoreGraphics.CGPath }) {
+        if let path = self.getCache(name: SDPathCacheCGPathKey, type: .transformed).map({ $0 as! CoreGraphics.CGPath }) {
             return path
         } else {
             let _path: CoreGraphics.CGPath
-            if let path = self.getCache(SDPathCacheCGPathKey, type: .regular).map({ $0 as! CoreGraphics.CGPath }) {
+            if let path = self.getCache(name: SDPathCacheCGPathKey, type: .regular).map({ $0 as! CoreGraphics.CGPath }) {
                 _path = path
             } else {
                 let path = CGMutablePath()
@@ -148,12 +148,12 @@ extension SDPath {
                     case .close: path.closeSubpath()
                     }
                 }
-                self.setCache(SDPathCacheCGPathKey, value: path, type: .regular)
+                self.setCache(name: SDPathCacheCGPathKey, value: path, type: .regular)
                 _path = path
             }
             var _transform = CGAffineTransform(transform)
             let path = _path.copy(using: &_transform) ?? _path
-            self.setCache(SDPathCacheCGPathKey, value: path, type: .transformed)
+            self.setCache(name: SDPathCacheCGPathKey, value: path, type: .transformed)
             return path
         }
     }
@@ -174,6 +174,6 @@ extension SDPath {
             case .closeSubpath: path.pointee.appendCommand(SDPath.ClosePath())
             }
         }
-        self.setCache(SDPathCacheCGPathKey, value: path.copy()!, type: .regular)
+        self.setCache(name: SDPathCacheCGPathKey, value: path.copy()!, type: .regular)
     }
 }
