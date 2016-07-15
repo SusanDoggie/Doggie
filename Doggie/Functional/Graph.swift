@@ -38,7 +38,6 @@ public struct Graph<Node : Hashable, Link> : Collection {
         return table.reduce(0) { $0 + $1.1.count }
     }
     
-    /// - Complexity: O(1).
     public func makeIterator() -> Iterator {
         return Iterator(_base: table.lazy.flatMap { from, to in to.lazy.map { (from, $0, $1) } }.makeIterator())
     }
@@ -262,7 +261,6 @@ public struct UndirectedGraph<Node : Hashable, Link> : Collection {
         return graph.count
     }
     
-    /// - Complexity: O(1).
     public func makeIterator() -> Iterator {
         return Iterator(base: graph.makeIterator())
     }
