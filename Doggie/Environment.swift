@@ -62,5 +62,5 @@ public func hash_combine<S: Sequence where S.Iterator.Element : Hashable>(seed: 
     return values.reduce(seed, combine: hash_combine)
 }
 public func hash_combine<T: Hashable>(seed: Int, _ a: T, _ b: T, _ res: T ... ) -> Int {
-    return hash_combine(seed, CollectionOfOne(a).concat(with: CollectionOfOne(b)).concat(res))
+    return hash_combine(seed, CollectionOfOne(a).concat(with: CollectionOfOne(b)).concat(with: res))
 }
