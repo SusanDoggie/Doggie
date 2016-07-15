@@ -686,6 +686,36 @@ extension Matrix.Translate {
     }
 }
 
+extension Matrix.Translate {
+    
+    public var tx: Double {
+        get {
+            return x
+        }
+        set {
+            x = newValue
+        }
+    }
+    
+    public var ty: Double {
+        get {
+            return y
+        }
+        set {
+            y = newValue
+        }
+    }
+    
+    public var tz: Double {
+        get {
+            return z
+        }
+        set {
+            z = newValue
+        }
+    }
+}
+
 public func == (lhs: Matrix.Translate, rhs: Matrix.Translate) -> Bool {
     return lhs.x == rhs.x && lhs.y == rhs.y && lhs.z == rhs.z
 }
