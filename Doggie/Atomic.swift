@@ -39,12 +39,10 @@ public protocol SDAtomicType {
 
 public extension SDAtomicType {
     
-    /// Sets the value, and returns the previous value.
     public mutating func fetchStore(new: Self) -> Self {
         return self.fetchStore { _ in new }
     }
     
-    /// Sets the value, and returns the previous value. `block` is called repeatedly until result accepted.
     public mutating func fetchStore(block: @noescape (Self) throws -> Self) rethrows -> Self {
         while true {
             let old = self
