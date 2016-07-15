@@ -205,13 +205,7 @@ extension AtomicBoolean: CustomStringConvertible, CustomDebugStringConvertible {
 }
 
 extension AtomicBoolean : Equatable, Hashable {
-    /// The hash value.
-    ///
-    /// **Axiom:** `x == y` implies `x.hashValue == y.hashValue`.
-    ///
-    /// - Note: the hash value is not guaranteed to be stable across
-    ///   different invocations of the same program.  Do not persist the
-    ///   hash value across program runs.
+    
     public var hashValue: Int {
         return boolValue.hashValue
     }
@@ -309,13 +303,6 @@ extension Atomic : Equatable, Hashable {
         return ObjectIdentifier(base)
     }
     
-    /// The hash value.
-    ///
-    /// **Axiom:** `x == y` implies `x.hashValue == y.hashValue`.
-    ///
-    /// - Note: the hash value is not guaranteed to be stable across
-    ///   different invocations of the same program.  Do not persist the
-    ///   hash value across program runs.
     public var hashValue: Int {
         return identifier.hashValue
     }

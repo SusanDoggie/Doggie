@@ -51,23 +51,22 @@ public func SDJSONWithData(data: Data) throws -> AnyObject {
 public func SDJSONWithStream(stream: InputStream) throws -> AnyObject {
     return try JSONSerialization.jsonObject(with: stream, options: [.mutableContainers, .mutableLeaves])
 }
-public func SDJSONSerialization(object: AnyObject) throws -> String {
+public func SDJSONSerialization(object: AnyObject, options: JSONSerialization.WritingOptions = []) throws -> String {
     if JSONSerialization.isValidJSONObject(object) {
-        return String(data: try JSONSerialization.data(withJSONObject: object, options: .prettyPrinted), encoding: String.Encoding.utf8)!
+        return String(data: try JSONSerialization.data(withJSONObject: object, options: options), encoding: String.Encoding.utf8)!
     }
     throw NSError(domain: #function, code: 1, userInfo: ["Message": "Invalid JSON Object"])
 }
-public func SDJSONSerialization(object: AnyObject, toStream stream: NSOutputStream) throws -> Int {
+public func SDJSONSerialization(object: AnyObject, toStream stream: NSOutputStream, options: JSONSerialization.WritingOptions = []) throws -> Int {
     if JSONSerialization.isValidJSONObject(object) {
         var error: NSError? = nil
-        let count = JSONSerialization.writeJSONObject(object, to: stream, options: .prettyPrinted, error: &error)
+        let count = JSONSerialization.writeJSONObject(object, to: stream, options: options, error: &error)
         if error != nil {
             throw error!
         }
         return count
     }
-    print("Error in \(#function): Invalid JSON Object")
-    return 0
+    throw NSError(domain: #function, code: 1, userInfo: ["Message": "Invalid JSON Object"])
 }
 
 extension NSArray {
