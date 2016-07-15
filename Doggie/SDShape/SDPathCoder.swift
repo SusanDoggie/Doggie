@@ -25,24 +25,25 @@
 
 import Foundation
 
-private struct PathDataScanner<G : IteratorProtocol where G.Element == String> : IteratorProtocol, Sequence {
+private struct PathDataScanner<I : IteratorProtocol where I.Element == String> : IteratorProtocol, Sequence {
     
-    var generator: G
+    var iterator: I
     var current: String!
     
     @_transparent
-    init(_ generator: G) {
-        self.generator = generator
+    init(_ iterator: I) {
+        self.iterator = iterator
     }
     
     @_transparent
-    init<S : Sequence where S.Iterator == G>(_ sequence: S) {
-        self.generator = sequence.generate()
+    init<S : Sequence where S.Iterator == I>(_ sequence: S) {
+        self.iterator = sequence.makeIterator()
     }
     
     @_transparent
+    @discardableResult
     mutating func next() -> String? {
-        current = generator.next()
+        current = iterator.next()
         return current
     }
 }
