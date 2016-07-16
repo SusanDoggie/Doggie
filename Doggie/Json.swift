@@ -681,16 +681,20 @@ private extension String {
         UnicodeScalar(x).write(to: &self)
     }
     
-    mutating func append(escape x: UInt8) -> Bool {
-        switch x {
+    mutating func append(escape scanner: inout CharacterScanner) throws -> Bool {
+        switch scanner.current! {
         case 34, 39, 47, 92:
-            self.append(x)
-        case 116:
-            self.append(9)
-        case 114:
-            self.append(13)
+            self.append(scanner.current!)
+        case 98:
+            self.append(8)
+        case 102:
+            self.append(12)
         case 110:
             self.append(10)
+        case 114:
+            self.append(13)
+        case 116:
+            self.append(9)
         default:
             return false
         }
@@ -800,8 +804,8 @@ private struct JsonParser {
         Loop: while currentChar != nil {
             switch currentChar! {
             case 92:
-                if let current = scanner.next() {
-                    if strbuf.append(escape: current) {
+                if scanner.next() != nil {
+                    if try strbuf.append(escape: &scanner) {
                         scanner.next()
                     } else {
                         throw JsonParseError.InvalidEscapeCharacter(position: scanner.pos)
