@@ -344,7 +344,11 @@ public func <(lhs: Json.Index, rhs: Json.Index) -> Bool {
     case .object(let _lhs):
         switch rhs.base {
         case .array(_): fatalError("Not the same index type.")
-        case .object(let _rhs): return _lhs.1 < _rhs.1
+        case .object(let _rhs):
+            if _lhs.1 == nil || _rhs.1 == nil {
+                 fatalError("Index not comparable.")
+            }
+            return _lhs.1 < _rhs.1
         }
     }
 }
