@@ -147,7 +147,7 @@ extension Json: CustomStringConvertible {
 
 extension Json {
     
-    public var isNull : Bool {
+    public var isNil : Bool {
         switch self.value {
         case .null: return true
         default: return false
@@ -479,14 +479,14 @@ extension Json : Collection {
                 }
             case .object(var x):
                 if let index = position.objectIndex {
-                    if newValue.isNull {
+                    if newValue.isNil {
                         x[x[index].key] = nil
                     } else {
                         x[x[index].key] = newValue
                     }
                     self = Json(x)
                 } else if let index = position.stringValue {
-                    if newValue.isNull {
+                    if newValue.isNil {
                         x[index] = nil
                     } else {
                         x[index] = newValue
@@ -512,7 +512,7 @@ extension Json : Equatable {
 
 public func == (lhs: Json, rhs: Json) -> Bool {
     switch lhs.value {
-    case .null: return rhs.isNull
+    case .null: return rhs.isNil
     case .bool(let l):
         switch rhs.value {
         case .bool(let r): return l == r
