@@ -307,24 +307,56 @@ extension Json {
     }
 }
 
-public struct JsonIndex {
+extension Json {
     
-    private enum Base {
-        case array(Int)
-        case object(String?, DictionaryIndex<String, Json>?)
+    public struct Index : Comparable {
+        
+        private enum Base {
+            case array(Int)
+            case object(String?, DictionaryIndex<String, Json>?)
+        }
+        
+        private let base: Base
     }
-    
-    private let base: Base
 }
 
-extension JsonIndex: IntegerLiteralConvertible {
+public func ==(lhs: Json.Index, rhs: Json.Index) -> Bool {
+    switch lhs.base {
+    case .array(let _lhs):
+        switch rhs.base {
+        case .array(let _rhs): return _lhs == _rhs
+        case .object(_): fatalError("Not the same index type.")
+        }
+    case .object(let _lhs):
+        switch rhs.base {
+        case .array(_): fatalError("Not the same index type.")
+        case .object(let _rhs): return _lhs.0 == _rhs.0
+        }
+    }
+}
+public func <(lhs: Json.Index, rhs: Json.Index) -> Bool {
+    switch lhs.base {
+    case .array(let _lhs):
+        switch rhs.base {
+        case .array(let _rhs): return _lhs < _rhs
+        case .object(_): fatalError("Not the same index type.")
+        }
+    case .object(let _lhs):
+        switch rhs.base {
+        case .array(_): fatalError("Not the same index type.")
+        case .object(let _rhs): return _lhs.1 < _rhs.1
+        }
+    }
+}
+
+extension Json.Index: IntegerLiteralConvertible {
     
     public init(integerLiteral value: IntegerLiteralType) {
         self.base = .array(value)
     }
 }
 
-extension JsonIndex: StringLiteralConvertible {
+extension Json.Index: StringLiteralConvertible {
     
     public typealias ExtendedGraphemeClusterLiteralType = StringLiteralType
     public typealias UnicodeScalarLiteralType = StringLiteralType
@@ -342,7 +374,7 @@ extension JsonIndex: StringLiteralConvertible {
     }
 }
 
-extension JsonIndex {
+extension Json.Index {
     
     public var intValue: Int? {
         switch self.base {
@@ -368,24 +400,24 @@ extension JsonIndex {
 
 extension Json : Collection {
     
-    public var startIndex : JsonIndex {
+    public var startIndex : Index {
         switch self.value {
-        case .array(let x): return JsonIndex(base: .array(x.startIndex))
+        case .array(let x): return Index(base: .array(x.startIndex))
         case .object(let x):
             let index = x.startIndex
-            return JsonIndex(base: .object(x[index].key, index))
+            return Index(base: .object(x[index].key, index))
         default: fatalError("Not an array or object.")
         }
     }
-    public var endIndex : JsonIndex {
+    public var endIndex : Index {
         switch self.value {
-        case .array(let x): return JsonIndex(base: .array(x.endIndex))
-        case .object(let x): return JsonIndex(base: .object(nil, x.endIndex))
+        case .array(let x): return Index(base: .array(x.endIndex))
+        case .object(let x): return Index(base: .object(nil, x.endIndex))
         default: fatalError("Not an array or object.")
         }
     }
     
-    public func index(after i: JsonIndex) -> JsonIndex {
+    public func index(after i: Index) -> Index {
         switch self.value {
         case .array(let x):
             if let index = i.intValue {
@@ -418,7 +450,7 @@ extension Json : Collection {
         }
     }
     
-    public subscript(position: JsonIndex) -> Json {
+    public subscript(position: Index) -> Json {
         get {
             switch self.value {
             case .array(let x):
