@@ -434,7 +434,8 @@ extension Json : Collection {
                 }
             case .object(let x):
                 if let index = position.objectIndex {
-                    return Json(key: x[index].key, value: x[index].value.value)
+                    let _val = x[index]
+                    return Json(key: _val.key, value: _val.value.value)
                 }
             default: break
             }
