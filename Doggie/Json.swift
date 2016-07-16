@@ -536,15 +536,21 @@ private func escapeString(_ source : String, _ result: inout [UInt8]) {
     result.append(34)
     for c in source.utf8 {
         switch c {
-        case 13:
+        case 8:
             result.append(92)
-            result.append(114)
-        case 10:
-            result.append(92)
-            result.append(110)
+            result.append(98)
         case 9:
             result.append(92)
             result.append(116)
+        case 10:
+            result.append(92)
+            result.append(110)
+        case 12:
+            result.append(92)
+            result.append(102)
+        case 13:
+            result.append(92)
+            result.append(114)
         case 34, 39, 47, 92:
             result.append(92)
             result.append(c)
