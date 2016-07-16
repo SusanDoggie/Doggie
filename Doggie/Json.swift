@@ -795,10 +795,7 @@ private struct JsonParser {
         return Json(val)
     }
     
-    mutating func parseString() throws -> Json {
-        if scanner.next() == nil {
-            throw JsonParseError.UnexpectedEndOfToken
-        }
+    mutating func _parseString() throws -> String {
         strbuf.removeAll(keepingCapacity: true)
         Loop: while currentChar != nil {
             switch currentChar! {
@@ -820,7 +817,14 @@ private struct JsonParser {
                 scanner.next()
             }
         }
-        return Json(strbuf)
+        return strbuf
+    }
+    
+    mutating func parseString() throws -> Json {
+        if scanner.next() == nil {
+            throw JsonParseError.UnexpectedEndOfToken
+        }
+        return Json(try _parseString())
     }
     
     mutating func parseArray() throws -> Json {
@@ -847,28 +851,11 @@ private struct JsonParser {
         return Json(array)
     }
     
-    mutating func parseKey() -> String? {
+    mutating func parseKey() throws -> String? {
         if scanner.next() == nil {
             return nil
         }
-        strbuf.removeAll(keepingCapacity: true)
-        Loop: while currentChar != nil {
-            switch currentChar! {
-            case 92:
-                if let current = scanner.next() where strbuf.append(escape: current) {
-                    scanner.next()
-                } else {
-                    return nil
-                }
-            case 34:
-                scanner.next()
-                break Loop
-            default:
-                strbuf.append(currentChar!)
-                scanner.next()
-            }
-        }
-        return strbuf
+        return try _parseString()
     }
     
     mutating func parseObject() throws -> Json {
@@ -888,7 +875,7 @@ private struct JsonParser {
                 scanner.next()
                 break Loop
             case 34:
-                if let key = parseKey() {
+                if let key = try parseKey() {
                     try skipWhitespaces()
                     if currentChar != 58 {
                         throw JsonParseError.UnexpectedToken(position: scanner.pos)
