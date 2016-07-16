@@ -198,13 +198,9 @@ public struct Graph<Node : Hashable, Link> : Collection {
     }
 }
 
-extension Graph: CustomStringConvertible, CustomDebugStringConvertible {
+extension Graph: CustomStringConvertible {
     
     public var description: String {
-        return "[\(self.map { "(from: \($0.from), to: \($0.to)): \($0.2)" }.joined(separator: ", "))]"
-    }
-    
-    public var debugDescription: String {
         return "[\(self.map { "(from: \($0.from), to: \($0.to)): \($0.2)" }.joined(separator: ", "))]"
     }
 }
@@ -237,11 +233,8 @@ public struct GraphIterator<Node : Hashable, Link> : IteratorProtocol, Sequence 
     }
 }
 
-extension GraphIterator: CustomStringConvertible, CustomDebugStringConvertible {
+extension GraphIterator: CustomStringConvertible {
     public var description: String {
-        return "GraphIterator"
-    }
-    public var debugDescription: String {
         return "GraphIterator"
     }
 }
@@ -367,13 +360,9 @@ public struct UndirectedGraph<Node : Hashable, Link> : Collection {
     }
 }
 
-extension UndirectedGraph: CustomStringConvertible, CustomDebugStringConvertible {
+extension UndirectedGraph: CustomStringConvertible {
     
     public var description: String {
-        return "[\(self.map { "(\($0.0), \($0.1)): \($0.2)" }.joined(separator: ", "))]"
-    }
-    
-    public var debugDescription: String {
         return "[\(self.map { "(\($0.0), \($0.1)): \($0.2)" }.joined(separator: ", "))]"
     }
 }
@@ -401,11 +390,8 @@ public struct UndirectedGraphIterator<Node : Hashable, Link> : IteratorProtocol,
     }
 }
 
-extension UndirectedGraphIterator: CustomStringConvertible, CustomDebugStringConvertible {
+extension UndirectedGraphIterator: CustomStringConvertible {
     public var description: String {
-        return "UndirectedGraphIterator"
-    }
-    public var debugDescription: String {
         return "UndirectedGraphIterator"
     }
 }

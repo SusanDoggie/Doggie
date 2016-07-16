@@ -59,13 +59,10 @@ extension Polynomial : ArrayLiteralConvertible {
     }
 }
 
-extension Polynomial : CustomStringConvertible, CustomDebugStringConvertible {
+extension Polynomial : CustomStringConvertible {
     
     public var description: String {
         return coeffs.description
-    }
-    public var debugDescription: String {
-        return coeffs.debugDescription
     }
 }
 

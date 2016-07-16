@@ -73,11 +73,8 @@ extension Regex: StringLiteralConvertible {
     }
 }
 
-extension Regex: CustomStringConvertible, CustomDebugStringConvertible {
+extension Regex: CustomStringConvertible {
     public var description: String {
-        return pattern
-    }
-    public var debugDescription: String {
         return pattern
     }
 }

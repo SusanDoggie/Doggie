@@ -48,7 +48,7 @@ public struct Complex {
     }
 }
 
-extension Complex: CustomStringConvertible, CustomDebugStringConvertible {
+extension Complex: CustomStringConvertible {
     
     public var description: String {
         
@@ -76,10 +76,6 @@ extension Complex: CustomStringConvertible, CustomDebugStringConvertible {
             print = "0.0"
         }
         return print
-    }
-    
-    public var debugDescription: String {
-        return self.description
     }
 }
 

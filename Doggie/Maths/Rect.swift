@@ -43,11 +43,8 @@ public struct Size {
     }
 }
 
-extension Size: CustomStringConvertible, CustomDebugStringConvertible {
+extension Size: CustomStringConvertible {
     public var description: String {
-        return "{w: \(width), h: \(height)}"
-    }
-    public var debugDescription: String {
         return "{w: \(width), h: \(height)}"
     }
 }
@@ -149,11 +146,8 @@ public struct Rect {
     }
 }
 
-extension Rect: CustomStringConvertible, CustomDebugStringConvertible {
+extension Rect: CustomStringConvertible {
     public var description: String {
-        return "{x: \(x), y: \(y), w: \(width), h: \(height)}"
-    }
-    public var debugDescription: String {
         return "{x: \(x), y: \(y), w: \(width), h: \(height)}"
     }
 }

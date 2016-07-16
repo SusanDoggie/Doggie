@@ -89,11 +89,8 @@ public struct SDTransform: SDTransformType {
     }
 }
 
-extension SDTransform : CustomStringConvertible, CustomDebugStringConvertible {
+extension SDTransform : CustomStringConvertible {
     public var description: String {
-        return "{a: \(a), b: \(b), c: \(c), d: \(d), e: \(e), f: \(f)}"
-    }
-    public var debugDescription: String {
         return "{a: \(a), b: \(b), c: \(c), d: \(d), e: \(e), f: \(f)}"
     }
 }

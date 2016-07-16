@@ -49,13 +49,9 @@ public struct Vector {
     }
 }
 
-extension Vector: CustomStringConvertible, CustomDebugStringConvertible {
+extension Vector: CustomStringConvertible {
     
     public var description: String {
-        return "{x: \(x), y: \(y), z: \(z)}"
-    }
-    
-    public var debugDescription: String {
         return "{x: \(x), y: \(y), z: \(z)}"
     }
 }

@@ -47,11 +47,8 @@ public struct Radius {
     }
 }
 
-extension Radius: CustomStringConvertible, CustomDebugStringConvertible {
+extension Radius: CustomStringConvertible {
     public var description: String {
-        return "{x: \(x), y: \(y)}"
-    }
-    public var debugDescription: String {
         return "{x: \(x), y: \(y)}"
     }
 }

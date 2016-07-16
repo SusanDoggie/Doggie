@@ -52,11 +52,8 @@ extension Point {
     }
 }
 
-extension Point: CustomStringConvertible, CustomDebugStringConvertible {
+extension Point: CustomStringConvertible {
     public var description: String {
-        return "{x: \(x), y: \(y)}"
-    }
-    public var debugDescription: String {
         return "{x: \(x), y: \(y)}"
     }
 }

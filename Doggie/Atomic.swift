@@ -191,13 +191,9 @@ extension AtomicBoolean : SDAtomicType {
     }
 }
 
-extension AtomicBoolean: CustomStringConvertible, CustomDebugStringConvertible {
+extension AtomicBoolean: CustomStringConvertible {
     
     public var description: String {
-        return self ? "true" : "false"
-    }
-    
-    public var debugDescription: String {
         return self ? "true" : "false"
     }
 }
@@ -283,13 +279,9 @@ extension Atomic {
     }
 }
 
-extension Atomic: CustomStringConvertible, CustomDebugStringConvertible {
+extension Atomic: CustomStringConvertible {
     
     public var description: String {
-        return "Atomic(\(value))"
-    }
-    
-    public var debugDescription: String {
         return "Atomic(\(value))"
     }
 }

@@ -119,11 +119,8 @@ public struct Matrix: MatrixType {
     }
 }
 
-extension Matrix : CustomStringConvertible, CustomDebugStringConvertible {
+extension Matrix : CustomStringConvertible {
     public var description: String {
-        return "{a: \(a), b: \(b), c: \(c), d: \(d), e: \(e), f: \(f), g: \(g), h: \(h), i: \(i), j: \(j), k: \(k), l: \(l)}"
-    }
-    public var debugDescription: String {
         return "{a: \(a), b: \(b), c: \(c), d: \(d), e: \(e), f: \(f), g: \(g), h: \(h), i: \(i), j: \(j), k: \(k), l: \(l)}"
     }
 }
