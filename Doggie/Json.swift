@@ -46,7 +46,7 @@ public struct Json {
     public init(_ val: Bool) {
         self.value = .bool(val)
     }
-    public init<S : SignedInteger>(_ val: S) {
+    public init<S : Integer>(_ val: S) {
         self.value = .integer(val.toIntMax())
     }
     public init(_ val: Float) {
@@ -58,8 +58,8 @@ public struct Json {
     public init(_ val: String) {
         self.value = .string(val)
     }
-    public init(_ val: [Json]) {
-        self.value = .array(val)
+    public init<S : Sequence where S.Iterator.Element == Json>(_ val: S) {
+        self.value = .array(val.array)
     }
     public init(_ val: [String: Json]) {
         self.value = .object(val)
