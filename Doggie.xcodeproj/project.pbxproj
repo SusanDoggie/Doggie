@@ -77,6 +77,8 @@
 		08AA03141C219B9900609109 /* SDSink.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08AA03131C219B9900609109 /* SDSink.swift */; };
 		08AA03161C219B9900609109 /* SDSink.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08AA03131C219B9900609109 /* SDSink.swift */; };
 		08BFF9BC1B07161E00EC88CB /* FourierTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08BFF9B91B0715ED00EC88CB /* FourierTest.swift */; };
+		0A6334581D3A005F00E01BE7 /* Json.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A6334571D3A005F00E01BE7 /* Json.swift */; };
+		0A6334591D3A005F00E01BE7 /* Json.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A6334571D3A005F00E01BE7 /* Json.swift */; };
 		0A80FA581D3733FC007CF2C1 /* Atomic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A80FA521D3733FC007CF2C1 /* Atomic.swift */; };
 		0A80FA591D3733FC007CF2C1 /* Atomic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A80FA521D3733FC007CF2C1 /* Atomic.swift */; };
 		0A80FA5A1D3733FC007CF2C1 /* Environment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A80FA531D3733FC007CF2C1 /* Environment.swift */; };
@@ -172,6 +174,7 @@
 		08863CC71C22756F004C27E5 /* SDObserver.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SDObserver.swift; sourceTree = "<group>"; };
 		08AA03131C219B9900609109 /* SDSink.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SDSink.swift; sourceTree = "<group>"; };
 		08BFF9B91B0715ED00EC88CB /* FourierTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FourierTest.swift; sourceTree = "<group>"; };
+		0A6334571D3A005F00E01BE7 /* Json.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Json.swift; sourceTree = "<group>"; };
 		0A80FA521D3733FC007CF2C1 /* Atomic.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Atomic.swift; sourceTree = "<group>"; };
 		0A80FA531D3733FC007CF2C1 /* Environment.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Environment.swift; sourceTree = "<group>"; };
 		0A80FA541D3733FC007CF2C1 /* Integer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Integer.swift; sourceTree = "<group>"; };
@@ -231,6 +234,7 @@
 				0A80FA531D3733FC007CF2C1 /* Environment.swift */,
 				0A80FA541D3733FC007CF2C1 /* Integer.swift */,
 				0A80FA561D3733FC007CF2C1 /* Random.swift */,
+				0A6334571D3A005F00E01BE7 /* Json.swift */,
 				0A80FA571D3733FC007CF2C1 /* Thread.swift */,
 				0858DA411C0550B7007FA426 /* Accelerate */,
 				0858DA4E1C0550B7007FA426 /* Color.swift */,
@@ -609,6 +613,7 @@
 				0813224D1C11D3600081B2B9 /* SDPathCoder.swift in Sources */,
 				081322411C11D3600081B2B9 /* Prime.swift in Sources */,
 				081322491C11D3600081B2B9 /* SDAtomicNode.swift in Sources */,
+				0A6334581D3A005F00E01BE7 /* Json.swift in Sources */,
 				081322381C11D3600081B2B9 /* Fourier.swift in Sources */,
 				0813223E1C11D3600081B2B9 /* Matrix.swift in Sources */,
 				0A80FA5A1D3733FC007CF2C1 /* Environment.swift in Sources */,
@@ -672,6 +677,7 @@
 				0858DB1B1C0550B7007FA426 /* SDAtomicNode.swift in Sources */,
 				0858DA871C0550B7007FA426 /* ComplexConversion.swift in Sources */,
 				0858DB481C055172007FA426 /* Fourier.swift in Sources */,
+				0A6334591D3A005F00E01BE7 /* Json.swift in Sources */,
 				0858DAAB1C0550B7007FA426 /* Color.swift in Sources */,
 				0A80FA5B1D3733FC007CF2C1 /* Environment.swift in Sources */,
 				08863CCA1C22756F004C27E5 /* SDObserver.swift in Sources */,
