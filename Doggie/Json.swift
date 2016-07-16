@@ -37,31 +37,40 @@ private enum JValue {
 
 public struct Json {
     
+    public let key: String?
     private let value: JValue
     
     private init(key: String?, value: JValue) {
+        self.key = key
         self.value = value
     }
     
     public init(_ val: Bool) {
+        self.key = nil
         self.value = .bool(val)
     }
     public init<S : Integer>(_ val: S) {
+        self.key = nil
         self.value = .integer(val.toIntMax())
     }
     public init(_ val: Float) {
+        self.key = nil
         self.value = .float(Double(val))
     }
     public init(_ val: Double) {
+        self.key = nil
         self.value = .float(val)
     }
     public init(_ val: String) {
+        self.key = nil
         self.value = .string(val)
     }
     public init<S : Sequence where S.Iterator.Element == Json>(_ val: S) {
+        self.key = nil
         self.value = .array(val.array)
     }
     public init(_ val: [String: Json]) {
+        self.key = nil
         self.value = .object(val)
     }
 }
@@ -69,6 +78,7 @@ public struct Json {
 extension Json: NilLiteralConvertible {
     
     public init(nilLiteral value: Void) {
+        self.key = nil
         self.value = .null
     }
 }
@@ -133,14 +143,15 @@ extension Json: DictionaryLiteralConvertible {
 extension Json: CustomStringConvertible {
     
     public var description: String {
+        let keyStr = self.key != nil ? "\"\(key!)\": " : ""
         switch self.value {
-        case .null: return "nil"
-        case .bool(let x): return x.description
-        case .integer(let x): return x.description
-        case .float(let x): return x.description
-        case .string(let x): return x
-        case .array(let x): return x.description
-        case .object(let x): return x.description
+        case .null: return keyStr + "nil"
+        case .bool(let x): return keyStr + x.description
+        case .integer(let x): return keyStr + x.description
+        case .float(let x): return keyStr + x.description
+        case .string(let x): return keyStr + x
+        case .array(let x): return keyStr + x.description
+        case .object(let x): return keyStr + x.description
         }
     }
 }
@@ -313,7 +324,7 @@ extension Json {
         
         private enum Base {
             case array(Int)
-            case object(String?, DictionaryIndex<String, Json>?)
+            case object(DictionaryIndex<String, Json>)
         }
         
         private let base: Base
@@ -330,7 +341,7 @@ public func ==(lhs: Json.Index, rhs: Json.Index) -> Bool {
     case .object(let _lhs):
         switch rhs.base {
         case .array(_): fatalError("Not the same index type.")
-        case .object(let _rhs): return _lhs.0 == _rhs.0
+        case .object(let _rhs): return _lhs == _rhs
         }
     }
 }
@@ -344,11 +355,7 @@ public func <(lhs: Json.Index, rhs: Json.Index) -> Bool {
     case .object(let _lhs):
         switch rhs.base {
         case .array(_): fatalError("Not the same index type.")
-        case .object(let _rhs):
-            if _lhs.1 == nil || _rhs.1 == nil {
-                 fatalError("Index not comparable.")
-            }
-            return _lhs.1 < _rhs.1
+        case .object(let _rhs): return _lhs < _rhs
         }
     }
 }
@@ -360,43 +367,18 @@ extension Json.Index: IntegerLiteralConvertible {
     }
 }
 
-extension Json.Index: StringLiteralConvertible {
+private extension Json.Index {
     
-    public typealias ExtendedGraphemeClusterLiteralType = StringLiteralType
-    public typealias UnicodeScalarLiteralType = StringLiteralType
-    
-    public init(stringLiteral value: StringLiteralType) {
-        self.base = .object(value, nil)
-    }
-    
-    public init(extendedGraphemeClusterLiteral value: ExtendedGraphemeClusterLiteralType) {
-        self.base = .object(value, nil)
-    }
-    
-    public init(unicodeScalarLiteral value: UnicodeScalarLiteralType) {
-        self.base = .object(value, nil)
-    }
-}
-
-extension Json.Index {
-    
-    public var intValue: Int? {
+    var intValue: Int? {
         switch self.base {
         case .array(let x): return x
         default: return nil
         }
     }
     
-    public var stringValue: String? {
+    var objectIndex: DictionaryIndex<String, Json>? {
         switch self.base {
-        case .object(let x, _): return x
-        default: return nil
-        }
-    }
-    
-    private var objectIndex: DictionaryIndex<String, Json>? {
-        switch self.base {
-        case .object(_, let x): return x
+        case .object(let x): return x
         default: return nil
         }
     }
@@ -407,16 +389,14 @@ extension Json : Collection {
     public var startIndex : Index {
         switch self.value {
         case .array(let x): return Index(base: .array(x.startIndex))
-        case .object(let x):
-            let index = x.startIndex
-            return Index(base: .object(x[index].key, index))
+        case .object(let x): return Index(base: .object(x.startIndex))
         default: fatalError("Not an array or object.")
         }
     }
     public var endIndex : Index {
         switch self.value {
         case .array(let x): return Index(base: .array(x.endIndex))
-        case .object(let x): return Index(base: .object(nil, x.endIndex))
+        case .object(let x): return Index(base: .object(x.endIndex))
         default: fatalError("Not an array or object.")
         }
     }
@@ -430,16 +410,7 @@ extension Json : Collection {
             fatalError("Not an object.")
         case .object(let x):
             if let index = i.objectIndex {
-                let index = x.index(after: index)
-                return Index(base: .object(x[index].key, index))
-            }
-            if let key = i.stringValue {
-                if let index = x.index(forKey: key) {
-                    let index = x.index(after: index)
-                    return Index(base: .object(x[index].key, index))
-                } else {
-                    fatalError("Index not exists.")
-                }
+                return Index(base: .object(x.index(after: index)))
             }
             fatalError("Not an array.")
         default: fatalError("Not an array or object.")
@@ -463,10 +434,7 @@ extension Json : Collection {
                 }
             case .object(let x):
                 if let index = position.objectIndex {
-                    return x[index].value
-                }
-                if let index = position.stringValue {
-                    return x[index] ?? nil
+                    return Json(key: x[index].key, value: x[index].value.value)
                 }
             default: break
             }
@@ -489,13 +457,6 @@ extension Json : Collection {
                         x[x[index].key] = newValue
                     }
                     self = Json(x)
-                } else if let index = position.stringValue {
-                    if newValue.isNil {
-                        x[index] = nil
-                    } else {
-                        x[index] = newValue
-                    }
-                    self = Json(x)
                 } else {
                     fatalError("Not an array.")
                 }
@@ -505,6 +466,32 @@ extension Json : Collection {
                 } else {
                     fatalError("Not an object.")
                 }
+            }
+        }
+    }
+    
+    public subscript(key: String) -> Json {
+        get {
+            switch self.value {
+            case .object(let x):
+                if let val = x[key] {
+                    return Json(key: key, value: val.value)
+                }
+                return Json(key: key, value: .null)
+            default: break
+            }
+            return nil
+        }
+        set {
+            switch self.value {
+            case .object(var x):
+                if newValue.isNil {
+                    x[key] = nil
+                } else {
+                    x[key] = newValue
+                }
+                self = Json(x)
+            default: fatalError("Not an object.")
             }
         }
     }
