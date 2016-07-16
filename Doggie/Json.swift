@@ -293,13 +293,13 @@ extension Json {
             }
         }
     }
-    public var arrayValue: [Json]? {
+    public var array: [Json]? {
         switch self.value {
         case .array(let x): return x
         default: return nil
         }
     }
-    public var dictionaryValue: [String: Json]? {
+    public var dictionary: [String: Json]? {
         switch self.value {
         case .object(let x): return x
         default: return nil
