@@ -210,7 +210,7 @@ extension Json {
 
 extension Json {
     
-    public var boolValue: Bool! {
+    public var boolValue: Bool? {
         get {
             switch self.value {
             case .bool(let x): return x
@@ -227,7 +227,7 @@ extension Json {
             }
         }
     }
-    public var intValue: Int! {
+    public var intValue: Int? {
         get {
             switch self.value {
             case .bool(let x): return x ? 1 : 0
@@ -244,7 +244,7 @@ extension Json {
             }
         }
     }
-    public var longIntValue: IntMax! {
+    public var longIntValue: IntMax? {
         get {
             switch self.value {
             case .bool(let x): return x ? 1 : 0
@@ -261,7 +261,7 @@ extension Json {
             }
         }
     }
-    public var doubleValue: Double! {
+    public var doubleValue: Double? {
         get {
             switch self.value {
             case .bool(let x): return x ? 1 : 0
@@ -278,7 +278,7 @@ extension Json {
             }
         }
     }
-    public var stringValue: String! {
+    public var stringValue: String? {
         get {
             switch self.value {
             case .string(let x): return x
@@ -293,13 +293,13 @@ extension Json {
             }
         }
     }
-    public var arrayValue: [Json]! {
+    public var arrayValue: [Json]? {
         switch self.value {
         case .array(let x): return x
         default: return nil
         }
     }
-    public var dictionaryValue: [String: Json]! {
+    public var dictionaryValue: [String: Json]? {
         switch self.value {
         case .object(let x): return x
         default: return nil
