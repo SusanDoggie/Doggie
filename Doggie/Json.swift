@@ -451,11 +451,7 @@ extension Json : Collection {
                 }
             case .object(var x):
                 if let index = position.objectIndex {
-                    if newValue.isNil {
-                        x[x[index].key] = nil
-                    } else {
-                        x[x[index].key] = newValue
-                    }
+                    x[x[index].key] = newValue.isNil ? nil : newValue
                     self = Json(x)
                 } else {
                     fatalError("Not an array.")
@@ -485,11 +481,7 @@ extension Json : Collection {
         set {
             switch self.value {
             case .object(var x):
-                if newValue.isNil {
-                    x[key] = nil
-                } else {
-                    x[key] = newValue
-                }
+                x[key] = newValue.isNil ? nil : newValue
                 self = Json(x)
             default: fatalError("Not an object.")
             }
