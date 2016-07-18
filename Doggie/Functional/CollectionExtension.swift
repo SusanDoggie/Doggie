@@ -240,33 +240,41 @@ public extension MutableCollection where Indices.Iterator.Element == Index {
     }
 }
 
+public typealias LazyAppendSequence<Elements : Sequence> = LazySequence<ConcatSequence<Elements, CollectionOfOne<Elements.Iterator.Element>>>
+public typealias LazyAppendCollection<Elements : Collection> = LazyCollection<ConcatCollection<Elements, CollectionOfOne<Elements.Iterator.Element>>>
+public typealias LazyAppendBidirectionalCollection<Elements : BidirectionalCollection> = LazyBidirectionalCollection<ConcatBidirectionalCollection<Elements, CollectionOfOne<Elements.Iterator.Element>>>
+
 public extension LazySequenceProtocol {
     
-    func append(_ newElement: Elements.Iterator.Element) -> LazySequence<ConcatSequence<Elements, CollectionOfOne<Elements.Iterator.Element>>> {
+    func append(_ newElement: Elements.Iterator.Element) -> LazyAppendSequence<Elements> {
         return self.elements.concat(with: CollectionOfOne(newElement)).lazy
     }
 }
 
 public extension LazyCollectionProtocol {
     
-    func append(_ newElement: Elements.Iterator.Element) -> LazyCollection<ConcatCollection<Elements, CollectionOfOne<Elements.Iterator.Element>>> {
+    func append(_ newElement: Elements.Iterator.Element) -> LazyAppendCollection<Elements> {
         return self.elements.concat(with: CollectionOfOne(newElement)).lazy
     }
 }
 
 public extension LazyCollectionProtocol where Elements : BidirectionalCollection {
     
-    func append(_ newElement: Elements.Iterator.Element) -> LazyBidirectionalCollection<ConcatBidirectionalCollection<Elements, CollectionOfOne<Elements.Iterator.Element>>> {
+    func append(_ newElement: Elements.Iterator.Element) -> LazyAppendBidirectionalCollection<Elements> {
         return self.elements.concat(with: CollectionOfOne(newElement)).lazy
     }
 }
 
+public typealias LazyDropRangeSequence<Elements : Sequence> = LazySequence<ConcatSequence<Elements.SubSequence, Elements.SubSequence>>
+public typealias LazyDropRangeCollection<Elements : Collection> = LazyCollection<ConcatCollection<Elements.SubSequence, Elements.SubSequence>>
+public typealias LazyDropRangeBidirectionalCollection<Elements : BidirectionalCollection> = LazyBidirectionalCollection<ConcatBidirectionalCollection<Elements.SubSequence, Elements.SubSequence>>
+
 public extension LazyCollectionProtocol {
     
     /// Remove the indicated `subRange` of elements.
     ///
     /// Invalidates all indices with respect to `self`.
-    func dropRange(_ subRange: Range<Elements.Index>) -> LazySequence<ConcatSequence<Elements.SubSequence, Elements.SubSequence>> {
+    func dropRange(_ subRange: Range<Elements.Index>) -> LazyDropRangeSequence<Elements, Elements> {
         return self.elements.prefix(upTo: subRange.lowerBound).concat(with: self.elements.suffix(from: subRange.upperBound)).lazy
     }
 }
@@ -276,7 +284,7 @@ public extension LazyCollectionProtocol where Elements.SubSequence : Collection 
     /// Remove the indicated `subRange` of elements.
     ///
     /// Invalidates all indices with respect to `self`.
-    func dropRange(_ subRange: Range<Elements.Index>) -> LazyCollection<ConcatCollection<Elements.SubSequence, Elements.SubSequence>> {
+    func dropRange(_ subRange: Range<Elements.Index>) -> LazyDropRangeCollection<Elements, Elements> {
         return self.elements.prefix(upTo: subRange.lowerBound).concat(with: self.elements.suffix(from: subRange.upperBound)).lazy
     }
 }
@@ -286,17 +294,21 @@ public extension LazyCollectionProtocol where Elements.SubSequence : Bidirection
     /// Remove the indicated `subRange` of elements.
     ///
     /// Invalidates all indices with respect to `self`.
-    func dropRange(_ subRange: Range<Elements.Index>) -> LazyBidirectionalCollection<ConcatBidirectionalCollection<Elements.SubSequence, Elements.SubSequence>> {
+    func dropRange(_ subRange: Range<Elements.Index>) -> LazyDropRangeBidirectionalCollection<Elements, Elements> {
         return self.elements.prefix(upTo: subRange.lowerBound).concat(with: self.elements.suffix(from: subRange.upperBound)).lazy
     }
 }
+
+public typealias LazyReplaceRangeSequence<Elements : Sequence, News : Sequence> = LazySequence<ConcatSequence<ConcatSequence<Elements.SubSequence, News>, Elements.SubSequence>>
+public typealias LazyReplaceRangeCollection<Elements : Collection, News : Collection> = LazyCollection<ConcatCollection<ConcatCollection<Elements.SubSequence, News>, Elements.SubSequence>>
+public typealias LazyReplaceRangeBidirectionalCollection<Elements : BidirectionalCollection, News : BidirectionalCollection> = LazyBidirectionalCollection<ConcatBidirectionalCollection<ConcatBidirectionalCollection<Elements.SubSequence, News>, Elements.SubSequence>>
 
 public extension LazyCollectionProtocol {
     
     /// Replace the given `subRange` of elements with `newElements`.
     ///
     /// Invalidates all indices with respect to `self`.
-    func replaceRange<S : Sequence where S.Iterator.Element == Elements.SubSequence.Iterator.Element>(_ subRange: Range<Elements.Index>, with newElements: S) -> LazySequence<ConcatSequence<ConcatSequence<Elements.SubSequence, S>, Elements.SubSequence>> {
+    func replaceRange<S : Sequence where S.Iterator.Element == Elements.SubSequence.Iterator.Element>(_ subRange: Range<Elements.Index>, with newElements: S) -> LazyReplaceRangeSequence<Elements, S> {
         return self.elements.prefix(upTo: subRange.lowerBound).concat(with: newElements).concat(with: self.elements.suffix(from: subRange.upperBound)).lazy
     }
 }
@@ -306,7 +318,7 @@ public extension LazyCollectionProtocol where Elements.SubSequence : Collection 
     /// Replace the given `subRange` of elements with `newElements`.
     ///
     /// Invalidates all indices with respect to `self`.
-    func replaceRange<C : Collection where C.Iterator.Element == Elements.SubSequence.Iterator.Element>(_ subRange: Range<Elements.Index>, with newElements: C) -> LazyCollection<ConcatCollection<ConcatCollection<Elements.SubSequence, C>, Elements.SubSequence>> {
+    func replaceRange<C : Collection where C.Iterator.Element == Elements.SubSequence.Iterator.Element>(_ subRange: Range<Elements.Index>, with newElements: C) -> LazyReplaceRangeCollection<Elements, C> {
         return self.elements.prefix(upTo: subRange.lowerBound).concat(with: newElements).concat(with: self.elements.suffix(from: subRange.upperBound)).lazy
     }
 }
@@ -316,7 +328,7 @@ public extension LazyCollectionProtocol where Elements.SubSequence : Bidirection
     /// Replace the given `subRange` of elements with `newElements`.
     ///
     /// Invalidates all indices with respect to `self`.
-    func replaceRange<C : BidirectionalCollection where C.Iterator.Element == Elements.SubSequence.Iterator.Element>(_ subRange: Range<Elements.Index>, with newElements: C) -> LazyBidirectionalCollection<ConcatBidirectionalCollection<ConcatBidirectionalCollection<Elements.SubSequence, C>, Elements.SubSequence>> {
+    func replaceRange<C : BidirectionalCollection where C.Iterator.Element == Elements.SubSequence.Iterator.Element>(_ subRange: Range<Elements.Index>, with newElements: C) -> LazyReplaceRangeBidirectionalCollection<Elements, C> {
         return self.elements.prefix(upTo: subRange.lowerBound).concat(newElements).concat(self.elements.suffix(from: subRange.upperBound)).lazy
     }
 }
@@ -344,10 +356,13 @@ public extension Sequence where Iterator.Element : Comparable {
     }
 }
 
+public typealias LazyMergeSequence<Elements : Sequence, Others : Sequence> = LazySequence<FlattenSequence<LazyMapSequence<Elements, LazyMapSequence<LazyFilterSequence<Others>, (Elements.Iterator.Element, Others.Iterator.Element)>>>>
+public typealias LazyMergeCollection<Elements : Collection, Others : Collection> = LazyCollection<FlattenCollection<LazyMapCollection<Elements, LazyMapCollection<LazyFilterCollection<Others>, (Elements.Iterator.Element, Others.Iterator.Element)>>>>
+
 public extension LazySequenceProtocol {
     
     /// Return a `Sequence` containing tuples satisfies `predicate` with each elements of two `sources`.
-    func merge<S : Sequence>(with: S, predicate: (Elements.Iterator.Element, S.Iterator.Element) -> Bool) -> LazySequence<FlattenSequence<LazyMapSequence<Elements, LazyMapSequence<LazyFilterSequence<S>, (Elements.Iterator.Element, S.Iterator.Element)>>>> {
+    func merge<S : Sequence>(with: S, predicate: (Elements.Iterator.Element, S.Iterator.Element) -> Bool) -> LazyMergeSequence<Elements, S> {
         return self.flatMap { lhs in with.lazy.filter { rhs in predicate(lhs, rhs) }.map { (lhs, $0) } }
     }
 }
@@ -355,7 +370,7 @@ public extension LazySequenceProtocol {
 public extension LazyCollectionProtocol {
     
     /// Return a `Collection` containing tuples satisfies `predicate` with each elements of two `sources`.
-    func merge<C : Collection>(with: C, predicate: (Elements.Iterator.Element, C.Iterator.Element) -> Bool) -> LazyCollection<FlattenCollection<LazyMapCollection<Elements, LazyMapCollection<LazyFilterCollection<C>, (Elements.Iterator.Element, C.Iterator.Element)>>>> {
+    func merge<C : Collection>(with: C, predicate: (Elements.Iterator.Element, C.Iterator.Element) -> Bool) -> LazyMergeCollection<Elements, C> {
         return self.flatMap { lhs in with.lazy.filter { rhs in predicate(lhs, rhs) }.map { (lhs, $0) } }
     }
 }

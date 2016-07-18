@@ -384,7 +384,7 @@ private extension Json.Index {
     }
 }
 
-extension Json : Collection {
+extension Json : MutableCollection {
     
     public var startIndex : Index {
         switch self.value {
