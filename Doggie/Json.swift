@@ -360,13 +360,6 @@ public func <(lhs: Json.Index, rhs: Json.Index) -> Bool {
     }
 }
 
-extension Json.Index: IntegerLiteralConvertible {
-    
-    public init(integerLiteral value: IntegerLiteralType) {
-        self.base = .array(value)
-    }
-}
-
 private extension Json.Index {
     
     var intValue: Int? {
@@ -467,6 +460,23 @@ extension Json : MutableCollection {
         }
     }
     
+    public subscript(index: Int) -> Json {
+        get {
+            switch self.value {
+            case .array(let x): return x[index]
+            default: break
+            }
+            return nil
+        }
+        set {
+            switch self.value {
+            case .array(var x):
+                x[index] = newValue
+                self = Json(x)
+            default: fatalError("Not an object.")
+            }
+        }
+    }
     public subscript(key: String) -> Json {
         get {
             switch self.value {
