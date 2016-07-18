@@ -274,7 +274,6 @@ public func addmod<T: UnsignedInteger>(_ a: T, _ b: T, _ m: T) -> T {
 }
 
 public func mulmod<T: UnsignedInteger>(_ a: T, _ b: T, _ m: T) -> T {
-    
     func _mulmod(_ a: UIntMax, _ b: UIntMax, _ m: UIntMax) -> UIntMax {
         let a = mod(a, m)
         let b = mod(b, m)
@@ -288,7 +287,6 @@ public func mulmod<T: UnsignedInteger>(_ a: T, _ b: T, _ m: T) -> T {
         }
         return mul % m
     }
-    
     assert(m != 0, "divide by zero")
     if m.isPower2 {
         return T.multiplyWithOverflow(a, b).0 & (m - 1)
@@ -297,7 +295,6 @@ public func mulmod<T: UnsignedInteger>(_ a: T, _ b: T, _ m: T) -> T {
 }
 
 public func pow<T: UnsignedInteger>(_ x: T, _ n: T, _ m: T) -> T {
-    
     func _pow(_ x: UIntMax, _ n: UIntMax, _ m: UIntMax) -> UIntMax {
         let x = mod(x, m)
         if x == 0 || m == 1 {
@@ -309,7 +306,6 @@ public func pow<T: UnsignedInteger>(_ x: T, _ n: T, _ m: T) -> T {
         let p = _pow(mulmod(x, x, m), n >> 1, m)
         return n & 1 == 1 ? mulmod(x, p, m) : p
     }
-    
     assert(m != 0, "divide by zero")
     return T(_pow(x.toUIntMax(), n.toUIntMax(), m.toUIntMax()))
 }
@@ -428,17 +424,17 @@ public func combination<T: UnsignedInteger where T.Stride : SignedInteger>(_ n: 
 }
 
 public func fibonacci<T: UnsignedInteger>(_ n: T) -> T {
-    func fib(_ n: T) -> (T, T) {
+    func fib(_ n: UIntMax) -> (UIntMax, UIntMax) {
         switch n {
         case 0: return (1, 1)
         case 1: return (1, 2)
         default:
-            let (a, b) = fib(n / 2 - 1)
+            let (a, b) = fib((n >> 1) - 1)
             let b2 = b * b
             let c = a * a + b2
             let d = 2 * a * b + b2
             return n & 1 == 0 ? (c, d) : (d, c + d)
         }
     }
-    return fib(n).0
+    return T(fib(n.toUIntMax()).0)
 }
