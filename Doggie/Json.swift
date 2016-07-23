@@ -36,26 +36,30 @@ public struct Json {
 
 extension Json {
     
-    public init(_ val: Bool) {
-        self.value = val
+    public init(_ value: Bool) {
+        self.value = value
     }
-    public init<S : Integer>(_ val: S) {
-        self.value = NSNumber(value: val.toIntMax())
+    public init<T : Integer>(_ value: T) {
+        self.value = NSNumber(value: value.toIntMax())
     }
-    public init(_ val: Float) {
-        self.value = Double(val)
+    public init(_ value: Float) {
+        self.value = Double(value)
     }
-    public init(_ val: Double) {
-        self.value = val
+    public init(_ value: Double) {
+        self.value = value
     }
-    public init(_ val: String) {
-        self.value = val
+    public init(_ value: String) {
+        self.value = value
     }
-    public init<S : Sequence where S.Iterator.Element == AnyObject>(_ val: S) {
-        self.value = val.array
+    public init<S : Sequence where S.Iterator.Element == Json>(_ elements: S) {
+        self.value = elements.map { $0.value! }
     }
-    public init(_ val: [String: AnyObject]) {
-        self.value = val
+    public init(_ elements: [String: Json]) {
+        var dictionary = [String: AnyObject](minimumCapacity: elements.count)
+        for (key, value) in elements {
+            dictionary[key] = value.value
+        }
+        self.value = dictionary
     }
 }
 
@@ -107,19 +111,19 @@ extension Json: StringLiteralConvertible {
 
 extension Json: ArrayLiteralConvertible {
     
-    public init(arrayLiteral elements: AnyObject ...) {
+    public init(arrayLiteral elements: Json ...) {
         self.init(elements)
     }
 }
 
 extension Json: DictionaryLiteralConvertible {
     
-    public init(dictionaryLiteral elements: (String, AnyObject) ...) {
+    public init(dictionaryLiteral elements: (String, Json) ...) {
         var dictionary = [String: AnyObject](minimumCapacity: elements.count)
-        for pair in elements {
-            dictionary[pair.0] = pair.1
+        for (key, value) in elements {
+            dictionary[key] = value.value
         }
-        self.init(dictionary)
+        self.init(value: dictionary)
     }
 }
 
@@ -203,13 +207,8 @@ extension Json {
 
 extension Json {
     
-    public var numberValue: NSNumber? {
-        get {
-            return value as? NSNumber
-        }
-        set {
-            self = Json(value: newValue)
-        }
+    private var numberValue: NSNumber? {
+        return value as? NSNumber
     }
     public var boolValue: Bool? {
         get {
@@ -336,13 +335,25 @@ extension Json {
         }
     }
     public var array: [Json]? {
-        if let array = self.value as? [AnyObject] {
-            return array.map { Json(value: $0) }
+        get {
+            if let array = self.value as? [AnyObject] {
+                return array.map { Json(value: $0) }
+            }
+            return nil
+        }
+        set {
+            self = Json(value: newValue?.map { $0.value! })
+        }
+    }
+    public var dictionary: [String: Json]? {
+        if let elements = self.value as? [String: AnyObject] {
+            var dictionary = [String: Json](minimumCapacity: elements.count)
+            for (key, value) in elements {
+                dictionary[key] = Json(value: value)
+            }
+            return dictionary
         }
         return nil
-    }
-    public var dictionary: [String: AnyObject]? {
-        return self.value as? Dictionary
     }
 }
 
