@@ -382,7 +382,7 @@ extension Matrix.Identity {
 public func == (_: Matrix.Identity, _: Matrix.Identity) -> Bool {
     return true
 }
-public func != (lhs: Matrix.Identity, rhs: Matrix.Identity) -> Bool {
+public func != (_: Matrix.Identity, _: Matrix.Identity) -> Bool {
     return false
 }
 
