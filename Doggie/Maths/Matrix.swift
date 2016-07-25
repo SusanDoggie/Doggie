@@ -293,6 +293,66 @@ extension Matrix {
         }
     }
     
+    ///
+    /// Transformation Matrix:
+    ///
+    ///     ⎛ -1 0 0 0 ⎞
+    ///     ⎜  0 1 0 0 ⎟
+    ///     ⎜  0 0 1 0 ⎟
+    ///     ⎝ 2x 0 0 1 ⎠
+    ///
+    public struct ReflectX: MatrixType {
+        
+        public var x: Double
+        
+        public init() {
+            self.x = 0
+        }
+        public init(_ x: Double) {
+            self.x = x
+        }
+    }
+    
+    ///
+    /// Transformation Matrix:
+    ///
+    ///     ⎛ 1  0 0 0 ⎞
+    ///     ⎜ 0 -1 0 0 ⎟
+    ///     ⎜ 0  0 1 0 ⎟
+    ///     ⎝ 0 2y 0 1 ⎠
+    ///
+    public struct ReflectY: MatrixType {
+        
+        public var y: Double
+        
+        public init() {
+            self.y = 0
+        }
+        public init(_ y: Double) {
+            self.y = y
+        }
+    }
+    
+    ///
+    /// Transformation Matrix:
+    ///
+    ///     ⎛ 1 0  0 0 ⎞
+    ///     ⎜ 0 1  0 0 ⎟
+    ///     ⎜ 0 0 -1 0 ⎟
+    ///     ⎝ 0 0 2z 1 ⎠
+    ///
+    public struct ReflectZ: MatrixType {
+        
+        public var z: Double
+        
+        public init() {
+            self.z = 0
+        }
+        public init(_ z: Double) {
+            self.z = z
+        }
+    }
+    
     public static func Rotate(roll x: Double, pitch y: Double, yaw z: Double) -> Matrix {
         return RotateX(x) * RotateY(y) * RotateZ(z)
     }
@@ -711,6 +771,159 @@ extension Matrix.Translate {
             z = newValue
         }
     }
+}
+
+extension Matrix.ReflectX {
+    
+    public var a: Double {
+        return -1
+    }
+    public var b: Double {
+        return 0
+    }
+    public var c: Double {
+        return 0
+    }
+    public var d: Double {
+        return 2 * x
+    }
+    public var e: Double {
+        return 0
+    }
+    public var f: Double {
+        return 1
+    }
+    public var g: Double {
+        return 0
+    }
+    public var h: Double {
+        return 0
+    }
+    public var i: Double {
+        return 0
+    }
+    public var j: Double {
+        return 0
+    }
+    public var k: Double {
+        return 1
+    }
+    public var l: Double {
+        return 0
+    }
+    
+    public var inverse : Matrix.ReflectX {
+        return self
+    }
+}
+
+public func == (lhs: Matrix.ReflectX, rhs: Matrix.ReflectX) -> Bool {
+    return lhs.x == rhs.x
+}
+public func != (lhs: Matrix.ReflectX, rhs: Matrix.ReflectX) -> Bool {
+    return lhs.x != rhs.x
+}
+
+extension Matrix.ReflectY {
+    
+    public var a: Double {
+        return 1
+    }
+    public var b: Double {
+        return 0
+    }
+    public var c: Double {
+        return 0
+    }
+    public var d: Double {
+        return 0
+    }
+    public var e: Double {
+        return 0
+    }
+    public var f: Double {
+        return -1
+    }
+    public var g: Double {
+        return 0
+    }
+    public var h: Double {
+        return 2 * y
+    }
+    public var i: Double {
+        return 0
+    }
+    public var j: Double {
+        return 0
+    }
+    public var k: Double {
+        return 1
+    }
+    public var l: Double {
+        return 0
+    }
+    
+    public var inverse : Matrix.ReflectY {
+        return self
+    }
+}
+
+public func == (lhs: Matrix.ReflectY, rhs: Matrix.ReflectY) -> Bool {
+    return lhs.y == rhs.y
+}
+public func != (lhs: Matrix.ReflectY, rhs: Matrix.ReflectY) -> Bool {
+    return lhs.y != rhs.y
+}
+
+extension Matrix.ReflectZ {
+    
+    public var a: Double {
+        return 1
+    }
+    public var b: Double {
+        return 0
+    }
+    public var c: Double {
+        return 0
+    }
+    public var d: Double {
+        return 0
+    }
+    public var e: Double {
+        return 0
+    }
+    public var f: Double {
+        return 1
+    }
+    public var g: Double {
+        return 0
+    }
+    public var h: Double {
+        return 0
+    }
+    public var i: Double {
+        return 0
+    }
+    public var j: Double {
+        return 0
+    }
+    public var k: Double {
+        return -1
+    }
+    public var l: Double {
+        return 2 * z
+    }
+    
+    public var inverse : Matrix.ReflectZ {
+        return self
+    }
+}
+
+public func == (lhs: Matrix.ReflectZ, rhs: Matrix.ReflectZ) -> Bool {
+    return lhs.y == rhs.y
+}
+public func != (lhs: Matrix.ReflectZ, rhs: Matrix.ReflectZ) -> Bool {
+    return lhs.y != rhs.y
 }
 
 public func == (lhs: Matrix.Translate, rhs: Matrix.Translate) -> Bool {
