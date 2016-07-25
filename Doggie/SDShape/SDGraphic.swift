@@ -88,7 +88,7 @@ extension Rect {
 
 extension CGAffineTransform {
     
-    public init<T: SDTransformType>(_ m: T) {
+    public init<T: SDTransformProtocol>(_ m: T) {
         self.a = CGFloat(m.a)
         self.b = CGFloat(m.d)
         self.c = CGFloat(m.b)

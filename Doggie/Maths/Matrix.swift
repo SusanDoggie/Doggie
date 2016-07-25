@@ -33,7 +33,7 @@ import Foundation
 ///     ⎜ c g k 0 ⎟
 ///     ⎝ d h l 1 ⎠
 ///
-public protocol MatrixType {
+public protocol MatrixProtocol {
     
     var a: Double { get }
     var b: Double { get }
@@ -50,7 +50,7 @@ public protocol MatrixType {
     var inverse : Self { get }
 }
 
-extension MatrixType {
+extension MatrixProtocol {
     
     public var tx: Double {
         return d
@@ -73,7 +73,7 @@ extension MatrixType {
 ///     ⎜ c g k 0 ⎟
 ///     ⎝ d h l 1 ⎠
 ///
-public struct Matrix: MatrixType {
+public struct Matrix: MatrixProtocol {
     
     public var a: Double
     public var b: Double
@@ -88,7 +88,7 @@ public struct Matrix: MatrixType {
     public var k: Double
     public var l: Double
     
-    public init<T: MatrixType>(_ m: T) {
+    public init<T: MatrixProtocol>(_ m: T) {
         self.a = m.a
         self.b = m.b
         self.c = m.c
@@ -189,7 +189,7 @@ extension Matrix {
     ///     ⎜ 0 0 1 0 ⎟
     ///     ⎝ 0 0 0 1 ⎠
     ///
-    public struct Identity: MatrixType {
+    public struct Identity: MatrixProtocol {
         
         public init() {
         }
@@ -203,7 +203,7 @@ extension Matrix {
     ///     ⎜ 0 -sin(a) cos(a) 0 ⎟
     ///     ⎝ 0    0      0    1 ⎠
     ///
-    public struct RotateX: MatrixType {
+    public struct RotateX: MatrixProtocol {
         
         public var angle: Double
         
@@ -220,7 +220,7 @@ extension Matrix {
     ///     ⎜ sin(a) 0  cos(a) 0 ⎟
     ///     ⎝   0    0    0    1 ⎠
     ///
-    public struct RotateY: MatrixType {
+    public struct RotateY: MatrixProtocol {
         
         public var angle: Double
         
@@ -237,7 +237,7 @@ extension Matrix {
     ///     ⎜    0      0    1 0 ⎟
     ///     ⎝    0      0    0 1 ⎠
     ///
-    public struct RotateZ: MatrixType {
+    public struct RotateZ: MatrixProtocol {
         
         public var angle: Double
         
@@ -254,7 +254,7 @@ extension Matrix {
     ///     ⎜ 0 0 z 0 ⎟
     ///     ⎝ 0 0 0 1 ⎠
     ///
-    public struct Scale: MatrixType {
+    public struct Scale: MatrixProtocol {
         
         public var x: Double
         public var y: Double
@@ -280,7 +280,7 @@ extension Matrix {
     ///     ⎜ 0 0 1 0 ⎟
     ///     ⎝ x y z 1 ⎠
     ///
-    public struct Translate: MatrixType {
+    public struct Translate: MatrixProtocol {
         
         public var x: Double
         public var y: Double
@@ -301,7 +301,7 @@ extension Matrix {
     ///     ⎜  0 0 1 0 ⎟
     ///     ⎝ 2x 0 0 1 ⎠
     ///
-    public struct ReflectX: MatrixType {
+    public struct ReflectX: MatrixProtocol {
         
         public var x: Double
         
@@ -321,7 +321,7 @@ extension Matrix {
     ///     ⎜ 0  0 1 0 ⎟
     ///     ⎝ 0 2y 0 1 ⎠
     ///
-    public struct ReflectY: MatrixType {
+    public struct ReflectY: MatrixProtocol {
         
         public var y: Double
         
@@ -341,7 +341,7 @@ extension Matrix {
     ///     ⎜ 0 0 -1 0 ⎟
     ///     ⎝ 0 0 2z 1 ⎠
     ///
-    public struct ReflectZ: MatrixType {
+    public struct ReflectZ: MatrixProtocol {
         
         public var z: Double
         
@@ -450,15 +450,15 @@ public func * (_: Matrix.Identity, _: Matrix.Identity) -> Matrix.Identity {
     return Matrix.Identity()
 }
 
-public func * <T: MatrixType>(_: Matrix.Identity, rhs: T) -> T {
+public func * <T: MatrixProtocol>(_: Matrix.Identity, rhs: T) -> T {
     return rhs
 }
 
-public func * <S: MatrixType>(lhs: S, _: Matrix.Identity) -> S {
+public func * <S: MatrixProtocol>(lhs: S, _: Matrix.Identity) -> S {
     return lhs
 }
 
-public func *= <S: MatrixType>(_: inout S, _: Matrix.Identity) {
+public func *= <S: MatrixProtocol>(_: inout S, _: Matrix.Identity) {
 }
 
 extension Matrix.RotateX {
@@ -943,18 +943,18 @@ public func *= (lhs: inout Matrix.Translate, rhs: Matrix.Translate) {
     lhs.z += rhs.z
 }
 
-public func == <S: MatrixType, T: MatrixType>(lhs: S, rhs: T) -> Bool {
+public func == <S: MatrixProtocol, T: MatrixProtocol>(lhs: S, rhs: T) -> Bool {
     return lhs.a == rhs.a && lhs.b == rhs.b && lhs.c == rhs.c && lhs.d == rhs.d
         && lhs.e == rhs.e && lhs.f == rhs.f && lhs.g == rhs.g && lhs.h == rhs.h
         && lhs.i == rhs.i && lhs.j == rhs.j && lhs.k == rhs.k && lhs.l == rhs.l
 }
-public func != <S: MatrixType, T: MatrixType>(lhs: S, rhs: T) -> Bool {
+public func != <S: MatrixProtocol, T: MatrixProtocol>(lhs: S, rhs: T) -> Bool {
     return lhs.a != rhs.a || lhs.b != rhs.b || lhs.c != rhs.c || lhs.d != rhs.d
         || lhs.e != rhs.e || lhs.f != rhs.f || lhs.g != rhs.g || lhs.h != rhs.h
         || lhs.i != rhs.i || lhs.j != rhs.j || lhs.k != rhs.k || lhs.l != rhs.l
 }
 
-public func * <S: MatrixType, T: MatrixType>(lhs: S, rhs: T) -> Matrix {
+public func * <S: MatrixProtocol, T: MatrixProtocol>(lhs: S, rhs: T) -> Matrix {
     let a = lhs.a * rhs.a + lhs.e * rhs.b + lhs.i * rhs.c
     let b = lhs.b * rhs.a + lhs.f * rhs.b + lhs.j * rhs.c
     let c = lhs.c * rhs.a + lhs.g * rhs.b + lhs.k * rhs.c
@@ -970,14 +970,14 @@ public func * <S: MatrixType, T: MatrixType>(lhs: S, rhs: T) -> Matrix {
     return Matrix(a: a, b: b, c: c, d: d, e: e, f: f, g: g, h: h, i: i, j: j, k: k, l: l)
 }
 
-public func *= <T: MatrixType>(lhs: inout Matrix, rhs: T) {
+public func *= <T: MatrixProtocol>(lhs: inout Matrix, rhs: T) {
     lhs = lhs * rhs
 }
 
-public func * <T: MatrixType>(lhs: Vector, rhs: T) -> Vector {
+public func * <T: MatrixProtocol>(lhs: Vector, rhs: T) -> Vector {
     return Vector(x: lhs.x * rhs.a + lhs.y * rhs.b + lhs.z * rhs.c + rhs.d, y: lhs.x * rhs.e + lhs.y * rhs.f + lhs.z * rhs.g + rhs.h, z: lhs.x * rhs.i + lhs.y * rhs.j + lhs.z * rhs.k + rhs.l)
 }
 
-public func *= <T: MatrixType>(lhs: inout Vector, rhs: T) {
+public func *= <T: MatrixProtocol>(lhs: inout Vector, rhs: T) {
     lhs = lhs * rhs
 }

@@ -137,7 +137,7 @@ public func EllipseStationary(_ r: Radius, _ a: Double, _ b: Double) -> Double {
 ///     ⎜ d e f ⎟ ⎜ B sin(t) ⎟
 ///     ⎝ 0 0 1 ⎠ ⎝    1     ⎠
 ///
-public func EllipseBound<T: SDTransformType>(_ center: Point, _ r: Radius, _ matrix: T) -> Rect {
+public func EllipseBound<T: SDTransformProtocol>(_ center: Point, _ r: Radius, _ matrix: T) -> Rect {
     
     let t1 = EllipseStationary(r, matrix.a, matrix.b)
     let t2 = EllipseStationary(r, matrix.d, matrix.e)
@@ -630,7 +630,7 @@ public func QuadBezierBound(_ p0: Point, _ p1: Point, _ p2: Point) -> Rect {
 ///     ⎜ d e f ⎟ ⎜ B_y(t) ⎟
 ///     ⎝ 0 0 1 ⎠ ⎝   1    ⎠
 ///
-public func QuadBezierBound<T: SDTransformType>(_ p0: Point, _ p1: Point, _ p2: Point, _ matrix: T) -> Rect {
+public func QuadBezierBound<T: SDTransformProtocol>(_ p0: Point, _ p1: Point, _ p2: Point, _ matrix: T) -> Rect {
     
     let tx = [0.0, QuadBezierStationary(p0, p1, p2, matrix.a, matrix.b).map { $0.clamp(0...1) } ?? 0.0, 1.0]
     let ty = [0.0, QuadBezierStationary(p0, p1, p2, matrix.d, matrix.e).map { $0.clamp(0...1) } ?? 0.0, 1.0]
@@ -675,7 +675,7 @@ public func CubicBezierBound(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point)
 ///     ⎜ d e f ⎟ ⎜ B_y(t) ⎟
 ///     ⎝ 0 0 1 ⎠ ⎝   1    ⎠
 ///
-public func CubicBezierBound<T: SDTransformType>(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point, _ matrix: T) -> Rect {
+public func CubicBezierBound<T: SDTransformProtocol>(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point, _ matrix: T) -> Rect {
     
     let tx = [0.0, 1.0] + CubicBezierStationary(p0, p1, p2, p3, matrix.a, matrix.b).lazy.map { $0.clamp(0...1) }
     let ty = [0.0, 1.0] + CubicBezierStationary(p0, p1, p2, p3, matrix.d, matrix.e).lazy.map { $0.clamp(0...1) }

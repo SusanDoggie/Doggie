@@ -32,7 +32,7 @@ import Foundation
 ///     ⎜ b e 0 ⎟
 ///     ⎝ c f 1 ⎠
 ///
-public protocol SDTransformType {
+public protocol SDTransformProtocol {
     
     var a: Double { get }
     var b: Double { get }
@@ -43,7 +43,7 @@ public protocol SDTransformType {
     var inverse : Self { get }
 }
 
-extension SDTransformType {
+extension SDTransformProtocol {
     
     public var tx: Double {
         return c
@@ -61,7 +61,7 @@ extension SDTransformType {
 ///     ⎜ b e 0 ⎟
 ///     ⎝ c f 1 ⎠
 ///
-public struct SDTransform: SDTransformType {
+public struct SDTransform: SDTransformProtocol {
     
     public var a: Double
     public var b: Double
@@ -70,7 +70,7 @@ public struct SDTransform: SDTransformType {
     public var e: Double
     public var f: Double
     
-    public init<T: SDTransformType>(_ m: T) {
+    public init<T: SDTransformProtocol>(_ m: T) {
         self.a = m.a
         self.b = m.b
         self.c = m.c
@@ -133,7 +133,7 @@ extension SDTransform {
     ///     ⎜ 0 1 0 ⎟
     ///     ⎝ 0 0 1 ⎠
     ///
-    public struct Identity: SDTransformType {
+    public struct Identity: SDTransformProtocol {
         
         public init() {
         }
@@ -146,7 +146,7 @@ extension SDTransform {
     ///     ⎜ -sin(a) cos(a) 0 ⎟
     ///     ⎝    0      0    1 ⎠
     ///
-    public struct Rotate: SDTransformType {
+    public struct Rotate: SDTransformProtocol {
         
         public var angle: Double
         
@@ -162,7 +162,7 @@ extension SDTransform {
     ///     ⎜ tan(a) 1 0 ⎟
     ///     ⎝   0    0 1 ⎠
     ///
-    public struct SkewX: SDTransformType {
+    public struct SkewX: SDTransformProtocol {
         
         public var angle: Double
         
@@ -178,7 +178,7 @@ extension SDTransform {
     ///     ⎜ 0   1    0 ⎟
     ///     ⎝ 0   0    1 ⎠
     ///
-    public struct SkewY: SDTransformType {
+    public struct SkewY: SDTransformProtocol {
         
         public var angle: Double
         
@@ -194,7 +194,7 @@ extension SDTransform {
     ///     ⎜ 0 y 0 ⎟
     ///     ⎝ 0 0 1 ⎠
     ///
-    public struct Scale: SDTransformType {
+    public struct Scale: SDTransformProtocol {
         
         public var x: Double
         public var y: Double
@@ -216,7 +216,7 @@ extension SDTransform {
     ///     ⎜ 0 1 0 ⎟
     ///     ⎝ x y 1 ⎠
     ///
-    public struct Translate: SDTransformType {
+    public struct Translate: SDTransformProtocol {
         
         public var x: Double
         public var y: Double
@@ -234,7 +234,7 @@ extension SDTransform {
     ///     ⎜  0 1 0 ⎟
     ///     ⎝ 2x 0 1 ⎠
     ///
-    public struct ReflectX: SDTransformType {
+    public struct ReflectX: SDTransformProtocol {
         
         public var x: Double
         
@@ -253,7 +253,7 @@ extension SDTransform {
     ///     ⎜ 0 -1 0 ⎟
     ///     ⎝ 0 2y 1 ⎠
     ///
-    public struct ReflectY: SDTransformType {
+    public struct ReflectY: SDTransformProtocol {
         
         public var y: Double
         
@@ -303,15 +303,15 @@ public func * (_: SDTransform.Identity, _: SDTransform.Identity) -> SDTransform.
     return SDTransform.Identity()
 }
 
-public func * <T: SDTransformType>(_: SDTransform.Identity, rhs: T) -> T {
+public func * <T: SDTransformProtocol>(_: SDTransform.Identity, rhs: T) -> T {
     return rhs
 }
 
-public func * <S: SDTransformType>(lhs: S, _: SDTransform.Identity) -> S {
+public func * <S: SDTransformProtocol>(lhs: S, _: SDTransform.Identity) -> S {
     return lhs
 }
 
-public func *= <S: SDTransformType>(_: inout S, _: SDTransform.Identity) {
+public func *= <S: SDTransformProtocol>(_: inout S, _: SDTransform.Identity) {
 }
 
 extension SDTransform.Rotate {
@@ -608,14 +608,14 @@ public func != (lhs: SDTransform.ReflectY, rhs: SDTransform.ReflectY) -> Bool {
     return lhs.y != rhs.y
 }
 
-public func == <S: SDTransformType, T: SDTransformType>(lhs: S, rhs: T) -> Bool {
+public func == <S: SDTransformProtocol, T: SDTransformProtocol>(lhs: S, rhs: T) -> Bool {
     return lhs.a == rhs.a && lhs.b == rhs.b && lhs.c == rhs.c && lhs.d == rhs.d && lhs.e == rhs.e && lhs.f == rhs.f
 }
-public func != <S: SDTransformType, T: SDTransformType>(lhs: S, rhs: T) -> Bool {
+public func != <S: SDTransformProtocol, T: SDTransformProtocol>(lhs: S, rhs: T) -> Bool {
     return lhs.a != rhs.a || lhs.b != rhs.b || lhs.c != rhs.c || lhs.d != rhs.d || lhs.e != rhs.e || lhs.f != rhs.f
 }
 
-public func * <S: SDTransformType, T: SDTransformType>(lhs: S, rhs: T) -> SDTransform {
+public func * <S: SDTransformProtocol, T: SDTransformProtocol>(lhs: S, rhs: T) -> SDTransform {
     let a = lhs.a * rhs.a + lhs.d * rhs.b
     let b = lhs.b * rhs.a + lhs.e * rhs.b
     let c = lhs.c * rhs.a + lhs.f * rhs.b + rhs.c
@@ -625,14 +625,14 @@ public func * <S: SDTransformType, T: SDTransformType>(lhs: S, rhs: T) -> SDTran
     return SDTransform(a: a, b: b, c: c, d: d, e: e, f: f)
 }
 
-public func *= <T: SDTransformType>(lhs: inout SDTransform, rhs: T) {
+public func *= <T: SDTransformProtocol>(lhs: inout SDTransform, rhs: T) {
     lhs = lhs * rhs
 }
 
-public func * <T: SDTransformType>(lhs: Point, rhs: T) -> Point {
+public func * <T: SDTransformProtocol>(lhs: Point, rhs: T) -> Point {
     return Point(x: lhs.x * rhs.a + lhs.y * rhs.b + rhs.c, y: lhs.x * rhs.d + lhs.y * rhs.e + rhs.f)
 }
 
-public func *= <T: SDTransformType>(lhs: inout Point, rhs: T) {
+public func *= <T: SDTransformProtocol>(lhs: inout Point, rhs: T) {
     lhs = lhs * rhs
 }
