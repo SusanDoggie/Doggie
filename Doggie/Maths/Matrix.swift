@@ -920,10 +920,10 @@ extension Matrix.ReflectZ {
 }
 
 public func == (lhs: Matrix.ReflectZ, rhs: Matrix.ReflectZ) -> Bool {
-    return lhs.y == rhs.y
+    return lhs.z == rhs.z
 }
 public func != (lhs: Matrix.ReflectZ, rhs: Matrix.ReflectZ) -> Bool {
-    return lhs.y != rhs.y
+    return lhs.z != rhs.z
 }
 
 public func == (lhs: Matrix.Translate, rhs: Matrix.Translate) -> Bool {
