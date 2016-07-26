@@ -109,11 +109,10 @@ public func distance(_ lhs: Point, _ rhs: Point) -> Double {
     return (lhs - rhs).magnitude
 }
 
-public func direction(_ lhs: Point, _ rhs:  Point) -> Double {
-    return lhs.x * rhs.y - lhs.y * rhs.x
-}
 public func direction(_ a: Point, _ b: Point, _ c: Point) -> Double {
-    return direction(b - a, c - a)
+    let d = b - a
+    let e = c - a
+    return d.x * e.y - d.y * e.x
 }
 
 public prefix func +(val: Point) -> Point {
