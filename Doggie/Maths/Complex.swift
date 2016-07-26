@@ -121,9 +121,6 @@ public func sgn(_ value: Complex) -> Complex {
 public func conj(_ value: Complex) -> Complex {
     return Complex(real: value.real, imag: -value.imag)
 }
-public func polar(rho: Double, theta: Double) -> Complex {
-    return rho * cis(theta)
-}
 
 public func exp(_ value: Complex) -> Complex {
     return exp(value.real) * cis(value.imag)
