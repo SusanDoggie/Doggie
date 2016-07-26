@@ -49,6 +49,13 @@ public struct Vector {
     }
 }
 
+extension Vector {
+    
+    public var magnitude: Double {
+        return sqrt(x * x + y * y + z * z)
+    }
+}
+
 extension Vector: CustomStringConvertible {
     
     public var description: String {
@@ -68,10 +75,6 @@ public func dot(_ lhs: Vector, _ rhs:  Vector) -> Double {
 }
 public func cross(_ lhs: Vector, _ rhs:  Vector) -> Vector {
     return Vector(x: lhs.y * rhs.z - lhs.z * rhs.y, y: lhs.z * rhs.x - lhs.x * rhs.z, z: lhs.x * rhs.y - lhs.y * rhs.x)
-}
-
-public func norm(_ value: Vector) -> Double {
-    return sqrt(dot(value, value))
 }
 
 public prefix func +(val: Vector) -> Vector {

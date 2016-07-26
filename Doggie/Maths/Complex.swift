@@ -48,6 +48,32 @@ public struct Complex {
     }
 }
 
+extension Complex {
+    
+    public init(magnitude: Double, phase: Double) {
+        self.real = magnitude * cos(phase)
+        self.imag = magnitude * sin(phase)
+    }
+    
+    public var magnitude: Double {
+        get {
+            return sqrt(real * real + imag * imag)
+        }
+        set {
+            self = Complex(magnitude: newValue, phase: phase)
+        }
+    }
+    
+    public var phase: Double {
+        get {
+            return atan2(imag, real)
+        }
+        set {
+            self = Complex(magnitude: magnitude, phase: newValue)
+        }
+    }
+}
+
 extension Complex: CustomStringConvertible {
     
     public var description: String {
@@ -89,14 +115,8 @@ extension Complex: Hashable {
 public func norm(_ value: Complex) -> Double {
     return value.real * value.real + value.imag * value.imag
 }
-public func abs(_ value: Complex) -> Double {
-    return sqrt(norm(value))
-}
 public func sgn(_ value: Complex) -> Complex {
-    return value / abs(value)
-}
-public func arg(_ value: Complex) -> Double {
-    return atan2(value.imag, value.real)
+    return value / value.magnitude
 }
 public func conj(_ value: Complex) -> Complex {
     return Complex(real: value.real, imag: -value.imag)
@@ -201,7 +221,7 @@ public func atanh(_ x: Complex) -> Complex {
 }
 
 public func log(_ c: Complex) -> Complex {
-    return Complex(real: log(abs(c)), imag: arg(c))
+    return Complex(real: log(c.magnitude), imag: c.phase)
 }
 
 public func log10(_ c: Complex) -> Complex {
@@ -210,20 +230,20 @@ public func log10(_ c: Complex) -> Complex {
 
 public func pow(_ a: Complex, _ b: Complex) -> Complex {
     let _norm = norm(a)
-    let _arg = arg(a)
+    let _arg = a.phase
     return pow(_norm, 0.5 * b.real) * exp(-b.imag * _arg) * cis(b.real * _arg + 0.5 * b.imag * log(_norm))
 }
 
 public func pow(_ c: Complex, _ n: Double) -> Complex {
-    return pow(norm(c), 0.5 * n) * cis(arg(c) * n)
+    return pow(norm(c), 0.5 * n) * cis(c.phase * n)
 }
 
 public func sqrt(_ c: Complex) -> Complex {
-    return sqrt(abs(c)) * cis(0.5 * arg(c))
+    return sqrt(c.magnitude) * cis(0.5 * c.phase)
 }
 
 public func cbrt(_ c: Complex) -> Complex {
-    return cbrt(abs(c)) * cis(arg(c) / 3)
+    return cbrt(c.magnitude) * cis(c.phase / 3)
 }
 
 public func +(lhs: Complex, rhs:  Double) -> Complex {

@@ -47,6 +47,32 @@ public struct Point {
 
 extension Point {
     
+    public init(magnitude: Double, phase: Double) {
+        self.x = magnitude * cos(phase)
+        self.y = magnitude * sin(phase)
+    }
+    
+    public var magnitude: Double {
+        get {
+            return sqrt(x * x + y * y)
+        }
+        set {
+            self = Point(magnitude: newValue, phase: phase)
+        }
+    }
+    
+    public var phase: Double {
+        get {
+            return atan2(y, x)
+        }
+        set {
+            self = Point(magnitude: magnitude, phase: newValue)
+        }
+    }
+}
+
+extension Point {
+    
     public func offset(dx: Double, dy: Double) -> Point {
         return Point(x: self.x + dx, y: self.y + dy)
     }
@@ -68,12 +94,6 @@ extension Point: Hashable {
 public func dot(_ lhs: Point, _ rhs:  Point) -> Double {
     return lhs.x * rhs.x + lhs.y * rhs.y
 }
-public func norm(_ value: Point) -> Double {
-    return sqrt(dot(value, value))
-}
-public func arg(_ value: Point) -> Double {
-    return atan2(value.y, value.x)
-}
 
 public func middle(_ p: Point ... ) -> Point {
     let count = Double(p.count)
@@ -86,7 +106,7 @@ public func middle(_ p: Point ... ) -> Point {
     return Point(x: _x / count, y: _y / count)
 }
 public func distance(_ lhs: Point, _ rhs: Point) -> Double {
-    return norm(lhs - rhs)
+    return (lhs - rhs).magnitude
 }
 
 public func direction(_ lhs: Point, _ rhs:  Point) -> Double {
