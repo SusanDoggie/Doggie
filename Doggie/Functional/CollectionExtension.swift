@@ -482,11 +482,9 @@ public extension BidirectionalCollection where Self : MutableCollection, Indices
     
     @_transparent
     private mutating func reverseInPlace(_ range: Indices.SubSequence) {
-        var temp: Index?
         for (lhs, rhs) in zip(range, range.reversed()) {
-            if lhs != rhs && temp != rhs {
+            if lhs < rhs {
                 swap(&self[lhs], &self[rhs])
-                temp = lhs
             } else {
                 break
             }
@@ -500,7 +498,7 @@ public extension BidirectionalCollection where Self : MutableCollection, Indices
                 swap(&_self[k], &_self[range.last { _self[k] < _self[$0] }!])
                 _self.reverseInPlace(range)
             } else {
-                _self.reverseInPlace(_self.indices.slice)
+                _self.reverse()
             }
         }
         return _self

@@ -148,7 +148,7 @@ public class SDAtomicNode : SDAtomic {
     public init<Value>(graph: SDAtomicGraph<Value>) {
         self.graphID = graph.identifier
         super.init {
-            if let _self = $0 as? SDAtomicNode where _self.activate {
+            if let _self = $0 as? SDAtomicNode, _self.activate {
                 _self.callback?(_self)
             }
         }
@@ -157,7 +157,7 @@ public class SDAtomicNode : SDAtomic {
         self.graphID = graph.identifier
         self.callback = callback
         super.init {
-            if let _self = $0 as? SDAtomicNode where _self.activate {
+            if let _self = $0 as? SDAtomicNode, _self.activate {
                 _self.callback?(_self)
             }
         }
