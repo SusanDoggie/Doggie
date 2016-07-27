@@ -481,7 +481,7 @@ public extension RangeReplaceableCollection {
 public extension BidirectionalCollection where Self : MutableCollection, Indices.SubSequence : BidirectionalCollection, Iterator.Element : Comparable, Indices.SubSequence.Iterator.Element == Index, Indices.Index == Index {
     
     @_transparent
-    private mutating func reverseInPlace(_ range: Indices.SubSequence) {
+    private mutating func reverse(_ range: Indices.SubSequence) {
         for (lhs, rhs) in zip(range, range.reversed()) {
             if lhs < rhs {
                 swap(&self[lhs], &self[rhs])
@@ -496,7 +496,7 @@ public extension BidirectionalCollection where Self : MutableCollection, Indices
             if let k = _self.indices.dropLast().last(where: { _self[$0] < _self[_self.index(after: $0)] }) {
                 let range = _self.indices.suffix(from: _self.index(after: k))
                 swap(&_self[k], &_self[range.last { _self[k] < _self[$0] }!])
-                _self.reverseInPlace(range)
+                _self.reverse(range)
             } else {
                 _self.reverse()
             }
