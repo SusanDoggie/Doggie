@@ -248,7 +248,8 @@
 				08AA03131C219B9900609109 /* SDSink.swift */,
 				08863CC71C22756F004C27E5 /* SDObserver.swift */,
 			);
-			path = Doggie;
+			name = Doggie;
+			path = Sources;
 			sourceTree = "<group>";
 		};
 		0858DA411C0550B7007FA426 /* Accelerate */ = {
