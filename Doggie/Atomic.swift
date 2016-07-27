@@ -158,14 +158,14 @@ public struct AtomicBoolean {
     }
 }
 
-extension AtomicBoolean : BooleanLiteralConvertible {
+extension AtomicBoolean : ExpressibleByBooleanLiteral {
     
     public init(booleanLiteral value: Bool) {
         self.val = value ? 0x80 : 0
     }
 }
 
-extension AtomicBoolean : Boolean {
+extension AtomicBoolean {
     
     /// Returns the current value of the boolean.
     public var boolValue: Bool {
@@ -173,20 +173,27 @@ extension AtomicBoolean : Boolean {
     }
     /// Construct an instance representing the same logical value as
     /// `value`.
-    public init<T : Boolean>(_ value: T) {
+    public init(_ value: Bool) {
         self.val = value ? 0x80 : 0
     }
 }
 
 extension AtomicBoolean : SDAtomicType {
     
+    public mutating func compareSet(old: AtomicBoolean, new: AtomicBoolean) -> Bool {
+        return self.compareSet(old: old.boolValue, new: new.boolValue)
+    }
+    public mutating func fetchStore(value: AtomicBoolean) -> Bool {
+        return self.fetchStore(value: value.boolValue)
+    }
+    
     /// Compare and set Bool with barrier.
-    public mutating func compareSet<T: Boolean>(old: T, new: T) -> Bool {
+    public mutating func compareSet(old: Bool, new: Bool) -> Bool {
         return OSAtomicCompareAndSwap32Barrier(old ? 0x80 : 0, new ? 0x80 : 0, &val)
     }
     
     /// Sets the value, and returns the previous value.
-    public mutating func fetchStore<T: Boolean>(value: T) -> Bool {
+    public mutating func fetchStore(value: Bool) -> Bool {
         return value ? OSAtomicTestAndSet(0, &val) : OSAtomicTestAndClear(0, &val)
     }
 }
@@ -194,7 +201,7 @@ extension AtomicBoolean : SDAtomicType {
 extension AtomicBoolean: CustomStringConvertible {
     
     public var description: String {
-        return self ? "true" : "false"
+        return self.boolValue ? "true" : "false"
     }
 }
 

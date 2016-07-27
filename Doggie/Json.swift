@@ -63,35 +63,35 @@ extension Json {
     }
 }
 
-extension Json: NilLiteralConvertible {
+extension Json: ExpressibleByNilLiteral {
     
     public init(nilLiteral value: Void) {
         self.value = nil
     }
 }
 
-extension Json: BooleanLiteralConvertible {
+extension Json: ExpressibleByBooleanLiteral {
     
     public init(booleanLiteral value: BooleanLiteralType) {
         self.init(value)
     }
 }
 
-extension Json: IntegerLiteralConvertible {
+extension Json: ExpressibleByIntegerLiteral {
     
     public init(integerLiteral value: IntegerLiteralType) {
         self.init(value)
     }
 }
 
-extension Json: FloatLiteralConvertible {
+extension Json: ExpressibleByFloatLiteral {
     
     public init(floatLiteral value: FloatLiteralType) {
         self.init(value)
     }
 }
 
-extension Json: StringLiteralConvertible {
+extension Json: ExpressibleByStringLiteral {
     
     public typealias ExtendedGraphemeClusterLiteralType = StringLiteralType
     public typealias UnicodeScalarLiteralType = StringLiteralType
@@ -109,14 +109,14 @@ extension Json: StringLiteralConvertible {
     }
 }
 
-extension Json: ArrayLiteralConvertible {
+extension Json: ExpressibleByArrayLiteral {
     
     public init(arrayLiteral elements: Json ...) {
         self.init(elements)
     }
 }
 
-extension Json: DictionaryLiteralConvertible {
+extension Json: ExpressibleByDictionaryLiteral {
     
     public init(dictionaryLiteral elements: (String, Json) ...) {
         var dictionary = [String: AnyObject](minimumCapacity: elements.count)

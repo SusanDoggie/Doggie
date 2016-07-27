@@ -64,16 +64,16 @@ private extension PathCommand {
     @_transparent
     var command: SDPathCommand {
         switch self {
-        case let move(point): return SDPath.Move(point)
-        case let line(point): return SDPath.Line(point)
-        case let quad(p1, p2): return SDPath.QuadBezier(p1, p2)
-        case let cubic(p1, p2, p3): return SDPath.CubicBezier(p1, p2, p3)
-        case close: return SDPath.ClosePath()
+        case let .move(point): return SDPath.Move(point)
+        case let .line(point): return SDPath.Line(point)
+        case let .quad(p1, p2): return SDPath.QuadBezier(p1, p2)
+        case let .cubic(p1, p2, p3): return SDPath.CubicBezier(p1, p2, p3)
+        case .close: return SDPath.ClosePath()
         }
     }
 }
 
-public struct SDPath : SDShape, RandomAccessCollection, MutableCollection, ArrayLiteralConvertible {
+public struct SDPath : SDShape, RandomAccessCollection, MutableCollection, ExpressibleByArrayLiteral {
     
     public typealias Indices = CountableRange<Int>
     

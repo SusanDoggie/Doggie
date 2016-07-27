@@ -49,7 +49,7 @@ public struct Polynomial {
     }
 }
 
-extension Polynomial : ArrayLiteralConvertible {
+extension Polynomial : ExpressibleByArrayLiteral {
     
     public init(arrayLiteral elements: Double ... ) {
         self.coeffs = elements
@@ -135,7 +135,7 @@ extension Polynomial {
     public func eval(_ x: Double) -> Double {
         switch x {
         case 0: return self[0]
-        case 1: return coeffs.reduce(0, combine: +)
+        case 1: return coeffs.reduce(0, +)
         default: return coeffs.reversed().reduce(0) { x * $0 + $1 }
         }
     }
@@ -243,7 +243,7 @@ private func _root(_ p: Polynomial) -> [Double] {
             }
         }
     }
-    if let last = extrema.last where p.eval(last).almostZero(reference: last) {
+    if let last = extrema.last, p.eval(last).almostZero(reference: last) {
         result.append(last)
     }
     return result

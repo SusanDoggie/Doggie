@@ -27,14 +27,14 @@ import Foundation
 
 public struct Regex : Equatable {
     
-    private let matcher: RegularExpression
+    private let matcher: NSRegularExpression
     
     public init(pattern: String) throws {
-        self.matcher = try RegularExpression(pattern: pattern, options: [])
+        self.matcher = try NSRegularExpression(pattern: pattern, options: [])
     }
     
-    public init(pattern: String, options: RegularExpression.Options) throws {
-        self.matcher = try RegularExpression(pattern: pattern, options: options)
+    public init(pattern: String, options: NSRegularExpression.Options) throws {
+        self.matcher = try NSRegularExpression(pattern: pattern, options: options)
     }
     
     /// Returns the regular expression pattern.
@@ -43,7 +43,7 @@ public struct Regex : Equatable {
     }
     
     /// Returns the options used when the regular expression option was created.
-    public var options: RegularExpression.Options {
+    public var options: NSRegularExpression.Options {
         return matcher.options
     }
     
@@ -55,7 +55,7 @@ public struct Regex : Equatable {
     }
 }
 
-extension Regex: StringLiteralConvertible {
+extension Regex: ExpressibleByStringLiteral {
     
     public typealias ExtendedGraphemeClusterLiteralType = StringLiteralType
     public typealias UnicodeScalarLiteralType = StringLiteralType

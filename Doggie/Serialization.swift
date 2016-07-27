@@ -37,7 +37,7 @@ public func SDPropertyListSerializationBinary(data: AnyObject) throws -> Data {
 public func SDPropertyListSerialization(object: AnyObject) throws -> String {
     return String(data: try PropertyListSerialization.data(fromPropertyList: object, format: .xml, options: 0), encoding: String.Encoding.utf8)!
 }
-public func SDPropertyListSerialization(object: AnyObject, toStream stream: NSOutputStream) throws -> Int {
+public func SDPropertyListSerialization(object: AnyObject, toStream stream: OutputStream) throws -> Int {
     var error: NSError? = nil
     let count = PropertyListSerialization.writePropertyList(object, to: stream, format: .xml, options: 0, error: &error)
     if error != nil {
@@ -57,7 +57,7 @@ public func SDJSONSerialization(object: AnyObject, options: JSONSerialization.Wr
     }
     throw NSError(domain: #function, code: 1, userInfo: ["Message": "Invalid JSON Object"])
 }
-public func SDJSONSerialization(object: AnyObject, toStream stream: NSOutputStream, options: JSONSerialization.WritingOptions = []) throws -> Int {
+public func SDJSONSerialization(object: AnyObject, toStream stream: OutputStream, options: JSONSerialization.WritingOptions = []) throws -> Int {
     if JSONSerialization.isValidJSONObject(object) {
         var error: NSError? = nil
         let count = JSONSerialization.writeJSONObject(object, to: stream, options: options, error: &error)
