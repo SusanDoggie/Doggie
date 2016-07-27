@@ -68,7 +68,7 @@ public extension Sequence where Iterator.Element : Equatable {
     
     /// Return `true` if all of elements in `seq` is `x`.
     ///
-    /// - Complexity: O(`self.count`).
+    /// - complexity: O(`self.count`).
     func all(_ x: Iterator.Element) -> Bool {
         
         for item in self where item != x {
@@ -82,7 +82,7 @@ public extension Sequence {
     
     /// Return `true` if all of elements in `seq` satisfies `predicate`.
     ///
-    /// - Complexity: O(`self.count`).
+    /// - complexity: O(`self.count`).
     func all(_ predicate: @noescape (Iterator.Element) throws -> Bool) rethrows -> Bool {
         
         for item in self where try !predicate(item) {
@@ -96,7 +96,7 @@ public extension Set {
     
     /// Return `true` if all of elements in `seq` is `x`.
     ///
-    /// - Complexity: O(1).
+    /// - complexity: O(1).
     func all(_ x: Element) -> Bool {
         
         switch self.count {
@@ -115,7 +115,7 @@ public extension BidirectionalCollection {
     /// Returns the last element of the sequence that satisfies the given
     /// predicate or nil if no such element is found.
     ///
-    /// - Parameter where: A closure that takes an element of the
+    /// - parameter where: A closure that takes an element of the
     ///   sequence as its argument and returns a Boolean value indicating
     ///   whether the element is a match.
     /// - Returns: The last match or `nil` if there was no match.
@@ -132,7 +132,7 @@ public extension Collection where Iterator.Element : Equatable {
     /// If none of elements equal to `value`, the result contains all
     /// the elements of `self`.
     ///
-    /// - Complexity: O(`self.count`)
+    /// - complexity: O(`self.count`)
     func prefix(until element: Iterator.Element) -> SubSequence {
         return self.prefix(upTo: self.index(of: element) ?? self.endIndex)
     }
@@ -146,7 +146,7 @@ public extension Collection {
     /// If none of elements satisfying the predicate, the result contains all
     /// the elements of `self`.
     ///
-    /// - Complexity: O(`self.count`)
+    /// - complexity: O(`self.count`)
     func prefix(until predicate: @noescape (Iterator.Element) throws -> Bool) rethrows -> SubSequence {
         return self.prefix(upTo: try self.index(where: predicate) ?? self.endIndex)
     }
@@ -160,7 +160,7 @@ public extension RandomAccessCollection where Iterator.Element : Equatable {
     /// If none of elements equal to `value`, the result contains all
     /// the elements of `self`.
     ///
-    /// - Complexity: O(`self.count`)
+    /// - complexity: O(`self.count`)
     func suffix(until element: Iterator.Element) -> SubSequence {
         return self.suffix(from: self.reversed().index(of: element)?.base ?? self.startIndex)
     }
@@ -174,7 +174,7 @@ public extension RandomAccessCollection {
     /// If none of elements satisfying the predicate, the result contains all
     /// the elements of `self`.
     ///
-    /// - Complexity: O(`self.count`)
+    /// - complexity: O(`self.count`)
     func suffix(until predicate: @noescape (Iterator.Element) throws -> Bool) rethrows -> SubSequence {
         return self.suffix(from: try self.reversed().index(where: predicate)?.base ?? self.startIndex)
     }
@@ -184,7 +184,7 @@ public extension RandomAccessCollection where Indices.SubSequence.Iterator.Eleme
     
     /// Returns first position of `pattern` appear in `self`, or `nil` if not match.
     ///
-    /// - Complexity: Amortized O(`self.count`)
+    /// - complexity: Amortized O(`self.count`)
     func match<C : BidirectionalCollection where C.Iterator.Element == Iterator.Element>(with pattern: C, isEquivalent: @noescape (Iterator.Element, Iterator.Element) throws -> Bool) rethrows -> Index? {
         
         let pattern_count: IndexDistance = numericCast(pattern.count)
@@ -215,7 +215,7 @@ public extension RandomAccessCollection where Indices.SubSequence.Iterator.Eleme
     
     /// Returns first position of `pattern` appear in `self`, or `nil` if not match.
     ///
-    /// - Complexity: Amortized O(`self.count`)
+    /// - complexity: Amortized O(`self.count`)
     func match<C : BidirectionalCollection where C.Iterator.Element == Iterator.Element>(with pattern: C) -> Index? {
         return self.match(with: pattern, isEquivalent: ==)
     }
@@ -225,7 +225,7 @@ public extension String {
     
     /// Returns true `pattern` appear in `self`.
     ///
-    /// - Complexity: Amortized O(`self.count`)
+    /// - complexity: Amortized O(`self.count`)
     func hasPattern(pattern: String) -> Bool {
         return Array(characters).match(with: Array(pattern.characters)) != nil
     }
@@ -334,7 +334,7 @@ public extension Sequence where Iterator.Element : Comparable {
     /// Returns the maximal `SubSequence`s of `self`, in order, around elements
     /// match in `separator`.
     ///
-    /// - Parameters:
+    /// - parameters:
     ///   - maxSplits: The maximum number of times to split the sequence, or one
     ///     less than the number of subsequences to return. If `maxSplits + 1`
     ///     subsequences are returned, the last one is a suffix of the original
@@ -388,13 +388,13 @@ public extension Sequence {
 public extension Sequence {
     /// Returns the minimum element in `self` or `nil` if the sequence is empty.
     ///
-    /// - Complexity: O(`elements.count`).
+    /// - complexity: O(`elements.count`).
     func min<R : Comparable>(by: @noescape (Iterator.Element) throws -> R) rethrows -> Iterator.Element? {
         return try self.min { try by($0) < by($1) }
     }
     /// Returns the maximum element in `self` or `nil` if the sequence is empty.
     ///
-    /// - Complexity: O(`elements.count`).
+    /// - complexity: O(`elements.count`).
     func max<R : Comparable>(by: @noescape (Iterator.Element) throws -> R) rethrows -> Iterator.Element? {
         return try self.max { try by($0) < by($1) }
     }
@@ -438,7 +438,7 @@ public extension RandomAccessCollection {
     
     /// Returns a random element in `self` or `nil` if the sequence is empty.
     ///
-    /// - Complexity: O(1).
+    /// - complexity: O(1).
     func random() -> Iterator.Element? {
         let _count = UIntMax(self.count.toIntMax())
         switch _count {

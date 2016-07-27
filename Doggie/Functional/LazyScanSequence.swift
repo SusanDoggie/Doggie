@@ -33,7 +33,7 @@ public extension Sequence {
     ///
     ///     (1..<6).scan(0, combine: +) // [0, 1, 3, 6, 10, 15]
     ///
-    /// - Complexity: O(N)
+    /// - complexity: O(N)
     func scan<R>(initial: R, combine: @noescape (R, Iterator.Element) throws -> R) rethrows -> [R] {
         var result = [initial]
         for x in self {
@@ -78,7 +78,7 @@ public extension LazySequenceProtocol {
     ///
     ///     Array((1..<6).lazy.scan(0, combine: +)) // [0, 1, 3, 6, 10, 15]
     ///
-    /// - Complexity: O(1)
+    /// - complexity: O(1)
     func scan<R>(initial: R, combine: (R, Elements.Iterator.Element) -> R) -> LazyScanSequence<Elements, R> {
         return LazyScanSequence(initial: initial, base: self.elements, combine: combine)
     }
