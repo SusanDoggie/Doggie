@@ -26,9 +26,13 @@
 import Foundation
 
 public func sec_random(_ buffer: UnsafeMutablePointer<Void>, size: Int) {
-    let _rand_file = open("/dev/random", O_RDONLY)
-    read(_rand_file, buffer, size)
-    close(_rand_file)
+    let buffer = UnsafeMutablePointer<UInt8>(buffer)
+    let rand_file = open("/dev/random", O_RDONLY)
+    var read_bytes = 0
+    while read_bytes < size {
+        read_bytes += read(rand_file, buffer + read_bytes, size - read_bytes)
+    }
+    close(rand_file)
 }
 
 public func sec_random_uniform(_ bound: UIntMax) -> UIntMax {
@@ -93,5 +97,5 @@ public func normal_distribution(mean: Complex, variance: Double) -> Complex {
     let r = -2 * log(u)
     let theta = 2 * M_PI * v
     
-    return polar(rho: sqrt(variance * r), theta: theta) + mean
+    return Complex(magnitude: sqrt(variance * r), phase: theta) + mean
 }
