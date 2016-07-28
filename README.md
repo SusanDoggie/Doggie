@@ -1,9 +1,9 @@
 # Doggie Swift Foundation
 
 [![Build Status](https://travis-ci.org/SusanDoggie/Doggie.svg?branch=swift3-beta)](https://travis-ci.org/SusanDoggie/Doggie)
-![platform](https://img.shields.io/badge/platform-macOS%20%7C%20iOS-lightgrey.svg?style=flat)
+![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20iOS-lightgrey.svg?style=flat)
 [![GitHub release](https://img.shields.io/github/release/SusanDoggie/Doggie.svg?style=flat&maxAge=2592000)](https://github.com/SusanDoggie/Doggie/releases)
-[![swift](https://img.shields.io/badge/swift-3.0-orange.svg?style=flat)](https://swift.org)
+[![Swift](https://img.shields.io/badge/swift-3.0-orange.svg?style=flat)](https://swift.org)
 [![MIT](https://img.shields.io/badge/license-MIT-blue.svg?style=flat)](LICENSE)
 
 Doggie is a foundational support library for Apple's swift. It includes Functional programming support, Mathematics, Accelerate, Signal processing and Graphic Libraries.
