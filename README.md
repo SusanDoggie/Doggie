@@ -29,8 +29,6 @@ print(task.result)   // 5
 print(task2.result)  // 6
 ```
 - atomic and lockable class (threading).
-- aspect-oriented programming.
-- key-value observing and functional reactive programming.
 - rectangle, ellipse and path (graphic).
 ```swift
 let path = try SDPath(code: "M100 0c0-100-236.60 36.60-150 86.60S36.60-136.60-50-86.60 100 100 100 0z")
