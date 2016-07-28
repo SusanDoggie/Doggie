@@ -65,6 +65,12 @@
 		087FE5BA1A372D97005A2E9E /* Doggie_Mac.h in Headers */ = {isa = PBXBuildFile; fileRef = 087FE5B91A372D97005A2E9E /* Doggie_Mac.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		087FE5C01A372D97005A2E9E /* Doggie.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 087FE5B51A372D97005A2E9E /* Doggie.framework */; settings = {ATTRIBUTES = (Required, ); }; };
 		08BFF9BC1B07161E00EC88CB /* FourierTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08BFF9B91B0715ED00EC88CB /* FourierTest.swift */; };
+		0A1605B31D49DEDC00109F7B /* Date.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2C33D01D48B8E200FE9A97 /* Date.swift */; };
+		0A1605B41D49DEDC00109F7B /* Environment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2C33D11D48B8E200FE9A97 /* Environment.swift */; };
+		0A1605B51D49DEDC00109F7B /* Integer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2C33D21D48B8E200FE9A97 /* Integer.swift */; };
+		0A1605B61D49DEDC00109F7B /* Json.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2C33D31D48B8E200FE9A97 /* Json.swift */; };
+		0A1605B71D49DEDC00109F7B /* Random.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2C33D41D48B8E200FE9A97 /* Random.swift */; };
+		0A1605B81D49DEDC00109F7B /* Regex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2C33D51D48B8E200FE9A97 /* Regex.swift */; };
 		0A2C33D61D48B8E200FE9A97 /* Date.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2C33D01D48B8E200FE9A97 /* Date.swift */; };
 		0A2C33D71D48B8E200FE9A97 /* Environment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2C33D11D48B8E200FE9A97 /* Environment.swift */; };
 		0A2C33D81D48B8E200FE9A97 /* Integer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2C33D21D48B8E200FE9A97 /* Integer.swift */; };
@@ -651,18 +657,21 @@
 				0858DB371C0550B7007FA426 /* SDShape.swift in Sources */,
 				0858DB331C0550B7007FA426 /* SDRectangle.swift in Sources */,
 				0858DAF31C0550B7007FA426 /* Point.swift in Sources */,
+				0A1605B61D49DEDC00109F7B /* Json.swift in Sources */,
 				0858DAE71C0550B7007FA426 /* Geometry.swift in Sources */,
 				0858DB0B1C0550B7007FA426 /* Vector.swift in Sources */,
 				0A5196F71D48B52D0082AE61 /* Thread.swift in Sources */,
 				0858DAE31C0550B7007FA426 /* Complex.swift in Sources */,
 				0858DB1F1C0550B7007FA426 /* SDEllipse.swift in Sources */,
 				0858DA9B1C0550B7007FA426 /* Move.swift in Sources */,
+				0A1605B31D49DEDC00109F7B /* Date.swift in Sources */,
 				0858DB1B1C0550B7007FA426 /* SDAtomicNode.swift in Sources */,
 				0858DA871C0550B7007FA426 /* ComplexConversion.swift in Sources */,
 				0858DB481C055172007FA426 /* Fourier.swift in Sources */,
 				0AADD1211D10E75300087247 /* LazyScanSequence.swift in Sources */,
 				0858DA931C0550B7007FA426 /* DiscreteConvolve.swift in Sources */,
 				0858DA8F1C0550B7007FA426 /* CooleyTukey.swift in Sources */,
+				0A1605B51D49DEDC00109F7B /* Integer.swift in Sources */,
 				0858DB231C0550B7007FA426 /* SDGraphic.swift in Sources */,
 				0ACE1E171C57114A00106D1F /* CollectionExtension.swift in Sources */,
 				0858DAF71C0550B7007FA426 /* Polynomial.swift in Sources */,
@@ -675,13 +684,16 @@
 				0858DAEB1C0550B7007FA426 /* Maths.swift in Sources */,
 				0AB539751D3C8B1F0011F08B /* LazyGatherCollection.swift in Sources */,
 				0858DAA71C0550B7007FA426 /* Transpose.swift in Sources */,
+				0A1605B71D49DEDC00109F7B /* Random.swift in Sources */,
 				0858DAA31C0550B7007FA426 /* SafeFunction.swift in Sources */,
 				0858DB271C0550B7007FA426 /* SDPath.swift in Sources */,
 				0AADD1261D10E77100087247 /* ConcatCollection.swift in Sources */,
 				0858DB031C0550B7007FA426 /* Rect.swift in Sources */,
 				0AADD13F1D10E82600087247 /* LazyUniqueSequence.swift in Sources */,
 				0ACE1E1C1C5711D300106D1F /* Graph.swift in Sources */,
+				0A1605B41D49DEDC00109F7B /* Environment.swift in Sources */,
 				0858DB071C0550B7007FA426 /* SDTransform.swift in Sources */,
+				0A1605B81D49DEDC00109F7B /* Regex.swift in Sources */,
 				0858DAEF1C0550B7007FA426 /* Matrix.swift in Sources */,
 				0ACE1E081C57104300106D1F /* ParallelCollectionType.swift in Sources */,
 				0858DA7F1C0550B7007FA426 /* Arithmetic.swift in Sources */,
