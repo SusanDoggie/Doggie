@@ -30,7 +30,10 @@ public func sec_random(_ buffer: UnsafeMutablePointer<Void>, size: Int) {
     let rand_file = open("/dev/random", O_RDONLY)
     var read_bytes = 0
     while read_bytes < size {
-        read_bytes += read(rand_file, buffer + read_bytes, size - read_bytes)
+        let r = read(rand_file, buffer + read_bytes, size - read_bytes)
+        if r > 0 {
+            read_bytes += r
+        }
     }
     close(rand_file)
 }
