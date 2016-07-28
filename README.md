@@ -1,5 +1,6 @@
 # Doggie Swift Foundation
 
+[![GitHub release](https://img.shields.io/github/release/SusanDoggie/Doggie.svg?maxAge=2592000)](https://github.com/SusanDoggie/Doggie/releases)
 ![macOS](https://img.shields.io/badge/os-macOS-green.svg?style=flat)
 ![iOS](https://img.shields.io/badge/os-iOS-green.svg?style=flat)
 [![swift](https://img.shields.io/badge/swift-3.0-orange.svg?style=flat)](https://swift.org)
