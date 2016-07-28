@@ -3,7 +3,7 @@
 [![swift](https://img.shields.io/badge/swift-3.0-orange.svg?style=flat)](https://swift.org)
 ![macOS](https://img.shields.io/badge/os-macOS-green.svg?style=flat)
 ![iOS](https://img.shields.io/badge/os-iOS-green.svg?style=flat)
-![MIT](https://img.shields.io/badge/license-MIT-blue.svg?style=flat)
+[![MIT](https://img.shields.io/badge/license-MIT-blue.svg?style=flat)](LICENSE)
 
 Doggie is a foundational support library for Apple's swift. It includes Functional programming support, Mathematics, Accelerate, Signal processing and Graphic Libraries.
 
