@@ -1,6 +1,6 @@
 # Doggie Swift Foundation
 
-![swift](https://img.shields.io/badge/swift-3.0-orange.svg?style=flat)
+[![swift](https://img.shields.io/badge/swift-3.0-orange.svg?style=flat)](https://swift.org)
 ![macOS](https://img.shields.io/badge/os-macOS-green.svg?style=flat)
 ![iOS](https://img.shields.io/badge/os-iOS-green.svg?style=flat)
 ![MIT](https://img.shields.io/badge/license-MIT-blue.svg?style=flat)
