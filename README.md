@@ -1,7 +1,9 @@
 # Doggie Swift Foundation
 
-[![Swift][swift-badge]][swift-url]
-[![License][mit-badge]](LICENSE)
+![swift](https://img.shields.io/badge/swift-3.0-orange.svg?style=flat)
+![macOS](https://img.shields.io/badge/os-macOS-green.svg?style=flat)
+![iOS](https://img.shields.io/badge/os-iOS-green.svg?style=flat)
+![MIT](https://img.shields.io/badge/license-MIT-blue.svg?style=flat)
 
 Doggie is a foundational support library for Apple's swift. It includes Functional programming support, Mathematics, Accelerate, Signal processing and Graphic Libraries.
 
@@ -90,7 +92,3 @@ Log(n) | vDSP - vDSP_fft_zopD | Doggie - Radix2CooleyTukey
 ## License
 
 Doggie is licensed under the [MIT license](LICENSE).
-
-[swift-badge]: https://img.shields.io/badge/Swift-3.0-orange.svg?style=flat
-[swift-url]: https://swift.org
-[mit-badge]: https://img.shields.io/badge/License-MIT-blue.svg
