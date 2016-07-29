@@ -24,8 +24,19 @@
 //
 
 import Foundation
+import Dispatch
 
-private let SDThreadDefaultDispatchQueue = DispatchQueue(label: "com.SusanDoggie.Thread", attributes: .concurrent)
+#if os(Linux)
+    
+    public typealias DispatchQueue = dispatch_queue_t
+    
+    private let SDThreadDefaultDispatchQueue = dispatch_queue_create("com.SusanDoggie.Thread", DISPATCH_QUEUE_CONCURRENT)
+    
+#else
+    
+    private let SDThreadDefaultDispatchQueue = DispatchQueue(label: "com.SusanDoggie.Thread", attributes: .concurrent)
+    
+#endif
 
 // MARK: Lockable and Lock Guard
 
@@ -270,7 +281,11 @@ extension SDAtomic {
     
     public final func signal() {
         if flag.fetchStore(new: 2) == 0 {
-            queue.async(execute: dispatchRunloop)
+            #if os(Linux)
+                dispatch_async(queue, dispatchRunloop)
+            #else
+                queue.async(execute: dispatchRunloop)
+            #endif
         }
     }
     
