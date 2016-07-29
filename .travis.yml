@@ -37,7 +37,7 @@ install:
         wget https://swift.org/builds/development/ubuntu1404/${TOOLCHAIN}/${TOOLCHAIN}-ubuntu14.04.tar.gz;
         tar xzf ${TOOLCHAIN}-ubuntu14.04.tar.gz;
         export PATH=${TRAVIS_BUILD_DIR}/${TOOLCHAIN}-ubuntu14.04/usr/bin:"${PATH}";
-        git clone -b experimental/foundation https://github.com/apple/swift-corelibs-libdispatch.git;
+        git clone -b master https://github.com/apple/swift-corelibs-libdispatch.git;
         cd swift-corelibs-libdispatch && git submodule init && git submodule update && sh ./autogen.sh && CFLAGS=-fuse-ld=gold ./configure --with-swift-toolchain=${TRAVIS_BUILD_DIR}/${TOOLCHAIN}-ubuntu14.04/usr --prefix=${TRAVIS_BUILD_DIR}/${TOOLCHAIN}-ubuntu14.04/usr && make && make install;
         cd -;
     fi
