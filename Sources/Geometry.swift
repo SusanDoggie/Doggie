@@ -340,7 +340,7 @@ public func BezierDegreeElevation(_ p: Vector ... ) -> [Vector] {
 }
 
 public func BezierPolynomial(_ poly: Polynomial) -> [Double] {
-    let de = (0..<poly.degree).scan(initial: poly) { p, _ in p.derivative / Double(p.degree) }
+    let de = (0..<poly.degree).scan(poly) { p, _ in p.derivative / Double(p.degree) }
     var result: [Double] = []
     for n in de.indices {
         let s = zip(CombinationList(UInt(n)), de)
@@ -1042,22 +1042,22 @@ extension PartialPolynomial {
     @_transparent
     var degree : Int {
         switch self {
-        case one: return 1
-        case two: return 2
+        case .one: return 1
+        case .two: return 2
         }
     }
     @_transparent
     var power : Int {
         switch self {
-        case one(_, let p): return p
-        case two(_, _, let p): return p
+        case .one(_, let p): return p
+        case .two(_, _, let p): return p
         }
     }
     @_transparent
     var polynomial : Polynomial {
         switch self {
-        case one(let a, _): return [a, 1]
-        case two(let a, let b, _): return [a, b, 1]
+        case .one(let a, _): return [a, 1]
+        case .two(let a, let b, _): return [a, b, 1]
         }
     }
 }
@@ -1067,22 +1067,22 @@ extension PartialPolynomial {
     @_transparent
     var a : Double {
         switch self {
-        case one(let a, _): return a
-        case two(let a, _, _): return a
+        case .one(let a, _): return a
+        case .two(let a, _, _): return a
         }
     }
     @_transparent
     func almostEqual(_ p: Double) -> Bool {
         switch self {
-        case one(let a, _): return p.almostEqual(a)
-        case two(_, _, _): return false
+        case .one(let a, _): return p.almostEqual(a)
+        case .two(_, _, _): return false
         }
     }
     @_transparent
     func almostEqual(_ p: (Double, Double)) -> Bool {
         switch self {
-        case one(_, _): return false
-        case two(let a, let b, _): return p.0.almostEqual(a) && p.1.almostEqual(b)
+        case .one(_, _): return false
+        case .two(let a, let b, _): return p.0.almostEqual(a) && p.1.almostEqual(b)
         }
     }
 }
@@ -1160,7 +1160,7 @@ private func degree6RationalIntegral(_ p: Polynomial, _ q: Polynomial) -> Double
             let poly = item.power == 1 ? _q / item.polynomial : _q / pow(item.polynomial, item.power)
             m.append(poly)
             if item.degree == 2 {
-                m.append(Polynomial(CollectionOfOne(0).concat(with: poly)))
+                m.append(Polynomial(CollectionOfOne(0).concat(poly)))
             }
         }
         m.append(rem)

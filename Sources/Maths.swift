@@ -39,22 +39,22 @@ extension Double {
     }
 }
 
-public func FactorialList<T: UnsignedInteger where T.Stride : SignedInteger>(_ n: T) -> LazyScanSequence<RandomAccessSlice<CountableClosedRange<T>>, T> {
+public func FactorialList<T: UnsignedInteger>(_ n: T) -> LazyScanSequence<RandomAccessSlice<CountableClosedRange<T>>, T> where T.Stride : SignedInteger {
     
-    return (0...n).dropFirst().lazy.scan(initial: 1, combine: *)
+    return (0...n).dropFirst().lazy.scan(1, *)
 }
-public func PermutationList<T: UnsignedInteger where T.Stride : SignedInteger>(_ n: T) -> LazyScanSequence<ReversedRandomAccessCollection<RandomAccessSlice<CountableClosedRange<T>>>, T> {
+public func PermutationList<T: UnsignedInteger>(_ n: T) -> LazyScanSequence<ReversedRandomAccessCollection<RandomAccessSlice<CountableClosedRange<T>>>, T> where T.Stride : SignedInteger {
     
-    return (0...n).dropFirst().reversed().lazy.scan(initial: 1, combine: *)
+    return (0...n).dropFirst().reversed().lazy.scan(1, *)
 }
-public func CombinationList<T: UnsignedInteger where T.Stride : SignedInteger>(_ n: T) -> LazyMapSequence<Zip2Sequence<LazyScanSequence<ReversedRandomAccessCollection<RandomAccessSlice<CountableClosedRange<T>>>, T>, LazyScanSequence<RandomAccessSlice<CountableClosedRange<T>>, T>>, T> {
+public func CombinationList<T: UnsignedInteger>(_ n: T) -> LazyMapSequence<Zip2Sequence<LazyScanSequence<ReversedRandomAccessCollection<RandomAccessSlice<CountableClosedRange<T>>>, T>, LazyScanSequence<RandomAccessSlice<CountableClosedRange<T>>, T>>, T> where T.Stride : SignedInteger {
     
     return zip(PermutationList(n), FactorialList(n)).lazy.map(/)
 }
 
-public func FibonacciList<T: UnsignedInteger where T.Stride : SignedInteger>(_ n: T) -> LazyMapSequence<LazyScanSequence<CountableRange<T>, (T, T)>, T> {
+public func FibonacciList<T: UnsignedInteger>(_ n: T) -> LazyMapSequence<LazyScanSequence<CountableRange<T>, (T, T)>, T> where T.Stride : SignedInteger {
     
-    return (0..<n).dropLast().lazy.scan(initial: (1, 1)) { ($0.0.1, $0.0.0 + $0.0.1) }.map { $0.0 }
+    return (0..<n).dropLast().lazy.scan((1, 1)) { ($0.0.1, $0.0.0 + $0.0.1) }.map { $0.0 }
 }
 
 // MARK: Prime
@@ -244,7 +244,7 @@ public func degree5decompose(_ b: Double, _ c: Double, _ d: Double, _ e: Double,
         r += dr
         s += ds
         
-        if dr.almostZero(epsilon: eps, reference: r) && ds.almostZero(eps, reference: s) {
+        if dr.almostZero(epsilon: eps, reference: r) && ds.almostZero(epsilon: eps, reference: s) {
             break
         }
         
@@ -289,7 +289,7 @@ public func degree6decompose(_ b: Double, _ c: Double, _ d: Double, _ e: Double,
         r += dr
         s += ds
         
-        if dr.almostZero(epsilon: eps, reference: r) && ds.almostZero(eps, reference: s) {
+        if dr.almostZero(epsilon: eps, reference: r) && ds.almostZero(epsilon: eps, reference: s) {
             break
         }
         
@@ -355,7 +355,7 @@ public func degree4roots(_ b: Double, _ c: Double, _ d: Double, _ e: Double) -> 
     }
     
     let _d2 = degree4decompose(b, c, d, e)
-    return Array(Set(degree2roots(_d2.0.0, _d2.0.1).concat(with: degree2roots(_d2.1.0, _d2.1.1))))
+    return Array(Set(degree2roots(_d2.0.0, _d2.0.1).concat(degree2roots(_d2.1.0, _d2.1.1))))
 }
 
 // MARK: Others

@@ -77,7 +77,7 @@ public struct SDPath : SDShape, RandomAccessCollection, MutableCollection, Expre
     
     public typealias Indices = CountableRange<Int>
     
-    public typealias SubSequence = MutableRangeReplaceableRandomAccessSlice<SDPath>
+    //public typealias SubSequence = MutableRangeReplaceableRandomAccessSlice<SDPath>
     
     private class Cache {
         
@@ -144,15 +144,15 @@ public struct SDPath : SDShape, RandomAccessCollection, MutableCollection, Expre
         self.commands = elements.map { PathCommand($0) }
     }
     
-    public init<S : Sequence where S.Iterator.Element : SDPathCommand>(_ commands: S) {
+    public init<S : Sequence>(_ commands: S) where S.Iterator.Element : SDPathCommand {
         self.commands = commands.map { PathCommand($0) }
     }
     
-    public init<S : Sequence where S.Iterator.Element == SDPathCommand>(_ commands: S) {
+    public init<S : Sequence>(_ commands: S) where S.Iterator.Element == SDPathCommand {
         self.commands = commands.map { PathCommand($0) }
     }
     
-    private init<S : Sequence where S.Iterator.Element == PathCommand>(_ commands: S) {
+    private init<S : Sequence>(_ commands: S) where S.Iterator.Element == PathCommand {
         self.commands = commands.array
     }
     
@@ -410,17 +410,17 @@ extension SDPath {
         commands.append(PathCommand(command: x))
     }
     
-    public mutating func append<S : Sequence where S.Iterator.Element : SDPathCommand>(contentsOf newElements: S) {
+    public mutating func append<S : Sequence>(contentsOf newElements: S) where S.Iterator.Element : SDPathCommand {
         cache = Cache()
         commands.append(contentsOf: newElements.lazy.map { PathCommand(command: $0) } as LazyMapSequence)
     }
     
-    public mutating func append<C : Collection where C.Iterator.Element : SDPathCommand>(contentsOf newElements: C) {
+    public mutating func append<C : Collection>(contentsOf newElements: C) where C.Iterator.Element : SDPathCommand {
         cache = Cache()
         commands.append(contentsOf: newElements.lazy.map { PathCommand(command: $0) } as LazyMapCollection)
     }
     
-    public mutating func replaceSubrange<C : Collection where C.Iterator.Element : SDPathCommand>(_ subRange: Range<Int>, with newElements: C) {
+    public mutating func replaceSubrange<C : Collection>(_ subRange: Range<Int>, with newElements: C) where C.Iterator.Element : SDPathCommand {
         cache = Cache()
         commands.replaceSubrange(subRange, with: newElements.lazy.map { PathCommand(command: $0) } as LazyMapCollection)
     }
@@ -430,7 +430,7 @@ extension SDPath {
         commands.insert(PathCommand(command: newElement), at: i)
     }
     
-    public mutating func insert<S : Collection where S.Iterator.Element : SDPathCommand>(contentsOf newElements: S, at i: Int) {
+    public mutating func insert<S : Collection>(contentsOf newElements: S, at i: Int) where S.Iterator.Element : SDPathCommand {
         cache = Cache()
         commands.insert(contentsOf: newElements.lazy.map { PathCommand(command: $0) } as LazyMapCollection, at: i)
     }
@@ -452,7 +452,7 @@ extension SDPath : RangeReplaceableCollection {
         commands.removeAll(keepingCapacity: keepingCapacity)
     }
     
-    public mutating func replaceSubrange<C : Collection where C.Iterator.Element == SDPathCommand>(_ subRange: Range<Int>, with newElements: C) {
+    public mutating func replaceSubrange<C : Collection>(_ subRange: Range<Int>, with newElements: C) where C.Iterator.Element == SDPathCommand {
         cache = Cache()
         commands.replaceSubrange(subRange, with: newElements.lazy.map { PathCommand($0) } as LazyMapCollection)
     }

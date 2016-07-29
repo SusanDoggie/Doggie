@@ -63,13 +63,13 @@ extension ParallelCollectionProtocol {
     
     public var array : [Iterator.Element] {
         let count: Int = numericCast(self.count)
-        let buffer = UnsafeMutablePointer<Iterator.Element>(allocatingCapacity: count)
+        let buffer = UnsafeMutablePointer<Iterator.Element>.allocate(capacity: count)
         DispatchQueue.concurrentPerform(iterations: numericCast(self.count)) {
-            (buffer + $0).initialize(with: self[self.index(startIndex, offsetBy: numericCast($0))])
+            (buffer + $0).initialize(to: self[self.index(startIndex, offsetBy: numericCast($0))])
         }
         let result = Array(UnsafeMutableBufferPointer(start: buffer, count: count))
         buffer.deinitialize(count: count)
-        buffer.deallocateCapacity(count)
+        buffer.deallocate(capacity: count)
         return result
     }
 }

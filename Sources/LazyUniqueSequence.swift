@@ -31,7 +31,7 @@ public struct LazyUniqueIterator<Base : IteratorProtocol> : IteratorProtocol, Se
     
     public mutating func next() -> Base.Element? {
         while let val = base.next() {
-            if !pass.contains({ isEquivalent($0, val) }) {
+            if !pass.contains(where: { isEquivalent($0, val) }) {
                 pass.append(val)
                 return val
             }
@@ -63,9 +63,9 @@ public extension Sequence where Iterator.Element : Equatable {
 
 public extension Sequence {
     
-    func unique(isEquivalent: @noescape (Iterator.Element, Iterator.Element) throws -> Bool) rethrows -> [Iterator.Element] {
+    func unique(where isEquivalent: @noescape (Iterator.Element, Iterator.Element) throws -> Bool) rethrows -> [Iterator.Element] {
         var result: [Iterator.Element] = []
-        for item in self where try !result.contains({ try isEquivalent($0, item) }) {
+        for item in self where try !result.contains(where: { try isEquivalent($0, item) }) {
             result.append(item)
         }
         return result
@@ -81,7 +81,7 @@ public extension LazySequenceProtocol where Elements.Iterator.Element : Equatabl
 
 public extension LazySequenceProtocol {
     
-    func unique(isEquivalent: (Elements.Iterator.Element, Elements.Iterator.Element) -> Bool) -> LazyUniqueSequence<Elements> {
+    func unique(where isEquivalent: (Elements.Iterator.Element, Elements.Iterator.Element) -> Bool) -> LazyUniqueSequence<Elements> {
         return LazyUniqueSequence(base: elements, isEquivalent: isEquivalent)
     }
 }

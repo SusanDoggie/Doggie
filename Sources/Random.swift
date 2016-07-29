@@ -25,8 +25,8 @@
 
 import Foundation
 
-public func sec_random(_ buffer: UnsafeMutablePointer<Void>, size: Int) {
-    let buffer = UnsafeMutablePointer<UInt8>(buffer)
+public func sec_random(_ buffer: UnsafeMutableRawPointer, size: Int) {
+    let buffer = buffer.assumingMemoryBound(to: UInt8.self)
     let rand_file = open("/dev/random", O_RDONLY)
     var read_bytes = 0
     while read_bytes < size {

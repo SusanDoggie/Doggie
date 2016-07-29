@@ -31,10 +31,10 @@ public extension Sequence {
     /// for each prefix `p` of `self`, in order from shortest to
     /// longest.  For example:
     ///
-    ///     (1..<6).scan(0, combine: +) // [0, 1, 3, 6, 10, 15]
+    ///     (1..<6).scan(0, +) // [0, 1, 3, 6, 10, 15]
     ///
     /// - complexity: O(N)
-    func scan<R>(initial: R, combine: @noescape (R, Iterator.Element) throws -> R) rethrows -> [R] {
+    func scan<R>(_ initial: R, _ combine: @noescape (R, Iterator.Element) throws -> R) rethrows -> [R] {
         var result = [initial]
         for x in self {
             result.append(try combine(result.last!, x))
@@ -76,10 +76,10 @@ public extension LazySequenceProtocol {
     /// for each prefix `p` of `self`, in order from shortest to
     /// longest.  For example:
     ///
-    ///     Array((1..<6).lazy.scan(0, combine: +)) // [0, 1, 3, 6, 10, 15]
+    ///     Array((1..<6).lazy.scan(0, +)) // [0, 1, 3, 6, 10, 15]
     ///
     /// - complexity: O(1)
-    func scan<R>(initial: R, combine: (R, Elements.Iterator.Element) -> R) -> LazyScanSequence<Elements, R> {
+    func scan<R>(_ initial: R, _ combine: (R, Elements.Iterator.Element) -> R) -> LazyScanSequence<Elements, R> {
         return LazyScanSequence(initial: initial, base: self.elements, combine: combine)
     }
 }

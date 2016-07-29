@@ -395,7 +395,7 @@ public func lcm<T: SignedInteger>(_ a: T, _ b: T) -> T {
     return a * b / gcd(a, b)
 }
 
-public func factorial<T: UnsignedInteger where T.Stride : SignedInteger>(_ x: T) -> T {
+public func factorial<T: UnsignedInteger>(_ x: T) -> T where T.Stride : SignedInteger {
     if x == 0 || x == 1 {
         return 1
     }
@@ -406,7 +406,7 @@ public func factorial<T: UnsignedInteger where T.Stride : SignedInteger>(_ x: T)
     return _a
 }
 
-public func permutation<T: UnsignedInteger where T.Stride : SignedInteger>(_ n: T, _ k: T) -> T {
+public func permutation<T: UnsignedInteger>(_ n: T, _ k: T) -> T where T.Stride : SignedInteger {
     if k == 0 {
         return 1
     }
@@ -419,7 +419,7 @@ public func permutation<T: UnsignedInteger where T.Stride : SignedInteger>(_ n: 
     }
     return _a
 }
-public func combination<T: UnsignedInteger where T.Stride : SignedInteger>(_ n: T, _ k: T) -> T {
+public func combination<T: UnsignedInteger>(_ n: T, _ k: T) -> T where T.Stride : SignedInteger {
     return permutation(n, k) / factorial(k)
 }
 

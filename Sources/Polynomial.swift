@@ -41,7 +41,7 @@ public struct Polynomial {
     }
     /// Construct from an arbitrary sequence of coeffs.
     /// a + b x + c x^2 + d x^3 + ...
-    public init<S : Sequence where S.Iterator.Element == Double>(_ s: S) {
+    public init<S : Sequence>(_ s: S) where S.Iterator.Element == Double {
         self.coeffs = s.array
         while self.coeffs.last == 0 {
             self.coeffs.removeLast()
@@ -111,7 +111,7 @@ extension Polynomial : RangeReplaceableCollection {
         coeffs.removeAll(keepingCapacity: keepingCapacity)
     }
     
-    public mutating func replaceSubrange<C : Collection where C.Iterator.Element == Double>(_ subRange: Range<Int>, with newElements: C) {
+    public mutating func replaceSubrange<C : Collection>(_ subRange: Range<Int>, with newElements: C) where C.Iterator.Element == Double {
         coeffs.replaceSubrange(subRange, with: newElements)
         while coeffs.last == 0 {
             coeffs.removeLast()
@@ -257,7 +257,7 @@ extension Polynomial {
     
     public var integral : Polynomial {
         let _coeffs = coeffs.enumerated().lazy.map { $1 / Double($0 + 1) }
-        return Polynomial(CollectionOfOne(0).concat(with: _coeffs))
+        return Polynomial(CollectionOfOne(0).concat(_coeffs))
     }
 }
 

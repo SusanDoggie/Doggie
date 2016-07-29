@@ -25,7 +25,7 @@
 
 import Foundation
 
-private struct PathDataScanner<I : IteratorProtocol where I.Element == String> : IteratorProtocol, Sequence {
+private struct PathDataScanner<I : IteratorProtocol> : IteratorProtocol, Sequence where I.Element == String {
     
     var iterator: I
     var current: String!
@@ -36,7 +36,7 @@ private struct PathDataScanner<I : IteratorProtocol where I.Element == String> :
     }
     
     @_transparent
-    init<S : Sequence where S.Iterator == I>(_ sequence: S) {
+    init<S : Sequence>(_ sequence: S) where S.Iterator == I {
         self.iterator = sequence.makeIterator()
     }
     
@@ -52,7 +52,7 @@ private let pathDataMatcher: Regex = "[MmLlHhVvCcSsQqTtAaZz]|[+-]?(\\d+\\.?\\d*|
 
 extension SDPath {
     
-    public struct DecoderError : ErrorProtocol {
+    public struct DecoderError : Error {
         
         var command: String?
     }
@@ -539,7 +539,7 @@ private let dataFormatter: NumberFormatter = {
 @_transparent
 private func getDataString(_ x: [Double]) -> String {
     var str = ""
-    for _x in x.map({ dataFormatter.string(from: $0) ?? "0" }) {
+    for _x in x.map({ dataFormatter.string(from: $0 as NSNumber) ?? "0" }) {
         if !str.isEmpty && _x.characters.first != "-" {
             " ".write(to: &str)
         }

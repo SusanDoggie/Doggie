@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-public struct ConcatIterator<G1: IteratorProtocol, G2: IteratorProtocol where G1.Element == G2.Element> : IteratorProtocol, Sequence {
+public struct ConcatIterator<G1: IteratorProtocol, G2: IteratorProtocol> : IteratorProtocol, Sequence where G1.Element == G2.Element {
     
     private var base1: G1
     private var base2: G2
@@ -40,7 +40,7 @@ public struct ConcatIterator<G1: IteratorProtocol, G2: IteratorProtocol where G1
     }
 }
 
-public struct ConcatSequence<S1 : Sequence, S2 : Sequence where S1.Iterator.Element == S2.Iterator.Element> : Sequence {
+public struct ConcatSequence<S1 : Sequence, S2 : Sequence> : Sequence where S1.Iterator.Element == S2.Iterator.Element {
     
     private let base1: S1
     private let base2: S2
@@ -62,7 +62,7 @@ public func < <I1, I2>(lhs: ConcatCollectionIndex<I1, I2>, rhs: ConcatCollection
     return (lhs.currect1, lhs.currect2) < (rhs.currect1, rhs.currect2)
 }
 
-public struct ConcatCollection<S1 : Collection, S2 : Collection where S1.Iterator.Element == S2.Iterator.Element> : Collection {
+public struct ConcatCollection<S1 : Collection, S2 : Collection> : Collection where S1.Iterator.Element == S2.Iterator.Element {
     
     public typealias Iterator = ConcatIterator<S1.Iterator, S2.Iterator>
     
@@ -95,7 +95,7 @@ public struct ConcatCollection<S1 : Collection, S2 : Collection where S1.Iterato
     }
 }
 
-public struct ConcatBidirectionalCollection<S1 : BidirectionalCollection, S2 : BidirectionalCollection where S1.Iterator.Element == S2.Iterator.Element> : BidirectionalCollection {
+public struct ConcatBidirectionalCollection<S1 : BidirectionalCollection, S2 : BidirectionalCollection> : BidirectionalCollection where S1.Iterator.Element == S2.Iterator.Element {
     
     public typealias Iterator = ConcatIterator<S1.Iterator, S2.Iterator>
     
@@ -137,42 +137,42 @@ public struct ConcatBidirectionalCollection<S1 : BidirectionalCollection, S2 : B
 
 public extension Sequence {
     
-    func concat<S : Sequence where Iterator.Element == S.Iterator.Element>(with: S) -> ConcatSequence<Self, S> {
+    func concat<S : Sequence>(_ with: S) -> ConcatSequence<Self, S> where Iterator.Element == S.Iterator.Element {
         return ConcatSequence(base1: self, base2: with)
     }
 }
 
 public extension Collection {
     
-    func concat<S : Collection where Iterator.Element == S.Iterator.Element>(with: S) -> ConcatCollection<Self, S> {
+    func concat<S : Collection>(_ with: S) -> ConcatCollection<Self, S> where Iterator.Element == S.Iterator.Element {
         return ConcatCollection(base1: self, base2: with)
     }
 }
 
 public extension BidirectionalCollection {
     
-    func concat<S : BidirectionalCollection where Iterator.Element == S.Iterator.Element>(with: S) -> ConcatBidirectionalCollection<Self, S> {
+    func concat<S : BidirectionalCollection>(_ with: S) -> ConcatBidirectionalCollection<Self, S> where Iterator.Element == S.Iterator.Element {
         return ConcatBidirectionalCollection(base1: self, base2: with)
     }
 }
 
 public extension LazySequenceProtocol {
     
-    func concat<S : Sequence where Elements.Iterator.Element == S.Iterator.Element>(with: S) -> LazySequence<ConcatSequence<Elements, S>> {
+    func concat<S : Sequence>(_ with: S) -> LazySequence<ConcatSequence<Elements, S>> where Elements.Iterator.Element == S.Iterator.Element {
         return ConcatSequence(base1: self.elements, base2: with).lazy
     }
 }
 
 public extension LazyCollectionProtocol {
     
-    func concat<S : Collection where Elements.Iterator.Element == S.Iterator.Element>(with: S) -> LazyCollection<ConcatCollection<Elements, S>> {
+    func concat<S : Collection>(_ with: S) -> LazyCollection<ConcatCollection<Elements, S>> where Elements.Iterator.Element == S.Iterator.Element {
         return ConcatCollection(base1: self.elements, base2: with).lazy
     }
 }
 
 public extension LazyCollectionProtocol where Elements : BidirectionalCollection {
     
-    func concat<S : BidirectionalCollection where Elements.Iterator.Element == S.Iterator.Element>(with: S) -> LazyCollection<ConcatBidirectionalCollection<Elements, S>> {
+    func concat<S : BidirectionalCollection>(_ with: S) -> LazyCollection<ConcatBidirectionalCollection<Elements, S>> where Elements.Iterator.Element == S.Iterator.Element {
         return ConcatBidirectionalCollection(base1: self.elements, base2: with).lazy
     }
 }

@@ -119,7 +119,7 @@ extension UnsafePointer : SDAtomicType {
     public mutating func compareSet(old: UnsafePointer, new: UnsafePointer) -> Bool {
         @_transparent
         func cas(_ theVal: UnsafeMutablePointer<UnsafePointer<Pointee>>) -> Bool {
-            return OSAtomicCompareAndSwapPtrBarrier(UnsafeMutablePointer(old), UnsafeMutablePointer(new), UnsafeMutablePointer<UnsafeMutablePointer<Void>?>(theVal))
+            return OSAtomicCompareAndSwapPtrBarrier(UnsafeMutableRawPointer(mutating: old), UnsafeMutableRawPointer(mutating: new), UnsafeMutablePointer<UnsafeMutableRawPointer?>(theVal))
         }
         return cas(&self)
     }
@@ -131,7 +131,30 @@ extension UnsafeMutablePointer : SDAtomicType {
     public mutating func compareSet(old: UnsafeMutablePointer, new: UnsafeMutablePointer) -> Bool {
         @_transparent
         func cas(_ theVal: UnsafeMutablePointer<UnsafeMutablePointer<Pointee>>) -> Bool {
-            return OSAtomicCompareAndSwapPtrBarrier(old, new, UnsafeMutablePointer<UnsafeMutablePointer<Void>?>(theVal))
+            return OSAtomicCompareAndSwapPtrBarrier(UnsafeMutableRawPointer(old), UnsafeMutableRawPointer(new), UnsafeMutablePointer<UnsafeMutableRawPointer?>(theVal))
+        }
+        return cas(&self)
+    }
+}
+extension UnsafeRawPointer : SDAtomicType {
+    
+    /// Compare and set pointers with barrier.
+    public mutating func compareSet(old: UnsafeRawPointer, new: UnsafeRawPointer) -> Bool {
+        @_transparent
+        func cas(_ theVal: UnsafeMutablePointer<UnsafeRawPointer>) -> Bool {
+            return OSAtomicCompareAndSwapPtrBarrier(UnsafeMutableRawPointer(mutating: old), UnsafeMutableRawPointer(mutating: new), UnsafeMutablePointer<UnsafeMutableRawPointer?>(theVal))
+        }
+        return cas(&self)
+    }
+}
+
+extension UnsafeMutableRawPointer : SDAtomicType {
+    
+    /// Compare and set pointers with barrier.
+    public mutating func compareSet(old: UnsafeMutableRawPointer, new: UnsafeMutableRawPointer) -> Bool {
+        @_transparent
+        func cas(_ theVal: UnsafeMutablePointer<UnsafeMutableRawPointer>) -> Bool {
+            return OSAtomicCompareAndSwapPtrBarrier(UnsafeMutableRawPointer(old), UnsafeMutableRawPointer(new), UnsafeMutablePointer<UnsafeMutableRawPointer?>(theVal))
         }
         return cas(&self)
     }
@@ -143,7 +166,7 @@ extension OpaquePointer : SDAtomicType {
     public mutating func compareSet(old: OpaquePointer, new: OpaquePointer) -> Bool {
         @_transparent
         func cas(_ theVal: UnsafeMutablePointer<OpaquePointer>) -> Bool {
-            return OSAtomicCompareAndSwapPtrBarrier(UnsafeMutablePointer(old), UnsafeMutablePointer(new), UnsafeMutablePointer<UnsafeMutablePointer<Void>?>(theVal))
+            return OSAtomicCompareAndSwapPtrBarrier(UnsafeMutableRawPointer(old), UnsafeMutableRawPointer(new), UnsafeMutablePointer<UnsafeMutableRawPointer?>(theVal))
         }
         return cas(&self)
     }
@@ -251,7 +274,7 @@ extension Atomic : SDAtomicType {
         let _new = Unmanaged.passRetained(new)
         @_transparent
         func cas(theVal: UnsafeMutablePointer<AtomicBase<Instance>>) -> Bool {
-            return OSAtomicCompareAndSwapPtrBarrier(_old.toOpaque(), _new.toOpaque(), UnsafeMutablePointer<UnsafeMutablePointer<Void>?>(theVal))
+            return OSAtomicCompareAndSwapPtrBarrier(_old.toOpaque(), _new.toOpaque(), UnsafeMutablePointer<UnsafeMutableRawPointer?>(theVal))
         }
         let result = cas(theVal: &base)
         if result {

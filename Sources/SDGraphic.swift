@@ -164,7 +164,7 @@ extension SDPath {
     public init(_ path: CoreGraphics.CGPath) {
         self.init()
         path.apply(info: &self) { buf, element in
-            let path = UnsafeMutablePointer<SDPath>(buf)!
+            let path = buf!.assumingMemoryBound(to: SDPath.self)
             let points = element.pointee.points
             switch element.pointee.type {
             case .moveToPoint: path.pointee.appendCommand(SDPath.Move(Point(points[0])))

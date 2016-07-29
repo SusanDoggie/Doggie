@@ -25,12 +25,12 @@
 
 public extension Collection {
     
-    func collect<I : Sequence where Index == I.Iterator.Element>(_ indices: I) -> [Iterator.Element] {
+    func collect<I : Sequence>(_ indices: I) -> [Iterator.Element] where Index == I.Iterator.Element {
         return indices.map { self[$0] }
     }
 }
 
-public struct LazyGatherIterator<C: Collection, I: IteratorProtocol where C.Index == I.Element> : IteratorProtocol, Sequence {
+public struct LazyGatherIterator<C: Collection, I: IteratorProtocol> : IteratorProtocol, Sequence where C.Index == I.Element {
     
     private var seq : C
     private var indices : I
@@ -42,7 +42,7 @@ public struct LazyGatherIterator<C: Collection, I: IteratorProtocol where C.Inde
     }
 }
 
-public struct LazyGatherSequence<C : Collection, I : Sequence where C.Index == I.Iterator.Element> : LazySequenceProtocol {
+public struct LazyGatherSequence<C : Collection, I : Sequence> : LazySequenceProtocol where C.Index == I.Iterator.Element {
     
     public typealias Iterator = LazyGatherIterator<C, I.Iterator>
     
@@ -54,7 +54,7 @@ public struct LazyGatherSequence<C : Collection, I : Sequence where C.Index == I
     }
 }
 
-public struct LazyGatherCollection<C : Collection, I : Collection where C.Index == I.Iterator.Element> : LazyCollectionProtocol {
+public struct LazyGatherCollection<C : Collection, I : Collection> : LazyCollectionProtocol where C.Index == I.Iterator.Element {
     
     public typealias Iterator = LazyGatherIterator<C, I.Iterator>
     
@@ -85,7 +85,7 @@ public struct LazyGatherCollection<C : Collection, I : Collection where C.Index 
     }
 }
 
-public struct LazyGatherBidirectionalCollection<C : Collection, I : BidirectionalCollection where C.Index == I.Iterator.Element> : LazyCollectionProtocol, BidirectionalCollection {
+public struct LazyGatherBidirectionalCollection<C : Collection, I : BidirectionalCollection> : LazyCollectionProtocol, BidirectionalCollection where C.Index == I.Iterator.Element {
     
     public typealias Iterator = LazyGatherIterator<C, I.Iterator>
     
@@ -120,7 +120,7 @@ public struct LazyGatherBidirectionalCollection<C : Collection, I : Bidirectiona
     }
 }
 
-public struct LazyGatherRandomAccessCollection<C : Collection, I : RandomAccessCollection where C.Index == I.Iterator.Element> : LazyCollectionProtocol, RandomAccessCollection {
+public struct LazyGatherRandomAccessCollection<C : Collection, I : RandomAccessCollection> : LazyCollectionProtocol, RandomAccessCollection where C.Index == I.Iterator.Element {
     
     public typealias Iterator = LazyGatherIterator<C, I.Iterator>
     
@@ -165,19 +165,19 @@ public struct LazyGatherRandomAccessCollection<C : Collection, I : RandomAccessC
 
 public extension LazyCollectionProtocol {
     
-    func collect<I : Sequence where Elements.Index == I.Iterator.Element>(_ indices: I) -> LazyGatherSequence<Elements, I> {
+    func collect<I : Sequence>(_ indices: I) -> LazyGatherSequence<Elements, I> where Elements.Index == I.Iterator.Element {
         return LazyGatherSequence(_base: self.elements, _indices: indices)
     }
     
-    func collect<I : Collection where Elements.Index == I.Iterator.Element>(_ indices: I) -> LazyGatherCollection<Elements, I> {
+    func collect<I : Collection>(_ indices: I) -> LazyGatherCollection<Elements, I> where Elements.Index == I.Iterator.Element {
         return LazyGatherCollection(_base: self.elements, _indices: indices)
     }
     
-    func collect<I : BidirectionalCollection where Elements.Index == I.Iterator.Element>(_ indices: I) -> LazyGatherBidirectionalCollection<Elements, I> {
+    func collect<I : BidirectionalCollection>(_ indices: I) -> LazyGatherBidirectionalCollection<Elements, I> where Elements.Index == I.Iterator.Element {
         return LazyGatherBidirectionalCollection(_base: self.elements, _indices: indices)
     }
     
-    func collect<I : RandomAccessCollection where Elements.Index == I.Iterator.Element>(_ indices: I) -> LazyGatherRandomAccessCollection<Elements, I> {
+    func collect<I : RandomAccessCollection>(_ indices: I) -> LazyGatherRandomAccessCollection<Elements, I> where Elements.Index == I.Iterator.Element {
         return LazyGatherRandomAccessCollection(_base: self.elements, _indices: indices)
     }
 }

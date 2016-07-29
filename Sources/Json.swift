@@ -27,9 +27,9 @@ import Foundation
 
 public struct Json {
     
-    private let value: AnyObject?
+    private let value: Any?
     
-    private init(value: AnyObject?) {
+    private init(value: Any?) {
         self.value = value
     }
 }
@@ -40,10 +40,10 @@ extension Json {
         self.value = value
     }
     public init<T : Integer>(_ value: T) {
-        self.value = NSNumber(value: value.toIntMax())
+        self.value = value
     }
     public init(_ value: Float) {
-        self.value = Double(value)
+        self.value = value
     }
     public init(_ value: Double) {
         self.value = value
@@ -51,11 +51,11 @@ extension Json {
     public init(_ value: String) {
         self.value = value
     }
-    public init<S : Sequence where S.Iterator.Element == Json>(_ elements: S) {
+    public init<S : Sequence>(_ elements: S) where S.Iterator.Element == Json {
         self.value = elements.map { $0.value! }
     }
     public init(_ elements: [String: Json]) {
-        var dictionary = [String: AnyObject](minimumCapacity: elements.count)
+        var dictionary = [String: Any](minimumCapacity: elements.count)
         for (key, value) in elements {
             dictionary[key] = value.value
         }
@@ -119,7 +119,7 @@ extension Json: ExpressibleByArrayLiteral {
 extension Json: ExpressibleByDictionaryLiteral {
     
     public init(dictionaryLiteral elements: (String, Json) ...) {
-        var dictionary = [String: AnyObject](minimumCapacity: elements.count)
+        var dictionary = [String: Any](minimumCapacity: elements.count)
         for (key, value) in elements {
             dictionary[key] = value.value
         }
@@ -197,11 +197,11 @@ extension Json {
     }
     
     public var isArray : Bool {
-        return self.value is [AnyObject]
+        return self.value is [Any]
     }
     
     public var isObject : Bool {
-        return self.value is [String:AnyObject]
+        return self.value is [String:Any]
     }
 }
 
@@ -336,7 +336,7 @@ extension Json {
     }
     public var array: [Json]? {
         get {
-            if let array = self.value as? [AnyObject] {
+            if let array = self.value as? [Any] {
                 return array.map { Json(value: $0) }
             }
             return nil
@@ -346,7 +346,7 @@ extension Json {
         }
     }
     public var dictionary: [String: Json]? {
-        if let elements = self.value as? [String: AnyObject] {
+        if let elements = self.value as? [String: Any] {
             var dictionary = [String: Json](minimumCapacity: elements.count)
             for (key, value) in elements {
                 dictionary[key] = Json(value: value)
@@ -363,7 +363,7 @@ extension Json {
         
         private enum Base {
             case array(Int)
-            case object(DictionaryIndex<String, AnyObject>)
+            case object(DictionaryIndex<String, Any>)
         }
         
         private let base: Base
@@ -408,7 +408,7 @@ private extension Json.Index {
         }
     }
     
-    var objectIndex: DictionaryIndex<String, AnyObject>? {
+    var objectIndex: DictionaryIndex<String, Any>? {
         switch self.base {
         case .object(let x): return x
         default: return nil
@@ -420,27 +420,27 @@ extension Json : MutableCollection {
     
     public var startIndex : Index {
         switch self.value {
-        case let array as [AnyObject]: return Index(base: .array(array.startIndex))
-        case let dictionary as [String: AnyObject]: return Index(base: .object(dictionary.startIndex))
+        case let array as [Any]: return Index(base: .array(array.startIndex))
+        case let dictionary as [String: Any]: return Index(base: .object(dictionary.startIndex))
         default: fatalError("Not an array or object.")
         }
     }
     public var endIndex : Index {
         switch self.value {
-        case let array as [AnyObject]: return Index(base: .array(array.endIndex))
-        case let dictionary as [String: AnyObject]: return Index(base: .object(dictionary.endIndex))
+        case let array as [Any]: return Index(base: .array(array.endIndex))
+        case let dictionary as [String: Any]: return Index(base: .object(dictionary.endIndex))
         default: fatalError("Not an array or object.")
         }
     }
     
     public func index(after i: Index) -> Index {
         switch self.value {
-        case let array as [AnyObject]:
+        case let array as [Any]:
             if let index = i.intValue {
                 return Index(base: .array(array.index(after: index)))
             }
             fatalError("Not an object.")
-        case let dictionary as [String: AnyObject]:
+        case let dictionary as [String: Any]:
             if let index = i.objectIndex {
                 return Index(base: .object(dictionary.index(after: index)))
             }
@@ -451,8 +451,8 @@ extension Json : MutableCollection {
     
     public var count: Int {
         switch self.value {
-        case let array as [AnyObject]: return array.count
-        case let dictionary as [String: AnyObject]: return dictionary.count
+        case let array as [Any]: return array.count
+        case let dictionary as [String: Any]: return dictionary.count
         default: fatalError("Not an array or object.")
         }
     }
@@ -460,11 +460,11 @@ extension Json : MutableCollection {
     public subscript(position: Index) -> Json {
         get {
             switch self.value {
-            case let array as [AnyObject]:
+            case let array as [Any]:
                 if let index = position.intValue {
                     return Json(value: array[index])
                 }
-            case let dictionary as [String: AnyObject]:
+            case let dictionary as [String: Any]:
                 if let index = position.objectIndex {
                     return Json(value: dictionary[index].1)
                 }
@@ -474,14 +474,14 @@ extension Json : MutableCollection {
         }
         set {
             switch self.value {
-            case var array as [AnyObject]:
+            case var array as [Any]:
                 if let index = position.intValue {
                     array[index] = newValue.value!
                     self = Json(value: array)
                 } else {
                     fatalError("Not an object.")
                 }
-            case var dictionary as [String: AnyObject]:
+            case var dictionary as [String: Any]:
                 if let index = position.objectIndex {
                     dictionary[dictionary[index].0] = newValue.value
                     self = Json(value: dictionary)
@@ -501,14 +501,14 @@ extension Json : MutableCollection {
     public subscript(index: Int) -> Json {
         get {
             switch self.value {
-            case let array as [AnyObject]: return Json(value: array[index])
+            case let array as [Any]: return Json(value: array[index])
             default: break
             }
             return nil
         }
         set {
             switch self.value {
-            case var array as [AnyObject]:
+            case var array as [Any]:
                 array[index] = newValue.value!
                 self = Json(value: array)
             default: fatalError("Not an array.")
@@ -519,7 +519,7 @@ extension Json : MutableCollection {
     public subscript(key: String) -> Json {
         get {
             switch self.value {
-            case let dictionary as [String: AnyObject]:
+            case let dictionary as [String: Any]:
                 if let val = dictionary[key] {
                     return Json(value: val)
                 }
@@ -530,7 +530,7 @@ extension Json : MutableCollection {
         }
         set {
             switch self.value {
-            case var dictionary as [String: AnyObject]:
+            case var dictionary as [String: Any]:
                 dictionary[key] = newValue.value
                 self = Json(value: dictionary)
             default: fatalError("Not an object.")
