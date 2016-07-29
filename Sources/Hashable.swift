@@ -23,6 +23,8 @@
 //  THE SOFTWARE.
 //
 
+import Foundation
+
 private let _hash_phi = 0.6180339887498948482045868343656381177203091798057628
 private let _hash_seed = Int(bitPattern: UInt(round(_hash_phi * Double(UInt.max))))
 
