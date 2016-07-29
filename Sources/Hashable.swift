@@ -1,5 +1,5 @@
 //
-//  Environment.swift
+//  Hashable.swift
 //
 //  The MIT License
 //  Copyright (c) 2015 - 2016 Susan Cheng. All rights reserved.
@@ -22,32 +22,6 @@
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 //  THE SOFTWARE.
 //
-
-import Foundation
-
-public let isLittleEndian = TARGET_RT_LITTLE_ENDIAN == 1
-public let isBigEndian = TARGET_RT_BIG_ENDIAN == 1
-
-public let Progname = String(cString: getprogname())
-
-public func Environment(name: String) -> String? {
-    return String(cString: getenv(name))
-}
-
-public func SDTimer(count: Int = 1, block: @noescape () -> Void) -> TimeInterval {
-    var time: UInt64 = 0
-    for _ in 0..<count {
-        autoreleasepool {
-            let start = mach_absolute_time()
-            block()
-            time += mach_absolute_time() - start
-        }
-    }
-    var timebaseInfo = mach_timebase_info()
-    mach_timebase_info(&timebaseInfo)
-    let frac = Double(timebaseInfo.numer) / Double(timebaseInfo.denom)
-    return 1e-9 * Double(time) * frac / Double(count)
-}
 
 private let _hash_phi = 0.6180339887498948482045868343656381177203091798057628
 private let _hash_seed = Int(bitPattern: UInt(round(_hash_phi * Double(UInt.max))))

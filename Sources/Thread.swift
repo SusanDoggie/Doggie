@@ -27,12 +27,6 @@ import Foundation
 
 private let SDThreadDefaultDispatchQueue = DispatchQueue(label: "com.SusanDoggie.Thread", attributes: .concurrent)
 
-public typealias thread_id_t = mach_port_t
-
-public func threadID() -> thread_id_t {
-    return mach_thread_self()
-}
-
 // MARK: Lockable and Lock Guard
 
 public protocol Lockable : class {
