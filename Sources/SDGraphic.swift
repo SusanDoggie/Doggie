@@ -25,10 +25,6 @@
 
 import Foundation
 
-#if os(macOS) || os(iOS) || os(tvOS) || os(watchOS)
-import CoreGraphics
-#endif
-
 extension CGPoint {
     
     public init(_ p: Point) {
@@ -89,94 +85,100 @@ extension Rect {
     }
 }
 
-extension CGAffineTransform {
+#if os(macOS) || os(iOS) || os(tvOS) || os(watchOS)
     
-    public init<T: SDTransformProtocol>(_ m: T) {
-        self.a = CGFloat(m.a)
-        self.b = CGFloat(m.d)
-        self.c = CGFloat(m.b)
-        self.d = CGFloat(m.e)
-        self.tx = CGFloat(m.c)
-        self.ty = CGFloat(m.f)
+    import CoreGraphics
+    
+    extension CGAffineTransform {
+        
+        public init<T: SDTransformProtocol>(_ m: T) {
+            self.a = CGFloat(m.a)
+            self.b = CGFloat(m.d)
+            self.c = CGFloat(m.b)
+            self.d = CGFloat(m.e)
+            self.tx = CGFloat(m.c)
+            self.ty = CGFloat(m.f)
+        }
     }
-}
-
-extension SDTransform {
     
-    public init(_ m: CGAffineTransform) {
-        self.a = Double(m.a)
-        self.b = Double(m.c)
-        self.c = Double(m.tx)
-        self.d = Double(m.b)
-        self.e = Double(m.d)
-        self.f = Double(m.ty)
+    extension SDTransform {
+        
+        public init(_ m: CGAffineTransform) {
+            self.a = Double(m.a)
+            self.b = Double(m.c)
+            self.c = Double(m.tx)
+            self.d = Double(m.b)
+            self.e = Double(m.d)
+            self.f = Double(m.ty)
+        }
     }
-}
-
-extension SDRectangle {
     
-    public var CGPath : CoreGraphics.CGPath {
-        var _transform = CGAffineTransform(transform)
-        return CoreGraphics.CGPath(rect: CGRect(Rect(x: x, y: y, width: width, height: height)), transform: &_transform)
-    }
-}
-
-extension SDEllipse {
-    
-    public var CGPath : CoreGraphics.CGPath {
-        var _transform = CGAffineTransform(transform)
-        return CoreGraphics.CGPath(ellipseIn: CGRect(Rect(x: x - rx, y: y - ry, width: 2 * rx, height: 2 * ry)), transform: &_transform)
-    }
-}
-
-private let SDPathCacheCGPathKey = "SDPathCacheCGPathKey"
-
-extension SDPath {
-    
-    public var CGPath : CoreGraphics.CGPath {
-        if let path = self.getCache(name: SDPathCacheCGPathKey, type: .transformed).map({ $0 as! CoreGraphics.CGPath }) {
-            return path
-        } else {
-            let _path: CoreGraphics.CGPath
-            if let path = self.getCache(name: SDPathCacheCGPathKey, type: .regular).map({ $0 as! CoreGraphics.CGPath }) {
-                _path = path
-            } else {
-                let path = CGMutablePath()
-                self._apply { component, state in
-                    switch component {
-                    case let .move(point): path.moveTo(nil, x: CGFloat(point.x), y: CGFloat(point.y))
-                    case let .line(point): path.addLineTo(nil, x: CGFloat(point.x), y: CGFloat(point.y))
-                    case let .quad(p1, p2): path.addQuadCurve(nil, cpx: CGFloat(p1.x), cpy: CGFloat(p1.y), endingAtX: CGFloat(p2.x), y: CGFloat(p2.y))
-                    case let .cubic(p1, p2, p3): path.addCurve(nil, cp1x: CGFloat(p1.x), cp1y: CGFloat(p1.y), cp2x: CGFloat(p2.x), cp2y: CGFloat(p2.y), endingAtX: CGFloat(p3.x), y: CGFloat(p3.y))
-                    case .close: path.closeSubpath()
-                    }
-                }
-                self.setCache(name: SDPathCacheCGPathKey, value: path, type: .regular)
-                _path = path
-            }
+    extension SDRectangle {
+        
+        public var CGPath : CoreGraphics.CGPath {
             var _transform = CGAffineTransform(transform)
-            let path = _path.copy(using: &_transform) ?? _path
-            self.setCache(name: SDPathCacheCGPathKey, value: path, type: .transformed)
-            return path
+            return CoreGraphics.CGPath(rect: CGRect(Rect(x: x, y: y, width: width, height: height)), transform: &_transform)
         }
     }
-}
-
-extension SDPath {
     
-    public init(_ path: CoreGraphics.CGPath) {
-        self.init()
-        path.apply(info: &self) { buf, element in
-            let path = buf!.assumingMemoryBound(to: SDPath.self)
-            let points = element.pointee.points
-            switch element.pointee.type {
-            case .moveToPoint: path.pointee.appendCommand(SDPath.Move(Point(points[0])))
-            case .addLineToPoint: path.pointee.appendCommand(SDPath.Line(Point(points[0])))
-            case .addQuadCurveToPoint: path.pointee.appendCommand(SDPath.QuadBezier(Point(points[0]), Point(points[1])))
-            case .addCurveToPoint: path.pointee.appendCommand(SDPath.CubicBezier(Point(points[0]), Point(points[1]), Point(points[2])))
-            case .closeSubpath: path.pointee.appendCommand(SDPath.ClosePath())
+    extension SDEllipse {
+        
+        public var CGPath : CoreGraphics.CGPath {
+            var _transform = CGAffineTransform(transform)
+            return CoreGraphics.CGPath(ellipseIn: CGRect(Rect(x: x - rx, y: y - ry, width: 2 * rx, height: 2 * ry)), transform: &_transform)
+        }
+    }
+    
+    private let SDPathCacheCGPathKey = "SDPathCacheCGPathKey"
+    
+    extension SDPath {
+        
+        public var CGPath : CoreGraphics.CGPath {
+            if let path = self.getCache(name: SDPathCacheCGPathKey, type: .transformed).map({ $0 as! CoreGraphics.CGPath }) {
+                return path
+            } else {
+                let _path: CoreGraphics.CGPath
+                if let path = self.getCache(name: SDPathCacheCGPathKey, type: .regular).map({ $0 as! CoreGraphics.CGPath }) {
+                    _path = path
+                } else {
+                    let path = CGMutablePath()
+                    self._apply { component, state in
+                        switch component {
+                        case let .move(point): path.moveTo(nil, x: CGFloat(point.x), y: CGFloat(point.y))
+                        case let .line(point): path.addLineTo(nil, x: CGFloat(point.x), y: CGFloat(point.y))
+                        case let .quad(p1, p2): path.addQuadCurve(nil, cpx: CGFloat(p1.x), cpy: CGFloat(p1.y), endingAtX: CGFloat(p2.x), y: CGFloat(p2.y))
+                        case let .cubic(p1, p2, p3): path.addCurve(nil, cp1x: CGFloat(p1.x), cp1y: CGFloat(p1.y), cp2x: CGFloat(p2.x), cp2y: CGFloat(p2.y), endingAtX: CGFloat(p3.x), y: CGFloat(p3.y))
+                        case .close: path.closeSubpath()
+                        }
+                    }
+                    self.setCache(name: SDPathCacheCGPathKey, value: path, type: .regular)
+                    _path = path
+                }
+                var _transform = CGAffineTransform(transform)
+                let path = _path.copy(using: &_transform) ?? _path
+                self.setCache(name: SDPathCacheCGPathKey, value: path, type: .transformed)
+                return path
             }
         }
-        self.setCache(name: SDPathCacheCGPathKey, value: path.copy()!, type: .regular)
     }
-}
+    
+    extension SDPath {
+        
+        public init(_ path: CoreGraphics.CGPath) {
+            self.init()
+            path.apply(info: &self) { buf, element in
+                let path = buf!.assumingMemoryBound(to: SDPath.self)
+                let points = element.pointee.points
+                switch element.pointee.type {
+                case .moveToPoint: path.pointee.appendCommand(SDPath.Move(Point(points[0])))
+                case .addLineToPoint: path.pointee.appendCommand(SDPath.Line(Point(points[0])))
+                case .addQuadCurveToPoint: path.pointee.appendCommand(SDPath.QuadBezier(Point(points[0]), Point(points[1])))
+                case .addCurveToPoint: path.pointee.appendCommand(SDPath.CubicBezier(Point(points[0]), Point(points[1]), Point(points[2])))
+                case .closeSubpath: path.pointee.appendCommand(SDPath.ClosePath())
+                }
+            }
+            self.setCache(name: SDPathCacheCGPathKey, value: path.copy()!, type: .regular)
+        }
+    }
+    
+#endif
