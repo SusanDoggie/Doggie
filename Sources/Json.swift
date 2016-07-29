@@ -40,7 +40,7 @@ extension Json {
         self.value = value
     }
     public init<T : Integer>(_ value: T) {
-        self.value = value
+        self.value = NSNumber(value: value.toIntMax())
     }
     public init(_ value: Float) {
         self.value = value
