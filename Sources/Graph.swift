@@ -216,7 +216,7 @@ public func == <Node, Link>(lhs: GraphIndex<Node, Link>, rhs: GraphIndex<Node, L
 public func < <Node, Link>(lhs: GraphIndex<Node, Link>, rhs: GraphIndex<Node, Link>) -> Bool {
     if lhs.index1 < rhs.index1 {
         return true
-    } else if lhs.index1 == rhs.index1 && lhs.index2 != nil && rhs.index2 != nil && lhs.index2 < rhs.index2 {
+    } else if lhs.index1 == rhs.index1 && lhs.index2 != nil && rhs.index2 != nil && lhs.index2! < rhs.index2! {
         return true
     }
     return false
