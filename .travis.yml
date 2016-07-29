@@ -29,16 +29,16 @@ before_install:
 install:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
         wget https://swift.org/builds/development/xcode/${TOOLCHAIN}/${TOOLCHAIN}-osx.pkg;
-        pkgutil --expand ${TRAVIS_BUILD_DIR}/${TOOLCHAIN}-osx.pkg ${TRAVIS_BUILD_DIR}/${TOOLCHAIN}-osx.unpkg;
-        cat ${TRAVIS_BUILD_DIR}/${TOOLCHAIN}-osx.unpkg/${TOOLCHAIN}-osx-package.pkg/Payload | gunzip -dc |cpio -i;
-        export PATH=${TRAVIS_BUILD_DIR}/usr/bin:"${PATH}";
+        pkgutil --expand ${WORK_DIR}/${TOOLCHAIN}-osx.pkg ${WORK_DIR}/${TOOLCHAIN}-osx.unpkg;
+        cat ${WORK_DIR}/${TOOLCHAIN}-osx.unpkg/${TOOLCHAIN}-osx-package.pkg/Payload | gunzip -dc |cpio -i;
+        export PATH=${WORK_DIR}/usr/bin:"${PATH}";
     fi
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
         wget https://swift.org/builds/development/ubuntu1404/${TOOLCHAIN}/${TOOLCHAIN}-ubuntu14.04.tar.gz;
         tar xzf ${TOOLCHAIN}-ubuntu14.04.tar.gz;
-        export PATH=${TRAVIS_BUILD_DIR}/${TOOLCHAIN}-ubuntu14.04/usr/bin:"${PATH}";
+        export PATH=${WORK_DIR}/${TOOLCHAIN}-ubuntu14.04/usr/bin:"${PATH}";
         git clone -b experimental/foundation https://github.com/apple/swift-corelibs-libdispatch.git;
-        cd swift-corelibs-libdispatch && git submodule init && git submodule update && sh ./autogen.sh && CFLAGS=-fuse-ld=gold ./configure --with-swift-toolchain=${TRAVIS_BUILD_DIR}/${TOOLCHAIN}-ubuntu14.04/usr --prefix=${TRAVIS_BUILD_DIR}/${TOOLCHAIN}-ubuntu14.04/usr && make && make install;
+        cd swift-corelibs-libdispatch && git submodule init && git submodule update && sh ./autogen.sh && CFLAGS=-fuse-ld=gold ./configure --with-swift-toolchain=${WORK_DIR}/${TOOLCHAIN}-ubuntu14.04/usr --prefix=${WORK_DIR}/${TOOLCHAIN}-ubuntu14.04/usr && make && make install;
         cd -;
     fi
 
