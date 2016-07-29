@@ -24,7 +24,10 @@
 //
 
 import Foundation
+
+#if os(macOS) || os(iOS) || os(tvOS) || os(watchOS)
 import CoreGraphics
+#endif
 
 extension CGPoint {
     
