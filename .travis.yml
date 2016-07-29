@@ -23,9 +23,9 @@ before_install:
         sudo apt-get install -y clang-3.6;
         sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-3.6 100;
         sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-3.6 100;
-        sudo apt-get install -y autoconf libtool libkqueue-dev libkqueue0 libcurl4-openssl-dev libbsd-dev libblocksruntime-dev g++-5 gcc-5;
-        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-5 200;
-        sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-5 200;
+        sudo apt-get install -y autoconf libtool libkqueue-dev libkqueue0 libcurl4-openssl-dev libbsd-dev libblocksruntime-dev g++-4.8 gcc-4.8;
+        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.8 200;
+        sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/gcc-4.8 200;
     fi
 
 install:
