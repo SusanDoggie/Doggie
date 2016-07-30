@@ -27,9 +27,9 @@ import Foundation
 
 public struct Json {
     
-    private let value: Any?
+    fileprivate let value: Any?
     
-    private init(value: Any?) {
+    fileprivate init(value: Any?) {
         self.value = value
     }
 }
@@ -207,7 +207,7 @@ extension Json {
 
 extension Json {
     
-    private var numberValue: NSNumber? {
+    fileprivate var numberValue: NSNumber? {
         return value as? NSNumber
     }
     public var boolValue: Bool? {
@@ -361,12 +361,12 @@ extension Json {
     
     public struct Index : Comparable {
         
-        private enum Base {
+        fileprivate enum Base {
             case array(Int)
             case object(DictionaryIndex<String, Any>)
         }
         
-        private let base: Base
+        fileprivate let base: Base
     }
 }
 

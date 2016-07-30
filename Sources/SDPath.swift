@@ -79,7 +79,7 @@ public struct SDPath : SDShape, RandomAccessCollection, MutableCollection, Expre
     
     //public typealias SubSequence = MutableRangeReplaceableRandomAccessSlice<SDPath>
     
-    private class Cache {
+    fileprivate class Cache {
         
         var frame: Rect?
         var boundary: Rect?
@@ -104,8 +104,8 @@ public struct SDPath : SDShape, RandomAccessCollection, MutableCollection, Expre
         }
     }
     
-    private var cache = Cache()
-    private var commands: [PathCommand]
+    fileprivate var cache = Cache()
+    fileprivate var commands: [PathCommand]
     
     public var baseTransform : SDTransform = SDTransform(SDTransform.Identity()) {
         willSet {
@@ -152,7 +152,7 @@ public struct SDPath : SDShape, RandomAccessCollection, MutableCollection, Expre
         self.commands = commands.map { PathCommand($0) }
     }
     
-    private init<S : Sequence>(_ commands: S) where S.Iterator.Element == PathCommand {
+    fileprivate init<S : Sequence>(_ commands: S) where S.Iterator.Element == PathCommand {
         self.commands = commands.array
     }
     
@@ -508,7 +508,7 @@ extension SDPath {
 extension SDPath {
     
     @_transparent
-    private var _identity : SDPath {
+    fileprivate var _identity : SDPath {
         if rotate == 0 && scale == 1 && baseTransform == SDTransform.Identity() {
             return self
         }

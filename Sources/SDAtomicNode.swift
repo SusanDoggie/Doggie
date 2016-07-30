@@ -29,10 +29,10 @@ public class SDAtomicGraph<Value> : Collection {
     public typealias Iterator = SDAtomicGraphIterator<Value>
     public typealias NodeID = SDAtomicNode.Identifier
     
-    private var graph: Graph<NodeID, Value>
-    private var lck: SDSpinLock
+    fileprivate var graph: Graph<NodeID, Value>
+    fileprivate var lck: SDSpinLock
     
-    private var identifier: ObjectIdentifier {
+    fileprivate var identifier: ObjectIdentifier {
         return ObjectIdentifier(self)
     }
     
@@ -110,7 +110,7 @@ public struct SDAtomicGraphIndex<Value> : Comparable {
     
     public typealias NodeID = SDAtomicNode.Identifier
     
-    private let base: Graph<NodeID, Value>.Index
+    fileprivate let base: Graph<NodeID, Value>.Index
 }
 
 public func == <Value>(lhs: SDAtomicGraphIndex<Value>, rhs: SDAtomicGraphIndex<Value>) -> Bool {
@@ -124,7 +124,7 @@ public struct SDAtomicGraphIterator<Value> : IteratorProtocol, Sequence {
     
     public typealias NodeID = SDAtomicNode.Identifier
     
-    private var base: Graph<NodeID, Value>.Iterator
+    fileprivate var base: Graph<NodeID, Value>.Iterator
     
     public mutating func next() -> Graph<NodeID, Value>.Iterator.Element? {
         return base.next()
@@ -133,7 +133,7 @@ public struct SDAtomicGraphIterator<Value> : IteratorProtocol, Sequence {
 
 public class SDAtomicNode : SDAtomic {
     
-    private let graphID: ObjectIdentifier
+    fileprivate let graphID: ObjectIdentifier
     
     public var activate: Bool = false {
         didSet {
@@ -170,9 +170,9 @@ extension SDAtomicNode : Hashable {
     
     public struct Identifier : Hashable {
         
-        private let graphID: ObjectIdentifier
-        private let nodeID: ObjectIdentifier
-        private weak var _node: SDAtomicNode?
+        fileprivate let graphID: ObjectIdentifier
+        fileprivate let nodeID: ObjectIdentifier
+        fileprivate weak var _node: SDAtomicNode?
         
         public init(node: SDAtomicNode) {
             graphID = node.graphID

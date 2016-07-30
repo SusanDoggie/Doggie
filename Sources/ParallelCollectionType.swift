@@ -77,7 +77,7 @@ extension ParallelCollectionProtocol {
 
 public struct ParallelCollection<Base: RandomAccessCollection> : ParallelCollectionProtocol {
     
-    private let base: Base
+    fileprivate let base: Base
     
     public typealias Iterator = ParallelCollectionIterator<Base.Iterator>
     
@@ -126,7 +126,7 @@ public struct ParallelCollection<Base: RandomAccessCollection> : ParallelCollect
 
 public struct ParallelCollectionIterator<Base: IteratorProtocol> : IteratorProtocol, Sequence {
     
-    private var base: Base
+    fileprivate var base: Base
     
     public mutating func next() -> Base.Element? {
         return base.next()
@@ -135,8 +135,8 @@ public struct ParallelCollectionIterator<Base: IteratorProtocol> : IteratorProto
 
 public struct ParallelMapCollection<Base: RandomAccessCollection, Element> : ParallelCollectionProtocol {
     
-    private let base: Base
-    private let transform: (Base.Iterator.Element) -> Element
+    fileprivate let base: Base
+    fileprivate let transform: (Base.Iterator.Element) -> Element
     
     public typealias Iterator = ParallelMapCollectionIterator<Base.Iterator, Element>
     
@@ -186,8 +186,8 @@ public struct ParallelMapCollection<Base: RandomAccessCollection, Element> : Par
 
 public struct ParallelMapCollectionIterator<Base: IteratorProtocol, Element> : IteratorProtocol, Sequence {
     
-    private var base: Base
-    private let transform: (Base.Element) -> Element
+    fileprivate var base: Base
+    fileprivate let transform: (Base.Element) -> Element
     
     public mutating func next() -> Element? {
         return base.next().map(transform)

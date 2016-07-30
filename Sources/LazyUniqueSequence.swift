@@ -25,9 +25,9 @@
 
 public struct LazyUniqueIterator<Base : IteratorProtocol> : IteratorProtocol, Sequence {
     
-    private var pass: [Base.Element]
-    private var base: Base
-    private let isEquivalent: (Base.Element, Base.Element) -> Bool
+    fileprivate var pass: [Base.Element]
+    fileprivate var base: Base
+    fileprivate let isEquivalent: (Base.Element, Base.Element) -> Bool
     
     public mutating func next() -> Base.Element? {
         while let val = base.next() {
@@ -42,8 +42,8 @@ public struct LazyUniqueIterator<Base : IteratorProtocol> : IteratorProtocol, Se
 
 public struct LazyUniqueSequence<Base : Sequence> : LazySequenceProtocol {
     
-    private let base: Base
-    private let isEquivalent: (Base.Iterator.Element, Base.Iterator.Element) -> Bool
+    fileprivate let base: Base
+    fileprivate let isEquivalent: (Base.Iterator.Element, Base.Iterator.Element) -> Bool
     
     public func makeIterator() -> LazyUniqueIterator<Base.Iterator> {
         return LazyUniqueIterator(pass: [], base: base.makeIterator(), isEquivalent: isEquivalent)

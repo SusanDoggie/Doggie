@@ -32,8 +32,8 @@ public extension Collection {
 
 public struct LazyGatherIterator<C: Collection, I: IteratorProtocol> : IteratorProtocol, Sequence where C.Index == I.Element {
     
-    private var seq : C
-    private var indices : I
+    fileprivate var seq : C
+    fileprivate var indices : I
     
     public typealias Element = C.Iterator.Element
     
@@ -46,8 +46,8 @@ public struct LazyGatherSequence<C : Collection, I : Sequence> : LazySequencePro
     
     public typealias Iterator = LazyGatherIterator<C, I.Iterator>
     
-    private let _base: C
-    private let _indices: I
+    fileprivate let _base: C
+    fileprivate let _indices: I
     
     public func makeIterator() -> Iterator {
         return LazyGatherIterator(seq: _base, indices: _indices.makeIterator())
@@ -58,8 +58,8 @@ public struct LazyGatherCollection<C : Collection, I : Collection> : LazyCollect
     
     public typealias Iterator = LazyGatherIterator<C, I.Iterator>
     
-    private let _base: C
-    private let _indices: I
+    fileprivate let _base: C
+    fileprivate let _indices: I
     
     public subscript(position: I.Index) -> C.Iterator.Element {
         return _base[_indices[position]]
@@ -89,8 +89,8 @@ public struct LazyGatherBidirectionalCollection<C : Collection, I : Bidirectiona
     
     public typealias Iterator = LazyGatherIterator<C, I.Iterator>
     
-    private let _base: C
-    private let _indices: I
+    fileprivate let _base: C
+    fileprivate let _indices: I
     
     public subscript(position: I.Index) -> C.Iterator.Element {
         return _base[_indices[position]]
@@ -124,8 +124,8 @@ public struct LazyGatherRandomAccessCollection<C : Collection, I : RandomAccessC
     
     public typealias Iterator = LazyGatherIterator<C, I.Iterator>
     
-    private let _base: C
-    private let _indices: I
+    fileprivate let _base: C
+    fileprivate let _indices: I
     
     public subscript(position: I.Index) -> C.Iterator.Element {
         return _base[_indices[position]]

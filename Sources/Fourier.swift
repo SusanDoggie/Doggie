@@ -355,7 +355,7 @@ public func FFTConvolve(_ signal: [Double], _ kernel: [Double], _ result: inout 
     
     let buffer = [Double](repeating: 0, count: fft_length << 1)
     let _output = UnsafeMutablePointer<Double>(buffer)
-    let _temp = UnsafeMutablePointer<Double>(buffer) + fft_length
+    let _temp = _output + fft_length
     
     let _signal = signal.count & 1 == 0 ? signal : signal + [0]
     let _kernel = kernel.count & 1 == 0 ? kernel : kernel + [0]
@@ -371,7 +371,7 @@ public func FFTConvolve(_ signal: [Complex], _ kernel: [Complex], _ result: inou
     
     let buffer = [Complex](repeating: Complex(0), count: fft_length << 1)
     let _output = UnsafeMutablePointer<Complex>(buffer)
-    let _temp = UnsafeMutablePointer<Complex>(buffer) + fft_length
+    let _temp = _output + fft_length
     
     DispatchRadix2CircularConvolve(lv, signal, 1, signal.count, kernel, 1, kernel.count, _output, 1, _temp, 1)
     

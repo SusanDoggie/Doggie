@@ -32,9 +32,9 @@ public extension RandomAccessCollection {
 
 public struct LazySliceSequence<Base : RandomAccessCollection> : IteratorProtocol, LazySequenceProtocol {
     
-    private let base: Base
-    private let maxLength: Base.IndexDistance
-    private var currentIndex: Base.Index
+    fileprivate let base: Base
+    fileprivate let maxLength: Base.IndexDistance
+    fileprivate var currentIndex: Base.Index
     
     public mutating func next() -> Base.SubSequence? {
         

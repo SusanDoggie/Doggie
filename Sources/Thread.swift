@@ -85,7 +85,7 @@ public func synchronized<R>(_ lcks: Lockable ... , block: @noescape () throws ->
 
 public class SDLock {
     
-    private var _mtx = pthread_mutex_t()
+    fileprivate var _mtx = pthread_mutex_t()
     
     public init() {
         var attr = pthread_mutexattr_t()
@@ -117,7 +117,7 @@ extension SDLock : Lockable {
 
 public struct SDSpinLock {
     
-    private var _lck: OSSpinLock
+    fileprivate var _lck: OSSpinLock
     
     public init() {
         _lck = OS_SPINLOCK_INIT
@@ -151,7 +151,7 @@ extension SDSpinLock {
 
 public class SDConditionLock : SDLock {
     
-    private var _cond = pthread_cond_t()
+    fileprivate var _cond = pthread_cond_t()
     
     public override init() {
         super.init()
@@ -251,9 +251,9 @@ extension SDConditionLock {
 
 public class SDAtomic {
     
-    private let queue: DispatchQueue
-    private let block: (SDAtomic) -> Void
-    private var flag: Int32
+    fileprivate let queue: DispatchQueue
+    fileprivate let block: (SDAtomic) -> Void
+    fileprivate var flag: Int32
     
     public init(queue: DispatchQueue, block: (SDAtomic) -> Void) {
         self.queue = queue
@@ -275,7 +275,7 @@ extension SDAtomic {
         }
     }
     
-    private func dispatchRunloop() {
+    fileprivate func dispatchRunloop() {
         while true {
             flag = 1
             autoreleasepool { self.block(self) }
@@ -290,9 +290,9 @@ extension SDAtomic {
 
 public class SDSingleton<Instance> {
     
-    private var _value: Instance?
-    private var spinlck: SDSpinLock = SDSpinLock()
-    private let block: () -> Instance
+    fileprivate var _value: Instance?
+    fileprivate var spinlck: SDSpinLock = SDSpinLock()
+    fileprivate let block: () -> Instance
     
     /// Create a SDSingleton.
     public init(block: () -> Instance) {
@@ -325,14 +325,14 @@ extension SDSingleton {
 
 public class SDTask<Result> : SDAtomic {
     
-    private var _notify: [(Result) -> Void] = []
+    fileprivate var _notify: [(Result) -> Void] = []
     
-    private var spinlck = SDSpinLock()
-    private let condition = SDConditionLock()
+    fileprivate var spinlck = SDSpinLock()
+    fileprivate let condition = SDConditionLock()
     
-    private var _result: Result?
+    fileprivate var _result: Result?
     
-    private init(queue: DispatchQueue, suspend: ((Result) -> Bool)?, block: () -> Result) {
+    fileprivate init(queue: DispatchQueue, suspend: ((Result) -> Bool)?, block: () -> Result) {
         super.init(queue: queue, block: SDTask.createBlock(suspend, block))
     }
     

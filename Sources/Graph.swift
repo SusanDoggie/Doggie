@@ -27,7 +27,7 @@ public struct Graph<Node : Hashable, Link> : Collection {
     
     public typealias Iterator = GraphIterator<Node, Link>
     
-    private var table: [Node:[Node:Link]]
+    fileprivate var table: [Node:[Node:Link]]
     
     /// Create an empty graph.
     public init() {
@@ -206,8 +206,8 @@ extension Graph: CustomStringConvertible {
 }
 
 public struct GraphIndex<Node : Hashable, Link> : Comparable {
-    private let index1: DictionaryIndex<Node, [Node:Link]>
-    private let index2: DictionaryIndex<Node, Link>?
+    fileprivate let index1: DictionaryIndex<Node, [Node:Link]>
+    fileprivate let index2: DictionaryIndex<Node, Link>?
 }
 
 public func == <Node, Link>(lhs: GraphIndex<Node, Link>, rhs: GraphIndex<Node, Link>) -> Bool {
@@ -226,7 +226,7 @@ public struct GraphIterator<Node : Hashable, Link> : IteratorProtocol, Sequence 
     
     public typealias Element = (from: Node, to: Node, Link)
     
-    private var _base: FlattenIterator<LazyMapIterator<DictionaryIterator<Node, [Node : Link]>, LazyMapCollection<[Node : Link], (Node, Node, Link)>>>
+    fileprivate var _base: FlattenIterator<LazyMapIterator<DictionaryIterator<Node, [Node : Link]>, LazyMapCollection<[Node : Link], (Node, Node, Link)>>>
     
     public mutating func next() -> Element? {
         return _base.next()
@@ -243,7 +243,7 @@ public struct UndirectedGraph<Node : Hashable, Link> : Collection {
     
     public typealias Iterator = UndirectedGraphIterator<Node, Link>
     
-    private var graph: Graph<Node, Link>
+    fileprivate var graph: Graph<Node, Link>
     
     /// Create an empty graph.
     public init() {
@@ -369,7 +369,7 @@ extension UndirectedGraph: CustomStringConvertible {
 
 public struct UndirectedGraphIndex<Node : Hashable, Link> : Comparable {
     
-    private let base: Graph<Node, Link>.Index
+    fileprivate let base: Graph<Node, Link>.Index
 }
 
 public func == <Node, Link>(lhs: UndirectedGraphIndex<Node, Link>, rhs: UndirectedGraphIndex<Node, Link>) -> Bool {
@@ -383,7 +383,7 @@ public struct UndirectedGraphIterator<Node : Hashable, Link> : IteratorProtocol,
     
     public typealias Element = (Node, Node, Link)
     
-    private var base: Graph<Node, Link>.Iterator
+    fileprivate var base: Graph<Node, Link>.Iterator
     
     public mutating func next() -> Element? {
         return base.next()

@@ -58,7 +58,7 @@ extension SDPath {
     }
     
     @_transparent
-    private func toDouble(_ str: String?) throws -> Double {
+    fileprivate func toDouble(_ str: String?) throws -> Double {
         
         if str != nil, let val = Double(str!) {
             return val
@@ -67,7 +67,7 @@ extension SDPath {
     }
     
     @_transparent
-    private func toInt(_ str: String?) throws -> Int {
+    fileprivate func toInt(_ str: String?) throws -> Int {
         
         if str != nil, let val = Int(str!) {
             return val
@@ -617,11 +617,11 @@ extension SDPathCommandSerializableShortFormType {
 extension SDPath.Move : SDPathCommandSerializableShortFormType {
     
     @_transparent
-    private func serialize1(_: Int, _: Point, _: Point, _ lastControl: Point?) -> (String, Int, Point, Point, Point?) {
+    fileprivate func serialize1(_: Int, _: Point, _: Point, _ lastControl: Point?) -> (String, Int, Point, Point, Point?) {
         return (getPathDataString("M", self.x, self.y), 0, self.point, self.point, nil)
     }
     @_transparent
-    private func serialize2(_: Int, _: Point, _ relative: Point, _ lastControl: Point?) -> (String, Int, Point, Point, Point?) {
+    fileprivate func serialize2(_: Int, _: Point, _ relative: Point, _ lastControl: Point?) -> (String, Int, Point, Point, Point?) {
         return (getPathDataString("m", self.x - relative.x, self.y - relative.y), 1, self.point, self.point, nil)
     }
 }
@@ -629,7 +629,7 @@ extension SDPath.Move : SDPathCommandSerializableShortFormType {
 extension SDPath.Line : SDPathCommandSerializableShortFormType {
     
     @_transparent
-    private func serialize1(_ currentState: Int, _ start: Point, _ relative: Point, _ lastControl: Point?) -> (String, Int, Point, Point, Point?) {
+    fileprivate func serialize1(_ currentState: Int, _ start: Point, _ relative: Point, _ lastControl: Point?) -> (String, Int, Point, Point, Point?) {
         var currentState = currentState
         let str: String
         if _round(relative.x) == _round(self.x) {
@@ -657,7 +657,7 @@ extension SDPath.Line : SDPathCommandSerializableShortFormType {
         return (str, currentState, start, self.point, nil)
     }
     @_transparent
-    private func serialize2(_ currentState: Int, _ start: Point, _ relative: Point, _ lastControl: Point?) -> (String, Int, Point, Point, Point?) {
+    fileprivate func serialize2(_ currentState: Int, _ start: Point, _ relative: Point, _ lastControl: Point?) -> (String, Int, Point, Point, Point?) {
         var currentState = currentState
         let str: String
         if _round(relative.x) == _round(self.x) {
@@ -689,7 +689,7 @@ extension SDPath.Line : SDPathCommandSerializableShortFormType {
 extension SDPath.QuadBezier : SDPathCommandSerializableShortFormType {
     
     @_transparent
-    private func isSmooth(_ relative: Point, _ lastControl: Point?) -> Bool {
+    fileprivate func isSmooth(_ relative: Point, _ lastControl: Point?) -> Bool {
         
         if let lastControl = lastControl {
             let d = self.p1 + lastControl - 2 * relative
@@ -699,7 +699,7 @@ extension SDPath.QuadBezier : SDPathCommandSerializableShortFormType {
     }
     
     @_transparent
-    private func serialize1(_ currentState: Int, _ start: Point, _ relative: Point, _ lastControl: Point?) -> (String, Int, Point, Point, Point?) {
+    fileprivate func serialize1(_ currentState: Int, _ start: Point, _ relative: Point, _ lastControl: Point?) -> (String, Int, Point, Point, Point?) {
         var currentState = currentState
         let str: String
         if self.isSmooth(relative, lastControl) && (8...11).contains(currentState) {
@@ -720,7 +720,7 @@ extension SDPath.QuadBezier : SDPathCommandSerializableShortFormType {
         return (str, currentState, start, self.point, self.p1)
     }
     @_transparent
-    private func serialize2(_ currentState: Int, _ start: Point, _ relative: Point, _ lastControl: Point?) -> (String, Int, Point, Point, Point?) {
+    fileprivate func serialize2(_ currentState: Int, _ start: Point, _ relative: Point, _ lastControl: Point?) -> (String, Int, Point, Point, Point?) {
         var currentState = currentState
         let str: String
         if self.isSmooth(relative, lastControl) && (8...11).contains(currentState) {
@@ -745,7 +745,7 @@ extension SDPath.QuadBezier : SDPathCommandSerializableShortFormType {
 extension SDPath.CubicBezier : SDPathCommandSerializableShortFormType {
     
     @_transparent
-    private func isSmooth(_ relative: Point, _ lastControl: Point?) -> Bool {
+    fileprivate func isSmooth(_ relative: Point, _ lastControl: Point?) -> Bool {
         
         if let lastControl = lastControl {
             let d = self.p1 + lastControl - 2 * relative
@@ -755,7 +755,7 @@ extension SDPath.CubicBezier : SDPathCommandSerializableShortFormType {
     }
     
     @_transparent
-    private func serialize1(_ currentState: Int, _ start: Point, _ relative: Point, _ lastControl: Point?) -> (String, Int, Point, Point, Point?) {
+    fileprivate func serialize1(_ currentState: Int, _ start: Point, _ relative: Point, _ lastControl: Point?) -> (String, Int, Point, Point, Point?) {
         var currentState = currentState
         let str: String
         if self.isSmooth(relative, lastControl) && (12...15).contains(currentState) {
@@ -776,7 +776,7 @@ extension SDPath.CubicBezier : SDPathCommandSerializableShortFormType {
         return (str, currentState, start, self.point, self.p2)
     }
     @_transparent
-    private func serialize2(_ currentState: Int, _ start: Point, _ relative: Point, _ lastControl: Point?) -> (String, Int, Point, Point, Point?) {
+    fileprivate func serialize2(_ currentState: Int, _ start: Point, _ relative: Point, _ lastControl: Point?) -> (String, Int, Point, Point, Point?) {
         var currentState = currentState
         let str: String
         if self.isSmooth(relative, lastControl) && (12...15).contains(currentState) {
@@ -801,7 +801,7 @@ extension SDPath.CubicBezier : SDPathCommandSerializableShortFormType {
 extension SDPath.ClosePath : SDPathCommandSerializableType {
     
     @_transparent
-    private func serialize(_ currentState: inout Int, start: inout Point, relative: inout Point, lastControl: inout Point?) -> String {
+    fileprivate func serialize(_ currentState: inout Int, start: inout Point, relative: inout Point, lastControl: inout Point?) -> String {
         let str = currentState != 18 ? "z" : ""
         relative = start
         currentState = 18

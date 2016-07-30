@@ -25,7 +25,7 @@
 
 public struct Polynomial {
     
-    private var coeffs: [Double]
+    fileprivate var coeffs: [Double]
     
     /// a + b x + c x^2 + d x^3 + ...
     public init() {

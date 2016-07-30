@@ -174,7 +174,7 @@ extension OpaquePointer : SDAtomicType {
 
 public struct AtomicBoolean {
     
-    private var val: Int32
+    fileprivate var val: Int32
     
     public init() {
         self.val = 0
@@ -250,7 +250,7 @@ private final class AtomicBase<Instance> {
 
 public struct Atomic<Instance> {
     
-    private var base: AtomicBase<Instance>
+    fileprivate var base: AtomicBase<Instance>
     
     public init(value: Instance) {
         self.base = AtomicBase(value: value)
@@ -269,7 +269,7 @@ public struct Atomic<Instance> {
 extension Atomic : SDAtomicType {
     
     @_transparent
-    private mutating func compareSet(old: AtomicBase<Instance>, new: AtomicBase<Instance>) -> Bool {
+    fileprivate mutating func compareSet(old: AtomicBase<Instance>, new: AtomicBase<Instance>) -> Bool {
         let _old = Unmanaged.passUnretained(old)
         let _new = Unmanaged.passRetained(new)
         @_transparent
@@ -319,7 +319,7 @@ extension Atomic: CustomStringConvertible {
 extension Atomic : Equatable, Hashable {
     
     @_transparent
-    private var identifier: ObjectIdentifier {
+    fileprivate var identifier: ObjectIdentifier {
         return ObjectIdentifier(base)
     }
     

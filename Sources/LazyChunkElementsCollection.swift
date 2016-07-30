@@ -25,7 +25,7 @@
 
 public struct LazyChunkElementsIterator<Base : IteratorProtocol> : IteratorProtocol, Sequence {
     
-    private var base: Base
+    fileprivate var base: Base
     
     public mutating func next() -> Base.Element? {
         return base.next()
@@ -35,7 +35,7 @@ public struct LazyChunkElementsIterator<Base : IteratorProtocol> : IteratorProto
 public struct LazyChunkElementsSequence<Key : Equatable, Base : Sequence> : LazySequenceProtocol {
     
     public let key: Key
-    private let base: Base
+    fileprivate let base: Base
     
     public func makeIterator() -> LazyChunkElementsIterator<Base.Iterator> {
         return LazyChunkElementsIterator(base: base.makeIterator())
@@ -51,7 +51,7 @@ public struct LazyChunkElementsCollection<Key : Equatable, Base : Collection> : 
     public typealias Iterator = LazyChunkElementsIterator<Base.Iterator>
     
     public let key: Key
-    private let base: Base
+    fileprivate let base: Base
     
     public var startIndex : Base.Index {
         return base.startIndex
@@ -86,7 +86,7 @@ public struct LazyChunkElementsBidirectionalCollection<Key : Equatable, Base : B
     public typealias Iterator = LazyChunkElementsIterator<Base.Iterator>
     
     public let key: Key
-    private let base: Base
+    fileprivate let base: Base
     
     public var startIndex : Base.Index {
         return base.startIndex
@@ -125,7 +125,7 @@ public struct LazyChunkElementsRandomAccessCollection<Key : Equatable, Base : Ra
     public typealias Iterator = LazyChunkElementsIterator<Base.Iterator>
     
     public let key: Key
-    private let base: Base
+    fileprivate let base: Base
     
     public var startIndex : Base.Index {
         return base.startIndex

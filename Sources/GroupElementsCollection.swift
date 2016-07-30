@@ -28,7 +28,7 @@ public struct GroupElementsCollection<Key : Equatable, Element> : RandomAccessCo
     public typealias Indices = CountableRange<Int>
     
     public let key: Key
-    private var base: [Element]
+    fileprivate var base: [Element]
     
     public var startIndex : Int {
         return base.startIndex

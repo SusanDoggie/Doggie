@@ -45,9 +45,9 @@ public extension Sequence {
 
 public struct LazyScanIterator<Base: IteratorProtocol, Element> : IteratorProtocol, Sequence {
     
-    private var nextElement: Element?
-    private var base: Base
-    private let combine: (Element, Base.Element) -> Element
+    fileprivate var nextElement: Element?
+    fileprivate var base: Base
+    fileprivate let combine: (Element, Base.Element) -> Element
     
     public mutating func next() -> Element? {
         return nextElement.map { result in
@@ -59,9 +59,9 @@ public struct LazyScanIterator<Base: IteratorProtocol, Element> : IteratorProtoc
 
 public struct LazyScanSequence<Base: Sequence, Element> : LazySequenceProtocol {
     
-    private let initial: Element
-    private let base: Base
-    private let combine: (Element, Base.Iterator.Element) -> Element
+    fileprivate let initial: Element
+    fileprivate let base: Base
+    fileprivate let combine: (Element, Base.Iterator.Element) -> Element
     
     public func makeIterator() -> LazyScanIterator<Base.Iterator, Element> {
         return LazyScanIterator(nextElement: initial, base: base.makeIterator(), combine: combine)

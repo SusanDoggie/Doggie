@@ -27,7 +27,7 @@ import Foundation
 
 public struct Regex : Equatable {
     
-    private let matcher: NSRegularExpression
+    fileprivate let matcher: NSRegularExpression
     
     public init(pattern: String) throws {
         self.matcher = try NSRegularExpression(pattern: pattern, options: [])

@@ -25,9 +25,9 @@
 
 public struct ConcatIterator<G1: IteratorProtocol, G2: IteratorProtocol> : IteratorProtocol, Sequence where G1.Element == G2.Element {
     
-    private var base1: G1
-    private var base2: G2
-    private var flag: Bool
+    fileprivate var base1: G1
+    fileprivate var base2: G2
+    fileprivate var flag: Bool
     
     public mutating func next() -> G1.Element? {
         if flag {
@@ -42,8 +42,8 @@ public struct ConcatIterator<G1: IteratorProtocol, G2: IteratorProtocol> : Itera
 
 public struct ConcatSequence<S1 : Sequence, S2 : Sequence> : Sequence where S1.Iterator.Element == S2.Iterator.Element {
     
-    private let base1: S1
-    private let base2: S2
+    fileprivate let base1: S1
+    fileprivate let base2: S2
     
     public func makeIterator() -> ConcatIterator<S1.Iterator, S2.Iterator> {
         return ConcatIterator(base1: base1.makeIterator(), base2: base2.makeIterator(), flag: true)
@@ -51,8 +51,8 @@ public struct ConcatSequence<S1 : Sequence, S2 : Sequence> : Sequence where S1.I
 }
 
 public struct ConcatCollectionIndex<I1 : Comparable, I2 : Comparable> : Comparable {
-    private let currect1: I1
-    private let currect2: I2
+    fileprivate let currect1: I1
+    fileprivate let currect2: I2
 }
 
 public func == <I1, I2>(lhs: ConcatCollectionIndex<I1, I2>, rhs: ConcatCollectionIndex<I1, I2>) -> Bool {
@@ -68,8 +68,8 @@ public struct ConcatCollection<S1 : Collection, S2 : Collection> : Collection wh
     
     public typealias Index = ConcatCollectionIndex<S1.Index, S2.Index>
     
-    private let base1: S1
-    private let base2: S2
+    fileprivate let base1: S1
+    fileprivate let base2: S2
     
     public var startIndex : Index {
         return ConcatCollectionIndex(currect1: base1.startIndex, currect2: base2.startIndex)
@@ -101,8 +101,8 @@ public struct ConcatBidirectionalCollection<S1 : BidirectionalCollection, S2 : B
     
     public typealias Index = ConcatCollectionIndex<S1.Index, S2.Index>
     
-    private let base1: S1
-    private let base2: S2
+    fileprivate let base1: S1
+    fileprivate let base2: S2
     
     public var startIndex : Index {
         return ConcatCollectionIndex(currect1: base1.startIndex, currect2: base2.startIndex)
