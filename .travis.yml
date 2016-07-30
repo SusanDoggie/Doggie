@@ -21,7 +21,7 @@ before_install:
     fi 
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
         sudo apt-get update;
-        sudo apt-get install -y clang-3.8 autoconf libtool libkqueue-dev libkqueue0 libcurl4-openssl-dev libbsd-dev libblocksruntime-dev libpthread-workqueue-dev ninja-build;
+        sudo apt-get install -y clang-3.8 autoconf libtool pkg-config clang systemtap-sdt-dev libblocksruntime-dev libkqueue-dev libbsd-dev;
         sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-3.8 100;
         sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-3.8 100;
     fi
