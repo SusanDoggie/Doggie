@@ -440,7 +440,7 @@ public extension Sequence {
     
     /// Return an `Array` containing the shuffled elements of `self`.
     func shuffled() -> [Iterator.Element] {
-        var list = ContinuesArray(self)
+        var list = ContiguousArray(self)
         list.shuffle()
         return Array(list)
     }
