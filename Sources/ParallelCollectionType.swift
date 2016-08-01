@@ -201,7 +201,7 @@ extension ParallelCollectionProtocol {
     }
     
     public func filter(includeElement: (Iterator.Element) -> Bool) -> ParallelCollection<[Iterator.Element]> {
-        let _filter: [Iterator.Element?] = self.map { includeElement($0) ? $0 : nil }.array
+        let _filter: [Iterator.Element?] = Array(self.map { includeElement($0) ? $0 : nil })
         return _filter.flatMap { $0 }.parallel
     }
 }

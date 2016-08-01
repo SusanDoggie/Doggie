@@ -84,7 +84,7 @@ extension SDPath {
         var lastcontrol = Point()
         var lastbezier = 0
         
-        let commandsymbol = "MmLlHhVvCcSsQqTtAaZz".utf8.array
+        let commandsymbol = Array("MmLlHhVvCcSsQqTtAaZz".utf8)
         
         g.next()
         while let command = g.current {

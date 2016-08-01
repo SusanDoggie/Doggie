@@ -153,7 +153,7 @@ public struct SDPath : SDShape, RandomAccessCollection, MutableCollection, Expre
     }
     
     fileprivate init<S : Sequence>(_ commands: S) where S.Iterator.Element == PathCommand {
-        self.commands = commands.array
+        self.commands = Array(commands)
     }
     
     public var center : Point {

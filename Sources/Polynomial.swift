@@ -42,7 +42,7 @@ public struct Polynomial {
     /// Construct from an arbitrary sequence of coeffs.
     /// a + b x + c x^2 + d x^3 + ...
     public init<S : Sequence>(_ s: S) where S.Iterator.Element == Double {
-        self.coeffs = s.array
+        self.coeffs = Array(s)
         while self.coeffs.last == 0 {
             self.coeffs.removeLast()
         }

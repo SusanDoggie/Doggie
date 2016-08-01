@@ -23,31 +23,6 @@
 //  THE SOFTWARE.
 //
 
-public extension Sequence {
-    
-    /// Returns the first element of `self`, or `nil` if `self` is empty.
-    var first: Iterator.Element? {
-        var iterator = makeIterator()
-        return iterator.next()
-    }
-}
-
-public extension Array {
-    
-    /// Returns `self`
-    var array: [Iterator.Element] {
-        return self
-    }
-}
-
-public extension Sequence {
-    
-    /// Returns an `Array` contains all elements of `self`
-    var array: [Iterator.Element] {
-        return self as? [Iterator.Element] ?? Array(self)
-    }
-}
-
 public extension Collection where Self == SubSequence {
     
     /// Returns sub-sequence of `self`.
@@ -465,9 +440,9 @@ public extension Sequence {
     
     /// Return an `Array` containing the shuffled elements of `self`.
     func shuffled() -> [Iterator.Element] {
-        var list = self.array
+        var list = ContinuesArray(self)
         list.shuffle()
-        return list
+        return Array(list)
     }
 }
 
