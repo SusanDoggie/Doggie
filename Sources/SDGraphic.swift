@@ -144,10 +144,10 @@ extension Rect {
                     let path = CGMutablePath()
                     self._apply { component, state in
                         switch component {
-                        case let .move(point): path.moveTo(nil, x: CGFloat(point.x), y: CGFloat(point.y))
-                        case let .line(point): path.addLineTo(nil, x: CGFloat(point.x), y: CGFloat(point.y))
-                        case let .quad(p1, p2): path.addQuadCurve(nil, cpx: CGFloat(p1.x), cpy: CGFloat(p1.y), endingAtX: CGFloat(p2.x), y: CGFloat(p2.y))
-                        case let .cubic(p1, p2, p3): path.addCurve(nil, cp1x: CGFloat(p1.x), cp1y: CGFloat(p1.y), cp2x: CGFloat(p2.x), cp2y: CGFloat(p2.y), endingAtX: CGFloat(p3.x), y: CGFloat(p3.y))
+                        case let .move(point): path.move(to: CGPoint(point))
+                        case let .line(point): path.addLine(to: CGPoint(point))
+                        case let .quad(p1, p2): path.addQuadCurve(to: CGPoint(p1), control: CGPoint(p2))
+                        case let .cubic(p1, p2, p3): path.addCurve(to: CGPoint(p1), control1: CGPoint(p2), control2: CGPoint(p3))
                         case .close: path.closeSubpath()
                         }
                     }

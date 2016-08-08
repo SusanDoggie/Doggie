@@ -80,7 +80,7 @@ public extension LazySequenceProtocol {
     ///     Array((1..<6).lazy.scan(0, +)) // [0, 1, 3, 6, 10, 15]
     ///
     /// - complexity: O(1)
-    func scan<R>(_ initial: R, _ combine: (R, Elements.Iterator.Element) -> R) -> LazyScanSequence<Elements, R> {
+    func scan<R>(_ initial: R, _ combine: @escaping (R, Elements.Iterator.Element) -> R) -> LazyScanSequence<Elements, R> {
         return LazyScanSequence(initial: initial, base: self.elements, combine: combine)
     }
 }

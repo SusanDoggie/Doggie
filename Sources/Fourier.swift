@@ -353,13 +353,14 @@ public func FFTConvolve(_ signal: [Double], _ kernel: [Double], _ result: inout 
     let fft_length = FFTConvolveLength(signal.count, kernel.count)
     let lv = log2(fft_length)
     
-    let buffer = [Double](repeating: 0, count: fft_length << 1)
-    let _output = UnsafeMutablePointer<Double>(buffer)
-    let _temp = _output + fft_length
-    
     let _signal = signal.count & 1 == 0 ? signal : signal + [0]
     let _kernel = kernel.count & 1 == 0 ? kernel : kernel + [0]
-    DispatchRadix2CircularConvolve(lv, _signal, 1, _signal.count, _kernel, 1, _kernel.count, _output, 1, _temp, 1)
+    var buffer = [Double](repeating: 0, count: fft_length << 1)
+    buffer.withUnsafeMutableBufferPointer { _buffer in
+        let _output = _buffer.baseAddress!
+        let _temp = _output + fft_length
+        DispatchRadix2CircularConvolve(lv, _signal, 1, _signal.count, _kernel, 1, _kernel.count, _output, 1, _temp, 1)
+    }
     
     result.replace(with: buffer.prefix(convolve_length))
 }
@@ -369,11 +370,12 @@ public func FFTConvolve(_ signal: [Complex], _ kernel: [Complex], _ result: inou
     let fft_length = FFTConvolveLength(signal.count, kernel.count)
     let lv = log2(fft_length)
     
-    let buffer = [Complex](repeating: Complex(0), count: fft_length << 1)
-    let _output = UnsafeMutablePointer<Complex>(buffer)
-    let _temp = _output + fft_length
-    
-    DispatchRadix2CircularConvolve(lv, signal, 1, signal.count, kernel, 1, kernel.count, _output, 1, _temp, 1)
+    var buffer = [Complex](repeating: Complex(0), count: fft_length << 1)
+    buffer.withUnsafeMutableBufferPointer { _buffer in
+        let _output = _buffer.baseAddress!
+        let _temp = _output + fft_length
+        DispatchRadix2CircularConvolve(lv, signal, 1, signal.count, kernel, 1, kernel.count, _output, 1, _temp, 1)
+    }
     
     result.replace(with: buffer.prefix(convolve_length))
 }
