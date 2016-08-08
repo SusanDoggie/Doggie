@@ -467,7 +467,7 @@ extension SDPath {
     }
     
     @_transparent
-    func _apply(body: @noescape (PathCommand, ComputeState) throws -> Void) rethrows {
+    func _apply(body: (PathCommand, ComputeState) throws -> Void) rethrows {
         var start : Point = Point()
         var last : Point = Point()
         for item in self.commands {
@@ -492,7 +492,7 @@ extension SDPath {
         }
     }
     
-    public func apply(body: @noescape (SDPathCommand, ComputeState) throws -> Void) rethrows {
+    public func apply(body: (SDPathCommand, ComputeState) throws -> Void) rethrows {
         try self._apply { commands, state in
             switch commands {
             case let .move(point): try body(SDPath.Move(point), state)

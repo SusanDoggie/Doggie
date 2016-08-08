@@ -100,10 +100,8 @@ public func ToPolar(_ count: Int, _ real: UnsafePointer<Double>, _ imag: UnsafeP
 }
 
 public func ToRect(_ count: Int, _ rho: UnsafePointer<Double>, _ theta: UnsafePointer<Double>, _ in_stride: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int) {
-    let _output = UnsafeMutablePointer<Double>(output)
-    ToRect(count, rho, theta, in_stride, _output, _output + 1, out_stride << 1)
+    output.withMemoryRebound(to: Double.self, capacity: 2) { ToRect(count, rho, theta, in_stride, $0, $0 + 1, out_stride << 1) }
 }
 public func ToPolar(_ count: Int, _ input: UnsafePointer<Complex>, _ in_stride: Int, rho: UnsafeMutablePointer<Double>, theta: UnsafeMutablePointer<Double>, _ out_stride: Int) {
-    let _input = UnsafePointer<Double>(input)
-    ToPolar(count, _input, _input + 1, in_stride << 1, rho, theta, out_stride)
+    input.withMemoryRebound(to: Double.self, capacity: 2) { ToPolar(count, $0, $0 + 1, in_stride << 1, rho, theta, out_stride) }
 }

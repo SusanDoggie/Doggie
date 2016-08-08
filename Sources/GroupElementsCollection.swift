@@ -49,7 +49,7 @@ public struct GroupElementsCollection<Key : Equatable, Element> : RandomAccessCo
 public extension Sequence {
     
     /// Groups the elements of a sequence according to a specified key selector function.
-    func group<Key : Equatable>(by: @noescape (Iterator.Element) throws -> Key) rethrows -> [GroupElementsCollection<Key, Iterator.Element>] {
+    func group<Key : Equatable>(by: (Iterator.Element) throws -> Key) rethrows -> [GroupElementsCollection<Key, Iterator.Element>] {
         var table = ContiguousArray<GroupElementsCollection<Key, Iterator.Element>>()
         for item in self {
             let key = try by(item)

@@ -61,7 +61,7 @@ public extension Sequence where Iterator.Element : Equatable {
 
 public extension Sequence {
     
-    func unique(where isEquivalent: @noescape (Iterator.Element, Iterator.Element) throws -> Bool) rethrows -> [Iterator.Element] {
+    func unique(where isEquivalent: (Iterator.Element, Iterator.Element) throws -> Bool) rethrows -> [Iterator.Element] {
         var result = ContiguousArray<Iterator.Element>()
         result.reserveCapacity(self.underestimatedCount)
         for item in self where try !result.contains(where: { try isEquivalent($0, item) }) {

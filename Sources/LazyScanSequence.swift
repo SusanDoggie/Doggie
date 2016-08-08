@@ -34,7 +34,7 @@ public extension Sequence {
     ///     (1..<6).scan(0, +) // [0, 1, 3, 6, 10, 15]
     ///
     /// - complexity: O(N)
-    func scan<R>(_ initial: R, _ combine: @noescape (R, Iterator.Element) throws -> R) rethrows -> [R] {
+    func scan<R>(_ initial: R, _ combine: (R, Iterator.Element) throws -> R) rethrows -> [R] {
         var result = [initial]
         result.reserveCapacity(self.underestimatedCount)
         for x in self {

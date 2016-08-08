@@ -58,7 +58,7 @@ public extension Sequence {
     /// Return `true` if all of elements in `seq` satisfies `predicate`.
     ///
     /// - complexity: O(`self.count`).
-    func all(_ predicate: @noescape (Iterator.Element) throws -> Bool) rethrows -> Bool {
+    func all(_ predicate: (Iterator.Element) throws -> Bool) rethrows -> Bool {
         
         for item in self where try !predicate(item) {
             return false
@@ -94,7 +94,7 @@ public extension BidirectionalCollection {
     ///   sequence as its argument and returns a Boolean value indicating
     ///   whether the element is a match.
     /// - Returns: The last match or `nil` if there was no match.
-    public func last(where predicate: @noescape (Iterator.Element) throws -> Bool) rethrows -> Iterator.Element? {
+    public func last(where predicate: (Iterator.Element) throws -> Bool) rethrows -> Iterator.Element? {
         return try self.reversed().first(where: predicate)
     }
 }
@@ -122,7 +122,7 @@ public extension Collection {
     /// the elements of `self`.
     ///
     /// - complexity: O(`self.count`)
-    func prefix(until predicate: @noescape (Iterator.Element) throws -> Bool) rethrows -> SubSequence {
+    func prefix(until predicate: (Iterator.Element) throws -> Bool) rethrows -> SubSequence {
         return self.prefix(upTo: try self.index(where: predicate) ?? self.endIndex)
     }
 }
@@ -150,7 +150,7 @@ public extension RandomAccessCollection {
     /// the elements of `self`.
     ///
     /// - complexity: O(`self.count`)
-    func suffix(until predicate: @noescape (Iterator.Element) throws -> Bool) rethrows -> SubSequence {
+    func suffix(until predicate: (Iterator.Element) throws -> Bool) rethrows -> SubSequence {
         return self.suffix(from: try self.reversed().index(where: predicate)?.base ?? self.startIndex)
     }
 }
@@ -160,7 +160,7 @@ public extension RandomAccessCollection where Indices.SubSequence.Iterator.Eleme
     /// Returns first position of `pattern` appear in `self`, or `nil` if not match.
     ///
     /// - complexity: Amortized O(`self.count`)
-    func match<C : BidirectionalCollection>(with pattern: C, by isEquivalent: @noescape (Iterator.Element, Iterator.Element) throws -> Bool) rethrows -> Index? where C.Iterator.Element == Iterator.Element {
+    func match<C : BidirectionalCollection>(with pattern: C, by isEquivalent: (Iterator.Element, Iterator.Element) throws -> Bool) rethrows -> Index? where C.Iterator.Element == Iterator.Element {
         
         let pattern_count: IndexDistance = numericCast(pattern.count)
         if count < pattern_count {
@@ -208,7 +208,7 @@ public extension String {
 
 public extension MutableCollection where Indices.Iterator.Element == Index {
     
-    mutating func mutateEach(body: @noescape (inout Iterator.Element) throws -> ()) rethrows {
+    mutating func mutateEach(body: (inout Iterator.Element) throws -> ()) rethrows {
         for idx in self.indices {
             try body(&self[idx])
         }
@@ -349,7 +349,7 @@ public extension LazyCollectionProtocol {
 public extension Sequence {
     
     /// Return an `Array` containing tuples satisfies `predicate` with each elements of two `sources`.
-    func merge<S : Sequence>(with: S, where predicate: @noescape (Iterator.Element, S.Iterator.Element) throws -> Bool) rethrows -> [(Iterator.Element, S.Iterator.Element)] {
+    func merge<S : Sequence>(with: S, where predicate: (Iterator.Element, S.Iterator.Element) throws -> Bool) rethrows -> [(Iterator.Element, S.Iterator.Element)] {
         var result: [(Iterator.Element, S.Iterator.Element)] = []
         for lhs in self {
             for rhs in with where try predicate(lhs, rhs) {
@@ -364,26 +364,26 @@ public extension Sequence {
     /// Returns the minimum element in `self` or `nil` if the sequence is empty.
     ///
     /// - complexity: O(`elements.count`).
-    func min<R : Comparable>(by: @noescape (Iterator.Element) throws -> R) rethrows -> Iterator.Element? {
+    func min<R : Comparable>(by: (Iterator.Element) throws -> R) rethrows -> Iterator.Element? {
         return try self.min { try by($0) < by($1) }
     }
     /// Returns the maximum element in `self` or `nil` if the sequence is empty.
     ///
     /// - complexity: O(`elements.count`).
-    func max<R : Comparable>(by: @noescape (Iterator.Element) throws -> R) rethrows -> Iterator.Element? {
+    func max<R : Comparable>(by: (Iterator.Element) throws -> R) rethrows -> Iterator.Element? {
         return try self.max { try by($0) < by($1) }
     }
 }
 
 public extension MutableCollection where Self : RandomAccessCollection {
     
-    mutating func sort<R : Comparable>(by: @noescape (Iterator.Element) -> R) {
+    mutating func sort<R : Comparable>(by: (Iterator.Element) -> R) {
         self.sort { by($0) < by($1) }
     }
 }
 public extension Sequence {
     
-    func sorted<R : Comparable>(by: @noescape (Iterator.Element) -> R) -> [Iterator.Element] {
+    func sorted<R : Comparable>(by: (Iterator.Element) -> R) -> [Iterator.Element] {
         return self.sorted { by($0) < by($1) }
     }
 }

@@ -169,7 +169,7 @@ public struct LazyChunkElementsRandomAccessCollection<Key : Equatable, Base : Ra
 
 public extension Collection {
     
-    func chunk<Key : Equatable>(by: @noescape (Iterator.Element) throws -> Key) rethrows -> [LazyChunkElementsSequence<Key, SubSequence>] {
+    func chunk<Key : Equatable>(by: (Iterator.Element) throws -> Key) rethrows -> [LazyChunkElementsSequence<Key, SubSequence>] {
         var table = ContiguousArray<LazyChunkElementsSequence<Key, SubSequence>>()
         var key: Key?
         var start = startIndex
@@ -191,7 +191,7 @@ public extension Collection {
 
 public extension Collection where SubSequence : Collection {
     
-    func chunk<Key : Equatable>(by: @noescape (Iterator.Element) throws -> Key) rethrows -> [LazyChunkElementsCollection<Key, SubSequence>] {
+    func chunk<Key : Equatable>(by: (Iterator.Element) throws -> Key) rethrows -> [LazyChunkElementsCollection<Key, SubSequence>] {
         var table = ContiguousArray<LazyChunkElementsCollection<Key, SubSequence>>()
         var key: Key?
         var start = startIndex
@@ -212,7 +212,7 @@ public extension Collection where SubSequence : Collection {
 }
 public extension Collection where SubSequence : BidirectionalCollection {
     
-    func chunk<Key : Equatable>(by: @noescape (Iterator.Element) throws -> Key) rethrows -> [LazyChunkElementsBidirectionalCollection<Key, SubSequence>] {
+    func chunk<Key : Equatable>(by: (Iterator.Element) throws -> Key) rethrows -> [LazyChunkElementsBidirectionalCollection<Key, SubSequence>] {
         var table = ContiguousArray<LazyChunkElementsBidirectionalCollection<Key, SubSequence>>()
         var key: Key?
         var start = startIndex
@@ -233,7 +233,7 @@ public extension Collection where SubSequence : BidirectionalCollection {
 }
 public extension Collection where SubSequence : RandomAccessCollection {
     
-    func chunk<Key : Equatable>(by: @noescape (Iterator.Element) throws -> Key) rethrows -> [LazyChunkElementsRandomAccessCollection<Key, SubSequence>] {
+    func chunk<Key : Equatable>(by: (Iterator.Element) throws -> Key) rethrows -> [LazyChunkElementsRandomAccessCollection<Key, SubSequence>] {
         var table = ContiguousArray<LazyChunkElementsRandomAccessCollection<Key, SubSequence>>()
         var key: Key?
         var start = startIndex

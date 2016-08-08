@@ -40,7 +40,7 @@ public protocol Lockable : class {
 public extension Lockable {
     
     @discardableResult
-    func synchronized<R>(block: @noescape () throws -> R) rethrows -> R {
+    func synchronized<R>(block: () throws -> R) rethrows -> R {
         self.lock()
         defer { self.unlock() }
         return try block()
@@ -48,14 +48,14 @@ public extension Lockable {
 }
 
 @discardableResult
-public func synchronized<R>(_ obj: AnyObject, block: @noescape () throws -> R) rethrows -> R {
+public func synchronized<R>(_ obj: AnyObject, block: () throws -> R) rethrows -> R {
     objc_sync_enter(obj)
     defer { objc_sync_exit(obj) }
     return try block()
 }
 
 @discardableResult
-public func synchronized<R>(_ lcks: Lockable ... , block: @noescape () throws -> R) rethrows -> R {
+public func synchronized<R>(_ lcks: Lockable ... , block: () throws -> R) rethrows -> R {
     if lcks.count > 1 {
         var waiting = 0
         while true {
@@ -140,7 +140,7 @@ extension SDSpinLock {
 extension SDSpinLock {
     
     @discardableResult
-    public mutating func synchronized<R>(block: @noescape () throws -> R) rethrows -> R {
+    public mutating func synchronized<R>(block: () throws -> R) rethrows -> R {
         self.lock()
         defer { self.unlock() }
         return try block()
@@ -232,13 +232,13 @@ extension SDConditionLock {
 extension SDConditionLock {
     
     @discardableResult
-    public func synchronized<R>(for predicate: @autoclosure () -> Bool, block: @noescape () throws -> R) rethrows -> R {
+    public func synchronized<R>(for predicate: @autoclosure () -> Bool, block: () throws -> R) rethrows -> R {
         self.lock(for: predicate)
         defer { self.unlock() }
         return try block()
     }
     @discardableResult
-    public func synchronized<R>(for predicate: @autoclosure () -> Bool, until date: Date, block: @noescape () throws -> R) rethrows -> R? {
+    public func synchronized<R>(for predicate: @autoclosure () -> Bool, until date: Date, block: () throws -> R) rethrows -> R? {
         if self.lock(for: predicate, until: date) {
             defer { self.unlock() }
             return try block()
@@ -255,12 +255,12 @@ public class SDAtomic {
     fileprivate let block: (SDAtomic) -> Void
     fileprivate var flag: Int32
     
-    public init(queue: DispatchQueue, block: (SDAtomic) -> Void) {
+    public init(queue: DispatchQueue, block: @escaping (SDAtomic) -> Void) {
         self.queue = queue
         self.block = block
         self.flag = 0
     }
-    public init(block: (SDAtomic) -> Void) {
+    public init(block: @escaping (SDAtomic) -> Void) {
         self.queue = SDThreadDefaultDispatchQueue
         self.block = block
         self.flag = 0
@@ -295,7 +295,7 @@ public class SDSingleton<Instance> {
     fileprivate let block: () -> Instance
     
     /// Create a SDSingleton.
-    public init(block: () -> Instance) {
+    public init(block: @escaping () -> Instance) {
         self.block = block
     }
 }
@@ -332,18 +332,18 @@ public class SDTask<Result> : SDAtomic {
     
     fileprivate var _result: Result?
     
-    fileprivate init(queue: DispatchQueue, suspend: ((Result) -> Bool)?, block: () -> Result) {
+    fileprivate init(queue: DispatchQueue, suspend: (@escaping (Result) -> Bool)?, block: @escaping () -> Result) {
         super.init(queue: queue, block: SDTask.createBlock(suspend, block))
     }
     
     /// Create a SDTask and compute block with specific queue.
-    public init(queue: DispatchQueue, block: () -> Result) {
+    public init(queue: DispatchQueue, block: @escaping () -> Result) {
         super.init(queue: queue, block: SDTask.createBlock(nil, block))
         self.signal()
     }
     
     /// Create a SDTask and compute block with default queue.
-    public init(block: () -> Result) {
+    public init(block: @escaping () -> Result) {
         super.init(block: SDTask.createBlock(nil, block))
         self.signal()
     }
@@ -352,7 +352,7 @@ public class SDTask<Result> : SDAtomic {
 private extension SDTask {
     
     @_transparent
-    static func createBlock(_ suspend: ((Result) -> Bool)?, _ block: () -> Result) -> (SDAtomic) -> Void {
+    static func createBlock(_ suspend: (@escaping (Result) -> Bool)?, _ block: @escaping () -> Result) -> (SDAtomic) -> Void {
         return { atomic in
             let _self = atomic as! SDTask<Result>
             if !_self.completed {
@@ -370,7 +370,7 @@ private extension SDTask {
     }
     
     @_transparent
-    func _apply<R>(_ queue: DispatchQueue, suspend: ((R) -> Bool)?, block: (Result) -> R) -> SDTask<R> {
+    func _apply<R>(_ queue: DispatchQueue, suspend: (@escaping (R) -> Bool)?, block: @escaping (Result) -> R) -> SDTask<R> {
         var storage: Result!
         let task = SDTask<R>(queue: queue, suspend: suspend) { block(storage) }
         return spinlck.synchronized {
@@ -408,13 +408,13 @@ extension SDTask {
     
     /// Run `block` after `self` is completed.
     @discardableResult
-    public final func then<R>(block: (Result) -> R) -> SDTask<R> {
+    public final func then<R>(block: @escaping (Result) -> R) -> SDTask<R> {
         return self.then(queue: queue, block: block)
     }
     
     /// Run `block` after `self` is completed with specific queue.
     @discardableResult
-    public final func then<R>(queue: DispatchQueue, block: (Result) -> R) -> SDTask<R> {
+    public final func then<R>(queue: DispatchQueue, block: @escaping (Result) -> R) -> SDTask<R> {
         return self._apply(queue, suspend: nil, block: block)
     }
 }
@@ -423,25 +423,25 @@ extension SDTask {
     
     /// Suspend if `result` satisfies `predicate`.
     @discardableResult
-    public final func suspend(where predicate: (Result) -> Bool) -> SDTask<Result> {
+    public final func suspend(where predicate: @escaping (Result) -> Bool) -> SDTask<Result> {
         return self.suspend(queue: queue, where: predicate)
     }
     
     /// Suspend if `result` satisfies `predicate` with specific queue.
     @discardableResult
-    public final func suspend(queue: DispatchQueue, where predicate: (Result) -> Bool) -> SDTask<Result> {
+    public final func suspend(queue: DispatchQueue, where predicate: @escaping (Result) -> Bool) -> SDTask<Result> {
         return self._apply(queue, suspend: predicate) { $0 }
     }
 }
 
 /// Create a SDTask and compute block with default queue.
 @discardableResult
-public func async<Result>(block: () -> Result) -> SDTask<Result> {
+public func async<Result>(block: @escaping () -> Result) -> SDTask<Result> {
     return SDTask(block: block)
 }
 
 /// Create a SDTask and compute block with specific queue.
 @discardableResult
-public func async<Result>(queue: DispatchQueue, _ block: () -> Result) -> SDTask<Result> {
+public func async<Result>(queue: DispatchQueue, _ block: @escaping () -> Result) -> SDTask<Result> {
     return SDTask(queue: queue, block: block)
 }
