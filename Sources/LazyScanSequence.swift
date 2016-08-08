@@ -36,6 +36,7 @@ public extension Sequence {
     /// - complexity: O(N)
     func scan<R>(_ initial: R, _ combine: @noescape (R, Iterator.Element) throws -> R) rethrows -> [R] {
         var result = [initial]
+        result.reserveCapacity(self.underestimatedCount)
         for x in self {
             result.append(try combine(result.last!, x))
         }

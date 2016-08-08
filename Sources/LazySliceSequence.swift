@@ -37,7 +37,6 @@ public struct LazySliceSequence<Base : RandomAccessCollection> : IteratorProtoco
     fileprivate var currentIndex: Base.Index
     
     public mutating func next() -> Base.SubSequence? {
-        
         if currentIndex != base.endIndex {
             let nextIndex = base.index(currentIndex, offsetBy: maxLength, limitedBy: base.endIndex) ?? base.endIndex
             let result = base[currentIndex..<nextIndex]

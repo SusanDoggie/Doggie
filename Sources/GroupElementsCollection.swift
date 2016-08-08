@@ -50,8 +50,7 @@ public extension Sequence {
     
     /// Groups the elements of a sequence according to a specified key selector function.
     func group<Key : Equatable>(by: @noescape (Iterator.Element) throws -> Key) rethrows -> [GroupElementsCollection<Key, Iterator.Element>] {
-        
-        var table: [GroupElementsCollection<Key, Iterator.Element>] = []
+        var table = ContiguousArray<GroupElementsCollection<Key, Iterator.Element>>()
         for item in self {
             let key = try by(item)
             if let idx = table.index(where: { $0.key == key }) {
@@ -60,6 +59,6 @@ public extension Sequence {
                 table.append(GroupElementsCollection(key: key, base: [item]))
             }
         }
-        return table
+        return Array(table)
     }
 }

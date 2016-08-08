@@ -25,7 +25,7 @@
 
 public struct LazyUniqueIterator<Base : IteratorProtocol> : IteratorProtocol, Sequence {
     
-    fileprivate var pass: [Base.Element]
+    fileprivate var pass: ContiguousArray<Base.Element>
     fileprivate var base: Base
     fileprivate let isEquivalent: (Base.Element, Base.Element) -> Bool
     
@@ -46,29 +46,28 @@ public struct LazyUniqueSequence<Base : Sequence> : LazySequenceProtocol {
     fileprivate let isEquivalent: (Base.Iterator.Element, Base.Iterator.Element) -> Bool
     
     public func makeIterator() -> LazyUniqueIterator<Base.Iterator> {
-        return LazyUniqueIterator(pass: [], base: base.makeIterator(), isEquivalent: isEquivalent)
+        var pass = ContiguousArray<Base.Iterator.Element>()
+        pass.reserveCapacity(base.underestimatedCount)
+        return LazyUniqueIterator(pass: pass, base: base.makeIterator(), isEquivalent: isEquivalent)
     }
 }
 
 public extension Sequence where Iterator.Element : Equatable {
     
     func unique() -> [Iterator.Element] {
-        var result: [Iterator.Element] = []
-        for item in self where !result.contains(item) {
-            result.append(item)
-        }
-        return result
+        return self.unique(where: ==)
     }
 }
 
 public extension Sequence {
     
     func unique(where isEquivalent: @noescape (Iterator.Element, Iterator.Element) throws -> Bool) rethrows -> [Iterator.Element] {
-        var result: [Iterator.Element] = []
+        var result = ContiguousArray<Iterator.Element>()
+        result.reserveCapacity(self.underestimatedCount)
         for item in self where try !result.contains(where: { try isEquivalent($0, item) }) {
             result.append(item)
         }
-        return result
+        return Array(result)
     }
 }
 

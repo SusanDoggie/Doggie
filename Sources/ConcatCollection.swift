@@ -27,16 +27,24 @@ public struct ConcatIterator<G1: IteratorProtocol, G2: IteratorProtocol> : Itera
     
     fileprivate var base1: G1
     fileprivate var base2: G2
-    fileprivate var flag: Bool
+    fileprivate var flag: Int
     
     public mutating func next() -> G1.Element? {
-        if flag {
-            if let val = base1.next() {
-                return val
+        while true {
+            switch flag {
+            case 0:
+                if let val = base1.next() {
+                    return val
+                }
+                flag = 1
+            case 1:
+                if let val = base2.next() {
+                    return val
+                }
+                flag = 2
+            default: return nil
             }
-            flag = false
         }
-        return base2.next()
     }
 }
 
@@ -46,7 +54,7 @@ public struct ConcatSequence<S1 : Sequence, S2 : Sequence> : Sequence where S1.I
     fileprivate let base2: S2
     
     public func makeIterator() -> ConcatIterator<S1.Iterator, S2.Iterator> {
-        return ConcatIterator(base1: base1.makeIterator(), base2: base2.makeIterator(), flag: true)
+        return ConcatIterator(base1: base1.makeIterator(), base2: base2.makeIterator(), flag: 0)
     }
 }
 
@@ -91,7 +99,7 @@ public struct ConcatCollection<S1 : Collection, S2 : Collection> : Collection wh
     }
     
     public func makeIterator() -> ConcatIterator<S1.Iterator, S2.Iterator> {
-        return ConcatIterator(base1: base1.makeIterator(), base2: base2.makeIterator(), flag: true)
+        return ConcatIterator(base1: base1.makeIterator(), base2: base2.makeIterator(), flag: 0)
     }
 }
 
@@ -131,7 +139,7 @@ public struct ConcatBidirectionalCollection<S1 : BidirectionalCollection, S2 : B
     }
     
     public func makeIterator() -> ConcatIterator<S1.Iterator, S2.Iterator> {
-        return ConcatIterator(base1: base1.makeIterator(), base2: base2.makeIterator(), flag: true)
+        return ConcatIterator(base1: base1.makeIterator(), base2: base2.makeIterator(), flag: 0)
     }
 }
 

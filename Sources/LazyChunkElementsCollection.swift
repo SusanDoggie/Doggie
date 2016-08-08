@@ -170,8 +170,7 @@ public struct LazyChunkElementsRandomAccessCollection<Key : Equatable, Base : Ra
 public extension Collection {
     
     func chunk<Key : Equatable>(by: @noescape (Iterator.Element) throws -> Key) rethrows -> [LazyChunkElementsSequence<Key, SubSequence>] {
-        
-        var table: [LazyChunkElementsSequence<Key, SubSequence>] = []
+        var table = ContiguousArray<LazyChunkElementsSequence<Key, SubSequence>>()
         var key: Key?
         var start = startIndex
         var scanner = startIndex
@@ -186,15 +185,14 @@ public extension Collection {
             }
             scanner = self.index(after: scanner)
         }
-        return table
+        return Array(table)
     }
 }
 
 public extension Collection where SubSequence : Collection {
     
     func chunk<Key : Equatable>(by: @noescape (Iterator.Element) throws -> Key) rethrows -> [LazyChunkElementsCollection<Key, SubSequence>] {
-        
-        var table: [LazyChunkElementsCollection<Key, SubSequence>] = []
+        var table = ContiguousArray<LazyChunkElementsCollection<Key, SubSequence>>()
         var key: Key?
         var start = startIndex
         var scanner = startIndex
@@ -209,14 +207,13 @@ public extension Collection where SubSequence : Collection {
             }
             scanner = self.index(after: scanner)
         }
-        return table
+        return Array(table)
     }
 }
 public extension Collection where SubSequence : BidirectionalCollection {
     
     func chunk<Key : Equatable>(by: @noescape (Iterator.Element) throws -> Key) rethrows -> [LazyChunkElementsBidirectionalCollection<Key, SubSequence>] {
-        
-        var table: [LazyChunkElementsBidirectionalCollection<Key, SubSequence>] = []
+        var table = ContiguousArray<LazyChunkElementsBidirectionalCollection<Key, SubSequence>>()
         var key: Key?
         var start = startIndex
         var scanner = startIndex
@@ -231,14 +228,13 @@ public extension Collection where SubSequence : BidirectionalCollection {
             }
             scanner = self.index(after: scanner)
         }
-        return table
+        return Array(table)
     }
 }
 public extension Collection where SubSequence : RandomAccessCollection {
     
     func chunk<Key : Equatable>(by: @noescape (Iterator.Element) throws -> Key) rethrows -> [LazyChunkElementsRandomAccessCollection<Key, SubSequence>] {
-        
-        var table: [LazyChunkElementsRandomAccessCollection<Key, SubSequence>] = []
+        var table = ContiguousArray<LazyChunkElementsRandomAccessCollection<Key, SubSequence>>()
         var key: Key?
         var start = startIndex
         var scanner = startIndex
@@ -253,6 +249,6 @@ public extension Collection where SubSequence : RandomAccessCollection {
             }
             scanner = self.index(after: scanner)
         }
-        return table
+        return Array(table)
     }
 }
