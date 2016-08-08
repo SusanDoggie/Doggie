@@ -77,7 +77,7 @@ public struct SDPath : SDShape, RandomAccessCollection, MutableCollection, Expre
     
     public typealias Indices = CountableRange<Int>
     
-    //public typealias SubSequence = MutableRangeReplaceableRandomAccessSlice<SDPath>
+    public typealias SubSequence = MutableRangeReplaceableRandomAccessSlice<SDPath>
     
     fileprivate class Cache {
         
