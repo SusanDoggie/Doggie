@@ -24,6 +24,8 @@ before_install:
         sudo apt-get install -y autoconf libtool pkg-config clang-3.8 systemtap-sdt-dev libblocksruntime-dev libkqueue-dev libbsd-dev;
         sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-3.8 100;		
         sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-3.8 100;
+        export CC=clang;
+        clang --version;
     fi
 
 install:
