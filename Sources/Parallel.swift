@@ -26,7 +26,7 @@
 import Foundation
 import Dispatch
 
-extension LazyRandomAccessCollection {
+extension RandomAccessCollection {
     
     /// Call `body` on each element in `self` in parallel
     ///
@@ -41,6 +41,10 @@ extension LazyRandomAccessCollection {
         }
     }
     
+}
+
+extension LazyRandomAccessCollection {
+    
     public var parallel : [Iterator.Element] {
         let count: Int = numericCast(self.count)
         let buffer = UnsafeMutablePointer<Iterator.Element>.allocate(capacity: count)
@@ -52,4 +56,5 @@ extension LazyRandomAccessCollection {
         buffer.deallocate(capacity: count)
         return Array(result)
     }
+    
 }
