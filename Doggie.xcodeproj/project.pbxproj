@@ -97,8 +97,8 @@
 		0AADD13F1D10E82600087247 /* LazyUniqueSequence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AADD13C1D10E82600087247 /* LazyUniqueSequence.swift */; };
 		0AB539741D3C8B1F0011F08B /* LazyGatherCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AB539731D3C8B1F0011F08B /* LazyGatherCollection.swift */; };
 		0AB539751D3C8B1F0011F08B /* LazyGatherCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AB539731D3C8B1F0011F08B /* LazyGatherCollection.swift */; };
-		0ACE1E061C57104300106D1F /* ParallelCollectionType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ACE1E051C57104300106D1F /* ParallelCollectionType.swift */; };
-		0ACE1E081C57104300106D1F /* ParallelCollectionType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ACE1E051C57104300106D1F /* ParallelCollectionType.swift */; };
+		0ACE1E061C57104300106D1F /* Parallel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ACE1E051C57104300106D1F /* Parallel.swift */; };
+		0ACE1E081C57104300106D1F /* Parallel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ACE1E051C57104300106D1F /* Parallel.swift */; };
 		0ACE1E151C57114A00106D1F /* CollectionExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ACE1E141C57114A00106D1F /* CollectionExtension.swift */; };
 		0ACE1E171C57114A00106D1F /* CollectionExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ACE1E141C57114A00106D1F /* CollectionExtension.swift */; };
 		0ACE1E1A1C5711D300106D1F /* Graph.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ACE1E191C5711D300106D1F /* Graph.swift */; };
@@ -176,7 +176,7 @@
 		0AADD1371D10E80A00087247 /* GroupElementsCollection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupElementsCollection.swift; sourceTree = "<group>"; };
 		0AADD13C1D10E82600087247 /* LazyUniqueSequence.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LazyUniqueSequence.swift; sourceTree = "<group>"; };
 		0AB539731D3C8B1F0011F08B /* LazyGatherCollection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LazyGatherCollection.swift; sourceTree = "<group>"; };
-		0ACE1E051C57104300106D1F /* ParallelCollectionType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ParallelCollectionType.swift; sourceTree = "<group>"; };
+		0ACE1E051C57104300106D1F /* Parallel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Parallel.swift; sourceTree = "<group>"; };
 		0ACE1E141C57114A00106D1F /* CollectionExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CollectionExtension.swift; sourceTree = "<group>"; };
 		0ACE1E191C5711D300106D1F /* Graph.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Graph.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -392,7 +392,7 @@
 			isa = PBXGroup;
 			children = (
 				0ACE1E191C5711D300106D1F /* Graph.swift */,
-				0ACE1E051C57104300106D1F /* ParallelCollectionType.swift */,
+				0ACE1E051C57104300106D1F /* Parallel.swift */,
 				0ACE1E141C57114A00106D1F /* CollectionExtension.swift */,
 				0AADD13C1D10E82600087247 /* LazyUniqueSequence.swift */,
 				0AADD1371D10E80A00087247 /* GroupElementsCollection.swift */,
@@ -634,7 +634,7 @@
 				0AADD13D1D10E82600087247 /* LazyUniqueSequence.swift in Sources */,
 				0ACE1E1A1C5711D300106D1F /* Graph.swift in Sources */,
 				0813223B1C11D3600081B2B9 /* Complex.swift in Sources */,
-				0ACE1E061C57104300106D1F /* ParallelCollectionType.swift in Sources */,
+				0ACE1E061C57104300106D1F /* Parallel.swift in Sources */,
 				081322451C11D3600081B2B9 /* Vector.swift in Sources */,
 				081322211C11D3600081B2B9 /* Arithmetic.swift in Sources */,
 			);
@@ -695,7 +695,7 @@
 				0858DB071C0550B7007FA426 /* SDTransform.swift in Sources */,
 				0A1605B81D49DEDC00109F7B /* Regex.swift in Sources */,
 				0858DAEF1C0550B7007FA426 /* Matrix.swift in Sources */,
-				0ACE1E081C57104300106D1F /* ParallelCollectionType.swift in Sources */,
+				0ACE1E081C57104300106D1F /* Parallel.swift in Sources */,
 				0858DA7F1C0550B7007FA426 /* Arithmetic.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
