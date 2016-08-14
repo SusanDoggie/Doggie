@@ -143,7 +143,7 @@ public struct ParallelMapCollection<Base: RandomAccessCollection, Element> : Par
     public typealias Index = Base.Index
     public typealias IndexDistance = Base.IndexDistance
     
-    public init(_ base: Base, transform: (Base.Iterator.Element) -> Element) {
+    public init(_ base: Base, transform: @escaping (Base.Iterator.Element) -> Element) {
         self.base = base
         self.transform = transform
     }
@@ -196,11 +196,11 @@ public struct ParallelMapCollectionIterator<Base: IteratorProtocol, Element> : I
 
 extension ParallelCollectionProtocol {
     
-    public func map<T>(transform: (Iterator.Element) -> T) -> ParallelMapCollection<Self, T> {
+    public func map<T>(transform: @escaping (Iterator.Element) -> T) -> ParallelMapCollection<Self, T> {
         return ParallelMapCollection(self, transform: transform)
     }
     
-    public func filter(includeElement: (Iterator.Element) -> Bool) -> ParallelCollection<[Iterator.Element]> {
+    public func filter(includeElement: @escaping (Iterator.Element) -> Bool) -> ParallelCollection<[Iterator.Element]> {
         let _filter: [Iterator.Element?] = Array(self.map { includeElement($0) ? $0 : nil })
         return _filter.flatMap { $0 }.parallel
     }
