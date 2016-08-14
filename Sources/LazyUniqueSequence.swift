@@ -80,7 +80,7 @@ public extension LazySequenceProtocol where Elements.Iterator.Element : Equatabl
 
 public extension LazySequenceProtocol {
     
-    func unique(where isEquivalent: (Elements.Iterator.Element, Elements.Iterator.Element) -> Bool) -> LazyUniqueSequence<Elements> {
+    func unique(where isEquivalent: @escaping (Elements.Iterator.Element, Elements.Iterator.Element) -> Bool) -> LazyUniqueSequence<Elements> {
         return LazyUniqueSequence(base: elements, isEquivalent: isEquivalent)
     }
 }
