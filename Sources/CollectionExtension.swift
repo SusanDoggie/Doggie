@@ -350,13 +350,13 @@ public extension Sequence {
     
     /// Return an `Array` containing tuples satisfies `predicate` with each elements of two `sources`.
     func merge<S : Sequence>(with: S, where predicate: (Iterator.Element, S.Iterator.Element) throws -> Bool) rethrows -> [(Iterator.Element, S.Iterator.Element)] {
-        var result: [(Iterator.Element, S.Iterator.Element)] = []
+        var result = ContiguousArray<(Iterator.Element, S.Iterator.Element)>()
         for lhs in self {
             for rhs in with where try predicate(lhs, rhs) {
                 result.append((lhs, rhs))
             }
         }
-        return result
+        return Array(result)
     }
 }
 

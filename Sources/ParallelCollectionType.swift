@@ -68,10 +68,10 @@ extension ParallelCollectionProtocol {
         DispatchQueue.concurrentPerform(iterations: numericCast(self.count)) {
             (buffer + $0).initialize(to: self[self.index(startIndex, offsetBy: numericCast($0))])
         }
-        let result = Array(UnsafeMutableBufferPointer(start: buffer, count: count))
+        let result = ContiguousArray(UnsafeMutableBufferPointer(start: buffer, count: count))
         buffer.deinitialize(count: count)
         buffer.deallocate(capacity: count)
-        return result
+        return Array(result)
     }
 }
 
@@ -201,7 +201,7 @@ extension ParallelCollectionProtocol {
     }
     
     public func filter(includeElement: @escaping (Iterator.Element) -> Bool) -> ParallelCollection<[Iterator.Element]> {
-        let _filter: [Iterator.Element?] = Array(self.map { includeElement($0) ? $0 : nil })
-        return _filter.flatMap { $0 }.parallel
+        let _filtered = ContiguousArray(self.map { OptionOneCollection(includeElement($0) ? $0 : nil) }.joined())
+        return Array(_filtered).parallel
     }
 }
