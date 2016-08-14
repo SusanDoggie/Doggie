@@ -377,7 +377,7 @@ public func ClosestBezier(_ point: Point, _ b0: Point, _ b1: Point, _ b2: Point,
     let y: Polynomial = [a.y, b.y, c.y, d.y]
     let dot = x * x + y * y
     let y_roots = y.roots
-    var roots = x.roots.filter { x in y_roots.contains { x.almostEqual($0) } }
+    let roots = x.roots.filter { x in y_roots.contains { x.almostEqual($0) } }
     return roots.count != 0 ? roots.sorted(by: { dot.eval($0) }) : dot.derivative.roots.sorted(by: { dot.eval($0) })
 }
 
@@ -892,10 +892,10 @@ public func QuadBeziersIntersect(_ b0: Point, _ b1: Point, _ b2: Point, _ b3: Po
 
 public func CubicQuadBezierIntersect(_ c0: Point, _ c1: Point, _ c2: Point, _ c3: Point, _ q0: Point, _ q1: Point, _ q2: Point) -> [Double]? {
     
-    let a = c0.x - q0.x
-    let b = 3 * (c1.x - c0.x)
-    let c = 3 * (c2.x + c0.x) - 6 * c1.x
-    let d = c3.x - c0.x + 3 * (c1.x - c2.x)
+    let a = c0 - q0
+    let b = 3 * (c1 - c0)
+    let c = 3 * (c2 + c0) - 6 * c1
+    let d = c3 - c0 + 3 * (c1 - c2)
     
     let u0: Polynomial = [a.x, b.x, c.x, d.x]
     let u1 = 2 * (q0.x - q1.x)
@@ -917,10 +917,10 @@ public func CubicQuadBezierIntersect(_ c0: Point, _ c1: Point, _ c2: Point, _ c3
 
 public func CubicBeziersIntersect(_ c0: Point, _ c1: Point, _ c2: Point, _ c3: Point, _ c4: Point, _ c5: Point, _ c6: Point, _ c7: Point) -> [Double]? {
     
-    let a = c0.x - c4.x
-    let b = 3 * (c1.x - c0.x)
-    let c = 3 * (c2.x + c0.x) - 6 * c1.x
-    let d = c3.x - c0.x + 3 * (c1.x - c2.x)
+    let a = c0 - c4
+    let b = 3 * (c1 - c0)
+    let c = 3 * (c2 + c0) - 6 * c1
+    let d = c3 - c0 + 3 * (c1 - c2)
     
     let u0: Polynomial = [a.x, b.x, c.x, d.x]
     let u1 = 3 * (c4.x - c5.x)
