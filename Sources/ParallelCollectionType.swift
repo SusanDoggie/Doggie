@@ -201,7 +201,8 @@ extension ParallelCollectionProtocol {
     }
     
     public func filter(includeElement: @escaping (Iterator.Element) -> Bool) -> ParallelCollection<[Iterator.Element]> {
-        let _filtered = ContiguousArray(self.map { OptionOneCollection(includeElement($0) ? $0 : nil) }.joined())
+        let _map = self.map { OptionOneCollection(includeElement($0) ? $0 : nil) } as ParallelMapCollection
+        let _filtered = ContiguousArray(_map.array.joined())
         return Array(_filtered).parallel
     }
 }
