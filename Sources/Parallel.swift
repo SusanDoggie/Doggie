@@ -41,10 +41,41 @@ extension RandomAccessCollection {
         }
     }
     
+    /// Returns an array containing the results of mapping the given closure
+    /// over the sequence's elements. The elements of the result are computed
+    /// in parallel.
+    ///
+    /// In this example, `map` is used first to convert the names in the array
+    /// to lowercase strings and then to count their characters.
+    ///
+    ///     let cast = ["Vivien", "Marlon", "Kim", "Karl"]
+    ///     let lowercaseNames = cast.map { $0.lowercaseString }
+    ///     // 'lowercaseNames' == ["vivien", "marlon", "kim", "karl"]
+    ///     let letterCounts = cast.map { $0.characters.count }
+    ///     // 'letterCounts' == [6, 6, 3, 4]
+    ///
+    /// - Parameter transform: A mapping closure. `transform` accepts an
+    ///   element of this sequence as its parameter and returns a transformed
+    ///   value of the same or of a different type.
+    /// - Returns: An array containing the transformed elements of this
+    ///   sequence.
+    public func parallelMap<T>(_ transform: (Iterator.Element) -> T) -> [T] {
+        let count: Int = numericCast(self.count)
+        let buffer = UnsafeMutablePointer<T>.allocate(capacity: count)
+        DispatchQueue.concurrentPerform(iterations: numericCast(self.count)) {
+            (buffer + $0).initialize(to: transform(self[self.index(startIndex, offsetBy: numericCast($0))]))
+        }
+        let result = ContiguousArray(UnsafeMutableBufferPointer(start: buffer, count: count))
+        buffer.deinitialize(count: count)
+        buffer.deallocate(capacity: count)
+        return Array(result)
+    }
 }
 
 extension LazyRandomAccessCollection {
     
+    /// Returns an array over the sequence's elements. The elements of
+    /// the result are computed in parallel.
     public var parallel : [Iterator.Element] {
         let count: Int = numericCast(self.count)
         let buffer = UnsafeMutablePointer<Iterator.Element>.allocate(capacity: count)

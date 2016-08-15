@@ -103,6 +103,8 @@
 		0ACE1E171C57114A00106D1F /* CollectionExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ACE1E141C57114A00106D1F /* CollectionExtension.swift */; };
 		0ACE1E1A1C5711D300106D1F /* Graph.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ACE1E191C5711D300106D1F /* Graph.swift */; };
 		0ACE1E1C1C5711D300106D1F /* Graph.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ACE1E191C5711D300106D1F /* Graph.swift */; };
+		0AF9BDBB1D6178470058F2AA /* SDMarker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF9BDBA1D6178470058F2AA /* SDMarker.swift */; };
+		0AF9BDBC1D6178470058F2AA /* SDMarker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF9BDBA1D6178470058F2AA /* SDMarker.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -179,6 +181,7 @@
 		0ACE1E051C57104300106D1F /* Parallel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Parallel.swift; sourceTree = "<group>"; };
 		0ACE1E141C57114A00106D1F /* CollectionExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CollectionExtension.swift; sourceTree = "<group>"; };
 		0ACE1E191C5711D300106D1F /* Graph.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Graph.swift; sourceTree = "<group>"; };
+		0AF9BDBA1D6178470058F2AA /* SDMarker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SDMarker.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -230,6 +233,7 @@
 				0858DB451C055172007FA426 /* Fourier.swift */,
 				0858DA5E1C0550B7007FA426 /* Maths */,
 				0858DA6D1C0550B7007FA426 /* SDAtomicNode.swift */,
+				0AF9BDBA1D6178470058F2AA /* SDMarker.swift */,
 				0858DA6E1C0550B7007FA426 /* SDShape */,
 			);
 			name = Doggie;
@@ -600,6 +604,7 @@
 				0813223C1C11D3600081B2B9 /* Geometry.swift in Sources */,
 				0A5196EE1D48B5110082AE61 /* Atomic.swift in Sources */,
 				0813224F1C11D3600081B2B9 /* SDRectangle.swift in Sources */,
+				0AF9BDBB1D6178470058F2AA /* SDMarker.swift in Sources */,
 				0813224A1C11D3600081B2B9 /* SDEllipse.swift in Sources */,
 				081322261C11D3600081B2B9 /* DiscreteConvolve.swift in Sources */,
 				0813224D1C11D3600081B2B9 /* SDPathCoder.swift in Sources */,
@@ -660,6 +665,7 @@
 				0A1605B61D49DEDC00109F7B /* Json.swift in Sources */,
 				0858DAE71C0550B7007FA426 /* Geometry.swift in Sources */,
 				0858DB0B1C0550B7007FA426 /* Vector.swift in Sources */,
+				0AF9BDBC1D6178470058F2AA /* SDMarker.swift in Sources */,
 				0A5196F71D48B52D0082AE61 /* Thread.swift in Sources */,
 				0858DAE31C0550B7007FA426 /* Complex.swift in Sources */,
 				0858DB1F1C0550B7007FA426 /* SDEllipse.swift in Sources */,
