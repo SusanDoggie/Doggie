@@ -239,7 +239,7 @@ public func == (lhs: AtomicBoolean, rhs: AtomicBoolean) -> Bool {
     return lhs.boolValue == rhs.boolValue
 }
 
-private final class AtomicBase<Instance> {
+private class AtomicBase<Instance> {
     
     let value: Instance
     

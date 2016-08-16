@@ -102,13 +102,13 @@ public class SDLock {
 
 extension SDLock : Lockable {
     
-    public final func lock() {
+    public func lock() {
         pthread_mutex_lock(&_mtx)
     }
-    public final func unlock() {
+    public func unlock() {
         pthread_mutex_unlock(&_mtx)
     }
-    public final func trylock() -> Bool {
+    public func trylock() -> Bool {
         return pthread_mutex_trylock(&_mtx) == 0
     }
 }
@@ -175,23 +175,23 @@ private extension Date {
 
 extension SDConditionLock {
     
-    public final func signal() {
+    public func signal() {
         super.synchronized {
             pthread_cond_signal(&_cond)
         }
     }
-    public final func broadcast() {
+    public func broadcast() {
         super.synchronized {
             pthread_cond_broadcast(&_cond)
         }
     }
-    public final func wait(for predicate: @autoclosure () -> Bool) {
+    public func wait(for predicate: @autoclosure () -> Bool) {
         while !predicate() {
             pthread_cond_wait(&_cond, &_mtx)
         }
     }
     @discardableResult
-    public final func wait(for predicate: @autoclosure () -> Bool, until date: Date) -> Bool {
+    public func wait(for predicate: @autoclosure () -> Bool, until date: Date) -> Bool {
         var _timespec = date.timespec
         while !predicate() {
             if pthread_cond_timedwait(&_cond, &_mtx, &_timespec) != 0 {
@@ -204,12 +204,12 @@ extension SDConditionLock {
 
 extension SDConditionLock {
     
-    public final func lock(for predicate: @autoclosure () -> Bool) {
+    public func lock(for predicate: @autoclosure () -> Bool) {
         super.lock()
         self.wait(for: predicate)
     }
     @discardableResult
-    public final func lock(for predicate: @autoclosure () -> Bool, until date: Date) -> Bool {
+    public func lock(for predicate: @autoclosure () -> Bool, until date: Date) -> Bool {
         super.lock()
         if self.wait(for: predicate, until: date) {
             return true
@@ -218,7 +218,7 @@ extension SDConditionLock {
         return false
     }
     @discardableResult
-    public final func trylock(for predicate: @autoclosure () -> Bool) -> Bool {
+    public func trylock(for predicate: @autoclosure () -> Bool) -> Bool {
         if super.trylock() {
             if self.wait(for: predicate, until: Date.distantPast) {
                 return true
@@ -249,7 +249,7 @@ extension SDConditionLock {
 
 // MARK: SDAtomic
 
-public class SDAtomic {
+open class SDAtomic {
     
     fileprivate let queue: DispatchQueue
     fileprivate let block: (SDAtomic) -> Void
@@ -269,7 +269,7 @@ public class SDAtomic {
 
 extension SDAtomic {
     
-    public final func signal() {
+    public func signal() {
         if flag.fetchStore(new: 2) == 0 {
             queue.async(execute: dispatchRunloop)
         }
@@ -288,7 +288,7 @@ extension SDAtomic {
 
 // MARK: SDSingleton
 
-public class SDSingleton<Instance> {
+open class SDSingleton<Instance> {
     
     fileprivate var _value: Instance?
     fileprivate var spinlck: SDSpinLock = SDSpinLock()
@@ -302,7 +302,7 @@ public class SDSingleton<Instance> {
 
 extension SDSingleton {
     
-    public final func signal() {
+    public func signal() {
         if !isValue {
             synchronized(self) {
                 let result = self._value ?? self.block()
@@ -311,11 +311,11 @@ extension SDSingleton {
         }
     }
     
-    public final var isValue : Bool {
+    public var isValue : Bool {
         return spinlck.synchronized { self._value != nil }
     }
     
-    public final var value: Instance {
+    public var value: Instance {
         self.signal()
         return self._value!
     }
@@ -391,12 +391,12 @@ private extension SDTask {
 extension SDTask {
     
     /// Return `true` iff task is completed.
-    public final var completed: Bool {
+    public var completed: Bool {
         return spinlck.synchronized { _result != nil }
     }
     
     /// Result of task.
-    public final var result: Result {
+    public var result: Result {
         if self.completed {
             return self._result!
         }
@@ -408,13 +408,13 @@ extension SDTask {
     
     /// Run `block` after `self` is completed.
     @discardableResult
-    public final func then<R>(block: @escaping (Result) -> R) -> SDTask<R> {
+    public func then<R>(block: @escaping (Result) -> R) -> SDTask<R> {
         return self.then(queue: queue, block: block)
     }
     
     /// Run `block` after `self` is completed with specific queue.
     @discardableResult
-    public final func then<R>(queue: DispatchQueue, block: @escaping (Result) -> R) -> SDTask<R> {
+    public func then<R>(queue: DispatchQueue, block: @escaping (Result) -> R) -> SDTask<R> {
         return self._apply(queue, suspend: nil, block: block)
     }
 }
@@ -423,13 +423,13 @@ extension SDTask {
     
     /// Suspend if `result` satisfies `predicate`.
     @discardableResult
-    public final func suspend(where predicate: @escaping (Result) -> Bool) -> SDTask<Result> {
+    public func suspend(where predicate: @escaping (Result) -> Bool) -> SDTask<Result> {
         return self.suspend(queue: queue, where: predicate)
     }
     
     /// Suspend if `result` satisfies `predicate` with specific queue.
     @discardableResult
-    public final func suspend(queue: DispatchQueue, where predicate: @escaping (Result) -> Bool) -> SDTask<Result> {
+    public func suspend(queue: DispatchQueue, where predicate: @escaping (Result) -> Bool) -> SDTask<Result> {
         return self._apply(queue, suspend: predicate) { $0 }
     }
 }

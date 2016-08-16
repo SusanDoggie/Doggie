@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-public class SDAtomicGraph<Value> : Collection {
+open class SDAtomicGraph<Value> : Collection {
     
     public typealias Index = SDAtomicGraphIndex<Value>
     public typealias Iterator = SDAtomicGraphIterator<Value>
@@ -131,7 +131,7 @@ public struct SDAtomicGraphIterator<Value> : IteratorProtocol, Sequence {
     }
 }
 
-public class SDAtomicNode : SDAtomic {
+open class SDAtomicNode : SDAtomic {
     
     fileprivate let graphID: ObjectIdentifier
     
