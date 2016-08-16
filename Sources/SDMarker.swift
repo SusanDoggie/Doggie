@@ -33,7 +33,6 @@ public struct SDMarker {
     
     public enum Value {
         case string(String)
-        case bool(Bool)
         case integer(IntMax)
         case float(Double)
         case array([[String: Value]])
@@ -43,7 +42,7 @@ public struct SDMarker {
 extension SDMarker.Value {
     
     public init(_ val: Bool) {
-        self = .bool(val)
+        self = .integer(val ? 1 : 0)
     }
     public init<S : SignedInteger>(_ val: S) {
         self = .integer(val.toIntMax())
@@ -113,7 +112,6 @@ extension SDMarker.Value : CustomStringConvertible {
     public var description: String {
         switch self {
         case let .string(string): return string
-        case let .bool(bool): return "\(bool)"
         case let .integer(integer): return "\(integer)"
         case let .float(float): return "\(float)"
         case let .array(array): return "\(array)"
@@ -129,12 +127,6 @@ extension SDMarker.Element {
         case let .variable(name): return stack[name]?.description ?? ""
         case let .scope(name, elements):
             switch stack[name] ?? false {
-            case let .bool(bool):
-                if bool {
-                    var stack = stack
-                    stack[name] = true
-                    return elements.lazy.map { $0.render(stack: stack) }.joined()
-                }
             case let .integer(count):
                 if count > 0 {
                     for idx in 0..<count {
