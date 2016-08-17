@@ -129,7 +129,9 @@ extension String: RegularExpressionMatchable {
     
     /// Returns true if any match of the regular expression in the string.
     public func isMatch(_ regex: Regex) -> Bool {
-        return self.firstMatch(regex) != nil
+        let nsstring = NSString(string: self)
+        let range = NSRange(location: 0, length: nsstring.length)
+        return regex.matcher.firstMatch(in: self, options: [], range: range) != nil
     }
     
     /// Returns the first match of the regular expression in the string.
@@ -162,38 +164,6 @@ extension String: RegularExpressionMatchable {
         let nsstring = NSString(string: self)
         let range = NSRange(location: 0, length: nsstring.length)
         return regex.matcher.stringByReplacingMatches(in: self, options: [], range: range, withTemplate: template)
-    }
-}
-
-extension StaticString: RegularExpressionMatchable {
-    
-    /// Returns the number of matches of the regular expression in the string.
-    public func count(_ regex: Regex) -> Int {
-        return String(self).count(regex)
-    }
-    
-    /// Returns true if any match of the regular expression in the string.
-    public func isMatch(_ regex: Regex) -> Bool {
-        return String(self).isMatch(regex)
-    }
-    
-    /// Returns the first match of the regular expression in the string.
-    public func firstMatch(_ regex: Regex) -> String? {
-        return String(self).firstMatch(regex)
-    }
-    
-    /// Returns an array containing all the matches of the regular expression in the string.
-    public func match(_ regex: Regex) -> [String] {
-        return String(self).match(regex)
-    }
-    
-    /// Returns a new string containing matching regular expressions replaced with the template string.
-    ///
-    /// The replacement is treated as a template, with $0 being replaced by the contents of the matched range, $1 by the contents of the first capture group, and so on.
-    /// Additional digits beyond the maximum required to represent the number of capture groups will be treated as ordinary characters, as will a $ not followed by digits.
-    /// Backslash will escape both $ and itself.
-    public func replace(_ regex: Regex, template: String) -> String {
-        return String(self).replace(regex, template: template)
     }
 }
 
