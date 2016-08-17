@@ -331,3 +331,7 @@ extension Atomic : Equatable, Hashable {
 public func == <Instance>(lhs: Atomic<Instance>, rhs: Atomic<Instance>) -> Bool {
     return lhs.identifier == rhs.identifier
 }
+
+public func == <Instance: Equatable>(lhs: Atomic<Instance>, rhs: Atomic<Instance>) -> Bool {
+    return lhs.value == rhs.value
+}
