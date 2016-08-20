@@ -218,13 +218,7 @@
 		0858DA401C0550B7007FA426 /* Doggie */ = {
 			isa = PBXGroup;
 			children = (
-				0A2C33D01D48B8E200FE9A97 /* Date.swift */,
-				0A2C33D11D48B8E200FE9A97 /* Hashable.swift */,
-				0A2C33D21D48B8E200FE9A97 /* Integer.swift */,
-				0A2C33D31D48B8E200FE9A97 /* Json.swift */,
-				0A2C33D41D48B8E200FE9A97 /* Random.swift */,
-				0A2C33D51D48B8E200FE9A97 /* Regex.swift */,
-				0A5196E71D48B5110082AE61 /* Thread.swift */,
+				0A73D3C81D67E95F007269CB /* Foundation */,
 				0858DA411C0550B7007FA426 /* Accelerate */,
 				0ACE1DFA1C570F4F00106D1F /* Functional */,
 				0858DB451C055172007FA426 /* Fourier.swift */,
@@ -378,6 +372,20 @@
 				08BFF9B91B0715ED00EC88CB /* FourierTest.swift */,
 			);
 			path = CommonTest;
+			sourceTree = "<group>";
+		};
+		0A73D3C81D67E95F007269CB /* Foundation */ = {
+			isa = PBXGroup;
+			children = (
+				0A2C33D01D48B8E200FE9A97 /* Date.swift */,
+				0A2C33D11D48B8E200FE9A97 /* Hashable.swift */,
+				0A2C33D21D48B8E200FE9A97 /* Integer.swift */,
+				0A2C33D31D48B8E200FE9A97 /* Json.swift */,
+				0A2C33D41D48B8E200FE9A97 /* Random.swift */,
+				0A2C33D51D48B8E200FE9A97 /* Regex.swift */,
+				0A5196E71D48B5110082AE61 /* Thread.swift */,
+			);
+			name = Foundation;
 			sourceTree = "<group>";
 		};
 		0ACE1DFA1C570F4F00106D1F /* Functional */ = {
