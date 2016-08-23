@@ -188,7 +188,7 @@ public struct SDPath : SDShape, RandomAccessCollection, MutableCollection, Expre
             return MutableRangeReplaceableRandomAccessSlice(base: self, bounds: bounds)
         }
         set {
-            _writeBackMutableSlice(&self, bounds: bounds, slice: newValue)
+            self.replaceSubrange(bounds, with: newValue)
         }
     }
     

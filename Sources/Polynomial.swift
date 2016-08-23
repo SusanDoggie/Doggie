@@ -96,13 +96,13 @@ extension Polynomial : RandomAccessCollection, MutableCollection {
         }
     }
     
-    public subscript(bounds: Range<Int>) -> MutableRandomAccessSlice<Polynomial> {
+    public subscript(bounds: Range<Int>) -> MutableRangeReplaceableRandomAccessSlice<Polynomial> {
         get {
             _failEarlyRangeCheck(bounds, bounds: startIndex..<endIndex)
-            return MutableRandomAccessSlice(base: self, bounds: bounds)
+            return MutableRangeReplaceableRandomAccessSlice(base: self, bounds: bounds)
         }
         set {
-            _writeBackMutableSlice(&self, bounds: bounds, slice: newValue)
+            self.replaceSubrange(bounds, with: newValue)
         }
     }
     

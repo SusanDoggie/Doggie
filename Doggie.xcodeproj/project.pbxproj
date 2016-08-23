@@ -101,8 +101,6 @@
 		0ACE1E171C57114A00106D1F /* CollectionExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ACE1E141C57114A00106D1F /* CollectionExtension.swift */; };
 		0ACE1E1A1C5711D300106D1F /* Graph.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ACE1E191C5711D300106D1F /* Graph.swift */; };
 		0ACE1E1C1C5711D300106D1F /* Graph.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ACE1E191C5711D300106D1F /* Graph.swift */; };
-		0AF819F51D6BE4BD002B7E18 /* _collection_fix.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF819F41D6BE4BD002B7E18 /* _collection_fix.swift */; };
-		0AF819F61D6BE4BD002B7E18 /* _collection_fix.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF819F41D6BE4BD002B7E18 /* _collection_fix.swift */; };
 		0AF9BDBB1D6178470058F2AA /* SDMarker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF9BDBA1D6178470058F2AA /* SDMarker.swift */; };
 		0AF9BDBC1D6178470058F2AA /* SDMarker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF9BDBA1D6178470058F2AA /* SDMarker.swift */; };
 /* End PBXBuildFile section */
@@ -180,7 +178,6 @@
 		0ACE1E051C57104300106D1F /* Parallel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Parallel.swift; sourceTree = "<group>"; };
 		0ACE1E141C57114A00106D1F /* CollectionExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CollectionExtension.swift; sourceTree = "<group>"; };
 		0ACE1E191C5711D300106D1F /* Graph.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Graph.swift; sourceTree = "<group>"; };
-		0AF819F41D6BE4BD002B7E18 /* _collection_fix.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = _collection_fix.swift; sourceTree = "<group>"; };
 		0AF9BDBA1D6178470058F2AA /* SDMarker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SDMarker.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -405,7 +402,6 @@
 				0AB539731D3C8B1F0011F08B /* LazyGatherCollection.swift */,
 				0AADD1191D10E6E100087247 /* OptionOneCollection.swift */,
 				0AADD1231D10E77100087247 /* ConcatCollection.swift */,
-				0AF819F41D6BE4BD002B7E18 /* _collection_fix.swift */,
 			);
 			name = Functional;
 			sourceTree = "<group>";
@@ -635,7 +631,6 @@
 				081322441C11D3600081B2B9 /* SDTransform.swift in Sources */,
 				0AADD1241D10E77100087247 /* ConcatCollection.swift in Sources */,
 				0813224C1C11D3600081B2B9 /* SDPath.swift in Sources */,
-				0AF819F51D6BE4BD002B7E18 /* _collection_fix.swift in Sources */,
 				0AADD13D1D10E82600087247 /* LazyUniqueSequence.swift in Sources */,
 				0ACE1E1A1C5711D300106D1F /* Graph.swift in Sources */,
 				0813223B1C11D3600081B2B9 /* Complex.swift in Sources */,
@@ -696,7 +691,6 @@
 				0858DB031C0550B7007FA426 /* Rect.swift in Sources */,
 				0AADD13F1D10E82600087247 /* LazyUniqueSequence.swift in Sources */,
 				0ACE1E1C1C5711D300106D1F /* Graph.swift in Sources */,
-				0AF819F61D6BE4BD002B7E18 /* _collection_fix.swift in Sources */,
 				0A1605B41D49DEDC00109F7B /* Hashable.swift in Sources */,
 				0858DB071C0550B7007FA426 /* SDTransform.swift in Sources */,
 				0A1605B81D49DEDC00109F7B /* Regex.swift in Sources */,
