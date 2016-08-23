@@ -70,6 +70,21 @@ extension Polynomial : RandomAccessCollection, MutableCollection {
     
     public typealias Indices = CountableRange<Int>
     
+    public typealias Index = Int
+    
+    //public typealias SubSequence = MutableRandomAccessSlice<Polynomial>
+    
+    // FIXME: this should remove if swift bugs fixed.
+    public subscript(bounds: Range<Int>) -> MutableRandomAccessSlice<Polynomial> {
+        get {
+            _failEarlyRangeCheck(bounds, bounds: startIndex..<endIndex)
+            return MutableRandomAccessSlice(base: self, bounds: bounds)
+        }
+        set {
+            _writeBackMutableSlice(&self, bounds: bounds, slice: newValue)
+        }
+    }
+    
     public var startIndex : Int {
         return coeffs.startIndex
     }

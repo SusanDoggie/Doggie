@@ -77,7 +77,20 @@ public struct SDPath : SDShape, RandomAccessCollection, MutableCollection, Expre
     
     public typealias Indices = CountableRange<Int>
     
-    public typealias SubSequence = MutableRangeReplaceableRandomAccessSlice<SDPath>
+    public typealias Index = Int
+    
+    //public typealias SubSequence = MutableRangeReplaceableRandomAccessSlice<SDPath>
+    
+    // FIXME: this should remove if swift bugs fixed.
+    public subscript(bounds: Range<Int>) -> MutableRangeReplaceableRandomAccessSlice<SDPath> {
+        get {
+            _failEarlyRangeCheck(bounds, bounds: startIndex..<endIndex)
+            return MutableRangeReplaceableRandomAccessSlice(base: self, bounds: bounds)
+        }
+        set {
+            _writeBackMutableSlice(&self, bounds: bounds, slice: newValue)
+        }
+    }
     
     fileprivate class Cache {
         

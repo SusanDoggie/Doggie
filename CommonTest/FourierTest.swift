@@ -47,7 +47,7 @@ class FourierTest: XCTestCase {
         // This is an example of a functional test case.
         var sample = [Double](repeating: 0, count: 4)
         for i in sample.indices {
-            sample[i] = random(0.0..<1.0)
+            sample[i] = (0.0..<1.0).random()
         }
         
         var answer = [Complex]()
@@ -65,7 +65,7 @@ class FourierTest: XCTestCase {
         // This is an example of a functional test case.
         var sample = [Double](repeating: 0, count: 8)
         for i in sample.indices {
-            sample[i] = random(0.0..<1.0)
+            sample[i] = (0.0..<1.0).random()
         }
         
         var answer = [Complex]()
@@ -83,7 +83,7 @@ class FourierTest: XCTestCase {
         // This is an example of a functional test case.
         var sample = [Double](repeating: 0, count: 16)
         for i in sample.indices {
-            sample[i] = random(0.0..<1.0)
+            sample[i] = (0.0..<1.0).random()
         }
         
         var answer = [Complex]()
@@ -101,7 +101,7 @@ class FourierTest: XCTestCase {
         // This is an example of a functional test case.
         var sample = [Double](repeating: 0, count: 32)
         for i in sample.indices {
-            sample[i] = random(0.0..<1.0)
+            sample[i] = (0.0..<1.0).random()
         }
         
         var answer = [Complex]()
@@ -119,7 +119,7 @@ class FourierTest: XCTestCase {
         // This is an example of a functional test case.
         var sample = [Double](repeating: 0, count: 512)
         for i in sample.indices {
-            sample[i] = random(0.0..<1.0)
+            sample[i] = (0.0..<1.0).random()
         }
         
         var answer = [Complex]()
@@ -137,7 +137,7 @@ class FourierTest: XCTestCase {
         // This is an example of a functional test case.
         var sample = [Complex](repeating: Complex(0), count: 4)
         for i in sample.indices {
-            sample[i] = Complex(real: random(0.0..<1.0), imag: random(0.0..<1.0))
+            sample[i] = Complex(real: (0.0..<1.0).random(), imag: (0.0..<1.0).random())
         }
         
         var answer = [Complex]()
@@ -153,7 +153,7 @@ class FourierTest: XCTestCase {
         // This is an example of a functional test case.
         var sample = [Complex](repeating: Complex(0), count: 8)
         for i in sample.indices {
-            sample[i] = Complex(real: random(0.0..<1.0), imag: random(0.0..<1.0))
+            sample[i] = Complex(real: (0.0..<1.0).random(), imag: (0.0..<1.0).random())
         }
         
         var answer = [Complex]()
@@ -169,7 +169,7 @@ class FourierTest: XCTestCase {
         // This is an example of a functional test case.
         var sample = [Complex](repeating: Complex(0), count: 16)
         for i in sample.indices {
-            sample[i] = Complex(real: random(0.0..<1.0), imag: random(0.0..<1.0))
+            sample[i] = Complex(real: (0.0..<1.0).random(), imag: (0.0..<1.0).random())
         }
         
         var answer = [Complex]()
@@ -185,7 +185,7 @@ class FourierTest: XCTestCase {
         // This is an example of a functional test case.
         var sample = [Complex](repeating: Complex(0), count: 32)
         for i in sample.indices {
-            sample[i] = Complex(real: random(0.0..<1.0), imag: random(0.0..<1.0))
+            sample[i] = Complex(real: (0.0..<1.0).random(), imag: (0.0..<1.0).random())
         }
         
         var answer = [Complex]()
@@ -201,7 +201,7 @@ class FourierTest: XCTestCase {
         // This is an example of a functional test case.
         var sample = [Complex](repeating: Complex(0), count: 512)
         for i in sample.indices {
-            sample[i] = Complex(real: random(0.0..<1.0), imag: random(0.0..<1.0))
+            sample[i] = Complex(real: (0.0..<1.0).random(), imag: (0.0..<1.0).random())
         }
         
         var answer = [Complex]()
@@ -217,7 +217,7 @@ class FourierTest: XCTestCase {
         // This is an example of a functional test case.
         var sample = [Double](repeating: 0, count: 4)
         for i in sample.indices {
-            sample[i] = random(0.0..<1.0)
+            sample[i] = (0.0..<1.0).random()
         }
         
         var answer = [Complex]()
@@ -235,7 +235,7 @@ class FourierTest: XCTestCase {
         // This is an example of a functional test case.
         var sample = [Double](repeating: 0, count: 8)
         for i in sample.indices {
-            sample[i] = random(0.0..<1.0)
+            sample[i] = (0.0..<1.0).random()
         }
         
         var answer = [Complex]()
@@ -253,7 +253,7 @@ class FourierTest: XCTestCase {
         // This is an example of a functional test case.
         var sample = [Double](repeating: 0, count: 16)
         for i in sample.indices {
-            sample[i] = random(0.0..<1.0)
+            sample[i] = (0.0..<1.0).random()
         }
         
         var answer = [Complex]()
@@ -271,7 +271,7 @@ class FourierTest: XCTestCase {
         // This is an example of a functional test case.
         var sample = [Double](repeating: 0, count: 32)
         for i in sample.indices {
-            sample[i] = random(0.0..<1.0)
+            sample[i] = (0.0..<1.0).random()
         }
         
         var answer = [Complex]()
@@ -289,7 +289,7 @@ class FourierTest: XCTestCase {
         // This is an example of a functional test case.
         var sample = [Double](repeating: 0, count: 512)
         for i in sample.indices {
-            sample[i] = random(0.0..<1.0)
+            sample[i] = (0.0..<1.0).random()
         }
         
         var answer = [Complex]()
@@ -307,7 +307,7 @@ class FourierTest: XCTestCase {
         // This is an example of a functional test case.
         var sample = [Complex](repeating: Complex(0), count: 4)
         for i in sample.indices {
-            sample[i] = Complex(real: random(0.0..<1.0), imag: random(0.0..<1.0))
+            sample[i] = Complex(real: (0.0..<1.0).random(), imag: (0.0..<1.0).random())
         }
         
         var answer = [Complex]()
@@ -323,7 +323,7 @@ class FourierTest: XCTestCase {
         // This is an example of a functional test case.
         var sample = [Complex](repeating: Complex(0), count: 8)
         for i in sample.indices {
-            sample[i] = Complex(real: random(0.0..<1.0), imag: random(0.0..<1.0))
+            sample[i] = Complex(real: (0.0..<1.0).random(), imag: (0.0..<1.0).random())
         }
         
         var answer = [Complex]()
@@ -339,7 +339,7 @@ class FourierTest: XCTestCase {
         // This is an example of a functional test case.
         var sample = [Complex](repeating: Complex(0), count: 16)
         for i in sample.indices {
-            sample[i] = Complex(real: random(0.0..<1.0), imag: random(0.0..<1.0))
+            sample[i] = Complex(real: (0.0..<1.0).random(), imag: (0.0..<1.0).random())
         }
         
         var answer = [Complex]()
@@ -355,7 +355,7 @@ class FourierTest: XCTestCase {
         // This is an example of a functional test case.
         var sample = [Complex](repeating: Complex(0), count: 32)
         for i in sample.indices {
-            sample[i] = Complex(real: random(0.0..<1.0), imag: random(0.0..<1.0))
+            sample[i] = Complex(real: (0.0..<1.0).random(), imag: (0.0..<1.0).random())
         }
         
         var answer = [Complex]()
@@ -371,7 +371,7 @@ class FourierTest: XCTestCase {
         // This is an example of a functional test case.
         var sample = [Complex](repeating: Complex(0), count: 512)
         for i in sample.indices {
-            sample[i] = Complex(real: random(0.0..<1.0), imag: random(0.0..<1.0))
+            sample[i] = Complex(real: (0.0..<1.0).random(), imag: (0.0..<1.0).random())
         }
         
         var answer = [Complex]()
@@ -387,7 +387,7 @@ class FourierTest: XCTestCase {
         // This is an example of a functional test case.
         var sample = [Double](repeating: 0, count: 10)
         for i in sample.indices {
-            sample[i] = random(0.0..<1.0)
+            sample[i] = (0.0..<1.0).random()
         }
         
         var answer = [Complex]()
@@ -405,7 +405,7 @@ class FourierTest: XCTestCase {
         // This is an example of a functional test case.
         var sample = [Complex](repeating: Complex(0), count: 10)
         for i in sample.indices {
-            sample[i] = Complex(real: random(0.0..<1.0), imag: random(0.0..<1.0))
+            sample[i] = Complex(real: (0.0..<1.0).random(), imag: (0.0..<1.0).random())
         }
         
         var answer = [Complex]()
@@ -423,7 +423,7 @@ class FourierTest: XCTestCase {
         // This is an example of a functional test case.
         var sample = [Double](repeating: 0, count: 8)
         for i in sample.indices {
-            sample[i] = random(0.0..<1.0)
+            sample[i] = (0.0..<1.0).random()
         }
         
         var answer = [Complex]()
@@ -441,7 +441,7 @@ class FourierTest: XCTestCase {
         // This is an example of a functional test case.
         var sample = [Complex](repeating: Complex(0), count: 8)
         for i in sample.indices {
-            sample[i] = Complex(real: random(0.0..<1.0), imag: random(0.0..<1.0))
+            sample[i] = Complex(real: (0.0..<1.0).random(), imag: (0.0..<1.0).random())
         }
         
         var answer = [Complex]()
@@ -459,7 +459,7 @@ class FourierTest: XCTestCase {
         // This is an example of a functional test case.
         var sample = [Double](repeating: 0, count: 10)
         for i in sample.indices {
-            sample[i] = random(0.0..<1.0)
+            sample[i] = (0.0..<1.0).random()
         }
         
         var answer = [Complex]()
@@ -477,7 +477,7 @@ class FourierTest: XCTestCase {
         // This is an example of a functional test case.
         var sample = [Complex](repeating: Complex(0), count: 10)
         for i in sample.indices {
-            sample[i] = Complex(real: random(0.0..<1.0), imag: random(0.0..<1.0))
+            sample[i] = Complex(real: (0.0..<1.0).random(), imag: (0.0..<1.0).random())
         }
         
         var answer = [Complex]()
@@ -495,7 +495,7 @@ class FourierTest: XCTestCase {
         // This is an example of a functional test case.
         var sample = [Double](repeating: 0, count: 9)
         for i in sample.indices {
-            sample[i] = random(0.0..<1.0)
+            sample[i] = (0.0..<1.0).random()
         }
         
         var answer = [Complex]()
@@ -513,7 +513,7 @@ class FourierTest: XCTestCase {
         // This is an example of a functional test case.
         var sample = [Complex](repeating: Complex(0), count: 9)
         for i in sample.indices {
-            sample[i] = Complex(real: random(0.0..<1.0), imag: random(0.0..<1.0))
+            sample[i] = Complex(real: (0.0..<1.0).random(), imag: (0.0..<1.0).random())
         }
         
         var answer = [Complex]()
@@ -532,7 +532,7 @@ class FourierTest: XCTestCase {
         // This is an example of a functional test case.
         var sample = [Double](repeating: 0, count: 10)
         for i in sample.indices {
-            sample[i] = random(0.0..<1.0)
+            sample[i] = (0.0..<1.0).random()
         }
         
         var answer = [Complex]()
@@ -550,7 +550,7 @@ class FourierTest: XCTestCase {
         // This is an example of a functional test case.
         var sample = [Complex](repeating: Complex(0), count: 10)
         for i in sample.indices {
-            sample[i] = Complex(real: random(0.0..<1.0), imag: random(0.0..<1.0))
+            sample[i] = Complex(real: (0.0..<1.0).random(), imag: (0.0..<1.0).random())
         }
         
         var answer = [Complex]()
@@ -568,7 +568,7 @@ class FourierTest: XCTestCase {
         // This is an example of a functional test case.
         var sample = [Complex](repeating: Complex(0), count: 8)
         for i in sample.indices {
-            sample[i] = Complex(real: random(0.0..<1.0), imag: random(0.0..<1.0))
+            sample[i] = Complex(real: (0.0..<1.0).random(), imag: (0.0..<1.0).random())
         }
         
         var answer = [Complex]()
@@ -586,7 +586,7 @@ class FourierTest: XCTestCase {
         // This is an example of a functional test case.
         var sample = [Double](repeating: 0, count: 10)
         for i in sample.indices {
-            sample[i] = random(0.0..<1.0)
+            sample[i] = (0.0..<1.0).random()
         }
         
         var answer = [Complex]()
@@ -604,7 +604,7 @@ class FourierTest: XCTestCase {
         // This is an example of a functional test case.
         var sample = [Complex](repeating: Complex(0), count: 10)
         for i in sample.indices {
-            sample[i] = Complex(real: random(0.0..<1.0), imag: random(0.0..<1.0))
+            sample[i] = Complex(real: (0.0..<1.0).random(), imag: (0.0..<1.0).random())
         }
         
         var answer = [Complex]()
@@ -622,7 +622,7 @@ class FourierTest: XCTestCase {
         // This is an example of a functional test case.
         var sample = [Double](repeating: 0, count: 9)
         for i in sample.indices {
-            sample[i] = random(0.0..<1.0)
+            sample[i] = (0.0..<1.0).random()
         }
         
         var answer = [Complex]()
@@ -640,7 +640,7 @@ class FourierTest: XCTestCase {
         // This is an example of a functional test case.
         var sample = [Complex](repeating: Complex(0), count: 9)
         for i in sample.indices {
-            sample[i] = Complex(real: random(0.0..<1.0), imag: random(0.0..<1.0))
+            sample[i] = Complex(real: (0.0..<1.0).random(), imag: (0.0..<1.0).random())
         }
         
         var answer = [Complex]()
@@ -660,10 +660,10 @@ class FourierTest: XCTestCase {
         var a = [Double](repeating: 0, count: 10)
         var b = [Double](repeating: 0, count: 10)
         for i in 0..<a.count {
-            a[i] = random(0.0..<1.0)
+            a[i] = (0.0..<1.0).random()
         }
         for i in 0..<a.count {
-            b[i] = random(0.0..<1.0)
+            b[i] = (0.0..<1.0).random()
         }
         
         var answer = [Double]()
@@ -681,10 +681,10 @@ class FourierTest: XCTestCase {
         var a = [Double](repeating: 0, count: 9)
         var b = [Double](repeating: 0, count: 9)
         for i in 0..<a.count {
-            a[i] = random(0.0..<1.0)
+            a[i] = (0.0..<1.0).random()
         }
         for i in 0..<a.count {
-            b[i] = random(0.0..<1.0)
+            b[i] = (0.0..<1.0).random()
         }
         
         var answer = [Double]()
@@ -702,10 +702,10 @@ class FourierTest: XCTestCase {
         var a = [Complex](repeating: Complex(0), count: 10)
         var b = [Complex](repeating: Complex(0), count: 10)
         for i in 0..<a.count {
-            a[i] = Complex(real: random(0.0..<1.0), imag: random(0.0..<1.0))
+            a[i] = Complex(real: (0.0..<1.0).random(), imag: (0.0..<1.0).random())
         }
         for i in 0..<a.count {
-            b[i] = Complex(real: random(0.0..<1.0), imag: random(0.0..<1.0))
+            b[i] = Complex(real: (0.0..<1.0).random(), imag: (0.0..<1.0).random())
         }
         
         var answer = [Complex]()
@@ -724,10 +724,10 @@ class FourierTest: XCTestCase {
         var a = [Double](repeating: 0, count: 10)
         var b = [Double](repeating: 0, count: 10)
         for i in 0..<a.count {
-            a[i] = random(0.0..<1.0)
+            a[i] = (0.0..<1.0).random()
         }
         for i in 0..<a.count {
-            b[i] = random(0.0..<1.0)
+            b[i] = (0.0..<1.0).random()
         }
         
         var answer = [Double]()
@@ -750,10 +750,10 @@ class FourierTest: XCTestCase {
         var a = [Complex](repeating: Complex(0), count: 10)
         var b = [Complex](repeating: Complex(0), count: 10)
         for i in 0..<a.count {
-            a[i] = Complex(real: random(0.0..<1.0), imag: random(0.0..<1.0))
+            a[i] = Complex(real: (0.0..<1.0).random(), imag: (0.0..<1.0).random())
         }
         for i in 0..<a.count {
-            b[i] = Complex(real: random(0.0..<1.0), imag: random(0.0..<1.0))
+            b[i] = Complex(real: (0.0..<1.0).random(), imag: (0.0..<1.0).random())
         }
         
         var answer = [Complex]()
@@ -777,10 +777,10 @@ class FourierTest: XCTestCase {
         var a = [Double](repeating: 0, count: 10)
         var b = [Double](repeating: 0, count: 10)
         for i in 0..<a.count {
-            a[i] = random(0.0..<1.0)
+            a[i] = (0.0..<1.0).random()
         }
         for i in 0..<a.count {
-            b[i] = random(0.0..<1.0)
+            b[i] = (0.0..<1.0).random()
         }
         
         var answer = [Double]()
@@ -803,10 +803,10 @@ class FourierTest: XCTestCase {
         var a = [Complex](repeating: Complex(0), count: 10)
         var b = [Complex](repeating: Complex(0), count: 10)
         for i in 0..<a.count {
-            a[i] = Complex(real: random(0.0..<1.0), imag: random(0.0..<1.0))
+            a[i] = Complex(real: (0.0..<1.0).random(), imag: (0.0..<1.0).random())
         }
         for i in 0..<a.count {
-            b[i] = Complex(real: random(0.0..<1.0), imag: random(0.0..<1.0))
+            b[i] = Complex(real: (0.0..<1.0).random(), imag: (0.0..<1.0).random())
         }
         
         var answer = [Complex]()
@@ -830,7 +830,7 @@ class FourierTest: XCTestCase {
         // This is an example of a functional test case.
         var sample = [Double](repeating: 0, count: 10)
         for i in sample.indices {
-            sample[i] = random(0.0..<1.0)
+            sample[i] = (0.0..<1.0).random()
         }
         
         var answer = [Double]()
@@ -847,7 +847,7 @@ class FourierTest: XCTestCase {
         // This is an example of a functional test case.
         var sample = [Double](repeating: 0, count: 10)
         for i in sample.indices {
-            sample[i] = random(0.0..<1.0)
+            sample[i] = (0.0..<1.0).random()
         }
         
         var answer = [Double]()
@@ -864,7 +864,7 @@ class FourierTest: XCTestCase {
         // This is an example of a functional test case.
         var sample = [Double](repeating: 0, count: 10)
         for i in sample.indices {
-            sample[i] = random(0.0..<1.0)
+            sample[i] = (0.0..<1.0).random()
         }
         
         var answer = [Double]()
@@ -881,7 +881,7 @@ class FourierTest: XCTestCase {
         // This is an example of a functional test case.
         var sample = [Double](repeating: 0, count: 10)
         for i in sample.indices {
-            sample[i] = random(0.0..<1.0)
+            sample[i] = (0.0..<1.0).random()
         }
         
         var answer = [Double]()
@@ -898,7 +898,7 @@ class FourierTest: XCTestCase {
         // This is an example of a functional test case.
         var sample = [Double](repeating: 0, count: 10)
         for i in sample.indices {
-            sample[i] = random(0.0..<1.0)
+            sample[i] = (0.0..<1.0).random()
         }
         
         var answer = [Double]()
@@ -915,7 +915,7 @@ class FourierTest: XCTestCase {
         // This is an example of a functional test case.
         var sample = [Double](repeating: 0, count: 10)
         for i in sample.indices {
-            sample[i] = random(0.0..<1.0)
+            sample[i] = (0.0..<1.0).random()
         }
         
         var answer = [Double]()

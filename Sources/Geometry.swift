@@ -389,7 +389,6 @@ public func ClosestBezier(_ point: Point, _ b0: Point, _ b1: Point, _ b2: Point,
     return dot.derivative.roots.sorted(by: { dot.eval($0) })
 }
 
-@_transparent
 private func SplitBezier(_ t: Double, _ p: [Double]) -> ([Double], [Double]) {
     let _t = 1 - t
     if p.count == 2 {
@@ -420,7 +419,6 @@ private func SplitBezier(_ t: [Double], _ p: [Double]) -> [[Double]] {
     return result
 }
 
-@_transparent
 private func SplitBezier(_ t: Double, _ p: [Point]) -> ([Point], [Point]) {
     let _t = 1 - t
     if p.count == 2 {
@@ -451,7 +449,6 @@ private func SplitBezier(_ t: [Double], _ p: [Point]) -> [[Point]] {
     return result
 }
 
-@_transparent
 private func SplitBezier(_ t: Double, _ p: [Vector]) -> ([Vector], [Vector]) {
     let _t = 1 - t
     if p.count == 2 {
@@ -980,7 +977,6 @@ private func _integral(_ m: Double, _ n: Double, _ b: Double, _ c: Double) -> Do
     return _m * log(abs(1 + (1 + b) / c)) + _integral(n - _m * b, b, c)
 }
 
-@_transparent
 private func _integral(_ m: Double, _ n: Double, _ b: Double, _ c: Double, _ r: Int) -> Double {
     
     if r == 1 {
@@ -1182,16 +1178,25 @@ private func degree6RationalIntegral(_ p: Polynomial, _ q: Polynomial) -> Double
 
 public func QuadBezierWinding(_ p0: Point, _ p1: Point, _ p2: Point) -> Double {
     
-    let x: Polynomial = [p0.x, 2 * (p1.x - p0.x), p0.x - 2 * p1.x + p2.x]
-    let y: Polynomial = [p0.y, 2 * (p1.y - p0.y), p0.y - 2 * p1.y + p2.y]
+    let a = p0
+    let b = 2 * (p1 - p0)
+    let c = p0 - 2 * p1 + p2
+    
+    let x: Polynomial = [a.x, b.x, c.x]
+    let y: Polynomial = [a.y, b.y, c.y]
     
     return 0.5 * M_1_PI * degree6RationalIntegral(x * y.derivative - x.derivative * y, x * x + y * y)
 }
 
 public func CubicBezierWinding(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point) -> Double {
     
-    let x: Polynomial = [p0.x, 3 * (p1.x - p0.x), 3 * (p2.x + p0.x) - 6 * p1.x, p3.x - p0.x + 3 * (p1.x - p2.x)]
-    let y: Polynomial = [p0.y, 3 * (p1.y - p0.y), 3 * (p2.y + p0.y) - 6 * p1.y, p3.y - p0.y + 3 * (p1.y - p2.y)]
+    let a = p0
+    let b = 3 * (p1 - p0)
+    let c = 3 * (p2 + p0) - 6 * p1
+    let d = p3 - p0 + 3 * (p1 - p2)
+    
+    let x: Polynomial = [a.x, b.x, c.x, d.x]
+    let y: Polynomial = [a.y, b.y, c.y, d.y]
     
     return 0.5 * M_1_PI * degree6RationalIntegral(x * y.derivative - x.derivative * y, x * x + y * y)
 }

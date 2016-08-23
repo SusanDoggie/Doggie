@@ -57,7 +57,7 @@ public extension SDShape {
     
     var transform : SDTransform {
         get {
-            return baseTransform * SDTransform.Scale(scale) * SDTransform.Rotate(rotate)
+            return baseTransform * ((SDTransform.Scale(scale) * SDTransform.Rotate(rotate)) as SDTransform)
         }
         set {
             baseTransform = newValue * SDTransform.Rotate(rotate).inverse * SDTransform.Scale(scale).inverse
