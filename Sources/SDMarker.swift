@@ -50,7 +50,7 @@ extension SDMarker {
     }
     
     private static func parseScope(_ chars: ArraySlice<Character>) -> [Element] {
-        let characterSet = Set("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-_1234567890".characters)
+        let characterSet = Set("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-_1234567890.".characters)
         var result: [Element] = []
         var chars = chars
         while let index = chars.match(with: "{{".characters) {
