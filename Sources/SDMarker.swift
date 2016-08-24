@@ -23,6 +23,8 @@
 //  THE SOFTWARE.
 //
 
+import Foundation
+
 public struct SDMarker {
     
     fileprivate indirect enum Element {
@@ -57,25 +59,30 @@ extension SDMarker {
             if let token = tail.first {
                 switch token {
                 case "#":
-                    if let end_token_index = tail.match(with: "#}}".characters), index + 3 != end_token_index, tail.prefix(upTo: end_token_index).dropFirst().all({ characterSet.contains($0) }) {
-                        let scope = String(tail.prefix(upTo: end_token_index).dropFirst())
-                        let _tail = chars.suffix(from: end_token_index + 3)
-                        if let end_scope_index = _tail.match(with: "{{#\(scope)#}}".characters) {
-                            result.append(.string(String(head.dropLast(2))))
-                            result.append(.scope(scope, parseScope(_tail.prefix(upTo: end_scope_index))))
-                            chars = _tail.suffix(from: end_scope_index + 6 + scope.characters.count)
-                        } else {
-                            result.append(.string(String(chars.prefix(upTo: end_token_index + 3))))
-                            chars = _tail
+                    if let end_token_index = tail.match(with: "#}}".characters), index + 3 != end_token_index {
+                        let scope_name = String(tail.prefix(upTo: end_token_index).dropFirst()).trimmingCharacters(in: .whitespaces)
+                        if scope_name.characters.all({ characterSet.contains($0) }) {
+                            let _tail = chars.suffix(from: end_token_index + 3)
+                            if let end_scope_index = _tail.match(with: "{{#\(scope_name)#}}".characters) {
+                                result.append(.string(String(head.dropLast(2))))
+                                result.append(.scope(scope_name, parseScope(_tail.prefix(upTo: end_scope_index))))
+                                chars = _tail.suffix(from: end_scope_index + 6 + scope_name.characters.count)
+                            } else {
+                                result.append(.string(String(chars.prefix(upTo: end_token_index + 3))))
+                                chars = _tail
+                            }
+                            continue
                         }
-                        continue
                     }
                 case "%":
-                    if let end_token_index = tail.match(with: "%}}".characters), index + 3 != end_token_index, tail.prefix(upTo: end_token_index).dropFirst().all({ characterSet.contains($0) }) {
-                        result.append(.string(String(head.dropLast(2))))
-                        result.append(.variable(String(tail.prefix(upTo: end_token_index).dropFirst())))
-                        chars = tail.suffix(from: end_token_index + 3)
-                        continue
+                    if let end_token_index = tail.match(with: "%}}".characters), index + 3 != end_token_index {
+                        let variable_name = String(tail.prefix(upTo: end_token_index).dropFirst()).trimmingCharacters(in: .whitespaces)
+                        if variable_name.characters.all({ characterSet.contains($0) }) {
+                            result.append(.string(String(head.dropLast(2))))
+                            result.append(.variable(variable_name))
+                            chars = tail.suffix(from: end_token_index + 3)
+                            continue
+                        }
                     }
                 default: break
                 }
