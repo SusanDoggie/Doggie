@@ -153,7 +153,7 @@ open class SDAtomicNode : SDAtomic {
             }
         }
     }
-    public init<Value>(graph: SDAtomicGraph<Value>, callback: ((SDAtomicNode) -> Void)) {
+    public init<Value>(graph: SDAtomicGraph<Value>, callback: @escaping (SDAtomicNode) -> Void) {
         self.graphID = graph.identifier
         self.callback = callback
         super.init {

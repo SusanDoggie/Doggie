@@ -643,7 +643,7 @@ public class SDTask<Result> : SDAtomic {
     
     fileprivate var _result: Result?
     
-    fileprivate init(queue: DispatchQueue, suspend: (@escaping (Result) -> Bool)?, block: @escaping () -> Result) {
+    fileprivate init(queue: DispatchQueue, suspend: ((Result) -> Bool)?, block: @escaping () -> Result) {
         super.init(queue: queue, block: SDTask.createBlock(suspend, block))
     }
     
@@ -663,7 +663,7 @@ public class SDTask<Result> : SDAtomic {
 private extension SDTask {
     
     @_transparent
-    static func createBlock(_ suspend: (@escaping (Result) -> Bool)?, _ block: @escaping () -> Result) -> (SDAtomic) -> Void {
+    static func createBlock(_ suspend: ((Result) -> Bool)?, _ block: @escaping () -> Result) -> (SDAtomic) -> Void {
         return { atomic in
             let _self = atomic as! SDTask<Result>
             if !_self.completed {
@@ -681,7 +681,7 @@ private extension SDTask {
     }
     
     @_transparent
-    func _apply<R>(_ queue: DispatchQueue, suspend: (@escaping (R) -> Bool)?, block: @escaping (Result) -> R) -> SDTask<R> {
+    func _apply<R>(_ queue: DispatchQueue, suspend: ((R) -> Bool)?, block: @escaping (Result) -> R) -> SDTask<R> {
         var storage: Result!
         let task = SDTask<R>(queue: queue, suspend: suspend) { block(storage) }
         return spinlck.synchronized {
