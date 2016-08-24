@@ -57,7 +57,7 @@ extension SDMarker {
             if let token = tail.first {
                 switch token {
                 case "#":
-                    if let end_token_index = tail.match(with: "#}}".characters), index != end_token_index, tail.prefix(upTo: end_token_index).dropFirst().all({ characterSet.contains($0) }) {
+                    if let end_token_index = tail.match(with: "#}}".characters), index + 3 != end_token_index, tail.prefix(upTo: end_token_index).dropFirst().all({ characterSet.contains($0) }) {
                         let scope = String(tail.prefix(upTo: end_token_index).dropFirst())
                         let _tail = chars.suffix(from: end_token_index + 3)
                         if let end_scope_index = _tail.match(with: "{{#\(scope)#}}".characters) {
@@ -71,7 +71,7 @@ extension SDMarker {
                         continue
                     }
                 case "%":
-                    if let end_token_index = tail.match(with: "%}}".characters), index != end_token_index, tail.prefix(upTo: end_token_index).dropFirst().all({ characterSet.contains($0) }) {
+                    if let end_token_index = tail.match(with: "%}}".characters), index + 3 != end_token_index, tail.prefix(upTo: end_token_index).dropFirst().all({ characterSet.contains($0) }) {
                         result.append(.string(String(head.dropLast(2))))
                         result.append(.variable(String(tail.prefix(upTo: end_token_index).dropFirst())))
                         chars = tail.suffix(from: end_token_index + 3)
