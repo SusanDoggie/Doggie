@@ -37,6 +37,62 @@ public struct SDMarker {
         case float(Double)
         case array([[String: Value]])
     }
+    
+    fileprivate let elements: [Element]
+}
+
+extension SDMarker {
+    
+    public init(template: String) {
+        self.elements = SDMarker.parseScope(ArraySlice(template.characters))
+    }
+    
+    private static func parseScope(_ chars: ArraySlice<Character>) -> [Element] {
+        let characterSet = Set("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-_1234567890".characters)
+        var result: [Element] = []
+        var chars = chars
+        while let index = chars.match(with: "{{".characters) {
+            let head = chars.prefix(upTo: index + 2)
+            let tail = chars.suffix(from: index + 2)
+            if let token = tail.first {
+                switch token {
+                case "#":
+                    if let end_token_index = tail.match(with: "#}}".characters), index != end_token_index, tail.prefix(upTo: end_token_index).dropFirst().all({ characterSet.contains($0) }) {
+                        let scope = String(tail.prefix(upTo: end_token_index).dropFirst())
+                        let _tail = chars.suffix(from: end_token_index + 3)
+                        if let end_scope_index = _tail.match(with: "{{#\(scope)#}}".characters) {
+                            result.append(.string(String(head.dropLast(2))))
+                            result.append(.scope(scope, parseScope(_tail.prefix(upTo: end_scope_index))))
+                            chars = _tail.suffix(from: end_scope_index + 6 + scope.characters.count)
+                        } else {
+                            result.append(.string(String(chars.prefix(upTo: end_token_index + 3))))
+                            chars = _tail
+                        }
+                        continue
+                    }
+                case "%":
+                    if let end_token_index = tail.match(with: "%}}".characters), index != end_token_index, tail.prefix(upTo: end_token_index).dropFirst().all({ characterSet.contains($0) }) {
+                        result.append(.string(String(head.dropLast(2))))
+                        result.append(.variable(String(tail.prefix(upTo: end_token_index).dropFirst())))
+                        chars = tail.suffix(from: end_token_index + 3)
+                        continue
+                    }
+                default: break
+                }
+            }
+            result.append(.string(String(head)))
+            chars = tail
+        }
+        result.append(.string(String(chars)))
+        return result
+    }
+}
+
+extension SDMarker {
+    
+    public func render(_ values: [String: SDMarker.Value]) -> String {
+        return self.elements.map { $0.render(stack: values) }.joined()
+    }
 }
 
 extension SDMarker.Value {
@@ -121,7 +177,7 @@ extension SDMarker.Value : CustomStringConvertible {
 
 extension SDMarker.Element {
     
-    func render(stack: [String: SDMarker.Value]) -> String {
+    fileprivate func render(stack: [String: SDMarker.Value]) -> String {
         switch self {
         case let .string(str): return str
         case let .variable(name): return stack[name]?.description ?? ""
@@ -129,22 +185,20 @@ extension SDMarker.Element {
             switch stack[name] ?? false {
             case let .integer(count):
                 if count > 0 {
-                    for idx in 0..<count {
+                    return (0..<count).lazy.map {
                         var stack = stack
-                        stack[name] = .integer(idx)
+                        stack[name] = .integer($0)
                         return elements.lazy.map { $0.render(stack: stack) }.joined()
-                    }
+                        }.joined()
                 }
             case let .array(array):
-                var result = ""
-                for item in array {
+                return array.lazy.map {
                     var stack = stack
-                    for (key, value) in item {
+                    for (key, value) in $0 {
                         stack[key] = value
                     }
-                    result += elements.lazy.map { $0.render(stack: stack) }.joined()
-                }
-                return result
+                    return elements.lazy.map { $0.render(stack: stack) }.joined()
+                    }.joined()
             default: break
             }
             return ""
