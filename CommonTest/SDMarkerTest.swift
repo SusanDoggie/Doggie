@@ -75,4 +75,21 @@ class SDMarkerTest: XCTestCase {
             ]), " 1 2 3 ")
         
     }
+    func testNestedSection() {
+        
+        let marker: SDMarker = "{{# section_1 #}}{{# section_2 #}} {{% section_1 %}}{{% section_2 %}}{{# section_2 #}}{{# section_1 #}} "
+        
+        XCTAssertEqual(marker.render([
+            
+            "section_1": [
+                ["section_1": 0, "section_2": 5],
+                ["section_1": 1, "section_2": 5],
+                ["section_1": 2, "section_2": 5],
+                ["section_1": 3, "section_2": 5],
+                ["section_1": 4, "section_2": 5],
+            ]
+            
+            ]), " 00 01 02 03 04 10 11 12 13 14 20 21 22 23 24 30 31 32 33 34 40 41 42 43 44 ")
+        
+    }
 }
