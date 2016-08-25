@@ -155,6 +155,9 @@ extension SDMarker.Value {
     public init(_ val: String) {
         self = .string(val)
     }
+    public init(_ val: [String: SDMarker.Value]) {
+        self = .array([val])
+    }
     public init<S : Sequence>(_ val: S) where S.Iterator.Element == [String: SDMarker.Value] {
         self = .array(Array(val))
     }
@@ -203,6 +206,17 @@ extension SDMarker.Value: ExpressibleByArrayLiteral {
     
     public init(arrayLiteral elements: [String: SDMarker.Value] ...) {
         self.init(elements)
+    }
+}
+
+extension SDMarker.Value: ExpressibleByDictionaryLiteral {
+    
+    public init(dictionaryLiteral elements: (String, SDMarker.Value) ...) {
+        var dictionary: [String: SDMarker.Value] = [:]
+        for (key, value) in elements {
+            dictionary[key] = value
+        }
+        self.init(dictionary)
     }
 }
 

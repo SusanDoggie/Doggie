@@ -75,6 +75,19 @@ class SDMarkerTest: XCTestCase {
             ]), " 1 2 3 ")
         
     }
+    func testObject() {
+        
+        let marker: SDMarker = "{{#array #}} {{%var%}}{{# array#}} "
+        
+        XCTAssertEqual(marker.render([
+            
+            "array": [
+                "var": 1
+            ]
+            
+            ]), " 1 ")
+        
+    }
     func testNestedSection() {
         
         let marker: SDMarker = "{{# section_1 #}}{{# section_2 #}} {{% section_1 %}}{{% section_2 %}}{{# section_2 #}}{{# section_1 #}} "
