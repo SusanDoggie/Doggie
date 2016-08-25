@@ -39,6 +39,36 @@ print(task2.result)  // 6
 ```swift
 let path = try SDPath(code: "M100 0c0-100-236.60 36.60-150 86.60S36.60-136.60-50-86.60 100 100 100 0z")
 ```
+- template engine
+```swift
+let marker: SDMarker = "<p>\n    <h1>{{% header %}}</h1>\n{{# false_section #}}    This line never shown.<br />{{# false_section #}}{{# true_section #}}    This line will shown.<br />{{# true_section #}}{{#loop#}}\n    {{%loop%}}<br />{{#loop#}}{{#list#}}\n    {{%item%}}<br />{{#list#}}\n</p>"
+
+marker.render([
+    
+    "header": "This is a header",
+    "false_section": false,
+    "true_section": true,
+    "loop": 3,
+    "list": [
+        ["item": "apple"],
+        ["item": "banana"],
+        ["item": "orange"]
+    ]
+    
+    ])
+```
+```HTML
+<p>
+    <h1>This is a header</h1>
+    This line will shown.<br />
+    0<br />
+    1<br />
+    2<br />
+    apple<br />
+    banana<br />
+    orange<br />
+</p>
+```
 
 ## Benchmark
 
