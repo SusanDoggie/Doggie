@@ -71,6 +71,8 @@
 		0A1605B61D49DEDC00109F7B /* Json.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2C33D31D48B8E200FE9A97 /* Json.swift */; };
 		0A1605B71D49DEDC00109F7B /* Random.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2C33D41D48B8E200FE9A97 /* Random.swift */; };
 		0A1605B81D49DEDC00109F7B /* Regex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2C33D51D48B8E200FE9A97 /* Regex.swift */; };
+		0A266E531D6E95C100ABE6B7 /* SDMarkerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A266E521D6E95C100ABE6B7 /* SDMarkerTest.swift */; };
+		0A266E541D6E95C100ABE6B7 /* SDMarkerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A266E521D6E95C100ABE6B7 /* SDMarkerTest.swift */; };
 		0A2C33D61D48B8E200FE9A97 /* Date.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2C33D01D48B8E200FE9A97 /* Date.swift */; };
 		0A2C33D71D48B8E200FE9A97 /* Hashable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2C33D11D48B8E200FE9A97 /* Hashable.swift */; };
 		0A2C33D81D48B8E200FE9A97 /* Integer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2C33D21D48B8E200FE9A97 /* Integer.swift */; };
@@ -160,6 +162,7 @@
 		087FE5BF1A372D97005A2E9E /* Doggie_MacTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Doggie_MacTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		087FE5C51A372D97005A2E9E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		08BFF9B91B0715ED00EC88CB /* FourierTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FourierTest.swift; sourceTree = "<group>"; };
+		0A266E521D6E95C100ABE6B7 /* SDMarkerTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SDMarkerTest.swift; sourceTree = "<group>"; };
 		0A2C33D01D48B8E200FE9A97 /* Date.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Date.swift; sourceTree = "<group>"; };
 		0A2C33D11D48B8E200FE9A97 /* Hashable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Hashable.swift; sourceTree = "<group>"; };
 		0A2C33D21D48B8E200FE9A97 /* Integer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Integer.swift; sourceTree = "<group>"; };
@@ -370,6 +373,7 @@
 			isa = PBXGroup;
 			children = (
 				08BFF9B91B0715ED00EC88CB /* FourierTest.swift */,
+				0A266E521D6E95C100ABE6B7 /* SDMarkerTest.swift */,
 			);
 			path = CommonTest;
 			sourceTree = "<group>";
@@ -644,6 +648,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0A266E531D6E95C100ABE6B7 /* SDMarkerTest.swift in Sources */,
 				081321EB1C11D2C60081B2B9 /* FourierTest.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -704,6 +709,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0A266E541D6E95C100ABE6B7 /* SDMarkerTest.swift in Sources */,
 				08BFF9BC1B07161E00EC88CB /* FourierTest.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

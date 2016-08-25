@@ -113,6 +113,24 @@ extension SDMarker {
     }
 }
 
+extension SDMarker: ExpressibleByStringLiteral {
+    
+    public typealias ExtendedGraphemeClusterLiteralType = StringLiteralType
+    public typealias UnicodeScalarLiteralType = StringLiteralType
+    
+    public init(stringLiteral value: StringLiteralType) {
+        self.init(template: value)
+    }
+    
+    public init(extendedGraphemeClusterLiteral value: ExtendedGraphemeClusterLiteralType) {
+        self.init(template: value)
+    }
+    
+    public init(unicodeScalarLiteral value: UnicodeScalarLiteralType) {
+        self.init(template: value)
+    }
+}
+
 extension SDMarker {
     
     public func render(_ values: [String: SDMarker.Value]) -> String {
