@@ -41,9 +41,38 @@ class SDMarkerTest: XCTestCase {
     
     func testVariable() {
         
-        let marker: SDMarker = " {{%Var1%}} {{%Var2%}} {{%Var3%}} "
+        let marker: SDMarker = " {{%Var1%}} {{% Var2%}} {{%Var3 %}} "
         
         XCTAssertEqual(marker.render(["Var1": 1, "Var2": 2, "Var3": 3]), " 1 2 3 ")
+        
+    }
+    func testBoolean() {
+        
+        let marker: SDMarker = " {{#bool_1 #}}{{%bool_1%}}{{# bool_1#}} {{#bool_2 #}}{{%bool_2%}} {{# bool_2#}}"
+        
+        XCTAssertEqual(marker.render(["bool_1": true, "bool_2": false]), " true ")
+        
+    }
+    func testLoop() {
+        
+        let marker: SDMarker = "{{#loop #}} {{%loop%}}{{# loop#}} "
+        
+        XCTAssertEqual(marker.render(["loop": 3]), " 0 1 2 ")
+        
+    }
+    func testArray() {
+        
+        let marker: SDMarker = "{{#array #}} {{%var%}}{{# array#}} "
+        
+        XCTAssertEqual(marker.render([
+            
+            "array": [
+                ["var": 1],
+                ["var": 2],
+                ["var": 3]
+            ]
+            
+            ]), " 1 2 3 ")
         
     }
 }
