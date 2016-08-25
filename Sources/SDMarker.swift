@@ -39,6 +39,7 @@ public struct SDMarker {
         case integer(IntMax)
         case float(Double)
         case array([[String: Value]])
+        case template(SDMarker)
     }
     
     fileprivate let elements: [Element]
@@ -138,6 +139,24 @@ extension SDMarker {
     }
 }
 
+extension SDMarker.Element : CustomStringConvertible {
+    
+    public var description: String {
+        switch self {
+        case let .string(str): return str
+        case let .variable(name): return "{{%\(name)%}}"
+        case let .scope(name, elements): return "{{#\(name)#}}\(elements.lazy.map { $0.description }.joined()){{#\(name)#}}"
+        }
+    }
+}
+
+extension SDMarker : CustomStringConvertible {
+    
+    public var description: String {
+        return elements.lazy.map { $0.description }.joined()
+    }
+}
+
 extension SDMarker.Value {
     
     public init(_ val: Bool) {
@@ -229,6 +248,7 @@ extension SDMarker.Value : CustomStringConvertible {
         case let .integer(integer): return "\(integer)"
         case let .float(float): return "\(float)"
         case let .array(array): return "\(array)"
+        case let .template(template): return template.description
         }
     }
 }
@@ -238,7 +258,13 @@ extension SDMarker.Element {
     fileprivate func render(stack: [String: SDMarker.Value]) -> String {
         switch self {
         case let .string(str): return str
-        case let .variable(name): return stack[name]?.description ?? ""
+        case let .variable(name):
+            if let variable = stack[name] {
+                switch variable {
+                case let .template(template): return template.render(stack)
+                default: return variable.description
+                }
+            }
         case let .scope(name, elements):
             switch stack[name] ?? false {
             case let .boolean(bool):
@@ -264,7 +290,7 @@ extension SDMarker.Element {
                     }.joined()
             default: break
             }
-            return ""
         }
+        return ""
     }
 }
