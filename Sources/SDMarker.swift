@@ -35,6 +35,7 @@ public struct SDMarker {
     
     public enum Value {
         case string(String)
+        case boolean(Bool)
         case integer(IntMax)
         case float(Double)
         case array([[String: Value]])
@@ -46,45 +47,34 @@ public struct SDMarker {
 extension SDMarker {
     
     public init(template: String) {
-        self.elements = SDMarker.parseScope(ArraySlice(template.characters))
+        let characterSet = Set("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-_1234567890.:".characters)
+        self.elements = SDMarker.parseScope(ArraySlice(template.characters), characterSet)
     }
     
-    private static func parseScope(_ chars: ArraySlice<Character>) -> [Element] {
-        let characterSet = Set("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-_1234567890.:".characters)
+    private static func parseScope(_ chars: ArraySlice<Character>, _ characterSet: Set<Character>) -> [Element] {
         var result: [Element] = []
         var chars = chars
-        while let index = chars.match(with: "{{".characters) {
+        outer: while let index = chars.match(with: "{{".characters) {
             let head = chars.prefix(upTo: index + 2)
             let tail = chars.suffix(from: index + 2)
-            if let token = tail.first {
+            if let token = parseToken(tail, characterSet) {
                 switch token {
-                case "#":
-                    if let end_token_index = tail.match(with: "#}}".characters), index + 3 != end_token_index {
-                        let scope_name = String(tail.prefix(upTo: end_token_index).dropFirst()).trimmingCharacters(in: .whitespaces)
-                        if scope_name.characters.all({ characterSet.contains($0) }) {
-                            let _tail = chars.suffix(from: end_token_index + 3)
-                            if let end_scope_index = _tail.match(with: "{{#\(scope_name)#}}".characters) {
-                                result.append(.string(String(head.dropLast(2))))
-                                result.append(.scope(scope_name, parseScope(_tail.prefix(upTo: end_scope_index))))
-                                chars = _tail.suffix(from: end_scope_index + 6 + scope_name.characters.count)
-                            } else {
-                                result.append(.string(String(chars.prefix(upTo: end_token_index + 3))))
-                                chars = _tail
-                            }
-                            continue
-                        }
-                    }
-                case "%":
-                    if let end_token_index = tail.match(with: "%}}".characters), index + 3 != end_token_index {
-                        let variable_name = String(tail.prefix(upTo: end_token_index).dropFirst()).trimmingCharacters(in: .whitespaces)
-                        if variable_name.characters.all({ characterSet.contains($0) }) {
+                case let .variable(name, end):
+                    result.append(.string(String(head.dropLast(2))))
+                    result.append(.variable(name))
+                    chars = tail.suffix(from: end)
+                    continue
+                case let .scope(name, end):
+                    var _tail = tail.dropFirst()
+                    while let index2 = _tail.match(with: "{{#".characters) {
+                        if let token = parseToken(_tail.suffix(from: index2 + 2), characterSet), case .scope(name, let end2) = token {
                             result.append(.string(String(head.dropLast(2))))
-                            result.append(.variable(variable_name))
-                            chars = tail.suffix(from: end_token_index + 3)
-                            continue
+                            result.append(.scope(name, parseScope(tail.suffix(from: end).prefix(upTo: index2), characterSet)))
+                            chars = _tail.suffix(from: end2)
+                            continue outer
                         }
+                        _tail = _tail.suffix(from: index2 + 3)
                     }
-                default: break
                 }
             }
             result.append(.string(String(head)))
@@ -92,6 +82,34 @@ extension SDMarker {
         }
         result.append(.string(String(chars)))
         return result
+    }
+    
+    private enum TokenType {
+        case variable(String, Int)
+        case scope(String, Int)
+    }
+    
+    private static func parseToken(_ chars: ArraySlice<Character>, _ characterSet: Set<Character>) -> TokenType? {
+        if let token = chars.first {
+            switch token {
+            case "%":
+                if let end_token_index = chars.match(with: "%}}".characters), chars.startIndex + 1 != end_token_index {
+                    let variable_name = String(chars.prefix(upTo: end_token_index).dropFirst()).trimmingCharacters(in: .whitespaces)
+                    if variable_name.characters.all({ characterSet.contains($0) }) {
+                        return .variable(variable_name, end_token_index + 3)
+                    }
+                }
+            case "#":
+                if let end_token_index = chars.match(with: "#}}".characters), chars.startIndex + 1 != end_token_index {
+                    let scope_name = String(chars.prefix(upTo: end_token_index).dropFirst()).trimmingCharacters(in: .whitespaces)
+                    if scope_name.characters.all({ characterSet.contains($0) }) {
+                        return .scope(scope_name, end_token_index + 3)
+                    }
+                }
+            default: break
+            }
+        }
+        return nil
     }
 }
 
@@ -105,7 +123,7 @@ extension SDMarker {
 extension SDMarker.Value {
     
     public init(_ val: Bool) {
-        self = .integer(val ? 1 : 0)
+        self = .boolean(val)
     }
     public init<S : SignedInteger>(_ val: S) {
         self = .integer(val.toIntMax())
@@ -175,6 +193,7 @@ extension SDMarker.Value : CustomStringConvertible {
     public var description: String {
         switch self {
         case let .string(string): return string
+        case let .boolean(bool): return "\(bool)"
         case let .integer(integer): return "\(integer)"
         case let .float(float): return "\(float)"
         case let .array(array): return "\(array)"
@@ -190,6 +209,10 @@ extension SDMarker.Element {
         case let .variable(name): return stack[name]?.description ?? ""
         case let .scope(name, elements):
             switch stack[name] ?? false {
+            case let .boolean(bool):
+                if bool {
+                    return elements.lazy.map { $0.render(stack: stack) }.joined()
+                }
             case let .integer(count):
                 if count > 0 {
                     return (0..<count).lazy.map {
@@ -201,6 +224,7 @@ extension SDMarker.Element {
             case let .array(array):
                 return array.lazy.map {
                     var stack = stack
+                    stack[name] = .array([$0])
                     for (key, value) in $0 {
                         stack[key] = value
                     }
