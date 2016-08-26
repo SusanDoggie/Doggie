@@ -30,7 +30,7 @@ public struct SDMarker {
     fileprivate indirect enum Element {
         case string(String)
         case variable(String)
-        case scope(String, [Element])
+        case scope(String, Bool, [Element])
     }
     
     public enum Value {
@@ -66,12 +66,12 @@ extension SDMarker {
                     result.append(.variable(name))
                     chars = tail.suffix(from: end)
                     continue
-                case let .scope(name, end):
+                case let .scope(name, flag, end):
                     var _tail = tail.dropFirst()
                     while let index2 = _tail.match(with: "{{#".characters) {
-                        if let token = parseToken(_tail.suffix(from: index2 + 2), characterSet), case .scope(name, let end2) = token {
+                        if let token = parseToken(_tail.suffix(from: index2 + 2), characterSet), case .scope(name, true, let end2) = token {
                             result.append(.string(String(head.dropLast(2))))
-                            result.append(.scope(name, parseScope(tail.suffix(from: end).prefix(upTo: index2), characterSet)))
+                            result.append(.scope(name, flag, parseScope(tail.suffix(from: end).prefix(upTo: index2), characterSet)))
                             chars = _tail.suffix(from: end2)
                             continue outer
                         }
@@ -88,7 +88,7 @@ extension SDMarker {
     
     private enum TokenType {
         case variable(String, Int)
-        case scope(String, Int)
+        case scope(String, Bool, Int)
     }
     
     private static func parseToken(_ chars: ArraySlice<Character>, _ characterSet: Set<Character>) -> TokenType? {
@@ -103,9 +103,15 @@ extension SDMarker {
                 }
             case "#":
                 if let end_token_index = chars.match(with: "#}}".characters), chars.startIndex + 1 != end_token_index {
-                    let scope_name = String(chars.prefix(upTo: end_token_index).dropFirst()).trimmingCharacters(in: .whitespaces)
+                    var flag = true
+                    var scope_name = String(chars.prefix(upTo: end_token_index).dropFirst()).trimmingCharacters(in: .whitespaces)
+                    if scope_name.characters.first == "!" {
+                        scope_name.remove(at: scope_name.startIndex)
+                        scope_name = scope_name.trimmingCharacters(in: .whitespaces)
+                        flag = false
+                    }
                     if scope_name.characters.all({ characterSet.contains($0) }) {
-                        return .scope(scope_name, end_token_index + 3)
+                        return .scope(scope_name, flag, end_token_index + 3)
                     }
                 }
             default: break
@@ -146,7 +152,7 @@ extension SDMarker.Element : CustomStringConvertible {
         switch self {
         case let .string(str): return str
         case let .variable(name): return "{{%\(name)%}}"
-        case let .scope(name, elements): return "{{#\(name)#}}\(elements.lazy.map { $0.description }.joined()){{#\(name)#}}"
+        case let .scope(name, flag, elements): return "{{#\(flag ? "" : "!")\(name)#}}\(elements.lazy.map { $0.description }.joined()){{#\(name)#}}"
         }
     }
 }
@@ -267,36 +273,60 @@ extension SDMarker.Element {
                 default: return variable.description
                 }
             }
-        case let .scope(name, elements):
+        case let .scope(name, flag, elements):
             switch stack[name] ?? false {
             case let .boolean(bool):
-                if bool {
-                    return elements.lazy.map { $0.render(stack: stack) }.joined()
+                if flag {
+                    if bool {
+                        return elements.lazy.map { $0.render(stack: stack) }.joined()
+                    }
+                } else {
+                    if !bool {
+                        return elements.lazy.map { $0.render(stack: stack) }.joined()
+                    }
                 }
             case let .integer(count):
-                if count > 0 {
-                    return (0..<count).lazy.map {
+                if flag {
+                    if count > 0 {
+                        return (0..<count).lazy.map {
+                            var stack = stack
+                            stack[name] = .integer($0)
+                            return elements.lazy.map { $0.render(stack: stack) }.joined()
+                            }.joined()
+                    }
+                } else {
+                    if count == 0 {
                         var stack = stack
-                        stack[name] = .integer($0)
+                        stack[name] = .integer(0)
                         return elements.lazy.map { $0.render(stack: stack) }.joined()
-                        }.joined()
+                    }
                 }
             case let .object(object):
-                var stack = stack
-                stack[name] = .object(object)
-                for (key, value) in object {
-                    stack[key] = value
-                }
-                return elements.lazy.map { $0.render(stack: stack) }.joined()
-            case let .array(array):
-                return array.lazy.map {
+                if flag {
                     var stack = stack
-                    stack[name] = .object($0)
-                    for (key, value) in $0 {
+                    stack[name] = .object(object)
+                    for (key, value) in object {
                         stack[key] = value
                     }
                     return elements.lazy.map { $0.render(stack: stack) }.joined()
-                    }.joined()
+                }
+            case let .array(array):
+                if flag {
+                    return array.lazy.map {
+                        var stack = stack
+                        stack[name] = .object($0)
+                        for (key, value) in $0 {
+                            stack[key] = value
+                        }
+                        return elements.lazy.map { $0.render(stack: stack) }.joined()
+                        }.joined()
+                } else {
+                    if array.count == 0 {
+                        var stack = stack
+                        stack[name] = .object([:])
+                        return elements.lazy.map { $0.render(stack: stack) }.joined()
+                    }
+                }
             default: break
             }
         }

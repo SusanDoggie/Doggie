@@ -105,6 +105,38 @@ class SDMarkerTest: XCTestCase {
             ]), " 00 01 02 03 04 10 11 12 13 14 20 21 22 23 24 30 31 32 33 34 40 41 42 43 44 ")
         
     }
+    func testInverseSection() {
+        
+        let marker1: SDMarker = "{{#!array #}} 1{{# array#}} "
+        
+        XCTAssertEqual(marker1.render([
+            
+            "array": [
+                ["var": 1],
+                ["var": 2],
+                ["var": 3]
+            ]
+            
+            ]), " ")
+        
+        let marker2: SDMarker = "{{#!array #}} 1{{# array#}} "
+        
+        XCTAssertEqual(marker2.render([
+            
+            "array": [
+            ]
+            
+            ]), " 1 ")
+        
+        let marker3: SDMarker = "{{#!section #}} 0{{# section#}}{{#section #}} 1{{# section#}} "
+        
+        XCTAssertEqual(marker3.render([
+            
+            "section": false
+            
+            ]), " 0 ")
+        
+    }
     func testTemplate() {
         
         let marker: SDMarker = "{{#loop#}}{{%template%}}{{#loop#}} "
