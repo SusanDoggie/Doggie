@@ -38,6 +38,7 @@ public struct SDMarker {
         case boolean(Bool)
         case integer(IntMax)
         case float(Double)
+        case object([String: Value])
         case array([[String: Value]])
         case template(SDMarker)
     }
@@ -175,7 +176,7 @@ extension SDMarker.Value {
         self = .string(val)
     }
     public init(_ val: [String: SDMarker.Value]) {
-        self = .array([val])
+        self = .object(val)
     }
     public init<S : Sequence>(_ val: S) where S.Iterator.Element == [String: SDMarker.Value] {
         self = .array(Array(val))
@@ -247,6 +248,7 @@ extension SDMarker.Value : CustomStringConvertible {
         case let .boolean(bool): return "\(bool)"
         case let .integer(integer): return "\(integer)"
         case let .float(float): return "\(float)"
+        case let .object(object): return "\(object)"
         case let .array(array): return "\(array)"
         case let .template(template): return template.description
         }
@@ -279,10 +281,17 @@ extension SDMarker.Element {
                         return elements.lazy.map { $0.render(stack: stack) }.joined()
                         }.joined()
                 }
+            case let .object(object):
+                var stack = stack
+                stack[name] = .object(object)
+                for (key, value) in object {
+                    stack[key] = value
+                }
+                return elements.lazy.map { $0.render(stack: stack) }.joined()
             case let .array(array):
                 return array.lazy.map {
                     var stack = stack
-                    stack[name] = .array([$0])
+                    stack[name] = .object($0)
                     for (key, value) in $0 {
                         stack[key] = value
                     }
