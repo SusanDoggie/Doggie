@@ -280,10 +280,8 @@ extension SDMarker.Element {
                     if bool {
                         return elements.lazy.map { $0.render(stack: stack) }.joined()
                     }
-                } else {
-                    if !bool {
-                        return elements.lazy.map { $0.render(stack: stack) }.joined()
-                    }
+                } else if !bool {
+                    return elements.lazy.map { $0.render(stack: stack) }.joined()
                 }
             case let .integer(count):
                 if flag {
@@ -294,12 +292,10 @@ extension SDMarker.Element {
                             return elements.lazy.map { $0.render(stack: stack) }.joined()
                             }.joined()
                     }
-                } else {
-                    if count == 0 {
-                        var stack = stack
-                        stack[name] = .integer(0)
-                        return elements.lazy.map { $0.render(stack: stack) }.joined()
-                    }
+                } else if count == 0 {
+                    var stack = stack
+                    stack[name] = .integer(0)
+                    return elements.lazy.map { $0.render(stack: stack) }.joined()
                 }
             case let .object(object):
                 if flag {
@@ -320,12 +316,10 @@ extension SDMarker.Element {
                         }
                         return elements.lazy.map { $0.render(stack: stack) }.joined()
                         }.joined()
-                } else {
-                    if array.count == 0 {
-                        var stack = stack
-                        stack[name] = .object([:])
-                        return elements.lazy.map { $0.render(stack: stack) }.joined()
-                    }
+                } else if array.count == 0 {
+                    var stack = stack
+                    stack[name] = .object([:])
+                    return elements.lazy.map { $0.render(stack: stack) }.joined()
                 }
             default: break
             }
