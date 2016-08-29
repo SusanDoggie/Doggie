@@ -41,13 +41,12 @@ let path = try SDPath(code: "M100 0c0-100-236.60 36.60-150 86.60S36.60-136.60-50
 ```
 - template engine
 ```swift
-let marker: SDMarker = "<p>\n    <h1>{{% header %}}</h1>\n{{# false_section #}}    This line never shown.<br />{{# false_section #}}{{# true_section #}}    This line will shown.<br />{{# true_section #}}{{#loop#}}\n    {{%loop%}}<br />{{#loop#}}{{#list#}}\n    {{%item%}}<br />{{#list#}}\n</p>"
+let marker: SDMarker = "<p>\n    <h1>{{% header %}}</h1>\n{{# ! bool #}}    This line never shown.<br />{{# bool #}}{{# bool #}}    This line will shown.<br />{{# bool #}}{{#loop#}}\n    {{%loop%}}<br />{{#loop#}}{{#list#}}\n    {{%item%}}<br />{{#list#}}\n</p>"
 
 marker.render([
     
     "header": "This is a header",
-    "false_section": false,
-    "true_section": true,
+    "bool": true,
     "loop": 3,
     "list": [
         ["item": "apple"],
