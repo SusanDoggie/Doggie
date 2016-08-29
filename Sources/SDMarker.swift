@@ -39,7 +39,7 @@ public struct SDMarker {
         case integer(IntMax)
         case float(Double)
         case object([String: Value])
-        case array([[String: Value]])
+        case array([Value])
         case template(SDMarker)
     }
     
@@ -184,7 +184,7 @@ extension SDMarker.Value {
     public init(_ val: [String: SDMarker.Value]) {
         self = .object(val)
     }
-    public init<S : Sequence>(_ val: S) where S.Iterator.Element == [String: SDMarker.Value] {
+    public init<S : Sequence>(_ val: S) where S.Iterator.Element == SDMarker.Value {
         self = .array(Array(val))
     }
 }
@@ -230,7 +230,7 @@ extension SDMarker.Value: ExpressibleByStringLiteral {
 
 extension SDMarker.Value: ExpressibleByArrayLiteral {
     
-    public init(arrayLiteral elements: [String: SDMarker.Value] ...) {
+    public init(arrayLiteral elements: SDMarker.Value ...) {
         self.init(elements)
     }
 }
@@ -293,8 +293,6 @@ extension SDMarker.Element {
                             }.joined()
                     }
                 } else if count == 0 {
-                    var stack = stack
-                    stack[name] = .integer(0)
                     return elements.lazy.map { $0.render(stack: stack) }.joined()
                 }
             case let .object(object):
@@ -310,15 +308,17 @@ extension SDMarker.Element {
                 if flag {
                     return array.lazy.map {
                         var stack = stack
-                        stack[name] = .object($0)
-                        for (key, value) in $0 {
-                            stack[key] = value
+                        stack[name] = $0
+                        switch $0 {
+                        case let .object(object):
+                            for (key, value) in object {
+                                stack[key] = value
+                            }
+                        default: break
                         }
                         return elements.lazy.map { $0.render(stack: stack) }.joined()
                         }.joined()
                 } else if array.count == 0 {
-                    var stack = stack
-                    stack[name] = .object([:])
                     return elements.lazy.map { $0.render(stack: stack) }.joined()
                 }
             default: break
