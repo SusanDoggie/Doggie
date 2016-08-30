@@ -390,7 +390,7 @@ public extension Sequence {
 
 public extension Comparable {
     
-    func clamp(_ range: ClosedRange<Self>) -> Self {
+    func clamped(to range: ClosedRange<Self>) -> Self {
         return min(max(self, range.lowerBound), range.upperBound)
     }
 }
