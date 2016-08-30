@@ -500,9 +500,8 @@ extension Json : MutableCollection {
     
     public subscript(index: Int) -> Json {
         get {
-            switch self.value {
-            case let array as [Any]: return Json(value: array[index])
-            default: break
+            if case let array as [Any] = self.value {
+                return Json(value: array[index])
             }
             return nil
         }
@@ -518,13 +517,11 @@ extension Json : MutableCollection {
     
     public subscript(key: String) -> Json {
         get {
-            switch self.value {
-            case let dictionary as [String: Any]:
+            if case let dictionary as [String: Any] = self.value {
                 if let val = dictionary[key] {
                     return Json(value: val)
                 }
                 return Json(value: nil)
-            default: break
             }
             return nil
         }

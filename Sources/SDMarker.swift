@@ -309,12 +309,10 @@ extension SDMarker.Element {
                     return array.lazy.map {
                         var stack = stack
                         stack[name] = $0
-                        switch $0 {
-                        case let .object(object):
+                        if case let .object(object) = $0 {
                             for (key, value) in object {
                                 stack[key] = value
                             }
-                        default: break
                         }
                         return elements.lazy.map { $0.render(stack: stack) }.joined()
                         }.joined()
