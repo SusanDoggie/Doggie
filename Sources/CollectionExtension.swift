@@ -196,16 +196,6 @@ public extension RandomAccessCollection where Indices.SubSequence.Iterator.Eleme
     }
 }
 
-public extension String {
-    
-    /// Returns true `pattern` appear in `self`.
-    ///
-    /// - complexity: Amortized O(`self.count`)
-    func hasPattern(_ pattern: String) -> Bool {
-        return Array(characters).match(with: Array(pattern.characters)) != nil
-    }
-}
-
 public extension MutableCollection where Indices.Iterator.Element == Index {
     
     mutating func mutateEach(body: (inout Iterator.Element) throws -> ()) rethrows {
