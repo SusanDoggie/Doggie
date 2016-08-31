@@ -56,7 +56,7 @@ extension SDMarker {
     private static func parseScope(_ chars: ArraySlice<Character>, _ characterSet: Set<Character>) -> [Element] {
         var result: [Element] = []
         var chars = chars
-        outer: while let index = chars.match(with: "{{".characters) {
+        outer: while let index = chars.range(of: "{{".characters)?.lowerBound {
             let head = chars.prefix(upTo: index + 2)
             let tail = chars.suffix(from: index + 2)
             if let token = parseToken(tail, characterSet) {
@@ -68,7 +68,7 @@ extension SDMarker {
                     continue
                 case let .scope(name, flag, end):
                     var _tail = tail.dropFirst()
-                    while let index2 = _tail.match(with: "{{#".characters) {
+                    while let index2 = _tail.range(of: "{{#".characters)?.lowerBound {
                         if let token = parseToken(_tail.suffix(from: index2 + 2), characterSet), case .scope(name, true, let end2) = token {
                             result.append(.string(String(head.dropLast(2))))
                             result.append(.scope(name, flag, parseScope(tail.suffix(from: end).prefix(upTo: index2), characterSet)))
@@ -95,14 +95,14 @@ extension SDMarker {
         if let token = chars.first {
             switch token {
             case "%":
-                if let end_token_index = chars.match(with: "%}}".characters), chars.startIndex + 1 != end_token_index {
+                if let end_token_index = chars.range(of: "%}}".characters)?.lowerBound, chars.startIndex + 1 != end_token_index {
                     let variable_name = String(chars.prefix(upTo: end_token_index).dropFirst()).trimmingCharacters(in: .whitespaces)
                     if variable_name.characters.all({ characterSet.contains($0) }) {
                         return .variable(variable_name, end_token_index + 3)
                     }
                 }
             case "#":
-                if let end_token_index = chars.match(with: "#}}".characters), chars.startIndex + 1 != end_token_index {
+                if let end_token_index = chars.range(of: "#}}".characters)?.lowerBound, chars.startIndex + 1 != end_token_index {
                     var flag = true
                     var scope_name = String(chars.prefix(upTo: end_token_index).dropFirst()).trimmingCharacters(in: .whitespaces)
                     if scope_name.characters.first == "!" {
