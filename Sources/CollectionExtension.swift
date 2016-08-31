@@ -157,10 +157,10 @@ public extension RandomAccessCollection {
 
 public extension RandomAccessCollection where Indices.SubSequence.Iterator.Element == Index, Indices.Index == Index {
     
-    /// Returns first position of `pattern` appear in `self`, or `nil` if not match.
+    /// Returns first range of `pattern` appear in `self`, or `nil` if not match.
     ///
     /// - complexity: Amortized O(`self.count`)
-    func match<C : BidirectionalCollection>(with pattern: C, by isEquivalent: (Iterator.Element, Iterator.Element) throws -> Bool) rethrows -> Index? where C.Iterator.Element == Iterator.Element {
+    func range<C : BidirectionalCollection>(of pattern: C, where isEquivalent: (Iterator.Element, Iterator.Element) throws -> Bool) rethrows -> Range<Index>? where C.Iterator.Element == Iterator.Element {
         
         let pattern_count: IndexDistance = numericCast(pattern.count)
         if count < pattern_count {
@@ -170,7 +170,9 @@ public extension RandomAccessCollection where Indices.SubSequence.Iterator.Eleme
         var cursor = self.index(startIndex, offsetBy: pattern_count - 1, limitedBy: endIndex) ?? endIndex
         while cursor < endIndex {
             guard let not_match = try zip(self.indices.prefix(through: cursor).reversed(), reverse_pattern).first(where: { try !isEquivalent(self[$0], $1) }) else {
-                return self.index(cursor, offsetBy: 1 - pattern_count)
+                let strat = self.index(cursor, offsetBy: 1 - pattern_count)
+                let end = self.index(cursor, offsetBy: 1)
+                return strat..<end
             }
             let notMatchValue = self[not_match.0]
             if let pos = try reverse_pattern.dropFirst().index(where: { try isEquivalent(notMatchValue, $0) }) {
@@ -180,7 +182,8 @@ public extension RandomAccessCollection where Indices.SubSequence.Iterator.Eleme
             }
         }
         if try self.reversed().starts(with: reverse_pattern, by: isEquivalent) {
-            return self.index(endIndex, offsetBy: -pattern_count)
+            let strat = self.index(endIndex, offsetBy: -pattern_count)
+            return strat..<endIndex
         }
         return nil
     }
@@ -188,11 +191,11 @@ public extension RandomAccessCollection where Indices.SubSequence.Iterator.Eleme
 
 public extension RandomAccessCollection where Indices.SubSequence.Iterator.Element == Index, Indices.Index == Index, Iterator.Element : Equatable {
     
-    /// Returns first position of `pattern` appear in `self`, or `nil` if not match.
+    /// Returns first range of `pattern` appear in `self`, or `nil` if not match.
     ///
     /// - complexity: Amortized O(`self.count`)
-    func match<C : BidirectionalCollection>(with pattern: C) -> Index? where C.Iterator.Element == Iterator.Element {
-        return self.match(with: pattern, by: ==)
+    func range<C : BidirectionalCollection>(of pattern: C) -> Range<Index>? where C.Iterator.Element == Iterator.Element {
+        return self.range(of: pattern, where: ==)
     }
 }
 
