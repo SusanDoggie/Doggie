@@ -390,8 +390,8 @@ public func PerspectiveProjectMatrix(alpha: Double, aspect: Double, nearZ: Doubl
     return [
         cotan / aspect, 0.0, 0.0, 0.0,
         0.0, cotan, 0.0, 0.0,
-        0.0, 0.0, (farZ + nearZ) / (nearZ - farZ), (2.0 * farZ * nearZ) / (nearZ - farZ),
-        0.0, 0.0, -1.0, 0.0
+        0.0, 0.0, (farZ + nearZ) / (nearZ - farZ), －1.0,
+        0.0, 0.0, (2.0 * farZ * nearZ) / (nearZ - farZ), 0.0
     ]
 }
 
