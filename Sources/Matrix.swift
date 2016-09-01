@@ -385,12 +385,13 @@ extension Matrix {
     }
 }
 
+// column major
 public func PerspectiveProjectMatrix(alpha: Double, aspect: Double, nearZ: Double, farZ: Double) -> [Double] {
     let cotan = 1.0 / tan(alpha * 0.5)
     return [
         cotan / aspect, 0.0, 0.0, 0.0,
         0.0, cotan, 0.0, 0.0,
-        0.0, 0.0, (farZ + nearZ) / (nearZ - farZ), －1.0,
+        0.0, 0.0, (farZ + nearZ) / (nearZ - farZ), -1.0,
         0.0, 0.0, (2.0 * farZ * nearZ) / (nearZ - farZ), 0.0
     ]
 }
