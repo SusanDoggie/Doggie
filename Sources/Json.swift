@@ -51,7 +51,7 @@ extension Json {
     public init(_ value: String) {
         self.value = value
     }
-    public init<S : Sequence>(_ elements: S) where S.Iterator.Element == Any {
+    public init<S : Sequence>(_ elements: S) {
         self.value = elements.map { ($0 as? Json)?.value! ?? $0 }
     }
     public init(_ elements: [String: Any]) {
