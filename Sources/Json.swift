@@ -51,13 +51,13 @@ extension Json {
     public init(_ value: String) {
         self.value = value
     }
-    public init<S : Sequence>(_ elements: S) where S.Iterator.Element == Json {
-        self.value = elements.map { $0.value! }
+    public init<S : Sequence>(_ elements: S) where S.Iterator.Element == Any {
+        self.value = elements.map { ($0 as? Json)?.value! ?? $0 }
     }
-    public init(_ elements: [String: Json]) {
+    public init(_ elements: [String: Any]) {
         var dictionary = [String: Any](minimumCapacity: elements.count)
         for (key, value) in elements {
-            dictionary[key] = value.value
+            dictionary[key] = (value as? Json)?.value! ?? value
         }
         self.value = dictionary
     }
@@ -111,14 +111,14 @@ extension Json: ExpressibleByStringLiteral {
 
 extension Json: ExpressibleByArrayLiteral {
     
-    public init(arrayLiteral elements: Json ...) {
+    public init(arrayLiteral elements: Any ...) {
         self.init(elements)
     }
 }
 
 extension Json: ExpressibleByDictionaryLiteral {
     
-    public init(dictionaryLiteral elements: (String, Json) ...) {
+    public init(dictionaryLiteral elements: (String, Any) ...) {
         var dictionary = [String: Any](minimumCapacity: elements.count)
         for (key, value) in elements {
             dictionary[key] = value.value
