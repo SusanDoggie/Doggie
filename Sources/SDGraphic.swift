@@ -146,8 +146,8 @@ extension Rect {
                         switch component {
                         case let .move(point): path.move(to: CGPoint(point))
                         case let .line(point): path.addLine(to: CGPoint(point))
-                        case let .quad(p1, p2): path.addQuadCurve(to: CGPoint(p1), control: CGPoint(p2))
-                        case let .cubic(p1, p2, p3): path.addCurve(to: CGPoint(p1), control1: CGPoint(p2), control2: CGPoint(p3))
+                        case let .quad(p1, p2): path.addQuadCurve(to: CGPoint(p2), control: CGPoint(p1))
+                        case let .cubic(p1, p2, p3): path.addCurve(to: CGPoint(p3), control1: CGPoint(p1), control2: CGPoint(p2))
                         case .close: path.closeSubpath()
                         }
                     }
