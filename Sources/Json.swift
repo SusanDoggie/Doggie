@@ -121,7 +121,7 @@ extension Json: ExpressibleByDictionaryLiteral {
     public init(dictionaryLiteral elements: (String, Any) ...) {
         var dictionary = [String: Any](minimumCapacity: elements.count)
         for (key, value) in elements {
-            dictionary[key] = value.value
+            dictionary[key] = (value as? Json)?.value! ?? value
         }
         self.init(value: dictionary)
     }
