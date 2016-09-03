@@ -33,7 +33,7 @@ public struct Json {
         self.value = value
     }
     
-    static func unwrap(_ value: Any) -> Any? {
+    fileprivate static func unwrap(_ value: Any) -> Any? {
         if let json = value as? Json {
             return json.value
         }
