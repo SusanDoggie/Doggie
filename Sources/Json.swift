@@ -32,6 +32,13 @@ public struct Json {
     fileprivate init(value: Any?) {
         self.value = value
     }
+    
+    static func unwrap(_ value: Any) -> Any? {
+        if let json = value as? Json {
+            return json.value
+        }
+        return value
+    }
 }
 
 extension Json {
@@ -52,12 +59,12 @@ extension Json {
         self.value = value
     }
     public init<S : Sequence>(_ elements: S) {
-        self.value = elements.map { ($0 as? Json)?.value! ?? $0 }
+        self.value = elements.map { Json.unwrap($0) }
     }
     public init(_ elements: [String: Any]) {
         var dictionary = [String: Any](minimumCapacity: elements.count)
         for (key, value) in elements {
-            dictionary[key] = (value as? Json)?.value! ?? value
+            dictionary[key] = Json.unwrap(value)
         }
         self.value = dictionary
     }
@@ -121,7 +128,7 @@ extension Json: ExpressibleByDictionaryLiteral {
     public init(dictionaryLiteral elements: (String, Any) ...) {
         var dictionary = [String: Any](minimumCapacity: elements.count)
         for (key, value) in elements {
-            dictionary[key] = (value as? Json)?.value! ?? value
+            dictionary[key] = Json.unwrap(value)
         }
         self.init(value: dictionary)
     }
