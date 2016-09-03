@@ -70,6 +70,20 @@ extension Vector: Hashable {
     }
 }
 
+extension Vector {
+    
+    public func offset(dx: Double, dy: Double, dz: Double) -> Vector {
+        return Vector(x: self.x + dx, y: self.y + dy, z: self.z + dz)
+    }
+}
+
+extension Vector {
+    
+    public func distance(to: Vector) -> Double {
+        return Vector(x: to.x - self.x, y: to.y - self.y, z: to.z - self.z).magnitude
+    }
+}
+
 public func dot(_ lhs: Vector, _ rhs:  Vector) -> Double {
     return lhs.x * rhs.x + lhs.y * rhs.y + lhs.z * rhs.z
 }

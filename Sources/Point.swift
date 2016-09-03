@@ -78,6 +78,13 @@ extension Point {
     }
 }
 
+extension Point {
+    
+    public func distance(to: Point) -> Double {
+        return Point(x: to.x - self.x, y: to.y - self.y).magnitude
+    }
+}
+
 extension Point: CustomStringConvertible {
     public var description: String {
         return "{x: \(x), y: \(y)}"
@@ -104,9 +111,6 @@ public func middle(_ p: Point ... ) -> Point {
         _y += point.y
     }
     return Point(x: _x / count, y: _y / count)
-}
-public func distance(_ lhs: Point, _ rhs: Point) -> Double {
-    return (lhs - rhs).magnitude
 }
 
 public func direction(_ a: Point, _ b: Point, _ c: Point) -> Double {
