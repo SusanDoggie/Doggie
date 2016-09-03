@@ -34,13 +34,12 @@ public struct SDMarker {
     }
     
     public enum Value {
-        case string(String)
-        case boolean(Bool)
-        case integer(IntMax)
-        case float(Double)
         case object([String: Value])
         case array([Value])
         case template(SDMarker)
+        case integer(IntMax)
+        case boolean(Bool)
+        case any(Any)
     }
     
     fileprivate let elements: [Element]
@@ -173,13 +172,13 @@ extension SDMarker.Value {
         self = .integer(val.toIntMax())
     }
     public init(_ val: Float) {
-        self = .float(Double(val))
+        self = .any(val)
     }
     public init(_ val: Double) {
-        self = .float(val)
+        self = .any(val)
     }
     public init(_ val: String) {
-        self = .string(val)
+        self = .any(val)
     }
     public init(_ val: [String: SDMarker.Value]) {
         self = .object(val)
@@ -250,13 +249,12 @@ extension SDMarker.Value : CustomStringConvertible {
     
     public var description: String {
         switch self {
-        case let .string(string): return string
-        case let .boolean(bool): return "\(bool)"
-        case let .integer(integer): return "\(integer)"
-        case let .float(float): return "\(float)"
         case let .object(object): return "\(object)"
         case let .array(array): return "\(array)"
         case let .template(template): return template.description
+        case let .integer(integer): return "\(integer)"
+        case let .boolean(bool): return "\(bool)"
+        case let .any(other): return "\(other)"
         }
     }
 }
@@ -275,26 +273,6 @@ extension SDMarker.Element {
             }
         case let .scope(name, flag, elements):
             switch stack[name] ?? false {
-            case let .boolean(bool):
-                if flag {
-                    if bool {
-                        return elements.lazy.map { $0.render(stack: stack) }.joined()
-                    }
-                } else if !bool {
-                    return elements.lazy.map { $0.render(stack: stack) }.joined()
-                }
-            case let .integer(count):
-                if flag {
-                    if count > 0 {
-                        return (0..<count).lazy.map {
-                            var stack = stack
-                            stack[name] = .integer($0)
-                            return elements.lazy.map { $0.render(stack: stack) }.joined()
-                            }.joined()
-                    }
-                } else if count == 0 {
-                    return elements.lazy.map { $0.render(stack: stack) }.joined()
-                }
             case let .object(object):
                 if flag {
                     var stack = stack
@@ -317,6 +295,26 @@ extension SDMarker.Element {
                         return elements.lazy.map { $0.render(stack: stack) }.joined()
                         }.joined()
                 } else if array.count == 0 {
+                    return elements.lazy.map { $0.render(stack: stack) }.joined()
+                }
+            case let .integer(count):
+                if flag {
+                    if count > 0 {
+                        return (0..<count).lazy.map {
+                            var stack = stack
+                            stack[name] = .integer($0)
+                            return elements.lazy.map { $0.render(stack: stack) }.joined()
+                            }.joined()
+                    }
+                } else if count == 0 {
+                    return elements.lazy.map { $0.render(stack: stack) }.joined()
+                }
+            case let .boolean(bool):
+                if flag {
+                    if bool {
+                        return elements.lazy.map { $0.render(stack: stack) }.joined()
+                    }
+                } else if !bool {
                     return elements.lazy.map { $0.render(stack: stack) }.joined()
                 }
             default: break
