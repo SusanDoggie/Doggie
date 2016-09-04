@@ -35,6 +35,8 @@
 		0813224D1C11D3600081B2B9 /* SDPathCoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA721C0550B7007FA426 /* SDPathCoder.swift */; };
 		0813224F1C11D3600081B2B9 /* SDRectangle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA741C0550B7007FA426 /* SDRectangle.swift */; };
 		081322501C11D3600081B2B9 /* SDShape.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA751C0550B7007FA426 /* SDShape.swift */; };
+		0819F5E61D7C13C60045E0EC /* SDValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0819F5E51D7C13C60045E0EC /* SDValue.swift */; };
+		0819F5E71D7C13C60045E0EC /* SDValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0819F5E51D7C13C60045E0EC /* SDValue.swift */; };
 		082516261C51C60A00F8F9B0 /* Doggie_iOS.h in Headers */ = {isa = PBXBuildFile; fileRef = 087FE59B1A372D5B005A2E9E /* Doggie_iOS.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		0858DA7F1C0550B7007FA426 /* Arithmetic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA431C0550B7007FA426 /* Arithmetic.swift */; };
 		0858DA831C0550B7007FA426 /* CircularConvolve.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA441C0550B7007FA426 /* CircularConvolve.swift */; };
@@ -127,6 +129,7 @@
 /* Begin PBXFileReference section */
 		081321D31C11D1840081B2B9 /* Doggie.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Doggie.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		081321DC1C11D1850081B2B9 /* Doggie_iOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Doggie_iOSTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		0819F5E51D7C13C60045E0EC /* SDValue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SDValue.swift; sourceTree = "<group>"; };
 		0858DA431C0550B7007FA426 /* Arithmetic.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Arithmetic.swift; sourceTree = "<group>"; };
 		0858DA441C0550B7007FA426 /* CircularConvolve.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CircularConvolve.swift; sourceTree = "<group>"; };
 		0858DA451C0550B7007FA426 /* ComplexConversion.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ComplexConversion.swift; sourceTree = "<group>"; };
@@ -228,6 +231,7 @@
 				0858DA5E1C0550B7007FA426 /* Maths */,
 				0858DA6D1C0550B7007FA426 /* SDAtomicNode.swift */,
 				0AF9BDBA1D6178470058F2AA /* SDMarker.swift */,
+				0819F5E51D7C13C60045E0EC /* SDValue.swift */,
 				0858DA6E1C0550B7007FA426 /* SDShape */,
 			);
 			name = Doggie;
@@ -598,6 +602,7 @@
 			files = (
 				0AADD1381D10E80A00087247 /* GroupElementsCollection.swift in Sources */,
 				0AADD1331D10E7E700087247 /* LazyChunkElementsCollection.swift in Sources */,
+				0819F5E61D7C13C60045E0EC /* SDValue.swift in Sources */,
 				081322281C11D3600081B2B9 /* Move.swift in Sources */,
 				081322231C11D3600081B2B9 /* ComplexConversion.swift in Sources */,
 				081322401C11D3600081B2B9 /* Polynomial.swift in Sources */,
@@ -659,6 +664,7 @@
 			files = (
 				0AADD13A1D10E80A00087247 /* GroupElementsCollection.swift in Sources */,
 				0AADD1351D10E7E700087247 /* LazyChunkElementsCollection.swift in Sources */,
+				0819F5E71D7C13C60045E0EC /* SDValue.swift in Sources */,
 				0858DB371C0550B7007FA426 /* SDShape.swift in Sources */,
 				0858DB331C0550B7007FA426 /* SDRectangle.swift in Sources */,
 				0858DAF31C0550B7007FA426 /* Point.swift in Sources */,

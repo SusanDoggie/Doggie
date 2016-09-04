@@ -379,29 +379,29 @@ extension Json {
 
 public func ==(lhs: Json.Index, rhs: Json.Index) -> Bool {
     switch lhs.base {
-    case .array(let _lhs):
+    case let .array(_lhs):
         switch rhs.base {
-        case .array(let _rhs): return _lhs == _rhs
+        case let .array(_rhs): return _lhs == _rhs
         case .object(_): fatalError("Not the same index type.")
         }
-    case .object(let _lhs):
+    case let .object(_lhs):
         switch rhs.base {
         case .array(_): fatalError("Not the same index type.")
-        case .object(let _rhs): return _lhs == _rhs
+        case let .object(_rhs): return _lhs == _rhs
         }
     }
 }
 public func <(lhs: Json.Index, rhs: Json.Index) -> Bool {
     switch lhs.base {
-    case .array(let _lhs):
+    case let .array(_lhs):
         switch rhs.base {
-        case .array(let _rhs): return _lhs < _rhs
+        case let .array(_rhs): return _lhs < _rhs
         case .object(_): fatalError("Not the same index type.")
         }
-    case .object(let _lhs):
+    case let .object(_lhs):
         switch rhs.base {
         case .array(_): fatalError("Not the same index type.")
-        case .object(let _rhs): return _lhs < _rhs
+        case let .object(_rhs): return _lhs < _rhs
         }
     }
 }
@@ -410,14 +410,14 @@ private extension Json.Index {
     
     var intValue: Int? {
         switch self.base {
-        case .array(let x): return x
+        case let .array(x): return x
         default: return nil
         }
     }
     
     var objectIndex: DictionaryIndex<String, Any>? {
         switch self.base {
-        case .object(let x): return x
+        case let .object(x): return x
         default: return nil
         }
     }
