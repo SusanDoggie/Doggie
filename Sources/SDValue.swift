@@ -23,62 +23,54 @@
 //  THE SOFTWARE.
 //
 
-public struct SDValue {
+public enum SDValue {
     
-    fileprivate var base: SDValue.Base?
-    
-    fileprivate init(_ base: SDValue.Base?) {
-        self.base = base
-    }
-    
-    fileprivate enum Base {
-        
-        case bool(Bool)
-        case int(IntMax)
-        case uint(UIntMax)
-        case float(Double)
-        case string(String)
-        case array([SDValue])
-        case object([String: SDValue])
-        case any(Any)
-    }
+    case none
+    case bool(Bool)
+    case int(IntMax)
+    case uint(UIntMax)
+    case float(Double)
+    case string(String)
+    case array([SDValue])
+    case object([String: SDValue])
+    case any(Any)
 }
 
 extension SDValue {
     
     public init(_ val: Bool) {
-        self.base = .bool(val)
+        self = .bool(val)
     }
     public init<S : SignedInteger>(_ val: S) {
-        self.base = .int(val.toIntMax())
+        self = .int(val.toIntMax())
     }
     public init<S : UnsignedInteger>(_ val: S) {
-        self.base = .uint(val.toUIntMax())
+        self = .uint(val.toUIntMax())
     }
     public init(_ val: Float) {
-        self.base = .float(Double(val))
+        self = .float(Double(val))
     }
     public init(_ val: Double) {
-        self.base = .float(val)
+        self = .float(val)
     }
     public init(_ val: String) {
-        self.base = .string(val)
+        self = .string(val)
     }
     public init(_ val: [String: SDValue]) {
-        self.base = .object(val)
+        self = .object(val)
     }
     public init<S : Sequence>(_ val: S) where S.Iterator.Element == SDValue {
-        self.base = .array(Array(val))
+        self = .array(Array(val))
     }
     public init(any: Any) {
-        self.base = .any(any)
+        self = .any(any)
     }
 }
 
 extension SDValue : ExpressibleByNilLiteral {
     
     public init(nilLiteral: ()){
-        self.init(nil)
+        self = .none
     }
 }
 
@@ -135,14 +127,15 @@ extension SDValue: ExpressibleByDictionaryLiteral {
         for (key, value) in elements {
             dictionary[key] = value
         }
-        self.base = .object(dictionary)
+        self = .object(dictionary)
     }
 }
 
-extension SDValue.Base {
+extension SDValue {
     
-    fileprivate var value: Any {
+    fileprivate var value: Any? {
         switch self {
+        case .none: return nil
         case let .bool(bool): return bool
         case let .int(int): return int
         case let .uint(uint): return uint
@@ -155,18 +148,11 @@ extension SDValue.Base {
     }
 }
 
-extension SDValue.Base: CustomStringConvertible {
-    
-    fileprivate var description: String {
-        return "\(self.value)"
-    }
-}
-
 extension SDValue: CustomStringConvertible {
     
     public var description: String {
-        if let base = self.base {
-            return base.description
+        if let value = self.value {
+            return "\(value)"
         }
         return "nil"
     }
@@ -175,62 +161,65 @@ extension SDValue: CustomStringConvertible {
 extension SDValue {
     
     public var isNil : Bool {
-        return self.base == nil
+        switch self {
+        case .none: return true
+        default: return false
+        }
     }
     
     public var isBool : Bool {
-        switch self.base {
-        case .some(.bool(_)): return true
+        switch self {
+        case .bool(_): return true
         default: return false
         }
     }
     
     public var isUnsignedInteger : Bool {
-        switch self.base {
-        case .some(.uint(_)): return true
+        switch self {
+        case .uint(_): return true
         default: return false
         }
     }
     
     public var isSignedInteger : Bool {
-        switch self.base {
-        case .some(.int(_)): return true
+        switch self {
+        case .int(_): return true
         default: return false
         }
     }
     
     public var isInteger : Bool {
-        switch self.base {
-        case .some(.int(_)): return true
-        case .some(.uint(_)): return true
+        switch self {
+        case .int(_): return true
+        case .uint(_): return true
         default: return false
         }
     }
     
     public var isString : Bool {
-        switch self.base {
-        case .some(.string(_)): return true
+        switch self {
+        case .string(_): return true
         default: return false
         }
     }
     
     public var isArray : Bool {
-        switch self.base {
-        case .some(.array(_)): return true
+        switch self {
+        case .array(_): return true
         default: return false
         }
     }
     
     public var isObject : Bool {
-        switch self.base {
-        case .some(.object(_)): return true
+        switch self {
+        case .object(_): return true
         default: return false
         }
     }
     
     public var isAny : Bool {
-        switch self.base {
-        case .some(.any(_)): return true
+        switch self {
+        case .any(_): return true
         default: return false
         }
     }
@@ -240,8 +229,8 @@ extension SDValue {
     
     public var boolValue: Bool? {
         get {
-            switch self.base {
-            case let .some(.bool(value)): return value
+            switch self {
+            case let .bool(value): return value
             default: return nil
             }
         }
@@ -249,15 +238,15 @@ extension SDValue {
             if let value = newValue {
                 self = SDValue(value)
             }
-            self.base = nil
+            self = nil
         }
     }
     
     public var int8Value: Int8? {
         get {
-            switch self.base {
-            case let .some(.int(value)): return Int8(exactly: value)
-            case let .some(.uint(value)): return Int8(exactly: value)
+            switch self {
+            case let .int(value): return Int8(exactly: value)
+            case let .uint(value): return Int8(exactly: value)
             default: return nil
             }
         }
@@ -265,15 +254,15 @@ extension SDValue {
             if let value = newValue {
                 self = SDValue(value)
             }
-            self.base = nil
+            self = nil
         }
     }
     
     public var uint8Value: UInt8? {
         get {
-            switch self.base {
-            case let .some(.int(value)): return UInt8(exactly: value)
-            case let .some(.uint(value)): return UInt8(exactly: value)
+            switch self {
+            case let .int(value): return UInt8(exactly: value)
+            case let .uint(value): return UInt8(exactly: value)
             default: return nil
             }
         }
@@ -281,15 +270,15 @@ extension SDValue {
             if let value = newValue {
                 self = SDValue(value)
             }
-            self.base = nil
+            self = nil
         }
     }
     
     public var int16Value: Int16? {
         get {
-            switch self.base {
-            case let .some(.int(value)): return Int16(exactly: value)
-            case let .some(.uint(value)): return Int16(exactly: value)
+            switch self {
+            case let .int(value): return Int16(exactly: value)
+            case let .uint(value): return Int16(exactly: value)
             default: return nil
             }
         }
@@ -297,15 +286,15 @@ extension SDValue {
             if let value = newValue {
                 self = SDValue(value)
             }
-            self.base = nil
+            self = nil
         }
     }
     
     public var uint16Value: UInt16? {
         get {
-            switch self.base {
-            case let .some(.int(value)): return UInt16(exactly: value)
-            case let .some(.uint(value)): return UInt16(exactly: value)
+            switch self {
+            case let .int(value): return UInt16(exactly: value)
+            case let .uint(value): return UInt16(exactly: value)
             default: return nil
             }
         }
@@ -313,15 +302,15 @@ extension SDValue {
             if let value = newValue {
                 self = SDValue(value)
             }
-            self.base = nil
+            self = nil
         }
     }
     
     public var int32Value: Int32? {
         get {
-            switch self.base {
-            case let .some(.int(value)): return Int32(exactly: value)
-            case let .some(.uint(value)): return Int32(exactly: value)
+            switch self {
+            case let .int(value): return Int32(exactly: value)
+            case let .uint(value): return Int32(exactly: value)
             default: return nil
             }
         }
@@ -329,15 +318,15 @@ extension SDValue {
             if let value = newValue {
                 self = SDValue(value)
             }
-            self.base = nil
+            self = nil
         }
     }
     
     public var uint32Value: UInt32? {
         get {
-            switch self.base {
-            case let .some(.int(value)): return UInt32(exactly: value)
-            case let .some(.uint(value)): return UInt32(exactly: value)
+            switch self {
+            case let .int(value): return UInt32(exactly: value)
+            case let .uint(value): return UInt32(exactly: value)
             default: return nil
             }
         }
@@ -345,15 +334,15 @@ extension SDValue {
             if let value = newValue {
                 self = SDValue(value)
             }
-            self.base = nil
+            self = nil
         }
     }
     
     public var int64Value: Int64? {
         get {
-            switch self.base {
-            case let .some(.int(value)): return Int64(exactly: value)
-            case let .some(.uint(value)): return Int64(exactly: value)
+            switch self {
+            case let .int(value): return Int64(exactly: value)
+            case let .uint(value): return Int64(exactly: value)
             default: return nil
             }
         }
@@ -361,15 +350,15 @@ extension SDValue {
             if let value = newValue {
                 self = SDValue(value)
             }
-            self.base = nil
+            self = nil
         }
     }
     
     public var uint64Value: UInt64? {
         get {
-            switch self.base {
-            case let .some(.int(value)): return UInt64(exactly: value)
-            case let .some(.uint(value)): return UInt64(exactly: value)
+            switch self {
+            case let .int(value): return UInt64(exactly: value)
+            case let .uint(value): return UInt64(exactly: value)
             default: return nil
             }
         }
@@ -377,14 +366,14 @@ extension SDValue {
             if let value = newValue {
                 self = SDValue(value)
             }
-            self.base = nil
+            self = nil
         }
     }
     
     public var floatValue: Float? {
         get {
-            switch self.base {
-            case let .some(.float(value)): return Float(value)
+            switch self {
+            case let .float(value): return Float(value)
             default: return nil
             }
         }
@@ -392,14 +381,14 @@ extension SDValue {
             if let value = newValue {
                 self = SDValue(value)
             }
-            self.base = nil
+            self = nil
         }
     }
     
     public var doubleValue: Double? {
         get {
-            switch self.base {
-            case let .some(.float(value)): return value
+            switch self {
+            case let .float(value): return value
             default: return nil
             }
         }
@@ -407,15 +396,15 @@ extension SDValue {
             if let value = newValue {
                 self = SDValue(value)
             }
-            self.base = nil
+            self = nil
         }
     }
     
     public var intValue: Int? {
         get {
-            switch self.base {
-            case let .some(.int(value)): return Int(exactly: value)
-            case let .some(.uint(value)): return Int(exactly: value)
+            switch self {
+            case let .int(value): return Int(exactly: value)
+            case let .uint(value): return Int(exactly: value)
             default: return nil
             }
         }
@@ -423,15 +412,15 @@ extension SDValue {
             if let value = newValue {
                 self = SDValue(value)
             }
-            self.base = nil
+            self = nil
         }
     }
     
     public var uintValue: UInt? {
         get {
-            switch self.base {
-            case let .some(.int(value)): return UInt(exactly: value)
-            case let .some(.uint(value)): return UInt(exactly: value)
+            switch self {
+            case let .int(value): return UInt(exactly: value)
+            case let .uint(value): return UInt(exactly: value)
             default: return nil
             }
         }
@@ -439,13 +428,13 @@ extension SDValue {
             if let value = newValue {
                 self = SDValue(value)
             }
-            self.base = nil
+            self = nil
         }
     }
     public var stringValue: String? {
         get {
-            switch self.base {
-            case let .some(.string(value)): return value
+            switch self {
+            case let .string(value): return value
             default: return nil
             }
         }
@@ -453,13 +442,13 @@ extension SDValue {
             if let value = newValue {
                 self = SDValue(value)
             }
-            self.base = nil
+            self = nil
         }
     }
     public var array: [SDValue]? {
         get {
-            switch self.base {
-            case let .some(.array(value)): return value.map { SDValue($0) }
+            switch self {
+            case let .array(value): return value.map { SDValue($0) }
             default: return nil
             }
         }
@@ -467,13 +456,13 @@ extension SDValue {
             if let value = newValue {
                 self = SDValue(value)
             }
-            self.base = nil
+            self = nil
         }
     }
     public var dictionary: [String: SDValue]? {
         get {
-            switch self.base {
-            case let .some(.object(value)):
+            switch self {
+            case let .object(value):
                 var dictionary = [String: SDValue](minimumCapacity: value.count)
                 for (key, value) in value {
                     dictionary[key] = SDValue(value)
@@ -486,13 +475,13 @@ extension SDValue {
             if let value = newValue {
                 self = SDValue(value)
             }
-            self.base = nil
+            self = nil
         }
     }
     public var anyValue: Any? {
         get {
-            switch self.base {
-            case let .some(.any(value)): return value
+            switch self {
+            case let .any(value): return value
             default: return nil
             }
         }
@@ -500,7 +489,7 @@ extension SDValue {
             if let value = newValue {
                 self = SDValue(any: value)
             }
-            self.base = nil
+            self = nil
         }
     }
 }
@@ -567,28 +556,28 @@ public func <(lhs: SDValue.Index, rhs: SDValue.Index) -> Bool {
 extension SDValue : MutableCollection {
     
     public var startIndex : Index {
-        switch self.base {
-        case let .some(.array(array)): return Index(base: .array(array.startIndex))
-        case let .some(.object(object)): return Index(base: .object(object.startIndex))
+        switch self {
+        case let .array(array): return Index(base: .array(array.startIndex))
+        case let .object(object): return Index(base: .object(object.startIndex))
         default: fatalError("Not an array or object.")
         }
     }
     public var endIndex : Index {
-        switch self.base {
-        case let .some(.array(array)): return Index(base: .array(array.endIndex))
-        case let .some(.object(object)): return Index(base: .object(object.endIndex))
+        switch self {
+        case let .array(array): return Index(base: .array(array.endIndex))
+        case let .object(object): return Index(base: .object(object.endIndex))
         default: fatalError("Not an array or object.")
         }
     }
     
     public func index(after i: Index) -> Index {
-        switch self.base {
-        case let .some(.array(array)):
+        switch self {
+        case let .array(array):
             if let index = i.intValue {
                 return Index(base: .array(array.index(after: index)))
             }
             fatalError("Not an object.")
-        case let .some(.object(object)):
+        case let .object(object):
             if let index = i.objectIndex {
                 return Index(base: .object(object.index(after: index)))
             }
@@ -598,40 +587,40 @@ extension SDValue : MutableCollection {
     }
     
     public var count: Int {
-        switch self.base {
-        case let .some(.array(array)): return array.count
-        case let .some(.object(object)): return object.count
+        switch self {
+        case let .array(array): return array.count
+        case let .object(object): return object.count
         default: fatalError("Not an array or object.")
         }
     }
     
     public subscript(position: Index) -> SDValue {
         get {
-            switch self.base {
-            case let .some(.array(array)):
+            switch self {
+            case let .array(array):
                 if let index = position.intValue {
                     return array[index]
                 }
-            case let .some(.object(object)):
+            case let .object(object):
                 if let index = position.objectIndex {
                     return object[index].1
                 }
             default: break
             }
-            return SDValue(nil)
+            return nil
         }
         set {
-            switch self.base {
-            case var .some(.array(array)):
+            switch self {
+            case var .array(array):
                 if let index = position.intValue {
                     array[index] = newValue
                     self = SDValue(array)
                 } else {
                     fatalError("Not an object.")
                 }
-            case var .some(.object(object)):
+            case var .object(object):
                 if let index = position.objectIndex {
-                    if newValue.base == nil {
+                    if case .none = newValue {
                         object[object[index].0] = nil
                     } else {
                         object[object[index].0] = newValue
@@ -652,14 +641,14 @@ extension SDValue : MutableCollection {
     
     public subscript(index: Int) -> SDValue {
         get {
-            if case let .some(.array(array)) = self.base {
+            if case let .array(array) = self {
                 return array[index]
             }
-            return SDValue(nil)
+            return nil
         }
         set {
-            switch self.base {
-            case var .some(.array(array)):
+            switch self {
+            case var .array(array):
                 array[index] = newValue
                 self = SDValue(array)
             default: fatalError("Not an array.")
@@ -669,15 +658,15 @@ extension SDValue : MutableCollection {
     
     public subscript(key: String) -> SDValue {
         get {
-            if case let .some(.object(object)) = self.base, let val = object[key] {
+            if case let .object(object) = self, let val = object[key] {
                 return val
             }
-            return SDValue(nil)
+            return nil
         }
         set {
-            switch self.base {
-            case var .some(.object(object)):
-                if newValue.base == nil {
+            switch self {
+            case var .object(object):
+                if case .none = newValue {
                     object[key] = nil
                 } else {
                     object[key] = newValue
@@ -691,24 +680,13 @@ extension SDValue : MutableCollection {
 
 extension SDValue {
     
-    fileprivate func writeJson(_ writer: (String) -> Void) {
-        if let base = self.base {
-            base.writeJson(writer)
-        } else {
-            writer("null")
-        }
-    }
-    
     public func json() -> String {
         var str = ""
         self.writeJson { str.append($0) }
         return str
     }
-}
-
-extension SDValue.Base {
     
-    fileprivate static func writeStringToJson(_ str: String, _ writer: (String) -> Void) {
+    private static func writeStringToJson(_ str: String, _ writer: (String) -> Void) {
         writer("\"")
         for scalar in str.unicodeScalars {
             switch scalar {
@@ -738,13 +716,14 @@ extension SDValue.Base {
         writer("\"")
     }
     
-    fileprivate func writeJson(_ writer: (String) -> Void) {
+    private func writeJson(_ writer: (String) -> Void) {
         switch self {
+        case .none: writer("null")
         case let .bool(bool): writer("\(bool)")
         case let .int(int): writer("\(int)")
         case let .uint(uint): writer("\(uint)")
         case let .float(float): writer("\(float)")
-        case let .string(string): SDValue.Base.writeStringToJson(string, writer)
+        case let .string(string): SDValue.writeStringToJson(string, writer)
         case let .array(array):
             writer("[")
             var first = true
@@ -766,7 +745,7 @@ extension SDValue.Base {
                 } else {
                     writer(",")
                 }
-                SDValue.Base.writeStringToJson(key, writer)
+                SDValue.writeStringToJson(key, writer)
                 writer(":")
                 value.writeJson(writer)
             }
