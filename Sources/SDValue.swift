@@ -75,6 +75,13 @@ extension SDValue {
     }
 }
 
+extension SDValue : ExpressibleByNilLiteral {
+    
+    public init(nilLiteral: ()){
+        self.init(nil)
+    }
+}
+
 extension SDValue: ExpressibleByBooleanLiteral {
     
     public init(booleanLiteral value: BooleanLiteralType) {
@@ -678,6 +685,93 @@ extension SDValue : MutableCollection {
                 self = SDValue(object)
             default: fatalError("Not an object.")
             }
+        }
+    }
+}
+
+extension SDValue {
+    
+    fileprivate func writeJson(_ writer: (String) -> Void) {
+        if let base = self.base {
+            base.writeJson(writer)
+        } else {
+            writer("null")
+        }
+    }
+    
+    public func json() -> String {
+        var str = ""
+        self.writeJson { str.append($0) }
+        return str
+    }
+}
+
+extension SDValue.Base {
+    
+    fileprivate static func writeStringToJson(_ str: String, _ writer: (String) -> Void) {
+        writer("\"")
+        for scalar in str.unicodeScalars {
+            switch scalar {
+            case "\"":
+                writer("\\\"") // U+0022 quotation mark
+            case "\\":
+                writer("\\\\") // U+005C reverse solidus
+            // U+002F solidus not escaped
+            case "\u{8}":
+                writer("\\b") // U+0008 backspace
+            case "\u{c}":
+                writer("\\f") // U+000C form feed
+            case "\n":
+                writer("\\n") // U+000A line feed
+            case "\r":
+                writer("\\r") // U+000D carriage return
+            case "\t":
+                writer("\\t") // U+0009 tab
+            case "\u{0}"..."\u{f}":
+                writer("\\u000\(String(scalar.value, radix: 16))") // U+0000 to U+000F
+            case "\u{10}"..."\u{1f}":
+                writer("\\u00\(String(scalar.value, radix: 16))") // U+0010 to U+001F
+            default:
+                writer(String(scalar))
+            }
+        }
+        writer("\"")
+    }
+    
+    fileprivate func writeJson(_ writer: (String) -> Void) {
+        switch self {
+        case let .bool(bool): writer("\(bool)")
+        case let .int(int): writer("\(int)")
+        case let .uint(uint): writer("\(uint)")
+        case let .float(float): writer("\(float)")
+        case let .string(string): SDValue.Base.writeStringToJson(string, writer)
+        case let .array(array):
+            writer("[")
+            var first = true
+            for item in array {
+                if first {
+                    first = false
+                } else {
+                    writer(",")
+                }
+                item.writeJson(writer)
+            }
+            writer("]")
+        case let .object(object):
+            writer("{")
+            var first = true
+            for (key, value) in object {
+                if first {
+                    first = false
+                } else {
+                    writer(",")
+                }
+                SDValue.Base.writeStringToJson(key, writer)
+                writer(":")
+                value.writeJson(writer)
+            }
+            writer("}")
+        default: break
         }
     }
 }
