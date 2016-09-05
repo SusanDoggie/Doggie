@@ -448,7 +448,7 @@ extension SDValue {
     public var array: [SDValue]? {
         get {
             switch self {
-            case let .array(value): return value.map { SDValue($0) }
+            case let .array(value): return value
             default: return nil
             }
         }
@@ -462,12 +462,7 @@ extension SDValue {
     public var dictionary: [String: SDValue]? {
         get {
             switch self {
-            case let .object(value):
-                var dictionary = [String: SDValue](minimumCapacity: value.count)
-                for (key, value) in value {
-                    dictionary[key] = SDValue(value)
-                }
-                return dictionary
+            case let .object(value): return value
             default: return nil
             }
         }
@@ -496,146 +491,11 @@ extension SDValue {
 
 extension SDValue {
     
-    public struct Index : Comparable {
-        
-        fileprivate let base: Base
-        
-        fileprivate enum Base {
-            case array(Int)
-            case object(DictionaryIndex<String, SDValue>)
-        }
-    }
-}
-
-extension SDValue.Index {
-    
-    public var intValue: Int? {
-        switch self.base {
-        case let .array(index): return index
-        default: return nil
-        }
-    }
-    
-    fileprivate var objectIndex: DictionaryIndex<String, SDValue>? {
-        switch self.base {
-        case let .object(index): return index
-        default: return nil
-        }
-    }
-}
-
-public func ==(lhs: SDValue.Index, rhs: SDValue.Index) -> Bool {
-    switch lhs.base {
-    case let .array(_lhs):
-        switch rhs.base {
-        case let .array(_rhs): return _lhs == _rhs
-        case .object(_): fatalError("Not the same index type.")
-        }
-    case let .object(_lhs):
-        switch rhs.base {
-        case .array(_): fatalError("Not the same index type.")
-        case let .object(_rhs): return _lhs == _rhs
-        }
-    }
-}
-public func <(lhs: SDValue.Index, rhs: SDValue.Index) -> Bool {
-    switch lhs.base {
-    case let .array(_lhs):
-        switch rhs.base {
-        case let .array(_rhs): return _lhs < _rhs
-        case .object(_): fatalError("Not the same index type.")
-        }
-    case let .object(_lhs):
-        switch rhs.base {
-        case .array(_): fatalError("Not the same index type.")
-        case let .object(_rhs): return _lhs < _rhs
-        }
-    }
-}
-
-extension SDValue : MutableCollection {
-    
-    public var startIndex : Index {
-        switch self {
-        case let .array(array): return Index(base: .array(array.startIndex))
-        case let .object(object): return Index(base: .object(object.startIndex))
-        default: fatalError("Not an array or object.")
-        }
-    }
-    public var endIndex : Index {
-        switch self {
-        case let .array(array): return Index(base: .array(array.endIndex))
-        case let .object(object): return Index(base: .object(object.endIndex))
-        default: fatalError("Not an array or object.")
-        }
-    }
-    
-    public func index(after i: Index) -> Index {
-        switch self {
-        case let .array(array):
-            if let index = i.intValue {
-                return Index(base: .array(array.index(after: index)))
-            }
-            fatalError("Not an object.")
-        case let .object(object):
-            if let index = i.objectIndex {
-                return Index(base: .object(object.index(after: index)))
-            }
-            fatalError("Not an array.")
-        default: fatalError("Not an array or object.")
-        }
-    }
-    
     public var count: Int {
         switch self {
         case let .array(array): return array.count
         case let .object(object): return object.count
         default: fatalError("Not an array or object.")
-        }
-    }
-    
-    public subscript(position: Index) -> SDValue {
-        get {
-            switch self {
-            case let .array(array):
-                if let index = position.intValue {
-                    return array[index]
-                }
-            case let .object(object):
-                if let index = position.objectIndex {
-                    return object[index].1
-                }
-            default: break
-            }
-            return nil
-        }
-        set {
-            switch self {
-            case var .array(array):
-                if let index = position.intValue {
-                    array[index] = newValue
-                    self = SDValue(array)
-                } else {
-                    fatalError("Not an object.")
-                }
-            case var .object(object):
-                if let index = position.objectIndex {
-                    if case .none = newValue {
-                        object[object[index].0] = nil
-                    } else {
-                        object[object[index].0] = newValue
-                    }
-                    self = SDValue(object)
-                } else {
-                    fatalError("Not an array.")
-                }
-            default:
-                if position.intValue != nil {
-                    fatalError("Not an array.")
-                } else {
-                    fatalError("Not an object.")
-                }
-            }
         }
     }
     
