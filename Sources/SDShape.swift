@@ -43,24 +43,34 @@ public protocol SDShape {
     var rotate: Double { get set }
     /// Scaling of shape.
     var scale: Double { get set }
+    
+    /// area of shape
+    var area: Double { get }
 }
 
-public extension SDShape {
+extension SDShape {
     
-    var frame : [Point] {
+    public var frame : [Point] {
         let _transform = self.transform
         return originalBoundary.points.map { $0 * _transform }
     }
 }
 
-public extension SDShape {
+extension SDShape {
     
-    var transform : SDTransform {
+    public var transform : SDTransform {
         get {
             return baseTransform * ((SDTransform.Scale(scale) * SDTransform.Rotate(rotate)) as SDTransform)
         }
         set {
             baseTransform = newValue * SDTransform.Rotate(rotate).inverse * SDTransform.Scale(scale).inverse
         }
+    }
+}
+
+extension SDShape {
+    
+    public var area: Double {
+        return path.area
     }
 }
