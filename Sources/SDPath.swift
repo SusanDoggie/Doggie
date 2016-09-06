@@ -85,6 +85,8 @@ public struct SDPath : SDShape, RandomAccessCollection, MutableCollection, Expre
         var boundary: Rect?
         var identity : SDPath?
         
+        var area: Double?
+        
         var table: [String : Any]
         var transformedTable: [String : Any]
         
@@ -92,6 +94,7 @@ public struct SDPath : SDShape, RandomAccessCollection, MutableCollection, Expre
             self.frame = nil
             self.boundary = nil
             self.identity = nil
+            self.area = nil
             self.table = [:]
             self.transformedTable = [:]
         }
@@ -99,6 +102,7 @@ public struct SDPath : SDShape, RandomAccessCollection, MutableCollection, Expre
             self.frame = frame
             self.boundary = boundary
             self.identity = nil
+            self.area = nil
             self.table = table
             self.transformedTable = [:]
         }
@@ -353,6 +357,26 @@ public struct SDPath : SDShape, RandomAccessCollection, MutableCollection, Expre
     
     public var path: SDPath {
         return self
+    }
+}
+
+extension SDPath {
+    
+    public var area: Double {
+        if cache.area == nil {
+            let transform = self.transform
+            var _area: Double = 0
+            self._apply { commands, state in
+                switch commands {
+                case let .line(p1): _area += LineSignedArea(state.last * transform, p1 * transform)
+                case let .quad(p1, p2): _area += QuadBezierSignedArea(state.last * transform, p1 * transform, p2 * transform)
+                case let .cubic(p1, p2, p3): _area += CubicBezierSignedArea(state.last * transform, p1 * transform, p2 * transform, p3 * transform)
+                default: break
+                }
+            }
+            cache.area = _area
+        }
+        return cache.area!
     }
 }
 
