@@ -13,7 +13,7 @@ os:
 osx_image: xcode8
 
 env:
-  - TOOLCHAIN="swift-DEVELOPMENT-SNAPSHOT-2016-08-23-a"
+  - TOOLCHAIN="swift-DEVELOPMENT-SNAPSHOT-2016-09-07-a"
   
 before_install:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
