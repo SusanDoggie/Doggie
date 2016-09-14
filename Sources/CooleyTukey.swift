@@ -40,6 +40,8 @@ public func HalfRadix2CooleyTukey(_ level: Int, _ input: UnsafePointer<Float>, _
         HalfRadix2CooleyTukey_2(input, in_stride, in_count, _real, _imag)
     case 2:
         HalfRadix2CooleyTukey_4(input, in_stride, in_count, _real, _imag, out_stride)
+    case 3:
+        HalfRadix2CooleyTukey_8(input, in_stride, in_count, _real, _imag, out_stride)
         
     default:
         let length = 1 << level
@@ -207,6 +209,8 @@ public func HalfRadix2CooleyTukey(_ level: Int, _ input: UnsafePointer<Double>, 
         HalfRadix2CooleyTukey_2(input, in_stride, in_count, _real, _imag)
     case 2:
         HalfRadix2CooleyTukey_4(input, in_stride, in_count, _real, _imag, out_stride)
+    case 3:
+        HalfRadix2CooleyTukey_8(input, in_stride, in_count, _real, _imag, out_stride)
         
     default:
         let length = 1 << level
@@ -376,6 +380,8 @@ public func Radix2CooleyTukey(_ level: Int, _ input: UnsafePointer<Float>, _ in_
         Radix2CooleyTukey_2(input, in_stride, in_count, _real, _imag, out_stride)
     case 2:
         Radix2CooleyTukey_4(input, in_stride, in_count, _real, _imag, out_stride)
+    case 3:
+        Radix2CooleyTukey_8(input, in_stride, in_count, _real, _imag, out_stride)
         
     default:
         let length = 1 << level
@@ -486,6 +492,8 @@ public func Radix2CooleyTukey(_ level: Int, _ real: UnsafePointer<Float>, _ imag
         Radix2CooleyTukey_2(real, imag, in_stride, in_count, _real, _imag, out_stride)
     case 2:
         Radix2CooleyTukey_4(real, imag, in_stride, in_count, _real, _imag, out_stride)
+    case 3:
+        Radix2CooleyTukey_8(real, imag, in_stride, in_count, _real, _imag, out_stride)
         
     default:
         let length = 1 << level
@@ -554,6 +562,8 @@ public func InverseRadix2CooleyTukey(_ level: Int, _ input: UnsafePointer<Float>
         InverseRadix2CooleyTukey_2(input, in_stride, in_count, _real, _imag, out_stride)
     case 2:
         InverseRadix2CooleyTukey_4(input, in_stride, in_count, _real, _imag, out_stride)
+    case 3:
+        InverseRadix2CooleyTukey_8(input, in_stride, in_count, _real, _imag, out_stride)
         
     default:
         let length = 1 << level
@@ -668,6 +678,8 @@ public func Radix2CooleyTukey(_ level: Int, _ input: UnsafePointer<Double>, _ in
         Radix2CooleyTukey_2(input, in_stride, in_count, _real, _imag, out_stride)
     case 2:
         Radix2CooleyTukey_4(input, in_stride, in_count, _real, _imag, out_stride)
+    case 3:
+        Radix2CooleyTukey_8(input, in_stride, in_count, _real, _imag, out_stride)
         
     default:
         let length = 1 << level
@@ -778,6 +790,8 @@ public func Radix2CooleyTukey(_ level: Int, _ real: UnsafePointer<Double>, _ ima
         Radix2CooleyTukey_2(real, imag, in_stride, in_count, _real, _imag, out_stride)
     case 2:
         Radix2CooleyTukey_4(real, imag, in_stride, in_count, _real, _imag, out_stride)
+    case 3:
+        Radix2CooleyTukey_8(real, imag, in_stride, in_count, _real, _imag, out_stride)
         
     default:
         let length = 1 << level
@@ -846,6 +860,8 @@ public func InverseRadix2CooleyTukey(_ level: Int, _ input: UnsafePointer<Double
         InverseRadix2CooleyTukey_2(input, in_stride, in_count, _real, _imag, out_stride)
     case 2:
         InverseRadix2CooleyTukey_4(input, in_stride, in_count, _real, _imag, out_stride)
+    case 3:
+        InverseRadix2CooleyTukey_8(input, in_stride, in_count, _real, _imag, out_stride)
         
     default:
         let length = 1 << level
@@ -962,6 +978,8 @@ public func DispatchHalfRadix2CooleyTukey(_ level: Int, _ input: UnsafePointer<F
         HalfRadix2CooleyTukey_2(input, in_stride, in_count, _real, _imag)
     case 2:
         HalfRadix2CooleyTukey_4(input, in_stride, in_count, _real, _imag, out_stride)
+    case 3:
+        HalfRadix2CooleyTukey_8(input, in_stride, in_count, _real, _imag, out_stride)
         
     default:
         let length = 1 << level
@@ -1129,6 +1147,8 @@ public func DispatchHalfRadix2CooleyTukey(_ level: Int, _ input: UnsafePointer<D
         HalfRadix2CooleyTukey_2(input, in_stride, in_count, _real, _imag)
     case 2:
         HalfRadix2CooleyTukey_4(input, in_stride, in_count, _real, _imag, out_stride)
+    case 3:
+        HalfRadix2CooleyTukey_8(input, in_stride, in_count, _real, _imag, out_stride)
         
     default:
         let length = 1 << level
@@ -1298,6 +1318,8 @@ public func DispatchRadix2CooleyTukey(_ level: Int, _ input: UnsafePointer<Float
         Radix2CooleyTukey_2(input, in_stride, in_count, _real, _imag, out_stride)
     case 2:
         Radix2CooleyTukey_4(input, in_stride, in_count, _real, _imag, out_stride)
+    case 3:
+        Radix2CooleyTukey_8(input, in_stride, in_count, _real, _imag, out_stride)
         
     default:
         let length = 1 << level
@@ -1407,6 +1429,8 @@ public func DispatchRadix2CooleyTukey(_ level: Int, _ real: UnsafePointer<Float>
         Radix2CooleyTukey_2(real, imag, in_stride, in_count, _real, _imag, out_stride)
     case 2:
         Radix2CooleyTukey_4(real, imag, in_stride, in_count, _real, _imag, out_stride)
+    case 3:
+        Radix2CooleyTukey_8(real, imag, in_stride, in_count, _real, _imag, out_stride)
         
     default:
         let length = 1 << level
@@ -1481,6 +1505,8 @@ public func DispatchInverseRadix2CooleyTukey(_ level: Int, _ input: UnsafePointe
         InverseRadix2CooleyTukey_2(input, in_stride, in_count, _real, _imag, out_stride)
     case 2:
         InverseRadix2CooleyTukey_4(input, in_stride, in_count, _real, _imag, out_stride)
+    case 3:
+        InverseRadix2CooleyTukey_8(input, in_stride, in_count, _real, _imag, out_stride)
         
     default:
         let length = 1 << level
@@ -1594,6 +1620,8 @@ public func DispatchRadix2CooleyTukey(_ level: Int, _ input: UnsafePointer<Doubl
         Radix2CooleyTukey_2(input, in_stride, in_count, _real, _imag, out_stride)
     case 2:
         Radix2CooleyTukey_4(input, in_stride, in_count, _real, _imag, out_stride)
+    case 3:
+        Radix2CooleyTukey_8(input, in_stride, in_count, _real, _imag, out_stride)
         
     default:
         let length = 1 << level
@@ -1703,6 +1731,8 @@ public func DispatchRadix2CooleyTukey(_ level: Int, _ real: UnsafePointer<Double
         Radix2CooleyTukey_2(real, imag, in_stride, in_count, _real, _imag, out_stride)
     case 2:
         Radix2CooleyTukey_4(real, imag, in_stride, in_count, _real, _imag, out_stride)
+    case 3:
+        Radix2CooleyTukey_8(real, imag, in_stride, in_count, _real, _imag, out_stride)
         
     default:
         let length = 1 << level
@@ -1777,6 +1807,8 @@ public func DispatchInverseRadix2CooleyTukey(_ level: Int, _ input: UnsafePointe
         InverseRadix2CooleyTukey_2(input, in_stride, in_count, _real, _imag, out_stride)
     case 2:
         InverseRadix2CooleyTukey_4(input, in_stride, in_count, _real, _imag, out_stride)
+    case 3:
+        InverseRadix2CooleyTukey_8(input, in_stride, in_count, _real, _imag, out_stride)
         
     default:
         let length = 1 << level
@@ -2119,6 +2151,94 @@ private func HalfRadix2CooleyTukey_4<T: FloatingPoint>(_ input: UnsafePointer<T>
     _imag.pointee = d - b
 }
 @_transparent
+private func HalfRadix2CooleyTukey_8<T: BinaryFloatingPoint>(_ input: UnsafePointer<T>, _ in_stride: Int, _ in_count: Int, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int) {
+    
+    var input = input
+    var _real = _real
+    var _imag = _imag
+    
+    if in_count == 0 {
+        _real.pointee = 0
+        _imag.pointee = 0
+        _real += out_stride
+        _imag += out_stride
+        _real.pointee = 0
+        _imag.pointee = 0
+        _real += out_stride
+        _imag += out_stride
+        _real.pointee = 0
+        _imag.pointee = 0
+        _real += out_stride
+        _imag += out_stride
+        _real.pointee = 0
+        _imag.pointee = 0
+        return
+    }
+    
+    let a1 = input.pointee
+    input += in_stride
+    
+    let e1 = in_count > 1 ? input.pointee : 0
+    input += in_stride
+    
+    let c1 = in_count > 2 ? input.pointee : 0
+    input += in_stride
+    
+    let g1 = in_count > 3 ? input.pointee : 0
+    input += in_stride
+    
+    let b1 = in_count > 4 ? input.pointee : 0
+    input += in_stride
+    
+    let f1 = in_count > 5 ? input.pointee : 0
+    input += in_stride
+    
+    let d1 = in_count > 6 ? input.pointee : 0
+    input += in_stride
+    
+    let h1 = in_count > 7 ? input.pointee : 0
+    
+    let a3 = a1 + b1
+    let b3 = a1 - b1
+    let c3 = c1 + d1
+    let d3 = c1 - d1
+    let e3 = e1 + f1
+    let f3 = e1 - f1
+    let g3 = g1 + h1
+    let h3 = g1 - h1
+    
+    let a5 = a3 + c3
+    let c5 = a3 - c3
+    let e5 = e3 + g3
+    let g5 = e3 - g3
+    
+    let M_SQRT1_2 = 0.7071067811865475244008443621048490392848359376884740 as T
+    
+    let i = M_SQRT1_2 * (f3 - h3)
+    let j = M_SQRT1_2 * (f3 + h3)
+    
+    _real.pointee = a5 + e5
+    _imag.pointee = a5 - e5
+    _real += out_stride
+    _imag += out_stride
+    
+    _real.pointee = b3 + i
+    _imag.pointee = -d3 - j
+    _real += out_stride
+    _imag += out_stride
+    
+    _real.pointee = c5
+    _imag.pointee = -g5
+    _real += out_stride
+    _imag += out_stride
+    
+    _real.pointee = b3 - i
+    _imag.pointee = d3 - j
+    _real += out_stride
+    _imag += out_stride
+}
+
+@_transparent
 private func HalfInverseRadix2CooleyTukey_2<T: FloatingPoint>(_ real: UnsafePointer<T>, _ imag: UnsafePointer<T>, _ in_count: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var output = output
@@ -2244,37 +2364,6 @@ private func Radix2CooleyTukey_2<T: FloatingPoint>(_ real: UnsafePointer<T>, _ i
     
     _real.pointee = a - c
     _imag.pointee = b - d
-    
-}
-@_transparent
-private func InverseRadix2CooleyTukey_2<T: FloatingPoint>(_ input: UnsafePointer<T>, _ in_stride: Int, _ in_count: Int, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int) {
-    
-    var input = input
-    var _real = _real
-    var _imag = _imag
-    
-    if in_count == 0 {
-        _real.pointee = 0
-        _imag.pointee = 0
-        _real += out_stride
-        _imag += out_stride
-        _real.pointee = 0
-        _imag.pointee = 0
-        return
-    }
-    
-    let a = input.pointee
-    input += in_stride
-    
-    let b = in_count > 1 ? input.pointee : 0
-    
-    _real.pointee = a + b
-    _imag.pointee = 0
-    _real += out_stride
-    _imag += out_stride
-    
-    _real.pointee = a - b
-    _imag.pointee = 0
     
 }
 @_transparent
@@ -2410,6 +2499,319 @@ private func Radix2CooleyTukey_4<T: FloatingPoint>(_ real: UnsafePointer<T>, _ i
 }
 
 @_transparent
+private func Radix2CooleyTukey_8<T: BinaryFloatingPoint>(_ input: UnsafePointer<T>, _ in_stride: Int, _ in_count: Int, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int) {
+    
+    var input = input
+    var _real = _real
+    var _imag = _imag
+    
+    if in_count == 0 {
+        _real.pointee = 0
+        _imag.pointee = 0
+        _real += out_stride
+        _imag += out_stride
+        _real.pointee = 0
+        _imag.pointee = 0
+        _real += out_stride
+        _imag += out_stride
+        _real.pointee = 0
+        _imag.pointee = 0
+        _real += out_stride
+        _imag += out_stride
+        _real.pointee = 0
+        _imag.pointee = 0
+        _real += out_stride
+        _imag += out_stride
+        _real.pointee = 0
+        _imag.pointee = 0
+        _real += out_stride
+        _imag += out_stride
+        _real.pointee = 0
+        _imag.pointee = 0
+        _real += out_stride
+        _imag += out_stride
+        _real.pointee = 0
+        _imag.pointee = 0
+        _real += out_stride
+        _imag += out_stride
+        _real.pointee = 0
+        _imag.pointee = 0
+        return
+    }
+    
+    let a1 = input.pointee
+    input += in_stride
+    
+    let e1 = in_count > 1 ? input.pointee : 0
+    input += in_stride
+    
+    let c1 = in_count > 2 ? input.pointee : 0
+    input += in_stride
+    
+    let g1 = in_count > 3 ? input.pointee : 0
+    input += in_stride
+    
+    let b1 = in_count > 4 ? input.pointee : 0
+    input += in_stride
+    
+    let f1 = in_count > 5 ? input.pointee : 0
+    input += in_stride
+    
+    let d1 = in_count > 6 ? input.pointee : 0
+    input += in_stride
+    
+    let h1 = in_count > 7 ? input.pointee : 0
+    
+    let a3 = a1 + b1
+    let b3 = a1 - b1
+    let c3 = c1 + d1
+    let d3 = c1 - d1
+    let e3 = e1 + f1
+    let f3 = e1 - f1
+    let g3 = g1 + h1
+    let h3 = g1 - h1
+    
+    let a5 = a3 + c3
+    let c5 = a3 - c3
+    let e5 = e3 + g3
+    let g5 = e3 - g3
+    
+    let M_SQRT1_2 = 0.7071067811865475244008443621048490392848359376884740 as T
+    
+    let i = M_SQRT1_2 * (f3 - h3)
+    let j = M_SQRT1_2 * (f3 + h3)
+    
+    _real.pointee = a5 + e5
+    _imag.pointee = 0
+    _real += out_stride
+    _imag += out_stride
+    
+    _real.pointee = b3 + i
+    _imag.pointee = -d3 - j
+    _real += out_stride
+    _imag += out_stride
+    
+    _real.pointee = c5
+    _imag.pointee = -g5
+    _real += out_stride
+    _imag += out_stride
+    
+    _real.pointee = b3 - i
+    _imag.pointee = d3 - j
+    _real += out_stride
+    _imag += out_stride
+    
+    _real.pointee = a5 - e5
+    _imag.pointee = 0
+    _real += out_stride
+    _imag += out_stride
+    
+    _real.pointee = b3 - i
+    _imag.pointee = -d3 + j
+    _real += out_stride
+    _imag += out_stride
+    
+    _real.pointee = c5
+    _imag.pointee = g5
+    _real += out_stride
+    _imag += out_stride
+    
+    _real.pointee = b3 + i
+    _imag.pointee = d3 + j
+}
+
+@_transparent
+private func Radix2CooleyTukey_8<T: BinaryFloatingPoint>(_ real: UnsafePointer<T>, _ imag: UnsafePointer<T>, _ in_stride: Int, _ in_count: Int, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int) {
+    
+    var real = real
+    var imag = imag
+    var _real = _real
+    var _imag = _imag
+    
+    if in_count == 0 {
+        _real.pointee = 0
+        _imag.pointee = 0
+        _real += out_stride
+        _imag += out_stride
+        _real.pointee = 0
+        _imag.pointee = 0
+        _real += out_stride
+        _imag += out_stride
+        _real.pointee = 0
+        _imag.pointee = 0
+        _real += out_stride
+        _imag += out_stride
+        _real.pointee = 0
+        _imag.pointee = 0
+        _real += out_stride
+        _imag += out_stride
+        _real.pointee = 0
+        _imag.pointee = 0
+        _real += out_stride
+        _imag += out_stride
+        _real.pointee = 0
+        _imag.pointee = 0
+        _real += out_stride
+        _imag += out_stride
+        _real.pointee = 0
+        _imag.pointee = 0
+        _real += out_stride
+        _imag += out_stride
+        _real.pointee = 0
+        _imag.pointee = 0
+        return
+    }
+    
+    let a1 = real.pointee
+    let a2 = imag.pointee
+    real += in_stride
+    imag += in_stride
+    
+    let e1 = in_count > 1 ? real.pointee : 0
+    let e2 = in_count > 1 ? imag.pointee : 0
+    real += in_stride
+    imag += in_stride
+    
+    let c1 = in_count > 2 ? real.pointee : 0
+    let c2 = in_count > 2 ? imag.pointee : 0
+    real += in_stride
+    imag += in_stride
+    
+    let g1 = in_count > 3 ? real.pointee : 0
+    let g2 = in_count > 3 ? imag.pointee : 0
+    real += in_stride
+    imag += in_stride
+    
+    let b1 = in_count > 4 ? real.pointee : 0
+    let b2 = in_count > 4 ? imag.pointee : 0
+    real += in_stride
+    imag += in_stride
+    
+    let f1 = in_count > 5 ? real.pointee : 0
+    let f2 = in_count > 5 ? imag.pointee : 0
+    real += in_stride
+    imag += in_stride
+    
+    let d1 = in_count > 6 ? real.pointee : 0
+    let d2 = in_count > 6 ? imag.pointee : 0
+    real += in_stride
+    imag += in_stride
+    
+    let h1 = in_count > 7 ? real.pointee : 0
+    let h2 = in_count > 7 ? imag.pointee : 0
+    
+    let a3 = a1 + b1
+    let a4 = a2 + b2
+    let b3 = a1 - b1
+    let b4 = a2 - b2
+    let c3 = c1 + d1
+    let c4 = c2 + d2
+    let d3 = c1 - d1
+    let d4 = c2 - d2
+    let e3 = e1 + f1
+    let e4 = e2 + f2
+    let f3 = e1 - f1
+    let f4 = e2 - f2
+    let g3 = g1 + h1
+    let g4 = g2 + h2
+    let h3 = g1 - h1
+    let h4 = g2 - h2
+    
+    let a5 = a3 + c3
+    let a6 = a4 + c4
+    let b5 = b3 + d4
+    let b6 = b4 - d3
+    let c5 = a3 - c3
+    let c6 = a4 - c4
+    let d5 = b3 - d4
+    let d6 = b4 + d3
+    let e5 = e3 + g3
+    let e6 = e4 + g4
+    let f5 = f3 + h4
+    let f6 = f4 - h3
+    let g5 = e3 - g3
+    let g6 = e4 - g4
+    let h5 = f3 - h4
+    let h6 = f4 + h3
+    
+    let M_SQRT1_2 = 0.7071067811865475244008443621048490392848359376884740 as T
+    
+    let i = M_SQRT1_2 * (f5 + f6)
+    let j = M_SQRT1_2 * (f6 - f5)
+    let k = M_SQRT1_2 * (h5 - h6)
+    let l = M_SQRT1_2 * (h6 + h5)
+    
+    _real.pointee = a5 + e5
+    _imag.pointee = a6 + e6
+    _real += out_stride
+    _imag += out_stride
+    
+    _real.pointee = b5 + i
+    _imag.pointee = b6 + j
+    _real += out_stride
+    _imag += out_stride
+    
+    _real.pointee = c5 + g6
+    _imag.pointee = c6 - g5
+    _real += out_stride
+    _imag += out_stride
+    
+    _real.pointee = d5 - k
+    _imag.pointee = d6 - l
+    _real += out_stride
+    _imag += out_stride
+    
+    _real.pointee = a5 - e5
+    _imag.pointee = a6 - e6
+    _real += out_stride
+    _imag += out_stride
+    
+    _real.pointee = b5 - i
+    _imag.pointee = b6 - j
+    _real += out_stride
+    _imag += out_stride
+    
+    _real.pointee = c5 - g6
+    _imag.pointee = c6 + g5
+    _real += out_stride
+    _imag += out_stride
+    
+    _real.pointee = d5 + k
+    _imag.pointee = d6 + l
+}
+
+@_transparent
+private func InverseRadix2CooleyTukey_2<T: FloatingPoint>(_ input: UnsafePointer<T>, _ in_stride: Int, _ in_count: Int, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int) {
+    
+    var input = input
+    var _real = _real
+    var _imag = _imag
+    
+    if in_count == 0 {
+        _real.pointee = 0
+        _imag.pointee = 0
+        _real += out_stride
+        _imag += out_stride
+        _real.pointee = 0
+        _imag.pointee = 0
+        return
+    }
+    
+    let a = input.pointee
+    input += in_stride
+    
+    let b = in_count > 1 ? input.pointee : 0
+    
+    _real.pointee = a + b
+    _imag.pointee = 0
+    _real += out_stride
+    _imag += out_stride
+    
+    _real.pointee = a - b
+    _imag.pointee = 0
+    
+}
+@_transparent
 private func InverseRadix2CooleyTukey_4<T: FloatingPoint>(_ input: UnsafePointer<T>, _ in_stride: Int, _ in_count: Int, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var input = input
@@ -2467,6 +2869,128 @@ private func InverseRadix2CooleyTukey_4<T: FloatingPoint>(_ input: UnsafePointer
     
     _real.pointee = f
     _imag.pointee = -h
+}
+
+@_transparent
+private func InverseRadix2CooleyTukey_8<T: BinaryFloatingPoint>(_ input: UnsafePointer<T>, _ in_stride: Int, _ in_count: Int, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int) {
+    
+    var input = input
+    var _real = _real
+    var _imag = _imag
+    
+    if in_count == 0 {
+        _real.pointee = 0
+        _imag.pointee = 0
+        _real += out_stride
+        _imag += out_stride
+        _real.pointee = 0
+        _imag.pointee = 0
+        _real += out_stride
+        _imag += out_stride
+        _real.pointee = 0
+        _imag.pointee = 0
+        _real += out_stride
+        _imag += out_stride
+        _real.pointee = 0
+        _imag.pointee = 0
+        _real += out_stride
+        _imag += out_stride
+        _real.pointee = 0
+        _imag.pointee = 0
+        _real += out_stride
+        _imag += out_stride
+        _real.pointee = 0
+        _imag.pointee = 0
+        _real += out_stride
+        _imag += out_stride
+        _real.pointee = 0
+        _imag.pointee = 0
+        _real += out_stride
+        _imag += out_stride
+        _real.pointee = 0
+        _imag.pointee = 0
+        return
+    }
+    
+    let a1 = input.pointee
+    input += in_stride
+    
+    let e1 = in_count > 1 ? input.pointee : 0
+    input += in_stride
+    
+    let c1 = in_count > 2 ? input.pointee : 0
+    input += in_stride
+    
+    let g1 = in_count > 3 ? input.pointee : 0
+    input += in_stride
+    
+    let b1 = in_count > 4 ? input.pointee : 0
+    input += in_stride
+    
+    let f1 = in_count > 5 ? input.pointee : 0
+    input += in_stride
+    
+    let d1 = in_count > 6 ? input.pointee : 0
+    input += in_stride
+    
+    let h1 = in_count > 7 ? input.pointee : 0
+    
+    let a3 = a1 + b1
+    let b3 = a1 - b1
+    let c3 = c1 + d1
+    let d3 = c1 - d1
+    let e3 = e1 + f1
+    let f3 = e1 - f1
+    let g3 = g1 + h1
+    let h3 = g1 - h1
+    
+    let a5 = a3 + c3
+    let c5 = a3 - c3
+    let e5 = e3 + g3
+    let g5 = e3 - g3
+    
+    let M_SQRT1_2 = 0.7071067811865475244008443621048490392848359376884740 as T
+    
+    let i = M_SQRT1_2 * (f3 - h3)
+    let j = M_SQRT1_2 * (h3 + f3)
+    
+    _real.pointee = a5 + e5
+    _imag.pointee = 0
+    _real += out_stride
+    _imag += out_stride
+    
+    _real.pointee = b3 + i
+    _imag.pointee = d3 + j
+    _real += out_stride
+    _imag += out_stride
+    
+    _real.pointee = c5
+    _imag.pointee = g5
+    _real += out_stride
+    _imag += out_stride
+    
+    _real.pointee = b3 - i
+    _imag.pointee = -d3 + j
+    _real += out_stride
+    _imag += out_stride
+    
+    _real.pointee = a5 - e5
+    _imag.pointee = 0
+    _real += out_stride
+    _imag += out_stride
+    
+    _real.pointee = b3 - i
+    _imag.pointee = d3 - j
+    _real += out_stride
+    _imag += out_stride
+    
+    _real.pointee = c5
+    _imag.pointee = -g5
+    _real += out_stride
+    _imag += out_stride
+    
+    _real.pointee = b3 + i
+    _imag.pointee = -d3 - j
 }
 
 // MARK: Wrapper
