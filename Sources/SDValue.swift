@@ -554,7 +554,7 @@ extension SDValue {
                 writer("\\\"") // U+0022 quotation mark
             case "\\":
                 writer("\\\\") // U+005C reverse solidus
-            // U+002F solidus not escaped
+                               // U+002F solidus not escaped
             case "\u{8}":
                 writer("\\b") // U+0008 backspace
             case "\u{c}":

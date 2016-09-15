@@ -29,7 +29,7 @@ public struct Json {
     
     fileprivate let value: Any?
     
-    fileprivate init(value: Any?) {
+    fileprivate init(value: Any) {
         self.value = value
     }
     
@@ -188,7 +188,7 @@ extension Json {
 extension Json {
     
     public var isNil : Bool {
-        return self.value == nil
+        return self.value == nil || self.value is NSNull
     }
     
     public var isBool : Bool {
@@ -377,14 +377,15 @@ extension Json {
     public subscript(index: Int) -> Json {
         get {
             if case let array as [Any] = self.value {
-                return Json(value: array[index])
+                let val = array[index]
+                return val is NSNull ? nil : Json(value: val)
             }
             return nil
         }
         set {
             switch self.value {
             case var array as [Any]:
-                array[index] = newValue.value!
+                array[index] = newValue.value ?? NSNull()
                 self = Json(value: array)
             default: fatalError("Not an array.")
             }
@@ -395,16 +396,17 @@ extension Json {
         get {
             if case let dictionary as [String: Any] = self.value {
                 if let val = dictionary[key] {
-                    return Json(value: val)
+                    return val is NSNull ? nil : Json(value: val)
                 }
-                return Json(value: nil)
+                return nil
             }
             return nil
         }
         set {
             switch self.value {
             case var dictionary as [String: Any]:
-                dictionary[key] = newValue.value
+                let val = newValue.value
+                dictionary[key] = val is NSNull ? nil : val
                 self = Json(value: dictionary)
             default: fatalError("Not an object.")
             }
