@@ -29,7 +29,7 @@ public struct Json {
     
     fileprivate let value: Any?
     
-    fileprivate init(value: Any) {
+    fileprivate init(value: Any?) {
         self.value = value
     }
     
@@ -59,7 +59,7 @@ extension Json {
         self.value = value
     }
     public init<S : Sequence>(_ elements: S) {
-        self.value = elements.map { Json.unwrap($0) }
+        self.value = elements.map { Json.unwrap($0) ?? NSNull() }
     }
     public init(_ elements: [String: Any]) {
         var dictionary = [String: Any](minimumCapacity: elements.count)
@@ -118,14 +118,14 @@ extension Json: ExpressibleByStringLiteral {
 
 extension Json: ExpressibleByArrayLiteral {
     
-    public init(arrayLiteral elements: Any ...) {
+    public init(arrayLiteral elements: Json ...) {
         self.init(elements)
     }
 }
 
 extension Json: ExpressibleByDictionaryLiteral {
     
-    public init(dictionaryLiteral elements: (String, Any) ...) {
+    public init(dictionaryLiteral elements: (String, Json) ...) {
         var dictionary = [String: Any](minimumCapacity: elements.count)
         for (key, value) in elements {
             dictionary[key] = Json.unwrap(value)
@@ -137,11 +137,13 @@ extension Json: ExpressibleByDictionaryLiteral {
 extension Json: CustomStringConvertible {
     
     public var description: String {
+        if self.isNil {
+            return "nil"
+        }
         switch self.value {
-        case nil: return "nil"
         case let number as NSNumber: return number.description
         case let string as String: return string
-        case let array as [AnyObject]:
+        case let array as [Any?]:
             var result = "["
             var first = true
             for item in array {
@@ -154,7 +156,7 @@ extension Json: CustomStringConvertible {
             }
             result += "]"
             return result
-        case let dictionary as [String: AnyObject]:
+        case let dictionary as [String: Any]:
             var result = "["
             var first = true
             for (k, v) in dictionary {
