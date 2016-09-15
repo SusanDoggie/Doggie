@@ -237,8 +237,9 @@ extension SDValue {
         set {
             if let value = newValue {
                 self = SDValue(value)
+            } else {
+                self = nil
             }
-            self = nil
         }
     }
     
@@ -253,8 +254,9 @@ extension SDValue {
         set {
             if let value = newValue {
                 self = SDValue(value)
+            } else {
+                self = nil
             }
-            self = nil
         }
     }
     
@@ -269,8 +271,9 @@ extension SDValue {
         set {
             if let value = newValue {
                 self = SDValue(value)
+            } else {
+                self = nil
             }
-            self = nil
         }
     }
     
@@ -285,8 +288,9 @@ extension SDValue {
         set {
             if let value = newValue {
                 self = SDValue(value)
+            } else {
+                self = nil
             }
-            self = nil
         }
     }
     
@@ -301,8 +305,9 @@ extension SDValue {
         set {
             if let value = newValue {
                 self = SDValue(value)
+            } else {
+                self = nil
             }
-            self = nil
         }
     }
     
@@ -317,8 +322,9 @@ extension SDValue {
         set {
             if let value = newValue {
                 self = SDValue(value)
+            } else {
+                self = nil
             }
-            self = nil
         }
     }
     
@@ -333,8 +339,9 @@ extension SDValue {
         set {
             if let value = newValue {
                 self = SDValue(value)
+            } else {
+                self = nil
             }
-            self = nil
         }
     }
     
@@ -349,8 +356,9 @@ extension SDValue {
         set {
             if let value = newValue {
                 self = SDValue(value)
+            } else {
+                self = nil
             }
-            self = nil
         }
     }
     
@@ -365,8 +373,9 @@ extension SDValue {
         set {
             if let value = newValue {
                 self = SDValue(value)
+            } else {
+                self = nil
             }
-            self = nil
         }
     }
     
@@ -380,8 +389,9 @@ extension SDValue {
         set {
             if let value = newValue {
                 self = SDValue(value)
+            } else {
+                self = nil
             }
-            self = nil
         }
     }
     
@@ -395,8 +405,9 @@ extension SDValue {
         set {
             if let value = newValue {
                 self = SDValue(value)
+            } else {
+                self = nil
             }
-            self = nil
         }
     }
     
@@ -411,8 +422,9 @@ extension SDValue {
         set {
             if let value = newValue {
                 self = SDValue(value)
+            } else {
+                self = nil
             }
-            self = nil
         }
     }
     
@@ -427,8 +439,9 @@ extension SDValue {
         set {
             if let value = newValue {
                 self = SDValue(value)
+            } else {
+                self = nil
             }
-            self = nil
         }
     }
     public var stringValue: String? {
@@ -441,8 +454,9 @@ extension SDValue {
         set {
             if let value = newValue {
                 self = SDValue(value)
+            } else {
+                self = nil
             }
-            self = nil
         }
     }
     public var array: [SDValue]? {
@@ -455,8 +469,9 @@ extension SDValue {
         set {
             if let value = newValue {
                 self = SDValue(value)
+            } else {
+                self = nil
             }
-            self = nil
         }
     }
     public var dictionary: [String: SDValue]? {
@@ -469,8 +484,9 @@ extension SDValue {
         set {
             if let value = newValue {
                 self = SDValue(value)
+            } else {
+                self = nil
             }
-            self = nil
         }
     }
     public var anyValue: Any? {
@@ -483,8 +499,9 @@ extension SDValue {
         set {
             if let value = newValue {
                 self = SDValue(any: value)
+            } else {
+                self = nil
             }
-            self = nil
         }
     }
 }
