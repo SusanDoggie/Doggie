@@ -145,7 +145,7 @@ extension Json: CustomStringConvertible {
         switch self.value {
         case let number as NSNumber: return number.description
         case let string as String: return string
-        case let array as [Any?]:
+        case let array as [Any]:
             var result = "["
             var first = true
             for item in array {
