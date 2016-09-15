@@ -123,7 +123,7 @@ extension Json: ExpressibleByStringLiteral {
 extension Json: ExpressibleByArrayLiteral {
     
     public init(arrayLiteral elements: Json ...) {
-        self.init(elements)
+        self.init(value: elements.map { $0.value })
     }
 }
 
@@ -132,7 +132,7 @@ extension Json: ExpressibleByDictionaryLiteral {
     public init(dictionaryLiteral elements: (String, Json) ...) {
         var dictionary = [String: Any](minimumCapacity: elements.count)
         for (key, value) in elements {
-            let val = Json.unwrap(value)
+            let val = value.value
             dictionary[key] = val is NSNull ? nil : val
         }
         self.init(value: dictionary)
