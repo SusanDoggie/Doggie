@@ -206,6 +206,15 @@ extension SDValue {
         }
     }
     
+    public var isNumber : Bool {
+        switch self {
+        case .int(_): return true
+        case .uint(_): return true
+        case .float(_): return true
+        default: return false
+        }
+    }
+    
     public var isString : Bool {
         switch self {
         case .string(_): return true
@@ -392,6 +401,8 @@ extension SDValue {
     public var floatValue: Float? {
         get {
             switch self {
+            case let .int(value): return Float(value)
+            case let .uint(value): return Float(value)
             case let .float(value): return Float(value)
             default: return nil
             }
@@ -408,6 +419,8 @@ extension SDValue {
     public var doubleValue: Double? {
         get {
             switch self {
+            case let .int(value): return Double(value)
+            case let .uint(value): return Double(value)
             case let .float(value): return value
             default: return nil
             }
