@@ -27,13 +27,13 @@ import Foundation
 
 public struct Json {
     
-    fileprivate let value: Any?
+    fileprivate let value: Any
     
     fileprivate init(value: Any?) {
-        self.value = value
+        self.value = value ?? NSNull()
     }
     
-    fileprivate static func unwrap(_ value: Any) -> Any? {
+    fileprivate static func unwrap(_ value: Any) -> Any {
         if let json = value as? Json {
             return json.value
         }
@@ -59,12 +59,13 @@ extension Json {
         self.value = value
     }
     public init<S : Sequence>(_ elements: S) {
-        self.value = elements.map { Json.unwrap($0) ?? NSNull() }
+        self.value = elements.map { Json.unwrap($0) }
     }
     public init(_ elements: [String: Any]) {
         var dictionary = [String: Any](minimumCapacity: elements.count)
         for (key, value) in elements {
-            dictionary[key] = Json.unwrap(value)
+            let val = Json.unwrap(value)
+            dictionary[key] = val is NSNull ? nil : val
         }
         self.value = dictionary
     }
@@ -73,7 +74,7 @@ extension Json {
 extension Json: ExpressibleByNilLiteral {
     
     public init(nilLiteral value: Void) {
-        self.value = nil
+        self.value = NSNull()
     }
 }
 
@@ -128,7 +129,8 @@ extension Json: ExpressibleByDictionaryLiteral {
     public init(dictionaryLiteral elements: (String, Json) ...) {
         var dictionary = [String: Any](minimumCapacity: elements.count)
         for (key, value) in elements {
-            dictionary[key] = Json.unwrap(value)
+            let val = Json.unwrap(value)
+            dictionary[key] = val is NSNull ? nil : val
         }
         self.init(value: dictionary)
     }
@@ -190,7 +192,7 @@ extension Json {
 extension Json {
     
     public var isNil : Bool {
-        return self.value == nil || self.value is NSNull
+        return self.value is NSNull
     }
     
     public var isBool : Bool {
@@ -351,18 +353,31 @@ extension Json {
             return nil
         }
         set {
-            self = Json(value: newValue?.map { $0.value! })
+            self = Json(value: newValue?.map { $0.value })
         }
     }
     public var dictionary: [String: Json]? {
-        if let elements = self.value as? [String: Any] {
-            var dictionary = [String: Json](minimumCapacity: elements.count)
-            for (key, value) in elements {
-                dictionary[key] = Json(value: value)
+        get {
+            if let elements = self.value as? [String: Any] {
+                var dictionary = [String: Json](minimumCapacity: elements.count)
+                for (key, value) in elements {
+                    dictionary[key] = Json(value: value)
+                }
+                return dictionary
             }
-            return dictionary
+            return nil
         }
-        return nil
+        set {
+            if let elements = newValue {
+                var dictionary = [String: Any](minimumCapacity: elements.count)
+                for (key, value) in elements {
+                    dictionary[key] = value.value
+                }
+                self = Json(value: dictionary)
+            } else {
+                self = nil
+            }
+        }
     }
 }
 
@@ -380,14 +395,14 @@ extension Json {
         get {
             if case let array as [Any] = self.value {
                 let val = array[index]
-                return val is NSNull ? nil : Json(value: val)
+                return Json(value: val)
             }
             return nil
         }
         set {
             switch self.value {
             case var array as [Any]:
-                array[index] = newValue.value ?? NSNull()
+                array[index] = newValue.value
                 self = Json(value: array)
             default: fatalError("Not an array.")
             }
@@ -398,7 +413,7 @@ extension Json {
         get {
             if case let dictionary as [String: Any] = self.value {
                 if let val = dictionary[key] {
-                    return val is NSNull ? nil : Json(value: val)
+                    return Json(value: val)
                 }
                 return nil
             }
@@ -419,8 +434,8 @@ extension Json {
 extension Json {
     
     public var data: Data? {
-        if let value = self.value, JSONSerialization.isValidJSONObject(value) {
-            return try? JSONSerialization.data(withJSONObject: value, options: [])
+        if JSONSerialization.isValidJSONObject(self.value) {
+            return try? JSONSerialization.data(withJSONObject: self.value, options: [])
         }
         return nil
     }
