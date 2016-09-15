@@ -57,6 +57,12 @@ extension SDValue {
         self = .string(val)
     }
     public init(_ val: [String: SDValue]) {
+        var val = val
+        for (key, value) in val {
+            if case .none = value {
+                val[key] = nil
+            }
+        }
         self = .object(val)
     }
     public init<S : Sequence>(_ val: S) where S.Iterator.Element == SDValue {
@@ -125,7 +131,11 @@ extension SDValue: ExpressibleByDictionaryLiteral {
     public init(dictionaryLiteral elements: (String, SDValue) ...) {
         var dictionary: [String: SDValue] = [:]
         for (key, value) in elements {
-            dictionary[key] = value
+            if case .none = value {
+                dictionary[key] = nil
+            } else {
+                dictionary[key] = value
+            }
         }
         self = .object(dictionary)
     }

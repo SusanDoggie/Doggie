@@ -62,12 +62,15 @@ extension Json {
         self.value = elements.map { Json.unwrap($0) }
     }
     public init(_ elements: [String: Any]) {
-        var dictionary = [String: Any](minimumCapacity: elements.count)
+        var elements = elements
         for (key, value) in elements {
-            let val = Json.unwrap(value)
-            dictionary[key] = val is NSNull ? nil : val
+            if let json = value as? Json {
+                elements[key] = json.value
+            } else if value is NSNull {
+                elements[key] = nil
+            }
         }
-        self.value = dictionary
+        self.value = elements
     }
 }
 
