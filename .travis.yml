@@ -6,9 +6,16 @@ notifications: never
 compiler:
   - clang
   
-os:
-  - linux
-  - osx
+matrix:
+  include:
+    - os: osx
+    - os: linux
+      env: COMPILER_NAME=clang CXX=clang++-3.8 CC=clang-3.8
+      addons:
+        apt:
+          packages:
+            - autoconf libtool pkg-config clang-3.8 libicu-dev systemtap-sdt-dev libblocksruntime-dev libkqueue-dev libbsd-dev
+          sources: *sources
 
 osx_image: xcode8
 
@@ -22,11 +29,6 @@ before_install:
     fi 
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
         sudo apt-get update;
-        sudo apt-get install -y autoconf libtool pkg-config clang-3.8 libicu-dev systemtap-sdt-dev libblocksruntime-dev libkqueue-dev libbsd-dev;
-        sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-3.8 100;		
-        sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-3.8 100;
-        make CC=clang-3.8;
-        make CXX=clang++-3.8;
     fi
 
 install:
