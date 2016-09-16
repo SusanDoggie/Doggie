@@ -14,6 +14,7 @@ osx_image: xcode8
 
 env:
   - TOOLCHAIN="swift-DEVELOPMENT-SNAPSHOT-2016-09-07-a"
+  - BRANCH="swift-3.0-branch"
   
 before_install:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
@@ -21,7 +22,7 @@ before_install:
     fi 
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
         sudo apt-get update;
-        sudo apt-get install -y autoconf libtool pkg-config clang-3.8 systemtap-sdt-dev libblocksruntime-dev libkqueue-dev libbsd-dev;
+        sudo apt-get install -y autoconf libtool pkg-config clang-3.8 libicu-dev systemtap-sdt-dev libblocksruntime-dev libkqueue-dev libbsd-dev;
         sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-3.8 100;		
         sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-3.8 100;
         export CC=clang-3.8;
@@ -39,7 +40,7 @@ install:
         wget https://swift.org/builds/development/ubuntu1404/${TOOLCHAIN}/${TOOLCHAIN}-ubuntu14.04.tar.gz;
         tar xzf ${TOOLCHAIN}-ubuntu14.04.tar.gz;
         export PATH=${TRAVIS_BUILD_DIR}/${TOOLCHAIN}-ubuntu14.04/usr/bin:"${PATH}";
-        git clone -b master https://github.com/apple/swift-corelibs-libdispatch.git;
+        git clone -b ${BRANCH} https://github.com/apple/swift-corelibs-libdispatch.git;
         cd swift-corelibs-libdispatch && git submodule init && git submodule update && sh ./autogen.sh && ./configure --with-swift-toolchain=${TRAVIS_BUILD_DIR}/${TOOLCHAIN}-ubuntu14.04/usr --prefix=${TRAVIS_BUILD_DIR}/${TOOLCHAIN}-ubuntu14.04/usr && make && make install;
         cd -;
     fi
