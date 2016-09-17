@@ -655,7 +655,175 @@ class FourierTest: XCTestCase {
         }
     }
     
-    func testConvolve() {
+    func testConvolveA() {
+        // This is an example of a functional test case.
+        var a = [Double](repeating: 0, count: 2)
+        var b = [Double](repeating: 0, count: 2)
+        for i in 0..<a.count {
+            a[i] = (0.0..<1.0).random()
+        }
+        for i in 0..<a.count {
+            b[i] = (0.0..<1.0).random()
+        }
+        
+        var answer = [Double]()
+        DiscreteConvolve(a, b, &answer)
+        
+        var result = [Double]()
+        Convolve(a, b, &result)
+        
+        for i in 0..<answer.count {
+            XCTAssertEqualWithAccuracy(answer[i], result[i], accuracy: accuracy)
+        }
+    }
+    func testConvolveB() {
+        // This is an example of a functional test case.
+        var a = [Double](repeating: 0, count: 3)
+        var b = [Double](repeating: 0, count: 3)
+        for i in 0..<a.count {
+            a[i] = (0.0..<1.0).random()
+        }
+        for i in 0..<a.count {
+            b[i] = (0.0..<1.0).random()
+        }
+        
+        var answer = [Double]()
+        DiscreteConvolve(a, b, &answer)
+        
+        var result = [Double]()
+        Convolve(a, b, &result)
+        
+        for i in 0..<answer.count {
+            XCTAssertEqualWithAccuracy(answer[i], result[i], accuracy: accuracy)
+        }
+    }
+    func testConvolveC() {
+        // This is an example of a functional test case.
+        var a = [Double](repeating: 0, count: 4)
+        var b = [Double](repeating: 0, count: 4)
+        for i in 0..<a.count {
+            a[i] = (0.0..<1.0).random()
+        }
+        for i in 0..<a.count {
+            b[i] = (0.0..<1.0).random()
+        }
+        
+        var answer = [Double]()
+        DiscreteConvolve(a, b, &answer)
+        
+        var result = [Double]()
+        Convolve(a, b, &result)
+        
+        for i in 0..<answer.count {
+            XCTAssertEqualWithAccuracy(answer[i], result[i], accuracy: accuracy)
+        }
+    }
+    func testConvolveD() {
+        // This is an example of a functional test case.
+        var a = [Double](repeating: 0, count: 5)
+        var b = [Double](repeating: 0, count: 5)
+        for i in 0..<a.count {
+            a[i] = (0.0..<1.0).random()
+        }
+        for i in 0..<a.count {
+            b[i] = (0.0..<1.0).random()
+        }
+        
+        var answer = [Double]()
+        DiscreteConvolve(a, b, &answer)
+        
+        var result = [Double]()
+        Convolve(a, b, &result)
+        
+        for i in 0..<answer.count {
+            XCTAssertEqualWithAccuracy(answer[i], result[i], accuracy: accuracy)
+        }
+    }
+    func testConvolveE() {
+        // This is an example of a functional test case.
+        var a = [Double](repeating: 0, count: 6)
+        var b = [Double](repeating: 0, count: 6)
+        for i in 0..<a.count {
+            a[i] = (0.0..<1.0).random()
+        }
+        for i in 0..<a.count {
+            b[i] = (0.0..<1.0).random()
+        }
+        
+        var answer = [Double]()
+        DiscreteConvolve(a, b, &answer)
+        
+        var result = [Double]()
+        Convolve(a, b, &result)
+        
+        for i in 0..<answer.count {
+            XCTAssertEqualWithAccuracy(answer[i], result[i], accuracy: accuracy)
+        }
+    }
+    func testConvolveF() {
+        // This is an example of a functional test case.
+        var a = [Double](repeating: 0, count: 7)
+        var b = [Double](repeating: 0, count: 7)
+        for i in 0..<a.count {
+            a[i] = (0.0..<1.0).random()
+        }
+        for i in 0..<a.count {
+            b[i] = (0.0..<1.0).random()
+        }
+        
+        var answer = [Double]()
+        DiscreteConvolve(a, b, &answer)
+        
+        var result = [Double]()
+        Convolve(a, b, &result)
+        
+        for i in 0..<answer.count {
+            XCTAssertEqualWithAccuracy(answer[i], result[i], accuracy: accuracy)
+        }
+    }
+    func testConvolveG() {
+        // This is an example of a functional test case.
+        var a = [Double](repeating: 0, count: 8)
+        var b = [Double](repeating: 0, count: 8)
+        for i in 0..<a.count {
+            a[i] = (0.0..<1.0).random()
+        }
+        for i in 0..<a.count {
+            b[i] = (0.0..<1.0).random()
+        }
+        
+        var answer = [Double]()
+        DiscreteConvolve(a, b, &answer)
+        
+        var result = [Double]()
+        Convolve(a, b, &result)
+        
+        for i in 0..<answer.count {
+            XCTAssertEqualWithAccuracy(answer[i], result[i], accuracy: accuracy)
+        }
+    }
+    func testConvolveH() {
+        // This is an example of a functional test case.
+        var a = [Double](repeating: 0, count: 9)
+        var b = [Double](repeating: 0, count: 9)
+        for i in 0..<a.count {
+            a[i] = (0.0..<1.0).random()
+        }
+        for i in 0..<a.count {
+            b[i] = (0.0..<1.0).random()
+        }
+        
+        var answer = [Double]()
+        DiscreteConvolve(a, b, &answer)
+        
+        var result = [Double]()
+        Convolve(a, b, &result)
+        
+        for i in 0..<answer.count {
+            XCTAssertEqualWithAccuracy(answer[i], result[i], accuracy: accuracy)
+        }
+    }
+    func testConvolveI() {
         // This is an example of a functional test case.
         var a = [Double](repeating: 0, count: 10)
         var b = [Double](repeating: 0, count: 10)
@@ -676,10 +844,10 @@ class FourierTest: XCTestCase {
             XCTAssertEqualWithAccuracy(answer[i], result[i], accuracy: accuracy)
         }
     }
-    func testConvolveO() {
+    func testConvolveJ() {
         // This is an example of a functional test case.
-        var a = [Double](repeating: 0, count: 9)
-        var b = [Double](repeating: 0, count: 9)
+        var a = [Double](repeating: 0, count: 11)
+        var b = [Double](repeating: 0, count: 11)
         for i in 0..<a.count {
             a[i] = (0.0..<1.0).random()
         }
