@@ -142,7 +142,7 @@ extension Rect {
                     _path = path
                 } else {
                     let path = CGMutablePath()
-                    self._apply { component, state in
+                    self.apply { component, state in
                         switch component {
                         case let .move(point): path.move(to: CGPoint(point))
                         case let .line(point): path.addLine(to: CGPoint(point))
@@ -170,11 +170,11 @@ extension Rect {
                 let path = buf!.assumingMemoryBound(to: SDPath.self)
                 let points = element.pointee.points
                 switch element.pointee.type {
-                case .moveToPoint: path.pointee.appendCommand(SDPath.Move(Point(points[0])))
-                case .addLineToPoint: path.pointee.appendCommand(SDPath.Line(Point(points[0])))
-                case .addQuadCurveToPoint: path.pointee.appendCommand(SDPath.QuadBezier(Point(points[0]), Point(points[1])))
-                case .addCurveToPoint: path.pointee.appendCommand(SDPath.CubicBezier(Point(points[0]), Point(points[1]), Point(points[2])))
-                case .closeSubpath: path.pointee.appendCommand(SDPath.ClosePath())
+                case .moveToPoint: path.pointee.append(.move(Point(points[0])))
+                case .addLineToPoint: path.pointee.append(.line(Point(points[0])))
+                case .addQuadCurveToPoint: path.pointee.append(.quad(Point(points[0]), Point(points[1])))
+                case .addCurveToPoint: path.pointee.append(.cubic(Point(points[0]), Point(points[1]), Point(points[2])))
+                case .closeSubpath: path.pointee.append(.close)
                 }
             }
             self.setCache(name: SDPathCacheCGPathKey, value: path.copy()!, type: .regular)

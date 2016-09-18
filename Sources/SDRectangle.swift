@@ -106,7 +106,7 @@ public struct SDRectangle : SDShape {
     
     public var path: SDPath {
         let points = self.rect.points
-        var path: SDPath = [SDPath.Move(points[0]), SDPath.Line(points[1]), SDPath.Line(points[2]), SDPath.Line(points[3]), SDPath.ClosePath()]
+        var path: SDPath = [.move(points[0]), .line(points[1]), .line(points[2]), .line(points[3]), .close]
         path.rotate = self.rotate
         path.scale = self.scale
         path.baseTransform = self.baseTransform

@@ -95,295 +95,239 @@ extension SDPath {
                     if self.lastMove {
                         self.removeLast()
                     }
-                    let move = SDPath.Move(x: try toDouble(g.current), y: try toDouble(g.next()))
-                    start = move.point
-                    relative = move.point
-                    lastcontrol = move.point
+                    let move = Point(x: try toDouble(g.current), y: try toDouble(g.next()))
+                    start = move
+                    relative = move
+                    lastcontrol = move
                     lastbezier = 0
-                    self.appendCommand(move)
+                    self.append(SDPath.Command.move(move))
                 } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
             case "m":
                 repeat {
                     if self.lastMove {
                         self.removeLast()
                     }
-                    let move = SDPath.Move(x: try toDouble(g.current) + relative.x, y: try toDouble(g.next()) + relative.y)
-                    start = move.point
-                    relative = move.point
-                    lastcontrol = move.point
+                    let move = Point(x: try toDouble(g.current) + relative.x, y: try toDouble(g.next()) + relative.y)
+                    start = move
+                    relative = move
+                    lastcontrol = move
                     lastbezier = 0
-                    self.appendCommand(move)
+                    self.append(SDPath.Command.move(move))
                 } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
             case "L":
                 if self.count == 0 || self.lastClose {
-                    let move = SDPath.Move(start)
-                    relative = move.point
-                    lastcontrol = move.point
+                    relative = start
+                    lastcontrol = start
                     lastbezier = 0
-                    self.appendCommand(move)
+                    self.append(SDPath.Command.move(start))
                 }
                 repeat {
-                    let line = SDPath.Line(x: try toDouble(g.current), y: try toDouble(g.next()))
-                    relative = line.point
-                    lastcontrol = line.point
+                    let line = Point(x: try toDouble(g.current), y: try toDouble(g.next()))
+                    relative = line
+                    lastcontrol = line
                     lastbezier = 0
-                    self.appendCommand(line)
+                    self.append(SDPath.Command.line(line))
                 } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
             case "l":
                 if self.count == 0 || self.lastClose {
-                    let move = SDPath.Move(start)
-                    relative = move.point
-                    lastcontrol = move.point
+                    relative = start
+                    lastcontrol = start
                     lastbezier = 0
-                    self.appendCommand(move)
+                    self.append(SDPath.Command.move(start))
                 }
                 repeat {
-                    let line = SDPath.Line(x: try toDouble(g.current) + relative.x, y: try toDouble(g.next()) + relative.y)
-                    relative = line.point
-                    lastcontrol = line.point
+                    let line = Point(x: try toDouble(g.current) + relative.x, y: try toDouble(g.next()) + relative.y)
+                    relative = line
+                    lastcontrol = line
                     lastbezier = 0
-                    self.appendCommand(line)
+                    self.append(SDPath.Command.line(line))
                 } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
             case "H":
                 if self.count == 0 || self.lastClose {
-                    let move = SDPath.Move(start)
-                    relative = move.point
-                    lastcontrol = move.point
+                    relative = start
+                    lastcontrol = start
                     lastbezier = 0
-                    self.appendCommand(move)
+                    self.append(SDPath.Command.move(start))
                 }
                 repeat {
-                    let line = SDPath.Line(x: try toDouble(g.current), y: relative.y)
-                    relative = line.point
-                    lastcontrol = line.point
+                    let line = Point(x: try toDouble(g.current), y: relative.y)
+                    relative = line
+                    lastcontrol = line
                     lastbezier = 0
-                    self.appendCommand(line)
+                    self.append(SDPath.Command.line(line))
                 } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
             case "h":
                 if self.count == 0 || self.lastClose {
-                    let move = SDPath.Move(start)
-                    relative = move.point
-                    lastcontrol = move.point
+                    relative = start
+                    lastcontrol = start
                     lastbezier = 0
-                    self.appendCommand(move)
+                    self.append(SDPath.Command.move(start))
                 }
                 repeat {
-                    let line = SDPath.Line(x: try toDouble(g.current) + relative.x, y: relative.y)
-                    relative = line.point
-                    lastcontrol = line.point
+                    let line = Point(x: try toDouble(g.current) + relative.x, y: relative.y)
+                    relative = line
+                    lastcontrol = line
                     lastbezier = 0
-                    self.appendCommand(line)
+                    self.append(SDPath.Command.line(line))
                 } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
             case "V":
                 if self.count == 0 || self.lastClose {
-                    let move = SDPath.Move(start)
-                    relative = move.point
-                    lastcontrol = move.point
+                    relative = start
+                    lastcontrol = start
                     lastbezier = 0
-                    self.appendCommand(move)
+                    self.append(SDPath.Command.move(start))
                 }
                 repeat {
-                    let line = SDPath.Line(x: relative.x, y: try toDouble(g.current))
-                    relative = line.point
-                    lastcontrol = line.point
+                    let line = Point(x: relative.x, y: try toDouble(g.current))
+                    relative = line
+                    lastcontrol = line
                     lastbezier = 0
-                    self.appendCommand(line)
+                    self.append(SDPath.Command.line(line))
                 } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
             case "v":
                 if self.count == 0 || self.lastClose {
-                    let move = SDPath.Move(start)
-                    relative = move.point
-                    lastcontrol = move.point
+                    relative = start
+                    lastcontrol = start
                     lastbezier = 0
-                    self.appendCommand(move)
+                    self.append(SDPath.Command.move(start))
                 }
                 repeat {
-                    if self.count == 0 || self.lastClose {
-                        let move = SDPath.Move(start)
-                        relative = move.point
-                        lastcontrol = move.point
-                        lastbezier = 0
-                        self.appendCommand(move)
-                    }
-                    let line = SDPath.Line(x: relative.x, y: try toDouble(g.current) + relative.y)
-                    relative = line.point
-                    lastcontrol = line.point
+                    let line = Point(x: relative.x, y: try toDouble(g.current) + relative.y)
+                    relative = line
+                    lastcontrol = line
                     lastbezier = 0
-                    self.appendCommand(line)
+                    self.append(SDPath.Command.line(line))
                 } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
             case "C":
                 if self.count == 0 || self.lastClose {
-                    let move = SDPath.Move(start)
-                    relative = move.point
-                    lastcontrol = move.point
+                    relative = start
+                    lastcontrol = start
                     lastbezier = 0
-                    self.appendCommand(move)
+                    self.append(SDPath.Command.move(start))
                 }
                 repeat {
-                    let bezier = SDPath.CubicBezier(
-                        x1: try toDouble(g.current), y1: try toDouble(g.next()),
-                        x2: try toDouble(g.next()), y2: try toDouble(g.next()),
-                        x3: try toDouble(g.next()), y3: try toDouble(g.next()))
-                    relative = bezier.p3
-                    lastcontrol = bezier.p2
+                    let p1 = Point(x: try toDouble(g.current), y: try toDouble(g.next()))
+                    let p2 = Point(x: try toDouble(g.next()), y: try toDouble(g.next()))
+                    let p3 = Point(x: try toDouble(g.next()), y: try toDouble(g.next()))
+                    relative = p3
+                    lastcontrol = p2
                     lastbezier = 2
-                    self.appendCommand(bezier)
+                    self.append(SDPath.Command.cubic(p1, p2, p3))
                 } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
             case "c":
                 if self.count == 0 || self.lastClose {
-                    let move = SDPath.Move(start)
-                    relative = move.point
-                    lastcontrol = move.point
+                    relative = start
+                    lastcontrol = start
                     lastbezier = 0
-                    self.appendCommand(move)
+                    self.append(SDPath.Command.move(start))
                 }
                 repeat {
-                    let bezier = SDPath.CubicBezier(
-                        x1: try toDouble(g.current) + relative.x, y1: try toDouble(g.next()) + relative.y,
-                        x2: try toDouble(g.next()) + relative.x, y2: try toDouble(g.next()) + relative.y,
-                        x3: try toDouble(g.next()) + relative.x, y3: try toDouble(g.next()) + relative.y)
-                    relative = bezier.p3
-                    lastcontrol = bezier.p2
+                    let p1 = Point(x: try toDouble(g.current) + relative.x, y: try toDouble(g.next()) + relative.y)
+                    let p2 = Point(x: try toDouble(g.next()) + relative.x, y: try toDouble(g.next()) + relative.y)
+                    let p3 = Point(x: try toDouble(g.next()) + relative.x, y: try toDouble(g.next()) + relative.y)
+                    relative = p3
+                    lastcontrol = p2
                     lastbezier = 2
-                    self.appendCommand(bezier)
+                    self.append(SDPath.Command.cubic(p1, p2, p3))
                 } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
             case "S":
                 if self.count == 0 || self.lastClose {
-                    let move = SDPath.Move(start)
-                    relative = move.point
-                    lastcontrol = move.point
+                    relative = start
+                    lastcontrol = start
                     lastbezier = 0
-                    self.appendCommand(move)
+                    self.append(SDPath.Command.move(start))
                 }
                 repeat {
-                    let bezier: SDPath.CubicBezier
-                    if lastbezier == 2 {
-                        let p1 = 2 * relative - lastcontrol
-                        bezier = SDPath.CubicBezier(
-                            x1: p1.x, y1: p1.y,
-                            x2: try toDouble(g.current), y2: try toDouble(g.next()),
-                            x3: try toDouble(g.next()), y3: try toDouble(g.next()))
-                    } else {
-                        bezier = SDPath.CubicBezier(
-                            x1: relative.x, y1: relative.y,
-                            x2: try toDouble(g.current), y2: try toDouble(g.next()),
-                            x3: try toDouble(g.next()), y3: try toDouble(g.next()))
-                    }
-                    relative = bezier.p3
-                    lastcontrol = bezier.p2
+                    let p1 = lastbezier == 2 ? 2 * relative - lastcontrol : relative
+                    let p2 = Point(x: try toDouble(g.current), y: try toDouble(g.next()))
+                    let p3 = Point(x: try toDouble(g.next()), y: try toDouble(g.next()))
+                    relative = p3
+                    lastcontrol = p2
                     lastbezier = 2
-                    self.appendCommand(bezier)
+                    self.append(SDPath.Command.cubic(p1, p2, p3))
                 } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
             case "s":
                 if self.count == 0 || self.lastClose {
-                    let move = SDPath.Move(start)
-                    relative = move.point
-                    lastcontrol = move.point
+                    relative = start
+                    lastcontrol = start
                     lastbezier = 0
-                    self.appendCommand(move)
+                    self.append(SDPath.Command.move(start))
                 }
                 repeat {
-                    let bezier: SDPath.CubicBezier
-                    if lastbezier == 2 {
-                        let p1 = 2 * relative - lastcontrol
-                        bezier = SDPath.CubicBezier(
-                            x1: p1.x, y1: p1.y,
-                            x2: try toDouble(g.current) + relative.x, y2: try toDouble(g.next()) + relative.y,
-                            x3: try toDouble(g.next()) + relative.x, y3: try toDouble(g.next()) + relative.y)
-                    } else {
-                        bezier = SDPath.CubicBezier(
-                            x1: relative.x, y1: relative.y,
-                            x2: try toDouble(g.current) + relative.x, y2: try toDouble(g.next()) + relative.y,
-                            x3: try toDouble(g.next()) + relative.x, y3: try toDouble(g.next()) + relative.y)
-                    }
-                    relative = bezier.p3
-                    lastcontrol = bezier.p2
+                    let p1 = lastbezier == 2 ? 2 * relative - lastcontrol : relative
+                    let p2 = Point(x: try toDouble(g.current) + relative.x, y: try toDouble(g.next()) + relative.y)
+                    let p3 = Point(x: try toDouble(g.next()) + relative.x, y: try toDouble(g.next()) + relative.y)
+                    relative = p3
+                    lastcontrol = p2
                     lastbezier = 2
-                    self.appendCommand(bezier)
+                    self.append(SDPath.Command.cubic(p1, p2, p3))
                 } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
             case "Q":
                 if self.count == 0 || self.lastClose {
-                    let move = SDPath.Move(start)
-                    relative = move.point
-                    lastcontrol = move.point
+                    relative = start
+                    lastcontrol = start
                     lastbezier = 0
-                    self.appendCommand(move)
+                    self.append(SDPath.Command.move(start))
                 }
                 repeat {
-                    let bezier = SDPath.QuadBezier(
-                        x1: try toDouble(g.current), y1: try toDouble(g.next()),
-                        x2: try toDouble(g.next()), y2: try toDouble(g.next()))
-                    relative = bezier.p2
-                    lastcontrol = bezier.p1
+                    let p1 = Point(x: try toDouble(g.current), y: try toDouble(g.next()))
+                    let p2 = Point(x: try toDouble(g.next()), y: try toDouble(g.next()))
+                    relative = p2
+                    lastcontrol = p1
                     lastbezier = 1
-                    self.appendCommand(bezier)
+                    self.append(SDPath.Command.quad(p1, p2))
                 } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
             case "q":
                 if self.count == 0 || self.lastClose {
-                    let move = SDPath.Move(start)
-                    relative = move.point
-                    lastcontrol = move.point
+                    relative = start
+                    lastcontrol = start
                     lastbezier = 0
-                    self.appendCommand(move)
+                    self.append(SDPath.Command.move(start))
                 }
                 repeat {
-                    let bezier = SDPath.QuadBezier(
-                        x1: try toDouble(g.current) + relative.x, y1: try toDouble(g.next()) + relative.y,
-                        x2: try toDouble(g.next()) + relative.x, y2: try toDouble(g.next()) + relative.y)
-                    relative = bezier.p2
-                    lastcontrol = bezier.p1
+                    let p1 = Point(x: try toDouble(g.current) + relative.x, y: try toDouble(g.next()) + relative.y)
+                    let p2 = Point(x: try toDouble(g.next()) + relative.x, y: try toDouble(g.next()) + relative.y)
+                    relative = p2
+                    lastcontrol = p1
                     lastbezier = 1
-                    self.appendCommand(bezier)
+                    self.append(SDPath.Command.quad(p1, p2))
                 } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
             case "T":
                 if self.count == 0 || self.lastClose {
-                    let move = SDPath.Move(start)
-                    relative = move.point
-                    lastcontrol = move.point
+                    relative = start
+                    lastcontrol = start
                     lastbezier = 0
-                    self.appendCommand(move)
+                    self.append(SDPath.Command.move(start))
                 }
                 repeat {
-                    let bezier: SDPath.QuadBezier
-                    if lastbezier == 1 {
-                        let p1 = 2 * relative - lastcontrol
-                        bezier = SDPath.QuadBezier(x1: p1.x, y1: p1.y, x2: try toDouble(g.current), y2: try toDouble(g.next()))
-                    } else {
-                        bezier = SDPath.QuadBezier(x1: relative.x, y1: relative.y, x2: try toDouble(g.current), y2: try toDouble(g.next()))
-                    }
-                    relative = bezier.p2
-                    lastcontrol = bezier.p1
+                    let p1 = lastbezier == 2 ? 2 * relative - lastcontrol : relative
+                    let p2 = Point(x: try toDouble(g.current), y: try toDouble(g.next()))
+                    relative = p2
+                    lastcontrol = p1
                     lastbezier = 1
-                    self.appendCommand(bezier)
+                    self.append(SDPath.Command.quad(p1, p2))
                 } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
             case "t":
                 if self.count == 0 || self.lastClose {
-                    let move = SDPath.Move(start)
-                    relative = move.point
-                    lastcontrol = move.point
+                    relative = start
+                    lastcontrol = start
                     lastbezier = 0
-                    self.appendCommand(move)
+                    self.append(SDPath.Command.move(start))
                 }
                 repeat {
-                    let bezier: SDPath.QuadBezier
-                    if lastbezier == 1 {
-                        let p1 = 2 * relative - lastcontrol
-                        bezier = SDPath.QuadBezier(x1: p1.x, y1: p1.y, x2: try toDouble(g.current) + relative.x, y2: try toDouble(g.next()) + relative.y)
-                    } else {
-                        bezier = SDPath.QuadBezier(x1: relative.x, y1: relative.y, x2: try toDouble(g.current) + relative.x, y2: try toDouble(g.next()) + relative.y)
-                    }
-                    relative = bezier.p2
-                    lastcontrol = bezier.p1
+                    let p1 = lastbezier == 2 ? 2 * relative - lastcontrol : relative
+                    let p2 = Point(x: try toDouble(g.current) + relative.x, y: try toDouble(g.next()) + relative.y)
+                    relative = p2
+                    lastcontrol = p1
                     lastbezier = 1
-                    self.appendCommand(bezier)
+                    self.append(SDPath.Command.quad(p1, p2))
                 } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
             case "A":
                 if self.count == 0 || self.lastClose {
-                    let move = SDPath.Move(start)
-                    relative = move.point
-                    lastcontrol = move.point
+                    relative = start
+                    lastcontrol = start
                     lastbezier = 0
-                    self.appendCommand(move)
+                    self.append(SDPath.Command.move(start))
                 }
                 repeat {
                     let rx = try toDouble(g.current)
@@ -426,11 +370,10 @@ extension SDPath {
                 } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
             case "a":
                 if self.count == 0 || self.lastClose {
-                    let move = SDPath.Move(start)
-                    relative = move.point
-                    lastcontrol = move.point
+                    relative = start
+                    lastcontrol = start
                     lastbezier = 0
-                    self.appendCommand(move)
+                    self.append(SDPath.Command.move(start))
                 }
                 repeat {
                     let rx = try toDouble(g.current)
@@ -475,11 +418,11 @@ extension SDPath {
                 if self.lastMove {
                     self.removeLast()
                 } else if self.count != 0 && !self.lastClose {
-                    let close = SDPath.ClosePath()
+                    let close = SDPath.Command.close
                     relative = start
                     lastcontrol = start
                     lastbezier = 0
-                    self.appendCommand(close)
+                    self.append(close)
                 }
             default:
                 throw DecoderError(command: command)
@@ -500,7 +443,7 @@ private func arcDetails(_ start: Point, _ end: Point, _ radius: Radius, _ rotate
     }
 }
 @_transparent
-private func bezierArc(_ start: Point, _ end: Point, _ radius: Radius, _ rotate: Double, _ largeArc: Bool, _ sweep: Bool) -> [SDPath.CubicBezier] {
+private func bezierArc(_ start: Point, _ end: Point, _ radius: Radius, _ rotate: Double, _ largeArc: Bool, _ sweep: Bool) -> [SDPath.Command] {
     let (center, radius) = arcDetails(start, end, radius, rotate, largeArc, sweep)
     let _arc_transform = SDTransform.Scale(x: radius.x, y: radius.y) * SDTransform.Rotate(rotate)
     let _arc_transform_inverse = _arc_transform.inverse
@@ -519,11 +462,11 @@ private func bezierArc(_ start: Point, _ end: Point, _ radius: Radius, _ rotate:
     }
     let _transform = SDTransform.Rotate(startAngle) * _arc_transform
     let point = BezierArc(endAngle - startAngle).lazy.map { $0 * _transform + center }
-    var result: [SDPath.CubicBezier] = []
+    var result: [SDPath.Command] = []
     if point.count > 1 {
         result.reserveCapacity(point.count / 3)
         for i in 0..<point.count / 3 {
-            result.append(SDPath.CubicBezier(point[i * 3 + 1], point[i * 3 + 2], point[i * 3 + 3]))
+            result.append(SDPath.Command.cubic(point[i * 3 + 1], point[i * 3 + 2], point[i * 3 + 3]))
         }
     }
     return result
@@ -575,28 +518,24 @@ public extension SDPath {
         var relative = Point()
         var lastControl: Point?
         for item in self {
-            (item as? SDPathCommandSerializableType)?.serialize(&currentState, start: &start, relative: &relative, lastControl: &lastControl).write(to: &data)
+            item.serialize(&currentState, start: &start, relative: &relative, lastControl: &lastControl).write(to: &data)
         }
         return data
     }
 }
 
-private protocol SDPathCommandSerializableType {
+private extension SDPath.Command {
     
-    func serialize(_ currentState: inout Int, start: inout Point, relative: inout Point, lastControl: inout Point?) -> String
-}
-
-private protocol SDPathCommandSerializableShortFormType : SDPathCommandSerializableType {
-    
-    func serialize1(_ currentState: Int, _ start: Point, _ relative: Point, _ lastControl: Point?) -> (String, Int, Point, Point, Point?)
-    func serialize2(_ currentState: Int, _ start: Point, _ relative: Point, _ lastControl: Point?) -> (String, Int, Point, Point, Point?)
-    
-}
-
-extension SDPathCommandSerializableShortFormType {
-    
-    @_transparent
     func serialize(_ currentState: inout Int, start: inout Point, relative: inout Point, lastControl: inout Point?) -> String {
+        
+        if case .close = self {
+            let str = currentState != 18 ? "z" : ""
+            relative = start
+            currentState = 18
+            lastControl = nil
+            return str
+        }
+        
         let _serialize1 = serialize1(currentState, start, relative, lastControl)
         let _serialize2 = serialize2(currentState, start, relative, lastControl)
         if _serialize1.0.characters.count <= _serialize2.0.characters.count {
@@ -612,200 +551,166 @@ extension SDPathCommandSerializableShortFormType {
         lastControl = _serialize2.4
         return _serialize2.0
     }
-}
-
-extension SDPath.Move : SDPathCommandSerializableShortFormType {
     
     @_transparent
-    fileprivate func serialize1(_: Int, _: Point, _: Point, _ lastControl: Point?) -> (String, Int, Point, Point, Point?) {
-        return (getPathDataString("M", self.x, self.y), 0, self.point, self.point, nil)
-    }
-    @_transparent
-    fileprivate func serialize2(_: Int, _: Point, _ relative: Point, _ lastControl: Point?) -> (String, Int, Point, Point, Point?) {
-        return (getPathDataString("m", self.x - relative.x, self.y - relative.y), 1, self.point, self.point, nil)
-    }
-}
-
-extension SDPath.Line : SDPathCommandSerializableShortFormType {
-    
-    @_transparent
-    fileprivate func serialize1(_ currentState: Int, _ start: Point, _ relative: Point, _ lastControl: Point?) -> (String, Int, Point, Point, Point?) {
-        var currentState = currentState
-        let str: String
-        if _round(relative.x) == _round(self.x) {
-            if currentState == 2 {
-                str = getPathDataString(nil, self.y)
-            } else {
-                str = getPathDataString("V", self.y)
-            }
-            currentState = 2
-        } else if _round(relative.y) == _round(self.y) {
-            if currentState == 4 {
-                str = getPathDataString(nil, self.x)
-            } else {
-                str = getPathDataString("H", self.x)
-            }
-            currentState = 4
-        } else {
-            if currentState == 6 {
-                str = getPathDataString(nil, self.x, self.y)
-            } else {
-                str = getPathDataString("L", self.x, self.y)
-            }
-            currentState = 6
-        }
-        return (str, currentState, start, self.point, nil)
-    }
-    @_transparent
-    fileprivate func serialize2(_ currentState: Int, _ start: Point, _ relative: Point, _ lastControl: Point?) -> (String, Int, Point, Point, Point?) {
-        var currentState = currentState
-        let str: String
-        if _round(relative.x) == _round(self.x) {
-            if currentState == 3 {
-                str = getPathDataString(nil, self.y - relative.y)
-            } else {
-                str = getPathDataString("v", self.y - relative.y)
-            }
-            currentState = 3
-        } else if _round(relative.y) == _round(self.y) {
-            if currentState == 5 {
-                str = getPathDataString(nil, self.x - relative.x)
-            } else {
-                str = getPathDataString("h", self.x - relative.x)
-            }
-            currentState = 5
-        } else {
-            if currentState == 7 {
-                str = getPathDataString(nil, self.x - relative.x, self.y - relative.y)
-            } else {
-                str = getPathDataString("l", self.x - relative.x, self.y - relative.y)
-            }
-            currentState = 7
-        }
-        return (str, currentState, start, self.point, nil)
-    }
-}
-
-extension SDPath.QuadBezier : SDPathCommandSerializableShortFormType {
-    
-    @_transparent
-    fileprivate func isSmooth(_ relative: Point, _ lastControl: Point?) -> Bool {
+    func isSmooth(_ p: Point, _ relative: Point, _ lastControl: Point?) -> Bool {
         
         if let lastControl = lastControl {
-            let d = self.p1 + lastControl - 2 * relative
+            let d = p + lastControl - 2 * relative
             return _round(d.x) == 0 && _round(d.y) == 0
         }
         return false
     }
     
-    @_transparent
-    fileprivate func serialize1(_ currentState: Int, _ start: Point, _ relative: Point, _ lastControl: Point?) -> (String, Int, Point, Point, Point?) {
-        var currentState = currentState
-        let str: String
-        if self.isSmooth(relative, lastControl) && (8...11).contains(currentState) {
-            if currentState == 8 {
-                str = getPathDataString(nil, self.p2.x, self.p2.y)
-            } else {
-                str = getPathDataString("T", self.p2.x, self.p2.y)
-            }
-            currentState = 8
-        } else {
-            if currentState == 10 {
-                str = getPathDataString(nil, self.p1.x, self.p1.y, self.p2.x, self.p2.y)
-            } else {
-                str = getPathDataString("Q", self.p1.x, self.p1.y, self.p2.x, self.p2.y)
-            }
-            currentState = 10
-        }
-        return (str, currentState, start, self.point, self.p1)
-    }
-    @_transparent
-    fileprivate func serialize2(_ currentState: Int, _ start: Point, _ relative: Point, _ lastControl: Point?) -> (String, Int, Point, Point, Point?) {
-        var currentState = currentState
-        let str: String
-        if self.isSmooth(relative, lastControl) && (8...11).contains(currentState) {
-            if currentState == 9 {
-                str = getPathDataString(nil, self.p2.x - relative.x, self.p2.y - relative.y)
-            } else {
-                str = getPathDataString("t", self.p2.x - relative.x, self.p2.y - relative.y)
-            }
-            currentState = 9
-        } else {
-            if currentState == 11 {
-                str = getPathDataString(nil, self.p1.x - relative.x, self.p1.y - relative.y, self.p2.x - relative.x, self.p2.y - relative.y)
-            } else {
-                str = getPathDataString("q", self.p1.x - relative.x, self.p1.y - relative.y, self.p2.x - relative.x, self.p2.y - relative.y)
-            }
-            currentState = 11
-        }
-        return (str, currentState, start, self.point, self.p1)
-    }
-}
-
-extension SDPath.CubicBezier : SDPathCommandSerializableShortFormType {
-    
-    @_transparent
-    fileprivate func isSmooth(_ relative: Point, _ lastControl: Point?) -> Bool {
+    func serialize1(_ currentState: Int, _ start: Point, _ relative: Point, _ lastControl: Point?) -> (String, Int, Point, Point, Point?) {
         
-        if let lastControl = lastControl {
-            let d = self.p1 + lastControl - 2 * relative
-            return _round(d.x) == 0 && _round(d.y) == 0
+        switch self {
+        case let .move(point): return (getPathDataString("M", point.x, point.y), 0, point, point, nil)
+            
+        case let .line(point):
+            
+            var currentState = currentState
+            let str: String
+            if _round(relative.x) == _round(point.x) {
+                if currentState == 2 {
+                    str = getPathDataString(nil, point.y)
+                } else {
+                    str = getPathDataString("V", point.y)
+                }
+                currentState = 2
+            } else if _round(relative.y) == _round(point.y) {
+                if currentState == 4 {
+                    str = getPathDataString(nil, point.x)
+                } else {
+                    str = getPathDataString("H", point.x)
+                }
+                currentState = 4
+            } else {
+                if currentState == 6 {
+                    str = getPathDataString(nil, point.x, point.y)
+                } else {
+                    str = getPathDataString("L", point.x, point.y)
+                }
+                currentState = 6
+            }
+            return (str, currentState, start, point, nil)
+        case let .quad(p1, p2):
+            
+            var currentState = currentState
+            let str: String
+            if isSmooth(p2, relative, lastControl) && (8...11).contains(currentState) {
+                if currentState == 8 {
+                    str = getPathDataString(nil, p2.x, p2.y)
+                } else {
+                    str = getPathDataString("T", p2.x, p2.y)
+                }
+                currentState = 8
+            } else {
+                if currentState == 10 {
+                    str = getPathDataString(nil, p1.x, p1.y, p2.x, p2.y)
+                } else {
+                    str = getPathDataString("Q", p1.x, p1.y, p2.x, p2.y)
+                }
+                currentState = 10
+            }
+            return (str, currentState, start, p2, p1)
+        case let .cubic(p1, p2, p3):
+            
+            var currentState = currentState
+            let str: String
+            if isSmooth(p3, relative, lastControl) && (12...15).contains(currentState) {
+                if currentState == 12 {
+                    str = getPathDataString(nil, p2.x, p2.y, p3.x, p3.y)
+                } else {
+                    str = getPathDataString("S", p2.x, p2.y, p3.x, p3.y)
+                }
+                currentState = 12
+            } else {
+                if currentState == 14 {
+                    str = getPathDataString(nil, p1.x, p1.y, p2.x, p2.y, p3.x, p3.y)
+                } else {
+                    str = getPathDataString("C", p1.x, p1.y, p2.x, p2.y, p3.x, p3.y)
+                }
+                currentState = 14
+            }
+            return (str, currentState, start, p3, p2)
+        default: fatalError()
         }
-        return false
     }
     
-    @_transparent
-    fileprivate func serialize1(_ currentState: Int, _ start: Point, _ relative: Point, _ lastControl: Point?) -> (String, Int, Point, Point, Point?) {
-        var currentState = currentState
-        let str: String
-        if self.isSmooth(relative, lastControl) && (12...15).contains(currentState) {
-            if currentState == 12 {
-                str = getPathDataString(nil, self.p2.x, self.p2.y, self.p3.x, self.p3.y)
+    func serialize2(_ currentState: Int, _ start: Point, _ relative: Point, _ lastControl: Point?) -> (String, Int, Point, Point, Point?) {
+        
+        switch self {
+        case let .move(point): return (getPathDataString("m", point.x - relative.x, point.y - relative.y), 1, point, point, nil)
+            
+        case let .line(point):
+            
+            var currentState = currentState
+            let str: String
+            if _round(relative.x) == _round(point.x) {
+                if currentState == 3 {
+                    str = getPathDataString(nil, point.y - relative.y)
+                } else {
+                    str = getPathDataString("v", point.y - relative.y)
+                }
+                currentState = 3
+            } else if _round(relative.y) == _round(point.y) {
+                if currentState == 5 {
+                    str = getPathDataString(nil, point.x - relative.x)
+                } else {
+                    str = getPathDataString("h", point.x - relative.x)
+                }
+                currentState = 5
             } else {
-                str = getPathDataString("S", self.p2.x, self.p2.y, self.p3.x, self.p3.y)
+                if currentState == 7 {
+                    str = getPathDataString(nil, point.x - relative.x, point.y - relative.y)
+                } else {
+                    str = getPathDataString("l", point.x - relative.x, point.y - relative.y)
+                }
+                currentState = 7
             }
-            currentState = 12
-        } else {
-            if currentState == 14 {
-                str = getPathDataString(nil, self.p1.x, self.p1.y, self.p2.x, self.p2.y, self.p3.x, self.p3.y)
+            return (str, currentState, start, point, nil)
+        case let .quad(p1, p2):
+            
+            var currentState = currentState
+            let str: String
+            if isSmooth(p2, relative, lastControl) && (8...11).contains(currentState) {
+                if currentState == 9 {
+                    str = getPathDataString(nil, p2.x - relative.x, p2.y - relative.y)
+                } else {
+                    str = getPathDataString("t", p2.x - relative.x, p2.y - relative.y)
+                }
+                currentState = 9
             } else {
-                str = getPathDataString("C", self.p1.x, self.p1.y, self.p2.x, self.p2.y, self.p3.x, self.p3.y)
+                if currentState == 11 {
+                    str = getPathDataString(nil, p1.x - relative.x, p1.y - relative.y, p2.x - relative.x, p2.y - relative.y)
+                } else {
+                    str = getPathDataString("q", p1.x - relative.x, p1.y - relative.y, p2.x - relative.x, p2.y - relative.y)
+                }
+                currentState = 11
             }
-            currentState = 14
+            return (str, currentState, start, p2, p1)
+        case let .cubic(p1, p2, p3):
+            
+            var currentState = currentState
+            let str: String
+            if isSmooth(p3, relative, lastControl) && (12...15).contains(currentState) {
+                if currentState == 13 {
+                    str = getPathDataString(nil, p2.x - relative.x, p2.y - relative.y, p3.x - relative.x, p3.y - relative.y)
+                } else {
+                    str = getPathDataString("s", p2.x - relative.x, p2.y - relative.y, p3.x - relative.x, p3.y - relative.y)
+                }
+                currentState = 13
+            } else {
+                if currentState == 15 {
+                    str = getPathDataString(nil, p1.x - relative.x, p1.y - relative.y, p2.x - relative.x, p2.y - relative.y, p3.x - relative.x, p3.y - relative.y)
+                } else {
+                    str = getPathDataString("c", p1.x - relative.x, p1.y - relative.y, p2.x - relative.x, p2.y - relative.y, p3.x - relative.x, p3.y - relative.y)
+                }
+                currentState = 15
+            }
+            return (str, currentState, start, p3, p2)
+        default: fatalError()
         }
-        return (str, currentState, start, self.point, self.p2)
-    }
-    @_transparent
-    fileprivate func serialize2(_ currentState: Int, _ start: Point, _ relative: Point, _ lastControl: Point?) -> (String, Int, Point, Point, Point?) {
-        var currentState = currentState
-        let str: String
-        if self.isSmooth(relative, lastControl) && (12...15).contains(currentState) {
-            if currentState == 13 {
-                str = getPathDataString(nil, self.p2.x - relative.x, self.p2.y - relative.y, self.p3.x - relative.x, self.p3.y - relative.y)
-            } else {
-                str = getPathDataString("s", self.p2.x - relative.x, self.p2.y - relative.y, self.p3.x - relative.x, self.p3.y - relative.y)
-            }
-            currentState = 13
-        } else {
-            if currentState == 15 {
-                str = getPathDataString(nil, self.p1.x - relative.x, self.p1.y - relative.y, self.p2.x - relative.x, self.p2.y - relative.y, self.p3.x - relative.x, self.p3.y - relative.y)
-            } else {
-                str = getPathDataString("c", self.p1.x - relative.x, self.p1.y - relative.y, self.p2.x - relative.x, self.p2.y - relative.y, self.p3.x - relative.x, self.p3.y - relative.y)
-            }
-            currentState = 15
-        }
-        return (str, currentState, start, self.point, self.p2)
-    }
-}
-
-extension SDPath.ClosePath : SDPathCommandSerializableType {
-    
-    @_transparent
-    fileprivate func serialize(_ currentState: inout Int, start: inout Point, relative: inout Point, lastControl: inout Point?) -> String {
-        let str = currentState != 18 ? "z" : ""
-        relative = start
-        currentState = 18
-        lastControl = nil
-        return str
     }
 }
