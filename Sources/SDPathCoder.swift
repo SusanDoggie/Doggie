@@ -100,7 +100,7 @@ extension SDPath {
                     relative = move
                     lastcontrol = move
                     lastbezier = 0
-                    self.append(SDPath.Command.move(move))
+                    self.append(.move(move))
                 } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
             case "m":
                 repeat {
@@ -112,98 +112,98 @@ extension SDPath {
                     relative = move
                     lastcontrol = move
                     lastbezier = 0
-                    self.append(SDPath.Command.move(move))
+                    self.append(.move(move))
                 } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
             case "L":
                 if self.count == 0 || self.lastClose {
                     relative = start
                     lastcontrol = start
                     lastbezier = 0
-                    self.append(SDPath.Command.move(start))
+                    self.append(.move(start))
                 }
                 repeat {
                     let line = Point(x: try toDouble(g.current), y: try toDouble(g.next()))
                     relative = line
                     lastcontrol = line
                     lastbezier = 0
-                    self.append(SDPath.Command.line(line))
+                    self.append(.line(line))
                 } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
             case "l":
                 if self.count == 0 || self.lastClose {
                     relative = start
                     lastcontrol = start
                     lastbezier = 0
-                    self.append(SDPath.Command.move(start))
+                    self.append(.move(start))
                 }
                 repeat {
                     let line = Point(x: try toDouble(g.current) + relative.x, y: try toDouble(g.next()) + relative.y)
                     relative = line
                     lastcontrol = line
                     lastbezier = 0
-                    self.append(SDPath.Command.line(line))
+                    self.append(.line(line))
                 } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
             case "H":
                 if self.count == 0 || self.lastClose {
                     relative = start
                     lastcontrol = start
                     lastbezier = 0
-                    self.append(SDPath.Command.move(start))
+                    self.append(.move(start))
                 }
                 repeat {
                     let line = Point(x: try toDouble(g.current), y: relative.y)
                     relative = line
                     lastcontrol = line
                     lastbezier = 0
-                    self.append(SDPath.Command.line(line))
+                    self.append(.line(line))
                 } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
             case "h":
                 if self.count == 0 || self.lastClose {
                     relative = start
                     lastcontrol = start
                     lastbezier = 0
-                    self.append(SDPath.Command.move(start))
+                    self.append(.move(start))
                 }
                 repeat {
                     let line = Point(x: try toDouble(g.current) + relative.x, y: relative.y)
                     relative = line
                     lastcontrol = line
                     lastbezier = 0
-                    self.append(SDPath.Command.line(line))
+                    self.append(.line(line))
                 } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
             case "V":
                 if self.count == 0 || self.lastClose {
                     relative = start
                     lastcontrol = start
                     lastbezier = 0
-                    self.append(SDPath.Command.move(start))
+                    self.append(.move(start))
                 }
                 repeat {
                     let line = Point(x: relative.x, y: try toDouble(g.current))
                     relative = line
                     lastcontrol = line
                     lastbezier = 0
-                    self.append(SDPath.Command.line(line))
+                    self.append(.line(line))
                 } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
             case "v":
                 if self.count == 0 || self.lastClose {
                     relative = start
                     lastcontrol = start
                     lastbezier = 0
-                    self.append(SDPath.Command.move(start))
+                    self.append(.move(start))
                 }
                 repeat {
                     let line = Point(x: relative.x, y: try toDouble(g.current) + relative.y)
                     relative = line
                     lastcontrol = line
                     lastbezier = 0
-                    self.append(SDPath.Command.line(line))
+                    self.append(.line(line))
                 } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
             case "C":
                 if self.count == 0 || self.lastClose {
                     relative = start
                     lastcontrol = start
                     lastbezier = 0
-                    self.append(SDPath.Command.move(start))
+                    self.append(.move(start))
                 }
                 repeat {
                     let p1 = Point(x: try toDouble(g.current), y: try toDouble(g.next()))
@@ -212,14 +212,14 @@ extension SDPath {
                     relative = p3
                     lastcontrol = p2
                     lastbezier = 2
-                    self.append(SDPath.Command.cubic(p1, p2, p3))
+                    self.append(.cubic(p1, p2, p3))
                 } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
             case "c":
                 if self.count == 0 || self.lastClose {
                     relative = start
                     lastcontrol = start
                     lastbezier = 0
-                    self.append(SDPath.Command.move(start))
+                    self.append(.move(start))
                 }
                 repeat {
                     let p1 = Point(x: try toDouble(g.current) + relative.x, y: try toDouble(g.next()) + relative.y)
@@ -228,14 +228,14 @@ extension SDPath {
                     relative = p3
                     lastcontrol = p2
                     lastbezier = 2
-                    self.append(SDPath.Command.cubic(p1, p2, p3))
+                    self.append(.cubic(p1, p2, p3))
                 } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
             case "S":
                 if self.count == 0 || self.lastClose {
                     relative = start
                     lastcontrol = start
                     lastbezier = 0
-                    self.append(SDPath.Command.move(start))
+                    self.append(.move(start))
                 }
                 repeat {
                     let p1 = lastbezier == 2 ? 2 * relative - lastcontrol : relative
@@ -244,14 +244,14 @@ extension SDPath {
                     relative = p3
                     lastcontrol = p2
                     lastbezier = 2
-                    self.append(SDPath.Command.cubic(p1, p2, p3))
+                    self.append(.cubic(p1, p2, p3))
                 } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
             case "s":
                 if self.count == 0 || self.lastClose {
                     relative = start
                     lastcontrol = start
                     lastbezier = 0
-                    self.append(SDPath.Command.move(start))
+                    self.append(.move(start))
                 }
                 repeat {
                     let p1 = lastbezier == 2 ? 2 * relative - lastcontrol : relative
@@ -260,14 +260,14 @@ extension SDPath {
                     relative = p3
                     lastcontrol = p2
                     lastbezier = 2
-                    self.append(SDPath.Command.cubic(p1, p2, p3))
+                    self.append(.cubic(p1, p2, p3))
                 } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
             case "Q":
                 if self.count == 0 || self.lastClose {
                     relative = start
                     lastcontrol = start
                     lastbezier = 0
-                    self.append(SDPath.Command.move(start))
+                    self.append(.move(start))
                 }
                 repeat {
                     let p1 = Point(x: try toDouble(g.current), y: try toDouble(g.next()))
@@ -275,14 +275,14 @@ extension SDPath {
                     relative = p2
                     lastcontrol = p1
                     lastbezier = 1
-                    self.append(SDPath.Command.quad(p1, p2))
+                    self.append(.quad(p1, p2))
                 } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
             case "q":
                 if self.count == 0 || self.lastClose {
                     relative = start
                     lastcontrol = start
                     lastbezier = 0
-                    self.append(SDPath.Command.move(start))
+                    self.append(.move(start))
                 }
                 repeat {
                     let p1 = Point(x: try toDouble(g.current) + relative.x, y: try toDouble(g.next()) + relative.y)
@@ -290,14 +290,14 @@ extension SDPath {
                     relative = p2
                     lastcontrol = p1
                     lastbezier = 1
-                    self.append(SDPath.Command.quad(p1, p2))
+                    self.append(.quad(p1, p2))
                 } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
             case "T":
                 if self.count == 0 || self.lastClose {
                     relative = start
                     lastcontrol = start
                     lastbezier = 0
-                    self.append(SDPath.Command.move(start))
+                    self.append(.move(start))
                 }
                 repeat {
                     let p1 = lastbezier == 2 ? 2 * relative - lastcontrol : relative
@@ -305,14 +305,14 @@ extension SDPath {
                     relative = p2
                     lastcontrol = p1
                     lastbezier = 1
-                    self.append(SDPath.Command.quad(p1, p2))
+                    self.append(.quad(p1, p2))
                 } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
             case "t":
                 if self.count == 0 || self.lastClose {
                     relative = start
                     lastcontrol = start
                     lastbezier = 0
-                    self.append(SDPath.Command.move(start))
+                    self.append(.move(start))
                 }
                 repeat {
                     let p1 = lastbezier == 2 ? 2 * relative - lastcontrol : relative
@@ -320,14 +320,14 @@ extension SDPath {
                     relative = p2
                     lastcontrol = p1
                     lastbezier = 1
-                    self.append(SDPath.Command.quad(p1, p2))
+                    self.append(.quad(p1, p2))
                 } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
             case "A":
                 if self.count == 0 || self.lastClose {
                     relative = start
                     lastcontrol = start
                     lastbezier = 0
-                    self.append(SDPath.Command.move(start))
+                    self.append(.move(start))
                 }
                 repeat {
                     let rx = try toDouble(g.current)
@@ -373,7 +373,7 @@ extension SDPath {
                     relative = start
                     lastcontrol = start
                     lastbezier = 0
-                    self.append(SDPath.Command.move(start))
+                    self.append(.move(start))
                 }
                 repeat {
                     let rx = try toDouble(g.current)
@@ -418,11 +418,10 @@ extension SDPath {
                 if self.lastMove {
                     self.removeLast()
                 } else if self.count != 0 && !self.lastClose {
-                    let close = SDPath.Command.close
                     relative = start
                     lastcontrol = start
                     lastbezier = 0
-                    self.append(close)
+                    self.append(.close)
                 }
             default:
                 throw DecoderError(command: command)
@@ -466,7 +465,7 @@ private func bezierArc(_ start: Point, _ end: Point, _ radius: Radius, _ rotate:
     if point.count > 1 {
         result.reserveCapacity(point.count / 3)
         for i in 0..<point.count / 3 {
-            result.append(SDPath.Command.cubic(point[i * 3 + 1], point[i * 3 + 2], point[i * 3 + 3]))
+            result.append(.cubic(point[i * 3 + 1], point[i * 3 + 2], point[i * 3 + 3]))
         }
     }
     return result
