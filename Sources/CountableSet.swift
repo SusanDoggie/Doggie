@@ -123,9 +123,7 @@ private extension CountableSet {
         case 0: return (false, indices.lowerBound)
         default:
             let mid = (indices.lowerBound + indices.upperBound) >> 1
-            if indices.upperBound == mid {
-                return (false, indices.upperBound)
-            } else if ranges[mid].contains(target) {
+            if ranges[mid].contains(target) {
                 return (true, mid)
             } else if target < ranges[mid].lowerBound {
                 if indices.lowerBound == mid {
