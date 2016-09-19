@@ -31,18 +31,6 @@ public struct CountableSet<Element : Comparable> where Element : Strideable, Ele
         self.ranges = []
     }
     
-    public init(_ elements: Range<Element>) {
-        self.ranges = [CountableClosedRange(elements)]
-    }
-    public init(_ elements: ClosedRange<Element>) {
-        self.ranges = [CountableClosedRange(elements)]
-    }
-    public init(_ elements: CountableRange<Element>) {
-        self.ranges = [CountableClosedRange(elements)]
-    }
-    public init(_ elements: CountableClosedRange<Element>) {
-        self.ranges = [elements]
-    }
     public init<S : Sequence>(_ elements: S) where S.Iterator.Element == Element {
         self.ranges = []
         self.insert(elements)
@@ -158,6 +146,50 @@ private extension CountableSet {
 
 public extension CountableSet {
     
+    func union<S : Sequence>(_ other: S) -> CountableSet<Element> where S.Iterator.Element == Element {
+        var clone = self
+        clone.formUnion(other)
+        return clone
+    }
+    
+    mutating func formUnion<S : Sequence>(_ other: S) where S.Iterator.Element == Element {
+        self.insert(other)
+    }
+    
+    func subtracting<S : Sequence>(_ other: S) -> CountableSet<Element> where S.Iterator.Element == Element {
+        var clone = self
+        clone.subtract(other)
+        return clone
+    }
+    
+    mutating func subtract<S : Sequence>(_ other: S) where S.Iterator.Element == Element {
+        self.remove(other)
+    }
+    
+    func intersection<S : Sequence>(_ other: S) -> CountableSet<Element> where S.Iterator.Element == Element {
+        var clone = self
+        clone.formIntersection(other)
+        return clone
+    }
+    
+    mutating func formIntersection<S : Sequence>(_ other: S) where S.Iterator.Element == Element {
+        self.subtract(self.subtracting(other))
+    }
+    
+    func symmetricDifference<S : Sequence>(_ other: S) -> CountableSet<Element> where S.Iterator.Element == Element {
+        var clone = self
+        clone.formSymmetricDifference(other)
+        return clone
+    }
+    
+    mutating func formSymmetricDifference<S : Sequence>(_ other: S) where S.Iterator.Element == Element {
+        self.formUnion(other)
+        self.subtract(self.intersection(other))
+    }
+}
+
+public extension CountableSet {
+    
     func contains(_ member: Element) -> Bool {
         return search(member).0
     }
@@ -196,7 +228,11 @@ public extension CountableSet {
         }
     }
     
-    mutating func insert(_ newMembers: CountableClosedRange<Element>) {
+    mutating func removeAll(keepingCapacity keepCapacity: Bool = false){
+        ranges.removeAll(keepingCapacity: keepCapacity)
+    }
+    
+    private mutating func _insert(_ newMembers: CountableClosedRange<Element>) {
         if newMembers.count == 0 {
             return
         }
@@ -223,7 +259,7 @@ public extension CountableSet {
         }
     }
     
-    mutating func remove(_ members: CountableClosedRange<Element>) {
+    private mutating func _remove(_ members: CountableClosedRange<Element>) {
         if members.count == 0 {
             return
         }
@@ -259,50 +295,38 @@ public extension CountableSet {
             ranges.replaceSubrange(index1..<index2, with: CollectionOfOne(members))
         }
     }
-}
-
-public extension CountableSet {
     
-    mutating func insert(_ other: CountableSet) {
-        for range in other.ranges {
-            self.insert(range)
-        }
-    }
-    mutating func remove(_ other: CountableSet) {
-        for range in other.ranges {
-            self.remove(range)
-        }
-    }
-}
-
-public extension CountableSet {
-    
-    mutating func insert(_ newMembers: Range<Element>) {
-        self.insert(CountableClosedRange(newMembers))
-    }
-    mutating func remove(_ members: Range<Element>) {
-        self.remove(CountableClosedRange(members))
-    }
-    mutating func insert(_ newMembers: ClosedRange<Element>) {
-        self.insert(CountableClosedRange(newMembers))
-    }
-    mutating func remove(_ members: ClosedRange<Element>) {
-        self.remove(CountableClosedRange(members))
-    }
-    mutating func insert(_ newMembers: CountableRange<Element>) {
-        self.insert(CountableClosedRange(newMembers))
-    }
-    mutating func remove(_ members: CountableRange<Element>) {
-        self.remove(CountableClosedRange(members))
-    }
     mutating func insert<S : Sequence>(_ newMembers: S) where S.Iterator.Element == Element {
-        for element in newMembers {
-            self.insert(element)
+        switch newMembers {
+        case let range as Range<Element>: self._insert(CountableClosedRange(range))
+        case let range as ClosedRange<Element>: self._insert(CountableClosedRange(range))
+        case let range as CountableRange<Element>: self._insert(CountableClosedRange(range))
+        case let range as CountableClosedRange<Element>: self._insert(range)
+        case let set as CountableSet:
+            for range in set.ranges {
+                self._insert(range)
+            }
+        default:
+            for element in newMembers {
+                self.insert(element)
+            }
         }
+        
     }
     mutating func remove<S : Sequence>(_ members: S) where S.Iterator.Element == Element {
-        for element in members {
-            self.remove(element)
+        switch members {
+        case let range as Range<Element>: self._remove(CountableClosedRange(range))
+        case let range as ClosedRange<Element>: self._remove(CountableClosedRange(range))
+        case let range as CountableRange<Element>: self._remove(CountableClosedRange(range))
+        case let range as CountableClosedRange<Element>: self._remove(range)
+        case let set as CountableSet:
+            for range in set.ranges {
+                self._remove(range)
+            }
+        default:
+            for element in members {
+                self.remove(element)
+            }
         }
     }
 }
