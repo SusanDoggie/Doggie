@@ -102,7 +102,7 @@ extension CountableSet : BidirectionalCollection {
 extension CountableSet: CustomStringConvertible {
     
     public var description: String {
-        var result = "["
+        var result = "{"
         var first = true
         for item in self {
             if first {
@@ -112,7 +112,7 @@ extension CountableSet: CustomStringConvertible {
             }
             result += "\(item)"
         }
-        result += "]"
+        result += "}"
         return result
     }
 }
