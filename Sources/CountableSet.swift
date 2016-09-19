@@ -119,7 +119,7 @@ extension CountableSet: CustomStringConvertible {
 private extension CountableSet {
     
     func search(_ target: Element, _ indices: CountableRange<Int>) -> (Bool, Int) {
-        switch ranges.count {
+        switch indices.count {
         case 0: return (false, indices.lowerBound)
         default:
             let mid = (indices.lowerBound + indices.upperBound) >> 1
