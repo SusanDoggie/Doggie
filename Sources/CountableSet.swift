@@ -67,6 +67,14 @@ public func < <Element>(lhs: CountableSetIndex<Element>, rhs: CountableSetIndex<
 
 extension CountableSet : BidirectionalCollection {
     
+    public var count: Int {
+        return ranges.reduce(0) { $0 + numericCast($1.count) }
+    }
+    
+    public var isEmpty: Bool {
+        return ranges.isEmpty
+    }
+    
     public var startIndex : CountableSetIndex<Element> {
         return CountableSetIndex(base: ranges.joined().startIndex)
     }
