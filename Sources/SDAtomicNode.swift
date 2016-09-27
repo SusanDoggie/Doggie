@@ -30,7 +30,7 @@ open class SDAtomicGraph<Value> : Collection {
     public typealias NodeID = SDAtomicNode.Identifier
     
     fileprivate var graph: Graph<NodeID, Value>
-    fileprivate var lck: SDSpinLock
+    fileprivate let lck: SDSpinLock
     
     fileprivate var identifier: ObjectIdentifier {
         return ObjectIdentifier(self)
