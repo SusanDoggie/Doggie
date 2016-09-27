@@ -540,21 +540,38 @@ extension SDLock : Lockable {
 public class SDSpinLock {
     
     fileprivate var base: Bool
+    fileprivate var thread_id: pthread_t?
+    fileprivate var count: Int
     
     public init() {
         self.base = false
+        self.thread_id = nil
+        self.count = 0
     }
 }
 
 extension SDSpinLock : Lockable {
     
     public func unlock() {
-        if !base.fetchStore(false) {
-            fatalError("unlock() is called before lock()")
+        if count == 0 {
+            thread_id = nil
+            if !base.fetchStore(false) {
+                fatalError("unlock() is called before lock()")
+            }
+        } else {
+            count -= 1
         }
     }
     public func trylock() -> Bool {
-        return base.compareSet(old: false, new: true)
+        if base.compareSet(old: false, new: true) {
+            thread_id = pthread_self()
+            count = 0
+            return true
+        } else if pthread_equal(thread_id, pthread_self()) != 0 {
+            count += 1
+            return true
+        }
+        return false
     }
 }
 
