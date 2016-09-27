@@ -85,6 +85,8 @@
 		0A5196F71D48B52D0082AE61 /* Thread.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A5196E71D48B5110082AE61 /* Thread.swift */; };
 		0A6E95441D8FC510008197E1 /* CountableSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A6E95431D8FC510008197E1 /* CountableSet.swift */; };
 		0A6E95451D8FC510008197E1 /* CountableSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A6E95431D8FC510008197E1 /* CountableSet.swift */; };
+		0A776FC51D9A0BA5005FC88F /* c11_atomic.h in Headers */ = {isa = PBXBuildFile; fileRef = 0A776FC31D9A0BA5005FC88F /* c11_atomic.h */; };
+		0A776FC61D9A0BA5005FC88F /* c11_atomic.h in Headers */ = {isa = PBXBuildFile; fileRef = 0A776FC31D9A0BA5005FC88F /* c11_atomic.h */; };
 		0AADD11A1D10E6E100087247 /* OptionOneCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AADD1191D10E6E100087247 /* OptionOneCollection.swift */; };
 		0AADD11C1D10E6E100087247 /* OptionOneCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AADD1191D10E6E100087247 /* OptionOneCollection.swift */; };
 		0AADD11F1D10E75300087247 /* LazyScanSequence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AADD11E1D10E75300087247 /* LazyScanSequence.swift */; };
@@ -176,6 +178,8 @@
 		0A2C33D51D48B8E200FE9A97 /* Regex.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Regex.swift; sourceTree = "<group>"; };
 		0A5196E71D48B5110082AE61 /* Thread.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Thread.swift; sourceTree = "<group>"; };
 		0A6E95431D8FC510008197E1 /* CountableSet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CountableSet.swift; sourceTree = "<group>"; };
+		0A776FC31D9A0BA5005FC88F /* c11_atomic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = c11_atomic.h; sourceTree = "<group>"; };
+		0A776FC41D9A0BA5005FC88F /* module.modulemap */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = "sourcecode.module-map"; path = module.modulemap; sourceTree = "<group>"; };
 		0AADD1191D10E6E100087247 /* OptionOneCollection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OptionOneCollection.swift; sourceTree = "<group>"; };
 		0AADD11E1D10E75300087247 /* LazyScanSequence.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LazyScanSequence.swift; sourceTree = "<group>"; };
 		0AADD1231D10E77100087247 /* ConcatCollection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConcatCollection.swift; sourceTree = "<group>"; };
@@ -227,6 +231,7 @@
 		0858DA401C0550B7007FA426 /* Doggie */ = {
 			isa = PBXGroup;
 			children = (
+				0A776FC21D9A0BA5005FC88F /* c11_atomic */,
 				0A73D3C81D67E95F007269CB /* Foundation */,
 				0858DA411C0550B7007FA426 /* Accelerate */,
 				0ACE1DFA1C570F4F00106D1F /* Functional */,
@@ -399,6 +404,15 @@
 			name = Foundation;
 			sourceTree = "<group>";
 		};
+		0A776FC21D9A0BA5005FC88F /* c11_atomic */ = {
+			isa = PBXGroup;
+			children = (
+				0A776FC31D9A0BA5005FC88F /* c11_atomic.h */,
+				0A776FC41D9A0BA5005FC88F /* module.modulemap */,
+			);
+			path = c11_atomic;
+			sourceTree = SOURCE_ROOT;
+		};
 		0ACE1DFA1C570F4F00106D1F /* Functional */ = {
 			isa = PBXGroup;
 			children = (
@@ -426,6 +440,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				082516261C51C60A00F8F9B0 /* Doggie_iOS.h in Headers */,
+				0A776FC51D9A0BA5005FC88F /* c11_atomic.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -434,6 +449,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				087FE5BA1A372D97005A2E9E /* Doggie_Mac.h in Headers */,
+				0A776FC61D9A0BA5005FC88F /* c11_atomic.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -785,6 +801,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.SusanDoggie.Doggie;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
+				SWIFT_INCLUDE_PATHS = "${SRCROOT}/c11_atomic/**";
 				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
@@ -831,6 +848,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.SusanDoggie.Doggie;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
+				SWIFT_INCLUDE_PATHS = "${SRCROOT}/c11_atomic/**";
 				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
@@ -1030,6 +1048,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.SusanDoggie.$(PRODUCT_NAME:rfc1034identifier)";
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
+				SWIFT_INCLUDE_PATHS = "${SRCROOT}/c11_atomic/**";
 				SWIFT_VERSION = 3.0;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
@@ -1078,6 +1097,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.SusanDoggie.$(PRODUCT_NAME:rfc1034identifier)";
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
+				SWIFT_INCLUDE_PATHS = "${SRCROOT}/c11_atomic/**";
 				SWIFT_VERSION = 3.0;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";

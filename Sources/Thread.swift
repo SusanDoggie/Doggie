@@ -25,6 +25,7 @@
 
 import Foundation
 import Dispatch
+import c11_atomic
 
 public protocol SDAtomicType {
     
@@ -54,11 +55,55 @@ public extension SDAtomicType {
     }
 }
 
+extension Bool : SDAtomicType {
+    
+    /// Compare and set Int8 with barrier.
+    public mutating func compareSet(old: Bool, new: Bool) -> Bool {
+        return _AtomicCompareAndSwapBoolBarrier(old, new, &self)
+    }
+    
+    /// Set Int8 with barrier.
+    public mutating func fetchStore(new: Bool) -> Bool {
+        return _AtomicExchangeBoolBarrier(new, &self)
+    }
+}
+
+extension Int8 : SDAtomicType {
+    
+    /// Compare and set Int8 with barrier.
+    public mutating func compareSet(old: Int8, new: Int8) -> Bool {
+        return _AtomicCompareAndSwap8Barrier(old, new, &self)
+    }
+    
+    /// Set Int8 with barrier.
+    public mutating func fetchStore(new: Int8) -> Int8 {
+        return _AtomicExchange8Barrier(new, &self)
+    }
+}
+
+extension Int16 : SDAtomicType {
+    
+    /// Set Int16 with barrier.
+    public mutating func compareSet(old: Int16, new: Int16) -> Bool {
+        return _AtomicCompareAndSwap16Barrier(old, new, &self)
+    }
+    
+    /// Set Int16 with barrier.
+    public mutating func fetchStore(new: Int16) -> Int16 {
+        return _AtomicExchange16Barrier(new, &self)
+    }
+}
+
 extension Int32 : SDAtomicType {
     
     /// Compare and set Int32 with barrier.
     public mutating func compareSet(old: Int32, new: Int32) -> Bool {
-        return OSAtomicCompareAndSwap32Barrier(old, new, &self)
+        return _AtomicCompareAndSwap32Barrier(old, new, &self)
+    }
+    
+    /// Set Int32 with barrier.
+    public mutating func fetchStore(new: Int32) -> Int32 {
+        return _AtomicExchange32Barrier(new, &self)
     }
 }
 
@@ -66,7 +111,12 @@ extension Int64 : SDAtomicType {
     
     /// Compare and set Int64 with barrier.
     public mutating func compareSet(old: Int64, new: Int64) -> Bool {
-        return OSAtomicCompareAndSwap64Barrier(old, new, &self)
+        return _AtomicCompareAndSwap64Barrier(old, new, &self)
+    }
+    
+    /// Set Int64 with barrier.
+    public mutating func fetchStore(new: Int64) -> Int64 {
+        return _AtomicExchange64Barrier(new, &self)
     }
 }
 
@@ -74,7 +124,54 @@ extension Int : SDAtomicType {
     
     /// Compare and set Int with barrier.
     public mutating func compareSet(old: Int, new: Int) -> Bool {
-        return OSAtomicCompareAndSwapLongBarrier(old, new, &self)
+        return _AtomicCompareAndSwapLongBarrier(old, new, &self)
+    }
+    
+    /// Set Int with barrier.
+    public mutating func fetchStore(new: Int) -> Int {
+        return _AtomicExchangeLongBarrier(new, &self)
+    }
+}
+
+extension UInt8 : SDAtomicType {
+    
+    /// Compare and set UInt8 with barrier.
+    public mutating func compareSet(old: UInt8, new: UInt8) -> Bool {
+        @_transparent
+        func cas(_ theVal: UnsafeMutablePointer<UInt8>) -> Bool {
+            return theVal.withMemoryRebound(to: Int8.self, capacity: 1) { _AtomicCompareAndSwap8Barrier(Int8(bitPattern: old), Int8(bitPattern: new), $0) }
+        }
+        return cas(&self)
+    }
+    
+    /// Set UInt8 with barrier.
+    public mutating func fetchStore(new: UInt8) -> UInt8 {
+        @_transparent
+        func exchange(_ theVal: UnsafeMutablePointer<UInt8>) -> Int8 {
+            return theVal.withMemoryRebound(to: Int8.self, capacity: 1) { _AtomicExchange8Barrier(Int8(bitPattern: new), $0) }
+        }
+        return UInt8(bitPattern: exchange(&self))
+    }
+}
+
+extension UInt16 : SDAtomicType {
+    
+    /// Compare and set UInt16 with barrier.
+    public mutating func compareSet(old: UInt16, new: UInt16) -> Bool {
+        @_transparent
+        func cas(_ theVal: UnsafeMutablePointer<UInt16>) -> Bool {
+            return theVal.withMemoryRebound(to: Int16.self, capacity: 1) { _AtomicCompareAndSwap16Barrier(Int16(bitPattern: old), Int16(bitPattern: new), $0) }
+        }
+        return cas(&self)
+    }
+    
+    /// Set UInt16 with barrier.
+    public mutating func fetchStore(new: UInt16) -> UInt16 {
+        @_transparent
+        func exchange(_ theVal: UnsafeMutablePointer<UInt16>) -> Int16 {
+            return theVal.withMemoryRebound(to: Int16.self, capacity: 1) { _AtomicExchange16Barrier(Int16(bitPattern: new), $0) }
+        }
+        return UInt16(bitPattern: exchange(&self))
     }
 }
 
@@ -84,9 +181,18 @@ extension UInt32 : SDAtomicType {
     public mutating func compareSet(old: UInt32, new: UInt32) -> Bool {
         @_transparent
         func cas(_ theVal: UnsafeMutablePointer<UInt32>) -> Bool {
-            return theVal.withMemoryRebound(to: Int32.self, capacity: 1) { OSAtomicCompareAndSwap32Barrier(Int32(bitPattern: old), Int32(bitPattern: new), $0) }
+            return theVal.withMemoryRebound(to: Int32.self, capacity: 1) { _AtomicCompareAndSwap32Barrier(Int32(bitPattern: old), Int32(bitPattern: new), $0) }
         }
         return cas(&self)
+    }
+    
+    /// Set UInt32 with barrier.
+    public mutating func fetchStore(new: UInt32) -> UInt32 {
+        @_transparent
+        func exchange(_ theVal: UnsafeMutablePointer<UInt32>) -> Int32 {
+            return theVal.withMemoryRebound(to: Int32.self, capacity: 1) { _AtomicExchange32Barrier(Int32(bitPattern: new), $0) }
+        }
+        return UInt32(bitPattern: exchange(&self))
     }
 }
 
@@ -96,9 +202,18 @@ extension UInt64 : SDAtomicType {
     public mutating func compareSet(old: UInt64, new: UInt64) -> Bool {
         @_transparent
         func cas(_ theVal: UnsafeMutablePointer<UInt64>) -> Bool {
-            return theVal.withMemoryRebound(to: Int64.self, capacity: 1) { OSAtomicCompareAndSwap64Barrier(Int64(bitPattern: old), Int64(bitPattern: new), $0) }
+            return theVal.withMemoryRebound(to: Int64.self, capacity: 1) { _AtomicCompareAndSwap64Barrier(Int64(bitPattern: old), Int64(bitPattern: new), $0) }
         }
         return cas(&self)
+    }
+    
+    /// Set UInt64 with barrier.
+    public mutating func fetchStore(new: UInt64) -> UInt64 {
+        @_transparent
+        func exchange(_ theVal: UnsafeMutablePointer<UInt64>) -> Int64 {
+            return theVal.withMemoryRebound(to: Int64.self, capacity: 1) { _AtomicExchange64Barrier(Int64(bitPattern: new), $0) }
+        }
+        return UInt64(bitPattern: exchange(&self))
     }
 }
 
@@ -108,9 +223,18 @@ extension UInt : SDAtomicType {
     public mutating func compareSet(old: UInt, new: UInt) -> Bool {
         @_transparent
         func cas(_ theVal: UnsafeMutablePointer<UInt>) -> Bool {
-            return theVal.withMemoryRebound(to: Int.self, capacity: 1) { OSAtomicCompareAndSwapLongBarrier(Int(bitPattern: old), Int(bitPattern: new), $0) }
+            return theVal.withMemoryRebound(to: Int.self, capacity: 1) { _AtomicCompareAndSwapLongBarrier(Int(bitPattern: old), Int(bitPattern: new), $0) }
         }
         return cas(&self)
+    }
+    
+    /// Set UInt with barrier.
+    public mutating func fetchStore(new: UInt) -> UInt {
+        @_transparent
+        func exchange(_ theVal: UnsafeMutablePointer<UInt>) -> Int {
+            return theVal.withMemoryRebound(to: Int.self, capacity: 1) { _AtomicExchangeLongBarrier(Int(bitPattern: new), $0) }
+        }
+        return UInt(bitPattern: exchange(&self))
     }
 }
 
@@ -120,9 +244,18 @@ extension UnsafePointer : SDAtomicType {
     public mutating func compareSet(old: UnsafePointer, new: UnsafePointer) -> Bool {
         @_transparent
         func cas(_ theVal: UnsafeMutablePointer<UnsafePointer<Pointee>>) -> Bool {
-            return theVal.withMemoryRebound(to: Optional<UnsafeMutableRawPointer>.self, capacity: 1) { OSAtomicCompareAndSwapPtrBarrier(UnsafeMutableRawPointer(mutating: old), UnsafeMutableRawPointer(mutating: new), $0) }
+            return theVal.withMemoryRebound(to: Optional<UnsafeMutableRawPointer>.self, capacity: 1) { _AtomicCompareAndSwapPtrBarrier(UnsafeMutableRawPointer(mutating: old), UnsafeMutableRawPointer(mutating: new), $0) }
         }
         return cas(&self)
+    }
+    
+    /// Set pointers with barrier.
+    public mutating func fetchStore(new: UnsafePointer) -> UnsafePointer {
+        @_transparent
+        func exchange(_ theVal: UnsafeMutablePointer<UnsafePointer<Pointee>>) -> UnsafeMutableRawPointer {
+            return theVal.withMemoryRebound(to: Optional<UnsafeMutableRawPointer>.self, capacity: 1) { _AtomicExchangePtrBarrier(UnsafeMutableRawPointer(mutating: new), $0) }
+        }
+        return UnsafePointer(exchange(&self).assumingMemoryBound(to: Pointee.self))
     }
 }
 
@@ -132,9 +265,18 @@ extension UnsafeMutablePointer : SDAtomicType {
     public mutating func compareSet(old: UnsafeMutablePointer, new: UnsafeMutablePointer) -> Bool {
         @_transparent
         func cas(_ theVal: UnsafeMutablePointer<UnsafeMutablePointer<Pointee>>) -> Bool {
-            return theVal.withMemoryRebound(to: Optional<UnsafeMutableRawPointer>.self, capacity: 1) { OSAtomicCompareAndSwapPtrBarrier(UnsafeMutableRawPointer(old), UnsafeMutableRawPointer(new), $0) }
+            return theVal.withMemoryRebound(to: Optional<UnsafeMutableRawPointer>.self, capacity: 1) { _AtomicCompareAndSwapPtrBarrier(UnsafeMutableRawPointer(old), UnsafeMutableRawPointer(new), $0) }
         }
         return cas(&self)
+    }
+    
+    /// Set pointers with barrier.
+    public mutating func fetchStore(new: UnsafeMutablePointer) -> UnsafeMutablePointer {
+        @_transparent
+        func exchange(_ theVal: UnsafeMutablePointer<UnsafeMutablePointer<Pointee>>) -> UnsafeMutableRawPointer {
+            return theVal.withMemoryRebound(to: Optional<UnsafeMutableRawPointer>.self, capacity: 1) { _AtomicExchangePtrBarrier(UnsafeMutableRawPointer(new), $0) }
+        }
+        return exchange(&self).assumingMemoryBound(to: Pointee.self)
     }
 }
 extension UnsafeRawPointer : SDAtomicType {
@@ -143,9 +285,18 @@ extension UnsafeRawPointer : SDAtomicType {
     public mutating func compareSet(old: UnsafeRawPointer, new: UnsafeRawPointer) -> Bool {
         @_transparent
         func cas(_ theVal: UnsafeMutablePointer<UnsafeRawPointer>) -> Bool {
-            return theVal.withMemoryRebound(to: Optional<UnsafeMutableRawPointer>.self, capacity: 1) { OSAtomicCompareAndSwapPtrBarrier(UnsafeMutableRawPointer(mutating: old), UnsafeMutableRawPointer(mutating: new), $0) }
+            return theVal.withMemoryRebound(to: Optional<UnsafeMutableRawPointer>.self, capacity: 1) { _AtomicCompareAndSwapPtrBarrier(UnsafeMutableRawPointer(mutating: old), UnsafeMutableRawPointer(mutating: new), $0) }
         }
         return cas(&self)
+    }
+    
+    /// Set pointers with barrier.
+    public mutating func fetchStore(new: UnsafeRawPointer) -> UnsafeRawPointer {
+        @_transparent
+        func exchange(_ theVal: UnsafeMutablePointer<UnsafeRawPointer>) -> UnsafeMutableRawPointer {
+            return theVal.withMemoryRebound(to: Optional<UnsafeMutableRawPointer>.self, capacity: 1) { _AtomicExchangePtrBarrier(UnsafeMutableRawPointer(mutating: new), $0) }
+        }
+        return UnsafeRawPointer(exchange(&self))
     }
 }
 
@@ -155,9 +306,18 @@ extension UnsafeMutableRawPointer : SDAtomicType {
     public mutating func compareSet(old: UnsafeMutableRawPointer, new: UnsafeMutableRawPointer) -> Bool {
         @_transparent
         func cas(_ theVal: UnsafeMutablePointer<UnsafeMutableRawPointer>) -> Bool {
-            return theVal.withMemoryRebound(to: Optional<UnsafeMutableRawPointer>.self, capacity: 1) { OSAtomicCompareAndSwapPtrBarrier(UnsafeMutableRawPointer(old), UnsafeMutableRawPointer(new), $0) }
+            return theVal.withMemoryRebound(to: Optional<UnsafeMutableRawPointer>.self, capacity: 1) { _AtomicCompareAndSwapPtrBarrier(old, new, $0) }
         }
         return cas(&self)
+    }
+    
+    /// Set pointers with barrier.
+    public mutating func fetchStore(new: UnsafeMutableRawPointer) -> UnsafeMutableRawPointer {
+        @_transparent
+        func exchange(_ theVal: UnsafeMutablePointer<UnsafeMutableRawPointer>) -> UnsafeMutableRawPointer {
+            return theVal.withMemoryRebound(to: Optional<UnsafeMutableRawPointer>.self, capacity: 1) { _AtomicExchangePtrBarrier(new, $0) }
+        }
+        return exchange(&self)
     }
 }
 
@@ -167,77 +327,19 @@ extension OpaquePointer : SDAtomicType {
     public mutating func compareSet(old: OpaquePointer, new: OpaquePointer) -> Bool {
         @_transparent
         func cas(_ theVal: UnsafeMutablePointer<OpaquePointer>) -> Bool {
-            return theVal.withMemoryRebound(to: Optional<UnsafeMutableRawPointer>.self, capacity: 1) { OSAtomicCompareAndSwapPtrBarrier(UnsafeMutableRawPointer(old), UnsafeMutableRawPointer(new), $0) }
+            return theVal.withMemoryRebound(to: Optional<UnsafeMutableRawPointer>.self, capacity: 1) { _AtomicCompareAndSwapPtrBarrier(UnsafeMutableRawPointer(old), UnsafeMutableRawPointer(new), $0) }
         }
         return cas(&self)
     }
-}
-
-public struct AtomicBoolean {
     
-    fileprivate var val: Int32
-    
-    public init() {
-        self.val = 0
+    /// Set pointers with barrier.
+    public mutating func fetchStore(new: OpaquePointer) -> OpaquePointer {
+        @_transparent
+        func exchange(_ theVal: UnsafeMutablePointer<OpaquePointer>) -> UnsafeMutableRawPointer {
+            return theVal.withMemoryRebound(to: Optional<UnsafeMutableRawPointer>.self, capacity: 1) { _AtomicExchangePtrBarrier(UnsafeMutableRawPointer(new), $0) }
+        }
+        return OpaquePointer(exchange(&self))
     }
-}
-
-extension AtomicBoolean : ExpressibleByBooleanLiteral {
-    
-    public init(booleanLiteral value: Bool) {
-        self.val = value ? 0x80 : 0
-    }
-}
-
-extension AtomicBoolean {
-    
-    /// Returns the current value of the boolean.
-    public var boolValue: Bool {
-        return val == 0x80
-    }
-    /// Construct an instance representing the same logical value as
-    /// `value`.
-    public init(_ value: Bool) {
-        self.val = value ? 0x80 : 0
-    }
-}
-
-extension AtomicBoolean : SDAtomicType {
-    
-    public mutating func compareSet(old: AtomicBoolean, new: AtomicBoolean) -> Bool {
-        return self.compareSet(old: old.boolValue, new: new.boolValue)
-    }
-    public mutating func fetchStore(value: AtomicBoolean) -> Bool {
-        return self.fetchStore(value: value.boolValue)
-    }
-    
-    /// Compare and set Bool with barrier.
-    public mutating func compareSet(old: Bool, new: Bool) -> Bool {
-        return OSAtomicCompareAndSwap32Barrier(old ? 0x80 : 0, new ? 0x80 : 0, &val)
-    }
-    
-    /// Sets the value, and returns the previous value.
-    public mutating func fetchStore(value: Bool) -> Bool {
-        return value ? OSAtomicTestAndSet(0, &val) : OSAtomicTestAndClear(0, &val)
-    }
-}
-
-extension AtomicBoolean: CustomStringConvertible {
-    
-    public var description: String {
-        return self.boolValue ? "true" : "false"
-    }
-}
-
-extension AtomicBoolean : Equatable, Hashable {
-    
-    public var hashValue: Int {
-        return boolValue.hashValue
-    }
-}
-
-public func == (lhs: AtomicBoolean, rhs: AtomicBoolean) -> Bool {
-    return lhs.boolValue == rhs.boolValue
 }
 
 private class AtomicBase<Instance> {
@@ -275,7 +377,7 @@ extension Atomic : SDAtomicType {
         let _new = Unmanaged.passRetained(new)
         @_transparent
         func cas(theVal: UnsafeMutablePointer<AtomicBase<Instance>>) -> Bool {
-            return theVal.withMemoryRebound(to: Optional<UnsafeMutableRawPointer>.self, capacity: 1) { OSAtomicCompareAndSwapPtrBarrier(_old.toOpaque(), _new.toOpaque(), $0) }
+            return theVal.withMemoryRebound(to: Optional<UnsafeMutableRawPointer>.self, capacity: 1) { _AtomicCompareAndSwapPtrBarrier(_old.toOpaque(), _new.toOpaque(), $0) }
         }
         let result = cas(theVal: &base)
         if result {
@@ -346,6 +448,15 @@ public protocol Lockable : class {
     func lock()
     func unlock()
     func trylock() -> Bool
+}
+
+public extension Lockable {
+    
+    func lock() {
+        while !trylock() {
+            sched_yield()
+        }
+    }
 }
 
 public extension Lockable {
@@ -428,23 +539,25 @@ extension SDLock : Lockable {
 
 public struct SDSpinLock {
     
-    fileprivate var _lck: OSSpinLock
+    fileprivate var base: Bool
     
     public init() {
-        _lck = OS_SPINLOCK_INIT
+        base = false
     }
 }
 
 extension SDSpinLock {
     
     public mutating func lock() {
-        OSSpinLockLock(&_lck)
+        while !trylock() {
+            sched_yield()
+        }
     }
     public mutating func unlock() {
-        OSSpinLockUnlock(&_lck)
+        base = false
     }
     public mutating func trylock() -> Bool {
-        return OSSpinLockTry(&_lck)
+        return base.compareSet(old: false, new: true)
     }
 }
 
