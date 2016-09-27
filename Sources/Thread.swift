@@ -679,7 +679,7 @@ extension SDAtomic {
 open class SDSingleton<Instance> {
     
     fileprivate var _value: Instance?
-    fileprivate var spinlck: SDSpinLock = SDSpinLock()
+    fileprivate let spinlck: SDSpinLock = SDSpinLock()
     fileprivate let block: () -> Instance
     
     /// Create a SDSingleton.
@@ -715,7 +715,7 @@ public class SDTask<Result> : SDAtomic {
     
     fileprivate var _notify: [(Result) -> Void] = []
     
-    fileprivate var spinlck = SDSpinLock()
+    fileprivate let spinlck = SDSpinLock()
     fileprivate let condition = SDConditionLock()
     
     fileprivate var _result: Result?
