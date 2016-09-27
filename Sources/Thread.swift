@@ -641,7 +641,7 @@ open class SDAtomic {
     
     fileprivate let queue: DispatchQueue
     fileprivate let block: (SDAtomic) -> Void
-    fileprivate var flag: Int32
+    fileprivate var flag: Int8
     
     public init(queue: DispatchQueue, block: @escaping (SDAtomic) -> Void) {
         self.queue = queue
