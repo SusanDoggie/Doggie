@@ -399,8 +399,6 @@ public func == <Instance: Equatable>(lhs: Atomic<Instance>, rhs: Atomic<Instance
     return lhs.value == rhs.value
 }
 
-private let SDThreadDefaultDispatchQueue = DispatchQueue(label: "com.SusanDoggie.Thread", attributes: .concurrent)
-
 // MARK: Lockable
 
 public protocol Lockable : class {
@@ -499,36 +497,44 @@ extension SDLock : Lockable {
 
 public class SDSpinLock {
     
-    fileprivate var base: Bool
-    fileprivate var thread_id: pthread_t?
-    fileprivate var count: Int
+    fileprivate var flag: Bool
+    fileprivate var recursion_count: Int
+    fileprivate var owner_thread: pthread_t?
     
     public init() {
-        self.base = false
-        self.thread_id = nil
-        self.count = 0
+        self.flag = false
+        self.recursion_count = 0
+        self.owner_thread = nil
     }
 }
 
 extension SDSpinLock : Lockable {
     
     public func unlock() {
-        if count == 0 {
-            thread_id = nil
-            if !base.fetchStore(false) {
+        guard pthread_equal(owner_thread, pthread_self()) != 0 else {
+            if flag {
+                fatalError("unlock() is called by different thread.")
+            } else {
+                fatalError("unlock() is called before lock()")
+            }
+        }
+        if recursion_count == 0 {
+            owner_thread = nil
+            guard flag.fetchStore(false) else {
                 fatalError("unlock() is called before lock()")
             }
         } else {
-            count -= 1
+            recursion_count -= 1
         }
     }
     public func trylock() -> Bool {
-        if base.compareSet(old: false, new: true) {
-            thread_id = pthread_self()
-            count = 0
+        let current_thread = pthread_self()
+        if flag.compareSet(old: false, new: true) {
+            owner_thread = current_thread
+            recursion_count = 0
             return true
-        } else if pthread_equal(thread_id, pthread_self()) != 0 {
-            count += 1
+        } else if pthread_equal(owner_thread, current_thread) != 0 {
+            recursion_count += 1
             return true
         }
         return false
@@ -636,6 +642,8 @@ extension SDConditionLock {
 }
 
 // MARK: SDAtomic
+
+private let SDThreadDefaultDispatchQueue = DispatchQueue(label: "com.SusanDoggie.Thread", attributes: .concurrent)
 
 open class SDAtomic {
     
