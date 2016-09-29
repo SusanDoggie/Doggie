@@ -25,9 +25,9 @@
 
 private class AtomicStackContainerBox<Instance> {
     
-    let base: AtomicStackContainer<Instance>
+    var base: AtomicStackContainer<Instance>!
     
-    init(base: AtomicStackContainer<Instance>) {
+    init(base: AtomicStackContainer<Instance>! = nil) {
         self.base = base
     }
 }
@@ -46,7 +46,15 @@ public class AtomicStack<Instance> {
     }
     
     public func push(_ newElement: Instance) {
-        head.fetchStore { AtomicStackContainer(value: newElement, next: $0.map(AtomicStackContainerBox.init)) }
+        let box = AtomicStackContainerBox<Instance>()
+        head.fetchStore {
+            if $0 == nil {
+                return AtomicStackContainer(value: newElement, next: nil)
+            } else {
+                box.base = $0
+                return AtomicStackContainer(value: newElement, next: box)
+            }
+        }
     }
     
     public func pop() -> Instance? {

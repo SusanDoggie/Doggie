@@ -27,7 +27,7 @@ import Foundation
 import Dispatch
 import c11_atomic
 
-public protocol SDAtomicType {
+public protocol SDAtomicProtocol {
     
     /// Compare and set the value.
     @discardableResult
@@ -42,7 +42,7 @@ public protocol SDAtomicType {
     mutating func fetchStore(block: (Self) throws -> Self) rethrows -> Self
 }
 
-public extension SDAtomicType {
+public extension SDAtomicProtocol {
     
     @discardableResult
     public mutating func fetchStore(_ new: Self) -> Self {
@@ -60,7 +60,7 @@ public extension SDAtomicType {
     }
 }
 
-extension Bool : SDAtomicType {
+extension Bool : SDAtomicProtocol {
     
     /// Compare and set Bool with barrier.
     @discardableResult
@@ -75,7 +75,7 @@ extension Bool : SDAtomicType {
     }
 }
 
-extension Int8 : SDAtomicType {
+extension Int8 : SDAtomicProtocol {
     
     /// Compare and set Int8 with barrier.
     @discardableResult
@@ -90,7 +90,7 @@ extension Int8 : SDAtomicType {
     }
 }
 
-extension Int16 : SDAtomicType {
+extension Int16 : SDAtomicProtocol {
     
     /// Set Int16 with barrier.
     @discardableResult
@@ -105,7 +105,7 @@ extension Int16 : SDAtomicType {
     }
 }
 
-extension Int32 : SDAtomicType {
+extension Int32 : SDAtomicProtocol {
     
     /// Compare and set Int32 with barrier.
     @discardableResult
@@ -120,7 +120,7 @@ extension Int32 : SDAtomicType {
     }
 }
 
-extension Int64 : SDAtomicType {
+extension Int64 : SDAtomicProtocol {
     
     /// Compare and set Int64 with barrier.
     @discardableResult
@@ -135,7 +135,7 @@ extension Int64 : SDAtomicType {
     }
 }
 
-extension Int : SDAtomicType {
+extension Int : SDAtomicProtocol {
     
     /// Compare and set Int with barrier.
     @discardableResult
@@ -150,7 +150,7 @@ extension Int : SDAtomicType {
     }
 }
 
-extension UInt8 : SDAtomicType {
+extension UInt8 : SDAtomicProtocol {
     
     /// Compare and set UInt8 with barrier.
     @discardableResult
@@ -165,7 +165,7 @@ extension UInt8 : SDAtomicType {
     }
 }
 
-extension UInt16 : SDAtomicType {
+extension UInt16 : SDAtomicProtocol {
     
     /// Set UInt16 with barrier.
     @discardableResult
@@ -180,7 +180,7 @@ extension UInt16 : SDAtomicType {
     }
 }
 
-extension UInt32 : SDAtomicType {
+extension UInt32 : SDAtomicProtocol {
     
     /// Compare and set UInt32 with barrier.
     @discardableResult
@@ -195,7 +195,7 @@ extension UInt32 : SDAtomicType {
     }
 }
 
-extension UInt64 : SDAtomicType {
+extension UInt64 : SDAtomicProtocol {
     
     /// Compare and set UInt64 with barrier.
     @discardableResult
@@ -210,7 +210,7 @@ extension UInt64 : SDAtomicType {
     }
 }
 
-extension UInt : SDAtomicType {
+extension UInt : SDAtomicProtocol {
     
     /// Compare and set UInt with barrier.
     @discardableResult
@@ -225,7 +225,7 @@ extension UInt : SDAtomicType {
     }
 }
 
-extension UnsafePointer : SDAtomicType {
+extension UnsafePointer : SDAtomicProtocol {
     
     /// Compare and set pointers with barrier.
     @discardableResult
@@ -248,7 +248,7 @@ extension UnsafePointer : SDAtomicType {
     }
 }
 
-extension UnsafeMutablePointer : SDAtomicType {
+extension UnsafeMutablePointer : SDAtomicProtocol {
     
     /// Compare and set pointers with barrier.
     @discardableResult
@@ -270,7 +270,7 @@ extension UnsafeMutablePointer : SDAtomicType {
         return exchange(&self).assumingMemoryBound(to: Pointee.self)
     }
 }
-extension UnsafeRawPointer : SDAtomicType {
+extension UnsafeRawPointer : SDAtomicProtocol {
     
     /// Compare and set pointers with barrier.
     @discardableResult
@@ -293,7 +293,7 @@ extension UnsafeRawPointer : SDAtomicType {
     }
 }
 
-extension UnsafeMutableRawPointer : SDAtomicType {
+extension UnsafeMutableRawPointer : SDAtomicProtocol {
     
     /// Compare and set pointers with barrier.
     @discardableResult
@@ -316,7 +316,7 @@ extension UnsafeMutableRawPointer : SDAtomicType {
     }
 }
 
-extension OpaquePointer : SDAtomicType {
+extension OpaquePointer : SDAtomicProtocol {
     
     /// Compare and set pointers with barrier.
     @discardableResult
@@ -341,9 +341,9 @@ extension OpaquePointer : SDAtomicType {
 
 private class AtomicBase<Instance> {
     
-    let value: Instance
+    var value: Instance!
     
-    init(value: Instance) {
+    init(value: Instance! = nil) {
         self.value = value
     }
 }
@@ -351,6 +351,10 @@ private class AtomicBase<Instance> {
 public struct Atomic<Instance> {
     
     fileprivate var base: AtomicBase<Instance>
+    
+    fileprivate init(base: AtomicBase<Instance>) {
+        self.base = base
+    }
     
     public init(value: Instance) {
         self.base = AtomicBase(value: value)
@@ -366,7 +370,7 @@ public struct Atomic<Instance> {
     }
 }
 
-extension Atomic : SDAtomicType {
+extension Atomic : SDAtomicProtocol {
     
     @_transparent
     fileprivate mutating func compareSet(old: AtomicBase<Instance>, new: AtomicBase<Instance>) -> Bool {
@@ -385,10 +389,27 @@ extension Atomic : SDAtomicType {
         return result
     }
     
+    @_transparent
+    fileprivate mutating func fetchStore(_ new: AtomicBase<Instance>) -> AtomicBase<Instance> {
+        let _new = Unmanaged.passRetained(new)
+        @_transparent
+        func exchange(theVal: UnsafeMutablePointer<AtomicBase<Instance>>) -> UnsafeMutableRawPointer {
+            return theVal.withMemoryRebound(to: Optional<UnsafeMutableRawPointer>.self, capacity: 1) { _AtomicExchangePtrBarrier(_new.toOpaque(), $0) }
+        }
+        let _old = Unmanaged<AtomicBase<Instance>>.fromOpaque(UnsafeRawPointer(exchange(theVal: &base)))
+        return _old.takeRetainedValue()
+    }
+    
     /// Compare and set Object with barrier.
     @discardableResult
     public mutating func compareSet(old: Atomic, new: Atomic) -> Bool {
         return compareSet(old: old.base, new: new.base)
+    }
+    
+    /// Set Object with barrier.
+    @discardableResult
+    public mutating func fetchStore(_ new: Atomic) -> Atomic {
+        return Atomic(base: fetchStore(new.base))
     }
 }
 
@@ -397,15 +418,17 @@ extension Atomic {
     /// Sets the value, and returns the previous value.
     @discardableResult
     public mutating func fetchStore(_ new: Instance) -> Instance {
-        return self.fetchStore { _ in new }
+        return fetchStore(AtomicBase(value: new)).value
     }
     
     /// Sets the value.
     @discardableResult
     public mutating func fetchStore(block: (Instance) throws -> Instance) rethrows -> Instance {
+        let new = AtomicBase<Instance>()
         while true {
             let old = self.base
-            if self.compareSet(old: old, new: AtomicBase(value: try block(old.value))) {
+            new.value = try block(old.value)
+            if self.compareSet(old: old, new: new) {
                 return old.value
             }
         }
@@ -683,7 +706,7 @@ extension SDConditionLock {
 
 // MARK: SDAtomic
 
-private let SDThreadDefaultDispatchQueue = DispatchQueue(label: "com.SusanDoggie.Thread", attributes: .concurrent)
+private let SDDefaultDispatchQueue = DispatchQueue(label: "com.SusanDoggie.Thread", attributes: .concurrent)
 
 open class SDAtomic {
     
@@ -691,13 +714,8 @@ open class SDAtomic {
     fileprivate let block: (SDAtomic) -> Void
     fileprivate var flag: Int8
     
-    public init(queue: DispatchQueue, block: @escaping (SDAtomic) -> Void) {
+    public init(queue: DispatchQueue = SDDefaultDispatchQueue, block: @escaping (SDAtomic) -> Void) {
         self.queue = queue
-        self.block = block
-        self.flag = 0
-    }
-    public init(block: @escaping (SDAtomic) -> Void) {
-        self.queue = SDThreadDefaultDispatchQueue
         self.block = block
         self.flag = 0
     }
@@ -772,15 +790,9 @@ public class SDTask<Result> : SDAtomic {
         super.init(queue: queue, block: SDTask.createBlock(suspend, block))
     }
     
-    /// Create a SDTask and compute block with specific queue.
-    public init(queue: DispatchQueue, block: @escaping () -> Result) {
+    /// Create a SDTask and compute block.
+    public init(queue: DispatchQueue = SDDefaultDispatchQueue, block: @escaping () -> Result) {
         super.init(queue: queue, block: SDTask.createBlock(nil, block))
-        self.signal()
-    }
-    
-    /// Create a SDTask and compute block with default queue.
-    public init(block: @escaping () -> Result) {
-        super.init(block: SDTask.createBlock(nil, block))
         self.signal()
     }
 }
@@ -870,14 +882,8 @@ extension SDTask {
     }
 }
 
-/// Create a SDTask and compute block with default queue.
+/// Create a SDTask and compute block.
 @discardableResult
-public func async<Result>(block: @escaping () -> Result) -> SDTask<Result> {
-    return SDTask(block: block)
-}
-
-/// Create a SDTask and compute block with specific queue.
-@discardableResult
-public func async<Result>(queue: DispatchQueue, _ block: @escaping () -> Result) -> SDTask<Result> {
+public func async<Result>(queue: DispatchQueue = SDDefaultDispatchQueue, _ block: @escaping () -> Result) -> SDTask<Result> {
     return SDTask(queue: queue, block: block)
 }
