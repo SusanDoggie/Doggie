@@ -87,6 +87,8 @@
 		0A6E95451D8FC510008197E1 /* CountableSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A6E95431D8FC510008197E1 /* CountableSet.swift */; };
 		0A76BB4A1D9CD6A500842F4D /* IndexedCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A76BB491D9CD6A500842F4D /* IndexedCollection.swift */; };
 		0A76BB4B1D9CD6A500842F4D /* IndexedCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A76BB491D9CD6A500842F4D /* IndexedCollection.swift */; };
+		0A76BB711D9D1BAF00842F4D /* AtomicStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A76BB701D9D1BAF00842F4D /* AtomicStack.swift */; };
+		0A76BB721D9D1BAF00842F4D /* AtomicStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A76BB701D9D1BAF00842F4D /* AtomicStack.swift */; };
 		0A776FC51D9A0BA5005FC88F /* c11_atomic.h in Headers */ = {isa = PBXBuildFile; fileRef = 0A776FC31D9A0BA5005FC88F /* c11_atomic.h */; };
 		0A776FC61D9A0BA5005FC88F /* c11_atomic.h in Headers */ = {isa = PBXBuildFile; fileRef = 0A776FC31D9A0BA5005FC88F /* c11_atomic.h */; };
 		0AADD11A1D10E6E100087247 /* OptionOneCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AADD1191D10E6E100087247 /* OptionOneCollection.swift */; };
@@ -181,6 +183,7 @@
 		0A5196E71D48B5110082AE61 /* Thread.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Thread.swift; sourceTree = "<group>"; };
 		0A6E95431D8FC510008197E1 /* CountableSet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CountableSet.swift; sourceTree = "<group>"; };
 		0A76BB491D9CD6A500842F4D /* IndexedCollection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IndexedCollection.swift; sourceTree = "<group>"; };
+		0A76BB701D9D1BAF00842F4D /* AtomicStack.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AtomicStack.swift; sourceTree = "<group>"; };
 		0A776FC31D9A0BA5005FC88F /* c11_atomic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = c11_atomic.h; sourceTree = "<group>"; };
 		0A776FC41D9A0BA5005FC88F /* module.modulemap */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = "sourcecode.module-map"; path = module.modulemap; sourceTree = "<group>"; };
 		0AADD1191D10E6E100087247 /* OptionOneCollection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OptionOneCollection.swift; sourceTree = "<group>"; };
@@ -236,6 +239,7 @@
 			children = (
 				0A776FC21D9A0BA5005FC88F /* c11_atomic */,
 				0A73D3C81D67E95F007269CB /* Foundation */,
+				0A76BB6F1D9D1B9000842F4D /* Atomic */,
 				0858DA411C0550B7007FA426 /* Accelerate */,
 				0ACE1DFA1C570F4F00106D1F /* Functional */,
 				0858DB451C055172007FA426 /* Fourier.swift */,
@@ -405,6 +409,14 @@
 				0A5196E71D48B5110082AE61 /* Thread.swift */,
 			);
 			name = Foundation;
+			sourceTree = "<group>";
+		};
+		0A76BB6F1D9D1B9000842F4D /* Atomic */ = {
+			isa = PBXGroup;
+			children = (
+				0A76BB701D9D1BAF00842F4D /* AtomicStack.swift */,
+			);
+			name = Atomic;
 			sourceTree = "<group>";
 		};
 		0A776FC21D9A0BA5005FC88F /* c11_atomic */ = {
@@ -636,6 +648,7 @@
 				0813224A1C11D3600081B2B9 /* SDEllipse.swift in Sources */,
 				081322261C11D3600081B2B9 /* DiscreteConvolve.swift in Sources */,
 				0813224D1C11D3600081B2B9 /* SDPathCoder.swift in Sources */,
+				0A76BB711D9D1BAF00842F4D /* AtomicStack.swift in Sources */,
 				0A2C33D81D48B8E200FE9A97 /* Integer.swift in Sources */,
 				081322411C11D3600081B2B9 /* Prime.swift in Sources */,
 				0A2C33D71D48B8E200FE9A97 /* Hashable.swift in Sources */,
@@ -700,6 +713,7 @@
 				0AF9BDBC1D6178470058F2AA /* SDMarker.swift in Sources */,
 				0A5196F71D48B52D0082AE61 /* Thread.swift in Sources */,
 				0858DAE31C0550B7007FA426 /* Complex.swift in Sources */,
+				0A76BB721D9D1BAF00842F4D /* AtomicStack.swift in Sources */,
 				0858DB1F1C0550B7007FA426 /* SDEllipse.swift in Sources */,
 				0858DA9B1C0550B7007FA426 /* Move.swift in Sources */,
 				0A1605B31D49DEDC00109F7B /* Date.swift in Sources */,
