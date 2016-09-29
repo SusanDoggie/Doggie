@@ -1965,7 +1965,7 @@ public func Radix2CooleyTukey<U: UnsignedInteger>(_ level: Int, _ input: UnsafeP
     switch level {
         
     case 0:
-        output.pointee = in_count == 0 ? 0 : mod(input.pointee, m)
+        output.pointee = in_count == 0 ? 0 : input.pointee % m
         
     default:
         let length = 1 << level
@@ -2006,7 +2006,7 @@ public func DispatchRadix2CooleyTukey<U: UnsignedInteger>(_ level: Int, _ input:
     switch level {
         
     case 0:
-        output.pointee = in_count == 0 ? 0 : mod(input.pointee, m)
+        output.pointee = in_count == 0 ? 0 : input.pointee % m
         
     default:
         let length = 1 << level
@@ -2053,7 +2053,7 @@ public func InverseRadix2CooleyTukey<U: UnsignedInteger>(_ level: Int, _ input: 
     switch level {
         
     case 0:
-        output.pointee = in_count == 0 ? 0 : mod(input.pointee, m)
+        output.pointee = in_count == 0 ? 0 : input.pointee % m
         
     default:
         let length = 1 << level
@@ -2095,7 +2095,7 @@ public func DispatchInverseRadix2CooleyTukey<U: UnsignedInteger>(_ level: Int, _
     switch level {
         
     case 0:
-        output.pointee = in_count == 0 ? 0 : mod(input.pointee, m)
+        output.pointee = in_count == 0 ? 0 : input.pointee % m
         
     default:
         let length = 1 << level

@@ -45,11 +45,11 @@ public func sec_random_uniform(_ bound: UIntMax) -> UIntMax {
     if bound.isPower2 {
         _rand &= bound &- 1
     } else {
-        let limit = RANDMAX - mod(RANDMAX, bound)
+        let limit = RANDMAX - RANDMAX % bound
         while _rand >= limit {
             sec_random(&_rand, size: MemoryLayout<UIntMax>.size)
         }
-        _rand = mod(_rand, bound)
+        _rand %= bound
     }
     return _rand
 }
@@ -61,11 +61,11 @@ public func random_uniform(_ bound: UIntMax) -> UIntMax {
     if bound.isPower2 {
         _rand &= bound &- 1
     } else {
-        let limit = RANDMAX - mod(RANDMAX, bound)
+        let limit = RANDMAX - RANDMAX % bound
         while _rand >= limit {
             arc4random_buf(&_rand, MemoryLayout<UIntMax>.size)
         }
-        _rand = mod(_rand, bound)
+        _rand %= bound
     }
     return _rand
 }

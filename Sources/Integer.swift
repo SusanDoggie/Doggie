@@ -254,29 +254,18 @@ public extension Integer {
     }
 }
 
-public func mod<T: UnsignedInteger>(_ x: T, _ m: T) -> T {
-    assert(m != 0, "divide by zero")
-    if x < m {
-        return x
-    }
-    if m.isPower2 {
-        return x & (m - 1)
-    }
-    return x % m
-}
-
 public func addmod<T: UnsignedInteger>(_ a: T, _ b: T, _ m: T) -> T {
     assert(m != 0, "divide by zero")
-    let a = mod(a, m)
-    let b = mod(b, m)
+    let a = a % m
+    let b = b % m
     let c = m &- b
     return a < c ? a &+ b : a &- c
 }
 
 public func mulmod<T: UnsignedInteger>(_ a: T, _ b: T, _ m: T) -> T {
     func _mulmod(_ a: UIntMax, _ b: UIntMax, _ m: UIntMax) -> UIntMax {
-        let a = mod(a, m)
-        let b = mod(b, m)
+        let a = a % m
+        let b = b % m
         if a == 0 || b == 0 || m == 1 {
             return 0
         }
@@ -296,7 +285,7 @@ public func mulmod<T: UnsignedInteger>(_ a: T, _ b: T, _ m: T) -> T {
 
 public func pow<T: UnsignedInteger>(_ x: T, _ n: T, _ m: T) -> T {
     func _pow(_ x: UIntMax, _ n: UIntMax, _ m: UIntMax) -> UIntMax {
-        let x = mod(x, m)
+        let x = x % m
         if x == 0 || m == 1 {
             return 0
         }
@@ -330,7 +319,7 @@ public func gcd<U: UnsignedInteger>(_ a: U, _ b: U) -> U {
     var a = a
     var b = b
     while b != 0 {
-        (a, b) = (b, mod(a, b))
+        (a, b) = (b, a % b)
     }
     return a
 }
@@ -374,7 +363,7 @@ public func modinv<U: UnsignedInteger>(_ a: U, _ b: U) -> U {
     var x: (U, U) = (1, 0)
     while b != 0 {
         x = (x.1, x.0 + (a / b) * x.1)
-        (a, b) = (b, mod(a, b))
+        (a, b) = (b, a % b)
         iter += 1
     }
     if a != 1 {
