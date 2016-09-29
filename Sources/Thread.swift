@@ -30,21 +30,26 @@ import c11_atomic
 public protocol SDAtomicType {
     
     /// Compare and set the value.
+    @discardableResult
     mutating func compareSet(old: Self, new: Self) -> Bool
     
     /// Sets the value, and returns the previous value.
+    @discardableResult
     mutating func fetchStore(_: Self) -> Self
     
     /// Sets the value, and returns the previous value. `block` is called repeatedly until result accepted.
+    @discardableResult
     mutating func fetchStore(block: (Self) throws -> Self) rethrows -> Self
 }
 
 public extension SDAtomicType {
     
+    @discardableResult
     public mutating func fetchStore(_ new: Self) -> Self {
         return self.fetchStore { _ in new }
     }
     
+    @discardableResult
     public mutating func fetchStore(block: (Self) throws -> Self) rethrows -> Self {
         while true {
             let old = self
@@ -58,11 +63,13 @@ public extension SDAtomicType {
 extension Bool : SDAtomicType {
     
     /// Compare and set Bool with barrier.
+    @discardableResult
     public mutating func compareSet(old: Bool, new: Bool) -> Bool {
         return _AtomicCompareAndSwapBoolBarrier(old, new, &self)
     }
     
     /// Set Bool with barrier.
+    @discardableResult
     public mutating func fetchStore(_ new: Bool) -> Bool {
         return _AtomicExchangeBoolBarrier(new, &self)
     }
@@ -71,11 +78,13 @@ extension Bool : SDAtomicType {
 extension Int8 : SDAtomicType {
     
     /// Compare and set Int8 with barrier.
+    @discardableResult
     public mutating func compareSet(old: Int8, new: Int8) -> Bool {
         return _AtomicCompareAndSwap8Barrier(old, new, &self)
     }
     
     /// Set Int8 with barrier.
+    @discardableResult
     public mutating func fetchStore(_ new: Int8) -> Int8 {
         return _AtomicExchange8Barrier(new, &self)
     }
@@ -84,11 +93,13 @@ extension Int8 : SDAtomicType {
 extension Int16 : SDAtomicType {
     
     /// Set Int16 with barrier.
+    @discardableResult
     public mutating func compareSet(old: Int16, new: Int16) -> Bool {
         return _AtomicCompareAndSwap16Barrier(old, new, &self)
     }
     
     /// Set Int16 with barrier.
+    @discardableResult
     public mutating func fetchStore(_ new: Int16) -> Int16 {
         return _AtomicExchange16Barrier(new, &self)
     }
@@ -97,11 +108,13 @@ extension Int16 : SDAtomicType {
 extension Int32 : SDAtomicType {
     
     /// Compare and set Int32 with barrier.
+    @discardableResult
     public mutating func compareSet(old: Int32, new: Int32) -> Bool {
         return _AtomicCompareAndSwap32Barrier(old, new, &self)
     }
     
     /// Set Int32 with barrier.
+    @discardableResult
     public mutating func fetchStore(_ new: Int32) -> Int32 {
         return _AtomicExchange32Barrier(new, &self)
     }
@@ -110,11 +123,13 @@ extension Int32 : SDAtomicType {
 extension Int64 : SDAtomicType {
     
     /// Compare and set Int64 with barrier.
+    @discardableResult
     public mutating func compareSet(old: Int64, new: Int64) -> Bool {
         return _AtomicCompareAndSwap64Barrier(old, new, &self)
     }
     
     /// Set Int64 with barrier.
+    @discardableResult
     public mutating func fetchStore(_ new: Int64) -> Int64 {
         return _AtomicExchange64Barrier(new, &self)
     }
@@ -123,11 +138,13 @@ extension Int64 : SDAtomicType {
 extension Int : SDAtomicType {
     
     /// Compare and set Int with barrier.
+    @discardableResult
     public mutating func compareSet(old: Int, new: Int) -> Bool {
         return _AtomicCompareAndSwapLongBarrier(old, new, &self)
     }
     
     /// Set Int with barrier.
+    @discardableResult
     public mutating func fetchStore(_ new: Int) -> Int {
         return _AtomicExchangeLongBarrier(new, &self)
     }
@@ -136,11 +153,13 @@ extension Int : SDAtomicType {
 extension UInt8 : SDAtomicType {
     
     /// Compare and set UInt8 with barrier.
+    @discardableResult
     public mutating func compareSet(old: UInt8, new: UInt8) -> Bool {
         return _AtomicCompareAndSwapU8Barrier(old, new, &self)
     }
     
     /// Set UInt8 with barrier.
+    @discardableResult
     public mutating func fetchStore(_ new: UInt8) -> UInt8 {
         return _AtomicExchangeU8Barrier(new, &self)
     }
@@ -149,11 +168,13 @@ extension UInt8 : SDAtomicType {
 extension UInt16 : SDAtomicType {
     
     /// Set UInt16 with barrier.
+    @discardableResult
     public mutating func compareSet(old: UInt16, new: UInt16) -> Bool {
         return _AtomicCompareAndSwapU16Barrier(old, new, &self)
     }
     
     /// Set UInt16 with barrier.
+    @discardableResult
     public mutating func fetchStore(_ new: UInt16) -> UInt16 {
         return _AtomicExchangeU16Barrier(new, &self)
     }
@@ -162,11 +183,13 @@ extension UInt16 : SDAtomicType {
 extension UInt32 : SDAtomicType {
     
     /// Compare and set UInt32 with barrier.
+    @discardableResult
     public mutating func compareSet(old: UInt32, new: UInt32) -> Bool {
         return _AtomicCompareAndSwapU32Barrier(old, new, &self)
     }
     
     /// Set UInt32 with barrier.
+    @discardableResult
     public mutating func fetchStore(_ new: UInt32) -> UInt32 {
         return _AtomicExchangeU32Barrier(new, &self)
     }
@@ -175,11 +198,13 @@ extension UInt32 : SDAtomicType {
 extension UInt64 : SDAtomicType {
     
     /// Compare and set UInt64 with barrier.
+    @discardableResult
     public mutating func compareSet(old: UInt64, new: UInt64) -> Bool {
         return _AtomicCompareAndSwapU64Barrier(old, new, &self)
     }
     
     /// Set UInt64 with barrier.
+    @discardableResult
     public mutating func fetchStore(_ new: UInt64) -> UInt64 {
         return _AtomicExchangeU64Barrier(new, &self)
     }
@@ -188,11 +213,13 @@ extension UInt64 : SDAtomicType {
 extension UInt : SDAtomicType {
     
     /// Compare and set UInt with barrier.
+    @discardableResult
     public mutating func compareSet(old: UInt, new: UInt) -> Bool {
         return _AtomicCompareAndSwapULongBarrier(old, new, &self)
     }
     
     /// Set UInt with barrier.
+    @discardableResult
     public mutating func fetchStore(_ new: UInt) -> UInt {
         return _AtomicExchangeULongBarrier(new, &self)
     }
@@ -201,6 +228,7 @@ extension UInt : SDAtomicType {
 extension UnsafePointer : SDAtomicType {
     
     /// Compare and set pointers with barrier.
+    @discardableResult
     public mutating func compareSet(old: UnsafePointer, new: UnsafePointer) -> Bool {
         @_transparent
         func cas(_ theVal: UnsafeMutablePointer<UnsafePointer<Pointee>>) -> Bool {
@@ -210,6 +238,7 @@ extension UnsafePointer : SDAtomicType {
     }
     
     /// Set pointers with barrier.
+    @discardableResult
     public mutating func fetchStore(_ new: UnsafePointer) -> UnsafePointer {
         @_transparent
         func exchange(_ theVal: UnsafeMutablePointer<UnsafePointer<Pointee>>) -> UnsafeMutableRawPointer {
@@ -222,6 +251,7 @@ extension UnsafePointer : SDAtomicType {
 extension UnsafeMutablePointer : SDAtomicType {
     
     /// Compare and set pointers with barrier.
+    @discardableResult
     public mutating func compareSet(old: UnsafeMutablePointer, new: UnsafeMutablePointer) -> Bool {
         @_transparent
         func cas(_ theVal: UnsafeMutablePointer<UnsafeMutablePointer<Pointee>>) -> Bool {
@@ -231,6 +261,7 @@ extension UnsafeMutablePointer : SDAtomicType {
     }
     
     /// Set pointers with barrier.
+    @discardableResult
     public mutating func fetchStore(_ new: UnsafeMutablePointer) -> UnsafeMutablePointer {
         @_transparent
         func exchange(_ theVal: UnsafeMutablePointer<UnsafeMutablePointer<Pointee>>) -> UnsafeMutableRawPointer {
@@ -242,6 +273,7 @@ extension UnsafeMutablePointer : SDAtomicType {
 extension UnsafeRawPointer : SDAtomicType {
     
     /// Compare and set pointers with barrier.
+    @discardableResult
     public mutating func compareSet(old: UnsafeRawPointer, new: UnsafeRawPointer) -> Bool {
         @_transparent
         func cas(_ theVal: UnsafeMutablePointer<UnsafeRawPointer>) -> Bool {
@@ -251,6 +283,7 @@ extension UnsafeRawPointer : SDAtomicType {
     }
     
     /// Set pointers with barrier.
+    @discardableResult
     public mutating func fetchStore(_ new: UnsafeRawPointer) -> UnsafeRawPointer {
         @_transparent
         func exchange(_ theVal: UnsafeMutablePointer<UnsafeRawPointer>) -> UnsafeMutableRawPointer {
@@ -263,6 +296,7 @@ extension UnsafeRawPointer : SDAtomicType {
 extension UnsafeMutableRawPointer : SDAtomicType {
     
     /// Compare and set pointers with barrier.
+    @discardableResult
     public mutating func compareSet(old: UnsafeMutableRawPointer, new: UnsafeMutableRawPointer) -> Bool {
         @_transparent
         func cas(_ theVal: UnsafeMutablePointer<UnsafeMutableRawPointer>) -> Bool {
@@ -272,6 +306,7 @@ extension UnsafeMutableRawPointer : SDAtomicType {
     }
     
     /// Set pointers with barrier.
+    @discardableResult
     public mutating func fetchStore(_ new: UnsafeMutableRawPointer) -> UnsafeMutableRawPointer {
         @_transparent
         func exchange(_ theVal: UnsafeMutablePointer<UnsafeMutableRawPointer>) -> UnsafeMutableRawPointer {
@@ -284,6 +319,7 @@ extension UnsafeMutableRawPointer : SDAtomicType {
 extension OpaquePointer : SDAtomicType {
     
     /// Compare and set pointers with barrier.
+    @discardableResult
     public mutating func compareSet(old: OpaquePointer, new: OpaquePointer) -> Bool {
         @_transparent
         func cas(_ theVal: UnsafeMutablePointer<OpaquePointer>) -> Bool {
@@ -293,6 +329,7 @@ extension OpaquePointer : SDAtomicType {
     }
     
     /// Set pointers with barrier.
+    @discardableResult
     public mutating func fetchStore(_ new: OpaquePointer) -> OpaquePointer {
         @_transparent
         func exchange(_ theVal: UnsafeMutablePointer<OpaquePointer>) -> UnsafeMutableRawPointer {
@@ -349,6 +386,7 @@ extension Atomic : SDAtomicType {
     }
     
     /// Compare and set Object with barrier.
+    @discardableResult
     public mutating func compareSet(old: Atomic, new: Atomic) -> Bool {
         return compareSet(old: old.base, new: new.base)
     }
@@ -357,11 +395,13 @@ extension Atomic : SDAtomicType {
 extension Atomic {
     
     /// Sets the value, and returns the previous value.
+    @discardableResult
     public mutating func fetchStore(_ new: Instance) -> Instance {
         return self.fetchStore { _ in new }
     }
     
     /// Sets the value.
+    @discardableResult
     public mutating func fetchStore(block: (Instance) throws -> Instance) rethrows -> Instance {
         while true {
             let old = self.base
