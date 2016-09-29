@@ -101,57 +101,30 @@ public extension BidirectionalCollection {
 
 public extension Collection where Iterator.Element : Equatable {
     
-    /// Returns a subsequence, until a element equal to `value`, containing the
-    /// initial elements.
-    ///
-    /// If none of elements equal to `value`, the result contains all
-    /// the elements of `self`.
-    ///
-    /// - complexity: O(`self.count`)
     func prefix(until element: Iterator.Element) -> SubSequence {
-        return self.prefix(upTo: self.index(of: element) ?? self.endIndex)
+        return self.prefix(while: { $0 != element })
     }
 }
 
 public extension Collection {
     
-    /// Returns a subsequence, until a element satisfying the predicate, containing the
-    /// initial elements.
+    /// Returns a subsequence containing the initial elements until `predicate`
+    /// returns `false` and skipping the remaining elements.
     ///
-    /// If none of elements satisfying the predicate, the result contains all
-    /// the elements of `self`.
+    /// - Parameter predicate: A closure that takes an element of the
+    ///   sequence as its argument and returns `true` if the element should
+    ///   be included or `false` if it should be excluded. Once the predicate
+    ///   returns `false` it will not be called again.
     ///
-    /// - complexity: O(`self.count`)
-    func prefix(until predicate: (Iterator.Element) throws -> Bool) rethrows -> SubSequence {
-        return self.prefix(upTo: try self.index(where: predicate) ?? self.endIndex)
-    }
-}
-
-public extension RandomAccessCollection where Iterator.Element : Equatable {
-    
-    /// Returns a subsequence, until a element equal to `value`, containing the
-    /// final elements of `self`.
-    ///
-    /// If none of elements equal to `value`, the result contains all
-    /// the elements of `self`.
-    ///
-    /// - complexity: O(`self.count`)
-    func suffix(until element: Iterator.Element) -> SubSequence {
-        return self.suffix(from: self.reversed().index(of: element)?.base ?? self.startIndex)
-    }
-}
-
-public extension RandomAccessCollection {
-    
-    /// Returns a subsequence, until a element satisfying the predicate, containing the
-    /// final elements of `self`.
-    ///
-    /// If none of elements satisfying the predicate, the result contains all
-    /// the elements of `self`.
-    ///
-    /// - complexity: O(`self.count`)
-    func suffix(until predicate: (Iterator.Element) throws -> Bool) rethrows -> SubSequence {
-        return self.suffix(from: try self.reversed().index(where: predicate)?.base ?? self.startIndex)
+    /// - Complexity: O(*n*), where *n* is the length of the collection.
+    public func prefix(
+        while predicate: (Iterator.Element) throws -> Bool
+        ) rethrows -> SubSequence {
+        var end = startIndex
+        while try end != endIndex && predicate(self[end]) {
+            formIndex(after: &end)
+        }
+        return self[startIndex..<end]
     }
 }
 
