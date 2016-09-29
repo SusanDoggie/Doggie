@@ -28,7 +28,7 @@ public struct IndexedIterator<C : Collection> : IteratorProtocol where C.Indices
     fileprivate let base: C
     fileprivate var indices: C.Indices.Iterator
     
-    public mutating func next() -> (C.Index, C.Iterator.Element)? {
+    public mutating func next() -> (index: C.Index, element: C.Iterator.Element)? {
         if let index = indices.next() {
             return (index, base[index])
         }
@@ -55,7 +55,7 @@ public struct IndexedCollection<C : Collection> : Collection where C.Indices.Ite
         return base.indices
     }
     
-    public subscript(i: C.Index) -> (C.Index, C.Iterator.Element) {
+    public subscript(i: C.Index) -> (index: C.Index, element: C.Iterator.Element) {
         return (i, base[i])
     }
     
@@ -87,7 +87,7 @@ public struct IndexedBidirectionalCollection<C : BidirectionalCollection> : Bidi
         return base.indices
     }
     
-    public subscript(i: C.Index) -> (C.Index, C.Iterator.Element) {
+    public subscript(i: C.Index) -> (index: C.Index, element: C.Iterator.Element) {
         return (i, base[i])
     }
     
@@ -123,7 +123,7 @@ public struct IndexedRandomAccessCollection<C : RandomAccessCollection> : Random
         return base.indices
     }
     
-    public subscript(i: C.Index) -> (C.Index, C.Iterator.Element) {
+    public subscript(i: C.Index) -> (index: C.Index, element: C.Iterator.Element) {
         return (i, base[i])
     }
     
