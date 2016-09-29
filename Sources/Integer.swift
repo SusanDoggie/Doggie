@@ -130,6 +130,10 @@ public func log2(_ x: UInt) -> UInt {
 public extension UnsignedInteger {
     
     var hibit: Self {
+        let mbit: Self = ~(~0 >> 1)
+        if self & mbit != 0 {
+            return mbit
+        }
         let n = UIntMax(MemoryLayout<Self>.size)
         var x = self
         for i in 1..<n {
