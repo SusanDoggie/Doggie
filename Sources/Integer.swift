@@ -127,36 +127,18 @@ public func log2(_ x: UInt) -> UInt {
     return UInt(bitPattern: log2(Int(bitPattern: x)))
 }
 
-public extension UInt64 {
+public extension UnsignedInteger {
     
-    var hibit: UInt64 {
-        return self == 0 ? 0 : 1 << log2(self)
+    var hibit: Self {
+        let n = UIntMax(MemoryLayout<Self>.size)
+        var x = self
+        for i in 1..<n {
+            x |= Self(x.toUIntMax() >> i)
+        }
+        return (x + 1) >> 1
     }
 }
-public extension UInt32 {
-    
-    var hibit: UInt32 {
-        return self == 0 ? 0 : 1 << log2(self)
-    }
-}
-public extension UInt16 {
-    
-    var hibit: UInt16 {
-        return self == 0 ? 0 : 1 << log2(self)
-    }
-}
-public extension UInt8 {
-    
-    var hibit: UInt8 {
-        return self == 0 ? 0 : 1 << log2(self)
-    }
-}
-public extension UInt {
-    
-    var hibit: UInt {
-        return self == 0 ? 0 : 1 << log2(self)
-    }
-}
+
 public extension Int64 {
     
     var hibit: Int64 {
@@ -262,6 +244,10 @@ public func addmod<T: UnsignedInteger>(_ a: T, _ b: T, _ m: T) -> T {
     return a < c ? a &+ b : a &- c
 }
 
+public func >><T: UnsignedInteger>(lhs: T, rhs: T) -> T {
+    return T(lhs.toUIntMax() >> rhs.toUIntMax())
+}
+
 public func mulmod<T: UnsignedInteger>(_ a: T, _ b: T, _ m: T) -> T {
     func _mulmod(_ a: UIntMax, _ b: UIntMax, _ m: UIntMax) -> UIntMax {
         let a = a % m
@@ -284,19 +270,16 @@ public func mulmod<T: UnsignedInteger>(_ a: T, _ b: T, _ m: T) -> T {
 }
 
 public func pow<T: UnsignedInteger>(_ x: T, _ n: T, _ m: T) -> T {
-    func _pow(_ x: UIntMax, _ n: UIntMax, _ m: UIntMax) -> UIntMax {
-        let x = x % m
-        if x == 0 || m == 1 {
-            return 0
-        }
-        if n == 0 {
-            return 1
-        }
-        let p = _pow(mulmod(x, x, m), n >> 1, m)
-        return n & 1 == 1 ? mulmod(x, p, m) : p
-    }
     assert(m != 0, "divide by zero")
-    return T(_pow(x.toUIntMax(), n.toUIntMax(), m.toUIntMax()))
+    let x = x % m
+    if x == 0 || m == 1 {
+        return 0
+    }
+    if n == 0 {
+        return 1
+    }
+    let p = pow(mulmod(x, x, m), n >> 1, m)
+    return n & 1 == 1 ? mulmod(x, p, m) : p
 }
 
 public func pow(_ x: UInt, _ n: UInt) -> UInt {
