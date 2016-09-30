@@ -32,13 +32,18 @@ public protocol SDAtomicProtocol {
     associatedtype Atom
     
     /// Atomic fetch the current value.
-    mutating func fetch() -> Atom
+    mutating func fetchSelf() -> (self: Self, value: Atom)
     
     /// Compare and set the value.
     mutating func compareSet(old: Self, new: Atom) -> Bool
 }
 
 public extension SDAtomicProtocol {
+    
+    /// Atomic fetch the current value.
+    public mutating func fetch() -> Atom {
+        return self.fetchSelf().value
+    }
     
     /// Atomic set the value.
     public mutating func store(_ new: Atom) {
@@ -54,8 +59,7 @@ public extension SDAtomicProtocol {
     @discardableResult
     public mutating func fetchStore(block: (Atom) throws -> Atom) rethrows -> Atom {
         while true {
-            var old = self
-            let oldVal = old.fetch()
+            let (old, oldVal) = self.fetchSelf()
             if self.compareSet(old: old, new: try block(oldVal)) {
                 return oldVal
             }
@@ -66,8 +70,9 @@ public extension SDAtomicProtocol {
 extension Bool : SDAtomicProtocol {
     
     /// Atomic fetch the current value with barrier.
-    public mutating func fetch() -> Bool {
-        return _AtomicLoadBoolBarrier(&self)
+    public mutating func fetchSelf() -> (self: Bool, value: Bool) {
+        let val = _AtomicLoadBoolBarrier(&self)
+        return (val, val)
     }
     
     /// Atomic sets the value with barrier.
@@ -89,8 +94,9 @@ extension Bool : SDAtomicProtocol {
 extension Int8 : SDAtomicProtocol {
     
     /// Atomic fetch the current value with barrier.
-    public mutating func fetch() -> Int8 {
-        return _AtomicLoad8Barrier(&self)
+    public mutating func fetchSelf() -> (self: Int8, value: Int8) {
+        let val = _AtomicLoad8Barrier(&self)
+        return (val, val)
     }
     
     /// Atomic sets the value with barrier.
@@ -112,8 +118,9 @@ extension Int8 : SDAtomicProtocol {
 extension Int16 : SDAtomicProtocol {
     
     /// Atomic fetch the current value with barrier.
-    public mutating func fetch() -> Int16 {
-        return _AtomicLoad16Barrier(&self)
+    public mutating func fetchSelf() -> (self: Int16, value: Int16) {
+        let val = _AtomicLoad16Barrier(&self)
+        return (val, val)
     }
     
     /// Atomic sets the value with barrier.
@@ -135,8 +142,9 @@ extension Int16 : SDAtomicProtocol {
 extension Int32 : SDAtomicProtocol {
     
     /// Atomic fetch the current value with barrier.
-    public mutating func fetch() -> Int32 {
-        return _AtomicLoad32Barrier(&self)
+    public mutating func fetchSelf() -> (self: Int32, value: Int32) {
+        let val = _AtomicLoad32Barrier(&self)
+        return (val, val)
     }
     
     /// Atomic sets the value with barrier.
@@ -158,8 +166,9 @@ extension Int32 : SDAtomicProtocol {
 extension Int64 : SDAtomicProtocol {
     
     /// Atomic fetch the current value with barrier.
-    public mutating func fetch() -> Int64 {
-        return _AtomicLoad64Barrier(&self)
+    public mutating func fetchSelf() -> (self: Int64, value: Int64) {
+        let val = _AtomicLoad64Barrier(&self)
+        return (val, val)
     }
     
     /// Atomic sets the value with barrier.
@@ -181,8 +190,9 @@ extension Int64 : SDAtomicProtocol {
 extension Int : SDAtomicProtocol {
     
     /// Atomic fetch the current value with barrier.
-    public mutating func fetch() -> Int {
-        return _AtomicLoadLongBarrier(&self)
+    public mutating func fetchSelf() -> (self: Int, value: Int) {
+        let val = _AtomicLoadLongBarrier(&self)
+        return (val, val)
     }
     
     /// Atomic sets the value with barrier.
@@ -204,8 +214,9 @@ extension Int : SDAtomicProtocol {
 extension UInt8 : SDAtomicProtocol {
     
     /// Atomic fetch the current value with barrier.
-    public mutating func fetch() -> UInt8 {
-        return _AtomicLoadU8Barrier(&self)
+    public mutating func fetchSelf() -> (self: UInt8, value: UInt8) {
+        let val = _AtomicLoadU8Barrier(&self)
+        return (val, val)
     }
     
     /// Atomic sets the value with barrier.
@@ -227,8 +238,9 @@ extension UInt8 : SDAtomicProtocol {
 extension UInt16 : SDAtomicProtocol {
     
     /// Atomic fetch the current value with barrier.
-    public mutating func fetch() -> UInt16 {
-        return _AtomicLoadU16Barrier(&self)
+    public mutating func fetchSelf() -> (self: UInt16, value: UInt16) {
+        let val = _AtomicLoadU16Barrier(&self)
+        return (val, val)
     }
     
     /// Atomic sets the value with barrier.
@@ -250,8 +262,9 @@ extension UInt16 : SDAtomicProtocol {
 extension UInt32 : SDAtomicProtocol {
     
     /// Atomic fetch the current value with barrier.
-    public mutating func fetch() -> UInt32 {
-        return _AtomicLoadU32Barrier(&self)
+    public mutating func fetchSelf() -> (self: UInt32, value: UInt32) {
+        let val = _AtomicLoadU32Barrier(&self)
+        return (val, val)
     }
     
     /// Atomic sets the value with barrier.
@@ -273,8 +286,9 @@ extension UInt32 : SDAtomicProtocol {
 extension UInt64 : SDAtomicProtocol {
     
     /// Atomic fetch the current value with barrier.
-    public mutating func fetch() -> UInt64 {
-        return _AtomicLoadU64Barrier(&self)
+    public mutating func fetchSelf() -> (self: UInt64, value: UInt64) {
+        let val = _AtomicLoadU64Barrier(&self)
+        return (val, val)
     }
     
     /// Atomic sets the value with barrier.
@@ -296,8 +310,9 @@ extension UInt64 : SDAtomicProtocol {
 extension UInt : SDAtomicProtocol {
     
     /// Atomic fetch the current value with barrier.
-    public mutating func fetch() -> UInt {
-        return _AtomicLoadULongBarrier(&self)
+    public mutating func fetchSelf() -> (self: UInt, value: UInt) {
+        let val = _AtomicLoadULongBarrier(&self)
+        return (val, val)
     }
     
     /// Atomic sets the value with barrier.
@@ -319,12 +334,13 @@ extension UInt : SDAtomicProtocol {
 extension UnsafePointer : SDAtomicProtocol {
     
     /// Atomic fetch the current value with barrier.
-    public mutating func fetch() -> UnsafePointer {
+    public mutating func fetchSelf() -> (self: UnsafePointer, value: UnsafePointer) {
         @_transparent
         func load(_ theVal: UnsafeMutablePointer<UnsafePointer<Pointee>>) -> UnsafeMutableRawPointer {
             return theVal.withMemoryRebound(to: Optional<UnsafeRawPointer>.self, capacity: 1) { _AtomicLoadPtrBarrier($0) }
         }
-        return UnsafePointer(load(&self).assumingMemoryBound(to: Pointee.self))
+        let val = UnsafePointer(load(&self).assumingMemoryBound(to: Pointee.self))
+        return (val, val)
     }
     
     /// Atomic sets the value with barrier.
@@ -358,12 +374,13 @@ extension UnsafePointer : SDAtomicProtocol {
 extension UnsafeMutablePointer : SDAtomicProtocol {
     
     /// Atomic fetch the current value with barrier.
-    public mutating func fetch() -> UnsafeMutablePointer {
+    public mutating func fetchSelf() -> (self: UnsafeMutablePointer, value: UnsafeMutablePointer) {
         @_transparent
         func load(_ theVal: UnsafeMutablePointer<UnsafeMutablePointer<Pointee>>) -> UnsafeMutableRawPointer {
             return theVal.withMemoryRebound(to: Optional<UnsafeRawPointer>.self, capacity: 1) { _AtomicLoadPtrBarrier($0) }
         }
-        return load(&self).assumingMemoryBound(to: Pointee.self)
+        let val = load(&self).assumingMemoryBound(to: Pointee.self)
+        return (val, val)
     }
     
     /// Atomic sets the value with barrier.
@@ -396,12 +413,13 @@ extension UnsafeMutablePointer : SDAtomicProtocol {
 extension UnsafeRawPointer : SDAtomicProtocol {
     
     /// Atomic fetch the current value with barrier.
-    public mutating func fetch() -> UnsafeRawPointer {
+    public mutating func fetchSelf() -> (self: UnsafeRawPointer, value: UnsafeRawPointer) {
         @_transparent
         func load(_ theVal: UnsafeMutablePointer<UnsafeRawPointer>) -> UnsafeMutableRawPointer {
             return theVal.withMemoryRebound(to: Optional<UnsafeRawPointer>.self, capacity: 1) { _AtomicLoadPtrBarrier($0) }
         }
-        return UnsafeRawPointer(load(&self))
+        let val = UnsafeRawPointer(load(&self))
+        return (val, val)
     }
     
     /// Atomic sets the value with barrier.
@@ -435,12 +453,13 @@ extension UnsafeRawPointer : SDAtomicProtocol {
 extension UnsafeMutableRawPointer : SDAtomicProtocol {
     
     /// Atomic fetch the current value with barrier.
-    public mutating func fetch() -> UnsafeMutableRawPointer {
+    public mutating func fetchSelf() -> (self: UnsafeMutableRawPointer, value: UnsafeMutableRawPointer) {
         @_transparent
         func load(_ theVal: UnsafeMutablePointer<UnsafeMutableRawPointer>) -> UnsafeMutableRawPointer {
             return theVal.withMemoryRebound(to: Optional<UnsafeRawPointer>.self, capacity: 1) { _AtomicLoadPtrBarrier($0) }
         }
-        return load(&self)
+        let val = load(&self)
+        return (val, val)
     }
     
     /// Atomic sets the value with barrier.
@@ -474,12 +493,13 @@ extension UnsafeMutableRawPointer : SDAtomicProtocol {
 extension OpaquePointer : SDAtomicProtocol {
     
     /// Atomic fetch the current value with barrier.
-    public mutating func fetch() -> OpaquePointer {
+    public mutating func fetchSelf() -> (self: OpaquePointer, value: OpaquePointer) {
         @_transparent
         func load(_ theVal: UnsafeMutablePointer<OpaquePointer>) -> UnsafeMutableRawPointer {
             return theVal.withMemoryRebound(to: Optional<UnsafeRawPointer>.self, capacity: 1) { _AtomicLoadPtrBarrier($0) }
         }
-        return OpaquePointer(load(&self))
+        let val = OpaquePointer(load(&self))
+        return (val, val)
     }
     
     /// Atomic sets the value with barrier.
@@ -586,8 +606,9 @@ extension Atomic {
 extension Atomic : SDAtomicProtocol {
     
     /// Atomic fetch the current value.
-    public mutating func fetch() -> Instance {
-        return _fetch().value
+    public mutating func fetchSelf() -> (self: Atomic, value: Instance) {
+        let _base = _fetch()
+        return (Atomic(base: _base), _base.value)
     }
     
     /// Compare and set the value.
