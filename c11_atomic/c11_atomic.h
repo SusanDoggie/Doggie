@@ -77,4 +77,49 @@ _ATOMIC_EXCHANGE_BARRIER(Long, long)
 _ATOMIC_EXCHANGE_BARRIER(ULong, unsigned long)
 _ATOMIC_EXCHANGE_BARRIER(Ptr, void*)
 
+#define _ATOMIC_LOAD_BARRIER(NAME, x) static inline x                                                               \
+_AtomicLoad##NAME##Barrier(const volatile x * address)                                                              \
+{                                                                                                                   \
+    return atomic_load((_Atomic(x)*)address);                                                                       \
+}
+
+#define _ATOMIC_LOAD_FIXED_INT_BARRIER(n) _ATOMIC_LOAD_BARRIER(n, int##n##_t)
+#define _ATOMIC_LOAD_FIXED_UINT_BARRIER(n) _ATOMIC_LOAD_BARRIER(U##n, uint##n##_t)
+
+_ATOMIC_LOAD_BARRIER(Bool, bool)
+_ATOMIC_LOAD_FIXED_INT_BARRIER(8)
+_ATOMIC_LOAD_FIXED_INT_BARRIER(16)
+_ATOMIC_LOAD_FIXED_INT_BARRIER(32)
+_ATOMIC_LOAD_FIXED_INT_BARRIER(64)
+_ATOMIC_LOAD_FIXED_UINT_BARRIER(8)
+_ATOMIC_LOAD_FIXED_UINT_BARRIER(16)
+_ATOMIC_LOAD_FIXED_UINT_BARRIER(32)
+_ATOMIC_LOAD_FIXED_UINT_BARRIER(64)
+_ATOMIC_LOAD_BARRIER(Long, long)
+_ATOMIC_LOAD_BARRIER(ULong, unsigned long)
+_ATOMIC_LOAD_BARRIER(Ptr, void*)
+
+#define _ATOMIC_STORE_BARRIER(NAME, x) static inline void                                                           \
+_AtomicStore##NAME##Barrier(x            newValue,                                                                  \
+                            volatile x * address)                                                                   \
+{                                                                                                                   \
+    atomic_store((_Atomic(x)*)address, newValue);                                                                   \
+}
+
+#define _ATOMIC_STORE_FIXED_INT_BARRIER(n) _ATOMIC_STORE_BARRIER(n, int##n##_t)
+#define _ATOMIC_STORE_FIXED_UINT_BARRIER(n) _ATOMIC_STORE_BARRIER(U##n, uint##n##_t)
+
+_ATOMIC_STORE_BARRIER(Bool, bool)
+_ATOMIC_STORE_FIXED_INT_BARRIER(8)
+_ATOMIC_STORE_FIXED_INT_BARRIER(16)
+_ATOMIC_STORE_FIXED_INT_BARRIER(32)
+_ATOMIC_STORE_FIXED_INT_BARRIER(64)
+_ATOMIC_STORE_FIXED_UINT_BARRIER(8)
+_ATOMIC_STORE_FIXED_UINT_BARRIER(16)
+_ATOMIC_STORE_FIXED_UINT_BARRIER(32)
+_ATOMIC_STORE_FIXED_UINT_BARRIER(64)
+_ATOMIC_STORE_BARRIER(Long, long)
+_ATOMIC_STORE_BARRIER(ULong, unsigned long)
+_ATOMIC_STORE_BARRIER(Ptr, void*)
+
 #endif /* c11_atomic_h */
