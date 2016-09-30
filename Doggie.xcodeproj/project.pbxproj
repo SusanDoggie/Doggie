@@ -115,6 +115,8 @@
 		0ACE1E1C1C5711D300106D1F /* Graph.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ACE1E191C5711D300106D1F /* Graph.swift */; };
 		0AF9BDBB1D6178470058F2AA /* SDMarker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF9BDBA1D6178470058F2AA /* SDMarker.swift */; };
 		0AF9BDBC1D6178470058F2AA /* SDMarker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF9BDBA1D6178470058F2AA /* SDMarker.swift */; };
+		0AFCA1501D9E1F130034AB10 /* AtomicTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AFCA14F1D9E1F130034AB10 /* AtomicTest.swift */; };
+		0AFCA1511D9E1F130034AB10 /* AtomicTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AFCA14F1D9E1F130034AB10 /* AtomicTest.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -198,6 +200,7 @@
 		0ACE1E141C57114A00106D1F /* CollectionExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CollectionExtension.swift; sourceTree = "<group>"; };
 		0ACE1E191C5711D300106D1F /* Graph.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Graph.swift; sourceTree = "<group>"; };
 		0AF9BDBA1D6178470058F2AA /* SDMarker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SDMarker.swift; sourceTree = "<group>"; };
+		0AFCA14F1D9E1F130034AB10 /* AtomicTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AtomicTest.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -391,6 +394,7 @@
 		08AF77AE1A3A10510042491F /* CommonTest */ = {
 			isa = PBXGroup;
 			children = (
+				0AFCA14F1D9E1F130034AB10 /* AtomicTest.swift */,
 				08BFF9B91B0715ED00EC88CB /* FourierTest.swift */,
 				0A266E521D6E95C100ABE6B7 /* SDMarkerTest.swift */,
 			);
@@ -693,6 +697,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				0A266E531D6E95C100ABE6B7 /* SDMarkerTest.swift in Sources */,
+				0AFCA1501D9E1F130034AB10 /* AtomicTest.swift in Sources */,
 				081321EB1C11D2C60081B2B9 /* FourierTest.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -758,6 +763,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				0A266E541D6E95C100ABE6B7 /* SDMarkerTest.swift in Sources */,
+				0AFCA1511D9E1F130034AB10 /* AtomicTest.swift in Sources */,
 				08BFF9BC1B07161E00EC88CB /* FourierTest.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
