@@ -31,33 +31,26 @@ public protocol SDAtomicProtocol {
     
     associatedtype Atom
     
-    /// Compare and set the value.
-    mutating func compareSet(old: Self, new: Atom) -> Bool
-    
     /// Atomic fetch the current value.
     mutating func fetch() -> Atom
     
-    /// Atomic set the value.
-    mutating func store(_: Atom)
-    
-    /// Set the value, and returns the previous value.
-    mutating func fetchStore(_: Atom) -> Atom
-    
-    /// Set the value, and returns the previous value. `block` is called repeatedly until result accepted.
-    @discardableResult
-    mutating func fetchStore(block: (Atom) throws -> Atom) rethrows -> Atom
+    /// Compare and set the value.
+    mutating func compareSet(old: Self, new: Atom) -> Bool
 }
 
 public extension SDAtomicProtocol {
     
+    /// Atomic set the value.
     public mutating func store(_ new: Atom) {
         self.fetchStore { _ in new }
     }
     
+    /// Set the value, and returns the previous value.
     public mutating func fetchStore(_ new: Atom) -> Atom {
         return self.fetchStore { _ in new }
     }
     
+    /// Set the value, and returns the previous value. `block` is called repeatedly until result accepted.
     @discardableResult
     public mutating func fetchStore(block: (Atom) throws -> Atom) rethrows -> Atom {
         while true {
@@ -592,14 +585,14 @@ extension Atomic {
 
 extension Atomic : SDAtomicProtocol {
     
-    /// Compare and set the value.
-    public mutating func compareSet(old: Atomic, new: Instance) -> Bool {
-        return self._compareSet(old: old.base, new: AtomicBase(value: new))
-    }
-    
     /// Atomic fetch the current value.
     public mutating func fetch() -> Instance {
         return _fetch().value
+    }
+    
+    /// Compare and set the value.
+    public mutating func compareSet(old: Atomic, new: Instance) -> Bool {
+        return self._compareSet(old: old.base, new: AtomicBase(value: new))
     }
     
     /// Set the value, and returns the previous value.
