@@ -62,9 +62,9 @@ public class AtomicQueue<Instance> {
     public func dequeue() -> Instance? {
         while true {
             let _head = head.fetchSelf()
-            let _next = _head.value.next.fetchSelf()
-            if head.compareSet(old: _head.current, new: _next.value ?? _head.value) {
-                return _next.value?.value
+            let _next = _head.value.next.fetch()
+            if head.compareSet(old: _head.current, new: _next ?? _head.value) {
+                return _next?.value
             }
         }
     }
