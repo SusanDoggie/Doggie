@@ -66,6 +66,8 @@
 		0858DB481C055172007FA426 /* Fourier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DB451C055172007FA426 /* Fourier.swift */; };
 		087FE5BA1A372D97005A2E9E /* Doggie_Mac.h in Headers */ = {isa = PBXBuildFile; fileRef = 087FE5B91A372D97005A2E9E /* Doggie_Mac.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		087FE5C01A372D97005A2E9E /* Doggie.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 087FE5B51A372D97005A2E9E /* Doggie.framework */; settings = {ATTRIBUTES = (Required, ); }; };
+		089E4B261D9FB8A700881F51 /* AtomicQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 089E4B251D9FB8A700881F51 /* AtomicQueue.swift */; };
+		089E4B271D9FB8A700881F51 /* AtomicQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 089E4B251D9FB8A700881F51 /* AtomicQueue.swift */; };
 		08BFF9BC1B07161E00EC88CB /* FourierTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08BFF9B91B0715ED00EC88CB /* FourierTest.swift */; };
 		0A1605B31D49DEDC00109F7B /* Date.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2C33D01D48B8E200FE9A97 /* Date.swift */; };
 		0A1605B41D49DEDC00109F7B /* Hashable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2C33D11D48B8E200FE9A97 /* Hashable.swift */; };
@@ -174,6 +176,7 @@
 		087FE5B91A372D97005A2E9E /* Doggie_Mac.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Doggie_Mac.h; sourceTree = "<group>"; };
 		087FE5BF1A372D97005A2E9E /* Doggie_MacTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Doggie_MacTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		087FE5C51A372D97005A2E9E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		089E4B251D9FB8A700881F51 /* AtomicQueue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AtomicQueue.swift; sourceTree = "<group>"; };
 		08BFF9B91B0715ED00EC88CB /* FourierTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FourierTest.swift; sourceTree = "<group>"; };
 		0A266E521D6E95C100ABE6B7 /* SDMarkerTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SDMarkerTest.swift; sourceTree = "<group>"; };
 		0A2C33D01D48B8E200FE9A97 /* Date.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Date.swift; sourceTree = "<group>"; };
@@ -419,6 +422,7 @@
 			isa = PBXGroup;
 			children = (
 				0A76BB701D9D1BAF00842F4D /* AtomicStack.swift */,
+				089E4B251D9FB8A700881F51 /* AtomicQueue.swift */,
 			);
 			name = Atomic;
 			sourceTree = "<group>";
@@ -658,6 +662,7 @@
 				0A2C33D71D48B8E200FE9A97 /* Hashable.swift in Sources */,
 				0A2C33D91D48B8E200FE9A97 /* Json.swift in Sources */,
 				081322491C11D3600081B2B9 /* SDAtomicNode.swift in Sources */,
+				089E4B261D9FB8A700881F51 /* AtomicQueue.swift in Sources */,
 				081322381C11D3600081B2B9 /* Fourier.swift in Sources */,
 				0813223E1C11D3600081B2B9 /* Matrix.swift in Sources */,
 				0A2C33D61D48B8E200FE9A97 /* Date.swift in Sources */,
@@ -724,6 +729,7 @@
 				0A1605B31D49DEDC00109F7B /* Date.swift in Sources */,
 				0858DB1B1C0550B7007FA426 /* SDAtomicNode.swift in Sources */,
 				0858DA871C0550B7007FA426 /* ComplexConversion.swift in Sources */,
+				089E4B271D9FB8A700881F51 /* AtomicQueue.swift in Sources */,
 				0858DB481C055172007FA426 /* Fourier.swift in Sources */,
 				0AADD1211D10E75300087247 /* LazyScanSequence.swift in Sources */,
 				0858DA931C0550B7007FA426 /* DiscreteConvolve.swift in Sources */,
