@@ -52,15 +52,13 @@ public class AtomicQueue<Instance> {
             if _tail.value != nil {
                 tail = _tail.value!
             } else if tail.next.compareSet(old: _tail.current, new: new) {
+                tail = new
                 return
             }
         }
     }
     
     public func dequeue() -> Instance? {
-        while let _tail = tail.next.fetch() {
-            tail = _tail
-        }
         while true {
             let _head = head.fetchSelf()
             let _next = _head.value.next.fetchSelf()
