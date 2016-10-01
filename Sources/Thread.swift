@@ -635,6 +635,22 @@ extension Atomic : SDAtomicProtocol {
     }
 }
 
+extension Atomic where Instance : Equatable {
+    
+    /// Compare and set the value.
+    public mutating func compareSet(old: Instance, new: Instance) -> Bool {
+        while true {
+            let (current, currentVal) = self.fetchSelf()
+            if currentVal != old {
+                return false
+            }
+            if compareSet(old: current, new: new) {
+                return true
+            }
+        }
+    }
+}
+
 extension Atomic: CustomStringConvertible {
     
     public var description: String {
