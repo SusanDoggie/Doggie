@@ -752,6 +752,105 @@ extension SDLock : Lockable {
     }
 }
 
+// MARK: Condition
+
+private extension Date {
+    
+    var timespec : timespec {
+        let _abs_time = self.timeIntervalSince1970
+        let sec = __darwin_time_t(_abs_time)
+        let nsec = Int((_abs_time - Double(sec)) * 1000000000.0)
+        return Foundation.timespec(tv_sec: sec, tv_nsec: nsec)
+    }
+}
+
+public class SDCondition {
+    
+    fileprivate var _cond = pthread_cond_t()
+    
+    public init() {
+        pthread_cond_init(&_cond, nil)
+    }
+    
+    deinit {
+        pthread_cond_destroy(&_cond)
+    }
+}
+
+extension SDCondition {
+    
+    public func signal() {
+        pthread_cond_signal(&_cond)
+    }
+    public func broadcast() {
+        pthread_cond_broadcast(&_cond)
+    }
+}
+
+extension SDLock {
+    
+    public func wait(_ cond: SDCondition, for predicate: @autoclosure () -> Bool) {
+        while !predicate() {
+            pthread_cond_wait(&cond._cond, &_mtx)
+        }
+    }
+    @discardableResult
+    public func wait(_ cond: SDCondition, for predicate: @autoclosure () -> Bool, until date: Date) -> Bool {
+        var _timespec = date.timespec
+        while !predicate() {
+            if pthread_cond_timedwait(&cond._cond, &_mtx, &_timespec) != 0 {
+                return predicate()
+            }
+        }
+        return true
+    }
+}
+
+extension SDLock {
+    
+    public func lock(_ cond: SDCondition, for predicate: @autoclosure () -> Bool) {
+        self.lock()
+        self.wait(cond, for: predicate)
+    }
+    @discardableResult
+    public func lock(_ cond: SDCondition, for predicate: @autoclosure () -> Bool, until date: Date) -> Bool {
+        self.lock()
+        if self.wait(cond, for: predicate, until: date) {
+            return true
+        }
+        self.unlock()
+        return false
+    }
+    @discardableResult
+    public func trylock(_ cond: SDCondition, for predicate: @autoclosure () -> Bool) -> Bool {
+        if self.trylock() {
+            if self.wait(cond, for: predicate, until: Date.distantPast) {
+                return true
+            }
+            self.unlock()
+        }
+        return false
+    }
+}
+
+extension SDLock {
+    
+    @discardableResult
+    public func synchronized<R>(_ cond: SDCondition, for predicate: @autoclosure () -> Bool, block: () throws -> R) rethrows -> R {
+        self.lock(cond, for: predicate)
+        defer { self.unlock() }
+        return try block()
+    }
+    @discardableResult
+    public func synchronized<R>(_ cond: SDCondition, for predicate: @autoclosure () -> Bool, until date: Date, block: () throws -> R) rethrows -> R? {
+        if self.lock(cond, for: predicate, until: date) {
+            defer { self.unlock() }
+            return try block()
+        }
+        return nil
+    }
+}
+
 // MARK: Spin Lock
 
 public class SDSpinLock {
@@ -804,81 +903,42 @@ extension SDSpinLock : Lockable {
 
 public class SDConditionLock : SDLock {
     
-    fileprivate var _cond = pthread_cond_t()
-    
-    public override init() {
-        super.init()
-        pthread_cond_init(&_cond, nil)
-    }
-    
-    deinit {
-        pthread_cond_destroy(&_cond)
-    }
-}
-
-private extension Date {
-    
-    var timespec : timespec {
-        let _abs_time = self.timeIntervalSince1970
-        let sec = __darwin_time_t(_abs_time)
-        let nsec = Int((_abs_time - Double(sec)) * 1000000000.0)
-        return Foundation.timespec(tv_sec: sec, tv_nsec: nsec)
-    }
+    fileprivate var cond = SDCondition()
 }
 
 extension SDConditionLock {
     
     public func signal() {
         super.synchronized {
-            pthread_cond_signal(&_cond)
+            cond.signal()
         }
     }
     public func broadcast() {
         super.synchronized {
-            pthread_cond_broadcast(&_cond)
+            cond.broadcast()
         }
     }
     public func wait(for predicate: @autoclosure () -> Bool) {
-        while !predicate() {
-            pthread_cond_wait(&_cond, &_mtx)
-        }
+        self.wait(cond, for: predicate)
     }
     @discardableResult
     public func wait(for predicate: @autoclosure () -> Bool, until date: Date) -> Bool {
-        var _timespec = date.timespec
-        while !predicate() {
-            if pthread_cond_timedwait(&_cond, &_mtx, &_timespec) != 0 {
-                return predicate()
-            }
-        }
-        return true
+        return self.wait(cond, for: predicate, until: date)
     }
 }
 
 extension SDConditionLock {
     
     public func lock(for predicate: @autoclosure () -> Bool) {
-        super.lock()
-        self.wait(for: predicate)
+        self.lock(cond, for: predicate)
     }
     @discardableResult
     public func lock(for predicate: @autoclosure () -> Bool, until date: Date) -> Bool {
-        super.lock()
-        if self.wait(for: predicate, until: date) {
-            return true
-        }
-        super.unlock()
-        return false
+        return self.lock(cond, for: predicate, until: date)
     }
     @discardableResult
     public func trylock(for predicate: @autoclosure () -> Bool) -> Bool {
-        if super.trylock() {
-            if self.wait(for: predicate, until: Date.distantPast) {
-                return true
-            }
-            super.unlock()
-        }
-        return false
+        return self.trylock(cond, for: predicate)
     }
 }
 
@@ -886,17 +946,11 @@ extension SDConditionLock {
     
     @discardableResult
     public func synchronized<R>(for predicate: @autoclosure () -> Bool, block: () throws -> R) rethrows -> R {
-        self.lock(for: predicate)
-        defer { self.unlock() }
-        return try block()
+        return try self.synchronized(cond, for: predicate, block: block)
     }
     @discardableResult
     public func synchronized<R>(for predicate: @autoclosure () -> Bool, until date: Date, block: () throws -> R) rethrows -> R? {
-        if self.lock(for: predicate, until: date) {
-            defer { self.unlock() }
-            return try block()
-        }
-        return nil
+        return try self.synchronized(cond, for: predicate, until: date, block: block)
     }
 }
 
