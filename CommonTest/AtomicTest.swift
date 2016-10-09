@@ -57,4 +57,45 @@ class AtomicTest: XCTestCase {
         
         XCTAssertEqual(atom.value, 10)
     }
+    
+    func testAtomicQueueA() {
+        
+        let queue = AtomicQueue<Int>()
+        
+        for i in 1...10 {
+            queue.push(i)
+        }
+        
+        XCTAssertEqual(queue.next(), 1)
+        XCTAssertEqual(queue.next(), 2)
+        XCTAssertEqual(queue.next(), 3)
+        XCTAssertEqual(queue.next(), 4)
+        XCTAssertEqual(queue.next(), 5)
+        XCTAssertEqual(queue.next(), 6)
+        XCTAssertEqual(queue.next(), 7)
+        XCTAssertEqual(queue.next(), 8)
+        XCTAssertEqual(queue.next(), 9)
+        XCTAssertEqual(queue.next(), 10)
+        XCTAssertEqual(queue.next(), nil)
+    }
+    func testAtomicStackA() {
+        
+        let stack = AtomicStack<Int>()
+        
+        for i in 1...10 {
+            stack.push(i)
+        }
+        
+        XCTAssertEqual(stack.next(), 10)
+        XCTAssertEqual(stack.next(), 9)
+        XCTAssertEqual(stack.next(), 8)
+        XCTAssertEqual(stack.next(), 7)
+        XCTAssertEqual(stack.next(), 6)
+        XCTAssertEqual(stack.next(), 5)
+        XCTAssertEqual(stack.next(), 4)
+        XCTAssertEqual(stack.next(), 3)
+        XCTAssertEqual(stack.next(), 2)
+        XCTAssertEqual(stack.next(), 1)
+        XCTAssertEqual(stack.next(), nil)
+    }
 }

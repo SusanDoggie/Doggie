@@ -57,7 +57,7 @@ public class AtomicStack<Instance> {
         }
     }
     
-    public func pop() -> Instance? {
+    public func next() -> Instance? {
         return head.fetchStore { $0?.next?.base }?.value
     }
 }

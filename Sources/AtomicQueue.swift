@@ -25,10 +25,10 @@
 
 private class AtomicQueueContainer<Instance> {
     
-    let value: Instance!
+    var value: Instance?
     var next: Atomic<AtomicQueueContainer<Instance>?>
     
-    init(value: Instance! = nil, next: AtomicQueueContainer<Instance>? = nil) {
+    init(value: Instance? = nil, next: AtomicQueueContainer<Instance>? = nil) {
         self.value = value
         self.next = Atomic(value: next)
     }
@@ -45,7 +45,7 @@ public class AtomicQueue<Instance> {
         self.tail = telomere
     }
     
-    public func enqueue(_ newElement: Instance) {
+    public func push(_ newElement: Instance) {
         let new = AtomicQueueContainer(value: newElement, next: nil)
         var cachedTail = tail
         while true {
@@ -59,12 +59,16 @@ public class AtomicQueue<Instance> {
         }
     }
     
-    public func dequeue() -> Instance? {
+    public func next() -> Instance? {
         while true {
             let _head = head.fetchSelf()
             let _next = _head.value.next.fetch()
             if head.compareSet(old: _head.current, new: _next ?? _head.value) {
-                return _next?.value
+                if let value = _next?.value {
+                    _next?.value = nil
+                    return value
+                }
+                return nil
             }
         }
     }
