@@ -216,54 +216,6 @@ extension SDLock {
     }
 }
 
-// MARK: Spin Lock
-
-public class SDSpinLock {
-    
-    fileprivate var flag: Bool
-    fileprivate var recursion_count: Int
-    fileprivate var owner_thread: pthread_t?
-    
-    public init() {
-        self.flag = false
-        self.recursion_count = 0
-        self.owner_thread = nil
-    }
-}
-
-extension SDSpinLock : Lockable {
-    
-    public func unlock() {
-        guard pthread_equal(owner_thread, pthread_self()) != 0 else {
-            if flag {
-                fatalError("unlock() is called by different thread.")
-            } else {
-                fatalError("unlock() is called before lock()")
-            }
-        }
-        if recursion_count == 0 {
-            owner_thread = nil
-            guard flag.fetchStore(false) else {
-                fatalError("unlock() is called before lock()")
-            }
-        } else {
-            recursion_count -= 1
-        }
-    }
-    public func trylock() -> Bool {
-        let current_thread = pthread_self()
-        if flag.compareSet(old: false, new: true) {
-            owner_thread = current_thread
-            recursion_count = 0
-            return true
-        } else if pthread_equal(owner_thread, current_thread) != 0 {
-            recursion_count += 1
-            return true
-        }
-        return false
-    }
-}
-
 // MARK: Condition Lock
 
 public class SDConditionLock : SDLock {

@@ -67,7 +67,7 @@ extension SDAtomic {
 open class SDSingleton<Instance> {
     
     fileprivate var _value: Instance?
-    fileprivate let spinlck: SDSpinLock = SDSpinLock()
+    fileprivate let lck = SDLock()
     fileprivate let block: () -> Instance
     
     /// Create a SDSingleton.
@@ -82,13 +82,13 @@ extension SDSingleton {
         if !isValue {
             synchronized(self) {
                 let result = self._value ?? self.block()
-                self.spinlck.synchronized { self._value = result }
+                self.lck.synchronized { self._value = result }
             }
         }
     }
     
     public var isValue : Bool {
-        return spinlck.synchronized { self._value != nil }
+        return lck.synchronized { self._value != nil }
     }
     
     public var value: Instance {
@@ -103,7 +103,7 @@ public class SDTask<Result> : SDAtomic {
     
     fileprivate var _notify: [(Result) -> Void] = []
     
-    fileprivate let spinlck = SDSpinLock()
+    fileprivate let lck = SDLock()
     fileprivate let condition = SDConditionLock()
     
     fileprivate var _result: Result?
@@ -128,7 +128,7 @@ private extension SDTask {
             if !_self.completed {
                 _self.condition.synchronized {
                     let result = _self._result ?? block()
-                    _self.spinlck.synchronized { _self._result = result }
+                    _self.lck.synchronized { _self._result = result }
                     _self.condition.broadcast()
                 }
             }
@@ -143,7 +143,7 @@ private extension SDTask {
     func _apply<R>(_ queue: DispatchQueue, suspend: ((R) -> Bool)?, block: @escaping (Result) -> R) -> SDTask<R> {
         var storage: Result!
         let task = SDTask<R>(queue: queue, suspend: suspend) { block(storage) }
-        return spinlck.synchronized {
+        return lck.synchronized {
             if _result == nil {
                 _notify.append {
                     storage = $0
@@ -162,7 +162,7 @@ extension SDTask {
     
     /// Return `true` iff task is completed.
     public var completed: Bool {
-        return spinlck.synchronized { _result != nil }
+        return lck.synchronized { _result != nil }
     }
     
     /// Result of task.
