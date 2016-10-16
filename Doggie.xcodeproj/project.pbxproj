@@ -35,8 +35,6 @@
 		0813224D1C11D3600081B2B9 /* SDPathCoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA721C0550B7007FA426 /* SDPathCoder.swift */; };
 		0813224F1C11D3600081B2B9 /* SDRectangle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA741C0550B7007FA426 /* SDRectangle.swift */; };
 		081322501C11D3600081B2B9 /* SDShape.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA751C0550B7007FA426 /* SDShape.swift */; };
-		0819F5E61D7C13C60045E0EC /* SDValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0819F5E51D7C13C60045E0EC /* SDValue.swift */; };
-		0819F5E71D7C13C60045E0EC /* SDValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0819F5E51D7C13C60045E0EC /* SDValue.swift */; };
 		082516261C51C60A00F8F9B0 /* Doggie_iOS.h in Headers */ = {isa = PBXBuildFile; fileRef = 087FE59B1A372D5B005A2E9E /* Doggie_iOS.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		0858DA7F1C0550B7007FA426 /* Arithmetic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA431C0550B7007FA426 /* Arithmetic.swift */; };
 		0858DA831C0550B7007FA426 /* CircularConvolve.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA441C0550B7007FA426 /* CircularConvolve.swift */; };
@@ -68,6 +66,8 @@
 		087FE5C01A372D97005A2E9E /* Doggie.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 087FE5B51A372D97005A2E9E /* Doggie.framework */; settings = {ATTRIBUTES = (Required, ); }; };
 		089E4B261D9FB8A700881F51 /* AtomicQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 089E4B251D9FB8A700881F51 /* AtomicQueue.swift */; };
 		089E4B271D9FB8A700881F51 /* AtomicQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 089E4B251D9FB8A700881F51 /* AtomicQueue.swift */; };
+		08A3D42F1DB36269001417C7 /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08A3D42E1DB36269001417C7 /* String.swift */; };
+		08A3D4301DB36269001417C7 /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08A3D42E1DB36269001417C7 /* String.swift */; };
 		08BFF9BC1B07161E00EC88CB /* FourierTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08BFF9B91B0715ED00EC88CB /* FourierTest.swift */; };
 		0A1605B31D49DEDC00109F7B /* Date.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2C33D01D48B8E200FE9A97 /* Date.swift */; };
 		0A1605B41D49DEDC00109F7B /* Hashable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2C33D11D48B8E200FE9A97 /* Hashable.swift */; };
@@ -145,7 +145,6 @@
 /* Begin PBXFileReference section */
 		081321D31C11D1840081B2B9 /* Doggie.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Doggie.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		081321DC1C11D1850081B2B9 /* Doggie_iOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Doggie_iOSTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		0819F5E51D7C13C60045E0EC /* SDValue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SDValue.swift; sourceTree = "<group>"; };
 		0858DA431C0550B7007FA426 /* Arithmetic.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Arithmetic.swift; sourceTree = "<group>"; };
 		0858DA441C0550B7007FA426 /* CircularConvolve.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CircularConvolve.swift; sourceTree = "<group>"; };
 		0858DA451C0550B7007FA426 /* ComplexConversion.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ComplexConversion.swift; sourceTree = "<group>"; };
@@ -181,6 +180,7 @@
 		087FE5BF1A372D97005A2E9E /* Doggie_MacTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Doggie_MacTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		087FE5C51A372D97005A2E9E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		089E4B251D9FB8A700881F51 /* AtomicQueue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AtomicQueue.swift; sourceTree = "<group>"; };
+		08A3D42E1DB36269001417C7 /* String.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = String.swift; sourceTree = "<group>"; };
 		08BFF9B91B0715ED00EC88CB /* FourierTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FourierTest.swift; sourceTree = "<group>"; };
 		0A266E521D6E95C100ABE6B7 /* SDMarkerTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SDMarkerTest.swift; sourceTree = "<group>"; };
 		0A2C33D01D48B8E200FE9A97 /* Date.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Date.swift; sourceTree = "<group>"; };
@@ -258,7 +258,6 @@
 				0858DA5E1C0550B7007FA426 /* Maths */,
 				0858DA6D1C0550B7007FA426 /* SDAtomicNode.swift */,
 				0AF9BDBA1D6178470058F2AA /* SDMarker.swift */,
-				0819F5E51D7C13C60045E0EC /* SDValue.swift */,
 				0858DA6E1C0550B7007FA426 /* SDShape */,
 			);
 			name = Doggie;
@@ -414,6 +413,7 @@
 			isa = PBXGroup;
 			children = (
 				0A2C33D01D48B8E200FE9A97 /* Date.swift */,
+				08A3D42E1DB36269001417C7 /* String.swift */,
 				0A2C33D11D48B8E200FE9A97 /* Hashable.swift */,
 				0A2C33D21D48B8E200FE9A97 /* Integer.swift */,
 				0A2C33D31D48B8E200FE9A97 /* Json.swift */,
@@ -654,10 +654,10 @@
 			files = (
 				0AADD1381D10E80A00087247 /* GroupElementsCollection.swift in Sources */,
 				0AADD1331D10E7E700087247 /* LazyChunkElementsCollection.swift in Sources */,
-				0819F5E61D7C13C60045E0EC /* SDValue.swift in Sources */,
 				081322281C11D3600081B2B9 /* Move.swift in Sources */,
 				0A72CA561DA4B1890041F67B /* Atomic.swift in Sources */,
 				081322231C11D3600081B2B9 /* ComplexConversion.swift in Sources */,
+				08A3D42F1DB36269001417C7 /* String.swift in Sources */,
 				081322401C11D3600081B2B9 /* Polynomial.swift in Sources */,
 				0813223C1C11D3600081B2B9 /* Geometry.swift in Sources */,
 				0813224F1C11D3600081B2B9 /* SDRectangle.swift in Sources */,
@@ -723,10 +723,10 @@
 			files = (
 				0AADD13A1D10E80A00087247 /* GroupElementsCollection.swift in Sources */,
 				0AADD1351D10E7E700087247 /* LazyChunkElementsCollection.swift in Sources */,
-				0819F5E71D7C13C60045E0EC /* SDValue.swift in Sources */,
 				0858DB371C0550B7007FA426 /* SDShape.swift in Sources */,
 				0A72CA571DA4B1890041F67B /* Atomic.swift in Sources */,
 				0858DB331C0550B7007FA426 /* SDRectangle.swift in Sources */,
+				08A3D4301DB36269001417C7 /* String.swift in Sources */,
 				0858DAF31C0550B7007FA426 /* Point.swift in Sources */,
 				0A1605B61D49DEDC00109F7B /* Json.swift in Sources */,
 				0858DAE71C0550B7007FA426 /* Geometry.swift in Sources */,
