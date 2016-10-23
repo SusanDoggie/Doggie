@@ -515,6 +515,58 @@ private func BezierDerivative(_ p: [Vector]) -> [Vector] {
     return de
 }
 
+@_transparent
+private func BezierFitting(start: Double, end: Double, _ passing: [(Double, Double)]) -> [Double]? {
+    
+    let n = passing.count + 2
+    
+    var matrix: [Double] = []
+    matrix.reserveCapacity(n * (n + 1))
+    
+    let e1 = CollectionOfOne(1).concat(repeatElement(0, count: n - 1)).concat(CollectionOfOne(start))
+    let e2 = repeatElement(0, count: n - 1).concat(CollectionOfOne(1)).concat(CollectionOfOne(end))
+    
+    matrix.append(contentsOf: e1)
+    
+    for (t, p) in passing {
+        let s = 1 - t
+        let st = t / s
+        let u = sequence(first: pow(s, Double(n - 1))) { $0 * st }
+        let v = zip(CombinationList(UInt(n - 1)), u).lazy.map { Double($0) * $1 }
+        matrix.append(contentsOf: v.concat(CollectionOfOne(p)))
+    }
+    
+    matrix.append(contentsOf: e2)
+    
+    return MatrixElimination(n, &matrix) ? matrix.lazy.slice(by: n + 1).map { $0.last! } : nil
+}
+
+public func BezierFitting(start: Double, end: Double, _ passing: (Double, Double) ...) -> [Double]? {
+    
+    return BezierFitting(start: start, end: end, passing)
+}
+
+public func BezierFitting(start: Point, end: Point, _ passing: (Double, Point) ...) -> [Point]? {
+    
+    let x = BezierFitting(start: start.x, end: end.x, passing.map { ($0, $1.x) })
+    let y = BezierFitting(start: start.y, end: end.y, passing.map { ($0, $1.y) })
+    if let x = x, let y = y {
+        return zip(x, y).map { Point(x: $0, y: $1) }
+    }
+    return nil
+}
+
+public func BezierFitting(start: Vector, end: Vector, _ passing: (Double, Vector) ...) -> [Vector]? {
+    
+    let x = BezierFitting(start: start.x, end: end.x, passing.map { ($0, $1.x) })
+    let y = BezierFitting(start: start.y, end: end.y, passing.map { ($0, $1.y) })
+    let z = BezierFitting(start: start.z, end: end.z, passing.map { ($0, $1.z) })
+    if let x = x, let y = y, let z = z {
+        return zip(zip(x, y), z).map { Vector(x: $0.0, y: $0.1, z: $1) }
+    }
+    return nil
+}
+
 // MARK: Stationary Points
 
 public func QuadBezierStationary(_ p0: Double, _ p1: Double, _ p2: Double) -> Double? {
