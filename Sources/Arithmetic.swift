@@ -1130,10 +1130,13 @@ public func MatrixElimination<T: FloatingPoint>(_ row: Int, _ column: Int, _ mat
                 if swap_ptr == endptr {
                     return false
                 }
-                swap_ptr += row_offset
                 m = (swap_ptr + i_offset).pointee
-            } while m == 0
-            Swap(column, current_row, stride_col, swap_ptr, stride_col)
+                if m != 0 {
+                    Swap(column, current_row, stride_col, swap_ptr, stride_col)
+                    break
+                }
+                swap_ptr += row_offset
+            } while true
         }
         Div(column, current_row, stride_col, &m, 0, current_row, stride_col)
         var scan = matrix
