@@ -518,27 +518,29 @@ private func BezierDerivative(_ p: [Vector]) -> [Vector] {
 @_transparent
 private func BezierFitting(start: Double, end: Double, _ passing: [(Double, Double)]) -> [Double]? {
     
-    let n = passing.count + 2
+    let n = passing.count
     
     var matrix: [Double] = []
     matrix.reserveCapacity(n * (n + 1))
     
-    let e1 = CollectionOfOne(1).concat(repeatElement(0, count: n - 1)).concat(CollectionOfOne(start))
-    let e2 = repeatElement(0, count: n - 1).concat(CollectionOfOne(1)).concat(CollectionOfOne(end))
-    
-    matrix.append(contentsOf: e1)
-    
+    let c = CombinationList(UInt(n + 1)).dropFirst().dropLast()
     for (t, p) in passing {
         let s = 1 - t
+        let tn = pow(t, Double(n + 1))
+        let sn = pow(s, Double(n + 1))
         let st = t / s
-        let u = sequence(first: pow(s, Double(n - 1))) { $0 * st }
-        let v = zip(CombinationList(UInt(n - 1)), u).lazy.map { Double($0) * $1 }
-        matrix.append(contentsOf: v.concat(CollectionOfOne(p)))
+        let u = sequence(first: sn * st) { $0 * st }
+        let v = zip(c, u).lazy.map { Double($0) * $1 }
+        matrix.append(contentsOf: v.concat(CollectionOfOne(p - sn * start - tn * end)))
     }
     
-    matrix.append(contentsOf: e2)
+    if MatrixElimination(n, &matrix) {
+        let a: LazyMapSequence = matrix.lazy.slice(by: n + 1).map { $0.last! }
+        let b = CollectionOfOne(start).concat(a).concat(CollectionOfOne(end))
+        return Array(b)
+    }
     
-    return MatrixElimination(n, &matrix) ? matrix.lazy.slice(by: n + 1).map { $0.last! } : nil
+    return nil
 }
 
 public func BezierFitting(start: Double, end: Double, _ passing: (Double, Double) ...) -> [Double]? {
