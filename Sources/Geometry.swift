@@ -515,6 +515,17 @@ private func BezierDerivative(_ p: [Vector]) -> [Vector] {
     return de
 }
 
+public func QuadBezierFitting(_ p0: Point, _ p2: Point, _ m0: Point, _ m2: Point) -> Point? {
+    let a = p2.x - p0.x
+    let b = p2.y - p0.y
+    let c = m0.x * m2.y - m0.y * m2.x
+    if c == 0 {
+        return nil
+    }
+    let d = a * m2.y - b * m2.x
+    return p0 + m0 * d / c
+}
+
 @_transparent
 private func BezierFitting(start: Double, end: Double, _ passing: [(Double, Double)]) -> [Double]? {
     
