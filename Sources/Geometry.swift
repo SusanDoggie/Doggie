@@ -601,6 +601,7 @@ public func BezierOffset(_ p0: Point, _ p1: Point, _ p2: Point, _ a: Double) -> 
     }
     let ph0 = q0.phase
     let ph1 = q1.phase
+    
     if ph0.almostEqual(ph1) || ph0.almostEqual(ph1 + 2 * M_PI) || ph0.almostEqual(ph1 - 2 * M_PI) {
         return BezierOffset(p0, p2, a).map { [[$0, $1]] }
     }
@@ -623,11 +624,6 @@ public func BezierOffset(_ p0: Point, _ p1: Point, _ p2: Point, _ a: Double) -> 
         }
     }
     
-    let s = 1 / sqrt(q0.x * q0.x + q0.y * q0.y)
-    let t = 1 / sqrt(q1.x * q1.x + q1.y * q1.y)
-    let start = Point(x: p0.x + a * q0.y * s, y: p0.y - a * q0.x * s)
-    let end = Point(x: p2.x + a * q1.y * t, y: p2.y - a * q1.x * t)
-    
     let u = p2 - p0
     let v = p1 - 0.5 * (p2 + p0)
     if u.magnitude < v.magnitude * 3 {
@@ -635,11 +631,75 @@ public func BezierOffset(_ p0: Point, _ p1: Point, _ p2: Point, _ a: Double) -> 
         if let _left = BezierOffset(left[0], left[1], left[2], a), let _right = BezierOffset(right[0], right[1], right[2], a) {
             return _left + _right
         }
-    } else if let mid = QuadBezierFitting(start, end, q0, q1) {
-        return [[start, mid, end]]
+    } else {
+        
+        let s = 1 / sqrt(q0.x * q0.x + q0.y * q0.y)
+        let t = 1 / sqrt(q1.x * q1.x + q1.y * q1.y)
+        let start = Point(x: p0.x + a * q0.y * s, y: p0.y - a * q0.x * s)
+        let end = Point(x: p2.x + a * q1.y * t, y: p2.y - a * q1.x * t)
+        
+        if let mid = QuadBezierFitting(start, end, q0, q1) {
+            return [[start, mid, end]]
+        }
     }
     
     return BezierOffset(p0, p2, a).map { [[$0, $1]] }
+}
+
+public func BezierOffset(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point, _ a: Double) -> [[Point]]? {
+    
+    let q0 = p1 - p0
+    let q1 = p2 - p1
+    let q2 = p3 - p2
+    
+    let z0 = q0.x.almostZero() && q0.y.almostZero()
+    let z1 = q1.x.almostZero() && q1.y.almostZero()
+    let z2 = q2.x.almostZero() && q2.y.almostZero()
+    
+    if (z0 && z1) || (z0 && z2) || (z1 && z2) {
+        return BezierOffset(p0, p3, a).map { [[$0, $1]] }
+    }
+    
+    let ph0 = q0.phase
+    let ph1 = q1.phase
+    let ph2 = q2.phase
+    let zh0 = ph0.almostEqual(ph1) || ph0.almostEqual(ph1 + 2 * M_PI) || ph0.almostEqual(ph1 - 2 * M_PI)
+    let zh1 = ph1.almostEqual(ph2) || ph1.almostEqual(ph2 + 2 * M_PI) || ph1.almostEqual(ph2 - 2 * M_PI)
+    let zh2 = ph0.almostEqual(ph1 + M_PI) || ph0.almostEqual(ph1 - M_PI)
+    let zh3 = ph1.almostEqual(ph2 + M_PI) || ph1.almostEqual(ph2 - M_PI)
+    
+    if zh0 && zh1 {
+        return BezierOffset(p0, p3, a).map { [[$0, $1]] }
+    }
+    if (zh2 && zh3) || (zh2 && zh1) || (zh3 && zh0) {
+        
+    }
+    
+    let u = p3 - p0
+    let v = p1 - 0.5 * (p3 + p0)
+    let w = p2 - 0.5 * (p3 + p0)
+    
+    if u.magnitude < v.magnitude * 3 || u.magnitude < w.magnitude * 3 {
+        let (left, right) = SplitBezier(0.5, p0, p1, p2, p3)
+        if let _left = BezierOffset(left[0], left[1], left[2], left[3], a), let _right = BezierOffset(right[0], right[1], right[2], right[3], a) {
+            return _left + _right
+        }
+    } else {
+        
+        let _q0 = z0 ? q1 : q0
+        let _q1 = z2 ? q1 : q2
+        
+        let s = 1 / sqrt(_q0.x * _q0.x + _q0.y * _q0.y)
+        let t = 1 / sqrt(_q1.x * _q1.x + _q1.y * _q1.y)
+        let start = Point(x: p0.x + a * _q0.y * s, y: p0.y - a * _q0.x * s)
+        let end = Point(x: p3.x + a * _q1.y * t, y: p3.y - a * _q1.x * t)
+        
+        if let mid = QuadBezierFitting(start, end, _q0, _q1) {
+            return [[start, mid, end]]
+        }
+    }
+    
+    return BezierOffset(p0, p3, a).map { [[$0, $1]] }
 }
 
 // MARK: Stationary Points
