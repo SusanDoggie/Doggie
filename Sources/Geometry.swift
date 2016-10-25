@@ -679,7 +679,14 @@ public func BezierOffset(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point, _ a
     let v = p1 - 0.5 * (p3 + p0)
     let w = p2 - 0.5 * (p3 + p0)
     
-    if u.magnitude < v.magnitude * 3 || u.magnitude < w.magnitude * 3 {
+    if LinesIntersect(p0, p3, p1, p2) != nil,
+        let t = CubicBezierLineIntersect(p0, p1, p2, p3, p0, p3)?.min(by: { abs(0.5 - $0) }),
+        !t.almostZero() && !(1 - t).almostZero() {
+        let (left, right) = SplitBezier(t, p0, p1, p2, p3)
+        if let _left = BezierOffset(left[0], left[1], left[2], left[3], a), let _right = BezierOffset(right[0], right[1], right[2], right[3], a) {
+            return _left + _right
+        }
+    } else if u.magnitude < max(v.magnitude, w.magnitude) * 3 {
         let (left, right) = SplitBezier(0.5, p0, p1, p2, p3)
         if let _left = BezierOffset(left[0], left[1], left[2], left[3], a), let _right = BezierOffset(right[0], right[1], right[2], right[3], a) {
             return _left + _right
