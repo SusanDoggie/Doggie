@@ -591,6 +591,36 @@ public func BezierOffset(_ p0: Point, _ p1: Point, _ a: Double) -> (Point, Point
     let t = -a * _x / _xy
     return (p0 + Point(x: s, y: t), p1 + Point(x: s, y: t))
 }
+public func BezierOffset(_ p0: Point, _ p1: Point, _ p2: Point, _ a: Double) -> [[Point]]? {
+    
+    let q0 = p1 - p0
+    let q1 = p2 - p1
+    
+    if (q0.x.almostZero() && q0.y.almostZero()) || (q1.x.almostZero() && q1.y.almostZero()) {
+        if let linear = BezierOffset(p0, p2, a) {
+            return [[linear.0, linear.1]]
+        }
+        return nil
+    }
+    
+    let s = 1 / sqrt(q0.x * q0.x + q0.y * q0.y)
+    let t = 1 / sqrt(q1.x * q1.x + q1.y * q1.y)
+    let start = Point(x: p0.x + a * q0.y * s, y: p0.y - a * q0.x * s)
+    let end = Point(x: p2.x + a * q1.y * t, y: p2.y - a * q1.x * t)
+    
+    let u = p2 - p0
+    let v = p1 - 0.5 * (p2 + p0)
+    if u.magnitude < v.magnitude * 2 {
+        let (left, right) = SplitBezier(0.5, p0, p1, p2)
+        if let _left = BezierOffset(left[0], left[1], left[2], a), let _right = BezierOffset(right[0], right[1], right[2], a) {
+            return _left + _right
+        }
+    } else if let mid = QuadBezierFitting(start, end, q0, q1) {
+        return [[start, mid, end]]
+    }
+    
+    return nil
+}
 
 // MARK: Stationary Points
 
