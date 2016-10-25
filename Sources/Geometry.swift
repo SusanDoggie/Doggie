@@ -604,7 +604,7 @@ public func BezierOffset(_ p0: Point, _ p1: Point, _ p2: Point, _ a: Double) -> 
     if ph0.almostEqual(ph1) || ph0.almostEqual(ph1 + 2 * M_PI) || ph0.almostEqual(ph1 - 2 * M_PI) {
         return BezierOffset(p0, p2, a).map { [[$0, $1]] }
     }
-    if ph0.almostEqual(-ph1) || ph0.almostEqual(ph1 + M_PI) || ph0.almostEqual(ph1 - M_PI) {
+    if ph0.almostEqual(ph1 + M_PI) || ph0.almostEqual(ph1 - M_PI) {
         if let w = QuadBezierStationary(p0.x, p1.x, p2.x) ?? QuadBezierStationary(p0.y, p1.y, p2.y) {
             let g = Bezier(w, p0, p1, p2)
             if let left = BezierOffset(p0, g, a), let right = BezierOffset(g, p2, a) {
