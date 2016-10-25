@@ -633,8 +633,8 @@ public func BezierOffset(_ p0: Point, _ p1: Point, _ p2: Point, _ a: Double) -> 
         }
     } else {
         
-        let s = 1 / sqrt(q0.x * q0.x + q0.y * q0.y)
-        let t = 1 / sqrt(q1.x * q1.x + q1.y * q1.y)
+        let s = 1 / q0.magnitude
+        let t = 1 / q1.magnitude
         let start = Point(x: p0.x + a * q0.y * s, y: p0.y - a * q0.x * s)
         let end = Point(x: p2.x + a * q1.y * t, y: p2.y - a * q1.x * t)
         
@@ -689,8 +689,8 @@ public func BezierOffset(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point, _ a
         let _q0 = z0 ? q1 : q0
         let _q1 = z2 ? q1 : q2
         
-        let s = 1 / sqrt(_q0.x * _q0.x + _q0.y * _q0.y)
-        let t = 1 / sqrt(_q1.x * _q1.x + _q1.y * _q1.y)
+        let s = 1 / _q0.magnitude
+        let t = 1 / _q1.magnitude
         let start = Point(x: p0.x + a * _q0.y * s, y: p0.y - a * _q0.x * s)
         let end = Point(x: p3.x + a * _q1.y * t, y: p3.y - a * _q1.x * t)
         
