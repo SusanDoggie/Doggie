@@ -597,10 +597,30 @@ public func BezierOffset(_ p0: Point, _ p1: Point, _ p2: Point, _ a: Double) -> 
     let q1 = p2 - p1
     
     if (q0.x.almostZero() && q0.y.almostZero()) || (q1.x.almostZero() && q1.y.almostZero()) {
-        if let linear = BezierOffset(p0, p2, a) {
-            return [[linear.0, linear.1]]
+        return BezierOffset(p0, p2, a).map { [[$0, $1]] }
+    }
+    let ph0 = q0.phase
+    let ph1 = q1.phase
+    if ph0.almostEqual(ph1) || ph0.almostEqual(ph1 + 2 * M_PI) || ph0.almostEqual(ph1 - 2 * M_PI) {
+        return BezierOffset(p0, p2, a).map { [[$0, $1]] }
+    }
+    if ph0.almostEqual(-ph1) || ph0.almostEqual(ph1 + M_PI) || ph0.almostEqual(ph1 - M_PI) {
+        if let w = QuadBezierStationary(p0.x, p1.x, p2.x) ?? QuadBezierStationary(p0.y, p1.y, p2.y) {
+            let g = Bezier(w, p0, p1, p2)
+            if let left = BezierOffset(p0, g, a), let right = BezierOffset(g, p2, a) {
+                let angle = ph0 - M_PI_2
+                let bezierCircle = BezierCircle.lazy.map { $0 * SDTransform.Rotate(angle) * a + g }
+                let i = [bezierCircle[0],
+                         bezierCircle[1],
+                         bezierCircle[2],
+                         bezierCircle[3]]
+                let j = [bezierCircle[3],
+                         bezierCircle[4],
+                         bezierCircle[5],
+                         bezierCircle[6]]
+                return [[left.0, left.1], i, j, [right.0, right.1]]
+            }
         }
-        return nil
     }
     
     let s = 1 / sqrt(q0.x * q0.x + q0.y * q0.y)
@@ -619,7 +639,7 @@ public func BezierOffset(_ p0: Point, _ p1: Point, _ p2: Point, _ a: Double) -> 
         return [[start, mid, end]]
     }
     
-    return nil
+    return BezierOffset(p0, p2, a).map { [[$0, $1]] }
 }
 
 // MARK: Stationary Points
