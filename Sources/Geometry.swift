@@ -610,7 +610,7 @@ public func BezierOffset(_ p0: Point, _ p1: Point, _ p2: Point, _ a: Double) -> 
     
     let u = p2 - p0
     let v = p1 - 0.5 * (p2 + p0)
-    if u.magnitude < v.magnitude * 5 {
+    if u.magnitude < v.magnitude * 3 {
         let (left, right) = SplitBezier(0.5, p0, p1, p2)
         if let _left = BezierOffset(left[0], left[1], left[2], a), let _right = BezierOffset(right[0], right[1], right[2], a) {
             return _left + _right
