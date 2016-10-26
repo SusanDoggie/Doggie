@@ -67,11 +67,11 @@ public func != (lhs: Radius, rhs: Radius) -> Bool {
     return lhs.x != rhs.x || lhs.y != rhs.y
 }
 
-public func Ellipse(_ t: Double, _ p: Point, _ r: Radius) -> Point {
+func Ellipse(_ t: Double, _ p: Point, _ r: Radius) -> Point {
     return Point(x: r.x * cos(t) + p.x, y: r.y * sin(t) + p.y)
 }
 
-public func EllipseRadius(_ p0: Point, _ p1: Point, _ r: Radius, _ rotate: Double) -> Radius {
+func EllipseRadius(_ p0: Point, _ p1: Point, _ r: Radius, _ rotate: Double) -> Radius {
     let _p = p1 - p0
     let _tx = _p.x * cos(rotate) + _p.y * sin(rotate)
     let _ty = _p.y * cos(rotate) - _p.x * sin(rotate)
@@ -79,7 +79,7 @@ public func EllipseRadius(_ p0: Point, _ p1: Point, _ r: Radius, _ rotate: Doubl
     return Radius(x: _tx / (2 * cos(_atan)), y: _ty / (2 * sin(_atan)))
 }
 
-public func EllipseCenter(_ r: Radius, _ rotate: Double, _ a: Point, _ b: Point) -> [Point] {
+func EllipseCenter(_ r: Radius, _ rotate: Double, _ a: Point, _ b: Point) -> [Point] {
     
     let _sin = sin(rotate)
     let _cos = cos(rotate)
@@ -126,7 +126,7 @@ public func EllipseCenter(_ r: Radius, _ rotate: Double, _ a: Point, _ b: Point)
 ///     ⎜ d e f ⎟ ⎜ B sin(t) ⎟
 ///     ⎝ 0 0 1 ⎠ ⎝    1     ⎠
 ///
-public func EllipseStationary(_ r: Radius, _ a: Double, _ b: Double) -> Double {
+func EllipseStationary(_ r: Radius, _ a: Double, _ b: Double) -> Double {
     return atan2(r.y * b, r.x * a)
 }
 
@@ -137,7 +137,7 @@ public func EllipseStationary(_ r: Radius, _ a: Double, _ b: Double) -> Double {
 ///     ⎜ d e f ⎟ ⎜ B sin(t) ⎟
 ///     ⎝ 0 0 1 ⎠ ⎝    1     ⎠
 ///
-public func EllipseBound<T: SDTransformProtocol>(_ center: Point, _ r: Radius, _ matrix: T) -> Rect {
+func EllipseBound<T: SDTransformProtocol>(_ center: Point, _ r: Radius, _ matrix: T) -> Rect {
     
     let t1 = EllipseStationary(r, matrix.a, matrix.b)
     let t2 = EllipseStationary(r, matrix.d, matrix.e)
@@ -162,95 +162,94 @@ public func EllipseBound<T: SDTransformProtocol>(_ center: Point, _ r: Radius, _
 
 // MARK: Bézier Curve
 
-public func Bezier(_ t: Double, _ p0: Double, _ p1: Double) -> Double {
+func Bezier(_ t: Double, _ p0: Double, _ p1: Double) -> Double {
     return p0 + t * (p1 - p0)
 }
-public func Bezier(_ t: Double, _ p0: Double, _ p1: Double, _ p2: Double) -> Double {
+func Bezier(_ t: Double, _ p0: Double, _ p1: Double, _ p2: Double) -> Double {
     let _t = 1 - t
     return _t * _t * p0 + 2 * _t * t * p1 + t * t * p2
 }
-public func Bezier(_ t: Double, _ p0: Double, _ p1: Double, _ p2: Double, _ p3: Double) -> Double {
+func Bezier(_ t: Double, _ p0: Double, _ p1: Double, _ p2: Double, _ p3: Double) -> Double {
     let t2 = t * t
     let _t = 1 - t
     let _t2 = _t * _t
     return _t * _t2 * p0 + 3 * _t2 * t * p1 + 3 * _t * t2 * p2 + t * t2 * p3
 }
-public func Bezier(_ t: Double, _ p0: Point, _ p1: Point) -> Point {
+func Bezier(_ t: Double, _ p0: Point, _ p1: Point) -> Point {
     return p0 + t * (p1 - p0)
 }
-public func Bezier(_ t: Double, _ p0: Point, _ p1: Point, _ p2: Point) -> Point {
+func Bezier(_ t: Double, _ p0: Point, _ p1: Point, _ p2: Point) -> Point {
     let _t = 1 - t
     return _t * _t * p0 + 2 * _t * t * p1 + t * t * p2
 }
-public func Bezier(_ t: Double, _ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point) -> Point {
+func Bezier(_ t: Double, _ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point) -> Point {
     let t2 = t * t
     let _t = 1 - t
     let _t2 = _t * _t
     return _t * _t2 * p0 + 3 * _t2 * t * p1 + 3 * _t * t2 * p2 + t * t2 * p3
 }
-public func Bezier(_ t: Double, _ p0: Vector, _ p1: Vector) -> Vector {
+func Bezier(_ t: Double, _ p0: Vector, _ p1: Vector) -> Vector {
     return p0 + t * (p1 - p0)
 }
-public func Bezier(_ t: Double, _ p0: Vector, _ p1: Vector, _ p2: Vector) -> Vector {
+func Bezier(_ t: Double, _ p0: Vector, _ p1: Vector, _ p2: Vector) -> Vector {
     let _t = 1 - t
     return _t * _t * p0 + 2 * _t * t * p1 + t * t * p2
 }
-public func Bezier(_ t: Double, _ p0: Vector, _ p1: Vector, _ p2: Vector, _ p3: Vector) -> Vector {
+func Bezier(_ t: Double, _ p0: Vector, _ p1: Vector, _ p2: Vector, _ p3: Vector) -> Vector {
     let t2 = t * t
     let _t = 1 - t
     let _t2 = _t * _t
     return _t * _t2 * p0 + 3 * _t2 * t * p1 + 3 * _t * t2 * p2 + t * t2 * p3
 }
-public func Bezier(_ t: Double, _ p0: Double, _ p1: Double, _ p2: Double, _ p3: Double, _ p4: Double, _ rest: Double ... ) -> Double {
+func Bezier(_ t: Double, _ p0: Double, _ p1: Double, _ p2: Double, _ p3: Double, _ p4: Double, _ rest: Double ... ) -> Double {
     return Bezier(t, [p0, p1, p2, p3, p4] + rest)
 }
 
-public func Bezier(_ t: Double, _ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point, _ p4: Point, _ rest: Point ... ) -> Point {
+func Bezier(_ t: Double, _ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point, _ p4: Point, _ rest: Point ... ) -> Point {
     return Bezier(t, [p0, p1, p2, p3, p4] + rest)
 }
 
-public func Bezier(_ t: Double, _ p0: Vector, _ p1: Vector, _ p2: Vector, _ p3: Vector, _ p4: Vector, _ rest: Vector ... ) -> Vector {
+func Bezier(_ t: Double, _ p0: Vector, _ p1: Vector, _ p2: Vector, _ p3: Vector, _ p4: Vector, _ rest: Vector ... ) -> Vector {
     return Bezier(t, [p0, p1, p2, p3, p4] + rest)
 }
 
-public func SplitBezier(_ t: Double, _ p: Double ... ) -> ([Double], [Double]) {
+func SplitBezier(_ t: Double, _ p: Double ... ) -> ([Double], [Double]) {
     return SplitBezier(t, p)
 }
 
-public func SplitBezier(_ t: Double, _ p: Point ... ) -> ([Point], [Point]) {
+func SplitBezier(_ t: Double, _ p: Point ... ) -> ([Point], [Point]) {
     return SplitBezier(t, p)
 }
 
-public func SplitBezier(_ t: Double, _ p: Vector ... ) -> ([Vector], [Vector]) {
+func SplitBezier(_ t: Double, _ p: Vector ... ) -> ([Vector], [Vector]) {
     return SplitBezier(t, p)
 }
 
-public func SplitBezier(_ t: [Double], _ p: Double ... ) -> [[Double]] {
+func SplitBezier(_ t: [Double], _ p: Double ... ) -> [[Double]] {
     return SplitBezier(t, p)
 }
 
-public func SplitBezier(_ t: [Double], _ p: Point ... ) -> [[Point]] {
+func SplitBezier(_ t: [Double], _ p: Point ... ) -> [[Point]] {
     return SplitBezier(t, p)
 }
 
-public func SplitBezier(_ t: [Double], _ p: Vector ... ) -> [[Vector]] {
+func SplitBezier(_ t: [Double], _ p: Vector ... ) -> [[Vector]] {
     return SplitBezier(t, p)
 }
 
-public func BezierDerivative(_ p: Double ... ) -> [Double] {
+func BezierDerivative(_ p: Double ... ) -> [Double] {
     return BezierDerivative(p)
 }
 
-public func BezierDerivative(_ p: Point ... ) -> [Point] {
+func BezierDerivative(_ p: Point ... ) -> [Point] {
     return BezierDerivative(p)
 }
 
-public func BezierDerivative(_ p: Vector ... ) -> [Vector] {
+func BezierDerivative(_ p: Vector ... ) -> [Vector] {
     return BezierDerivative(p)
 }
 
-@_transparent
-private func Bezier(_ t: Double, _ p: [Double]) -> Double {
+func Bezier(_ t: Double, _ p: [Double]) -> Double {
     var result: Double = 0
     let _n = p.count - 1
     for (idx, k) in CombinationList(UInt(_n)).enumerated() {
@@ -260,8 +259,7 @@ private func Bezier(_ t: Double, _ p: [Double]) -> Double {
     return result
 }
 
-@_transparent
-private func Bezier(_ t: Double, _ p: [Point]) -> Point {
+func Bezier(_ t: Double, _ p: [Point]) -> Point {
     var result = Point()
     let _n = p.count - 1
     for (idx, k) in CombinationList(UInt(_n)).enumerated() {
@@ -271,8 +269,7 @@ private func Bezier(_ t: Double, _ p: [Point]) -> Point {
     return result
 }
 
-@_transparent
-private func Bezier(_ t: Double, _ p: [Vector]) -> Vector {
+func Bezier(_ t: Double, _ p: [Vector]) -> Vector {
     var result = Vector()
     let _n = p.count - 1
     for (idx, k) in CombinationList(UInt(_n)).enumerated() {
@@ -282,8 +279,7 @@ private func Bezier(_ t: Double, _ p: [Vector]) -> Vector {
     return result
 }
 
-@_transparent
-private func BezierPolynomial(_ p: [Double]) -> Polynomial {
+func BezierPolynomial(_ p: [Double]) -> Polynomial {
     
     var result = PermutationList(UInt(p.count - 1)).map(Double.init) as Array
     for i in result.indices {
@@ -301,12 +297,12 @@ private func BezierPolynomial(_ p: [Double]) -> Polynomial {
     return Polynomial(result)
 }
 
-public func BezierPolynomial(_ p: Double ... ) -> Polynomial {
+func BezierPolynomial(_ p: Double ... ) -> Polynomial {
     
     return BezierPolynomial(p)
 }
 
-public func BezierDegreeElevation(_ p: Double ... ) -> [Double] {
+func BezierDegreeElevation(_ p: Double ... ) -> [Double] {
     let n = Double(p.count)
     var result = [p[0]]
     for (k, points) in zip(p, p.dropFirst()).enumerated() {
@@ -317,7 +313,7 @@ public func BezierDegreeElevation(_ p: Double ... ) -> [Double] {
     return result
 }
 
-public func BezierDegreeElevation(_ p: Point ... ) -> [Point] {
+func BezierDegreeElevation(_ p: Point ... ) -> [Point] {
     let n = Double(p.count)
     var result = [p[0]]
     for (k, points) in zip(p, p.dropFirst()).enumerated() {
@@ -328,7 +324,7 @@ public func BezierDegreeElevation(_ p: Point ... ) -> [Point] {
     return result
 }
 
-public func BezierDegreeElevation(_ p: Vector ... ) -> [Vector] {
+func BezierDegreeElevation(_ p: Vector ... ) -> [Vector] {
     let n = Double(p.count)
     var result = [p[0]]
     for (k, points) in zip(p, p.dropFirst()).enumerated() {
@@ -339,7 +335,7 @@ public func BezierDegreeElevation(_ p: Vector ... ) -> [Vector] {
     return result
 }
 
-public func BezierPolynomial(_ poly: Polynomial) -> [Double] {
+func BezierPolynomial(_ poly: Polynomial) -> [Double] {
     let de = (0..<poly.degree).scan(poly) { p, _ in p.derivative / Double(p.degree) }
     var result: [Double] = []
     for n in de.indices {
@@ -349,7 +345,7 @@ public func BezierPolynomial(_ poly: Polynomial) -> [Double] {
     return result
 }
 
-public func ClosestBezier(_ point: Point, _ b0: Point, _ b1: Point) -> [Double] {
+func ClosestBezier(_ point: Point, _ b0: Point, _ b1: Point) -> [Double] {
     let a = b0 - point
     let b = b1 - b0
     let x: Polynomial = [a.x, b.x]
@@ -358,7 +354,7 @@ public func ClosestBezier(_ point: Point, _ b0: Point, _ b1: Point) -> [Double] 
     return dot.derivative.roots.sorted(by: { dot.eval($0) })
 }
 
-public func ClosestBezier(_ point: Point, _ b0: Point, _ b1: Point, _ b2: Point) -> [Double] {
+func ClosestBezier(_ point: Point, _ b0: Point, _ b1: Point, _ b2: Point) -> [Double] {
     let a = b0 - point
     let b = 2 * (b1 - b0)
     let c = b0 - 2 * b1 + b2
@@ -368,7 +364,7 @@ public func ClosestBezier(_ point: Point, _ b0: Point, _ b1: Point, _ b2: Point)
     return dot.derivative.roots.sorted(by: { dot.eval($0) })
 }
 
-public func ClosestBezier(_ point: Point, _ b0: Point, _ b1: Point, _ b2: Point, _ b3: Point) -> [Double] {
+func ClosestBezier(_ point: Point, _ b0: Point, _ b1: Point, _ b2: Point, _ b3: Point) -> [Double] {
     let a = b0 - point
     let b = 3 * (b1 - b0)
     let c = 3 * (b2 + b0) - 6 * b1
@@ -381,7 +377,7 @@ public func ClosestBezier(_ point: Point, _ b0: Point, _ b1: Point, _ b2: Point,
     return roots.count != 0 ? roots.sorted(by: { dot.eval($0) }) : dot.derivative.roots.sorted(by: { dot.eval($0) })
 }
 
-public func ClosestBezier(_ point: Point, _ b0: Point, _ b1: Point, _ b2: Point, _ b3: Point, _ b4: Point , _ b5: Point ... ) -> [Double] {
+func ClosestBezier(_ point: Point, _ b0: Point, _ b1: Point, _ b2: Point, _ b3: Point, _ b4: Point , _ b5: Point ... ) -> [Double] {
     let list = [b0, b1, b2, b3, b4] + b5
     let x = BezierPolynomial(list.map { $0.x }) - point.x
     let y = BezierPolynomial(list.map { $0.y }) - point.y
@@ -389,7 +385,7 @@ public func ClosestBezier(_ point: Point, _ b0: Point, _ b1: Point, _ b2: Point,
     return dot.derivative.roots.sorted(by: { dot.eval($0) })
 }
 
-private func SplitBezier(_ t: Double, _ p: [Double]) -> ([Double], [Double]) {
+func SplitBezier(_ t: Double, _ p: [Double]) -> ([Double], [Double]) {
     let _t = 1 - t
     if p.count == 2 {
         let split = _t * p.first! + t * p.last!
@@ -404,8 +400,7 @@ private func SplitBezier(_ t: Double, _ p: [Double]) -> ([Double], [Double]) {
     let split = SplitBezier(t, subpath)
     return ([p.first!] + split.0, split.1 + [p.last!])
 }
-@_transparent
-private func SplitBezier(_ t: [Double], _ p: [Double]) -> [[Double]] {
+func SplitBezier(_ t: [Double], _ p: [Double]) -> [[Double]] {
     var result: [[Double]] = []
     var remain = p
     var last_t = 0.0
@@ -419,7 +414,7 @@ private func SplitBezier(_ t: [Double], _ p: [Double]) -> [[Double]] {
     return result
 }
 
-private func SplitBezier(_ t: Double, _ p: [Point]) -> ([Point], [Point]) {
+func SplitBezier(_ t: Double, _ p: [Point]) -> ([Point], [Point]) {
     let _t = 1 - t
     if p.count == 2 {
         let split = _t * p.first! + t * p.last!
@@ -434,8 +429,7 @@ private func SplitBezier(_ t: Double, _ p: [Point]) -> ([Point], [Point]) {
     let split = SplitBezier(t, subpath)
     return ([p.first!] + split.0, split.1 + [p.last!])
 }
-@_transparent
-private func SplitBezier(_ t: [Double], _ p: [Point]) -> [[Point]] {
+func SplitBezier(_ t: [Double], _ p: [Point]) -> [[Point]] {
     var result: [[Point]] = []
     var remain = p
     var last_t = 0.0
@@ -449,7 +443,7 @@ private func SplitBezier(_ t: [Double], _ p: [Point]) -> [[Point]] {
     return result
 }
 
-private func SplitBezier(_ t: Double, _ p: [Vector]) -> ([Vector], [Vector]) {
+func SplitBezier(_ t: Double, _ p: [Vector]) -> ([Vector], [Vector]) {
     let _t = 1 - t
     if p.count == 2 {
         let split = _t * p.first! + t * p.last!
@@ -464,8 +458,7 @@ private func SplitBezier(_ t: Double, _ p: [Vector]) -> ([Vector], [Vector]) {
     let split = SplitBezier(t, subpath)
     return ([p.first!] + split.0, split.1 + [p.last!])
 }
-@_transparent
-private func SplitBezier(_ t: [Double], _ p: [Vector]) -> [[Vector]] {
+func SplitBezier(_ t: [Double], _ p: [Vector]) -> [[Vector]] {
     var result: [[Vector]] = []
     var remain = p
     var last_t = 0.0
@@ -479,8 +472,7 @@ private func SplitBezier(_ t: [Double], _ p: [Vector]) -> [[Vector]] {
     return result
 }
 
-@_transparent
-private func BezierDerivative(_ p: [Double]) -> [Double] {
+func BezierDerivative(_ p: [Double]) -> [Double] {
     let n = Double(p.count - 1)
     var de = [Double]()
     var lastPoint = p.first!
@@ -491,8 +483,7 @@ private func BezierDerivative(_ p: [Double]) -> [Double] {
     return de
 }
 
-@_transparent
-private func BezierDerivative(_ p: [Point]) -> [Point] {
+func BezierDerivative(_ p: [Point]) -> [Point] {
     let n = Double(p.count - 1)
     var de = [Point]()
     var lastPoint = p.first!
@@ -503,8 +494,7 @@ private func BezierDerivative(_ p: [Point]) -> [Point] {
     return de
 }
 
-@_transparent
-private func BezierDerivative(_ p: [Vector]) -> [Vector] {
+func BezierDerivative(_ p: [Vector]) -> [Vector] {
     let n = Double(p.count - 1)
     var de = [Vector]()
     var lastPoint = p.first!
@@ -515,7 +505,7 @@ private func BezierDerivative(_ p: [Vector]) -> [Vector] {
     return de
 }
 
-public func QuadBezierFitting(_ p0: Point, _ p2: Point, _ m0: Point, _ m2: Point) -> Point? {
+func QuadBezierFitting(_ p0: Point, _ p2: Point, _ m0: Point, _ m2: Point) -> Point? {
     let a = p2.x - p0.x
     let b = p2.y - p0.y
     let c = m0.x * m2.y - m0.y * m2.x
@@ -526,8 +516,7 @@ public func QuadBezierFitting(_ p0: Point, _ p2: Point, _ m0: Point, _ m2: Point
     return p0 + m0 * d / c
 }
 
-@_transparent
-private func BezierFitting(start: Double, end: Double, _ passing: [(Double, Double)]) -> [Double]? {
+func BezierFitting(start: Double, end: Double, _ passing: [(Double, Double)]) -> [Double]? {
     
     let n = passing.count
     
@@ -554,12 +543,12 @@ private func BezierFitting(start: Double, end: Double, _ passing: [(Double, Doub
     return nil
 }
 
-public func BezierFitting(start: Double, end: Double, _ passing: (Double, Double) ...) -> [Double]? {
+func BezierFitting(start: Double, end: Double, _ passing: (Double, Double) ...) -> [Double]? {
     
     return BezierFitting(start: start, end: end, passing)
 }
 
-public func BezierFitting(start: Point, end: Point, _ passing: (Double, Point) ...) -> [Point]? {
+func BezierFitting(start: Point, end: Point, _ passing: (Double, Point) ...) -> [Point]? {
     
     let x = BezierFitting(start: start.x, end: end.x, passing.map { ($0, $1.x) })
     let y = BezierFitting(start: start.y, end: end.y, passing.map { ($0, $1.y) })
@@ -569,7 +558,7 @@ public func BezierFitting(start: Point, end: Point, _ passing: (Double, Point) .
     return nil
 }
 
-public func BezierFitting(start: Vector, end: Vector, _ passing: (Double, Vector) ...) -> [Vector]? {
+func BezierFitting(start: Vector, end: Vector, _ passing: (Double, Vector) ...) -> [Vector]? {
     
     let x = BezierFitting(start: start.x, end: end.x, passing.map { ($0, $1.x) })
     let y = BezierFitting(start: start.y, end: end.y, passing.map { ($0, $1.y) })
@@ -580,7 +569,7 @@ public func BezierFitting(start: Vector, end: Vector, _ passing: (Double, Vector
     return nil
 }
 
-public func BezierOffset(_ p0: Point, _ p1: Point, _ a: Double) -> (Point, Point)? {
+func BezierOffset(_ p0: Point, _ p1: Point, _ a: Double) -> (Point, Point)? {
     let _x = p1.x - p0.x
     let _y = p1.y - p0.y
     if _x.almostZero() && _y.almostZero() {
@@ -592,21 +581,19 @@ public func BezierOffset(_ p0: Point, _ p1: Point, _ a: Double) -> (Point, Point
     return (p0 + Point(x: s, y: t), p1 + Point(x: s, y: t))
 }
 
-@_transparent
-private func BezierOffsetCurvature(_ p0: Point, _ p1: Point, _ p2: Point) -> Bool {
+func BezierOffsetCurvature(_ p0: Point, _ p1: Point, _ p2: Point) -> Bool {
     let u = p2 - p0
     let v = p1 - 0.5 * (p2 + p0)
     return u.magnitude < v.magnitude * 3
 }
-@_transparent
-private func BezierOffsetCurvature(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point) -> Bool {
+func BezierOffsetCurvature(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point) -> Bool {
     let u = p3 - p0
     let v = p1 - 0.5 * (p3 + p0)
     let w = p2 - 0.5 * (p3 + p0)
     return u.magnitude < max(v.magnitude, w.magnitude) * 4
 }
 
-public func BezierOffset(_ p0: Point, _ p1: Point, _ p2: Point, _ a: Double) -> [[Point]]? {
+func BezierOffset(_ p0: Point, _ p1: Point, _ p2: Point, _ a: Double) -> [[Point]]? {
     
     let q0 = p1 - p0
     let q1 = p2 - p1
@@ -664,7 +651,7 @@ public func BezierOffset(_ p0: Point, _ p1: Point, _ p2: Point, _ a: Double) -> 
     return BezierOffset(p0, p2, a).map { [[$0, $1]] }
 }
 
-public func BezierOffset(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point, _ a: Double) -> [[Point]]? {
+func BezierOffset(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point, _ a: Double) -> [[Point]]? {
     
     let q0 = p1 - p0
     let q1 = p2 - p1
@@ -779,7 +766,7 @@ public func BezierOffset(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point, _ a
 
 // MARK: Stationary Points
 
-public func QuadBezierStationary(_ p0: Double, _ p1: Double, _ p2: Double) -> Double? {
+func QuadBezierStationary(_ p0: Double, _ p1: Double, _ p2: Double) -> Double? {
     let d = p0 + p2 - 2 * p1
     if d.almostZero() {
         return nil
@@ -797,7 +784,7 @@ public func QuadBezierStationary(_ p0: Double, _ p1: Double, _ p2: Double) -> Do
 ///     ⎜ d e f ⎟ ⎜ B_y(t) ⎟
 ///     ⎝ 0 0 1 ⎠ ⎝   1    ⎠
 ///
-public func QuadBezierStationary(_ p0: Point, _ p1: Point, _ p2: Point, _ a: Double, _ b: Double) -> Double? {
+func QuadBezierStationary(_ p0: Point, _ p1: Point, _ p2: Point, _ a: Double, _ b: Double) -> Double? {
     let d = a * (p0.x + p2.x - 2 * p1.x) + b * (p0.y + p2.y - 2 * p1.y)
     if d.almostZero() {
         return nil
@@ -805,7 +792,7 @@ public func QuadBezierStationary(_ p0: Point, _ p1: Point, _ p2: Point, _ a: Dou
     return (a * (p0.x - p1.x) + b * (p0.y - p1.y)) / d
 }
 
-public func CubicBezierStationary(_ p0: Double, _ p1: Double, _ p2: Double, _ p3: Double) -> [Double] {
+func CubicBezierStationary(_ p0: Double, _ p1: Double, _ p2: Double, _ p3: Double) -> [Double] {
     let _a = 3 * (p3 - p0) + 9 * (p1 - p2)
     let _b = 6 * (p2 + p0) - 12 * p1
     let _c = 3 * (p1 - p0)
@@ -841,7 +828,7 @@ public func CubicBezierStationary(_ p0: Double, _ p1: Double, _ p2: Double, _ p3
 ///     ⎜ d e f ⎟ ⎜ B_y(t) ⎟
 ///     ⎝ 0 0 1 ⎠ ⎝   1    ⎠
 ///
-public func CubicBezierStationary(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point, _ a: Double, _ b: Double) -> [Double] {
+func CubicBezierStationary(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point, _ a: Double, _ b: Double) -> [Double] {
     let _ax = 3 * (p3.x - p0.x) + 9 * (p1.x - p2.x)
     let _bx = 6 * (p2.x + p0.x) - 12 * p1.x
     let _cx = 3 * (p1.x - p0.x)
@@ -875,7 +862,7 @@ public func CubicBezierStationary(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: P
 
 // MARK: Boundary
 
-public func QuadBezierBound(_ p0: Point, _ p1: Point, _ p2: Point) -> Rect {
+func QuadBezierBound(_ p0: Point, _ p1: Point, _ p2: Point) -> Rect {
     
     let tx = [0.0, QuadBezierStationary(p0.x, p1.x, p2.x).map { $0.clamped(to: 0...1) } ?? 0.0, 1.0]
     let ty = [0.0, QuadBezierStationary(p0.y, p1.y, p2.y).map { $0.clamped(to: 0...1) } ?? 0.0, 1.0]
@@ -898,7 +885,7 @@ public func QuadBezierBound(_ p0: Point, _ p1: Point, _ p2: Point) -> Rect {
 ///     ⎜ d e f ⎟ ⎜ B_y(t) ⎟
 ///     ⎝ 0 0 1 ⎠ ⎝   1    ⎠
 ///
-public func QuadBezierBound<T: SDTransformProtocol>(_ p0: Point, _ p1: Point, _ p2: Point, _ matrix: T) -> Rect {
+func QuadBezierBound<T: SDTransformProtocol>(_ p0: Point, _ p1: Point, _ p2: Point, _ matrix: T) -> Rect {
     
     let tx = [0.0, QuadBezierStationary(p0, p1, p2, matrix.a, matrix.b).map { $0.clamped(to: 0...1) } ?? 0.0, 1.0]
     let ty = [0.0, QuadBezierStationary(p0, p1, p2, matrix.d, matrix.e).map { $0.clamped(to: 0...1) } ?? 0.0, 1.0]
@@ -920,7 +907,7 @@ public func QuadBezierBound<T: SDTransformProtocol>(_ p0: Point, _ p1: Point, _ 
     return Rect(x: minX + matrix.c, y: minY + matrix.f, width: maxX - minX, height: maxY - minY)
 }
 
-public func CubicBezierBound(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point) -> Rect {
+func CubicBezierBound(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point) -> Rect {
     
     let tx = [0.0, 1.0] + CubicBezierStationary(p0.x, p1.x, p2.x, p3.x).lazy.map { $0.clamped(to: 0...1) }
     let ty = [0.0, 1.0] + CubicBezierStationary(p0.y, p1.y, p2.y, p3.y).lazy.map { $0.clamped(to: 0...1) }
@@ -943,7 +930,7 @@ public func CubicBezierBound(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point)
 ///     ⎜ d e f ⎟ ⎜ B_y(t) ⎟
 ///     ⎝ 0 0 1 ⎠ ⎝   1    ⎠
 ///
-public func CubicBezierBound<T: SDTransformProtocol>(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point, _ matrix: T) -> Rect {
+func CubicBezierBound<T: SDTransformProtocol>(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point, _ matrix: T) -> Rect {
     
     let tx = [0.0, 1.0] + CubicBezierStationary(p0, p1, p2, p3, matrix.a, matrix.b).lazy.map { $0.clamped(to: 0...1) }
     let ty = [0.0, 1.0] + CubicBezierStationary(p0, p1, p2, p3, matrix.d, matrix.e).lazy.map { $0.clamped(to: 0...1) }
@@ -965,7 +952,7 @@ public func CubicBezierBound<T: SDTransformProtocol>(_ p0: Point, _ p1: Point, _
     return Rect(x: minX + matrix.c, y: minY + matrix.f, width: maxX - minX, height: maxY - minY)
 }
 
-public var BezierCircle: [Point] {
+var BezierCircle: [Point] {
     
     //
     // root of 18225 x^12 + 466560 x^11 - 28977264 x^10 + 63288000 x^9 + 96817248 x^8
@@ -991,7 +978,7 @@ public var BezierCircle: [Point] {
         Point(x: 1, y: 0)
     ]
 }
-public func BezierArc(_ angle: Double) -> [Point] {
+func BezierArc(_ angle: Double) -> [Point] {
     
     //
     // root of 18225 x^12 + 466560 x^11 - 28977264 x^10 + 63288000 x^9 + 96817248 x^8
@@ -1047,7 +1034,7 @@ public func BezierArc(_ angle: Double) -> [Point] {
 
 // MARK: Path Intersection
 
-public func CubicBezierSelfIntersect(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point) -> (Double, Double)? {
+func CubicBezierSelfIntersect(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point) -> (Double, Double)? {
     
     let a = p3.x - p0.x + 3 * (p1.x - p2.x)
     if a.almostZero() {
@@ -1081,7 +1068,7 @@ public func CubicBezierSelfIntersect(_ p0: Point, _ p1: Point, _ p2: Point, _ p3
     return nil
 }
 
-public func LinesIntersect(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point) -> Point? {
+func LinesIntersect(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point) -> Point? {
     
     let d = (p0.x - p1.x) * (p2.y - p3.y) - (p0.y - p1.y) * (p2.x - p3.x)
     if d.almostZero() {
@@ -1092,7 +1079,7 @@ public func LinesIntersect(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point) -
     return Point(x: (p2.x - p3.x) * a - (p0.x - p1.x) * b, y: (p2.y - p3.y) * a - (p0.y - p1.y) * b)
 }
 
-public func QuadBezierLineIntersect(_ b0: Point, _ b1: Point, _ b2: Point, _ l0: Point, _ l1: Point) -> [Double]? {
+func QuadBezierLineIntersect(_ b0: Point, _ b1: Point, _ b2: Point, _ l0: Point, _ l1: Point) -> [Double]? {
     
     let a = b0 - l0
     let b = 2 * (b1 - b0)
@@ -1108,7 +1095,7 @@ public func QuadBezierLineIntersect(_ b0: Point, _ b1: Point, _ b2: Point, _ l0:
     return poly.all({ $0.almostZero() }) ? nil : poly.roots
 }
 
-public func CubicBezierLineIntersect(_ b0: Point, _ b1: Point, _ b2: Point, _ b3: Point, _ l0: Point, _ l1: Point) -> [Double]? {
+func CubicBezierLineIntersect(_ b0: Point, _ b1: Point, _ b2: Point, _ b3: Point, _ l0: Point, _ l1: Point) -> [Double]? {
     
     let a = b0 - l0
     let b = 3 * (b1 - b0)
@@ -1125,7 +1112,7 @@ public func CubicBezierLineIntersect(_ b0: Point, _ b1: Point, _ b2: Point, _ b3
     return poly.all({ $0.almostZero() }) ? nil : poly.roots
 }
 
-public func QuadBeziersIntersect(_ b0: Point, _ b1: Point, _ b2: Point, _ b3: Point, _ b4: Point, _ b5: Point) -> [Double]? {
+func QuadBeziersIntersect(_ b0: Point, _ b1: Point, _ b2: Point, _ b3: Point, _ b4: Point, _ b5: Point) -> [Double]? {
     
     let a = b0 - b3
     let b = 2 * (b1 - b0)
@@ -1149,7 +1136,7 @@ public func QuadBeziersIntersect(_ b0: Point, _ b1: Point, _ b2: Point, _ b3: Po
     return det.all({ $0.almostZero() }) ? nil : det.roots
 }
 
-public func CubicQuadBezierIntersect(_ c0: Point, _ c1: Point, _ c2: Point, _ c3: Point, _ q0: Point, _ q1: Point, _ q2: Point) -> [Double]? {
+func CubicQuadBezierIntersect(_ c0: Point, _ c1: Point, _ c2: Point, _ c3: Point, _ q0: Point, _ q1: Point, _ q2: Point) -> [Double]? {
     
     let a = c0 - q0
     let b = 3 * (c1 - c0)
@@ -1174,7 +1161,7 @@ public func CubicQuadBezierIntersect(_ c0: Point, _ c1: Point, _ c2: Point, _ c3
     return det.all({ $0.almostZero() }) ? nil : det.roots
 }
 
-public func CubicBeziersIntersect(_ c0: Point, _ c1: Point, _ c2: Point, _ c3: Point, _ c4: Point, _ c5: Point, _ c6: Point, _ c7: Point) -> [Double]? {
+func CubicBeziersIntersect(_ c0: Point, _ c1: Point, _ c2: Point, _ c3: Point, _ c4: Point, _ c5: Point, _ c6: Point, _ c7: Point) -> [Double]? {
     
     let a = c0 - c4
     let b = 3 * (c1 - c0)
@@ -1211,8 +1198,7 @@ public func CubicBeziersIntersect(_ c0: Point, _ c1: Point, _ c2: Point, _ c3: P
 
 // MARK: Winding Number
 
-@_transparent
-private func _integral(_ n: Double, _ b: Double, _ c: Double) -> Double {
+func _integral(_ n: Double, _ b: Double, _ c: Double) -> Double {
     
     let delta = b * b - 4 * c
     
@@ -1232,14 +1218,13 @@ private func _integral(_ n: Double, _ b: Double, _ c: Double) -> Double {
     }
 }
 
-@_transparent
-private func _integral(_ m: Double, _ n: Double, _ b: Double, _ c: Double) -> Double {
+func _integral(_ m: Double, _ n: Double, _ b: Double, _ c: Double) -> Double {
     
     let _m = 0.5 * m
     return _m * log(abs(1 + (1 + b) / c)) + _integral(n - _m * b, b, c)
 }
 
-private func _integral(_ m: Double, _ n: Double, _ b: Double, _ c: Double, _ r: Int) -> Double {
+func _integral(_ m: Double, _ n: Double, _ b: Double, _ c: Double, _ r: Int) -> Double {
     
     if r == 1 {
         return _integral(m, n, b, c)
@@ -1256,7 +1241,7 @@ private func _integral(_ m: Double, _ n: Double, _ b: Double, _ c: Double, _ r: 
     return t / u - v / w + _integral(0, Double(2 * r - 3) * (2 * n - b * m) / s, b, c, _r)
 }
 
-public func LineWinding(_ p0: Point, _ p1: Point) -> Double {
+func LineWinding(_ p0: Point, _ p1: Point) -> Double {
     
     let x0 = p0.x
     let x1 = p1.x - p0.x
@@ -1275,7 +1260,7 @@ public func LineWinding(_ p0: Point, _ p1: Point) -> Double {
     return a.almostZero() ? 0 : 0.5 * M_1_PI * _integral(m / a, b / a, c / a)
 }
 
-private enum PartialPolynomial {
+enum PartialPolynomial {
     
     case one(Double, Int)
     case two(Double, Double, Int)
@@ -1331,14 +1316,12 @@ extension PartialPolynomial {
     }
 }
 
-@_transparent
-private func appendPartialPolynomial(_ p: inout [PartialPolynomial], _ poly: Double) {
+func appendPartialPolynomial(_ p: inout [PartialPolynomial], _ poly: Double) {
     let power = p.lazy.filter { $0.almostEqual(poly) }.max(by: { $0.power })?.power ?? 0
     p.append(.one(poly, power + 1))
 }
 
-@_transparent
-private func appendPartialPolynomial(_ p: inout [PartialPolynomial], _ poly: (Double, Double)) {
+func appendPartialPolynomial(_ p: inout [PartialPolynomial], _ poly: (Double, Double)) {
     let delta = poly.1 * poly.1 - 4 * poly.0
     if delta.almostZero() {
         appendPartialPolynomial(&p, 0.5 * poly.1)
@@ -1353,7 +1336,7 @@ private func appendPartialPolynomial(_ p: inout [PartialPolynomial], _ poly: (Do
     }
 }
 
-private func degree6RationalIntegral(_ p: Polynomial, _ q: Polynomial) -> Double {
+func degree6RationalIntegral(_ p: Polynomial, _ q: Polynomial) -> Double {
     
     var partials: [PartialPolynomial] = []
     
@@ -1438,7 +1421,7 @@ private func degree6RationalIntegral(_ p: Polynomial, _ q: Polynomial) -> Double
     return result
 }
 
-public func QuadBezierWinding(_ p0: Point, _ p1: Point, _ p2: Point) -> Double {
+func QuadBezierWinding(_ p0: Point, _ p1: Point, _ p2: Point) -> Double {
     
     let a = p0
     let b = 2 * (p1 - p0)
@@ -1450,7 +1433,7 @@ public func QuadBezierWinding(_ p0: Point, _ p1: Point, _ p2: Point) -> Double {
     return 0.5 * M_1_PI * degree6RationalIntegral(x * y.derivative - x.derivative * y, x * x + y * y)
 }
 
-public func CubicBezierWinding(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point) -> Double {
+func CubicBezierWinding(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point) -> Double {
     
     let a = p0
     let b = 3 * (p1 - p0)
@@ -1465,7 +1448,7 @@ public func CubicBezierWinding(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Poin
 
 // MARK: Area
 
-public func BezierSignedArea(_ p: Point ...) -> Double {
+func BezierSignedArea(_ p: Point ...) -> Double {
     
     let x = BezierPolynomial(p.map { $0.x })
     let y = BezierPolynomial(p.map { $0.y })
@@ -1473,12 +1456,12 @@ public func BezierSignedArea(_ p: Point ...) -> Double {
     return 0.5 * t.integral.eval(1)
 }
 
-public func LineSignedArea(_ p0: Point, _ p1: Point) -> Double {
+func LineSignedArea(_ p0: Point, _ p1: Point) -> Double {
     
     return 0.5 * (p0.x * p1.y - p0.y * p1.x)
 }
 
-public func QuadBezierSignedArea(_ p0: Point, _ p1: Point, _ p2: Point) -> Double {
+func QuadBezierSignedArea(_ p0: Point, _ p1: Point, _ p2: Point) -> Double {
     
     let a = p0.x - 2 * p1.x + p2.x
     let b = 2 * (p1.x - p0.x)
@@ -1489,7 +1472,7 @@ public func QuadBezierSignedArea(_ p0: Point, _ p1: Point, _ p2: Point) -> Doubl
     return 0.5 * (p0.x * p2.y - p2.x * p0.y) + (b * c - a * d) / 6
 }
 
-public func CubicBezierSignedArea(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point) -> Double {
+func CubicBezierSignedArea(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point) -> Double {
     
     let a = p3.x - p0.x + 3 * (p1.x - p2.x)
     let b = 3 * (p2.x + p0.x) - 6 * p1.x
@@ -1502,7 +1485,7 @@ public func CubicBezierSignedArea(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: P
     return 0.5 * (p0.x * p3.y - p3.x * p0.y) + 0.1 * (b * d - a * e) + 0.25 * (c * d - a * f) + (c * e - b * f) / 6
 }
 
-public func ArcSignedArea(_ startAngle: Double, _ endAngle: Double, _ center: Point, _ radius: Radius) -> Double {
+func ArcSignedArea(_ startAngle: Double, _ endAngle: Double, _ center: Point, _ radius: Radius) -> Double {
     
     let diffAngle = endAngle - startAngle
     let sin1 = sin(startAngle)
