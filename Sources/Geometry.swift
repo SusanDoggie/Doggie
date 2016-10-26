@@ -690,7 +690,54 @@ public func BezierOffset(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point, _ a
         return BezierOffset(p0, p3, a).map { [[$0, $1]] }
     }
     if (zh2 && zh3) || (zh2 && zh1) || (zh3 && zh0) {
-        
+        var u = CubicBezierStationary(p0.x, p1.x, p2.x, p3.x).sorted()
+        if u.count == 0 {
+            u = CubicBezierStationary(p0.y, p1.y, p2.y, p3.y).sorted()
+        }
+        switch u.count {
+        case 1:
+            let g = Bezier(u[0], p0, p1, p2, p3)
+            if let left = BezierOffset(p0, g, a), let right = BezierOffset(g, p3, a) {
+                let angle = ph0 - M_PI_2
+                let bezierCircle = BezierCircle.lazy.map { $0 * SDTransform.Rotate(angle) * a + g }
+                let i = [bezierCircle[0],
+                         bezierCircle[1],
+                         bezierCircle[2],
+                         bezierCircle[3]]
+                let j = [bezierCircle[3],
+                         bezierCircle[4],
+                         bezierCircle[5],
+                         bezierCircle[6]]
+                return [[left.0, left.1], i, j, [right.0, right.1]]
+            }
+        case 2:
+            let g = Bezier(u[0], p0, p1, p2, p3)
+            let h = Bezier(u[1], p0, p1, p2, p3)
+            if let left = BezierOffset(p0, g, a), let mid = BezierOffset(g, h, a), let right = BezierOffset(h, p3, a) {
+                let angle1 = ph0 - M_PI_2
+                let bezierCircle1 = BezierCircle.lazy.map { $0 * SDTransform.Rotate(angle1) * a + g }
+                let i = [bezierCircle1[0],
+                         bezierCircle1[1],
+                         bezierCircle1[2],
+                         bezierCircle1[3]]
+                let j = [bezierCircle1[3],
+                         bezierCircle1[4],
+                         bezierCircle1[5],
+                         bezierCircle1[6]]
+                let angle2 = ph1 - M_PI_2
+                let bezierCircle2 = BezierCircle.lazy.map { $0 * SDTransform.Rotate(angle2) * a + h }
+                let k = [bezierCircle2[0],
+                         bezierCircle2[1],
+                         bezierCircle2[2],
+                         bezierCircle2[3]]
+                let l = [bezierCircle2[3],
+                         bezierCircle2[4],
+                         bezierCircle2[5],
+                         bezierCircle2[6]]
+                return [[left.0, left.1], i, j, [mid.0, mid.1], k, l, [right.0, right.1]]
+            }
+        default: break
+        }
     }
     
     func split(_ t: Double) -> [[Point]]? {
