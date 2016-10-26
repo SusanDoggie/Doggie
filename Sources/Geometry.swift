@@ -591,6 +591,21 @@ public func BezierOffset(_ p0: Point, _ p1: Point, _ a: Double) -> (Point, Point
     let t = -a * _x / _xy
     return (p0 + Point(x: s, y: t), p1 + Point(x: s, y: t))
 }
+
+@_transparent
+private func BezierOffsetCurvature(_ p0: Point, _ p1: Point, _ p2: Point) -> Bool {
+    let u = p2 - p0
+    let v = p1 - 0.5 * (p2 + p0)
+    return u.magnitude < v.magnitude * 3
+}
+@_transparent
+private func BezierOffsetCurvature(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point) -> Bool {
+    let u = p3 - p0
+    let v = p1 - 0.5 * (p3 + p0)
+    let w = p2 - 0.5 * (p3 + p0)
+    return u.magnitude < max(v.magnitude, w.magnitude) * 3
+}
+
 public func BezierOffset(_ p0: Point, _ p1: Point, _ p2: Point, _ a: Double) -> [[Point]]? {
     
     let q0 = p1 - p0
@@ -624,13 +639,16 @@ public func BezierOffset(_ p0: Point, _ p1: Point, _ p2: Point, _ a: Double) -> 
         }
     }
     
-    let u = p2 - p0
-    let v = p1 - 0.5 * (p2 + p0)
-    if u.magnitude < v.magnitude * 3 {
-        let (left, right) = SplitBezier(0.5, p0, p1, p2)
+    func split(_ t: Double) -> [[Point]]? {
+        let (left, right) = SplitBezier(t, p0, p1, p2)
         if let _left = BezierOffset(left[0], left[1], left[2], a), let _right = BezierOffset(right[0], right[1], right[2], a) {
             return _left + _right
         }
+        return nil
+    }
+    
+    if BezierOffsetCurvature(p0, p1, p2) {
+        return split(0.5)
     } else {
         
         let s = 1 / q0.magnitude
@@ -639,7 +657,7 @@ public func BezierOffset(_ p0: Point, _ p1: Point, _ p2: Point, _ a: Double) -> 
         let end = Point(x: p2.x + a * q1.y * t, y: p2.y - a * q1.x * t)
         
         if let mid = QuadBezierFitting(start, end, q0, q1) {
-            return [[start, mid, end]]
+            return BezierOffsetCurvature(start, mid, end) ? split(0.5) : [[start, mid, end]]
         }
     }
     
@@ -675,22 +693,20 @@ public func BezierOffset(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point, _ a
         
     }
     
-    let u = p3 - p0
-    let v = p1 - 0.5 * (p3 + p0)
-    let w = p2 - 0.5 * (p3 + p0)
-    
-    if LinesIntersect(p0, p3, p1, p2) != nil,
-        let t = CubicBezierLineIntersect(p0, p1, p2, p3, p0, p3)?.min(by: { abs(0.5 - $0) }),
-        !t.almostZero() && !(1 - t).almostZero() {
+    func split(_ t: Double) -> [[Point]]? {
         let (left, right) = SplitBezier(t, p0, p1, p2, p3)
         if let _left = BezierOffset(left[0], left[1], left[2], left[3], a), let _right = BezierOffset(right[0], right[1], right[2], right[3], a) {
             return _left + _right
         }
-    } else if u.magnitude < max(v.magnitude, w.magnitude) * 3 {
-        let (left, right) = SplitBezier(0.5, p0, p1, p2, p3)
-        if let _left = BezierOffset(left[0], left[1], left[2], left[3], a), let _right = BezierOffset(right[0], right[1], right[2], right[3], a) {
-            return _left + _right
-        }
+        return nil
+    }
+    
+    if let t = CubicBezierLineIntersect(p0, p1, p2, p3, p0, p3)?.min(by: { abs(0.5 - $0) }), !t.almostZero() && !(1 - t).almostZero() {
+        
+        return split(t)
+    } else if BezierOffsetCurvature(p0, p1, p2, p3) {
+        
+        return split(0.5)
     } else {
         
         let _q0 = z0 ? q1 : q0
@@ -702,7 +718,7 @@ public func BezierOffset(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point, _ a
         let end = Point(x: p3.x + a * _q1.y * t, y: p3.y - a * _q1.x * t)
         
         if let mid = QuadBezierFitting(start, end, _q0, _q1) {
-            return [[start, mid, end]]
+            return BezierOffsetCurvature(start, mid, end) ? split(0.5) : [[start, mid, end]]
         }
     }
     
