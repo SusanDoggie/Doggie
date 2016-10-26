@@ -701,7 +701,9 @@ public func BezierOffset(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point, _ a
         return nil
     }
     
-    if let t = CubicBezierLineIntersect(p0, p1, p2, p3, p0, p3)?.min(by: { abs(0.5 - $0) }), !t.almostZero() && !(1 - t).almostZero() {
+    if direction(p0, p1, p3).sign != direction(p0, p2, p3).sign,
+        let t = CubicBezierLineIntersect(p0, p1, p2, p3, p0, p3)?.min(by: { abs(0.5 - $0) }),
+        !t.almostZero() && !(1 - t).almostZero() {
         
         return split(t)
     } else if BezierOffsetCurvature(p0, p1, p2, p3) {
