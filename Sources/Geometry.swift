@@ -596,14 +596,14 @@ public func BezierOffset(_ p0: Point, _ p1: Point, _ a: Double) -> (Point, Point
 private func BezierOffsetCurvature(_ p0: Point, _ p1: Point, _ p2: Point) -> Bool {
     let u = p2 - p0
     let v = p1 - 0.5 * (p2 + p0)
-    return u.magnitude < v.magnitude * 3
+    return u.magnitude < v.magnitude * 4
 }
 @_transparent
 private func BezierOffsetCurvature(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point) -> Bool {
     let u = p3 - p0
     let v = p1 - 0.5 * (p3 + p0)
     let w = p2 - 0.5 * (p3 + p0)
-    return u.magnitude < max(v.magnitude, w.magnitude) * 3
+    return u.magnitude < max(v.magnitude, w.magnitude) * 4
 }
 
 public func BezierOffset(_ p0: Point, _ p1: Point, _ p2: Point, _ a: Double) -> [[Point]]? {
