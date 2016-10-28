@@ -119,6 +119,8 @@
 		0ACE1E171C57114A00106D1F /* CollectionExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ACE1E141C57114A00106D1F /* CollectionExtension.swift */; };
 		0ACE1E1A1C5711D300106D1F /* Graph.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ACE1E191C5711D300106D1F /* Graph.swift */; };
 		0ACE1E1C1C5711D300106D1F /* Graph.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ACE1E191C5711D300106D1F /* Graph.swift */; };
+		0AE12EE21DC2FD7400996BF9 /* SDPathStroke.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE12EE11DC2FD7400996BF9 /* SDPathStroke.swift */; };
+		0AE12EE31DC2FD7400996BF9 /* SDPathStroke.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE12EE11DC2FD7400996BF9 /* SDPathStroke.swift */; };
 		0AF9BDBB1D6178470058F2AA /* SDMarker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF9BDBA1D6178470058F2AA /* SDMarker.swift */; };
 		0AF9BDBC1D6178470058F2AA /* SDMarker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF9BDBA1D6178470058F2AA /* SDMarker.swift */; };
 		0AFCA1501D9E1F130034AB10 /* AtomicTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AFCA14F1D9E1F130034AB10 /* AtomicTest.swift */; };
@@ -208,6 +210,7 @@
 		0ACE1E051C57104300106D1F /* Parallel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Parallel.swift; sourceTree = "<group>"; };
 		0ACE1E141C57114A00106D1F /* CollectionExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CollectionExtension.swift; sourceTree = "<group>"; };
 		0ACE1E191C5711D300106D1F /* Graph.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Graph.swift; sourceTree = "<group>"; };
+		0AE12EE11DC2FD7400996BF9 /* SDPathStroke.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SDPathStroke.swift; sourceTree = "<group>"; };
 		0AF9BDBA1D6178470058F2AA /* SDMarker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SDMarker.swift; sourceTree = "<group>"; };
 		0AFCA14F1D9E1F130034AB10 /* AtomicTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AtomicTest.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -302,6 +305,7 @@
 				0858DA6F1C0550B7007FA426 /* SDEllipse.swift */,
 				0858DA701C0550B7007FA426 /* SDGraphic.swift */,
 				0858DA711C0550B7007FA426 /* SDPath.swift */,
+				0AE12EE11DC2FD7400996BF9 /* SDPathStroke.swift */,
 				0858DA721C0550B7007FA426 /* SDPathCoder.swift */,
 				0858DA741C0550B7007FA426 /* SDRectangle.swift */,
 				0858DA751C0550B7007FA426 /* SDShape.swift */,
@@ -670,6 +674,7 @@
 				081322411C11D3600081B2B9 /* Prime.swift in Sources */,
 				0A2C33D71D48B8E200FE9A97 /* Hashable.swift in Sources */,
 				0A2C33D91D48B8E200FE9A97 /* Json.swift in Sources */,
+				0AE12EE21DC2FD7400996BF9 /* SDPathStroke.swift in Sources */,
 				081322491C11D3600081B2B9 /* SDAtomicNode.swift in Sources */,
 				089E4B261D9FB8A700881F51 /* AtomicQueue.swift in Sources */,
 				081322381C11D3600081B2B9 /* Fourier.swift in Sources */,
@@ -739,6 +744,7 @@
 				0858DA9B1C0550B7007FA426 /* Move.swift in Sources */,
 				0A1605B31D49DEDC00109F7B /* Date.swift in Sources */,
 				0858DB1B1C0550B7007FA426 /* SDAtomicNode.swift in Sources */,
+				0AE12EE31DC2FD7400996BF9 /* SDPathStroke.swift in Sources */,
 				0858DA871C0550B7007FA426 /* ComplexConversion.swift in Sources */,
 				089E4B271D9FB8A700881F51 /* AtomicQueue.swift in Sources */,
 				0858DB481C055172007FA426 /* Fourier.swift in Sources */,
