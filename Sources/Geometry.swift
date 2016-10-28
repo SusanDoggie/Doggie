@@ -607,19 +607,19 @@ private func BezierOffsetCurvature(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: 
     return u.magnitude < max(v.magnitude, w.magnitude) * 4
 }
 
-func BezierOffset(_ p0: Point, _ p1: Point, _ p2: Point, _ a: Double) -> [[Point]]? {
+func BezierOffset(_ p0: Point, _ p1: Point, _ p2: Point, _ a: Double) -> [[Point]] {
     
     let q0 = p1 - p0
     let q1 = p2 - p1
     
     if (q0.x.almostZero() && q0.y.almostZero()) || (q1.x.almostZero() && q1.y.almostZero()) {
-        return BezierOffset(p0, p2, a).map { [[$0, $1]] }
+        return BezierOffset(p0, p2, a).map { [[$0, $1]] } ?? []
     }
     let ph0 = q0.phase
     let ph1 = q1.phase
     
     if ph0.almostEqual(ph1) || ph0.almostEqual(ph1 + 2 * M_PI) || ph0.almostEqual(ph1 - 2 * M_PI) {
-        return BezierOffset(p0, p2, a).map { [[$0, $1]] }
+        return BezierOffset(p0, p2, a).map { [[$0, $1]] } ?? []
     }
     if ph0.almostEqual(ph1 + M_PI) || ph0.almostEqual(ph1 - M_PI) {
         if let w = QuadBezierStationary(p0.x, p1.x, p2.x) ?? QuadBezierStationary(p0.y, p1.y, p2.y) {
@@ -640,12 +640,9 @@ func BezierOffset(_ p0: Point, _ p1: Point, _ p2: Point, _ a: Double) -> [[Point
         }
     }
     
-    func split(_ t: Double) -> [[Point]]? {
+    func split(_ t: Double) -> [[Point]] {
         let (left, right) = SplitBezier(t, p0, p1, p2)
-        if let _left = BezierOffset(left[0], left[1], left[2], a), let _right = BezierOffset(right[0], right[1], right[2], a) {
-            return _left + _right
-        }
-        return nil
+        return BezierOffset(left[0], left[1], left[2], a) + BezierOffset(right[0], right[1], right[2], a)
     }
     
     if BezierOffsetCurvature(p0, p1, p2) {
@@ -662,10 +659,10 @@ func BezierOffset(_ p0: Point, _ p1: Point, _ p2: Point, _ a: Double) -> [[Point
         }
     }
     
-    return BezierOffset(p0, p2, a).map { [[$0, $1]] }
+    return BezierOffset(p0, p2, a).map { [[$0, $1]] } ?? []
 }
 
-func BezierOffset(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point, _ a: Double) -> [[Point]]? {
+func BezierOffset(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point, _ a: Double) -> [[Point]] {
     
     let q0 = p1 - p0
     let q1 = p2 - p1
@@ -676,7 +673,7 @@ func BezierOffset(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point, _ a: Doubl
     let z2 = q2.x.almostZero() && q2.y.almostZero()
     
     if (z0 && z1) || (z0 && z2) || (z1 && z2) {
-        return BezierOffset(p0, p3, a).map { [[$0, $1]] }
+        return BezierOffset(p0, p3, a).map { [[$0, $1]] } ?? []
     }
     
     let ph0 = q0.phase
@@ -688,7 +685,7 @@ func BezierOffset(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point, _ a: Doubl
     let zh3 = ph1.almostEqual(ph2 + M_PI) || ph1.almostEqual(ph2 - M_PI)
     
     if zh0 && zh1 {
-        return BezierOffset(p0, p3, a).map { [[$0, $1]] }
+        return BezierOffset(p0, p3, a).map { [[$0, $1]] } ?? []
     }
     if (zh2 && zh3) || (zh2 && zh1) || (zh3 && zh0) {
         var u = CubicBezierStationary(p0.x, p1.x, p2.x, p3.x).sorted()
@@ -741,12 +738,9 @@ func BezierOffset(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point, _ a: Doubl
         }
     }
     
-    func split(_ t: Double) -> [[Point]]? {
+    func split(_ t: Double) -> [[Point]] {
         let (left, right) = SplitBezier(t, p0, p1, p2, p3)
-        if let _left = BezierOffset(left[0], left[1], left[2], left[3], a), let _right = BezierOffset(right[0], right[1], right[2], right[3], a) {
-            return _left + _right
-        }
-        return nil
+        return BezierOffset(left[0], left[1], left[2], left[3], a) + BezierOffset(right[0], right[1], right[2], right[3], a)
     }
     
     if direction(p0, p1, p3).sign != direction(p0, p2, p3).sign,
@@ -775,7 +769,7 @@ func BezierOffset(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point, _ a: Doubl
         }
     }
     
-    return BezierOffset(p0, p3, a).map { [[$0, $1]] }
+    return BezierOffset(p0, p3, a).map { [[$0, $1]] } ?? []
 }
 
 // MARK: Stationary Points
