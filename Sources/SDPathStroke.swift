@@ -50,7 +50,7 @@ extension SDPath {
         var cap: LineCap
         var join: LineJoin
         
-        var path = SDPath()
+        var path: [Command] = []
         
         var buffer1: [Command] = []
         var buffer2: [Command] = []
@@ -463,7 +463,7 @@ extension SDPath {
             }
         }
         buffer.flush()
-        return buffer.path
+        return SDPath(buffer.path)
     }
     
 }
