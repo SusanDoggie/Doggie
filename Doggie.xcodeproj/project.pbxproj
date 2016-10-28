@@ -85,6 +85,8 @@
 		0A2C33DB1D48B8E200FE9A97 /* Regex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2C33D51D48B8E200FE9A97 /* Regex.swift */; };
 		0A5196EF1D48B5110082AE61 /* SDThread.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A5196E71D48B5110082AE61 /* SDThread.swift */; };
 		0A5196F71D48B52D0082AE61 /* SDThread.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A5196E71D48B5110082AE61 /* SDThread.swift */; };
+		0A65984D1DC33E3B002EC536 /* AccelerateWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A65984C1DC33E3B002EC536 /* AccelerateWrapper.swift */; };
+		0A65984E1DC33E3B002EC536 /* AccelerateWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A65984C1DC33E3B002EC536 /* AccelerateWrapper.swift */; };
 		0A6E95441D8FC510008197E1 /* CountableSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A6E95431D8FC510008197E1 /* CountableSet.swift */; };
 		0A6E95451D8FC510008197E1 /* CountableSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A6E95431D8FC510008197E1 /* CountableSet.swift */; };
 		0A72CA561DA4B1890041F67B /* Atomic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A72CA551DA4B1890041F67B /* Atomic.swift */; };
@@ -192,6 +194,7 @@
 		0A2C33D41D48B8E200FE9A97 /* Random.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Random.swift; sourceTree = "<group>"; };
 		0A2C33D51D48B8E200FE9A97 /* Regex.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Regex.swift; sourceTree = "<group>"; };
 		0A5196E71D48B5110082AE61 /* SDThread.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SDThread.swift; sourceTree = "<group>"; };
+		0A65984C1DC33E3B002EC536 /* AccelerateWrapper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccelerateWrapper.swift; sourceTree = "<group>"; };
 		0A6E95431D8FC510008197E1 /* CountableSet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CountableSet.swift; sourceTree = "<group>"; };
 		0A72CA551DA4B1890041F67B /* Atomic.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Atomic.swift; sourceTree = "<group>"; };
 		0A72CA581DA4B1C40041F67B /* Lock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Lock.swift; sourceTree = "<group>"; };
@@ -270,6 +273,7 @@
 		0858DA411C0550B7007FA426 /* Accelerate */ = {
 			isa = PBXGroup;
 			children = (
+				0A65984C1DC33E3B002EC536 /* AccelerateWrapper.swift */,
 				0858DA431C0550B7007FA426 /* Arithmetic.swift */,
 				0858DA441C0550B7007FA426 /* CircularConvolve.swift */,
 				0858DA451C0550B7007FA426 /* ComplexConversion.swift */,
@@ -680,6 +684,7 @@
 				081322381C11D3600081B2B9 /* Fourier.swift in Sources */,
 				0813223E1C11D3600081B2B9 /* Matrix.swift in Sources */,
 				0A2C33D61D48B8E200FE9A97 /* Date.swift in Sources */,
+				0A65984D1DC33E3B002EC536 /* AccelerateWrapper.swift in Sources */,
 				0AADD11F1D10E75300087247 /* LazyScanSequence.swift in Sources */,
 				0A2C33DB1D48B8E200FE9A97 /* Regex.swift in Sources */,
 				081322251C11D3600081B2B9 /* CooleyTukey.swift in Sources */,
@@ -750,6 +755,7 @@
 				0858DB481C055172007FA426 /* Fourier.swift in Sources */,
 				0AADD1211D10E75300087247 /* LazyScanSequence.swift in Sources */,
 				0858DA931C0550B7007FA426 /* DiscreteConvolve.swift in Sources */,
+				0A65984E1DC33E3B002EC536 /* AccelerateWrapper.swift in Sources */,
 				0858DA8F1C0550B7007FA426 /* CooleyTukey.swift in Sources */,
 				0A1605B51D49DEDC00109F7B /* Integer.swift in Sources */,
 				0858DB231C0550B7007FA426 /* SDGraphic.swift in Sources */,

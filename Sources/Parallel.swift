@@ -62,7 +62,7 @@ extension RandomAccessCollection {
     public func parallelMap<T>(_ transform: (Iterator.Element) -> T) -> [T] {
         let count: Int = numericCast(self.count)
         let buffer = UnsafeMutablePointer<T>.allocate(capacity: count)
-        DispatchQueue.concurrentPerform(iterations: numericCast(self.count)) {
+        DispatchQueue.concurrentPerform(iterations: count) {
             (buffer + $0).initialize(to: transform(self[self.index(startIndex, offsetBy: numericCast($0))]))
         }
         let result = ContiguousArray(UnsafeMutableBufferPointer(start: buffer, count: count))
@@ -70,22 +70,4 @@ extension RandomAccessCollection {
         buffer.deallocate(capacity: count)
         return Array(result)
     }
-}
-
-extension LazyRandomAccessCollection {
-    
-    /// Returns an array over the sequence's elements. The elements of
-    /// the result are computed in parallel.
-    public var parallel : [Iterator.Element] {
-        let count: Int = numericCast(self.count)
-        let buffer = UnsafeMutablePointer<Iterator.Element>.allocate(capacity: count)
-        DispatchQueue.concurrentPerform(iterations: numericCast(self.count)) {
-            (buffer + $0).initialize(to: self[self.index(startIndex, offsetBy: numericCast($0))])
-        }
-        let result = ContiguousArray(UnsafeMutableBufferPointer(start: buffer, count: count))
-        buffer.deinitialize(count: count)
-        buffer.deallocate(capacity: count)
-        return Array(result)
-    }
-    
 }
