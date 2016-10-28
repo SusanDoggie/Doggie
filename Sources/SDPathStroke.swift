@@ -173,7 +173,25 @@ extension SDPath.StrokeBuffer {
                     cap_buffer.append(.cubic(bezierCircle[1], bezierCircle[2], bezierCircle[3]))
                     cap_buffer.append(.cubic(bezierCircle[4], bezierCircle[5], bezierCircle[6]))
                 }
-            case .square: break
+            case .square:
+                do {
+                    let d = last!.endDirection
+                    let m = d.magnitude
+                    let u = width * 0.5 * d.y / m
+                    let v = -width * 0.5 * d.x / m
+                    buffer1.append(.line(last!.end + Point(x: u - v, y: v + u)))
+                    buffer1.append(.line(last!.end - Point(x: u + v, y: v - u)))
+                    buffer1.append(.line(reverse_start))
+                }
+                do {
+                    let d = first!.startDirection
+                    let m = d.magnitude
+                    let u = -width * 0.5 * d.y / m
+                    let v = width * 0.5 * d.x / m
+                    cap_buffer.append(.line(first!.start + Point(x: u - v, y: v + u)))
+                    cap_buffer.append(.line(first!.start - Point(x: u + v, y: v - u)))
+                    cap_buffer.append(.line(start))
+                }
             }
             path.append(.move(start))
             path.append(contentsOf: buffer1)
@@ -190,13 +208,13 @@ extension SDPath.StrokeBuffer {
     
     mutating func addJoin(_ segment: Segment) {
         
-        switch join {
-        case let .miter(limit): break
-        case .round:
-            let ph0 = last!.endDirection.phase
-            let ph1 = segment.startDirection.phase
-            let angle = (ph0 - ph1).remainder(dividingBy: 2 * M_PI)
-            if !angle.almostZero() {
+        let ph0 = last!.endDirection.phase
+        let ph1 = segment.startDirection.phase
+        let angle = (ph0 - ph1).remainder(dividingBy: 2 * M_PI)
+        if !angle.almostZero() {
+            switch join {
+            case let .miter(limit): break
+            case .round:
                 if angle > 0 {
                     do {
                         let a = ph0 - M_PI_2
@@ -234,8 +252,8 @@ extension SDPath.StrokeBuffer {
                         }
                     }
                 }
+            default: break
             }
-        default: break
         }
     }
     
