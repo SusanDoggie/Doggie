@@ -632,7 +632,7 @@ public func BezierOffset(_ p0: Point, _ p1: Point, _ p2: Point, _ a: Double) -> 
 }
 public func BezierOffset(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point, _ a: Double) -> [[Point]] {
     
-    return BezierOffset(p0, p1, p2, p3, a, 5)
+    return BezierOffset(p0, p1, p2, p3, a, 5, true)
 }
 private func BezierOffset(_ p0: Point, _ p1: Point, _ p2: Point, _ a: Double, _ limit: Int) -> [[Point]] {
     
@@ -688,7 +688,7 @@ private func BezierOffset(_ p0: Point, _ p1: Point, _ p2: Point, _ a: Double, _ 
     return BezierOffset(p0, p2, a).map { [[$0, $1]] } ?? []
 }
 
-private func BezierOffset(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point, _ a: Double, _ limit: Int) -> [[Point]] {
+private func BezierOffset(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point, _ a: Double, _ limit: Int, _ inflection_check: Bool) -> [[Point]] {
     
     let q0 = p1 - p0
     let q1 = p2 - p1
@@ -766,18 +766,18 @@ private func BezierOffset(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point, _ 
     
     func split(_ t: Double) -> [[Point]] {
         let (left, right) = SplitBezier(t, p0, p1, p2, p3)
-        return BezierOffset(left[0], left[1], left[2], left[3], a, limit - 1) + BezierOffset(right[0], right[1], right[2], right[3], a, limit - 1)
+        return BezierOffset(left[0], left[1], left[2], left[3], a, limit - 1, false) + BezierOffset(right[0], right[1], right[2], right[3], a, limit - 1, false)
     }
     
-    if limit > 0 {
+    if inflection_check && limit > 0 {
         let inflection = CubicBezierInflection(p0, p1, p2, p3).filter { !$0.almostZero() && !$0.almostEqual(1) && (0...1).contains($0) }
         switch inflection.count {
         case 1: return split(inflection[0])
         case 2:
             let paths = SplitBezier(inflection, p0, p1, p2, p3)
-            return BezierOffset(paths[0][0], paths[0][1], paths[0][2], paths[0][3], a, limit - 1) +
-                BezierOffset(paths[1][0], paths[1][1], paths[1][2], paths[1][3], a, limit - 1) +
-                BezierOffset(paths[2][0], paths[2][1], paths[2][2], paths[2][3], a, limit - 1)
+            return BezierOffset(paths[0][0], paths[0][1], paths[0][2], paths[0][3], a, limit - 1, false) +
+                BezierOffset(paths[1][0], paths[1][1], paths[1][2], paths[1][3], a, limit - 1, false) +
+                BezierOffset(paths[2][0], paths[2][1], paths[2][2], paths[2][3], a, limit - 1, false)
         default: break
         }
     }
