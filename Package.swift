@@ -26,5 +26,8 @@
 import PackageDescription
 
 let package = Package(
-    name: "Doggie"
+    name: "Doggie",
+    dependencies: [
+        .Package(url: "https://github.com/SusanDoggie/c11_atomic.git", majorVersion: 1),
+        ]
 )
