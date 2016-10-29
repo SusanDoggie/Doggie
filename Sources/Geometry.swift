@@ -535,6 +535,30 @@ public func CubicBezierInflection(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: P
     return degree2roots(y / x, z / x)
 }
 
+public func QuadBezierLength(_ t: Double, _ p0: Point, _ p1: Point, _ p2: Point) -> Double {
+    
+    let x = BezierPolynomial(p0.x, p1.x, p2.x).derivative
+    let y = BezierPolynomial(p0.y, p1.y, p2.y).derivative
+    
+    let u = x * x + y * y
+    
+    let a = u[2]
+    let b = u[1]
+    let c = u[0]
+    
+    if a.almostZero() {
+        return b.almostZero() ? sqrt(c) * t : 2 * (pow(b * t + c, 1.5) - pow(c, 1.5)) / (3 * b)
+    }
+    
+    let g = 2 * sqrt(a * (t * (a * t + b) + c))
+    let h = 2 * a * t + b
+    let i = 0.125 * pow(a, -1.5)
+    let j = b * b - 4 * a * c
+    let k = 2 * sqrt(a * c)
+    
+    return i * (g * h - k * b) - i * j * (log(g + h) - log(k + b))
+}
+
 public func QuadBezierFitting(_ p0: Point, _ p2: Point, _ m0: Point, _ m2: Point) -> Point? {
     let a = p2.x - p0.x
     let b = p2.y - p0.y
