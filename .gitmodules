@@ -1,0 +1,3 @@
+[submodule "c11_atomic"]
+	path = c11_atomic
+	url = https://github.com/SusanDoggie/c11_atomic.git
