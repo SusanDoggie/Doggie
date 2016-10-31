@@ -885,6 +885,14 @@ private func BezierOffset(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point, _ 
 }
 
 public func BezierVariableOffset(_ p0: Point, _ p1: Point, _ a: Point ... ) -> [Point]? {
+    
+    return BezierVariableOffset(p0, p1, a)
+}
+public func BezierVariableOffset(p0: Point, p1: Point, p2: Point, _ a: Point ... ) -> [[Point]] {
+    
+    return BezierVariableOffset(p0: p0, p1: p1, p2: p2, a, 8)
+}
+private func BezierVariableOffset(_ p0: Point, _ p1: Point, _ a: [Point]) -> [Point]? {
     let z = p1 - p0
     if z.x.almostZero() && z.y.almostZero() {
         return nil
@@ -893,11 +901,7 @@ public func BezierVariableOffset(_ p0: Point, _ p1: Point, _ a: Point ... ) -> [
     let magnitude = z.magnitude
     return a.map { Point(x: $0.x * magnitude, y: -$0.y) * SDTransform.Rotate(angle) + p0 }
 }
-public func BezierVariableOffset(p0: Point, p1: Point, p2: Point, a0: Point, a1: Point) -> [[Point]] {
-    
-    return BezierVariableOffset(p0: p0, p1: p1, p2: p2, a0: a0, a1: a1, 8)
-}
-private func BezierVariableOffset(p0: Point, p1: Point, p2: Point, a0: Point, a1: Point, _ limit: Int) -> [[Point]] {
+private func BezierVariableOffset(p0: Point, p1: Point, p2: Point, _ a: [Point], _ limit: Int) -> [[Point]] {
     
     let q0 = p1 - p0
     let q1 = p2 - p1
@@ -909,7 +913,7 @@ private func BezierVariableOffset(p0: Point, p1: Point, p2: Point, a0: Point, a1
     let ph1 = q1.phase
     
     if ph0.almostEqual(ph1) || ph0.almostEqual(ph1 + 2 * M_PI) || ph0.almostEqual(ph1 - 2 * M_PI) {
-        return BezierVariableOffset(p0, p2, a0, a1).map { [$0] } ?? []
+        return BezierVariableOffset(p0, p2, a).map { [$0] } ?? []
     }
     
     let length = QuadBezierLength(1, p0, p1, p2)
@@ -917,11 +921,17 @@ private func BezierVariableOffset(p0: Point, p1: Point, p2: Point, a0: Point, a1
     if ph0.almostEqual(ph1 + M_PI) || ph0.almostEqual(ph1 - M_PI) {
         if let w = QuadBezierStationary(p0.x, p1.x, p2.x) ?? QuadBezierStationary(p0.y, p1.y, p2.y) {
             let mid_length = QuadBezierLength(w, p0, p1, p2)
-            let (a_left, a_right) = SplitBezier(mid_length / length, a0, a1)
+            let t = (BezierPolynomial(a.map { $0.x }) - mid_length / length).roots.first { (0...1).contains($0) } ?? mid_length / length
             let g = Bezier(w, p0, p1, p2)
-            if let left = BezierVariableOffset(p0, g, Point(x: 0, y: a_left[0].y), Point(x: 1, y: a_left[1].y)), let right = BezierVariableOffset(g, p2, Point(x: 0, y: a_right[0].y), Point(x: 1, y: a_right[1].y)) {
+            let (a_left, a_right) = SplitBezier(t, a)
+            let a_left_last = a_left.last!
+            let a_right_first = a_right.first!
+            let a_right_last = a_right.last!
+            let _a_left = a_left.map { Point(x: $0.x / a_left_last.x, y: $0.y) }
+            let _a_right = a_right.map { Point(x: ($0.x - a_right_first.x) / (a_right_last.x - a_right_first.x), y: $0.y) }
+            if let left = BezierVariableOffset(p0, g, _a_left), let right = BezierVariableOffset(g, p2, _a_right) {
                 let angle = ph0 - M_PI_2
-                let bezierCircle = BezierCircle.lazy.map { $0 * SDTransform.Rotate(angle) * a_left[1].y + g }
+                let bezierCircle = BezierCircle.lazy.map { $0 * SDTransform.Rotate(angle) * a_left_last.y + g }
                 let i = [bezierCircle[0],
                          bezierCircle[1],
                          bezierCircle[2],
@@ -939,8 +949,10 @@ private func BezierVariableOffset(p0: Point, p1: Point, p2: Point, a0: Point, a1
     
     func split_half() -> [[Point]] {
         let (p_left, p_right) = SplitBezier(0.5, p0, p1, p2)
-        let (a_left, a_right) = SplitBezier(half_length / length, a0, a1)
-        return BezierVariableOffset(p0: p_left[0], p1: p_left[1], p2: p_left[2], a0: Point(x: 0, y: a_left[0].y), a1: Point(x: 1, y: a_left[1].y), limit - 1) + BezierVariableOffset(p0: p_right[0], p1: p_right[1], p2: p_right[2], a0: Point(x: 0, y: a_right[0].y), a1: Point(x: 1, y: a_right[1].y), limit - 1)
+        let (a_left, a_right) = SplitBezier(half_length / length, a)
+        let _a_left = a_left.map { Point(x: $0.x / a_left.last!.x, y: $0.y) }
+        let _a_right = a_right.map { Point(x: ($0.x - a_right.first!.x) / (a_right.last!.x - a_right.first!.x), y: $0.y) }
+        return BezierVariableOffset(p0: p_left[0], p1: p_left[1], p2: p_left[2], _a_left, limit - 1) + BezierVariableOffset(p0: p_right[0], p1: p_right[1], p2: p_right[2], _a_right, limit - 1)
     }
     
     if limit > 0 && BezierOffsetCurvature(p0, p1, p2) {
@@ -949,17 +961,19 @@ private func BezierVariableOffset(p0: Point, p1: Point, p2: Point, a0: Point, a1
     
     let s = 1 / q0.magnitude
     let t = 1 / q1.magnitude
-    let start = Point(x: p0.x + a0.y * q0.y * s, y: p0.y - a0.y * q0.x * s)
-    let end = Point(x: p2.x + a1.y * q1.y * t, y: p2.y - a1.y * q1.x * t)
+    let a_first = a.first!
+    let a_last = a.last!
+    let start = Point(x: p0.x + a_first.y * q0.y * s, y: p0.y - a_first.y * q0.x * s)
+    let end = Point(x: p2.x + a_last.y * q1.y * t, y: p2.y - a_last.y * q1.x * t)
     
-    let z = Point(x: a1.x * length, y: -a1.y) - Point(x: a0.x * length, y: -a0.y)
-    let zh = z.phase
+    let z0 = a.lazy.map { $0 - a_first }.first { !$0.x.almostZero() || !$0.y.almostZero() }!
+    let z1 = a.reversed().lazy.map { a_last - $0 }.first { !$0.x.almostZero() || !$0.y.almostZero() }!
     
-    if let mid = QuadBezierFitting(start, end, q0 * SDTransform.Rotate(zh), q1 * SDTransform.Rotate(zh)) {
+    if let mid = QuadBezierFitting(start, end, q0 * SDTransform.Rotate(z0.phase), q1 * SDTransform.Rotate(z1.phase)) {
         return limit > 0 && BezierOffsetCurvature(start, mid, end) ? split_half() : [[start, mid, end]]
     }
     
-    return BezierVariableOffset(p0, p2, a0, a1).map { [$0] } ?? []
+    return BezierVariableOffset(p0, p2, a).map { [$0] } ?? []
 }
 
 // MARK: Stationary Points
