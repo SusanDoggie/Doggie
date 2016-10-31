@@ -873,6 +873,16 @@ private func BezierOffset(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point, _ 
     return BezierOffset(p0, p3, a).map { [[$0, $1]] } ?? []
 }
 
+public func BezierVariableOffset(_ p0: Point, _ p1: Point, _ a: Point ... ) -> [Point]? {
+    let z = p1 - p0
+    if z.x.almostZero() && z.y.almostZero() {
+        return nil
+    }
+    let angle = z.phase
+    let magnitude = z.magnitude
+    return a.map { Point(x: $0.x * magnitude, y: -$0.y) * SDTransform.Rotate(angle) + p0 }
+}
+
 // MARK: Stationary Points
 
 public func QuadBezierStationary(_ p0: Double, _ p1: Double, _ p2: Double) -> Double? {
