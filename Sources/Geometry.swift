@@ -535,7 +535,48 @@ public func CubicBezierInflection(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: P
     return degree2roots(y / x, z / x)
 }
 
+@_transparent
+private func QuadBezierLength(_ t: Double, _ a: Double, _ b: Double, _ c: Double) -> Double {
+    
+    if a.almostZero() {
+        return b.almostZero() ? sqrt(c) * t : 2 * (pow(b * t + c, 1.5) - pow(c, 1.5)) / (3 * b)
+    }
+    if b.almostZero() {
+        let g = sqrt(a * t * t + c)
+        let h = sqrt(a)
+        return 0.5 * t * g + 0.5 * c * log(h * g + a * t) / h
+    }
+    if a.almostEqual(c) && a.almostEqual(-0.5 * b) {
+        let g = t - 1
+        return g.almostZero() ? 0.5 * sqrt(a) : 0.5 * t * (t - 2) * sqrt(a * g * g) / g
+    }
+    
+    let g = 2 * sqrt(a * (t * (a * t + b) + c))
+    let h = 2 * a * t + b
+    let i = 0.125 * pow(a, -1.5)
+    let j = b * b - 4 * a * c
+    let k = 2 * sqrt(a * c)
+    
+    return i * (g * h - k * b) - i * j * (log(g + h) - log(k + b))
+}
 public func QuadBezierLength(_ t: Double, _ p0: Point, _ p1: Point, _ p2: Point) -> Double {
+    
+    if t.almostZero() {
+        return t
+    }
+    
+    let x = BezierPolynomial(p0.x, p1.x, p2.x).derivative
+    let y = BezierPolynomial(p0.y, p1.y, p2.y).derivative
+    
+    let u = x * x + y * y
+    
+    return QuadBezierLength(t, u[2], u[1], u[0])
+}
+public func InverseQuadBezierLength(_ length: Double, _ p0: Point, _ p1: Point, _ p2: Point) -> Double {
+    
+    if length.almostZero() {
+        return length
+    }
     
     let x = BezierPolynomial(p0.x, p1.x, p2.x).derivative
     let y = BezierPolynomial(p0.y, p1.y, p2.y).derivative
@@ -547,16 +588,20 @@ public func QuadBezierLength(_ t: Double, _ p0: Point, _ p1: Point, _ p2: Point)
     let c = u[0]
     
     if a.almostZero() {
-        return b.almostZero() ? sqrt(c) * t : 2 * (pow(b * t + c, 1.5) - pow(c, 1.5)) / (3 * b)
+        return b.almostZero() ? length / sqrt(c) : (pow(1.5 * b * length, 2 / 3) - c) / b
+    }
+    if a.almostEqual(c) && a.almostEqual(-0.5 * b) && length.almostEqual(0.5 * sqrt(a)) {
+        return 1
     }
     
-    let g = 2 * sqrt(a * (t * (a * t + b) + c))
-    let h = 2 * a * t + b
-    let i = 0.125 * pow(a, -1.5)
-    let j = b * b - 4 * a * c
-    let k = 2 * sqrt(a * c)
+    var t = length / QuadBezierLength(1, a, b, c)
     
-    return i * (g * h - k * b) - i * j * (log(g + h) - log(k + b))
+    t -= (QuadBezierLength(t, a, b, c) - length) / sqrt((a * t + b) * t + c)
+    t -= (QuadBezierLength(t, a, b, c) - length) / sqrt((a * t + b) * t + c)
+    t -= (QuadBezierLength(t, a, b, c) - length) / sqrt((a * t + b) * t + c)
+    t -= (QuadBezierLength(t, a, b, c) - length) / sqrt((a * t + b) * t + c)
+    
+    return t
 }
 
 public func QuadBezierFitting(_ p0: Point, _ p2: Point, _ m0: Point, _ m2: Point) -> Point? {
