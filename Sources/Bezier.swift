@@ -801,8 +801,10 @@ private func BezierVariableOffset(p0: Point, p1: Point, p2: Point, _ a: [Point],
     let start = Point(x: p0.x + a_first.y * q0.y * s, y: p0.y - a_first.y * q0.x * s)
     let end = Point(x: p2.x + a_last.y * q1.y * t, y: p2.y - a_last.y * q1.x * t)
     
-    let z0 = a.lazy.map { $0 - a_first }.first { !$0.x.almostZero() || !$0.y.almostZero() }!
-    let z1 = a.lazy.map { a_last - $0 }.last { !$0.x.almostZero() || !$0.y.almostZero() }!
+    let za_first = Point(x: a_first.x * length, y: -a_first.y)
+    let za_last = Point(x: a_last.x * length, y: -a_last.y)
+    let z0 = a.lazy.map { Point(x: $0.x * length, y: -$0.y) - za_first }.first { !$0.x.almostZero() || !$0.y.almostZero() }!
+    let z1 = a.lazy.map { za_last - Point(x: $0.x * length, y: -$0.y) }.last { !$0.x.almostZero() || !$0.y.almostZero() }!
     
     if let mid = QuadBezierFitting(start, end, q0 * SDTransform.Rotate(z0.phase), q1 * SDTransform.Rotate(z1.phase)) {
         return limit > 0 && BezierOffsetCurvature(start, mid, end) ? split_half() : [[start, mid, end]]
