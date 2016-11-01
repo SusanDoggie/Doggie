@@ -543,6 +543,9 @@ public func BezierFitting(start: Vector, end: Vector, _ passing: (Double, Vector
 }
 
 public func BezierOffset(_ p0: Point, _ p1: Point, _ a: Double) -> (Point, Point)? {
+    if a.almostZero() {
+        return (p0, p1)
+    }
     let _x = p1.x - p0.x
     let _y = p1.y - p0.y
     if _x.almostZero() && _y.almostZero() {
@@ -577,6 +580,10 @@ public func BezierOffset(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point, _ a
     return BezierOffset(p0, p1, p2, p3, a, 8, true)
 }
 private func BezierOffset(_ p0: Point, _ p1: Point, _ p2: Point, _ a: Double, _ limit: Int) -> [[Point]] {
+    
+    if a.almostZero() {
+        return [[p0, p1, p2]]
+    }
     
     let q0 = p1 - p0
     let q1 = p2 - p1
