@@ -674,6 +674,9 @@ private func BezierOffset(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point, _ 
         switch u.count {
         case 1:
             let g = Bezier(u[0], p0, p1, p2, p3)
+            if a.almostZero() {
+                return [[p0, g], [g, p3]]
+            }
             let angle = ph0 - M_PI_2
             let bezierCircle = BezierCircle.lazy.map { $0 * SDTransform.Rotate(angle) * a + g }
             let v0 = OptionOneCollection(BezierOffset(p0, g, a).map { [$0, $1] })
@@ -684,6 +687,9 @@ private func BezierOffset(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point, _ 
         case 2:
             let g = Bezier(u[0], p0, p1, p2, p3)
             let h = Bezier(u[1], p0, p1, p2, p3)
+            if a.almostZero() {
+                return [[p0, g], [g, h], [h, p3]]
+            }
             let angle1 = ph0 - M_PI_2
             let angle2 = ph1 - M_PI_2
             let bezierCircle1 = BezierCircle.lazy.map { $0 * SDTransform.Rotate(angle1) * a + g }
@@ -724,6 +730,22 @@ private func BezierOffset(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point, _ 
     
     let _q0 = z0 ? q1 : q0
     let _q1 = z2 ? q1 : q2
+    
+    if a.almostZero() {
+        if limit > 0, let mid = QuadBezierFitting(p0, p3, _q0, _q1), BezierOffsetCurvature(p0, mid, p3) {
+            return split(0.5)
+        }
+        if let mid = QuadBezierFitting(p0, p3, _q0, _q1) {
+            if BezierOffsetCurvature(p0, mid, p3) {
+                if limit > 0 {
+                    return split(0.5)
+                } else {
+                    return [[p0, (Bezier(0.5, p0, p1, p2, p3) - 0.25 * (p0 + p3)) / 0.5, p3]]
+                }
+            }
+            return [[p0, mid, p3]]
+        }
+    }
     
     let s = 1 / _q0.magnitude
     let t = 1 / _q1.magnitude
