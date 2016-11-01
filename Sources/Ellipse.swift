@@ -158,3 +158,17 @@ public func EllipseBound<T: SDTransformProtocol>(_ center: Point, _ r: Radius, _
     
     return Rect(x: minX + matrix.c, y: minY + matrix.f, width: maxX - minX, height: maxY - minY)
 }
+
+// MARK: Area
+
+public func ArcSignedArea(_ startAngle: Double, _ endAngle: Double, _ center: Point, _ radius: Radius) -> Double {
+    
+    let diffAngle = endAngle - startAngle
+    let sin1 = sin(startAngle)
+    let cos1 = cos(startAngle)
+    let sin2 = sin(endAngle)
+    let cos2 = cos(endAngle)
+    let _sin = sin2 - sin1
+    let _cos = cos2 - cos1
+    return 0.5 * (radius.x * radius.y * diffAngle - radius.x * center.y * _cos + radius.y * center.x * _sin)
+}
