@@ -570,11 +570,11 @@ private func BezierOffsetCurvature(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: 
 
 public func BezierOffset(_ p0: Point, _ p1: Point, _ p2: Point, _ a: Double) -> [[Point]] {
     
-    return BezierOffset(p0, p1, p2, a, 5)
+    return BezierOffset(p0, p1, p2, a, 8)
 }
 public func BezierOffset(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point, _ a: Double) -> [[Point]] {
     
-    return BezierOffset(p0, p1, p2, p3, a, 5, true)
+    return BezierOffset(p0, p1, p2, p3, a, 8, true)
 }
 private func BezierOffset(_ p0: Point, _ p1: Point, _ p2: Point, _ a: Double, _ limit: Int) -> [[Point]] {
     
@@ -618,7 +618,17 @@ private func BezierOffset(_ p0: Point, _ p1: Point, _ p2: Point, _ a: Double, _ 
     let end = Point(x: p2.x + a * q1.y * t, y: p2.y - a * q1.x * t)
     
     if let mid = QuadBezierFitting(start, end, q0, q1) {
-        return limit > 0 && BezierOffsetCurvature(start, mid, end) ? split(0.5) : [[start, mid, end]]
+        if BezierOffsetCurvature(start, mid, end) {
+            if limit > 0 {
+                return split(0.5)
+            } else {
+                let m = Bezier(0.5, q0, q1)
+                let _s = 1 / m.magnitude
+                let _mid = Bezier(0.5, p0, p1, p2) + Point(x: a * m.y * _s, y: -a * m.x * _s)
+                return [[start, (_mid - 0.25 * (start + end)) / 0.5, end]]
+            }
+        }
+        return [[start, mid, end]]
     }
     
     return BezierOffset(p0, p2, a).map { [[$0, $1]] } ?? []
@@ -717,7 +727,17 @@ private func BezierOffset(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point, _ 
         return split(0.5)
     }
     if let mid = QuadBezierFitting(start, end, _q0, _q1) {
-        return limit > 0 && BezierOffsetCurvature(start, mid, end) ? split(0.5) : [[start, mid, end]]
+        if BezierOffsetCurvature(start, mid, end) {
+            if limit > 0 {
+                return split(0.5)
+            } else {
+                let m = Bezier(0.5, q0, q1 + q1, q2)
+                let _s = 1 / m.magnitude
+                let _mid = Bezier(0.5, p0, p1, p2, p3) + Point(x: a * m.y * _s, y: -a * m.x * _s)
+                return [[start, (_mid - 0.25 * (start + end)) / 0.5, end]]
+            }
+        }
+        return [[start, mid, end]]
     }
     
     return BezierOffset(p0, p3, a).map { [[$0, $1]] } ?? []
@@ -807,7 +827,19 @@ private func BezierVariableOffset(p0: Point, p1: Point, p2: Point, _ a: [Point],
     let z1 = a.lazy.map { za_last - Point(x: $0.x * length, y: -$0.y) }.last { !$0.x.almostZero() || !$0.y.almostZero() }!
     
     if let mid = QuadBezierFitting(start, end, q0 * SDTransform.Rotate(z0.phase), q1 * SDTransform.Rotate(z1.phase)) {
-        return limit > 0 && BezierOffsetCurvature(start, mid, end) ? split_half() : [[start, mid, end]]
+        if BezierOffsetCurvature(start, mid, end) {
+            if limit > 0 {
+                return split_half()
+            } else {
+                let t = a.count == 2 ? half_length / length : (BezierPolynomial(a.map { $0.x }) - half_length / length).roots.first { !$0.almostZero() && !$0.almostEqual(1) && (0...1).contains($0) } ?? half_length / length
+                let g = Bezier(t, a)
+                let m = Bezier(0.5, q0, q1)
+                let _s = 1 / m.magnitude
+                let _mid = Bezier(0.5, p0, p1, p2) + Point(x: g.y * m.y * _s, y: -g.y * m.x * _s)
+                return [[start, (_mid - 0.25 * (start + end)) / 0.5, end]]
+            }
+        }
+        return [[start, mid, end]]
     }
     
     return BezierVariableOffset(p0, p2, a).map { [$0] } ?? []
