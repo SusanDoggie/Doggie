@@ -772,15 +772,7 @@ private func BezierOffset(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point, _ 
     return BezierOffset(p0, p3, a).map { [[$0, $1]] } ?? []
 }
 
-public func BezierVariableOffset(_ p0: Point, _ p1: Point, _ a: Point ... ) -> [Point]? {
-    
-    return BezierVariableOffset(p0, p1, a)
-}
-public func BezierVariableOffset(p0: Point, p1: Point, p2: Point, _ a: Point ... ) -> [[Point]] {
-    
-    return BezierVariableOffset(p0: p0, p1: p1, p2: p2, a, 8)
-}
-private func BezierVariableOffset(_ p0: Point, _ p1: Point, _ a: [Point]) -> [Point]? {
+public func BezierVariableOffset(_ p0: Point, _ p1: Point, _ a: [Point]) -> [Point]? {
     let z = p1 - p0
     if z.x.almostZero() && z.y.almostZero() {
         return nil
@@ -789,7 +781,11 @@ private func BezierVariableOffset(_ p0: Point, _ p1: Point, _ a: [Point]) -> [Po
     let magnitude = z.magnitude
     return a.map { Point(x: $0.x * magnitude, y: -$0.y) * SDTransform.Rotate(angle) + p0 }
 }
-private func BezierVariableOffset(p0: Point, p1: Point, p2: Point, _ a: [Point], _ limit: Int) -> [[Point]] {
+public func BezierVariableOffset(_ p0: Point, _ p1: Point, _ p2: Point, _ a: [Point]) -> [[Point]] {
+    
+    return BezierVariableOffset(p0, p1, p2, a, 8)
+}
+private func BezierVariableOffset(_ p0: Point, _ p1: Point, _ p2: Point, _ a: [Point], _ limit: Int) -> [[Point]] {
     
     let q0 = p1 - p0
     let q1 = p2 - p1
