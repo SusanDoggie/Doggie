@@ -832,7 +832,7 @@ private func BezierVariableOffset(_ p0: Point, _ p1: Point, _ p2: Point, _ a: [P
     func split_half() -> [[Point]] {
         let (p_left, p_right) = SplitBezier(0.5, p0, p1, p2)
         let (a_left, a_right) = split_a(half_length)
-        return BezierVariableOffset(p0: p_left[0], p1: p_left[1], p2: p_left[2], a_left, limit - 1) + BezierVariableOffset(p0: p_right[0], p1: p_right[1], p2: p_right[2], a_right, limit - 1)
+        return BezierVariableOffset(p_left[0], p_left[1], p_left[2], a_left, limit - 1) + BezierVariableOffset(p_right[0], p_right[1], p_right[2], a_right, limit - 1)
     }
     
     if limit > 0 && BezierOffsetCurvature(p0, p1, p2) {
