@@ -253,6 +253,12 @@ public func ClosestBezier(_ point: Point, _ b0: Point, _ b1: Point, _ b2: Point,
 }
 
 private func SplitBezier(_ t: Double, _ p: [Double]) -> ([Double], [Double]) {
+    if t.almostZero() {
+        return (Array(repeating: p.first ?? 0, count: p.count), p)
+    }
+    if t.almostEqual(1) {
+        return (p, Array(repeating: p.last ?? 0, count: p.count))
+    }
     let _t = 1 - t
     if p.count == 2 {
         let split = _t * p.first! + t * p.last!
@@ -283,6 +289,12 @@ private func SplitBezier(_ t: [Double], _ p: [Double]) -> [[Double]] {
 }
 
 private func SplitBezier(_ t: Double, _ p: [Point]) -> ([Point], [Point]) {
+    if t.almostZero() {
+        return (Array(repeating: p.first ?? Point(), count: p.count), p)
+    }
+    if t.almostEqual(1) {
+        return (p, Array(repeating: p.last ?? Point(), count: p.count))
+    }
     let _t = 1 - t
     if p.count == 2 {
         let split = _t * p.first! + t * p.last!
@@ -313,6 +325,12 @@ private func SplitBezier(_ t: [Double], _ p: [Point]) -> [[Point]] {
 }
 
 private func SplitBezier(_ t: Double, _ p: [Vector]) -> ([Vector], [Vector]) {
+    if t.almostZero() {
+        return (Array(repeating: p.first ?? Vector(), count: p.count), p)
+    }
+    if t.almostEqual(1) {
+        return (p, Array(repeating: p.last ?? Vector(), count: p.count))
+    }
     let _t = 1 - t
     if p.count == 2 {
         let split = _t * p.first! + t * p.last!
