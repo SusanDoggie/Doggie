@@ -210,7 +210,7 @@ extension SDPath.StrokeBuffer {
         
         let ph0 = last!.endDirection.phase
         let ph1 = segment.startDirection.phase
-        let angle = (ph0 - ph1).remainder(dividingBy: 2 * M_PI)
+        let angle = (ph1 - ph0).remainder(dividingBy: 2 * M_PI)
         if !angle.almostZero() {
             switch join {
             case let .miter(limit):
@@ -225,6 +225,27 @@ extension SDPath.StrokeBuffer {
                     buffer2.append(.line(reverse_start))
                 } else {
                     if angle > 0 {
+                        do {
+                            let d0 = last!.endDirection
+                            let m0 = d0.magnitude
+                            let u0 = width * 0.5 * d0.y / m0
+                            let v0 = -width * 0.5 * d0.x / m0
+                            
+                            let d1 = segment.startDirection
+                            let m1 = d1.magnitude
+                            let u1 = width * 0.5 * d1.y / m1
+                            let v1 = -width * 0.5 * d1.x / m1
+                            
+                            let p0 = last!.end + Point(x: u0, y: v0)
+                            let p1 = p0 + Point(x: -v0, y: u0)
+                            let q0 = segment.start + Point(x: u1, y: v1)
+                            let q1 = q0 + Point(x: -v1, y: u1)
+                            let intersect = LinesIntersect(p0, p1, q0, q1)!
+                            buffer1.append(.line(intersect))
+                            buffer1.append(.line(q0))
+                        }
+                        buffer2.append(.line(reverse_start))
+                    } else {
                         do {
                             let d = segment.startDirection
                             let m = d.magnitude
@@ -252,31 +273,20 @@ extension SDPath.StrokeBuffer {
                             buffer2.append(.line(intersect))
                             reverse_start = p0
                         }
-                    } else {
-                        do {
-                            let d0 = last!.endDirection
-                            let m0 = d0.magnitude
-                            let u0 = width * 0.5 * d0.y / m0
-                            let v0 = -width * 0.5 * d0.x / m0
-                            
-                            let d1 = segment.startDirection
-                            let m1 = d1.magnitude
-                            let u1 = width * 0.5 * d1.y / m1
-                            let v1 = -width * 0.5 * d1.x / m1
-                            
-                            let p0 = last!.end + Point(x: u0, y: v0)
-                            let p1 = p0 + Point(x: -v0, y: u0)
-                            let q0 = segment.start + Point(x: u1, y: v1)
-                            let q1 = q0 + Point(x: -v1, y: u1)
-                            let intersect = LinesIntersect(p0, p1, q0, q1)!
-                            buffer1.append(.line(intersect))
-                            buffer1.append(.line(q0))
-                        }
-                        buffer2.append(.line(reverse_start))
                     }
                 }
             case .round:
                 if angle > 0 {
+                    do {
+                        let a = ph0 - M_PI_2
+                        let r = 0.5 * width
+                        let bezierArc = BezierArc(angle).lazy.map { $0 * SDTransform.Rotate(a) * r + segment.start }
+                        for i in 0..<bezierArc.count / 3 {
+                            buffer1.append(.cubic(bezierArc[i * 3 + 1], bezierArc[i * 3 + 2], bezierArc[i * 3 + 3]))
+                        }
+                    }
+                    buffer2.append(.line(reverse_start))
+                } else {
                     do {
                         let d = segment.startDirection
                         let m = d.magnitude
@@ -287,22 +297,12 @@ extension SDPath.StrokeBuffer {
                     do {
                         let a = ph1 - M_PI_2
                         let r = -0.5 * width
-                        let bezierArc = BezierArc(angle).lazy.map { $0 * SDTransform.Rotate(a) * r + segment.start }
+                        let bezierArc = BezierArc(-angle).lazy.map { $0 * SDTransform.Rotate(a) * r + segment.start }
                         reverse_start = bezierArc[0]
                         for i in (0..<bezierArc.count / 3).reversed() {
                             buffer2.append(.cubic(bezierArc[i * 3 + 1], bezierArc[i * 3 + 2], bezierArc[i * 3 + 3]))
                         }
                     }
-                } else {
-                    do {
-                        let a = ph0 - M_PI_2
-                        let r = 0.5 * width
-                        let bezierArc = BezierArc(-angle).lazy.map { $0 * SDTransform.Rotate(a) * r + segment.start }
-                        for i in 0..<bezierArc.count / 3 {
-                            buffer1.append(.cubic(bezierArc[i * 3 + 1], bezierArc[i * 3 + 2], bezierArc[i * 3 + 3]))
-                        }
-                    }
-                    buffer2.append(.line(reverse_start))
                 }
             default: break
             }
