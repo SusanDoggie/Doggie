@@ -424,7 +424,9 @@ private func QuadBezierLength(_ t: Double, _ a: Double, _ b: Double, _ c: Double
     if b.almostZero() {
         let g = sqrt(a * t * t + c)
         let h = sqrt(a)
-        return 0.5 * (t * g + c * (log(h * g + a * t) - log(h * sqrt(c))) / h)
+        let i = log(h * g + a * t)
+        let j = log(h * sqrt(c))
+        return 0.5 * (t * g + c * (i - j) / h)
     }
     if a.almostEqual(c) && a.almostEqual(-0.5 * b) {
         let g = t - 1
