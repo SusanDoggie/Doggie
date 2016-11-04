@@ -866,8 +866,8 @@ private func BezierVariableOffset(_ p0: Point, _ p1: Point, _ p2: Point, _ a: [P
     
     let za_first = Point(x: a_first.x * length, y: -a_first.y)
     let za_last = Point(x: a_last.x * length, y: -a_last.y)
-    let z0 = a.lazy.map { Point(x: $0.x * length, y: -$0.y) - za_first }.first { !$0.x.almostZero() || !$0.y.almostZero() }!
-    let z1 = a.lazy.map { za_last - Point(x: $0.x * length, y: -$0.y) }.last { !$0.x.almostZero() || !$0.y.almostZero() }!
+    let z0 = a.dropFirst().lazy.map { Point(x: $0.x * length, y: -$0.y) - za_first }.first { !$0.x.almostZero() || !$0.y.almostZero() }!
+    let z1 = a.dropLast().lazy.map { za_last - Point(x: $0.x * length, y: -$0.y) }.last { !$0.x.almostZero() || !$0.y.almostZero() }!
     
     if let mid = QuadBezierFitting(start, end, q0 * SDTransform.Rotate(z0.phase), q1 * SDTransform.Rotate(z1.phase)) {
         if BezierOffsetCurvature(start, mid, end) {
