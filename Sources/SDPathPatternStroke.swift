@@ -172,8 +172,8 @@ extension SDPath {
             
             defer { flag2 = _flag2 }
             
-            var _p0 = Bezier(start, p0, p1)
-            let _p1 = Bezier(end, p0, p1)
+            var _p0 = BezierPoint(start, p0, p1)
+            let _p1 = BezierPoint(end, p0, p1)
             
             while true {
                 let z = _p1 - _p0
@@ -188,7 +188,7 @@ extension SDPath {
                     addJoin(_p0.y, z.x.sign)
                 }
                 if z.x > 0 {
-                    let mid = Bezier((current_endX / fitting.total - p0.x) / (p1.x - p0.x), p0, p1)
+                    let mid = BezierPoint((current_endX / fitting.total - p0.x) / (p1.x - p0.x), p0, p1)
                     let segment_points = current_segment.points
                     let a = [Point(x: 0, y: _p0.y), Point(x: 1, y: mid.y)]
                     switch segment_points.count {
@@ -219,7 +219,7 @@ extension SDPath {
                         _startX = current_startX
                         segment_points = current_segment.points
                     }
-                    let mid = Bezier((_startX / fitting.total - p0.x) / (p1.x - p0.x), p0, p1)
+                    let mid = BezierPoint((_startX / fitting.total - p0.x) / (p1.x - p0.x), p0, p1)
                     let a = [Point(x: 0, y: -_p0.y), Point(x: 1, y: -mid.y)]
                     switch segment_points.count {
                     case 2:
