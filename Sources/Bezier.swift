@@ -25,124 +25,445 @@
 
 import Foundation
 
-public func BezierPoint(_ t: Double, _ p0: Double, _ p1: Double) -> Double {
+public protocol BezierPointProtocol {
+    
+    static prefix func + (_: Self) -> Self
+    static prefix func - (_: Self) -> Self
+    static func + (_: Self, _: Self) -> Self
+    static func - (_: Self, _: Self) -> Self
+    static func * (_: Double, _: Self) -> Self
+    static func * (_: Self, _: Double) -> Self
+    static func / (_: Self, _: Double) -> Self
+    static func += (_: inout Self, _: Self)
+    static func -= (_: inout Self, _: Self)
+    static func *= (_: inout Self, _: Double)
+    static func /= (_: inout Self, _: Double)
+}
+
+extension Double : BezierPointProtocol {
+    
+}
+extension Point : BezierPointProtocol {
+    
+}
+extension Vector : BezierPointProtocol {
+    
+}
+
+private enum BezierControlsBase<Point : BezierPointProtocol> {
+    
+    case zero
+    case one(Point)
+    case two(Point, Point)
+    case many([Point])
+    
+    init<C : Collection>(_ c: C) where C.Iterator.Element == Point {
+        switch c.count {
+        case 0: self = .zero
+        case 1: self = .one(c[c.startIndex])
+        case 2: self = .two(c[c.startIndex], c[c.index(after: c.startIndex)])
+        default: self = .many(Array(c))
+        }
+    }
+}
+public struct Bezier<Point : BezierPointProtocol> {
+    
+    public var start: Point
+    public var end: Point
+    
+    fileprivate var base: BezierControlsBase<Point>
+    
+    public init(_ p0: Point, _ p1: Point) {
+        self.start = p0
+        self.end = p1
+        self.base = .zero
+    }
+    public init(_ p0: Point, _ p1: Point, _ p2: Point) {
+        self.start = p0
+        self.end = p2
+        self.base = .one(p1)
+    }
+    public init(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point) {
+        self.start = p0
+        self.end = p3
+        self.base = .two(p1, p2)
+    }
+    public init<S : Sequence>(_ s: S) where S.Iterator.Element == Point {
+        let _s = Array(s)
+        self.start = _s.first!
+        self.end = _s.last!
+        self.base = BezierControlsBase(_s.dropFirst().dropLast())
+    }
+}
+extension Bezier : ExpressibleByArrayLiteral {
+    
+    public init(arrayLiteral elements: Point ... ) {
+        self.init(elements)
+    }
+}
+
+extension Bezier : CustomStringConvertible {
+    
+    public var description: String {
+        return "\(points)"
+    }
+}
+extension Bezier {
+    
+    public var controls: [Point] {
+        get {
+            switch base {
+            case .zero: return []
+            case let .one(p1): return [p1]
+            case let .two(p1, p2): return [p1, p2]
+            case let .many(p): return p
+            }
+        }
+        set {
+            base = BezierControlsBase(newValue)
+        }
+    }
+    
+}
+extension Bezier : RandomAccessCollection, MutableCollection {
+    
+    public typealias Indices = CountableRange<Int>
+    
+    public typealias Index = Int
+    
+    public var degree: Int {
+        switch base {
+        case .zero: return 1
+        case .one: return 2
+        case .two: return 3
+        case let .many(p): return p.count + 1
+        }
+    }
+    public var count: Int {
+        switch base {
+        case .zero: return 2
+        case .one: return 3
+        case .two: return 4
+        case let .many(p): return p.count + 2
+        }
+    }
+    public var startIndex: Int {
+        return 0
+    }
+    public var endIndex: Int {
+        return count
+    }
+    
+    public subscript(position: Int) -> Point {
+        get {
+            if position == 0 {
+                return start
+            }
+            switch base {
+            case .zero:
+                switch position {
+                case 1: return end
+                default: fatalError("Index out of range")
+                }
+            case let .one(p1):
+                switch position {
+                case 1: return p1
+                case 2: return end
+                default: fatalError("Index out of range")
+                }
+            case let .two(p1, p2):
+                switch position {
+                case 1: return p1
+                case 2: return p2
+                case 3: return end
+                default: fatalError("Index out of range")
+                }
+            case let .many(p):
+                switch position {
+                case p.count + 1: return end
+                default: return p[position - 1]
+                }
+            }
+        }
+        set {
+            if position == 0 {
+                start = newValue
+            }
+            switch base {
+            case .zero:
+                switch position {
+                case 1: end = newValue
+                default: fatalError("Index out of range")
+                }
+            case .one:
+                switch position {
+                case 1: base = .one(newValue)
+                case 2: end = newValue
+                default: fatalError("Index out of range")
+                }
+            case let .two(p1, p2):
+                switch position {
+                case 1: base = .two(newValue, p2)
+                case 2: base = .two(p1, newValue)
+                case 3: end = newValue
+                default: fatalError("Index out of range")
+                }
+            case var .many(p):
+                switch position {
+                case p.count + 1: end = newValue
+                default:
+                    p[position - 1] = newValue
+                    base = .many(p)
+                }
+            }
+        }
+    }
+    
+    public subscript(bounds: Range<Int>) -> MutableRandomAccessSlice<Bezier> {
+        get {
+            _failEarlyRangeCheck(bounds, bounds: startIndex..<endIndex)
+            return MutableRandomAccessSlice(base: self, bounds: bounds)
+        }
+        set {
+            self = newValue.base
+        }
+    }
+}
+
+extension Bezier {
+    
+    public func eval(_ t: Double) -> Point {
+        switch base {
+        case .zero: return start + t * (end - start)
+        case let .one(p1):
+            let _t = 1 - t
+            return _t * _t * start + 2 * _t * t * p1 + t * t * end
+        case let .two(p1, p2):
+            let t2 = t * t
+            let _t = 1 - t
+            let _t2 = _t * _t
+            let a = _t * _t2 * start
+            let b = 3 * _t2 * t * p1
+            let c = 3 * _t * t2 * p2
+            let d = t * t2 * end
+            return a + b + c + d
+        default:
+            let p = points
+            var result: Point?
+            let _n = p.count - 1
+            for (idx, k) in CombinationList(UInt(_n)).enumerated() {
+                let b = Double(k) * pow(t, Double(idx)) * pow(1 - t, Double(_n - idx))
+                if result == nil {
+                    result = b * p[idx]
+                } else {
+                    result! += b * p[idx]
+                }
+            }
+            return result!
+        }
+    }
+    
+}
+
+extension Bezier {
+    
+    fileprivate var points: [Point] {
+        get {
+            switch base {
+            case .zero: return [start, end]
+            case let .one(p1): return [start, p1, end]
+            case let .two(p1, p2): return [start, p1, p2, end]
+            case let .many(p): return [start] + p + [end]
+            }
+        }
+        set {
+            self = Bezier(newValue)
+        }
+    }
+}
+
+extension Polynomial {
+    
+    public var bezier: Bezier<Double> {
+        let de = (0..<self.degree).scan(self) { p, _ in p.derivative / Double(p.degree) }
+        var result: [Double] = []
+        for n in de.indices {
+            let s = zip(CombinationList(UInt(n)), de)
+            result.append(s.reduce(0) { $0 + Double($1.0) * $1.1[0] })
+        }
+        return Bezier(result)
+    }
+    
+    public init(_ bezier: Bezier<Double>) {
+        let p = bezier.points
+        var result = PermutationList(UInt(p.count - 1)).map(Double.init) as Array
+        for i in result.indices {
+            var sum = 0.0
+            let fact = Array(FactorialList(UInt(i)))
+            for (j, f) in zip(fact, fact.reversed()).map(*).enumerated() {
+                if (i + j) & 1 == 0 {
+                    sum += p[j] / Double(f)
+                } else {
+                    sum -= p[j] / Double(f)
+                }
+            }
+            result[i] *= sum
+        }
+        self.init(result)
+    }
+}
+
+extension Bezier {
+    
+    public func elevated() -> Bezier {
+        let p = points
+        let n = Double(p.count)
+        var result = [p[0]]
+        for (k, points) in zip(p, p.dropFirst()).enumerated() {
+            let t = Double(k + 1) / n
+            result.append(t * points.0 + (1 - t) * points.1)
+        }
+        result.append(p.last!)
+        return Bezier(result)
+    }
+}
+
+extension Bezier {
+    
+    private static func split(_ t: Double, _ p: [Point]) -> ([Point], [Point]) {
+        let _t = 1 - t
+        if p.count == 2 {
+            let split = _t * p.first! + t * p.last!
+            return ([p.first!, split], [split, p.last!])
+        }
+        var subpath = [Point]()
+        var lastPoint = p.first!
+        for current in p.dropFirst() {
+            subpath.append(_t * lastPoint + t * current)
+            lastPoint = current
+        }
+        let _split = split(t, subpath)
+        return ([p.first!] + _split.0, _split.1 + [p.last!])
+    }
+    public func split(_ t: Double) -> (Bezier, Bezier) {
+        if t.almostZero() {
+            return (Bezier(repeatElement(start, count: self.count)), self)
+        }
+        if t.almostEqual(1) {
+            return (self, Bezier(repeatElement(end, count: self.count)))
+        }
+        let split = Bezier.split(t, points)
+        return (Bezier(split.0), Bezier(split.1))
+    }
+    
+    public func split(_ t: [Double]) -> [Bezier] {
+        var result: [Bezier] = []
+        var remain = self
+        var last_t = 0.0
+        for _t in t.sorted() {
+            let split = remain.split((_t - last_t) / (1 - last_t))
+            result.append(split.0)
+            remain = split.1
+            last_t = _t
+        }
+        result.append(remain)
+        return result
+    }
+}
+
+extension Bezier {
+    
+    public func derivative() -> Bezier {
+        let p = self.points
+        let n = Double(p.count - 1)
+        var de = [Point]()
+        var lastPoint = p.first!
+        for current in p.dropFirst() {
+            de.append(n * (current - lastPoint))
+            lastPoint = current
+        }
+        return Bezier(de)
+    }
+}
+
+public func BezierPoint<Point: BezierPointProtocol>(_ t: Double, _ p0: Point, _ p1: Point) -> Point {
     return p0 + t * (p1 - p0)
 }
-public func BezierPoint(_ t: Double, _ p0: Double, _ p1: Double, _ p2: Double) -> Double {
+public func BezierPoint<Point: BezierPointProtocol>(_ t: Double, _ p0: Point, _ p1: Point, _ p2: Point) -> Point {
     let _t = 1 - t
     return _t * _t * p0 + 2 * _t * t * p1 + t * t * p2
 }
-public func BezierPoint(_ t: Double, _ p0: Double, _ p1: Double, _ p2: Double, _ p3: Double) -> Double {
+public func BezierPoint<Point: BezierPointProtocol>(_ t: Double, _ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point) -> Point {
     let t2 = t * t
     let _t = 1 - t
     let _t2 = _t * _t
-    return _t * _t2 * p0 + 3 * _t2 * t * p1 + 3 * _t * t2 * p2 + t * t2 * p3
+    let a = _t * _t2 * p0
+    let b = 3 * _t2 * t * p1
+    let c = 3 * _t * t2 * p2
+    let d = t * t2 * p3
+    return a + b + c + d
 }
-public func BezierPoint(_ t: Double, _ p0: Point, _ p1: Point) -> Point {
-    return p0 + t * (p1 - p0)
-}
-public func BezierPoint(_ t: Double, _ p0: Point, _ p1: Point, _ p2: Point) -> Point {
-    let _t = 1 - t
-    return _t * _t * p0 + 2 * _t * t * p1 + t * t * p2
-}
-public func BezierPoint(_ t: Double, _ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point) -> Point {
-    let t2 = t * t
-    let _t = 1 - t
-    let _t2 = _t * _t
-    return _t * _t2 * p0 + 3 * _t2 * t * p1 + 3 * _t * t2 * p2 + t * t2 * p3
-}
-public func BezierPoint(_ t: Double, _ p0: Vector, _ p1: Vector) -> Vector {
-    return p0 + t * (p1 - p0)
-}
-public func BezierPoint(_ t: Double, _ p0: Vector, _ p1: Vector, _ p2: Vector) -> Vector {
-    let _t = 1 - t
-    return _t * _t * p0 + 2 * _t * t * p1 + t * t * p2
-}
-public func BezierPoint(_ t: Double, _ p0: Vector, _ p1: Vector, _ p2: Vector, _ p3: Vector) -> Vector {
-    let t2 = t * t
-    let _t = 1 - t
-    let _t2 = _t * _t
-    return _t * _t2 * p0 + 3 * _t2 * t * p1 + 3 * _t * t2 * p2 + t * t2 * p3
-}
-public func BezierPoint(_ t: Double, _ p0: Double, _ p1: Double, _ p2: Double, _ p3: Double, _ p4: Double, _ rest: Double ... ) -> Double {
+public func BezierPoint<Point: BezierPointProtocol>(_ t: Double, _ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point, _ p4: Point, _ rest: Point ... ) -> Point {
     return BezierPoint(t, [p0, p1, p2, p3, p4] + rest)
 }
 
-public func BezierPoint(_ t: Double, _ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point, _ p4: Point, _ rest: Point ... ) -> Point {
-    return BezierPoint(t, [p0, p1, p2, p3, p4] + rest)
-}
-
-public func BezierPoint(_ t: Double, _ p0: Vector, _ p1: Vector, _ p2: Vector, _ p3: Vector, _ p4: Vector, _ rest: Vector ... ) -> Vector {
-    return BezierPoint(t, [p0, p1, p2, p3, p4] + rest)
-}
-
-public func SplitBezier(_ t: Double, _ p: Double ... ) -> ([Double], [Double]) {
-    return SplitBezier(t, p)
-}
-
-public func SplitBezier(_ t: Double, _ p: Point ... ) -> ([Point], [Point]) {
-    return SplitBezier(t, p)
-}
-
-public func SplitBezier(_ t: Double, _ p: Vector ... ) -> ([Vector], [Vector]) {
-    return SplitBezier(t, p)
-}
-
-public func SplitBezier(_ t: [Double], _ p: Double ... ) -> [[Double]] {
-    return SplitBezier(t, p)
-}
-
-public func SplitBezier(_ t: [Double], _ p: Point ... ) -> [[Point]] {
-    return SplitBezier(t, p)
-}
-
-public func SplitBezier(_ t: [Double], _ p: Vector ... ) -> [[Vector]] {
-    return SplitBezier(t, p)
-}
-
-public func BezierDerivative(_ p: Double ... ) -> [Double] {
-    return BezierDerivative(p)
-}
-
-public func BezierDerivative(_ p: Point ... ) -> [Point] {
-    return BezierDerivative(p)
-}
-
-public func BezierDerivative(_ p: Vector ... ) -> [Vector] {
-    return BezierDerivative(p)
-}
-
-@_transparent
-private func BezierPoint(_ t: Double, _ p: [Double]) -> Double {
-    var result: Double = 0
-    let _n = p.count - 1
-    for (idx, k) in CombinationList(UInt(_n)).enumerated() {
-        let b = Double(k) * pow(t, Double(idx)) * pow(1 - t, Double(_n - idx))
-        result += b * p[idx]
+private func SplitBezier<Point: BezierPointProtocol>(_ t: Double, _ p: [Point]) -> ([Point], [Point]) {
+    if t.almostZero() {
+        return (Array(repeating: p.first!, count: p.count), p)
     }
+    if t.almostEqual(1) {
+        return (p, Array(repeating: p.last!, count: p.count))
+    }
+    let _t = 1 - t
+    if p.count == 2 {
+        let split = _t * p.first! + t * p.last!
+        return ([p.first!, split], [split, p.last!])
+    }
+    var subpath = [Point]()
+    var lastPoint = p.first!
+    for current in p.dropFirst() {
+        subpath.append(_t * lastPoint + t * current)
+        lastPoint = current
+    }
+    let split = SplitBezier(t, subpath)
+    return ([p.first!] + split.0, split.1 + [p.last!])
+}
+@_transparent
+private func SplitBezier<Point: BezierPointProtocol>(_ t: [Double], _ p: [Point]) -> [[Point]] {
+    var result: [[Point]] = []
+    var remain = p
+    var last_t = 0.0
+    for _t in t.sorted() {
+        let split = SplitBezier((_t - last_t) / (1 - last_t), remain)
+        result.append(split.0)
+        remain = split.1
+        last_t = _t
+    }
+    result.append(remain)
     return result
 }
 
-@_transparent
-private func BezierPoint(_ t: Double, _ p: [Point]) -> Point {
-    var result = Point()
-    let _n = p.count - 1
-    for (idx, k) in CombinationList(UInt(_n)).enumerated() {
-        let b = Double(k) * pow(t, Double(idx)) * pow(1 - t, Double(_n - idx))
-        result += b * p[idx]
-    }
-    return result
+public func SplitBezier<Point: BezierPointProtocol>(_ t: Double, _ p: Point ... ) -> ([Point], [Point]) {
+    return SplitBezier(t, p)
+}
+
+public func SplitBezier<Point: BezierPointProtocol>(_ t: [Double], _ p: Point ... ) -> [[Point]] {
+    return SplitBezier(t, p)
 }
 
 @_transparent
-private func BezierPoint(_ t: Double, _ p: [Vector]) -> Vector {
-    var result = Vector()
+private func BezierPoint<Point: BezierPointProtocol>(_ t: Double, _ p: [Point]) -> Point {
+    var result: Point?
     let _n = p.count - 1
     for (idx, k) in CombinationList(UInt(_n)).enumerated() {
         let b = Double(k) * pow(t, Double(idx)) * pow(1 - t, Double(_n - idx))
-        result += b * p[idx]
+        if result == nil {
+            result = b * p[idx]
+        } else {
+            result! += b * p[idx]
+        }
     }
-    return result
+    return result!
 }
 
 @_transparent
@@ -167,39 +488,6 @@ private func BezierPolynomial(_ p: [Double]) -> Polynomial {
 public func BezierPolynomial(_ p: Double ... ) -> Polynomial {
     
     return BezierPolynomial(p)
-}
-
-public func BezierDegreeElevation(_ p: Double ... ) -> [Double] {
-    let n = Double(p.count)
-    var result = [p[0]]
-    for (k, points) in zip(p, p.dropFirst()).enumerated() {
-        let t = Double(k + 1) / n
-        result.append(t * points.0 + (1 - t) * points.1)
-    }
-    result.append(p.last!)
-    return result
-}
-
-public func BezierDegreeElevation(_ p: Point ... ) -> [Point] {
-    let n = Double(p.count)
-    var result = [p[0]]
-    for (k, points) in zip(p, p.dropFirst()).enumerated() {
-        let t = Double(k + 1) / n
-        result.append(t * points.0 + (1 - t) * points.1)
-    }
-    result.append(p.last!)
-    return result
-}
-
-public func BezierDegreeElevation(_ p: Vector ... ) -> [Vector] {
-    let n = Double(p.count)
-    var result = [p[0]]
-    for (k, points) in zip(p, p.dropFirst()).enumerated() {
-        let t = Double(k + 1) / n
-        result.append(t * points.0 + (1 - t) * points.1)
-    }
-    result.append(p.last!)
-    return result
 }
 
 public func BezierPolynomial(_ poly: Polynomial) -> [Double] {
@@ -250,150 +538,6 @@ public func ClosestBezier(_ point: Point, _ b0: Point, _ b1: Point, _ b2: Point,
     let y = BezierPolynomial(list.map { $0.y }) - point.y
     let dot = x * x + y * y
     return dot.derivative.roots.sorted(by: { dot.eval($0) })
-}
-
-private func SplitBezier(_ t: Double, _ p: [Double]) -> ([Double], [Double]) {
-    if t.almostZero() {
-        return (Array(repeating: p.first ?? 0, count: p.count), p)
-    }
-    if t.almostEqual(1) {
-        return (p, Array(repeating: p.last ?? 0, count: p.count))
-    }
-    let _t = 1 - t
-    if p.count == 2 {
-        let split = _t * p.first! + t * p.last!
-        return ([p.first!, split], [split, p.last!])
-    }
-    var subpath = [Double]()
-    var lastPoint = p.first!
-    for current in p.dropFirst() {
-        subpath.append(_t * lastPoint + t * current)
-        lastPoint = current
-    }
-    let split = SplitBezier(t, subpath)
-    return ([p.first!] + split.0, split.1 + [p.last!])
-}
-@_transparent
-private func SplitBezier(_ t: [Double], _ p: [Double]) -> [[Double]] {
-    var result: [[Double]] = []
-    var remain = p
-    var last_t = 0.0
-    for _t in t.sorted() {
-        let split = SplitBezier((_t - last_t) / (1 - last_t), remain)
-        result.append(split.0)
-        remain = split.1
-        last_t = _t
-    }
-    result.append(remain)
-    return result
-}
-
-private func SplitBezier(_ t: Double, _ p: [Point]) -> ([Point], [Point]) {
-    if t.almostZero() {
-        return (Array(repeating: p.first ?? Point(), count: p.count), p)
-    }
-    if t.almostEqual(1) {
-        return (p, Array(repeating: p.last ?? Point(), count: p.count))
-    }
-    let _t = 1 - t
-    if p.count == 2 {
-        let split = _t * p.first! + t * p.last!
-        return ([p.first!, split], [split, p.last!])
-    }
-    var subpath = [Point]()
-    var lastPoint = p.first!
-    for current in p.dropFirst() {
-        subpath.append(_t * lastPoint + t * current)
-        lastPoint = current
-    }
-    let split = SplitBezier(t, subpath)
-    return ([p.first!] + split.0, split.1 + [p.last!])
-}
-@_transparent
-private func SplitBezier(_ t: [Double], _ p: [Point]) -> [[Point]] {
-    var result: [[Point]] = []
-    var remain = p
-    var last_t = 0.0
-    for _t in t.sorted() {
-        let split = SplitBezier((_t - last_t) / (1 - last_t), remain)
-        result.append(split.0)
-        remain = split.1
-        last_t = _t
-    }
-    result.append(remain)
-    return result
-}
-
-private func SplitBezier(_ t: Double, _ p: [Vector]) -> ([Vector], [Vector]) {
-    if t.almostZero() {
-        return (Array(repeating: p.first ?? Vector(), count: p.count), p)
-    }
-    if t.almostEqual(1) {
-        return (p, Array(repeating: p.last ?? Vector(), count: p.count))
-    }
-    let _t = 1 - t
-    if p.count == 2 {
-        let split = _t * p.first! + t * p.last!
-        return ([p.first!, split], [split, p.last!])
-    }
-    var subpath = [Vector]()
-    var lastPoint = p.first!
-    for current in p.dropFirst() {
-        subpath.append(_t * lastPoint + t * current)
-        lastPoint = current
-    }
-    let split = SplitBezier(t, subpath)
-    return ([p.first!] + split.0, split.1 + [p.last!])
-}
-@_transparent
-private func SplitBezier(_ t: [Double], _ p: [Vector]) -> [[Vector]] {
-    var result: [[Vector]] = []
-    var remain = p
-    var last_t = 0.0
-    for _t in t.sorted() {
-        let split = SplitBezier((_t - last_t) / (1 - last_t), remain)
-        result.append(split.0)
-        remain = split.1
-        last_t = _t
-    }
-    result.append(remain)
-    return result
-}
-
-@_transparent
-private func BezierDerivative(_ p: [Double]) -> [Double] {
-    let n = Double(p.count - 1)
-    var de = [Double]()
-    var lastPoint = p.first!
-    for current in p.dropFirst() {
-        de.append(n * (current - lastPoint))
-        lastPoint = current
-    }
-    return de
-}
-
-@_transparent
-private func BezierDerivative(_ p: [Point]) -> [Point] {
-    let n = Double(p.count - 1)
-    var de = [Point]()
-    var lastPoint = p.first!
-    for current in p.dropFirst() {
-        de.append(n * (current - lastPoint))
-        lastPoint = current
-    }
-    return de
-}
-
-@_transparent
-private func BezierDerivative(_ p: [Vector]) -> [Vector] {
-    let n = Double(p.count - 1)
-    var de = [Vector]()
-    var lastPoint = p.first!
-    for current in p.dropFirst() {
-        de.append(n * (current - lastPoint))
-        lastPoint = current
-    }
-    return de
 }
 
 public func CubicBezierInflection(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point) -> [Double] {
