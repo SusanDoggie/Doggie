@@ -237,7 +237,10 @@ extension Bezier {
         case .zero: return start + t * (end - start)
         case let .one(p1):
             let _t = 1 - t
-            return _t * _t * start + 2 * _t * t * p1 + t * t * end
+            let a = _t * _t * start
+            let b = 2 * _t * t * p1
+            let c = t * t * end
+            return a + b + c
         case let .two(p1, p2):
             let t2 = t * t
             let _t = 1 - t
@@ -391,7 +394,10 @@ public func BezierPoint<Point: BezierPointProtocol>(_ t: Double, _ p0: Point, _ 
 }
 public func BezierPoint<Point: BezierPointProtocol>(_ t: Double, _ p0: Point, _ p1: Point, _ p2: Point) -> Point {
     let _t = 1 - t
-    return _t * _t * p0 + 2 * _t * t * p1 + t * t * p2
+    let a = _t * _t * p0
+    let b = 2 * _t * t * p1
+    let c = t * t * p2
+    return a + b + c
 }
 public func BezierPoint<Point: BezierPointProtocol>(_ t: Double, _ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point) -> Point {
     let t2 = t * t
