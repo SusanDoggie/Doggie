@@ -52,13 +52,6 @@ public extension Lockable {
 }
 
 @discardableResult
-public func synchronized<R>(_ obj: AnyObject, block: () throws -> R) rethrows -> R {
-    objc_sync_enter(obj)
-    defer { objc_sync_exit(obj) }
-    return try block()
-}
-
-@discardableResult
 public func synchronized<R>(_ lcks: Lockable ... , block: () throws -> R) rethrows -> R {
     if lcks.count > 1 {
         var waiting = 0

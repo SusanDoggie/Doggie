@@ -66,7 +66,7 @@ extension SDAtomic {
 
 open class SDSingleton<Instance> {
     
-    fileprivate var _value: Instance?
+    fileprivate var _value: Atomic<Instance?> = Atomic(value: nil)
     fileprivate let lck = SDLock()
     fileprivate let block: () -> Instance
     
@@ -80,20 +80,19 @@ extension SDSingleton {
     
     public func signal() {
         if !isValue {
-            synchronized(self) {
-                let result = self._value ?? self.block()
-                self.lck.synchronized { self._value = result }
+            lck.synchronized {
+                self._value.value = self._value.value ?? self.block()
             }
         }
     }
     
     public var isValue : Bool {
-        return lck.synchronized { self._value != nil }
+        return self._value.value != nil
     }
     
     public var value: Instance {
         self.signal()
-        return self._value!
+        return self._value.value!
     }
 }
 
