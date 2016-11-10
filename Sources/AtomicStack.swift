@@ -37,7 +37,7 @@ private struct AtomicStackContainer<Instance> {
     let next: AtomicStackContainerBox<Instance>?
 }
 
-public class AtomicStack<Instance> {
+open class AtomicStack<Instance> {
     
     fileprivate var head: Atomic<AtomicStackContainer<Instance>?>
     

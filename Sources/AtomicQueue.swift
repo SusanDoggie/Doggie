@@ -34,7 +34,7 @@ private class AtomicQueueContainer<Instance> {
     }
 }
 
-public class AtomicQueue<Instance> {
+open class AtomicQueue<Instance> {
     
     fileprivate var head: Atomic<AtomicQueueContainer<Instance>>
     fileprivate var tail: AtomicQueueContainer<Instance>
