@@ -102,6 +102,10 @@ public func dot(_ lhs: Point, _ rhs:  Point) -> Double {
     return lhs.x * rhs.x + lhs.y * rhs.y
 }
 
+public func cross(_ lhs: Point, _ rhs:  Point) -> Double {
+    return lhs.x * rhs.y - lhs.y * rhs.x
+}
+
 public func middle(_ p: Point ... ) -> Point {
     let count = Double(p.count)
     var _x = 0.0
@@ -111,12 +115,6 @@ public func middle(_ p: Point ... ) -> Point {
         _y += point.y
     }
     return Point(x: _x / count, y: _y / count)
-}
-
-public func direction(_ a: Point, _ b: Point, _ c: Point) -> Double {
-    let d = b - a
-    let e = c - a
-    return d.x * e.y - d.y * e.x
 }
 
 public prefix func +(val: Point) -> Point {

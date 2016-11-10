@@ -435,7 +435,7 @@ private func arcDetails(_ start: Point, _ end: Point, _ radius: Radius, _ rotate
     let centers = EllipseCenter(radius, rotate, start, end)
     if centers.count == 0 {
         return (middle(end, start), EllipseRadius(start, end, radius, rotate))
-    } else if centers.count == 1 || (direction(start, centers[0], end).sign == (sweep ? .plus : .minus) ? largeArc : !largeArc) {
+    } else if centers.count == 1 || (cross(centers[0] - start, end - start).sign == (sweep ? .plus : .minus) ? largeArc : !largeArc) {
         return (centers[0], radius)
     } else {
         return (centers[1], radius)
