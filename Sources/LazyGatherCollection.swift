@@ -52,6 +52,10 @@ public struct LazyGatherSequence<C : Collection, I : Sequence> : LazySequencePro
     public func makeIterator() -> Iterator {
         return LazyGatherIterator(seq: _base, indices: _indices.makeIterator())
     }
+    
+    public var underestimatedCount: Int {
+        return _indices.underestimatedCount
+    }
 }
 
 public struct LazyGatherCollection<C : Collection, I : Collection> : LazyCollectionProtocol where C.Index == I.Iterator.Element {
@@ -82,6 +86,10 @@ public struct LazyGatherCollection<C : Collection, I : Collection> : LazyCollect
     
     public func makeIterator() -> Iterator {
         return LazyGatherIterator(seq: _base, indices: _indices.makeIterator())
+    }
+    
+    public var underestimatedCount: Int {
+        return _indices.underestimatedCount
     }
 }
 
@@ -117,6 +125,10 @@ public struct LazyGatherBidirectionalCollection<C : Collection, I : Bidirectiona
     
     public func makeIterator() -> Iterator {
         return LazyGatherIterator(seq: _base, indices: _indices.makeIterator())
+    }
+    
+    public var underestimatedCount: Int {
+        return _indices.underestimatedCount
     }
 }
 
@@ -160,6 +172,10 @@ public struct LazyGatherRandomAccessCollection<C : Collection, I : RandomAccessC
     
     public func makeIterator() -> Iterator {
         return LazyGatherIterator(seq: _base, indices: _indices.makeIterator())
+    }
+    
+    public var underestimatedCount: Int {
+        return _indices.underestimatedCount
     }
 }
 

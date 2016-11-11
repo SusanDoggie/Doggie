@@ -56,6 +56,10 @@ public struct ConcatSequence<S1 : Sequence, S2 : Sequence> : Sequence where S1.I
     public func makeIterator() -> ConcatIterator<S1.Iterator, S2.Iterator> {
         return ConcatIterator(base1: base1.makeIterator(), base2: base2.makeIterator(), flag: 0)
     }
+    
+    public var underestimatedCount: Int {
+        return base1.underestimatedCount + base2.underestimatedCount
+    }
 }
 
 public struct ConcatCollectionIndex<I1 : Comparable, I2 : Comparable> : Comparable {
@@ -101,6 +105,10 @@ public struct ConcatCollection<S1 : Collection, S2 : Collection> : Collection wh
     public func makeIterator() -> ConcatIterator<S1.Iterator, S2.Iterator> {
         return ConcatIterator(base1: base1.makeIterator(), base2: base2.makeIterator(), flag: 0)
     }
+    
+    public var underestimatedCount: Int {
+        return base1.underestimatedCount + base2.underestimatedCount
+    }
 }
 
 public struct ConcatBidirectionalCollection<S1 : BidirectionalCollection, S2 : BidirectionalCollection> : BidirectionalCollection where S1.Iterator.Element == S2.Iterator.Element {
@@ -140,6 +148,10 @@ public struct ConcatBidirectionalCollection<S1 : BidirectionalCollection, S2 : B
     
     public func makeIterator() -> ConcatIterator<S1.Iterator, S2.Iterator> {
         return ConcatIterator(base1: base1.makeIterator(), base2: base2.makeIterator(), flag: 0)
+    }
+    
+    public var underestimatedCount: Int {
+        return base1.underestimatedCount + base2.underestimatedCount
     }
 }
 

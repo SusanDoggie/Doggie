@@ -383,14 +383,14 @@ public func OverlapConvolve(signal: [Double], kernel: [Double], _ overlap: inout
     FFTConvolve(signal, kernel, &result)
     let count = min(result.count, overlap.count)
     Add(count, result, 1, overlap, 1, &result, 1)
-    overlap.replace(with: result[signal.count..<result.count].concat(overlap[count..<overlap.count]))
+    overlap.replaceSubrange(0..<count, with: result[signal.count..<result.count])
     result.removeSubrange(signal.count..<result.count)
 }
 public func OverlapConvolve(signal: [Complex], kernel: [Complex], _ overlap: inout [Complex], _ result: inout [Complex]) {
     FFTConvolve(signal, kernel, &result)
     let count = min(result.count, overlap.count)
     Add(count, result, 1, overlap, 1, &result, 1)
-    overlap.replace(with: result[signal.count..<result.count].concat(overlap[count..<overlap.count]))
+    overlap.replaceSubrange(0..<count, with: result[signal.count..<result.count])
     result.removeSubrange(signal.count..<result.count)
 }
 

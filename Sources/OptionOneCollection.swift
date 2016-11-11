@@ -42,4 +42,8 @@ public struct OptionOneCollection<T> : RandomAccessCollection {
     public subscript(position: Int) -> T {
         return value!
     }
+    
+    public var underestimatedCount: Int {
+        return value == nil ? 0 : 1
+    }
 }

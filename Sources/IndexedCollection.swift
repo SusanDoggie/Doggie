@@ -62,6 +62,10 @@ public struct IndexedCollection<C : Collection> : Collection where C.Indices.Ite
     public func makeIterator() -> IndexedIterator<C> {
         return IndexedIterator(base: base, indices: base.indices.makeIterator())
     }
+    
+    public var underestimatedCount: Int {
+        return base.underestimatedCount
+    }
 }
 
 public struct IndexedBidirectionalCollection<C : BidirectionalCollection> : BidirectionalCollection where C.Indices.Iterator.Element == C.Index {
@@ -93,6 +97,10 @@ public struct IndexedBidirectionalCollection<C : BidirectionalCollection> : Bidi
     
     public func makeIterator() -> IndexedIterator<C> {
         return IndexedIterator(base: base, indices: base.indices.makeIterator())
+    }
+    
+    public var underestimatedCount: Int {
+        return base.underestimatedCount
     }
 }
 
@@ -129,6 +137,10 @@ public struct IndexedRandomAccessCollection<C : RandomAccessCollection> : Random
     
     public func makeIterator() -> IndexedIterator<C> {
         return IndexedIterator(base: base, indices: base.indices.makeIterator())
+    }
+    
+    public var underestimatedCount: Int {
+        return base.underestimatedCount
     }
 }
 
