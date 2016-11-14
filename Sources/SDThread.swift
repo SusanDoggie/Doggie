@@ -100,14 +100,13 @@ extension SDSingleton {
 
 public class SDTask<Result> : SDAtomic {
     
-    fileprivate var _notify: [(Result) -> Void] = []
+    fileprivate var notify: [(Result) -> Void] = []
     
-    fileprivate let lck = SDLock()
-    fileprivate let condition = SDConditionLock()
+    fileprivate let lck = SDConditionLock()
     
-    fileprivate var _result: Result?
+    fileprivate var storage = Atomic<Result?>(value: nil)
     
-    fileprivate init(queue: DispatchQueue, suspend: ((Result) -> Bool)?, block: @escaping () -> Result) {
+    fileprivate init(queue: DispatchQueue, suspend: ((Result) -> Bool)?, block: @escaping () -> Result?) {
         super.init(queue: queue, block: SDTask.createBlock(suspend, block))
     }
     
@@ -121,35 +120,36 @@ public class SDTask<Result> : SDAtomic {
 private extension SDTask {
     
     @_transparent
-    static func createBlock(_ suspend: ((Result) -> Bool)?, _ block: @escaping () -> Result) -> (SDAtomic) -> Void {
+    static func createBlock(_ suspend: ((Result) -> Bool)?, _ block: @escaping () -> Result?) -> (SDAtomic) -> Void {
         return { atomic in
             let _self = atomic as! SDTask<Result>
             if !_self.completed {
-                _self.condition.synchronized {
-                    let result = _self._result ?? block()
-                    _self.lck.synchronized { _self._result = result }
-                    _self.condition.broadcast()
+                guard let result = block() else { return }
+                _self.lck.synchronized {
+                    _self.storage.value = result
+                    _self.lck.broadcast()
                 }
             }
-            if suspend?(_self._result!) != true {
-                _self._notify.forEach { $0(_self._result!) }
+            let value = _self.storage.value!
+            if suspend?(value) != true {
+                _self.notify.forEach { $0(value) }
             }
-            _self._notify = []
+            _self.notify = []
         }
     }
     
     @_transparent
     func _apply<R>(_ queue: DispatchQueue, suspend: ((R) -> Bool)?, block: @escaping (Result) -> R) -> SDTask<R> {
-        var storage: Result!
-        let task = SDTask<R>(queue: queue, suspend: suspend) { block(storage) }
+        var storage: Result?
+        let task = SDTask<R>(queue: queue, suspend: suspend) { storage.map(block) }
         return lck.synchronized {
-            if _result == nil {
-                _notify.append {
+            if !completed {
+                notify.append {
                     storage = $0
                     task.signal()
                 }
             } else {
-                storage = _result
+                storage = self.storage.value
                 task.signal()
             }
             return task
@@ -161,15 +161,15 @@ extension SDTask {
     
     /// Return `true` iff task is completed.
     public var completed: Bool {
-        return lck.synchronized { _result != nil }
+        return storage.value != nil
     }
     
     /// Result of task.
     public var result: Result {
-        if self.completed {
-            return self._result!
+        if completed {
+            return storage.value!
         }
-        return condition.synchronized(for: self.completed) { self._result! }
+        return lck.synchronized(for: completed) { storage.value! }
     }
 }
 
