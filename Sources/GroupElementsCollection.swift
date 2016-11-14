@@ -37,12 +37,20 @@ public struct GroupElementsCollection<Key : Equatable, Element> : RandomAccessCo
         return base.endIndex
     }
     
+    public var count: Int {
+        return base.count
+    }
+    
     public subscript(position: Int) -> Element {
         return base[position]
     }
     
     public var elements: [Element] {
         return base
+    }
+    
+    public var underestimatedCount: Int {
+        return base.underestimatedCount
     }
 }
 

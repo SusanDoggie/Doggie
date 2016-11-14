@@ -60,6 +60,17 @@ public struct ConcatSequence<S1 : Sequence, S2 : Sequence> : Sequence where S1.I
     public var underestimatedCount: Int {
         return base1.underestimatedCount + base2.underestimatedCount
     }
+    
+    public func _copyToContiguousArray() -> ContiguousArray<S1.Iterator.Element> {
+        var result = ContiguousArray<Iterator.Element>()
+        result.reserveCapacity(underestimatedCount)
+        
+        result.append(contentsOf: base1)
+        result.append(contentsOf: base2)
+        
+        return result
+    }
+    
 }
 
 public struct ConcatCollectionIndex<I1 : Comparable, I2 : Comparable> : Comparable {
@@ -91,6 +102,10 @@ public struct ConcatCollection<S1 : Collection, S2 : Collection> : Collection wh
         return ConcatCollectionIndex(currect1: base1.endIndex, currect2: base2.endIndex)
     }
     
+    public var count : Int {
+        return numericCast(base1.count) + numericCast(base2.count)
+    }
+    
     public func index(after i: Index) -> Index {
         if i.currect1 != base1.endIndex {
             return ConcatCollectionIndex(currect1: base1.index(after: i.currect1), currect2: i.currect2)
@@ -104,6 +119,16 @@ public struct ConcatCollection<S1 : Collection, S2 : Collection> : Collection wh
     
     public func makeIterator() -> ConcatIterator<S1.Iterator, S2.Iterator> {
         return ConcatIterator(base1: base1.makeIterator(), base2: base2.makeIterator(), flag: 0)
+    }
+    
+    public func _copyToContiguousArray() -> ContiguousArray<S1.Iterator.Element> {
+        var result = ContiguousArray<Iterator.Element>()
+        result.reserveCapacity(underestimatedCount)
+        
+        result.append(contentsOf: base1)
+        result.append(contentsOf: base2)
+        
+        return result
     }
     
     public var underestimatedCount: Int {
@@ -128,6 +153,10 @@ public struct ConcatBidirectionalCollection<S1 : BidirectionalCollection, S2 : B
         return ConcatCollectionIndex(currect1: base1.endIndex, currect2: base2.endIndex)
     }
     
+    public var count : Int {
+        return numericCast(base1.count) + numericCast(base2.count)
+    }
+    
     public func index(after i: Index) -> Index {
         if i.currect1 != base1.endIndex {
             return ConcatCollectionIndex(currect1: base1.index(after: i.currect1), currect2: i.currect2)
@@ -148,6 +177,16 @@ public struct ConcatBidirectionalCollection<S1 : BidirectionalCollection, S2 : B
     
     public func makeIterator() -> ConcatIterator<S1.Iterator, S2.Iterator> {
         return ConcatIterator(base1: base1.makeIterator(), base2: base2.makeIterator(), flag: 0)
+    }
+    
+    public func _copyToContiguousArray() -> ContiguousArray<S1.Iterator.Element> {
+        var result = ContiguousArray<Iterator.Element>()
+        result.reserveCapacity(underestimatedCount)
+        
+        result.append(contentsOf: base1)
+        result.append(contentsOf: base2)
+        
+        return result
     }
     
     public var underestimatedCount: Int {

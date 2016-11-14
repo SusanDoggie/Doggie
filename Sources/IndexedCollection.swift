@@ -47,6 +47,10 @@ public struct IndexedCollection<C : Collection> : Collection where C.Indices.Ite
         return base.endIndex
     }
     
+    public var count : C.IndexDistance {
+        return base.count
+    }
+    
     public func index(after i: C.Index) -> C.Index {
         return base.index(after: i)
     }
@@ -77,6 +81,10 @@ public struct IndexedBidirectionalCollection<C : BidirectionalCollection> : Bidi
     }
     public var endIndex: C.Index {
         return base.endIndex
+    }
+    
+    public var count : C.IndexDistance {
+        return base.count
     }
     
     public func index(after i: C.Index) -> C.Index {
@@ -113,6 +121,10 @@ public struct IndexedRandomAccessCollection<C : RandomAccessCollection> : Random
     }
     public var endIndex: C.Index {
         return base.endIndex
+    }
+    
+    public var count : C.IndexDistance {
+        return base.count
     }
     
     public func index(after i: C.Index) -> C.Index {

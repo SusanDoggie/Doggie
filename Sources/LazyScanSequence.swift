@@ -67,6 +67,10 @@ public struct LazyScanSequence<Base: Sequence, Element> : LazySequenceProtocol {
     public func makeIterator() -> LazyScanIterator<Base.Iterator, Element> {
         return LazyScanIterator(nextElement: initial, base: base.makeIterator(), combine: combine)
     }
+    
+    public var underestimatedCount: Int {
+        return base.underestimatedCount + 1
+    }
 }
 
 public extension LazySequenceProtocol {

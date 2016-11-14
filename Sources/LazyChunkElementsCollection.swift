@@ -23,32 +23,25 @@
 //  THE SOFTWARE.
 //
 
-public struct LazyChunkElementsIterator<Base : IteratorProtocol> : IteratorProtocol, Sequence {
-    
-    fileprivate var base: Base
-    
-    public mutating func next() -> Base.Element? {
-        return base.next()
-    }
-}
-
 public struct LazyChunkElementsSequence<Key : Equatable, Base : Sequence> : LazySequenceProtocol {
     
     public let key: Key
     fileprivate let base: Base
     
-    public func makeIterator() -> LazyChunkElementsIterator<Base.Iterator> {
-        return LazyChunkElementsIterator(base: base.makeIterator())
+    public func makeIterator() -> Base.Iterator {
+        return base.makeIterator()
     }
     
     public var elements: Base {
         return base
     }
+    
+    public var underestimatedCount: Int {
+        return base.underestimatedCount
+    }
 }
 
 public struct LazyChunkElementsCollection<Key : Equatable, Base : Collection> : LazyCollectionProtocol {
-    
-    public typealias Iterator = LazyChunkElementsIterator<Base.Iterator>
     
     public let key: Key
     fileprivate let base: Base
@@ -72,18 +65,20 @@ public struct LazyChunkElementsCollection<Key : Equatable, Base : Collection> : 
         return base.count
     }
     
-    public func makeIterator() -> LazyChunkElementsIterator<Base.Iterator> {
-        return LazyChunkElementsIterator(base: base.makeIterator())
+    public func makeIterator() -> Base.Iterator {
+        return base.makeIterator()
     }
     
     public var elements: Base {
         return base
     }
+    
+    public var underestimatedCount: Int {
+        return base.underestimatedCount
+    }
 }
 
 public struct LazyChunkElementsBidirectionalCollection<Key : Equatable, Base : BidirectionalCollection> : LazyCollectionProtocol {
-    
-    public typealias Iterator = LazyChunkElementsIterator<Base.Iterator>
     
     public let key: Key
     fileprivate let base: Base
@@ -111,18 +106,20 @@ public struct LazyChunkElementsBidirectionalCollection<Key : Equatable, Base : B
         return base.count
     }
     
-    public func makeIterator() -> LazyChunkElementsIterator<Base.Iterator> {
-        return LazyChunkElementsIterator(base: base.makeIterator())
+    public func makeIterator() -> Base.Iterator {
+        return base.makeIterator()
     }
     
     public var elements: Base {
         return base
     }
+    
+    public var underestimatedCount: Int {
+        return base.underestimatedCount
+    }
 }
 
 public struct LazyChunkElementsRandomAccessCollection<Key : Equatable, Base : RandomAccessCollection> : LazyCollectionProtocol {
-    
-    public typealias Iterator = LazyChunkElementsIterator<Base.Iterator>
     
     public let key: Key
     fileprivate let base: Base
@@ -158,12 +155,16 @@ public struct LazyChunkElementsRandomAccessCollection<Key : Equatable, Base : Ra
         return base.count
     }
     
-    public func makeIterator() -> LazyChunkElementsIterator<Base.Iterator> {
-        return LazyChunkElementsIterator(base: base.makeIterator())
+    public func makeIterator() -> Base.Iterator {
+        return base.makeIterator()
     }
     
     public var elements: Base {
         return base
+    }
+    
+    public var underestimatedCount: Int {
+        return base.underestimatedCount
     }
 }
 

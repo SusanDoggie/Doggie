@@ -45,11 +45,16 @@ public struct LazySliceSequence<Base : RandomAccessCollection> : IteratorProtoco
         }
         return nil
     }
+    
+    public var underestimatedCount: Int {
+        return base.underestimatedCount / numericCast(maxLength)
+    }
 }
 
 public extension LazyCollectionProtocol where Elements : RandomAccessCollection {
     
     func slice(by maxLength: Elements.IndexDistance) -> LazySliceSequence<Elements> {
+        precondition(maxLength != 0, "Sliced by zero-length.")
         return LazySliceSequence(base: elements, maxLength: maxLength, currentIndex: elements.startIndex)
     }
 }
