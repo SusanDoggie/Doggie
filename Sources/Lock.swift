@@ -147,13 +147,12 @@ extension SDCondition {
 
 extension SDLock {
     
-    public func wait(_ cond: SDCondition, for predicate: @autoclosure () -> Bool) {
+    fileprivate func _wait(_ cond: SDCondition, for predicate: @autoclosure () -> Bool) {
         while !predicate() {
             pthread_cond_wait(&cond._cond, &_mtx)
         }
     }
-    @discardableResult
-    public func wait(_ cond: SDCondition, for predicate: @autoclosure () -> Bool, until date: Date) -> Bool {
+    fileprivate func _wait(_ cond: SDCondition, for predicate: @autoclosure () -> Bool, until date: Date) -> Bool {
         var _timespec = date.timespec
         while !predicate() {
             if pthread_cond_timedwait(&cond._cond, &_mtx, &_timespec) != 0 {
@@ -166,14 +165,29 @@ extension SDLock {
 
 extension SDLock {
     
+    public func wait(_ cond: SDCondition, for predicate: @autoclosure () -> Bool) {
+        self.synchronized {
+            self._wait(cond, for: predicate)
+        }
+    }
+    @discardableResult
+    public func wait(_ cond: SDCondition, for predicate: @autoclosure () -> Bool, until date: Date) -> Bool {
+        return self.synchronized {
+            self._wait(cond, for: predicate, until: date)
+        }
+    }
+}
+
+extension SDLock {
+    
     public func lock(_ cond: SDCondition, for predicate: @autoclosure () -> Bool) {
         self.lock()
-        self.wait(cond, for: predicate)
+        self._wait(cond, for: predicate)
     }
     @discardableResult
     public func lock(_ cond: SDCondition, for predicate: @autoclosure () -> Bool, until date: Date) -> Bool {
         self.lock()
-        if self.wait(cond, for: predicate, until: date) {
+        if self._wait(cond, for: predicate, until: date) {
             return true
         }
         self.unlock()
@@ -182,7 +196,7 @@ extension SDLock {
     @discardableResult
     public func trylock(_ cond: SDCondition, for predicate: @autoclosure () -> Bool) -> Bool {
         if self.trylock() {
-            if self.wait(cond, for: predicate, until: Date.distantPast) {
+            if self._wait(cond, for: predicate, until: Date.distantPast) {
                 return true
             }
             self.unlock()
