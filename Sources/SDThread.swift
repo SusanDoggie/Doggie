@@ -160,10 +160,14 @@ extension SDTask {
     /// Run `block` after `self` is completed with specific queue.
     @discardableResult
     public func then<R>(queue: DispatchQueue, qos: DispatchQoS = .unspecified, flags: DispatchWorkItemFlags = [], block: @escaping (Result) -> R) -> SDTask<R> {
+        var storage: Result!
         let result = SDTask<R>(queue: queue)
-        let worker = result.createWorker(qos: qos, flags: flags) { block(self.result) }
+        let worker = result.createWorker(qos: qos, flags: flags) { block(storage) }
         result.worker = worker
-        self.worker.notify(queue: queue, execute: worker)
+        self.worker.notify(qos: qos, flags: flags, queue: queue) {
+            storage = self.result
+            worker.perform()
+        }
         return result
     }
 }
@@ -179,11 +183,13 @@ extension SDTask {
     /// Suspend if `result` satisfies `predicate` with specific queue.
     @discardableResult
     public func suspend(queue: DispatchQueue, qos: DispatchQoS = .unspecified, flags: DispatchWorkItemFlags = [], where predicate: @escaping (Result) -> Bool) -> SDTask<Result> {
+        var storage: Result!
         let result = SDTask<Result>(queue: queue)
-        let worker = result.createWorker(qos: qos, flags: flags) { self.result }
+        let worker = result.createWorker(qos: qos, flags: flags) { storage }
         result.worker = worker
         self.worker.notify(qos: qos, flags: flags, queue: queue) {
-            if !predicate(self.result) {
+            storage = self.result
+            if !predicate(storage) {
                 worker.perform()
             }
         }
