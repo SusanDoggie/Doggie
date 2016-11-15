@@ -98,61 +98,36 @@ extension SDSingleton {
 
 // MARK: SDTask
 
-public class SDTask<Result> : SDAtomic {
+public class SDTask<Result> {
     
-    fileprivate var notify: [(Result) -> Void] = []
+    fileprivate let queue: DispatchQueue
+    fileprivate var worker: DispatchWorkItem!
     
     fileprivate let lck = SDConditionLock()
     
     fileprivate var storage = Atomic<Result?>(value: nil)
     
-    fileprivate init(queue: DispatchQueue, suspend: ((Result) -> Bool)?, block: @escaping () -> Result?) {
-        super.init(queue: queue, block: SDTask.createBlock(suspend, block))
+    fileprivate init(queue: DispatchQueue = SDDefaultDispatchQueue) {
+        self.queue = queue
     }
-    
     /// Create a SDTask and compute block.
     public init(queue: DispatchQueue = SDDefaultDispatchQueue, block: @escaping () -> Result) {
-        super.init(queue: queue, block: SDTask.createBlock(nil, block))
-        self.signal()
+        self.queue = queue
+        let worker = createWorker(block: block)
+        self.worker = worker
+        self.queue.async(execute: worker)
     }
 }
 
-private extension SDTask {
+extension SDTask {
     
-    @_transparent
-    static func createBlock(_ suspend: ((Result) -> Bool)?, _ block: @escaping () -> Result?) -> (SDAtomic) -> Void {
-        return { atomic in
-            let _self = atomic as! SDTask<Result>
-            if !_self.completed {
-                guard let result = block() else { return }
-                _self.lck.synchronized {
-                    _self.storage.value = result
-                    _self.lck.broadcast()
-                }
+    fileprivate func createWorker(block: @escaping () -> Result) -> DispatchWorkItem {
+        return DispatchWorkItem { [weak self] in
+            let value = block()
+            if let _self = self {
+                _self.storage.value = value
+                _self.lck.broadcast()
             }
-            let value = _self.storage.value!
-            if suspend?(value) != true {
-                _self.notify.forEach { $0(value) }
-            }
-            _self.notify = []
-        }
-    }
-    
-    @_transparent
-    func _apply<R>(_ queue: DispatchQueue, suspend: ((R) -> Bool)?, block: @escaping (Result) -> R) -> SDTask<R> {
-        var storage: Result?
-        let task = SDTask<R>(queue: queue, suspend: suspend) { storage.map(block) }
-        return lck.synchronized {
-            if !completed {
-                notify.append {
-                    storage = $0
-                    task.signal()
-                }
-            } else {
-                storage = self.storage.value
-                task.signal()
-            }
-            return task
         }
     }
 }
@@ -166,10 +141,11 @@ extension SDTask {
     
     /// Result of task.
     public var result: Result {
-        if completed {
-            return storage.value!
+        if let value = storage.value {
+            return value
         }
-        return lck.synchronized(for: completed) { storage.value! }
+        lck.wait(for: completed)
+        return storage.value!
     }
 }
 
@@ -184,7 +160,11 @@ extension SDTask {
     /// Run `block` after `self` is completed with specific queue.
     @discardableResult
     public func then<R>(queue: DispatchQueue, block: @escaping (Result) -> R) -> SDTask<R> {
-        return self._apply(queue, suspend: nil, block: block)
+        let result = SDTask<R>(queue: queue)
+        let worker = result.createWorker { block(self.result) }
+        result.worker = worker
+        self.worker.notify(queue: queue, execute: worker)
+        return result
     }
 }
 
@@ -199,7 +179,15 @@ extension SDTask {
     /// Suspend if `result` satisfies `predicate` with specific queue.
     @discardableResult
     public func suspend(queue: DispatchQueue, where predicate: @escaping (Result) -> Bool) -> SDTask<Result> {
-        return self._apply(queue, suspend: predicate) { $0 }
+        let result = SDTask<Result>(queue: queue)
+        let worker = result.createWorker { self.result }
+        result.worker = worker
+        self.worker.notify(queue: queue) {
+            if !predicate(self.result) {
+                worker.perform()
+            }
+        }
+        return result
     }
 }
 
