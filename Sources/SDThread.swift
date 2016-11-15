@@ -107,7 +107,7 @@ public class SDTask<Result> {
     
     fileprivate var storage = Atomic<Result?>(value: nil)
     
-    fileprivate init(queue: DispatchQueue = SDDefaultDispatchQueue) {
+    fileprivate init(queue: DispatchQueue) {
         self.queue = queue
     }
     /// Create a SDTask and compute block.
@@ -153,8 +153,8 @@ extension SDTask {
     
     /// Run `block` after `self` is completed.
     @discardableResult
-    public func then<R>(block: @escaping (Result) -> R) -> SDTask<R> {
-        return self.then(queue: queue, block: block)
+    public func then<R>(qos: DispatchQoS = .unspecified, flags: DispatchWorkItemFlags = [], block: @escaping (Result) -> R) -> SDTask<R> {
+        return self.then(queue: queue, qos: qos, flags: flags, block: block)
     }
     
     /// Run `block` after `self` is completed with specific queue.
@@ -172,8 +172,8 @@ extension SDTask {
     
     /// Suspend if `result` satisfies `predicate`.
     @discardableResult
-    public func suspend(where predicate: @escaping (Result) -> Bool) -> SDTask<Result> {
-        return self.suspend(queue: queue, where: predicate)
+    public func suspend(qos: DispatchQoS = .unspecified, flags: DispatchWorkItemFlags = [], where predicate: @escaping (Result) -> Bool) -> SDTask<Result> {
+        return self.suspend(queue: queue, qos: qos, flags: flags, where: predicate)
     }
     
     /// Suspend if `result` satisfies `predicate` with specific queue.
