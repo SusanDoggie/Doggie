@@ -111,9 +111,9 @@ public class SDTask<Result> {
         self.queue = queue
     }
     /// Create a SDTask and compute block.
-    public init(queue: DispatchQueue = SDDefaultDispatchQueue, block: @escaping () -> Result) {
+    public init(queue: DispatchQueue = SDDefaultDispatchQueue, qos: DispatchQoS = .unspecified, flags: DispatchWorkItemFlags = [], block: @escaping () -> Result) {
         self.queue = queue
-        let worker = createWorker(block: block)
+        let worker = createWorker(qos: qos, flags: flags, block: block)
         self.worker = worker
         self.queue.async(execute: worker)
     }
@@ -121,8 +121,8 @@ public class SDTask<Result> {
 
 extension SDTask {
     
-    fileprivate func createWorker(block: @escaping () -> Result) -> DispatchWorkItem {
-        return DispatchWorkItem { [weak self] in
+    fileprivate func createWorker(qos: DispatchQoS, flags: DispatchWorkItemFlags, block: @escaping () -> Result) -> DispatchWorkItem {
+        return DispatchWorkItem(qos: qos, flags: flags) { [weak self] in
             let value = block()
             if let _self = self {
                 _self.storage.value = value
@@ -159,9 +159,9 @@ extension SDTask {
     
     /// Run `block` after `self` is completed with specific queue.
     @discardableResult
-    public func then<R>(queue: DispatchQueue, block: @escaping (Result) -> R) -> SDTask<R> {
+    public func then<R>(queue: DispatchQueue, qos: DispatchQoS = .unspecified, flags: DispatchWorkItemFlags = [], block: @escaping (Result) -> R) -> SDTask<R> {
         let result = SDTask<R>(queue: queue)
-        let worker = result.createWorker { block(self.result) }
+        let worker = result.createWorker(qos: qos, flags: flags) { block(self.result) }
         result.worker = worker
         self.worker.notify(queue: queue, execute: worker)
         return result
@@ -178,11 +178,11 @@ extension SDTask {
     
     /// Suspend if `result` satisfies `predicate` with specific queue.
     @discardableResult
-    public func suspend(queue: DispatchQueue, where predicate: @escaping (Result) -> Bool) -> SDTask<Result> {
+    public func suspend(queue: DispatchQueue, qos: DispatchQoS = .unspecified, flags: DispatchWorkItemFlags = [], where predicate: @escaping (Result) -> Bool) -> SDTask<Result> {
         let result = SDTask<Result>(queue: queue)
-        let worker = result.createWorker { self.result }
+        let worker = result.createWorker(qos: qos, flags: flags) { self.result }
         result.worker = worker
-        self.worker.notify(queue: queue) {
+        self.worker.notify(qos: qos, flags: flags, queue: queue) {
             if !predicate(self.result) {
                 worker.perform()
             }
@@ -193,6 +193,6 @@ extension SDTask {
 
 /// Create a SDTask and compute block.
 @discardableResult
-public func async<Result>(queue: DispatchQueue = SDDefaultDispatchQueue, _ block: @escaping () -> Result) -> SDTask<Result> {
+public func async<Result>(queue: DispatchQueue = SDDefaultDispatchQueue, qos: DispatchQoS = .unspecified, flags: DispatchWorkItemFlags = [], block: @escaping () -> Result) -> SDTask<Result> {
     return SDTask(queue: queue, block: block)
 }
