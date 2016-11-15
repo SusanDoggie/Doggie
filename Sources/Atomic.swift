@@ -564,10 +564,10 @@ extension Atomic {
     @_transparent
     fileprivate mutating func _fetch() -> AtomicBase<Instance> {
         @_transparent
-        func exchange(theVal: UnsafeMutablePointer<AtomicBase<Instance>>) -> UnsafeMutableRawPointer {
+        func load(theVal: UnsafeMutablePointer<AtomicBase<Instance>>) -> UnsafeMutableRawPointer {
             return theVal.withMemoryRebound(to: Optional<UnsafeRawPointer>.self, capacity: 1) { _AtomicLoadPtrBarrier($0) }
         }
-        let _old = Unmanaged<AtomicBase<Instance>>.fromOpaque(UnsafeRawPointer(exchange(theVal: &base)))
+        let _old = Unmanaged<AtomicBase<Instance>>.fromOpaque(UnsafeRawPointer(load(theVal: &base)))
         return _old.takeUnretainedValue()
     }
     
