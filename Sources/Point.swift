@@ -74,7 +74,8 @@ extension Point {
 extension Point {
     
     public var unit: Point {
-        return self / magnitude
+        let d = magnitude
+        return d == 0 ? Point() : self / d
     }
 }
 

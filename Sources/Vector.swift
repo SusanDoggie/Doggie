@@ -59,7 +59,8 @@ extension Vector {
 extension Vector {
     
     public var unit: Vector {
-        return self / magnitude
+        let d = magnitude
+        return d == 0 ? Vector() : self / d
     }
 }
 
