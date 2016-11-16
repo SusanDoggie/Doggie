@@ -48,16 +48,16 @@ public struct SDMarker {
 extension SDMarker {
     
     public init(template: String) {
-        let characterSet = Set("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-_1234567890.:".characters)
-        self.elements = SDMarker.parseScope(ArraySlice(template.characters), characterSet)
+        self.elements = SDMarker.parseScope(ArraySlice(template.characters))
     }
     
+    private static let characterSet = Set("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-_1234567890.:".characters)
     private static let token_start = Array("{{".characters)
     private static let scope_token_start = Array("{{#".characters)
     private static let scope_token_end = Array("#}}".characters)
     private static let variable_token_end = Array("%}}".characters)
     
-    private static func parseScope(_ chars: ArraySlice<Character>, _ characterSet: Set<Character>) -> [Element] {
+    private static func parseScope(_ chars: ArraySlice<Character>) -> [Element] {
         var result: [Element] = []
         var chars = chars
         outer: while let index = chars.range(of: token_start)?.lowerBound {
@@ -75,7 +75,7 @@ extension SDMarker {
                     while let index2 = _tail.range(of: scope_token_start)?.lowerBound {
                         if let token = parseToken(_tail.suffix(from: index2 + 2), characterSet), case .scope(name, true, let end2) = token {
                             result.append(.string(String(head.dropLast(2))))
-                            result.append(.scope(name, flag, parseScope(tail.suffix(from: end).prefix(upTo: index2), characterSet)))
+                            result.append(.scope(name, flag, parseScope(tail.suffix(from: end).prefix(upTo: index2))))
                             chars = _tail.suffix(from: end2)
                             continue outer
                         }
