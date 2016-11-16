@@ -63,7 +63,7 @@ extension SDMarker {
         outer: while let index = chars.range(of: token_start)?.lowerBound {
             let head = chars.prefix(upTo: index + 2)
             let tail = chars.suffix(from: index + 2)
-            if let token = parseToken(tail, characterSet) {
+            if let token = parseToken(tail) {
                 switch token {
                 case let .variable(name, end):
                     result.append(.string(String(head.dropLast(2))))
@@ -73,7 +73,7 @@ extension SDMarker {
                 case let .scope(name, flag, end):
                     var _tail = tail.dropFirst()
                     while let index2 = _tail.range(of: scope_token_start)?.lowerBound {
-                        if let token = parseToken(_tail.suffix(from: index2 + 2), characterSet), case .scope(name, true, let end2) = token {
+                        if let token = parseToken(_tail.suffix(from: index2 + 2)), case .scope(name, true, let end2) = token {
                             result.append(.string(String(head.dropLast(2))))
                             result.append(.scope(name, flag, parseScope(tail.suffix(from: end).prefix(upTo: index2))))
                             chars = _tail.suffix(from: end2)
@@ -95,7 +95,7 @@ extension SDMarker {
         case scope(String, Bool, Int)
     }
     
-    private static func parseToken(_ chars: ArraySlice<Character>, _ characterSet: Set<Character>) -> TokenType? {
+    private static func parseToken(_ chars: ArraySlice<Character>) -> TokenType? {
         if let token = chars.first {
             switch token {
             case "%":
