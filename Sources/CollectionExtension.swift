@@ -133,7 +133,7 @@ public extension RandomAccessCollection where Indices.SubSequence.Iterator.Eleme
     /// Returns first range of `pattern` appear in `self`, or `nil` if not match.
     ///
     /// - complexity: Amortized O(`self.count`)
-    func range<C : BidirectionalCollection>(of pattern: C, where isEquivalent: (Iterator.Element, Iterator.Element) throws -> Bool) rethrows -> Range<Index>? where C.Iterator.Element == Iterator.Element {
+    func range<C : RandomAccessCollection>(of pattern: C, where isEquivalent: (Iterator.Element, Iterator.Element) throws -> Bool) rethrows -> Range<Index>? where C.Iterator.Element == Iterator.Element {
         
         let pattern_count: IndexDistance = numericCast(pattern.count)
         if count < pattern_count {
@@ -167,7 +167,7 @@ public extension RandomAccessCollection where Indices.SubSequence.Iterator.Eleme
     /// Returns first range of `pattern` appear in `self`, or `nil` if not match.
     ///
     /// - complexity: Amortized O(`self.count`)
-    func range<C : BidirectionalCollection>(of pattern: C) -> Range<Index>? where C.Iterator.Element == Iterator.Element {
+    func range<C : RandomAccessCollection>(of pattern: C) -> Range<Index>? where C.Iterator.Element == Iterator.Element {
         return self.range(of: pattern, where: ==)
     }
 }
