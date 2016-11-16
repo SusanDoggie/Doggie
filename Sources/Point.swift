@@ -73,6 +73,13 @@ extension Point {
 
 extension Point {
     
+    public var unit: Point {
+        return self / magnitude
+    }
+}
+
+extension Point {
+    
     public func offset(dx: Double, dy: Double) -> Point {
         return Point(x: self.x + dx, y: self.y + dy)
     }

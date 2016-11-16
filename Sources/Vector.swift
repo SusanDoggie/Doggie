@@ -56,6 +56,13 @@ extension Vector {
     }
 }
 
+extension Vector {
+    
+    public var unit: Vector {
+        return self / magnitude
+    }
+}
+
 extension Vector: CustomStringConvertible {
     
     public var description: String {
