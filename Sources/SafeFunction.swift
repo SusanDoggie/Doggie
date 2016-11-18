@@ -39,6 +39,32 @@ public func addmod<T: UnsignedInteger>(_ lhs: [T], _ rhs: [T], _ mod: [T]) -> [T
     AddMod(lhs.count, lhs, 1, rhs, 1, mod, 1, &result, 1)
     return result
 }
+public func negmod<T: UnsignedInteger>(_ a: [T], _ mod: T) -> [T] {
+    var result = a
+    NegMod(a.count, a, 1, [mod], 0, &result, 1)
+    return result
+}
+
+public func negmod<T: UnsignedInteger>(_ a: [T], _ mod: [T]) -> [T] {
+    var result = a
+    assert(a.count == mod.count, "mismatch count of inputs.")
+    NegMod(a.count, a, 1, mod, 1, &result, 1)
+    return result
+}
+public func submod<T: UnsignedInteger>(_ lhs: [T], _ rhs: [T], _ mod: T) -> [T] {
+    var result = lhs
+    assert(lhs.count == rhs.count, "mismatch count of inputs.")
+    SubMod(lhs.count, lhs, 1, rhs, 1, [mod], 0, &result, 1)
+    return result
+}
+
+public func submod<T: UnsignedInteger>(_ lhs: [T], _ rhs: [T], _ mod: [T]) -> [T] {
+    var result = lhs
+    assert(lhs.count == rhs.count, "mismatch count of inputs.")
+    assert(lhs.count == mod.count, "mismatch count of inputs.")
+    SubMod(lhs.count, lhs, 1, rhs, 1, mod, 1, &result, 1)
+    return result
+}
 
 public func mulmod<T: UnsignedInteger>(_ lhs: [T], _ rhs: [T], _ mod: T) -> [T] {
     var result = lhs

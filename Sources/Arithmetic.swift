@@ -38,6 +38,34 @@ public func AddMod<T: UnsignedInteger>(_ count: Int, _ left: UnsafePointer<T>, _
         output += out_stride
     }
 }
+public func NegMod<T: UnsignedInteger>(_ count: Int, _ a: UnsafePointer<T>, _ a_stride: Int, _ mod: UnsafePointer<T>, _ mod_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
+    
+    var a = a
+    var mod = mod
+    var output = output
+    
+    for _ in 0..<count {
+        output.pointee = negmod(a.pointee, mod.pointee)
+        a += a_stride
+        mod += mod_stride
+        output += out_stride
+    }
+}
+public func SubMod<T: UnsignedInteger>(_ count: Int, _ left: UnsafePointer<T>, _ left_stride: Int, _ right: UnsafePointer<T>, _ right_stride: Int, _ mod: UnsafePointer<T>, _ mod_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
+    
+    var left = left
+    var right = right
+    var mod = mod
+    var output = output
+    
+    for _ in 0..<count {
+        output.pointee = submod(left.pointee, right.pointee, mod.pointee)
+        left += left_stride
+        right += right_stride
+        mod += mod_stride
+        output += out_stride
+    }
+}
 public func MulMod<T: UnsignedInteger>(_ count: Int, _ left: UnsafePointer<T>, _ left_stride: Int, _ right: UnsafePointer<T>, _ right_stride: Int, _ mod: UnsafePointer<T>, _ mod_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var left = left
