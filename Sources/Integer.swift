@@ -247,6 +247,18 @@ public func addmod<T: UnsignedInteger>(_ a: T, _ b: T, _ m: T) -> T {
     let c = m &- b
     return a < c ? a &+ b : a &- c
 }
+public func negmod<T: UnsignedInteger>(_ a: T, _ m: T) -> T {
+    assert(m != 0, "divide by zero")
+    let a = a % m
+    return m &- a
+}
+public func submod<T: UnsignedInteger>(_ a: T, _ b: T, _ m: T) -> T {
+    assert(m != 0, "divide by zero")
+    let a = a % m
+    let b = b % m
+    let c = m &- b
+    return a < b ? a &+ c : a &- b
+}
 
 public func >><T: UnsignedInteger>(lhs: T, rhs: T) -> T {
     return T(lhs.toUIntMax() >> rhs.toUIntMax())
@@ -254,9 +266,7 @@ public func >><T: UnsignedInteger>(lhs: T, rhs: T) -> T {
 
 public func mulmod<T: UnsignedInteger>(_ a: T, _ b: T, _ m: T) -> T {
     func _mulmod(_ a: UIntMax, _ b: UIntMax, _ m: UIntMax) -> UIntMax {
-        let a = a % m
-        let b = b % m
-        if a == 0 || b == 0 || m == 1 {
+        if a == 0 || b == 0 {
             return 0
         }
         let (mul, overflow) = UIntMax.multiplyWithOverflow(a, b)
@@ -267,8 +277,13 @@ public func mulmod<T: UnsignedInteger>(_ a: T, _ b: T, _ m: T) -> T {
         return mul % m
     }
     assert(m != 0, "divide by zero")
+    let a = a % m
+    let b = b % m
+    if a == 0 || b == 0 {
+        return 0
+    }
     if m.isPower2 {
-        return T.multiplyWithOverflow(a, b).0 & (m - 1)
+        return (a &* b) & (m - 1)
     }
     return T(_mulmod(a.toUIntMax(), b.toUIntMax(), m.toUIntMax()))
 }
