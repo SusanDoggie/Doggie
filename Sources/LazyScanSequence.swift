@@ -35,10 +35,13 @@ public extension Sequence {
     ///
     /// - complexity: O(N)
     func scan<R>(_ initial: R, _ combine: (R, Iterator.Element) throws -> R) rethrows -> [R] {
+        var last = initial
         var result = [initial]
         result.reserveCapacity(self.underestimatedCount)
         for x in self {
-            result.append(try combine(result.last!, x))
+            let next = try combine(last, x)
+            result.append(next)
+            last = next
         }
         return result
     }
