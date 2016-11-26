@@ -285,34 +285,43 @@ extension Bezier {
     }
 }
 
+@_transparent
+private func BezierPolynomial(_ p: [Double]) -> Polynomial {
+    var result = PermutationList(UInt(p.count - 1)).map(Double.init) as Array
+    for i in result.indices {
+        var sum = 0.0
+        let fact = Array(FactorialList(UInt(i)))
+        for (j, f) in zip(fact, fact.reversed()).map(*).enumerated() {
+            if (i + j) & 1 == 0 {
+                sum += p[j] / Double(f)
+            } else {
+                sum -= p[j] / Double(f)
+            }
+        }
+        result[i] *= sum
+    }
+    return Polynomial(result)
+}
+@_transparent
+private func BezierPolynomial(_ poly: Polynomial) -> [Double] {
+    let de = (0..<poly.degree).scan(poly) { p, _ in p.derivative / Double(p.degree) }
+    var result: [Double] = []
+    for n in de.indices {
+        let s = zip(CombinationList(UInt(n)), de)
+        result.append(s.reduce(0) { $0 + Double($1.0) * $1.1[0] })
+    }
+    return result
+}
+
+
 extension Polynomial {
     
     public var bezier: Bezier<Double> {
-        let de = (0..<self.degree).scan(self) { p, _ in p.derivative / Double(p.degree) }
-        var result: [Double] = []
-        for n in de.indices {
-            let s = zip(CombinationList(UInt(n)), de)
-            result.append(s.reduce(0) { $0 + Double($1.0) * $1.1[0] })
-        }
-        return Bezier(result)
+        return Bezier(BezierPolynomial(self))
     }
     
     public init(_ bezier: Bezier<Double>) {
-        let p = bezier.points
-        var result = PermutationList(UInt(p.count - 1)).map(Double.init) as Array
-        for i in result.indices {
-            var sum = 0.0
-            let fact = Array(FactorialList(UInt(i)))
-            for (j, f) in zip(fact, fact.reversed()).map(*).enumerated() {
-                if (i + j) & 1 == 0 {
-                    sum += p[j] / Double(f)
-                } else {
-                    sum -= p[j] / Double(f)
-                }
-            }
-            result[i] *= sum
-        }
-        self.init(result)
+        self = BezierPolynomial(bezier.points)
     }
 }
 
@@ -472,38 +481,9 @@ private func BezierPoint<Point: BezierPointProtocol>(_ t: Double, _ p: [Point]) 
     return result!
 }
 
-@_transparent
-private func BezierPolynomial(_ p: [Double]) -> Polynomial {
-    
-    var result = PermutationList(UInt(p.count - 1)).map(Double.init) as Array
-    for i in result.indices {
-        var sum = 0.0
-        let fact = Array(FactorialList(UInt(i)))
-        for (j, f) in zip(fact, fact.reversed()).map(*).enumerated() {
-            if (i + j) & 1 == 0 {
-                sum += p[j] / Double(f)
-            } else {
-                sum -= p[j] / Double(f)
-            }
-        }
-        result[i] *= sum
-    }
-    return Polynomial(result)
-}
-
 public func BezierPolynomial(_ p: Double ... ) -> Polynomial {
     
     return BezierPolynomial(p)
-}
-
-public func BezierPolynomial(_ poly: Polynomial) -> [Double] {
-    let de = (0..<poly.degree).scan(poly) { p, _ in p.derivative / Double(p.degree) }
-    var result: [Double] = []
-    for n in de.indices {
-        let s = zip(CombinationList(UInt(n)), de)
-        result.append(s.reduce(0) { $0 + Double($1.0) * $1.1[0] })
-    }
-    return result
 }
 
 public func ClosestBezier(_ point: Point, _ b0: Point, _ b1: Point) -> [Double] {
