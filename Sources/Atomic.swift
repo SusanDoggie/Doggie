@@ -34,6 +34,19 @@ public protocol SDAtomicProtocol {
     
     /// Compare and set the value.
     mutating func compareSet(old: Self, new: Atom) -> Bool
+    
+    /// Atomic fetch the current value.
+    mutating func fetch() -> Atom
+    
+    /// Atomic set the value.
+    mutating func store(_ new: Atom)
+    
+    /// Set the value, and returns the previous value.
+    mutating func fetchStore(_ new: Atom) -> Atom
+    
+    /// Set the value, and returns the previous value. `block` is called repeatedly until result accepted.
+    @discardableResult
+    mutating func fetchStore(block: (Atom) throws -> Atom) rethrows -> Atom
 }
 
 public extension SDAtomicProtocol {
