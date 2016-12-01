@@ -58,6 +58,9 @@ extension Json {
     public init(_ value: String) {
         self.value = value
     }
+    public init(_ elements: Any ...) {
+        self.value = elements.map { Json.unwrap($0) }
+    }
     public init<S : Sequence>(_ elements: S) {
         self.value = elements.map { Json.unwrap($0) }
     }

@@ -34,10 +34,7 @@ public struct Polynomial {
     
     /// a + b x + c x^2 + d x^3 + ...
     public init(_ coeffs: Double ... ) {
-        self.coeffs = coeffs
-        while self.coeffs.last == 0 {
-            self.coeffs.removeLast()
-        }
+        self.init(coeffs)
     }
     /// Construct from an arbitrary sequence of coeffs.
     /// a + b x + c x^2 + d x^3 + ...
@@ -52,10 +49,7 @@ public struct Polynomial {
 extension Polynomial : ExpressibleByArrayLiteral {
     
     public init(arrayLiteral elements: Double ... ) {
-        self.coeffs = elements
-        while self.coeffs.last == 0 {
-            self.coeffs.removeLast()
-        }
+        self.init(elements)
     }
 }
 

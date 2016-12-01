@@ -106,6 +106,10 @@ public struct SDPath : SDShape, RandomAccessCollection, MutableCollection, Expre
         self.commands = elements
     }
     
+    public init(_ elements: Command ...) {
+        self.commands = elements
+    }
+    
     public init<S : Sequence>(_ commands: S) where S.Iterator.Element == Command {
         self.commands = Array(commands)
     }
