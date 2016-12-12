@@ -30,6 +30,9 @@ public protocol Lockable : class {
     func lock()
     func unlock()
     func trylock() -> Bool
+    
+    @discardableResult
+    func synchronized<R>(block: () throws -> R) rethrows -> R
 }
 
 public extension Lockable {

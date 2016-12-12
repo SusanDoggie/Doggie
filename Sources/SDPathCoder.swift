@@ -434,7 +434,7 @@ extension SDPath {
 private func arcDetails(_ start: Point, _ end: Point, _ radius: Radius, _ rotate: Double, _ largeArc: Bool, _ sweep: Bool) -> (Point, Radius) {
     let centers = EllipseCenter(radius, rotate, start, end)
     if centers.count == 0 {
-        return (middle(end, start), EllipseRadius(start, end, radius, rotate))
+        return (0.5 * (start + end), EllipseRadius(start, end, radius, rotate))
     } else if centers.count == 1 || (cross(centers[0] - start, end - start).sign == (sweep ? .plus : .minus) ? largeArc : !largeArc) {
         return (centers[0], radius)
     } else {

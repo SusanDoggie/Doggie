@@ -41,6 +41,9 @@ public protocol SDTransformProtocol {
     var e: Double { get }
     var f: Double { get }
     var inverse : Self { get }
+    
+    static func == (_: Self, _: Self) -> Bool
+    static func != (_: Self, _: Self) -> Bool
 }
 
 extension SDTransformProtocol {

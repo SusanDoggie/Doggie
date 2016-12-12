@@ -24,7 +24,6 @@
 		0813223E1C11D3600081B2B9 /* Matrix.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA621C0550B7007FA426 /* Matrix.swift */; };
 		0813223F1C11D3600081B2B9 /* Point.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA631C0550B7007FA426 /* Point.swift */; };
 		081322401C11D3600081B2B9 /* Polynomial.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA641C0550B7007FA426 /* Polynomial.swift */; };
-		081322411C11D3600081B2B9 /* Prime.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA651C0550B7007FA426 /* Prime.swift */; };
 		081322431C11D3600081B2B9 /* Rect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA671C0550B7007FA426 /* Rect.swift */; };
 		081322441C11D3600081B2B9 /* SDTransform.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA681C0550B7007FA426 /* SDTransform.swift */; };
 		081322451C11D3600081B2B9 /* Vector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA691C0550B7007FA426 /* Vector.swift */; };
@@ -50,7 +49,6 @@
 		0858DAEF1C0550B7007FA426 /* Matrix.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA621C0550B7007FA426 /* Matrix.swift */; };
 		0858DAF31C0550B7007FA426 /* Point.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA631C0550B7007FA426 /* Point.swift */; };
 		0858DAF71C0550B7007FA426 /* Polynomial.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA641C0550B7007FA426 /* Polynomial.swift */; };
-		0858DAFB1C0550B7007FA426 /* Prime.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA651C0550B7007FA426 /* Prime.swift */; };
 		0858DB031C0550B7007FA426 /* Rect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA671C0550B7007FA426 /* Rect.swift */; };
 		0858DB071C0550B7007FA426 /* SDTransform.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA681C0550B7007FA426 /* SDTransform.swift */; };
 		0858DB0B1C0550B7007FA426 /* Vector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA691C0550B7007FA426 /* Vector.swift */; };
@@ -165,7 +163,6 @@
 		0858DA621C0550B7007FA426 /* Matrix.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Matrix.swift; sourceTree = "<group>"; };
 		0858DA631C0550B7007FA426 /* Point.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Point.swift; sourceTree = "<group>"; };
 		0858DA641C0550B7007FA426 /* Polynomial.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Polynomial.swift; sourceTree = "<group>"; };
-		0858DA651C0550B7007FA426 /* Prime.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Prime.swift; sourceTree = "<group>"; };
 		0858DA671C0550B7007FA426 /* Rect.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Rect.swift; sourceTree = "<group>"; };
 		0858DA681C0550B7007FA426 /* SDTransform.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SDTransform.swift; sourceTree = "<group>"; };
 		0858DA691C0550B7007FA426 /* Vector.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Vector.swift; sourceTree = "<group>"; };
@@ -299,7 +296,6 @@
 				0858DA621C0550B7007FA426 /* Matrix.swift */,
 				0858DA631C0550B7007FA426 /* Point.swift */,
 				0858DA641C0550B7007FA426 /* Polynomial.swift */,
-				0858DA651C0550B7007FA426 /* Prime.swift */,
 				0858DA671C0550B7007FA426 /* Rect.swift */,
 				0858DA681C0550B7007FA426 /* SDTransform.swift */,
 				0858DA691C0550B7007FA426 /* Vector.swift */,
@@ -680,7 +676,6 @@
 				0813224D1C11D3600081B2B9 /* SDPathCoder.swift in Sources */,
 				0A76BB711D9D1BAF00842F4D /* AtomicStack.swift in Sources */,
 				0A2C33D81D48B8E200FE9A97 /* Integer.swift in Sources */,
-				081322411C11D3600081B2B9 /* Prime.swift in Sources */,
 				0A2C33D71D48B8E200FE9A97 /* Hashable.swift in Sources */,
 				0A2C33D91D48B8E200FE9A97 /* Json.swift in Sources */,
 				0AE12EE21DC2FD7400996BF9 /* SDPathStroke.swift in Sources */,
@@ -769,7 +764,6 @@
 				0A9021F51DCC760500736586 /* SDPathPatternStroke.swift in Sources */,
 				0858DAF71C0550B7007FA426 /* Polynomial.swift in Sources */,
 				0858DA831C0550B7007FA426 /* CircularConvolve.swift in Sources */,
-				0858DAFB1C0550B7007FA426 /* Prime.swift in Sources */,
 				0AADD11C1D10E6E100087247 /* OptionOneCollection.swift in Sources */,
 				0AADD1301D10E7C100087247 /* LazySliceSequence.swift in Sources */,
 				0858DB2B1C0550B7007FA426 /* SDPathCoder.swift in Sources */,

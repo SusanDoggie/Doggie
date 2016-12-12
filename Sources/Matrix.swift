@@ -48,6 +48,9 @@ public protocol MatrixProtocol {
     var k: Double { get }
     var l: Double { get }
     var inverse : Self { get }
+    
+    static func == (_: Self, _: Self) -> Bool
+    static func != (_: Self, _: Self) -> Bool
 }
 
 extension MatrixProtocol {

@@ -114,17 +114,6 @@ public func cross(_ lhs: Point, _ rhs:  Point) -> Double {
     return lhs.x * rhs.y - lhs.y * rhs.x
 }
 
-public func middle(_ p: Point ... ) -> Point {
-    let count = Double(p.count)
-    var _x = 0.0
-    var _y = 0.0
-    for point in p {
-        _x += point.x
-        _y += point.y
-    }
-    return Point(x: _x / count, y: _y / count)
-}
-
 public prefix func +(val: Point) -> Point {
     return val
 }
