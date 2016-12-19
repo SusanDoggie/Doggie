@@ -25,7 +25,7 @@
 
 import Foundation
 
-public protocol BezierPointProtocol {
+public protocol BezierElementProtocol {
     
     static prefix func + (_: Self) -> Self
     static prefix func - (_: Self) -> Self
@@ -40,24 +40,24 @@ public protocol BezierPointProtocol {
     static func /= (_: inout Self, _: Double)
 }
 
-extension Double : BezierPointProtocol {
+extension Double : BezierElementProtocol {
     
 }
-extension Point : BezierPointProtocol {
+extension Point : BezierElementProtocol {
     
 }
-extension Vector : BezierPointProtocol {
+extension Vector : BezierElementProtocol {
     
 }
 
-private enum BezierControlsBase<Point : BezierPointProtocol> {
+private enum BezierControlsBase<Element : BezierElementProtocol> {
     
     case zero
-    case one(Point)
-    case two(Point, Point)
-    case many([Point])
+    case one(Element)
+    case two(Element, Element)
+    case many([Element])
     
-    init<C : Collection>(_ c: C) where C.Iterator.Element == Point {
+    init<C : Collection>(_ c: C) where C.Iterator.Element == Element {
         switch c.count {
         case 0: self = .zero
         case 1: self = .one(c[c.startIndex])
@@ -66,29 +66,29 @@ private enum BezierControlsBase<Point : BezierPointProtocol> {
         }
     }
 }
-public struct Bezier<Point : BezierPointProtocol> {
+public struct Bezier<Element : BezierElementProtocol> {
     
-    public var start: Point
-    public var end: Point
+    public var start: Element
+    public var end: Element
     
-    fileprivate var base: BezierControlsBase<Point>
+    fileprivate var base: BezierControlsBase<Element>
     
-    public init(_ p0: Point, _ p1: Point) {
+    public init(_ p0: Element, _ p1: Element) {
         self.start = p0
         self.end = p1
         self.base = .zero
     }
-    public init(_ p0: Point, _ p1: Point, _ p2: Point) {
+    public init(_ p0: Element, _ p1: Element, _ p2: Element) {
         self.start = p0
         self.end = p2
         self.base = .one(p1)
     }
-    public init(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point) {
+    public init(_ p0: Element, _ p1: Element, _ p2: Element, _ p3: Element) {
         self.start = p0
         self.end = p3
         self.base = .two(p1, p2)
     }
-    public init<S : Sequence>(_ s: S) where S.Iterator.Element == Point {
+    public init<S : Sequence>(_ s: S) where S.Iterator.Element == Element {
         let _s = Array(s)
         self.start = _s.first!
         self.end = _s.last!
@@ -97,7 +97,7 @@ public struct Bezier<Point : BezierPointProtocol> {
 }
 extension Bezier : ExpressibleByArrayLiteral {
     
-    public init(arrayLiteral elements: Point ... ) {
+    public init(arrayLiteral elements: Element ... ) {
         self.init(elements)
     }
 }
@@ -110,7 +110,7 @@ extension Bezier : CustomStringConvertible {
 }
 extension Bezier {
     
-    public var controls: [Point] {
+    public var controls: [Element] {
         get {
             switch base {
             case .zero: return []
@@ -154,7 +154,7 @@ extension Bezier : RandomAccessCollection, MutableCollection {
         return count
     }
     
-    public subscript(position: Int) -> Point {
+    public subscript(position: Int) -> Element {
         get {
             if position == 0 {
                 return start
@@ -232,7 +232,7 @@ extension Bezier : RandomAccessCollection, MutableCollection {
 
 extension Bezier {
     
-    public func eval(_ t: Double) -> Point {
+    public func eval(_ t: Double) -> Element {
         switch base {
         case .zero: return start + t * (end - start)
         case let .one(p1):
@@ -252,7 +252,7 @@ extension Bezier {
             return a + b + c + d
         default:
             let p = points
-            var result: Point?
+            var result: Element?
             let _n = p.count - 1
             for (idx, k) in CombinationList(UInt(_n)).enumerated() {
                 let b = Double(k) * pow(t, Double(idx)) * pow(1 - t, Double(_n - idx))
@@ -270,7 +270,7 @@ extension Bezier {
 
 extension Bezier {
     
-    fileprivate var points: [Point] {
+    fileprivate var points: [Element] {
         get {
             switch base {
             case .zero: return [start, end]
@@ -342,13 +342,13 @@ extension Bezier {
 
 extension Bezier {
     
-    private static func split(_ t: Double, _ p: [Point]) -> ([Point], [Point]) {
+    private static func split(_ t: Double, _ p: [Element]) -> ([Element], [Element]) {
         let _t = 1 - t
         if p.count == 2 {
             let split = _t * p.first! + t * p.last!
             return ([p.first!, split], [split, p.last!])
         }
-        var subpath = [Point]()
+        var subpath = [Element]()
         var lastPoint = p.first!
         for current in p.dropFirst() {
             subpath.append(_t * lastPoint + t * current)
@@ -388,7 +388,7 @@ extension Bezier {
     public func derivative() -> Bezier {
         let p = self.points
         let n = Double(p.count - 1)
-        var de = [Point]()
+        var de = [Element]()
         var lastPoint = p.first!
         for current in p.dropFirst() {
             de.append(n * (current - lastPoint))
@@ -398,17 +398,17 @@ extension Bezier {
     }
 }
 
-public func BezierPoint<Point: BezierPointProtocol>(_ t: Double, _ p0: Point, _ p1: Point) -> Point {
+public func BezierPoint<Element: BezierElementProtocol>(_ t: Double, _ p0: Element, _ p1: Element) -> Element {
     return p0 + t * (p1 - p0)
 }
-public func BezierPoint<Point: BezierPointProtocol>(_ t: Double, _ p0: Point, _ p1: Point, _ p2: Point) -> Point {
+public func BezierPoint<Element: BezierElementProtocol>(_ t: Double, _ p0: Element, _ p1: Element, _ p2: Element) -> Element {
     let _t = 1 - t
     let a = _t * _t * p0
     let b = 2 * _t * t * p1
     let c = t * t * p2
     return a + b + c
 }
-public func BezierPoint<Point: BezierPointProtocol>(_ t: Double, _ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point) -> Point {
+public func BezierPoint<Element: BezierElementProtocol>(_ t: Double, _ p0: Element, _ p1: Element, _ p2: Element, _ p3: Element) -> Element {
     let t2 = t * t
     let _t = 1 - t
     let _t2 = _t * _t
@@ -418,11 +418,11 @@ public func BezierPoint<Point: BezierPointProtocol>(_ t: Double, _ p0: Point, _ 
     let d = t * t2 * p3
     return a + b + c + d
 }
-public func BezierPoint<Point: BezierPointProtocol>(_ t: Double, _ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point, _ p4: Point, _ rest: Point ... ) -> Point {
+public func BezierPoint<Element: BezierElementProtocol>(_ t: Double, _ p0: Element, _ p1: Element, _ p2: Element, _ p3: Element, _ p4: Element, _ rest: Element ... ) -> Element {
     return BezierPoint(t, [p0, p1, p2, p3, p4] + rest)
 }
 
-private func SplitBezier<Point: BezierPointProtocol>(_ t: Double, _ p: [Point]) -> ([Point], [Point]) {
+private func SplitBezier<Element: BezierElementProtocol>(_ t: Double, _ p: [Element]) -> ([Element], [Element]) {
     if t.almostZero() {
         return (Array(repeating: p.first!, count: p.count), p)
     }
@@ -434,7 +434,7 @@ private func SplitBezier<Point: BezierPointProtocol>(_ t: Double, _ p: [Point]) 
         let split = _t * p.first! + t * p.last!
         return ([p.first!, split], [split, p.last!])
     }
-    var subpath = [Point]()
+    var subpath = [Element]()
     var lastPoint = p.first!
     for current in p.dropFirst() {
         subpath.append(_t * lastPoint + t * current)
@@ -444,8 +444,8 @@ private func SplitBezier<Point: BezierPointProtocol>(_ t: Double, _ p: [Point]) 
     return ([p.first!] + split.0, split.1 + [p.last!])
 }
 @_transparent
-private func SplitBezier<Point: BezierPointProtocol>(_ t: [Double], _ p: [Point]) -> [[Point]] {
-    var result: [[Point]] = []
+private func SplitBezier<Element: BezierElementProtocol>(_ t: [Double], _ p: [Element]) -> [[Element]] {
+    var result: [[Element]] = []
     var remain = p
     var last_t = 0.0
     for _t in t.sorted() {
@@ -458,17 +458,17 @@ private func SplitBezier<Point: BezierPointProtocol>(_ t: [Double], _ p: [Point]
     return result
 }
 
-public func SplitBezier<Point: BezierPointProtocol>(_ t: Double, _ p: Point ... ) -> ([Point], [Point]) {
+public func SplitBezier<Element: BezierElementProtocol>(_ t: Double, _ p: Element ... ) -> ([Element], [Element]) {
     return SplitBezier(t, p)
 }
 
-public func SplitBezier<Point: BezierPointProtocol>(_ t: [Double], _ p: Point ... ) -> [[Point]] {
+public func SplitBezier<Element: BezierElementProtocol>(_ t: [Double], _ p: Element ... ) -> [[Element]] {
     return SplitBezier(t, p)
 }
 
 @_transparent
-private func BezierPoint<Point: BezierPointProtocol>(_ t: Double, _ p: [Point]) -> Point {
-    var result: Point?
+private func BezierPoint<Element: BezierElementProtocol>(_ t: Double, _ p: [Element]) -> Element {
+    var result: Element?
     let _n = p.count - 1
     for (idx, k) in CombinationList(UInt(_n)).enumerated() {
         let b = Double(k) * pow(t, Double(idx)) * pow(1 - t, Double(_n - idx))
