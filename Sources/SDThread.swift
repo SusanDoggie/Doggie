@@ -121,6 +121,15 @@ public class SDTask<Result> {
 
 extension SDTask {
     
+    /// Create a SDTask and compute block.
+    @discardableResult
+    public static func async(queue: DispatchQueue = SDDefaultDispatchQueue, qos: DispatchQoS = .unspecified, flags: DispatchWorkItemFlags = [], block: @escaping () -> Result) -> SDTask {
+        return SDTask(queue: queue, block: block)
+    }
+}
+
+extension SDTask {
+    
     fileprivate func createWorker(qos: DispatchQoS, flags: DispatchWorkItemFlags, block: @escaping () -> Result) -> DispatchWorkItem {
         return DispatchWorkItem(qos: qos, flags: flags) { [weak self] in
             let value = block()
@@ -195,10 +204,4 @@ extension SDTask {
         }
         return result
     }
-}
-
-/// Create a SDTask and compute block.
-@discardableResult
-public func async<Result>(queue: DispatchQueue = SDDefaultDispatchQueue, qos: DispatchQoS = .unspecified, flags: DispatchWorkItemFlags = [], block: @escaping () -> Result) -> SDTask<Result> {
-    return SDTask(queue: queue, block: block)
 }
