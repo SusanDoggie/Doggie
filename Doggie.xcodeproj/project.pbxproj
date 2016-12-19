@@ -322,7 +322,7 @@
 			isa = PBXGroup;
 			children = (
 				0858DA401C0550B7007FA426 /* Doggie */,
-				08AF77AE1A3A10510042491F /* CommonTest */,
+				08AF77AE1A3A10510042491F /* Tests */,
 				087FE5981A372D5B005A2E9E /* Doggie_iOS */,
 				087FE5A51A372D5B005A2E9E /* Doggie_iOSTests */,
 				087FE5B61A372D97005A2E9E /* Doggie_Mac */,
@@ -408,14 +408,14 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
-		08AF77AE1A3A10510042491F /* CommonTest */ = {
+		08AF77AE1A3A10510042491F /* Tests */ = {
 			isa = PBXGroup;
 			children = (
 				0AFCA14F1D9E1F130034AB10 /* AtomicTest.swift */,
 				08BFF9B91B0715ED00EC88CB /* FourierTest.swift */,
 				0A266E521D6E95C100ABE6B7 /* SDMarkerTest.swift */,
 			);
-			path = CommonTest;
+			path = Tests;
 			sourceTree = "<group>";
 		};
 		0A73D3C81D67E95F007269CB /* Foundation */ = {

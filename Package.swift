@@ -29,5 +29,12 @@ let package = Package(
     name: "Doggie",
     dependencies: [
         .Package(url: "https://github.com/SusanDoggie/c11_atomic.git", majorVersion: 1),
-        ]
+        ],
+    exclude: [
+        "Doggie.xcodeproj",
+        "LICENSE", "README.md",
+        "Doggie_iOS", "Doggie_iOSTests",
+        "Doggie_Mac", "Doggie_MacTests",
+        "c11_atomic"
+    ]
 )
