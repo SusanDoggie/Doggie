@@ -94,9 +94,18 @@ extension RGBColorModel {
     
     public var hue: Double {
         get {
-            let alpha = red - 0.5 * (green + blue)
-            let beta = 0.5 * M_SQRT3 * (green - blue)
-            return positive_mod(0.5 * M_1_PI * atan2(beta, alpha), 1)
+            let _max = max(red, green, blue)
+            let _min = min(red, green, blue)
+            let c = _max - _min
+            if c == 0 {
+                return 0
+            }
+            switch _max {
+            case red: return positive_mod((green - blue) / (6 * c), 1)
+            case green: return positive_mod((blue - red) / (6 * c) + 2 / 6, 1)
+            case blue: return positive_mod((red - green) / (6 * c) + 4 / 6, 1)
+            default: return 0
+            }
         }
         set {
             let _max = max(red, green, blue)
