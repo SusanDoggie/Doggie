@@ -25,72 +25,74 @@
 
 import Foundation
 
-public protocol ColorModel {
+public protocol ColorModelProtocol {
     
 }
 
-public struct RGBColorModel {
+public struct RGBColorModel : ColorModelProtocol {
     
-    var red: Double
-    var green: Double
-    var blue: Double
+    public var red: Double
+    public var green: Double
+    public var blue: Double
 }
 
-public struct CMYKColorModel {
+public struct CMYKColorModel : ColorModelProtocol {
     
-    var cyan: Double
-    var magenta: Double
-    var yellow: Double
-    var black: Double
+    public var cyan: Double
+    public var magenta: Double
+    public var yellow: Double
+    public var black: Double
 }
 
-public struct HSBColorModel {
+public struct HSBColorModel : ColorModelProtocol {
     
-    var hue: Double
-    var saturation: Double
-    var brightness: Double
+    public var hue: Double
+    public var saturation: Double
+    public var brightness: Double
 }
 
-public struct HSLColorModel {
+public struct HSLColorModel : ColorModelProtocol {
     
-    var hue: Double
-    var saturation: Double
-    var lightness: Double
+    public var hue: Double
+    public var saturation: Double
+    public var lightness: Double
 }
 
-public struct CIELABColorModel {
+public struct LabColorModel : ColorModelProtocol {
     
     /// The lightness dimension.
-    var lightness: Double
+    public var lightness: Double
     /// The a color component.
-    var a: Double
+    public var a: Double
     /// The b color component.
-    var b: Double
+    public var b: Double
 }
 
-public struct CIEXYZColorModel {
+public struct XYZColorModel : ColorModelProtocol {
     
     /// The Y luminance component.
-    var x: Double
+    public var x: Double
     /// The Cb chroma component.
-    var y: Double
+    public var y: Double
     /// The Cr chroma component.
-    var z: Double
+    public var z: Double
 }
 
-public struct GrayColorModel {
+public struct GrayColorModel : ColorModelProtocol {
     
-    var white: Double
+    public var white: Double
 }
 
-public struct ColorSpace {
+public protocol ColorSpaceProtocol {
+    
+    associatedtype Model : ColorModelProtocol
     
 }
 
-public struct Color<ColorModel> {
+public struct Color<ColorSpace : ColorSpaceProtocol> {
     
-    var colorSpace: ColorSpace
+    public var colorSpace: ColorSpace
     
-    var color: ColorModel
-    var alpha: Double
+    public var color: ColorSpace.Model
+    public var alpha: Double
 }
