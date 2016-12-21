@@ -44,6 +44,15 @@ public struct RGBColorModel : ColorModelProtocol {
 
 extension RGBColorModel {
     
+    public init(_ hex: UInt32) {
+        self.red = Double((hex >> 16) & 0xFF) / 255
+        self.green = Double((hex >> 8) & 0xFF) / 255
+        self.blue = Double(hex & 0xFF) / 255
+    }
+}
+
+extension RGBColorModel {
+    
     public init(_ cmyk: CMYKColorModel) {
         let _k = 1 - cmyk.black
         let _cyan = cmyk.cyan * _k + cmyk.black
