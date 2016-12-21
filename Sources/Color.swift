@@ -92,40 +92,26 @@ extension RGBColorModel {
 
 extension RGBColorModel {
     
-    private var _alpha_beta: (alpha: Double, beta: Double) {
-        return (0.5 * (2 * red - green - blue), 0.5 * M_SQRT3 * (green - blue))
-    }
-    private var _hue_chroma: (hue: Double, chroma: Double) {
-        let (alpha, beta) = self._alpha_beta
-        return (positive_mod(0.5 * M_1_PI * atan2(beta, alpha), 1), sqrt(alpha * alpha + beta * beta))
-    }
-    private var _hue_saturation: (hue: Double, saturation: Double) {
-        let (hue, chroma) = self._hue_chroma
-        let brightness = self.brightness
-        return (hue, brightness == 0 ? 0 : chroma / brightness)
-    }
-    
     public var hue: Double {
         get {
-            let (alpha, beta) = self._alpha_beta
+            let alpha = red - 0.5 * (green + blue)
+            let beta = 0.5 * M_SQRT3 * (green - blue)
             return positive_mod(0.5 * M_1_PI * atan2(beta, alpha), 1)
         }
         set {
-            let saturation = self.saturation
-            let brightness = self.brightness
-            self = RGBColorModel(hue: newValue, saturation: saturation, brightness: brightness)
+            let _max = max(red, green, blue)
+            let _min = min(red, green, blue)
+            self = RGBColorModel(hue: newValue, saturation: _max == 0 ? 0 : (_max - _min) / _max, brightness: _max)
         }
     }
     
     public var saturation: Double {
         get {
-            let (alpha, beta) = self._alpha_beta
-            let brightness = self.brightness
-            return brightness == 0 ? 0 : sqrt(alpha * alpha + beta * beta) / brightness
+            let _max = max(red, green, blue)
+            let _min = min(red, green, blue)
+            return _max == 0 ? 0 : (_max - _min) / _max
         }
         set {
-            let hue = self.hue
-            let brightness = self.brightness
             self = RGBColorModel(hue: hue, saturation: newValue, brightness: brightness)
         }
     }
@@ -135,7 +121,6 @@ extension RGBColorModel {
             return max(red, green, blue)
         }
         set {
-            let (hue, saturation) = self._hue_saturation
             self = RGBColorModel(hue: hue, saturation: saturation, brightness: newValue)
         }
     }
