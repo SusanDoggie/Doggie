@@ -101,6 +101,8 @@
 		0A776FC61D9A0BA5005FC88F /* c11_atomic.h in Headers */ = {isa = PBXBuildFile; fileRef = 0A776FC31D9A0BA5005FC88F /* c11_atomic.h */; };
 		0A9021F41DCC760500736586 /* SDPathPatternStroke.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9021F31DCC760500736586 /* SDPathPatternStroke.swift */; };
 		0A9021F51DCC760500736586 /* SDPathPatternStroke.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9021F31DCC760500736586 /* SDPathPatternStroke.swift */; };
+		0A987DC21E0A2C6F00C2D789 /* FloatingPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A987DC11E0A2C6F00C2D789 /* FloatingPoint.swift */; };
+		0A987DC31E0A2C6F00C2D789 /* FloatingPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A987DC11E0A2C6F00C2D789 /* FloatingPoint.swift */; };
 		0AADD11A1D10E6E100087247 /* OptionOneCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AADD1191D10E6E100087247 /* OptionOneCollection.swift */; };
 		0AADD11C1D10E6E100087247 /* OptionOneCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AADD1191D10E6E100087247 /* OptionOneCollection.swift */; };
 		0AADD11F1D10E75300087247 /* LazyScanSequence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AADD11E1D10E75300087247 /* LazyScanSequence.swift */; };
@@ -205,6 +207,7 @@
 		0A776FC31D9A0BA5005FC88F /* c11_atomic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = c11_atomic.h; sourceTree = "<group>"; };
 		0A776FC41D9A0BA5005FC88F /* module.modulemap */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = "sourcecode.module-map"; path = module.modulemap; sourceTree = "<group>"; };
 		0A9021F31DCC760500736586 /* SDPathPatternStroke.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SDPathPatternStroke.swift; sourceTree = "<group>"; };
+		0A987DC11E0A2C6F00C2D789 /* FloatingPoint.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FloatingPoint.swift; sourceTree = "<group>"; };
 		0AADD1191D10E6E100087247 /* OptionOneCollection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OptionOneCollection.swift; sourceTree = "<group>"; };
 		0AADD11E1D10E75300087247 /* LazyScanSequence.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LazyScanSequence.swift; sourceTree = "<group>"; };
 		0AADD1231D10E77100087247 /* ConcatCollection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConcatCollection.swift; sourceTree = "<group>"; };
@@ -429,6 +432,7 @@
 				08A3D42E1DB36269001417C7 /* String.swift */,
 				0A2C33D11D48B8E200FE9A97 /* Hashable.swift */,
 				0A2C33D21D48B8E200FE9A97 /* Integer.swift */,
+				0A987DC11E0A2C6F00C2D789 /* FloatingPoint.swift */,
 				0A2C33D31D48B8E200FE9A97 /* Json.swift */,
 				0A2C33D41D48B8E200FE9A97 /* Random.swift */,
 				0A2C33D51D48B8E200FE9A97 /* Regex.swift */,
@@ -668,6 +672,7 @@
 				0AADD1331D10E7E700087247 /* LazyChunkElementsCollection.swift in Sources */,
 				081322281C11D3600081B2B9 /* Move.swift in Sources */,
 				0A72CA561DA4B1890041F67B /* Atomic.swift in Sources */,
+				0A987DC21E0A2C6F00C2D789 /* FloatingPoint.swift in Sources */,
 				081322231C11D3600081B2B9 /* ComplexConversion.swift in Sources */,
 				08A3D42F1DB36269001417C7 /* String.swift in Sources */,
 				0881EC1A1DC793100002477F /* Bezier.swift in Sources */,
@@ -740,6 +745,7 @@
 				0AADD1351D10E7E700087247 /* LazyChunkElementsCollection.swift in Sources */,
 				0858DB371C0550B7007FA426 /* SDShape.swift in Sources */,
 				0A72CA571DA4B1890041F67B /* Atomic.swift in Sources */,
+				0A987DC31E0A2C6F00C2D789 /* FloatingPoint.swift in Sources */,
 				0858DB331C0550B7007FA426 /* SDRectangle.swift in Sources */,
 				08A3D4301DB36269001417C7 /* String.swift in Sources */,
 				0881EC1B1DC793100002477F /* Bezier.swift in Sources */,
