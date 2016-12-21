@@ -44,13 +44,14 @@ public struct RGBColorModel : ColorModelProtocol {
 
 extension RGBColorModel {
     
-    public init(_ cmy: CMYColorModel) {
-        self.red = 1 - cmy.cyan
-        self.green = 1 - cmy.magenta
-        self.blue = 1 - cmy.yellow
-    }
     public init(_ cmyk: CMYKColorModel) {
-        self.init(CMYColorModel(cmyk))
+        let _k = 1 - cmyk.black
+        let _cyan = cmyk.cyan * _k + cmyk.black
+        let _magenta = cmyk.magenta * _k + cmyk.black
+        let _yellow = cmyk.yellow * _k + cmyk.black
+        self.red = 1 - _cyan
+        self.green = 1 - _magenta
+        self.blue = 1 - _yellow
     }
 }
 extension RGBColorModel {
@@ -135,34 +136,6 @@ extension RGBColorModel {
     }
 }
 
-public struct CMYColorModel : ColorModelProtocol {
-    
-    public var cyan: Double
-    public var magenta: Double
-    public var yellow: Double
-    
-    public init(cyan: Double, magenta: Double, yellow: Double) {
-        self.cyan = cyan
-        self.magenta = magenta
-        self.yellow = yellow
-    }
-}
-
-extension CMYColorModel {
-    
-    public init(_ cmyk: CMYKColorModel) {
-        let _k = 1 - cmyk.black
-        self.cyan = cmyk.cyan * _k + cmyk.black
-        self.magenta = cmyk.magenta * _k + cmyk.black
-        self.yellow = cmyk.yellow * _k + cmyk.black
-    }
-    public init(_ rgb: RGBColorModel) {
-        self.cyan = 1 - rgb.red
-        self.magenta = 1 - rgb.green
-        self.yellow = 1 - rgb.blue
-    }
-}
-
 public struct CMYKColorModel : ColorModelProtocol {
     
     public var cyan: Double
@@ -180,21 +153,21 @@ public struct CMYKColorModel : ColorModelProtocol {
 
 extension CMYKColorModel {
     
-    public init(_ cmy: CMYColorModel) {
-        self.black = min(cmy.cyan, cmy.magenta, cmy.yellow)
+    public init(_ rgb: RGBColorModel) {
+        let _cyan = 1 - rgb.red
+        let _magenta = 1 - rgb.green
+        let _yellow = 1 - rgb.blue
+        self.black = min(_cyan, _magenta, _yellow)
         if black == 1 {
             self.cyan = 0
             self.magenta = 0
             self.yellow = 0
         } else {
             let _k = 1 / (1 - black)
-            self.cyan = _k * (cmy.cyan - black)
-            self.magenta = _k * (cmy.magenta - black)
-            self.yellow = _k * (cmy.yellow - black)
+            self.cyan = _k * (_cyan - black)
+            self.magenta = _k * (_magenta - black)
+            self.yellow = _k * (_yellow - black)
         }
-    }
-    public init(_ rgb: RGBColorModel) {
-        self.init(CMYColorModel(rgb))
     }
 }
 
