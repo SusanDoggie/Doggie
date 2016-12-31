@@ -294,11 +294,8 @@ extension LuvColorModel {
 
 public struct XYZColorModel : ColorModelProtocol {
     
-    /// The Y luminance component.
     public var x: Double
-    /// The Cb chroma component.
     public var y: Double
-    /// The Cr chroma component.
     public var z: Double
     
     public init(x: Double, y: Double, z: Double) {
@@ -331,8 +328,11 @@ public func *= <T: MatrixProtocol>(lhs: inout XYZColorModel, rhs: T) {
 
 public struct YxyColorModel : ColorModelProtocol {
     
+    /// The Y luminance component.
     public var luminance: Double
+    /// The Cb chroma component.
     public var x: Double
+    /// The Cr chroma component.
     public var y: Double
     
     public init(luminance: Double, x: Double, y: Double) {
