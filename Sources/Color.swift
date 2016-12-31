@@ -348,24 +348,21 @@ public class CalibratedRGBColorSpace : ColorSpaceProtocol {
     public var red: XYZColorModel
     public var green: XYZColorModel
     public var blue: XYZColorModel
-    public var gamma: Double
     
-    public init(white: XYZColorModel, black: XYZColorModel, red: XYZColorModel, green: XYZColorModel, blue: XYZColorModel, gamma: Double) {
+    public init(white: XYZColorModel, black: XYZColorModel, red: XYZColorModel, green: XYZColorModel, blue: XYZColorModel) {
         self.white = white
         self.black = black
         self.red = red
         self.green = green
         self.blue = blue
-        self.gamma = gamma
     }
     
-    public init(white: YxyColorModel, black: YxyColorModel, red: YxyColorModel, green: YxyColorModel, blue: YxyColorModel, gamma: Double) {
+    public init(white: YxyColorModel, black: YxyColorModel, red: YxyColorModel, green: YxyColorModel, blue: YxyColorModel) {
         self.white = XYZColorModel(white)
         self.black = XYZColorModel(black)
         self.red = XYZColorModel(red)
         self.green = XYZColorModel(green)
         self.blue = XYZColorModel(blue)
-        self.gamma = gamma
     }
 }
 
@@ -395,12 +392,12 @@ extension CalibratedRGBColorSpace {
         return CIEXYZColorSpace(white: white * normalizeMatrix)
     }
     
-    public func convertLinearToXYZ(_ color: Model) -> XYZColorModel {
+    public func convertToXYZ(_ color: Model) -> XYZColorModel {
         let transferMatrix = self.transferMatrix
         let _color = Vector(x: color.red, y: color.green, z: color.blue) * transferMatrix
         return XYZColorModel(x: _color.x, y: _color.y, z: _color.z)
     }
-    public func convertLinearFromXYZ(_ color: XYZColorModel) -> Model {
+    public func convertFromXYZ(_ color: XYZColorModel) -> Model {
         let transferMatrix = self.transferMatrix
         let _color = Vector(x: color.x, y: color.y, z: color.z) * transferMatrix.inverse
         return Model(red: _color.x, green: _color.y, blue: _color.z)
