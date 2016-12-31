@@ -358,12 +358,21 @@ public class CalibratedRGBColorSpace : ColorSpaceProtocol {
         self.blue = blue
         self.gamma = gamma
     }
+    
+    public init(white: YxyColorModel, black: YxyColorModel, red: YxyColorModel, green: YxyColorModel, blue: YxyColorModel, gamma: Double) {
+        self.white = XYZColorModel(white)
+        self.black = XYZColorModel(black)
+        self.red = XYZColorModel(red)
+        self.green = XYZColorModel(green)
+        self.blue = XYZColorModel(blue)
+        self.gamma = gamma
+    }
 }
 
 extension CalibratedRGBColorSpace {
     
     private var normalizeMatrix: Matrix {
-        return Matrix.Translate(x: -black.z, y: -black.y, z: -black.z) * Matrix.Scale(x: white.x / (white.y * (white.x - black.x)), y: 1 / (white.y - black.y), z: white.z / (white.y * (white.z - black.z)))
+        return Matrix.Translate(x: -black.x, y: -black.y, z: -black.z) * Matrix.Scale(x: white.x / (white.y * (white.x - black.x)), y: 1 / (white.y - black.y), z: white.z / (white.y * (white.z - black.z)))
     }
     
     private var transferMatrix: Matrix {
