@@ -380,7 +380,7 @@ public protocol ColorSpaceProtocol {
 
 extension ColorSpaceProtocol {
     
-    public func convert<C : ColorSpaceProtocol>(_ color: Model, to other: C, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm = .Bradford) -> C.Model {
+    public func convert<C : ColorSpaceProtocol>(_ color: Model, to other: C, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm = .bradford) -> C.Model {
         return other.convertFromXYZ(self.cieXYZ.convert(self.convertToXYZ(color), to: other.cieXYZ, algorithm: algorithm))
     }
 }
@@ -422,12 +422,13 @@ extension CIEXYZColorSpace {
 extension CIEXYZColorSpace {
     
     public enum ChromaticAdaptationAlgorithm {
-        case XYZScaling
-        case VonKries
-        case Bradford
+        case xyzScaling
+        case vonKries
+        case bradford
+        case other(Matrix)
     }
     
-    public func convert(_ color: Model, to other: CIEXYZColorSpace, algorithm: ChromaticAdaptationAlgorithm = .Bradford) -> Model {
+    public func convert(_ color: Model, to other: CIEXYZColorSpace, algorithm: ChromaticAdaptationAlgorithm = .bradford) -> Model {
         let matrix = algorithm.matrix
         let _s = self.white * matrix
         let _d = other.white * matrix
@@ -439,13 +440,14 @@ extension CIEXYZColorSpace.ChromaticAdaptationAlgorithm {
     
     fileprivate var matrix: Matrix {
         switch self {
-        case .XYZScaling: return Matrix(Matrix.Identity())
-        case .VonKries: return Matrix(a: 0.4002400, b: 0.7076000, c: -0.0808100, d: 0,
+        case .xyzScaling: return Matrix(Matrix.Identity())
+        case .vonKries: return Matrix(a: 0.4002400, b: 0.7076000, c: -0.0808100, d: 0,
                                       e: -0.2263000, f: 1.1653200, g: 0.0457000, h: 0,
                                       i: 0.0000000, j: 0.0000000, k: 0.9182200, l: 0)
-        case .Bradford: return Matrix(a: 0.8951000, b: 0.2664000, c: -0.1614000, d: 0,
+        case .bradford: return Matrix(a: 0.8951000, b: 0.2664000, c: -0.1614000, d: 0,
                                       e: -0.7502000, f: 1.7135000, g: 0.0367000, h: 0,
                                       i: 0.0389000, j: -0.0685000, k: 1.0296000, l: 0)
+        case let .other(m): return m
         }
     }
 }
@@ -623,7 +625,7 @@ public struct Color<ColorSpace : ColorSpaceProtocol> {
 
 extension Color {
 
-    public func convert<C : ColorSpaceProtocol>(to colorSpace: C, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm = .Bradford) -> Color<C> {
+    public func convert<C : ColorSpaceProtocol>(to colorSpace: C, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm = .bradford) -> Color<C> {
         return Color<C>(colorSpace: colorSpace, color: self.colorSpace.convert(color, to: colorSpace, algorithm: algorithm), alpha: alpha)
     }
 }
