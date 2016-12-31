@@ -613,4 +613,17 @@ public struct Color<ColorSpace : ColorSpaceProtocol> {
     
     public var color: ColorSpace.Model
     public var alpha: Double
+    
+    public init(colorSpace: ColorSpace, color: ColorSpace.Model, alpha: Double = 1) {
+        self.colorSpace = colorSpace
+        self.color = color
+        self.alpha = alpha
+    }
+}
+
+extension Color {
+
+    public func convert<C : ColorSpaceProtocol>(to colorSpace: C, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm = .Bradford) -> Color<C> {
+        return Color<C>(colorSpace: colorSpace, color: self.colorSpace.convert(color, to: colorSpace, algorithm: algorithm), alpha: alpha)
+    }
 }
