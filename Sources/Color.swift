@@ -208,10 +208,10 @@ public struct LabColorModel : ColorModelProtocol {
         self.a = a
         self.b = b
     }
-    public init(lightness: Double, saturation: Double, hue: Double) {
+    public init(lightness: Double, chroma: Double, hue: Double) {
         self.lightness = lightness
-        self.a = saturation * cos(2 * M_PI * hue)
-        self.b = saturation * sin(2 * M_PI * hue)
+        self.a = chroma * cos(2 * M_PI * hue)
+        self.b = chroma * sin(2 * M_PI * hue)
     }
 }
 
@@ -229,16 +229,16 @@ extension LabColorModel {
             return positive_mod(0.5 * atan2(b, a) / M_PI, 1)
         }
         set {
-            self = LabColorModel(lightness: lightness, saturation: saturation, hue: newValue)
+            self = LabColorModel(lightness: lightness, chroma: chroma, hue: newValue)
         }
     }
     
-    public var saturation: Double {
+    public var chroma: Double {
         get {
             return sqrt(a * a + b * b)
         }
         set {
-            self = LabColorModel(lightness: lightness, saturation: newValue, hue: hue)
+            self = LabColorModel(lightness: lightness, chroma: newValue, hue: hue)
         }
     }
 }
@@ -257,10 +257,10 @@ public struct LuvColorModel : ColorModelProtocol {
         self.u = u
         self.v = v
     }
-    public init(lightness: Double, saturation: Double, hue: Double) {
+    public init(lightness: Double, chroma: Double, hue: Double) {
         self.lightness = lightness
-        self.u = saturation * cos(2 * M_PI * hue)
-        self.v = saturation * sin(2 * M_PI * hue)
+        self.u = chroma * cos(2 * M_PI * hue)
+        self.v = chroma * sin(2 * M_PI * hue)
     }
 }
 
@@ -278,16 +278,16 @@ extension LuvColorModel {
             return positive_mod(0.5 * atan2(v, u) / M_PI, 1)
         }
         set {
-            self = LuvColorModel(lightness: lightness, saturation: saturation, hue: newValue)
+            self = LuvColorModel(lightness: lightness, chroma: chroma, hue: newValue)
         }
     }
     
-    public var saturation: Double {
+    public var chroma: Double {
         get {
             return sqrt(u * u + v * v)
         }
         set {
-            self = LuvColorModel(lightness: lightness, saturation: newValue, hue: hue)
+            self = LuvColorModel(lightness: lightness, chroma: newValue, hue: hue)
         }
     }
 }
