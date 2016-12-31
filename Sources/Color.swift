@@ -246,6 +246,14 @@ extension XYZColorModel : CustomStringConvertible {
     }
 }
 
+public func * <T: MatrixProtocol>(lhs: XYZColorModel, rhs: T) -> XYZColorModel {
+    return XYZColorModel(x: lhs.x * rhs.a + lhs.y * rhs.b + lhs.z * rhs.c + rhs.d, y: lhs.x * rhs.e + lhs.y * rhs.f + lhs.z * rhs.g + rhs.h, z: lhs.x * rhs.i + lhs.y * rhs.j + lhs.z * rhs.k + rhs.l)
+}
+
+public func *= <T: MatrixProtocol>(lhs: inout XYZColorModel, rhs: T) {
+    lhs = lhs * rhs
+}
+
 public struct YxyColorModel : ColorModelProtocol {
     
     public var luminance: Double
@@ -271,14 +279,6 @@ extension YxyColorModel : CustomStringConvertible {
     public var description: String {
         return "YxyColorModel(luminance: \(luminance), x: \(x), y: \(y))"
     }
-}
-
-public func * <T: MatrixProtocol>(lhs: XYZColorModel, rhs: T) -> XYZColorModel {
-    return XYZColorModel(x: lhs.x * rhs.a + lhs.y * rhs.b + lhs.z * rhs.c + rhs.d, y: lhs.x * rhs.e + lhs.y * rhs.f + lhs.z * rhs.g + rhs.h, z: lhs.x * rhs.i + lhs.y * rhs.j + lhs.z * rhs.k + rhs.l)
-}
-
-public func *= <T: MatrixProtocol>(lhs: inout XYZColorModel, rhs: T) {
-    lhs = lhs * rhs
 }
 
 public struct GrayColorModel : ColorModelProtocol {
