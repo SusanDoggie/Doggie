@@ -199,17 +199,58 @@ public struct LabColorModel : ColorModelProtocol {
 public struct XYZColorModel : ColorModelProtocol {
     
     /// The Y luminance component.
-    public var x: Double
+    public var X: Double
     /// The Cb chroma component.
-    public var y: Double
+    public var Y: Double
     /// The Cr chroma component.
-    public var z: Double
+    public var Z: Double
+    
+    public var x: Double {
+        get {
+            return X / (X + Y + Z)
+        }
+        set {
+            self = XYZColorModel(x: newValue, y: y, luminance: luminance)
+        }
+    }
+    public var y: Double {
+        get {
+            return Y / (X + Y + Z)
+        }
+        set {
+            self = XYZColorModel(x: x, y: newValue, luminance: luminance)
+        }
+    }
+    
+    public var luminance: Double {
+        get {
+            return Y
+        }
+        set {
+            self.Y = newValue
+        }
+    }
     
     public init(x: Double, y: Double, z: Double) {
-        self.x = x
-        self.y = y
-        self.z = z
+        self.X = x
+        self.Y = y
+        self.Z = z
     }
+    
+    public init(x: Double, y: Double, luminance: Double) {
+        let _y = 1 / y
+        self.X = x * _y * luminance
+        self.Y = luminance
+        self.Z = (1 - x - y) * _y * luminance
+    }
+}
+
+public func * <T: MatrixProtocol>(lhs: XYZColorModel, rhs: T) -> XYZColorModel {
+    return XYZColorModel(x: lhs.X * rhs.a + lhs.Y * rhs.b + lhs.Z * rhs.c + rhs.d, y: lhs.X * rhs.e + lhs.Y * rhs.f + lhs.Z * rhs.g + rhs.h, z: lhs.X * rhs.i + lhs.Y * rhs.j + lhs.Z * rhs.k + rhs.l)
+}
+
+public func *= <T: MatrixProtocol>(lhs: inout XYZColorModel, rhs: T) {
+    lhs = lhs * rhs
 }
 
 public struct GrayColorModel : ColorModelProtocol {
@@ -225,6 +266,105 @@ public protocol ColorSpaceProtocol {
     
     associatedtype Model : ColorModelProtocol
     
+}
+
+public struct CIEXYZColorSpace : ColorSpaceProtocol {
+    
+    public typealias Model = XYZColorModel
+    public typealias ConnectionSpace = CIEXYZColorSpace
+    
+    public var white: Point
+    
+    public init(white: Point) {
+        self.white = white
+    }
+}
+
+extension CIEXYZColorSpace {
+    
+    public enum ChromaticAdaptationAlgorithm {
+        case XYZScaling
+        case VonKries
+        case Bradford
+    }
+    
+    public func convert(_ color: Model, to other: CIEXYZColorSpace, algorithm: ChromaticAdaptationAlgorithm = .Bradford) -> Model {
+        let matrix: Matrix
+        switch algorithm {
+        case .XYZScaling: matrix = Matrix(Matrix.Identity())
+        case .VonKries: matrix = Matrix(a: 0.4002400, b: 0.7076000, c: -0.0808100, d: 0,
+                                        e: -0.2263000, f: 1.1653200, g: 0.0457000, h: 0,
+                                        i: 0.0000000, j: 0.0000000, k: 0.9182200, l: 0)
+        case .Bradford: matrix = Matrix(a: 0.8951000, b: 0.2664000, c: -0.1614000, d: 0,
+                                        e: -0.7502000, f: 1.7135000, g: 0.0367000, h: 0,
+                                        i: 0.0389000, j: -0.0685000, k: 1.0296000, l: 0)
+        }
+        let _s = XYZColorModel(x: self.white.x, y: self.white.y, luminance: 1) * matrix
+        let _d = XYZColorModel(x: self.white.x, y: self.white.y, luminance: 1) * matrix
+        return color * matrix * Matrix.Scale(x: _d.X / _s.X, y: _d.Y / _s.Y, z: _d.Z / _s.Z) * matrix.inverse
+    }
+}
+
+public class CalibratedRGBColorSpace : ColorSpaceProtocol {
+    
+    public typealias Model = RGBColorModel
+    
+    public var white: Point
+    public var whiteLuminance: Double
+    public var blackLuminance: Double
+    public var red: Point
+    public var green: Point
+    public var blue: Point
+    
+    public init(white: Point, whiteLuminance: Double = 1, blackLuminance: Double = 0, red: Point, green: Point, blue: Point) {
+        self.white = white
+        self.whiteLuminance = whiteLuminance
+        self.blackLuminance = blackLuminance
+        self.red = red
+        self.green = green
+        self.blue = blue
+    }
+}
+
+extension CalibratedRGBColorSpace {
+    
+    private var normalizeMatrix: Matrix {
+        let _white = XYZColorModel(x: self.white.x, y: self.white.y, luminance: whiteLuminance)
+        let _black = XYZColorModel(x: self.white.x, y: self.white.y, luminance: blackLuminance)
+        return Matrix.Translate(x: -_black.X, y: -_black.Y, z: -_black.Z) * Matrix.Scale(x: _white.X / (_white.Y * (_white.X - _black.X)), y: 1 / (_white.Y - _black.Y), z: _white.Z / (_white.Y * (_white.Z - _black.Z)))
+    }
+    
+    private var transferMatrix: Matrix {
+        let normalizeMatrix = self.normalizeMatrix
+        let _red = XYZColorModel(x: self.red.x, y: self.red.y, luminance: whiteLuminance) * normalizeMatrix
+        let _green = XYZColorModel(x: self.green.x, y: self.green.y, luminance: whiteLuminance) * normalizeMatrix
+        let _blue = XYZColorModel(x: self.blue.x, y: self.blue.y, luminance: whiteLuminance) * normalizeMatrix
+        let _white = XYZColorModel(x: self.white.x, y: self.white.y, luminance: whiteLuminance) * normalizeMatrix
+        
+        let s = _white * Matrix(a: _red.X, b: _green.X, c: _blue.X, d: 0,
+                                e: _red.Y, f: _green.Y, g: _blue.Y, h: 0,
+                                i: _red.Z, j: _green.Z, k: _blue.Z, l: 0).inverse
+        
+        return Matrix(a: s.X * _red.X, b: s.Y * _green.X, c: s.Z * _blue.X, d: 0,
+                      e: s.X * _red.Y, f: s.Y * _green.Y, g: s.Z * _blue.Y, h: 0,
+                      i: s.X * _red.Z, j: s.Y * _green.Z, k: s.Z * _blue.Z, l: 0)
+    }
+    
+    public var cieXYZ: CIEXYZColorSpace {
+        let _white = XYZColorModel(x: self.white.x, y: self.white.y, luminance: whiteLuminance) * normalizeMatrix
+        return CIEXYZColorSpace(white: Point(x: _white.x, y: _white.y))
+    }
+    
+    public func convertToXYZ(_ color: Model) -> XYZColorModel {
+        let transferMatrix = self.transferMatrix
+        let _color = Vector(x: color.red, y: color.green, z: color.blue) * transferMatrix
+        return XYZColorModel(x: _color.x, y: _color.y, z: _color.z)
+    }
+    public func convertFromXYZ(_ color: XYZColorModel) -> Model {
+        let transferMatrix = self.transferMatrix
+        let _color = Vector(x: color.X, y: color.Y, z: color.Z) * transferMatrix.inverse
+        return Model(red: _color.x, green: _color.y, blue: _color.z)
+    }
 }
 
 public struct Color<ColorSpace : ColorSpaceProtocol> {
