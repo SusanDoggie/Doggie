@@ -38,5 +38,5 @@ public func hash_combine<S: Sequence>(seed: Int, _ values: S) -> Int where S.Ite
     return values.reduce(seed, hash_combine)
 }
 public func hash_combine<T: Hashable>(seed: Int, _ a: T, _ b: T, _ res: T ... ) -> Int {
-    return hash_combine(seed: seed, CollectionOfOne(a).concat(CollectionOfOne(b)).concat(res))
+    return hash_combine(seed: hash_combine(seed: hash_combine(seed: seed, a), b), res)
 }
