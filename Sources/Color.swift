@@ -294,18 +294,45 @@ public protocol ColorSpaceProtocol {
     
     associatedtype Model : ColorModelProtocol
     
+    var cieXYZ: CIEXYZColorSpace { get }
+    
+    func convertToXYZ(_ color: Model) -> XYZColorModel
+    
+    func convertFromXYZ(_ color: XYZColorModel) -> Model
 }
 
 public struct CIEXYZColorSpace : ColorSpaceProtocol {
     
     public typealias Model = XYZColorModel
-    public typealias ConnectionSpace = CIEXYZColorSpace
     
     public var white: Model
     
     public init(white: Model) {
         self.white = white
     }
+}
+
+extension CIEXYZColorSpace {
+    
+    public var cieXYZ: CIEXYZColorSpace {
+        return self
+    }
+    
+    public func convertToXYZ(_ color: Model) -> XYZColorModel {
+        return color
+    }
+    
+    public func convertFromXYZ(_ color: XYZColorModel) -> Model {
+        return color
+    }
+}
+
+extension CIEXYZColorSpace {
+    
+    public var cieLab: CIELabColorSpace {
+        return CIELabColorSpace(white: white)
+    }
+    
 }
 
 extension CIEXYZColorSpace {
@@ -336,6 +363,51 @@ extension CIEXYZColorSpace.ChromaticAdaptationAlgorithm {
                                       e: -0.7502000, f: 1.7135000, g: 0.0367000, h: 0,
                                       i: 0.0389000, j: -0.0685000, k: 1.0296000, l: 0)
         }
+    }
+}
+
+public struct CIELabColorSpace : ColorSpaceProtocol {
+    
+    public typealias Model = LabColorModel
+    
+    public var white: XYZColorModel
+    
+    public init(white: XYZColorModel) {
+        self.white = white
+    }
+}
+
+extension CIELabColorSpace {
+    
+    public var cieXYZ: CIEXYZColorSpace {
+        return CIEXYZColorSpace(white: white)
+    }
+    
+    public func convertToXYZ(_ color: Model) -> XYZColorModel {
+        let a = 216.0 / 24389.0
+        let b = 27.0 / 24389.0
+        let ab = 216.0 / 27.0
+        let fy = (color.lightness + 16) / 116
+        let fx = 0.002 * color.a + fy
+        let fz = fy - 0.005 * color.b
+        let fx3 = fx * fx * fx
+        let fz3 = fz * fz * fz
+        let x = fx3 > a ? fx3 : b * (116 * fx - 16)
+        let y = color.lightness > ab ? fy * fy * fy : b * color.lightness
+        let z = fz3 > a ? fz3 : b * (116 * fz - 16)
+        return XYZColorModel(x: x * white.x, y: y * white.y, z: z * white.z)
+    }
+    
+    public func convertFromXYZ(_ color: XYZColorModel) -> Model {
+        let a = 216.0 / 24389.0
+        let b = 24389.0 / 27.0
+        let x = color.x / white.x
+        let y = color.y / white.y
+        let z = color.z / white.z
+        let fx = x > a ? cbrt(x) : (b * x + 16) / 116
+        let fy = y > a ? cbrt(y) : (b * y + 16) / 116
+        let fz = z > a ? cbrt(z) : (b * z + 16) / 116
+        return LabColorModel(lightness: 116 * fy - 16, a: 500 * (fx - fy), b: 200 * (fy - fz))
     }
 }
 
