@@ -310,19 +310,19 @@ public class CalibratedRGBColorSpace : ColorSpaceProtocol {
     public typealias Model = RGBColorModel
     
     public var white: Point
-    public var whiteLuminance: Double
-    public var blackLuminance: Double
     public var red: Point
     public var green: Point
     public var blue: Point
+    public var whiteLuminance: Double
+    public var blackLuminance: Double
     
-    public init(white: Point, whiteLuminance: Double = 1, blackLuminance: Double = 0, red: Point, green: Point, blue: Point) {
+    public init(white: Point, red: Point, green: Point, blue: Point, whiteLuminance: Double = 1, blackLuminance: Double = 0) {
         self.white = white
-        self.whiteLuminance = whiteLuminance
-        self.blackLuminance = blackLuminance
         self.red = red
         self.green = green
         self.blue = blue
+        self.whiteLuminance = whiteLuminance
+        self.blackLuminance = blackLuminance
     }
 }
 
