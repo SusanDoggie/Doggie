@@ -313,14 +313,16 @@ public class CalibratedRGBColorSpace : ColorSpaceProtocol {
     public var red: Point
     public var green: Point
     public var blue: Point
+    public var gamma: Double
     public var whiteLuminance: Double
     public var blackLuminance: Double
     
-    public init(white: Point, red: Point, green: Point, blue: Point, whiteLuminance: Double = 1, blackLuminance: Double = 0) {
+    public init(white: Point, red: Point, green: Point, blue: Point, gamma: Double, whiteLuminance: Double = 1, blackLuminance: Double = 0) {
         self.white = white
         self.red = red
         self.green = green
         self.blue = blue
+        self.gamma = gamma
         self.whiteLuminance = whiteLuminance
         self.blackLuminance = blackLuminance
     }
@@ -355,12 +357,12 @@ extension CalibratedRGBColorSpace {
         return CIEXYZColorSpace(white: Point(x: _white.x, y: _white.y))
     }
     
-    public func convertToXYZ(_ color: Model) -> XYZColorModel {
+    public func convertLinearToXYZ(_ color: Model) -> XYZColorModel {
         let transferMatrix = self.transferMatrix
         let _color = Vector(x: color.red, y: color.green, z: color.blue) * transferMatrix
         return XYZColorModel(x: _color.x, y: _color.y, z: _color.z)
     }
-    public func convertFromXYZ(_ color: XYZColorModel) -> Model {
+    public func convertLinearFromXYZ(_ color: XYZColorModel) -> Model {
         let transferMatrix = self.transferMatrix
         let _color = Vector(x: color.X, y: color.Y, z: color.Z) * transferMatrix.inverse
         return Model(red: _color.x, green: _color.y, blue: _color.z)
