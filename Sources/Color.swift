@@ -208,12 +208,38 @@ public struct LabColorModel : ColorModelProtocol {
         self.a = a
         self.b = b
     }
+    public init(lightness: Double, saturation: Double, hue: Double) {
+        self.lightness = lightness
+        self.a = saturation * cos(2 * M_PI * hue)
+        self.b = saturation * sin(2 * M_PI * hue)
+    }
 }
 
 extension LabColorModel : CustomStringConvertible {
     
     public var description: String {
         return "LabColorModel(lightness: \(lightness), a: \(a), b: \(b))"
+    }
+}
+
+extension LabColorModel {
+    
+    public var hue: Double {
+        get {
+            return positive_mod(0.5 * atan2(b, a) / M_PI, 1)
+        }
+        set {
+            self = LabColorModel(lightness: lightness, saturation: saturation, hue: newValue)
+        }
+    }
+    
+    public var saturation: Double {
+        get {
+            return sqrt(a * a + b * b)
+        }
+        set {
+            self = LabColorModel(lightness: lightness, saturation: newValue, hue: hue)
+        }
     }
 }
 
