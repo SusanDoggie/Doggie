@@ -299,6 +299,15 @@ public protocol ColorSpaceProtocol {
     func convertToXYZ(_ color: Model) -> XYZColorModel
     
     func convertFromXYZ(_ color: XYZColorModel) -> Model
+    
+    func convert<C : ColorSpaceProtocol>(_ color: Model, to other: C, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm) -> C.Model
+}
+
+extension ColorSpaceProtocol {
+    
+    public func convert<C : ColorSpaceProtocol>(_ color: Model, to other: C, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm = .Bradford) -> C.Model {
+        return other.convertFromXYZ(self.cieXYZ.convert(self.convertToXYZ(color), to: other.cieXYZ, algorithm: algorithm))
+    }
 }
 
 public struct CIEXYZColorSpace : ColorSpaceProtocol {
