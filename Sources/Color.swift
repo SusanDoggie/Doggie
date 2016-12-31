@@ -317,19 +317,25 @@ extension CIEXYZColorSpace {
     }
     
     public func convert(_ color: Model, to other: CIEXYZColorSpace, algorithm: ChromaticAdaptationAlgorithm = .Bradford) -> Model {
-        let matrix: Matrix
-        switch algorithm {
-        case .XYZScaling: matrix = Matrix(Matrix.Identity())
-        case .VonKries: matrix = Matrix(a: 0.4002400, b: 0.7076000, c: -0.0808100, d: 0,
-                                        e: -0.2263000, f: 1.1653200, g: 0.0457000, h: 0,
-                                        i: 0.0000000, j: 0.0000000, k: 0.9182200, l: 0)
-        case .Bradford: matrix = Matrix(a: 0.8951000, b: 0.2664000, c: -0.1614000, d: 0,
-                                        e: -0.7502000, f: 1.7135000, g: 0.0367000, h: 0,
-                                        i: 0.0389000, j: -0.0685000, k: 1.0296000, l: 0)
-        }
+        let matrix = algorithm.matrix
         let _s = self.white * matrix
         let _d = other.white * matrix
         return color * matrix * Matrix.Scale(x: _d.X / _s.X, y: _d.Y / _s.Y, z: _d.Z / _s.Z) * matrix.inverse
+    }
+}
+
+extension CIEXYZColorSpace.ChromaticAdaptationAlgorithm {
+    
+    fileprivate var matrix: Matrix {
+        switch self {
+        case .XYZScaling: return Matrix(Matrix.Identity())
+        case .VonKries: return Matrix(a: 0.4002400, b: 0.7076000, c: -0.0808100, d: 0,
+                                      e: -0.2263000, f: 1.1653200, g: 0.0457000, h: 0,
+                                      i: 0.0000000, j: 0.0000000, k: 0.9182200, l: 0)
+        case .Bradford: return Matrix(a: 0.8951000, b: 0.2664000, c: -0.1614000, d: 0,
+                                      e: -0.7502000, f: 1.7135000, g: 0.0367000, h: 0,
+                                      i: 0.0389000, j: -0.0685000, k: 1.0296000, l: 0)
+        }
     }
 }
 
