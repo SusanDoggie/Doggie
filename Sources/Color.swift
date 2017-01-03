@@ -666,13 +666,11 @@ public class CalibratedRGBColorSpace : LinearColorSpaceProtocol {
         let _blue = blue * normalizeMatrix
         let _white = white * normalizeMatrix
         
-        let s = _white * Matrix(a: _red.x, b: _green.x, c: _blue.x, d: 0,
-                                e: _red.y, f: _green.y, g: _blue.y, h: 0,
-                                i: _red.z, j: _green.z, k: _blue.z, l: 0).inverse
-        
-        self.transferMatrix = Matrix(a: s.x * _red.x, b: s.y * _green.x, c: s.z * _blue.x, d: 0,
-                                     e: s.x * _red.y, f: s.y * _green.y, g: s.z * _blue.y, h: 0,
-                                     i: s.x * _red.z, j: s.y * _green.z, k: s.z * _blue.z, l: 0)
+        let m = Matrix(a: _red.x, b: _green.x, c: _blue.x, d: 0,
+                       e: _red.y, f: _green.y, g: _blue.y, h: 0,
+                       i: _red.z, j: _green.z, k: _blue.z, l: 0)
+        let s = _white * m.inverse
+        self.transferMatrix = m * Matrix.Scale(x: s.x, y: s.y, z: s.z)
     }
 }
 
