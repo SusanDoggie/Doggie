@@ -513,7 +513,7 @@ extension CIEXYZColorSpace {
         let m2 = other.normalizeMatrix * matrix
         let _s = self.white * m1
         let _d = other.white * m2
-        return (m1 * Matrix.Scale(x: _d.x / _s.x, y: _d.y / _s.y, z: _d.z / _s.z) as Matrix) * m2.inverse
+        return m1 * Matrix.Scale(x: _d.x / _s.x, y: _d.y / _s.y, z: _d.z / _s.z) as Matrix * m2.inverse
     }
     
     public enum ChromaticAdaptationAlgorithm {
@@ -670,7 +670,7 @@ public class CalibratedRGBColorSpace : LinearColorSpaceProtocol {
                        e: _red.y, f: _green.y, g: _blue.y, h: 0,
                        i: _red.z, j: _green.z, k: _blue.z, l: 0)
         let s = _white * m.inverse
-        self.transferMatrix = m * Matrix.Scale(x: s.x, y: s.y, z: s.z)
+        self.transferMatrix = m * Matrix.Scale(x: s.x, y: s.y, z: s.z) as Matrix * normalizeMatrix.inverse
     }
 }
 
