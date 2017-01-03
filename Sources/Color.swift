@@ -444,6 +444,10 @@ extension ColorSpaceProtocol {
         let m = self.cieXYZ.transferMatrix(to: other.cieXYZ, algorithm: algorithm)
         return other.convertFromXYZ(XYZColorModel(self.convertToXYZ(color) * m))
     }
+    
+    public func convert<C : LinearColorSpaceProtocol>(_ color: Model, to other: C, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm = .bradford) -> C.Model {
+        return C.Model(self.convertToXYZ(color) * self.cieXYZ.transferMatrix(to: other, algorithm: algorithm))
+    }
 }
 
 extension LinearColorSpaceProtocol {
@@ -452,8 +456,12 @@ extension LinearColorSpaceProtocol {
         return self.transferMatrix * self.cieXYZ.transferMatrix(to: other.cieXYZ, algorithm: algorithm) * other.transferMatrix.inverse
     }
     
+    public func convert<C : ColorSpaceProtocol>(_ color: Model, to other: C, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm = .bradford) -> C.Model {
+        return other.convertFromXYZ(XYZColorModel(color * self.transferMatrix(to: other.cieXYZ, algorithm: algorithm)))
+    }
+    
     public func convert<C : LinearColorSpaceProtocol>(_ color: Model, to other: C, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm = .bradford) -> C.Model {
-        return C.Model(color * self.transferMatrix(to: other.cieXYZ, algorithm: algorithm))
+        return C.Model(color * self.transferMatrix(to: other, algorithm: algorithm))
     }
 }
 
