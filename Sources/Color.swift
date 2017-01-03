@@ -33,7 +33,7 @@ public protocol ColorVectorConvertible : ColorModelProtocol {
     
     init(_ vector: Vector)
     
-    var vector: Vector { get }
+    var vector: Vector { get set }
 }
 
 public func * <C: ColorVectorConvertible, T: MatrixProtocol>(lhs: C, rhs: T) -> Vector {
@@ -41,7 +41,7 @@ public func * <C: ColorVectorConvertible, T: MatrixProtocol>(lhs: C, rhs: T) -> 
 }
 
 public func *= <C: ColorVectorConvertible, T: MatrixProtocol>(lhs: inout C, rhs: T) {
-    lhs = C(lhs.vector * rhs)
+    lhs.vector *= rhs
 }
 
 public struct RGBColorModel : ColorModelProtocol {
@@ -66,7 +66,14 @@ extension RGBColorModel : ColorVectorConvertible {
     }
     
     public var vector: Vector {
-        return Vector(x: red, y: green, z: blue)
+        get {
+            return Vector(x: red, y: green, z: blue)
+        }
+        set {
+            self.red = newValue.x
+            self.green = newValue.y
+            self.blue = newValue.z
+        }
     }
 }
 
@@ -98,6 +105,7 @@ extension RGBColorModel {
         self.blue = 1 - _yellow
     }
 }
+
 extension RGBColorModel {
     
     public init(hue: Double, saturation: Double, brightness: Double) {
@@ -371,7 +379,14 @@ extension XYZColorModel : ColorVectorConvertible {
     }
     
     public var vector: Vector {
-        return Vector(x: x, y: y, z: z)
+        get {
+            return Vector(x: x, y: y, z: z)
+        }
+        set {
+            self.x = newValue.x
+            self.y = newValue.y
+            self.z = newValue.z
+        }
     }
 }
 
