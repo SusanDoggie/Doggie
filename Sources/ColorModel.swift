@@ -29,11 +29,30 @@ public protocol ColorModelProtocol {
     
 }
 
+public protocol ColorBlendProtocol : ColorModelProtocol {
+    
+    func blend(operation: (Double) -> Double) -> Self
+    func blend(source: Self, operation: (Double, Double) -> Double) -> Self
+}
+
 public protocol ColorVectorConvertible : ColorModelProtocol {
     
     init(_ vector: Vector)
     
     var vector: Vector { get set }
+}
+
+extension ColorBlendProtocol where Self : ColorVectorConvertible {
+    
+    public func blend(operation: (Double) -> Double) -> Self {
+        let v = self.vector
+        return Self(Vector(x: operation(v.x), y: operation(v.y), z: operation(v.z)))
+    }
+    public func blend(source: Self, operation: (Double, Double) -> Double) -> Self {
+        let d = self.vector
+        let s = source.vector
+        return Self(Vector(x: operation(d.x, s.x), y: operation(d.y, s.y), z: operation(d.z, s.z)))
+    }
 }
 
 public func * <C: ColorVectorConvertible, T: MatrixProtocol>(lhs: C, rhs: T) -> Vector {
@@ -207,6 +226,16 @@ extension CMYKColorModel : CustomStringConvertible {
     
     public var description: String {
         return "CMYKColorModel(cyan: \(cyan), magenta: \(magenta), yellow: \(yellow), black: \(black))"
+    }
+}
+
+extension CMYKColorModel : ColorBlendProtocol {
+    
+    public func blend(operation: (Double) -> Double) -> CMYKColorModel {
+        return CMYKColorModel(cyan: operation(cyan), magenta: operation(magenta), yellow: operation(yellow), black: operation(black))
+    }
+    public func blend(source: CMYKColorModel, operation: (Double, Double) -> Double) -> CMYKColorModel {
+        return CMYKColorModel(cyan: operation(cyan, source.cyan), magenta: operation(magenta, source.magenta), yellow: operation(yellow, source.yellow), black: operation(black, source.black))
     }
 }
 
@@ -403,5 +432,15 @@ public struct GrayColorModel : ColorModelProtocol {
     
     public init(white: Double) {
         self.white = white
+    }
+}
+
+extension GrayColorModel : ColorBlendProtocol {
+    
+    public func blend(operation: (Double) -> Double) -> GrayColorModel {
+        return GrayColorModel(white: operation(white))
+    }
+    public func blend(source: GrayColorModel, operation: (Double, Double) -> Double) -> GrayColorModel {
+        return GrayColorModel(white: operation(white, source.white))
     }
 }
