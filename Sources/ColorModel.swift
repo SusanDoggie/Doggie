@@ -27,15 +27,6 @@ import Foundation
 
 public protocol ColorModelProtocol {
     
-    static func + (_: Self, _: Self) -> Self
-    static func - (_: Self, _: Self) -> Self
-    static func * (_: Double, _: Self) -> Self
-    static func * (_: Self, _: Double) -> Self
-    static func / (_: Self, _: Double) -> Self
-    static func += (_: inout Self, _: Self)
-    static func -= (_: inout Self, _: Self)
-    static func *= (_: inout Self, _: Double)
-    static func /= (_: inout Self, _: Double)
 }
 
 public protocol ColorVectorConvertible : ColorModelProtocol {
@@ -43,6 +34,14 @@ public protocol ColorVectorConvertible : ColorModelProtocol {
     init(_ vector: Vector)
     
     var vector: Vector { get set }
+}
+
+public func * <C: ColorVectorConvertible, T: MatrixProtocol>(lhs: C, rhs: T) -> Vector {
+    return lhs.vector * rhs
+}
+
+public func *= <C: ColorVectorConvertible, T: MatrixProtocol>(lhs: inout C, rhs: T) {
+    lhs.vector *= rhs
 }
 
 public struct RGBColorModel : ColorModelProtocol {
@@ -405,103 +404,4 @@ public struct GrayColorModel : ColorModelProtocol {
     public init(white: Double) {
         self.white = white
     }
-}
-
-public func += <C: ColorModelProtocol>(lhs: inout C, rhs: C) {
-    lhs = lhs + rhs
-}
-public func -= <C: ColorModelProtocol>(lhs: inout C, rhs: C) {
-    lhs = lhs - rhs
-}
-public func *= <C: ColorModelProtocol>(lhs: inout C, rhs: Double) {
-    lhs = lhs * rhs
-}
-public func /= <C: ColorModelProtocol>(lhs: inout C, rhs: Double) {
-    lhs = lhs / rhs
-}
-
-public func + <C: ColorVectorConvertible>(lhs: C, rhs: C) -> C {
-    return C(lhs.vector + rhs.vector)
-}
-public func - <C: ColorVectorConvertible>(lhs: C, rhs: C) -> C {
-    return C(lhs.vector - rhs.vector)
-}
-public func * <C: ColorVectorConvertible>(lhs: Double, rhs: C) -> C {
-    return C(lhs * rhs.vector)
-}
-public func * <C: ColorVectorConvertible>(lhs: C, rhs: Double) -> C {
-    return C(lhs.vector * rhs)
-}
-public func / <C: ColorVectorConvertible>(lhs: C, rhs: Double) -> C {
-    return C(lhs.vector / rhs)
-}
-public func * <C: ColorVectorConvertible, T: MatrixProtocol>(lhs: C, rhs: T) -> Vector {
-    return lhs.vector * rhs
-}
-
-public func *= <C: ColorVectorConvertible, T: MatrixProtocol>(lhs: inout C, rhs: T) {
-    lhs.vector *= rhs
-}
-
-public func + (lhs: CMYKColorModel, rhs: CMYKColorModel) -> CMYKColorModel {
-    return CMYKColorModel(cyan: lhs.cyan + rhs.cyan, magenta: lhs.magenta + rhs.magenta, yellow: lhs.yellow + rhs.yellow, black: lhs.black + rhs.black)
-}
-public func - (lhs: CMYKColorModel, rhs: CMYKColorModel) -> CMYKColorModel {
-    return CMYKColorModel(cyan: lhs.cyan - rhs.cyan, magenta: lhs.magenta - rhs.magenta, yellow: lhs.yellow - rhs.yellow, black: lhs.black - rhs.black)
-}
-public func * (lhs: Double, rhs: CMYKColorModel) -> CMYKColorModel {
-    return CMYKColorModel(cyan: lhs * rhs.cyan, magenta: lhs * rhs.magenta, yellow: lhs * rhs.yellow, black: lhs * rhs.black)
-}
-public func * (lhs: CMYKColorModel, rhs: Double) -> CMYKColorModel {
-    return CMYKColorModel(cyan: lhs.cyan * rhs, magenta: lhs.magenta * rhs, yellow: lhs.yellow * rhs, black: lhs.black * rhs)
-}
-public func / (lhs: CMYKColorModel, rhs: Double) -> CMYKColorModel {
-    return CMYKColorModel(cyan: lhs.cyan / rhs, magenta: lhs.magenta / rhs, yellow: lhs.yellow / rhs, black: lhs.black / rhs)
-}
-public func + (lhs: LabColorModel, rhs: LabColorModel) -> LabColorModel {
-    return LabColorModel(lightness: lhs.lightness + rhs.lightness, a: lhs.a + rhs.a, b: lhs.b + rhs.b)
-}
-public func - (lhs: LabColorModel, rhs: LabColorModel) -> LabColorModel {
-    return LabColorModel(lightness: lhs.lightness - rhs.lightness, a: lhs.a - rhs.a, b: lhs.b - rhs.b)
-}
-public func * (lhs: Double, rhs: LabColorModel) -> LabColorModel {
-    return LabColorModel(lightness: lhs * rhs.lightness, a: lhs * rhs.a, b: lhs * rhs.b)
-}
-public func * (lhs: LabColorModel, rhs: Double) -> LabColorModel {
-    return LabColorModel(lightness: lhs.lightness * rhs, a: lhs.a * rhs, b: lhs.b * rhs)
-}
-public func / (lhs: LabColorModel, rhs: Double) -> LabColorModel {
-    return LabColorModel(lightness: lhs.lightness / rhs, a: lhs.a / rhs, b: lhs.b / rhs)
-}
-
-public func + (lhs: LuvColorModel, rhs: LuvColorModel) -> LuvColorModel {
-    return LuvColorModel(lightness: lhs.lightness + rhs.lightness, u: lhs.u + rhs.u, v: lhs.v + rhs.v)
-}
-public func - (lhs: LuvColorModel, rhs: LuvColorModel) -> LuvColorModel {
-    return LuvColorModel(lightness: lhs.lightness - rhs.lightness, u: lhs.u - rhs.u, v: lhs.v - rhs.v)
-}
-public func * (lhs: Double, rhs: LuvColorModel) -> LuvColorModel {
-    return LuvColorModel(lightness: lhs * rhs.lightness, u: lhs * rhs.u, v: lhs * rhs.v)
-}
-public func * (lhs: LuvColorModel, rhs: Double) -> LuvColorModel {
-    return LuvColorModel(lightness: lhs.lightness * rhs, u: lhs.u * rhs, v: lhs.v * rhs)
-}
-public func / (lhs: LuvColorModel, rhs: Double) -> LuvColorModel {
-    return LuvColorModel(lightness: lhs.lightness / rhs, u: lhs.u / rhs, v: lhs.v / rhs)
-}
-
-public func + (lhs: GrayColorModel, rhs: GrayColorModel) -> GrayColorModel {
-    return GrayColorModel(white: lhs.white + rhs.white)
-}
-public func - (lhs: GrayColorModel, rhs: GrayColorModel) -> GrayColorModel {
-    return GrayColorModel(white: lhs.white - rhs.white)
-}
-public func * (lhs: Double, rhs: GrayColorModel) -> GrayColorModel {
-    return GrayColorModel(white: lhs * rhs.white)
-}
-public func * (lhs: GrayColorModel, rhs: Double) -> GrayColorModel {
-    return GrayColorModel(white: lhs.white * rhs)
-}
-public func / (lhs: GrayColorModel, rhs: Double) -> GrayColorModel {
-    return GrayColorModel(white: lhs.white / rhs)
 }
