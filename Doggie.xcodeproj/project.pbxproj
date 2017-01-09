@@ -290,7 +290,7 @@
 				0858DA6E1C0550B7007FA426 /* SDShape */,
 			);
 			name = Doggie;
-			path = Sources;
+			path = Sources/Doggie;
 			sourceTree = "<group>";
 		};
 		0858DA411C0550B7007FA426 /* Accelerate */ = {
@@ -438,7 +438,8 @@
 				08BFF9B91B0715ED00EC88CB /* FourierTest.swift */,
 				0A266E521D6E95C100ABE6B7 /* SDMarkerTest.swift */,
 			);
-			path = Tests;
+			name = Tests;
+			path = Tests/DoggieTests;
 			sourceTree = "<group>";
 		};
 		0A73D3C81D67E95F007269CB /* Foundation */ = {
@@ -474,7 +475,8 @@
 				0A776FC31D9A0BA5005FC88F /* c11_atomic.h */,
 				0A776FC41D9A0BA5005FC88F /* module.modulemap */,
 			);
-			path = c11_atomic;
+			name = c11_atomic;
+			path = Sources/c11_atomic/include;
 			sourceTree = SOURCE_ROOT;
 		};
 		0ACE1DFA1C570F4F00106D1F /* Functional */ = {
@@ -605,7 +607,7 @@
 						CreatedOnToolsVersion = 7.1.1;
 						DevelopmentTeam = MPZ83Y3AFN;
 						DevelopmentTeamName = "Chai Fung Cheng";
-						LastSwiftMigration = 0800;
+						LastSwiftMigration = 0820;
 					};
 					081321DB1C11D1850081B2B9 = {
 						CreatedOnToolsVersion = 7.1.1;
@@ -617,7 +619,7 @@
 						CreatedOnToolsVersion = 6.1.1;
 						DevelopmentTeam = MPZ83Y3AFN;
 						DevelopmentTeamName = "Chai Fung Cheng";
-						LastSwiftMigration = 0800;
+						LastSwiftMigration = 0820;
 					};
 					087FE5BE1A372D97005A2E9E = {
 						CreatedOnToolsVersion = 6.1.1;
@@ -852,6 +854,7 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
@@ -888,7 +891,8 @@
 				MTL_ENABLE_DEBUG_INFO = YES;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
-				SWIFT_INCLUDE_PATHS = "${SRCROOT}/c11_atomic/**";
+				SWIFT_INCLUDE_PATHS = "${SRCROOT}/Sources/c11_atomic/include/**";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
@@ -902,6 +906,7 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
@@ -934,7 +939,7 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
-				SWIFT_INCLUDE_PATHS = "${SRCROOT}/c11_atomic/**";
+				SWIFT_INCLUDE_PATHS = "${SRCROOT}/Sources/c11_atomic/include/**";
 				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
@@ -1096,6 +1101,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
@@ -1136,6 +1142,7 @@
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
 				SWIFT_INCLUDE_PATHS = "${SRCROOT}/c11_atomic/**";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 3.0;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
@@ -1146,6 +1153,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
