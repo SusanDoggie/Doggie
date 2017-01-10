@@ -115,12 +115,6 @@
 		0AADD1261D10E77100087247 /* ConcatCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AADD1231D10E77100087247 /* ConcatCollection.swift */; };
 		0AADD12E1D10E7C100087247 /* LazySliceSequence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AADD12D1D10E7C100087247 /* LazySliceSequence.swift */; };
 		0AADD1301D10E7C100087247 /* LazySliceSequence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AADD12D1D10E7C100087247 /* LazySliceSequence.swift */; };
-		0AADD1331D10E7E700087247 /* LazyChunkElementsCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AADD1321D10E7E700087247 /* LazyChunkElementsCollection.swift */; };
-		0AADD1351D10E7E700087247 /* LazyChunkElementsCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AADD1321D10E7E700087247 /* LazyChunkElementsCollection.swift */; };
-		0AADD1381D10E80A00087247 /* GroupElementsCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AADD1371D10E80A00087247 /* GroupElementsCollection.swift */; };
-		0AADD13A1D10E80A00087247 /* GroupElementsCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AADD1371D10E80A00087247 /* GroupElementsCollection.swift */; };
-		0AADD13D1D10E82600087247 /* LazyUniqueSequence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AADD13C1D10E82600087247 /* LazyUniqueSequence.swift */; };
-		0AADD13F1D10E82600087247 /* LazyUniqueSequence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AADD13C1D10E82600087247 /* LazyUniqueSequence.swift */; };
 		0AB539741D3C8B1F0011F08B /* LazyGatherCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AB539731D3C8B1F0011F08B /* LazyGatherCollection.swift */; };
 		0AB539751D3C8B1F0011F08B /* LazyGatherCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AB539731D3C8B1F0011F08B /* LazyGatherCollection.swift */; };
 		0ACE1E061C57104300106D1F /* Parallel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ACE1E051C57104300106D1F /* Parallel.swift */; };
@@ -218,9 +212,6 @@
 		0AADD11E1D10E75300087247 /* LazyScanSequence.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LazyScanSequence.swift; sourceTree = "<group>"; };
 		0AADD1231D10E77100087247 /* ConcatCollection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConcatCollection.swift; sourceTree = "<group>"; };
 		0AADD12D1D10E7C100087247 /* LazySliceSequence.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LazySliceSequence.swift; sourceTree = "<group>"; };
-		0AADD1321D10E7E700087247 /* LazyChunkElementsCollection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LazyChunkElementsCollection.swift; sourceTree = "<group>"; };
-		0AADD1371D10E80A00087247 /* GroupElementsCollection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupElementsCollection.swift; sourceTree = "<group>"; };
-		0AADD13C1D10E82600087247 /* LazyUniqueSequence.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LazyUniqueSequence.swift; sourceTree = "<group>"; };
 		0AB539731D3C8B1F0011F08B /* LazyGatherCollection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LazyGatherCollection.swift; sourceTree = "<group>"; };
 		0ACE1E051C57104300106D1F /* Parallel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Parallel.swift; sourceTree = "<group>"; };
 		0ACE1E141C57114A00106D1F /* CollectionExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CollectionExtension.swift; sourceTree = "<group>"; };
@@ -485,9 +476,6 @@
 				0ACE1E191C5711D300106D1F /* Graph.swift */,
 				0ACE1E051C57104300106D1F /* Parallel.swift */,
 				0ACE1E141C57114A00106D1F /* CollectionExtension.swift */,
-				0AADD13C1D10E82600087247 /* LazyUniqueSequence.swift */,
-				0AADD1371D10E80A00087247 /* GroupElementsCollection.swift */,
-				0AADD1321D10E7E700087247 /* LazyChunkElementsCollection.swift */,
 				0AADD12D1D10E7C100087247 /* LazySliceSequence.swift */,
 				0AADD11E1D10E75300087247 /* LazyScanSequence.swift */,
 				0AB539731D3C8B1F0011F08B /* LazyGatherCollection.swift */,
@@ -686,8 +674,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0AADD1381D10E80A00087247 /* GroupElementsCollection.swift in Sources */,
-				0AADD1331D10E7E700087247 /* LazyChunkElementsCollection.swift in Sources */,
 				081322281C11D3600081B2B9 /* Move.swift in Sources */,
 				0A72CA561DA4B1890041F67B /* Atomic.swift in Sources */,
 				0A987DC21E0A2C6F00C2D789 /* FloatingPoint.swift in Sources */,
@@ -736,7 +722,6 @@
 				081322441C11D3600081B2B9 /* SDTransform.swift in Sources */,
 				0AADD1241D10E77100087247 /* ConcatCollection.swift in Sources */,
 				0813224C1C11D3600081B2B9 /* SDPath.swift in Sources */,
-				0AADD13D1D10E82600087247 /* LazyUniqueSequence.swift in Sources */,
 				0ACE1E1A1C5711D300106D1F /* Graph.swift in Sources */,
 				0813223B1C11D3600081B2B9 /* Complex.swift in Sources */,
 				0A72CA591DA4B1C40041F67B /* Lock.swift in Sources */,
@@ -761,8 +746,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0AADD13A1D10E80A00087247 /* GroupElementsCollection.swift in Sources */,
-				0AADD1351D10E7E700087247 /* LazyChunkElementsCollection.swift in Sources */,
 				0858DB371C0550B7007FA426 /* SDShape.swift in Sources */,
 				0A72CA571DA4B1890041F67B /* Atomic.swift in Sources */,
 				0A987DC31E0A2C6F00C2D789 /* FloatingPoint.swift in Sources */,
@@ -809,7 +792,6 @@
 				0858DB271C0550B7007FA426 /* SDPath.swift in Sources */,
 				0AADD1261D10E77100087247 /* ConcatCollection.swift in Sources */,
 				0858DB031C0550B7007FA426 /* Rect.swift in Sources */,
-				0AADD13F1D10E82600087247 /* LazyUniqueSequence.swift in Sources */,
 				0ACE1E1C1C5711D300106D1F /* Graph.swift in Sources */,
 				0A1605B41D49DEDC00109F7B /* Hashable.swift in Sources */,
 				0858DB071C0550B7007FA426 /* SDTransform.swift in Sources */,
