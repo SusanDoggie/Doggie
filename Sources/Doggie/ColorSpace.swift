@@ -36,6 +36,12 @@ public protocol ColorSpaceProtocol {
     func convertFromXYZ(_ color: XYZColorModel) -> Model
     
     func convert<C : ColorSpaceProtocol>(_ color: Model, to other: C, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm) -> C.Model
+    
+    func convert<C : LinearColorSpaceProtocol>(_ color: Model, to other: C, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm) -> C.Model
+    
+    func convert<C : ColorSpaceProtocol>(_ color: [Model], to other: C, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm) -> [C.Model]
+    
+    func convert<C : LinearColorSpaceProtocol>(_ color: [Model], to other: C, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm) -> [C.Model]
 }
 
 public protocol LinearColorSpaceProtocol : ColorSpaceProtocol {
