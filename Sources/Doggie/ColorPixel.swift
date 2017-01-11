@@ -1,5 +1,5 @@
 //
-//  Color.swift
+//  ColorPixel.swift
 //
 //  The MIT License
 //  Copyright (c) 2015 - 2017 Susan Cheng. All rights reserved.
@@ -23,34 +23,47 @@
 //  THE SOFTWARE.
 //
 
-public struct Color<ColorSpace : ColorSpaceProtocol> {
+public protocol ColorPixelProtocol {
     
-    public var colorSpace: ColorSpace
+    associatedtype Model : ColorModelProtocol
     
-    public var color: ColorSpace.Model
-    public var alpha: Double
+    init(color: Model, alpha: Double)
     
-    public init(colorSpace: ColorSpace, color: ColorSpace.Model, alpha: Double = 1) {
-        self.colorSpace = colorSpace
-        self.color = color
-        self.alpha = alpha
-    }
-}
-
-extension Color {
-    
-    public func convert<C : ColorSpaceProtocol>(to colorSpace: C, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm = .bradford) -> Color<C> {
-        return Color<C>(colorSpace: colorSpace, color: self.colorSpace.convert(color, to: colorSpace, algorithm: algorithm), alpha: alpha)
-    }
-}
-
-public protocol ColorProtocol {
+    var color: Model { get set }
     
     var alpha: Double { get set }
-    
-    func convert<C : ColorSpaceProtocol>(to colorSpace: C, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm) -> Color<C>
 }
 
-extension Color : ColorProtocol {
+public struct ARGB32ColorPixel : ColorPixelProtocol {
     
+    public var a: UInt8
+    public var r: UInt8
+    public var g: UInt8
+    public var b: UInt8
+    
+    public init(color: RGBColorModel, alpha: Double) {
+        self.a = UInt8(alpha * 255)
+        self.r = UInt8(color.red * 255)
+        self.g = UInt8(color.green * 255)
+        self.b = UInt8(color.blue * 255)
+    }
+    
+    public var color: RGBColorModel {
+        get {
+            return RGBColorModel(red: Double(r) / 255, green: Double(g) / 255, blue: Double(b) / 255)
+        }
+        set {
+            self.r = UInt8(newValue.red * 255)
+            self.g = UInt8(newValue.green * 255)
+            self.b = UInt8(newValue.blue * 255)
+        }
+    }
+    public var alpha: Double {
+        get {
+            return Double(a) / 255
+        }
+        set {
+            self.a = UInt8(newValue * 255)
+        }
+    }
 }
