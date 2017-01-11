@@ -29,6 +29,8 @@ private protocol ImageBaseProtocol {
     var height: Int { get }
     
     subscript(x: Int, y: Int) -> ColorProtocol { get set }
+    
+    func convert<RPixel: ColorPixelProtocol, RSpace : ColorSpaceProtocol>(pixel: RPixel.Type, colorSpace: RSpace, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm) -> ImageBase<RPixel, RSpace>
 }
 
 private struct ImageBase<ColorPixel: ColorPixelProtocol, ColorSpace : ColorSpaceProtocol> : ImageBaseProtocol where ColorPixel.Model == ColorSpace.Model {
@@ -50,6 +52,11 @@ private struct ImageBase<ColorPixel: ColorPixelProtocol, ColorSpace : ColorSpace
             buffer[width * y + x] = ColorPixel(color: color.color, alpha: color.alpha)
         }
     }
+    
+    func convert<RPixel: ColorPixelProtocol, RSpace : ColorSpaceProtocol>(pixel: RPixel.Type, colorSpace: RSpace, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm = .bradford) -> ImageBase<RPixel, RSpace> {
+        let _buffer = zip(self.colorSpace.convert(buffer.map { $0.color }, to: colorSpace, algorithm: algorithm), buffer).map { RPixel(color: $0, alpha: $1.alpha) }
+        return ImageBase<RPixel, RSpace>(width: width, height: height, buffer: _buffer, colorSpace: colorSpace, algorithm: algorithm)
+    }
 }
 
 public struct Image {
@@ -58,6 +65,10 @@ public struct Image {
     
     public init<ColorPixel: ColorPixelProtocol, ColorSpace : ColorSpaceProtocol>(width: Int, height: Int, pixel: ColorPixel, colorSpace: ColorSpace, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm = .bradford) where ColorPixel.Model == ColorSpace.Model {
         self.base = ImageBase(width: width, height: height, buffer: [ColorPixel](repeating: pixel, count: width * height), colorSpace: colorSpace, algorithm: algorithm)
+    }
+    
+    public init<ColorPixel: ColorPixelProtocol, ColorSpace : ColorSpaceProtocol>(image: Image, pixel: ColorPixel.Type, colorSpace: ColorSpace, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm = .bradford) where ColorPixel.Model == ColorSpace.Model {
+        self.base = image.base.convert(pixel: pixel, colorSpace: colorSpace, algorithm: algorithm)
     }
     
     public var width: Int {

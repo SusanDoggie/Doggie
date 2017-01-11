@@ -47,6 +47,16 @@ public protocol LinearColorSpaceProtocol : ColorSpaceProtocol {
     var transferMatrix: TransferMatrix { get }
 }
 
+extension ColorSpaceProtocol {
+    
+    public func convertToXYZ(_ color: [Model]) -> [XYZColorModel] {
+        return color.map { self.convertToXYZ($0) }
+    }
+    public func convertFromXYZ(_ color: [XYZColorModel]) -> [Model] {
+        return color.map { self.convertFromXYZ($0) }
+    }
+}
+
 extension LinearColorSpaceProtocol {
     
     public func convertToXYZ(_ color: Model) -> XYZColorModel {
@@ -54,6 +64,15 @@ extension LinearColorSpaceProtocol {
     }
     public func convertFromXYZ(_ color: XYZColorModel) -> Model {
         return Model(color * transferMatrix.inverse)
+    }
+    
+    public func convertToXYZ(_ color: [Model]) -> [XYZColorModel] {
+        let transferMatrix = self.transferMatrix
+        return color.map { XYZColorModel($0 * transferMatrix) }
+    }
+    public func convertFromXYZ(_ color: [XYZColorModel]) -> [Model] {
+        let transferMatrix = self.transferMatrix.inverse
+        return color.map { Model($0 * transferMatrix) }
     }
 }
 
@@ -69,6 +88,19 @@ extension ColorSpaceProtocol {
     }
 }
 
+extension ColorSpaceProtocol {
+    
+    public func convert<C : ColorSpaceProtocol>(_ color: [Model], to other: C, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm = .bradford) -> [C.Model] {
+        let m = self.cieXYZ.transferMatrix(to: other.cieXYZ, algorithm: algorithm)
+        return color.map { other.convertFromXYZ(XYZColorModel(self.convertToXYZ($0) * m)) }
+    }
+    
+    public func convert<C : LinearColorSpaceProtocol>(_ color: [Model], to other: C, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm = .bradford) -> [C.Model] {
+        let m = self.cieXYZ.transferMatrix(to: other, algorithm: algorithm)
+        return color.map { C.Model(self.convertToXYZ($0) * m) }
+    }
+}
+
 extension LinearColorSpaceProtocol {
     
     public func transferMatrix<C : LinearColorSpaceProtocol>(to other: C, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm = .bradford) -> Matrix {
@@ -81,6 +113,19 @@ extension LinearColorSpaceProtocol {
     
     public func convert<C : LinearColorSpaceProtocol>(_ color: Model, to other: C, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm = .bradford) -> C.Model {
         return C.Model(color * self.transferMatrix(to: other, algorithm: algorithm))
+    }
+}
+
+extension LinearColorSpaceProtocol {
+    
+    public func convert<C : ColorSpaceProtocol>(_ color: [Model], to other: C, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm = .bradford) -> [C.Model] {
+        let m = self.transferMatrix(to: other.cieXYZ, algorithm: algorithm)
+        return color.map { other.convertFromXYZ(XYZColorModel($0 * m)) }
+    }
+    
+    public func convert<C : LinearColorSpaceProtocol>(_ color: [Model], to other: C, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm = .bradford) -> [C.Model] {
+        let m = self.transferMatrix(to: other, algorithm: algorithm)
+        return color.map { C.Model($0 * m) }
     }
 }
 
