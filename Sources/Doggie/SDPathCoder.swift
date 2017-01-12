@@ -362,7 +362,7 @@ extension SDPath {
                     }
                     let x = try toDouble(g.next())
                     let y = try toDouble(g.next())
-                    let arc = bezierArc(relative, Point(x: x, y: y), Radius(x: rx, y: ry), M_PI * rotate / 180, largeArc, sweep)
+                    let arc = bezierArc(relative, Point(x: x, y: y), Radius(x: rx, y: ry), Double.pi * rotate / 180, largeArc, sweep)
                     relative = Point(x: x, y: y)
                     lastcontrol = Point(x: x, y: y)
                     lastbezier = 0
@@ -408,7 +408,7 @@ extension SDPath {
                     }
                     let x = try toDouble(g.next()) + relative.x
                     let y = try toDouble(g.next()) + relative.y
-                    let arc = bezierArc(relative, Point(x: x, y: y), Radius(x: rx, y: ry), M_PI * rotate / 180, largeArc, sweep)
+                    let arc = bezierArc(relative, Point(x: x, y: y), Radius(x: rx, y: ry), Double.pi * rotate / 180, largeArc, sweep)
                     relative = Point(x: x, y: y)
                     lastcontrol = Point(x: x, y: y)
                     lastbezier = 0
@@ -452,11 +452,11 @@ private func bezierArc(_ start: Point, _ end: Point, _ radius: Radius, _ rotate:
     var endAngle = atan2(_end.y, _end.x)
     if sweep {
         while endAngle < startAngle {
-            endAngle += 2 * M_PI
+            endAngle += 2 * Double.pi
         }
     } else {
         while endAngle > startAngle {
-            endAngle -= 2 * M_PI
+            endAngle -= 2 * Double.pi
         }
     }
     let _transform = SDTransform.Rotate(startAngle) * _arc_transform

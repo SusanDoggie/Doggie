@@ -142,9 +142,9 @@ public func EllipseBound<T: SDTransformProtocol>(_ center: Point, _ r: Radius, _
     let t2 = EllipseStationary(r, matrix.d, matrix.e)
     
     let p0 = Ellipse(t1, center, r)
-    let p1 = Ellipse(t1 + M_PI, center, r)
+    let p1 = Ellipse(t1 + Double.pi, center, r)
     let p2 = Ellipse(t2, center, r)
-    let p3 = Ellipse(t2 + M_PI, center, r)
+    let p3 = Ellipse(t2 + Double.pi, center, r)
     
     let _p0 = matrix.a * p0.x + matrix.b * p0.y
     let _p1 = matrix.a * p1.x + matrix.b * p1.y

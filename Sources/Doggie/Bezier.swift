@@ -744,10 +744,10 @@ private func BezierOffset(_ p0: Point, _ p1: Point, _ p2: Point, _ a: Double, _ 
     let ph0 = q0.phase
     let ph1 = q1.phase
     
-    if ph0.almostEqual(ph1) || ph0.almostEqual(ph1 + 2 * M_PI) || ph0.almostEqual(ph1 - 2 * M_PI) {
+    if ph0.almostEqual(ph1) || ph0.almostEqual(ph1 + 2 * Double.pi) || ph0.almostEqual(ph1 - 2 * Double.pi) {
         return BezierOffset(p0, p2, a).map { [[$0, $1]] } ?? []
     }
-    if ph0.almostEqual(ph1 + M_PI) || ph0.almostEqual(ph1 - M_PI) {
+    if ph0.almostEqual(ph1 + Double.pi) || ph0.almostEqual(ph1 - Double.pi) {
         if let w = QuadBezierStationary(p0.x, p1.x, p2.x) ?? QuadBezierStationary(p0.y, p1.y, p2.y) {
             let g = BezierPoint(w, p0, p1, p2)
             let angle = ph0 - M_PI_2
@@ -808,10 +808,10 @@ private func BezierOffset(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point, _ 
     let ph0 = q0.phase
     let ph1 = q1.phase
     let ph2 = q2.phase
-    let zh0 = ph0.almostEqual(ph1) || ph0.almostEqual(ph1 + 2 * M_PI) || ph0.almostEqual(ph1 - 2 * M_PI)
-    let zh1 = ph1.almostEqual(ph2) || ph1.almostEqual(ph2 + 2 * M_PI) || ph1.almostEqual(ph2 - 2 * M_PI)
-    let zh2 = ph0.almostEqual(ph1 + M_PI) || ph0.almostEqual(ph1 - M_PI)
-    let zh3 = ph1.almostEqual(ph2 + M_PI) || ph1.almostEqual(ph2 - M_PI)
+    let zh0 = ph0.almostEqual(ph1) || ph0.almostEqual(ph1 + 2 * Double.pi) || ph0.almostEqual(ph1 - 2 * Double.pi)
+    let zh1 = ph1.almostEqual(ph2) || ph1.almostEqual(ph2 + 2 * Double.pi) || ph1.almostEqual(ph2 - 2 * Double.pi)
+    let zh2 = ph0.almostEqual(ph1 + Double.pi) || ph0.almostEqual(ph1 - Double.pi)
+    let zh3 = ph1.almostEqual(ph2 + Double.pi) || ph1.almostEqual(ph2 - Double.pi)
     
     if zh0 && zh1 {
         return BezierOffset(p0, p3, a).map { [[$0, $1]] } ?? []
@@ -946,7 +946,7 @@ private func BezierVariableOffset(_ p0: Point, _ p1: Point, _ p2: Point, _ a: [P
     let ph0 = q0.phase
     let ph1 = q1.phase
     
-    if ph0.almostEqual(ph1) || ph0.almostEqual(ph1 + 2 * M_PI) || ph0.almostEqual(ph1 - 2 * M_PI) {
+    if ph0.almostEqual(ph1) || ph0.almostEqual(ph1 + 2 * Double.pi) || ph0.almostEqual(ph1 - 2 * Double.pi) {
         return BezierVariableOffset(p0, p2, a).map { [$0] } ?? []
     }
     
@@ -961,7 +961,7 @@ private func BezierVariableOffset(_ p0: Point, _ p1: Point, _ p2: Point, _ a: [P
         return (a_left.map { Point(x: $0.x / a_left_last.x, y: $0.y) }, a_right.map { Point(x: ($0.x - a_right_first.x) / (a_right_last.x - a_right_first.x), y: $0.y) })
     }
     
-    if ph0.almostEqual(ph1 + M_PI) || ph0.almostEqual(ph1 - M_PI) {
+    if ph0.almostEqual(ph1 + Double.pi) || ph0.almostEqual(ph1 - Double.pi) {
         if let w = QuadBezierStationary(p0.x, p1.x, p2.x) ?? QuadBezierStationary(p0.y, p1.y, p2.y) {
             let mid_length = QuadBezierLength(w, p0, p1, p2)
             let g = BezierPoint(w, p0, p1, p2)

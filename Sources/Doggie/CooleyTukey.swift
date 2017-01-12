@@ -80,7 +80,7 @@ public func HalfRadix2CooleyTukey(_ level: Int, _ input: UnsafePointer<Float>, _
         let opf_i = _imag + fourth * out_stride
         opf_i.pointee = -opf_i.pointee
         
-        let angle = -Float(M_PI) / Float(half)
+        let angle = -Float.pi / Float(half)
         let _cos = cos(angle)
         let _sin = sin(angle)
         var _cos1 = _cos
@@ -159,7 +159,7 @@ public func HalfInverseRadix2CooleyTukey(_ level: Int, _ real: UnsafePointer<Flo
         tpf_r.pointee = ipf_r.pointee * 2.0
         tpf_i.pointee = -ipf_i.pointee * 2.0
         
-        let angle = -Float(M_PI) / Float(half)
+        let angle = -Float.pi / Float(half)
         let _cos = cos(angle)
         let _sin = sin(angle)
         var _cos1 = _cos
@@ -255,7 +255,7 @@ public func HalfRadix2CooleyTukey(_ level: Int, _ input: UnsafePointer<Double>, 
         let opf_i = _imag + fourth * out_stride
         opf_i.pointee = -opf_i.pointee
         
-        let angle = -M_PI / Double(half)
+        let angle = -Double.pi / Double(half)
         let _cos = cos(angle)
         let _sin = sin(angle)
         var _cos1 = _cos
@@ -334,7 +334,7 @@ public func HalfInverseRadix2CooleyTukey(_ level: Int, _ real: UnsafePointer<Dou
         tpf_r.pointee = ipf_r.pointee * 2.0
         tpf_i.pointee = -ipf_i.pointee * 2.0
         
-        let angle = -M_PI / Double(half)
+        let angle = -Double.pi / Double(half)
         let _cos = cos(angle)
         let _sin = sin(angle)
         var _cos1 = _cos
@@ -443,7 +443,7 @@ public func Radix2CooleyTukey(_ level: Int, _ input: UnsafePointer<Float>, _ in_
         optf_i.pointee = opf_i.pointee
         opf_i.pointee = -opf_i.pointee
         
-        let angle = -Float(M_PI) / Float(half)
+        let angle = -Float.pi / Float(half)
         let _cos = cos(angle)
         let _sin = sin(angle)
         var _cos1 = _cos
@@ -536,7 +536,7 @@ public func Radix2CooleyTukey(_ level: Int, _ real: UnsafePointer<Float>, _ imag
         Radix2CooleyTukey(level - 1, real, imag, in_stride << 1, in_count - in_count >> 1, op_r, op_i, out_stride)
         Radix2CooleyTukey(level - 1, real + in_stride, imag + in_stride, in_stride << 1, in_count >> 1, oph_r, oph_i, out_stride)
         
-        let angle = -Float(M_PI) / Float(half)
+        let angle = -Float.pi / Float(half)
         let _cos = cos(angle)
         let _sin = sin(angle)
         var _cos1: Float = 1.0
@@ -628,7 +628,7 @@ public func InverseRadix2CooleyTukey(_ level: Int, _ input: UnsafePointer<Float>
         optf_r.pointee = opf_r.pointee
         optf_i.pointee = -opf_i.pointee
         
-        let angle = Float(M_PI) / Float(half)
+        let angle = Float.pi / Float(half)
         let _cos = cos(angle)
         let _sin = sin(angle)
         var _cos1 = _cos
@@ -747,7 +747,7 @@ public func Radix2CooleyTukey(_ level: Int, _ input: UnsafePointer<Double>, _ in
         optf_i.pointee = opf_i.pointee
         opf_i.pointee = -opf_i.pointee
         
-        let angle = -M_PI / Double(half)
+        let angle = -Double.pi / Double(half)
         let _cos = cos(angle)
         let _sin = sin(angle)
         var _cos1 = _cos
@@ -840,7 +840,7 @@ public func Radix2CooleyTukey(_ level: Int, _ real: UnsafePointer<Double>, _ ima
         Radix2CooleyTukey(level - 1, real, imag, in_stride << 1, in_count - in_count >> 1, op_r, op_i, out_stride)
         Radix2CooleyTukey(level - 1, real + in_stride, imag + in_stride, in_stride << 1, in_count >> 1, oph_r, oph_i, out_stride)
         
-        let angle = -M_PI / Double(half)
+        let angle = -Double.pi / Double(half)
         let _cos = cos(angle)
         let _sin = sin(angle)
         var _cos1 = 1.0
@@ -932,7 +932,7 @@ public func InverseRadix2CooleyTukey(_ level: Int, _ input: UnsafePointer<Double
         optf_r.pointee = opf_r.pointee
         optf_i.pointee = -opf_i.pointee
         
-        let angle = M_PI / Double(half)
+        let angle = Double.pi / Double(half)
         let _cos = cos(angle)
         let _sin = sin(angle)
         var _cos1 = _cos
@@ -1042,7 +1042,7 @@ public func DispatchHalfRadix2CooleyTukey(_ level: Int, _ input: UnsafePointer<F
         let opf_i = _imag + fourth * out_stride
         opf_i.pointee = -opf_i.pointee
         
-        let angle = -Float(M_PI) / Float(half)
+        let angle = -Float.pi / Float(half)
         let _cos = cos(angle)
         let _sin = sin(angle)
         var _cos1 = _cos
@@ -1121,7 +1121,7 @@ public func DispatchHalfInverseRadix2CooleyTukey(_ level: Int, _ real: UnsafePoi
         tpf_r.pointee = ipf_r.pointee * 2.0
         tpf_i.pointee = -ipf_i.pointee * 2.0
         
-        let angle = -Float(M_PI) / Float(half)
+        let angle = -Float.pi / Float(half)
         let _cos = cos(angle)
         let _sin = sin(angle)
         var _cos1 = _cos
@@ -1217,7 +1217,7 @@ public func DispatchHalfRadix2CooleyTukey(_ level: Int, _ input: UnsafePointer<D
         let opf_i = _imag + fourth * out_stride
         opf_i.pointee = -opf_i.pointee
         
-        let angle = -M_PI / Double(half)
+        let angle = -Double.pi / Double(half)
         let _cos = cos(angle)
         let _sin = sin(angle)
         var _cos1 = _cos
@@ -1296,7 +1296,7 @@ public func DispatchHalfInverseRadix2CooleyTukey(_ level: Int, _ real: UnsafePoi
         tpf_r.pointee = ipf_r.pointee * 2.0
         tpf_i.pointee = -ipf_i.pointee * 2.0
         
-        let angle = -M_PI / Double(half)
+        let angle = -Double.pi / Double(half)
         let _cos = cos(angle)
         let _sin = sin(angle)
         var _cos1 = _cos
@@ -1405,7 +1405,7 @@ public func DispatchRadix2CooleyTukey(_ level: Int, _ input: UnsafePointer<Float
         optf_i.pointee = opf_i.pointee
         opf_i.pointee = -opf_i.pointee
         
-        let angle = -Float(M_PI) / Float(half)
+        let angle = -Float.pi / Float(half)
         let _cos = cos(angle)
         let _sin = sin(angle)
         var _cos1 = _cos
@@ -1503,7 +1503,7 @@ public func DispatchRadix2CooleyTukey(_ level: Int, _ real: UnsafePointer<Float>
             }
         }
         
-        let angle = -Float(M_PI) / Float(half)
+        let angle = -Float.pi / Float(half)
         let _cos = cos(angle)
         let _sin = sin(angle)
         var _cos1: Float = 1.0
@@ -1595,7 +1595,7 @@ public func DispatchInverseRadix2CooleyTukey(_ level: Int, _ input: UnsafePointe
         optf_r.pointee = opf_r.pointee
         optf_i.pointee = -opf_i.pointee
         
-        let angle = Float(M_PI) / Float(half)
+        let angle = Float.pi / Float(half)
         let _cos = cos(angle)
         let _sin = sin(angle)
         var _cos1 = _cos
@@ -1713,7 +1713,7 @@ public func DispatchRadix2CooleyTukey(_ level: Int, _ input: UnsafePointer<Doubl
         optf_i.pointee = opf_i.pointee
         opf_i.pointee = -opf_i.pointee
         
-        let angle = -M_PI / Double(half)
+        let angle = -Double.pi / Double(half)
         let _cos = cos(angle)
         let _sin = sin(angle)
         var _cos1 = _cos
@@ -1811,7 +1811,7 @@ public func DispatchRadix2CooleyTukey(_ level: Int, _ real: UnsafePointer<Double
             }
         }
         
-        let angle = -M_PI / Double(half)
+        let angle = -Double.pi / Double(half)
         let _cos = cos(angle)
         let _sin = sin(angle)
         var _cos1 = 1.0
@@ -1903,7 +1903,7 @@ public func DispatchInverseRadix2CooleyTukey(_ level: Int, _ input: UnsafePointe
         optf_r.pointee = opf_r.pointee
         optf_i.pointee = -opf_i.pointee
         
-        let angle = M_PI / Double(half)
+        let angle = Double.pi / Double(half)
         let _cos = cos(angle)
         let _sin = sin(angle)
         var _cos1 = _cos

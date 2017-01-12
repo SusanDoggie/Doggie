@@ -127,7 +127,7 @@ extension SDPath {
             
             let ph0 = z0.phase
             let ph1 = z1.phase
-            let angle = (ph1 - ph0).remainder(dividingBy: 2 * M_PI)
+            let angle = (ph1 - ph0).remainder(dividingBy: 2 * Double.pi)
             
             switch direction {
             case .plus:

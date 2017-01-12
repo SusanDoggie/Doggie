@@ -155,7 +155,7 @@ public func degree3decompose(_ b: Double, _ c: Double, _ d: Double) -> (Double, 
         let p_3 = p / 3
         let s = 2 * sqrt(-p_3)
         let t = acos(q / (p_3 * s)) / 3
-        let u = M_PI * 2 / 3
+        let u = Double.pi * 2 / 3
         let cos1 = cos(t)
         let cos2 = cos(t - u)
         let cos3 = cos(t - 2 * u)
@@ -324,7 +324,7 @@ public func degree3roots(_ b: Double, _ c: Double, _ d: Double) -> [Double] {
         let p_3 = p / 3
         let s = 2 * sqrt(-p_3)
         let t = acos(q / (p_3 * s)) / 3
-        let u = M_PI * 2 / 3
+        let u = Double.pi * 2 / 3
         return [s * cos(t) - m, s * cos(t - u) - m, s * cos(t - 2 * u) - m]
     }
     
@@ -368,10 +368,10 @@ public func logScale(_ f: UInt, _ x: Double) -> UInt {
 }
 
 public func degreesToRad(_ alpha: Float) -> Float {
-    return alpha * Float(M_PI) / 180.0
+    return alpha * Float.pi / 180.0
 }
 public func degreesToRad(_ alpha: Double) -> Double {
-    return alpha * M_PI / 180.0
+    return alpha * Double.pi / 180.0
 }
 
 public func LogarithmicDynamicRangeCompression(_ x: Double, _ m: Double) -> Double {
@@ -386,7 +386,7 @@ public func LinearInterpolate(_ t: Double, _ a: Double, _ b: Double) -> Double {
 }
 
 public func CosineInterpolate(_ t: Double, _ a: Double, _ b: Double) -> Double {
-    return LinearInterpolate((1.0 - cos(t * M_PI)) * 0.5, a, b)
+    return LinearInterpolate((1.0 - cos(t * Double.pi)) * 0.5, a, b)
 }
 
 public func CubicInterpolate(_ t: Double, _ a: Double, _ b: Double, _ c: Double, _ d: Double) -> Double {
@@ -414,7 +414,7 @@ public func Phase(_ x: Double, _ shift: Double, _ frequency: Double, _ maxFreque
     return abs((x / maxFrequency + shift) * frequency).truncatingRemainder(dividingBy: 1.0)
 }
 public func SineWave(_ phase: Double) -> Double {
-    return sin(2 * M_PI * phase)
+    return sin(2 * Double.pi * phase)
 }
 public func SquareWave(_ phase: Double) -> Double {
     return phase < 0.5 ? 1 : -1

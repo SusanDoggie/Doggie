@@ -210,11 +210,11 @@ extension SDPath.StrokeBuffer {
         
         let ph0 = last!.endDirection.phase
         let ph1 = segment.startDirection.phase
-        let angle = (ph1 - ph0).remainder(dividingBy: 2 * M_PI)
+        let angle = (ph1 - ph0).remainder(dividingBy: 2 * Double.pi)
         if !angle.almostZero() {
             switch join {
             case let .miter(limit):
-                if limit * sin(0.5 * (M_PI - abs(angle))) < 1 {
+                if limit * sin(0.5 * (Double.pi - abs(angle))) < 1 {
                     do {
                         let d = segment.startDirection
                         let m = d.magnitude

@@ -275,8 +275,8 @@ public struct LabColorModel : ColorModelProtocol {
     }
     public init(lightness: Double, chroma: Double, hue: Double) {
         self.lightness = lightness
-        self.a = chroma * cos(2 * M_PI * hue)
-        self.b = chroma * sin(2 * M_PI * hue)
+        self.a = chroma * cos(2 * Double.pi * hue)
+        self.b = chroma * sin(2 * Double.pi * hue)
     }
 }
 
@@ -291,7 +291,7 @@ extension LabColorModel {
     
     public var hue: Double {
         get {
-            return positive_mod(0.5 * atan2(b, a) / M_PI, 1)
+            return positive_mod(0.5 * atan2(b, a) / Double.pi, 1)
         }
         set {
             self = LabColorModel(lightness: lightness, chroma: chroma, hue: newValue)
@@ -324,8 +324,8 @@ public struct LuvColorModel : ColorModelProtocol {
     }
     public init(lightness: Double, chroma: Double, hue: Double) {
         self.lightness = lightness
-        self.u = chroma * cos(2 * M_PI * hue)
-        self.v = chroma * sin(2 * M_PI * hue)
+        self.u = chroma * cos(2 * Double.pi * hue)
+        self.v = chroma * sin(2 * Double.pi * hue)
     }
 }
 
@@ -340,7 +340,7 @@ extension LuvColorModel {
     
     public var hue: Double {
         get {
-            return positive_mod(0.5 * atan2(v, u) / M_PI, 1)
+            return positive_mod(0.5 * atan2(v, u) / Double.pi, 1)
         }
         set {
             self = LuvColorModel(lightness: lightness, chroma: chroma, hue: newValue)

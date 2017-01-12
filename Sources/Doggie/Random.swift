@@ -89,7 +89,7 @@ public func normal_distribution(mean: Double, variance: Double) -> Double {
     let v = 1 - Double.random(includeOne: false)
     
     let r = -2 * log(u)
-    let theta = 2 * M_PI * v
+    let theta = 2 * Double.pi * v
     
     return sqrt(variance * r) * cos(theta) + mean
 }
@@ -98,7 +98,7 @@ public func normal_distribution(mean: Complex, variance: Double) -> Complex {
     let v = 1 - Double.random(includeOne: false)
     
     let r = -2 * log(u)
-    let theta = 2 * M_PI * v
+    let theta = 2 * Double.pi * v
     
     return Complex(magnitude: sqrt(variance * r), phase: theta) + mean
 }

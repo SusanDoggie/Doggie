@@ -107,7 +107,7 @@ public func BluesteinKernel(_ count: Int, _ kernel: inout [Complex]) {
     kernel[0].real = 1
     kernel[0].imag = 0
     
-    let angle = M_PI / Double(count)
+    let angle = Double.pi / Double(count)
     var twiddle = cis(angle)
     let twiddleBasis = twiddle * twiddle
     var twiddle2 = twiddle
@@ -131,7 +131,7 @@ public func InverseBluesteinKernel(_ count: Int, _ kernel: inout [Complex]) {
     kernel[0].real = 1
     kernel[0].imag = 0
     
-    let angle = -M_PI / Double(count)
+    let angle = -Double.pi / Double(count)
     var twiddle = cis(angle)
     let twiddleBasis = twiddle * twiddle
     var twiddle2 = twiddle
@@ -400,7 +400,7 @@ public func DiscreteFourier(_ buffer: [Double], _ result: inout [Complex]) {
     if result.count != buffer.count {
         result.replace(with: repeatElement(Complex(0), count: buffer.count))
     }
-    let angle: Double = -2 * M_PI / Double(buffer.count)
+    let angle: Double = -2 * Double.pi / Double(buffer.count)
     let sqrt_length = sqrt(Double(buffer.count))
     for k in buffer.indices {
         var tp = Complex(0)
@@ -414,7 +414,7 @@ public func DiscreteFourier(_ buffer: [Complex], _ result: inout [Complex]) {
     if result.count != buffer.count {
         result.replace(with: repeatElement(Complex(0), count: buffer.count))
     }
-    let angle: Double = -2 * M_PI / Double(buffer.count)
+    let angle: Double = -2 * Double.pi / Double(buffer.count)
     let sqrt_length = sqrt(Double(buffer.count))
     for k in buffer.indices {
         var tp = Complex(0)
@@ -428,7 +428,7 @@ public func InverseDiscreteFourier(_ buffer: [Double], _ result: inout [Complex]
     if result.count != buffer.count {
         result.replace(with: repeatElement(Complex(0), count: buffer.count))
     }
-    let angle: Double = 2 * M_PI / Double(buffer.count)
+    let angle: Double = 2 * Double.pi / Double(buffer.count)
     let sqrt_length = sqrt(Double(buffer.count))
     for k in buffer.indices {
         var tp = Complex(0)
@@ -442,7 +442,7 @@ public func InverseDiscreteFourier(_ buffer: [Complex], _ result: inout [Complex
     if result.count != buffer.count {
         result.replace(with: repeatElement(Complex(0), count: buffer.count))
     }
-    let angle: Double = 2 * M_PI / Double(buffer.count)
+    let angle: Double = 2 * Double.pi / Double(buffer.count)
     let sqrt_length = sqrt(Double(buffer.count))
     for k in buffer.indices {
         var tp = Complex(0)
@@ -519,7 +519,7 @@ public func DCTIV(_ buffer: [Double], _ result: inout [Double]) {
     }
     var _temp = [Complex](repeating: Complex(0), count: N)
     _temp[0] = Complex(temp[0])
-    let _angle = -M_PI / Double(N)
+    let _angle = -Double.pi / Double(N)
     for i in 1..<N {
         _temp[i] = Complex(magnitude: temp[i], phase: _angle * Double(i))
     }
@@ -542,7 +542,7 @@ public func DSTII(_ buffer: [Double], _ result: inout [Double]) {
     }
     var _temp = [Complex](repeating: Complex(0), count: N)
     _temp[0] = Complex(temp[0])
-    let _angle: Double = -2 * M_PI / Double(N)
+    let _angle: Double = -2 * Double.pi / Double(N)
     for i in 1..<N {
         _temp[i] = Complex(magnitude: temp[i], phase: _angle * Double(i))
     }
@@ -565,7 +565,7 @@ public func DSTIII(_ buffer: [Double], _ result: inout [Double]) {
     temp[N - 1] = Complex(magnitude: buffer[N - 1], phase: -M_PI_2)
     var _temp = [Complex]()
     Fourier(temp, &_temp)
-    let _angle2: Double = -2 * M_PI / Double(N)
+    let _angle2: Double = -2 * Double.pi / Double(N)
     for i in 1..<N {
         _temp[i] *= Complex(magnitude: 1, phase: _angle2 * Double(i))
     }
@@ -590,7 +590,7 @@ public func DSTIV(_ buffer: [Double], _ result: inout [Double]) {
     }
     var _temp = [Complex](repeating: Complex(0), count: N)
     _temp[0] = Complex(temp[0])
-    let _angle = -M_PI / Double(N)
+    let _angle = -Double.pi / Double(N)
     for i in 1..<N {
         _temp[i] = Complex(magnitude: temp[i], phase: _angle * Double(i))
     }
