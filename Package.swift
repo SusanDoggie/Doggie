@@ -27,11 +27,14 @@ import PackageDescription
 
 let package = Package(
     name: "Doggie",
-    targets: [Target(name: "Doggie", dependencies: [.Target(name: "c11_atomic")]),
-              Target(name: "c11_atomic")
+    targets: [
+        Target(name: "Doggie", dependencies: [.Target(name: "c11_atomic")]),
+        Target(name: "c11_atomic")
     ],
     exclude: [
         "Doggie.xcodeproj",
+        "Doggie.xcworkspace",
+        "Doggie.playground",
         "LICENSE", "README.md",
         "Doggie_iOS", "Doggie_iOSTests",
         "Doggie_Mac", "Doggie_MacTests"
