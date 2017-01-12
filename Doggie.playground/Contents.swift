@@ -23,8 +23,8 @@ let task2 = task.then { a -> Int in
     return a + 1
 }
 
-print(task.result)   // 5
-print(task2.result)  // 6
+task.result   // 5
+task2.result  // 6
 
 
 
@@ -34,7 +34,7 @@ let path = try SDPath(code: "M100 0c0-100-236.60 36.60-150 86.60S36.60-136.60-50
 
 let marker: SDMarker = "<p>\n    <h1>{{% header %}}</h1>\n{{# ! bool #}}    This line never shown.<br />{{# bool #}}{{# bool #}}    This line will shown.<br />{{# bool #}}{{#loop#}}\n    {{%loop%}}<br />{{#loop#}}{{#list#}}\n    {{%item%}}<br />{{#list#}}\n</p>"
 
-marker.render([
+print(marker.render([
     
     "header": "This is a header",
     "bool": true,
@@ -45,5 +45,5 @@ marker.render([
         ["item": "orange"]
     ]
     
-    ])
+    ]))
 
