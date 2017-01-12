@@ -27,3 +27,18 @@ public func positive_mod<T: FloatingPoint>(_ x: T, _ m: T) -> T {
     let r = x.remainder(dividingBy: m)
     return r < 0 ? r + m : r
 }
+
+extension FloatingPoint {
+    
+    private static var defaultAlmostEqualEpsilon: Self {
+        return Self(sign: .plus, exponent: Self.ulpOfOne.exponent / 2, significand: 1)
+    }
+    
+    public func almostZero(epsilon: Self = Self.defaultAlmostEqualEpsilon, reference: Self = 0) -> Bool {
+        return self == 0 || abs(self) < abs(epsilon) * max(1, abs(reference))
+    }
+    
+    public func almostEqual(_ other: Self, epsilon: Self = Self.defaultAlmostEqualEpsilon) -> Bool {
+        return self == other || abs(self - other).almostZero(epsilon: epsilon, reference: self)
+    }
+}

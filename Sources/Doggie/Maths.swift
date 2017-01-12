@@ -28,17 +28,6 @@ import Foundation
 public let M_SQRT3 = 1.7320508075688772935274463415058723669428052538103806
 public let M_SQRT5 = 2.2360679774997896964091736687312762354406183596115257
 
-extension Double {
-    
-    public func almostZero(epsilon: Double = 1e-9, reference: Double = 0) -> Bool {
-        return self == 0 || abs(self) < abs(epsilon) * max(1, abs(reference))
-    }
-    
-    public func almostEqual(_ other: Double, epsilon: Double = 1e-9) -> Bool {
-        return self == other || abs(self - other).almostZero(epsilon: epsilon, reference: self)
-    }
-}
-
 public func FactorialList<T: UnsignedInteger>(_ n: T) -> LazyScanSequence<RandomAccessSlice<CountableClosedRange<T>>, T> where T.Stride : SignedInteger {
     
     return (0...n).dropFirst().lazy.scan(1, *)
