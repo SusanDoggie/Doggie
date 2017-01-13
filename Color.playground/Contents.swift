@@ -45,11 +45,15 @@ for j in 0..<size {
         let index = j * size + i
         let x = 256 * Double(i) / Double(size) - 128
         let y = 256 * Double(j) / Double(size) - 128
-        let rgb = lab.convert(LabColorModel(lightness: 100, a: x, b: y), to: srgb)
-        let red = UInt32(rgb.red.clamped(to: 0...1) * Double(UInt8.max))
-        let green = UInt32(rgb.green.clamped(to: 0...1) * Double(UInt8.max))
-        let blue = UInt32(rgb.blue.clamped(to: 0...1) * Double(UInt8.max))
-        buffer[index] = red | green << 8 | blue << 16 | 0xff000000
+        let rgb = lab.convert(LabColorModel(lightness: 50, a: x, b: y), to: srgb)
+        if (0...1).contains(rgb.red) && (0...1).contains(rgb.green) && (0...1).contains(rgb.blue) {
+            let red = UInt32(rgb.red * Double(UInt8.max))
+            let green = UInt32(rgb.green * Double(UInt8.max))
+            let blue = UInt32(rgb.blue * Double(UInt8.max))
+            buffer[index] = red | green << 8 | blue << 16 | 0xff000000
+        } else {
+            buffer[index] = 0xff000000
+        }
     }
 }
 
@@ -63,11 +67,15 @@ for j in 0..<size {
         let index = j * size + i
         let x = 256 * Double(i) / Double(size) - 128
         let y = 256 * Double(j) / Double(size) - 128
-        let rgb = luv.convert(LuvColorModel(lightness: 100, u: x, v: y), to: srgb)
-        let red = UInt32(rgb.red.clamped(to: 0...1) * Double(UInt8.max))
-        let green = UInt32(rgb.green.clamped(to: 0...1) * Double(UInt8.max))
-        let blue = UInt32(rgb.blue.clamped(to: 0...1) * Double(UInt8.max))
-        buffer[index] = red | green << 8 | blue << 16 | 0xff000000
+        let rgb = luv.convert(LuvColorModel(lightness: 50, u: x, v: y), to: srgb)
+        if (0...1).contains(rgb.red) && (0...1).contains(rgb.green) && (0...1).contains(rgb.blue) {
+            let red = UInt32(rgb.red * Double(UInt8.max))
+            let green = UInt32(rgb.green * Double(UInt8.max))
+            let blue = UInt32(rgb.blue * Double(UInt8.max))
+            buffer[index] = red | green << 8 | blue << 16 | 0xff000000
+        } else {
+            buffer[index] = 0xff000000
+        }
     }
 }
 
