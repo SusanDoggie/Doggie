@@ -5,6 +5,9 @@
       location = "group:Doggie.playground">
    </FileRef>
    <FileRef
+      location = "group:Color.playground">
+   </FileRef>
+   <FileRef
       location = "group:Doggie.xcodeproj">
    </FileRef>
 </Workspace>
