@@ -32,10 +32,10 @@ let package = Package(
         Target(name: "c11_atomic")
     ],
     exclude: [
+        "LICENSE", "README.md",
         "Doggie.xcodeproj",
         "Doggie.xcworkspace",
-        "Doggie.playground",
-        "LICENSE", "README.md",
+        "playgrounds",
         "Doggie_iOS", "Doggie_iOSTests",
         "Doggie_Mac", "Doggie_MacTests"
     ]
