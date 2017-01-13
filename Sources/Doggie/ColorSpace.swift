@@ -177,6 +177,10 @@ extension CIEXYZColorSpace {
         return Matrix.Translate(x: -black.x, y: -black.y, z: -black.z) * Matrix.Scale(x: white.x / (white.y * (white.x - black.x)), y: 1 / (white.y - black.y), z: white.z / (white.y * (white.z - black.z)))
     }
     
+    public var normalized: CIEXYZColorSpace {
+        return CIEXYZColorSpace(white: XYZColorModel(white * normalizeMatrix))
+    }
+    
     fileprivate func transferMatrix(to other: CIEXYZColorSpace, algorithm: ChromaticAdaptationAlgorithm = .bradford) -> Matrix {
         let matrix = algorithm.matrix
         let m1 = self.normalizeMatrix * matrix
