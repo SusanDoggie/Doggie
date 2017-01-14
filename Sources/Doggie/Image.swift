@@ -28,7 +28,7 @@ private protocol ImageBaseProtocol {
     var width: Int { get }
     var height: Int { get }
     
-    subscript(x: Int, y: Int) -> ColorProtocol { get set }
+    subscript(x: Int, y: Int) -> Color { get set }
     
     func convert<RPixel: ColorPixelProtocol, RSpace : ColorSpaceProtocol>(pixel: RPixel.Type, colorSpace: RSpace, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm) -> ImageBase<RPixel, RSpace>
     
@@ -44,14 +44,14 @@ private struct ImageBase<ColorPixel: ColorPixelProtocol, ColorSpace : ColorSpace
     var colorSpace: ColorSpace
     var algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm
     
-    subscript(x: Int, y: Int) -> ColorProtocol {
+    subscript(x: Int, y: Int) -> Color {
         get {
             let pixel = buffer[width * y + x]
             return Color(colorSpace: colorSpace, color: pixel.color, alpha: pixel.alpha)
         }
         set {
             let color = newValue.convert(to: colorSpace, algorithm: algorithm)
-            buffer[width * y + x] = ColorPixel(color: color.color, alpha: color.alpha)
+            buffer[width * y + x] = ColorPixel(color: color.color as! ColorSpace.Model, alpha: color.alpha)
         }
     }
     
@@ -90,7 +90,7 @@ public struct Image {
         return base.height
     }
     
-    public subscript(x: Int, y: Int) -> ColorProtocol {
+    public subscript(x: Int, y: Int) -> Color {
         get {
             return base[x, y]
         }

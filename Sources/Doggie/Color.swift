@@ -23,34 +23,71 @@
 //  THE SOFTWARE.
 //
 
-public struct Color<ColorSpace : ColorSpaceProtocol> {
+private protocol ColorBaseProtocol {
     
-    public var colorSpace: ColorSpace
+    var alpha: Double { get set }
     
-    public var color: ColorSpace.Model
-    public var alpha: Double
+    var color: ColorModelProtocol { get }
     
-    public init(colorSpace: ColorSpace, color: ColorSpace.Model, alpha: Double = 1) {
+    func convert<ColorSpace : ColorSpaceProtocol>(to colorSpace: ColorSpace, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm) -> ColorBase<ColorSpace>
+}
+
+private struct ColorBase<ColorSpace : ColorSpaceProtocol> : ColorBaseProtocol {
+    
+    var colorSpace: ColorSpace
+    
+    var _color: ColorSpace.Model
+    var alpha: Double
+    var color: ColorModelProtocol {
+        return _color
+    }
+    
+    init(colorSpace: ColorSpace, color: ColorSpace.Model, alpha: Double) {
         self.colorSpace = colorSpace
-        self.color = color
+        self._color = color
         self.alpha = alpha
+    }
+}
+
+extension ColorBase {
+    
+    func convert<C : ColorSpaceProtocol>(to colorSpace: C, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm) -> ColorBase<C> {
+        return ColorBase<C>(colorSpace: colorSpace, color: self.colorSpace.convert(_color, to: colorSpace, algorithm: algorithm), alpha: alpha)
+    }
+}
+
+public struct Color {
+    
+    fileprivate var base: ColorBaseProtocol
+    
+    fileprivate init(base: ColorBaseProtocol) {
+        self.base = base
+    }
+    
+    public init<ColorSpace : ColorSpaceProtocol>(colorSpace: ColorSpace, color: ColorSpace.Model, alpha: Double = 1) {
+        self.base = ColorBase(colorSpace: colorSpace, color: color, alpha: alpha)
     }
 }
 
 extension Color {
     
-    public func convert<C : ColorSpaceProtocol>(to colorSpace: C, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm = .bradford) -> Color<C> {
-        return Color<C>(colorSpace: colorSpace, color: self.colorSpace.convert(color, to: colorSpace, algorithm: algorithm), alpha: alpha)
+    public var alpha: Double {
+        get {
+            return self.base.alpha
+        }
+        set {
+            self.base.alpha = newValue
+        }
+    }
+    
+    public var color: ColorModelProtocol {
+        return self.base.color
     }
 }
 
-public protocol ColorProtocol {
+extension Color {
     
-    var alpha: Double { get set }
-    
-    func convert<C : ColorSpaceProtocol>(to colorSpace: C, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm) -> Color<C>
-}
-
-extension Color : ColorProtocol {
-    
+    public func convert<ColorSpace : ColorSpaceProtocol>(to colorSpace: ColorSpace, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm = .bradford) -> Color {
+        return Color(base: self.base.convert(to: colorSpace, algorithm: algorithm))
+    }
 }
