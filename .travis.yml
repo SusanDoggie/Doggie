@@ -30,6 +30,8 @@ install:
     fi
     
 script:
+  - echo "📅 Version: `swift --version`";
+    
   - echo "🚀 Building";
   - swift build;
   - if [[ $? == 0 ]]; then 
