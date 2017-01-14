@@ -9,7 +9,7 @@ osx_image: xcode8
 env:
   - VERSION="3.0.1"
     
-script:
+install:
   - echo "Swift $VERSION Continuous Integration";
 
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
@@ -41,7 +41,8 @@ script:
         export PATH=$PWD/$SWIFTFILE/usr/bin:"${PATH}"
     fi
     
-  - echo "📅 Version: 'swift --version'";
+script:
+  - echo "📅 Version: `swift --version`";
     
   - echo "🚀 Building";
   - swift build
