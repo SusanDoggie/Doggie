@@ -8,11 +8,12 @@ notifications: never
 osx_image: xcode8
 env:
   - VERSION="3.0.1"
-    
-install:
-  - echo "Swift $VERSION Continuous Integration";
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
         UBUNTU_RELEASE=`lsb_release -a 2>/dev/null`;
+    fi
+    
+install:
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
         if [[ $UBUNTU_RELEASE == *"15.10"* ]]; then
             OS="ubuntu1510";
             SWIFTFILE="swift-$VERSION-RELEASE-ubuntu15.10";    
