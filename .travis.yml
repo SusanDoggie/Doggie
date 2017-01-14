@@ -41,7 +41,7 @@ script:
         export PATH=$PWD/$SWIFTFILE/usr/bin:"${PATH}"
     fi
     
-  - echo "📅 Version: `swift --version`";
+  - echo "📅 Version: 'swift --version'";
     
   - echo "🚀 Building";
   - swift build
