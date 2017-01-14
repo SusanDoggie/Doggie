@@ -96,35 +96,29 @@ public extension Int8 {
     }
 }
 
+public func log2<T: UnsignedInteger>(_ x: T) -> T {
+    var r: T = 0
+    var x = x
+    while x != 0 {
+        x = x >> 1
+        r = r + 1
+    }
+    return r - 1
+}
 public func log2(_ x: Int64) -> Int64 {
-    return Int64(flsll(x)) - 1
+    return Int64(bitPattern: log2(UInt64(bitPattern: x)))
 }
 public func log2(_ x: Int32) -> Int32 {
-    return fls(x) - 1
+    return Int32(bitPattern: log2(UInt32(bitPattern: x)))
 }
 public func log2(_ x: Int16) -> Int16 {
-    return Int16(truncatingBitPattern: log2(Int32(x) & 0xFFFF))
+    return Int16(bitPattern: log2(UInt16(bitPattern: x)))
 }
 public func log2(_ x: Int8) -> Int8 {
-    return Int8(truncatingBitPattern: log2(Int32(x) & 0xFF))
+    return Int8(bitPattern: log2(UInt8(bitPattern: x)))
 }
 public func log2(_ x: Int) -> Int {
-    return Int(flsl(x)) - 1
-}
-public func log2(_ x: UInt64) -> UInt64 {
-    return UInt64(bitPattern: log2(Int64(bitPattern: x)))
-}
-public func log2(_ x: UInt32) -> UInt32 {
-    return UInt32(bitPattern: log2(Int32(bitPattern: x)))
-}
-public func log2(_ x: UInt16) -> UInt16 {
-    return UInt16(bitPattern: log2(Int16(bitPattern: x)))
-}
-public func log2(_ x: UInt8) -> UInt8 {
-    return UInt8(bitPattern: log2(Int8(bitPattern: x)))
-}
-public func log2(_ x: UInt) -> UInt {
-    return UInt(bitPattern: log2(Int(bitPattern: x)))
+    return Int(bitPattern: log2(UInt(bitPattern: x)))
 }
 
 public extension UnsignedInteger {
