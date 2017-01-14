@@ -1,48 +1,16 @@
-sudo: true
-dist: trusty
-language: c
-notifications: never
-
-compiler:
-  - clang
-
-osx_image: xcode8
-
-os: 
-  - osx
+os:
   - linux
-
-env:
-  - TOOLCHAIN="swift-DEVELOPMENT-SNAPSHOT-2016-09-07-a"
-    BRANCH="swift-3.0-branch"
-
-before_install:
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
-        brew update;
-    fi 
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
-        sudo apt-get update;
-        sudo apt-get install -y autoconf libtool pkg-config clang-3.8 libicu-dev systemtap-sdt-dev libblocksruntime-dev libkqueue-dev libbsd-dev;
-        sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-3.8 100;		
-        sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-3.8 100;
-    fi
-
+  - osx
+language: generic
+sudo: required
+dist: trusty
+notifications: never
+osx_image: xcode8
 install:
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
-        wget https://swift.org/builds/development/xcode/${TOOLCHAIN}/${TOOLCHAIN}-osx.pkg;
-        pkgutil --expand ${TRAVIS_BUILD_DIR}/${TOOLCHAIN}-osx.pkg ${TRAVIS_BUILD_DIR}/${TOOLCHAIN}-osx.unpkg;
-        cat ${TRAVIS_BUILD_DIR}/${TOOLCHAIN}-osx.unpkg/${TOOLCHAIN}-osx-package.pkg/Payload | gunzip -dc |cpio -i;
-        export PATH=${TRAVIS_BUILD_DIR}/usr/bin:"${PATH}";
-    fi
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
-        wget https://swift.org/builds/development/ubuntu1404/${TOOLCHAIN}/${TOOLCHAIN}-ubuntu14.04.tar.gz;
-        tar xzf ${TOOLCHAIN}-ubuntu14.04.tar.gz;
-        export PATH=${TRAVIS_BUILD_DIR}/${TOOLCHAIN}-ubuntu14.04/usr/bin:"${PATH}";
-        git clone -b ${BRANCH} https://github.com/apple/swift-corelibs-libdispatch.git;
-        cd swift-corelibs-libdispatch && git submodule init && git submodule update && sh ./autogen.sh && ./configure --with-swift-toolchain=${TRAVIS_BUILD_DIR}/${TOOLCHAIN}-ubuntu14.04/usr --prefix=${TRAVIS_BUILD_DIR}/${TOOLCHAIN}-ubuntu14.04/usr && make && make install;
-        cd -;
-    fi
-
+  - eval "$(curl -sL swift.qutheory.io/travis)"
 script:
+  # Build Core
   - swift build
-  - .build/debug/Doggie
+  - swift build --configuration release
+  # Test Core
+  - swift test
