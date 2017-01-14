@@ -32,12 +32,6 @@ install:
   
 script:
   - swift --version;
-    
-  - echo "🚀 Building";
-  - swift build;
-    
-  - echo "🚂 Building Release";
-  - swift build -c release;
-    
-  - echo "🔎 Testing";
-  - swift test;
+  - echo "🚀 Building"; swift build;
+  - echo "🚂 Building Release"; swift build -c release;
+  - echo "🔎 Testing"; swift test;
