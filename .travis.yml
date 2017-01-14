@@ -6,5 +6,64 @@ sudo: required
 dist: trusty
 notifications: never
 osx_image: xcode8
+env:
+  - VERSION="3.0.1"
+    
 script:
-  - eval "$(curl -sL https://swift.vapor.sh/ci)"
+  - echo "Swift $VERSION Continuous Integration";
+
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
+        OS="macos";
+    else
+        if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
+            UBUNTU_RELEASE=`lsb_release -a 2>/dev/null`;
+            if [[ $UBUNTU_RELEASE == *"15.10"* ]]; then
+                OS="ubuntu1510";
+            else
+                OS="ubuntu1404";
+            fi
+        fi
+    fi
+  - echo "🖥 Operating System: $OS";
+    
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
+        echo "📚 Installing Dependencies"
+        sudo apt-get install -y clang libicu-dev uuid-dev
+    
+        echo "🐦 Installing Swift";
+        if [[ $OS == "ubuntu1510" ]]; then
+            SWIFTFILE="swift-$VERSION-RELEASE-ubuntu15.10";    
+        else
+            SWIFTFILE="swift-$VERSION-RELEASE-ubuntu14.04";
+        fi
+        wget https://swift.org/builds/swift-$VERSION-release/$OS/swift-$VERSION-RELEASE/$SWIFTFILE.tar.gz
+        tar -zxf $SWIFTFILE.tar.gz
+        export PATH=$PWD/$SWIFTFILE/usr/bin:"${PATH}"
+    fi
+    
+  - echo "📅 Version: `swift --version`";
+    
+  - echo "🚀 Building";
+  - swift build
+  - if [[ $? != 0 ]]; then 
+        echo "❌  Build failed";
+        exit 1; 
+    fi
+    
+  - echo "💼 Building Release";
+  - swift build -c release
+  - if [[ $? != 0 ]]; then 
+        echo "❌  Build for release failed";
+        exit 1; 
+    fi
+    
+  - echo "🔎 Testing";
+    
+  - swift test
+  - if [[ $? != 0 ]]; then 
+        echo "❌ Tests failed";
+        exit 1; 
+    fi
+    
+  - echo "✅ Done"
+    
