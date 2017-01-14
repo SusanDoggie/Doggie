@@ -14,14 +14,13 @@ install:
 
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
         OS="macos";
-    else
-        if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
-            UBUNTU_RELEASE=`lsb_release -a 2>/dev/null`;
-            if [[ $UBUNTU_RELEASE == *"15.10"* ]]; then
-                OS="ubuntu1510";
-            else
-                OS="ubuntu1404";
-            fi
+    fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
+        UBUNTU_RELEASE=`lsb_release -a 2>/dev/null`;
+        if [[ $UBUNTU_RELEASE == *"15.10"* ]]; then
+            OS="ubuntu1510";
+        else
+            OS="ubuntu1404";
         fi
     fi
   - echo "🖥 Operating System: $OS";
@@ -42,7 +41,7 @@ install:
     fi
     
 script:
-  - echo "📅 Version: `swift --version`";
+  - echo "📅 Version: \`swift --version\`";
     
   - echo "🚀 Building";
   - swift build
