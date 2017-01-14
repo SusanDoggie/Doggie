@@ -10,7 +10,7 @@ env:
   - VERSION="3.0.1"
   
 before_install:
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
+  - if [[ $TRAVIS_OS_NAME == "linux" ]]; then
         UBUNTU_RELEASE=`lsb_release -a 2>/dev/null`;
         if [[ $UBUNTU_RELEASE == *"15.10"* ]]; then
             OS="ubuntu1510";
@@ -22,11 +22,8 @@ before_install:
     fi
     
 install:
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
-        echo "📚 Installing Dependencies";
+  - if [[ $TRAVIS_OS_NAME == "linux" ]]; then
         sudo apt-get install -y clang libicu-dev uuid-dev;
-    
-        echo "🐦 Installing Swift";
         wget https://swift.org/builds/swift-$VERSION-release/$OS/swift-$VERSION-RELEASE/$SWIFTFILE.tar.gz;
         tar -zxf $SWIFTFILE.tar.gz;
         export PATH=$PWD/$SWIFTFILE/usr/bin:"${PATH}";
@@ -35,22 +32,27 @@ install:
 script:
   - echo "🚀 Building";
   - swift build;
-  - if [[ $? != 0 ]]; then 
-        echo "❌  Build failed";
+  - if [[ $? == 0 ]]; then 
+        echo "✅ Build done";
+    else
+        echo "❌ Build failed";
         exit 1; 
     fi
     
-  - echo "💼 Building Release";
+  - echo "🚂 Building Release";
   - swift build -c release;
-  - if [[ $? != 0 ]]; then 
-        echo "❌  Build for release failed";
+  - if [[ $? == 0 ]]; then 
+        echo "✅ Build for release done";
+    else
+        echo "❌ Build for release failed";
         exit 1; 
     fi
     
   - echo "🔎 Testing";
-    
   - swift test;
-  - if [[ $? != 0 ]]; then 
+  - if [[ $? == 0 ]]; then 
+        echo "✅ Tests done";
+    else
         echo "❌ Tests failed";
         exit 1; 
     fi
