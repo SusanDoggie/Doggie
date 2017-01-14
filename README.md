@@ -1,6 +1,6 @@
 # Doggie Swift Foundation
 
-[![Build Status](https://travis-ci.org/SusanDoggie/Doggie.svg?branch=swift3-beta)](https://travis-ci.org/SusanDoggie/Doggie)
+[![Build Status](https://travis-ci.org/SusanDoggie/Doggie.svg?branch=master)](https://travis-ci.org/SusanDoggie/Doggie)
 ![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20iOS-lightgrey.svg?style=flat)
 [![GitHub release](https://img.shields.io/github/release/SusanDoggie/Doggie.svg?style=flat&maxAge=2592000)](https://github.com/SusanDoggie/Doggie/releases)
 [![Swift](https://img.shields.io/badge/swift-3.0-orange.svg?style=flat)](https://swift.org)
