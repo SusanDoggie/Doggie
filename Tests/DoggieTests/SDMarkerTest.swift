@@ -29,6 +29,17 @@ import XCTest
 
 class SDMarkerTest: XCTestCase {
     
+    static let allTests = [
+        ("testVariable", testVariable),
+        ("testBoolean", testBoolean),
+        ("testLoop", testLoop),
+        ("testArray", testArray),
+        ("testObject", testObject),
+        ("testNestedSection", testNestedSection),
+        ("testInverseSection", testInverseSection),
+        ("testTemplate", testTemplate),
+        ]
+    
     override func setUp() {
         super.setUp()
         // Put setup code here. This method is called before the invocation of each test method in the class.
