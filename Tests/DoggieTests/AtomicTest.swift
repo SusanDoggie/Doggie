@@ -24,6 +24,7 @@
 //
 
 import Foundation
+import Dispatch
 import Doggie
 import XCTest
 
