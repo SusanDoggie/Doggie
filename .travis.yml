@@ -12,10 +12,6 @@ env:
 before_install:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
         UBUNTU_RELEASE=`lsb_release -a 2>/dev/null`;
-    fi
-    
-install:
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
         if [[ $UBUNTU_RELEASE == *"15.10"* ]]; then
             OS="ubuntu1510";
             SWIFTFILE="swift-$VERSION-RELEASE-ubuntu15.10";    
@@ -23,6 +19,10 @@ install:
             OS="ubuntu1404";
             SWIFTFILE="swift-$VERSION-RELEASE-ubuntu14.04";
         fi
+    fi
+    
+install:
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
         echo "📚 Installing Dependencies";
         sudo apt-get install -y clang libicu-dev uuid-dev;
     
