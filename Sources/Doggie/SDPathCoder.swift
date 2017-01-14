@@ -481,7 +481,7 @@ private let dataFormatter: NumberFormatter = {
 @_transparent
 private func getDataString(_ x: [Double]) -> String {
     var str = ""
-    for _x in x.map({ dataFormatter.string(from: $0 as NSNumber) ?? "0" }) {
+    for _x in x.map({ dataFormatter.string(from: NSNumber(value: $0)) ?? "0" }) {
         if !str.isEmpty && _x.characters.first != "-" {
             " ".write(to: &str)
         }

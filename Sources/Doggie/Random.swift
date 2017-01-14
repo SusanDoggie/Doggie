@@ -25,29 +25,43 @@
 
 import Foundation
 
-public func sec_random(_ buffer: UnsafeMutableRawPointer, size: Int) {
-    let buffer = buffer.assumingMemoryBound(to: UInt8.self)
-    let rand_file = open("/dev/random", O_RDONLY)
-    var read_bytes = 0
-    while read_bytes < size {
-        let r = read(rand_file, buffer + read_bytes, size - read_bytes)
-        if r > 0 {
-            read_bytes += r
+public class RandomGenerator {
+    
+    private let rand_file: Int32
+    
+    fileprivate init(source: String) {
+        rand_file = open(source, O_RDONLY)
+    }
+    
+    deinit {
+        close(rand_file)
+    }
+    
+    public func read(_ buffer: UnsafeMutableRawPointer, size: Int) {
+        let buffer = buffer.assumingMemoryBound(to: UInt8.self)
+        var read_bytes = 0
+        while read_bytes < size {
+            let r = Foundation.read(rand_file, buffer + read_bytes, size - read_bytes)
+            if r > 0 {
+                read_bytes += r
+            }
         }
     }
-    close(rand_file)
 }
+
+public let _dev_random = RandomGenerator(source: "/dev/random")
+public let _dev_urandom = RandomGenerator(source: "/dev/urandom")
 
 public func sec_random_uniform(_ bound: UIntMax) -> UIntMax {
     let RANDMAX: UIntMax = ~0
     var _rand: UIntMax = 0
-    sec_random(&_rand, size: MemoryLayout<UIntMax>.size)
+    _dev_random.read(&_rand, size: MemoryLayout<UIntMax>.size)
     if bound.isPower2 {
         _rand &= bound &- 1
     } else {
         let limit = RANDMAX - RANDMAX % bound
         while _rand >= limit {
-            sec_random(&_rand, size: MemoryLayout<UIntMax>.size)
+            _dev_random.read(&_rand, size: MemoryLayout<UIntMax>.size)
         }
         _rand %= bound
     }
@@ -57,13 +71,13 @@ public func sec_random_uniform(_ bound: UIntMax) -> UIntMax {
 public func random_uniform(_ bound: UIntMax) -> UIntMax {
     let RANDMAX: UIntMax = ~0
     var _rand: UIntMax = 0
-    arc4random_buf(&_rand, MemoryLayout<UIntMax>.size)
+    _dev_urandom.read(&_rand, size: MemoryLayout<UIntMax>.size)
     if bound.isPower2 {
         _rand &= bound &- 1
     } else {
         let limit = RANDMAX - RANDMAX % bound
         while _rand >= limit {
-            arc4random_buf(&_rand, MemoryLayout<UIntMax>.size)
+            _dev_urandom.read(&_rand, size: MemoryLayout<UIntMax>.size)
         }
         _rand %= bound
     }

@@ -549,7 +549,10 @@ public func CubicBezierInflection(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: P
 private func QuadBezierLength(_ t: Double, _ a: Double, _ b: Double, _ c: Double) -> Double {
     
     if a.almostZero() {
-        return b.almostZero() ? sqrt(c) * t : 2 * (pow(b * t + c, 1.5) - pow(c, 1.5)) / (3 * b)
+        if b.almostZero() {
+            return sqrt(c) * t
+        }
+        return 2 * (pow(b * t + c, 1.5) - pow(c, 1.5)) / (3 * b)
     }
     if b.almostZero() {
         let g = sqrt(a * t * t + c)
@@ -560,7 +563,10 @@ private func QuadBezierLength(_ t: Double, _ a: Double, _ b: Double, _ c: Double
     }
     if a.almostEqual(c) && a.almostEqual(-0.5 * b) {
         let g = t - 1
-        return g.almostZero() ? 0.5 * sqrt(a) : 0.5 * t * (t - 2) * sqrt(a * g * g) / g
+        if g.almostZero() {
+            return 0.5 * sqrt(a)
+        }
+        return 0.5 * t * (t - 2) * sqrt(a * g * g) / g
     }
     
     let delta = b * b - 4 * a * c
