@@ -28,7 +28,13 @@ import Dispatch
 
 // MARK: SDAtomic
 
-private let SDDefaultDispatchQueue = DispatchQueue(label: "com.SusanDoggie.Thread", attributes: .concurrent)
+private let SDDefaultDispatchQueue: DispatchQueue = {
+    if #available(OSX 10.12, iOS 10.0, tvOS 10.0, watchOS 3.0, *) {
+        return DispatchQueue(label: "com.SusanDoggie.Thread", attributes: .concurrent, autoreleaseFrequency: .workItem)
+    } else {
+        return DispatchQueue(label: "com.SusanDoggie.Thread", attributes: .concurrent)
+    }
+}()
 
 open class SDAtomic {
     
@@ -54,7 +60,13 @@ extension SDAtomic {
     fileprivate func dispatchRunloop() {
         while true {
             flag = 1
-            autoreleasepool { self.block(self) }
+            
+            #if os(macOS) || os(iOS) || os(tvOS) || os(watchOS)
+                autoreleasepool { self.block(self) }
+            #else
+                self.block(self)
+            #endif
+
             if flag.compareSet(old: 1, new: 0) {
                 return
             }
