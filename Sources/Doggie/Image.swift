@@ -25,10 +25,7 @@
 
 private protocol ImageBaseProtocol {
     
-    var width: Int { get }
-    var height: Int { get }
-    
-    subscript(x: Int, y: Int) -> Color { get set }
+    subscript(position: Int) -> Color { get set }
     
     func convert<RPixel: ColorPixelProtocol, RSpace : ColorSpaceProtocol>(pixel: RPixel.Type, colorSpace: RSpace, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm) -> ImageBase<RPixel, RSpace>
     
@@ -37,65 +34,63 @@ private protocol ImageBaseProtocol {
 
 private struct ImageBase<ColorPixel: ColorPixelProtocol, ColorSpace : ColorSpaceProtocol> : ImageBaseProtocol where ColorPixel.Model == ColorSpace.Model {
     
-    var width: Int
-    var height: Int
     var buffer: [ColorPixel]
     
     var colorSpace: ColorSpace
     var algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm
     
-    subscript(x: Int, y: Int) -> Color {
+    subscript(position: Int) -> Color {
         get {
-            let pixel = buffer[width * y + x]
+            let pixel = buffer[position]
             return Color(colorSpace: colorSpace, color: pixel.color, alpha: pixel.alpha)
         }
         set {
             let color = newValue.convert(to: colorSpace, algorithm: algorithm)
-            buffer[width * y + x] = ColorPixel(color: color.color as! ColorSpace.Model, alpha: color.alpha)
+            buffer[position] = ColorPixel(color: color.color as! ColorSpace.Model, alpha: color.alpha)
         }
     }
     
     func convert<RPixel: ColorPixelProtocol, RSpace : ColorSpaceProtocol>(pixel: RPixel.Type, colorSpace: RSpace, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm = .bradford) -> ImageBase<RPixel, RSpace> {
         let _buffer = zip(self.colorSpace.convert(buffer.map { $0.color }, to: colorSpace, algorithm: algorithm), buffer).map { RPixel(color: $0, alpha: $1.alpha) }
-        return ImageBase<RPixel, RSpace>(width: width, height: height, buffer: _buffer, colorSpace: colorSpace, algorithm: algorithm)
+        return ImageBase<RPixel, RSpace>(buffer: _buffer, colorSpace: colorSpace, algorithm: algorithm)
     }
     
     func convert<RPixel: ColorPixelProtocol, RSpace : LinearColorSpaceProtocol>(pixel: RPixel.Type, colorSpace: RSpace, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm = .bradford) -> ImageBase<RPixel, RSpace> {
         let _buffer = zip(self.colorSpace.convert(buffer.map { $0.color }, to: colorSpace, algorithm: algorithm), buffer).map { RPixel(color: $0, alpha: $1.alpha) }
-        return ImageBase<RPixel, RSpace>(width: width, height: height, buffer: _buffer, colorSpace: colorSpace, algorithm: algorithm)
+        return ImageBase<RPixel, RSpace>(buffer: _buffer, colorSpace: colorSpace, algorithm: algorithm)
     }
 }
 
 public struct Image {
     
+    public let width: Int
+    public let height: Int
     private var base: ImageBaseProtocol
     
     public init<ColorPixel: ColorPixelProtocol, ColorSpace : ColorSpaceProtocol>(width: Int, height: Int, pixel: ColorPixel, colorSpace: ColorSpace, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm = .bradford) where ColorPixel.Model == ColorSpace.Model {
-        self.base = ImageBase(width: width, height: height, buffer: [ColorPixel](repeating: pixel, count: width * height), colorSpace: colorSpace, algorithm: algorithm)
+        self.width = width
+        self.height = height
+        self.base = ImageBase(buffer: [ColorPixel](repeating: pixel, count: width * height), colorSpace: colorSpace, algorithm: algorithm)
     }
     
     public init<ColorPixel: ColorPixelProtocol, ColorSpace : ColorSpaceProtocol>(image: Image, pixel: ColorPixel.Type, colorSpace: ColorSpace, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm = .bradford) where ColorPixel.Model == ColorSpace.Model {
+        self.width = image.width
+        self.height = image.height
         self.base = image.base.convert(pixel: pixel, colorSpace: colorSpace, algorithm: algorithm)
     }
     
     public init<ColorPixel: ColorPixelProtocol, ColorSpace : LinearColorSpaceProtocol>(image: Image, pixel: ColorPixel.Type, colorSpace: ColorSpace, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm = .bradford) where ColorPixel.Model == ColorSpace.Model {
+        self.width = image.width
+        self.height = image.height
         self.base = image.base.convert(pixel: pixel, colorSpace: colorSpace, algorithm: algorithm)
-    }
-    
-    public var width: Int {
-        return base.width
-    }
-    
-    public var height: Int {
-        return base.height
     }
     
     public subscript(x: Int, y: Int) -> Color {
         get {
-            return base[x, y]
+            return base[width * y + x]
         }
         set {
-            base[x, y] = newValue
+            base[width * y + x] = newValue
         }
     }
 }
