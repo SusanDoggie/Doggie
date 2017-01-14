@@ -30,6 +30,7 @@ install:
     fi
     
 script:
+  - rvm get stable
   - swift --version;
     
   - echo "🚀 Building";
