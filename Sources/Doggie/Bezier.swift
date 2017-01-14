@@ -552,7 +552,9 @@ private func QuadBezierLength(_ t: Double, _ a: Double, _ b: Double, _ c: Double
         if b.almostZero() {
             return sqrt(c) * t
         }
-        return 2 * (pow(b * t + c, 1.5) - pow(c, 1.5)) / (3 * b)
+        let g = pow(b * t + c, 1.5)
+        let h = pow(c, 1.5)
+        return 2 * (g - h) / (3 * b)
     }
     if b.almostZero() {
         let g = sqrt(a * t * t + c)
@@ -566,7 +568,8 @@ private func QuadBezierLength(_ t: Double, _ a: Double, _ b: Double, _ c: Double
         if g.almostZero() {
             return 0.5 * sqrt(a)
         }
-        return 0.5 * t * (t - 2) * sqrt(a * g * g) / g
+        let h = sqrt(a * g * g)
+        return 0.5 * t * (t - 2) * h / g
     }
     
     let delta = b * b - 4 * a * c
@@ -585,8 +588,9 @@ private func QuadBezierLength(_ t: Double, _ a: Double, _ b: Double, _ c: Double
     let h = 2 * a * t + b
     let i = 0.125 * pow(a, -1.5)
     let j = 2 * sqrt(a * c)
-    
-    return i * (g * h - j * b - delta * (log(g + h) - log(j + b)))
+    let k = log(g + h)
+    let l = log(j + b)
+    return i * (g * h - j * b - delta * (k - l))
 }
 public func QuadBezierLength(_ t: Double, _ p0: Point, _ p1: Point, _ p2: Point) -> Double {
     
