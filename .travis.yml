@@ -8,6 +8,8 @@ notifications: never
 osx_image: xcode8
 env:
   - VERSION="3.0.1"
+  
+before_install:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
         UBUNTU_RELEASE=`lsb_release -a 2>/dev/null`;
     fi
