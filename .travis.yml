@@ -24,7 +24,7 @@ install:
                 OS="ubuntu1404";
             fi
         else
-            echo "Unsupported Operating System: $UNAME";
+            echo "Unsupported Operating System";
         fi
     fi
   - echo "🖥 Operating System: $OS";
