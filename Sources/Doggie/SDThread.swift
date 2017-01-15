@@ -136,7 +136,7 @@ extension SDTask {
     /// Create a SDTask and compute block.
     @discardableResult
     public static func async(queue: DispatchQueue = SDDefaultDispatchQueue, qos: DispatchQoS = .unspecified, flags: DispatchWorkItemFlags = [], block: @escaping () -> Result) -> SDTask {
-        return SDTask(queue: queue, block: block)
+        return SDTask(queue: queue, qos: qos, flags: flags, block: block)
     }
 }
 
