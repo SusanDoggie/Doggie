@@ -42,10 +42,15 @@ open class SDAtomic {
     fileprivate let block: (SDAtomic) -> Void
     fileprivate var flag: Int8
     
-    public init(queue: DispatchQueue = SDDefaultDispatchQueue, block: @escaping (SDAtomic) -> Void) {
+    public var qos: DispatchQoS
+    public var flags: DispatchWorkItemFlags
+    
+    public init(queue: DispatchQueue = SDDefaultDispatchQueue, qos: DispatchQoS = .unspecified, flags: DispatchWorkItemFlags = [], block: @escaping (SDAtomic) -> Void) {
         self.queue = queue
         self.block = block
         self.flag = 0
+        self.qos = qos
+        self.flags = flags
     }
 }
 
@@ -53,7 +58,7 @@ extension SDAtomic {
     
     public func signal() {
         if flag.fetchStore(2) == 0 {
-            queue.async(execute: dispatchRunloop)
+            queue.async(qos: qos, flags: flags, execute: dispatchRunloop)
         }
     }
     
