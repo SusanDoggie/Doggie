@@ -28,6 +28,7 @@ private protocol ColorBaseProtocol {
     var color: ColorModelProtocol { get }
     
     func convert<ColorSpace : ColorSpaceProtocol>(to colorSpace: ColorSpace, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm) -> ColorBase<ColorSpace>
+    func convert<ColorSpace : LinearColorSpaceProtocol>(to colorSpace: ColorSpace, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm) -> ColorBase<ColorSpace>
 }
 
 private struct ColorBase<ColorSpace : ColorSpaceProtocol> : ColorBaseProtocol {
@@ -48,6 +49,10 @@ private struct ColorBase<ColorSpace : ColorSpaceProtocol> : ColorBaseProtocol {
 extension ColorBase {
     
     func convert<C : ColorSpaceProtocol>(to colorSpace: C, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm) -> ColorBase<C> {
+        return ColorBase<C>(colorSpace: colorSpace, color: self.colorSpace.convert(_color, to: colorSpace, algorithm: algorithm))
+    }
+    
+    func convert<C : LinearColorSpaceProtocol>(to colorSpace: C, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm) -> ColorBase<C> {
         return ColorBase<C>(colorSpace: colorSpace, color: self.colorSpace.convert(_color, to: colorSpace, algorithm: algorithm))
     }
 }
@@ -78,6 +83,10 @@ extension Color {
 extension Color {
     
     public func convert<ColorSpace : ColorSpaceProtocol>(to colorSpace: ColorSpace, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm = .bradford) -> Color {
+        return Color(alpha: self.alpha, base: self.base.convert(to: colorSpace, algorithm: algorithm))
+    }
+    
+    public func convert<ColorSpace : LinearColorSpaceProtocol>(to colorSpace: ColorSpace, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm = .bradford) -> Color {
         return Color(alpha: self.alpha, base: self.base.convert(to: colorSpace, algorithm: algorithm))
     }
 }
