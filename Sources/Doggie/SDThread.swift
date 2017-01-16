@@ -79,40 +79,6 @@ extension SDAtomic {
     }
 }
 
-// MARK: SDSingleton
-
-open class SDSingleton<Instance> {
-    
-    fileprivate var _value: Atomic<Instance?> = Atomic(value: nil)
-    fileprivate let lck = SDLock()
-    fileprivate let block: () -> Instance
-    
-    /// Create a SDSingleton.
-    public init(block: @escaping () -> Instance) {
-        self.block = block
-    }
-}
-
-extension SDSingleton {
-    
-    public func signal() {
-        if !isValue {
-            lck.synchronized {
-                self._value.value = self._value.value ?? self.block()
-            }
-        }
-    }
-    
-    public var isValue : Bool {
-        return self._value.value != nil
-    }
-    
-    public var value: Instance {
-        self.signal()
-        return self._value.value!
-    }
-}
-
 // MARK: SDTask
 
 public class SDTask<Result> {
