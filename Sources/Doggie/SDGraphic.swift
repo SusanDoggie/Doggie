@@ -85,6 +85,101 @@ extension Rect {
     }
 }
 
+#if os(macOS)
+    
+    public extension AffineTransform {
+        
+        init<T: SDTransformProtocol>(_ transform: T) {
+            self.m11 = CGFloat(transform.a)
+            self.m12 = CGFloat(transform.d)
+            self.m21 = CGFloat(transform.b)
+            self.m22 = CGFloat(transform.e)
+            self.tX = CGFloat(transform.c)
+            self.tY = CGFloat(transform.f)
+        }
+    }
+    
+    extension SDTransform {
+        
+        public init(_ m: AffineTransform) {
+            self.a = Double(m.m11)
+            self.b = Double(m.m21)
+            self.c = Double(m.tX)
+            self.d = Double(m.m12)
+            self.e = Double(m.m22)
+            self.f = Double(m.tY)
+        }
+    }
+    
+#endif
+
+#if os(macOS)
+    
+    import AppKit
+    
+    public extension NSBezierPath {
+        
+        convenience init(_ shape: SDPath) {
+            self.init()
+            var state = SDPath.DrawableComputeState()
+            for item in shape {
+                item.drawPath(self, state: &state)
+            }
+            self.transform(using: AffineTransform(shape.transform))
+        }
+    }
+    
+    private extension SDPath {
+        
+        struct DrawableComputeState {
+            
+            var start : Point = Point()
+            var last : Point = Point()
+        }
+    }
+    
+    private extension SDPath.Command {
+        
+        func drawPath(_ path: NSBezierPath, state: inout SDPath.DrawableComputeState) {
+            
+            switch self {
+            case let .move(point):
+                path.move(to: NSPoint(x: point.x, y: point.y))
+                state.start = point
+                state.last = point
+            case let .line(point):
+                path.line(to: NSPoint(x: point.x, y: point.y))
+                state.last = point
+            case let .quad(p1, p2):
+                path.curve(to: NSPoint(x: p2.x, y: p2.y),
+                           controlPoint1: NSPoint(x: (p1.x - state.last.x) * 2 / 3 + state.last.x, y: (p1.y - state.last.y) * 2 / 3 + state.last.y),
+                           controlPoint2: NSPoint(x: (p1.x - p2.x) * 2 / 3 + p2.x, y: (p1.y - p2.y) * 2 / 3 + p2.y))
+                state.last = p2
+            case let .cubic(p1, p2, p3):
+                path.curve(to: NSPoint(x: p3.x, y: p3.y), controlPoint1: NSPoint(x: p1.x, y: p1.y), controlPoint2: NSPoint(x: p2.x, y: p2.y))
+                state.last = p3
+            case .close:
+                path.close()
+                state.last = state.start
+            }
+        }
+    }
+    
+#endif
+
+#if os(iOS) || os(tvOS) || os(watchOS)
+    
+    import UIKit
+    
+    public extension UIBezierPath {
+        
+        convenience init(_ shape: SDPath) {
+            self.init(cgPath: shape.cgPath)
+        }
+    }
+    
+#endif
+
 #if os(macOS) || os(iOS) || os(tvOS) || os(watchOS)
     
     import CoreGraphics
@@ -115,7 +210,7 @@ extension Rect {
     
     extension SDRectangle {
         
-        public var CGPath : CoreGraphics.CGPath {
+        public var cgPath : CGPath {
             var _transform = CGAffineTransform(transform)
             return CoreGraphics.CGPath(rect: CGRect(Rect(x: x, y: y, width: width, height: height)), transform: &_transform)
         }
@@ -123,7 +218,7 @@ extension Rect {
     
     extension SDEllipse {
         
-        public var CGPath : CoreGraphics.CGPath {
+        public var cgPath : CGPath {
             var _transform = CGAffineTransform(transform)
             return CoreGraphics.CGPath(ellipseIn: CGRect(Rect(x: x - rx, y: y - ry, width: 2 * rx, height: 2 * ry)), transform: &_transform)
         }
@@ -133,12 +228,12 @@ extension Rect {
     
     extension SDPath {
         
-        public var CGPath : CoreGraphics.CGPath {
-            if let path = self.getCache(name: SDPathCacheCGPathKey, type: .transformed).map({ $0 as! CoreGraphics.CGPath }) {
+        public var cgPath : CGPath {
+            if let path = self.getCache(name: SDPathCacheCGPathKey, type: .transformed).map({ $0 as! CGPath }) {
                 return path
             } else {
-                let _path: CoreGraphics.CGPath
-                if let path = self.getCache(name: SDPathCacheCGPathKey, type: .regular).map({ $0 as! CoreGraphics.CGPath }) {
+                let _path: CGPath
+                if let path = self.getCache(name: SDPathCacheCGPathKey, type: .regular).map({ $0 as! CGPath }) {
                     _path = path
                 } else {
                     let path = CGMutablePath()
@@ -164,7 +259,7 @@ extension Rect {
     
     extension SDPath {
         
-        public init(_ path: CoreGraphics.CGPath) {
+        public init(_ path: CGPath) {
             self.init()
             path.apply(info: &self) { buf, element in
                 let path = buf!.assumingMemoryBound(to: SDPath.self)
