@@ -212,7 +212,7 @@ extension Rect {
         
         public var cgPath : CGPath {
             var _transform = CGAffineTransform(transform)
-            return CoreGraphics.CGPath(rect: CGRect(Rect(x: x, y: y, width: width, height: height)), transform: &_transform)
+            return CGPath(rect: CGRect(Rect(x: x, y: y, width: width, height: height)), transform: &_transform)
         }
     }
     
@@ -220,7 +220,7 @@ extension Rect {
         
         public var cgPath : CGPath {
             var _transform = CGAffineTransform(transform)
-            return CoreGraphics.CGPath(ellipseIn: CGRect(Rect(x: x - rx, y: y - ry, width: 2 * rx, height: 2 * ry)), transform: &_transform)
+            return CGPath(ellipseIn: CGRect(Rect(x: x - rx, y: y - ry, width: 2 * rx, height: 2 * ry)), transform: &_transform)
         }
     }
     
