@@ -9,128 +9,128 @@
 /* Begin PBXBuildFile section */
 		081321DD1C11D1850081B2B9 /* Doggie.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 081321D31C11D1840081B2B9 /* Doggie.framework */; };
 		081321EB1C11D2C60081B2B9 /* FourierTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08BFF9B91B0715ED00EC88CB /* FourierTest.swift */; };
-		081322211C11D3600081B2B9 /* Arithmetic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA431C0550B7007FA426 /* Arithmetic.swift */; };
-		081322221C11D3600081B2B9 /* CircularConvolve.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA441C0550B7007FA426 /* CircularConvolve.swift */; };
-		081322231C11D3600081B2B9 /* ComplexConversion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA451C0550B7007FA426 /* ComplexConversion.swift */; };
-		081322251C11D3600081B2B9 /* CooleyTukey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA471C0550B7007FA426 /* CooleyTukey.swift */; };
-		081322261C11D3600081B2B9 /* DiscreteConvolve.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA481C0550B7007FA426 /* DiscreteConvolve.swift */; };
-		081322281C11D3600081B2B9 /* Move.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA4A1C0550B7007FA426 /* Move.swift */; };
-		0813222A1C11D3600081B2B9 /* SafeFunction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA4C1C0550B7007FA426 /* SafeFunction.swift */; };
-		0813222B1C11D3600081B2B9 /* Transpose.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA4D1C0550B7007FA426 /* Transpose.swift */; };
-		081322381C11D3600081B2B9 /* Fourier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DB451C055172007FA426 /* Fourier.swift */; };
-		0813223B1C11D3600081B2B9 /* Complex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA5F1C0550B7007FA426 /* Complex.swift */; };
-		0813223C1C11D3600081B2B9 /* Ellipse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA601C0550B7007FA426 /* Ellipse.swift */; };
-		0813223D1C11D3600081B2B9 /* Maths.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA611C0550B7007FA426 /* Maths.swift */; };
-		0813223E1C11D3600081B2B9 /* Matrix.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA621C0550B7007FA426 /* Matrix.swift */; };
-		0813223F1C11D3600081B2B9 /* Point.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA631C0550B7007FA426 /* Point.swift */; };
-		081322401C11D3600081B2B9 /* Polynomial.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA641C0550B7007FA426 /* Polynomial.swift */; };
-		081322431C11D3600081B2B9 /* Rect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA671C0550B7007FA426 /* Rect.swift */; };
-		081322441C11D3600081B2B9 /* SDTransform.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA681C0550B7007FA426 /* SDTransform.swift */; };
-		081322451C11D3600081B2B9 /* Vector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA691C0550B7007FA426 /* Vector.swift */; };
-		081322491C11D3600081B2B9 /* SDAtomicNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA6D1C0550B7007FA426 /* SDAtomicNode.swift */; };
-		0813224A1C11D3600081B2B9 /* SDEllipse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA6F1C0550B7007FA426 /* SDEllipse.swift */; };
-		0813224B1C11D3600081B2B9 /* SDGraphic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA701C0550B7007FA426 /* SDGraphic.swift */; };
-		0813224C1C11D3600081B2B9 /* SDPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA711C0550B7007FA426 /* SDPath.swift */; };
-		0813224D1C11D3600081B2B9 /* SDPathCoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA721C0550B7007FA426 /* SDPathCoder.swift */; };
-		0813224F1C11D3600081B2B9 /* SDRectangle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA741C0550B7007FA426 /* SDRectangle.swift */; };
-		081322501C11D3600081B2B9 /* SDShape.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA751C0550B7007FA426 /* SDShape.swift */; };
 		082516261C51C60A00F8F9B0 /* Doggie_iOS.h in Headers */ = {isa = PBXBuildFile; fileRef = 087FE59B1A372D5B005A2E9E /* Doggie_iOS.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		08381D641E1BFAF7003E7972 /* ColorSpace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08381D631E1BFAF7003E7972 /* ColorSpace.swift */; };
-		08381D651E1BFAF7003E7972 /* ColorSpace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08381D631E1BFAF7003E7972 /* ColorSpace.swift */; };
-		08381D671E1BFB19003E7972 /* Color.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08381D661E1BFB19003E7972 /* Color.swift */; };
-		08381D681E1BFB19003E7972 /* Color.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08381D661E1BFB19003E7972 /* Color.swift */; };
-		0858DA7F1C0550B7007FA426 /* Arithmetic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA431C0550B7007FA426 /* Arithmetic.swift */; };
-		0858DA831C0550B7007FA426 /* CircularConvolve.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA441C0550B7007FA426 /* CircularConvolve.swift */; };
-		0858DA871C0550B7007FA426 /* ComplexConversion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA451C0550B7007FA426 /* ComplexConversion.swift */; };
-		0858DA8F1C0550B7007FA426 /* CooleyTukey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA471C0550B7007FA426 /* CooleyTukey.swift */; };
-		0858DA931C0550B7007FA426 /* DiscreteConvolve.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA481C0550B7007FA426 /* DiscreteConvolve.swift */; };
-		0858DA9B1C0550B7007FA426 /* Move.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA4A1C0550B7007FA426 /* Move.swift */; };
-		0858DAA31C0550B7007FA426 /* SafeFunction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA4C1C0550B7007FA426 /* SafeFunction.swift */; };
-		0858DAA71C0550B7007FA426 /* Transpose.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA4D1C0550B7007FA426 /* Transpose.swift */; };
-		0858DAE31C0550B7007FA426 /* Complex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA5F1C0550B7007FA426 /* Complex.swift */; };
-		0858DAE71C0550B7007FA426 /* Ellipse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA601C0550B7007FA426 /* Ellipse.swift */; };
-		0858DAEB1C0550B7007FA426 /* Maths.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA611C0550B7007FA426 /* Maths.swift */; };
-		0858DAEF1C0550B7007FA426 /* Matrix.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA621C0550B7007FA426 /* Matrix.swift */; };
-		0858DAF31C0550B7007FA426 /* Point.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA631C0550B7007FA426 /* Point.swift */; };
-		0858DAF71C0550B7007FA426 /* Polynomial.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA641C0550B7007FA426 /* Polynomial.swift */; };
-		0858DB031C0550B7007FA426 /* Rect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA671C0550B7007FA426 /* Rect.swift */; };
-		0858DB071C0550B7007FA426 /* SDTransform.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA681C0550B7007FA426 /* SDTransform.swift */; };
-		0858DB0B1C0550B7007FA426 /* Vector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA691C0550B7007FA426 /* Vector.swift */; };
-		0858DB1B1C0550B7007FA426 /* SDAtomicNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA6D1C0550B7007FA426 /* SDAtomicNode.swift */; };
-		0858DB1F1C0550B7007FA426 /* SDEllipse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA6F1C0550B7007FA426 /* SDEllipse.swift */; };
-		0858DB231C0550B7007FA426 /* SDGraphic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA701C0550B7007FA426 /* SDGraphic.swift */; };
-		0858DB271C0550B7007FA426 /* SDPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA711C0550B7007FA426 /* SDPath.swift */; };
-		0858DB2B1C0550B7007FA426 /* SDPathCoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA721C0550B7007FA426 /* SDPathCoder.swift */; };
-		0858DB331C0550B7007FA426 /* SDRectangle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA741C0550B7007FA426 /* SDRectangle.swift */; };
-		0858DB371C0550B7007FA426 /* SDShape.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DA751C0550B7007FA426 /* SDShape.swift */; };
-		0858DB481C055172007FA426 /* Fourier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0858DB451C055172007FA426 /* Fourier.swift */; };
+		08458AF01E2E627600D01813 /* AccelerateWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AB11E2E627600D01813 /* AccelerateWrapper.swift */; };
+		08458AF11E2E627600D01813 /* AccelerateWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AB11E2E627600D01813 /* AccelerateWrapper.swift */; };
+		08458AF21E2E627600D01813 /* Arithmetic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AB21E2E627600D01813 /* Arithmetic.swift */; };
+		08458AF31E2E627600D01813 /* Arithmetic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AB21E2E627600D01813 /* Arithmetic.swift */; };
+		08458AF41E2E627600D01813 /* CircularConvolve.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AB31E2E627600D01813 /* CircularConvolve.swift */; };
+		08458AF51E2E627600D01813 /* CircularConvolve.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AB31E2E627600D01813 /* CircularConvolve.swift */; };
+		08458AF61E2E627600D01813 /* ComplexConversion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AB41E2E627600D01813 /* ComplexConversion.swift */; };
+		08458AF71E2E627600D01813 /* ComplexConversion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AB41E2E627600D01813 /* ComplexConversion.swift */; };
+		08458AF81E2E627600D01813 /* CooleyTukey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AB51E2E627600D01813 /* CooleyTukey.swift */; };
+		08458AF91E2E627600D01813 /* CooleyTukey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AB51E2E627600D01813 /* CooleyTukey.swift */; };
+		08458AFA1E2E627600D01813 /* DiscreteConvolve.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AB61E2E627600D01813 /* DiscreteConvolve.swift */; };
+		08458AFB1E2E627600D01813 /* DiscreteConvolve.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AB61E2E627600D01813 /* DiscreteConvolve.swift */; };
+		08458AFC1E2E627600D01813 /* Move.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AB71E2E627600D01813 /* Move.swift */; };
+		08458AFD1E2E627600D01813 /* Move.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AB71E2E627600D01813 /* Move.swift */; };
+		08458AFE1E2E627600D01813 /* SafeFunction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AB81E2E627600D01813 /* SafeFunction.swift */; };
+		08458AFF1E2E627600D01813 /* SafeFunction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AB81E2E627600D01813 /* SafeFunction.swift */; };
+		08458B001E2E627600D01813 /* Transpose.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AB91E2E627600D01813 /* Transpose.swift */; };
+		08458B011E2E627600D01813 /* Transpose.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AB91E2E627600D01813 /* Transpose.swift */; };
+		08458B021E2E627600D01813 /* Date.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458ABB1E2E627600D01813 /* Date.swift */; };
+		08458B031E2E627600D01813 /* Date.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458ABB1E2E627600D01813 /* Date.swift */; };
+		08458B041E2E627600D01813 /* FloatingPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458ABC1E2E627600D01813 /* FloatingPoint.swift */; };
+		08458B051E2E627600D01813 /* FloatingPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458ABC1E2E627600D01813 /* FloatingPoint.swift */; };
+		08458B061E2E627600D01813 /* Hashable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458ABD1E2E627600D01813 /* Hashable.swift */; };
+		08458B071E2E627600D01813 /* Hashable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458ABD1E2E627600D01813 /* Hashable.swift */; };
+		08458B081E2E627600D01813 /* Integer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458ABE1E2E627600D01813 /* Integer.swift */; };
+		08458B091E2E627600D01813 /* Integer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458ABE1E2E627600D01813 /* Integer.swift */; };
+		08458B0A1E2E627600D01813 /* Json.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458ABF1E2E627600D01813 /* Json.swift */; };
+		08458B0B1E2E627600D01813 /* Json.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458ABF1E2E627600D01813 /* Json.swift */; };
+		08458B0C1E2E627600D01813 /* Random.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AC01E2E627600D01813 /* Random.swift */; };
+		08458B0D1E2E627600D01813 /* Random.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AC01E2E627600D01813 /* Random.swift */; };
+		08458B0E1E2E627600D01813 /* Regex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AC11E2E627600D01813 /* Regex.swift */; };
+		08458B0F1E2E627600D01813 /* Regex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AC11E2E627600D01813 /* Regex.swift */; };
+		08458B101E2E627600D01813 /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AC21E2E627600D01813 /* String.swift */; };
+		08458B111E2E627600D01813 /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AC21E2E627600D01813 /* String.swift */; };
+		08458B121E2E627600D01813 /* Fourier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AC31E2E627600D01813 /* Fourier.swift */; };
+		08458B131E2E627600D01813 /* Fourier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AC31E2E627600D01813 /* Fourier.swift */; };
+		08458B141E2E627600D01813 /* CollectionExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AC51E2E627600D01813 /* CollectionExtension.swift */; };
+		08458B151E2E627600D01813 /* CollectionExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AC51E2E627600D01813 /* CollectionExtension.swift */; };
+		08458B161E2E627600D01813 /* ConcatCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AC61E2E627600D01813 /* ConcatCollection.swift */; };
+		08458B171E2E627600D01813 /* ConcatCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AC61E2E627600D01813 /* ConcatCollection.swift */; };
+		08458B181E2E627600D01813 /* Graph.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AC71E2E627600D01813 /* Graph.swift */; };
+		08458B191E2E627600D01813 /* Graph.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AC71E2E627600D01813 /* Graph.swift */; };
+		08458B1A1E2E627600D01813 /* IndexedCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AC81E2E627600D01813 /* IndexedCollection.swift */; };
+		08458B1B1E2E627600D01813 /* IndexedCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AC81E2E627600D01813 /* IndexedCollection.swift */; };
+		08458B1C1E2E627600D01813 /* LazyGatherCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AC91E2E627600D01813 /* LazyGatherCollection.swift */; };
+		08458B1D1E2E627600D01813 /* LazyGatherCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AC91E2E627600D01813 /* LazyGatherCollection.swift */; };
+		08458B1E1E2E627600D01813 /* LazyScanSequence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458ACA1E2E627600D01813 /* LazyScanSequence.swift */; };
+		08458B1F1E2E627600D01813 /* LazyScanSequence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458ACA1E2E627600D01813 /* LazyScanSequence.swift */; };
+		08458B201E2E627600D01813 /* LazySliceSequence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458ACB1E2E627600D01813 /* LazySliceSequence.swift */; };
+		08458B211E2E627600D01813 /* LazySliceSequence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458ACB1E2E627600D01813 /* LazySliceSequence.swift */; };
+		08458B221E2E627600D01813 /* OptionOneCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458ACC1E2E627600D01813 /* OptionOneCollection.swift */; };
+		08458B231E2E627600D01813 /* OptionOneCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458ACC1E2E627600D01813 /* OptionOneCollection.swift */; };
+		08458B241E2E627600D01813 /* Parallel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458ACD1E2E627600D01813 /* Parallel.swift */; };
+		08458B251E2E627600D01813 /* Parallel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458ACD1E2E627600D01813 /* Parallel.swift */; };
+		08458B261E2E627600D01813 /* Color.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458ACF1E2E627600D01813 /* Color.swift */; };
+		08458B271E2E627600D01813 /* Color.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458ACF1E2E627600D01813 /* Color.swift */; };
+		08458B281E2E627600D01813 /* ColorModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AD01E2E627600D01813 /* ColorModel.swift */; };
+		08458B291E2E627600D01813 /* ColorModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AD01E2E627600D01813 /* ColorModel.swift */; };
+		08458B2A1E2E627600D01813 /* ColorPixel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AD11E2E627600D01813 /* ColorPixel.swift */; };
+		08458B2B1E2E627600D01813 /* ColorPixel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AD11E2E627600D01813 /* ColorPixel.swift */; };
+		08458B2C1E2E627600D01813 /* ColorSpace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AD21E2E627600D01813 /* ColorSpace.swift */; };
+		08458B2D1E2E627600D01813 /* ColorSpace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AD21E2E627600D01813 /* ColorSpace.swift */; };
+		08458B2E1E2E627600D01813 /* Image.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AD31E2E627600D01813 /* Image.swift */; };
+		08458B2F1E2E627600D01813 /* Image.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AD31E2E627600D01813 /* Image.swift */; };
+		08458B301E2E627600D01813 /* Bezier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AD51E2E627600D01813 /* Bezier.swift */; };
+		08458B311E2E627600D01813 /* Bezier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AD51E2E627600D01813 /* Bezier.swift */; };
+		08458B321E2E627600D01813 /* Complex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AD61E2E627600D01813 /* Complex.swift */; };
+		08458B331E2E627600D01813 /* Complex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AD61E2E627600D01813 /* Complex.swift */; };
+		08458B341E2E627600D01813 /* Ellipse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AD71E2E627600D01813 /* Ellipse.swift */; };
+		08458B351E2E627600D01813 /* Ellipse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AD71E2E627600D01813 /* Ellipse.swift */; };
+		08458B361E2E627600D01813 /* Maths.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AD81E2E627600D01813 /* Maths.swift */; };
+		08458B371E2E627600D01813 /* Maths.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AD81E2E627600D01813 /* Maths.swift */; };
+		08458B381E2E627600D01813 /* Matrix.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AD91E2E627600D01813 /* Matrix.swift */; };
+		08458B391E2E627600D01813 /* Matrix.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AD91E2E627600D01813 /* Matrix.swift */; };
+		08458B3A1E2E627600D01813 /* Point.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458ADA1E2E627600D01813 /* Point.swift */; };
+		08458B3B1E2E627600D01813 /* Point.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458ADA1E2E627600D01813 /* Point.swift */; };
+		08458B3C1E2E627600D01813 /* Polynomial.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458ADB1E2E627600D01813 /* Polynomial.swift */; };
+		08458B3D1E2E627600D01813 /* Polynomial.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458ADB1E2E627600D01813 /* Polynomial.swift */; };
+		08458B3E1E2E627600D01813 /* Rect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458ADC1E2E627600D01813 /* Rect.swift */; };
+		08458B3F1E2E627600D01813 /* Rect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458ADC1E2E627600D01813 /* Rect.swift */; };
+		08458B401E2E627600D01813 /* SDTransform.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458ADD1E2E627600D01813 /* SDTransform.swift */; };
+		08458B411E2E627600D01813 /* SDTransform.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458ADD1E2E627600D01813 /* SDTransform.swift */; };
+		08458B421E2E627600D01813 /* Vector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458ADE1E2E627600D01813 /* Vector.swift */; };
+		08458B431E2E627600D01813 /* Vector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458ADE1E2E627600D01813 /* Vector.swift */; };
+		08458B441E2E627600D01813 /* SDAtomicNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458ADF1E2E627600D01813 /* SDAtomicNode.swift */; };
+		08458B451E2E627600D01813 /* SDAtomicNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458ADF1E2E627600D01813 /* SDAtomicNode.swift */; };
+		08458B461E2E627600D01813 /* SDMarker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AE01E2E627600D01813 /* SDMarker.swift */; };
+		08458B471E2E627600D01813 /* SDMarker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AE01E2E627600D01813 /* SDMarker.swift */; };
+		08458B481E2E627600D01813 /* SDEllipse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AE21E2E627600D01813 /* SDEllipse.swift */; };
+		08458B491E2E627600D01813 /* SDEllipse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AE21E2E627600D01813 /* SDEllipse.swift */; };
+		08458B4A1E2E627600D01813 /* SDGraphic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AE31E2E627600D01813 /* SDGraphic.swift */; };
+		08458B4B1E2E627600D01813 /* SDGraphic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AE31E2E627600D01813 /* SDGraphic.swift */; };
+		08458B4C1E2E627600D01813 /* SDPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AE41E2E627600D01813 /* SDPath.swift */; };
+		08458B4D1E2E627600D01813 /* SDPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AE41E2E627600D01813 /* SDPath.swift */; };
+		08458B4E1E2E627600D01813 /* SDPathCoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AE51E2E627600D01813 /* SDPathCoder.swift */; };
+		08458B4F1E2E627600D01813 /* SDPathCoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AE51E2E627600D01813 /* SDPathCoder.swift */; };
+		08458B501E2E627600D01813 /* SDPathPatternStroke.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AE61E2E627600D01813 /* SDPathPatternStroke.swift */; };
+		08458B511E2E627600D01813 /* SDPathPatternStroke.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AE61E2E627600D01813 /* SDPathPatternStroke.swift */; };
+		08458B521E2E627600D01813 /* SDPathStroke.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AE71E2E627600D01813 /* SDPathStroke.swift */; };
+		08458B531E2E627600D01813 /* SDPathStroke.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AE71E2E627600D01813 /* SDPathStroke.swift */; };
+		08458B541E2E627600D01813 /* SDRectangle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AE81E2E627600D01813 /* SDRectangle.swift */; };
+		08458B551E2E627600D01813 /* SDRectangle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AE81E2E627600D01813 /* SDRectangle.swift */; };
+		08458B561E2E627600D01813 /* SDShape.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AE91E2E627600D01813 /* SDShape.swift */; };
+		08458B571E2E627600D01813 /* SDShape.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AE91E2E627600D01813 /* SDShape.swift */; };
+		08458B581E2E627600D01813 /* Atomic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AEB1E2E627600D01813 /* Atomic.swift */; };
+		08458B591E2E627600D01813 /* Atomic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AEB1E2E627600D01813 /* Atomic.swift */; };
+		08458B5A1E2E627600D01813 /* AtomicQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AEC1E2E627600D01813 /* AtomicQueue.swift */; };
+		08458B5B1E2E627600D01813 /* AtomicQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AEC1E2E627600D01813 /* AtomicQueue.swift */; };
+		08458B5C1E2E627600D01813 /* AtomicStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AED1E2E627600D01813 /* AtomicStack.swift */; };
+		08458B5D1E2E627600D01813 /* AtomicStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AED1E2E627600D01813 /* AtomicStack.swift */; };
+		08458B5E1E2E627600D01813 /* Lock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AEE1E2E627600D01813 /* Lock.swift */; };
+		08458B5F1E2E627600D01813 /* Lock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AEE1E2E627600D01813 /* Lock.swift */; };
+		08458B601E2E627600D01813 /* SDThread.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AEF1E2E627600D01813 /* SDThread.swift */; };
+		08458B611E2E627600D01813 /* SDThread.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AEF1E2E627600D01813 /* SDThread.swift */; };
 		087FE5BA1A372D97005A2E9E /* Doggie_Mac.h in Headers */ = {isa = PBXBuildFile; fileRef = 087FE5B91A372D97005A2E9E /* Doggie_Mac.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		087FE5C01A372D97005A2E9E /* Doggie.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 087FE5B51A372D97005A2E9E /* Doggie.framework */; settings = {ATTRIBUTES = (Required, ); }; };
-		0881EC1A1DC793100002477F /* Bezier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0881EC191DC793100002477F /* Bezier.swift */; };
-		0881EC1B1DC793100002477F /* Bezier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0881EC191DC793100002477F /* Bezier.swift */; };
-		089E4B261D9FB8A700881F51 /* AtomicQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 089E4B251D9FB8A700881F51 /* AtomicQueue.swift */; };
-		089E4B271D9FB8A700881F51 /* AtomicQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 089E4B251D9FB8A700881F51 /* AtomicQueue.swift */; };
-		08A3D42F1DB36269001417C7 /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08A3D42E1DB36269001417C7 /* String.swift */; };
-		08A3D4301DB36269001417C7 /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08A3D42E1DB36269001417C7 /* String.swift */; };
 		08BFF9BC1B07161E00EC88CB /* FourierTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08BFF9B91B0715ED00EC88CB /* FourierTest.swift */; };
-		0A10EC2B1E0946B2006EAA14 /* ColorModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A10EC2A1E0946B2006EAA14 /* ColorModel.swift */; };
-		0A10EC2C1E0946B2006EAA14 /* ColorModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A10EC2A1E0946B2006EAA14 /* ColorModel.swift */; };
-		0A1605B31D49DEDC00109F7B /* Date.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2C33D01D48B8E200FE9A97 /* Date.swift */; };
-		0A1605B41D49DEDC00109F7B /* Hashable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2C33D11D48B8E200FE9A97 /* Hashable.swift */; };
-		0A1605B51D49DEDC00109F7B /* Integer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2C33D21D48B8E200FE9A97 /* Integer.swift */; };
-		0A1605B61D49DEDC00109F7B /* Json.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2C33D31D48B8E200FE9A97 /* Json.swift */; };
-		0A1605B71D49DEDC00109F7B /* Random.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2C33D41D48B8E200FE9A97 /* Random.swift */; };
-		0A1605B81D49DEDC00109F7B /* Regex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2C33D51D48B8E200FE9A97 /* Regex.swift */; };
 		0A266E531D6E95C100ABE6B7 /* SDMarkerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A266E521D6E95C100ABE6B7 /* SDMarkerTest.swift */; };
 		0A266E541D6E95C100ABE6B7 /* SDMarkerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A266E521D6E95C100ABE6B7 /* SDMarkerTest.swift */; };
-		0A2C33D61D48B8E200FE9A97 /* Date.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2C33D01D48B8E200FE9A97 /* Date.swift */; };
-		0A2C33D71D48B8E200FE9A97 /* Hashable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2C33D11D48B8E200FE9A97 /* Hashable.swift */; };
-		0A2C33D81D48B8E200FE9A97 /* Integer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2C33D21D48B8E200FE9A97 /* Integer.swift */; };
-		0A2C33D91D48B8E200FE9A97 /* Json.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2C33D31D48B8E200FE9A97 /* Json.swift */; };
-		0A2C33DA1D48B8E200FE9A97 /* Random.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2C33D41D48B8E200FE9A97 /* Random.swift */; };
-		0A2C33DB1D48B8E200FE9A97 /* Regex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2C33D51D48B8E200FE9A97 /* Regex.swift */; };
-		0A5196EF1D48B5110082AE61 /* SDThread.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A5196E71D48B5110082AE61 /* SDThread.swift */; };
-		0A5196F71D48B52D0082AE61 /* SDThread.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A5196E71D48B5110082AE61 /* SDThread.swift */; };
-		0A65984D1DC33E3B002EC536 /* AccelerateWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A65984C1DC33E3B002EC536 /* AccelerateWrapper.swift */; };
-		0A65984E1DC33E3B002EC536 /* AccelerateWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A65984C1DC33E3B002EC536 /* AccelerateWrapper.swift */; };
-		0A72CA561DA4B1890041F67B /* Atomic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A72CA551DA4B1890041F67B /* Atomic.swift */; };
-		0A72CA571DA4B1890041F67B /* Atomic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A72CA551DA4B1890041F67B /* Atomic.swift */; };
-		0A72CA591DA4B1C40041F67B /* Lock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A72CA581DA4B1C40041F67B /* Lock.swift */; };
-		0A72CA5A1DA4B1C40041F67B /* Lock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A72CA581DA4B1C40041F67B /* Lock.swift */; };
-		0A76BB4A1D9CD6A500842F4D /* IndexedCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A76BB491D9CD6A500842F4D /* IndexedCollection.swift */; };
-		0A76BB4B1D9CD6A500842F4D /* IndexedCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A76BB491D9CD6A500842F4D /* IndexedCollection.swift */; };
-		0A76BB711D9D1BAF00842F4D /* AtomicStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A76BB701D9D1BAF00842F4D /* AtomicStack.swift */; };
-		0A76BB721D9D1BAF00842F4D /* AtomicStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A76BB701D9D1BAF00842F4D /* AtomicStack.swift */; };
 		0A776FC51D9A0BA5005FC88F /* c11_atomic.h in Headers */ = {isa = PBXBuildFile; fileRef = 0A776FC31D9A0BA5005FC88F /* c11_atomic.h */; };
 		0A776FC61D9A0BA5005FC88F /* c11_atomic.h in Headers */ = {isa = PBXBuildFile; fileRef = 0A776FC31D9A0BA5005FC88F /* c11_atomic.h */; };
-		0A7C072A1E25CC5E0063E1AE /* Image.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7C07291E25CC5E0063E1AE /* Image.swift */; };
-		0A7C072B1E25CC5E0063E1AE /* Image.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7C07291E25CC5E0063E1AE /* Image.swift */; };
-		0A7C072E1E25CCC40063E1AE /* ColorPixel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7C072D1E25CCC40063E1AE /* ColorPixel.swift */; };
-		0A7C072F1E25CCC40063E1AE /* ColorPixel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7C072D1E25CCC40063E1AE /* ColorPixel.swift */; };
-		0A9021F41DCC760500736586 /* SDPathPatternStroke.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9021F31DCC760500736586 /* SDPathPatternStroke.swift */; };
-		0A9021F51DCC760500736586 /* SDPathPatternStroke.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9021F31DCC760500736586 /* SDPathPatternStroke.swift */; };
-		0A987DC21E0A2C6F00C2D789 /* FloatingPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A987DC11E0A2C6F00C2D789 /* FloatingPoint.swift */; };
-		0A987DC31E0A2C6F00C2D789 /* FloatingPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A987DC11E0A2C6F00C2D789 /* FloatingPoint.swift */; };
-		0AADD11A1D10E6E100087247 /* OptionOneCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AADD1191D10E6E100087247 /* OptionOneCollection.swift */; };
-		0AADD11C1D10E6E100087247 /* OptionOneCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AADD1191D10E6E100087247 /* OptionOneCollection.swift */; };
-		0AADD11F1D10E75300087247 /* LazyScanSequence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AADD11E1D10E75300087247 /* LazyScanSequence.swift */; };
-		0AADD1211D10E75300087247 /* LazyScanSequence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AADD11E1D10E75300087247 /* LazyScanSequence.swift */; };
-		0AADD1241D10E77100087247 /* ConcatCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AADD1231D10E77100087247 /* ConcatCollection.swift */; };
-		0AADD1261D10E77100087247 /* ConcatCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AADD1231D10E77100087247 /* ConcatCollection.swift */; };
-		0AADD12E1D10E7C100087247 /* LazySliceSequence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AADD12D1D10E7C100087247 /* LazySliceSequence.swift */; };
-		0AADD1301D10E7C100087247 /* LazySliceSequence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AADD12D1D10E7C100087247 /* LazySliceSequence.swift */; };
-		0AB539741D3C8B1F0011F08B /* LazyGatherCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AB539731D3C8B1F0011F08B /* LazyGatherCollection.swift */; };
-		0AB539751D3C8B1F0011F08B /* LazyGatherCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AB539731D3C8B1F0011F08B /* LazyGatherCollection.swift */; };
-		0ACE1E061C57104300106D1F /* Parallel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ACE1E051C57104300106D1F /* Parallel.swift */; };
-		0ACE1E081C57104300106D1F /* Parallel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ACE1E051C57104300106D1F /* Parallel.swift */; };
-		0ACE1E151C57114A00106D1F /* CollectionExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ACE1E141C57114A00106D1F /* CollectionExtension.swift */; };
-		0ACE1E171C57114A00106D1F /* CollectionExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ACE1E141C57114A00106D1F /* CollectionExtension.swift */; };
-		0ACE1E1A1C5711D300106D1F /* Graph.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ACE1E191C5711D300106D1F /* Graph.swift */; };
-		0ACE1E1C1C5711D300106D1F /* Graph.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ACE1E191C5711D300106D1F /* Graph.swift */; };
-		0AE12EE21DC2FD7400996BF9 /* SDPathStroke.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE12EE11DC2FD7400996BF9 /* SDPathStroke.swift */; };
-		0AE12EE31DC2FD7400996BF9 /* SDPathStroke.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE12EE11DC2FD7400996BF9 /* SDPathStroke.swift */; };
-		0AF9BDBB1D6178470058F2AA /* SDMarker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF9BDBA1D6178470058F2AA /* SDMarker.swift */; };
-		0AF9BDBC1D6178470058F2AA /* SDMarker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF9BDBA1D6178470058F2AA /* SDMarker.swift */; };
 		0AFCA1501D9E1F130034AB10 /* AtomicTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AFCA14F1D9E1F130034AB10 /* AtomicTest.swift */; };
 		0AFCA1511D9E1F130034AB10 /* AtomicTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AFCA14F1D9E1F130034AB10 /* AtomicTest.swift */; };
 /* End PBXBuildFile section */
@@ -155,33 +155,63 @@
 /* Begin PBXFileReference section */
 		081321D31C11D1840081B2B9 /* Doggie.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Doggie.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		081321DC1C11D1850081B2B9 /* Doggie_iOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Doggie_iOSTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		08381D631E1BFAF7003E7972 /* ColorSpace.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ColorSpace.swift; sourceTree = "<group>"; };
-		08381D661E1BFB19003E7972 /* Color.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Color.swift; sourceTree = "<group>"; };
-		0858DA431C0550B7007FA426 /* Arithmetic.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Arithmetic.swift; sourceTree = "<group>"; };
-		0858DA441C0550B7007FA426 /* CircularConvolve.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CircularConvolve.swift; sourceTree = "<group>"; };
-		0858DA451C0550B7007FA426 /* ComplexConversion.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ComplexConversion.swift; sourceTree = "<group>"; };
-		0858DA471C0550B7007FA426 /* CooleyTukey.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CooleyTukey.swift; sourceTree = "<group>"; };
-		0858DA481C0550B7007FA426 /* DiscreteConvolve.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DiscreteConvolve.swift; sourceTree = "<group>"; };
-		0858DA4A1C0550B7007FA426 /* Move.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Move.swift; sourceTree = "<group>"; };
-		0858DA4C1C0550B7007FA426 /* SafeFunction.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SafeFunction.swift; sourceTree = "<group>"; };
-		0858DA4D1C0550B7007FA426 /* Transpose.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Transpose.swift; sourceTree = "<group>"; };
-		0858DA5F1C0550B7007FA426 /* Complex.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Complex.swift; sourceTree = "<group>"; };
-		0858DA601C0550B7007FA426 /* Ellipse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Ellipse.swift; sourceTree = "<group>"; };
-		0858DA611C0550B7007FA426 /* Maths.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Maths.swift; sourceTree = "<group>"; };
-		0858DA621C0550B7007FA426 /* Matrix.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Matrix.swift; sourceTree = "<group>"; };
-		0858DA631C0550B7007FA426 /* Point.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Point.swift; sourceTree = "<group>"; };
-		0858DA641C0550B7007FA426 /* Polynomial.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Polynomial.swift; sourceTree = "<group>"; };
-		0858DA671C0550B7007FA426 /* Rect.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Rect.swift; sourceTree = "<group>"; };
-		0858DA681C0550B7007FA426 /* SDTransform.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SDTransform.swift; sourceTree = "<group>"; };
-		0858DA691C0550B7007FA426 /* Vector.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Vector.swift; sourceTree = "<group>"; };
-		0858DA6D1C0550B7007FA426 /* SDAtomicNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SDAtomicNode.swift; sourceTree = "<group>"; };
-		0858DA6F1C0550B7007FA426 /* SDEllipse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SDEllipse.swift; sourceTree = "<group>"; };
-		0858DA701C0550B7007FA426 /* SDGraphic.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SDGraphic.swift; sourceTree = "<group>"; };
-		0858DA711C0550B7007FA426 /* SDPath.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SDPath.swift; sourceTree = "<group>"; };
-		0858DA721C0550B7007FA426 /* SDPathCoder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SDPathCoder.swift; sourceTree = "<group>"; };
-		0858DA741C0550B7007FA426 /* SDRectangle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SDRectangle.swift; sourceTree = "<group>"; };
-		0858DA751C0550B7007FA426 /* SDShape.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SDShape.swift; sourceTree = "<group>"; };
-		0858DB451C055172007FA426 /* Fourier.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Fourier.swift; sourceTree = "<group>"; };
+		08458AB11E2E627600D01813 /* AccelerateWrapper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccelerateWrapper.swift; sourceTree = "<group>"; };
+		08458AB21E2E627600D01813 /* Arithmetic.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Arithmetic.swift; sourceTree = "<group>"; };
+		08458AB31E2E627600D01813 /* CircularConvolve.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CircularConvolve.swift; sourceTree = "<group>"; };
+		08458AB41E2E627600D01813 /* ComplexConversion.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ComplexConversion.swift; sourceTree = "<group>"; };
+		08458AB51E2E627600D01813 /* CooleyTukey.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CooleyTukey.swift; sourceTree = "<group>"; };
+		08458AB61E2E627600D01813 /* DiscreteConvolve.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DiscreteConvolve.swift; sourceTree = "<group>"; };
+		08458AB71E2E627600D01813 /* Move.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Move.swift; sourceTree = "<group>"; };
+		08458AB81E2E627600D01813 /* SafeFunction.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SafeFunction.swift; sourceTree = "<group>"; };
+		08458AB91E2E627600D01813 /* Transpose.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Transpose.swift; sourceTree = "<group>"; };
+		08458ABB1E2E627600D01813 /* Date.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Date.swift; sourceTree = "<group>"; };
+		08458ABC1E2E627600D01813 /* FloatingPoint.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FloatingPoint.swift; sourceTree = "<group>"; };
+		08458ABD1E2E627600D01813 /* Hashable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Hashable.swift; sourceTree = "<group>"; };
+		08458ABE1E2E627600D01813 /* Integer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Integer.swift; sourceTree = "<group>"; };
+		08458ABF1E2E627600D01813 /* Json.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Json.swift; sourceTree = "<group>"; };
+		08458AC01E2E627600D01813 /* Random.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Random.swift; sourceTree = "<group>"; };
+		08458AC11E2E627600D01813 /* Regex.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Regex.swift; sourceTree = "<group>"; };
+		08458AC21E2E627600D01813 /* String.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = String.swift; sourceTree = "<group>"; };
+		08458AC31E2E627600D01813 /* Fourier.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Fourier.swift; sourceTree = "<group>"; };
+		08458AC51E2E627600D01813 /* CollectionExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CollectionExtension.swift; sourceTree = "<group>"; };
+		08458AC61E2E627600D01813 /* ConcatCollection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConcatCollection.swift; sourceTree = "<group>"; };
+		08458AC71E2E627600D01813 /* Graph.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Graph.swift; sourceTree = "<group>"; };
+		08458AC81E2E627600D01813 /* IndexedCollection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IndexedCollection.swift; sourceTree = "<group>"; };
+		08458AC91E2E627600D01813 /* LazyGatherCollection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LazyGatherCollection.swift; sourceTree = "<group>"; };
+		08458ACA1E2E627600D01813 /* LazyScanSequence.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LazyScanSequence.swift; sourceTree = "<group>"; };
+		08458ACB1E2E627600D01813 /* LazySliceSequence.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LazySliceSequence.swift; sourceTree = "<group>"; };
+		08458ACC1E2E627600D01813 /* OptionOneCollection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OptionOneCollection.swift; sourceTree = "<group>"; };
+		08458ACD1E2E627600D01813 /* Parallel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Parallel.swift; sourceTree = "<group>"; };
+		08458ACF1E2E627600D01813 /* Color.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Color.swift; sourceTree = "<group>"; };
+		08458AD01E2E627600D01813 /* ColorModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ColorModel.swift; sourceTree = "<group>"; };
+		08458AD11E2E627600D01813 /* ColorPixel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ColorPixel.swift; sourceTree = "<group>"; };
+		08458AD21E2E627600D01813 /* ColorSpace.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ColorSpace.swift; sourceTree = "<group>"; };
+		08458AD31E2E627600D01813 /* Image.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Image.swift; sourceTree = "<group>"; };
+		08458AD51E2E627600D01813 /* Bezier.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Bezier.swift; sourceTree = "<group>"; };
+		08458AD61E2E627600D01813 /* Complex.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Complex.swift; sourceTree = "<group>"; };
+		08458AD71E2E627600D01813 /* Ellipse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Ellipse.swift; sourceTree = "<group>"; };
+		08458AD81E2E627600D01813 /* Maths.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Maths.swift; sourceTree = "<group>"; };
+		08458AD91E2E627600D01813 /* Matrix.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Matrix.swift; sourceTree = "<group>"; };
+		08458ADA1E2E627600D01813 /* Point.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Point.swift; sourceTree = "<group>"; };
+		08458ADB1E2E627600D01813 /* Polynomial.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Polynomial.swift; sourceTree = "<group>"; };
+		08458ADC1E2E627600D01813 /* Rect.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Rect.swift; sourceTree = "<group>"; };
+		08458ADD1E2E627600D01813 /* SDTransform.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SDTransform.swift; sourceTree = "<group>"; };
+		08458ADE1E2E627600D01813 /* Vector.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Vector.swift; sourceTree = "<group>"; };
+		08458ADF1E2E627600D01813 /* SDAtomicNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SDAtomicNode.swift; sourceTree = "<group>"; };
+		08458AE01E2E627600D01813 /* SDMarker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SDMarker.swift; sourceTree = "<group>"; };
+		08458AE21E2E627600D01813 /* SDEllipse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SDEllipse.swift; sourceTree = "<group>"; };
+		08458AE31E2E627600D01813 /* SDGraphic.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SDGraphic.swift; sourceTree = "<group>"; };
+		08458AE41E2E627600D01813 /* SDPath.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SDPath.swift; sourceTree = "<group>"; };
+		08458AE51E2E627600D01813 /* SDPathCoder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SDPathCoder.swift; sourceTree = "<group>"; };
+		08458AE61E2E627600D01813 /* SDPathPatternStroke.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SDPathPatternStroke.swift; sourceTree = "<group>"; };
+		08458AE71E2E627600D01813 /* SDPathStroke.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SDPathStroke.swift; sourceTree = "<group>"; };
+		08458AE81E2E627600D01813 /* SDRectangle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SDRectangle.swift; sourceTree = "<group>"; };
+		08458AE91E2E627600D01813 /* SDShape.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SDShape.swift; sourceTree = "<group>"; };
+		08458AEB1E2E627600D01813 /* Atomic.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Atomic.swift; sourceTree = "<group>"; };
+		08458AEC1E2E627600D01813 /* AtomicQueue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AtomicQueue.swift; sourceTree = "<group>"; };
+		08458AED1E2E627600D01813 /* AtomicStack.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AtomicStack.swift; sourceTree = "<group>"; };
+		08458AEE1E2E627600D01813 /* Lock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Lock.swift; sourceTree = "<group>"; };
+		08458AEF1E2E627600D01813 /* SDThread.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SDThread.swift; sourceTree = "<group>"; };
 		087FE59A1A372D5B005A2E9E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		087FE59B1A372D5B005A2E9E /* Doggie_iOS.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Doggie_iOS.h; sourceTree = "<group>"; };
 		087FE5A71A372D5B005A2E9E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -190,40 +220,10 @@
 		087FE5B91A372D97005A2E9E /* Doggie_Mac.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Doggie_Mac.h; sourceTree = "<group>"; };
 		087FE5BF1A372D97005A2E9E /* Doggie_MacTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Doggie_MacTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		087FE5C51A372D97005A2E9E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		0881EC191DC793100002477F /* Bezier.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Bezier.swift; sourceTree = "<group>"; };
-		089E4B251D9FB8A700881F51 /* AtomicQueue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AtomicQueue.swift; sourceTree = "<group>"; };
-		08A3D42E1DB36269001417C7 /* String.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = String.swift; sourceTree = "<group>"; };
 		08BFF9B91B0715ED00EC88CB /* FourierTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FourierTest.swift; sourceTree = "<group>"; };
-		0A10EC2A1E0946B2006EAA14 /* ColorModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ColorModel.swift; sourceTree = "<group>"; };
 		0A266E521D6E95C100ABE6B7 /* SDMarkerTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SDMarkerTest.swift; sourceTree = "<group>"; };
-		0A2C33D01D48B8E200FE9A97 /* Date.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Date.swift; sourceTree = "<group>"; };
-		0A2C33D11D48B8E200FE9A97 /* Hashable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Hashable.swift; sourceTree = "<group>"; };
-		0A2C33D21D48B8E200FE9A97 /* Integer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Integer.swift; sourceTree = "<group>"; };
-		0A2C33D31D48B8E200FE9A97 /* Json.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Json.swift; sourceTree = "<group>"; };
-		0A2C33D41D48B8E200FE9A97 /* Random.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Random.swift; sourceTree = "<group>"; };
-		0A2C33D51D48B8E200FE9A97 /* Regex.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Regex.swift; sourceTree = "<group>"; };
-		0A5196E71D48B5110082AE61 /* SDThread.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SDThread.swift; sourceTree = "<group>"; };
-		0A65984C1DC33E3B002EC536 /* AccelerateWrapper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccelerateWrapper.swift; sourceTree = "<group>"; };
-		0A72CA551DA4B1890041F67B /* Atomic.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Atomic.swift; sourceTree = "<group>"; };
-		0A72CA581DA4B1C40041F67B /* Lock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Lock.swift; sourceTree = "<group>"; };
-		0A76BB491D9CD6A500842F4D /* IndexedCollection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IndexedCollection.swift; sourceTree = "<group>"; };
-		0A76BB701D9D1BAF00842F4D /* AtomicStack.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AtomicStack.swift; sourceTree = "<group>"; };
 		0A776FC31D9A0BA5005FC88F /* c11_atomic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = c11_atomic.h; sourceTree = "<group>"; };
 		0A776FC41D9A0BA5005FC88F /* module.modulemap */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = "sourcecode.module-map"; path = module.modulemap; sourceTree = "<group>"; };
-		0A7C07291E25CC5E0063E1AE /* Image.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Image.swift; sourceTree = "<group>"; };
-		0A7C072D1E25CCC40063E1AE /* ColorPixel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ColorPixel.swift; sourceTree = "<group>"; };
-		0A9021F31DCC760500736586 /* SDPathPatternStroke.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SDPathPatternStroke.swift; sourceTree = "<group>"; };
-		0A987DC11E0A2C6F00C2D789 /* FloatingPoint.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FloatingPoint.swift; sourceTree = "<group>"; };
-		0AADD1191D10E6E100087247 /* OptionOneCollection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OptionOneCollection.swift; sourceTree = "<group>"; };
-		0AADD11E1D10E75300087247 /* LazyScanSequence.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LazyScanSequence.swift; sourceTree = "<group>"; };
-		0AADD1231D10E77100087247 /* ConcatCollection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConcatCollection.swift; sourceTree = "<group>"; };
-		0AADD12D1D10E7C100087247 /* LazySliceSequence.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LazySliceSequence.swift; sourceTree = "<group>"; };
-		0AB539731D3C8B1F0011F08B /* LazyGatherCollection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LazyGatherCollection.swift; sourceTree = "<group>"; };
-		0ACE1E051C57104300106D1F /* Parallel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Parallel.swift; sourceTree = "<group>"; };
-		0ACE1E141C57114A00106D1F /* CollectionExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CollectionExtension.swift; sourceTree = "<group>"; };
-		0ACE1E191C5711D300106D1F /* Graph.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Graph.swift; sourceTree = "<group>"; };
-		0AE12EE11DC2FD7400996BF9 /* SDPathStroke.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SDPathStroke.swift; sourceTree = "<group>"; };
-		0AF9BDBA1D6178470058F2AA /* SDMarker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SDMarker.swift; sourceTree = "<group>"; };
 		0AFCA14F1D9E1F130034AB10 /* AtomicTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AtomicTest.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -261,82 +261,126 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		08381D621E1BFAD8003E7972 /* Color */ = {
+		08458AB01E2E627600D01813 /* Accelerate */ = {
 			isa = PBXGroup;
 			children = (
-				08381D661E1BFB19003E7972 /* Color.swift */,
-				0A10EC2A1E0946B2006EAA14 /* ColorModel.swift */,
-				08381D631E1BFAF7003E7972 /* ColorSpace.swift */,
+				08458AB11E2E627600D01813 /* AccelerateWrapper.swift */,
+				08458AB21E2E627600D01813 /* Arithmetic.swift */,
+				08458AB31E2E627600D01813 /* CircularConvolve.swift */,
+				08458AB41E2E627600D01813 /* ComplexConversion.swift */,
+				08458AB51E2E627600D01813 /* CooleyTukey.swift */,
+				08458AB61E2E627600D01813 /* DiscreteConvolve.swift */,
+				08458AB71E2E627600D01813 /* Move.swift */,
+				08458AB81E2E627600D01813 /* SafeFunction.swift */,
+				08458AB91E2E627600D01813 /* Transpose.swift */,
 			);
-			name = Color;
+			path = Accelerate;
+			sourceTree = "<group>";
+		};
+		08458ABA1E2E627600D01813 /* Foundation */ = {
+			isa = PBXGroup;
+			children = (
+				08458ABB1E2E627600D01813 /* Date.swift */,
+				08458ABC1E2E627600D01813 /* FloatingPoint.swift */,
+				08458ABD1E2E627600D01813 /* Hashable.swift */,
+				08458ABE1E2E627600D01813 /* Integer.swift */,
+				08458ABF1E2E627600D01813 /* Json.swift */,
+				08458AC01E2E627600D01813 /* Random.swift */,
+				08458AC11E2E627600D01813 /* Regex.swift */,
+				08458AC21E2E627600D01813 /* String.swift */,
+			);
+			path = Foundation;
+			sourceTree = "<group>";
+		};
+		08458AC41E2E627600D01813 /* Functional */ = {
+			isa = PBXGroup;
+			children = (
+				08458AC51E2E627600D01813 /* CollectionExtension.swift */,
+				08458AC61E2E627600D01813 /* ConcatCollection.swift */,
+				08458AC71E2E627600D01813 /* Graph.swift */,
+				08458AC81E2E627600D01813 /* IndexedCollection.swift */,
+				08458AC91E2E627600D01813 /* LazyGatherCollection.swift */,
+				08458ACA1E2E627600D01813 /* LazyScanSequence.swift */,
+				08458ACB1E2E627600D01813 /* LazySliceSequence.swift */,
+				08458ACC1E2E627600D01813 /* OptionOneCollection.swift */,
+				08458ACD1E2E627600D01813 /* Parallel.swift */,
+			);
+			path = Functional;
+			sourceTree = "<group>";
+		};
+		08458ACE1E2E627600D01813 /* Image */ = {
+			isa = PBXGroup;
+			children = (
+				08458ACF1E2E627600D01813 /* Color.swift */,
+				08458AD01E2E627600D01813 /* ColorModel.swift */,
+				08458AD11E2E627600D01813 /* ColorPixel.swift */,
+				08458AD21E2E627600D01813 /* ColorSpace.swift */,
+				08458AD31E2E627600D01813 /* Image.swift */,
+			);
+			path = Image;
+			sourceTree = "<group>";
+		};
+		08458AD41E2E627600D01813 /* Maths */ = {
+			isa = PBXGroup;
+			children = (
+				08458AD51E2E627600D01813 /* Bezier.swift */,
+				08458AD61E2E627600D01813 /* Complex.swift */,
+				08458AD71E2E627600D01813 /* Ellipse.swift */,
+				08458AD81E2E627600D01813 /* Maths.swift */,
+				08458AD91E2E627600D01813 /* Matrix.swift */,
+				08458ADA1E2E627600D01813 /* Point.swift */,
+				08458ADB1E2E627600D01813 /* Polynomial.swift */,
+				08458ADC1E2E627600D01813 /* Rect.swift */,
+				08458ADD1E2E627600D01813 /* SDTransform.swift */,
+				08458ADE1E2E627600D01813 /* Vector.swift */,
+			);
+			path = Maths;
+			sourceTree = "<group>";
+		};
+		08458AE11E2E627600D01813 /* SDShape */ = {
+			isa = PBXGroup;
+			children = (
+				08458AE21E2E627600D01813 /* SDEllipse.swift */,
+				08458AE31E2E627600D01813 /* SDGraphic.swift */,
+				08458AE41E2E627600D01813 /* SDPath.swift */,
+				08458AE51E2E627600D01813 /* SDPathCoder.swift */,
+				08458AE61E2E627600D01813 /* SDPathPatternStroke.swift */,
+				08458AE71E2E627600D01813 /* SDPathStroke.swift */,
+				08458AE81E2E627600D01813 /* SDRectangle.swift */,
+				08458AE91E2E627600D01813 /* SDShape.swift */,
+			);
+			path = SDShape;
+			sourceTree = "<group>";
+		};
+		08458AEA1E2E627600D01813 /* Thread */ = {
+			isa = PBXGroup;
+			children = (
+				08458AEB1E2E627600D01813 /* Atomic.swift */,
+				08458AEC1E2E627600D01813 /* AtomicQueue.swift */,
+				08458AED1E2E627600D01813 /* AtomicStack.swift */,
+				08458AEE1E2E627600D01813 /* Lock.swift */,
+				08458AEF1E2E627600D01813 /* SDThread.swift */,
+			);
+			path = Thread;
 			sourceTree = "<group>";
 		};
 		0858DA401C0550B7007FA426 /* Doggie */ = {
 			isa = PBXGroup;
 			children = (
 				0A776FC21D9A0BA5005FC88F /* c11_atomic */,
-				08381D621E1BFAD8003E7972 /* Color */,
-				0A7C072C1E25CC630063E1AE /* Image */,
-				0A73D3C81D67E95F007269CB /* Foundation */,
-				0A76BB6F1D9D1B9000842F4D /* Thread */,
-				0858DA411C0550B7007FA426 /* Accelerate */,
-				0ACE1DFA1C570F4F00106D1F /* Functional */,
-				0858DB451C055172007FA426 /* Fourier.swift */,
-				0858DA5E1C0550B7007FA426 /* Maths */,
-				0858DA6D1C0550B7007FA426 /* SDAtomicNode.swift */,
-				0AF9BDBA1D6178470058F2AA /* SDMarker.swift */,
-				0858DA6E1C0550B7007FA426 /* SDShape */,
+				08458AB01E2E627600D01813 /* Accelerate */,
+				08458ABA1E2E627600D01813 /* Foundation */,
+				08458AC31E2E627600D01813 /* Fourier.swift */,
+				08458AC41E2E627600D01813 /* Functional */,
+				08458ACE1E2E627600D01813 /* Image */,
+				08458AD41E2E627600D01813 /* Maths */,
+				08458ADF1E2E627600D01813 /* SDAtomicNode.swift */,
+				08458AE01E2E627600D01813 /* SDMarker.swift */,
+				08458AE11E2E627600D01813 /* SDShape */,
+				08458AEA1E2E627600D01813 /* Thread */,
 			);
 			name = Doggie;
 			path = Sources/Doggie;
-			sourceTree = "<group>";
-		};
-		0858DA411C0550B7007FA426 /* Accelerate */ = {
-			isa = PBXGroup;
-			children = (
-				0A65984C1DC33E3B002EC536 /* AccelerateWrapper.swift */,
-				0858DA431C0550B7007FA426 /* Arithmetic.swift */,
-				0858DA441C0550B7007FA426 /* CircularConvolve.swift */,
-				0858DA451C0550B7007FA426 /* ComplexConversion.swift */,
-				0858DA471C0550B7007FA426 /* CooleyTukey.swift */,
-				0858DA481C0550B7007FA426 /* DiscreteConvolve.swift */,
-				0858DA4A1C0550B7007FA426 /* Move.swift */,
-				0858DA4C1C0550B7007FA426 /* SafeFunction.swift */,
-				0858DA4D1C0550B7007FA426 /* Transpose.swift */,
-			);
-			name = Accelerate;
-			sourceTree = "<group>";
-		};
-		0858DA5E1C0550B7007FA426 /* Maths */ = {
-			isa = PBXGroup;
-			children = (
-				0858DA5F1C0550B7007FA426 /* Complex.swift */,
-				0858DA601C0550B7007FA426 /* Ellipse.swift */,
-				0881EC191DC793100002477F /* Bezier.swift */,
-				0858DA611C0550B7007FA426 /* Maths.swift */,
-				0858DA621C0550B7007FA426 /* Matrix.swift */,
-				0858DA631C0550B7007FA426 /* Point.swift */,
-				0858DA641C0550B7007FA426 /* Polynomial.swift */,
-				0858DA671C0550B7007FA426 /* Rect.swift */,
-				0858DA681C0550B7007FA426 /* SDTransform.swift */,
-				0858DA691C0550B7007FA426 /* Vector.swift */,
-			);
-			name = Maths;
-			sourceTree = "<group>";
-		};
-		0858DA6E1C0550B7007FA426 /* SDShape */ = {
-			isa = PBXGroup;
-			children = (
-				0858DA6F1C0550B7007FA426 /* SDEllipse.swift */,
-				0858DA701C0550B7007FA426 /* SDGraphic.swift */,
-				0858DA711C0550B7007FA426 /* SDPath.swift */,
-				0AE12EE11DC2FD7400996BF9 /* SDPathStroke.swift */,
-				0A9021F31DCC760500736586 /* SDPathPatternStroke.swift */,
-				0858DA721C0550B7007FA426 /* SDPathCoder.swift */,
-				0858DA741C0550B7007FA426 /* SDRectangle.swift */,
-				0858DA751C0550B7007FA426 /* SDShape.swift */,
-			);
-			name = SDShape;
 			sourceTree = "<group>";
 		};
 		087FE58A1A372D23005A2E9E = {
@@ -440,33 +484,6 @@
 			path = Tests/DoggieTests;
 			sourceTree = "<group>";
 		};
-		0A73D3C81D67E95F007269CB /* Foundation */ = {
-			isa = PBXGroup;
-			children = (
-				0A2C33D01D48B8E200FE9A97 /* Date.swift */,
-				08A3D42E1DB36269001417C7 /* String.swift */,
-				0A2C33D11D48B8E200FE9A97 /* Hashable.swift */,
-				0A2C33D21D48B8E200FE9A97 /* Integer.swift */,
-				0A987DC11E0A2C6F00C2D789 /* FloatingPoint.swift */,
-				0A2C33D31D48B8E200FE9A97 /* Json.swift */,
-				0A2C33D41D48B8E200FE9A97 /* Random.swift */,
-				0A2C33D51D48B8E200FE9A97 /* Regex.swift */,
-			);
-			name = Foundation;
-			sourceTree = "<group>";
-		};
-		0A76BB6F1D9D1B9000842F4D /* Thread */ = {
-			isa = PBXGroup;
-			children = (
-				0A72CA551DA4B1890041F67B /* Atomic.swift */,
-				0A72CA581DA4B1C40041F67B /* Lock.swift */,
-				0A76BB701D9D1BAF00842F4D /* AtomicStack.swift */,
-				089E4B251D9FB8A700881F51 /* AtomicQueue.swift */,
-				0A5196E71D48B5110082AE61 /* SDThread.swift */,
-			);
-			name = Thread;
-			sourceTree = "<group>";
-		};
 		0A776FC21D9A0BA5005FC88F /* c11_atomic */ = {
 			isa = PBXGroup;
 			children = (
@@ -476,31 +493,6 @@
 			name = c11_atomic;
 			path = Sources/c11_atomic/include;
 			sourceTree = SOURCE_ROOT;
-		};
-		0A7C072C1E25CC630063E1AE /* Image */ = {
-			isa = PBXGroup;
-			children = (
-				0A7C07291E25CC5E0063E1AE /* Image.swift */,
-				0A7C072D1E25CCC40063E1AE /* ColorPixel.swift */,
-			);
-			name = Image;
-			sourceTree = "<group>";
-		};
-		0ACE1DFA1C570F4F00106D1F /* Functional */ = {
-			isa = PBXGroup;
-			children = (
-				0ACE1E191C5711D300106D1F /* Graph.swift */,
-				0ACE1E051C57104300106D1F /* Parallel.swift */,
-				0ACE1E141C57114A00106D1F /* CollectionExtension.swift */,
-				0AADD12D1D10E7C100087247 /* LazySliceSequence.swift */,
-				0AADD11E1D10E75300087247 /* LazyScanSequence.swift */,
-				0AB539731D3C8B1F0011F08B /* LazyGatherCollection.swift */,
-				0AADD1191D10E6E100087247 /* OptionOneCollection.swift */,
-				0AADD1231D10E77100087247 /* ConcatCollection.swift */,
-				0A76BB491D9CD6A500842F4D /* IndexedCollection.swift */,
-			);
-			name = Functional;
-			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
@@ -690,63 +682,63 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				081322281C11D3600081B2B9 /* Move.swift in Sources */,
-				0A72CA561DA4B1890041F67B /* Atomic.swift in Sources */,
-				0A987DC21E0A2C6F00C2D789 /* FloatingPoint.swift in Sources */,
-				081322231C11D3600081B2B9 /* ComplexConversion.swift in Sources */,
-				08A3D42F1DB36269001417C7 /* String.swift in Sources */,
-				0881EC1A1DC793100002477F /* Bezier.swift in Sources */,
-				081322401C11D3600081B2B9 /* Polynomial.swift in Sources */,
-				0A7C072E1E25CCC40063E1AE /* ColorPixel.swift in Sources */,
-				0813223C1C11D3600081B2B9 /* Ellipse.swift in Sources */,
-				0813224F1C11D3600081B2B9 /* SDRectangle.swift in Sources */,
-				0AF9BDBB1D6178470058F2AA /* SDMarker.swift in Sources */,
-				0813224A1C11D3600081B2B9 /* SDEllipse.swift in Sources */,
-				081322261C11D3600081B2B9 /* DiscreteConvolve.swift in Sources */,
-				0A10EC2B1E0946B2006EAA14 /* ColorModel.swift in Sources */,
-				0813224D1C11D3600081B2B9 /* SDPathCoder.swift in Sources */,
-				0A76BB711D9D1BAF00842F4D /* AtomicStack.swift in Sources */,
-				08381D671E1BFB19003E7972 /* Color.swift in Sources */,
-				0A2C33D81D48B8E200FE9A97 /* Integer.swift in Sources */,
-				0A2C33D71D48B8E200FE9A97 /* Hashable.swift in Sources */,
-				0A2C33D91D48B8E200FE9A97 /* Json.swift in Sources */,
-				0AE12EE21DC2FD7400996BF9 /* SDPathStroke.swift in Sources */,
-				081322491C11D3600081B2B9 /* SDAtomicNode.swift in Sources */,
-				089E4B261D9FB8A700881F51 /* AtomicQueue.swift in Sources */,
-				081322381C11D3600081B2B9 /* Fourier.swift in Sources */,
-				0813223E1C11D3600081B2B9 /* Matrix.swift in Sources */,
-				0A2C33D61D48B8E200FE9A97 /* Date.swift in Sources */,
-				0A65984D1DC33E3B002EC536 /* AccelerateWrapper.swift in Sources */,
-				0AADD11F1D10E75300087247 /* LazyScanSequence.swift in Sources */,
-				0A2C33DB1D48B8E200FE9A97 /* Regex.swift in Sources */,
-				081322251C11D3600081B2B9 /* CooleyTukey.swift in Sources */,
-				0813223D1C11D3600081B2B9 /* Maths.swift in Sources */,
-				0A9021F41DCC760500736586 /* SDPathPatternStroke.swift in Sources */,
-				081322501C11D3600081B2B9 /* SDShape.swift in Sources */,
-				0ACE1E151C57114A00106D1F /* CollectionExtension.swift in Sources */,
-				08381D641E1BFAF7003E7972 /* ColorSpace.swift in Sources */,
-				0A2C33DA1D48B8E200FE9A97 /* Random.swift in Sources */,
-				0813223F1C11D3600081B2B9 /* Point.swift in Sources */,
-				081322431C11D3600081B2B9 /* Rect.swift in Sources */,
-				0AADD11A1D10E6E100087247 /* OptionOneCollection.swift in Sources */,
-				0AADD12E1D10E7C100087247 /* LazySliceSequence.swift in Sources */,
-				081322221C11D3600081B2B9 /* CircularConvolve.swift in Sources */,
-				0813222B1C11D3600081B2B9 /* Transpose.swift in Sources */,
-				0AB539741D3C8B1F0011F08B /* LazyGatherCollection.swift in Sources */,
-				0813224B1C11D3600081B2B9 /* SDGraphic.swift in Sources */,
-				0813222A1C11D3600081B2B9 /* SafeFunction.swift in Sources */,
-				0A5196EF1D48B5110082AE61 /* SDThread.swift in Sources */,
-				081322441C11D3600081B2B9 /* SDTransform.swift in Sources */,
-				0AADD1241D10E77100087247 /* ConcatCollection.swift in Sources */,
-				0813224C1C11D3600081B2B9 /* SDPath.swift in Sources */,
-				0ACE1E1A1C5711D300106D1F /* Graph.swift in Sources */,
-				0A7C072A1E25CC5E0063E1AE /* Image.swift in Sources */,
-				0813223B1C11D3600081B2B9 /* Complex.swift in Sources */,
-				0A72CA591DA4B1C40041F67B /* Lock.swift in Sources */,
-				0ACE1E061C57104300106D1F /* Parallel.swift in Sources */,
-				081322451C11D3600081B2B9 /* Vector.swift in Sources */,
-				081322211C11D3600081B2B9 /* Arithmetic.swift in Sources */,
-				0A76BB4A1D9CD6A500842F4D /* IndexedCollection.swift in Sources */,
+				08458B081E2E627600D01813 /* Integer.swift in Sources */,
+				08458B3C1E2E627600D01813 /* Polynomial.swift in Sources */,
+				08458B0E1E2E627600D01813 /* Regex.swift in Sources */,
+				08458B3E1E2E627600D01813 /* Rect.swift in Sources */,
+				08458B001E2E627600D01813 /* Transpose.swift in Sources */,
+				08458B0C1E2E627600D01813 /* Random.swift in Sources */,
+				08458B1C1E2E627600D01813 /* LazyGatherCollection.swift in Sources */,
+				08458B401E2E627600D01813 /* SDTransform.swift in Sources */,
+				08458B481E2E627600D01813 /* SDEllipse.swift in Sources */,
+				08458B141E2E627600D01813 /* CollectionExtension.swift in Sources */,
+				08458B441E2E627600D01813 /* SDAtomicNode.swift in Sources */,
+				08458B301E2E627600D01813 /* Bezier.swift in Sources */,
+				08458B421E2E627600D01813 /* Vector.swift in Sources */,
+				08458B361E2E627600D01813 /* Maths.swift in Sources */,
+				08458B3A1E2E627600D01813 /* Point.swift in Sources */,
+				08458B461E2E627600D01813 /* SDMarker.swift in Sources */,
+				08458B501E2E627600D01813 /* SDPathPatternStroke.swift in Sources */,
+				08458B1A1E2E627600D01813 /* IndexedCollection.swift in Sources */,
+				08458B1E1E2E627600D01813 /* LazyScanSequence.swift in Sources */,
+				08458B281E2E627600D01813 /* ColorModel.swift in Sources */,
+				08458B561E2E627600D01813 /* SDShape.swift in Sources */,
+				08458B2E1E2E627600D01813 /* Image.swift in Sources */,
+				08458B521E2E627600D01813 /* SDPathStroke.swift in Sources */,
+				08458B581E2E627600D01813 /* Atomic.swift in Sources */,
+				08458B5C1E2E627600D01813 /* AtomicStack.swift in Sources */,
+				08458B201E2E627600D01813 /* LazySliceSequence.swift in Sources */,
+				08458B261E2E627600D01813 /* Color.swift in Sources */,
+				08458B061E2E627600D01813 /* Hashable.swift in Sources */,
+				08458B241E2E627600D01813 /* Parallel.swift in Sources */,
+				08458B021E2E627600D01813 /* Date.swift in Sources */,
+				08458B041E2E627600D01813 /* FloatingPoint.swift in Sources */,
+				08458B4C1E2E627600D01813 /* SDPath.swift in Sources */,
+				08458AFC1E2E627600D01813 /* Move.swift in Sources */,
+				08458B5A1E2E627600D01813 /* AtomicQueue.swift in Sources */,
+				08458B321E2E627600D01813 /* Complex.swift in Sources */,
+				08458B4E1E2E627600D01813 /* SDPathCoder.swift in Sources */,
+				08458B181E2E627600D01813 /* Graph.swift in Sources */,
+				08458AF61E2E627600D01813 /* ComplexConversion.swift in Sources */,
+				08458B5E1E2E627600D01813 /* Lock.swift in Sources */,
+				08458B0A1E2E627600D01813 /* Json.swift in Sources */,
+				08458B341E2E627600D01813 /* Ellipse.swift in Sources */,
+				08458AFE1E2E627600D01813 /* SafeFunction.swift in Sources */,
+				08458AF41E2E627600D01813 /* CircularConvolve.swift in Sources */,
+				08458B121E2E627600D01813 /* Fourier.swift in Sources */,
+				08458B601E2E627600D01813 /* SDThread.swift in Sources */,
+				08458AF81E2E627600D01813 /* CooleyTukey.swift in Sources */,
+				08458AF01E2E627600D01813 /* AccelerateWrapper.swift in Sources */,
+				08458B101E2E627600D01813 /* String.swift in Sources */,
+				08458B161E2E627600D01813 /* ConcatCollection.swift in Sources */,
+				08458B221E2E627600D01813 /* OptionOneCollection.swift in Sources */,
+				08458B541E2E627600D01813 /* SDRectangle.swift in Sources */,
+				08458B381E2E627600D01813 /* Matrix.swift in Sources */,
+				08458B4A1E2E627600D01813 /* SDGraphic.swift in Sources */,
+				08458B2C1E2E627600D01813 /* ColorSpace.swift in Sources */,
+				08458AFA1E2E627600D01813 /* DiscreteConvolve.swift in Sources */,
+				08458B2A1E2E627600D01813 /* ColorPixel.swift in Sources */,
+				08458AF21E2E627600D01813 /* Arithmetic.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -764,63 +756,63 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0858DB371C0550B7007FA426 /* SDShape.swift in Sources */,
-				0A72CA571DA4B1890041F67B /* Atomic.swift in Sources */,
-				0A987DC31E0A2C6F00C2D789 /* FloatingPoint.swift in Sources */,
-				0858DB331C0550B7007FA426 /* SDRectangle.swift in Sources */,
-				08A3D4301DB36269001417C7 /* String.swift in Sources */,
-				0881EC1B1DC793100002477F /* Bezier.swift in Sources */,
-				0858DAF31C0550B7007FA426 /* Point.swift in Sources */,
-				0A7C072F1E25CCC40063E1AE /* ColorPixel.swift in Sources */,
-				0A1605B61D49DEDC00109F7B /* Json.swift in Sources */,
-				0858DAE71C0550B7007FA426 /* Ellipse.swift in Sources */,
-				0858DB0B1C0550B7007FA426 /* Vector.swift in Sources */,
-				0AF9BDBC1D6178470058F2AA /* SDMarker.swift in Sources */,
-				0A5196F71D48B52D0082AE61 /* SDThread.swift in Sources */,
-				0A10EC2C1E0946B2006EAA14 /* ColorModel.swift in Sources */,
-				0858DAE31C0550B7007FA426 /* Complex.swift in Sources */,
-				0A76BB721D9D1BAF00842F4D /* AtomicStack.swift in Sources */,
-				08381D681E1BFB19003E7972 /* Color.swift in Sources */,
-				0858DB1F1C0550B7007FA426 /* SDEllipse.swift in Sources */,
-				0858DA9B1C0550B7007FA426 /* Move.swift in Sources */,
-				0A1605B31D49DEDC00109F7B /* Date.swift in Sources */,
-				0858DB1B1C0550B7007FA426 /* SDAtomicNode.swift in Sources */,
-				0AE12EE31DC2FD7400996BF9 /* SDPathStroke.swift in Sources */,
-				0858DA871C0550B7007FA426 /* ComplexConversion.swift in Sources */,
-				089E4B271D9FB8A700881F51 /* AtomicQueue.swift in Sources */,
-				0858DB481C055172007FA426 /* Fourier.swift in Sources */,
-				0AADD1211D10E75300087247 /* LazyScanSequence.swift in Sources */,
-				0858DA931C0550B7007FA426 /* DiscreteConvolve.swift in Sources */,
-				0A65984E1DC33E3B002EC536 /* AccelerateWrapper.swift in Sources */,
-				0858DA8F1C0550B7007FA426 /* CooleyTukey.swift in Sources */,
-				0A1605B51D49DEDC00109F7B /* Integer.swift in Sources */,
-				0858DB231C0550B7007FA426 /* SDGraphic.swift in Sources */,
-				0ACE1E171C57114A00106D1F /* CollectionExtension.swift in Sources */,
-				0A9021F51DCC760500736586 /* SDPathPatternStroke.swift in Sources */,
-				0858DAF71C0550B7007FA426 /* Polynomial.swift in Sources */,
-				08381D651E1BFAF7003E7972 /* ColorSpace.swift in Sources */,
-				0858DA831C0550B7007FA426 /* CircularConvolve.swift in Sources */,
-				0AADD11C1D10E6E100087247 /* OptionOneCollection.swift in Sources */,
-				0AADD1301D10E7C100087247 /* LazySliceSequence.swift in Sources */,
-				0858DB2B1C0550B7007FA426 /* SDPathCoder.swift in Sources */,
-				0858DAEB1C0550B7007FA426 /* Maths.swift in Sources */,
-				0AB539751D3C8B1F0011F08B /* LazyGatherCollection.swift in Sources */,
-				0858DAA71C0550B7007FA426 /* Transpose.swift in Sources */,
-				0A1605B71D49DEDC00109F7B /* Random.swift in Sources */,
-				0858DAA31C0550B7007FA426 /* SafeFunction.swift in Sources */,
-				0858DB271C0550B7007FA426 /* SDPath.swift in Sources */,
-				0AADD1261D10E77100087247 /* ConcatCollection.swift in Sources */,
-				0858DB031C0550B7007FA426 /* Rect.swift in Sources */,
-				0ACE1E1C1C5711D300106D1F /* Graph.swift in Sources */,
-				0A1605B41D49DEDC00109F7B /* Hashable.swift in Sources */,
-				0858DB071C0550B7007FA426 /* SDTransform.swift in Sources */,
-				0A7C072B1E25CC5E0063E1AE /* Image.swift in Sources */,
-				0A1605B81D49DEDC00109F7B /* Regex.swift in Sources */,
-				0A72CA5A1DA4B1C40041F67B /* Lock.swift in Sources */,
-				0858DAEF1C0550B7007FA426 /* Matrix.swift in Sources */,
-				0ACE1E081C57104300106D1F /* Parallel.swift in Sources */,
-				0858DA7F1C0550B7007FA426 /* Arithmetic.swift in Sources */,
-				0A76BB4B1D9CD6A500842F4D /* IndexedCollection.swift in Sources */,
+				08458B091E2E627600D01813 /* Integer.swift in Sources */,
+				08458B3D1E2E627600D01813 /* Polynomial.swift in Sources */,
+				08458B0F1E2E627600D01813 /* Regex.swift in Sources */,
+				08458B3F1E2E627600D01813 /* Rect.swift in Sources */,
+				08458B011E2E627600D01813 /* Transpose.swift in Sources */,
+				08458B0D1E2E627600D01813 /* Random.swift in Sources */,
+				08458B1D1E2E627600D01813 /* LazyGatherCollection.swift in Sources */,
+				08458B411E2E627600D01813 /* SDTransform.swift in Sources */,
+				08458B491E2E627600D01813 /* SDEllipse.swift in Sources */,
+				08458B151E2E627600D01813 /* CollectionExtension.swift in Sources */,
+				08458B451E2E627600D01813 /* SDAtomicNode.swift in Sources */,
+				08458B311E2E627600D01813 /* Bezier.swift in Sources */,
+				08458B431E2E627600D01813 /* Vector.swift in Sources */,
+				08458B371E2E627600D01813 /* Maths.swift in Sources */,
+				08458B3B1E2E627600D01813 /* Point.swift in Sources */,
+				08458B471E2E627600D01813 /* SDMarker.swift in Sources */,
+				08458B511E2E627600D01813 /* SDPathPatternStroke.swift in Sources */,
+				08458B1B1E2E627600D01813 /* IndexedCollection.swift in Sources */,
+				08458B1F1E2E627600D01813 /* LazyScanSequence.swift in Sources */,
+				08458B291E2E627600D01813 /* ColorModel.swift in Sources */,
+				08458B571E2E627600D01813 /* SDShape.swift in Sources */,
+				08458B2F1E2E627600D01813 /* Image.swift in Sources */,
+				08458B531E2E627600D01813 /* SDPathStroke.swift in Sources */,
+				08458B591E2E627600D01813 /* Atomic.swift in Sources */,
+				08458B5D1E2E627600D01813 /* AtomicStack.swift in Sources */,
+				08458B211E2E627600D01813 /* LazySliceSequence.swift in Sources */,
+				08458B271E2E627600D01813 /* Color.swift in Sources */,
+				08458B071E2E627600D01813 /* Hashable.swift in Sources */,
+				08458B251E2E627600D01813 /* Parallel.swift in Sources */,
+				08458B031E2E627600D01813 /* Date.swift in Sources */,
+				08458B051E2E627600D01813 /* FloatingPoint.swift in Sources */,
+				08458B4D1E2E627600D01813 /* SDPath.swift in Sources */,
+				08458AFD1E2E627600D01813 /* Move.swift in Sources */,
+				08458B5B1E2E627600D01813 /* AtomicQueue.swift in Sources */,
+				08458B331E2E627600D01813 /* Complex.swift in Sources */,
+				08458B4F1E2E627600D01813 /* SDPathCoder.swift in Sources */,
+				08458B191E2E627600D01813 /* Graph.swift in Sources */,
+				08458AF71E2E627600D01813 /* ComplexConversion.swift in Sources */,
+				08458B5F1E2E627600D01813 /* Lock.swift in Sources */,
+				08458B0B1E2E627600D01813 /* Json.swift in Sources */,
+				08458B351E2E627600D01813 /* Ellipse.swift in Sources */,
+				08458AFF1E2E627600D01813 /* SafeFunction.swift in Sources */,
+				08458AF51E2E627600D01813 /* CircularConvolve.swift in Sources */,
+				08458B131E2E627600D01813 /* Fourier.swift in Sources */,
+				08458B611E2E627600D01813 /* SDThread.swift in Sources */,
+				08458AF91E2E627600D01813 /* CooleyTukey.swift in Sources */,
+				08458AF11E2E627600D01813 /* AccelerateWrapper.swift in Sources */,
+				08458B111E2E627600D01813 /* String.swift in Sources */,
+				08458B171E2E627600D01813 /* ConcatCollection.swift in Sources */,
+				08458B231E2E627600D01813 /* OptionOneCollection.swift in Sources */,
+				08458B551E2E627600D01813 /* SDRectangle.swift in Sources */,
+				08458B391E2E627600D01813 /* Matrix.swift in Sources */,
+				08458B4B1E2E627600D01813 /* SDGraphic.swift in Sources */,
+				08458B2D1E2E627600D01813 /* ColorSpace.swift in Sources */,
+				08458AFB1E2E627600D01813 /* DiscreteConvolve.swift in Sources */,
+				08458B2B1E2E627600D01813 /* ColorPixel.swift in Sources */,
+				08458AF31E2E627600D01813 /* Arithmetic.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -953,6 +945,7 @@
 		081321E81C11D1850081B2B9 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -995,6 +988,7 @@
 		081321E91C11D1850081B2B9 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -1203,6 +1197,7 @@
 		087FE5CC1A372D98005A2E9E /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -1251,6 +1246,7 @@
 		087FE5CD1A372D98005A2E9E /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
