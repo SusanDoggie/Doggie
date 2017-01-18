@@ -23,6 +23,7 @@
 //  THE SOFTWARE.
 //
 
+@_specialize(UInt8) @_specialize(UInt16) @_specialize(UInt32) @_specialize(UInt64) @_specialize(UInt)
 public func AddMod<T: UnsignedInteger>(_ count: Int, _ left: UnsafePointer<T>, _ left_stride: Int, _ right: UnsafePointer<T>, _ right_stride: Int, _ mod: UnsafePointer<T>, _ mod_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var left = left
@@ -38,6 +39,7 @@ public func AddMod<T: UnsignedInteger>(_ count: Int, _ left: UnsafePointer<T>, _
         output += out_stride
     }
 }
+@_specialize(UInt8) @_specialize(UInt16) @_specialize(UInt32) @_specialize(UInt64) @_specialize(UInt)
 public func NegMod<T: UnsignedInteger>(_ count: Int, _ a: UnsafePointer<T>, _ a_stride: Int, _ mod: UnsafePointer<T>, _ mod_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var a = a
@@ -51,6 +53,7 @@ public func NegMod<T: UnsignedInteger>(_ count: Int, _ a: UnsafePointer<T>, _ a_
         output += out_stride
     }
 }
+@_specialize(UInt8) @_specialize(UInt16) @_specialize(UInt32) @_specialize(UInt64) @_specialize(UInt)
 public func SubMod<T: UnsignedInteger>(_ count: Int, _ left: UnsafePointer<T>, _ left_stride: Int, _ right: UnsafePointer<T>, _ right_stride: Int, _ mod: UnsafePointer<T>, _ mod_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var left = left
@@ -66,6 +69,7 @@ public func SubMod<T: UnsignedInteger>(_ count: Int, _ left: UnsafePointer<T>, _
         output += out_stride
     }
 }
+@_specialize(UInt8) @_specialize(UInt16) @_specialize(UInt32) @_specialize(UInt64) @_specialize(UInt)
 public func MulMod<T: UnsignedInteger>(_ count: Int, _ left: UnsafePointer<T>, _ left_stride: Int, _ right: UnsafePointer<T>, _ right_stride: Int, _ mod: UnsafePointer<T>, _ mod_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var left = left
@@ -92,6 +96,7 @@ public func MulMod<T: UnsignedInteger>(_ count: Int, _ left: UnsafePointer<T>, _
 ///   - output: Integer result vector.
 ///   - out_stride: Stride for `output`.
 /// - remark: `output[n] = left[n] + right[n], 0 <= n < count`
+@_specialize(Int8) @_specialize(Int16) @_specialize(Int32) @_specialize(Int64) @_specialize(Int) @_specialize(UInt8) @_specialize(UInt16) @_specialize(UInt32) @_specialize(UInt64) @_specialize(UInt)
 public func Add<T: Integer>(_ count: Int, _ left: UnsafePointer<T>, _ left_stride: Int, _ right: UnsafePointer<T>, _ right_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var left = left
@@ -116,6 +121,7 @@ public func Add<T: Integer>(_ count: Int, _ left: UnsafePointer<T>, _ left_strid
 ///   - output: Integer result vector.
 ///   - out_stride: Stride for `output`.
 /// - remark: `output[n] = left[n] - right[n], 0 <= n < count`
+@_specialize(Int8) @_specialize(Int16) @_specialize(Int32) @_specialize(Int64) @_specialize(Int) @_specialize(UInt8) @_specialize(UInt16) @_specialize(UInt32) @_specialize(UInt64) @_specialize(UInt)
 public func Sub<T: Integer>(_ count: Int, _ left: UnsafePointer<T>, _ left_stride: Int, _ right: UnsafePointer<T>, _ right_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var left = left
@@ -140,6 +146,7 @@ public func Sub<T: Integer>(_ count: Int, _ left: UnsafePointer<T>, _ left_strid
 ///   - output: Integer result vector.
 ///   - out_stride: Stride for `output`.
 /// - remark: `output[n] = left[n] * right[n], 0 <= n < count`
+@_specialize(Int8) @_specialize(Int16) @_specialize(Int32) @_specialize(Int64) @_specialize(Int) @_specialize(UInt8) @_specialize(UInt16) @_specialize(UInt32) @_specialize(UInt64) @_specialize(UInt)
 public func Mul<T: Integer>(_ count: Int, _ left: UnsafePointer<T>, _ left_stride: Int, _ right: UnsafePointer<T>, _ right_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var left = left
@@ -164,6 +171,7 @@ public func Mul<T: Integer>(_ count: Int, _ left: UnsafePointer<T>, _ left_strid
 ///   - output: Integer result vector.
 ///   - out_stride: Stride for `output`.
 /// - remark: `output[n] = left[n] / right[n], 0 <= n < count`
+@_specialize(Int8) @_specialize(Int16) @_specialize(Int32) @_specialize(Int64) @_specialize(Int) @_specialize(UInt8) @_specialize(UInt16) @_specialize(UInt32) @_specialize(UInt64) @_specialize(UInt)
 public func Div<T: Integer>(_ count: Int, _ left: UnsafePointer<T>, _ left_stride: Int, _ right: UnsafePointer<T>, _ right_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var left = left
@@ -177,6 +185,7 @@ public func Div<T: Integer>(_ count: Int, _ left: UnsafePointer<T>, _ left_strid
         output += out_stride
     }
 }
+@_specialize(Int8) @_specialize(Int16) @_specialize(Int32) @_specialize(Int64) @_specialize(Int) @_specialize(UInt8) @_specialize(UInt16) @_specialize(UInt32) @_specialize(UInt64) @_specialize(UInt)
 public func Mod<T: Integer>(_ count: Int, _ left: UnsafePointer<T>, _ left_stride: Int, _ right: UnsafePointer<T>, _ right_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var left = left
@@ -190,6 +199,7 @@ public func Mod<T: Integer>(_ count: Int, _ left: UnsafePointer<T>, _ left_strid
         output += out_stride
     }
 }
+@_specialize(Int8) @_specialize(Int16) @_specialize(Int32) @_specialize(Int64) @_specialize(Int) @_specialize(UInt8) @_specialize(UInt16) @_specialize(UInt32) @_specialize(UInt64) @_specialize(UInt)
 public func QuoRem<T: Integer>(_ count: Int, _ left: UnsafePointer<T>, _ left_stride: Int, _ right: UnsafePointer<T>, _ right_stride: Int, _ quo: UnsafeMutablePointer<T>, _ quo_stride: Int, _ rem: UnsafeMutablePointer<T>, _ rem_stride: Int) {
     
     var left = left
@@ -220,6 +230,7 @@ public func QuoRem<T: Integer>(_ count: Int, _ left: UnsafePointer<T>, _ left_st
 ///   - output: Real result vector.
 ///   - out_stride: Stride for `output`.
 /// - remark: `output[n] = left[n] + right[n], 0 <= n < count`
+@_specialize(Float) @_specialize(Double)
 public func Add<T: FloatingPoint>(_ count: Int, _ left: UnsafePointer<T>, _ left_stride: Int, _ right: UnsafePointer<T>, _ right_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var left = left
@@ -244,6 +255,7 @@ public func Add<T: FloatingPoint>(_ count: Int, _ left: UnsafePointer<T>, _ left
 ///   - output: Real result vector.
 ///   - out_stride: Stride for `output`.
 /// - remark: `output[n] = left[n] - right[n], 0 <= n < count`
+@_specialize(Float) @_specialize(Double)
 public func Sub<T: FloatingPoint>(_ count: Int, _ left: UnsafePointer<T>, _ left_stride: Int, _ right: UnsafePointer<T>, _ right_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var left = left
@@ -268,6 +280,7 @@ public func Sub<T: FloatingPoint>(_ count: Int, _ left: UnsafePointer<T>, _ left
 ///   - output: Real result vector.
 ///   - out_stride: Stride for `output`.
 /// - remark: `output[n] = left[n] * right[n], 0 <= n < count`
+@_specialize(Float) @_specialize(Double)
 public func Mul<T: FloatingPoint>(_ count: Int, _ left: UnsafePointer<T>, _ left_stride: Int, _ right: UnsafePointer<T>, _ right_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var left = left
@@ -292,6 +305,7 @@ public func Mul<T: FloatingPoint>(_ count: Int, _ left: UnsafePointer<T>, _ left
 ///   - output: Real result vector.
 ///   - out_stride: Stride for `output`.
 /// - remark: `output[n] = left[n] / right[n], 0 <= n < count`
+@_specialize(Float) @_specialize(Double)
 public func Div<T: FloatingPoint>(_ count: Int, _ left: UnsafePointer<T>, _ left_stride: Int, _ right: UnsafePointer<T>, _ right_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var left = left
@@ -305,6 +319,7 @@ public func Div<T: FloatingPoint>(_ count: Int, _ left: UnsafePointer<T>, _ left
         output += out_stride
     }
 }
+@_specialize(Float) @_specialize(Double)
 public func Mod<T: FloatingPoint>(_ count: Int, _ left: UnsafePointer<T>, _ left_stride: Int, _ right: UnsafePointer<T>, _ right_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var left = left
@@ -318,6 +333,7 @@ public func Mod<T: FloatingPoint>(_ count: Int, _ left: UnsafePointer<T>, _ left
         output += out_stride
     }
 }
+@_specialize(Float) @_specialize(Double)
 public func MulAdd<T: FloatingPoint>(_ count: Int, _ a: UnsafePointer<T>, _ a_stride: Int, _ b: UnsafePointer<T>, _ b_stride: Int, _ c: UnsafePointer<T>, _ c_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var a = a
@@ -333,6 +349,7 @@ public func MulAdd<T: FloatingPoint>(_ count: Int, _ a: UnsafePointer<T>, _ a_st
         output += out_stride
     }
 }
+@_specialize(Float) @_specialize(Double)
 public func MulSub<T: FloatingPoint>(_ count: Int, _ a: UnsafePointer<T>, _ a_stride: Int, _ b: UnsafePointer<T>, _ b_stride: Int, _ c: UnsafePointer<T>, _ c_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var a = a
@@ -348,6 +365,7 @@ public func MulSub<T: FloatingPoint>(_ count: Int, _ a: UnsafePointer<T>, _ a_st
         output += out_stride
     }
 }
+@_specialize(Float) @_specialize(Double)
 public func SubMul<T: FloatingPoint>(_ count: Int, _ a: UnsafePointer<T>, _ a_stride: Int, _ b: UnsafePointer<T>, _ b_stride: Int, _ c: UnsafePointer<T>, _ c_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var a = a
@@ -364,6 +382,7 @@ public func SubMul<T: FloatingPoint>(_ count: Int, _ a: UnsafePointer<T>, _ a_st
     }
 }
 
+@_specialize(Float) @_specialize(Double)
 public func Add<T: FloatingPoint>(_ count: Int, _ left: UnsafePointer<T>, _ left_stride: Int, _ rreal: UnsafePointer<T>, _ rimag: UnsafePointer<T>, _ right_stride: Int, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var left = left
@@ -385,6 +404,7 @@ public func Add<T: FloatingPoint>(_ count: Int, _ left: UnsafePointer<T>, _ left
         _imag += out_stride
     }
 }
+@_specialize(Float) @_specialize(Double)
 public func Sub<T: FloatingPoint>(_ count: Int, _ left: UnsafePointer<T>, _ left_stride: Int, _ rreal: UnsafePointer<T>, _ rimag: UnsafePointer<T>, _ right_stride: Int, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var left = left
@@ -406,6 +426,7 @@ public func Sub<T: FloatingPoint>(_ count: Int, _ left: UnsafePointer<T>, _ left
         _imag += out_stride
     }
 }
+@_specialize(Float) @_specialize(Double)
 public func Mul<T: FloatingPoint>(_ count: Int, _ left: UnsafePointer<T>, _ left_stride: Int, _ rreal: UnsafePointer<T>, _ rimag: UnsafePointer<T>, _ right_stride: Int, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var left = left
@@ -427,6 +448,7 @@ public func Mul<T: FloatingPoint>(_ count: Int, _ left: UnsafePointer<T>, _ left
         _imag += out_stride
     }
 }
+@_specialize(Float) @_specialize(Double)
 public func MulAdd<T: FloatingPoint>(_ count: Int, _ a: UnsafePointer<T>, _ a_stride: Int, _ breal: UnsafePointer<T>, _ bimag: UnsafePointer<T>, _ b_stride: Int, _ creal: UnsafePointer<T>, _ cimag: UnsafePointer<T>, _ c_stride: Int, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var a = a
@@ -454,6 +476,7 @@ public func MulAdd<T: FloatingPoint>(_ count: Int, _ a: UnsafePointer<T>, _ a_st
         _imag += out_stride
     }
 }
+@_specialize(Float) @_specialize(Double)
 public func MulSub<T: FloatingPoint>(_ count: Int, _ a: UnsafePointer<T>, _ a_stride: Int, _ breal: UnsafePointer<T>, _ bimag: UnsafePointer<T>, _ b_stride: Int, _ creal: UnsafePointer<T>, _ cimag: UnsafePointer<T>, _ c_stride: Int, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var a = a
@@ -481,6 +504,7 @@ public func MulSub<T: FloatingPoint>(_ count: Int, _ a: UnsafePointer<T>, _ a_st
         _imag += out_stride
     }
 }
+@_specialize(Float) @_specialize(Double)
 public func SubMul<T: FloatingPoint>(_ count: Int, _ areal: UnsafePointer<T>, _ aimag: UnsafePointer<T>, _ a_stride: Int, _ b: UnsafePointer<T>, _ b_stride: Int, _ creal: UnsafePointer<T>, _ cimag: UnsafePointer<T>, _ c_stride: Int, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var areal = areal
@@ -508,6 +532,7 @@ public func SubMul<T: FloatingPoint>(_ count: Int, _ areal: UnsafePointer<T>, _ 
         _imag += out_stride
     }
 }
+@_specialize(Float) @_specialize(Double)
 public func Div<T: FloatingPoint>(_ count: Int, _ left: UnsafePointer<T>, _ left_stride: Int, _ rreal: UnsafePointer<T>, _ rimag: UnsafePointer<T>, _ right_stride: Int, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var left = left
@@ -532,6 +557,7 @@ public func Div<T: FloatingPoint>(_ count: Int, _ left: UnsafePointer<T>, _ left
         _imag += out_stride
     }
 }
+@_specialize(Float) @_specialize(Double)
 public func Add<T: FloatingPoint>(_ count: Int, _ lreal: UnsafePointer<T>, _ limag: UnsafePointer<T>, _ left_stride: Int, _ right: UnsafePointer<T>, _ right_stride: Int, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var lreal = lreal
@@ -553,6 +579,7 @@ public func Add<T: FloatingPoint>(_ count: Int, _ lreal: UnsafePointer<T>, _ lim
         _imag += out_stride
     }
 }
+@_specialize(Float) @_specialize(Double)
 public func Sub<T: FloatingPoint>(_ count: Int, _ lreal: UnsafePointer<T>, _ limag: UnsafePointer<T>, _ left_stride: Int, _ right: UnsafePointer<T>, _ right_stride: Int, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var lreal = lreal
@@ -574,6 +601,7 @@ public func Sub<T: FloatingPoint>(_ count: Int, _ lreal: UnsafePointer<T>, _ lim
         _imag += out_stride
     }
 }
+@_specialize(Float) @_specialize(Double)
 public func Mul<T: FloatingPoint>(_ count: Int, _ lreal: UnsafePointer<T>, _ limag: UnsafePointer<T>, _ left_stride: Int, _ right: UnsafePointer<T>, _ right_stride: Int, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var lreal = lreal
@@ -595,6 +623,7 @@ public func Mul<T: FloatingPoint>(_ count: Int, _ lreal: UnsafePointer<T>, _ lim
         _imag += out_stride
     }
 }
+@_specialize(Float) @_specialize(Double)
 public func MulAdd<T: FloatingPoint>(_ count: Int, _ areal: UnsafePointer<T>, _ aimag: UnsafePointer<T>, _ a_stride: Int, _ b: UnsafePointer<T>, _ b_stride: Int, _ creal: UnsafePointer<T>, _ cimag: UnsafePointer<T>, _ c_stride: Int, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var areal = areal
@@ -622,6 +651,7 @@ public func MulAdd<T: FloatingPoint>(_ count: Int, _ areal: UnsafePointer<T>, _ 
         _imag += out_stride
     }
 }
+@_specialize(Float) @_specialize(Double)
 public func MulSub<T: FloatingPoint>(_ count: Int, _ areal: UnsafePointer<T>, _ aimag: UnsafePointer<T>, _ a_stride: Int, _ b: UnsafePointer<T>, _ b_stride: Int, _ creal: UnsafePointer<T>, _ cimag: UnsafePointer<T>, _ c_stride: Int, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var areal = areal
@@ -649,6 +679,7 @@ public func MulSub<T: FloatingPoint>(_ count: Int, _ areal: UnsafePointer<T>, _ 
         _imag += out_stride
     }
 }
+@_specialize(Float) @_specialize(Double)
 public func SubMul<T: FloatingPoint>(_ count: Int, _ areal: UnsafePointer<T>, _ aimag: UnsafePointer<T>, _ a_stride: Int, _ breal: UnsafePointer<T>, _ bimag: UnsafePointer<T>, _ b_stride: Int, _ c: UnsafePointer<T>, _ c_stride: Int, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var areal = areal
@@ -676,6 +707,7 @@ public func SubMul<T: FloatingPoint>(_ count: Int, _ areal: UnsafePointer<T>, _ 
         _imag += out_stride
     }
 }
+@_specialize(Float) @_specialize(Double)
 public func MulConj<T: FloatingPoint>(_ count: Int, _ lreal: UnsafePointer<T>, _ limag: UnsafePointer<T>, _ left_stride: Int, _ right: UnsafePointer<T>, _ right_stride: Int, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var lreal = lreal
@@ -697,6 +729,7 @@ public func MulConj<T: FloatingPoint>(_ count: Int, _ lreal: UnsafePointer<T>, _
         _imag += out_stride
     }
 }
+@_specialize(Float) @_specialize(Double)
 public func Div<T: FloatingPoint>(_ count: Int, _ lreal: UnsafePointer<T>, _ limag: UnsafePointer<T>, _ left_stride: Int, _ right: UnsafePointer<T>, _ right_stride: Int, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var lreal = lreal
@@ -718,6 +751,7 @@ public func Div<T: FloatingPoint>(_ count: Int, _ lreal: UnsafePointer<T>, _ lim
         _imag += out_stride
     }
 }
+@_specialize(Float) @_specialize(Double)
 public func Add<T: FloatingPoint>(_ count: Int, _ lreal: UnsafePointer<T>, _ limag: UnsafePointer<T>, _ left_stride: Int, _ rreal: UnsafePointer<T>, _ rimag: UnsafePointer<T>, _ right_stride: Int, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var lreal = lreal
@@ -742,6 +776,7 @@ public func Add<T: FloatingPoint>(_ count: Int, _ lreal: UnsafePointer<T>, _ lim
         _imag += out_stride
     }
 }
+@_specialize(Float) @_specialize(Double)
 public func Sub<T: FloatingPoint>(_ count: Int, _ lreal: UnsafePointer<T>, _ limag: UnsafePointer<T>, _ left_stride: Int, _ rreal: UnsafePointer<T>, _ rimag: UnsafePointer<T>, _ right_stride: Int, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var lreal = lreal
@@ -766,6 +801,7 @@ public func Sub<T: FloatingPoint>(_ count: Int, _ lreal: UnsafePointer<T>, _ lim
         _imag += out_stride
     }
 }
+@_specialize(Float) @_specialize(Double)
 public func Mul<T: FloatingPoint>(_ count: Int, _ lreal: UnsafePointer<T>, _ limag: UnsafePointer<T>, _ left_stride: Int, _ rreal: UnsafePointer<T>, _ rimag: UnsafePointer<T>, _ right_stride: Int, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var lreal = lreal
@@ -790,6 +826,7 @@ public func Mul<T: FloatingPoint>(_ count: Int, _ lreal: UnsafePointer<T>, _ lim
         _imag += out_stride
     }
 }
+@_specialize(Float) @_specialize(Double)
 public func MulAdd<T: FloatingPoint>(_ count: Int, _ areal: UnsafePointer<T>, _ aimag: UnsafePointer<T>, _ a_stride: Int, _ breal: UnsafePointer<T>, _ bimag: UnsafePointer<T>, _ b_stride: Int, _ creal: UnsafePointer<T>, _ cimag: UnsafePointer<T>, _ c_stride: Int, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var areal = areal
@@ -820,6 +857,7 @@ public func MulAdd<T: FloatingPoint>(_ count: Int, _ areal: UnsafePointer<T>, _ 
         _imag += out_stride
     }
 }
+@_specialize(Float) @_specialize(Double)
 public func MulSub<T: FloatingPoint>(_ count: Int, _ areal: UnsafePointer<T>, _ aimag: UnsafePointer<T>, _ a_stride: Int, _ breal: UnsafePointer<T>, _ bimag: UnsafePointer<T>, _ b_stride: Int, _ creal: UnsafePointer<T>, _ cimag: UnsafePointer<T>, _ c_stride: Int, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var areal = areal
@@ -850,6 +888,7 @@ public func MulSub<T: FloatingPoint>(_ count: Int, _ areal: UnsafePointer<T>, _ 
         _imag += out_stride
     }
 }
+@_specialize(Float) @_specialize(Double)
 public func SubMul<T: FloatingPoint>(_ count: Int, _ areal: UnsafePointer<T>, _ aimag: UnsafePointer<T>, _ a_stride: Int, _ breal: UnsafePointer<T>, _ bimag: UnsafePointer<T>, _ b_stride: Int, _ creal: UnsafePointer<T>, _ cimag: UnsafePointer<T>, _ c_stride: Int, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var areal = areal
@@ -880,6 +919,7 @@ public func SubMul<T: FloatingPoint>(_ count: Int, _ areal: UnsafePointer<T>, _ 
         _imag += out_stride
     }
 }
+@_specialize(Float) @_specialize(Double)
 public func MulConj<T: FloatingPoint>(_ count: Int, _ lreal: UnsafePointer<T>, _ limag: UnsafePointer<T>, _ left_stride: Int, _ rreal: UnsafePointer<T>, _ rimag: UnsafePointer<T>, _ right_stride: Int, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var lreal = lreal
@@ -904,6 +944,7 @@ public func MulConj<T: FloatingPoint>(_ count: Int, _ lreal: UnsafePointer<T>, _
         _imag += out_stride
     }
 }
+@_specialize(Float) @_specialize(Double)
 public func Div<T: FloatingPoint>(_ count: Int, _ lreal: UnsafePointer<T>, _ limag: UnsafePointer<T>, _ left_stride: Int, _ rreal: UnsafePointer<T>, _ rimag: UnsafePointer<T>, _ right_stride: Int, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var lreal = lreal
@@ -932,6 +973,7 @@ public func Div<T: FloatingPoint>(_ count: Int, _ lreal: UnsafePointer<T>, _ lim
     }
 }
 
+@_specialize(Float) @_specialize(Double)
 public func Dot<T: FloatingPoint>(_ count: Int, _ left: UnsafePointer<T>, _ left_stride: Int, _ right: UnsafePointer<T>, _ right_stride: Int) -> T {
     
     var left = left
@@ -946,6 +988,7 @@ public func Dot<T: FloatingPoint>(_ count: Int, _ left: UnsafePointer<T>, _ left
     return result
 }
 
+@_specialize(Float) @_specialize(Double)
 public func Deconvolve<T: FloatingPoint>(_ signal_count: Int, _ signal: UnsafePointer<T>, _ signal_stride: Int, _ kernel_count: Int, _ kernel: UnsafePointer<T>, _ kernel_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var signal = signal
@@ -975,6 +1018,7 @@ public func Deconvolve<T: FloatingPoint>(_ signal_count: Int, _ signal: UnsafePo
         }
     }
 }
+@_specialize(Float) @_specialize(Double)
 public func Deconvolve<T: FloatingPoint>(_ signal_count: Int, _ signal: UnsafePointer<T>, _ signal_stride: Int, _ kernel_count: Int, _ kernel: UnsafePointer<T>, _ kernel_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int, _ residue: UnsafeMutablePointer<T>, _ residue_stride: Int) {
     
     var signal = signal
@@ -1027,6 +1071,7 @@ public func Deconvolve<T: FloatingPoint>(_ signal_count: Int, _ signal: UnsafePo
     }
 }
 
+@_specialize(Float) @_specialize(Double)
 public func MatrixElimination<T: FloatingPoint>(_ row: Int, _ column: Int, _ matrix: UnsafeMutablePointer<T>, _ stride_row: Int, _ stride_col: Int) -> Bool {
     
     let row_offset = stride_row * stride_col * column

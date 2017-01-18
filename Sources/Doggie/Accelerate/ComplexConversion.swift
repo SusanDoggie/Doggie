@@ -25,7 +25,8 @@
 
 import Foundation
 
-public func ToRect(_ count: Int, _ rho: UnsafePointer<Float>, _ theta: UnsafePointer<Float>, _ in_stride: Int, _ real: UnsafeMutablePointer<Float>, _ imag: UnsafeMutablePointer<Float>, _ out_stride: Int) {
+@_specialize(Float) @_specialize(Double)
+public func ToRect<T: FloatingMathProtocol>(_ count: Int, _ rho: UnsafePointer<T>, _ theta: UnsafePointer<T>, _ in_stride: Int, _ real: UnsafeMutablePointer<T>, _ imag: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var rho = rho
     var theta = theta
@@ -35,15 +36,16 @@ public func ToRect(_ count: Int, _ rho: UnsafePointer<Float>, _ theta: UnsafePoi
     for _ in 0..<count {
         let _rho = rho.pointee
         let _theta = theta.pointee
-        real.pointee = _rho * cos(_theta)
-        imag.pointee = _rho * sin(_theta)
+        real.pointee = _rho * T.cos(_theta)
+        imag.pointee = _rho * T.sin(_theta)
         rho += in_stride
         theta += in_stride
         real += out_stride
         imag += out_stride
     }
 }
-public func ToPolar(_ count: Int, _ real: UnsafePointer<Float>, _ imag: UnsafePointer<Float>, _ in_stride: Int, _ rho: UnsafeMutablePointer<Float>, _ theta: UnsafeMutablePointer<Float>, _ out_stride: Int) {
+@_specialize(Float) @_specialize(Double)
+public func ToPolar<T: FloatingMathProtocol>(_ count: Int, _ real: UnsafePointer<T>, _ imag: UnsafePointer<T>, _ in_stride: Int, _ rho: UnsafeMutablePointer<T>, _ theta: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var real = real
     var imag = imag
@@ -53,45 +55,8 @@ public func ToPolar(_ count: Int, _ real: UnsafePointer<Float>, _ imag: UnsafePo
     for _ in 0..<count {
         let _real = real.pointee
         let _imag = imag.pointee
-        rho.pointee = sqrt(_real * _real + _imag * _imag)
-        theta.pointee = atan2(_imag, _real)
-        real += in_stride
-        imag += in_stride
-        rho += out_stride
-        theta += out_stride
-    }
-}
-
-public func ToRect(_ count: Int, _ rho: UnsafePointer<Double>, _ theta: UnsafePointer<Double>, _ in_stride: Int, _ real: UnsafeMutablePointer<Double>, _ imag: UnsafeMutablePointer<Double>, _ out_stride: Int) {
-    
-    var rho = rho
-    var theta = theta
-    var real = real
-    var imag = imag
-    
-    for _ in 0..<count {
-        let _rho = rho.pointee
-        let _theta = theta.pointee
-        real.pointee = _rho * cos(_theta)
-        imag.pointee = _rho * sin(_theta)
-        rho += in_stride
-        theta += in_stride
-        real += out_stride
-        imag += out_stride
-    }
-}
-public func ToPolar(_ count: Int, _ real: UnsafePointer<Double>, _ imag: UnsafePointer<Double>, _ in_stride: Int, _ rho: UnsafeMutablePointer<Double>, _ theta: UnsafeMutablePointer<Double>, _ out_stride: Int) {
-    
-    var real = real
-    var imag = imag
-    var rho = rho
-    var theta = theta
-    
-    for _ in 0..<count {
-        let _real = real.pointee
-        let _imag = imag.pointee
-        rho.pointee = sqrt(_real * _real + _imag * _imag)
-        theta.pointee = atan2(_imag, _real)
+        rho.pointee = T.sqrt(_real * _real + _imag * _imag)
+        theta.pointee = T.atan2(_imag, _real)
         real += in_stride
         imag += in_stride
         rho += out_stride

@@ -25,6 +25,7 @@
 
 import Foundation
 
+@_specialize(UInt8) @_specialize(UInt16) @_specialize(UInt32) @_specialize(UInt64) @_specialize(UInt)
 public func addmod<T: UnsignedInteger>(_ lhs: [T], _ rhs: [T], _ mod: T) -> [T] {
     var result = lhs
     assert(lhs.count == rhs.count, "mismatch count of inputs.")
@@ -32,6 +33,7 @@ public func addmod<T: UnsignedInteger>(_ lhs: [T], _ rhs: [T], _ mod: T) -> [T] 
     return result
 }
 
+@_specialize(UInt8) @_specialize(UInt16) @_specialize(UInt32) @_specialize(UInt64) @_specialize(UInt)
 public func addmod<T: UnsignedInteger>(_ lhs: [T], _ rhs: [T], _ mod: [T]) -> [T] {
     var result = lhs
     assert(lhs.count == rhs.count, "mismatch count of inputs.")
@@ -39,18 +41,21 @@ public func addmod<T: UnsignedInteger>(_ lhs: [T], _ rhs: [T], _ mod: [T]) -> [T
     AddMod(lhs.count, lhs, 1, rhs, 1, mod, 1, &result, 1)
     return result
 }
+@_specialize(UInt8) @_specialize(UInt16) @_specialize(UInt32) @_specialize(UInt64) @_specialize(UInt)
 public func negmod<T: UnsignedInteger>(_ a: [T], _ mod: T) -> [T] {
     var result = a
     NegMod(a.count, a, 1, [mod], 0, &result, 1)
     return result
 }
 
+@_specialize(UInt8) @_specialize(UInt16) @_specialize(UInt32) @_specialize(UInt64) @_specialize(UInt)
 public func negmod<T: UnsignedInteger>(_ a: [T], _ mod: [T]) -> [T] {
     var result = a
     assert(a.count == mod.count, "mismatch count of inputs.")
     NegMod(a.count, a, 1, mod, 1, &result, 1)
     return result
 }
+@_specialize(UInt8) @_specialize(UInt16) @_specialize(UInt32) @_specialize(UInt64) @_specialize(UInt)
 public func submod<T: UnsignedInteger>(_ lhs: [T], _ rhs: [T], _ mod: T) -> [T] {
     var result = lhs
     assert(lhs.count == rhs.count, "mismatch count of inputs.")
@@ -58,6 +63,7 @@ public func submod<T: UnsignedInteger>(_ lhs: [T], _ rhs: [T], _ mod: T) -> [T] 
     return result
 }
 
+@_specialize(UInt8) @_specialize(UInt16) @_specialize(UInt32) @_specialize(UInt64) @_specialize(UInt)
 public func submod<T: UnsignedInteger>(_ lhs: [T], _ rhs: [T], _ mod: [T]) -> [T] {
     var result = lhs
     assert(lhs.count == rhs.count, "mismatch count of inputs.")
@@ -66,6 +72,7 @@ public func submod<T: UnsignedInteger>(_ lhs: [T], _ rhs: [T], _ mod: [T]) -> [T
     return result
 }
 
+@_specialize(UInt8) @_specialize(UInt16) @_specialize(UInt32) @_specialize(UInt64) @_specialize(UInt)
 public func mulmod<T: UnsignedInteger>(_ lhs: [T], _ rhs: [T], _ mod: T) -> [T] {
     var result = lhs
     assert(lhs.count == rhs.count, "mismatch count of inputs.")
@@ -73,6 +80,7 @@ public func mulmod<T: UnsignedInteger>(_ lhs: [T], _ rhs: [T], _ mod: T) -> [T] 
     return result
 }
 
+@_specialize(UInt8) @_specialize(UInt16) @_specialize(UInt32) @_specialize(UInt64) @_specialize(UInt)
 public func mulmod<T: UnsignedInteger>(_ lhs: [T], _ rhs: [T], _ mod: [T]) -> [T] {
     var result = lhs
     assert(lhs.count == rhs.count, "mismatch count of inputs.")
@@ -81,6 +89,7 @@ public func mulmod<T: UnsignedInteger>(_ lhs: [T], _ rhs: [T], _ mod: [T]) -> [T
     return result
 }
 
+@_specialize(Int8) @_specialize(Int16) @_specialize(Int32) @_specialize(Int64) @_specialize(Int) @_specialize(UInt8) @_specialize(UInt16) @_specialize(UInt32) @_specialize(UInt64) @_specialize(UInt)
 public func add<T: Integer>(_ lhs: [T], _ rhs: [T]) -> [T] {
     var result = lhs
     assert(lhs.count == rhs.count, "mismatch count of inputs.")
@@ -88,6 +97,7 @@ public func add<T: Integer>(_ lhs: [T], _ rhs: [T]) -> [T] {
     return result
 }
 
+@_specialize(Int8) @_specialize(Int16) @_specialize(Int32) @_specialize(Int64) @_specialize(Int) @_specialize(UInt8) @_specialize(UInt16) @_specialize(UInt32) @_specialize(UInt64) @_specialize(UInt)
 public func sub<T: Integer>(_ lhs: [T], _ rhs: [T]) -> [T] {
     var result = lhs
     assert(lhs.count == rhs.count, "mismatch count of inputs.")
@@ -95,6 +105,7 @@ public func sub<T: Integer>(_ lhs: [T], _ rhs: [T]) -> [T] {
     return result
 }
 
+@_specialize(Int8) @_specialize(Int16) @_specialize(Int32) @_specialize(Int64) @_specialize(Int) @_specialize(UInt8) @_specialize(UInt16) @_specialize(UInt32) @_specialize(UInt64) @_specialize(UInt)
 public func mul<T: Integer>(_ lhs: [T], _ rhs: [T]) -> [T] {
     var result = lhs
     assert(lhs.count == rhs.count, "mismatch count of inputs.")
@@ -102,6 +113,7 @@ public func mul<T: Integer>(_ lhs: [T], _ rhs: [T]) -> [T] {
     return result
 }
 
+@_specialize(Int8) @_specialize(Int16) @_specialize(Int32) @_specialize(Int64) @_specialize(Int) @_specialize(UInt8) @_specialize(UInt16) @_specialize(UInt32) @_specialize(UInt64) @_specialize(UInt)
 public func div<T: Integer>(_ lhs: [T], _ rhs: [T]) -> [T] {
     var result = lhs
     assert(lhs.count == rhs.count, "mismatch count of inputs.")
@@ -109,6 +121,7 @@ public func div<T: Integer>(_ lhs: [T], _ rhs: [T]) -> [T] {
     return result
 }
 
+@_specialize(Int8) @_specialize(Int16) @_specialize(Int32) @_specialize(Int64) @_specialize(Int) @_specialize(UInt8) @_specialize(UInt16) @_specialize(UInt32) @_specialize(UInt64) @_specialize(UInt)
 public func mod<T: Integer>(_ lhs: [T], _ rhs: [T]) -> [T] {
     var result = lhs
     assert(lhs.count == rhs.count, "mismatch count of inputs.")
@@ -116,6 +129,7 @@ public func mod<T: Integer>(_ lhs: [T], _ rhs: [T]) -> [T] {
     return result
 }
 
+@_specialize(Float) @_specialize(Double)
 public func add<T: FloatingPoint>(_ lhs: [T], _ rhs: [T]) -> [T] {
     var result = lhs
     assert(lhs.count == rhs.count, "mismatch count of inputs.")
@@ -123,6 +137,7 @@ public func add<T: FloatingPoint>(_ lhs: [T], _ rhs: [T]) -> [T] {
     return result
 }
 
+@_specialize(Float) @_specialize(Double)
 public func sub<T: FloatingPoint>(_ lhs: [T], _ rhs: [T]) -> [T] {
     var result = lhs
     assert(lhs.count == rhs.count, "mismatch count of inputs.")
@@ -130,6 +145,7 @@ public func sub<T: FloatingPoint>(_ lhs: [T], _ rhs: [T]) -> [T] {
     return result
 }
 
+@_specialize(Float) @_specialize(Double)
 public func mul<T: FloatingPoint>(_ lhs: [T], _ rhs: [T]) -> [T] {
     var result = lhs
     assert(lhs.count == rhs.count, "mismatch count of inputs.")
@@ -137,6 +153,7 @@ public func mul<T: FloatingPoint>(_ lhs: [T], _ rhs: [T]) -> [T] {
     return result
 }
 
+@_specialize(Float) @_specialize(Double)
 public func div<T: FloatingPoint>(_ lhs: [T], _ rhs: [T]) -> [T] {
     var result = lhs
     assert(lhs.count == rhs.count, "mismatch count of inputs.")
@@ -144,6 +161,7 @@ public func div<T: FloatingPoint>(_ lhs: [T], _ rhs: [T]) -> [T] {
     return result
 }
 
+@_specialize(Float) @_specialize(Double)
 public func mod<T: FloatingPoint>(_ lhs: [T], _ rhs: [T]) -> [T] {
     var result = lhs
     assert(lhs.count == rhs.count, "mismatch count of inputs.")
@@ -151,6 +169,7 @@ public func mod<T: FloatingPoint>(_ lhs: [T], _ rhs: [T]) -> [T] {
     return result
 }
 
+@_specialize(Float) @_specialize(Double)
 public func mulAdd<T: FloatingPoint>(_ a: [T], _ b: [T], _ c: [T]) -> [T] {
     var result = a
     assert(a.count == b.count && a.count == c.count, "mismatch count of inputs.")
@@ -158,6 +177,7 @@ public func mulAdd<T: FloatingPoint>(_ a: [T], _ b: [T], _ c: [T]) -> [T] {
     return result
 }
 
+@_specialize(Float) @_specialize(Double)
 public func mulSub<T: FloatingPoint>(_ a: [T], _ b: [T], _ c: [T]) -> [T] {
     var result = a
     assert(a.count == b.count && a.count == c.count, "mismatch count of inputs.")
@@ -165,6 +185,7 @@ public func mulSub<T: FloatingPoint>(_ a: [T], _ b: [T], _ c: [T]) -> [T] {
     return result
 }
 
+@_specialize(Float) @_specialize(Double)
 public func subMul<T: FloatingPoint>(_ a: [T], _ b: [T], _ c: [T]) -> [T] {
     var result = a
     assert(a.count == b.count && a.count == c.count, "mismatch count of inputs.")
@@ -172,6 +193,7 @@ public func subMul<T: FloatingPoint>(_ a: [T], _ b: [T], _ c: [T]) -> [T] {
     return result
 }
 
+@_specialize(Float) @_specialize(Double)
 public func dot<T: FloatingPoint>(_ a: [T], _ b: [T]) -> T {
     assert(a.count == b.count, "mismatch count of inputs.")
     return Dot(a.count, a, 1, b, 1)

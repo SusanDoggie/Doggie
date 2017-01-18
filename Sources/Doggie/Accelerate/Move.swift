@@ -34,6 +34,7 @@ public func Move<T>(_ count: Int, _ input: UnsafePointer<T>, _ in_stride: Int, _
         output += out_stride
     }
 }
+@_specialize(Float) @_specialize(Double)
 public func Move<T: FloatingPoint>(_ count: Int, _ real: UnsafePointer<T>, _ imag: UnsafePointer<T>, _ in_stride: Int, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var real = real
@@ -62,6 +63,7 @@ public func Swap<T>(_ count: Int, _ left: UnsafeMutablePointer<T>, _ l_stride: I
         right += r_stride
     }
 }
+@_specialize(Float) @_specialize(Double)
 public func Swap<T: FloatingPoint>(_ count: Int, _ lreal: UnsafeMutablePointer<T>, _ limag: UnsafeMutablePointer<T>, _ l_stride: Int, _ rreal: UnsafeMutablePointer<T>, _ rimag: UnsafeMutablePointer<T>, _ r_stride: Int) {
     
     var lreal = lreal
@@ -76,5 +78,38 @@ public func Swap<T: FloatingPoint>(_ count: Int, _ lreal: UnsafeMutablePointer<T
         limag += l_stride
         rreal += r_stride
         rimag += r_stride
+    }
+}
+
+public func Transpose<T>(_ row: Int, _ column: Int, _ input: UnsafePointer<T>, _ in_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
+    
+    var input = input
+    var output = output
+    
+    let _in_stride = in_stride * column
+    let _out_stride = out_stride * column
+    for _ in 0..<row {
+        Move(column, input, _in_stride, output, out_stride)
+        input += in_stride
+        output += _out_stride
+    }
+}
+
+@_specialize(Float) @_specialize(Double)
+public func Transpose<T: FloatingPoint>(_ row: Int, _ column: Int, _ real: UnsafePointer<T>, _ imag: UnsafePointer<T>, _ in_stride: Int, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int) {
+    
+    var real = real
+    var imag = imag
+    var _real = _real
+    var _imag = _imag
+    
+    let _in_stride = in_stride * column
+    let _out_stride = out_stride * column
+    for _ in 0..<row {
+        Move(column, real, imag, _in_stride, _real, _imag, out_stride)
+        real += in_stride
+        imag += in_stride
+        _real += _out_stride
+        _imag += _out_stride
     }
 }

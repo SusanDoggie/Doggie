@@ -26,8 +26,6 @@
 		08458AFD1E2E627600D01813 /* Move.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AB71E2E627600D01813 /* Move.swift */; };
 		08458AFE1E2E627600D01813 /* SafeFunction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AB81E2E627600D01813 /* SafeFunction.swift */; };
 		08458AFF1E2E627600D01813 /* SafeFunction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AB81E2E627600D01813 /* SafeFunction.swift */; };
-		08458B001E2E627600D01813 /* Transpose.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AB91E2E627600D01813 /* Transpose.swift */; };
-		08458B011E2E627600D01813 /* Transpose.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AB91E2E627600D01813 /* Transpose.swift */; };
 		08458B021E2E627600D01813 /* Date.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458ABB1E2E627600D01813 /* Date.swift */; };
 		08458B031E2E627600D01813 /* Date.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458ABB1E2E627600D01813 /* Date.swift */; };
 		08458B041E2E627600D01813 /* FloatingPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458ABC1E2E627600D01813 /* FloatingPoint.swift */; };
@@ -163,7 +161,6 @@
 		08458AB61E2E627600D01813 /* DiscreteConvolve.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DiscreteConvolve.swift; sourceTree = "<group>"; };
 		08458AB71E2E627600D01813 /* Move.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Move.swift; sourceTree = "<group>"; };
 		08458AB81E2E627600D01813 /* SafeFunction.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SafeFunction.swift; sourceTree = "<group>"; };
-		08458AB91E2E627600D01813 /* Transpose.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Transpose.swift; sourceTree = "<group>"; };
 		08458ABB1E2E627600D01813 /* Date.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Date.swift; sourceTree = "<group>"; };
 		08458ABC1E2E627600D01813 /* FloatingPoint.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FloatingPoint.swift; sourceTree = "<group>"; };
 		08458ABD1E2E627600D01813 /* Hashable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Hashable.swift; sourceTree = "<group>"; };
@@ -272,7 +269,6 @@
 				08458AB61E2E627600D01813 /* DiscreteConvolve.swift */,
 				08458AB71E2E627600D01813 /* Move.swift */,
 				08458AB81E2E627600D01813 /* SafeFunction.swift */,
-				08458AB91E2E627600D01813 /* Transpose.swift */,
 			);
 			path = Accelerate;
 			sourceTree = "<group>";
@@ -686,7 +682,6 @@
 				08458B3C1E2E627600D01813 /* Polynomial.swift in Sources */,
 				08458B0E1E2E627600D01813 /* Regex.swift in Sources */,
 				08458B3E1E2E627600D01813 /* Rect.swift in Sources */,
-				08458B001E2E627600D01813 /* Transpose.swift in Sources */,
 				08458B0C1E2E627600D01813 /* Random.swift in Sources */,
 				08458B1C1E2E627600D01813 /* LazyGatherCollection.swift in Sources */,
 				08458B401E2E627600D01813 /* SDTransform.swift in Sources */,
@@ -760,7 +755,6 @@
 				08458B3D1E2E627600D01813 /* Polynomial.swift in Sources */,
 				08458B0F1E2E627600D01813 /* Regex.swift in Sources */,
 				08458B3F1E2E627600D01813 /* Rect.swift in Sources */,
-				08458B011E2E627600D01813 /* Transpose.swift in Sources */,
 				08458B0D1E2E627600D01813 /* Random.swift in Sources */,
 				08458B1D1E2E627600D01813 /* LazyGatherCollection.swift in Sources */,
 				08458B411E2E627600D01813 /* SDTransform.swift in Sources */,
