@@ -23,6 +23,7 @@
 //  THE SOFTWARE.
 //
 
+@_specialize(Int8) @_specialize(Int16) @_specialize(Int32) @_specialize(Int64) @_specialize(Int) @_specialize(UInt8) @_specialize(UInt16) @_specialize(UInt32) @_specialize(UInt64) @_specialize(UInt) @_specialize(Float) @_specialize(Double)
 public func Move<T>(_ count: Int, _ input: UnsafePointer<T>, _ in_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var input = input
@@ -52,6 +53,7 @@ public func Move<T: FloatingPoint>(_ count: Int, _ real: UnsafePointer<T>, _ ima
     }
 }
 
+@_specialize(Int8) @_specialize(Int16) @_specialize(Int32) @_specialize(Int64) @_specialize(Int) @_specialize(UInt8) @_specialize(UInt16) @_specialize(UInt32) @_specialize(UInt64) @_specialize(UInt) @_specialize(Float) @_specialize(Double)
 public func Swap<T>(_ count: Int, _ left: UnsafeMutablePointer<T>, _ l_stride: Int, _ right: UnsafeMutablePointer<T>, _ r_stride: Int) {
     
     var left = left
@@ -81,6 +83,7 @@ public func Swap<T: FloatingPoint>(_ count: Int, _ lreal: UnsafeMutablePointer<T
     }
 }
 
+@_specialize(Int8) @_specialize(Int16) @_specialize(Int32) @_specialize(Int64) @_specialize(Int) @_specialize(UInt8) @_specialize(UInt16) @_specialize(UInt32) @_specialize(UInt64) @_specialize(UInt) @_specialize(Float) @_specialize(Double)
 public func Transpose<T>(_ row: Int, _ column: Int, _ input: UnsafePointer<T>, _ in_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var input = input

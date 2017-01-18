@@ -23,8 +23,6 @@
 //  THE SOFTWARE.
 //
 
-import Foundation
-
 @_specialize(Float) @_specialize(Double)
 public func ToRect<T: FloatingMathProtocol>(_ count: Int, _ rho: UnsafePointer<T>, _ theta: UnsafePointer<T>, _ in_stride: Int, _ real: UnsafeMutablePointer<T>, _ imag: UnsafeMutablePointer<T>, _ out_stride: Int) {
     

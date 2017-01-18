@@ -276,7 +276,7 @@ public func Radix2CooleyTukey(_ buffer: [Complex]) -> [Complex] {
         return buffer
     }
     var result = buffer
-    DispatchRadix2CooleyTukey(log2(buffer.count), buffer.map { $0 / _sqrt }, 1, buffer.count, &result, 1)
+    Radix2CooleyTukey(log2(buffer.count), buffer.map { $0 / _sqrt }, 1, buffer.count, &result, 1)
     return result
 }
 public func InverseRadix2CooleyTukey(_ buffer: [Complex]) -> [Complex] {
@@ -286,7 +286,7 @@ public func InverseRadix2CooleyTukey(_ buffer: [Complex]) -> [Complex] {
         return buffer
     }
     var result = buffer
-    DispatchInverseRadix2CooleyTukey(log2(buffer.count), buffer.map { $0 / _sqrt }, 1, buffer.count, &result, 1)
+    InverseRadix2CooleyTukey(log2(buffer.count), buffer.map { $0 / _sqrt }, 1, buffer.count, &result, 1)
     return result
 }
 
@@ -295,11 +295,12 @@ public func Radix2FiniteImpulseFilter(_ signal: [Complex], _ kernel: [Complex]) 
     var temp = signal
     assert(signal.count.isPower2, "size of signal must be power of 2.")
     assert(signal.count == kernel.count, "mismatch count of inputs.")
-    DispatchRadix2FiniteImpulseFilter(log2(signal.count), signal, 1, signal.count, kernel, 1, &result, 1, &temp, 1)
+    Radix2FiniteImpulseFilter(log2(signal.count), signal, 1, signal.count, kernel, 1, &result, 1, &temp, 1)
     return result
 }
 
-public func Radix2CircularConvolve(_ signal: [Double], _ kernel: [Double]) -> [Double] {
+@_specialize(Float) @_specialize(Double)
+public func Radix2CircularConvolve<T: BinaryFloatingPoint>(_ signal: [T], _ kernel: [T]) -> [T] where T : FloatingMathProtocol {
     assert(signal.count.isPower2, "size of signal must be power of 2.")
     assert(signal.count == kernel.count, "mismatch count of inputs.")
     if signal.count == 1 {
@@ -307,7 +308,7 @@ public func Radix2CircularConvolve(_ signal: [Double], _ kernel: [Double]) -> [D
     }
     var result = signal
     var temp = signal
-    DispatchRadix2CircularConvolve(log2(signal.count), signal, 1, signal.count, kernel, 1, kernel.count, &result, 1, &temp, 1)
+    Radix2CircularConvolve(log2(signal.count), signal, 1, signal.count, kernel, 1, kernel.count, &result, 1, &temp, 1)
     return result
 }
 
@@ -319,18 +320,19 @@ public func Radix2CircularConvolve(_ signal: [Complex], _ kernel: [Complex]) -> 
     }
     var result = signal
     var temp = signal
-    DispatchRadix2CircularConvolve(log2(signal.count), signal, 1, signal.count, kernel, 1, kernel.count, &result, 1, &temp, 1)
+    Radix2CircularConvolve(log2(signal.count), signal, 1, signal.count, kernel, 1, kernel.count, &result, 1, &temp, 1)
     return result
 }
 
-public func Radix2PowerCircularConvolve(_ signal: [Double], _ n: Double) -> [Double] {
+@_specialize(Float) @_specialize(Double)
+public func Radix2PowerCircularConvolve<T: BinaryFloatingPoint>(_ signal: [T], _ n: T) -> [T] where T : FloatingMathProtocol {
     assert(signal.count.isPower2, "size of signal must be power of 2.")
     if signal.count == 1 {
-        return [pow(signal[0], n)]
+        return [T.pow(signal[0], n)]
     }
     var result = signal
     var temp = signal
-    DispatchRadix2PowerCircularConvolve(log2(signal.count), signal, 1, signal.count, n, &result, 1, &temp, 1)
+    Radix2PowerCircularConvolve(log2(signal.count), signal, 1, signal.count, n, &result, 1, &temp, 1)
     return result
 }
 
@@ -341,7 +343,7 @@ public func Radix2PowerCircularConvolve(_ signal: [Complex], _ n: Double) -> [Co
     }
     var result = signal
     var temp = signal
-    DispatchRadix2PowerCircularConvolve(log2(signal.count), signal, 1, signal.count, n, &result, 1, &temp, 1)
+    Radix2PowerCircularConvolve(log2(signal.count), signal, 1, signal.count, n, &result, 1, &temp, 1)
     return result
 }
 
@@ -351,7 +353,7 @@ public func Radix2CooleyTukey<U: UnsignedInteger>(_ buffer: [U], _ alpha: U, _ m
         return buffer
     }
     var result = buffer
-    DispatchRadix2CooleyTukey(log2(buffer.count), buffer, 1, buffer.count, alpha, mod, &result, 1)
+    Radix2CooleyTukey(log2(buffer.count), buffer, 1, buffer.count, alpha, mod, &result, 1)
     return result
 }
 public func InverseRadix2CooleyTukey<U: UnsignedInteger>(_ buffer: [U], _ alpha: U, _ mod: U) -> [U] {
@@ -360,7 +362,7 @@ public func InverseRadix2CooleyTukey<U: UnsignedInteger>(_ buffer: [U], _ alpha:
         return buffer
     }
     var result = buffer
-    DispatchInverseRadix2CooleyTukey(log2(buffer.count), buffer, 1, buffer.count, alpha, mod, &result, 1)
+    InverseRadix2CooleyTukey(log2(buffer.count), buffer, 1, buffer.count, alpha, mod, &result, 1)
     return result
 }
 public func Radix2CircularConvolve<U: UnsignedInteger>(_ signal: [U], _ kernel: [U], _ alpha: U, _ mod: U) -> [U] {
@@ -371,6 +373,6 @@ public func Radix2CircularConvolve<U: UnsignedInteger>(_ signal: [U], _ kernel: 
     }
     var result = signal
     var temp = signal
-    DispatchRadix2CircularConvolve(log2(signal.count), signal, 1, signal.count, kernel, 1, kernel.count, alpha, mod, &result, 1, &temp, 1)
+    Radix2CircularConvolve(log2(signal.count), signal, 1, signal.count, kernel, 1, kernel.count, alpha, mod, &result, 1, &temp, 1)
     return result
 }
