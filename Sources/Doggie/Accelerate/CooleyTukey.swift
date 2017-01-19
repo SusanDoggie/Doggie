@@ -518,10 +518,11 @@ public func InverseRadix2CooleyTukey<T: BinaryFloatingPoint>(_ level: Int, _ rea
 public func HalfRadix2CooleyTukey<T: BinaryFloatingPoint>(_ level: Int, _ row: Int, _ input: UnsafePointer<T>, _ in_stride: Int, _ in_row_stride: Int, _ in_count: Int, _ in_interleaved: Bool, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int, _ out_row_stride: Int, _ out_interleaved: Bool) where T : FloatingMathProtocol {
     
     let length = 1 << level
+    let half = length >> 1
     let _in_stride = in_interleaved ? row * in_stride * in_row_stride : in_stride
     let _in_row_stride = in_interleaved ? in_row_stride : in_count * in_stride * in_row_stride
     let _out_stride = out_interleaved ? row * out_stride * out_row_stride : out_stride
-    let _out_row_stride = out_interleaved ? out_row_stride : length * out_stride * out_row_stride
+    let _out_row_stride = out_interleaved ? out_row_stride : half * out_stride * out_row_stride
     
     var input = input
     var _real = _real
@@ -537,8 +538,9 @@ public func HalfRadix2CooleyTukey<T: BinaryFloatingPoint>(_ level: Int, _ row: I
 public func HalfInverseRadix2CooleyTukey<T: BinaryFloatingPoint>(_ level: Int, _ row: Int, _ real: UnsafePointer<T>, _ imag: UnsafePointer<T>, _ in_stride: Int, _ in_row_stride: Int, _ in_interleaved: Bool, _ output: UnsafeMutablePointer<T>, _ out_stride: Int, _ out_row_stride: Int, _ out_interleaved: Bool, _ treal: UnsafeMutablePointer<T>, _ timag: UnsafeMutablePointer<T>, _ tp_stride: Int, _ tp_row_stride: Int, _ tp_interleaved: Bool) where T : FloatingMathProtocol {
     
     let length = 1 << level
+    let half = length >> 1
     let _in_stride = in_interleaved ? row * in_stride * in_row_stride : in_stride
-    let _in_row_stride = in_interleaved ? in_row_stride : length * in_stride * in_row_stride
+    let _in_row_stride = in_interleaved ? in_row_stride : half * in_stride * in_row_stride
     let _out_stride = out_interleaved ? row * out_stride * out_row_stride : out_stride
     let _out_row_stride = out_interleaved ? out_row_stride : length * out_stride * out_row_stride
     let _tp_stride = tp_interleaved ? row * tp_stride * tp_row_stride : tp_stride
