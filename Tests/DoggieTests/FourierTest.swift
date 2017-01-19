@@ -32,49 +32,13 @@ class FourierTest: XCTestCase {
     static let allTests = [
         ("testRadix2CooleyTukeyA", testRadix2CooleyTukeyA),
         ("testRadix2CooleyTukeyB", testRadix2CooleyTukeyB),
-        ("testRadix2CooleyTukeyC", testRadix2CooleyTukeyC),
-        ("testRadix2CooleyTukeyD", testRadix2CooleyTukeyD),
-        ("testRadix2CooleyTukeyE", testRadix2CooleyTukeyE),
         ("testRadix2CooleyTukeyComplexA", testRadix2CooleyTukeyComplexA),
         ("testRadix2CooleyTukeyComplexB", testRadix2CooleyTukeyComplexB),
-        ("testRadix2CooleyTukeyComplexC", testRadix2CooleyTukeyComplexC),
-        ("testRadix2CooleyTukeyComplexD", testRadix2CooleyTukeyComplexD),
-        ("testRadix2CooleyTukeyComplexE", testRadix2CooleyTukeyComplexE),
         ("testInverseRadix2CooleyTukeyA", testInverseRadix2CooleyTukeyA),
         ("testInverseRadix2CooleyTukeyB", testInverseRadix2CooleyTukeyB),
-        ("testInverseRadix2CooleyTukeyC", testInverseRadix2CooleyTukeyC),
-        ("testInverseRadix2CooleyTukeyD", testInverseRadix2CooleyTukeyD),
-        ("testInverseRadix2CooleyTukeyE", testInverseRadix2CooleyTukeyE),
         ("testInverseRadix2CooleyTukeyComplexA", testInverseRadix2CooleyTukeyComplexA),
         ("testInverseRadix2CooleyTukeyComplexB", testInverseRadix2CooleyTukeyComplexB),
-        ("testInverseRadix2CooleyTukeyComplexC", testInverseRadix2CooleyTukeyComplexC),
-        ("testInverseRadix2CooleyTukeyComplexD", testInverseRadix2CooleyTukeyComplexD),
-        ("testInverseRadix2CooleyTukeyComplexE", testInverseRadix2CooleyTukeyComplexE),
-        ("testFourier", testFourier),
-        ("testFourierComplex", testFourierComplex),
-        ("testRadix2CooleyTukey", testRadix2CooleyTukey),
-        ("testRadix2CooleyTukeyComplex", testRadix2CooleyTukeyComplex),
-        ("testBluestein", testBluestein),
-        ("testBluesteinComplex", testBluesteinComplex),
-        ("testBluesteinO", testBluesteinO),
-        ("testBluesteinOComplex", testBluesteinOComplex),
-        ("testInverseFourier", testInverseFourier),
-        ("testInverseFourierComplex", testInverseFourierComplex),
-        ("testInverseRadix2CooleyTukeyComplex", testInverseRadix2CooleyTukeyComplex),
-        ("testInverseBluestein", testInverseBluestein),
-        ("testInverseBluesteinComplex", testInverseBluesteinComplex),
-        ("testInverseBluesteinO", testInverseBluesteinO),
-        ("testInverseBluesteinOComplex", testInverseBluesteinOComplex),
-        ("testConvolveA", testConvolveA),
-        ("testConvolveB", testConvolveB),
-        ("testConvolveC", testConvolveC),
-        ("testConvolveD", testConvolveD),
-        ("testConvolveE", testConvolveE),
-        ("testConvolveF", testConvolveF),
-        ("testConvolveG", testConvolveG),
-        ("testConvolveH", testConvolveH),
-        ("testConvolveI", testConvolveI),
-        ("testConvolveJ", testConvolveJ),
+        ("testConvolveA", testConvolve),
         ("testConvolveComplex", testConvolveComplex),
         ("testCircularConvolve", testCircularConvolve),
         ("testCircularConvolveComplex", testCircularConvolveComplex),
@@ -110,1055 +74,444 @@ class FourierTest: XCTestCase {
     
     func testRadix2CooleyTukeyA() {
         
-        var sample = [Double](repeating: 0, count: 4)
-        for i in sample.indices {
-            sample[i] = (0.0..<1.0).random()
-        }
-        
-        var answer = [Complex]()
-        DiscreteFourier(sample, &answer)
-        
-        var result = [Complex]()
-        Radix2CooleyTukey(sample, &result)
-        
-        for i in 0..<answer.count {
-            XCTAssertEqualWithAccuracy(answer[i].real, result[i].real, accuracy: accuracy)
-            XCTAssertEqualWithAccuracy(answer[i].imag, result[i].imag, accuracy: accuracy)
-        }
-    }
-    func testRadix2CooleyTukeyB() {
-        
-        var sample = [Double](repeating: 0, count: 8)
-        for i in sample.indices {
-            sample[i] = (0.0..<1.0).random()
-        }
-        
-        var answer = [Complex]()
-        DiscreteFourier(sample, &answer)
-        
-        var result = [Complex]()
-        Radix2CooleyTukey(sample, &result)
-        
-        for i in 0..<answer.count {
-            XCTAssertEqualWithAccuracy(answer[i].real, result[i].real, accuracy: accuracy)
-            XCTAssertEqualWithAccuracy(answer[i].imag, result[i].imag, accuracy: accuracy)
-        }
-    }
-    func testRadix2CooleyTukeyC() {
-        
-        var sample = [Double](repeating: 0, count: 16)
-        for i in sample.indices {
-            sample[i] = (0.0..<1.0).random()
-        }
-        
-        var answer = [Complex]()
-        DiscreteFourier(sample, &answer)
-        
-        var result = [Complex]()
-        Radix2CooleyTukey(sample, &result)
-        
-        for i in 0..<answer.count {
-            XCTAssertEqualWithAccuracy(answer[i].real, result[i].real, accuracy: accuracy)
-            XCTAssertEqualWithAccuracy(answer[i].imag, result[i].imag, accuracy: accuracy)
-        }
-    }
-    func testRadix2CooleyTukeyD() {
-        
-        var sample = [Double](repeating: 0, count: 32)
-        for i in sample.indices {
-            sample[i] = (0.0..<1.0).random()
-        }
-        
-        var answer = [Complex]()
-        DiscreteFourier(sample, &answer)
-        
-        var result = [Complex]()
-        Radix2CooleyTukey(sample, &result)
-        
-        for i in 0..<answer.count {
-            XCTAssertEqualWithAccuracy(answer[i].real, result[i].real, accuracy: accuracy)
-            XCTAssertEqualWithAccuracy(answer[i].imag, result[i].imag, accuracy: accuracy)
-        }
-    }
-    func testRadix2CooleyTukeyE() {
-        
-        var sample = [Double](repeating: 0, count: 512)
-        for i in sample.indices {
-            sample[i] = (0.0..<1.0).random()
-        }
-        
-        var answer = [Complex]()
-        DiscreteFourier(sample, &answer)
-        
-        var result = [Complex]()
-        Radix2CooleyTukey(sample, &result)
-        
-        for i in 0..<answer.count {
-            XCTAssertEqualWithAccuracy(answer[i].real, result[i].real, accuracy: accuracy)
-            XCTAssertEqualWithAccuracy(answer[i].imag, result[i].imag, accuracy: accuracy)
+        for i in 0...10 {
+            let n = 1 << i
+            
+            var sample = [Double](repeating: 0, count: n)
+            for i in sample.indices {
+                sample[i] = (0.0..<1.0).random()
+            }
+            
+            var answer = [Complex]()
+            DiscreteFourier(sample, &answer)
+            
+            var result = [Complex]()
+            Radix2CooleyTukey(sample, &result)
+            
+            for i in 0..<answer.count {
+                XCTAssertEqualWithAccuracy(answer[i].real, result[i].real, accuracy: accuracy)
+                XCTAssertEqualWithAccuracy(answer[i].imag, result[i].imag, accuracy: accuracy)
+            }
         }
     }
     func testRadix2CooleyTukeyComplexA() {
         
-        var sample = [Complex](repeating: Complex(0), count: 4)
-        for i in sample.indices {
-            sample[i] = Complex(real: (0.0..<1.0).random(), imag: (0.0..<1.0).random())
-        }
-        
-        var answer = [Complex]()
-        DiscreteFourier(sample, &answer)
-        
-        let result = Radix2CooleyTukey(sample)
-        for i in 0..<answer.count {
-            XCTAssertEqualWithAccuracy(answer[i].real, result[i].real, accuracy: accuracy)
-            XCTAssertEqualWithAccuracy(answer[i].imag, result[i].imag, accuracy: accuracy)
-        }
-    }
-    func testRadix2CooleyTukeyComplexB() {
-        
-        var sample = [Complex](repeating: Complex(0), count: 8)
-        for i in sample.indices {
-            sample[i] = Complex(real: (0.0..<1.0).random(), imag: (0.0..<1.0).random())
-        }
-        
-        var answer = [Complex]()
-        DiscreteFourier(sample, &answer)
-        
-        let result = Radix2CooleyTukey(sample)
-        for i in 0..<answer.count {
-            XCTAssertEqualWithAccuracy(answer[i].real, result[i].real, accuracy: accuracy)
-            XCTAssertEqualWithAccuracy(answer[i].imag, result[i].imag, accuracy: accuracy)
-        }
-    }
-    func testRadix2CooleyTukeyComplexC() {
-        
-        var sample = [Complex](repeating: Complex(0), count: 16)
-        for i in sample.indices {
-            sample[i] = Complex(real: (0.0..<1.0).random(), imag: (0.0..<1.0).random())
-        }
-        
-        var answer = [Complex]()
-        DiscreteFourier(sample, &answer)
-        
-        let result = Radix2CooleyTukey(sample)
-        for i in 0..<answer.count {
-            XCTAssertEqualWithAccuracy(answer[i].real, result[i].real, accuracy: accuracy)
-            XCTAssertEqualWithAccuracy(answer[i].imag, result[i].imag, accuracy: accuracy)
-        }
-    }
-    func testRadix2CooleyTukeyComplexD() {
-        
-        var sample = [Complex](repeating: Complex(0), count: 32)
-        for i in sample.indices {
-            sample[i] = Complex(real: (0.0..<1.0).random(), imag: (0.0..<1.0).random())
-        }
-        
-        var answer = [Complex]()
-        DiscreteFourier(sample, &answer)
-        
-        let result = Radix2CooleyTukey(sample)
-        for i in 0..<answer.count {
-            XCTAssertEqualWithAccuracy(answer[i].real, result[i].real, accuracy: accuracy)
-            XCTAssertEqualWithAccuracy(answer[i].imag, result[i].imag, accuracy: accuracy)
-        }
-    }
-    func testRadix2CooleyTukeyComplexE() {
-        
-        var sample = [Complex](repeating: Complex(0), count: 512)
-        for i in sample.indices {
-            sample[i] = Complex(real: (0.0..<1.0).random(), imag: (0.0..<1.0).random())
-        }
-        
-        var answer = [Complex]()
-        DiscreteFourier(sample, &answer)
-        
-        let result = Radix2CooleyTukey(sample)
-        for i in 0..<answer.count {
-            XCTAssertEqualWithAccuracy(answer[i].real, result[i].real, accuracy: accuracy)
-            XCTAssertEqualWithAccuracy(answer[i].imag, result[i].imag, accuracy: accuracy)
+        for i in 0...10 {
+            let n = 1 << i
+            
+            var sample = [Complex](repeating: Complex(0), count: n)
+            for i in sample.indices {
+                sample[i] = Complex(real: (0.0..<1.0).random(), imag: (0.0..<1.0).random())
+            }
+            
+            var answer = [Complex]()
+            DiscreteFourier(sample, &answer)
+            
+            let result = Radix2CooleyTukey(sample)
+            
+            for i in 0..<answer.count {
+                XCTAssertEqualWithAccuracy(answer[i].real, result[i].real, accuracy: accuracy)
+                XCTAssertEqualWithAccuracy(answer[i].imag, result[i].imag, accuracy: accuracy)
+            }
         }
     }
     func testInverseRadix2CooleyTukeyA() {
         
-        var sample = [Double](repeating: 0, count: 4)
-        for i in sample.indices {
-            sample[i] = (0.0..<1.0).random()
-        }
-        
-        var answer = [Complex]()
-        InverseDiscreteFourier(sample, &answer)
-        
-        var result = [Complex]()
-        InverseRadix2CooleyTukey(sample, &result)
-        
-        for i in 0..<answer.count {
-            XCTAssertEqualWithAccuracy(answer[i].real, result[i].real, accuracy: accuracy)
-            XCTAssertEqualWithAccuracy(answer[i].imag, result[i].imag, accuracy: accuracy)
-        }
-    }
-    func testInverseRadix2CooleyTukeyB() {
-        
-        var sample = [Double](repeating: 0, count: 8)
-        for i in sample.indices {
-            sample[i] = (0.0..<1.0).random()
-        }
-        
-        var answer = [Complex]()
-        InverseDiscreteFourier(sample, &answer)
-        
-        var result = [Complex]()
-        InverseRadix2CooleyTukey(sample, &result)
-        
-        for i in 0..<answer.count {
-            XCTAssertEqualWithAccuracy(answer[i].real, result[i].real, accuracy: accuracy)
-            XCTAssertEqualWithAccuracy(answer[i].imag, result[i].imag, accuracy: accuracy)
-        }
-    }
-    func testInverseRadix2CooleyTukeyC() {
-        
-        var sample = [Double](repeating: 0, count: 16)
-        for i in sample.indices {
-            sample[i] = (0.0..<1.0).random()
-        }
-        
-        var answer = [Complex]()
-        InverseDiscreteFourier(sample, &answer)
-        
-        var result = [Complex]()
-        InverseRadix2CooleyTukey(sample, &result)
-        
-        for i in 0..<answer.count {
-            XCTAssertEqualWithAccuracy(answer[i].real, result[i].real, accuracy: accuracy)
-            XCTAssertEqualWithAccuracy(answer[i].imag, result[i].imag, accuracy: accuracy)
-        }
-    }
-    func testInverseRadix2CooleyTukeyD() {
-        
-        var sample = [Double](repeating: 0, count: 32)
-        for i in sample.indices {
-            sample[i] = (0.0..<1.0).random()
-        }
-        
-        var answer = [Complex]()
-        InverseDiscreteFourier(sample, &answer)
-        
-        var result = [Complex]()
-        InverseRadix2CooleyTukey(sample, &result)
-        
-        for i in 0..<answer.count {
-            XCTAssertEqualWithAccuracy(answer[i].real, result[i].real, accuracy: accuracy)
-            XCTAssertEqualWithAccuracy(answer[i].imag, result[i].imag, accuracy: accuracy)
-        }
-    }
-    func testInverseRadix2CooleyTukeyE() {
-        
-        var sample = [Double](repeating: 0, count: 512)
-        for i in sample.indices {
-            sample[i] = (0.0..<1.0).random()
-        }
-        
-        var answer = [Complex]()
-        InverseDiscreteFourier(sample, &answer)
-        
-        var result = [Complex]()
-        InverseRadix2CooleyTukey(sample, &result)
-        
-        for i in 0..<answer.count {
-            XCTAssertEqualWithAccuracy(answer[i].real, result[i].real, accuracy: accuracy)
-            XCTAssertEqualWithAccuracy(answer[i].imag, result[i].imag, accuracy: accuracy)
+        for i in 0...10 {
+            let n = 1 << i
+            
+            var sample = [Double](repeating: 0, count: n)
+            for i in sample.indices {
+                sample[i] = (0.0..<1.0).random()
+            }
+            
+            var answer = [Complex]()
+            InverseDiscreteFourier(sample, &answer)
+            
+            var result = [Complex]()
+            InverseRadix2CooleyTukey(sample, &result)
+            
+            for i in 0..<answer.count {
+                XCTAssertEqualWithAccuracy(answer[i].real, result[i].real, accuracy: accuracy)
+                XCTAssertEqualWithAccuracy(answer[i].imag, result[i].imag, accuracy: accuracy)
+            }
         }
     }
     func testInverseRadix2CooleyTukeyComplexA() {
         
-        var sample = [Complex](repeating: Complex(0), count: 4)
-        for i in sample.indices {
-            sample[i] = Complex(real: (0.0..<1.0).random(), imag: (0.0..<1.0).random())
+        for i in 0...10 {
+            let n = 1 << i
+            
+            var sample = [Complex](repeating: Complex(0), count: n)
+            for i in sample.indices {
+                sample[i] = Complex(real: (0.0..<1.0).random(), imag: (0.0..<1.0).random())
+            }
+            
+            var answer = [Complex]()
+            InverseDiscreteFourier(sample, &answer)
+            
+            let result = InverseRadix2CooleyTukey(sample)
+            
+            for i in 0..<answer.count {
+                XCTAssertEqualWithAccuracy(answer[i].real, result[i].real, accuracy: accuracy)
+                XCTAssertEqualWithAccuracy(answer[i].imag, result[i].imag, accuracy: accuracy)
+            }
         }
+    }
+    func testRadix2CooleyTukeyB() {
         
-        var answer = [Complex]()
-        InverseDiscreteFourier(sample, &answer)
+        for n in 2...11 {
+            var sample = [Double](repeating: 0, count: n)
+            for i in sample.indices {
+                sample[i] = (0.0..<1.0).random()
+            }
+            
+            var answer = [Complex]()
+            DiscreteFourier(sample, &answer)
+            
+            var result = [Complex]()
+            Fourier(sample, &result)
+            
+            for i in 0..<answer.count {
+                XCTAssertEqualWithAccuracy(answer[i].real, result[i].real, accuracy: accuracy)
+                XCTAssertEqualWithAccuracy(answer[i].imag, result[i].imag, accuracy: accuracy)
+            }
+        }
+    }
+    func testRadix2CooleyTukeyComplexB() {
         
-        let result = InverseRadix2CooleyTukey(sample)
-        for i in 0..<answer.count {
-            XCTAssertEqualWithAccuracy(answer[i].real, result[i].real, accuracy: accuracy)
-            XCTAssertEqualWithAccuracy(answer[i].imag, result[i].imag, accuracy: accuracy)
+        for n in 2...11 {
+            var sample = [Complex](repeating: Complex(0), count: n)
+            for i in sample.indices {
+                sample[i] = Complex(real: (0.0..<1.0).random(), imag: (0.0..<1.0).random())
+            }
+            
+            var answer = [Complex]()
+            DiscreteFourier(sample, &answer)
+            
+            var result = [Complex]()
+            Fourier(sample, &result)
+            
+            for i in 0..<answer.count {
+                XCTAssertEqualWithAccuracy(answer[i].real, result[i].real, accuracy: accuracy)
+                XCTAssertEqualWithAccuracy(answer[i].imag, result[i].imag, accuracy: accuracy)
+            }
+        }
+    }
+    func testInverseRadix2CooleyTukeyB() {
+        
+        for n in 2...11 {
+            var sample = [Double](repeating: 0, count: n)
+            for i in sample.indices {
+                sample[i] = (0.0..<1.0).random()
+            }
+            
+            var answer = [Complex]()
+            InverseDiscreteFourier(sample, &answer)
+            
+            var result = [Complex]()
+            InverseFourier(sample, &result)
+            
+            for i in 0..<answer.count {
+                XCTAssertEqualWithAccuracy(answer[i].real, result[i].real, accuracy: accuracy)
+                XCTAssertEqualWithAccuracy(answer[i].imag, result[i].imag, accuracy: accuracy)
+            }
         }
     }
     func testInverseRadix2CooleyTukeyComplexB() {
         
-        var sample = [Complex](repeating: Complex(0), count: 8)
-        for i in sample.indices {
-            sample[i] = Complex(real: (0.0..<1.0).random(), imag: (0.0..<1.0).random())
-        }
-        
-        var answer = [Complex]()
-        InverseDiscreteFourier(sample, &answer)
-        
-        let result = InverseRadix2CooleyTukey(sample)
-        for i in 0..<answer.count {
-            XCTAssertEqualWithAccuracy(answer[i].real, result[i].real, accuracy: accuracy)
-            XCTAssertEqualWithAccuracy(answer[i].imag, result[i].imag, accuracy: accuracy)
-        }
-    }
-    func testInverseRadix2CooleyTukeyComplexC() {
-        
-        var sample = [Complex](repeating: Complex(0), count: 16)
-        for i in sample.indices {
-            sample[i] = Complex(real: (0.0..<1.0).random(), imag: (0.0..<1.0).random())
-        }
-        
-        var answer = [Complex]()
-        InverseDiscreteFourier(sample, &answer)
-        
-        let result = InverseRadix2CooleyTukey(sample)
-        for i in 0..<answer.count {
-            XCTAssertEqualWithAccuracy(answer[i].real, result[i].real, accuracy: accuracy)
-            XCTAssertEqualWithAccuracy(answer[i].imag, result[i].imag, accuracy: accuracy)
+        for n in 2...11 {
+            var sample = [Complex](repeating: Complex(0), count: n)
+            for i in sample.indices {
+                sample[i] = Complex(real: (0.0..<1.0).random(), imag: (0.0..<1.0).random())
+            }
+            
+            var answer = [Complex]()
+            InverseDiscreteFourier(sample, &answer)
+            
+            var result = [Complex]()
+            InverseFourier(sample, &result)
+            
+            for i in 0..<answer.count {
+                XCTAssertEqualWithAccuracy(answer[i].real, result[i].real, accuracy: accuracy)
+                XCTAssertEqualWithAccuracy(answer[i].imag, result[i].imag, accuracy: accuracy)
+            }
         }
     }
-    func testInverseRadix2CooleyTukeyComplexD() {
-        
-        var sample = [Complex](repeating: Complex(0), count: 32)
-        for i in sample.indices {
-            sample[i] = Complex(real: (0.0..<1.0).random(), imag: (0.0..<1.0).random())
-        }
-        
-        var answer = [Complex]()
-        InverseDiscreteFourier(sample, &answer)
-        
-        let result = InverseRadix2CooleyTukey(sample)
-        for i in 0..<answer.count {
-            XCTAssertEqualWithAccuracy(answer[i].real, result[i].real, accuracy: accuracy)
-            XCTAssertEqualWithAccuracy(answer[i].imag, result[i].imag, accuracy: accuracy)
-        }
-    }
-    func testInverseRadix2CooleyTukeyComplexE() {
-        
-        var sample = [Complex](repeating: Complex(0), count: 512)
-        for i in sample.indices {
-            sample[i] = Complex(real: (0.0..<1.0).random(), imag: (0.0..<1.0).random())
-        }
-        
-        var answer = [Complex]()
-        InverseDiscreteFourier(sample, &answer)
-        
-        let result = InverseRadix2CooleyTukey(sample)
-        for i in 0..<answer.count {
-            XCTAssertEqualWithAccuracy(answer[i].real, result[i].real, accuracy: accuracy)
-            XCTAssertEqualWithAccuracy(answer[i].imag, result[i].imag, accuracy: accuracy)
-        }
-    }
-    func testFourier() {
-        
-        var sample = [Double](repeating: 0, count: 10)
-        for i in sample.indices {
-            sample[i] = (0.0..<1.0).random()
-        }
-        
-        var answer = [Complex]()
-        DiscreteFourier(sample, &answer)
-        
-        var result = [Complex]()
-        Fourier(sample, &result)
-        
-        for i in 0..<answer.count {
-            XCTAssertEqualWithAccuracy(answer[i].real, result[i].real, accuracy: accuracy)
-            XCTAssertEqualWithAccuracy(answer[i].imag, result[i].imag, accuracy: accuracy)
-        }
-    }
-    func testFourierComplex() {
-        
-        var sample = [Complex](repeating: Complex(0), count: 10)
-        for i in sample.indices {
-            sample[i] = Complex(real: (0.0..<1.0).random(), imag: (0.0..<1.0).random())
-        }
-        
-        var answer = [Complex]()
-        DiscreteFourier(sample, &answer)
-        
-        var result = [Complex]()
-        Fourier(sample, &result)
-        
-        for i in 0..<answer.count {
-            XCTAssertEqualWithAccuracy(answer[i].real, result[i].real, accuracy: accuracy)
-            XCTAssertEqualWithAccuracy(answer[i].imag, result[i].imag, accuracy: accuracy)
-        }
-    }
-    func testRadix2CooleyTukey() {
-        
-        var sample = [Double](repeating: 0, count: 8)
-        for i in sample.indices {
-            sample[i] = (0.0..<1.0).random()
-        }
-        
-        var answer = [Complex]()
-        DiscreteFourier(sample, &answer)
-        
-        var result = [Complex]()
-        Fourier(sample, &result)
-        
-        for i in 0..<answer.count {
-            XCTAssertEqualWithAccuracy(answer[i].real, result[i].real, accuracy: accuracy)
-            XCTAssertEqualWithAccuracy(answer[i].imag, result[i].imag, accuracy: accuracy)
-        }
-    }
-    func testRadix2CooleyTukeyComplex() {
-        
-        var sample = [Complex](repeating: Complex(0), count: 8)
-        for i in sample.indices {
-            sample[i] = Complex(real: (0.0..<1.0).random(), imag: (0.0..<1.0).random())
-        }
-        
-        var answer = [Complex]()
-        DiscreteFourier(sample, &answer)
-        
-        var result = [Complex]()
-        Fourier(sample, &result)
-        
-        for i in 0..<answer.count {
-            XCTAssertEqualWithAccuracy(answer[i].real, result[i].real, accuracy: accuracy)
-            XCTAssertEqualWithAccuracy(answer[i].imag, result[i].imag, accuracy: accuracy)
-        }
-    }
-    func testBluestein() {
-        
-        var sample = [Double](repeating: 0, count: 10)
-        for i in sample.indices {
-            sample[i] = (0.0..<1.0).random()
-        }
-        
-        var answer = [Complex]()
-        DiscreteFourier(sample, &answer)
-        
-        var result = [Complex]()
-        Fourier(sample, &result)
-        
-        for i in 0..<answer.count {
-            XCTAssertEqualWithAccuracy(answer[i].real, result[i].real, accuracy: accuracy)
-            XCTAssertEqualWithAccuracy(answer[i].imag, result[i].imag, accuracy: accuracy)
-        }
-    }
-    func testBluesteinComplex() {
-        
-        var sample = [Complex](repeating: Complex(0), count: 10)
-        for i in sample.indices {
-            sample[i] = Complex(real: (0.0..<1.0).random(), imag: (0.0..<1.0).random())
-        }
-        
-        var answer = [Complex]()
-        DiscreteFourier(sample, &answer)
-        
-        var result = [Complex]()
-        Fourier(sample, &result)
-        
-        for i in 0..<answer.count {
-            XCTAssertEqualWithAccuracy(answer[i].real, result[i].real, accuracy: accuracy)
-            XCTAssertEqualWithAccuracy(answer[i].imag, result[i].imag, accuracy: accuracy)
-        }
-    }
-    func testBluesteinO() {
-        
-        var sample = [Double](repeating: 0, count: 9)
-        for i in sample.indices {
-            sample[i] = (0.0..<1.0).random()
-        }
-        
-        var answer = [Complex]()
-        DiscreteFourier(sample, &answer)
-        
-        var result = [Complex]()
-        Fourier(sample, &result)
-        
-        for i in 0..<answer.count {
-            XCTAssertEqualWithAccuracy(answer[i].real, result[i].real, accuracy: accuracy)
-            XCTAssertEqualWithAccuracy(answer[i].imag, result[i].imag, accuracy: accuracy)
-        }
-    }
-    func testBluesteinOComplex() {
-        
-        var sample = [Complex](repeating: Complex(0), count: 9)
-        for i in sample.indices {
-            sample[i] = Complex(real: (0.0..<1.0).random(), imag: (0.0..<1.0).random())
-        }
-        
-        var answer = [Complex]()
-        DiscreteFourier(sample, &answer)
-        
-        var result = [Complex]()
-        Fourier(sample, &result)
-        
-        for i in 0..<answer.count {
-            XCTAssertEqualWithAccuracy(answer[i].real, result[i].real, accuracy: accuracy)
-            XCTAssertEqualWithAccuracy(answer[i].imag, result[i].imag, accuracy: accuracy)
-        }
-    }
-    
-    func testInverseFourier() {
-        
-        var sample = [Double](repeating: 0, count: 10)
-        for i in sample.indices {
-            sample[i] = (0.0..<1.0).random()
-        }
-        
-        var answer = [Complex]()
-        InverseDiscreteFourier(sample, &answer)
-        
-        var result = [Complex]()
-        InverseFourier(sample, &result)
-        
-        for i in 0..<answer.count {
-            XCTAssertEqualWithAccuracy(answer[i].real, result[i].real, accuracy: accuracy)
-            XCTAssertEqualWithAccuracy(answer[i].imag, result[i].imag, accuracy: accuracy)
-        }
-    }
-    func testInverseFourierComplex() {
-        
-        var sample = [Complex](repeating: Complex(0), count: 10)
-        for i in sample.indices {
-            sample[i] = Complex(real: (0.0..<1.0).random(), imag: (0.0..<1.0).random())
-        }
-        
-        var answer = [Complex]()
-        InverseDiscreteFourier(sample, &answer)
-        
-        var result = [Complex]()
-        InverseFourier(sample, &result)
-        
-        for i in 0..<answer.count {
-            XCTAssertEqualWithAccuracy(answer[i].real, result[i].real, accuracy: accuracy)
-            XCTAssertEqualWithAccuracy(answer[i].imag, result[i].imag, accuracy: accuracy)
-        }
-    }
-    func testInverseRadix2CooleyTukeyComplex() {
-        
-        var sample = [Complex](repeating: Complex(0), count: 8)
-        for i in sample.indices {
-            sample[i] = Complex(real: (0.0..<1.0).random(), imag: (0.0..<1.0).random())
-        }
-        
-        var answer = [Complex]()
-        InverseDiscreteFourier(sample, &answer)
-        
-        var result = [Complex]()
-        InverseFourier(sample, &result)
-        
-        for i in 0..<answer.count {
-            XCTAssertEqualWithAccuracy(answer[i].real, result[i].real, accuracy: accuracy)
-            XCTAssertEqualWithAccuracy(answer[i].imag, result[i].imag, accuracy: accuracy)
-        }
-    }
-    func testInverseBluestein() {
-        
-        var sample = [Double](repeating: 0, count: 10)
-        for i in sample.indices {
-            sample[i] = (0.0..<1.0).random()
-        }
-        
-        var answer = [Complex]()
-        InverseDiscreteFourier(sample, &answer)
-        
-        var result = [Complex]()
-        InverseFourier(sample, &result)
-        
-        for i in 0..<answer.count {
-            XCTAssertEqualWithAccuracy(answer[i].real, result[i].real, accuracy: accuracy)
-            XCTAssertEqualWithAccuracy(answer[i].imag, result[i].imag, accuracy: accuracy)
-        }
-    }
-    func testInverseBluesteinComplex() {
-        
-        var sample = [Complex](repeating: Complex(0), count: 10)
-        for i in sample.indices {
-            sample[i] = Complex(real: (0.0..<1.0).random(), imag: (0.0..<1.0).random())
-        }
-        
-        var answer = [Complex]()
-        InverseDiscreteFourier(sample, &answer)
-        
-        var result = [Complex]()
-        InverseFourier(sample, &result)
-        
-        for i in 0..<answer.count {
-            XCTAssertEqualWithAccuracy(answer[i].real, result[i].real, accuracy: accuracy)
-            XCTAssertEqualWithAccuracy(answer[i].imag, result[i].imag, accuracy: accuracy)
-        }
-    }
-    func testInverseBluesteinO() {
-        
-        var sample = [Double](repeating: 0, count: 9)
-        for i in sample.indices {
-            sample[i] = (0.0..<1.0).random()
-        }
-        
-        var answer = [Complex]()
-        InverseDiscreteFourier(sample, &answer)
-        
-        var result = [Complex]()
-        InverseFourier(sample, &result)
-        
-        for i in 0..<answer.count {
-            XCTAssertEqualWithAccuracy(answer[i].real, result[i].real, accuracy: accuracy)
-            XCTAssertEqualWithAccuracy(answer[i].imag, result[i].imag, accuracy: accuracy)
-        }
-    }
-    func testInverseBluesteinOComplex() {
-        
-        var sample = [Complex](repeating: Complex(0), count: 9)
-        for i in sample.indices {
-            sample[i] = Complex(real: (0.0..<1.0).random(), imag: (0.0..<1.0).random())
-        }
-        
-        var answer = [Complex]()
-        InverseDiscreteFourier(sample, &answer)
-        
-        var result = [Complex]()
-        InverseFourier(sample, &result)
-        
-        for i in 0..<answer.count {
-            XCTAssertEqualWithAccuracy(answer[i].real, result[i].real, accuracy: accuracy)
-            XCTAssertEqualWithAccuracy(answer[i].imag, result[i].imag, accuracy: accuracy)
-        }
-    }
-    
-    func testConvolveA() {
-        
-        var a = [Double](repeating: 0, count: 2)
-        var b = [Double](repeating: 0, count: 2)
-        for i in 0..<a.count {
-            a[i] = (0.0..<1.0).random()
-        }
-        for i in 0..<a.count {
-            b[i] = (0.0..<1.0).random()
-        }
-        
-        var answer = [Double]()
-        DiscreteConvolve(a, b, &answer)
-        
-        var result = [Double]()
-        Convolve(a, b, &result)
-        
-        for i in 0..<answer.count {
-            XCTAssertEqualWithAccuracy(answer[i], result[i], accuracy: accuracy)
-        }
-    }
-    func testConvolveB() {
-        
-        var a = [Double](repeating: 0, count: 3)
-        var b = [Double](repeating: 0, count: 3)
-        for i in 0..<a.count {
-            a[i] = (0.0..<1.0).random()
-        }
-        for i in 0..<a.count {
-            b[i] = (0.0..<1.0).random()
-        }
-        
-        var answer = [Double]()
-        DiscreteConvolve(a, b, &answer)
-        
-        var result = [Double]()
-        Convolve(a, b, &result)
-        
-        for i in 0..<answer.count {
-            XCTAssertEqualWithAccuracy(answer[i], result[i], accuracy: accuracy)
-        }
-    }
-    func testConvolveC() {
-        
-        var a = [Double](repeating: 0, count: 4)
-        var b = [Double](repeating: 0, count: 4)
-        for i in 0..<a.count {
-            a[i] = (0.0..<1.0).random()
-        }
-        for i in 0..<a.count {
-            b[i] = (0.0..<1.0).random()
-        }
-        
-        var answer = [Double]()
-        DiscreteConvolve(a, b, &answer)
-        
-        var result = [Double]()
-        Convolve(a, b, &result)
-        
-        for i in 0..<answer.count {
-            XCTAssertEqualWithAccuracy(answer[i], result[i], accuracy: accuracy)
-        }
-    }
-    func testConvolveD() {
-        
-        var a = [Double](repeating: 0, count: 5)
-        var b = [Double](repeating: 0, count: 5)
-        for i in 0..<a.count {
-            a[i] = (0.0..<1.0).random()
-        }
-        for i in 0..<a.count {
-            b[i] = (0.0..<1.0).random()
-        }
-        
-        var answer = [Double]()
-        DiscreteConvolve(a, b, &answer)
-        
-        var result = [Double]()
-        Convolve(a, b, &result)
-        
-        for i in 0..<answer.count {
-            XCTAssertEqualWithAccuracy(answer[i], result[i], accuracy: accuracy)
-        }
-    }
-    func testConvolveE() {
-        
-        var a = [Double](repeating: 0, count: 6)
-        var b = [Double](repeating: 0, count: 6)
-        for i in 0..<a.count {
-            a[i] = (0.0..<1.0).random()
-        }
-        for i in 0..<a.count {
-            b[i] = (0.0..<1.0).random()
-        }
-        
-        var answer = [Double]()
-        DiscreteConvolve(a, b, &answer)
-        
-        var result = [Double]()
-        Convolve(a, b, &result)
-        
-        for i in 0..<answer.count {
-            XCTAssertEqualWithAccuracy(answer[i], result[i], accuracy: accuracy)
-        }
-    }
-    func testConvolveF() {
-        
-        var a = [Double](repeating: 0, count: 7)
-        var b = [Double](repeating: 0, count: 7)
-        for i in 0..<a.count {
-            a[i] = (0.0..<1.0).random()
-        }
-        for i in 0..<a.count {
-            b[i] = (0.0..<1.0).random()
-        }
-        
-        var answer = [Double]()
-        DiscreteConvolve(a, b, &answer)
-        
-        var result = [Double]()
-        Convolve(a, b, &result)
-        
-        for i in 0..<answer.count {
-            XCTAssertEqualWithAccuracy(answer[i], result[i], accuracy: accuracy)
-        }
-    }
-    func testConvolveG() {
-        
-        var a = [Double](repeating: 0, count: 8)
-        var b = [Double](repeating: 0, count: 8)
-        for i in 0..<a.count {
-            a[i] = (0.0..<1.0).random()
-        }
-        for i in 0..<a.count {
-            b[i] = (0.0..<1.0).random()
-        }
-        
-        var answer = [Double]()
-        DiscreteConvolve(a, b, &answer)
-        
-        var result = [Double]()
-        Convolve(a, b, &result)
-        
-        for i in 0..<answer.count {
-            XCTAssertEqualWithAccuracy(answer[i], result[i], accuracy: accuracy)
-        }
-    }
-    func testConvolveH() {
-        
-        var a = [Double](repeating: 0, count: 9)
-        var b = [Double](repeating: 0, count: 9)
-        for i in 0..<a.count {
-            a[i] = (0.0..<1.0).random()
-        }
-        for i in 0..<a.count {
-            b[i] = (0.0..<1.0).random()
-        }
-        
-        var answer = [Double]()
-        DiscreteConvolve(a, b, &answer)
-        
-        var result = [Double]()
-        Convolve(a, b, &result)
-        
-        for i in 0..<answer.count {
-            XCTAssertEqualWithAccuracy(answer[i], result[i], accuracy: accuracy)
-        }
-    }
-    func testConvolveI() {
-        
-        var a = [Double](repeating: 0, count: 10)
-        var b = [Double](repeating: 0, count: 10)
-        for i in 0..<a.count {
-            a[i] = (0.0..<1.0).random()
-        }
-        for i in 0..<a.count {
-            b[i] = (0.0..<1.0).random()
-        }
-        
-        var answer = [Double]()
-        DiscreteConvolve(a, b, &answer)
-        
-        var result = [Double]()
-        Convolve(a, b, &result)
-        
-        for i in 0..<answer.count {
-            XCTAssertEqualWithAccuracy(answer[i], result[i], accuracy: accuracy)
-        }
-    }
-    func testConvolveJ() {
-        
-        var a = [Double](repeating: 0, count: 11)
-        var b = [Double](repeating: 0, count: 11)
-        for i in 0..<a.count {
-            a[i] = (0.0..<1.0).random()
-        }
-        for i in 0..<a.count {
-            b[i] = (0.0..<1.0).random()
-        }
-        
-        var answer = [Double]()
-        DiscreteConvolve(a, b, &answer)
-        
-        var result = [Double]()
-        Convolve(a, b, &result)
-        
-        for i in 0..<answer.count {
-            XCTAssertEqualWithAccuracy(answer[i], result[i], accuracy: accuracy)
+    func testConvolve() {
+        
+        for n in 2...11 {
+            var a = [Double](repeating: 0, count: n)
+            var b = [Double](repeating: 0, count: n)
+            for i in 0..<a.count {
+                a[i] = (0.0..<1.0).random()
+            }
+            for i in 0..<a.count {
+                b[i] = (0.0..<1.0).random()
+            }
+            
+            var answer = [Double]()
+            DiscreteConvolve(a, b, &answer)
+            
+            var result = [Double]()
+            Convolve(a, b, &result)
+            
+            for i in 0..<answer.count {
+                XCTAssertEqualWithAccuracy(answer[i], result[i], accuracy: accuracy)
+            }
         }
     }
     func testConvolveComplex() {
         
-        var a = [Complex](repeating: Complex(0), count: 10)
-        var b = [Complex](repeating: Complex(0), count: 10)
-        for i in 0..<a.count {
-            a[i] = Complex(real: (0.0..<1.0).random(), imag: (0.0..<1.0).random())
-        }
-        for i in 0..<a.count {
-            b[i] = Complex(real: (0.0..<1.0).random(), imag: (0.0..<1.0).random())
-        }
-        
-        var answer = [Complex]()
-        DiscreteConvolve(a, b, &answer)
-        
-        var result = [Complex]()
-        Convolve(a, b, &result)
-        
-        for i in 0..<answer.count {
-            XCTAssertEqualWithAccuracy(answer[i].real, result[i].real, accuracy: accuracy)
-            XCTAssertEqualWithAccuracy(answer[i].imag, result[i].imag, accuracy: accuracy)
+        for n in 2...11 {
+            var a = [Complex](repeating: Complex(0), count: n)
+            var b = [Complex](repeating: Complex(0), count: n)
+            for i in 0..<a.count {
+                a[i] = Complex(real: (0.0..<1.0).random(), imag: (0.0..<1.0).random())
+            }
+            for i in 0..<a.count {
+                b[i] = Complex(real: (0.0..<1.0).random(), imag: (0.0..<1.0).random())
+            }
+            
+            var answer = [Complex]()
+            DiscreteConvolve(a, b, &answer)
+            
+            var result = [Complex]()
+            Convolve(a, b, &result)
+            
+            for i in 0..<answer.count {
+                XCTAssertEqualWithAccuracy(answer[i].real, result[i].real, accuracy: accuracy)
+                XCTAssertEqualWithAccuracy(answer[i].imag, result[i].imag, accuracy: accuracy)
+            }
         }
     }
     func testCircularConvolve() {
         
-        var a = [Double](repeating: 0, count: 10)
-        var b = [Double](repeating: 0, count: 10)
-        for i in 0..<a.count {
-            a[i] = (0.0..<1.0).random()
-        }
-        for i in 0..<a.count {
-            b[i] = (0.0..<1.0).random()
-        }
-        
-        var answer = [Double]()
-        DiscreteConvolve(a, b, &answer)
-        let part = answer[a.count..<answer.count]
-        answer = [Double](answer[0..<a.count])
-        for i in 0..<part.count {
-            answer[i] += part[i + part.startIndex]
-        }
-        
-        var result = [Double]()
-        CircularConvolve(a, b, &result)
-        
-        for i in 0..<answer.count {
-            XCTAssertEqualWithAccuracy(answer[i], result[i], accuracy: accuracy)
+        for n in 2...11 {
+            var a = [Double](repeating: 0, count: n)
+            var b = [Double](repeating: 0, count: n)
+            for i in 0..<a.count {
+                a[i] = (0.0..<1.0).random()
+            }
+            for i in 0..<a.count {
+                b[i] = (0.0..<1.0).random()
+            }
+            
+            var answer = [Double]()
+            DiscreteConvolve(a, b, &answer)
+            let part = answer[a.count..<answer.count]
+            answer = [Double](answer[0..<a.count])
+            for i in 0..<part.count {
+                answer[i] += part[i + part.startIndex]
+            }
+            
+            var result = [Double]()
+            CircularConvolve(a, b, &result)
+            
+            for i in 0..<answer.count {
+                XCTAssertEqualWithAccuracy(answer[i], result[i], accuracy: accuracy)
+            }
         }
     }
     func testCircularConvolveComplex() {
         
-        var a = [Complex](repeating: Complex(0), count: 10)
-        var b = [Complex](repeating: Complex(0), count: 10)
-        for i in 0..<a.count {
-            a[i] = Complex(real: (0.0..<1.0).random(), imag: (0.0..<1.0).random())
-        }
-        for i in 0..<a.count {
-            b[i] = Complex(real: (0.0..<1.0).random(), imag: (0.0..<1.0).random())
-        }
-        
-        var answer = [Complex]()
-        DiscreteConvolve(a, b, &answer)
-        let part = answer[a.count..<answer.count]
-        answer = [Complex](answer[0..<a.count])
-        for i in 0..<part.count {
-            answer[i] += part[i + part.startIndex]
-        }
-        
-        var result = [Complex]()
-        CircularConvolve(a, b, &result)
-        
-        for i in 0..<answer.count {
-            XCTAssertEqualWithAccuracy(answer[i].real, result[i].real, accuracy: accuracy)
-            XCTAssertEqualWithAccuracy(answer[i].imag, result[i].imag, accuracy: accuracy)
+        for n in 2...11 {
+            var a = [Complex](repeating: Complex(0), count: n)
+            var b = [Complex](repeating: Complex(0), count: n)
+            for i in 0..<a.count {
+                a[i] = Complex(real: (0.0..<1.0).random(), imag: (0.0..<1.0).random())
+            }
+            for i in 0..<a.count {
+                b[i] = Complex(real: (0.0..<1.0).random(), imag: (0.0..<1.0).random())
+            }
+            
+            var answer = [Complex]()
+            DiscreteConvolve(a, b, &answer)
+            let part = answer[a.count..<answer.count]
+            answer = [Complex](answer[0..<a.count])
+            for i in 0..<part.count {
+                answer[i] += part[i + part.startIndex]
+            }
+            
+            var result = [Complex]()
+            CircularConvolve(a, b, &result)
+            
+            for i in 0..<answer.count {
+                XCTAssertEqualWithAccuracy(answer[i].real, result[i].real, accuracy: accuracy)
+                XCTAssertEqualWithAccuracy(answer[i].imag, result[i].imag, accuracy: accuracy)
+            }
         }
     }
     func testNegacyclicConvolve() {
         
-        var a = [Double](repeating: 0, count: 10)
-        var b = [Double](repeating: 0, count: 10)
-        for i in 0..<a.count {
-            a[i] = (0.0..<1.0).random()
-        }
-        for i in 0..<a.count {
-            b[i] = (0.0..<1.0).random()
-        }
-        
-        var answer = [Double]()
-        DiscreteConvolve(a, b, &answer)
-        let part = answer[a.count..<answer.count]
-        answer = [Double](answer[0..<a.count])
-        for i in 0..<part.count {
-            answer[i] -= part[i + part.startIndex]
-        }
-        
-        var result = [Double]()
-        NegacyclicConvolve(a, b, &result)
-        
-        for i in 0..<answer.count {
-            XCTAssertEqualWithAccuracy(answer[i], result[i], accuracy: accuracy)
+        for n in 2...11 {
+            var a = [Double](repeating: 0, count: n)
+            var b = [Double](repeating: 0, count: n)
+            for i in 0..<a.count {
+                a[i] = (0.0..<1.0).random()
+            }
+            for i in 0..<a.count {
+                b[i] = (0.0..<1.0).random()
+            }
+            
+            var answer = [Double]()
+            DiscreteConvolve(a, b, &answer)
+            let part = answer[a.count..<answer.count]
+            answer = [Double](answer[0..<a.count])
+            for i in 0..<part.count {
+                answer[i] -= part[i + part.startIndex]
+            }
+            
+            var result = [Double]()
+            NegacyclicConvolve(a, b, &result)
+            
+            for i in 0..<answer.count {
+                XCTAssertEqualWithAccuracy(answer[i], result[i], accuracy: accuracy)
+            }
         }
     }
     func testNegacyclicConvolveComplex() {
         
-        var a = [Complex](repeating: Complex(0), count: 10)
-        var b = [Complex](repeating: Complex(0), count: 10)
-        for i in 0..<a.count {
-            a[i] = Complex(real: (0.0..<1.0).random(), imag: (0.0..<1.0).random())
-        }
-        for i in 0..<a.count {
-            b[i] = Complex(real: (0.0..<1.0).random(), imag: (0.0..<1.0).random())
-        }
-        
-        var answer = [Complex]()
-        DiscreteConvolve(a, b, &answer)
-        let part = answer[a.count..<answer.count]
-        answer = [Complex](answer[0..<a.count])
-        for i in 0..<part.count {
-            answer[i] -= part[i + part.startIndex]
-        }
-        
-        var result = [Complex]()
-        NegacyclicConvolve(a, b, &result)
-        
-        for i in 0..<answer.count {
-            XCTAssertEqualWithAccuracy(answer[i].real, result[i].real, accuracy: accuracy)
-            XCTAssertEqualWithAccuracy(answer[i].imag, result[i].imag, accuracy: accuracy)
+        for n in 2...11 {
+            var a = [Complex](repeating: Complex(0), count: n)
+            var b = [Complex](repeating: Complex(0), count: n)
+            for i in 0..<a.count {
+                a[i] = Complex(real: (0.0..<1.0).random(), imag: (0.0..<1.0).random())
+            }
+            for i in 0..<a.count {
+                b[i] = Complex(real: (0.0..<1.0).random(), imag: (0.0..<1.0).random())
+            }
+            
+            var answer = [Complex]()
+            DiscreteConvolve(a, b, &answer)
+            let part = answer[a.count..<answer.count]
+            answer = [Complex](answer[0..<a.count])
+            for i in 0..<part.count {
+                answer[i] -= part[i + part.startIndex]
+            }
+            
+            var result = [Complex]()
+            NegacyclicConvolve(a, b, &result)
+            
+            for i in 0..<answer.count {
+                XCTAssertEqualWithAccuracy(answer[i].real, result[i].real, accuracy: accuracy)
+                XCTAssertEqualWithAccuracy(answer[i].imag, result[i].imag, accuracy: accuracy)
+            }
         }
     }
     
     func testDCTII() {
         
-        var sample = [Double](repeating: 0, count: 10)
-        for i in sample.indices {
-            sample[i] = (0.0..<1.0).random()
-        }
-        
-        var answer = [Double]()
-        _DCTII(sample, result: &answer)
-        
-        var result = [Double]()
-        DCTII(sample, &result)
-        
-        for i in 0..<answer.count {
-            XCTAssertEqualWithAccuracy(answer[i], result[i], accuracy: accuracy)
+        for n in 2...11 {
+            var sample = [Double](repeating: 0, count: n)
+            for i in sample.indices {
+                sample[i] = (0.0..<1.0).random()
+            }
+            
+            var answer = [Double]()
+            _DCTII(sample, result: &answer)
+            
+            var result = [Double]()
+            DCTII(sample, &result)
+            
+            for i in 0..<answer.count {
+                XCTAssertEqualWithAccuracy(answer[i], result[i], accuracy: accuracy)
+            }
         }
     }
     func testDCTIII() {
         
-        var sample = [Double](repeating: 0, count: 10)
-        for i in sample.indices {
-            sample[i] = (0.0..<1.0).random()
-        }
-        
-        var answer = [Double]()
-        _DCTIII(sample, result: &answer)
-        
-        var result = [Double]()
-        DCTIII(sample, &result)
-        
-        for i in 0..<answer.count {
-            XCTAssertEqualWithAccuracy(answer[i], result[i], accuracy: accuracy)
+        for n in 2...11 {
+            var sample = [Double](repeating: 0, count: n)
+            for i in sample.indices {
+                sample[i] = (0.0..<1.0).random()
+            }
+            
+            var answer = [Double]()
+            _DCTIII(sample, result: &answer)
+            
+            var result = [Double]()
+            DCTIII(sample, &result)
+            
+            for i in 0..<answer.count {
+                XCTAssertEqualWithAccuracy(answer[i], result[i], accuracy: accuracy)
+            }
         }
     }
     func testDCTIV() {
         
-        var sample = [Double](repeating: 0, count: 10)
-        for i in sample.indices {
-            sample[i] = (0.0..<1.0).random()
-        }
-        
-        var answer = [Double]()
-        _DCTIV(sample, result: &answer)
-        
-        var result = [Double]()
-        DCTIV(sample, &result)
-        
-        for i in 0..<answer.count {
-            XCTAssertEqualWithAccuracy(answer[i], result[i], accuracy: accuracy)
+        for n in 2...11 {
+            var sample = [Double](repeating: 0, count: n)
+            for i in sample.indices {
+                sample[i] = (0.0..<1.0).random()
+            }
+            
+            var answer = [Double]()
+            _DCTIV(sample, result: &answer)
+            
+            var result = [Double]()
+            DCTIV(sample, &result)
+            
+            for i in 0..<answer.count {
+                XCTAssertEqualWithAccuracy(answer[i], result[i], accuracy: accuracy)
+            }
         }
     }
     func testDSTII() {
         
-        var sample = [Double](repeating: 0, count: 10)
-        for i in sample.indices {
-            sample[i] = (0.0..<1.0).random()
-        }
-        
-        var answer = [Double]()
-        _DSTII(sample, result: &answer)
-        
-        var result = [Double]()
-        DSTII(sample, &result)
-        
-        for i in 0..<answer.count {
-            XCTAssertEqualWithAccuracy(answer[i], result[i], accuracy: accuracy)
+        for n in 2...11 {
+            var sample = [Double](repeating: 0, count: n)
+            for i in sample.indices {
+                sample[i] = (0.0..<1.0).random()
+            }
+            
+            var answer = [Double]()
+            _DSTII(sample, result: &answer)
+            
+            var result = [Double]()
+            DSTII(sample, &result)
+            
+            for i in 0..<answer.count {
+                XCTAssertEqualWithAccuracy(answer[i], result[i], accuracy: accuracy)
+            }
         }
     }
     func testDSTIII() {
         
-        var sample = [Double](repeating: 0, count: 10)
-        for i in sample.indices {
-            sample[i] = (0.0..<1.0).random()
-        }
-        
-        var answer = [Double]()
-        _DSTIII(sample, result: &answer)
-        
-        var result = [Double]()
-        DSTIII(sample, &result)
-        
-        for i in 0..<answer.count {
-            XCTAssertEqualWithAccuracy(answer[i], result[i], accuracy: accuracy)
+        for n in 2...11 {
+            var sample = [Double](repeating: 0, count: n)
+            for i in sample.indices {
+                sample[i] = (0.0..<1.0).random()
+            }
+            
+            var answer = [Double]()
+            _DSTIII(sample, result: &answer)
+            
+            var result = [Double]()
+            DSTIII(sample, &result)
+            
+            for i in 0..<answer.count {
+                XCTAssertEqualWithAccuracy(answer[i], result[i], accuracy: accuracy)
+            }
         }
     }
     func testDSTIV() {
         
-        var sample = [Double](repeating: 0, count: 10)
-        for i in sample.indices {
-            sample[i] = (0.0..<1.0).random()
-        }
-        
-        var answer = [Double]()
-        _DSTIV(sample, result: &answer)
-        
-        var result = [Double]()
-        DSTIV(sample, &result)
-        
-        for i in 0..<answer.count {
-            XCTAssertEqualWithAccuracy(answer[i], result[i], accuracy: accuracy)
+        for n in 2...11 {
+            var sample = [Double](repeating: 0, count: n)
+            for i in sample.indices {
+                sample[i] = (0.0..<1.0).random()
+            }
+            
+            var answer = [Double]()
+            _DSTIV(sample, result: &answer)
+            
+            var result = [Double]()
+            DSTIV(sample, &result)
+            
+            for i in 0..<answer.count {
+                XCTAssertEqualWithAccuracy(answer[i], result[i], accuracy: accuracy)
+            }
         }
     }
     
