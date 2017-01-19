@@ -668,14 +668,13 @@ public func DispatchHalfRadix2CooleyTukey<T: BinaryFloatingPoint>(_ level: Int, 
     let _out_stride = out_interleaved ? row * out_stride : out_stride
     let _out_row_stride = out_interleaved ? out_stride : half * out_stride
     
-    func run(_ i: Int) {
-        let in_total = in_total - i * in_count
-        let input = input + i * _in_row_stride
-        let _real = _real + i * _out_row_stride
-        let _imag = _imag + i * _out_row_stride
+    DispatchQueue.concurrentPerform(iterations: row) {
+        let in_total = in_total - $0 * in_count
+        let input = input + $0 * _in_row_stride
+        let _real = _real + $0 * _out_row_stride
+        let _imag = _imag + $0 * _out_row_stride
         HalfRadix2CooleyTukey(level, input, _in_stride, in_total.clamped(to: 0...in_count), _real, _imag, _out_stride)
     }
-    DispatchQueue.concurrentPerform(iterations: row, execute: run)
 }
 @_specialize(Float) @_specialize(Double)
 public func DispatchHalfInverseRadix2CooleyTukey<T: BinaryFloatingPoint>(_ level: Int, _ row: Int, _ real: UnsafePointer<T>, _ imag: UnsafePointer<T>, _ in_stride: Int, _ in_interleaved: Bool, _ output: UnsafeMutablePointer<T>, _ out_stride: Int, _ out_interleaved: Bool, _ treal: UnsafeMutablePointer<T>, _ timag: UnsafeMutablePointer<T>, _ tp_stride: Int, _ tp_interleaved: Bool) where T : FloatingMathProtocol {
@@ -689,15 +688,14 @@ public func DispatchHalfInverseRadix2CooleyTukey<T: BinaryFloatingPoint>(_ level
     let _tp_stride = tp_interleaved ? row * tp_stride : tp_stride
     let _tp_row_stride = tp_interleaved ? tp_stride : length * tp_stride
     
-    func run(_ i: Int) {
-        let real = real + i * _in_row_stride
-        let imag = imag + i * _in_row_stride
-        let output = output + i * _out_row_stride
-        let treal = treal + i * _tp_row_stride
-        let timag = timag + i * _tp_row_stride
+    DispatchQueue.concurrentPerform(iterations: row) {
+        let real = real + $0 * _in_row_stride
+        let imag = imag + $0 * _in_row_stride
+        let output = output + $0 * _out_row_stride
+        let treal = treal + $0 * _tp_row_stride
+        let timag = timag + $0 * _tp_row_stride
         HalfInverseRadix2CooleyTukey(level, real, imag, _in_stride, output, _out_stride, treal, timag, _tp_stride)
     }
-    DispatchQueue.concurrentPerform(iterations: row, execute: run)
 }
 
 @_specialize(Float) @_specialize(Double)
@@ -709,14 +707,13 @@ public func DispatchRadix2CooleyTukey<T: BinaryFloatingPoint>(_ level: Int, _ ro
     let _out_stride = out_interleaved ? row * out_stride : out_stride
     let _out_row_stride = out_interleaved ? out_stride : length * out_stride
     
-    func run(_ i: Int) {
-        let in_total = in_total - i * in_count
-        let input = input + i * _in_row_stride
-        let _real = _real + i * _out_row_stride
-        let _imag = _imag + i * _out_row_stride
+    DispatchQueue.concurrentPerform(iterations: row) {
+        let in_total = in_total - $0 * in_count
+        let input = input + $0 * _in_row_stride
+        let _real = _real + $0 * _out_row_stride
+        let _imag = _imag + $0 * _out_row_stride
         Radix2CooleyTukey(level, input, _in_stride, in_total.clamped(to: 0...in_count), _real, _imag, _out_stride)
     }
-    DispatchQueue.concurrentPerform(iterations: row, execute: run)
 }
 
 @_specialize(Float) @_specialize(Double)
@@ -728,15 +725,14 @@ public func DispatchRadix2CooleyTukey<T: BinaryFloatingPoint>(_ level: Int, _ ro
     let _out_stride = out_interleaved ? row * out_stride : out_stride
     let _out_row_stride = out_interleaved ? out_stride : length * out_stride
     
-    func run(_ i: Int) {
-        let in_total = in_total - i * in_count
-        let real = real + i * _in_row_stride
-        let imag = imag + i * _in_row_stride
-        let _real = _real + i * _out_row_stride
-        let _imag = _imag + i * _out_row_stride
+    DispatchQueue.concurrentPerform(iterations: row) {
+        let in_total = in_total - $0 * in_count
+        let real = real + $0 * _in_row_stride
+        let imag = imag + $0 * _in_row_stride
+        let _real = _real + $0 * _out_row_stride
+        let _imag = _imag + $0 * _out_row_stride
         Radix2CooleyTukey(level, real, imag, _in_stride, in_total.clamped(to: 0...in_count), _real, _imag, _out_stride)
     }
-    DispatchQueue.concurrentPerform(iterations: row, execute: run)
 }
 
 @_specialize(Float) @_specialize(Double)
@@ -748,14 +744,13 @@ public func DispatchInverseRadix2CooleyTukey<T: BinaryFloatingPoint>(_ level: In
     let _out_stride = out_interleaved ? row * out_stride : out_stride
     let _out_row_stride = out_interleaved ? out_stride : length * out_stride
     
-    func run(_ i: Int) {
-        let in_total = in_total - i * in_count
-        let input = input + i * _in_row_stride
-        let _real = _real + i * _out_row_stride
-        let _imag = _imag + i * _out_row_stride
+    DispatchQueue.concurrentPerform(iterations: row) {
+        let in_total = in_total - $0 * in_count
+        let input = input + $0 * _in_row_stride
+        let _real = _real + $0 * _out_row_stride
+        let _imag = _imag + $0 * _out_row_stride
         InverseRadix2CooleyTukey(level, input, _in_stride, in_total.clamped(to: 0...in_count), _real, _imag, _out_stride)
     }
-    DispatchQueue.concurrentPerform(iterations: row, execute: run)
 }
 
 @_specialize(Float) @_specialize(Double)
@@ -767,15 +762,14 @@ public func DispatchInverseRadix2CooleyTukey<T: BinaryFloatingPoint>(_ level: In
     let _out_stride = out_interleaved ? row * out_stride : out_stride
     let _out_row_stride = out_interleaved ? out_stride : length * out_stride
     
-    func run(_ i: Int) {
-        let in_total = in_total - i * in_count
-        let real = real + i * _in_row_stride
-        let imag = imag + i * _in_row_stride
-        let _real = _real + i * _out_row_stride
-        let _imag = _imag + i * _out_row_stride
+    DispatchQueue.concurrentPerform(iterations: row) {
+        let in_total = in_total - $0 * in_count
+        let real = real + $0 * _in_row_stride
+        let imag = imag + $0 * _in_row_stride
+        let _real = _real + $0 * _out_row_stride
+        let _imag = _imag + $0 * _out_row_stride
         InverseRadix2CooleyTukey(level, real, imag, _in_stride, in_total.clamped(to: 0...in_count), _real, _imag, _out_stride)
     }
-    DispatchQueue.concurrentPerform(iterations: row, execute: run)
 }
 
 // MARK: Number Theoretic Transform
