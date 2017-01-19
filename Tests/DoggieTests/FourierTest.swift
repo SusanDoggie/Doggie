@@ -38,7 +38,7 @@ class FourierTest: XCTestCase {
         ("testInverseRadix2CooleyTukeyB", testInverseRadix2CooleyTukeyB),
         ("testInverseRadix2CooleyTukeyComplexA", testInverseRadix2CooleyTukeyComplexA),
         ("testInverseRadix2CooleyTukeyComplexB", testInverseRadix2CooleyTukeyComplexB),
-        ("testConvolveA", testConvolve),
+        ("testConvolve", testConvolve),
         ("testConvolveComplex", testConvolveComplex),
         ("testCircularConvolve", testCircularConvolve),
         ("testCircularConvolveComplex", testCircularConvolveComplex),
