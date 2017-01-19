@@ -512,6 +512,137 @@ public func InverseRadix2CooleyTukey<T: BinaryFloatingPoint>(_ level: Int, _ rea
     Radix2CooleyTukey(level, imag, real, in_stride, in_count, _imag, _real, out_stride)
 }
 
+// MARK: Parallel Radix-2 Cooley-Tukey
+
+@_specialize(Float) @_specialize(Double)
+public func HalfRadix2CooleyTukey<T: BinaryFloatingPoint>(_ level: Int, _ row: Int, _ input: UnsafePointer<T>, _ in_stride: Int, _ in_row_stride: Int, _ in_count: Int, _ in_interleaved: Bool, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int, _ out_row_stride: Int, _ out_interleaved: Bool) where T : FloatingMathProtocol {
+    
+    let length = 1 << level
+    let _in_stride = in_interleaved ? row * in_stride * in_row_stride : in_stride
+    let _in_row_stride = in_interleaved ? in_row_stride : in_count * in_stride * in_row_stride
+    let _out_stride = out_interleaved ? row * out_stride * out_row_stride : out_stride
+    let _out_row_stride = out_interleaved ? out_row_stride : length * out_stride * out_row_stride
+    
+    var input = input
+    var _real = _real
+    var _imag = _imag
+    for _ in 0..<row {
+        HalfRadix2CooleyTukey(level, input, _in_stride, in_count, _real, _imag, _out_stride)
+        input += _in_row_stride
+        _real += _out_row_stride
+        _imag += _out_row_stride
+    }
+}
+@_specialize(Float) @_specialize(Double)
+public func HalfInverseRadix2CooleyTukey<T: BinaryFloatingPoint>(_ level: Int, _ row: Int, _ real: UnsafePointer<T>, _ imag: UnsafePointer<T>, _ in_stride: Int, _ in_row_stride: Int, _ in_interleaved: Bool, _ output: UnsafeMutablePointer<T>, _ out_stride: Int, _ out_row_stride: Int, _ out_interleaved: Bool, _ treal: UnsafeMutablePointer<T>, _ timag: UnsafeMutablePointer<T>, _ tp_stride: Int, _ tp_row_stride: Int, _ tp_interleaved: Bool) where T : FloatingMathProtocol {
+    
+    let length = 1 << level
+    let _in_stride = in_interleaved ? row * in_stride * in_row_stride : in_stride
+    let _in_row_stride = in_interleaved ? in_row_stride : length * in_stride * in_row_stride
+    let _out_stride = out_interleaved ? row * out_stride * out_row_stride : out_stride
+    let _out_row_stride = out_interleaved ? out_row_stride : length * out_stride * out_row_stride
+    let _tp_stride = tp_interleaved ? row * tp_stride * tp_row_stride : tp_stride
+    let _tp_row_stride = tp_interleaved ? tp_row_stride : length * tp_stride * tp_row_stride
+    
+    var real = real
+    var imag = imag
+    var output = output
+    var treal = treal
+    var timag = timag
+    for _ in 0..<row {
+        HalfInverseRadix2CooleyTukey(level, real, imag, _in_stride, output, _out_stride, treal, timag, _tp_stride)
+        real += _in_row_stride
+        imag += _in_row_stride
+        output += _out_row_stride
+        treal += _tp_row_stride
+        timag += _tp_row_stride
+    }
+}
+
+@_specialize(Float) @_specialize(Double)
+public func Radix2CooleyTukey<T: BinaryFloatingPoint>(_ level: Int, _ row: Int, _ input: UnsafePointer<T>, _ in_stride: Int, _ in_row_stride: Int, _ in_count: Int, _ in_interleaved: Bool, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int, _ out_row_stride: Int, _ out_interleaved: Bool) where T : FloatingMathProtocol {
+    
+    let length = 1 << level
+    let _in_stride = in_interleaved ? row * in_stride * in_row_stride : in_stride
+    let _in_row_stride = in_interleaved ? in_row_stride : in_count * in_stride * in_row_stride
+    let _out_stride = out_interleaved ? row * out_stride * out_row_stride : out_stride
+    let _out_row_stride = out_interleaved ? out_row_stride : length * out_stride * out_row_stride
+    
+    var input = input
+    var _real = _real
+    var _imag = _imag
+    for _ in 0..<row {
+        Radix2CooleyTukey(level, input, _in_stride, in_count, _real, _imag, _out_stride)
+        input += _in_row_stride
+        _real += _out_row_stride
+        _imag += _out_row_stride
+    }
+}
+
+@_specialize(Float) @_specialize(Double)
+public func Radix2CooleyTukey<T: BinaryFloatingPoint>(_ level: Int, _ row: Int, _ real: UnsafePointer<T>, _ imag: UnsafePointer<T>, _ in_stride: Int, _ in_row_stride: Int, _ in_count: Int, _ in_interleaved: Bool, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int, _ out_row_stride: Int, _ out_interleaved: Bool) where T : FloatingMathProtocol {
+    
+    let length = 1 << level
+    let _in_stride = in_interleaved ? row * in_stride * in_row_stride : in_stride
+    let _in_row_stride = in_interleaved ? in_row_stride : in_count * in_stride * in_row_stride
+    let _out_stride = out_interleaved ? row * out_stride * out_row_stride : out_stride
+    let _out_row_stride = out_interleaved ? out_row_stride : length * out_stride * out_row_stride
+    
+    var real = real
+    var imag = imag
+    var _real = _real
+    var _imag = _imag
+    for _ in 0..<row {
+        Radix2CooleyTukey(level, real, imag, _in_stride, in_count, _real, _imag, _out_stride)
+        real += _in_row_stride
+        imag += _in_row_stride
+        _real += _out_row_stride
+        _imag += _out_row_stride
+    }
+}
+
+@_specialize(Float) @_specialize(Double)
+public func InverseRadix2CooleyTukey<T: BinaryFloatingPoint>(_ level: Int, _ row: Int, _ input: UnsafePointer<T>, _ in_stride: Int, _ in_row_stride: Int, _ in_count: Int, _ in_interleaved: Bool, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int, _ out_row_stride: Int, _ out_interleaved: Bool) where T : FloatingMathProtocol {
+    
+    let length = 1 << level
+    let _in_stride = in_interleaved ? row * in_stride * in_row_stride : in_stride
+    let _in_row_stride = in_interleaved ? in_row_stride : in_count * in_stride * in_row_stride
+    let _out_stride = out_interleaved ? row * out_stride * out_row_stride : out_stride
+    let _out_row_stride = out_interleaved ? out_row_stride : length * out_stride * out_row_stride
+    
+    var input = input
+    var _real = _real
+    var _imag = _imag
+    for _ in 0..<row {
+        InverseRadix2CooleyTukey(level, input, _in_stride, in_count, _real, _imag, _out_stride)
+        input += _in_row_stride
+        _real += _out_row_stride
+        _imag += _out_row_stride
+    }
+}
+
+@_specialize(Float) @_specialize(Double)
+public func InverseRadix2CooleyTukey<T: BinaryFloatingPoint>(_ level: Int, _ row: Int, _ real: UnsafePointer<T>, _ imag: UnsafePointer<T>, _ in_stride: Int, _ in_row_stride: Int, _ in_count: Int, _ in_interleaved: Bool, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int, _ out_row_stride: Int, _ out_interleaved: Bool) where T : FloatingMathProtocol {
+    
+    let length = 1 << level
+    let _in_stride = in_interleaved ? row * in_stride * in_row_stride : in_stride
+    let _in_row_stride = in_interleaved ? in_row_stride : in_count * in_stride * in_row_stride
+    let _out_stride = out_interleaved ? row * out_stride * out_row_stride : out_stride
+    let _out_row_stride = out_interleaved ? out_row_stride : length * out_stride * out_row_stride
+    
+    var real = real
+    var imag = imag
+    var _real = _real
+    var _imag = _imag
+    for _ in 0..<row {
+        InverseRadix2CooleyTukey(level, real, imag, _in_stride, in_count, _real, _imag, _out_stride)
+        real += _in_row_stride
+        imag += _in_row_stride
+        _real += _out_row_stride
+        _imag += _out_row_stride
+    }
+}
+
 // MARK: Number Theoretic Transform
 
 public func Radix2CooleyTukey<U: UnsignedInteger>(_ level: Int, _ input: UnsafePointer<U>, _ in_stride: Int, _ in_count: Int, _ alpha: U, _ m: U, _ output: UnsafeMutablePointer<U>, _ out_stride: Int) {
