@@ -85,6 +85,14 @@ public extension Set {
     }
 }
 
+public extension RandomAccessCollection where IndexDistance == Index {
+    
+    public func indexMod(_ index: Index) -> Index {
+        let c = index % self.count
+        return c < startIndex ? c + self.count : c
+    }
+}
+
 public extension BidirectionalCollection {
     
     /// Returns the last element of the sequence that satisfies the given
