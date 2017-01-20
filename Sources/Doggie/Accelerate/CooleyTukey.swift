@@ -1149,114 +1149,144 @@ public func DispatchInverseRadix2CooleyTukey<T: BinaryFloatingPoint>(_ level: In
 @_specialize(Float) @_specialize(Double)
 public func DispatchParallelHalfRadix2CooleyTukey<T: BinaryFloatingPoint>(_ level: Int, _ row: Int, _ input: UnsafePointer<T>, _ in_stride: Int, _ in_count: Int, _ in_total: Int, _ in_interleaved: Bool, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int, _ out_interleaved: Bool) where T : FloatingMathProtocol {
     
-    let length = 1 << level
-    let half = length >> 1
-    let _in_stride = in_interleaved ? row * in_stride : in_stride
-    let _in_row_stride = in_interleaved ? in_stride : in_count * in_stride
-    let _out_stride = out_interleaved ? row * out_stride : out_stride
-    let _out_row_stride = out_interleaved ? out_stride : half * out_stride
-    
-    DispatchQueue.concurrentPerform(iterations: row) {
-        let in_total = in_total - $0 * in_count
-        let input = input + $0 * _in_row_stride
-        let _real = _real + $0 * _out_row_stride
-        let _imag = _imag + $0 * _out_row_stride
-        HalfRadix2CooleyTukey(level, input, _in_stride, in_total.clamped(to: 0...in_count), _real, _imag, _out_stride)
+    switch row {
+    case 0: break
+    case 1: DispatchHalfRadix2CooleyTukey(level, input, in_stride, min(in_count, in_total), _real, _imag, out_stride)
+    default:
+        let length = 1 << level
+        let half = length >> 1
+        let _in_stride = in_interleaved ? row * in_stride : in_stride
+        let _in_row_stride = in_interleaved ? in_stride : in_count * in_stride
+        let _out_stride = out_interleaved ? row * out_stride : out_stride
+        let _out_row_stride = out_interleaved ? out_stride : half * out_stride
+        
+        DispatchQueue.concurrentPerform(iterations: row) {
+            let in_total = in_total - $0 * in_count
+            let input = input + $0 * _in_row_stride
+            let _real = _real + $0 * _out_row_stride
+            let _imag = _imag + $0 * _out_row_stride
+            HalfRadix2CooleyTukey(level, input, _in_stride, in_total.clamped(to: 0...in_count), _real, _imag, _out_stride)
+        }
     }
 }
 @_specialize(Float) @_specialize(Double)
 public func DispatchParallelHalfInverseRadix2CooleyTukey<T: BinaryFloatingPoint>(_ level: Int, _ row: Int, _ real: UnsafePointer<T>, _ imag: UnsafePointer<T>, _ in_stride: Int, _ in_interleaved: Bool, _ output: UnsafeMutablePointer<T>, _ out_stride: Int, _ out_interleaved: Bool, _ treal: UnsafeMutablePointer<T>, _ timag: UnsafeMutablePointer<T>, _ tp_stride: Int, _ tp_interleaved: Bool) where T : FloatingMathProtocol {
     
-    let length = 1 << level
-    let half = length >> 1
-    let _in_stride = in_interleaved ? row * in_stride : in_stride
-    let _in_row_stride = in_interleaved ? in_stride : half * in_stride
-    let _out_stride = out_interleaved ? row * out_stride : out_stride
-    let _out_row_stride = out_interleaved ? out_stride : length * out_stride
-    let _tp_stride = tp_interleaved ? row * tp_stride : tp_stride
-    let _tp_row_stride = tp_interleaved ? tp_stride : length * tp_stride
-    
-    DispatchQueue.concurrentPerform(iterations: row) {
-        let real = real + $0 * _in_row_stride
-        let imag = imag + $0 * _in_row_stride
-        let output = output + $0 * _out_row_stride
-        let treal = treal + $0 * _tp_row_stride
-        let timag = timag + $0 * _tp_row_stride
-        HalfInverseRadix2CooleyTukey(level, real, imag, _in_stride, output, _out_stride, treal, timag, _tp_stride)
+    switch row {
+    case 0: break
+    case 1: DispatchHalfInverseRadix2CooleyTukey(level, real, imag, in_stride, output, out_stride, treal, timag, tp_stride)
+    default:
+        let length = 1 << level
+        let half = length >> 1
+        let _in_stride = in_interleaved ? row * in_stride : in_stride
+        let _in_row_stride = in_interleaved ? in_stride : half * in_stride
+        let _out_stride = out_interleaved ? row * out_stride : out_stride
+        let _out_row_stride = out_interleaved ? out_stride : length * out_stride
+        let _tp_stride = tp_interleaved ? row * tp_stride : tp_stride
+        let _tp_row_stride = tp_interleaved ? tp_stride : length * tp_stride
+        
+        DispatchQueue.concurrentPerform(iterations: row) {
+            let real = real + $0 * _in_row_stride
+            let imag = imag + $0 * _in_row_stride
+            let output = output + $0 * _out_row_stride
+            let treal = treal + $0 * _tp_row_stride
+            let timag = timag + $0 * _tp_row_stride
+            HalfInverseRadix2CooleyTukey(level, real, imag, _in_stride, output, _out_stride, treal, timag, _tp_stride)
+        }
     }
 }
 
 @_specialize(Float) @_specialize(Double)
 public func DispatchParallelRadix2CooleyTukey<T: BinaryFloatingPoint>(_ level: Int, _ row: Int, _ input: UnsafePointer<T>, _ in_stride: Int, _ in_count: Int, _ in_total: Int, _ in_interleaved: Bool, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int, _ out_interleaved: Bool) where T : FloatingMathProtocol {
     
-    let length = 1 << level
-    let _in_stride = in_interleaved ? row * in_stride : in_stride
-    let _in_row_stride = in_interleaved ? in_stride : in_count * in_stride
-    let _out_stride = out_interleaved ? row * out_stride : out_stride
-    let _out_row_stride = out_interleaved ? out_stride : length * out_stride
-    
-    DispatchQueue.concurrentPerform(iterations: row) {
-        let in_total = in_total - $0 * in_count
-        let input = input + $0 * _in_row_stride
-        let _real = _real + $0 * _out_row_stride
-        let _imag = _imag + $0 * _out_row_stride
-        Radix2CooleyTukey(level, input, _in_stride, in_total.clamped(to: 0...in_count), _real, _imag, _out_stride)
+    switch row {
+    case 0: break
+    case 1: DispatchRadix2CooleyTukey(level, input, in_stride, min(in_count, in_total), _real, _imag, out_stride)
+    default:
+        let length = 1 << level
+        let _in_stride = in_interleaved ? row * in_stride : in_stride
+        let _in_row_stride = in_interleaved ? in_stride : in_count * in_stride
+        let _out_stride = out_interleaved ? row * out_stride : out_stride
+        let _out_row_stride = out_interleaved ? out_stride : length * out_stride
+        
+        DispatchQueue.concurrentPerform(iterations: row) {
+            let in_total = in_total - $0 * in_count
+            let input = input + $0 * _in_row_stride
+            let _real = _real + $0 * _out_row_stride
+            let _imag = _imag + $0 * _out_row_stride
+            Radix2CooleyTukey(level, input, _in_stride, in_total.clamped(to: 0...in_count), _real, _imag, _out_stride)
+        }
     }
 }
 
 @_specialize(Float) @_specialize(Double)
 public func DispatchParallelRadix2CooleyTukey<T: BinaryFloatingPoint>(_ level: Int, _ row: Int, _ real: UnsafePointer<T>, _ imag: UnsafePointer<T>, _ in_stride: Int, _ in_count: Int, _ in_total: Int, _ in_interleaved: Bool, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int, _ out_interleaved: Bool) where T : FloatingMathProtocol {
     
-    let length = 1 << level
-    let _in_stride = in_interleaved ? row * in_stride : in_stride
-    let _in_row_stride = in_interleaved ? in_stride : in_count * in_stride
-    let _out_stride = out_interleaved ? row * out_stride : out_stride
-    let _out_row_stride = out_interleaved ? out_stride : length * out_stride
-    
-    DispatchQueue.concurrentPerform(iterations: row) {
-        let in_total = in_total - $0 * in_count
-        let real = real + $0 * _in_row_stride
-        let imag = imag + $0 * _in_row_stride
-        let _real = _real + $0 * _out_row_stride
-        let _imag = _imag + $0 * _out_row_stride
-        Radix2CooleyTukey(level, real, imag, _in_stride, in_total.clamped(to: 0...in_count), _real, _imag, _out_stride)
+    switch row {
+    case 0: break
+    case 1: DispatchRadix2CooleyTukey(level, real, imag, in_stride, min(in_count, in_total), _real, _imag, out_stride)
+    default:
+        let length = 1 << level
+        let _in_stride = in_interleaved ? row * in_stride : in_stride
+        let _in_row_stride = in_interleaved ? in_stride : in_count * in_stride
+        let _out_stride = out_interleaved ? row * out_stride : out_stride
+        let _out_row_stride = out_interleaved ? out_stride : length * out_stride
+        
+        DispatchQueue.concurrentPerform(iterations: row) {
+            let in_total = in_total - $0 * in_count
+            let real = real + $0 * _in_row_stride
+            let imag = imag + $0 * _in_row_stride
+            let _real = _real + $0 * _out_row_stride
+            let _imag = _imag + $0 * _out_row_stride
+            Radix2CooleyTukey(level, real, imag, _in_stride, in_total.clamped(to: 0...in_count), _real, _imag, _out_stride)
+        }
     }
 }
 
 @_specialize(Float) @_specialize(Double)
 public func DispatchParallelInverseRadix2CooleyTukey<T: BinaryFloatingPoint>(_ level: Int, _ row: Int, _ input: UnsafePointer<T>, _ in_stride: Int, _ in_count: Int, _ in_total: Int, _ in_interleaved: Bool, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int, _ out_interleaved: Bool) where T : FloatingMathProtocol {
     
-    let length = 1 << level
-    let _in_stride = in_interleaved ? row * in_stride : in_stride
-    let _in_row_stride = in_interleaved ? in_stride : in_count * in_stride
-    let _out_stride = out_interleaved ? row * out_stride : out_stride
-    let _out_row_stride = out_interleaved ? out_stride : length * out_stride
-    
-    DispatchQueue.concurrentPerform(iterations: row) {
-        let in_total = in_total - $0 * in_count
-        let input = input + $0 * _in_row_stride
-        let _real = _real + $0 * _out_row_stride
-        let _imag = _imag + $0 * _out_row_stride
-        InverseRadix2CooleyTukey(level, input, _in_stride, in_total.clamped(to: 0...in_count), _real, _imag, _out_stride)
+    switch row {
+    case 0: break
+    case 1: DispatchInverseRadix2CooleyTukey(level, input, in_stride, min(in_count, in_total), _real, _imag, out_stride)
+    default:
+        let length = 1 << level
+        let _in_stride = in_interleaved ? row * in_stride : in_stride
+        let _in_row_stride = in_interleaved ? in_stride : in_count * in_stride
+        let _out_stride = out_interleaved ? row * out_stride : out_stride
+        let _out_row_stride = out_interleaved ? out_stride : length * out_stride
+        
+        DispatchQueue.concurrentPerform(iterations: row) {
+            let in_total = in_total - $0 * in_count
+            let input = input + $0 * _in_row_stride
+            let _real = _real + $0 * _out_row_stride
+            let _imag = _imag + $0 * _out_row_stride
+            InverseRadix2CooleyTukey(level, input, _in_stride, in_total.clamped(to: 0...in_count), _real, _imag, _out_stride)
+        }
     }
 }
 
 @_specialize(Float) @_specialize(Double)
 public func DispatchParallelInverseRadix2CooleyTukey<T: BinaryFloatingPoint>(_ level: Int, _ row: Int, _ real: UnsafePointer<T>, _ imag: UnsafePointer<T>, _ in_stride: Int, _ in_count: Int, _ in_total: Int, _ in_interleaved: Bool, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int, _ out_interleaved: Bool) where T : FloatingMathProtocol {
     
-    let length = 1 << level
-    let _in_stride = in_interleaved ? row * in_stride : in_stride
-    let _in_row_stride = in_interleaved ? in_stride : in_count * in_stride
-    let _out_stride = out_interleaved ? row * out_stride : out_stride
-    let _out_row_stride = out_interleaved ? out_stride : length * out_stride
-    
-    DispatchQueue.concurrentPerform(iterations: row) {
-        let in_total = in_total - $0 * in_count
-        let real = real + $0 * _in_row_stride
-        let imag = imag + $0 * _in_row_stride
-        let _real = _real + $0 * _out_row_stride
-        let _imag = _imag + $0 * _out_row_stride
-        InverseRadix2CooleyTukey(level, real, imag, _in_stride, in_total.clamped(to: 0...in_count), _real, _imag, _out_stride)
+    switch row {
+    case 0: break
+    case 1: DispatchInverseRadix2CooleyTukey(level, real, imag, in_stride, min(in_count, in_total), _real, _imag, out_stride)
+    default:
+        let length = 1 << level
+        let _in_stride = in_interleaved ? row * in_stride : in_stride
+        let _in_row_stride = in_interleaved ? in_stride : in_count * in_stride
+        let _out_stride = out_interleaved ? row * out_stride : out_stride
+        let _out_row_stride = out_interleaved ? out_stride : length * out_stride
+        
+        DispatchQueue.concurrentPerform(iterations: row) {
+            let in_total = in_total - $0 * in_count
+            let real = real + $0 * _in_row_stride
+            let imag = imag + $0 * _in_row_stride
+            let _real = _real + $0 * _out_row_stride
+            let _imag = _imag + $0 * _out_row_stride
+            InverseRadix2CooleyTukey(level, real, imag, _in_stride, in_total.clamped(to: 0...in_count), _real, _imag, _out_stride)
+        }
     }
 }
 
