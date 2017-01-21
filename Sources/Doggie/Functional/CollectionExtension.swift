@@ -85,11 +85,12 @@ public extension Set {
     }
 }
 
-public extension RandomAccessCollection where IndexDistance == Index {
+public extension RandomAccessCollection {
     
     public func indexMod(_ index: Index) -> Index {
-        let c = index % self.count
-        return c < startIndex ? c + self.count : c
+        let count = self.count
+        let offset = distance(from: startIndex, to: index) % count
+        return self.index(startIndex, offsetBy: offset < 0 ? offset + count : offset)
     }
 }
 
