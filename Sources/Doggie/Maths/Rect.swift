@@ -291,7 +291,8 @@ extension Rect {
         return [a, b, c, d]
     }
     
-    public static func bound(_ points: [Point]) -> Rect {
+    public static func bound<S : Sequence>(_ points: S) -> Rect where S.Iterator.Element == Point {
+        let points = Array(points)
         if points.count == 0 {
             return Rect()
         }
