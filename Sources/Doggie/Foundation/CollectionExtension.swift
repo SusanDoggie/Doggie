@@ -302,13 +302,13 @@ public extension LazyCollectionProtocol where Elements.Iterator.Element == Eleme
 }
 public extension LazyCollectionProtocol where Elements.SubSequence : Collection, Elements.Iterator.Element == Elements.SubSequence.Iterator.Element {
     
-    public func rotated(_ n: Int) -> LazyRotateSequence<Elements.SubSequence> {
+    public func rotated(_ n: Int) -> LazyRotateCollection<Elements.SubSequence> {
         return self.elements.dropFirst(n).concat(self.elements.prefix(n)).lazy
     }
 }
 public extension LazyCollectionProtocol where Elements.SubSequence : BidirectionalCollection, Elements.Iterator.Element == Elements.SubSequence.Iterator.Element {
     
-    public func rotated(_ n: Int) -> LazyRotateSequence<Elements.SubSequence> {
+    public func rotated(_ n: Int) -> LazyRotateBidirectionalCollection<Elements.SubSequence> {
         return self.elements.dropFirst(n).concat(self.elements.prefix(n)).lazy
     }
 }
