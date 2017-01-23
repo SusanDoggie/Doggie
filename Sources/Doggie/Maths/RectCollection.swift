@@ -1,5 +1,5 @@
 //
-//  RectSpace.swift
+//  RectCollection.swift
 //
 //  The MIT License
 //  Copyright (c) 2015 - 2017 Susan Cheng. All rights reserved.
@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-public struct RectSpace {
+public struct RectCollection {
     
     fileprivate let bounds: [Rect]
     fileprivate let minX: [(Int, Double)]
@@ -49,7 +49,7 @@ public struct RectSpace {
     }
 }
 
-extension RectSpace : RandomAccessCollection {
+extension RectCollection : RandomAccessCollection {
     
     public typealias Indices = CountableRange<Int>
     
@@ -68,7 +68,7 @@ extension RectSpace : RandomAccessCollection {
     }
 }
 
-extension RectSpace {
+extension RectCollection {
     
     private func search(_ target: Double, _ elements: [(Int, Double)], _ indices: CountableRange<Int>) -> Int {
         switch indices.count {
