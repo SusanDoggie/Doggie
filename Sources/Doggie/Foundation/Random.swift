@@ -86,7 +86,7 @@ public func random_uniform(_ bound: UIntMax) -> UIntMax {
 
 public extension BinaryFloatingPoint {
     
-    static func random(includeOne: Bool = false) -> Self {
+    public static func random(includeOne: Bool = false) -> Self {
         let significandBitCount: UIntMax = numericCast(Self.significandBitCount)
         let exponentBitPattern = numericCast((1 as Self).exponentBitPattern) << significandBitCount
         let maxsignificand = 1 << significandBitCount
@@ -98,6 +98,20 @@ public extension BinaryFloatingPoint {
     }
 }
 
+public extension Range where Bound : BinaryFloatingPoint {
+    
+    public func random() -> Bound {
+        let diff = upperBound - lowerBound
+        return (Bound.random() * diff) + lowerBound
+    }
+}
+public extension ClosedRange where Bound : BinaryFloatingPoint {
+    
+    public func random() -> Bound {
+        let diff = upperBound - lowerBound
+        return (Bound.random(includeOne: true) * diff) + lowerBound
+    }
+}
 public func normal_distribution(mean: Double, variance: Double) -> Double {
     let u = 1 - Double.random(includeOne: false)
     let v = 1 - Double.random(includeOne: false)

@@ -343,6 +343,14 @@ extension Json {
             self = Json(value: newValue)
         }
     }
+    public var decimalValue: Decimal? {
+        get {
+            return self.numberValue?.decimalValue
+        }
+        set {
+            self = Json(value: newValue)
+        }
+    }
     public var stringValue: String? {
         get {
             return value as? String

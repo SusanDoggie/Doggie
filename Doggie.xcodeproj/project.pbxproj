@@ -26,42 +26,8 @@
 		08458AFD1E2E627600D01813 /* Move.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AB71E2E627600D01813 /* Move.swift */; };
 		08458AFE1E2E627600D01813 /* SafeFunction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AB81E2E627600D01813 /* SafeFunction.swift */; };
 		08458AFF1E2E627600D01813 /* SafeFunction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AB81E2E627600D01813 /* SafeFunction.swift */; };
-		08458B021E2E627600D01813 /* Date.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458ABB1E2E627600D01813 /* Date.swift */; };
-		08458B031E2E627600D01813 /* Date.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458ABB1E2E627600D01813 /* Date.swift */; };
-		08458B041E2E627600D01813 /* FloatingPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458ABC1E2E627600D01813 /* FloatingPoint.swift */; };
-		08458B051E2E627600D01813 /* FloatingPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458ABC1E2E627600D01813 /* FloatingPoint.swift */; };
-		08458B061E2E627600D01813 /* Hashable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458ABD1E2E627600D01813 /* Hashable.swift */; };
-		08458B071E2E627600D01813 /* Hashable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458ABD1E2E627600D01813 /* Hashable.swift */; };
-		08458B081E2E627600D01813 /* Integer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458ABE1E2E627600D01813 /* Integer.swift */; };
-		08458B091E2E627600D01813 /* Integer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458ABE1E2E627600D01813 /* Integer.swift */; };
-		08458B0A1E2E627600D01813 /* Json.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458ABF1E2E627600D01813 /* Json.swift */; };
-		08458B0B1E2E627600D01813 /* Json.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458ABF1E2E627600D01813 /* Json.swift */; };
-		08458B0C1E2E627600D01813 /* Random.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AC01E2E627600D01813 /* Random.swift */; };
-		08458B0D1E2E627600D01813 /* Random.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AC01E2E627600D01813 /* Random.swift */; };
-		08458B0E1E2E627600D01813 /* Regex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AC11E2E627600D01813 /* Regex.swift */; };
-		08458B0F1E2E627600D01813 /* Regex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AC11E2E627600D01813 /* Regex.swift */; };
-		08458B101E2E627600D01813 /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AC21E2E627600D01813 /* String.swift */; };
-		08458B111E2E627600D01813 /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AC21E2E627600D01813 /* String.swift */; };
 		08458B121E2E627600D01813 /* Fourier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AC31E2E627600D01813 /* Fourier.swift */; };
 		08458B131E2E627600D01813 /* Fourier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AC31E2E627600D01813 /* Fourier.swift */; };
-		08458B141E2E627600D01813 /* CollectionExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AC51E2E627600D01813 /* CollectionExtension.swift */; };
-		08458B151E2E627600D01813 /* CollectionExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AC51E2E627600D01813 /* CollectionExtension.swift */; };
-		08458B161E2E627600D01813 /* ConcatCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AC61E2E627600D01813 /* ConcatCollection.swift */; };
-		08458B171E2E627600D01813 /* ConcatCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AC61E2E627600D01813 /* ConcatCollection.swift */; };
-		08458B181E2E627600D01813 /* Graph.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AC71E2E627600D01813 /* Graph.swift */; };
-		08458B191E2E627600D01813 /* Graph.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AC71E2E627600D01813 /* Graph.swift */; };
-		08458B1A1E2E627600D01813 /* IndexedCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AC81E2E627600D01813 /* IndexedCollection.swift */; };
-		08458B1B1E2E627600D01813 /* IndexedCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AC81E2E627600D01813 /* IndexedCollection.swift */; };
-		08458B1C1E2E627600D01813 /* LazyGatherCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AC91E2E627600D01813 /* LazyGatherCollection.swift */; };
-		08458B1D1E2E627600D01813 /* LazyGatherCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AC91E2E627600D01813 /* LazyGatherCollection.swift */; };
-		08458B1E1E2E627600D01813 /* LazyScanSequence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458ACA1E2E627600D01813 /* LazyScanSequence.swift */; };
-		08458B1F1E2E627600D01813 /* LazyScanSequence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458ACA1E2E627600D01813 /* LazyScanSequence.swift */; };
-		08458B201E2E627600D01813 /* LazySliceSequence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458ACB1E2E627600D01813 /* LazySliceSequence.swift */; };
-		08458B211E2E627600D01813 /* LazySliceSequence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458ACB1E2E627600D01813 /* LazySliceSequence.swift */; };
-		08458B221E2E627600D01813 /* OptionOneCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458ACC1E2E627600D01813 /* OptionOneCollection.swift */; };
-		08458B231E2E627600D01813 /* OptionOneCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458ACC1E2E627600D01813 /* OptionOneCollection.swift */; };
-		08458B241E2E627600D01813 /* Parallel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458ACD1E2E627600D01813 /* Parallel.swift */; };
-		08458B251E2E627600D01813 /* Parallel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458ACD1E2E627600D01813 /* Parallel.swift */; };
 		08458B261E2E627600D01813 /* Color.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458ACF1E2E627600D01813 /* Color.swift */; };
 		08458B271E2E627600D01813 /* Color.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458ACF1E2E627600D01813 /* Color.swift */; };
 		08458B281E2E627600D01813 /* ColorModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AD01E2E627600D01813 /* ColorModel.swift */; };
@@ -127,6 +93,40 @@
 		08BFF9BC1B07161E00EC88CB /* FourierTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08BFF9B91B0715ED00EC88CB /* FourierTest.swift */; };
 		0A266E531D6E95C100ABE6B7 /* SDMarkerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A266E521D6E95C100ABE6B7 /* SDMarkerTest.swift */; };
 		0A266E541D6E95C100ABE6B7 /* SDMarkerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A266E521D6E95C100ABE6B7 /* SDMarkerTest.swift */; };
+		0A53E45E1E35AEF80060FB83 /* CollectionExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A53E44D1E35AEF80060FB83 /* CollectionExtension.swift */; };
+		0A53E45F1E35AEF80060FB83 /* CollectionExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A53E44D1E35AEF80060FB83 /* CollectionExtension.swift */; };
+		0A53E4601E35AEF80060FB83 /* ConcatCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A53E44E1E35AEF80060FB83 /* ConcatCollection.swift */; };
+		0A53E4611E35AEF80060FB83 /* ConcatCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A53E44E1E35AEF80060FB83 /* ConcatCollection.swift */; };
+		0A53E4621E35AEF80060FB83 /* Date.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A53E44F1E35AEF80060FB83 /* Date.swift */; };
+		0A53E4631E35AEF80060FB83 /* Date.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A53E44F1E35AEF80060FB83 /* Date.swift */; };
+		0A53E4641E35AEF80060FB83 /* FloatingPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A53E4501E35AEF80060FB83 /* FloatingPoint.swift */; };
+		0A53E4651E35AEF80060FB83 /* FloatingPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A53E4501E35AEF80060FB83 /* FloatingPoint.swift */; };
+		0A53E4661E35AEF80060FB83 /* Graph.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A53E4511E35AEF80060FB83 /* Graph.swift */; };
+		0A53E4671E35AEF80060FB83 /* Graph.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A53E4511E35AEF80060FB83 /* Graph.swift */; };
+		0A53E4681E35AEF80060FB83 /* Hashable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A53E4521E35AEF80060FB83 /* Hashable.swift */; };
+		0A53E4691E35AEF80060FB83 /* Hashable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A53E4521E35AEF80060FB83 /* Hashable.swift */; };
+		0A53E46A1E35AEF80060FB83 /* IndexedCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A53E4531E35AEF80060FB83 /* IndexedCollection.swift */; };
+		0A53E46B1E35AEF80060FB83 /* IndexedCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A53E4531E35AEF80060FB83 /* IndexedCollection.swift */; };
+		0A53E46C1E35AEF80060FB83 /* Integer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A53E4541E35AEF80060FB83 /* Integer.swift */; };
+		0A53E46D1E35AEF80060FB83 /* Integer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A53E4541E35AEF80060FB83 /* Integer.swift */; };
+		0A53E46E1E35AEF80060FB83 /* Json.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A53E4551E35AEF80060FB83 /* Json.swift */; };
+		0A53E46F1E35AEF80060FB83 /* Json.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A53E4551E35AEF80060FB83 /* Json.swift */; };
+		0A53E4701E35AEF80060FB83 /* LazyGatherCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A53E4561E35AEF80060FB83 /* LazyGatherCollection.swift */; };
+		0A53E4711E35AEF80060FB83 /* LazyGatherCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A53E4561E35AEF80060FB83 /* LazyGatherCollection.swift */; };
+		0A53E4721E35AEF80060FB83 /* LazyScanSequence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A53E4571E35AEF80060FB83 /* LazyScanSequence.swift */; };
+		0A53E4731E35AEF80060FB83 /* LazyScanSequence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A53E4571E35AEF80060FB83 /* LazyScanSequence.swift */; };
+		0A53E4741E35AEF80060FB83 /* LazySliceSequence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A53E4581E35AEF80060FB83 /* LazySliceSequence.swift */; };
+		0A53E4751E35AEF80060FB83 /* LazySliceSequence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A53E4581E35AEF80060FB83 /* LazySliceSequence.swift */; };
+		0A53E4761E35AEF80060FB83 /* OptionOneCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A53E4591E35AEF80060FB83 /* OptionOneCollection.swift */; };
+		0A53E4771E35AEF80060FB83 /* OptionOneCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A53E4591E35AEF80060FB83 /* OptionOneCollection.swift */; };
+		0A53E4781E35AEF80060FB83 /* Parallel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A53E45A1E35AEF80060FB83 /* Parallel.swift */; };
+		0A53E4791E35AEF80060FB83 /* Parallel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A53E45A1E35AEF80060FB83 /* Parallel.swift */; };
+		0A53E47A1E35AEF80060FB83 /* Random.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A53E45B1E35AEF80060FB83 /* Random.swift */; };
+		0A53E47B1E35AEF80060FB83 /* Random.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A53E45B1E35AEF80060FB83 /* Random.swift */; };
+		0A53E47C1E35AEF80060FB83 /* Regex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A53E45C1E35AEF80060FB83 /* Regex.swift */; };
+		0A53E47D1E35AEF80060FB83 /* Regex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A53E45C1E35AEF80060FB83 /* Regex.swift */; };
+		0A53E47E1E35AEF80060FB83 /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A53E45D1E35AEF80060FB83 /* String.swift */; };
+		0A53E47F1E35AEF80060FB83 /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A53E45D1E35AEF80060FB83 /* String.swift */; };
 		0A776FC51D9A0BA5005FC88F /* c11_atomic.h in Headers */ = {isa = PBXBuildFile; fileRef = 0A776FC31D9A0BA5005FC88F /* c11_atomic.h */; };
 		0A776FC61D9A0BA5005FC88F /* c11_atomic.h in Headers */ = {isa = PBXBuildFile; fileRef = 0A776FC31D9A0BA5005FC88F /* c11_atomic.h */; };
 		0AFCA1501D9E1F130034AB10 /* AtomicTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AFCA14F1D9E1F130034AB10 /* AtomicTest.swift */; };
@@ -161,24 +161,7 @@
 		08458AB61E2E627600D01813 /* DiscreteConvolve.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DiscreteConvolve.swift; sourceTree = "<group>"; };
 		08458AB71E2E627600D01813 /* Move.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Move.swift; sourceTree = "<group>"; };
 		08458AB81E2E627600D01813 /* SafeFunction.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SafeFunction.swift; sourceTree = "<group>"; };
-		08458ABB1E2E627600D01813 /* Date.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Date.swift; sourceTree = "<group>"; };
-		08458ABC1E2E627600D01813 /* FloatingPoint.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FloatingPoint.swift; sourceTree = "<group>"; };
-		08458ABD1E2E627600D01813 /* Hashable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Hashable.swift; sourceTree = "<group>"; };
-		08458ABE1E2E627600D01813 /* Integer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Integer.swift; sourceTree = "<group>"; };
-		08458ABF1E2E627600D01813 /* Json.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Json.swift; sourceTree = "<group>"; };
-		08458AC01E2E627600D01813 /* Random.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Random.swift; sourceTree = "<group>"; };
-		08458AC11E2E627600D01813 /* Regex.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Regex.swift; sourceTree = "<group>"; };
-		08458AC21E2E627600D01813 /* String.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = String.swift; sourceTree = "<group>"; };
 		08458AC31E2E627600D01813 /* Fourier.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Fourier.swift; sourceTree = "<group>"; };
-		08458AC51E2E627600D01813 /* CollectionExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CollectionExtension.swift; sourceTree = "<group>"; };
-		08458AC61E2E627600D01813 /* ConcatCollection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConcatCollection.swift; sourceTree = "<group>"; };
-		08458AC71E2E627600D01813 /* Graph.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Graph.swift; sourceTree = "<group>"; };
-		08458AC81E2E627600D01813 /* IndexedCollection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IndexedCollection.swift; sourceTree = "<group>"; };
-		08458AC91E2E627600D01813 /* LazyGatherCollection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LazyGatherCollection.swift; sourceTree = "<group>"; };
-		08458ACA1E2E627600D01813 /* LazyScanSequence.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LazyScanSequence.swift; sourceTree = "<group>"; };
-		08458ACB1E2E627600D01813 /* LazySliceSequence.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LazySliceSequence.swift; sourceTree = "<group>"; };
-		08458ACC1E2E627600D01813 /* OptionOneCollection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OptionOneCollection.swift; sourceTree = "<group>"; };
-		08458ACD1E2E627600D01813 /* Parallel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Parallel.swift; sourceTree = "<group>"; };
 		08458ACF1E2E627600D01813 /* Color.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Color.swift; sourceTree = "<group>"; };
 		08458AD01E2E627600D01813 /* ColorModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ColorModel.swift; sourceTree = "<group>"; };
 		08458AD11E2E627600D01813 /* ColorPixel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ColorPixel.swift; sourceTree = "<group>"; };
@@ -219,6 +202,23 @@
 		087FE5C51A372D97005A2E9E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		08BFF9B91B0715ED00EC88CB /* FourierTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FourierTest.swift; sourceTree = "<group>"; };
 		0A266E521D6E95C100ABE6B7 /* SDMarkerTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SDMarkerTest.swift; sourceTree = "<group>"; };
+		0A53E44D1E35AEF80060FB83 /* CollectionExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CollectionExtension.swift; sourceTree = "<group>"; };
+		0A53E44E1E35AEF80060FB83 /* ConcatCollection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConcatCollection.swift; sourceTree = "<group>"; };
+		0A53E44F1E35AEF80060FB83 /* Date.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Date.swift; sourceTree = "<group>"; };
+		0A53E4501E35AEF80060FB83 /* FloatingPoint.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FloatingPoint.swift; sourceTree = "<group>"; };
+		0A53E4511E35AEF80060FB83 /* Graph.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Graph.swift; sourceTree = "<group>"; };
+		0A53E4521E35AEF80060FB83 /* Hashable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Hashable.swift; sourceTree = "<group>"; };
+		0A53E4531E35AEF80060FB83 /* IndexedCollection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IndexedCollection.swift; sourceTree = "<group>"; };
+		0A53E4541E35AEF80060FB83 /* Integer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Integer.swift; sourceTree = "<group>"; };
+		0A53E4551E35AEF80060FB83 /* Json.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Json.swift; sourceTree = "<group>"; };
+		0A53E4561E35AEF80060FB83 /* LazyGatherCollection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LazyGatherCollection.swift; sourceTree = "<group>"; };
+		0A53E4571E35AEF80060FB83 /* LazyScanSequence.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LazyScanSequence.swift; sourceTree = "<group>"; };
+		0A53E4581E35AEF80060FB83 /* LazySliceSequence.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LazySliceSequence.swift; sourceTree = "<group>"; };
+		0A53E4591E35AEF80060FB83 /* OptionOneCollection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OptionOneCollection.swift; sourceTree = "<group>"; };
+		0A53E45A1E35AEF80060FB83 /* Parallel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Parallel.swift; sourceTree = "<group>"; };
+		0A53E45B1E35AEF80060FB83 /* Random.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Random.swift; sourceTree = "<group>"; };
+		0A53E45C1E35AEF80060FB83 /* Regex.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Regex.swift; sourceTree = "<group>"; };
+		0A53E45D1E35AEF80060FB83 /* String.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = String.swift; sourceTree = "<group>"; };
 		0A776FC31D9A0BA5005FC88F /* c11_atomic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = c11_atomic.h; sourceTree = "<group>"; };
 		0A776FC41D9A0BA5005FC88F /* module.modulemap */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = "sourcecode.module-map"; path = module.modulemap; sourceTree = "<group>"; };
 		0AFCA14F1D9E1F130034AB10 /* AtomicTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AtomicTest.swift; sourceTree = "<group>"; };
@@ -276,32 +276,25 @@
 		08458ABA1E2E627600D01813 /* Foundation */ = {
 			isa = PBXGroup;
 			children = (
-				08458ABB1E2E627600D01813 /* Date.swift */,
-				08458ABC1E2E627600D01813 /* FloatingPoint.swift */,
-				08458ABD1E2E627600D01813 /* Hashable.swift */,
-				08458ABE1E2E627600D01813 /* Integer.swift */,
-				08458ABF1E2E627600D01813 /* Json.swift */,
-				08458AC01E2E627600D01813 /* Random.swift */,
-				08458AC11E2E627600D01813 /* Regex.swift */,
-				08458AC21E2E627600D01813 /* String.swift */,
+				0A53E44D1E35AEF80060FB83 /* CollectionExtension.swift */,
+				0A53E44E1E35AEF80060FB83 /* ConcatCollection.swift */,
+				0A53E44F1E35AEF80060FB83 /* Date.swift */,
+				0A53E4501E35AEF80060FB83 /* FloatingPoint.swift */,
+				0A53E4511E35AEF80060FB83 /* Graph.swift */,
+				0A53E4521E35AEF80060FB83 /* Hashable.swift */,
+				0A53E4531E35AEF80060FB83 /* IndexedCollection.swift */,
+				0A53E4541E35AEF80060FB83 /* Integer.swift */,
+				0A53E4551E35AEF80060FB83 /* Json.swift */,
+				0A53E4561E35AEF80060FB83 /* LazyGatherCollection.swift */,
+				0A53E4571E35AEF80060FB83 /* LazyScanSequence.swift */,
+				0A53E4581E35AEF80060FB83 /* LazySliceSequence.swift */,
+				0A53E4591E35AEF80060FB83 /* OptionOneCollection.swift */,
+				0A53E45A1E35AEF80060FB83 /* Parallel.swift */,
+				0A53E45B1E35AEF80060FB83 /* Random.swift */,
+				0A53E45C1E35AEF80060FB83 /* Regex.swift */,
+				0A53E45D1E35AEF80060FB83 /* String.swift */,
 			);
 			path = Foundation;
-			sourceTree = "<group>";
-		};
-		08458AC41E2E627600D01813 /* Functional */ = {
-			isa = PBXGroup;
-			children = (
-				08458AC51E2E627600D01813 /* CollectionExtension.swift */,
-				08458AC61E2E627600D01813 /* ConcatCollection.swift */,
-				08458AC71E2E627600D01813 /* Graph.swift */,
-				08458AC81E2E627600D01813 /* IndexedCollection.swift */,
-				08458AC91E2E627600D01813 /* LazyGatherCollection.swift */,
-				08458ACA1E2E627600D01813 /* LazyScanSequence.swift */,
-				08458ACB1E2E627600D01813 /* LazySliceSequence.swift */,
-				08458ACC1E2E627600D01813 /* OptionOneCollection.swift */,
-				08458ACD1E2E627600D01813 /* Parallel.swift */,
-			);
-			path = Functional;
 			sourceTree = "<group>";
 		};
 		08458ACE1E2E627600D01813 /* Image */ = {
@@ -367,7 +360,6 @@
 				08458AB01E2E627600D01813 /* Accelerate */,
 				08458ABA1E2E627600D01813 /* Foundation */,
 				08458AC31E2E627600D01813 /* Fourier.swift */,
-				08458AC41E2E627600D01813 /* Functional */,
 				08458ACE1E2E627600D01813 /* Image */,
 				08458AD41E2E627600D01813 /* Maths */,
 				08458ADF1E2E627600D01813 /* SDAtomicNode.swift */,
@@ -678,60 +670,60 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				08458B081E2E627600D01813 /* Integer.swift in Sources */,
 				08458B3C1E2E627600D01813 /* Polynomial.swift in Sources */,
-				08458B0E1E2E627600D01813 /* Regex.swift in Sources */,
 				08458B3E1E2E627600D01813 /* Rect.swift in Sources */,
-				08458B0C1E2E627600D01813 /* Random.swift in Sources */,
-				08458B1C1E2E627600D01813 /* LazyGatherCollection.swift in Sources */,
+				0A53E4781E35AEF80060FB83 /* Parallel.swift in Sources */,
 				08458B401E2E627600D01813 /* SDTransform.swift in Sources */,
 				08458B481E2E627600D01813 /* SDEllipse.swift in Sources */,
-				08458B141E2E627600D01813 /* CollectionExtension.swift in Sources */,
 				08458B441E2E627600D01813 /* SDAtomicNode.swift in Sources */,
+				0A53E45E1E35AEF80060FB83 /* CollectionExtension.swift in Sources */,
 				08458B301E2E627600D01813 /* Bezier.swift in Sources */,
 				08458B421E2E627600D01813 /* Vector.swift in Sources */,
 				08458B361E2E627600D01813 /* Maths.swift in Sources */,
 				08458B3A1E2E627600D01813 /* Point.swift in Sources */,
 				08458B461E2E627600D01813 /* SDMarker.swift in Sources */,
 				08458B501E2E627600D01813 /* SDPathPatternStroke.swift in Sources */,
-				08458B1A1E2E627600D01813 /* IndexedCollection.swift in Sources */,
-				08458B1E1E2E627600D01813 /* LazyScanSequence.swift in Sources */,
+				0A53E46C1E35AEF80060FB83 /* Integer.swift in Sources */,
 				08458B281E2E627600D01813 /* ColorModel.swift in Sources */,
 				08458B561E2E627600D01813 /* SDShape.swift in Sources */,
+				0A53E4721E35AEF80060FB83 /* LazyScanSequence.swift in Sources */,
+				0A53E46E1E35AEF80060FB83 /* Json.swift in Sources */,
 				08458B2E1E2E627600D01813 /* Image.swift in Sources */,
+				0A53E4641E35AEF80060FB83 /* FloatingPoint.swift in Sources */,
 				08458B521E2E627600D01813 /* SDPathStroke.swift in Sources */,
+				0A53E47C1E35AEF80060FB83 /* Regex.swift in Sources */,
 				08458B581E2E627600D01813 /* Atomic.swift in Sources */,
 				08458B5C1E2E627600D01813 /* AtomicStack.swift in Sources */,
-				08458B201E2E627600D01813 /* LazySliceSequence.swift in Sources */,
 				08458B261E2E627600D01813 /* Color.swift in Sources */,
-				08458B061E2E627600D01813 /* Hashable.swift in Sources */,
-				08458B241E2E627600D01813 /* Parallel.swift in Sources */,
-				08458B021E2E627600D01813 /* Date.swift in Sources */,
-				08458B041E2E627600D01813 /* FloatingPoint.swift in Sources */,
+				0A53E4761E35AEF80060FB83 /* OptionOneCollection.swift in Sources */,
 				08458B4C1E2E627600D01813 /* SDPath.swift in Sources */,
+				0A53E47A1E35AEF80060FB83 /* Random.swift in Sources */,
 				08458AFC1E2E627600D01813 /* Move.swift in Sources */,
 				08458B5A1E2E627600D01813 /* AtomicQueue.swift in Sources */,
 				08458B321E2E627600D01813 /* Complex.swift in Sources */,
 				08458B4E1E2E627600D01813 /* SDPathCoder.swift in Sources */,
-				08458B181E2E627600D01813 /* Graph.swift in Sources */,
 				08458AF61E2E627600D01813 /* ComplexConversion.swift in Sources */,
 				08458B5E1E2E627600D01813 /* Lock.swift in Sources */,
-				08458B0A1E2E627600D01813 /* Json.swift in Sources */,
 				08458B341E2E627600D01813 /* Ellipse.swift in Sources */,
 				08458AFE1E2E627600D01813 /* SafeFunction.swift in Sources */,
 				08458AF41E2E627600D01813 /* CircularConvolve.swift in Sources */,
 				08458B121E2E627600D01813 /* Fourier.swift in Sources */,
+				0A53E4701E35AEF80060FB83 /* LazyGatherCollection.swift in Sources */,
 				08458B601E2E627600D01813 /* SDThread.swift in Sources */,
 				08458AF81E2E627600D01813 /* CooleyTukey.swift in Sources */,
+				0A53E46A1E35AEF80060FB83 /* IndexedCollection.swift in Sources */,
 				08458AF01E2E627600D01813 /* AccelerateWrapper.swift in Sources */,
-				08458B101E2E627600D01813 /* String.swift in Sources */,
-				08458B161E2E627600D01813 /* ConcatCollection.swift in Sources */,
-				08458B221E2E627600D01813 /* OptionOneCollection.swift in Sources */,
+				0A53E4741E35AEF80060FB83 /* LazySliceSequence.swift in Sources */,
 				08458B541E2E627600D01813 /* SDRectangle.swift in Sources */,
 				08458B381E2E627600D01813 /* Matrix.swift in Sources */,
+				0A53E47E1E35AEF80060FB83 /* String.swift in Sources */,
 				08458B4A1E2E627600D01813 /* SDGraphic.swift in Sources */,
+				0A53E4681E35AEF80060FB83 /* Hashable.swift in Sources */,
 				08458B2C1E2E627600D01813 /* ColorSpace.swift in Sources */,
+				0A53E4621E35AEF80060FB83 /* Date.swift in Sources */,
 				08458AFA1E2E627600D01813 /* DiscreteConvolve.swift in Sources */,
+				0A53E4661E35AEF80060FB83 /* Graph.swift in Sources */,
+				0A53E4601E35AEF80060FB83 /* ConcatCollection.swift in Sources */,
 				08458B2A1E2E627600D01813 /* ColorPixel.swift in Sources */,
 				08458AF21E2E627600D01813 /* Arithmetic.swift in Sources */,
 			);
@@ -751,60 +743,60 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				08458B091E2E627600D01813 /* Integer.swift in Sources */,
 				08458B3D1E2E627600D01813 /* Polynomial.swift in Sources */,
-				08458B0F1E2E627600D01813 /* Regex.swift in Sources */,
 				08458B3F1E2E627600D01813 /* Rect.swift in Sources */,
-				08458B0D1E2E627600D01813 /* Random.swift in Sources */,
-				08458B1D1E2E627600D01813 /* LazyGatherCollection.swift in Sources */,
+				0A53E4791E35AEF80060FB83 /* Parallel.swift in Sources */,
 				08458B411E2E627600D01813 /* SDTransform.swift in Sources */,
 				08458B491E2E627600D01813 /* SDEllipse.swift in Sources */,
-				08458B151E2E627600D01813 /* CollectionExtension.swift in Sources */,
 				08458B451E2E627600D01813 /* SDAtomicNode.swift in Sources */,
+				0A53E45F1E35AEF80060FB83 /* CollectionExtension.swift in Sources */,
 				08458B311E2E627600D01813 /* Bezier.swift in Sources */,
 				08458B431E2E627600D01813 /* Vector.swift in Sources */,
 				08458B371E2E627600D01813 /* Maths.swift in Sources */,
 				08458B3B1E2E627600D01813 /* Point.swift in Sources */,
 				08458B471E2E627600D01813 /* SDMarker.swift in Sources */,
 				08458B511E2E627600D01813 /* SDPathPatternStroke.swift in Sources */,
-				08458B1B1E2E627600D01813 /* IndexedCollection.swift in Sources */,
-				08458B1F1E2E627600D01813 /* LazyScanSequence.swift in Sources */,
+				0A53E46D1E35AEF80060FB83 /* Integer.swift in Sources */,
 				08458B291E2E627600D01813 /* ColorModel.swift in Sources */,
 				08458B571E2E627600D01813 /* SDShape.swift in Sources */,
+				0A53E4731E35AEF80060FB83 /* LazyScanSequence.swift in Sources */,
+				0A53E46F1E35AEF80060FB83 /* Json.swift in Sources */,
 				08458B2F1E2E627600D01813 /* Image.swift in Sources */,
+				0A53E4651E35AEF80060FB83 /* FloatingPoint.swift in Sources */,
 				08458B531E2E627600D01813 /* SDPathStroke.swift in Sources */,
+				0A53E47D1E35AEF80060FB83 /* Regex.swift in Sources */,
 				08458B591E2E627600D01813 /* Atomic.swift in Sources */,
 				08458B5D1E2E627600D01813 /* AtomicStack.swift in Sources */,
-				08458B211E2E627600D01813 /* LazySliceSequence.swift in Sources */,
 				08458B271E2E627600D01813 /* Color.swift in Sources */,
-				08458B071E2E627600D01813 /* Hashable.swift in Sources */,
-				08458B251E2E627600D01813 /* Parallel.swift in Sources */,
-				08458B031E2E627600D01813 /* Date.swift in Sources */,
-				08458B051E2E627600D01813 /* FloatingPoint.swift in Sources */,
+				0A53E4771E35AEF80060FB83 /* OptionOneCollection.swift in Sources */,
 				08458B4D1E2E627600D01813 /* SDPath.swift in Sources */,
+				0A53E47B1E35AEF80060FB83 /* Random.swift in Sources */,
 				08458AFD1E2E627600D01813 /* Move.swift in Sources */,
 				08458B5B1E2E627600D01813 /* AtomicQueue.swift in Sources */,
 				08458B331E2E627600D01813 /* Complex.swift in Sources */,
 				08458B4F1E2E627600D01813 /* SDPathCoder.swift in Sources */,
-				08458B191E2E627600D01813 /* Graph.swift in Sources */,
 				08458AF71E2E627600D01813 /* ComplexConversion.swift in Sources */,
 				08458B5F1E2E627600D01813 /* Lock.swift in Sources */,
-				08458B0B1E2E627600D01813 /* Json.swift in Sources */,
 				08458B351E2E627600D01813 /* Ellipse.swift in Sources */,
 				08458AFF1E2E627600D01813 /* SafeFunction.swift in Sources */,
 				08458AF51E2E627600D01813 /* CircularConvolve.swift in Sources */,
 				08458B131E2E627600D01813 /* Fourier.swift in Sources */,
+				0A53E4711E35AEF80060FB83 /* LazyGatherCollection.swift in Sources */,
 				08458B611E2E627600D01813 /* SDThread.swift in Sources */,
 				08458AF91E2E627600D01813 /* CooleyTukey.swift in Sources */,
+				0A53E46B1E35AEF80060FB83 /* IndexedCollection.swift in Sources */,
 				08458AF11E2E627600D01813 /* AccelerateWrapper.swift in Sources */,
-				08458B111E2E627600D01813 /* String.swift in Sources */,
-				08458B171E2E627600D01813 /* ConcatCollection.swift in Sources */,
-				08458B231E2E627600D01813 /* OptionOneCollection.swift in Sources */,
+				0A53E4751E35AEF80060FB83 /* LazySliceSequence.swift in Sources */,
 				08458B551E2E627600D01813 /* SDRectangle.swift in Sources */,
 				08458B391E2E627600D01813 /* Matrix.swift in Sources */,
+				0A53E47F1E35AEF80060FB83 /* String.swift in Sources */,
 				08458B4B1E2E627600D01813 /* SDGraphic.swift in Sources */,
+				0A53E4691E35AEF80060FB83 /* Hashable.swift in Sources */,
 				08458B2D1E2E627600D01813 /* ColorSpace.swift in Sources */,
+				0A53E4631E35AEF80060FB83 /* Date.swift in Sources */,
 				08458AFB1E2E627600D01813 /* DiscreteConvolve.swift in Sources */,
+				0A53E4671E35AEF80060FB83 /* Graph.swift in Sources */,
+				0A53E4611E35AEF80060FB83 /* ConcatCollection.swift in Sources */,
 				08458B2B1E2E627600D01813 /* ColorPixel.swift in Sources */,
 				08458AF31E2E627600D01813 /* Arithmetic.swift in Sources */,
 			);

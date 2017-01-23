@@ -44,7 +44,7 @@ public extension Sequence where Iterator.Element : Equatable {
     /// Return `true` if all of elements in `seq` is `x`.
     ///
     /// - complexity: O(`self.count`).
-    func all(_ x: Iterator.Element) -> Bool {
+    public func all(_ x: Iterator.Element) -> Bool {
         
         for item in self where item != x {
             return false
@@ -58,7 +58,7 @@ public extension Sequence {
     /// Return `true` if all of elements in `seq` satisfies `predicate`.
     ///
     /// - complexity: O(`self.count`).
-    func all(_ predicate: (Iterator.Element) throws -> Bool) rethrows -> Bool {
+    public func all(_ predicate: (Iterator.Element) throws -> Bool) rethrows -> Bool {
         
         for item in self where try !predicate(item) {
             return false
@@ -72,7 +72,7 @@ public extension Set {
     /// Return `true` if all of elements in `seq` is `x`.
     ///
     /// - complexity: O(1).
-    func all(_ x: Element) -> Bool {
+    public func all(_ x: Element) -> Bool {
         
         switch self.count {
         case 0:
@@ -82,6 +82,17 @@ public extension Set {
         default:
             return false
         }
+    }
+}
+
+public extension Collection {
+    
+    public func count(where predicate: (Iterator.Element) throws -> Bool) rethrows -> IndexDistance {
+        var counter: IndexDistance = 0
+        for item in self where try predicate(item) {
+            counter = counter + 1
+        }
+        return counter
     }
 }
 
@@ -110,7 +121,7 @@ public extension BidirectionalCollection {
 
 public extension Collection where Iterator.Element : Equatable {
     
-    func prefix(until element: Iterator.Element) -> SubSequence {
+    public func prefix(until element: Iterator.Element) -> SubSequence {
         return self.prefix(while: { $0 != element })
     }
 }
@@ -142,7 +153,7 @@ public extension RandomAccessCollection where Indices.SubSequence.Iterator.Eleme
     /// Returns first range of `pattern` appear in `self`, or `nil` if not match.
     ///
     /// - complexity: Amortized O(`self.count`)
-    func range<C : RandomAccessCollection>(of pattern: C, where isEquivalent: (Iterator.Element, Iterator.Element) throws -> Bool) rethrows -> Range<Index>? where C.Iterator.Element == Iterator.Element {
+    public func range<C : RandomAccessCollection>(of pattern: C, where isEquivalent: (Iterator.Element, Iterator.Element) throws -> Bool) rethrows -> Range<Index>? where C.Iterator.Element == Iterator.Element {
         
         let pattern_count: IndexDistance = numericCast(pattern.count)
         if count < pattern_count {
@@ -176,14 +187,14 @@ public extension RandomAccessCollection where Indices.SubSequence.Iterator.Eleme
     /// Returns first range of `pattern` appear in `self`, or `nil` if not match.
     ///
     /// - complexity: Amortized O(`self.count`)
-    func range<C : RandomAccessCollection>(of pattern: C) -> Range<Index>? where C.Iterator.Element == Iterator.Element {
+    public func range<C : RandomAccessCollection>(of pattern: C) -> Range<Index>? where C.Iterator.Element == Iterator.Element {
         return self.range(of: pattern, where: ==)
     }
 }
 
 public extension MutableCollection where Indices.Iterator.Element == Index {
     
-    mutating func mutateEach(body: (inout Iterator.Element) throws -> ()) rethrows {
+    public mutating func mutateEach(body: (inout Iterator.Element) throws -> ()) rethrows {
         for idx in self.indices {
             try body(&self[idx])
         }
@@ -196,21 +207,21 @@ public typealias LazyAppendBidirectionalCollection<Elements : BidirectionalColle
 
 public extension LazySequenceProtocol {
     
-    func append(_ newElement: Elements.Iterator.Element) -> LazyAppendSequence<Elements> {
+    public func append(_ newElement: Elements.Iterator.Element) -> LazyAppendSequence<Elements> {
         return self.elements.concat(CollectionOfOne(newElement)).lazy
     }
 }
 
 public extension LazyCollectionProtocol {
     
-    func append(_ newElement: Elements.Iterator.Element) -> LazyAppendCollection<Elements> {
+    public func append(_ newElement: Elements.Iterator.Element) -> LazyAppendCollection<Elements> {
         return self.elements.concat(CollectionOfOne(newElement)).lazy
     }
 }
 
 public extension LazyCollectionProtocol where Elements : BidirectionalCollection {
     
-    func append(_ newElement: Elements.Iterator.Element) -> LazyAppendBidirectionalCollection<Elements> {
+    public func append(_ newElement: Elements.Iterator.Element) -> LazyAppendBidirectionalCollection<Elements> {
         return self.elements.concat(CollectionOfOne(newElement)).lazy
     }
 }
@@ -224,7 +235,7 @@ public extension LazyCollectionProtocol {
     /// Remove the indicated `subRange` of elements.
     ///
     /// Invalidates all indices with respect to `self`.
-    func dropRange(_ subRange: Range<Elements.Index>) -> LazyDropRangeSequence<Elements.SubSequence> {
+    public func dropRange(_ subRange: Range<Elements.Index>) -> LazyDropRangeSequence<Elements.SubSequence> {
         return self.elements.prefix(upTo: subRange.lowerBound).concat(self.elements.suffix(from: subRange.upperBound)).lazy
     }
 }
@@ -234,7 +245,7 @@ public extension LazyCollectionProtocol where Elements.SubSequence : Collection 
     /// Remove the indicated `subRange` of elements.
     ///
     /// Invalidates all indices with respect to `self`.
-    func dropRange(_ subRange: Range<Elements.Index>) -> LazyDropRangeCollection<Elements.SubSequence> {
+    public func dropRange(_ subRange: Range<Elements.Index>) -> LazyDropRangeCollection<Elements.SubSequence> {
         return self.elements.prefix(upTo: subRange.lowerBound).concat(self.elements.suffix(from: subRange.upperBound)).lazy
     }
 }
@@ -244,7 +255,7 @@ public extension LazyCollectionProtocol where Elements.SubSequence : Bidirection
     /// Remove the indicated `subRange` of elements.
     ///
     /// Invalidates all indices with respect to `self`.
-    func dropRange(_ subRange: Range<Elements.Index>) -> LazyDropRangeBidirectionalCollection<Elements.SubSequence> {
+    public func dropRange(_ subRange: Range<Elements.Index>) -> LazyDropRangeBidirectionalCollection<Elements.SubSequence> {
         return self.elements.prefix(upTo: subRange.lowerBound).concat(self.elements.suffix(from: subRange.upperBound)).lazy
     }
 }
@@ -254,7 +265,7 @@ public extension LazyCollectionProtocol {
     /// Replace the given `subRange` of elements with `newElements`.
     ///
     /// Invalidates all indices with respect to `self`.
-    func replaceRange<S : Sequence>(_ subRange: Range<Elements.Index>, with newElements: S) -> LazySequence<ConcatSequence<ConcatSequence<Elements.SubSequence, S>, Elements.SubSequence>> where S.Iterator.Element == Elements.SubSequence.Iterator.Element {
+    public func replaceRange<S : Sequence>(_ subRange: Range<Elements.Index>, with newElements: S) -> LazySequence<ConcatSequence<ConcatSequence<Elements.SubSequence, S>, Elements.SubSequence>> where S.Iterator.Element == Elements.SubSequence.Iterator.Element {
         return self.elements.prefix(upTo: subRange.lowerBound).concat(newElements).concat(self.elements.suffix(from: subRange.upperBound)).lazy
     }
 }
@@ -264,7 +275,7 @@ public extension LazyCollectionProtocol where Elements.SubSequence : Collection 
     /// Replace the given `subRange` of elements with `newElements`.
     ///
     /// Invalidates all indices with respect to `self`.
-    func replaceRange<C : Collection>(_ subRange: Range<Elements.Index>, with newElements: C) -> LazyCollection<ConcatCollection<ConcatCollection<Elements.SubSequence, C>, Elements.SubSequence>> where C.Iterator.Element == Elements.SubSequence.Iterator.Element {
+    public func replaceRange<C : Collection>(_ subRange: Range<Elements.Index>, with newElements: C) -> LazyCollection<ConcatCollection<ConcatCollection<Elements.SubSequence, C>, Elements.SubSequence>> where C.Iterator.Element == Elements.SubSequence.Iterator.Element {
         return self.elements.prefix(upTo: subRange.lowerBound).concat(newElements).concat(self.elements.suffix(from: subRange.upperBound)).lazy
     }
 }
@@ -274,7 +285,7 @@ public extension LazyCollectionProtocol where Elements.SubSequence : Bidirection
     /// Replace the given `subRange` of elements with `newElements`.
     ///
     /// Invalidates all indices with respect to `self`.
-    func replaceRange<C : BidirectionalCollection>(_ subRange: Range<Elements.Index>, with newElements: C) -> LazyBidirectionalCollection<ConcatBidirectionalCollection<ConcatBidirectionalCollection<Elements.SubSequence, C>, Elements.SubSequence>> where C.Iterator.Element == Elements.SubSequence.Iterator.Element {
+    public func replaceRange<C : BidirectionalCollection>(_ subRange: Range<Elements.Index>, with newElements: C) -> LazyBidirectionalCollection<ConcatBidirectionalCollection<ConcatBidirectionalCollection<Elements.SubSequence, C>, Elements.SubSequence>> where C.Iterator.Element == Elements.SubSequence.Iterator.Element {
         return self.elements.prefix(upTo: subRange.lowerBound).concat(newElements).concat(self.elements.suffix(from: subRange.upperBound)).lazy
     }
 }
@@ -297,7 +308,7 @@ public extension Sequence where Iterator.Element : Comparable {
     ///     If `true`, only nonempty subsequences are returned. The default
     ///     value is `true`.
     /// - Returns: An array of subsequences, split from this sequence's elements.
-    func split<S: Sequence>(separator: S, maxSplit: Int = Int.max, omittingEmptySubsequences: Bool = true) -> [SubSequence] where S.Iterator.Element == Iterator.Element {
+    public func split<S: Sequence>(separator: S, maxSplit: Int = Int.max, omittingEmptySubsequences: Bool = true) -> [SubSequence] where S.Iterator.Element == Iterator.Element {
         return self.split(maxSplits: maxSplit, omittingEmptySubsequences: omittingEmptySubsequences) { separator.contains($0) }
     }
 }
@@ -308,7 +319,7 @@ public typealias LazyMergeCollection<Elements : Collection, Others : Collection>
 public extension LazySequenceProtocol {
     
     /// Return a `Sequence` containing tuples satisfies `predicate` with each elements of two `sources`.
-    func merge<S : Sequence>(with: S, where predicate: @escaping (Elements.Iterator.Element, S.Iterator.Element) -> Bool) -> LazyMergeSequence<Elements, S> {
+    public func merge<S : Sequence>(with: S, where predicate: @escaping (Elements.Iterator.Element, S.Iterator.Element) -> Bool) -> LazyMergeSequence<Elements, S> {
         return self.flatMap { lhs in with.lazy.filter { rhs in predicate(lhs, rhs) }.map { (lhs, $0) } }
     }
 }
@@ -316,7 +327,7 @@ public extension LazySequenceProtocol {
 public extension LazyCollectionProtocol {
     
     /// Return a `Collection` containing tuples satisfies `predicate` with each elements of two `sources`.
-    func merge<C : Collection>(with: C, where predicate: @escaping (Elements.Iterator.Element, C.Iterator.Element) -> Bool) -> LazyMergeCollection<Elements, C> {
+    public func merge<C : Collection>(with: C, where predicate: @escaping (Elements.Iterator.Element, C.Iterator.Element) -> Bool) -> LazyMergeCollection<Elements, C> {
         return self.flatMap { lhs in with.lazy.filter { rhs in predicate(lhs, rhs) }.map { (lhs, $0) } }
     }
 }
@@ -324,7 +335,7 @@ public extension LazyCollectionProtocol {
 public extension Sequence {
     
     /// Return an `Array` containing tuples satisfies `predicate` with each elements of two `sources`.
-    func merge<S : Sequence>(with: S, where predicate: (Iterator.Element, S.Iterator.Element) throws -> Bool) rethrows -> [(Iterator.Element, S.Iterator.Element)] {
+    public func merge<S : Sequence>(with: S, where predicate: (Iterator.Element, S.Iterator.Element) throws -> Bool) rethrows -> [(Iterator.Element, S.Iterator.Element)] {
         var result = ContiguousArray<(Iterator.Element, S.Iterator.Element)>()
         for lhs in self {
             for rhs in with where try predicate(lhs, rhs) {
@@ -339,57 +350,43 @@ public extension Sequence {
     /// Returns the minimum element in `self` or `nil` if the sequence is empty.
     ///
     /// - complexity: O(`elements.count`).
-    func min<R : Comparable>(by: (Iterator.Element) throws -> R) rethrows -> Iterator.Element? {
+    public func min<R : Comparable>(by: (Iterator.Element) throws -> R) rethrows -> Iterator.Element? {
         return try self.min { try by($0) < by($1) }
     }
     /// Returns the maximum element in `self` or `nil` if the sequence is empty.
     ///
     /// - complexity: O(`elements.count`).
-    func max<R : Comparable>(by: (Iterator.Element) throws -> R) rethrows -> Iterator.Element? {
+    public func max<R : Comparable>(by: (Iterator.Element) throws -> R) rethrows -> Iterator.Element? {
         return try self.max { try by($0) < by($1) }
     }
 }
 
 public extension MutableCollection where Self : RandomAccessCollection {
     
-    mutating func sort<R : Comparable>(by: (Iterator.Element) -> R) {
+    public mutating func sort<R : Comparable>(by: (Iterator.Element) -> R) {
         self.sort { by($0) < by($1) }
     }
 }
 public extension Sequence {
     
-    func sorted<R : Comparable>(by: (Iterator.Element) -> R) -> [Iterator.Element] {
+    public func sorted<R : Comparable>(by: (Iterator.Element) -> R) -> [Iterator.Element] {
         return self.sorted { by($0) < by($1) }
     }
 }
 
 public extension Comparable {
     
-    func clamped(to range: ClosedRange<Self>) -> Self {
+    public func clamped(to range: ClosedRange<Self>) -> Self {
         return min(max(self, range.lowerBound), range.upperBound)
     }
 }
 
-public extension Range where Bound : BinaryFloatingPoint {
-    
-    func random() -> Bound {
-        let diff = upperBound - lowerBound
-        return (Bound.random() * diff) + lowerBound
-    }
-}
-public extension ClosedRange where Bound : BinaryFloatingPoint {
-    
-    func random() -> Bound {
-        let diff = upperBound - lowerBound
-        return (Bound.random(includeOne: true) * diff) + lowerBound
-    }
-}
 public extension RandomAccessCollection {
     
     /// Returns a random element in `self` or `nil` if the sequence is empty.
     ///
     /// - complexity: O(1).
-    func random() -> Iterator.Element? {
+    public func random() -> Iterator.Element? {
         let _count = UIntMax(self.count.toIntMax())
         switch _count {
         case 0: return nil
@@ -402,7 +399,7 @@ public extension RandomAccessCollection {
 public extension MutableCollection where Self : RandomAccessCollection, Indices.Index == Index, Indices.SubSequence : RandomAccessCollection, Indices.SubSequence.Iterator.Element == Index {
     
     /// Shuffle `self` in-place.
-    mutating func shuffle() {
+    public mutating func shuffle() {
         for i in self.indices.dropLast() {
             let j = self.indices.suffix(from: i).random()!
             if i != j {
@@ -414,7 +411,7 @@ public extension MutableCollection where Self : RandomAccessCollection, Indices.
 public extension Sequence {
     
     /// Return an `Array` containing the shuffled elements of `self`.
-    func shuffled() -> [Iterator.Element] {
+    public func shuffled() -> [Iterator.Element] {
         var list = ContiguousArray(self)
         list.shuffle()
         return Array(list)
@@ -423,7 +420,7 @@ public extension Sequence {
 
 public extension RangeReplaceableCollection {
     
-    mutating func replace<C : Collection>(with newElements: C) where Iterator.Element == C.Iterator.Element {
+    public mutating func replace<C : Collection>(with newElements: C) where Iterator.Element == C.Iterator.Element {
         self.replaceSubrange(startIndex..<endIndex, with: newElements)
     }
 }
@@ -440,7 +437,7 @@ public extension BidirectionalCollection where Self : MutableCollection, Indices
             }
         }
     }
-    func nextPermute() -> Self {
+    public func nextPermute() -> Self {
         var _self = self
         if !_self.isEmpty {
             if let k = _self.indices.dropLast().last(where: { _self[$0] < _self[_self.index(after: $0)] }) {
