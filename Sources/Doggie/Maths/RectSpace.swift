@@ -1,5 +1,5 @@
 //
-//  SpacePartition.swift
+//  RectSpace.swift
 //
 //  The MIT License
 //  Copyright (c) 2015 - 2017 Susan Cheng. All rights reserved.
@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-public struct SpacePartition {
+public struct RectSpace {
     
     fileprivate let bounds: [Rect]
     fileprivate let minX: [(Int, Double)]
@@ -49,7 +49,7 @@ public struct SpacePartition {
     }
 }
 
-extension SpacePartition : RandomAccessCollection {
+extension RectSpace : RandomAccessCollection {
     
     public typealias Indices = CountableRange<Int>
     
@@ -68,7 +68,7 @@ extension SpacePartition : RandomAccessCollection {
     }
 }
 
-extension SpacePartition {
+extension RectSpace {
     
     private func search(_ target: Double, _ elements: [(Int, Double)], _ indices: CountableRange<Int>) -> Int {
         switch indices.count {
