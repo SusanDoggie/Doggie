@@ -290,6 +290,29 @@ public extension LazyCollectionProtocol where Elements.SubSequence : Bidirection
     }
 }
 
+public typealias LazyRotateSequence<Elements : Sequence> = LazySequence<ConcatSequence<Elements, Elements>>
+public typealias LazyRotateCollection<Elements : Collection> = LazyCollection<ConcatCollection<Elements, Elements>>
+public typealias LazyRotateBidirectionalCollection<Elements : BidirectionalCollection> = LazyBidirectionalCollection<ConcatBidirectionalCollection<Elements, Elements>>
+
+public extension LazyCollectionProtocol where Elements.Iterator.Element == Elements.SubSequence.Iterator.Element {
+    
+    public func rotated(_ n: Int) -> LazyRotateSequence<Elements.SubSequence> {
+        return self.elements.dropFirst(n).concat(self.elements.prefix(n)).lazy
+    }
+}
+public extension LazyCollectionProtocol where Elements.SubSequence : Collection, Elements.Iterator.Element == Elements.SubSequence.Iterator.Element {
+    
+    public func rotated(_ n: Int) -> LazyRotateSequence<Elements.SubSequence> {
+        return self.elements.dropFirst(n).concat(self.elements.prefix(n)).lazy
+    }
+}
+public extension LazyCollectionProtocol where Elements.SubSequence : BidirectionalCollection, Elements.Iterator.Element == Elements.SubSequence.Iterator.Element {
+    
+    public func rotated(_ n: Int) -> LazyRotateSequence<Elements.SubSequence> {
+        return self.elements.dropFirst(n).concat(self.elements.prefix(n)).lazy
+    }
+}
+
 public extension Sequence where Iterator.Element : Comparable {
     
     /// Returns the maximal `SubSequence`s of `self`, in order, around elements
