@@ -5,7 +5,7 @@ language: generic
 sudo: required
 dist: trusty
 notifications: never
-osx_image: xcode8
+osx_image: xcode8.2
 env:
   - VERSION="3.0.1"
   
