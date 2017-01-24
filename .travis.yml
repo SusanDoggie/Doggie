@@ -28,7 +28,6 @@ install:
         tar -zxf $SWIFTFILE.tar.gz;
         export PATH=$PWD/$SWIFTFILE/usr/bin:"${PATH}";
     fi
-  - rvm get stable
   
 script:
   - swift --version;
