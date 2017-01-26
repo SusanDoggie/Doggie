@@ -101,7 +101,7 @@ extension SDMarker {
             case "%":
                 if let end_token_index = chars.range(of: variable_token_end)?.lowerBound, chars.startIndex + 1 != end_token_index {
                     let variable_name = String(chars.prefix(upTo: end_token_index).dropFirst()).trimmingCharacters(in: .whitespaces)
-                    if variable_name.characters.all({ characterSet.contains($0) }) {
+                    if variable_name.characters.all(where: { characterSet.contains($0) }) {
                         return .variable(variable_name, end_token_index + 3)
                     }
                 }
@@ -114,7 +114,7 @@ extension SDMarker {
                         scope_name = scope_name.trimmingCharacters(in: .whitespaces)
                         flag = false
                     }
-                    if scope_name.characters.all({ characterSet.contains($0) }) {
+                    if scope_name.characters.all(where: { characterSet.contains($0) }) {
                         return .scope(scope_name, flag, end_token_index + 3)
                     }
                 }

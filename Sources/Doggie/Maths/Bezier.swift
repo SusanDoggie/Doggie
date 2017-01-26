@@ -1358,7 +1358,7 @@ public func QuadBezierLineIntersect(_ b0: Point, _ b1: Point, _ b2: Point, _ l0:
     let v1 = l0.y - l1.y
     
     let poly = u1 * v0 - u0 * v1
-    return poly.all({ $0.almostZero() }) ? nil : poly.roots
+    return poly.all(where: { $0.almostZero() }) ? nil : poly.roots
 }
 
 public func CubicBezierLineIntersect(_ b0: Point, _ b1: Point, _ b2: Point, _ b3: Point, _ l0: Point, _ l1: Point) -> [Double]? {
@@ -1375,7 +1375,7 @@ public func CubicBezierLineIntersect(_ b0: Point, _ b1: Point, _ b2: Point, _ b3
     let v1 = l0.y - l1.y
     
     let poly = u1 * v0 - u0 * v1
-    return poly.all({ $0.almostZero() }) ? nil : poly.roots
+    return poly.all(where: { $0.almostZero() }) ? nil : poly.roots
 }
 
 public func QuadBeziersIntersect(_ b0: Point, _ b1: Point, _ b2: Point, _ b3: Point, _ b4: Point, _ b5: Point) -> [Double]? {
@@ -1399,7 +1399,7 @@ public func QuadBeziersIntersect(_ b0: Point, _ b1: Point, _ b2: Point, _ b3: Po
     let m11 = u1 * v0 - u0 * v1
     
     let det = m00 * m11 - m01 * m10
-    return det.all({ $0.almostZero() }) ? nil : det.roots
+    return det.all(where: { $0.almostZero() }) ? nil : det.roots
 }
 
 public func CubicQuadBezierIntersect(_ c0: Point, _ c1: Point, _ c2: Point, _ c3: Point, _ q0: Point, _ q1: Point, _ q2: Point) -> [Double]? {
@@ -1424,7 +1424,7 @@ public func CubicQuadBezierIntersect(_ c0: Point, _ c1: Point, _ c2: Point, _ c3
     let m11 = u1 * v0 - u0 * v1
     
     let det = m00 * m11 - m01 * m10
-    return det.all({ $0.almostZero() }) ? nil : det.roots
+    return det.all(where: { $0.almostZero() }) ? nil : det.roots
 }
 
 public func CubicBeziersIntersect(_ c0: Point, _ c1: Point, _ c2: Point, _ c3: Point, _ c4: Point, _ c5: Point, _ c6: Point, _ c7: Point) -> [Double]? {
@@ -1459,7 +1459,7 @@ public func CubicBeziersIntersect(_ c0: Point, _ c1: Point, _ c2: Point, _ c3: P
     let _b = m12 * m20 - m10 * m22
     let _c = m10 * m21 - m11 * m20
     let det = m00 * _a + m01 * _b + m02 * _c
-    return det.all({ $0.almostZero() }) ? nil : det.roots
+    return det.all(where: { $0.almostZero() }) ? nil : det.roots
 }
 
 // MARK: Area
