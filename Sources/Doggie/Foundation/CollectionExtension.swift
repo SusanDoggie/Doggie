@@ -58,7 +58,7 @@ public extension Sequence {
     /// Return `true` if all of elements in `seq` satisfies `predicate`.
     ///
     /// - complexity: O(`self.count`).
-    public func all(_ predicate: (Iterator.Element) throws -> Bool) rethrows -> Bool {
+    public func all(where predicate: (Iterator.Element) throws -> Bool) rethrows -> Bool {
         
         for item in self where try !predicate(item) {
             return false
