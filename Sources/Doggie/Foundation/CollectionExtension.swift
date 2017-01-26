@@ -531,7 +531,7 @@ public extension Sequence {
     func scan<R>(_ initial: R, _ combine: (R, Iterator.Element) throws -> R) rethrows -> [R] {
         var last = initial
         var result = [initial]
-        result.reserveCapacity(self.underestimatedCount)
+        result.reserveCapacity(self.underestimatedCount + 1)
         for x in self {
             let next = try combine(last, x)
             result.append(next)
