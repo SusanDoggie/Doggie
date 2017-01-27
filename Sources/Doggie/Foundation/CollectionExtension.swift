@@ -121,30 +121,12 @@ public extension BidirectionalCollection {
 
 public extension Collection where Iterator.Element : Equatable {
     
+    public func drop(until element: Iterator.Element) -> SubSequence {
+        return self.drop(while: { $0 != element })
+    }
+    
     public func prefix(until element: Iterator.Element) -> SubSequence {
         return self.prefix(while: { $0 != element })
-    }
-}
-
-public extension Collection {
-    
-    /// Returns a subsequence containing the initial elements until `predicate`
-    /// returns `false` and skipping the remaining elements.
-    ///
-    /// - Parameter predicate: A closure that takes an element of the
-    ///   sequence as its argument and returns `true` if the element should
-    ///   be included or `false` if it should be excluded. Once the predicate
-    ///   returns `false` it will not be called again.
-    ///
-    /// - Complexity: O(*n*), where *n* is the length of the collection.
-    public func prefix(
-        while predicate: (Iterator.Element) throws -> Bool
-        ) rethrows -> SubSequence {
-        var end = startIndex
-        while try end != endIndex && predicate(self[end]) {
-            formIndex(after: &end)
-        }
-        return self[startIndex..<end]
     }
 }
 

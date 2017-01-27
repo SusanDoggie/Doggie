@@ -254,7 +254,7 @@ extension SDPath {
                 return
             }
             if !bound.minX.almostZero() && bound.minX < 0 {
-                let t = BezierPolynomial(p0.x, p1.x, p2.x).roots.filter { !$0.almostZero() && !$0.almostEqual(1) && (0...1).contains($0) }.sorted()
+                let t = Bezier(p0.x, p1.x, p2.x).polynomial.roots.filter { !$0.almostZero() && !$0.almostEqual(1) && (0...1).contains($0) }.sorted()
                 let q = SplitBezier(t, p0, p1, p2)
                 for item in q {
                     addBezier(item[0], item[1], item[2])
@@ -262,7 +262,7 @@ extension SDPath {
                 return
             }
             if !bound.maxX.almostEqual(1) && bound.maxX > 1 {
-                let t = (BezierPolynomial(p0.x, p1.x, p2.x) - 1).roots.filter { !$0.almostZero() && !$0.almostEqual(1) && (0...1).contains($0) }.sorted()
+                let t = (Bezier(p0.x, p1.x, p2.x).polynomial - 1).roots.filter { !$0.almostZero() && !$0.almostEqual(1) && (0...1).contains($0) }.sorted()
                 let q = SplitBezier(t, p0, p1, p2)
                 for item in q {
                     addBezier(item[0], item[1], item[2])
@@ -292,7 +292,7 @@ extension SDPath {
                 if _p0.x.almostEqual(current_startX / fitting.total) {
                     addJoin(_p0.y, z.x.sign)
                 }
-                let x_poly = BezierPolynomial(_p0.x, _p1.x, _p2.x)
+                let x_poly = Bezier(_p0.x, _p1.x, _p2.x).polynomial
                 if z.x > 0 {
                     let _mid_t = (x_poly - current_endX / fitting.total).roots.filter { !$0.almostZero() && !$0.almostEqual(1) && (0...1).contains($0) }.sorted().first ?? 1
                     let (left, right) = SplitBezier(_mid_t, _p0, _p1, _p2)
@@ -368,14 +368,14 @@ extension SDPath {
                 return
             }
             if !bound.minX.almostZero() && bound.minX < 0 {
-                let t = BezierPolynomial(p0.x, p1.x, p2.x, p3.x).roots.filter { !$0.almostZero() && !$0.almostEqual(1) && (0...1).contains($0) }.sorted()
+                let t = Bezier(p0.x, p1.x, p2.x, p3.x).polynomial.roots.filter { !$0.almostZero() && !$0.almostEqual(1) && (0...1).contains($0) }.sorted()
                 let q = SplitBezier(t, p0, p1, p2, p3)
                 for item in q {
                     addBezier(item[0], item[1], item[2], item[3])
                 }
             }
             if !bound.maxX.almostEqual(1) && bound.maxX > 1 {
-                let t = (BezierPolynomial(p0.x, p1.x, p2.x, p3.x) - 1).roots.filter { !$0.almostZero() && !$0.almostEqual(1) && (0...1).contains($0) }.sorted()
+                let t = (Bezier(p0.x, p1.x, p2.x, p3.x).polynomial - 1).roots.filter { !$0.almostZero() && !$0.almostEqual(1) && (0...1).contains($0) }.sorted()
                 let q = SplitBezier(t, p0, p1, p2, p3)
                 for item in q {
                     addBezier(item[0], item[1], item[2], item[3])
@@ -406,7 +406,7 @@ extension SDPath {
                 if _p0.x.almostEqual(current_startX / fitting.total) {
                     addJoin(_p0.y, z.x.sign)
                 }
-                let x_poly = BezierPolynomial(_p0.x, _p1.x, _p2.x, _p3.x)
+                let x_poly = Bezier(_p0.x, _p1.x, _p2.x, _p3.x).polynomial
                 if z.x > 0 {
                     let _mid_t = (x_poly - current_endX / fitting.total).roots.filter { !$0.almostZero() && !$0.almostEqual(1) && (0...1).contains($0) }.sorted().first ?? 1
                     let (left, right) = SplitBezier(_mid_t, _p0, _p1, _p2, _p3)

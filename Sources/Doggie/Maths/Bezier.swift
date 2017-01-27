@@ -50,49 +50,16 @@ extension Vector : BezierElementProtocol {
     
 }
 
-private enum BezierControlsBase<Element : BezierElementProtocol> {
-    
-    case zero
-    case one(Element)
-    case two(Element, Element)
-    case many([Element])
-    
-    init<C : Collection>(_ c: C) where C.Iterator.Element == Element {
-        switch c.count {
-        case 0: self = .zero
-        case 1: self = .one(c[c.startIndex])
-        case 2: self = .two(c[c.startIndex], c[c.index(after: c.startIndex)])
-        default: self = .many(Array(c))
-        }
-    }
-}
 public struct Bezier<Element : BezierElementProtocol> {
     
-    public var start: Element
-    public var end: Element
+    fileprivate var points: [Element]
     
-    fileprivate var base: BezierControlsBase<Element>
-    
-    public init(_ p0: Element, _ p1: Element) {
-        self.start = p0
-        self.end = p1
-        self.base = .zero
-    }
-    public init(_ p0: Element, _ p1: Element, _ p2: Element) {
-        self.start = p0
-        self.end = p2
-        self.base = .one(p1)
-    }
-    public init(_ p0: Element, _ p1: Element, _ p2: Element, _ p3: Element) {
-        self.start = p0
-        self.end = p3
-        self.base = .two(p1, p2)
+    public init(_ p: Element ... ) {
+        self.points = p
     }
     public init<S : Sequence>(_ s: S) where S.Iterator.Element == Element {
-        let _s = Array(s)
-        self.start = _s.first!
-        self.end = _s.last!
-        self.base = BezierControlsBase(_s.dropFirst().dropLast())
+        self.points = Array(s)
+        assert(self.points.count > 1, "count of points less than 2.")
     }
 }
 extension Bezier : ExpressibleByArrayLiteral {
@@ -108,23 +75,7 @@ extension Bezier : CustomStringConvertible {
         return "\(points)"
     }
 }
-extension Bezier {
-    
-    public var controls: [Element] {
-        get {
-            switch base {
-            case .zero: return []
-            case let .one(p1): return [p1]
-            case let .two(p1, p2): return [p1, p2]
-            case let .many(p): return p
-            }
-        }
-        set {
-            base = BezierControlsBase(newValue)
-        }
-    }
-    
-}
+
 extension Bezier : RandomAccessCollection, MutableCollection {
     
     public typealias Indices = CountableRange<Int>
@@ -132,90 +83,24 @@ extension Bezier : RandomAccessCollection, MutableCollection {
     public typealias Index = Int
     
     public var degree: Int {
-        switch base {
-        case .zero: return 1
-        case .one: return 2
-        case .two: return 3
-        case let .many(p): return p.count + 1
-        }
+        return points.count - 1
     }
     public var count: Int {
-        switch base {
-        case .zero: return 2
-        case .one: return 3
-        case .two: return 4
-        case let .many(p): return p.count + 2
-        }
+        return points.count
     }
     public var startIndex: Int {
-        return 0
+        return points.startIndex
     }
     public var endIndex: Int {
-        return count
+        return points.endIndex
     }
     
     public subscript(position: Int) -> Element {
         get {
-            if position == 0 {
-                return start
-            }
-            switch base {
-            case .zero:
-                switch position {
-                case 1: return end
-                default: fatalError("Index out of range")
-                }
-            case let .one(p1):
-                switch position {
-                case 1: return p1
-                case 2: return end
-                default: fatalError("Index out of range")
-                }
-            case let .two(p1, p2):
-                switch position {
-                case 1: return p1
-                case 2: return p2
-                case 3: return end
-                default: fatalError("Index out of range")
-                }
-            case let .many(p):
-                switch position {
-                case p.count + 1: return end
-                default: return p[position - 1]
-                }
-            }
+            return points[position]
         }
         set {
-            if position == 0 {
-                start = newValue
-            }
-            switch base {
-            case .zero:
-                switch position {
-                case 1: end = newValue
-                default: fatalError("Index out of range")
-                }
-            case .one:
-                switch position {
-                case 1: base = .one(newValue)
-                case 2: end = newValue
-                default: fatalError("Index out of range")
-                }
-            case let .two(p1, p2):
-                switch position {
-                case 1: base = .two(newValue, p2)
-                case 2: base = .two(p1, newValue)
-                case 3: end = newValue
-                default: fatalError("Index out of range")
-                }
-            case var .many(p):
-                switch position {
-                case p.count + 1: end = newValue
-                default:
-                    p[position - 1] = newValue
-                    base = .many(p)
-                }
-            }
+            points[position] = newValue
         }
     }
     
@@ -233,33 +118,35 @@ extension Bezier : RandomAccessCollection, MutableCollection {
 extension Bezier {
     
     public func eval(_ t: Double) -> Element {
-        switch base {
-        case .zero: return start + t * (end - start)
-        case let .one(p1):
+        switch points.count {
+        case 2:
+            let p0 = points[0]
+            let p1 = points[1]
+            return p0 + t * (p1 - p0)
+        case 3:
             let _t = 1 - t
-            let a = _t * _t * start
-            let b = 2 * _t * t * p1
-            let c = t * t * end
+            let a = _t * _t * points[0]
+            let b = 2 * _t * t * points[1]
+            let c = t * t * points[2]
             return a + b + c
-        case let .two(p1, p2):
+        case 4:
             let t2 = t * t
             let _t = 1 - t
             let _t2 = _t * _t
-            let a = _t * _t2 * start
-            let b = 3 * _t2 * t * p1
-            let c = 3 * _t * t2 * p2
-            let d = t * t2 * end
+            let a = _t * _t2 * points[0]
+            let b = 3 * _t2 * t * points[1]
+            let c = 3 * _t * t2 * points[2]
+            let d = t * t2 * points[3]
             return a + b + c + d
         default:
-            let p = points
             var result: Element?
-            let _n = p.count - 1
+            let _n = points.count - 1
             for (idx, k) in CombinationList(UInt(_n)).enumerated() {
                 let b = Double(k) * pow(t, Double(idx)) * pow(1 - t, Double(_n - idx))
                 if result == nil {
-                    result = b * p[idx]
+                    result = b * points[idx]
                 } else {
-                    result! += b * p[idx]
+                    result! += b * points[idx]
                 }
             }
             return result!
@@ -268,60 +155,33 @@ extension Bezier {
     
 }
 
-extension Bezier {
+extension Bezier where Element == Double {
     
-    fileprivate var points: [Element] {
-        get {
-            switch base {
-            case .zero: return [start, end]
-            case let .one(p1): return [start, p1, end]
-            case let .two(p1, p2): return [start, p1, p2, end]
-            case let .many(p): return [start] + p + [end]
+    public var polynomial: Polynomial {
+        var result = PermutationList(UInt(points.count - 1)).map(Double.init) as Array
+        for i in result.indices {
+            var sum = 0.0
+            let fact = Array(FactorialList(UInt(i)))
+            for (j, f) in zip(fact, fact.reversed()).map(*).enumerated() {
+                if (i + j) & 1 == 0 {
+                    sum += points[j] / Double(f)
+                } else {
+                    sum -= points[j] / Double(f)
+                }
             }
+            result[i] *= sum
         }
-        set {
-            self = Bezier(newValue)
-        }
-    }
-}
-
-@_transparent
-private func BezierPolynomial(_ p: [Double]) -> Polynomial {
-    var result = PermutationList(UInt(p.count - 1)).map(Double.init) as Array
-    for i in result.indices {
-        var sum = 0.0
-        let fact = Array(FactorialList(UInt(i)))
-        for (j, f) in zip(fact, fact.reversed()).map(*).enumerated() {
-            if (i + j) & 1 == 0 {
-                sum += p[j] / Double(f)
-            } else {
-                sum -= p[j] / Double(f)
-            }
-        }
-        result[i] *= sum
-    }
-    return Polynomial(result)
-}
-@_transparent
-private func BezierPolynomial(_ poly: Polynomial) -> [Double] {
-    let de = (0..<poly.degree).scan(poly) { p, _ in p.derivative / Double(p.degree) }
-    var result: [Double] = []
-    for n in de.indices {
-        let s = zip(CombinationList(UInt(n)), de)
-        result.append(s.reduce(0) { $0 + Double($1.0) * $1.1[0] })
-    }
-    return result
-}
-
-
-extension Polynomial {
-    
-    public var bezier: Bezier<Double> {
-        return Bezier(BezierPolynomial(self))
+        return Polynomial(result)
     }
     
-    public init(_ bezier: Bezier<Double>) {
-        self = BezierPolynomial(bezier.points)
+    public init(_ polynomial: Polynomial) {
+        let de = (0..<polynomial.degree).scan(polynomial) { p, _ in p.derivative / Double(p.degree) }
+        var points: [Double] = []
+        for n in de.indices {
+            let s = zip(CombinationList(UInt(n)), de)
+            points.append(s.reduce(0) { $0 + Double($1.0) * $1.1[0] })
+        }
+        self.init(points)
     }
 }
 
@@ -359,10 +219,10 @@ extension Bezier {
     }
     public func split(_ t: Double) -> (Bezier, Bezier) {
         if t.almostZero() {
-            return (Bezier(repeatElement(start, count: self.count)), self)
+            return (Bezier(repeatElement(points.first!, count: self.count)), self)
         }
         if t.almostEqual(1) {
-            return (self, Bezier(repeatElement(end, count: self.count)))
+            return (self, Bezier(repeatElement(points.last!, count: self.count)))
         }
         let split = Bezier.split(t, points)
         return (Bezier(split.0), Bezier(split.1))
@@ -395,6 +255,101 @@ extension Bezier {
             lastPoint = current
         }
         return Bezier(de)
+    }
+}
+
+extension Bezier where Element == Point {
+    
+    public func closest(_ point: Point) -> [Double] {
+        switch points.count {
+        case 2:
+            let b0 = points[0]
+            let b1 = points[1]
+            
+            let a = b0 - point
+            let b = b1 - b0
+            let x: Polynomial = [a.x, b.x]
+            let y: Polynomial = [a.y, b.y]
+            let dot = x * x + y * y
+            return dot.derivative.roots.sorted(by: { dot.eval($0) })
+        case 3:
+            let b0 = points[0]
+            let b1 = points[1]
+            let b2 = points[2]
+            
+            let a = b0 - point
+            let b = 2 * (b1 - b0)
+            let c = b0 - 2 * b1 + b2
+            let x: Polynomial = [a.x, b.x, c.x]
+            let y: Polynomial = [a.y, b.y, c.y]
+            let dot = x * x + y * y
+            return dot.derivative.roots.sorted(by: { dot.eval($0) })
+        case 4:
+            let b0 = points[0]
+            let b1 = points[1]
+            let b2 = points[2]
+            let b3 = points[3]
+            
+            let a = b0 - point
+            let b = 3 * (b1 - b0)
+            let c = 3 * (b2 + b0) - 6 * b1
+            let d = b3 + 3 * (b1 - b2) - b0
+            let x: Polynomial = [a.x, b.x, c.x, d.x]
+            let y: Polynomial = [a.y, b.y, c.y, d.y]
+            let dot = x * x + y * y
+            let y_roots = y.roots
+            let roots = x.roots.filter { x in y_roots.contains { x.almostEqual($0) } }
+            return roots.count != 0 ? roots.sorted(by: { dot.eval($0) }) : dot.derivative.roots.sorted(by: { dot.eval($0) })
+        default:
+            let x = Bezier<Double>(points.map { $0.x }).polynomial - point.x
+            let y = Bezier<Double>(points.map { $0.y }).polynomial - point.y
+            let dot = x * x + y * y
+            return dot.derivative.roots.sorted(by: { dot.eval($0) })
+        }
+    }
+}
+
+extension Bezier where Element == Point {
+    
+    public var area: Double {
+        switch points.count {
+        case 2:
+            let p0 = points[0]
+            let p1 = points[1]
+            return 0.5 * (p0.x * p1.y - p0.y * p1.x)
+        case 3:
+            let p0 = points[0]
+            let p1 = points[1]
+            let p2 = points[2]
+            
+            let a = p0.x - 2 * p1.x + p2.x
+            let b = 2 * (p1.x - p0.x)
+            
+            let c = p0.y - 2 * p1.y + p2.y
+            let d = 2 * (p1.y - p0.y)
+            
+            return 0.5 * (p0.x * p2.y - p2.x * p0.y) + (b * c - a * d) / 6
+        case 4:
+            let p0 = points[0]
+            let p1 = points[1]
+            let p2 = points[2]
+            let p3 = points[3]
+            
+            let a = p3.x - p0.x + 3 * (p1.x - p2.x)
+            let b = 3 * (p2.x + p0.x) - 6 * p1.x
+            let c = 3 * (p1.x - p0.x)
+            
+            let d = p3.y - p0.y + 3 * (p1.y - p2.y)
+            let e = 3 * (p2.y + p0.y) - 6 * p1.y
+            let f = 3 * (p1.y - p0.y)
+            
+            return 0.5 * (p0.x * p3.y - p3.x * p0.y) + 0.1 * (b * d - a * e) + 0.25 * (c * d - a * f) + (c * e - b * f) / 6
+        default:
+            let x = Bezier<Double>(points.map { $0.x }).polynomial
+            let y = Bezier<Double>(points.map { $0.y }).polynomial
+            let t = x * y.derivative - x.derivative * y
+            return 0.5 * t.integral.eval(1)
+        }
     }
 }
 
@@ -481,11 +436,6 @@ private func BezierPoint<Element: BezierElementProtocol>(_ t: Double, _ p: [Elem
     return result!
 }
 
-public func BezierPolynomial(_ p: Double ... ) -> Polynomial {
-    
-    return BezierPolynomial(p)
-}
-
 public func ClosestBezier(_ point: Point, _ b0: Point, _ b1: Point) -> [Double] {
     let a = b0 - point
     let b = b1 - b0
@@ -520,8 +470,8 @@ public func ClosestBezier(_ point: Point, _ b0: Point, _ b1: Point, _ b2: Point,
 
 public func ClosestBezier(_ point: Point, _ b0: Point, _ b1: Point, _ b2: Point, _ b3: Point, _ b4: Point , _ b5: Point ... ) -> [Double] {
     let list = [b0, b1, b2, b3, b4] + b5
-    let x = BezierPolynomial(list.map { $0.x }) - point.x
-    let y = BezierPolynomial(list.map { $0.y }) - point.y
+    let x = Bezier(list.map { $0.x }).polynomial - point.x
+    let y = Bezier(list.map { $0.y }).polynomial - point.y
     let dot = x * x + y * y
     return dot.derivative.roots.sorted(by: { dot.eval($0) })
 }
@@ -598,8 +548,8 @@ public func QuadBezierLength(_ t: Double, _ p0: Point, _ p1: Point, _ p2: Point)
         return t
     }
     
-    let x = BezierPolynomial(p0.x, p1.x, p2.x).derivative
-    let y = BezierPolynomial(p0.y, p1.y, p2.y).derivative
+    let x = Bezier(p0.x, p1.x, p2.x).polynomial.derivative
+    let y = Bezier(p0.y, p1.y, p2.y).polynomial.derivative
     
     let u = x * x + y * y
     
@@ -611,8 +561,8 @@ public func InverseQuadBezierLength(_ length: Double, _ p0: Point, _ p1: Point, 
         return length
     }
     
-    let x = BezierPolynomial(p0.x, p1.x, p2.x).derivative
-    let y = BezierPolynomial(p0.y, p1.y, p2.y).derivative
+    let x = Bezier(p0.x, p1.x, p2.x).polynomial.derivative
+    let y = Bezier(p0.y, p1.y, p2.y).polynomial.derivative
     
     let u = x * x + y * y
     
@@ -963,7 +913,7 @@ private func BezierVariableOffset(_ p0: Point, _ p1: Point, _ p2: Point, _ a: [P
     let length = QuadBezierLength(1, p0, p1, p2)
     
     func split_a(_ mid_length: Double) -> ([Point], [Point]) {
-        let t = (BezierPolynomial(a.map { $0.x }) - mid_length / length).roots.first { !$0.almostZero() && !$0.almostEqual(1) && (0...1).contains($0) } ?? mid_length / length
+        let t = (Bezier(a.map { $0.x }).polynomial - mid_length / length).roots.first { !$0.almostZero() && !$0.almostEqual(1) && (0...1).contains($0) } ?? mid_length / length
         let (a_left, a_right) = SplitBezier(t, a)
         let a_left_last = a_left.last!
         let a_right_first = a_right.first!
@@ -1016,7 +966,7 @@ private func BezierVariableOffset(_ p0: Point, _ p1: Point, _ p2: Point, _ a: [P
             if limit > 0 {
                 return split_half()
             } else {
-                let t = a.count == 2 ? half_length / length : (BezierPolynomial(a.map { $0.x }) - half_length / length).roots.first { !$0.almostZero() && !$0.almostEqual(1) && (0...1).contains($0) } ?? half_length / length
+                let t = a.count == 2 ? half_length / length : (Bezier(a.map { $0.x }).polynomial - half_length / length).roots.first { !$0.almostZero() && !$0.almostEqual(1) && (0...1).contains($0) } ?? half_length / length
                 let g = BezierPoint(t, a)
                 let m = BezierPoint(0.5, q0, q1)
                 let _s = 1 / m.magnitude
@@ -1466,8 +1416,8 @@ public func CubicBeziersIntersect(_ c0: Point, _ c1: Point, _ c2: Point, _ c3: P
 
 public func BezierSignedArea(_ p: Point ...) -> Double {
     
-    let x = BezierPolynomial(p.map { $0.x })
-    let y = BezierPolynomial(p.map { $0.y })
+    let x = Bezier(p.map { $0.x }).polynomial
+    let y = Bezier(p.map { $0.y }).polynomial
     let t = x * y.derivative - x.derivative * y
     return 0.5 * t.integral.eval(1)
 }

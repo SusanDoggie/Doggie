@@ -205,6 +205,61 @@ extension Graph: CustomStringConvertible {
     }
 }
 
+extension Graph where Node == AnyHashable {
+    
+    /// Return `true` iff it has link from `fromNode` to `toNode`.
+    ///
+    /// - complexity: Amortized O(1)
+    public func isLinked<ConcreteElement : Hashable>(from fromNode: ConcreteElement, to toNode: ConcreteElement) -> Bool {
+        return self.isLinked(from: AnyHashable(fromNode), to: AnyHashable(toNode))
+    }
+    
+    /// - complexity: Amortized O(1)
+    public func linkValue<ConcreteElement : Hashable>(from fromNode: ConcreteElement, to toNode: ConcreteElement) -> Link? {
+        return self.linkValue(from: AnyHashable(fromNode), to: AnyHashable(toNode))
+    }
+    
+    /// - complexity: Amortized O(1)
+    @discardableResult
+    public mutating func updateLink<ConcreteElement : Hashable>(from fromNode: ConcreteElement, to toNode: ConcreteElement, with link: Link) -> Link? {
+        return self.updateLink(from: AnyHashable(fromNode), to: AnyHashable(toNode), with: link)
+    }
+    
+    /// - complexity: Amortized O(1)
+    @discardableResult
+    public mutating func removeLink<ConcreteElement : Hashable>(from fromNode: ConcreteElement, to toNode: ConcreteElement) -> Link? {
+        return self.removeLink(from: AnyHashable(fromNode), to: AnyHashable(toNode))
+    }
+    
+    /// `true` iff `self` contains `node`.
+    ///
+    /// - complexity: O(`count of nodes`).
+    public func contains<ConcreteElement : Hashable>(_ node: ConcreteElement) -> Bool {
+        return self.contains(AnyHashable(node))
+    }
+    
+    /// Remove a node with all connections with it.
+    ///
+    /// - complexity: O(`count of nodes`).
+    public mutating func removeNode<ConcreteElement : Hashable>(_ node: ConcreteElement) {
+        self.removeNode(AnyHashable(node))
+    }
+    /// A set of nodes which has connection with `nearNode`.
+    public func nodes<ConcreteElement : Hashable>(near nearNode: ConcreteElement) -> Set<Node> {
+        return self.nodes(near: AnyHashable(nearNode))
+    }
+    
+    /// A collection of nodes which connected from `fromNode`.
+    public func nodes<ConcreteElement : Hashable>(from fromNode: ConcreteElement) -> AnyCollection<(Node, Link)> {
+        return self.nodes(from: AnyHashable(fromNode))
+    }
+    
+    /// A collection of nodes which connected to `toNode`.
+    public func nodes<ConcreteElement : Hashable>(to toNode: ConcreteElement) -> AnyCollection<(Node, Link)> {
+        return self.nodes(to: AnyHashable(toNode))
+    }
+}
+
 public struct GraphIndex<Node : Hashable, Link> : Comparable {
     fileprivate let index1: DictionaryIndex<Node, [Node:Link]>
     fileprivate let index2: DictionaryIndex<Node, Link>?
@@ -364,6 +419,51 @@ extension UndirectedGraph: CustomStringConvertible {
     
     public var description: String {
         return "[\(self.map { "(\($0.0), \($0.1)): \($0.2)" }.joined(separator: ", "))]"
+    }
+}
+
+extension UndirectedGraph where Node == AnyHashable {
+    
+    /// Return `true` iff it has link from `fromNode` to `toNode`.
+    ///
+    /// - complexity: Amortized O(1)
+    public func isLinked<ConcreteElement : Hashable>(from fromNode: ConcreteElement, to toNode: ConcreteElement) -> Bool {
+        return self.isLinked(from: AnyHashable(fromNode), to: AnyHashable(toNode))
+    }
+    
+    /// - complexity: Amortized O(1)
+    public func linkValue<ConcreteElement : Hashable>(from fromNode: ConcreteElement, to toNode: ConcreteElement) -> Link? {
+        return self.linkValue(from: AnyHashable(fromNode), to: AnyHashable(toNode))
+    }
+    
+    /// - complexity: Amortized O(1)
+    @discardableResult
+    public mutating func updateLink<ConcreteElement : Hashable>(from fromNode: ConcreteElement, to toNode: ConcreteElement, with link: Link) -> Link? {
+        return self.updateLink(from: AnyHashable(fromNode), to: AnyHashable(toNode), with: link)
+    }
+    
+    /// - complexity: Amortized O(1)
+    @discardableResult
+    public mutating func removeLink<ConcreteElement : Hashable>(from fromNode: ConcreteElement, to toNode: ConcreteElement) -> Link? {
+        return self.removeLink(from: AnyHashable(fromNode), to: AnyHashable(toNode))
+    }
+    
+    /// `true` iff `self` contains `node`.
+    ///
+    /// - complexity: O(`count of nodes`).
+    public func contains<ConcreteElement : Hashable>(_ node: ConcreteElement) -> Bool {
+        return self.contains(AnyHashable(node))
+    }
+    
+    /// Remove a node with all connections with it.
+    ///
+    /// - complexity: O(`count of nodes`).
+    public mutating func removeNode<ConcreteElement : Hashable>(_ node: ConcreteElement) {
+        self.removeNode(AnyHashable(node))
+    }
+    /// A set of nodes which has connection with `nearNode`.
+    public func nodes<ConcreteElement : Hashable>(near nearNode: ConcreteElement) -> AnyCollection<(Node, Link)> {
+        return self.nodes(near: AnyHashable(nearNode))
     }
 }
 
