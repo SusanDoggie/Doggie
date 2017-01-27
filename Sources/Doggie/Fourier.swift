@@ -239,7 +239,7 @@ public func Radix2CooleyTukey(_ buffer: [Double], _ result: inout [Complex]) {
             result.replace(with: repeatElement(Complex(0), count: buffer.count))
         }
         let _sqrt = sqrt(Double(buffer.count))
-        Radix2CooleyTukey(log2(buffer.count), buffer.map { $0 / _sqrt }, 1, buffer.count, &result, 1)
+        DispatchRadix2CooleyTukey(log2(buffer.count), buffer.map { $0 / _sqrt }, 1, buffer.count, &result, 1)
     }
 }
 public func InverseRadix2CooleyTukey(_ buffer: [Double], _ result: inout [Complex]) {
@@ -255,7 +255,7 @@ public func InverseRadix2CooleyTukey(_ buffer: [Double], _ result: inout [Comple
             result.replace(with: repeatElement(Complex(0), count: buffer.count))
         }
         let _sqrt = sqrt(Double(buffer.count))
-        InverseRadix2CooleyTukey(log2(buffer.count), buffer.map { $0 / _sqrt }, 1, buffer.count, &result, 1)
+        DispatchInverseRadix2CooleyTukey(log2(buffer.count), buffer.map { $0 / _sqrt }, 1, buffer.count, &result, 1)
     }
 }
 
@@ -282,9 +282,9 @@ public func CircularConvolve(_ signal: [Double], _ kernel: [Double], _ result: i
         let lv = log2(signal.count)
         
         if signal.count == kernel.count {
-            Radix2CircularConvolve(lv, signal, 1, signal.count, kernel, 1, kernel.count, &result, 1, &temp, 1)
+            DispatchRadix2CircularConvolve(lv, signal, 1, signal.count, kernel, 1, kernel.count, &result, 1, &temp, 1)
         } else {
-            Radix2CircularConvolve(lv, signal, 1, signal.count, kernel, 1, kernel.count, &result, 1, &temp, 1)
+            DispatchRadix2CircularConvolve(lv, signal, 1, signal.count, kernel, 1, kernel.count, &result, 1, &temp, 1)
         }
         
     } else {
@@ -313,9 +313,9 @@ public func CircularConvolve(_ signal: [Complex], _ kernel: [Complex], _ result:
         let lv = log2(signal.count)
         
         if signal.count == kernel.count {
-            Radix2CircularConvolve(lv, signal, 1, signal.count, kernel, 1, kernel.count, &result, 1, &temp, 1)
+            DispatchRadix2CircularConvolve(lv, signal, 1, signal.count, kernel, 1, kernel.count, &result, 1, &temp, 1)
         } else {
-            Radix2CircularConvolve(lv, signal, 1, signal.count, kernel, 1, kernel.count, &result, 1, &temp, 1)
+            DispatchRadix2CircularConvolve(lv, signal, 1, signal.count, kernel, 1, kernel.count, &result, 1, &temp, 1)
         }
         
     } else {
@@ -359,7 +359,7 @@ public func FFTConvolve(_ signal: [Double], _ kernel: [Double], _ result: inout 
     buffer.withUnsafeMutableBufferPointer { _buffer in
         let _output = _buffer.baseAddress!
         let _temp = _output + fft_length
-        Radix2CircularConvolve(lv, _signal, 1, _signal.count, _kernel, 1, _kernel.count, _output, 1, _temp, 1)
+        DispatchRadix2CircularConvolve(lv, _signal, 1, _signal.count, _kernel, 1, _kernel.count, _output, 1, _temp, 1)
     }
     
     result.replace(with: buffer.prefix(convolve_length))
@@ -374,7 +374,7 @@ public func FFTConvolve(_ signal: [Complex], _ kernel: [Complex], _ result: inou
     buffer.withUnsafeMutableBufferPointer { _buffer in
         let _output = _buffer.baseAddress!
         let _temp = _output + fft_length
-        Radix2CircularConvolve(lv, signal, 1, signal.count, kernel, 1, kernel.count, _output, 1, _temp, 1)
+        DispatchRadix2CircularConvolve(lv, signal, 1, signal.count, kernel, 1, kernel.count, _output, 1, _temp, 1)
     }
     
     result.replace(with: buffer.prefix(convolve_length))
