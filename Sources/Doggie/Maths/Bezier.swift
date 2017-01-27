@@ -55,7 +55,7 @@ public struct Bezier<Element : BezierElementProtocol> {
     fileprivate var points: [Element]
     
     public init(_ p: Element ... ) {
-        self.points = p
+        self.init(p)
     }
     public init<S : Sequence>(_ s: S) where S.Iterator.Element == Element {
         self.points = Array(s)
