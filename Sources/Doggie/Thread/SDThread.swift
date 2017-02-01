@@ -131,6 +131,11 @@ extension SDTask {
         return storage.value != nil
     }
     
+    @discardableResult
+    public func wait(until date: Date) -> Bool {
+        return lck.wait(for: completed, until: date)
+    }
+    
     /// Result of task.
     public var result: Result {
         if let value = storage.value {
@@ -162,6 +167,38 @@ extension SDTask {
         }
         return result
     }
+}
+
+extension SDTask {
+    
+    @discardableResult
+    public func wait(deadline: DispatchTime, qos: DispatchQoS = .unspecified, flags: DispatchWorkItemFlags = []) -> SDTask<Result?> {
+        return self.wait(queue: queue, deadline: deadline, qos: qos, flags: flags)
+    }
+    
+    @discardableResult
+    public func wait(queue: DispatchQueue, deadline: DispatchTime, qos: DispatchQoS = .unspecified, flags: DispatchWorkItemFlags = []) -> SDTask<Result?> {
+        let result = SDTask<Result?>(queue: queue)
+        let worker = result.createWorker(qos: qos, flags: flags) { self.storage.value }
+        result.worker = worker
+        queue.asyncAfter(deadline: deadline, execute: worker)
+        return result
+    }
+    
+    @discardableResult
+    public func wait(wallDeadline: DispatchWallTime, qos: DispatchQoS = .unspecified, flags: DispatchWorkItemFlags = []) -> SDTask<Result?> {
+        return self.wait(queue: queue, wallDeadline: wallDeadline, qos: qos, flags: flags)
+    }
+    
+    @discardableResult
+    public func wait(queue: DispatchQueue, wallDeadline: DispatchWallTime, qos: DispatchQoS = .unspecified, flags: DispatchWorkItemFlags = []) -> SDTask<Result?> {
+        let result = SDTask<Result?>(queue: queue)
+        let worker = result.createWorker(qos: qos, flags: flags) { self.storage.value }
+        result.worker = worker
+        queue.asyncAfter(wallDeadline: wallDeadline, execute: worker)
+        return result
+    }
+    
 }
 
 extension SDTask {
