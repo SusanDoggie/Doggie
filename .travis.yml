@@ -7,7 +7,7 @@ dist: trusty
 notifications: never
 osx_image: xcode8.2
 env:
-  - VERSION="3.0.1"
+  - VERSION="3.0.2"
   
 before_install:
   - if [[ $TRAVIS_OS_NAME == "linux" ]]; then
