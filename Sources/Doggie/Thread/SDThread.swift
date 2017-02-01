@@ -171,12 +171,10 @@ extension SDTask {
 
 extension SDTask {
     
-    @discardableResult
     public func wait(deadline: DispatchTime, qos: DispatchQoS = .unspecified, flags: DispatchWorkItemFlags = []) -> SDTask<Result?> {
         return self.wait(queue: queue, deadline: deadline, qos: qos, flags: flags)
     }
     
-    @discardableResult
     public func wait(queue: DispatchQueue, deadline: DispatchTime, qos: DispatchQoS = .unspecified, flags: DispatchWorkItemFlags = []) -> SDTask<Result?> {
         let result = SDTask<Result?>(queue: queue)
         let worker = result.createWorker(qos: qos, flags: flags) { self.storage.value }
@@ -185,12 +183,10 @@ extension SDTask {
         return result
     }
     
-    @discardableResult
     public func wait(wallDeadline: DispatchWallTime, qos: DispatchQoS = .unspecified, flags: DispatchWorkItemFlags = []) -> SDTask<Result?> {
         return self.wait(queue: queue, wallDeadline: wallDeadline, qos: qos, flags: flags)
     }
     
-    @discardableResult
     public func wait(queue: DispatchQueue, wallDeadline: DispatchWallTime, qos: DispatchQoS = .unspecified, flags: DispatchWorkItemFlags = []) -> SDTask<Result?> {
         let result = SDTask<Result?>(queue: queue)
         let worker = result.createWorker(qos: qos, flags: flags) { self.storage.value }
@@ -198,7 +194,6 @@ extension SDTask {
         queue.asyncAfter(wallDeadline: wallDeadline, execute: worker)
         return result
     }
-    
 }
 
 extension SDTask {
