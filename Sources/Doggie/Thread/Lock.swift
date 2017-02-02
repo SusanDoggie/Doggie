@@ -24,6 +24,7 @@
 //
 
 import Foundation
+import Dispatch
 
 public protocol Lockable : class {
     
