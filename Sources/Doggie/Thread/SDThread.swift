@@ -132,8 +132,8 @@ extension SDTask {
     }
     
     @discardableResult
-    public func wait(until date: Date) -> Bool {
-        return lck.wait(for: completed, until: date)
+    public func wait(until time: DispatchWallTime) -> Bool {
+        return lck.wait(for: completed, until: time)
     }
     
     /// Result of task.
