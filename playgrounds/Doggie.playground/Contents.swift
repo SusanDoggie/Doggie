@@ -31,12 +31,12 @@ task.wait(deadline: .now() + 2).then {
     $0
 }
 
-task.wait(until: Date() + 1)
+task.wait(until: .now() + 1)
 
 task.result   // 5
 task2.result  // 6
 
-task.wait(until: Date() + 1)
+task.wait(until: .now() + 1)
 
 
 let path = try SDPath(code: "M100 0c0-100-236.60 36.60-150 86.60S36.60-136.60-50-86.60 100 100 100 0z")

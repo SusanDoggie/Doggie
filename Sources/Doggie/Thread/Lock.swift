@@ -115,16 +115,6 @@ extension SDLock : Lockable {
 
 // MARK: Condition
 
-private extension Date {
-    
-    var timespec : timespec {
-        let _abs_time = self.timeIntervalSince1970
-        let sec = Int(_abs_time)
-        let nsec = Int((_abs_time - Double(sec)) * 1000000000.0)
-        return Foundation.timespec(tv_sec: sec, tv_nsec: nsec)
-    }
-}
-
 public class SDCondition {
     
     fileprivate var _cond = pthread_cond_t()
@@ -155,8 +145,11 @@ extension SDLock {
             pthread_cond_wait(&cond._cond, &_mtx)
         }
     }
-    fileprivate func _wait(_ cond: SDCondition, for predicate: @autoclosure () -> Bool, until date: Date) -> Bool {
-        var _timespec = date.timespec
+    fileprivate func _wait(_ cond: SDCondition, for predicate: @autoclosure () -> Bool, until time: DispatchWallTime) -> Bool {
+        let _time = UInt64(bitPattern: -Int64(bitPattern: time.rawValue))
+        let sec = _time / NSEC_PER_SEC
+        let nsec = _time % NSEC_PER_SEC
+        var _timespec = timespec(tv_sec: Int(sec), tv_nsec: Int(nsec))
         while !predicate() {
             if pthread_cond_timedwait(&cond._cond, &_mtx, &_timespec) != 0 {
                 return predicate()
@@ -174,9 +167,9 @@ extension SDLock {
         }
     }
     @discardableResult
-    public func wait(_ cond: SDCondition, for predicate: @autoclosure () -> Bool, until date: Date) -> Bool {
+    public func wait(_ cond: SDCondition, for predicate: @autoclosure () -> Bool, until time: DispatchWallTime) -> Bool {
         return self.synchronized {
-            self._wait(cond, for: predicate, until: date)
+            self._wait(cond, for: predicate, until: time)
         }
     }
 }
@@ -188,9 +181,9 @@ extension SDLock {
         self._wait(cond, for: predicate)
     }
     @discardableResult
-    public func lock(_ cond: SDCondition, for predicate: @autoclosure () -> Bool, until date: Date) -> Bool {
+    public func lock(_ cond: SDCondition, for predicate: @autoclosure () -> Bool, until time: DispatchWallTime) -> Bool {
         self.lock()
-        if self._wait(cond, for: predicate, until: date) {
+        if self._wait(cond, for: predicate, until: time) {
             return true
         }
         self.unlock()
@@ -199,7 +192,7 @@ extension SDLock {
     @discardableResult
     public func trylock(_ cond: SDCondition, for predicate: @autoclosure () -> Bool) -> Bool {
         if self.trylock() {
-            if self._wait(cond, for: predicate, until: Date.distantPast) {
+            if self._wait(cond, for: predicate, until: .distantFuture) {
                 return true
             }
             self.unlock()
@@ -217,8 +210,8 @@ extension SDLock {
         return try block()
     }
     @discardableResult
-    public func synchronized<R>(_ cond: SDCondition, for predicate: @autoclosure () -> Bool, until date: Date, block: () throws -> R) rethrows -> R? {
-        if self.lock(cond, for: predicate, until: date) {
+    public func synchronized<R>(_ cond: SDCondition, for predicate: @autoclosure () -> Bool, until time: DispatchWallTime, block: () throws -> R) rethrows -> R? {
+        if self.lock(cond, for: predicate, until: time) {
             defer { self.unlock() }
             return try block()
         }
@@ -249,8 +242,8 @@ extension SDConditionLock {
         self.wait(cond, for: predicate)
     }
     @discardableResult
-    public func wait(for predicate: @autoclosure () -> Bool, until date: Date) -> Bool {
-        return self.wait(cond, for: predicate, until: date)
+    public func wait(for predicate: @autoclosure () -> Bool, until time: DispatchWallTime) -> Bool {
+        return self.wait(cond, for: predicate, until: time)
     }
 }
 
@@ -260,8 +253,8 @@ extension SDConditionLock {
         self.lock(cond, for: predicate)
     }
     @discardableResult
-    public func lock(for predicate: @autoclosure () -> Bool, until date: Date) -> Bool {
-        return self.lock(cond, for: predicate, until: date)
+    public func lock(for predicate: @autoclosure () -> Bool, until time: DispatchWallTime) -> Bool {
+        return self.lock(cond, for: predicate, until: time)
     }
     @discardableResult
     public func trylock(for predicate: @autoclosure () -> Bool) -> Bool {
@@ -276,7 +269,7 @@ extension SDConditionLock {
         return try self.synchronized(cond, for: predicate, block: block)
     }
     @discardableResult
-    public func synchronized<R>(for predicate: @autoclosure () -> Bool, until date: Date, block: () throws -> R) rethrows -> R? {
-        return try self.synchronized(cond, for: predicate, until: date, block: block)
+    public func synchronized<R>(for predicate: @autoclosure () -> Bool, until time: DispatchWallTime, block: () throws -> R) rethrows -> R? {
+        return try self.synchronized(cond, for: predicate, until: time, block: block)
     }
 }
