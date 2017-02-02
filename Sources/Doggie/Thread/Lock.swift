@@ -147,9 +147,9 @@ extension SDLock {
         }
     }
     fileprivate func _wait(_ cond: SDCondition, for predicate: @autoclosure () -> Bool, until time: DispatchWallTime) -> Bool {
-        let _time = UInt64(bitPattern: -Int64(bitPattern: time.rawValue))
-        let sec = _time / NSEC_PER_SEC
-        let nsec = _time % NSEC_PER_SEC
+        let _time = -Int64(bitPattern: time.rawValue)
+        let sec = _time / 1000000000
+        let nsec = _time % 1000000000
         var _timespec = timespec(tv_sec: Int(sec), tv_nsec: Int(nsec))
         while !predicate() {
             if pthread_cond_timedwait(&cond._cond, &_mtx, &_timespec) != 0 {
