@@ -25,6 +25,8 @@
 
 private protocol ColorBaseProtocol {
     
+    var colorModel: ColorModelProtocol.Type { get }
+    
     var color: ColorModelProtocol { get }
     
     func convert<ColorSpace : ColorSpaceProtocol>(to colorSpace: ColorSpace, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm) -> ColorBase<ColorSpace>
@@ -43,6 +45,13 @@ private struct ColorBase<ColorSpace : ColorSpaceProtocol> : ColorBaseProtocol {
     init(colorSpace: ColorSpace, color: ColorSpace.Model) {
         self.colorSpace = colorSpace
         self._color = color
+    }
+}
+
+extension ColorBase {
+    
+    var colorModel: ColorModelProtocol.Type {
+        return ColorSpace.Model.self
     }
 }
 
@@ -75,6 +84,9 @@ public struct Color {
 
 extension Color {
     
+    public var colorModel: ColorModelProtocol.Type {
+        return self.base.colorModel
+    }
     public var color: ColorModelProtocol {
         return self.base.color
     }

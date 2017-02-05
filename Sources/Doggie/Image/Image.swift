@@ -25,11 +25,13 @@
 
 private protocol ImageBaseProtocol {
     
+    var colorModel: ColorModelProtocol.Type { get }
+    
     subscript(position: Int) -> Color { get set }
     
-    func convert<RPixel: ColorPixelProtocol, RSpace : ColorSpaceProtocol>(pixel: RPixel.Type, colorSpace: RSpace, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm) -> ImageBase<RPixel, RSpace>
+    func convert<RPixel: ColorPixelProtocol, RSpace : ColorSpaceProtocol>(pixel: RPixel.Type, colorSpace: RSpace, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm) -> ImageBaseProtocol where RPixel.Model == RSpace.Model
     
-    func convert<RPixel: LinearColorSpaceProtocol, RSpace : ColorSpaceProtocol>(pixel: RPixel.Type, colorSpace: RSpace, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm) -> ImageBase<RPixel, RSpace>
+    func convert<RPixel: ColorPixelProtocol, RSpace : LinearColorSpaceProtocol>(pixel: RPixel.Type, colorSpace: RSpace, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm) -> ImageBaseProtocol where RPixel.Model == RSpace.Model
     
     mutating func withUnsafeMutableBytes<R>(_ body: (UnsafeMutableRawBufferPointer) throws -> R) rethrows -> R
     
@@ -43,6 +45,10 @@ private struct ImageBase<ColorPixel: ColorPixelProtocol, ColorSpace : ColorSpace
     var colorSpace: ColorSpace
     var algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm
     
+    var colorModel: ColorModelProtocol.Type {
+        return ColorSpace.Model.self
+    }
+    
     subscript(position: Int) -> Color {
         get {
             let pixel = buffer[position]
@@ -54,12 +60,12 @@ private struct ImageBase<ColorPixel: ColorPixelProtocol, ColorSpace : ColorSpace
         }
     }
     
-    func convert<RPixel: ColorPixelProtocol, RSpace : ColorSpaceProtocol>(pixel: RPixel.Type, colorSpace: RSpace, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm = .bradford) -> ImageBase<RPixel, RSpace> {
+    func convert<RPixel: ColorPixelProtocol, RSpace : ColorSpaceProtocol>(pixel: RPixel.Type, colorSpace: RSpace, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm = .bradford) -> ImageBaseProtocol where RPixel.Model == RSpace.Model {
         let _buffer = zip(self.colorSpace.convert(buffer.map { $0.color }, to: colorSpace, algorithm: algorithm), buffer).map { RPixel(color: $0, alpha: $1.alpha) }
         return ImageBase<RPixel, RSpace>(buffer: _buffer, colorSpace: colorSpace, algorithm: algorithm)
     }
     
-    func convert<RPixel: ColorPixelProtocol, RSpace : LinearColorSpaceProtocol>(pixel: RPixel.Type, colorSpace: RSpace, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm = .bradford) -> ImageBase<RPixel, RSpace> {
+    func convert<RPixel: ColorPixelProtocol, RSpace : LinearColorSpaceProtocol>(pixel: RPixel.Type, colorSpace: RSpace, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm = .bradford) -> ImageBaseProtocol where RPixel.Model == RSpace.Model {
         let _buffer = zip(self.colorSpace.convert(buffer.map { $0.color }, to: colorSpace, algorithm: algorithm), buffer).map { RPixel(color: $0, alpha: $1.alpha) }
         return ImageBase<RPixel, RSpace>(buffer: _buffer, colorSpace: colorSpace, algorithm: algorithm)
     }
@@ -95,6 +101,10 @@ public struct Image {
         self.width = image.width
         self.height = image.height
         self.base = image.base.convert(pixel: pixel, colorSpace: colorSpace, algorithm: algorithm)
+    }
+    
+    public var colorModel: ColorModelProtocol.Type {
+        return base.colorModel
     }
     
     public subscript(x: Int, y: Int) -> Color {
