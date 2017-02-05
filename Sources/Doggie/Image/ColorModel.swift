@@ -31,6 +31,8 @@ public protocol ColorModelProtocol {
 
 public protocol ColorBlendProtocol : ColorModelProtocol {
     
+    init()
+    
     func blend(operation: (Double) -> Double) -> Self
     func blend(source: Self, operation: (Double, Double) -> Double) -> Self
 }
@@ -43,6 +45,10 @@ public protocol ColorVectorConvertible : ColorModelProtocol {
 }
 
 extension ColorBlendProtocol where Self : ColorVectorConvertible {
+    
+    public init() {
+        self.init(Vector())
+    }
     
     public func blend(operation: (Double) -> Double) -> Self {
         let v = self.vector
@@ -230,6 +236,13 @@ extension CMYKColorModel : CustomStringConvertible {
 }
 
 extension CMYKColorModel : ColorBlendProtocol {
+    
+    public init() {
+        self.cyan = 0
+        self.magenta = 0
+        self.yellow = 0
+        self.black = 0
+    }
     
     public func blend(operation: (Double) -> Double) -> CMYKColorModel {
         return CMYKColorModel(cyan: operation(cyan), magenta: operation(magenta), yellow: operation(yellow), black: operation(black))
@@ -436,6 +449,10 @@ public struct GrayColorModel : ColorModelProtocol {
 }
 
 extension GrayColorModel : ColorBlendProtocol {
+    
+    public init() {
+        self.white = 0
+    }
     
     public func blend(operation: (Double) -> Double) -> GrayColorModel {
         return GrayColorModel(white: operation(white))

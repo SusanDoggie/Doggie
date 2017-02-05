@@ -31,9 +31,12 @@ private protocol ColorBaseProtocol {
     
     func convert<ColorSpace : ColorSpaceProtocol>(to colorSpace: ColorSpace, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm) -> ColorBase<ColorSpace>
     func convert<ColorSpace : LinearColorSpaceProtocol>(to colorSpace: ColorSpace, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm) -> ColorBase<ColorSpace>
+    
+    func blend(operation: (Double) -> Double) -> ColorBaseProtocol
+    func blend(source: ColorBaseProtocol, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm, operation: (Double, Double) -> Double) -> ColorBaseProtocol
 }
 
-private struct ColorBase<ColorSpace : ColorSpaceProtocol> : ColorBaseProtocol {
+private struct ColorBase<ColorSpace : ColorSpaceProtocol> : ColorBaseProtocol where ColorSpace.Model : ColorBlendProtocol {
     
     var colorSpace: ColorSpace
     
@@ -66,6 +69,17 @@ extension ColorBase {
     }
 }
 
+extension ColorBase {
+    
+    func blend(operation: (Double) -> Double) -> ColorBaseProtocol {
+        return ColorBase(colorSpace: colorSpace, color: _color.blend(operation: operation))
+    }
+    func blend(source: ColorBaseProtocol, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm, operation: (Double, Double) -> Double) -> ColorBaseProtocol {
+        let _source = source.convert(to: colorSpace, algorithm: algorithm)
+        return ColorBase(colorSpace: colorSpace, color: _color.blend(source: _source._color, operation: operation))
+    }
+}
+
 public struct Color {
     
     public var alpha: Double
@@ -76,7 +90,7 @@ public struct Color {
         self.base = base
     }
     
-    public init<ColorSpace : ColorSpaceProtocol>(colorSpace: ColorSpace, color: ColorSpace.Model, alpha: Double = 1) {
+    public init<ColorSpace : ColorSpaceProtocol>(colorSpace: ColorSpace, color: ColorSpace.Model, alpha: Double = 1) where ColorSpace.Model : ColorBlendProtocol {
         self.alpha = alpha
         self.base = ColorBase(colorSpace: colorSpace, color: color)
     }
@@ -94,11 +108,21 @@ extension Color {
 
 extension Color {
     
-    public func convert<ColorSpace : ColorSpaceProtocol>(to colorSpace: ColorSpace, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm = .bradford) -> Color {
+    public func convert<ColorSpace : ColorSpaceProtocol>(to colorSpace: ColorSpace, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm = .bradford) -> Color where ColorSpace.Model : ColorBlendProtocol {
         return Color(alpha: self.alpha, base: self.base.convert(to: colorSpace, algorithm: algorithm))
     }
     
-    public func convert<ColorSpace : LinearColorSpaceProtocol>(to colorSpace: ColorSpace, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm = .bradford) -> Color {
+    public func convert<ColorSpace : LinearColorSpaceProtocol>(to colorSpace: ColorSpace, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm = .bradford) -> Color where ColorSpace.Model : ColorBlendProtocol {
         return Color(alpha: self.alpha, base: self.base.convert(to: colorSpace, algorithm: algorithm))
+    }
+}
+
+extension Color {
+    
+    func blend(operation: (Double) -> Double) -> Color {
+        return Color(alpha: operation(self.alpha), base: self.base.blend(operation: operation))
+    }
+    func blend(source: Color, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm = .bradford, operation: (Double, Double) -> Double) -> Color {
+        return Color(alpha: operation(self.alpha, source.alpha), base: self.base.blend(source: source.base, algorithm: algorithm, operation: operation))
     }
 }

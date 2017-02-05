@@ -29,16 +29,18 @@ private protocol ImageBaseProtocol {
     
     subscript(position: Int) -> Color { get set }
     
-    func convert<RPixel: ColorPixelProtocol, RSpace : ColorSpaceProtocol>(pixel: RPixel.Type, colorSpace: RSpace, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm) -> ImageBaseProtocol where RPixel.Model == RSpace.Model
+    func convert<RPixel: ColorPixelProtocol, RSpace : ColorSpaceProtocol>(pixel: RPixel.Type, colorSpace: RSpace, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm) -> ImageBaseProtocol where RSpace.Model : ColorBlendProtocol, RPixel.Model == RSpace.Model
     
-    func convert<RPixel: ColorPixelProtocol, RSpace : LinearColorSpaceProtocol>(pixel: RPixel.Type, colorSpace: RSpace, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm) -> ImageBaseProtocol where RPixel.Model == RSpace.Model
+    func convert<RPixel: ColorPixelProtocol, RSpace : LinearColorSpaceProtocol>(pixel: RPixel.Type, colorSpace: RSpace, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm) -> ImageBaseProtocol where RSpace.Model : ColorBlendProtocol, RPixel.Model == RSpace.Model
+    
+    func resampling<T: SDTransformProtocol>(s_width: Int, width: Int, height: Int, transform: T, algorithm: Image.ResamplingAlgorithm) -> ImageBaseProtocol
     
     mutating func withUnsafeMutableBytes<R>(_ body: (UnsafeMutableRawBufferPointer) throws -> R) rethrows -> R
     
     func withUnsafeBytes<R>(_ body: (UnsafeRawBufferPointer) throws -> R) rethrows -> R
 }
 
-private struct ImageBase<ColorPixel: ColorPixelProtocol, ColorSpace : ColorSpaceProtocol> : ImageBaseProtocol where ColorPixel.Model == ColorSpace.Model {
+private struct ImageBase<ColorPixel: ColorPixelProtocol, ColorSpace : ColorSpaceProtocol> : ImageBaseProtocol where ColorSpace.Model : ColorBlendProtocol, ColorPixel.Model == ColorSpace.Model {
     
     var buffer: [ColorPixel]
     
@@ -60,14 +62,31 @@ private struct ImageBase<ColorPixel: ColorPixelProtocol, ColorSpace : ColorSpace
         }
     }
     
-    func convert<RPixel: ColorPixelProtocol, RSpace : ColorSpaceProtocol>(pixel: RPixel.Type, colorSpace: RSpace, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm = .bradford) -> ImageBaseProtocol where RPixel.Model == RSpace.Model {
+    func convert<RPixel: ColorPixelProtocol, RSpace : ColorSpaceProtocol>(pixel: RPixel.Type, colorSpace: RSpace, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm) -> ImageBaseProtocol where RSpace.Model : ColorBlendProtocol, RPixel.Model == RSpace.Model {
         let _buffer = zip(self.colorSpace.convert(buffer.map { $0.color }, to: colorSpace, algorithm: algorithm), buffer).map { RPixel(color: $0, alpha: $1.alpha) }
         return ImageBase<RPixel, RSpace>(buffer: _buffer, colorSpace: colorSpace, algorithm: algorithm)
     }
     
-    func convert<RPixel: ColorPixelProtocol, RSpace : LinearColorSpaceProtocol>(pixel: RPixel.Type, colorSpace: RSpace, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm = .bradford) -> ImageBaseProtocol where RPixel.Model == RSpace.Model {
+    func convert<RPixel: ColorPixelProtocol, RSpace : LinearColorSpaceProtocol>(pixel: RPixel.Type, colorSpace: RSpace, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm) -> ImageBaseProtocol where RSpace.Model : ColorBlendProtocol, RPixel.Model == RSpace.Model {
         let _buffer = zip(self.colorSpace.convert(buffer.map { $0.color }, to: colorSpace, algorithm: algorithm), buffer).map { RPixel(color: $0, alpha: $1.alpha) }
         return ImageBase<RPixel, RSpace>(buffer: _buffer, colorSpace: colorSpace, algorithm: algorithm)
+    }
+    
+    func resampling<T: SDTransformProtocol>(s_width: Int, width: Int, height: Int, transform: T, algorithm: Image.ResamplingAlgorithm) -> ImageBaseProtocol {
+        
+        if buffer.count == 0 {
+            return ImageBase(buffer: [], colorSpace: self.colorSpace, algorithm: self.algorithm)
+        }
+        
+        var result = [ColorPixel](repeating: buffer.first!, count: width * height)
+        let s_height = buffer.count / s_width
+        let _transform = transform.inverse
+        
+        for i in 0..<result.count {
+            result[i] = algorithm.calculate(source: buffer, width: s_width, height: s_height, point: Point(x: i % width, y: i / width) * _transform)
+        }
+        
+        return ImageBase(buffer: result, colorSpace: self.colorSpace, algorithm: self.algorithm)
     }
     
     mutating func withUnsafeMutableBytes<R>(_ body: (UnsafeMutableRawBufferPointer) throws -> R) rethrows -> R {
@@ -85,19 +104,25 @@ public struct Image {
     public let height: Int
     private var base: ImageBaseProtocol
     
-    public init<ColorPixel: ColorPixelProtocol, ColorSpace : ColorSpaceProtocol>(width: Int, height: Int, pixel: ColorPixel, colorSpace: ColorSpace, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm = .bradford) where ColorPixel.Model == ColorSpace.Model {
+    public init<T: SDTransformProtocol>(image: Image, width: Int, height: Int, transform: T, resampling algorithm: ResamplingAlgorithm = .lanczos(3)) {
+        self.width = width
+        self.height = height
+        self.base = image.base.resampling(s_width: image.width, width: width, height: height, transform: transform, algorithm: algorithm)
+    }
+    
+    public init<ColorPixel: ColorPixelProtocol, ColorSpace : ColorSpaceProtocol>(width: Int, height: Int, pixel: ColorPixel, colorSpace: ColorSpace, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm = .bradford) where ColorSpace.Model : ColorBlendProtocol, ColorPixel.Model == ColorSpace.Model {
         self.width = width
         self.height = height
         self.base = ImageBase(buffer: [ColorPixel](repeating: pixel, count: width * height), colorSpace: colorSpace, algorithm: algorithm)
     }
     
-    public init<ColorPixel: ColorPixelProtocol, ColorSpace : ColorSpaceProtocol>(image: Image, pixel: ColorPixel.Type, colorSpace: ColorSpace, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm = .bradford) where ColorPixel.Model == ColorSpace.Model {
+    public init<ColorPixel: ColorPixelProtocol, ColorSpace : ColorSpaceProtocol>(image: Image, pixel: ColorPixel.Type, colorSpace: ColorSpace, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm = .bradford) where ColorSpace.Model : ColorBlendProtocol, ColorPixel.Model == ColorSpace.Model {
         self.width = image.width
         self.height = image.height
         self.base = image.base.convert(pixel: pixel, colorSpace: colorSpace, algorithm: algorithm)
     }
     
-    public init<ColorPixel: ColorPixelProtocol, ColorSpace : LinearColorSpaceProtocol>(image: Image, pixel: ColorPixel.Type, colorSpace: ColorSpace, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm = .bradford) where ColorPixel.Model == ColorSpace.Model {
+    public init<ColorPixel: ColorPixelProtocol, ColorSpace : LinearColorSpaceProtocol>(image: Image, pixel: ColorPixel.Type, colorSpace: ColorSpace, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm = .bradford) where ColorSpace.Model : ColorBlendProtocol, ColorPixel.Model == ColorSpace.Model {
         self.width = image.width
         self.height = image.height
         self.base = image.base.convert(pixel: pixel, colorSpace: colorSpace, algorithm: algorithm)
@@ -122,5 +147,68 @@ public struct Image {
     
     public func withUnsafeBytes<R>(_ body: (UnsafeRawBufferPointer) throws -> R) rethrows -> R {
         return try base.withUnsafeBytes(body)
+    }
+}
+
+extension Image {
+    
+    public enum ResamplingAlgorithm {
+        
+        case none
+        case lanczos(Int)
+    }
+}
+
+extension Image.ResamplingAlgorithm {
+    
+    func calculate<C: ColorPixelProtocol>(source: [C], width: Int, height: Int, point: Point) -> C where C.Model : ColorBlendProtocol {
+        switch self {
+        case .none:
+            
+            let _x = Int(point.x.rounded())
+            let _y = Int(point.y.rounded())
+            return source[_y * width + _x]
+            
+        case let .lanczos(a):
+            
+            func _kernel(_ x: Double) -> Double {
+                let a = Double(a)
+                if x == 0 {
+                    return 1
+                }
+                if x < -a {
+                    return 0
+                }
+                if x < a {
+                    let _x = Double.pi * x
+                    return a * Double.sin(_x) * Double.sin(_x / a) / (_x * _x)
+                }
+                return 0
+            }
+            
+            var s_color = C.Model()
+            var s_alpha: Double = 0
+            var t: Double = 0
+            
+            let _x = Int(point.x.rounded())
+            let _y = Int(point.y.rounded())
+            
+            let min_x = _x - a + 1
+            let max_x = _x + a
+            let min_y = _y - a + 1
+            let max_y = _y + a
+            
+            for y in min_y...max_y where (0..<height).contains(y) {
+                let _y = y * width
+                for x in min_x...max_x where (0..<width).contains(x) {
+                    let l = _kernel((point - Point(x: x, y: y)).magnitude)
+                    let _source = source[x + _y]
+                    s_color = s_color.blend(source: _source.color) { $0 + $1 * l }
+                    s_alpha += _source.alpha * l
+                    t += l
+                }
+            }
+            return t == 0 ? C(color: s_color, alpha: s_alpha) : C(color: s_color.blend { $0 / t }, alpha: s_alpha / t)
+        }
     }
 }
