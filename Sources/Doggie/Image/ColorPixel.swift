@@ -43,7 +43,7 @@ extension ColorPixelProtocol where Model : ColorBlendProtocol {
     }
 }
 
-public struct ColorPixel<Model : ColorModelProtocol> : ColorPixelProtocol {
+public struct ColorPixel<Model : ColorBlendProtocol> : ColorPixelProtocol {
     
     public var color: Model
     public var alpha: Double
