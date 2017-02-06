@@ -176,7 +176,7 @@ extension Image.ResamplingAlgorithm {
             
             let _x = Int(point.x)
             let _y = Int(point.y)
-            return source[_y * width + _x]
+            return (0..<width).contains(_x) && (0..<height).contains(_y) ? source[_y * width + _x] : ColorPixel()
             
         case let .lanczos(a):
             
