@@ -33,7 +33,7 @@ private protocol ColorBaseProtocol {
     func convert<ColorSpace : LinearColorSpaceProtocol>(to colorSpace: ColorSpace, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm) -> ColorBase<ColorSpace>
     
     func blend(operation: (Double) -> Double) -> ColorBaseProtocol
-    func blend(source: ColorBaseProtocol, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm, operation: (Double, Double) -> Double) -> ColorBaseProtocol
+    func blend(_ source: ColorBaseProtocol, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm, operation: (Double, Double) -> Double) -> ColorBaseProtocol
 }
 
 private struct ColorBase<ColorSpace : ColorSpaceProtocol> : ColorBaseProtocol where ColorSpace.Model : ColorBlendProtocol {
@@ -74,9 +74,9 @@ extension ColorBase {
     func blend(operation: (Double) -> Double) -> ColorBaseProtocol {
         return ColorBase(colorSpace: colorSpace, color: _color.blend(operation: operation))
     }
-    func blend(source: ColorBaseProtocol, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm, operation: (Double, Double) -> Double) -> ColorBaseProtocol {
+    func blend(_ source: ColorBaseProtocol, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm, operation: (Double, Double) -> Double) -> ColorBaseProtocol {
         let _source = source.convert(to: colorSpace, algorithm: algorithm)
-        return ColorBase(colorSpace: colorSpace, color: _color.blend(source: _source._color, operation: operation))
+        return ColorBase(colorSpace: colorSpace, color: _color.blend(_source._color, operation: operation))
     }
 }
 
@@ -122,7 +122,7 @@ extension Color {
     func blend(operation: (Double) -> Double) -> Color {
         return Color(alpha: operation(self.alpha), base: self.base.blend(operation: operation))
     }
-    func blend(source: Color, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm = .bradford, operation: (Double, Double) -> Double) -> Color {
-        return Color(alpha: operation(self.alpha, source.alpha), base: self.base.blend(source: source.base, algorithm: algorithm, operation: operation))
+    func blend(_ source: Color, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm = .bradford, operation: (Double, Double) -> Double) -> Color {
+        return Color(alpha: operation(self.alpha, source.alpha), base: self.base.blend(source.base, algorithm: algorithm, operation: operation))
     }
 }

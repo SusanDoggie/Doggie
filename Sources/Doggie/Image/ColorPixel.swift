@@ -54,6 +54,14 @@ public struct ColorPixel<Model : ColorBlendProtocol> : ColorPixelProtocol {
     }
 }
 
+extension ColorPixel {
+    
+    public init<C : ColorPixelProtocol>(_ color: C) where Model == C.Model {
+        self.color = color.color
+        self.alpha = color.alpha
+    }
+}
+
 public struct ARGB32ColorPixel : ColorPixelProtocol {
     
     public var a: UInt8
