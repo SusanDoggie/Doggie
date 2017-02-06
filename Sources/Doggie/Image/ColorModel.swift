@@ -39,16 +39,28 @@ public protocol ColorBlendProtocol : ColorModelProtocol {
 
 public protocol ColorVectorConvertible : ColorModelProtocol {
     
+    init()
     init(_ vector: Vector)
     
     var vector: Vector { get set }
 }
 
-extension ColorBlendProtocol where Self : ColorVectorConvertible {
+extension ColorVectorConvertible {
     
     public init() {
         self.init(Vector())
     }
+}
+
+public func * <C: ColorVectorConvertible, T: MatrixProtocol>(lhs: C, rhs: T) -> Vector {
+    return lhs.vector * rhs
+}
+
+public func *= <C: ColorVectorConvertible, T: MatrixProtocol>(lhs: inout C, rhs: T) {
+    lhs.vector *= rhs
+}
+
+extension ColorBlendProtocol where Self : ColorVectorConvertible {
     
     public func blend(operation: (Double) -> Double) -> Self {
         let v = self.vector
@@ -59,14 +71,6 @@ extension ColorBlendProtocol where Self : ColorVectorConvertible {
         let s = source.vector
         return Self(Vector(x: operation(d.x, s.x), y: operation(d.y, s.y), z: operation(d.z, s.z)))
     }
-}
-
-public func * <C: ColorVectorConvertible, T: MatrixProtocol>(lhs: C, rhs: T) -> Vector {
-    return lhs.vector * rhs
-}
-
-public func *= <C: ColorVectorConvertible, T: MatrixProtocol>(lhs: inout C, rhs: T) {
-    lhs.vector *= rhs
 }
 
 public struct RGBColorModel : ColorModelProtocol {
@@ -82,7 +86,7 @@ public struct RGBColorModel : ColorModelProtocol {
     }
 }
 
-extension RGBColorModel : ColorVectorConvertible {
+extension RGBColorModel : ColorBlendProtocol, ColorVectorConvertible {
     
     public init(_ vector: Vector) {
         self.red = vector.x

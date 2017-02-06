@@ -74,18 +74,16 @@ private struct ImageBase<ColorPixel: ColorPixelProtocol, ColorSpace : ColorSpace
     
     func resampling<T: SDTransformProtocol>(s_width: Int, width: Int, height: Int, transform: T, algorithm: Image.ResamplingAlgorithm) -> ImageBaseProtocol {
         
-        if buffer.count == 0 {
-            return ImageBase(buffer: [], colorSpace: self.colorSpace, algorithm: self.algorithm)
+        var result = [ColorPixel](repeating: ColorPixel(), count: width * height)
+        
+        if buffer.count != 0 {
+            let s_height = buffer.count / s_width
+            let _transform = transform.inverse
+            
+            for i in 0..<result.count {
+                result[i] = algorithm.calculate(source: buffer, width: s_width, height: s_height, point: Point(x: i % width, y: i / width) * _transform)
+            }
         }
-        
-        var result = [ColorPixel](repeating: buffer.first!, count: width * height)
-        let s_height = buffer.count / s_width
-        let _transform = transform.inverse
-        
-        for i in 0..<result.count {
-            result[i] = algorithm.calculate(source: buffer, width: s_width, height: s_height, point: Point(x: i % width, y: i / width) * _transform)
-        }
-        
         return ImageBase(buffer: result, colorSpace: self.colorSpace, algorithm: self.algorithm)
     }
     
@@ -161,7 +159,7 @@ extension Image {
 
 extension Image.ResamplingAlgorithm {
     
-    func calculate<C: ColorPixelProtocol>(source: [C], width: Int, height: Int, point: Point) -> C where C.Model : ColorBlendProtocol {
+    func calculate<ColorPixel: ColorPixelProtocol>(source: [ColorPixel], width: Int, height: Int, point: Point) -> ColorPixel where ColorPixel.Model : ColorBlendProtocol {
         switch self {
         case .none:
             
@@ -186,21 +184,21 @@ extension Image.ResamplingAlgorithm {
                 return 0
             }
             
-            var s_color = C.Model()
+            var s_color = ColorPixel.Model()
             var s_alpha: Double = 0
             var t: Double = 0
             
             let _x = Int(point.x.rounded())
             let _y = Int(point.y.rounded())
             
-            let min_x = _x - a + 1
-            let max_x = _x + a
-            let min_y = _y - a + 1
-            let max_y = _y + a
+            let min_x = max(0, _x - a + 1)
+            let max_x = min(width, _x + a + 1)
+            let min_y = max(0, _y - a + 1)
+            let max_y = min(height, _y + a + 1)
             
-            for y in min_y...max_y where (0..<height).contains(y) {
+            for y in min_y..<max_y {
                 let _y = y * width
-                for x in min_x...max_x where (0..<width).contains(x) {
+                for x in min_x..<max_x {
                     let l = _kernel((point - Point(x: x, y: y)).magnitude)
                     let _source = source[x + _y]
                     s_color = s_color.blend(source: _source.color) { $0 + $1 * l }
@@ -208,7 +206,7 @@ extension Image.ResamplingAlgorithm {
                     t += l
                 }
             }
-            return t == 0 ? C(color: s_color, alpha: s_alpha) : C(color: s_color.blend { $0 / t }, alpha: s_alpha / t)
+            return t == 0 ? ColorPixel() : ColorPixel(color: s_color.blend { $0 / t }, alpha: s_alpha / t)
         }
     }
 }
