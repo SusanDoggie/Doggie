@@ -27,11 +27,20 @@ public protocol ColorPixelProtocol {
     
     associatedtype Model : ColorModelProtocol
     
+    init()
+    
     init(color: Model, alpha: Double)
     
     var color: Model { get set }
     
     var alpha: Double { get set }
+}
+
+extension ColorPixelProtocol where Model : ColorBlendProtocol {
+    
+    public init() {
+        self.init(color: Model(), alpha: 0)
+    }
 }
 
 public struct ARGB32ColorPixel : ColorPixelProtocol {
