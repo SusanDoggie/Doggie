@@ -174,8 +174,8 @@ extension Image.ResamplingAlgorithm {
         switch self {
         case .none:
             
-            let _x = Int(point.x.rounded())
-            let _y = Int(point.y.rounded())
+            let _x = Int(point.x)
+            let _y = Int(point.y)
             return source[_y * width + _x]
             
         case let .lanczos(a):
