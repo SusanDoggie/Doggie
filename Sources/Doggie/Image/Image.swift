@@ -113,7 +113,7 @@ public struct Image {
     public let height: Int
     private var base: ImageBaseProtocol
     
-    public init<T: SDTransformProtocol>(image: Image, width: Int, height: Int, transform: T, resampling algorithm: ResamplingAlgorithm = .lanczos(3)) {
+    public init<T: SDTransformProtocol>(image: Image, width: Int, height: Int, transform: T, resampling algorithm: ResamplingAlgorithm = .linear) {
         self.width = width
         self.height = height
         self.base = image.base.resampling(s_width: image.width, width: width, height: height, transform: transform, algorithm: algorithm)
