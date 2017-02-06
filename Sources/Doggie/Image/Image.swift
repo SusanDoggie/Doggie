@@ -169,6 +169,8 @@ extension Image.ResamplingAlgorithm {
             
         case let .lanczos(a):
             
+            let a = abs(a)
+            
             func _kernel(_ x: Double) -> Double {
                 let a = Double(a)
                 if x == 0 {
@@ -191,10 +193,10 @@ extension Image.ResamplingAlgorithm {
             let _x = Int(point.x.rounded())
             let _y = Int(point.y.rounded())
             
-            let min_x = max(0, _x - a + 1)
-            let max_x = min(width, _x + a + 1)
-            let min_y = max(0, _y - a + 1)
-            let max_y = min(height, _y + a + 1)
+            let min_x = (_x - a + 1).clamped(to: 0..<width)
+            let max_x = (_x + a + 1).clamped(to: 0..<width)
+            let min_y = (_y - a + 1).clamped(to: 0..<height)
+            let max_y = (_y + a + 1).clamped(to: 0..<height)
             
             for y in min_y..<max_y {
                 let _y = y * width

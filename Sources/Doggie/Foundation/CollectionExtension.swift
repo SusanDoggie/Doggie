@@ -404,6 +404,16 @@ public extension Comparable {
     }
 }
 
+public extension Strideable where Stride : SignedInteger {
+    
+    public func clamped(to range: CountableRange<Self>) -> Self {
+        return min(max(self, range.lowerBound), range.last ?? range.lowerBound)
+    }
+    public func clamped(to range: CountableClosedRange<Self>) -> Self {
+        return min(max(self, range.lowerBound), range.upperBound)
+    }
+}
+
 public extension RandomAccessCollection {
     
     /// Returns a random element in `self` or `nil` if the sequence is empty.
