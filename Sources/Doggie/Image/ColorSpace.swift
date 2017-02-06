@@ -118,7 +118,11 @@ extension LinearColorSpaceProtocol {
     }
     
     public func convert<C : LinearColorSpaceProtocol>(_ color: Model, to other: C, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm = .bradford) -> C.Model {
-        return C.Model(color * self.transferMatrix(to: other, algorithm: algorithm))
+        let m = self.transferMatrix(to: other, algorithm: algorithm)
+        if m == Matrix.Identity() {
+            return C.Model(color.vector)
+        }
+        return C.Model(color * m)
     }
 }
 
@@ -131,6 +135,9 @@ extension LinearColorSpaceProtocol {
     
     public func convert<C : LinearColorSpaceProtocol>(_ color: [Model], to other: C, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm = .bradford) -> [C.Model] {
         let m = self.transferMatrix(to: other, algorithm: algorithm)
+        if m == Matrix.Identity() {
+            return color.map { C.Model($0.vector) }
+        }
         return color.map { C.Model($0 * m) }
     }
 }
