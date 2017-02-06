@@ -43,6 +43,17 @@ extension ColorPixelProtocol where Model : ColorBlendProtocol {
     }
 }
 
+public struct ColorPixel<Model : ColorModelProtocol> : ColorPixelProtocol {
+    
+    public var color: Model
+    public var alpha: Double
+    
+    public init(color: Model, alpha: Double) {
+        self.color = color
+        self.alpha = alpha
+    }
+}
+
 public struct ARGB32ColorPixel : ColorPixelProtocol {
     
     public var a: UInt8
