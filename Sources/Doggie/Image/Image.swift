@@ -166,78 +166,131 @@ extension Image {
         case none
         case linear
         case cosine
+        case cubic
         case lanczos(Int)
     }
 }
 
 extension Image.ResamplingAlgorithm {
     
-    func smapling2<ColorPixel: ColorPixelProtocol>(source: UnsafePointer<ColorPixel>, width: Int, height: Int, point: Point, sampler: (Double, Double, Double) -> Double) -> ColorPixel where ColorPixel.Model : ColorBlendProtocol {
+    func smapling2<Pixel: ColorPixelProtocol>(source: UnsafePointer<Pixel>, width: Int, height: Int, point: Point, sampler: (Double, Double, Double) -> Double) -> Pixel where Pixel.Model : ColorBlendProtocol {
+        
+        let x_range = 0..<width
+        let y_range = 0..<height
         
         let _x1 = Int(point.x)
         let _y1 = Int(point.y)
         let _x2 = _x1 + 1
         let _y2 = _y1 + 1
-        let check1 = (0..<width).contains(_x1)
-        let check2 = (0..<width).contains(_x2)
-        let check3 = (0..<height).contains(_y1)
-        let check4 = (0..<height).contains(_y2)
+        let check1 = x_range.contains(_x1)
+        let check2 = x_range.contains(_x2)
+        let check3 = y_range.contains(_y1)
+        let check4 = y_range.contains(_y2)
         
         let _tx = point.x - Double(_x1)
         let _ty = point.y - Double(_y1)
         
-        if check1 && check2 && check1 && check2 {
-            let _s1 = source[_y1 * width + _x1]
-            let _s2 = source[_y1 * width + _x2]
-            let _s3 = source[_y2 * width + _x1]
-            let _s4 = source[_y2 * width + _x2]
+        if check1 || check2 || check3 || check4 {
             
-            let _u1 = _s1.color.blend(source: _s2.color) { sampler(_tx, $0, $1) }
-            let _u2 = _s3.color.blend(source: _s4.color) { sampler(_tx, $0, $1) }
-            let _v = _u1.blend(source: _u2) { sampler(_ty, $0, $1) }
+            let __x1 = _x1.clamped(to: x_range)
+            let __x2 = _x2.clamped(to: x_range)
+            let __y1 = _y1.clamped(to: y_range)
+            let __y2 = _y2.clamped(to: y_range)
             
-            return ColorPixel(color: _v, alpha: sampler(_ty, sampler(_tx, _s1.alpha, _s2.alpha), sampler(_tx, _s3.alpha, _s4.alpha)))
+            let _s1 = check1 && check3 ? ColorPixel(source[_y1 * width + _x1]) : ColorPixel(color: source[__y1 * width + __x1].color, alpha: 0)
+            let _s2 = check2 && check3 ? ColorPixel(source[_y1 * width + _x2]) : ColorPixel(color: source[__y1 * width + __x2].color, alpha: 0)
+            let _s3 = check1 && check4 ? ColorPixel(source[_y2 * width + _x1]) : ColorPixel(color: source[__y2 * width + __x1].color, alpha: 0)
+            let _s4 = check2 && check4 ? ColorPixel(source[_y2 * width + _x2]) : ColorPixel(color: source[__y2 * width + __x2].color, alpha: 0)
             
-        } else if check1 && check3 && check4 {
+            let _u1 = _s1.color.blend(_s2.color) { sampler(_tx, $0, $1) }
+            let _u2 = _s3.color.blend(_s4.color) { sampler(_tx, $0, $1) }
+            let _v = _u1.blend(_u2) { sampler(_ty, $0, $1) }
             
-            let _s1 = source[_y1 * width + _x1]
-            let _s3 = source[_y2 * width + _x1]
-            
-            return ColorPixel(color: _s1.color.blend(source: _s3.color) { sampler(_ty, $0, $1) }, alpha: sampler(_tx, _s1.alpha, _s3.alpha))
-            
-        } else if check2 && check3 && check4 {
-            
-            let _s2 = source[_y1 * width + _x2]
-            let _s4 = source[_y2 * width + _x2]
-            
-            return ColorPixel(color: _s2.color.blend(source: _s4.color) { sampler(_ty, $0, $1) }, alpha: sampler(_tx, _s2.alpha, _s4.alpha))
-            
-        } else if check1 && check2 && check3 {
-            
-            let _s1 = source[_y1 * width + _x1]
-            let _s2 = source[_y1 * width + _x2]
-            
-            return ColorPixel(color: _s1.color.blend(source: _s2.color) { sampler(_tx, $0, $1) }, alpha: sampler(_tx, _s1.alpha, _s2.alpha))
-            
-        } else if check1 && check2 && check4 {
-            
-            let _s3 = source[_y2 * width + _x1]
-            let _s4 = source[_y2 * width + _x2]
-            
-            return ColorPixel(color: _s3.color.blend(source: _s4.color) { sampler(_tx, $0, $1) }, alpha: sampler(_tx, _s3.alpha, _s4.alpha))
+            return Pixel(color: _v, alpha: sampler(_ty, sampler(_tx, _s1.alpha, _s2.alpha), sampler(_tx, _s3.alpha, _s4.alpha)))
             
         } else {
-            return ColorPixel()
+            return Pixel()
         }
     }
     
-    func calculate<ColorPixel: ColorPixelProtocol>(source: UnsafePointer<ColorPixel>, width: Int, height: Int, point: Point) -> ColorPixel where ColorPixel.Model : ColorBlendProtocol {
+    func smapling4<Pixel: ColorPixelProtocol>(source: UnsafePointer<Pixel>, width: Int, height: Int, point: Point, sampler: (Double, Double, Double, Double, Double) -> Double) -> Pixel where Pixel.Model : ColorBlendProtocol {
+        
+        let x_range = 0..<width
+        let y_range = 0..<height
+        
+        let _x2 = Int(point.x)
+        let _y2 = Int(point.y)
+        let _x3 = _x2 + 1
+        let _y3 = _y2 + 1
+        let _x1 = _x2 - 1
+        let _y1 = _y2 - 1
+        let _x4 = _x2 + 2
+        let _y4 = _y2 + 2
+        let check1 = x_range.contains(_x1)
+        let check2 = x_range.contains(_x2)
+        let check3 = x_range.contains(_x3)
+        let check4 = x_range.contains(_x4)
+        let check5 = y_range.contains(_y1)
+        let check6 = y_range.contains(_y2)
+        let check7 = y_range.contains(_y3)
+        let check8 = y_range.contains(_y4)
+        
+        let _tx = point.x - Double(_x2)
+        let _ty = point.y - Double(_y2)
+        
+        if check1 || check2 || check3 || check4 || check5 || check6 || check7 || check8 {
+            
+            let __x1 = _x1.clamped(to: x_range)
+            let __x2 = _x2.clamped(to: x_range)
+            let __x3 = _x3.clamped(to: x_range)
+            let __x4 = _x4.clamped(to: x_range)
+            let __y1 = _y1.clamped(to: y_range)
+            let __y2 = _y2.clamped(to: y_range)
+            let __y3 = _y3.clamped(to: y_range)
+            let __y4 = _y4.clamped(to: y_range)
+            
+            let _s1 = check1 && check5 ? ColorPixel(source[_y1 * width + _x1]) : ColorPixel(color: source[__y1 * width + __x1].color, alpha: 0)
+            let _s2 = check2 && check5 ? ColorPixel(source[_y1 * width + _x2]) : ColorPixel(color: source[__y1 * width + __x2].color, alpha: 0)
+            let _s3 = check3 && check5 ? ColorPixel(source[_y1 * width + _x3]) : ColorPixel(color: source[__y1 * width + __x3].color, alpha: 0)
+            let _s4 = check4 && check5 ? ColorPixel(source[_y1 * width + _x4]) : ColorPixel(color: source[__y1 * width + __x4].color, alpha: 0)
+            let _s5 = check1 && check6 ? ColorPixel(source[_y2 * width + _x1]) : ColorPixel(color: source[__y2 * width + __x1].color, alpha: 0)
+            let _s6 = check2 && check6 ? ColorPixel(source[_y2 * width + _x2]) : ColorPixel(color: source[__y2 * width + __x2].color, alpha: 0)
+            let _s7 = check3 && check6 ? ColorPixel(source[_y2 * width + _x3]) : ColorPixel(color: source[__y2 * width + __x3].color, alpha: 0)
+            let _s8 = check4 && check6 ? ColorPixel(source[_y2 * width + _x4]) : ColorPixel(color: source[__y2 * width + __x4].color, alpha: 0)
+            let _s9 = check1 && check7 ? ColorPixel(source[_y3 * width + _x1]) : ColorPixel(color: source[__y3 * width + __x1].color, alpha: 0)
+            let _s10 = check2 && check7 ? ColorPixel(source[_y3 * width + _x2]) : ColorPixel(color: source[__y3 * width + __x2].color, alpha: 0)
+            let _s11 = check3 && check7 ? ColorPixel(source[_y3 * width + _x3]) : ColorPixel(color: source[__y3 * width + __x3].color, alpha: 0)
+            let _s12 = check4 && check7 ? ColorPixel(source[_y3 * width + _x4]) : ColorPixel(color: source[__y3 * width + __x4].color, alpha: 0)
+            let _s13 = check1 && check8 ? ColorPixel(source[_y4 * width + _x1]) : ColorPixel(color: source[__y4 * width + __x1].color, alpha: 0)
+            let _s14 = check2 && check8 ? ColorPixel(source[_y4 * width + _x2]) : ColorPixel(color: source[__y4 * width + __x2].color, alpha: 0)
+            let _s15 = check3 && check8 ? ColorPixel(source[_y4 * width + _x3]) : ColorPixel(color: source[__y4 * width + __x3].color, alpha: 0)
+            let _s16 = check4 && check8 ? ColorPixel(source[_y4 * width + _x4]) : ColorPixel(color: source[__y4 * width + __x4].color, alpha: 0)
+            
+            let _u1 = _s1.color.blend(_s2.color, _s3.color, _s4.color) { sampler(_tx, $0, $1, $2, $3) }
+            let _u2 = _s5.color.blend(_s6.color, _s7.color, _s8.color) { sampler(_tx, $0, $1, $2, $3) }
+            let _u3 = _s9.color.blend(_s10.color, _s11.color, _s12.color) { sampler(_tx, $0, $1, $2, $3) }
+            let _u4 = _s13.color.blend(_s14.color, _s15.color, _s16.color) { sampler(_tx, $0, $1, $2, $3) }
+            let _v = _u1.blend(_u2, _u3, _u4) { sampler(_ty, $0, $1, $2, $3) }
+            
+            let a1 = sampler(_tx, _s1.alpha, _s2.alpha, _s3.alpha, _s4.alpha)
+            let a2 = sampler(_tx, _s5.alpha, _s6.alpha, _s7.alpha, _s8.alpha)
+            let a3 = sampler(_tx, _s9.alpha, _s10.alpha, _s11.alpha, _s12.alpha)
+            let a4 = sampler(_tx, _s13.alpha, _s14.alpha, _s15.alpha, _s16.alpha)
+            
+            return Pixel(color: _v, alpha: sampler(_ty, a1, a2, a3, a4))
+            
+        } else {
+            return Pixel()
+        }
+    }
+    
+    func calculate<Pixel: ColorPixelProtocol>(source: UnsafePointer<Pixel>, width: Int, height: Int, point: Point) -> Pixel where Pixel.Model : ColorBlendProtocol {
         switch self {
         case .none:
             
             let _x = Int(point.x)
             let _y = Int(point.y)
-            return (0..<width).contains(_x) && (0..<height).contains(_y) ? source[_y * width + _x] : ColorPixel()
+            return (0..<width).contains(_x) && (0..<height).contains(_y) ? source[_y * width + _x] : Pixel()
             
         case .linear:
             
@@ -246,6 +299,10 @@ extension Image.ResamplingAlgorithm {
         case .cosine:
             
             return smapling2(source: source, width: width, height: height, point: point, sampler: CosineInterpolate)
+            
+        case .cubic:
+            
+            return smapling4(source: source, width: width, height: height, point: point, sampler: CubicInterpolate)
             
         case let .lanczos(a):
             
@@ -266,32 +323,31 @@ extension Image.ResamplingAlgorithm {
                 return 0
             }
             
-            var s_color = ColorPixel.Model()
+            var s_color = Pixel.Model()
             var s_alpha: Double = 0
             var t: Double = 0
             
             let _x = Int(point.x)
             let _y = Int(point.y)
             
-            let min_x = (_x - a + 1).clamped(to: 0..<width)
-            let max_x = (_x + a + 1).clamped(to: 0..<width)
-            let min_y = (_y - a + 1).clamped(to: 0..<height)
-            let max_y = (_y + a + 1).clamped(to: 0..<height)
+            let min_x = _x - a + 1
+            let max_x = _x + a + 1
+            let min_y = _y - a + 1
+            let max_y = _y + a + 1
             
-            var ptr1 = source + min_y * width
+            let x_range = 0..<width
+            let y_range = 0..<height
+            
             for y in min_y..<max_y {
-                var ptr2 = ptr1 + min_x
                 for x in min_x..<max_x {
                     let l = _kernel((point - Point(x: x, y: y)).magnitude)
-                    let _source = ptr2.pointee
-                    s_color = s_color.blend(source: _source.color) { $0 + $1 * l }
+                    let _source = x_range.contains(x) && y_range.contains(y) ? ColorPixel(source[y * width + x]) : ColorPixel(color: source[y.clamped(to: y_range) * width + x.clamped(to: x_range)].color, alpha: 0)
+                    s_color = s_color.blend(_source.color) { $0 + $1 * l }
                     s_alpha += _source.alpha * l
                     t += l
-                    ptr2 += 1
                 }
-                ptr1 += width
             }
-            return t == 0 ? ColorPixel() : ColorPixel(color: s_color.blend { $0 / t }, alpha: s_alpha / t)
+            return t == 0 ? Pixel() : Pixel(color: s_color.blend { $0 / t }, alpha: s_alpha / t)
         }
     }
 }

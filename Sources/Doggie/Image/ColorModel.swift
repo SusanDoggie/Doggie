@@ -34,7 +34,9 @@ public protocol ColorBlendProtocol : ColorModelProtocol {
     init()
     
     func blend(operation: (Double) -> Double) -> Self
-    func blend(source: Self, operation: (Double, Double) -> Double) -> Self
+    func blend(_ source: Self, operation: (Double, Double) -> Double) -> Self
+    func blend(_ s1: Self, _ s2: Self, operation: (Double, Double, Double) -> Double) -> Self
+    func blend(_ s1: Self, _ s2: Self, _ s3: Self, operation: (Double, Double, Double, Double) -> Double) -> Self
 }
 
 public protocol ColorVectorConvertible : ColorModelProtocol {
@@ -66,10 +68,23 @@ extension ColorBlendProtocol where Self : ColorVectorConvertible {
         let v = self.vector
         return Self(Vector(x: operation(v.x), y: operation(v.y), z: operation(v.z)))
     }
-    public func blend(source: Self, operation: (Double, Double) -> Double) -> Self {
+    public func blend(_ source: Self, operation: (Double, Double) -> Double) -> Self {
         let d = self.vector
         let s = source.vector
         return Self(Vector(x: operation(d.x, s.x), y: operation(d.y, s.y), z: operation(d.z, s.z)))
+    }
+    public func blend(_ s1: Self, _ s2: Self, operation: (Double, Double, Double) -> Double) -> Self {
+        let d = self.vector
+        let s1 = s1.vector
+        let s2 = s2.vector
+        return Self(Vector(x: operation(d.x, s1.x, s2.x), y: operation(d.y, s1.y, s2.y), z: operation(d.z, s1.z, s2.z)))
+    }
+    public func blend(_ s1: Self, _ s2: Self, _ s3: Self, operation: (Double, Double, Double, Double) -> Double) -> Self {
+        let d = self.vector
+        let s1 = s1.vector
+        let s2 = s2.vector
+        let s3 = s3.vector
+        return Self(Vector(x: operation(d.x, s1.x, s2.x, s3.x), y: operation(d.y, s1.y, s2.y, s3.y), z: operation(d.z, s1.z, s2.z, s3.z)))
     }
 }
 
@@ -251,8 +266,14 @@ extension CMYKColorModel : ColorBlendProtocol {
     public func blend(operation: (Double) -> Double) -> CMYKColorModel {
         return CMYKColorModel(cyan: operation(cyan), magenta: operation(magenta), yellow: operation(yellow), black: operation(black))
     }
-    public func blend(source: CMYKColorModel, operation: (Double, Double) -> Double) -> CMYKColorModel {
+    public func blend(_ source: CMYKColorModel, operation: (Double, Double) -> Double) -> CMYKColorModel {
         return CMYKColorModel(cyan: operation(cyan, source.cyan), magenta: operation(magenta, source.magenta), yellow: operation(yellow, source.yellow), black: operation(black, source.black))
+    }
+    public func blend(_ s1: CMYKColorModel, _ s2: CMYKColorModel, operation: (Double, Double, Double) -> Double) -> CMYKColorModel {
+        return CMYKColorModel(cyan: operation(cyan, s1.cyan, s2.cyan), magenta: operation(magenta, s1.magenta, s2.magenta), yellow: operation(yellow, s1.yellow, s2.yellow), black: operation(black, s1.black, s2.black))
+    }
+    public func blend(_ s1: CMYKColorModel, _ s2: CMYKColorModel, _ s3: CMYKColorModel, operation: (Double, Double, Double, Double) -> Double) -> CMYKColorModel {
+        return CMYKColorModel(cyan: operation(cyan, s1.cyan, s2.cyan, s3.cyan), magenta: operation(magenta, s1.magenta, s2.magenta, s3.magenta), yellow: operation(yellow, s1.yellow, s2.yellow, s3.yellow), black: operation(black, s1.black, s2.black, s3.black))
     }
 }
 
@@ -461,7 +482,13 @@ extension GrayColorModel : ColorBlendProtocol {
     public func blend(operation: (Double) -> Double) -> GrayColorModel {
         return GrayColorModel(white: operation(white))
     }
-    public func blend(source: GrayColorModel, operation: (Double, Double) -> Double) -> GrayColorModel {
+    public func blend(_ source: GrayColorModel, operation: (Double, Double) -> Double) -> GrayColorModel {
         return GrayColorModel(white: operation(white, source.white))
+    }
+    public func blend(_ s1: GrayColorModel, _ s2: GrayColorModel, operation: (Double, Double, Double) -> Double) -> GrayColorModel {
+        return GrayColorModel(white: operation(white, s1.white, s2.white))
+    }
+    public func blend(_ s1: GrayColorModel, _ s2: GrayColorModel, _ s3: GrayColorModel, operation: (Double, Double, Double, Double) -> Double) -> GrayColorModel {
+        return GrayColorModel(white: operation(white, s1.white, s2.white, s3.white))
     }
 }
