@@ -284,6 +284,7 @@ extension Image.ResamplingAlgorithm {
         }
     }
     
+    @_specialize(ColorPixel<RGBColorModel>) @_specialize(ColorPixel<CMYKColorModel>) @_specialize(ColorPixel<GrayColorModel>) @_specialize(ARGB32ColorPixel)
     func calculate<Pixel: ColorPixelProtocol>(source: UnsafePointer<Pixel>, width: Int, height: Int, point: Point) -> Pixel where Pixel.Model : ColorBlendProtocol {
         switch self {
         case .none:
