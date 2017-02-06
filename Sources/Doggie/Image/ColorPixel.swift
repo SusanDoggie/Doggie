@@ -51,10 +51,10 @@ public struct ARGB32ColorPixel : ColorPixelProtocol {
     public var b: UInt8
     
     public init(color: RGBColorModel, alpha: Double) {
-        self.a = UInt8(alpha * 255)
-        self.r = UInt8(color.red * 255)
-        self.g = UInt8(color.green * 255)
-        self.b = UInt8(color.blue * 255)
+        self.a = UInt8((alpha * 255).clamped(to: 0...255))
+        self.r = UInt8((color.red * 255).clamped(to: 0...255))
+        self.g = UInt8((color.green * 255).clamped(to: 0...255))
+        self.b = UInt8((color.blue * 255).clamped(to: 0...255))
     }
     
     public var color: RGBColorModel {
@@ -62,9 +62,9 @@ public struct ARGB32ColorPixel : ColorPixelProtocol {
             return RGBColorModel(red: Double(r) / 255, green: Double(g) / 255, blue: Double(b) / 255)
         }
         set {
-            self.r = UInt8(newValue.red * 255)
-            self.g = UInt8(newValue.green * 255)
-            self.b = UInt8(newValue.blue * 255)
+            self.r = UInt8((newValue.red * 255).clamped(to: 0...255))
+            self.g = UInt8((newValue.green * 255).clamped(to: 0...255))
+            self.b = UInt8((newValue.blue * 255).clamped(to: 0...255))
         }
     }
     public var alpha: Double {
@@ -72,7 +72,7 @@ public struct ARGB32ColorPixel : ColorPixelProtocol {
             return Double(a) / 255
         }
         set {
-            self.a = UInt8(newValue * 255)
+            self.a = UInt8((newValue * 255).clamped(to: 0...255))
         }
     }
 }
