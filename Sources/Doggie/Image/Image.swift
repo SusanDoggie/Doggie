@@ -23,6 +23,8 @@
 //  THE SOFTWARE.
 //
 
+import Foundation
+
 private protocol ImageBaseProtocol {
     
     var colorModel: ColorModelProtocol.Type { get }
@@ -80,8 +82,17 @@ private struct ImageBase<ColorPixel: ColorPixelProtocol, ColorSpace : ColorSpace
             let s_height = buffer.count / s_width
             let _transform = transform.inverse
             
-            for i in 0..<result.count {
-                result[i] = algorithm.calculate(source: buffer, width: s_width, height: s_height, point: Point(x: i % width, y: i / width) * _transform)
+            self.buffer.withUnsafeBufferPointer { source in
+                if let source = source.baseAddress {
+                    result.withUnsafeMutableBufferPointer { buffer in
+                        if var pointer = buffer.baseAddress {
+                            for i in buffer.indices {
+                                pointer.pointee = algorithm.calculate(source: source, width: s_width, height: s_height, point: Point(x: i % width, y: i / width) * _transform)
+                                pointer += 1
+                            }
+                        }
+                    }
+                }
             }
         }
         return ImageBase(buffer: result, colorSpace: self.colorSpace, algorithm: self.algorithm)
@@ -159,7 +170,7 @@ extension Image {
 
 extension Image.ResamplingAlgorithm {
     
-    func calculate<ColorPixel: ColorPixelProtocol>(source: [ColorPixel], width: Int, height: Int, point: Point) -> ColorPixel where ColorPixel.Model : ColorBlendProtocol {
+    func calculate<ColorPixel: ColorPixelProtocol>(source: UnsafePointer<ColorPixel>, width: Int, height: Int, point: Point) -> ColorPixel where ColorPixel.Model : ColorBlendProtocol {
         switch self {
         case .none:
             
@@ -181,7 +192,7 @@ extension Image.ResamplingAlgorithm {
                 }
                 if x < a {
                     let _x = Double.pi * x
-                    return a * Double.sin(_x) * Double.sin(_x / a) / (_x * _x)
+                    return a * sin(_x) * sin(_x / a) / (_x * _x)
                 }
                 return 0
             }
@@ -190,8 +201,8 @@ extension Image.ResamplingAlgorithm {
             var s_alpha: Double = 0
             var t: Double = 0
             
-            let _x = Int(point.x.rounded())
-            let _y = Int(point.y.rounded())
+            let _x = Int(point.x)
+            let _y = Int(point.y)
             
             let min_x = (_x - a + 1).clamped(to: 0..<width)
             let max_x = (_x + a + 1).clamped(to: 0..<width)
