@@ -148,7 +148,7 @@ extension Image {
         case linear
         case cosine
         case cubic
-        case lanczos(Int)
+        case lanczos(UInt)
     }
 }
 
@@ -311,8 +311,6 @@ extension Image.ResamplingAlgorithm {
             
         case let .lanczos(a):
             
-            let a = abs(a)
-            
             func _kernel(_ x: Double) -> Double {
                 let a = Double(a)
                 if x == 0 {
@@ -334,6 +332,8 @@ extension Image.ResamplingAlgorithm {
             
             let _x = Int(point.x)
             let _y = Int(point.y)
+            
+            let a = Int(a)
             
             let min_x = _x - a + 1
             let max_x = _x + a + 1
