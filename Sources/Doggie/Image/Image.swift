@@ -148,6 +148,7 @@ extension Image {
         case linear
         case cosine
         case cubic
+        case mitchell(Double, Double)
         case lanczos(UInt)
     }
 }
@@ -207,6 +208,53 @@ extension Image.ResamplingAlgorithm {
                                     
                                     return smapling4(source: _source, width: s_width, height: s_height, point: point, sampler: CubicInterpolate)
                                     
+                                }
+                            case let .mitchell(B, C):
+                                
+                                filling(buffer: buffer, width: width, transform: transform) { point in
+                                    
+                                    func _kernel(_ x: Double) -> Double {
+                                        if x < 1 {
+                                            let a = 12 - 9 * B - 6 * C
+                                            let b = -18 + 12 * B + 6 * C
+                                            let c = 6 - 2 * B
+                                            return (a * x + b) * x * x + c
+                                        }
+                                        if x < 2 {
+                                            let a = -B - 6 * C
+                                            let b = 6 * B + 30 * C
+                                            let c = -12 * B - 48 * C
+                                            let d = 8 * B + 24 * C
+                                            return ((a * x + b) * x + c) * x + d
+                                        }
+                                        return 0
+                                    }
+                                    
+                                    var s_color = Pixel.Model()
+                                    var s_alpha: Double = 0
+                                    var t: Double = 0
+                                    
+                                    let _x = Int(point.x)
+                                    let _y = Int(point.y)
+                                    
+                                    let min_x = _x - 2
+                                    let max_x = _x + 3
+                                    let min_y = _y - 2
+                                    let max_y = _y + 3
+                                    
+                                    let x_range = 0..<s_width
+                                    let y_range = 0..<s_height
+                                    
+                                    for y in min_y..<max_y {
+                                        for x in min_x..<max_x {
+                                            let l = _kernel((point - Point(x: x, y: y)).magnitude)
+                                            let _source = x_range.contains(x) && y_range.contains(y) ? _source[y * s_width + x] : _source[y.clamped(to: y_range) * s_width + x.clamped(to: x_range)].with(alpha: 0)
+                                            s_color = s_color.blend(_source.color) { $0 + $1 * l }
+                                            s_alpha += _source.alpha * l
+                                            t += l
+                                        }
+                                    }
+                                    return t == 0 ? ColorPixel() : ColorPixel(color: s_color.blend { $0 / t }, alpha: s_alpha / t)
                                 }
                             case let .lanczos(a):
                                 
