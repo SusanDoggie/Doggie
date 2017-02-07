@@ -76,26 +76,7 @@ private struct ImageBase<ColorPixel: ColorPixelProtocol, ColorSpace : ColorSpace
     
     func resampling<T: SDTransformProtocol>(s_width: Int, width: Int, height: Int, transform: T, algorithm: Image.ResamplingAlgorithm) -> ImageBaseProtocol {
         
-        var result = [ColorPixel](repeating: ColorPixel(), count: width * height)
-        
-        if buffer.count != 0 {
-            let s_height = buffer.count / s_width
-            let _transform = transform.inverse
-            
-            self.buffer.withUnsafeBufferPointer { source in
-                if let source = source.baseAddress {
-                    result.withUnsafeMutableBufferPointer { buffer in
-                        if var pointer = buffer.baseAddress {
-                            for i in buffer.indices {
-                                pointer.pointee = algorithm.calculate(source: source, width: s_width, height: s_height, point: Point(x: i % width, y: i / width) * _transform)
-                                pointer += 1
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return ImageBase(buffer: result, colorSpace: self.colorSpace, algorithm: self.algorithm)
+        return ImageBase(buffer: algorithm.calculate(source: self.buffer, s_width: s_width, width: width, height: height, transform: transform), colorSpace: self.colorSpace, algorithm: self.algorithm)
     }
     
     mutating func withUnsafeMutableBytes<R>(_ body: (UnsafeMutableRawBufferPointer) throws -> R) rethrows -> R {
@@ -173,6 +154,30 @@ extension Image {
 
 extension Image.ResamplingAlgorithm {
     
+    @_specialize(ColorPixel<RGBColorModel>, SDTransform) @_specialize(ColorPixel<CMYKColorModel>, SDTransform) @_specialize(ColorPixel<GrayColorModel>, SDTransform) @_specialize(ARGB32ColorPixel, SDTransform)
+    func calculate<Pixel: ColorPixelProtocol, T: SDTransformProtocol>(source: [Pixel], s_width: Int, width: Int, height: Int, transform: T) -> [Pixel] where Pixel.Model : ColorBlendProtocol {
+        
+        var result = [Pixel](repeating: Pixel(), count: width * height)
+        
+        if source.count != 0 {
+            let s_height = source.count / s_width
+            let _transform = transform.inverse
+            
+            source.withUnsafeBufferPointer { source in
+                if let source = source.baseAddress {
+                    result.withUnsafeMutableBufferPointer { buffer in
+                        if var pointer = buffer.baseAddress {
+                            for i in buffer.indices {
+                                pointer.pointee = sampler(source: source, width: s_width, height: s_height, point: Point(x: i % width, y: i / width) * _transform)
+                                pointer += 1
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return result
+    }
     func smapling2<Pixel: ColorPixelProtocol>(source: UnsafePointer<Pixel>, width: Int, height: Int, point: Point, sampler: (Double, Double, Double) -> Double) -> Pixel where Pixel.Model : ColorBlendProtocol {
         
         let x_range = 0..<width
@@ -284,8 +289,7 @@ extension Image.ResamplingAlgorithm {
         }
     }
     
-    @_specialize(ColorPixel<RGBColorModel>) @_specialize(ColorPixel<CMYKColorModel>) @_specialize(ColorPixel<GrayColorModel>) @_specialize(ARGB32ColorPixel)
-    func calculate<Pixel: ColorPixelProtocol>(source: UnsafePointer<Pixel>, width: Int, height: Int, point: Point) -> Pixel where Pixel.Model : ColorBlendProtocol {
+    func sampler<Pixel: ColorPixelProtocol>(source: UnsafePointer<Pixel>, width: Int, height: Int, point: Point) -> Pixel where Pixel.Model : ColorBlendProtocol {
         switch self {
         case .none:
             
