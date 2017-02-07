@@ -160,16 +160,101 @@ extension Image.ResamplingAlgorithm {
         var result = [Pixel](repeating: Pixel(), count: width * height)
         
         if source.count != 0 {
-            let s_height = source.count / s_width
-            let _transform = transform.inverse
             
-            source.map { ColorPixel($0) }.withUnsafeBufferPointer { source in
-                if let source = source.baseAddress {
-                    result.withUnsafeMutableBufferPointer { buffer in
-                        if var pointer = buffer.baseAddress {
-                            for i in buffer.indices {
-                                pointer.pointee = Pixel(sampler(source: source, width: s_width, height: s_height, point: Point(x: i % width, y: i / width) * _transform))
-                                pointer += 1
+            result.withUnsafeMutableBufferPointer { buffer in
+                switch self {
+                case .none:
+                    source.withUnsafeBufferPointer { source in
+                        if let _source = source.baseAddress {
+                            let s_height = source.count / s_width
+                            
+                            if var pointer = buffer.baseAddress {
+                                let _transform = transform.inverse
+                                for i in buffer.indices {
+                                    let point = Point(x: i % width, y: i / width) * _transform
+                                    let _x = Int(point.x)
+                                    let _y = Int(point.y)
+                                    pointer.pointee = (0..<s_width).contains(_x) && (0..<s_height).contains(_y) ? _source[_y * s_width + _x] : Pixel()
+                                    pointer += 1
+                                }
+                            }
+                        }
+                    }
+                default:
+                    source.map { ColorPixel($0) }.withUnsafeBufferPointer { source in
+                        if let _source = source.baseAddress {
+                            let s_height = source.count / s_width
+                            
+                            switch self {
+                            case .none: fatalError()
+                            case .linear:
+                                
+                                filling(buffer: buffer, width: width, transform: transform) { point in
+                                    
+                                    return smapling2(source: _source, width: s_width, height: s_height, point: point, sampler: LinearInterpolate)
+                                    
+                                }
+                            case .cosine:
+                                
+                                filling(buffer: buffer, width: width, transform: transform) { point in
+                                    
+                                    return smapling2(source: _source, width: s_width, height: s_height, point: point, sampler: CosineInterpolate)
+                                    
+                                }
+                            case .cubic:
+                                
+                                filling(buffer: buffer, width: width, transform: transform) { point in
+                                    
+                                    return smapling4(source: _source, width: s_width, height: s_height, point: point, sampler: CubicInterpolate)
+                                    
+                                }
+                            case let .lanczos(a):
+                                
+                                filling(buffer: buffer, width: width, transform: transform) { point in
+                                    
+                                    func _kernel(_ x: Double) -> Double {
+                                        let a = Double(a)
+                                        if x == 0 {
+                                            return 1
+                                        }
+                                        if x < -a {
+                                            return 0
+                                        }
+                                        if x < a {
+                                            let _x = Double.pi * x
+                                            return a * sin(_x) * sin(_x / a) / (_x * _x)
+                                        }
+                                        return 0
+                                    }
+                                    
+                                    var s_color = Pixel.Model()
+                                    var s_alpha: Double = 0
+                                    var t: Double = 0
+                                    
+                                    let _x = Int(point.x)
+                                    let _y = Int(point.y)
+                                    
+                                    let a = Int(a)
+                                    
+                                    let min_x = _x - a + 1
+                                    let max_x = _x + a + 1
+                                    let min_y = _y - a + 1
+                                    let max_y = _y + a + 1
+                                    
+                                    let x_range = 0..<s_width
+                                    let y_range = 0..<s_height
+                                    
+                                    for y in min_y..<max_y {
+                                        for x in min_x..<max_x {
+                                            let l = _kernel((point - Point(x: x, y: y)).magnitude)
+                                            let _source = x_range.contains(x) && y_range.contains(y) ? _source[y * s_width + x] : _source[y.clamped(to: y_range) * s_width + x.clamped(to: x_range)].with(alpha: 0)
+                                            s_color = s_color.blend(_source.color) { $0 + $1 * l }
+                                            s_alpha += _source.alpha * l
+                                            t += l
+                                        }
+                                    }
+                                    return t == 0 ? ColorPixel() : ColorPixel(color: s_color.blend { $0 / t }, alpha: s_alpha / t)
+                                }
                             }
                         }
                     }
@@ -178,6 +263,18 @@ extension Image.ResamplingAlgorithm {
         }
         return result
     }
+
+    func filling<Pixel: ColorPixelProtocol, T: SDTransformProtocol>(buffer: UnsafeMutableBufferPointer<Pixel>, width: Int, transform: T, operation: (Point) -> ColorPixel<Pixel.Model>) where Pixel.Model : ColorBlendProtocol {
+        
+        let _transform = transform.inverse
+        if var pointer = buffer.baseAddress {
+            for i in buffer.indices {
+                pointer.pointee = Pixel(operation(Point(x: i % width, y: i / width) * _transform))
+                pointer += 1
+            }
+        }
+    }
+    
     func smapling2<Model : ColorBlendProtocol>(source: UnsafePointer<ColorPixel<Model>>, width: Int, height: Int, point: Point, sampler: (Double, Double, Double) -> Double) -> ColorPixel<Model> {
         
         let x_range = 0..<width
@@ -286,73 +383,6 @@ extension Image.ResamplingAlgorithm {
             
         } else {
             return ColorPixel()
-        }
-    }
-    
-    func sampler<Model : ColorBlendProtocol>(source: UnsafePointer<ColorPixel<Model>>, width: Int, height: Int, point: Point) -> ColorPixel<Model> {
-        switch self {
-        case .none:
-            
-            let _x = Int(point.x)
-            let _y = Int(point.y)
-            return (0..<width).contains(_x) && (0..<height).contains(_y) ? source[_y * width + _x] : ColorPixel()
-            
-        case .linear:
-            
-            return smapling2(source: source, width: width, height: height, point: point, sampler: LinearInterpolate)
-            
-        case .cosine:
-            
-            return smapling2(source: source, width: width, height: height, point: point, sampler: CosineInterpolate)
-            
-        case .cubic:
-            
-            return smapling4(source: source, width: width, height: height, point: point, sampler: CubicInterpolate)
-            
-        case let .lanczos(a):
-            
-            func _kernel(_ x: Double) -> Double {
-                let a = Double(a)
-                if x == 0 {
-                    return 1
-                }
-                if x < -a {
-                    return 0
-                }
-                if x < a {
-                    let _x = Double.pi * x
-                    return a * sin(_x) * sin(_x / a) / (_x * _x)
-                }
-                return 0
-            }
-            
-            var s_color = Model()
-            var s_alpha: Double = 0
-            var t: Double = 0
-            
-            let _x = Int(point.x)
-            let _y = Int(point.y)
-            
-            let a = Int(a)
-            
-            let min_x = _x - a + 1
-            let max_x = _x + a + 1
-            let min_y = _y - a + 1
-            let max_y = _y + a + 1
-            
-            let x_range = 0..<width
-            let y_range = 0..<height
-            
-            for y in min_y..<max_y {
-                for x in min_x..<max_x {
-                    let l = _kernel((point - Point(x: x, y: y)).magnitude)
-                    let _source = x_range.contains(x) && y_range.contains(y) ? source[y * width + x] : source[y.clamped(to: y_range) * width + x.clamped(to: x_range)].with(alpha: 0)
-                    s_color = s_color.blend(_source.color) { $0 + $1 * l }
-                    s_alpha += _source.alpha * l
-                    t += l
-                }
-            }
-            return t == 0 ? ColorPixel() : ColorPixel(color: s_color.blend { $0 / t }, alpha: s_alpha / t)
         }
     }
 }
