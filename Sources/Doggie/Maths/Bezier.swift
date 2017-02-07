@@ -710,7 +710,7 @@ private func BezierOffset(_ p0: Point, _ p1: Point, _ p2: Point, _ a: Double, _ 
     if ph0.almostEqual(ph1 + Double.pi) || ph0.almostEqual(ph1 - Double.pi) {
         if let w = QuadBezierStationary(p0.x, p1.x, p2.x) ?? QuadBezierStationary(p0.y, p1.y, p2.y) {
             let g = BezierPoint(w, p0, p1, p2)
-            let angle = ph0 - M_PI_2
+            let angle = ph0 - 0.5 * Double.pi
             let bezierCircle = BezierCircle.lazy.map { $0 * SDTransform.Rotate(angle) * a + g }
             let v0 = OptionOneCollection(BezierOffset(p0, g, a).map { [$0, $1] })
             let v1 = OptionOneCollection([bezierCircle[0], bezierCircle[1], bezierCircle[2], bezierCircle[3]])
@@ -787,7 +787,7 @@ private func BezierOffset(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point, _ 
             if a.almostZero() {
                 return [[p0, g], [g, p3]]
             }
-            let angle = ph0 - M_PI_2
+            let angle = ph0 - 0.5 * Double.pi
             let bezierCircle = BezierCircle.lazy.map { $0 * SDTransform.Rotate(angle) * a + g }
             let v0 = OptionOneCollection(BezierOffset(p0, g, a).map { [$0, $1] })
             let v1 = OptionOneCollection([bezierCircle[0], bezierCircle[1], bezierCircle[2], bezierCircle[3]])
@@ -800,8 +800,8 @@ private func BezierOffset(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point, _ 
             if a.almostZero() {
                 return [[p0, g], [g, h], [h, p3]]
             }
-            let angle1 = ph0 - M_PI_2
-            let angle2 = ph1 - M_PI_2
+            let angle1 = ph0 - 0.5 * Double.pi
+            let angle2 = ph1 - 0.5 * Double.pi
             let bezierCircle1 = BezierCircle.lazy.map { $0 * SDTransform.Rotate(angle1) * a + g }
             let bezierCircle2 = BezierCircle.lazy.map { $0 * SDTransform.Rotate(angle2) * a + h }
             let v0 = OptionOneCollection(BezierOffset(p0, g, a).map { [$0, $1] })
@@ -927,7 +927,7 @@ private func BezierVariableOffset(_ p0: Point, _ p1: Point, _ p2: Point, _ a: [P
             let g = BezierPoint(w, p0, p1, p2)
             let (a_left, a_right) = split_a(mid_length)
             let a_left_last = a_left.last!
-            let angle = ph0 - M_PI_2
+            let angle = ph0 - 0.5 * Double.pi
             let bezierCircle = BezierCircle.lazy.map { $0 * SDTransform.Rotate(angle) * a_left_last.y + g }
             let v0 = OptionOneCollection(BezierVariableOffset(p0, g, a_left))
             let v1 = OptionOneCollection([bezierCircle[0], bezierCircle[1], bezierCircle[2], bezierCircle[3]])
@@ -1228,8 +1228,8 @@ public func BezierArc(_ angle: Double) -> [Point] {
             result.append(Point(x: 1, y: 0))
         default: break
         }
-        if _angle < M_PI_2 {
-            let offset = Double(counter & 3) * M_PI_2
+        if _angle < 0.5 * Double.pi {
+            let offset = Double(counter & 3) * 0.5 * Double.pi
             let s = _angle + offset
             let _a = result.count - 4
             let _b = result.count - 3
@@ -1242,7 +1242,7 @@ public func BezierArc(_ angle: Double) -> [Point] {
             result[_c] = split[2]
             result[_d] = end
         }
-        _angle -= M_PI_2
+        _angle -= 0.5 * Double.pi
         counter += 1
     }
     return angle.sign == .minus ? result.map { Point(x: $0.x, y: -$0.y) } : result

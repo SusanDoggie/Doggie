@@ -159,7 +159,7 @@ extension SDPath.StrokeBuffer {
             case .round:
                 do {
                     let last_point = last!.end
-                    let a = last!.endDirection.phase - M_PI_2
+                    let a = last!.endDirection.phase - 0.5 * Double.pi
                     let r = 0.5 * width
                     let bezierCircle = BezierCircle.lazy.map { $0 * SDTransform.Rotate(a) * r + last_point }
                     buffer1.append(.cubic(bezierCircle[1], bezierCircle[2], bezierCircle[3]))
@@ -167,7 +167,7 @@ extension SDPath.StrokeBuffer {
                 }
                 do {
                     let start_point = first!.start
-                    let a = first!.startDirection.phase - M_PI_2
+                    let a = first!.startDirection.phase - 0.5 * Double.pi
                     let r = -0.5 * width
                     let bezierCircle = BezierCircle.lazy.map { $0 * SDTransform.Rotate(a) * r + start_point }
                     cap_buffer.append(.cubic(bezierCircle[1], bezierCircle[2], bezierCircle[3]))
@@ -278,7 +278,7 @@ extension SDPath.StrokeBuffer {
             case .round:
                 if angle > 0 {
                     do {
-                        let a = ph0 - M_PI_2
+                        let a = ph0 - 0.5 * Double.pi
                         let r = 0.5 * width
                         let bezierArc = BezierArc(angle).lazy.map { $0 * SDTransform.Rotate(a) * r + segment.start }
                         for i in 0..<bezierArc.count / 3 {
@@ -295,7 +295,7 @@ extension SDPath.StrokeBuffer {
                         buffer1.append(.line(segment.start + Point(x: u, y: v)))
                     }
                     do {
-                        let a = ph1 - M_PI_2
+                        let a = ph1 - 0.5 * Double.pi
                         let r = -0.5 * width
                         let bezierArc = BezierArc(-angle).lazy.map { $0 * SDTransform.Rotate(a) * r + segment.start }
                         reverse_start = bezierArc[0]

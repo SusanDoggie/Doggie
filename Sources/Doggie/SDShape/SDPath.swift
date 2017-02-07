@@ -229,14 +229,12 @@ extension SDPath {
         case transformed
     }
     
-    @_transparent
     func setCache(name: String, value: Any, type: CacheType) {
         switch type {
         case .regular: cache.table[name] = value
         case .transformed: cache.transformedTable[name] = value
         }
     }
-    @_transparent
     func getCache(name: String, type: CacheType) -> Any? {
         switch type {
         case .regular: return cache.table[name]

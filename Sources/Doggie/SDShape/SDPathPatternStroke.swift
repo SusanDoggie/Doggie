@@ -131,13 +131,13 @@ extension SDPath {
             
             switch direction {
             case .plus:
-                let a = ph0 - M_PI_2
+                let a = ph0 - 0.5 * Double.pi
                 let bezierArc = BezierArc(angle).lazy.map { $0 * SDTransform.Rotate(a) * width + current_first }
                 for i in 0..<bezierArc.count / 3 {
                     buffer.append(.cubic(bezierArc[i * 3 + 1], bezierArc[i * 3 + 2], bezierArc[i * 3 + 3]))
                 }
             case .minus:
-                let a = ph1 - M_PI_2
+                let a = ph1 - 0.5 * Double.pi
                 let bezierArc = BezierArc(-angle).lazy.map { $0 * SDTransform.Rotate(a) * width + current_first }
                 for i in (0..<bezierArc.count / 3).reversed() {
                     buffer.append(.cubic(bezierArc[i * 3 + 1], bezierArc[i * 3 + 2], bezierArc[i * 3 + 3]))

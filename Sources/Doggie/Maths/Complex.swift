@@ -185,7 +185,7 @@ public func asin(_ x: Complex) -> Complex {
 }
 
 public func acos(_ x: Complex) -> Complex {
-    return M_PI_2 - asin(x)
+    return 0.5 * Double.pi - asin(x)
 }
 
 public func atan(_ x: Complex) -> Complex {
@@ -194,7 +194,7 @@ public func atan(_ x: Complex) -> Complex {
 }
 
 public func asec(_ x: Complex) -> Complex {
-    return M_PI_2 - acsc(x)
+    return 0.5 * Double.pi - acsc(x)
 }
 
 public func acsc(_ x: Complex) -> Complex {

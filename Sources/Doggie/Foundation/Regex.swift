@@ -26,7 +26,7 @@
 import Foundation
 
 #if os(macOS) || os(iOS) || os(tvOS) || os(watchOS)
-    private typealias RegularExpression = NSRegularExpression
+    public typealias RegularExpression = NSRegularExpression
 #endif
 
 public struct Regex : Equatable {

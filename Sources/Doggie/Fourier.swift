@@ -38,8 +38,8 @@ public func Fourier(_ buffer: [Double], _ result: inout [Complex]) {
     case 1:
         result = [Complex(buffer[0])]
     case 2:
-        let first = buffer[0] * M_SQRT1_2
-        let second = buffer[1] * M_SQRT1_2
+        let first = buffer[0] * sqrt(0.5)
+        let second = buffer[1] * sqrt(0.5)
         result = [Complex(first + second), Complex(first - second)]
     default:
         if buffer.count.isPower2 {
@@ -54,8 +54,8 @@ public func Fourier(_ buffer: [Complex], _ result: inout [Complex]) {
     case 0, 1:
         result = buffer
     case 2:
-        let first = buffer[0] * M_SQRT1_2
-        let second = buffer[1] * M_SQRT1_2
+        let first = buffer[0] * sqrt(0.5)
+        let second = buffer[1] * sqrt(0.5)
         result = [first + second, first - second]
     default:
         if buffer.count.isPower2 {
@@ -72,8 +72,8 @@ public func InverseFourier(_ buffer: [Double], _ result: inout [Complex]) {
     case 1:
         result = [Complex(buffer[0])]
     case 2:
-        let first = buffer[0] * M_SQRT1_2
-        let second = buffer[1] * M_SQRT1_2
+        let first = buffer[0] * sqrt(0.5)
+        let second = buffer[1] * sqrt(0.5)
         result = [Complex(first + second), Complex(first - second)]
     default:
         if buffer.count.isPower2 {
@@ -88,8 +88,8 @@ public func InverseFourier(_ buffer: [Complex], _ result: inout [Complex]) {
     case 0, 1:
         result = buffer
     case 2:
-        let first = buffer[0] * M_SQRT1_2
-        let second = buffer[1] * M_SQRT1_2
+        let first = buffer[0] * sqrt(0.5)
+        let second = buffer[1] * sqrt(0.5)
         result = [first + second, first - second]
     default:
         if buffer.count.isPower2 {
@@ -483,18 +483,18 @@ public func DCTII(_ buffer: [Double], _ result: inout [Double]) {
     Fourier(temp, &_temp)
     result = [Double](repeating: 0, count: N)
     result[0] = _temp[0].real
-    let _angle = -M_PI_2 / Double(N)
+    let _angle = -0.5 * Double.pi / Double(N)
     for i in 1..<N {
-        result[i] = (_temp[i] * Complex(magnitude: M_SQRT2, phase: _angle * Double(i))).real
+        result[i] = (_temp[i] * Complex(magnitude: sqrt(2), phase: _angle * Double(i))).real
     }
 }
 public func DCTIII(_ buffer: [Double], _ result: inout [Double]) {
     let N = buffer.count
     var temp = [Complex](repeating: Complex(0), count: N)
     temp[0] = Complex(buffer[0])
-    let _angle = -M_PI_2 / Double(N)
+    let _angle = -0.5 * Double.pi / Double(N)
     for i in 1..<N {
-        temp[i] = buffer[i] * Complex(magnitude: M_SQRT2, phase: _angle * Double(i))
+        temp[i] = buffer[i] * Complex(magnitude: sqrt(2), phase: _angle * Double(i))
     }
     var _temp = [Complex]()
     Fourier(temp, &_temp)
@@ -525,9 +525,9 @@ public func DCTIV(_ buffer: [Double], _ result: inout [Double]) {
     }
     Fourier(_temp, &_temp)
     result = [Double](repeating: 0, count: N)
-    let _angle2 = -M_PI_4 / Double(N)
+    let _angle2 = -0.25 * Double.pi / Double(N)
     for i in 0..<N {
-        result[i] = (_temp[i] * Complex(magnitude: M_SQRT2, phase: _angle2 * Double((i << 1) + 1))).real
+        result[i] = (_temp[i] * Complex(magnitude: sqrt(2), phase: _angle2 * Double((i << 1) + 1))).real
     }
 }
 public func DSTII(_ buffer: [Double], _ result: inout [Double]) {
@@ -548,21 +548,21 @@ public func DSTII(_ buffer: [Double], _ result: inout [Double]) {
     }
     Fourier(_temp, &_temp)
     result = [Double](repeating: 0, count: N)
-    let _angle2 = -M_PI_2 / Double(N)
+    let _angle2 = -0.5 * Double.pi / Double(N)
     for i in 0..<N - 1 {
-        result[i] = (_temp[i] * Complex(magnitude: M_SQRT2, phase: _angle2 * Double(i + 1))).imag
+        result[i] = (_temp[i] * Complex(magnitude: sqrt(2), phase: _angle2 * Double(i + 1))).imag
     }
-    result[N - 1] = (_temp[N - 1] * Complex(magnitude: 1, phase: -M_PI_2)).imag
+    result[N - 1] = (_temp[N - 1] * Complex(magnitude: 1, phase: -0.5 * Double.pi)).imag
 }
 public func DSTIII(_ buffer: [Double], _ result: inout [Double]) {
     let N = buffer.count
     var temp = [Complex](repeating: Complex(0), count: N)
     temp[0] = Complex(buffer[0])
-    let _angle = -M_PI_2 / Double(N)
+    let _angle = -0.5 * Double.pi / Double(N)
     for i in 0..<N - 1 {
-        temp[i] = Complex(magnitude: buffer[i] * M_SQRT2, phase: _angle * Double(i + 1))
+        temp[i] = Complex(magnitude: buffer[i] * sqrt(2), phase: _angle * Double(i + 1))
     }
-    temp[N - 1] = Complex(magnitude: buffer[N - 1], phase: -M_PI_2)
+    temp[N - 1] = Complex(magnitude: buffer[N - 1], phase: -0.5 * Double.pi)
     var _temp = [Complex]()
     Fourier(temp, &_temp)
     let _angle2: Double = -2 * Double.pi / Double(N)
@@ -596,9 +596,9 @@ public func DSTIV(_ buffer: [Double], _ result: inout [Double]) {
     }
     Fourier(_temp, &_temp)
     result = [Double](repeating: 0, count: N)
-    let _angle2 = -M_PI_4 / Double(N)
+    let _angle2 = -0.25 * Double.pi / Double(N)
     for i in 0..<N {
-        result[i] = (_temp[i] * Complex(magnitude: M_SQRT2, phase: _angle2 * Double((i << 1) + 1))).imag
+        result[i] = (_temp[i] * Complex(magnitude: sqrt(2), phase: _angle2 * Double((i << 1) + 1))).imag
     }
 }
 

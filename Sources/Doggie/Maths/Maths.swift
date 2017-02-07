@@ -25,9 +25,6 @@
 
 import Foundation
 
-public let M_SQRT3 = 1.7320508075688772935274463415058723669428052538103806
-public let M_SQRT5 = 2.2360679774997896964091736687312762354406183596115257
-
 public func FactorialList<T: UnsignedInteger>(_ n: T) -> LazyScanSequence<RandomAccessSlice<CountableClosedRange<T>>, T> where T.Stride : SignedInteger {
     
     return (0...n).dropFirst().lazy.scan(1, *)

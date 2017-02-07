@@ -605,9 +605,9 @@ func _DCTII(_ buffer: [Double], result: inout [Double]) {
         for i in buffer.indices {
             result[k] += buffer[i] * cos(angle * Double(k) * (Double(i) + 0.5))
         }
-        result[k] *= M_SQRT2 / _sqrt_length
+        result[k] *= sqrt(2) / _sqrt_length
     }
-    result[0] *= M_SQRT1_2
+    result[0] *= sqrt(0.5)
 }
 func _DCTIII(_ buffer: [Double], result: inout [Double]) {
     result = [Double](repeating: 0, count: buffer.count)
@@ -616,12 +616,12 @@ func _DCTIII(_ buffer: [Double], result: inout [Double]) {
     for k in buffer.indices {
         for i in buffer.indices {
             if i == 0 {
-                result[k] += buffer[i] * cos(angle * Double(i) * (Double(k) + 0.5)) * M_SQRT1_2
+                result[k] += buffer[i] * cos(angle * Double(i) * (Double(k) + 0.5)) * sqrt(0.5)
             } else {
                 result[k] += buffer[i] * cos(angle * Double(i) * (Double(k) + 0.5))
             }
         }
-        result[k] *= M_SQRT2 / _sqrt_length
+        result[k] *= sqrt(2) / _sqrt_length
     }
 }
 func _DCTIV(_ buffer: [Double], result: inout [Double]) {
@@ -632,7 +632,7 @@ func _DCTIV(_ buffer: [Double], result: inout [Double]) {
         for i in buffer.indices {
             result[k] += buffer[i] * cos(angle * (Double(i) + 0.5) * (Double(k) + 0.5))
         }
-        result[k] *= M_SQRT2 / _sqrt_length
+        result[k] *= sqrt(2) / _sqrt_length
     }
 }
 func _DSTII(_ buffer: [Double], result: inout [Double]) {
@@ -643,9 +643,9 @@ func _DSTII(_ buffer: [Double], result: inout [Double]) {
         for i in buffer.indices {
             result[k] += buffer[i] * sin(angle * (Double(i) + 0.5) * Double(k + 1))
         }
-        result[k] *= M_SQRT2 / _sqrt_length
+        result[k] *= sqrt(2) / _sqrt_length
     }
-    result[buffer.count - 1] *= M_SQRT1_2
+    result[buffer.count - 1] *= sqrt(0.5)
 }
 func _DSTIII(_ buffer: [Double], result: inout [Double]) {
     result = [Double](repeating: 0, count: buffer.count)
@@ -654,12 +654,12 @@ func _DSTIII(_ buffer: [Double], result: inout [Double]) {
     for k in buffer.indices {
         for i in buffer.indices {
             if i == buffer.count - 1 {
-                result[k] += buffer[i] * sin(angle * Double(i + 1) * (Double(k) + 0.5)) * M_SQRT1_2
+                result[k] += buffer[i] * sin(angle * Double(i + 1) * (Double(k) + 0.5)) * sqrt(0.5)
             } else {
                 result[k] += buffer[i] * sin(angle * Double(i + 1) * (Double(k) + 0.5))
             }
         }
-        result[k] *= M_SQRT2 / _sqrt_length
+        result[k] *= sqrt(2) / _sqrt_length
     }
 }
 func _DSTIV(_ buffer: [Double], result: inout [Double]) {
@@ -670,6 +670,6 @@ func _DSTIV(_ buffer: [Double], result: inout [Double]) {
         for i in buffer.indices {
             result[k] += buffer[i] * sin(angle * (Double(i) + 0.5) * (Double(k) + 0.5))
         }
-        result[k] *= M_SQRT2 / _sqrt_length
+        result[k] *= sqrt(2) / _sqrt_length
     }
 }
