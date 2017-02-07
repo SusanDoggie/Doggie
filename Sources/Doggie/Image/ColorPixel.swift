@@ -36,6 +36,13 @@ public protocol ColorPixelProtocol {
     var alpha: Double { get set }
 }
 
+extension ColorPixelProtocol {
+    
+    public func with(alpha: Double) -> Self {
+        return Self(color: color, alpha: 0)
+    }
+}
+
 extension ColorPixelProtocol where Model : ColorBlendProtocol {
     
     public init() {
@@ -59,6 +66,13 @@ extension ColorPixel {
     public init<C : ColorPixelProtocol>(_ color: C) where Model == C.Model {
         self.color = color.color
         self.alpha = color.alpha
+    }
+}
+
+extension ColorPixelProtocol where Model : ColorBlendProtocol {
+    
+    public init(_ color: ColorPixel<Model>) {
+        self.init(color: color.color, alpha: color.alpha)
     }
 }
 
