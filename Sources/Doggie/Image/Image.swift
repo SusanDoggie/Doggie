@@ -201,24 +201,24 @@ extension Image.ResamplingAlgorithm {
                             case .cubic: filling { smapling4(source: _source, width: s_width, height: s_height, point: $0, sampler: CubicInterpolate) }
                             case let .mitchell(B, C):
                                 
-                                filling { point in
-                                    
-                                    func _kernel(_ x: Double) -> Double {
-                                        if x < 1 {
-                                            let a = 12 - 9 * B - 6 * C
-                                            let b = -18 + 12 * B + 6 * C
-                                            let c = 6 - 2 * B
-                                            return (a * x + b) * x * x + c
-                                        }
-                                        if x < 2 {
-                                            let a = -B - 6 * C
-                                            let b = 6 * B + 30 * C
-                                            let c = -12 * B - 48 * C
-                                            let d = 8 * B + 24 * C
-                                            return ((a * x + b) * x + c) * x + d
-                                        }
-                                        return 0
+                                func _kernel(_ x: Double) -> Double {
+                                    if x < 1 {
+                                        let a = 12 - 9 * B - 6 * C
+                                        let b = -18 + 12 * B + 6 * C
+                                        let c = 6 - 2 * B
+                                        return (a * x + b) * x * x + c
                                     }
+                                    if x < 2 {
+                                        let a = -B - 6 * C
+                                        let b = 6 * B + 30 * C
+                                        let c = -12 * B - 48 * C
+                                        let d = 8 * B + 24 * C
+                                        return ((a * x + b) * x + c) * x + d
+                                    }
+                                    return 0
+                                }
+                                
+                                filling { point in
                                     
                                     var s_color = Pixel.Model()
                                     var s_alpha: Double = 0
@@ -246,24 +246,25 @@ extension Image.ResamplingAlgorithm {
                                     }
                                     return t == 0 ? Pixel() : Pixel(color: s_color.blend { $0 / t }, alpha: s_alpha / t)
                                 }
+                                
                             case let .lanczos(a):
                                 
-                                filling { point in
-                                    
-                                    func _kernel(_ x: Double) -> Double {
-                                        let a = Double(a)
-                                        if x == 0 {
-                                            return 1
-                                        }
-                                        if x < -a {
-                                            return 0
-                                        }
-                                        if x < a {
-                                            let _x = Double.pi * x
-                                            return a * sin(_x) * sin(_x / a) / (_x * _x)
-                                        }
+                                func _kernel(_ x: Double) -> Double {
+                                    let a = Double(a)
+                                    if x == 0 {
+                                        return 1
+                                    }
+                                    if x < -a {
                                         return 0
                                     }
+                                    if x < a {
+                                        let _x = Double.pi * x
+                                        return a * sin(_x) * sin(_x / a) / (_x * _x)
+                                    }
+                                    return 0
+                                }
+                                
+                                filling { point in
                                     
                                     var s_color = Pixel.Model()
                                     var s_alpha: Double = 0
