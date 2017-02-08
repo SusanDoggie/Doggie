@@ -83,6 +83,18 @@ public struct ARGB32ColorPixel : ColorPixelProtocol {
     public var g: UInt8
     public var b: UInt8
     
+    public init(red: UInt8, green: UInt8, blue: UInt8, alpha: UInt8) {
+        self.a = alpha
+        self.r = red
+        self.g = green
+        self.b = blue
+    }
+    public init(_ hex: UInt32) {
+        self.a = UInt8((hex >> 24) & 0xFF)
+        self.r = UInt8((hex >> 16) & 0xFF)
+        self.g = UInt8((hex >> 8) & 0xFF)
+        self.b = UInt8(hex & 0xFF)
+    }
     public init(color: RGBColorModel, alpha: Double) {
         self.a = UInt8((alpha * 255).clamped(to: 0...255))
         self.r = UInt8((color.red * 255).clamped(to: 0...255))
