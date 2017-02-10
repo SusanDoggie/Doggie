@@ -64,8 +64,6 @@
 		08458B471E2E627600D01813 /* SDMarker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AE01E2E627600D01813 /* SDMarker.swift */; };
 		08458B481E2E627600D01813 /* SDEllipse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AE21E2E627600D01813 /* SDEllipse.swift */; };
 		08458B491E2E627600D01813 /* SDEllipse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AE21E2E627600D01813 /* SDEllipse.swift */; };
-		08458B4A1E2E627600D01813 /* SDGraphic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AE31E2E627600D01813 /* SDGraphic.swift */; };
-		08458B4B1E2E627600D01813 /* SDGraphic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AE31E2E627600D01813 /* SDGraphic.swift */; };
 		08458B4C1E2E627600D01813 /* SDPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AE41E2E627600D01813 /* SDPath.swift */; };
 		08458B4D1E2E627600D01813 /* SDPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AE41E2E627600D01813 /* SDPath.swift */; };
 		08458B4E1E2E627600D01813 /* SDPathCoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AE51E2E627600D01813 /* SDPathCoder.swift */; };
@@ -91,6 +89,12 @@
 		087FE5BA1A372D97005A2E9E /* Doggie_Mac.h in Headers */ = {isa = PBXBuildFile; fileRef = 087FE5B91A372D97005A2E9E /* Doggie_Mac.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		087FE5C01A372D97005A2E9E /* Doggie.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 087FE5B51A372D97005A2E9E /* Doggie.framework */; settings = {ATTRIBUTES = (Required, ); }; };
 		08BFF9BC1B07161E00EC88CB /* FourierTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08BFF9B91B0715ED00EC88CB /* FourierTest.swift */; };
+		0A0697581E4D6659005CF664 /* Graphic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0697571E4D6659005CF664 /* Graphic.swift */; };
+		0A0697591E4D6659005CF664 /* Graphic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0697571E4D6659005CF664 /* Graphic.swift */; };
+		0A06975B1E4D66A3005CF664 /* Filter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A06975A1E4D66A3005CF664 /* Filter.swift */; };
+		0A06975C1E4D66A3005CF664 /* Filter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A06975A1E4D66A3005CF664 /* Filter.swift */; };
+		0A06975E1E4D6732005CF664 /* NSImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A06975D1E4D6732005CF664 /* NSImage.swift */; };
+		0A06975F1E4D6732005CF664 /* NSImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A06975D1E4D6732005CF664 /* NSImage.swift */; };
 		0A266E531D6E95C100ABE6B7 /* SDMarkerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A266E521D6E95C100ABE6B7 /* SDMarkerTest.swift */; };
 		0A266E541D6E95C100ABE6B7 /* SDMarkerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A266E521D6E95C100ABE6B7 /* SDMarkerTest.swift */; };
 		0A53E45E1E35AEF80060FB83 /* CollectionExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A53E44D1E35AEF80060FB83 /* CollectionExtension.swift */; };
@@ -170,7 +174,6 @@
 		08458ADF1E2E627600D01813 /* SDAtomicNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SDAtomicNode.swift; sourceTree = "<group>"; };
 		08458AE01E2E627600D01813 /* SDMarker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SDMarker.swift; sourceTree = "<group>"; };
 		08458AE21E2E627600D01813 /* SDEllipse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SDEllipse.swift; sourceTree = "<group>"; };
-		08458AE31E2E627600D01813 /* SDGraphic.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SDGraphic.swift; sourceTree = "<group>"; };
 		08458AE41E2E627600D01813 /* SDPath.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SDPath.swift; sourceTree = "<group>"; };
 		08458AE51E2E627600D01813 /* SDPathCoder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SDPathCoder.swift; sourceTree = "<group>"; };
 		08458AE61E2E627600D01813 /* SDPathPatternStroke.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SDPathPatternStroke.swift; sourceTree = "<group>"; };
@@ -191,6 +194,9 @@
 		087FE5BF1A372D97005A2E9E /* Doggie_MacTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Doggie_MacTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		087FE5C51A372D97005A2E9E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		08BFF9B91B0715ED00EC88CB /* FourierTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FourierTest.swift; sourceTree = "<group>"; };
+		0A0697571E4D6659005CF664 /* Graphic.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Graphic.swift; sourceTree = "<group>"; };
+		0A06975A1E4D66A3005CF664 /* Filter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Filter.swift; sourceTree = "<group>"; };
+		0A06975D1E4D6732005CF664 /* NSImage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSImage.swift; sourceTree = "<group>"; };
 		0A266E521D6E95C100ABE6B7 /* SDMarkerTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SDMarkerTest.swift; sourceTree = "<group>"; };
 		0A53E44D1E35AEF80060FB83 /* CollectionExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CollectionExtension.swift; sourceTree = "<group>"; };
 		0A53E44F1E35AEF80060FB83 /* Date.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Date.swift; sourceTree = "<group>"; };
@@ -310,7 +316,6 @@
 			isa = PBXGroup;
 			children = (
 				08458AE21E2E627600D01813 /* SDEllipse.swift */,
-				08458AE31E2E627600D01813 /* SDGraphic.swift */,
 				08458AE41E2E627600D01813 /* SDPath.swift */,
 				08458AE51E2E627600D01813 /* SDPathCoder.swift */,
 				08458AE61E2E627600D01813 /* SDPathPatternStroke.swift */,
@@ -340,6 +345,7 @@
 				08458AB01E2E627600D01813 /* Accelerate */,
 				08458ABA1E2E627600D01813 /* Foundation */,
 				08458AC31E2E627600D01813 /* Fourier.swift */,
+				0A0697561E4D6659005CF664 /* Graphic */,
 				08458ACE1E2E627600D01813 /* Image */,
 				08458AD41E2E627600D01813 /* Maths */,
 				08458ADF1E2E627600D01813 /* SDAtomicNode.swift */,
@@ -450,6 +456,16 @@
 			);
 			name = Tests;
 			path = Tests/DoggieTests;
+			sourceTree = "<group>";
+		};
+		0A0697561E4D6659005CF664 /* Graphic */ = {
+			isa = PBXGroup;
+			children = (
+				0A06975A1E4D66A3005CF664 /* Filter.swift */,
+				0A0697571E4D6659005CF664 /* Graphic.swift */,
+				0A06975D1E4D6732005CF664 /* NSImage.swift */,
+			);
+			path = Graphic;
 			sourceTree = "<group>";
 		};
 		0A776FC21D9A0BA5005FC88F /* c11_atomic */ = {
@@ -691,14 +707,16 @@
 				08458AF81E2E627600D01813 /* CooleyTukey.swift in Sources */,
 				08458AF01E2E627600D01813 /* AccelerateWrapper.swift in Sources */,
 				08458B541E2E627600D01813 /* SDRectangle.swift in Sources */,
+				0A0697581E4D6659005CF664 /* Graphic.swift in Sources */,
 				08458B381E2E627600D01813 /* Matrix.swift in Sources */,
 				0A53E47E1E35AEF80060FB83 /* String.swift in Sources */,
-				08458B4A1E2E627600D01813 /* SDGraphic.swift in Sources */,
 				0A53E4681E35AEF80060FB83 /* Hashable.swift in Sources */,
 				08458B2C1E2E627600D01813 /* ColorSpace.swift in Sources */,
 				0A53E4621E35AEF80060FB83 /* Date.swift in Sources */,
 				08458AFA1E2E627600D01813 /* DiscreteConvolve.swift in Sources */,
 				0A53E4661E35AEF80060FB83 /* Graph.swift in Sources */,
+				0A06975E1E4D6732005CF664 /* NSImage.swift in Sources */,
+				0A06975B1E4D66A3005CF664 /* Filter.swift in Sources */,
 				08458B2A1E2E627600D01813 /* ColorPixel.swift in Sources */,
 				08458AF21E2E627600D01813 /* Arithmetic.swift in Sources */,
 			);
@@ -759,14 +777,16 @@
 				08458AF91E2E627600D01813 /* CooleyTukey.swift in Sources */,
 				08458AF11E2E627600D01813 /* AccelerateWrapper.swift in Sources */,
 				08458B551E2E627600D01813 /* SDRectangle.swift in Sources */,
+				0A0697591E4D6659005CF664 /* Graphic.swift in Sources */,
 				08458B391E2E627600D01813 /* Matrix.swift in Sources */,
 				0A53E47F1E35AEF80060FB83 /* String.swift in Sources */,
-				08458B4B1E2E627600D01813 /* SDGraphic.swift in Sources */,
 				0A53E4691E35AEF80060FB83 /* Hashable.swift in Sources */,
 				08458B2D1E2E627600D01813 /* ColorSpace.swift in Sources */,
 				0A53E4631E35AEF80060FB83 /* Date.swift in Sources */,
 				08458AFB1E2E627600D01813 /* DiscreteConvolve.swift in Sources */,
 				0A53E4671E35AEF80060FB83 /* Graph.swift in Sources */,
+				0A06975F1E4D6732005CF664 /* NSImage.swift in Sources */,
+				0A06975C1E4D66A3005CF664 /* Filter.swift in Sources */,
 				08458B2B1E2E627600D01813 /* ColorPixel.swift in Sources */,
 				08458AF31E2E627600D01813 /* Arithmetic.swift in Sources */,
 			);
