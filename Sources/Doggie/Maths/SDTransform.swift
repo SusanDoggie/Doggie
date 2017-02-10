@@ -32,7 +32,7 @@ import Foundation
 ///     ⎜ b e 0 ⎟
 ///     ⎝ c f 1 ⎠
 ///
-public protocol SDTransformProtocol {
+public protocol SDTransformProtocol: Hashable {
     
     var a: Double { get }
     var b: Double { get }
@@ -41,9 +41,6 @@ public protocol SDTransformProtocol {
     var e: Double { get }
     var f: Double { get }
     var inverse : Self { get }
-    
-    static func == (_: Self, _: Self) -> Bool
-    static func != (_: Self, _: Self) -> Bool
 }
 
 extension SDTransformProtocol {
@@ -54,6 +51,13 @@ extension SDTransformProtocol {
     
     public var ty: Double {
         return f
+    }
+}
+
+extension SDTransformProtocol {
+    
+    public var hashValue: Int {
+        return hash_combine(seed: 0, a, b, c, d, e, f)
     }
 }
 
