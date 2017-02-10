@@ -39,7 +39,7 @@ public protocol ColorPixelProtocol {
 extension ColorPixelProtocol {
     
     public func with(alpha: Double) -> Self {
-        return Self(color: color, alpha: 0)
+        return Self(color: color, alpha: alpha)
     }
 }
 
