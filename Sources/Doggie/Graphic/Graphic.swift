@@ -117,6 +117,31 @@ extension Rect {
     
     import AppKit
     
+    public extension NSImage {
+        
+        public convenience init(cgImage image: CGImage) {
+            self.init(cgImage: image, size: NSZeroSize)
+        }
+        
+        @available(OSX 10.11, *)
+        public convenience init(ciImage image: CoreImage.CIImage) {
+            self.init(cgImage: CIContext(options: nil).createCGImage(image, from: image.extent)!)
+        }
+        
+        public var cgImage: CGImage? {
+            if let imageData = self.tiffRepresentation, let source = CGImageSourceCreateWithData(imageData as CFData, nil) {
+                return CGImageSourceCreateImageAtIndex(source, 0, nil)
+            }
+            return nil
+        }
+        public var ciImage: CIImage? {
+            if let imageData = self.tiffRepresentation {
+                return CoreImage.CIImage(data: imageData)
+            }
+            return nil
+        }
+    }
+    
     public extension NSBezierPath {
         
         convenience init(_ shape: SDPath) {
@@ -276,4 +301,82 @@ extension Rect {
         }
     }
     
+#endif
+
+#if os(macOS) || os(iOS) || os(tvOS) || os(watchOS)
+    
+    public extension CGImage {
+        
+        static func create(_ buffer: UnsafeMutableRawPointer, width: Int, height: Int, bitsPerComponent: Int, bitsPerPixel: Int, bytesPerRow: Int, space: CGColorSpace, bitmapInfo: UInt32) -> CGImage? {
+            
+            if let providerRef = CGDataProvider(data: Data(bytes: buffer, count: bytesPerRow * height) as CFData) {
+                return CGImage(width: width, height: height, bitsPerComponent: bitsPerComponent, bitsPerPixel: bitsPerPixel, bytesPerRow: bytesPerRow, space: space, bitmapInfo: CGBitmapInfo(rawValue: bitmapInfo), provider: providerRef, decode: nil, shouldInterpolate: false, intent: .defaultIntent)
+            } else {
+                return nil
+            }
+        }
+        
+        func copy(to buffer: UnsafeMutableRawPointer, bitsPerComponent: Int, bytesPerRow: Int, space: CGColorSpace, bitmapInfo: UInt32) {
+            let imageWidth = self.width
+            let imageHeight = self.height
+            if let context = CGContext(data: buffer, width: imageWidth, height: imageHeight, bitsPerComponent: bitsPerComponent, bytesPerRow: bytesPerRow, space: space, bitmapInfo: bitmapInfo) {
+                context.draw(self, in: CGRect(x: 0, y: 0, width: CGFloat(imageWidth), height: CGFloat(imageHeight)))
+            }
+        }
+    }
+    
+    private final class CGPatternCallbackContainer {
+        static var CGPatternCallbackList = [UInt: CGPatternCallbackContainer]()
+        
+        let callback: (CGContext?) -> Void
+        
+        let callbacks_struct: UnsafeMutablePointer<CGPatternCallbacks>
+        
+        init(callback: @escaping (CGContext?) -> Void) {
+            self.callback = callback
+            self.callbacks_struct = UnsafeMutablePointer.allocate(capacity: 1)
+            
+            let id = UInt(bitPattern: ObjectIdentifier(self))
+            CGPatternCallbackContainer.CGPatternCallbackList[id] = self
+            
+            self.callbacks_struct.initialize(to: CGPatternCallbacks(version: 0, drawPattern: {
+                let id = unsafeBitCast($0, to: UInt.self)
+                CGPatternCallbackContainer.CGPatternCallbackList[id]?.callback($1)
+            }, releaseInfo: {
+                let id = unsafeBitCast($0, to: UInt.self)
+                CGPatternCallbackContainer.CGPatternCallbackList[id] = nil
+            }))
+        }
+        
+        deinit {
+            self.callbacks_struct.deinitialize()
+            self.callbacks_struct.deallocate(capacity: 1)
+        }
+    }
+    
+    public func CGPatternCreate(_ bounds: CGRect, _ matrix: CGAffineTransform, _ xStep: CGFloat, _ yStep: CGFloat, _ tiling: CGPatternTiling, _ isColored: Bool, _ callback: @escaping (CGContext?) -> Void) -> CGPattern? {
+        let callbackContainer = CGPatternCallbackContainer(callback: callback)
+        let id = UInt(bitPattern: ObjectIdentifier(callbackContainer))
+        return CGPattern(info: unsafeBitCast(id, to: UnsafeMutableRawPointer.self), bounds: bounds, matrix: matrix, xStep: xStep, yStep: yStep, tiling: tiling, isColored: isColored, callbacks: callbackContainer.callbacks_struct)
+    }
+    
+    public func CGContextClipToDrawing(_ context : CGContext, command: (CGContext) -> Void) {
+        
+        let width = context.width
+        let height = context.height
+        
+        if let maskContext = CGContext(data: nil, width: width, height: height, bitsPerComponent: 8, bytesPerRow: width, space: CGColorSpaceCreateDeviceGray(), bitmapInfo: 0) {
+            maskContext.setFillColor(gray: 0, alpha: 1)
+            maskContext.fill(CGRect(x: 0, y: 0, width: width, height: height))
+            maskContext.setFillColor(gray: 1, alpha: 1)
+            let transform = context.ctm
+            maskContext.concatenate(transform)
+            command(maskContext)
+            let alphaMask = maskContext.makeImage()
+            context.concatenate(transform.inverted())
+            context.clip(to: CGRect(x: 0, y: 0, width: width, height: height), mask: alphaMask!)
+            context.concatenate(transform)
+        }
+    }
+
 #endif
