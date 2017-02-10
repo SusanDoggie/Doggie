@@ -951,6 +951,16 @@ public func *= (lhs: inout Matrix.Translate, rhs: Matrix.Translate) {
     lhs.z += rhs.z
 }
 
+public func == <T: MatrixProtocol>(lhs: T, rhs: T) -> Bool {
+    return lhs.a == rhs.a && lhs.b == rhs.b && lhs.c == rhs.c && lhs.d == rhs.d
+        && lhs.e == rhs.e && lhs.f == rhs.f && lhs.g == rhs.g && lhs.h == rhs.h
+        && lhs.i == rhs.i && lhs.j == rhs.j && lhs.k == rhs.k && lhs.l == rhs.l
+}
+public func != <T: MatrixProtocol>(lhs: T, rhs: T) -> Bool {
+    return lhs.a != rhs.a || lhs.b != rhs.b || lhs.c != rhs.c || lhs.d != rhs.d
+        || lhs.e != rhs.e || lhs.f != rhs.f || lhs.g != rhs.g || lhs.h != rhs.h
+        || lhs.i != rhs.i || lhs.j != rhs.j || lhs.k != rhs.k || lhs.l != rhs.l
+}
 public func == <S: MatrixProtocol, T: MatrixProtocol>(lhs: S, rhs: T) -> Bool {
     return lhs.a == rhs.a && lhs.b == rhs.b && lhs.c == rhs.c && lhs.d == rhs.d
         && lhs.e == rhs.e && lhs.f == rhs.f && lhs.g == rhs.g && lhs.h == rhs.h
