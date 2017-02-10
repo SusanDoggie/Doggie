@@ -33,7 +33,7 @@ import Foundation
 ///     ⎜ c g k 0 ⎟
 ///     ⎝ d h l 1 ⎠
 ///
-public protocol MatrixProtocol {
+public protocol MatrixProtocol: Hashable {
     
     var a: Double { get }
     var b: Double { get }
@@ -48,9 +48,6 @@ public protocol MatrixProtocol {
     var k: Double { get }
     var l: Double { get }
     var inverse : Self { get }
-    
-    static func == (_: Self, _: Self) -> Bool
-    static func != (_: Self, _: Self) -> Bool
 }
 
 extension MatrixProtocol {
@@ -65,6 +62,13 @@ extension MatrixProtocol {
     
     public var tz: Double {
         return l
+    }
+}
+
+extension MatrixProtocol {
+    
+    public var hashValue: Int {
+        return hash_combine(seed: 0, a, b, c, d, e, f, g, h, i, j, k, l)
     }
 }
 
