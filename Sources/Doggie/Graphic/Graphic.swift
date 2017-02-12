@@ -357,7 +357,7 @@ extension Rect {
     public func CGPatternCreate(_ bounds: CGRect, _ matrix: CGAffineTransform, _ xStep: CGFloat, _ yStep: CGFloat, _ tiling: CGPatternTiling, _ isColored: Bool, _ callback: @escaping (CGContext?) -> Void) -> CGPattern? {
         let callbackContainer = CGPatternCallbackContainer(callback: callback)
         let id = UInt(bitPattern: ObjectIdentifier(callbackContainer))
-        return CGPattern(info: unsafeBitCast(id, to: UnsafeMutableRawPointer.self), bounds: bounds, matrix: matrix, xStep: xStep, yStep: yStep, tiling: tiling, isColored: isColored, callbacks: callbackContainer.callbacks_struct)
+        return CGPattern(info: UnsafeMutableRawPointer(bitPattern: id), bounds: bounds, matrix: matrix, xStep: xStep, yStep: yStep, tiling: tiling, isColored: isColored, callbacks: callbackContainer.callbacks_struct)
     }
     
     public func CGContextClipToDrawing(_ context : CGContext, command: (CGContext) -> Void) {
