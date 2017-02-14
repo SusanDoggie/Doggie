@@ -274,16 +274,14 @@ extension CIELabColorSpace {
         let x = fx3 > s ? fx3 : t * (116 * fx - 16)
         let y = color.lightness > st ? fy * fy * fy : t * color.lightness
         let z = fz3 > s ? fz3 : t * (116 * fz - 16)
-        let white = cieXYZ.normalized.white.point
-        let _white = XYZColorModel(luminance: 1, x: white.x, y: white.y)
+        let _white = XYZColorModel(luminance: 1, point: cieXYZ.normalized.white.point)
         return XYZColorModel(x: x * _white.x, y: y * _white.y, z: z * _white.z)
     }
     
     public func convertFromXYZ(_ color: XYZColorModel) -> Model {
         let s = 216.0 / 24389.0
         let t = 24389.0 / 27.0
-        let white = cieXYZ.normalized.white.point
-        let _white = XYZColorModel(luminance: 1, x: white.x, y: white.y)
+        let _white = XYZColorModel(luminance: 1, point: cieXYZ.normalized.white.point)
         let x = color.x / _white.x
         let y = color.y / _white.y
         let z = color.z / _white.z
@@ -333,8 +331,7 @@ extension CIELuvColorSpace {
     public func convertToXYZ(_ color: Model) -> XYZColorModel {
         let t = 27.0 / 24389.0
         let st = 216.0 / 27.0
-        let white = cieXYZ.normalized.white.point
-        let _white = XYZColorModel(luminance: 1, x: white.x, y: white.y)
+        let _white = XYZColorModel(luminance: 1, point: cieXYZ.normalized.white.point)
         let n = 1 / (_white.x + 15 * _white.y + 3 * _white.z)
         let _uw = 4 * _white.x * n
         let _vw = 9 * _white.y * n
@@ -350,8 +347,7 @@ extension CIELuvColorSpace {
     public func convertFromXYZ(_ color: XYZColorModel) -> Model {
         let s = 216.0 / 24389.0
         let t = 24389.0 / 27.0
-        let white = cieXYZ.normalized.white.point
-        let _white = XYZColorModel(luminance: 1, x: white.x, y: white.y)
+        let _white = XYZColorModel(luminance: 1, point: cieXYZ.normalized.white.point)
         let m = 1 / (color.x + 15 * color.y + 3 * color.z)
         let n = 1 / (_white.x + 15 * _white.y + 3 * _white.z)
         let y = color.y / _white.y
