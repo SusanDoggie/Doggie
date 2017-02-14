@@ -162,7 +162,12 @@ public struct CIEXYZColorSpace : ColorSpaceProtocol {
 extension CIEXYZColorSpace : LinearColorSpaceProtocol {
     
     public var cieXYZ: CIEXYZColorSpace {
-        return self
+        get {
+            return self
+        }
+        set {
+            self = newValue
+        }
     }
     
     public func convertToXYZ(_ color: Model) -> XYZColorModel {
@@ -225,13 +230,23 @@ public struct CIELabColorSpace : ColorSpaceProtocol {
     
     public typealias Model = LabColorModel
     
-    public let cieXYZ: CIEXYZColorSpace
+    public var cieXYZ: CIEXYZColorSpace
     
     public var white: XYZColorModel {
-        return cieXYZ.white
+        get {
+            return cieXYZ.white
+        }
+        set {
+            cieXYZ.white = newValue
+        }
     }
     public var black: XYZColorModel {
-        return cieXYZ.black
+        get {
+            return cieXYZ.black
+        }
+        set {
+            cieXYZ.black = newValue
+        }
     }
     
     public init(white: Point) {
@@ -283,13 +298,23 @@ public struct CIELuvColorSpace : ColorSpaceProtocol {
     
     public typealias Model = LuvColorModel
     
-    public let cieXYZ: CIEXYZColorSpace
+    public var cieXYZ: CIEXYZColorSpace
     
     public var white: XYZColorModel {
-        return cieXYZ.white
+        get {
+            return cieXYZ.white
+        }
+        set {
+            cieXYZ.white = newValue
+        }
     }
     public var black: XYZColorModel {
-        return cieXYZ.black
+        get {
+            return cieXYZ.black
+        }
+        set {
+            cieXYZ.black = newValue
+        }
     }
     
     public init(white: Point) {
