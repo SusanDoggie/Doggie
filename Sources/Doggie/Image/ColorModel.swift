@@ -439,8 +439,7 @@ extension XYZColorModel {
             return y
         }
         set {
-            let _p = self.point
-            self = XYZColorModel(luminance: newValue, x: _p.x, y: _p.y)
+            self = XYZColorModel(luminance: newValue, point: point)
         }
     }
     
@@ -449,7 +448,7 @@ extension XYZColorModel {
             return Point(x: x, y: y) / (x + y + z)
         }
         set {
-            self = XYZColorModel(luminance: luminance, x: newValue.x, y: newValue.y)
+            self = XYZColorModel(luminance: luminance, point: newValue)
         }
     }
 }
