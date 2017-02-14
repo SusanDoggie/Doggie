@@ -225,25 +225,27 @@ public struct CIELabColorSpace : ColorSpaceProtocol {
     
     public typealias Model = LabColorModel
     
-    public var white: Point
+    public let cieXYZ: CIEXYZColorSpace
+    
+    public var white: XYZColorModel {
+        return cieXYZ.white
+    }
+    public var black: XYZColorModel {
+        return cieXYZ.black
+    }
     
     public init(white: Point) {
-        self.white = white
+        self.cieXYZ = CIEXYZColorSpace(white: white)
+    }
+    public init(white: XYZColorModel, black: XYZColorModel) {
+        self.cieXYZ = CIEXYZColorSpace(white: white, black: black)
+    }
+    public init(_ cieXYZ: CIEXYZColorSpace) {
+        self.cieXYZ = cieXYZ
     }
 }
 
 extension CIELabColorSpace {
-    
-    public init(_ xyz: CIEXYZColorSpace) {
-        self.init(white: XYZColorModel(xyz.white * xyz.normalizeMatrix).point)
-    }
-}
-
-extension CIELabColorSpace {
-    
-    public var cieXYZ: CIEXYZColorSpace {
-        return CIEXYZColorSpace(white: white)
-    }
     
     public func convertToXYZ(_ color: Model) -> XYZColorModel {
         let s = 216.0 / 24389.0
@@ -257,6 +259,7 @@ extension CIELabColorSpace {
         let x = fx3 > s ? fx3 : t * (116 * fx - 16)
         let y = color.lightness > st ? fy * fy * fy : t * color.lightness
         let z = fz3 > s ? fz3 : t * (116 * fz - 16)
+        let white = cieXYZ.normalized.white.point
         let _white = XYZColorModel(luminance: 1, x: white.x, y: white.y)
         return XYZColorModel(x: x * _white.x, y: y * _white.y, z: z * _white.z)
     }
@@ -264,6 +267,7 @@ extension CIELabColorSpace {
     public func convertFromXYZ(_ color: XYZColorModel) -> Model {
         let s = 216.0 / 24389.0
         let t = 24389.0 / 27.0
+        let white = cieXYZ.normalized.white.point
         let _white = XYZColorModel(luminance: 1, x: white.x, y: white.y)
         let x = color.x / _white.x
         let y = color.y / _white.y
@@ -279,29 +283,32 @@ public struct CIELuvColorSpace : ColorSpaceProtocol {
     
     public typealias Model = LuvColorModel
     
-    public var white: Point
+    public let cieXYZ: CIEXYZColorSpace
+    
+    public var white: XYZColorModel {
+        return cieXYZ.white
+    }
+    public var black: XYZColorModel {
+        return cieXYZ.black
+    }
     
     public init(white: Point) {
-        self.white = white
+        self.cieXYZ = CIEXYZColorSpace(white: white)
+    }
+    public init(white: XYZColorModel, black: XYZColorModel) {
+        self.cieXYZ = CIEXYZColorSpace(white: white, black: black)
+    }
+    public init(_ cieXYZ: CIEXYZColorSpace) {
+        self.cieXYZ = cieXYZ
     }
 }
 
 extension CIELuvColorSpace {
-    
-    public init(_ xyz: CIEXYZColorSpace) {
-        self.init(white: XYZColorModel(xyz.white * xyz.normalizeMatrix).point)
-    }
-}
-
-extension CIELuvColorSpace {
-    
-    public var cieXYZ: CIEXYZColorSpace {
-        return CIEXYZColorSpace(white: white)
-    }
     
     public func convertToXYZ(_ color: Model) -> XYZColorModel {
         let t = 27.0 / 24389.0
         let st = 216.0 / 27.0
+        let white = cieXYZ.normalized.white.point
         let _white = XYZColorModel(luminance: 1, x: white.x, y: white.y)
         let n = 1 / (_white.x + 15 * _white.y + 3 * _white.z)
         let _uw = 4 * _white.x * n
@@ -318,6 +325,7 @@ extension CIELuvColorSpace {
     public func convertFromXYZ(_ color: XYZColorModel) -> Model {
         let s = 216.0 / 24389.0
         let t = 24389.0 / 27.0
+        let white = cieXYZ.normalized.white.point
         let _white = XYZColorModel(luminance: 1, x: white.x, y: white.y)
         let m = 1 / (color.x + 15 * color.y + 3 * color.z)
         let n = 1 / (_white.x + 15 * _white.y + 3 * _white.z)
@@ -337,6 +345,13 @@ public class CalibratedRGBColorSpace : LinearColorSpaceProtocol {
     
     public let cieXYZ: CIEXYZColorSpace
     public let transferMatrix: Matrix
+    
+    public var white: XYZColorModel {
+        return cieXYZ.white
+    }
+    public var black: XYZColorModel {
+        return cieXYZ.black
+    }
     
     public init(white: XYZColorModel, black: XYZColorModel, red: XYZColorModel, green: XYZColorModel, blue: XYZColorModel) {
         self.cieXYZ = CIEXYZColorSpace(white: white, black: black)
