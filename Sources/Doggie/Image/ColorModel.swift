@@ -139,6 +139,12 @@ extension RGBColorModel {
 
 extension RGBColorModel {
     
+    public init(_ gray: GrayColorModel) {
+        self.red = gray.white
+        self.green = gray.white
+        self.blue = gray.white
+    }
+    
     public init(_ cmyk: CMYKColorModel) {
         let _k = 1 - cmyk.black
         let _cyan = cmyk.cyan * _k + cmyk.black
@@ -278,6 +284,13 @@ extension CMYKColorModel : ColorBlendProtocol {
 }
 
 extension CMYKColorModel {
+    
+    public init(_ gray: GrayColorModel) {
+        self.cyan = 0
+        self.magenta = 0
+        self.yellow = 0
+        self.black = 1 - gray.white
+    }
     
     public init(_ rgb: RGBColorModel) {
         let _cyan = 1 - rgb.red
