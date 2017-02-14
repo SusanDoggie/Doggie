@@ -420,6 +420,10 @@ public struct XYZColorModel : ColorModelProtocol {
         self.z = z
     }
     
+    public init(luminance: Double, point: Point) {
+        self.init(luminance: luminance, x: point.x, y: point.y)
+    }
+    
     public init(luminance: Double, x: Double, y: Double) {
         let _y = 1 / y
         self.x = x * _y * luminance
