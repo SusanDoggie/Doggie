@@ -597,7 +597,7 @@ private extension SDPath.Command {
             
             var currentState = currentState
             let str: String
-            if isSmooth(p2, relative, lastControl) && (8...11).contains(currentState) {
+            if isSmooth(p2, relative, lastControl) && 8...11 ~= currentState {
                 if currentState == 8 {
                     str = getPathDataString(nil, p2.x, p2.y)
                 } else {
@@ -617,7 +617,7 @@ private extension SDPath.Command {
             
             var currentState = currentState
             let str: String
-            if isSmooth(p3, relative, lastControl) && (12...15).contains(currentState) {
+            if isSmooth(p3, relative, lastControl) && 12...15 ~= currentState {
                 if currentState == 12 {
                     str = getPathDataString(nil, p2.x, p2.y, p3.x, p3.y)
                 } else {
@@ -673,7 +673,7 @@ private extension SDPath.Command {
             
             var currentState = currentState
             let str: String
-            if isSmooth(p2, relative, lastControl) && (8...11).contains(currentState) {
+            if isSmooth(p2, relative, lastControl) && 8...11 ~= currentState {
                 if currentState == 9 {
                     str = getPathDataString(nil, p2.x - relative.x, p2.y - relative.y)
                 } else {
@@ -693,7 +693,7 @@ private extension SDPath.Command {
             
             var currentState = currentState
             let str: String
-            if isSmooth(p3, relative, lastControl) && (12...15).contains(currentState) {
+            if isSmooth(p3, relative, lastControl) && 12...15 ~= currentState {
                 if currentState == 13 {
                     str = getPathDataString(nil, p2.x - relative.x, p2.y - relative.y, p3.x - relative.x, p3.y - relative.y)
                 } else {

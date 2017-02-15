@@ -247,7 +247,7 @@ extension SDPath {
                 flag2 = true
                 return
             }
-            if let stationary = QuadBezierStationary(p0.x, p1.x, p2.x), !stationary.almostZero() && !stationary.almostEqual(1) && (0...1).contains(stationary) {
+            if let stationary = QuadBezierStationary(p0.x, p1.x, p2.x), !stationary.almostZero() && !stationary.almostEqual(1) && 0...1 ~= stationary {
                 let (left, right) = SplitBezier(stationary, p0, p1, p2)
                 addBezier(left[0], left[1], left[2])
                 addBezier(right[0], right[1], right[2])
@@ -294,7 +294,7 @@ extension SDPath {
                 }
                 let x_poly = Bezier(_p0.x, _p1.x, _p2.x).polynomial
                 if z.x > 0 {
-                    let _mid_t = (x_poly - current_endX / fitting.total).roots.filter { !$0.almostZero() && !$0.almostEqual(1) && (0...1).contains($0) }.sorted().first ?? 1
+                    let _mid_t = (x_poly - current_endX / fitting.total).roots.filter { !$0.almostZero() && !$0.almostEqual(1) && 0...1 ~= $0 }.sorted().first ?? 1
                     let (left, right) = SplitBezier(_mid_t, _p0, _p1, _p2)
                     let segment_points = current_segment.points
                     let a = [Point(x: 0, y: _p0.y), Point(x: (left[1].x - _p0.x) / z.x, y: left[1].y), Point(x: 1, y: left[2].y)]
@@ -328,7 +328,7 @@ extension SDPath {
                         _startX = current_startX
                         segment_points = current_segment.points
                     }
-                    let _mid_t = (x_poly - _startX / fitting.total).roots.filter { !$0.almostZero() && !$0.almostEqual(1) && (0...1).contains($0) }.sorted().first ?? 1
+                    let _mid_t = (x_poly - _startX / fitting.total).roots.filter { !$0.almostZero() && !$0.almostEqual(1) && 0...1 ~= $0 }.sorted().first ?? 1
                     let (left, right) = SplitBezier(_mid_t, _p0, _p1, _p2)
                     let a = [Point(x: 0, y: -_p0.y), Point(x: (left[1].x - _p0.x) / z.x, y: -left[1].y), Point(x: 1, y: -left[2].y)]
                     switch segment_points.count {
@@ -359,7 +359,7 @@ extension SDPath {
                 flag2 = true
                 return
             }
-            let stationary = CubicBezierStationary(p0.x, p1.x, p2.x, p3.x).filter { !$0.almostZero() && !$0.almostEqual(1) && (0...1).contains($0) }.sorted()
+            let stationary = CubicBezierStationary(p0.x, p1.x, p2.x, p3.x).filter { !$0.almostZero() && !$0.almostEqual(1) && 0...1 ~= $0 }.sorted()
             if stationary.count != 0 {
                 let q = SplitBezier(stationary, p0, p1, p2, p3)
                 for item in q {
@@ -408,7 +408,7 @@ extension SDPath {
                 }
                 let x_poly = Bezier(_p0.x, _p1.x, _p2.x, _p3.x).polynomial
                 if z.x > 0 {
-                    let _mid_t = (x_poly - current_endX / fitting.total).roots.filter { !$0.almostZero() && !$0.almostEqual(1) && (0...1).contains($0) }.sorted().first ?? 1
+                    let _mid_t = (x_poly - current_endX / fitting.total).roots.filter { !$0.almostZero() && !$0.almostEqual(1) && 0...1 ~= $0 }.sorted().first ?? 1
                     let (left, right) = SplitBezier(_mid_t, _p0, _p1, _p2, _p3)
                     let segment_points = current_segment.points
                     let a = [Point(x: 0, y: _p0.y), Point(x: (left[1].x - _p0.x) / z.x, y: left[1].y), Point(x: (left[2].x - _p0.x) / z.x, y: left[2].y), Point(x: 1, y: left[3].y)]
@@ -443,7 +443,7 @@ extension SDPath {
                         _startX = current_startX
                         segment_points = current_segment.points
                     }
-                    let _mid_t = (x_poly - _startX / fitting.total).roots.filter { !$0.almostZero() && !$0.almostEqual(1) && (0...1).contains($0) }.sorted().first ?? 1
+                    let _mid_t = (x_poly - _startX / fitting.total).roots.filter { !$0.almostZero() && !$0.almostEqual(1) && 0...1 ~= $0 }.sorted().first ?? 1
                     let (left, right) = SplitBezier(_mid_t, _p0, _p1, _p2, _p3)
                     let a = [Point(x: 0, y: -_p0.y), Point(x: (left[1].x - _p0.x) / z.x, y: -left[1].y), Point(x: (left[2].x - _p0.x) / z.x, y: -left[2].y), Point(x: 1, y: -left[3].y)]
                     switch segment_points.count {

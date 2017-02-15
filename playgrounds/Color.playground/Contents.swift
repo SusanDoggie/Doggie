@@ -42,7 +42,7 @@ for j in 0..<size {
         let x = 256 * Double(i) / Double(size) - 128
         let y = 256 * Double(j) / Double(size) - 128
         let rgb = lab.convert(LabColorModel(lightness: 50, a: x, b: y), to: srgb)
-        if (0...1).contains(rgb.red) && (0...1).contains(rgb.green) && (0...1).contains(rgb.blue) {
+        if 0...1 ~= rgb.red && 0...1 ~= rgb.green && 0...1 ~= rgb.blue {
             let red = UInt32(rgb.red * Double(UInt8.max))
             let green = UInt32(rgb.green * Double(UInt8.max))
             let blue = UInt32(rgb.blue * Double(UInt8.max))
@@ -64,7 +64,7 @@ for j in 0..<size {
         let x = 256 * Double(i) / Double(size) - 128
         let y = 256 * Double(j) / Double(size) - 128
         let rgb = luv.convert(LuvColorModel(lightness: 50, u: x, v: y), to: srgb)
-        if (0...1).contains(rgb.red) && (0...1).contains(rgb.green) && (0...1).contains(rgb.blue) {
+        if 0...1 ~= rgb.red && 0...1 ~= rgb.green && 0...1 ~= rgb.blue {
             let red = UInt32(rgb.red * Double(UInt8.max))
             let green = UInt32(rgb.green * Double(UInt8.max))
             let blue = UInt32(rgb.blue * Double(UInt8.max))

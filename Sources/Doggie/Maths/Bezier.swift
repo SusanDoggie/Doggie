@@ -822,7 +822,7 @@ private func BezierOffset(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point, _ 
     }
     
     if inflection_check && limit > 0 {
-        let inflection = CubicBezierInflection(p0, p1, p2, p3).filter { !$0.almostZero() && !$0.almostEqual(1) && (0...1).contains($0) }
+        let inflection = CubicBezierInflection(p0, p1, p2, p3).filter { !$0.almostZero() && !$0.almostEqual(1) && 0...1 ~= $0 }
         switch inflection.count {
         case 1: return split(inflection[0])
         case 2:
