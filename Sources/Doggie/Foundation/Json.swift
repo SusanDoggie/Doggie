@@ -423,6 +423,13 @@ extension Json {
         }
     }
     
+    public var keys: LazyMapCollection<Dictionary<String, Any>, String> {
+        switch self.value {
+        case let dictionary as [String: Any]: return dictionary.keys
+        default: fatalError("Not an object.")
+        }
+    }
+    
     public subscript(key: String) -> Json {
         get {
             if case let dictionary as [String: Any] = self.value {

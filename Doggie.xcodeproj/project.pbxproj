@@ -125,6 +125,12 @@
 		0A776FC61D9A0BA5005FC88F /* c11_atomic.h in Headers */ = {isa = PBXBuildFile; fileRef = 0A776FC31D9A0BA5005FC88F /* c11_atomic.h */; };
 		0A8D98A51E53EE310050E112 /* ImageTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A8D98A21E53ED0F0050E112 /* ImageTest.swift */; };
 		0A8D98A61E53EE310050E112 /* ImageTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A8D98A21E53ED0F0050E112 /* ImageTest.swift */; };
+		0A9AA8401E543748007A2B92 /* PDFDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9AA83F1E543748007A2B92 /* PDFDocument.swift */; };
+		0A9AA8411E543748007A2B92 /* PDFDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9AA83F1E543748007A2B92 /* PDFDocument.swift */; };
+		0A9AA8431E543B11007A2B92 /* PDFObjectIdentifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9AA8421E543B11007A2B92 /* PDFObjectIdentifier.swift */; };
+		0A9AA8441E543B11007A2B92 /* PDFObjectIdentifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9AA8421E543B11007A2B92 /* PDFObjectIdentifier.swift */; };
+		0A9AA8461E543B6A007A2B92 /* PDFValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9AA8451E543B6A007A2B92 /* PDFValue.swift */; };
+		0A9AA8471E543B6A007A2B92 /* PDFValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9AA8451E543B6A007A2B92 /* PDFValue.swift */; };
 		0AFCA1501D9E1F130034AB10 /* AtomicTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AFCA14F1D9E1F130034AB10 /* AtomicTest.swift */; };
 		0AFCA1511D9E1F130034AB10 /* AtomicTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AFCA14F1D9E1F130034AB10 /* AtomicTest.swift */; };
 /* End PBXBuildFile section */
@@ -215,6 +221,9 @@
 		0A776FC31D9A0BA5005FC88F /* c11_atomic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = c11_atomic.h; sourceTree = "<group>"; };
 		0A776FC41D9A0BA5005FC88F /* module.modulemap */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = "sourcecode.module-map"; path = module.modulemap; sourceTree = "<group>"; };
 		0A8D98A21E53ED0F0050E112 /* ImageTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageTest.swift; sourceTree = "<group>"; };
+		0A9AA83F1E543748007A2B92 /* PDFDocument.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PDFDocument.swift; sourceTree = "<group>"; };
+		0A9AA8421E543B11007A2B92 /* PDFObjectIdentifier.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PDFObjectIdentifier.swift; sourceTree = "<group>"; };
+		0A9AA8451E543B6A007A2B92 /* PDFValue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PDFValue.swift; sourceTree = "<group>"; };
 		0AFCA14F1D9E1F130034AB10 /* AtomicTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AtomicTest.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -351,6 +360,7 @@
 				0A0697561E4D6659005CF664 /* Graphic */,
 				08458ACE1E2E627600D01813 /* Image */,
 				08458AD41E2E627600D01813 /* Maths */,
+				0A9AA83E1E54373E007A2B92 /* PDF */,
 				08458ADF1E2E627600D01813 /* SDAtomicNode.swift */,
 				08458AE01E2E627600D01813 /* SDMarker.swift */,
 				08458AE11E2E627600D01813 /* SDShape */,
@@ -481,6 +491,16 @@
 			name = c11_atomic;
 			path = Sources/c11_atomic/include;
 			sourceTree = SOURCE_ROOT;
+		};
+		0A9AA83E1E54373E007A2B92 /* PDF */ = {
+			isa = PBXGroup;
+			children = (
+				0A9AA83F1E543748007A2B92 /* PDFDocument.swift */,
+				0A9AA8421E543B11007A2B92 /* PDFObjectIdentifier.swift */,
+				0A9AA8451E543B6A007A2B92 /* PDFValue.swift */,
+			);
+			path = PDF;
+			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
@@ -677,6 +697,7 @@
 				08458B481E2E627600D01813 /* SDEllipse.swift in Sources */,
 				08458B441E2E627600D01813 /* SDAtomicNode.swift in Sources */,
 				0A53E45E1E35AEF80060FB83 /* CollectionExtension.swift in Sources */,
+				0A9AA8401E543748007A2B92 /* PDFDocument.swift in Sources */,
 				08458B301E2E627600D01813 /* Bezier.swift in Sources */,
 				08458B421E2E627600D01813 /* Vector.swift in Sources */,
 				08458B361E2E627600D01813 /* Maths.swift in Sources */,
@@ -696,6 +717,7 @@
 				08458B261E2E627600D01813 /* Color.swift in Sources */,
 				08458B4C1E2E627600D01813 /* SDPath.swift in Sources */,
 				0A53E47A1E35AEF80060FB83 /* Random.swift in Sources */,
+				0A9AA8431E543B11007A2B92 /* PDFObjectIdentifier.swift in Sources */,
 				08458AFC1E2E627600D01813 /* Move.swift in Sources */,
 				08458B5A1E2E627600D01813 /* AtomicQueue.swift in Sources */,
 				08458B321E2E627600D01813 /* Complex.swift in Sources */,
@@ -708,6 +730,7 @@
 				08458AF41E2E627600D01813 /* CircularConvolve.swift in Sources */,
 				08458B121E2E627600D01813 /* Fourier.swift in Sources */,
 				08458B601E2E627600D01813 /* SDThread.swift in Sources */,
+				0A9AA8461E543B6A007A2B92 /* PDFValue.swift in Sources */,
 				08458AF81E2E627600D01813 /* CooleyTukey.swift in Sources */,
 				08458AF01E2E627600D01813 /* AccelerateWrapper.swift in Sources */,
 				08458B541E2E627600D01813 /* SDRectangle.swift in Sources */,
@@ -748,6 +771,7 @@
 				08458B491E2E627600D01813 /* SDEllipse.swift in Sources */,
 				08458B451E2E627600D01813 /* SDAtomicNode.swift in Sources */,
 				0A53E45F1E35AEF80060FB83 /* CollectionExtension.swift in Sources */,
+				0A9AA8411E543748007A2B92 /* PDFDocument.swift in Sources */,
 				08458B311E2E627600D01813 /* Bezier.swift in Sources */,
 				08458B431E2E627600D01813 /* Vector.swift in Sources */,
 				08458B371E2E627600D01813 /* Maths.swift in Sources */,
@@ -767,6 +791,7 @@
 				08458B271E2E627600D01813 /* Color.swift in Sources */,
 				08458B4D1E2E627600D01813 /* SDPath.swift in Sources */,
 				0A53E47B1E35AEF80060FB83 /* Random.swift in Sources */,
+				0A9AA8441E543B11007A2B92 /* PDFObjectIdentifier.swift in Sources */,
 				08458AFD1E2E627600D01813 /* Move.swift in Sources */,
 				08458B5B1E2E627600D01813 /* AtomicQueue.swift in Sources */,
 				08458B331E2E627600D01813 /* Complex.swift in Sources */,
@@ -779,6 +804,7 @@
 				08458AF51E2E627600D01813 /* CircularConvolve.swift in Sources */,
 				08458B131E2E627600D01813 /* Fourier.swift in Sources */,
 				08458B611E2E627600D01813 /* SDThread.swift in Sources */,
+				0A9AA8471E543B6A007A2B92 /* PDFValue.swift in Sources */,
 				08458AF91E2E627600D01813 /* CooleyTukey.swift in Sources */,
 				08458AF11E2E627600D01813 /* AccelerateWrapper.swift in Sources */,
 				08458B551E2E627600D01813 /* SDRectangle.swift in Sources */,
