@@ -913,7 +913,7 @@ private func BezierVariableOffset(_ p0: Point, _ p1: Point, _ p2: Point, _ a: [P
     let length = QuadBezierLength(1, p0, p1, p2)
     
     func split_a(_ mid_length: Double) -> ([Point], [Point]) {
-        let t = (Bezier(a.map { $0.x }).polynomial - mid_length / length).roots.first { !$0.almostZero() && !$0.almostEqual(1) && (0...1).contains($0) } ?? mid_length / length
+        let t = (Bezier(a.map { $0.x }).polynomial - mid_length / length).roots.first { !$0.almostZero() && !$0.almostEqual(1) && 0...1 ~= $0 } ?? mid_length / length
         let (a_left, a_right) = SplitBezier(t, a)
         let a_left_last = a_left.last!
         let a_right_first = a_right.first!
@@ -966,7 +966,7 @@ private func BezierVariableOffset(_ p0: Point, _ p1: Point, _ p2: Point, _ a: [P
             if limit > 0 {
                 return split_half()
             } else {
-                let t = a.count == 2 ? half_length / length : (Bezier(a.map { $0.x }).polynomial - half_length / length).roots.first { !$0.almostZero() && !$0.almostEqual(1) && (0...1).contains($0) } ?? half_length / length
+                let t = a.count == 2 ? half_length / length : (Bezier(a.map { $0.x }).polynomial - half_length / length).roots.first { !$0.almostZero() && !$0.almostEqual(1) && 0...1 ~= $0 } ?? half_length / length
                 let g = BezierPoint(t, a)
                 let m = BezierPoint(0.5, q0, q1)
                 let _s = 1 / m.magnitude
