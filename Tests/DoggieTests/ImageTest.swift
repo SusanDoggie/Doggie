@@ -44,42 +44,44 @@ class ImageTest: XCTestCase {
         
         var sample = Image(width: 100, height: 100, pixel: ARGB32ColorPixel(), colorSpace: srgb)
         
-        if #available(OSX 10.12, *) {
-            let _colorspace = CGColorSpace(name: CGColorSpace.linearSRGB) ?? CGColorSpaceCreateDeviceRGB()
-            let _bitmapInfo = CGBitmapInfo.byteOrder32Big.rawValue | CGImageAlphaInfo.premultipliedFirst.rawValue
-            
-            func createImage(data rawData: UnsafeRawPointer, size: CGSize) -> CGImage? {
+        #if os(macOS)
+            if #available(OSX 10.12, *) {
+                let _colorspace = CGColorSpace(name: CGColorSpace.linearSRGB) ?? CGColorSpaceCreateDeviceRGB()
+                let _bitmapInfo = CGBitmapInfo.byteOrder32Big.rawValue | CGImageAlphaInfo.premultipliedFirst.rawValue
                 
-                let imageWidth = Int(size.width)
-                let imageHeight = Int(size.height)
-                
-                let bitsPerComponent: Int = 8
-                let bytesPerPixel: Int = 4
-                let bitsPerPixel: Int = bytesPerPixel * bitsPerComponent
-                
-                let bytesPerRow = bytesPerPixel * imageWidth
-                
-                return CGImage.create(rawData, width: imageWidth, height: imageHeight, bitsPerComponent: bitsPerComponent, bitsPerPixel: bitsPerPixel, bytesPerRow: bytesPerRow, space: _colorspace, bitmapInfo: _bitmapInfo)
-            }
-            
-            sample.withUnsafeMutableBytes {
-                if let context = CGContext(data: $0.baseAddress!, width: 100, height: 100, bitsPerComponent: 8, bytesPerRow: 400, space: _colorspace, bitmapInfo: _bitmapInfo) {
+                func createImage(data rawData: UnsafeRawPointer, size: CGSize) -> CGImage? {
                     
-                    context.setStrokeColor(NSColor.black.cgColor)
-                    context.setFillColor(NSColor(calibratedRed: 247/255, green: 217/255, blue: 12/255, alpha: 1).cgColor)
+                    let imageWidth = Int(size.width)
+                    let imageHeight = Int(size.height)
                     
-                    context.fillEllipse(in: CGRect(x: 10, y: 35, width: 55, height: 55))
-                    context.strokeEllipse(in: CGRect(x: 10, y: 35, width: 55, height: 55))
+                    let bitsPerComponent: Int = 8
+                    let bytesPerPixel: Int = 4
+                    let bitsPerPixel: Int = bytesPerPixel * bitsPerComponent
                     
-                    context.setFillColor(NSColor(calibratedRed: 234/255, green: 24/255, blue: 71/255, alpha: 1).cgColor)
+                    let bytesPerRow = bytesPerPixel * imageWidth
                     
-                    context.fillEllipse(in: CGRect(x: 35, y: 10, width: 55, height: 55))
-                    context.strokeEllipse(in: CGRect(x: 35, y: 10, width: 55, height: 55))
-                    
+                    return CGImage.create(rawData, width: imageWidth, height: imageHeight, bitsPerComponent: bitsPerComponent, bitsPerPixel: bitsPerPixel, bytesPerRow: bytesPerRow, space: _colorspace, bitmapInfo: _bitmapInfo)
                 }
+                
+                sample.withUnsafeMutableBytes {
+                    if let context = CGContext(data: $0.baseAddress!, width: 100, height: 100, bitsPerComponent: 8, bytesPerRow: 400, space: _colorspace, bitmapInfo: _bitmapInfo) {
+                        
+                        context.setStrokeColor(NSColor.black.cgColor)
+                        context.setFillColor(NSColor(calibratedRed: 247/255, green: 217/255, blue: 12/255, alpha: 1).cgColor)
+                        
+                        context.fillEllipse(in: CGRect(x: 10, y: 35, width: 55, height: 55))
+                        context.strokeEllipse(in: CGRect(x: 10, y: 35, width: 55, height: 55))
+                        
+                        context.setFillColor(NSColor(calibratedRed: 234/255, green: 24/255, blue: 71/255, alpha: 1).cgColor)
+                        
+                        context.fillEllipse(in: CGRect(x: 35, y: 10, width: 55, height: 55))
+                        context.strokeEllipse(in: CGRect(x: 35, y: 10, width: 55, height: 55))
+                        
+                    }
+                }
+                
             }
-            
-        }
+        #endif
         
         return sample
     }()
