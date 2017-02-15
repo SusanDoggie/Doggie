@@ -167,9 +167,11 @@ extension Image.ResamplingAlgorithm {
                 func filling(operation: (Point) -> Pixel) {
                     
                     if var pointer = buffer.baseAddress {
-                        for i in buffer.indices {
-                            pointer.pointee = operation(Point(x: i % width, y: i / width) * transform)
-                            pointer += 1
+                        for y in 0..<height {
+                            for x in 0..<width {
+                                pointer.pointee = operation(Point(x: x, y: y) * transform)
+                                pointer += 1
+                            }
                         }
                     }
                 }

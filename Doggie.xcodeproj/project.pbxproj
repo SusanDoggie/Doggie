@@ -123,6 +123,8 @@
 		0A56E9111E35F02E00D93786 /* RectCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A56E90F1E35F02E00D93786 /* RectCollection.swift */; };
 		0A776FC51D9A0BA5005FC88F /* c11_atomic.h in Headers */ = {isa = PBXBuildFile; fileRef = 0A776FC31D9A0BA5005FC88F /* c11_atomic.h */; };
 		0A776FC61D9A0BA5005FC88F /* c11_atomic.h in Headers */ = {isa = PBXBuildFile; fileRef = 0A776FC31D9A0BA5005FC88F /* c11_atomic.h */; };
+		0A8D98A51E53EE310050E112 /* ImageTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A8D98A21E53ED0F0050E112 /* ImageTest.swift */; };
+		0A8D98A61E53EE310050E112 /* ImageTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A8D98A21E53ED0F0050E112 /* ImageTest.swift */; };
 		0AFCA1501D9E1F130034AB10 /* AtomicTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AFCA14F1D9E1F130034AB10 /* AtomicTest.swift */; };
 		0AFCA1511D9E1F130034AB10 /* AtomicTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AFCA14F1D9E1F130034AB10 /* AtomicTest.swift */; };
 /* End PBXBuildFile section */
@@ -212,6 +214,7 @@
 		0A56E90F1E35F02E00D93786 /* RectCollection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RectCollection.swift; sourceTree = "<group>"; };
 		0A776FC31D9A0BA5005FC88F /* c11_atomic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = c11_atomic.h; sourceTree = "<group>"; };
 		0A776FC41D9A0BA5005FC88F /* module.modulemap */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = "sourcecode.module-map"; path = module.modulemap; sourceTree = "<group>"; };
+		0A8D98A21E53ED0F0050E112 /* ImageTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageTest.swift; sourceTree = "<group>"; };
 		0AFCA14F1D9E1F130034AB10 /* AtomicTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AtomicTest.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -452,6 +455,7 @@
 			children = (
 				0AFCA14F1D9E1F130034AB10 /* AtomicTest.swift */,
 				08BFF9B91B0715ED00EC88CB /* FourierTest.swift */,
+				0A8D98A21E53ED0F0050E112 /* ImageTest.swift */,
 				0A266E521D6E95C100ABE6B7 /* SDMarkerTest.swift */,
 			);
 			name = Tests;
@@ -727,6 +731,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				0A266E531D6E95C100ABE6B7 /* SDMarkerTest.swift in Sources */,
+				0A8D98A51E53EE310050E112 /* ImageTest.swift in Sources */,
 				0AFCA1501D9E1F130034AB10 /* AtomicTest.swift in Sources */,
 				081321EB1C11D2C60081B2B9 /* FourierTest.swift in Sources */,
 			);
@@ -797,6 +802,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				0A266E541D6E95C100ABE6B7 /* SDMarkerTest.swift in Sources */,
+				0A8D98A61E53EE310050E112 /* ImageTest.swift in Sources */,
 				0AFCA1511D9E1F130034AB10 /* AtomicTest.swift in Sources */,
 				08BFF9BC1B07161E00EC88CB /* FourierTest.swift in Sources */,
 			);
