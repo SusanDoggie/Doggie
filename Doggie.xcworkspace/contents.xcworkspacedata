@@ -11,6 +11,9 @@
       location = "group:playgrounds/Image.playground">
    </FileRef>
    <FileRef
+      location = "group:playgrounds/PDF.playground">
+   </FileRef>
+   <FileRef
       location = "group:Doggie.xcodeproj">
    </FileRef>
 </Workspace>
