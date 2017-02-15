@@ -185,7 +185,7 @@ extension Image.ResamplingAlgorithm {
                             filling { point in
                                 let _x = Int(point.x)
                                 let _y = Int(point.y)
-                                return (0..<s_width).contains(_x) && (0..<s_height).contains(_y) ? _source[_y * s_width + _x] : Pixel()
+                                return 0..<s_width ~= _x && 0..<s_height ~= _y ? _source[_y * s_width + _x] : Pixel()
                             }
                         }
                     }

@@ -329,7 +329,7 @@ extension Rect {
         return Rect(x: self.x + dx, y: self.y + dy, width: self.width, height: self.height)
     }
     public func contains(_ point: Point) -> Bool {
-        return (minX...maxX).contains(point.x) && (minY...maxY).contains(point.y)
+        return minX...maxX ~= point.x && minY...maxY ~= point.y
     }
     public func contains(_ rect: Rect) -> Bool {
         let a = Point(x: rect.minX, y: rect.minY)
