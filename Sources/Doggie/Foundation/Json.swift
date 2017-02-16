@@ -160,7 +160,7 @@ extension Json: CustomStringConvertible {
                 } else {
                     result += ", "
                 }
-                result += Json(value: item).description
+                result += (item as? String).map { "\"\($0)\"" } ?? Json(value: item).description
             }
             result += "]"
             return result
@@ -175,7 +175,7 @@ extension Json: CustomStringConvertible {
                 }
                 result += k
                 result += ": "
-                result += Json(value: v).description
+                result += (v as? String).map { "\"\($0)\"" } ?? Json(value: v).description
             }
             result += "]"
             return result

@@ -44,11 +44,37 @@ extension DGDocument.Value : CustomStringConvertible {
     public var description: String {
         switch self {
         case .null: return "nil"
-        case let .indirect(identifier): return "/\(identifier)"
+        case let .indirect(identifier): return "&\(identifier)"
         case let .number(number): return "\(number)"
-        case let .string(string): return "\(string)"
-        case let .array(array): return "\(array)"
-        case let .dictionary(dictionary): return "\(dictionary)"
+        case let .string(string): return string
+        case let .array(array):
+            var result = "["
+            var first = true
+            for item in array {
+                if first {
+                    first = false
+                } else {
+                    result += ", "
+                }
+                result += item.stringValue.map { "\"\($0)\"" } ?? item.description
+            }
+            result += "]"
+            return result
+        case let .dictionary(dictionary):
+            var result = "["
+            var first = true
+            for (k, v) in dictionary {
+                if first {
+                    first = false
+                } else {
+                    result += ", "
+                }
+                result += k
+                result += ": "
+                result += v.stringValue.map { "\"\($0)\"" } ?? v.description
+            }
+            result += "]"
+            return result
         case let .stream(stream): return "\(stream)"
         }
     }
