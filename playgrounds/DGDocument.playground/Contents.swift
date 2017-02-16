@@ -158,7 +158,6 @@ extension DGDocument {
     
     private static func eofPosition(data: Data) throws -> Int {
         let _lineEndPosition = lineEndPosition(data: data, position: data.count - 1)
-        data.prefix(upTo: _lineEndPosition).suffix(5)
         if equals(data.prefix(upTo: _lineEndPosition).suffix(5), [37, 37, 69, 79, 70]) {
             return _lineEndPosition - 5
         }
