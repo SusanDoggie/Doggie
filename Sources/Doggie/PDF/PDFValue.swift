@@ -27,6 +27,8 @@ import Foundation
 
 extension PDFDocument {
     
+    public typealias Dictionary = [PDFDocument.Name: PDFDocument.Value]
+    
     public struct Name {
         
         public var name: String
@@ -45,7 +47,7 @@ extension PDFDocument {
         case string(String)
         case name(Name)
         case array([Value])
-        case dictionary([PDFDocument.Name: Value])
+        case dictionary(PDFDocument.Dictionary)
         case stream(Data)
     }
 }
@@ -132,7 +134,7 @@ extension PDFDocument.Value {
     public init<S : Sequence>(_ elements: S) where S.Iterator.Element == PDFDocument.Value {
         self = .array(Array(elements))
     }
-    public init(_ elements: [PDFDocument.Name: PDFDocument.Value]) {
+    public init(_ elements: PDFDocument.Dictionary) {
         self = .dictionary(elements)
     }
 }
@@ -193,7 +195,7 @@ extension PDFDocument.Value: ExpressibleByArrayLiteral {
 extension PDFDocument.Value: ExpressibleByDictionaryLiteral {
     
     public init(dictionaryLiteral elements: (PDFDocument.Name, PDFDocument.Value) ...) {
-        var dictionary: [PDFDocument.Name: PDFDocument.Value] = [:]
+        var dictionary: PDFDocument.Dictionary = [:]
         for (key, value) in elements {
             dictionary[key] = value
         }
@@ -443,7 +445,7 @@ extension PDFDocument.Value {
         }
     }
     
-    public var dictionary: [PDFDocument.Name: PDFDocument.Value]? {
+    public var dictionary: PDFDocument.Dictionary? {
         get {
             switch self {
             case let .dictionary(dictionary): return dictionary
@@ -495,7 +497,7 @@ extension PDFDocument.Value {
         }
     }
     
-    public var keys: LazyMapCollection<Dictionary<PDFDocument.Name, PDFDocument.Value>, PDFDocument.Name> {
+    public var keys: LazyMapCollection<PDFDocument.Dictionary, PDFDocument.Name> {
         switch self {
         case let .dictionary(dictionary): return dictionary.keys
         default: fatalError("Not an object.")
