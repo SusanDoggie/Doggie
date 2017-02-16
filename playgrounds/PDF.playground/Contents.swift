@@ -18,7 +18,7 @@ extension PDFDocument {
         let _version = try version(data: data)
         
         var trailer: PDFDocument.Dictionary = [:]
-        var xref: [PDFDocument.ObjectIdentifier: PDFDocument.Value] = [:]
+        var xref: [[PDFDocument.Value?]] = []
         
         let _xrefPosition = try xrefPosition(data: data)
         

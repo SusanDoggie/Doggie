@@ -26,14 +26,35 @@
 public struct PDFDocument {
     
     fileprivate let trailer: PDFDocument.Dictionary
-    fileprivate let xref: [PDFDocument.ObjectIdentifier: PDFDocument.Value]
+    fileprivate let xref: Xref
     
     public let version: (major: Int, minor: Int)
     
-    public init(version: (major: Int, minor: Int), trailer: PDFDocument.Dictionary, xref: [PDFDocument.ObjectIdentifier: PDFDocument.Value]) {
+    public init(version: (major: Int, minor: Int), trailer: PDFDocument.Dictionary, xref: [[PDFDocument.Value?]]) {
         self.version = version
         self.trailer = trailer
-        self.xref = xref
+        self.xref = Xref(table: xref)
+    }
+}
+
+extension PDFDocument {
+    
+    fileprivate struct Xref {
+        
+        let table: [[PDFDocument.Value?]]
+    }
+}
+
+extension PDFDocument.Xref {
+    
+    fileprivate subscript(index: PDFDocument.ObjectIdentifier) -> PDFDocument.Value? {
+        if table.indices ~= index.identifier {
+            let objects = table[index.identifier]
+            if objects.indices ~= index.generation {
+                return objects[index.generation]
+            }
+        }
+        return nil
     }
 }
 
@@ -41,7 +62,7 @@ extension PDFDocument {
     
     public struct View {
         
-        fileprivate var xref: [PDFDocument.ObjectIdentifier: PDFDocument.Value]
+        fileprivate var xref: PDFDocument.Xref
         
         public var value: PDFDocument.Value
     }
