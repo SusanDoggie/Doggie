@@ -25,9 +25,16 @@
 
 public struct PDFDocument {
     
-    fileprivate var rootId: PDFDocument.ObjectIdentifier
-    fileprivate var list: [PDFDocument.ObjectIdentifier: PDFDocument.Value]
+    fileprivate let rootId: PDFDocument.ObjectIdentifier
+    fileprivate let list: [PDFDocument.ObjectIdentifier: PDFDocument.Value]
     
+    public let version: (major: Int, minor: Int)
+    
+    public init(version: (major: Int, minor: Int), root: PDFDocument.ObjectIdentifier, _ list: [PDFDocument.ObjectIdentifier: PDFDocument.Value]) {
+        self.version = version
+        self.rootId = root
+        self.list = list
+    }
 }
 
 extension PDFDocument {
