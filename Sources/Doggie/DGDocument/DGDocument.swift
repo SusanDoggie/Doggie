@@ -30,7 +30,33 @@ public struct DGDocument {
     
     public init(root: Int, table: [Int: Value]) {
         self.rootId = root
-        self.table = table
+        self.table = DGDocument.trim(root: root, table: table)
+    }
+}
+
+extension DGDocument {
+    
+    fileprivate static func trim(root: Int, table: [Int: Value]) -> [Int: Value] {
+        var result: [Int: Value] = [:]
+        if table[root] != nil {
+            var checking = [root]
+            while let id = checking.popLast() {
+                if let item = table[id] {
+                    switch item {
+                    case .indirect: break
+                    case let .array(array):
+                        result[id] = table[id]
+                        checking.append(contentsOf: array.flatMap { $0.identifier.flatMap { result[$0] == nil ? $0 : nil } })
+                    case let .dictionary(dictionary):
+                        result[id] = table[id]
+                        checking.append(contentsOf: dictionary.flatMap { $1.identifier.flatMap { result[$0] == nil ? $0 : nil } })
+                    default:
+                        result[id] = table[id]
+                    }
+                }
+            }
+        }
+        return result
     }
 }
 
@@ -58,7 +84,7 @@ extension DGDocument.View {
     public subscript(index: Int) -> DGDocument.View {
         let value = self.value[index]
         switch value {
-        case let .indirect(identifier): return table[identifier].flatMap { $0.isIndirect ? nil : DGDocument.View(table: table, identifier: identifier, value: $0) } ?? DGDocument.View(table: table, identifier: identifier, value: nil)
+        case let .indirect(identifier): return table[identifier].map { DGDocument.View(table: table, identifier: identifier, value: $0) } ?? DGDocument.View(table: table, identifier: identifier, value: nil)
         default: return DGDocument.View(table: table, identifier: nil, value: value)
         }
     }
@@ -70,7 +96,7 @@ extension DGDocument.View {
     public subscript(key: String) -> DGDocument.View {
         let value = self.value[key]
         switch value {
-        case let .indirect(identifier): return table[identifier].flatMap { $0.isIndirect ? nil : DGDocument.View(table: table, identifier: identifier, value: $0) } ?? DGDocument.View(table: table, identifier: identifier, value: nil)
+        case let .indirect(identifier): return table[identifier].map { DGDocument.View(table: table, identifier: identifier, value: $0) } ?? DGDocument.View(table: table, identifier: identifier, value: nil)
         default: return DGDocument.View(table: table, identifier: nil, value: value)
         }
     }
