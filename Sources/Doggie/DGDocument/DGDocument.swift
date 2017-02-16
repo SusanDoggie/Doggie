@@ -25,9 +25,13 @@
 
 public struct DGDocument {
     
-    fileprivate var table: [Int: Value] = [:]
+    fileprivate let rootId: Int
+    public let table: [Int: Value]
     
-    public var rootId: Int
+    public init(root: Int, table: [Int: Value]) {
+        self.rootId = root
+        self.table = table
+    }
 }
 
 extension DGDocument {
@@ -36,11 +40,12 @@ extension DGDocument {
         
         fileprivate var table: [Int: Value] = [:]
         
-        public var value: DGDocument.Value
+        public let identifier: Int?
+        public let value: DGDocument.Value
     }
     
     public var root: DGDocument.View? {
-        return table[rootId].map { DGDocument.View(table: table, value: $0) }
+        return table[rootId].map { DGDocument.View(table: table, identifier: rootId, value: $0) }
     }
 }
 
@@ -53,8 +58,8 @@ extension DGDocument.View {
     public subscript(index: Int) -> DGDocument.View {
         let value = self.value[index]
         switch value {
-        case let .indirect(identifier): return table[identifier].flatMap { $0.isIndirect ? nil : DGDocument.View(table: table, value: $0) } ?? DGDocument.View(table: table, value: nil)
-        default: return DGDocument.View(table: table, value: value)
+        case let .indirect(identifier): return table[identifier].flatMap { $0.isIndirect ? nil : DGDocument.View(table: table, identifier: identifier, value: $0) } ?? DGDocument.View(table: table, identifier: identifier, value: nil)
+        default: return DGDocument.View(table: table, identifier: nil, value: value)
         }
     }
     
@@ -65,8 +70,8 @@ extension DGDocument.View {
     public subscript(key: String) -> DGDocument.View {
         let value = self.value[key]
         switch value {
-        case let .indirect(identifier): return table[identifier].flatMap { $0.isIndirect ? nil : DGDocument.View(table: table, value: $0) } ?? DGDocument.View(table: table, value: nil)
-        default: return DGDocument.View(table: table, value: value)
+        case let .indirect(identifier): return table[identifier].flatMap { $0.isIndirect ? nil : DGDocument.View(table: table, identifier: identifier, value: $0) } ?? DGDocument.View(table: table, identifier: identifier, value: nil)
+        default: return DGDocument.View(table: table, identifier: nil, value: value)
         }
     }
 }

@@ -127,6 +127,10 @@
 		0A7C97491E558E0C00AB4803 /* DGDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7C97471E558E0C00AB4803 /* DGDocument.swift */; };
 		0A7C974B1E558E3900AB4803 /* DGValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7C974A1E558E3900AB4803 /* DGValue.swift */; };
 		0A7C974C1E558E3900AB4803 /* DGValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7C974A1E558E3900AB4803 /* DGValue.swift */; };
+		0A7C974E1E55999900AB4803 /* PDFXref.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7C974D1E55999900AB4803 /* PDFXref.swift */; };
+		0A7C974F1E55999900AB4803 /* PDFXref.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7C974D1E55999900AB4803 /* PDFXref.swift */; };
+		0A7C97511E5599D500AB4803 /* PDFView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7C97501E5599D500AB4803 /* PDFView.swift */; };
+		0A7C97521E5599D500AB4803 /* PDFView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7C97501E5599D500AB4803 /* PDFView.swift */; };
 		0A8D98A51E53EE310050E112 /* ImageTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A8D98A21E53ED0F0050E112 /* ImageTest.swift */; };
 		0A8D98A61E53EE310050E112 /* ImageTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A8D98A21E53ED0F0050E112 /* ImageTest.swift */; };
 		0A9AA8401E543748007A2B92 /* PDFDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9AA83F1E543748007A2B92 /* PDFDocument.swift */; };
@@ -226,6 +230,8 @@
 		0A776FC41D9A0BA5005FC88F /* module.modulemap */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = "sourcecode.module-map"; path = module.modulemap; sourceTree = "<group>"; };
 		0A7C97471E558E0C00AB4803 /* DGDocument.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DGDocument.swift; sourceTree = "<group>"; };
 		0A7C974A1E558E3900AB4803 /* DGValue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DGValue.swift; sourceTree = "<group>"; };
+		0A7C974D1E55999900AB4803 /* PDFXref.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PDFXref.swift; sourceTree = "<group>"; };
+		0A7C97501E5599D500AB4803 /* PDFView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PDFView.swift; sourceTree = "<group>"; };
 		0A8D98A21E53ED0F0050E112 /* ImageTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageTest.swift; sourceTree = "<group>"; };
 		0A9AA83F1E543748007A2B92 /* PDFDocument.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PDFDocument.swift; sourceTree = "<group>"; };
 		0A9AA8421E543B11007A2B92 /* PDFObjectIdentifier.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PDFObjectIdentifier.swift; sourceTree = "<group>"; };
@@ -512,6 +518,8 @@
 			isa = PBXGroup;
 			children = (
 				0A9AA83F1E543748007A2B92 /* PDFDocument.swift */,
+				0A7C97501E5599D500AB4803 /* PDFView.swift */,
+				0A7C974D1E55999900AB4803 /* PDFXref.swift */,
 				0A9AA8421E543B11007A2B92 /* PDFObjectIdentifier.swift */,
 				0A9AA8451E543B6A007A2B92 /* PDFValue.swift */,
 			);
@@ -739,6 +747,7 @@
 				08458B5A1E2E627600D01813 /* AtomicQueue.swift in Sources */,
 				08458B321E2E627600D01813 /* Complex.swift in Sources */,
 				08458B4E1E2E627600D01813 /* SDPathCoder.swift in Sources */,
+				0A7C97511E5599D500AB4803 /* PDFView.swift in Sources */,
 				08458AF61E2E627600D01813 /* ComplexConversion.swift in Sources */,
 				08458B5E1E2E627600D01813 /* Lock.swift in Sources */,
 				08458B341E2E627600D01813 /* Ellipse.swift in Sources */,
@@ -763,6 +772,7 @@
 				0A06975E1E4D6732005CF664 /* NSImage.swift in Sources */,
 				0A06975B1E4D66A3005CF664 /* Filter.swift in Sources */,
 				08458B2A1E2E627600D01813 /* ColorPixel.swift in Sources */,
+				0A7C974E1E55999900AB4803 /* PDFXref.swift in Sources */,
 				08458AF21E2E627600D01813 /* Arithmetic.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -815,6 +825,7 @@
 				08458B5B1E2E627600D01813 /* AtomicQueue.swift in Sources */,
 				08458B331E2E627600D01813 /* Complex.swift in Sources */,
 				08458B4F1E2E627600D01813 /* SDPathCoder.swift in Sources */,
+				0A7C97521E5599D500AB4803 /* PDFView.swift in Sources */,
 				08458AF71E2E627600D01813 /* ComplexConversion.swift in Sources */,
 				08458B5F1E2E627600D01813 /* Lock.swift in Sources */,
 				08458B351E2E627600D01813 /* Ellipse.swift in Sources */,
@@ -839,6 +850,7 @@
 				0A06975F1E4D6732005CF664 /* NSImage.swift in Sources */,
 				0A06975C1E4D66A3005CF664 /* Filter.swift in Sources */,
 				08458B2B1E2E627600D01813 /* ColorPixel.swift in Sources */,
+				0A7C974F1E55999900AB4803 /* PDFXref.swift in Sources */,
 				08458AF31E2E627600D01813 /* Arithmetic.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
