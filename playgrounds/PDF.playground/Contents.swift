@@ -6,23 +6,23 @@ import Doggie
 extension PDFDocument {
     
     public enum ParserError: Error {
-        case invalidFormat
+        case invalidFormat(String)
     }
     
     public static func Parse(data: Data) throws -> PDFDocument {
         
         guard equals(data.prefix(5), [37, 80, 68, 70, 45]) else {
-            throw ParserError.invalidFormat
+            throw ParserError.invalidFormat("'%PDF-' not find.")
         }
         
         let _version = try version(data: data)
         
-        var root = PDFDocument.ObjectIdentifier(identifier: 0, generation: 0)
-        var list: [PDFDocument.ObjectIdentifier: PDFDocument.Value] = [:]
+        var trailer: PDFDocument.Dictionary = [:]
+        var xref: [PDFDocument.ObjectIdentifier: PDFDocument.Value] = [:]
         
         let _xrefPosition = try xrefPosition(data: data)
         
-        return PDFDocument(version: _version, root: root, list)
+        return PDFDocument(version: _version, trailer: trailer, xref: xref)
     }
     
     private static func equals<S1 : Sequence, S2 : Sequence>(_ lhs: S1, _ rhs: S2) -> Bool where S1.Iterator.Element : Equatable, S1.Iterator.Element == S2.Iterator.Element {
@@ -55,11 +55,11 @@ extension PDFDocument {
             } else if flag && d == 46 {
                 flag = false
             } else if flag {
-                throw ParserError.invalidFormat
+                throw ParserError.invalidFormat("invalid version number.")
             } else if d == 10 || d == 13 {
                 break
             } else {
-                throw ParserError.invalidFormat
+                throw ParserError.invalidFormat("invalid version number.")
             }
         }
         
@@ -113,7 +113,7 @@ extension PDFDocument {
         if equals(data.prefix(upTo: _lineEndPosition).suffix(5), [37, 37, 69, 79, 70]) {
             return _lineEndPosition - 5
         }
-        throw ParserError.invalidFormat
+        throw ParserError.invalidFormat("'%%EOF' not find.")
     }
     
     private static func xrefPosition(data: Data) throws -> Int {
@@ -125,7 +125,7 @@ extension PDFDocument {
         
         let _startxref_flag_end = lineEndPosition(data: data, position: _xrefStartPosition - 1)
         if !equals(data.prefix(upTo: _startxref_flag_end).suffix(9), [115, 116, 97, 114, 116, 120, 114, 101, 102]) {
-            throw ParserError.invalidFormat
+            throw ParserError.invalidFormat("'startxref' not find.")
         }
         
         var offset = 0
@@ -133,7 +133,7 @@ extension PDFDocument {
             if 48...57 ~= d {
                 offset = offset * 10 + Int(d - 48)
             } else {
-                throw ParserError.invalidFormat
+                throw ParserError.invalidFormat("invalid xref position.")
             }
         }
         return offset
@@ -141,6 +141,8 @@ extension PDFDocument {
 }
 
 if let url = Bundle.main.url(forResource: "test", withExtension: "pdf"), let data = try? Data(contentsOf: url) {
+    
+    print(String(data: data, encoding: .ascii) ?? "")
     
     try PDFDocument.Parse(data: data)
     
