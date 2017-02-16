@@ -22,7 +22,7 @@ extension PDFDocument {
         
         let _xrefPosition = try xrefPosition(data: data)
         
-        return PDFDocument(version: _version, trailer: trailer, xref: xref)
+        return PDFDocument(version: _version, trailer: trailer, xref: PDFDocument.Xref(xref))
     }
     
     private static func equals<S1 : Sequence, S2 : Sequence>(_ lhs: S1, _ rhs: S2) -> Bool where S1.Iterator.Element : Equatable, S1.Iterator.Element == S2.Iterator.Element {
