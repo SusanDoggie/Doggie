@@ -25,12 +25,24 @@
 
 public struct DGDocument {
     
-    fileprivate let rootId: Int
+    public let rootId: Int
     public let table: [Int: Value]
     
     public init(root: Int, table: [Int: Value]) {
         self.rootId = root
         self.table = DGDocument.trim(root: root, table: table)
+    }
+}
+
+extension DGDocument.Value {
+    
+    fileprivate var identifiers: [Int] {
+        switch self {
+        case let .indirect(identifier): return [identifier]
+        case let .array(array): return array.flatMap { $0.identifiers }
+        case let .dictionary(dictionary): return dictionary.flatMap { $1.identifiers }
+        default: return []
+        }
     }
 }
 
@@ -46,12 +58,11 @@ extension DGDocument {
                     case .indirect: break
                     case let .array(array):
                         result[id] = table[id]
-                        checking.append(contentsOf: array.flatMap { $0.identifier.flatMap { result[$0] == nil ? $0 : nil } })
+                        checking.append(contentsOf: Set(array.flatMap { Set($0.identifiers).flatMap { result[$0] == nil ? $0 : nil } }))
                     case let .dictionary(dictionary):
                         result[id] = table[id]
-                        checking.append(contentsOf: dictionary.flatMap { $1.identifier.flatMap { result[$0] == nil ? $0 : nil } })
-                    default:
-                        result[id] = table[id]
+                        checking.append(contentsOf: Set(dictionary.flatMap { Set($1.identifiers).flatMap { result[$0] == nil ? $0 : nil } }))
+                    default: result[id] = table[id]
                     }
                 }
             }

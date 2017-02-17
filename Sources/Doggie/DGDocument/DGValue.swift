@@ -29,7 +29,7 @@ extension DGDocument {
     
     public enum Value {
         
-        case null
+        case `nil`
         case indirect(Int)
         case number(NSNumber)
         case string(String)
@@ -43,7 +43,7 @@ extension DGDocument.Value : CustomStringConvertible {
     
     public var description: String {
         switch self {
-        case .null: return "nil"
+        case .nil: return "nil"
         case let .indirect(identifier): return "&\(identifier)"
         case let .number(number): return "\(number)"
         case let .string(string): return string
@@ -111,7 +111,7 @@ extension DGDocument.Value {
 extension DGDocument.Value: ExpressibleByNilLiteral {
     
     public init(nilLiteral value: Void) {
-        self = .null
+        self = .nil
     }
 }
 
@@ -176,7 +176,7 @@ extension DGDocument.Value {
     
     public var isNil : Bool {
         switch self {
-        case .null: return true
+        case .nil: return true
         default: return false
         }
     }
@@ -237,7 +237,7 @@ extension DGDocument.Value {
             return self.numberValue?.boolValue
         }
         set {
-            self = newValue.map { DGDocument.Value($0) } ?? .null
+            self = newValue.map { DGDocument.Value($0) } ?? .nil
         }
     }
     
@@ -246,7 +246,7 @@ extension DGDocument.Value {
             return self.numberValue?.int8Value
         }
         set {
-            self = newValue.map { DGDocument.Value($0) } ?? .null
+            self = newValue.map { DGDocument.Value($0) } ?? .nil
         }
     }
     
@@ -255,7 +255,7 @@ extension DGDocument.Value {
             return self.numberValue?.uint8Value
         }
         set {
-            self = newValue.map { DGDocument.Value($0) } ?? .null
+            self = newValue.map { DGDocument.Value($0) } ?? .nil
         }
     }
     
@@ -264,7 +264,7 @@ extension DGDocument.Value {
             return self.numberValue?.int16Value
         }
         set {
-            self = newValue.map { DGDocument.Value($0) } ?? .null
+            self = newValue.map { DGDocument.Value($0) } ?? .nil
         }
     }
     
@@ -273,7 +273,7 @@ extension DGDocument.Value {
             return self.numberValue?.uint16Value
         }
         set {
-            self = newValue.map { DGDocument.Value($0) } ?? .null
+            self = newValue.map { DGDocument.Value($0) } ?? .nil
         }
     }
     
@@ -282,7 +282,7 @@ extension DGDocument.Value {
             return self.numberValue?.int32Value
         }
         set {
-            self = newValue.map { DGDocument.Value($0) } ?? .null
+            self = newValue.map { DGDocument.Value($0) } ?? .nil
         }
     }
     
@@ -291,7 +291,7 @@ extension DGDocument.Value {
             return self.numberValue?.uint32Value
         }
         set {
-            self = newValue.map { DGDocument.Value($0) } ?? .null
+            self = newValue.map { DGDocument.Value($0) } ?? .nil
         }
     }
     
@@ -300,7 +300,7 @@ extension DGDocument.Value {
             return self.numberValue?.int64Value
         }
         set {
-            self = newValue.map { DGDocument.Value($0) } ?? .null
+            self = newValue.map { DGDocument.Value($0) } ?? .nil
         }
     }
     
@@ -309,7 +309,7 @@ extension DGDocument.Value {
             return self.numberValue?.uint64Value
         }
         set {
-            self = newValue.map { DGDocument.Value($0) } ?? .null
+            self = newValue.map { DGDocument.Value($0) } ?? .nil
         }
     }
     
@@ -318,7 +318,7 @@ extension DGDocument.Value {
             return self.numberValue?.floatValue
         }
         set {
-            self = newValue.map { DGDocument.Value($0) } ?? .null
+            self = newValue.map { DGDocument.Value($0) } ?? .nil
         }
     }
     
@@ -327,7 +327,7 @@ extension DGDocument.Value {
             return self.numberValue?.doubleValue
         }
         set {
-            self = newValue.map { DGDocument.Value($0) } ?? .null
+            self = newValue.map { DGDocument.Value($0) } ?? .nil
         }
     }
     
@@ -336,7 +336,7 @@ extension DGDocument.Value {
             return self.numberValue?.intValue
         }
         set {
-            self = newValue.map { DGDocument.Value($0) } ?? .null
+            self = newValue.map { DGDocument.Value($0) } ?? .nil
         }
     }
     
@@ -345,7 +345,7 @@ extension DGDocument.Value {
             return self.numberValue?.uintValue
         }
         set {
-            self = newValue.map { DGDocument.Value($0) } ?? .null
+            self = newValue.map { DGDocument.Value($0) } ?? .nil
         }
     }
     
@@ -357,7 +357,7 @@ extension DGDocument.Value {
             }
         }
         set {
-            self = newValue.map { DGDocument.Value($0) } ?? .null
+            self = newValue.map { DGDocument.Value($0) } ?? .nil
         }
     }
     
@@ -369,7 +369,7 @@ extension DGDocument.Value {
             }
         }
         set {
-            self = newValue.map { DGDocument.Value($0) } ?? .null
+            self = newValue.map { DGDocument.Value($0) } ?? .nil
         }
     }
     
@@ -381,7 +381,7 @@ extension DGDocument.Value {
             }
         }
         set {
-            self = newValue.map { DGDocument.Value($0) } ?? .null
+            self = newValue.map { DGDocument.Value($0) } ?? .nil
         }
     }
     
@@ -393,7 +393,7 @@ extension DGDocument.Value {
             }
         }
         set {
-            self = newValue.map { DGDocument.Value($0) } ?? .null
+            self = newValue.map { DGDocument.Value($0) } ?? .nil
         }
     }
     
@@ -405,7 +405,7 @@ extension DGDocument.Value {
             }
         }
         set {
-            self = newValue.map { .stream($0) } ?? .null
+            self = newValue.map { .stream($0) } ?? .nil
         }
     }
 }
