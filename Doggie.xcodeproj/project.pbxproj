@@ -133,6 +133,8 @@
 		0A7C97521E5599D500AB4803 /* PDFView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7C97501E5599D500AB4803 /* PDFView.swift */; };
 		0A8D98A51E53EE310050E112 /* ImageTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A8D98A21E53ED0F0050E112 /* ImageTest.swift */; };
 		0A8D98A61E53EE310050E112 /* ImageTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A8D98A21E53ED0F0050E112 /* ImageTest.swift */; };
+		0A92C7B21E56A52E0090EBFC /* zlib.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A92C7B11E56A52E0090EBFC /* zlib.swift */; };
+		0A92C7B31E56A52E0090EBFC /* zlib.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A92C7B11E56A52E0090EBFC /* zlib.swift */; };
 		0A92C7B71E56A5550090EBFC /* zlib_include.h in Headers */ = {isa = PBXBuildFile; fileRef = 0A92C7B61E56A5550090EBFC /* zlib_include.h */; };
 		0A92C7B81E56A5550090EBFC /* zlib_include.h in Headers */ = {isa = PBXBuildFile; fileRef = 0A92C7B61E56A5550090EBFC /* zlib_include.h */; };
 		0A92C7BC1E56A5AF0090EBFC /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 0A92C7BA1E56A5730090EBFC /* libz.tbd */; };
@@ -239,6 +241,7 @@
 		0A7C974D1E55999900AB4803 /* PDFXref.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PDFXref.swift; sourceTree = "<group>"; };
 		0A7C97501E5599D500AB4803 /* PDFView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PDFView.swift; sourceTree = "<group>"; };
 		0A8D98A21E53ED0F0050E112 /* ImageTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageTest.swift; sourceTree = "<group>"; };
+		0A92C7B11E56A52E0090EBFC /* zlib.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = zlib.swift; sourceTree = "<group>"; };
 		0A92C7B51E56A5550090EBFC /* module.modulemap */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = "sourcecode.module-map"; path = module.modulemap; sourceTree = "<group>"; };
 		0A92C7B61E56A5550090EBFC /* zlib_include.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = zlib_include.h; sourceTree = "<group>"; };
 		0A92C7BA1E56A5730090EBFC /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS10.2.sdk/usr/lib/libz.tbd; sourceTree = DEVELOPER_DIR; };
