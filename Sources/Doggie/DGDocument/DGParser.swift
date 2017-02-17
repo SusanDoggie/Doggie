@@ -196,7 +196,7 @@ extension DGDocument {
         while position < data.count {
             let d = data[position]
             switch d {
-            case 10, 13, 32: position += 1
+            case 9, 10, 13, 32: position += 1
             case 93:
                 position += 1
                 return (position, .array(array))
@@ -223,7 +223,7 @@ extension DGDocument {
         while position < data.count {
             let d = data[position]
             switch d {
-            case 10, 13, 32: position += 1
+            case 9, 10, 13, 32: position += 1
             case 125:
                 position += 1
                 return (position, .dictionary(dictionary))
@@ -241,7 +241,7 @@ extension DGDocument {
                 
                 loop: while true {
                     switch data[position] {
-                    case 10, 13, 32: position += 1
+                    case 9, 10, 13, 32: position += 1
                     default: break loop
                     }
                 }
@@ -321,17 +321,10 @@ extension DGDocument {
         let _rootIdEndPosition = lineEndPosition(data: data, position: _eofPosition - 1)
         let _rootIdStartPosition = lineStartPosition(data: data, position: _rootIdEndPosition - 1)
         
-        var flag = 0
-        for d in data[_rootIdStartPosition..<_rootIdEndPosition] {
-            if 48...57 ~= d {
-                switch flag {
-                case 0: root = root * 10 + Int(d - 48)
-                default: throw ParserError.invalidFormat("invalid file format.")
-                }
-            } else if d == 32 {
-                flag += 1
-            } else {
-                throw ParserError.invalidFormat("invalid file format.")
+        loop: for d in data[_rootIdStartPosition..<_rootIdEndPosition] {
+            switch d {
+            case 48...57: root = root * 10 + Int(d - 48)
+            default: throw ParserError.invalidFormat("invalid file format.")
             }
         }
         var offset = _rootIdStartPosition - 1
@@ -351,10 +344,9 @@ extension DGDocument {
             if line.count > 5 && equals(line.prefix(6), [37, 88, 82, 69, 70, 32]) {
                 var offset = 0
                 for d in line.dropFirst(6) {
-                    if 48...57 ~= d {
-                        offset = offset * 10 + Int(d - 48)
-                    } else {
-                        throw ParserError.invalidFormat("invalid file format.")
+                    switch d {
+                    case 48...57: offset = offset * 10 + Int(d - 48)
+                    default: throw ParserError.invalidFormat("invalid file format.")
                     }
                 }
                 return offset
@@ -363,13 +355,12 @@ extension DGDocument {
             } else {
                 var numList = [0]
                 for d in line {
-                    if 48...57 ~= d {
+                    switch d {
+                    case 48...57:
                         let _last = numList.endIndex - 1
                         numList[_last] = numList[_last] * 10 + Int(d - 48)
-                    } else if d == 32 {
-                        numList.append(0)
-                    } else {
-                        throw ParserError.invalidFormat("invalid file format.")
+                    case 32: numList.append(0)
+                    default: throw ParserError.invalidFormat("invalid file format.")
                     }
                 }
                 if numList.count > 1 {
