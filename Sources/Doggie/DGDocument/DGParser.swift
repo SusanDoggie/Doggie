@@ -360,33 +360,29 @@ extension DGDocument {
                 return offset
             } else if line.count == 5 && equals(line, [37, 88, 82, 69, 70]) {
                 return nil
-            }
-            try xrefDecodeLine(line: line, table: &table)
-            _lineEnd = lineEndPosition(data: data, position: _lineStart - 1)
-            _lineStart = lineStartPosition(data: data, position: _lineStart - 1)
-        }
-    }
-    
-    private static func xrefDecodeLine(line: MutableRandomAccessSlice<Data>, table: inout [Int: Int]) throws {
-        
-        var numList = [0]
-        for d in line {
-            if 48...57 ~= d {
-                let _last = numList.endIndex - 1
-                numList[_last] = numList[_last] * 10 + Int(d - 48)
-            } else if d == 32 {
-                numList.append(0)
             } else {
-                throw ParserError.invalidFormat("invalid file format.")
-            }
-        }
-        if numList.count > 1 {
-            var counter = numList[0]
-            for d in numList.dropFirst() {
-                if table[counter] == nil {
-                    table[counter] = d
+                var numList = [0]
+                for d in line {
+                    if 48...57 ~= d {
+                        let _last = numList.endIndex - 1
+                        numList[_last] = numList[_last] * 10 + Int(d - 48)
+                    } else if d == 32 {
+                        numList.append(0)
+                    } else {
+                        throw ParserError.invalidFormat("invalid file format.")
+                    }
                 }
-                counter += 1
+                if numList.count > 1 {
+                    var counter = numList[0]
+                    for d in numList.dropFirst() {
+                        if table[counter] == nil {
+                            table[counter] = d
+                        }
+                        counter += 1
+                    }
+                }
+                _lineEnd = lineEndPosition(data: data, position: _lineStart - 1)
+                _lineStart = lineStartPosition(data: data, position: _lineStart - 1)
             }
         }
     }
