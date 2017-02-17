@@ -28,7 +28,9 @@ import PackageDescription
 let package = Package(
     name: "Doggie",
     targets: [
-        Target(name: "Doggie", dependencies: [.Target(name: "c11_atomic")]),
+        Target(name: "Doggie", dependencies: [
+            .Target(name: "c11_atomic")
+            ]),
         Target(name: "c11_atomic")
     ],
     exclude: [
