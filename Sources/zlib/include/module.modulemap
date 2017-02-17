@@ -23,5 +23,6 @@
 
 module zlib [system][extern_c] {
     header "zlib_include.h"
+    link "z"
     export *
 }
