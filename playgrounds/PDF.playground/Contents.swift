@@ -71,12 +71,14 @@ extension PDFDocument {
         }
         let _1 = data[position - 1]
         let _2 = data[position]
+        
         var index = position
-        if (_1 == 10 && _2 == 13) || (_1 == 13 && _2 == 10) {
-            index -= 2
-        } else if _2 == 10 || _2 == 13 {
-            index -= 1
+        switch (_1, _2) {
+        case (10, 13), (13, 10): index -= 2
+        case (_, 10), (_, 13): index -= 1
+        default: break
         }
+        
         while index != 0 {
             switch data[index] {
             case 10, 13: return index + 1
@@ -91,11 +93,13 @@ extension PDFDocument {
         }
         let _1 = data[position - 1]
         let _2 = data[position]
-        if (_1 == 10 && _2 == 13) || (_1 == 13 && _2 == 10) {
-            return position - 1
-        } else if _2 == 10 || _2 == 13 {
-            return position
+        
+        switch (_1, _2) {
+        case (10, 13), (13, 10): return position - 1
+        case (_, 10), (_, 13): return position
+        default: break
         }
+        
         var index = position
         while index != data.count {
             switch data[index] {
@@ -104,6 +108,23 @@ extension PDFDocument {
             }
         }
         return index
+    }
+    private static func nextLineStartPosition(data: Data, position: Int) -> Int {
+        
+        if position == data.count {
+            return position
+        }
+        if position + 1 == data.count {
+            return position
+        }
+        
+        let _1 = data[position]
+        let _2 = data[position + 1]
+        
+        switch (_1, _2) {
+        case (10, 13), (13, 10): return position + 2
+        default: return position + 1
+        }
     }
     
     private static func eofPosition(data: Data) throws -> Int {
