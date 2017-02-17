@@ -139,6 +139,8 @@
 		0A92C7B81E56A5550090EBFC /* zlib_include.h in Headers */ = {isa = PBXBuildFile; fileRef = 0A92C7B61E56A5550090EBFC /* zlib_include.h */; };
 		0A92C7C41E56AB9D0090EBFC /* Data.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A92C7C31E56AB9D0090EBFC /* Data.swift */; };
 		0A92C7C51E56AB9D0090EBFC /* Data.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A92C7C31E56AB9D0090EBFC /* Data.swift */; };
+		0A92C7D31E56DA960090EBFC /* DGParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A92C7D21E56DA960090EBFC /* DGParser.swift */; };
+		0A92C7D41E56DA960090EBFC /* DGParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A92C7D21E56DA960090EBFC /* DGParser.swift */; };
 		0A9AA8401E543748007A2B92 /* PDFDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9AA83F1E543748007A2B92 /* PDFDocument.swift */; };
 		0A9AA8411E543748007A2B92 /* PDFDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9AA83F1E543748007A2B92 /* PDFDocument.swift */; };
 		0A9AA8431E543B11007A2B92 /* PDFObjectIdentifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9AA8421E543B11007A2B92 /* PDFObjectIdentifier.swift */; };
@@ -243,6 +245,7 @@
 		0A92C7B51E56A5550090EBFC /* module.modulemap */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = "sourcecode.module-map"; path = module.modulemap; sourceTree = "<group>"; };
 		0A92C7B61E56A5550090EBFC /* zlib_include.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = zlib_include.h; sourceTree = "<group>"; };
 		0A92C7C31E56AB9D0090EBFC /* Data.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Data.swift; sourceTree = "<group>"; };
+		0A92C7D21E56DA960090EBFC /* DGParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DGParser.swift; sourceTree = "<group>"; };
 		0A9AA83F1E543748007A2B92 /* PDFDocument.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PDFDocument.swift; sourceTree = "<group>"; };
 		0A9AA8421E543B11007A2B92 /* PDFObjectIdentifier.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PDFObjectIdentifier.swift; sourceTree = "<group>"; };
 		0A9AA8451E543B6A007A2B92 /* PDFValue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PDFValue.swift; sourceTree = "<group>"; };
@@ -522,6 +525,7 @@
 			isa = PBXGroup;
 			children = (
 				0A7C97471E558E0C00AB4803 /* DGDocument.swift */,
+				0A92C7D21E56DA960090EBFC /* DGParser.swift */,
 				0A7C974A1E558E3900AB4803 /* DGValue.swift */,
 			);
 			path = DGDocument;
@@ -788,6 +792,7 @@
 				08458B341E2E627600D01813 /* Ellipse.swift in Sources */,
 				0A56E9101E35F02E00D93786 /* RectCollection.swift in Sources */,
 				08458AFE1E2E627600D01813 /* SafeFunction.swift in Sources */,
+				0A92C7D31E56DA960090EBFC /* DGParser.swift in Sources */,
 				08458AF41E2E627600D01813 /* CircularConvolve.swift in Sources */,
 				08458B121E2E627600D01813 /* Fourier.swift in Sources */,
 				08458B601E2E627600D01813 /* SDThread.swift in Sources */,
@@ -868,6 +873,7 @@
 				08458B351E2E627600D01813 /* Ellipse.swift in Sources */,
 				0A56E9111E35F02E00D93786 /* RectCollection.swift in Sources */,
 				08458AFF1E2E627600D01813 /* SafeFunction.swift in Sources */,
+				0A92C7D41E56DA960090EBFC /* DGParser.swift in Sources */,
 				08458AF51E2E627600D01813 /* CircularConvolve.swift in Sources */,
 				08458B131E2E627600D01813 /* Fourier.swift in Sources */,
 				08458B611E2E627600D01813 /* SDThread.swift in Sources */,
