@@ -133,6 +133,12 @@
 		0A7C97521E5599D500AB4803 /* PDFView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7C97501E5599D500AB4803 /* PDFView.swift */; };
 		0A8D98A51E53EE310050E112 /* ImageTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A8D98A21E53ED0F0050E112 /* ImageTest.swift */; };
 		0A8D98A61E53EE310050E112 /* ImageTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A8D98A21E53ED0F0050E112 /* ImageTest.swift */; };
+		0A92C7B71E56A5550090EBFC /* zlib_include.h in Headers */ = {isa = PBXBuildFile; fileRef = 0A92C7B61E56A5550090EBFC /* zlib_include.h */; };
+		0A92C7B81E56A5550090EBFC /* zlib_include.h in Headers */ = {isa = PBXBuildFile; fileRef = 0A92C7B61E56A5550090EBFC /* zlib_include.h */; };
+		0A92C7BC1E56A5AF0090EBFC /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 0A92C7BA1E56A5730090EBFC /* libz.tbd */; };
+		0A92C7BE1E56A5BB0090EBFC /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 0A92C7BD1E56A5BB0090EBFC /* libz.tbd */; };
+		0A92C7C41E56AB9D0090EBFC /* Data.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A92C7C31E56AB9D0090EBFC /* Data.swift */; };
+		0A92C7C51E56AB9D0090EBFC /* Data.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A92C7C31E56AB9D0090EBFC /* Data.swift */; };
 		0A9AA8401E543748007A2B92 /* PDFDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9AA83F1E543748007A2B92 /* PDFDocument.swift */; };
 		0A9AA8411E543748007A2B92 /* PDFDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9AA83F1E543748007A2B92 /* PDFDocument.swift */; };
 		0A9AA8431E543B11007A2B92 /* PDFObjectIdentifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9AA8421E543B11007A2B92 /* PDFObjectIdentifier.swift */; };
@@ -233,6 +239,11 @@
 		0A7C974D1E55999900AB4803 /* PDFXref.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PDFXref.swift; sourceTree = "<group>"; };
 		0A7C97501E5599D500AB4803 /* PDFView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PDFView.swift; sourceTree = "<group>"; };
 		0A8D98A21E53ED0F0050E112 /* ImageTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageTest.swift; sourceTree = "<group>"; };
+		0A92C7B51E56A5550090EBFC /* module.modulemap */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = "sourcecode.module-map"; path = module.modulemap; sourceTree = "<group>"; };
+		0A92C7B61E56A5550090EBFC /* zlib_include.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = zlib_include.h; sourceTree = "<group>"; };
+		0A92C7BA1E56A5730090EBFC /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS10.2.sdk/usr/lib/libz.tbd; sourceTree = DEVELOPER_DIR; };
+		0A92C7BD1E56A5BB0090EBFC /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
+		0A92C7C31E56AB9D0090EBFC /* Data.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Data.swift; sourceTree = "<group>"; };
 		0A9AA83F1E543748007A2B92 /* PDFDocument.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PDFDocument.swift; sourceTree = "<group>"; };
 		0A9AA8421E543B11007A2B92 /* PDFObjectIdentifier.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PDFObjectIdentifier.swift; sourceTree = "<group>"; };
 		0A9AA8451E543B6A007A2B92 /* PDFValue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PDFValue.swift; sourceTree = "<group>"; };
@@ -244,6 +255,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0A92C7BC1E56A5AF0090EBFC /* libz.tbd in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -259,6 +271,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0A92C7BE1E56A5BB0090EBFC /* libz.tbd in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -293,6 +306,7 @@
 			children = (
 				0A53E44D1E35AEF80060FB83 /* CollectionExtension.swift */,
 				0A53E44F1E35AEF80060FB83 /* Date.swift */,
+				0A92C7C31E56AB9D0090EBFC /* Data.swift */,
 				0A53E4501E35AEF80060FB83 /* FloatingPoint.swift */,
 				0A53E4511E35AEF80060FB83 /* Graph.swift */,
 				0A53E4521E35AEF80060FB83 /* Hashable.swift */,
@@ -365,9 +379,11 @@
 		0858DA401C0550B7007FA426 /* Doggie */ = {
 			isa = PBXGroup;
 			children = (
+				0A92C7B41E56A5550090EBFC /* zlib */,
 				0A776FC21D9A0BA5005FC88F /* c11_atomic */,
 				08458AB01E2E627600D01813 /* Accelerate */,
 				0A7C97461E558DE600AB4803 /* DGDocument */,
+				0A92C7B01E56A52E0090EBFC /* Encoding */,
 				08458ABA1E2E627600D01813 /* Foundation */,
 				08458AC31E2E627600D01813 /* Fourier.swift */,
 				0A0697561E4D6659005CF664 /* Graphic */,
@@ -393,6 +409,7 @@
 				087FE5B61A372D97005A2E9E /* Doggie_Mac */,
 				087FE5C31A372D97005A2E9E /* Doggie_MacTests */,
 				087FE5971A372D5B005A2E9E /* Products */,
+				0A92C7B91E56A5730090EBFC /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -514,6 +531,33 @@
 			path = DGDocument;
 			sourceTree = "<group>";
 		};
+		0A92C7B01E56A52E0090EBFC /* Encoding */ = {
+			isa = PBXGroup;
+			children = (
+				0A92C7B11E56A52E0090EBFC /* zlib.swift */,
+			);
+			path = Encoding;
+			sourceTree = "<group>";
+		};
+		0A92C7B41E56A5550090EBFC /* zlib */ = {
+			isa = PBXGroup;
+			children = (
+				0A92C7B51E56A5550090EBFC /* module.modulemap */,
+				0A92C7B61E56A5550090EBFC /* zlib_include.h */,
+			);
+			name = zlib;
+			path = Sources/zlib/include;
+			sourceTree = SOURCE_ROOT;
+		};
+		0A92C7B91E56A5730090EBFC /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				0A92C7BD1E56A5BB0090EBFC /* libz.tbd */,
+				0A92C7BA1E56A5730090EBFC /* libz.tbd */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		0A9AA83E1E54373E007A2B92 /* PDF */ = {
 			isa = PBXGroup;
 			children = (
@@ -533,6 +577,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0A92C7B71E56A5550090EBFC /* zlib_include.h in Headers */,
 				082516261C51C60A00F8F9B0 /* Doggie_iOS.h in Headers */,
 				0A776FC51D9A0BA5005FC88F /* c11_atomic.h in Headers */,
 			);
@@ -542,6 +587,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0A92C7B81E56A5550090EBFC /* zlib_include.h in Headers */,
 				087FE5BA1A372D97005A2E9E /* Doggie_Mac.h in Headers */,
 				0A776FC61D9A0BA5005FC88F /* c11_atomic.h in Headers */,
 			);
@@ -727,11 +773,13 @@
 				08458B361E2E627600D01813 /* Maths.swift in Sources */,
 				08458B3A1E2E627600D01813 /* Point.swift in Sources */,
 				08458B461E2E627600D01813 /* SDMarker.swift in Sources */,
+				0A92C7C41E56AB9D0090EBFC /* Data.swift in Sources */,
 				08458B501E2E627600D01813 /* SDPathPatternStroke.swift in Sources */,
 				0A53E46C1E35AEF80060FB83 /* Integer.swift in Sources */,
 				08458B281E2E627600D01813 /* ColorModel.swift in Sources */,
 				0A7C974B1E558E3900AB4803 /* DGValue.swift in Sources */,
 				08458B561E2E627600D01813 /* SDShape.swift in Sources */,
+				0A92C7B21E56A52E0090EBFC /* zlib.swift in Sources */,
 				0A53E46E1E35AEF80060FB83 /* Json.swift in Sources */,
 				08458B2E1E2E627600D01813 /* Image.swift in Sources */,
 				0A53E4641E35AEF80060FB83 /* FloatingPoint.swift in Sources */,
@@ -805,11 +853,13 @@
 				08458B371E2E627600D01813 /* Maths.swift in Sources */,
 				08458B3B1E2E627600D01813 /* Point.swift in Sources */,
 				08458B471E2E627600D01813 /* SDMarker.swift in Sources */,
+				0A92C7C51E56AB9D0090EBFC /* Data.swift in Sources */,
 				08458B511E2E627600D01813 /* SDPathPatternStroke.swift in Sources */,
 				0A53E46D1E35AEF80060FB83 /* Integer.swift in Sources */,
 				08458B291E2E627600D01813 /* ColorModel.swift in Sources */,
 				0A7C974C1E558E3900AB4803 /* DGValue.swift in Sources */,
 				08458B571E2E627600D01813 /* SDShape.swift in Sources */,
+				0A92C7B31E56A52E0090EBFC /* zlib.swift in Sources */,
 				0A53E46F1E35AEF80060FB83 /* Json.swift in Sources */,
 				08458B2F1E2E627600D01813 /* Image.swift in Sources */,
 				0A53E4651E35AEF80060FB83 /* FloatingPoint.swift in Sources */,
@@ -1094,7 +1144,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.SusanDoggie.Doggie;
 				PRODUCT_NAME = Doggie;
-				SWIFT_INCLUDE_PATHS = "${SRCROOT}/Sources/c11_atomic/include/**";
+				SWIFT_INCLUDE_PATHS = "${SRCROOT}/Sources/c11_atomic/include/** ${SRCROOT}/Sources/zlib/include/**";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
@@ -1128,7 +1178,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				PRODUCT_BUNDLE_IDENTIFIER = com.SusanDoggie.Doggie;
 				PRODUCT_NAME = Doggie;
-				SWIFT_INCLUDE_PATHS = "${SRCROOT}/Sources/c11_atomic/include/**";
+				SWIFT_INCLUDE_PATHS = "${SRCROOT}/Sources/c11_atomic/include/** ${SRCROOT}/Sources/zlib/include/**";
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 			};
 			name = Release;
