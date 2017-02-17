@@ -3,8 +3,6 @@
 import Cocoa
 import Doggie
 
-Array("%XREF ".utf8)
-
 extension DGDocument {
     
     public enum ParserError: Error {
@@ -13,7 +11,7 @@ extension DGDocument {
     
     public static func Parse(data: Data) throws -> DGDocument {
         
-        guard equals(data.prefix(5), [37, 68, 79, 71]) else {
+        guard equals(data.prefix(4), [37, 68, 79, 71]) else {
             throw ParserError.invalidFormat("'%DOG' not find.")
         }
         
@@ -103,7 +101,7 @@ extension DGDocument {
         }
         var offset = _rootIdStartPosition - 1
         while let next = try xrefDecode(data: data, position: offset, table: &table) {
-            offset = next
+            offset = next - 1
         }
         return (root, table)
     }
@@ -113,25 +111,25 @@ extension DGDocument {
         var _lineStart = lineStartPosition(data: data, position: position)
         var _lineEnd = lineEndPosition(data: data, position: position)
         
-        let line = data[_lineStart..<_lineEnd]
-        if line.count > 5 && equals(line.prefix(6), [37, 88, 82, 69, 70, 32]) {
-            var offset = 0
-            for d in line.dropFirst(6) {
-                if 48...57 ~= d {
-                    offset = offset * 10 + Int(d - 48)
-                } else {
-                    throw ParserError.invalidFormat("invalid file format.")
+        while true {
+            let line = data[_lineStart..<_lineEnd]
+            if line.count > 5 && equals(line.prefix(6), [37, 88, 82, 69, 70, 32]) {
+                var offset = 0
+                for d in line.dropFirst(6) {
+                    if 48...57 ~= d {
+                        offset = offset * 10 + Int(d - 48)
+                    } else {
+                        throw ParserError.invalidFormat("invalid file format.")
+                    }
                 }
+                return offset
+            } else if line.count == 5 && equals(line, [37, 88, 82, 69, 70]) {
+                return nil
             }
-            return offset
-        } else if line.count == 5 && equals(line, [37, 88, 82, 69, 70]) {
-            return nil
-        } else {
             try xrefDecodeLine(line: line, table: &table)
-            _lineStart = lineStartPosition(data: data, position: _lineStart - 1)
             _lineEnd = lineEndPosition(data: data, position: _lineStart - 1)
+            _lineStart = lineStartPosition(data: data, position: _lineStart - 1)
         }
-        return nil
     }
     
     private static func xrefDecodeLine(line: MutableRandomAccessSlice<Data>, table: inout [Int: Int]) throws {
@@ -149,8 +147,10 @@ extension DGDocument {
         }
         if numList.count > 1 {
             var counter = numList[0]
-            for d in numList.dropFirst() where table[counter] == nil {
-                table[counter] = d
+            for d in numList.dropFirst() {
+                if table[counter] == nil {
+                    table[counter] = d
+                }
                 counter += 1
             }
         }
@@ -165,3 +165,19 @@ extension DGDocument {
     }
 }
 
+Array("%XREF ".utf8)
+
+let test = "%DOG\n{@2 a\0 /1}\n[]\n%XREF\n0 5 16\n0\n%%EOF\n{@2 b\0 /1}\n%XREF 32\n0 39\n0\n%%EOF"
+
+print(Array(test.utf8))
+let data = Data(bytes: Array(test.utf8))
+
+do {
+    
+    let document = try DGDocument.Parse(data: data)
+    
+    document
+
+} catch let DGDocument.ParserError.invalidFormat(msg) {
+    print(msg)
+}
