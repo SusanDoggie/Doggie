@@ -1,5 +1,5 @@
 //
-//  Package.swift
+//  zlib_include.h
 //
 //  The MIT License
 //  Copyright (c) 2015 - 2017 Susan Cheng. All rights reserved.
@@ -23,24 +23,9 @@
 //  THE SOFTWARE.
 //
 
-import PackageDescription
+#ifndef zlib_include_h
+#define zlib_include_h
 
-let package = Package(
-    name: "Doggie",
-    targets: [
-        Target(name: "Doggie", dependencies: [
-            .Target(name: "c11_atomic"),
-            .Target(name: "zlib")
-            ]),
-        Target(name: "c11_atomic"),
-        Target(name: "zlib")
-    ],
-    exclude: [
-        "LICENSE", "README.md",
-        "Doggie.xcodeproj",
-        "Doggie.xcworkspace",
-        "playgrounds",
-        "Doggie_iOS", "Doggie_iOSTests",
-        "Doggie_Mac", "Doggie_MacTests"
-    ]
-)
+#include <zlib.h>
+
+#endif /* zlib_include_h */
