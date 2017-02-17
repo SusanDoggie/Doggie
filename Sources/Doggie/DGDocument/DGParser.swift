@@ -344,7 +344,12 @@ extension DGDocument {
         var _lineEnd = lineEndPosition(data: data, position: position)
         
         while true {
+            
+            if _lineStart >= _lineEnd {
+                throw ParserError.invalidFormat("invalid file format.")
+            }
             let line = data[_lineStart..<_lineEnd]
+            
             if line.count > 5 && equals(line.prefix(6), [37, 88, 82, 69, 70, 32]) {
                 var offset = 0
                 for d in line.dropFirst(6) {
@@ -375,8 +380,6 @@ extension DGDocument {
                         }
                         counter += 1
                     }
-                } else {
-                    throw ParserError.invalidFormat("invalid file format.")
                 }
                 _lineEnd = lineEndPosition(data: data, position: _lineStart - 1)
                 _lineStart = lineStartPosition(data: data, position: _lineStart - 1)
