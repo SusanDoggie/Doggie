@@ -7,6 +7,8 @@ extension PDFDocument {
     
     public enum ParserError: Error {
         case invalidFormat(String)
+        case unknownToken(Int)
+        case unexpectedEOF
     }
     
     public static func Parse(data: Data) throws -> PDFDocument {
@@ -17,10 +19,7 @@ extension PDFDocument {
         
         let _version = try version(data: data)
         
-        var trailer: PDFDocument.Dictionary = [:]
-        var xref: [[PDFDocument.Value?]] = []
-        
-        let _xrefPosition = try xrefPosition(data: data)
+        let (trailer, xref) = try xrefTable(data: data)
         
         return PDFDocument(version: _version, trailer: trailer, xref: PDFDocument.Xref(xref))
     }
@@ -122,6 +121,10 @@ extension PDFDocument {
         let _xrefEndPosition = lineEndPosition(data: data, position: _eofPosition - 1)
         let _xrefStartPosition = lineStartPosition(data: data, position: _xrefEndPosition - 1)
         
+        if _xrefStartPosition >= _xrefEndPosition {
+            throw ParserError.invalidFormat("invalid file format.")
+        }
+        
         let _startxref_flag_end = lineEndPosition(data: data, position: _xrefStartPosition - 1)
         if !equals(data.prefix(upTo: _startxref_flag_end).suffix(9), [115, 116, 97, 114, 116, 120, 114, 101, 102]) {
             throw ParserError.invalidFormat("'startxref' not find.")
@@ -137,13 +140,43 @@ extension PDFDocument {
         }
         return offset
     }
+    
+    private static func xrefTable(data: Data) throws -> (PDFDocument.Dictionary, [[PDFDocument.Value?]]) {
+        
+        let _xrefPosition = try xrefPosition(data: data)
+        
+        var _lineStart = lineStartPosition(data: data, position: _xrefPosition)
+        var _lineEnd = lineEndPosition(data: data, position: _xrefPosition)
+        
+        String(data: Data(data[_lineStart..<_lineEnd]), encoding: .ascii) ?? ""
+        
+        throw ParserError.unexpectedEOF
+        
+    }
+    
+    private static func trailer(data: Data, position: Int) throws -> PDFDocument.Dictionary {
+        
+        throw ParserError.unexpectedEOF
+    }
 }
 
 if let url = Bundle.main.url(forResource: "test", withExtension: "pdf"), let data = try? Data(contentsOf: url) {
     
     print(String(data: data, encoding: .ascii) ?? "")
     
-    try PDFDocument.Parse(data: data)
-    
+    do {
+        
+        let document = try PDFDocument.Parse(data: data)
+        
+        print(document)
+        
+    } catch let PDFDocument.ParserError.invalidFormat(msg) {
+        print("invalid format:", msg)
+    } catch let PDFDocument.ParserError.unknownToken(pos) {
+        print("unknown token:", pos)
+    } catch PDFDocument.ParserError.unexpectedEOF {
+        print("unexpected EOF")
+    }
+
 }
 
