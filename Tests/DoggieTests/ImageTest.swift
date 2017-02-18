@@ -31,6 +31,7 @@ class ImageTest: XCTestCase {
     
     static let allTests = [
         ("testResamplingNonePerformance", testResamplingNonePerformance),
+        ("testResamplingNonePerformanceB", testResamplingNonePerformanceB),
         ("testResamplingLinearPerformance", testResamplingLinearPerformance),
         ("testResamplingCosinePerformance", testResamplingCosinePerformance),
         ("testResamplingCubicPerformance", testResamplingCubicPerformance),
@@ -105,6 +106,21 @@ class ImageTest: XCTestCase {
         self.measure() {
             // Put the code you want to measure the time of here.
             _ = Image(image: sample, width: 1000, height: 1000, transform: transform, resampling: .none)
+        }
+    }
+    
+    func testResamplingNonePerformanceB() {
+        // This is an example of a performance test case.
+        
+        let sampleA = self.sample
+        let transformA = SDTransform.Scale(x: 19.2, y: 10.8)
+        
+        let sampleB = Image(image: sampleA, width: 1920, height: 1080, transform: transformA, resampling: .none)
+        let transformB = SDTransform.Scale(x: 3840/1920, y: 2160/1080)
+        
+        self.measure() {
+            // Put the code you want to measure the time of here.
+            _ = Image(image: sampleB, width: 3840, height: 2160, transform: transformB, resampling: .none)
         }
     }
     

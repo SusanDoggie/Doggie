@@ -164,15 +164,33 @@ extension PDFDocument {
     
     private static func xrefTable(data: Data) throws -> (PDFDocument.Dictionary, [[PDFDocument.Value?]]) {
         
-        let _xrefPosition = try xrefPosition(data: data)
+        var _xrefPosition = try xrefPosition(data: data)
         
-        var _lineStart = lineStartPosition(data: data, position: _xrefPosition)
-        var _lineEnd = lineEndPosition(data: data, position: _xrefPosition)
-        
-        String(data: Data(data[_lineStart..<_lineEnd]), encoding: .ascii) ?? ""
-        
-        throw ParserError.unexpectedEOF
-        
+        while true {
+            
+            var _lineStart = lineStartPosition(data: data, position: _xrefPosition)
+            var _lineEnd = lineEndPosition(data: data, position: _xrefPosition)
+            
+            if _lineStart >= _lineEnd {
+                throw ParserError.invalidFormat("invalid file format.")
+            }
+            
+            if !equals(data[_lineStart..<_lineEnd], [120, 114, 101, 102]) {
+                throw ParserError.invalidFormat("'xref' not find.")
+            }
+            
+            _lineStart = nextLineStartPosition(data: data, position: _lineEnd)
+            _lineEnd = lineEndPosition(data: data, position: _lineStart)
+            
+            if _lineStart >= _lineEnd {
+                throw ParserError.invalidFormat("invalid file format.")
+            }
+            let line = data[_lineStart..<_lineEnd]
+            
+            String(data: Data(line), encoding: .ascii) ?? ""
+            
+            throw ParserError.unexpectedEOF
+        }
     }
     
     private static func trailer(data: Data, position: Int) throws -> PDFDocument.Dictionary {
