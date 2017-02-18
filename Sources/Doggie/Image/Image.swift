@@ -35,6 +35,7 @@ private protocol ImageBaseProtocol {
     
     func convert<RPixel: ColorPixelProtocol, RSpace : LinearColorSpaceProtocol>(pixel: RPixel.Type, colorSpace: RSpace, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm) -> ImageBaseProtocol where RSpace.Model : ColorBlendProtocol, RPixel.Model == RSpace.Model
     
+    func resampling(s_width: Int, width: Int, height: Int, algorithm: Image.ResamplingAlgorithm) -> ImageBaseProtocol
     func resampling<T: SDTransformProtocol>(s_width: Int, width: Int, height: Int, transform: T, algorithm: Image.ResamplingAlgorithm) -> ImageBaseProtocol
     
     mutating func withUnsafeMutableBytes<R>(_ body: (UnsafeMutableRawBufferPointer) throws -> R) rethrows -> R
@@ -74,6 +75,10 @@ private struct ImageBase<ColorPixel: ColorPixelProtocol, ColorSpace : ColorSpace
         return ImageBase<RPixel, RSpace>(buffer: _buffer, colorSpace: colorSpace, algorithm: algorithm)
     }
     
+    func resampling(s_width: Int, width: Int, height: Int, algorithm: Image.ResamplingAlgorithm) -> ImageBaseProtocol {
+        
+        return resampling(s_width: s_width, width: width, height: height, transform: SDTransform.Scale(x: Double(width) / Double(s_width), y: Double(height) / Double(buffer.count / s_width)), algorithm: algorithm)
+    }
     func resampling<T: SDTransformProtocol>(s_width: Int, width: Int, height: Int, transform: T, algorithm: Image.ResamplingAlgorithm) -> ImageBaseProtocol {
         
         return ImageBase(buffer: algorithm.calculate(source: self.buffer, s_width: s_width, width: width, height: height, transform: SDTransform(transform.inverse)), colorSpace: self.colorSpace, algorithm: self.algorithm)
@@ -93,6 +98,12 @@ public struct Image {
     public let width: Int
     public let height: Int
     private var base: ImageBaseProtocol
+    
+    public init(image: Image, width: Int, height: Int, resampling algorithm: ResamplingAlgorithm = .linear) {
+        self.width = width
+        self.height = height
+        self.base = image.base.resampling(s_width: image.width, width: width, height: height, algorithm: algorithm)
+    }
     
     public init<T: SDTransformProtocol>(image: Image, width: Int, height: Int, transform: T, resampling algorithm: ResamplingAlgorithm = .linear) {
         self.width = width
@@ -162,6 +173,8 @@ extension Image.ResamplingAlgorithm {
         
         if source.count != 0 {
             
+            let s_height = source.count / s_width
+            
             result.withUnsafeMutableBufferPointer { buffer in
                 
                 @_transparent
@@ -189,8 +202,6 @@ extension Image.ResamplingAlgorithm {
                 case .none:
                     source.withUnsafeBufferPointer { source in
                         if let _source = source.baseAddress {
-                            let s_height = source.count / s_width
-                            
                             filling { point in
                                 let _x = Int(point.x)
                                 let _y = Int(point.y)
@@ -202,8 +213,6 @@ extension Image.ResamplingAlgorithm {
                     
                     source.map { ColorPixel($0) }.withUnsafeBufferPointer { source in
                         if let _source = source.baseAddress {
-                            let s_height = source.count / s_width
-                            
                             switch self {
                             case .none: fatalError()
                             case .linear: filling { smapling2(source: _source, width: s_width, height: s_height, point: $0, sampler: LinearInterpolate) }
