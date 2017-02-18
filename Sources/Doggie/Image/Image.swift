@@ -164,14 +164,23 @@ extension Image.ResamplingAlgorithm {
             
             result.withUnsafeMutableBufferPointer { buffer in
                 
+                @_transparent
                 func filling(operation: (Point) -> Pixel) {
                     
                     if var pointer = buffer.baseAddress {
-                        for y in 0..<height {
-                            for x in 0..<width {
-                                pointer.pointee = operation(Point(x: x, y: y) * transform)
+                        
+                        var _p = Point(x: 0, y: 0)
+                        let _p1 = Point(x: 1, y: 0) * transform
+                        let _p2 = Point(x: 0, y: 1) * transform
+                        
+                        for _ in 0..<height {
+                            var p = _p
+                            for _ in 0..<width {
+                                pointer.pointee = operation(p)
                                 pointer += 1
+                                p += _p1
                             }
+                            _p += _p2
                         }
                     }
                 }
@@ -202,61 +211,49 @@ extension Image.ResamplingAlgorithm {
                             case .cubic: filling { smapling4(source: _source, width: s_width, height: s_height, point: $0, sampler: CubicInterpolate) }
                             case let .mitchell(B, C):
                                 
+                                let a1 = 12 - 9 * B - 6 * C
+                                let b1 = -18 + 12 * B + 6 * C
+                                let c1 = 6 - 2 * B
+                                let a2 = -B - 6 * C
+                                let b2 = 6 * B + 30 * C
+                                let c2 = -12 * B - 48 * C
+                                let d2 = 8 * B + 24 * C
+                                
+                                @_transparent
                                 func _kernel(_ x: Double) -> Double {
                                     if x < 1 {
-                                        let a = 12 - 9 * B - 6 * C
-                                        let b = -18 + 12 * B + 6 * C
-                                        let c = 6 - 2 * B
-                                        return (a * x + b) * x * x + c
+                                        return (a1 * x + b1) * x * x + c1
                                     }
                                     if x < 2 {
-                                        let a = -B - 6 * C
-                                        let b = 6 * B + 30 * C
-                                        let c = -12 * B - 48 * C
-                                        let d = 8 * B + 24 * C
-                                        return ((a * x + b) * x + c) * x + d
+                                        return ((a2 * x + b2) * x + c2) * x + d2
                                     }
                                     return 0
                                 }
+                                filling { convolve(source: _source, width: s_width, height: s_height, point: $0, kernel_size: 5, kernel: _kernel) }
                                 
-                                filling { point in
-                                    
-                                    var s_color = Pixel.Model()
-                                    var s_alpha: Double = 0
-                                    var t: Double = 0
-                                    
-                                    let _x = Int(point.x)
-                                    let _y = Int(point.y)
-                                    
-                                    let min_x = _x - 2
-                                    let max_x = _x + 3
-                                    let min_y = _y - 2
-                                    let max_y = _y + 3
-                                    
-                                    let x_range = 0..<s_width
-                                    let y_range = 0..<s_height
-                                    
-                                    for y in min_y..<max_y {
-                                        for x in min_x..<max_x {
-                                            let l = _kernel((point - Point(x: x, y: y)).magnitude)
-                                            let _source = x_range.contains(x) && y_range.contains(y) ? _source[y * s_width + x] : _source[y.clamped(to: y_range) * s_width + x.clamped(to: x_range)].with(alpha: 0)
-                                            s_color = s_color.blend(_source.color) { $0 + $1 * l }
-                                            s_alpha += _source.alpha * l
-                                            t += l
-                                        }
+                            case .lanczos(1):
+                                
+                                @_transparent
+                                func _kernel(_ x: Double) -> Double {
+                                    if x == 0 {
+                                        return 1
                                     }
-                                    return t == 0 ? Pixel() : Pixel(color: s_color.blend { $0 / t }, alpha: s_alpha / t)
+                                    if x < 1 {
+                                        let _x = Double.pi * x
+                                        let _sinc = sin(_x) / _x
+                                        return _sinc * _sinc
+                                    }
+                                    return 0
                                 }
+                                filling { convolve(source: _source, width: s_width, height: s_height, point: $0, kernel_size: 2, kernel: _kernel) }
                                 
                             case let .lanczos(a):
                                 
+                                @_transparent
                                 func _kernel(_ x: Double) -> Double {
                                     let a = Double(a)
                                     if x == 0 {
                                         return 1
-                                    }
-                                    if x < -a {
-                                        return 0
                                     }
                                     if x < a {
                                         let _x = Double.pi * x
@@ -264,37 +261,7 @@ extension Image.ResamplingAlgorithm {
                                     }
                                     return 0
                                 }
-                                
-                                filling { point in
-                                    
-                                    var s_color = Pixel.Model()
-                                    var s_alpha: Double = 0
-                                    var t: Double = 0
-                                    
-                                    let _x = Int(point.x)
-                                    let _y = Int(point.y)
-                                    
-                                    let a = Int(a)
-                                    
-                                    let min_x = _x - a + 1
-                                    let max_x = _x + a + 1
-                                    let min_y = _y - a + 1
-                                    let max_y = _y + a + 1
-                                    
-                                    let x_range = 0..<s_width
-                                    let y_range = 0..<s_height
-                                    
-                                    for y in min_y..<max_y {
-                                        for x in min_x..<max_x {
-                                            let l = _kernel((point - Point(x: x, y: y)).magnitude)
-                                            let _source = x_range.contains(x) && y_range.contains(y) ? _source[y * s_width + x] : _source[y.clamped(to: y_range) * s_width + x.clamped(to: x_range)].with(alpha: 0)
-                                            s_color = s_color.blend(_source.color) { $0 + $1 * l }
-                                            s_alpha += _source.alpha * l
-                                            t += l
-                                        }
-                                    }
-                                    return t == 0 ? Pixel() : Pixel(color: s_color.blend { $0 / t }, alpha: s_alpha / t)
-                                }
+                                filling { convolve(source: _source, width: s_width, height: s_height, point: $0, kernel_size: Int(a) << 1, kernel: _kernel) }
                             }
                         }
                     }
@@ -304,6 +271,39 @@ extension Image.ResamplingAlgorithm {
         return result
     }
     
+    @_transparent
+    private func convolve<Pixel: ColorPixelProtocol>(source: UnsafePointer<ColorPixel<Pixel.Model>>, width: Int, height: Int, point: Point, kernel_size: Int, kernel: (Double) -> Double) -> Pixel {
+        
+        var s_color = Pixel.Model()
+        var s_alpha: Double = 0
+        var t: Double = 0
+        
+        let _x = Int(point.x)
+        let _y = Int(point.y)
+        
+        let a = kernel_size >> 1
+        let b = 1 - kernel_size & 1
+        let min_x = _x - a + b
+        let max_x = min_x + kernel_size
+        let min_y = _y - a + b
+        let max_y = min_y + kernel_size
+        
+        let x_range = 0..<width
+        let y_range = 0..<height
+        
+        for y in min_y..<max_y {
+            for x in min_x..<max_x {
+                let l = kernel((point - Point(x: x, y: y)).magnitude)
+                let _source = x_range.contains(x) && y_range.contains(y) ? source[y * width + x] : source[y.clamped(to: y_range) * width + x.clamped(to: x_range)].with(alpha: 0)
+                s_color = s_color.blend(_source.color) { $0 + $1 * l }
+                s_alpha += _source.alpha * l
+                t += l
+            }
+        }
+        return t == 0 ? Pixel() : Pixel(color: s_color.blend { $0 / t }, alpha: s_alpha / t)
+    }
+    
+    @_transparent
     private func smapling2<Pixel: ColorPixelProtocol>(source: UnsafePointer<ColorPixel<Pixel.Model>>, width: Int, height: Int, point: Point, sampler: (Double, Double, Double) -> Double) -> Pixel {
         
         let x_range = 0..<width
@@ -344,6 +344,7 @@ extension Image.ResamplingAlgorithm {
         }
     }
     
+    @_transparent
     private func smapling4<Pixel: ColorPixelProtocol>(source: UnsafePointer<ColorPixel<Pixel.Model>>, width: Int, height: Int, point: Point, sampler: (Double, Double, Double, Double, Double) -> Double) -> Pixel {
         
         let x_range = 0..<width
