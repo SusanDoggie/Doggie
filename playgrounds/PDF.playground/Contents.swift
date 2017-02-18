@@ -72,6 +72,10 @@ extension PDFDocument {
             
             if equals(data[_lineStart..<_lineEnd], [115, 116, 114, 101, 97, 109]) {
                 if let dict = obj.dictionary, let length = dict["Length"] {
+                    if _version >= (1, 2) && dict["F"] != nil {
+                        table[id][gen] = PDFDocument.Value.stream(dict, Data())
+                        continue
+                    }
                     switch length {
                     case let .number(length):
                         
