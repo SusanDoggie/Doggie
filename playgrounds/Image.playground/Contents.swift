@@ -54,39 +54,37 @@ sample.withUnsafeBytes {
     }
 }
 
-let transform = SDTransform.Scale(x: 10, y: 10)
-
-Image(image: sample, width: 1000, height: 1000, transform: transform, resampling: .none).withUnsafeBytes {
+Image(image: sample, width: 1000, height: 1000, resampling: .none).withUnsafeBytes {
     if let image = createImage(data: $0.baseAddress!, size: CGSize(width: 1000, height: 1000)) {
         NSImage(cgImage: image)
     }
 }
 
-Image(image: sample, width: 1000, height: 1000, transform: transform, resampling: .linear).withUnsafeBytes {
+Image(image: sample, width: 1000, height: 1000, resampling: .linear).withUnsafeBytes {
     if let image = createImage(data: $0.baseAddress!, size: CGSize(width: 1000, height: 1000)) {
         NSImage(cgImage: image)
     }
 }
 
-Image(image: sample, width: 1000, height: 1000, transform: transform, resampling: .cosine).withUnsafeBytes {
+Image(image: sample, width: 1000, height: 1000, resampling: .cosine).withUnsafeBytes {
     if let image = createImage(data: $0.baseAddress!, size: CGSize(width: 1000, height: 1000)) {
         NSImage(cgImage: image)
     }
 }
 
-Image(image: sample, width: 1000, height: 1000, transform: transform, resampling: .cubic).withUnsafeBytes {
+Image(image: sample, width: 1000, height: 1000, resampling: .cubic).withUnsafeBytes {
     if let image = createImage(data: $0.baseAddress!, size: CGSize(width: 1000, height: 1000)) {
         NSImage(cgImage: image)
     }
 }
 
-Image(image: sample, width: 1000, height: 1000, transform: transform, resampling: .mitchell(1/3, 1/3)).withUnsafeBytes {
+Image(image: sample, width: 1000, height: 1000, resampling: .mitchell(1/3, 1/3)).withUnsafeBytes {
     if let image = createImage(data: $0.baseAddress!, size: CGSize(width: 1000, height: 1000)) {
         NSImage(cgImage: image)
     }
 }
 
-Image(image: sample, width: 1000, height: 1000, transform: transform, resampling: .lanczos(3)).withUnsafeBytes {
+Image(image: sample, width: 1000, height: 1000, resampling: .lanczos(3)).withUnsafeBytes {
     if let image = createImage(data: $0.baseAddress!, size: CGSize(width: 1000, height: 1000)) {
         NSImage(cgImage: image)
     }

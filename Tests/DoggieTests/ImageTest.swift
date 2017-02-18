@@ -101,11 +101,10 @@ class ImageTest: XCTestCase {
         // This is an example of a performance test case.
         
         let sample = self.sample
-        let transform = SDTransform.Scale(x: 10, y: 10)
         
         self.measure() {
             // Put the code you want to measure the time of here.
-            _ = Image(image: sample, width: 1000, height: 1000, transform: transform, resampling: .none)
+            _ = Image(image: sample, width: 1000, height: 1000, resampling: .none)
         }
     }
     
@@ -113,14 +112,12 @@ class ImageTest: XCTestCase {
         // This is an example of a performance test case.
         
         let sampleA = self.sample
-        let transformA = SDTransform.Scale(x: 19.2, y: 10.8)
         
-        let sampleB = Image(image: sampleA, width: 1920, height: 1080, transform: transformA, resampling: .none)
-        let transformB = SDTransform.Scale(x: 3840/1920, y: 2160/1080)
+        let sampleB = Image(image: sampleA, width: 1920, height: 1080, resampling: .none)
         
         self.measure() {
             // Put the code you want to measure the time of here.
-            _ = Image(image: sampleB, width: 3840, height: 2160, transform: transformB, resampling: .none)
+            _ = Image(image: sampleB, width: 3840, height: 2160, resampling: .none)
         }
     }
     
@@ -128,11 +125,10 @@ class ImageTest: XCTestCase {
         // This is an example of a performance test case.
         
         let sample = self.sample
-        let transform = SDTransform.Scale(x: 10, y: 10)
         
         self.measure() {
             // Put the code you want to measure the time of here.
-            _ = Image(image: sample, width: 1000, height: 1000, transform: transform, resampling: .linear)
+            _ = Image(image: sample, width: 1000, height: 1000, resampling: .linear)
         }
     }
     
@@ -140,11 +136,10 @@ class ImageTest: XCTestCase {
         // This is an example of a performance test case.
         
         let sample = self.sample
-        let transform = SDTransform.Scale(x: 10, y: 10)
         
         self.measure() {
             // Put the code you want to measure the time of here.
-            _ = Image(image: sample, width: 1000, height: 1000, transform: transform, resampling: .cosine)
+            _ = Image(image: sample, width: 1000, height: 1000, resampling: .cosine)
         }
     }
     
@@ -152,11 +147,10 @@ class ImageTest: XCTestCase {
         // This is an example of a performance test case.
         
         let sample = self.sample
-        let transform = SDTransform.Scale(x: 10, y: 10)
         
         self.measure() {
             // Put the code you want to measure the time of here.
-            _ = Image(image: sample, width: 1000, height: 1000, transform: transform, resampling: .cubic)
+            _ = Image(image: sample, width: 1000, height: 1000, resampling: .cubic)
         }
     }
     
@@ -164,11 +158,10 @@ class ImageTest: XCTestCase {
         // This is an example of a performance test case.
         
         let sample = self.sample
-        let transform = SDTransform.Scale(x: 10, y: 10)
         
         self.measure() {
             // Put the code you want to measure the time of here.
-            _ = Image(image: sample, width: 1000, height: 1000, transform: transform, resampling: .mitchell(1/3, 1/3))
+            _ = Image(image: sample, width: 1000, height: 1000, resampling: .mitchell(1/3, 1/3))
         }
     }
     
@@ -176,11 +169,10 @@ class ImageTest: XCTestCase {
         // This is an example of a performance test case.
         
         let sample = self.sample
-        let transform = SDTransform.Scale(x: 10, y: 10)
         
         self.measure() {
             // Put the code you want to measure the time of here.
-            _ = Image(image: sample, width: 1000, height: 1000, transform: transform, resampling: .lanczos(3))
+            _ = Image(image: sample, width: 1000, height: 1000, resampling: .lanczos(3))
         }
     }
     
