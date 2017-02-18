@@ -3,7 +3,7 @@
 import Cocoa
 import Doggie
 
-Array("/".utf8)
+Array("()<>[]{}/%".utf8).sorted()
 
 extension PDFDocument {
     
@@ -30,21 +30,27 @@ extension PDFDocument {
     
     private static func parseValue(data: Data, position: Int, version: (Int, Int)) throws -> (Int, PDFDocument.Value) {
         
-        switch data[position] {
-        case 110:
-            if equals(data.suffix(from: position).prefix(4), [110, 117, 108, 108]) {
-                return (position + 4, .null)
+        var position = position
+        
+        while position < data.count {
+            switch data[position] {
+            case 0, 9, 10, 12, 13, 32: position += 1
+            case 125: position = nextLineStartPosition(data: data, position: lineEndPosition(data: data, position: position))
+            case 110:
+                if equals(data.suffix(from: position).prefix(4), [110, 117, 108, 108]) {
+                    return (position + 4, .null)
+                }
+            case 116, 102: return try parseBool(data: data, position: position)
+            case 47: return try parseName(data: data, position: position, version: version)
+            case 91: return try parseArray(data: data, position: position, version: version)
+            case 60:
+                if position + 1 != data.count && data[position + 1] == 60 {
+                    return try parseDictionary(data: data, position: position, version: version)
+                }
+                return try parseHexString(data: data, position: position)
+            case 43, 45, 46, 48...57: return try parseReference(data: data, position: position) ?? parseNumber(data: data, position: position)
+            default: break
             }
-        case 116, 102: return try parseBool(data: data, position: position)
-        case 47: return try parseName(data: data, position: position, version: version)
-        case 91: return try parseArray(data: data, position: position, version: version)
-        case 60:
-            if position + 1 != data.count && data[position + 1] == 60 {
-                return try parseDictionary(data: data, position: position, version: version)
-            }
-            return try parseHexString(data: data, position: position)
-        case 43, 45, 46, 48...57: return try parseReference(data: data, position: position) ?? parseNumber(data: data, position: position)
-        default: break
         }
         throw ParserError.unknownToken(position)
     }
@@ -66,7 +72,7 @@ extension PDFDocument {
         
         loop: for (pos, d) in data.suffix(from: position).dropFirst().indexed() {
             switch d {
-            case 33, 34, 36...126:
+            case 33, 34, 36, 38, 39, 42...46, 48...59, 61, 63...90, 92, 94...122, 124, 126:
                 if flag == 0 {
                     name.append(d)
                 } else {
@@ -163,7 +169,7 @@ extension PDFDocument {
                     hex.append(t * 0x10 + (d - 97 + 0xA))
                 }
                 flag += 1
-            case 9, 10, 13, 32: break
+            case 0, 9, 10, 12, 13, 32: break
             case 62:
                 if flag & 1 == 1 {
                     hex.append(t * 0x10)
@@ -235,7 +241,7 @@ extension PDFDocument {
         while position < data.count {
             let d = data[position]
             switch d {
-            case 9, 10, 13, 32: position += 1
+            case 0, 9, 10, 12, 13, 32: position += 1
             case 93: return (position + 1, .array(array))
             default:
                 let (pos, value) = try parseValue(data: data, position: position, version: version)
@@ -260,7 +266,7 @@ extension PDFDocument {
         while position < data.count {
             let d = data[position]
             switch d {
-            case 9, 10, 13, 32: position += 1
+            case 0, 9, 10, 12, 13, 32: position += 1
             case 62:
                 if position + 1 != data.count && data[position + 1] == 62 {
                     return (position + 2, .dictionary(dictionary))
@@ -280,7 +286,7 @@ extension PDFDocument {
                 
                 loop: while true {
                     switch data[position] {
-                    case 9, 10, 13, 32: position += 1
+                    case 0, 9, 10, 12, 13, 32: position += 1
                     default: break loop
                     }
                 }
