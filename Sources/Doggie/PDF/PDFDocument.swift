@@ -87,7 +87,7 @@ public struct PDFDocument {
         case name(Name)
         case array([Value])
         case dictionary(PDFDocument.Dictionary)
-        case stream(Data)
+        case stream(PDFDocument.Dictionary, Data)
     }
 }
 
@@ -634,7 +634,7 @@ extension PDFDocument.Value {
         }
     }
     
-    public var stream: Data? {
+    public var stream: (PDFDocument.Dictionary, Data)? {
         get {
             switch self {
             case let .stream(stream): return stream
@@ -642,7 +642,7 @@ extension PDFDocument.Value {
             }
         }
         set {
-            self = newValue.map { .stream($0) } ?? .null
+            self = newValue.map { .stream($0, $1) } ?? .null
         }
     }
 }

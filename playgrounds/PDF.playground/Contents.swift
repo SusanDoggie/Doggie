@@ -3,7 +3,7 @@
 import Cocoa
 import Doggie
 
-Array("()<>[]{}/%".utf8).sorted()
+Array("endstream".utf8)
 
 extension PDFDocument {
     
@@ -23,9 +23,110 @@ extension PDFDocument {
         
         let (trailer, xref) = try xrefTable(data: data, version: _version)
         
-        print(xref)
+        var table: [[PDFDocument.Value?]] = []
+        var stream: [PDFDocument.ObjectIdentifier: (PDFDocument.Dictionary, Int)] = [:]
         
-        return PDFDocument(version: _version, trailer: trailer, xref: PDFDocument.Xref([]))
+        for (identifier, offset) in xref {
+            
+            var _lineStart = lineStartPosition(data: data, position: offset)
+            var _lineEnd = lineEndPosition(data: data, position: offset)
+            
+            if _lineStart >= _lineEnd {
+                throw ParserError.invalidFormat("invalid file format.")
+            }
+            
+            var flag = 0
+            var id = 0
+            var gen = 0
+            
+            loop: for (pos, d) in data[_lineStart..<_lineEnd].indexed() {
+                switch d {
+                case 48...57:
+                    switch flag {
+                    case 0: id = id * 10 + Int(d - 48)
+                    case 1: gen = gen * 10 + Int(d - 48)
+                    default: throw ParserError.invalidFormat("invalid obj format.")
+                    }
+                case 32: flag += 1
+                case 111:
+                    if flag != 2 || !equals(data.suffix(from: pos).prefix(3), [111, 98, 106]) {
+                        throw ParserError.invalidFormat("'obj' not find.")
+                    }
+                    break loop
+                default: throw ParserError.invalidFormat("invalid obj format.")
+                }
+            }
+            
+            if identifier.identifier != id || identifier.generation != gen {
+                throw ParserError.invalidFormat("incorrect obj identifier.")
+            }
+            
+            _lineStart = nextLineStartPosition(data: data, position: _lineEnd)
+            
+            let (pos, obj) = try parseValue(data: data, position: _lineStart, version: _version)
+            
+            _lineEnd = lineEndPosition(data: data, position: pos)
+            
+            _lineStart = nextLineStartPosition(data: data, position: _lineEnd)
+            _lineEnd = lineEndPosition(data: data, position: _lineStart)
+            
+            if equals(data[_lineStart..<_lineEnd], [115, 116, 114, 101, 97, 109]) {
+                if let dict = obj.dictionary, let length = dict["Length"] {
+                    switch length {
+                    case let .number(length):
+                        
+                        let _length = length.intValue
+                        
+                        let _streamStart = nextLineStartPosition(data: data, position: _lineEnd)
+                        let data = data.suffix(from: _streamStart).prefix(_length)
+                        
+                        if data.count != _length {
+                            throw ParserError.unexpectedEOF
+                        }
+                        table[id][gen] = PDFDocument.Value.stream(dict, Data(data))
+                        
+                    case .indirect: stream[identifier] = (dict, _lineEnd)
+                    default: throw ParserError.invalidFormat("invalid stream format.")
+                    }
+                } else {
+                    throw ParserError.invalidFormat("invalid stream format.")
+                }
+            } else {
+                if id >= table.count {
+                    table.append(contentsOf: repeatElement([], count: id - table.count + 1))
+                }
+                if gen >= table[id].count {
+                    table[id].append(contentsOf: repeatElement(nil, count: gen - table[id].count + 1))
+                }
+                table[id][gen] = obj
+            }
+        }
+        
+        for (identifier, (dict, offset)) in stream {
+            if identifier.identifier < table.count && identifier.generation < table[identifier.identifier].count, let length = table[identifier.identifier][identifier.generation] {
+                
+                switch length {
+                case let .number(length):
+                    
+                    let _length = length.intValue
+                    
+                    let _streamStart = nextLineStartPosition(data: data, position: offset)
+                    let data = data.suffix(from: _streamStart).prefix(_length)
+                    
+                    if data.count != _length {
+                        throw ParserError.unexpectedEOF
+                    }
+                    table[identifier.identifier][identifier.generation] = PDFDocument.Value.stream(dict, Data(data))
+                    
+                default: throw ParserError.invalidFormat("obj \(identifier.identifier) \(identifier.generation) not a number.")
+                }
+                
+            } else {
+                throw ParserError.invalidFormat("obj \(identifier.identifier) \(identifier.generation) not found.")
+            }
+        }
+        
+        return PDFDocument(version: _version, trailer: trailer, xref: PDFDocument.Xref(table))
     }
     
     private static func parseValue(data: Data, position: Int, version: (Int, Int)) throws -> (Int, PDFDocument.Value) {
@@ -72,7 +173,7 @@ extension PDFDocument {
         
         loop: for (pos, d) in data.suffix(from: position).dropFirst().indexed() {
             switch d {
-            case 33, 34, 36, 38, 39, 42...46, 48...59, 61, 63...90, 92, 94...122, 124, 126:
+            case 1...8, 11, 14...31, 33, 34, 36, 38, 39, 42...46, 48...59, 61, 63...90, 92, 94...122, 124, 126...255:
                 if flag == 0 {
                     name.append(d)
                 } else {
