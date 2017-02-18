@@ -3,6 +3,8 @@
 import Cocoa
 import Doggie
 
+Array("()<>[]{}/%".utf8).sorted()
+
 extension PDFDocument {
     
     public enum ParserError: Error {
@@ -19,9 +21,284 @@ extension PDFDocument {
         
         let _version = try version(data: data)
         
-        let (trailer, xref) = try xrefTable(data: data)
+        let (trailer, xref) = try xrefTable(data: data, version: _version)
         
-        return PDFDocument(version: _version, trailer: trailer, xref: PDFDocument.Xref(xref))
+        print(xref)
+        
+        return PDFDocument(version: _version, trailer: trailer, xref: PDFDocument.Xref([]))
+    }
+    
+    private static func parseValue(data: Data, position: Int, version: (Int, Int)) throws -> (Int, PDFDocument.Value) {
+        
+        var position = position
+        
+        while position < data.count {
+            switch data[position] {
+            case 0, 9, 10, 12, 13, 32: position += 1
+            case 125: position = nextLineStartPosition(data: data, position: lineEndPosition(data: data, position: position))
+            case 110:
+                if equals(data.suffix(from: position).prefix(4), [110, 117, 108, 108]) {
+                    return (position + 4, .null)
+                }
+            case 116, 102: return try parseBool(data: data, position: position)
+            case 47: return try parseName(data: data, position: position, version: version)
+            case 91: return try parseArray(data: data, position: position, version: version)
+            case 60:
+                if position + 1 != data.count && data[position + 1] == 60 {
+                    return try parseDictionary(data: data, position: position, version: version)
+                }
+                return try parseHexString(data: data, position: position)
+            case 43, 45, 46, 48...57: return try parseReference(data: data, position: position) ?? parseNumber(data: data, position: position)
+            default: break
+            }
+        }
+        throw ParserError.unknownToken(position)
+    }
+    private static func parseBool(data: Data, position: Int) throws -> (Int, PDFDocument.Value) {
+        
+        if equals(data.suffix(from: position).prefix(4), [116, 114, 117, 101]) {
+            return (position + 4, true)
+        }
+        if equals(data.suffix(from: position).prefix(5), [102, 97, 108, 115, 101]) {
+            return (position + 5, false)
+        }
+        throw ParserError.unexpectedEOF
+    }
+    private static func parseName(data: Data, position: Int, version: (Int, Int)) throws -> (Int, PDFDocument.Value) {
+        
+        var name = [UInt8]()
+        var flag = 0
+        var t: UInt8 = 0
+        
+        loop: for (pos, d) in data.suffix(from: position).dropFirst().indexed() {
+            switch d {
+            case 33, 34, 36, 38, 39, 42...46, 48...59, 61, 63...90, 92, 94...122, 124, 126:
+                if flag == 0 {
+                    name.append(d)
+                } else {
+                    switch d {
+                    case 48...57:
+                        if flag == 2 {
+                            t = d - 48
+                        } else {
+                            name.append(t * 0x10 + (d - 48))
+                        }
+                    case 65...70:
+                        if flag == 2 {
+                            t = d - 65 + 0xA
+                        } else {
+                            name.append(t * 0x10 + (d - 65 + 0xA))
+                        }
+                    case 97...102:
+                        if flag == 2 {
+                            t = d - 97 + 0xA
+                        } else {
+                            name.append(t * 0x10 + (d - 97 + 0xA))
+                        }
+                    default: throw ParserError.invalidFormat("invalid name format.")
+                    }
+                    flag -= 1
+                }
+            case 35:
+                if version < (1, 2) {
+                    name.append(d)
+                } else {
+                    flag = 2
+                }
+            default:
+                if flag == 0, let _name = String(data: Data(name), encoding: .ascii) {
+                    return (pos, .name(PDFDocument.Name(_name)))
+                }
+                throw ParserError.invalidFormat("invalid name format.")
+            }
+        }
+        
+        throw ParserError.unexpectedEOF
+    }
+    private static func parseReference(data: Data, position: Int) throws -> (Int, PDFDocument.Value)? {
+        
+        var flag = 0
+        var identifier = 0
+        var generation = 0
+        
+        loop: for (pos, d) in data.suffix(from: position).indexed() {
+            switch d {
+            case 48...57:
+                switch flag {
+                case 0: identifier = identifier * 10 + Int(d - 48)
+                case 1: generation = generation * 10 + Int(d - 48)
+                default: return nil
+                }
+            case 32: flag += 1
+            case 82:
+                if flag == 2 {
+                    return (pos + 1, .indirect(PDFDocument.ObjectIdentifier(identifier: identifier, generation: generation)))
+                }
+            default: return nil
+            }
+        }
+        
+        throw ParserError.unexpectedEOF
+    }
+    private static func parseHexString(data: Data, position: Int) throws -> (Int, PDFDocument.Value) {
+        
+        var hex: [UInt8] = []
+        var flag = 0
+        var t: UInt8 = 0
+        
+        loop: for (pos, d) in data.suffix(from: position).dropFirst().indexed() {
+            switch d {
+            case 48...57:
+                if flag & 1 == 0 {
+                    t = d - 48
+                } else {
+                    hex.append(t * 0x10 + (d - 48))
+                }
+                flag += 1
+            case 65...70:
+                if flag & 1 == 0 {
+                    t = d - 65 + 0xA
+                } else {
+                    hex.append(t * 0x10 + (d - 65 + 0xA))
+                }
+                flag += 1
+            case 97...102:
+                if flag & 1 == 0 {
+                    t = d - 97 + 0xA
+                } else {
+                    hex.append(t * 0x10 + (d - 97 + 0xA))
+                }
+                flag += 1
+            case 0, 9, 10, 12, 13, 32: break
+            case 62:
+                if flag & 1 == 1 {
+                    hex.append(t * 0x10)
+                }
+                if let str = String(data: Data(hex), encoding: .ascii) {
+                    return (pos + 1, .string(str))
+                }
+                throw ParserError.invalidFormat("invalid string format.")
+            default: throw ParserError.invalidFormat("invalid string format.")
+            }
+        }
+        
+        throw ParserError.unexpectedEOF
+    }
+    private static func parseNumber(data: Data, position: Int) throws -> (Int, PDFDocument.Value) {
+        
+        var sign: Bool?
+        var int: IntMax = 0
+        var float = 0.0
+        var fflag = false
+        
+        loop: for (pos, d) in data.suffix(from: position).indexed() {
+            switch d {
+            case 43:
+                if sign != nil {
+                    throw ParserError.invalidFormat("invalid number format.")
+                }
+                sign = true
+            case 45:
+                if sign != nil {
+                    throw ParserError.invalidFormat("invalid number format.")
+                }
+                sign = false
+            case 46:
+                if fflag {
+                    throw ParserError.invalidFormat("invalid number format.")
+                }
+                sign = sign ?? false
+                fflag = true
+            case 48...57:
+                sign = sign ?? false
+                if fflag {
+                    float = (float + Double(d - 48)) / 10
+                } else {
+                    int = int * 10 + Int(d - 48)
+                }
+            default:
+                if fflag {
+                    let num = Double(int) + float
+                    return (pos, PDFDocument.Value(sign == true ? -num : num))
+                }
+                return (pos, PDFDocument.Value(sign == true ? -int : int))
+            }
+        }
+        
+        throw ParserError.unexpectedEOF
+    }
+    private static func parseArray(data: Data, position: Int, version: (Int, Int)) throws -> (Int, PDFDocument.Value) {
+        
+        var array: [PDFDocument.Value] = []
+        var position = position
+        
+        position += 1
+        
+        if position == data.count {
+            throw ParserError.unexpectedEOF
+        }
+        
+        while position < data.count {
+            let d = data[position]
+            switch d {
+            case 0, 9, 10, 12, 13, 32: position += 1
+            case 93: return (position + 1, .array(array))
+            default:
+                let (pos, value) = try parseValue(data: data, position: position, version: version)
+                array.append(value)
+                position = pos
+            }
+        }
+        
+        throw ParserError.unexpectedEOF
+    }
+    private static func parseDictionary(data: Data, position: Int, version: (Int, Int)) throws -> (Int, PDFDocument.Value) {
+        
+        var dictionary: PDFDocument.Dictionary = [:]
+        var position = position
+        
+        position += 2
+        
+        if position >= data.count {
+            throw ParserError.unexpectedEOF
+        }
+        
+        while position < data.count {
+            let d = data[position]
+            switch d {
+            case 0, 9, 10, 12, 13, 32: position += 1
+            case 62:
+                if position + 1 != data.count && data[position + 1] == 62 {
+                    return (position + 2, .dictionary(dictionary))
+                }
+                throw ParserError.invalidFormat("invalid dictionary format.")
+            default:
+                let (pos, _key) = try parseValue(data: data, position: position, version: version)
+                
+                let key: PDFDocument.Name
+                if case let .name(name) = _key {
+                    key = name
+                } else {
+                    throw ParserError.invalidFormat("invalid dictionary format.")
+                }
+                
+                position = pos
+                
+                loop: while true {
+                    switch data[position] {
+                    case 0, 9, 10, 12, 13, 32: position += 1
+                    default: break loop
+                    }
+                }
+                
+                let (pos2, value) = try parseValue(data: data, position: position, version: version)
+                
+                dictionary[key] = value
+                position = pos2
+            }
+        }
+        
+        throw ParserError.unexpectedEOF
     }
     
     private static func equals<S1 : Sequence, S2 : Sequence>(_ lhs: S1, _ rhs: S2) -> Bool where S1.Iterator.Element : Equatable, S1.Iterator.Element == S2.Iterator.Element {
@@ -153,18 +430,20 @@ extension PDFDocument {
         
         var offset = 0
         for d in data[_xrefStartPosition..<_xrefEndPosition] {
-            if 48...57 ~= d {
-                offset = offset * 10 + Int(d - 48)
-            } else {
-                throw ParserError.invalidFormat("invalid xref position.")
+            switch d {
+            case 48...57: offset = offset * 10 + Int(d - 48)
+            default: throw ParserError.invalidFormat("invalid xref position.")
             }
         }
         return offset
     }
     
-    private static func xrefTable(data: Data) throws -> (PDFDocument.Dictionary, [[PDFDocument.Value?]]) {
+    private static func xrefTable(data: Data, version: (Int, Int)) throws -> (PDFDocument.Dictionary, [PDFDocument.ObjectIdentifier: Int]) {
         
         var _xrefPosition = try xrefPosition(data: data)
+        
+        var trailer: PDFDocument.Dictionary?
+        var xref: [PDFDocument.ObjectIdentifier: Int] = [:]
         
         while true {
             
@@ -185,11 +464,106 @@ extension PDFDocument {
             if _lineStart >= _lineEnd {
                 throw ParserError.invalidFormat("invalid file format.")
             }
-            let line = data[_lineStart..<_lineEnd]
             
-            String(data: Data(line), encoding: .ascii) ?? ""
+            while true {
+                
+                var id = 0
+                var count = 0
+                var flag = false
+                
+                do {
+                    let line = data[_lineStart..<_lineEnd]
+                    
+                    for d in line {
+                        switch d {
+                        case 48...57:
+                            if flag {
+                                count = count * 10 + Int(d - 48)
+                            } else {
+                                id = id * 10 + Int(d - 48)
+                            }
+                        case 32:
+                            if flag {
+                                throw ParserError.invalidFormat("invalid xref format.")
+                            }
+                            flag = true
+                        default: throw ParserError.invalidFormat("invalid xref format.")
+                        }
+                    }
+                }
+                
+                _lineStart = nextLineStartPosition(data: data, position: _lineEnd)
+                
+                for i in 0..<count {
+                    
+                    _lineEnd = _lineStart + 18
+                    
+                    if _lineStart >= data.count || _lineEnd >= data.count {
+                        throw ParserError.unexpectedEOF
+                    }
+                    
+                    if data[_lineStart + 17] == 102 {
+                        _lineStart = _lineEnd + 2
+                        _lineEnd = _lineStart + 18
+                        continue
+                    }
+                    if data[_lineStart + 10] != 32 || data[_lineStart + 16] != 32 || data[_lineStart + 17] != 110 {
+                        throw ParserError.invalidFormat("invalid xref format.")
+                    }
+                    
+                    let line = data[_lineStart..<_lineEnd]
+                    
+                    var d1 = 0
+                    var d2 = 0
+                    
+                    for d in line.prefix(10) {
+                        switch d {
+                        case 48...57: d1 = d1 * 10 + Int(d - 48)
+                        default: throw ParserError.invalidFormat("invalid xref format.")
+                        }
+                    }
+                    let s1 = line.dropFirst(11)
+                    for d in s1.prefix(5) {
+                        switch d {
+                        case 48...57: d2 = d2 * 10 + Int(d - 48)
+                        default: throw ParserError.invalidFormat("invalid xref format.")
+                        }
+                    }
+                    
+                    let identifier = PDFDocument.ObjectIdentifier(identifier: id + i, generation: d2)
+                    if xref[identifier] == nil {
+                        xref[identifier] = d1
+                    }
+                    
+                    _lineStart = _lineEnd + 2
+                }
+                
+                do {
+                    _lineEnd = lineEndPosition(data: data, position: _lineStart)
+                    
+                    if _lineStart >= _lineEnd {
+                        throw ParserError.invalidFormat("invalid file format.")
+                    }
+                    let line = data[_lineStart..<_lineEnd]
+                    
+                    if equals(line, [116, 114, 97, 105, 108, 101, 114]) {
+                        break
+                    }
+                }
+            }
             
-            throw ParserError.unexpectedEOF
+            let _trailerStart = nextLineStartPosition(data: data, position: _lineEnd)
+            
+            if case let .dictionary(dictionary) = try parseValue(data: data, position: _trailerStart, version: version).1 {
+                trailer = trailer ?? dictionary
+                if case let .some(.number(number)) = dictionary["Prev"] {
+                    _xrefPosition = number.intValue
+                } else {
+                    return (trailer ?? [:], xref)
+                }
+            } else {
+                throw ParserError.invalidFormat("invalid trailer format.")
+            }
         }
     }
     

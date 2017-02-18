@@ -196,10 +196,8 @@ extension DGDocument {
         while position < data.count {
             let d = data[position]
             switch d {
-            case 9, 10, 13, 32: position += 1
-            case 93:
-                position += 1
-                return (position, .array(array))
+            case 0, 9, 10, 12, 13, 32: position += 1
+            case 93: return (position + 1, .array(array))
             default:
                 let (pos, value) = try parseValue(data: data, position: position)
                 array.append(value)
@@ -223,10 +221,8 @@ extension DGDocument {
         while position < data.count {
             let d = data[position]
             switch d {
-            case 9, 10, 13, 32: position += 1
-            case 125:
-                position += 1
-                return (position, .dictionary(dictionary))
+            case 0, 9, 10, 12, 13, 32: position += 1
+            case 125: return (position + 1, .dictionary(dictionary))
             default:
                 let (pos, _key) = try parseValue(data: data, position: position)
                 
@@ -241,7 +237,7 @@ extension DGDocument {
                 
                 loop: while true {
                     switch data[position] {
-                    case 9, 10, 13, 32: position += 1
+                    case 0, 9, 10, 12, 13, 32: position += 1
                     default: break loop
                     }
                 }
