@@ -2,20 +2,26 @@
 import Cocoa
 import Doggie
 
-public class CoonsPatchView: NSView, NSGestureRecognizerDelegate {
+open class CoonsPatchView: NSView, NSGestureRecognizerDelegate {
     
-    var p0: Point = Point()
-    var p1: Point = Point()
-    var p2: Point = Point()
-    var p3: Point = Point()
-    var p4: Point = Point()
-    var p5: Point = Point()
-    var p6: Point = Point()
-    var p7: Point = Point()
-    var p8: Point = Point()
-    var p9: Point = Point()
-    var p10: Point = Point()
-    var p11: Point = Point()
+    public var shape: SDShape? {
+        didSet {
+            self.setNeedsDisplay(frame)
+        }
+    }
+    
+    public var p0: Point = Point()
+    public var p1: Point = Point()
+    public var p2: Point = Point()
+    public var p3: Point = Point()
+    public var p4: Point = Point()
+    public var p5: Point = Point()
+    public var p6: Point = Point()
+    public var p7: Point = Point()
+    public var p8: Point = Point()
+    public var p9: Point = Point()
+    public var p10: Point = Point()
+    public var p11: Point = Point()
     
     var target: Int = -1
     
@@ -45,7 +51,12 @@ public class CoonsPatchView: NSView, NSGestureRecognizerDelegate {
         p11 = Bezier(p2, p3).eval(2 / 3)
     }
     
-    public override func draw(_ dirtyRect: NSRect) {
+    open func implement() -> SDPath? {
+        
+        return shape?.path
+    }
+    
+    open override func draw(_ dirtyRect: NSRect) {
         
         NSColor.white.setFill()
         NSRectFill(dirtyRect)
@@ -85,6 +96,14 @@ public class CoonsPatchView: NSView, NSGestureRecognizerDelegate {
                     context.move(to: CGPoint(b2[0]))
                     context.addCurve(to: CGPoint(b2[3]), control1: CGPoint(b2[1]), control2: CGPoint(b2[2]))
                 }
+            }
+            
+            context.strokePath()
+            
+            context.setStrokeColor(NSColor.red.cgColor)
+            
+            if let shape = implement() {
+                context.addPath(shape.cgPath)
             }
             
             context.strokePath()
