@@ -352,6 +352,112 @@ extension Bezier where Element == Point {
         }
     }
 }
+
+extension Bezier where Element == Point {
+    
+    public var inflection: [Double] {
+        switch points.count {
+        case 2, 3: return []
+        case 4:
+            let p0 = points[0]
+            let p1 = points[1]
+            let p2 = points[2]
+            let p3 = points[3]
+            
+            let p = (p3 - p0).phase
+            let _p1 = (p1 - p0) * SDTransform.Rotate(-p)
+            let _p2 = (p2 - p0) * SDTransform.Rotate(-p)
+            let _p3 = (p3 - p0) * SDTransform.Rotate(-p)
+            let a = _p2.x * _p1.y
+            let b = _p3.x * _p1.y
+            let c = _p1.x * _p2.y
+            let d = _p3.x * _p2.y
+            let x = 18 * (2 * b + 3 * (c - a) - d)
+            let y = 18 * (3 * (a - c) - b)
+            let z = 18 * (c - a)
+            if x.almostZero() {
+                return y.almostZero() ? [] : [-z / y]
+            }
+            return degree2roots(y / x, z / x)
+        default:
+            let x = Bezier<Double>(points.map { $0.x }).polynomial.derivative
+            let y = Bezier<Double>(points.map { $0.y }).polynomial.derivative
+            return (x * y.derivative - y * x.derivative).roots
+        }
+    }
+}
+
+extension Bezier where Element == Double {
+    
+    public var stationary: [Double] {
+        switch points.count {
+        case 2: return []
+        case 3:
+            let p0 = points[0]
+            let p1 = points[1]
+            let p2 = points[2]
+            
+            let d = p0 + p2 - 2 * p1
+            if d.almostZero() {
+                return []
+            }
+            return [(p0 - p1) / d]
+        case 4:
+            let p0 = points[0]
+            let p1 = points[1]
+            let p2 = points[2]
+            let p3 = points[3]
+            
+            let _a = 3 * (p3 - p0) + 9 * (p1 - p2)
+            let _b = 6 * (p2 + p0) - 12 * p1
+            let _c = 3 * (p1 - p0)
+            if _a.almostZero() {
+                if _b.almostZero() {
+                    return []
+                }
+                let t = -_c / _b
+                return [t]
+            } else {
+                let delta = _b * _b - 4 * _a * _c
+                let _a2 = 2 * _a
+                let _b2 = -_b / _a2
+                if delta.sign == .plus {
+                    let sqrt_delta = sqrt(delta) / _a2
+                    let t1 = _b2 + sqrt_delta
+                    let t2 = _b2 - sqrt_delta
+                    return [t1, t2]
+                } else if delta.almostZero() {
+                    return [_b2]
+                }
+            }
+            return []
+        default: return polynomial.derivative.roots
+        }
+    }
+}
+
+extension Bezier where Element == Point {
+    
+    public var boundary: Rect {
+        
+        let bx = Bezier<Double>(points.map { $0.x })
+        let by = Bezier<Double>(points.map { $0.y })
+        
+        let tx = [0.0, 1.0] + bx.stationary.lazy.map { $0.clamped(to: 0...1) }
+        let ty = [0.0, 1.0] + by.stationary.lazy.map { $0.clamped(to: 0...1) }
+        
+        let _x = tx.map { bx.eval($0) }
+        let _y = ty.map { by.eval($0) }
+        
+        let minX = _x.min()!
+        let minY = _y.min()!
+        let maxX = _x.max()!
+        let maxY = _y.max()!
+        
+        return Rect(x: minX, y: minY, width: maxX - minX, height: maxY - minY)
+    }
+}
+
 public prefix func + <Element>(x: Bezier<Element>) -> Bezier<Element> {
     return x
 }
