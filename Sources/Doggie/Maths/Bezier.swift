@@ -398,6 +398,58 @@ extension Bezier {
     }
 }
 
+public prefix func + <Element>(x: Bezier<Element>) -> Bezier<Element> {
+    return x
+}
+public prefix func - <Element>(x: Bezier<Element>) -> Bezier<Element> {
+    return Bezier(x.points.map { -$0 })
+}
+public func + <Element>(lhs: Bezier<Element>, rhs: Bezier<Element>) -> Bezier<Element> {
+    var lhs = lhs
+    var rhs = rhs
+    let degree = max(lhs.degree, rhs.degree)
+    while lhs.degree != degree {
+        lhs = lhs.elevated()
+    }
+    while rhs.degree != degree {
+        rhs = rhs.elevated()
+    }
+    return Bezier(zip(lhs.points, rhs.points).map(+))
+}
+public func - <Element>(lhs: Bezier<Element>, rhs: Bezier<Element>) -> Bezier<Element> {
+    var lhs = lhs
+    var rhs = rhs
+    let degree = max(lhs.degree, rhs.degree)
+    while lhs.degree != degree {
+        lhs = lhs.elevated()
+    }
+    while rhs.degree != degree {
+        rhs = rhs.elevated()
+    }
+    return Bezier(zip(lhs.points, rhs.points).map(-))
+}
+public func * <Element>(lhs: Double, rhs: Bezier<Element>) -> Bezier<Element> {
+    return Bezier(rhs.points.map { lhs * $0 })
+}
+public func * <Element>(lhs: Bezier<Element>, rhs: Double) -> Bezier<Element> {
+    return Bezier(lhs.points.map { $0 * rhs })
+}
+public func / <Element>(lhs: Bezier<Element>, rhs: Double) -> Bezier<Element> {
+    return Bezier(lhs.points.map { $0 / rhs })
+}
+public func += <Element>(lhs: inout Bezier<Element>, rhs: Bezier<Element>) {
+    lhs = lhs + rhs
+}
+public func -= <Element>(lhs: inout Bezier<Element>, rhs: Bezier<Element>) {
+    lhs = lhs - rhs
+}
+public func *= <Element>(lhs: inout Bezier<Element>, rhs: Double) {
+    lhs = lhs * rhs
+}
+public func /= <Element>(lhs: inout Bezier<Element>, rhs: Double) {
+    lhs = lhs / rhs
+}
+
 public func BezierPoint<Element: BezierElementProtocol>(_ t: Double, _ p0: Element, _ p1: Element) -> Element {
     return p0 + t * (p1 - p0)
 }
