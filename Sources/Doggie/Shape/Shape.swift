@@ -263,26 +263,13 @@ extension Shape {
 
 extension Shape {
     
-    func setCache(name: String, value: Any, type: CacheType) {
-        switch type {
-        case .regular: cache.table[name] = value
-        case .transformed: cache.transformedTable[name] = value
+    @_transparent
+    var cacheTable: [String: Any] {
+        get {
+            return cache.table
         }
-    }
-    func getCache(name: String, type: CacheType) -> Any? {
-        switch type {
-        case .regular: return cache.table[name]
-        case .transformed:
-            if let value = cache.transformedTable[name] {
-                return value
-            }
-            if rotate == 0 && scale == 1 && baseTransform == SDTransform.Identity() {
-                return cache.table[name]
-            }
-            if transform == SDTransform.Identity() {
-                return cache.table[name]
-            }
-            return nil
+        nonmutating set {
+            cache.table = newValue
         }
     }
 }
