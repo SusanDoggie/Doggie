@@ -2,7 +2,7 @@
 import Cocoa
 import Doggie
 
-open class CoonsPatchView: NSView, NSGestureRecognizerDelegate {
+public class CoonsPatchView: NSView, NSGestureRecognizerDelegate {
     
     public var shape: SDShape? {
         didSet {
@@ -10,18 +10,66 @@ open class CoonsPatchView: NSView, NSGestureRecognizerDelegate {
         }
     }
     
-    public var p0: Point = Point()
-    public var p1: Point = Point()
-    public var p2: Point = Point()
-    public var p3: Point = Point()
-    public var p4: Point = Point()
-    public var p5: Point = Point()
-    public var p6: Point = Point()
-    public var p7: Point = Point()
-    public var p8: Point = Point()
-    public var p9: Point = Point()
-    public var p10: Point = Point()
-    public var p11: Point = Point()
+    public var p0: Point = Point() {
+        didSet {
+            self.setNeedsDisplay(frame)
+        }
+    }
+    public var p1: Point = Point() {
+        didSet {
+            self.setNeedsDisplay(frame)
+        }
+    }
+    public var p2: Point = Point() {
+        didSet {
+            self.setNeedsDisplay(frame)
+        }
+    }
+    public var p3: Point = Point() {
+        didSet {
+            self.setNeedsDisplay(frame)
+        }
+    }
+    public var p4: Point = Point() {
+        didSet {
+            self.setNeedsDisplay(frame)
+        }
+    }
+    public var p5: Point = Point() {
+        didSet {
+            self.setNeedsDisplay(frame)
+        }
+    }
+    public var p6: Point = Point() {
+        didSet {
+            self.setNeedsDisplay(frame)
+        }
+    }
+    public var p7: Point = Point() {
+        didSet {
+            self.setNeedsDisplay(frame)
+        }
+    }
+    public var p8: Point = Point() {
+        didSet {
+            self.setNeedsDisplay(frame)
+        }
+    }
+    public var p9: Point = Point() {
+        didSet {
+            self.setNeedsDisplay(frame)
+        }
+    }
+    public var p10: Point = Point() {
+        didSet {
+            self.setNeedsDisplay(frame)
+        }
+    }
+    public var p11: Point = Point() {
+        didSet {
+            self.setNeedsDisplay(frame)
+        }
+    }
     
     var target: Int = -1
     
@@ -51,12 +99,58 @@ open class CoonsPatchView: NSView, NSGestureRecognizerDelegate {
         p11 = Bezier(p2, p3).eval(2 / 3)
     }
     
-    open func implement() -> SDPath? {
+    public func implement() -> SDPath? {
         
-        return shape?.path
+        if let shape = shape?.path {
+            
+            var path: [SDPath.Command] = []
+            var flag = true
+            
+            path.reserveCapacity(shape.count)
+            
+            shape.identity.apply { commands, state in
+                
+                func addCurves(_ points: [[Point]]) {
+                    if let first = points.first {
+                        if flag {
+                            path.append(.move(first[0]))
+                            flag = false
+                        }
+                        for p in points {
+                            switch p.count {
+                            case 2: path.append(.line(p[1]))
+                            case 3: path.append(.quad(p[1], p[2]))
+                            case 4: path.append(.cubic(p[1], p[2], p[3]))
+                            default: break
+                            }
+                        }
+                    }
+                }
+                
+                switch commands {
+                case .move: flag = true
+                case .close:
+                    let z = state.start - state.last
+                    if !z.x.almostZero() || !z.y.almostZero() {
+                        addCurves(CoonsPatch(self.p0, self.p4, self.p5, self.p1, self.p6, self.p8, self.p7, self.p9, self.p2, self.p10, self.p11, self.p3, state.last, state.start))
+                    }
+                    if !flag {
+                        path.append(.close)
+                        flag = true
+                    }
+                case let .line(p1): addCurves(CoonsPatch(self.p0, self.p4, self.p5, self.p1, self.p6, self.p8, self.p7, self.p9, self.p2, self.p10, self.p11, self.p3, state.last, p1))
+                case let .quad(p1, p2): addCurves(CoonsPatch(self.p0, self.p4, self.p5, self.p1, self.p6, self.p8, self.p7, self.p9, self.p2, self.p10, self.p11, self.p3, state.last, p1, p2))
+                case let .cubic(p1, p2, p3): addCurves(CoonsPatch(self.p0, self.p4, self.p5, self.p1, self.p6, self.p8, self.p7, self.p9, self.p2, self.p10, self.p11, self.p3, state.last, p1, p2, p3))
+                }
+            }
+            
+            return SDPath(path)
+        }
+        
+        return nil
     }
     
-    open override func draw(_ dirtyRect: NSRect) {
+    public override func draw(_ dirtyRect: NSRect) {
         
         NSColor.white.setFill()
         NSRectFill(dirtyRect)
@@ -157,7 +251,6 @@ open class CoonsPatchView: NSView, NSGestureRecognizerDelegate {
             case 11: p11 = Point(sender.location(in: self))
             default: break
             }
-            self.setNeedsDisplay(frame)
         default: break
         }
     }

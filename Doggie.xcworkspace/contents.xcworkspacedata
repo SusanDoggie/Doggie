@@ -11,6 +11,9 @@
       location = "group:playgrounds/Mesh Warping.playground">
    </FileRef>
    <FileRef
+      location = "group:playgrounds/Stroke.playground">
+   </FileRef>
+   <FileRef
       location = "group:playgrounds/DGDocument.playground">
    </FileRef>
    <FileRef
