@@ -175,7 +175,7 @@ extension Bezier where Element == Double {
     }
     
     public init(_ polynomial: Polynomial) {
-        let de = (0..<polynomial.degree).scan(polynomial) { p, _ in p.derivative / Double(p.degree) }
+        let de = (0..<max(1, polynomial.degree)).scan(polynomial) { p, _ in p.derivative / Double(p.degree) }
         var points: [Double] = []
         for n in de.indices {
             let s = zip(CombinationList(UInt(n)), de)
@@ -1120,8 +1120,82 @@ public func CoonsPatch(_ m00: Point, _ m01: Point, _ m02: Point, _ m03: Point,
     let d1x = _u * c2x + u * c3x
     let d1y = _u * c2y + u * c3y
     
-    var x = Bezier(d0x + d1x - bx)
-    var y = Bezier(d0y + d1y - by)
+    var _x = d0x + d1x - bx
+    var _y = d0y + d1y - by
+    
+    while _x.last?.almostZero() == true {
+        _x.removeLast()
+    }
+    while _y.last?.almostZero() == true {
+        _y.removeLast()
+    }
+    
+    var x = Bezier(_x)
+    var y = Bezier(_y)
+    
+    let degree = max(x.degree, y.degree)
+    
+    while x.degree != degree {
+        x = x.elevated()
+    }
+    while y.degree != degree {
+        y = y.elevated()
+    }
+    
+    let points = zip(x, y).map { Point(x: $0, y: $1) }
+    
+    switch degree {
+    case 1, 2, 3: return [points]
+    default: return QuadBezierFitting(points)
+    }
+}
+
+public func TensorPatch(_ m00: Point, _ m01: Point, _ m02: Point, _ m03: Point,
+                        _ m10: Point, _ m11: Point, _ m12: Point, _ m13: Point,
+                        _ m20: Point, _ m21: Point, _ m22: Point, _ m23: Point,
+                        _ m30: Point, _ m31: Point, _ m32: Point, _ m33: Point,
+                        _ p: Point ... ) -> [[Point]] {
+    
+    let u = Bezier(p.map { $0.x }).polynomial
+    let v = Bezier(p.map { $0.y }).polynomial
+    let u2 = u * u
+    let v2 = v * v
+    let u3 = u2 * u
+    let v3 = v2 * v
+    
+    let _u = 1 - u
+    let _v = 1 - v
+    let _u2 = _u * _u
+    let _v2 = _v * _v
+    let _u3 = _u2 * _u
+    let _v3 = _v2 * _v
+    
+    let u_u2 = 3 * _u2 * u
+    let u2_u = 3 * _u * u2
+    let v_v2 = 3 * _v2 * v
+    let v2_v = 3 * _v * v2
+    
+    let c0x = _u3 * m00.x + u_u2 * m01.x + u2_u * m02.x + u3 * m03.x
+    let c0y = _u3 * m00.y + u_u2 * m01.y + u2_u * m02.y + u3 * m03.y
+    let c1x = _u3 * m10.x + u_u2 * m11.x + u2_u * m12.x + u3 * m13.x
+    let c1y = _u3 * m10.y + u_u2 * m11.y + u2_u * m12.y + u3 * m13.y
+    let c2x = _u3 * m20.x + u_u2 * m21.x + u2_u * m22.x + u3 * m23.x
+    let c2y = _u3 * m20.y + u_u2 * m21.y + u2_u * m22.y + u3 * m23.y
+    let c3x = _u3 * m30.x + u_u2 * m31.x + u2_u * m32.x + u3 * m33.x
+    let c3y = _u3 * m30.y + u_u2 * m31.y + u2_u * m32.y + u3 * m33.y
+    
+    var _x = _v3 * c0x + v_v2 * c1x + v2_v * c2x + v3 * c3x
+    var _y = _v3 * c0y + v_v2 * c1y + v2_v * c2y + v3 * c3y
+    
+    while _x.last?.almostZero() == true {
+        _x.removeLast()
+    }
+    while _y.last?.almostZero() == true {
+        _y.removeLast()
+    }
+    
+    var x = Bezier(_x)
+    var y = Bezier(_y)
     
     let degree = max(x.degree, y.degree)
     
