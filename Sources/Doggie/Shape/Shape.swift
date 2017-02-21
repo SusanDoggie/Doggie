@@ -193,10 +193,6 @@ public struct Shape : RandomAccessCollection, MutableCollection, ExpressibleByAr
         }
         return cache.originalBoundary!
     }
-    
-    public var path: Shape {
-        return self
-    }
 }
 
 extension Shape {
