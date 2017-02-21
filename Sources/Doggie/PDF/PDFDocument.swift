@@ -140,7 +140,7 @@ extension PDFDocument.Xref : BidirectionalCollection {
     
     public typealias Iterator = IndexingIterator<PDFDocument.Xref>
     
-    private typealias _Collection = FlattenBidirectionalCollection<LazyMapBidirectionalCollection<IndexedRandomAccessCollection<[[PDFDocument.Value?]]>, LazyMapRandomAccessCollection<IndexedRandomAccessCollection<[PDFDocument.Value?]>, (PDFDocument.ObjectIdentifier, PDFDocument.Value?)>>>
+    fileprivate typealias _Collection = FlattenBidirectionalCollection<LazyMapBidirectionalCollection<IndexedRandomAccessCollection<[[PDFDocument.Value?]]>, LazyMapRandomAccessCollection<IndexedRandomAccessCollection<[PDFDocument.Value?]>, (PDFDocument.ObjectIdentifier, PDFDocument.Value?)>>>
     
     public struct Index : Comparable {
         

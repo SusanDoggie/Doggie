@@ -165,11 +165,11 @@ extension DGDocument {
             case 48...57:
                 sign = sign ?? false
                 if eflag {
-                    e = e * 10 + Int(d - 48)
+                    e = e * 10 + IntMax(d - 48)
                 } else if fflag {
                     float = (float + Double(d - 48)) / 10
                 } else {
-                    int = int * 10 + Int(d - 48)
+                    int = int * 10 + IntMax(d - 48)
                 }
             default:
                 if fflag || eflag {
