@@ -979,137 +979,6 @@ private func _BezierOffset(_ p0: Point, _ p1: Point, _ p2: Point, _ a: Double, _
     return BezierOffset(p0, p2, a).map { [[$0, $1]] } ?? []
 }
 
-private func BezierOffset(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point, _ a: Double, _ limit: Int, _ inflection_check: Bool) -> [[Point]] {
-    
-    let q0 = p1 - p0
-    let q1 = p2 - p1
-    let q2 = p3 - p2
-    
-    let z0 = q0.x.almostZero() && q0.y.almostZero()
-    let z1 = q1.x.almostZero() && q1.y.almostZero()
-    let z2 = q2.x.almostZero() && q2.y.almostZero()
-    
-    if (z0 && z1) || (z0 && z2) || (z1 && z2) {
-        return BezierOffset(p0, p3, a).map { [[$0, $1]] } ?? []
-    }
-    
-    let ph0 = q0.phase
-    let ph1 = q1.phase
-    let ph2 = q2.phase
-    let zh0 = ph0.almostEqual(ph1) || ph0.almostEqual(ph1 + 2 * Double.pi) || ph0.almostEqual(ph1 - 2 * Double.pi)
-    let zh1 = ph1.almostEqual(ph2) || ph1.almostEqual(ph2 + 2 * Double.pi) || ph1.almostEqual(ph2 - 2 * Double.pi)
-    let zh2 = ph0.almostEqual(ph1 + Double.pi) || ph0.almostEqual(ph1 - Double.pi)
-    let zh3 = ph1.almostEqual(ph2 + Double.pi) || ph1.almostEqual(ph2 - Double.pi)
-    
-    if zh0 && zh1 {
-        return BezierOffset(p0, p3, a).map { [[$0, $1]] } ?? []
-    }
-    if (zh2 && zh3) || (zh2 && zh1) || (zh3 && zh0) {
-        var u = CubicBezierStationary(p0.x, p1.x, p2.x, p3.x).sorted()
-        if u.count == 0 {
-            u = CubicBezierStationary(p0.y, p1.y, p2.y, p3.y).sorted()
-        }
-        switch u.count {
-        case 1:
-            let g = BezierPoint(u[0], p0, p1, p2, p3)
-            if a.almostZero() {
-                return [[p0, g], [g, p3]]
-            }
-            let angle = ph0 - 0.5 * Double.pi
-            let bezierCircle = BezierCircle.lazy.map { $0 * SDTransform.Rotate(angle) * a + g }
-            let v0 = OptionOneCollection(BezierOffset(p0, g, a).map { [$0, $1] })
-            let v1 = OptionOneCollection([bezierCircle[0], bezierCircle[1], bezierCircle[2], bezierCircle[3]])
-            let v2 = OptionOneCollection([bezierCircle[3], bezierCircle[4], bezierCircle[5], bezierCircle[6]])
-            let v3 = OptionOneCollection(BezierOffset(g, p3, a).map { [$0, $1] })
-            return Array([v0, v1, v2, v3].joined())
-        case 2:
-            let g = BezierPoint(u[0], p0, p1, p2, p3)
-            let h = BezierPoint(u[1], p0, p1, p2, p3)
-            if a.almostZero() {
-                return [[p0, g], [g, h], [h, p3]]
-            }
-            let angle1 = ph0 - 0.5 * Double.pi
-            let angle2 = ph1 - 0.5 * Double.pi
-            let bezierCircle1 = BezierCircle.lazy.map { $0 * SDTransform.Rotate(angle1) * a + g }
-            let bezierCircle2 = BezierCircle.lazy.map { $0 * SDTransform.Rotate(angle2) * a + h }
-            let v0 = OptionOneCollection(BezierOffset(p0, g, a).map { [$0, $1] })
-            let v1 = OptionOneCollection([bezierCircle1[0], bezierCircle1[1], bezierCircle1[2], bezierCircle1[3]])
-            let v2 = OptionOneCollection([bezierCircle1[3], bezierCircle1[4], bezierCircle1[5], bezierCircle1[6]])
-            let v3 = OptionOneCollection(BezierOffset(g, h, a).map { [$0, $1] })
-            let v4 = OptionOneCollection([bezierCircle2[0], bezierCircle2[1], bezierCircle2[2], bezierCircle2[3]])
-            let v5 = OptionOneCollection([bezierCircle2[3], bezierCircle2[4], bezierCircle2[5], bezierCircle2[6]])
-            let v6 = OptionOneCollection(BezierOffset(h, p3, a).map { [$0, $1] })
-            return Array([v0, v1, v2, v3, v4, v5, v6].joined())
-        default: break
-        }
-    }
-    
-    func split(_ t: Double) -> [[Point]] {
-        let (left, right) = SplitBezier(t, p0, p1, p2, p3)
-        return BezierOffset(left[0], left[1], left[2], left[3], a, limit - 1, false) + BezierOffset(right[0], right[1], right[2], right[3], a, limit - 1, false)
-    }
-    
-    if inflection_check && limit > 0 {
-        let inflection = CubicBezierInflection(p0, p1, p2, p3).filter { !$0.almostZero() && !$0.almostEqual(1) && 0...1 ~= $0 }
-        switch inflection.count {
-        case 1: return split(inflection[0])
-        case 2:
-            let paths = SplitBezier(inflection, p0, p1, p2, p3)
-            return BezierOffset(paths[0][0], paths[0][1], paths[0][2], paths[0][3], a, limit - 1, false) +
-                BezierOffset(paths[1][0], paths[1][1], paths[1][2], paths[1][3], a, limit - 1, false) +
-                BezierOffset(paths[2][0], paths[2][1], paths[2][2], paths[2][3], a, limit - 1, false)
-        default: break
-        }
-    }
-    if limit > 0 && BezierOffsetCurvature(p0, p1, p2, p3) {
-        
-        return split(0.5)
-    }
-    
-    let _q0 = z0 ? q1 : q0
-    let _q1 = z2 ? q1 : q2
-    
-    if a.almostZero() {
-        if limit > 0, let mid = QuadBezierFitting(p0, p3, _q0, _q1), BezierOffsetCurvature(p0, mid, p3) {
-            return split(0.5)
-        }
-        if let mid = QuadBezierFitting(p0, p3, _q0, _q1) {
-            if BezierOffsetCurvature(p0, mid, p3) {
-                if limit > 0 {
-                    return split(0.5)
-                } else {
-                    return [[p0, (BezierPoint(0.5, p0, p1, p2, p3) - 0.25 * (p0 + p3)) / 0.5, p3]]
-                }
-            }
-            return [[p0, mid, p3]]
-        }
-    }
-    
-    let s = 1 / _q0.magnitude
-    let t = 1 / _q1.magnitude
-    let start = Point(x: p0.x + a * _q0.y * s, y: p0.y - a * _q0.x * s)
-    let end = Point(x: p3.x + a * _q1.y * t, y: p3.y - a * _q1.x * t)
-    
-    if limit > 0, let mid = QuadBezierFitting(p0, p3, _q0, _q1), BezierOffsetCurvature(p0, mid, p3) {
-        return split(0.5)
-    }
-    if let mid = QuadBezierFitting(start, end, _q0, _q1) {
-        if BezierOffsetCurvature(start, mid, end) {
-            if limit > 0 {
-                return split(0.5)
-            } else {
-                let m = BezierPoint(0.5, q0, q1 + q1, q2)
-                let _s = 1 / m.magnitude
-                let _mid = BezierPoint(0.5, p0, p1, p2, p3) + Point(x: a * m.y * _s, y: -a * m.x * _s)
-                return [[start, (_mid - 0.25 * (start + end)) / 0.5, end]]
-            }
-        }
-        return [[start, mid, end]]
-    }
-    
-    return BezierOffset(p0, p3, a).map { [[$0, $1]] } ?? []
-}
-
 public func BezierVariableOffset(_ p0: Point, _ p1: Point, _ a: [Point]) -> [Point]? {
     let z = p1 - p0
     if z.x.almostZero() && z.y.almostZero() {
@@ -1215,8 +1084,8 @@ public func CoonsPatch(_ m00: Point, _ m01: Point, _ m02: Point, _ m03: Point,
                        _ m30: Point, _ m31: Point, _ m32: Point, _ m33: Point,
                        _ p: Point ... ) -> [[Point]] {
     
-    let u = Polynomial(Bezier(p.map { $0.x }))
-    let v = Polynomial(Bezier(p.map { $0.y }))
+    let u = Bezier(p.map { $0.x }).polynomial
+    let v = Bezier(p.map { $0.y }).polynomial
     let u2 = u * u
     let v2 = v * v
     let u3 = u2 * u
@@ -1246,8 +1115,8 @@ public func CoonsPatch(_ m00: Point, _ m01: Point, _ m02: Point, _ m03: Point,
     let d1x = _u * c2x + u * c3x
     let d1y = _u * c2y + u * c3y
     
-    var x = (d0x + d1x - bx).bezier
-    var y = (d0y + d1y - by).bezier
+    var x = Bezier(d0x + d1x - bx)
+    var y = Bezier(d0y + d1y - by)
     
     let degree = max(x.degree, y.degree)
     
