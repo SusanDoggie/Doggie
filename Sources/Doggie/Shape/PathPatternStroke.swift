@@ -1,5 +1,5 @@
 //
-//  SDPathPatternStroke.swift
+//  PathPatternStroke.swift
 //
 //  The MIT License
 //  Copyright (c) 2015 - 2017 Susan Cheng. All rights reserved.
@@ -25,7 +25,7 @@
 
 import Foundation
 
-extension SDPath {
+extension Shape {
     
     private struct PatternStrokePathData {
         
@@ -471,7 +471,7 @@ extension SDPath {
         }
     }
     
-    public func strokePath(pattern: SDPath, scaling: Bool) -> SDPath {
+    public func strokePath(pattern: Shape, scaling: Bool) -> Shape {
         
         let pattern = pattern.identity
         
@@ -505,7 +505,7 @@ extension SDPath {
             }
         }
         
-        return SDPath(buffer.buffer)
+        return Shape(buffer.buffer)
     }
     
     private func quadBezierFitting() -> [PatternStrokePathData] {

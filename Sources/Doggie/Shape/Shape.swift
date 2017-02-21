@@ -1,5 +1,5 @@
 //
-//  SDPath.swift
+//  Shape.swift
 //
 //  The MIT License
 //  Copyright (c) 2015 - 2017 Susan Cheng. All rights reserved.
@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-public struct SDPath : SDShape, RandomAccessCollection, MutableCollection, ExpressibleByArrayLiteral {
+public struct Shape : RandomAccessCollection, MutableCollection, ExpressibleByArrayLiteral {
     
     public typealias Indices = CountableRange<Int>
     
@@ -39,30 +39,27 @@ public struct SDPath : SDShape, RandomAccessCollection, MutableCollection, Expre
     
     fileprivate class Cache {
         
-        var frame: Rect?
+        var originalBoundary: Rect?
         var boundary: Rect?
-        var identity : SDPath?
+        var identity : Shape?
         
         var area: Double?
         
         var table: [String : Any]
-        var transformedTable: [String : Any]
         
         init() {
-            self.frame = nil
+            self.originalBoundary = nil
             self.boundary = nil
             self.identity = nil
             self.area = nil
             self.table = [:]
-            self.transformedTable = [:]
         }
-        init(frame: Rect?, boundary: Rect?, table: [String : Any]) {
-            self.frame = frame
+        init(originalBoundary: Rect?, boundary: Rect?, table: [String : Any]) {
+            self.originalBoundary = originalBoundary
             self.boundary = boundary
             self.identity = nil
             self.area = nil
             self.table = table
-            self.transformedTable = [:]
         }
     }
     
@@ -72,7 +69,7 @@ public struct SDPath : SDShape, RandomAccessCollection, MutableCollection, Expre
     public var baseTransform : SDTransform = SDTransform(SDTransform.Identity()) {
         willSet {
             if baseTransform != newValue {
-                cache = Cache(frame: cache.frame, boundary: nil, table: cache.table)
+                cache = Cache(originalBoundary: cache.originalBoundary, boundary: nil, table: cache.table)
             }
         }
     }
@@ -80,7 +77,7 @@ public struct SDPath : SDShape, RandomAccessCollection, MutableCollection, Expre
     public var rotate: Double = 0 {
         didSet {
             if rotate != oldValue {
-                cache = Cache(frame: cache.frame, boundary: nil, table: cache.table)
+                cache = Cache(originalBoundary: cache.originalBoundary, boundary: nil, table: cache.table)
                 center = originalBoundary.center * baseTransform * SDTransform.Scale(scale) * SDTransform.Rotate(oldValue)
             }
         }
@@ -92,7 +89,7 @@ public struct SDPath : SDShape, RandomAccessCollection, MutableCollection, Expre
                 let _center = originalBoundary.center * baseTransform * SDTransform.Scale(oldValue) * SDTransform.Rotate(rotate)
                 center = _center
                 if boundary != nil {
-                    cache = Cache(frame: cache.frame, boundary: Rect.bound(boundary!.points.map { ($0 - _center) * scale / oldValue + _center }), table: cache.table)
+                    cache = Cache(originalBoundary: cache.originalBoundary, boundary: Rect.bound(boundary!.points.map { ($0 - _center) * scale / oldValue + _center }), table: cache.table)
                 }
             }
         }
@@ -125,7 +122,7 @@ public struct SDPath : SDShape, RandomAccessCollection, MutableCollection, Expre
                 boundary?.origin += newValue - _center
                 let offset = newValue * SDTransform.Rotate(rotate).inverse * SDTransform.Scale(scale).inverse - originalBoundary.center * baseTransform
                 baseTransform *= SDTransform.Translate(x: offset.x, y: offset.y)
-                cache = Cache(frame: cache.frame, boundary: boundary, table: cache.table)
+                cache = Cache(originalBoundary: cache.originalBoundary, boundary: boundary, table: cache.table)
             }
         }
     }
@@ -140,7 +137,7 @@ public struct SDPath : SDShape, RandomAccessCollection, MutableCollection, Expre
         }
     }
     
-    public subscript(bounds: Range<Int>) -> MutableRangeReplaceableRandomAccessSlice<SDPath> {
+    public subscript(bounds: Range<Int>) -> MutableRangeReplaceableRandomAccessSlice<Shape> {
         get {
             _failEarlyRangeCheck(bounds, bounds: startIndex..<endIndex)
             return MutableRangeReplaceableRandomAccessSlice(base: self, bounds: bounds)
@@ -182,7 +179,7 @@ public struct SDPath : SDShape, RandomAccessCollection, MutableCollection, Expre
     }
     
     public var originalBoundary : Rect {
-        if cache.frame == nil {
+        if cache.originalBoundary == nil {
             var bound: Rect? = nil
             self.apply { commands, state in
                 switch commands {
@@ -192,17 +189,59 @@ public struct SDPath : SDShape, RandomAccessCollection, MutableCollection, Expre
                 default: break
                 }
             }
-            cache.frame = bound ?? Rect()
+            cache.originalBoundary = bound ?? Rect()
         }
-        return cache.frame!
+        return cache.originalBoundary!
     }
     
-    public var path: SDPath {
+    public var path: Shape {
         return self
     }
 }
 
-extension SDPath {
+extension Shape {
+    
+    public var frame : [Point] {
+        let _transform = self.transform
+        return originalBoundary.points.map { $0 * _transform }
+    }
+}
+
+extension Shape {
+    
+    public var transform : SDTransform {
+        get {
+            return baseTransform * SDTransform.Scale(scale) as SDTransform * SDTransform.Rotate(rotate)
+        }
+        set {
+            baseTransform = newValue * SDTransform.Rotate(rotate).inverse * SDTransform.Scale(scale).inverse
+        }
+    }
+}
+
+extension Shape {
+    
+    public static func Rectangle(_ rect: Rect) -> Shape {
+        let points = rect.points
+        return [.move(points[0]), .line(points[1]), .line(points[2]), .line(points[3]), .close]
+    }
+    
+    public static func Ellipse(center: Point, radius: Radius) -> Shape {
+        let scale = SDTransform.Scale(x: radius.x, y: radius.y)
+        let point = BezierCircle.lazy.map { $0 * scale + center }
+        let commands: [Shape.Command] = [
+            .move(point[0]),
+            .cubic(point[1], point[2], point[3]),
+            .cubic(point[4], point[5], point[6]),
+            .cubic(point[7], point[8], point[9]),
+            .cubic(point[10], point[11], point[12]),
+            .close
+        ]
+        return Shape(commands)
+    }
+}
+
+extension Shape {
     
     public var area: Double {
         if cache.area == nil {
@@ -222,40 +261,20 @@ extension SDPath {
     }
 }
 
-extension SDPath {
-    
-    enum CacheType {
-        case regular
-        case transformed
-    }
+extension Shape {
     
     @_transparent
-    func setCache(name: String, value: Any, type: CacheType) {
-        switch type {
-        case .regular: cache.table[name] = value
-        case .transformed: cache.transformedTable[name] = value
+    var cacheTable: [String: Any] {
+        get {
+            return cache.table
         }
-    }
-    @_transparent
-    func getCache(name: String, type: CacheType) -> Any? {
-        switch type {
-        case .regular: return cache.table[name]
-        case .transformed:
-            if let value = cache.transformedTable[name] {
-                return value
-            }
-            if rotate == 0 && scale == 1 && baseTransform == SDTransform.Identity() {
-                return cache.table[name]
-            }
-            if transform == SDTransform.Identity() {
-                return cache.table[name]
-            }
-            return nil
+        nonmutating set {
+            cache.table = newValue
         }
     }
 }
 
-extension SDPath {
+extension Shape {
     
     public var lastMove: Bool {
         if let command = self.commands.last, case .move = command {
@@ -272,14 +291,7 @@ extension SDPath {
     }
 }
 
-extension SDPath {
-    
-    public init<S: SDShape>(_ shape: S) {
-        self = shape.path
-    }
-}
-
-extension SDPath : RangeReplaceableCollection {
+extension Shape : RangeReplaceableCollection {
     
     public mutating func append(_ x: Command) {
         cache = Cache()
@@ -301,7 +313,7 @@ extension SDPath : RangeReplaceableCollection {
     }
 }
 
-extension SDPath {
+extension Shape {
     
     public struct ComputeState {
         
@@ -335,18 +347,18 @@ extension SDPath {
     }
 }
 
-extension SDPath {
+extension Shape {
     
     @_transparent
-    fileprivate var _identity : SDPath {
+    fileprivate var _identity : Shape {
         if rotate == 0 && scale == 1 && baseTransform == SDTransform.Identity() {
             return self
         }
         let transform = self.transform
         if transform == SDTransform.Identity() {
-            return SDPath(self.commands)
+            return Shape(self.commands)
         }
-        var _path = SDPath()
+        var _path = Shape()
         _path.reserveCapacity(self.commands.count)
         for command in self.commands {
             switch command {
@@ -360,7 +372,7 @@ extension SDPath {
         return _path
     }
     
-    public var identity : SDPath {
+    public var identity : Shape {
         if cache.identity == nil {
             cache.identity = _identity
         }

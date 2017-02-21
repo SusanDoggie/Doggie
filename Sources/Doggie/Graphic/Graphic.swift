@@ -144,9 +144,9 @@ extension Rect {
     
     public extension NSBezierPath {
         
-        convenience init(_ shape: SDPath) {
+        convenience init(_ shape: Shape) {
             self.init()
-            var state = SDPath.DrawableComputeState()
+            var state = Shape.DrawableComputeState()
             for item in shape {
                 item.drawPath(self, state: &state)
             }
@@ -154,7 +154,7 @@ extension Rect {
         }
     }
     
-    private extension SDPath {
+    private extension Shape {
         
         struct DrawableComputeState {
             
@@ -163,9 +163,9 @@ extension Rect {
         }
     }
     
-    private extension SDPath.Command {
+    private extension Shape.Command {
         
-        func drawPath(_ path: NSBezierPath, state: inout SDPath.DrawableComputeState) {
+        func drawPath(_ path: NSBezierPath, state: inout Shape.DrawableComputeState) {
             
             switch self {
             case let .move(point):
@@ -198,7 +198,7 @@ extension Rect {
     
     public extension UIBezierPath {
         
-        convenience init(_ shape: SDPath) {
+        convenience init(_ shape: Shape) {
             self.init(cgPath: shape.cgPath)
         }
     }
@@ -233,32 +233,16 @@ extension Rect {
         }
     }
     
-    extension SDRectangle {
+    private let ShapeCacheCGPathKey = "ShapeCacheCGPathKey"
+    
+    extension Shape {
         
         public var cgPath : CGPath {
-            var _transform = CGAffineTransform(transform)
-            return CGPath(rect: CGRect(Rect(x: x, y: y, width: width, height: height)), transform: &_transform)
-        }
-    }
-    
-    extension SDEllipse {
-        
-        public var cgPath : CGPath {
-            var _transform = CGAffineTransform(transform)
-            return CGPath(ellipseIn: CGRect(Rect(x: x - rx, y: y - ry, width: 2 * rx, height: 2 * ry)), transform: &_transform)
-        }
-    }
-    
-    private let SDPathCacheCGPathKey = "SDPathCacheCGPathKey"
-    
-    extension SDPath {
-        
-        public var cgPath : CGPath {
-            if let path = self.getCache(name: SDPathCacheCGPathKey, type: .transformed).map({ $0 as! CGPath }) {
+            if let path = self.identity.cacheTable[ShapeCacheCGPathKey].map({ $0 as! CGPath }) {
                 return path
             } else {
                 let _path: CGPath
-                if let path = self.getCache(name: SDPathCacheCGPathKey, type: .regular).map({ $0 as! CGPath }) {
+                if let path = self.cacheTable[ShapeCacheCGPathKey].map({ $0 as! CGPath }) {
                     _path = path
                 } else {
                     let path = CGMutablePath()
@@ -271,23 +255,23 @@ extension Rect {
                         case .close: path.closeSubpath()
                         }
                     }
-                    self.setCache(name: SDPathCacheCGPathKey, value: path, type: .regular)
+                    self.cacheTable[ShapeCacheCGPathKey] = path
                     _path = path
                 }
                 var _transform = CGAffineTransform(transform)
                 let path = _path.copy(using: &_transform) ?? _path
-                self.setCache(name: SDPathCacheCGPathKey, value: path, type: .transformed)
+                self.identity.cacheTable[ShapeCacheCGPathKey] = path
                 return path
             }
         }
     }
     
-    extension SDPath {
+    extension Shape {
         
         public init(_ path: CGPath) {
             self.init()
             path.apply(info: &self) { buf, element in
-                let path = buf!.assumingMemoryBound(to: SDPath.self)
+                let path = buf!.assumingMemoryBound(to: Shape.self)
                 let points = element.pointee.points
                 switch element.pointee.type {
                 case .moveToPoint: path.pointee.append(.move(Point(points[0])))
@@ -297,7 +281,7 @@ extension Rect {
                 case .closeSubpath: path.pointee.append(.close)
                 }
             }
-            self.setCache(name: SDPathCacheCGPathKey, value: path.copy()!, type: .regular)
+            self.cacheTable[ShapeCacheCGPathKey] = path.copy()
         }
     }
     

@@ -26,7 +26,7 @@
 import AppKit
 import Doggie
 
-extension SDPath : CustomPlaygroundQuickLookable {
+extension Shape : CustomPlaygroundQuickLookable {
     
     public var customPlaygroundQuickLook: PlaygroundQuickLook {
         return .bezierPath(NSBezierPath(self))
