@@ -1098,17 +1098,22 @@ public func CoonsPatch(_ m00: Point, _ m01: Point, _ m02: Point, _ m03: Point,
     let _u3 = _u2 * _u
     let _v3 = _v2 * _v
     
+    let u_u2 = 3 * _u2 * u
+    let u2_u = 3 * _u * u2
+    let v_v2 = 3 * _v2 * v
+    let v2_v = 3 * _v * v2
+    
     let bx = (m00.x * _u + m03.x * u) * _v + (m30.x * _u + m33.x * u) * v
     let by = (m00.y * _u + m03.y * u) * _v + (m30.y * _u + m33.y * u) * v
     
-    let c0x = _u3 * m00.x + 3 * _u2 * u * m01.x + 3 * _u * u2 * m02.x + u3 * m03.x
-    let c0y = _u3 * m00.y + 3 * _u2 * u * m01.y + 3 * _u * u2 * m02.y + u3 * m03.y
-    let c1x = _u3 * m30.x + 3 * _u2 * u * m31.x + 3 * _u * u2 * m32.x + u3 * m33.x
-    let c1y = _u3 * m30.y + 3 * _u2 * u * m31.y + 3 * _u * u2 * m32.y + u3 * m33.y
-    let c2x = _v3 * m00.x + 3 * _v2 * v * m10.x + 3 * _v * v2 * m20.x + v3 * m30.x
-    let c2y = _v3 * m00.y + 3 * _v2 * v * m10.y + 3 * _v * v2 * m20.y + v3 * m30.y
-    let c3x = _v3 * m03.x + 3 * _v2 * v * m13.x + 3 * _v * v2 * m23.x + v3 * m33.x
-    let c3y = _v3 * m03.y + 3 * _v2 * v * m13.y + 3 * _v * v2 * m23.y + v3 * m33.y
+    let c0x = _u3 * m00.x + u_u2 * m01.x + u2_u * m02.x + u3 * m03.x
+    let c0y = _u3 * m00.y + u_u2 * m01.y + u2_u * m02.y + u3 * m03.y
+    let c1x = _u3 * m30.x + u_u2 * m31.x + u2_u * m32.x + u3 * m33.x
+    let c1y = _u3 * m30.y + u_u2 * m31.y + u2_u * m32.y + u3 * m33.y
+    let c2x = _v3 * m00.x + v_v2 * m10.x + v2_v * m20.x + v3 * m30.x
+    let c2y = _v3 * m00.y + v_v2 * m10.y + v2_v * m20.y + v3 * m30.y
+    let c3x = _v3 * m03.x + v_v2 * m13.x + v2_v * m23.x + v3 * m33.x
+    let c3y = _v3 * m03.y + v_v2 * m13.y + v2_v * m23.y + v3 * m33.y
     
     let d0x = _v * c0x + v * c1x
     let d0y = _v * c0y + v * c1y

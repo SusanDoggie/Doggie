@@ -130,6 +130,20 @@ public extension Collection where Iterator.Element : Equatable {
     }
 }
 
+public extension BidirectionalCollection where Iterator.Element : Equatable {
+    
+    public func suffix(until element: Iterator.Element) -> SubSequence {
+        return self.suffix(while: { $0 != element })
+    }
+}
+
+public extension BidirectionalCollection {
+    
+    public func suffix(while predicate: (Iterator.Element) throws -> Bool) rethrows -> SubSequence {
+        return self.suffix(from: try self.reversed().index { try !predicate($0) }?.base ?? self.startIndex)
+    }
+}
+
 public extension RandomAccessCollection where Indices.SubSequence.Iterator.Element == Index, Indices.Index == Index {
     
     /// Returns first range of `pattern` appear in `self`, or `nil` if not match.
