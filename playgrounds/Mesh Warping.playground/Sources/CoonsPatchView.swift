@@ -4,7 +4,7 @@ import Doggie
 
 public class CoonsPatchView: NSView, NSGestureRecognizerDelegate {
     
-    public var shape: SDShape? {
+    public var shape: Shape? {
         didSet {
             self.setNeedsDisplay(frame)
         }
@@ -101,7 +101,7 @@ public class CoonsPatchView: NSView, NSGestureRecognizerDelegate {
     
     public func implement() -> Shape? {
         
-        if let shape = shape?.path {
+        if let shape = shape {
             
             var path: [Shape.Command] = []
             var flag = true
