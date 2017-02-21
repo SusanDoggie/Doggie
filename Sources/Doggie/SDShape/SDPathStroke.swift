@@ -405,7 +405,7 @@ extension SDPath.StrokeBuffer {
             }
         case let .cubic(p0, p1, p2, p3):
             do {
-                let path = BezierOffset(p0, p1, p2, p3, width * 0.5)
+                let path = BezierOffset([p0, p1, p2, p3], width * 0.5)
                 if let first = path.first {
                     if flag {
                         start = first[0]
@@ -421,7 +421,7 @@ extension SDPath.StrokeBuffer {
                 }
             }
             do {
-                let path = BezierOffset(p0, p1, p2, p3, -width * 0.5)
+                let path = BezierOffset([p0, p1, p2, p3], -width * 0.5)
                 for item in path {
                     switch item.count {
                     case 2:

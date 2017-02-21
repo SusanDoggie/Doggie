@@ -542,7 +542,7 @@ extension SDPath {
                 segments.append(PatternStrokePathSegmentData(accumulate: accumulate, length: m, points: [state.last, p1, p2]))
                 accumulate += m
             case let .cubic(p1, p2, p3):
-                let fitting = BezierOffset(p1, p2, p3, 0)
+                let fitting = QuadBezierFitting([p1, p2, p3])
                 for item in fitting {
                     switch item.count {
                     case 2:

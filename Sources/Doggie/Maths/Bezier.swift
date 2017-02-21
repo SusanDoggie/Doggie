@@ -633,6 +633,8 @@ public func ClosestBezier(_ point: Point, _ b0: Point, _ b1: Point, _ b2: Point,
     return dot.derivative.roots.sorted(by: { dot.eval($0) })
 }
 
+// MARK: Inflection
+
 public func CubicBezierInflection(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point) -> [Double] {
     
     let p = (p3 - p0).phase
@@ -651,6 +653,23 @@ public func CubicBezierInflection(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: P
     }
     return degree2roots(y / x, z / x)
 }
+@_transparent
+private func BezierInflection(_ p: [Point]) -> [Double] {
+    switch p.count {
+    case 0, 1, 2, 3: return []
+    case 4: return CubicBezierInflection(p[0], p[1], p[2], p[3])
+    default:
+        let x = Polynomial(Bezier(p.map { $0.x })).derivative
+        let y = Polynomial(Bezier(p.map { $0.y })).derivative
+        return (x * y.derivative - y * x.derivative).roots
+    }
+}
+public func BezierInflection(_ p: Point ... ) -> [Double] {
+    
+    return BezierInflection(p)
+}
+
+// MARK: Bezier Length
 
 @_transparent
 private func QuadBezierLength(_ t: Double, _ a: Double, _ b: Double, _ c: Double) -> Double {
@@ -744,6 +763,8 @@ public func InverseQuadBezierLength(_ length: Double, _ p0: Point, _ p1: Point, 
     return t
 }
 
+// MARK: Fitting
+
 public func QuadBezierFitting(_ p0: Point, _ p2: Point, _ m0: Point, _ m2: Point) -> Point? {
     let a = p2.x - p0.x
     let b = p2.y - p0.y
@@ -753,6 +774,55 @@ public func QuadBezierFitting(_ p0: Point, _ p2: Point, _ m0: Point, _ m2: Point
     }
     let d = a * m2.y - b * m2.x
     return p0 + m0 * d / c
+}
+
+@_transparent
+private func QuadBezierFittingCurvature(_ p0: Point, _ p1: Point, _ p2: Point) -> Bool {
+    let u = p2 - p0
+    let v = p1 - 0.5 * (p2 + p0)
+    return u.magnitude < v.magnitude * 3
+}
+private func QuadBezierFitting(_ p: [Point], _ limit: Int, _ inflection_check: Bool) -> [[Point]] {
+    
+    if inflection_check {
+        let t = BezierInflection(p).filter { !$0.almostZero() && !$0.almostEqual(1) && 0...1 ~= $0 }
+        return Bezier(p).split(t).flatMap { QuadBezierFitting($0.points, limit - 1, false) }
+    }
+    
+    let d = zip(p.dropFirst(), p).map { $0 - $1 }
+    
+    func split(_ t: Double) -> [[Point]] {
+        let (left, right) = Bezier(p).split(t)
+        return QuadBezierFitting(left.points, limit - 1, false) + QuadBezierFitting(right.points, limit - 1, false)
+    }
+    
+    let start = p.first!
+    let end = p.last!
+    
+    if limit > 0 && p.dropFirst().dropLast().contains(where: { QuadBezierFittingCurvature(start, $0, end) }) {
+        return split(0.5)
+    }
+    
+    let m0 = d.first { !$0.x.almostZero() || !$0.y.almostZero() }
+    let m1 = d.last { !$0.x.almostZero() || !$0.y.almostZero() }
+    
+    if let m0 = m0, let m1 = m1 {
+        if let mid = QuadBezierFitting(start, end, m0, m1) {
+            if QuadBezierFittingCurvature(start, mid, end) {
+                if limit > 0 {
+                    return split(0.5)
+                } else {
+                    return [[start, 2 * (Bezier(p).eval(0.5) - 0.25 * (start + end)), end]]
+                }
+            }
+            return [[start, mid, end]]
+        }
+    }
+    return [[start, end]]
+}
+public func QuadBezierFitting(_ p: [Point]) -> [[Point]] {
+    
+    return QuadBezierFitting(p, p.count + 4, true)
 }
 
 @_transparent
@@ -809,6 +879,8 @@ public func BezierFitting(start: Vector, end: Vector, _ passing: (Double, Vector
     return nil
 }
 
+// MARK: Bezier Offset
+
 public func BezierOffset(_ p0: Point, _ p1: Point, _ a: Double) -> (Point, Point)? {
     if a.almostZero() {
         return (p0, p1)
@@ -830,23 +902,22 @@ private func BezierOffsetCurvature(_ p0: Point, _ p1: Point, _ p2: Point) -> Boo
     let v = p1 - 0.5 * (p2 + p0)
     return u.magnitude < v.magnitude * 3
 }
-@_transparent
-private func BezierOffsetCurvature(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point) -> Bool {
-    let u = p3 - p0
-    let v = p1 - 0.5 * (p3 + p0)
-    let w = p2 - 0.5 * (p3 + p0)
-    return u.magnitude < max(v.magnitude, w.magnitude) * 4
-}
 
 public func BezierOffset(_ p0: Point, _ p1: Point, _ p2: Point, _ a: Double) -> [[Point]] {
     
-    return BezierOffset(p0, p1, p2, a, 8)
+    return _BezierOffset(p0, p1, p2, a, 8)
 }
-public func BezierOffset(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point, _ a: Double) -> [[Point]] {
+public func BezierOffset(_ p: [Point], _ a: Double) -> [[Point]] {
     
-    return BezierOffset(p0, p1, p2, p3, a, 8, true)
+    return QuadBezierFitting(p).flatMap { points -> [[Point]] in
+        switch points.count {
+        case 2: return BezierOffset(points[0], points[1], a).map { [[$0, $1]] } ?? []
+        case 3: return _BezierOffset(points[0], points[1], points[2], a, 4)
+        default: fatalError()
+        }
+    }
 }
-private func BezierOffset(_ p0: Point, _ p1: Point, _ p2: Point, _ a: Double, _ limit: Int) -> [[Point]] {
+private func _BezierOffset(_ p0: Point, _ p1: Point, _ p2: Point, _ a: Double, _ limit: Int) -> [[Point]] {
     
     if a.almostZero() {
         return [[p0, p1, p2]]
@@ -879,7 +950,7 @@ private func BezierOffset(_ p0: Point, _ p1: Point, _ p2: Point, _ a: Double, _ 
     
     func split(_ t: Double) -> [[Point]] {
         let (left, right) = SplitBezier(t, p0, p1, p2)
-        return BezierOffset(left[0], left[1], left[2], a, limit - 1) + BezierOffset(right[0], right[1], right[2], a, limit - 1)
+        return _BezierOffset(left[0], left[1], left[2], a, limit - 1) + _BezierOffset(right[0], right[1], right[2], a, limit - 1)
     }
     
     if limit > 0 && BezierOffsetCurvature(p0, p1, p2) {
@@ -899,7 +970,7 @@ private func BezierOffset(_ p0: Point, _ p1: Point, _ p2: Point, _ a: Double, _ 
                 let m = BezierPoint(0.5, q0, q1)
                 let _s = 1 / m.magnitude
                 let _mid = BezierPoint(0.5, p0, p1, p2) + Point(x: a * m.y * _s, y: -a * m.x * _s)
-                return [[start, (_mid - 0.25 * (start + end)) / 0.5, end]]
+                return [[start, 2 * (_mid - 0.25 * (start + end)), end]]
             }
         }
         return [[start, mid, end]]
@@ -1050,9 +1121,9 @@ public func BezierVariableOffset(_ p0: Point, _ p1: Point, _ a: [Point]) -> [Poi
 }
 public func BezierVariableOffset(_ p0: Point, _ p1: Point, _ p2: Point, _ a: [Point]) -> [[Point]] {
     
-    return BezierVariableOffset(p0, p1, p2, a, 8)
+    return _BezierVariableOffset(p0, p1, p2, a, 8)
 }
-private func BezierVariableOffset(_ p0: Point, _ p1: Point, _ p2: Point, _ a: [Point], _ limit: Int) -> [[Point]] {
+private func _BezierVariableOffset(_ p0: Point, _ p1: Point, _ p2: Point, _ a: [Point], _ limit: Int) -> [[Point]] {
     
     let q0 = p1 - p0
     let q1 = p2 - p1
@@ -1099,7 +1170,7 @@ private func BezierVariableOffset(_ p0: Point, _ p1: Point, _ p2: Point, _ a: [P
     func split_half() -> [[Point]] {
         let (p_left, p_right) = SplitBezier(0.5, p0, p1, p2)
         let (a_left, a_right) = split_a(half_length)
-        return BezierVariableOffset(p_left[0], p_left[1], p_left[2], a_left, limit - 1) + BezierVariableOffset(p_right[0], p_right[1], p_right[2], a_right, limit - 1)
+        return _BezierVariableOffset(p_left[0], p_left[1], p_left[2], a_left, limit - 1) + _BezierVariableOffset(p_right[0], p_right[1], p_right[2], a_right, limit - 1)
     }
     
     if limit > 0 && BezierOffsetCurvature(p0, p1, p2) {
@@ -1128,13 +1199,71 @@ private func BezierVariableOffset(_ p0: Point, _ p1: Point, _ p2: Point, _ a: [P
                 let m = BezierPoint(0.5, q0, q1)
                 let _s = 1 / m.magnitude
                 let _mid = BezierPoint(0.5, p0, p1, p2) + Point(x: g.y * m.y * _s, y: -g.y * m.x * _s)
-                return [[start, (_mid - 0.25 * (start + end)) / 0.5, end]]
+                return [[start, 2 * (_mid - 0.25 * (start + end)), end]]
             }
         }
         return [[start, mid, end]]
     }
     
     return BezierVariableOffset(p0, p2, a).map { [$0] } ?? []
+}
+
+// MARK: Mesh Warping
+
+public func CoonsPatch(_ m00: Point, _ m01: Point, _ m02: Point, _ m03: Point,
+                       _ m10: Point, _ m13: Point, _ m20: Point, _ m23: Point,
+                       _ m30: Point, _ m31: Point, _ m32: Point, _ m33: Point,
+                       _ p: Point ... ) -> [[Point]] {
+    
+    let u = Polynomial(Bezier(p.map { $0.x }))
+    let v = Polynomial(Bezier(p.map { $0.y }))
+    let u2 = u * u
+    let v2 = v * v
+    let u3 = u2 * u
+    let v3 = v2 * v
+    
+    let _u = 1 - u
+    let _v = 1 - v
+    let _u2 = _u * _u
+    let _v2 = _v * _v
+    let _u3 = _u2 * _u
+    let _v3 = _v2 * _v
+    
+    let bx = (m00.x * _u + m03.x * u) * _v + (m30.x * _u + m33.x * u) * v
+    let by = (m00.y * _u + m03.y * u) * _v + (m30.y * _u + m33.y * u) * v
+    
+    let c0x = _u3 * m00.x + 3 * _u2 * u * m01.x + 3 * _u * u2 * m02.x + u3 * m03.x
+    let c0y = _u3 * m00.y + 3 * _u2 * u * m01.y + 3 * _u * u2 * m02.y + u3 * m03.y
+    let c1x = _u3 * m30.x + 3 * _u2 * u * m31.x + 3 * _u * u2 * m32.x + u3 * m33.x
+    let c1y = _u3 * m30.y + 3 * _u2 * u * m31.y + 3 * _u * u2 * m32.y + u3 * m33.y
+    let c2x = _v3 * m00.x + 3 * _v2 * v * m10.x + 3 * _v * v2 * m20.x + v3 * m30.x
+    let c2y = _v3 * m00.y + 3 * _v2 * v * m10.y + 3 * _v * v2 * m20.y + v3 * m30.y
+    let c3x = _v3 * m03.x + 3 * _v2 * v * m13.x + 3 * _v * v2 * m23.x + v3 * m33.x
+    let c3y = _v3 * m03.y + 3 * _v2 * v * m13.y + 3 * _v * v2 * m23.y + v3 * m33.y
+    
+    let d0x = _v * c0x + v * c1x
+    let d0y = _v * c0y + v * c1y
+    let d1x = _u * c2x + u * c3x
+    let d1y = _u * c2y + u * c3y
+    
+    var x = (d0x + d1x - bx).bezier
+    var y = (d0y + d1y - by).bezier
+    
+    let degree = max(x.degree, y.degree)
+    
+    while x.degree != degree {
+        x = x.elevated()
+    }
+    while y.degree != degree {
+        y = y.elevated()
+    }
+    
+    let points = zip(x, y).map { Point(x: $0, y: $1) }
+    
+    switch degree {
+    case 1, 2, 3: return [points]
+    default: return QuadBezierFitting(points)
+    }
 }
 
 // MARK: Stationary Points
