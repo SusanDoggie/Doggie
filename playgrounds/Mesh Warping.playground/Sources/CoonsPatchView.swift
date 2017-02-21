@@ -99,11 +99,11 @@ public class CoonsPatchView: NSView, NSGestureRecognizerDelegate {
         p11 = Bezier(p2, p3).eval(2 / 3)
     }
     
-    public func implement() -> SDPath? {
+    public func implement() -> Shape? {
         
         if let shape = shape?.path {
             
-            var path: [SDPath.Command] = []
+            var path: [Shape.Command] = []
             var flag = true
             
             path.reserveCapacity(shape.count)
@@ -144,7 +144,7 @@ public class CoonsPatchView: NSView, NSGestureRecognizerDelegate {
                 }
             }
             
-            return SDPath(path)
+            return Shape(path)
         }
         
         return nil

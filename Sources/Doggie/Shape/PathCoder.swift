@@ -1,5 +1,5 @@
 //
-//  SDPathCoder.swift
+//  PathCoder.swift
 //
 //  The MIT License
 //  Copyright (c) 2015 - 2017 Susan Cheng. All rights reserved.
@@ -50,7 +50,7 @@ private struct PathDataScanner<I : IteratorProtocol> : IteratorProtocol, Sequenc
 
 private let pathDataMatcher: Regex = "[MmLlHhVvCcSsQqTtAaZz]|[+-]?(\\d+\\.?\\d*|\\.\\d+)([eE][+-]?\\d+)?"
 
-extension SDPath {
+extension Shape {
     
     public struct DecoderError : Error {
         
@@ -442,7 +442,7 @@ private func arcDetails(_ start: Point, _ end: Point, _ radius: Radius, _ rotate
     }
 }
 @_transparent
-private func bezierArc(_ start: Point, _ end: Point, _ radius: Radius, _ rotate: Double, _ largeArc: Bool, _ sweep: Bool) -> [SDPath.Command] {
+private func bezierArc(_ start: Point, _ end: Point, _ radius: Radius, _ rotate: Double, _ largeArc: Bool, _ sweep: Bool) -> [Shape.Command] {
     let (center, radius) = arcDetails(start, end, radius, rotate, largeArc, sweep)
     let _arc_transform = SDTransform.Scale(x: radius.x, y: radius.y) * SDTransform.Rotate(rotate)
     let _arc_transform_inverse = _arc_transform.inverse
@@ -461,7 +461,7 @@ private func bezierArc(_ start: Point, _ end: Point, _ radius: Radius, _ rotate:
     }
     let _transform = SDTransform.Rotate(startAngle) * _arc_transform
     let point = BezierArc(endAngle - startAngle).lazy.map { $0 * _transform + center }
-    var result: [SDPath.Command] = []
+    var result: [Shape.Command] = []
     if point.count > 1 {
         result.reserveCapacity(point.count / 3)
         for i in 0..<point.count / 3 {
@@ -507,7 +507,7 @@ private func getPathDataString(_ command: Character?, _ x: Double ...) -> String
     return result
 }
 
-public extension SDPath {
+public extension Shape {
     
     public func encode() -> String {
         
@@ -523,7 +523,7 @@ public extension SDPath {
     }
 }
 
-private extension SDPath.Command {
+private extension Shape.Command {
     
     func serialize(_ currentState: inout Int, start: inout Point, relative: inout Point, lastControl: inout Point?) -> String {
         

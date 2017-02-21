@@ -1,5 +1,5 @@
 //
-//  SDPathStroke.swift
+//  PathStroke.swift
 //
 //  The MIT License
 //  Copyright (c) 2015 - 2017 Susan Cheng. All rights reserved.
@@ -25,7 +25,7 @@
 
 import Foundation
 
-extension SDPath {
+extension Shape {
     
     public enum LineCap {
         case butt
@@ -68,7 +68,7 @@ extension SDPath {
     }
 }
 
-extension SDPath.StrokeBuffer.Segment {
+extension Shape.StrokeBuffer.Segment {
     
     var isPoint: Bool {
         switch self {
@@ -148,12 +148,12 @@ extension SDPath.StrokeBuffer.Segment {
     }
 }
 
-extension SDPath.StrokeBuffer {
+extension Shape.StrokeBuffer {
     
     mutating func flush() {
         
         if first != nil {
-            var cap_buffer: [SDPath.Command] = []
+            var cap_buffer: [Shape.Command] = []
             switch cap {
             case .butt: buffer1.append(.line(reverse_start))
             case .round:
@@ -443,9 +443,9 @@ extension SDPath.StrokeBuffer {
     
 }
 
-extension SDPath {
+extension Shape {
     
-    public func strokePath(width: Double, cap: LineCap, join: LineJoin) -> SDPath {
+    public func strokePath(width: Double, cap: LineCap, join: LineJoin) -> Shape {
         var buffer = StrokeBuffer(width: width, cap: cap, join: join)
         buffer.path.reserveCapacity(self.count << 4)
         self.identity.apply { command, state in
@@ -463,7 +463,7 @@ extension SDPath {
             }
         }
         buffer.flush()
-        return SDPath(buffer.path)
+        return Shape(buffer.path)
     }
     
 }
