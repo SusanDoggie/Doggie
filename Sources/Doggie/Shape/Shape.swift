@@ -168,8 +168,8 @@ public struct Shape : RandomAccessCollection, MutableCollection, ExpressibleByAr
             self.apply { commands, state in
                 switch commands {
                 case let .line(p1): bound = bound?.union(Rect.bound([state.last * transform, p1 * transform])) ?? Rect.bound([state.last * transform, p1 * transform])
-                case let .quad(p1, p2): bound = bound?.union(QuadBezierBound(state.last, p1, p2, transform)) ?? QuadBezierBound(state.last, p1, p2, transform)
-                case let .cubic(p1, p2, p3): bound = bound?.union(CubicBezierBound(state.last, p1, p2, p3, transform)) ?? CubicBezierBound(state.last, p1, p2, p3, transform)
+                case let .quad(p1, p2): bound = bound?.union(Bezier(state.last * transform, p1 * transform, p2 * transform).boundary) ?? Bezier(state.last * transform, p1 * transform, p2 * transform).boundary
+                case let .cubic(p1, p2, p3): bound = bound?.union(Bezier(state.last * transform, p1 * transform, p2 * transform, p3 * transform).boundary) ?? Bezier(state.last * transform, p1 * transform, p2 * transform, p3 * transform).boundary
                 default: break
                 }
             }
@@ -184,8 +184,8 @@ public struct Shape : RandomAccessCollection, MutableCollection, ExpressibleByAr
             self.apply { commands, state in
                 switch commands {
                 case let .line(p1): bound = bound?.union(Rect.bound([state.last, p1])) ?? Rect.bound([state.last, p1])
-                case let .quad(p1, p2): bound = bound?.union(QuadBezierBound(state.last, p1, p2)) ?? QuadBezierBound(state.last, p1, p2)
-                case let .cubic(p1, p2, p3): bound = bound?.union(CubicBezierBound(state.last, p1, p2, p3)) ?? CubicBezierBound(state.last, p1, p2, p3)
+                case let .quad(p1, p2): bound = bound?.union(Bezier(state.last, p1, p2).boundary) ?? Bezier(state.last, p1, p2).boundary
+                case let .cubic(p1, p2, p3): bound = bound?.union(Bezier(state.last, p1, p2, p3).boundary) ?? Bezier(state.last, p1, p2, p3).boundary
                 default: break
                 }
             }
@@ -257,9 +257,9 @@ extension Shape {
             var _area: Double = 0
             self.apply { commands, state in
                 switch commands {
-                case let .line(p1): _area += LineSignedArea(state.last * transform, p1 * transform)
-                case let .quad(p1, p2): _area += QuadBezierSignedArea(state.last * transform, p1 * transform, p2 * transform)
-                case let .cubic(p1, p2, p3): _area += CubicBezierSignedArea(state.last * transform, p1 * transform, p2 * transform, p3 * transform)
+                case let .line(p1): _area += Bezier(state.last * transform, p1 * transform).area
+                case let .quad(p1, p2): _area += Bezier(state.last * transform, p1 * transform, p2 * transform).area
+                case let .cubic(p1, p2, p3): _area += Bezier(state.last * transform, p1 * transform, p2 * transform, p3 * transform).area
                 default: break
                 }
             }

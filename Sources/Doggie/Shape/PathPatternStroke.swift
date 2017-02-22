@@ -172,8 +172,8 @@ extension Shape {
             
             defer { flag2 = _flag2 }
             
-            var _p0 = BezierPoint(start, p0, p1)
-            let _p1 = BezierPoint(end, p0, p1)
+            var _p0 = Bezier(p0, p1).eval(start)
+            let _p1 = Bezier(p0, p1).eval(end)
             
             while true {
                 let z = _p1 - _p0
@@ -188,21 +188,21 @@ extension Shape {
                     addJoin(_p0.y, z.x.sign)
                 }
                 if z.x > 0 {
-                    let mid = BezierPoint((current_endX / fitting.total - p0.x) / (p1.x - p0.x), p0, p1)
+                    let mid = Bezier(p0, p1).eval((current_endX / fitting.total - p0.x) / (p1.x - p0.x))
                     let segment_points = current_segment.points
                     let a = [Point(x: 0, y: _p0.y), Point(x: 1, y: mid.y)]
                     switch segment_points.count {
                     case 2:
                         let _s = (p0.x * fitting.total - current_startX) / current_segment.length
                         let _t = (mid.x * fitting.total - current_startX) / current_segment.length
-                        let u = SplitBezier([_s, _t], segment_points[0], segment_points[1])
+                        let u = Bezier(segment_points[0], segment_points[1]).split([_s, _t])
                         if let q = BezierVariableOffset(u[1][0], u[1][1], a) {
                             push(q)
                         }
                     default:
                         let _s = InverseQuadBezierLength(p0.x * fitting.total - current_startX, segment_points[0], segment_points[1], segment_points[2])
                         let _t = InverseQuadBezierLength(mid.x * fitting.total - current_startX, segment_points[0], segment_points[1], segment_points[2])
-                        let u = SplitBezier([_s, _t], segment_points[0], segment_points[1], segment_points[2])
+                        let u = Bezier(segment_points[0], segment_points[1], segment_points[2]).split([_s, _t])
                         for q in BezierVariableOffset(u[1][0], u[1][1], u[1][2], a) {
                             push(q)
                         }
@@ -219,20 +219,20 @@ extension Shape {
                         _startX = current_startX
                         segment_points = current_segment.points
                     }
-                    let mid = BezierPoint((_startX / fitting.total - p0.x) / (p1.x - p0.x), p0, p1)
+                    let mid = Bezier(p0, p1).eval((_startX / fitting.total - p0.x) / (p1.x - p0.x))
                     let a = [Point(x: 0, y: -_p0.y), Point(x: 1, y: -mid.y)]
                     switch segment_points.count {
                     case 2:
                         let _s = (_p0.x * fitting.total - _startX) / current_segment.length
                         let _t = (mid.x * fitting.total - _startX) / current_segment.length
-                        let u = SplitBezier([_t, _s], segment_points[0], segment_points[1])
+                        let u = Bezier(segment_points[0], segment_points[1]).split([_t, _s])
                         if let q = BezierVariableOffset(u[1][1], u[1][0], a) {
                             push(q)
                         }
                     default:
                         let _s = InverseQuadBezierLength(_p0.x * fitting.total - _startX, segment_points[0], segment_points[1], segment_points[2])
                         let _t = InverseQuadBezierLength(mid.x * fitting.total - _startX, segment_points[0], segment_points[1], segment_points[2])
-                        let u = SplitBezier([_t, _s], segment_points[0], segment_points[1], segment_points[2])
+                        let u = Bezier(segment_points[0], segment_points[1], segment_points[2]).split([_t, _s])
                         for q in BezierVariableOffset(u[1][2], u[1][1], u[1][0], a) {
                             push(q)
                         }
@@ -242,20 +242,20 @@ extension Shape {
             }
         }
         mutating func addBezier(_ p0: Point, _ p1: Point, _ p2: Point) {
-            let bound = QuadBezierBound(p0, p1, p2)
+            let bound = Bezier(p0, p1, p2).boundary
             if bound.maxX < 0 || bound.maxX.almostZero() || bound.minX > 1 || bound.minX.almostEqual(1) {
                 flag2 = true
                 return
             }
-            if let stationary = QuadBezierStationary(p0.x, p1.x, p2.x), !stationary.almostZero() && !stationary.almostEqual(1) && 0...1 ~= stationary {
-                let (left, right) = SplitBezier(stationary, p0, p1, p2)
+            if let stationary = Bezier(p0.x, p1.x, p2.x).stationary.first, !stationary.almostZero() && !stationary.almostEqual(1) && 0...1 ~= stationary {
+                let (left, right) = Bezier(p0, p1, p2).split(stationary)
                 addBezier(left[0], left[1], left[2])
                 addBezier(right[0], right[1], right[2])
                 return
             }
             if !bound.minX.almostZero() && bound.minX < 0 {
                 let t = Bezier(p0.x, p1.x, p2.x).polynomial.roots.filter { !$0.almostZero() && !$0.almostEqual(1) && 0...1 ~= $0 }.sorted()
-                let q = SplitBezier(t, p0, p1, p2)
+                let q = Bezier(p0, p1, p2).split(t)
                 for item in q {
                     addBezier(item[0], item[1], item[2])
                 }
@@ -263,7 +263,7 @@ extension Shape {
             }
             if !bound.maxX.almostEqual(1) && bound.maxX > 1 {
                 let t = (Bezier(p0.x, p1.x, p2.x).polynomial - 1).roots.filter { !$0.almostZero() && !$0.almostEqual(1) && 0...1 ~= $0 }.sorted()
-                let q = SplitBezier(t, p0, p1, p2)
+                let q = Bezier(p0, p1, p2).split(t)
                 for item in q {
                     addBezier(item[0], item[1], item[2])
                 }
@@ -295,21 +295,21 @@ extension Shape {
                 let x_poly = Bezier(_p0.x, _p1.x, _p2.x).polynomial
                 if z.x > 0 {
                     let _mid_t = (x_poly - current_endX / fitting.total).roots.filter { !$0.almostZero() && !$0.almostEqual(1) && 0...1 ~= $0 }.sorted().first ?? 1
-                    let (left, right) = SplitBezier(_mid_t, _p0, _p1, _p2)
+                    let (left, right) = Bezier(_p0, _p1, _p2).split(_mid_t)
                     let segment_points = current_segment.points
                     let a = [Point(x: 0, y: _p0.y), Point(x: (left[1].x - _p0.x) / z.x, y: left[1].y), Point(x: 1, y: left[2].y)]
                     switch segment_points.count {
                     case 2:
                         let _s = (p0.x * fitting.total - current_startX) / current_segment.length
                         let _t = (left[2].x * fitting.total - current_startX) / current_segment.length
-                        let u = SplitBezier([_s, _t], segment_points[0], segment_points[1])
+                        let u = Bezier(segment_points[0], segment_points[1]).split([_s, _t])
                         if let q = BezierVariableOffset(u[1][0], u[1][1], a) {
                             push(q)
                         }
                     default:
                         let _s = InverseQuadBezierLength(p0.x * fitting.total - current_startX, segment_points[0], segment_points[1], segment_points[2])
                         let _t = InverseQuadBezierLength(left[2].x * fitting.total - current_startX, segment_points[0], segment_points[1], segment_points[2])
-                        let u = SplitBezier([_s, _t], segment_points[0], segment_points[1], segment_points[2])
+                        let u = Bezier(segment_points[0], segment_points[1], segment_points[2]).split([_s, _t])
                         for q in BezierVariableOffset(u[1][0], u[1][1], u[1][2], a) {
                             push(q)
                         }
@@ -329,20 +329,20 @@ extension Shape {
                         segment_points = current_segment.points
                     }
                     let _mid_t = (x_poly - _startX / fitting.total).roots.filter { !$0.almostZero() && !$0.almostEqual(1) && 0...1 ~= $0 }.sorted().first ?? 1
-                    let (left, right) = SplitBezier(_mid_t, _p0, _p1, _p2)
+                    let (left, right) = Bezier(_p0, _p1, _p2).split(_mid_t)
                     let a = [Point(x: 0, y: -_p0.y), Point(x: (left[1].x - _p0.x) / z.x, y: -left[1].y), Point(x: 1, y: -left[2].y)]
                     switch segment_points.count {
                     case 2:
                         let _s = (_p0.x * fitting.total - _startX) / current_segment.length
                         let _t = (left[2].x * fitting.total - _startX) / current_segment.length
-                        let u = SplitBezier([_t, _s], segment_points[0], segment_points[1])
+                        let u = Bezier(segment_points[0], segment_points[1]).split([_t, _s])
                         if let q = BezierVariableOffset(u[1][1], u[1][0], a) {
                             push(q)
                         }
                     default:
                         let _s = InverseQuadBezierLength(_p0.x * fitting.total - _startX, segment_points[0], segment_points[1], segment_points[2])
                         let _t = InverseQuadBezierLength(left[2].x * fitting.total - _startX, segment_points[0], segment_points[1], segment_points[2])
-                        let u = SplitBezier([_t, _s], segment_points[0], segment_points[1], segment_points[2])
+                        let u = Bezier(segment_points[0], segment_points[1], segment_points[2]).split([_t, _s])
                         for q in BezierVariableOffset(u[1][2], u[1][1], u[1][0], a) {
                             push(q)
                         }
@@ -354,14 +354,14 @@ extension Shape {
             }
         }
         mutating func addBezier(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point) {
-            let bound = CubicBezierBound(p0, p1, p2, p3)
+            let bound = Bezier(p0, p1, p2, p3).boundary
             if bound.maxX < 0 || bound.minX > 1 {
                 flag2 = true
                 return
             }
-            let stationary = CubicBezierStationary(p0.x, p1.x, p2.x, p3.x).filter { !$0.almostZero() && !$0.almostEqual(1) && 0...1 ~= $0 }.sorted()
+            let stationary = Bezier(p0.x, p1.x, p2.x, p3.x).stationary.filter { !$0.almostZero() && !$0.almostEqual(1) && 0...1 ~= $0 }.sorted()
             if stationary.count != 0 {
-                let q = SplitBezier(stationary, p0, p1, p2, p3)
+                let q = Bezier(p0, p1, p2, p3).split(stationary)
                 for item in q {
                     addBezier(item[0], item[1], item[2], item[3])
                 }
@@ -369,14 +369,14 @@ extension Shape {
             }
             if !bound.minX.almostZero() && bound.minX < 0 {
                 let t = Bezier(p0.x, p1.x, p2.x, p3.x).polynomial.roots.filter { !$0.almostZero() && !$0.almostEqual(1) && 0...1 ~= $0 }.sorted()
-                let q = SplitBezier(t, p0, p1, p2, p3)
+                let q = Bezier(p0, p1, p2, p3).split(t)
                 for item in q {
                     addBezier(item[0], item[1], item[2], item[3])
                 }
             }
             if !bound.maxX.almostEqual(1) && bound.maxX > 1 {
                 let t = (Bezier(p0.x, p1.x, p2.x, p3.x).polynomial - 1).roots.filter { !$0.almostZero() && !$0.almostEqual(1) && 0...1 ~= $0 }.sorted()
-                let q = SplitBezier(t, p0, p1, p2, p3)
+                let q = Bezier(p0, p1, p2, p3).split(t)
                 for item in q {
                     addBezier(item[0], item[1], item[2], item[3])
                 }
@@ -409,21 +409,21 @@ extension Shape {
                 let x_poly = Bezier(_p0.x, _p1.x, _p2.x, _p3.x).polynomial
                 if z.x > 0 {
                     let _mid_t = (x_poly - current_endX / fitting.total).roots.filter { !$0.almostZero() && !$0.almostEqual(1) && 0...1 ~= $0 }.sorted().first ?? 1
-                    let (left, right) = SplitBezier(_mid_t, _p0, _p1, _p2, _p3)
+                    let (left, right) = Bezier(_p0, _p1, _p2, _p3).split(_mid_t)
                     let segment_points = current_segment.points
                     let a = [Point(x: 0, y: _p0.y), Point(x: (left[1].x - _p0.x) / z.x, y: left[1].y), Point(x: (left[2].x - _p0.x) / z.x, y: left[2].y), Point(x: 1, y: left[3].y)]
                     switch segment_points.count {
                     case 2:
                         let _s = (p0.x * fitting.total - current_startX) / current_segment.length
                         let _t = (left[3].x * fitting.total - current_startX) / current_segment.length
-                        let u = SplitBezier([_s, _t], segment_points[0], segment_points[1])
+                        let u = Bezier(segment_points[0], segment_points[1]).split([_s, _t])
                         if let q = BezierVariableOffset(u[1][0], u[1][1], a) {
                             push(q)
                         }
                     default:
                         let _s = InverseQuadBezierLength(p0.x * fitting.total - current_startX, segment_points[0], segment_points[1], segment_points[2])
                         let _t = InverseQuadBezierLength(left[3].x * fitting.total - current_startX, segment_points[0], segment_points[1], segment_points[2])
-                        let u = SplitBezier([_s, _t], segment_points[0], segment_points[1], segment_points[2])
+                        let u = Bezier(segment_points[0], segment_points[1], segment_points[2]).split([_s, _t])
                         for q in BezierVariableOffset(u[1][0], u[1][1], u[1][2], a) {
                             push(q)
                         }
@@ -444,20 +444,20 @@ extension Shape {
                         segment_points = current_segment.points
                     }
                     let _mid_t = (x_poly - _startX / fitting.total).roots.filter { !$0.almostZero() && !$0.almostEqual(1) && 0...1 ~= $0 }.sorted().first ?? 1
-                    let (left, right) = SplitBezier(_mid_t, _p0, _p1, _p2, _p3)
+                    let (left, right) = Bezier(_p0, _p1, _p2, _p3).split(_mid_t)
                     let a = [Point(x: 0, y: -_p0.y), Point(x: (left[1].x - _p0.x) / z.x, y: -left[1].y), Point(x: (left[2].x - _p0.x) / z.x, y: -left[2].y), Point(x: 1, y: -left[3].y)]
                     switch segment_points.count {
                     case 2:
                         let _s = (_p0.x * fitting.total - _startX) / current_segment.length
                         let _t = (left[3].x * fitting.total - _startX) / current_segment.length
-                        let u = SplitBezier([_t, _s], segment_points[0], segment_points[1])
+                        let u = Bezier(segment_points[0], segment_points[1]).split([_t, _s])
                         if let q = BezierVariableOffset(u[1][1], u[1][0], a) {
                             push(q)
                         }
                     default:
                         let _s = InverseQuadBezierLength(_p0.x * fitting.total - _startX, segment_points[0], segment_points[1], segment_points[2])
                         let _t = InverseQuadBezierLength(left[3].x * fitting.total - _startX, segment_points[0], segment_points[1], segment_points[2])
-                        let u = SplitBezier([_t, _s], segment_points[0], segment_points[1], segment_points[2])
+                        let u = Bezier(segment_points[0], segment_points[1], segment_points[2]).split([_t, _s])
                         for q in BezierVariableOffset(u[1][2], u[1][1], u[1][0], a) {
                             push(q)
                         }

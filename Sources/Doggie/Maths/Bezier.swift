@@ -515,6 +515,12 @@ extension Bezier where Element == Double {
 
 extension Bezier where Element == Point {
     
+    public var stationary: [Double] {
+        let bx = Bezier<Double>(points.map { $0.x }).stationary.lazy.map { $0.clamped(to: 0...1) }
+        let by = Bezier<Double>(points.map { $0.y }).stationary.lazy.map { $0.clamped(to: 0...1) }
+        return [0.0, 1.0] + bx + by
+    }
+    
     public var boundary: Rect {
         let points = self.points
         
@@ -938,7 +944,8 @@ private func _BezierOffset(_ p0: Point, _ p1: Point, _ p2: Point, _ a: Double, _
         return BezierOffset(p0, p2, a).map { [[$0, $1]] } ?? []
     }
     if ph0.almostEqual(ph1 + Double.pi) || ph0.almostEqual(ph1 - Double.pi) {
-        if let w = QuadBezierStationary(p0.x, p1.x, p2.x) ?? QuadBezierStationary(p0.y, p1.y, p2.y) {
+        let w = Bezier(p0, p1, p2).stationary.filter { !$0.almostZero() && !$0.almostEqual(1) && 0...1 ~= $0 }
+        if w.count != 0 {
             let g = Bezier(p0, p1, p2).eval(w)
             let angle = ph0 - 0.5 * Double.pi
             let bezierCircle = BezierCircle.lazy.map { $0 * SDTransform.Rotate(angle) * a + g }
@@ -1021,7 +1028,8 @@ private func _BezierVariableOffset(_ p0: Point, _ p1: Point, _ p2: Point, _ a: [
     }
     
     if ph0.almostEqual(ph1 + Double.pi) || ph0.almostEqual(ph1 - Double.pi) {
-        if let w = QuadBezierStationary(p0.x, p1.x, p2.x) ?? QuadBezierStationary(p0.y, p1.y, p2.y) {
+        let w = Bezier(p0, p1, p2).stationary.filter { !$0.almostZero() && !$0.almostEqual(1) && 0...1 ~= $0 }
+        if w.count != 0 {
             let mid_length = QuadBezierLength(w, p0, p1, p2)
             let g = Bezier(p0, p1, p2).eval(w)
             let (a_left, a_right) = split_a(mid_length)
@@ -1214,194 +1222,6 @@ public func TensorPatch(_ m00: Point, _ m01: Point, _ m02: Point, _ m03: Point,
     case 1, 2, 3: return [points]
     default: return QuadBezierFitting(points)
     }
-}
-
-// MARK: Stationary Points
-
-public func QuadBezierStationary(_ p0: Double, _ p1: Double, _ p2: Double) -> Double? {
-    let d = p0 + p2 - 2 * p1
-    if d.almostZero() {
-        return nil
-    }
-    return (p0 - p1) / d
-}
-
-///
-/// :param: a value of 'a' in matrix if parallel to x-axis or value of 'd' in matrix if parallel to y-axis.
-/// :param: b value of 'b' in matrix if parallel to x-axis or value of 'e' in matrix if parallel to y-axis.
-///
-/// Transformation Matrix:
-///
-///     ⎛ a b c ⎞ ⎛ B_x(t) ⎞
-///     ⎜ d e f ⎟ ⎜ B_y(t) ⎟
-///     ⎝ 0 0 1 ⎠ ⎝   1    ⎠
-///
-public func QuadBezierStationary(_ p0: Point, _ p1: Point, _ p2: Point, _ a: Double, _ b: Double) -> Double? {
-    let d = a * (p0.x + p2.x - 2 * p1.x) + b * (p0.y + p2.y - 2 * p1.y)
-    if d.almostZero() {
-        return nil
-    }
-    return (a * (p0.x - p1.x) + b * (p0.y - p1.y)) / d
-}
-
-public func CubicBezierStationary(_ p0: Double, _ p1: Double, _ p2: Double, _ p3: Double) -> [Double] {
-    let _a = 3 * (p3 - p0) + 9 * (p1 - p2)
-    let _b = 6 * (p2 + p0) - 12 * p1
-    let _c = 3 * (p1 - p0)
-    if _a.almostZero() {
-        if _b.almostZero() {
-            return []
-        }
-        let t = -_c / _b
-        return [t]
-    } else {
-        let delta = _b * _b - 4 * _a * _c
-        let _a2 = 2 * _a
-        let _b2 = -_b / _a2
-        if delta.sign == .plus {
-            let sqrt_delta = sqrt(delta) / _a2
-            let t1 = _b2 + sqrt_delta
-            let t2 = _b2 - sqrt_delta
-            return [t1, t2]
-        } else if delta.almostZero() {
-            return [_b2]
-        }
-    }
-    return []
-}
-
-///
-/// :param: a value of 'a' in matrix if parallel to x-axis or value of 'd' in matrix if parallel to y-axis.
-/// :param: b value of 'b' in matrix if parallel to x-axis or value of 'e' in matrix if parallel to y-axis.
-///
-/// Transformation Matrix:
-///
-///     ⎛ a b c ⎞ ⎛ B_x(t) ⎞
-///     ⎜ d e f ⎟ ⎜ B_y(t) ⎟
-///     ⎝ 0 0 1 ⎠ ⎝   1    ⎠
-///
-public func CubicBezierStationary(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point, _ a: Double, _ b: Double) -> [Double] {
-    let _ax = 3 * (p3.x - p0.x) + 9 * (p1.x - p2.x)
-    let _bx = 6 * (p2.x + p0.x) - 12 * p1.x
-    let _cx = 3 * (p1.x - p0.x)
-    let _ay = 3 * (p3.y - p0.y) + 9 * (p1.y - p2.y)
-    let _by = 6 * (p2.y + p0.y) - 12 * p1.y
-    let _cy = 3 * (p1.y - p0.y)
-    let _a = a * _ax + b * _ay
-    let _b = a * _bx + b * _by
-    let _c = a * _cx + b * _cy
-    if _a.almostZero() {
-        if _b.almostZero() {
-            return []
-        }
-        let t = -_c / _b
-        return [t]
-    } else {
-        let delta = _b * _b - 4 * _a * _c
-        let _a2 = 2 * _a
-        let _b2 = -_b / _a2
-        if delta.sign == .plus {
-            let sqrt_delta = sqrt(delta) / _a2
-            let t1 = _b2 + sqrt_delta
-            let t2 = _b2 - sqrt_delta
-            return [t1, t2]
-        } else if delta.almostZero() {
-            return [_b2]
-        }
-    }
-    return []
-}
-
-// MARK: Boundary
-
-public func QuadBezierBound(_ p0: Point, _ p1: Point, _ p2: Point) -> Rect {
-    
-    let tx = [0.0, QuadBezierStationary(p0.x, p1.x, p2.x).map { $0.clamped(to: 0...1) } ?? 0.0, 1.0]
-    let ty = [0.0, QuadBezierStationary(p0.y, p1.y, p2.y).map { $0.clamped(to: 0...1) } ?? 0.0, 1.0]
-    
-    let _x = tx.map { Bezier(p0.x, p1.x, p2.x).eval($0) }
-    let _y = ty.map { Bezier(p0.y, p1.y, p2.y).eval($0) }
-    
-    let minX = _x.min()!
-    let minY = _y.min()!
-    let maxX = _x.max()!
-    let maxY = _y.max()!
-    
-    return Rect(x: minX, y: minY, width: maxX - minX, height: maxY - minY)
-}
-
-///
-/// Transformation Matrix:
-///
-///     ⎛ a b c ⎞ ⎛ B_x(t) ⎞
-///     ⎜ d e f ⎟ ⎜ B_y(t) ⎟
-///     ⎝ 0 0 1 ⎠ ⎝   1    ⎠
-///
-public func QuadBezierBound<T: SDTransformProtocol>(_ p0: Point, _ p1: Point, _ p2: Point, _ matrix: T) -> Rect {
-    
-    let tx = [0.0, QuadBezierStationary(p0, p1, p2, matrix.a, matrix.b).map { $0.clamped(to: 0...1) } ?? 0.0, 1.0]
-    let ty = [0.0, QuadBezierStationary(p0, p1, p2, matrix.d, matrix.e).map { $0.clamped(to: 0...1) } ?? 0.0, 1.0]
-    
-    let _x = tx.map { t -> Double in
-        let _p = Bezier(p0, p1, p2).eval(t)
-        return matrix.a * _p.x + matrix.b * _p.y
-    }
-    let _y = ty.map { t -> Double in
-        let _p = Bezier(p0, p1, p2).eval(t)
-        return matrix.d * _p.x + matrix.e * _p.y
-    }
-    
-    let minX = _x.min()!
-    let minY = _y.min()!
-    let maxX = _x.max()!
-    let maxY = _y.max()!
-    
-    return Rect(x: minX + matrix.c, y: minY + matrix.f, width: maxX - minX, height: maxY - minY)
-}
-
-public func CubicBezierBound(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point) -> Rect {
-    
-    let tx = [0.0, 1.0] + CubicBezierStationary(p0.x, p1.x, p2.x, p3.x).lazy.map { $0.clamped(to: 0...1) }
-    let ty = [0.0, 1.0] + CubicBezierStationary(p0.y, p1.y, p2.y, p3.y).lazy.map { $0.clamped(to: 0...1) }
-    
-    let _x = tx.map { Bezier(p0.x, p1.x, p2.x, p3.x).eval($0) }
-    let _y = ty.map { Bezier(p0.y, p1.y, p2.y, p3.y).eval($0) }
-    
-    let minX = _x.min()!
-    let minY = _y.min()!
-    let maxX = _x.max()!
-    let maxY = _y.max()!
-    
-    return Rect(x: minX, y: minY, width: maxX - minX, height: maxY - minY)
-}
-
-///
-/// Transformation Matrix:
-///
-///     ⎛ a b c ⎞ ⎛ B_x(t) ⎞
-///     ⎜ d e f ⎟ ⎜ B_y(t) ⎟
-///     ⎝ 0 0 1 ⎠ ⎝   1    ⎠
-///
-public func CubicBezierBound<T: SDTransformProtocol>(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point, _ matrix: T) -> Rect {
-    
-    let tx = [0.0, 1.0] + CubicBezierStationary(p0, p1, p2, p3, matrix.a, matrix.b).lazy.map { $0.clamped(to: 0...1) }
-    let ty = [0.0, 1.0] + CubicBezierStationary(p0, p1, p2, p3, matrix.d, matrix.e).lazy.map { $0.clamped(to: 0...1) }
-    
-    let _x = tx.map { t -> Double in
-        let _p = Bezier(p0, p1, p2, p3).eval(t)
-        return matrix.a * _p.x + matrix.b * _p.y
-    }
-    let _y = ty.map { t -> Double in
-        let _p = Bezier(p0, p1, p2, p3).eval(t)
-        return matrix.d * _p.x + matrix.e * _p.y
-    }
-    
-    let minX = _x.min()!
-    let minY = _y.min()!
-    let maxX = _x.max()!
-    let maxY = _y.max()!
-    
-    return Rect(x: minX + matrix.c, y: minY + matrix.f, width: maxX - minX, height: maxY - minY)
 }
 
 var BezierCircle: [Point] {
