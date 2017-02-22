@@ -944,8 +944,7 @@ private func _BezierOffset(_ p0: Point, _ p1: Point, _ p2: Point, _ a: Double, _
         return BezierOffset(p0, p2, a).map { [[$0, $1]] } ?? []
     }
     if ph0.almostEqual(ph1 + Double.pi) || ph0.almostEqual(ph1 - Double.pi) {
-        let w = Bezier(p0, p1, p2).stationary.filter { !$0.almostZero() && !$0.almostEqual(1) && 0...1 ~= $0 }
-        if w.count != 0 {
+        if let w = Bezier(p0, p1, p2).stationary.first, !w.almostZero() && !w.almostEqual(1) && 0...1 ~= w {
             let g = Bezier(p0, p1, p2).eval(w)
             let angle = ph0 - 0.5 * Double.pi
             let bezierCircle = BezierCircle.lazy.map { $0 * SDTransform.Rotate(angle) * a + g }
@@ -1028,8 +1027,7 @@ private func _BezierVariableOffset(_ p0: Point, _ p1: Point, _ p2: Point, _ a: [
     }
     
     if ph0.almostEqual(ph1 + Double.pi) || ph0.almostEqual(ph1 - Double.pi) {
-        let w = Bezier(p0, p1, p2).stationary.filter { !$0.almostZero() && !$0.almostEqual(1) && 0...1 ~= $0 }
-        if w.count != 0 {
+        if let w = Bezier(p0, p1, p2).stationary.first, !w.almostZero() && !w.almostEqual(1) && 0...1 ~= w {
             let mid_length = QuadBezierLength(w, p0, p1, p2)
             let g = Bezier(p0, p1, p2).eval(w)
             let (a_left, a_right) = split_a(mid_length)
