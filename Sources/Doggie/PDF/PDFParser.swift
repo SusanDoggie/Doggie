@@ -49,7 +49,7 @@ extension PDFDocument {
         for (identifier, offset) in xref {
             
             var _lineStart = lineStartPosition(data: data, position: offset)
-            var _lineEnd = lineEndPosition(data: data, position: offset)
+            let _lineEnd = lineEndPosition(data: data, position: offset)
             
             if _lineStart >= _lineEnd {
                 throw ParserError.invalidFormat("invalid file format.")
@@ -165,9 +165,9 @@ extension PDFDocument {
                     if data.count != _length {
                         throw ParserError.unexpectedEOF
                     }
-                    table[lengthId.identifier][lengthId.generation] = PDFDocument.Value.stream(dict, Data(data))
+                    table[identifier.identifier][identifier.generation] = PDFDocument.Value.stream(dict, Data(data))
                     
-                default: throw ParserError.invalidFormat("obj \(lengthId.identifier) \(lengthId.generation) not a number.")
+                default: throw ParserError.invalidFormat("obj \(lengthId.identifier) \(lengthId.generation) is not a number.")
                 }
                 
             } else {
