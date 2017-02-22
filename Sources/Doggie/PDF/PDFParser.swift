@@ -536,7 +536,7 @@ extension PDFDocument {
                 if fflag {
                     float = (float + Double(d - 48)) / 10
                 } else {
-                    int = int * 10 + Int(d - 48)
+                    int = int * 10 + IntMax(d - 48)
                 }
             default:
                 if fflag {
