@@ -1,9 +1,29 @@
-//: Playground - noun: a place where people can play
+//
+//  PDFParser.swift
+//
+//  The MIT License
+//  Copyright (c) 2015 - 2017 Susan Cheng. All rights reserved.
+//
+//  Permission is hereby granted, free of charge, to any person obtaining a copy
+//  of this software and associated documentation files (the "Software"), to deal
+//  in the Software without restriction, including without limitation the rights
+//  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+//  copies of the Software, and to permit persons to whom the Software is
+//  furnished to do so, subject to the following conditions:
+//
+//  The above copyright notice and this permission notice shall be included in
+//  all copies or substantial portions of the Software.
+//
+//  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+//  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+//  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
+//  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+//  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+//  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+//  THE SOFTWARE.
+//
 
-import Cocoa
-import Doggie
-
-Array("endstream".utf8)
+import Foundation
 
 extension PDFDocument {
     
@@ -65,37 +85,7 @@ extension PDFDocument {
             
             let (pos, obj) = try parseValue(data: data, position: _lineStart, version: _version)
             
-            _lineEnd = lineEndPosition(data: data, position: pos)
-            
-            _lineStart = nextLineStartPosition(data: data, position: _lineEnd)
-            _lineEnd = lineEndPosition(data: data, position: _lineStart)
-            
-            if equals(data[_lineStart..<_lineEnd], [115, 116, 114, 101, 97, 109]) {
-                if let dict = obj.dictionary, let length = dict["Length"] {
-                    if _version >= (1, 2) && dict["F"] != nil {
-                        table[id][gen] = PDFDocument.Value.stream(dict, Data())
-                        continue
-                    }
-                    switch length {
-                    case let .number(length):
-                        
-                        let _length = length.intValue
-                        
-                        let _streamStart = nextLineStartPosition(data: data, position: _lineEnd)
-                        let data = data.suffix(from: _streamStart).prefix(_length)
-                        
-                        if data.count != _length {
-                            throw ParserError.unexpectedEOF
-                        }
-                        table[id][gen] = PDFDocument.Value.stream(dict, Data(data))
-                        
-                    case .indirect: stream[identifier] = (dict, _lineEnd)
-                    default: throw ParserError.invalidFormat("invalid stream format.")
-                    }
-                } else {
-                    throw ParserError.invalidFormat("invalid stream format.")
-                }
-            } else {
+            if !obj.isDictionary {
                 if id >= table.count {
                     table.append(contentsOf: repeatElement([], count: id - table.count + 1))
                 }
@@ -104,10 +94,69 @@ extension PDFDocument {
                 }
                 table[id][gen] = obj
             }
+            
+            var _tokenStart = pos
+            var _tokenEnd = lineEndPosition(data: data, position: pos)
+            
+            loop: while true {
+                
+                if _tokenStart > _tokenEnd {
+                    throw ParserError.invalidFormat("invalid file format.")
+                }
+                if _tokenEnd > data.count {
+                    throw ParserError.unexpectedEOF
+                }
+                
+                if equals(data[_tokenStart..<_tokenEnd], [101, 110, 100, 111, 98, 106]) {
+                    
+                    if id >= table.count {
+                        table.append(contentsOf: repeatElement([], count: id - table.count + 1))
+                    }
+                    if gen >= table[id].count {
+                        table[id].append(contentsOf: repeatElement(nil, count: gen - table[id].count + 1))
+                    }
+                    table[id][gen] = obj
+                    
+                    break loop
+                    
+                } else if equals(data[_tokenStart..<_tokenEnd], [115, 116, 114, 101, 97, 109]) {
+                    
+                    if let dict = obj.dictionary, let length = dict["Length"] {
+                        if _version >= (1, 2) && dict["F"] != nil {
+                            table[id][gen] = PDFDocument.Value.stream(dict, Data())
+                            continue
+                        }
+                        switch length {
+                        case let .number(length):
+                            
+                            let _length = length.intValue
+                            
+                            let _streamStart = nextLineStartPosition(data: data, position: _tokenEnd)
+                            let data = data.suffix(from: _streamStart).prefix(_length)
+                            
+                            if data.count != _length {
+                                throw ParserError.unexpectedEOF
+                            }
+                            table[id][gen] = PDFDocument.Value.stream(dict, Data(data))
+                            
+                        case .indirect: stream[identifier] = (dict, _tokenEnd)
+                        default: throw ParserError.invalidFormat("invalid stream format.")
+                        }
+                    } else {
+                        throw ParserError.invalidFormat("invalid stream format.")
+                    }
+                    
+                    break loop
+                }
+                
+                _tokenStart = nextLineStartPosition(data: data, position: _tokenEnd)
+                _tokenEnd = lineEndPosition(data: data, position: _tokenStart)
+            }
         }
         
         for (identifier, (dict, offset)) in stream {
-            if identifier.identifier < table.count && identifier.generation < table[identifier.identifier].count, let length = table[identifier.identifier][identifier.generation] {
+            let lengthId = dict["Length"]!.identifier!
+            if lengthId.identifier < table.count && lengthId.generation < table[lengthId.identifier].count, let length = table[lengthId.identifier][lengthId.generation] {
                 
                 switch length {
                 case let .number(length):
@@ -122,11 +171,11 @@ extension PDFDocument {
                     }
                     table[identifier.identifier][identifier.generation] = PDFDocument.Value.stream(dict, Data(data))
                     
-                default: throw ParserError.invalidFormat("obj \(identifier.identifier) \(identifier.generation) not a number.")
+                default: throw ParserError.invalidFormat("obj \(lengthId.identifier) \(lengthId.generation) not a number.")
                 }
                 
             } else {
-                throw ParserError.invalidFormat("obj \(identifier.identifier) \(identifier.generation) not found.")
+                throw ParserError.invalidFormat("obj \(lengthId.identifier) \(lengthId.generation) not found.")
             }
         }
         
@@ -146,6 +195,7 @@ extension PDFDocument {
                     return (position + 4, .null)
                 }
             case 116, 102: return try parseBool(data: data, position: position)
+            case 40: return try parseLiteralString(data: data, position: position)
             case 47: return try parseName(data: data, position: position, version: version)
             case 91: return try parseArray(data: data, position: position, version: version)
             case 60:
@@ -175,7 +225,7 @@ extension PDFDocument {
         var flag = 0
         var t: UInt8 = 0
         
-        loop: for (pos, d) in data.suffix(from: position).dropFirst().indexed() {
+        for (pos, d) in data.suffix(from: position).dropFirst().indexed() {
             switch d {
             case 1...8, 11, 14...31, 33, 34, 36, 38, 39, 42...46, 48...59, 61, 63...90, 92, 94...122, 124, 126...255:
                 if flag == 0 {
@@ -226,7 +276,7 @@ extension PDFDocument {
         var identifier = 0
         var generation = 0
         
-        loop: for (pos, d) in data.suffix(from: position).indexed() {
+        for (pos, d) in data.suffix(from: position).indexed() {
             switch d {
             case 48...57:
                 switch flag {
@@ -245,13 +295,180 @@ extension PDFDocument {
         
         throw ParserError.unexpectedEOF
     }
+    private static func parseLiteralString(data: Data, position: Int) throws -> (Int, PDFDocument.Value) {
+        
+        var position = position + 1
+        
+        var literal: [UInt8] = []
+        var balance = 0
+        var flag = 0
+        var t: UInt16 = 0
+        
+        while position < data.count {
+            if position == data.count {
+                throw ParserError.unexpectedEOF
+            }
+            let d = data[position]
+            switch d {
+            case 92:
+                switch flag {
+                case 0: flag += 1
+                case 1:
+                    literal.append(92)
+                    flag = 0
+                default:
+                    literal.append(UInt8(min(255, t)))
+                    flag = 1
+                }
+            case 10, 13:
+                switch flag {
+                case 0:
+                    literal.append(10)
+                    if position + 1 == data.count {
+                        throw ParserError.unexpectedEOF
+                    }
+                    switch (d, data[position + 1]) {
+                    case (10, 13), (13, 10): position += 1
+                    default: break
+                    }
+                case 1:
+                    if position + 1 == data.count {
+                        throw ParserError.unexpectedEOF
+                    }
+                    switch (d, data[position + 1]) {
+                    case (10, 13), (13, 10): position += 1
+                    default: break
+                    }
+                    flag = 0
+                default:
+                    literal.append(UInt8(min(255, t)))
+                    literal.append(10)
+                    if position + 1 == data.count {
+                        throw ParserError.unexpectedEOF
+                    }
+                    switch (d, data[position + 1]) {
+                    case (10, 13), (13, 10): position += 1
+                    default: break
+                    }
+                    flag = 0
+                }
+            case 110:
+                switch flag {
+                case 0: literal.append(110)
+                case 1:
+                    literal.append(10)
+                    flag = 0
+                default:
+                    literal.append(UInt8(min(255, t)))
+                    literal.append(110)
+                    flag = 0
+                }
+            case 114:
+                switch flag {
+                case 0: literal.append(114)
+                case 1:
+                    literal.append(13)
+                    flag = 0
+                default:
+                    literal.append(UInt8(min(255, t)))
+                    literal.append(114)
+                    flag = 0
+                }
+            case 116:
+                switch flag {
+                case 0: literal.append(116)
+                case 1:
+                    literal.append(9)
+                    flag = 0
+                default:
+                    literal.append(UInt8(min(255, t)))
+                    literal.append(116)
+                    flag = 0
+                }
+            case 98:
+                switch flag {
+                case 0: literal.append(98)
+                case 1:
+                    literal.append(8)
+                    flag = 0
+                default:
+                    literal.append(UInt8(min(255, t)))
+                    literal.append(98)
+                    flag = 0
+                }
+            case 102:
+                switch flag {
+                case 0: literal.append(102)
+                case 1:
+                    literal.append(12)
+                    flag = 0
+                default:
+                    literal.append(UInt8(min(255, t)))
+                    literal.append(102)
+                    flag = 0
+                }
+            case 40:
+                switch flag {
+                case 0:
+                    literal.append(40)
+                    balance += 1
+                case 1:
+                    literal.append(40)
+                    flag = 0
+                default:
+                    literal.append(UInt8(min(255, t)))
+                    literal.append(40)
+                    flag = 0
+                }
+            case 41:
+                switch flag {
+                case 0:
+                    if balance == 0 {
+                        if t > 1 {
+                            literal.append(UInt8(min(255, t)))
+                        }
+                        return try (position + 1, .string(toString(literal)))
+                    }
+                    balance -= 1
+                    literal.append(41)
+                case 1:
+                    literal.append(41)
+                    flag = 0
+                default:
+                    literal.append(UInt8(min(255, t)))
+                    literal.append(41)
+                    flag = 0
+                }
+            case 48...57:
+                switch flag {
+                case 0: literal.append(d)
+                case 1:
+                    t = UInt16(d) - 48
+                    flag += 1
+                case 2:
+                    t = t << 3 + (UInt16(d) - 48)
+                    flag += 1
+                case 3:
+                    literal.append(UInt8(min(255, t << 3 + (UInt16(d) - 48))))
+                    flag = 0
+                default: fatalError()
+                }
+            default:
+                literal.append(d)
+                flag = 0
+            }
+            position += 1
+        }
+        
+        throw ParserError.unexpectedEOF
+    }
     private static func parseHexString(data: Data, position: Int) throws -> (Int, PDFDocument.Value) {
         
         var hex: [UInt8] = []
         var flag = 0
         var t: UInt8 = 0
         
-        loop: for (pos, d) in data.suffix(from: position).dropFirst().indexed() {
+        for (pos, d) in data.suffix(from: position).dropFirst().indexed() {
             switch d {
             case 48...57:
                 if flag & 1 == 0 {
@@ -279,15 +496,19 @@ extension PDFDocument {
                 if flag & 1 == 1 {
                     hex.append(t * 0x10)
                 }
-                if let str = String(data: Data(hex), encoding: .ascii) {
-                    return (pos + 1, .string(str))
-                }
-                throw ParserError.invalidFormat("invalid string format.")
+                return try (pos + 1, .string(toString(hex)))
             default: throw ParserError.invalidFormat("invalid string format.")
             }
         }
         
         throw ParserError.unexpectedEOF
+    }
+    private static func toString(_ data: [UInt8]) throws -> String {
+        
+        if let str = String(data: Data(data), encoding: .ascii) {
+            return str
+        }
+        throw ParserError.invalidFormat("invalid string format.")
     }
     private static func parseNumber(data: Data, position: Int) throws -> (Int, PDFDocument.Value) {
         
@@ -296,7 +517,7 @@ extension PDFDocument {
         var float = 0.0
         var fflag = false
         
-        loop: for (pos, d) in data.suffix(from: position).indexed() {
+        for (pos, d) in data.suffix(from: position).indexed() {
             switch d {
             case 43:
                 if sign != nil {
@@ -672,29 +893,11 @@ extension PDFDocument {
         }
     }
     
-    private static func trailer(data: Data, position: Int) throws -> PDFDocument.Dictionary {
+    private static func trailer(data: Data, position: Int, version: (Int, Int)) throws -> PDFDocument.Dictionary {
         
-        throw ParserError.unexpectedEOF
+        switch try parseValue(data: data, position: position, version: version) {
+        case let (_, .dictionary(dictionary)): return dictionary
+        default: throw ParserError.invalidFormat("invalid trailer format.")
+        }
     }
 }
-
-if let url = Bundle.main.url(forResource: "test", withExtension: "pdf"), let data = try? Data(contentsOf: url) {
-    
-    print(String(data: data, encoding: .ascii) ?? "")
-    
-    do {
-        
-        let document = try PDFDocument.Parse(data: data)
-        
-        print(document)
-        
-    } catch let PDFDocument.ParserError.invalidFormat(msg) {
-        print("invalid format:", msg)
-    } catch let PDFDocument.ParserError.unknownToken(pos) {
-        print("unknown token:", pos)
-    } catch PDFDocument.ParserError.unexpectedEOF {
-        print("unexpected EOF")
-    }
-
-}
-

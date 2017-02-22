@@ -14,13 +14,7 @@
       location = "group:playgrounds/Stroke.playground">
    </FileRef>
    <FileRef
-      location = "group:playgrounds/DGDocument.playground">
-   </FileRef>
-   <FileRef
       location = "group:playgrounds/Image.playground">
-   </FileRef>
-   <FileRef
-      location = "group:playgrounds/PDF.playground">
    </FileRef>
    <FileRef
       location = "group:Doggie.xcodeproj">
