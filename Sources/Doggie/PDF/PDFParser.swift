@@ -35,7 +35,7 @@ extension PDFDocument {
     
     public static func Parse(data: Data) throws -> PDFDocument {
         
-        guard equals(data.prefix(5), [37, 80, 68, 70, 45]) else {
+        guard data.starts(with: [37, 80, 68, 70, 45]) else {
             throw ParserError.invalidFormat("'%PDF-' not find.")
         }
         
@@ -69,7 +69,7 @@ extension PDFDocument {
                     }
                 case 32: flag += 1
                 case 111:
-                    if flag != 2 || !equals(data.suffix(from: pos).prefix(3), [111, 98, 106]) {
+                    if flag != 2 || !data.suffix(from: pos).starts(with: [111, 98, 106]) {
                         throw ParserError.invalidFormat("'obj' not find.")
                     }
                     break loop
@@ -81,24 +81,26 @@ extension PDFDocument {
                 throw ParserError.invalidFormat("incorrect obj identifier.")
             }
             
+            if id >= table.count {
+                table.append(contentsOf: repeatElement([], count: id - table.count + 1))
+            }
+            if gen >= table[id].count {
+                table[id].append(contentsOf: repeatElement(nil, count: gen - table[id].count + 1))
+            }
+            
             _lineStart = nextLineStartPosition(data: data, position: _lineEnd)
             
             let (pos, obj) = try parseValue(data: data, position: _lineStart, version: _version)
             
             if !obj.isDictionary {
-                if id >= table.count {
-                    table.append(contentsOf: repeatElement([], count: id - table.count + 1))
-                }
-                if gen >= table[id].count {
-                    table[id].append(contentsOf: repeatElement(nil, count: gen - table[id].count + 1))
-                }
                 table[id][gen] = obj
+                continue
             }
             
             var _tokenStart = pos
             var _tokenEnd = lineEndPosition(data: data, position: pos)
             
-            loop: while true {
+            while true {
                 
                 if _tokenStart > _tokenEnd {
                     throw ParserError.invalidFormat("invalid file format.")
@@ -107,24 +109,18 @@ extension PDFDocument {
                     throw ParserError.unexpectedEOF
                 }
                 
-                if equals(data[_tokenStart..<_tokenEnd], [101, 110, 100, 111, 98, 106]) {
+                if data[_tokenStart..<_tokenEnd].elementsEqual([101, 110, 100, 111, 98, 106]) {
                     
-                    if id >= table.count {
-                        table.append(contentsOf: repeatElement([], count: id - table.count + 1))
-                    }
-                    if gen >= table[id].count {
-                        table[id].append(contentsOf: repeatElement(nil, count: gen - table[id].count + 1))
-                    }
                     table[id][gen] = obj
                     
-                    break loop
+                    break
                     
-                } else if equals(data[_tokenStart..<_tokenEnd], [115, 116, 114, 101, 97, 109]) {
+                } else if data[_tokenStart..<_tokenEnd].elementsEqual([115, 116, 114, 101, 97, 109]) {
                     
                     if let dict = obj.dictionary, let length = dict["Length"] {
                         if _version >= (1, 2) && dict["F"] != nil {
                             table[id][gen] = PDFDocument.Value.stream(dict, Data())
-                            continue
+                            break
                         }
                         switch length {
                         case let .number(length):
@@ -146,7 +142,7 @@ extension PDFDocument {
                         throw ParserError.invalidFormat("invalid stream format.")
                     }
                     
-                    break loop
+                    break
                 }
                 
                 _tokenStart = nextLineStartPosition(data: data, position: _tokenEnd)
@@ -169,7 +165,7 @@ extension PDFDocument {
                     if data.count != _length {
                         throw ParserError.unexpectedEOF
                     }
-                    table[identifier.identifier][identifier.generation] = PDFDocument.Value.stream(dict, Data(data))
+                    table[lengthId.identifier][lengthId.generation] = PDFDocument.Value.stream(dict, Data(data))
                     
                 default: throw ParserError.invalidFormat("obj \(lengthId.identifier) \(lengthId.generation) not a number.")
                 }
@@ -191,7 +187,7 @@ extension PDFDocument {
             case 0, 9, 10, 12, 13, 32: position += 1
             case 125: position = nextLineStartPosition(data: data, position: lineEndPosition(data: data, position: position))
             case 110:
-                if equals(data.suffix(from: position).prefix(4), [110, 117, 108, 108]) {
+                if data.suffix(from: position).starts(with: [110, 117, 108, 108]) {
                     return (position + 4, .null)
                 }
             case 116, 102: return try parseBool(data: data, position: position)
@@ -211,10 +207,10 @@ extension PDFDocument {
     }
     private static func parseBool(data: Data, position: Int) throws -> (Int, PDFDocument.Value) {
         
-        if equals(data.suffix(from: position).prefix(4), [116, 114, 117, 101]) {
+        if data.suffix(from: position).starts(with: [116, 114, 117, 101]) {
             return (position + 4, true)
         }
-        if equals(data.suffix(from: position).prefix(5), [102, 97, 108, 115, 101]) {
+        if data.suffix(from: position).starts(with: [102, 97, 108, 115, 101]) {
             return (position + 5, false)
         }
         throw ParserError.unexpectedEOF
@@ -627,20 +623,6 @@ extension PDFDocument {
         throw ParserError.unexpectedEOF
     }
     
-    private static func equals<S1 : Sequence, S2 : Sequence>(_ lhs: S1, _ rhs: S2) -> Bool where S1.Iterator.Element : Equatable, S1.Iterator.Element == S2.Iterator.Element {
-        var i1 = lhs.makeIterator()
-        var i2 = rhs.makeIterator()
-        while true {
-            let e1 = i1.next()
-            let e2 = i2.next()
-            if e1 == nil && e2 == nil {
-                return true
-            } else if e1 != e2 {
-                return false
-            }
-        }
-    }
-    
     private static func version(data: Data) throws -> (Int, Int) {
         
         var major = 0
@@ -732,7 +714,7 @@ extension PDFDocument {
     
     private static func eofPosition(data: Data) throws -> Int {
         let _lineEndPosition = lineEndPosition(data: data, position: data.count - 1)
-        if equals(data.prefix(upTo: _lineEndPosition).suffix(5), [37, 37, 69, 79, 70]) {
+        if data.prefix(upTo: _lineEndPosition).suffix(5).elementsEqual([37, 37, 69, 79, 70]) {
             return _lineEndPosition - 5
         }
         throw ParserError.invalidFormat("'%%EOF' not find.")
@@ -750,7 +732,7 @@ extension PDFDocument {
         }
         
         let _startxref_flag_end = lineEndPosition(data: data, position: _xrefStartPosition - 1)
-        if !equals(data.prefix(upTo: _startxref_flag_end).suffix(9), [115, 116, 97, 114, 116, 120, 114, 101, 102]) {
+        if !data.prefix(upTo: _startxref_flag_end).suffix(9).elementsEqual([115, 116, 97, 114, 116, 120, 114, 101, 102]) {
             throw ParserError.invalidFormat("'startxref' not find.")
         }
         
@@ -780,7 +762,7 @@ extension PDFDocument {
                 throw ParserError.invalidFormat("invalid file format.")
             }
             
-            if !equals(data[_lineStart..<_lineEnd], [120, 114, 101, 102]) {
+            if !data[_lineStart..<_lineEnd].elementsEqual([120, 114, 101, 102]) {
                 throw ParserError.invalidFormat("'xref' not find.")
             }
             
@@ -872,7 +854,7 @@ extension PDFDocument {
                     }
                     let line = data[_lineStart..<_lineEnd]
                     
-                    if equals(line, [116, 114, 97, 105, 108, 101, 114]) {
+                    if line.elementsEqual([116, 114, 97, 105, 108, 101, 114]) {
                         break
                     }
                 }

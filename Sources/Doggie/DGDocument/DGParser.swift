@@ -35,7 +35,7 @@ extension DGDocument {
     
     public static func Parse(data: Data) throws -> DGDocument {
         
-        guard equals(data.prefix(4), [37, 68, 79, 71]) else {
+        guard data.starts(with: [37, 68, 79, 71]) else {
             throw ParserError.invalidFormat("'%DOG' not find.")
         }
         
@@ -53,7 +53,7 @@ extension DGDocument {
         
         switch data[position] {
         case 110:
-            if equals(data.suffix(from: position).prefix(3), [110, 105, 108]) {
+            if data.suffix(from: position).starts(with: [110, 105, 108]) {
                 return (position + 3, .nil)
             }
         case 64: return try parseString(data: data, position: position)
@@ -252,20 +252,6 @@ extension DGDocument {
         throw ParserError.unexpectedEOF
     }
     
-    private static func equals<S1 : Sequence, S2 : Sequence>(_ lhs: S1, _ rhs: S2) -> Bool where S1.Iterator.Element : Equatable, S1.Iterator.Element == S2.Iterator.Element {
-        var i1 = lhs.makeIterator()
-        var i2 = rhs.makeIterator()
-        while true {
-            let e1 = i1.next()
-            let e2 = i2.next()
-            if e1 == nil && e2 == nil {
-                return true
-            } else if e1 != e2 {
-                return false
-            }
-        }
-    }
-    
     private static func lineStartPosition(data: Data, position: Int) -> Int {
         if position == 0 {
             return 0
@@ -350,7 +336,7 @@ extension DGDocument {
             }
             let line = data[_lineStart..<_lineEnd]
             
-            if line.count > 5 && equals(line.prefix(6), [37, 88, 82, 69, 70, 32]) {
+            if line.count > 5 && line.starts(with: [37, 88, 82, 69, 70, 32]) {
                 var offset = 0
                 for d in line.dropFirst(6) {
                     switch d {
@@ -359,7 +345,7 @@ extension DGDocument {
                     }
                 }
                 return offset
-            } else if line.count == 5 && equals(line, [37, 88, 82, 69, 70]) {
+            } else if line.count == 5 && line.elementsEqual([37, 88, 82, 69, 70]) {
                 return nil
             } else {
                 var numList = [0]
@@ -389,7 +375,7 @@ extension DGDocument {
     
     private static func eofPosition(data: Data) throws -> Int {
         let _lineEndPosition = lineEndPosition(data: data, position: data.count - 1)
-        if equals(data.prefix(upTo: _lineEndPosition).suffix(5), [37, 37, 69, 79, 70]) {
+        if data.prefix(upTo: _lineEndPosition).suffix(5).elementsEqual([37, 37, 69, 79, 70]) {
             return _lineEndPosition - 5
         }
         throw ParserError.invalidFormat("'%%EOF' not find.")
