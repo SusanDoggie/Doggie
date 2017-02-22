@@ -789,9 +789,9 @@ private func QuadBezierFitting(_ p: [Point], _ limit: Int, _ inflection_check: B
     }
     
     if inflection_check {
-        var t = BezierInflection(p).filter { !$0.almostZero() && !$0.almostEqual(1) && 0...1 ~= $0 }
-        t.append(contentsOf: BezierPolynomial(p.map { $0.x }).derivative.roots.filter { _t in !_t.almostZero() && !_t.almostEqual(1) && 0...1 ~= _t && !t.contains { $0.almostEqual(_t) } })
-        t.append(contentsOf: BezierPolynomial(p.map { $0.y }).derivative.roots.filter { _t in !_t.almostZero() && !_t.almostEqual(1) && 0...1 ~= _t && !t.contains { $0.almostEqual(_t) } })
+        var t = Bezier(p).inflection.filter { !$0.almostZero() && !$0.almostEqual(1) && 0...1 ~= $0 }
+        t.append(contentsOf: Bezier(p.map { $0.x }).stationary.filter { _t in !_t.almostZero() && !_t.almostEqual(1) && 0...1 ~= _t && !t.contains { $0.almostEqual(_t) } })
+        t.append(contentsOf: Bezier(p.map { $0.y }).stationary.filter { _t in !_t.almostZero() && !_t.almostEqual(1) && 0...1 ~= _t && !t.contains { $0.almostEqual(_t) } })
         return Bezier(p).split(t).flatMap { QuadBezierFitting($0.points, limit - 1, false) }
     }
     
