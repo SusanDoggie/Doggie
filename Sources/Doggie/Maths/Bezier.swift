@@ -315,7 +315,6 @@ extension Bezier {
 
 extension Bezier {
     
-    @_transparent
     private static func split(_ t: Double, _ p: [Element]) -> ([Element], [Element]) {
         let _t = 1 - t
         if p.count == 2 {
