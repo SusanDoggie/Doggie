@@ -277,7 +277,7 @@ extension PDFDocument.Value : CustomStringConvertible {
             }
             result += "]"
             return result
-        case let .stream(stream): return "\(stream)"
+        case let .stream(dict, data): return "stream \(dict) \(data)"
         }
     }
 }

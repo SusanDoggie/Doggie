@@ -66,10 +66,6 @@ public enum GzipError: Error {
 
 public extension Data {
     
-    public var isGzipped: Bool {
-        return self.starts(with: [0x1f, 0x8b])
-    }
-    
     private func streamBuffer(body: (z_stream) throws -> Void) rethrows {
         
         try self.withUnsafeBytes { (bytes: UnsafePointer<Bytef>) in
