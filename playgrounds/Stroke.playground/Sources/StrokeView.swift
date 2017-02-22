@@ -54,12 +54,32 @@ public class StrokeView: NSView, NSGestureRecognizerDelegate {
             
             context.setStrokeColor(NSColor.red.cgColor)
             
-            let path: Shape = [.move(p0), .cubic(p1, p2, p3)]
+            for (f, p) in BezierOffset([p0, p1, p2, p3], 25).enumerated() {
+                if f == 0 {
+                    context.move(to: CGPoint(p[0]))
+                }
+                switch p.count {
+                case 2: context.addLine(to: CGPoint(p[1]))
+                case 3: context.addQuadCurve(to: CGPoint(p[2]), control: CGPoint(p[1]))
+                case 4: context.addCurve(to: CGPoint(p[3]), control1: CGPoint(p[1]), control2: CGPoint(p[2]))
+                default: break
+                }
+            }
+            context.strokePath()
             
-            let stroke = path.strokePath(width: 50, cap: .round, join: .round)
+            context.setStrokeColor(NSColor.blue.cgColor)
             
-            context.addPath(stroke.cgPath)
-            
+            for (f, p) in BezierOffset([p0, p1, p2, p3], -25).enumerated() {
+                if f == 0 {
+                    context.move(to: CGPoint(p[0]))
+                }
+                switch p.count {
+                case 2: context.addLine(to: CGPoint(p[1]))
+                case 3: context.addQuadCurve(to: CGPoint(p[2]), control: CGPoint(p[1]))
+                case 4: context.addCurve(to: CGPoint(p[3]), control1: CGPoint(p[1]), control2: CGPoint(p[2]))
+                default: break
+                }
+            }
             context.strokePath()
             
             context.setStrokeColor(NSColor.blue.cgColor)

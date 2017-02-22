@@ -217,11 +217,23 @@ extension Shape {
 
 extension Shape {
     
+    public static func Rectangle(origin: Point, size: Size) -> Shape {
+        return Rectangle(Rect(origin: origin, size: size))
+    }
+    public static func Rectangle(x: Double, y: Double, width: Double, height: Double) -> Shape {
+        return Rectangle(Rect(x: x, y: y, width: width, height: height))
+    }
     public static func Rectangle(_ rect: Rect) -> Shape {
         let points = rect.points
         return [.move(points[0]), .line(points[1]), .line(points[2]), .line(points[3]), .close]
     }
     
+    public static func Ellipse(_ rect: Rect) -> Shape {
+        return Ellipse(center: rect.center, radius: Radius(x: 0.5 * rect.width, y: 0.5 * rect.height))
+    }
+    public static func Ellipse(center: Point, radius: Double) -> Shape {
+        return Ellipse(center: center, radius: Radius(x: radius, y: radius))
+    }
     public static func Ellipse(center: Point, radius: Radius) -> Shape {
         let scale = SDTransform.Scale(x: radius.x, y: radius.y)
         let point = BezierCircle.lazy.map { $0 * scale + center }
