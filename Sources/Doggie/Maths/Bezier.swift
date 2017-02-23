@@ -778,13 +778,12 @@ public func QuadBezierFitting(_ p: [Point]) -> [[Point]] {
 
 public func CubicBezierFitting(_ p0: Point, _ p3: Point, _ m0: Point, _ m1: Point, _ points: [(Double, Point)]) -> (Point, Point)? {
     
-    var a: [Double] = []
-    var b: [Double] = []
-    var c: [Double] = []
-    
-    a.reserveCapacity(points.count << 1)
-    b.reserveCapacity(points.count << 1)
-    c.reserveCapacity(points.count << 1)
+    var _a1 = 0.0
+    var _b1 = 0.0
+    var _c1 = 0.0
+    var _a2 = 0.0
+    var _b2 = 0.0
+    var _c2 = 0.0
     
     for (t, p) in points {
         
@@ -802,35 +801,17 @@ public func CubicBezierFitting(_ p0: Point, _ p3: Point, _ m0: Point, _ m1: Poin
         let _b = t2_t * m1
         let _c = (_t3 + t_t2) * p0 + (t3 + t2_t) * p3 - p
         
-        a.append(_a.x)
-        b.append(_b.x)
-        c.append(_c.x)
-        a.append(_a.y)
-        b.append(_b.y)
-        c.append(_c.y)
+        _a1 += dot(_a, _a)
+        _b1 += dot(_a, _b)
+        _c1 += dot(_a, _c)
+        
+        _a2 += dot(_b, _a)
+        _b2 += dot(_b, _b)
+        _c2 += dot(_b, _c)
     }
     
-    var _a1 = 0.0
-    var _b1 = 0.0
-    var _c1 = 0.0
-    var _a2 = 0.0
-    var _b2 = 0.0
-    var _c2 = 0.0
-    
-    for ((a, b), c) in zip(zip(a, b), c) {
-        
-        let a2 = 2 * a
-        let b2 = 2 * b
-        let c2 = 2 * c
-        
-        _a1 += a * a2
-        _b1 += a * b2
-        _c1 -= a * c2
-        
-        _a2 += b * a2
-        _b2 += b * b2
-        _c2 -= b * c2
-    }
+    _c1 = abs(_c1)
+    _c2 = abs(_c2)
     
     let t = _a1 * _b2 - _b1 * _a2
     
@@ -848,9 +829,8 @@ public func CubicBezierFitting(_ p0: Point, _ p3: Point, _ m0: Point, _ m1: Poin
 public func CubicBezierFitting(_ p0: Point, _ p3: Point, _ m0: Point, _ m1: Point, _ points: [Point]) -> (Point, Point)? {
     
     let ds = zip(CollectionOfOne(p0).concat(points), points).map { ($0 - $1).magnitude }
-    let dt = ds.reduce((p3 - (points.last ?? p0)).magnitude, +)
-    
-    return CubicBezierFitting(p0, p3, m0, m1, Array(zip(ds.map { $0 / dt }, points)))
+    let dt = zip(points, points.dropFirst().concat(CollectionOfOne(p3))).map { ($0 - $1).magnitude }
+    return CubicBezierFitting(p0, p3, m0, m1, Array(zip(zip(ds, dt).map { $0 / ($0 + $1) }, points)))
 }
 
 @_transparent
@@ -937,10 +917,29 @@ public func BezierOffset(_ p0: Point, _ p1: Point, _ p2: Point, _ a: Double) -> 
 }
 public func BezierOffset(_ p: [Point], _ a: Double) -> [[Point]] {
     
+    var ph0: Double?
+    
     return QuadBezierFitting(p).flatMap { points -> [[Point]] in
+        
+        var join: [[Point]]  = []
+        let d = zip(points.dropFirst(), points).map { $0 - $1 }
+        
+        if let ph0 = ph0, let ph1 = d.first(where: { !$0.x.almostZero() || !$0.y.almostZero() })?.phase {
+            let angle = (ph1 - ph0).remainder(dividingBy: 2 * Double.pi)
+            if !angle.almostZero() {
+                let rotate = SDTransform.Rotate(ph0 - M_PI_2)
+                let offset = points[0]
+                let bezierArc = BezierArc(angle).lazy.map { $0 * rotate * a + offset }
+                for i in 0..<bezierArc.count / 3 {
+                    join.append([bezierArc[i * 3], bezierArc[i * 3 + 1], bezierArc[i * 3 + 2], bezierArc[i * 3 + 3]])
+                }
+            }
+        }
+        ph0 = d.last { !$0.x.almostZero() || !$0.y.almostZero() }?.phase ?? ph0
+        
         switch points.count {
-        case 2: return BezierOffset(points[0], points[1], a).map { [[$0, $1]] } ?? []
-        case 3: return _BezierOffset(points[0], points[1], points[2], a, 3)
+        case 2: return BezierOffset(points[0], points[1], a).map { join + [[$0, $1]] } ?? join
+        case 3: return join + _BezierOffset(points[0], points[1], points[2], a, 3)
         default: fatalError()
         }
     }
