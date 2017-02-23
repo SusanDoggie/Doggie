@@ -295,7 +295,7 @@ extension PDFDocument {
         
         var position = position + 1
         
-        var literal: [UInt8] = []
+        var literal = Data()
         var balance = 0
         var flag = 0
         var t: UInt16 = 0
@@ -423,7 +423,7 @@ extension PDFDocument {
                         if t > 1 {
                             literal.append(UInt8(min(255, t)))
                         }
-                        return try (position + 1, .string(toString(literal)))
+                        return try (position + 1, .string(PDFDecodeString(literal)))
                     }
                     balance -= 1
                     literal.append(41)
@@ -460,7 +460,7 @@ extension PDFDocument {
     }
     private static func parseHexString(data: Data, position: Int) throws -> (Int, PDFDocument.Value) {
         
-        var hex: [UInt8] = []
+        var hex = Data()
         var flag = 0
         var t: UInt8 = 0
         
@@ -492,19 +492,12 @@ extension PDFDocument {
                 if flag & 1 == 1 {
                     hex.append(t * 0x10)
                 }
-                return try (pos + 1, .string(toString(hex)))
+                return try (pos + 1, .string(PDFDecodeString(hex)))
             default: throw ParserError.invalidFormat("invalid string format.")
             }
         }
         
         throw ParserError.unexpectedEOF
-    }
-    private static func toString(_ data: [UInt8]) throws -> String {
-        
-        if let str = String(data: Data(data), encoding: .ascii) {
-            return str
-        }
-        throw ParserError.invalidFormat("invalid string format.")
     }
     private static func parseNumber(data: Data, position: Int) throws -> (Int, PDFDocument.Value) {
         

@@ -133,6 +133,8 @@
 		0A92C7D41E56DA960090EBFC /* DGParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A92C7D21E56DA960090EBFC /* DGParser.swift */; };
 		0A9AA8401E543748007A2B92 /* PDFDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9AA83F1E543748007A2B92 /* PDFDocument.swift */; };
 		0A9AA8411E543748007A2B92 /* PDFDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9AA83F1E543748007A2B92 /* PDFDocument.swift */; };
+		0ACBE7371E5EB9E600B31117 /* PDFEncoding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ACBE7361E5EB9E600B31117 /* PDFEncoding.swift */; };
+		0ACBE7381E5EB9E600B31117 /* PDFEncoding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ACBE7361E5EB9E600B31117 /* PDFEncoding.swift */; };
 		0AFCA1501D9E1F130034AB10 /* AtomicTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AFCA14F1D9E1F130034AB10 /* AtomicTest.swift */; };
 		0AFCA1511D9E1F130034AB10 /* AtomicTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AFCA14F1D9E1F130034AB10 /* AtomicTest.swift */; };
 /* End PBXBuildFile section */
@@ -228,6 +230,7 @@
 		0A92C7C31E56AB9D0090EBFC /* Data.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Data.swift; sourceTree = "<group>"; };
 		0A92C7D21E56DA960090EBFC /* DGParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DGParser.swift; sourceTree = "<group>"; };
 		0A9AA83F1E543748007A2B92 /* PDFDocument.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PDFDocument.swift; sourceTree = "<group>"; };
+		0ACBE7361E5EB9E600B31117 /* PDFEncoding.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PDFEncoding.swift; sourceTree = "<group>"; };
 		0AFCA14F1D9E1F130034AB10 /* AtomicTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AtomicTest.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -529,6 +532,7 @@
 			children = (
 				0A9AA83F1E543748007A2B92 /* PDFDocument.swift */,
 				0A2A643D1E5C45EE000E21BB /* PDFParser.swift */,
+				0ACBE7361E5EB9E600B31117 /* PDFEncoding.swift */,
 			);
 			path = PDF;
 			sourceTree = "<group>";
@@ -755,6 +759,7 @@
 				08458B5A1E2E627600D01813 /* AtomicQueue.swift in Sources */,
 				08458B321E2E627600D01813 /* Complex.swift in Sources */,
 				0A2107151E5BEEBB00F1E00E /* Shape.swift in Sources */,
+				0ACBE7371E5EB9E600B31117 /* PDFEncoding.swift in Sources */,
 				08458AF61E2E627600D01813 /* ComplexConversion.swift in Sources */,
 				08458B5E1E2E627600D01813 /* Lock.swift in Sources */,
 				08458B341E2E627600D01813 /* Ellipse.swift in Sources */,
@@ -829,6 +834,7 @@
 				08458B5B1E2E627600D01813 /* AtomicQueue.swift in Sources */,
 				08458B331E2E627600D01813 /* Complex.swift in Sources */,
 				0A2107161E5BEEBB00F1E00E /* Shape.swift in Sources */,
+				0ACBE7381E5EB9E600B31117 /* PDFEncoding.swift in Sources */,
 				08458AF71E2E627600D01813 /* ComplexConversion.swift in Sources */,
 				08458B5F1E2E627600D01813 /* Lock.swift in Sources */,
 				08458B351E2E627600D01813 /* Ellipse.swift in Sources */,
