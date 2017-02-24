@@ -1,5 +1,5 @@
 //
-//  PDFASCIIHexFilter.swift
+//  PDFASCIIHexDecode.swift
 //
 //  The MIT License
 //  Copyright (c) 2015 - 2017 Susan Cheng. All rights reserved.
@@ -90,5 +90,5 @@ func PDFASCIIHexDecode(_ data: Data) throws -> Data {
         }
     }
     
-    return result
+    throw PDFFilterError(message: "invalid ASCIIHexDecode format.")
 }

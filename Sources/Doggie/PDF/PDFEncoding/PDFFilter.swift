@@ -36,6 +36,7 @@ private func _PDFFilterDecode(_ name: PDFDocument.Name, _ data: Data) throws -> 
     case "ASCIIHexDecode": return try PDFASCIIHexDecode(data)
     case "ASCII85Decode": return try PDFASCII85Decode(data)
     case "FlateDecode": return try data.gunzipped()
+    case "RunLengthDecode": return try PDFRunLengthDecode(data)
     default: return data
     }
 }
