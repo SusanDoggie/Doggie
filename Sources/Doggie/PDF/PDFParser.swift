@@ -257,8 +257,8 @@ extension PDFDocument {
                     flag = 2
                 }
             default:
-                if flag == 0, let _name = String(data: Data(name), encoding: .ascii) {
-                    return (pos, .name(PDFDocument.Name(_name)))
+                if flag == 0 {
+                    return (pos, .name(PDFDocument.Name(PDFDocDecodeString(Data(name)))))
                 }
                 throw ParserError.invalidFormat("invalid name format.")
             }
@@ -423,7 +423,7 @@ extension PDFDocument {
                         if t > 1 {
                             literal.append(UInt8(min(255, t)))
                         }
-                        return try (position + 1, .string(PDFDecodeString(literal)))
+                        return (position + 1, .string(PDFDecodeString(literal)))
                     }
                     balance -= 1
                     literal.append(41)
@@ -466,6 +466,7 @@ extension PDFDocument {
         
         for (pos, d) in data.suffix(from: position).dropFirst().indexed() {
             switch d {
+            case 0, 9, 10, 12, 13, 32: break
             case 48...57:
                 if flag & 1 == 0 {
                     t = d - 48
@@ -487,12 +488,11 @@ extension PDFDocument {
                     hex.append(t * 0x10 + (d - 97 + 0xA))
                 }
                 flag += 1
-            case 0, 9, 10, 12, 13, 32: break
             case 62:
                 if flag & 1 == 1 {
                     hex.append(t * 0x10)
                 }
-                return try (pos + 1, .string(PDFDecodeString(hex)))
+                return (pos + 1, .string(PDFDecodeString(hex)))
             default: throw ParserError.invalidFormat("invalid string format.")
             }
         }

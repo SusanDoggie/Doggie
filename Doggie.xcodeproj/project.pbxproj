@@ -93,6 +93,12 @@
 		0A266E541D6E95C100ABE6B7 /* SDMarkerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A266E521D6E95C100ABE6B7 /* SDMarkerTest.swift */; };
 		0A2A643E1E5C45EE000E21BB /* PDFParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2A643D1E5C45EE000E21BB /* PDFParser.swift */; };
 		0A2A643F1E5C45EE000E21BB /* PDFParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2A643D1E5C45EE000E21BB /* PDFParser.swift */; };
+		0A47DEA01E5EE96E0070C838 /* PDFASCIIHexFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A47DE9F1E5EE96E0070C838 /* PDFASCIIHexFilter.swift */; };
+		0A47DEA11E5EE96E0070C838 /* PDFASCIIHexFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A47DE9F1E5EE96E0070C838 /* PDFASCIIHexFilter.swift */; };
+		0A47DEA31E5EE9BF0070C838 /* PDFFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A47DEA21E5EE9BF0070C838 /* PDFFilter.swift */; };
+		0A47DEA41E5EE9BF0070C838 /* PDFFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A47DEA21E5EE9BF0070C838 /* PDFFilter.swift */; };
+		0A47DEA61E5EF3E90070C838 /* PDFASCII85Filter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A47DEA51E5EF3E90070C838 /* PDFASCII85Filter.swift */; };
+		0A47DEA71E5EF3E90070C838 /* PDFASCII85Filter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A47DEA51E5EF3E90070C838 /* PDFASCII85Filter.swift */; };
 		0A53E45E1E35AEF80060FB83 /* CollectionExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A53E44D1E35AEF80060FB83 /* CollectionExtension.swift */; };
 		0A53E45F1E35AEF80060FB83 /* CollectionExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A53E44D1E35AEF80060FB83 /* CollectionExtension.swift */; };
 		0A53E4621E35AEF80060FB83 /* Date.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A53E44F1E35AEF80060FB83 /* Date.swift */; };
@@ -208,6 +214,9 @@
 		0A21070C1E5BEEBB00F1E00E /* Shape.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Shape.swift; sourceTree = "<group>"; };
 		0A266E521D6E95C100ABE6B7 /* SDMarkerTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SDMarkerTest.swift; sourceTree = "<group>"; };
 		0A2A643D1E5C45EE000E21BB /* PDFParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PDFParser.swift; sourceTree = "<group>"; };
+		0A47DE9F1E5EE96E0070C838 /* PDFASCIIHexFilter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PDFASCIIHexFilter.swift; sourceTree = "<group>"; };
+		0A47DEA21E5EE9BF0070C838 /* PDFFilter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PDFFilter.swift; sourceTree = "<group>"; };
+		0A47DEA51E5EF3E90070C838 /* PDFASCII85Filter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PDFASCII85Filter.swift; sourceTree = "<group>"; };
 		0A53E44D1E35AEF80060FB83 /* CollectionExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CollectionExtension.swift; sourceTree = "<group>"; };
 		0A53E44F1E35AEF80060FB83 /* Date.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Date.swift; sourceTree = "<group>"; };
 		0A53E4501E35AEF80060FB83 /* FloatingPoint.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FloatingPoint.swift; sourceTree = "<group>"; };
@@ -490,6 +499,16 @@
 			path = Shape;
 			sourceTree = "<group>";
 		};
+		0A47DE9E1E5EE94A0070C838 /* PDFFilter */ = {
+			isa = PBXGroup;
+			children = (
+				0A47DEA21E5EE9BF0070C838 /* PDFFilter.swift */,
+				0A47DEA51E5EF3E90070C838 /* PDFASCII85Filter.swift */,
+				0A47DE9F1E5EE96E0070C838 /* PDFASCIIHexFilter.swift */,
+			);
+			path = PDFFilter;
+			sourceTree = "<group>";
+		};
 		0A776FC21D9A0BA5005FC88F /* c11_atomic */ = {
 			isa = PBXGroup;
 			children = (
@@ -533,6 +552,7 @@
 				0A9AA83F1E543748007A2B92 /* PDFDocument.swift */,
 				0A2A643D1E5C45EE000E21BB /* PDFParser.swift */,
 				0ACBE7361E5EB9E600B31117 /* PDFEncoding.swift */,
+				0A47DE9E1E5EE94A0070C838 /* PDFFilter */,
 			);
 			path = PDF;
 			sourceTree = "<group>";
@@ -742,6 +762,7 @@
 				08458B361E2E627600D01813 /* Maths.swift in Sources */,
 				08458B3A1E2E627600D01813 /* Point.swift in Sources */,
 				08458B461E2E627600D01813 /* SDMarker.swift in Sources */,
+				0A47DEA61E5EF3E90070C838 /* PDFASCII85Filter.swift in Sources */,
 				0A92C7C41E56AB9D0090EBFC /* Data.swift in Sources */,
 				0A53E46C1E35AEF80060FB83 /* Integer.swift in Sources */,
 				08458B281E2E627600D01813 /* ColorModel.swift in Sources */,
@@ -769,8 +790,10 @@
 				08458AF41E2E627600D01813 /* CircularConvolve.swift in Sources */,
 				08458B121E2E627600D01813 /* Fourier.swift in Sources */,
 				08458B601E2E627600D01813 /* SDThread.swift in Sources */,
+				0A47DEA31E5EE9BF0070C838 /* PDFFilter.swift in Sources */,
 				08458AF81E2E627600D01813 /* CooleyTukey.swift in Sources */,
 				08458AF01E2E627600D01813 /* AccelerateWrapper.swift in Sources */,
+				0A47DEA01E5EE96E0070C838 /* PDFASCIIHexFilter.swift in Sources */,
 				0A0697581E4D6659005CF664 /* Graphic.swift in Sources */,
 				0A7C97481E558E0C00AB4803 /* DGDocument.swift in Sources */,
 				08458B381E2E627600D01813 /* Matrix.swift in Sources */,
@@ -817,6 +840,7 @@
 				08458B371E2E627600D01813 /* Maths.swift in Sources */,
 				08458B3B1E2E627600D01813 /* Point.swift in Sources */,
 				08458B471E2E627600D01813 /* SDMarker.swift in Sources */,
+				0A47DEA71E5EF3E90070C838 /* PDFASCII85Filter.swift in Sources */,
 				0A92C7C51E56AB9D0090EBFC /* Data.swift in Sources */,
 				0A53E46D1E35AEF80060FB83 /* Integer.swift in Sources */,
 				08458B291E2E627600D01813 /* ColorModel.swift in Sources */,
@@ -844,8 +868,10 @@
 				08458AF51E2E627600D01813 /* CircularConvolve.swift in Sources */,
 				08458B131E2E627600D01813 /* Fourier.swift in Sources */,
 				08458B611E2E627600D01813 /* SDThread.swift in Sources */,
+				0A47DEA41E5EE9BF0070C838 /* PDFFilter.swift in Sources */,
 				08458AF91E2E627600D01813 /* CooleyTukey.swift in Sources */,
 				08458AF11E2E627600D01813 /* AccelerateWrapper.swift in Sources */,
+				0A47DEA11E5EE96E0070C838 /* PDFASCIIHexFilter.swift in Sources */,
 				0A0697591E4D6659005CF664 /* Graphic.swift in Sources */,
 				0A7C97491E558E0C00AB4803 /* DGDocument.swift in Sources */,
 				08458B391E2E627600D01813 /* Matrix.swift in Sources */,
