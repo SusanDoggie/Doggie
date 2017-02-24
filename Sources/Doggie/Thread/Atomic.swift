@@ -602,6 +602,23 @@ extension Atomic {
     }
     
     @_transparent
+    fileprivate mutating func _compareSetWeak(old: AtomicBase<Instance>, new: AtomicBase<Instance>) -> Bool {
+        let _old = Unmanaged.passUnretained(old)
+        let _new = Unmanaged.passRetained(new)
+        @_transparent
+        func cas(theVal: UnsafeMutablePointer<AtomicBase<Instance>>) -> Bool {
+            return theVal.withMemoryRebound(to: Optional<UnsafeMutableRawPointer>.self, capacity: 1) { _AtomicCompareAndSwapWeakPtrBarrier(_old.toOpaque(), _new.toOpaque(), $0) }
+        }
+        let result = cas(theVal: &base)
+        if result {
+            _old.release()
+        } else {
+            _new.release()
+        }
+        return result
+    }
+    
+    @_transparent
     @discardableResult
     fileprivate mutating func _fetchStore(_ new: AtomicBase<Instance>) -> AtomicBase<Instance> {
         let _new = Unmanaged.passRetained(new)
@@ -639,7 +656,7 @@ extension Atomic : SDAtomicProtocol {
         while true {
             let old = self.base
             new.value = try block(old.value)
-            if self._compareSet(old: old, new: new) {
+            if self._compareSetWeak(old: old, new: new) {
                 return old.value
             }
         }

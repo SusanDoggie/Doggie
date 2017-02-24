@@ -68,16 +68,16 @@ private let PDFDocEncoding: [UInt16: UInt8] = {
     return dict
 }()
 
-private func PDFDocDecodeString(_ data: Data) -> String {
+func PDFDocDecodeString(_ data: Data) -> String {
     
     var str = ""
     for code in data {
-        UnicodeScalar(PDFDocDecoding[Int(code)])?.write(to: &str)
+        UnicodeScalar(PDFDocDecoding[Int(code)])!.write(to: &str)
     }
     return str
 }
 
-private func PDFDocEncodeString(_ string: String) -> Data? {
+func PDFDocEncodeString(_ string: String) -> Data? {
     
     var data = Data()
     for code in string.utf16 {
@@ -95,7 +95,6 @@ func PDFDecodeString(_ data: Data) -> String {
     if data.starts(with: [254, 255]), let str = String(data: Data(data.dropFirst(2)), encoding: .utf16BigEndian) {
         return str
     }
-    
     return PDFDocDecodeString(data)
 }
 
