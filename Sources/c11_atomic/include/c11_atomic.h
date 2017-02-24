@@ -30,6 +30,11 @@
 #include <stdbool.h>
 #include <stdatomic.h>
 
+static inline bool _AtomicCompareAndSwapWeakPtrBarrier(void* oldValue, void* newValue, volatile void** address) {
+    
+    return atomic_compare_exchange_weak((_Atomic(void*)*)address, &oldValue, newValue);
+}
+
 #define _ATOMIC_CAS_BARRIER(NAME, x) static inline bool                                                             \
 _AtomicCompareAndSwap##NAME##Barrier(x            oldValue,                                                         \
                                      x            newValue,                                                         \
