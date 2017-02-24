@@ -128,12 +128,11 @@ public extension UnsignedInteger {
         if self & mbit != 0 {
             return mbit
         }
-        let n = UIntMax(MemoryLayout<Self>.size)
-        var x = self
-        for i in 1..<n {
-            x |= Self(x.toUIntMax() >> i)
+        var x = self.toUIntMax()
+        for i in 1..<UIntMax(MemoryLayout<Self>.size) {
+            x |= x >> i
         }
-        return (x + 1) >> 1
+        return Self((x + 1) >> 1)
     }
 }
 

@@ -1,5 +1,5 @@
 //
-//  PDFASCII85Filter.swift
+//  PDFASCII85Decode.swift
 //
 //  The MIT License
 //  Copyright (c) 2015 - 2017 Susan Cheng. All rights reserved.
@@ -43,7 +43,7 @@ func PDFASCII85Decode(_ data: Data) throws -> Data {
             case 4:
                 t += UInt64(d - 33)
                 if t > UInt64(UInt32.max) {
-                    throw PDFFilterError(message: "invalid ASCII85 format.")
+                    throw PDFFilterError(message: "invalid ASCII85Decode format.")
                 }
                 result.append(UInt8((t >> 24) & 0xFF))
                 result.append(UInt8((t >> 16) & 0xFF))
@@ -59,7 +59,7 @@ func PDFASCII85Decode(_ data: Data) throws -> Data {
                 result.append(0)
                 result.append(0)
                 result.append(0)
-            default: throw PDFFilterError(message: "invalid ASCII85 format.")
+            default: throw PDFFilterError(message: "invalid ASCII85Decode format.")
             }
         case 126:
             if pos + 1 != data.count && data[pos + 1] == 62 {
@@ -74,11 +74,11 @@ func PDFASCII85Decode(_ data: Data) throws -> Data {
                     result.append(UInt8((t >> 24) & 0xFF))
                     result.append(UInt8((t >> 16) & 0xFF))
                     result.append(UInt8((t >> 8) & 0xFF))
-                default: throw PDFFilterError(message: "invalid ASCII85 format.")
+                default: throw PDFFilterError(message: "invalid ASCII85Decode format.")
                 }
                 return result
             }
-            throw PDFFilterError(message: "invalid ASCII85 format.")
+            throw PDFFilterError(message: "invalid ASCII85Decode format.")
         default: throw PDFFilterError(message: "unknown character: \(d)")
         }
     }
