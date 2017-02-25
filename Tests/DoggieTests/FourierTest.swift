@@ -64,11 +64,11 @@ class FourierTest: XCTestCase {
     
     override func setUp() {
         super.setUp()
-        // Put setup code here. This method is called before the invocation of each test method in the class.
+        
     }
     
     override func tearDown() {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
+        
         super.tearDown()
     }
     
@@ -516,82 +516,82 @@ class FourierTest: XCTestCase {
     }
     
     func testFourierBPerformance() {
-        // This is an example of a performance test case.
+        
         let sample = [Double](repeating: 0, count: 32700)
         var result = [Complex]()
         Fourier(sample, &result)
         self.measure() {
-            // Put the code you want to measure the time of here.
+            
             Fourier(sample, &result)
         }
     }
     func testFourierCPerformance() {
-        // This is an example of a performance test case.
+        
         let sample = [Double](repeating: 0, count: 32768)
         var result = [Complex]()
         Fourier(sample, &result)
         self.measure() {
-            // Put the code you want to measure the time of here.
+            
             Fourier(sample, &result)
         }
     }
     func testFourierBPerformanceX2() {
-        // This is an example of a performance test case.
+        
         let sample = [Double](repeating: 0, count: 65500)
         var result = [Complex]()
         Fourier(sample, &result)
         self.measure() {
-            // Put the code you want to measure the time of here.
+            
             Fourier(sample, &result)
         }
     }
     func testFourierCPerformanceX2() {
-        // This is an example of a performance test case.
+        
         let sample = [Double](repeating: 0, count: 65536)
         var result = [Complex]()
         Fourier(sample, &result)
         self.measure() {
-            // Put the code you want to measure the time of here.
+            
             Fourier(sample, &result)
         }
     }
     func testFourierCPerformanceX3() {
-        // This is an example of a performance test case.
+        
         let sample = [Double](repeating: 0, count: 131072)
         var result = [Complex]()
         Fourier(sample, &result)
         self.measure() {
-            // Put the code you want to measure the time of here.
+            
             Fourier(sample, &result)
         }
     }
     func testCircularConvolvePerformance() {
-        // This is an example of a performance test case.
+        
         let sample = [Double](repeating: 0, count: 44100)
         var result = [Double]()
         CircularConvolve(sample, sample, &result)
         self.measure() {
-            // Put the code you want to measure the time of here.
+            
             CircularConvolve(sample, sample, &result)
         }
     }
     func testCircularConvolvePerformanceX2() {
-        // This is an example of a performance test case.
+        
         let sample = [Double](repeating: 0, count: 96000)
         var result = [Double]()
         CircularConvolve(sample, sample, &result)
         self.measure() {
-            // Put the code you want to measure the time of here.
+            
             CircularConvolve(sample, sample, &result)
         }
     }
     func testCircularConvolvePerformanceX3() {
-        // This is an example of a performance test case.
+        
         let sample = [Double](repeating: 0, count: 192000)
         var result = [Double]()
         CircularConvolve(sample, sample, &result)
         self.measure() {
-            // Put the code you want to measure the time of here.
+            
             CircularConvolve(sample, sample, &result)
         }
     }

@@ -129,6 +129,8 @@
 		0A53E47F1E35AEF80060FB83 /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A53E45D1E35AEF80060FB83 /* String.swift */; };
 		0A56E9101E35F02E00D93786 /* RectCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A56E90F1E35F02E00D93786 /* RectCollection.swift */; };
 		0A56E9111E35F02E00D93786 /* RectCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A56E90F1E35F02E00D93786 /* RectCollection.swift */; };
+		0A6CDDA11E612233009DDEEB /* DGDocumentTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A6CDDA01E612233009DDEEB /* DGDocumentTest.swift */; };
+		0A6CDDA21E612233009DDEEB /* DGDocumentTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A6CDDA01E612233009DDEEB /* DGDocumentTest.swift */; };
 		0A776FC51D9A0BA5005FC88F /* c11_atomic.h in Headers */ = {isa = PBXBuildFile; fileRef = 0A776FC31D9A0BA5005FC88F /* c11_atomic.h */; };
 		0A776FC61D9A0BA5005FC88F /* c11_atomic.h in Headers */ = {isa = PBXBuildFile; fileRef = 0A776FC31D9A0BA5005FC88F /* c11_atomic.h */; };
 		0A7C97481E558E0C00AB4803 /* DGDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7C97471E558E0C00AB4803 /* DGDocument.swift */; };
@@ -236,6 +238,7 @@
 		0A53E45C1E35AEF80060FB83 /* Regex.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Regex.swift; sourceTree = "<group>"; };
 		0A53E45D1E35AEF80060FB83 /* String.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = String.swift; sourceTree = "<group>"; };
 		0A56E90F1E35F02E00D93786 /* RectCollection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RectCollection.swift; sourceTree = "<group>"; };
+		0A6CDDA01E612233009DDEEB /* DGDocumentTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DGDocumentTest.swift; sourceTree = "<group>"; };
 		0A776FC31D9A0BA5005FC88F /* c11_atomic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = c11_atomic.h; sourceTree = "<group>"; };
 		0A776FC41D9A0BA5005FC88F /* module.modulemap */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = "sourcecode.module-map"; path = module.modulemap; sourceTree = "<group>"; };
 		0A7C97471E558E0C00AB4803 /* DGDocument.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DGDocument.swift; sourceTree = "<group>"; };
@@ -476,6 +479,7 @@
 			isa = PBXGroup;
 			children = (
 				0AFCA14F1D9E1F130034AB10 /* AtomicTest.swift */,
+				0A6CDDA01E612233009DDEEB /* DGDocumentTest.swift */,
 				08BFF9B91B0715ED00EC88CB /* FourierTest.swift */,
 				0A8D98A21E53ED0F0050E112 /* ImageTest.swift */,
 				0A266E521D6E95C100ABE6B7 /* SDMarkerTest.swift */,
@@ -826,6 +830,7 @@
 			files = (
 				0A266E531D6E95C100ABE6B7 /* SDMarkerTest.swift in Sources */,
 				0A8D98A51E53EE310050E112 /* ImageTest.swift in Sources */,
+				0A6CDDA11E612233009DDEEB /* DGDocumentTest.swift in Sources */,
 				0AFCA1501D9E1F130034AB10 /* AtomicTest.swift in Sources */,
 				081321EB1C11D2C60081B2B9 /* FourierTest.swift in Sources */,
 			);
@@ -906,6 +911,7 @@
 			files = (
 				0A266E541D6E95C100ABE6B7 /* SDMarkerTest.swift in Sources */,
 				0A8D98A61E53EE310050E112 /* ImageTest.swift in Sources */,
+				0A6CDDA21E612233009DDEEB /* DGDocumentTest.swift in Sources */,
 				0AFCA1511D9E1F130034AB10 /* AtomicTest.swift in Sources */,
 				08BFF9BC1B07161E00EC88CB /* FourierTest.swift in Sources */,
 			);

@@ -89,89 +89,89 @@ class ImageTest: XCTestCase {
     
     override func setUp() {
         super.setUp()
-        // Put setup code here. This method is called before the invocation of each test method in the class.
+        
     }
     
     override func tearDown() {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
+        
         super.tearDown()
     }
     
     func testResamplingNonePerformance() {
-        // This is an example of a performance test case.
+        
         
         let sample = self.sample
         
         self.measure() {
-            // Put the code you want to measure the time of here.
+            
             _ = Image(image: sample, width: 1000, height: 1000, resampling: .none)
         }
     }
     
     func testResamplingNonePerformanceB() {
-        // This is an example of a performance test case.
+        
         
         let sampleA = self.sample
         
         let sampleB = Image(image: sampleA, width: 1920, height: 1080, resampling: .none)
         
         self.measure() {
-            // Put the code you want to measure the time of here.
+            
             _ = Image(image: sampleB, width: 3840, height: 2160, resampling: .none)
         }
     }
     
     func testResamplingLinearPerformance() {
-        // This is an example of a performance test case.
+        
         
         let sample = self.sample
         
         self.measure() {
-            // Put the code you want to measure the time of here.
+            
             _ = Image(image: sample, width: 1000, height: 1000, resampling: .linear)
         }
     }
     
     func testResamplingCosinePerformance() {
-        // This is an example of a performance test case.
+        
         
         let sample = self.sample
         
         self.measure() {
-            // Put the code you want to measure the time of here.
+            
             _ = Image(image: sample, width: 1000, height: 1000, resampling: .cosine)
         }
     }
     
     func testResamplingCubicPerformance() {
-        // This is an example of a performance test case.
+        
         
         let sample = self.sample
         
         self.measure() {
-            // Put the code you want to measure the time of here.
+            
             _ = Image(image: sample, width: 1000, height: 1000, resampling: .cubic)
         }
     }
     
     func testResamplingMitchellPerformance() {
-        // This is an example of a performance test case.
+        
         
         let sample = self.sample
         
         self.measure() {
-            // Put the code you want to measure the time of here.
+            
             _ = Image(image: sample, width: 1000, height: 1000, resampling: .mitchell(1/3, 1/3))
         }
     }
     
     func testResamplingLanczosPerformance() {
-        // This is an example of a performance test case.
+        
         
         let sample = self.sample
         
         self.measure() {
-            // Put the code you want to measure the time of here.
+            
             _ = Image(image: sample, width: 1000, height: 1000, resampling: .lanczos(3))
         }
     }
