@@ -319,6 +319,9 @@ extension DGDocument {
         }
         var offset = _rootIdStartPosition - 1
         while let next = try xrefDecode(data: data, position: offset, table: &table) {
+            if next == 0 || next > offset {
+                throw ParserError.invalidFormat("invalid file format.")
+            }
             offset = next - 1
         }
         return (root, table)
@@ -366,6 +369,8 @@ extension DGDocument {
                         }
                         counter += 1
                     }
+                } else {
+                    throw ParserError.invalidFormat("invalid file format.")
                 }
                 _lineEnd = lineEndPosition(data: data, position: _lineStart - 1)
                 _lineStart = lineStartPosition(data: data, position: _lineStart - 1)
