@@ -27,75 +27,86 @@ import Foundation
 
 func PDFLZWDecode(_ data: Data) throws -> Data {
     
-    var t: UInt32 = 0
-    var flag: UInt32 = 0
-    var sequence: [UInt8] = []
-    var s: UInt32 = 9
-    
-    var result = Data()
-    var table: [[UInt8]] = [] {
-        didSet {
-            switch table.count {
-            case 0...254: s = 9
-            case 255...766: s = 10
-            case 767...1790: s = 11
-            case 1791...3838: s = 12
-            default: fatalError()
+    struct Table {
+        
+        var s: UInt32 = 9
+        var table: [[UInt8]] = [] {
+            didSet {
+                switch table.count {
+                case 0...254: s = 9
+                case 255...766: s = 10
+                case 767...1790: s = 11
+                case 1791...3838: s = 12
+                default: s = 0
+                }
+            }
+        }
+        
+        subscript(code: UInt32) -> [UInt8]? {
+            switch code {
+            case 0...255: return [UInt8(code)]
+            case 258...4095:
+                let idx = Int(code) - 258
+                return idx < table.count ? table[idx] : nil
+            default: return nil
             }
         }
     }
     
+    var t: UInt32 = 0
+    var flag: UInt32 = 0
+    var code: UInt32 = 256
+    
+    var result = Data()
+    var table = Table()
+    
     func write_buf() throws -> Bool {
-        let shift = flag - s
-        let m = ((1 << s) - 1) << shift
-        let code = (t & m) >> shift
-        switch code {
-        case 0...255:
-            result.append(UInt8(code))
-            if table.count >= 3838 {
-                table.removeAll(keepingCapacity: true)
-            }
-            if sequence.count == 0 {
-                table.append([UInt8(code), UInt8(code)])
-                sequence = [UInt8(code), UInt8(code)]
-            } else {
-                table.append(sequence + CollectionOfOne(UInt8(code)))
-                sequence = [UInt8(code)]
-            }
-        case 258...4095:
-            if sequence.count == 0 {
-                throw PDFFilterError(message: "invalid LZWDecode format.")
-            }
-            let idx = Int(code) - 258
-            if idx >= table.count {
-                throw PDFFilterError(message: "invalid LZWDecode format.")
-            }
-            let record = table[idx]
-            result.append(contentsOf: record)
-            if table.count >= 3838 {
-                table.removeAll(keepingCapacity: true)
-            }
-            table.append(sequence + CollectionOfOne(record[0]))
-            sequence = record
-        case 256: table.removeAll(keepingCapacity: true)
-        case 257: return true
-        default: throw PDFFilterError(message: "invalid LZWDecode format.")
+        let s = table.s
+        if s == 0 {
+            throw PDFFilterError(message: "invalid LZWDecode format.")
         }
         flag -= s
+        let m = ((1 << s) - 1) << flag
+        let _code = code
+        code = (t & m) >> flag
+        switch code {
+        case 256: table.table.removeAll(keepingCapacity: true)
+        case 257: return true
+        default:
+            if _code == 256 {
+                if let record = table[code] {
+                    result.append(contentsOf: record)
+                } else {
+                    throw PDFFilterError(message: "invalid LZWDecode format.")
+                }
+            } else if let _record = table[_code] {
+                if let record = table[code] {
+                    result.append(contentsOf: record)
+                    if table.table.count != 3838 {
+                        table.table.append(_record + CollectionOfOne(record[0]))
+                    }
+                } else {
+                    result.append(contentsOf: _record + CollectionOfOne(_record[0]))
+                    table.table.append(_record + CollectionOfOne(_record[0]))
+                }
+            } else {
+                throw PDFFilterError(message: "invalid LZWDecode format.")
+            }
+        }
         return false
     }
     
-    table.reserveCapacity(3838)
+    table.table.reserveCapacity(3838)
     for d in data {
         t = ((t & ((1 << flag) - 1)) << 8) | UInt32(d)
         flag += 8
-        while flag >= s {
+        while flag >= table.s {
             if try write_buf() {
                 return result
             }
         }
     }
-    while flag >= s {
+    while flag >= table.s {
         if try write_buf() {
             return result
         }
