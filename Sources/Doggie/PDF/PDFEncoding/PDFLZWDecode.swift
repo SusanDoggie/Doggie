@@ -53,41 +53,28 @@ func PDFLZWDecode(_ data: Data) throws -> Data {
         }
     }
     
-    var t: UInt32 = 0
-    var flag: UInt32 = 0
-    var code: UInt32 = 256
-    
     var result = Data()
     var table = Table()
     
-    func write_buf() throws -> Bool {
-        let s = table.s
-        if s == 0 {
-            throw PDFFilterError(message: "invalid LZWDecode format.")
-        }
-        flag -= s
-        let m = ((1 << s) - 1) << flag
-        let _code = code
-        code = (t & m) >> flag
+    func write_buf(_ code: UInt32, _ last: UInt32) throws -> Bool {
         switch code {
         case 256: table.table.removeAll(keepingCapacity: true)
         case 257: return true
         default:
-            if _code == 256 {
+            if last == 256 {
                 if let record = table[code] {
                     result.append(contentsOf: record)
                 } else {
                     throw PDFFilterError(message: "invalid LZWDecode format.")
                 }
-            } else if let _record = table[_code] {
+            } else if let last_record = table[last] {
                 if let record = table[code] {
                     result.append(contentsOf: record)
-                    if table.table.count != 3838 {
-                        table.table.append(_record + CollectionOfOne(record[0]))
-                    }
+                    table.table.append(last_record + CollectionOfOne(record[0]))
                 } else {
-                    result.append(contentsOf: _record + CollectionOfOne(_record[0]))
-                    table.table.append(_record + CollectionOfOne(_record[0]))
+                    let seq = last_record + CollectionOfOne(last_record[0])
+                    result.append(contentsOf: seq)
+                    table.table.append(seq)
                 }
             } else {
                 throw PDFFilterError(message: "invalid LZWDecode format.")
@@ -96,19 +83,25 @@ func PDFLZWDecode(_ data: Data) throws -> Data {
         return false
     }
     
+    var t: UInt32 = 0
+    var flag: UInt32 = 0
+    var code: UInt32 = 256
+    
     table.table.reserveCapacity(3838)
     for d in data {
-        t = ((t & ((1 << flag) - 1)) << 8) | UInt32(d)
+        t = (t << 8) | UInt32(d)
         flag += 8
         while flag >= table.s {
-            if try write_buf() {
+            if table.s == 0 {
+                throw PDFFilterError(message: "invalid LZWDecode format.")
+            }
+            let last = code
+            flag -= table.s
+            code = t >> flag
+            t &= (1 << flag) - 1
+            if try write_buf(code, last) {
                 return result
             }
-        }
-    }
-    while flag >= table.s {
-        if try write_buf() {
-            return result
         }
     }
     
