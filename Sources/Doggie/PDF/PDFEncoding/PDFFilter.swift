@@ -35,6 +35,7 @@ private func _PDFFilterDecode(_ name: PDFDocument.Name, _ data: Data) throws -> 
     switch name.name {
     case "ASCIIHexDecode": return try PDFASCIIHexDecode(data)
     case "ASCII85Decode": return try PDFASCII85Decode(data)
+    case "LZWDecode": return try PDFLZWDecode(data)
     case "FlateDecode": return try data.gunzipped()
     case "RunLengthDecode": return try PDFRunLengthDecode(data)
     default: return data
@@ -45,13 +46,44 @@ public func PDFFilterDecode(_ dict: PDFDocument.Dictionary, _ data: Data) throws
     
     var data = data
     
+    let predictor = dict["DecodeParms"]?["Predictor"].intValue ?? 1
+    let colors = dict["DecodeParms"]?["Colors"].intValue ?? 1
+    let bitsPerComponent = dict["DecodeParms"]?["BitsPerComponent"].intValue ?? 8
+    let columns = dict["DecodeParms"]?["Columns"].intValue ?? 1
+    
     if let filter = dict["Filter"] {
         switch filter {
-        case let .name(name): data = try _PDFFilterDecode(name, data)
+        case let .name(name):
+            data = try _PDFFilterDecode(name, data)
+            if name == "LZWDecode" || name == "FlateDecode" {
+                switch predictor {
+                case 2: data = PDFPredictor(data, .TIFF2, colors, bitsPerComponent, columns)
+                case 10: data = PDFPredictor(data, .PNGNone, colors, bitsPerComponent, columns)
+                case 11: data = PDFPredictor(data, .PNGSub, colors, bitsPerComponent, columns)
+                case 12: data = PDFPredictor(data, .PNGUp, colors, bitsPerComponent, columns)
+                case 13: data = PDFPredictor(data, .PNGAverage, colors, bitsPerComponent, columns)
+                case 14: data = PDFPredictor(data, .PNGPaeth, colors, bitsPerComponent, columns)
+                case 15: data = PDFPredictor(data, .PNGOptimum, colors, bitsPerComponent, columns)
+                default: break
+                }
+            }
         case let .array(array):
             loop: for filter in array {
                 switch filter {
-                case let .name(name): data = try _PDFFilterDecode(name, data)
+                case let .name(name):
+                    data = try _PDFFilterDecode(name, data)
+                    if name == "LZWDecode" || name == "FlateDecode" {
+                        switch predictor {
+                        case 2: data = PDFPredictor(data, .TIFF2, colors, bitsPerComponent, columns)
+                        case 10: data = PDFPredictor(data, .PNGNone, colors, bitsPerComponent, columns)
+                        case 11: data = PDFPredictor(data, .PNGSub, colors, bitsPerComponent, columns)
+                        case 12: data = PDFPredictor(data, .PNGUp, colors, bitsPerComponent, columns)
+                        case 13: data = PDFPredictor(data, .PNGAverage, colors, bitsPerComponent, columns)
+                        case 14: data = PDFPredictor(data, .PNGPaeth, colors, bitsPerComponent, columns)
+                        case 15: data = PDFPredictor(data, .PNGOptimum, colors, bitsPerComponent, columns)
+                        default: break
+                        }
+                    }
                 default: break loop
                 }
             }
