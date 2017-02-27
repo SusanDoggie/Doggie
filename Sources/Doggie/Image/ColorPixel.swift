@@ -36,21 +36,74 @@ public protocol ColorPixelProtocol {
     var alpha: Double { get set }
 }
 
+public prefix func +<Pixel : ColorPixelProtocol>(val: Pixel) -> Pixel {
+    
+    return val
+}
+public prefix func -<Pixel : ColorPixelProtocol>(val: Pixel) -> Pixel {
+    
+    return Pixel(color: -val.color, alpha: -val.alpha)
+}
+public func +<Pixel : ColorPixelProtocol>(lhs: Pixel, rhs:  Pixel) -> Pixel {
+    
+    return Pixel(color: lhs.color + rhs.color, alpha: lhs.alpha + rhs.alpha)
+}
+public func -<Pixel : ColorPixelProtocol>(lhs: Pixel, rhs:  Pixel) -> Pixel {
+    
+    return Pixel(color: lhs.color - rhs.color, alpha: lhs.alpha - rhs.alpha)
+}
+
+public func *<Pixel : ColorPixelProtocol>(lhs: Double, rhs:  Pixel) -> Pixel {
+    
+    return Pixel(color: lhs * rhs.color, alpha: lhs * rhs.alpha)
+}
+public func *<Pixel : ColorPixelProtocol>(lhs: Pixel, rhs:  Double) -> Pixel {
+    
+    return Pixel(color: lhs.color * rhs, alpha: lhs.alpha * rhs)
+}
+
+public func /<Pixel : ColorPixelProtocol>(lhs: Pixel, rhs:  Double) -> Pixel {
+    
+    return Pixel(color: lhs.color / rhs, alpha: lhs.alpha / rhs)
+}
+
+public func *=<Pixel : ColorPixelProtocol> (lhs: inout Pixel, rhs:  Double) {
+    lhs.color *= rhs
+    lhs.alpha *= rhs
+}
+public func /=<Pixel : ColorPixelProtocol> (lhs: inout Pixel, rhs:  Double) {
+    lhs.color /= rhs
+    lhs.alpha /= rhs
+}
+public func +=<Pixel : ColorPixelProtocol> (lhs: inout Pixel, rhs:  Pixel) {
+    lhs.color += rhs.color
+    lhs.alpha += rhs.alpha
+}
+public func -=<Pixel : ColorPixelProtocol> (lhs: inout Pixel, rhs:  Pixel) {
+    lhs.color -= rhs.color
+    lhs.alpha -= rhs.alpha
+}
+public func ==<Pixel : ColorPixelProtocol>(lhs: Pixel, rhs: Pixel) -> Bool {
+    
+    return lhs.color == rhs.color && lhs.alpha == rhs.alpha
+}
+public func !=<Pixel : ColorPixelProtocol>(lhs: Pixel, rhs: Pixel) -> Bool {
+    
+    return lhs.color != rhs.color || lhs.alpha != rhs.alpha
+}
+
 extension ColorPixelProtocol {
+    
+    public init() {
+        self.init(color: Model(), alpha: 0)
+    }
     
     public func with(alpha: Double) -> Self {
         return Self(color: color, alpha: alpha)
     }
 }
 
-extension ColorPixelProtocol where Model : ColorBlendProtocol {
-    
-    public init() {
-        self.init(color: Model(), alpha: 0)
-    }
-}
-
-public struct ColorPixel<Model : ColorBlendProtocol> : ColorPixelProtocol {
+public struct ColorPixel<Model : ColorModelProtocol> : ColorPixelProtocol {
     
     public var color: Model
     public var alpha: Double
@@ -69,7 +122,7 @@ extension ColorPixel {
     }
 }
 
-extension ColorPixelProtocol where Model : ColorBlendProtocol {
+extension ColorPixelProtocol {
     
     public init(_ color: ColorPixel<Model>) {
         self.init(color: color.color, alpha: color.alpha)
