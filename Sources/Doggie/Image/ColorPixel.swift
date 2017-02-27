@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-public protocol ColorPixelProtocol {
+public protocol ColorPixelProtocol : Hashable {
     
     associatedtype Model : ColorModelProtocol
     
