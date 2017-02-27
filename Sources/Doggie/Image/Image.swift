@@ -31,9 +31,9 @@ private protocol ImageBaseProtocol {
     
     subscript(position: Int) -> Color { get set }
     
-    func convert<RPixel: ColorPixelProtocol, RSpace : ColorSpaceProtocol>(pixel: RPixel.Type, colorSpace: RSpace, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm) -> ImageBaseProtocol where RSpace.Model : ColorBlendProtocol, RPixel.Model == RSpace.Model
+    func convert<RPixel: ColorPixelProtocol, RSpace : ColorSpaceProtocol>(pixel: RPixel.Type, colorSpace: RSpace, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm) -> ImageBaseProtocol where RPixel.Model == RSpace.Model
     
-    func convert<RPixel: ColorPixelProtocol, RSpace : LinearColorSpaceProtocol>(pixel: RPixel.Type, colorSpace: RSpace, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm) -> ImageBaseProtocol where RSpace.Model : ColorBlendProtocol, RPixel.Model == RSpace.Model
+    func convert<RPixel: ColorPixelProtocol, RSpace : LinearColorSpaceProtocol>(pixel: RPixel.Type, colorSpace: RSpace, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm) -> ImageBaseProtocol where RPixel.Model == RSpace.Model
     
     func resampling(s_width: Int, width: Int, height: Int, algorithm: Image.ResamplingAlgorithm) -> ImageBaseProtocol
     func resampling<T: SDTransformProtocol>(s_width: Int, width: Int, height: Int, transform: T, algorithm: Image.ResamplingAlgorithm) -> ImageBaseProtocol
@@ -43,7 +43,7 @@ private protocol ImageBaseProtocol {
     func withUnsafeBytes<R>(_ body: (UnsafeRawBufferPointer) throws -> R) rethrows -> R
 }
 
-private struct ImageBase<ColorPixel: ColorPixelProtocol, ColorSpace : ColorSpaceProtocol> : ImageBaseProtocol where ColorSpace.Model : ColorBlendProtocol, ColorPixel.Model == ColorSpace.Model {
+private struct ImageBase<ColorPixel: ColorPixelProtocol, ColorSpace : ColorSpaceProtocol> : ImageBaseProtocol where ColorPixel.Model == ColorSpace.Model {
     
     var buffer: [ColorPixel]
     
@@ -65,12 +65,12 @@ private struct ImageBase<ColorPixel: ColorPixelProtocol, ColorSpace : ColorSpace
         }
     }
     
-    func convert<RPixel: ColorPixelProtocol, RSpace : ColorSpaceProtocol>(pixel: RPixel.Type, colorSpace: RSpace, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm) -> ImageBaseProtocol where RSpace.Model : ColorBlendProtocol, RPixel.Model == RSpace.Model {
+    func convert<RPixel: ColorPixelProtocol, RSpace : ColorSpaceProtocol>(pixel: RPixel.Type, colorSpace: RSpace, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm) -> ImageBaseProtocol where RPixel.Model == RSpace.Model {
         let _buffer = zip(self.colorSpace.convert(buffer.map { $0.color }, to: colorSpace, algorithm: algorithm), buffer).map { RPixel(color: $0, alpha: $1.alpha) }
         return ImageBase<RPixel, RSpace>(buffer: _buffer, colorSpace: colorSpace, algorithm: algorithm)
     }
     
-    func convert<RPixel: ColorPixelProtocol, RSpace : LinearColorSpaceProtocol>(pixel: RPixel.Type, colorSpace: RSpace, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm) -> ImageBaseProtocol where RSpace.Model : ColorBlendProtocol, RPixel.Model == RSpace.Model {
+    func convert<RPixel: ColorPixelProtocol, RSpace : LinearColorSpaceProtocol>(pixel: RPixel.Type, colorSpace: RSpace, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm) -> ImageBaseProtocol where RPixel.Model == RSpace.Model {
         let _buffer = zip(self.colorSpace.convert(buffer.map { $0.color }, to: colorSpace, algorithm: algorithm), buffer).map { RPixel(color: $0, alpha: $1.alpha) }
         return ImageBase<RPixel, RSpace>(buffer: _buffer, colorSpace: colorSpace, algorithm: algorithm)
     }
@@ -111,19 +111,19 @@ public struct Image {
         self.base = image.base.resampling(s_width: image.width, width: width, height: height, transform: transform, algorithm: algorithm)
     }
     
-    public init<ColorPixel: ColorPixelProtocol, ColorSpace : ColorSpaceProtocol>(width: Int, height: Int, pixel: ColorPixel, colorSpace: ColorSpace, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm = .bradford) where ColorSpace.Model : ColorBlendProtocol, ColorPixel.Model == ColorSpace.Model {
+    public init<ColorPixel: ColorPixelProtocol, ColorSpace : ColorSpaceProtocol>(width: Int, height: Int, pixel: ColorPixel, colorSpace: ColorSpace, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm = .bradford) where ColorPixel.Model == ColorSpace.Model {
         self.width = width
         self.height = height
         self.base = ImageBase(buffer: [ColorPixel](repeating: pixel, count: width * height), colorSpace: colorSpace, algorithm: algorithm)
     }
     
-    public init<ColorPixel: ColorPixelProtocol, ColorSpace : ColorSpaceProtocol>(image: Image, pixel: ColorPixel.Type, colorSpace: ColorSpace, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm = .bradford) where ColorSpace.Model : ColorBlendProtocol, ColorPixel.Model == ColorSpace.Model {
+    public init<ColorPixel: ColorPixelProtocol, ColorSpace : ColorSpaceProtocol>(image: Image, pixel: ColorPixel.Type, colorSpace: ColorSpace, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm = .bradford) where ColorPixel.Model == ColorSpace.Model {
         self.width = image.width
         self.height = image.height
         self.base = image.base.convert(pixel: pixel, colorSpace: colorSpace, algorithm: algorithm)
     }
     
-    public init<ColorPixel: ColorPixelProtocol, ColorSpace : LinearColorSpaceProtocol>(image: Image, pixel: ColorPixel.Type, colorSpace: ColorSpace, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm = .bradford) where ColorSpace.Model : ColorBlendProtocol, ColorPixel.Model == ColorSpace.Model {
+    public init<ColorPixel: ColorPixelProtocol, ColorSpace : LinearColorSpaceProtocol>(image: Image, pixel: ColorPixel.Type, colorSpace: ColorSpace, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm = .bradford) where ColorPixel.Model == ColorSpace.Model {
         self.width = image.width
         self.height = image.height
         self.base = image.base.convert(pixel: pixel, colorSpace: colorSpace, algorithm: algorithm)
@@ -167,7 +167,7 @@ extension Image {
 extension Image.ResamplingAlgorithm {
     
     @_specialize(ColorPixel<RGBColorModel>) @_specialize(ColorPixel<CMYKColorModel>) @_specialize(ColorPixel<GrayColorModel>) @_specialize(ARGB32ColorPixel)
-    fileprivate func calculate<Pixel: ColorPixelProtocol>(source: [Pixel], s_width: Int, width: Int, height: Int, transform: SDTransform) -> [Pixel] where Pixel.Model : ColorBlendProtocol {
+    fileprivate func calculate<Pixel: ColorPixelProtocol>(source: [Pixel], s_width: Int, width: Int, height: Int, transform: SDTransform) -> [Pixel] {
         
         var result = [Pixel](repeating: Pixel(), count: width * height)
         
@@ -283,8 +283,7 @@ extension Image.ResamplingAlgorithm {
     @_transparent
     private func convolve<Pixel: ColorPixelProtocol>(source: UnsafePointer<ColorPixel<Pixel.Model>>, width: Int, height: Int, point: Point, kernel_size: Int, kernel: (Double) -> Double) -> Pixel {
         
-        var s_color = Pixel.Model()
-        var s_alpha: Double = 0
+        var pixel = ColorPixel<Pixel.Model>()
         var t: Double = 0
         
         let _x = Int(point.x)
@@ -304,12 +303,11 @@ extension Image.ResamplingAlgorithm {
             for x in min_x..<max_x {
                 let l = kernel((point - Point(x: x, y: y)).magnitude)
                 let _source = x_range.contains(x) && y_range.contains(y) ? source[y * width + x] : source[y.clamped(to: y_range) * width + x.clamped(to: x_range)].with(alpha: 0)
-                s_color = s_color.blend(_source.color) { $0 + $1 * l }
-                s_alpha += _source.alpha * l
+                pixel += _source * l
                 t += l
             }
         }
-        return t == 0 ? Pixel() : Pixel(color: s_color.blend { $0 / t }, alpha: s_alpha / t)
+        return t == 0 ? Pixel() : Pixel(pixel / t)
     }
     
     @_transparent
@@ -342,11 +340,11 @@ extension Image.ResamplingAlgorithm {
             let _s3 = check1 && check4 ? source[_y2 * width + _x1] : source[__y2 * width + __x1].with(alpha: 0)
             let _s4 = check2 && check4 ? source[_y2 * width + _x2] : source[__y2 * width + __x2].with(alpha: 0)
             
-            let _u1 = _s1.color.blend(_s2.color) { sampler(_tx, $0, $1) }
-            let _u2 = _s3.color.blend(_s4.color) { sampler(_tx, $0, $1) }
-            let _v = _u1.blend(_u2) { sampler(_ty, $0, $1) }
-            
-            return Pixel(color: _v, alpha: sampler(_ty, sampler(_tx, _s1.alpha, _s2.alpha), sampler(_tx, _s3.alpha, _s4.alpha)))
+            var color = Pixel.Model()
+            for i in 0..<Pixel.Model.count {
+                color.setComponent(i, sampler(_ty,sampler(_tx, _s1.color.component(i), _s2.color.component(i)), sampler(_tx, _s3.color.component(i), _s4.color.component(i))))
+            }
+            return Pixel(color: color, alpha: sampler(_ty, sampler(_tx, _s1.alpha, _s2.alpha), sampler(_tx, _s3.alpha, _s4.alpha)))
             
         } else {
             return Pixel()
@@ -407,18 +405,21 @@ extension Image.ResamplingAlgorithm {
             let _s15 = check3 && check8 ? source[_y4 * width + _x3] : source[__y4 * width + __x3].with(alpha: 0)
             let _s16 = check4 && check8 ? source[_y4 * width + _x4] : source[__y4 * width + __x4].with(alpha: 0)
             
-            let _u1 = _s1.color.blend(_s2.color, _s3.color, _s4.color) { sampler(_tx, $0, $1, $2, $3) }
-            let _u2 = _s5.color.blend(_s6.color, _s7.color, _s8.color) { sampler(_tx, $0, $1, $2, $3) }
-            let _u3 = _s9.color.blend(_s10.color, _s11.color, _s12.color) { sampler(_tx, $0, $1, $2, $3) }
-            let _u4 = _s13.color.blend(_s14.color, _s15.color, _s16.color) { sampler(_tx, $0, $1, $2, $3) }
-            let _v = _u1.blend(_u2, _u3, _u4) { sampler(_ty, $0, $1, $2, $3) }
+            var color = Pixel.Model()
+            for i in 0..<Pixel.Model.count {
+                let _u1 = sampler(_tx, _s1.color.component(i), _s2.color.component(i), _s3.color.component(i), _s4.color.component(i))
+                let _u2 = sampler(_tx, _s5.color.component(i), _s6.color.component(i), _s7.color.component(i), _s8.color.component(i))
+                let _u3 = sampler(_tx, _s9.color.component(i), _s10.color.component(i), _s11.color.component(i), _s12.color.component(i))
+                let _u4 = sampler(_tx, _s13.color.component(i), _s14.color.component(i), _s15.color.component(i), _s16.color.component(i))
+                color.setComponent(i, sampler(_ty, _u1, _u2, _u3, _u4))
+            }
             
             let a1 = sampler(_tx, _s1.alpha, _s2.alpha, _s3.alpha, _s4.alpha)
             let a2 = sampler(_tx, _s5.alpha, _s6.alpha, _s7.alpha, _s8.alpha)
             let a3 = sampler(_tx, _s9.alpha, _s10.alpha, _s11.alpha, _s12.alpha)
             let a4 = sampler(_tx, _s13.alpha, _s14.alpha, _s15.alpha, _s16.alpha)
             
-            return Pixel(color: _v, alpha: sampler(_ty, a1, a2, a3, a4))
+            return Pixel(color: color, alpha: sampler(_ty, a1, a2, a3, a4))
             
         } else {
             return Pixel()

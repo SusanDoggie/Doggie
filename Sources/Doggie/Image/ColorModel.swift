@@ -27,21 +27,97 @@ import Foundation
 
 public protocol ColorModelProtocol {
     
-}
-
-public protocol ColorBlendProtocol : ColorModelProtocol {
+    static var count: Int { get }
     
     init()
     
-    func blend(operation: (Double) -> Double) -> Self
-    func blend(_ source: Self, operation: (Double, Double) -> Double) -> Self
-    func blend(_ s1: Self, _ s2: Self, operation: (Double, Double, Double) -> Double) -> Self
-    func blend(_ s1: Self, _ s2: Self, _ s3: Self, operation: (Double, Double, Double, Double) -> Double) -> Self
+    func component(_ index: Int) -> Double
+    mutating func setComponent(_ index: Int, _ value: Double)
+}
+
+public prefix func +<Model : ColorModelProtocol>(val: Model) -> Model {
+    return val
+}
+public prefix func -<Model : ColorModelProtocol>(val: Model) -> Model {
+    var val = val
+    for i in 0..<Model.count {
+        val.setComponent(i, -val.component(i))
+    }
+    return val
+}
+public func +<Model : ColorModelProtocol>(lhs: Model, rhs:  Model) -> Model {
+    var result = Model()
+    for i in 0..<Model.count {
+        result.setComponent(i, lhs.component(i) + rhs.component(i))
+    }
+    return result
+}
+public func -<Model : ColorModelProtocol>(lhs: Model, rhs:  Model) -> Model {
+    var result = Model()
+    for i in 0..<Model.count {
+        result.setComponent(i, lhs.component(i) - rhs.component(i))
+    }
+    return result
+}
+
+public func *<Model : ColorModelProtocol>(lhs: Double, rhs:  Model) -> Model {
+    var result = Model()
+    for i in 0..<Model.count {
+        result.setComponent(i, lhs * rhs.component(i))
+    }
+    return result
+}
+public func *<Model : ColorModelProtocol>(lhs: Model, rhs:  Double) -> Model {
+    var result = Model()
+    for i in 0..<Model.count {
+        result.setComponent(i, lhs.component(i) * rhs)
+    }
+    return result
+}
+
+public func /<Model : ColorModelProtocol>(lhs: Model, rhs:  Double) -> Model {
+    var result = Model()
+    for i in 0..<Model.count {
+        result.setComponent(i, lhs.component(i) / rhs)
+    }
+    return result
+}
+
+public func *=<Model : ColorModelProtocol> (lhs: inout Model, rhs:  Double) {
+    for i in 0..<Model.count {
+        lhs.setComponent(i, lhs.component(i) * rhs)
+    }
+}
+public func /=<Model : ColorModelProtocol> (lhs: inout Model, rhs:  Double) {
+    for i in 0..<Model.count {
+        lhs.setComponent(i, lhs.component(i) / rhs)
+    }
+}
+public func +=<Model : ColorModelProtocol> (lhs: inout Model, rhs:  Model) {
+    for i in 0..<Model.count {
+        lhs.setComponent(i, lhs.component(i) + rhs.component(i))
+    }
+}
+public func -=<Model : ColorModelProtocol> (lhs: inout Model, rhs:  Model) {
+    for i in 0..<Model.count {
+        lhs.setComponent(i, lhs.component(i) - rhs.component(i))
+    }
+}
+public func ==<Model : ColorModelProtocol>(lhs: Model, rhs: Model) -> Bool {
+    for i in 0..<Model.count where lhs.component(i) != rhs.component(i) {
+        return false
+    }
+    return true
+}
+public func !=<Model : ColorModelProtocol>(lhs: Model, rhs: Model) -> Bool {
+    for i in 0..<Model.count where lhs.component(i) != rhs.component(i) {
+        return true
+    }
+    return false
 }
 
 public protocol ColorVectorConvertible : ColorModelProtocol {
     
-    init()
     init(_ vector: Vector)
     
     var vector: Vector { get set }
@@ -62,33 +138,11 @@ public func *= <C: ColorVectorConvertible, T: MatrixProtocol>(lhs: inout C, rhs:
     lhs.vector *= rhs
 }
 
-extension ColorBlendProtocol where Self : ColorVectorConvertible {
-    
-    public func blend(operation: (Double) -> Double) -> Self {
-        let v = self.vector
-        return Self(Vector(x: operation(v.x), y: operation(v.y), z: operation(v.z)))
-    }
-    public func blend(_ source: Self, operation: (Double, Double) -> Double) -> Self {
-        let d = self.vector
-        let s = source.vector
-        return Self(Vector(x: operation(d.x, s.x), y: operation(d.y, s.y), z: operation(d.z, s.z)))
-    }
-    public func blend(_ s1: Self, _ s2: Self, operation: (Double, Double, Double) -> Double) -> Self {
-        let d = self.vector
-        let s1 = s1.vector
-        let s2 = s2.vector
-        return Self(Vector(x: operation(d.x, s1.x, s2.x), y: operation(d.y, s1.y, s2.y), z: operation(d.z, s1.z, s2.z)))
-    }
-    public func blend(_ s1: Self, _ s2: Self, _ s3: Self, operation: (Double, Double, Double, Double) -> Double) -> Self {
-        let d = self.vector
-        let s1 = s1.vector
-        let s2 = s2.vector
-        let s3 = s3.vector
-        return Self(Vector(x: operation(d.x, s1.x, s2.x, s3.x), y: operation(d.y, s1.y, s2.y, s3.y), z: operation(d.z, s1.z, s2.z, s3.z)))
-    }
-}
-
 public struct RGBColorModel : ColorModelProtocol {
+    
+    public static var count: Int {
+        return 3
+    }
     
     public var red: Double
     public var green: Double
@@ -99,9 +153,26 @@ public struct RGBColorModel : ColorModelProtocol {
         self.green = green
         self.blue = blue
     }
+    
+    public func component(_ index: Int) -> Double {
+        switch index {
+        case 0: return red
+        case 1: return green
+        case 2: return blue
+        default: fatalError()
+        }
+    }
+    public mutating func setComponent(_ index: Int, _ value: Double) {
+        switch index {
+        case 0: red = value
+        case 1: green = value
+        case 2: blue = value
+        default: fatalError()
+        }
+    }
 }
 
-extension RGBColorModel : ColorBlendProtocol, ColorVectorConvertible {
+extension RGBColorModel : ColorVectorConvertible {
     
     public init(_ vector: Vector) {
         self.red = vector.x
@@ -240,6 +311,10 @@ extension RGBColorModel {
 
 public struct CMYKColorModel : ColorModelProtocol {
     
+    public static var count: Int {
+        return 4
+    }
+    
     public var cyan: Double
     public var magenta: Double
     public var yellow: Double
@@ -251,6 +326,25 @@ public struct CMYKColorModel : ColorModelProtocol {
         self.yellow = yellow
         self.black = black
     }
+    
+    public func component(_ index: Int) -> Double {
+        switch index {
+        case 0: return cyan
+        case 1: return magenta
+        case 2: return yellow
+        case 3: return black
+        default: fatalError()
+        }
+    }
+    public mutating func setComponent(_ index: Int, _ value: Double) {
+        switch index {
+        case 0: cyan = value
+        case 1: magenta = value
+        case 2: yellow = value
+        case 3: black = value
+        default: fatalError()
+        }
+    }
 }
 
 extension CMYKColorModel : CustomStringConvertible {
@@ -260,26 +354,13 @@ extension CMYKColorModel : CustomStringConvertible {
     }
 }
 
-extension CMYKColorModel : ColorBlendProtocol {
+extension CMYKColorModel {
     
     public init() {
         self.cyan = 0
         self.magenta = 0
         self.yellow = 0
         self.black = 0
-    }
-    
-    public func blend(operation: (Double) -> Double) -> CMYKColorModel {
-        return CMYKColorModel(cyan: operation(cyan), magenta: operation(magenta), yellow: operation(yellow), black: operation(black))
-    }
-    public func blend(_ source: CMYKColorModel, operation: (Double, Double) -> Double) -> CMYKColorModel {
-        return CMYKColorModel(cyan: operation(cyan, source.cyan), magenta: operation(magenta, source.magenta), yellow: operation(yellow, source.yellow), black: operation(black, source.black))
-    }
-    public func blend(_ s1: CMYKColorModel, _ s2: CMYKColorModel, operation: (Double, Double, Double) -> Double) -> CMYKColorModel {
-        return CMYKColorModel(cyan: operation(cyan, s1.cyan, s2.cyan), magenta: operation(magenta, s1.magenta, s2.magenta), yellow: operation(yellow, s1.yellow, s2.yellow), black: operation(black, s1.black, s2.black))
-    }
-    public func blend(_ s1: CMYKColorModel, _ s2: CMYKColorModel, _ s3: CMYKColorModel, operation: (Double, Double, Double, Double) -> Double) -> CMYKColorModel {
-        return CMYKColorModel(cyan: operation(cyan, s1.cyan, s2.cyan, s3.cyan), magenta: operation(magenta, s1.magenta, s2.magenta, s3.magenta), yellow: operation(yellow, s1.yellow, s2.yellow, s3.yellow), black: operation(black, s1.black, s2.black, s3.black))
     }
 }
 
@@ -312,12 +393,22 @@ extension CMYKColorModel {
 
 public struct LabColorModel : ColorModelProtocol {
     
+    public static var count: Int {
+        return 3
+    }
+    
     /// The lightness dimension.
     public var lightness: Double
     /// The a color component.
     public var a: Double
     /// The b color component.
     public var b: Double
+    
+    public init() {
+        self.lightness = 0
+        self.a = 0
+        self.b = 0
+    }
     
     public init(lightness: Double, a: Double, b: Double) {
         self.lightness = lightness
@@ -328,6 +419,23 @@ public struct LabColorModel : ColorModelProtocol {
         self.lightness = lightness
         self.a = chroma * cos(2 * Double.pi * hue)
         self.b = chroma * sin(2 * Double.pi * hue)
+    }
+    
+    public func component(_ index: Int) -> Double {
+        switch index {
+        case 0: return lightness
+        case 1: return a
+        case 2: return b
+        default: fatalError()
+        }
+    }
+    public mutating func setComponent(_ index: Int, _ value: Double) {
+        switch index {
+        case 0: lightness = value
+        case 1: a = value
+        case 2: b = value
+        default: fatalError()
+        }
     }
 }
 
@@ -361,6 +469,10 @@ extension LabColorModel {
 
 public struct LuvColorModel : ColorModelProtocol {
     
+    public static var count: Int {
+        return 3
+    }
+    
     /// The lightness dimension.
     public var lightness: Double
     /// The u color component.
@@ -368,6 +480,11 @@ public struct LuvColorModel : ColorModelProtocol {
     /// The v color component.
     public var v: Double
     
+    public init() {
+        self.lightness = 0
+        self.u = 0
+        self.v = 0
+    }
     public init(lightness: Double, u: Double, v: Double) {
         self.lightness = lightness
         self.u = u
@@ -377,6 +494,23 @@ public struct LuvColorModel : ColorModelProtocol {
         self.lightness = lightness
         self.u = chroma * cos(2 * Double.pi * hue)
         self.v = chroma * sin(2 * Double.pi * hue)
+    }
+    
+    public func component(_ index: Int) -> Double {
+        switch index {
+        case 0: return lightness
+        case 1: return u
+        case 2: return v
+        default: fatalError()
+        }
+    }
+    public mutating func setComponent(_ index: Int, _ value: Double) {
+        switch index {
+        case 0: lightness = value
+        case 1: u = value
+        case 2: v = value
+        default: fatalError()
+        }
     }
 }
 
@@ -410,6 +544,10 @@ extension LuvColorModel {
 
 public struct XYZColorModel : ColorModelProtocol {
     
+    public static var count: Int {
+        return 3
+    }
+    
     public var x: Double
     public var y: Double
     public var z: Double
@@ -429,6 +567,23 @@ public struct XYZColorModel : ColorModelProtocol {
         self.x = x * _y * luminance
         self.y = luminance
         self.z = (1 - x - y) * _y * luminance
+    }
+    
+    public func component(_ index: Int) -> Double {
+        switch index {
+        case 0: return x
+        case 1: return y
+        case 2: return z
+        default: fatalError()
+        }
+    }
+    public mutating func setComponent(_ index: Int, _ value: Double) {
+        switch index {
+        case 0: x = value
+        case 1: y = value
+        case 2: z = value
+        default: fatalError()
+        }
     }
 }
 
@@ -482,29 +637,33 @@ extension XYZColorModel : CustomStringConvertible {
 
 public struct GrayColorModel : ColorModelProtocol {
     
+    public static var count: Int {
+        return 1
+    }
+    
     public var white: Double
     
     public init(white: Double) {
         self.white = white
     }
+    
+    public func component(_ index: Int) -> Double {
+        switch index {
+        case 0: return white
+        default: fatalError()
+        }
+    }
+    public mutating func setComponent(_ index: Int, _ value: Double) {
+        switch index {
+        case 0: white = value
+        default: fatalError()
+        }
+    }
 }
 
-extension GrayColorModel : ColorBlendProtocol {
+extension GrayColorModel {
     
     public init() {
         self.white = 0
-    }
-    
-    public func blend(operation: (Double) -> Double) -> GrayColorModel {
-        return GrayColorModel(white: operation(white))
-    }
-    public func blend(_ source: GrayColorModel, operation: (Double, Double) -> Double) -> GrayColorModel {
-        return GrayColorModel(white: operation(white, source.white))
-    }
-    public func blend(_ s1: GrayColorModel, _ s2: GrayColorModel, operation: (Double, Double, Double) -> Double) -> GrayColorModel {
-        return GrayColorModel(white: operation(white, s1.white, s2.white))
-    }
-    public func blend(_ s1: GrayColorModel, _ s2: GrayColorModel, _ s3: GrayColorModel, operation: (Double, Double, Double, Double) -> Double) -> GrayColorModel {
-        return GrayColorModel(white: operation(white, s1.white, s2.white, s3.white))
     }
 }
