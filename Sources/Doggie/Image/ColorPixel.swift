@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-public protocol ColorPixelProtocol {
+public protocol ColorPixelProtocol : Hashable {
     
     associatedtype Model : ColorModelProtocol
     
@@ -34,6 +34,15 @@ public protocol ColorPixelProtocol {
     var color: Model { get set }
     
     var alpha: Double { get set }
+    
+    var hashValue: Int { get }
+}
+
+extension ColorPixelProtocol {
+    
+    public var hashValue: Int {
+        return hash_combine(seed: 0, self.alpha.hashValue, self.color.hashValue)
+    }
 }
 
 public prefix func +<Pixel : ColorPixelProtocol>(val: Pixel) -> Pixel {

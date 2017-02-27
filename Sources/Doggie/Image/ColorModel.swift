@@ -33,6 +33,19 @@ public protocol ColorModelProtocol {
     
     func component(_ index: Int) -> Double
     mutating func setComponent(_ index: Int, _ value: Double)
+    
+    var hashValue: Int { get }
+}
+
+extension ColorModelProtocol {
+    
+    public var hashValue: Int {
+        var hash = 0
+        for i in 0..<Self.count {
+            hash = hash_combine(seed: hash, self.component(i))
+        }
+        return hash
+    }
 }
 
 public prefix func +<Model : ColorModelProtocol>(val: Model) -> Model {
