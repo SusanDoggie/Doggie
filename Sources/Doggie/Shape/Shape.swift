@@ -165,16 +165,7 @@ public struct Shape : RandomAccessCollection, MutableCollection, ExpressibleByAr
     
     public var boundary : Rect {
         if cache.boundary == nil {
-            var bound: Rect? = nil
-            self.apply { commands, state in
-                switch commands {
-                case let .line(p1): bound = bound?.union(Rect.bound([state.last * transform, p1 * transform])) ?? Rect.bound([state.last * transform, p1 * transform])
-                case let .quad(p1, p2): bound = bound?.union(Bezier(state.last * transform, p1 * transform, p2 * transform).boundary) ?? Bezier(state.last * transform, p1 * transform, p2 * transform).boundary
-                case let .cubic(p1, p2, p3): bound = bound?.union(Bezier(state.last * transform, p1 * transform, p2 * transform, p3 * transform).boundary) ?? Bezier(state.last * transform, p1 * transform, p2 * transform, p3 * transform).boundary
-                default: break
-                }
-            }
-            cache.boundary = bound ?? Rect()
+            cache.boundary = identity.originalBoundary
         }
         return cache.boundary!
     }
