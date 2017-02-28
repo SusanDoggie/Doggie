@@ -286,7 +286,7 @@ extension Shape : RangeReplaceableCollection {
         commands.reserveCapacity(minimumCapacity)
     }
     
-    public mutating func removeAll(_ keepingCapacity: Bool = false) {
+    public mutating func removeAll(keepingCapacity: Bool = false) {
         cache = Cache()
         commands.removeAll(keepingCapacity: keepingCapacity)
     }

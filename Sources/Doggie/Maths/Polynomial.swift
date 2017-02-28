@@ -114,7 +114,7 @@ extension Polynomial : RangeReplaceableCollection {
         coeffs.reserveCapacity(minimumCapacity)
     }
     
-    public mutating func removeAll(_ keepingCapacity: Bool = false) {
+    public mutating func removeAll(keepingCapacity: Bool = false) {
         coeffs.removeAll(keepingCapacity: keepingCapacity)
     }
     
