@@ -255,6 +255,13 @@ import Foundation
         }
     }
     
+    public extension CGImage {
+        
+        func applyingFilter(_ filterName: String, withInputParameters params: [String : Any]?) -> CIImage {
+            return CIImage(cgImage: self).applyingFilter(filterName, withInputParameters: params)
+        }
+    }
+    
     public extension CIImage {
         
         func apply(_ filter: SDFilter) -> CIImage {
