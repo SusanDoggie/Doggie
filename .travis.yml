@@ -36,4 +36,4 @@ script:
   - echo "🚂 Building Release";
   - travis_wait swift build -c release;
   - echo "🔎 Testing";
-  - swift test;
+  - travis_wait swift test;
