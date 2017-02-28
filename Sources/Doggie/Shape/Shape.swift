@@ -94,6 +94,14 @@ public struct Shape : RandomAccessCollection, MutableCollection, ExpressibleByAr
             }
         }
     }
+    public var transform : SDTransform {
+        get {
+            return baseTransform * SDTransform.Scale(scale) as SDTransform * SDTransform.Rotate(rotate)
+        }
+        set {
+            baseTransform = newValue * SDTransform.Rotate(rotate).inverse * SDTransform.Scale(scale).inverse
+        }
+    }
     
     public init() {
         self.commands = []
@@ -156,24 +164,8 @@ public struct Shape : RandomAccessCollection, MutableCollection, ExpressibleByAr
     }
     
     public var boundary : Rect {
-        if rotate == 0 && scale == 1 && baseTransform == SDTransform.Identity() {
-            return originalBoundary
-        }
-        let transform = self.transform
-        if transform == SDTransform.Identity() {
-            return originalBoundary
-        }
         if cache.boundary == nil {
-            var bound: Rect? = nil
-            self.apply { commands, state in
-                switch commands {
-                case let .line(p1): bound = bound?.union(Rect.bound([state.last * transform, p1 * transform])) ?? Rect.bound([state.last * transform, p1 * transform])
-                case let .quad(p1, p2): bound = bound?.union(QuadBezierBound(state.last, p1, p2, transform)) ?? QuadBezierBound(state.last, p1, p2, transform)
-                case let .cubic(p1, p2, p3): bound = bound?.union(CubicBezierBound(state.last, p1, p2, p3, transform)) ?? CubicBezierBound(state.last, p1, p2, p3, transform)
-                default: break
-                }
-            }
-            cache.boundary = bound ?? Rect()
+            cache.boundary = identity.originalBoundary
         }
         return cache.boundary!
     }
@@ -193,25 +185,10 @@ public struct Shape : RandomAccessCollection, MutableCollection, ExpressibleByAr
         }
         return cache.originalBoundary!
     }
-}
-
-extension Shape {
     
     public var frame : [Point] {
         let _transform = self.transform
         return originalBoundary.points.map { $0 * _transform }
-    }
-}
-
-extension Shape {
-    
-    public var transform : SDTransform {
-        get {
-            return baseTransform * SDTransform.Scale(scale) as SDTransform * SDTransform.Rotate(rotate)
-        }
-        set {
-            baseTransform = newValue * SDTransform.Rotate(rotate).inverse * SDTransform.Scale(scale).inverse
-        }
     }
 }
 
@@ -357,32 +334,32 @@ extension Shape {
 
 extension Shape {
     
-    @_transparent
-    fileprivate var _identity : Shape {
+    public var identity : Shape {
         if rotate == 0 && scale == 1 && baseTransform == SDTransform.Identity() {
             return self
         }
-        let transform = self.transform
-        if transform == SDTransform.Identity() {
-            return Shape(self.commands)
-        }
-        var _path = Shape()
-        _path.reserveCapacity(self.commands.count)
-        for command in self.commands {
-            switch command {
-            case let .move(point): _path.commands.append(.move(point * transform))
-            case let .line(point): _path.commands.append(.line(point * transform))
-            case let .quad(p1, p2): _path.commands.append(.quad(p1 * transform, p2 * transform))
-            case let .cubic(p1, p2, p3): _path.commands.append(.cubic(p1 * transform, p2 * transform, p3 * transform))
-            case .close: _path.commands.append(.close)
-            }
-        }
-        return _path
-    }
-    
-    public var identity : Shape {
         if cache.identity == nil {
-            cache.identity = _identity
+            let transform = self.transform
+            if transform == SDTransform.Identity() {
+                let _path = Shape(self.commands)
+                _path.cache.originalBoundary = cache.originalBoundary
+                _path.cache.boundary = cache.boundary
+                _path.cache.area = cache.area
+                cache.identity = _path
+            } else {
+                var _path = Shape()
+                _path.reserveCapacity(self.commands.count)
+                for command in self.commands {
+                    switch command {
+                    case let .move(point): _path.commands.append(.move(point * transform))
+                    case let .line(point): _path.commands.append(.line(point * transform))
+                    case let .quad(p1, p2): _path.commands.append(.quad(p1 * transform, p2 * transform))
+                    case let .cubic(p1, p2, p3): _path.commands.append(.cubic(p1 * transform, p2 * transform, p3 * transform))
+                    case .close: _path.commands.append(.close)
+                    }
+                }
+                cache.identity = _path
+            }
         }
         return cache.identity!
     }
