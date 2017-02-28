@@ -88,9 +88,8 @@ public struct Shape : RandomAccessCollection, MutableCollection, ExpressibleByAr
                 let boundary = cache.boundary
                 let _center = originalBoundary.center * baseTransform * SDTransform.Scale(oldValue) * SDTransform.Rotate(rotate)
                 center = _center
-                if boundary != nil {
-                    cache = Cache(originalBoundary: cache.originalBoundary, boundary: Rect.bound(boundary!.points.map { ($0 - _center) * scale / oldValue + _center }), table: cache.table)
-                }
+                let _scale = scale / oldValue
+                cache = Cache(originalBoundary: cache.originalBoundary, boundary: boundary.map { Rect.bound($0.points.map { ($0 - _center) * _scale + _center }) }, table: cache.table)
             }
         }
     }
