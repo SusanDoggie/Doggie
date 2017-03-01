@@ -32,6 +32,9 @@ public struct RangeSet<Bound : Comparable> {
         self.lowerBounds = []
         self.upperBounds = []
     }
+    public init(_ ranges: Range<Bound> ... ) {
+        self.init(ranges)
+    }
     public init<S : Sequence>(_ s: S) where S.Iterator.Element == Range<Bound> {
         self = s.reduce(RangeSet()) { $0.union($1) }
     }
