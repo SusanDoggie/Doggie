@@ -25,12 +25,10 @@
 
 public struct RangeSet<Bound : Comparable> {
     
-    public let lowerBounds: [Bound]
-    public let upperBounds: [Bound]
+    fileprivate let ranges: [Range<Bound>]
     
     public init() {
-        self.lowerBounds = []
-        self.upperBounds = []
+        self.ranges = []
     }
     public init(_ ranges: Range<Bound> ... ) {
         self.init(ranges)
@@ -39,31 +37,29 @@ public struct RangeSet<Bound : Comparable> {
         self = s.reduce(RangeSet()) { $0.union($1) }
     }
     
-    fileprivate init(bounds: [Range<Bound>]) {
-        let sorted = bounds.sorted { $0.lowerBound < $1.lowerBound }
-        self.lowerBounds = sorted.map { $0.lowerBound }
-        self.upperBounds = sorted.map { $0.upperBound }
+    fileprivate init(ranges: [Range<Bound>]) {
+        self.ranges = ranges
     }
 }
 
 extension RangeSet : RandomAccessCollection {
     
     public var startIndex: Int {
-        return lowerBounds.startIndex
+        return ranges.startIndex
     }
     public var endIndex: Int {
-        return lowerBounds.endIndex
+        return ranges.endIndex
     }
     
     public subscript(position: Int) -> Range<Bound> {
-        return Range(uncheckedBounds: (lowerBounds[position], upperBounds[position]))
+        return ranges[position]
     }
     
     public func index(before i: Int) -> Int {
-        return lowerBounds.index(before: i)
+        return ranges.index(before: i)
     }
     public func index(after i: Int) -> Int {
-        return lowerBounds.index(after: i)
+        return ranges.index(after: i)
     }
 }
 
@@ -72,7 +68,7 @@ extension RangeSet {
     public func union(_ range: Range<Bound>) -> RangeSet {
         var collect: [Range<Bound>] = []
         var overlap = range
-        for r in self {
+        for r in ranges {
             if overlap.overlaps(r) || overlap.lowerBound == r.upperBound || overlap.upperBound == r.lowerBound {
                 overlap = Range(uncheckedBounds: (Swift.min(overlap.lowerBound, r.lowerBound), Swift.max(overlap.upperBound, r.upperBound)))
             } else {
@@ -80,12 +76,12 @@ extension RangeSet {
             }
         }
         collect.append(overlap)
-        return RangeSet(bounds: collect)
+        return RangeSet(ranges: collect.sorted { $0.lowerBound < $1.lowerBound })
     }
     
     public func subtracting(_ range: Range<Bound>) -> RangeSet {
         var collect: [Range<Bound>] = []
-        for r in self {
+        for r in ranges {
             if range.overlaps(r) {
                 if r.upperBound <= range.upperBound && r.lowerBound < range.lowerBound {
                     collect.append(Range(uncheckedBounds: (r.lowerBound, Swift.min(range.lowerBound, r.upperBound))))
@@ -99,14 +95,14 @@ extension RangeSet {
                 collect.append(r)
             }
         }
-        return RangeSet(bounds: collect)
+        return RangeSet(ranges: collect.sorted { $0.lowerBound < $1.lowerBound })
     }
     
     public func intersection(_ range: Range<Bound>) -> RangeSet {
         var collect: [Range<Bound>] = []
-        for r in self where range.overlaps(r) {
+        for r in ranges where range.overlaps(r) {
             collect.append(r.clamped(to: range))
         }
-        return RangeSet(bounds: collect)
+        return RangeSet(ranges: collect.sorted { $0.lowerBound < $1.lowerBound })
     }
 }
