@@ -113,3 +113,16 @@ extension RangeSet {
         return RangeSet(ranges: collect.sorted { $0.lowerBound < $1.lowerBound })
     }
 }
+
+extension RangeSet {
+    
+    public func union(_ ranges: RangeSet) -> RangeSet {
+        return ranges.ranges.reduce(self) { $0.union($1) }
+    }
+    public func subtracting(_ ranges: RangeSet) -> RangeSet {
+        return ranges.ranges.reduce(self) { $0.subtracting($1) }
+    }
+    public func intersection(_ ranges: RangeSet) -> RangeSet {
+        return ranges.ranges.reduce(self) { $0.intersection($1) }
+    }
+}
