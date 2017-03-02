@@ -65,6 +65,13 @@ extension RangeSet : RandomAccessCollection {
 
 extension RangeSet {
     
+    public func contains(_ x: Bound) -> Bool {
+        return ranges.contains { $0.contains(x) }
+    }
+}
+
+extension RangeSet {
+    
     public func union(_ range: Range<Bound>) -> RangeSet {
         var collect: [Range<Bound>] = []
         var overlap = range
