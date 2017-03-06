@@ -1106,41 +1106,29 @@ private func _BezierVariableOffset(_ p0: Point, _ p1: Point, _ p2: Point, _ a: [
 
 // MARK: Shape Tweening
 
-func BezierTweening(start: Bezier<Point>, end: Bezier<Point>, _ t: Double) -> Bezier<Point> {
+public func BezierTweening(start: [Point], end: [Point], _ t: Double) -> [Point] {
     
-    var start = start
-    var end = end
+    let start_start = start.first!
+    let start_end = start.last!
+    let end_start = end.first!
+    let end_end = end.last!
+    let d1 = start_end - start_start
+    let d2 = end_end - end_start
     
-    let degree = max(start.degree, end.degree)
-    
-    while start.degree != degree {
-        start = start.elevated()
-    }
-    while end.degree != degree {
-        end = end.elevated()
-    }
-    
-    let start_first = start.first!
-    let start_last = start.last!
-    let end_first = end.first!
-    let end_last = end.last!
-    let d1 = start_last - start_first
-    let d2 = end_last - end_first
-    
-    let transform1 = SDTransform.Translate(x: -start_first.x, y: -start_first.y) * SDTransform.Scale(1 / d1.magnitude) * SDTransform.Rotate(-d1.phase)
+    let transform1 = SDTransform.Translate(x: -start_start.x, y: -start_start.y) * SDTransform.Scale(1 / d1.magnitude) * SDTransform.Rotate(-d1.phase)
     let s = Bezier(start.map { $0 * transform1 })
     
-    let transform2 = SDTransform.Translate(x: -end_first.x, y: -end_first.y) * SDTransform.Scale(1 / d2.magnitude) * SDTransform.Rotate(-d2.phase)
+    let transform2 = SDTransform.Translate(x: -end_start.x, y: -end_start.y) * SDTransform.Scale(1 / d2.magnitude) * SDTransform.Rotate(-d2.phase)
     let e = Bezier(end.map { $0 * transform2 })
     
     let m = (1 - t) * s + t * e
     
-    let m_start = (1 - t) * start_first + t * end_first
-    let m_end = (1 - t) * start_last + t * end_last
+    let m_start = (1 - t) * start_start + t * end_start
+    let m_end = (1 - t) * start_end + t * end_end
     let m_d = m_end - m_start
     
     let transform3 = SDTransform.Rotate(m_d.phase) * SDTransform.Scale(m_d.magnitude) * SDTransform.Translate(x: m_start.x, y: m_start.y)
-    return Bezier(m.map { $0 * transform3 })
+    return m.map { $0 * transform3 }
 }
 
 // MARK: Mesh Warping
