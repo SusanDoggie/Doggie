@@ -906,7 +906,7 @@ public func BezierOffset(_ p: [Point], _ a: Double) -> [[Point]] {
         if let ph0 = ph0, let ph1 = d.first(where: { !$0.x.almostZero() || !$0.y.almostZero() })?.phase {
             let angle = (ph1 - ph0).remainder(dividingBy: 2 * Double.pi)
             if !angle.almostZero() {
-                let rotate = SDTransform.Rotate(ph0 - M_PI_2)
+                let rotate = SDTransform.Rotate(ph0 - Double.pi / 2)
                 let offset = points[0]
                 let bezierArc = BezierArc(angle).lazy.map { $0 * rotate * a + offset }
                 for i in 0..<bezierArc.count / 3 {

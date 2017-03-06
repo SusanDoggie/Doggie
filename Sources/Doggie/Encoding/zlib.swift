@@ -90,7 +90,7 @@ public extension Data {
             
             var stream = stream
             
-            let status = deflateInit2_(&stream, level.rawValue, Z_DEFLATED, MAX_WBITS + 16, MAX_MEM_LEVEL, Z_DEFAULT_STRATEGY, ZLIB_VERSION, Int32(MemoryLayout<z_stream>.size))
+            let status = deflateInit2_(&stream, level.rawValue, Z_DEFLATED, MAX_WBITS + 16 as Int32, MAX_MEM_LEVEL, Z_DEFAULT_STRATEGY, ZLIB_VERSION, Int32(MemoryLayout<z_stream>.size))
             
             guard status == Z_OK else {
                 throw GzipError(code: status, msg: stream.msg)
@@ -131,7 +131,7 @@ public extension Data {
             
             var stream = stream
             
-            var status = inflateInit2_(&stream, MAX_WBITS + 32, ZLIB_VERSION, Int32(MemoryLayout<z_stream>.size))
+            var status = inflateInit2_(&stream, MAX_WBITS + 32 as Int32, ZLIB_VERSION, Int32(MemoryLayout<z_stream>.size))
             
             guard status == Z_OK else {
                 throw GzipError(code: status, msg: stream.msg)
