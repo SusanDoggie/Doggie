@@ -325,6 +325,9 @@ extension Rect {
     public func inset(dx: Double, dy: Double) -> Rect {
         return Rect(x: self.x + dx, y: self.y + dy, width: self.width - 2 * dx, height: self.height - 2 * dy)
     }
+    public func inset(top: Double, left: Double, right: Double, bottom: Double) -> Rect {
+        return Rect(x: self.x + left, y: self.y + top, width: self.width - left - right, height: self.height - top - bottom)
+    }
     public func offset(dx: Double, dy: Double) -> Rect {
         return Rect(x: self.x + dx, y: self.y + dy, width: self.width, height: self.height)
     }
