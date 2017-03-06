@@ -17,7 +17,7 @@
       location = "group:playgrounds/Image.playground">
    </FileRef>
    <FileRef
-      location = "group:/Users/CloudDesign/Doggie/playgrounds/ShapeTweening.playground">
+      location = "group:playgrounds/ShapeTweening.playground">
    </FileRef>
    <FileRef
       location = "group:Doggie.xcodeproj">
