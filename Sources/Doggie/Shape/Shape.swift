@@ -78,27 +78,27 @@ public struct Shape : RandomAccessCollection, MutableCollection, ExpressibleByAr
         didSet {
             if rotate != oldValue {
                 cache = Cache(originalBoundary: cache.originalBoundary, boundary: nil, table: cache.table)
-                center = originalBoundary.center * baseTransform * SDTransform.Scale(scale) * SDTransform.Rotate(oldValue)
+                center = originalBoundary.center * baseTransform * SDTransform.Scale(level: scaleLevel) * SDTransform.Rotate(oldValue)
             }
         }
     }
-    public var scale: Double = 1 {
+    public var scaleLevel: Double = 0 {
         didSet {
-            if scale != oldValue {
+            if scaleLevel != oldValue {
                 let boundary = cache.boundary
-                let _center = originalBoundary.center * baseTransform * SDTransform.Scale(oldValue) * SDTransform.Rotate(rotate)
+                let _center = originalBoundary.center * baseTransform * SDTransform.Scale(level: oldValue) * SDTransform.Rotate(rotate)
                 center = _center
-                let _scale = scale / oldValue
-                cache = Cache(originalBoundary: cache.originalBoundary, boundary: boundary.map { Rect.bound($0.points.map { ($0 - _center) * _scale + _center }) }, table: cache.table)
+                let _scaleLevel = scaleLevel - oldValue
+                cache = Cache(originalBoundary: cache.originalBoundary, boundary: boundary.map { Rect.bound($0.points.map { ($0 - _center) * SDTransform.Scale(level: _scaleLevel) + _center }) }, table: cache.table)
             }
         }
     }
     public var transform : SDTransform {
         get {
-            return baseTransform * SDTransform.Scale(scale) as SDTransform * SDTransform.Rotate(rotate)
+            return baseTransform * SDTransform.Scale(level: scaleLevel) as SDTransform * SDTransform.Rotate(rotate)
         }
         set {
-            baseTransform = newValue * SDTransform.Rotate(rotate).inverse * SDTransform.Scale(scale).inverse
+            baseTransform = newValue * SDTransform.Rotate(rotate).inverse * SDTransform.Scale(level: scaleLevel).inverse
         }
     }
     
@@ -127,7 +127,7 @@ public struct Shape : RandomAccessCollection, MutableCollection, ExpressibleByAr
             if _center != newValue {
                 var boundary = cache.boundary
                 boundary?.origin += newValue - _center
-                let offset = newValue * SDTransform.Rotate(rotate).inverse * SDTransform.Scale(scale).inverse - originalBoundary.center * baseTransform
+                let offset = newValue * SDTransform.Rotate(rotate).inverse * SDTransform.Scale(level: scaleLevel).inverse - originalBoundary.center * baseTransform
                 baseTransform *= SDTransform.Translate(x: offset.x, y: offset.y)
                 cache = Cache(originalBoundary: cache.originalBoundary, boundary: boundary, table: cache.table)
             }
@@ -334,7 +334,7 @@ extension Shape {
 extension Shape {
     
     public var identity : Shape {
-        if rotate == 0 && scale == 1 && baseTransform == SDTransform.Identity() {
+        if rotate == 0 && scaleLevel == 0 && baseTransform == SDTransform.Identity() {
             return self
         }
         if cache.identity == nil {
