@@ -214,12 +214,6 @@ extension SDTransform {
             self.x = x
             self.y = y
         }
-        public init(level: Double) {
-            self.init(level.sign == .plus ? 1 + level : 1 / (1 - level))
-        }
-        public init(xLevel: Double, yLevel: Double) {
-            self.init(x: xLevel.sign == .plus ? 1 + xLevel : 1 / (1 - xLevel), y: yLevel.sign == .plus ? 1 + yLevel : 1 / (1 - yLevel))
-        }
     }
     
     ///
