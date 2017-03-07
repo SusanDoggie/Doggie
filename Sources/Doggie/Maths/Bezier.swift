@@ -1128,7 +1128,7 @@ public func BezierTweening(start: [Point], end: [Point], _ t: Double) -> [Point]
     let m_d = m_end - m_start
     
     let transform3 = SDTransform.Rotate(m_d.phase) * SDTransform.Scale(m_d.magnitude) * SDTransform.Translate(x: m_start.x, y: m_start.y)
-    return m.map { $0 * transform3 }
+    return m.points.map { $0 * transform3 }
 }
 
 // MARK: Mesh Warping
