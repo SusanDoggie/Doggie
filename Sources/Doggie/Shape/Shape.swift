@@ -82,6 +82,14 @@ public struct Shape : RandomAccessCollection, MutableCollection, ExpressibleByAr
             }
         }
     }
+    public var scaleLevel: Double {
+        get {
+            return scale < 1 ? 1 - 1 / scale : scale - 1
+        }
+        set {
+            scale = newValue.sign == .plus ? 1 + newValue : 1 / (1 - newValue)
+        }
+    }
     public var scale: Double = 1 {
         didSet {
             if scale != oldValue {
