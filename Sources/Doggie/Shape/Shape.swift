@@ -90,7 +90,7 @@ public struct Shape : RandomAccessCollection, MutableCollection, ExpressibleByAr
             scale = newValue.sign == .plus ? 1 + newValue : 1 / (1 - newValue)
         }
     }
-    public var scale: Double = 1 {
+    fileprivate var scale: Double = 1 {
         didSet {
             if scale != oldValue {
                 let boundary = cache.boundary
