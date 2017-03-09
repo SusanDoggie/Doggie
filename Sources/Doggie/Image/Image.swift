@@ -57,21 +57,21 @@ private struct ImageBase<ColorPixel: ColorPixelProtocol, ColorSpace : ColorSpace
     subscript(position: Int) -> Color {
         get {
             let pixel = buffer[position]
-            return Color(colorSpace: colorSpace, color: pixel.color, alpha: pixel.alpha)
+            return Color(colorSpace: colorSpace, color: pixel.color, opacity: pixel.opacity)
         }
         set {
             let color = newValue.convert(to: colorSpace, algorithm: algorithm)
-            buffer[position] = ColorPixel(color: color.color as! ColorSpace.Model, alpha: color.alpha)
+            buffer[position] = ColorPixel(color: color.color as! ColorSpace.Model, opacity: color.opacity)
         }
     }
     
     func convert<RPixel: ColorPixelProtocol, RSpace : ColorSpaceProtocol>(pixel: RPixel.Type, colorSpace: RSpace, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm) -> ImageBaseProtocol where RPixel.Model == RSpace.Model {
-        let _buffer = zip(self.colorSpace.convert(buffer.map { $0.color }, to: colorSpace, algorithm: algorithm), buffer).map { RPixel(color: $0, alpha: $1.alpha) }
+        let _buffer = zip(self.colorSpace.convert(buffer.map { $0.color }, to: colorSpace, algorithm: algorithm), buffer).map { RPixel(color: $0, opacity: $1.opacity) }
         return ImageBase<RPixel, RSpace>(buffer: _buffer, colorSpace: colorSpace, algorithm: algorithm)
     }
     
     func convert<RPixel: ColorPixelProtocol, RSpace : LinearColorSpaceProtocol>(pixel: RPixel.Type, colorSpace: RSpace, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm) -> ImageBaseProtocol where RPixel.Model == RSpace.Model {
-        let _buffer = zip(self.colorSpace.convert(buffer.map { $0.color }, to: colorSpace, algorithm: algorithm), buffer).map { RPixel(color: $0, alpha: $1.alpha) }
+        let _buffer = zip(self.colorSpace.convert(buffer.map { $0.color }, to: colorSpace, algorithm: algorithm), buffer).map { RPixel(color: $0, opacity: $1.opacity) }
         return ImageBase<RPixel, RSpace>(buffer: _buffer, colorSpace: colorSpace, algorithm: algorithm)
     }
     
@@ -302,7 +302,7 @@ extension Image.ResamplingAlgorithm {
         for y in min_y..<max_y {
             for x in min_x..<max_x {
                 let l = kernel((point - Point(x: x, y: y)).magnitude)
-                let _source = x_range.contains(x) && y_range.contains(y) ? source[y * width + x] : source[y.clamped(to: y_range) * width + x.clamped(to: x_range)].with(alpha: 0)
+                let _source = x_range.contains(x) && y_range.contains(y) ? source[y * width + x] : source[y.clamped(to: y_range) * width + x.clamped(to: x_range)].with(opacity: 0)
                 pixel += _source * l
                 t += l
             }
@@ -335,16 +335,16 @@ extension Image.ResamplingAlgorithm {
             let __y1 = _y1.clamped(to: y_range)
             let __y2 = _y2.clamped(to: y_range)
             
-            let _s1 = check1 && check3 ? source[_y1 * width + _x1] : source[__y1 * width + __x1].with(alpha: 0)
-            let _s2 = check2 && check3 ? source[_y1 * width + _x2] : source[__y1 * width + __x2].with(alpha: 0)
-            let _s3 = check1 && check4 ? source[_y2 * width + _x1] : source[__y2 * width + __x1].with(alpha: 0)
-            let _s4 = check2 && check4 ? source[_y2 * width + _x2] : source[__y2 * width + __x2].with(alpha: 0)
+            let _s1 = check1 && check3 ? source[_y1 * width + _x1] : source[__y1 * width + __x1].with(opacity: 0)
+            let _s2 = check2 && check3 ? source[_y1 * width + _x2] : source[__y1 * width + __x2].with(opacity: 0)
+            let _s3 = check1 && check4 ? source[_y2 * width + _x1] : source[__y2 * width + __x1].with(opacity: 0)
+            let _s4 = check2 && check4 ? source[_y2 * width + _x2] : source[__y2 * width + __x2].with(opacity: 0)
             
             var color = Pixel.Model()
             for i in 0..<Pixel.Model.count {
                 color.setComponent(i, sampler(_ty,sampler(_tx, _s1.color.component(i), _s2.color.component(i)), sampler(_tx, _s3.color.component(i), _s4.color.component(i))))
             }
-            return Pixel(color: color, alpha: sampler(_ty, sampler(_tx, _s1.alpha, _s2.alpha), sampler(_tx, _s3.alpha, _s4.alpha)))
+            return Pixel(color: color, opacity: sampler(_ty, sampler(_tx, _s1.opacity, _s2.opacity), sampler(_tx, _s3.opacity, _s4.opacity)))
             
         } else {
             return Pixel()
@@ -388,22 +388,22 @@ extension Image.ResamplingAlgorithm {
             let __y3 = _y3.clamped(to: y_range)
             let __y4 = _y4.clamped(to: y_range)
             
-            let _s1 = check1 && check5 ? source[_y1 * width + _x1] : source[__y1 * width + __x1].with(alpha: 0)
-            let _s2 = check2 && check5 ? source[_y1 * width + _x2] : source[__y1 * width + __x2].with(alpha: 0)
-            let _s3 = check3 && check5 ? source[_y1 * width + _x3] : source[__y1 * width + __x3].with(alpha: 0)
-            let _s4 = check4 && check5 ? source[_y1 * width + _x4] : source[__y1 * width + __x4].with(alpha: 0)
-            let _s5 = check1 && check6 ? source[_y2 * width + _x1] : source[__y2 * width + __x1].with(alpha: 0)
-            let _s6 = check2 && check6 ? source[_y2 * width + _x2] : source[__y2 * width + __x2].with(alpha: 0)
-            let _s7 = check3 && check6 ? source[_y2 * width + _x3] : source[__y2 * width + __x3].with(alpha: 0)
-            let _s8 = check4 && check6 ? source[_y2 * width + _x4] : source[__y2 * width + __x4].with(alpha: 0)
-            let _s9 = check1 && check7 ? source[_y3 * width + _x1] : source[__y3 * width + __x1].with(alpha: 0)
-            let _s10 = check2 && check7 ? source[_y3 * width + _x2] : source[__y3 * width + __x2].with(alpha: 0)
-            let _s11 = check3 && check7 ? source[_y3 * width + _x3] : source[__y3 * width + __x3].with(alpha: 0)
-            let _s12 = check4 && check7 ? source[_y3 * width + _x4] : source[__y3 * width + __x4].with(alpha: 0)
-            let _s13 = check1 && check8 ? source[_y4 * width + _x1] : source[__y4 * width + __x1].with(alpha: 0)
-            let _s14 = check2 && check8 ? source[_y4 * width + _x2] : source[__y4 * width + __x2].with(alpha: 0)
-            let _s15 = check3 && check8 ? source[_y4 * width + _x3] : source[__y4 * width + __x3].with(alpha: 0)
-            let _s16 = check4 && check8 ? source[_y4 * width + _x4] : source[__y4 * width + __x4].with(alpha: 0)
+            let _s1 = check1 && check5 ? source[_y1 * width + _x1] : source[__y1 * width + __x1].with(opacity: 0)
+            let _s2 = check2 && check5 ? source[_y1 * width + _x2] : source[__y1 * width + __x2].with(opacity: 0)
+            let _s3 = check3 && check5 ? source[_y1 * width + _x3] : source[__y1 * width + __x3].with(opacity: 0)
+            let _s4 = check4 && check5 ? source[_y1 * width + _x4] : source[__y1 * width + __x4].with(opacity: 0)
+            let _s5 = check1 && check6 ? source[_y2 * width + _x1] : source[__y2 * width + __x1].with(opacity: 0)
+            let _s6 = check2 && check6 ? source[_y2 * width + _x2] : source[__y2 * width + __x2].with(opacity: 0)
+            let _s7 = check3 && check6 ? source[_y2 * width + _x3] : source[__y2 * width + __x3].with(opacity: 0)
+            let _s8 = check4 && check6 ? source[_y2 * width + _x4] : source[__y2 * width + __x4].with(opacity: 0)
+            let _s9 = check1 && check7 ? source[_y3 * width + _x1] : source[__y3 * width + __x1].with(opacity: 0)
+            let _s10 = check2 && check7 ? source[_y3 * width + _x2] : source[__y3 * width + __x2].with(opacity: 0)
+            let _s11 = check3 && check7 ? source[_y3 * width + _x3] : source[__y3 * width + __x3].with(opacity: 0)
+            let _s12 = check4 && check7 ? source[_y3 * width + _x4] : source[__y3 * width + __x4].with(opacity: 0)
+            let _s13 = check1 && check8 ? source[_y4 * width + _x1] : source[__y4 * width + __x1].with(opacity: 0)
+            let _s14 = check2 && check8 ? source[_y4 * width + _x2] : source[__y4 * width + __x2].with(opacity: 0)
+            let _s15 = check3 && check8 ? source[_y4 * width + _x3] : source[__y4 * width + __x3].with(opacity: 0)
+            let _s16 = check4 && check8 ? source[_y4 * width + _x4] : source[__y4 * width + __x4].with(opacity: 0)
             
             var color = Pixel.Model()
             for i in 0..<Pixel.Model.count {
@@ -414,12 +414,12 @@ extension Image.ResamplingAlgorithm {
                 color.setComponent(i, sampler(_ty, _u1, _u2, _u3, _u4))
             }
             
-            let a1 = sampler(_tx, _s1.alpha, _s2.alpha, _s3.alpha, _s4.alpha)
-            let a2 = sampler(_tx, _s5.alpha, _s6.alpha, _s7.alpha, _s8.alpha)
-            let a3 = sampler(_tx, _s9.alpha, _s10.alpha, _s11.alpha, _s12.alpha)
-            let a4 = sampler(_tx, _s13.alpha, _s14.alpha, _s15.alpha, _s16.alpha)
+            let a1 = sampler(_tx, _s1.opacity, _s2.opacity, _s3.opacity, _s4.opacity)
+            let a2 = sampler(_tx, _s5.opacity, _s6.opacity, _s7.opacity, _s8.opacity)
+            let a3 = sampler(_tx, _s9.opacity, _s10.opacity, _s11.opacity, _s12.opacity)
+            let a4 = sampler(_tx, _s13.opacity, _s14.opacity, _s15.opacity, _s16.opacity)
             
-            return Pixel(color: color, alpha: sampler(_ty, a1, a2, a3, a4))
+            return Pixel(color: color, opacity: sampler(_ty, a1, a2, a3, a4))
             
         } else {
             return Pixel()

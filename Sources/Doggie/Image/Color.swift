@@ -84,17 +84,17 @@ extension ColorBase {
 
 public struct Color {
     
-    public var alpha: Double
     fileprivate var base: ColorBaseProtocol
+    public var opacity: Double
     
-    fileprivate init(alpha: Double, base: ColorBaseProtocol) {
-        self.alpha = alpha
+    fileprivate init(base: ColorBaseProtocol, opacity: Double) {
         self.base = base
+        self.opacity = opacity
     }
     
-    public init<ColorSpace : ColorSpaceProtocol>(colorSpace: ColorSpace, color: ColorSpace.Model, alpha: Double = 1) {
-        self.alpha = alpha
+    public init<ColorSpace : ColorSpaceProtocol>(colorSpace: ColorSpace, color: ColorSpace.Model, opacity: Double = 1) {
         self.base = ColorBase(colorSpace: colorSpace, color: color)
+        self.opacity = opacity
     }
 }
 
@@ -111,11 +111,11 @@ extension Color {
 extension Color {
     
     public func convert<ColorSpace : ColorSpaceProtocol>(to colorSpace: ColorSpace, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm = .bradford) -> Color {
-        return Color(alpha: self.alpha, base: self.base.convert(to: colorSpace, algorithm: algorithm))
+        return Color(base: self.base.convert(to: colorSpace, algorithm: algorithm), opacity: self.opacity)
     }
     
     public func convert<ColorSpace : LinearColorSpaceProtocol>(to colorSpace: ColorSpace, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm = .bradford) -> Color {
-        return Color(alpha: self.alpha, base: self.base.convert(to: colorSpace, algorithm: algorithm))
+        return Color(base: self.base.convert(to: colorSpace, algorithm: algorithm), opacity: self.opacity)
     }
 }
 
