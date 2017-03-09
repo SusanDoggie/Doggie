@@ -48,6 +48,34 @@ extension ColorModelProtocol {
     }
 }
 
+public struct ColorModelComponentCollection<Model: ColorModelProtocol>: RandomAccessCollection {
+    
+    public typealias Indices = CountableRange<Int>
+    
+    public typealias Index = Int
+    
+    fileprivate let base: Model
+    
+    public var startIndex: Int {
+        return 0
+    }
+    public var endIndex: Int {
+        return Model.count
+    }
+    
+    public subscript(position: Int) -> Double {
+        _failEarlyRangeCheck(position, bounds: startIndex..<endIndex)
+        return base.component(position)
+    }
+}
+
+extension ColorModelProtocol {
+    
+    public var components: ColorModelComponentCollection<Self> {
+        return ColorModelComponentCollection(base: self)
+    }
+}
+
 public prefix func +<Model : ColorModelProtocol>(val: Model) -> Model {
     return val
 }
