@@ -29,11 +29,11 @@ public protocol ColorPixelProtocol : Hashable {
     
     init()
     
-    init(color: Model, alpha: Double)
+    init(color: Model, opacity: Double)
     
     var color: Model { get set }
     
-    var alpha: Double { get set }
+    var opacity: Double { get set }
     
     var hashValue: Int { get }
 }
@@ -41,7 +41,7 @@ public protocol ColorPixelProtocol : Hashable {
 extension ColorPixelProtocol {
     
     public var hashValue: Int {
-        return hash_combine(seed: 0, self.alpha.hashValue, self.color.hashValue)
+        return hash_combine(seed: 0, self.opacity.hashValue, self.color.hashValue)
     }
 }
 
@@ -51,75 +51,75 @@ public prefix func +<Pixel : ColorPixelProtocol>(val: Pixel) -> Pixel {
 }
 public prefix func -<Pixel : ColorPixelProtocol>(val: Pixel) -> Pixel {
     
-    return Pixel(color: -val.color, alpha: -val.alpha)
+    return Pixel(color: -val.color, opacity: -val.opacity)
 }
 public func +<Pixel : ColorPixelProtocol>(lhs: Pixel, rhs:  Pixel) -> Pixel {
     
-    return Pixel(color: lhs.color + rhs.color, alpha: lhs.alpha + rhs.alpha)
+    return Pixel(color: lhs.color + rhs.color, opacity: lhs.opacity + rhs.opacity)
 }
 public func -<Pixel : ColorPixelProtocol>(lhs: Pixel, rhs:  Pixel) -> Pixel {
     
-    return Pixel(color: lhs.color - rhs.color, alpha: lhs.alpha - rhs.alpha)
+    return Pixel(color: lhs.color - rhs.color, opacity: lhs.opacity - rhs.opacity)
 }
 
 public func *<Pixel : ColorPixelProtocol>(lhs: Double, rhs:  Pixel) -> Pixel {
     
-    return Pixel(color: lhs * rhs.color, alpha: lhs * rhs.alpha)
+    return Pixel(color: lhs * rhs.color, opacity: lhs * rhs.opacity)
 }
 public func *<Pixel : ColorPixelProtocol>(lhs: Pixel, rhs:  Double) -> Pixel {
     
-    return Pixel(color: lhs.color * rhs, alpha: lhs.alpha * rhs)
+    return Pixel(color: lhs.color * rhs, opacity: lhs.opacity * rhs)
 }
 
 public func /<Pixel : ColorPixelProtocol>(lhs: Pixel, rhs:  Double) -> Pixel {
     
-    return Pixel(color: lhs.color / rhs, alpha: lhs.alpha / rhs)
+    return Pixel(color: lhs.color / rhs, opacity: lhs.opacity / rhs)
 }
 
 public func *=<Pixel : ColorPixelProtocol> (lhs: inout Pixel, rhs:  Double) {
     lhs.color *= rhs
-    lhs.alpha *= rhs
+    lhs.opacity *= rhs
 }
 public func /=<Pixel : ColorPixelProtocol> (lhs: inout Pixel, rhs:  Double) {
     lhs.color /= rhs
-    lhs.alpha /= rhs
+    lhs.opacity /= rhs
 }
 public func +=<Pixel : ColorPixelProtocol> (lhs: inout Pixel, rhs:  Pixel) {
     lhs.color += rhs.color
-    lhs.alpha += rhs.alpha
+    lhs.opacity += rhs.opacity
 }
 public func -=<Pixel : ColorPixelProtocol> (lhs: inout Pixel, rhs:  Pixel) {
     lhs.color -= rhs.color
-    lhs.alpha -= rhs.alpha
+    lhs.opacity -= rhs.opacity
 }
 public func ==<Pixel : ColorPixelProtocol>(lhs: Pixel, rhs: Pixel) -> Bool {
     
-    return lhs.color == rhs.color && lhs.alpha == rhs.alpha
+    return lhs.color == rhs.color && lhs.opacity == rhs.opacity
 }
 public func !=<Pixel : ColorPixelProtocol>(lhs: Pixel, rhs: Pixel) -> Bool {
     
-    return lhs.color != rhs.color || lhs.alpha != rhs.alpha
+    return lhs.color != rhs.color || lhs.opacity != rhs.opacity
 }
 
 extension ColorPixelProtocol {
     
     public init() {
-        self.init(color: Model(), alpha: 0)
+        self.init(color: Model(), opacity: 0)
     }
     
-    public func with(alpha: Double) -> Self {
-        return Self(color: color, alpha: alpha)
+    public func with(opacity: Double) -> Self {
+        return Self(color: color, opacity: opacity)
     }
 }
 
 public struct ColorPixel<Model : ColorModelProtocol> : ColorPixelProtocol {
     
     public var color: Model
-    public var alpha: Double
+    public var opacity: Double
     
-    public init(color: Model, alpha: Double) {
+    public init(color: Model, opacity: Double) {
         self.color = color
-        self.alpha = alpha
+        self.opacity = opacity
     }
 }
 
@@ -127,14 +127,14 @@ extension ColorPixel {
     
     public init<C : ColorPixelProtocol>(_ color: C) where Model == C.Model {
         self.color = color.color
-        self.alpha = color.alpha
+        self.opacity = color.opacity
     }
 }
 
 extension ColorPixelProtocol {
     
     public init(_ color: ColorPixel<Model>) {
-        self.init(color: color.color, alpha: color.alpha)
+        self.init(color: color.color, opacity: color.opacity)
     }
 }
 
@@ -145,8 +145,8 @@ public struct ARGB32ColorPixel : ColorPixelProtocol {
     public var g: UInt8
     public var b: UInt8
     
-    public init(red: UInt8, green: UInt8, blue: UInt8, alpha: UInt8) {
-        self.a = alpha
+    public init(red: UInt8, green: UInt8, blue: UInt8, opacity: UInt8) {
+        self.a = opacity
         self.r = red
         self.g = green
         self.b = blue
@@ -157,8 +157,8 @@ public struct ARGB32ColorPixel : ColorPixelProtocol {
         self.g = UInt8((hex >> 8) & 0xFF)
         self.b = UInt8(hex & 0xFF)
     }
-    public init(color: RGBColorModel, alpha: Double) {
-        self.a = UInt8((alpha * 255).clamped(to: 0...255))
+    public init(color: RGBColorModel, opacity: Double) {
+        self.a = UInt8((opacity * 255).clamped(to: 0...255))
         self.r = UInt8((color.red * 255).clamped(to: 0...255))
         self.g = UInt8((color.green * 255).clamped(to: 0...255))
         self.b = UInt8((color.blue * 255).clamped(to: 0...255))
@@ -174,7 +174,7 @@ public struct ARGB32ColorPixel : ColorPixelProtocol {
             self.b = UInt8((newValue.blue * 255).clamped(to: 0...255))
         }
     }
-    public var alpha: Double {
+    public var opacity: Double {
         get {
             return Double(a) / 255
         }
