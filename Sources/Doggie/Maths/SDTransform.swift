@@ -41,6 +41,7 @@ public protocol SDTransformProtocol: Hashable {
     var e: Double { get }
     var f: Double { get }
     var inverse : Self { get }
+    var determinant : Double { get }
 }
 
 extension SDTransformProtocol {
@@ -58,6 +59,13 @@ extension SDTransformProtocol {
     
     public var hashValue: Int {
         return hash_combine(seed: 0, a, b, c, d, e, f)
+    }
+}
+
+extension SDTransformProtocol {
+    
+    public var determinant : Double {
+        return a * e - b * d
     }
 }
 
@@ -97,6 +105,7 @@ public struct SDTransform: SDTransformProtocol {
 }
 
 extension SDTransform : CustomStringConvertible {
+    
     public var description: String {
         return "{a: \(a), b: \(b), c: \(c), d: \(d), e: \(e), f: \(f)}"
     }
@@ -105,7 +114,7 @@ extension SDTransform : CustomStringConvertible {
 extension SDTransform {
     
     public var inverse : SDTransform {
-        let det = a * e - b * d
+        let det = self.determinant
         return SDTransform(a: e / det, b: -b / det, c: (b * f - c * e) / det, d: -d / det, e: a / det, f: (c * d - a * f) / det)
     }
 }
