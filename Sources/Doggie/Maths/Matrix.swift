@@ -48,6 +48,7 @@ public protocol MatrixProtocol: Hashable {
     var k: Double { get }
     var l: Double { get }
     var inverse : Self { get }
+    var determinant : Double { get }
 }
 
 extension MatrixProtocol {
@@ -69,6 +70,16 @@ extension MatrixProtocol {
     
     public var hashValue: Int {
         return hash_combine(seed: 0, a, b, c, d, e, f, g, h, i, j, k, l)
+    }
+}
+
+extension MatrixProtocol {
+    
+    public var determinant : Double {
+        let _c = c * f - b * g
+        let _g = c * e - a * g
+        let _k = b * e - a * f
+        return _c * i - _g * j + _k * k
     }
 }
 
@@ -127,6 +138,7 @@ public struct Matrix: MatrixProtocol {
 }
 
 extension Matrix : CustomStringConvertible {
+    
     public var description: String {
         return "{a: \(a), b: \(b), c: \(c), d: \(d), e: \(e), f: \(f), g: \(g), h: \(h), i: \(i), j: \(j), k: \(k), l: \(l)}"
     }
