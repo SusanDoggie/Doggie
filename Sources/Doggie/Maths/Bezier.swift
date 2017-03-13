@@ -399,9 +399,7 @@ extension Bezier where Element == Point {
             let x: Polynomial = [a.x, b.x, c.x, d.x]
             let y: Polynomial = [a.y, b.y, c.y, d.y]
             let dot = x * x + y * y
-            let y_roots = y.roots
-            let roots = x.roots.filter { x in y_roots.contains { x.almostEqual($0) } }
-            return roots.count != 0 ? roots.sorted(by: { dot.eval($0) }) : dot.derivative.roots.sorted(by: { dot.eval($0) })
+            return dot.derivative.roots.sorted(by: { dot.eval($0) })
         case let .many(points):
             let x = Bezier<Double>(points.map { $0.x }).polynomial - point.x
             let y = Bezier<Double>(points.map { $0.y }).polynomial - point.y
