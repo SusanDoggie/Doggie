@@ -209,6 +209,9 @@ extension Shape {
         let points = rect.points
         return [.move(points[0]), .line(points[1]), .line(points[2]), .line(points[3]), .close]
     }
+}
+
+extension Shape {
     
     public static func Ellipse(_ rect: Rect) -> Shape {
         return Ellipse(center: rect.center, radius: Radius(x: 0.5 * rect.width, y: 0.5 * rect.height))
@@ -229,6 +232,13 @@ extension Shape {
         ]
         return Shape(commands)
     }
+    public static func Ellipse(x: Double, y: Double, radius: Double) -> Shape {
+        return Ellipse(center: Point(x: x, y: y), radius: Radius(x: radius, y: radius))
+    }
+    public static func Ellipse(x: Double, y: Double, rx: Double, ry: Double) -> Shape {
+        return Ellipse(center: Point(x: x, y: y), radius: Radius(x: rx, y: ry))
+    }
+    
 }
 
 extension Shape {
