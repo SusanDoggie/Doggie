@@ -129,6 +129,30 @@ extension RangeSet {
 
 extension RangeSet where Bound : Strideable, Bound.Stride : SignedInteger {
     
+    public init(_ ranges: ClosedRange<Bound> ... ) {
+        self.init(ranges)
+    }
+    public init<S : Sequence>(_ s: S) where S.Iterator.Element == ClosedRange<Bound> {
+        self = s.reduce(RangeSet()) { $0.union($1) }
+    }
+    
+    public init(_ ranges: CountableRange<Bound> ... ) {
+        self.init(ranges)
+    }
+    public init<S : Sequence>(_ s: S) where S.Iterator.Element == CountableRange<Bound> {
+        self = s.reduce(RangeSet()) { $0.union($1) }
+    }
+    
+    public init(_ ranges: CountableClosedRange<Bound> ... ) {
+        self.init(ranges)
+    }
+    public init<S : Sequence>(_ s: S) where S.Iterator.Element == CountableClosedRange<Bound> {
+        self = s.reduce(RangeSet()) { $0.union($1) }
+    }
+}
+
+extension RangeSet where Bound : Strideable, Bound.Stride : SignedInteger {
+    
     public func union(_ ranges: ClosedRange<Bound>) -> RangeSet {
         return self.union(Range(ranges))
     }
