@@ -126,3 +126,36 @@ extension RangeSet {
         return ranges.ranges.reduce(self) { $0.intersection($1) }
     }
 }
+
+extension RangeSet where Bound : Strideable, Bound.Stride : SignedInteger {
+    
+    public func union(_ ranges: ClosedRange<Bound>) -> RangeSet {
+        return self.union(Range(ranges))
+    }
+    public func subtracting(_ ranges: ClosedRange<Bound>) -> RangeSet {
+        return self.subtracting(Range(ranges))
+    }
+    public func intersection(_ ranges: ClosedRange<Bound>) -> RangeSet {
+        return self.subtracting(Range(ranges))
+    }
+    
+    public func union(_ ranges: CountableRange<Bound>) -> RangeSet {
+        return self.union(Range(ranges))
+    }
+    public func subtracting(_ ranges: CountableRange<Bound>) -> RangeSet {
+        return self.subtracting(Range(ranges))
+    }
+    public func intersection(_ ranges: CountableRange<Bound>) -> RangeSet {
+        return self.subtracting(Range(ranges))
+    }
+    
+    public func union(_ ranges: CountableClosedRange<Bound>) -> RangeSet {
+        return self.union(Range(ranges))
+    }
+    public func subtracting(_ ranges: CountableClosedRange<Bound>) -> RangeSet {
+        return self.subtracting(Range(ranges))
+    }
+    public func intersection(_ ranges: CountableClosedRange<Bound>) -> RangeSet {
+        return self.subtracting(Range(ranges))
+    }
+}
