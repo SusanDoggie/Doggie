@@ -112,6 +112,10 @@ extension RangeSet {
         }
         return RangeSet(ranges: collect.sorted { $0.lowerBound < $1.lowerBound })
     }
+    
+    public func symmetricDifference(_ range: Range<Bound>) -> RangeSet {
+        return self.subtracting(range).union(RangeSet([range]).subtracting(self))
+    }
 }
 
 extension RangeSet {
@@ -123,7 +127,10 @@ extension RangeSet {
         return ranges.ranges.reduce(self) { $0.subtracting($1) }
     }
     public func intersection(_ ranges: RangeSet) -> RangeSet {
-        return ranges.ranges.reduce(self) { $0.intersection($1) }
+        return ranges.ranges.reduce(RangeSet()) { $0.union(self.intersection($1)) }
+    }
+    public func symmetricDifference(_ ranges: RangeSet) -> RangeSet {
+        return self.subtracting(ranges).union(ranges.subtracting(self))
     }
 }
 
@@ -160,7 +167,10 @@ extension RangeSet where Bound : Strideable, Bound.Stride : SignedInteger {
         return self.subtracting(Range(ranges))
     }
     public func intersection(_ ranges: ClosedRange<Bound>) -> RangeSet {
-        return self.subtracting(Range(ranges))
+        return self.intersection(Range(ranges))
+    }
+    public func symmetricDifference(_ ranges: ClosedRange<Bound>) -> RangeSet {
+        return self.symmetricDifference(Range(ranges))
     }
     
     public func union(_ ranges: CountableRange<Bound>) -> RangeSet {
@@ -170,7 +180,10 @@ extension RangeSet where Bound : Strideable, Bound.Stride : SignedInteger {
         return self.subtracting(Range(ranges))
     }
     public func intersection(_ ranges: CountableRange<Bound>) -> RangeSet {
-        return self.subtracting(Range(ranges))
+        return self.intersection(Range(ranges))
+    }
+    public func symmetricDifference(_ ranges: CountableRange<Bound>) -> RangeSet {
+        return self.symmetricDifference(Range(ranges))
     }
     
     public func union(_ ranges: CountableClosedRange<Bound>) -> RangeSet {
@@ -180,6 +193,9 @@ extension RangeSet where Bound : Strideable, Bound.Stride : SignedInteger {
         return self.subtracting(Range(ranges))
     }
     public func intersection(_ ranges: CountableClosedRange<Bound>) -> RangeSet {
-        return self.subtracting(Range(ranges))
+        return self.intersection(Range(ranges))
+    }
+    public func symmetricDifference(_ ranges: CountableClosedRange<Bound>) -> RangeSet {
+        return self.symmetricDifference(Range(ranges))
     }
 }
