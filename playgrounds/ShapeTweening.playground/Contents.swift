@@ -16,11 +16,8 @@ func curves(_ shape: Shape) -> [[Point]] {
     return result
 }
 
-var square = Shape.Rectangle(x: 0, y: -50, width: 100, height: 100)
+let square = Shape.Rectangle(x: 0, y: -50, width: 100, height: 100)
 let ellipse = Shape.Ellipse(center: Point(x: 700, y: 0), radius: 70.7)
-
-square.rotate += 0.5 * Double.pi
-square = square.identity
 
 func ShapeTween(_ t: Double) -> Shape {
     
