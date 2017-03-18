@@ -284,24 +284,37 @@ extension Rect {
 extension Rect {
     
     public var points : [Point] {
-        let a = Point(x: self.minX, y: self.minY)
-        let b = Point(x: self.maxX, y: self.minY)
-        let c = Point(x: self.maxX, y: self.maxY)
-        let d = Point(x: self.minX, y: self.maxY)
+        let minX = self.minX
+        let maxX = self.maxX
+        let minY = self.minY
+        let maxY = self.maxY
+        let a = Point(x: maxX, y: minY)
+        let b = Point(x: maxX, y: maxY)
+        let c = Point(x: minX, y: maxY)
+        let d = Point(x: minX, y: minY)
         return [a, b, c, d]
     }
     
     public static func bound<S : Sequence>(_ points: S) -> Rect where S.Iterator.Element == Point {
-        let points = Array(points)
-        if points.count == 0 {
-            return Rect()
+        
+        var minX = 0.0
+        var maxX = 0.0
+        var minY = 0.0
+        var maxY = 0.0
+        
+        for (i, p) in points.enumerated() {
+            if i == 0 {
+                minX = p.x
+                maxX = p.x
+                minY = p.y
+                maxY = p.y
+            } else {
+                minX = min(minX, p.x)
+                maxX = max(maxX, p.x)
+                minY = min(minY, p.y)
+                maxY = max(maxY, p.y)
+            }
         }
-        let _x = points.map { $0.x }
-        let _y = points.map { $0.y }
-        let minX = _x.min()!
-        let minY = _y.min()!
-        let maxX = _x.max()!
-        let maxY = _y.max()!
         return Rect(x: minX, y: minY, width: maxX - minX, height: maxY - minY)
     }
 }
