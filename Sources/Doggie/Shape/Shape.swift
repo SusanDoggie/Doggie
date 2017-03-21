@@ -100,7 +100,7 @@ public struct Shape : RandomAccessCollection, MutableCollection, ExpressibleByAr
             return baseTransform * translate.inverse * scale * rotate * translate
         }
         set {
-            let center = self.center
+            let center = originalBoundary.center * newValue
             let translate = SDTransform.Translate(x: center.x, y: center.y)
             let scale = SDTransform.Scale(self.scale)
             let rotate = SDTransform.Rotate(self.rotate)
