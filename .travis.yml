@@ -32,8 +32,8 @@ install:
 script:
   - swift --version;
   - echo "🚀 Building";
-  - travis_wait swift build;
+  - swift build;
   - echo "🚂 Building Release";
-  - travis_wait swift build -c release;
+  - swift build -c release;
   - echo "🔎 Testing";
-  - travis_wait swift test;
+  - swift test -Xswiftc -whole-module-optimization;
