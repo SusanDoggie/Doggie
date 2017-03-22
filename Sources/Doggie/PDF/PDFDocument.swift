@@ -667,9 +667,13 @@ extension PDFDocument.Value {
         set {
             switch self {
             case var .array(array):
+                if index >= array.count {
+                    array.append(contentsOf: repeatElement(.null, count: index - array.count + 1))
+                }
                 array[index] = newValue
                 self = .array(array)
-            default: fatalError("Not an array.")
+            default:
+                self = .array(Array(repeating: .null, count: index) + [newValue])
             }
         }
     }
@@ -696,7 +700,8 @@ extension PDFDocument.Value {
             case var .dictionary(dictionary):
                 dictionary[key] = newValue.isNil ? nil : newValue
                 self = .dictionary(dictionary)
-            default: fatalError("Not an object.")
+            default:
+                self = .dictionary([key: newValue])
             }
         }
     }
