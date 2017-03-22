@@ -413,9 +413,13 @@ extension Json {
         set {
             switch self.value {
             case var array as [Any]:
+                if index >= array.count {
+                    array.append(contentsOf: repeatElement(NSNull() as Any, count: index - array.count + 1))
+                }
                 array[index] = newValue.value
                 self = Json(value: array)
-            default: break
+            default:
+                self = Json(value: [Any](repeating: NSNull(), count: index) + [newValue.value])
             }
         }
     }
@@ -443,7 +447,8 @@ extension Json {
                 let val = newValue.value
                 dictionary[key] = val is NSNull ? nil : val
                 self = Json(value: dictionary)
-            default: break
+            default:
+                self = Json(value: [key: newValue.value])
             }
         }
     }
