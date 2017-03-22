@@ -47,7 +47,7 @@ extension Json {
         self.value = value
     }
     public init<T : Integer>(_ value: T) {
-        self.value = NSNumber(value: value.toIntMax())
+        self.value = value.toIntMax()
     }
     public init(_ value: Float) {
         self.value = value
@@ -57,9 +57,6 @@ extension Json {
     }
     public init(_ value: String) {
         self.value = value
-    }
-    public init(_ elements: Any ...) {
-        self.value = elements.map { Json.unwrap($0) }
     }
     public init<S : Sequence>(_ elements: S) {
         self.value = elements.map { Json.unwrap($0) }
@@ -418,7 +415,7 @@ extension Json {
             case var array as [Any]:
                 array[index] = newValue.value
                 self = Json(value: array)
-            default: fatalError("Not an array.")
+            default: break
             }
         }
     }
@@ -446,7 +443,7 @@ extension Json {
                 let val = newValue.value
                 dictionary[key] = val is NSNull ? nil : val
                 self = Json(value: dictionary)
-            default: fatalError("Not an object.")
+            default: break
             }
         }
     }
