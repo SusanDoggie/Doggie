@@ -75,8 +75,8 @@ public struct Shape : RandomAccessCollection, MutableCollection, ExpressibleByAr
     }
     
     public var rotate: Double = 0 {
-        didSet {
-            if rotate != oldValue {
+        willSet {
+            if rotate != newValue {
                 cache = Cache(originalBoundary: cache.originalBoundary, boundary: nil, table: cache.table)
             }
         }
