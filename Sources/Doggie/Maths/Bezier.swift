@@ -71,7 +71,7 @@ public struct Bezier<Element : BezierElementProtocol> {
         self.base = ._4(p0, p1, p2, p3)
     }
     public init(_ p0: Element, _ p1: Element, _ p2: Element, _ p3: Element, _ p4: Element, _ p: Element ... ) {
-        self.init([p0, p1, p2, p3, p4] + p)
+        self.base = .many([p0, p1, p2, p3, p4] + p)
     }
     public init<S : Sequence>(_ s: S) where S.Iterator.Element == Element {
         let s = Array(s)
