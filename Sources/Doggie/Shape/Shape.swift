@@ -25,6 +25,8 @@
 
 public struct Shape : RandomAccessCollection, MutableCollection, ExpressibleByArrayLiteral {
     
+    public typealias SubSequence = MutableRangeReplaceableRandomAccessSlice<Shape>
+    
     public typealias Indices = CountableRange<Int>
     
     public typealias Index = Int
@@ -295,6 +297,8 @@ extension Shape.Component {
 }
 
 extension Shape.Component : RandomAccessCollection, MutableCollection {
+    
+    public typealias SubSequence = MutableRangeReplaceableRandomAccessSlice<Shape.Component>
     
     public typealias Indices = CountableRange<Int>
     

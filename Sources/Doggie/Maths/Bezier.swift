@@ -100,6 +100,8 @@ extension Bezier : CustomStringConvertible {
 
 extension Bezier : RandomAccessCollection, MutableCollection {
     
+    public typealias SubSequence = MutableRandomAccessSlice<Bezier>
+    
     public typealias Indices = CountableRange<Int>
     
     public typealias Index = Int
