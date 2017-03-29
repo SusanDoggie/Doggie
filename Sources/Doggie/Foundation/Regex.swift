@@ -25,20 +25,16 @@
 
 import Foundation
 
-#if os(macOS) || os(iOS) || os(tvOS) || os(watchOS)
-    public typealias RegularExpression = NSRegularExpression
-#endif
-
 public struct Regex : Equatable {
     
-    fileprivate let matcher: RegularExpression
+    fileprivate let matcher: NSRegularExpression
     
     public init(pattern: String) throws {
-        self.matcher = try RegularExpression(pattern: pattern, options: [])
+        self.matcher = try NSRegularExpression(pattern: pattern, options: [])
     }
     
-    public init(pattern: String, options: RegularExpression.Options) throws {
-        self.matcher = try RegularExpression(pattern: pattern, options: options)
+    public init(pattern: String, options: NSRegularExpression.Options) throws {
+        self.matcher = try NSRegularExpression(pattern: pattern, options: options)
     }
     
     /// Returns the regular expression pattern.
@@ -47,7 +43,7 @@ public struct Regex : Equatable {
     }
     
     /// Returns the options used when the regular expression option was created.
-    public var options: RegularExpression.Options {
+    public var options: NSRegularExpression.Options {
         return matcher.options
     }
     
