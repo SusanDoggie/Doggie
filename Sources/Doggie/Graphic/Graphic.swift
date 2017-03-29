@@ -146,47 +146,29 @@ extension Rect {
         
         convenience init(_ shape: Shape) {
             self.init()
-            var state = Shape.DrawableComputeState()
             for item in shape {
-                item.drawPath(self, state: &state)
+                var last: Point = item.start
+                self.move(to: NSPoint(item.start))
+                for segment in item {
+                    switch segment {
+                    case let .line(point):
+                        self.line(to: NSPoint(x: point.x, y: point.y))
+                        last = point
+                    case let .quad(p1, p2):
+                        self.curve(to: NSPoint(x: p2.x, y: p2.y),
+                                   controlPoint1: NSPoint(x: (p1.x - last.x) * 2 / 3 + last.x, y: (p1.y - last.y) * 2 / 3 + last.y),
+                                   controlPoint2: NSPoint(x: (p1.x - p2.x) * 2 / 3 + p2.x, y: (p1.y - p2.y) * 2 / 3 + p2.y))
+                        last = p2
+                    case let .cubic(p1, p2, p3):
+                        self.curve(to: NSPoint(x: p3.x, y: p3.y), controlPoint1: NSPoint(x: p1.x, y: p1.y), controlPoint2: NSPoint(x: p2.x, y: p2.y))
+                        last = p3
+                    }
+                }
+                if item.isClosed {
+                    self.close()
+                }
             }
             self.transform(using: AffineTransform(shape.transform))
-        }
-    }
-    
-    private extension Shape {
-        
-        struct DrawableComputeState {
-            
-            var start : Point = Point()
-            var last : Point = Point()
-        }
-    }
-    
-    private extension Shape.Command {
-        
-        func drawPath(_ path: NSBezierPath, state: inout Shape.DrawableComputeState) {
-            
-            switch self {
-            case let .move(point):
-                path.move(to: NSPoint(x: point.x, y: point.y))
-                state.start = point
-                state.last = point
-            case let .line(point):
-                path.line(to: NSPoint(x: point.x, y: point.y))
-                state.last = point
-            case let .quad(p1, p2):
-                path.curve(to: NSPoint(x: p2.x, y: p2.y),
-                           controlPoint1: NSPoint(x: (p1.x - state.last.x) * 2 / 3 + state.last.x, y: (p1.y - state.last.y) * 2 / 3 + state.last.y),
-                           controlPoint2: NSPoint(x: (p1.x - p2.x) * 2 / 3 + p2.x, y: (p1.y - p2.y) * 2 / 3 + p2.y))
-                state.last = p2
-            case let .cubic(p1, p2, p3):
-                path.curve(to: NSPoint(x: p3.x, y: p3.y), controlPoint1: NSPoint(x: p1.x, y: p1.y), controlPoint2: NSPoint(x: p2.x, y: p2.y))
-                state.last = p3
-            case .close:
-                path.close()
-                state.last = state.start
-            }
         }
     }
     
@@ -246,13 +228,17 @@ extension Rect {
                     _path = path
                 } else {
                     let path = CGMutablePath()
-                    self.apply { component, state in
-                        switch component {
-                        case let .move(point): path.move(to: CGPoint(point))
-                        case let .line(point): path.addLine(to: CGPoint(point))
-                        case let .quad(p1, p2): path.addQuadCurve(to: CGPoint(p2), control: CGPoint(p1))
-                        case let .cubic(p1, p2, p3): path.addCurve(to: CGPoint(p3), control1: CGPoint(p1), control2: CGPoint(p2))
-                        case .close: path.closeSubpath()
+                    for item in self {
+                        path.move(to: CGPoint(item.start))
+                        for segment in item {
+                            switch segment {
+                            case let .line(point): path.addLine(to: CGPoint(point))
+                            case let .quad(p1, p2): path.addQuadCurve(to: CGPoint(p2), control: CGPoint(p1))
+                            case let .cubic(p1, p2, p3): path.addCurve(to: CGPoint(p3), control1: CGPoint(p1), control2: CGPoint(p2))
+                            }
+                        }
+                        if item.isClosed {
+                            path.closeSubpath()
                         }
                     }
                     self.cacheTable[ShapeCacheCGPathKey] = path
@@ -274,11 +260,27 @@ extension Rect {
                 let path = buf!.assumingMemoryBound(to: Shape.self)
                 let points = element.pointee.points
                 switch element.pointee.type {
-                case .moveToPoint: path.pointee.append(.move(Point(points[0])))
-                case .addLineToPoint: path.pointee.append(.line(Point(points[0])))
-                case .addQuadCurveToPoint: path.pointee.append(.quad(Point(points[0]), Point(points[1])))
-                case .addCurveToPoint: path.pointee.append(.cubic(Point(points[0]), Point(points[1]), Point(points[2])))
-                case .closeSubpath: path.pointee.append(.close)
+                case .moveToPoint: path.pointee.append(Component(start: Point(points[0]), closed: false, segments: []))
+                case .addLineToPoint:
+                    if path.pointee.count == 0 {
+                        path.pointee.append(Component(start: Point(), closed: false, segments: []))
+                    }
+                    path.pointee[path.pointee.count - 1].append(.line(Point(points[0])))
+                case .addQuadCurveToPoint:
+                    if path.pointee.count == 0 {
+                        path.pointee.append(Component(start: Point(), closed: false, segments: []))
+                    }
+                    path.pointee[path.pointee.count - 1].append(.quad(Point(points[0]), Point(points[1])))
+                case .addCurveToPoint:
+                    if path.pointee.count == 0 {
+                        path.pointee.append(Component(start: Point(), closed: false, segments: []))
+                    }
+                    path.pointee[path.pointee.count - 1].append(.cubic(Point(points[0]), Point(points[1]), Point(points[2])))
+                case .closeSubpath:
+                    if path.pointee.count == 0 {
+                        path.pointee.append(Component(start: Point(), closed: false, segments: []))
+                    }
+                    path.pointee[path.pointee.count - 1].isClosed = true
                 }
             }
             self.cacheTable[ShapeCacheCGPathKey] = path.copy()

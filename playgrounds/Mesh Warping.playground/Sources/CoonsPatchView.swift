@@ -103,45 +103,56 @@ public class CoonsPatchView: NSView, NSGestureRecognizerDelegate {
         
         if let shape = shape {
             
-            var path: [Shape.Command] = []
-            var flag = true
+            var path: [Shape.Component] = []
             
             path.reserveCapacity(shape.count)
             
-            shape.identity.apply { commands, state in
+            for item in shape.identity {
+                var flag = true
+                var component = Shape.Component()
+                
+                var last = item.start
                 
                 func addCurves(_ points: [[Point]]) {
                     if let first = points.first {
                         if flag {
-                            path.append(.move(first[0]))
+                            component.start = first[0]
                             flag = false
                         }
                         for p in points {
                             switch p.count {
-                            case 2: path.append(.line(p[1]))
-                            case 3: path.append(.quad(p[1], p[2]))
-                            case 4: path.append(.cubic(p[1], p[2], p[3]))
+                            case 2: component.append(.line(p[1]))
+                            case 3: component.append(.quad(p[1], p[2]))
+                            case 4: component.append(.cubic(p[1], p[2], p[3]))
                             default: break
                             }
                         }
                     }
                 }
                 
-                switch commands {
-                case .move: flag = true
-                case .close:
-                    let z = state.start - state.last
-                    if !z.x.almostZero() || !z.y.almostZero() {
-                        addCurves(CoonsPatch(self.p0, self.p4, self.p5, self.p1, self.p6, self.p8, self.p7, self.p9, self.p2, self.p10, self.p11, self.p3, state.last, state.start))
+                for segment in item {
+                    switch segment {
+                    case let .line(p1):
+                        addCurves(CoonsPatch(self.p0, self.p4, self.p5, self.p1, self.p6, self.p8, self.p7, self.p9, self.p2, self.p10, self.p11, self.p3, last, p1))
+                        last = p1
+                    case let .quad(p1, p2):
+                        addCurves(CoonsPatch(self.p0, self.p4, self.p5, self.p1, self.p6, self.p8, self.p7, self.p9, self.p2, self.p10, self.p11, self.p3, last, p1, p2))
+                        last = p2
+                    case let .cubic(p1, p2, p3):
+                        addCurves(CoonsPatch(self.p0, self.p4, self.p5, self.p1, self.p6, self.p8, self.p7, self.p9, self.p2, self.p10, self.p11, self.p3, last, p1, p2, p3))
+                        last = p3
                     }
-                    if !flag {
-                        path.append(.close)
-                        flag = true
-                    }
-                case let .line(p1): addCurves(CoonsPatch(self.p0, self.p4, self.p5, self.p1, self.p6, self.p8, self.p7, self.p9, self.p2, self.p10, self.p11, self.p3, state.last, p1))
-                case let .quad(p1, p2): addCurves(CoonsPatch(self.p0, self.p4, self.p5, self.p1, self.p6, self.p8, self.p7, self.p9, self.p2, self.p10, self.p11, self.p3, state.last, p1, p2))
-                case let .cubic(p1, p2, p3): addCurves(CoonsPatch(self.p0, self.p4, self.p5, self.p1, self.p6, self.p8, self.p7, self.p9, self.p2, self.p10, self.p11, self.p3, state.last, p1, p2, p3))
                 }
+                
+                if item.isClosed {
+                    let z = item.start - last
+                    if !z.x.almostZero() || !z.y.almostZero() {
+                        addCurves(CoonsPatch(self.p0, self.p4, self.p5, self.p1, self.p6, self.p8, self.p7, self.p9, self.p2, self.p10, self.p11, self.p3, last, item.start))
+                    }
+                    component.isClosed = true
+                }
+                
+                path.append(component)
             }
             
             return Shape(path)

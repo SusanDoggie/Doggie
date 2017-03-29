@@ -54,7 +54,7 @@ public class StrokeView: NSView, NSGestureRecognizerDelegate {
             
             context.setStrokeColor(NSColor.red.cgColor)
             
-            let shape: Shape = [.move(p0), .cubic(p1, p2, p3)]
+            let shape: Shape = [Shape.Component(start: p0, segments: [.cubic(p1, p2, p3)])]
             
             context.addPath(shape.strokePath(width: 50, cap: .round, join: .round).cgPath)
             context.strokePath()

@@ -5,12 +5,20 @@ import Doggie
 
 func curves(_ shape: Shape) -> [[Point]] {
     var result: [[Point]] = []
-    shape.apply { command, state in
-        switch command {
-        case let .line(p1): result.append([state.last, p1])
-        case let .quad(p1, p2): result.append([state.last, p1, p2])
-        case let .cubic(p1, p2, p3): result.append([state.last, p1, p2, p3])
-        default: break
+    for item in shape {
+        var last = item.start
+        for segment in item {
+            switch segment {
+            case let .line(p1):
+                result.append([last, p1])
+                last = p1
+            case let .quad(p1, p2):
+                result.append([last, p1, p2])
+                last = p2
+            case let .cubic(p1, p2, p3):
+                result.append([last, p1, p2, p3])
+                last = p3
+            }
         }
     }
     return result
@@ -30,17 +38,14 @@ func ShapeTween(_ t: Double) -> Shape {
     
     let b = zip(_s, _e).map { BezierTweening(start: $0, end: $1, t) }
     
-    var result: Shape = [.move(b[0][0])]
-    for bezier in b {
-        switch bezier.count {
-        case 2: result.append(.line(bezier[1]))
-        case 3: result.append(.quad(bezier[1], bezier[2]))
-        case 4: result.append(.cubic(bezier[1], bezier[2], bezier[3]))
-        default: break
+    return [Shape.Component(start: b[0][0], closed: true, segments: b.flatMap {
+        switch $0.count {
+        case 2: return .line($0[1])
+        case 3: return .quad($0[1], $0[2])
+        case 4: return .cubic($0[1], $0[2], $0[3])
+        default: return nil
         }
-    }
-    result.append(.close)
-    return result
+    })]
 }
 
 var shapes: Shape = []

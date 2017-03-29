@@ -29,14 +29,6 @@ public struct Shape : RandomAccessCollection, MutableCollection, ExpressibleByAr
     
     public typealias Index = Int
     
-    public enum Command {
-        case move(Point)
-        case line(Point)
-        case quad(Point, Point)
-        case cubic(Point, Point, Point)
-        case close
-    }
-    
     fileprivate class Cache {
         
         var originalBoundary: Rect?
@@ -64,7 +56,7 @@ public struct Shape : RandomAccessCollection, MutableCollection, ExpressibleByAr
     }
     
     fileprivate var cache = Cache()
-    fileprivate var commands: [Command]
+    fileprivate var components: [Component]
     
     public var baseTransform : SDTransform = SDTransform(SDTransform.Identity()) {
         willSet {
@@ -109,19 +101,19 @@ public struct Shape : RandomAccessCollection, MutableCollection, ExpressibleByAr
     }
     
     public init() {
-        self.commands = []
+        self.components = []
     }
     
-    public init(arrayLiteral elements: Command ...) {
-        self.commands = elements
+    public init(arrayLiteral elements: Component ...) {
+        self.components = elements
     }
     
-    public init(_ elements: Command ...) {
-        self.commands = elements
+    public init(_ elements: Component ...) {
+        self.components = elements
     }
     
-    public init<S : Sequence>(_ commands: S) where S.Iterator.Element == Command {
-        self.commands = Array(commands)
+    public init<S : Sequence>(_ components: S) where S.Iterator.Element == Component {
+        self.components = Array(components)
     }
     
     public var center : Point {
@@ -140,32 +132,22 @@ public struct Shape : RandomAccessCollection, MutableCollection, ExpressibleByAr
         }
     }
     
-    public subscript(position : Int) -> Command {
+    public subscript(position : Int) -> Component {
         get {
-            return commands[position]
+            return components[position]
         }
         set {
             cache = Cache()
-            commands[position] = newValue
-        }
-    }
-    
-    public subscript(bounds: Range<Int>) -> MutableRangeReplaceableRandomAccessSlice<Shape> {
-        get {
-            _failEarlyRangeCheck(bounds, bounds: startIndex..<endIndex)
-            return MutableRangeReplaceableRandomAccessSlice(base: self, bounds: bounds)
-        }
-        set {
-            self.replaceSubrange(bounds, with: newValue)
+            components[position] = newValue
         }
     }
     
     public var startIndex: Int {
-        return commands.startIndex
+        return components.startIndex
     }
     
     public var endIndex: Int {
-        return commands.endIndex
+        return components.endIndex
     }
     
     public var boundary : Rect {
@@ -177,16 +159,7 @@ public struct Shape : RandomAccessCollection, MutableCollection, ExpressibleByAr
     
     public var originalBoundary : Rect {
         if cache.originalBoundary == nil {
-            var bound: Rect? = nil
-            self.apply { commands, state in
-                switch commands {
-                case let .line(p1): bound = bound?.union(Rect.bound([state.last, p1])) ?? Rect.bound([state.last, p1])
-                case let .quad(p1, p2): bound = bound?.union(Bezier(state.last, p1, p2).boundary) ?? Bezier(state.last, p1, p2).boundary
-                case let .cubic(p1, p2, p3): bound = bound?.union(Bezier(state.last, p1, p2, p3).boundary) ?? Bezier(state.last, p1, p2, p3).boundary
-                default: break
-                }
-            }
-            cache.originalBoundary = bound ?? Rect()
+            cache.originalBoundary = self.components.reduce(nil) { $0?.union($1.boundary) ?? $1.boundary } ?? Rect()
         }
         return cache.originalBoundary!
     }
@@ -207,7 +180,7 @@ extension Shape {
     }
     public static func Rectangle(_ rect: Rect) -> Shape {
         let points = rect.points
-        return [.move(points[0]), .line(points[1]), .line(points[2]), .line(points[3]), .close]
+        return [Component(start: points[0], closed: true, segments: [.line(points[1]), .line(points[2]), .line(points[3])])]
     }
 }
 
@@ -221,16 +194,9 @@ extension Shape {
     }
     public static func Ellipse(center: Point, radius: Radius) -> Shape {
         let scale = SDTransform.Scale(x: radius.x, y: radius.y)
-        let point = BezierCircle.lazy.map { $0 * scale + center }
-        let commands: [Shape.Command] = [
-            .move(point[0]),
-            .cubic(point[1], point[2], point[3]),
-            .cubic(point[4], point[5], point[6]),
-            .cubic(point[7], point[8], point[9]),
-            .cubic(point[10], point[11], point[12]),
-            .close
-        ]
-        return Shape(commands)
+        let points = BezierCircle.lazy.map { $0 * scale + center }
+        let segments: [Shape.Segment] = [.cubic(points[1], points[2], points[3]), .cubic(points[4], points[5], points[6]), .cubic(points[7], points[8], points[9]), .cubic(points[10], points[11], points[12])]
+        return [Component(start: points[0], closed: true, segments: segments)]
     }
     public static func Ellipse(x: Double, y: Double, radius: Double) -> Shape {
         return Ellipse(center: Point(x: x, y: y), radius: Radius(x: radius, y: radius))
@@ -243,21 +209,15 @@ extension Shape {
 
 extension Shape {
     
-    public var area: Double {
+    public var originalArea : Double {
         if cache.area == nil {
-            let transform = self.transform
-            var _area: Double = 0
-            self.apply { commands, state in
-                switch commands {
-                case let .line(p1): _area += Bezier(state.last * transform, p1 * transform).area
-                case let .quad(p1, p2): _area += Bezier(state.last * transform, p1 * transform, p2 * transform).area
-                case let .cubic(p1, p2, p3): _area += Bezier(state.last * transform, p1 * transform, p2 * transform, p3 * transform).area
-                default: break
-                }
-            }
-            cache.area = _area
+            cache.area = self.components.reduce(0) { $0 + $1.area }
         }
         return cache.area!
+    }
+    
+    public var area: Double {
+        return identity.originalArea
     }
 }
 
@@ -274,76 +234,25 @@ extension Shape {
     }
 }
 
-extension Shape {
-    
-    public var lastMove: Bool {
-        if let command = self.commands.last, case .move = command {
-            return true
-        }
-        return false
-    }
-    
-    public var lastClose: Bool {
-        if let command = self.commands.last, case .close = command {
-            return true
-        }
-        return false
-    }
-}
-
 extension Shape : RangeReplaceableCollection {
     
-    public mutating func append(_ x: Command) {
+    public mutating func append(_ x: Component) {
         cache = Cache()
-        commands.append(x)
+        components.append(x)
     }
     
     public mutating func reserveCapacity(_ minimumCapacity: Int) {
-        commands.reserveCapacity(minimumCapacity)
+        components.reserveCapacity(minimumCapacity)
     }
     
     public mutating func removeAll(keepingCapacity: Bool = false) {
         cache = Cache()
-        commands.removeAll(keepingCapacity: keepingCapacity)
+        components.removeAll(keepingCapacity: keepingCapacity)
     }
     
-    public mutating func replaceSubrange<C : Collection>(_ subRange: Range<Int>, with newElements: C) where C.Iterator.Element == Command {
+    public mutating func replaceSubrange<C : Collection>(_ subRange: Range<Int>, with newElements: C) where C.Iterator.Element == Component {
         cache = Cache()
-        commands.replaceSubrange(subRange, with: newElements)
-    }
-}
-
-extension Shape {
-    
-    public struct ComputeState {
-        
-        public let start : Point
-        public let last : Point
-    }
-    
-    public func apply(body: (Command, ComputeState) throws -> Void) rethrows {
-        var start : Point = Point()
-        var last : Point = Point()
-        for item in self.commands {
-            switch item {
-            case let .move(point):
-                try body(.move(point), ComputeState(start: point, last: point))
-                start = point
-                last = point
-            case let .line(point):
-                try body(.line(point), ComputeState(start: start, last: last))
-                last = point
-            case let .quad(p1, p2):
-                try body(.quad(p1, p2), ComputeState(start: start, last: last))
-                last = p2
-            case let .cubic(p1, p2, p3):
-                try body(.cubic(p1, p2, p3), ComputeState(start: start, last: last))
-                last = p3
-            case .close:
-                try body(.close, ComputeState(start: start, last: last))
-                last = start
-            }
-        }
+        components.replaceSubrange(subRange, with: newElements)
     }
 }
 
@@ -356,24 +265,13 @@ extension Shape {
         if cache.identity == nil {
             let transform = self.transform
             if transform == SDTransform.Identity() {
-                let _path = Shape(self.commands)
+                let _path = Shape(self.components)
                 _path.cache.originalBoundary = cache.originalBoundary
                 _path.cache.boundary = cache.boundary
                 _path.cache.area = cache.area
                 cache.identity = _path
             } else {
-                var _path = Shape()
-                _path.reserveCapacity(self.commands.count)
-                for command in self.commands {
-                    switch command {
-                    case let .move(point): _path.commands.append(.move(point * transform))
-                    case let .line(point): _path.commands.append(.line(point * transform))
-                    case let .quad(p1, p2): _path.commands.append(.quad(p1 * transform, p2 * transform))
-                    case let .cubic(p1, p2, p3): _path.commands.append(.cubic(p1 * transform, p2 * transform, p3 * transform))
-                    case .close: _path.commands.append(.close)
-                    }
-                }
-                cache.identity = _path
+                cache.identity = Shape(self.components.map { $0 * transform })
             }
         }
         return cache.identity!

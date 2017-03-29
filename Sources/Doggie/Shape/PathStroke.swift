@@ -50,10 +50,10 @@ extension Shape {
         var cap: LineCap
         var join: LineJoin
         
-        var path: [Command] = []
+        var path: [Shape.Component] = []
         
-        var buffer1: [Command] = []
-        var buffer2: [Command] = []
+        var buffer1: [Shape.Segment] = []
+        var buffer2: [Shape.Segment] = []
         var first: Segment?
         var last: Segment?
         var start = Point()
@@ -173,7 +173,7 @@ extension Shape.StrokeBuffer {
     mutating func flush() {
         
         if first != nil {
-            var cap_buffer: [Shape.Command] = []
+            var cap_buffer: [Shape.Segment] = []
             switch cap {
             case .butt: buffer1.append(.line(reverse_start))
             case .round:
@@ -213,11 +213,11 @@ extension Shape.StrokeBuffer {
                     cap_buffer.append(.line(start))
                 }
             }
-            path.append(.move(start))
-            path.append(contentsOf: buffer1)
-            path.append(contentsOf: buffer2.reversed())
-            path.append(contentsOf: cap_buffer)
-            path.append(.close)
+            
+            var component = Shape.Component(start: start, closed: true, segments: buffer1)
+            component.append(contentsOf: buffer2.reversed())
+            component.append(contentsOf: cap_buffer)
+            path.append(component)
             
             buffer1.removeAll(keepingCapacity: true)
             buffer2.removeAll(keepingCapacity: true)
@@ -336,12 +336,9 @@ extension Shape.StrokeBuffer {
             case .bevel: break
             default: self.addJoin(first!)
             }
-            path.append(.move(start))
-            path.append(contentsOf: buffer1)
-            path.append(.close)
-            path.append(.move(reverse_start))
-            path.append(contentsOf: buffer2.reversed())
-            path.append(.close)
+            
+            path.append(Shape.Component(start: start, closed: true, segments: buffer1))
+            path.append(Shape.Component(start: reverse_start, closed: true, segments: buffer2.reversed()))
             
             buffer1.removeAll(keepingCapacity: true)
             buffer2.removeAll(keepingCapacity: true)
@@ -468,21 +465,30 @@ extension Shape {
     public func strokePath(width: Double, cap: LineCap, join: LineJoin) -> Shape {
         var buffer = StrokeBuffer(width: width, cap: cap, join: join)
         buffer.path.reserveCapacity(self.count << 4)
-        self.identity.apply { command, state in
-            switch command {
-            case .move: buffer.flush()
-            case .close:
-                let z = state.start - state.last
+        for item in self.identity {
+            var last = item.start
+            for segment in item {
+                switch segment {
+                case let .line(p1):
+                    buffer.addSegment(.line(last, p1))
+                    last = p1
+                case let .quad(p1, p2):
+                    buffer.addSegment(.quad(last, p1, p2))
+                    last = p2
+                case let .cubic(p1, p2, p3):
+                    buffer.addSegment(.cubic(last, p1, p2, p3))
+                    last = p3
+                }
+            }
+            if item.isClosed {
+                let z = item.start - last
                 if !z.x.almostZero() || !z.y.almostZero() {
-                    buffer.addSegment(.line(state.last, state.start))
+                    buffer.addSegment(.line(last, item.start))
                 }
                 buffer.closePath()
-            case let .line(p1): buffer.addSegment(.line(state.last, p1))
-            case let .quad(p1, p2): buffer.addSegment(.quad(state.last, p1, p2))
-            case let .cubic(p1, p2, p3): buffer.addSegment(.cubic(state.last, p1, p2, p3))
             }
+            buffer.flush()
         }
-        buffer.flush()
         return Shape(buffer.path)
     }
     
