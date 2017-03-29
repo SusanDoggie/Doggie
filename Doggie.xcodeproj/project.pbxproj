@@ -127,8 +127,6 @@
 		0A53E47F1E35AEF80060FB83 /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A53E45D1E35AEF80060FB83 /* String.swift */; };
 		0A56E9101E35F02E00D93786 /* RectCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A56E90F1E35F02E00D93786 /* RectCollection.swift */; };
 		0A56E9111E35F02E00D93786 /* RectCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A56E90F1E35F02E00D93786 /* RectCollection.swift */; };
-		0A6BB0C31E8A77B100A80BCE /* ShapeComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A6BB0C21E8A77B100A80BCE /* ShapeComponent.swift */; };
-		0A6BB0C41E8A77B100A80BCE /* ShapeComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A6BB0C21E8A77B100A80BCE /* ShapeComponent.swift */; };
 		0A6CDDA11E612233009DDEEB /* DGDocumentTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A6CDDA01E612233009DDEEB /* DGDocumentTest.swift */; };
 		0A6CDDA21E612233009DDEEB /* DGDocumentTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A6CDDA01E612233009DDEEB /* DGDocumentTest.swift */; };
 		0A6CDDA71E61738A009DDEEB /* PDFPredictor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A6CDDA61E61738A009DDEEB /* PDFPredictor.swift */; };
@@ -241,7 +239,6 @@
 		0A53E45C1E35AEF80060FB83 /* Regex.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Regex.swift; sourceTree = "<group>"; };
 		0A53E45D1E35AEF80060FB83 /* String.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = String.swift; sourceTree = "<group>"; };
 		0A56E90F1E35F02E00D93786 /* RectCollection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RectCollection.swift; sourceTree = "<group>"; };
-		0A6BB0C21E8A77B100A80BCE /* ShapeComponent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShapeComponent.swift; sourceTree = "<group>"; };
 		0A6CDDA01E612233009DDEEB /* DGDocumentTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DGDocumentTest.swift; sourceTree = "<group>"; };
 		0A6CDDA61E61738A009DDEEB /* PDFPredictor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PDFPredictor.swift; sourceTree = "<group>"; };
 		0A776FC31D9A0BA5005FC88F /* c11_atomic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = c11_atomic.h; sourceTree = "<group>"; };
@@ -511,7 +508,6 @@
 				0A2107081E5BEEBB00F1E00E /* PathCoder.swift */,
 				0A21070A1E5BEEBB00F1E00E /* PathStroke.swift */,
 				0A21070C1E5BEEBB00F1E00E /* Shape.swift */,
-				0A6BB0C21E8A77B100A80BCE /* ShapeComponent.swift */,
 			);
 			path = Shape;
 			sourceTree = "<group>";
@@ -771,7 +767,6 @@
 				0A2A643E1E5C45EE000E21BB /* PDFParser.swift in Sources */,
 				0A80D1471E66A7000003BB44 /* RangeSet.swift in Sources */,
 				0A52E2DE1E60266A0065EED6 /* PDFLZWDecode.swift in Sources */,
-				0A6BB0C31E8A77B100A80BCE /* ShapeComponent.swift in Sources */,
 				0A52E2D21E6012140065EED6 /* PDFASCII85Decode.swift in Sources */,
 				08458B3E1E2E627600D01813 /* Rect.swift in Sources */,
 				0A53E4781E35AEF80060FB83 /* Parallel.swift in Sources */,
@@ -854,7 +849,6 @@
 				0A2A643F1E5C45EE000E21BB /* PDFParser.swift in Sources */,
 				0A80D1481E66A7000003BB44 /* RangeSet.swift in Sources */,
 				0A52E2DF1E60266A0065EED6 /* PDFLZWDecode.swift in Sources */,
-				0A6BB0C41E8A77B100A80BCE /* ShapeComponent.swift in Sources */,
 				0A52E2D31E6012140065EED6 /* PDFASCII85Decode.swift in Sources */,
 				08458B3F1E2E627600D01813 /* Rect.swift in Sources */,
 				0A53E4791E35AEF80060FB83 /* Parallel.swift in Sources */,
