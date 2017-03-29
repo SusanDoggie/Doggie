@@ -464,7 +464,7 @@ extension Shape {
     
     public func strokePath(width: Double, cap: LineCap, join: LineJoin) -> Shape {
         var buffer = StrokeBuffer(width: width, cap: cap, join: join)
-        buffer.path.reserveCapacity(self.count << 4)
+        buffer.path.reserveCapacity(self.count << 1)
         for item in self.identity {
             var last = item.start
             for segment in item {

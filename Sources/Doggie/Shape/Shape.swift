@@ -222,6 +222,7 @@ extension Shape.Component {
         if cache.spaces == nil {
             var lastPoint = start
             var bounds: [Rect] = []
+            bounds.reserveCapacity(segments.count)
             for segment in segments {
                 switch segment {
                 case let .line(p1):
