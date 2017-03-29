@@ -31,9 +31,9 @@ install:
   
 script:
   - swift --version;
-  - echo "🚀 Building";
+  - echo "🚂 Building";
   - swift build;
-  - echo "🚂 Building Release";
+  - echo "🚀 Building Release";
   - swift build -c release;
   - echo "🔎 Testing";
   - swift test -Xswiftc -whole-module-optimization;
