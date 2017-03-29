@@ -89,17 +89,6 @@ extension Polynomial : RandomAccessCollection, MutableCollection {
             }
         }
     }
-    
-    public subscript(bounds: Range<Int>) -> MutableRangeReplaceableRandomAccessSlice<Polynomial> {
-        get {
-            _failEarlyRangeCheck(bounds, bounds: startIndex..<endIndex)
-            return MutableRangeReplaceableRandomAccessSlice(base: self, bounds: bounds)
-        }
-        set {
-            self.replaceSubrange(bounds, with: newValue)
-        }
-    }
-    
 }
 
 extension Polynomial : RangeReplaceableCollection {

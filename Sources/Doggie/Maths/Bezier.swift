@@ -188,16 +188,6 @@ extension Bezier : RandomAccessCollection, MutableCollection {
             }
         }
     }
-    
-    public subscript(bounds: Range<Int>) -> MutableRandomAccessSlice<Bezier> {
-        get {
-            _failEarlyRangeCheck(bounds, bounds: startIndex..<endIndex)
-            return MutableRandomAccessSlice(base: self, bounds: bounds)
-        }
-        set {
-            self = newValue.base
-        }
-    }
 }
 
 extension Bezier {
