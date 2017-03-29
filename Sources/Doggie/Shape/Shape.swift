@@ -29,32 +29,6 @@ public struct Shape : RandomAccessCollection, MutableCollection, ExpressibleByAr
     
     public typealias Index = Int
     
-    fileprivate class Cache {
-        
-        var originalBoundary: Rect?
-        var boundary: Rect?
-        var identity : Shape?
-        
-        var area: Double?
-        
-        var table: [String : Any]
-        
-        init() {
-            self.originalBoundary = nil
-            self.boundary = nil
-            self.identity = nil
-            self.area = nil
-            self.table = [:]
-        }
-        init(originalBoundary: Rect?, boundary: Rect?, table: [String : Any]) {
-            self.originalBoundary = originalBoundary
-            self.boundary = boundary
-            self.identity = nil
-            self.area = nil
-            self.table = table
-        }
-    }
-    
     public enum Segment {
         
         case line(Point)
@@ -69,7 +43,7 @@ public struct Shape : RandomAccessCollection, MutableCollection, ExpressibleByAr
         
         fileprivate var segments: [Segment]
         
-        fileprivate var cache = Shape.Component.Cache()
+        var cache = Shape.Component.Cache()
         
         public init() {
             self.start = Point()
@@ -84,7 +58,6 @@ public struct Shape : RandomAccessCollection, MutableCollection, ExpressibleByAr
         }
     }
     
-    fileprivate var cache = Cache()
     fileprivate var components: [Component]
     
     public var baseTransform : SDTransform = SDTransform(SDTransform.Identity()) {
@@ -128,6 +101,8 @@ public struct Shape : RandomAccessCollection, MutableCollection, ExpressibleByAr
             baseTransform = newValue * translate.inverse * rotate.inverse * scale.inverse * translate
         }
     }
+    
+    var cache = Cache()
     
     public init() {
         self.components = []
@@ -199,9 +174,39 @@ public struct Shape : RandomAccessCollection, MutableCollection, ExpressibleByAr
     }
 }
 
+extension Shape {
+    
+    class Cache {
+        
+        var originalBoundary: Rect?
+        var boundary: Rect?
+        var identity : Shape?
+        
+        var area: Double?
+        
+        var table: [String : Any]
+        
+        init() {
+            self.originalBoundary = nil
+            self.boundary = nil
+            self.identity = nil
+            self.area = nil
+            self.table = [:]
+        }
+        init(originalBoundary: Rect?, boundary: Rect?, table: [String : Any]) {
+            self.originalBoundary = originalBoundary
+            self.boundary = boundary
+            self.identity = nil
+            self.area = nil
+            self.table = table
+        }
+    }
+    
+}
+
 extension Shape.Component {
     
-    fileprivate class Cache {
+    class Cache {
         
         var spaces: RectCollection?
         var boundary: Rect?
