@@ -172,6 +172,34 @@ extension Rect {
         }
     }
     
+    extension Shape {
+        
+        public init(_ path: NSBezierPath) {
+            self.init()
+            var points = [NSPoint](repeating: NSPoint(x: 0, y: 0), count: 3)
+            for idx in 0..<path.elementCount {
+                switch path.element(at: idx, associatedPoints: &points) {
+                case .moveToBezierPathElement: self.append(Component(start: Point(points[0]), closed: false, segments: []))
+                case .lineToBezierPathElement:
+                    if self.count == 0 || self.last?.isClosed == true {
+                        self.append(Component(start: self.last?.start ?? Point(), closed: false, segments: []))
+                    }
+                    self[self.count - 1].append(.quad(Point(points[0]), Point(points[1])))
+                case .curveToBezierPathElement:
+                    if self.count == 0 || self.last?.isClosed == true {
+                        self.append(Component(start: self.last?.start ?? Point(), closed: false, segments: []))
+                    }
+                    self[self.count - 1].append(.cubic(Point(points[0]), Point(points[1]), Point(points[2])))
+                case .closePathBezierPathElement:
+                    if self.count == 0 || self.last?.isClosed == true {
+                        self.append(Component(start: self.last?.start ?? Point(), closed: false, segments: []))
+                    }
+                    self[self.count - 1].isClosed = true
+                }
+            }
+        }
+    }
+    
 #endif
 
 #if os(iOS) || os(tvOS) || os(watchOS)
@@ -262,23 +290,23 @@ extension Rect {
                 switch element.pointee.type {
                 case .moveToPoint: path.pointee.append(Component(start: Point(points[0]), closed: false, segments: []))
                 case .addLineToPoint:
-                    if path.pointee.count == 0 {
-                        path.pointee.append(Component(start: Point(), closed: false, segments: []))
+                    if path.pointee.count == 0 || path.pointee.last?.isClosed == true {
+                        path.pointee.append(Component(start: path.pointee.last?.start ?? Point(), closed: false, segments: []))
                     }
                     path.pointee[path.pointee.count - 1].append(.line(Point(points[0])))
                 case .addQuadCurveToPoint:
-                    if path.pointee.count == 0 {
-                        path.pointee.append(Component(start: Point(), closed: false, segments: []))
+                    if path.pointee.count == 0 || path.pointee.last?.isClosed == true {
+                        path.pointee.append(Component(start: path.pointee.last?.start ?? Point(), closed: false, segments: []))
                     }
                     path.pointee[path.pointee.count - 1].append(.quad(Point(points[0]), Point(points[1])))
                 case .addCurveToPoint:
-                    if path.pointee.count == 0 {
-                        path.pointee.append(Component(start: Point(), closed: false, segments: []))
+                    if path.pointee.count == 0 || path.pointee.last?.isClosed == true {
+                        path.pointee.append(Component(start: path.pointee.last?.start ?? Point(), closed: false, segments: []))
                     }
                     path.pointee[path.pointee.count - 1].append(.cubic(Point(points[0]), Point(points[1]), Point(points[2])))
                 case .closeSubpath:
-                    if path.pointee.count == 0 {
-                        path.pointee.append(Component(start: Point(), closed: false, segments: []))
+                    if path.pointee.count == 0 || path.pointee.last?.isClosed == true {
+                        path.pointee.append(Component(start: path.pointee.last?.start ?? Point(), closed: false, segments: []))
                     }
                     path.pointee[path.pointee.count - 1].isClosed = true
                 }
