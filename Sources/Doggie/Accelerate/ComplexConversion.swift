@@ -23,6 +23,7 @@
 //  THE SOFTWARE.
 //
 
+@_inlineable
 @_specialize(Float) @_specialize(Double)
 public func ToRect<T: FloatingMathProtocol>(_ count: Int, _ rho: UnsafePointer<T>, _ theta: UnsafePointer<T>, _ in_stride: Int, _ real: UnsafeMutablePointer<T>, _ imag: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
@@ -42,6 +43,7 @@ public func ToRect<T: FloatingMathProtocol>(_ count: Int, _ rho: UnsafePointer<T
         imag += out_stride
     }
 }
+@_inlineable
 @_specialize(Float) @_specialize(Double)
 public func ToPolar<T: FloatingMathProtocol>(_ count: Int, _ real: UnsafePointer<T>, _ imag: UnsafePointer<T>, _ in_stride: Int, _ rho: UnsafeMutablePointer<T>, _ theta: UnsafeMutablePointer<T>, _ out_stride: Int) {
     

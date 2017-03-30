@@ -25,35 +25,63 @@
 
 import Foundation
 
-private protocol ImageBaseProtocol {
+@_versioned
+protocol ImageBaseProtocol {
     
+    @_versioned
     var colorModel: ColorModelProtocol.Type { get }
     
+    @_versioned
     subscript(position: Int) -> Color { get set }
     
+    @_versioned
     func convert<RPixel: ColorPixelProtocol, RSpace : ColorSpaceProtocol>(pixel: RPixel.Type, colorSpace: RSpace, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm) -> ImageBaseProtocol where RPixel.Model == RSpace.Model
     
+    @_versioned
     func convert<RPixel: ColorPixelProtocol, RSpace : LinearColorSpaceProtocol>(pixel: RPixel.Type, colorSpace: RSpace, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm) -> ImageBaseProtocol where RPixel.Model == RSpace.Model
     
+    @_versioned
     func resampling(s_width: Int, width: Int, height: Int, algorithm: Image.ResamplingAlgorithm) -> ImageBaseProtocol
+    
+    @_versioned
     func resampling<T: SDTransformProtocol>(s_width: Int, width: Int, height: Int, transform: T, algorithm: Image.ResamplingAlgorithm) -> ImageBaseProtocol
     
+    @_versioned
     mutating func withUnsafeMutableBytes<R>(_ body: (UnsafeMutableRawBufferPointer) throws -> R) rethrows -> R
     
+    @_versioned
     func withUnsafeBytes<R>(_ body: (UnsafeRawBufferPointer) throws -> R) rethrows -> R
 }
 
-private struct ImageBase<ColorPixel: ColorPixelProtocol, ColorSpace : ColorSpaceProtocol> : ImageBaseProtocol where ColorPixel.Model == ColorSpace.Model {
+@_versioned
+@_fixed_layout
+struct ImageBase<ColorPixel: ColorPixelProtocol, ColorSpace : ColorSpaceProtocol> : ImageBaseProtocol where ColorPixel.Model == ColorSpace.Model {
     
+    @_versioned
     var buffer: [ColorPixel]
     
+    @_versioned
     var colorSpace: ColorSpace
+    
+    @_versioned
     var algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm
     
+    @_versioned
+    @_inlineable
+    init(buffer: [ColorPixel], colorSpace: ColorSpace, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm) {
+        self.buffer = buffer
+        self.colorSpace = colorSpace
+        self.algorithm = algorithm
+    }
+    
+    @_versioned
+    @_inlineable
     var colorModel: ColorModelProtocol.Type {
         return ColorSpace.Model.self
     }
     
+    @_versioned
+    @_inlineable
     subscript(position: Int) -> Color {
         get {
             let pixel = buffer[position]
@@ -65,74 +93,96 @@ private struct ImageBase<ColorPixel: ColorPixelProtocol, ColorSpace : ColorSpace
         }
     }
     
+    @_versioned
+    @_inlineable
     func convert<RPixel: ColorPixelProtocol, RSpace : ColorSpaceProtocol>(pixel: RPixel.Type, colorSpace: RSpace, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm) -> ImageBaseProtocol where RPixel.Model == RSpace.Model {
         let _buffer = zip(self.colorSpace.convert(buffer.map { $0.color }, to: colorSpace, algorithm: algorithm), buffer).map { RPixel(color: $0, opacity: $1.opacity) }
         return ImageBase<RPixel, RSpace>(buffer: _buffer, colorSpace: colorSpace, algorithm: algorithm)
     }
     
+    @_versioned
+    @_inlineable
     func convert<RPixel: ColorPixelProtocol, RSpace : LinearColorSpaceProtocol>(pixel: RPixel.Type, colorSpace: RSpace, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm) -> ImageBaseProtocol where RPixel.Model == RSpace.Model {
         let _buffer = zip(self.colorSpace.convert(buffer.map { $0.color }, to: colorSpace, algorithm: algorithm), buffer).map { RPixel(color: $0, opacity: $1.opacity) }
         return ImageBase<RPixel, RSpace>(buffer: _buffer, colorSpace: colorSpace, algorithm: algorithm)
     }
     
+    @_versioned
+    @_inlineable
     func resampling(s_width: Int, width: Int, height: Int, algorithm: Image.ResamplingAlgorithm) -> ImageBaseProtocol {
         
         return resampling(s_width: s_width, width: width, height: height, transform: SDTransform.Scale(x: Double(width) / Double(s_width), y: Double(height) / Double(buffer.count / s_width)), algorithm: algorithm)
     }
+    @_versioned
+    @_inlineable
     func resampling<T: SDTransformProtocol>(s_width: Int, width: Int, height: Int, transform: T, algorithm: Image.ResamplingAlgorithm) -> ImageBaseProtocol {
         
         return ImageBase(buffer: algorithm.calculate(source: self.buffer, s_width: s_width, width: width, height: height, transform: SDTransform(transform.inverse)), colorSpace: self.colorSpace, algorithm: self.algorithm)
     }
     
+    @_versioned
+    @_inlineable
     mutating func withUnsafeMutableBytes<R>(_ body: (UnsafeMutableRawBufferPointer) throws -> R) rethrows -> R {
         return try buffer.withUnsafeMutableBytes(body)
     }
     
+    @_versioned
+    @_inlineable
     func withUnsafeBytes<R>(_ body: (UnsafeRawBufferPointer) throws -> R) rethrows -> R {
         return try buffer.withUnsafeBytes(body)
     }
 }
 
+@_fixed_layout
 public struct Image {
     
     public let width: Int
     public let height: Int
-    private var base: ImageBaseProtocol
     
+    @_versioned
+    var base: ImageBaseProtocol
+    
+    @_inlineable
     public init(image: Image, width: Int, height: Int, resampling algorithm: ResamplingAlgorithm = .linear) {
         self.width = width
         self.height = height
         self.base = image.base.resampling(s_width: image.width, width: width, height: height, algorithm: algorithm)
     }
     
+    @_inlineable
     public init<T: SDTransformProtocol>(image: Image, width: Int, height: Int, transform: T, resampling algorithm: ResamplingAlgorithm = .linear) {
         self.width = width
         self.height = height
         self.base = image.base.resampling(s_width: image.width, width: width, height: height, transform: transform, algorithm: algorithm)
     }
     
+    @_inlineable
     public init<ColorPixel: ColorPixelProtocol, ColorSpace : ColorSpaceProtocol>(width: Int, height: Int, pixel: ColorPixel, colorSpace: ColorSpace, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm = .bradford) where ColorPixel.Model == ColorSpace.Model {
         self.width = width
         self.height = height
         self.base = ImageBase(buffer: [ColorPixel](repeating: pixel, count: width * height), colorSpace: colorSpace, algorithm: algorithm)
     }
     
+    @_inlineable
     public init<ColorPixel: ColorPixelProtocol, ColorSpace : ColorSpaceProtocol>(image: Image, pixel: ColorPixel.Type, colorSpace: ColorSpace, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm = .bradford) where ColorPixel.Model == ColorSpace.Model {
         self.width = image.width
         self.height = image.height
         self.base = image.base.convert(pixel: pixel, colorSpace: colorSpace, algorithm: algorithm)
     }
     
+    @_inlineable
     public init<ColorPixel: ColorPixelProtocol, ColorSpace : LinearColorSpaceProtocol>(image: Image, pixel: ColorPixel.Type, colorSpace: ColorSpace, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm = .bradford) where ColorPixel.Model == ColorSpace.Model {
         self.width = image.width
         self.height = image.height
         self.base = image.base.convert(pixel: pixel, colorSpace: colorSpace, algorithm: algorithm)
     }
     
+    @_inlineable
     public var colorModel: ColorModelProtocol.Type {
         return base.colorModel
     }
     
+    @_inlineable
     public subscript(x: Int, y: Int) -> Color {
         get {
             return base[width * y + x]
@@ -142,10 +192,12 @@ public struct Image {
         }
     }
     
+    @_inlineable
     public mutating func withUnsafeMutableBytes<R>(_ body: (UnsafeMutableRawBufferPointer) throws -> R) rethrows -> R {
         return try base.withUnsafeMutableBytes(body)
     }
     
+    @_inlineable
     public func withUnsafeBytes<R>(_ body: (UnsafeRawBufferPointer) throws -> R) rethrows -> R {
         return try base.withUnsafeBytes(body)
     }
@@ -166,8 +218,10 @@ extension Image {
 
 extension Image.ResamplingAlgorithm {
     
+    @_versioned
+    @_inlineable
     @_specialize(ColorPixel<RGBColorModel>) @_specialize(ColorPixel<CMYKColorModel>) @_specialize(ColorPixel<GrayColorModel>) @_specialize(ARGB32ColorPixel)
-    fileprivate func calculate<Pixel: ColorPixelProtocol>(source: [Pixel], s_width: Int, width: Int, height: Int, transform: SDTransform) -> [Pixel] {
+    func calculate<Pixel: ColorPixelProtocol>(source: [Pixel], s_width: Int, width: Int, height: Int, transform: SDTransform) -> [Pixel] {
         
         var result = [Pixel](repeating: Pixel(), count: width * height)
         
@@ -280,8 +334,9 @@ extension Image.ResamplingAlgorithm {
         return result
     }
     
+    @_versioned
     @_transparent
-    private func convolve<Pixel: ColorPixelProtocol>(source: UnsafePointer<ColorPixel<Pixel.Model>>, width: Int, height: Int, point: Point, kernel_size: Int, kernel: (Double) -> Double) -> Pixel {
+    func convolve<Pixel: ColorPixelProtocol>(source: UnsafePointer<ColorPixel<Pixel.Model>>, width: Int, height: Int, point: Point, kernel_size: Int, kernel: (Double) -> Double) -> Pixel {
         
         var pixel = ColorPixel<Pixel.Model>()
         var t: Double = 0
@@ -310,8 +365,9 @@ extension Image.ResamplingAlgorithm {
         return t == 0 ? Pixel() : Pixel(pixel / t)
     }
     
+    @_versioned
     @_transparent
-    private func smapling2<Pixel: ColorPixelProtocol>(source: UnsafePointer<ColorPixel<Pixel.Model>>, width: Int, height: Int, point: Point, sampler: (Double, Double, Double) -> Double) -> Pixel {
+    func smapling2<Pixel: ColorPixelProtocol>(source: UnsafePointer<ColorPixel<Pixel.Model>>, width: Int, height: Int, point: Point, sampler: (Double, Double, Double) -> Double) -> Pixel {
         
         let x_range = 0..<width
         let y_range = 0..<height
@@ -351,8 +407,9 @@ extension Image.ResamplingAlgorithm {
         }
     }
     
+    @_versioned
     @_transparent
-    private func smapling4<Pixel: ColorPixelProtocol>(source: UnsafePointer<ColorPixel<Pixel.Model>>, width: Int, height: Int, point: Point, sampler: (Double, Double, Double, Double, Double) -> Double) -> Pixel {
+    func smapling4<Pixel: ColorPixelProtocol>(source: UnsafePointer<ColorPixel<Pixel.Model>>, width: Int, height: Int, point: Point, sampler: (Double, Double, Double, Double, Double) -> Double) -> Pixel {
         
         let x_range = 0..<width
         let y_range = 0..<height

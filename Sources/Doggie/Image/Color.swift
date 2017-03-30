@@ -23,42 +23,69 @@
 //  THE SOFTWARE.
 //
 
-private protocol ColorBaseProtocol {
+@_versioned
+protocol ColorBaseProtocol {
     
+    @_versioned
     var count: Int { get }
     
+    @_versioned
     var colorModel: ColorModelProtocol.Type { get }
     
+    @_versioned
     var color: ColorModelProtocol { get }
     
+    @_versioned
     func convert<ColorSpace : ColorSpaceProtocol>(to colorSpace: ColorSpace, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm) -> ColorBase<ColorSpace>
+    
+    @_versioned
     func convert<ColorSpace : LinearColorSpaceProtocol>(to colorSpace: ColorSpace, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm) -> ColorBase<ColorSpace>
     
+    @_versioned
     func component(_ index: Int) -> Double
+    
+    @_versioned
     mutating func setComponent(_ index: Int, _ value: Double)
 }
 
-private struct ColorBase<ColorSpace : ColorSpaceProtocol> : ColorBaseProtocol {
+@_versioned
+@_fixed_layout
+struct ColorBase<ColorSpace : ColorSpaceProtocol> : ColorBaseProtocol {
     
+    @_versioned
+    @_inlineable
     var count: Int {
         return ColorSpace.Model.count
     }
     
+    @_versioned
+    @_inlineable
     var colorSpace: ColorSpace
     
+    @_versioned
+    @_inlineable
     var _color: ColorSpace.Model
+    
+    @_versioned
+    @_inlineable
     var color: ColorModelProtocol {
         return _color
     }
     
+    @_versioned
+    @_inlineable
     init(colorSpace: ColorSpace, color: ColorSpace.Model) {
         self.colorSpace = colorSpace
         self._color = color
     }
     
+    @_versioned
+    @_inlineable
     func component(_ index: Int) -> Double {
         return _color.component(index)
     }
+    @_versioned
+    @_inlineable
     mutating func setComponent(_ index: Int, _ value: Double) {
         _color.setComponent(index, value)
     }
@@ -66,6 +93,8 @@ private struct ColorBase<ColorSpace : ColorSpaceProtocol> : ColorBaseProtocol {
 
 extension ColorBase {
     
+    @_versioned
+    @_inlineable
     var colorModel: ColorModelProtocol.Type {
         return ColorSpace.Model.self
     }
@@ -73,25 +102,35 @@ extension ColorBase {
 
 extension ColorBase {
     
+    @_versioned
+    @_inlineable
     func convert<C : ColorSpaceProtocol>(to colorSpace: C, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm) -> ColorBase<C> {
         return ColorBase<C>(colorSpace: colorSpace, color: self.colorSpace.convert(_color, to: colorSpace, algorithm: algorithm))
     }
     
+    @_versioned
+    @_inlineable
     func convert<C : LinearColorSpaceProtocol>(to colorSpace: C, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm) -> ColorBase<C> {
         return ColorBase<C>(colorSpace: colorSpace, color: self.colorSpace.convert(_color, to: colorSpace, algorithm: algorithm))
     }
 }
 
+@_fixed_layout
 public struct Color {
     
-    fileprivate var base: ColorBaseProtocol
+    @_versioned
+    var base: ColorBaseProtocol
+    
     public var opacity: Double
     
-    fileprivate init(base: ColorBaseProtocol, opacity: Double) {
+    @_versioned
+    @_inlineable
+    init(base: ColorBaseProtocol, opacity: Double) {
         self.base = base
         self.opacity = opacity
     }
     
+    @_inlineable
     public init<ColorSpace : ColorSpaceProtocol>(colorSpace: ColorSpace, color: ColorSpace.Model, opacity: Double = 1) {
         self.base = ColorBase(colorSpace: colorSpace, color: color)
         self.opacity = opacity
@@ -100,9 +139,11 @@ public struct Color {
 
 extension Color {
     
+    @_inlineable
     public var colorModel: ColorModelProtocol.Type {
         return self.base.colorModel
     }
+    @_inlineable
     public var color: ColorModelProtocol {
         return self.base.color
     }
@@ -110,10 +151,12 @@ extension Color {
 
 extension Color {
     
+    @_inlineable
     public func convert<ColorSpace : ColorSpaceProtocol>(to colorSpace: ColorSpace, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm = .bradford) -> Color {
         return Color(base: self.base.convert(to: colorSpace, algorithm: algorithm), opacity: self.opacity)
     }
     
+    @_inlineable
     public func convert<ColorSpace : LinearColorSpaceProtocol>(to colorSpace: ColorSpace, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm = .bradford) -> Color {
         return Color(base: self.base.convert(to: colorSpace, algorithm: algorithm), opacity: self.opacity)
     }
@@ -121,13 +164,16 @@ extension Color {
 
 extension Color {
     
+    @_inlineable
     public var componentCount: Int {
         return base.count
     }
     
+    @_inlineable
     public func component(_ index: Int) -> Double {
         return base.component(index)
     }
+    @_inlineable
     public mutating func setComponent(_ index: Int, _ value: Double) {
         base.setComponent(index, value)
     }

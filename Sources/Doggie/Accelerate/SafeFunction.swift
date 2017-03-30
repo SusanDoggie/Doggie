@@ -25,6 +25,7 @@
 
 import Foundation
 
+@_inlineable
 @_specialize(UInt8) @_specialize(UInt16) @_specialize(UInt32) @_specialize(UInt64) @_specialize(UInt)
 public func addmod<T: UnsignedInteger>(_ lhs: [T], _ rhs: [T], _ mod: T) -> [T] {
     var result = lhs
@@ -33,6 +34,7 @@ public func addmod<T: UnsignedInteger>(_ lhs: [T], _ rhs: [T], _ mod: T) -> [T] 
     return result
 }
 
+@_inlineable
 @_specialize(UInt8) @_specialize(UInt16) @_specialize(UInt32) @_specialize(UInt64) @_specialize(UInt)
 public func addmod<T: UnsignedInteger>(_ lhs: [T], _ rhs: [T], _ mod: [T]) -> [T] {
     var result = lhs
@@ -41,6 +43,7 @@ public func addmod<T: UnsignedInteger>(_ lhs: [T], _ rhs: [T], _ mod: [T]) -> [T
     AddMod(lhs.count, lhs, 1, rhs, 1, mod, 1, &result, 1)
     return result
 }
+@_inlineable
 @_specialize(UInt8) @_specialize(UInt16) @_specialize(UInt32) @_specialize(UInt64) @_specialize(UInt)
 public func negmod<T: UnsignedInteger>(_ a: [T], _ mod: T) -> [T] {
     var result = a
@@ -48,6 +51,7 @@ public func negmod<T: UnsignedInteger>(_ a: [T], _ mod: T) -> [T] {
     return result
 }
 
+@_inlineable
 @_specialize(UInt8) @_specialize(UInt16) @_specialize(UInt32) @_specialize(UInt64) @_specialize(UInt)
 public func negmod<T: UnsignedInteger>(_ a: [T], _ mod: [T]) -> [T] {
     var result = a
@@ -55,6 +59,7 @@ public func negmod<T: UnsignedInteger>(_ a: [T], _ mod: [T]) -> [T] {
     NegMod(a.count, a, 1, mod, 1, &result, 1)
     return result
 }
+@_inlineable
 @_specialize(UInt8) @_specialize(UInt16) @_specialize(UInt32) @_specialize(UInt64) @_specialize(UInt)
 public func submod<T: UnsignedInteger>(_ lhs: [T], _ rhs: [T], _ mod: T) -> [T] {
     var result = lhs
@@ -63,6 +68,7 @@ public func submod<T: UnsignedInteger>(_ lhs: [T], _ rhs: [T], _ mod: T) -> [T] 
     return result
 }
 
+@_inlineable
 @_specialize(UInt8) @_specialize(UInt16) @_specialize(UInt32) @_specialize(UInt64) @_specialize(UInt)
 public func submod<T: UnsignedInteger>(_ lhs: [T], _ rhs: [T], _ mod: [T]) -> [T] {
     var result = lhs
@@ -72,6 +78,7 @@ public func submod<T: UnsignedInteger>(_ lhs: [T], _ rhs: [T], _ mod: [T]) -> [T
     return result
 }
 
+@_inlineable
 @_specialize(UInt8) @_specialize(UInt16) @_specialize(UInt32) @_specialize(UInt64) @_specialize(UInt)
 public func mulmod<T: UnsignedInteger>(_ lhs: [T], _ rhs: [T], _ mod: T) -> [T] {
     var result = lhs
@@ -80,6 +87,7 @@ public func mulmod<T: UnsignedInteger>(_ lhs: [T], _ rhs: [T], _ mod: T) -> [T] 
     return result
 }
 
+@_inlineable
 @_specialize(UInt8) @_specialize(UInt16) @_specialize(UInt32) @_specialize(UInt64) @_specialize(UInt)
 public func mulmod<T: UnsignedInteger>(_ lhs: [T], _ rhs: [T], _ mod: [T]) -> [T] {
     var result = lhs
@@ -89,7 +97,9 @@ public func mulmod<T: UnsignedInteger>(_ lhs: [T], _ rhs: [T], _ mod: [T]) -> [T
     return result
 }
 
-@_specialize(Int8) @_specialize(Int16) @_specialize(Int32) @_specialize(Int64) @_specialize(Int) @_specialize(UInt8) @_specialize(UInt16) @_specialize(UInt32) @_specialize(UInt64) @_specialize(UInt)
+@_inlineable
+@_specialize(Int8) @_specialize(Int16) @_specialize(Int32) @_specialize(Int64) @_specialize(Int)
+@_specialize(UInt8) @_specialize(UInt16) @_specialize(UInt32) @_specialize(UInt64) @_specialize(UInt)
 public func add<T: Integer>(_ lhs: [T], _ rhs: [T]) -> [T] {
     var result = lhs
     assert(lhs.count == rhs.count, "mismatch count of inputs.")
@@ -97,7 +107,9 @@ public func add<T: Integer>(_ lhs: [T], _ rhs: [T]) -> [T] {
     return result
 }
 
-@_specialize(Int8) @_specialize(Int16) @_specialize(Int32) @_specialize(Int64) @_specialize(Int) @_specialize(UInt8) @_specialize(UInt16) @_specialize(UInt32) @_specialize(UInt64) @_specialize(UInt)
+@_inlineable
+@_specialize(Int8) @_specialize(Int16) @_specialize(Int32) @_specialize(Int64) @_specialize(Int)
+@_specialize(UInt8) @_specialize(UInt16) @_specialize(UInt32) @_specialize(UInt64) @_specialize(UInt)
 public func sub<T: Integer>(_ lhs: [T], _ rhs: [T]) -> [T] {
     var result = lhs
     assert(lhs.count == rhs.count, "mismatch count of inputs.")
@@ -105,7 +117,9 @@ public func sub<T: Integer>(_ lhs: [T], _ rhs: [T]) -> [T] {
     return result
 }
 
-@_specialize(Int8) @_specialize(Int16) @_specialize(Int32) @_specialize(Int64) @_specialize(Int) @_specialize(UInt8) @_specialize(UInt16) @_specialize(UInt32) @_specialize(UInt64) @_specialize(UInt)
+@_inlineable
+@_specialize(Int8) @_specialize(Int16) @_specialize(Int32) @_specialize(Int64) @_specialize(Int)
+@_specialize(UInt8) @_specialize(UInt16) @_specialize(UInt32) @_specialize(UInt64) @_specialize(UInt)
 public func mul<T: Integer>(_ lhs: [T], _ rhs: [T]) -> [T] {
     var result = lhs
     assert(lhs.count == rhs.count, "mismatch count of inputs.")
@@ -113,7 +127,9 @@ public func mul<T: Integer>(_ lhs: [T], _ rhs: [T]) -> [T] {
     return result
 }
 
-@_specialize(Int8) @_specialize(Int16) @_specialize(Int32) @_specialize(Int64) @_specialize(Int) @_specialize(UInt8) @_specialize(UInt16) @_specialize(UInt32) @_specialize(UInt64) @_specialize(UInt)
+@_inlineable
+@_specialize(Int8) @_specialize(Int16) @_specialize(Int32) @_specialize(Int64) @_specialize(Int)
+@_specialize(UInt8) @_specialize(UInt16) @_specialize(UInt32) @_specialize(UInt64) @_specialize(UInt)
 public func div<T: Integer>(_ lhs: [T], _ rhs: [T]) -> [T] {
     var result = lhs
     assert(lhs.count == rhs.count, "mismatch count of inputs.")
@@ -121,7 +137,9 @@ public func div<T: Integer>(_ lhs: [T], _ rhs: [T]) -> [T] {
     return result
 }
 
-@_specialize(Int8) @_specialize(Int16) @_specialize(Int32) @_specialize(Int64) @_specialize(Int) @_specialize(UInt8) @_specialize(UInt16) @_specialize(UInt32) @_specialize(UInt64) @_specialize(UInt)
+@_inlineable
+@_specialize(Int8) @_specialize(Int16) @_specialize(Int32) @_specialize(Int64) @_specialize(Int)
+@_specialize(UInt8) @_specialize(UInt16) @_specialize(UInt32) @_specialize(UInt64) @_specialize(UInt)
 public func mod<T: Integer>(_ lhs: [T], _ rhs: [T]) -> [T] {
     var result = lhs
     assert(lhs.count == rhs.count, "mismatch count of inputs.")
@@ -129,6 +147,7 @@ public func mod<T: Integer>(_ lhs: [T], _ rhs: [T]) -> [T] {
     return result
 }
 
+@_inlineable
 @_specialize(Float) @_specialize(Double)
 public func add<T: FloatingPoint>(_ lhs: [T], _ rhs: [T]) -> [T] {
     var result = lhs
@@ -137,6 +156,7 @@ public func add<T: FloatingPoint>(_ lhs: [T], _ rhs: [T]) -> [T] {
     return result
 }
 
+@_inlineable
 @_specialize(Float) @_specialize(Double)
 public func sub<T: FloatingPoint>(_ lhs: [T], _ rhs: [T]) -> [T] {
     var result = lhs
@@ -145,6 +165,7 @@ public func sub<T: FloatingPoint>(_ lhs: [T], _ rhs: [T]) -> [T] {
     return result
 }
 
+@_inlineable
 @_specialize(Float) @_specialize(Double)
 public func mul<T: FloatingPoint>(_ lhs: [T], _ rhs: [T]) -> [T] {
     var result = lhs
@@ -153,6 +174,7 @@ public func mul<T: FloatingPoint>(_ lhs: [T], _ rhs: [T]) -> [T] {
     return result
 }
 
+@_inlineable
 @_specialize(Float) @_specialize(Double)
 public func div<T: FloatingPoint>(_ lhs: [T], _ rhs: [T]) -> [T] {
     var result = lhs
@@ -161,6 +183,7 @@ public func div<T: FloatingPoint>(_ lhs: [T], _ rhs: [T]) -> [T] {
     return result
 }
 
+@_inlineable
 @_specialize(Float) @_specialize(Double)
 public func mod<T: FloatingPoint>(_ lhs: [T], _ rhs: [T]) -> [T] {
     var result = lhs
@@ -169,6 +192,7 @@ public func mod<T: FloatingPoint>(_ lhs: [T], _ rhs: [T]) -> [T] {
     return result
 }
 
+@_inlineable
 @_specialize(Float) @_specialize(Double)
 public func mulAdd<T: FloatingPoint>(_ a: [T], _ b: [T], _ c: [T]) -> [T] {
     var result = a
@@ -177,6 +201,7 @@ public func mulAdd<T: FloatingPoint>(_ a: [T], _ b: [T], _ c: [T]) -> [T] {
     return result
 }
 
+@_inlineable
 @_specialize(Float) @_specialize(Double)
 public func mulSub<T: FloatingPoint>(_ a: [T], _ b: [T], _ c: [T]) -> [T] {
     var result = a
@@ -185,6 +210,7 @@ public func mulSub<T: FloatingPoint>(_ a: [T], _ b: [T], _ c: [T]) -> [T] {
     return result
 }
 
+@_inlineable
 @_specialize(Float) @_specialize(Double)
 public func subMul<T: FloatingPoint>(_ a: [T], _ b: [T], _ c: [T]) -> [T] {
     var result = a
@@ -193,12 +219,14 @@ public func subMul<T: FloatingPoint>(_ a: [T], _ b: [T], _ c: [T]) -> [T] {
     return result
 }
 
+@_inlineable
 @_specialize(Float) @_specialize(Double)
 public func dot<T: FloatingPoint>(_ a: [T], _ b: [T]) -> T {
     assert(a.count == b.count, "mismatch count of inputs.")
     return Dot(a.count, a, 1, b, 1)
 }
 
+@_inlineable
 public func add(_ lhs: [Complex], _ rhs: [Complex]) -> [Complex] {
     var result = lhs
     assert(lhs.count == rhs.count, "mismatch count of inputs.")
@@ -206,6 +234,7 @@ public func add(_ lhs: [Complex], _ rhs: [Complex]) -> [Complex] {
     return result
 }
 
+@_inlineable
 public func sub(_ lhs: [Complex], _ rhs: [Complex]) -> [Complex] {
     var result = lhs
     assert(lhs.count == rhs.count, "mismatch count of inputs.")
@@ -213,6 +242,7 @@ public func sub(_ lhs: [Complex], _ rhs: [Complex]) -> [Complex] {
     return result
 }
 
+@_inlineable
 public func mul(_ lhs: [Complex], _ rhs: [Complex]) -> [Complex] {
     var result = lhs
     assert(lhs.count == rhs.count, "mismatch count of inputs.")
@@ -220,6 +250,7 @@ public func mul(_ lhs: [Complex], _ rhs: [Complex]) -> [Complex] {
     return result
 }
 
+@_inlineable
 public func mulAdd(_ a: [Complex], _ b: [Complex], _ c: [Complex]) -> [Complex] {
     var result = a
     assert(a.count == b.count && a.count == c.count, "mismatch count of inputs.")
@@ -227,6 +258,7 @@ public func mulAdd(_ a: [Complex], _ b: [Complex], _ c: [Complex]) -> [Complex] 
     return result
 }
 
+@_inlineable
 public func mulSub(_ a: [Complex], _ b: [Complex], _ c: [Complex]) -> [Complex] {
     var result = a
     assert(a.count == b.count && a.count == c.count, "mismatch count of inputs.")
@@ -234,6 +266,7 @@ public func mulSub(_ a: [Complex], _ b: [Complex], _ c: [Complex]) -> [Complex] 
     return result
 }
 
+@_inlineable
 public func subMul(_ a: [Complex], _ b: [Complex], _ c: [Complex]) -> [Complex] {
     var result = a
     assert(a.count == b.count && a.count == c.count, "mismatch count of inputs.")
@@ -241,6 +274,7 @@ public func subMul(_ a: [Complex], _ b: [Complex], _ c: [Complex]) -> [Complex] 
     return result
 }
 
+@_inlineable
 public func mulConj(_ lhs: [Complex], _ rhs: [Complex]) -> [Complex] {
     var result = lhs
     assert(lhs.count == rhs.count, "mismatch count of inputs.")
@@ -248,6 +282,7 @@ public func mulConj(_ lhs: [Complex], _ rhs: [Complex]) -> [Complex] {
     return result
 }
 
+@_inlineable
 public func div(_ lhs: [Complex], _ rhs: [Complex]) -> [Complex] {
     var result = lhs
     assert(lhs.count == rhs.count, "mismatch count of inputs.")
@@ -255,6 +290,7 @@ public func div(_ lhs: [Complex], _ rhs: [Complex]) -> [Complex] {
     return result
 }
 
+@_inlineable
 public func transpose<T>(_ row: Int, _ column: Int, _ data: [T]) -> [T] {
     var result = data
     assert(data.count == row * column, "mismatch count of input.")
@@ -262,6 +298,7 @@ public func transpose<T>(_ row: Int, _ column: Int, _ data: [T]) -> [T] {
     return result
 }
 
+@_inlineable
 public func MatrixElimination<T: FloatingPoint>(_ row: Int, _ matrix: inout [T]) -> Bool {
     let column = matrix.count / row
     assert(matrix.count % row == 0, "count of matrix is not multiples of row.")
@@ -269,6 +306,7 @@ public func MatrixElimination<T: FloatingPoint>(_ row: Int, _ matrix: inout [T])
     return MatrixElimination(row, column, &matrix, 1, 1)
 }
 
+@_inlineable
 public func Radix2CooleyTukey(_ buffer: [Complex]) -> [Complex] {
     assert(buffer.count.isPower2, "size of buffer must be power of 2.")
     let _sqrt = sqrt(Double(buffer.count))
@@ -279,6 +317,7 @@ public func Radix2CooleyTukey(_ buffer: [Complex]) -> [Complex] {
     DispatchRadix2CooleyTukey(log2(buffer.count), buffer.map { $0 / _sqrt }, 1, buffer.count, &result, 1)
     return result
 }
+@_inlineable
 public func InverseRadix2CooleyTukey(_ buffer: [Complex]) -> [Complex] {
     assert(buffer.count.isPower2, "size of buffer must be power of 2.")
     let _sqrt = sqrt(Double(buffer.count))
@@ -290,6 +329,7 @@ public func InverseRadix2CooleyTukey(_ buffer: [Complex]) -> [Complex] {
     return result
 }
 
+@_inlineable
 public func Radix2FiniteImpulseFilter(_ signal: [Complex], _ kernel: [Complex]) -> [Complex] {
     var result = signal
     var temp = signal
@@ -299,6 +339,7 @@ public func Radix2FiniteImpulseFilter(_ signal: [Complex], _ kernel: [Complex]) 
     return result
 }
 
+@_inlineable
 @_specialize(Float) @_specialize(Double)
 public func Radix2CircularConvolve<T: BinaryFloatingPoint>(_ signal: [T], _ kernel: [T]) -> [T] where T : FloatingMathProtocol {
     assert(signal.count.isPower2, "size of signal must be power of 2.")
@@ -312,6 +353,7 @@ public func Radix2CircularConvolve<T: BinaryFloatingPoint>(_ signal: [T], _ kern
     return result
 }
 
+@_inlineable
 public func Radix2CircularConvolve(_ signal: [Complex], _ kernel: [Complex]) -> [Complex] {
     assert(signal.count.isPower2, "size of signal must be power of 2.")
     assert(signal.count == kernel.count, "mismatch count of inputs.")
@@ -324,6 +366,7 @@ public func Radix2CircularConvolve(_ signal: [Complex], _ kernel: [Complex]) -> 
     return result
 }
 
+@_inlineable
 @_specialize(Float) @_specialize(Double)
 public func Radix2PowerCircularConvolve<T: BinaryFloatingPoint>(_ signal: [T], _ n: T) -> [T] where T : FloatingMathProtocol {
     assert(signal.count.isPower2, "size of signal must be power of 2.")
@@ -336,6 +379,7 @@ public func Radix2PowerCircularConvolve<T: BinaryFloatingPoint>(_ signal: [T], _
     return result
 }
 
+@_inlineable
 public func Radix2PowerCircularConvolve(_ signal: [Complex], _ n: Double) -> [Complex] {
     assert(signal.count.isPower2, "size of signal must be power of 2.")
     if signal.count == 1 {
@@ -347,6 +391,7 @@ public func Radix2PowerCircularConvolve(_ signal: [Complex], _ n: Double) -> [Co
     return result
 }
 
+@_inlineable
 public func Radix2CooleyTukey<U: UnsignedInteger>(_ buffer: [U], _ alpha: U, _ mod: U) -> [U] {
     assert(buffer.count.isPower2, "size of buffer must be power of 2.")
     if buffer.count == 1 {
@@ -356,6 +401,7 @@ public func Radix2CooleyTukey<U: UnsignedInteger>(_ buffer: [U], _ alpha: U, _ m
     Radix2CooleyTukey(log2(buffer.count), buffer, 1, buffer.count, alpha, mod, &result, 1)
     return result
 }
+@_inlineable
 public func InverseRadix2CooleyTukey<U: UnsignedInteger>(_ buffer: [U], _ alpha: U, _ mod: U) -> [U] {
     assert(buffer.count.isPower2, "size of buffer must be power of 2.")
     if buffer.count == 1 {
@@ -365,6 +411,7 @@ public func InverseRadix2CooleyTukey<U: UnsignedInteger>(_ buffer: [U], _ alpha:
     InverseRadix2CooleyTukey(log2(buffer.count), buffer, 1, buffer.count, alpha, mod, &result, 1)
     return result
 }
+@_inlineable
 public func Radix2CircularConvolve<U: UnsignedInteger>(_ signal: [U], _ kernel: [U], _ alpha: U, _ mod: U) -> [U] {
     assert(signal.count.isPower2, "size of signal must be power of 2.")
     assert(signal.count == kernel.count, "mismatch count of inputs.")
