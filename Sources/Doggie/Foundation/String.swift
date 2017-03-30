@@ -25,6 +25,7 @@
 
 extension String {
     
+    @_inlineable
     public init?<Input : Collection, Encoding : UnicodeCodec>(_ input: Input, encoding: Encoding.Type) where Input.Iterator.Element == Encoding.CodeUnit {
         if let str = String._fromCodeUnitSequence(encoding, input: input) {
             self = str

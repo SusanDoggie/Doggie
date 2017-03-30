@@ -52,6 +52,7 @@ public class RandomGenerator {
 public let _dev_random = RandomGenerator(source: "/dev/random")
 public let _dev_urandom = RandomGenerator(source: "/dev/urandom")
 
+@_inlineable
 public func sec_random_uniform(_ bound: UIntMax) -> UIntMax {
     let RANDMAX: UIntMax = ~0
     var _rand: UIntMax = 0
@@ -68,6 +69,7 @@ public func sec_random_uniform(_ bound: UIntMax) -> UIntMax {
     return _rand
 }
 
+@_inlineable
 public func random_uniform(_ bound: UIntMax) -> UIntMax {
     let RANDMAX: UIntMax = ~0
     var _rand: UIntMax = 0
@@ -84,8 +86,9 @@ public func random_uniform(_ bound: UIntMax) -> UIntMax {
     return _rand
 }
 
-public extension BinaryFloatingPoint {
+extension BinaryFloatingPoint {
     
+    @_inlineable
     public static func random(includeOne: Bool = false) -> Self {
         let significandBitCount: UIntMax = numericCast(Self.significandBitCount)
         let exponentBitPattern = numericCast((1 as Self).exponentBitPattern) << significandBitCount
@@ -100,6 +103,7 @@ public extension BinaryFloatingPoint {
 
 public extension Range where Bound : BinaryFloatingPoint {
     
+    @_inlineable
     public func random() -> Bound {
         let diff = upperBound - lowerBound
         return (Bound.random() * diff) + lowerBound
@@ -107,11 +111,13 @@ public extension Range where Bound : BinaryFloatingPoint {
 }
 public extension ClosedRange where Bound : BinaryFloatingPoint {
     
+    @_inlineable
     public func random() -> Bound {
         let diff = upperBound - lowerBound
         return (Bound.random(includeOne: true) * diff) + lowerBound
     }
 }
+@_inlineable
 public func normal_distribution(mean: Double, variance: Double) -> Double {
     let u = 1 - Double.random(includeOne: false)
     let v = 1 - Double.random(includeOne: false)
@@ -121,6 +127,7 @@ public func normal_distribution(mean: Double, variance: Double) -> Double {
     
     return sqrt(variance * r) * cos(theta) + mean
 }
+@_inlineable
 public func normal_distribution(mean: Complex, variance: Double) -> Complex {
     let u = 1 - Double.random(includeOne: false)
     let v = 1 - Double.random(includeOne: false)

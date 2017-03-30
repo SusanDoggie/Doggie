@@ -53,14 +53,17 @@ public protocol MatrixProtocol: Hashable {
 
 extension MatrixProtocol {
     
+    @_inlineable
     public var tx: Double {
         return d
     }
     
+    @_inlineable
     public var ty: Double {
         return h
     }
     
+    @_inlineable
     public var tz: Double {
         return l
     }
@@ -68,6 +71,7 @@ extension MatrixProtocol {
 
 extension MatrixProtocol {
     
+    @_inlineable
     public var hashValue: Int {
         return hash_combine(seed: 0, a, b, c, d, e, f, g, h, i, j, k, l)
     }
@@ -75,6 +79,7 @@ extension MatrixProtocol {
 
 extension MatrixProtocol {
     
+    @_inlineable
     public var determinant : Double {
         let _c = c * f - b * g
         let _g = c * e - a * g
@@ -106,6 +111,7 @@ public struct Matrix: MatrixProtocol {
     public var k: Double
     public var l: Double
     
+    @_inlineable
     public init<T: MatrixProtocol>(_ m: T) {
         self.a = m.a
         self.b = m.b
@@ -121,6 +127,7 @@ public struct Matrix: MatrixProtocol {
         self.l = m.l
     }
     
+    @_inlineable
     public init(a: Double, b: Double, c: Double, d: Double, e: Double, f: Double, g: Double, h: Double, i: Double, j: Double, k: Double, l: Double) {
         self.a = a
         self.b = b
@@ -139,6 +146,7 @@ public struct Matrix: MatrixProtocol {
 
 extension Matrix : CustomStringConvertible {
     
+    @_inlineable
     public var description: String {
         return "{a: \(a), b: \(b), c: \(c), d: \(d), e: \(e), f: \(f), g: \(g), h: \(h), i: \(i), j: \(j), k: \(k), l: \(l)}"
     }
@@ -146,6 +154,7 @@ extension Matrix : CustomStringConvertible {
 
 extension Matrix {
     
+    @_inlineable
     public var inverse : Matrix {
         let _a = g * j - f * k
         let _b = c * j - b * k
@@ -170,6 +179,7 @@ extension Matrix {
 
 extension Matrix {
     
+    @_inlineable
     public var tx: Double {
         get {
             return d
@@ -179,6 +189,7 @@ extension Matrix {
         }
     }
     
+    @_inlineable
     public var ty: Double {
         get {
             return h
@@ -188,6 +199,7 @@ extension Matrix {
         }
     }
     
+    @_inlineable
     public var tz: Double {
         get {
             return l
@@ -210,6 +222,7 @@ extension Matrix {
     ///
     public struct Identity: MatrixProtocol {
         
+        @_inlineable
         public init() {
         }
     }
@@ -226,6 +239,7 @@ extension Matrix {
         
         public var angle: Double
         
+        @_inlineable
         public init(_ angle: Double) {
             self.angle = angle
         }
@@ -243,6 +257,7 @@ extension Matrix {
         
         public var angle: Double
         
+        @_inlineable
         public init(_ angle: Double) {
             self.angle = angle
         }
@@ -260,6 +275,7 @@ extension Matrix {
         
         public var angle: Double
         
+        @_inlineable
         public init(_ angle: Double) {
             self.angle = angle
         }
@@ -279,11 +295,13 @@ extension Matrix {
         public var y: Double
         public var z: Double
         
+        @_inlineable
         public init(_ scale: Double) {
             self.x = scale
             self.y = scale
             self.z = scale
         }
+        @_inlineable
         public init(x: Double, y: Double, z: Double) {
             self.x = x
             self.y = y
@@ -305,6 +323,7 @@ extension Matrix {
         public var y: Double
         public var z: Double
         
+        @_inlineable
         public init(x: Double, y: Double, z: Double) {
             self.x = x
             self.y = y
@@ -324,9 +343,11 @@ extension Matrix {
         
         public var x: Double
         
+        @_inlineable
         public init() {
             self.x = 0
         }
+        @_inlineable
         public init(_ x: Double) {
             self.x = x
         }
@@ -344,9 +365,11 @@ extension Matrix {
         
         public var y: Double
         
+        @_inlineable
         public init() {
             self.y = 0
         }
+        @_inlineable
         public init(_ y: Double) {
             self.y = y
         }
@@ -364,17 +387,21 @@ extension Matrix {
         
         public var z: Double
         
+        @_inlineable
         public init() {
             self.z = 0
         }
+        @_inlineable
         public init(_ z: Double) {
             self.z = z
         }
     }
     
+    @_inlineable
     public static func Rotate(roll x: Double, pitch y: Double, yaw z: Double) -> Matrix {
         return RotateX(x) * RotateY(y) * RotateZ(z)
     }
+    @_inlineable
     public static func Rotate(radian: Double, x: Double, y: Double, z: Double) -> Matrix {
         let _abs = sqrt(x * x + y * y + z * z)
         let vx = x / _abs
@@ -399,12 +426,14 @@ extension Matrix {
         )
     }
     
+    @_inlineable
     public static func CameraTransform(position tx: Double, _ ty: Double, _ tz: Double, rotate ax: Double, _ ay: Double, _ az: Double) -> Matrix {
         return Translate(x: -tx, y: -ty, z: -tz) * RotateZ(-az) * RotateY(-ay) * RotateX(-ax)
     }
 }
 
 // column major
+@_inlineable
 public func PerspectiveProjectMatrix(alpha: Double, aspect: Double, nearZ: Double, farZ: Double) -> [Double] {
     let cotan = 1.0 / tan(alpha * 0.5)
     return [
@@ -417,302 +446,389 @@ public func PerspectiveProjectMatrix(alpha: Double, aspect: Double, nearZ: Doubl
 
 extension Matrix.Identity {
     
+    @_inlineable
     public var a: Double {
         return 1
     }
+    @_inlineable
     public var b: Double {
         return 0
     }
+    @_inlineable
     public var c: Double {
         return 0
     }
+    @_inlineable
     public var d: Double {
         return 0
     }
+    @_inlineable
     public var e: Double {
         return 0
     }
+    @_inlineable
     public var f: Double {
         return 1
     }
+    @_inlineable
     public var g: Double {
         return 0
     }
+    @_inlineable
     public var h: Double {
         return 0
     }
+    @_inlineable
     public var i: Double {
         return 0
     }
+    @_inlineable
     public var j: Double {
         return 0
     }
+    @_inlineable
     public var k: Double {
         return 1
     }
+    @_inlineable
     public var l: Double {
         return 0
     }
     
+    @_inlineable
     public var inverse : Matrix.Identity {
         return self
     }
 }
 
+@_inlineable
 public func == (_: Matrix.Identity, _: Matrix.Identity) -> Bool {
     return true
 }
+@_inlineable
 public func != (_: Matrix.Identity, _: Matrix.Identity) -> Bool {
     return false
 }
 
+@_inlineable
 public func * (_: Matrix.Identity, _: Matrix.Identity) -> Matrix.Identity {
     return Matrix.Identity()
 }
 
+@_inlineable
 public func * <T: MatrixProtocol>(_: Matrix.Identity, rhs: T) -> T {
     return rhs
 }
 
+@_inlineable
 public func * <S: MatrixProtocol>(lhs: S, _: Matrix.Identity) -> S {
     return lhs
 }
 
+@_inlineable
 public func *= <S: MatrixProtocol>(_: inout S, _: Matrix.Identity) {
 }
 
 extension Matrix.RotateX {
     
+    @_inlineable
     public var a: Double {
         return 1
     }
+    @_inlineable
     public var b: Double {
         return 0
     }
+    @_inlineable
     public var c: Double {
         return 0
     }
+    @_inlineable
     public var d: Double {
         return 0
     }
+    @_inlineable
     public var e: Double {
         return 0
     }
+    @_inlineable
     public var f: Double {
         return cos(angle)
     }
+    @_inlineable
     public var g: Double {
         return -sin(angle)
     }
+    @_inlineable
     public var h: Double {
         return 0
     }
+    @_inlineable
     public var i: Double {
         return 0
     }
+    @_inlineable
     public var j: Double {
         return sin(angle)
     }
+    @_inlineable
     public var k: Double {
         return cos(angle)
     }
+    @_inlineable
     public var l: Double {
         return 0
     }
     
+    @_inlineable
     public var inverse : Matrix.RotateX {
         return Matrix.RotateX(-angle)
     }
 }
 
+@_inlineable
 public func == (lhs: Matrix.RotateX, rhs: Matrix.RotateX) -> Bool {
     return lhs.angle == rhs.angle
 }
+@_inlineable
 public func != (lhs: Matrix.RotateX, rhs: Matrix.RotateX) -> Bool {
     return lhs.angle != rhs.angle
 }
 
+@_inlineable
 public func * (lhs: Matrix.RotateX, rhs: Matrix.RotateX) -> Matrix.RotateX {
     return Matrix.RotateX(lhs.angle + rhs.angle)
 }
 
+@_inlineable
 public func *= (lhs: inout Matrix.RotateX, rhs: Matrix.RotateX) {
     return lhs.angle += rhs.angle
 }
 
 extension Matrix.RotateY {
     
+    @_inlineable
     public var a: Double {
         return cos(angle)
     }
+    @_inlineable
     public var b: Double {
         return 0
     }
+    @_inlineable
     public var c: Double {
         return sin(angle)
     }
+    @_inlineable
     public var d: Double {
         return 0
     }
+    @_inlineable
     public var e: Double {
         return 0
     }
+    @_inlineable
     public var f: Double {
         return 1
     }
+    @_inlineable
     public var g: Double {
         return 0
     }
+    @_inlineable
     public var h: Double {
         return 0
     }
+    @_inlineable
     public var i: Double {
         return -sin(angle)
     }
+    @_inlineable
     public var j: Double {
         return 0
     }
+    @_inlineable
     public var k: Double {
         return cos(angle)
     }
+    @_inlineable
     public var l: Double {
         return 0
     }
     
+    @_inlineable
     public var inverse : Matrix.RotateY {
         return Matrix.RotateY(-angle)
     }
 }
 
+@_inlineable
 public func == (lhs: Matrix.RotateY, rhs: Matrix.RotateY) -> Bool {
     return lhs.angle == rhs.angle
 }
+@_inlineable
 public func != (lhs: Matrix.RotateY, rhs: Matrix.RotateY) -> Bool {
     return lhs.angle != rhs.angle
 }
 
+@_inlineable
 public func * (lhs: Matrix.RotateY, rhs: Matrix.RotateY) -> Matrix.RotateY {
     return Matrix.RotateY(lhs.angle + rhs.angle)
 }
 
+@_inlineable
 public func *= (lhs: inout Matrix.RotateY, rhs: Matrix.RotateY) {
     return lhs.angle += rhs.angle
 }
 
 extension Matrix.RotateZ {
     
+    @_inlineable
     public var a: Double {
         return cos(angle)
     }
+    @_inlineable
     public var b: Double {
         return -sin(angle)
     }
+    @_inlineable
     public var c: Double {
         return 0
     }
+    @_inlineable
     public var d: Double {
         return 0
     }
+    @_inlineable
     public var e: Double {
         return sin(angle)
     }
+    @_inlineable
     public var f: Double {
         return cos(angle)
     }
+    @_inlineable
     public var g: Double {
         return 0
     }
+    @_inlineable
     public var h: Double {
         return 0
     }
+    @_inlineable
     public var i: Double {
         return 0
     }
+    @_inlineable
     public var j: Double {
         return 0
     }
+    @_inlineable
     public var k: Double {
         return 1
     }
+    @_inlineable
     public var l: Double {
         return 0
     }
     
+    @_inlineable
     public var inverse : Matrix.RotateZ {
         return Matrix.RotateZ(-angle)
     }
 }
 
+@_inlineable
 public func == (lhs: Matrix.RotateZ, rhs: Matrix.RotateZ) -> Bool {
     return lhs.angle == rhs.angle
 }
+@_inlineable
 public func != (lhs: Matrix.RotateZ, rhs: Matrix.RotateZ) -> Bool {
     return lhs.angle != rhs.angle
 }
 
+@_inlineable
 public func * (lhs: Matrix.RotateZ, rhs: Matrix.RotateZ) -> Matrix.RotateZ {
     return Matrix.RotateZ(lhs.angle + rhs.angle)
 }
 
+@_inlineable
 public func *= (lhs: inout Matrix.RotateZ, rhs: Matrix.RotateZ) {
     return lhs.angle += rhs.angle
 }
 
 extension Matrix.Scale {
     
+    @_inlineable
     public var a: Double {
         return x
     }
+    @_inlineable
     public var b: Double {
         return 0
     }
+    @_inlineable
     public var c: Double {
         return 0
     }
+    @_inlineable
     public var d: Double {
         return 0
     }
+    @_inlineable
     public var e: Double {
         return 0
     }
+    @_inlineable
     public var f: Double {
         return y
     }
+    @_inlineable
     public var g: Double {
         return 0
     }
+    @_inlineable
     public var h: Double {
         return 0
     }
+    @_inlineable
     public var i: Double {
         return 0
     }
+    @_inlineable
     public var j: Double {
         return 0
     }
+    @_inlineable
     public var k: Double {
         return z
     }
+    @_inlineable
     public var l: Double {
         return 0
     }
     
+    @_inlineable
     public var inverse : Matrix.Scale {
         return Matrix.Scale(x: 1 / x, y: 1 / y, z: 1 / z)
     }
 }
 
+@_inlineable
 public func == (lhs: Matrix.Scale, rhs: Matrix.Scale) -> Bool {
     return lhs.x == rhs.x && lhs.y == rhs.y && lhs.z == rhs.z
 }
+@_inlineable
 public func != (lhs: Matrix.Scale, rhs: Matrix.Scale) -> Bool {
     return lhs.x != rhs.x || lhs.y != rhs.y || lhs.z != rhs.z
 }
 
+@_inlineable
 public func * (lhs: Matrix.Scale, rhs: Matrix.Scale) -> Matrix.Scale {
     return Matrix.Scale(x: lhs.x * rhs.x, y: lhs.y * rhs.y, z: lhs.z * rhs.z)
 }
 
+@_inlineable
 public func *= (lhs: inout Matrix.Scale, rhs: Matrix.Scale) {
     lhs.x *= rhs.x
     lhs.y *= rhs.y
@@ -721,43 +837,56 @@ public func *= (lhs: inout Matrix.Scale, rhs: Matrix.Scale) {
 
 extension Matrix.Translate {
     
+    @_inlineable
     public var a: Double {
         return 1
     }
+    @_inlineable
     public var b: Double {
         return 0
     }
+    @_inlineable
     public var c: Double {
         return 0
     }
+    @_inlineable
     public var d: Double {
         return x
     }
+    @_inlineable
     public var e: Double {
         return 0
     }
+    @_inlineable
     public var f: Double {
         return 1
     }
+    @_inlineable
     public var g: Double {
         return 0
     }
+    @_inlineable
     public var h: Double {
         return y
     }
+    @_inlineable
     public var i: Double {
         return 0
     }
+    @_inlineable
     public var j: Double {
         return 0
     }
+    @_inlineable
     public var k: Double {
         return 1
     }
+    @_inlineable
     public var l: Double {
         return z
     }
     
+    @_inlineable
     public var inverse : Matrix.Translate {
         return Matrix.Translate(x: -x, y: -y, z: -z)
     }
@@ -765,6 +894,7 @@ extension Matrix.Translate {
 
 extension Matrix.Translate {
     
+    @_inlineable
     public var tx: Double {
         get {
             return x
@@ -774,6 +904,7 @@ extension Matrix.Translate {
         }
     }
     
+    @_inlineable
     public var ty: Double {
         get {
             return y
@@ -783,6 +914,7 @@ extension Matrix.Translate {
         }
     }
     
+    @_inlineable
     public var tz: Double {
         get {
             return z
@@ -795,195 +927,249 @@ extension Matrix.Translate {
 
 extension Matrix.ReflectX {
     
+    @_inlineable
     public var a: Double {
         return -1
     }
+    @_inlineable
     public var b: Double {
         return 0
     }
+    @_inlineable
     public var c: Double {
         return 0
     }
+    @_inlineable
     public var d: Double {
         return 2 * x
     }
+    @_inlineable
     public var e: Double {
         return 0
     }
+    @_inlineable
     public var f: Double {
         return 1
     }
+    @_inlineable
     public var g: Double {
         return 0
     }
+    @_inlineable
     public var h: Double {
         return 0
     }
+    @_inlineable
     public var i: Double {
         return 0
     }
+    @_inlineable
     public var j: Double {
         return 0
     }
+    @_inlineable
     public var k: Double {
         return 1
     }
+    @_inlineable
     public var l: Double {
         return 0
     }
     
+    @_inlineable
     public var inverse : Matrix.ReflectX {
         return self
     }
 }
 
+@_inlineable
 public func == (lhs: Matrix.ReflectX, rhs: Matrix.ReflectX) -> Bool {
     return lhs.x == rhs.x
 }
+@_inlineable
 public func != (lhs: Matrix.ReflectX, rhs: Matrix.ReflectX) -> Bool {
     return lhs.x != rhs.x
 }
 
 extension Matrix.ReflectY {
     
+    @_inlineable
     public var a: Double {
         return 1
     }
+    @_inlineable
     public var b: Double {
         return 0
     }
+    @_inlineable
     public var c: Double {
         return 0
     }
+    @_inlineable
     public var d: Double {
         return 0
     }
+    @_inlineable
     public var e: Double {
         return 0
     }
+    @_inlineable
     public var f: Double {
         return -1
     }
+    @_inlineable
     public var g: Double {
         return 0
     }
+    @_inlineable
     public var h: Double {
         return 2 * y
     }
+    @_inlineable
     public var i: Double {
         return 0
     }
+    @_inlineable
     public var j: Double {
         return 0
     }
+    @_inlineable
     public var k: Double {
         return 1
     }
+    @_inlineable
     public var l: Double {
         return 0
     }
     
+    @_inlineable
     public var inverse : Matrix.ReflectY {
         return self
     }
 }
 
+@_inlineable
 public func == (lhs: Matrix.ReflectY, rhs: Matrix.ReflectY) -> Bool {
     return lhs.y == rhs.y
 }
+@_inlineable
 public func != (lhs: Matrix.ReflectY, rhs: Matrix.ReflectY) -> Bool {
     return lhs.y != rhs.y
 }
 
 extension Matrix.ReflectZ {
     
+    @_inlineable
     public var a: Double {
         return 1
     }
+    @_inlineable
     public var b: Double {
         return 0
     }
+    @_inlineable
     public var c: Double {
         return 0
     }
+    @_inlineable
     public var d: Double {
         return 0
     }
+    @_inlineable
     public var e: Double {
         return 0
     }
+    @_inlineable
     public var f: Double {
         return 1
     }
+    @_inlineable
     public var g: Double {
         return 0
     }
+    @_inlineable
     public var h: Double {
         return 0
     }
+    @_inlineable
     public var i: Double {
         return 0
     }
+    @_inlineable
     public var j: Double {
         return 0
     }
+    @_inlineable
     public var k: Double {
         return -1
     }
+    @_inlineable
     public var l: Double {
         return 2 * z
     }
     
+    @_inlineable
     public var inverse : Matrix.ReflectZ {
         return self
     }
 }
 
+@_inlineable
 public func == (lhs: Matrix.ReflectZ, rhs: Matrix.ReflectZ) -> Bool {
     return lhs.z == rhs.z
 }
+@_inlineable
 public func != (lhs: Matrix.ReflectZ, rhs: Matrix.ReflectZ) -> Bool {
     return lhs.z != rhs.z
 }
 
+@_inlineable
 public func == (lhs: Matrix.Translate, rhs: Matrix.Translate) -> Bool {
     return lhs.x == rhs.x && lhs.y == rhs.y && lhs.z == rhs.z
 }
+@_inlineable
 public func != (lhs: Matrix.Translate, rhs: Matrix.Translate) -> Bool {
     return lhs.x != rhs.x || lhs.y != rhs.y || lhs.z != rhs.z
 }
 
+@_inlineable
 public func * (lhs: Matrix.Translate, rhs: Matrix.Translate) -> Matrix.Translate {
     return Matrix.Translate(x: lhs.x + rhs.x, y: lhs.y + rhs.y, z: lhs.z + rhs.z)
 }
 
+@_inlineable
 public func *= (lhs: inout Matrix.Translate, rhs: Matrix.Translate) {
     lhs.x += rhs.x
     lhs.y += rhs.y
     lhs.z += rhs.z
 }
 
+@_inlineable
 public func == <T: MatrixProtocol>(lhs: T, rhs: T) -> Bool {
     return lhs.a == rhs.a && lhs.b == rhs.b && lhs.c == rhs.c && lhs.d == rhs.d
         && lhs.e == rhs.e && lhs.f == rhs.f && lhs.g == rhs.g && lhs.h == rhs.h
         && lhs.i == rhs.i && lhs.j == rhs.j && lhs.k == rhs.k && lhs.l == rhs.l
 }
+@_inlineable
 public func != <T: MatrixProtocol>(lhs: T, rhs: T) -> Bool {
     return lhs.a != rhs.a || lhs.b != rhs.b || lhs.c != rhs.c || lhs.d != rhs.d
         || lhs.e != rhs.e || lhs.f != rhs.f || lhs.g != rhs.g || lhs.h != rhs.h
         || lhs.i != rhs.i || lhs.j != rhs.j || lhs.k != rhs.k || lhs.l != rhs.l
 }
+@_inlineable
 public func == <S: MatrixProtocol, T: MatrixProtocol>(lhs: S, rhs: T) -> Bool {
     return lhs.a == rhs.a && lhs.b == rhs.b && lhs.c == rhs.c && lhs.d == rhs.d
         && lhs.e == rhs.e && lhs.f == rhs.f && lhs.g == rhs.g && lhs.h == rhs.h
         && lhs.i == rhs.i && lhs.j == rhs.j && lhs.k == rhs.k && lhs.l == rhs.l
 }
+@_inlineable
 public func != <S: MatrixProtocol, T: MatrixProtocol>(lhs: S, rhs: T) -> Bool {
     return lhs.a != rhs.a || lhs.b != rhs.b || lhs.c != rhs.c || lhs.d != rhs.d
         || lhs.e != rhs.e || lhs.f != rhs.f || lhs.g != rhs.g || lhs.h != rhs.h
         || lhs.i != rhs.i || lhs.j != rhs.j || lhs.k != rhs.k || lhs.l != rhs.l
 }
 
+@_inlineable
 public func * <S: MatrixProtocol, T: MatrixProtocol>(lhs: S, rhs: T) -> Matrix {
     let a = lhs.a * rhs.a + lhs.e * rhs.b + lhs.i * rhs.c
     let b = lhs.b * rhs.a + lhs.f * rhs.b + lhs.j * rhs.c
@@ -1000,14 +1186,17 @@ public func * <S: MatrixProtocol, T: MatrixProtocol>(lhs: S, rhs: T) -> Matrix {
     return Matrix(a: a, b: b, c: c, d: d, e: e, f: f, g: g, h: h, i: i, j: j, k: k, l: l)
 }
 
+@_inlineable
 public func *= <T: MatrixProtocol>(lhs: inout Matrix, rhs: T) {
     lhs = lhs * rhs
 }
 
+@_inlineable
 public func * <T: MatrixProtocol>(lhs: Vector, rhs: T) -> Vector {
     return Vector(x: lhs.x * rhs.a + lhs.y * rhs.b + lhs.z * rhs.c + rhs.d, y: lhs.x * rhs.e + lhs.y * rhs.f + lhs.z * rhs.g + rhs.h, z: lhs.x * rhs.i + lhs.y * rhs.j + lhs.z * rhs.k + rhs.l)
 }
 
+@_inlineable
 public func *= <T: MatrixProtocol>(lhs: inout Vector, rhs: T) {
     lhs = lhs * rhs
 }

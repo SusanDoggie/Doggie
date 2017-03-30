@@ -39,6 +39,7 @@ public protocol ColorModelProtocol {
 
 extension ColorModelProtocol {
     
+    @_inlineable
     public var hashValue: Int {
         var hash = 0
         for i in 0..<Self.count {
@@ -48,21 +49,30 @@ extension ColorModelProtocol {
     }
 }
 
+@_fixed_layout
 public struct ColorModelComponentCollection<Model: ColorModelProtocol>: RandomAccessCollection {
     
     public typealias Indices = CountableRange<Int>
     
     public typealias Index = Int
     
-    fileprivate let base: Model
+    public let base: Model
     
+    @_inlineable
+    public init(base: Model) {
+        self.base = base
+    }
+    
+    @_inlineable
     public var startIndex: Int {
         return 0
     }
+    @_inlineable
     public var endIndex: Int {
         return Model.count
     }
     
+    @_inlineable
     public subscript(position: Int) -> Double {
         _failEarlyRangeCheck(position, bounds: startIndex..<endIndex)
         return base.component(position)
@@ -71,14 +81,17 @@ public struct ColorModelComponentCollection<Model: ColorModelProtocol>: RandomAc
 
 extension ColorModelProtocol {
     
+    @_inlineable
     public var components: ColorModelComponentCollection<Self> {
         return ColorModelComponentCollection(base: self)
     }
 }
 
+@_inlineable
 public prefix func +<Model : ColorModelProtocol>(val: Model) -> Model {
     return val
 }
+@_inlineable
 public prefix func -<Model : ColorModelProtocol>(val: Model) -> Model {
     var val = val
     for i in 0..<Model.count {
@@ -86,6 +99,7 @@ public prefix func -<Model : ColorModelProtocol>(val: Model) -> Model {
     }
     return val
 }
+@_inlineable
 public func +<Model : ColorModelProtocol>(lhs: Model, rhs:  Model) -> Model {
     var result = Model()
     for i in 0..<Model.count {
@@ -93,6 +107,7 @@ public func +<Model : ColorModelProtocol>(lhs: Model, rhs:  Model) -> Model {
     }
     return result
 }
+@_inlineable
 public func -<Model : ColorModelProtocol>(lhs: Model, rhs:  Model) -> Model {
     var result = Model()
     for i in 0..<Model.count {
@@ -101,6 +116,7 @@ public func -<Model : ColorModelProtocol>(lhs: Model, rhs:  Model) -> Model {
     return result
 }
 
+@_inlineable
 public func *<Model : ColorModelProtocol>(lhs: Double, rhs:  Model) -> Model {
     var result = Model()
     for i in 0..<Model.count {
@@ -108,6 +124,7 @@ public func *<Model : ColorModelProtocol>(lhs: Double, rhs:  Model) -> Model {
     }
     return result
 }
+@_inlineable
 public func *<Model : ColorModelProtocol>(lhs: Model, rhs:  Double) -> Model {
     var result = Model()
     for i in 0..<Model.count {
@@ -116,6 +133,7 @@ public func *<Model : ColorModelProtocol>(lhs: Model, rhs:  Double) -> Model {
     return result
 }
 
+@_inlineable
 public func /<Model : ColorModelProtocol>(lhs: Model, rhs:  Double) -> Model {
     var result = Model()
     for i in 0..<Model.count {
@@ -124,32 +142,38 @@ public func /<Model : ColorModelProtocol>(lhs: Model, rhs:  Double) -> Model {
     return result
 }
 
+@_inlineable
 public func *=<Model : ColorModelProtocol> (lhs: inout Model, rhs:  Double) {
     for i in 0..<Model.count {
         lhs.setComponent(i, lhs.component(i) * rhs)
     }
 }
+@_inlineable
 public func /=<Model : ColorModelProtocol> (lhs: inout Model, rhs:  Double) {
     for i in 0..<Model.count {
         lhs.setComponent(i, lhs.component(i) / rhs)
     }
 }
+@_inlineable
 public func +=<Model : ColorModelProtocol> (lhs: inout Model, rhs:  Model) {
     for i in 0..<Model.count {
         lhs.setComponent(i, lhs.component(i) + rhs.component(i))
     }
 }
+@_inlineable
 public func -=<Model : ColorModelProtocol> (lhs: inout Model, rhs:  Model) {
     for i in 0..<Model.count {
         lhs.setComponent(i, lhs.component(i) - rhs.component(i))
     }
 }
+@_inlineable
 public func ==<Model : ColorModelProtocol>(lhs: Model, rhs: Model) -> Bool {
     for i in 0..<Model.count where lhs.component(i) != rhs.component(i) {
         return false
     }
     return true
 }
+@_inlineable
 public func !=<Model : ColorModelProtocol>(lhs: Model, rhs: Model) -> Bool {
     for i in 0..<Model.count where lhs.component(i) != rhs.component(i) {
         return true
@@ -166,21 +190,25 @@ public protocol ColorVectorConvertible : ColorModelProtocol {
 
 extension ColorVectorConvertible {
     
+    @_inlineable
     public init() {
         self.init(Vector())
     }
 }
 
+@_inlineable
 public func * <C: ColorVectorConvertible, T: MatrixProtocol>(lhs: C, rhs: T) -> Vector {
     return lhs.vector * rhs
 }
 
+@_inlineable
 public func *= <C: ColorVectorConvertible, T: MatrixProtocol>(lhs: inout C, rhs: T) {
     lhs.vector *= rhs
 }
 
 public struct RGBColorModel : ColorModelProtocol {
     
+    @_inlineable
     public static var count: Int {
         return 3
     }
@@ -189,12 +217,14 @@ public struct RGBColorModel : ColorModelProtocol {
     public var green: Double
     public var blue: Double
     
+    @_inlineable
     public init(red: Double, green: Double, blue: Double) {
         self.red = red
         self.green = green
         self.blue = blue
     }
     
+    @_inlineable
     public func component(_ index: Int) -> Double {
         switch index {
         case 0: return red
@@ -203,6 +233,7 @@ public struct RGBColorModel : ColorModelProtocol {
         default: fatalError()
         }
     }
+    @_inlineable
     public mutating func setComponent(_ index: Int, _ value: Double) {
         switch index {
         case 0: red = value
@@ -215,12 +246,14 @@ public struct RGBColorModel : ColorModelProtocol {
 
 extension RGBColorModel : ColorVectorConvertible {
     
+    @_inlineable
     public init(_ vector: Vector) {
         self.red = vector.x
         self.green = vector.y
         self.blue = vector.z
     }
     
+    @_inlineable
     public var vector: Vector {
         get {
             return Vector(x: red, y: green, z: blue)
@@ -235,6 +268,7 @@ extension RGBColorModel : ColorVectorConvertible {
 
 extension RGBColorModel : CustomStringConvertible {
     
+    @_inlineable
     public var description: String {
         return "RGBColorModel(red: \(red), green: \(green), blue: \(blue))"
     }
@@ -242,6 +276,7 @@ extension RGBColorModel : CustomStringConvertible {
 
 extension RGBColorModel {
     
+    @_inlineable
     public init(_ hex: UInt32) {
         self.red = Double((hex >> 16) & 0xFF) / 255
         self.green = Double((hex >> 8) & 0xFF) / 255
@@ -251,12 +286,14 @@ extension RGBColorModel {
 
 extension RGBColorModel {
     
+    @_inlineable
     public init(_ gray: GrayColorModel) {
         self.red = gray.white
         self.green = gray.white
         self.blue = gray.white
     }
     
+    @_inlineable
     public init(_ cmyk: CMYKColorModel) {
         let _k = 1 - cmyk.black
         let _cyan = cmyk.cyan * _k + cmyk.black
@@ -270,6 +307,7 @@ extension RGBColorModel {
 
 extension RGBColorModel {
     
+    @_inlineable
     public init(hue: Double, saturation: Double, brightness: Double) {
         let _hue = positive_mod(hue, 1) * 6
         let __hue = Int(_hue)
@@ -307,6 +345,7 @@ extension RGBColorModel {
 
 extension RGBColorModel {
     
+    @_inlineable
     public var hue: Double {
         get {
             let _max = max(red, green, blue)
@@ -329,6 +368,7 @@ extension RGBColorModel {
         }
     }
     
+    @_inlineable
     public var saturation: Double {
         get {
             let _max = max(red, green, blue)
@@ -340,6 +380,7 @@ extension RGBColorModel {
         }
     }
     
+    @_inlineable
     public var brightness: Double {
         get {
             return max(red, green, blue)
@@ -352,6 +393,7 @@ extension RGBColorModel {
 
 public struct CMYKColorModel : ColorModelProtocol {
     
+    @_inlineable
     public static var count: Int {
         return 4
     }
@@ -361,6 +403,7 @@ public struct CMYKColorModel : ColorModelProtocol {
     public var yellow: Double
     public var black: Double
     
+    @_inlineable
     public init(cyan: Double, magenta: Double, yellow: Double, black: Double) {
         self.cyan = cyan
         self.magenta = magenta
@@ -368,6 +411,7 @@ public struct CMYKColorModel : ColorModelProtocol {
         self.black = black
     }
     
+    @_inlineable
     public func component(_ index: Int) -> Double {
         switch index {
         case 0: return cyan
@@ -377,6 +421,7 @@ public struct CMYKColorModel : ColorModelProtocol {
         default: fatalError()
         }
     }
+    @_inlineable
     public mutating func setComponent(_ index: Int, _ value: Double) {
         switch index {
         case 0: cyan = value
@@ -390,6 +435,7 @@ public struct CMYKColorModel : ColorModelProtocol {
 
 extension CMYKColorModel : CustomStringConvertible {
     
+    @_inlineable
     public var description: String {
         return "CMYKColorModel(cyan: \(cyan), magenta: \(magenta), yellow: \(yellow), black: \(black))"
     }
@@ -397,6 +443,7 @@ extension CMYKColorModel : CustomStringConvertible {
 
 extension CMYKColorModel {
     
+    @_inlineable
     public init() {
         self.cyan = 0
         self.magenta = 0
@@ -407,6 +454,7 @@ extension CMYKColorModel {
 
 extension CMYKColorModel {
     
+    @_inlineable
     public init(_ gray: GrayColorModel) {
         self.cyan = 0
         self.magenta = 0
@@ -414,6 +462,7 @@ extension CMYKColorModel {
         self.black = 1 - gray.white
     }
     
+    @_inlineable
     public init(_ rgb: RGBColorModel) {
         let _cyan = 1 - rgb.red
         let _magenta = 1 - rgb.green
@@ -434,6 +483,7 @@ extension CMYKColorModel {
 
 public struct LabColorModel : ColorModelProtocol {
     
+    @_inlineable
     public static var count: Int {
         return 3
     }
@@ -445,23 +495,27 @@ public struct LabColorModel : ColorModelProtocol {
     /// The b color component.
     public var b: Double
     
+    @_inlineable
     public init() {
         self.lightness = 0
         self.a = 0
         self.b = 0
     }
     
+    @_inlineable
     public init(lightness: Double, a: Double, b: Double) {
         self.lightness = lightness
         self.a = a
         self.b = b
     }
+    @_inlineable
     public init(lightness: Double, chroma: Double, hue: Double) {
         self.lightness = lightness
         self.a = chroma * cos(2 * Double.pi * hue)
         self.b = chroma * sin(2 * Double.pi * hue)
     }
     
+    @_inlineable
     public func component(_ index: Int) -> Double {
         switch index {
         case 0: return lightness
@@ -470,6 +524,7 @@ public struct LabColorModel : ColorModelProtocol {
         default: fatalError()
         }
     }
+    @_inlineable
     public mutating func setComponent(_ index: Int, _ value: Double) {
         switch index {
         case 0: lightness = value
@@ -482,6 +537,7 @@ public struct LabColorModel : ColorModelProtocol {
 
 extension LabColorModel : CustomStringConvertible {
     
+    @_inlineable
     public var description: String {
         return "LabColorModel(lightness: \(lightness), a: \(a), b: \(b))"
     }
@@ -489,6 +545,7 @@ extension LabColorModel : CustomStringConvertible {
 
 extension LabColorModel {
     
+    @_inlineable
     public var hue: Double {
         get {
             return positive_mod(0.5 * atan2(b, a) / Double.pi, 1)
@@ -498,6 +555,7 @@ extension LabColorModel {
         }
     }
     
+    @_inlineable
     public var chroma: Double {
         get {
             return sqrt(a * a + b * b)
@@ -510,6 +568,7 @@ extension LabColorModel {
 
 public struct LuvColorModel : ColorModelProtocol {
     
+    @_inlineable
     public static var count: Int {
         return 3
     }
@@ -521,22 +580,26 @@ public struct LuvColorModel : ColorModelProtocol {
     /// The v color component.
     public var v: Double
     
+    @_inlineable
     public init() {
         self.lightness = 0
         self.u = 0
         self.v = 0
     }
+    @_inlineable
     public init(lightness: Double, u: Double, v: Double) {
         self.lightness = lightness
         self.u = u
         self.v = v
     }
+    @_inlineable
     public init(lightness: Double, chroma: Double, hue: Double) {
         self.lightness = lightness
         self.u = chroma * cos(2 * Double.pi * hue)
         self.v = chroma * sin(2 * Double.pi * hue)
     }
     
+    @_inlineable
     public func component(_ index: Int) -> Double {
         switch index {
         case 0: return lightness
@@ -545,6 +608,7 @@ public struct LuvColorModel : ColorModelProtocol {
         default: fatalError()
         }
     }
+    @_inlineable
     public mutating func setComponent(_ index: Int, _ value: Double) {
         switch index {
         case 0: lightness = value
@@ -557,6 +621,7 @@ public struct LuvColorModel : ColorModelProtocol {
 
 extension LuvColorModel : CustomStringConvertible {
     
+    @_inlineable
     public var description: String {
         return "LuvColorModel(lightness: \(lightness), u: \(u), v: \(v))"
     }
@@ -564,6 +629,7 @@ extension LuvColorModel : CustomStringConvertible {
 
 extension LuvColorModel {
     
+    @_inlineable
     public var hue: Double {
         get {
             return positive_mod(0.5 * atan2(v, u) / Double.pi, 1)
@@ -573,6 +639,7 @@ extension LuvColorModel {
         }
     }
     
+    @_inlineable
     public var chroma: Double {
         get {
             return sqrt(u * u + v * v)
@@ -585,6 +652,7 @@ extension LuvColorModel {
 
 public struct XYZColorModel : ColorModelProtocol {
     
+    @_inlineable
     public static var count: Int {
         return 3
     }
@@ -593,16 +661,19 @@ public struct XYZColorModel : ColorModelProtocol {
     public var y: Double
     public var z: Double
     
+    @_inlineable
     public init(x: Double, y: Double, z: Double) {
         self.x = x
         self.y = y
         self.z = z
     }
     
+    @_inlineable
     public init(luminance: Double, point: Point) {
         self.init(luminance: luminance, x: point.x, y: point.y)
     }
     
+    @_inlineable
     public init(luminance: Double, x: Double, y: Double) {
         let _y = 1 / y
         self.x = x * _y * luminance
@@ -610,6 +681,7 @@ public struct XYZColorModel : ColorModelProtocol {
         self.z = (1 - x - y) * _y * luminance
     }
     
+    @_inlineable
     public func component(_ index: Int) -> Double {
         switch index {
         case 0: return x
@@ -618,6 +690,7 @@ public struct XYZColorModel : ColorModelProtocol {
         default: fatalError()
         }
     }
+    @_inlineable
     public mutating func setComponent(_ index: Int, _ value: Double) {
         switch index {
         case 0: x = value
@@ -630,6 +703,7 @@ public struct XYZColorModel : ColorModelProtocol {
 
 extension XYZColorModel {
     
+    @_inlineable
     public var luminance: Double {
         get {
             return y
@@ -639,6 +713,7 @@ extension XYZColorModel {
         }
     }
     
+    @_inlineable
     public var point: Point {
         get {
             return Point(x: x, y: y) / (x + y + z)
@@ -651,12 +726,14 @@ extension XYZColorModel {
 
 extension XYZColorModel : ColorVectorConvertible {
     
+    @_inlineable
     public init(_ vector: Vector) {
         self.x = vector.x
         self.y = vector.y
         self.z = vector.z
     }
     
+    @_inlineable
     public var vector: Vector {
         get {
             return Vector(x: x, y: y, z: z)
@@ -671,6 +748,7 @@ extension XYZColorModel : ColorVectorConvertible {
 
 extension XYZColorModel : CustomStringConvertible {
     
+    @_inlineable
     public var description: String {
         return "XYZColorModel(x: \(x), y: \(y), z: \(z))"
     }
@@ -678,22 +756,26 @@ extension XYZColorModel : CustomStringConvertible {
 
 public struct GrayColorModel : ColorModelProtocol {
     
+    @_inlineable
     public static var count: Int {
         return 1
     }
     
     public var white: Double
     
+    @_inlineable
     public init(white: Double) {
         self.white = white
     }
     
+    @_inlineable
     public func component(_ index: Int) -> Double {
         switch index {
         case 0: return white
         default: fatalError()
         }
     }
+    @_inlineable
     public mutating func setComponent(_ index: Int, _ value: Double) {
         switch index {
         case 0: white = value
@@ -704,6 +786,7 @@ public struct GrayColorModel : ColorModelProtocol {
 
 extension GrayColorModel {
     
+    @_inlineable
     public init() {
         self.white = 0
     }

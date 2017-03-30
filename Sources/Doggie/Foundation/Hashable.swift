@@ -25,18 +25,24 @@
 
 import Foundation
 
-private let _hash_phi = 0.6180339887498948482045868343656381177203091798057628
-private let _hash_seed = Int(bitPattern: UInt(round(_hash_phi * Double(UInt.max))))
+@_versioned
+let _hash_phi = 0.6180339887498948482045868343656381177203091798057628
 
+@_versioned
+let _hash_seed = Int(bitPattern: UInt(round(_hash_phi * Double(UInt.max))))
+
+@_inlineable
 public func hash_combine<T: Hashable>(seed: Int, _ value: T) -> Int {
     let a = seed << 6
     let b = seed >> 2
     let c = value.hashValue &+ _hash_seed &+ a &+ b
     return seed ^ c
 }
+@_inlineable
 public func hash_combine<S: Sequence>(seed: Int, _ values: S) -> Int where S.Iterator.Element : Hashable {
     return values.reduce(seed, hash_combine)
 }
+@_inlineable
 public func hash_combine<T: Hashable>(seed: Int, _ a: T, _ b: T, _ res: T ... ) -> Int {
     return hash_combine(seed: hash_combine(seed: hash_combine(seed: seed, a), b), res)
 }

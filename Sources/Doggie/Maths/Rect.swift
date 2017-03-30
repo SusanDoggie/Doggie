@@ -28,15 +28,18 @@ public struct Size {
     public var width: Double
     public var height: Double
     
+    @_inlineable
     public init() {
         self.width = 0
         self.height = 0
     }
     
+    @_inlineable
     public init(width: Double, height: Double) {
         self.width = width
         self.height = height
     }
+    @_inlineable
     public init(width: Int, height: Int) {
         self.width = Double(width)
         self.height = Double(height)
@@ -44,6 +47,8 @@ public struct Size {
 }
 
 extension Size: CustomStringConvertible {
+    
+    @_inlineable
     public var description: String {
         return "{w: \(width), h: \(height)}"
     }
@@ -51,20 +56,24 @@ extension Size: CustomStringConvertible {
 
 extension Size: Hashable {
     
+    @_inlineable
     public var hashValue: Int {
         return hash_combine(seed: 0, width, height)
     }
 }
 
+@_inlineable
 public func == (lhs: Size, rhs: Size) -> Bool {
     return lhs.width == rhs.width && lhs.height == rhs.height
 }
+@_inlineable
 public func != (lhs: Size, rhs: Size) -> Bool {
     return lhs.width != rhs.width || lhs.height != rhs.height
 }
 
 extension Size {
     
+    @_inlineable
     public func aspectFit(_ bound: Size) -> Size {
         let ratio = width / height
         if ratio < bound.width / bound.height {
@@ -74,6 +83,7 @@ extension Size {
         }
     }
     
+    @_inlineable
     public func aspectFill(_ bound: Size) -> Size {
         let ratio = width / height
         if ratio < bound.width / bound.height {
@@ -84,42 +94,53 @@ extension Size {
     }
 }
 
+@_inlineable
 public prefix func +(val: Size) -> Size {
     return val
 }
+@_inlineable
 public prefix func -(val: Size) -> Size {
     return Size(width: -val.width, height: -val.height)
 }
+@_inlineable
 public func +(lhs: Size, rhs:  Size) -> Size {
     return Size(width: lhs.width + rhs.width, height: lhs.height + rhs.height)
 }
+@_inlineable
 public func -(lhs: Size, rhs:  Size) -> Size {
     return Size(width: lhs.width - rhs.width, height: lhs.height - rhs.height)
 }
 
+@_inlineable
 public func *(lhs: Double, rhs:  Size) -> Size {
     return Size(width: lhs * rhs.width, height: lhs * rhs.height)
 }
+@_inlineable
 public func *(lhs: Size, rhs:  Double) -> Size {
     return Size(width: lhs.width * rhs, height: lhs.height * rhs)
 }
 
+@_inlineable
 public func /(lhs: Size, rhs:  Double) -> Size {
     return Size(width: lhs.width / rhs, height: lhs.height / rhs)
 }
 
+@_inlineable
 public func *= (lhs: inout Size, rhs:  Double) {
     lhs.width *= rhs
     lhs.height *= rhs
 }
+@_inlineable
 public func /= (lhs: inout Size, rhs:  Double) {
     lhs.width /= rhs
     lhs.height /= rhs
 }
+@_inlineable
 public func += (lhs: inout Size, rhs:  Size) {
     lhs.width += rhs.width
     lhs.height += rhs.height
 }
+@_inlineable
 public func -= (lhs: inout Size, rhs:  Size) {
     lhs.width -= rhs.width
     lhs.height -= rhs.height
@@ -130,16 +151,19 @@ public struct Rect {
     public var origin : Point
     public var size : Size
     
+    @_inlineable
     public init() {
         self.origin = Point()
         self.size = Size()
     }
     
+    @_inlineable
     public init(origin: Point, size: Size) {
         self.origin = origin
         self.size = size
     }
     
+    @_inlineable
     public init(x: Double, y: Double, width: Double, height: Double) {
         self.origin = Point(x: x, y: y)
         self.size = Size(width: width, height: height)
@@ -147,6 +171,8 @@ public struct Rect {
 }
 
 extension Rect: CustomStringConvertible {
+    
+    @_inlineable
     public var description: String {
         return "{x: \(x), y: \(y), w: \(width), h: \(height)}"
     }
@@ -154,20 +180,24 @@ extension Rect: CustomStringConvertible {
 
 extension Rect: Hashable {
     
+    @_inlineable
     public var hashValue: Int {
         return hash_combine(seed: 0, origin.hashValue, size.hashValue)
     }
 }
 
+@_inlineable
 public func == (lhs: Rect, rhs: Rect) -> Bool {
     return lhs.origin == rhs.origin && lhs.size == rhs.size
 }
+@_inlineable
 public func != (lhs: Rect, rhs: Rect) -> Bool {
     return lhs.origin != rhs.origin || lhs.size != rhs.size
 }
 
 extension Rect {
     
+    @_inlineable
     public var x : Double {
         get {
             return origin.x
@@ -177,6 +207,7 @@ extension Rect {
         }
     }
     
+    @_inlineable
     public var y : Double {
         get {
             return origin.y
@@ -186,6 +217,7 @@ extension Rect {
         }
     }
     
+    @_inlineable
     public var width : Double {
         get {
             return size.width
@@ -195,6 +227,7 @@ extension Rect {
         }
     }
     
+    @_inlineable
     public var height : Double {
         get {
             return size.height
@@ -207,6 +240,7 @@ extension Rect {
 
 extension Rect {
     
+    @_inlineable
     public var minX : Double {
         get {
             return x
@@ -215,6 +249,7 @@ extension Rect {
             x = newValue
         }
     }
+    @_inlineable
     public var minY : Double {
         get {
             return y
@@ -223,6 +258,7 @@ extension Rect {
             y = newValue
         }
     }
+    @_inlineable
     public var maxX : Double {
         get {
             return x + width
@@ -231,6 +267,7 @@ extension Rect {
             x = newValue - width
         }
     }
+    @_inlineable
     public var maxY : Double {
         get {
             return y + height
@@ -239,6 +276,7 @@ extension Rect {
             y = newValue - height
         }
     }
+    @_inlineable
     public var midX : Double {
         get {
             return 0.5 * width + x
@@ -247,6 +285,7 @@ extension Rect {
             x = newValue - 0.5 * width
         }
     }
+    @_inlineable
     public var midY : Double {
         get {
             return 0.5 * height + y
@@ -255,6 +294,7 @@ extension Rect {
             y = newValue - 0.5 * height
         }
     }
+    @_inlineable
     public var center : Point {
         get {
             return Point(x: midX, y: midY)
@@ -268,12 +308,14 @@ extension Rect {
 
 extension Rect {
     
+    @_inlineable
     public func aspectFit(bound: Rect) -> Rect {
         var rect = Rect(origin: Point(), size: self.size.aspectFit(bound.size))
         rect.center = bound.center
         return rect
     }
     
+    @_inlineable
     public func aspectFill(bound: Rect) -> Rect {
         var rect = Rect(origin: Point(), size: self.size.aspectFill(bound.size))
         rect.center = bound.center
@@ -283,6 +325,7 @@ extension Rect {
 
 extension Rect {
     
+    @_inlineable
     public var points : [Point] {
         let minX = self.minX
         let maxX = self.maxX
@@ -295,6 +338,7 @@ extension Rect {
         return [a, b, c, d]
     }
     
+    @_inlineable
     public static func bound<S : Sequence>(_ points: S) -> Rect where S.Iterator.Element == Point {
         
         var minX = 0.0
@@ -321,6 +365,7 @@ extension Rect {
 
 extension Rect {
     
+    @_inlineable
     public func union(_ other : Rect) -> Rect {
         let minX = min(self.minX, other.minX)
         let minY = min(self.minY, other.minY)
@@ -328,6 +373,7 @@ extension Rect {
         let maxY = max(self.maxY, other.maxY)
         return Rect(x: minX, y: minY, width: maxX - minX, height: maxY - minY)
     }
+    @_inlineable
     public func intersect(_ other : Rect) -> Rect {
         let minX = max(self.minX, other.minX)
         let minY = max(self.minY, other.minY)
@@ -335,23 +381,29 @@ extension Rect {
         let _height = max(0, min(self.maxY, other.maxY) - minY)
         return Rect(x: minX, y: minY, width: _width, height: _height)
     }
+    @_inlineable
     public func inset(dx: Double, dy: Double) -> Rect {
         return Rect(x: self.x + dx, y: self.y + dy, width: self.width - 2 * dx, height: self.height - 2 * dy)
     }
+    @_inlineable
     public func inset(top: Double, left: Double, right: Double, bottom: Double) -> Rect {
         return Rect(x: self.x + left, y: self.y + top, width: self.width - left - right, height: self.height - top - bottom)
     }
+    @_inlineable
     public func offset(dx: Double, dy: Double) -> Rect {
         return Rect(x: self.x + dx, y: self.y + dy, width: self.width, height: self.height)
     }
+    @_inlineable
     public func contains(_ point: Point) -> Bool {
         return minX...maxX ~= point.x && minY...maxY ~= point.y
     }
+    @_inlineable
     public func contains(_ rect: Rect) -> Bool {
         let a = Point(x: rect.minX, y: rect.minY)
         let b = Point(x: rect.maxX, y: rect.maxY)
         return self.contains(a) && self.contains(b)
     }
+    @_inlineable
     public func isIntersect(_ rect: Rect) -> Bool {
         return self.minX < rect.maxX && self.maxX > rect.minX && self.minY < rect.maxY && self.maxY > rect.minY
     }

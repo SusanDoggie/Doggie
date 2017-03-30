@@ -46,10 +46,12 @@ public protocol SDTransformProtocol: Hashable {
 
 extension SDTransformProtocol {
     
+    @_inlineable
     public var tx: Double {
         return c
     }
     
+    @_inlineable
     public var ty: Double {
         return f
     }
@@ -57,6 +59,7 @@ extension SDTransformProtocol {
 
 extension SDTransformProtocol {
     
+    @_inlineable
     public var hashValue: Int {
         return hash_combine(seed: 0, a, b, c, d, e, f)
     }
@@ -64,6 +67,7 @@ extension SDTransformProtocol {
 
 extension SDTransformProtocol {
     
+    @_inlineable
     public var determinant : Double {
         return a * e - b * d
     }
@@ -85,6 +89,7 @@ public struct SDTransform: SDTransformProtocol {
     public var e: Double
     public var f: Double
     
+    @_inlineable
     public init<T: SDTransformProtocol>(_ m: T) {
         self.a = m.a
         self.b = m.b
@@ -94,6 +99,7 @@ public struct SDTransform: SDTransformProtocol {
         self.f = m.f
     }
     
+    @_inlineable
     public init(a: Double, b: Double, c: Double, d: Double, e: Double, f: Double) {
         self.a = a
         self.b = b
@@ -106,6 +112,7 @@ public struct SDTransform: SDTransformProtocol {
 
 extension SDTransform : CustomStringConvertible {
     
+    @_inlineable
     public var description: String {
         return "{a: \(a), b: \(b), c: \(c), d: \(d), e: \(e), f: \(f)}"
     }
@@ -113,6 +120,7 @@ extension SDTransform : CustomStringConvertible {
 
 extension SDTransform {
     
+    @_inlineable
     public var inverse : SDTransform {
         let det = self.determinant
         return SDTransform(a: e / det, b: -b / det, c: (b * f - c * e) / det, d: -d / det, e: a / det, f: (c * d - a * f) / det)
@@ -121,6 +129,7 @@ extension SDTransform {
 
 extension SDTransform {
     
+    @_inlineable
     public var tx: Double {
         get {
             return c
@@ -130,6 +139,7 @@ extension SDTransform {
         }
     }
     
+    @_inlineable
     public var ty: Double {
         get {
             return f
@@ -151,6 +161,7 @@ extension SDTransform {
     ///
     public struct Identity: SDTransformProtocol {
         
+        @_inlineable
         public init() {
         }
     }
@@ -166,6 +177,7 @@ extension SDTransform {
         
         public var angle: Double
         
+        @_inlineable
         public init(_ angle: Double) {
             self.angle = angle
         }
@@ -182,6 +194,7 @@ extension SDTransform {
         
         public var angle: Double
         
+        @_inlineable
         public init(_ angle: Double) {
             self.angle = angle
         }
@@ -198,6 +211,7 @@ extension SDTransform {
         
         public var angle: Double
         
+        @_inlineable
         public init(_ angle: Double) {
             self.angle = angle
         }
@@ -215,10 +229,12 @@ extension SDTransform {
         public var x: Double
         public var y: Double
         
+        @_inlineable
         public init(_ scale: Double) {
             self.x = scale
             self.y = scale
         }
+        @_inlineable
         public init(x: Double, y: Double) {
             self.x = x
             self.y = y
@@ -237,6 +253,7 @@ extension SDTransform {
         public var x: Double
         public var y: Double
         
+        @_inlineable
         public init(x: Double, y: Double) {
             self.x = x
             self.y = y
@@ -254,9 +271,11 @@ extension SDTransform {
         
         public var x: Double
         
+        @_inlineable
         public init() {
             self.x = 0
         }
+        @_inlineable
         public init(_ x: Double) {
             self.x = x
         }
@@ -273,9 +292,11 @@ extension SDTransform {
         
         public var y: Double
         
+        @_inlineable
         public init() {
             self.y = 0
         }
+        @_inlineable
         public init(_ y: Double) {
             self.y = y
         }
@@ -284,212 +305,269 @@ extension SDTransform {
 
 extension SDTransform.Identity {
     
+    @_inlineable
     public var a: Double {
         return 1
     }
+    @_inlineable
     public var b: Double {
         return 0
     }
+    @_inlineable
     public var c: Double {
         return 0
     }
+    @_inlineable
     public var d: Double {
         return 0
     }
+    @_inlineable
     public var e: Double {
         return 1
     }
+    @_inlineable
     public var f: Double {
         return 0
     }
     
+    @_inlineable
     public var inverse : SDTransform.Identity {
         return self
     }
 }
 
+@_inlineable
 public func == (_: SDTransform.Identity, _: SDTransform.Identity) -> Bool {
     return true
 }
+@_inlineable
 public func != (_: SDTransform.Identity, _: SDTransform.Identity) -> Bool {
     return false
 }
 
+@_inlineable
 public func * (_: SDTransform.Identity, _: SDTransform.Identity) -> SDTransform.Identity {
     return SDTransform.Identity()
 }
 
+@_inlineable
 public func * <T: SDTransformProtocol>(_: SDTransform.Identity, rhs: T) -> T {
     return rhs
 }
 
+@_inlineable
 public func * <S: SDTransformProtocol>(lhs: S, _: SDTransform.Identity) -> S {
     return lhs
 }
 
+@_inlineable
 public func *= <S: SDTransformProtocol>(_: inout S, _: SDTransform.Identity) {
 }
 
 extension SDTransform.Rotate {
     
+    @_inlineable
     public var a: Double {
         return cos(angle)
     }
+    @_inlineable
     public var b: Double {
         return -sin(angle)
     }
+    @_inlineable
     public var c: Double {
         return 0
     }
+    @_inlineable
     public var d: Double {
         return sin(angle)
     }
+    @_inlineable
     public var e: Double {
         return cos(angle)
     }
+    @_inlineable
     public var f: Double {
         return 0
     }
     
+    @_inlineable
     public var inverse : SDTransform.Rotate {
         return SDTransform.Rotate(-angle)
     }
 }
 
+@_inlineable
 public func == (lhs: SDTransform.Rotate, rhs: SDTransform.Rotate) -> Bool {
     return lhs.angle == rhs.angle
 }
+@_inlineable
 public func != (lhs: SDTransform.Rotate, rhs: SDTransform.Rotate) -> Bool {
     return lhs.angle != rhs.angle
 }
 
+@_inlineable
 public func * (lhs: SDTransform.Rotate, rhs: SDTransform.Rotate) -> SDTransform.Rotate {
     return SDTransform.Rotate(lhs.angle + rhs.angle)
 }
 
+@_inlineable
 public func *= (lhs: inout SDTransform.Rotate, rhs: SDTransform.Rotate) {
     return lhs.angle += rhs.angle
 }
 
 extension SDTransform.SkewX {
     
+    @_inlineable
     public var a: Double {
         return 1
     }
+    @_inlineable
     public var b: Double {
         return tan(angle)
     }
+    @_inlineable
     public var c: Double {
         return 0
     }
+    @_inlineable
     public var d: Double {
         return 0
     }
+    @_inlineable
     public var e: Double {
         return 1
     }
+    @_inlineable
     public var f: Double {
         return 0
     }
     
+    @_inlineable
     public var inverse : SDTransform.SkewX {
         return SDTransform.SkewX(-angle)
     }
 }
 
+@_inlineable
 public func == (lhs: SDTransform.SkewX, rhs: SDTransform.SkewX) -> Bool {
     return lhs.angle == rhs.angle
 }
+@_inlineable
 public func != (lhs: SDTransform.SkewX, rhs: SDTransform.SkewX) -> Bool {
     return lhs.angle != rhs.angle
 }
 
+@_inlineable
 public func * (lhs: SDTransform.SkewX, rhs: SDTransform.SkewX) -> SDTransform.SkewX {
     return SDTransform.SkewX(atan(tan(lhs.angle) + tan(rhs.angle)))
 }
 
+@_inlineable
 public func *= (lhs: inout SDTransform.SkewX, rhs: SDTransform.SkewX) {
     return lhs.angle = atan(tan(lhs.angle) + tan(rhs.angle))
 }
 
 extension SDTransform.SkewY {
     
+    @_inlineable
     public var a: Double {
         return 1
     }
+    @_inlineable
     public var b: Double {
         return 0
     }
+    @_inlineable
     public var c: Double {
         return 0
     }
+    @_inlineable
     public var d: Double {
         return tan(angle)
     }
+    @_inlineable
     public var e: Double {
         return 1
     }
+    @_inlineable
     public var f: Double {
         return 0
     }
     
+    @_inlineable
     public var inverse : SDTransform.SkewY {
         return SDTransform.SkewY(-angle)
     }
 }
 
+@_inlineable
 public func == (lhs: SDTransform.SkewY, rhs: SDTransform.SkewY) -> Bool {
     return lhs.angle == rhs.angle
 }
+@_inlineable
 public func != (lhs: SDTransform.SkewY, rhs: SDTransform.SkewY) -> Bool {
     return lhs.angle != rhs.angle
 }
 
+@_inlineable
 public func * (lhs: SDTransform.SkewY, rhs: SDTransform.SkewY) -> SDTransform.SkewY {
     return SDTransform.SkewY(atan(tan(lhs.angle) + tan(rhs.angle)))
 }
 
+@_inlineable
 public func *= (lhs: inout SDTransform.SkewY, rhs: SDTransform.SkewY) {
     return lhs.angle = atan(tan(lhs.angle) + tan(rhs.angle))
 }
 
 extension SDTransform.Scale {
     
+    @_inlineable
     public var a: Double {
         return x
     }
+    @_inlineable
     public var b: Double {
         return 0
     }
+    @_inlineable
     public var c: Double {
         return 0
     }
+    @_inlineable
     public var d: Double {
         return 0
     }
+    @_inlineable
     public var e: Double {
         return y
     }
+    @_inlineable
     public var f: Double {
         return 0
     }
     
+    @_inlineable
     public var inverse : SDTransform.Scale {
         return SDTransform.Scale(x: 1 / x, y: 1 / y)
     }
 }
 
+@_inlineable
 public func == (lhs: SDTransform.Scale, rhs: SDTransform.Scale) -> Bool {
     return lhs.x == rhs.x && lhs.y == rhs.y
 }
+@_inlineable
 public func != (lhs: SDTransform.Scale, rhs: SDTransform.Scale) -> Bool {
     return lhs.x != rhs.x || lhs.y != rhs.y
 }
 
+@_inlineable
 public func * (lhs: SDTransform.Scale, rhs: SDTransform.Scale) -> SDTransform.Scale {
     return SDTransform.Scale(x: lhs.x * rhs.x, y: lhs.y * rhs.y)
 }
 
+@_inlineable
 public func *= (lhs: inout SDTransform.Scale, rhs: SDTransform.Scale) {
     lhs.x *= rhs.x
     lhs.y *= rhs.y
@@ -497,25 +575,32 @@ public func *= (lhs: inout SDTransform.Scale, rhs: SDTransform.Scale) {
 
 extension SDTransform.Translate {
     
+    @_inlineable
     public var a: Double {
         return 1
     }
+    @_inlineable
     public var b: Double {
         return 0
     }
+    @_inlineable
     public var c: Double {
         return x
     }
+    @_inlineable
     public var d: Double {
         return 0
     }
+    @_inlineable
     public var e: Double {
         return 1
     }
+    @_inlineable
     public var f: Double {
         return y
     }
     
+    @_inlineable
     public var inverse : SDTransform.Translate {
         return SDTransform.Translate(x: -x, y: -y)
     }
@@ -523,6 +608,7 @@ extension SDTransform.Translate {
 
 extension SDTransform.Translate {
     
+    @_inlineable
     public var tx: Double {
         get {
             return x
@@ -532,6 +618,7 @@ extension SDTransform.Translate {
         }
     }
     
+    @_inlineable
     public var ty: Double {
         get {
             return y
@@ -542,17 +629,21 @@ extension SDTransform.Translate {
     }
 }
 
+@_inlineable
 public func == (lhs: SDTransform.Translate, rhs: SDTransform.Translate) -> Bool {
     return lhs.x == rhs.x && lhs.y == rhs.y
 }
+@_inlineable
 public func != (lhs: SDTransform.Translate, rhs: SDTransform.Translate) -> Bool {
     return lhs.x != rhs.x || lhs.y != rhs.y
 }
 
+@_inlineable
 public func * (lhs: SDTransform.Translate, rhs: SDTransform.Translate) -> SDTransform.Translate {
     return SDTransform.Translate(x: lhs.x + rhs.x, y: lhs.y + rhs.y)
 }
 
+@_inlineable
 public func *= (lhs: inout SDTransform.Translate, rhs: SDTransform.Translate) {
     lhs.x += rhs.x
     lhs.y += rhs.y
@@ -560,83 +651,106 @@ public func *= (lhs: inout SDTransform.Translate, rhs: SDTransform.Translate) {
 
 extension SDTransform.ReflectX {
     
+    @_inlineable
     public var a: Double {
         return -1
     }
+    @_inlineable
     public var b: Double {
         return 0
     }
+    @_inlineable
     public var c: Double {
         return 2 * x
     }
+    @_inlineable
     public var d: Double {
         return 0
     }
+    @_inlineable
     public var e: Double {
         return 1
     }
+    @_inlineable
     public var f: Double {
         return 0
     }
     
+    @_inlineable
     public var inverse : SDTransform.ReflectX {
         return self
     }
 }
 
+@_inlineable
 public func == (lhs: SDTransform.ReflectX, rhs: SDTransform.ReflectX) -> Bool {
     return lhs.x == rhs.x
 }
+@_inlineable
 public func != (lhs: SDTransform.ReflectX, rhs: SDTransform.ReflectX) -> Bool {
     return lhs.x != rhs.x
 }
 
 extension SDTransform.ReflectY {
     
+    @_inlineable
     public var a: Double {
         return 1
     }
+    @_inlineable
     public var b: Double {
         return 0
     }
+    @_inlineable
     public var c: Double {
         return 0
     }
+    @_inlineable
     public var d: Double {
         return 0
     }
+    @_inlineable
     public var e: Double {
         return -1
     }
+    @_inlineable
     public var f: Double {
         return 2 * y
     }
     
+    @_inlineable
     public var inverse : SDTransform.ReflectY {
         return self
     }
 }
 
+@_inlineable
 public func == (lhs: SDTransform.ReflectY, rhs: SDTransform.ReflectY) -> Bool {
     return lhs.y == rhs.y
 }
+@_inlineable
 public func != (lhs: SDTransform.ReflectY, rhs: SDTransform.ReflectY) -> Bool {
     return lhs.y != rhs.y
 }
 
+@_inlineable
 public func == <T: SDTransformProtocol>(lhs: T, rhs: T) -> Bool {
     return lhs.a == rhs.a && lhs.b == rhs.b && lhs.c == rhs.c && lhs.d == rhs.d && lhs.e == rhs.e && lhs.f == rhs.f
 }
+@_inlineable
 public func != <T: SDTransformProtocol>(lhs: T, rhs: T) -> Bool {
     return lhs.a != rhs.a || lhs.b != rhs.b || lhs.c != rhs.c || lhs.d != rhs.d || lhs.e != rhs.e || lhs.f != rhs.f
 }
+@_inlineable
 public func == <S: SDTransformProtocol, T: SDTransformProtocol>(lhs: S, rhs: T) -> Bool {
     return lhs.a == rhs.a && lhs.b == rhs.b && lhs.c == rhs.c && lhs.d == rhs.d && lhs.e == rhs.e && lhs.f == rhs.f
 }
+@_inlineable
 public func != <S: SDTransformProtocol, T: SDTransformProtocol>(lhs: S, rhs: T) -> Bool {
     return lhs.a != rhs.a || lhs.b != rhs.b || lhs.c != rhs.c || lhs.d != rhs.d || lhs.e != rhs.e || lhs.f != rhs.f
 }
 
+@_inlineable
 public func * <S: SDTransformProtocol, T: SDTransformProtocol>(lhs: S, rhs: T) -> SDTransform {
     let a = lhs.a * rhs.a + lhs.d * rhs.b
     let b = lhs.b * rhs.a + lhs.e * rhs.b
@@ -647,14 +761,17 @@ public func * <S: SDTransformProtocol, T: SDTransformProtocol>(lhs: S, rhs: T) -
     return SDTransform(a: a, b: b, c: c, d: d, e: e, f: f)
 }
 
+@_inlineable
 public func *= <T: SDTransformProtocol>(lhs: inout SDTransform, rhs: T) {
     lhs = lhs * rhs
 }
 
+@_inlineable
 public func * <T: SDTransformProtocol>(lhs: Point, rhs: T) -> Point {
     return Point(x: lhs.x * rhs.a + lhs.y * rhs.b + rhs.c, y: lhs.x * rhs.d + lhs.y * rhs.e + rhs.f)
 }
 
+@_inlineable
 public func *= <T: SDTransformProtocol>(lhs: inout Point, rhs: T) {
     lhs = lhs * rhs
 }

@@ -23,21 +23,26 @@
 //  THE SOFTWARE.
 //
 
+@_fixed_layout
 public struct Polynomial {
     
-    fileprivate var coeffs: [Double]
+    @_versioned
+    var coeffs: [Double]
     
     /// a + b x + c x^2 + d x^3 + ...
+    @_inlineable
     public init() {
         self.coeffs = []
     }
     
     /// a + b x + c x^2 + d x^3 + ...
+    @_inlineable
     public init(_ coeffs: Double ... ) {
         self.init(coeffs)
     }
     /// Construct from an arbitrary sequence of coeffs.
     /// a + b x + c x^2 + d x^3 + ...
+    @_inlineable
     public init<S : Sequence>(_ s: S) where S.Iterator.Element == Double {
         self.coeffs = Array(s)
         while self.coeffs.last == 0 {
@@ -48,6 +53,7 @@ public struct Polynomial {
 
 extension Polynomial : ExpressibleByArrayLiteral {
     
+    @_inlineable
     public init(arrayLiteral elements: Double ... ) {
         self.init(elements)
     }
@@ -55,6 +61,7 @@ extension Polynomial : ExpressibleByArrayLiteral {
 
 extension Polynomial : CustomStringConvertible {
     
+    @_inlineable
     public var description: String {
         return coeffs.description
     }
@@ -68,13 +75,16 @@ extension Polynomial : RandomAccessCollection, MutableCollection {
     
     public typealias Index = Int
     
+    @_inlineable
     public var startIndex : Int {
         return coeffs.startIndex
     }
+    @_inlineable
     public var endIndex : Int {
         return coeffs.endIndex
     }
     
+    @_inlineable
     public subscript(position: Int) -> Double {
         get {
             return position < coeffs.count ? coeffs[position] : 0
@@ -95,20 +105,24 @@ extension Polynomial : RandomAccessCollection, MutableCollection {
 
 extension Polynomial : RangeReplaceableCollection {
     
+    @_inlineable
     public mutating func append(_ x: Double) {
         if x != 0 {
             coeffs.append(x)
         }
     }
     
+    @_inlineable
     public mutating func reserveCapacity(_ minimumCapacity: Int) {
         coeffs.reserveCapacity(minimumCapacity)
     }
     
+    @_inlineable
     public mutating func removeAll(keepingCapacity: Bool = false) {
         coeffs.removeAll(keepingCapacity: keepingCapacity)
     }
     
+    @_inlineable
     public mutating func replaceSubrange<C : Collection>(_ subRange: Range<Int>, with newElements: C) where C.Iterator.Element == Double {
         coeffs.replaceSubrange(subRange, with: newElements)
         while coeffs.last == 0 {
@@ -119,6 +133,7 @@ extension Polynomial : RangeReplaceableCollection {
 
 extension Polynomial : Hashable {
     
+    @_inlineable
     public var hashValue: Int {
         return hash_combine(seed: 0, coeffs)
     }
@@ -126,10 +141,12 @@ extension Polynomial : Hashable {
 
 extension Polynomial {
     
+    @_inlineable
     public var degree : Int {
         return Swift.max(coeffs.count - 1, 0)
     }
     
+    @_inlineable
     public func eval(_ x: Double) -> Double {
         switch x {
         case 0: return self[0]
@@ -249,16 +266,19 @@ private func _root(_ p: Polynomial) -> [Double] {
 
 extension Polynomial {
     
+    @_inlineable
     public var derivative : Polynomial {
         return count > 1 ? Polynomial(coeffs.enumerated().dropFirst().lazy.map { Double($0) * $1 }) : Polynomial()
     }
     
+    @_inlineable
     public var integral : Polynomial {
         let _coeffs = coeffs.enumerated().lazy.map { $1 / Double($0 + 1) }
         return Polynomial(CollectionOfOne(0).concat(_coeffs))
     }
 }
 
+@_inlineable
 public func quorem(_ lhs: Double, _ rhs: Polynomial) -> (quo: Polynomial, rem: Polynomial) {
     switch rhs.count {
     case 0: fatalError("Divide by zero.")
@@ -267,10 +287,12 @@ public func quorem(_ lhs: Double, _ rhs: Polynomial) -> (quo: Polynomial, rem: P
     }
 }
 
+@_inlineable
 public func quorem(_ lhs: Polynomial, _ rhs: Double) -> (quo: Polynomial, rem: Polynomial) {
     return (Polynomial(lhs.coeffs.map { $0 / rhs }), [])
 }
 
+@_inlineable
 public func quorem(_ lhs: Polynomial, _ rhs: Polynomial) -> (quo: Polynomial, rem: Polynomial) {
     if lhs.count < rhs.count {
         return ([], lhs)
@@ -286,42 +308,52 @@ public func quorem(_ lhs: Polynomial, _ rhs: Polynomial) -> (quo: Polynomial, re
     }
 }
 
+@_inlineable
 public func += (lhs: inout Polynomial, rhs: Polynomial) {
     lhs = lhs + rhs
 }
 
+@_inlineable
 public func += (lhs: inout Polynomial, rhs: Double) {
     lhs[0] += rhs
 }
 
+@_inlineable
 public func -= (lhs: inout Polynomial, rhs: Polynomial) {
     lhs = lhs - rhs
 }
 
+@_inlineable
 public func -= (lhs: inout Polynomial, rhs: Double) {
     lhs[0] -= rhs
 }
 
+@_inlineable
 public func *= (lhs: inout Polynomial, rhs: Double) {
     lhs = lhs * rhs
 }
 
+@_inlineable
 public func *= (lhs: inout Polynomial, rhs: Polynomial) {
     lhs = lhs * rhs
 }
 
+@_inlineable
 public func /= (lhs: inout Polynomial, rhs: Double) {
     lhs = lhs / rhs
 }
 
+@_inlineable
 public func /= (lhs: inout Polynomial, rhs: Polynomial) {
     lhs = lhs / rhs
 }
 
+@_inlineable
 public func %= (lhs: inout Polynomial, rhs: Double) {
     lhs = []
 }
 
+@_inlineable
 public func %= (lhs: inout Polynomial, rhs: Polynomial) {
     lhs = lhs % rhs
 }
@@ -334,6 +366,7 @@ public prefix func - (p: Polynomial) -> Polynomial {
     return Polynomial(p.coeffs.map { -$0 })
 }
 
+@_inlineable
 public func + (lhs: Polynomial, rhs: Polynomial) -> Polynomial {
     var lhs = lhs
     var buf = [Double](repeating: 0, count: max(lhs.count, rhs.count))
@@ -343,18 +376,21 @@ public func + (lhs: Polynomial, rhs: Polynomial) -> Polynomial {
     return Polynomial(buf)
 }
 
+@_inlineable
 public func + (lhs: Double, rhs: Polynomial) -> Polynomial {
     var rhs = rhs
     rhs[0] += lhs
     return rhs
 }
 
+@_inlineable
 public func + (lhs: Polynomial, rhs: Double) -> Polynomial {
     var lhs = lhs
     lhs[0] += rhs
     return lhs
 }
 
+@_inlineable
 public func - (lhs: Polynomial, rhs: Polynomial) -> Polynomial {
     var lhs = lhs
     var buf = [Double](repeating: 0, count: max(lhs.count, rhs.count))
@@ -364,26 +400,31 @@ public func - (lhs: Polynomial, rhs: Polynomial) -> Polynomial {
     return Polynomial(buf)
 }
 
+@_inlineable
 public func - (lhs: Double, rhs: Polynomial) -> Polynomial {
     var buf = rhs.map { -$0 }
     buf[0] += lhs
     return Polynomial(buf)
 }
 
+@_inlineable
 public func - (lhs: Polynomial, rhs: Double) -> Polynomial {
     var lhs = lhs
     lhs[0] -= rhs
     return lhs
 }
 
+@_inlineable
 public func * (lhs: Double, rhs: Polynomial) -> Polynomial {
     return Polynomial(rhs.coeffs.map { lhs * $0 })
 }
 
+@_inlineable
 public func * (lhs: Polynomial, rhs: Double) -> Polynomial {
     return Polynomial(lhs.coeffs.map { $0 * rhs })
 }
 
+@_inlineable
 public func * (lhs: Polynomial, rhs: Polynomial) -> Polynomial {
     if lhs.count == 0 || rhs.count == 0 {
         return Polynomial()
@@ -393,6 +434,7 @@ public func * (lhs: Polynomial, rhs: Polynomial) -> Polynomial {
     return Polynomial(result)
 }
 
+@_inlineable
 public func / (lhs: Double, rhs: Polynomial) -> Polynomial {
     switch rhs.count {
     case 0: fatalError("Divide by zero.")
@@ -401,10 +443,12 @@ public func / (lhs: Double, rhs: Polynomial) -> Polynomial {
     }
 }
 
+@_inlineable
 public func / (lhs: Polynomial, rhs: Double) -> Polynomial {
     return Polynomial(lhs.coeffs.map { $0 / rhs })
 }
 
+@_inlineable
 public func / (lhs: Polynomial, rhs: Polynomial) -> Polynomial {
     if lhs.count < rhs.count {
         return []
@@ -419,6 +463,7 @@ public func / (lhs: Polynomial, rhs: Polynomial) -> Polynomial {
     }
 }
 
+@_inlineable
 public func % (lhs: Double, rhs: Polynomial) -> Polynomial {
     switch rhs.count {
     case 0: fatalError("Divide by zero.")
@@ -427,10 +472,12 @@ public func % (lhs: Double, rhs: Polynomial) -> Polynomial {
     }
 }
 
+@_inlineable
 public func % (lhs: Polynomial, rhs: Double) -> Polynomial {
     return []
 }
 
+@_inlineable
 public func % (lhs: Polynomial, rhs: Polynomial) -> Polynomial {
     if lhs.count < rhs.count {
         return lhs
@@ -446,29 +493,36 @@ public func % (lhs: Polynomial, rhs: Polynomial) -> Polynomial {
     }
 }
 
+@_inlineable
 public func == (lhs: Polynomial, rhs: Polynomial) -> Bool {
     return lhs.coeffs == rhs.coeffs
 }
 
+@_inlineable
 public func == (lhs: Double, rhs: Polynomial) -> Bool {
     return rhs.degree == 0 && lhs == rhs[0]
 }
 
+@_inlineable
 public func == (lhs: Polynomial, rhs: Double) -> Bool {
     return lhs.degree == 0 && lhs[0] == rhs
 }
 
+@_inlineable
 public func != (lhs: Polynomial, rhs: Polynomial) -> Bool {
     return lhs.coeffs != rhs.coeffs
 }
 
+@_inlineable
 public func != (lhs: Double, rhs: Polynomial) -> Bool {
     return rhs.degree != 0 || lhs != rhs[0]
 }
 
+@_inlineable
 public func != (lhs: Polynomial, rhs: Double) -> Bool {
     return lhs.degree != 0 || lhs[0] != rhs
 }
+@_inlineable
 public func gcd(_ a: Polynomial, _ b: Polynomial) -> Polynomial {
     var a = a
     var b = b
@@ -477,6 +531,7 @@ public func gcd(_ a: Polynomial, _ b: Polynomial) -> Polynomial {
     }
     return a
 }
+@_inlineable
 public func exgcd(_ a: Polynomial, _ b: Polynomial) -> (gcd: Polynomial, x: Polynomial, y: Polynomial) {
     var a = a
     var b = b
@@ -490,6 +545,7 @@ public func exgcd(_ a: Polynomial, _ b: Polynomial) -> (gcd: Polynomial, x: Poly
     }
     return (a, x.0, y.0)
 }
+@_inlineable
 public func pow(_ p: Polynomial, _ n: Int) -> Polynomial {
     if p.count == 0 {
         return Polynomial()

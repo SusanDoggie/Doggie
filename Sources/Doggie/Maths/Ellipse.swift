@@ -30,15 +30,18 @@ public struct Radius {
     public var x: Double
     public var y: Double
     
+    @_inlineable
     public init() {
         self.x = 0
         self.y = 0
     }
     
+    @_inlineable
     public init(x: Double, y: Double) {
         self.x = x
         self.y = y
     }
+    @_inlineable
     public init(x: Int, y: Int) {
         self.x = Double(x)
         self.y = Double(y)
@@ -47,6 +50,7 @@ public struct Radius {
 
 extension Radius: CustomStringConvertible {
     
+    @_inlineable
     public var description: String {
         return "{x: \(x), y: \(y)}"
     }
@@ -54,22 +58,27 @@ extension Radius: CustomStringConvertible {
 
 extension Radius: Hashable {
     
+    @_inlineable
     public var hashValue: Int {
         return hash_combine(seed: 0, x, y)
     }
 }
 
+@_inlineable
 public func == (lhs: Radius, rhs: Radius) -> Bool {
     return lhs.x == rhs.x && lhs.y == rhs.y
 }
+@_inlineable
 public func != (lhs: Radius, rhs: Radius) -> Bool {
     return lhs.x != rhs.x || lhs.y != rhs.y
 }
 
+@_inlineable
 public func Ellipse(_ t: Double, _ p: Point, _ r: Radius) -> Point {
     return Point(x: r.x * cos(t) + p.x, y: r.y * sin(t) + p.y)
 }
 
+@_inlineable
 public func EllipseRadius(_ p0: Point, _ p1: Point, _ r: Radius, _ rotate: Double) -> Radius {
     let _p = p1 - p0
     let _tx = _p.x * cos(rotate) + _p.y * sin(rotate)
@@ -78,6 +87,7 @@ public func EllipseRadius(_ p0: Point, _ p1: Point, _ r: Radius, _ rotate: Doubl
     return Radius(x: _tx / (2 * cos(_atan)), y: _ty / (2 * sin(_atan)))
 }
 
+@_inlineable
 public func EllipseCenter(_ r: Radius, _ rotate: Double, _ a: Point, _ b: Point) -> [Point] {
     
     let _sin = sin(rotate)
@@ -125,6 +135,7 @@ public func EllipseCenter(_ r: Radius, _ rotate: Double, _ a: Point, _ b: Point)
 ///     ⎜ d e f ⎟ ⎜ B sin(t) ⎟
 ///     ⎝ 0 0 1 ⎠ ⎝    1     ⎠
 ///
+@_inlineable
 public func EllipseStationary(_ r: Radius, _ a: Double, _ b: Double) -> Double {
     return atan2(r.y * b, r.x * a)
 }
@@ -136,6 +147,7 @@ public func EllipseStationary(_ r: Radius, _ a: Double, _ b: Double) -> Double {
 ///     ⎜ d e f ⎟ ⎜ B sin(t) ⎟
 ///     ⎝ 0 0 1 ⎠ ⎝    1     ⎠
 ///
+@_inlineable
 public func EllipseBound<T: SDTransformProtocol>(_ center: Point, _ r: Radius, _ matrix: T) -> Rect {
     
     let t1 = EllipseStationary(r, matrix.a, matrix.b)
@@ -161,6 +173,7 @@ public func EllipseBound<T: SDTransformProtocol>(_ center: Point, _ r: Radius, _
 
 // MARK: Area
 
+@_inlineable
 public func ArcSignedArea(_ startAngle: Double, _ endAngle: Double, _ center: Point, _ radius: Radius) -> Double {
     
     let diffAngle = endAngle - startAngle

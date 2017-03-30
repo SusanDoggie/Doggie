@@ -23,41 +23,53 @@
 //  THE SOFTWARE.
 //
 
+@_fixed_layout
 public struct RangeSet<Bound : Comparable> {
     
-    fileprivate let ranges: [Range<Bound>]
+    @_versioned
+    let ranges: [Range<Bound>]
     
+    @_inlineable
     public init() {
         self.ranges = []
     }
+    @_inlineable
     public init(_ ranges: Range<Bound> ... ) {
         self.init(ranges)
     }
+    @_inlineable
     public init<S : Sequence>(_ s: S) where S.Iterator.Element == Range<Bound> {
         self = s.reduce(RangeSet()) { $0.union($1) }
     }
     
-    fileprivate init(ranges: [Range<Bound>]) {
+    @_versioned
+    @_inlineable
+    init(ranges: [Range<Bound>]) {
         self.ranges = ranges
     }
 }
 
 extension RangeSet : RandomAccessCollection {
     
+    @_inlineable
     public var startIndex: Int {
         return ranges.startIndex
     }
+    @_inlineable
     public var endIndex: Int {
         return ranges.endIndex
     }
     
+    @_inlineable
     public subscript(position: Int) -> Range<Bound> {
         return ranges[position]
     }
     
+    @_inlineable
     public func index(before i: Int) -> Int {
         return ranges.index(before: i)
     }
+    @_inlineable
     public func index(after i: Int) -> Int {
         return ranges.index(after: i)
     }
@@ -65,6 +77,7 @@ extension RangeSet : RandomAccessCollection {
 
 extension RangeSet {
     
+    @_inlineable
     public func contains(_ x: Bound) -> Bool {
         return ranges.contains { $0.contains(x) }
     }
@@ -72,6 +85,7 @@ extension RangeSet {
 
 extension RangeSet {
     
+    @_inlineable
     public func union(_ range: Range<Bound>) -> RangeSet {
         var collect: [Range<Bound>] = []
         var overlap = range
@@ -86,6 +100,7 @@ extension RangeSet {
         return RangeSet(ranges: collect.sorted { $0.lowerBound < $1.lowerBound })
     }
     
+    @_inlineable
     public func subtracting(_ range: Range<Bound>) -> RangeSet {
         var collect: [Range<Bound>] = []
         for r in ranges {
@@ -105,6 +120,7 @@ extension RangeSet {
         return RangeSet(ranges: collect.sorted { $0.lowerBound < $1.lowerBound })
     }
     
+    @_inlineable
     public func intersection(_ range: Range<Bound>) -> RangeSet {
         var collect: [Range<Bound>] = []
         for r in ranges where range.overlaps(r) {
@@ -113,6 +129,7 @@ extension RangeSet {
         return RangeSet(ranges: collect.sorted { $0.lowerBound < $1.lowerBound })
     }
     
+    @_inlineable
     public func symmetricDifference(_ range: Range<Bound>) -> RangeSet {
         return self.subtracting(range).union(RangeSet([range]).subtracting(self))
     }
@@ -120,15 +137,19 @@ extension RangeSet {
 
 extension RangeSet {
     
+    @_inlineable
     public func union(_ ranges: RangeSet) -> RangeSet {
         return ranges.ranges.reduce(self) { $0.union($1) }
     }
+    @_inlineable
     public func subtracting(_ ranges: RangeSet) -> RangeSet {
         return ranges.ranges.reduce(self) { $0.subtracting($1) }
     }
+    @_inlineable
     public func intersection(_ ranges: RangeSet) -> RangeSet {
         return ranges.ranges.reduce(RangeSet()) { $0.union(self.intersection($1)) }
     }
+    @_inlineable
     public func symmetricDifference(_ ranges: RangeSet) -> RangeSet {
         return self.subtracting(ranges).union(ranges.subtracting(self))
     }
@@ -136,23 +157,29 @@ extension RangeSet {
 
 extension RangeSet where Bound : Strideable, Bound.Stride : SignedInteger {
     
+    @_inlineable
     public init(_ ranges: ClosedRange<Bound> ... ) {
         self.init(ranges)
     }
+    @_inlineable
     public init<S : Sequence>(_ s: S) where S.Iterator.Element == ClosedRange<Bound> {
         self = s.reduce(RangeSet()) { $0.union($1) }
     }
     
+    @_inlineable
     public init(_ ranges: CountableRange<Bound> ... ) {
         self.init(ranges)
     }
+    @_inlineable
     public init<S : Sequence>(_ s: S) where S.Iterator.Element == CountableRange<Bound> {
         self = s.reduce(RangeSet()) { $0.union($1) }
     }
     
+    @_inlineable
     public init(_ ranges: CountableClosedRange<Bound> ... ) {
         self.init(ranges)
     }
+    @_inlineable
     public init<S : Sequence>(_ s: S) where S.Iterator.Element == CountableClosedRange<Bound> {
         self = s.reduce(RangeSet()) { $0.union($1) }
     }
@@ -160,41 +187,53 @@ extension RangeSet where Bound : Strideable, Bound.Stride : SignedInteger {
 
 extension RangeSet where Bound : Strideable, Bound.Stride : SignedInteger {
     
+    @_inlineable
     public func union(_ ranges: ClosedRange<Bound>) -> RangeSet {
         return self.union(Range(ranges))
     }
+    @_inlineable
     public func subtracting(_ ranges: ClosedRange<Bound>) -> RangeSet {
         return self.subtracting(Range(ranges))
     }
+    @_inlineable
     public func intersection(_ ranges: ClosedRange<Bound>) -> RangeSet {
         return self.intersection(Range(ranges))
     }
+    @_inlineable
     public func symmetricDifference(_ ranges: ClosedRange<Bound>) -> RangeSet {
         return self.symmetricDifference(Range(ranges))
     }
     
+    @_inlineable
     public func union(_ ranges: CountableRange<Bound>) -> RangeSet {
         return self.union(Range(ranges))
     }
+    @_inlineable
     public func subtracting(_ ranges: CountableRange<Bound>) -> RangeSet {
         return self.subtracting(Range(ranges))
     }
+    @_inlineable
     public func intersection(_ ranges: CountableRange<Bound>) -> RangeSet {
         return self.intersection(Range(ranges))
     }
+    @_inlineable
     public func symmetricDifference(_ ranges: CountableRange<Bound>) -> RangeSet {
         return self.symmetricDifference(Range(ranges))
     }
     
+    @_inlineable
     public func union(_ ranges: CountableClosedRange<Bound>) -> RangeSet {
         return self.union(Range(ranges))
     }
+    @_inlineable
     public func subtracting(_ ranges: CountableClosedRange<Bound>) -> RangeSet {
         return self.subtracting(Range(ranges))
     }
+    @_inlineable
     public func intersection(_ ranges: CountableClosedRange<Bound>) -> RangeSet {
         return self.intersection(Range(ranges))
     }
+    @_inlineable
     public func symmetricDifference(_ ranges: CountableClosedRange<Bound>) -> RangeSet {
         return self.symmetricDifference(Range(ranges))
     }

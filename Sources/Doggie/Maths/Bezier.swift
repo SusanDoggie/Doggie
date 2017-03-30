@@ -50,16 +50,20 @@ extension Vector : BezierElementProtocol {
     
 }
 
+@_fixed_layout
 public struct Bezier<Element : BezierElementProtocol> {
     
-    fileprivate enum Base {
+    @_versioned
+    @_fixed_layout
+    enum Base {
         case _2(Element, Element)
         case _3(Element, Element, Element)
         case _4(Element, Element, Element, Element)
         case many([Element])
     }
     
-    fileprivate var base: Base
+    @_versioned
+    var base: Base
     
     public init(_ p0: Element, _ p1: Element) {
         self.base = ._2(p0, p1)
@@ -84,8 +88,10 @@ public struct Bezier<Element : BezierElementProtocol> {
         }
     }
 }
+
 extension Bezier : ExpressibleByArrayLiteral {
     
+    @_inlineable
     public init(arrayLiteral elements: Element ... ) {
         self.init(elements)
     }
@@ -93,6 +99,7 @@ extension Bezier : ExpressibleByArrayLiteral {
 
 extension Bezier : CustomStringConvertible {
     
+    @_inlineable
     public var description: String {
         return "\(points)"
     }
@@ -106,6 +113,7 @@ extension Bezier : RandomAccessCollection, MutableCollection {
     
     public typealias Index = Int
     
+    @_inlineable
     public var degree: Int {
         switch base {
         case ._2: return 1
@@ -114,6 +122,7 @@ extension Bezier : RandomAccessCollection, MutableCollection {
         case let .many(p): return p.count - 1
         }
     }
+    @_inlineable
     public var count: Int {
         switch base {
         case ._2: return 2
@@ -122,9 +131,11 @@ extension Bezier : RandomAccessCollection, MutableCollection {
         case let .many(p): return p.count
         }
     }
+    @_inlineable
     public var startIndex: Int {
         return 0
     }
+    @_inlineable
     public var endIndex: Int {
         switch base {
         case ._2: return 2
@@ -194,8 +205,8 @@ extension Bezier : RandomAccessCollection, MutableCollection {
 
 extension Bezier {
     
-    @_transparent
-    fileprivate var points: [Element] {
+    @_inlineable
+    public var points: [Element] {
         switch base {
         case let ._2(p0, p1): return [p0, p1]
         case let ._3(p0, p1, p2): return [p0, p1, p2]
@@ -207,6 +218,7 @@ extension Bezier {
 
 extension Bezier {
     
+    @_inlineable
     public func eval(_ t: Double) -> Element {
         switch base {
         case let ._2(p0, p1): return p0 + t * (p1 - p0)
@@ -244,6 +256,7 @@ extension Bezier {
 
 extension Bezier where Element == Double {
     
+    @_inlineable
     public var polynomial: Polynomial {
         switch base {
         case let ._2(p0, p1):
@@ -279,6 +292,7 @@ extension Bezier where Element == Double {
         }
     }
     
+    @_inlineable
     public init(_ polynomial: Polynomial) {
         let de = (0..<Swift.max(1, polynomial.degree)).scan(polynomial) { p, _ in p.derivative / Double(p.degree) }
         var points: [Double] = []
@@ -292,6 +306,7 @@ extension Bezier where Element == Double {
 
 extension Bezier {
     
+    @_inlineable
     public func elevated() -> Bezier {
         let p = self.points
         let n = Double(p.count)
@@ -307,7 +322,8 @@ extension Bezier {
 
 extension Bezier {
     
-    private static func split(_ t: Double, _ p: [Element]) -> ([Element], [Element]) {
+    @_versioned
+    static func split(_ t: Double, _ p: [Element]) -> ([Element], [Element]) {
         let _t = 1 - t
         if p.count == 2 {
             let split = _t * p.first! + t * p.last!
@@ -322,6 +338,7 @@ extension Bezier {
         let _split = split(t, subpath)
         return ([p.first!] + _split.0, _split.1 + [p.last!])
     }
+    @_inlineable
     public func split(_ t: Double) -> (Bezier, Bezier) {
         let points = self.points
         if t.almostZero() {
@@ -334,6 +351,7 @@ extension Bezier {
         return (Bezier(split.0), Bezier(split.1))
     }
     
+    @_inlineable
     public func split(_ t: [Double]) -> [Bezier] {
         var result: [Bezier] = []
         var remain = self
@@ -351,6 +369,7 @@ extension Bezier {
 
 extension Bezier {
     
+    @_inlineable
     public func derivative() -> Bezier {
         let p = self.points
         let n = Double(p.count - 1)
@@ -366,6 +385,7 @@ extension Bezier {
 
 extension Bezier where Element == Point {
     
+    @_inlineable
     public func closest(_ point: Point) -> [Double] {
         switch base {
         case let ._2(p0, p1):
@@ -403,6 +423,7 @@ extension Bezier where Element == Point {
 
 extension Bezier where Element == Point {
     
+    @_inlineable
     public var area: Double {
         switch base {
         case let ._2(p0, p1): return 0.5 * (p0.x * p1.y - p0.y * p1.x)
@@ -435,6 +456,7 @@ extension Bezier where Element == Point {
 
 extension Bezier where Element == Point {
     
+    @_inlineable
     public var inflection: [Double] {
         switch base {
         case ._2, ._3: return []
@@ -464,6 +486,7 @@ extension Bezier where Element == Point {
 
 extension Bezier where Element == Double {
     
+    @_inlineable
     public var stationary: [Double] {
         switch base {
         case ._2: return []
@@ -504,12 +527,14 @@ extension Bezier where Element == Double {
 
 extension Bezier where Element == Point {
     
+    @_inlineable
     public var stationary: [Double] {
         let bx = Bezier<Double>(points.map { $0.x }).stationary.lazy.map { $0.clamped(to: 0...1) }
         let by = Bezier<Double>(points.map { $0.y }).stationary.lazy.map { $0.clamped(to: 0...1) }
         return [0.0, 1.0] + bx + by
     }
     
+    @_inlineable
     public var boundary: Rect {
         let points = self.points
         
@@ -531,12 +556,15 @@ extension Bezier where Element == Point {
     }
 }
 
+@_inlineable
 public prefix func + <Element>(x: Bezier<Element>) -> Bezier<Element> {
     return x
 }
+@_inlineable
 public prefix func - <Element>(x: Bezier<Element>) -> Bezier<Element> {
     return Bezier(x.points.map { -$0 })
 }
+@_inlineable
 public func + <Element>(lhs: Bezier<Element>, rhs: Bezier<Element>) -> Bezier<Element> {
     var lhs = lhs
     var rhs = rhs
@@ -549,6 +577,7 @@ public func + <Element>(lhs: Bezier<Element>, rhs: Bezier<Element>) -> Bezier<El
     }
     return Bezier(zip(lhs.points, rhs.points).map(+))
 }
+@_inlineable
 public func - <Element>(lhs: Bezier<Element>, rhs: Bezier<Element>) -> Bezier<Element> {
     var lhs = lhs
     var rhs = rhs
@@ -561,24 +590,31 @@ public func - <Element>(lhs: Bezier<Element>, rhs: Bezier<Element>) -> Bezier<El
     }
     return Bezier(zip(lhs.points, rhs.points).map(-))
 }
+@_inlineable
 public func * <Element>(lhs: Double, rhs: Bezier<Element>) -> Bezier<Element> {
     return Bezier(rhs.points.map { lhs * $0 })
 }
+@_inlineable
 public func * <Element>(lhs: Bezier<Element>, rhs: Double) -> Bezier<Element> {
     return Bezier(lhs.points.map { $0 * rhs })
 }
+@_inlineable
 public func / <Element>(lhs: Bezier<Element>, rhs: Double) -> Bezier<Element> {
     return Bezier(lhs.points.map { $0 / rhs })
 }
+@_inlineable
 public func += <Element>(lhs: inout Bezier<Element>, rhs: Bezier<Element>) {
     lhs = lhs + rhs
 }
+@_inlineable
 public func -= <Element>(lhs: inout Bezier<Element>, rhs: Bezier<Element>) {
     lhs = lhs - rhs
 }
+@_inlineable
 public func *= <Element>(lhs: inout Bezier<Element>, rhs: Double) {
     lhs = lhs * rhs
 }
+@_inlineable
 public func /= <Element>(lhs: inout Bezier<Element>, rhs: Double) {
     lhs = lhs / rhs
 }

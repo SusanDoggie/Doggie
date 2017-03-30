@@ -25,19 +25,23 @@
 
 import Foundation
 
+@_inlineable
 public func FactorialList<T: UnsignedInteger>(_ n: T) -> LazyScanSequence<RandomAccessSlice<CountableClosedRange<T>>, T> where T.Stride : SignedInteger {
     
     return (0...n).dropFirst().lazy.scan(1, *)
 }
+@_inlineable
 public func PermutationList<T: UnsignedInteger>(_ n: T) -> LazyScanSequence<ReversedRandomAccessCollection<RandomAccessSlice<CountableClosedRange<T>>>, T> where T.Stride : SignedInteger {
     
     return (0...n).dropFirst().reversed().lazy.scan(1, *)
 }
+@_inlineable
 public func CombinationList<T: UnsignedInteger>(_ n: T) -> LazyMapSequence<Zip2Sequence<LazyScanSequence<ReversedRandomAccessCollection<RandomAccessSlice<CountableClosedRange<T>>>, T>, LazyScanSequence<RandomAccessSlice<CountableClosedRange<T>>, T>>, T> where T.Stride : SignedInteger {
     
     return zip(PermutationList(n), FactorialList(n)).lazy.map(/)
 }
 
+@_inlineable
 public func FibonacciList<T: UnsignedInteger>(_ n: T) -> LazyMapSequence<LazyScanSequence<CountableRange<T>, (T, T)>, T> where T.Stride : SignedInteger {
     
     return (0..<n).dropLast().lazy.scan((1, 1)) { ($0.0.1, $0.0.0 + $0.0.1) }.map { $0.0 }
@@ -346,20 +350,25 @@ public func degree4roots(_ b: Double, _ c: Double, _ d: Double, _ e: Double) -> 
 
 // MARK: Others
 
+@_inlineable
 public func linearScale(_ f: UInt, _ x: UInt) -> Double {
     return log(Double(x + 1)) / log(Double(f))
 }
+@_inlineable
 public func logScale(_ f: UInt, _ x: Double) -> UInt {
     return UInt(lround(pow(Double(f), x))) - 1
 }
 
+@_inlineable
 public func degreesToRad(_ alpha: Float) -> Float {
     return alpha * Float.pi / 180.0
 }
+@_inlineable
 public func degreesToRad(_ alpha: Double) -> Double {
     return alpha * Double.pi / 180.0
 }
 
+@_inlineable
 public func LogarithmicDynamicRangeCompression(_ x: Double, _ m: Double) -> Double {
     let alpha = 2.5128624172523393539654752332184326538328336634026474
     let alpha_2 = 0.7959050946318330895721191440438390881317432367303995
@@ -367,14 +376,17 @@ public func LogarithmicDynamicRangeCompression(_ x: Double, _ m: Double) -> Doub
     return x.sign == .minus ? -re : re
 }
 
+@_inlineable
 public func LinearInterpolate(_ t: Double, _ a: Double, _ b: Double) -> Double {
     return a + t * (b - a)
 }
 
+@_inlineable
 public func CosineInterpolate(_ t: Double, _ a: Double, _ b: Double) -> Double {
     return LinearInterpolate((1.0 - cos(t * Double.pi)) * 0.5, a, b)
 }
 
+@_inlineable
 public func CubicInterpolate(_ t: Double, _ a: Double, _ b: Double, _ c: Double, _ d: Double) -> Double {
     let t2 = t * t
     let m0 = d - c - a + b
@@ -384,6 +396,7 @@ public func CubicInterpolate(_ t: Double, _ a: Double, _ b: Double, _ c: Double,
     return m0 * t * t2 + m1 * t2 + m2 * t + m3
 }
 
+@_inlineable
 public func HermiteInterpolate(_ t: Double, _ a: Double, _ b: Double, _ c: Double, _ d: Double, _ s: Double, _ e: Double) -> Double {
     let t2 = t * t
     let t3 = t2 * t
@@ -396,18 +409,23 @@ public func HermiteInterpolate(_ t: Double, _ a: Double, _ b: Double, _ c: Doubl
     return a0 * b + a1 * m0 + a2 * m1 + a3 * c
 }
 
+@_inlineable
 public func Phase(_ x: Double, _ shift: Double, _ frequency: Double, _ maxFrequency: Double) -> Double {
     return abs((x / maxFrequency + shift) * frequency).truncatingRemainder(dividingBy: 1.0)
 }
+@_inlineable
 public func SineWave(_ phase: Double) -> Double {
     return sin(2 * Double.pi * phase)
 }
+@_inlineable
 public func SquareWave(_ phase: Double) -> Double {
     return phase < 0.5 ? 1 : -1
 }
+@_inlineable
 public func SawtoothWave(_ phase: Double) -> Double {
     return phase * 2 - 1.0
 }
+@_inlineable
 public func TriangleWave(_ phase: Double) -> Double {
     return phase < 0.5 ? phase * 4 - 1.0 : 3.0 - phase * 4
 }

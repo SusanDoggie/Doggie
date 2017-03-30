@@ -25,9 +25,10 @@
 
 import Foundation
 
-public extension UInt64 {
+extension UInt64 {
     
-    var reverse: UInt64 {
+    @_inlineable
+    public var reverse: UInt64 {
         var x = self
         x = ((x & 0x5555555555555555) << 1) | ((x & 0xAAAAAAAAAAAAAAAA) >> 1)
         x = ((x & 0x3333333333333333) << 2) | ((x & 0xCCCCCCCCCCCCCCCC) >> 2)
@@ -38,9 +39,10 @@ public extension UInt64 {
         return x
     }
 }
-public extension UInt32 {
+extension UInt32 {
     
-    var reverse: UInt32 {
+    @_inlineable
+    public var reverse: UInt32 {
         var x = self
         x = ((x & 0x55555555) << 1) | ((x & 0xAAAAAAAA) >> 1)
         x = ((x & 0x33333333) << 2) | ((x & 0xCCCCCCCC) >> 2)
@@ -50,9 +52,10 @@ public extension UInt32 {
         return x
     }
 }
-public extension UInt16 {
+extension UInt16 {
     
-    var reverse: UInt16 {
+    @_inlineable
+    public var reverse: UInt16 {
         var x = self
         x = ((x & 0x5555) << 1) | ((x & 0xAAAA) >> 1)
         x = ((x & 0x3333) << 2) | ((x & 0xCCCC) >> 2)
@@ -61,9 +64,10 @@ public extension UInt16 {
         return x
     }
 }
-public extension UInt8 {
+extension UInt8 {
     
-    var reverse: UInt8 {
+    @_inlineable
+    public var reverse: UInt8 {
         var x = self
         x = ((x & 0x55) << 1) | ((x & 0xAA) >> 1)
         x = ((x & 0x33) << 2) | ((x & 0xCC) >> 2)
@@ -71,31 +75,36 @@ public extension UInt8 {
         return x
     }
 }
-public extension Int64 {
+extension Int64 {
     
-    var reverse: Int64 {
+    @_inlineable
+    public var reverse: Int64 {
         return Int64(bitPattern: UInt64(bitPattern: self).reverse)
     }
 }
-public extension Int32 {
+extension Int32 {
     
-    var reverse: Int32 {
+    @_inlineable
+    public var reverse: Int32 {
         return Int32(bitPattern: UInt32(bitPattern: self).reverse)
     }
 }
-public extension Int16 {
+extension Int16 {
     
-    var reverse: Int16 {
+    @_inlineable
+    public var reverse: Int16 {
         return Int16(bitPattern: UInt16(bitPattern: self).reverse)
     }
 }
-public extension Int8 {
+extension Int8 {
     
-    var reverse: Int8 {
+    @_inlineable
+    public var reverse: Int8 {
         return Int8(bitPattern: UInt8(bitPattern: self).reverse)
     }
 }
 
+@_inlineable
 public func log2<T: UnsignedInteger>(_ x: T) -> T {
     var r: T = 0
     var x = x
@@ -105,25 +114,31 @@ public func log2<T: UnsignedInteger>(_ x: T) -> T {
     }
     return r - 1
 }
+@_inlineable
 public func log2(_ x: Int64) -> Int64 {
     return Int64(bitPattern: log2(UInt64(bitPattern: x)))
 }
+@_inlineable
 public func log2(_ x: Int32) -> Int32 {
     return Int32(bitPattern: log2(UInt32(bitPattern: x)))
 }
+@_inlineable
 public func log2(_ x: Int16) -> Int16 {
     return Int16(bitPattern: log2(UInt16(bitPattern: x)))
 }
+@_inlineable
 public func log2(_ x: Int8) -> Int8 {
     return Int8(bitPattern: log2(UInt8(bitPattern: x)))
 }
+@_inlineable
 public func log2(_ x: Int) -> Int {
     return Int(bitPattern: log2(UInt(bitPattern: x)))
 }
 
-public extension UnsignedInteger {
+extension UnsignedInteger {
     
-    var hibit: Self {
+    @_inlineable
+    public var hibit: Self {
         let mbit: Self = ~(~0 >> 1)
         if self & mbit != 0 {
             return mbit
@@ -136,47 +151,54 @@ public extension UnsignedInteger {
     }
 }
 
-public extension Int64 {
+extension Int64 {
     
-    var hibit: Int64 {
+    @_inlineable
+    public var hibit: Int64 {
         return Int64(bitPattern: UInt64(bitPattern: self).hibit)
     }
 }
-public extension Int32 {
+extension Int32 {
     
-    var hibit: Int32 {
+    @_inlineable
+    public var hibit: Int32 {
         return Int32(bitPattern: UInt32(bitPattern: self).hibit)
     }
 }
-public extension Int16 {
+extension Int16 {
     
-    var hibit: Int16 {
+    @_inlineable
+    public var hibit: Int16 {
         return Int16(bitPattern: UInt16(bitPattern: self).hibit)
     }
 }
-public extension Int8 {
+extension Int8 {
     
-    var hibit: Int8 {
+    @_inlineable
+    public var hibit: Int8 {
         return Int8(bitPattern: UInt8(bitPattern: self).hibit)
     }
 }
-public extension Int {
+extension Int {
     
-    var hibit: Int {
+    @_inlineable
+    public var hibit: Int {
         return Int(bitPattern: UInt(bitPattern: self).hibit)
     }
 }
 
-public extension Integer {
+extension Integer {
     
-    var lowbit: Self {
+    @_inlineable
+    public var lowbit: Self {
         return self & (~self &+ 1)
     }
 }
 
-public extension UnsignedInteger {
+extension UnsignedInteger {
     
-    var bitCount: Self {
+    @_inlineable
+    public var bitCount: Self {
         var x = self
         var c: Self = 0
         while x != 0 {
@@ -186,53 +208,61 @@ public extension UnsignedInteger {
         return c
     }
 }
-public extension Int64 {
+extension Int64 {
     
-    var bitCount: Int64 {
+    @_inlineable
+    public var bitCount: Int64 {
         return Int64(bitPattern: UInt64(bitPattern: self).bitCount)
     }
 }
-public extension Int32 {
+extension Int32 {
     
-    var bitCount: Int32 {
+    @_inlineable
+    public var bitCount: Int32 {
         return Int32(bitPattern: UInt32(bitPattern: self).bitCount)
     }
 }
-public extension Int16 {
+extension Int16 {
     
-    var bitCount: Int16 {
+    @_inlineable
+    public var bitCount: Int16 {
         return Int16(bitPattern: UInt16(bitPattern: self).bitCount)
     }
 }
-public extension Int8 {
+extension Int8 {
     
-    var bitCount: Int8 {
+    @_inlineable
+    public var bitCount: Int8 {
         return Int8(bitPattern: UInt8(bitPattern: self).bitCount)
     }
 }
-public extension Int {
+extension Int {
     
-    var bitCount: Int {
+    @_inlineable
+    public var bitCount: Int {
         return Int(bitPattern: UInt(bitPattern: self).bitCount)
     }
 }
 
-public extension Integer {
+extension Integer {
     
-    var isPower2 : Bool {
+    @_inlineable
+    public var isPower2 : Bool {
         return 0 < self && self & (self &- 1) == 0
     }
 }
 
-public extension Integer {
+extension Integer {
     
-    func align(_ s: Self) -> Self {
+    @_inlineable
+    public func align(_ s: Self) -> Self {
         assert(s.isPower2, "alignment is not power of 2.")
         let MASK = s - 1
         return (self + MASK) & ~MASK
     }
 }
 
+@_inlineable
 public func addmod<T: UnsignedInteger>(_ a: T, _ b: T, _ m: T) -> T {
     assert(m != 0, "divide by zero")
     let a = a % m
@@ -240,11 +270,13 @@ public func addmod<T: UnsignedInteger>(_ a: T, _ b: T, _ m: T) -> T {
     let c = m &- b
     return a < c ? a &+ b : a &- c
 }
+@_inlineable
 public func negmod<T: UnsignedInteger>(_ a: T, _ m: T) -> T {
     assert(m != 0, "divide by zero")
     let a = a % m
     return m &- a
 }
+@_inlineable
 public func submod<T: UnsignedInteger>(_ a: T, _ b: T, _ m: T) -> T {
     assert(m != 0, "divide by zero")
     let a = a % m
@@ -253,10 +285,12 @@ public func submod<T: UnsignedInteger>(_ a: T, _ b: T, _ m: T) -> T {
     return a < b ? a &+ c : a &- b
 }
 
+@_inlineable
 public func >><T: UnsignedInteger>(lhs: T, rhs: T) -> T {
     return T(lhs.toUIntMax() >> rhs.toUIntMax())
 }
 
+@_inlineable
 public func mulmod<T: UnsignedInteger>(_ a: T, _ b: T, _ m: T) -> T {
     func _mulmod(_ a: UIntMax, _ b: UIntMax, _ m: UIntMax) -> UIntMax {
         if a == 0 || b == 0 {
@@ -281,6 +315,7 @@ public func mulmod<T: UnsignedInteger>(_ a: T, _ b: T, _ m: T) -> T {
     return T(_mulmod(a.toUIntMax(), b.toUIntMax(), m.toUIntMax()))
 }
 
+@_inlineable
 public func pow<T: UnsignedInteger>(_ x: T, _ n: T, _ m: T) -> T {
     assert(m != 0, "divide by zero")
     let x = x % m
@@ -294,22 +329,28 @@ public func pow<T: UnsignedInteger>(_ x: T, _ n: T, _ m: T) -> T {
     return n & 1 == 1 ? mulmod(x, p, m) : p
 }
 
+@_inlineable
 public func pow(_ x: UInt, _ n: UInt) -> UInt {
     return pow(x, n, UInt.max)
 }
+@_inlineable
 public func pow(_ x: UInt64, _ n: UInt64) -> UInt64 {
     return pow(x, n, UInt64.max)
 }
+@_inlineable
 public func pow(_ x: UInt32, _ n: UInt32) -> UInt32 {
     return pow(x, n, UInt32.max)
 }
+@_inlineable
 public func pow(_ x: UInt16, _ n: UInt16) -> UInt16 {
     return pow(x, n, UInt16.max)
 }
+@_inlineable
 public func pow(_ x: UInt8, _ n: UInt8) -> UInt8 {
     return pow(x, n, UInt8.max)
 }
 
+@_inlineable
 public func gcd<U: UnsignedInteger>(_ a: U, _ b: U) -> U {
     var a = a
     var b = b
@@ -318,6 +359,7 @@ public func gcd<U: UnsignedInteger>(_ a: U, _ b: U) -> U {
     }
     return a
 }
+@_inlineable
 public func gcd<S: SignedInteger>(_ a: S, _ b: S) -> S {
     var a = a
     var b = b
@@ -328,6 +370,7 @@ public func gcd<S: SignedInteger>(_ a: S, _ b: S) -> S {
     return sign ? abs(a) : -abs(a)
 }
 
+@_inlineable
 public func exgcd<S: SignedInteger>(_ a: S, _ b: S) -> (gcd: S, x: S, y: S) {
     var a = a
     var b = b
@@ -350,6 +393,7 @@ public func exgcd<S: SignedInteger>(_ a: S, _ b: S) -> (gcd: S, x: S, y: S) {
     }
 }
 
+@_inlineable
 public func modinv<U: UnsignedInteger>(_ a: U, _ b: U) -> U {
     var a = a
     var b = b
@@ -372,13 +416,16 @@ public func modinv<U: UnsignedInteger>(_ a: U, _ b: U) -> U {
     }
 }
 
+@_inlineable
 public func lcm<T: UnsignedInteger>(_ a: T, _ b: T) -> T {
     return a * b / gcd(a, b)
 }
+@_inlineable
 public func lcm<T: SignedInteger>(_ a: T, _ b: T) -> T {
     return a * b / gcd(a, b)
 }
 
+@_inlineable
 public func factorial<T: UnsignedInteger>(_ x: T) -> T where T.Stride : SignedInteger {
     if x == 0 || x == 1 {
         return 1
@@ -390,6 +437,7 @@ public func factorial<T: UnsignedInteger>(_ x: T) -> T where T.Stride : SignedIn
     return _a
 }
 
+@_inlineable
 public func permutation<T: UnsignedInteger>(_ n: T, _ k: T) -> T where T.Stride : SignedInteger {
     if k == 0 {
         return 1
@@ -403,10 +451,12 @@ public func permutation<T: UnsignedInteger>(_ n: T, _ k: T) -> T where T.Stride 
     }
     return _a
 }
+@_inlineable
 public func combination<T: UnsignedInteger>(_ n: T, _ k: T) -> T where T.Stride : SignedInteger {
     return permutation(n, k) / factorial(k)
 }
 
+@_inlineable
 public func fibonacci<T: UnsignedInteger>(_ n: T) -> T {
     func fib(_ n: UIntMax) -> (UIntMax, UIntMax) {
         switch n {
