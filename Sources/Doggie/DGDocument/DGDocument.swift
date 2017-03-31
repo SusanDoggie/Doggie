@@ -27,12 +27,12 @@ import Foundation
 
 public struct DGDocument {
     
-    public let rootId: Int
-    public let table: [Int: Value]
+    public var rootId: Int
+    public var table: [Int: Value]
     
     public init(root: Int, table: [Int: Value]) {
         self.rootId = root
-        self.table = DGDocument.trim(root: root, table: table)
+        self.table = table
     }
     
     public enum Value {
@@ -69,26 +69,26 @@ extension DGDocument.Value {
 
 extension DGDocument {
     
-    fileprivate static func trim(root: Int, table: [Int: Value]) -> [Int: Value] {
-        var result: [Int: Value] = [:]
-        if table[root] != nil {
-            var checking = [root]
+    public mutating func trimTable() {
+        var trimed: [Int: Value] = [:]
+        if table[rootId] != nil {
+            var checking = [rootId]
             while let id = checking.popLast() {
                 if let item = table[id] {
                     switch item {
                     case .indirect: break
                     case let .array(array):
-                        result[id] = table[id]
-                        checking.append(contentsOf: Set(array.flatMap { Set($0.identifiers).flatMap { result[$0] == nil ? $0 : nil } }))
+                        trimed[id] = table[id]
+                        checking.append(contentsOf: Set(array.flatMap { Set($0.identifiers).flatMap { trimed[$0] == nil ? $0 : nil } }))
                     case let .dictionary(dictionary):
-                        result[id] = table[id]
-                        checking.append(contentsOf: Set(dictionary.flatMap { Set($1.identifiers).flatMap { result[$0] == nil ? $0 : nil } }))
-                    default: result[id] = table[id]
+                        trimed[id] = table[id]
+                        checking.append(contentsOf: Set(dictionary.flatMap { Set($1.identifiers).flatMap { trimed[$0] == nil ? $0 : nil } }))
+                    default: trimed[id] = table[id]
                     }
                 }
             }
         }
-        return result
+        self.table = trimed
     }
 }
 
