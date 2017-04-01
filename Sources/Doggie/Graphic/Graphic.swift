@@ -374,13 +374,13 @@ extension Rect {
         return CGPattern(info: UnsafeMutableRawPointer(bitPattern: id), bounds: bounds, matrix: matrix, xStep: xStep, yStep: yStep, tiling: tiling, isColored: isColored, callbacks: callbackContainer.callbacks_struct)
     }
     
-    public func CGContextClipToDrawing(_ context : CGContext, command: (CGContext) -> Void) {
+    public func CGContextClipToDrawing(_ context : CGContext, fillBackground: CGFloat = 0, command: (CGContext) -> Void) {
         
         let width = context.width
         let height = context.height
         
         if let maskContext = CGContext(data: nil, width: width, height: height, bitsPerComponent: 8, bytesPerRow: width, space: CGColorSpaceCreateDeviceGray(), bitmapInfo: 0) {
-            maskContext.setFillColor(gray: 0, alpha: 1)
+            maskContext.setFillColor(gray: fillBackground, alpha: 1)
             maskContext.fill(CGRect(x: 0, y: 0, width: width, height: height))
             maskContext.setFillColor(gray: 1, alpha: 1)
             let transform = context.ctm
