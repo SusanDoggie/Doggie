@@ -120,6 +120,40 @@ extension SDTransform : CustomStringConvertible {
 
 extension SDTransform {
     
+    public init?(from p0: Point, _ p1: Point, _ p2: Point, to q0: Point, _ q1: Point, _ q2: Point) {
+        
+        func solve(_ a: Double, _ b: Double, _ c: Double, _ d: Double, _ e: Double, _ f: Double, _ x: Double, _ y: Double, _ z: Double) -> (Double, Double, Double)? {
+            
+            let _det = a * (d - f) + b * (e - c) + c * f - d * e
+            
+            if _det == 0 {
+                return nil
+            }
+            
+            let det = 1 / _det
+            
+            let _a = d - f
+            let _b = f - b
+            let _c = b - d
+            let _d = e - c
+            let _e = a - e
+            let _f = c - a
+            let _g = c * f - d * e
+            let _h = b * e - a * f
+            let _i = a * d - b * c
+            
+            return ((x * _a + y * _b + z * _c) * det, (x * _d + y * _e + z * _f) * det, (x * _g + y * _h + z * _i) * det)
+        }
+        
+        guard let (a, b, c) = solve(p0.x, p0.y, p1.x, p1.y, p2.x, p2.y, q0.x, q1.x, q2.x) else { return nil }
+        guard let (d, e, f) = solve(p0.x, p0.y, p1.x, p1.y, p2.x, p2.y, q0.y, q1.y, q2.y) else { return nil }
+        
+        self.init(a: a, b: b, c: c, d: d, e: e, f: f)
+    }
+}
+
+extension SDTransform {
+    
     @_inlineable
     public var inverse : SDTransform {
         let det = self.determinant
