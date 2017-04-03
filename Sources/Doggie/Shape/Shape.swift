@@ -323,6 +323,20 @@ extension Shape.Component : RandomAccessCollection, MutableCollection {
     }
 }
 
+extension Shape.Component {
+    
+    public var last: Point {
+        if let last = segments.last {
+            switch last {
+            case let .line(p1): return p1
+            case let .quad(_, p2): return p2
+            case let .cubic(_, _, p3): return p3
+            }
+        }
+        return start
+    }
+}
+
 extension Shape.Component : RangeReplaceableCollection {
     
     public mutating func append(_ x: Shape.Segment) {
