@@ -120,6 +120,7 @@ extension SDTransform : CustomStringConvertible {
 
 extension SDTransform {
     
+    @_inlineable
     public init?(from p0: Point, _ p1: Point, _ p2: Point, to q0: Point, _ q1: Point, _ q2: Point) {
         
         func solve(_ a: Double, _ b: Double, _ c: Double, _ d: Double, _ e: Double, _ f: Double, _ x: Double, _ y: Double, _ z: Double) -> (Double, Double, Double)? {
