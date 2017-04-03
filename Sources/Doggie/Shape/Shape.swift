@@ -325,7 +325,7 @@ extension Shape.Component : RandomAccessCollection, MutableCollection {
 
 extension Shape.Component {
     
-    public var last: Point {
+    public var end: Point {
         if let last = segments.last {
             switch last {
             case let .line(p1): return p1
