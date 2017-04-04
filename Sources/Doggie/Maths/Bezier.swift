@@ -50,20 +50,20 @@ extension Vector : BezierElementProtocol {
     
 }
 
+@_versioned
+@_fixed_layout
+enum BezierBase<Element : BezierElementProtocol> {
+    case _2(Element, Element)
+    case _3(Element, Element, Element)
+    case _4(Element, Element, Element, Element)
+    case many([Element])
+}
+
 @_fixed_layout
 public struct Bezier<Element : BezierElementProtocol> {
     
     @_versioned
-    @_fixed_layout
-    enum Base {
-        case _2(Element, Element)
-        case _3(Element, Element, Element)
-        case _4(Element, Element, Element, Element)
-        case many([Element])
-    }
-    
-    @_versioned
-    var base: Base
+    var base: BezierBase<Element>
     
     public init(_ p0: Element, _ p1: Element) {
         self.base = ._2(p0, p1)
