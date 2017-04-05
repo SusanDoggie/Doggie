@@ -362,6 +362,29 @@ extension Shape.Component : RangeReplaceableCollection {
     }
 }
 
+extension Shape.Component {
+    
+    public struct BezierCollection: RandomAccessCollection {
+        
+        fileprivate var component: Shape.Component
+        
+        public var startIndex: Int {
+            return component.startIndex
+        }
+        public var endIndex: Int {
+            return component.endIndex
+        }
+        public subscript(position: Int) -> (Point, Shape.Segment) {
+            return (position == 0 ? component.start : component[position - 1].end, component[position])
+        }
+    }
+    
+    public var bezier: BezierCollection {
+        return BezierCollection(component: self)
+    }
+    
+}
+
 extension Shape {
     
     public static func Rectangle(origin: Point, size: Size) -> Shape {
