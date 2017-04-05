@@ -323,17 +323,20 @@ extension Shape.Component : RandomAccessCollection, MutableCollection {
     }
 }
 
+extension Shape.Segment {
+    
+    public var end: Point {
+        switch self {
+        case let .line(p1): return p1
+        case let .quad(_, p2): return p2
+        case let .cubic(_, _, p3): return p3
+        }
+    }
+}
 extension Shape.Component {
     
     public var end: Point {
-        if let last = segments.last {
-            switch last {
-            case let .line(p1): return p1
-            case let .quad(_, p2): return p2
-            case let .cubic(_, _, p3): return p3
-            }
-        }
-        return start
+        return segments.last?.end ?? start
     }
 }
 
