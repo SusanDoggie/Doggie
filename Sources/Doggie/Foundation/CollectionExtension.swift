@@ -310,28 +310,19 @@ public extension LazyCollectionProtocol where Elements.SubSequence : Bidirection
     }
 }
 
-public typealias LazyRotateSequence<Elements : Sequence> = LazySequence<ConcatSequence<Elements, Elements>>
 public typealias LazyRotateCollection<Elements : Collection> = LazyCollection<ConcatCollection<Elements, Elements>>
 public typealias LazyRotateBidirectionalCollection<Elements : BidirectionalCollection> = LazyBidirectionalCollection<ConcatBidirectionalCollection<Elements, Elements>>
 
-public extension LazyCollectionProtocol {
-    
-    @_inlineable
-    public func rotated(_ n: Int) -> LazyRotateSequence<Elements.SubSequence> {
-        if n < 0 {
-            return self.elements.suffix(-n).concat(self.elements.dropLast(-n)).lazy
-        }
-        return self.elements.dropFirst(n).concat(self.elements.prefix(n)).lazy
-    }
-}
 public extension LazyCollectionProtocol where Elements.SubSequence : Collection {
     
     @_inlineable
     public func rotated(_ n: Int) -> LazyRotateCollection<Elements.SubSequence> {
         if n < 0 {
-            return self.elements.suffix(-n).concat(self.elements.dropLast(-n)).lazy
+            let _n = -n % numericCast(count)
+            return self.elements.suffix(_n).concat(self.elements.dropLast(_n)).lazy
         }
-        return self.elements.dropFirst(n).concat(self.elements.prefix(n)).lazy
+        let _n = n % numericCast(count)
+        return self.elements.dropFirst(_n).concat(self.elements.prefix(_n)).lazy
     }
 }
 public extension LazyCollectionProtocol where Elements.SubSequence : BidirectionalCollection {
@@ -339,9 +330,11 @@ public extension LazyCollectionProtocol where Elements.SubSequence : Bidirection
     @_inlineable
     public func rotated(_ n: Int) -> LazyRotateBidirectionalCollection<Elements.SubSequence> {
         if n < 0 {
-            return self.elements.suffix(-n).concat(self.elements.dropLast(-n)).lazy
+            let _n = -n % numericCast(count)
+            return self.elements.suffix(_n).concat(self.elements.dropLast(_n)).lazy
         }
-        return self.elements.dropFirst(n).concat(self.elements.prefix(n)).lazy
+        let _n = n % numericCast(count)
+        return self.elements.dropFirst(_n).concat(self.elements.prefix(_n)).lazy
     }
 }
 public extension LazyCollectionProtocol where Elements.SubSequence : RandomAccessCollection {
@@ -349,9 +342,11 @@ public extension LazyCollectionProtocol where Elements.SubSequence : RandomAcces
     @_inlineable
     public func rotated(_ n: Int) -> LazyRotateBidirectionalCollection<Elements.SubSequence> {
         if n < 0 {
-            return self.elements.suffix(-n).concat(self.elements.dropLast(-n)).lazy
+            let _n = -n % numericCast(count)
+            return self.elements.suffix(_n).concat(self.elements.dropLast(_n)).lazy
         }
-        return self.elements.dropFirst(n).concat(self.elements.prefix(n)).lazy
+        let _n = n % numericCast(count)
+        return self.elements.dropFirst(_n).concat(self.elements.prefix(_n)).lazy
     }
 }
 
