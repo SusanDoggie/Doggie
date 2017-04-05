@@ -364,7 +364,13 @@ extension Shape.Component : RangeReplaceableCollection {
 
 extension Shape.Component {
     
-    public struct BezierCollection: RandomAccessCollection {
+    public struct BezierCollection: RandomAccessCollection, MutableCollection {
+        
+        public typealias SubSequence = MutableRandomAccessSlice<BezierCollection>
+        
+        public typealias Indices = CountableRange<Int>
+        
+        public typealias Index = Int
         
         fileprivate var component: Shape.Component
         
@@ -375,14 +381,32 @@ extension Shape.Component {
             return component.endIndex
         }
         public subscript(position: Int) -> (Point, Shape.Segment) {
-            return (position == 0 ? component.start : component[position - 1].end, component[position])
+            get {
+                return (position == 0 ? component.start : component[position - 1].end, component[position])
+            }
+            set {
+                if position == 0 {
+                    component.start = newValue.0
+                } else {
+                    switch component[position - 1] {
+                    case .line: component[position - 1] = .line(newValue.0)
+                    case let .quad(p1, _): component[position - 1] = .quad(p1, newValue.0)
+                    case let .cubic(p1, p2, _): component[position - 1] = .cubic(p1, p2, newValue.0)
+                    }
+                }
+                component[position] = newValue.1
+            }
         }
     }
     
     public var bezier: BezierCollection {
-        return BezierCollection(component: self)
+        get {
+            return BezierCollection(component: self)
+        }
+        set {
+            self = newValue.component
+        }
     }
-    
 }
 
 extension Shape {
