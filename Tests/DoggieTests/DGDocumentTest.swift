@@ -30,6 +30,7 @@ import XCTest
 class DGDocumentTest: XCTestCase {
     
     static let allTests = [
+        ("testNumber", testNumber),
         ("testArray", testArray),
         ("testIncrementUpdate", testIncrementUpdate),
         ]
@@ -42,6 +43,28 @@ class DGDocumentTest: XCTestCase {
     override func tearDown() {
         
         super.tearDown()
+    }
+    
+    func testNumber() {
+        
+        let sample = "%DOG\n[0.5 -1]\n%XREF\n0 5\n0\n%%EOF"
+        
+        do {
+            
+            let document = try DGDocument.Parse(data: Data(sample.utf8))
+            
+            XCTAssertEqual(document.rootId, 0)
+            
+            XCTAssertEqual(document.table[0]?.array?.count, 2)
+            
+            XCTAssertEqual(document.table[0]?.array?[0].doubleValue, 0.5)
+            
+            XCTAssertEqual(document.table[0]?.array?[1].intValue, -1)
+            
+        } catch let error {
+            
+            XCTFail("\(error)")
+        }
     }
     
     func testArray() {

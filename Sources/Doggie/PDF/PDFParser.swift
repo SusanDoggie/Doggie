@@ -512,12 +512,12 @@ extension PDFDocument {
                 if sign != nil {
                     throw ParserError.invalidFormat("invalid number format.")
                 }
-                sign = true
+                sign = false
             case 45:
                 if sign != nil {
                     throw ParserError.invalidFormat("invalid number format.")
                 }
-                sign = false
+                sign = true
             case 46:
                 if fflag {
                     throw ParserError.invalidFormat("invalid number format.")

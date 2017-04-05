@@ -138,18 +138,18 @@ extension DGDocument {
         var fflag = false
         var eflag = false
         
-        loop: for (pos, d) in data.suffix(from: position).dropFirst().indexed() {
+        loop: for (pos, d) in data.suffix(from: position).indexed() {
             switch d {
             case 43:
                 if sign != nil {
                     throw ParserError.invalidFormat("invalid number format.")
                 }
-                sign = true
+                sign = false
             case 45:
                 if sign != nil {
                     throw ParserError.invalidFormat("invalid number format.")
                 }
-                sign = false
+                sign = true
             case 46:
                 if fflag || eflag {
                     throw ParserError.invalidFormat("invalid number format.")
