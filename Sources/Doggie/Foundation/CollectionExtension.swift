@@ -509,21 +509,28 @@ public extension BidirectionalCollection where Self : MutableCollection, Indices
         }
     }
 }
-public extension BidirectionalCollection where Self : MutableCollection, Indices.SubSequence : BidirectionalCollection, Iterator.Element : Comparable, Indices.SubSequence.Iterator.Element == Index, Indices.Index == Index {
+public extension BidirectionalCollection where Self : MutableCollection, Indices.SubSequence : BidirectionalCollection, Indices.SubSequence.Iterator.Element == Index, Indices.Index == Index {
     
     @_inlineable
-    public func nextPermute() -> Self {
+    public func nextPermute(by areInIncreasingOrder: (Iterator.Element, Iterator.Element) throws -> Bool) rethrows -> Self {
         var _self = self
         if !_self.isEmpty {
-            if let k = _self.indices.dropLast().last(where: { _self[$0] < _self[_self.index(after: $0)] }) {
+            if let k = try _self.indices.dropLast().last(where: { try areInIncreasingOrder(_self[$0], _self[_self.index(after: $0)]) }) {
                 let range = _self.indices.suffix(from: _self.index(after: k))
-                swap(&_self[k], &_self[range.last { _self[k] < _self[$0] }!])
+                swap(&_self[k], &_self[try range.last { try areInIncreasingOrder(_self[k], _self[$0]) }!])
                 _self.reverseSubrange(range)
             } else {
                 _self.reverse()
             }
         }
         return _self
+    }
+}
+public extension BidirectionalCollection where Self : MutableCollection, Indices.SubSequence : BidirectionalCollection, Iterator.Element : Comparable, Indices.SubSequence.Iterator.Element == Index, Indices.Index == Index {
+    
+    @_inlineable
+    public func nextPermute() -> Self {
+        return nextPermute(by: <)
     }
 }
 
