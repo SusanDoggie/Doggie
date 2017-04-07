@@ -73,9 +73,9 @@ extension Shape {
                                 for x in min_x..<max_x {
                                     if body(x, y) {
                                         if d.sign == .plus {
-                                            pixel.pointee += 1
+                                            pixel.pointee += 1 as T
                                         } else {
-                                            pixel.pointee -= 1
+                                            pixel.pointee -= 1 as T
                                         }
                                     }
                                     pixel += 1
