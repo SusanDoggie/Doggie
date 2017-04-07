@@ -50,20 +50,6 @@ class ImageTest: XCTestCase {
                 let _colorspace = CGColorSpace(name: CGColorSpace.linearSRGB) ?? CGColorSpaceCreateDeviceRGB()
                 let _bitmapInfo = CGBitmapInfo.byteOrder32Big.rawValue | CGImageAlphaInfo.premultipliedFirst.rawValue
                 
-                func createImage(data rawData: UnsafeRawPointer, size: CGSize) -> CGImage? {
-                    
-                    let imageWidth = Int(size.width)
-                    let imageHeight = Int(size.height)
-                    
-                    let bitsPerComponent: Int = 8
-                    let bytesPerPixel: Int = 4
-                    let bitsPerPixel: Int = bytesPerPixel * bitsPerComponent
-                    
-                    let bytesPerRow = bytesPerPixel * imageWidth
-                    
-                    return CGImage.create(rawData, width: imageWidth, height: imageHeight, bitsPerComponent: bitsPerComponent, bitsPerPixel: bitsPerPixel, bytesPerRow: bytesPerRow, space: _colorspace, bitmapInfo: _bitmapInfo)
-                }
-                
                 sample.withUnsafeMutableBytes {
                     if let context = CGContext(data: $0.baseAddress!, width: 100, height: 100, bitsPerComponent: 8, bytesPerRow: 400, space: _colorspace, bitmapInfo: _bitmapInfo) {
                         
