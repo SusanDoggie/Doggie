@@ -25,7 +25,7 @@
 
 extension Shape {
     
-    private func render<T: Integer>(width: Int, height: Int, stencil: inout [T]) {
+    private func render<T: SignedInteger>(width: Int, height: Int, stencil: inout [T]) {
         
         assert(stencil.count == width * height, "incorrect size of stencil.")
         
