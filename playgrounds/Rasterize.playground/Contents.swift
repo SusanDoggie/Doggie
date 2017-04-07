@@ -17,9 +17,11 @@ let shape: Shape = [
         ])
 ]
 
-let s = shape.raster(width: sample.width, height: sample.height)
+var stencil = [Int](repeating: 0, count: sample.width * sample.height)
 
-s.withUnsafeBufferPointer { stencil in
+shape.raster(width: sample.width, height: sample.height, stencil: &stencil)
+
+stencil.withUnsafeBufferPointer { stencil in
     
     if var stencil = stencil.baseAddress {
         

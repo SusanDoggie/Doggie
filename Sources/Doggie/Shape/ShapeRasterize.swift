@@ -25,12 +25,12 @@
 
 extension Shape {
     
-    private func stencil(width: Int, height: Int) -> [Int] {
+    private func render<T: Integer>(width: Int, height: Int, stencil: inout [T]) {
         
-        var stencil = [Int](repeating: 0, count: width * height)
+        assert(stencil.count == width * height, "incorrect size of stencil.")
         
         if stencil.count == 0 {
-            return stencil
+            return
         }
         
         func sort<T>(_ a: inout T, _ b: inout T, _ c: inout T, compare: (T, T) -> Bool) {
@@ -133,12 +133,11 @@ extension Shape {
                 }
             }
         }
-        
-        return stencil
     }
     
-    public func raster(width: Int, height: Int) -> [Int] {
+    @_specialize(Int8) @_specialize(Int16) @_specialize(Int32) @_specialize(Int64) @_specialize(Int)
+    public func raster<T: SignedInteger>(width: Int, height: Int, stencil: inout [T]) {
         
-        return self.identity.stencil(width: width, height: width)
+        return self.identity.render(width: width, height: width, stencil: &stencil)
     }
 }
