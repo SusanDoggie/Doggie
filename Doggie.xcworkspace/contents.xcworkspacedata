@@ -8,6 +8,9 @@
       location = "group:playgrounds/Rasterize.playground">
    </FileRef>
    <FileRef
+      location = "group:playgrounds/CurveInside.playground">
+   </FileRef>
+   <FileRef
       location = "group:playgrounds/Doggie.playground">
    </FileRef>
    <FileRef
