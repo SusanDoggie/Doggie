@@ -35,6 +35,9 @@ protocol ImageBaseProtocol {
     subscript(position: Int) -> Color { get set }
     
     @_versioned
+    func convert(color: Color, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm) -> Color
+    
+    @_versioned
     func convert<RPixel: ColorPixelProtocol, RSpace : ColorSpaceProtocol>(pixel: RPixel.Type, colorSpace: RSpace, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm) -> ImageBaseProtocol where RPixel.Model == RSpace.Model
     
     @_versioned
@@ -91,6 +94,12 @@ struct ImageBase<ColorPixel: ColorPixelProtocol, ColorSpace : ColorSpaceProtocol
             let color = newValue.convert(to: colorSpace, algorithm: algorithm)
             buffer[position] = ColorPixel(color: color.color as! ColorSpace.Model, opacity: color.opacity)
         }
+    }
+    
+    @_versioned
+    @_inlineable
+    func convert(color: Color, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm) -> Color {
+        return color.convert(to: colorSpace, algorithm: algorithm)
     }
     
     @_versioned
@@ -177,6 +186,10 @@ public struct Image {
         self.base = image.base.convert(pixel: pixel, colorSpace: colorSpace, algorithm: algorithm)
     }
     
+    @_inlineable
+    public func convert(from color: Color, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm = .bradford) -> Color {
+        return base.convert(color: color, algorithm: algorithm)
+    }
     @_inlineable
     public var colorModel: ColorModelProtocol.Type {
         return base.colorModel
@@ -265,7 +278,9 @@ extension Image.ResamplingAlgorithm {
                     }
                 default:
                     
-                    source.map { ColorPixel($0) }.withUnsafeBufferPointer { source in
+                    let _source = source as? [ColorPixel<Pixel.Model>] ?? source.map { ColorPixel($0) }
+                    
+                    _source.withUnsafeBufferPointer { source in
                         if let _source = source.baseAddress {
                             switch self {
                             case .none: fatalError()
