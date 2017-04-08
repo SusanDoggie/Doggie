@@ -38,6 +38,8 @@ public class CurveInsideView: NSView, NSGestureRecognizerDelegate {
     public override init(frame frameRect: NSRect) {
         super.init(frame: frameRect)
         
+        self.addTrackingArea(NSTrackingArea(rect: self.bounds, options: [.mouseMoved, .activeInActiveApp, .inVisibleRect], owner: self, userInfo: nil))
+        
         let pan = NSPanGestureRecognizer(target: self, action: #selector(handleGesture))
         pan.delegate = self
         
@@ -248,8 +250,6 @@ public class CurveInsideView: NSView, NSGestureRecognizerDelegate {
             drawPoint(context, p2)
             drawPoint(context, p3)
             
-            drawPoint(context, q)
-            
             if let (t1, t2) = CubicBezierSelfIntersect(p0, p1, p2, p3) {
                 
                 context.setStrokeColor(NSColor.red.cgColor)
@@ -307,19 +307,25 @@ public class CurveInsideView: NSView, NSGestureRecognizerDelegate {
         fatalError("init(coder:) has not been implemented")
     }
     
+    public override func mouseMoved(with event: NSEvent) {
+        
+        q = Point(self.convert(event.locationInWindow, from: nil))
+        
+        super.mouseMoved(with: event)
+    }
+    
     func handleGesture(_ sender: NSPanGestureRecognizer) {
         
         switch sender.state {
         case .began:
             let location = sender.location(in: self)
-            target = [p0, p1, p2, p3, q].map { (Point(location) - $0).magnitude }.enumerated().min { $0.1 }?.0 ?? -1
+            target = [p0, p1, p2, p3].map { (Point(location) - $0).magnitude }.enumerated().min { $0.1 }?.0 ?? -1
         case .changed:
             switch target {
             case 0: p0 = Point(sender.location(in: self))
             case 1: p1 = Point(sender.location(in: self))
             case 2: p2 = Point(sender.location(in: self))
             case 3: p3 = Point(sender.location(in: self))
-            case 4: q = Point(sender.location(in: self))
             default: break
             }
         default: break
