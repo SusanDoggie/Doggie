@@ -111,7 +111,6 @@ extension Shape {
             let q2 = 3 * (p2 + p0) - 6 * p1
             let q3 = p3 - p0 + 3 * (p1 - p2)
             
-            let d0 = cross(q2, q1) - cross(q3, q1) + cross(q3, q2)
             let d1 = cross(q3, q0) - cross(q2, q0) - cross(q3, q2)
             let d2 = cross(q1, q0) - cross(q3, q0) + cross(q3, q1)
             let d3 = cross(q2, q0) - cross(q1, q0) - cross(q2, q1)

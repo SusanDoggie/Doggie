@@ -64,7 +64,6 @@ public class CurveInsideView: NSView, NSGestureRecognizerDelegate {
         let q2 = 3 * (p2 + p0) - 6 * p1
         let q3 = p3 - p0 + 3 * (p1 - p2)
         
-        let d0 = cross(q2, q1) - cross(q3, q1) + cross(q3, q2)
         let d1 = cross(q3, q0) - cross(q2, q0) - cross(q3, q2)
         let d2 = cross(q1, q0) - cross(q3, q0) + cross(q3, q1)
         let d3 = cross(q2, q0) - cross(q1, q0) - cross(q2, q1)
@@ -201,7 +200,7 @@ public class CurveInsideView: NSView, NSGestureRecognizerDelegate {
         
         if let context = NSGraphicsContext.current()?.cgContext {
             
-            context.setStrokeColor(NSColor.red.cgColor)
+            context.setStrokeColor(NSColor.black.cgColor)
             
             let shape: Shape = [Shape.Component(start: p0, segments: [.cubic(p1, p2, p3)])]
             
@@ -216,6 +215,14 @@ public class CurveInsideView: NSView, NSGestureRecognizerDelegate {
             drawPoint(context, p3)
             
             drawPoint(context, q)
+            
+            if let (t1, t2) = CubicBezierSelfIntersect(p0, p1, p2, p3) {
+                
+                context.setStrokeColor(NSColor.red.cgColor)
+                
+                drawPoint(context, Bezier(p0, p1, p2, p3).eval(t1))
+                drawPoint(context, Bezier(p0, p1, p2, p3).eval(t2))
+            }
             
             var counter = 0
             
