@@ -1259,33 +1259,26 @@ public func BezierArc(_ angle: Double) -> [Point] {
 
 public func CubicBezierSelfIntersect(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point) -> (Double, Double)? {
     
-    let a = p3.x - p0.x + 3 * (p1.x - p2.x)
-    if a.almostZero() {
-        return nil
-    }
+    let q1 = 3 * (p1 - p0)
+    let q2 = 3 * (p2 + p0) - 6 * p1
+    let q3 = p3 - p0 + 3 * (p1 - p2)
     
-    let b = (3 * (p0.x + p2.x) - 6 * p1.x) / a
-    let c = (3 * (p1.x - p0.x)) / a
+    let d1 = -cross(q3, q2)
+    let d2 = cross(q3, q1)
+    let d3 = -cross(q2, q1)
     
-    let d = p3.y - p0.y + 3 * (p1.y - p2.y)
-    if d.almostZero() {
-        return nil
-    }
-    let e = (3 * (p0.y + p2.y) - 6 * p1.y) / d
-    if b == e {
-        return nil
-    }
-    let f = (3 * (p1.y - p0.y)) / d
-    let g = (f - c) / (b - e)
+    let discr = 3 * d2 * d2 - 4 * d1 * d3
     
-    let g_2 = g * g
-    
-    let _b = -3 * g
-    let _c = 3 * g_2 + 2 * (g * b + c)
-    let _d = -g_2 * g - b * g_2 - c * g
-    let roots = Polynomial(_d, _c, _b, 2).roots
-    if roots.count == 3 {
-        return (roots.min()!, roots.max()!)
+    if !d1.almostZero() && !discr.almostZero() && discr < 0 {
+        
+        let delta = sqrt(-discr)
+        
+        let td = d2 + delta
+        let sd = 2 * d1
+        let te = d2 - delta
+        let se = sd
+        
+        return (td / sd, te / se)
     }
     
     return nil

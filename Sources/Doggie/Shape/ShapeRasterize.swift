@@ -106,14 +106,13 @@ extension Shape {
         }
         func _cubic(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point) {
             
-            let q0 = p0
             let q1 = 3 * (p1 - p0)
             let q2 = 3 * (p2 + p0) - 6 * p1
             let q3 = p3 - p0 + 3 * (p1 - p2)
             
-            let d1 = cross(q3, q0) - cross(q2, q0) - cross(q3, q2)
-            let d2 = cross(q1, q0) - cross(q3, q0) + cross(q3, q1)
-            let d3 = cross(q2, q0) - cross(q1, q0) - cross(q2, q1)
+            let d1 = -cross(q3, q2)
+            let d2 = cross(q3, q1)
+            let d3 = -cross(q2, q1)
             
             let discr = 3 * d2 * d2 - 4 * d1 * d3
             

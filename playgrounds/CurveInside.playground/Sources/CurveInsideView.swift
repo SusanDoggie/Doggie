@@ -59,14 +59,13 @@ public class CurveInsideView: NSView, NSGestureRecognizerDelegate {
     
     private func test(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point, _ drawQuad: (Point, Point, Point) -> Void, _ drawCubic: (Point, Point, Point, Vector, Vector, Vector) -> Void) {
         
-        let q0 = p0
         let q1 = 3 * (p1 - p0)
         let q2 = 3 * (p2 + p0) - 6 * p1
         let q3 = p3 - p0 + 3 * (p1 - p2)
         
-        let d1 = cross(q3, q0) - cross(q2, q0) - cross(q3, q2)
-        let d2 = cross(q1, q0) - cross(q3, q0) + cross(q3, q1)
-        let d3 = cross(q2, q0) - cross(q1, q0) - cross(q2, q1)
+        let d1 = -cross(q3, q2)
+        let d2 = cross(q3, q1)
+        let d3 = -cross(q2, q1)
         
         let discr = 3 * d2 * d2 - 4 * d1 * d3
         
@@ -131,7 +130,7 @@ public class CurveInsideView: NSView, NSGestureRecognizerDelegate {
                 let tl = d2 + delta
                 let sl = 2 * d1
                 let tm = d2 - delta
-                let sm = 2 * d1
+                let sm = sl
                 
                 let tl2 = tl * tl
                 let sl2 = sl * sl
@@ -154,37 +153,19 @@ public class CurveInsideView: NSView, NSGestureRecognizerDelegate {
                 let td = d2 + delta
                 let sd = 2 * d1
                 let te = d2 - delta
-                let se = 2 * d1
+                let se = sd
                 
-                var flag = true
+                let td2 = td * td
+                let sd2 = sd * sd
+                let te2 = te * te
+                let se2 = se * se
                 
-                if let (t1, t2) = CubicBezierSelfIntersect(p0, p1, p2, p3) {
-                    
-                    let split_t = [t1, t2].filter { !$0.almostZero() && !$0.almostEqual(1) && 0...1 ~= $0 }
-                    
-                    if split_t.count != 0 {
-                        
-                        Bezier(p0, p1, p2, p3).split(split_t).forEach {
-                            test($0[0], $0[1], $0[2], $0[3], drawQuad, drawCubic)
-                        }
-                        flag = false
-                    }
-                }
-                if flag {
-                    
-                    let td2 = td * td
-                    let sd2 = sd * sd
-                    let te2 = te * te
-                    let se2 = se * se
-                    
-                    let k0 = Vector(x: td * te, y: td2 * te, z: td * te2)
-                    let k1 = Vector(x: -se * td - sd * te, y: -se * td2 - 2 * sd * te * td, z: -sd * te2 - 2 * se * td * te)
-                    let k2 = Vector(x: sd * se, y: te * sd2 + 2 * se * td * sd, z: td * se2 + 2 * sd * te * se)
-                    let k3 = Vector(x: 0, y: -sd2 * se, z: -sd * se2)
-                    
-                    draw(k0, k1, k2, k3, drawCubic)
-                    
-                }
+                let k0 = Vector(x: td * te, y: td2 * te, z: td * te2)
+                let k1 = Vector(x: -se * td - sd * te, y: -se * td2 - 2 * sd * te * td, z: -sd * te2 - 2 * se * td * te)
+                let k2 = Vector(x: sd * se, y: te * sd2 + 2 * se * td * sd, z: td * se2 + 2 * sd * te * se)
+                let k3 = Vector(x: 0, y: -sd2 * se, z: -sd * se2)
+                
+                draw(k0, k1, k2, k3, drawCubic)
             }
         }
     }
