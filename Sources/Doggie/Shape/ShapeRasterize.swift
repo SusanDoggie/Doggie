@@ -127,28 +127,12 @@ extension Shape {
                 }
             }
             
-            func hessian(_ s: Double, _ t: Double) -> Double {
-                return 36 * ((d3 * d1 - d2 * d2) * s * s + d1 * d2 * s * t - d1 * d1 * t * t)
-            }
-            
             func draw(_ k0: Vector, _ k1: Vector, _ k2: Vector, _ k3: Vector) {
                 
-                var v0 = k0
-                var v1 = k0 + k1 / 3
-                var v2 = k0 + (2 * k1 + k2) / 3
-                var v3 = k0 + k1 + k2 + k3
-                
-                let q = (q1 + q2 + q3) / 3
-                if hessian(q.x, q.y).sign == .plus {
-                    v0.x = -v0.x
-                    v1.x = -v1.x
-                    v2.x = -v2.x
-                    v3.x = -v3.x
-                    v0.y = -v0.y
-                    v1.y = -v1.y
-                    v2.y = -v2.y
-                    v3.y = -v3.y
-                }
+                let v0 = k0
+                let v1 = k0 + k1 / 3
+                let v2 = k0 + (2 * k1 + k2) / 3
+                let v3 = k0 + k1 + k2 + k3
                 
                 var q0 = p0
                 var q1 = p1
@@ -232,10 +216,21 @@ extension Shape {
                     let tm2 = tm * tm
                     let sm2 = sm * sm
                     
-                    let k0 = Vector(x: tl * tm, y: tl2 * tl, z: tm2 * tm)
-                    let k1 = Vector(x: -sm * tl - sl * tm, y: -3 * sl * tl2, z: -3 * sm * tm2)
-                    let k2 = Vector(x: sl * sm, y: 3 * sl2 * tl, z: 3 * sm2 * tm)
-                    let k3 = Vector(x: 0, y: -sl2 * sl, z: -sm2 * sm)
+                    var k0 = Vector(x: tl * tm, y: tl2 * tl, z: tm2 * tm)
+                    var k1 = Vector(x: -sm * tl - sl * tm, y: -3 * sl * tl2, z: -3 * sm * tm2)
+                    var k2 = Vector(x: sl * sm, y: 3 * sl2 * tl, z: 3 * sm2 * tm)
+                    var k3 = Vector(x: 0, y: -sl2 * sl, z: -sm2 * sm)
+                    
+                    if d1.sign == .minus {
+                        k0.x = -k0.x
+                        k1.x = -k1.x
+                        k2.x = -k2.x
+                        k3.x = -k3.x
+                        k0.y = -k0.y
+                        k1.y = -k1.y
+                        k2.y = -k2.y
+                        k3.y = -k3.y
+                    }
                     
                     draw(k0, k1, k2, k3)
                     
@@ -269,10 +264,22 @@ extension Shape {
                         let te2 = te * te
                         let se2 = se * se
                         
-                        let k0 = Vector(x: td * te, y: td2 * te, z: td * te2)
-                        let k1 = Vector(x: -se * td - sd * te, y: -se * td2 - 2 * sd * te * td, z: -sd * te2 - 2 * se * td * te)
-                        let k2 = Vector(x: sd * se, y: te * sd2 + 2 * se * td * sd, z: td * se2 + 2 * sd * te * se)
-                        let k3 = Vector(x: 0, y: -sd2 * se, z: -sd * se2)
+                        var k0 = Vector(x: td * te, y: td2 * te, z: td * te2)
+                        var k1 = Vector(x: -se * td - sd * te, y: -se * td2 - 2 * sd * te * td, z: -sd * te2 - 2 * se * td * te)
+                        var k2 = Vector(x: sd * se, y: te * sd2 + 2 * se * td * sd, z: td * se2 + 2 * sd * te * se)
+                        var k3 = Vector(x: 0, y: -sd2 * se, z: -sd * se2)
+                        
+                        let v1x = k0.x + k1.x / 3
+                        if d1.sign != v1x.sign {
+                            k0.x = -k0.x
+                            k1.x = -k1.x
+                            k2.x = -k2.x
+                            k3.x = -k3.x
+                            k0.y = -k0.y
+                            k1.y = -k1.y
+                            k2.y = -k2.y
+                            k3.y = -k3.y
+                        }
                         
                         draw(k0, k1, k2, k3)
                         
