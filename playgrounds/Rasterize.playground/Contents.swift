@@ -26,7 +26,7 @@ stencil.withUnsafeBufferPointer { stencil in
                     
                     let winding = stencil.pointee
                     
-                    if winding != 0 {
+                    if winding & 1 == 1 {
                         ptr.pointee = ARGB32ColorPixel(red: 0, green: 0, blue: 0, opacity: 255)
                     }
                     

@@ -121,18 +121,31 @@ extension Shape {
                 _loop(p0, p1, p2) { x, y in
                     if let p = Barycentric(p0, p1, p2, Point(x: x, y: y)) {
                         let v = p.x * v0 + p.y * v1 + p.z * v2
-                        return v.x * v.x * v.x - v.y * v.z > 0
+                        return v.x * v.x * v.x - v.y * v.z < 0
                     }
                     return false
                 }
             }
             
+            let area = Bezier(p0, p1, p2, p3).area + Bezier(p3, p0).area
+            
             func draw(_ k0: Vector, _ k1: Vector, _ k2: Vector, _ k3: Vector) {
                 
-                let v0 = k0
-                let v1 = k0 + k1 / 3
-                let v2 = k0 + (2 * k1 + k2) / 3
-                let v3 = k0 + k1 + k2 + k3
+                var v0 = k0
+                var v1 = k0 + k1 / 3
+                var v2 = k0 + (2 * k1 + k2) / 3
+                var v3 = k0 + k1 + k2 + k3
+                
+                if area.sign == .minus {
+                    v0.x = -v0.x
+                    v1.x = -v1.x
+                    v2.x = -v2.x
+                    v3.x = -v3.x
+                    v0.y = -v0.y
+                    v1.y = -v1.y
+                    v2.y = -v2.y
+                    v3.y = -v3.y
+                }
                 
                 var q0 = p0
                 var q1 = p1
