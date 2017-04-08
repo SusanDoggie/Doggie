@@ -250,12 +250,11 @@ public class CurveInsideView: NSView, NSGestureRecognizerDelegate {
             drawPoint(context, p2)
             drawPoint(context, p3)
             
-            if let (t1, t2) = CubicBezierSelfIntersect(p0, p1, p2, p3) {
+            if let (t1, _) = CubicBezierSelfIntersect(p0, p1, p2, p3) {
                 
                 context.setStrokeColor(NSColor.red.cgColor)
                 
                 drawPoint(context, Bezier(p0, p1, p2, p3).eval(t1))
-                drawPoint(context, Bezier(p0, p1, p2, p3).eval(t2))
             }
             
             var counter = 0
