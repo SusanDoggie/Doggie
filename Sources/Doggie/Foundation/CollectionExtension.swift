@@ -106,6 +106,9 @@ public extension RandomAccessCollection {
     
     @_inlineable
     public func indexMod(_ index: Index) -> Index {
+        if startIndex == endIndex {
+            return endIndex
+        }
         let count = self.count
         let offset = distance(from: startIndex, to: index) % count
         return self.index(startIndex, offsetBy: offset < 0 ? offset + count : offset)
