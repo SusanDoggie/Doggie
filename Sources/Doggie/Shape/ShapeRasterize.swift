@@ -23,6 +23,8 @@
 //  THE SOFTWARE.
 //
 
+import Foundation
+
 extension Shape {
     
     private func render<T: SignedInteger>(width: Int, height: Int, stencil: inout [T]) {
@@ -93,12 +95,133 @@ extension Shape {
             _loop(p0, p1, p2) { _ in true }
         }
         
-        func _bezier(_ p0: Point, _ p1: Point, _ p2: Point) {
+        func _quad(_ p0: Point, _ p1: Point, _ p2: Point) {
             
             if let transform = SDTransform(from: p0, p1, p2, to: Point(x: 0, y: 0), Point(x: 0.5, y: 0), Point(x: 1, y: 1)) {
                 _loop(p0, p1, p2) { x, y in
                     let _q = Point(x: x, y: y) * transform
                     return _q.x * _q.x - _q.y < 0
+                }
+            }
+        }
+        func _cubic(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point) {
+            
+            let q0 = p0
+            let q1 = 3 * (p1 - p0)
+            let q2 = 3 * (p2 + p0) - 6 * p1
+            let q3 = p3 - p0 + 3 * (p1 - p2)
+            
+            let d0 = cross(q2, q1) - cross(q3, q1) + cross(q3, q2)
+            let d1 = cross(q3, q0) - cross(q2, q0) - cross(q3, q2)
+            let d2 = cross(q1, q0) - cross(q3, q0) + cross(q3, q1)
+            let d3 = cross(q2, q0) - cross(q1, q0) - cross(q2, q1)
+            
+            let discr = 3 * d2 * d2 - 4 * d1 * d3
+            
+            func _drawCubic(_ p0: Point, _ p1: Point, _ p2: Point, _ v0: Vector, _ v1: Vector, _ v2: Vector) {
+                
+                _loop(p0, p1, p2) { x, y in
+                    if let p = Barycentric(p0, p1, p2, Point(x: x, y: y)) {
+                        let v = p.x * v0 + p.y * v1 + p.z * v2
+                        return v.x * v.x * v.x - v.y * v.z > 0
+                    }
+                    return false
+                }
+            }
+            
+            func draw(_ k0: Vector, _ k1: Vector, _ k2: Vector, _ k3: Vector) {
+                
+                let v0 = k0
+                let v1 = k0 + k1 / 3
+                let v2 = k0 + (2 * k1 + k2) / 3
+                let v3 = k0 + k1 + k2 + k3
+                
+                if !CircleInside(p0, p1, p2, p3) {
+                    _drawCubic(p0, p1, p2, v0, v1, v2)
+                }
+                if !CircleInside(p0, p2, p3, p1) {
+                    _drawCubic(p0, p2, p3, v0, v2, v3)
+                }
+                if !CircleInside(p1, p2, p3, p0) {
+                    _drawCubic(p1, p2, p3, v1, v2, v3)
+                }
+                if !CircleInside(p0, p1, p3, p2) {
+                    _drawCubic(p0, p1, p3, v0, v1, v3)
+                }
+            }
+            
+            if d1.almostZero() {
+                
+                if d2.almostZero() {
+                    
+                    if !d3.almostZero(), let intersect = LinesIntersect(p0, p1, p2, p3) {
+                        _quad(p0, intersect, p3)
+                    }
+                } else {
+                    
+                    // cusp with cusp at infinity
+                    
+                    let tl = d3
+                    let sl = 3 * d2
+                    
+                    let tl2 = tl * tl
+                    let sl2 = sl * sl
+                    
+                    let k0 = Vector(x: tl, y: tl2 * tl, z: 1)
+                    let k1 = Vector(x: -sl, y: -3 * sl * tl2, z: 0)
+                    let k2 = Vector(x: 0, y: 3 * sl2 * tl, z: 0)
+                    let k3 = Vector(x: 0, y: -sl2 * sl, z: 0)
+                    
+                    draw(k0, k1, k2, k3)
+                }
+                
+            } else {
+                
+                if discr.almostZero() || discr > 0 {
+                    
+                    // serpentine
+                    
+                    let delta = sqrt(Swift.max(0, discr)) / sqrt(3)
+                    
+                    let tl = d2 + delta
+                    let sl = 2 * d1
+                    let tm = d2 - delta
+                    let sm = 2 * d1
+                    
+                    let tl2 = tl * tl
+                    let sl2 = sl * sl
+                    let tm2 = tm * tm
+                    let sm2 = sm * sm
+                    
+                    let k0 = Vector(x: tl * tm, y: tl2 * tl, z: tm2 * tm)
+                    let k1 = Vector(x: -sm * tl - sl * tm, y: -3 * sl * tl2, z: -3 * sm * tm2)
+                    let k2 = Vector(x: sl * sm, y: 3 * sl2 * tl, z: 3 * sm2 * tm)
+                    let k3 = Vector(x: 0, y: -sl2 * sl, z: -sm2 * sm)
+                    
+                    draw(k0, k1, k2, k3)
+                    
+                } else {
+                    
+                    // loop
+                    
+                    let delta = sqrt(-discr)
+                    
+                    let td = d2 + delta
+                    let sd = 2 * d1
+                    let te = d2 - delta
+                    let se = 2 * d1
+                    
+                    let td2 = td * td
+                    let sd2 = sd * sd
+                    let te2 = te * te
+                    let se2 = se * se
+                    
+                    let k0 = Vector(x: td * te, y: td2 * te, z: td * te2)
+                    let k1 = Vector(x: -se * td - sd * te, y: -se * td2 - 2 * sd * te * td, z: -sd * te2 - 2 * se * td * te)
+                    let k2 = Vector(x: sd * se, y: te * sd2 + 2 * se * td * sd, z: td * se2 + 2 * sd * te * se)
+                    let k3 = Vector(x: 0, y: -sd2 * se, z: -sd * se2)
+                    
+                    draw(k0, k1, k2, k3)
                 }
             }
         }
@@ -112,9 +235,10 @@ extension Shape {
                 switch first {
                 case let .line(q1): last = q1
                 case let .quad(q1, q2):
-                    _bezier(last, q1, q2)
+                    _quad(last, q1, q2)
                     last = q2
                 case let .cubic(q1, q2, q3):
+                    _cubic(last, q1, q2, q3)
                     last = q3
                 }
                 for segment in component.dropFirst() {
@@ -124,10 +248,11 @@ extension Shape {
                         last = q1
                     case let .quad(q1, q2):
                         _triangle(component.start, last, q2)
-                        _bezier(last, q1, q2)
+                        _quad(last, q1, q2)
                         last = q2
                     case let .cubic(q1, q2, q3):
                         _triangle(component.start, last, q3)
+                        _cubic(last, q1, q2, q3)
                         last = q3
                     }
                 }

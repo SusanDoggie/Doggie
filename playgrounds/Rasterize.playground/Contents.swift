@@ -10,7 +10,7 @@ var sample = Image(width: 100, height: 100, pixel: ARGB32ColorPixel(), colorSpac
 
 let shape: Shape = [
     Shape.Component(start: Point(x: 50, y: 10), closed: true, segments: [
-        .quad(Point(x: 10, y: 10), Point(x: 10, y: 50)),
+        .cubic(Point(x: 30, y: 10), Point(x: 10, y: 30), Point(x: 10, y: 50)),
         .quad(Point(x: 10, y: 90), Point(x: 50, y: 90)),
         .quad(Point(x: 50, y: 50), Point(x: 90, y: 50)),
         .quad(Point(x: 50, y: 50), Point(x: 50, y: 10))
