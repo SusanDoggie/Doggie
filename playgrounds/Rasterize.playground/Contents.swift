@@ -8,14 +8,7 @@ let srgb = CalibratedRGBColorSpace(white: XYZColorModel(luminance: 1, x: 0.3127,
 
 var sample = Image(width: 100, height: 100, pixel: ARGB32ColorPixel(), colorSpace: srgb)
 
-let shape: Shape = [
-    Shape.Component(start: Point(x: 50, y: 10), closed: true, segments: [
-        .cubic(Point(x: 30, y: 10), Point(x: 10, y: 30), Point(x: 10, y: 50)),
-        .quad(Point(x: 10, y: 90), Point(x: 50, y: 90)),
-        .quad(Point(x: 50, y: 50), Point(x: 90, y: 50)),
-        .quad(Point(x: 50, y: 50), Point(x: 50, y: 10))
-        ])
-]
+let shape = try Shape(code: "M95.572496361 50c0-53.913110701-127.558419918 19.732198516-80.869666051 46.688753867 46.688753867 26.95655535 46.688753867-120.334063084 0-93.377507734C-31.985923557 30.267801484 95.572496361 103.913110701 95.572496361 50z")
 
 var stencil = [Int](repeating: 0, count: sample.width * sample.height)
 

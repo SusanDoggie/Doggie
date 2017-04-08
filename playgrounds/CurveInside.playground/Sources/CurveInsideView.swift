@@ -57,7 +57,7 @@ public class CurveInsideView: NSView, NSGestureRecognizerDelegate {
         self.addSubview(textField)
     }
     
-    private func test(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point, _ drawQuad: (Point, Point, Point) -> Void, _ drawCubic: (Point, Point, Point, Vector, Vector, Vector) -> Void) {
+    private func test(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point, _ _triangle: (Point, Point, Point) -> Void, _ drawQuad: (Point, Point, Point) -> Void, _ drawCubic: (Point, Point, Point, Vector, Vector, Vector) -> Void) {
         
         let q1 = 3 * (p1 - p0)
         let q2 = 3 * (p2 + p0) - 6 * p1
@@ -75,22 +75,59 @@ public class CurveInsideView: NSView, NSGestureRecognizerDelegate {
         
         func draw(_ k0: Vector, _ k1: Vector, _ k2: Vector, _ k3: Vector, _ _drawCubic: (Point, Point, Point, Vector, Vector, Vector) -> Void) {
             
-            let v0 = k0
-            let v1 = k0 + k1 / 3
-            let v2 = k0 + (2 * k1 + k2) / 3
-            let v3 = k0 + k1 + k2 + k3
+            var v0 = k0
+            var v1 = k0 + k1 / 3
+            var v2 = k0 + (2 * k1 + k2) / 3
+            var v3 = k0 + k1 + k2 + k3
             
-            if !CircleInside(p0, p1, p2, p3) {
-                _drawCubic(p0, p1, p2, v0, v1, v2)
+            let q = (q1 + q2 + q3) / 3
+            if hessian(q.x, q.y).sign == .plus {
+                v0.x = -v0.x
+                v1.x = -v1.x
+                v2.x = -v2.x
+                v3.x = -v3.x
+                v0.y = -v0.y
+                v1.y = -v1.y
+                v2.y = -v2.y
+                v3.y = -v3.y
             }
-            if !CircleInside(p0, p2, p3, p1) {
-                _drawCubic(p0, p2, p3, v0, v2, v3)
-            }
-            if !CircleInside(p1, p2, p3, p0) {
-                _drawCubic(p1, p2, p3, v1, v2, v3)
-            }
-            if !CircleInside(p0, p1, p3, p2) {
-                _drawCubic(p0, p1, p3, v0, v1, v3)
+            
+            var q0 = p0
+            var q1 = p1
+            var q2 = p2
+            var q3 = p3
+            
+            while true {
+                
+                var flag = false
+                
+                if !CircleInside(q0, q1, q2, q3) {
+                    _drawCubic(p0, p1, p2, v0, v1, v2)
+                    flag = true
+                }
+                if !CircleInside(q0, q2, q3, q1) {
+                    _drawCubic(p0, p2, p3, v0, v2, v3)
+                    flag = true
+                }
+                if !CircleInside(q1, q2, q3, q0) {
+                    _drawCubic(p1, p2, p3, v1, v2, v3)
+                    flag = true
+                }
+                if !CircleInside(q0, q1, q3, q2) {
+                    _drawCubic(p0, p1, p3, v0, v1, v3)
+                    flag = true
+                }
+                if !flag {
+                    
+                    q0 *= SDTransform.SkewX(1)
+                    q1 *= SDTransform.SkewX(1)
+                    q2 *= SDTransform.SkewX(1)
+                    q3 *= SDTransform.SkewX(1)
+                    
+                    continue
+                }
+                
+                return
             }
         }
         
@@ -155,17 +192,33 @@ public class CurveInsideView: NSView, NSGestureRecognizerDelegate {
                 let te = d2 - delta
                 let se = sd
                 
-                let td2 = td * td
-                let sd2 = sd * sd
-                let te2 = te * te
-                let se2 = se * se
+                let split_t = [td / sd, te / se].filter { !$0.almostZero() && !$0.almostEqual(1) && 0...1 ~= $0 }
                 
-                let k0 = Vector(x: td * te, y: td2 * te, z: td * te2)
-                let k1 = Vector(x: -se * td - sd * te, y: -se * td2 - 2 * sd * te * td, z: -sd * te2 - 2 * se * td * te)
-                let k2 = Vector(x: sd * se, y: te * sd2 + 2 * se * td * sd, z: td * se2 + 2 * sd * te * se)
-                let k3 = Vector(x: 0, y: -sd2 * se, z: -sd * se2)
-                
-                draw(k0, k1, k2, k3, drawCubic)
+                if split_t.count != 0 {
+                    
+                    let beziers = Bezier(p0, p1, p2, p3).split(split_t)
+                    
+                    _triangle(p0, beziers.last![0], beziers.last![3])
+                    
+                    beziers.forEach {
+                        test($0[0], $0[1], $0[2], $0[3], _triangle, drawQuad, drawCubic)
+                    }
+                    
+                } else {
+                    
+                    let td2 = td * td
+                    let sd2 = sd * sd
+                    let te2 = te * te
+                    let se2 = se * se
+                    
+                    let k0 = Vector(x: td * te, y: td2 * te, z: td * te2)
+                    let k1 = Vector(x: -se * td - sd * te, y: -se * td2 - 2 * sd * te * td, z: -sd * te2 - 2 * se * td * te)
+                    let k2 = Vector(x: sd * se, y: te * sd2 + 2 * se * td * sd, z: td * se2 + 2 * sd * te * se)
+                    let k3 = Vector(x: 0, y: -sd2 * se, z: -sd * se2)
+                    
+                    draw(k0, k1, k2, k3, drawCubic)
+                    
+                }
             }
         }
     }
@@ -210,6 +263,12 @@ public class CurveInsideView: NSView, NSGestureRecognizerDelegate {
             var str = ""
             
             test(p0, p1, p2, p3, {
+                
+                context.setStrokeColor(NSColor.yellow.cgColor)
+                
+                context.strokeLineSegments(between: [$0, $1, $1, $2, $2, $0].map(CGPoint.init))
+                
+            }, {
                 
                 context.setStrokeColor(NSColor.yellow.cgColor)
                 
