@@ -60,8 +60,8 @@ extension Shape {
                     return ((p1.x - p0.x) * y - p1.x * p0.y + p0.x * p1.y) / d
                 }
                 
-                let min_y = Swift.max(0, Int(q0.y.rounded()))
-                let max_y = Swift.min(height - 1, Int(q2.y.rounded()))
+                let min_y = Int(Swift.max(0, q0.y.rounded()))
+                let max_y = Int(Swift.min(Double(height - 1), q2.y.rounded()))
                 
                 stencil.withUnsafeMutableBufferPointer {
                     if var buf = $0.baseAddress {
@@ -69,8 +69,8 @@ extension Shape {
                         for y in min_y...max_y {
                             let _y = Double(y)
                             if let x1 = _y < q1.y ? intersect(q0, q1, y: _y) : intersect(q1, q2, y: _y), let x2 = intersect(q0, q2, y: _y) {
-                                let min_x = Swift.max(0, Int(Swift.min(x1, x2).rounded()))
-                                let max_x = Swift.min(width, Int(Swift.max(x1, x2).rounded()))
+                                let min_x = Int(Swift.max(0, Swift.min(x1, x2).rounded()))
+                                let max_x = Int(Swift.min(Double(width), Swift.max(x1, x2).rounded()))
                                 var pixel = buf + min_x
                                 for x in min_x..<max_x {
                                     if body(x, y) {
