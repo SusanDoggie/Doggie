@@ -1273,12 +1273,11 @@ public func CubicBezierSelfIntersect(_ p0: Point, _ p1: Point, _ p2: Point, _ p3
         
         let delta = sqrt(-discr)
         
+        let s = 0.5 / d1
         let td = d2 + delta
-        let sd = 2 * d1
         let te = d2 - delta
-        let se = sd
         
-        return (td / sd, te / se)
+        return (td * s, te * s)
     }
     
     return nil

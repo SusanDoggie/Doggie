@@ -24,7 +24,7 @@
 //
 
 @_inlineable
-public func CircleInside(_ p0: Point, _ p1: Point, _ p2: Point, _ q: Point) -> Bool {
+public func CircleInside(_ p0: Point, _ p1: Point, _ p2: Point, _ q: Point) -> Bool? {
     
     func det(_ x0: Double, _ y0: Double, _ z0: Double,
              _ x1: Double, _ y1: Double, _ z1: Double,
@@ -44,7 +44,7 @@ public func CircleInside(_ p0: Point, _ p1: Point, _ p2: Point, _ q: Point) -> B
                 p1.x - q.x, p1.y - q.y, dot(p1, p1) - s,
                 p2.x - q.x, p2.y - q.y, dot(p2, p2) - s)
     
-    return r.sign == cross(p1 - p0, p2 - p0).sign
+    return r.almostZero() ? nil : r.sign == cross(p1 - p0, p2 - p0).sign
 }
 
 @_inlineable

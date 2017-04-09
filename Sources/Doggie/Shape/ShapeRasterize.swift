@@ -40,7 +40,12 @@ private func _loop<T: SignedInteger>(_ p0: Point, _ p1: Point, _ p2: Point, widt
     
     let d = cross(p1 - p0, p2 - p0)
     
+    if !Rect.bound([p0, p1, p2]).isIntersect(Rect(x: 0, y: 0, width: Double(width), height: Double(height))) {
+        return
+    }
+    
     if !d.almostZero() {
+        
         var q0 = p0
         var q1 = p1
         var q2 = p2
@@ -189,33 +194,31 @@ private func _cubic(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point, loop: (P
             
             var flag = false
             
-            if !CircleInside(q0, q1, q2, q3) {
+            if CircleInside(q0, q1, q2, q3) == false {
                 _drawCubic(p0, p1, p2, v0, v1, v2, loop: loop)
                 flag = true
             }
-            if !CircleInside(q0, q2, q3, q1) {
+            if CircleInside(q0, q2, q3, q1) == false {
                 _drawCubic(p0, p2, p3, v0, v2, v3, loop: loop)
                 flag = true
             }
-            if !CircleInside(q1, q2, q3, q0) {
+            if CircleInside(q1, q2, q3, q0) == false {
                 _drawCubic(p1, p2, p3, v1, v2, v3, loop: loop)
                 flag = true
             }
-            if !CircleInside(q0, q1, q3, q2) {
+            if CircleInside(q0, q1, q3, q2) == false {
                 _drawCubic(p0, p1, p3, v0, v1, v3, loop: loop)
                 flag = true
             }
-            if !flag {
-                
-                q0 *= SDTransform.SkewX(1)
-                q1 *= SDTransform.SkewX(1)
-                q2 *= SDTransform.SkewX(1)
-                q3 *= SDTransform.SkewX(1)
-                
-                continue
+            
+            if flag {
+                return
             }
             
-            return
+            q0 *= SDTransform.SkewX(0.1)
+            q1 *= SDTransform.SkewX(0.1)
+            q2 *= SDTransform.SkewX(0.1)
+            q3 *= SDTransform.SkewX(0.1)
         }
     }
     
