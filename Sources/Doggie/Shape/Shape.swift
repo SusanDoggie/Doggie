@@ -265,7 +265,7 @@ extension Shape.Component {
                     lastPoint = p3
                 }
             }
-            cache.boundary = bound ?? Rect()
+            cache.boundary = bound ?? Rect(origin: start, size: Size())
         }
         return cache.boundary!
     }
