@@ -1,27 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Workspace
    version = "1.0">
-   <FileRef
-      location = "group:playgrounds/Color.playground">
-   </FileRef>
-   <FileRef
-      location = "group:playgrounds/Rasterize.playground">
-   </FileRef>
-   <FileRef
-      location = "group:playgrounds/Doggie.playground">
-   </FileRef>
-   <FileRef
-      location = "group:playgrounds/Mesh Warping.playground">
-   </FileRef>
-   <FileRef
-      location = "group:playgrounds/Stroke.playground">
-   </FileRef>
-   <FileRef
-      location = "group:playgrounds/Image.playground">
-   </FileRef>
-   <FileRef
-      location = "group:playgrounds/ShapeTweening.playground">
-   </FileRef>
+   <Group
+      location = "group:Playground"
+      name = "Playground">
+      <FileRef
+         location = "group:Color.playground">
+      </FileRef>
+      <FileRef
+         location = "group:Doggie.playground">
+      </FileRef>
+      <FileRef
+         location = "group:Image.playground">
+      </FileRef>
+      <FileRef
+         location = "group:Mesh Warping.playground">
+      </FileRef>
+      <FileRef
+         location = "group:Rasterize.playground">
+      </FileRef>
+      <FileRef
+         location = "group:ShapeTweening.playground">
+      </FileRef>
+      <FileRef
+         location = "group:Stroke.playground">
+      </FileRef>
+   </Group>
    <FileRef
       location = "group:Doggie.xcodeproj">
    </FileRef>
