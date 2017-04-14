@@ -263,12 +263,12 @@ public func ParallelInverseRadix2CooleyTukey(_ level: Int, row: Int, _ input: Un
     input.withMemoryRebound(to: Double.self, capacity: 2) { _input in output.withMemoryRebound(to: Double.self, capacity: 2) { ParallelInverseRadix2CooleyTukey(level, row, _input, _input + 1, in_stride << 1, in_count, in_total, in_interleaved, $0, $0 + 1, out_stride << 1, out_interleaved) } }
 }
 @_inlineable
-public func ParallelRadix2CooleyTukey(_ level: Int, row: Int, _ buffer: UnsafePointer<Complex>, _ stride: Int, _ interleaved: Bool) {
+public func ParallelRadix2CooleyTukey(_ level: Int, row: Int, _ buffer: UnsafeMutablePointer<Complex>, _ stride: Int, _ interleaved: Bool) {
     buffer.withMemoryRebound(to: Double.self, capacity: 2) { ParallelRadix2CooleyTukey(level, row, $0, $0 + 1, stride << 1, interleaved) }
 }
 @_inlineable
-public func ParallelRadix2CooleyTukey(_ level: Int, row: Int, _ buffer: UnsafePointer<Complex>, _ stride: Int, _ interleaved: Bool) {
-    buffer.withMemoryRebound(to: Double.self, capacity: 2) { ParallelRadix2CooleyTukey(level, row, $0, $0 + 1, stride << 1, interleaved) }
+public func ParallelInverseRadix2CooleyTukey(_ level: Int, row: Int, _ buffer: UnsafeMutablePointer<Complex>, _ stride: Int, _ interleaved: Bool) {
+    buffer.withMemoryRebound(to: Double.self, capacity: 2) { ParallelInverseRadix2CooleyTukey(level, row, $0, $0 + 1, stride << 1, interleaved) }
 }
 
 @_inlineable
@@ -296,11 +296,11 @@ public func DispatchParallelInverseRadix2CooleyTukey(_ level: Int, row: Int, _ i
     input.withMemoryRebound(to: Double.self, capacity: 2) { _input in output.withMemoryRebound(to: Double.self, capacity: 2) { DispatchParallelInverseRadix2CooleyTukey(level, row, _input, _input + 1, in_stride << 1, in_count, in_total, in_interleaved, $0, $0 + 1, out_stride << 1, out_interleaved) } }
 }
 @_inlineable
-public func DispatchParallelRadix2CooleyTukey(_ level: Int, row: Int, _ buffer: UnsafePointer<Complex>, _ stride: Int, _ interleaved: Bool) {
+public func DispatchParallelRadix2CooleyTukey(_ level: Int, row: Int, _ buffer: UnsafeMutablePointer<Complex>, _ stride: Int, _ interleaved: Bool) {
     buffer.withMemoryRebound(to: Double.self, capacity: 2) { DispatchParallelRadix2CooleyTukey(level, row, $0, $0 + 1, stride << 1, interleaved) }
 }
 @_inlineable
-public func DispatchParallelInverseRadix2CooleyTukey(_ level: Int, row: Int, _ buffer: UnsafePointer<Complex>, _ stride: Int, _ interleaved: Bool) {
+public func DispatchParallelInverseRadix2CooleyTukey(_ level: Int, row: Int, _ buffer: UnsafeMutablePointer<Complex>, _ stride: Int, _ interleaved: Bool) {
     buffer.withMemoryRebound(to: Double.self, capacity: 2) { DispatchParallelInverseRadix2CooleyTukey(level, row, $0, $0 + 1, stride << 1, interleaved) }
 }
 
@@ -309,8 +309,8 @@ public func Radix2CircularConvolve(_ level: Int, _ signal: UnsafePointer<Complex
     signal.withMemoryRebound(to: Double.self, capacity: 2) { _signal in kernel.withMemoryRebound(to: Double.self, capacity: 2) { _kernel in temp.withMemoryRebound(to: Double.self, capacity: 2) { _temp in output.withMemoryRebound(to: Double.self, capacity: 2) { Radix2CircularConvolve(level, _signal, _signal + 1, signal_stride << 1, signal_count, _kernel, _kernel + 1, kernel_stride << 1, kernel_count, $0, $0 + 1, out_stride << 1, _temp, _temp + 1, temp_stride << 1) } } } }
 }
 @_inlineable
-public func Radix2PowerCircularConvolve(_ level: Int, _ input: UnsafePointer<Complex>, _ in_stride: Int, _ in_count: Int, _ n: Double, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int, _ temp: UnsafeMutablePointer<Complex>, _ temp_stride: Int) {
-    input.withMemoryRebound(to: Double.self, capacity: 2) { _input in temp.withMemoryRebound(to: Double.self, capacity: 2) { _temp in output.withMemoryRebound(to: Double.self, capacity: 2) { Radix2PowerCircularConvolve(level, _input, _input + 1, in_stride << 1, in_count, n, $0, $0 + 1, out_stride << 1, _temp, _temp + 1, temp_stride << 1) } } }
+public func Radix2PowerCircularConvolve(_ level: Int, _ input: UnsafePointer<Complex>, _ in_stride: Int, _ in_count: Int, _ n: Double, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int) {
+    input.withMemoryRebound(to: Double.self, capacity: 2) { _input in output.withMemoryRebound(to: Double.self, capacity: 2) { Radix2PowerCircularConvolve(level, _input, _input + 1, in_stride << 1, in_count, n, $0, $0 + 1, out_stride << 1) } }
 }
 
 @_inlineable
@@ -318,6 +318,6 @@ public func DispatchRadix2CircularConvolve(_ level: Int, _ signal: UnsafePointer
     signal.withMemoryRebound(to: Double.self, capacity: 2) { _signal in kernel.withMemoryRebound(to: Double.self, capacity: 2) { _kernel in temp.withMemoryRebound(to: Double.self, capacity: 2) { _temp in output.withMemoryRebound(to: Double.self, capacity: 2) { DispatchRadix2CircularConvolve(level, _signal, _signal + 1, signal_stride << 1, signal_count, _kernel, _kernel + 1, kernel_stride << 1, kernel_count, $0, $0 + 1, out_stride << 1, _temp, _temp + 1, temp_stride << 1) } } } }
 }
 @_inlineable
-public func DispatchRadix2PowerCircularConvolve(_ level: Int, _ input: UnsafePointer<Complex>, _ in_stride: Int, _ in_count: Int, _ n: Double, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int, _ temp: UnsafeMutablePointer<Complex>, _ temp_stride: Int) {
-    input.withMemoryRebound(to: Double.self, capacity: 2) { _input in temp.withMemoryRebound(to: Double.self, capacity: 2) { _temp in output.withMemoryRebound(to: Double.self, capacity: 2) { DispatchRadix2PowerCircularConvolve(level, _input, _input + 1, in_stride << 1, in_count, n, $0, $0 + 1, out_stride << 1, _temp, _temp + 1, temp_stride << 1) } } }
+public func DispatchRadix2PowerCircularConvolve(_ level: Int, _ input: UnsafePointer<Complex>, _ in_stride: Int, _ in_count: Int, _ n: Double, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int) {
+    input.withMemoryRebound(to: Double.self, capacity: 2) { _input in output.withMemoryRebound(to: Double.self, capacity: 2) { DispatchRadix2PowerCircularConvolve(level, _input, _input + 1, in_stride << 1, in_count, n, $0, $0 + 1, out_stride << 1) } }
 }

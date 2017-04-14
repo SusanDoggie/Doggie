@@ -332,10 +332,9 @@ public func InverseRadix2CooleyTukey(_ buffer: [Complex]) -> [Complex] {
 @_inlineable
 public func Radix2FiniteImpulseFilter(_ signal: [Complex], _ kernel: [Complex]) -> [Complex] {
     var result = signal
-    var temp = signal
     assert(signal.count.isPower2, "size of signal must be power of 2.")
     assert(signal.count == kernel.count, "mismatch count of inputs.")
-    DispatchRadix2FiniteImpulseFilter(log2(signal.count), signal, 1, signal.count, kernel, 1, &result, 1, &temp, 1)
+    DispatchRadix2FiniteImpulseFilter(log2(signal.count), signal, 1, signal.count, kernel, 1, &result, 1)
     return result
 }
 
@@ -374,8 +373,7 @@ public func Radix2PowerCircularConvolve<T: BinaryFloatingPoint>(_ signal: [T], _
         return [T.pow(signal[0], n)]
     }
     var result = signal
-    var temp = signal
-    DispatchRadix2PowerCircularConvolve(log2(signal.count), signal, 1, signal.count, n, &result, 1, &temp, 1)
+    DispatchRadix2PowerCircularConvolve(log2(signal.count), signal, 1, signal.count, n, &result, 1)
     return result
 }
 
@@ -386,8 +384,7 @@ public func Radix2PowerCircularConvolve(_ signal: [Complex], _ n: Double) -> [Co
         return [pow(signal[0], n)]
     }
     var result = signal
-    var temp = signal
-    DispatchRadix2PowerCircularConvolve(log2(signal.count), signal, 1, signal.count, n, &result, 1, &temp, 1)
+    DispatchRadix2PowerCircularConvolve(log2(signal.count), signal, 1, signal.count, n, &result, 1)
     return result
 }
 

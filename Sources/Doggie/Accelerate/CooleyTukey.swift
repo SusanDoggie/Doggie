@@ -1550,7 +1550,7 @@ public func DispatchParallelRadix2CooleyTukey<T: BinaryFloatingPoint>(_ level: I
 }
 @_inlineable
 @_specialize(Float) @_specialize(Double)
-public func DispatchParallelRadix2CooleyTukey<T: BinaryFloatingPoint>(_ level: Int, _ row: Int, _ real: UnsafeMutablePointer<T>, _ imag: UnsafeMutablePointer<T>, _ stride: Int, _ interleaved: Bool) where T : FloatingMathProtocol {
+public func DispatchParallelInverseRadix2CooleyTukey<T: BinaryFloatingPoint>(_ level: Int, _ row: Int, _ real: UnsafeMutablePointer<T>, _ imag: UnsafeMutablePointer<T>, _ stride: Int, _ interleaved: Bool) where T : FloatingMathProtocol {
     
     switch row {
     case 0: break
