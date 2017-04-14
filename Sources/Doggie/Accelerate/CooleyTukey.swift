@@ -773,8 +773,8 @@ public func ParallelRadix2CooleyTukey<T: BinaryFloatingPoint>(_ level: Int, _ ro
     var imag = imag
     for _ in 0..<row {
         Radix2CooleyTukey(level, real, imag, _stride)
-        real += _in_row_stride
-        imag += _in_row_stride
+        real += _row_stride
+        imag += _row_stride
     }
 }
 
