@@ -177,8 +177,8 @@ public func HalfRadix2CooleyTukey(_ level: Int, _ input: UnsafePointer<Double>, 
     output.withMemoryRebound(to: Double.self, capacity: 2) { HalfRadix2CooleyTukey(level, input, in_stride, in_count, $0, $0 + 1, out_stride << 1) }
 }
 @_inlineable
-public func HalfInverseRadix2CooleyTukey(_ level: Int, _ input: UnsafePointer<Complex>, _ in_stride: Int, _ output: UnsafeMutablePointer<Double>, _ out_stride: Int, temp: UnsafeMutablePointer<Complex>, tp_stride: Int) {
-    input.withMemoryRebound(to: Double.self, capacity: 2) { _input in temp.withMemoryRebound(to: Double.self, capacity: 2) { _temp in HalfInverseRadix2CooleyTukey(level, _input, _input + 1, in_stride << 1, output, out_stride, _temp, _temp + 1, tp_stride << 1) } }
+public func HalfInverseRadix2CooleyTukey(_ level: Int, _ input: UnsafePointer<Complex>, _ in_stride: Int, _ output: UnsafeMutablePointer<Double>, _ out_stride: Int) {
+    input.withMemoryRebound(to: Double.self, capacity: 2) { _input in HalfInverseRadix2CooleyTukey(level, _input, _input + 1, in_stride << 1, output, out_stride) }
 }
 @_inlineable
 public func Radix2CooleyTukey(_ level: Int, _ input: UnsafePointer<Double>, _ in_stride: Int, _ in_count: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int) {
@@ -196,14 +196,22 @@ public func InverseRadix2CooleyTukey(_ level: Int, _ input: UnsafePointer<Double
 public func InverseRadix2CooleyTukey(_ level: Int, _ input: UnsafePointer<Complex>, _ in_stride: Int, _ in_count: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int) {
     input.withMemoryRebound(to: Double.self, capacity: 2) { _input in output.withMemoryRebound(to: Double.self, capacity: 2) { InverseRadix2CooleyTukey(level, _input, _input + 1, in_stride << 1, in_count, $0, $0 + 1, out_stride << 1) } }
 }
+@_inlineable
+public func Radix2CooleyTukey(_ level: Int, _ buffer: UnsafeMutablePointer<Complex>, _ stride: Int) {
+    buffer.withMemoryRebound(to: Double.self, capacity: 2) { Radix2CooleyTukey(level, $0, $0 + 1, stride << 1) }
+}
+@_inlineable
+public func InverseRadix2CooleyTukey(_ level: Int, _ buffer: UnsafeMutablePointer<Complex>, _ stride: Int) {
+    buffer.withMemoryRebound(to: Double.self, capacity: 2) { InverseRadix2CooleyTukey(level, $0, $0 + 1, stride << 1) }
+}
 
 @_inlineable
 public func DispatchHalfRadix2CooleyTukey(_ level: Int, _ input: UnsafePointer<Double>, _ in_stride: Int, _ in_count: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int) {
     output.withMemoryRebound(to: Double.self, capacity: 2) { DispatchHalfRadix2CooleyTukey(level, input, in_stride, in_count, $0, $0 + 1, out_stride << 1) }
 }
 @_inlineable
-public func DispatchHalfInverseRadix2CooleyTukey(_ level: Int, _ input: UnsafePointer<Complex>, _ in_stride: Int, _ output: UnsafeMutablePointer<Double>, _ out_stride: Int, temp: UnsafeMutablePointer<Complex>, tp_stride: Int) {
-    input.withMemoryRebound(to: Double.self, capacity: 2) { _input in temp.withMemoryRebound(to: Double.self, capacity: 2) { _temp in DispatchHalfInverseRadix2CooleyTukey(level, _input, _input + 1, in_stride << 1, output, out_stride, _temp, _temp + 1, tp_stride << 1) } }
+public func DispatchHalfInverseRadix2CooleyTukey(_ level: Int, _ input: UnsafePointer<Complex>, _ in_stride: Int, _ output: UnsafeMutablePointer<Double>, _ out_stride: Int) {
+    input.withMemoryRebound(to: Double.self, capacity: 2) { _input in DispatchHalfInverseRadix2CooleyTukey(level, _input, _input + 1, in_stride << 1, output, out_stride) }
 }
 @_inlineable
 public func DispatchRadix2CooleyTukey(_ level: Int, _ input: UnsafePointer<Double>, _ in_stride: Int, _ in_count: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int) {
@@ -221,14 +229,22 @@ public func DispatchInverseRadix2CooleyTukey(_ level: Int, _ input: UnsafePointe
 public func DispatchInverseRadix2CooleyTukey(_ level: Int, _ input: UnsafePointer<Complex>, _ in_stride: Int, _ in_count: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int) {
     input.withMemoryRebound(to: Double.self, capacity: 2) { _input in output.withMemoryRebound(to: Double.self, capacity: 2) { DispatchInverseRadix2CooleyTukey(level, _input, _input + 1, in_stride << 1, in_count, $0, $0 + 1, out_stride << 1) } }
 }
+@_inlineable
+public func DispatchRadix2CooleyTukey(_ level: Int, _ buffer: UnsafeMutablePointer<Complex>, _ stride: Int) {
+    buffer.withMemoryRebound(to: Double.self, capacity: 2) { DispatchRadix2CooleyTukey(level, $0, $0 + 1, stride << 1) }
+}
+@_inlineable
+public func DispatchInverseRadix2CooleyTukey(_ level: Int, _ buffer: UnsafeMutablePointer<Complex>, _ stride: Int) {
+    buffer.withMemoryRebound(to: Double.self, capacity: 2) { DispatchInverseRadix2CooleyTukey(level, $0, $0 + 1, stride << 1) }
+}
 
 @_inlineable
 public func ParallelHalfRadix2CooleyTukey(_ level: Int, row: Int, _ input: UnsafePointer<Double>, _ in_stride: Int, _ in_count: Int, _ in_total: Int, _ in_interleaved: Bool, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int, _ out_interleaved: Bool) {
     output.withMemoryRebound(to: Double.self, capacity: 2) { ParallelHalfRadix2CooleyTukey(level, row, input, in_stride, in_count, in_total, in_interleaved, $0, $0 + 1, out_stride << 1, out_interleaved) }
 }
 @_inlineable
-public func ParallelHalfInverseRadix2CooleyTukey(_ level: Int, row: Int, _ input: UnsafePointer<Complex>, _ in_stride: Int, _ in_interleaved: Bool, _ output: UnsafeMutablePointer<Double>, _ out_stride: Int, _ out_interleaved: Bool, temp: UnsafeMutablePointer<Complex>, tp_stride: Int, _ tp_interleaved: Bool) {
-    input.withMemoryRebound(to: Double.self, capacity: 2) { _input in temp.withMemoryRebound(to: Double.self, capacity: 2) { _temp in ParallelHalfInverseRadix2CooleyTukey(level, row, _input, _input + 1, in_stride << 1, in_interleaved, output, out_stride, out_interleaved, _temp, _temp + 1, tp_stride << 1, tp_interleaved) } }
+public func ParallelHalfInverseRadix2CooleyTukey(_ level: Int, row: Int, _ input: UnsafePointer<Complex>, _ in_stride: Int, _ in_interleaved: Bool, _ output: UnsafeMutablePointer<Double>, _ out_stride: Int, _ out_interleaved: Bool) {
+    input.withMemoryRebound(to: Double.self, capacity: 2) { _input in ParallelHalfInverseRadix2CooleyTukey(level, row, _input, _input + 1, in_stride << 1, in_interleaved, output, out_stride, out_interleaved) }
 }
 @_inlineable
 public func ParallelRadix2CooleyTukey(_ level: Int, row: Int, _ input: UnsafePointer<Double>, _ in_stride: Int, _ in_count: Int, _ in_total: Int, _ in_interleaved: Bool, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int, _ out_interleaved: Bool) {
@@ -246,14 +262,22 @@ public func ParallelInverseRadix2CooleyTukey(_ level: Int, row: Int, _ input: Un
 public func ParallelInverseRadix2CooleyTukey(_ level: Int, row: Int, _ input: UnsafePointer<Complex>, _ in_stride: Int, _ in_count: Int, _ in_total: Int, _ in_interleaved: Bool, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int, _ out_interleaved: Bool) {
     input.withMemoryRebound(to: Double.self, capacity: 2) { _input in output.withMemoryRebound(to: Double.self, capacity: 2) { ParallelInverseRadix2CooleyTukey(level, row, _input, _input + 1, in_stride << 1, in_count, in_total, in_interleaved, $0, $0 + 1, out_stride << 1, out_interleaved) } }
 }
+@_inlineable
+public func ParallelRadix2CooleyTukey(_ level: Int, row: Int, _ buffer: UnsafePointer<Complex>, _ stride: Int, _ interleaved: Bool) {
+    buffer.withMemoryRebound(to: Double.self, capacity: 2) { ParallelRadix2CooleyTukey(level, row, $0, $0 + 1, stride << 1, interleaved) }
+}
+@_inlineable
+public func ParallelRadix2CooleyTukey(_ level: Int, row: Int, _ buffer: UnsafePointer<Complex>, _ stride: Int, _ interleaved: Bool) {
+    buffer.withMemoryRebound(to: Double.self, capacity: 2) { ParallelRadix2CooleyTukey(level, row, $0, $0 + 1, stride << 1, interleaved) }
+}
 
 @_inlineable
 public func DispatchParallelHalfRadix2CooleyTukey(_ level: Int, row: Int, _ input: UnsafePointer<Double>, _ in_stride: Int, _ in_count: Int, _ in_total: Int, _ in_interleaved: Bool, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int, _ out_interleaved: Bool) {
     output.withMemoryRebound(to: Double.self, capacity: 2) { DispatchParallelHalfRadix2CooleyTukey(level, row, input, in_stride, in_count, in_total, in_interleaved, $0, $0 + 1, out_stride << 1, out_interleaved) }
 }
 @_inlineable
-public func DispatchParallelHalfInverseRadix2CooleyTukey(_ level: Int, row: Int, _ input: UnsafePointer<Complex>, _ in_stride: Int, _ in_interleaved: Bool, _ output: UnsafeMutablePointer<Double>, _ out_stride: Int, _ out_interleaved: Bool, _ temp: UnsafeMutablePointer<Complex>, _ tp_stride: Int, _ tp_interleaved: Bool) {
-    input.withMemoryRebound(to: Double.self, capacity: 2) { _input in temp.withMemoryRebound(to: Double.self, capacity: 2) { _temp in DispatchParallelHalfInverseRadix2CooleyTukey(level, row, _input, _input + 1, in_stride << 1, in_interleaved, output, out_stride, out_interleaved, _temp, _temp + 1, tp_stride << 1, tp_interleaved) } }
+public func DispatchParallelHalfInverseRadix2CooleyTukey(_ level: Int, row: Int, _ input: UnsafePointer<Complex>, _ in_stride: Int, _ in_interleaved: Bool, _ output: UnsafeMutablePointer<Double>, _ out_stride: Int, _ out_interleaved: Bool) {
+    input.withMemoryRebound(to: Double.self, capacity: 2) { _input in DispatchParallelHalfInverseRadix2CooleyTukey(level, row, _input, _input + 1, in_stride << 1, in_interleaved, output, out_stride, out_interleaved) } 
 }
 @_inlineable
 public func DispatchParallelRadix2CooleyTukey(_ level: Int, row: Int, _ input: UnsafePointer<Double>, _ in_stride: Int, _ in_count: Int, _ in_total: Int, _ in_interleaved: Bool, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int, _ out_interleaved: Bool) {
@@ -270,6 +294,14 @@ public func DispatchParallelInverseRadix2CooleyTukey(_ level: Int, row: Int, _ i
 @_inlineable
 public func DispatchParallelInverseRadix2CooleyTukey(_ level: Int, row: Int, _ input: UnsafePointer<Complex>, _ in_stride: Int, _ in_count: Int, _ in_total: Int, _ in_interleaved: Bool, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int, _ out_interleaved: Bool) {
     input.withMemoryRebound(to: Double.self, capacity: 2) { _input in output.withMemoryRebound(to: Double.self, capacity: 2) { DispatchParallelInverseRadix2CooleyTukey(level, row, _input, _input + 1, in_stride << 1, in_count, in_total, in_interleaved, $0, $0 + 1, out_stride << 1, out_interleaved) } }
+}
+@_inlineable
+public func DispatchParallelRadix2CooleyTukey(_ level: Int, row: Int, _ buffer: UnsafePointer<Complex>, _ stride: Int, _ interleaved: Bool) {
+    buffer.withMemoryRebound(to: Double.self, capacity: 2) { DispatchParallelRadix2CooleyTukey(level, row, $0, $0 + 1, stride << 1, interleaved) }
+}
+@_inlineable
+public func DispatchParallelInverseRadix2CooleyTukey(_ level: Int, row: Int, _ buffer: UnsafePointer<Complex>, _ stride: Int, _ interleaved: Bool) {
+    buffer.withMemoryRebound(to: Double.self, capacity: 2) { DispatchParallelInverseRadix2CooleyTukey(level, row, $0, $0 + 1, stride << 1, interleaved) }
 }
 
 @_inlineable

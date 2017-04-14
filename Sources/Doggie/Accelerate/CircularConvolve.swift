@@ -66,7 +66,7 @@ public func Radix2CircularConvolve<T: BinaryFloatingPoint>(_ level: Int, _ signa
         _simag.pointee = _sr * _ki + _si * _kr
     }
     
-    HalfInverseRadix2CooleyTukey(level, temp, temp + temp_stride, k_stride, output, out_stride, temp, temp + temp_stride, k_stride)
+    HalfInverseRadix2CooleyTukey(level, temp, temp + temp_stride, k_stride, output, out_stride)
 }
 
 @_inlineable
@@ -150,7 +150,7 @@ public func Radix2PowerCircularConvolve<T: BinaryFloatingPoint>(_ level: Int, _ 
         _timag.pointee = _pow * T.sin(_arg)
     }
     
-    HalfInverseRadix2CooleyTukey(level, temp, temp + temp_stride, t_stride, output, out_stride, temp, temp + temp_stride, t_stride)
+    HalfInverseRadix2CooleyTukey(level, temp, temp + temp_stride, t_stride, output, out_stride)
 }
 
 @_inlineable
@@ -259,7 +259,7 @@ public func Radix2FiniteImpulseFilter(_ level: Int, _ signal: UnsafePointer<Doub
         _timag.pointee = _tr * _ki + _ti * _kr
     }
     
-    HalfInverseRadix2CooleyTukey(level, temp, temp + temp_stride, t_stride, output, out_stride, temp, temp + temp_stride, t_stride)
+    HalfInverseRadix2CooleyTukey(level, temp, temp + temp_stride, t_stride, output, out_stride)
 }
 
 @_inlineable
@@ -338,7 +338,7 @@ public func DispatchRadix2CircularConvolve<T: BinaryFloatingPoint>(_ level: Int,
         _simag.pointee = _sr * _ki + _si * _kr
     }
     
-    DispatchHalfInverseRadix2CooleyTukey(level, temp, temp + temp_stride, k_stride, output, out_stride, temp, temp + temp_stride, k_stride)
+    DispatchHalfInverseRadix2CooleyTukey(level, temp, temp + temp_stride, k_stride, output, out_stride)
 }
 
 @_inlineable
@@ -422,7 +422,7 @@ public func DispatchRadix2PowerCircularConvolve<T: BinaryFloatingPoint>(_ level:
         _timag.pointee = _pow * T.sin(_arg)
     }
     
-    DispatchHalfInverseRadix2CooleyTukey(level, temp, temp + temp_stride, t_stride, output, out_stride, temp, temp + temp_stride, t_stride)
+    DispatchHalfInverseRadix2CooleyTukey(level, temp, temp + temp_stride, t_stride, output, out_stride)
 }
 
 @_inlineable
@@ -499,7 +499,7 @@ public func DispatchRadix2FiniteImpulseFilter(_ level: Int, _ signal: UnsafePoin
         _timag.pointee = _tr * _ki + _ti * _kr
     }
     
-    DispatchHalfInverseRadix2CooleyTukey(level, temp, temp + temp_stride, t_stride, output, out_stride, temp, temp + temp_stride, t_stride)
+    DispatchHalfInverseRadix2CooleyTukey(level, temp, temp + temp_stride, t_stride, output, out_stride)
 }
 
 @_inlineable

@@ -5,7 +5,7 @@
       location = "group:Playground"
       name = "Playground">
       <FileRef
-         location = "group:Test.playground">
+         location = "group:Benchmark.playground">
       </FileRef>
       <FileRef
          location = "group:Color.playground">

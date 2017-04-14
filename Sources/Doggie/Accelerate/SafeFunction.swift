@@ -313,8 +313,8 @@ public func Radix2CooleyTukey(_ buffer: [Complex]) -> [Complex] {
     if buffer.count == 1 {
         return buffer
     }
-    var result = buffer
-    DispatchRadix2CooleyTukey(log2(buffer.count), buffer.map { $0 / _sqrt }, 1, buffer.count, &result, 1)
+    var result = buffer.map { $0 / _sqrt }
+    DispatchRadix2CooleyTukey(log2(buffer.count), &result, 1)
     return result
 }
 @_inlineable
@@ -324,8 +324,8 @@ public func InverseRadix2CooleyTukey(_ buffer: [Complex]) -> [Complex] {
     if buffer.count == 1 {
         return buffer
     }
-    var result = buffer
-    DispatchInverseRadix2CooleyTukey(log2(buffer.count), buffer.map { $0 / _sqrt }, 1, buffer.count, &result, 1)
+    var result = buffer.map { $0 / _sqrt }
+    DispatchInverseRadix2CooleyTukey(log2(buffer.count), &result, 1)
     return result
 }
 
