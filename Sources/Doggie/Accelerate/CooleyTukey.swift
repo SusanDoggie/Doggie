@@ -346,13 +346,12 @@ public func Radix2CooleyTukey<T: BinaryFloatingPoint>(_ level: Int, _ real: Unsa
         Radix2CooleyTukey_16(real, imag, in_stride, in_count, _real, _imag, out_stride)
         
     default:
-        let length = 1 << level
-        let half = length >> 1
+        let count = 1 << level
         
         if in_count == 0 {
             var _real = _real
             var _imag = _imag
-            for _ in 0..<length {
+            for _ in 0..<count {
                 _real.pointee = 0
                 _imag.pointee = 0
                 _real += out_stride
@@ -361,40 +360,87 @@ public func Radix2CooleyTukey<T: BinaryFloatingPoint>(_ level: Int, _ real: Unsa
             return
         }
         
-        ParallelRadix2CooleyTukey(level - 1, 2, real, imag, in_stride, in_count - in_count >> 1, in_count, true, _real, _imag, out_stride, false)
+        let offset = UIntMax(MemoryLayout<UIntMax>.size << 3) - log2(UIntMax(count))
         
-        let oph_stride = half * out_stride
-        var op_r = _real
-        var op_i = _imag
-        var oph_r = _real + oph_stride
-        var oph_i = _imag + oph_stride
+        do {
+            var real = real
+            var imag = imag
+            for i in 0..<count {
+                let _i = Int(UIntMax(i).reverse >> offset)
+                _real[_i * out_stride] = i < in_count ? real.pointee : 0
+                _imag[_i * out_stride] = i < in_count ? imag.pointee : 0
+                real += in_stride
+                imag += in_stride
+            }
+        }
         
-        let angle = -T.pi / T(half)
-        let _cos = T.cos(angle)
-        let _sin = T.sin(angle)
-        var _cos1 = 1 as T
-        var _sin1 = 0 as T
-        for _ in 0..<half {
-            let tpr = op_r.pointee
-            let tpi = op_i.pointee
-            let tphr = oph_r.pointee
-            let tphi = oph_i.pointee
-            let tphrc = tphr * _cos1
-            let tphic = tphi * _cos1
-            let tphrs = tphr * _sin1
-            let tphis = tphi * _sin1
-            let _c = _cos * _cos1 - _sin * _sin1
-            let _s = _cos * _sin1 + _sin * _cos1
-            _cos1 = _c
-            _sin1 = _s
-            op_r.pointee = tpr + tphrc - tphis
-            op_i.pointee = tpi + tphrs + tphic
-            oph_r.pointee = tpr - tphrc + tphis
-            oph_i.pointee = tpi - tphrs - tphic
-            op_r += out_stride
-            op_i += out_stride
-            oph_r += out_stride
-            oph_i += out_stride
+        do {
+            var _r = _real
+            var _i = _imag
+            let m_stride = out_stride << 4
+            for _ in Swift.stride(from: 0, to: count, by: 16) {
+                Radix2CooleyTukey_Orderd_16(_r, _i, out_stride)
+                _r += m_stride
+                _i += m_stride
+            }
+        }
+        
+        for s in 4..<level {
+            
+            let m = 2 << s
+            let n = 1 << s
+            
+            let angle = -T.pi / T(n)
+            let _cos = T.cos(angle)
+            let _sin = T.sin(angle)
+            
+            let m_stride = m * out_stride
+            let n_stride = n * out_stride
+            
+            var r1 = _real
+            var i1 = _imag
+            
+            for _ in Swift.stride(from: 0, to: count, by: m) {
+                
+                var _cos1 = 1 as T
+                var _sin1 = 0 as T
+                
+                var _r1 = r1
+                var _i1 = i1
+                var _r2 = r1 + n_stride
+                var _i2 = i1 + n_stride
+                
+                for _ in 0..<n {
+                    
+                    let ur = _r1.pointee
+                    let ui = _i1.pointee
+                    let vr = _r2.pointee
+                    let vi = _i2.pointee
+                    
+                    let vrc = vr * _cos1
+                    let vic = vi * _cos1
+                    let vrs = vr * _sin1
+                    let vis = vi * _sin1
+                    
+                    let _c = _cos * _cos1 - _sin * _sin1
+                    let _s = _cos * _sin1 + _sin * _cos1
+                    _cos1 = _c
+                    _sin1 = _s
+                    
+                    _r1.pointee = ur + vrc - vis
+                    _i1.pointee = ui + vrs + vic
+                    _r2.pointee = ur - vrc + vis
+                    _i2.pointee = ui - vrs - vic
+                    
+                    _r1 += out_stride
+                    _i1 += out_stride
+                    _r2 += out_stride
+                    _i2 += out_stride
+                }
+                
+                r1 += m_stride
+                i1 += m_stride
+            }
         }
     }
 }
@@ -1127,13 +1173,12 @@ public func DispatchRadix2CooleyTukey<T: BinaryFloatingPoint>(_ level: Int, _ re
         Radix2CooleyTukey_16(real, imag, in_stride, in_count, _real, _imag, out_stride)
         
     default:
-        let length = 1 << level
-        let half = length >> 1
+        let count = 1 << level
         
         if in_count == 0 {
             var _real = _real
             var _imag = _imag
-            for _ in 0..<length {
+            for _ in 0..<count {
                 _real.pointee = 0
                 _imag.pointee = 0
                 _real += out_stride
@@ -1142,40 +1187,81 @@ public func DispatchRadix2CooleyTukey<T: BinaryFloatingPoint>(_ level: Int, _ re
             return
         }
         
-        DispatchParallelRadix2CooleyTukey(level - 1, 2, real, imag, in_stride, in_count - in_count >> 1, in_count, true, _real, _imag, out_stride, false)
+        let offset = UIntMax(MemoryLayout<UIntMax>.size << 3) - log2(UIntMax(count))
         
-        let oph_stride = half * out_stride
-        var op_r = _real
-        var op_i = _imag
-        var oph_r = _real + oph_stride
-        var oph_i = _imag + oph_stride
+        do {
+            var real = real
+            var imag = imag
+            for i in 0..<count {
+                let _i = Int(UIntMax(i).reverse >> offset)
+                _real[_i * out_stride] = i < in_count ? real.pointee : 0
+                _imag[_i * out_stride] = i < in_count ? imag.pointee : 0
+                real += in_stride
+                imag += in_stride
+            }
+        }
         
-        let angle = -T.pi / T(half)
-        let _cos = T.cos(angle)
-        let _sin = T.sin(angle)
-        var _cos1 = 1 as T
-        var _sin1 = 0 as T
-        for _ in 0..<half {
-            let tpr = op_r.pointee
-            let tpi = op_i.pointee
-            let tphr = oph_r.pointee
-            let tphi = oph_i.pointee
-            let tphrc = tphr * _cos1
-            let tphic = tphi * _cos1
-            let tphrs = tphr * _sin1
-            let tphis = tphi * _sin1
-            let _c = _cos * _cos1 - _sin * _sin1
-            let _s = _cos * _sin1 + _sin * _cos1
-            _cos1 = _c
-            _sin1 = _s
-            op_r.pointee = tpr + tphrc - tphis
-            op_i.pointee = tpi + tphrs + tphic
-            oph_r.pointee = tpr - tphrc + tphis
-            oph_i.pointee = tpi - tphrs - tphic
-            op_r += out_stride
-            op_i += out_stride
-            oph_r += out_stride
-            oph_i += out_stride
+        do {
+            var _r = _real
+            var _i = _imag
+            let m_stride = out_stride << 4
+            for _ in Swift.stride(from: 0, to: count, by: 16) {
+                Radix2CooleyTukey_Orderd_16(_r, _i, out_stride)
+                _r += m_stride
+                _i += m_stride
+            }
+        }
+        
+        for s in 4..<level {
+            
+            let m = 2 << s
+            let n = 1 << s
+            
+            let angle = -T.pi / T(n)
+            let _cos = T.cos(angle)
+            let _sin = T.sin(angle)
+            
+            let m_stride = m * out_stride
+            let n_stride = n * out_stride
+            
+            DispatchQueue.concurrentPerform(iterations: count >> (s + 1)) { k in
+                
+                var _cos1 = 1 as T
+                var _sin1 = 0 as T
+                
+                var _r1 = _real + k * m_stride
+                var _i1 = _imag + k * m_stride
+                var _r2 = _r1 + n_stride
+                var _i2 = _i1 + n_stride
+                
+                for _ in 0..<n {
+                    
+                    let ur = _r1.pointee
+                    let ui = _i1.pointee
+                    let vr = _r2.pointee
+                    let vi = _i2.pointee
+                    
+                    let vrc = vr * _cos1
+                    let vic = vi * _cos1
+                    let vrs = vr * _sin1
+                    let vis = vi * _sin1
+                    
+                    let _c = _cos * _cos1 - _sin * _sin1
+                    let _s = _cos * _sin1 + _sin * _cos1
+                    _cos1 = _c
+                    _sin1 = _s
+                    
+                    _r1.pointee = ur + vrc - vis
+                    _i1.pointee = ui + vrs + vic
+                    _r2.pointee = ur - vrc + vis
+                    _i2.pointee = ui - vrs - vic
+                    
+                    _r1 += out_stride
+                    _i1 += out_stride
+                    _r2 += out_stride
+                    _i2 += out_stride
+                }
+            }
         }
     }
 }
