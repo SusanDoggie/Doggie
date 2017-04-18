@@ -52,9 +52,29 @@ public class StrokeView: NSView, NSGestureRecognizerDelegate {
         
         if let context = NSGraphicsContext.current()?.cgContext {
             
+            let shape: Shape = [Shape.Component(start: p0, segments: [.cubic(p1, p2, p3)])]
+            
+            QuadBezierFitting([p0, p1, p2, p3]).enumerated().forEach { idx, points in
+                
+                context.setStrokeColor(idx & 1 == 0 ? NSColor.blue.cgColor : NSColor.red.cgColor)
+                
+                let path = CGMutablePath()
+                path.move(to: CGPoint(points[0]))
+                
+                switch points.count {
+                case 2: path.addLine(to: CGPoint(points[1]))
+                case 3: path.addQuadCurve(to: CGPoint(points[2]), control: CGPoint(points[1]))
+                default: break
+                }
+                context.addPath(path)
+                context.strokePath()
+            }
+            
+            context.setFillColor(NSColor.yellow.cgColor)
             context.setStrokeColor(NSColor.red.cgColor)
             
-            let shape: Shape = [Shape.Component(start: p0, segments: [.cubic(p1, p2, p3)])]
+            context.addPath(shape.cgPath)
+            context.fillPath()
             
             context.addPath(shape.strokePath(width: 50, cap: .round, join: .round).cgPath)
             context.strokePath()
