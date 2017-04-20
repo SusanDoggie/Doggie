@@ -738,17 +738,19 @@ private func QuadBezierFitting(_ p: [Point], _ limit: Int, _ inflection_check: B
         return [p]
     }
     
+    let bezier = Bezier(p)
+    
     if inflection_check {
-        var t = Bezier(p).inflection.filter { !$0.almostZero() && !$0.almostEqual(1) && 0...1 ~= $0 }
+        var t = bezier.inflection.filter { !$0.almostZero() && !$0.almostEqual(1) && 0...1 ~= $0 }
         t.append(contentsOf: Bezier(p.map { $0.x }).stationary.filter { _t in !_t.almostZero() && !_t.almostEqual(1) && 0...1 ~= _t && !t.contains { $0.almostEqual(_t) } })
         t.append(contentsOf: Bezier(p.map { $0.y }).stationary.filter { _t in !_t.almostZero() && !_t.almostEqual(1) && 0...1 ~= _t && !t.contains { $0.almostEqual(_t) } })
-        return Bezier(p).split(t).flatMap { QuadBezierFitting($0.points, limit - 1, false) }
+        return bezier.split(t).flatMap { QuadBezierFitting($0.points, limit - 1, false) }
     }
     
     let d = zip(p.dropFirst(), p).map { $0 - $1 }
     
     func split(_ t: Double) -> [[Point]] {
-        let (left, right) = Bezier(p).split(t)
+        let (left, right) = bezier.split(t)
         return QuadBezierFitting(left.points, limit - 1, false) + QuadBezierFitting(right.points, limit - 1, false)
     }
     
@@ -815,9 +817,6 @@ public func CubicBezierFitting(_ p0: Point, _ p3: Point, _ m0: Point, _ m1: Poin
         _c2 += dot(_b, _c)
     }
     
-    _c1 = abs(_c1)
-    _c2 = abs(_c2)
-    
     let t = _a1 * _b2 - _b1 * _a2
     
     if t.almostZero() {
@@ -829,7 +828,7 @@ public func CubicBezierFitting(_ p0: Point, _ p3: Point, _ m0: Point, _ m1: Poin
     let u = (_c1 * _b2 - _c2 * _b1) * _t
     let v = (_c2 * _a1 - _c1 * _a2) * _t
     
-    return (u * m0 + p0, v * m1 + p3)
+    return (abs(u) * m0 + p0, abs(v) * m1 + p3)
 }
 public func CubicBezierFitting(_ p0: Point, _ p3: Point, _ m0: Point, _ m1: Point, _ points: [Point]) -> (Point, Point)? {
     
@@ -999,9 +998,8 @@ private func _BezierOffset(_ p0: Point, _ p1: Point, _ p2: Point, _ a: Double, _
             if limit > 0 {
                 return split(0.5)
             } else {
-                let m = Bezier(q0, q1).eval(0.5)
-                let _s = 1 / m.magnitude
-                let _mid = Bezier(p0, p1, p2).eval(0.5) + Point(x: a * m.y * _s, y: -a * m.x * _s)
+                let m = Bezier(q0, q1).eval(0.5).unit
+                let _mid = Bezier(p0, p1, p2).eval(0.5) + Point(x: a * m.y, y: -a * m.x)
                 return [[start, 2 * (_mid - 0.25 * (start + end)), end]]
             }
         }

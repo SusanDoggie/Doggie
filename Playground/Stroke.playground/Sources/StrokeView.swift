@@ -70,13 +70,16 @@ public class StrokeView: NSView, NSGestureRecognizerDelegate {
                 context.strokePath()
             }
             
-            context.setFillColor(NSColor.yellow.cgColor)
-            context.setStrokeColor(NSColor.red.cgColor)
-            
-            context.addPath(shape.cgPath)
+            context.addPath(shape.strokePath(width: 50, cap: .round, join: .round).cgPath)
+            context.setFillColor(NSColor(calibratedWhite: 0.9, alpha: 1).cgColor)
             context.fillPath()
             
             context.addPath(shape.strokePath(width: 50, cap: .round, join: .round).cgPath)
+            context.setStrokeColor(NSColor.red.cgColor)
+            context.strokePath()
+            
+            context.addPath(shape.cgPath)
+            context.setStrokeColor(NSColor.green.cgColor)
             context.strokePath()
             
             context.setStrokeColor(NSColor.blue.cgColor)
