@@ -1000,7 +1000,7 @@ private func _BezierOffset(_ p0: Point, _ p1: Point, _ p2: Point, _ a: Double, _
             } else {
                 let m = Bezier(q0, q1).eval(0.5).unit
                 let _mid = Bezier(p0, p1, p2).eval(0.5) + Point(x: a * m.y, y: -a * m.x)
-                return [[start, 2 * (_mid - 0.25 * (start + end)), end]]
+                return CubicBezierFitting(start, end, q0, -q1, [_mid]).map { [[start, $0, $1, end]] } ?? [[start, 2 * (_mid - 0.25 * (start + end)), end]]
             }
         }
         return [[start, mid, end]]
