@@ -21,15 +21,15 @@ private func Bairstow(_ poly: Polynomial, eps: Double = 1e-14) -> [(Double, Doub
         var r = poly[poly.count - 2].almostZero(reference: poly[poly.count - 3]) ? poly[poly.count - 3] : poly[poly.count - 3] / poly[poly.count - 2]
         var s = poly[poly.count - 2].almostZero(reference: poly[poly.count - 4]) ? poly[poly.count - 4] : poly[poly.count - 4] / poly[poly.count - 2]
         
-        func reduce(_ p: Double, _ a: Double, _ b: Double, _ c: Double, _ d: Double, _ e: Double, _ f: Double) -> (Double, Double, Double, Double, Double, Double) {
+        func reduce(_ p: Double, _ a: Double, _ b: Double, _ c: Double, _ d: Double, _ e: Double) -> (Double, Double, Double, Double, Double) {
+            let v = b - r * e - s * d
             let u = p - r * b - s * a
-            let v = u - r * f - s * e
-            return (b, u, d, e, f, v)
+            return (b, u, d, e, v)
         }
         
         while true {
             
-            let (g, h, i, j, k, _) = poly.dropLast().reversed().reduce((0, 1, 0, 0, 0, 1)) { reduce($1, $0.0, $0.1, $0.2, $0.3, $0.4, $0.5) }
+            let (g, h, i, j, k) = poly.dropLast().reversed().reduce((0, 1, 0, 0, 0)) { reduce($1, $0.0, $0.1, $0.2, $0.3, $0.4) }
             
             let d = k * i - j * j
             
