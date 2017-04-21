@@ -20,6 +20,9 @@
          location = "group:Mesh Warping.playground">
       </FileRef>
       <FileRef
+         location = "group:Polynomial.playground">
+      </FileRef>
+      <FileRef
          location = "group:Rasterize.playground">
       </FileRef>
       <FileRef
