@@ -409,6 +409,41 @@ extension Shape.Component {
     }
 }
 
+extension Shape.Component {
+    
+    public mutating func reverse() {
+        self = self.reversed()
+    }
+    
+    public func reversed() -> Shape.Component {
+        
+        var _segments: [Shape.Segment] = []
+        _segments.reserveCapacity(segments.count)
+        
+        var p0 = start
+        
+        for segment in segments {
+            switch segment {
+            case let .line(p1):
+                _segments.append(.line(p0))
+                p0 = p1
+            case let .quad(p1, p2):
+                _segments.append(.quad(p1, p0))
+                p0 = p2
+            case let .cubic(p1, p2, p3):
+                _segments.append(.cubic(p2, p1, p0))
+                p0 = p3
+            }
+        }
+        
+        let reversed = Shape.Component(start: p0, closed: isClosed, segments: _segments.reversed())
+        reversed.cache.boundary = self.cache.boundary
+        reversed.cache.area = self.cache.area.map { -$0 }
+        
+        return reversed
+    }
+}
+
 extension Shape {
     
     public static func Rectangle(origin: Point, size: Size) -> Shape {
