@@ -158,6 +158,14 @@ extension RangeSet {
 extension RangeSet where Bound : Strideable, Bound.Stride : SignedInteger {
     
     @_inlineable
+    public var elements: LazyCollection<FlattenBidirectionalCollection<LazyMapBidirectionalCollection<[Range<Bound>], CountableRange<Bound>>>> {
+        return ranges.lazy.flatMap(CountableRange.init)
+    }
+}
+
+extension RangeSet where Bound : Strideable, Bound.Stride : SignedInteger {
+    
+    @_inlineable
     public init(_ ranges: ClosedRange<Bound> ... ) {
         self.init(ranges)
     }
