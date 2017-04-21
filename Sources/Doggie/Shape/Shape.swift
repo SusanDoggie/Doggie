@@ -437,6 +437,8 @@ extension Shape.Component {
         }
         
         let reversed = Shape.Component(start: p0, closed: isClosed, segments: _segments.reversed())
+        
+        reversed.cache.spaces = self.cache.spaces.map { RectCollection($0.reversed()) }
         reversed.cache.boundary = self.cache.boundary
         reversed.cache.area = self.cache.area.map { -$0 }
         
