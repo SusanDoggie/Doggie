@@ -158,6 +158,16 @@ extension RangeSet {
 extension RangeSet where Bound : Strideable, Bound.Stride : SignedInteger {
     
     @_inlineable
+    public func min() -> Bound? {
+        return ranges.first.flatMap { CountableRange($0).min() }
+    }
+    
+    @_inlineable
+    public func max() -> Bound? {
+        return ranges.last.flatMap { CountableRange($0).max() }
+    }
+    
+    @_inlineable
     public var elements: LazyCollection<FlattenBidirectionalCollection<LazyMapBidirectionalCollection<[Range<Bound>], CountableRange<Bound>>>> {
         return ranges.lazy.flatMap(CountableRange.init)
     }
