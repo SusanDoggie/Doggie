@@ -15,7 +15,7 @@ private func Bairstow(_ poly: Polynomial, eps: Double = 1e-14) -> [(Double, Doub
         
     default:
         
-        var eps = eps
+        var _eps = eps
         var iter = 0
         
         var r = poly[poly.count - 2].almostZero(reference: poly[poly.count - 3]) ? poly[poly.count - 3] : poly[poly.count - 3] / poly[poly.count - 2]
@@ -43,13 +43,13 @@ private func Bairstow(_ poly: Polynomial, eps: Double = 1e-14) -> [(Double, Doub
             r += dr
             s += ds
             
-            if dr.almostZero(epsilon: eps, reference: r) && ds.almostZero(epsilon: eps, reference: s) {
+            if dr.almostZero(epsilon: _eps, reference: r) && ds.almostZero(epsilon: _eps, reference: s) {
                 return Bairstow(poly / [s, r, 1], eps: eps) + [(s, r)]
             }
             
             iter += 1
             if iter % 5000 == 0 {
-                eps *= 2
+                _eps *= 2
             }
         }
     }
