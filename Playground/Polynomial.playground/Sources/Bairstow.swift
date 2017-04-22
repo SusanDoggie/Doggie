@@ -1,7 +1,7 @@
 import Foundation
 import Doggie
 
-private func Bairstow(_ poly: Polynomial, eps: Double = 1e-14) -> [(Double, Double?)] {
+private func _Bairstow(_ poly: Polynomial, eps: Double = 1e-14) -> [(Double, Double?)] {
     
     switch poly.degree {
     case 2: return [(poly[0], poly[1])]
@@ -34,7 +34,7 @@ private func Bairstow(_ poly: Polynomial, eps: Double = 1e-14) -> [(Double, Doub
             let d = k * i - j * j
             
             if d == 0 {
-                return Bairstow(poly / [s, r, 1], eps: eps) + [(s, r)]
+                return _Bairstow(poly / [s, r, 1], eps: eps) + [(s, r)]
             }
             
             let dr = (h * i - g * j) / d
@@ -44,7 +44,7 @@ private func Bairstow(_ poly: Polynomial, eps: Double = 1e-14) -> [(Double, Doub
             s += ds
             
             if dr.almostZero(epsilon: _eps, reference: r) && ds.almostZero(epsilon: _eps, reference: s) {
-                return Bairstow(poly / [s, r, 1], eps: eps) + [(s, r)]
+                return _Bairstow(poly / [s, r, 1], eps: eps) + [(s, r)]
             }
             
             iter += 1
@@ -55,12 +55,12 @@ private func Bairstow(_ poly: Polynomial, eps: Double = 1e-14) -> [(Double, Doub
     }
 }
 
-public func roots(_ polynomial: Polynomial, eps: Double = 1e-14) -> [Double] {
+public func Bairstow(_ polynomial: Polynomial, eps: Double = 1e-14) -> [Double] {
     
     var result: [Double] = []
     result.reserveCapacity(polynomial.degree)
     
-    for (s, r) in Bairstow(polynomial / polynomial.last!, eps: eps) {
+    for (s, r) in _Bairstow(polynomial / polynomial.last!, eps: eps) {
         if let r = r {
             result.append(contentsOf: degree2roots(r, s))
         } else {
@@ -69,36 +69,4 @@ public func roots(_ polynomial: Polynomial, eps: Double = 1e-14) -> [Double] {
     }
     
     return result
-}
-
-public func test1(_ polynomial: Polynomial) -> Double {
-    
-    var time: clock_t = 0
-    
-    for _ in 0..<10 {
-        
-        let t = clock()
-        
-        let _roots = polynomial.roots
-        
-        time += clock() - t
-    }
-    
-    return 0.1 * Double(time) / Double(CLOCKS_PER_SEC)
-}
-
-public func test2(_ polynomial: Polynomial, eps: Double = 1e-14) -> Double {
-    
-    var time: clock_t = 0
-    
-    for _ in 0..<10 {
-        
-        let t = clock()
-        
-        let _roots = roots(polynomial, eps: eps)
-        
-        time += clock() - t
-    }
-    
-    return 0.1 * Double(time) / Double(CLOCKS_PER_SEC)
 }

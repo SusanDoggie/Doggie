@@ -10,7 +10,7 @@ sqrt(5)
 
 print(polynomial.roots)
 
-print(roots(polynomial, eps: 1e-14))
+print(Bairstow(polynomial, eps: 1e-14))
 
 test1(polynomial)
 
