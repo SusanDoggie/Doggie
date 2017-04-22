@@ -13,8 +13,12 @@ print(Bairstow(polynomial, eps: 1e-14))
 
 print(DurandKerner(polynomial, eps: 1e-14).map { $0.real })
 
+print(Aberth(polynomial, eps: 1e-14).map { $0.real })
+
 test1(polynomial)
 
 test2(polynomial, eps: 1e-14)
 
 test3(polynomial, eps: 1e-14)
+
+test4(polynomial, eps: 1e-14)
