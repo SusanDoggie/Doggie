@@ -32,3 +32,19 @@ public func test2(_ polynomial: Polynomial, eps: Double = 1e-14) -> Double {
     
     return 0.1 * Double(time) / Double(CLOCKS_PER_SEC)
 }
+
+public func test3(_ polynomial: Polynomial, eps: Double = 1e-14) -> Double {
+    
+    var time: clock_t = 0
+    
+    for _ in 0..<10 {
+        
+        let t = clock()
+        
+        let _roots = DurandKerner(polynomial, eps: eps)
+        
+        time += clock() - t
+    }
+    
+    return 0.1 * Double(time) / Double(CLOCKS_PER_SEC)
+}
