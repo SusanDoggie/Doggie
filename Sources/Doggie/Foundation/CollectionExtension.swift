@@ -310,11 +310,15 @@ extension Collection where SubSequence : Collection {
     
     @_inlineable
     public func rotated(_ n: Int) -> ConcatCollection<SubSequence, SubSequence> {
+        let count: Int = numericCast(self.count)
+        if count == 0 {
+            return self.slice.concat(self.slice)
+        }
         if n < 0 {
-            let _n = -n % numericCast(count)
+            let _n = -n % count
             return self.suffix(_n).concat(self.dropLast(_n))
         }
-        let _n = n % numericCast(count)
+        let _n = n % count
         return self.dropFirst(_n).concat(self.prefix(_n))
     }
 }
@@ -322,11 +326,15 @@ extension Collection where SubSequence : BidirectionalCollection {
     
     @_inlineable
     public func rotated(_ n: Int) -> ConcatBidirectionalCollection<SubSequence, SubSequence> {
+        let count: Int = numericCast(self.count)
+        if count == 0 {
+            return self.slice.concat(self.slice)
+        }
         if n < 0 {
-            let _n = -n % numericCast(count)
+            let _n = -n % count
             return self.suffix(_n).concat(self.dropLast(_n))
         }
-        let _n = n % numericCast(count)
+        let _n = n % count
         return self.dropFirst(_n).concat(self.prefix(_n))
     }
 }
@@ -334,11 +342,15 @@ extension Collection where SubSequence : RandomAccessCollection {
     
     @_inlineable
     public func rotated(_ n: Int) -> ConcatBidirectionalCollection<SubSequence, SubSequence> {
+        let count: Int = numericCast(self.count)
+        if count == 0 {
+            return self.slice.concat(self.slice)
+        }
         if n < 0 {
-            let _n = -n % numericCast(count)
+            let _n = -n % count
             return self.suffix(_n).concat(self.dropLast(_n))
         }
-        let _n = n % numericCast(count)
+        let _n = n % count
         return self.dropFirst(_n).concat(self.prefix(_n))
     }
 }
