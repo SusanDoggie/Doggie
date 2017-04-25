@@ -24,6 +24,12 @@
 //
 
 @_inlineable
+public func Collinear(_ p0: Point, _ p1: Point, _ p2: Point) -> Bool {
+    let d = p0.x * (p1.y - p2.y) + p1.x * (p2.y - p0.y) + p2.x * (p0.y - p1.y)
+    return d.almostZero()
+}
+
+@_inlineable
 public func CircleInside(_ p0: Point, _ p1: Point, _ p2: Point, _ q: Point) -> Bool? {
     
     func det(_ x0: Double, _ y0: Double, _ z0: Double,
