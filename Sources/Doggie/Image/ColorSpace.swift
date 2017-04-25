@@ -48,9 +48,7 @@ public protocol LinearColorSpaceProtocol : ColorSpaceProtocol {
     
     associatedtype Model : ColorVectorConvertible
     
-    associatedtype TransferMatrix : MatrixProtocol
-    
-    var transferMatrix: TransferMatrix { get }
+    var transferMatrix: Matrix { get }
 }
 
 extension ColorSpaceProtocol {
@@ -132,7 +130,7 @@ extension LinearColorSpaceProtocol {
     @_inlineable
     public func convert<C : LinearColorSpaceProtocol>(_ color: Model, to other: C, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm = .bradford) -> C.Model {
         let m = self.transferMatrix(to: other, algorithm: algorithm)
-        if m == Matrix.Identity() {
+        if m == Matrix.Identity {
             return C.Model(color.vector)
         }
         return C.Model(color * m)
@@ -150,7 +148,7 @@ extension LinearColorSpaceProtocol {
     @_inlineable
     public func convert<C : LinearColorSpaceProtocol>(_ color: [Model], to other: C, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm = .bradford) -> [C.Model] {
         let m = self.transferMatrix(to: other, algorithm: algorithm)
-        if m == Matrix.Identity() {
+        if m == Matrix.Identity {
             return color.map { C.Model($0.vector) }
         }
         return color.map { C.Model($0 * m) }
@@ -199,8 +197,8 @@ extension CIEXYZColorSpace : LinearColorSpaceProtocol {
     }
     
     @_inlineable
-    public var transferMatrix: Matrix.Identity {
-        return Matrix.Identity()
+    public var transferMatrix: Matrix {
+        return Matrix.Identity
     }
 }
 
@@ -241,7 +239,7 @@ extension CIEXYZColorSpace.ChromaticAdaptationAlgorithm {
     @_inlineable
     var matrix: Matrix {
         switch self {
-        case .xyzScaling: return Matrix(Matrix.Identity())
+        case .xyzScaling: return Matrix.Identity
         case .vonKries: return Matrix(a: 0.4002400, b: 0.7076000, c: -0.0808100, d: 0,
                                       e: -0.2263000, f: 1.1653200, g: 0.0457000, h: 0,
                                       i: 0.0000000, j: 0.0000000, k: 0.9182200, l: 0)

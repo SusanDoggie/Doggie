@@ -47,7 +47,7 @@ protocol ImageBaseProtocol {
     func resampling(s_width: Int, width: Int, height: Int, algorithm: Image.ResamplingAlgorithm) -> ImageBaseProtocol
     
     @_versioned
-    func resampling<T: SDTransformProtocol>(s_width: Int, width: Int, height: Int, transform: T, algorithm: Image.ResamplingAlgorithm) -> ImageBaseProtocol
+    func resampling(s_width: Int, width: Int, height: Int, transform: SDTransform, algorithm: Image.ResamplingAlgorithm) -> ImageBaseProtocol
     
     @_versioned
     mutating func withUnsafeMutableBytes<R>(_ body: (UnsafeMutableRawBufferPointer) throws -> R) rethrows -> R
@@ -124,9 +124,9 @@ struct ImageBase<ColorPixel: ColorPixelProtocol, ColorSpace : ColorSpaceProtocol
     }
     @_versioned
     @_inlineable
-    func resampling<T: SDTransformProtocol>(s_width: Int, width: Int, height: Int, transform: T, algorithm: Image.ResamplingAlgorithm) -> ImageBaseProtocol {
+    func resampling(s_width: Int, width: Int, height: Int, transform: SDTransform, algorithm: Image.ResamplingAlgorithm) -> ImageBaseProtocol {
         
-        return ImageBase(buffer: algorithm.calculate(source: self.buffer, s_width: s_width, width: width, height: height, transform: SDTransform(transform.inverse)), colorSpace: self.colorSpace, algorithm: self.algorithm)
+        return ImageBase(buffer: algorithm.calculate(source: self.buffer, s_width: s_width, width: width, height: height, transform: transform.inverse), colorSpace: self.colorSpace, algorithm: self.algorithm)
     }
     
     @_versioned
@@ -159,7 +159,7 @@ public struct Image {
     }
     
     @_inlineable
-    public init<T: SDTransformProtocol>(image: Image, width: Int, height: Int, transform: T, resampling algorithm: ResamplingAlgorithm = .linear) {
+    public init(image: Image, width: Int, height: Int, transform: SDTransform, resampling algorithm: ResamplingAlgorithm = .linear) {
         self.width = width
         self.height = height
         self.base = image.base.resampling(s_width: image.width, width: width, height: height, transform: transform, algorithm: algorithm)

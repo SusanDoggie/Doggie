@@ -89,7 +89,7 @@ extension Rect {
     
     public extension AffineTransform {
         
-        init<T: SDTransformProtocol>(_ transform: T) {
+        init(_ transform: SDTransform) {
             self.m11 = CGFloat(transform.a)
             self.m12 = CGFloat(transform.d)
             self.m21 = CGFloat(transform.b)
@@ -221,7 +221,7 @@ extension Rect {
     
     extension CGAffineTransform {
         
-        public init<T: SDTransformProtocol>(_ m: T) {
+        public init(_ m: SDTransform) {
             self.a = CGFloat(m.a)
             self.b = CGFloat(m.d)
             self.c = CGFloat(m.b)

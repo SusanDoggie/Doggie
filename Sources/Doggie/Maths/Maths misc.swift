@@ -107,7 +107,7 @@ extension Radius {
     }
 }
 
-extension SDTransformProtocol {
+extension SDTransform {
     
     @_inlineable
     public func almostZero(epsilon: Double = Double.defaultAlmostEqualEpsilon, reference: Double = 0) -> Bool {
@@ -121,7 +121,7 @@ extension SDTransformProtocol {
     }
     
     @_inlineable
-    public func almostEqual<T : SDTransformProtocol>(_ other: T, epsilon: Double = Double.defaultAlmostEqualEpsilon) -> Bool {
+    public func almostEqual(_ other: SDTransform, epsilon: Double = Double.defaultAlmostEqualEpsilon) -> Bool {
         
         return self.a.almostEqual(other.a, epsilon: epsilon)
             && self.b.almostEqual(other.b, epsilon: epsilon)
@@ -132,7 +132,7 @@ extension SDTransformProtocol {
     }
 }
 
-extension MatrixProtocol {
+extension Matrix {
     
     @_inlineable
     public func almostZero(epsilon: Double = Double.defaultAlmostEqualEpsilon, reference: Double = 0) -> Bool {
@@ -152,7 +152,7 @@ extension MatrixProtocol {
     }
     
     @_inlineable
-    public func almostEqual<T : MatrixProtocol>(_ other: T, epsilon: Double = Double.defaultAlmostEqualEpsilon) -> Bool {
+    public func almostEqual(_ other: Matrix, epsilon: Double = Double.defaultAlmostEqualEpsilon) -> Bool {
         
         return self.a.almostEqual(other.a, epsilon: epsilon)
             && self.b.almostEqual(other.b, epsilon: epsilon)

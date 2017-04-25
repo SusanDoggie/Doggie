@@ -197,12 +197,12 @@ extension ColorVectorConvertible {
 }
 
 @_inlineable
-public func * <C: ColorVectorConvertible, T: MatrixProtocol>(lhs: C, rhs: T) -> Vector {
+public func * <C: ColorVectorConvertible>(lhs: C, rhs: Matrix) -> Vector {
     return lhs.vector * rhs
 }
 
 @_inlineable
-public func *= <C: ColorVectorConvertible, T: MatrixProtocol>(lhs: inout C, rhs: T) {
+public func *= <C: ColorVectorConvertible>(lhs: inout C, rhs: Matrix) {
     lhs.vector *= rhs
 }
 

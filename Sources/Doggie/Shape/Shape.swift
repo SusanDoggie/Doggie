@@ -62,7 +62,7 @@ public struct Shape : RandomAccessCollection, MutableCollection, ExpressibleByAr
     
     fileprivate var components: [Component]
     
-    public var baseTransform : SDTransform = SDTransform(SDTransform.Identity()) {
+    public var baseTransform : SDTransform = SDTransform.Identity {
         willSet {
             if baseTransform != newValue {
                 cache = Cache(originalBoundary: cache.originalBoundary, boundary: nil, table: cache.table)
@@ -535,12 +535,12 @@ extension Shape : RangeReplaceableCollection {
 extension Shape {
     
     public var identity : Shape {
-        if rotate == 0 && scale == 1 && baseTransform == SDTransform.Identity() {
+        if rotate == 0 && scale == 1 && baseTransform == SDTransform.Identity {
             return self
         }
         if cache.identity == nil {
             let transform = self.transform
-            if transform == SDTransform.Identity() {
+            if transform == SDTransform.Identity {
                 let _path = Shape(self.components)
                 _path.cache.originalBoundary = cache.originalBoundary
                 _path.cache.boundary = cache.boundary
@@ -554,7 +554,7 @@ extension Shape {
     }
 }
 
-public func * <T: SDTransformProtocol>(lhs: Shape.Component, rhs: T) -> Shape.Component {
+public func * (lhs: Shape.Component, rhs: SDTransform) -> Shape.Component {
     return Shape.Component(start: lhs.start * rhs, closed: lhs.isClosed, segments: lhs.segments.map {
         switch $0 {
         case let .line(p1): return .line(p1 * rhs)
@@ -563,6 +563,6 @@ public func * <T: SDTransformProtocol>(lhs: Shape.Component, rhs: T) -> Shape.Co
         }
     })
 }
-public func *= <T: SDTransformProtocol>(lhs: inout Shape.Component, rhs: T) {
+public func *= (lhs: inout Shape.Component, rhs: SDTransform) {
     lhs = lhs * rhs
 }

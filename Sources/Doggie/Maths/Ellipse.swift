@@ -148,7 +148,7 @@ public func EllipseStationary(_ r: Radius, _ a: Double, _ b: Double) -> Double {
 ///     ⎝ 0 0 1 ⎠ ⎝    1     ⎠
 ///
 @_inlineable
-public func EllipseBound<T: SDTransformProtocol>(_ center: Point, _ r: Radius, _ matrix: T) -> Rect {
+public func EllipseBound(_ center: Point, _ r: Radius, _ matrix: SDTransform) -> Rect {
     
     let t1 = EllipseStationary(r, matrix.a, matrix.b)
     let t2 = EllipseStationary(r, matrix.d, matrix.e)
