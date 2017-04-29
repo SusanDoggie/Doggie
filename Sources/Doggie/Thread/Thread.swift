@@ -1,5 +1,5 @@
 //
-//  SDThread.swift
+//  Thread.swift
 //
 //  The MIT License
 //  Copyright (c) 2015 - 2017 Susan Cheng. All rights reserved.
@@ -26,7 +26,7 @@
 import Foundation
 import Dispatch
 
-// MARK: SDAtomic
+// MARK: Trigger
 
 private let SDDefaultDispatchQueue: DispatchQueue = {
     if #available(OSX 10.12, iOS 10.0, tvOS 10.0, watchOS 3.0, *) {
@@ -36,16 +36,16 @@ private let SDDefaultDispatchQueue: DispatchQueue = {
     }
 }()
 
-open class SDAtomic {
+open class Trigger {
     
     fileprivate let queue: DispatchQueue
-    fileprivate let block: (SDAtomic) -> Void
+    fileprivate let block: (Trigger) -> Void
     fileprivate var flag: Int8
     
     public var qos: DispatchQoS
     public var flags: DispatchWorkItemFlags
     
-    public init(queue: DispatchQueue = SDDefaultDispatchQueue, qos: DispatchQoS = .unspecified, flags: DispatchWorkItemFlags = [], block: @escaping (SDAtomic) -> Void) {
+    public init(queue: DispatchQueue = SDDefaultDispatchQueue, qos: DispatchQoS = .unspecified, flags: DispatchWorkItemFlags = [], block: @escaping (Trigger) -> Void) {
         self.queue = queue
         self.block = block
         self.flag = 0
@@ -54,7 +54,7 @@ open class SDAtomic {
     }
 }
 
-extension SDAtomic {
+extension Trigger {
     
     public func signal() {
         if flag.fetchStore(2) == 0 {

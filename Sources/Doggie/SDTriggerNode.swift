@@ -1,5 +1,5 @@
 //
-//  SDAtomicNode.swift
+//  SDTriggerNode.swift
 //
 //  The MIT License
 //  Copyright (c) 2015 - 2017 Susan Cheng. All rights reserved.
@@ -23,11 +23,11 @@
 //  THE SOFTWARE.
 //
 
-open class SDAtomicGraph<Value> : Collection {
+open class SDTriggerGraph<Value> : Collection {
     
-    public typealias Index = SDAtomicGraphIndex<Value>
-    public typealias Iterator = SDAtomicGraphIterator<Value>
-    public typealias NodeID = SDAtomicNode.Identifier
+    public typealias Index = SDTriggerGraphIndex<Value>
+    public typealias Iterator = SDTriggerGraphIterator<Value>
+    public typealias NodeID = SDTriggerNode.Identifier
     
     fileprivate var graph: Graph<NodeID, Value>
     fileprivate let lck: SDLock
@@ -106,23 +106,23 @@ open class SDAtomicGraph<Value> : Collection {
     }
 }
 
-public struct SDAtomicGraphIndex<Value> : Comparable {
+public struct SDTriggerGraphIndex<Value> : Comparable {
     
-    public typealias NodeID = SDAtomicNode.Identifier
+    public typealias NodeID = SDTriggerNode.Identifier
     
     fileprivate let base: Graph<NodeID, Value>.Index
 }
 
-public func == <Value>(lhs: SDAtomicGraphIndex<Value>, rhs: SDAtomicGraphIndex<Value>) -> Bool {
+public func == <Value>(lhs: SDTriggerGraphIndex<Value>, rhs: SDTriggerGraphIndex<Value>) -> Bool {
     return lhs.base == rhs.base
 }
-public func < <Value>(lhs: SDAtomicGraphIndex<Value>, rhs: SDAtomicGraphIndex<Value>) -> Bool {
+public func < <Value>(lhs: SDTriggerGraphIndex<Value>, rhs: SDTriggerGraphIndex<Value>) -> Bool {
     return lhs.base < rhs.base
 }
 
-public struct SDAtomicGraphIterator<Value> : IteratorProtocol, Sequence {
+public struct SDTriggerGraphIterator<Value> : IteratorProtocol, Sequence {
     
-    public typealias NodeID = SDAtomicNode.Identifier
+    public typealias NodeID = SDTriggerNode.Identifier
     
     fileprivate var base: Graph<NodeID, Value>.Iterator
     
@@ -131,7 +131,7 @@ public struct SDAtomicGraphIterator<Value> : IteratorProtocol, Sequence {
     }
 }
 
-open class SDAtomicNode : SDAtomic {
+open class SDTriggerNode : Trigger {
     
     fileprivate let graphID: ObjectIdentifier
     
@@ -143,38 +143,38 @@ open class SDAtomicNode : SDAtomic {
         }
     }
     
-    public var callback: ((SDAtomicNode) -> Void)?
+    public var callback: ((SDTriggerNode) -> Void)?
     
-    public init<Value>(graph: SDAtomicGraph<Value>) {
+    public init<Value>(graph: SDTriggerGraph<Value>) {
         self.graphID = graph.identifier
         super.init {
-            if let _self = $0 as? SDAtomicNode, _self.activate {
+            if let _self = $0 as? SDTriggerNode, _self.activate {
                 _self.callback?(_self)
             }
         }
     }
-    public init<Value>(graph: SDAtomicGraph<Value>, callback: @escaping (SDAtomicNode) -> Void) {
+    public init<Value>(graph: SDTriggerGraph<Value>, callback: @escaping (SDTriggerNode) -> Void) {
         self.graphID = graph.identifier
         self.callback = callback
         super.init {
-            if let _self = $0 as? SDAtomicNode, _self.activate {
+            if let _self = $0 as? SDTriggerNode, _self.activate {
                 _self.callback?(_self)
             }
         }
     }
 }
 
-// MARK: SDAtomicNode Identifier
+// MARK: SDTriggerNode Identifier
 
-extension SDAtomicNode : Hashable {
+extension SDTriggerNode : Hashable {
     
     public struct Identifier : Hashable {
         
         fileprivate let graphID: ObjectIdentifier
         fileprivate let nodeID: ObjectIdentifier
-        fileprivate weak var _node: SDAtomicNode?
+        fileprivate weak var _node: SDTriggerNode?
         
-        public init(node: SDAtomicNode) {
+        public init(node: SDTriggerNode) {
             graphID = node.graphID
             nodeID = ObjectIdentifier(node)
             _node = node
@@ -194,7 +194,7 @@ extension SDAtomicNode : Hashable {
     }
 }
 
-extension SDAtomicNode.Identifier {
+extension SDTriggerNode.Identifier {
     
     public func signal() {
         _node?.signal()
@@ -203,10 +203,10 @@ extension SDAtomicNode.Identifier {
 
 // MARK: -
 
-public func == (lhs: SDAtomicNode.Identifier, rhs: SDAtomicNode.Identifier) -> Bool {
+public func == (lhs: SDTriggerNode.Identifier, rhs: SDTriggerNode.Identifier) -> Bool {
     return lhs.nodeID == rhs.nodeID
 }
 
-public func == (lhs: SDAtomicNode, rhs: SDAtomicNode) -> Bool {
+public func == (lhs: SDTriggerNode, rhs: SDTriggerNode) -> Bool {
     return lhs.identifier == rhs.identifier
 }
