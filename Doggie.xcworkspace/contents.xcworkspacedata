@@ -14,6 +14,9 @@
          location = "group:Doggie.playground">
       </FileRef>
       <FileRef
+         location = "group:Graph.playground">
+      </FileRef>
+      <FileRef
          location = "group:Image.playground">
       </FileRef>
       <FileRef

@@ -101,10 +101,31 @@ public struct Graph<Node : Hashable, Link> : Collection {
         return linkValue(from: fromNode, to: toNode) != nil
     }
     
+    /// Return `true` iff it has link between two nodes.
+    ///
+    /// - complexity: Amortized O(1)
+    @_inlineable
+    public func isLinked(between lhs: Node, _ rhs: Node) -> Bool {
+        if lhs == rhs {
+            return isLinked(from: lhs, to: rhs)
+        }
+        return isLinked(from: lhs, to: rhs) || isLinked(from: rhs, to: lhs)
+    }
+    
     /// - complexity: Amortized O(1)
     @_inlineable
     public func linkValue(from fromNode: Node, to toNode: Node) -> Link? {
         return table[fromNode]?[toNode]
+    }
+    
+    /// - complexity: Amortized O(1)
+    @_inlineable
+    public func linkValues(between lhs: Node, _ rhs: Node) -> (Link?, Link?) {
+        if lhs == rhs {
+            let value = linkValue(from: lhs, to: rhs)
+            return (value, value)
+        }
+        return (linkValue(from: lhs, to: rhs), linkValue(from: rhs, to: lhs))
     }
     
     /// - complexity: Amortized O(1)
@@ -134,6 +155,17 @@ public struct Graph<Node : Hashable, Link> : Collection {
         return nil
     }
     
+    /// - complexity: Amortized O(1)
+    @discardableResult
+    @_inlineable
+    public mutating func removeLinks(between lhs: Node, _ rhs: Node) -> (Link?, Link?) {
+        if lhs == rhs {
+            let value = removeLink(from: lhs, to: rhs)
+            return (value, value)
+        }
+        return (removeLink(from: lhs, to: rhs), removeLink(from: rhs, to: lhs))
+    }
+    
     /// `true` iff `self` contains `node`.
     ///
     /// - complexity: O(`count of nodes`).
@@ -159,8 +191,7 @@ public struct Graph<Node : Hashable, Link> : Collection {
     @_inlineable
     public mutating func removeNode(_ node: Node) {
         table[node] = nil
-        for (fromNode, var list) in table {
-            list.removeValue(forKey: node)
+        for (fromNode, var list) in table where list.removeValue(forKey: node) != nil {
             if list.count != 0 {
                 table.updateValue(list, forKey: fromNode)
             } else {
@@ -237,10 +268,24 @@ extension Graph where Node == AnyHashable {
         return self.isLinked(from: AnyHashable(fromNode), to: AnyHashable(toNode))
     }
     
+    /// Return `true` iff it has link between two nodes.
+    ///
+    /// - complexity: Amortized O(1)
+    @_inlineable
+    public func isLinked<ConcreteElement : Hashable>(between node1: ConcreteElement, _ node2: ConcreteElement) -> Bool {
+        return self.isLinked(between: AnyHashable(node1), AnyHashable(node2))
+    }
+    
     /// - complexity: Amortized O(1)
     @_inlineable
     public func linkValue<ConcreteElement : Hashable>(from fromNode: ConcreteElement, to toNode: ConcreteElement) -> Link? {
         return self.linkValue(from: AnyHashable(fromNode), to: AnyHashable(toNode))
+    }
+    
+    /// - complexity: Amortized O(1)
+    @_inlineable
+    public func linkValues<ConcreteElement : Hashable>(between node1: ConcreteElement, _ node2: ConcreteElement) -> (Link?, Link?) {
+        return self.linkValues(between: AnyHashable(node1), AnyHashable(node2))
     }
     
     /// - complexity: Amortized O(1)
@@ -255,6 +300,13 @@ extension Graph where Node == AnyHashable {
     @_inlineable
     public mutating func removeLink<ConcreteElement : Hashable>(from fromNode: ConcreteElement, to toNode: ConcreteElement) -> Link? {
         return self.removeLink(from: AnyHashable(fromNode), to: AnyHashable(toNode))
+    }
+    
+    /// - complexity: Amortized O(1)
+    @discardableResult
+    @_inlineable
+    public mutating func removeLinks<ConcreteElement : Hashable>(between node1: ConcreteElement, _ node2: ConcreteElement) -> (Link?, Link?) {
+        return self.removeLinks(between: AnyHashable(node1), AnyHashable(node2))
     }
     
     /// `true` iff `self` contains `node`.
@@ -349,259 +401,5 @@ extension GraphIterator: CustomStringConvertible {
     @_inlineable
     public var description: String {
         return "GraphIterator"
-    }
-}
-
-@_fixed_layout
-public struct UndirectedGraph<Node : Hashable, Link> : Collection {
-    
-    public typealias Iterator = UndirectedGraphIterator<Node, Link>
-    
-    @_versioned
-    var graph: Graph<Node, Link>
-    
-    /// Create an empty graph.
-    @_inlineable
-    public init() {
-        graph = Graph()
-    }
-    
-    @_inlineable
-    public var count: Int {
-        return graph.count
-    }
-    
-    @_inlineable
-    public func makeIterator() -> Iterator {
-        return Iterator(base: graph.makeIterator())
-    }
-    
-    @_inlineable
-    public var startIndex: UndirectedGraphIndex<Node, Link> {
-        return UndirectedGraphIndex(base: graph.startIndex)
-    }
-    
-    @_inlineable
-    public var endIndex: UndirectedGraphIndex<Node, Link> {
-        return UndirectedGraphIndex(base: graph.endIndex)
-    }
-    
-    @_inlineable
-    public func index(after i: UndirectedGraphIndex<Node, Link>) -> UndirectedGraphIndex<Node, Link> {
-        return UndirectedGraphIndex(base: graph.index(after: i.base))
-    }
-    
-    public subscript(position: UndirectedGraphIndex<Node, Link>) -> Iterator.Element {
-        return graph[position.base]
-    }
-    
-    /// - complexity: Amortized O(1)
-    public subscript(fromNode: Node, toNode: Node) -> Link? {
-        get {
-            return linkValue(fromNode, toNode)
-        }
-        set {
-            if newValue != nil {
-                updateLink(fromNode, toNode, with: newValue!)
-            } else {
-                removeLink(fromNode, toNode)
-            }
-        }
-    }
-    
-    /// Return `true` iff it has link with `fromNode` and `toNode`.
-    ///
-    /// - complexity: Amortized O(1)
-
-    @_inlineable
-    public func isLinked(_ fromNode: Node, _ toNode: Node) -> Bool {
-        return linkValue(fromNode, toNode) != nil
-    }
-    
-    /// - complexity: Amortized O(1)
-
-    @_inlineable
-    public func linkValue(_ fromNode: Node, _ toNode: Node) -> Link? {
-        return graph.linkValue(from: fromNode, to: toNode) ?? graph.linkValue(from: toNode, to: fromNode)
-    }
-    
-    /// - complexity: Amortized O(1)
-    @discardableResult
-    @_inlineable
-    public mutating func updateLink(_ fromNode: Node, _ toNode: Node, with link: Link) -> Link? {
-        return graph.updateLink(from: fromNode, to: toNode, with: link) ?? (fromNode != toNode ? graph.removeLink(from: toNode, to: fromNode) : nil)
-    }
-    
-    /// - complexity: Amortized O(1)
-    @discardableResult
-    @_inlineable
-    public mutating func removeLink(_ fromNode: Node, _ toNode: Node) -> Link? {
-        return graph.removeLink(from: fromNode, to: toNode) ?? graph.removeLink(from: toNode, to: fromNode)
-    }
-    
-    /// `true` iff `self` contains `node`.
-    ///
-    /// - complexity: O(`count of nodes`).
-    @_inlineable
-    public func contains(_ node: Node) -> Bool {
-        return graph.contains(node)
-    }
-    
-    /// `true` iff `count == 0`.
-    @_inlineable
-    public var isEmpty: Bool {
-        return graph.isEmpty
-    }
-    
-    /// Remove a node with all connections with it.
-    ///
-    /// - complexity: O(`count of nodes`).
-    @_inlineable
-    public mutating func removeNode(_ node: Node) {
-        graph.removeNode(node)
-    }
-    
-    /// Remove all elements.
-    ///
-    /// - parameter keepingCapacity: If `true`, the operation preserves the
-    ///   storage capacity that the collection has, otherwise the underlying
-    ///   storage is released.  The default is `false`.
-    ///
-    /// - complexity: O(`count of nodes`).
-    @_inlineable
-    public mutating func removeAll(keepingCapacity: Bool = false) {
-        graph.removeAll(keepingCapacity: keepingCapacity)
-    }
-    
-    /// A collection containing just the links of `self`.
-    @_inlineable
-    public var links: LazyMapCollection<UndirectedGraph<Node, Link>, Link> {
-        return self.lazy.map { $0.2 }
-    }
-    
-    /// A set containing just the nodes of `self`.
-    ///
-    /// - complexity: O(`count of nodes`).
-    @_inlineable
-    public var nodes: Set<Node> {
-        return graph.nodes
-    }
-    
-    /// A collection of nodes which has connection with `nearNode`.
-    @_inlineable
-    public func nodes(near nearNode: Node) -> AnyCollection<(Node, Link)> {
-        return AnyCollection(graph.nodes(from: nearNode).concat(graph.table.lazy.flatMap { from, to in from != nearNode ? to[nearNode].map { (from, $0) } : nil }))
-    }
-}
-
-extension UndirectedGraph: CustomStringConvertible {
-    
-    @_inlineable
-    public var description: String {
-        return "[\(self.map { "(\($0.0), \($0.1)): \($0.2)" }.joined(separator: ", "))]"
-    }
-}
-
-extension UndirectedGraph where Node == AnyHashable {
-    
-    /// Return `true` iff it has link from `fromNode` to `toNode`.
-    ///
-    /// - complexity: Amortized O(1)
-    @_inlineable
-    public func isLinked<ConcreteElement : Hashable>(from fromNode: ConcreteElement, to toNode: ConcreteElement) -> Bool {
-        return self.isLinked(from: AnyHashable(fromNode), to: AnyHashable(toNode))
-    }
-    
-    /// - complexity: Amortized O(1)
-    @_inlineable
-    public func linkValue<ConcreteElement : Hashable>(from fromNode: ConcreteElement, to toNode: ConcreteElement) -> Link? {
-        return self.linkValue(from: AnyHashable(fromNode), to: AnyHashable(toNode))
-    }
-    
-    /// - complexity: Amortized O(1)
-    @discardableResult
-    @_inlineable
-    public mutating func updateLink<ConcreteElement : Hashable>(from fromNode: ConcreteElement, to toNode: ConcreteElement, with link: Link) -> Link? {
-        return self.updateLink(from: AnyHashable(fromNode), to: AnyHashable(toNode), with: link)
-    }
-    
-    /// - complexity: Amortized O(1)
-    @discardableResult
-    @_inlineable
-    public mutating func removeLink<ConcreteElement : Hashable>(from fromNode: ConcreteElement, to toNode: ConcreteElement) -> Link? {
-        return self.removeLink(from: AnyHashable(fromNode), to: AnyHashable(toNode))
-    }
-    
-    /// `true` iff `self` contains `node`.
-    ///
-    /// - complexity: O(`count of nodes`).
-    @_inlineable
-    public func contains<ConcreteElement : Hashable>(_ node: ConcreteElement) -> Bool {
-        return self.contains(AnyHashable(node))
-    }
-    
-    /// Remove a node with all connections with it.
-    ///
-    /// - complexity: O(`count of nodes`).
-    @_inlineable
-    public mutating func removeNode<ConcreteElement : Hashable>(_ node: ConcreteElement) {
-        self.removeNode(AnyHashable(node))
-    }
-    /// A set of nodes which has connection with `nearNode`.
-
-    @_inlineable
-    public func nodes<ConcreteElement : Hashable>(near nearNode: ConcreteElement) -> AnyCollection<(Node, Link)> {
-        return self.nodes(near: AnyHashable(nearNode))
-    }
-}
-
-@_fixed_layout
-public struct UndirectedGraphIndex<Node : Hashable, Link> : Comparable {
-    
-    @_versioned
-    let base: Graph<Node, Link>.Index
-    
-    @_versioned
-    @_inlineable
-    init(base: Graph<Node, Link>.Index) {
-        self.base = base
-    }
-    
-}
-
-@_inlineable
-public func == <Node, Link>(lhs: UndirectedGraphIndex<Node, Link>, rhs: UndirectedGraphIndex<Node, Link>) -> Bool {
-    return lhs.base == rhs.base
-}
-@_inlineable
-public func < <Node, Link>(lhs: UndirectedGraphIndex<Node, Link>, rhs: UndirectedGraphIndex<Node, Link>) -> Bool {
-    return lhs.base < rhs.base
-}
-
-@_fixed_layout
-public struct UndirectedGraphIterator<Node : Hashable, Link> : IteratorProtocol, Sequence {
-    
-    public typealias Element = (Node, Node, Link)
-    
-    @_versioned
-    var base: Graph<Node, Link>.Iterator
-    
-    @_versioned
-    @_inlineable
-    init(base: Graph<Node, Link>.Iterator) {
-        self.base = base
-    }
-    
-    @_inlineable
-    public mutating func next() -> Element? {
-        return base.next()
-    }
-}
-
-extension UndirectedGraphIterator: CustomStringConvertible {
-    
-    @_inlineable
-    public var description: String {
-        return "UndirectedGraphIterator"
     }
 }
