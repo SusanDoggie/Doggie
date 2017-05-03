@@ -196,16 +196,6 @@ extension ColorVectorConvertible {
     }
 }
 
-@_inlineable
-public func * <C: ColorVectorConvertible>(lhs: C, rhs: Matrix) -> Vector {
-    return lhs.vector * rhs
-}
-
-@_inlineable
-public func *= <C: ColorVectorConvertible>(lhs: inout C, rhs: Matrix) {
-    lhs.vector *= rhs
-}
-
 public struct RGBColorModel : ColorModelProtocol {
     
     @_inlineable
