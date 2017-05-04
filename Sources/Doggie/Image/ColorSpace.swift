@@ -137,11 +137,6 @@ extension CIEXYZColorSpace {
     public func convertFromXYZ(_ color: XYZColorModel) -> Model {
         return color
     }
-    
-    @_inlineable
-    public var transferMatrix: Matrix {
-        return Matrix.Identity
-    }
 }
 
 extension CIEXYZColorSpace {
