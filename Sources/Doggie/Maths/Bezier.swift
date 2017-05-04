@@ -783,7 +783,7 @@ public func QuadBezierFitting(_ p: [Point]) -> [[Point]] {
     return QuadBezierFitting(p, 3, true)
 }
 
-public func CubicBezierFitting(_ p0: Point, _ p3: Point, _ m0: Point, _ m1: Point, _ points: [(Double, Point)]) -> (Point, Point)? {
+public func CubicBezierFitting(_ p0: Point, _ p3: Point, _ m0: Point, _ m1: Point, _ points: [(Double, Point)]) -> (Double, Double)? {
     
     var _a1 = 0.0
     var _b1 = 0.0
@@ -825,12 +825,12 @@ public func CubicBezierFitting(_ p0: Point, _ p3: Point, _ m0: Point, _ m1: Poin
     
     let _t = 1 / t
     
-    let u = (_c1 * _b2 - _c2 * _b1) * _t
-    let v = (_c2 * _a1 - _c1 * _a2) * _t
+    let u = (_c2 * _b1 - _c1 * _b2) * _t
+    let v = (_c1 * _a2 - _c2 * _a1) * _t
     
-    return (abs(u) * m0 + p0, abs(v) * m1 + p3)
+    return (u, v)
 }
-public func CubicBezierFitting(_ p0: Point, _ p3: Point, _ m0: Point, _ m1: Point, _ points: [Point]) -> (Point, Point)? {
+public func CubicBezierFitting(_ p0: Point, _ p3: Point, _ m0: Point, _ m1: Point, _ points: [Point]) -> (Double, Double)? {
     
     let ds = zip(CollectionOfOne(p0).concat(points), points).map { ($0 - $1).magnitude }
     let dt = zip(points, points.dropFirst().concat(CollectionOfOne(p3))).map { ($0 - $1).magnitude }
@@ -1000,7 +1000,7 @@ private func _BezierOffset(_ p0: Point, _ p1: Point, _ p2: Point, _ a: Double, _
             } else {
                 let m = Bezier(q0, q1).eval(0.5).unit
                 let _mid = Bezier(p0, p1, p2).eval(0.5) + Point(x: a * m.y, y: -a * m.x)
-                return CubicBezierFitting(start, end, q0, -q1, [_mid]).map { [[start, $0, $1, end]] } ?? [[start, 2 * (_mid - 0.25 * (start + end)), end]]
+                return CubicBezierFitting(start, end, q0, -q1, [_mid]).map { [[start, start + abs($0) * q0, end - abs($1) * q1, end]] } ?? [[start, 2 * (_mid - 0.25 * (start + end)), end]]
             }
         }
         return [[start, mid, end]]
