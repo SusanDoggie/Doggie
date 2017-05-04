@@ -505,6 +505,16 @@ public class CalibratedGrayColorSpace : ColorSpaceProtocol {
     public init(_ cieXYZ: CIEXYZColorSpace) {
         self.cieXYZ = cieXYZ
     }
+    
+    @_inlineable
+    public func convertToLinear(_ color: Model) -> Model {
+        return color
+    }
+    
+    @_inlineable
+    public func convertFromLinear(_ color: Model) -> Model {
+        return color
+    }
 }
 
 extension CalibratedGrayColorSpace {
