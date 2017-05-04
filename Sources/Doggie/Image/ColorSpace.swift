@@ -487,3 +487,38 @@ extension CalibratedRGBColorSpace {
     
 }
 
+public class CalibratedGrayColorSpace : ColorSpaceProtocol {
+    
+    public typealias Model = GrayColorModel
+    
+    public let cieXYZ: CIEXYZColorSpace
+    
+    @_inlineable
+    public init(white: Point) {
+        self.cieXYZ = CIEXYZColorSpace(white: white)
+    }
+    @_inlineable
+    public init(white: XYZColorModel, black: XYZColorModel) {
+        self.cieXYZ = CIEXYZColorSpace(white: white, black: black)
+    }
+    @_inlineable
+    public init(_ cieXYZ: CIEXYZColorSpace) {
+        self.cieXYZ = cieXYZ
+    }
+}
+
+extension CalibratedGrayColorSpace {
+    
+    @_inlineable
+    public func convertLinearToXYZ(_ color: Model) -> XYZColorModel {
+        let normalizeMatrix = cieXYZ.normalizeMatrix
+        let _white = white * normalizeMatrix
+        return XYZColorModel(luminance: color.white, point: _white.point) * normalizeMatrix.inverse
+    }
+    
+    @_inlineable
+    public func convertLinearFromXYZ(_ color: XYZColorModel) -> Model {
+        let normalized = color * cieXYZ.normalizeMatrix
+        return Model(white: normalized.luminance)
+    }
+}
