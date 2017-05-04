@@ -41,9 +41,6 @@ protocol ImageBaseProtocol {
     func convert<RPixel: ColorPixelProtocol, RSpace : ColorSpaceProtocol>(pixel: RPixel.Type, colorSpace: RSpace, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm) -> ImageBaseProtocol where RPixel.Model == RSpace.Model
     
     @_versioned
-    func convert<RPixel: ColorPixelProtocol, RSpace : LinearColorSpaceProtocol>(pixel: RPixel.Type, colorSpace: RSpace, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm) -> ImageBaseProtocol where RPixel.Model == RSpace.Model
-    
-    @_versioned
     func resampling(s_width: Int, width: Int, height: Int, algorithm: Image.ResamplingAlgorithm) -> ImageBaseProtocol
     
     @_versioned
@@ -105,15 +102,7 @@ struct ImageBase<ColorPixel: ColorPixelProtocol, ColorSpace : ColorSpaceProtocol
     @_versioned
     @_inlineable
     func convert<RPixel: ColorPixelProtocol, RSpace : ColorSpaceProtocol>(pixel: RPixel.Type, colorSpace: RSpace, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm) -> ImageBaseProtocol where RPixel.Model == RSpace.Model {
-        let _buffer = zip(self.colorSpace.convert(buffer.map { $0.color }, to: colorSpace, algorithm: algorithm), buffer).map { RPixel(color: $0, opacity: $1.opacity) }
-        return ImageBase<RPixel, RSpace>(buffer: _buffer, colorSpace: colorSpace, algorithm: algorithm)
-    }
-    
-    @_versioned
-    @_inlineable
-    func convert<RPixel: ColorPixelProtocol, RSpace : LinearColorSpaceProtocol>(pixel: RPixel.Type, colorSpace: RSpace, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm) -> ImageBaseProtocol where RPixel.Model == RSpace.Model {
-        let _buffer = zip(self.colorSpace.convert(buffer.map { $0.color }, to: colorSpace, algorithm: algorithm), buffer).map { RPixel(color: $0, opacity: $1.opacity) }
-        return ImageBase<RPixel, RSpace>(buffer: _buffer, colorSpace: colorSpace, algorithm: algorithm)
+        return ImageBase<RPixel, RSpace>(buffer: buffer.map { RPixel(color: self.colorSpace.convert($0.color, to: colorSpace, algorithm: algorithm), opacity: $0.opacity) }, colorSpace: colorSpace, algorithm: algorithm)
     }
     
     @_versioned
@@ -174,13 +163,6 @@ public struct Image {
     
     @_inlineable
     public init<ColorPixel: ColorPixelProtocol, ColorSpace : ColorSpaceProtocol>(image: Image, pixel: ColorPixel.Type, colorSpace: ColorSpace, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm = .bradford) where ColorPixel.Model == ColorSpace.Model {
-        self.width = image.width
-        self.height = image.height
-        self.base = image.base.convert(pixel: pixel, colorSpace: colorSpace, algorithm: algorithm)
-    }
-    
-    @_inlineable
-    public init<ColorPixel: ColorPixelProtocol, ColorSpace : LinearColorSpaceProtocol>(image: Image, pixel: ColorPixel.Type, colorSpace: ColorSpace, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm = .bradford) where ColorPixel.Model == ColorSpace.Model {
         self.width = image.width
         self.height = image.height
         self.base = image.base.convert(pixel: pixel, colorSpace: colorSpace, algorithm: algorithm)

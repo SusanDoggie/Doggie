@@ -31,32 +31,39 @@ public protocol ColorSpaceProtocol {
     
     var cieXYZ: CIEXYZColorSpace { get }
     
+    var white: XYZColorModel { get }
+    
+    var black: XYZColorModel { get }
+    
     func convertToLinear(_ color: Model) -> Model
     
     func convertFromLinear(_ color: Model) -> Model
+    
+    func convertLinearToXYZ(_ color: Model) -> XYZColorModel
+    
+    func convertLinearFromXYZ(_ color: XYZColorModel) -> Model
     
     func convertToXYZ(_ color: Model) -> XYZColorModel
     
     func convertFromXYZ(_ color: XYZColorModel) -> Model
     
     func convert<C : ColorSpaceProtocol>(_ color: Model, to other: C, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm) -> C.Model
-    
-    func convert<C : LinearColorSpaceProtocol>(_ color: Model, to other: C, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm) -> C.Model
-    
-    func convert<C : ColorSpaceProtocol>(_ color: [Model], to other: C, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm) -> [C.Model]
-    
-    func convert<C : LinearColorSpaceProtocol>(_ color: [Model], to other: C, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm) -> [C.Model]
-}
-
-public protocol LinearColorSpaceProtocol : ColorSpaceProtocol {
-    
-    associatedtype Model : ColorVectorConvertible
-    
-    var transferMatrix: Matrix { get }
 }
 
 extension ColorSpaceProtocol {
     
+    @_inlineable
+    public var white: XYZColorModel {
+        return cieXYZ.white
+    }
+    
+    @_inlineable
+    public var black: XYZColorModel {
+        return cieXYZ.black
+    }
+}
+
+extension ColorSpaceProtocol {
     
     @_inlineable
     public func convertToLinear(_ color: Model) -> Model {
@@ -72,35 +79,13 @@ extension ColorSpaceProtocol {
 extension ColorSpaceProtocol {
     
     @_inlineable
-    public func convertToXYZ(_ color: [Model]) -> [XYZColorModel] {
-        return color.map { self.convertToXYZ($0) }
-    }
-    @_inlineable
-    public func convertFromXYZ(_ color: [XYZColorModel]) -> [Model] {
-        return color.map { self.convertFromXYZ($0) }
-    }
-}
-
-extension LinearColorSpaceProtocol {
-    
-    @_inlineable
     public func convertToXYZ(_ color: Model) -> XYZColorModel {
-        return XYZColorModel(color.vector * transferMatrix)
+        return self.convertLinearToXYZ(self.convertToLinear(color))
     }
+    
     @_inlineable
     public func convertFromXYZ(_ color: XYZColorModel) -> Model {
-        return Model(color.vector * transferMatrix.inverse)
-    }
-    
-    @_inlineable
-    public func convertToXYZ(_ color: [Model]) -> [XYZColorModel] {
-        let transferMatrix = self.transferMatrix
-        return color.map { XYZColorModel($0.vector * transferMatrix) }
-    }
-    @_inlineable
-    public func convertFromXYZ(_ color: [XYZColorModel]) -> [Model] {
-        let transferMatrix = self.transferMatrix.inverse
-        return color.map { Model($0.vector * transferMatrix) }
+        return self.convertFromLinear(self.convertLinearFromXYZ(color))
     }
 }
 
@@ -108,68 +93,7 @@ extension ColorSpaceProtocol {
     
     @_inlineable
     public func convert<C : ColorSpaceProtocol>(_ color: Model, to other: C, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm = .bradford) -> C.Model {
-        let m = self.cieXYZ.transferMatrix(to: other.cieXYZ, algorithm: algorithm)
-        return other.convertFromLinear(other.convertFromXYZ(XYZColorModel(self.convertToXYZ(self.convertToLinear(color)).vector * m)))
-    }
-    
-    @_inlineable
-    public func convert<C : LinearColorSpaceProtocol>(_ color: Model, to other: C, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm = .bradford) -> C.Model {
-        return other.convertFromLinear(C.Model(self.convertToXYZ(self.convertToLinear(color)).vector * self.cieXYZ.transferMatrix(to: other, algorithm: algorithm)))
-    }
-}
-
-extension ColorSpaceProtocol {
-    
-    @_inlineable
-    public func convert<C : ColorSpaceProtocol>(_ color: [Model], to other: C, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm = .bradford) -> [C.Model] {
-        let m = self.cieXYZ.transferMatrix(to: other.cieXYZ, algorithm: algorithm)
-        return color.map { other.convertFromLinear(other.convertFromXYZ(XYZColorModel(self.convertToXYZ(self.convertToLinear($0)).vector * m))) }
-    }
-    
-    @_inlineable
-    public func convert<C : LinearColorSpaceProtocol>(_ color: [Model], to other: C, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm = .bradford) -> [C.Model] {
-        let m = self.cieXYZ.transferMatrix(to: other, algorithm: algorithm)
-        return color.map { other.convertFromLinear(C.Model(self.convertToXYZ(self.convertToLinear($0)).vector * m)) }
-    }
-}
-
-extension LinearColorSpaceProtocol {
-    
-    @_inlineable
-    public func transferMatrix<C : LinearColorSpaceProtocol>(to other: C, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm = .bradford) -> Matrix {
-        return self.transferMatrix * self.cieXYZ.transferMatrix(to: other.cieXYZ, algorithm: algorithm) * other.transferMatrix.inverse
-    }
-    
-    @_inlineable
-    public func convert<C : ColorSpaceProtocol>(_ color: Model, to other: C, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm = .bradford) -> C.Model {
-        return other.convertFromLinear(other.convertFromXYZ(XYZColorModel(self.convertToLinear(color).vector * self.transferMatrix(to: other.cieXYZ, algorithm: algorithm))))
-    }
-    
-    @_inlineable
-    public func convert<C : LinearColorSpaceProtocol>(_ color: Model, to other: C, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm = .bradford) -> C.Model {
-        let m = self.transferMatrix(to: other, algorithm: algorithm)
-        if m == Matrix.Identity {
-            return other.convertFromLinear(C.Model(self.convertToLinear(color).vector))
-        }
-        return other.convertFromLinear(C.Model(self.convertToLinear(color).vector * m))
-    }
-}
-
-extension LinearColorSpaceProtocol {
-    
-    @_inlineable
-    public func convert<C : ColorSpaceProtocol>(_ color: [Model], to other: C, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm = .bradford) -> [C.Model] {
-        let m = self.transferMatrix(to: other.cieXYZ, algorithm: algorithm)
-        return color.map { other.convertFromLinear(other.convertFromXYZ(XYZColorModel(self.convertToLinear($0).vector * m))) }
-    }
-    
-    @_inlineable
-    public func convert<C : LinearColorSpaceProtocol>(_ color: [Model], to other: C, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm = .bradford) -> [C.Model] {
-        let m = self.transferMatrix(to: other, algorithm: algorithm)
-        if m == Matrix.Identity {
-            return color.map { other.convertFromLinear(C.Model(self.convertToLinear($0).vector)) }
-        }
-        return color.map { other.convertFromLinear(C.Model(self.convertToLinear($0).vector * m)) }
+        return other.convertFromXYZ(self.convertToXYZ(color) * self.cieXYZ.transferMatrix(to: other.cieXYZ, algorithm: algorithm))
     }
 }
 
@@ -185,6 +109,7 @@ public struct CIEXYZColorSpace : ColorSpaceProtocol {
         self.white = XYZColorModel(luminance: 1, x: white.x, y: white.y)
         self.black = XYZColorModel(x: 0, y: 0, z: 0)
     }
+    
     @_inlineable
     public init(white: Model, black: Model = XYZColorModel(x: 0, y: 0, z: 0)) {
         self.white = white
@@ -192,7 +117,7 @@ public struct CIEXYZColorSpace : ColorSpaceProtocol {
     }
 }
 
-extension CIEXYZColorSpace : LinearColorSpaceProtocol {
+extension CIEXYZColorSpace {
     
     @_inlineable
     public var cieXYZ: CIEXYZColorSpace {
@@ -205,12 +130,12 @@ extension CIEXYZColorSpace : LinearColorSpaceProtocol {
     }
     
     @_inlineable
-    public func convertToXYZ(_ color: Model) -> XYZColorModel {
+    public func convertLinearToXYZ(_ color: Model) -> XYZColorModel {
         return color
     }
     
     @_inlineable
-    public func convertFromXYZ(_ color: XYZColorModel) -> Model {
+    public func convertLinearFromXYZ(_ color: XYZColorModel) -> Model {
         return color
     }
     
@@ -229,7 +154,7 @@ extension CIEXYZColorSpace {
     
     @_inlineable
     public var normalized: CIEXYZColorSpace {
-        return CIEXYZColorSpace(white: XYZColorModel(white.vector * normalizeMatrix))
+        return CIEXYZColorSpace(white: white * normalizeMatrix)
     }
     
     @_versioned
@@ -238,8 +163,8 @@ extension CIEXYZColorSpace {
         let matrix = algorithm.matrix
         let m1 = self.normalizeMatrix * matrix
         let m2 = other.normalizeMatrix * matrix
-        let _s = self.white.vector * m1
-        let _d = other.white.vector * m2
+        let _s = self.white * m1
+        let _d = other.white * m2
         return m1 * Matrix.Scale(x: _d.x / _s.x, y: _d.y / _s.y, z: _d.z / _s.z) as Matrix * m2.inverse
     }
     
@@ -311,7 +236,7 @@ public struct CIELabColorSpace : ColorSpaceProtocol {
 extension CIELabColorSpace {
     
     @_inlineable
-    public func convertToXYZ(_ color: Model) -> XYZColorModel {
+    public func convertLinearToXYZ(_ color: Model) -> XYZColorModel {
         let s = 216.0 / 24389.0
         let t = 27.0 / 24389.0
         let st = 216.0 / 27.0
@@ -328,7 +253,7 @@ extension CIELabColorSpace {
     }
     
     @_inlineable
-    public func convertFromXYZ(_ color: XYZColorModel) -> Model {
+    public func convertLinearFromXYZ(_ color: XYZColorModel) -> Model {
         let s = 216.0 / 24389.0
         let t = 24389.0 / 27.0
         let _white = XYZColorModel(luminance: 1, point: cieXYZ.normalized.white.point)
@@ -384,7 +309,7 @@ public struct CIELuvColorSpace : ColorSpaceProtocol {
 extension CIELuvColorSpace {
     
     @_inlineable
-    public func convertToXYZ(_ color: Model) -> XYZColorModel {
+    public func convertLinearToXYZ(_ color: Model) -> XYZColorModel {
         let t = 27.0 / 24389.0
         let st = 216.0 / 27.0
         let _white = XYZColorModel(luminance: 1, point: cieXYZ.normalized.white.point)
@@ -401,7 +326,7 @@ extension CIELuvColorSpace {
     }
     
     @_inlineable
-    public func convertFromXYZ(_ color: XYZColorModel) -> Model {
+    public func convertLinearFromXYZ(_ color: XYZColorModel) -> Model {
         let s = 216.0 / 24389.0
         let t = 24389.0 / 27.0
         let _white = XYZColorModel(luminance: 1, point: cieXYZ.normalized.white.point)
@@ -417,7 +342,7 @@ extension CIELuvColorSpace {
     }
 }
 
-public class CalibratedRGBColorSpace : LinearColorSpaceProtocol {
+public class CalibratedRGBColorSpace : ColorSpaceProtocol {
     
     public typealias Model = RGBColorModel
     
@@ -425,28 +350,140 @@ public class CalibratedRGBColorSpace : LinearColorSpaceProtocol {
     public let transferMatrix: Matrix
     
     @_inlineable
-    public var white: XYZColorModel {
-        return cieXYZ.white
-    }
-    @_inlineable
-    public var black: XYZColorModel {
-        return cieXYZ.black
+    public init(white: XYZColorModel, black: XYZColorModel, red: Point, green: Point, blue: Point) {
+        
+        self.cieXYZ = CIEXYZColorSpace(white: white, black: black)
+        
+        let normalizeMatrix = CIEXYZColorSpace(white: white, black: black).normalizeMatrix
+        let _white = white * normalizeMatrix
+        
+        let p = Matrix(a: red.x, b: green.x, c: blue.x, d: 0,
+                       e: red.y, f: green.y, g: blue.y, h: 0,
+                       i: 1 - red.x - red.y, j: 1 - green.x - green.y, k: 1 - blue.x - blue.y, l: 0)
+        
+        let c = XYZColorModel(x: _white.x / _white.y, y: 1, z: _white.z / _white.y) * p.inverse
+        
+        self.transferMatrix = Matrix.Scale(x: c.x, y: c.y, z: c.z) * p * normalizeMatrix.inverse
     }
     
     @_inlineable
-    public init(white: XYZColorModel, black: XYZColorModel, red: XYZColorModel, green: XYZColorModel, blue: XYZColorModel) {
-        self.cieXYZ = CIEXYZColorSpace(white: white, black: black)
-        
-        let normalizeMatrix = self.cieXYZ.normalizeMatrix
-        let _red = red.vector * normalizeMatrix
-        let _green = green.vector * normalizeMatrix
-        let _blue = blue.vector * normalizeMatrix
-        let _white = white.vector * normalizeMatrix
-        
-        let m = Matrix(a: _red.x, b: _green.x, c: _blue.x, d: 0,
-                       e: _red.y, f: _green.y, g: _blue.y, h: 0,
-                       i: _red.z, j: _green.z, k: _blue.z, l: 0)
-        let s = _white * m.inverse
-        self.transferMatrix = m * Matrix.Scale(x: s.x, y: s.y, z: s.z) as Matrix * normalizeMatrix.inverse
+    public func convertToLinear(_ color: Model) -> Model {
+        return color
+    }
+    
+    @_inlineable
+    public func convertFromLinear(_ color: Model) -> Model {
+        return color
     }
 }
+
+extension CalibratedRGBColorSpace {
+    
+    @_inlineable
+    public var red: XYZColorModel {
+        return XYZColorModel(x: 1, y: 0, z: 0) * transferMatrix
+    }
+    
+    @_inlineable
+    public var green: XYZColorModel {
+        return XYZColorModel(x: 0, y: 1, z: 0) * transferMatrix
+    }
+    
+    @_inlineable
+    public var blue: XYZColorModel {
+        return XYZColorModel(x: 0, y: 0, z: 1) * transferMatrix
+    }
+}
+
+extension CalibratedRGBColorSpace {
+    
+    @_inlineable
+    public func convertLinearToXYZ(_ color: Model) -> XYZColorModel {
+        return XYZColorModel(x: color.red, y: color.green, z: color.blue) * transferMatrix
+    }
+    
+    @_inlineable
+    public func convertLinearFromXYZ(_ color: XYZColorModel) -> Model {
+        let c = color * transferMatrix.inverse
+        return Model(red: c.x, green: c.y, blue: c.z)
+    }
+}
+
+extension CalibratedRGBColorSpace {
+    
+    private class _adobeRGB: CalibratedRGBColorSpace {
+        
+        init() {
+            super.init(white: XYZColorModel(luminance: 160.00, x: 0.3127, y: 0.3290), black: XYZColorModel(luminance: 0.5557, x: 0.3127, y: 0.3290), red: Point(x: 0.6400, y: 0.3300), green: Point(x: 0.2100, y: 0.7100), blue: Point(x: 0.1500, y: 0.0600))
+        }
+    }
+    
+    public static var adobeRGB: CalibratedRGBColorSpace {
+        
+        class adobeRGB: _adobeRGB {
+            
+            override func convertToLinear(_ color: RGBColorModel) -> RGBColorModel {
+                
+                return RGBColorModel(red: pow(color.red, 2.19921875), green: pow(color.green, 2.19921875), blue: pow(color.blue, 2.19921875))
+            }
+            
+            override func convertFromLinear(_ color: RGBColorModel) -> RGBColorModel {
+                
+                return RGBColorModel(red: pow(color.red, 1 / 2.19921875), green: pow(color.green, 1 / 2.19921875), blue: pow(color.blue, 1 / 2.19921875))
+            }
+        }
+        return adobeRGB()
+    }
+    
+    public static var linearAdobeRGB: CalibratedRGBColorSpace {
+        
+        return _adobeRGB()
+    }
+    
+}
+
+extension CalibratedRGBColorSpace {
+    
+    private class _sRGB: CalibratedRGBColorSpace {
+        
+        init() {
+            super.init(white: XYZColorModel(luminance: 1, x: 0.3127, y: 0.3290), black: XYZColorModel(luminance: 0, x: 0.3127, y: 0.3290), red: Point(x: 0.6400, y: 0.3300), green: Point(x: 0.3000, y: 0.6000), blue: Point(x: 0.1500, y: 0.0600))
+        }
+    }
+    
+    public static var sRGB: CalibratedRGBColorSpace {
+        
+        class sRGB: _sRGB {
+            
+            override func convertToLinear(_ color: RGBColorModel) -> RGBColorModel {
+                
+                func toLinear(_ x: Double) -> Double {
+                    if x > 0.04045 {
+                        return pow((x + 0.055) / 1.055, 2.4)
+                    }
+                    return x / 12.92
+                }
+                return RGBColorModel(red: toLinear(color.red), green: toLinear(color.green), blue: toLinear(color.blue))
+            }
+            
+            override func convertFromLinear(_ color: RGBColorModel) -> RGBColorModel {
+                
+                func toGamma(_ x: Double) -> Double {
+                    if x > 0.0031308 {
+                        return 1.055 * pow(x, 1 / 2.4) - 0.055
+                    }
+                    return 12.92 * x
+                }
+                return RGBColorModel(red: toGamma(color.red), green: toGamma(color.green), blue: toGamma(color.blue))
+            }
+        }
+        return sRGB()
+    }
+    
+    public static var linearSRGB: CalibratedRGBColorSpace {
+        
+        return _sRGB()
+    }
+    
+}
+

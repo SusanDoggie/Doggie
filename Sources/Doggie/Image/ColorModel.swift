@@ -181,21 +181,6 @@ public func !=<Model : ColorModelProtocol>(lhs: Model, rhs: Model) -> Bool {
     return false
 }
 
-public protocol ColorVectorConvertible : ColorModelProtocol {
-    
-    init(_ vector: Vector)
-    
-    var vector: Vector { get set }
-}
-
-extension ColorVectorConvertible {
-    
-    @_inlineable
-    public init() {
-        self.init(Vector())
-    }
-}
-
 public struct RGBColorModel : ColorModelProtocol {
     
     @_inlineable
@@ -206,6 +191,13 @@ public struct RGBColorModel : ColorModelProtocol {
     public var red: Double
     public var green: Double
     public var blue: Double
+    
+    @_inlineable
+    public init() {
+        self.red = 0
+        self.green = 0
+        self.blue = 0
+    }
     
     @_inlineable
     public init(red: Double, green: Double, blue: Double) {
@@ -230,28 +222,6 @@ public struct RGBColorModel : ColorModelProtocol {
         case 1: green = value
         case 2: blue = value
         default: fatalError()
-        }
-    }
-}
-
-extension RGBColorModel : ColorVectorConvertible {
-    
-    @_inlineable
-    public init(_ vector: Vector) {
-        self.red = vector.x
-        self.green = vector.y
-        self.blue = vector.z
-    }
-    
-    @_inlineable
-    public var vector: Vector {
-        get {
-            return Vector(x: red, y: green, z: blue)
-        }
-        set {
-            self.red = newValue.x
-            self.green = newValue.y
-            self.blue = newValue.z
         }
     }
 }
@@ -652,6 +622,13 @@ public struct XYZColorModel : ColorModelProtocol {
     public var z: Double
     
     @_inlineable
+    public init() {
+        self.x = 0
+        self.y = 0
+        self.z = 0
+    }
+    
+    @_inlineable
     public init(x: Double, y: Double, z: Double) {
         self.x = x
         self.y = y
@@ -714,34 +691,21 @@ extension XYZColorModel {
     }
 }
 
-extension XYZColorModel : ColorVectorConvertible {
-    
-    @_inlineable
-    public init(_ vector: Vector) {
-        self.x = vector.x
-        self.y = vector.y
-        self.z = vector.z
-    }
-    
-    @_inlineable
-    public var vector: Vector {
-        get {
-            return Vector(x: x, y: y, z: z)
-        }
-        set {
-            self.x = newValue.x
-            self.y = newValue.y
-            self.z = newValue.z
-        }
-    }
-}
-
 extension XYZColorModel : CustomStringConvertible {
     
     @_inlineable
     public var description: String {
         return "XYZColorModel(x: \(x), y: \(y), z: \(z))"
     }
+}
+
+@_inlineable
+public func * (lhs: XYZColorModel, rhs: Matrix) -> XYZColorModel {
+    return XYZColorModel(x: lhs.x * rhs.a + lhs.y * rhs.b + lhs.z * rhs.c + rhs.d, y: lhs.x * rhs.e + lhs.y * rhs.f + lhs.z * rhs.g + rhs.h, z: lhs.x * rhs.i + lhs.y * rhs.j + lhs.z * rhs.k + rhs.l)
+}
+@_inlineable
+public func *= (lhs: inout XYZColorModel, rhs: Matrix) {
+    lhs = lhs * rhs
 }
 
 public struct GrayColorModel : ColorModelProtocol {

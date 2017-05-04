@@ -27,7 +27,7 @@ extension NSImage {
 let lab = CIELabColorSpace(white: Point(x: 0.34567, y: 0.35850))
 let luv = CIELuvColorSpace(white: Point(x: 0.34567, y: 0.35850))
 
-let srgb = CalibratedRGBColorSpace(white: XYZColorModel(luminance: 1, x: 0.3127, y: 0.3290), black: XYZColorModel(luminance: 0, x: 0.3127, y: 0.3290), red: XYZColorModel(luminance: 0.2126, x: 0.6400, y: 0.3300), green: XYZColorModel(luminance: 0.7152, x: 0.3000, y: 0.6000), blue: XYZColorModel(luminance: 0.0722, x: 0.1500, y: 0.0600))
+let srgb = CalibratedRGBColorSpace.sRGB
 
 srgb.convert(RGBColorModel(red: 1, green: 0, blue: 0), to: lab)
 srgb.convert(RGBColorModel(red: 1, green: 0, blue: 0), to: luv)

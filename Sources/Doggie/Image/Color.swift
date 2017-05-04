@@ -39,9 +39,6 @@ protocol ColorBaseProtocol {
     func convert<ColorSpace : ColorSpaceProtocol>(to colorSpace: ColorSpace, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm) -> ColorBase<ColorSpace>
     
     @_versioned
-    func convert<ColorSpace : LinearColorSpaceProtocol>(to colorSpace: ColorSpace, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm) -> ColorBase<ColorSpace>
-    
-    @_versioned
     func component(_ index: Int) -> Double
     
     @_versioned
@@ -107,12 +104,6 @@ extension ColorBase {
     func convert<C : ColorSpaceProtocol>(to colorSpace: C, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm) -> ColorBase<C> {
         return ColorBase<C>(colorSpace: colorSpace, color: self.colorSpace.convert(_color, to: colorSpace, algorithm: algorithm))
     }
-    
-    @_versioned
-    @_inlineable
-    func convert<C : LinearColorSpaceProtocol>(to colorSpace: C, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm) -> ColorBase<C> {
-        return ColorBase<C>(colorSpace: colorSpace, color: self.colorSpace.convert(_color, to: colorSpace, algorithm: algorithm))
-    }
 }
 
 @_fixed_layout
@@ -153,11 +144,6 @@ extension Color {
     
     @_inlineable
     public func convert<ColorSpace : ColorSpaceProtocol>(to colorSpace: ColorSpace, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm = .bradford) -> Color {
-        return Color(base: self.base.convert(to: colorSpace, algorithm: algorithm), opacity: self.opacity)
-    }
-    
-    @_inlineable
-    public func convert<ColorSpace : LinearColorSpaceProtocol>(to colorSpace: ColorSpace, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm = .bradford) -> Color {
         return Color(base: self.base.convert(to: colorSpace, algorithm: algorithm), opacity: self.opacity)
     }
 }

@@ -41,9 +41,7 @@ class ImageTest: XCTestCase {
     
     var sample: Image = {
         
-        let srgb = CalibratedRGBColorSpace(white: XYZColorModel(luminance: 1, x: 0.3127, y: 0.3290), black: XYZColorModel(luminance: 0, x: 0.3127, y: 0.3290), red: XYZColorModel(luminance: 0.2126, x: 0.6400, y: 0.3300), green: XYZColorModel(luminance: 0.7152, x: 0.3000, y: 0.6000), blue: XYZColorModel(luminance: 0.0722, x: 0.1500, y: 0.0600))
-        
-        var sample = Image(width: 100, height: 100, pixel: ARGB32ColorPixel(), colorSpace: srgb)
+        var sample = Image(width: 100, height: 100, pixel: ARGB32ColorPixel(), colorSpace: CalibratedRGBColorSpace.linearSRGB)
         
         #if os(macOS)
             if #available(OSX 10.12, *) {
