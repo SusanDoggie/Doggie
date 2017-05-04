@@ -35,14 +35,6 @@ public protocol ColorSpaceProtocol {
     
     var black: XYZColorModel { get }
     
-    func convertToLinear(_ color: Model) -> Model
-    
-    func convertFromLinear(_ color: Model) -> Model
-    
-    func convertLinearToXYZ(_ color: Model) -> XYZColorModel
-    
-    func convertLinearFromXYZ(_ color: XYZColorModel) -> Model
-    
     func convertToXYZ(_ color: Model) -> XYZColorModel
     
     func convertFromXYZ(_ color: XYZColorModel) -> Model
@@ -66,17 +58,23 @@ extension ColorSpaceProtocol {
 extension ColorSpaceProtocol {
     
     @_inlineable
-    public func convertToLinear(_ color: Model) -> Model {
-        return color
-    }
-    
-    @_inlineable
-    public func convertFromLinear(_ color: Model) -> Model {
-        return color
+    public func convert<C : ColorSpaceProtocol>(_ color: Model, to other: C, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm = .bradford) -> C.Model {
+        return other.convertFromXYZ(self.convertToXYZ(color) * self.cieXYZ.transferMatrix(to: other.cieXYZ, algorithm: algorithm))
     }
 }
 
-extension ColorSpaceProtocol {
+public protocol GammaColorSpaceProtocol : class, ColorSpaceProtocol {
+    
+    func convertToLinear(_ color: Model) -> Model
+    
+    func convertFromLinear(_ color: Model) -> Model
+    
+    func convertLinearToXYZ(_ color: Model) -> XYZColorModel
+    
+    func convertLinearFromXYZ(_ color: XYZColorModel) -> Model
+}
+
+extension GammaColorSpaceProtocol {
     
     @_inlineable
     public func convertToXYZ(_ color: Model) -> XYZColorModel {
@@ -89,11 +87,12 @@ extension ColorSpaceProtocol {
     }
 }
 
-extension ColorSpaceProtocol {
+extension GammaColorSpaceProtocol {
     
+    @_versioned
     @_inlineable
-    public func convert<C : ColorSpaceProtocol>(_ color: Model, to other: C, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm = .bradford) -> C.Model {
-        return other.convertFromXYZ(self.convertToXYZ(color) * self.cieXYZ.transferMatrix(to: other.cieXYZ, algorithm: algorithm))
+    func exteneded(_ x: Double, _ gamma: (Double) -> Double) -> Double {
+        return x.sign == .plus ? gamma(x) : -gamma(-x)
     }
 }
 
@@ -130,12 +129,12 @@ extension CIEXYZColorSpace {
     }
     
     @_inlineable
-    public func convertLinearToXYZ(_ color: Model) -> XYZColorModel {
+    public func convertToXYZ(_ color: Model) -> XYZColorModel {
         return color
     }
     
     @_inlineable
-    public func convertLinearFromXYZ(_ color: XYZColorModel) -> Model {
+    public func convertFromXYZ(_ color: XYZColorModel) -> Model {
         return color
     }
     
@@ -236,7 +235,7 @@ public struct CIELabColorSpace : ColorSpaceProtocol {
 extension CIELabColorSpace {
     
     @_inlineable
-    public func convertLinearToXYZ(_ color: Model) -> XYZColorModel {
+    public func convertToXYZ(_ color: Model) -> XYZColorModel {
         let s = 216.0 / 24389.0
         let t = 27.0 / 24389.0
         let st = 216.0 / 27.0
@@ -253,7 +252,7 @@ extension CIELabColorSpace {
     }
     
     @_inlineable
-    public func convertLinearFromXYZ(_ color: XYZColorModel) -> Model {
+    public func convertFromXYZ(_ color: XYZColorModel) -> Model {
         let s = 216.0 / 24389.0
         let t = 24389.0 / 27.0
         let _white = XYZColorModel(luminance: 1, point: cieXYZ.normalized.white.point)
@@ -309,7 +308,7 @@ public struct CIELuvColorSpace : ColorSpaceProtocol {
 extension CIELuvColorSpace {
     
     @_inlineable
-    public func convertLinearToXYZ(_ color: Model) -> XYZColorModel {
+    public func convertToXYZ(_ color: Model) -> XYZColorModel {
         let t = 27.0 / 24389.0
         let st = 216.0 / 27.0
         let _white = XYZColorModel(luminance: 1, point: cieXYZ.normalized.white.point)
@@ -326,7 +325,7 @@ extension CIELuvColorSpace {
     }
     
     @_inlineable
-    public func convertLinearFromXYZ(_ color: XYZColorModel) -> Model {
+    public func convertFromXYZ(_ color: XYZColorModel) -> Model {
         let s = 216.0 / 24389.0
         let t = 24389.0 / 27.0
         let _white = XYZColorModel(luminance: 1, point: cieXYZ.normalized.white.point)
@@ -342,7 +341,7 @@ extension CIELuvColorSpace {
     }
 }
 
-public class CalibratedRGBColorSpace : ColorSpaceProtocol {
+public class CalibratedRGBColorSpace : GammaColorSpaceProtocol {
     
     public typealias Model = RGBColorModel
     
@@ -424,12 +423,12 @@ extension CalibratedRGBColorSpace {
             
             override func convertToLinear(_ color: RGBColorModel) -> RGBColorModel {
                 
-                return RGBColorModel(red: pow(color.red, 2.19921875), green: pow(color.green, 2.19921875), blue: pow(color.blue, 2.19921875))
+                return RGBColorModel(red: exteneded(color.red) { pow($0, 2.19921875) }, green: exteneded(color.green) { pow($0, 2.19921875) }, blue: exteneded(color.blue) { pow($0, 2.19921875) })
             }
             
             override func convertFromLinear(_ color: RGBColorModel) -> RGBColorModel {
                 
-                return RGBColorModel(red: pow(color.red, 1 / 2.19921875), green: pow(color.green, 1 / 2.19921875), blue: pow(color.blue, 1 / 2.19921875))
+                return RGBColorModel(red: exteneded(color.red) { pow($0, 1 / 2.19921875) }, green: exteneded(color.green) { pow($0, 1 / 2.19921875) }, blue: exteneded(color.blue) { pow($0, 1 / 2.19921875) })
             }
         }
         return adobeRGB()
@@ -463,7 +462,7 @@ extension CalibratedRGBColorSpace {
                     }
                     return x / 12.92
                 }
-                return RGBColorModel(red: toLinear(color.red), green: toLinear(color.green), blue: toLinear(color.blue))
+                return RGBColorModel(red: exteneded(color.red, toLinear), green: exteneded(color.green, toLinear), blue: exteneded(color.blue, toLinear))
             }
             
             override func convertFromLinear(_ color: RGBColorModel) -> RGBColorModel {
@@ -474,7 +473,7 @@ extension CalibratedRGBColorSpace {
                     }
                     return 12.92 * x
                 }
-                return RGBColorModel(red: toGamma(color.red), green: toGamma(color.green), blue: toGamma(color.blue))
+                return RGBColorModel(red: exteneded(color.red, toGamma), green: exteneded(color.green, toGamma), blue: exteneded(color.blue, toGamma))
             }
         }
         return sRGB()
@@ -487,7 +486,7 @@ extension CalibratedRGBColorSpace {
     
 }
 
-public class CalibratedGrayColorSpace : ColorSpaceProtocol {
+public class CalibratedGrayColorSpace : GammaColorSpaceProtocol {
     
     public typealias Model = GrayColorModel
     
