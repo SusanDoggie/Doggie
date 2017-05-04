@@ -224,7 +224,7 @@ public struct CIELabColorSpace : ColorSpaceProtocol {
         self.cieXYZ = CIEXYZColorSpace(white: white)
     }
     @_inlineable
-    public init(white: XYZColorModel, black: XYZColorModel) {
+    public init(white: XYZColorModel, black: XYZColorModel = XYZColorModel(x: 0, y: 0, z: 0)) {
         self.cieXYZ = CIEXYZColorSpace(white: white, black: black)
     }
     @_inlineable
@@ -297,7 +297,7 @@ public struct CIELuvColorSpace : ColorSpaceProtocol {
         self.cieXYZ = CIEXYZColorSpace(white: white)
     }
     @_inlineable
-    public init(white: XYZColorModel, black: XYZColorModel) {
+    public init(white: XYZColorModel, black: XYZColorModel = XYZColorModel(x: 0, y: 0, z: 0)) {
         self.cieXYZ = CIEXYZColorSpace(white: white, black: black)
     }
     @_inlineable
@@ -498,7 +498,7 @@ public class CalibratedGrayColorSpace : ColorSpaceProtocol {
         self.cieXYZ = CIEXYZColorSpace(white: white)
     }
     @_inlineable
-    public init(white: XYZColorModel, black: XYZColorModel) {
+    public init(white: XYZColorModel, black: XYZColorModel = XYZColorModel(x: 0, y: 0, z: 0)) {
         self.cieXYZ = CIEXYZColorSpace(white: white, black: black)
     }
     @_inlineable
