@@ -63,7 +63,7 @@ extension ColorSpaceProtocol {
     }
 }
 
-public protocol GammaColorSpaceProtocol : class, ColorSpaceProtocol {
+public protocol ToneResponseColorSpaceProtocol : class, ColorSpaceProtocol {
     
     func convertToLinear(_ color: Model) -> Model
     
@@ -74,7 +74,7 @@ public protocol GammaColorSpaceProtocol : class, ColorSpaceProtocol {
     func convertLinearFromXYZ(_ color: XYZColorModel) -> Model
 }
 
-extension GammaColorSpaceProtocol {
+extension ToneResponseColorSpaceProtocol {
     
     @_inlineable
     public func convertToXYZ(_ color: Model) -> XYZColorModel {
@@ -87,12 +87,48 @@ extension GammaColorSpaceProtocol {
     }
 }
 
-extension GammaColorSpaceProtocol {
+extension ToneResponseColorSpaceProtocol {
     
     @_versioned
     @_inlineable
     func exteneded(_ x: Double, _ gamma: (Double) -> Double) -> Double {
         return x.sign == .plus ? gamma(x) : -gamma(-x)
+    }
+}
+
+@_fixed_layout
+public struct LinearToneColorSpace<ColorSpace: ToneResponseColorSpaceProtocol> : ColorSpaceProtocol {
+    
+    @_versioned
+    let base: ColorSpace
+    
+    @_versioned
+    @_inlineable
+    init(_ base: ColorSpace) {
+        self.base = base
+    }
+    
+    @_inlineable
+    public var cieXYZ: CIEXYZColorSpace {
+        return base.cieXYZ
+    }
+    
+    @_inlineable
+    public func convertToXYZ(_ color: ColorSpace.Model) -> XYZColorModel {
+        return base.convertLinearToXYZ(color)
+    }
+    
+    @_inlineable
+    public func convertFromXYZ(_ color: XYZColorModel) -> ColorSpace.Model {
+        return base.convertLinearFromXYZ(color)
+    }
+}
+
+extension ToneResponseColorSpaceProtocol {
+    
+    @_inlineable
+    public var linearTone: LinearToneColorSpace<Self> {
+        return LinearToneColorSpace(self)
     }
 }
 
@@ -336,7 +372,7 @@ extension CIELuvColorSpace {
     }
 }
 
-public class CalibratedRGBColorSpace : GammaColorSpaceProtocol {
+public class CalibratedRGBColorSpace : ToneResponseColorSpaceProtocol {
     
     public typealias Model = RGBColorModel
     
@@ -405,16 +441,13 @@ extension CalibratedRGBColorSpace {
 
 extension CalibratedRGBColorSpace {
     
-    private class _adobeRGB: CalibratedRGBColorSpace {
-        
-        init() {
-            super.init(white: XYZColorModel(luminance: 160.00, x: 0.3127, y: 0.3290), black: XYZColorModel(luminance: 0.5557, x: 0.3127, y: 0.3290), red: Point(x: 0.6400, y: 0.3300), green: Point(x: 0.2100, y: 0.7100), blue: Point(x: 0.1500, y: 0.0600))
-        }
-    }
-    
     public static var adobeRGB: CalibratedRGBColorSpace {
         
-        class adobeRGB: _adobeRGB {
+        class adobeRGB: CalibratedRGBColorSpace {
+            
+            init() {
+                super.init(white: XYZColorModel(luminance: 160.00, x: 0.3127, y: 0.3290), black: XYZColorModel(luminance: 0.5557, x: 0.3127, y: 0.3290), red: Point(x: 0.6400, y: 0.3300), green: Point(x: 0.2100, y: 0.7100), blue: Point(x: 0.1500, y: 0.0600))
+            }
             
             override func convertToLinear(_ color: RGBColorModel) -> RGBColorModel {
                 
@@ -426,28 +459,20 @@ extension CalibratedRGBColorSpace {
                 return RGBColorModel(red: exteneded(color.red) { pow($0, 1 / 2.19921875) }, green: exteneded(color.green) { pow($0, 1 / 2.19921875) }, blue: exteneded(color.blue) { pow($0, 1 / 2.19921875) })
             }
         }
+        
         return adobeRGB()
     }
-    
-    public static var linearAdobeRGB: CalibratedRGBColorSpace {
-        
-        return _adobeRGB()
-    }
-    
 }
 
 extension CalibratedRGBColorSpace {
     
-    private class _sRGB: CalibratedRGBColorSpace {
-        
-        init() {
-            super.init(white: XYZColorModel(luminance: 1, x: 0.3127, y: 0.3290), black: XYZColorModel(luminance: 0, x: 0.3127, y: 0.3290), red: Point(x: 0.6400, y: 0.3300), green: Point(x: 0.3000, y: 0.6000), blue: Point(x: 0.1500, y: 0.0600))
-        }
-    }
-    
     public static var sRGB: CalibratedRGBColorSpace {
         
-        class sRGB: _sRGB {
+        class sRGB: CalibratedRGBColorSpace {
+            
+            init() {
+                super.init(white: XYZColorModel(luminance: 1, x: 0.3127, y: 0.3290), black: XYZColorModel(luminance: 0, x: 0.3127, y: 0.3290), red: Point(x: 0.6400, y: 0.3300), green: Point(x: 0.3000, y: 0.6000), blue: Point(x: 0.1500, y: 0.0600))
+            }
             
             override func convertToLinear(_ color: RGBColorModel) -> RGBColorModel {
                 
@@ -471,17 +496,49 @@ extension CalibratedRGBColorSpace {
                 return RGBColorModel(red: exteneded(color.red, toGamma), green: exteneded(color.green, toGamma), blue: exteneded(color.blue, toGamma))
             }
         }
+        
         return sRGB()
     }
-    
-    public static var linearSRGB: CalibratedRGBColorSpace {
-        
-        return _sRGB()
-    }
-    
 }
 
-public class CalibratedGrayColorSpace : GammaColorSpaceProtocol {
+extension CalibratedRGBColorSpace {
+    
+    public static var displayP3: CalibratedRGBColorSpace {
+        
+        class displayP3: CalibratedRGBColorSpace {
+            
+            init() {
+                super.init(white: XYZColorModel(luminance: 1, x: 0.3127, y: 0.3290), black: XYZColorModel(luminance: 0, x: 0.3127, y: 0.3290), red: Point(x: 0.6800, y: 0.3200), green: Point(x: 0.2650, y: 0.6900), blue: Point(x: 0.1500, y: 0.0600))
+            }
+            
+            override func convertToLinear(_ color: RGBColorModel) -> RGBColorModel {
+                
+                func toLinear(_ x: Double) -> Double {
+                    if x > 0.04045 {
+                        return pow((x + 0.055) / 1.055, 2.4)
+                    }
+                    return x / 12.92
+                }
+                return RGBColorModel(red: exteneded(color.red, toLinear), green: exteneded(color.green, toLinear), blue: exteneded(color.blue, toLinear))
+            }
+            
+            override func convertFromLinear(_ color: RGBColorModel) -> RGBColorModel {
+                
+                func toGamma(_ x: Double) -> Double {
+                    if x > 0.0031308 {
+                        return 1.055 * pow(x, 1 / 2.4) - 0.055
+                    }
+                    return 12.92 * x
+                }
+                return RGBColorModel(red: exteneded(color.red, toGamma), green: exteneded(color.green, toGamma), blue: exteneded(color.blue, toGamma))
+            }
+        }
+        
+        return displayP3()
+    }
+}
+
+public class CalibratedGrayColorSpace : ToneResponseColorSpaceProtocol {
     
     public typealias Model = GrayColorModel
     
