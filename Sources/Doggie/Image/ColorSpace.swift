@@ -63,6 +63,42 @@ extension ColorSpaceProtocol {
     }
 }
 
+@_fixed_layout
+public struct NormalizedColorSpace<ColorSpace: ColorSpaceProtocol> : ColorSpaceProtocol {
+    
+    @_versioned
+    let base: ColorSpace
+    
+    @_versioned
+    @_inlineable
+    init(_ base: ColorSpace) {
+        self.base = base
+    }
+    
+    @_inlineable
+    public var cieXYZ: CIEXYZColorSpace {
+        return CIEXYZColorSpace(white: base.cieXYZ.white * base.cieXYZ.normalizeMatrix)
+    }
+    
+    @_inlineable
+    public func convertToXYZ(_ color: ColorSpace.Model) -> XYZColorModel {
+        return base.convertToXYZ(color) * base.cieXYZ.normalizeMatrix
+    }
+    
+    @_inlineable
+    public func convertFromXYZ(_ color: XYZColorModel) -> ColorSpace.Model {
+        return base.convertFromXYZ(color * base.cieXYZ.normalizeMatrix.inverse)
+    }
+}
+
+extension ColorSpaceProtocol {
+    
+    @_inlineable
+    public var normalized: NormalizedColorSpace<Self> {
+        return NormalizedColorSpace(self)
+    }
+}
+
 public protocol ToneResponseColorSpaceProtocol : class, ColorSpaceProtocol {
     
     func convertToLinear(_ color: Model) -> Model
@@ -177,19 +213,15 @@ extension CIEXYZColorSpace {
 
 extension CIEXYZColorSpace {
     
+    @_versioned
     @_inlineable
-    public var normalizeMatrix: Matrix {
+    var normalizeMatrix: Matrix {
         return Matrix.Translate(x: -black.x, y: -black.y, z: -black.z) * Matrix.Scale(x: white.x / (white.y * (white.x - black.x)), y: 1 / (white.y - black.y), z: white.z / (white.y * (white.z - black.z)))
-    }
-    
-    @_inlineable
-    public var normalized: CIEXYZColorSpace {
-        return CIEXYZColorSpace(white: white * normalizeMatrix)
     }
     
     @_versioned
     @_inlineable
-    func transferMatrix(to other: CIEXYZColorSpace, algorithm: ChromaticAdaptationAlgorithm = .bradford) -> Matrix {
+    func transferMatrix(to other: CIEXYZColorSpace, algorithm: ChromaticAdaptationAlgorithm) -> Matrix {
         let matrix = algorithm.matrix
         let m1 = self.normalizeMatrix * matrix
         let m2 = other.normalizeMatrix * matrix

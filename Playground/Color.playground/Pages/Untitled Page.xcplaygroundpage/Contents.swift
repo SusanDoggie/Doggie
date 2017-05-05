@@ -29,9 +29,6 @@ let luv = CIELuvColorSpace(white: Point(x: 0.34567, y: 0.35850))
 
 let srgb = CalibratedRGBColorSpace.sRGB
 
-srgb.convert(RGBColorModel(red: 1, green: 0, blue: 0), to: lab)
-srgb.convert(RGBColorModel(red: 1, green: 0, blue: 0), to: luv)
-
 let size = 128
 
 var buffer = [UInt32](repeating: 0, count: size * size)
