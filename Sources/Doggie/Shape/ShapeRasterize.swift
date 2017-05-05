@@ -25,6 +25,7 @@
 
 import Foundation
 
+@inline(__always)
 private func _cubic(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point, drawQuad: (Point, Point, Point) -> Void, drawCubic: (Point, Point, Point, Vector, Vector, Vector) -> Void) {
     
     let q1 = 3 * (p1 - p0)
@@ -39,6 +40,7 @@ private func _cubic(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point, drawQuad
     
     let area = Bezier(p0, p1, p2, p3).area + Bezier(p3, p0).area
     
+    @inline(__always)
     func draw(_ k0: Vector, _ k1: Vector, _ k2: Vector, _ k3: Vector, drawCubic: (Point, Point, Point, Vector, Vector, Vector) -> Void) {
         
         var v0 = k0
@@ -197,7 +199,7 @@ extension Shape {
     
     public func render(triangle: (Point, Point, Point) -> Void, quadratic: (Point, Point, Point) -> Void, cubic: (Point, Point, Point, Vector, Vector, Vector) -> Void) {
         
-        @_transparent
+        @inline(__always)
         func drawCubic(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point, drawTriangle: (Point, Point, Point) -> Void, drawQuad: (Point, Point, Point) -> Void, drawCubic: (Point, Point, Point, Vector, Vector, Vector) -> Void) {
             
             let bezier = Bezier(p0, p1, p2, p3)
@@ -273,7 +275,7 @@ extension Shape {
     }
 }
 
-@_transparent
+@inline(__always)
 private func scan(_ p0: Point, _ p1: Point, _ y: Double) -> (Double, Double)? {
     let d = p1.y - p0.y
     if d.almostZero() {
@@ -285,7 +287,7 @@ private func scan(_ p0: Point, _ p1: Point, _ y: Double) -> (Double, Double)? {
     return (q * y + r, q)
 }
 
-@_transparent
+@inline(__always)
 private func _loop<T: SignedInteger>(_ p0: Point, _ p1: Point, _ p2: Point, width: Int, height: Int, stencil: inout [T], body: (Int, Int) -> Bool) {
     
     let d = cross(p1 - p0, p2 - p0)
@@ -313,14 +315,15 @@ private func _loop<T: SignedInteger>(_ p0: Point, _ p1: Point, _ p2: Point, widt
                     
                     buf += y0 * width
                     
+                    let winding: T = d.sign == .plus ? 1 : -1
+                    
+                    @inline(__always)
                     func _drawLoop(_ range: CountableClosedRange<Int>, _ x0: Double, _ dx0: Double, _ x1: Double, _ dx1: Double, body: (Int, Int) -> Bool) {
                         
                         let (min_x, min_dx, max_x, max_dx) = mid_x < q1.x ? (x0, dx0, x1, dx1) : (x1, dx1, x0, dx0)
                         
                         var _min_x = min_x
                         var _max_x = max_x
-                        
-                        let winding: T = d.sign == .plus ? 1 : -1
                         
                         for y in range {
                             if _min_x < _max_x {
@@ -389,17 +392,19 @@ extension Shape {
             return
         }
         
-        @_transparent
+        @inline(__always)
         func loop(_ p0: Point, _ p1: Point, _ p2: Point, body: (Int, Int) -> Bool) {
             
             _loop(p0, p1, p2, width: width, height: height, stencil: &stencil, body: body)
         }
         
+        @inline(__always)
         func triangle(_ p0: Point, _ p1: Point, _ p2: Point) {
             
             loop(p0, p1, p2) { _ in true }
         }
         
+        @inline(__always)
         func quad(_ p0: Point, _ p1: Point, _ p2: Point) {
             
             if let transform = SDTransform(from: p0, p1, p2, to: Point(x: 0, y: 0), Point(x: 0.5, y: 0), Point(x: 1, y: 1)) {
@@ -410,6 +415,7 @@ extension Shape {
             }
         }
         
+        @inline(__always)
         func cubic(_ p0: Point, _ p1: Point, _ p2: Point, _ v0: Vector, _ v1: Vector, _ v2: Vector) {
             
             loop(p0, p1, p2) { x, y in
