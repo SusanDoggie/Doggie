@@ -2,7 +2,6 @@
 
 import Cocoa
 import Doggie
-import PlaygroundSupport
 
 let size = 150
 
