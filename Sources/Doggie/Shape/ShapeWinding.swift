@@ -31,6 +31,12 @@ extension Shape.Component {
         
         var winding = 0
         
+        let maxX = self.boundary.maxX
+        
+        if maxX + 1e-14 < p.x {
+            return 0
+        }
+        
         if self.count != 0 {
             
             let end = self.end
@@ -45,24 +51,27 @@ extension Shape.Component {
                     let t = -end.y / s
                     let x = end.x + t * (start.x - end.x)
                     
-                    if t.almostZero() || t.almostEqual(1) {
-                        if (p.x < x) == (end.y < start.y) {
-                            winding += 1
+                    if p.x < x {
+                        
+                        if t.almostZero() || t.almostEqual(1) {
+                            if end.y < start.y {
+                                winding += 1
+                            } else {
+                                winding -= 1
+                            }
                         } else {
-                            winding -= 1
-                        }
-                    } else {
-                        if (p.x < x) == (end.y < start.y) {
-                            winding += 2
-                        } else {
-                            winding -= 2
+                            if end.y < start.y {
+                                winding += 2
+                            } else {
+                                winding -= 2
+                            }
                         }
                     }
                 }
             }
         }
         
-        for (p0, segment) in self.spaces.search(y: p.y - 1e-14...p.y + 1e-14).lazy.map({ self.bezier[$0] }) {
+        for (p0, segment) in self.spaces.search(overlap: Rect.bound([p, Point(x: maxX, y: p.y)]).inset(dx: -1e-14, dy: -1e-14)).lazy.map({ self.bezier[$0] }) {
             switch segment {
             case let .line(p1):
                 
@@ -71,17 +80,20 @@ extension Shape.Component {
                     let t = -p0.y / s
                     let x = p0.x + t * (p1.x - p0.x)
                     
-                    if t.almostZero() || t.almostEqual(1) {
-                        if (p.x < x) == (p0.y < p1.y) {
-                            winding += 1
+                    if p.x < x {
+                        
+                        if t.almostZero() || t.almostEqual(1) {
+                            if p0.y < p1.y {
+                                winding += 1
+                            } else {
+                                winding -= 1
+                            }
                         } else {
-                            winding -= 1
-                        }
-                    } else {
-                        if (p.x < x) == (p0.y < p1.y) {
-                            winding += 2
-                        } else {
-                            winding -= 2
+                            if p0.y < p1.y {
+                                winding += 2
+                            } else {
+                                winding -= 2
+                            }
                         }
                     }
                 }
@@ -98,21 +110,24 @@ extension Shape.Component {
                     for t in _poly.roots.filter({ $0.almostZero() || $0.almostEqual(1) || 0...1 ~= $0 }) {
                         
                         let x = x_bezier.eval(t)
-                        let dy = derivative.eval(t).y
                         
-                        if !dy.almostZero() {
+                        if p.x < x {
                             
-                            if t.almostZero() || t.almostEqual(1) {
-                                if (p.x < x) == (dy > 0) {
-                                    winding += 1
+                            let dy = derivative.eval(t).y
+                            
+                            if dy.almostZero() {
+                                if t.almostZero() || t.almostEqual(1) {
+                                    if dy > 0 {
+                                        winding += 1
+                                    } else {
+                                        winding -= 1
+                                    }
                                 } else {
-                                    winding -= 1
-                                }
-                            } else {
-                                if (p.x < x) == (dy > 0) {
-                                    winding += 2
-                                } else {
-                                    winding -= 2
+                                    if dy > 0 {
+                                        winding += 2
+                                    } else {
+                                        winding -= 2
+                                    }
                                 }
                             }
                         }
@@ -133,42 +148,46 @@ extension Shape.Component {
                     for t in roots {
                         
                         let x = x_bezier.eval(t)
-                        let dy = derivative.eval(t).y
                         
-                        if dy.almostZero() {
-                            if roots.count == 1 {
-                                if t.almostZero() {
-                                    if (p.x < x) == (p3.y > 0) {
+                        if p.x < x {
+                            
+                            let dy = derivative.eval(t).y
+                            
+                            if dy.almostZero() {
+                                if roots.count == 1 {
+                                    if t.almostZero() {
+                                        if p3.y > 0 {
+                                            winding += 1
+                                        } else {
+                                            winding -= 1
+                                        }
+                                    } else if t.almostEqual(1) {
+                                        if p0.y < 0 {
+                                            winding += 1
+                                        } else {
+                                            winding -= 1
+                                        }
+                                    } else if p0.y.sign != p3.y.sign {
+                                        if p0.y < p3.y {
+                                            winding += 2
+                                        } else {
+                                            winding -= 2
+                                        }
+                                    }
+                                }
+                            } else {
+                                if t.almostZero() || t.almostEqual(1) {
+                                    if dy > 0 {
                                         winding += 1
                                     } else {
                                         winding -= 1
                                     }
-                                } else if t.almostEqual(1) {
-                                    if (p.x < x) == (p0.y < 0) {
-                                        winding += 1
-                                    } else {
-                                        winding -= 1
-                                    }
-                                } else if p0.y.sign != p3.y.sign {
-                                    if (p.x < x) == (p0.y < p3.y) {
+                                } else {
+                                    if dy > 0 {
                                         winding += 2
                                     } else {
                                         winding -= 2
                                     }
-                                }
-                            }
-                        } else {
-                            if t.almostZero() || t.almostEqual(1) {
-                                if (p.x < x) == (dy > 0) {
-                                    winding += 1
-                                } else {
-                                    winding -= 1
-                                }
-                            } else {
-                                if (p.x < x) == (dy > 0) {
-                                    winding += 2
-                                } else {
-                                    winding -= 2
                                 }
                             }
                         }
@@ -177,7 +196,7 @@ extension Shape.Component {
             }
         }
         
-        return winding >> 2
+        return winding >> 1
     }
 }
 
