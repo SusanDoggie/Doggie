@@ -48,7 +48,7 @@ extension Shape.Component {
                 
                 let s = start.y - end.y
                 if !s.almostZero() {
-                    let t = -end.y / s
+                    let t = (p.y - end.y) / s
                     let x = end.x + t * (start.x - end.x)
                     
                     if p.x < x {
@@ -77,7 +77,7 @@ extension Shape.Component {
                 
                 let s = p1.y - p0.y
                 if !s.almostZero() {
-                    let t = -p0.y / s
+                    let t = (p.y - p0.y) / s
                     let x = p0.x + t * (p1.x - p0.x)
                     
                     if p.x < x {
