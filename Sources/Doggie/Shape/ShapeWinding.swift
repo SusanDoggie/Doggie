@@ -177,7 +177,7 @@ extension Shape.Component {
             }
         }
         
-        return winding >> 1
+        return winding >> 2
     }
 }
 
