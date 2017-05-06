@@ -7,7 +7,7 @@ let size = 150
 
 var shape = try Shape(code: "M100 0c0-100-236.60 36.60-150 86.60S36.60-136.60-50-86.60 100 100 100 0z")
 
-shape.scale *= Double(size) / shape.boundary.height
+shape.scale *= Double(size) / max(shape.boundary.width, shape.boundary.height)
 
 shape.center = Point(x: 0.5 * Double(size), y: 0.5 * Double(size))
 

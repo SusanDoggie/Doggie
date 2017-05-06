@@ -68,41 +68,8 @@ private func _cubic(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point, operatio
             v3.y = -v3.y
         }
         
-        var q0 = p0
-        var q1 = p1
-        var q2 = p2
-        var q3 = p3
-        
-        while true {
-            
-            var flag = false
-            
-            if CircleInside(q0, q1, q2, q3) == false {
-                operation(.cubic(p0, p1, p2, v0, v1, v2))
-                flag = true
-            }
-            if CircleInside(q0, q2, q3, q1) == false {
-                operation(.cubic(p0, p2, p3, v0, v2, v3))
-                flag = true
-            }
-            if CircleInside(q1, q2, q3, q0) == false {
-                operation(.cubic(p1, p2, p3, v1, v2, v3))
-                flag = true
-            }
-            if CircleInside(q0, q1, q3, q2) == false {
-                operation(.cubic(p0, p1, p3, v0, v1, v3))
-                flag = true
-            }
-            
-            if flag {
-                return
-            }
-            
-            q0 *= SDTransform.SkewX(0.1)
-            q1 *= SDTransform.SkewX(0.1)
-            q2 *= SDTransform.SkewX(0.1)
-            q3 *= SDTransform.SkewX(0.1)
-        }
+        operation(.cubic(p0, p1, p2, v0, v1, v2))
+        operation(.cubic(p0, p2, p3, v0, v2, v3))
     }
     
     if d1.almostZero() {
