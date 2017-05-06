@@ -115,7 +115,7 @@ extension Shape.Component {
                             
                             let dy = derivative.eval(t).y
                             
-                            if dy.almostZero() {
+                            if !dy.almostZero() {
                                 if t.almostZero() || t.almostEqual(1) {
                                     if dy > 0 {
                                         winding += 1
