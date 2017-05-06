@@ -52,18 +52,24 @@ private func _cubic(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point, operatio
     @inline(__always)
     func draw(_ k0: Vector, _ k1: Vector, _ k2: Vector, _ k3: Vector, operation: (Shape.RenderOperation) -> Void) {
         
-        let v0 = k0
-        let v1 = k0 + k1 / 3
-        let v2 = k0 + (2 * k1 + k2) / 3
-        let v3 = k0 + k1 + k2 + k3
+        var v0 = k0
+        var v1 = k0 + k1 / 3
+        var v2 = k0 + (2 * k1 + k2) / 3
+        var v3 = k0 + k1 + k2 + k3
         
-        if area.sign == .plus {
-            operation(.cubic(p0, p1, p2, v0, v1, v2))
-            operation(.cubic(p0, p2, p3, v0, v2, v3))
-        } else {
-            operation(.cubic(p0, p1, p2, -v0, -v1, -v2))
-            operation(.cubic(p0, p2, p3, -v0, -v2, -v3))
+        if area.sign == .minus {
+            v0.x = -v0.x
+            v1.x = -v1.x
+            v2.x = -v2.x
+            v3.x = -v3.x
+            v0.y = -v0.y
+            v1.y = -v1.y
+            v2.y = -v2.y
+            v3.y = -v3.y
         }
+        
+        operation(.cubic(p0, p1, p2, v0, v1, v2))
+        operation(.cubic(p0, p2, p3, v0, v2, v3))
     }
     
     if d1.almostZero() {
