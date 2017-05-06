@@ -24,7 +24,6 @@ shape.identity.render {
     }
 }
 
-// Setup Metal
 let device = MTLCreateSystemDefaultDevice()!
 
 let view = NSView(frame: CGRect(x: 0, y: 0, width: 500, height: 500))
@@ -62,15 +61,12 @@ pipelineDescriptor.colorAttachments[0].pixelFormat = .bgra8Unorm
 
 renderEncoder.setRenderPipelineState(try device.makeRenderPipelineState(descriptor: pipelineDescriptor))
 
-let vertexData: [Float] = [-1.0, -1.0, 0.0,
-                           1.0, -1.0, 0.0,
-                           -1.0, 1.0, 0.0,
-                           1.0, 1.0, 0.0]
+let vertexData: [Float] = [-1.0, -1.0, 0.0, 1.0, -1.0, 0.0, -1.0, 1.0, 0.0, 1.0, 1.0, 0.0]
 
-let vertexBuffer = device.makeBuffer(bytes: vertexData, length: vertexData.count * MemoryLayout.size(ofValue: vertexData[0]), options: [])
+let vertexBuffer = device.makeBuffer(bytes: vertexData, length: vertexData.count * MemoryLayout<Float>.size, options: .storageModePrivate)
 
-let operationBuffer = device.makeBuffer(bytes: operation, length: operation.count == 0 ? 1 : operation.count * MemoryLayout.size(ofValue: operation[0]), options: [])
-let operationCount = device.makeBuffer(bytes: [Int32(operation.count)], length: MemoryLayout<Int32>.size, options: [])
+let operationBuffer = device.makeBuffer(bytes: operation, length: operation.count * MemoryLayout.size(ofValue: operation[0]), options: .storageModePrivate)
+let operationCount = device.makeBuffer(bytes: [Int32(operation.count)], length: MemoryLayout<Int32>.size, options: .storageModePrivate)
 
 renderEncoder.setVertexBuffer(vertexBuffer, offset: 0, at: 0)
 
