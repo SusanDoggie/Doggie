@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <playground version='6.0' target-platform='macos'>
     <pages>
-        <page name='Untitled Page'/>
-        <page name='Untitled Page 2'/>
+        <page name='raster'/>
+        <page name='raster GPU'/>
+        <page name='winding'/>
     </pages>
 </playground>

@@ -103,6 +103,18 @@ extension RectCollection {
         return Set(a).intersection(b)
     }
     
+    public func search(x: ClosedRange<Double>) -> Set<Int> {
+        let a = minX.indices.prefix(upTo: search(x.upperBound, minX, minX.indices)).map { minX[$0].0 }
+        let b = maxX.indices.suffix(from: search(x.lowerBound, maxX, maxX.indices)).map { maxX[$0].0 }
+        return Set(a).intersection(b)
+    }
+    
+    public func search(y: ClosedRange<Double>) -> Set<Int> {
+        let a = minY.indices.prefix(upTo: search(y.upperBound, minY, minY.indices)).map { minY[$0].0 }
+        let b = maxY.indices.suffix(from: search(y.lowerBound, maxY, maxY.indices)).map { maxY[$0].0 }
+        return Set(a).intersection(b)
+    }
+    
     public func search(_ point: Point) -> Set<Int> {
         return Set(search(x: point.x)).intersection(search(y: point.y))
     }
@@ -112,10 +124,6 @@ extension RectCollection {
     }
     
     public func search(overlap rect: Rect) -> Set<Int> {
-        let a = minX.indices.prefix(upTo: search(rect.maxX, minX, minX.indices)).map { minX[$0].0 }
-        let b = minY.indices.prefix(upTo: search(rect.maxY, minY, minY.indices)).map { minY[$0].0 }
-        let c = maxX.indices.suffix(from: search(rect.minX, maxX, maxX.indices)).map { maxX[$0].0 }
-        let d = maxY.indices.suffix(from: search(rect.minY, maxY, maxY.indices)).map { maxY[$0].0 }
-        return Set(a).intersection(b).intersection(c).intersection(d)
+        return search(x: rect.minX...rect.maxX).intersection(search(y: rect.minY...rect.maxY))
     }
 }

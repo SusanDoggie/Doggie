@@ -370,16 +370,20 @@ private func _loop<T: SignedInteger>(_ p0: Point, _ p1: Point, _ p2: Point, widt
                         
                         if let (x0, dx0) = scan(q0, q2, Double(y1)), let (x2, dx2) = scan(q1, q2, Double(y1)) {
                             
-                            if y0 != y1, let (x0, dx0) = scan(q0, q2, Double(y0)), let (x1, dx1) = scan(q0, q1, Double(y0)) {
+                            if y0 + 1 < y1, let (x0, dx0) = scan(q0, q2, Double(y0)), let (x1, dx1) = scan(q0, q1, Double(y0)) {
                                 
                                 _drawLoop(y0...y1 - 1, x0, dx0, x1, dx1, body: body)
                             }
                             
-                            _drawLoop(y1...y2, x0, dx0, x2, dx2, body: body)
+                            if y1 + 1 < y2 {
+                                _drawLoop(y1...y2 - 1, x0, dx0, x2, dx2, body: body)
+                            }
                             
                         } else if let (x0, dx0) = scan(q0, q2, Double(y0)), let (x1, dx1) = scan(q0, q1, Double(y0)) {
                             
-                            _drawLoop(y0...y1, x0, dx0, x1, dx1, body: body)
+                            if y0 + 1 < y1 {
+                                _drawLoop(y0...y1 - 1, x0, dx0, x1, dx1, body: body)
+                            }
                         }
                     } else {
                         
@@ -387,13 +391,15 @@ private func _loop<T: SignedInteger>(_ p0: Point, _ p1: Point, _ p2: Point, widt
                             
                             _drawLoop(y0...y1, x0, dx0, x1, dx1, body: body)
                             
-                            if y1 != y2, let (x0, dx0) = scan(q0, q2, Double(y1)), let (x2, dx2) = scan(q1, q2, Double(y1)) {
+                            if y1 + 2 < y2, let (x0, dx0) = scan(q0, q2, Double(y1)), let (x2, dx2) = scan(q1, q2, Double(y1)) {
                                 
-                                _drawLoop(y1 + 1...y2, x0 + dx0, dx0, x2 + dx2, dx2, body: body)
+                                _drawLoop(y1 + 1...y2 - 1, x0 + dx0, dx0, x2 + dx2, dx2, body: body)
                             }
                         } else if let (x0, dx0) = scan(q0, q2, Double(y1)), let (x2, dx2) = scan(q1, q2, Double(y1)) {
                             
-                            _drawLoop(y1...y2, x0, dx0, x2, dx2, body: body)
+                            if y1 + 1 < y2 {
+                                _drawLoop(y1...y2 - 1, x0, dx0, x2, dx2, body: body)
+                            }
                         }
                     }
                 }
