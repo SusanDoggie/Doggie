@@ -25,8 +25,17 @@
 
 import Foundation
 
+extension Shape {
+    
+    public enum RasterOperation {
+        case triangle(Point, Point, Point)
+        case quadratic(Point, Point, Point)
+        case cubic(Point, Point, Point, Vector, Vector, Vector)
+    }
+}
+
 @inline(__always)
-private func _cubic(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point, drawQuad: (Point, Point, Point) -> Void, drawCubic: (Point, Point, Point, Vector, Vector, Vector) -> Void) {
+private func _cubic(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point, operation: (Shape.RasterOperation) -> Void) {
     
     let q1 = 3 * (p1 - p0)
     let q2 = 3 * (p2 + p0) - 6 * p1
@@ -41,7 +50,7 @@ private func _cubic(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point, drawQuad
     let area = Bezier(p0, p1, p2, p3).area + Bezier(p3, p0).area
     
     @inline(__always)
-    func draw(_ k0: Vector, _ k1: Vector, _ k2: Vector, _ k3: Vector, drawCubic: (Point, Point, Point, Vector, Vector, Vector) -> Void) {
+    func draw(_ k0: Vector, _ k1: Vector, _ k2: Vector, _ k3: Vector, operation: (Shape.RasterOperation) -> Void) {
         
         var v0 = k0
         var v1 = k0 + k1 / 3
@@ -69,19 +78,19 @@ private func _cubic(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point, drawQuad
             var flag = false
             
             if CircleInside(q0, q1, q2, q3) == false {
-                drawCubic(p0, p1, p2, v0, v1, v2)
+                operation(.cubic(p0, p1, p2, v0, v1, v2))
                 flag = true
             }
             if CircleInside(q0, q2, q3, q1) == false {
-                drawCubic(p0, p2, p3, v0, v2, v3)
+                operation(.cubic(p0, p2, p3, v0, v2, v3))
                 flag = true
             }
             if CircleInside(q1, q2, q3, q0) == false {
-                drawCubic(p1, p2, p3, v1, v2, v3)
+                operation(.cubic(p1, p2, p3, v1, v2, v3))
                 flag = true
             }
             if CircleInside(q0, q1, q3, q2) == false {
-                drawCubic(p0, p1, p3, v0, v1, v3)
+                operation(.cubic(p0, p1, p3, v0, v1, v3))
                 flag = true
             }
             
@@ -101,7 +110,7 @@ private func _cubic(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point, drawQuad
         if d2.almostZero() {
             
             if !d3.almostZero(), let intersect = LinesIntersect(p0, p1, p2, p3) {
-                drawQuad(p0, intersect, p3)
+                operation(.quadratic(p0, intersect, p3))
             }
         } else {
             
@@ -118,7 +127,7 @@ private func _cubic(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point, drawQuad
             let k2 = Vector(x: 0, y: 3 * sl2 * tl, z: 0)
             let k3 = Vector(x: 0, y: -sl2 * sl, z: 0)
             
-            draw(k0, k1, k2, k3, drawCubic: drawCubic)
+            draw(k0, k1, k2, k3, operation: operation)
         }
         
     } else {
@@ -155,7 +164,7 @@ private func _cubic(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point, drawQuad
                 k3.y = -k3.y
             }
             
-            draw(k0, k1, k2, k3, drawCubic: drawCubic)
+            draw(k0, k1, k2, k3, operation: operation)
             
         } else {
             
@@ -190,17 +199,17 @@ private func _cubic(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point, drawQuad
                 k3.y = -k3.y
             }
             
-            draw(k0, k1, k2, k3, drawCubic: drawCubic)
+            draw(k0, k1, k2, k3, operation: operation)
         }
     }
 }
 
-extension Shape {
+extension Shape.Component {
     
-    public func render(triangle: (Point, Point, Point) -> Void, quadratic: (Point, Point, Point) -> Void, cubic: (Point, Point, Point, Vector, Vector, Vector) -> Void) {
+    public func render(_ operation: (Shape.RasterOperation) -> Void) {
         
         @inline(__always)
-        func drawCubic(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point, drawTriangle: (Point, Point, Point) -> Void, drawQuad: (Point, Point, Point) -> Void, drawCubic: (Point, Point, Point, Vector, Vector, Vector) -> Void) {
+        func drawCubic(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point, operation: (Shape.RasterOperation) -> Void) {
             
             let bezier = Bezier(p0, p1, p2, p3)
             let inflection = bezier.inflection
@@ -212,19 +221,19 @@ extension Shape {
                     
                     if split_t.count == 0 {
                         
-                        _cubic(p0, p1, p2, p3, drawQuad: drawQuad, drawCubic: drawCubic)
+                        _cubic(p0, p1, p2, p3, operation: operation)
                     } else {
                         
                         let beziers = bezier.split(split_t)
                         
-                        drawTriangle(p0, beziers.last![0], beziers.last![3])
+                        operation(.triangle(p0, beziers.last![0], beziers.last![3]))
                         
                         beziers.forEach {
-                            _cubic($0[0], $0[1], $0[2], $0[3], drawQuad: drawQuad, drawCubic: drawCubic)
+                            _cubic($0[0], $0[1], $0[2], $0[3], operation: operation)
                         }
                     }
                 } else {
-                    _cubic(p0, p1, p2, p3, drawQuad: drawQuad, drawCubic: drawCubic)
+                    _cubic(p0, p1, p2, p3, operation: operation)
                 }
             } else {
                 
@@ -232,45 +241,53 @@ extension Shape {
                 
                 for b in bezier.split(inflection) {
                     if let last = last {
-                        drawTriangle(p0, last, b[3])
+                        operation(.triangle(p0, last, b[3]))
                     }
-                    _cubic(b[0], b[1], b[2], b[3], drawQuad: drawQuad, drawCubic: drawCubic)
+                    _cubic(b[0], b[1], b[2], b[3], operation: operation)
                     last = b[3]
                 }
             }
         }
         
-        for component in self {
+        if let first = self.first {
             
-            if let first = component.first {
-                
-                var last = component.start
-                
-                switch first {
-                case let .line(q1): last = q1
+            var last = self.start
+            
+            switch first {
+            case let .line(q1): last = q1
+            case let .quad(q1, q2):
+                operation(.quadratic(last, q1, q2))
+                last = q2
+            case let .cubic(q1, q2, q3):
+                drawCubic(last, q1, q2, q3, operation: operation)
+                last = q3
+            }
+            for segment in self.dropFirst() {
+                switch segment {
+                case let .line(q1):
+                    operation(.triangle(self.start, last, q1))
+                    last = q1
                 case let .quad(q1, q2):
-                    quadratic(last, q1, q2)
+                    operation(.triangle(self.start, last, q2))
+                    operation(.quadratic(last, q1, q2))
                     last = q2
                 case let .cubic(q1, q2, q3):
-                    drawCubic(last, q1, q2, q3, drawTriangle: triangle, drawQuad: quadratic, drawCubic: cubic)
+                    operation(.triangle(self.start, last, q3))
+                    drawCubic(last, q1, q2, q3, operation: operation)
                     last = q3
                 }
-                for segment in component.dropFirst() {
-                    switch segment {
-                    case let .line(q1):
-                        triangle(component.start, last, q1)
-                        last = q1
-                    case let .quad(q1, q2):
-                        triangle(component.start, last, q2)
-                        quadratic(last, q1, q2)
-                        last = q2
-                    case let .cubic(q1, q2, q3):
-                        triangle(component.start, last, q3)
-                        drawCubic(last, q1, q2, q3, drawTriangle: triangle, drawQuad: quadratic, drawCubic: cubic)
-                        last = q3
-                    }
-                }
             }
+        }
+    }
+}
+
+extension Shape {
+    
+    @_inlineable
+    public func render(_ operation: (Shape.RasterOperation) -> Void) {
+        
+        for component in self {
+            component.render(operation)
         }
     }
 }
@@ -398,36 +415,32 @@ extension Shape {
             _loop(p0, p1, p2, width: width, height: height, stencil: &stencil, body: body)
         }
         
-        @inline(__always)
-        func triangle(_ p0: Point, _ p1: Point, _ p2: Point) {
-            
-            loop(p0, p1, p2) { _ in true }
-        }
-        
-        @inline(__always)
-        func quad(_ p0: Point, _ p1: Point, _ p2: Point) {
-            
-            if let transform = SDTransform(from: p0, p1, p2, to: Point(x: 0, y: 0), Point(x: 0.5, y: 0), Point(x: 1, y: 1)) {
+        self.render {
+            switch $0 {
+            case let .triangle(p0, p1, p2):
+                
+                loop(p0, p1, p2) { _ in true }
+                
+            case let .quadratic(p0, p1, p2):
+                
+                if let transform = SDTransform(from: p0, p1, p2, to: Point(x: 0, y: 0), Point(x: 0.5, y: 0), Point(x: 1, y: 1)) {
+                    loop(p0, p1, p2) { x, y in
+                        let _q = Point(x: x, y: y) * transform
+                        return _q.x * _q.x - _q.y < 0
+                    }
+                }
+                
+            case let .cubic(p0, p1, p2, v0, v1, v2):
+                
                 loop(p0, p1, p2) { x, y in
-                    let _q = Point(x: x, y: y) * transform
-                    return _q.x * _q.x - _q.y < 0
+                    if let p = Barycentric(p0, p1, p2, Point(x: x, y: y)) {
+                        let v = p.x * v0 + p.y * v1 + p.z * v2
+                        return v.x * v.x * v.x - v.y * v.z < 0
+                    }
+                    return false
                 }
             }
         }
-        
-        @inline(__always)
-        func cubic(_ p0: Point, _ p1: Point, _ p2: Point, _ v0: Vector, _ v1: Vector, _ v2: Vector) {
-            
-            loop(p0, p1, p2) { x, y in
-                if let p = Barycentric(p0, p1, p2, Point(x: x, y: y)) {
-                    let v = p.x * v0 + p.y * v1 + p.z * v2
-                    return v.x * v.x * v.x - v.y * v.z < 0
-                }
-                return false
-            }
-        }
-        
-        return self.render(triangle: triangle, quadratic: quad, cubic: cubic)
     }
     
     @_inlineable
