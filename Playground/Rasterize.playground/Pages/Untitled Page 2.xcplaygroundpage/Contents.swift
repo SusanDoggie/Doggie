@@ -14,15 +14,13 @@ shape.scale *= Double(size) / shape.boundary.height
 
 shape.center = Point(x: 0.5 * Double(size), y: 0.5 * Double(size))
 
-var triangle: [(Float, Float, Float, Float, Float, Float)] = []
-var quadratic: [(Float, Float, Float, Float, Float, Float)] = []
-var cubic: [(Float, Float, Float, Float, Float, Float, Float, Float, Float, Float, Float, Float, Float, Float, Float)] = []
+var operation: [(Int32, Float, Float, Float, Float, Float, Float, Float, Float, Float, Float, Float, Float, Float, Float, Float)] = []
 
 shape.identity.render {
     switch $0 {
-    case let .triangle(p0, p1, p2): triangle.append((Float(p0.x), Float(p0.y), Float(p1.x), Float(p1.y), Float(p2.x), Float(p2.y)))
-    case let .quadratic(p0, p1, p2): quadratic.append((Float(p0.x), Float(p0.y), Float(p1.x), Float(p1.y), Float(p2.x), Float(p2.y)))
-    case let .cubic(p0, p1, p2, v0, v1, v2): cubic.append((Float(p0.x), Float(p0.y), Float(p1.x), Float(p1.y), Float(p2.x), Float(p2.y), Float(v0.x), Float(v0.y), Float(v0.z), Float(v1.x), Float(v1.y), Float(v1.z), Float(v2.x), Float(v2.y), Float(v2.z)))
+    case let .triangle(p0, p1, p2): operation.append((0, Float(p0.x), Float(p0.y), Float(p1.x), Float(p1.y), Float(p2.x), Float(p2.y), 0, 0, 0, 0, 0, 0, 0, 0, 0))
+    case let .quadratic(p0, p1, p2): operation.append((1, Float(p0.x), Float(p0.y), Float(p1.x), Float(p1.y), Float(p2.x), Float(p2.y), 0, 0, 0, 0, 0, 0, 0, 0, 0))
+    case let .cubic(p0, p1, p2, v0, v1, v2): operation.append((2, Float(p0.x), Float(p0.y), Float(p1.x), Float(p1.y), Float(p2.x), Float(p2.y), Float(v0.x), Float(v0.y), Float(v0.z), Float(v1.x), Float(v1.y), Float(v1.z), Float(v2.x), Float(v2.y), Float(v2.z)))
     }
 }
 
@@ -71,22 +69,13 @@ let vertexData: [Float] = [-1.0, -1.0, 0.0,
 
 let vertexBuffer = device.makeBuffer(bytes: vertexData, length: vertexData.count * MemoryLayout.size(ofValue: vertexData[0]), options: [])
 
-let triangleBuffer = device.makeBuffer(bytes: triangle, length: triangle.count == 0 ? 1 : triangle.count * MemoryLayout.size(ofValue: triangle[0]), options: [])
-let quadraticBuffer = device.makeBuffer(bytes: quadratic, length: quadratic.count == 0 ? 1 : quadratic.count * MemoryLayout.size(ofValue: quadratic[0]), options: [])
-let cubicBuffer = device.makeBuffer(bytes: cubic, length: cubic.count == 0 ? 1 : cubic.count * MemoryLayout.size(ofValue: cubic[0]), options: [])
-
-let triangleCount = device.makeBuffer(bytes: [Int32(triangle.count)], length: MemoryLayout<Int32>.size, options: [])
-let quadraticCount = device.makeBuffer(bytes: [Int32(quadratic.count)], length: MemoryLayout<Int32>.size, options: [])
-let cubicCount = device.makeBuffer(bytes: [Int32(cubic.count)], length: MemoryLayout<Int32>.size, options: [])
+let operationBuffer = device.makeBuffer(bytes: operation, length: operation.count == 0 ? 1 : operation.count * MemoryLayout.size(ofValue: operation[0]), options: [])
+let operationCount = device.makeBuffer(bytes: [Int32(operation.count)], length: MemoryLayout<Int32>.size, options: [])
 
 renderEncoder.setVertexBuffer(vertexBuffer, offset: 0, at: 0)
 
-renderEncoder.setFragmentBuffer(triangleBuffer, offset: 0, at: 0)
-renderEncoder.setFragmentBuffer(triangleCount, offset: 0, at: 1)
-renderEncoder.setFragmentBuffer(quadraticBuffer, offset: 0, at: 2)
-renderEncoder.setFragmentBuffer(quadraticCount, offset: 0, at: 3)
-renderEncoder.setFragmentBuffer(cubicBuffer, offset: 0, at: 4)
-renderEncoder.setFragmentBuffer(cubicCount, offset: 0, at: 5)
+renderEncoder.setFragmentBuffer(operationBuffer, offset: 0, at: 0)
+renderEncoder.setFragmentBuffer(operationCount, offset: 0, at: 1)
 
 renderEncoder.drawPrimitives(type: .triangleStrip, vertexStart: 0, vertexCount: 4)
 
