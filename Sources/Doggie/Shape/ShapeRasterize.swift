@@ -278,7 +278,7 @@ private func scan(_ p0: Point, _ p1: Point, _ y: Double) -> (Double, Double)? {
 }
 
 @inline(__always)
-private func _loop<T: SignedInteger>(_ p0: Point, _ p1: Point, _ p2: Point, width: Int, height: Int, stencil: inout [T], body: (Int, Int) -> Bool) {
+private func _loop<T: SignedInteger>(_ p0: Point, _ p1: Point, _ p2: Point, width: Int, height: Int, stencil: inout [T], body: (Double, Double) -> Bool) {
     
     let d = cross(p1 - p0, p2 - p0)
     
@@ -308,7 +308,7 @@ private func _loop<T: SignedInteger>(_ p0: Point, _ p1: Point, _ p2: Point, widt
                     let winding: T = d.sign == .plus ? 1 : -1
                     
                     @inline(__always)
-                    func _drawLoop(_ range: CountableClosedRange<Int>, _ x0: Double, _ dx0: Double, _ x1: Double, _ dx1: Double, body: (Int, Int) -> Bool) {
+                    func _drawLoop(_ range: CountableClosedRange<Int>, _ x0: Double, _ dx0: Double, _ x1: Double, _ dx1: Double, body: (Double, Double) -> Bool) {
                         
                         let (min_x, min_dx, max_x, max_dx) = mid_x < q1.x ? (x0, dx0, x1, dx1) : (x1, dx1, x0, dx0)
                         
@@ -316,12 +316,14 @@ private func _loop<T: SignedInteger>(_ p0: Point, _ p1: Point, _ p2: Point, widt
                         var _max_x = max_x
                         
                         for y in range {
-                            if _min_x < _max_x {
+                            let _y = Double(y)
+                            if _min_x < _max_x && q0.y..<q2.y ~= _y {
                                 let __min_x = Int(_min_x.rounded().clamped(to: 0...Double(width)))
                                 let __max_x = Int(_max_x.rounded().clamped(to: 0...Double(width)))
                                 var pixel = buf + __min_x
-                                for x in __min_x..<__max_x {
-                                    if body(x, y) {
+                                for x in __min_x...__max_x {
+                                    let _x = Double(x)
+                                    if _min_x..<_max_x ~= _x && body(_x, _y) {
                                         pixel.pointee += winding
                                     }
                                     pixel += 1
@@ -337,20 +339,16 @@ private func _loop<T: SignedInteger>(_ p0: Point, _ p1: Point, _ p2: Point, widt
                         
                         if let (x0, dx0) = scan(q0, q2, Double(y1)), let (x2, dx2) = scan(q1, q2, Double(y1)) {
                             
-                            if y0 + 1 < y1, let (x0, dx0) = scan(q0, q2, Double(y0)), let (x1, dx1) = scan(q0, q1, Double(y0)) {
+                            if y0 < y1, let (x0, dx0) = scan(q0, q2, Double(y0)), let (x1, dx1) = scan(q0, q1, Double(y0)) {
                                 
                                 _drawLoop(y0...y1 - 1, x0, dx0, x1, dx1, body: body)
                             }
                             
-                            if y1 + 1 < y2 {
-                                _drawLoop(y1...y2 - 1, x0, dx0, x2, dx2, body: body)
-                            }
+                            _drawLoop(y1...y2, x0, dx0, x2, dx2, body: body)
                             
                         } else if let (x0, dx0) = scan(q0, q2, Double(y0)), let (x1, dx1) = scan(q0, q1, Double(y0)) {
                             
-                            if y0 + 1 < y1 {
-                                _drawLoop(y0...y1 - 1, x0, dx0, x1, dx1, body: body)
-                            }
+                            _drawLoop(y0...y1, x0, dx0, x1, dx1, body: body)
                         }
                     } else {
                         
@@ -358,15 +356,13 @@ private func _loop<T: SignedInteger>(_ p0: Point, _ p1: Point, _ p2: Point, widt
                             
                             _drawLoop(y0...y1, x0, dx0, x1, dx1, body: body)
                             
-                            if y1 + 2 < y2, let (x0, dx0) = scan(q0, q2, Double(y1)), let (x2, dx2) = scan(q1, q2, Double(y1)) {
+                            if y1 < y2, let (x0, dx0) = scan(q0, q2, Double(y1)), let (x2, dx2) = scan(q1, q2, Double(y1)) {
                                 
-                                _drawLoop(y1 + 1...y2 - 1, x0 + dx0, dx0, x2 + dx2, dx2, body: body)
+                                _drawLoop(y1 + 1...y2, x0 + dx0, dx0, x2 + dx2, dx2, body: body)
                             }
                         } else if let (x0, dx0) = scan(q0, q2, Double(y1)), let (x2, dx2) = scan(q1, q2, Double(y1)) {
                             
-                            if y1 + 1 < y2 {
-                                _drawLoop(y1...y2 - 1, x0, dx0, x2, dx2, body: body)
-                            }
+                            _drawLoop(y1...y2, x0, dx0, x2, dx2, body: body)
                         }
                     }
                 }
@@ -389,7 +385,7 @@ extension Shape {
         }
         
         @inline(__always)
-        func loop(_ p0: Point, _ p1: Point, _ p2: Point, body: (Int, Int) -> Bool) {
+        func loop(_ p0: Point, _ p1: Point, _ p2: Point, body: (Double, Double) -> Bool) {
             
             _loop(p0, p1, p2, width: width, height: height, stencil: &stencil, body: body)
         }
