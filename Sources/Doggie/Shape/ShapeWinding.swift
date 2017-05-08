@@ -71,8 +71,9 @@ extension Shape.Component {
             }
         }
         
-        for (p0, segment) in self.spaces.search(overlap: Rect.bound([p, Point(x: maxX, y: p.y)]).inset(dx: -1e-14, dy: -1e-14)).lazy.map({ self.bezier[$0] }) {
-            switch segment {
+        for bezier in self.spaces.search(overlap: Rect.bound([p, Point(x: maxX, y: p.y)]).inset(dx: -1e-14, dy: -1e-14)).lazy.map({ self.bezier[$0] }) {
+            let p0 = bezier.start
+            switch bezier.segment {
             case let .line(p1):
                 
                 let s = p1.y - p0.y

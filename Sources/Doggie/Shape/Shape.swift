@@ -326,10 +326,19 @@ extension Shape.Component : RandomAccessCollection, MutableCollection {
 extension Shape.Segment {
     
     public var end: Point {
-        switch self {
-        case let .line(p1): return p1
-        case let .quad(_, p2): return p2
-        case let .cubic(_, _, p3): return p3
+        get {
+            switch self {
+            case let .line(p1): return p1
+            case let .quad(_, p2): return p2
+            case let .cubic(_, _, p3): return p3
+            }
+        }
+        set {
+            switch self {
+            case .line: self = .line(newValue)
+            case let .quad(p1, _): self = .quad(p1, newValue)
+            case let .cubic(p1, p2, _): self = .cubic(p1, p2, newValue)
+            }
         }
     }
 }
@@ -380,21 +389,28 @@ extension Shape.Component {
         public var endIndex: Int {
             return component.endIndex
         }
-        public subscript(position: Int) -> (Point, Shape.Segment) {
+        public subscript(position: Int) -> Element {
             get {
-                return (position == 0 ? component.start : component[position - 1].end, component[position])
+                return Element(start: position == 0 ? component.start : component[position - 1].end, segment: component[position])
             }
             set {
                 if position == 0 {
-                    component.start = newValue.0
+                    component.start = newValue.start
                 } else {
-                    switch component[position - 1] {
-                    case .line: component[position - 1] = .line(newValue.0)
-                    case let .quad(p1, _): component[position - 1] = .quad(p1, newValue.0)
-                    case let .cubic(p1, p2, _): component[position - 1] = .cubic(p1, p2, newValue.0)
-                    }
+                    component[position - 1].end = newValue.start
                 }
-                component[position] = newValue.1
+                component[position] = newValue.segment
+            }
+        }
+        
+        public struct Element {
+            
+            public var start: Point
+            public var segment: Shape.Segment
+            
+            public init(start: Point, segment: Shape.Segment) {
+                self.start = start
+                self.segment = segment
             }
         }
     }
@@ -405,6 +421,29 @@ extension Shape.Component {
         }
         set {
             self = newValue.component
+        }
+    }
+}
+
+extension Bezier where Element == Point {
+    
+    public init(_ bezier: Shape.Component.BezierCollection.Element) {
+        switch bezier.segment {
+        case let .line(p1): self.init(bezier.start, p1)
+        case let .quad(p1, p2): self.init(bezier.start, p1, p2)
+        case let .cubic(p1, p2, p3): self.init(bezier.start, p1, p2, p3)
+        }
+    }
+}
+
+extension Shape.Component.BezierCollection.Element {
+    
+    public var end: Point {
+        get {
+            return segment.end
+        }
+        set {
+            segment.end = newValue
         }
     }
 }
