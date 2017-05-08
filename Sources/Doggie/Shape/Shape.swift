@@ -62,7 +62,7 @@ public struct Shape : RandomAccessCollection, MutableCollection, ExpressibleByAr
     
     fileprivate var components: [Component]
     
-    public var baseTransform : SDTransform = SDTransform.Identity {
+    public var baseTransform : SDTransform = SDTransform.identity {
         willSet {
             if baseTransform != newValue {
                 cache = Cache(originalBoundary: cache.originalBoundary, boundary: nil, table: cache.table)
@@ -90,16 +90,16 @@ public struct Shape : RandomAccessCollection, MutableCollection, ExpressibleByAr
     public var transform : SDTransform {
         get {
             let center = self.center
-            let translate = SDTransform.Translate(x: center.x, y: center.y)
-            let scale = SDTransform.Scale(self.scale)
-            let rotate = SDTransform.Rotate(self.rotate)
+            let translate = SDTransform.translate(x: center.x, y: center.y)
+            let scale = SDTransform.scale(self.scale)
+            let rotate = SDTransform.rotate(self.rotate)
             return baseTransform * translate.inverse * scale * rotate * translate
         }
         set {
             let center = originalBoundary.center * newValue
-            let translate = SDTransform.Translate(x: center.x, y: center.y)
-            let scale = SDTransform.Scale(self.scale)
-            let rotate = SDTransform.Rotate(self.rotate)
+            let translate = SDTransform.translate(x: center.x, y: center.y)
+            let scale = SDTransform.scale(self.scale)
+            let rotate = SDTransform.rotate(self.rotate)
             baseTransform = newValue * translate.inverse * rotate.inverse * scale.inverse * translate
         }
     }
@@ -132,7 +132,7 @@ public struct Shape : RandomAccessCollection, MutableCollection, ExpressibleByAr
                 var boundary = cache.boundary
                 let offset = newValue - _center
                 boundary?.origin += offset
-                baseTransform *= SDTransform.Translate(x: offset.x, y: offset.y)
+                baseTransform *= SDTransform.translate(x: offset.x, y: offset.y)
                 cache = Cache(originalBoundary: cache.originalBoundary, boundary: boundary, table: cache.table)
             }
         }
@@ -508,7 +508,7 @@ extension Shape {
         return Ellipse(center: center, radius: Radius(x: radius, y: radius))
     }
     public static func Ellipse(center: Point, radius: Radius) -> Shape {
-        let scale = SDTransform.Scale(x: radius.x, y: radius.y)
+        let scale = SDTransform.scale(x: radius.x, y: radius.y)
         let points = BezierCircle.lazy.map { $0 * scale + center }
         let segments: [Shape.Segment] = [.cubic(points[1], points[2], points[3]), .cubic(points[4], points[5], points[6]), .cubic(points[7], points[8], points[9]), .cubic(points[10], points[11], points[12])]
         return [Component(start: points[0], closed: true, segments: segments)]
@@ -574,12 +574,12 @@ extension Shape : RangeReplaceableCollection {
 extension Shape {
     
     public var identity : Shape {
-        if rotate == 0 && scale == 1 && baseTransform == SDTransform.Identity {
+        if rotate == 0 && scale == 1 && baseTransform == SDTransform.identity {
             return self
         }
         if cache.identity == nil {
             let transform = self.transform
-            if transform == SDTransform.Identity {
+            if transform == SDTransform.identity {
                 let _path = Shape(self.components)
                 _path.cache.originalBoundary = cache.originalBoundary
                 _path.cache.boundary = cache.boundary

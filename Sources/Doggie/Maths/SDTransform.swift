@@ -153,7 +153,7 @@ extension SDTransform {
     ///     ⎝ 0 0 1 ⎠
     ///
     @_inlineable
-    public static var Identity : SDTransform {
+    public static var identity : SDTransform {
         
         return SDTransform(a: 1, b: 0, c: 0,
                            d: 0, e: 1, f: 0)
@@ -167,7 +167,7 @@ extension SDTransform {
     ///     ⎝    0      0    1 ⎠
     ///
     @_inlineable
-    public static func Rotate(_ angle: Double) -> SDTransform {
+    public static func rotate(_ angle: Double) -> SDTransform {
         
         return SDTransform(a: cos(angle), b: -sin(angle), c: 0,
                            d: sin(angle), e: cos(angle), f: 0)
@@ -181,7 +181,7 @@ extension SDTransform {
     ///     ⎝   0    0 1 ⎠
     ///
     @_inlineable
-    public static func SkewX(_ angle: Double) -> SDTransform {
+    public static func skewX(_ angle: Double) -> SDTransform {
         
         return SDTransform(a: 1, b: tan(angle), c: 0,
                            d: 0, e: 1, f: 0)
@@ -195,7 +195,7 @@ extension SDTransform {
     ///     ⎝ 0   0    1 ⎠
     ///
     @_inlineable
-    public static func SkewY(_ angle: Double) -> SDTransform {
+    public static func skewY(_ angle: Double) -> SDTransform {
         
         return SDTransform(a: 1, b: 0, c: 0,
                            d: tan(angle), e: 1, f: 0)
@@ -209,7 +209,7 @@ extension SDTransform {
     ///     ⎝ 0 0 1 ⎠
     ///
     @_inlineable
-    public static func Scale(_ scale: Double) -> SDTransform {
+    public static func scale(_ scale: Double) -> SDTransform {
         
         return SDTransform(a: scale, b: 0, c: 0,
                            d: 0, e: scale, f: 0)
@@ -223,7 +223,7 @@ extension SDTransform {
     ///     ⎝ 0 0 1 ⎠
     ///
     @_inlineable
-    public static func Scale(x: Double = 1, y: Double = 1) -> SDTransform {
+    public static func scale(x: Double = 1, y: Double = 1) -> SDTransform {
         
         return SDTransform(a: x, b: 0, c: 0,
                            d: 0, e: y, f: 0)
@@ -237,7 +237,7 @@ extension SDTransform {
     ///     ⎝ x y 1 ⎠
     ///
     @_inlineable
-    public static func Translate(x: Double = 0, y: Double = 0) -> SDTransform {
+    public static func translate(x: Double = 0, y: Double = 0) -> SDTransform {
         
         return SDTransform(a: 1, b: 0, c: x,
                            d: 0, e: 1, f: y)
@@ -251,7 +251,7 @@ extension SDTransform {
     ///     ⎝ 2x 0 1 ⎠
     ///
     @_inlineable
-    public static func ReflectX(_ x: Double = 0) -> SDTransform {
+    public static func reflectX(_ x: Double = 0) -> SDTransform {
         
         return SDTransform(a: -1, b: 0, c: 2 * x,
                            d: 0, e: 1, f: 0)
@@ -265,7 +265,7 @@ extension SDTransform {
     ///     ⎝ 0 2y 1 ⎠
     ///
     @_inlineable
-    public static func ReflectY(_ y: Double = 0) -> SDTransform {
+    public static func reflectY(_ y: Double = 0) -> SDTransform {
         
         return SDTransform(a: 1, b: 0, c: 0,
                            d: 0, e: -1, f: 2 * y)

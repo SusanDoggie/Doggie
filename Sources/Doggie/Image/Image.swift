@@ -109,7 +109,7 @@ struct ImageBase<ColorPixel: ColorPixelProtocol, ColorSpace : ColorSpaceProtocol
     @_inlineable
     func resampling(s_width: Int, width: Int, height: Int, algorithm: Image.ResamplingAlgorithm) -> ImageBaseProtocol {
         
-        return resampling(s_width: s_width, width: width, height: height, transform: SDTransform.Scale(x: Double(width) / Double(s_width), y: Double(height) / Double(buffer.count / s_width)), algorithm: algorithm)
+        return resampling(s_width: s_width, width: width, height: height, transform: SDTransform.scale(x: Double(width) / Double(s_width), y: Double(height) / Double(buffer.count / s_width)), algorithm: algorithm)
     }
     @_versioned
     @_inlineable

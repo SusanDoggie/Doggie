@@ -159,7 +159,7 @@ extension Matrix {
     ///     ⎝ 0 0 0 1 ⎠
     ///
     @_inlineable
-    public static var Identity : Matrix {
+    public static var identity : Matrix {
         
         return Matrix(a: 1, b: 0, c: 0, d: 0,
                       e: 0, f: 1, g: 0, h: 0,
@@ -175,7 +175,7 @@ extension Matrix {
     ///     ⎝ 0    0      0    1 ⎠
     ///
     @_inlineable
-    public static func RotateX(_ angle: Double) -> Matrix {
+    public static func rotateX(_ angle: Double) -> Matrix {
         
         return Matrix(a: 1, b: 0, c: 0, d: 0,
                       e: 0, f: cos(angle), g: -sin(angle), h: 0,
@@ -191,7 +191,7 @@ extension Matrix {
     ///     ⎝   0    0    0    1 ⎠
     ///
     @_inlineable
-    public static func RotateY(_ angle: Double) -> Matrix {
+    public static func rotateY(_ angle: Double) -> Matrix {
         
         return Matrix(a: cos(angle), b: 0, c: sin(angle), d: 0,
                       e: 0, f: 1, g: 0, h: 0,
@@ -207,7 +207,7 @@ extension Matrix {
     ///     ⎝    0      0    0 1 ⎠
     ///
     @_inlineable
-    public static func RotateZ(_ angle: Double) -> Matrix {
+    public static func rotateZ(_ angle: Double) -> Matrix {
         
         return Matrix(a: cos(angle), b: -sin(angle), c: 0, d: 0,
                       e: sin(angle), f: cos(angle), g: 0, h: 0,
@@ -223,7 +223,7 @@ extension Matrix {
     ///     ⎝ 0 0 0 1 ⎠
     ///
     @_inlineable
-    public static func Scale(_ scale: Double) -> Matrix {
+    public static func scale(_ scale: Double) -> Matrix {
         
         return Matrix(a: scale, b: 0, c: 0, d: 0,
                       e: 0, f: scale, g: 0, h: 0,
@@ -239,7 +239,7 @@ extension Matrix {
     ///     ⎝ 0 0 0 1 ⎠
     ///
     @_inlineable
-    public static func Scale(x: Double = 1, y: Double = 1, z: Double = 1) -> Matrix {
+    public static func scale(x: Double = 1, y: Double = 1, z: Double = 1) -> Matrix {
         
         return Matrix(a: x, b: 0, c: 0, d: 0,
                       e: 0, f: y, g: 0, h: 0,
@@ -255,7 +255,7 @@ extension Matrix {
     ///     ⎝ x y z 1 ⎠
     ///
     @_inlineable
-    public static func Translate(x: Double = 0, y: Double = 0, z: Double = 0) -> Matrix {
+    public static func translate(x: Double = 0, y: Double = 0, z: Double = 0) -> Matrix {
         
         return Matrix(a: 1, b: 0, c: 0, d: x,
                       e: 0, f: 1, g: 0, h: y,
@@ -271,7 +271,7 @@ extension Matrix {
     ///     ⎝ 2x 0 0 1 ⎠
     ///
     @_inlineable
-    public static func ReflectX(_ x: Double = 0) -> Matrix {
+    public static func reflectX(_ x: Double = 0) -> Matrix {
         
         return Matrix(a: -1, b: 0, c: 0, d: 2 * x,
                       e: 0, f: 1, g: 0, h: 0,
@@ -287,7 +287,7 @@ extension Matrix {
     ///     ⎝ 0 2y 0 1 ⎠
     ///
     @_inlineable
-    public static func ReflectY(_ y: Double = 0) -> Matrix {
+    public static func reflectY(_ y: Double = 0) -> Matrix {
         
         return Matrix(a: 1, b: 0, c: 0, d: 0,
                       e: 0, f: -1, g: 0, h: 2 * y,
@@ -303,7 +303,7 @@ extension Matrix {
     ///     ⎝ 0 0 2z 1 ⎠
     ///
     @_inlineable
-    public static func ReflectZ(_ z: Double = 0) -> Matrix {
+    public static func reflectZ(_ z: Double = 0) -> Matrix {
         
         return Matrix(a: 1, b: 0, c: 0, d: 0,
                       e: 0, f: 1, g: 0, h: 0,
@@ -311,11 +311,11 @@ extension Matrix {
     }
     
     @_inlineable
-    public static func Rotate(roll x: Double, pitch y: Double, yaw z: Double) -> Matrix {
-        return RotateX(x) * RotateY(y) * RotateZ(z)
+    public static func rotate(roll x: Double, pitch y: Double, yaw z: Double) -> Matrix {
+        return rotateX(x) * rotateY(y) * rotateZ(z)
     }
     @_inlineable
-    public static func Rotate(radian: Double, x: Double, y: Double, z: Double) -> Matrix {
+    public static func rotate(radian: Double, x: Double, y: Double, z: Double) -> Matrix {
         let _abs = sqrt(x * x + y * y + z * z)
         let vx = x / _abs
         let vy = y / _abs
@@ -338,8 +338,8 @@ extension Matrix {
     }
     
     @_inlineable
-    public static func CameraTransform(position tx: Double, _ ty: Double, _ tz: Double, rotate ax: Double, _ ay: Double, _ az: Double) -> Matrix {
-        return Translate(x: -tx, y: -ty, z: -tz) * RotateZ(-az) * RotateY(-ay) * RotateX(-ax)
+    public static func camera(position tx: Double, _ ty: Double, _ tz: Double, rotate ax: Double, _ ay: Double, _ az: Double) -> Matrix {
+        return translate(x: -tx, y: -ty, z: -tz) * rotateZ(-az) * rotateY(-ay) * rotateX(-ax)
     }
 }
 

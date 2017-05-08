@@ -216,7 +216,7 @@ extension CIEXYZColorSpace {
     @_versioned
     @_inlineable
     var normalizeMatrix: Matrix {
-        return Matrix.Translate(x: -black.x, y: -black.y, z: -black.z) * Matrix.Scale(x: white.x / (white.y * (white.x - black.x)), y: 1 / (white.y - black.y), z: white.z / (white.y * (white.z - black.z)))
+        return Matrix.translate(x: -black.x, y: -black.y, z: -black.z) * Matrix.scale(x: white.x / (white.y * (white.x - black.x)), y: 1 / (white.y - black.y), z: white.z / (white.y * (white.z - black.z)))
     }
     
     @_versioned
@@ -227,7 +227,7 @@ extension CIEXYZColorSpace {
         let m2 = other.normalizeMatrix * matrix
         let _s = self.white * m1
         let _d = other.white * m2
-        return m1 * Matrix.Scale(x: _d.x / _s.x, y: _d.y / _s.y, z: _d.z / _s.z) as Matrix * m2.inverse
+        return m1 * Matrix.scale(x: _d.x / _s.x, y: _d.y / _s.y, z: _d.z / _s.z) as Matrix * m2.inverse
     }
     
     public enum ChromaticAdaptationAlgorithm {
@@ -244,7 +244,7 @@ extension CIEXYZColorSpace.ChromaticAdaptationAlgorithm {
     @_inlineable
     var matrix: Matrix {
         switch self {
-        case .xyzScaling: return Matrix.Identity
+        case .xyzScaling: return Matrix.identity
         case .vonKries: return Matrix(a: 0.4002400, b: 0.7076000, c: -0.0808100, d: 0,
                                       e: -0.2263000, f: 1.1653200, g: 0.0457000, h: 0,
                                       i: 0.0000000, j: 0.0000000, k: 0.9182200, l: 0)
@@ -425,7 +425,7 @@ public class CalibratedRGBColorSpace : ToneResponseColorSpaceProtocol {
         
         let c = XYZColorModel(x: _white.x / _white.y, y: 1, z: _white.z / _white.y) * p.inverse
         
-        self.transferMatrix = Matrix.Scale(x: c.x, y: c.y, z: c.z) * p * normalizeMatrix.inverse
+        self.transferMatrix = Matrix.scale(x: c.x, y: c.y, z: c.z) * p * normalizeMatrix.inverse
     }
     
     @_inlineable

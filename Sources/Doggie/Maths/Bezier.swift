@@ -462,9 +462,9 @@ extension Bezier where Element == Point {
         case ._2, ._3: return []
         case let ._4(p0, p1, p2, p3):
             let p = (p3 - p0).phase
-            let _p1 = (p1 - p0) * SDTransform.Rotate(-p)
-            let _p2 = (p2 - p0) * SDTransform.Rotate(-p)
-            let _p3 = (p3 - p0) * SDTransform.Rotate(-p)
+            let _p1 = (p1 - p0) * SDTransform.rotate(-p)
+            let _p2 = (p2 - p0) * SDTransform.rotate(-p)
+            let _p3 = (p3 - p0) * SDTransform.rotate(-p)
             let a = _p2.x * _p1.y
             let b = _p3.x * _p1.y
             let c = _p1.x * _p2.y
@@ -931,7 +931,7 @@ public func BezierOffset(_ p: [Point], _ a: Double) -> [[Point]] {
         if let ph0 = ph0, let ph1 = d.first(where: { !$0.x.almostZero() || !$0.y.almostZero() })?.phase {
             let angle = (ph1 - ph0).remainder(dividingBy: 2 * Double.pi)
             if !angle.almostZero() {
-                let rotate = SDTransform.Rotate(ph0 - 0.5 * Double.pi)
+                let rotate = SDTransform.rotate(ph0 - 0.5 * Double.pi)
                 let offset = points[0]
                 let bezierArc = BezierArc(angle).lazy.map { $0 * rotate * a + offset }
                 for i in 0..<bezierArc.count / 3 {
@@ -970,7 +970,7 @@ private func _BezierOffset(_ p0: Point, _ p1: Point, _ p2: Point, _ a: Double, _
         if let w = Bezier(p0, p1, p2).stationary.first, !w.almostZero() && !w.almostEqual(1) && 0...1 ~= w {
             let g = Bezier(p0, p1, p2).eval(w)
             let angle = ph0 - 0.5 * Double.pi
-            let bezierCircle = BezierCircle.lazy.map { $0 * SDTransform.Rotate(angle) * a + g }
+            let bezierCircle = BezierCircle.lazy.map { $0 * SDTransform.rotate(angle) * a + g }
             let v0 = OptionOneCollection(BezierOffset(p0, g, a).map { [$0, $1] })
             let v1 = OptionOneCollection([bezierCircle[0], bezierCircle[1], bezierCircle[2], bezierCircle[3]])
             let v2 = OptionOneCollection([bezierCircle[3], bezierCircle[4], bezierCircle[5], bezierCircle[6]])
@@ -1020,10 +1020,10 @@ public func BezierTweening(start: [Point], end: [Point], _ t: Double) -> [Point]
     let d1 = start_end - start_start
     let d2 = end_end - end_start
     
-    let transform1 = SDTransform.Translate(x: -start_start.x, y: -start_start.y) * SDTransform.Scale(1 / d1.magnitude) * SDTransform.Rotate(-d1.phase)
+    let transform1 = SDTransform.translate(x: -start_start.x, y: -start_start.y) * SDTransform.scale(1 / d1.magnitude) * SDTransform.rotate(-d1.phase)
     let s = Bezier(start.map { $0 * transform1 })
     
-    let transform2 = SDTransform.Translate(x: -end_start.x, y: -end_start.y) * SDTransform.Scale(1 / d2.magnitude) * SDTransform.Rotate(-d2.phase)
+    let transform2 = SDTransform.translate(x: -end_start.x, y: -end_start.y) * SDTransform.scale(1 / d2.magnitude) * SDTransform.rotate(-d2.phase)
     let e = Bezier(end.map { $0 * transform2 })
     
     let m = (1 - t) * s + t * e
@@ -1032,7 +1032,7 @@ public func BezierTweening(start: [Point], end: [Point], _ t: Double) -> [Point]
     let m_end = (1 - t) * start_end + t * end_end
     let m_d = m_end - m_start
     
-    let transform3 = SDTransform.Rotate(m_d.phase) * SDTransform.Scale(m_d.magnitude) * SDTransform.Translate(x: m_start.x, y: m_start.y)
+    let transform3 = SDTransform.rotate(m_d.phase) * SDTransform.scale(m_d.magnitude) * SDTransform.translate(x: m_start.x, y: m_start.y)
     return m.points.map { $0 * transform3 }
 }
 

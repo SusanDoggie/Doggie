@@ -181,7 +181,7 @@ extension Shape.StrokeBuffer {
                     let last_point = last!.end
                     let a = last!.endDirection.phase - 0.5 * Double.pi
                     let r = 0.5 * width
-                    let bezierCircle = BezierCircle.lazy.map { $0 * SDTransform.Rotate(a) * r + last_point }
+                    let bezierCircle = BezierCircle.lazy.map { $0 * SDTransform.rotate(a) * r + last_point }
                     buffer1.append(.cubic(bezierCircle[1], bezierCircle[2], bezierCircle[3]))
                     buffer1.append(.cubic(bezierCircle[4], bezierCircle[5], bezierCircle[6]))
                 }
@@ -189,7 +189,7 @@ extension Shape.StrokeBuffer {
                     let start_point = first!.start
                     let a = first!.startDirection.phase - 0.5 * Double.pi
                     let r = -0.5 * width
-                    let bezierCircle = BezierCircle.lazy.map { $0 * SDTransform.Rotate(a) * r + start_point }
+                    let bezierCircle = BezierCircle.lazy.map { $0 * SDTransform.rotate(a) * r + start_point }
                     cap_buffer.append(.cubic(bezierCircle[1], bezierCircle[2], bezierCircle[3]))
                     cap_buffer.append(.cubic(bezierCircle[4], bezierCircle[5], bezierCircle[6]))
                 }
@@ -300,7 +300,7 @@ extension Shape.StrokeBuffer {
                     do {
                         let a = ph0 - 0.5 * Double.pi
                         let r = 0.5 * width
-                        let bezierArc = BezierArc(angle).lazy.map { $0 * SDTransform.Rotate(a) * r + segment.start }
+                        let bezierArc = BezierArc(angle).lazy.map { $0 * SDTransform.rotate(a) * r + segment.start }
                         for i in 0..<bezierArc.count / 3 {
                             buffer1.append(.cubic(bezierArc[i * 3 + 1], bezierArc[i * 3 + 2], bezierArc[i * 3 + 3]))
                         }
@@ -317,7 +317,7 @@ extension Shape.StrokeBuffer {
                     do {
                         let a = ph1 - 0.5 * Double.pi
                         let r = -0.5 * width
-                        let bezierArc = BezierArc(-angle).lazy.map { $0 * SDTransform.Rotate(a) * r + segment.start }
+                        let bezierArc = BezierArc(-angle).lazy.map { $0 * SDTransform.rotate(a) * r + segment.start }
                         reverse_start = bezierArc[0]
                         for i in (0..<bezierArc.count / 3).reversed() {
                             buffer2.append(.cubic(bezierArc[i * 3 + 1], bezierArc[i * 3 + 2], bezierArc[i * 3 + 3]))

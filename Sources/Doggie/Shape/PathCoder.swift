@@ -354,7 +354,7 @@ private func arcDetails(_ start: Point, _ end: Point, _ radius: Radius, _ rotate
 @_transparent
 private func bezierArc(_ start: Point, _ end: Point, _ radius: Radius, _ rotate: Double, _ largeArc: Bool, _ sweep: Bool) -> [Shape.Segment] {
     let (center, radius) = arcDetails(start, end, radius, rotate, largeArc, sweep)
-    let _arc_transform = SDTransform.Scale(x: radius.x, y: radius.y) * SDTransform.Rotate(rotate)
+    let _arc_transform = SDTransform.scale(x: radius.x, y: radius.y) * SDTransform.rotate(rotate)
     let _arc_transform_inverse = _arc_transform.inverse
     let _begin = (start - center) * _arc_transform_inverse
     let _end = (end - center) * _arc_transform_inverse
@@ -369,7 +369,7 @@ private func bezierArc(_ start: Point, _ end: Point, _ radius: Radius, _ rotate:
             endAngle -= 2 * Double.pi
         }
     }
-    let _transform = SDTransform.Rotate(startAngle) * _arc_transform
+    let _transform = SDTransform.rotate(startAngle) * _arc_transform
     let point = BezierArc(endAngle - startAngle).lazy.map { $0 * _transform + center }
     var result: [Shape.Segment] = []
     if point.count > 1 {
