@@ -41,7 +41,7 @@ class ImageTest: XCTestCase {
     
     var sample: Image = {
         
-        var sample = Image(width: 100, height: 100, pixel: ARGB32ColorPixel(), colorSpace: CalibratedRGBColorSpace.linearSRGB)
+        var sample = Image(width: 100, height: 100, pixel: ARGB32ColorPixel(), colorSpace: CalibratedRGBColorSpace.sRGB.linearTone)
         
         #if os(macOS)
             if #available(OSX 10.12, *) {
