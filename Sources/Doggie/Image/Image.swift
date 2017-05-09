@@ -41,9 +41,6 @@ protocol ImageBaseProtocol {
     func convert<RPixel: ColorPixelProtocol, RSpace : ColorSpaceProtocol>(pixel: RPixel.Type, colorSpace: RSpace, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm) -> ImageBaseProtocol where RPixel.Model == RSpace.Model
     
     @_versioned
-    func resampling(s_width: Int, width: Int, height: Int, algorithm: Image.ResamplingAlgorithm) -> ImageBaseProtocol
-    
-    @_versioned
     func resampling(s_width: Int, width: Int, height: Int, transform: SDTransform, algorithm: Image.ResamplingAlgorithm) -> ImageBaseProtocol
     
     @_versioned
@@ -58,7 +55,7 @@ protocol ImageBaseProtocol {
 struct ImageBase<ColorPixel: ColorPixelProtocol, ColorSpace : ColorSpaceProtocol> : ImageBaseProtocol where ColorPixel.Model == ColorSpace.Model {
     
     @_versioned
-    var buffer: [ColorPixel]
+    var buffer: Data
     
     @_versioned
     var colorSpace: ColorSpace
@@ -68,10 +65,20 @@ struct ImageBase<ColorPixel: ColorPixelProtocol, ColorSpace : ColorSpaceProtocol
     
     @_versioned
     @_inlineable
-    init(buffer: [ColorPixel], colorSpace: ColorSpace, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm) {
+    init(buffer: Data, colorSpace: ColorSpace, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm) {
         self.buffer = buffer
         self.colorSpace = colorSpace
         self.algorithm = algorithm
+    }
+    
+    @_versioned
+    @_inlineable
+    init(size: Int, pixel: ColorPixel, colorSpace: ColorSpace, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm) {
+        
+        var data = Data(count: MemoryLayout<ColorPixel>.stride * size)
+        data.withUnsafeMutableBytes { _ = UnsafeMutableBufferPointer(start: $0, count: size).initialize(from: repeatElement(pixel, count: size)) }
+        
+        self.init(buffer: data, colorSpace: colorSpace, algorithm: algorithm)
     }
     
     @_versioned
@@ -84,12 +91,16 @@ struct ImageBase<ColorPixel: ColorPixelProtocol, ColorSpace : ColorSpaceProtocol
     @_inlineable
     subscript(position: Int) -> Color {
         get {
-            let pixel = buffer[position]
-            return Color(colorSpace: colorSpace, color: pixel.color, opacity: pixel.opacity)
+            return buffer.withUnsafeBytes { (ptr: UnsafePointer<ColorPixel>) in
+                let pixel = ptr[position]
+                return Color(colorSpace: colorSpace, color: pixel.color, opacity: pixel.opacity)
+            }
         }
         set {
-            let color = newValue.convert(to: colorSpace, algorithm: algorithm)
-            buffer[position] = ColorPixel(color: color.color as! ColorSpace.Model, opacity: color.opacity)
+            buffer.withUnsafeMutableBytes { (ptr: UnsafeMutablePointer<ColorPixel>) in
+                let color = newValue.convert(to: colorSpace, algorithm: algorithm)
+                ptr[position] = ColorPixel(color: color.color as! ColorSpace.Model, opacity: color.opacity)
+            }
         }
     }
     
@@ -102,32 +113,56 @@ struct ImageBase<ColorPixel: ColorPixelProtocol, ColorSpace : ColorSpaceProtocol
     @_versioned
     @_inlineable
     func convert<RPixel: ColorPixelProtocol, RSpace : ColorSpaceProtocol>(pixel: RPixel.Type, colorSpace: RSpace, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm) -> ImageBaseProtocol where RPixel.Model == RSpace.Model {
-        return ImageBase<RPixel, RSpace>(buffer: buffer.map { RPixel(color: self.colorSpace.convert($0.color, to: colorSpace, algorithm: algorithm), opacity: $0.opacity) }, colorSpace: colorSpace, algorithm: algorithm)
+        
+        return ImageBase<RPixel, RSpace>(buffer: buffer._map { (pixel: ColorPixel) in RPixel(color: self.colorSpace.convert(pixel.color, to: colorSpace, algorithm: algorithm), opacity: pixel.opacity) }, colorSpace: colorSpace, algorithm: algorithm)
     }
     
     @_versioned
     @_inlineable
-    func resampling(s_width: Int, width: Int, height: Int, algorithm: Image.ResamplingAlgorithm) -> ImageBaseProtocol {
-        
-        return resampling(s_width: s_width, width: width, height: height, transform: SDTransform.scale(x: Double(width) / Double(s_width), y: Double(height) / Double(buffer.count / s_width)), algorithm: algorithm)
-    }
-    @_versioned
-    @_inlineable
     func resampling(s_width: Int, width: Int, height: Int, transform: SDTransform, algorithm: Image.ResamplingAlgorithm) -> ImageBaseProtocol {
         
-        return ImageBase(buffer: algorithm.calculate(source: self.buffer, s_width: s_width, width: width, height: height, transform: transform.inverse), colorSpace: self.colorSpace, algorithm: self.algorithm)
+        return ImageBase(buffer: algorithm.calculate(source: self.buffer, s_width: s_width, width: width, height: height, pixel: ColorPixel.self, transform: transform.inverse), colorSpace: self.colorSpace, algorithm: self.algorithm)
     }
     
     @_versioned
     @_inlineable
     mutating func withUnsafeMutableBytes<R>(_ body: (UnsafeMutableRawBufferPointer) throws -> R) rethrows -> R {
-        return try buffer.withUnsafeMutableBytes(body)
+        return try buffer.withUnsafeMutableBytes { (ptr: UnsafeMutablePointer<UInt8>) in try body(UnsafeMutableRawBufferPointer(start: UnsafeMutableRawPointer(ptr), count: buffer.count)) }
     }
     
     @_versioned
     @_inlineable
     func withUnsafeBytes<R>(_ body: (UnsafeRawBufferPointer) throws -> R) rethrows -> R {
-        return try buffer.withUnsafeBytes(body)
+        return try buffer.withUnsafeBytes { (ptr: UnsafePointer<UInt8>) in try body(UnsafeRawBufferPointer(start: UnsafeRawPointer(ptr), count: buffer.count)) }
+    }
+}
+
+extension Data {
+    
+    @_versioned
+    @_inlineable
+    func _map<T, R>(body: (T) throws -> R) rethrows -> Data {
+        
+        let s_count = self.count / MemoryLayout<T>.stride
+        var result = Data(count: MemoryLayout<R>.stride * s_count)
+        
+        try self.withUnsafeBytes { (source: UnsafePointer<T>) in
+            
+            try result.withUnsafeMutableBytes { (destination: UnsafeMutablePointer<R>) in
+                
+                var source = source
+                var destination = destination
+                
+                for _ in 0..<s_count {
+                    
+                    destination.pointee = try body(source.pointee)
+                    
+                    source += 1
+                    destination += 1
+                }
+            }
+        }
+        return result
     }
 }
 
@@ -144,7 +179,7 @@ public struct Image {
     public init(image: Image, width: Int, height: Int, resampling algorithm: ResamplingAlgorithm = .linear) {
         self.width = width
         self.height = height
-        self.base = image.base.resampling(s_width: image.width, width: width, height: height, algorithm: algorithm)
+        self.base = image.base.resampling(s_width: image.width, width: width, height: height, transform: SDTransform.scale(x: Double(width) / Double(image.width), y: Double(height) / Double(image.height)), algorithm: algorithm)
     }
     
     @_inlineable
@@ -158,7 +193,7 @@ public struct Image {
     public init<ColorPixel: ColorPixelProtocol, ColorSpace : ColorSpaceProtocol>(width: Int, height: Int, pixel: ColorPixel, colorSpace: ColorSpace, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm = .bradford) where ColorPixel.Model == ColorSpace.Model {
         self.width = width
         self.height = height
-        self.base = ImageBase(buffer: [ColorPixel](repeating: pixel, count: width * height), colorSpace: colorSpace, algorithm: algorithm)
+        self.base = ImageBase(size: width * height, pixel: pixel, colorSpace: colorSpace, algorithm: algorithm)
     }
     
     @_inlineable
@@ -216,113 +251,110 @@ extension Image.ResamplingAlgorithm {
     @_versioned
     @_inlineable
     @_specialize(ColorPixel<RGBColorModel>) @_specialize(ColorPixel<CMYKColorModel>) @_specialize(ColorPixel<GrayColorModel>) @_specialize(ARGB32ColorPixel)
-    func calculate<Pixel: ColorPixelProtocol>(source: [Pixel], s_width: Int, width: Int, height: Int, transform: SDTransform) -> [Pixel] {
+    func calculate<Pixel: ColorPixelProtocol>(source: Data, s_width: Int, width: Int, height: Int, pixel: Pixel.Type, transform: SDTransform) -> Data {
         
-        var result = [Pixel](repeating: Pixel(), count: width * height)
+        var result = Data(count: MemoryLayout<Pixel>.stride * width * height)
         
         if source.count != 0 {
             
-            let s_height = source.count / s_width
+            let s_count = source.count / MemoryLayout<Pixel>.stride
+            let s_height = s_count / s_width
             
-            result.withUnsafeMutableBufferPointer { buffer in
+            result.withUnsafeMutableBytes { (buffer: UnsafeMutablePointer<Pixel>) in
                 
                 @_transparent
                 func filling(operation: (Point) -> Pixel) {
                     
-                    if var pointer = buffer.baseAddress {
-                        
-                        var _p = Point(x: 0, y: 0)
-                        let _p1 = Point(x: 1, y: 0) * transform
-                        let _p2 = Point(x: 0, y: 1) * transform
-                        
-                        for _ in 0..<height {
-                            var p = _p
-                            for _ in 0..<width {
-                                pointer.pointee = operation(p)
-                                pointer += 1
-                                p += _p1
-                            }
-                            _p += _p2
+                    var buffer = buffer
+                    
+                    var _p = Point(x: 0, y: 0)
+                    let _p1 = Point(x: 1, y: 0) * transform
+                    let _p2 = Point(x: 0, y: 1) * transform
+                    
+                    for _ in 0..<height {
+                        var p = _p
+                        for _ in 0..<width {
+                            buffer.pointee = operation(p)
+                            buffer += 1
+                            p += _p1
                         }
+                        _p += _p2
                     }
                 }
                 
                 switch self {
                 case .none:
-                    source.withUnsafeBufferPointer { source in
-                        if let _source = source.baseAddress {
-                            filling { point in
-                                let _x = Int(point.x)
-                                let _y = Int(point.y)
-                                return 0..<s_width ~= _x && 0..<s_height ~= _y ? _source[_y * s_width + _x] : Pixel()
-                            }
+                    source.withUnsafeBytes { (source: UnsafePointer<Pixel>) in
+                        filling { point in
+                            let _x = Int(point.x)
+                            let _y = Int(point.y)
+                            return 0..<s_width ~= _x && 0..<s_height ~= _y ? source[_y * s_width + _x] : Pixel()
                         }
                     }
                 default:
                     
-                    let _source = source as? [ColorPixel<Pixel.Model>] ?? source.map { ColorPixel($0) }
+                    let _source = Pixel.self is ColorPixel<Pixel.Model>.Type ? source : source._map { (pixel: Pixel) in ColorPixel(pixel) }
                     
-                    _source.withUnsafeBufferPointer { source in
-                        if let _source = source.baseAddress {
-                            switch self {
-                            case .none: fatalError()
-                            case .linear: filling { smapling2(source: _source, width: s_width, height: s_height, point: $0, sampler: LinearInterpolate) }
-                            case .cosine: filling { smapling2(source: _source, width: s_width, height: s_height, point: $0, sampler: CosineInterpolate) }
-                            case .cubic: filling { smapling4(source: _source, width: s_width, height: s_height, point: $0, sampler: CubicInterpolate) }
-                            case let .mitchell(B, C):
-                                
-                                let a1 = 12 - 9 * B - 6 * C
-                                let b1 = -18 + 12 * B + 6 * C
-                                let c1 = 6 - 2 * B
-                                let a2 = -B - 6 * C
-                                let b2 = 6 * B + 30 * C
-                                let c2 = -12 * B - 48 * C
-                                let d2 = 8 * B + 24 * C
-                                
-                                @_transparent
-                                func _kernel(_ x: Double) -> Double {
-                                    if x < 1 {
-                                        return (a1 * x + b1) * x * x + c1
-                                    }
-                                    if x < 2 {
-                                        return ((a2 * x + b2) * x + c2) * x + d2
-                                    }
-                                    return 0
+                    _source.withUnsafeBytes { (source: UnsafePointer<ColorPixel<Pixel.Model>>) in
+                        
+                        switch self {
+                        case .none: fatalError()
+                        case .linear: filling { smapling2(source: source, width: s_width, height: s_height, point: $0, sampler: LinearInterpolate) }
+                        case .cosine: filling { smapling2(source: source, width: s_width, height: s_height, point: $0, sampler: CosineInterpolate) }
+                        case .cubic: filling { smapling4(source: source, width: s_width, height: s_height, point: $0, sampler: CubicInterpolate) }
+                        case let .mitchell(B, C):
+                            
+                            let a1 = 12 - 9 * B - 6 * C
+                            let b1 = -18 + 12 * B + 6 * C
+                            let c1 = 6 - 2 * B
+                            let a2 = -B - 6 * C
+                            let b2 = 6 * B + 30 * C
+                            let c2 = -12 * B - 48 * C
+                            let d2 = 8 * B + 24 * C
+                            
+                            @_transparent
+                            func _kernel(_ x: Double) -> Double {
+                                if x < 1 {
+                                    return (a1 * x + b1) * x * x + c1
                                 }
-                                filling { convolve(source: _source, width: s_width, height: s_height, point: $0, kernel_size: 5, kernel: _kernel) }
-                                
-                            case .lanczos(1):
-                                
-                                @_transparent
-                                func _kernel(_ x: Double) -> Double {
-                                    if x == 0 {
-                                        return 1
-                                    }
-                                    if x < 1 {
-                                        let _x = Double.pi * x
-                                        let _sinc = sin(_x) / _x
-                                        return _sinc * _sinc
-                                    }
-                                    return 0
+                                if x < 2 {
+                                    return ((a2 * x + b2) * x + c2) * x + d2
                                 }
-                                filling { convolve(source: _source, width: s_width, height: s_height, point: $0, kernel_size: 2, kernel: _kernel) }
-                                
-                            case let .lanczos(a):
-                                
-                                @_transparent
-                                func _kernel(_ x: Double) -> Double {
-                                    let a = Double(a)
-                                    if x == 0 {
-                                        return 1
-                                    }
-                                    if x < a {
-                                        let _x = Double.pi * x
-                                        return a * sin(_x) * sin(_x / a) / (_x * _x)
-                                    }
-                                    return 0
-                                }
-                                filling { convolve(source: _source, width: s_width, height: s_height, point: $0, kernel_size: Int(a) << 1, kernel: _kernel) }
+                                return 0
                             }
+                            filling { convolve(source: source, width: s_width, height: s_height, point: $0, kernel_size: 5, kernel: _kernel) }
+                            
+                        case .lanczos(1):
+                            
+                            @_transparent
+                            func _kernel(_ x: Double) -> Double {
+                                if x == 0 {
+                                    return 1
+                                }
+                                if x < 1 {
+                                    let _x = Double.pi * x
+                                    let _sinc = sin(_x) / _x
+                                    return _sinc * _sinc
+                                }
+                                return 0
+                            }
+                            filling { convolve(source: source, width: s_width, height: s_height, point: $0, kernel_size: 2, kernel: _kernel) }
+                            
+                        case let .lanczos(a):
+                            
+                            @_transparent
+                            func _kernel(_ x: Double) -> Double {
+                                let a = Double(a)
+                                if x == 0 {
+                                    return 1
+                                }
+                                if x < a {
+                                    let _x = Double.pi * x
+                                    return a * sin(_x) * sin(_x / a) / (_x * _x)
+                                }
+                                return 0
+                            }
+                            filling { convolve(source: source, width: s_width, height: s_height, point: $0, kernel_size: Int(a) << 1, kernel: _kernel) }
                         }
                     }
                 }
