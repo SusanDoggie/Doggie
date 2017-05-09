@@ -75,6 +75,14 @@ extension RangeSet : RandomAccessCollection {
     }
 }
 
+extension RangeSet : Equatable {
+    
+}
+
+public func ==<Bound>(lhs: RangeSet<Bound>, rhs: RangeSet<Bound>) -> Bool {
+    return lhs.ranges == rhs.ranges
+}
+
 extension RangeSet {
     
     @_inlineable
