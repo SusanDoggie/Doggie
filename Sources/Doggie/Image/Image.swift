@@ -76,7 +76,7 @@ struct ImageBase<ColorPixel: ColorPixelProtocol, ColorSpace : ColorSpaceProtocol
     init(size: Int, pixel: ColorPixel, colorSpace: ColorSpace, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm) {
         
         var data = Data(count: MemoryLayout<ColorPixel>.stride * size)
-        data.withUnsafeMutableBytes { _ = UnsafeMutableBufferPointer(start: $0, count: size).initialize(from: repeatElement(pixel, count: size)) }
+        data.withUnsafeMutableBytes { _memset($0, pixel, MemoryLayout<ColorPixel>.stride * size) }
         
         self.init(buffer: data, colorSpace: colorSpace, algorithm: algorithm)
     }
@@ -127,42 +127,13 @@ struct ImageBase<ColorPixel: ColorPixelProtocol, ColorSpace : ColorSpaceProtocol
     @_versioned
     @_inlineable
     mutating func withUnsafeMutableBytes<R>(_ body: (UnsafeMutableRawBufferPointer) throws -> R) rethrows -> R {
-        return try buffer.withUnsafeMutableBytes { (ptr: UnsafeMutablePointer<UInt8>) in try body(UnsafeMutableRawBufferPointer(start: UnsafeMutableRawPointer(ptr), count: buffer.count)) }
+        return try buffer.withUnsafeMutableBytes { (ptr: UnsafeMutablePointer<UInt8>) in try body(UnsafeMutableRawBufferPointer(start: ptr, count: buffer.count)) }
     }
     
     @_versioned
     @_inlineable
     func withUnsafeBytes<R>(_ body: (UnsafeRawBufferPointer) throws -> R) rethrows -> R {
-        return try buffer.withUnsafeBytes { (ptr: UnsafePointer<UInt8>) in try body(UnsafeRawBufferPointer(start: UnsafeRawPointer(ptr), count: buffer.count)) }
-    }
-}
-
-extension Data {
-    
-    @_versioned
-    @_inlineable
-    func _map<T, R>(body: (T) throws -> R) rethrows -> Data {
-        
-        let s_count = self.count / MemoryLayout<T>.stride
-        var result = Data(count: MemoryLayout<R>.stride * s_count)
-        
-        try self.withUnsafeBytes { (source: UnsafePointer<T>) in
-            
-            try result.withUnsafeMutableBytes { (destination: UnsafeMutablePointer<R>) in
-                
-                var source = source
-                var destination = destination
-                
-                for _ in 0..<s_count {
-                    
-                    destination.pointee = try body(source.pointee)
-                    
-                    source += 1
-                    destination += 1
-                }
-            }
-        }
-        return result
+        return try buffer.withUnsafeBytes { (ptr: UnsafePointer<UInt8>) in try body(UnsafeRawBufferPointer(start: ptr, count: buffer.count)) }
     }
 }
 
