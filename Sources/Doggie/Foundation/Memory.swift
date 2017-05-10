@@ -1,5 +1,5 @@
 //
-//  Data.swift
+//  Memory.swift
 //
 //  The MIT License
 //  Copyright (c) 2015 - 2017 Susan Cheng. All rights reserved.
@@ -25,37 +25,55 @@
 
 import Foundation
 
-extension Data : ExpressibleByArrayLiteral {
+extension UnsafeRawBufferPointer {
     
-    public init(arrayLiteral elements: UInt8 ...) {
-        self.init(elements)
+    @_inlineable
+    public func _memmap<T, R>(to: UnsafeMutableRawBufferPointer, body: (T) throws -> R) rethrows -> Int {
+        
+        let s_count = self.count / MemoryLayout<T>.stride
+        let r_count = to.count / MemoryLayout<R>.stride
+        
+        let write = Swift.min(s_count, r_count)
+        
+        if var source = self.baseAddress?.assumingMemoryBound(to: T.self), var destination = to.baseAddress?.assumingMemoryBound(to: R.self) {
+            
+            for _ in 0..<write {
+                
+                destination.pointee = try body(source.pointee)
+                
+                source += 1
+                destination += 1
+            }
+        }
+        
+        return write
     }
 }
 
-extension Data {
+@_inlineable
+public func _memset<T>(_ __b: UnsafeMutableRawPointer, _ __c: T, _ __len: Int) -> Int {
     
-    @_inlineable
-    public func _memmap<T, R>(body: (T) throws -> R) rethrows -> Data {
-        
-        let s_count = self.count / MemoryLayout<T>.stride
-        var result = Data(count: MemoryLayout<R>.stride * s_count)
-        
-        try self.withUnsafeBytes { (source: UnsafePointer<T>) in
-            
-            try result.withUnsafeMutableBytes { (destination: UnsafeMutablePointer<R>) in
-                
-                var source = source
-                var destination = destination
-                
-                for _ in 0..<s_count {
-                    
-                    destination.pointee = try body(source.pointee)
-                    
-                    source += 1
-                    destination += 1
-                }
-            }
-        }
-        return result
+    var __c = __c
+    let __s = __b
+    var __b = __b
+    var __len = __len
+    var copied = 0
+    
+    if __len > 0 {
+        let copy = min(MemoryLayout<T>.stride, __len)
+        withUnsafeBytes(of: &__c) { _ = memcpy(__b, $0.baseAddress, copy) }
+        __len -= copy
+        __b += copy
+        copied += copy
     }
+    
+    while __len > 0 {
+        let copy = min(copied, __len)
+        memcpy(__b, __s, copy)
+        __len -= copy
+        __b += copy
+        copied += copy
+    }
+    
+    return copied
 }

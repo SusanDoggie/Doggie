@@ -76,7 +76,7 @@ struct ImageBase<ColorPixel: ColorPixelProtocol, ColorSpace : ColorSpaceProtocol
     init(size: Int, pixel: ColorPixel, colorSpace: ColorSpace, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm) {
         
         var data = Data(count: MemoryLayout<ColorPixel>.stride * size)
-        data.withUnsafeMutableBytes { _memset($0, pixel, MemoryLayout<ColorPixel>.stride * size) }
+        data.withUnsafeMutableBytes { _ = _memset($0, pixel, MemoryLayout<ColorPixel>.stride * size) }
         
         self.init(buffer: data, colorSpace: colorSpace, algorithm: algorithm)
     }
@@ -114,7 +114,7 @@ struct ImageBase<ColorPixel: ColorPixelProtocol, ColorSpace : ColorSpaceProtocol
     @_inlineable
     func convert<RPixel: ColorPixelProtocol, RSpace : ColorSpaceProtocol>(pixel: RPixel.Type, colorSpace: RSpace, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm) -> ImageBaseProtocol where RPixel.Model == RSpace.Model {
         
-        return ImageBase<RPixel, RSpace>(buffer: buffer._map { (pixel: ColorPixel) in RPixel(color: self.colorSpace.convert(pixel.color, to: colorSpace, algorithm: algorithm), opacity: pixel.opacity) }, colorSpace: colorSpace, algorithm: algorithm)
+        return ImageBase<RPixel, RSpace>(buffer: buffer._memmap { (pixel: ColorPixel) in RPixel(color: self.colorSpace.convert(pixel.color, to: colorSpace, algorithm: algorithm), opacity: pixel.opacity) }, colorSpace: colorSpace, algorithm: algorithm)
     }
     
     @_versioned
@@ -264,7 +264,7 @@ extension Image.ResamplingAlgorithm {
                     }
                 default:
                     
-                    let _source = Pixel.self is ColorPixel<Pixel.Model>.Type ? source : source._map { (pixel: Pixel) in ColorPixel(pixel) }
+                    let _source = Pixel.self is ColorPixel<Pixel.Model>.Type ? source : source._memmap { (pixel: Pixel) in ColorPixel(pixel) }
                     
                     _source.withUnsafeBytes { (source: UnsafePointer<ColorPixel<Pixel.Model>>) in
                         
