@@ -25,6 +25,21 @@
 
 import Foundation
 
+extension Shape {
+    
+    public enum WindingRule {
+        case nonZero
+        case evenOdd
+    }
+    
+    public func contains(_ p: Point, winding: WindingRule) -> Bool {
+        switch winding {
+        case .nonZero: return self.winding(p) != 0
+        case .evenOdd: return self.winding(p) & 1 == 1
+        }
+    }
+}
+
 extension Shape.Component {
     
     public func winding(_ p: Point) -> Int {
