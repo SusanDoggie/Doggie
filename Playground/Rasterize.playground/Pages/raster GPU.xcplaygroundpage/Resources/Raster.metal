@@ -14,13 +14,13 @@ struct RasterOp {
     packed_float3 v0, v1, v2;
 };
 
-int _winding(float2 position, const device RasterOp* operation, const int operation_count);
+int _winding(float2 position, constant RasterOp* operation, const int operation_count);
 
 fragment half4 basic_fragment(float4 position [[position]],
-                              const device RasterOp* operation [[ buffer(0) ]],
-                              const device int* operation_count [[ buffer(1) ]]) {
+                              constant RasterOp* operation [[ buffer(0) ]],
+                              constant int& operation_count [[ buffer(1) ]]) {
     
-    int winding = _winding(float2(position[0], position[1]), operation, *operation_count);
+    int winding = _winding(float2(position[0], position[1]), operation, operation_count);
     
     if ((winding & 1) == 1) {
         return half4(1);
@@ -33,7 +33,7 @@ float3 _barycentric(const float2 p0, const float2 p1, const float2 p2, const flo
 
 float _cross(const float2 lhs, const float2 rhs);
 
-int _winding(float2 position, const device RasterOp* operation, const int operation_count) {
+int _winding(float2 position, constant RasterOp* operation, const int operation_count) {
     
     int winding = 0;
     
