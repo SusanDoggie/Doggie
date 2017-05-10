@@ -79,6 +79,7 @@ extension RangeSet : Equatable {
     
 }
 
+@_inlineable
 public func ==<Bound>(lhs: RangeSet<Bound>, rhs: RangeSet<Bound>) -> Bool {
     return lhs.ranges == rhs.ranges
 }
