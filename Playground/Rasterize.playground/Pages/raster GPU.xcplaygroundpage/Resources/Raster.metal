@@ -56,7 +56,7 @@ bool inTriangle(float2 position, packed_float2 p0, packed_float2 p1, packed_floa
     
     sort(q0, q1, q2);
     
-    if (q0[1] < position[1] && position[1] < q2[1]) {
+    if (q0[1] <= position[1] && position[1] < q2[1]) {
         
         float t1 = (position[1] - q0[1]) / (q2[1] - q0[1]);
         float x1 = q0[0] + t1 * (q2[0] - q0[0]);
