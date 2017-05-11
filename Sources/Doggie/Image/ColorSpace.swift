@@ -35,9 +35,13 @@ public protocol ColorSpaceProtocol {
     
     var black: XYZColorModel { get }
     
-    func convertToXYZ(_ color: Model) -> XYZColorModel
+    func convertToLinear(_ color: Model) -> Model
     
-    func convertFromXYZ(_ color: XYZColorModel) -> Model
+    func convertFromLinear(_ color: Model) -> Model
+    
+    func convertLinearToXYZ(_ color: Model) -> XYZColorModel
+    
+    func convertLinearFromXYZ(_ color: XYZColorModel) -> Model
     
     func convert<C : ColorSpaceProtocol>(_ color: Model, to other: C, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm) -> C.Model
 }
@@ -56,6 +60,16 @@ extension ColorSpaceProtocol {
 }
 
 extension ColorSpaceProtocol {
+    
+    @_inlineable
+    public func convertToXYZ(_ color: Model) -> XYZColorModel {
+        return self.convertLinearToXYZ(self.convertToLinear(color))
+    }
+    
+    @_inlineable
+    public func convertFromXYZ(_ color: XYZColorModel) -> Model {
+        return self.convertFromLinear(self.convertLinearFromXYZ(color))
+    }
     
     @_inlineable
     public func convert<C : ColorSpaceProtocol>(_ color: Model, to other: C, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm = .bradford) -> C.Model {
@@ -80,14 +94,25 @@ public struct NormalizedColorSpace<ColorSpace: ColorSpaceProtocol> : ColorSpaceP
         return CIEXYZColorSpace(white: base.cieXYZ.white * base.cieXYZ.normalizeMatrix)
     }
     
+    
     @_inlineable
-    public func convertToXYZ(_ color: ColorSpace.Model) -> XYZColorModel {
-        return base.convertToXYZ(color) * base.cieXYZ.normalizeMatrix
+    public func convertToLinear(_ color: ColorSpace.Model) -> ColorSpace.Model {
+        return base.convertToLinear(color)
     }
     
     @_inlineable
-    public func convertFromXYZ(_ color: XYZColorModel) -> ColorSpace.Model {
-        return base.convertFromXYZ(color * base.cieXYZ.normalizeMatrix.inverse)
+    public func convertFromLinear(_ color: ColorSpace.Model) -> ColorSpace.Model {
+        return base.convertFromLinear(color)
+    }
+    
+    @_inlineable
+    public func convertLinearToXYZ(_ color: ColorSpace.Model) -> XYZColorModel {
+        return base.convertLinearToXYZ(color) * base.cieXYZ.normalizeMatrix
+    }
+    
+    @_inlineable
+    public func convertLinearFromXYZ(_ color: XYZColorModel) -> ColorSpace.Model {
+        return base.convertLinearFromXYZ(color * base.cieXYZ.normalizeMatrix.inverse)
     }
 }
 
@@ -99,31 +124,7 @@ extension ColorSpaceProtocol {
     }
 }
 
-public protocol ToneResponseColorSpaceProtocol : class, ColorSpaceProtocol {
-    
-    func convertToLinear(_ color: Model) -> Model
-    
-    func convertFromLinear(_ color: Model) -> Model
-    
-    func convertLinearToXYZ(_ color: Model) -> XYZColorModel
-    
-    func convertLinearFromXYZ(_ color: XYZColorModel) -> Model
-}
-
-extension ToneResponseColorSpaceProtocol {
-    
-    @_inlineable
-    public func convertToXYZ(_ color: Model) -> XYZColorModel {
-        return self.convertLinearToXYZ(self.convertToLinear(color))
-    }
-    
-    @_inlineable
-    public func convertFromXYZ(_ color: XYZColorModel) -> Model {
-        return self.convertFromLinear(self.convertLinearFromXYZ(color))
-    }
-}
-
-extension ToneResponseColorSpaceProtocol {
+extension ColorSpaceProtocol {
     
     @_versioned
     @_inlineable
@@ -133,7 +134,7 @@ extension ToneResponseColorSpaceProtocol {
 }
 
 @_fixed_layout
-public struct LinearToneColorSpace<ColorSpace: ToneResponseColorSpaceProtocol> : ColorSpaceProtocol {
+public struct LinearToneColorSpace<ColorSpace: ColorSpaceProtocol> : ColorSpaceProtocol {
     
     @_versioned
     let base: ColorSpace
@@ -150,17 +151,27 @@ public struct LinearToneColorSpace<ColorSpace: ToneResponseColorSpaceProtocol> :
     }
     
     @_inlineable
-    public func convertToXYZ(_ color: ColorSpace.Model) -> XYZColorModel {
+    public func convertToLinear(_ color: ColorSpace.Model) -> ColorSpace.Model {
+        return color
+    }
+    
+    @_inlineable
+    public func convertFromLinear(_ color: ColorSpace.Model) -> ColorSpace.Model {
+        return color
+    }
+    
+    @_inlineable
+    public func convertLinearToXYZ(_ color: ColorSpace.Model) -> XYZColorModel {
         return base.convertLinearToXYZ(color)
     }
     
     @_inlineable
-    public func convertFromXYZ(_ color: XYZColorModel) -> ColorSpace.Model {
+    public func convertLinearFromXYZ(_ color: XYZColorModel) -> ColorSpace.Model {
         return base.convertLinearFromXYZ(color)
     }
 }
 
-extension ToneResponseColorSpaceProtocol {
+extension ColorSpaceProtocol {
     
     @_inlineable
     public var linearTone: LinearToneColorSpace<Self> {
@@ -201,12 +212,22 @@ extension CIEXYZColorSpace {
     }
     
     @_inlineable
-    public func convertToXYZ(_ color: Model) -> XYZColorModel {
+    public func convertToLinear(_ color: Model) -> Model {
         return color
     }
     
     @_inlineable
-    public func convertFromXYZ(_ color: XYZColorModel) -> Model {
+    public func convertFromLinear(_ color: Model) -> Model {
+        return color
+    }
+    
+    @_inlineable
+    public func convertLinearToXYZ(_ color: Model) -> XYZColorModel {
+        return color
+    }
+    
+    @_inlineable
+    public func convertLinearFromXYZ(_ color: XYZColorModel) -> Model {
         return color
     }
 }
@@ -298,7 +319,17 @@ public struct CIELabColorSpace : ColorSpaceProtocol {
 extension CIELabColorSpace {
     
     @_inlineable
-    public func convertToXYZ(_ color: Model) -> XYZColorModel {
+    public func convertToLinear(_ color: Model) -> Model {
+        return color
+    }
+    
+    @_inlineable
+    public func convertFromLinear(_ color: Model) -> Model {
+        return color
+    }
+    
+    @_inlineable
+    public func convertLinearToXYZ(_ color: Model) -> XYZColorModel {
         let s = 216.0 / 24389.0
         let t = 27.0 / 24389.0
         let st = 216.0 / 27.0
@@ -315,7 +346,7 @@ extension CIELabColorSpace {
     }
     
     @_inlineable
-    public func convertFromXYZ(_ color: XYZColorModel) -> Model {
+    public func convertLinearFromXYZ(_ color: XYZColorModel) -> Model {
         let s = 216.0 / 24389.0
         let t = 24389.0 / 27.0
         let _white = XYZColorModel(luminance: 1, point: cieXYZ.normalized.white.point)
@@ -371,7 +402,17 @@ public struct CIELuvColorSpace : ColorSpaceProtocol {
 extension CIELuvColorSpace {
     
     @_inlineable
-    public func convertToXYZ(_ color: Model) -> XYZColorModel {
+    public func convertToLinear(_ color: Model) -> Model {
+        return color
+    }
+    
+    @_inlineable
+    public func convertFromLinear(_ color: Model) -> Model {
+        return color
+    }
+    
+    @_inlineable
+    public func convertLinearToXYZ(_ color: Model) -> XYZColorModel {
         let t = 27.0 / 24389.0
         let st = 216.0 / 27.0
         let _white = XYZColorModel(luminance: 1, point: cieXYZ.normalized.white.point)
@@ -388,7 +429,7 @@ extension CIELuvColorSpace {
     }
     
     @_inlineable
-    public func convertFromXYZ(_ color: XYZColorModel) -> Model {
+    public func convertLinearFromXYZ(_ color: XYZColorModel) -> Model {
         let s = 216.0 / 24389.0
         let t = 24389.0 / 27.0
         let _white = XYZColorModel(luminance: 1, point: cieXYZ.normalized.white.point)
@@ -404,7 +445,7 @@ extension CIELuvColorSpace {
     }
 }
 
-public class CalibratedRGBColorSpace : ToneResponseColorSpaceProtocol {
+public class CalibratedRGBColorSpace : ColorSpaceProtocol {
     
     public typealias Model = RGBColorModel
     
@@ -570,7 +611,7 @@ extension CalibratedRGBColorSpace {
     }
 }
 
-public class CalibratedGrayColorSpace : ToneResponseColorSpaceProtocol {
+public class CalibratedGrayColorSpace : ColorSpaceProtocol {
     
     public typealias Model = GrayColorModel
     

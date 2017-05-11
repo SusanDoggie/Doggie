@@ -8,3 +8,7 @@ let D50 = CIEXYZColorSpace(white: CIEXYZColorSpace.Model(luminance: 1, x: 0.3456
 CalibratedRGBColorSpace.adobeRGB.convert(RGBColorModel(red: 0.5, green: 0, blue: 0), to: D50)
 
 CalibratedRGBColorSpace.adobeRGB.normalized.convert(RGBColorModel(red: 0.5, green: 0, blue: 0), to: D50)
+
+CalibratedRGBColorSpace.adobeRGB.convert(RGBColorModel(red: 0.5, green: 0, blue: 0), to: CalibratedRGBColorSpace.adobeRGB.linearTone)
+
+CalibratedRGBColorSpace.adobeRGB.linearTone.convert(RGBColorModel(red: 0.217755528144395, green: 0, blue: 0), to: CalibratedRGBColorSpace.adobeRGB)
