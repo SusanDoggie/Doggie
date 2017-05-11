@@ -2,7 +2,7 @@
 #include <metal_stdlib>
 using namespace metal;
 
-vertex float4 basic_vertex(const device packed_float3* vertex_array [[ buffer(0) ]],
+vertex float4 basic_vertex(device packed_float3* vertex_array [[ buffer(0) ]],
                            unsigned int vid [[ vertex_id ]]) {
     
     return float4(vertex_array[vid], 1.0);
@@ -14,7 +14,7 @@ struct RasterOp {
     packed_float3 v0, v1, v2;
 };
 
-int _winding(float2 position, constant RasterOp* operation, const int operation_count);
+int _winding(float2 position, constant RasterOp* operation, int operation_count);
 
 fragment half4 basic_fragment(float4 position [[position]],
                               constant RasterOp* operation [[ buffer(0) ]],
@@ -29,9 +29,9 @@ fragment half4 basic_fragment(float4 position [[position]],
     return half4(0);
 }
 
-float3 _barycentric(const float2 p0, const float2 p1, const float2 p2, const float2 q);
+float3 _barycentric(float2 p0, float2 p1, float2 p2, float2 q);
 
-float _cross(const float2 lhs, const float2 rhs);
+float _cross(float2 lhs, float2 rhs);
 
 void swap(thread packed_float2* a, thread packed_float2* b);
 void sort(thread packed_float2& a, thread packed_float2& b, thread packed_float2& c);
@@ -85,7 +85,7 @@ bool inTriangle(float2 position, packed_float2 p0, packed_float2 p1, packed_floa
     return false;
 }
 
-int _winding(float2 position, constant RasterOp* operation, const int operation_count) {
+int _winding(float2 position, constant RasterOp* operation, int operation_count) {
     
     int winding = 0;
     
@@ -132,7 +132,7 @@ int _winding(float2 position, constant RasterOp* operation, const int operation_
     return winding;
 }
 
-float3 _barycentric(const float2 p0, const float2 p1, const float2 p2, const float2 q) {
+float3 _barycentric(float2 p0, float2 p1, float2 p2, float2 q) {
     
     float det = (p1[1] - p2[1]) * (p0[0] - p2[0]) + (p2[0] - p1[0]) * (p0[1] - p2[1]);
     
@@ -142,6 +142,6 @@ float3 _barycentric(const float2 p0, const float2 p1, const float2 p2, const flo
     return float3(s, t, 1 - s - t);
 }
 
-float _cross(const float2 lhs, const float2 rhs) {
+float _cross(float2 lhs, float2 rhs) {
     return lhs[0] * rhs[1] - lhs[1] * rhs[0];
 }
