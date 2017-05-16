@@ -41,7 +41,7 @@ protocol ImageBaseProtocol {
     func convert<RPixel: ColorPixelProtocol, RSpace : ColorSpaceProtocol>(pixel: RPixel.Type, colorSpace: RSpace, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm) -> ImageBaseProtocol where RPixel.Model == RSpace.Model
     
     @_versioned
-    func resampling(s_width: Int, width: Int, height: Int, transform: SDTransform, algorithm: Image.ResamplingAlgorithm) -> ImageBaseProtocol
+    func resampling(s_width: Int, width: Int, height: Int, transform: SDTransform, algorithm: Image.ResamplingAlgorithm, antialias: Bool) -> ImageBaseProtocol
     
     @_versioned
     mutating func withUnsafeMutableBytes<R>(_ body: (UnsafeMutableRawBufferPointer) throws -> R) rethrows -> R
@@ -119,9 +119,9 @@ struct ImageBase<ColorPixel: ColorPixelProtocol, ColorSpace : ColorSpaceProtocol
     
     @_versioned
     @_inlineable
-    func resampling(s_width: Int, width: Int, height: Int, transform: SDTransform, algorithm: Image.ResamplingAlgorithm) -> ImageBaseProtocol {
+    func resampling(s_width: Int, width: Int, height: Int, transform: SDTransform, algorithm: Image.ResamplingAlgorithm, antialias: Bool) -> ImageBaseProtocol {
         
-        return ImageBase(buffer: algorithm.calculate(source: self.buffer, s_width: s_width, width: width, height: height, pixel: ColorPixel.self, transform: transform.inverse), colorSpace: self.colorSpace, algorithm: self.algorithm)
+        return ImageBase(buffer: algorithm.calculate(source: self.buffer, s_width: s_width, width: width, height: height, pixel: ColorPixel.self, transform: transform.inverse, antialias: antialias), colorSpace: self.colorSpace, algorithm: self.algorithm)
     }
     
     @_versioned
@@ -147,17 +147,17 @@ public struct Image {
     var base: ImageBaseProtocol
     
     @_inlineable
-    public init(image: Image, width: Int, height: Int, resampling algorithm: ResamplingAlgorithm = .linear) {
+    public init(image: Image, width: Int, height: Int, resampling algorithm: ResamplingAlgorithm = .linear, antialias: Bool = false) {
         self.width = width
         self.height = height
-        self.base = image.base.resampling(s_width: image.width, width: width, height: height, transform: SDTransform.scale(x: Double(width) / Double(image.width), y: Double(height) / Double(image.height)), algorithm: algorithm)
+        self.base = image.base.resampling(s_width: image.width, width: width, height: height, transform: SDTransform.scale(x: Double(width) / Double(image.width), y: Double(height) / Double(image.height)), algorithm: algorithm, antialias: antialias)
     }
     
     @_inlineable
-    public init(image: Image, width: Int, height: Int, transform: SDTransform, resampling algorithm: ResamplingAlgorithm = .linear) {
+    public init(image: Image, width: Int, height: Int, transform: SDTransform, resampling algorithm: ResamplingAlgorithm = .linear, antialias: Bool = false) {
         self.width = width
         self.height = height
-        self.base = image.base.resampling(s_width: image.width, width: width, height: height, transform: transform, algorithm: algorithm)
+        self.base = image.base.resampling(s_width: image.width, width: width, height: height, transform: transform, algorithm: algorithm, antialias: antialias)
     }
     
     @_inlineable
@@ -222,7 +222,7 @@ extension Image.ResamplingAlgorithm {
     @_versioned
     @_inlineable
     @_specialize(ColorPixel<RGBColorModel>) @_specialize(ColorPixel<CMYKColorModel>) @_specialize(ColorPixel<GrayColorModel>) @_specialize(ARGB32ColorPixel)
-    func calculate<Pixel: ColorPixelProtocol>(source: Data, s_width: Int, width: Int, height: Int, pixel: Pixel.Type, transform: SDTransform) -> Data {
+    func calculate<Pixel: ColorPixelProtocol>(source: Data, s_width: Int, width: Int, height: Int, pixel: Pixel.Type, transform: SDTransform, antialias: Bool) -> Data {
         
         var result = Data(count: MemoryLayout<Pixel>.stride * width * height)
         
@@ -234,7 +234,7 @@ extension Image.ResamplingAlgorithm {
             result.withUnsafeMutableBytes { (buffer: UnsafeMutablePointer<Pixel>) in
                 
                 @inline(__always)
-                func filling(operation: (Point) -> Pixel) {
+                func _filling(operation: (Point) -> Pixel) {
                     
                     var buffer = buffer
                     
@@ -256,13 +256,52 @@ extension Image.ResamplingAlgorithm {
                 switch self {
                 case .none:
                     source.withUnsafeBytes { (source: UnsafePointer<Pixel>) in
-                        filling { point in
+                        _filling { point in
                             let _x = Int(point.x)
                             let _y = Int(point.y)
                             return 0..<s_width ~= _x && 0..<s_height ~= _y ? source[_y * s_width + _x] : Pixel()
                         }
                     }
                 default:
+                    
+                    @inline(__always)
+                    func filling(operation: (Point) -> ColorPixel<Pixel.Model>) {
+                        
+                        if antialias {
+                            
+                            var buffer = buffer
+                            
+                            var _p = Point(x: 0, y: 0)
+                            let _p1 = Point(x: 1, y: 0) * transform
+                            let _p2 = Point(x: 0, y: 1) * transform
+                            
+                            let _q1 = Point(x: -0.4, y: -0.4) * transform
+                            let _q2 = Point(x: 0.2, y: 0) * transform
+                            let _q3 = Point(x: 0, y: 0.2) * transform
+                            
+                            for _ in 0..<height {
+                                var p = _p
+                                for _ in 0..<width {
+                                    var _q = p + _q1
+                                    var pixel = ColorPixel<Pixel.Model>()
+                                    for _ in 0..<5 {
+                                        var q = _q
+                                        for _ in 0..<5 {
+                                            pixel += operation(q)
+                                            q += _q2
+                                        }
+                                        _q += _q3
+                                    }
+                                    buffer.pointee = Pixel(pixel * 0.04)
+                                    buffer += 1
+                                    p += _p1
+                                }
+                                _p += _p2
+                            }
+                        } else {
+                            _filling { Pixel(operation($0)) }
+                        }
+                    }
                     
                     let _source = Pixel.self is ColorPixel<Pixel.Model>.Type ? source : source._memmap { (pixel: Pixel) in ColorPixel(pixel) }
                     
@@ -336,9 +375,9 @@ extension Image.ResamplingAlgorithm {
     
     @_versioned
     @inline(__always)
-    func convolve<Pixel: ColorPixelProtocol>(source: UnsafePointer<ColorPixel<Pixel.Model>>, width: Int, height: Int, point: Point, kernel_size: Int, kernel: (Double) -> Double) -> Pixel {
+    func convolve<ColorModel: ColorModelProtocol>(source: UnsafePointer<ColorPixel<ColorModel>>, width: Int, height: Int, point: Point, kernel_size: Int, kernel: (Double) -> Double) -> ColorPixel<ColorModel> {
         
-        var pixel = ColorPixel<Pixel.Model>()
+        var pixel = ColorPixel<ColorModel>()
         var t: Double = 0
         
         let _x = Int(point.x)
@@ -362,12 +401,12 @@ extension Image.ResamplingAlgorithm {
                 t += l
             }
         }
-        return t == 0 ? Pixel() : Pixel(pixel / t)
+        return t == 0 ? ColorPixel<ColorModel>() : pixel / t
     }
     
     @_versioned
     @inline(__always)
-    func smapling2<Pixel: ColorPixelProtocol>(source: UnsafePointer<ColorPixel<Pixel.Model>>, width: Int, height: Int, point: Point, sampler: (Double, Double, Double) -> Double) -> Pixel {
+    func smapling2<ColorModel: ColorModelProtocol>(source: UnsafePointer<ColorPixel<ColorModel>>, width: Int, height: Int, point: Point, sampler: (Double, Double, Double) -> Double) -> ColorPixel<ColorModel> {
         
         let x_range = 0..<width
         let y_range = 0..<height
@@ -396,20 +435,20 @@ extension Image.ResamplingAlgorithm {
             let _s3 = check1 && check4 ? source[_y2 * width + _x1] : source[__y2 * width + __x1].with(opacity: 0)
             let _s4 = check2 && check4 ? source[_y2 * width + _x2] : source[__y2 * width + __x2].with(opacity: 0)
             
-            var color = Pixel.Model()
-            for i in 0..<Pixel.Model.count {
+            var color = ColorModel()
+            for i in 0..<ColorModel.count {
                 color.setComponent(i, sampler(_ty,sampler(_tx, _s1.color.component(i), _s2.color.component(i)), sampler(_tx, _s3.color.component(i), _s4.color.component(i))))
             }
-            return Pixel(color: color, opacity: sampler(_ty, sampler(_tx, _s1.opacity, _s2.opacity), sampler(_tx, _s3.opacity, _s4.opacity)))
+            return ColorPixel<ColorModel>(color: color, opacity: sampler(_ty, sampler(_tx, _s1.opacity, _s2.opacity), sampler(_tx, _s3.opacity, _s4.opacity)))
             
         } else {
-            return Pixel()
+            return ColorPixel<ColorModel>()
         }
     }
     
     @_versioned
     @inline(__always)
-    func smapling4<Pixel: ColorPixelProtocol>(source: UnsafePointer<ColorPixel<Pixel.Model>>, width: Int, height: Int, point: Point, sampler: (Double, Double, Double, Double, Double) -> Double) -> Pixel {
+    func smapling4<ColorModel: ColorModelProtocol>(source: UnsafePointer<ColorPixel<ColorModel>>, width: Int, height: Int, point: Point, sampler: (Double, Double, Double, Double, Double) -> Double) -> ColorPixel<ColorModel> {
         
         let x_range = 0..<width
         let y_range = 0..<height
@@ -462,8 +501,8 @@ extension Image.ResamplingAlgorithm {
             let _s15 = check3 && check8 ? source[_y4 * width + _x3] : source[__y4 * width + __x3].with(opacity: 0)
             let _s16 = check4 && check8 ? source[_y4 * width + _x4] : source[__y4 * width + __x4].with(opacity: 0)
             
-            var color = Pixel.Model()
-            for i in 0..<Pixel.Model.count {
+            var color = ColorModel()
+            for i in 0..<ColorModel.count {
                 let _u1 = sampler(_tx, _s1.color.component(i), _s2.color.component(i), _s3.color.component(i), _s4.color.component(i))
                 let _u2 = sampler(_tx, _s5.color.component(i), _s6.color.component(i), _s7.color.component(i), _s8.color.component(i))
                 let _u3 = sampler(_tx, _s9.color.component(i), _s10.color.component(i), _s11.color.component(i), _s12.color.component(i))
@@ -476,10 +515,10 @@ extension Image.ResamplingAlgorithm {
             let a3 = sampler(_tx, _s9.opacity, _s10.opacity, _s11.opacity, _s12.opacity)
             let a4 = sampler(_tx, _s13.opacity, _s14.opacity, _s15.opacity, _s16.opacity)
             
-            return Pixel(color: color, opacity: sampler(_ty, a1, a2, a3, a4))
+            return ColorPixel<ColorModel>(color: color, opacity: sampler(_ty, a1, a2, a3, a4))
             
         } else {
-            return Pixel()
+            return ColorPixel<ColorModel>()
         }
     }
 }
