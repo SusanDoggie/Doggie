@@ -49,7 +49,6 @@ extension ColorModelProtocol {
     }
 }
 
-@_fixed_layout
 public struct ColorModelComponentCollection<Model: ColorModelProtocol>: RandomAccessCollection {
     
     public typealias Indices = CountableRange<Int>
