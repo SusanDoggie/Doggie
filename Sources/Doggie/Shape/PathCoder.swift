@@ -30,17 +30,17 @@ private struct PathDataScanner<I : IteratorProtocol> : IteratorProtocol, Sequenc
     var iterator: I
     var current: String!
     
-    @_transparent
+    @inline(__always)
     init(_ iterator: I) {
         self.iterator = iterator
     }
     
-    @_transparent
+    @inline(__always)
     init<S : Sequence>(_ sequence: S) where S.Iterator == I {
         self.iterator = sequence.makeIterator()
     }
     
-    @_transparent
+    @inline(__always)
     @discardableResult
     mutating func next() -> String? {
         current = iterator.next()
@@ -57,7 +57,7 @@ extension Shape {
         var command: String?
     }
     
-    @_transparent
+    @inline(__always)
     fileprivate func toDouble(_ str: String?) throws -> Double {
         
         if str != nil, let val = Double(str!) {
@@ -66,7 +66,7 @@ extension Shape {
         throw DecoderError(command: str)
     }
     
-    @_transparent
+    @inline(__always)
     fileprivate func toInt(_ str: String?) throws -> Int {
         
         if str != nil, let val = Int(str!) {
@@ -340,7 +340,7 @@ extension Shape {
     }
 }
 
-@_transparent
+@inline(__always)
 private func arcDetails(_ start: Point, _ end: Point, _ radius: Radius, _ rotate: Double, _ largeArc: Bool, _ sweep: Bool) -> (Point, Radius) {
     let centers = EllipseCenter(radius, rotate, start, end)
     if centers.count == 0 {
@@ -351,7 +351,7 @@ private func arcDetails(_ start: Point, _ end: Point, _ radius: Radius, _ rotate
         return (centers[1], radius)
     }
 }
-@_transparent
+@inline(__always)
 private func bezierArc(_ start: Point, _ end: Point, _ radius: Radius, _ rotate: Double, _ largeArc: Bool, _ sweep: Bool) -> [Shape.Segment] {
     let (center, radius) = arcDetails(start, end, radius, rotate, largeArc, sweep)
     let _arc_transform = SDTransform.scale(x: radius.x, y: radius.y) * SDTransform.rotate(rotate)
@@ -388,7 +388,7 @@ private let dataFormatter: NumberFormatter = {
     return formatter
     }()
 
-@_transparent
+@inline(__always)
 private func getDataString(_ x: [Double]) -> String {
     var str = ""
     for _x in x.map({ dataFormatter.string(from: NSNumber(value: $0)) ?? "0" }) {
@@ -400,12 +400,12 @@ private func getDataString(_ x: [Double]) -> String {
     return str
 }
 
-@_transparent
+@inline(__always)
 private func _round(_ x: Double) -> Double {
     return round(x * 1000000000) / 1000000000
 }
 
-@_transparent
+@inline(__always)
 private func getPathDataString(_ command: Character?, _ x: Double ...) -> String {
     var result = ""
     command?.write(to: &result)
@@ -482,7 +482,7 @@ private extension Shape.Segment {
         return _serialize2.0
     }
     
-    @_transparent
+    @inline(__always)
     func isSmooth(_ p: Point, _ relative: Point, _ lastControl: Point?) -> Bool {
         
         if let lastControl = lastControl {

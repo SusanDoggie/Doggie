@@ -621,7 +621,7 @@ public func /= <Element>(lhs: inout Bezier<Element>, rhs: Double) {
 
 // MARK: Bezier Length
 
-@_transparent
+@inline(__always)
 private func QuadBezierLength(_ t: Double, _ a: Double, _ b: Double, _ c: Double) -> Double {
     
     if a.almostZero() {
@@ -726,7 +726,7 @@ public func QuadBezierFitting(_ p0: Point, _ p2: Point, _ m0: Point, _ m2: Point
     return p0 + m0 * d / c
 }
 
-@_transparent
+@inline(__always)
 private func QuadBezierFittingCurvature(_ p0: Point, _ p1: Point, _ p2: Point) -> Bool {
     let u = p2 - p0
     let v = p1 - 0.5 * (p2 + p0)
@@ -837,7 +837,7 @@ public func CubicBezierFitting(_ p0: Point, _ p3: Point, _ m0: Point, _ m1: Poin
     return CubicBezierFitting(p0, p3, m0, m1, Array(zip(zip(ds, dt).map { $0 / ($0 + $1) }, points)))
 }
 
-@_transparent
+@inline(__always)
 private func BezierFitting(start: Double, end: Double, _ passing: [(Double, Double)]) -> [Double]? {
     
     let n = passing.count
@@ -908,7 +908,7 @@ public func BezierOffset(_ p0: Point, _ p1: Point, _ a: Double) -> (Point, Point
     return (p0 + Point(x: s, y: t), p1 + Point(x: s, y: t))
 }
 
-@_transparent
+@inline(__always)
 private func BezierOffsetCurvature(_ p0: Point, _ p1: Point, _ p2: Point) -> Bool {
     let u = p2 - p0
     let v = p1 - 0.5 * (p2 + p0)

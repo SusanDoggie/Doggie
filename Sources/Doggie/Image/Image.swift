@@ -233,7 +233,7 @@ extension Image.ResamplingAlgorithm {
             
             result.withUnsafeMutableBytes { (buffer: UnsafeMutablePointer<Pixel>) in
                 
-                @_transparent
+                @inline(__always)
                 func filling(operation: (Point) -> Pixel) {
                     
                     var buffer = buffer
@@ -283,7 +283,7 @@ extension Image.ResamplingAlgorithm {
                             let c2 = -12 * B - 48 * C
                             let d2 = 8 * B + 24 * C
                             
-                            @_transparent
+                            @inline(__always)
                             func _kernel(_ x: Double) -> Double {
                                 if x < 1 {
                                     return (a1 * x + b1) * x * x + c1
@@ -297,7 +297,7 @@ extension Image.ResamplingAlgorithm {
                             
                         case .lanczos(1):
                             
-                            @_transparent
+                            @inline(__always)
                             func _kernel(_ x: Double) -> Double {
                                 if x == 0 {
                                     return 1
@@ -313,7 +313,7 @@ extension Image.ResamplingAlgorithm {
                             
                         case let .lanczos(a):
                             
-                            @_transparent
+                            @inline(__always)
                             func _kernel(_ x: Double) -> Double {
                                 let a = Double(a)
                                 if x == 0 {
@@ -335,7 +335,7 @@ extension Image.ResamplingAlgorithm {
     }
     
     @_versioned
-    @_transparent
+    @inline(__always)
     func convolve<Pixel: ColorPixelProtocol>(source: UnsafePointer<ColorPixel<Pixel.Model>>, width: Int, height: Int, point: Point, kernel_size: Int, kernel: (Double) -> Double) -> Pixel {
         
         var pixel = ColorPixel<Pixel.Model>()
@@ -366,7 +366,7 @@ extension Image.ResamplingAlgorithm {
     }
     
     @_versioned
-    @_transparent
+    @inline(__always)
     func smapling2<Pixel: ColorPixelProtocol>(source: UnsafePointer<ColorPixel<Pixel.Model>>, width: Int, height: Int, point: Point, sampler: (Double, Double, Double) -> Double) -> Pixel {
         
         let x_range = 0..<width
@@ -408,7 +408,7 @@ extension Image.ResamplingAlgorithm {
     }
     
     @_versioned
-    @_transparent
+    @inline(__always)
     func smapling4<Pixel: ColorPixelProtocol>(source: UnsafePointer<ColorPixel<Pixel.Model>>, width: Int, height: Int, point: Point, sampler: (Double, Double, Double, Double, Double) -> Double) -> Pixel {
         
         let x_range = 0..<width

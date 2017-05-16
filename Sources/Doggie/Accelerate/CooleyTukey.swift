@@ -1126,7 +1126,7 @@ public func InverseRadix2CooleyTukey<U: UnsignedInteger>(_ level: Int, _ input: 
 // MARK: Fixed Length Cooley-Tukey
 
 @_versioned
-@_transparent
+@inline(__always)
 func HalfRadix2CooleyTukey_2<T: FloatingPoint>(_ input: UnsafePointer<T>, _ in_stride: Int, _ in_count: Int, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>) {
     
     if in_count == 0 {
@@ -1146,7 +1146,7 @@ func HalfRadix2CooleyTukey_2<T: FloatingPoint>(_ input: UnsafePointer<T>, _ in_s
     _imag.pointee = a - b
 }
 @_versioned
-@_transparent
+@inline(__always)
 func HalfRadix2CooleyTukey_4<T: FloatingPoint>(_ input: UnsafePointer<T>, _ in_stride: Int, _ in_count: Int, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var input = input
@@ -1186,7 +1186,7 @@ func HalfRadix2CooleyTukey_4<T: FloatingPoint>(_ input: UnsafePointer<T>, _ in_s
     _imag.pointee = d - b
 }
 @_versioned
-@_transparent
+@inline(__always)
 func HalfRadix2CooleyTukey_8<T: BinaryFloatingPoint>(_ input: UnsafePointer<T>, _ in_stride: Int, _ in_count: Int, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var input = input
@@ -1274,7 +1274,7 @@ func HalfRadix2CooleyTukey_8<T: BinaryFloatingPoint>(_ input: UnsafePointer<T>, 
     _imag += out_stride
 }
 @_versioned
-@_transparent
+@inline(__always)
 func HalfRadix2CooleyTukey_16<T: BinaryFloatingPoint>(_ input: UnsafePointer<T>, _ in_stride: Int, _ in_count: Int, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var input = input
@@ -1458,7 +1458,7 @@ func HalfRadix2CooleyTukey_16<T: BinaryFloatingPoint>(_ input: UnsafePointer<T>,
 }
 
 @_versioned
-@_transparent
+@inline(__always)
 func HalfInverseRadix2CooleyTukey_2<T: FloatingPoint>(_ real: UnsafePointer<T>, _ imag: UnsafePointer<T>, _ in_count: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var output = output
@@ -1479,7 +1479,7 @@ func HalfInverseRadix2CooleyTukey_2<T: FloatingPoint>(_ real: UnsafePointer<T>, 
     output.pointee = a - b
 }
 @_versioned
-@_transparent
+@inline(__always)
 func HalfInverseRadix2CooleyTukey_4<T: FloatingPoint>(_ real: UnsafePointer<T>, _ imag: UnsafePointer<T>, _ in_stride: Int, _ in_count: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var real = real
@@ -1522,7 +1522,7 @@ func HalfInverseRadix2CooleyTukey_4<T: FloatingPoint>(_ real: UnsafePointer<T>, 
     output.pointee = f + h
 }
 @_versioned
-@_transparent
+@inline(__always)
 func HalfInverseRadix2CooleyTukey_8<T: BinaryFloatingPoint>(_ real: UnsafePointer<T>, _ imag: UnsafePointer<T>, _ in_stride: Int, _ in_count: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var real = real
@@ -1619,7 +1619,7 @@ func HalfInverseRadix2CooleyTukey_8<T: BinaryFloatingPoint>(_ real: UnsafePointe
     output.pointee = d5 + k
 }
 @_versioned
-@_transparent
+@inline(__always)
 func HalfInverseRadix2CooleyTukey_16<T: BinaryFloatingPoint>(_ real: UnsafePointer<T>, _ imag: UnsafePointer<T>, _ in_stride: Int, _ in_count: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var real = real
@@ -1845,7 +1845,7 @@ func HalfInverseRadix2CooleyTukey_16<T: BinaryFloatingPoint>(_ real: UnsafePoint
     output.pointee = h7 - z2
 }
 @_versioned
-@_transparent
+@inline(__always)
 func Radix2CooleyTukey_2<T: FloatingPoint>(_ input: UnsafePointer<T>, _ in_stride: Int, _ in_count: Int, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var input = input
@@ -1877,7 +1877,7 @@ func Radix2CooleyTukey_2<T: FloatingPoint>(_ input: UnsafePointer<T>, _ in_strid
     
 }
 @_versioned
-@_transparent
+@inline(__always)
 func Radix2CooleyTukey_2<T: FloatingPoint>(_ real: UnsafePointer<T>, _ imag: UnsafePointer<T>, _ in_stride: Int, _ in_count: Int, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var real = real
@@ -1913,7 +1913,7 @@ func Radix2CooleyTukey_2<T: FloatingPoint>(_ real: UnsafePointer<T>, _ imag: Uns
     
 }
 @_versioned
-@_transparent
+@inline(__always)
 func Radix2CooleyTukey_4<T: FloatingPoint>(_ input: UnsafePointer<T>, _ in_stride: Int, _ in_count: Int, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var input = input
@@ -1974,7 +1974,7 @@ func Radix2CooleyTukey_4<T: FloatingPoint>(_ input: UnsafePointer<T>, _ in_strid
 }
 
 @_versioned
-@_transparent
+@inline(__always)
 func Radix2CooleyTukey_4<T: FloatingPoint>(_ real: UnsafePointer<T>, _ imag: UnsafePointer<T>, _ in_stride: Int, _ in_count: Int, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var real = real
@@ -2047,7 +2047,7 @@ func Radix2CooleyTukey_4<T: FloatingPoint>(_ real: UnsafePointer<T>, _ imag: Uns
 }
 
 @_versioned
-@_transparent
+@inline(__always)
 func Radix2CooleyTukey_8<T: BinaryFloatingPoint>(_ input: UnsafePointer<T>, _ in_stride: Int, _ in_count: Int, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var input = input
@@ -2170,7 +2170,7 @@ func Radix2CooleyTukey_8<T: BinaryFloatingPoint>(_ input: UnsafePointer<T>, _ in
 }
 
 @_versioned
-@_transparent
+@inline(__always)
 func Radix2CooleyTukey_8<T: BinaryFloatingPoint>(_ real: UnsafePointer<T>, _ imag: UnsafePointer<T>, _ in_stride: Int, _ in_count: Int, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var real = real
@@ -2330,7 +2330,7 @@ func Radix2CooleyTukey_8<T: BinaryFloatingPoint>(_ real: UnsafePointer<T>, _ ima
     _imag.pointee = d6 + l
 }
 @_versioned
-@_transparent
+@inline(__always)
 func Radix2CooleyTukey_16<T: BinaryFloatingPoint>(_ input: UnsafePointer<T>, _ in_stride: Int, _ in_count: Int, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var input = input
@@ -2585,7 +2585,7 @@ func Radix2CooleyTukey_16<T: BinaryFloatingPoint>(_ input: UnsafePointer<T>, _ i
     _imag.pointee = b8 + w3
 }
 @_versioned
-@_transparent
+@inline(__always)
 func Radix2CooleyTukey_16<T: BinaryFloatingPoint>(_ real: UnsafePointer<T>, _ imag: UnsafePointer<T>, _ in_stride: Int, _ in_count: Int, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var real = real
@@ -2943,7 +2943,7 @@ func Radix2CooleyTukey_16<T: BinaryFloatingPoint>(_ real: UnsafePointer<T>, _ im
 }
 
 @_versioned
-@_transparent
+@inline(__always)
 func Radix2CooleyTukey_Orderd_16<T: BinaryFloatingPoint>(_ real: UnsafeMutablePointer<T>, _ imag: UnsafeMutablePointer<T>, _ stride: Int) {
     
     var real = real
@@ -3235,7 +3235,7 @@ func Radix2CooleyTukey_Orderd_16<T: BinaryFloatingPoint>(_ real: UnsafeMutablePo
 }
 
 @_versioned
-@_transparent
+@inline(__always)
 func InverseRadix2CooleyTukey_2<T: FloatingPoint>(_ input: UnsafePointer<T>, _ in_stride: Int, _ in_count: Int, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var input = input
@@ -3267,7 +3267,7 @@ func InverseRadix2CooleyTukey_2<T: FloatingPoint>(_ input: UnsafePointer<T>, _ i
     
 }
 @_versioned
-@_transparent
+@inline(__always)
 func InverseRadix2CooleyTukey_4<T: FloatingPoint>(_ input: UnsafePointer<T>, _ in_stride: Int, _ in_count: Int, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var input = input
@@ -3328,7 +3328,7 @@ func InverseRadix2CooleyTukey_4<T: FloatingPoint>(_ input: UnsafePointer<T>, _ i
 }
 
 @_versioned
-@_transparent
+@inline(__always)
 func InverseRadix2CooleyTukey_8<T: BinaryFloatingPoint>(_ input: UnsafePointer<T>, _ in_stride: Int, _ in_count: Int, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var input = input
@@ -3451,7 +3451,7 @@ func InverseRadix2CooleyTukey_8<T: BinaryFloatingPoint>(_ input: UnsafePointer<T
 }
 
 @_versioned
-@_transparent
+@inline(__always)
 func InverseRadix2CooleyTukey_16<T: BinaryFloatingPoint>(_ input: UnsafePointer<T>, _ in_stride: Int, _ in_count: Int, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var input = input
