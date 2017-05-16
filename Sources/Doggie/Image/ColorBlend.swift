@@ -190,15 +190,15 @@ extension ColorPixelProtocol {
         let r_alpha = compositingMode.mix(s_alpha, s_alpha, d_alpha, d_alpha)
         
         if r_alpha > 0 {
-            
             self.opacity = r_alpha
-            
             for i in 0..<Model.count {
                 let _source = source.color.component(i)
                 let _destination = self.color.component(i)
                 let blended = (1 - d_alpha) * _source + d_alpha * blendMode.blend(_source, _destination)
                 self.color.setComponent(i, compositingMode.mix(s_alpha * blended, s_alpha, d_alpha * _destination, d_alpha) / r_alpha)
             }
+        } else {
+            self = Self()
         }
     }
     
