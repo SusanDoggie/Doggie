@@ -76,6 +76,12 @@ Image(image: sample, width: 1000, height: 1000, resampling: .cubic).withUnsafeBy
     }
 }
 
+Image(image: sample, width: 1000, height: 1000, resampling: .hermite(0.5, 0)).withUnsafeBytes {
+    if let image = createImage(data: $0.baseAddress!, size: CGSize(width: 1000, height: 1000)) {
+        NSImage(cgImage: image)
+    }
+}
+
 Image(image: sample, width: 1000, height: 1000, resampling: .mitchell(1/3, 1/3)).withUnsafeBytes {
     if let image = createImage(data: $0.baseAddress!, size: CGSize(width: 1000, height: 1000)) {
         NSImage(cgImage: image)

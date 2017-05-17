@@ -215,6 +215,7 @@ extension Image {
         case linear
         case cosine
         case cubic
+        case hermite(Double, Double)
         case mitchell(Double, Double)
         case lanczos(UInt)
     }
@@ -315,6 +316,14 @@ extension Image.ResamplingAlgorithm {
                         case .linear: filling { smapling2(source: source, width: s_width, height: s_height, point: $0, sampler: LinearInterpolate) }
                         case .cosine: filling { smapling2(source: source, width: s_width, height: s_height, point: $0, sampler: CosineInterpolate) }
                         case .cubic: filling { smapling4(source: source, width: s_width, height: s_height, point: $0, sampler: CubicInterpolate) }
+                        case let .hermite(s, e):
+                            
+                            @inline(__always)
+                            func _kernel(_ t: Double, _ a: Double, _ b: Double, _ c: Double, _ d: Double) -> Double {
+                                return HermiteInterpolate(t, a, b, c, d, s, e)
+                            }
+                            filling { smapling4(source: source, width: s_width, height: s_height, point: $0, sampler: _kernel) }
+                            
                         case let .mitchell(B, C):
                             
                             let a1 = 12 - 9 * B - 6 * C
