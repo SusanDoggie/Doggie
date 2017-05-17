@@ -35,6 +35,7 @@ class ImageTest: XCTestCase {
         ("testResamplingLinearPerformance", testResamplingLinearPerformance),
         ("testResamplingCosinePerformance", testResamplingCosinePerformance),
         ("testResamplingCubicPerformance", testResamplingCubicPerformance),
+        ("testResamplingHermitePerformance", testResamplingHermitePerformance),
         ("testResamplingMitchellPerformance", testResamplingMitchellPerformance),
         ("testResamplingLanczosPerformance", testResamplingLanczosPerformance),
         ]
@@ -135,6 +136,17 @@ class ImageTest: XCTestCase {
         self.measure() {
             
             _ = Image(image: sample, width: 1000, height: 1000, resampling: .cubic)
+        }
+    }
+    
+    func testResamplingHermitePerformance() {
+        
+        
+        let sample = self.sample
+        
+        self.measure() {
+            
+            _ = Image(image: sample, width: 1000, height: 1000, resampling: .hermite(0.5, 0))
         }
     }
     
