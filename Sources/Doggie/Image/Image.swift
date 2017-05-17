@@ -387,6 +387,26 @@ extension Image.ResamplingAlgorithm {
     
     @_versioned
     @inline(__always)
+    func read_source<ColorModel: ColorModelProtocol>(_ source: UnsafePointer<ColorPixel<ColorModel>>, _ width: Int, _ height: Int, _ x: Int, _ y: Int) -> ColorPixel<ColorModel> {
+        
+        let x_range = 0..<width
+        let y_range = 0..<height
+        
+        let check1 = x_range.contains(x)
+        let check2 = y_range.contains(y)
+        
+        if check1 && check2 {
+            return source[y * width + x]
+        }
+        
+        let _x = x.clamped(to: x_range)
+        let _y = y.clamped(to: y_range)
+        
+        return source[_y * width + _x].with(opacity: 0)
+    }
+    
+    @_versioned
+    @inline(__always)
     func convolve<ColorModel: ColorModelProtocol>(source: UnsafePointer<ColorPixel<ColorModel>>, width: Int, height: Int, point: Point, kernel_size: Int, kernel: (Double) -> Double) -> ColorPixel<ColorModel> {
         
         var pixel = ColorPixel<ColorModel>()
@@ -402,15 +422,11 @@ extension Image.ResamplingAlgorithm {
         let min_y = _y - a + b
         let max_y = min_y + kernel_size
         
-        let x_range = 0..<width
-        let y_range = 0..<height
-        
         for y in min_y..<max_y {
             for x in min_x..<max_x {
-                let l = kernel((point - Point(x: x, y: y)).magnitude)
-                let _source = x_range.contains(x) && y_range.contains(y) ? source[y * width + x] : source[y.clamped(to: y_range) * width + x.clamped(to: x_range)].with(opacity: 0)
-                pixel += _source * l
-                t += l
+                let k = kernel((point - Point(x: x, y: y)).magnitude)
+                pixel += read_source(source, width, height, x, y) * k
+                t += k
             }
         }
         return t == 0 ? ColorPixel<ColorModel>() : pixel / t
@@ -420,50 +436,32 @@ extension Image.ResamplingAlgorithm {
     @inline(__always)
     func smapling2<ColorModel: ColorModelProtocol>(source: UnsafePointer<ColorPixel<ColorModel>>, width: Int, height: Int, point: Point, sampler: (Double, Double, Double) -> Double) -> ColorPixel<ColorModel> {
         
-        let x_range = 0..<width
-        let y_range = 0..<height
-        
         let _x1 = Int(point.x)
         let _y1 = Int(point.y)
         let _x2 = _x1 + 1
         let _y2 = _y1 + 1
-        let check1 = x_range.contains(_x1)
-        let check2 = x_range.contains(_x2)
-        let check3 = y_range.contains(_y1)
-        let check4 = y_range.contains(_y2)
         
         let _tx = point.x - Double(_x1)
         let _ty = point.y - Double(_y1)
         
-        if check1 || check2 || check3 || check4 {
-            
-            let __x1 = _x1.clamped(to: x_range)
-            let __x2 = _x2.clamped(to: x_range)
-            let __y1 = _y1.clamped(to: y_range)
-            let __y2 = _y2.clamped(to: y_range)
-            
-            let _s1 = check1 && check3 ? source[_y1 * width + _x1] : source[__y1 * width + __x1].with(opacity: 0)
-            let _s2 = check2 && check3 ? source[_y1 * width + _x2] : source[__y1 * width + __x2].with(opacity: 0)
-            let _s3 = check1 && check4 ? source[_y2 * width + _x1] : source[__y2 * width + __x1].with(opacity: 0)
-            let _s4 = check2 && check4 ? source[_y2 * width + _x2] : source[__y2 * width + __x2].with(opacity: 0)
-            
-            var color = ColorModel()
-            for i in 0..<ColorModel.count {
-                color.setComponent(i, sampler(_ty,sampler(_tx, _s1.color.component(i), _s2.color.component(i)), sampler(_tx, _s3.color.component(i), _s4.color.component(i))))
-            }
-            return ColorPixel<ColorModel>(color: color, opacity: sampler(_ty, sampler(_tx, _s1.opacity, _s2.opacity), sampler(_tx, _s3.opacity, _s4.opacity)))
-            
-        } else {
-            return ColorPixel<ColorModel>()
+        let _s1 = read_source(source, width, height, _x1, _y1)
+        let _s2 = read_source(source, width, height, _x2, _y1)
+        let _s3 = read_source(source, width, height, _x1, _y2)
+        let _s4 = read_source(source, width, height, _x2, _y2)
+        
+        var color = ColorModel()
+        
+        for i in 0..<ColorModel.count {
+            color.setComponent(i, sampler(_ty,sampler(_tx, _s1.color.component(i), _s2.color.component(i)), sampler(_tx, _s3.color.component(i), _s4.color.component(i))))
         }
+        
+        return ColorPixel<ColorModel>(color: color, opacity: sampler(_ty, sampler(_tx, _s1.opacity, _s2.opacity), sampler(_tx, _s3.opacity, _s4.opacity)))
+        
     }
     
     @_versioned
     @inline(__always)
     func smapling4<ColorModel: ColorModelProtocol>(source: UnsafePointer<ColorPixel<ColorModel>>, width: Int, height: Int, point: Point, sampler: (Double, Double, Double, Double, Double) -> Double) -> ColorPixel<ColorModel> {
-        
-        let x_range = 0..<width
-        let y_range = 0..<height
         
         let _x2 = Int(point.x)
         let _y2 = Int(point.y)
@@ -473,64 +471,43 @@ extension Image.ResamplingAlgorithm {
         let _y1 = _y2 - 1
         let _x4 = _x2 + 2
         let _y4 = _y2 + 2
-        let check1 = x_range.contains(_x1)
-        let check2 = x_range.contains(_x2)
-        let check3 = x_range.contains(_x3)
-        let check4 = x_range.contains(_x4)
-        let check5 = y_range.contains(_y1)
-        let check6 = y_range.contains(_y2)
-        let check7 = y_range.contains(_y3)
-        let check8 = y_range.contains(_y4)
         
         let _tx = point.x - Double(_x2)
         let _ty = point.y - Double(_y2)
         
-        if check1 || check2 || check3 || check4 || check5 || check6 || check7 || check8 {
-            
-            let __x1 = _x1.clamped(to: x_range)
-            let __x2 = _x2.clamped(to: x_range)
-            let __x3 = _x3.clamped(to: x_range)
-            let __x4 = _x4.clamped(to: x_range)
-            let __y1 = _y1.clamped(to: y_range)
-            let __y2 = _y2.clamped(to: y_range)
-            let __y3 = _y3.clamped(to: y_range)
-            let __y4 = _y4.clamped(to: y_range)
-            
-            let _s1 = check1 && check5 ? source[_y1 * width + _x1] : source[__y1 * width + __x1].with(opacity: 0)
-            let _s2 = check2 && check5 ? source[_y1 * width + _x2] : source[__y1 * width + __x2].with(opacity: 0)
-            let _s3 = check3 && check5 ? source[_y1 * width + _x3] : source[__y1 * width + __x3].with(opacity: 0)
-            let _s4 = check4 && check5 ? source[_y1 * width + _x4] : source[__y1 * width + __x4].with(opacity: 0)
-            let _s5 = check1 && check6 ? source[_y2 * width + _x1] : source[__y2 * width + __x1].with(opacity: 0)
-            let _s6 = check2 && check6 ? source[_y2 * width + _x2] : source[__y2 * width + __x2].with(opacity: 0)
-            let _s7 = check3 && check6 ? source[_y2 * width + _x3] : source[__y2 * width + __x3].with(opacity: 0)
-            let _s8 = check4 && check6 ? source[_y2 * width + _x4] : source[__y2 * width + __x4].with(opacity: 0)
-            let _s9 = check1 && check7 ? source[_y3 * width + _x1] : source[__y3 * width + __x1].with(opacity: 0)
-            let _s10 = check2 && check7 ? source[_y3 * width + _x2] : source[__y3 * width + __x2].with(opacity: 0)
-            let _s11 = check3 && check7 ? source[_y3 * width + _x3] : source[__y3 * width + __x3].with(opacity: 0)
-            let _s12 = check4 && check7 ? source[_y3 * width + _x4] : source[__y3 * width + __x4].with(opacity: 0)
-            let _s13 = check1 && check8 ? source[_y4 * width + _x1] : source[__y4 * width + __x1].with(opacity: 0)
-            let _s14 = check2 && check8 ? source[_y4 * width + _x2] : source[__y4 * width + __x2].with(opacity: 0)
-            let _s15 = check3 && check8 ? source[_y4 * width + _x3] : source[__y4 * width + __x3].with(opacity: 0)
-            let _s16 = check4 && check8 ? source[_y4 * width + _x4] : source[__y4 * width + __x4].with(opacity: 0)
-            
-            var color = ColorModel()
-            for i in 0..<ColorModel.count {
-                let _u1 = sampler(_tx, _s1.color.component(i), _s2.color.component(i), _s3.color.component(i), _s4.color.component(i))
-                let _u2 = sampler(_tx, _s5.color.component(i), _s6.color.component(i), _s7.color.component(i), _s8.color.component(i))
-                let _u3 = sampler(_tx, _s9.color.component(i), _s10.color.component(i), _s11.color.component(i), _s12.color.component(i))
-                let _u4 = sampler(_tx, _s13.color.component(i), _s14.color.component(i), _s15.color.component(i), _s16.color.component(i))
-                color.setComponent(i, sampler(_ty, _u1, _u2, _u3, _u4))
-            }
-            
-            let a1 = sampler(_tx, _s1.opacity, _s2.opacity, _s3.opacity, _s4.opacity)
-            let a2 = sampler(_tx, _s5.opacity, _s6.opacity, _s7.opacity, _s8.opacity)
-            let a3 = sampler(_tx, _s9.opacity, _s10.opacity, _s11.opacity, _s12.opacity)
-            let a4 = sampler(_tx, _s13.opacity, _s14.opacity, _s15.opacity, _s16.opacity)
-            
-            return ColorPixel<ColorModel>(color: color, opacity: sampler(_ty, a1, a2, a3, a4))
-            
-        } else {
-            return ColorPixel<ColorModel>()
+        let _s1 = read_source(source, width, height, _x1, _y1)
+        let _s2 = read_source(source, width, height, _x2, _y1)
+        let _s3 = read_source(source, width, height, _x3, _y1)
+        let _s4 = read_source(source, width, height, _x4, _y1)
+        let _s5 = read_source(source, width, height, _x1, _y2)
+        let _s6 = read_source(source, width, height, _x2, _y2)
+        let _s7 = read_source(source, width, height, _x3, _y2)
+        let _s8 = read_source(source, width, height, _x4, _y2)
+        let _s9 = read_source(source, width, height, _x1, _y3)
+        let _s10 = read_source(source, width, height, _x2, _y3)
+        let _s11 = read_source(source, width, height, _x3, _y3)
+        let _s12 = read_source(source, width, height, _x4, _y3)
+        let _s13 = read_source(source, width, height, _x1, _y4)
+        let _s14 = read_source(source, width, height, _x2, _y4)
+        let _s15 = read_source(source, width, height, _x3, _y4)
+        let _s16 = read_source(source, width, height, _x4, _y4)
+        
+        var color = ColorModel()
+        
+        for i in 0..<ColorModel.count {
+            let _u1 = sampler(_tx, _s1.color.component(i), _s2.color.component(i), _s3.color.component(i), _s4.color.component(i))
+            let _u2 = sampler(_tx, _s5.color.component(i), _s6.color.component(i), _s7.color.component(i), _s8.color.component(i))
+            let _u3 = sampler(_tx, _s9.color.component(i), _s10.color.component(i), _s11.color.component(i), _s12.color.component(i))
+            let _u4 = sampler(_tx, _s13.color.component(i), _s14.color.component(i), _s15.color.component(i), _s16.color.component(i))
+            color.setComponent(i, sampler(_ty, _u1, _u2, _u3, _u4))
         }
+        
+        let a1 = sampler(_tx, _s1.opacity, _s2.opacity, _s3.opacity, _s4.opacity)
+        let a2 = sampler(_tx, _s5.opacity, _s6.opacity, _s7.opacity, _s8.opacity)
+        let a3 = sampler(_tx, _s9.opacity, _s10.opacity, _s11.opacity, _s12.opacity)
+        let a4 = sampler(_tx, _s13.opacity, _s14.opacity, _s15.opacity, _s16.opacity)
+        
+        return ColorPixel<ColorModel>(color: color, opacity: sampler(_ty, a1, a2, a3, a4))
+        
     }
 }
