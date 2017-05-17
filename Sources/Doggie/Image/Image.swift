@@ -121,7 +121,7 @@ struct ImageBase<ColorPixel: ColorPixelProtocol, ColorSpace : ColorSpaceProtocol
     @_inlineable
     func resampling(s_width: Int, width: Int, height: Int, transform: SDTransform, algorithm: Image.ResamplingAlgorithm, antialias: Bool) -> ImageBaseProtocol {
         
-        if transform.determinant.almostZero() {
+        if buffer.count == 0 || transform.determinant.almostZero() {
             return ImageBase(size: width * height, pixel: ColorPixel(), colorSpace: self.colorSpace, algorithm: self.algorithm)
         }
         return ImageBase(buffer: algorithm.calculate(source: self.buffer, s_width: s_width, width: width, height: height, pixel: ColorPixel.self, transform: transform.inverse, antialias: antialias), colorSpace: self.colorSpace, algorithm: self.algorithm)
