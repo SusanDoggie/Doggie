@@ -120,48 +120,6 @@ public enum ResamplingAlgorithm {
     case lanczos(UInt)
 }
 
-extension Image {
-    
-    @_inlineable
-    public mutating func blend<C : ColorSpaceProtocol, P: ColorPixelProtocol>(source: Image<C, P>, transform: SDTransform, blendMode: ColorBlendMode, compositingMode: ColorCompositingMode, algorithm: ResamplingAlgorithm, antialias: Bool) where C.Model == P.Model {
-        
-        if buffer.count == 0 || source.width == 0 || source.height == 0 || transform.determinant.almostZero() {
-            return
-        }
-        
-        let _source: Image
-        
-        if transform == SDTransform.identity && width == source.width && height == source.height {
-            _source = Image(image: source, colorSpace: colorSpace)
-        } else if C.Model.count < ColorSpace.Model.count || (C.Model.count == ColorSpace.Model.count && width * height < source.width * source.height) {
-            let _temp = Image<C, P>(image: source, width: width, height: height, transform: transform, resampling: algorithm, antialias: antialias)
-            _source = Image(image: _temp, colorSpace: colorSpace)
-        } else {
-            let _temp = Image(image: source, colorSpace: colorSpace)
-            _source = Image(image: _temp, width: width, height: height, transform: transform, resampling: algorithm, antialias: antialias)
-        }
-        
-        _source.buffer.withUnsafeBytes { (_s: UnsafePointer<ColorPixel>) in
-            self.buffer.withUnsafeMutableBytes { (_d: UnsafeMutablePointer<ColorPixel>) in
-                var _s = _s
-                var _d = _d
-                for _ in 0..<width * height {
-                    _d.pointee.blend(source: _s.pointee, blendMode: blendMode, compositingMode: compositingMode)
-                    _s += 1
-                    _d += 1
-                }
-            }
-        }
-    }
-    
-    @_inlineable
-    public func blended<C : ColorSpaceProtocol, P: ColorPixelProtocol>(source: Image<C, P>, transform: SDTransform, blendMode: ColorBlendMode, compositingMode: ColorCompositingMode, algorithm: ResamplingAlgorithm, antialias: Bool) -> Image where C.Model == P.Model {
-        var result = self
-        result.blend(source: source, transform: transform, blendMode: blendMode, compositingMode: compositingMode, algorithm: algorithm, antialias: antialias)
-        return result
-    }
-}
-
 extension ResamplingAlgorithm {
     
     @_versioned

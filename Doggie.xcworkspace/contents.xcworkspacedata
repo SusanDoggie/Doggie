@@ -29,6 +29,9 @@
          location = "group:Rasterize.playground">
       </FileRef>
       <FileRef
+         location = "group:ImageContext.playground">
+      </FileRef>
+      <FileRef
          location = "group:ShapeTweening.playground">
       </FileRef>
       <FileRef
