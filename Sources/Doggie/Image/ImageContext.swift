@@ -48,9 +48,6 @@ open class ImageContext<ColorSpace : ColorSpaceProtocol> {
         _image = Image(width: width, height: height, colorSpace: colorSpace, pixel: ColorPixel<ColorSpace.Model>())
         self.clip = Image(width: width, height: height, colorSpace: CalibratedGrayColorSpace(colorSpace.cieXYZ), pixel: ColorPixel<GrayColorModel>(color: GrayColorModel(white: 1), opacity: 1))
     }
-}
-
-extension ImageContext {
     
     open func withUnsafeMutableImageBufferPointer<R>(_ body: (UnsafeMutableBufferPointer<ColorPixel<ColorSpace.Model>>) throws -> R) rethrows -> R {
         
@@ -78,9 +75,6 @@ extension ImageContext {
             return try clip.withUnsafeBufferPointer(body)
         }
     }
-}
-
-extension ImageContext {
     
     open var colorSpace: ColorSpace {
         get {
@@ -111,9 +105,6 @@ extension ImageContext {
     open var image: Image<ColorSpace, ColorPixel<ColorSpace.Model>> {
         return _image
     }
-}
-
-extension ImageContext {
     
     open func drawClip(body: (ImageContext<CalibratedGrayColorSpace>) throws -> Void) rethrows {
         
@@ -136,9 +127,6 @@ extension ImageContext {
         
         self.clip = _clip.image
     }
-}
-
-extension ImageContext {
     
     open func beginTransparencyLayer() {
         
@@ -210,9 +198,6 @@ extension ImageContext {
             }
         }
     }
-}
-
-extension ImageContext {
     
     open func draw<C : ColorSpaceProtocol, P: ColorPixelProtocol>(image: Image<C, P>, transform: SDTransform) {
         
@@ -274,9 +259,6 @@ extension ImageContext {
             }
         }
     }
-}
-
-extension ImageContext {
     
     private func draw<C : ColorSpaceProtocol>(shape: Shape, color: Color<C>, winding: (Int) -> Bool) {
         
