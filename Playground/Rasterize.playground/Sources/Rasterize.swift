@@ -1,9 +1,9 @@
 
 import Doggie
 
-public func drawImage(shape: Shape, width: Int, height: Int) -> Image {
+public func drawImage(shape: Shape, width: Int, height: Int) -> Image<CalibratedRGBColorSpace, ARGB32ColorPixel> {
     
-    var image = Image(width: width, height: height, pixel: ARGB32ColorPixel(), colorSpace: CalibratedRGBColorSpace.sRGB)
+    var image = Image(width: width, height: height, colorSpace: CalibratedRGBColorSpace.sRGB, pixel: ARGB32ColorPixel())
     
     var stencil = [Int](repeating: 0, count: width * height)
     
@@ -13,9 +13,9 @@ public func drawImage(shape: Shape, width: Int, height: Int) -> Image {
         
         if var stencil = stencil.baseAddress {
             
-            image.withUnsafeMutableBytes {
+            image.withUnsafeMutableBufferPointer {
                 
-                if var ptr = $0.baseAddress?.assumingMemoryBound(to: ARGB32ColorPixel.self) {
+                if var ptr = $0.baseAddress {
                     
                     for _ in 0..<width * height {
                         

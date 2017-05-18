@@ -25,7 +25,7 @@
 
 import Foundation
 
-public protocol ColorModelProtocol {
+public protocol ColorModelProtocol : Hashable {
     
     static var count: Int { get }
     

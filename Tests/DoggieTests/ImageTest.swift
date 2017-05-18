@@ -40,16 +40,16 @@ class ImageTest: XCTestCase {
         ("testResamplingLanczosPerformance", testResamplingLanczosPerformance),
         ]
     
-    var sample: Image = {
+    var sample: Image<LinearToneColorSpace<CalibratedRGBColorSpace>, ARGB32ColorPixel> = {
         
-        var sample = Image(width: 100, height: 100, pixel: ARGB32ColorPixel(), colorSpace: CalibratedRGBColorSpace.sRGB.linearTone)
+        var sample = Image(width: 100, height: 100, colorSpace: CalibratedRGBColorSpace.sRGB.linearTone, pixel: ARGB32ColorPixel())
         
         #if os(macOS)
             if #available(OSX 10.12, *) {
                 let _colorspace = CGColorSpace(name: CGColorSpace.linearSRGB) ?? CGColorSpaceCreateDeviceRGB()
                 let _bitmapInfo = CGBitmapInfo.byteOrder32Big.rawValue | CGImageAlphaInfo.premultipliedFirst.rawValue
                 
-                sample.withUnsafeMutableBytes {
+                sample.withUnsafeMutableBufferPointer {
                     if let context = CGContext(data: $0.baseAddress!, width: 100, height: 100, bitsPerComponent: 8, bytesPerRow: 400, space: _colorspace, bitmapInfo: _bitmapInfo) {
                         
                         context.setStrokeColor(NSColor.black.cgColor)

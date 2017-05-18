@@ -23,128 +23,28 @@
 //  THE SOFTWARE.
 //
 
-@_versioned
-protocol ColorBaseProtocol {
+public struct Color<ColorSpace : ColorSpaceProtocol> {
     
-    @_versioned
-    var count: Int { get }
+    public var colorSpace: ColorSpace
     
-    @_versioned
-    var colorModel: ColorModelProtocol.Type { get }
-    
-    @_versioned
-    var color: ColorModelProtocol { get }
-    
-    @_versioned
-    func convert<ColorSpace : ColorSpaceProtocol>(to colorSpace: ColorSpace, chromaticAdaptationAlgorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm) -> ColorBase<ColorSpace>
-    
-    @_versioned
-    func blended(source: ColorBaseProtocol, source_alpha: Double, destination_alpha: Double, blendMode: ColorBlendMode, compositingMode: ColorCompositingMode, chromaticAdaptationAlgorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm) -> (ColorBaseProtocol, Double)
-    
-    @_versioned
-    func component(_ index: Int) -> Double
-    
-    @_versioned
-    mutating func setComponent(_ index: Int, _ value: Double)
-}
-
-@_versioned
-@_fixed_layout
-struct ColorBase<ColorSpace : ColorSpaceProtocol> : ColorBaseProtocol {
-    
-    @_versioned
-    @_inlineable
-    var count: Int {
-        return ColorSpace.Model.count
-    }
-    
-    @_versioned
-    @_inlineable
-    var colorSpace: ColorSpace
-    
-    @_versioned
-    @_inlineable
-    var _color: ColorSpace.Model
-    
-    @_versioned
-    @_inlineable
-    var color: ColorModelProtocol {
-        return _color
-    }
-    
-    @_versioned
-    @_inlineable
-    init(colorSpace: ColorSpace, color: ColorSpace.Model) {
-        self.colorSpace = colorSpace
-        self._color = color
-    }
-    
-    @_versioned
-    @_inlineable
-    func component(_ index: Int) -> Double {
-        return _color.component(index)
-    }
-    @_versioned
-    @_inlineable
-    mutating func setComponent(_ index: Int, _ value: Double) {
-        _color.setComponent(index, value)
-    }
-}
-
-extension ColorBase {
-    
-    @_versioned
-    @_inlineable
-    var colorModel: ColorModelProtocol.Type {
-        return ColorSpace.Model.self
-    }
-}
-
-extension ColorBase {
-    
-    @_versioned
-    @_inlineable
-    func convert<C : ColorSpaceProtocol>(to colorSpace: C, chromaticAdaptationAlgorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm) -> ColorBase<C> {
-        return ColorBase<C>(colorSpace: colorSpace, color: self.colorSpace.convert(_color, to: colorSpace, chromaticAdaptationAlgorithm: chromaticAdaptationAlgorithm))
-    }
-}
-
-extension ColorBase {
-    
-    @_versioned
-    @_inlineable
-    func blended(source: ColorBaseProtocol, source_alpha: Double, destination_alpha: Double, blendMode: ColorBlendMode, compositingMode: ColorCompositingMode, chromaticAdaptationAlgorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm) -> (ColorBaseProtocol, Double) {
-        
-        let source = ColorPixel(color: source.convert(to: colorSpace, chromaticAdaptationAlgorithm: chromaticAdaptationAlgorithm)._color, opacity: source_alpha)
-        let destination = ColorPixel(color: _color, opacity: destination_alpha)
-        
-        let blended = destination.blended(source: source, blendMode: blendMode, compositingMode: compositingMode)
-        
-        return (ColorBase(colorSpace: colorSpace, color: blended.color), blended.opacity)
-    }
-}
-
-@_fixed_layout
-public struct Color {
-    
-    @_versioned
-    var base: ColorBaseProtocol
+    public var color: ColorSpace.Model
     
     public var opacity: Double
     
     public var chromaticAdaptationAlgorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm
     
-    @_versioned
     @_inlineable
-    init(base: ColorBaseProtocol, opacity: Double, chromaticAdaptationAlgorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm = .bradford) {
-        self.base = base
-        self.opacity = opacity
+    public init<C : ColorPixelProtocol>(colorSpace: ColorSpace, color: C, chromaticAdaptationAlgorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm = .bradford) where C.Model == ColorSpace.Model {
+        self.colorSpace = colorSpace
+        self.color = color.color
+        self.opacity = color.opacity
         self.chromaticAdaptationAlgorithm = chromaticAdaptationAlgorithm
     }
     
     @_inlineable
-    public init<ColorSpace : ColorSpaceProtocol>(colorSpace: ColorSpace, color: ColorSpace.Model, opacity: Double = 1, chromaticAdaptationAlgorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm = .bradford) {
-        self.base = ColorBase(colorSpace: colorSpace, color: color)
+    public init(colorSpace: ColorSpace, color: ColorSpace.Model, opacity: Double = 1, chromaticAdaptationAlgorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm = .bradford) {
+        self.colorSpace = colorSpace
+        self.color = color
         self.opacity = opacity
         self.chromaticAdaptationAlgorithm = chromaticAdaptationAlgorithm
     }
@@ -153,50 +53,22 @@ public struct Color {
 extension Color {
     
     @_inlineable
-    public var colorModel: ColorModelProtocol.Type {
-        return self.base.colorModel
-    }
-    @_inlineable
-    public var color: ColorModelProtocol {
-        return self.base.color
+    public func convert<C : ColorSpaceProtocol>(to colorSpace: C) -> Color<C> {
+        return Color<C>(colorSpace: colorSpace, color: self.colorSpace.convert(color, to: colorSpace, chromaticAdaptationAlgorithm: chromaticAdaptationAlgorithm), opacity: opacity, chromaticAdaptationAlgorithm: chromaticAdaptationAlgorithm)
     }
 }
 
 extension Color {
     
     @_inlineable
-    public func convert<ColorSpace : ColorSpaceProtocol>(to colorSpace: ColorSpace) -> Color {
-        return Color(base: self.base.convert(to: colorSpace, chromaticAdaptationAlgorithm: chromaticAdaptationAlgorithm), opacity: self.opacity)
-    }
-}
-
-extension Color {
-    
-    @_inlineable
-    public func blended(source: Color, blendMode: ColorBlendMode, compositingMode: ColorCompositingMode) -> Color {
-        let color = base.blended(source: source.base, source_alpha: source.opacity, destination_alpha: opacity, blendMode: blendMode, compositingMode: compositingMode, chromaticAdaptationAlgorithm: chromaticAdaptationAlgorithm)
-        return Color(base: color.0, opacity: color.1)
+    public func blended<C : ColorSpaceProtocol>(source: Color<C>, blendMode: ColorBlendMode, compositingMode: ColorCompositingMode) -> Color {
+        let source = source.convert(to: colorSpace)
+        let color = ColorPixel(color: self.color, opacity: self.opacity).blended(source: ColorPixel(color: source.color, opacity: source.opacity), blendMode: blendMode, compositingMode: compositingMode)
+        return Color(colorSpace: colorSpace, color: color.color, opacity: color.opacity, chromaticAdaptationAlgorithm: chromaticAdaptationAlgorithm)
     }
     
     @_inlineable
-    public mutating func blend(source: Color, blendMode: ColorBlendMode, compositingMode: ColorCompositingMode) {
+    public mutating func blend<C : ColorSpaceProtocol>(source: Color<C>, blendMode: ColorBlendMode, compositingMode: ColorCompositingMode) {
         self = self.blended(source: source, blendMode: blendMode, compositingMode: compositingMode)
-    }
-}
-
-extension Color {
-    
-    @_inlineable
-    public var componentCount: Int {
-        return base.count
-    }
-    
-    @_inlineable
-    public func component(_ index: Int) -> Double {
-        return base.component(index)
-    }
-    @_inlineable
-    public mutating func setComponent(_ index: Int, _ value: Double) {
-        base.setComponent(index, value)
     }
 }

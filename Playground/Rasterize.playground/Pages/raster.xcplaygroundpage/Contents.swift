@@ -41,7 +41,7 @@ extension NSImage {
     }
 }
 
-sample.withUnsafeBytes {
+sample.withUnsafeBufferPointer {
     if let image = createImage(data: $0.baseAddress!, size: CGSize(width: sample.width, height: sample.height)) {
         NSImage(cgImage: image)
     }

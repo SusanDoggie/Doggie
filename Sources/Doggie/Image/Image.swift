@@ -25,259 +25,144 @@
 
 import Foundation
 
-@_versioned
-protocol ImageBaseProtocol {
-    
-    @_versioned
-    var colorModel: ColorModelProtocol.Type { get }
-    
-    @_versioned
-    var chromaticAdaptationAlgorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm { get set }
-    
-    @_versioned
-    subscript(position: Int) -> Color { get set }
-    
-    @_versioned
-    func convert<RPixel: ColorPixelProtocol, RSpace : ColorSpaceProtocol>(pixel: RPixel.Type, colorSpace: RSpace) -> ImageBaseProtocol where RPixel.Model == RSpace.Model
-    
-    @_versioned
-    func blended(source: Image, width: Int, height: Int, transform: SDTransform, blendMode: ColorBlendMode, compositingMode: ColorCompositingMode, algorithm: Image.ResamplingAlgorithm, antialias: Bool) -> ImageBaseProtocol
-    
-    @_versioned
-    func resampling(s_width: Int, width: Int, height: Int, transform: SDTransform, algorithm: Image.ResamplingAlgorithm, antialias: Bool) -> ImageBaseProtocol
-    
-    @_versioned
-    mutating func withUnsafeMutableBytes<R>(_ body: (UnsafeMutableRawBufferPointer) throws -> R) rethrows -> R
-    
-    @_versioned
-    func withUnsafeBytes<R>(_ body: (UnsafeRawBufferPointer) throws -> R) rethrows -> R
-}
-
-@_versioned
 @_fixed_layout
-struct ImageBase<ColorPixel: ColorPixelProtocol, ColorSpace : ColorSpaceProtocol> : ImageBaseProtocol where ColorPixel.Model == ColorSpace.Model {
-    
-    @_versioned
-    var buffer: Data
-    
-    @_versioned
-    var colorSpace: ColorSpace
-    
-    @_versioned
-    var chromaticAdaptationAlgorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm
-    
-    @_versioned
-    @_inlineable
-    init(buffer: Data, colorSpace: ColorSpace, chromaticAdaptationAlgorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm) {
-        self.buffer = buffer
-        self.colorSpace = colorSpace
-        self.chromaticAdaptationAlgorithm = chromaticAdaptationAlgorithm
-    }
-    
-    @_versioned
-    @_inlineable
-    init(size: Int, pixel: ColorPixel, colorSpace: ColorSpace, chromaticAdaptationAlgorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm) {
-        
-        var data = Data(count: MemoryLayout<ColorPixel>.stride * size)
-        data.withUnsafeMutableBytes { _ = _memset($0, pixel, MemoryLayout<ColorPixel>.stride * size) }
-        
-        self.init(buffer: data, colorSpace: colorSpace, chromaticAdaptationAlgorithm: chromaticAdaptationAlgorithm)
-    }
-    
-    @_versioned
-    @_inlineable
-    var colorModel: ColorModelProtocol.Type {
-        return ColorSpace.Model.self
-    }
-    
-    @_versioned
-    @_inlineable
-    subscript(position: Int) -> Color {
-        get {
-            return buffer.withUnsafeBytes { (ptr: UnsafePointer<ColorPixel>) in
-                let pixel = ptr[position]
-                return Color(colorSpace: colorSpace, color: pixel.color, opacity: pixel.opacity, chromaticAdaptationAlgorithm: chromaticAdaptationAlgorithm)
-            }
-        }
-        set {
-            buffer.withUnsafeMutableBytes { (ptr: UnsafeMutablePointer<ColorPixel>) in
-                let color = newValue.convert(to: colorSpace)
-                ptr[position] = ColorPixel(color: color.color as! ColorSpace.Model, opacity: color.opacity)
-            }
-        }
-    }
-    
-    @_versioned
-    @_inlineable
-    func convert<RPixel: ColorPixelProtocol, RSpace : ColorSpaceProtocol>(pixel: RPixel.Type, colorSpace: RSpace) -> ImageBaseProtocol where RPixel.Model == RSpace.Model {
-        
-        return ImageBase<RPixel, RSpace>(buffer: buffer._memmap { (pixel: ColorPixel) in RPixel(color: self.colorSpace.convert(pixel.color, to: colorSpace, chromaticAdaptationAlgorithm: chromaticAdaptationAlgorithm), opacity: pixel.opacity) }, colorSpace: colorSpace, chromaticAdaptationAlgorithm: chromaticAdaptationAlgorithm)
-    }
-    
-    @_versioned
-    @_inlineable
-    func blended(source: Image, width: Int, height: Int, transform: SDTransform, blendMode: ColorBlendMode, compositingMode: ColorCompositingMode, algorithm: Image.ResamplingAlgorithm, antialias: Bool) -> ImageBaseProtocol {
-        
-        if buffer.count == 0 || source.width == 0 || source.height == 0 || transform.determinant.almostZero() {
-            return self
-        }
-        
-        let _source: ImageBase
-        
-        if transform == SDTransform.identity && width == source.width && height == source.height {
-            _source = Image(image: source, pixel: ColorPixel.self, colorSpace: colorSpace).base as! ImageBase
-        } else if source.colorModel.count < ColorSpace.Model.count || (source.colorModel.count == ColorSpace.Model.count && width * height < source.width * source.height) {
-            let _temp = Image(image: source, width: width, height: height, transform: transform, resampling: algorithm, antialias: antialias)
-            _source = Image(image: _temp, pixel: ColorPixel.self, colorSpace: colorSpace).base as! ImageBase
-        } else {
-            let _temp = Image(image: source, pixel: ColorPixel.self, colorSpace: colorSpace)
-            _source = Image(image: _temp, width: width, height: height, transform: transform, resampling: algorithm, antialias: antialias).base as! ImageBase
-        }
-        
-        var _buffer = self.buffer
-        
-        _source.buffer.withUnsafeBytes { (_s: UnsafePointer<ColorPixel>) in
-            _buffer.withUnsafeMutableBytes { (_d: UnsafeMutablePointer<ColorPixel>) in
-                var _s = _s
-                var _d = _d
-                for _ in 0..<buffer.count {
-                    _d.pointee.blend(source: _s.pointee, blendMode: blendMode, compositingMode: compositingMode)
-                    _s += 1
-                    _d += 1
-                }
-            }
-        }
-        
-        return ImageBase(buffer: _buffer, colorSpace: colorSpace, chromaticAdaptationAlgorithm: chromaticAdaptationAlgorithm)
-    }
-    
-    @_versioned
-    @_inlineable
-    func resampling(s_width: Int, width: Int, height: Int, transform: SDTransform, algorithm: Image.ResamplingAlgorithm, antialias: Bool) -> ImageBaseProtocol {
-        
-        if buffer.count == 0 || transform.determinant.almostZero() {
-            return ImageBase(size: width * height, pixel: ColorPixel(), colorSpace: self.colorSpace, chromaticAdaptationAlgorithm: chromaticAdaptationAlgorithm)
-        }
-        return ImageBase(buffer: algorithm.calculate(source: self.buffer, s_width: s_width, width: width, height: height, pixel: ColorPixel.self, transform: transform.inverse, antialias: antialias), colorSpace: self.colorSpace, chromaticAdaptationAlgorithm: chromaticAdaptationAlgorithm)
-    }
-    
-    @_versioned
-    @_inlineable
-    mutating func withUnsafeMutableBytes<R>(_ body: (UnsafeMutableRawBufferPointer) throws -> R) rethrows -> R {
-        return try buffer.withUnsafeMutableBytes { (ptr: UnsafeMutablePointer<UInt8>) in try body(UnsafeMutableRawBufferPointer(start: ptr, count: buffer.count)) }
-    }
-    
-    @_versioned
-    @_inlineable
-    func withUnsafeBytes<R>(_ body: (UnsafeRawBufferPointer) throws -> R) rethrows -> R {
-        return try buffer.withUnsafeBytes { (ptr: UnsafePointer<UInt8>) in try body(UnsafeRawBufferPointer(start: ptr, count: buffer.count)) }
-    }
-}
-
-@_fixed_layout
-public struct Image {
+public struct Image<ColorSpace : ColorSpaceProtocol, ColorPixel: ColorPixelProtocol> where ColorPixel.Model == ColorSpace.Model {
     
     public let width: Int
     public let height: Int
     
     @_versioned
-    var base: ImageBaseProtocol
+    var buffer: Data
+    
+    public var colorSpace: ColorSpace
+    
+    public var chromaticAdaptationAlgorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm
     
     @_inlineable
     public init(image: Image, width: Int, height: Int, resampling algorithm: ResamplingAlgorithm = .linear, antialias: Bool = false) {
-        self.width = width
-        self.height = height
-        self.base = image.base.resampling(s_width: image.width, width: width, height: height, transform: SDTransform.scale(x: Double(width) / Double(image.width), y: Double(height) / Double(image.height)), algorithm: algorithm, antialias: antialias)
+        self.init(image: image, width: width, height: height, transform: SDTransform.scale(x: Double(width) / Double(image.width), y: Double(height) / Double(image.height)), resampling: algorithm, antialias: antialias)
     }
     
     @_inlineable
     public init(image: Image, width: Int, height: Int, transform: SDTransform, resampling algorithm: ResamplingAlgorithm = .linear, antialias: Bool = false) {
         self.width = width
         self.height = height
-        self.base = image.base.resampling(s_width: image.width, width: width, height: height, transform: transform, algorithm: algorithm, antialias: antialias)
+        self.colorSpace = image.colorSpace
+        self.chromaticAdaptationAlgorithm = image.chromaticAdaptationAlgorithm
+        if image.buffer.count == 0 || transform.determinant.almostZero() {
+            self.buffer = Data(count: MemoryLayout<ColorPixel>.stride * width * height)
+            self.buffer.withUnsafeMutableBytes { _ = _memset($0, ColorPixel(), MemoryLayout<ColorPixel>.stride * width * height) }
+        } else {
+            self.buffer = algorithm.calculate(source: image.buffer, s_width: image.width, width: width, height: height, pixel: ColorPixel.self, transform: transform.inverse, antialias: antialias)
+        }
     }
     
     @_inlineable
-    public init<ColorPixel: ColorPixelProtocol, ColorSpace : ColorSpaceProtocol>(width: Int, height: Int, pixel: ColorPixel, colorSpace: ColorSpace, chromaticAdaptationAlgorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm = .bradford) where ColorPixel.Model == ColorSpace.Model {
+    public init(width: Int, height: Int, colorSpace: ColorSpace, pixel: ColorPixel = ColorPixel(), chromaticAdaptationAlgorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm = .bradford) {
         self.width = width
         self.height = height
-        self.base = ImageBase(size: width * height, pixel: pixel, colorSpace: colorSpace, chromaticAdaptationAlgorithm: chromaticAdaptationAlgorithm)
+        self.colorSpace = colorSpace
+        self.chromaticAdaptationAlgorithm = chromaticAdaptationAlgorithm
+        self.buffer = Data(count: MemoryLayout<ColorPixel>.stride * width * height)
+        self.buffer.withUnsafeMutableBytes { _ = _memset($0, pixel, MemoryLayout<ColorPixel>.stride * width * height) }
     }
     
     @_inlineable
-    public init<ColorPixel: ColorPixelProtocol, ColorSpace : ColorSpaceProtocol>(image: Image, pixel: ColorPixel.Type, colorSpace: ColorSpace) where ColorPixel.Model == ColorSpace.Model {
+    public init<C : ColorSpaceProtocol, P: ColorPixelProtocol>(image: Image<C, P>, colorSpace: ColorSpace) where C.Model == P.Model {
         self.width = image.width
         self.height = image.height
-        self.base = image.base.convert(pixel: pixel, colorSpace: colorSpace)
-    }
-    
-    @_inlineable
-    public var colorModel: ColorModelProtocol.Type {
-        return base.colorModel
-    }
-    
-    @_inlineable
-    public var chromaticAdaptationAlgorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm {
-        get {
-            return base.chromaticAdaptationAlgorithm
-        }
-        set {
-            base.chromaticAdaptationAlgorithm = newValue
-        }
-    }
-    
-    @_inlineable
-    public subscript(x: Int, y: Int) -> Color {
-        get {
-            return base[width * y + x]
-        }
-        set {
-            base[width * y + x] = newValue
-        }
-    }
-    
-    @_inlineable
-    public mutating func withUnsafeMutableBytes<R>(_ body: (UnsafeMutableRawBufferPointer) throws -> R) rethrows -> R {
-        return try base.withUnsafeMutableBytes(body)
-    }
-    
-    @_inlineable
-    public func withUnsafeBytes<R>(_ body: (UnsafeRawBufferPointer) throws -> R) rethrows -> R {
-        return try base.withUnsafeBytes(body)
+        self.colorSpace = colorSpace
+        self.chromaticAdaptationAlgorithm = image.chromaticAdaptationAlgorithm
+        self.buffer = image.buffer._memmap { (pixel: P) in ColorPixel(color: image.colorSpace.convert(pixel.color, to: colorSpace, chromaticAdaptationAlgorithm: image.chromaticAdaptationAlgorithm), opacity: pixel.opacity) }
     }
 }
 
 extension Image {
     
     @_inlineable
-    public mutating func blend(source: Image, transform: SDTransform, blendMode: ColorBlendMode, compositingMode: ColorCompositingMode, algorithm: Image.ResamplingAlgorithm, antialias: Bool) {
+    public subscript(x: Int, y: Int) -> Color<ColorSpace> {
+        get {
+            precondition(0..<width ~= x)
+            precondition(0..<height ~= y)
+            return buffer.withUnsafeBytes { (ptr: UnsafePointer<ColorPixel>) in Color(colorSpace: colorSpace, color: ptr[width * y + x], chromaticAdaptationAlgorithm: chromaticAdaptationAlgorithm) }
+        }
+        set {
+            precondition(0..<width ~= x)
+            precondition(0..<height ~= y)
+            buffer.withUnsafeMutableBytes { (ptr: UnsafeMutablePointer<ColorPixel>) in ptr[width * y + x] = ColorPixel(newValue.convert(to: colorSpace)) }
+        }
+    }
+}
+
+extension Image {
+    
+    @_inlineable
+    public func withUnsafeBufferPointer<R>(_ body: (UnsafeBufferPointer<ColorPixel>) throws -> R) rethrows -> R {
         
-        base = base.blended(source: source, width: width, height: height, transform: transform, blendMode: blendMode, compositingMode: compositingMode, algorithm: algorithm, antialias: antialias)
+        return try buffer.withUnsafeBytes { try body(UnsafeBufferPointer(start: $0, count: width * height)) }
     }
     
     @_inlineable
-    public func blended(source: Image, transform: SDTransform, blendMode: ColorBlendMode, compositingMode: ColorCompositingMode, algorithm: Image.ResamplingAlgorithm, antialias: Bool) -> Image {
+    public mutating func withUnsafeMutableBufferPointer<R>(_ body: (UnsafeMutableBufferPointer<ColorPixel>) throws -> R) rethrows -> R {
+        
+        return try buffer.withUnsafeMutableBytes { try body(UnsafeMutableBufferPointer(start: $0, count: width * height)) }
+    }
+}
+
+public enum ResamplingAlgorithm {
+    
+    case none
+    case linear
+    case cosine
+    case cubic
+    case hermite(Double, Double)
+    case mitchell(Double, Double)
+    case lanczos(UInt)
+}
+
+extension Image {
+    
+    @_inlineable
+    public mutating func blend<C : ColorSpaceProtocol, P: ColorPixelProtocol>(source: Image<C, P>, transform: SDTransform, blendMode: ColorBlendMode, compositingMode: ColorCompositingMode, algorithm: ResamplingAlgorithm, antialias: Bool) where C.Model == P.Model {
+        
+        if buffer.count == 0 || source.width == 0 || source.height == 0 || transform.determinant.almostZero() {
+            return
+        }
+        
+        let _source: Image
+        
+        if transform == SDTransform.identity && width == source.width && height == source.height {
+            _source = Image(image: source, colorSpace: colorSpace)
+        } else if C.Model.count < ColorSpace.Model.count || (C.Model.count == ColorSpace.Model.count && width * height < source.width * source.height) {
+            let _temp = Image<C, P>(image: source, width: width, height: height, transform: transform, resampling: algorithm, antialias: antialias)
+            _source = Image(image: _temp, colorSpace: colorSpace)
+        } else {
+            let _temp = Image(image: source, colorSpace: colorSpace)
+            _source = Image(image: _temp, width: width, height: height, transform: transform, resampling: algorithm, antialias: antialias)
+        }
+        
+        _source.buffer.withUnsafeBytes { (_s: UnsafePointer<ColorPixel>) in
+            self.buffer.withUnsafeMutableBytes { (_d: UnsafeMutablePointer<ColorPixel>) in
+                var _s = _s
+                var _d = _d
+                for _ in 0..<width * height {
+                    _d.pointee.blend(source: _s.pointee, blendMode: blendMode, compositingMode: compositingMode)
+                    _s += 1
+                    _d += 1
+                }
+            }
+        }
+    }
+    
+    @_inlineable
+    public func blended<C : ColorSpaceProtocol, P: ColorPixelProtocol>(source: Image<C, P>, transform: SDTransform, blendMode: ColorBlendMode, compositingMode: ColorCompositingMode, algorithm: ResamplingAlgorithm, antialias: Bool) -> Image where C.Model == P.Model {
         var result = self
         result.blend(source: source, transform: transform, blendMode: blendMode, compositingMode: compositingMode, algorithm: algorithm, antialias: antialias)
         return result
     }
 }
 
-extension Image {
-    
-    public enum ResamplingAlgorithm {
-        
-        case none
-        case linear
-        case cosine
-        case cubic
-        case hermite(Double, Double)
-        case mitchell(Double, Double)
-        case lanczos(UInt)
-    }
-}
-
-extension Image.ResamplingAlgorithm {
+extension ResamplingAlgorithm {
     
     @_versioned
     @_inlineable

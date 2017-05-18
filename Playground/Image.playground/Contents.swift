@@ -27,9 +27,9 @@ extension NSImage {
     }
 }
 
-var sample = Image(width: 100, height: 100, pixel: ARGB32ColorPixel(), colorSpace: CalibratedRGBColorSpace.sRGB.linearTone)
+var sample = Image(width: 100, height: 100, colorSpace: CalibratedRGBColorSpace.sRGB.linearTone, pixel: ARGB32ColorPixel())
 
-sample.withUnsafeMutableBytes {
+sample.withUnsafeMutableBufferPointer {
     if let context = CGContext(data: $0.baseAddress!, width: 100, height: 100, bitsPerComponent: 8, bytesPerRow: 400, space: _colorspace, bitmapInfo: _bitmapInfo) {
         
         context.setStrokeColor(NSColor.black.cgColor)
@@ -46,49 +46,49 @@ sample.withUnsafeMutableBytes {
     }
 }
 
-sample.withUnsafeBytes {
+sample.withUnsafeBufferPointer {
     if let image = createImage(data: $0.baseAddress!, size: CGSize(width: 100, height: 100)) {
         NSImage(cgImage: image)
     }
 }
 
-Image(image: sample, width: 1000, height: 1000, resampling: .none).withUnsafeBytes {
+Image(image: sample, width: 1000, height: 1000, resampling: .none).withUnsafeBufferPointer {
     if let image = createImage(data: $0.baseAddress!, size: CGSize(width: 1000, height: 1000)) {
         NSImage(cgImage: image)
     }
 }
 
-Image(image: sample, width: 1000, height: 1000, resampling: .linear).withUnsafeBytes {
+Image(image: sample, width: 1000, height: 1000, resampling: .linear).withUnsafeBufferPointer {
     if let image = createImage(data: $0.baseAddress!, size: CGSize(width: 1000, height: 1000)) {
         NSImage(cgImage: image)
     }
 }
 
-Image(image: sample, width: 1000, height: 1000, resampling: .cosine).withUnsafeBytes {
+Image(image: sample, width: 1000, height: 1000, resampling: .cosine).withUnsafeBufferPointer {
     if let image = createImage(data: $0.baseAddress!, size: CGSize(width: 1000, height: 1000)) {
         NSImage(cgImage: image)
     }
 }
 
-Image(image: sample, width: 1000, height: 1000, resampling: .cubic).withUnsafeBytes {
+Image(image: sample, width: 1000, height: 1000, resampling: .cubic).withUnsafeBufferPointer {
     if let image = createImage(data: $0.baseAddress!, size: CGSize(width: 1000, height: 1000)) {
         NSImage(cgImage: image)
     }
 }
 
-Image(image: sample, width: 1000, height: 1000, resampling: .hermite(0.5, 0)).withUnsafeBytes {
+Image(image: sample, width: 1000, height: 1000, resampling: .hermite(0.5, 0)).withUnsafeBufferPointer {
     if let image = createImage(data: $0.baseAddress!, size: CGSize(width: 1000, height: 1000)) {
         NSImage(cgImage: image)
     }
 }
 
-Image(image: sample, width: 1000, height: 1000, resampling: .mitchell(1/3, 1/3)).withUnsafeBytes {
+Image(image: sample, width: 1000, height: 1000, resampling: .mitchell(1/3, 1/3)).withUnsafeBufferPointer {
     if let image = createImage(data: $0.baseAddress!, size: CGSize(width: 1000, height: 1000)) {
         NSImage(cgImage: image)
     }
 }
 
-Image(image: sample, width: 1000, height: 1000, resampling: .lanczos(3)).withUnsafeBytes {
+Image(image: sample, width: 1000, height: 1000, resampling: .lanczos(3)).withUnsafeBufferPointer {
     if let image = createImage(data: $0.baseAddress!, size: CGSize(width: 1000, height: 1000)) {
         NSImage(cgImage: image)
     }
