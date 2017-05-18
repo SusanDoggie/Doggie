@@ -38,9 +38,6 @@ protocol ImageBaseProtocol {
     subscript(position: Int) -> Color { get set }
     
     @_versioned
-    func convert(color: Color) -> Color
-    
-    @_versioned
     func convert<RPixel: ColorPixelProtocol, RSpace : ColorSpaceProtocol>(pixel: RPixel.Type, colorSpace: RSpace) -> ImageBaseProtocol where RPixel.Model == RSpace.Model
     
     @_versioned
@@ -99,21 +96,15 @@ struct ImageBase<ColorPixel: ColorPixelProtocol, ColorSpace : ColorSpaceProtocol
         get {
             return buffer.withUnsafeBytes { (ptr: UnsafePointer<ColorPixel>) in
                 let pixel = ptr[position]
-                return Color(colorSpace: colorSpace, color: pixel.color, opacity: pixel.opacity)
+                return Color(colorSpace: colorSpace, color: pixel.color, opacity: pixel.opacity, chromaticAdaptationAlgorithm: chromaticAdaptationAlgorithm)
             }
         }
         set {
             buffer.withUnsafeMutableBytes { (ptr: UnsafeMutablePointer<ColorPixel>) in
-                let color = newValue.convert(to: colorSpace, chromaticAdaptationAlgorithm: chromaticAdaptationAlgorithm)
+                let color = newValue.convert(to: colorSpace)
                 ptr[position] = ColorPixel(color: color.color as! ColorSpace.Model, opacity: color.opacity)
             }
         }
-    }
-    
-    @_versioned
-    @_inlineable
-    func convert(color: Color) -> Color {
-        return color.convert(to: colorSpace, chromaticAdaptationAlgorithm: chromaticAdaptationAlgorithm)
     }
     
     @_versioned
@@ -220,10 +211,6 @@ public struct Image {
         self.base = image.base.convert(pixel: pixel, colorSpace: colorSpace)
     }
     
-    @_inlineable
-    public func convert(from color: Color) -> Color {
-        return base.convert(color: color)
-    }
     @_inlineable
     public var colorModel: ColorModelProtocol.Type {
         return base.colorModel
