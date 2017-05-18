@@ -133,7 +133,9 @@ struct ImageBase<ColorPixel: ColorPixelProtocol, ColorSpace : ColorSpaceProtocol
         
         let _source: ImageBase
         
-        if source.colorModel.count < ColorSpace.Model.count || (source.colorModel.count == ColorSpace.Model.count && width * height < source.width * source.height) {
+        if transform == SDTransform.identity && width == source.width && height == source.height {
+            _source = Image(image: source, pixel: ColorPixel.self, colorSpace: colorSpace)
+        } else if source.colorModel.count < ColorSpace.Model.count || (source.colorModel.count == ColorSpace.Model.count && width * height < source.width * source.height) {
             let _temp = Image(image: source, width: width, height: height, transform: transform, resampling: algorithm, antialias: antialias)
             _source = Image(image: _temp, pixel: ColorPixel.self, colorSpace: colorSpace).base as! ImageBase
         } else {
