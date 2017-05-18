@@ -41,6 +41,9 @@ protocol ImageBaseProtocol {
     func convert<RPixel: ColorPixelProtocol, RSpace : ColorSpaceProtocol>(pixel: RPixel.Type, colorSpace: RSpace, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm) -> ImageBaseProtocol where RPixel.Model == RSpace.Model
     
     @_versioned
+    func blended(source: Image, width: Int, height: Int, transform: SDTransform, blendMode: ColorBlendMode, compositingMode: ColorCompositingMode, algorithm: Image.ResamplingAlgorithm, antialias: Bool) -> ImageBaseProtocol
+    
+    @_versioned
     func resampling(s_width: Int, width: Int, height: Int, transform: SDTransform, algorithm: Image.ResamplingAlgorithm, antialias: Bool) -> ImageBaseProtocol
     
     @_versioned
@@ -115,6 +118,41 @@ struct ImageBase<ColorPixel: ColorPixelProtocol, ColorSpace : ColorSpaceProtocol
     func convert<RPixel: ColorPixelProtocol, RSpace : ColorSpaceProtocol>(pixel: RPixel.Type, colorSpace: RSpace, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm) -> ImageBaseProtocol where RPixel.Model == RSpace.Model {
         
         return ImageBase<RPixel, RSpace>(buffer: buffer._memmap { (pixel: ColorPixel) in RPixel(color: self.colorSpace.convert(pixel.color, to: colorSpace, algorithm: algorithm), opacity: pixel.opacity) }, colorSpace: colorSpace, algorithm: algorithm)
+    }
+    
+    @_versioned
+    @_inlineable
+    func blended(source: Image, width: Int, height: Int, transform: SDTransform, blendMode: ColorBlendMode, compositingMode: ColorCompositingMode, algorithm: Image.ResamplingAlgorithm, antialias: Bool) -> ImageBaseProtocol {
+        
+        if buffer.count == 0 || source.width == 0 || source.height == 0 || transform.determinant.almostZero() {
+            return self
+        }
+        
+        let _source: ImageBase
+        
+        if source.colorModel.count < ColorSpace.Model.count || (source.colorModel.count == ColorSpace.Model.count && width * height < source.width * source.height) {
+            let _temp = Image(image: source, width: width, height: height, transform: transform, resampling: algorithm, antialias: antialias)
+            _source = Image(image: _temp, pixel: ColorPixel.self, colorSpace: colorSpace).base as! ImageBase
+        } else {
+            let _temp = Image(image: source, pixel: ColorPixel.self, colorSpace: colorSpace)
+            _source = Image(image: _temp, width: width, height: height, transform: transform, resampling: algorithm, antialias: antialias).base as! ImageBase
+        }
+        
+        var _buffer = self.buffer
+        
+        _source.buffer.withUnsafeBytes { (_s: UnsafePointer<ColorPixel>) in
+            _buffer.withUnsafeMutableBytes { (_d: UnsafeMutablePointer<ColorPixel>) in
+                var _s = _s
+                var _d = _d
+                for _ in 0..<buffer.count {
+                    _d.pointee.blend(source: _s.pointee, blendMode: blendMode, compositingMode: compositingMode)
+                    _s += 1
+                    _d += 1
+                }
+            }
+        }
+        
+        return ImageBase(buffer: _buffer, colorSpace: colorSpace, algorithm: self.algorithm)
     }
     
     @_versioned
@@ -204,6 +242,22 @@ public struct Image {
     @_inlineable
     public func withUnsafeBytes<R>(_ body: (UnsafeRawBufferPointer) throws -> R) rethrows -> R {
         return try base.withUnsafeBytes(body)
+    }
+}
+
+extension Image {
+    
+    @_inlineable
+    public mutating func blend(source: Image, transform: SDTransform, blendMode: ColorBlendMode, compositingMode: ColorCompositingMode, algorithm: Image.ResamplingAlgorithm, antialias: Bool) {
+        
+        base = base.blended(source: source, width: width, height: height, transform: transform, blendMode: blendMode, compositingMode: compositingMode, algorithm: algorithm, antialias: antialias)
+    }
+    
+    @_inlineable
+    public func blended(source: Image, transform: SDTransform, blendMode: ColorBlendMode, compositingMode: ColorCompositingMode, algorithm: Image.ResamplingAlgorithm, antialias: Bool) -> Image {
+        var result = self
+        result.blend(source: source, transform: transform, blendMode: blendMode, compositingMode: compositingMode, algorithm: algorithm, antialias: antialias)
+        return result
     }
 }
 

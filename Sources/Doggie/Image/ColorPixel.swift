@@ -41,6 +41,27 @@ public protocol ColorPixelProtocol : Hashable {
 extension ColorPixelProtocol {
     
     @_inlineable
+    public init() {
+        self.init(color: Model(), opacity: 0)
+    }
+    
+    @_inlineable
+    public init<C : ColorPixelProtocol>(_ color: C) where Model == C.Model {
+        self.init(color: color.color, opacity: color.opacity)
+    }
+}
+
+extension ColorPixelProtocol {
+    
+    @_inlineable
+    public func with(opacity: Double) -> Self {
+        return Self(color: color, opacity: opacity)
+    }
+}
+
+extension ColorPixelProtocol {
+    
+    @_inlineable
     public var hashValue: Int {
         return hash_combine(seed: 0, self.opacity.hashValue, self.color.hashValue)
     }
@@ -115,19 +136,6 @@ public func !=<Pixel : ColorPixelProtocol>(lhs: Pixel, rhs: Pixel) -> Bool {
     return lhs.color != rhs.color || lhs.opacity != rhs.opacity
 }
 
-extension ColorPixelProtocol {
-    
-    @_inlineable
-    public init() {
-        self.init(color: Model(), opacity: 0)
-    }
-    
-    @_inlineable
-    public func with(opacity: Double) -> Self {
-        return Self(color: color, opacity: opacity)
-    }
-}
-
 public struct ColorPixel<Model : ColorModelProtocol> : ColorPixelProtocol {
     
     public var color: Model
@@ -137,23 +145,6 @@ public struct ColorPixel<Model : ColorModelProtocol> : ColorPixelProtocol {
     public init(color: Model, opacity: Double) {
         self.color = color
         self.opacity = opacity
-    }
-}
-
-extension ColorPixel {
-    
-    @_inlineable
-    public init<C : ColorPixelProtocol>(_ color: C) where Model == C.Model {
-        self.color = color.color
-        self.opacity = color.opacity
-    }
-}
-
-extension ColorPixelProtocol {
-    
-    @_inlineable
-    public init(_ color: ColorPixel<Model>) {
-        self.init(color: color.color, opacity: color.opacity)
     }
 }
 

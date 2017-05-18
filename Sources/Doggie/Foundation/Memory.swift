@@ -61,7 +61,7 @@ public func _memset<T>(_ __b: UnsafeMutableRawPointer, _ __c: T, _ __len: Int) -
     
     if __len > 0 {
         let copy = min(MemoryLayout<T>.stride, __len)
-        withUnsafeBytes(of: &__c) { _ = memcpy(__b, $0.baseAddress, copy) }
+        withUnsafeBytes(of: &__c) { _ = memcpy(__b, $0.baseAddress!, copy) }
         __len -= copy
         __b += copy
         copied += copy
