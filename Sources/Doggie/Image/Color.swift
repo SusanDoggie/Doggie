@@ -36,10 +36,10 @@ protocol ColorBaseProtocol {
     var color: ColorModelProtocol { get }
     
     @_versioned
-    func convert<ColorSpace : ColorSpaceProtocol>(to colorSpace: ColorSpace, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm) -> ColorBase<ColorSpace>
+    func convert<ColorSpace : ColorSpaceProtocol>(to colorSpace: ColorSpace, chromaticAdaptationAlgorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm) -> ColorBase<ColorSpace>
     
     @_versioned
-    func blended(source: ColorBaseProtocol, source_alpha: Double, destination_alpha: Double, blendMode: ColorBlendMode, compositingMode: ColorCompositingMode, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm) -> (ColorBaseProtocol, Double)
+    func blended(source: ColorBaseProtocol, source_alpha: Double, destination_alpha: Double, blendMode: ColorBlendMode, compositingMode: ColorCompositingMode, chromaticAdaptationAlgorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm) -> (ColorBaseProtocol, Double)
     
     @_versioned
     func component(_ index: Int) -> Double
@@ -104,8 +104,8 @@ extension ColorBase {
     
     @_versioned
     @_inlineable
-    func convert<C : ColorSpaceProtocol>(to colorSpace: C, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm) -> ColorBase<C> {
-        return ColorBase<C>(colorSpace: colorSpace, color: self.colorSpace.convert(_color, to: colorSpace, algorithm: algorithm))
+    func convert<C : ColorSpaceProtocol>(to colorSpace: C, chromaticAdaptationAlgorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm) -> ColorBase<C> {
+        return ColorBase<C>(colorSpace: colorSpace, color: self.colorSpace.convert(_color, to: colorSpace, chromaticAdaptationAlgorithm: chromaticAdaptationAlgorithm))
     }
 }
 
@@ -113,9 +113,9 @@ extension ColorBase {
     
     @_versioned
     @_inlineable
-    func blended(source: ColorBaseProtocol, source_alpha: Double, destination_alpha: Double, blendMode: ColorBlendMode, compositingMode: ColorCompositingMode, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm) -> (ColorBaseProtocol, Double) {
+    func blended(source: ColorBaseProtocol, source_alpha: Double, destination_alpha: Double, blendMode: ColorBlendMode, compositingMode: ColorCompositingMode, chromaticAdaptationAlgorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm) -> (ColorBaseProtocol, Double) {
         
-        let source = ColorPixel(color: source.convert(to: colorSpace, algorithm: algorithm)._color, opacity: source_alpha)
+        let source = ColorPixel(color: source.convert(to: colorSpace, chromaticAdaptationAlgorithm: chromaticAdaptationAlgorithm)._color, opacity: source_alpha)
         let destination = ColorPixel(color: _color, opacity: destination_alpha)
         
         let blended = destination.blended(source: source, blendMode: blendMode, compositingMode: compositingMode)
@@ -161,22 +161,22 @@ extension Color {
 extension Color {
     
     @_inlineable
-    public func convert<ColorSpace : ColorSpaceProtocol>(to colorSpace: ColorSpace, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm = .bradford) -> Color {
-        return Color(base: self.base.convert(to: colorSpace, algorithm: algorithm), opacity: self.opacity)
+    public func convert<ColorSpace : ColorSpaceProtocol>(to colorSpace: ColorSpace, chromaticAdaptationAlgorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm = .bradford) -> Color {
+        return Color(base: self.base.convert(to: colorSpace, chromaticAdaptationAlgorithm: chromaticAdaptationAlgorithm), opacity: self.opacity)
     }
 }
 
 extension Color {
     
     @_inlineable
-    public func blended(source: Color, blendMode: ColorBlendMode, compositingMode: ColorCompositingMode, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm = .bradford) -> Color {
-        let color = base.blended(source: source.base, source_alpha: source.opacity, destination_alpha: opacity, blendMode: blendMode, compositingMode: compositingMode, algorithm: algorithm)
+    public func blended(source: Color, blendMode: ColorBlendMode, compositingMode: ColorCompositingMode, chromaticAdaptationAlgorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm = .bradford) -> Color {
+        let color = base.blended(source: source.base, source_alpha: source.opacity, destination_alpha: opacity, blendMode: blendMode, compositingMode: compositingMode, chromaticAdaptationAlgorithm: chromaticAdaptationAlgorithm)
         return Color(base: color.0, opacity: color.1)
     }
     
     @_inlineable
-    public mutating func blend(source: Color, blendMode: ColorBlendMode, compositingMode: ColorCompositingMode, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm = .bradford) {
-        self = self.blended(source: source, blendMode: blendMode, compositingMode: compositingMode, algorithm: algorithm)
+    public mutating func blend(source: Color, blendMode: ColorBlendMode, compositingMode: ColorCompositingMode, chromaticAdaptationAlgorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm = .bradford) {
+        self = self.blended(source: source, blendMode: blendMode, compositingMode: compositingMode, chromaticAdaptationAlgorithm: chromaticAdaptationAlgorithm)
     }
 }
 

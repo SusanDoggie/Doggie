@@ -43,7 +43,7 @@ public protocol ColorSpaceProtocol {
     
     func convertLinearFromXYZ(_ color: XYZColorModel) -> Model
     
-    func convert<C : ColorSpaceProtocol>(_ color: Model, to other: C, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm) -> C.Model
+    func convert<C : ColorSpaceProtocol>(_ color: Model, to other: C, chromaticAdaptationAlgorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm) -> C.Model
 }
 
 extension ColorSpaceProtocol {
@@ -72,8 +72,8 @@ extension ColorSpaceProtocol {
     }
     
     @_inlineable
-    public func convert<C : ColorSpaceProtocol>(_ color: Model, to other: C, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm = .bradford) -> C.Model {
-        return other.convertFromXYZ(self.convertToXYZ(color) * self.cieXYZ.transferMatrix(to: other.cieXYZ, algorithm: algorithm))
+    public func convert<C : ColorSpaceProtocol>(_ color: Model, to other: C, chromaticAdaptationAlgorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm = .bradford) -> C.Model {
+        return other.convertFromXYZ(self.convertToXYZ(color) * self.cieXYZ.transferMatrix(to: other.cieXYZ, chromaticAdaptationAlgorithm: chromaticAdaptationAlgorithm))
     }
 }
 
@@ -242,8 +242,8 @@ extension CIEXYZColorSpace {
     
     @_versioned
     @_inlineable
-    func transferMatrix(to other: CIEXYZColorSpace, algorithm: ChromaticAdaptationAlgorithm) -> Matrix {
-        let matrix = algorithm.matrix
+    func transferMatrix(to other: CIEXYZColorSpace, chromaticAdaptationAlgorithm: ChromaticAdaptationAlgorithm) -> Matrix {
+        let matrix = chromaticAdaptationAlgorithm.matrix
         let m1 = self.normalizeMatrix * matrix
         let m2 = other.normalizeMatrix * matrix
         let _s = self.white * m1

@@ -32,13 +32,16 @@ protocol ImageBaseProtocol {
     var colorModel: ColorModelProtocol.Type { get }
     
     @_versioned
+    var chromaticAdaptationAlgorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm { get set }
+    
+    @_versioned
     subscript(position: Int) -> Color { get set }
     
     @_versioned
-    func convert(color: Color, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm) -> Color
+    func convert(color: Color) -> Color
     
     @_versioned
-    func convert<RPixel: ColorPixelProtocol, RSpace : ColorSpaceProtocol>(pixel: RPixel.Type, colorSpace: RSpace, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm) -> ImageBaseProtocol where RPixel.Model == RSpace.Model
+    func convert<RPixel: ColorPixelProtocol, RSpace : ColorSpaceProtocol>(pixel: RPixel.Type, colorSpace: RSpace) -> ImageBaseProtocol where RPixel.Model == RSpace.Model
     
     @_versioned
     func blended(source: Image, width: Int, height: Int, transform: SDTransform, blendMode: ColorBlendMode, compositingMode: ColorCompositingMode, algorithm: Image.ResamplingAlgorithm, antialias: Bool) -> ImageBaseProtocol
@@ -64,24 +67,24 @@ struct ImageBase<ColorPixel: ColorPixelProtocol, ColorSpace : ColorSpaceProtocol
     var colorSpace: ColorSpace
     
     @_versioned
-    var algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm
+    var chromaticAdaptationAlgorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm
     
     @_versioned
     @_inlineable
-    init(buffer: Data, colorSpace: ColorSpace, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm) {
+    init(buffer: Data, colorSpace: ColorSpace, chromaticAdaptationAlgorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm) {
         self.buffer = buffer
         self.colorSpace = colorSpace
-        self.algorithm = algorithm
+        self.chromaticAdaptationAlgorithm = chromaticAdaptationAlgorithm
     }
     
     @_versioned
     @_inlineable
-    init(size: Int, pixel: ColorPixel, colorSpace: ColorSpace, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm) {
+    init(size: Int, pixel: ColorPixel, colorSpace: ColorSpace, chromaticAdaptationAlgorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm) {
         
         var data = Data(count: MemoryLayout<ColorPixel>.stride * size)
         data.withUnsafeMutableBytes { _ = _memset($0, pixel, MemoryLayout<ColorPixel>.stride * size) }
         
-        self.init(buffer: data, colorSpace: colorSpace, algorithm: algorithm)
+        self.init(buffer: data, colorSpace: colorSpace, chromaticAdaptationAlgorithm: chromaticAdaptationAlgorithm)
     }
     
     @_versioned
@@ -101,7 +104,7 @@ struct ImageBase<ColorPixel: ColorPixelProtocol, ColorSpace : ColorSpaceProtocol
         }
         set {
             buffer.withUnsafeMutableBytes { (ptr: UnsafeMutablePointer<ColorPixel>) in
-                let color = newValue.convert(to: colorSpace, algorithm: algorithm)
+                let color = newValue.convert(to: colorSpace, chromaticAdaptationAlgorithm: chromaticAdaptationAlgorithm)
                 ptr[position] = ColorPixel(color: color.color as! ColorSpace.Model, opacity: color.opacity)
             }
         }
@@ -109,15 +112,15 @@ struct ImageBase<ColorPixel: ColorPixelProtocol, ColorSpace : ColorSpaceProtocol
     
     @_versioned
     @_inlineable
-    func convert(color: Color, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm) -> Color {
-        return color.convert(to: colorSpace, algorithm: algorithm)
+    func convert(color: Color) -> Color {
+        return color.convert(to: colorSpace, chromaticAdaptationAlgorithm: chromaticAdaptationAlgorithm)
     }
     
     @_versioned
     @_inlineable
-    func convert<RPixel: ColorPixelProtocol, RSpace : ColorSpaceProtocol>(pixel: RPixel.Type, colorSpace: RSpace, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm) -> ImageBaseProtocol where RPixel.Model == RSpace.Model {
+    func convert<RPixel: ColorPixelProtocol, RSpace : ColorSpaceProtocol>(pixel: RPixel.Type, colorSpace: RSpace) -> ImageBaseProtocol where RPixel.Model == RSpace.Model {
         
-        return ImageBase<RPixel, RSpace>(buffer: buffer._memmap { (pixel: ColorPixel) in RPixel(color: self.colorSpace.convert(pixel.color, to: colorSpace, algorithm: algorithm), opacity: pixel.opacity) }, colorSpace: colorSpace, algorithm: algorithm)
+        return ImageBase<RPixel, RSpace>(buffer: buffer._memmap { (pixel: ColorPixel) in RPixel(color: self.colorSpace.convert(pixel.color, to: colorSpace, chromaticAdaptationAlgorithm: chromaticAdaptationAlgorithm), opacity: pixel.opacity) }, colorSpace: colorSpace, chromaticAdaptationAlgorithm: chromaticAdaptationAlgorithm)
     }
     
     @_versioned
@@ -152,7 +155,7 @@ struct ImageBase<ColorPixel: ColorPixelProtocol, ColorSpace : ColorSpaceProtocol
             }
         }
         
-        return ImageBase(buffer: _buffer, colorSpace: colorSpace, algorithm: self.algorithm)
+        return ImageBase(buffer: _buffer, colorSpace: colorSpace, chromaticAdaptationAlgorithm: chromaticAdaptationAlgorithm)
     }
     
     @_versioned
@@ -160,9 +163,9 @@ struct ImageBase<ColorPixel: ColorPixelProtocol, ColorSpace : ColorSpaceProtocol
     func resampling(s_width: Int, width: Int, height: Int, transform: SDTransform, algorithm: Image.ResamplingAlgorithm, antialias: Bool) -> ImageBaseProtocol {
         
         if buffer.count == 0 || transform.determinant.almostZero() {
-            return ImageBase(size: width * height, pixel: ColorPixel(), colorSpace: self.colorSpace, algorithm: self.algorithm)
+            return ImageBase(size: width * height, pixel: ColorPixel(), colorSpace: self.colorSpace, chromaticAdaptationAlgorithm: chromaticAdaptationAlgorithm)
         }
-        return ImageBase(buffer: algorithm.calculate(source: self.buffer, s_width: s_width, width: width, height: height, pixel: ColorPixel.self, transform: transform.inverse, antialias: antialias), colorSpace: self.colorSpace, algorithm: self.algorithm)
+        return ImageBase(buffer: algorithm.calculate(source: self.buffer, s_width: s_width, width: width, height: height, pixel: ColorPixel.self, transform: transform.inverse, antialias: antialias), colorSpace: self.colorSpace, chromaticAdaptationAlgorithm: chromaticAdaptationAlgorithm)
     }
     
     @_versioned
@@ -202,26 +205,36 @@ public struct Image {
     }
     
     @_inlineable
-    public init<ColorPixel: ColorPixelProtocol, ColorSpace : ColorSpaceProtocol>(width: Int, height: Int, pixel: ColorPixel, colorSpace: ColorSpace, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm = .bradford) where ColorPixel.Model == ColorSpace.Model {
+    public init<ColorPixel: ColorPixelProtocol, ColorSpace : ColorSpaceProtocol>(width: Int, height: Int, pixel: ColorPixel, colorSpace: ColorSpace, chromaticAdaptationAlgorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm = .bradford) where ColorPixel.Model == ColorSpace.Model {
         self.width = width
         self.height = height
-        self.base = ImageBase(size: width * height, pixel: pixel, colorSpace: colorSpace, algorithm: algorithm)
+        self.base = ImageBase(size: width * height, pixel: pixel, colorSpace: colorSpace, chromaticAdaptationAlgorithm: chromaticAdaptationAlgorithm)
     }
     
     @_inlineable
-    public init<ColorPixel: ColorPixelProtocol, ColorSpace : ColorSpaceProtocol>(image: Image, pixel: ColorPixel.Type, colorSpace: ColorSpace, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm = .bradford) where ColorPixel.Model == ColorSpace.Model {
+    public init<ColorPixel: ColorPixelProtocol, ColorSpace : ColorSpaceProtocol>(image: Image, pixel: ColorPixel.Type, colorSpace: ColorSpace) where ColorPixel.Model == ColorSpace.Model {
         self.width = image.width
         self.height = image.height
-        self.base = image.base.convert(pixel: pixel, colorSpace: colorSpace, algorithm: algorithm)
+        self.base = image.base.convert(pixel: pixel, colorSpace: colorSpace)
     }
     
     @_inlineable
-    public func convert(from color: Color, algorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm = .bradford) -> Color {
-        return base.convert(color: color, algorithm: algorithm)
+    public func convert(from color: Color) -> Color {
+        return base.convert(color: color)
     }
     @_inlineable
     public var colorModel: ColorModelProtocol.Type {
         return base.colorModel
+    }
+    
+    @_inlineable
+    public var chromaticAdaptationAlgorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm {
+        get {
+            return base.chromaticAdaptationAlgorithm
+        }
+        set {
+            base.chromaticAdaptationAlgorithm = newValue
+        }
     }
     
     @_inlineable
