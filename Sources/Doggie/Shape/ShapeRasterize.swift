@@ -376,7 +376,7 @@ extension Shape {
     
     @_versioned
     @_specialize(Int8) @_specialize(Int16) @_specialize(Int32) @_specialize(Int64) @_specialize(Int)
-    func _raster<T: SignedInteger>(width: Int, height: Int, stencil: inout [T]) {
+    func _raster<T: SignedInteger>(width: Int, height: Int, transform: SDTransform, stencil: inout [T]) {
         
         assert(stencil.count == width * height, "incorrect size of stencil.")
         
@@ -394,12 +394,20 @@ extension Shape {
             switch $0 {
             case let .triangle(p0, p1, p2):
                 
-                loop(p0, p1, p2) { _ in true }
+                let q0 = p0 * transform
+                let q1 = p1 * transform
+                let q2 = p2 * transform
+                
+                loop(q0, q1, q2) { _ in true }
                 
             case let .quadratic(p0, p1, p2):
                 
-                if let transform = SDTransform(from: p0, p1, p2, to: Point(x: 0, y: 0), Point(x: 0.5, y: 0), Point(x: 1, y: 1)) {
-                    loop(p0, p1, p2) { x, y in
+                let q0 = p0 * transform
+                let q1 = p1 * transform
+                let q2 = p2 * transform
+                
+                if let transform = SDTransform(from: q0, q1, q2, to: Point(x: 0, y: 0), Point(x: 0.5, y: 0), Point(x: 1, y: 1)) {
+                    loop(q0, q1, q2) { x, y in
                         let _q = Point(x: x, y: y) * transform
                         return _q.x * _q.x - _q.y < 0
                     }
@@ -407,8 +415,12 @@ extension Shape {
                 
             case let .cubic(p0, p1, p2, v0, v1, v2):
                 
-                loop(p0, p1, p2) { x, y in
-                    if let p = Barycentric(p0, p1, p2, Point(x: x, y: y)) {
+                let q0 = p0 * transform
+                let q1 = p1 * transform
+                let q2 = p2 * transform
+                
+                loop(q0, q1, q2) { x, y in
+                    if let p = Barycentric(q0, q1, q2, Point(x: x, y: y)) {
                         let v = p.x * v0 + p.y * v1 + p.z * v2
                         return v.x * v.x * v.x - v.y * v.z < 0
                     }
@@ -421,6 +433,6 @@ extension Shape {
     @_inlineable
     public func raster<T: SignedInteger>(width: Int, height: Int, stencil: inout [T]) {
         
-        return self.identity._raster(width: width, height: width, stencil: &stencil)
+        return self._raster(width: width, height: width, transform: self.transform, stencil: &stencil)
     }
 }

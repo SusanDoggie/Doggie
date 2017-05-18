@@ -3,7 +3,11 @@
 import Cocoa
 import Doggie
 
+let t = Date()
+
 let image = sampleImage(width: 500, height: 500)
+
+t.timeIntervalSinceNow
 
 image.withUnsafeBufferPointer {
     

@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-open class ImageContext<ColorSpace : ColorSpaceProtocol> {
+public class ImageContext<ColorSpace : ColorSpaceProtocol> {
     
     var clip: Image<CalibratedGrayColorSpace, ColorPixel<GrayColorModel>>
     
@@ -31,15 +31,15 @@ open class ImageContext<ColorSpace : ColorSpaceProtocol> {
     
     var stencil: [Int] = []
     
-    open var antialias: Bool = true
+    public var antialias: Bool = true
     
-    open var resamplingAlgorithm: ResamplingAlgorithm = .linear
+    public var resamplingAlgorithm: ResamplingAlgorithm = .linear
     
-    open var opacity: Double = 1
-    open var blendMode: ColorBlendMode = .normal
-    open var compositingMode: ColorCompositingMode = .sourceOver
+    public var opacity: Double = 1
+    public var blendMode: ColorBlendMode = .normal
+    public var compositingMode: ColorCompositingMode = .sourceOver
     
-    open var transform: SDTransform = SDTransform.identity
+    public var transform: SDTransform = SDTransform.identity
     
     var next: ImageContext<ColorSpace>?
     
@@ -48,8 +48,11 @@ open class ImageContext<ColorSpace : ColorSpaceProtocol> {
         _image = Image(width: width, height: height, colorSpace: colorSpace, pixel: ColorPixel<ColorSpace.Model>())
         self.clip = Image(width: width, height: height, colorSpace: CalibratedGrayColorSpace(colorSpace.cieXYZ), pixel: ColorPixel<GrayColorModel>(color: GrayColorModel(white: 1), opacity: 1))
     }
+}
+
+extension ImageContext {
     
-    open func withUnsafeMutableImageBufferPointer<R>(_ body: (UnsafeMutableBufferPointer<ColorPixel<ColorSpace.Model>>) throws -> R) rethrows -> R {
+    public func withUnsafeMutableImageBufferPointer<R>(_ body: (UnsafeMutableBufferPointer<ColorPixel<ColorSpace.Model>>) throws -> R) rethrows -> R {
         
         if let next = self.next {
             return try next.withUnsafeMutableImageBufferPointer(body)
@@ -58,7 +61,7 @@ open class ImageContext<ColorSpace : ColorSpaceProtocol> {
         }
     }
     
-    open func withUnsafeImageBufferPointer<R>(_ body: (UnsafeBufferPointer<ColorPixel<ColorSpace.Model>>) throws -> R) rethrows -> R {
+    public func withUnsafeImageBufferPointer<R>(_ body: (UnsafeBufferPointer<ColorPixel<ColorSpace.Model>>) throws -> R) rethrows -> R {
         
         if let next = self.next {
             return try next.withUnsafeImageBufferPointer(body)
@@ -67,7 +70,7 @@ open class ImageContext<ColorSpace : ColorSpaceProtocol> {
         }
     }
     
-    open func withUnsafeClipBufferPointer<R>(_ body: (UnsafeBufferPointer<ColorPixel<GrayColorModel>>) throws -> R) rethrows -> R {
+    public func withUnsafeClipBufferPointer<R>(_ body: (UnsafeBufferPointer<ColorPixel<GrayColorModel>>) throws -> R) rethrows -> R {
         
         if let next = self.next {
             return try next.withUnsafeClipBufferPointer(body)
@@ -75,8 +78,11 @@ open class ImageContext<ColorSpace : ColorSpaceProtocol> {
             return try clip.withUnsafeBufferPointer(body)
         }
     }
+}
+
+extension ImageContext {
     
-    open var colorSpace: ColorSpace {
+    public var colorSpace: ColorSpace {
         get {
             return _image.colorSpace
         }
@@ -85,15 +91,15 @@ open class ImageContext<ColorSpace : ColorSpaceProtocol> {
         }
     }
     
-    open var width: Int {
+    public var width: Int {
         return _image.width
     }
     
-    open var height: Int {
+    public var height: Int {
         return _image.height
     }
     
-    open var chromaticAdaptationAlgorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm {
+    public var chromaticAdaptationAlgorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm {
         get {
             return _image.chromaticAdaptationAlgorithm
         }
@@ -102,11 +108,14 @@ open class ImageContext<ColorSpace : ColorSpaceProtocol> {
         }
     }
     
-    open var image: Image<ColorSpace, ColorPixel<ColorSpace.Model>> {
+    public var image: Image<ColorSpace, ColorPixel<ColorSpace.Model>> {
         return _image
     }
+}
+
+extension ImageContext {
     
-    open func drawClip(body: (ImageContext<CalibratedGrayColorSpace>) throws -> Void) rethrows {
+    public func drawClip(body: (ImageContext<CalibratedGrayColorSpace>) throws -> Void) rethrows {
         
         if let next = self.next {
             try next.drawClip(body: body)
@@ -127,8 +136,11 @@ open class ImageContext<ColorSpace : ColorSpaceProtocol> {
         
         self.clip = _clip.image
     }
+}
+
+extension ImageContext {
     
-    open func beginTransparencyLayer() {
+    public func beginTransparencyLayer() {
         
         if let next = self.next {
             next.beginTransparencyLayer()
@@ -148,7 +160,7 @@ open class ImageContext<ColorSpace : ColorSpaceProtocol> {
         }
     }
     
-    open func endTransparencyLayer() {
+    public func endTransparencyLayer() {
         
         if let next = self.next {
             if next.next != nil {
@@ -198,8 +210,11 @@ open class ImageContext<ColorSpace : ColorSpaceProtocol> {
             }
         }
     }
+}
+
+extension ImageContext {
     
-    open func draw<C : ColorSpaceProtocol, P: ColorPixelProtocol>(image: Image<C, P>, transform: SDTransform) {
+    public func draw<C : ColorSpaceProtocol, P: ColorPixelProtocol>(image: Image<C, P>, transform: SDTransform) {
         
         if let next = self.next {
             next.draw(image: image, transform: transform)
@@ -259,6 +274,9 @@ open class ImageContext<ColorSpace : ColorSpaceProtocol> {
             }
         }
     }
+}
+
+extension ImageContext {
     
     private func draw<C : ColorSpaceProtocol>(shape: Shape, color: Color<C>, winding: (Int) -> Bool) {
         
@@ -396,7 +414,7 @@ open class ImageContext<ColorSpace : ColorSpaceProtocol> {
         }
     }
     
-    open func draw<C : ColorSpaceProtocol>(shape: Shape, color: Color<C>, winding: Shape.WindingRule) {
+    public func draw<C : ColorSpaceProtocol>(shape: Shape, color: Color<C>, winding: Shape.WindingRule) {
         
         switch winding {
         case .nonZero: self.draw(shape: shape, color: color) { $0 != 0 }
