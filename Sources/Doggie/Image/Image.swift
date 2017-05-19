@@ -181,22 +181,21 @@ extension ResamplingAlgorithm {
                             let _p1 = Point(x: 1, y: 0) * transform
                             let _p2 = Point(x: 0, y: 1) * transform
                             
-                            let _q1 = Point(x: -0.4, y: -0.4) * transform
-                            let _q2 = Point(x: 0.2, y: 0) * transform
-                            let _q3 = Point(x: 0, y: 0.2) * transform
+                            let _q1 = Point(x: 0.2, y: 0) * transform
+                            let _q2 = Point(x: 0, y: 0.2) * transform
                             
                             for _ in 0..<height {
                                 var p = _p
                                 for _ in 0..<width {
-                                    var _q = p + _q1
+                                    var _q = p
                                     var pixel = ColorPixel<Pixel.Model>()
                                     for _ in 0..<5 {
                                         var q = _q
                                         for _ in 0..<5 {
                                             pixel += operation(q)
-                                            q += _q2
+                                            q += _q1
                                         }
-                                        _q += _q3
+                                        _q += _q2
                                     }
                                     buffer.pointee = Pixel(pixel * 0.04)
                                     buffer += 1
