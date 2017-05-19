@@ -31,22 +31,18 @@ public struct Color<ColorSpace : ColorSpaceProtocol> {
     
     public var opacity: Double
     
-    public var chromaticAdaptationAlgorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm
-    
     @_inlineable
-    public init<C : ColorPixelProtocol>(colorSpace: ColorSpace, color: C, chromaticAdaptationAlgorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm = .bradford) where C.Model == ColorSpace.Model {
+    public init<C : ColorPixelProtocol>(colorSpace: ColorSpace, color: C) where C.Model == ColorSpace.Model {
         self.colorSpace = colorSpace
         self.color = color.color
         self.opacity = color.opacity
-        self.chromaticAdaptationAlgorithm = chromaticAdaptationAlgorithm
     }
     
     @_inlineable
-    public init(colorSpace: ColorSpace, color: ColorSpace.Model, opacity: Double = 1, chromaticAdaptationAlgorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm = .bradford) {
+    public init(colorSpace: ColorSpace, color: ColorSpace.Model, opacity: Double = 1) {
         self.colorSpace = colorSpace
         self.color = color
         self.opacity = opacity
-        self.chromaticAdaptationAlgorithm = chromaticAdaptationAlgorithm
     }
 }
 
@@ -54,7 +50,7 @@ extension Color {
     
     @_inlineable
     public func convert<C : ColorSpaceProtocol>(to colorSpace: C) -> Color<C> {
-        return Color<C>(colorSpace: colorSpace, color: self.colorSpace.convert(color, to: colorSpace, chromaticAdaptationAlgorithm: chromaticAdaptationAlgorithm), opacity: opacity, chromaticAdaptationAlgorithm: chromaticAdaptationAlgorithm)
+        return Color<C>(colorSpace: colorSpace, color: self.colorSpace.convert(color, to: colorSpace), opacity: opacity)
     }
 }
 
@@ -64,7 +60,7 @@ extension Color {
     public func blended<C : ColorSpaceProtocol>(source: Color<C>, blendMode: ColorBlendMode, compositingMode: ColorCompositingMode) -> Color {
         let source = source.convert(to: colorSpace)
         let color = ColorPixel(color: self.color, opacity: self.opacity).blended(source: ColorPixel(color: source.color, opacity: source.opacity), blendMode: blendMode, compositingMode: compositingMode)
-        return Color(colorSpace: colorSpace, color: color.color, opacity: color.opacity, chromaticAdaptationAlgorithm: chromaticAdaptationAlgorithm)
+        return Color(colorSpace: colorSpace, color: color.color, opacity: color.opacity)
     }
     
     @_inlineable

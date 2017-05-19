@@ -58,6 +58,14 @@ public enum ColorBlendMode {
 
 extension ColorBlendMode {
     
+    @_inlineable
+    public static var `default` : ColorBlendMode {
+        return .normal
+    }
+}
+
+extension ColorBlendMode {
+    
     @_versioned
     @inline(__always)
     func blend(_ source: Double, _ destination: Double) -> Double {
@@ -155,6 +163,14 @@ public enum ColorCompositingMode {
     
     case xor /* R = S * (1 - Da) + D * (1 - Sa) */
     
+}
+
+extension ColorCompositingMode {
+    
+    @_inlineable
+    public static var `default` : ColorCompositingMode {
+        return .sourceOver
+    }
 }
 
 extension ColorCompositingMode {

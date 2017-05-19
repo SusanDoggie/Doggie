@@ -25,23 +25,23 @@
 
 public class ImageContext<ColorSpace : ColorSpaceProtocol> {
     
-    var clip: Image<CalibratedGrayColorSpace, ColorPixel<GrayColorModel>>
+    fileprivate var clip: Image<CalibratedGrayColorSpace, ColorPixel<GrayColorModel>>
     
-    var _image: Image<ColorSpace, ColorPixel<ColorSpace.Model>>
+    fileprivate var _image: Image<ColorSpace, ColorPixel<ColorSpace.Model>>
     
-    var stencil: [Int] = []
+    fileprivate var stencil: [Int] = []
     
-    public var antialias: Bool = true
+    fileprivate var _antialias: Bool = true
     
-    public var resamplingAlgorithm: ResamplingAlgorithm = .linear
+    fileprivate var _resamplingAlgorithm: ResamplingAlgorithm = .default
     
-    public var opacity: Double = 1
-    public var blendMode: ColorBlendMode = .normal
-    public var compositingMode: ColorCompositingMode = .sourceOver
+    fileprivate var _opacity: Double = 1
+    fileprivate var _blendMode: ColorBlendMode = .default
+    fileprivate var _compositingMode: ColorCompositingMode = .default
     
-    public var transform: SDTransform = SDTransform.identity
+    fileprivate var _transform: SDTransform = SDTransform.identity
     
-    var next: ImageContext<ColorSpace>?
+    fileprivate var next: ImageContext<ColorSpace>?
     
     public init(width: Int, height: Int, colorSpace: ColorSpace) {
         
@@ -82,13 +82,86 @@ extension ImageContext {
 
 extension ImageContext {
     
-    public var colorSpace: ColorSpace {
+    public var antialias: Bool {
         get {
-            return _image.colorSpace
+            return next?.antialias ?? _antialias
         }
         set {
-            _image.colorSpace = newValue
+            if let next = self.next {
+                next.antialias = newValue
+            } else {
+                _antialias = newValue
+            }
         }
+    }
+    
+    public var resamplingAlgorithm: ResamplingAlgorithm {
+        get {
+            return next?.resamplingAlgorithm ?? _resamplingAlgorithm
+        }
+        set {
+            if let next = self.next {
+                next.resamplingAlgorithm = newValue
+            } else {
+                _resamplingAlgorithm = newValue
+            }
+        }
+    }
+    
+    public var opacity: Double {
+        get {
+            return next?.opacity ?? _opacity
+        }
+        set {
+            if let next = self.next {
+                next.opacity = newValue
+            } else {
+                _opacity = newValue
+            }
+        }
+    }
+    
+    public var blendMode: ColorBlendMode {
+        get {
+            return next?.blendMode ?? _blendMode
+        }
+        set {
+            if let next = self.next {
+                next.blendMode = newValue
+            } else {
+                _blendMode = newValue
+            }
+        }
+    }
+    
+    public var compositingMode: ColorCompositingMode {
+        get {
+            return next?.compositingMode ?? _compositingMode
+        }
+        set {
+            if let next = self.next {
+                next.compositingMode = newValue
+            } else {
+                _compositingMode = newValue
+            }
+        }
+    }
+    
+    public var transform: SDTransform {
+        get {
+            return next?.transform ?? _transform
+        }
+        set {
+            if let next = self.next {
+                next.transform = newValue
+            } else {
+                _transform = newValue
+            }
+        }
+    }
+    
+    public var colorSpace: ColorSpace {
+        return _image.colorSpace
     }
     
     public var width: Int {
@@ -97,15 +170,6 @@ extension ImageContext {
     
     public var height: Int {
         return _image.height
-    }
-    
-    public var chromaticAdaptationAlgorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm {
-        get {
-            return _image.chromaticAdaptationAlgorithm
-        }
-        set {
-            _image.chromaticAdaptationAlgorithm = newValue
-        }
     }
     
     public var image: Image<ColorSpace, ColorPixel<ColorSpace.Model>> {
@@ -127,10 +191,9 @@ extension ImageContext {
         }
         
         let _clip = ImageContext<CalibratedGrayColorSpace>(width: _image.width, height: _image.height, colorSpace: CalibratedGrayColorSpace(colorSpace.cieXYZ))
-        _clip.antialias = self.antialias
-        _clip.transform = self.transform
-        _clip.resamplingAlgorithm = self.resamplingAlgorithm
-        _clip._image.chromaticAdaptationAlgorithm = _image.chromaticAdaptationAlgorithm
+        _clip._antialias = self._antialias
+        _clip._transform = self._transform
+        _clip._resamplingAlgorithm = self._resamplingAlgorithm
         
         try body(_clip)
         
@@ -151,10 +214,9 @@ extension ImageContext {
             }
             
             let layer = ImageContext(width: _image.width, height: _image.height, colorSpace: colorSpace)
-            layer.antialias = self.antialias
-            layer.transform = self.transform
-            layer.resamplingAlgorithm = self.resamplingAlgorithm
-            layer._image.chromaticAdaptationAlgorithm = _image.chromaticAdaptationAlgorithm
+            layer._antialias = self._antialias
+            layer._transform = self._transform
+            layer._resamplingAlgorithm = self._resamplingAlgorithm
             
             self.next = layer
         }
@@ -192,9 +254,9 @@ extension ImageContext {
                                             if _alpha > 0 {
                                                 
                                                 var __source = _source.pointee
-                                                __source.opacity *= opacity * _alpha
+                                                __source.opacity *= _opacity * _alpha
                                                 
-                                                _destination.pointee.blend(source: __source, blendMode: blendMode, compositingMode: compositingMode)
+                                                _destination.pointee.blend(source: __source, blendMode: _blendMode, compositingMode: _compositingMode)
                                             }
                                             
                                             _source += 1
@@ -221,7 +283,7 @@ extension ImageContext {
             return
         }
         
-        let transform = transform * self.transform
+        let transform = transform * self._transform
         
         if _image.width == 0 || _image.height == 0 || image.width == 0 || image.height == 0 || transform.determinant.almostZero() {
             return
@@ -232,11 +294,11 @@ extension ImageContext {
         if transform == SDTransform.identity && _image.width == image.width && _image.height == image.height {
             source = Image(image: image, colorSpace: colorSpace)
         } else if C.Model.count < ColorSpace.Model.count || (C.Model.count == ColorSpace.Model.count && _image.width * _image.height < image.width * image.height) {
-            let _temp = Image(image: image, width: _image.width, height: _image.height, transform: transform, resampling: resamplingAlgorithm, antialias: antialias)
+            let _temp = Image(image: image, width: _image.width, height: _image.height, transform: transform, resampling: _resamplingAlgorithm, antialias: _antialias)
             source = Image(image: _temp, colorSpace: colorSpace)
         } else {
             let _temp = Image(image: image, colorSpace: colorSpace) as Image<ColorSpace, ColorPixel<ColorSpace.Model>>
-            source = Image(image: _temp, width: _image.width, height: _image.height, transform: transform, resampling: resamplingAlgorithm, antialias: antialias)
+            source = Image(image: _temp, width: _image.width, height: _image.height, transform: transform, resampling: _resamplingAlgorithm, antialias: _antialias)
         }
         
         source.withUnsafeBufferPointer { source in
@@ -258,9 +320,9 @@ extension ImageContext {
                                     if _alpha > 0 {
                                         
                                         var __source = _source.pointee
-                                        __source.opacity *= opacity * _alpha
+                                        __source.opacity *= _opacity * _alpha
                                         
-                                        _destination.pointee.blend(source: __source, blendMode: blendMode, compositingMode: compositingMode)
+                                        _destination.pointee.blend(source: __source, blendMode: _blendMode, compositingMode: _compositingMode)
                                     }
                                     
                                     _source += 1
@@ -289,7 +351,7 @@ extension ImageContext {
             return
         }
         
-        let transform = shape.transform * self.transform
+        let transform = shape.transform * self._transform
         
         if _image.width == 0 || _image.height == 0 || transform.determinant.almostZero() {
             return
@@ -297,7 +359,7 @@ extension ImageContext {
         
         let source = ColorPixel(color.convert(to: colorSpace))
         
-        let stencil_count = antialias ? _image.width * _image.height * 25 : _image.width * _image.height
+        let stencil_count = _antialias ? _image.width * _image.height * 25 : _image.width * _image.height
         
         if stencil.count != stencil_count {
             stencil = [Int](repeating: 0, count: stencil_count)
@@ -307,7 +369,7 @@ extension ImageContext {
         
         var shape = shape
         
-        if antialias {
+        if _antialias {
             
             shape.transform = transform * SDTransform.scale(5)
             
@@ -351,9 +413,9 @@ extension ImageContext {
                                             if _alpha > 0 {
                                                 
                                                 var _source = source
-                                                _source.opacity *= opacity * _alpha
+                                                _source.opacity *= _opacity * _alpha
                                                 
-                                                _destination.pointee.blend(source: _source, blendMode: blendMode, compositingMode: compositingMode)
+                                                _destination.pointee.blend(source: _source, blendMode: _blendMode, compositingMode: _compositingMode)
                                             }
                                             
                                             __stencil += 5
@@ -395,9 +457,9 @@ extension ImageContext {
                                         if winding(_stencil.pointee) && _alpha > 0 {
                                             
                                             var _source = source
-                                            _source.opacity *= opacity * _alpha
+                                            _source.opacity *= _opacity * _alpha
                                             
-                                            _destination.pointee.blend(source: _source, blendMode: blendMode, compositingMode: compositingMode)
+                                            _destination.pointee.blend(source: _source, blendMode: _blendMode, compositingMode: _compositingMode)
                                         }
                                         
                                         _destination += 1

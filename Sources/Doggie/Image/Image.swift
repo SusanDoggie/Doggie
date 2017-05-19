@@ -36,19 +36,16 @@ public struct Image<ColorSpace : ColorSpaceProtocol, ColorPixel: ColorPixelProto
     
     public var colorSpace: ColorSpace
     
-    public var chromaticAdaptationAlgorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm
-    
     @_inlineable
-    public init(image: Image, width: Int, height: Int, resampling algorithm: ResamplingAlgorithm = .linear, antialias: Bool = false) {
+    public init(image: Image, width: Int, height: Int, resampling algorithm: ResamplingAlgorithm = .default, antialias: Bool = false) {
         self.init(image: image, width: width, height: height, transform: SDTransform.scale(x: Double(width) / Double(image.width), y: Double(height) / Double(image.height)), resampling: algorithm, antialias: antialias)
     }
     
     @_inlineable
-    public init(image: Image, width: Int, height: Int, transform: SDTransform, resampling algorithm: ResamplingAlgorithm = .linear, antialias: Bool = false) {
+    public init(image: Image, width: Int, height: Int, transform: SDTransform, resampling algorithm: ResamplingAlgorithm = .default, antialias: Bool = false) {
         self.width = width
         self.height = height
         self.colorSpace = image.colorSpace
-        self.chromaticAdaptationAlgorithm = image.chromaticAdaptationAlgorithm
         if image.buffer.count == 0 || transform.determinant.almostZero() {
             self.buffer = Data(count: MemoryLayout<ColorPixel>.stride * width * height)
             self.buffer.withUnsafeMutableBytes { _ = _memset($0, ColorPixel(), MemoryLayout<ColorPixel>.stride * width * height) }
@@ -58,11 +55,10 @@ public struct Image<ColorSpace : ColorSpaceProtocol, ColorPixel: ColorPixelProto
     }
     
     @_inlineable
-    public init(width: Int, height: Int, colorSpace: ColorSpace, pixel: ColorPixel = ColorPixel(), chromaticAdaptationAlgorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm = .bradford) {
+    public init(width: Int, height: Int, colorSpace: ColorSpace, pixel: ColorPixel = ColorPixel()) {
         self.width = width
         self.height = height
         self.colorSpace = colorSpace
-        self.chromaticAdaptationAlgorithm = chromaticAdaptationAlgorithm
         self.buffer = Data(count: MemoryLayout<ColorPixel>.stride * width * height)
         self.buffer.withUnsafeMutableBytes { _ = _memset($0, pixel, MemoryLayout<ColorPixel>.stride * width * height) }
     }
@@ -72,8 +68,7 @@ public struct Image<ColorSpace : ColorSpaceProtocol, ColorPixel: ColorPixelProto
         self.width = image.width
         self.height = image.height
         self.colorSpace = colorSpace
-        self.chromaticAdaptationAlgorithm = image.chromaticAdaptationAlgorithm
-        self.buffer = image.buffer._memmap { (pixel: P) in ColorPixel(color: image.colorSpace.convert(pixel.color, to: colorSpace, chromaticAdaptationAlgorithm: image.chromaticAdaptationAlgorithm), opacity: pixel.opacity) }
+        self.buffer = image.buffer._memmap { (pixel: P) in ColorPixel(color: image.colorSpace.convert(pixel.color, to: colorSpace), opacity: pixel.opacity) }
     }
 }
 
@@ -84,7 +79,7 @@ extension Image {
         get {
             precondition(0..<width ~= x)
             precondition(0..<height ~= y)
-            return buffer.withUnsafeBytes { (ptr: UnsafePointer<ColorPixel>) in Color(colorSpace: colorSpace, color: ptr[width * y + x], chromaticAdaptationAlgorithm: chromaticAdaptationAlgorithm) }
+            return buffer.withUnsafeBytes { (ptr: UnsafePointer<ColorPixel>) in Color(colorSpace: colorSpace, color: ptr[width * y + x]) }
         }
         set {
             precondition(0..<width ~= x)
@@ -118,6 +113,14 @@ public enum ResamplingAlgorithm {
     case hermite(Double, Double)
     case mitchell(Double, Double)
     case lanczos(UInt)
+}
+
+extension ResamplingAlgorithm {
+    
+    @_inlineable
+    public static var `default` : ResamplingAlgorithm {
+        return .linear
+    }
 }
 
 extension ResamplingAlgorithm {

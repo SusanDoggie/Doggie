@@ -25,6 +25,21 @@
 
 import Foundation
 
+public enum ChromaticAdaptationAlgorithm {
+    case xyzScaling
+    case vonKries
+    case bradford
+    case other(Matrix)
+}
+
+extension ChromaticAdaptationAlgorithm {
+    
+    @_inlineable
+    public static var `default` : ChromaticAdaptationAlgorithm {
+        return .bradford
+    }
+}
+
 public protocol ColorSpaceProtocol {
     
     associatedtype Model : ColorModelProtocol
@@ -35,6 +50,8 @@ public protocol ColorSpaceProtocol {
     
     var black: XYZColorModel { get }
     
+    var chromaticAdaptationAlgorithm: ChromaticAdaptationAlgorithm { get }
+    
     func convertToLinear(_ color: Model) -> Model
     
     func convertFromLinear(_ color: Model) -> Model
@@ -43,7 +60,7 @@ public protocol ColorSpaceProtocol {
     
     func convertLinearFromXYZ(_ color: XYZColorModel) -> Model
     
-    func convert<C : ColorSpaceProtocol>(_ color: Model, to other: C, chromaticAdaptationAlgorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm) -> C.Model
+    func convert<C : ColorSpaceProtocol>(_ color: Model, to other: C) -> C.Model
 }
 
 extension ColorSpaceProtocol {
@@ -72,7 +89,7 @@ extension ColorSpaceProtocol {
     }
     
     @_inlineable
-    public func convert<C : ColorSpaceProtocol>(_ color: Model, to other: C, chromaticAdaptationAlgorithm: CIEXYZColorSpace.ChromaticAdaptationAlgorithm = .bradford) -> C.Model {
+    public func convert<C : ColorSpaceProtocol>(_ color: Model, to other: C) -> C.Model {
         return other.convertFromXYZ(self.convertToXYZ(color) * self.cieXYZ.transferMatrix(to: other.cieXYZ, chromaticAdaptationAlgorithm: chromaticAdaptationAlgorithm))
     }
 }
@@ -91,9 +108,13 @@ public struct NormalizedColorSpace<ColorSpace: ColorSpaceProtocol> : ColorSpaceP
     
     @_inlineable
     public var cieXYZ: CIEXYZColorSpace {
-        return CIEXYZColorSpace(white: base.cieXYZ.white * base.cieXYZ.normalizeMatrix)
+        return CIEXYZColorSpace(white: base.cieXYZ.white * base.cieXYZ.normalizeMatrix, chromaticAdaptationAlgorithm: base.chromaticAdaptationAlgorithm)
     }
     
+    @_inlineable
+    public var chromaticAdaptationAlgorithm: ChromaticAdaptationAlgorithm {
+        return base.chromaticAdaptationAlgorithm
+    }
     
     @_inlineable
     public func convertToLinear(_ color: ColorSpace.Model) -> ColorSpace.Model {
@@ -151,6 +172,11 @@ public struct LinearToneColorSpace<ColorSpace: ColorSpaceProtocol> : ColorSpaceP
     }
     
     @_inlineable
+    public var chromaticAdaptationAlgorithm: ChromaticAdaptationAlgorithm {
+        return base.chromaticAdaptationAlgorithm
+    }
+    
+    @_inlineable
     public func convertToLinear(_ color: ColorSpace.Model) -> ColorSpace.Model {
         return color
     }
@@ -183,19 +209,23 @@ public struct CIEXYZColorSpace : ColorSpaceProtocol {
     
     public typealias Model = XYZColorModel
     
-    public var white: Model
-    public var black: Model
+    public let white: Model
+    public let black: Model
+    
+    public var chromaticAdaptationAlgorithm: ChromaticAdaptationAlgorithm
     
     @_inlineable
-    public init(white: Point) {
+    public init(white: Point, chromaticAdaptationAlgorithm: ChromaticAdaptationAlgorithm = .default) {
         self.white = XYZColorModel(luminance: 1, x: white.x, y: white.y)
         self.black = XYZColorModel(x: 0, y: 0, z: 0)
+        self.chromaticAdaptationAlgorithm = chromaticAdaptationAlgorithm
     }
     
     @_inlineable
-    public init(white: Model, black: Model = XYZColorModel(x: 0, y: 0, z: 0)) {
+    public init(white: Model, black: Model = XYZColorModel(x: 0, y: 0, z: 0), chromaticAdaptationAlgorithm: ChromaticAdaptationAlgorithm = .default) {
         self.white = white
         self.black = black
+        self.chromaticAdaptationAlgorithm = chromaticAdaptationAlgorithm
     }
 }
 
@@ -203,12 +233,7 @@ extension CIEXYZColorSpace {
     
     @_inlineable
     public var cieXYZ: CIEXYZColorSpace {
-        get {
-            return self
-        }
-        set {
-            self = newValue
-        }
+        return self
     }
     
     @_inlineable
@@ -250,16 +275,9 @@ extension CIEXYZColorSpace {
         let _d = other.white * m2
         return m1 * Matrix.scale(x: _d.x / _s.x, y: _d.y / _s.y, z: _d.z / _s.z) as Matrix * m2.inverse
     }
-    
-    public enum ChromaticAdaptationAlgorithm {
-        case xyzScaling
-        case vonKries
-        case bradford
-        case other(Matrix)
-    }
 }
 
-extension CIEXYZColorSpace.ChromaticAdaptationAlgorithm {
+extension ChromaticAdaptationAlgorithm {
     
     @_versioned
     @_inlineable
@@ -281,38 +299,29 @@ public struct CIELabColorSpace : ColorSpaceProtocol {
     
     public typealias Model = LabColorModel
     
-    public var cieXYZ: CIEXYZColorSpace
+    public private(set) var cieXYZ: CIEXYZColorSpace
     
     @_inlineable
-    public var white: XYZColorModel {
-        get {
-            return cieXYZ.white
-        }
-        set {
-            cieXYZ.white = newValue
-        }
+    public init(white: Point, chromaticAdaptationAlgorithm: ChromaticAdaptationAlgorithm = .default) {
+        self.cieXYZ = CIEXYZColorSpace(white: white, chromaticAdaptationAlgorithm: chromaticAdaptationAlgorithm)
     }
     @_inlineable
-    public var black: XYZColorModel {
-        get {
-            return cieXYZ.black
-        }
-        set {
-            cieXYZ.black = newValue
-        }
-    }
-    
-    @_inlineable
-    public init(white: Point) {
-        self.cieXYZ = CIEXYZColorSpace(white: white)
-    }
-    @_inlineable
-    public init(white: XYZColorModel, black: XYZColorModel = XYZColorModel(x: 0, y: 0, z: 0)) {
-        self.cieXYZ = CIEXYZColorSpace(white: white, black: black)
+    public init(white: XYZColorModel, black: XYZColorModel = XYZColorModel(x: 0, y: 0, z: 0), chromaticAdaptationAlgorithm: ChromaticAdaptationAlgorithm = .default) {
+        self.cieXYZ = CIEXYZColorSpace(white: white, black: black, chromaticAdaptationAlgorithm: chromaticAdaptationAlgorithm)
     }
     @_inlineable
     public init(_ cieXYZ: CIEXYZColorSpace) {
         self.cieXYZ = cieXYZ
+    }
+    
+    @_inlineable
+    public var chromaticAdaptationAlgorithm: ChromaticAdaptationAlgorithm {
+        get {
+            return cieXYZ.chromaticAdaptationAlgorithm
+        }
+        set {
+            cieXYZ.chromaticAdaptationAlgorithm = newValue
+        }
     }
 }
 
@@ -364,38 +373,29 @@ public struct CIELuvColorSpace : ColorSpaceProtocol {
     
     public typealias Model = LuvColorModel
     
-    public var cieXYZ: CIEXYZColorSpace
+    public private(set) var cieXYZ: CIEXYZColorSpace
     
     @_inlineable
-    public var white: XYZColorModel {
-        get {
-            return cieXYZ.white
-        }
-        set {
-            cieXYZ.white = newValue
-        }
+    public init(white: Point, chromaticAdaptationAlgorithm: ChromaticAdaptationAlgorithm = .default) {
+        self.cieXYZ = CIEXYZColorSpace(white: white, chromaticAdaptationAlgorithm: chromaticAdaptationAlgorithm)
     }
     @_inlineable
-    public var black: XYZColorModel {
-        get {
-            return cieXYZ.black
-        }
-        set {
-            cieXYZ.black = newValue
-        }
-    }
-    
-    @_inlineable
-    public init(white: Point) {
-        self.cieXYZ = CIEXYZColorSpace(white: white)
-    }
-    @_inlineable
-    public init(white: XYZColorModel, black: XYZColorModel = XYZColorModel(x: 0, y: 0, z: 0)) {
-        self.cieXYZ = CIEXYZColorSpace(white: white, black: black)
+    public init(white: XYZColorModel, black: XYZColorModel = XYZColorModel(x: 0, y: 0, z: 0), chromaticAdaptationAlgorithm: ChromaticAdaptationAlgorithm = .default) {
+        self.cieXYZ = CIEXYZColorSpace(white: white, black: black, chromaticAdaptationAlgorithm: chromaticAdaptationAlgorithm)
     }
     @_inlineable
     public init(_ cieXYZ: CIEXYZColorSpace) {
         self.cieXYZ = cieXYZ
+    }
+    
+    @_inlineable
+    public var chromaticAdaptationAlgorithm: ChromaticAdaptationAlgorithm {
+        get {
+            return cieXYZ.chromaticAdaptationAlgorithm
+        }
+        set {
+            cieXYZ.chromaticAdaptationAlgorithm = newValue
+        }
     }
 }
 
@@ -449,13 +449,13 @@ public class CalibratedRGBColorSpace : ColorSpaceProtocol {
     
     public typealias Model = RGBColorModel
     
-    public let cieXYZ: CIEXYZColorSpace
+    public private(set) var cieXYZ: CIEXYZColorSpace
     public let transferMatrix: Matrix
     
     @_inlineable
-    public init(white: XYZColorModel, black: XYZColorModel, red: Point, green: Point, blue: Point) {
+    public init(white: XYZColorModel, black: XYZColorModel, red: Point, green: Point, blue: Point, chromaticAdaptationAlgorithm: ChromaticAdaptationAlgorithm = .default) {
         
-        self.cieXYZ = CIEXYZColorSpace(white: white, black: black)
+        self.cieXYZ = CIEXYZColorSpace(white: white, black: black, chromaticAdaptationAlgorithm: chromaticAdaptationAlgorithm)
         
         let normalizeMatrix = CIEXYZColorSpace(white: white, black: black).normalizeMatrix
         let _white = white * normalizeMatrix
@@ -467,6 +467,16 @@ public class CalibratedRGBColorSpace : ColorSpaceProtocol {
         let c = XYZColorModel(x: _white.x / _white.y, y: 1, z: _white.z / _white.y) * p.inverse
         
         self.transferMatrix = Matrix.scale(x: c.x, y: c.y, z: c.z) * p * normalizeMatrix.inverse
+    }
+    
+    @_inlineable
+    public var chromaticAdaptationAlgorithm: ChromaticAdaptationAlgorithm {
+        get {
+            return cieXYZ.chromaticAdaptationAlgorithm
+        }
+        set {
+            cieXYZ.chromaticAdaptationAlgorithm = newValue
+        }
     }
     
     @_inlineable
@@ -615,19 +625,29 @@ public class CalibratedGrayColorSpace : ColorSpaceProtocol {
     
     public typealias Model = GrayColorModel
     
-    public let cieXYZ: CIEXYZColorSpace
+    public private(set) var cieXYZ: CIEXYZColorSpace
     
     @_inlineable
-    public init(white: Point) {
-        self.cieXYZ = CIEXYZColorSpace(white: white)
+    public init(white: Point, chromaticAdaptationAlgorithm: ChromaticAdaptationAlgorithm = .default) {
+        self.cieXYZ = CIEXYZColorSpace(white: white, chromaticAdaptationAlgorithm: chromaticAdaptationAlgorithm)
     }
     @_inlineable
-    public init(white: XYZColorModel, black: XYZColorModel = XYZColorModel(x: 0, y: 0, z: 0)) {
-        self.cieXYZ = CIEXYZColorSpace(white: white, black: black)
+    public init(white: XYZColorModel, black: XYZColorModel = XYZColorModel(x: 0, y: 0, z: 0), chromaticAdaptationAlgorithm: ChromaticAdaptationAlgorithm = .default) {
+        self.cieXYZ = CIEXYZColorSpace(white: white, black: black, chromaticAdaptationAlgorithm: chromaticAdaptationAlgorithm)
     }
     @_inlineable
     public init(_ cieXYZ: CIEXYZColorSpace) {
         self.cieXYZ = cieXYZ
+    }
+    
+    @_inlineable
+    public var chromaticAdaptationAlgorithm: ChromaticAdaptationAlgorithm {
+        get {
+            return cieXYZ.chromaticAdaptationAlgorithm
+        }
+        set {
+            cieXYZ.chromaticAdaptationAlgorithm = newValue
+        }
     }
     
     @_inlineable
