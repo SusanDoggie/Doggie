@@ -126,6 +126,114 @@ extension ResamplingAlgorithm {
 extension ResamplingAlgorithm {
     
     @_versioned
+    @inline(__always)
+    func read_source<Pixel: ColorPixelProtocol>(_ source: UnsafePointer<Pixel>, _ width: Int, _ height: Int, _ x: Int, _ y: Int) -> Pixel {
+        
+        let x_range = 0..<width
+        let y_range = 0..<height
+        
+        if x_range ~= x && y_range ~= y {
+            
+            return source[y * width + x]
+        }
+        
+        let _x = x.clamped(to: x_range)
+        let _y = y.clamped(to: y_range)
+        
+        return source[_y * width + _x].with(opacity: 0)
+    }
+    
+    @_versioned
+    @inline(__always)
+    func antialias_filling<Pixel: ColorPixelProtocol>(_ buffer: UnsafeMutablePointer<Pixel>, _ width: Int, _ height: Int, _ transform: SDTransform, _ operation: (Point) -> ColorPixel<Pixel.Model>) {
+        
+        var buffer = buffer
+        
+        var _p = Point(x: 0, y: 0)
+        let _p1 = Point(x: 1, y: 0) * transform
+        let _p2 = Point(x: 0, y: 1) * transform
+        
+        let _q1 = Point(x: 0.2, y: 0) * transform
+        let _q2 = Point(x: 0, y: 0.2) * transform
+        
+        for _ in 0..<height {
+            var p = _p
+            for _ in 0..<width {
+                var _q = p
+                var pixel = ColorPixel<Pixel.Model>()
+                for _ in 0..<5 {
+                    var q = _q
+                    for _ in 0..<5 {
+                        pixel += operation(q)
+                        q += _q1
+                    }
+                    _q += _q2
+                }
+                buffer.pointee = Pixel(pixel * 0.04)
+                buffer += 1
+                p += _p1
+            }
+            _p += _p2
+        }
+    }
+    
+    @_versioned
+    @inline(__always)
+    func filling1<Pixel: ColorPixelProtocol>(_ buffer: UnsafeMutablePointer<Pixel>, _ width: Int, _ height: Int, _ transform: SDTransform, _ antialias: Bool, _ operation: (Point) -> Pixel) {
+        
+        if antialias {
+            
+            antialias_filling(buffer, width, height, transform) { ColorPixel(operation($0)) }
+            
+        } else {
+            
+            var buffer = buffer
+            
+            var _p = Point(x: 0, y: 0)
+            let _p1 = Point(x: 1, y: 0) * transform
+            let _p2 = Point(x: 0, y: 1) * transform
+            
+            for _ in 0..<height {
+                var p = _p
+                for _ in 0..<width {
+                    buffer.pointee = operation(p)
+                    buffer += 1
+                    p += _p1
+                }
+                _p += _p2
+            }
+        }
+    }
+    
+    @_versioned
+    @inline(__always)
+    func filling2<Pixel: ColorPixelProtocol>(_ buffer: UnsafeMutablePointer<Pixel>, _ width: Int, _ height: Int, _ transform: SDTransform, _ antialias: Bool, _ operation: (Point) -> ColorPixel<Pixel.Model>) {
+        
+        if antialias {
+            
+            antialias_filling(buffer, width, height, transform, operation)
+            
+        } else {
+            
+            var buffer = buffer
+            
+            var _p = Point(x: 0, y: 0)
+            let _p1 = Point(x: 1, y: 0) * transform
+            let _p2 = Point(x: 0, y: 1) * transform
+            
+            for _ in 0..<height {
+                var p = _p
+                for _ in 0..<width {
+                    buffer.pointee = Pixel(operation(p))
+                    buffer += 1
+                    p += _p1
+                }
+                _p += _p2
+            }
+        }
+    }
+    
+    @_versioned
     @_inlineable
     @_specialize(ColorPixel<RGBColorModel>) @_specialize(ColorPixel<CMYKColorModel>) @_specialize(ColorPixel<GrayColorModel>) @_specialize(ARGB32ColorPixel)
     func calculate<Pixel: ColorPixelProtocol>(source: Data, s_width: Int, width: Int, height: Int, pixel: Pixel.Type, transform: SDTransform, antialias: Bool) -> Data {
@@ -139,74 +247,20 @@ extension ResamplingAlgorithm {
             
             result.withUnsafeMutableBytes { (buffer: UnsafeMutablePointer<Pixel>) in
                 
-                @inline(__always)
-                func _filling(operation: (Point) -> Pixel) {
-                    
-                    var buffer = buffer
-                    
-                    var _p = Point(x: 0, y: 0)
-                    let _p1 = Point(x: 1, y: 0) * transform
-                    let _p2 = Point(x: 0, y: 1) * transform
-                    
-                    for _ in 0..<height {
-                        var p = _p
-                        for _ in 0..<width {
-                            buffer.pointee = operation(p)
-                            buffer += 1
-                            p += _p1
-                        }
-                        _p += _p2
-                    }
-                }
-                
                 switch self {
                 case .none:
-                    source.withUnsafeBytes { (source: UnsafePointer<Pixel>) in
-                        _filling { point in
-                            let _x = Int(point.x)
-                            let _y = Int(point.y)
-                            return 0..<s_width ~= _x && 0..<s_height ~= _y ? source[_y * s_width + _x] : Pixel()
-                        }
-                    }
-                default:
                     
-                    @inline(__always)
-                    func filling(operation: (Point) -> ColorPixel<Pixel.Model>) {
+                    source.withUnsafeBytes { (source: UnsafePointer<Pixel>) in
                         
-                        if antialias {
-                            
-                            var buffer = buffer
-                            
-                            var _p = Point(x: 0, y: 0)
-                            let _p1 = Point(x: 1, y: 0) * transform
-                            let _p2 = Point(x: 0, y: 1) * transform
-                            
-                            let _q1 = Point(x: 0.2, y: 0) * transform
-                            let _q2 = Point(x: 0, y: 0.2) * transform
-                            
-                            for _ in 0..<height {
-                                var p = _p
-                                for _ in 0..<width {
-                                    var _q = p
-                                    var pixel = ColorPixel<Pixel.Model>()
-                                    for _ in 0..<5 {
-                                        var q = _q
-                                        for _ in 0..<5 {
-                                            pixel += operation(q)
-                                            q += _q1
-                                        }
-                                        _q += _q2
-                                    }
-                                    buffer.pointee = Pixel(pixel * 0.04)
-                                    buffer += 1
-                                    p += _p1
-                                }
-                                _p += _p2
-                            }
-                        } else {
-                            _filling { Pixel(operation($0)) }
+                        @inline(__always)
+                        func op(point: Point) -> Pixel {
+                            return read_source(source, width, height, Int(point.x), Int(point.y))
                         }
+                        
+                        filling1(buffer, width, height, transform, antialias, op)
                     }
+                    
+                default:
                     
                     let _source = Pixel.self is ColorPixel<Pixel.Model>.Type ? source : source._memmap { (pixel: Pixel) in ColorPixel(pixel) }
                     
@@ -214,16 +268,46 @@ extension ResamplingAlgorithm {
                         
                         switch self {
                         case .none: fatalError()
-                        case .linear: filling { smapling2(source: source, width: s_width, height: s_height, point: $0, sampler: LinearInterpolate) }
-                        case .cosine: filling { smapling2(source: source, width: s_width, height: s_height, point: $0, sampler: CosineInterpolate) }
-                        case .cubic: filling { smapling4(source: source, width: s_width, height: s_height, point: $0, sampler: CubicInterpolate) }
+                        case .linear:
+                            
+                            @inline(__always)
+                            func op(point: Point) -> ColorPixel<Pixel.Model> {
+                                return smapling2(source: source, width: s_width, height: s_height, point: point, sampler: LinearInterpolate)
+                            }
+                            
+                            filling2(buffer, width, height, transform, antialias, op)
+                            
+                        case .cosine:
+                            
+                            @inline(__always)
+                            func op(point: Point) -> ColorPixel<Pixel.Model> {
+                                return smapling2(source: source, width: s_width, height: s_height, point: point, sampler: CosineInterpolate)
+                            }
+                            
+                            filling2(buffer, width, height, transform, antialias, op)
+                            
+                        case .cubic:
+                            
+                            @inline(__always)
+                            func op(point: Point) -> ColorPixel<Pixel.Model> {
+                                return smapling4(source: source, width: s_width, height: s_height, point: point, sampler: CubicInterpolate)
+                            }
+                            
+                            filling2(buffer, width, height, transform, antialias, op)
+                            
                         case let .hermite(s, e):
                             
                             @inline(__always)
                             func _kernel(_ t: Double, _ a: Double, _ b: Double, _ c: Double, _ d: Double) -> Double {
                                 return HermiteInterpolate(t, a, b, c, d, s, e)
                             }
-                            filling { smapling4(source: source, width: s_width, height: s_height, point: $0, sampler: _kernel) }
+                            
+                            @inline(__always)
+                            func op(point: Point) -> ColorPixel<Pixel.Model> {
+                                return smapling4(source: source, width: s_width, height: s_height, point: point, sampler: _kernel)
+                            }
+                            
+                            filling2(buffer, width, height, transform, antialias, op)
                             
                         case let .mitchell(B, C):
                             
@@ -245,7 +329,13 @@ extension ResamplingAlgorithm {
                                 }
                                 return 0
                             }
-                            filling { convolve(source: source, width: s_width, height: s_height, point: $0, kernel_size: 5, kernel: _kernel) }
+                            
+                            @inline(__always)
+                            func op(point: Point) -> ColorPixel<Pixel.Model> {
+                                return convolve(source: source, width: s_width, height: s_height, point: point, kernel_size: 5, kernel: _kernel)
+                            }
+                            
+                            filling2(buffer, width, height, transform, antialias, op)
                             
                         case .lanczos(1):
                             
@@ -261,7 +351,13 @@ extension ResamplingAlgorithm {
                                 }
                                 return 0
                             }
-                            filling { convolve(source: source, width: s_width, height: s_height, point: $0, kernel_size: 2, kernel: _kernel) }
+                            
+                            @inline(__always)
+                            func op(point: Point) -> ColorPixel<Pixel.Model> {
+                                return convolve(source: source, width: s_width, height: s_height, point: point, kernel_size: 2, kernel: _kernel)
+                            }
+                            
+                            filling2(buffer, width, height, transform, antialias, op)
                             
                         case let .lanczos(a):
                             
@@ -277,33 +373,19 @@ extension ResamplingAlgorithm {
                                 }
                                 return 0
                             }
-                            filling { convolve(source: source, width: s_width, height: s_height, point: $0, kernel_size: Int(a) << 1, kernel: _kernel) }
+                            
+                            @inline(__always)
+                            func op(point: Point) -> ColorPixel<Pixel.Model> {
+                                return convolve(source: source, width: s_width, height: s_height, point: point, kernel_size: Int(a) << 1, kernel: _kernel)
+                            }
+                            
+                            filling2(buffer, width, height, transform, antialias, op)
                         }
                     }
                 }
             }
         }
         return result
-    }
-    
-    @_versioned
-    @inline(__always)
-    func read_source<ColorModel: ColorModelProtocol>(_ source: UnsafePointer<ColorPixel<ColorModel>>, _ width: Int, _ height: Int, _ x: Int, _ y: Int) -> ColorPixel<ColorModel> {
-        
-        let x_range = 0..<width
-        let y_range = 0..<height
-        
-        let check1 = x_range.contains(x)
-        let check2 = y_range.contains(y)
-        
-        if check1 && check2 {
-            return source[y * width + x]
-        }
-        
-        let _x = x.clamped(to: x_range)
-        let _y = y.clamped(to: y_range)
-        
-        return source[_y * width + _x].with(opacity: 0)
     }
     
     @_versioned

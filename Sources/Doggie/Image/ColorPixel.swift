@@ -36,6 +36,8 @@ public protocol ColorPixelProtocol : Hashable {
     var opacity: Double { get set }
     
     var hashValue: Int { get }
+    
+    func with(opacity: Double) -> Self
 }
 
 extension ColorPixelProtocol {
@@ -164,6 +166,13 @@ public struct ARGB32ColorPixel : ColorPixelProtocol {
     public var b: UInt8
     
     @_inlineable
+    public init() {
+        self.a = 0
+        self.r = 0
+        self.g = 0
+        self.b = 0
+    }
+    @_inlineable
     public init(red: UInt8, green: UInt8, blue: UInt8, opacity: UInt8) {
         self.a = opacity
         self.r = red
@@ -205,4 +214,37 @@ public struct ARGB32ColorPixel : ColorPixelProtocol {
             self.a = UInt8((newValue * 255).clamped(to: 0...255))
         }
     }
+    
+    @_inlineable
+    public var hex: UInt32 {
+        let _a = UInt32(a) << 24
+        let _r = UInt32(r) << 16
+        let _g = UInt32(g) << 8
+        let _b = UInt32(b)
+        return _a | _r | _g | _b
+    }
+    
+    @_inlineable
+    public var hashValue: Int {
+        return hex.hashValue
+    }
+    
+    @_inlineable
+    public func with(opacity: Double) -> ARGB32ColorPixel {
+        var c = self
+        c.opacity = opacity
+        return c
+    }
+}
+
+@_inlineable
+public func ==(lhs: ARGB32ColorPixel, rhs: ARGB32ColorPixel) -> Bool {
+    
+    return (lhs.a, lhs.r, lhs.g, lhs.b) == (rhs.a, rhs.r, rhs.g, rhs.b)
+}
+
+@_inlineable
+public func !=(lhs: ARGB32ColorPixel, rhs: ARGB32ColorPixel) -> Bool {
+    
+    return (lhs.a, lhs.r, lhs.g, lhs.b) != (rhs.a, rhs.r, rhs.g, rhs.b)
 }

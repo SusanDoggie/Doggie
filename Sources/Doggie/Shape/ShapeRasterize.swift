@@ -390,8 +390,10 @@ extension Shape {
             _loop(p0, p1, p2, width: width, height: height, stencil: &stencil, body: body)
         }
         
-        self.render {
-            switch $0 {
+        @inline(__always)
+        func _render(op: Shape.RenderOperation) -> Void {
+            
+            switch op {
             case let .triangle(p0, p1, p2):
                 
                 let q0 = p0 * transform
@@ -407,10 +409,14 @@ extension Shape {
                 let q2 = p2 * transform
                 
                 if let transform = SDTransform(from: q0, q1, q2, to: Point(x: 0, y: 0), Point(x: 0.5, y: 0), Point(x: 1, y: 1)) {
-                    loop(q0, q1, q2) { x, y in
+                    
+                    @inline(__always)
+                    func _test(x: Double, y: Double) -> Bool {
                         let _q = Point(x: x, y: y) * transform
                         return _q.x * _q.x - _q.y < 0
                     }
+                    
+                    loop(q0, q1, q2, body: _test)
                 }
                 
             case let .cubic(p0, p1, p2, v0, v1, v2):
@@ -419,15 +425,20 @@ extension Shape {
                 let q1 = p1 * transform
                 let q2 = p2 * transform
                 
-                loop(q0, q1, q2) { x, y in
+                @inline(__always)
+                func _test(x: Double, y: Double) -> Bool {
                     if let p = Barycentric(q0, q1, q2, Point(x: x, y: y)) {
                         let v = p.x * v0 + p.y * v1 + p.z * v2
                         return v.x * v.x * v.x - v.y * v.z < 0
                     }
                     return false
                 }
+                
+                loop(q0, q1, q2, body: _test)
             }
         }
+        
+        self.render(_render)
     }
     
     @_inlineable
