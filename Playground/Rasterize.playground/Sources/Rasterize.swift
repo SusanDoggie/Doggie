@@ -1,7 +1,7 @@
 
 import Doggie
 
-public func drawImage(shape: Shape, width: Int, height: Int) -> Image<CalibratedRGBColorSpace, ARGB32ColorPixel> {
+public func drawImage(shape: Shape, width: Int, height: Int) -> Image<ARGB32ColorPixel> {
     
     var image = Image(width: width, height: height, colorSpace: CalibratedRGBColorSpace.sRGB, pixel: ARGB32ColorPixel())
     

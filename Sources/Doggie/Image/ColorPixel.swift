@@ -43,7 +43,7 @@ public protocol ColorPixelProtocol : Hashable {
 extension ColorPixelProtocol {
     
     @_inlineable
-    public init<ColorSpace : ColorSpaceProtocol>(_ color: Color<ColorSpace>) where Model == ColorSpace.Model {
+    public init(_ color: Color<Model>) {
         self.init(color: color.color, opacity: color.opacity)
     }
 }

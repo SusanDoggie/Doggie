@@ -23,11 +23,11 @@
 //  THE SOFTWARE.
 //
 
-public class ImageContext<ColorSpace : ColorSpaceProtocol> {
+public class ImageContext<Model : ColorModelProtocol> {
     
-    fileprivate var clip: Image<CalibratedGrayColorSpace, ColorPixel<GrayColorModel>>
+    fileprivate var clip: Image<ColorPixel<GrayColorModel>>
     
-    fileprivate var _image: Image<ColorSpace, ColorPixel<ColorSpace.Model>>
+    fileprivate var _image: Image<ColorPixel<Model>>
     
     fileprivate var stencil: [Int] = []
     
@@ -41,18 +41,24 @@ public class ImageContext<ColorSpace : ColorSpaceProtocol> {
     
     fileprivate var _transform: SDTransform = SDTransform.identity
     
-    fileprivate var next: ImageContext<ColorSpace>?
+    fileprivate var next: ImageContext<Model>?
     
-    public init(width: Int, height: Int, colorSpace: ColorSpace) {
+    public init<P : ColorPixelProtocol>(image: Image<P>) where P.Model == Model {
         
-        _image = Image(width: width, height: height, colorSpace: colorSpace, pixel: ColorPixel<ColorSpace.Model>())
+        self._image = Image(image: image)
+        self.clip = Image(width: image.width, height: image.height, colorSpace: CalibratedGrayColorSpace(image.colorSpace.cieXYZ), pixel: ColorPixel<GrayColorModel>(color: GrayColorModel(white: 1), opacity: 1))
+    }
+    
+    public init<C : ColorSpaceProtocol>(width: Int, height: Int, colorSpace: C) where C.Model == Model {
+        
+        self._image = Image(width: width, height: height, colorSpace: colorSpace, pixel: ColorPixel<Model>())
         self.clip = Image(width: width, height: height, colorSpace: CalibratedGrayColorSpace(colorSpace.cieXYZ), pixel: ColorPixel<GrayColorModel>(color: GrayColorModel(white: 1), opacity: 1))
     }
 }
 
 extension ImageContext {
     
-    public func withUnsafeMutableImageBufferPointer<R>(_ body: (inout UnsafeMutableBufferPointer<ColorPixel<ColorSpace.Model>>) throws -> R) rethrows -> R {
+    public func withUnsafeMutableImageBufferPointer<R>(_ body: (inout UnsafeMutableBufferPointer<ColorPixel<Model>>) throws -> R) rethrows -> R {
         
         if let next = self.next {
             return try next.withUnsafeMutableImageBufferPointer(body)
@@ -61,7 +67,7 @@ extension ImageContext {
         }
     }
     
-    public func withUnsafeImageBufferPointer<R>(_ body: (UnsafeBufferPointer<ColorPixel<ColorSpace.Model>>) throws -> R) rethrows -> R {
+    public func withUnsafeImageBufferPointer<R>(_ body: (UnsafeBufferPointer<ColorPixel<Model>>) throws -> R) rethrows -> R {
         
         if let next = self.next {
             return try next.withUnsafeImageBufferPointer(body)
@@ -160,7 +166,7 @@ extension ImageContext {
         }
     }
     
-    public var colorSpace: ColorSpace {
+    public var colorSpace: ColorSpace<Model> {
         return _image.colorSpace
     }
     
@@ -172,14 +178,14 @@ extension ImageContext {
         return _image.height
     }
     
-    public var image: Image<ColorSpace, ColorPixel<ColorSpace.Model>> {
+    public var image: Image<ColorPixel<Model>> {
         return _image
     }
 }
 
 extension ImageContext {
     
-    public func drawClip(body: (ImageContext<CalibratedGrayColorSpace>) throws -> Void) rethrows {
+    public func drawClip(body: (ImageContext<GrayColorModel>) throws -> Void) rethrows {
         
         if let next = self.next {
             try next.drawClip(body: body)
@@ -190,7 +196,7 @@ extension ImageContext {
             return
         }
         
-        let _clip = ImageContext<CalibratedGrayColorSpace>(width: _image.width, height: _image.height, colorSpace: CalibratedGrayColorSpace(colorSpace.cieXYZ))
+        let _clip = ImageContext<GrayColorModel>(width: _image.width, height: _image.height, colorSpace: CalibratedGrayColorSpace(colorSpace.cieXYZ))
         _clip._antialias = self._antialias
         _clip._transform = self._transform
         _clip._resamplingAlgorithm = self._resamplingAlgorithm
@@ -276,7 +282,7 @@ extension ImageContext {
 
 extension ImageContext {
     
-    public func draw<C : ColorSpaceProtocol, P: ColorPixelProtocol>(image: Image<C, P>, transform: SDTransform) {
+    public func draw<C>(image: Image<C>, transform: SDTransform) {
         
         if let next = self.next {
             next.draw(image: image, transform: transform)
@@ -289,15 +295,15 @@ extension ImageContext {
             return
         }
         
-        let source: Image<ColorSpace, ColorPixel<ColorSpace.Model>>
+        let source: Image<ColorPixel<Model>>
         
         if transform == SDTransform.identity && _image.width == image.width && _image.height == image.height {
             source = Image(image: image, colorSpace: colorSpace)
-        } else if C.Model.count < ColorSpace.Model.count || (C.Model.count == ColorSpace.Model.count && _image.width * _image.height < image.width * image.height) {
+        } else if C.Model.count < Model.count || (C.Model.count == Model.count && _image.width * _image.height < image.width * image.height) {
             let _temp = Image(image: image, width: _image.width, height: _image.height, transform: transform, resampling: _resamplingAlgorithm, antialias: _antialias)
             source = Image(image: _temp, colorSpace: colorSpace)
         } else {
-            let _temp = Image(image: image, colorSpace: colorSpace) as Image<ColorSpace, ColorPixel<ColorSpace.Model>>
+            let _temp = Image(image: image, colorSpace: colorSpace) as Image<ColorPixel<Model>>
             source = Image(image: _temp, width: _image.width, height: _image.height, transform: transform, resampling: _resamplingAlgorithm, antialias: _antialias)
         }
         
@@ -340,7 +346,7 @@ extension ImageContext {
 
 extension ImageContext {
     
-    private func draw<C : ColorSpaceProtocol>(shape: Shape, color: Color<C>, winding: (Int) -> Bool) {
+    private func draw<C>(shape: Shape, color: Color<C>, winding: (Int) -> Bool) {
         
         if let next = self.next {
             next.draw(shape: shape, color: color, winding: winding)
@@ -476,7 +482,7 @@ extension ImageContext {
         }
     }
     
-    public func draw<C : ColorSpaceProtocol>(shape: Shape, color: Color<C>, winding: Shape.WindingRule) {
+    public func draw<C>(shape: Shape, color: Color<C>, winding: Shape.WindingRule) {
         
         switch winding {
         case .nonZero: self.draw(shape: shape, color: color) { $0 != 0 }

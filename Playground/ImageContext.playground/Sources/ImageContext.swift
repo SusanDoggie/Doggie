@@ -16,7 +16,7 @@ public func createImage(data rawData: UnsafeRawPointer, size: CGSize, colorSpace
     return CGImage.create(rawData, width: imageWidth, height: imageHeight, bitsPerComponent: bitsPerComponent, bitsPerPixel: bitsPerPixel, bytesPerRow: bytesPerRow, space: colorSpace, bitmapInfo: bitmapInfo)
 }
 
-public func sampleImage(width: Int, height: Int) -> Image<CalibratedRGBColorSpace, ARGB32ColorPixel> {
+public func sampleImage(width: Int, height: Int) -> Image<ARGB32ColorPixel> {
     
     let context = ImageContext(width: width, height: height, colorSpace: CalibratedRGBColorSpace.sRGB)
     

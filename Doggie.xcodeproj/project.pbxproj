@@ -34,8 +34,6 @@
 		08458B291E2E627600D01813 /* ColorModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AD01E2E627600D01813 /* ColorModel.swift */; };
 		08458B2A1E2E627600D01813 /* ColorPixel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AD11E2E627600D01813 /* ColorPixel.swift */; };
 		08458B2B1E2E627600D01813 /* ColorPixel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AD11E2E627600D01813 /* ColorPixel.swift */; };
-		08458B2C1E2E627600D01813 /* ColorSpace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AD21E2E627600D01813 /* ColorSpace.swift */; };
-		08458B2D1E2E627600D01813 /* ColorSpace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AD21E2E627600D01813 /* ColorSpace.swift */; };
 		08458B2E1E2E627600D01813 /* Image.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AD31E2E627600D01813 /* Image.swift */; };
 		08458B2F1E2E627600D01813 /* Image.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AD31E2E627600D01813 /* Image.swift */; };
 		08458B301E2E627600D01813 /* Bezier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AD51E2E627600D01813 /* Bezier.swift */; };
@@ -76,6 +74,24 @@
 		087FE5C01A372D97005A2E9E /* Doggie.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 087FE5B51A372D97005A2E9E /* Doggie.framework */; settings = {ATTRIBUTES = (Required, ); }; };
 		08B085481E9A20720037DECE /* Algorithm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08B085471E9A20720037DECE /* Algorithm.swift */; };
 		08B085491E9A20720037DECE /* Algorithm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08B085471E9A20720037DECE /* Algorithm.swift */; };
+		08B68A311ED07A2400F8D423 /* ColorSpace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08B68A301ED07A2400F8D423 /* ColorSpace.swift */; };
+		08B68A321ED07A2400F8D423 /* ColorSpace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08B68A301ED07A2400F8D423 /* ColorSpace.swift */; };
+		08B68A341ED07A4700F8D423 /* ColorSpaceProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08B68A331ED07A4700F8D423 /* ColorSpaceProtocol.swift */; };
+		08B68A351ED07A4700F8D423 /* ColorSpaceProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08B68A331ED07A4700F8D423 /* ColorSpaceProtocol.swift */; };
+		08B68A371ED07A6A00F8D423 /* CIEXYZColorSpace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08B68A361ED07A6A00F8D423 /* CIEXYZColorSpace.swift */; };
+		08B68A381ED07A6A00F8D423 /* CIEXYZColorSpace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08B68A361ED07A6A00F8D423 /* CIEXYZColorSpace.swift */; };
+		08B68A3A1ED07A8300F8D423 /* LinearToneColorSpace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08B68A391ED07A8300F8D423 /* LinearToneColorSpace.swift */; };
+		08B68A3B1ED07A8300F8D423 /* LinearToneColorSpace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08B68A391ED07A8300F8D423 /* LinearToneColorSpace.swift */; };
+		08B68A3D1ED07AA500F8D423 /* NormalizedColorSpace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08B68A3C1ED07AA500F8D423 /* NormalizedColorSpace.swift */; };
+		08B68A3E1ED07AA500F8D423 /* NormalizedColorSpace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08B68A3C1ED07AA500F8D423 /* NormalizedColorSpace.swift */; };
+		08B68A401ED07AC000F8D423 /* CIELabColorSpace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08B68A3F1ED07AC000F8D423 /* CIELabColorSpace.swift */; };
+		08B68A411ED07AC000F8D423 /* CIELabColorSpace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08B68A3F1ED07AC000F8D423 /* CIELabColorSpace.swift */; };
+		08B68A431ED07AD100F8D423 /* CIELuvColorSpace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08B68A421ED07AD100F8D423 /* CIELuvColorSpace.swift */; };
+		08B68A441ED07AD100F8D423 /* CIELuvColorSpace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08B68A421ED07AD100F8D423 /* CIELuvColorSpace.swift */; };
+		08B68A461ED07AE100F8D423 /* CalibratedRGBColorSpace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08B68A451ED07AE100F8D423 /* CalibratedRGBColorSpace.swift */; };
+		08B68A471ED07AE100F8D423 /* CalibratedRGBColorSpace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08B68A451ED07AE100F8D423 /* CalibratedRGBColorSpace.swift */; };
+		08B68A491ED07AF700F8D423 /* CalibratedGrayColorSpace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08B68A481ED07AF700F8D423 /* CalibratedGrayColorSpace.swift */; };
+		08B68A4A1ED07AF700F8D423 /* CalibratedGrayColorSpace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08B68A481ED07AF700F8D423 /* CalibratedGrayColorSpace.swift */; };
 		08BFF9BC1B07161E00EC88CB /* FourierTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08BFF9B91B0715ED00EC88CB /* FourierTest.swift */; };
 		0A0697581E4D6659005CF664 /* Graphic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0697571E4D6659005CF664 /* Graphic.swift */; };
 		0A0697591E4D6659005CF664 /* Graphic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0697571E4D6659005CF664 /* Graphic.swift */; };
@@ -201,7 +217,6 @@
 		08458ACF1E2E627600D01813 /* Color.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Color.swift; sourceTree = "<group>"; };
 		08458AD01E2E627600D01813 /* ColorModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ColorModel.swift; sourceTree = "<group>"; };
 		08458AD11E2E627600D01813 /* ColorPixel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ColorPixel.swift; sourceTree = "<group>"; };
-		08458AD21E2E627600D01813 /* ColorSpace.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ColorSpace.swift; sourceTree = "<group>"; };
 		08458AD31E2E627600D01813 /* Image.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Image.swift; sourceTree = "<group>"; };
 		08458AD51E2E627600D01813 /* Bezier.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Bezier.swift; sourceTree = "<group>"; };
 		08458AD61E2E627600D01813 /* Complex.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Complex.swift; sourceTree = "<group>"; };
@@ -229,6 +244,15 @@
 		087FE5BF1A372D97005A2E9E /* Doggie_MacTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Doggie_MacTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		087FE5C51A372D97005A2E9E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		08B085471E9A20720037DECE /* Algorithm.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Algorithm.swift; sourceTree = "<group>"; };
+		08B68A301ED07A2400F8D423 /* ColorSpace.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ColorSpace.swift; sourceTree = "<group>"; };
+		08B68A331ED07A4700F8D423 /* ColorSpaceProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ColorSpaceProtocol.swift; sourceTree = "<group>"; };
+		08B68A361ED07A6A00F8D423 /* CIEXYZColorSpace.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CIEXYZColorSpace.swift; sourceTree = "<group>"; };
+		08B68A391ED07A8300F8D423 /* LinearToneColorSpace.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LinearToneColorSpace.swift; sourceTree = "<group>"; };
+		08B68A3C1ED07AA500F8D423 /* NormalizedColorSpace.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NormalizedColorSpace.swift; sourceTree = "<group>"; };
+		08B68A3F1ED07AC000F8D423 /* CIELabColorSpace.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CIELabColorSpace.swift; sourceTree = "<group>"; };
+		08B68A421ED07AD100F8D423 /* CIELuvColorSpace.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CIELuvColorSpace.swift; sourceTree = "<group>"; };
+		08B68A451ED07AE100F8D423 /* CalibratedRGBColorSpace.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CalibratedRGBColorSpace.swift; sourceTree = "<group>"; };
+		08B68A481ED07AF700F8D423 /* CalibratedGrayColorSpace.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CalibratedGrayColorSpace.swift; sourceTree = "<group>"; };
 		08BFF9B91B0715ED00EC88CB /* FourierTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FourierTest.swift; sourceTree = "<group>"; };
 		0A0697571E4D6659005CF664 /* Graphic.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Graphic.swift; sourceTree = "<group>"; };
 		0A06975A1E4D66A3005CF664 /* Filter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Filter.swift; sourceTree = "<group>"; };
@@ -357,7 +381,7 @@
 				08458AD01E2E627600D01813 /* ColorModel.swift */,
 				0A7D3ADA1ECAD5890030DC26 /* ColorBlend.swift */,
 				08458AD11E2E627600D01813 /* ColorPixel.swift */,
-				08458AD21E2E627600D01813 /* ColorSpace.swift */,
+				08B68A2F1ED07A2400F8D423 /* ColorSpace */,
 				08458AD31E2E627600D01813 /* Image.swift */,
 				0A16C6D31ECDA8320041816B /* ImageContext.swift */,
 			);
@@ -520,6 +544,22 @@
 			);
 			name = Tests;
 			path = Tests/DoggieTests;
+			sourceTree = "<group>";
+		};
+		08B68A2F1ED07A2400F8D423 /* ColorSpace */ = {
+			isa = PBXGroup;
+			children = (
+				08B68A301ED07A2400F8D423 /* ColorSpace.swift */,
+				08B68A331ED07A4700F8D423 /* ColorSpaceProtocol.swift */,
+				08B68A3C1ED07AA500F8D423 /* NormalizedColorSpace.swift */,
+				08B68A391ED07A8300F8D423 /* LinearToneColorSpace.swift */,
+				08B68A361ED07A6A00F8D423 /* CIEXYZColorSpace.swift */,
+				08B68A3F1ED07AC000F8D423 /* CIELabColorSpace.swift */,
+				08B68A421ED07AD100F8D423 /* CIELuvColorSpace.swift */,
+				08B68A451ED07AE100F8D423 /* CalibratedRGBColorSpace.swift */,
+				08B68A481ED07AF700F8D423 /* CalibratedGrayColorSpace.swift */,
+			);
+			path = ColorSpace;
 			sourceTree = "<group>";
 		};
 		0A0697561E4D6659005CF664 /* Graphic */ = {
@@ -795,6 +835,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				08B68A341ED07A4700F8D423 /* ColorSpaceProtocol.swift in Sources */,
 				08458B3C1E2E627600D01813 /* Polynomial.swift in Sources */,
 				0A2A643E1E5C45EE000E21BB /* PDFParser.swift in Sources */,
 				0AD7FA301EBDA86A001C9B21 /* ShapeWinding.swift in Sources */,
@@ -808,6 +849,7 @@
 				0A7D3ADB1ECAD5890030DC26 /* ColorBlend.swift in Sources */,
 				0A52E2D61E6012140065EED6 /* PDFDocEncoding.swift in Sources */,
 				0A52E2DB1E6012530065EED6 /* PDFRunLengthDecode.swift in Sources */,
+				08B68A3D1ED07AA500F8D423 /* NormalizedColorSpace.swift in Sources */,
 				08458B401E2E627600D01813 /* SDTransform.swift in Sources */,
 				08458B441E2E627600D01813 /* SDTriggerNode.swift in Sources */,
 				0A53E45E1E35AEF80060FB83 /* CollectionExtension.swift in Sources */,
@@ -817,6 +859,7 @@
 				0A2107111E5BEEBB00F1E00E /* PathStroke.swift in Sources */,
 				08458B361E2E627600D01813 /* Maths.swift in Sources */,
 				08458B3A1E2E627600D01813 /* Point.swift in Sources */,
+				08B68A401ED07AC000F8D423 /* CIELabColorSpace.swift in Sources */,
 				08B085481E9A20720037DECE /* Algorithm.swift in Sources */,
 				08458B461E2E627600D01813 /* SDMarker.swift in Sources */,
 				0A92C7C41E56AB9D0090EBFC /* Data.swift in Sources */,
@@ -825,12 +868,15 @@
 				0A92C7B21E56A52E0090EBFC /* zlib.swift in Sources */,
 				0A53E46E1E35AEF80060FB83 /* Json.swift in Sources */,
 				08458B2E1E2E627600D01813 /* Image.swift in Sources */,
+				08B68A461ED07AE100F8D423 /* CalibratedRGBColorSpace.swift in Sources */,
+				08B68A431ED07AD100F8D423 /* CIELuvColorSpace.swift in Sources */,
 				0AAC4DF41E977906008DCADA /* ShapeRasterize.swift in Sources */,
 				0A53E4641E35AEF80060FB83 /* FloatingPoint.swift in Sources */,
 				0A53E47C1E35AEF80060FB83 /* Regex.swift in Sources */,
 				0A52E2D41E6012140065EED6 /* PDFASCIIHexDecode.swift in Sources */,
 				0A21070D1E5BEEBB00F1E00E /* PathCoder.swift in Sources */,
 				08458B581E2E627600D01813 /* Atomic.swift in Sources */,
+				08B68A371ED07A6A00F8D423 /* CIEXYZColorSpace.swift in Sources */,
 				08458B5C1E2E627600D01813 /* AtomicStack.swift in Sources */,
 				08458B261E2E627600D01813 /* Color.swift in Sources */,
 				0A53E47A1E35AEF80060FB83 /* Random.swift in Sources */,
@@ -841,10 +887,12 @@
 				08458AF61E2E627600D01813 /* ComplexConversion.swift in Sources */,
 				08458B5E1E2E627600D01813 /* Lock.swift in Sources */,
 				08458B341E2E627600D01813 /* Ellipse.swift in Sources */,
+				08B68A311ED07A2400F8D423 /* ColorSpace.swift in Sources */,
 				0A56E9101E35F02E00D93786 /* RectCollection.swift in Sources */,
 				0A52E2D81E6012140065EED6 /* PDFFilter.swift in Sources */,
 				08458AFE1E2E627600D01813 /* SafeFunction.swift in Sources */,
 				0A92C7D31E56DA960090EBFC /* DGParser.swift in Sources */,
+				08B68A3A1ED07A8300F8D423 /* LinearToneColorSpace.swift in Sources */,
 				08458AF41E2E627600D01813 /* CircularConvolve.swift in Sources */,
 				08458B121E2E627600D01813 /* Fourier.swift in Sources */,
 				08458B601E2E627600D01813 /* Thread.swift in Sources */,
@@ -856,13 +904,13 @@
 				0A53E47E1E35AEF80060FB83 /* String.swift in Sources */,
 				0A53E4681E35AEF80060FB83 /* Hashable.swift in Sources */,
 				0AD4D8D81EA6247200C99728 /* Maths misc.swift in Sources */,
-				08458B2C1E2E627600D01813 /* ColorSpace.swift in Sources */,
 				0A6A6CE11EC2CD720053795B /* Memory.swift in Sources */,
 				0A53E4621E35AEF80060FB83 /* Date.swift in Sources */,
 				08458AFA1E2E627600D01813 /* DiscreteConvolve.swift in Sources */,
 				0A53E4661E35AEF80060FB83 /* Graph.swift in Sources */,
 				0A06975E1E4D6732005CF664 /* NSImage.swift in Sources */,
 				0A06975B1E4D66A3005CF664 /* Filter.swift in Sources */,
+				08B68A491ED07AF700F8D423 /* CalibratedGrayColorSpace.swift in Sources */,
 				0A6CDDA71E61738A009DDEEB /* PDFPredictor.swift in Sources */,
 				08458B2A1E2E627600D01813 /* ColorPixel.swift in Sources */,
 				08458AF21E2E627600D01813 /* Arithmetic.swift in Sources */,
@@ -885,6 +933,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				08B68A351ED07A4700F8D423 /* ColorSpaceProtocol.swift in Sources */,
 				08458B3D1E2E627600D01813 /* Polynomial.swift in Sources */,
 				0A2A643F1E5C45EE000E21BB /* PDFParser.swift in Sources */,
 				0AD7FA311EBDA86A001C9B21 /* ShapeWinding.swift in Sources */,
@@ -898,6 +947,7 @@
 				0A7D3ADC1ECAD5890030DC26 /* ColorBlend.swift in Sources */,
 				0A52E2D71E6012140065EED6 /* PDFDocEncoding.swift in Sources */,
 				0A52E2DC1E6012530065EED6 /* PDFRunLengthDecode.swift in Sources */,
+				08B68A3E1ED07AA500F8D423 /* NormalizedColorSpace.swift in Sources */,
 				08458B411E2E627600D01813 /* SDTransform.swift in Sources */,
 				08458B451E2E627600D01813 /* SDTriggerNode.swift in Sources */,
 				0A53E45F1E35AEF80060FB83 /* CollectionExtension.swift in Sources */,
@@ -907,6 +957,7 @@
 				0A2107121E5BEEBB00F1E00E /* PathStroke.swift in Sources */,
 				08458B371E2E627600D01813 /* Maths.swift in Sources */,
 				08458B3B1E2E627600D01813 /* Point.swift in Sources */,
+				08B68A411ED07AC000F8D423 /* CIELabColorSpace.swift in Sources */,
 				08B085491E9A20720037DECE /* Algorithm.swift in Sources */,
 				08458B471E2E627600D01813 /* SDMarker.swift in Sources */,
 				0A92C7C51E56AB9D0090EBFC /* Data.swift in Sources */,
@@ -915,12 +966,15 @@
 				0A92C7B31E56A52E0090EBFC /* zlib.swift in Sources */,
 				0A53E46F1E35AEF80060FB83 /* Json.swift in Sources */,
 				08458B2F1E2E627600D01813 /* Image.swift in Sources */,
+				08B68A471ED07AE100F8D423 /* CalibratedRGBColorSpace.swift in Sources */,
+				08B68A441ED07AD100F8D423 /* CIELuvColorSpace.swift in Sources */,
 				0AAC4DF51E977906008DCADA /* ShapeRasterize.swift in Sources */,
 				0A53E4651E35AEF80060FB83 /* FloatingPoint.swift in Sources */,
 				0A53E47D1E35AEF80060FB83 /* Regex.swift in Sources */,
 				0A52E2D51E6012140065EED6 /* PDFASCIIHexDecode.swift in Sources */,
 				0A21070E1E5BEEBB00F1E00E /* PathCoder.swift in Sources */,
 				08458B591E2E627600D01813 /* Atomic.swift in Sources */,
+				08B68A381ED07A6A00F8D423 /* CIEXYZColorSpace.swift in Sources */,
 				08458B5D1E2E627600D01813 /* AtomicStack.swift in Sources */,
 				08458B271E2E627600D01813 /* Color.swift in Sources */,
 				0A53E47B1E35AEF80060FB83 /* Random.swift in Sources */,
@@ -931,10 +985,12 @@
 				08458AF71E2E627600D01813 /* ComplexConversion.swift in Sources */,
 				08458B5F1E2E627600D01813 /* Lock.swift in Sources */,
 				08458B351E2E627600D01813 /* Ellipse.swift in Sources */,
+				08B68A321ED07A2400F8D423 /* ColorSpace.swift in Sources */,
 				0A56E9111E35F02E00D93786 /* RectCollection.swift in Sources */,
 				0A52E2D91E6012140065EED6 /* PDFFilter.swift in Sources */,
 				08458AFF1E2E627600D01813 /* SafeFunction.swift in Sources */,
 				0A92C7D41E56DA960090EBFC /* DGParser.swift in Sources */,
+				08B68A3B1ED07A8300F8D423 /* LinearToneColorSpace.swift in Sources */,
 				08458AF51E2E627600D01813 /* CircularConvolve.swift in Sources */,
 				08458B131E2E627600D01813 /* Fourier.swift in Sources */,
 				08458B611E2E627600D01813 /* Thread.swift in Sources */,
@@ -946,13 +1002,13 @@
 				0A53E47F1E35AEF80060FB83 /* String.swift in Sources */,
 				0A53E4691E35AEF80060FB83 /* Hashable.swift in Sources */,
 				0AD4D8D91EA6247200C99728 /* Maths misc.swift in Sources */,
-				08458B2D1E2E627600D01813 /* ColorSpace.swift in Sources */,
 				0A6A6CE21EC2CD720053795B /* Memory.swift in Sources */,
 				0A53E4631E35AEF80060FB83 /* Date.swift in Sources */,
 				08458AFB1E2E627600D01813 /* DiscreteConvolve.swift in Sources */,
 				0A53E4671E35AEF80060FB83 /* Graph.swift in Sources */,
 				0A06975F1E4D6732005CF664 /* NSImage.swift in Sources */,
 				0A06975C1E4D66A3005CF664 /* Filter.swift in Sources */,
+				08B68A4A1ED07AF700F8D423 /* CalibratedGrayColorSpace.swift in Sources */,
 				0A6CDDA81E61738A009DDEEB /* PDFPredictor.swift in Sources */,
 				08458B2B1E2E627600D01813 /* ColorPixel.swift in Sources */,
 				08458AF31E2E627600D01813 /* Arithmetic.swift in Sources */,

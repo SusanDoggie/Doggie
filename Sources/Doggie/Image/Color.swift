@@ -23,24 +23,24 @@
 //  THE SOFTWARE.
 //
 
-public struct Color<ColorSpace : ColorSpaceProtocol> {
+public struct Color<Model : ColorModelProtocol> {
     
-    public var colorSpace: ColorSpace
+    public var colorSpace: ColorSpace<Model>
     
-    public var color: ColorSpace.Model
+    public var color: Model
     
     public var opacity: Double
     
     @_inlineable
-    public init<C : ColorPixelProtocol>(colorSpace: ColorSpace, color: C) where C.Model == ColorSpace.Model {
-        self.colorSpace = colorSpace
+    public init<C : ColorSpaceProtocol, P : ColorPixelProtocol>(colorSpace: C, color: P) where C.Model == Model, C.Model == P.Model {
+        self.colorSpace = ColorSpace(colorSpace)
         self.color = color.color
         self.opacity = color.opacity
     }
     
     @_inlineable
-    public init(colorSpace: ColorSpace, color: ColorSpace.Model, opacity: Double = 1) {
-        self.colorSpace = colorSpace
+    public init<C : ColorSpaceProtocol>(colorSpace: C, color: Model, opacity: Double = 1) where C.Model == Model {
+        self.colorSpace = ColorSpace(colorSpace)
         self.color = color
         self.opacity = opacity
     }
@@ -49,22 +49,22 @@ public struct Color<ColorSpace : ColorSpaceProtocol> {
 extension Color {
     
     @_inlineable
-    public func convert<C : ColorSpaceProtocol>(to colorSpace: C) -> Color<C> {
-        return Color<C>(colorSpace: colorSpace, color: self.colorSpace.convert(color, to: colorSpace), opacity: opacity)
+    public func convert<C : ColorSpaceProtocol>(to colorSpace: C) -> Color<C.Model> {
+        return Color<C.Model>(colorSpace: colorSpace, color: self.colorSpace.convert(color, to: colorSpace), opacity: opacity)
     }
 }
 
 extension Color {
     
     @_inlineable
-    public func blended<C : ColorSpaceProtocol>(source: Color<C>, blendMode: ColorBlendMode, compositingMode: ColorCompositingMode) -> Color {
+    public func blended<C>(source: Color<C>, blendMode: ColorBlendMode, compositingMode: ColorCompositingMode) -> Color {
         let source = source.convert(to: colorSpace)
         let color = ColorPixel(color: self.color, opacity: self.opacity).blended(source: ColorPixel(color: source.color, opacity: source.opacity), blendMode: blendMode, compositingMode: compositingMode)
         return Color(colorSpace: colorSpace, color: color.color, opacity: color.opacity)
     }
     
     @_inlineable
-    public mutating func blend<C : ColorSpaceProtocol>(source: Color<C>, blendMode: ColorBlendMode, compositingMode: ColorCompositingMode) {
+    public mutating func blend<C>(source: Color<C>, blendMode: ColorBlendMode, compositingMode: ColorCompositingMode) {
         self = self.blended(source: source, blendMode: blendMode, compositingMode: compositingMode)
     }
 }

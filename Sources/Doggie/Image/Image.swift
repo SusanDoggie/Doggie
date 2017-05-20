@@ -26,15 +26,39 @@
 import Foundation
 
 @_fixed_layout
-public struct Image<ColorSpace : ColorSpaceProtocol, ColorPixel: ColorPixelProtocol> where ColorPixel.Model == ColorSpace.Model {
+public struct Image<Pixel: ColorPixelProtocol> {
     
     public let width: Int
     public let height: Int
     
     @_versioned
-    var pixel: [ColorPixel]
+    var pixel: [Pixel]
     
-    public var colorSpace: ColorSpace
+    public var colorSpace: ColorSpace<Pixel.Model>
+    
+    @_inlineable
+    public init<C : ColorSpaceProtocol>(width: Int, height: Int, colorSpace: C, pixel: Pixel = Pixel()) where C.Model == Pixel.Model {
+        self.width = width
+        self.height = height
+        self.colorSpace = ColorSpace(colorSpace)
+        self.pixel = [Pixel](repeating: pixel, count: width * height)
+    }
+    
+    @_inlineable
+    public init<P>(image: Image<P>) where P.Model == Pixel.Model {
+        self.width = image.width
+        self.height = image.height
+        self.colorSpace = image.colorSpace
+        self.pixel = image.pixel.map(Pixel.init)
+    }
+    
+    @_inlineable
+    public init<C : ColorSpaceProtocol, P>(image: Image<P>, colorSpace: C) where C.Model == Pixel.Model {
+        self.width = image.width
+        self.height = image.height
+        self.colorSpace = ColorSpace(colorSpace)
+        self.pixel = image.colorSpace.convert(image.pixel, colorSpace: self.colorSpace)
+    }
     
     @_inlineable
     public init(image: Image, width: Int, height: Int, resampling algorithm: ResamplingAlgorithm = .default, antialias: Bool = false) {
@@ -47,33 +71,27 @@ public struct Image<ColorSpace : ColorSpaceProtocol, ColorPixel: ColorPixelProto
         self.height = height
         self.colorSpace = image.colorSpace
         if image.pixel.count == 0 || transform.determinant.almostZero() {
-            self.pixel = [ColorPixel](repeating: ColorPixel(), count: width * height)
+            self.pixel = [Pixel](repeating: Pixel(), count: width * height)
         } else {
-            self.pixel = algorithm.calculate(source: image.pixel, s_width: image.width, width: width, height: height, pixel: ColorPixel.self, transform: transform.inverse, antialias: antialias)
+            self.pixel = algorithm.calculate(source: image.pixel, s_width: image.width, width: width, height: height, pixel: Pixel.self, transform: transform.inverse, antialias: antialias)
         }
     }
+}
+
+extension ColorSpace {
     
+    @_versioned
     @_inlineable
-    public init(width: Int, height: Int, colorSpace: ColorSpace, pixel: ColorPixel = ColorPixel()) {
-        self.width = width
-        self.height = height
-        self.colorSpace = colorSpace
-        self.pixel = [ColorPixel](repeating: pixel, count: width * height)
-    }
-    
-    @_inlineable
-    public init<C : ColorSpaceProtocol, P: ColorPixelProtocol>(image: Image<C, P>, colorSpace: ColorSpace) where C.Model == P.Model {
-        self.width = image.width
-        self.height = image.height
-        self.colorSpace = colorSpace
-        self.pixel = image.pixel.map { ColorPixel(color: image.colorSpace.convert($0.color, to: colorSpace), opacity: $0.opacity) }
+    func convert<S: ColorPixelProtocol, R: ColorPixelProtocol>(_ source: [S], colorSpace: ColorSpace<R.Model>) -> [R] where S.Model == Model {
+        let matrix = self.cieXYZ.transferMatrix(to: colorSpace.cieXYZ, chromaticAdaptationAlgorithm: chromaticAdaptationAlgorithm)
+        return source.map { R(color: colorSpace.base.convertFromXYZ(self.base.convertToXYZ($0.color) * matrix), opacity: $0.opacity) }
     }
 }
 
 extension Image {
     
     @_inlineable
-    public subscript(x: Int, y: Int) -> Color<ColorSpace> {
+    public subscript(x: Int, y: Int) -> Color<Pixel.Model> {
         get {
             precondition(0..<width ~= x)
             precondition(0..<height ~= y)
@@ -82,7 +100,7 @@ extension Image {
         set {
             precondition(0..<width ~= x)
             precondition(0..<height ~= y)
-            pixel[width * y + x] = ColorPixel(newValue.convert(to: colorSpace))
+            pixel[width * y + x] = Pixel(newValue.convert(to: colorSpace))
         }
     }
 }
@@ -90,13 +108,13 @@ extension Image {
 extension Image {
     
     @_inlineable
-    public func withUnsafeBufferPointer<R>(_ body: (UnsafeBufferPointer<ColorPixel>) throws -> R) rethrows -> R {
+    public func withUnsafeBufferPointer<R>(_ body: (UnsafeBufferPointer<Pixel>) throws -> R) rethrows -> R {
         
         return try pixel.withUnsafeBufferPointer(body)
     }
     
     @_inlineable
-    public mutating func withUnsafeMutableBufferPointer<R>(_ body: (inout UnsafeMutableBufferPointer<ColorPixel>) throws -> R) rethrows -> R {
+    public mutating func withUnsafeMutableBufferPointer<R>(_ body: (inout UnsafeMutableBufferPointer<Pixel>) throws -> R) rethrows -> R {
         
         return try pixel.withUnsafeMutableBufferPointer(body)
     }

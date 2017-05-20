@@ -41,7 +41,7 @@ class ImageTest: XCTestCase {
         ("testResamplingLanczosPerformance", testResamplingLanczosPerformance),
         ]
     
-    var sample: Image<LinearToneColorSpace<CalibratedRGBColorSpace>, ARGB32ColorPixel> = {
+    var sample: Image<ARGB32ColorPixel> = {
         
         var sample = Image(width: 100, height: 100, colorSpace: CalibratedRGBColorSpace.sRGB.linearTone, pixel: ARGB32ColorPixel())
         
@@ -92,7 +92,7 @@ class ImageTest: XCTestCase {
         
         self.measure() {
             
-            _ = Image<CalibratedRGBColorSpace, ARGB32ColorPixel>(image: sampleB, colorSpace: CalibratedRGBColorSpace.adobeRGB)
+            _ = Image<ARGB32ColorPixel>(image: sampleB, colorSpace: CalibratedRGBColorSpace.adobeRGB)
         }
     }
     
