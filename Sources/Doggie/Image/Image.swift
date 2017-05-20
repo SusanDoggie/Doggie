@@ -254,7 +254,7 @@ extension ResamplingAlgorithm {
                         
                         @inline(__always)
                         func op(point: Point) -> Pixel {
-                            return read_source(source, width, height, Int(point.x), Int(point.y))
+                            return read_source(source, s_width, s_height, Int(point.x), Int(point.y))
                         }
                         
                         filling1(buffer, width, height, transform, antialias, op)
