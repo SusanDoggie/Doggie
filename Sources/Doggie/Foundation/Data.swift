@@ -31,31 +31,3 @@ extension Data : ExpressibleByArrayLiteral {
         self.init(elements)
     }
 }
-
-extension Data {
-    
-    @_inlineable
-    public func _memmap<T, R>(body: (T) throws -> R) rethrows -> Data {
-        
-        let s_count = self.count / MemoryLayout<T>.stride
-        var result = Data(count: MemoryLayout<R>.stride * s_count)
-        
-        try self.withUnsafeBytes { (source: UnsafePointer<T>) in
-            
-            try result.withUnsafeMutableBytes { (destination: UnsafeMutablePointer<R>) in
-                
-                var source = source
-                var destination = destination
-                
-                for _ in 0..<s_count {
-                    
-                    destination.pointee = try body(source.pointee)
-                    
-                    source += 1
-                    destination += 1
-                }
-            }
-        }
-        return result
-    }
-}

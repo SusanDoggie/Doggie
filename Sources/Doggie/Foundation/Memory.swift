@@ -25,31 +25,6 @@
 
 import Foundation
 
-extension UnsafeRawBufferPointer {
-    
-    @_inlineable
-    public func _memmap<T, R>(to: UnsafeMutableRawBufferPointer, body: (T) throws -> R) rethrows -> Int {
-        
-        let s_count = self.count / MemoryLayout<T>.stride
-        let r_count = to.count / MemoryLayout<R>.stride
-        
-        let write = Swift.min(s_count, r_count)
-        
-        if var source = self.baseAddress?.assumingMemoryBound(to: T.self), var destination = to.baseAddress?.assumingMemoryBound(to: R.self) {
-            
-            for _ in 0..<write {
-                
-                destination.pointee = try body(source.pointee)
-                
-                source += 1
-                destination += 1
-            }
-        }
-        
-        return write
-    }
-}
-
 @_inlineable
 public func _memset<T>(_ __b: UnsafeMutableRawPointer, _ __c: T, _ __len: Int) -> Int {
     
