@@ -32,7 +32,7 @@ public struct Image<ColorSpace : ColorSpaceProtocol, ColorPixel: ColorPixelProto
     public let height: Int
     
     @_versioned
-    var buffer: Data
+    var pixel: [ColorPixel]
     
     public var colorSpace: ColorSpace
     
@@ -46,11 +46,10 @@ public struct Image<ColorSpace : ColorSpaceProtocol, ColorPixel: ColorPixelProto
         self.width = width
         self.height = height
         self.colorSpace = image.colorSpace
-        if image.buffer.count == 0 || transform.determinant.almostZero() {
-            self.buffer = Data(count: MemoryLayout<ColorPixel>.stride * width * height)
-            self.buffer.withUnsafeMutableBytes { _ = _memset($0, ColorPixel(), MemoryLayout<ColorPixel>.stride * width * height) }
+        if image.pixel.count == 0 || transform.determinant.almostZero() {
+            self.pixel = [ColorPixel](repeating: ColorPixel(), count: width * height)
         } else {
-            self.buffer = algorithm.calculate(source: image.buffer, s_width: image.width, width: width, height: height, pixel: ColorPixel.self, transform: transform.inverse, antialias: antialias)
+            self.pixel = algorithm.calculate(source: image.pixel, s_width: image.width, width: width, height: height, pixel: ColorPixel.self, transform: transform.inverse, antialias: antialias)
         }
     }
     
@@ -59,8 +58,7 @@ public struct Image<ColorSpace : ColorSpaceProtocol, ColorPixel: ColorPixelProto
         self.width = width
         self.height = height
         self.colorSpace = colorSpace
-        self.buffer = Data(count: MemoryLayout<ColorPixel>.stride * width * height)
-        self.buffer.withUnsafeMutableBytes { _ = _memset($0, pixel, MemoryLayout<ColorPixel>.stride * width * height) }
+        self.pixel = [ColorPixel](repeating: pixel, count: width * height)
     }
     
     @_inlineable
@@ -68,7 +66,7 @@ public struct Image<ColorSpace : ColorSpaceProtocol, ColorPixel: ColorPixelProto
         self.width = image.width
         self.height = image.height
         self.colorSpace = colorSpace
-        self.buffer = image.buffer._memmap { (pixel: P) in ColorPixel(color: image.colorSpace.convert(pixel.color, to: colorSpace), opacity: pixel.opacity) }
+        self.pixel = image.pixel.map { ColorPixel(color: image.colorSpace.convert($0.color, to: colorSpace), opacity: $0.opacity) }
     }
 }
 
@@ -79,12 +77,12 @@ extension Image {
         get {
             precondition(0..<width ~= x)
             precondition(0..<height ~= y)
-            return buffer.withUnsafeBytes { (ptr: UnsafePointer<ColorPixel>) in Color(colorSpace: colorSpace, color: ptr[width * y + x]) }
+            return Color(colorSpace: colorSpace, color: pixel[width * y + x])
         }
         set {
             precondition(0..<width ~= x)
             precondition(0..<height ~= y)
-            buffer.withUnsafeMutableBytes { (ptr: UnsafeMutablePointer<ColorPixel>) in ptr[width * y + x] = ColorPixel(newValue.convert(to: colorSpace)) }
+            pixel[width * y + x] = ColorPixel(newValue.convert(to: colorSpace))
         }
     }
 }
@@ -94,13 +92,13 @@ extension Image {
     @_inlineable
     public func withUnsafeBufferPointer<R>(_ body: (UnsafeBufferPointer<ColorPixel>) throws -> R) rethrows -> R {
         
-        return try buffer.withUnsafeBytes { try body(UnsafeBufferPointer(start: $0, count: width * height)) }
+        return try pixel.withUnsafeBufferPointer(body)
     }
     
     @_inlineable
-    public mutating func withUnsafeMutableBufferPointer<R>(_ body: (UnsafeMutableBufferPointer<ColorPixel>) throws -> R) rethrows -> R {
+    public mutating func withUnsafeMutableBufferPointer<R>(_ body: (inout UnsafeMutableBufferPointer<ColorPixel>) throws -> R) rethrows -> R {
         
-        return try buffer.withUnsafeMutableBytes { try body(UnsafeMutableBufferPointer(start: $0, count: width * height)) }
+        return try pixel.withUnsafeMutableBufferPointer(body)
     }
 }
 
@@ -236,35 +234,34 @@ extension ResamplingAlgorithm {
     @_versioned
     @_inlineable
     @_specialize(ColorPixel<RGBColorModel>) @_specialize(ColorPixel<CMYKColorModel>) @_specialize(ColorPixel<GrayColorModel>) @_specialize(ARGB32ColorPixel)
-    func calculate<Pixel: ColorPixelProtocol>(source: Data, s_width: Int, width: Int, height: Int, pixel: Pixel.Type, transform: SDTransform, antialias: Bool) -> Data {
+    func calculate<Pixel: ColorPixelProtocol>(source: [Pixel], s_width: Int, width: Int, height: Int, pixel: Pixel.Type, transform: SDTransform, antialias: Bool) -> [Pixel] {
         
-        var result = Data(count: MemoryLayout<Pixel>.stride * width * height)
+        var result = [Pixel](repeating: Pixel(), count: width * height)
         
         if source.count != 0 {
             
-            let s_count = source.count / MemoryLayout<Pixel>.stride
-            let s_height = s_count / s_width
+            let s_height = source.count / s_width
             
-            result.withUnsafeMutableBytes { (buffer: UnsafeMutablePointer<Pixel>) in
+            result.withUnsafeMutableBufferPointer { buffer in
                 
                 switch self {
                 case .none:
                     
-                    source.withUnsafeBytes { (source: UnsafePointer<Pixel>) in
+                    source.withUnsafeBufferPointer { source in
                         
                         @inline(__always)
                         func op(point: Point) -> Pixel {
-                            return read_source(source, s_width, s_height, Int(point.x), Int(point.y))
+                            return read_source(source.baseAddress!, s_width, s_height, Int(point.x), Int(point.y))
                         }
                         
-                        filling1(buffer, width, height, transform, antialias, op)
+                        filling1(buffer.baseAddress!, width, height, transform, antialias, op)
                     }
                     
                 default:
                     
-                    let _source = Pixel.self is ColorPixel<Pixel.Model>.Type ? source : source._memmap { (pixel: Pixel) in ColorPixel(pixel) }
+                    let _source = source as? [ColorPixel<Pixel.Model>] ?? source.map(ColorPixel.init)
                     
-                    _source.withUnsafeBytes { (source: UnsafePointer<ColorPixel<Pixel.Model>>) in
+                    _source.withUnsafeBufferPointer { source in
                         
                         switch self {
                         case .none: fatalError()
@@ -272,28 +269,28 @@ extension ResamplingAlgorithm {
                             
                             @inline(__always)
                             func op(point: Point) -> ColorPixel<Pixel.Model> {
-                                return smapling2(source: source, width: s_width, height: s_height, point: point, sampler: LinearInterpolate)
+                                return smapling2(source: source.baseAddress!, width: s_width, height: s_height, point: point, sampler: LinearInterpolate)
                             }
                             
-                            filling2(buffer, width, height, transform, antialias, op)
+                            filling2(buffer.baseAddress!, width, height, transform, antialias, op)
                             
                         case .cosine:
                             
                             @inline(__always)
                             func op(point: Point) -> ColorPixel<Pixel.Model> {
-                                return smapling2(source: source, width: s_width, height: s_height, point: point, sampler: CosineInterpolate)
+                                return smapling2(source: source.baseAddress!, width: s_width, height: s_height, point: point, sampler: CosineInterpolate)
                             }
                             
-                            filling2(buffer, width, height, transform, antialias, op)
+                            filling2(buffer.baseAddress!, width, height, transform, antialias, op)
                             
                         case .cubic:
                             
                             @inline(__always)
                             func op(point: Point) -> ColorPixel<Pixel.Model> {
-                                return smapling4(source: source, width: s_width, height: s_height, point: point, sampler: CubicInterpolate)
+                                return smapling4(source: source.baseAddress!, width: s_width, height: s_height, point: point, sampler: CubicInterpolate)
                             }
                             
-                            filling2(buffer, width, height, transform, antialias, op)
+                            filling2(buffer.baseAddress!, width, height, transform, antialias, op)
                             
                         case let .hermite(s, e):
                             
@@ -304,10 +301,10 @@ extension ResamplingAlgorithm {
                             
                             @inline(__always)
                             func op(point: Point) -> ColorPixel<Pixel.Model> {
-                                return smapling4(source: source, width: s_width, height: s_height, point: point, sampler: _kernel)
+                                return smapling4(source: source.baseAddress!, width: s_width, height: s_height, point: point, sampler: _kernel)
                             }
                             
-                            filling2(buffer, width, height, transform, antialias, op)
+                            filling2(buffer.baseAddress!, width, height, transform, antialias, op)
                             
                         case let .mitchell(B, C):
                             
@@ -332,10 +329,10 @@ extension ResamplingAlgorithm {
                             
                             @inline(__always)
                             func op(point: Point) -> ColorPixel<Pixel.Model> {
-                                return convolve(source: source, width: s_width, height: s_height, point: point, kernel_size: 5, kernel: _kernel)
+                                return convolve(source: source.baseAddress!, width: s_width, height: s_height, point: point, kernel_size: 5, kernel: _kernel)
                             }
                             
-                            filling2(buffer, width, height, transform, antialias, op)
+                            filling2(buffer.baseAddress!, width, height, transform, antialias, op)
                             
                         case .lanczos(1):
                             
@@ -354,10 +351,10 @@ extension ResamplingAlgorithm {
                             
                             @inline(__always)
                             func op(point: Point) -> ColorPixel<Pixel.Model> {
-                                return convolve(source: source, width: s_width, height: s_height, point: point, kernel_size: 2, kernel: _kernel)
+                                return convolve(source: source.baseAddress!, width: s_width, height: s_height, point: point, kernel_size: 2, kernel: _kernel)
                             }
                             
-                            filling2(buffer, width, height, transform, antialias, op)
+                            filling2(buffer.baseAddress!, width, height, transform, antialias, op)
                             
                         case let .lanczos(a):
                             
@@ -376,10 +373,10 @@ extension ResamplingAlgorithm {
                             
                             @inline(__always)
                             func op(point: Point) -> ColorPixel<Pixel.Model> {
-                                return convolve(source: source, width: s_width, height: s_height, point: point, kernel_size: Int(a) << 1, kernel: _kernel)
+                                return convolve(source: source.baseAddress!, width: s_width, height: s_height, point: point, kernel_size: Int(a) << 1, kernel: _kernel)
                             }
                             
-                            filling2(buffer, width, height, transform, antialias, op)
+                            filling2(buffer.baseAddress!, width, height, transform, antialias, op)
                         }
                     }
                 }

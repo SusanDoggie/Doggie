@@ -52,7 +52,7 @@ public class ImageContext<ColorSpace : ColorSpaceProtocol> {
 
 extension ImageContext {
     
-    public func withUnsafeMutableImageBufferPointer<R>(_ body: (UnsafeMutableBufferPointer<ColorPixel<ColorSpace.Model>>) throws -> R) rethrows -> R {
+    public func withUnsafeMutableImageBufferPointer<R>(_ body: (inout UnsafeMutableBufferPointer<ColorPixel<ColorSpace.Model>>) throws -> R) rethrows -> R {
         
         if let next = self.next {
             return try next.withUnsafeMutableImageBufferPointer(body)
