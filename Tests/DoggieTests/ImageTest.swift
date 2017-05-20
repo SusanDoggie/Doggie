@@ -30,6 +30,7 @@ import XCTest
 class ImageTest: XCTestCase {
     
     static let allTests = [
+        ("testColorSpaceConvertionPerformance", testColorSpaceConvertionPerformance),
         ("testResamplingNonePerformance", testResamplingNonePerformance),
         ("testResamplingNonePerformanceB", testResamplingNonePerformanceB),
         ("testResamplingLinearPerformance", testResamplingLinearPerformance),
@@ -80,6 +81,17 @@ class ImageTest: XCTestCase {
     override func tearDown() {
         
         super.tearDown()
+    }
+    
+    func testColorSpaceConvertionPerformance() {
+        
+        
+        let sample = self.sample
+        
+        self.measure() {
+            
+            _ = Image<CalibratedRGBColorSpace, ARGB32ColorPixel>(image: sample, colorSpace: CalibratedRGBColorSpace.adobeRGB)
+        }
     }
     
     func testResamplingNonePerformance() {
