@@ -462,8 +462,8 @@ extension ImageContext {
                                             _destination.pointee.blend(source: _source, blendMode: _blendMode, compositingMode: _compositingMode)
                                         }
                                         
-                                        _destination += 1
                                         _stencil += 1
+                                        _destination += 1
                                         _clip += 1
                                     }
                                 }
