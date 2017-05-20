@@ -86,11 +86,13 @@ class ImageTest: XCTestCase {
     func testColorSpaceConvertionPerformance() {
         
         
-        let sample = self.sample
+        let sampleA = self.sample
+        
+        let sampleB = Image(image: sampleA, width: 1000, height: 1000, resampling: .none)
         
         self.measure() {
             
-            _ = Image<CalibratedRGBColorSpace, ARGB32ColorPixel>(image: sample, colorSpace: CalibratedRGBColorSpace.adobeRGB)
+            _ = Image<CalibratedRGBColorSpace, ARGB32ColorPixel>(image: sampleB, colorSpace: CalibratedRGBColorSpace.adobeRGB)
         }
     }
     
