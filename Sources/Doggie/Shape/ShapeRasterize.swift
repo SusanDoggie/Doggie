@@ -299,9 +299,11 @@ private func _loop<T: SignedInteger>(_ p0: Point, _ p1: Point, _ p2: Point, widt
         let y2 = Int(q2.y.rounded().clamped(to: 0...Double(height - 1)))
         
         stencil.withUnsafeMutableBufferPointer {
-            if let buf = $0.baseAddress {
+            if var buf = $0.baseAddress {
                 
                 if let (mid_x, _) = scan(q0, q2, q1.y) {
+                    
+                    buf += y0 * width
                     
                     let winding: T = d.sign == .plus ? 1 : -1
                     
@@ -310,26 +312,26 @@ private func _loop<T: SignedInteger>(_ p0: Point, _ p1: Point, _ p2: Point, widt
                         
                         let (min_x, min_dx, max_x, max_dx) = mid_x < q1.x ? (x0, dx0, x1, dx1) : (x1, dx1, x0, dx0)
                         
-                        range.parallelEach { y in
-                            
-                            let min_x = min_x + min_dx * Double(y - range.lowerBound)
-                            let max_x = max_x + max_dx * Double(y - range.lowerBound)
-                            let line = buf + width * y
-                            
+                        var _min_x = min_x
+                        var _max_x = max_x
+                        
+                        for y in range {
                             let _y = Double(y)
-                            
-                            if min_x < max_x && q0.y..<q2.y ~= _y {
-                                let __min_x = Int(min_x.rounded().clamped(to: 0...Double(width)))
-                                let __max_x = Int(max_x.rounded().clamped(to: 0...Double(width)))
-                                var pixel = line + __min_x
+                            if _min_x < _max_x && q0.y..<q2.y ~= _y {
+                                let __min_x = Int(_min_x.rounded().clamped(to: 0...Double(width)))
+                                let __max_x = Int(_max_x.rounded().clamped(to: 0...Double(width)))
+                                var pixel = buf + __min_x
                                 for x in __min_x...__max_x {
                                     let _x = Double(x)
-                                    if min_x..<max_x ~= _x && body(_x, _y) {
+                                    if _min_x..<_max_x ~= _x && body(_x, _y) {
                                         pixel.pointee += winding
                                     }
                                     pixel += 1
                                 }
                             }
+                            _min_x += min_dx
+                            _max_x += max_dx
+                            buf += width
                         }
                     }
                     
