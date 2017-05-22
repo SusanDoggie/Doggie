@@ -84,7 +84,7 @@ extension ColorSpace {
     @_inlineable
     func convert<S: ColorPixelProtocol, R: ColorPixelProtocol>(_ source: [S], colorSpace: ColorSpace<R.Model>) -> [R] where S.Model == Model {
         let matrix = self.cieXYZ.transferMatrix(to: colorSpace.cieXYZ, chromaticAdaptationAlgorithm: chromaticAdaptationAlgorithm)
-        return source.map { R(color: colorSpace.base.convertFromXYZ(self.base.convertToXYZ($0.color) * matrix), opacity: $0.opacity) }
+        return source.parallelMap { R(color: colorSpace.base.convertFromXYZ(self.base.convertToXYZ($0.color) * matrix), opacity: $0.opacity) }
     }
 }
 

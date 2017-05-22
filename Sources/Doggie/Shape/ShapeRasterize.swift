@@ -299,11 +299,9 @@ private func _loop<T: SignedInteger>(_ p0: Point, _ p1: Point, _ p2: Point, widt
         let y2 = Int(q2.y.rounded().clamped(to: 0...Double(height - 1)))
         
         stencil.withUnsafeMutableBufferPointer {
-            if var buf = $0.baseAddress {
+            if let buf = $0.baseAddress {
                 
                 if let (mid_x, _) = scan(q0, q2, q1.y) {
-                    
-                    buf += y0 * width
                     
                     let winding: T = d.sign == .plus ? 1 : -1
                     
@@ -312,26 +310,26 @@ private func _loop<T: SignedInteger>(_ p0: Point, _ p1: Point, _ p2: Point, widt
                         
                         let (min_x, min_dx, max_x, max_dx) = mid_x < q1.x ? (x0, dx0, x1, dx1) : (x1, dx1, x0, dx0)
                         
-                        var _min_x = min_x
-                        var _max_x = max_x
-                        
-                        for y in range {
+                        range.parallelEach { y in
+                            
+                            let min_x = min_x + min_dx * Double(y - range.lowerBound)
+                            let max_x = max_x + max_dx * Double(y - range.lowerBound)
+                            let line = buf + width * y
+                            
                             let _y = Double(y)
-                            if _min_x < _max_x && q0.y..<q2.y ~= _y {
-                                let __min_x = Int(_min_x.rounded().clamped(to: 0...Double(width)))
-                                let __max_x = Int(_max_x.rounded().clamped(to: 0...Double(width)))
-                                var pixel = buf + __min_x
+                            
+                            if min_x < max_x && q0.y..<q2.y ~= _y {
+                                let __min_x = Int(min_x.rounded().clamped(to: 0...Double(width)))
+                                let __max_x = Int(max_x.rounded().clamped(to: 0...Double(width)))
+                                var pixel = line + __min_x
                                 for x in __min_x...__max_x {
                                     let _x = Double(x)
-                                    if _min_x..<_max_x ~= _x && body(_x, _y) {
+                                    if min_x..<max_x ~= _x && body(_x, _y) {
                                         pixel.pointee += winding
                                     }
                                     pixel += 1
                                 }
                             }
-                            _min_x += min_dx
-                            _max_x += max_dx
-                            buf += width
                         }
                     }
                     
@@ -385,12 +383,6 @@ extension Shape {
         }
         
         @inline(__always)
-        func loop(_ p0: Point, _ p1: Point, _ p2: Point, body: (Double, Double) -> Bool) {
-            
-            _loop(p0, p1, p2, width: width, height: height, stencil: &stencil, body: body)
-        }
-        
-        @inline(__always)
         func _render(op: Shape.RenderOperation) -> Void {
             
             switch op {
@@ -400,7 +392,7 @@ extension Shape {
                 let q1 = p1 * transform
                 let q2 = p2 * transform
                 
-                loop(q0, q1, q2) { _ in true }
+                _loop(q0, q1, q2, width: width, height: height, stencil: &stencil) { _ in true }
                 
             case let .quadratic(p0, p1, p2):
                 
@@ -416,7 +408,7 @@ extension Shape {
                         return _q.x * _q.x - _q.y < 0
                     }
                     
-                    loop(q0, q1, q2, body: _test)
+                    _loop(q0, q1, q2, width: width, height: height, stencil: &stencil, body: _test)
                 }
                 
             case let .cubic(p0, p1, p2, v0, v1, v2):
@@ -434,7 +426,7 @@ extension Shape {
                     return false
                 }
                 
-                loop(q0, q1, q2, body: _test)
+                _loop(q0, q1, q2, width: width, height: height, stencil: &stencil, body: _test)
             }
         }
         
