@@ -36,3 +36,10 @@ public func drawImage(shape: Shape, width: Int, height: Int) -> Image<ARGB32Colo
     return image
 }
 
+extension Image : CustomPlaygroundQuickLookable {
+    
+    public var customPlaygroundQuickLook: PlaygroundQuickLook {
+        
+        return .text("Image{ width: \(width), height: \(height) }")
+    }
+}

@@ -32,3 +32,11 @@ public func sampleImage(width: Int, height: Int) -> Image<ARGB32ColorPixel> {
     
     return Image(image: context.image, colorSpace: CalibratedRGBColorSpace.sRGB)
 }
+
+extension Image : CustomPlaygroundQuickLookable {
+    
+    public var customPlaygroundQuickLook: PlaygroundQuickLook {
+        
+        return .text("Image{ width: \(width), height: \(height) }")
+    }
+}
