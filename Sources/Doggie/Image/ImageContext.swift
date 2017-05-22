@@ -346,7 +346,7 @@ extension ImageContext {
 
 extension ImageContext {
     
-    private func draw<C>(shape: Shape, color: Color<C>, winding: (Int) -> Bool) {
+    private func draw(shape: Shape, color: ColorPixel<Model>, winding: (Int) -> Bool) {
         
         if let next = self.next {
             next.draw(shape: shape, color: color, winding: winding)
@@ -362,8 +362,6 @@ extension ImageContext {
         if _image.width == 0 || _image.height == 0 || transform.determinant.almostZero() {
             return
         }
-        
-        let source = ColorPixel(color.convert(to: colorSpace))
         
         let stencil_count = _antialias ? _image.width * _image.height * 25 : _image.width * _image.height
         
@@ -418,10 +416,10 @@ extension ImageContext {
                                             
                                             if _alpha > 0 {
                                                 
-                                                var _source = source
-                                                _source.opacity *= _opacity * _alpha
+                                                var source = color
+                                                source.opacity *= _opacity * _alpha
                                                 
-                                                _destination.pointee.blend(source: _source, blendMode: _blendMode, compositingMode: _compositingMode)
+                                                _destination.pointee.blend(source: source, blendMode: _blendMode, compositingMode: _compositingMode)
                                             }
                                             
                                             __stencil += 5
@@ -462,10 +460,10 @@ extension ImageContext {
                                         
                                         if winding(_stencil.pointee) && _alpha > 0 {
                                             
-                                            var _source = source
-                                            _source.opacity *= _opacity * _alpha
+                                            var source = color
+                                            source.opacity *= _opacity * _alpha
                                             
-                                            _destination.pointee.blend(source: _source, blendMode: _blendMode, compositingMode: _compositingMode)
+                                            _destination.pointee.blend(source: source, blendMode: _blendMode, compositingMode: _compositingMode)
                                         }
                                         
                                         _stencil += 1
@@ -485,8 +483,8 @@ extension ImageContext {
     public func draw<C>(shape: Shape, color: Color<C>, winding: Shape.WindingRule) {
         
         switch winding {
-        case .nonZero: self.draw(shape: shape, color: color) { $0 != 0 }
-        case .evenOdd: self.draw(shape: shape, color: color) { $0 & 1 == 1 }
+        case .nonZero: self.draw(shape: shape, color: ColorPixel(color.convert(to: colorSpace))) { $0 != 0 }
+        case .evenOdd: self.draw(shape: shape, color: ColorPixel(color.convert(to: colorSpace))) { $0 & 1 == 1 }
         }
     }
 }
