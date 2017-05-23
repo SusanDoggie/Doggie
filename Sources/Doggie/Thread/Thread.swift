@@ -28,7 +28,8 @@ import Dispatch
 
 // MARK: Trigger
 
-private let SDDefaultDispatchQueue: DispatchQueue = {
+@_versioned
+let SDDefaultDispatchQueue: DispatchQueue = {
     if #available(OSX 10.12, iOS 10.0, tvOS 10.0, watchOS 3.0, *) {
         return DispatchQueue(label: "com.SusanDoggie.Thread", attributes: .concurrent, autoreleaseFrequency: .workItem)
     } else {
@@ -65,13 +66,7 @@ extension Trigger {
     fileprivate func dispatchRunloop() {
         while true {
             flag = 1
-            
-            #if os(macOS) || os(iOS) || os(tvOS) || os(watchOS)
-                autoreleasepool { self.block(self) }
-            #else
-                self.block(self)
-            #endif
-
+            self.block(self)
             if flag.compareSet(old: 1, new: 0) {
                 return
             }
