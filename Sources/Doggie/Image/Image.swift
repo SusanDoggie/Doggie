@@ -24,6 +24,7 @@
 //
 
 import Foundation
+import Dispatch
 
 @_fixed_layout
 public struct Image<Pixel: ColorPixelProtocol> {
@@ -161,7 +162,7 @@ extension ResamplingAlgorithm {
     
     @_versioned
     @inline(__always)
-    func antialias_filling<Pixel: ColorPixelProtocol>(_ buffer: UnsafeMutablePointer<Pixel>, _ width: Int, _ height: Int, _ transform: SDTransform, _ operation: (Point) -> ColorPixel<Pixel.Model>) {
+    func antialias_filling1<Pixel: ColorPixelProtocol>(_ buffer: UnsafeMutablePointer<Pixel>, _ width: Int, _ height: Int, _ transform: SDTransform, _ operation: (Point) -> ColorPixel<Pixel.Model>) {
         
         var buffer = buffer
         
@@ -195,11 +196,43 @@ extension ResamplingAlgorithm {
     
     @_versioned
     @inline(__always)
+    func antialias_filling2<Pixel: ColorPixelProtocol>(_ buffer: UnsafeMutablePointer<Pixel>, _ width: Int, _ height: Int, _ transform: SDTransform, _ operation: (Point) -> ColorPixel<Pixel.Model>) {
+        
+        let _p = Point(x: 0, y: 0)
+        let _p1 = Point(x: 1, y: 0) * transform
+        let _p2 = Point(x: 0, y: 1) * transform
+        
+        let _q1 = Point(x: 0.2, y: 0) * transform
+        let _q2 = Point(x: 0, y: 0.2) * transform
+        
+        DispatchQueue.concurrentPerform(iterations: height) { i in
+            var buffer = buffer + width * i
+            var p = _p + _p2 * Double(i)
+            for _ in 0..<width {
+                var _q = p
+                var pixel = ColorPixel<Pixel.Model>()
+                for _ in 0..<5 {
+                    var q = _q
+                    for _ in 0..<5 {
+                        pixel += operation(q)
+                        q += _q1
+                    }
+                    _q += _q2
+                }
+                buffer.pointee = Pixel(pixel * 0.04)
+                buffer += 1
+                p += _p1
+            }
+        }
+    }
+    
+    @_versioned
+    @inline(__always)
     func filling1<Pixel: ColorPixelProtocol>(_ buffer: UnsafeMutablePointer<Pixel>, _ width: Int, _ height: Int, _ transform: SDTransform, _ antialias: Bool, _ operation: (Point) -> Pixel) {
         
         if antialias {
             
-            antialias_filling(buffer, width, height, transform) { ColorPixel(operation($0)) }
+            antialias_filling1(buffer, width, height, transform) { ColorPixel(operation($0)) }
             
         } else {
             
@@ -227,7 +260,7 @@ extension ResamplingAlgorithm {
         
         if antialias {
             
-            antialias_filling(buffer, width, height, transform, operation)
+            antialias_filling1(buffer, width, height, transform, operation)
             
         } else {
             
@@ -245,6 +278,32 @@ extension ResamplingAlgorithm {
                     p += _p1
                 }
                 _p += _p2
+            }
+        }
+    }
+    
+    @_versioned
+    @inline(__always)
+    func filling3<Pixel: ColorPixelProtocol>(_ buffer: UnsafeMutablePointer<Pixel>, _ width: Int, _ height: Int, _ transform: SDTransform, _ antialias: Bool, _ operation: (Point) -> ColorPixel<Pixel.Model>) {
+        
+        if antialias {
+            
+            antialias_filling2(buffer, width, height, transform, operation)
+            
+        } else {
+            
+            let _p = Point(x: 0, y: 0)
+            let _p1 = Point(x: 1, y: 0) * transform
+            let _p2 = Point(x: 0, y: 1) * transform
+            
+            DispatchQueue.concurrentPerform(iterations: height) { i in
+                var buffer = buffer + width * i
+                var p = _p + _p2 * Double(i)
+                for _ in 0..<width {
+                    buffer.pointee = Pixel(operation(p))
+                    buffer += 1
+                    p += _p1
+                }
             }
         }
     }
@@ -299,7 +358,7 @@ extension ResamplingAlgorithm {
                                 return smapling2(source: source.baseAddress!, width: s_width, height: s_height, point: point, sampler: CosineInterpolate)
                             }
                             
-                            filling2(buffer.baseAddress!, width, height, transform, antialias, op)
+                            filling3(buffer.baseAddress!, width, height, transform, antialias, op)
                             
                         case .cubic:
                             
@@ -308,7 +367,7 @@ extension ResamplingAlgorithm {
                                 return smapling4(source: source.baseAddress!, width: s_width, height: s_height, point: point, sampler: CubicInterpolate)
                             }
                             
-                            filling2(buffer.baseAddress!, width, height, transform, antialias, op)
+                            filling3(buffer.baseAddress!, width, height, transform, antialias, op)
                             
                         case let .hermite(s, e):
                             
@@ -322,7 +381,7 @@ extension ResamplingAlgorithm {
                                 return smapling4(source: source.baseAddress!, width: s_width, height: s_height, point: point, sampler: _kernel)
                             }
                             
-                            filling2(buffer.baseAddress!, width, height, transform, antialias, op)
+                            filling3(buffer.baseAddress!, width, height, transform, antialias, op)
                             
                         case let .mitchell(B, C):
                             
@@ -350,7 +409,7 @@ extension ResamplingAlgorithm {
                                 return convolve(source: source.baseAddress!, width: s_width, height: s_height, point: point, kernel_size: 5, kernel: _kernel)
                             }
                             
-                            filling2(buffer.baseAddress!, width, height, transform, antialias, op)
+                            filling3(buffer.baseAddress!, width, height, transform, antialias, op)
                             
                         case .lanczos(1):
                             
@@ -372,7 +431,7 @@ extension ResamplingAlgorithm {
                                 return convolve(source: source.baseAddress!, width: s_width, height: s_height, point: point, kernel_size: 2, kernel: _kernel)
                             }
                             
-                            filling2(buffer.baseAddress!, width, height, transform, antialias, op)
+                            filling3(buffer.baseAddress!, width, height, transform, antialias, op)
                             
                         case let .lanczos(a):
                             
@@ -394,7 +453,7 @@ extension ResamplingAlgorithm {
                                 return convolve(source: source.baseAddress!, width: s_width, height: s_height, point: point, kernel_size: Int(a) << 1, kernel: _kernel)
                             }
                             
-                            filling2(buffer.baseAddress!, width, height, transform, antialias, op)
+                            filling3(buffer.baseAddress!, width, height, transform, antialias, op)
                         }
                     }
                 }

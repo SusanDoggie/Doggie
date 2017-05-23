@@ -39,6 +39,13 @@ class ImageTest: XCTestCase {
         ("testResamplingHermitePerformance", testResamplingHermitePerformance),
         ("testResamplingMitchellPerformance", testResamplingMitchellPerformance),
         ("testResamplingLanczosPerformance", testResamplingLanczosPerformance),
+        ("testResamplingNoneAntialiasPerformance", testResamplingNoneAntialiasPerformance),
+        ("testResamplingLinearAntialiasPerformance", testResamplingLinearAntialiasPerformance),
+        ("testResamplingCosineAntialiasPerformance", testResamplingCosineAntialiasPerformance),
+        ("testResamplingCubicAntialiasPerformance", testResamplingCubicAntialiasPerformance),
+        ("testResamplingHermiteAntialiasPerformance", testResamplingHermiteAntialiasPerformance),
+        ("testResamplingMitchellAntialiasPerformance", testResamplingMitchellAntialiasPerformance),
+        ("testResamplingLanczosAntialiasPerformance", testResamplingLanczosAntialiasPerformance),
         ]
     
     var sample: Image<ARGB32ColorPixel> = {
@@ -183,6 +190,83 @@ class ImageTest: XCTestCase {
         self.measure() {
             
             _ = Image(image: sample, width: 1000, height: 1000, resampling: .lanczos(3))
+        }
+    }
+    
+    func testResamplingNoneAntialiasPerformance() {
+        
+        
+        let sample = self.sample
+        
+        self.measure() {
+            
+            _ = Image(image: sample, width: 200, height: 200, resampling: .none, antialias: true)
+        }
+    }
+    
+    func testResamplingLinearAntialiasPerformance() {
+        
+        
+        let sample = self.sample
+        
+        self.measure() {
+            
+            _ = Image(image: sample, width: 200, height: 200, resampling: .linear, antialias: true)
+        }
+    }
+    
+    func testResamplingCosineAntialiasPerformance() {
+        
+        
+        let sample = self.sample
+        
+        self.measure() {
+            
+            _ = Image(image: sample, width: 200, height: 200, resampling: .cosine, antialias: true)
+        }
+    }
+    
+    func testResamplingCubicAntialiasPerformance() {
+        
+        
+        let sample = self.sample
+        
+        self.measure() {
+            
+            _ = Image(image: sample, width: 200, height: 200, resampling: .cubic, antialias: true)
+        }
+    }
+    
+    func testResamplingHermiteAntialiasPerformance() {
+        
+        
+        let sample = self.sample
+        
+        self.measure() {
+            
+            _ = Image(image: sample, width: 200, height: 200, resampling: .hermite(0.5, 0), antialias: true)
+        }
+    }
+    
+    func testResamplingMitchellAntialiasPerformance() {
+        
+        
+        let sample = self.sample
+        
+        self.measure() {
+            
+            _ = Image(image: sample, width: 200, height: 200, resampling: .mitchell(1/3, 1/3), antialias: true)
+        }
+    }
+    
+    func testResamplingLanczosAntialiasPerformance() {
+        
+        
+        let sample = self.sample
+        
+        self.measure() {
+            
+            _ = Image(image: sample, width: 200, height: 200, resampling: .lanczos(3), antialias: true)
         }
     }
     
