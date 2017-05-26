@@ -23,6 +23,8 @@
 //  THE SOFTWARE.
 //
 
+import Foundation
+
 public class ImageContext<Model : ColorModelProtocol> {
     
     fileprivate var clip: Image<ColorPixel<GrayColorModel>>
@@ -368,7 +370,7 @@ extension ImageContext {
         if stencil.count != stencil_count {
             stencil = [Int](repeating: 0, count: stencil_count)
         } else {
-            stencil.withUnsafeMutableBytes { _ = _memset($0.baseAddress!, 0, $0.count) }
+            stencil.withUnsafeMutableBytes { _ = memset($0.baseAddress!, 0, $0.count) }
         }
         
         var shape = shape
