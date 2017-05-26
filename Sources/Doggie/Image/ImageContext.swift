@@ -27,9 +27,9 @@ import Foundation
 
 public class ImageContext<Model : ColorModelProtocol> {
     
-    fileprivate var clip: Image<ColorPixel<GrayColorModel>>
-    
     fileprivate var _image: Image<ColorPixel<Model>>
+    
+    fileprivate var clip: [Double]
     
     fileprivate var stencil: [Int] = []
     
@@ -48,13 +48,13 @@ public class ImageContext<Model : ColorModelProtocol> {
     public init<P : ColorPixelProtocol>(image: Image<P>) where P.Model == Model {
         
         self._image = Image(image: image)
-        self.clip = Image(width: image.width, height: image.height, colorSpace: CalibratedGrayColorSpace(image.colorSpace.cieXYZ), pixel: ColorPixel<GrayColorModel>(color: GrayColorModel(white: 1), opacity: 1))
+        self.clip = [Double](repeating: 1, count: image.width * image.height)
     }
     
     public init<C : ColorSpaceProtocol>(width: Int, height: Int, colorSpace: C) where C.Model == Model {
         
         self._image = Image(width: width, height: height, colorSpace: colorSpace, pixel: ColorPixel<Model>())
-        self.clip = Image(width: width, height: height, colorSpace: CalibratedGrayColorSpace(colorSpace.cieXYZ), pixel: ColorPixel<GrayColorModel>(color: GrayColorModel(white: 1), opacity: 1))
+        self.clip = [Double](repeating: 1, count: width * height)
     }
 }
 
@@ -78,7 +78,7 @@ extension ImageContext {
         }
     }
     
-    public func withUnsafeClipBufferPointer<R>(_ body: (UnsafeBufferPointer<ColorPixel<GrayColorModel>>) throws -> R) rethrows -> R {
+    public func withUnsafeClipBufferPointer<R>(_ body: (UnsafeBufferPointer<Double>) throws -> R) rethrows -> R {
         
         if let next = self.next {
             return try next.withUnsafeClipBufferPointer(body)
@@ -205,7 +205,7 @@ extension ImageContext {
         
         try body(_clip)
         
-        self.clip = _clip.image
+        self.clip = _clip.image.pixel.map { $0.color.white * $0.opacity }
     }
 }
 
@@ -257,7 +257,7 @@ extension ImageContext {
                                         
                                         for _ in 0..<_image.width * _image.height {
                                             
-                                            let _alpha = _clip.pointee.color.white * _clip.pointee.opacity
+                                            let _alpha = _clip.pointee
                                             
                                             if _alpha > 0 {
                                                 
@@ -323,7 +323,7 @@ extension ImageContext {
                                 
                                 for _ in 0..<_image.width * _image.height {
                                     
-                                    let _alpha = _clip.pointee.color.white * _clip.pointee.opacity
+                                    let _alpha = _clip.pointee
                                     
                                     if _alpha > 0 {
                                         
@@ -414,7 +414,7 @@ extension ImageContext {
                                                 _s += 5 * image.width
                                             }
                                             
-                                            let _alpha = _clip.pointee.color.white * _clip.pointee.opacity * (0.04 * Double(_p))
+                                            let _alpha = _clip.pointee * (0.04 * Double(_p))
                                             
                                             if _alpha > 0 {
                                                 
@@ -458,7 +458,7 @@ extension ImageContext {
                                     
                                     for _ in 0..<image.width * image.height {
                                         
-                                        let _alpha = _clip.pointee.color.white * _clip.pointee.opacity
+                                        let _alpha = _clip.pointee
                                         
                                         if winding(_stencil.pointee) && _alpha > 0 {
                                             
