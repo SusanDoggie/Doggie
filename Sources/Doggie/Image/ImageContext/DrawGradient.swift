@@ -85,7 +85,9 @@ extension ImageContext {
                                     var pixel = try shader(p)
                                     pixel.opacity *= _alpha
                                     
-                                    _destination.pointee.blend(source: pixel, blendMode: _blendMode, compositingMode: _compositingMode)
+                                    if pixel.opacity > 0 {
+                                        _destination.pointee.blend(source: pixel, blendMode: _blendMode, compositingMode: _compositingMode)
+                                    }
                                 }
                                 
                                 _destination += 1
@@ -170,15 +172,64 @@ extension ImageContext {
             return
         }
         
-        if endRadius < startRadius {
-            try self.radialShading(start: end, startRadius: endRadius, end: start, endRadius: startRadius, startSpread: endSpread, endSpread: startSpread) { try shading(1 - $0) }
-            return
-        }
-        
         let startColor = try shading(0)
         let endColor = try shading(1)
         
-        
+        try self._shading { point in
+            
+            let p0 = point - start
+            let p1 = start - end
+            let r0 = startRadius
+            let r1 = endRadius - startRadius
+            
+            let a = p1.x * p1.x + p1.y * p1.y - r1 * r1
+            let b = 2 * (p0.x * p1.x + p0.y * p1.y - r0 * r1)
+            let c = p0.x * p0.x + p0.y * p0.y - r0 * r0
+            
+            func _filter(_ t: Double) -> Bool {
+                return r0 + t * r1 >= 0 && (t >= 0 || startSpread != .none) && (t <= 1 || endSpread != .none)
+            }
+            
+            if let t = degree2roots(b / a, c / a).filter(_filter).max() {
+                
+                if 0...1 ~= t {
+                    
+                    return try shading(t)
+                    
+                } else if t > 1 {
+                    
+                    switch endSpread {
+                    case .none: return endColor.with(opacity: 0)
+                    case .pad: return endColor
+                    case .reflect:
+                        var _t = 0.0
+                        let s = modf(t, &_t)
+                        return try shading(Int(_t) & 1 == 0 ? s : 1 - s)
+                    case .repeat:
+                        var _t = 0.0
+                        let s = modf(t, &_t)
+                        return try shading(s)
+                    }
+                    
+                } else {
+                    
+                    switch startSpread {
+                    case .none: return startColor.with(opacity: 0)
+                    case .pad: return startColor
+                    case .reflect:
+                        var _t = 0.0
+                        let s = modf(t, &_t)
+                        return try shading(Int(_t) & 1 == 0 ? -s : 1 + s)
+                    case .repeat:
+                        var _t = 0.0
+                        let s = modf(t, &_t)
+                        return try shading(1 + s)
+                    }
+                }
+            }
+            
+            return ColorPixel()
+        }
     }
 }
 

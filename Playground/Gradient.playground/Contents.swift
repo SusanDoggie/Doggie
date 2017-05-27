@@ -15,3 +15,5 @@ image.withUnsafeBufferPointer {
         NSImage(cgImage: image, size: NSZeroSize)
     }
 }
+
+coregraphic(width: 500, height: 500)
