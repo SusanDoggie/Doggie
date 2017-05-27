@@ -23,24 +23,37 @@
 //  THE SOFTWARE.
 //
 
+@_fixed_layout
 public class ImageContext<Model : ColorModelProtocol> {
     
+    @_versioned
     var _image: Image<ColorPixel<Model>>
     
+    @_versioned
     var clip: [Double]
     
+    @_versioned
     var stencil: [Int] = []
     
+    @_versioned
     var _antialias: Bool = true
     
+    @_versioned
     var _resamplingAlgorithm: ResamplingAlgorithm = .default
     
+    @_versioned
     var _opacity: Double = 1
+    
+    @_versioned
     var _blendMode: ColorBlendMode = .default
+    
+    @_versioned
     var _compositingMode: ColorCompositingMode = .default
     
+    @_versioned
     var _transform: SDTransform = SDTransform.identity
     
+    @_versioned
     var next: ImageContext<Model>?
     
     public init<P : ColorPixelProtocol>(image: Image<P>) where P.Model == Model {
@@ -58,6 +71,7 @@ public class ImageContext<Model : ColorModelProtocol> {
 
 extension ImageContext {
     
+    @_inlineable
     public func withUnsafeMutableImageBufferPointer<R>(_ body: (inout UnsafeMutableBufferPointer<ColorPixel<Model>>) throws -> R) rethrows -> R {
         
         if let next = self.next {
@@ -67,6 +81,7 @@ extension ImageContext {
         }
     }
     
+    @_inlineable
     public func withUnsafeImageBufferPointer<R>(_ body: (UnsafeBufferPointer<ColorPixel<Model>>) throws -> R) rethrows -> R {
         
         if let next = self.next {
@@ -76,6 +91,7 @@ extension ImageContext {
         }
     }
     
+    @_inlineable
     public func withUnsafeClipBufferPointer<R>(_ body: (UnsafeBufferPointer<Double>) throws -> R) rethrows -> R {
         
         if let next = self.next {
@@ -88,6 +104,7 @@ extension ImageContext {
 
 extension ImageContext {
     
+    @_inlineable
     public var antialias: Bool {
         get {
             return next?.antialias ?? _antialias
@@ -101,6 +118,7 @@ extension ImageContext {
         }
     }
     
+    @_inlineable
     public var resamplingAlgorithm: ResamplingAlgorithm {
         get {
             return next?.resamplingAlgorithm ?? _resamplingAlgorithm
@@ -114,6 +132,7 @@ extension ImageContext {
         }
     }
     
+    @_inlineable
     public var opacity: Double {
         get {
             return next?.opacity ?? _opacity
@@ -127,6 +146,7 @@ extension ImageContext {
         }
     }
     
+    @_inlineable
     public var blendMode: ColorBlendMode {
         get {
             return next?.blendMode ?? _blendMode
@@ -140,6 +160,7 @@ extension ImageContext {
         }
     }
     
+    @_inlineable
     public var compositingMode: ColorCompositingMode {
         get {
             return next?.compositingMode ?? _compositingMode
@@ -153,6 +174,7 @@ extension ImageContext {
         }
     }
     
+    @_inlineable
     public var transform: SDTransform {
         get {
             return next?.transform ?? _transform
@@ -166,18 +188,22 @@ extension ImageContext {
         }
     }
     
+    @_inlineable
     public var colorSpace: ColorSpace<Model> {
         return _image.colorSpace
     }
     
+    @_inlineable
     public var width: Int {
         return _image.width
     }
     
+    @_inlineable
     public var height: Int {
         return _image.height
     }
     
+    @_inlineable
     public var image: Image<ColorPixel<Model>> {
         return _image
     }

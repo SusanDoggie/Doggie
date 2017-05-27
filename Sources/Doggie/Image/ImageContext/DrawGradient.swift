@@ -38,6 +38,7 @@ public struct GradientStop<Model : ColorModelProtocol> {
     public var offset: Double
     public var color: Color<Model>
     
+    @_inlineable
     public init(offset: Double, color: Color<Model>) {
         self.offset = offset
         self.color = color
@@ -46,6 +47,8 @@ public struct GradientStop<Model : ColorModelProtocol> {
 
 extension ImageContext {
     
+    @_versioned
+    @_inlineable
     func _shading(_ shader: (Point) throws -> ColorPixel<Model>) rethrows {
         
         if let next = self.next {
@@ -101,6 +104,7 @@ extension ImageContext {
 
 extension ImageContext {
     
+    @_inlineable
     public func axialShading(start: Point, end: Point, startSpread: GradientSpreadMode, endSpread: GradientSpreadMode, shading: (Double) throws -> ColorPixel<Model>) rethrows {
         
         if start.almostEqual(end) {
@@ -159,6 +163,7 @@ extension ImageContext {
 
 extension ImageContext {
     
+    @_inlineable
     public func radialShading(start: Point, startRadius: Double, end: Point, endRadius: Double, startSpread: GradientSpreadMode, endSpread: GradientSpreadMode, shading: (Double) throws -> ColorPixel<Model>) rethrows {
         
         if start.almostEqual(end) && startRadius.almostEqual(endRadius) {
@@ -179,6 +184,7 @@ extension ImageContext {
 
 extension ImageContext {
     
+    @_inlineable
     public func drawLinearGradient<C>(stops: [GradientStop<C>], start: Point, end: Point, startSpread: GradientSpreadMode, endSpread: GradientSpreadMode) {
         
         let stops = stops.sorted { $0.offset }.map { ($0.offset, ColorPixel($0.color.convert(to: colorSpace))) }
@@ -210,6 +216,7 @@ extension ImageContext {
 
 extension ImageContext {
     
+    @_inlineable
     public func drawRadialGradient<C>(stops: [GradientStop<C>], start: Point, startRadius: Double, end: Point, endRadius: Double, startSpread: GradientSpreadMode, endSpread: GradientSpreadMode) {
         
         let stops = stops.sorted { $0.offset }.map { ($0.offset, ColorPixel($0.color.convert(to: colorSpace))) }

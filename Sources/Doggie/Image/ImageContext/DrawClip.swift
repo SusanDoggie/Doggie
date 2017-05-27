@@ -25,6 +25,7 @@
 
 extension ImageContext {
     
+    @_inlineable
     public func drawClip(body: (ImageContext<GrayColorModel>) throws -> Void) rethrows {
         
         if let next = self.next {

@@ -25,6 +25,7 @@
 
 extension ImageContext {
     
+    @_inlineable
     public func draw<C>(image: Image<C>, transform: SDTransform) {
         
         if let next = self.next {

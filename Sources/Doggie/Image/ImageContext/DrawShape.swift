@@ -27,7 +27,9 @@ import Foundation
 
 extension ImageContext {
     
-    fileprivate func draw(shape: Shape, color: ColorPixel<Model>, winding: (Int) -> Bool) {
+    @_versioned
+    @_inlineable
+    func draw(shape: Shape, color: ColorPixel<Model>, winding: (Int) -> Bool) {
         
         if let next = self.next {
             next.draw(shape: shape, color: color, winding: winding)
@@ -164,6 +166,7 @@ extension ImageContext {
 
 extension ImageContext {
     
+    @_inlineable
     public func draw<C>(shape: Shape, color: Color<C>, winding: Shape.WindingRule) {
         
         switch winding {

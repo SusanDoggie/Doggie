@@ -25,6 +25,7 @@
 
 extension ImageContext {
     
+    @_inlineable
     public func beginTransparencyLayer() {
         
         if let next = self.next {
@@ -47,6 +48,7 @@ extension ImageContext {
 
 extension ImageContext {
     
+    @_inlineable
     public func endTransparencyLayer() {
         
         if let next = self.next {
