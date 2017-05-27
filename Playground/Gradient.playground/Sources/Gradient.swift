@@ -20,15 +20,10 @@ public func sampleImage(width: Int, height: Int) -> Image<ARGB32ColorPixel> {
     
     let context = ImageContext(width: width, height: height, colorSpace: CalibratedRGBColorSpace.sRGB)
     
-    context.transform = SDTransform.scale(5)
+    let from = GradientStop(offset: 0, color: Color(colorSpace: context.colorSpace, color: RGBColorModel(red: 1, green: 0, blue: 0)))
+    let to = GradientStop(offset: 1, color: Color(colorSpace: context.colorSpace, color: RGBColorModel(red: 0, green: 0, blue: 1)))
     
-    context.draw(shape: Shape.Ellipse(Rect(x: 10, y: 35, width: 55, height: 55)), color: Color(colorSpace: CalibratedRGBColorSpace.sRGB, color: RGBColorModel(red: 247/255, green: 217/255, blue: 12/255)), winding: .nonZero)
-    
-    context.draw(shape: Shape.Ellipse(Rect(x: 10, y: 35, width: 55, height: 55)).strokePath(width: 1, cap: .round, join: .round), color: Color(colorSpace: CalibratedRGBColorSpace.sRGB, color: RGBColorModel()), winding: .nonZero)
-    
-    context.draw(shape: Shape.Ellipse(Rect(x: 35, y: 10, width: 55, height: 55)), color: Color(colorSpace: CalibratedRGBColorSpace.sRGB, color: RGBColorModel(red: 234/255, green: 24/255, blue: 71/255)), winding: .nonZero)
-    
-    context.draw(shape: Shape.Ellipse(Rect(x: 35, y: 10, width: 55, height: 55)).strokePath(width: 1, cap: .round, join: .round), color: Color(colorSpace: CalibratedRGBColorSpace.sRGB, color: RGBColorModel()), winding: .nonZero)
+    context.drawLinearGradient(stops: [from, to], start: Point(x: 3 * (width >> 3), y: 3 * (height >> 3)), end: Point(x: 4 * (width >> 3), y: 4 * (height >> 3)), startSpread: .reflect, endSpread: .reflect)
     
     return Image(image: context.image)
 }

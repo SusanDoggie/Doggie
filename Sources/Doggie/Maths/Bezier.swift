@@ -391,10 +391,7 @@ extension Bezier where Element == Point {
         case let ._2(p0, p1):
             let a = p0 - point
             let b = p1 - p0
-            let x: Polynomial = [a.x, b.x]
-            let y: Polynomial = [a.y, b.y]
-            let dot = x * x + y * y
-            return dot.derivative.roots.sorted(by: { dot.eval($0) })
+            return Polynomial(b.x * a.x + b.y * a.y, b.x * b.x + b.y * b.y).roots
         case let ._3(p0, p1, p2):
             let a = p0 - point
             let b = 2 * (p1 - p0)

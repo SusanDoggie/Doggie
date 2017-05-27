@@ -99,8 +99,6 @@
 		0A06975C1E4D66A3005CF664 /* Filter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A06975A1E4D66A3005CF664 /* Filter.swift */; };
 		0A06975E1E4D6732005CF664 /* NSImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A06975D1E4D6732005CF664 /* NSImage.swift */; };
 		0A06975F1E4D6732005CF664 /* NSImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A06975D1E4D6732005CF664 /* NSImage.swift */; };
-		0A16C6D41ECDA8320041816B /* ImageContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A16C6D31ECDA8320041816B /* ImageContext.swift */; };
-		0A16C6D51ECDA8320041816B /* ImageContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A16C6D31ECDA8320041816B /* ImageContext.swift */; };
 		0A21070D1E5BEEBB00F1E00E /* PathCoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2107081E5BEEBB00F1E00E /* PathCoder.swift */; };
 		0A21070E1E5BEEBB00F1E00E /* PathCoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2107081E5BEEBB00F1E00E /* PathCoder.swift */; };
 		0A2107111E5BEEBB00F1E00E /* PathStroke.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A21070A1E5BEEBB00F1E00E /* PathStroke.swift */; };
@@ -111,6 +109,18 @@
 		0A266E541D6E95C100ABE6B7 /* SDMarkerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A266E521D6E95C100ABE6B7 /* SDMarkerTest.swift */; };
 		0A2A643E1E5C45EE000E21BB /* PDFParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2A643D1E5C45EE000E21BB /* PDFParser.swift */; };
 		0A2A643F1E5C45EE000E21BB /* PDFParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2A643D1E5C45EE000E21BB /* PDFParser.swift */; };
+		0A39A6B51ED9342C00804004 /* ImageContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A39A6B41ED9342C00804004 /* ImageContext.swift */; };
+		0A39A6B61ED9342C00804004 /* ImageContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A39A6B41ED9342C00804004 /* ImageContext.swift */; };
+		0A39A6B81ED9345100804004 /* DrawImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A39A6B71ED9345100804004 /* DrawImage.swift */; };
+		0A39A6B91ED9345100804004 /* DrawImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A39A6B71ED9345100804004 /* DrawImage.swift */; };
+		0A39A6BB1ED9347C00804004 /* DrawShape.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A39A6BA1ED9347C00804004 /* DrawShape.swift */; };
+		0A39A6BC1ED9347C00804004 /* DrawShape.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A39A6BA1ED9347C00804004 /* DrawShape.swift */; };
+		0A39A6BE1ED934B100804004 /* TransparencyLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A39A6BD1ED934B100804004 /* TransparencyLayer.swift */; };
+		0A39A6BF1ED934B100804004 /* TransparencyLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A39A6BD1ED934B100804004 /* TransparencyLayer.swift */; };
+		0A39A6C11ED934D300804004 /* DrawClip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A39A6C01ED934D300804004 /* DrawClip.swift */; };
+		0A39A6C21ED934D300804004 /* DrawClip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A39A6C01ED934D300804004 /* DrawClip.swift */; };
+		0A39A6C41ED937C700804004 /* DrawGradient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A39A6C31ED937C700804004 /* DrawGradient.swift */; };
+		0A39A6C51ED937C700804004 /* DrawGradient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A39A6C31ED937C700804004 /* DrawGradient.swift */; };
 		0A52E2D21E6012140065EED6 /* PDFASCII85Decode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A52E2CE1E6012140065EED6 /* PDFASCII85Decode.swift */; };
 		0A52E2D31E6012140065EED6 /* PDFASCII85Decode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A52E2CE1E6012140065EED6 /* PDFASCII85Decode.swift */; };
 		0A52E2D41E6012140065EED6 /* PDFASCIIHexDecode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A52E2CF1E6012140065EED6 /* PDFASCIIHexDecode.swift */; };
@@ -255,12 +265,17 @@
 		0A0697571E4D6659005CF664 /* Graphic.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Graphic.swift; sourceTree = "<group>"; };
 		0A06975A1E4D66A3005CF664 /* Filter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Filter.swift; sourceTree = "<group>"; };
 		0A06975D1E4D6732005CF664 /* NSImage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSImage.swift; sourceTree = "<group>"; };
-		0A16C6D31ECDA8320041816B /* ImageContext.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageContext.swift; sourceTree = "<group>"; };
 		0A2107081E5BEEBB00F1E00E /* PathCoder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PathCoder.swift; sourceTree = "<group>"; };
 		0A21070A1E5BEEBB00F1E00E /* PathStroke.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PathStroke.swift; sourceTree = "<group>"; };
 		0A21070C1E5BEEBB00F1E00E /* Shape.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Shape.swift; sourceTree = "<group>"; };
 		0A266E521D6E95C100ABE6B7 /* SDMarkerTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SDMarkerTest.swift; sourceTree = "<group>"; };
 		0A2A643D1E5C45EE000E21BB /* PDFParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PDFParser.swift; sourceTree = "<group>"; };
+		0A39A6B41ED9342C00804004 /* ImageContext.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageContext.swift; sourceTree = "<group>"; };
+		0A39A6B71ED9345100804004 /* DrawImage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DrawImage.swift; sourceTree = "<group>"; };
+		0A39A6BA1ED9347C00804004 /* DrawShape.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DrawShape.swift; sourceTree = "<group>"; };
+		0A39A6BD1ED934B100804004 /* TransparencyLayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransparencyLayer.swift; sourceTree = "<group>"; };
+		0A39A6C01ED934D300804004 /* DrawClip.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DrawClip.swift; sourceTree = "<group>"; };
+		0A39A6C31ED937C700804004 /* DrawGradient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DrawGradient.swift; sourceTree = "<group>"; };
 		0A52E2CE1E6012140065EED6 /* PDFASCII85Decode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PDFASCII85Decode.swift; sourceTree = "<group>"; };
 		0A52E2CF1E6012140065EED6 /* PDFASCIIHexDecode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PDFASCIIHexDecode.swift; sourceTree = "<group>"; };
 		0A52E2D01E6012140065EED6 /* PDFDocEncoding.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PDFDocEncoding.swift; sourceTree = "<group>"; };
@@ -379,7 +394,7 @@
 				08458AD11E2E627600D01813 /* ColorPixel.swift */,
 				08B68A2F1ED07A2400F8D423 /* ColorSpace */,
 				08458AD31E2E627600D01813 /* Image.swift */,
-				0A16C6D31ECDA8320041816B /* ImageContext.swift */,
+				0A39A6B31ED9342C00804004 /* ImageContext */,
 			);
 			path = Image;
 			sourceTree = "<group>";
@@ -578,6 +593,19 @@
 				0AAC4DF31E977906008DCADA /* ShapeRasterize.swift */,
 			);
 			path = Shape;
+			sourceTree = "<group>";
+		};
+		0A39A6B31ED9342C00804004 /* ImageContext */ = {
+			isa = PBXGroup;
+			children = (
+				0A39A6B41ED9342C00804004 /* ImageContext.swift */,
+				0A39A6C01ED934D300804004 /* DrawClip.swift */,
+				0A39A6BD1ED934B100804004 /* TransparencyLayer.swift */,
+				0A39A6B71ED9345100804004 /* DrawImage.swift */,
+				0A39A6BA1ED9347C00804004 /* DrawShape.swift */,
+				0A39A6C31ED937C700804004 /* DrawGradient.swift */,
+			);
+			path = ImageContext;
 			sourceTree = "<group>";
 		};
 		0A52E2CD1E6012140065EED6 /* PDFEncoding */ = {
@@ -839,10 +867,11 @@
 				0A52E2DE1E60266A0065EED6 /* PDFLZWDecode.swift in Sources */,
 				0A78E1F81E98B20A00BD91AB /* Geometry.swift in Sources */,
 				0A52E2D21E6012140065EED6 /* PDFASCII85Decode.swift in Sources */,
-				0A16C6D41ECDA8320041816B /* ImageContext.swift in Sources */,
 				08458B3E1E2E627600D01813 /* Rect.swift in Sources */,
 				0A53E4781E35AEF80060FB83 /* Parallel.swift in Sources */,
+				0A39A6B51ED9342C00804004 /* ImageContext.swift in Sources */,
 				0A7D3ADB1ECAD5890030DC26 /* ColorBlend.swift in Sources */,
+				0A39A6B81ED9345100804004 /* DrawImage.swift in Sources */,
 				0A52E2D61E6012140065EED6 /* PDFDocEncoding.swift in Sources */,
 				0A52E2DB1E6012530065EED6 /* PDFRunLengthDecode.swift in Sources */,
 				08B68A3D1ED07AA500F8D423 /* NormalizedColorSpace.swift in Sources */,
@@ -851,6 +880,7 @@
 				0A53E45E1E35AEF80060FB83 /* CollectionExtension.swift in Sources */,
 				0A9AA8401E543748007A2B92 /* PDFDocument.swift in Sources */,
 				08458B301E2E627600D01813 /* Bezier.swift in Sources */,
+				0A39A6BE1ED934B100804004 /* TransparencyLayer.swift in Sources */,
 				08458B421E2E627600D01813 /* Vector.swift in Sources */,
 				0A2107111E5BEEBB00F1E00E /* PathStroke.swift in Sources */,
 				08458B361E2E627600D01813 /* Maths.swift in Sources */,
@@ -884,9 +914,11 @@
 				08458B5E1E2E627600D01813 /* Lock.swift in Sources */,
 				08458B341E2E627600D01813 /* Ellipse.swift in Sources */,
 				08B68A311ED07A2400F8D423 /* ColorSpace.swift in Sources */,
+				0A39A6C41ED937C700804004 /* DrawGradient.swift in Sources */,
 				0A56E9101E35F02E00D93786 /* RectCollection.swift in Sources */,
 				0A52E2D81E6012140065EED6 /* PDFFilter.swift in Sources */,
 				08458AFE1E2E627600D01813 /* SafeFunction.swift in Sources */,
+				0A39A6BB1ED9347C00804004 /* DrawShape.swift in Sources */,
 				0A92C7D31E56DA960090EBFC /* DGParser.swift in Sources */,
 				08B68A3A1ED07A8300F8D423 /* LinearToneColorSpace.swift in Sources */,
 				08458AF41E2E627600D01813 /* CircularConvolve.swift in Sources */,
@@ -895,6 +927,7 @@
 				08458AF81E2E627600D01813 /* CooleyTukey.swift in Sources */,
 				08458AF01E2E627600D01813 /* AccelerateWrapper.swift in Sources */,
 				0A0697581E4D6659005CF664 /* Graphic.swift in Sources */,
+				0A39A6C11ED934D300804004 /* DrawClip.swift in Sources */,
 				0A7C97481E558E0C00AB4803 /* DGDocument.swift in Sources */,
 				08458B381E2E627600D01813 /* Matrix.swift in Sources */,
 				0A53E47E1E35AEF80060FB83 /* String.swift in Sources */,
@@ -936,10 +969,11 @@
 				0A52E2DF1E60266A0065EED6 /* PDFLZWDecode.swift in Sources */,
 				0A78E1F91E98B20A00BD91AB /* Geometry.swift in Sources */,
 				0A52E2D31E6012140065EED6 /* PDFASCII85Decode.swift in Sources */,
-				0A16C6D51ECDA8320041816B /* ImageContext.swift in Sources */,
 				08458B3F1E2E627600D01813 /* Rect.swift in Sources */,
 				0A53E4791E35AEF80060FB83 /* Parallel.swift in Sources */,
+				0A39A6B61ED9342C00804004 /* ImageContext.swift in Sources */,
 				0A7D3ADC1ECAD5890030DC26 /* ColorBlend.swift in Sources */,
+				0A39A6B91ED9345100804004 /* DrawImage.swift in Sources */,
 				0A52E2D71E6012140065EED6 /* PDFDocEncoding.swift in Sources */,
 				0A52E2DC1E6012530065EED6 /* PDFRunLengthDecode.swift in Sources */,
 				08B68A3E1ED07AA500F8D423 /* NormalizedColorSpace.swift in Sources */,
@@ -948,6 +982,7 @@
 				0A53E45F1E35AEF80060FB83 /* CollectionExtension.swift in Sources */,
 				0A9AA8411E543748007A2B92 /* PDFDocument.swift in Sources */,
 				08458B311E2E627600D01813 /* Bezier.swift in Sources */,
+				0A39A6BF1ED934B100804004 /* TransparencyLayer.swift in Sources */,
 				08458B431E2E627600D01813 /* Vector.swift in Sources */,
 				0A2107121E5BEEBB00F1E00E /* PathStroke.swift in Sources */,
 				08458B371E2E627600D01813 /* Maths.swift in Sources */,
@@ -981,9 +1016,11 @@
 				08458B5F1E2E627600D01813 /* Lock.swift in Sources */,
 				08458B351E2E627600D01813 /* Ellipse.swift in Sources */,
 				08B68A321ED07A2400F8D423 /* ColorSpace.swift in Sources */,
+				0A39A6C51ED937C700804004 /* DrawGradient.swift in Sources */,
 				0A56E9111E35F02E00D93786 /* RectCollection.swift in Sources */,
 				0A52E2D91E6012140065EED6 /* PDFFilter.swift in Sources */,
 				08458AFF1E2E627600D01813 /* SafeFunction.swift in Sources */,
+				0A39A6BC1ED9347C00804004 /* DrawShape.swift in Sources */,
 				0A92C7D41E56DA960090EBFC /* DGParser.swift in Sources */,
 				08B68A3B1ED07A8300F8D423 /* LinearToneColorSpace.swift in Sources */,
 				08458AF51E2E627600D01813 /* CircularConvolve.swift in Sources */,
@@ -992,6 +1029,7 @@
 				08458AF91E2E627600D01813 /* CooleyTukey.swift in Sources */,
 				08458AF11E2E627600D01813 /* AccelerateWrapper.swift in Sources */,
 				0A0697591E4D6659005CF664 /* Graphic.swift in Sources */,
+				0A39A6C21ED934D300804004 /* DrawClip.swift in Sources */,
 				0A7C97491E558E0C00AB4803 /* DGDocument.swift in Sources */,
 				08458B391E2E627600D01813 /* Matrix.swift in Sources */,
 				0A53E47F1E35AEF80060FB83 /* String.swift in Sources */,

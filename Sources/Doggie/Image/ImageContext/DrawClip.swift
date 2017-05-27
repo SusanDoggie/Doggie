@@ -1,5 +1,5 @@
 //
-//  PlaygroundQuickLook.swift
+//  DrawClip.swift
 //
 //  The MIT License
 //  Copyright (c) 2015 - 2017 Susan Cheng. All rights reserved.
@@ -23,12 +23,26 @@
 //  THE SOFTWARE.
 //
 
-import AppKit
-import Doggie
-
-extension Shape : CustomPlaygroundQuickLookable {
+extension ImageContext {
     
-    public var customPlaygroundQuickLook: PlaygroundQuickLook {
-        return .bezierPath(NSBezierPath(self))
+    public func drawClip(body: (ImageContext<GrayColorModel>) throws -> Void) rethrows {
+        
+        if let next = self.next {
+            try next.drawClip(body: body)
+            return
+        }
+        
+        if _image.width == 0 || _image.height == 0 {
+            return
+        }
+        
+        let _clip = ImageContext<GrayColorModel>(width: _image.width, height: _image.height, colorSpace: CalibratedGrayColorSpace(colorSpace.cieXYZ))
+        _clip._antialias = self._antialias
+        _clip._transform = self._transform
+        _clip._resamplingAlgorithm = self._resamplingAlgorithm
+        
+        try body(_clip)
+        
+        self.clip = _clip.image.pixel.map { $0.color.white * $0.opacity }
     }
 }

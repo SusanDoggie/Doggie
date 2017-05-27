@@ -5,37 +5,34 @@
       location = "group:Playground"
       name = "Playground">
       <FileRef
-         location = "group:Benchmark.playground">
-      </FileRef>
-      <FileRef
-         location = "group:Color.playground">
-      </FileRef>
-      <FileRef
          location = "group:Doggie.playground">
       </FileRef>
       <FileRef
-         location = "group:Graph.playground">
-      </FileRef>
-      <FileRef
-         location = "group:Image.playground">
-      </FileRef>
-      <FileRef
-         location = "group:Mesh Warping.playground">
+         location = "group:Benchmark.playground">
       </FileRef>
       <FileRef
          location = "group:Polynomial.playground">
       </FileRef>
       <FileRef
-         location = "group:Rasterize.playground">
-      </FileRef>
-      <FileRef
-         location = "group:ImageContext.playground">
+         location = "group:Mesh Warping.playground">
       </FileRef>
       <FileRef
          location = "group:ShapeTweening.playground">
       </FileRef>
       <FileRef
          location = "group:Stroke.playground">
+      </FileRef>
+      <FileRef
+         location = "group:Color.playground">
+      </FileRef>
+      <FileRef
+         location = "group:/Users/CloudDesign/Doggie/Playground/Resampling.playground">
+      </FileRef>
+      <FileRef
+         location = "group:ImageContext.playground">
+      </FileRef>
+      <FileRef
+         location = "group:Gradient.playground">
       </FileRef>
    </Group>
    <FileRef
