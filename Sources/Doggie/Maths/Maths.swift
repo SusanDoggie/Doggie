@@ -49,12 +49,15 @@ public func FibonacciList<T: UnsignedInteger>(_ n: T) -> LazyMapSequence<LazySca
 
 // MARK: Prime
 
+@_inlineable
 public func isPrime(_ n: UInt8) -> Bool {
     return isPrime(UInt32(n))
 }
+@_inlineable
 public func isPrime(_ n: UInt16) -> Bool {
     return isPrime(UInt32(n))
 }
+@_inlineable
 public func isPrime(_ n: UInt32) -> Bool {
     let list: [UInt32] = n < 2047 ? [2] : n < 1373653 ? [2, 3] : [2, 7, 61]
     let _n = n - 1
@@ -71,6 +74,7 @@ public func isPrime(_ n: UInt32) -> Bool {
     }
     return true
 }
+@_inlineable
 public func isPrime(_ n: UInt64) -> Bool {
     let list: [UInt64] = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37]
     let _n = n - 1
@@ -87,6 +91,7 @@ public func isPrime(_ n: UInt64) -> Bool {
     }
     return true
 }
+@_inlineable
 public func isPrime(_ n: UInt) -> Bool {
     let list: [UInt] = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37]
     let _n = n - 1
@@ -106,6 +111,7 @@ public func isPrime(_ n: UInt) -> Bool {
 
 // MARK: Polynomial
 
+@_inlineable
 public func degree2roots(_ b: Double, _ c: Double) -> [Double] {
     if b.almostZero() {
         if c < 0 {
@@ -128,6 +134,7 @@ public func degree2roots(_ b: Double, _ c: Double) -> [Double] {
     return []
 }
 
+@_inlineable
 public func degree3decompose(_ b: Double, _ c: Double, _ d: Double) -> (Double, (Double, Double)) {
     if d.almostZero() {
         return (0, (b, c))
@@ -162,6 +169,7 @@ public func degree3decompose(_ b: Double, _ c: Double, _ d: Double) -> (Double, 
     return ((-b - c3) / 3, ((2 * b - c3) / 3, (b2 - b * c3 + c3 * c3 - 3 * c1 * c2) / 9))
 }
 
+@_inlineable
 public func degree4decompose(_ b: Double, _ c: Double, _ d: Double, _ e: Double) -> ((Double, Double), (Double, Double)) {
     if e.almostZero() {
         let z = degree3decompose(b, c, d)
@@ -207,6 +215,7 @@ public func degree4decompose(_ b: Double, _ c: Double, _ d: Double, _ e: Double)
     return ((2 * k1, k1 * k1 - 0.25 * t1), (2 * k2, k2 * k2 - 0.25 * t2))
 }
 
+@_inlineable
 public func degree3roots(_ b: Double, _ c: Double, _ d: Double) -> [Double] {
     if d.almostZero() {
         let z = degree2roots(b, c)
@@ -237,6 +246,7 @@ public func degree3roots(_ b: Double, _ c: Double, _ d: Double) -> [Double] {
     return Array(Set(_d2))
 }
 
+@_inlineable
 public func degree4roots(_ b: Double, _ c: Double, _ d: Double, _ e: Double) -> [Double] {
     if e.almostZero() {
         let z = degree3roots(b, c, d)

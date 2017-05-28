@@ -158,6 +158,7 @@ extension Polynomial {
 
 extension Polynomial {
     
+    @_inlineable
     public var roots : [Double] {
         
         if degree == 0 {
@@ -180,7 +181,8 @@ extension Polynomial {
     }
 }
 
-private func _root(_ p: Polynomial) -> [Double] {
+@_versioned
+func _root(_ p: Polynomial) -> [Double] {
     
     var extrema = p.derivative.roots.sorted()
     
@@ -358,10 +360,12 @@ public func %= (lhs: inout Polynomial, rhs: Polynomial) {
     lhs = lhs % rhs
 }
 
+@_inlineable
 public prefix func + (p: Polynomial) -> Polynomial {
     return p
 }
 
+@_inlineable
 public prefix func - (p: Polynomial) -> Polynomial {
     return Polynomial(p.coeffs.map { -$0 })
 }

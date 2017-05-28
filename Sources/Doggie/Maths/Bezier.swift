@@ -50,42 +50,21 @@ extension Vector : BezierElementProtocol {
     
 }
 
-@_versioned
-@_fixed_layout
-enum BezierBase<Element : BezierElementProtocol> {
-    case _2(Element, Element)
-    case _3(Element, Element, Element)
-    case _4(Element, Element, Element, Element)
-    case many([Element])
-}
-
 @_fixed_layout
 public struct Bezier<Element : BezierElementProtocol> {
     
     @_versioned
-    var base: BezierBase<Element>
+    var points: [Element]
     
-    public init(_ p0: Element, _ p1: Element) {
-        self.base = ._2(p0, p1)
+    @_inlineable
+    public init(_ p: Element ... ) {
+        self.init(p)
     }
-    public init(_ p0: Element, _ p1: Element, _ p2: Element) {
-        self.base = ._3(p0, p1, p2)
-    }
-    public init(_ p0: Element, _ p1: Element, _ p2: Element, _ p3: Element) {
-        self.base = ._4(p0, p1, p2, p3)
-    }
-    public init(_ p0: Element, _ p1: Element, _ p2: Element, _ p3: Element, _ p4: Element, _ p: Element ... ) {
-        self.base = .many([p0, p1, p2, p3, p4] + p)
-    }
+    
+    @_inlineable
     public init<S : Sequence>(_ s: S) where S.Iterator.Element == Element {
-        let s = Array(s)
-        switch s.count {
-        case 0, 1: fatalError("count of points less than 2.")
-        case 2: self.base = ._2(s[0], s[1])
-        case 3: self.base = ._3(s[0], s[1], s[2])
-        case 4: self.base = ._4(s[0], s[1], s[2], s[3])
-        default: self.base = .many(s)
-        }
+        self.points = Array(s)
+        precondition(points.count > 1, "count of points less than 2.")
     }
 }
 
@@ -115,103 +94,28 @@ extension Bezier : RandomAccessCollection, MutableCollection {
     
     @_inlineable
     public var degree: Int {
-        switch base {
-        case ._2: return 1
-        case ._3: return 2
-        case ._4: return 3
-        case let .many(p): return p.count - 1
-        }
+        return points.count - 1
     }
     @_inlineable
     public var count: Int {
-        switch base {
-        case ._2: return 2
-        case ._3: return 3
-        case ._4: return 4
-        case let .many(p): return p.count
-        }
+        return points.count
     }
     @_inlineable
     public var startIndex: Int {
-        return 0
+        return points.startIndex
     }
     @_inlineable
     public var endIndex: Int {
-        switch base {
-        case ._2: return 2
-        case ._3: return 3
-        case ._4: return 4
-        case let .many(p): return p.count
-        }
+        return points.endIndex
     }
-    
-    public subscript(position: Int) -> Element {
-        get {
-            switch base {
-            case let ._2(p0, p1):
-                switch position {
-                case 0: return p0
-                case 1: return p1
-                default: fatalError("out of index.")
-                }
-            case let ._3(p0, p1, p2):
-                switch position {
-                case 0: return p0
-                case 1: return p1
-                case 2: return p2
-                default: fatalError("out of index.")
-                }
-            case let ._4(p0, p1, p2, p3):
-                switch position {
-                case 0: return p0
-                case 1: return p1
-                case 2: return p2
-                case 3: return p3
-                default: fatalError("out of index.")
-                }
-            case let .many(p): return p[position]
-            }
-        }
-        set {
-            switch base {
-            case let ._2(p0, p1):
-                switch position {
-                case 0: base = ._2(newValue, p1)
-                case 1: base = ._2(p0, newValue)
-                default: fatalError("out of index.")
-                }
-            case let ._3(p0, p1, p2):
-                switch position {
-                case 0: base = ._3(newValue, p1, p2)
-                case 1: base = ._3(p0, newValue, p2)
-                case 2: base = ._3(p0, p1, newValue)
-                default: fatalError("out of index.")
-                }
-            case let ._4(p0, p1, p2, p3):
-                switch position {
-                case 0: base = ._4(newValue, p1, p2, p3)
-                case 1: base = ._4(p0, newValue, p2, p3)
-                case 2: base = ._4(p0, p1, newValue, p3)
-                case 3: base = ._4(p0, p1, p2, newValue)
-                default: fatalError("out of index.")
-                }
-            case var .many(p):
-                p[position] = newValue
-                base = .many(p)
-            }
-        }
-    }
-}
-
-extension Bezier {
     
     @_inlineable
-    public var points: [Element] {
-        switch base {
-        case let ._2(p0, p1): return [p0, p1]
-        case let ._3(p0, p1, p2): return [p0, p1, p2]
-        case let ._4(p0, p1, p2, p3): return [p0, p1, p2, p3]
-        case let .many(p): return p
+    public subscript(position: Int) -> Element {
+        get {
+            return points[position]
+        }
+        set {
+            points[position] = newValue
         }
     }
 }
@@ -220,15 +124,25 @@ extension Bezier {
     
     @_inlineable
     public func eval(_ t: Double) -> Element {
-        switch base {
-        case let ._2(p0, p1): return p0 + t * (p1 - p0)
-        case let ._3(p0, p1, p2):
+        switch points.count {
+        case 2:
+            let p0 = points[0]
+            let p1 = points[1]
+            return p0 + t * (p1 - p0)
+        case 3:
+            let p0 = points[0]
+            let p1 = points[1]
+            let p2 = points[2]
             let _t = 1 - t
             let a = _t * _t * p0
             let b = 2 * _t * t * p1
             let c = t * t * p2
             return a + b + c
-        case let ._4(p0, p1, p2, p3):
+        case 4:
+            let p0 = points[0]
+            let p1 = points[1]
+            let p2 = points[2]
+            let p3 = points[3]
             let t2 = t * t
             let _t = 1 - t
             let _t2 = _t * _t
@@ -237,7 +151,7 @@ extension Bezier {
             let c = 3 * _t * t2 * p2
             let d = t * t2 * p3
             return a + b + c + d
-        case let .many(points):
+        default:
             var result: Element?
             let _n = points.count - 1
             for (idx, k) in CombinationList(UInt(_n)).enumerated() {
@@ -258,23 +172,32 @@ extension Bezier where Element == Double {
     
     @_inlineable
     public var polynomial: Polynomial {
-        switch base {
-        case let ._2(p0, p1):
+        switch points.count {
+        case 2:
+            let p0 = points[0]
+            let p1 = points[1]
             let a = p0
             let b = p1 - p0
             return [a, b]
-        case let ._3(p0, p1, p2):
+        case 3:
+            let p0 = points[0]
+            let p1 = points[1]
+            let p2 = points[2]
             let a = p0
             let b = 2 * (p1 - p0)
             let c = p0 + p2 - 2 * p1
             return [a, b, c]
-        case let ._4(p0, p1, p2, p3):
+        case 4:
+            let p0 = points[0]
+            let p1 = points[1]
+            let p2 = points[2]
+            let p3 = points[3]
             let a = p0
             let b = 3 * (p1 - p0)
             let c = 3 * (p2 + p0) - 6 * p1
             let d = p3 - p0 + 3 * (p1 - p2)
             return [a, b, c, d]
-        case let .many(points):
+        default:
             var result = PermutationList(UInt(points.count - 1)).map(Double.init) as Array
             for i in result.indices {
                 var sum = 0.0
@@ -387,12 +310,17 @@ extension Bezier where Element == Point {
     
     @_inlineable
     public func closest(_ point: Point) -> [Double] {
-        switch base {
-        case let ._2(p0, p1):
+        switch points.count {
+        case 2:
+            let p0 = points[0]
+            let p1 = points[1]
             let a = p0 - point
             let b = p1 - p0
             return Polynomial(b.x * a.x + b.y * a.y, b.x * b.x + b.y * b.y).roots
-        case let ._3(p0, p1, p2):
+        case 3:
+            let p0 = points[0]
+            let p1 = points[1]
+            let p2 = points[2]
             let a = p0 - point
             let b = 2 * (p1 - p0)
             let c = p0 + p2 - 2 * p1
@@ -400,7 +328,11 @@ extension Bezier where Element == Point {
             let y: Polynomial = [a.y, b.y, c.y]
             let dot = x * x + y * y
             return dot.derivative.roots.sorted(by: { dot.eval($0) })
-        case let ._4(p0, p1, p2, p3):
+        case 4:
+            let p0 = points[0]
+            let p1 = points[1]
+            let p2 = points[2]
+            let p3 = points[3]
             let a = p0 - point
             let b = 3 * (p1 - p0)
             let c = 3 * (p2 + p0) - 6 * p1
@@ -409,7 +341,7 @@ extension Bezier where Element == Point {
             let y: Polynomial = [a.y, b.y, c.y, d.y]
             let dot = x * x + y * y
             return dot.derivative.roots.sorted(by: { dot.eval($0) })
-        case let .many(points):
+        default:
             let x = Bezier<Double>(points.map { $0.x }).polynomial - point.x
             let y = Bezier<Double>(points.map { $0.y }).polynomial - point.y
             let dot = x * x + y * y
@@ -422,9 +354,15 @@ extension Bezier where Element == Point {
     
     @_inlineable
     public var area: Double {
-        switch base {
-        case let ._2(p0, p1): return 0.5 * (p0.x * p1.y - p0.y * p1.x)
-        case let ._3(p0, p1, p2):
+        switch points.count {
+        case 2:
+            let p0 = points[0]
+            let p1 = points[1]
+            return 0.5 * (p0.x * p1.y - p0.y * p1.x)
+        case 3:
+            let p0 = points[0]
+            let p1 = points[1]
+            let p2 = points[2]
             let a = p0.x - 2 * p1.x + p2.x
             let b = 2 * (p1.x - p0.x)
             
@@ -432,7 +370,11 @@ extension Bezier where Element == Point {
             let d = 2 * (p1.y - p0.y)
             
             return 0.5 * (p0.x * p2.y - p2.x * p0.y) + (b * c - a * d) / 6
-        case let ._4(p0, p1, p2, p3):
+        case 4:
+            let p0 = points[0]
+            let p1 = points[1]
+            let p2 = points[2]
+            let p3 = points[3]
             let a = p3.x - p0.x + 3 * (p1.x - p2.x)
             let b = 3 * (p2.x + p0.x) - 6 * p1.x
             let c = 3 * (p1.x - p0.x)
@@ -442,7 +384,7 @@ extension Bezier where Element == Point {
             let f = 3 * (p1.y - p0.y)
             
             return 0.5 * (p0.x * p3.y - p3.x * p0.y) + 0.1 * (b * d - a * e) + 0.25 * (c * d - a * f) + (c * e - b * f) / 6
-        case let .many(points):
+        default:
             let x = Bezier<Double>(points.map { $0.x }).polynomial
             let y = Bezier<Double>(points.map { $0.y }).polynomial
             let t = x * y.derivative - x.derivative * y
@@ -455,9 +397,13 @@ extension Bezier where Element == Point {
     
     @_inlineable
     public var inflection: [Double] {
-        switch base {
-        case ._2, ._3: return []
-        case let ._4(p0, p1, p2, p3):
+        switch points.count {
+        case 2, 3: return []
+        case 4:
+            let p0 = points[0]
+            let p1 = points[1]
+            let p2 = points[2]
+            let p3 = points[3]
             let p = (p3 - p0).phase
             let _p1 = (p1 - p0) * SDTransform.rotate(-p)
             let _p2 = (p2 - p0) * SDTransform.rotate(-p)
@@ -473,7 +419,7 @@ extension Bezier where Element == Point {
                 return y.almostZero() ? [] : [-z / y]
             }
             return degree2roots(y / x, z / x)
-        case let .many(points):
+        default:
             let x = Bezier<Double>(points.map { $0.x }).polynomial.derivative
             let y = Bezier<Double>(points.map { $0.y }).polynomial.derivative
             return (x * y.derivative - y * x.derivative).roots
@@ -485,15 +431,22 @@ extension Bezier where Element == Double {
     
     @_inlineable
     public var stationary: [Double] {
-        switch base {
-        case ._2: return []
-        case let ._3(p0, p1, p2):
+        switch points.count {
+        case 2: return []
+        case 3:
+            let p0 = points[0]
+            let p1 = points[1]
+            let p2 = points[2]
             let d = p0 + p2 - 2 * p1
             if d.almostZero() {
                 return []
             }
             return [(p0 - p1) / d]
-        case let ._4(p0, p1, p2, p3):
+        case 4:
+            let p0 = points[0]
+            let p1 = points[1]
+            let p2 = points[2]
+            let p3 = points[3]
             let _a = 3 * (p3 - p0) + 9 * (p1 - p2)
             let _b = 6 * (p2 + p0) - 12 * p1
             let _c = 3 * (p1 - p0)
