@@ -186,11 +186,23 @@ extension ImageContext {
             let b = 2 * (p0.x * p1.x + p0.y * p1.y - r0 * r1)
             let c = p0.x * p0.x + p0.y * p0.y - r0 * r0
             
+            let t: [Double]
+            
+            if a.almostZero() {
+                if b.almostZero() {
+                    t = []
+                } else {
+                    t = [-c / b]
+                }
+            } else {
+                t = degree2roots(b / a, c / a)
+            }
+            
             func _filter(_ t: Double) -> Bool {
                 return r0 + t * r1 >= 0 && (t >= 0 || startSpread != .none) && (t <= 1 || endSpread != .none)
             }
             
-            if let t = degree2roots(b / a, c / a).filter(_filter).max() {
+            if let t = t.filter(_filter).max() {
                 
                 if 0...1 ~= t {
                     
