@@ -986,142 +986,135 @@ public func BezierTweening(start: [Point], end: [Point], _ t: Double) -> [Point]
     return m.points.map { $0 * transform3 }
 }
 
-// MARK: Mesh Warping
+// MARK: Cubic Bezier Patch
 
-public func CoonsPatch(_ m00: Point, _ m01: Point, _ m02: Point, _ m03: Point,
-                       _ m10: Point, _ m13: Point, _ m20: Point, _ m23: Point,
-                       _ m30: Point, _ m31: Point, _ m32: Point, _ m33: Point,
-                       _ p: Point ... ) -> [[Point]] {
+public struct CubicBezierPatch {
     
-    let u = Bezier(p.map { $0.x }).polynomial
-    let v = Bezier(p.map { $0.y }).polynomial
-    let u2 = u * u
-    let v2 = v * v
-    let u3 = u2 * u
-    let v3 = v2 * v
+    public var m00: Point
+    public var m01: Point
+    public var m02: Point
+    public var m03: Point
+    public var m10: Point
+    public var m11: Point
+    public var m12: Point
+    public var m13: Point
+    public var m20: Point
+    public var m21: Point
+    public var m22: Point
+    public var m23: Point
+    public var m30: Point
+    public var m31: Point
+    public var m32: Point
+    public var m33: Point
     
-    let _u = 1 - u
-    let _v = 1 - v
-    let _u2 = _u * _u
-    let _v2 = _v * _v
-    let _u3 = _u2 * _u
-    let _v3 = _v2 * _v
-    
-    let u_u2 = 3 * _u2 * u
-    let u2_u = 3 * _u * u2
-    let v_v2 = 3 * _v2 * v
-    let v2_v = 3 * _v * v2
-    
-    let bx = (m00.x * _u + m03.x * u) * _v + (m30.x * _u + m33.x * u) * v
-    let by = (m00.y * _u + m03.y * u) * _v + (m30.y * _u + m33.y * u) * v
-    
-    let c0x = _u3 * m00.x + u_u2 * m01.x + u2_u * m02.x + u3 * m03.x
-    let c0y = _u3 * m00.y + u_u2 * m01.y + u2_u * m02.y + u3 * m03.y
-    let c1x = _u3 * m30.x + u_u2 * m31.x + u2_u * m32.x + u3 * m33.x
-    let c1y = _u3 * m30.y + u_u2 * m31.y + u2_u * m32.y + u3 * m33.y
-    let c2x = _v3 * m00.x + v_v2 * m10.x + v2_v * m20.x + v3 * m30.x
-    let c2y = _v3 * m00.y + v_v2 * m10.y + v2_v * m20.y + v3 * m30.y
-    let c3x = _v3 * m03.x + v_v2 * m13.x + v2_v * m23.x + v3 * m33.x
-    let c3y = _v3 * m03.y + v_v2 * m13.y + v2_v * m23.y + v3 * m33.y
-    
-    let d0x = _v * c0x + v * c1x
-    let d0y = _v * c0y + v * c1y
-    let d1x = _u * c2x + u * c3x
-    let d1y = _u * c2y + u * c3y
-    
-    var _x = d0x + d1x - bx
-    var _y = d0y + d1y - by
-    
-    while _x.last?.almostZero() == true {
-        _x.removeLast()
-    }
-    while _y.last?.almostZero() == true {
-        _y.removeLast()
+    public init(coonsPatch m00: Point, _ m01: Point, _ m02: Point, _ m03: Point,
+                _ m10: Point, _ m13: Point, _ m20: Point, _ m23: Point,
+                _ m30: Point, _ m31: Point, _ m32: Point, _ m33: Point) {
+        self.m00 = m00
+        self.m01 = m01
+        self.m02 = m02
+        self.m03 = m03
+        self.m10 = m10
+        self.m11 = (6 * (m01 + m10) + 3 * (m31 + m13) - 2 * (m03 + m30) - 4 * m00 - m33) / 9
+        self.m12 = (6 * (m02 + m13) + 3 * (m32 + m10) - 2 * (m00 + m33) - 4 * m03 - m30) / 9
+        self.m13 = m13
+        self.m20 = m20
+        self.m21 = (6 * (m31 + m20) + 3 * (m01 + m23) - 2 * (m33 + m00) - 4 * m30 - m03) / 9
+        self.m22 = (6 * (m32 + m23) + 3 * (m02 + m20) - 2 * (m30 + m03) - 4 * m33 - m00) / 9
+        self.m23 = m23
+        self.m30 = m30
+        self.m31 = m31
+        self.m32 = m32
+        self.m33 = m33
     }
     
-    var x = Bezier(_x)
-    var y = Bezier(_y)
-    
-    let degree = max(x.degree, y.degree)
-    
-    while x.degree != degree {
-        x = x.elevated()
-    }
-    while y.degree != degree {
-        y = y.elevated()
-    }
-    
-    let points = zip(x, y).map { Point(x: $0, y: $1) }
-    
-    switch degree {
-    case 1, 2, 3: return [points]
-    default: return QuadBezierFitting(points)
+    public init(_ m00: Point, _ m01: Point, _ m02: Point, _ m03: Point,
+                _ m10: Point, _ m11: Point, _ m12: Point, _ m13: Point,
+                _ m20: Point, _ m21: Point, _ m22: Point, _ m23: Point,
+                _ m30: Point, _ m31: Point, _ m32: Point, _ m33: Point) {
+        self.m00 = m00
+        self.m01 = m01
+        self.m02 = m02
+        self.m03 = m03
+        self.m10 = m10
+        self.m11 = m11
+        self.m12 = m12
+        self.m13 = m13
+        self.m20 = m20
+        self.m21 = m21
+        self.m22 = m22
+        self.m23 = m23
+        self.m30 = m30
+        self.m31 = m31
+        self.m32 = m32
+        self.m33 = m33
     }
 }
 
-public func TensorPatch(_ m00: Point, _ m01: Point, _ m02: Point, _ m03: Point,
-                        _ m10: Point, _ m11: Point, _ m12: Point, _ m13: Point,
-                        _ m20: Point, _ m21: Point, _ m22: Point, _ m23: Point,
-                        _ m30: Point, _ m31: Point, _ m32: Point, _ m33: Point,
-                        _ p: Point ... ) -> [[Point]] {
+extension CubicBezierPatch {
     
-    let u = Bezier(p.map { $0.x }).polynomial
-    let v = Bezier(p.map { $0.y }).polynomial
-    let u2 = u * u
-    let v2 = v * v
-    let u3 = u2 * u
-    let v3 = v2 * v
-    
-    let _u = 1 - u
-    let _v = 1 - v
-    let _u2 = _u * _u
-    let _v2 = _v * _v
-    let _u3 = _u2 * _u
-    let _v3 = _v2 * _v
-    
-    let u_u2 = 3 * _u2 * u
-    let u2_u = 3 * _u * u2
-    let v_v2 = 3 * _v2 * v
-    let v2_v = 3 * _v * v2
-    
-    let c0x = _u3 * m00.x + u_u2 * m01.x + u2_u * m02.x + u3 * m03.x
-    let c0y = _u3 * m00.y + u_u2 * m01.y + u2_u * m02.y + u3 * m03.y
-    let c1x = _u3 * m10.x + u_u2 * m11.x + u2_u * m12.x + u3 * m13.x
-    let c1y = _u3 * m10.y + u_u2 * m11.y + u2_u * m12.y + u3 * m13.y
-    let c2x = _u3 * m20.x + u_u2 * m21.x + u2_u * m22.x + u3 * m23.x
-    let c2y = _u3 * m20.y + u_u2 * m21.y + u2_u * m22.y + u3 * m23.y
-    let c3x = _u3 * m30.x + u_u2 * m31.x + u2_u * m32.x + u3 * m33.x
-    let c3y = _u3 * m30.y + u_u2 * m31.y + u2_u * m32.y + u3 * m33.y
-    
-    var _x = _v3 * c0x + v_v2 * c1x + v2_v * c2x + v3 * c3x
-    var _y = _v3 * c0y + v_v2 * c1y + v2_v * c2y + v3 * c3y
-    
-    while _x.last?.almostZero() == true {
-        _x.removeLast()
-    }
-    while _y.last?.almostZero() == true {
-        _y.removeLast()
-    }
-    
-    var x = Bezier(_x)
-    var y = Bezier(_y)
-    
-    let degree = max(x.degree, y.degree)
-    
-    while x.degree != degree {
-        x = x.elevated()
-    }
-    while y.degree != degree {
-        y = y.elevated()
-    }
-    
-    let points = zip(x, y).map { Point(x: $0, y: $1) }
-    
-    switch degree {
-    case 1, 2, 3: return [points]
-    default: return QuadBezierFitting(points)
+    public func warping(_ bezier: Bezier<Point>) -> [Bezier<Point>] {
+        
+        let u = Bezier(bezier.points.map { $0.x }).polynomial
+        let v = Bezier(bezier.points.map { $0.y }).polynomial
+        let u2 = u * u
+        let v2 = v * v
+        let u3 = u2 * u
+        let v3 = v2 * v
+        
+        let _u = 1 - u
+        let _v = 1 - v
+        let _u2 = _u * _u
+        let _v2 = _v * _v
+        let _u3 = _u2 * _u
+        let _v3 = _v2 * _v
+        
+        let u_u2 = 3 * _u2 * u
+        let u2_u = 3 * _u * u2
+        let v_v2 = 3 * _v2 * v
+        let v2_v = 3 * _v * v2
+        
+        let c0x = _u3 * m00.x + u_u2 * m01.x + u2_u * m02.x + u3 * m03.x
+        let c0y = _u3 * m00.y + u_u2 * m01.y + u2_u * m02.y + u3 * m03.y
+        let c1x = _u3 * m10.x + u_u2 * m11.x + u2_u * m12.x + u3 * m13.x
+        let c1y = _u3 * m10.y + u_u2 * m11.y + u2_u * m12.y + u3 * m13.y
+        let c2x = _u3 * m20.x + u_u2 * m21.x + u2_u * m22.x + u3 * m23.x
+        let c2y = _u3 * m20.y + u_u2 * m21.y + u2_u * m22.y + u3 * m23.y
+        let c3x = _u3 * m30.x + u_u2 * m31.x + u2_u * m32.x + u3 * m33.x
+        let c3y = _u3 * m30.y + u_u2 * m31.y + u2_u * m32.y + u3 * m33.y
+        
+        var _x = _v3 * c0x + v_v2 * c1x + v2_v * c2x + v3 * c3x
+        var _y = _v3 * c0y + v_v2 * c1y + v2_v * c2y + v3 * c3y
+        
+        while _x.last?.almostZero() == true {
+            _x.removeLast()
+        }
+        while _y.last?.almostZero() == true {
+            _y.removeLast()
+        }
+        
+        var x = Bezier(_x)
+        var y = Bezier(_y)
+        
+        let degree = max(x.degree, y.degree)
+        
+        while x.degree != degree {
+            x = x.elevated()
+        }
+        while y.degree != degree {
+            y = y.elevated()
+        }
+        
+        let points = zip(x, y).map { Point(x: $0, y: $1) }
+        
+        switch degree {
+        case 1, 2, 3: return [Bezier(points)]
+        default: return QuadBezierFitting(points).map(Bezier.init)
+        }
     }
 }
+
+// MARK: Circle
 
 var BezierCircle: [Point] {
     

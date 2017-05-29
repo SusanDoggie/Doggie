@@ -113,7 +113,7 @@ public class CoonsPatchView: NSView, NSGestureRecognizerDelegate {
                 
                 var last = item.start
                 
-                func addCurves(_ points: [[Point]]) {
+                func addCurves(_ points: [Bezier<Point>]) {
                     if let first = points.first {
                         if flag {
                             component.start = first[0]
@@ -133,13 +133,13 @@ public class CoonsPatchView: NSView, NSGestureRecognizerDelegate {
                 for segment in item {
                     switch segment {
                     case let .line(p1):
-                        addCurves(CoonsPatch(self.p0, self.p4, self.p5, self.p1, self.p6, self.p8, self.p7, self.p9, self.p2, self.p10, self.p11, self.p3, last, p1))
+                        addCurves(CubicBezierPatch(coonsPatch: self.p0, self.p4, self.p5, self.p1, self.p6, self.p8, self.p7, self.p9, self.p2, self.p10, self.p11, self.p3).warping([last, p1]))
                         last = p1
                     case let .quad(p1, p2):
-                        addCurves(CoonsPatch(self.p0, self.p4, self.p5, self.p1, self.p6, self.p8, self.p7, self.p9, self.p2, self.p10, self.p11, self.p3, last, p1, p2))
+                        addCurves(CubicBezierPatch(coonsPatch: self.p0, self.p4, self.p5, self.p1, self.p6, self.p8, self.p7, self.p9, self.p2, self.p10, self.p11, self.p3).warping([last, p1, p2]))
                         last = p2
                     case let .cubic(p1, p2, p3):
-                        addCurves(CoonsPatch(self.p0, self.p4, self.p5, self.p1, self.p6, self.p8, self.p7, self.p9, self.p2, self.p10, self.p11, self.p3, last, p1, p2, p3))
+                        addCurves(CubicBezierPatch(coonsPatch: self.p0, self.p4, self.p5, self.p1, self.p6, self.p8, self.p7, self.p9, self.p2, self.p10, self.p11, self.p3).warping([last, p1, p2, p3]))
                         last = p3
                     }
                 }
@@ -147,7 +147,7 @@ public class CoonsPatchView: NSView, NSGestureRecognizerDelegate {
                 if item.isClosed {
                     let z = item.start - last
                     if !z.x.almostZero() || !z.y.almostZero() {
-                        addCurves(CoonsPatch(self.p0, self.p4, self.p5, self.p1, self.p6, self.p8, self.p7, self.p9, self.p2, self.p10, self.p11, self.p3, last, item.start))
+                        addCurves(CubicBezierPatch(coonsPatch: self.p0, self.p4, self.p5, self.p1, self.p6, self.p8, self.p7, self.p9, self.p2, self.p10, self.p11, self.p3).warping([last, item.start]))
                     }
                     component.isClosed = true
                 }
@@ -205,6 +205,8 @@ public class CoonsPatchView: NSView, NSGestureRecognizerDelegate {
             
             context.strokePath()
             
+            context.strokePath()
+            
             context.setStrokeColor(NSColor.red.cgColor)
             
             if let shape = implement() {
@@ -230,7 +232,6 @@ public class CoonsPatchView: NSView, NSGestureRecognizerDelegate {
             drawPoint(context, p9)
             drawPoint(context, p10)
             drawPoint(context, p11)
-            
         }
         
         super.draw(dirtyRect)

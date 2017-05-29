@@ -139,7 +139,7 @@ public class TensorPatchView: NSView, NSGestureRecognizerDelegate {
                 
                 var last = item.start
                 
-                func addCurves(_ points: [[Point]]) {
+                func addCurves(_ points: [Bezier<Point>]) {
                     if let first = points.first {
                         if flag {
                             component.start = first[0]
@@ -159,13 +159,13 @@ public class TensorPatchView: NSView, NSGestureRecognizerDelegate {
                 for segment in item {
                     switch segment {
                     case let .line(p1):
-                        addCurves(TensorPatch(self.p0, self.p1, self.p2, self.p3, self.p4, self.p5, self.p6, self.p7, self.p8, self.p9, self.p10, self.p11, self.p12, self.p13, self.p14, self.p15, last, p1))
+                        addCurves(CubicBezierPatch(self.p0, self.p1, self.p2, self.p3, self.p4, self.p5, self.p6, self.p7, self.p8, self.p9, self.p10, self.p11, self.p12, self.p13, self.p14, self.p15).warping([last, p1]))
                         last = p1
                     case let .quad(p1, p2):
-                        addCurves(TensorPatch(self.p0, self.p1, self.p2, self.p3, self.p4, self.p5, self.p6, self.p7, self.p8, self.p9, self.p10, self.p11, self.p12, self.p13, self.p14, self.p15, last, p1, p2))
+                        addCurves(CubicBezierPatch(self.p0, self.p1, self.p2, self.p3, self.p4, self.p5, self.p6, self.p7, self.p8, self.p9, self.p10, self.p11, self.p12, self.p13, self.p14, self.p15).warping([last, p1, p2]))
                         last = p2
                     case let .cubic(p1, p2, p3):
-                        addCurves(TensorPatch(self.p0, self.p1, self.p2, self.p3, self.p4, self.p5, self.p6, self.p7, self.p8, self.p9, self.p10, self.p11, self.p12, self.p13, self.p14, self.p15, last, p1, p2, p3))
+                        addCurves(CubicBezierPatch(self.p0, self.p1, self.p2, self.p3, self.p4, self.p5, self.p6, self.p7, self.p8, self.p9, self.p10, self.p11, self.p12, self.p13, self.p14, self.p15).warping([last, p1, p2, p3]))
                         last = p3
                     }
                 }
@@ -173,7 +173,7 @@ public class TensorPatchView: NSView, NSGestureRecognizerDelegate {
                 if item.isClosed {
                     let z = item.start - last
                     if !z.x.almostZero() || !z.y.almostZero() {
-                        addCurves(TensorPatch(self.p0, self.p1, self.p2, self.p3, self.p4, self.p5, self.p6, self.p7, self.p8, self.p9, self.p10, self.p11, self.p12, self.p13, self.p14, self.p15, last, item.start))
+                        addCurves(CubicBezierPatch(self.p0, self.p1, self.p2, self.p3, self.p4, self.p5, self.p6, self.p7, self.p8, self.p9, self.p10, self.p11, self.p12, self.p13, self.p14, self.p15).warping([last, item.start]))
                     }
                     component.isClosed = true
                 }
