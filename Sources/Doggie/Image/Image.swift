@@ -39,6 +39,8 @@ public struct Image<Pixel: ColorPixelProtocol> {
     
     @_inlineable
     public init<C : ColorSpaceProtocol>(width: Int, height: Int, colorSpace: C, pixel: Pixel = Pixel()) where C.Model == Pixel.Model {
+        precondition(width >= 0, "negative width is not allowed.")
+        precondition(height >= 0, "negative height is not allowed.")
         self.width = width
         self.height = height
         self.colorSpace = ColorSpace(colorSpace)
@@ -68,6 +70,8 @@ public struct Image<Pixel: ColorPixelProtocol> {
     
     @_inlineable
     public init(image: Image, width: Int, height: Int, transform: SDTransform, resampling algorithm: ResamplingAlgorithm = .default, antialias: Bool = false) {
+        precondition(width >= 0, "negative width is not allowed.")
+        precondition(height >= 0, "negative height is not allowed.")
         self.width = width
         self.height = height
         self.colorSpace = image.colorSpace
