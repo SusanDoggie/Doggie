@@ -40,13 +40,15 @@ extension ImageContext {
             return
         }
         
+        let width = self.width
+        let height = self.height
         let transform = shape.transform * self._transform
         
-        if _image.width == 0 || _image.height == 0 || transform.determinant.almostZero() {
+        if width == 0 || height == 0 || transform.determinant.almostZero() {
             return
         }
         
-        let stencil_count = _antialias ? _image.width * _image.height * 25 : _image.width * _image.height
+        let stencil_count = _antialias ? width * height * 25 : width * height
         
         if stencil.count != stencil_count {
             stencil = [Int](repeating: 0, count: stencil_count)
@@ -60,7 +62,7 @@ extension ImageContext {
             
             shape.transform = transform * SDTransform.scale(5)
             
-            shape.raster(width: _image.width * 5, height: _image.height * 5, stencil: &stencil)
+            shape.raster(width: width * 5, height: height * 5, stencil: &stencil)
             
             stencil.withUnsafeBufferPointer { stencil in
                 
@@ -74,11 +76,11 @@ extension ImageContext {
                                 
                                 if var _clip = _clip.baseAddress {
                                     
-                                    for _ in 0..<image.height {
+                                    for _ in 0..<height {
                                         
                                         var __stencil = _stencil
                                         
-                                        for _ in 0..<image.width {
+                                        for _ in 0..<width {
                                             
                                             var _p = 0
                                             
@@ -92,7 +94,7 @@ extension ImageContext {
                                                     }
                                                     __s += 1
                                                 }
-                                                _s += 5 * image.width
+                                                _s += 5 * width
                                             }
                                             
                                             let _alpha = _clip.pointee * (0.04 * Double(_p))
@@ -110,7 +112,7 @@ extension ImageContext {
                                             _clip += 1
                                         }
                                         
-                                        _stencil += 25 * image.width
+                                        _stencil += 25 * width
                                     }
                                 }
                             }
@@ -123,7 +125,7 @@ extension ImageContext {
             
             shape.transform = transform
             
-            shape.raster(width: _image.width, height: _image.height, stencil: &stencil)
+            shape.raster(width: width, height: height, stencil: &stencil)
             
             stencil.withUnsafeBufferPointer { stencil in
                 
@@ -137,7 +139,7 @@ extension ImageContext {
                                 
                                 if var _clip = _clip.baseAddress {
                                     
-                                    for _ in 0..<image.width * image.height {
+                                    for _ in 0..<width * height {
                                         
                                         let _alpha = _clip.pointee
                                         

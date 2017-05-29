@@ -33,22 +33,24 @@ extension ImageContext {
             return
         }
         
+        let width = self.width
+        let height = self.height
         let transform = transform * self._transform
         
-        if _image.width == 0 || _image.height == 0 || image.width == 0 || image.height == 0 || transform.determinant.almostZero() {
+        if width == 0 || height == 0 || image.width == 0 || image.height == 0 || transform.determinant.almostZero() {
             return
         }
         
         let source: Image<ColorPixel<Model>>
         
-        if transform == SDTransform.identity && _image.width == image.width && _image.height == image.height {
+        if transform == SDTransform.identity && width == image.width && height == image.height {
             source = Image(image: image, colorSpace: colorSpace)
-        } else if C.Model.count < Model.count || (C.Model.count == Model.count && _image.width * _image.height < image.width * image.height) {
-            let _temp = Image(image: image, width: _image.width, height: _image.height, transform: transform, resampling: _resamplingAlgorithm, antialias: _antialias)
+        } else if C.Model.count < Model.count || (C.Model.count == Model.count && width * height < image.width * image.height) {
+            let _temp = Image(image: image, width: width, height: height, transform: transform, resampling: _resamplingAlgorithm, antialias: _antialias)
             source = Image(image: _temp, colorSpace: colorSpace)
         } else {
             let _temp = Image(image: image, colorSpace: colorSpace) as Image<ColorPixel<Model>>
-            source = Image(image: _temp, width: _image.width, height: _image.height, transform: transform, resampling: _resamplingAlgorithm, antialias: _antialias)
+            source = Image(image: _temp, width: width, height: height, transform: transform, resampling: _resamplingAlgorithm, antialias: _antialias)
         }
         
         source.withUnsafeBufferPointer { source in
@@ -63,7 +65,7 @@ extension ImageContext {
                             
                             if var _clip = _clip.baseAddress {
                                 
-                                for _ in 0..<_image.width * _image.height {
+                                for _ in 0..<width * height {
                                     
                                     let _alpha = _clip.pointee
                                     

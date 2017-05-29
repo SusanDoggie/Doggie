@@ -32,11 +32,14 @@ extension ImageContext {
             next.beginTransparencyLayer()
         } else {
             
-            if _image.width == 0 || _image.height == 0 {
+            let width = self.width
+            let height = self.height
+            
+            if width == 0 || height == 0 {
                 return
             }
             
-            let layer = ImageContext(width: _image.width, height: _image.height, colorSpace: colorSpace)
+            let layer = ImageContext(width: width, height: height, colorSpace: colorSpace)
             layer._antialias = self._antialias
             layer._transform = self._transform
             layer._resamplingAlgorithm = self._resamplingAlgorithm
@@ -58,7 +61,10 @@ extension ImageContext {
                 
             } else {
                 
-                if _image.width == 0 || _image.height == 0 {
+                let width = self.width
+                let height = self.height
+                
+                if width == 0 || height == 0 {
                     return
                 }
                 
@@ -74,7 +80,7 @@ extension ImageContext {
                                     
                                     if var _clip = _clip.baseAddress {
                                         
-                                        for _ in 0..<_image.width * _image.height {
+                                        for _ in 0..<width * height {
                                             
                                             let _alpha = _clip.pointee
                                             

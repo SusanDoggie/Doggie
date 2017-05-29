@@ -33,11 +33,14 @@ extension ImageContext {
             return
         }
         
-        if _image.width == 0 || _image.height == 0 {
+        let width = self.width
+        let height = self.height
+        
+        if width == 0 || height == 0 {
             return
         }
         
-        let _clip = ImageContext<GrayColorModel>(width: _image.width, height: _image.height, colorSpace: CalibratedGrayColorSpace(colorSpace.cieXYZ))
+        let _clip = ImageContext<GrayColorModel>(width: width, height: height, colorSpace: CalibratedGrayColorSpace(colorSpace.cieXYZ))
         _clip._antialias = self._antialias
         _clip._transform = self._transform
         _clip._resamplingAlgorithm = self._resamplingAlgorithm
