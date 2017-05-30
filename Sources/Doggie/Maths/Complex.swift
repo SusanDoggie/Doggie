@@ -121,6 +121,10 @@ extension Complex: Hashable {
     }
 }
 
+extension Complex : Additive, Subtractive, Multiplicative, Divisive {
+    
+}
+
 @_inlineable
 public func norm(_ value: Complex) -> Double {
     return value.real * value.real + value.imag * value.imag

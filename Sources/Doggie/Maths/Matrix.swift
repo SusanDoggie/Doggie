@@ -343,6 +343,10 @@ extension Matrix {
     }
 }
 
+extension Matrix : Multiplicative {
+    
+}
+
 // column major
 @_inlineable
 public func PerspectiveProjectMatrix(alpha: Double, aspect: Double, nearZ: Double, farZ: Double) -> [Double] {

@@ -25,17 +25,11 @@
 
 import Foundation
 
-public protocol BezierElementProtocol {
+public protocol BezierElementProtocol : Additive, Subtractive {
     
-    static prefix func + (_: Self) -> Self
-    static prefix func - (_: Self) -> Self
-    static func + (_: Self, _: Self) -> Self
-    static func - (_: Self, _: Self) -> Self
     static func * (_: Double, _: Self) -> Self
     static func * (_: Self, _: Double) -> Self
     static func / (_: Self, _: Double) -> Self
-    static func += (_: inout Self, _: Self)
-    static func -= (_: inout Self, _: Self)
     static func *= (_: inout Self, _: Double)
     static func /= (_: inout Self, _: Double)
 }
@@ -506,6 +500,10 @@ extension Bezier where Element == Point {
     }
 }
 
+extension Bezier : Additive, Subtractive {
+    
+}
+
 @_inlineable
 public prefix func + <Element>(x: Bezier<Element>) -> Bezier<Element> {
     return x
@@ -567,6 +565,14 @@ public func *= <Element>(lhs: inout Bezier<Element>, rhs: Double) {
 @_inlineable
 public func /= <Element>(lhs: inout Bezier<Element>, rhs: Double) {
     lhs = lhs / rhs
+}
+@_inlineable
+public func == <Element>(lhs: Bezier<Element>, rhs: Bezier<Element>) -> Bool {
+    return lhs.points == rhs.points
+}
+@_inlineable
+public func != <Element>(lhs: Bezier<Element>, rhs: Bezier<Element>) -> Bool {
+    return lhs.points != rhs.points
 }
 
 // MARK: Bezier Length

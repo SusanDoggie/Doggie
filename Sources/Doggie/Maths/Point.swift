@@ -117,6 +117,10 @@ extension Point: Hashable {
     }
 }
 
+extension Point : Additive, Subtractive {
+    
+}
+
 @_inlineable
 public func dot(_ lhs: Point, _ rhs:  Point) -> Double {
     return lhs.x * rhs.x + lhs.y * rhs.y

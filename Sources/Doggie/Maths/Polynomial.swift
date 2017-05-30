@@ -280,6 +280,10 @@ extension Polynomial {
     }
 }
 
+extension Polynomial : Additive, Subtractive, Multiplicative, Divisive {
+    
+}
+
 @_inlineable
 public func quorem(_ lhs: Double, _ rhs: Polynomial) -> (quo: Polynomial, rem: Polynomial) {
     switch rhs.count {

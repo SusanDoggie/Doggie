@@ -1,5 +1,5 @@
 //
-//  Arithmetic.swift
+//  AccelerateArithmetic.swift
 //
 //  The MIT License
 //  Copyright (c) 2015 - 2017 Susan Cheng. All rights reserved.
@@ -101,9 +101,8 @@ public func MulMod<T: UnsignedInteger>(_ count: Int, _ left: UnsafePointer<T>, _
 ///   - out_stride: Stride for `output`.
 /// - remark: `output[n] = left[n] + right[n], 0 <= n < count`
 @_inlineable
-@_specialize(Int8) @_specialize(Int16) @_specialize(Int32) @_specialize(Int64) @_specialize(Int)
-@_specialize(UInt8) @_specialize(UInt16) @_specialize(UInt32) @_specialize(UInt64) @_specialize(UInt)
-public func Add<T: Integer>(_ count: Int, _ left: UnsafePointer<T>, _ left_stride: Int, _ right: UnsafePointer<T>, _ right_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
+@_specialize(Int8) @_specialize(Int16) @_specialize(Int32) @_specialize(Int64) @_specialize(Int) @_specialize(Float) @_specialize(Double) @_specialize(Complex)
+public func Add<T: Additive>(_ count: Int, _ left: UnsafePointer<T>, _ left_stride: Int, _ right: UnsafePointer<T>, _ right_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var left = left
     var right = right
@@ -128,9 +127,8 @@ public func Add<T: Integer>(_ count: Int, _ left: UnsafePointer<T>, _ left_strid
 ///   - out_stride: Stride for `output`.
 /// - remark: `output[n] = left[n] - right[n], 0 <= n < count`
 @_inlineable
-@_specialize(Int8) @_specialize(Int16) @_specialize(Int32) @_specialize(Int64) @_specialize(Int)
-@_specialize(UInt8) @_specialize(UInt16) @_specialize(UInt32) @_specialize(UInt64) @_specialize(UInt)
-public func Sub<T: Integer>(_ count: Int, _ left: UnsafePointer<T>, _ left_stride: Int, _ right: UnsafePointer<T>, _ right_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
+@_specialize(Int8) @_specialize(Int16) @_specialize(Int32) @_specialize(Int64) @_specialize(Int) @_specialize(Float) @_specialize(Double) @_specialize(Complex)
+public func Sub<T: Subtractive>(_ count: Int, _ left: UnsafePointer<T>, _ left_stride: Int, _ right: UnsafePointer<T>, _ right_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var left = left
     var right = right
@@ -155,9 +153,8 @@ public func Sub<T: Integer>(_ count: Int, _ left: UnsafePointer<T>, _ left_strid
 ///   - out_stride: Stride for `output`.
 /// - remark: `output[n] = left[n] * right[n], 0 <= n < count`
 @_inlineable
-@_specialize(Int8) @_specialize(Int16) @_specialize(Int32) @_specialize(Int64) @_specialize(Int)
-@_specialize(UInt8) @_specialize(UInt16) @_specialize(UInt32) @_specialize(UInt64) @_specialize(UInt)
-public func Mul<T: Integer>(_ count: Int, _ left: UnsafePointer<T>, _ left_stride: Int, _ right: UnsafePointer<T>, _ right_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
+@_specialize(Int8) @_specialize(Int16) @_specialize(Int32) @_specialize(Int64) @_specialize(Int) @_specialize(Float) @_specialize(Double) @_specialize(Complex)
+public func Mul<T: Multiplicative>(_ count: Int, _ left: UnsafePointer<T>, _ left_stride: Int, _ right: UnsafePointer<T>, _ right_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var left = left
     var right = right
@@ -182,9 +179,8 @@ public func Mul<T: Integer>(_ count: Int, _ left: UnsafePointer<T>, _ left_strid
 ///   - out_stride: Stride for `output`.
 /// - remark: `output[n] = left[n] / right[n], 0 <= n < count`
 @_inlineable
-@_specialize(Int8) @_specialize(Int16) @_specialize(Int32) @_specialize(Int64) @_specialize(Int)
-@_specialize(UInt8) @_specialize(UInt16) @_specialize(UInt32) @_specialize(UInt64) @_specialize(UInt)
-public func Div<T: Integer>(_ count: Int, _ left: UnsafePointer<T>, _ left_stride: Int, _ right: UnsafePointer<T>, _ right_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
+@_specialize(Int8) @_specialize(Int16) @_specialize(Int32) @_specialize(Int64) @_specialize(Int) @_specialize(Float) @_specialize(Double) @_specialize(Complex)
+public func Div<T: Divisive>(_ count: Int, _ left: UnsafePointer<T>, _ left_stride: Int, _ right: UnsafePointer<T>, _ right_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var left = left
     var right = right
@@ -235,110 +231,6 @@ public func QuoRem<T: Integer>(_ count: Int, _ left: UnsafePointer<T>, _ left_st
     }
 }
 
-/// Adds the elements of two real vectors.
-///
-/// - parameters:
-///   - count: Number of elements to process in the input and output vectors.
-///   - left: Real input vector.
-///   - left_stride: Stride for `left`.
-///   - right: Real input vector.
-///   - right_stride: Stride for `right`.
-///   - output: Real result vector.
-///   - out_stride: Stride for `output`.
-/// - remark: `output[n] = left[n] + right[n], 0 <= n < count`
-@_inlineable
-@_specialize(Float) @_specialize(Double)
-public func Add<T: FloatingPoint>(_ count: Int, _ left: UnsafePointer<T>, _ left_stride: Int, _ right: UnsafePointer<T>, _ right_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
-    
-    var left = left
-    var right = right
-    var output = output
-    
-    for _ in 0..<count {
-        output.pointee = left.pointee + right.pointee
-        left += left_stride
-        right += right_stride
-        output += out_stride
-    }
-}
-/// Subtracts the elements of two real vectors.
-///
-/// - parameters:
-///   - count: Number of elements to process in the input and output vectors.
-///   - left: Real input vector.
-///   - left_stride: Stride for `left`.
-///   - right: Real input vector.
-///   - right_stride: Stride for `right`.
-///   - output: Real result vector.
-///   - out_stride: Stride for `output`.
-/// - remark: `output[n] = left[n] - right[n], 0 <= n < count`
-@_inlineable
-@_specialize(Float) @_specialize(Double)
-public func Sub<T: FloatingPoint>(_ count: Int, _ left: UnsafePointer<T>, _ left_stride: Int, _ right: UnsafePointer<T>, _ right_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
-    
-    var left = left
-    var right = right
-    var output = output
-    
-    for _ in 0..<count {
-        output.pointee = left.pointee - right.pointee
-        left += left_stride
-        right += right_stride
-        output += out_stride
-    }
-}
-/// Multiplies the elements of two real vectors.
-///
-/// - parameters:
-///   - count: Number of elements to process in the input and output vectors.
-///   - left: Real input vector.
-///   - left_stride: Stride for `left`.
-///   - right: Real input vector.
-///   - right_stride: Stride for `right`.
-///   - output: Real result vector.
-///   - out_stride: Stride for `output`.
-/// - remark: `output[n] = left[n] * right[n], 0 <= n < count`
-@_inlineable
-@_specialize(Float) @_specialize(Double)
-public func Mul<T: FloatingPoint>(_ count: Int, _ left: UnsafePointer<T>, _ left_stride: Int, _ right: UnsafePointer<T>, _ right_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
-    
-    var left = left
-    var right = right
-    var output = output
-    
-    for _ in 0..<count {
-        output.pointee = left.pointee * right.pointee
-        left += left_stride
-        right += right_stride
-        output += out_stride
-    }
-}
-/// Divides the elements of two real vectors.
-///
-/// - parameters:
-///   - count: Number of elements to process in the input and output vectors.
-///   - left: Real input vector.
-///   - left_stride: Stride for `left`.
-///   - right: Real input vector.
-///   - right_stride: Stride for `right`.
-///   - output: Real result vector.
-///   - out_stride: Stride for `output`.
-/// - remark: `output[n] = left[n] / right[n], 0 <= n < count`
-@_inlineable
-@_specialize(Float) @_specialize(Double)
-public func Div<T: FloatingPoint>(_ count: Int, _ left: UnsafePointer<T>, _ left_stride: Int, _ right: UnsafePointer<T>, _ right_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
-    
-    var left = left
-    var right = right
-    var output = output
-    
-    for _ in 0..<count {
-        output.pointee = left.pointee / right.pointee
-        left += left_stride
-        right += right_stride
-        output += out_stride
-    }
-}
 @_inlineable
 @_specialize(Float) @_specialize(Double)
 public func Mod<T: FloatingPoint>(_ count: Int, _ left: UnsafePointer<T>, _ left_stride: Int, _ right: UnsafePointer<T>, _ right_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
@@ -355,8 +247,8 @@ public func Mod<T: FloatingPoint>(_ count: Int, _ left: UnsafePointer<T>, _ left
     }
 }
 @_inlineable
-@_specialize(Float) @_specialize(Double)
-public func MulAdd<T: FloatingPoint>(_ count: Int, _ a: UnsafePointer<T>, _ a_stride: Int, _ b: UnsafePointer<T>, _ b_stride: Int, _ c: UnsafePointer<T>, _ c_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
+@_specialize(Int8) @_specialize(Int16) @_specialize(Int32) @_specialize(Int64) @_specialize(Int) @_specialize(Float) @_specialize(Double) @_specialize(Complex)
+public func MulAdd<T: Multiplicative & Additive>(_ count: Int, _ a: UnsafePointer<T>, _ a_stride: Int, _ b: UnsafePointer<T>, _ b_stride: Int, _ c: UnsafePointer<T>, _ c_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var a = a
     var b = b
@@ -372,8 +264,8 @@ public func MulAdd<T: FloatingPoint>(_ count: Int, _ a: UnsafePointer<T>, _ a_st
     }
 }
 @_inlineable
-@_specialize(Float) @_specialize(Double)
-public func MulSub<T: FloatingPoint>(_ count: Int, _ a: UnsafePointer<T>, _ a_stride: Int, _ b: UnsafePointer<T>, _ b_stride: Int, _ c: UnsafePointer<T>, _ c_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
+@_specialize(Int8) @_specialize(Int16) @_specialize(Int32) @_specialize(Int64) @_specialize(Int) @_specialize(Float) @_specialize(Double) @_specialize(Complex)
+public func MulSub<T: Multiplicative & Subtractive>(_ count: Int, _ a: UnsafePointer<T>, _ a_stride: Int, _ b: UnsafePointer<T>, _ b_stride: Int, _ c: UnsafePointer<T>, _ c_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var a = a
     var b = b
@@ -389,8 +281,8 @@ public func MulSub<T: FloatingPoint>(_ count: Int, _ a: UnsafePointer<T>, _ a_st
     }
 }
 @_inlineable
-@_specialize(Float) @_specialize(Double)
-public func SubMul<T: FloatingPoint>(_ count: Int, _ a: UnsafePointer<T>, _ a_stride: Int, _ b: UnsafePointer<T>, _ b_stride: Int, _ c: UnsafePointer<T>, _ c_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
+@_specialize(Int8) @_specialize(Int16) @_specialize(Int32) @_specialize(Int64) @_specialize(Int) @_specialize(Float) @_specialize(Double) @_specialize(Complex)
+public func SubMul<T: Multiplicative & Subtractive>(_ count: Int, _ a: UnsafePointer<T>, _ a_stride: Int, _ b: UnsafePointer<T>, _ b_stride: Int, _ c: UnsafePointer<T>, _ c_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var a = a
     var b = b
@@ -1123,7 +1015,7 @@ public func Deconvolve<T: FloatingPoint>(_ signal_count: Int, _ signal: UnsafePo
 
 @_inlineable
 @_specialize(Float) @_specialize(Double)
-public func MatrixElimination<T: FloatingPoint>(_ row: Int, _ column: Int, _ matrix: UnsafeMutablePointer<T>, _ stride_row: Int, _ stride_col: Int) -> Bool {
+public func MatrixElimination<T: FloatingPoint & Subtractive & Divisive>(_ row: Int, _ column: Int, _ matrix: UnsafeMutablePointer<T>, _ stride_row: Int, _ stride_col: Int) -> Bool {
     
     let row_offset = stride_row * stride_col * column
     let endptr = matrix + row_offset * row

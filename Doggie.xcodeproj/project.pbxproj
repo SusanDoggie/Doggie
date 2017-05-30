@@ -12,8 +12,8 @@
 		082516261C51C60A00F8F9B0 /* Doggie_iOS.h in Headers */ = {isa = PBXBuildFile; fileRef = 087FE59B1A372D5B005A2E9E /* Doggie_iOS.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		08458AF01E2E627600D01813 /* AccelerateWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AB11E2E627600D01813 /* AccelerateWrapper.swift */; };
 		08458AF11E2E627600D01813 /* AccelerateWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AB11E2E627600D01813 /* AccelerateWrapper.swift */; };
-		08458AF21E2E627600D01813 /* Arithmetic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AB21E2E627600D01813 /* Arithmetic.swift */; };
-		08458AF31E2E627600D01813 /* Arithmetic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AB21E2E627600D01813 /* Arithmetic.swift */; };
+		08458AF21E2E627600D01813 /* AccelerateArithmetic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AB21E2E627600D01813 /* AccelerateArithmetic.swift */; };
+		08458AF31E2E627600D01813 /* AccelerateArithmetic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AB21E2E627600D01813 /* AccelerateArithmetic.swift */; };
 		08458AF41E2E627600D01813 /* CircularConvolve.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AB31E2E627600D01813 /* CircularConvolve.swift */; };
 		08458AF51E2E627600D01813 /* CircularConvolve.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AB31E2E627600D01813 /* CircularConvolve.swift */; };
 		08458AF61E2E627600D01813 /* ComplexConversion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AB41E2E627600D01813 /* ComplexConversion.swift */; };
@@ -70,10 +70,16 @@
 		08458B5F1E2E627600D01813 /* Lock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AEE1E2E627600D01813 /* Lock.swift */; };
 		08458B601E2E627600D01813 /* Thread.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AEF1E2E627600D01813 /* Thread.swift */; };
 		08458B611E2E627600D01813 /* Thread.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AEF1E2E627600D01813 /* Thread.swift */; };
+		086F06491EDC623D00BA70C8 /* Rasterizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 086F06481EDC623D00BA70C8 /* Rasterizer.swift */; };
+		086F064A1EDC623D00BA70C8 /* Rasterizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 086F06481EDC623D00BA70C8 /* Rasterizer.swift */; };
+		086F064C1EDC65D600BA70C8 /* DrawGradientMesh.swift in Sources */ = {isa = PBXBuildFile; fileRef = 086F064B1EDC65D600BA70C8 /* DrawGradientMesh.swift */; };
+		086F064D1EDC65D600BA70C8 /* DrawGradientMesh.swift in Sources */ = {isa = PBXBuildFile; fileRef = 086F064B1EDC65D600BA70C8 /* DrawGradientMesh.swift */; };
 		087FE5BA1A372D97005A2E9E /* Doggie_Mac.h in Headers */ = {isa = PBXBuildFile; fileRef = 087FE5B91A372D97005A2E9E /* Doggie_Mac.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		087FE5C01A372D97005A2E9E /* Doggie.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 087FE5B51A372D97005A2E9E /* Doggie.framework */; settings = {ATTRIBUTES = (Required, ); }; };
 		08B085481E9A20720037DECE /* Algorithm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08B085471E9A20720037DECE /* Algorithm.swift */; };
 		08B085491E9A20720037DECE /* Algorithm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08B085471E9A20720037DECE /* Algorithm.swift */; };
+		08B457E61EDD3223007AA4F0 /* Arithmetic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08B457E51EDD3223007AA4F0 /* Arithmetic.swift */; };
+		08B457E71EDD3223007AA4F0 /* Arithmetic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08B457E51EDD3223007AA4F0 /* Arithmetic.swift */; };
 		08B68A311ED07A2400F8D423 /* ColorSpace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08B68A301ED07A2400F8D423 /* ColorSpace.swift */; };
 		08B68A321ED07A2400F8D423 /* ColorSpace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08B68A301ED07A2400F8D423 /* ColorSpace.swift */; };
 		08B68A341ED07A4700F8D423 /* ColorSpaceProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08B68A331ED07A4700F8D423 /* ColorSpaceProtocol.swift */; };
@@ -214,7 +220,7 @@
 		081321D31C11D1840081B2B9 /* Doggie.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Doggie.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		081321DC1C11D1850081B2B9 /* Doggie_iOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Doggie_iOSTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		08458AB11E2E627600D01813 /* AccelerateWrapper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccelerateWrapper.swift; sourceTree = "<group>"; };
-		08458AB21E2E627600D01813 /* Arithmetic.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Arithmetic.swift; sourceTree = "<group>"; };
+		08458AB21E2E627600D01813 /* AccelerateArithmetic.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccelerateArithmetic.swift; sourceTree = "<group>"; };
 		08458AB31E2E627600D01813 /* CircularConvolve.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CircularConvolve.swift; sourceTree = "<group>"; };
 		08458AB41E2E627600D01813 /* ComplexConversion.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ComplexConversion.swift; sourceTree = "<group>"; };
 		08458AB51E2E627600D01813 /* CooleyTukey.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CooleyTukey.swift; sourceTree = "<group>"; };
@@ -243,6 +249,8 @@
 		08458AED1E2E627600D01813 /* AtomicStack.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AtomicStack.swift; sourceTree = "<group>"; };
 		08458AEE1E2E627600D01813 /* Lock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Lock.swift; sourceTree = "<group>"; };
 		08458AEF1E2E627600D01813 /* Thread.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Thread.swift; sourceTree = "<group>"; };
+		086F06481EDC623D00BA70C8 /* Rasterizer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Rasterizer.swift; sourceTree = "<group>"; };
+		086F064B1EDC65D600BA70C8 /* DrawGradientMesh.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DrawGradientMesh.swift; sourceTree = "<group>"; };
 		087FE59A1A372D5B005A2E9E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		087FE59B1A372D5B005A2E9E /* Doggie_iOS.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Doggie_iOS.h; sourceTree = "<group>"; };
 		087FE5A71A372D5B005A2E9E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -252,6 +260,7 @@
 		087FE5BF1A372D97005A2E9E /* Doggie_MacTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Doggie_MacTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		087FE5C51A372D97005A2E9E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		08B085471E9A20720037DECE /* Algorithm.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Algorithm.swift; sourceTree = "<group>"; };
+		08B457E51EDD3223007AA4F0 /* Arithmetic.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Arithmetic.swift; sourceTree = "<group>"; };
 		08B68A301ED07A2400F8D423 /* ColorSpace.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ColorSpace.swift; sourceTree = "<group>"; };
 		08B68A331ED07A4700F8D423 /* ColorSpaceProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ColorSpaceProtocol.swift; sourceTree = "<group>"; };
 		08B68A361ED07A6A00F8D423 /* CIEXYZColorSpace.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CIEXYZColorSpace.swift; sourceTree = "<group>"; };
@@ -353,7 +362,7 @@
 			isa = PBXGroup;
 			children = (
 				08458AB11E2E627600D01813 /* AccelerateWrapper.swift */,
-				08458AB21E2E627600D01813 /* Arithmetic.swift */,
+				08458AB21E2E627600D01813 /* AccelerateArithmetic.swift */,
 				08458AB31E2E627600D01813 /* CircularConvolve.swift */,
 				08458AB41E2E627600D01813 /* ComplexConversion.swift */,
 				08458AB51E2E627600D01813 /* CooleyTukey.swift */,
@@ -368,6 +377,7 @@
 			isa = PBXGroup;
 			children = (
 				08B085471E9A20720037DECE /* Algorithm.swift */,
+				08B457E51EDD3223007AA4F0 /* Arithmetic.swift */,
 				0A53E44D1E35AEF80060FB83 /* CollectionExtension.swift */,
 				0A53E44F1E35AEF80060FB83 /* Date.swift */,
 				0A92C7C31E56AB9D0090EBFC /* Data.swift */,
@@ -602,8 +612,10 @@
 				0A39A6C01ED934D300804004 /* DrawClip.swift */,
 				0A39A6BD1ED934B100804004 /* TransparencyLayer.swift */,
 				0A39A6B71ED9345100804004 /* DrawImage.swift */,
+				086F06481EDC623D00BA70C8 /* Rasterizer.swift */,
 				0A39A6BA1ED9347C00804004 /* DrawShape.swift */,
 				0A39A6C31ED937C700804004 /* DrawGradient.swift */,
+				086F064B1EDC65D600BA70C8 /* DrawGradientMesh.swift */,
 			);
 			path = ImageContext;
 			sourceTree = "<group>";
@@ -861,12 +873,14 @@
 			files = (
 				08B68A341ED07A4700F8D423 /* ColorSpaceProtocol.swift in Sources */,
 				08458B3C1E2E627600D01813 /* Polynomial.swift in Sources */,
+				086F06491EDC623D00BA70C8 /* Rasterizer.swift in Sources */,
 				0A2A643E1E5C45EE000E21BB /* PDFParser.swift in Sources */,
 				0AD7FA301EBDA86A001C9B21 /* ShapeWinding.swift in Sources */,
 				0A80D1471E66A7000003BB44 /* RangeSet.swift in Sources */,
 				0A52E2DE1E60266A0065EED6 /* PDFLZWDecode.swift in Sources */,
 				0A78E1F81E98B20A00BD91AB /* Geometry.swift in Sources */,
 				0A52E2D21E6012140065EED6 /* PDFASCII85Decode.swift in Sources */,
+				08B457E61EDD3223007AA4F0 /* Arithmetic.swift in Sources */,
 				08458B3E1E2E627600D01813 /* Rect.swift in Sources */,
 				0A53E4781E35AEF80060FB83 /* Parallel.swift in Sources */,
 				0A39A6B51ED9342C00804004 /* ImageContext.swift in Sources */,
@@ -919,6 +933,7 @@
 				0A52E2D81E6012140065EED6 /* PDFFilter.swift in Sources */,
 				08458AFE1E2E627600D01813 /* SafeFunction.swift in Sources */,
 				0A39A6BB1ED9347C00804004 /* DrawShape.swift in Sources */,
+				086F064C1EDC65D600BA70C8 /* DrawGradientMesh.swift in Sources */,
 				0A92C7D31E56DA960090EBFC /* DGParser.swift in Sources */,
 				08B68A3A1ED07A8300F8D423 /* LinearToneColorSpace.swift in Sources */,
 				08458AF41E2E627600D01813 /* CircularConvolve.swift in Sources */,
@@ -941,7 +956,7 @@
 				08B68A491ED07AF700F8D423 /* CalibratedGrayColorSpace.swift in Sources */,
 				0A6CDDA71E61738A009DDEEB /* PDFPredictor.swift in Sources */,
 				08458B2A1E2E627600D01813 /* ColorPixel.swift in Sources */,
-				08458AF21E2E627600D01813 /* Arithmetic.swift in Sources */,
+				08458AF21E2E627600D01813 /* AccelerateArithmetic.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -963,12 +978,14 @@
 			files = (
 				08B68A351ED07A4700F8D423 /* ColorSpaceProtocol.swift in Sources */,
 				08458B3D1E2E627600D01813 /* Polynomial.swift in Sources */,
+				086F064A1EDC623D00BA70C8 /* Rasterizer.swift in Sources */,
 				0A2A643F1E5C45EE000E21BB /* PDFParser.swift in Sources */,
 				0AD7FA311EBDA86A001C9B21 /* ShapeWinding.swift in Sources */,
 				0A80D1481E66A7000003BB44 /* RangeSet.swift in Sources */,
 				0A52E2DF1E60266A0065EED6 /* PDFLZWDecode.swift in Sources */,
 				0A78E1F91E98B20A00BD91AB /* Geometry.swift in Sources */,
 				0A52E2D31E6012140065EED6 /* PDFASCII85Decode.swift in Sources */,
+				08B457E71EDD3223007AA4F0 /* Arithmetic.swift in Sources */,
 				08458B3F1E2E627600D01813 /* Rect.swift in Sources */,
 				0A53E4791E35AEF80060FB83 /* Parallel.swift in Sources */,
 				0A39A6B61ED9342C00804004 /* ImageContext.swift in Sources */,
@@ -1021,6 +1038,7 @@
 				0A52E2D91E6012140065EED6 /* PDFFilter.swift in Sources */,
 				08458AFF1E2E627600D01813 /* SafeFunction.swift in Sources */,
 				0A39A6BC1ED9347C00804004 /* DrawShape.swift in Sources */,
+				086F064D1EDC65D600BA70C8 /* DrawGradientMesh.swift in Sources */,
 				0A92C7D41E56DA960090EBFC /* DGParser.swift in Sources */,
 				08B68A3B1ED07A8300F8D423 /* LinearToneColorSpace.swift in Sources */,
 				08458AF51E2E627600D01813 /* CircularConvolve.swift in Sources */,
@@ -1043,7 +1061,7 @@
 				08B68A4A1ED07AF700F8D423 /* CalibratedGrayColorSpace.swift in Sources */,
 				0A6CDDA81E61738A009DDEEB /* PDFPredictor.swift in Sources */,
 				08458B2B1E2E627600D01813 /* ColorPixel.swift in Sources */,
-				08458AF31E2E627600D01813 /* Arithmetic.swift in Sources */,
+				08458AF31E2E627600D01813 /* AccelerateArithmetic.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

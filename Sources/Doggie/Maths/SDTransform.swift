@@ -272,6 +272,10 @@ extension SDTransform {
     }
 }
 
+extension SDTransform : Multiplicative {
+    
+}
+
 @_inlineable
 public func ==(lhs: SDTransform, rhs: SDTransform) -> Bool {
     return lhs.a == rhs.a && lhs.b == rhs.b && lhs.c == rhs.c && lhs.d == rhs.d && lhs.e == rhs.e && lhs.f == rhs.f

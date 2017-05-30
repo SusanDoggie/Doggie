@@ -25,6 +25,138 @@
 
 import Foundation
 
+@_versioned
+@_fixed_layout
+struct ShapeRasterizeBuffer<T: SignedInteger & SDAtomicProtocol> : RasterizeBufferProtocol {
+    
+    @_versioned
+    var stencil: UnsafeMutablePointer<T>
+    
+    @_versioned
+    var width: Int
+    
+    @_versioned
+    var height: Int
+    
+    @_versioned
+    @_inlineable
+    init(stencil: UnsafeMutablePointer<T>, width: Int, height: Int) {
+        self.stencil = stencil
+        self.width = width
+        self.height = height
+    }
+    
+    @_versioned
+    @_inlineable
+    static func + (lhs: ShapeRasterizeBuffer, rhs: Int) -> ShapeRasterizeBuffer {
+        return ShapeRasterizeBuffer(stencil: lhs.stencil + rhs, width: lhs.width, height: lhs.height)
+    }
+    
+    @_versioned
+    @_inlineable
+    static func += (lhs: inout ShapeRasterizeBuffer, rhs: Int) {
+        lhs.stencil += rhs
+    }
+}
+
+@_versioned
+@inline(never)
+@_specialize(Int8) @_specialize(Int16) @_specialize(Int32) @_specialize(Int64) @_specialize(Int)
+func _render<T: SignedInteger & SDAtomicProtocol>(_ op: Shape.RenderOperation, width: Int, height: Int, transform: SDTransform, stencil: UnsafeMutablePointer<T>) where T.Atom == T {
+    
+    let rasterizer = ShapeRasterizeBuffer(stencil: stencil, width: width, height: width)
+    
+    switch op {
+    case let .triangle(p0, p1, p2):
+        
+        let q0 = p0 * transform
+        let q1 = p1 * transform
+        let q2 = p2 * transform
+        
+        rasterizer.rasterize(q0, q1, q2) { d, point, pixel in
+            
+            let winding: T = d.sign == .plus ? 1 : -1
+            
+            pixel.stencil.pointee.fetchStore { $0 + winding }
+        }
+        
+    case let .quadratic(p0, p1, p2):
+        
+        let q0 = p0 * transform
+        let q1 = p1 * transform
+        let q2 = p2 * transform
+        
+        if let transform = SDTransform(from: q0, q1, q2, to: Point(x: 0, y: 0), Point(x: 0.5, y: 0), Point(x: 1, y: 1)) {
+            
+            @inline(__always)
+            func _test(_ point: Point) -> Bool {
+                let _q = point * transform
+                return _q.x * _q.x - _q.y < 0
+            }
+            
+            rasterizer.rasterize(q0, q1, q2) { d, point, pixel in
+                
+                let winding: T = d.sign == .plus ? 1 : -1
+                
+                if _test(point) {
+                    pixel.stencil.pointee.fetchStore { $0 + winding }
+                }
+            }
+        }
+        
+    case let .cubic(p0, p1, p2, v0, v1, v2):
+        
+        let q0 = p0 * transform
+        let q1 = p1 * transform
+        let q2 = p2 * transform
+        
+        @inline(__always)
+        func _test(_ point: Point) -> Bool {
+            if let p = Barycentric(q0, q1, q2, point) {
+                let v = p.x * v0 + p.y * v1 + p.z * v2
+                return v.x * v.x * v.x - v.y * v.z < 0
+            }
+            return false
+        }
+        
+        rasterizer.rasterize(q0, q1, q2) { d, point, pixel in
+            
+            let winding: T = d.sign == .plus ? 1 : -1
+            
+            if _test(point) {
+                pixel.stencil.pointee.fetchStore { $0 + winding }
+            }
+        }
+    }
+}
+
+extension Shape {
+    
+    @_inlineable
+    public func raster<T: SignedInteger & SDAtomicProtocol>(width: Int, height: Int, stencil: inout [T]) where T.Atom == T {
+        
+        assert(stencil.count == width * height, "incorrect size of stencil.")
+        
+        if stencil.count == 0 {
+            return
+        }
+        
+        let transform = self.transform
+        
+        stencil.withUnsafeMutableBufferPointer { stencil in
+            
+            if let ptr = stencil.baseAddress {
+                
+                let group = DispatchGroup()
+                
+                self.render { op in SDDefaultDispatchQueue.async(group: group) { _render(op, width: width, height: width, transform: transform, stencil: ptr) } }
+                
+                group.wait()
+            }
+        }
+    }
+}
+
 extension ImageContext {
     
     @_versioned

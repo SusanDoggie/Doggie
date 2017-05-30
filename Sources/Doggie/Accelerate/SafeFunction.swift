@@ -98,9 +98,8 @@ public func mulmod<T: UnsignedInteger>(_ lhs: [T], _ rhs: [T], _ mod: [T]) -> [T
 }
 
 @_inlineable
-@_specialize(Int8) @_specialize(Int16) @_specialize(Int32) @_specialize(Int64) @_specialize(Int)
-@_specialize(UInt8) @_specialize(UInt16) @_specialize(UInt32) @_specialize(UInt64) @_specialize(UInt)
-public func add<T: Integer>(_ lhs: [T], _ rhs: [T]) -> [T] {
+@_specialize(Int8) @_specialize(Int16) @_specialize(Int32) @_specialize(Int64) @_specialize(Int) @_specialize(Float) @_specialize(Double) @_specialize(Complex)
+public func add<T: Additive>(_ lhs: [T], _ rhs: [T]) -> [T] {
     var result = lhs
     assert(lhs.count == rhs.count, "mismatch count of inputs.")
     Add(lhs.count, lhs, 1, rhs, 1, &result, 1)
@@ -108,9 +107,8 @@ public func add<T: Integer>(_ lhs: [T], _ rhs: [T]) -> [T] {
 }
 
 @_inlineable
-@_specialize(Int8) @_specialize(Int16) @_specialize(Int32) @_specialize(Int64) @_specialize(Int)
-@_specialize(UInt8) @_specialize(UInt16) @_specialize(UInt32) @_specialize(UInt64) @_specialize(UInt)
-public func sub<T: Integer>(_ lhs: [T], _ rhs: [T]) -> [T] {
+@_specialize(Int8) @_specialize(Int16) @_specialize(Int32) @_specialize(Int64) @_specialize(Int) @_specialize(Float) @_specialize(Double) @_specialize(Complex)
+public func sub<T: Subtractive>(_ lhs: [T], _ rhs: [T]) -> [T] {
     var result = lhs
     assert(lhs.count == rhs.count, "mismatch count of inputs.")
     Sub(lhs.count, lhs, 1, rhs, 1, &result, 1)
@@ -118,9 +116,8 @@ public func sub<T: Integer>(_ lhs: [T], _ rhs: [T]) -> [T] {
 }
 
 @_inlineable
-@_specialize(Int8) @_specialize(Int16) @_specialize(Int32) @_specialize(Int64) @_specialize(Int)
-@_specialize(UInt8) @_specialize(UInt16) @_specialize(UInt32) @_specialize(UInt64) @_specialize(UInt)
-public func mul<T: Integer>(_ lhs: [T], _ rhs: [T]) -> [T] {
+@_specialize(Int8) @_specialize(Int16) @_specialize(Int32) @_specialize(Int64) @_specialize(Int) @_specialize(Float) @_specialize(Double) @_specialize(Complex)
+public func mul<T: Multiplicative>(_ lhs: [T], _ rhs: [T]) -> [T] {
     var result = lhs
     assert(lhs.count == rhs.count, "mismatch count of inputs.")
     Mul(lhs.count, lhs, 1, rhs, 1, &result, 1)
@@ -128,9 +125,8 @@ public func mul<T: Integer>(_ lhs: [T], _ rhs: [T]) -> [T] {
 }
 
 @_inlineable
-@_specialize(Int8) @_specialize(Int16) @_specialize(Int32) @_specialize(Int64) @_specialize(Int)
-@_specialize(UInt8) @_specialize(UInt16) @_specialize(UInt32) @_specialize(UInt64) @_specialize(UInt)
-public func div<T: Integer>(_ lhs: [T], _ rhs: [T]) -> [T] {
+@_specialize(Int8) @_specialize(Int16) @_specialize(Int32) @_specialize(Int64) @_specialize(Int) @_specialize(Float) @_specialize(Double) @_specialize(Complex)
+public func div<T: Divisive>(_ lhs: [T], _ rhs: [T]) -> [T] {
     var result = lhs
     assert(lhs.count == rhs.count, "mismatch count of inputs.")
     Div(lhs.count, lhs, 1, rhs, 1, &result, 1)
@@ -149,42 +145,6 @@ public func mod<T: Integer>(_ lhs: [T], _ rhs: [T]) -> [T] {
 
 @_inlineable
 @_specialize(Float) @_specialize(Double)
-public func add<T: FloatingPoint>(_ lhs: [T], _ rhs: [T]) -> [T] {
-    var result = lhs
-    assert(lhs.count == rhs.count, "mismatch count of inputs.")
-    Add(lhs.count, lhs, 1, rhs, 1, &result, 1)
-    return result
-}
-
-@_inlineable
-@_specialize(Float) @_specialize(Double)
-public func sub<T: FloatingPoint>(_ lhs: [T], _ rhs: [T]) -> [T] {
-    var result = lhs
-    assert(lhs.count == rhs.count, "mismatch count of inputs.")
-    Sub(lhs.count, lhs, 1, rhs, 1, &result, 1)
-    return result
-}
-
-@_inlineable
-@_specialize(Float) @_specialize(Double)
-public func mul<T: FloatingPoint>(_ lhs: [T], _ rhs: [T]) -> [T] {
-    var result = lhs
-    assert(lhs.count == rhs.count, "mismatch count of inputs.")
-    Mul(lhs.count, lhs, 1, rhs, 1, &result, 1)
-    return result
-}
-
-@_inlineable
-@_specialize(Float) @_specialize(Double)
-public func div<T: FloatingPoint>(_ lhs: [T], _ rhs: [T]) -> [T] {
-    var result = lhs
-    assert(lhs.count == rhs.count, "mismatch count of inputs.")
-    Div(lhs.count, lhs, 1, rhs, 1, &result, 1)
-    return result
-}
-
-@_inlineable
-@_specialize(Float) @_specialize(Double)
 public func mod<T: FloatingPoint>(_ lhs: [T], _ rhs: [T]) -> [T] {
     var result = lhs
     assert(lhs.count == rhs.count, "mismatch count of inputs.")
@@ -193,8 +153,8 @@ public func mod<T: FloatingPoint>(_ lhs: [T], _ rhs: [T]) -> [T] {
 }
 
 @_inlineable
-@_specialize(Float) @_specialize(Double)
-public func mulAdd<T: FloatingPoint>(_ a: [T], _ b: [T], _ c: [T]) -> [T] {
+@_specialize(Int8) @_specialize(Int16) @_specialize(Int32) @_specialize(Int64) @_specialize(Int) @_specialize(Float) @_specialize(Double) @_specialize(Complex)
+public func mulAdd<T: Multiplicative & Additive>(_ a: [T], _ b: [T], _ c: [T]) -> [T] {
     var result = a
     assert(a.count == b.count && a.count == c.count, "mismatch count of inputs.")
     MulAdd(a.count, a, 1, b, 1, c, 1, &result, 1)
@@ -202,8 +162,8 @@ public func mulAdd<T: FloatingPoint>(_ a: [T], _ b: [T], _ c: [T]) -> [T] {
 }
 
 @_inlineable
-@_specialize(Float) @_specialize(Double)
-public func mulSub<T: FloatingPoint>(_ a: [T], _ b: [T], _ c: [T]) -> [T] {
+@_specialize(Int8) @_specialize(Int16) @_specialize(Int32) @_specialize(Int64) @_specialize(Int) @_specialize(Float) @_specialize(Double) @_specialize(Complex)
+public func mulSub<T: Multiplicative & Subtractive>(_ a: [T], _ b: [T], _ c: [T]) -> [T] {
     var result = a
     assert(a.count == b.count && a.count == c.count, "mismatch count of inputs.")
     MulSub(a.count, a, 1, b, 1, c, 1, &result, 1)
@@ -211,8 +171,8 @@ public func mulSub<T: FloatingPoint>(_ a: [T], _ b: [T], _ c: [T]) -> [T] {
 }
 
 @_inlineable
-@_specialize(Float) @_specialize(Double)
-public func subMul<T: FloatingPoint>(_ a: [T], _ b: [T], _ c: [T]) -> [T] {
+@_specialize(Int8) @_specialize(Int16) @_specialize(Int32) @_specialize(Int64) @_specialize(Int) @_specialize(Float) @_specialize(Double) @_specialize(Complex)
+public func subMul<T: Multiplicative & Subtractive>(_ a: [T], _ b: [T], _ c: [T]) -> [T] {
     var result = a
     assert(a.count == b.count && a.count == c.count, "mismatch count of inputs.")
     SubMul(a.count, a, 1, b, 1, c, 1, &result, 1)
@@ -227,66 +187,10 @@ public func dot<T: FloatingPoint>(_ a: [T], _ b: [T]) -> T {
 }
 
 @_inlineable
-public func add(_ lhs: [Complex], _ rhs: [Complex]) -> [Complex] {
-    var result = lhs
-    assert(lhs.count == rhs.count, "mismatch count of inputs.")
-    Add(lhs.count, lhs, 1, rhs, 1, &result, 1)
-    return result
-}
-
-@_inlineable
-public func sub(_ lhs: [Complex], _ rhs: [Complex]) -> [Complex] {
-    var result = lhs
-    assert(lhs.count == rhs.count, "mismatch count of inputs.")
-    Sub(lhs.count, lhs, 1, rhs, 1, &result, 1)
-    return result
-}
-
-@_inlineable
-public func mul(_ lhs: [Complex], _ rhs: [Complex]) -> [Complex] {
-    var result = lhs
-    assert(lhs.count == rhs.count, "mismatch count of inputs.")
-    Mul(lhs.count, lhs, 1, rhs, 1, &result, 1)
-    return result
-}
-
-@_inlineable
-public func mulAdd(_ a: [Complex], _ b: [Complex], _ c: [Complex]) -> [Complex] {
-    var result = a
-    assert(a.count == b.count && a.count == c.count, "mismatch count of inputs.")
-    MulAdd(a.count, a, 1, b, 1, c, 1, &result, 1)
-    return result
-}
-
-@_inlineable
-public func mulSub(_ a: [Complex], _ b: [Complex], _ c: [Complex]) -> [Complex] {
-    var result = a
-    assert(a.count == b.count && a.count == c.count, "mismatch count of inputs.")
-    MulSub(a.count, a, 1, b, 1, c, 1, &result, 1)
-    return result
-}
-
-@_inlineable
-public func subMul(_ a: [Complex], _ b: [Complex], _ c: [Complex]) -> [Complex] {
-    var result = a
-    assert(a.count == b.count && a.count == c.count, "mismatch count of inputs.")
-    SubMul(a.count, a, 1, b, 1, c, 1, &result, 1)
-    return result
-}
-
-@_inlineable
 public func mulConj(_ lhs: [Complex], _ rhs: [Complex]) -> [Complex] {
     var result = lhs
     assert(lhs.count == rhs.count, "mismatch count of inputs.")
     MulConj(lhs.count, lhs, 1, rhs, 1, &result, 1)
-    return result
-}
-
-@_inlineable
-public func div(_ lhs: [Complex], _ rhs: [Complex]) -> [Complex] {
-    var result = lhs
-    assert(lhs.count == rhs.count, "mismatch count of inputs.")
-    Div(lhs.count, lhs, 1, rhs, 1, &result, 1)
     return result
 }
 
@@ -299,7 +203,7 @@ public func transpose<T>(_ row: Int, _ column: Int, _ data: [T]) -> [T] {
 }
 
 @_inlineable
-public func MatrixElimination<T: FloatingPoint>(_ row: Int, _ matrix: inout [T]) -> Bool {
+public func MatrixElimination<T: FloatingPoint & Subtractive & Divisive>(_ row: Int, _ matrix: inout [T]) -> Bool {
     let column = matrix.count / row
     assert(matrix.count % row == 0, "count of matrix is not multiples of row.")
     assert(column > row, "count of column of matrix is less than or equal to row.")

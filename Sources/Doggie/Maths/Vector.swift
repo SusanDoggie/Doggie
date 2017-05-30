@@ -101,6 +101,10 @@ extension Vector {
     }
 }
 
+extension Vector : Additive, Subtractive {
+    
+}
+
 @_inlineable
 public func dot(_ lhs: Vector, _ rhs:  Vector) -> Double {
     return lhs.x * rhs.x + lhs.y * rhs.y + lhs.z * rhs.z

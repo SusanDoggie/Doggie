@@ -23,259 +23,205 @@
 //  THE SOFTWARE.
 //
 
+extension UnsafePointer where Pointee == Complex {
+    
+    @_versioned
+    @inline(__always)
+    func _reboundToDouble(body: (UnsafePointer<Double>) throws -> Void) rethrows {
+        try self.withMemoryRebound(to: Double.self, capacity: 2, body)
+    }
+}
+
+extension UnsafeMutablePointer where Pointee == Complex {
+    
+    @_versioned
+    @inline(__always)
+    func _reboundToDouble(body: (UnsafeMutablePointer<Double>) throws -> Void) rethrows {
+        try self.withMemoryRebound(to: Double.self, capacity: 2, body)
+    }
+}
+
 @_inlineable
 public func Add(_ count: Int, _ left: UnsafePointer<Double>, _ left_stride: Int, _ right: UnsafePointer<Complex>, _ right_stride: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int) {
-    right.withMemoryRebound(to: Double.self, capacity: 2) { _right in output.withMemoryRebound(to: Double.self, capacity: 2) { Add(count, left, left_stride, _right, _right + 1, right_stride << 1, $0, $0 + 1, out_stride << 1) } }
+    right._reboundToDouble { _right in output._reboundToDouble { Add(count, left, left_stride, _right, _right.successor(), right_stride << 1, $0, $0.successor(), out_stride << 1) } }
 }
 @_inlineable
 public func Sub(_ count: Int, _ left: UnsafePointer<Double>, _ left_stride: Int, _ right: UnsafePointer<Complex>, _ right_stride: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int) {
-    right.withMemoryRebound(to: Double.self, capacity: 2) { _right in output.withMemoryRebound(to: Double.self, capacity: 2) { Sub(count, left, left_stride, _right, _right + 1, right_stride << 1, $0, $0 + 1, out_stride << 1) } }
+    right._reboundToDouble { _right in output._reboundToDouble { Sub(count, left, left_stride, _right, _right.successor(), right_stride << 1, $0, $0.successor(), out_stride << 1) } }
 }
 @_inlineable
 public func Mul(_ count: Int, _ left: UnsafePointer<Double>, _ left_stride: Int, _ right: UnsafePointer<Complex>, _ right_stride: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int) {
-    right.withMemoryRebound(to: Double.self, capacity: 2) { _right in output.withMemoryRebound(to: Double.self, capacity: 2) { Mul(count, left, left_stride, _right, _right + 1, right_stride << 1, $0, $0 + 1, out_stride << 1) } }
+    right._reboundToDouble { _right in output._reboundToDouble { Mul(count, left, left_stride, _right, _right.successor(), right_stride << 1, $0, $0.successor(), out_stride << 1) } }
 }
 @_inlineable
 public func MulAdd(_ count: Int, _ a: UnsafePointer<Double>, _ a_stride: Int, _ b: UnsafePointer<Complex>, _ b_stride: Int, _ c: UnsafePointer<Complex>, _ c_stride: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int) {
-    b.withMemoryRebound(to: Double.self, capacity: 2) { _b in c.withMemoryRebound(to: Double.self, capacity: 2) { _c in output.withMemoryRebound(to: Double.self, capacity: 2) { MulAdd(count, a, a_stride, _b, _b + 1, b_stride << 1, _c, _c + 1, c_stride << 1, $0, $0 + 1, out_stride << 1) } } }
+    b._reboundToDouble { _b in c._reboundToDouble { _c in output._reboundToDouble { MulAdd(count, a, a_stride, _b, _b.successor(), b_stride << 1, _c, _c.successor(), c_stride << 1, $0, $0.successor(), out_stride << 1) } } }
 }
 @_inlineable
 public func MulSub(_ count: Int, _ a: UnsafePointer<Double>, _ a_stride: Int, _ b: UnsafePointer<Complex>, _ b_stride: Int, _ c: UnsafePointer<Complex>, _ c_stride: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int) {
-    b.withMemoryRebound(to: Double.self, capacity: 2) { _b in c.withMemoryRebound(to: Double.self, capacity: 2) { _c in output.withMemoryRebound(to: Double.self, capacity: 2) { MulSub(count, a, a_stride, _b, _b + 1, b_stride << 1, _c, _c + 1, c_stride << 1, $0, $0 + 1, out_stride << 1) } } }
+    b._reboundToDouble { _b in c._reboundToDouble { _c in output._reboundToDouble { MulSub(count, a, a_stride, _b, _b.successor(), b_stride << 1, _c, _c.successor(), c_stride << 1, $0, $0.successor(), out_stride << 1) } } }
 }
 @_inlineable
 public func SubMul(_ count: Int, _ a: UnsafePointer<Complex>, _ a_stride: Int, _ b: UnsafePointer<Double>, _ b_stride: Int, _ c: UnsafePointer<Complex>, _ c_stride: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int) {
-    a.withMemoryRebound(to: Double.self, capacity: 2) { _a in c.withMemoryRebound(to: Double.self, capacity: 2) { _c in output.withMemoryRebound(to: Double.self, capacity: 2) { SubMul(count, _a, _a + 1, a_stride << 1, b, b_stride, _c, _c + 1, c_stride << 1, $0, $0 + 1, out_stride << 1) } } }
+    a._reboundToDouble { _a in c._reboundToDouble { _c in output._reboundToDouble { SubMul(count, _a, _a.successor(), a_stride << 1, b, b_stride, _c, _c.successor(), c_stride << 1, $0, $0.successor(), out_stride << 1) } } }
 }
 @_inlineable
 public func Div(_ count: Int, _ left: UnsafePointer<Double>, _ left_stride: Int, _ right: UnsafePointer<Complex>, _ right_stride: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int) {
-    right.withMemoryRebound(to: Double.self, capacity: 2) { _right in output.withMemoryRebound(to: Double.self, capacity: 2) { Div(count, left, left_stride, _right, _right + 1, right_stride << 1, $0, $0 + 1, out_stride << 1) } }
+    right._reboundToDouble { _right in output._reboundToDouble { Div(count, left, left_stride, _right, _right.successor(), right_stride << 1, $0, $0.successor(), out_stride << 1) } }
 }
 
 @_inlineable
 public func Add(_ count: Int, _ left: UnsafePointer<Complex>, _ left_stride: Int, _ right: UnsafePointer<Double>, _ right_stride: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int) {
-    left.withMemoryRebound(to: Double.self, capacity: 2) { _left in output.withMemoryRebound(to: Double.self, capacity: 2) { Add(count, _left, _left + 1, left_stride << 1, right, right_stride, $0, $0 + 1, out_stride << 1) } }
+    left._reboundToDouble { _left in output._reboundToDouble { Add(count, _left, _left.successor(), left_stride << 1, right, right_stride, $0, $0.successor(), out_stride << 1) } }
 }
 @_inlineable
 public func Sub(_ count: Int, _ left: UnsafePointer<Complex>, _ left_stride: Int, _ right: UnsafePointer<Double>, _ right_stride: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int) {
-    left.withMemoryRebound(to: Double.self, capacity: 2) { _left in output.withMemoryRebound(to: Double.self, capacity: 2) { Sub(count, _left, _left + 1, left_stride << 1, right, right_stride, $0, $0 + 1, out_stride << 1) } }
+    left._reboundToDouble { _left in output._reboundToDouble { Sub(count, _left, _left.successor(), left_stride << 1, right, right_stride, $0, $0.successor(), out_stride << 1) } }
 }
 @_inlineable
 public func Mul(_ count: Int, _ left: UnsafePointer<Complex>, _ left_stride: Int, _ right: UnsafePointer<Double>, _ right_stride: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int) {
-    left.withMemoryRebound(to: Double.self, capacity: 2) { _left in output.withMemoryRebound(to: Double.self, capacity: 2) { Mul(count, _left, _left + 1, left_stride << 1, right, right_stride, $0, $0 + 1, out_stride << 1) } }
+    left._reboundToDouble { _left in output._reboundToDouble { Mul(count, _left, _left.successor(), left_stride << 1, right, right_stride, $0, $0.successor(), out_stride << 1) } }
 }
 @_inlineable
 public func MulAdd(_ count: Int, _ a: UnsafePointer<Complex>, _ a_stride: Int, _ b: UnsafePointer<Double>, _ b_stride: Int, _ c: UnsafePointer<Complex>, _ c_stride: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int) {
-    a.withMemoryRebound(to: Double.self, capacity: 2) { _a in c.withMemoryRebound(to: Double.self, capacity: 2) { _c in output.withMemoryRebound(to: Double.self, capacity: 2) { MulAdd(count, _a, _a + 1, a_stride << 1, b, b_stride, _c, _c + 1, c_stride << 1, $0, $0 + 1, out_stride << 1) } } }
+    a._reboundToDouble { _a in c._reboundToDouble { _c in output._reboundToDouble { MulAdd(count, _a, _a.successor(), a_stride << 1, b, b_stride, _c, _c.successor(), c_stride << 1, $0, $0.successor(), out_stride << 1) } } }
 }
 @_inlineable
 public func MulSub(_ count: Int, _ a: UnsafePointer<Complex>, _ a_stride: Int, _ b: UnsafePointer<Double>, _ b_stride: Int, _ c: UnsafePointer<Complex>, _ c_stride: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int) {
-    a.withMemoryRebound(to: Double.self, capacity: 2) { _a in c.withMemoryRebound(to: Double.self, capacity: 2) { _c in output.withMemoryRebound(to: Double.self, capacity: 2) { MulSub(count, _a, _a + 1, a_stride << 1, b, b_stride, _c, _c + 1, c_stride << 1, $0, $0 + 1, out_stride << 1) } } }
+    a._reboundToDouble { _a in c._reboundToDouble { _c in output._reboundToDouble { MulSub(count, _a, _a.successor(), a_stride << 1, b, b_stride, _c, _c.successor(), c_stride << 1, $0, $0.successor(), out_stride << 1) } } }
 }
 @_inlineable
 public func SubMul(_ count: Int, _ a: UnsafePointer<Complex>, _ a_stride: Int, _ b: UnsafePointer<Complex>, _ b_stride: Int, _ c: UnsafePointer<Double>, _ c_stride: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int) {
-    a.withMemoryRebound(to: Double.self, capacity: 2) { _a in b.withMemoryRebound(to: Double.self, capacity: 2) { _b in output.withMemoryRebound(to: Double.self, capacity: 2) { SubMul(count, _a, _a + 1, a_stride << 1, _b, _b + 1, b_stride << 1, c, c_stride, $0, $0 + 1, out_stride << 1) } } }
+    a._reboundToDouble { _a in b._reboundToDouble { _b in output._reboundToDouble { SubMul(count, _a, _a.successor(), a_stride << 1, _b, _b.successor(), b_stride << 1, c, c_stride, $0, $0.successor(), out_stride << 1) } } }
 }
 @_inlineable
 public func MulConj(_ count: Int, _ left: UnsafePointer<Complex>, _ left_stride: Int, _ right: UnsafePointer<Double>, _ right_stride: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int) {
-    left.withMemoryRebound(to: Double.self, capacity: 2) { _left in output.withMemoryRebound(to: Double.self, capacity: 2) { MulConj(count, _left, _left + 1, left_stride << 1, right, right_stride, $0, $0 + 1, out_stride << 1) } }
+    left._reboundToDouble { _left in output._reboundToDouble { MulConj(count, _left, _left.successor(), left_stride << 1, right, right_stride, $0, $0.successor(), out_stride << 1) } }
 }
 @_inlineable
 public func Div(_ count: Int, _ left: UnsafePointer<Complex>, _ left_stride: Int, _ right: UnsafePointer<Double>, _ right_stride: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int) {
-    left.withMemoryRebound(to: Double.self, capacity: 2) { _left in output.withMemoryRebound(to: Double.self, capacity: 2) { Div(count, _left, _left + 1, left_stride << 1, right, right_stride, $0, $0 + 1, out_stride << 1) } }
+    left._reboundToDouble { _left in output._reboundToDouble { Div(count, _left, _left.successor(), left_stride << 1, right, right_stride, $0, $0.successor(), out_stride << 1) } }
 }
 
-/// Adds the elements of two complex vectors.
-///
-/// - parameters:
-///   - count: Number of elements to process in the input and output vectors.
-///   - left: Complex input vector.
-///   - left_stride: Stride for `left`.
-///   - right: Complex input vector.
-///   - right_stride: Stride for `right`.
-///   - output: Complex result vector.
-///   - out_stride: Stride for `output`.
-/// - remark: `output[n] = left[n] + right[n], 0 <= n < count`
-@_inlineable
-public func Add(_ count: Int, _ left: UnsafePointer<Complex>, _ left_stride: Int, _ right: UnsafePointer<Complex>, _ right_stride: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int) {
-    left.withMemoryRebound(to: Double.self, capacity: 2) { _left in right.withMemoryRebound(to: Double.self, capacity: 2) { _right in output.withMemoryRebound(to: Double.self, capacity: 2) { Add(count, _left, _left + 1, left_stride << 1, _right, _right + 1, right_stride << 1, $0, $0 + 1, out_stride << 1) } } }
-}
-/// Subtracts the elements of two complex vectors.
-///
-/// - parameters:
-///   - count: Number of elements to process in the input and output vectors.
-///   - left: Complex input vector.
-///   - left_stride: Stride for `left`.
-///   - right: Complex input vector.
-///   - right_stride: Stride for `right`.
-///   - output: Complex result vector.
-///   - out_stride: Stride for `output`.
-/// - remark: `output[n] = left[n] - right[n], 0 <= n < count`
-@_inlineable
-public func Sub(_ count: Int, _ left: UnsafePointer<Complex>, _ left_stride: Int, _ right: UnsafePointer<Complex>, _ right_stride: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int) {
-    left.withMemoryRebound(to: Double.self, capacity: 2) { _left in right.withMemoryRebound(to: Double.self, capacity: 2) { _right in output.withMemoryRebound(to: Double.self, capacity: 2) { Sub(count, _left, _left + 1, left_stride << 1, _right, _right + 1, right_stride << 1, $0, $0 + 1, out_stride << 1) } } }
-}
-/// Multiplies the elements of two complex vectors.
-///
-/// - parameters:
-///   - count: Number of elements to process in the input and output vectors.
-///   - left: Complex input vector.
-///   - left_stride: Stride for `left`.
-///   - right: Complex input vector.
-///   - right_stride: Stride for `right`.
-///   - output: Complex result vector.
-///   - out_stride: Stride for `output`.
-/// - remark: `output[n] = left[n] * right[n], 0 <= n < count`
-@_inlineable
-public func Mul(_ count: Int, _ left: UnsafePointer<Complex>, _ left_stride: Int, _ right: UnsafePointer<Complex>, _ right_stride: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int) {
-    left.withMemoryRebound(to: Double.self, capacity: 2) { _left in right.withMemoryRebound(to: Double.self, capacity: 2) { _right in output.withMemoryRebound(to: Double.self, capacity: 2) { Mul(count, _left, _left + 1, left_stride << 1, _right, _right + 1, right_stride << 1, $0, $0 + 1, out_stride << 1) } } }
-}
-@_inlineable
-public func MulAdd(_ count: Int, _ a: UnsafePointer<Complex>, _ a_stride: Int, _ b: UnsafePointer<Complex>, _ b_stride: Int, _ c: UnsafePointer<Complex>, _ c_stride: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int) {
-    a.withMemoryRebound(to: Double.self, capacity: 2) { _a in b.withMemoryRebound(to: Double.self, capacity: 2) { _b in c.withMemoryRebound(to: Double.self, capacity: 2) { _c in output.withMemoryRebound(to: Double.self, capacity: 2) { MulAdd(count, _a, _a + 1, a_stride << 1, _b, _b + 1, b_stride << 1, _c, _c + 1, c_stride << 1, $0, $0 + 1, out_stride << 1) } } } }
-}
-@_inlineable
-public func MulSub(_ count: Int, _ a: UnsafePointer<Complex>, _ a_stride: Int, _ b: UnsafePointer<Complex>, _ b_stride: Int, _ c: UnsafePointer<Complex>, _ c_stride: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int) {
-    a.withMemoryRebound(to: Double.self, capacity: 2) { _a in b.withMemoryRebound(to: Double.self, capacity: 2) { _b in c.withMemoryRebound(to: Double.self, capacity: 2) { _c in output.withMemoryRebound(to: Double.self, capacity: 2) { MulSub(count, _a, _a + 1, a_stride << 1, _b, _b + 1, b_stride << 1, _c, _c + 1, c_stride << 1, $0, $0 + 1, out_stride << 1) } } } }
-}
-@_inlineable
-public func SubMul(_ count: Int, _ a: UnsafePointer<Complex>, _ a_stride: Int, _ b: UnsafePointer<Complex>, _ b_stride: Int, _ c: UnsafePointer<Complex>, _ c_stride: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int) {
-    a.withMemoryRebound(to: Double.self, capacity: 2) { _a in b.withMemoryRebound(to: Double.self, capacity: 2) { _b in c.withMemoryRebound(to: Double.self, capacity: 2) { _c in output.withMemoryRebound(to: Double.self, capacity: 2) { SubMul(count, _a, _a + 1, a_stride << 1, _b, _b + 1, b_stride << 1, _c, _c + 1, c_stride << 1, $0, $0 + 1, out_stride << 1) } } } }
-}
 @_inlineable
 public func MulConj(_ count: Int, _ left: UnsafePointer<Complex>, _ left_stride: Int, _ right: UnsafePointer<Complex>, _ right_stride: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int) {
-    left.withMemoryRebound(to: Double.self, capacity: 2) { _left in right.withMemoryRebound(to: Double.self, capacity: 2) { _right in output.withMemoryRebound(to: Double.self, capacity: 2) { MulConj(count, _left, _left + 1, left_stride << 1, _right, _right + 1, right_stride << 1, $0, $0 + 1, out_stride << 1) } } }
-}
-/// Divides the elements of two complex vectors.
-///
-/// - parameters:
-///   - count: Number of elements to process in the input and output vectors.
-///   - left: Complex input vector.
-///   - left_stride: Stride for `left`.
-///   - right: Complex input vector.
-///   - right_stride: Stride for `right`.
-///   - output: Complex result vector.
-///   - out_stride: Stride for `output`.
-/// - remark: `output[n] = left[n] / right[n], 0 <= n < count`
-@_inlineable
-public func Div(_ count: Int, _ left: UnsafePointer<Complex>, _ left_stride: Int, _ right: UnsafePointer<Complex>, _ right_stride: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int) {
-    left.withMemoryRebound(to: Double.self, capacity: 2) { _left in right.withMemoryRebound(to: Double.self, capacity: 2) { _right in output.withMemoryRebound(to: Double.self, capacity: 2) { Div(count, _left, _left + 1, left_stride << 1, _right, _right + 1, right_stride << 1, $0, $0 + 1, out_stride << 1) } } }
+    left._reboundToDouble { _left in right._reboundToDouble { _right in output._reboundToDouble { MulConj(count, _left, _left.successor(), left_stride << 1, _right, _right.successor(), right_stride << 1, $0, $0.successor(), out_stride << 1) } } }
 }
 
 @_inlineable
 public func ToRect(_ count: Int, _ rho: UnsafePointer<Double>, _ theta: UnsafePointer<Double>, _ in_stride: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int) {
-    output.withMemoryRebound(to: Double.self, capacity: 2) { ToRect(count, rho, theta, in_stride, $0, $0 + 1, out_stride << 1) }
+    output._reboundToDouble { ToRect(count, rho, theta, in_stride, $0, $0.successor(), out_stride << 1) }
 }
 @_inlineable
 public func ToPolar(_ count: Int, _ input: UnsafePointer<Complex>, _ in_stride: Int, rho: UnsafeMutablePointer<Double>, theta: UnsafeMutablePointer<Double>, _ out_stride: Int) {
-    input.withMemoryRebound(to: Double.self, capacity: 2) { ToPolar(count, $0, $0 + 1, in_stride << 1, rho, theta, out_stride) }
+    input._reboundToDouble { ToPolar(count, $0, $0.successor(), in_stride << 1, rho, theta, out_stride) }
 }
 
 
 @_inlineable
 public func HalfRadix2CooleyTukey(_ level: Int, _ input: UnsafePointer<Double>, _ in_stride: Int, _ in_count: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int) {
-    output.withMemoryRebound(to: Double.self, capacity: 2) { HalfRadix2CooleyTukey(level, input, in_stride, in_count, $0, $0 + 1, out_stride << 1) }
+    output._reboundToDouble { HalfRadix2CooleyTukey(level, input, in_stride, in_count, $0, $0.successor(), out_stride << 1) }
 }
 @_inlineable
 public func HalfInverseRadix2CooleyTukey(_ level: Int, _ input: UnsafePointer<Complex>, _ in_stride: Int, _ output: UnsafeMutablePointer<Double>, _ out_stride: Int) {
-    input.withMemoryRebound(to: Double.self, capacity: 2) { _input in HalfInverseRadix2CooleyTukey(level, _input, _input + 1, in_stride << 1, output, out_stride) }
+    input._reboundToDouble { _input in HalfInverseRadix2CooleyTukey(level, _input, _input.successor(), in_stride << 1, output, out_stride) }
 }
 @_inlineable
 public func Radix2CooleyTukey(_ level: Int, _ input: UnsafePointer<Double>, _ in_stride: Int, _ in_count: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int) {
-    output.withMemoryRebound(to: Double.self, capacity: 2) { Radix2CooleyTukey(level, input, in_stride, in_count, $0, $0 + 1, out_stride << 1) }
+    output._reboundToDouble { Radix2CooleyTukey(level, input, in_stride, in_count, $0, $0.successor(), out_stride << 1) }
 }
 @_inlineable
 public func Radix2CooleyTukey(_ level: Int, _ input: UnsafePointer<Complex>, _ in_stride: Int, _ in_count: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int) {
-    input.withMemoryRebound(to: Double.self, capacity: 2) { _input in output.withMemoryRebound(to: Double.self, capacity: 2) { Radix2CooleyTukey(level, _input, _input + 1, in_stride << 1, in_count, $0, $0 + 1, out_stride << 1) } }
+    input._reboundToDouble { _input in output._reboundToDouble { Radix2CooleyTukey(level, _input, _input.successor(), in_stride << 1, in_count, $0, $0.successor(), out_stride << 1) } }
 }
 @_inlineable
 public func InverseRadix2CooleyTukey(_ level: Int, _ input: UnsafePointer<Double>, _ in_stride: Int, _ in_count: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int) {
-    output.withMemoryRebound(to: Double.self, capacity: 2) { InverseRadix2CooleyTukey(level, input, in_stride, in_count, $0, $0 + 1, out_stride << 1) }
+    output._reboundToDouble { InverseRadix2CooleyTukey(level, input, in_stride, in_count, $0, $0.successor(), out_stride << 1) }
 }
 @_inlineable
 public func InverseRadix2CooleyTukey(_ level: Int, _ input: UnsafePointer<Complex>, _ in_stride: Int, _ in_count: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int) {
-    input.withMemoryRebound(to: Double.self, capacity: 2) { _input in output.withMemoryRebound(to: Double.self, capacity: 2) { InverseRadix2CooleyTukey(level, _input, _input + 1, in_stride << 1, in_count, $0, $0 + 1, out_stride << 1) } }
+    input._reboundToDouble { _input in output._reboundToDouble { InverseRadix2CooleyTukey(level, _input, _input.successor(), in_stride << 1, in_count, $0, $0.successor(), out_stride << 1) } }
 }
 @_inlineable
 public func Radix2CooleyTukey(_ level: Int, _ buffer: UnsafeMutablePointer<Complex>, _ stride: Int) {
-    buffer.withMemoryRebound(to: Double.self, capacity: 2) { Radix2CooleyTukey(level, $0, $0 + 1, stride << 1) }
+    buffer._reboundToDouble { Radix2CooleyTukey(level, $0, $0.successor(), stride << 1) }
 }
 @_inlineable
 public func InverseRadix2CooleyTukey(_ level: Int, _ buffer: UnsafeMutablePointer<Complex>, _ stride: Int) {
-    buffer.withMemoryRebound(to: Double.self, capacity: 2) { InverseRadix2CooleyTukey(level, $0, $0 + 1, stride << 1) }
+    buffer._reboundToDouble { InverseRadix2CooleyTukey(level, $0, $0.successor(), stride << 1) }
 }
 
 @_inlineable
 public func ParallelHalfRadix2CooleyTukey(_ level: Int, row: Int, _ input: UnsafePointer<Double>, _ in_stride: Int, _ in_count: Int, _ in_total: Int, _ in_interleaved: Bool, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int, _ out_interleaved: Bool) {
-    output.withMemoryRebound(to: Double.self, capacity: 2) { ParallelHalfRadix2CooleyTukey(level, row, input, in_stride, in_count, in_total, in_interleaved, $0, $0 + 1, out_stride << 1, out_interleaved) }
+    output._reboundToDouble { ParallelHalfRadix2CooleyTukey(level, row, input, in_stride, in_count, in_total, in_interleaved, $0, $0.successor(), out_stride << 1, out_interleaved) }
 }
 @_inlineable
 public func ParallelHalfInverseRadix2CooleyTukey(_ level: Int, row: Int, _ input: UnsafePointer<Complex>, _ in_stride: Int, _ in_interleaved: Bool, _ output: UnsafeMutablePointer<Double>, _ out_stride: Int, _ out_interleaved: Bool) {
-    input.withMemoryRebound(to: Double.self, capacity: 2) { _input in ParallelHalfInverseRadix2CooleyTukey(level, row, _input, _input + 1, in_stride << 1, in_interleaved, output, out_stride, out_interleaved) }
+    input._reboundToDouble { _input in ParallelHalfInverseRadix2CooleyTukey(level, row, _input, _input.successor(), in_stride << 1, in_interleaved, output, out_stride, out_interleaved) }
 }
 @_inlineable
 public func ParallelRadix2CooleyTukey(_ level: Int, row: Int, _ input: UnsafePointer<Double>, _ in_stride: Int, _ in_count: Int, _ in_total: Int, _ in_interleaved: Bool, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int, _ out_interleaved: Bool) {
-    output.withMemoryRebound(to: Double.self, capacity: 2) { ParallelRadix2CooleyTukey(level, row, input, in_stride, in_count, in_total, in_interleaved, $0, $0 + 1, out_stride << 1, out_interleaved) }
+    output._reboundToDouble { ParallelRadix2CooleyTukey(level, row, input, in_stride, in_count, in_total, in_interleaved, $0, $0.successor(), out_stride << 1, out_interleaved) }
 }
 @_inlineable
 public func ParallelRadix2CooleyTukey(_ level: Int, row: Int, _ input: UnsafePointer<Complex>, _ in_stride: Int, _ in_count: Int, _ in_total: Int, _ in_interleaved: Bool, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int, _ out_interleaved: Bool) {
-    input.withMemoryRebound(to: Double.self, capacity: 2) { _input in output.withMemoryRebound(to: Double.self, capacity: 2) { ParallelRadix2CooleyTukey(level, row, _input, _input + 1, in_stride << 1, in_count, in_total, in_interleaved, $0, $0 + 1, out_stride << 1, out_interleaved) } }
+    input._reboundToDouble { _input in output._reboundToDouble { ParallelRadix2CooleyTukey(level, row, _input, _input.successor(), in_stride << 1, in_count, in_total, in_interleaved, $0, $0.successor(), out_stride << 1, out_interleaved) } }
 }
 @_inlineable
 public func ParallelInverseRadix2CooleyTukey(_ level: Int, row: Int, _ input: UnsafePointer<Double>, _ in_stride: Int, _ in_count: Int, _ in_total: Int, _ in_interleaved: Bool, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int, _ out_interleaved: Bool) {
-    output.withMemoryRebound(to: Double.self, capacity: 2) { ParallelInverseRadix2CooleyTukey(level, row, input, in_stride, in_count, in_total, in_interleaved, $0, $0 + 1, out_stride << 1, out_interleaved) }
+    output._reboundToDouble { ParallelInverseRadix2CooleyTukey(level, row, input, in_stride, in_count, in_total, in_interleaved, $0, $0.successor(), out_stride << 1, out_interleaved) }
 }
 @_inlineable
 public func ParallelInverseRadix2CooleyTukey(_ level: Int, row: Int, _ input: UnsafePointer<Complex>, _ in_stride: Int, _ in_count: Int, _ in_total: Int, _ in_interleaved: Bool, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int, _ out_interleaved: Bool) {
-    input.withMemoryRebound(to: Double.self, capacity: 2) { _input in output.withMemoryRebound(to: Double.self, capacity: 2) { ParallelInverseRadix2CooleyTukey(level, row, _input, _input + 1, in_stride << 1, in_count, in_total, in_interleaved, $0, $0 + 1, out_stride << 1, out_interleaved) } }
+    input._reboundToDouble { _input in output._reboundToDouble { ParallelInverseRadix2CooleyTukey(level, row, _input, _input.successor(), in_stride << 1, in_count, in_total, in_interleaved, $0, $0.successor(), out_stride << 1, out_interleaved) } }
 }
 @_inlineable
 public func ParallelRadix2CooleyTukey(_ level: Int, row: Int, _ buffer: UnsafeMutablePointer<Complex>, _ stride: Int, _ interleaved: Bool) {
-    buffer.withMemoryRebound(to: Double.self, capacity: 2) { ParallelRadix2CooleyTukey(level, row, $0, $0 + 1, stride << 1, interleaved) }
+    buffer._reboundToDouble { ParallelRadix2CooleyTukey(level, row, $0, $0.successor(), stride << 1, interleaved) }
 }
 @_inlineable
 public func ParallelInverseRadix2CooleyTukey(_ level: Int, row: Int, _ buffer: UnsafeMutablePointer<Complex>, _ stride: Int, _ interleaved: Bool) {
-    buffer.withMemoryRebound(to: Double.self, capacity: 2) { ParallelInverseRadix2CooleyTukey(level, row, $0, $0 + 1, stride << 1, interleaved) }
+    buffer._reboundToDouble { ParallelInverseRadix2CooleyTukey(level, row, $0, $0.successor(), stride << 1, interleaved) }
 }
 
 @_inlineable
 public func DispatchParallelHalfRadix2CooleyTukey(_ level: Int, row: Int, _ input: UnsafePointer<Double>, _ in_stride: Int, _ in_count: Int, _ in_total: Int, _ in_interleaved: Bool, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int, _ out_interleaved: Bool) {
-    output.withMemoryRebound(to: Double.self, capacity: 2) { DispatchParallelHalfRadix2CooleyTukey(level, row, input, in_stride, in_count, in_total, in_interleaved, $0, $0 + 1, out_stride << 1, out_interleaved) }
+    output._reboundToDouble { DispatchParallelHalfRadix2CooleyTukey(level, row, input, in_stride, in_count, in_total, in_interleaved, $0, $0.successor(), out_stride << 1, out_interleaved) }
 }
 @_inlineable
 public func DispatchParallelHalfInverseRadix2CooleyTukey(_ level: Int, row: Int, _ input: UnsafePointer<Complex>, _ in_stride: Int, _ in_interleaved: Bool, _ output: UnsafeMutablePointer<Double>, _ out_stride: Int, _ out_interleaved: Bool) {
-    input.withMemoryRebound(to: Double.self, capacity: 2) { _input in DispatchParallelHalfInverseRadix2CooleyTukey(level, row, _input, _input + 1, in_stride << 1, in_interleaved, output, out_stride, out_interleaved) } 
+    input._reboundToDouble { _input in DispatchParallelHalfInverseRadix2CooleyTukey(level, row, _input, _input.successor(), in_stride << 1, in_interleaved, output, out_stride, out_interleaved) } 
 }
 @_inlineable
 public func DispatchParallelRadix2CooleyTukey(_ level: Int, row: Int, _ input: UnsafePointer<Double>, _ in_stride: Int, _ in_count: Int, _ in_total: Int, _ in_interleaved: Bool, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int, _ out_interleaved: Bool) {
-    output.withMemoryRebound(to: Double.self, capacity: 2) { DispatchParallelRadix2CooleyTukey(level, row, input, in_stride, in_count, in_total, in_interleaved, $0, $0 + 1, out_stride << 1, out_interleaved) }
+    output._reboundToDouble { DispatchParallelRadix2CooleyTukey(level, row, input, in_stride, in_count, in_total, in_interleaved, $0, $0.successor(), out_stride << 1, out_interleaved) }
 }
 @_inlineable
 public func DispatchParallelRadix2CooleyTukey(_ level: Int, row: Int, _ input: UnsafePointer<Complex>, _ in_stride: Int, _ in_count: Int, _ in_total: Int, _ in_interleaved: Bool, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int, _ out_interleaved: Bool) {
-    input.withMemoryRebound(to: Double.self, capacity: 2) { _input in output.withMemoryRebound(to: Double.self, capacity: 2) { DispatchParallelRadix2CooleyTukey(level, row, _input, _input + 1, in_stride << 1, in_count, in_total, in_interleaved, $0, $0 + 1, out_stride << 1, out_interleaved) } }
+    input._reboundToDouble { _input in output._reboundToDouble { DispatchParallelRadix2CooleyTukey(level, row, _input, _input.successor(), in_stride << 1, in_count, in_total, in_interleaved, $0, $0.successor(), out_stride << 1, out_interleaved) } }
 }
 @_inlineable
 public func DispatchParallelInverseRadix2CooleyTukey(_ level: Int, row: Int, _ input: UnsafePointer<Double>, _ in_stride: Int, _ in_count: Int, _ in_total: Int, _ in_interleaved: Bool, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int, _ out_interleaved: Bool) {
-    output.withMemoryRebound(to: Double.self, capacity: 2) { DispatchParallelInverseRadix2CooleyTukey(level, row, input, in_stride, in_count, in_total, in_interleaved, $0, $0 + 1, out_stride << 1, out_interleaved) }
+    output._reboundToDouble { DispatchParallelInverseRadix2CooleyTukey(level, row, input, in_stride, in_count, in_total, in_interleaved, $0, $0.successor(), out_stride << 1, out_interleaved) }
 }
 @_inlineable
 public func DispatchParallelInverseRadix2CooleyTukey(_ level: Int, row: Int, _ input: UnsafePointer<Complex>, _ in_stride: Int, _ in_count: Int, _ in_total: Int, _ in_interleaved: Bool, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int, _ out_interleaved: Bool) {
-    input.withMemoryRebound(to: Double.self, capacity: 2) { _input in output.withMemoryRebound(to: Double.self, capacity: 2) { DispatchParallelInverseRadix2CooleyTukey(level, row, _input, _input + 1, in_stride << 1, in_count, in_total, in_interleaved, $0, $0 + 1, out_stride << 1, out_interleaved) } }
+    input._reboundToDouble { _input in output._reboundToDouble { DispatchParallelInverseRadix2CooleyTukey(level, row, _input, _input.successor(), in_stride << 1, in_count, in_total, in_interleaved, $0, $0.successor(), out_stride << 1, out_interleaved) } }
 }
 @_inlineable
 public func DispatchParallelRadix2CooleyTukey(_ level: Int, row: Int, _ buffer: UnsafeMutablePointer<Complex>, _ stride: Int, _ interleaved: Bool) {
-    buffer.withMemoryRebound(to: Double.self, capacity: 2) { DispatchParallelRadix2CooleyTukey(level, row, $0, $0 + 1, stride << 1, interleaved) }
+    buffer._reboundToDouble { DispatchParallelRadix2CooleyTukey(level, row, $0, $0.successor(), stride << 1, interleaved) }
 }
 @_inlineable
 public func DispatchParallelInverseRadix2CooleyTukey(_ level: Int, row: Int, _ buffer: UnsafeMutablePointer<Complex>, _ stride: Int, _ interleaved: Bool) {
-    buffer.withMemoryRebound(to: Double.self, capacity: 2) { DispatchParallelInverseRadix2CooleyTukey(level, row, $0, $0 + 1, stride << 1, interleaved) }
+    buffer._reboundToDouble { DispatchParallelInverseRadix2CooleyTukey(level, row, $0, $0.successor(), stride << 1, interleaved) }
 }
 
 @_inlineable
 public func Radix2CircularConvolve(_ level: Int, _ signal: UnsafePointer<Complex>, _ signal_stride: Int, _ signal_count: Int, _ kernel: UnsafePointer<Complex>, _ kernel_stride: Int, _ kernel_count: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int, _ temp: UnsafeMutablePointer<Complex>, _ temp_stride: Int) {
-    signal.withMemoryRebound(to: Double.self, capacity: 2) { _signal in kernel.withMemoryRebound(to: Double.self, capacity: 2) { _kernel in temp.withMemoryRebound(to: Double.self, capacity: 2) { _temp in output.withMemoryRebound(to: Double.self, capacity: 2) { Radix2CircularConvolve(level, _signal, _signal + 1, signal_stride << 1, signal_count, _kernel, _kernel + 1, kernel_stride << 1, kernel_count, $0, $0 + 1, out_stride << 1, _temp, _temp + 1, temp_stride << 1) } } } }
+    signal._reboundToDouble { _signal in kernel._reboundToDouble { _kernel in temp._reboundToDouble { _temp in output._reboundToDouble { Radix2CircularConvolve(level, _signal, _signal.successor(), signal_stride << 1, signal_count, _kernel, _kernel.successor(), kernel_stride << 1, kernel_count, $0, $0.successor(), out_stride << 1, _temp, _temp.successor(), temp_stride << 1) } } } }
 }
 @_inlineable
 public func Radix2PowerCircularConvolve(_ level: Int, _ input: UnsafePointer<Complex>, _ in_stride: Int, _ in_count: Int, _ n: Double, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int) {
-    input.withMemoryRebound(to: Double.self, capacity: 2) { _input in output.withMemoryRebound(to: Double.self, capacity: 2) { Radix2PowerCircularConvolve(level, _input, _input + 1, in_stride << 1, in_count, n, $0, $0 + 1, out_stride << 1) } }
+    input._reboundToDouble { _input in output._reboundToDouble { Radix2PowerCircularConvolve(level, _input, _input.successor(), in_stride << 1, in_count, n, $0, $0.successor(), out_stride << 1) } }
 }
