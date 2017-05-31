@@ -43,7 +43,7 @@ protocol RasterizeBufferProtocol {
 extension RasterizeBufferProtocol {
     
     @_versioned
-    @_inlineable
+    @inline(__always)
     func rasterize(_ p0: Point, _ p1: Point, _ p2: Point, operation: (Double, Point, Self) throws -> Void) rethrows {
         
         if !Rect.bound([p0, p1, p2]).isIntersect(Rect(x: 0, y: 0, width: Double(width), height: Double(height))) {

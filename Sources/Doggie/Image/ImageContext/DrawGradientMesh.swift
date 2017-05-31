@@ -42,7 +42,7 @@ struct ImageContextGradientMeshRasterizeBuffer<Model : ColorModelProtocol> : Ras
     var height: Int
     
     @_versioned
-    @_inlineable
+    @inline(__always)
     init(destination: UnsafeMutablePointer<ColorPixel<Model>>, clip: UnsafePointer<Double>, width: Int, height: Int) {
         self.destination = destination
         self.clip = clip
@@ -51,13 +51,13 @@ struct ImageContextGradientMeshRasterizeBuffer<Model : ColorModelProtocol> : Ras
     }
     
     @_versioned
-    @_inlineable
+    @inline(__always)
     static func + (lhs: ImageContextGradientMeshRasterizeBuffer, rhs: Int) -> ImageContextGradientMeshRasterizeBuffer {
         return ImageContextGradientMeshRasterizeBuffer(destination: lhs.destination + rhs, clip: lhs.clip + rhs, width: lhs.width, height: lhs.height)
     }
     
     @_versioned
-    @_inlineable
+    @inline(__always)
     static func += (lhs: inout ImageContextGradientMeshRasterizeBuffer, rhs: Int) {
         lhs.destination += rhs
         lhs.clip += rhs
@@ -126,7 +126,8 @@ extension ImageContext {
                 
                 let rasterizer = ImageContextGradientMeshRasterizeBuffer(destination: destination, clip: clip, width: width, height: height)
                 
-                rasterizer.rasterize(patch.m00, patch.m03, patch.m30) { _, _, buf in
+                @inline(__always)
+                func _rasterize(_: Double, _: Point, buf: ImageContextGradientMeshRasterizeBuffer<Model>) {
                     
                     let _alpha = buf.clip.pointee
                     
@@ -141,20 +142,8 @@ extension ImageContext {
                     }
                 }
                 
-                rasterizer.rasterize(patch.m03, patch.m33, patch.m30) { _, _, buf in
-                    
-                    let _alpha = buf.clip.pointee
-                    
-                    if _alpha > 0 {
-                        
-                        var pixel = c8
-                        pixel.opacity *= _alpha
-                        
-                        if pixel.opacity > 0 {
-                            buf.destination.pointee.blend(source: pixel, blendMode: _blendMode, compositingMode: _compositingMode)
-                        }
-                    }
-                }
+                rasterizer.rasterize(patch.m00, patch.m03, patch.m30, operation: _rasterize)
+                rasterizer.rasterize(patch.m03, patch.m33, patch.m30, operation: _rasterize)
                 
             } else {
                 _drawGradient(destination, clip, patch, c0, c1, c2, c3)

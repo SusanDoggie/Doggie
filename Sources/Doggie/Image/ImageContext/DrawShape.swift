@@ -39,7 +39,7 @@ struct ShapeRasterizeBuffer<T: SignedInteger & SDAtomicProtocol> : RasterizeBuff
     var height: Int
     
     @_versioned
-    @_inlineable
+    @inline(__always)
     init(stencil: UnsafeMutablePointer<T>, width: Int, height: Int) {
         self.stencil = stencil
         self.width = width
@@ -47,13 +47,13 @@ struct ShapeRasterizeBuffer<T: SignedInteger & SDAtomicProtocol> : RasterizeBuff
     }
     
     @_versioned
-    @_inlineable
+    @inline(__always)
     static func + (lhs: ShapeRasterizeBuffer, rhs: Int) -> ShapeRasterizeBuffer {
         return ShapeRasterizeBuffer(stencil: lhs.stencil + rhs, width: lhs.width, height: lhs.height)
     }
     
     @_versioned
-    @_inlineable
+    @inline(__always)
     static func += (lhs: inout ShapeRasterizeBuffer, rhs: Int) {
         lhs.stencil += rhs
     }
