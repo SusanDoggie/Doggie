@@ -5,7 +5,7 @@ import Doggie
 
 let t = Date()
 
-let image = sampleImage(width: 400, height: 400)
+let image = sampleImage3(width: 400, height: 400)
 
 t.timeIntervalSinceNow
 
