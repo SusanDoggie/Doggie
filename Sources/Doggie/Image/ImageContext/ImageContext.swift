@@ -33,7 +33,7 @@ public class ImageContext<Model : ColorModelProtocol> {
     var clip: [Double]
     
     @_versioned
-    var stencil: [Int] = []
+    var stencil: [Int16] = []
     
     @_versioned
     var _antialias: Bool = true

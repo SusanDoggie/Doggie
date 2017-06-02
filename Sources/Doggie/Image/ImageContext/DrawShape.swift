@@ -27,10 +27,10 @@ import Foundation
 
 @_versioned
 @_fixed_layout
-struct ShapeRasterizeBuffer<T: SignedInteger & SDAtomicProtocol> : RasterizeBufferProtocol {
+struct ShapeRasterizeBuffer : RasterizeBufferProtocol {
     
     @_versioned
-    var stencil: UnsafeMutablePointer<T>
+    var stencil: UnsafeMutablePointer<Int16>
     
     @_versioned
     var width: Int
@@ -40,7 +40,7 @@ struct ShapeRasterizeBuffer<T: SignedInteger & SDAtomicProtocol> : RasterizeBuff
     
     @_versioned
     @inline(__always)
-    init(stencil: UnsafeMutablePointer<T>, width: Int, height: Int) {
+    init(stencil: UnsafeMutablePointer<Int16>, width: Int, height: Int) {
         self.stencil = stencil
         self.width = width
         self.height = height
@@ -60,9 +60,8 @@ struct ShapeRasterizeBuffer<T: SignedInteger & SDAtomicProtocol> : RasterizeBuff
 }
 
 @_versioned
-@inline(never)
-@_specialize(Int8) @_specialize(Int16) @_specialize(Int32) @_specialize(Int64) @_specialize(Int)
-func _render<T: SignedInteger & SDAtomicProtocol>(_ op: Shape.RenderOperation, width: Int, height: Int, transform: SDTransform, stencil: UnsafeMutablePointer<T>) where T.Atom == T {
+@inline(__always)
+func _render(_ op: Shape.RenderOperation, width: Int, height: Int, transform: SDTransform, stencil: UnsafeMutablePointer<Int16>) {
     
     let rasterizer = ShapeRasterizeBuffer(stencil: stencil, width: width, height: width)
     
@@ -75,9 +74,11 @@ func _render<T: SignedInteger & SDAtomicProtocol>(_ op: Shape.RenderOperation, w
         
         rasterizer.rasterize(q0, q1, q2) { d, point, pixel in
             
-            let winding: T = d.sign == .plus ? 1 : -1
-            
-            pixel.stencil.pointee.fetchStore { $0 + winding }
+            if d.sign == .plus {
+                pixel.stencil.pointee.fetchStore { $0 + 1 }
+            } else {
+                pixel.stencil.pointee.fetchStore { $0 - 1 }
+            }
         }
         
     case let .quadratic(p0, p1, p2):
@@ -96,10 +97,12 @@ func _render<T: SignedInteger & SDAtomicProtocol>(_ op: Shape.RenderOperation, w
             
             rasterizer.rasterize(q0, q1, q2) { d, point, pixel in
                 
-                let winding: T = d.sign == .plus ? 1 : -1
-                
                 if _test(point) {
-                    pixel.stencil.pointee.fetchStore { $0 + winding }
+                    if d.sign == .plus {
+                        pixel.stencil.pointee.fetchStore { $0 + 1 }
+                    } else {
+                        pixel.stencil.pointee.fetchStore { $0 - 1 }
+                    }
                 }
             }
         }
@@ -121,10 +124,12 @@ func _render<T: SignedInteger & SDAtomicProtocol>(_ op: Shape.RenderOperation, w
         
         rasterizer.rasterize(q0, q1, q2) { d, point, pixel in
             
-            let winding: T = d.sign == .plus ? 1 : -1
-            
             if _test(point) {
-                pixel.stencil.pointee.fetchStore { $0 + winding }
+                if d.sign == .plus {
+                    pixel.stencil.pointee.fetchStore { $0 + 1 }
+                } else {
+                    pixel.stencil.pointee.fetchStore { $0 - 1 }
+                }
             }
         }
     }
@@ -132,8 +137,9 @@ func _render<T: SignedInteger & SDAtomicProtocol>(_ op: Shape.RenderOperation, w
 
 extension Shape {
     
-    @_inlineable
-    public func raster<T: SignedInteger & SDAtomicProtocol>(width: Int, height: Int, stencil: inout [T]) where T.Atom == T {
+    @_versioned
+    @inline(__always)
+    func raster(width: Int, height: Int, stencil: inout [Int16]) {
         
         assert(stencil.count == width * height, "incorrect size of stencil.")
         
@@ -161,7 +167,7 @@ extension ImageContext {
     
     @_versioned
     @_inlineable
-    func draw(shape: Shape, color: ColorPixel<Model>, winding: (Int) -> Bool) {
+    func draw(shape: Shape, color: ColorPixel<Model>, winding: (Int16) -> Bool) {
         
         if let next = self.next {
             next.draw(shape: shape, color: color, winding: winding)
@@ -183,7 +189,7 @@ extension ImageContext {
         let stencil_count = _antialias ? width * height * 25 : width * height
         
         if stencil.count != stencil_count {
-            stencil = [Int](repeating: 0, count: stencil_count)
+            stencil = [Int16](repeating: 0, count: stencil_count)
         } else {
             stencil.withUnsafeMutableBytes { _ = memset($0.baseAddress!, 0, $0.count) }
         }
