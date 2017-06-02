@@ -87,22 +87,22 @@ func _render(_ op: Shape.RenderOperation, width: Int, height: Int, transform: SD
         let q1 = p1 * transform
         let q2 = p2 * transform
         
-        if let transform = SDTransform(from: q0, q1, q2, to: Point(x: 0, y: 0), Point(x: 0.5, y: 0), Point(x: 1, y: 1)) {
-            
-            @inline(__always)
-            func _test(_ point: Point) -> Bool {
-                let _q = point * transform
+        @inline(__always)
+        func _test(_ point: Point) -> Bool {
+            if let p = Barycentric(q0, q1, q2, point) {
+                let _q = p.x * Point(x: 0, y: 0) + p.y * Point(x: 0.5, y: 0) + p.z * Point(x: 1, y: 1)
                 return _q.x * _q.x - _q.y < 0
             }
+            return false
+        }
+        
+        rasterizer.rasterize(q0, q1, q2) { d, point, pixel in
             
-            rasterizer.rasterize(q0, q1, q2) { d, point, pixel in
-                
-                if _test(point) {
-                    if d.sign == .plus {
-                        pixel.stencil.pointee.fetchStore { $0 + 1 }
-                    } else {
-                        pixel.stencil.pointee.fetchStore { $0 - 1 }
-                    }
+            if _test(point) {
+                if d.sign == .plus {
+                    pixel.stencil.pointee.fetchStore { $0 + 1 }
+                } else {
+                    pixel.stencil.pointee.fetchStore { $0 - 1 }
                 }
             }
         }
