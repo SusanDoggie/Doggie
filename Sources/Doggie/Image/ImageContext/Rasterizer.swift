@@ -23,6 +23,8 @@
 //  THE SOFTWARE.
 //
 
+import Foundation
+
 @_versioned
 protocol RasterizeBufferProtocol {
     
@@ -204,6 +206,29 @@ public enum ImageContextRasterizeCullMode {
     case back
 }
 
+public struct PerspectiveProjectMatrix {
+    
+    public var angle: Double
+    public var nearZ: Double
+    public var farZ: Double
+    
+    @_inlineable
+    public init(angle: Double, nearZ: Double, farZ: Double) {
+        self.angle = angle
+        self.nearZ = nearZ
+        self.farZ = farZ
+    }
+}
+
+@_inlineable
+public func *(lhs: Vector, rhs: PerspectiveProjectMatrix) -> Point {
+    let cotan = 1.0 / tan(0.5 * rhs.angle)
+    let dz = rhs.nearZ - rhs.farZ
+    let _z = lhs.z * (rhs.farZ + rhs.nearZ) + 2.0 * rhs.farZ * rhs.nearZ
+    let _w = dz / _z
+    return Point(x: lhs.x * cotan * _w, y: lhs.y * cotan * _w)
+}
+
 extension ImageContext {
     
     @_versioned
@@ -274,7 +299,7 @@ extension ImageContext {
         @inline(__always)
         func _projection(_ v: Vector) -> Point {
             let p = v * projection
-            return Point(x: (0.5 + 0.5 * p.x / p.z) * width, y: (0.5 + 0.5 * p.y / p.z) * height)
+            return Point(x: (0.5 + 0.5 * p.x) * width, y: (0.5 + 0.5 * p.y) * height)
         }
         
         @inline(__always)

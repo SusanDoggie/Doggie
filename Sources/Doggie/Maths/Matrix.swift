@@ -347,32 +347,6 @@ extension Matrix : Multiplicative {
     
 }
 
-public struct PerspectiveProjectMatrix {
-    
-    public var angle: Double
-    public var nearZ: Double
-    public var farZ: Double
-    
-    @_inlineable
-    public init(angle: Double, nearZ: Double, farZ: Double) {
-        self.angle = angle
-        self.nearZ = nearZ
-        self.farZ = farZ
-    }
-}
-
-@_inlineable
-public func *(lhs: Vector, rhs: PerspectiveProjectMatrix) -> Vector {
-    let cotan = 1.0 / tan(rhs.angle * 0.5)
-    let depthZ = rhs.nearZ - rhs.farZ
-    return Vector(x: lhs.x * cotan, y: lhs.y * cotan, z: (lhs.z * (rhs.farZ + rhs.nearZ) + 2.0 * rhs.farZ * rhs.nearZ) / depthZ)
-}
-
-@_inlineable
-public func *=(lhs: inout Vector, rhs: PerspectiveProjectMatrix) {
-    lhs = lhs * rhs
-}
-
 @_inlineable
 public func ==(lhs: Matrix, rhs: Matrix) -> Bool {
     return lhs.a == rhs.a && lhs.b == rhs.b && lhs.c == rhs.c && lhs.d == rhs.d
