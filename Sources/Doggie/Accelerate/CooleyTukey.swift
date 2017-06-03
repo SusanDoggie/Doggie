@@ -587,13 +587,18 @@ public func Radix2CooleyTukey<T: BinaryFloatingPoint>(_ level: Int, _ real: Unsa
     default:
         let count = 1 << level
         
-        let offset = UIntMax(MemoryLayout<UIntMax>.size << 3) - log2(UIntMax(count))
-        
-        for i in 1..<count - 1 {
-            let _i = Int(UIntMax(i).reverse >> offset)
-            if i < _i {
-                swap(&real[i * stride], &real[_i * stride])
-                swap(&imag[i * stride], &imag[_i * stride])
+        do {
+            let offset = UIntMax(MemoryLayout<UIntMax>.size << 3) - log2(UIntMax(count))
+            var _real = real
+            var _imag = imag
+            for i in 1..<count - 1 {
+                let _i = Int(UIntMax(i).reverse >> offset)
+                _real += stride
+                _imag += stride
+                if i < _i {
+                    swap(&_real.pointee, &real[_i * stride])
+                    swap(&_imag.pointee, &imag[_i * stride])
+                }
             }
         }
         
