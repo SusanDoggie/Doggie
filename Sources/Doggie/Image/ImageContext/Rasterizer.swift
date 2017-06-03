@@ -232,8 +232,19 @@ public func *(lhs: Vector, rhs: PerspectiveProjectMatrix) -> Point {
 extension ImageContext {
     
     @_versioned
-    @inline(__always)
+    @_inlineable
     func _rasterize<S : Sequence, Vertex : ImageContextRasterizeVertex>(_ triangles: S, shader: (Vertex) throws -> ColorPixel<Model>?, position: (Vertex) -> Point, culling: (Point, Point, Point) -> Bool) rethrows where S.Iterator.Element == (Vertex, Vertex, Vertex) {
+        
+        if let next = self.next {
+            try next._rasterize(triangles, shader: shader, position: position, culling: culling)
+            return
+        }
+        
+        let transform = self._transform
+        
+        if _image.width == 0 || _image.height == 0 || transform.determinant.almostZero() {
+            return
+        }
         
         try _image.withUnsafeMutableBufferPointer { _image in
             
@@ -253,11 +264,15 @@ extension ImageContext {
                             
                             if culling(p0, p1, p2) {
                                 
-                                try rasterizer.rasterize(p0, p1, p2) { (position, buf) in
+                                let _p0 = p0 * transform
+                                let _p1 = p1 * transform
+                                let _p2 = p2 * transform
+                                
+                                try rasterizer.rasterize(_p0, _p1, _p2) { (position, buf) in
                                     
                                     let _alpha = buf.clip.pointee
                                     
-                                    if _alpha > 0, let q = Barycentric(p0, p1, p2, position) {
+                                    if _alpha > 0, let q = Barycentric(_p0, _p1, _p2, position) {
                                         
                                         let b = q.x * v0 + q.y * v1 + q.z * v2
                                         
@@ -296,6 +311,8 @@ extension ImageContext {
         let height = Double(self.height)
         let aspect = height / width
         
+        let z_range = min(projection.nearZ, projection.farZ)...max(projection.nearZ, projection.farZ)
+        
         @inline(__always)
         func _projection(_ v: Vector) -> Point {
             let p = v * projection
@@ -308,9 +325,9 @@ extension ImageContext {
         }
         
         switch culling {
-        case .none: try _rasterize(triangles, shader: shader, position: _position, culling: { _ in true })
-        case .front: try _rasterize(triangles, shader: shader, position: _position, culling: { cross($1 - $0, $2 - $0) > 0 })
-        case .back: try _rasterize(triangles, shader: shader, position: _position, culling: { cross($1 - $0, $2 - $0) < 0 })
+        case .none: try _rasterize(triangles, shader: { z_range ~= $0.position.z ? try shader($0) : nil }, position: _position, culling: { _ in true })
+        case .front: try _rasterize(triangles, shader: { z_range ~= $0.position.z ? try shader($0) : nil }, position: _position, culling: { cross($1 - $0, $2 - $0) > 0 })
+        case .back: try _rasterize(triangles, shader: { z_range ~= $0.position.z ? try shader($0) : nil }, position: _position, culling: { cross($1 - $0, $2 - $0) < 0 })
         }
     }
 }

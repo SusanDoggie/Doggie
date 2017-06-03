@@ -136,7 +136,7 @@ public func sampleImage4(width: Int, height: Int) -> Image<ARGB32ColorPixel> {
     
     let triangles = [t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11]
     
-    context.rasterize(triangles, projection: PerspectiveProjectMatrix(angle: degreesToRad(50), nearZ: -0.01, farZ: -500), culling: .back, shader: shader)
+    context.rasterize(triangles, projection: PerspectiveProjectMatrix(angle: degreesToRad(50), nearZ: 0, farZ: -500), culling: .back, shader: shader)
     
     return Image(image: context.image)
 }
