@@ -146,3 +146,94 @@ extension RasterizeBufferProtocol {
     }
     
 }
+
+@_versioned
+@_fixed_layout
+struct ImageContextRasterizeBuffer<Model : ColorModelProtocol> : RasterizeBufferProtocol {
+    
+    @_versioned
+    var destination: UnsafeMutablePointer<ColorPixel<Model>>
+    
+    @_versioned
+    var clip: UnsafePointer<Double>
+    
+    @_versioned
+    var width: Int
+    
+    @_versioned
+    var height: Int
+    
+    @_versioned
+    @inline(__always)
+    init(destination: UnsafeMutablePointer<ColorPixel<Model>>, clip: UnsafePointer<Double>, width: Int, height: Int) {
+        self.destination = destination
+        self.clip = clip
+        self.width = width
+        self.height = height
+    }
+    
+    @_versioned
+    @inline(__always)
+    static func + (lhs: ImageContextRasterizeBuffer, rhs: Int) -> ImageContextRasterizeBuffer {
+        return ImageContextRasterizeBuffer(destination: lhs.destination + rhs, clip: lhs.clip + rhs, width: lhs.width, height: lhs.height)
+    }
+    
+    @_versioned
+    @inline(__always)
+    static func += (lhs: inout ImageContextRasterizeBuffer, rhs: Int) {
+        lhs.destination += rhs
+        lhs.clip += rhs
+    }
+}
+
+public protocol ImageContextRasterizeVertex {
+    
+    var position: Point { get }
+    
+    static func + (lhs: Self, rhs: Self) -> Self
+    
+    static func * (lhs: Double, rhs: Self) -> Self
+}
+
+extension ImageContext {
+    
+    @_inlineable
+    public func rasterize<Vertex: ImageContextRasterizeVertex>(_ v0: Vertex, _ v1: Vertex, _ v2: Vertex, operation: (Double, Vertex) throws -> ColorPixel<Model>) rethrows {
+        
+        try _image.withUnsafeMutableBufferPointer { _image in
+            
+            if let _destination = _image.baseAddress {
+                
+                try clip.withUnsafeBufferPointer { _clip in
+                    
+                    if let _clip = _clip.baseAddress {
+                        
+                        let rasterizer = ImageContextRasterizeBuffer(destination: _destination, clip: _clip, width: width, height: height)
+                        
+                        try rasterizer.rasterize(v0.position, v1.position, v2.position) { (f, p, buf) in
+                            
+                            let _alpha = buf.clip.pointee
+                            
+                            if _alpha > 0 {
+                                
+                                if let q = Barycentric(v0.position, v1.position, v2.position, p) {
+                                    
+                                    let b = q.x * v0 + q.y * v1 + q.z * v2
+                                    
+                                    var pixel = try operation(f, b)
+                                    
+                                    pixel.opacity *= _alpha
+                                    
+                                    if pixel.opacity > 0 {
+                                        buf.destination.pointee.blend(source: pixel, blendMode: _blendMode, compositingMode: _compositingMode)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+    }
+}
