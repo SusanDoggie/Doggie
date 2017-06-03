@@ -46,6 +46,30 @@ public struct Color<Model : ColorModelProtocol> {
     }
 }
 
+extension Color where Model == GrayColorModel {
+    
+    @_inlineable
+    public init<C : ColorSpaceProtocol>(colorSpace: C, white: Double, opacity: Double = 1) where C.Model == Model {
+        self.init(colorSpace: colorSpace, color: GrayColorModel(white: white), opacity: opacity)
+    }
+}
+
+extension Color where Model == RGBColorModel {
+    
+    @_inlineable
+    public init<C : ColorSpaceProtocol>(colorSpace: C, red: Double, green: Double, blue: Double, opacity: Double = 1) where C.Model == Model {
+        self.init(colorSpace: colorSpace, color: RGBColorModel(red: red, green: green, blue: blue), opacity: opacity)
+    }
+}
+
+extension Color where Model == CMYKColorModel {
+    
+    @_inlineable
+    public init<C : ColorSpaceProtocol>(colorSpace: C, cyan: Double, magenta: Double, yellow: Double, black: Double, opacity: Double = 1) where C.Model == Model {
+        self.init(colorSpace: colorSpace, color: CMYKColorModel(cyan: cyan, magenta: magenta, yellow: yellow, black: black), opacity: opacity)
+    }
+}
+
 extension Color {
     
     @_inlineable

@@ -158,6 +158,30 @@ public struct ColorPixel<Model : ColorModelProtocol> : ColorPixelProtocol {
     }
 }
 
+extension ColorPixel where Model == GrayColorModel {
+    
+    @_inlineable
+    public init(white: Double, opacity: Double = 1) {
+        self.init(color: GrayColorModel(white: white), opacity: opacity)
+    }
+}
+
+extension ColorPixel where Model == RGBColorModel {
+    
+    @_inlineable
+    public init(red: Double, green: Double, blue: Double, opacity: Double = 1) {
+        self.init(color: RGBColorModel(red: red, green: green, blue: blue), opacity: opacity)
+    }
+}
+
+extension ColorPixel where Model == CMYKColorModel {
+    
+    @_inlineable
+    public init(cyan: Double, magenta: Double, yellow: Double, black: Double, opacity: Double = 1) {
+        self.init(color: CMYKColorModel(cyan: cyan, magenta: magenta, yellow: yellow, black: black), opacity: opacity)
+    }
+}
+
 public struct ARGB32ColorPixel : ColorPixelProtocol {
     
     public var a: UInt8

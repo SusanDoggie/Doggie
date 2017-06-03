@@ -57,9 +57,9 @@ public func sampleImage3(width: Int, height: Int) -> Image<ARGB32ColorPixel> {
         return vertex.color
     }
     
-    let triangle = (Vertex(position: Point(x: 50, y: 50), color: ColorPixel(color: RGBColorModel(red: 1, green: 0, blue: 0), opacity: 1)),
-                    Vertex(position: Point(x: 450, y: 50), color: ColorPixel(color: RGBColorModel(red: 0, green: 1, blue: 0), opacity: 1)),
-                    Vertex(position: Point(x: 450, y: 450), color: ColorPixel(color: RGBColorModel(red: 0, green: 0, blue: 1), opacity: 1)))
+    let triangle = (Vertex(position: Point(x: 50, y: 50), color: ColorPixel(red: 1, green: 0, blue: 0, opacity: 1)),
+                    Vertex(position: Point(x: 450, y: 50), color: ColorPixel(red: 0, green: 1, blue: 0, opacity: 1)),
+                    Vertex(position: Point(x: 450, y: 450), color: ColorPixel(red: 0, green: 0, blue: 1, opacity: 1)))
     
     context.rasterize(CollectionOfOne(triangle), shader: shader)
     
@@ -87,14 +87,14 @@ public func sampleImage4(width: Int, height: Int) -> Image<ARGB32ColorPixel> {
     
     let matrix = Matrix.rotateY(degreesToRad(30)) * Matrix.rotateX(degreesToRad(30)) * Matrix.translate(x: 0, y: 0, z: -100)
     
-    let c0 = ColorPixel(color: RGBColorModel(red: 0, green: 0, blue: 0), opacity: 1)
-    let c1 = ColorPixel(color: RGBColorModel(red: 1, green: 0, blue: 0), opacity: 1)
-    let c2 = ColorPixel(color: RGBColorModel(red: 0, green: 1, blue: 0), opacity: 1)
-    let c3 = ColorPixel(color: RGBColorModel(red: 0, green: 0, blue: 1), opacity: 1)
-    let c4 = ColorPixel(color: RGBColorModel(red: 1, green: 1, blue: 0), opacity: 1)
-    let c5 = ColorPixel(color: RGBColorModel(red: 1, green: 0, blue: 1), opacity: 1)
-    let c6 = ColorPixel(color: RGBColorModel(red: 0, green: 1, blue: 1), opacity: 1)
-    let c7 = ColorPixel(color: RGBColorModel(red: 1, green: 1, blue: 1), opacity: 1)
+    let c0 = ColorPixel(red: 0, green: 0, blue: 0, opacity: 1)
+    let c1 = ColorPixel(red: 1, green: 0, blue: 0, opacity: 1)
+    let c2 = ColorPixel(red: 0, green: 1, blue: 0, opacity: 1)
+    let c3 = ColorPixel(red: 0, green: 0, blue: 1, opacity: 1)
+    let c4 = ColorPixel(red: 1, green: 1, blue: 0, opacity: 1)
+    let c5 = ColorPixel(red: 1, green: 0, blue: 1, opacity: 1)
+    let c6 = ColorPixel(red: 0, green: 1, blue: 1, opacity: 1)
+    let c7 = ColorPixel(red: 1, green: 1, blue: 1, opacity: 1)
     
     let v0 = Vertex2(position: Vector(x: 25, y: 25, z: 25) * matrix, color: c0)
     let v1 = Vertex2(position: Vector(x: -25, y: 25, z: 25) * matrix, color: c1)

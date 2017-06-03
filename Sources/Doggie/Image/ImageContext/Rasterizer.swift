@@ -233,10 +233,10 @@ extension ImageContext {
     
     @_versioned
     @inline(__always)
-    func _rasterize<S : Sequence, Vertex : ImageContextRasterizeVertex>(_ triangles: S, test: ((ImageContextRasterizeBuffer<Model>, Vertex) -> Bool)?, shader: (Vertex) throws -> ColorPixel<Model>?, position: (Vertex) -> Point, culling: (Point, Point, Point) -> Bool) rethrows where S.Iterator.Element == (Vertex, Vertex, Vertex) {
+    func _rasterize<S : Sequence, Vertex : ImageContextRasterizeVertex, Pixel : ColorPixelProtocol>(_ triangles: S, test: ((ImageContextRasterizeBuffer<Model>, Vertex) -> Bool)?, shader: (Vertex) throws -> Pixel?, position: (Vertex) -> Point, culling: (Point, Point, Point) -> Bool) rethrows where S.Iterator.Element == (Vertex, Vertex, Vertex), Pixel.Model == Model {
         
         @inline(__always)
-        func __rasterize(rasterizer: ImageContextRasterizeBuffer<Model>, test: ((ImageContextRasterizeBuffer<Model>, Vertex) -> Bool)?, shader: (Vertex) throws -> ColorPixel<Model>?, position: (Vertex) -> Point, culling: (Point, Point, Point) -> Bool) rethrows {
+        func __rasterize(rasterizer: ImageContextRasterizeBuffer<Model>, test: ((ImageContextRasterizeBuffer<Model>, Vertex) -> Bool)?, shader: (Vertex) throws -> Pixel?, position: (Vertex) -> Point, culling: (Point, Point, Point) -> Bool) rethrows {
             
             let transform = self._transform
             
@@ -292,7 +292,7 @@ extension ImageContext {
     }
     
     @_inlineable
-    public func rasterize<S : Sequence, Vertex : ImageContextRasterizeVertex>(_ triangles: S, culling: ImageContextRasterizeCullMode = .none, shader: (Vertex) throws -> ColorPixel<Model>?) rethrows where S.Iterator.Element == (Vertex, Vertex, Vertex), Vertex.Position == Point {
+    public func rasterize<S : Sequence, Vertex : ImageContextRasterizeVertex, Pixel : ColorPixelProtocol>(_ triangles: S, culling: ImageContextRasterizeCullMode = .none, shader: (Vertex) throws -> Pixel?) rethrows where S.Iterator.Element == (Vertex, Vertex, Vertex), Vertex.Position == Point, Pixel.Model == Model {
         
         if let next = self.next {
             try next.rasterize(triangles, culling: culling, shader: shader)
@@ -311,7 +311,7 @@ extension ImageContext {
     }
     
     @_inlineable
-    public func rasterize<S : Sequence, Vertex : ImageContextRasterizeVertex>(_ triangles: S, projection: PerspectiveProjectMatrix, culling: ImageContextRasterizeCullMode = .none, shader: (Vertex) throws -> ColorPixel<Model>?) rethrows where S.Iterator.Element == (Vertex, Vertex, Vertex), Vertex.Position == Vector {
+    public func rasterize<S : Sequence, Vertex : ImageContextRasterizeVertex, Pixel : ColorPixelProtocol>(_ triangles: S, projection: PerspectiveProjectMatrix, culling: ImageContextRasterizeCullMode = .none, shader: (Vertex) throws -> Pixel?) rethrows where S.Iterator.Element == (Vertex, Vertex, Vertex), Vertex.Position == Vector, Pixel.Model == Model {
         
         if let next = self.next {
             try next.rasterize(triangles, projection: projection, culling: culling, shader: shader)
