@@ -72,7 +72,9 @@ func _render(_ op: Shape.RenderOperation, width: Int, height: Int, transform: SD
         let q1 = p1 * transform
         let q2 = p2 * transform
         
-        rasterizer.rasterize(q0, q1, q2) { d, point, pixel in
+        rasterizer.rasterize(q0, q1, q2) { point, pixel in
+            
+            let d = cross(q1 - q0, q2 - q0)
             
             if d.sign == .plus {
                 pixel.stencil.pointee.fetchStore { $0 + 1 }
@@ -96,7 +98,9 @@ func _render(_ op: Shape.RenderOperation, width: Int, height: Int, transform: SD
             return false
         }
         
-        rasterizer.rasterize(q0, q1, q2) { d, point, pixel in
+        rasterizer.rasterize(q0, q1, q2) { point, pixel in
+            
+            let d = cross(q1 - q0, q2 - q0)
             
             if _test(point) {
                 if d.sign == .plus {
@@ -122,7 +126,9 @@ func _render(_ op: Shape.RenderOperation, width: Int, height: Int, transform: SD
             return false
         }
         
-        rasterizer.rasterize(q0, q1, q2) { d, point, pixel in
+        rasterizer.rasterize(q0, q1, q2) { point, pixel in
+            
+            let d = cross(q1 - q0, q2 - q0)
             
             if _test(point) {
                 if d.sign == .plus {

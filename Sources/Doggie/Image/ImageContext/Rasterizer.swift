@@ -44,7 +44,7 @@ extension RasterizeBufferProtocol {
     
     @_versioned
     @inline(__always)
-    func rasterize(_ p0: Point, _ p1: Point, _ p2: Point, operation: (Double, Point, Self) throws -> Void) rethrows {
+    func rasterize(_ p0: Point, _ p1: Point, _ p2: Point, operation: (Point, Self) throws -> Void) rethrows {
         
         if !Rect.bound([p0, p1, p2]).isIntersect(Rect(x: 0, y: 0, width: Double(width), height: Double(height))) {
             return
@@ -83,7 +83,7 @@ extension RasterizeBufferProtocol {
                 buf += y0 * width
                 
                 @inline(__always)
-                func _drawLoop(_ range: CountableClosedRange<Int>, _ x0: Double, _ dx0: Double, _ x1: Double, _ dx1: Double, operation: (Double, Point, Self) throws -> Void) rethrows {
+                func _drawLoop(_ range: CountableClosedRange<Int>, _ x0: Double, _ dx0: Double, _ x1: Double, _ dx1: Double, operation: (Point, Self) throws -> Void) rethrows {
                     
                     let (min_x, min_dx, max_x, max_dx) = mid_x < q1.x ? (x0, dx0, x1, dx1) : (x1, dx1, x0, dx0)
                     
@@ -99,7 +99,7 @@ extension RasterizeBufferProtocol {
                             for x in __min_x...__max_x {
                                 let _x = Double(x)
                                 if _min_x..<_max_x ~= _x {
-                                    try operation(d, Point(x: _x, y: _y), pixel)
+                                    try operation(Point(x: _x, y: _y), pixel)
                                 }
                                 pixel += 1
                             }
@@ -198,7 +198,7 @@ public protocol ImageContextRasterizeVertex {
 extension ImageContext {
     
     @_inlineable
-    public func rasterize<Vertex: ImageContextRasterizeVertex>(_ v0: Vertex, _ v1: Vertex, _ v2: Vertex, operation: (Double, Vertex) throws -> ColorPixel<Model>) rethrows {
+    public func rasterize<S : Sequence, Vertex : ImageContextRasterizeVertex>(_ triangles: S, shader: (Vertex) throws -> ColorPixel<Model>?) rethrows where S.Iterator.Element == (Vertex, Vertex, Vertex) {
         
         try _image.withUnsafeMutableBufferPointer { _image in
             
@@ -210,22 +210,23 @@ extension ImageContext {
                         
                         let rasterizer = ImageContextRasterizeBuffer(destination: _destination, clip: _clip, width: width, height: height)
                         
-                        try rasterizer.rasterize(v0.position, v1.position, v2.position) { (f, p, buf) in
+                        for (v0, v1, v2) in triangles {
                             
-                            let _alpha = buf.clip.pointee
-                            
-                            if _alpha > 0 {
+                            try rasterizer.rasterize(v0.position, v1.position, v2.position) { (position, buf) in
                                 
-                                if let q = Barycentric(v0.position, v1.position, v2.position, p) {
+                                let _alpha = buf.clip.pointee
+                                
+                                if _alpha > 0, let q = Barycentric(v0.position, v1.position, v2.position, position) {
                                     
                                     let b = q.x * v0 + q.y * v1 + q.z * v2
                                     
-                                    var pixel = try operation(f, b)
-                                    
-                                    pixel.opacity *= _alpha
-                                    
-                                    if pixel.opacity > 0 {
-                                        buf.destination.pointee.blend(source: pixel, blendMode: _blendMode, compositingMode: _compositingMode)
+                                    if var pixel = try shader(b) {
+                                        
+                                        pixel.opacity *= _alpha
+                                        
+                                        if pixel.opacity > 0 {
+                                            buf.destination.pointee.blend(source: pixel, blendMode: _blendMode, compositingMode: _compositingMode)
+                                        }
                                     }
                                 }
                             }

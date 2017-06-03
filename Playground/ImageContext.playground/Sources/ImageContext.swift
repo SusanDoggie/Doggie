@@ -52,15 +52,16 @@ public func sampleImage3(width: Int, height: Int) -> Image<ARGB32ColorPixel> {
     
     let context = ImageContext(width: 500, height: 500, colorSpace: CalibratedRGBColorSpace.sRGB)
     
-    func shader(face: Double, vertex: Vertex) -> ColorPixel<RGBColorModel> {
+    func shader(vertex: Vertex) -> ColorPixel<RGBColorModel> {
         
         return vertex.color
     }
     
-    context.rasterize(Vertex(position: Point(x: 50, y: 50), color: ColorPixel(color: RGBColorModel(red: 1, green: 0, blue: 0), opacity: 1)),
-                      Vertex(position: Point(x: 450, y: 50), color: ColorPixel(color: RGBColorModel(red: 0, green: 1, blue: 0), opacity: 1)),
-                      Vertex(position: Point(x: 450, y: 450), color: ColorPixel(color: RGBColorModel(red: 0, green: 0, blue: 1), opacity: 1)),
-                      operation: shader)
+    let triangle = (Vertex(position: Point(x: 50, y: 50), color: ColorPixel(color: RGBColorModel(red: 1, green: 0, blue: 0), opacity: 1)),
+                    Vertex(position: Point(x: 450, y: 50), color: ColorPixel(color: RGBColorModel(red: 0, green: 1, blue: 0), opacity: 1)),
+                    Vertex(position: Point(x: 450, y: 450), color: ColorPixel(color: RGBColorModel(red: 0, green: 0, blue: 1), opacity: 1)))
+    
+    context.rasterize(CollectionOfOne(triangle), shader: shader)
     
     return Image(image: context.image)
 }

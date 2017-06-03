@@ -127,7 +127,7 @@ extension ImageContext {
                 let rasterizer = ImageContextGradientMeshRasterizeBuffer(destination: destination, clip: clip, width: width, height: height)
                 
                 @inline(__always)
-                func _rasterize(_: Double, _: Point, buf: ImageContextGradientMeshRasterizeBuffer<Model>) {
+                func _rasterize(_: Point, buf: ImageContextGradientMeshRasterizeBuffer<Model>) {
                     
                     let _alpha = buf.clip.pointee
                     
