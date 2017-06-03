@@ -232,18 +232,46 @@ public func *(lhs: Vector, rhs: PerspectiveProjectMatrix) -> Point {
 extension ImageContext {
     
     @_versioned
-    @_inlineable
-    func _rasterize<S : Sequence, Vertex : ImageContextRasterizeVertex>(_ triangles: S, shader: (Vertex) throws -> ColorPixel<Model>?, position: (Vertex) -> Point, culling: (Point, Point, Point) -> Bool) rethrows where S.Iterator.Element == (Vertex, Vertex, Vertex) {
+    @inline(__always)
+    func _rasterize<S : Sequence, Vertex : ImageContextRasterizeVertex>(_ triangles: S, test: ((ImageContextRasterizeBuffer<Model>, Vertex) -> Bool)?, shader: (Vertex) throws -> ColorPixel<Model>?, position: (Vertex) -> Point, culling: (Point, Point, Point) -> Bool) rethrows where S.Iterator.Element == (Vertex, Vertex, Vertex) {
         
-        if let next = self.next {
-            try next._rasterize(triangles, shader: shader, position: position, culling: culling)
-            return
-        }
-        
-        let transform = self._transform
-        
-        if _image.width == 0 || _image.height == 0 || transform.determinant.almostZero() {
-            return
+        @inline(__always)
+        func __rasterize(rasterizer: ImageContextRasterizeBuffer<Model>, test: ((ImageContextRasterizeBuffer<Model>, Vertex) -> Bool)?, shader: (Vertex) throws -> ColorPixel<Model>?, position: (Vertex) -> Point, culling: (Point, Point, Point) -> Bool) rethrows {
+            
+            let transform = self._transform
+            
+            for (v0, v1, v2) in triangles {
+                
+                let p0 = position(v0)
+                let p1 = position(v1)
+                let p2 = position(v2)
+                
+                if culling(p0, p1, p2) {
+                    
+                    let _p0 = p0 * transform
+                    let _p1 = p1 * transform
+                    let _p2 = p2 * transform
+                    
+                    try rasterizer.rasterize(_p0, _p1, _p2) { (position, buf) in
+                        
+                        let _alpha = buf.clip.pointee
+                        
+                        if _alpha > 0, let q = Barycentric(_p0, _p1, _p2, position) {
+                            
+                            let b = q.x * v0 + q.y * v1 + q.z * v2
+                            
+                            if test?(buf, b) != false, var pixel = try shader(b) {
+                                
+                                pixel.opacity *= _alpha
+                                
+                                if pixel.opacity > 0 {
+                                    buf.destination.pointee.blend(source: pixel, blendMode: _blendMode, compositingMode: _compositingMode)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
         
         try _image.withUnsafeMutableBufferPointer { _image in
@@ -256,38 +284,7 @@ extension ImageContext {
                         
                         let rasterizer = ImageContextRasterizeBuffer(destination: _destination, clip: _clip, width: width, height: height)
                         
-                        for (v0, v1, v2) in triangles {
-                            
-                            let p0 = position(v0)
-                            let p1 = position(v1)
-                            let p2 = position(v2)
-                            
-                            if culling(p0, p1, p2) {
-                                
-                                let _p0 = p0 * transform
-                                let _p1 = p1 * transform
-                                let _p2 = p2 * transform
-                                
-                                try rasterizer.rasterize(_p0, _p1, _p2) { (position, buf) in
-                                    
-                                    let _alpha = buf.clip.pointee
-                                    
-                                    if _alpha > 0, let q = Barycentric(_p0, _p1, _p2, position) {
-                                        
-                                        let b = q.x * v0 + q.y * v1 + q.z * v2
-                                        
-                                        if var pixel = try shader(b) {
-                                            
-                                            pixel.opacity *= _alpha
-                                            
-                                            if pixel.opacity > 0 {
-                                                buf.destination.pointee.blend(source: pixel, blendMode: _blendMode, compositingMode: _compositingMode)
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
+                        try __rasterize(rasterizer: rasterizer, test: test, shader: shader, position: position, culling: culling)
                     }
                 }
             }
@@ -297,15 +294,33 @@ extension ImageContext {
     @_inlineable
     public func rasterize<S : Sequence, Vertex : ImageContextRasterizeVertex>(_ triangles: S, culling: ImageContextRasterizeCullMode = .none, shader: (Vertex) throws -> ColorPixel<Model>?) rethrows where S.Iterator.Element == (Vertex, Vertex, Vertex), Vertex.Position == Point {
         
+        if let next = self.next {
+            try next.rasterize(triangles, culling: culling, shader: shader)
+            return
+        }
+        
+        if _image.width == 0 || _image.height == 0 || _transform.determinant.almostZero() {
+            return
+        }
+        
         switch culling {
-        case .none: try _rasterize(triangles, shader: shader, position: { $0.position }, culling: { _ in true })
-        case .front: try _rasterize(triangles, shader: shader, position: { $0.position }, culling: { cross($1 - $0, $2 - $0) < 0 })
-        case .back: try _rasterize(triangles, shader: shader, position: { $0.position }, culling: { cross($1 - $0, $2 - $0) > 0 })
+        case .none: try _rasterize(triangles, test: nil, shader: shader, position: { $0.position }, culling: { _ in true })
+        case .front: try _rasterize(triangles, test: nil, shader: shader, position: { $0.position }, culling: { cross($1 - $0, $2 - $0) < 0 })
+        case .back: try _rasterize(triangles, test: nil, shader: shader, position: { $0.position }, culling: { cross($1 - $0, $2 - $0) > 0 })
         }
     }
     
     @_inlineable
     public func rasterize<S : Sequence, Vertex : ImageContextRasterizeVertex>(_ triangles: S, projection: PerspectiveProjectMatrix, culling: ImageContextRasterizeCullMode = .none, shader: (Vertex) throws -> ColorPixel<Model>?) rethrows where S.Iterator.Element == (Vertex, Vertex, Vertex), Vertex.Position == Vector {
+        
+        if let next = self.next {
+            try next.rasterize(triangles, projection: projection, culling: culling, shader: shader)
+            return
+        }
+        
+        if _image.width == 0 || _image.height == 0 || _transform.determinant.almostZero() {
+            return
+        }
         
         let width = Double(self.width)
         let height = Double(self.height)
@@ -314,20 +329,20 @@ extension ImageContext {
         let z_range = min(projection.nearZ, projection.farZ)...max(projection.nearZ, projection.farZ)
         
         @inline(__always)
-        func _projection(_ v: Vector) -> Point {
-            let p = v * projection
-            return Point(x: (0.5 + 0.5 * p.x) * width, y: (0.5 + 0.5 * p.y) * height)
+        func _test(_ buf: ImageContextRasterizeBuffer<Model>, _ v: Vertex) -> Bool {
+            return z_range ~= v.position.z
         }
         
         @inline(__always)
         func _position(_ v: Vertex) -> Point {
-            return _projection(Vector(x: v.position.x * aspect, y: -v.position.y, z: v.position.z))
+            let p = Vector(x: v.position.x * aspect, y: -v.position.y, z: v.position.z) * projection
+            return Point(x: (0.5 + 0.5 * p.x) * width, y: (0.5 + 0.5 * p.y) * height)
         }
         
         switch culling {
-        case .none: try _rasterize(triangles, shader: { z_range ~= $0.position.z ? try shader($0) : nil }, position: _position, culling: { _ in true })
-        case .front: try _rasterize(triangles, shader: { z_range ~= $0.position.z ? try shader($0) : nil }, position: _position, culling: { cross($1 - $0, $2 - $0) > 0 })
-        case .back: try _rasterize(triangles, shader: { z_range ~= $0.position.z ? try shader($0) : nil }, position: _position, culling: { cross($1 - $0, $2 - $0) < 0 })
+        case .none: try _rasterize(triangles, test: _test, shader: shader, position: _position, culling: { _ in true })
+        case .front: try _rasterize(triangles, test: _test, shader: shader, position: _position, culling: { cross($1 - $0, $2 - $0) > 0 })
+        case .back: try _rasterize(triangles, test: _test, shader: shader, position: _position, culling: { cross($1 - $0, $2 - $0) < 0 })
         }
     }
 }
