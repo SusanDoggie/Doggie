@@ -182,6 +182,128 @@ extension ColorPixel where Model == CMYKColorModel {
     }
 }
 
+extension ColorPixel where Model == GrayColorModel {
+    
+    @_inlineable
+    public var white: Double {
+        get {
+            return color.white
+        }
+        set {
+            color.white = newValue
+        }
+    }
+}
+
+extension ColorPixel where Model == RGBColorModel {
+    
+    @_inlineable
+    public var red: Double {
+        get {
+            return color.red
+        }
+        set {
+            color.red = newValue
+        }
+    }
+    
+    @_inlineable
+    public var green: Double {
+        get {
+            return color.green
+        }
+        set {
+            color.green = newValue
+        }
+    }
+    
+    @_inlineable
+    public var blue: Double {
+        get {
+            return color.blue
+        }
+        set {
+            color.blue = newValue
+        }
+    }
+}
+
+extension ColorPixel where Model == RGBColorModel {
+    
+    @_inlineable
+    public var hue: Double {
+        get {
+            return color.hue
+        }
+        set {
+            color.hue = newValue
+        }
+    }
+    
+    @_inlineable
+    public var saturation: Double {
+        get {
+            return color.saturation
+        }
+        set {
+            color.saturation = newValue
+        }
+    }
+    
+    @_inlineable
+    public var brightness: Double {
+        get {
+            return color.brightness
+        }
+        set {
+            color.brightness = newValue
+        }
+    }
+}
+
+extension ColorPixel where Model == CMYKColorModel {
+    
+    @_inlineable
+    public var cyan: Double {
+        get {
+            return color.cyan
+        }
+        set {
+            color.cyan = newValue
+        }
+    }
+    
+    @_inlineable
+    public var magenta: Double {
+        get {
+            return color.magenta
+        }
+        set {
+            color.magenta = newValue
+        }
+    }
+    
+    @_inlineable
+    public var yellow: Double {
+        get {
+            return color.yellow
+        }
+        set {
+            color.yellow = newValue
+        }
+    }
+    
+    @_inlineable
+    public var black: Double {
+        get {
+            return color.black
+        }
+        set {
+            color.black = newValue
+        }
+    }
+}
+
 public struct ARGB32ColorPixel : ColorPixelProtocol {
     
     public var a: UInt8
