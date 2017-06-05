@@ -233,10 +233,10 @@ extension ImageContext {
     
     @_versioned
     @inline(__always)
-    func _rasterize<S : Sequence, Vertex : ImageContextRasterizeVertex, Pixel : ColorPixelProtocol>(_ triangles: S, culling: ImageContextRasterizeCullMode, position: (Vertex) -> Point, test: ((ImageContextRasterizeBuffer<Model>, Vertex) -> Bool)?, shader: (Vertex) throws -> Pixel?) rethrows where S.Iterator.Element == (Vertex, Vertex, Vertex), Pixel.Model == Model {
+    func _rasterize<S : Sequence, Vertex : ImageContextRasterizeVertex, Pixel : ColorPixelProtocol>(_ triangles: S, culling: ImageContextRasterizeCullMode, position: (Vertex) -> Point, depth: (Vertex) -> Double, shader: (Vertex) throws -> Pixel?) rethrows where S.Iterator.Element == (Vertex, Vertex, Vertex), Pixel.Model == Model {
         
         @inline(__always)
-        func __rasterize(rasterizer: ImageContextRasterizeBuffer<Model>, position: (Vertex) -> Point, test: ((ImageContextRasterizeBuffer<Model>, Vertex) -> Bool)?, shader: (Vertex) throws -> Pixel?) rethrows {
+        func __rasterize(rasterizer: ImageContextRasterizeBuffer<Model>, position: (Vertex) -> Point, depth: (Vertex) -> Double, shader: (Vertex) throws -> Pixel?) rethrows {
             
             let transform = self._transform
             
@@ -267,7 +267,9 @@ extension ImageContext {
                             
                             let b = q.x * v0 + q.y * v1 + q.z * v2
                             
-                            if test?(buf, b) != false, var pixel = try shader(b) {
+                            let _depth = depth(b)
+                            
+                            if 0...1 ~= _depth, var pixel = try shader(b) {
                                 
                                 pixel.opacity *= _alpha
                                 
@@ -291,7 +293,7 @@ extension ImageContext {
                         
                         let rasterizer = ImageContextRasterizeBuffer(destination: _destination, clip: _clip, width: width, height: height)
                         
-                        try __rasterize(rasterizer: rasterizer, position: position, test: test, shader: shader)
+                        try __rasterize(rasterizer: rasterizer, position: position, depth: depth, shader: shader)
                     }
                 }
             }
@@ -310,7 +312,7 @@ extension ImageContext {
             return
         }
         
-        try _rasterize(triangles, culling: culling, position: { $0.position }, test: nil, shader: shader)
+        try _rasterize(triangles, culling: culling, position: { $0.position }, depth: { _ in 1 }, shader: shader)
     }
     
     @_inlineable
@@ -335,12 +337,6 @@ extension ImageContext {
             return Point(x: (0.5 + 0.5 * p.x) * width, y: (0.5 + 0.5 * p.y) * height)
         }
         
-        @inline(__always)
-        func _test(_ buf: ImageContextRasterizeBuffer<Model>, _ v: Vertex) -> Bool {
-            let _z = (v.position.z - projection.nearZ) / (projection.farZ - projection.nearZ)
-            return 0...1 ~= _z
-        }
-        
-        try _rasterize(triangles, culling: culling, position: _position, test: _test, shader: shader)
+        try _rasterize(triangles, culling: culling, position: _position, depth: { ($0.position.z - projection.nearZ) / (projection.farZ - projection.nearZ) }, shader: shader)
     }
 }
