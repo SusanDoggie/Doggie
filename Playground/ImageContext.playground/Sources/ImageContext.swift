@@ -33,7 +33,7 @@ public func sampleImage(width: Int, height: Int) -> Image<ARGB32ColorPixel> {
     return Image(image: context.image)
 }
 
-struct Vertex : ImageContextRasterizeVertex {
+struct Vertex : ImageContextRenderVertex {
     
     var position: Point
     
@@ -61,12 +61,12 @@ public func sampleImage3(width: Int, height: Int) -> Image<ARGB32ColorPixel> {
                     Vertex(position: Point(x: 450, y: 50), color: ColorPixel(red: 0, green: 1, blue: 0, opacity: 1)),
                     Vertex(position: Point(x: 450, y: 450), color: ColorPixel(red: 0, green: 0, blue: 1, opacity: 1)))
     
-    context.rasterize(CollectionOfOne(triangle), shader: shader)
+    context.render(CollectionOfOne(triangle), shader: shader)
     
     return Image(image: context.image)
 }
 
-struct Vertex2 : ImageContextRasterizeVertex {
+struct Vertex2 : ImageContextRenderVertex {
     
     var position: Vector
     
@@ -136,7 +136,9 @@ public func sampleImage4(width: Int, height: Int) -> Image<ARGB32ColorPixel> {
     
     let triangles = [t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11]
     
-    context.rasterize(triangles, projection: PerspectiveProjectMatrix(angle: degreesToRad(50), nearZ: 1, farZ: 500), culling: .back, shader: shader)
+    context.renderDepthCompareMode = .less
+    
+    context.render(triangles, projection: PerspectiveProjectMatrix(angle: degreesToRad(50), nearZ: 1, farZ: 500), culling: .back, shader: shader)
     
     return Image(image: context.image)
 }

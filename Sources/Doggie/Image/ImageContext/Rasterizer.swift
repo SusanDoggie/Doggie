@@ -151,13 +151,16 @@ extension RasterizeBufferProtocol {
 
 @_versioned
 @_fixed_layout
-struct ImageContextRasterizeBuffer<Model : ColorModelProtocol> : RasterizeBufferProtocol {
+struct ImageContextRenderBuffer<Model : ColorModelProtocol> : RasterizeBufferProtocol {
     
     @_versioned
     var destination: UnsafeMutablePointer<ColorPixel<Model>>
     
     @_versioned
     var clip: UnsafePointer<Double>
+    
+    @_versioned
+    var depth: UnsafeMutablePointer<Double>
     
     @_versioned
     var width: Int
@@ -167,28 +170,30 @@ struct ImageContextRasterizeBuffer<Model : ColorModelProtocol> : RasterizeBuffer
     
     @_versioned
     @inline(__always)
-    init(destination: UnsafeMutablePointer<ColorPixel<Model>>, clip: UnsafePointer<Double>, width: Int, height: Int) {
+    init(destination: UnsafeMutablePointer<ColorPixel<Model>>, clip: UnsafePointer<Double>, depth: UnsafeMutablePointer<Double>, width: Int, height: Int) {
         self.destination = destination
         self.clip = clip
+        self.depth = depth
         self.width = width
         self.height = height
     }
     
     @_versioned
     @inline(__always)
-    static func + (lhs: ImageContextRasterizeBuffer, rhs: Int) -> ImageContextRasterizeBuffer {
-        return ImageContextRasterizeBuffer(destination: lhs.destination + rhs, clip: lhs.clip + rhs, width: lhs.width, height: lhs.height)
+    static func + (lhs: ImageContextRenderBuffer, rhs: Int) -> ImageContextRenderBuffer {
+        return ImageContextRenderBuffer(destination: lhs.destination + rhs, clip: lhs.clip + rhs, depth: lhs.depth + rhs, width: lhs.width, height: lhs.height)
     }
     
     @_versioned
     @inline(__always)
-    static func += (lhs: inout ImageContextRasterizeBuffer, rhs: Int) {
+    static func += (lhs: inout ImageContextRenderBuffer, rhs: Int) {
         lhs.destination += rhs
         lhs.clip += rhs
+        lhs.depth += rhs
     }
 }
 
-public protocol ImageContextRasterizeVertex {
+public protocol ImageContextRenderVertex {
     
     associatedtype Position
     
@@ -199,7 +204,7 @@ public protocol ImageContextRasterizeVertex {
     static func * (lhs: Double, rhs: Self) -> Self
 }
 
-public enum ImageContextRasterizeCullMode {
+public enum ImageContextRenderCullMode {
     
     case none
     case front
@@ -233,12 +238,13 @@ extension ImageContext {
     
     @_versioned
     @inline(__always)
-    func _rasterize<S : Sequence, Vertex : ImageContextRasterizeVertex, Pixel : ColorPixelProtocol>(_ triangles: S, culling: ImageContextRasterizeCullMode, position: (Vertex) -> Point, depth: (Vertex) -> Double, shader: (Vertex) throws -> Pixel?) rethrows where S.Iterator.Element == (Vertex, Vertex, Vertex), Pixel.Model == Model {
+    func _rasterize<S : Sequence, Vertex : ImageContextRenderVertex, Pixel : ColorPixelProtocol>(_ triangles: S, culling: ImageContextRenderCullMode, position: (Vertex) -> Point, depthFun: ((Vertex) -> Double)?, shader: (Vertex) throws -> Pixel?) rethrows where S.Iterator.Element == (Vertex, Vertex, Vertex), Pixel.Model == Model {
         
         @inline(__always)
-        func __rasterize(rasterizer: ImageContextRasterizeBuffer<Model>, position: (Vertex) -> Point, depth: (Vertex) -> Double, shader: (Vertex) throws -> Pixel?) rethrows {
+        func __rasterize(rasterizer: ImageContextRenderBuffer<Model>, position: (Vertex) -> Point, depthFun: ((Vertex) -> Double)?, shader: (Vertex) throws -> Pixel?) rethrows {
             
             let transform = self._transform
+            let depthCompareMode = self._renderDepthCompareMode
             
             for (v0, v1, v2) in triangles {
                 
@@ -267,14 +273,42 @@ extension ImageContext {
                             
                             let b = q.x * v0 + q.y * v1 + q.z * v2
                             
-                            let _depth = depth(b)
-                            
-                            if 0...1 ~= _depth, var pixel = try shader(b) {
+                            if let _depth = depthFun?(b) {
                                 
-                                pixel.opacity *= _alpha
+                                if 0...1 ~= _depth {
+                                    
+                                    let depthPass: Bool
+                                    
+                                    switch depthCompareMode {
+                                    case .always: depthPass = true
+                                    case .never: depthPass = false
+                                    case .equal: depthPass = _depth == buf.depth.pointee
+                                    case .notEqual: depthPass = _depth != buf.depth.pointee
+                                    case .less: depthPass = _depth < buf.depth.pointee
+                                    case .lessEqual: depthPass = _depth <= buf.depth.pointee
+                                    case .greater: depthPass = _depth > buf.depth.pointee
+                                    case .greaterEqual: depthPass = _depth >= buf.depth.pointee
+                                    }
+                                    
+                                    if depthPass, var pixel = try shader(b) {
+                                        
+                                        pixel.opacity *= _alpha
+                                        
+                                        if pixel.opacity > 0 {
+                                            buf.destination.pointee.blend(source: pixel, blendMode: _blendMode, compositingMode: _compositingMode)
+                                            buf.depth.pointee = _depth
+                                        }
+                                    }
+                                }
+                            } else {
                                 
-                                if pixel.opacity > 0 {
-                                    buf.destination.pointee.blend(source: pixel, blendMode: _blendMode, compositingMode: _compositingMode)
+                                if var pixel = try shader(b) {
+                                    
+                                    pixel.opacity *= _alpha
+                                    
+                                    if pixel.opacity > 0 {
+                                        buf.destination.pointee.blend(source: pixel, blendMode: _blendMode, compositingMode: _compositingMode)
+                                    }
                                 }
                             }
                         }
@@ -291,20 +325,81 @@ extension ImageContext {
                     
                     if let _clip = _clip.baseAddress {
                         
-                        let rasterizer = ImageContextRasterizeBuffer(destination: _destination, clip: _clip, width: width, height: height)
-                        
-                        try __rasterize(rasterizer: rasterizer, position: position, depth: depth, shader: shader)
+                        try depth.withUnsafeMutableBufferPointer { _depth in
+                            
+                            if let _depth = _depth.baseAddress {
+                                
+                                let rasterizer = ImageContextRenderBuffer(destination: _destination, clip: _clip, depth: _depth, width: width, height: height)
+                                
+                                try __rasterize(rasterizer: rasterizer, position: position, depthFun: depthFun, shader: shader)
+                            }
+                        }
                     }
                 }
             }
         }
     }
+}
+
+public enum ImageContextRenderDepthCompareMode {
+    
+    case always
+    case never
+    case equal
+    case notEqual
+    case less
+    case lessEqual
+    case greater
+    case greaterEqual
+}
+
+extension ImageContext {
     
     @_inlineable
-    public func rasterize<S : Sequence, Vertex : ImageContextRasterizeVertex, Pixel : ColorPixelProtocol>(_ triangles: S, culling: ImageContextRasterizeCullMode = .none, shader: (Vertex) throws -> Pixel?) rethrows where S.Iterator.Element == (Vertex, Vertex, Vertex), Vertex.Position == Point, Pixel.Model == Model {
+    public func withUnsafeMutableDepthBufferPointer<R>(_ body: (inout UnsafeMutableBufferPointer<Double>) throws -> R) rethrows -> R {
         
         if let next = self.next {
-            try next.rasterize(triangles, culling: culling, shader: shader)
+            return try next.withUnsafeMutableDepthBufferPointer(body)
+        } else {
+            return try depth.withUnsafeMutableBufferPointer(body)
+        }
+    }
+    
+    @_inlineable
+    public func withUnsafeDepthBufferPointer<R>(_ body: (UnsafeBufferPointer<Double>) throws -> R) rethrows -> R {
+        
+        if let next = self.next {
+            return try next.withUnsafeDepthBufferPointer(body)
+        } else {
+            return try depth.withUnsafeBufferPointer(body)
+        }
+    }
+}
+
+extension ImageContext {
+    
+    @_inlineable
+    public var renderDepthCompareMode: ImageContextRenderDepthCompareMode {
+        get {
+            return next?.renderDepthCompareMode ?? _renderDepthCompareMode
+        }
+        set {
+            if let next = self.next {
+                next.renderDepthCompareMode = newValue
+            } else {
+                _renderDepthCompareMode = newValue
+            }
+        }
+    }
+}
+
+extension ImageContext {
+    
+    @_inlineable
+    public func render<S : Sequence, Vertex : ImageContextRenderVertex, Pixel : ColorPixelProtocol>(_ triangles: S, culling: ImageContextRenderCullMode = .none, shader: (Vertex) throws -> Pixel?) rethrows where S.Iterator.Element == (Vertex, Vertex, Vertex), Vertex.Position == Point, Pixel.Model == Model {
+        
+        if let next = self.next {
+            try next.render(triangles, culling: culling, shader: shader)
             return
         }
         
@@ -312,14 +407,14 @@ extension ImageContext {
             return
         }
         
-        try _rasterize(triangles, culling: culling, position: { $0.position }, depth: { _ in 1 }, shader: shader)
+        try _rasterize(triangles, culling: culling, position: { $0.position }, depthFun: nil, shader: shader)
     }
     
     @_inlineable
-    public func rasterize<S : Sequence, Vertex : ImageContextRasterizeVertex, Pixel : ColorPixelProtocol>(_ triangles: S, projection: PerspectiveProjectMatrix, culling: ImageContextRasterizeCullMode = .none, shader: (Vertex) throws -> Pixel?) rethrows where S.Iterator.Element == (Vertex, Vertex, Vertex), Vertex.Position == Vector, Pixel.Model == Model {
+    public func render<S : Sequence, Vertex : ImageContextRenderVertex, Pixel : ColorPixelProtocol>(_ triangles: S, projection: PerspectiveProjectMatrix, culling: ImageContextRenderCullMode = .none, shader: (Vertex) throws -> Pixel?) rethrows where S.Iterator.Element == (Vertex, Vertex, Vertex), Vertex.Position == Vector, Pixel.Model == Model {
         
         if let next = self.next {
-            try next.rasterize(triangles, projection: projection, culling: culling, shader: shader)
+            try next.render(triangles, projection: projection, culling: culling, shader: shader)
             return
         }
         
@@ -337,6 +432,6 @@ extension ImageContext {
             return Point(x: (0.5 + 0.5 * p.x) * width, y: (0.5 + 0.5 * p.y) * height)
         }
         
-        try _rasterize(triangles, culling: culling, position: _position, depth: { ($0.position.z - projection.nearZ) / (projection.farZ - projection.nearZ) }, shader: shader)
+        try _rasterize(triangles, culling: culling, position: _position, depthFun: { ($0.position.z - projection.nearZ) / (projection.farZ - projection.nearZ) }, shader: shader)
     }
 }

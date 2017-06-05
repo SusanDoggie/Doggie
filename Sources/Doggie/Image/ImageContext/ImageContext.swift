@@ -36,6 +36,12 @@ public class ImageContext<Model : ColorModelProtocol> {
     var stencil: [Int16] = []
     
     @_versioned
+    var depth: [Double]
+    
+    @_versioned
+    var _renderDepthCompareMode: ImageContextRenderDepthCompareMode = .always
+    
+    @_versioned
     var _antialias: Bool = true
     
     @_versioned
@@ -60,12 +66,14 @@ public class ImageContext<Model : ColorModelProtocol> {
         
         self._image = Image(image: image)
         self.clip = [Double](repeating: 1, count: image.width * image.height)
+        self.depth = [Double](repeating: 1, count: image.width * image.height)
     }
     
     public init<C : ColorSpaceProtocol>(width: Int, height: Int, colorSpace: C) where C.Model == Model {
         
         self._image = Image(width: width, height: height, colorSpace: colorSpace)
         self.clip = [Double](repeating: 1, count: width * height)
+        self.depth = [Double](repeating: 1, count: width * height)
     }
 }
 
@@ -88,16 +96,6 @@ extension ImageContext {
             return try next.withUnsafeImageBufferPointer(body)
         } else {
             return try _image.withUnsafeBufferPointer(body)
-        }
-    }
-    
-    @_inlineable
-    public func withUnsafeClipBufferPointer<R>(_ body: (UnsafeBufferPointer<Double>) throws -> R) rethrows -> R {
-        
-        if let next = self.next {
-            return try next.withUnsafeClipBufferPointer(body)
-        } else {
-            return try clip.withUnsafeBufferPointer(body)
         }
     }
 }

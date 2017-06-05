@@ -26,6 +26,19 @@
 extension ImageContext {
     
     @_inlineable
+    public func withUnsafeClipBufferPointer<R>(_ body: (UnsafeBufferPointer<Double>) throws -> R) rethrows -> R {
+        
+        if let next = self.next {
+            return try next.withUnsafeClipBufferPointer(body)
+        } else {
+            return try clip.withUnsafeBufferPointer(body)
+        }
+    }
+}
+
+extension ImageContext {
+    
+    @_inlineable
     public func drawClip(body: (ImageContext<GrayColorModel>) throws -> Void) rethrows {
         
         if let next = self.next {
