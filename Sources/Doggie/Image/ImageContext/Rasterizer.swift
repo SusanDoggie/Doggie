@@ -391,6 +391,21 @@ extension ImageContext {
             }
         }
     }
+    
+    @_inlineable
+    public func clearRenderDepthBuffer(with value: Double = 1) {
+        
+        withUnsafeMutableDepthBufferPointer { buf in
+            
+            if var depth = buf.baseAddress {
+                
+                for _ in 0..<buf.count {
+                    depth.pointee = value
+                    depth += 1
+                }
+            }
+        }
+    }
 }
 
 extension ImageContext {
