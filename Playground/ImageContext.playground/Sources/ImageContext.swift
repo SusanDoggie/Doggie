@@ -85,7 +85,7 @@ public func sampleImage4(width: Int, height: Int) -> Image<ARGB32ColorPixel> {
     
     let context = ImageContext(width: 500, height: 500, colorSpace: CalibratedRGBColorSpace.sRGB)
     
-    let matrix = Matrix.rotateY(degreesToRad(30)) * Matrix.rotateX(degreesToRad(30)) * Matrix.translate(x: 0, y: 0, z: -100)
+    let matrix = Matrix.rotateY(degreesToRad(30)) * Matrix.rotateX(degreesToRad(-30)) * Matrix.translate(x: 0, y: 0, z: 100)
     
     let c0 = ColorPixel(red: 0, green: 0, blue: 0, opacity: 1)
     let c1 = ColorPixel(red: 1, green: 0, blue: 0, opacity: 1)
@@ -96,14 +96,14 @@ public func sampleImage4(width: Int, height: Int) -> Image<ARGB32ColorPixel> {
     let c6 = ColorPixel(red: 0, green: 1, blue: 1, opacity: 1)
     let c7 = ColorPixel(red: 1, green: 1, blue: 1, opacity: 1)
     
-    let v0 = Vertex2(position: Vector(x: 25, y: 25, z: 25) * matrix, color: c0)
-    let v1 = Vertex2(position: Vector(x: -25, y: 25, z: 25) * matrix, color: c1)
-    let v2 = Vertex2(position: Vector(x: -25, y: -25, z: 25) * matrix, color: c5)
-    let v3 = Vertex2(position: Vector(x: 25, y: -25, z: 25) * matrix, color: c3)
-    let v4 = Vertex2(position: Vector(x: 25, y: 25, z: -25) * matrix, color: c2)
-    let v5 = Vertex2(position: Vector(x: -25, y: 25, z: -25) * matrix, color: c4)
-    let v6 = Vertex2(position: Vector(x: -25, y: -25, z: -25) * matrix, color: c7)
-    let v7 = Vertex2(position: Vector(x: 25, y: -25, z: -25) * matrix, color: c6)
+    let v0 = Vertex2(position: Vector(x: 25, y: 25, z: -25) * matrix, color: c0)
+    let v1 = Vertex2(position: Vector(x: -25, y: 25, z: -25) * matrix, color: c1)
+    let v2 = Vertex2(position: Vector(x: -25, y: -25, z: -25) * matrix, color: c5)
+    let v3 = Vertex2(position: Vector(x: 25, y: -25, z: -25) * matrix, color: c3)
+    let v4 = Vertex2(position: Vector(x: 25, y: 25, z: 25) * matrix, color: c2)
+    let v5 = Vertex2(position: Vector(x: -25, y: 25, z: 25) * matrix, color: c4)
+    let v6 = Vertex2(position: Vector(x: -25, y: -25, z: 25) * matrix, color: c7)
+    let v7 = Vertex2(position: Vector(x: 25, y: -25, z: 25) * matrix, color: c6)
     
     // face v0, v1, v2, v3
     let t0 = (v0, v1, v2)
@@ -136,7 +136,7 @@ public func sampleImage4(width: Int, height: Int) -> Image<ARGB32ColorPixel> {
     
     let triangles = [t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11]
     
-    context.rasterize(triangles, projection: PerspectiveProjectMatrix(angle: degreesToRad(50), nearZ: 0, farZ: -500), culling: .back, shader: shader)
+    context.rasterize(triangles, projection: PerspectiveProjectMatrix(angle: degreesToRad(50), nearZ: 1, farZ: 500), culling: .back, shader: shader)
     
     return Image(image: context.image)
 }
