@@ -24,8 +24,8 @@
 //
 
 @_inlineable
-@_specialize(UInt8) @_specialize(UInt16) @_specialize(UInt32) @_specialize(UInt64) @_specialize(UInt)
-public func AddMod<T: UnsignedInteger>(_ count: Int, _ left: UnsafePointer<T>, _ left_stride: Int, _ right: UnsafePointer<T>, _ right_stride: Int, _ mod: UnsafePointer<T>, _ mod_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
+@_specialize(where T == UInt8) @_specialize(where T == UInt16) @_specialize(where T == UInt32) @_specialize(where T == UInt64) @_specialize(where T == UInt)
+public func AddMod<T: UnsignedInteger & FixedWidthInteger>(_ count: Int, _ left: UnsafePointer<T>, _ left_stride: Int, _ right: UnsafePointer<T>, _ right_stride: Int, _ mod: UnsafePointer<T>, _ mod_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var left = left
     var right = right
@@ -41,8 +41,8 @@ public func AddMod<T: UnsignedInteger>(_ count: Int, _ left: UnsafePointer<T>, _
     }
 }
 @_inlineable
-@_specialize(UInt8) @_specialize(UInt16) @_specialize(UInt32) @_specialize(UInt64) @_specialize(UInt)
-public func NegMod<T: UnsignedInteger>(_ count: Int, _ a: UnsafePointer<T>, _ a_stride: Int, _ mod: UnsafePointer<T>, _ mod_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
+@_specialize(where T == UInt8) @_specialize(where T == UInt16) @_specialize(where T == UInt32) @_specialize(where T == UInt64) @_specialize(where T == UInt)
+public func NegMod<T: UnsignedInteger & FixedWidthInteger>(_ count: Int, _ a: UnsafePointer<T>, _ a_stride: Int, _ mod: UnsafePointer<T>, _ mod_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var a = a
     var mod = mod
@@ -56,8 +56,8 @@ public func NegMod<T: UnsignedInteger>(_ count: Int, _ a: UnsafePointer<T>, _ a_
     }
 }
 @_inlineable
-@_specialize(UInt8) @_specialize(UInt16) @_specialize(UInt32) @_specialize(UInt64) @_specialize(UInt)
-public func SubMod<T: UnsignedInteger>(_ count: Int, _ left: UnsafePointer<T>, _ left_stride: Int, _ right: UnsafePointer<T>, _ right_stride: Int, _ mod: UnsafePointer<T>, _ mod_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
+@_specialize(where T == UInt8) @_specialize(where T == UInt16) @_specialize(where T == UInt32) @_specialize(where T == UInt64) @_specialize(where T == UInt)
+public func SubMod<T: UnsignedInteger & FixedWidthInteger>(_ count: Int, _ left: UnsafePointer<T>, _ left_stride: Int, _ right: UnsafePointer<T>, _ right_stride: Int, _ mod: UnsafePointer<T>, _ mod_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var left = left
     var right = right
@@ -73,8 +73,8 @@ public func SubMod<T: UnsignedInteger>(_ count: Int, _ left: UnsafePointer<T>, _
     }
 }
 @_inlineable
-@_specialize(UInt8) @_specialize(UInt16) @_specialize(UInt32) @_specialize(UInt64) @_specialize(UInt)
-public func MulMod<T: UnsignedInteger>(_ count: Int, _ left: UnsafePointer<T>, _ left_stride: Int, _ right: UnsafePointer<T>, _ right_stride: Int, _ mod: UnsafePointer<T>, _ mod_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
+@_specialize(where T == UInt8) @_specialize(where T == UInt16) @_specialize(where T == UInt32) @_specialize(where T == UInt64) @_specialize(where T == UInt)
+public func MulMod<T: UnsignedInteger & FixedWidthInteger>(_ count: Int, _ left: UnsafePointer<T>, _ left_stride: Int, _ right: UnsafePointer<T>, _ right_stride: Int, _ mod: UnsafePointer<T>, _ mod_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var left = left
     var right = right
@@ -101,7 +101,7 @@ public func MulMod<T: UnsignedInteger>(_ count: Int, _ left: UnsafePointer<T>, _
 ///   - out_stride: Stride for `output`.
 /// - remark: `output[n] = left[n] + right[n], 0 <= n < count`
 @_inlineable
-@_specialize(Int8) @_specialize(Int16) @_specialize(Int32) @_specialize(Int64) @_specialize(Int) @_specialize(Float) @_specialize(Double) @_specialize(Complex)
+@_specialize(where T == Int8) @_specialize(where T == Int16) @_specialize(where T == Int32) @_specialize(where T == Int64) @_specialize(where T == Int) @_specialize(where T == Float) @_specialize(where T == Double) @_specialize(where T == Complex)
 public func Add<T: Additive>(_ count: Int, _ left: UnsafePointer<T>, _ left_stride: Int, _ right: UnsafePointer<T>, _ right_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var left = left
@@ -127,7 +127,7 @@ public func Add<T: Additive>(_ count: Int, _ left: UnsafePointer<T>, _ left_stri
 ///   - out_stride: Stride for `output`.
 /// - remark: `output[n] = left[n] - right[n], 0 <= n < count`
 @_inlineable
-@_specialize(Int8) @_specialize(Int16) @_specialize(Int32) @_specialize(Int64) @_specialize(Int) @_specialize(Float) @_specialize(Double) @_specialize(Complex)
+@_specialize(where T == Int8) @_specialize(where T == Int16) @_specialize(where T == Int32) @_specialize(where T == Int64) @_specialize(where T == Int) @_specialize(where T == Float) @_specialize(where T == Double) @_specialize(where T == Complex)
 public func Sub<T: Subtractive>(_ count: Int, _ left: UnsafePointer<T>, _ left_stride: Int, _ right: UnsafePointer<T>, _ right_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var left = left
@@ -153,7 +153,7 @@ public func Sub<T: Subtractive>(_ count: Int, _ left: UnsafePointer<T>, _ left_s
 ///   - out_stride: Stride for `output`.
 /// - remark: `output[n] = left[n] * right[n], 0 <= n < count`
 @_inlineable
-@_specialize(Int8) @_specialize(Int16) @_specialize(Int32) @_specialize(Int64) @_specialize(Int) @_specialize(Float) @_specialize(Double) @_specialize(Complex)
+@_specialize(where T == Int8) @_specialize(where T == Int16) @_specialize(where T == Int32) @_specialize(where T == Int64) @_specialize(where T == Int) @_specialize(where T == Float) @_specialize(where T == Double) @_specialize(where T == Complex)
 public func Mul<T: Multiplicative>(_ count: Int, _ left: UnsafePointer<T>, _ left_stride: Int, _ right: UnsafePointer<T>, _ right_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var left = left
@@ -179,7 +179,7 @@ public func Mul<T: Multiplicative>(_ count: Int, _ left: UnsafePointer<T>, _ lef
 ///   - out_stride: Stride for `output`.
 /// - remark: `output[n] = left[n] / right[n], 0 <= n < count`
 @_inlineable
-@_specialize(Int8) @_specialize(Int16) @_specialize(Int32) @_specialize(Int64) @_specialize(Int) @_specialize(Float) @_specialize(Double) @_specialize(Complex)
+@_specialize(where T == Int8) @_specialize(where T == Int16) @_specialize(where T == Int32) @_specialize(where T == Int64) @_specialize(where T == Int) @_specialize(where T == Float) @_specialize(where T == Double) @_specialize(where T == Complex)
 public func Div<T: Divisive>(_ count: Int, _ left: UnsafePointer<T>, _ left_stride: Int, _ right: UnsafePointer<T>, _ right_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var left = left
@@ -194,9 +194,9 @@ public func Div<T: Divisive>(_ count: Int, _ left: UnsafePointer<T>, _ left_stri
     }
 }
 @_inlineable
-@_specialize(Int8) @_specialize(Int16) @_specialize(Int32) @_specialize(Int64) @_specialize(Int)
-@_specialize(UInt8) @_specialize(UInt16) @_specialize(UInt32) @_specialize(UInt64) @_specialize(UInt)
-public func Mod<T: Integer>(_ count: Int, _ left: UnsafePointer<T>, _ left_stride: Int, _ right: UnsafePointer<T>, _ right_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
+@_specialize(where T == Int8) @_specialize(where T == Int16) @_specialize(where T == Int32) @_specialize(where T == Int64) @_specialize(where T == Int)
+@_specialize(where T == UInt8) @_specialize(where T == UInt16) @_specialize(where T == UInt32) @_specialize(where T == UInt64) @_specialize(where T == UInt)
+public func Mod<T: BinaryInteger>(_ count: Int, _ left: UnsafePointer<T>, _ left_stride: Int, _ right: UnsafePointer<T>, _ right_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var left = left
     var right = right
@@ -210,9 +210,9 @@ public func Mod<T: Integer>(_ count: Int, _ left: UnsafePointer<T>, _ left_strid
     }
 }
 @_inlineable
-@_specialize(Int8) @_specialize(Int16) @_specialize(Int32) @_specialize(Int64) @_specialize(Int)
-@_specialize(UInt8) @_specialize(UInt16) @_specialize(UInt32) @_specialize(UInt64) @_specialize(UInt)
-public func QuoRem<T: Integer>(_ count: Int, _ left: UnsafePointer<T>, _ left_stride: Int, _ right: UnsafePointer<T>, _ right_stride: Int, _ quo: UnsafeMutablePointer<T>, _ quo_stride: Int, _ rem: UnsafeMutablePointer<T>, _ rem_stride: Int) {
+@_specialize(where T == Int8) @_specialize(where T == Int16) @_specialize(where T == Int32) @_specialize(where T == Int64) @_specialize(where T == Int)
+@_specialize(where T == UInt8) @_specialize(where T == UInt16) @_specialize(where T == UInt32) @_specialize(where T == UInt64) @_specialize(where T == UInt)
+public func QuoRem<T: BinaryInteger>(_ count: Int, _ left: UnsafePointer<T>, _ left_stride: Int, _ right: UnsafePointer<T>, _ right_stride: Int, _ quo: UnsafeMutablePointer<T>, _ quo_stride: Int, _ rem: UnsafeMutablePointer<T>, _ rem_stride: Int) {
     
     var left = left
     var right = right
@@ -232,7 +232,7 @@ public func QuoRem<T: Integer>(_ count: Int, _ left: UnsafePointer<T>, _ left_st
 }
 
 @_inlineable
-@_specialize(Float) @_specialize(Double)
+@_specialize(where T == Float) @_specialize(where T == Double)
 public func Mod<T: FloatingPoint>(_ count: Int, _ left: UnsafePointer<T>, _ left_stride: Int, _ right: UnsafePointer<T>, _ right_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var left = left
@@ -247,7 +247,7 @@ public func Mod<T: FloatingPoint>(_ count: Int, _ left: UnsafePointer<T>, _ left
     }
 }
 @_inlineable
-@_specialize(Int8) @_specialize(Int16) @_specialize(Int32) @_specialize(Int64) @_specialize(Int) @_specialize(Float) @_specialize(Double) @_specialize(Complex)
+@_specialize(where T == Int8) @_specialize(where T == Int16) @_specialize(where T == Int32) @_specialize(where T == Int64) @_specialize(where T == Int) @_specialize(where T == Float) @_specialize(where T == Double) @_specialize(where T == Complex)
 public func MulAdd<T: Multiplicative & Additive>(_ count: Int, _ a: UnsafePointer<T>, _ a_stride: Int, _ b: UnsafePointer<T>, _ b_stride: Int, _ c: UnsafePointer<T>, _ c_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var a = a
@@ -264,7 +264,7 @@ public func MulAdd<T: Multiplicative & Additive>(_ count: Int, _ a: UnsafePointe
     }
 }
 @_inlineable
-@_specialize(Int8) @_specialize(Int16) @_specialize(Int32) @_specialize(Int64) @_specialize(Int) @_specialize(Float) @_specialize(Double) @_specialize(Complex)
+@_specialize(where T == Int8) @_specialize(where T == Int16) @_specialize(where T == Int32) @_specialize(where T == Int64) @_specialize(where T == Int) @_specialize(where T == Float) @_specialize(where T == Double) @_specialize(where T == Complex)
 public func MulSub<T: Multiplicative & Subtractive>(_ count: Int, _ a: UnsafePointer<T>, _ a_stride: Int, _ b: UnsafePointer<T>, _ b_stride: Int, _ c: UnsafePointer<T>, _ c_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var a = a
@@ -281,7 +281,7 @@ public func MulSub<T: Multiplicative & Subtractive>(_ count: Int, _ a: UnsafePoi
     }
 }
 @_inlineable
-@_specialize(Int8) @_specialize(Int16) @_specialize(Int32) @_specialize(Int64) @_specialize(Int) @_specialize(Float) @_specialize(Double) @_specialize(Complex)
+@_specialize(where T == Int8) @_specialize(where T == Int16) @_specialize(where T == Int32) @_specialize(where T == Int64) @_specialize(where T == Int) @_specialize(where T == Float) @_specialize(where T == Double) @_specialize(where T == Complex)
 public func SubMul<T: Multiplicative & Subtractive>(_ count: Int, _ a: UnsafePointer<T>, _ a_stride: Int, _ b: UnsafePointer<T>, _ b_stride: Int, _ c: UnsafePointer<T>, _ c_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var a = a
@@ -299,7 +299,7 @@ public func SubMul<T: Multiplicative & Subtractive>(_ count: Int, _ a: UnsafePoi
 }
 
 @_inlineable
-@_specialize(Float) @_specialize(Double)
+@_specialize(where T == Float) @_specialize(where T == Double)
 public func Add<T: FloatingPoint>(_ count: Int, _ left: UnsafePointer<T>, _ left_stride: Int, _ rreal: UnsafePointer<T>, _ rimag: UnsafePointer<T>, _ right_stride: Int, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var left = left
@@ -322,7 +322,7 @@ public func Add<T: FloatingPoint>(_ count: Int, _ left: UnsafePointer<T>, _ left
     }
 }
 @_inlineable
-@_specialize(Float) @_specialize(Double)
+@_specialize(where T == Float) @_specialize(where T == Double)
 public func Sub<T: FloatingPoint>(_ count: Int, _ left: UnsafePointer<T>, _ left_stride: Int, _ rreal: UnsafePointer<T>, _ rimag: UnsafePointer<T>, _ right_stride: Int, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var left = left
@@ -345,7 +345,7 @@ public func Sub<T: FloatingPoint>(_ count: Int, _ left: UnsafePointer<T>, _ left
     }
 }
 @_inlineable
-@_specialize(Float) @_specialize(Double)
+@_specialize(where T == Float) @_specialize(where T == Double)
 public func Mul<T: FloatingPoint>(_ count: Int, _ left: UnsafePointer<T>, _ left_stride: Int, _ rreal: UnsafePointer<T>, _ rimag: UnsafePointer<T>, _ right_stride: Int, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var left = left
@@ -368,7 +368,7 @@ public func Mul<T: FloatingPoint>(_ count: Int, _ left: UnsafePointer<T>, _ left
     }
 }
 @_inlineable
-@_specialize(Float) @_specialize(Double)
+@_specialize(where T == Float) @_specialize(where T == Double)
 public func MulAdd<T: FloatingPoint>(_ count: Int, _ a: UnsafePointer<T>, _ a_stride: Int, _ breal: UnsafePointer<T>, _ bimag: UnsafePointer<T>, _ b_stride: Int, _ creal: UnsafePointer<T>, _ cimag: UnsafePointer<T>, _ c_stride: Int, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var a = a
@@ -397,7 +397,7 @@ public func MulAdd<T: FloatingPoint>(_ count: Int, _ a: UnsafePointer<T>, _ a_st
     }
 }
 @_inlineable
-@_specialize(Float) @_specialize(Double)
+@_specialize(where T == Float) @_specialize(where T == Double)
 public func MulSub<T: FloatingPoint>(_ count: Int, _ a: UnsafePointer<T>, _ a_stride: Int, _ breal: UnsafePointer<T>, _ bimag: UnsafePointer<T>, _ b_stride: Int, _ creal: UnsafePointer<T>, _ cimag: UnsafePointer<T>, _ c_stride: Int, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var a = a
@@ -426,7 +426,7 @@ public func MulSub<T: FloatingPoint>(_ count: Int, _ a: UnsafePointer<T>, _ a_st
     }
 }
 @_inlineable
-@_specialize(Float) @_specialize(Double)
+@_specialize(where T == Float) @_specialize(where T == Double)
 public func SubMul<T: FloatingPoint>(_ count: Int, _ areal: UnsafePointer<T>, _ aimag: UnsafePointer<T>, _ a_stride: Int, _ b: UnsafePointer<T>, _ b_stride: Int, _ creal: UnsafePointer<T>, _ cimag: UnsafePointer<T>, _ c_stride: Int, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var areal = areal
@@ -455,7 +455,7 @@ public func SubMul<T: FloatingPoint>(_ count: Int, _ areal: UnsafePointer<T>, _ 
     }
 }
 @_inlineable
-@_specialize(Float) @_specialize(Double)
+@_specialize(where T == Float) @_specialize(where T == Double)
 public func Div<T: FloatingPoint>(_ count: Int, _ left: UnsafePointer<T>, _ left_stride: Int, _ rreal: UnsafePointer<T>, _ rimag: UnsafePointer<T>, _ right_stride: Int, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var left = left
@@ -481,7 +481,7 @@ public func Div<T: FloatingPoint>(_ count: Int, _ left: UnsafePointer<T>, _ left
     }
 }
 @_inlineable
-@_specialize(Float) @_specialize(Double)
+@_specialize(where T == Float) @_specialize(where T == Double)
 public func Add<T: FloatingPoint>(_ count: Int, _ lreal: UnsafePointer<T>, _ limag: UnsafePointer<T>, _ left_stride: Int, _ right: UnsafePointer<T>, _ right_stride: Int, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var lreal = lreal
@@ -504,7 +504,7 @@ public func Add<T: FloatingPoint>(_ count: Int, _ lreal: UnsafePointer<T>, _ lim
     }
 }
 @_inlineable
-@_specialize(Float) @_specialize(Double)
+@_specialize(where T == Float) @_specialize(where T == Double)
 public func Sub<T: FloatingPoint>(_ count: Int, _ lreal: UnsafePointer<T>, _ limag: UnsafePointer<T>, _ left_stride: Int, _ right: UnsafePointer<T>, _ right_stride: Int, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var lreal = lreal
@@ -527,7 +527,7 @@ public func Sub<T: FloatingPoint>(_ count: Int, _ lreal: UnsafePointer<T>, _ lim
     }
 }
 @_inlineable
-@_specialize(Float) @_specialize(Double)
+@_specialize(where T == Float) @_specialize(where T == Double)
 public func Mul<T: FloatingPoint>(_ count: Int, _ lreal: UnsafePointer<T>, _ limag: UnsafePointer<T>, _ left_stride: Int, _ right: UnsafePointer<T>, _ right_stride: Int, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var lreal = lreal
@@ -550,7 +550,7 @@ public func Mul<T: FloatingPoint>(_ count: Int, _ lreal: UnsafePointer<T>, _ lim
     }
 }
 @_inlineable
-@_specialize(Float) @_specialize(Double)
+@_specialize(where T == Float) @_specialize(where T == Double)
 public func MulAdd<T: FloatingPoint>(_ count: Int, _ areal: UnsafePointer<T>, _ aimag: UnsafePointer<T>, _ a_stride: Int, _ b: UnsafePointer<T>, _ b_stride: Int, _ creal: UnsafePointer<T>, _ cimag: UnsafePointer<T>, _ c_stride: Int, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var areal = areal
@@ -579,7 +579,7 @@ public func MulAdd<T: FloatingPoint>(_ count: Int, _ areal: UnsafePointer<T>, _ 
     }
 }
 @_inlineable
-@_specialize(Float) @_specialize(Double)
+@_specialize(where T == Float) @_specialize(where T == Double)
 public func MulSub<T: FloatingPoint>(_ count: Int, _ areal: UnsafePointer<T>, _ aimag: UnsafePointer<T>, _ a_stride: Int, _ b: UnsafePointer<T>, _ b_stride: Int, _ creal: UnsafePointer<T>, _ cimag: UnsafePointer<T>, _ c_stride: Int, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var areal = areal
@@ -608,7 +608,7 @@ public func MulSub<T: FloatingPoint>(_ count: Int, _ areal: UnsafePointer<T>, _ 
     }
 }
 @_inlineable
-@_specialize(Float) @_specialize(Double)
+@_specialize(where T == Float) @_specialize(where T == Double)
 public func SubMul<T: FloatingPoint>(_ count: Int, _ areal: UnsafePointer<T>, _ aimag: UnsafePointer<T>, _ a_stride: Int, _ breal: UnsafePointer<T>, _ bimag: UnsafePointer<T>, _ b_stride: Int, _ c: UnsafePointer<T>, _ c_stride: Int, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var areal = areal
@@ -637,7 +637,7 @@ public func SubMul<T: FloatingPoint>(_ count: Int, _ areal: UnsafePointer<T>, _ 
     }
 }
 @_inlineable
-@_specialize(Float) @_specialize(Double)
+@_specialize(where T == Float) @_specialize(where T == Double)
 public func MulConj<T: FloatingPoint>(_ count: Int, _ lreal: UnsafePointer<T>, _ limag: UnsafePointer<T>, _ left_stride: Int, _ right: UnsafePointer<T>, _ right_stride: Int, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var lreal = lreal
@@ -660,7 +660,7 @@ public func MulConj<T: FloatingPoint>(_ count: Int, _ lreal: UnsafePointer<T>, _
     }
 }
 @_inlineable
-@_specialize(Float) @_specialize(Double)
+@_specialize(where T == Float) @_specialize(where T == Double)
 public func Div<T: FloatingPoint>(_ count: Int, _ lreal: UnsafePointer<T>, _ limag: UnsafePointer<T>, _ left_stride: Int, _ right: UnsafePointer<T>, _ right_stride: Int, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var lreal = lreal
@@ -683,7 +683,7 @@ public func Div<T: FloatingPoint>(_ count: Int, _ lreal: UnsafePointer<T>, _ lim
     }
 }
 @_inlineable
-@_specialize(Float) @_specialize(Double)
+@_specialize(where T == Float) @_specialize(where T == Double)
 public func Add<T: FloatingPoint>(_ count: Int, _ lreal: UnsafePointer<T>, _ limag: UnsafePointer<T>, _ left_stride: Int, _ rreal: UnsafePointer<T>, _ rimag: UnsafePointer<T>, _ right_stride: Int, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var lreal = lreal
@@ -709,7 +709,7 @@ public func Add<T: FloatingPoint>(_ count: Int, _ lreal: UnsafePointer<T>, _ lim
     }
 }
 @_inlineable
-@_specialize(Float) @_specialize(Double)
+@_specialize(where T == Float) @_specialize(where T == Double)
 public func Sub<T: FloatingPoint>(_ count: Int, _ lreal: UnsafePointer<T>, _ limag: UnsafePointer<T>, _ left_stride: Int, _ rreal: UnsafePointer<T>, _ rimag: UnsafePointer<T>, _ right_stride: Int, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var lreal = lreal
@@ -735,7 +735,7 @@ public func Sub<T: FloatingPoint>(_ count: Int, _ lreal: UnsafePointer<T>, _ lim
     }
 }
 @_inlineable
-@_specialize(Float) @_specialize(Double)
+@_specialize(where T == Float) @_specialize(where T == Double)
 public func Mul<T: FloatingPoint>(_ count: Int, _ lreal: UnsafePointer<T>, _ limag: UnsafePointer<T>, _ left_stride: Int, _ rreal: UnsafePointer<T>, _ rimag: UnsafePointer<T>, _ right_stride: Int, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var lreal = lreal
@@ -761,7 +761,7 @@ public func Mul<T: FloatingPoint>(_ count: Int, _ lreal: UnsafePointer<T>, _ lim
     }
 }
 @_inlineable
-@_specialize(Float) @_specialize(Double)
+@_specialize(where T == Float) @_specialize(where T == Double)
 public func MulAdd<T: FloatingPoint>(_ count: Int, _ areal: UnsafePointer<T>, _ aimag: UnsafePointer<T>, _ a_stride: Int, _ breal: UnsafePointer<T>, _ bimag: UnsafePointer<T>, _ b_stride: Int, _ creal: UnsafePointer<T>, _ cimag: UnsafePointer<T>, _ c_stride: Int, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var areal = areal
@@ -793,7 +793,7 @@ public func MulAdd<T: FloatingPoint>(_ count: Int, _ areal: UnsafePointer<T>, _ 
     }
 }
 @_inlineable
-@_specialize(Float) @_specialize(Double)
+@_specialize(where T == Float) @_specialize(where T == Double)
 public func MulSub<T: FloatingPoint>(_ count: Int, _ areal: UnsafePointer<T>, _ aimag: UnsafePointer<T>, _ a_stride: Int, _ breal: UnsafePointer<T>, _ bimag: UnsafePointer<T>, _ b_stride: Int, _ creal: UnsafePointer<T>, _ cimag: UnsafePointer<T>, _ c_stride: Int, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var areal = areal
@@ -825,7 +825,7 @@ public func MulSub<T: FloatingPoint>(_ count: Int, _ areal: UnsafePointer<T>, _ 
     }
 }
 @_inlineable
-@_specialize(Float) @_specialize(Double)
+@_specialize(where T == Float) @_specialize(where T == Double)
 public func SubMul<T: FloatingPoint>(_ count: Int, _ areal: UnsafePointer<T>, _ aimag: UnsafePointer<T>, _ a_stride: Int, _ breal: UnsafePointer<T>, _ bimag: UnsafePointer<T>, _ b_stride: Int, _ creal: UnsafePointer<T>, _ cimag: UnsafePointer<T>, _ c_stride: Int, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var areal = areal
@@ -857,7 +857,7 @@ public func SubMul<T: FloatingPoint>(_ count: Int, _ areal: UnsafePointer<T>, _ 
     }
 }
 @_inlineable
-@_specialize(Float) @_specialize(Double)
+@_specialize(where T == Float) @_specialize(where T == Double)
 public func MulConj<T: FloatingPoint>(_ count: Int, _ lreal: UnsafePointer<T>, _ limag: UnsafePointer<T>, _ left_stride: Int, _ rreal: UnsafePointer<T>, _ rimag: UnsafePointer<T>, _ right_stride: Int, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var lreal = lreal
@@ -883,7 +883,7 @@ public func MulConj<T: FloatingPoint>(_ count: Int, _ lreal: UnsafePointer<T>, _
     }
 }
 @_inlineable
-@_specialize(Float) @_specialize(Double)
+@_specialize(where T == Float) @_specialize(where T == Double)
 public func Div<T: FloatingPoint>(_ count: Int, _ lreal: UnsafePointer<T>, _ limag: UnsafePointer<T>, _ left_stride: Int, _ rreal: UnsafePointer<T>, _ rimag: UnsafePointer<T>, _ right_stride: Int, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var lreal = lreal
@@ -913,7 +913,7 @@ public func Div<T: FloatingPoint>(_ count: Int, _ lreal: UnsafePointer<T>, _ lim
 }
 
 @_inlineable
-@_specialize(Float) @_specialize(Double)
+@_specialize(where T == Float) @_specialize(where T == Double)
 public func Dot<T: FloatingPoint>(_ count: Int, _ left: UnsafePointer<T>, _ left_stride: Int, _ right: UnsafePointer<T>, _ right_stride: Int) -> T {
     
     var left = left
@@ -929,7 +929,7 @@ public func Dot<T: FloatingPoint>(_ count: Int, _ left: UnsafePointer<T>, _ left
 }
 
 @_inlineable
-@_specialize(Float) @_specialize(Double)
+@_specialize(where T == Float) @_specialize(where T == Double)
 public func Deconvolve<T: FloatingPoint>(_ signal_count: Int, _ signal: UnsafePointer<T>, _ signal_stride: Int, _ kernel_count: Int, _ kernel: UnsafePointer<T>, _ kernel_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var signal = signal
@@ -960,7 +960,7 @@ public func Deconvolve<T: FloatingPoint>(_ signal_count: Int, _ signal: UnsafePo
     }
 }
 @_inlineable
-@_specialize(Float) @_specialize(Double)
+@_specialize(where T == Float) @_specialize(where T == Double)
 public func Deconvolve<T: FloatingPoint>(_ signal_count: Int, _ signal: UnsafePointer<T>, _ signal_stride: Int, _ kernel_count: Int, _ kernel: UnsafePointer<T>, _ kernel_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int, _ residue: UnsafeMutablePointer<T>, _ residue_stride: Int) {
     
     var signal = signal
@@ -1014,7 +1014,7 @@ public func Deconvolve<T: FloatingPoint>(_ signal_count: Int, _ signal: UnsafePo
 }
 
 @_inlineable
-@_specialize(Float) @_specialize(Double)
+@_specialize(where T == Float) @_specialize(where T == Double)
 public func MatrixElimination<T: FloatingPoint & Subtractive & Divisive>(_ row: Int, _ column: Int, _ matrix: UnsafeMutablePointer<T>, _ stride_row: Int, _ stride_col: Int) -> Bool {
     
     let row_offset = stride_row * stride_col * column

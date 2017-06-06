@@ -44,7 +44,7 @@ public struct Graph<Node : Hashable, Link> : Collection {
     
     @_inlineable
     public func makeIterator() -> Iterator {
-        return Iterator(base: table.lazy.flatMap { from, to in to.lazy.map { (from, $0, $1) } }.makeIterator())
+        return Iterator(base: table.lazy.flatMap { arg in arg.1.lazy.map { (arg.0, $0.0, $0.1) } }.makeIterator())
     }
     
     @_inlineable
@@ -246,7 +246,7 @@ public struct Graph<Node : Hashable, Link> : Collection {
     /// A collection of nodes which connected to `toNode`.
     @_inlineable
     public func nodes(to toNode: Node) -> AnyCollection<(Node, Link)> {
-        return AnyCollection(table.lazy.flatMap { from, to in to[toNode].map { (from, $0) } })
+        return AnyCollection(table.lazy.flatMap { arg in arg.1[toNode].map { (arg.0, $0) } })
     }
 }
 

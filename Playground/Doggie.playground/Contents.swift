@@ -43,7 +43,14 @@ let path = try Shape(code: "M100 0c0-100-236.60 36.60-150 86.60S36.60-136.60-50-
 
 
 
-let marker: SDMarker = "<p>\n    <h1>{{% header %}}</h1>\n{{# ! bool #}}    This line never shown.<br />{{# bool #}}{{# bool #}}    This line will shown.<br />{{# bool #}}{{#loop#}}\n    {{%loop%}}<br />{{#loop#}}{{#list#}}\n    {{%item%}}<br />{{#list#}}\n</p>"
+let marker: SDMarker = """
+                       <p>
+                       <h1>{{% header %}}</h1>
+                       {{# ! bool #}}    This line never shown.<br />{{# bool #}}{{# bool #}}    This line will shown.<br />{{# bool #}}{{#loop#}}
+                       {{%loop%}}<br />{{#loop#}}{{#list#}}
+                       {{%item%}}<br />{{#list#}}
+                       </p>
+                       """
 
 print(marker.render([
     

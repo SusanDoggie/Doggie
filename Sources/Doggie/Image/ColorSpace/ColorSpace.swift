@@ -26,37 +26,26 @@
 @_versioned
 protocol _ColorSpaceBaseProtocol {
     
-    @_versioned
     var cieXYZ: CIEXYZColorSpace { get }
     
-    @_versioned
     var chromaticAdaptationAlgorithm: ChromaticAdaptationAlgorithm { get }
     
-    @_versioned
     func convertToLinear<Model: ColorModelProtocol>(_ color: Model) -> Model
     
-    @_versioned
     func convertFromLinear<Model: ColorModelProtocol>(_ color: Model) -> Model
     
-    @_versioned
     func convertLinearToXYZ<Model: ColorModelProtocol>(_ color: Model) -> XYZColorModel
     
-    @_versioned
     func convertLinearFromXYZ<Model: ColorModelProtocol>(_ color: XYZColorModel) -> Model
     
-    @_versioned
     func convertToXYZ<Model: ColorModelProtocol>(_ color: Model) -> XYZColorModel
     
-    @_versioned
     func convertFromXYZ<Model: ColorModelProtocol>(_ color: XYZColorModel) -> Model
     
-    @_versioned
     func convert<Model: ColorModelProtocol, R : ColorSpaceProtocol>(_ color: Model, to other: R) -> R.Model
     
-    @_versioned
     var normalized: _ColorSpaceBaseProtocol { get }
     
-    @_versioned
     var linearTone: _ColorSpaceBaseProtocol { get }
 }
 

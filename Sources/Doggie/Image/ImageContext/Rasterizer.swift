@@ -28,16 +28,12 @@ import Foundation
 @_versioned
 protocol RasterizeBufferProtocol {
     
-    @_versioned
     var width: Int { get }
     
-    @_versioned
     var height: Int { get }
     
-    @_versioned
     static func + (lhs: Self, rhs: Int) -> Self
     
-    @_versioned
     static func += (lhs: inout Self, rhs: Int)
     
 }
@@ -271,7 +267,10 @@ extension ImageContext {
                         
                         if _alpha > 0, let q = Barycentric(_p0, _p1, _p2, position) {
                             
-                            let b = q.x * v0 + q.y * v1 + q.z * v2
+                            let b0 = q.x * v0
+                            let b1 = q.y * v1
+                            let b2 = q.z * v2
+                            let b = b0 + b1 + b2
                             
                             if let _depth = depthFun?(b) {
                                 

@@ -24,7 +24,7 @@
 //
 
 @_inlineable
-@_specialize(Float) @_specialize(Double)
+@_specialize(where T == Float) @_specialize(where T == Double)
 public func DiscreteConvolve<T: FloatingPoint>(_ signal_count: Int, _ signal: UnsafePointer<T>, _ signal_stride: Int, _ kernel_count: Int, _ kernel: UnsafePointer<T>, _ kernel_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var output = output

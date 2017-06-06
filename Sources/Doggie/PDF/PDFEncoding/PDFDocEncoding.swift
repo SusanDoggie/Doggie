@@ -92,7 +92,7 @@ func PDFDocEncodeString(_ string: String) -> Data? {
 
 func PDFDecodeString(_ data: Data) -> String {
     
-    if data.starts(with: [254, 255]), let str = String(data: Data(data.dropFirst(2)), encoding: .utf16BigEndian) {
+    if data.starts(with: [254, 255]), let str = String(data: data.dropFirst(2), encoding: .utf16BigEndian) {
         return str
     }
     return PDFDocDecodeString(data)

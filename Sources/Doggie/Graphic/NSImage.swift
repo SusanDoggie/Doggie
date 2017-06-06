@@ -96,12 +96,12 @@ public enum SDImageInterpolation {
                 samplesPerPixel: 4,
                 hasAlpha: true,
                 isPlanar: false,
-                colorSpaceName: NSDeviceRGBColorSpace,
+                colorSpaceName: NSColorSpaceName.deviceRGB,
                 bitmapFormat: .alphaFirst,
                 bytesPerRow: 0, bitsPerPixel: 0)
             let gctx = NSGraphicsContext(bitmapImageRep: offscreenRep!)
             NSGraphicsContext.saveGraphicsState()
-            NSGraphicsContext.setCurrent(gctx)
+            NSGraphicsContext.current = gctx
             command(gctx!.cgContext)
             NSGraphicsContext.restoreGraphicsState()
             
@@ -116,19 +116,14 @@ public enum SDImageInterpolation {
             
             newImage.lockFocus()
             
-            let hints: [String : AnyObject]
+            let hints: [NSImageRep.HintKey : Any]
             
             switch interpolation {
-            case .default:
-                hints = [NSImageHintInterpolation: NSImageInterpolation.default.rawValue as AnyObject]
-            case .none:
-                hints = [NSImageHintInterpolation: NSImageInterpolation.none.rawValue as AnyObject]
-            case .low:
-                hints = [NSImageHintInterpolation: NSImageInterpolation.low.rawValue as AnyObject]
-            case .medium:
-                hints = [NSImageHintInterpolation: NSImageInterpolation.medium.rawValue as AnyObject]
-            case .high:
-                hints = [NSImageHintInterpolation: NSImageInterpolation.high.rawValue as AnyObject]
+            case .default: hints = [NSImageRep.HintKey.interpolation: NSImageInterpolation.default]
+            case .none: hints = [NSImageRep.HintKey.interpolation: NSImageInterpolation.none]
+            case .low: hints = [NSImageRep.HintKey.interpolation: NSImageInterpolation.low]
+            case .medium: hints = [NSImageRep.HintKey.interpolation: NSImageInterpolation.medium]
+            case .high: hints = [NSImageRep.HintKey.interpolation: NSImageInterpolation.high]
             }
             let rect = CGRect(origin: CGPoint(x: 0, y: 0), size: self.size)
             let imageRep = self.bestRepresentation(for: rect, context: nil, hints: nil)

@@ -28,7 +28,7 @@ import Dispatch
 // MARK: Half Radix-2 Cooley-Tukey
 
 @_inlineable
-@_specialize(Float) @_specialize(Double)
+@_specialize(where T == Float) @_specialize(where T == Double)
 public func HalfRadix2CooleyTukey<T: BinaryFloatingPoint>(_ level: Int, _ input: UnsafePointer<T>, _ in_stride: Int, _ in_count: Int, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int) where T : FloatingMathProtocol {
     
     switch level {
@@ -119,7 +119,7 @@ public func HalfRadix2CooleyTukey<T: BinaryFloatingPoint>(_ level: Int, _ input:
     }
 }
 @_inlineable
-@_specialize(Float) @_specialize(Double)
+@_specialize(where T == Float) @_specialize(where T == Double)
 public func HalfInverseRadix2CooleyTukey<T: BinaryFloatingPoint>(_ level: Int, _ real: UnsafePointer<T>, _ imag: UnsafePointer<T>, _ in_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) where T : FloatingMathProtocol {
     
     switch level {
@@ -211,7 +211,7 @@ public func HalfInverseRadix2CooleyTukey<T: BinaryFloatingPoint>(_ level: Int, _
 // MARK: Radix-2 Cooley-Tukey
 
 @_inlineable
-@_specialize(Float) @_specialize(Double)
+@_specialize(where T == Float) @_specialize(where T == Double)
 public func Radix2CooleyTukey<T: BinaryFloatingPoint>(_ level: Int, _ input: UnsafePointer<T>, _ in_stride: Int, _ in_count: Int, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int) where T : FloatingMathProtocol {
     
     switch level {
@@ -327,7 +327,7 @@ public func Radix2CooleyTukey<T: BinaryFloatingPoint>(_ level: Int, _ input: Uns
 }
 
 @_inlineable
-@_specialize(Float) @_specialize(Double)
+@_specialize(where T == Float) @_specialize(where T == Double)
 public func Radix2CooleyTukey<T: BinaryFloatingPoint>(_ level: Int, _ real: UnsafePointer<T>, _ imag: UnsafePointer<T>, _ in_stride: Int, _ in_count: Int, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int) where T : FloatingMathProtocol {
     
     switch level {
@@ -360,13 +360,13 @@ public func Radix2CooleyTukey<T: BinaryFloatingPoint>(_ level: Int, _ real: Unsa
             return
         }
         
-        let offset = UIntMax(MemoryLayout<UIntMax>.size << 3) - log2(UIntMax(count))
+        let offset = Int.bitWidth - log2(count)
         
         do {
             var real = real
             var imag = imag
             for i in 0..<count {
-                let _i = Int(UIntMax(i).reverse >> offset)
+                let _i = Int(UInt(i).reverse >> offset)
                 _real[_i * out_stride] = i < in_count ? real.pointee : 0
                 _imag[_i * out_stride] = i < in_count ? imag.pointee : 0
                 real += in_stride
@@ -446,7 +446,7 @@ public func Radix2CooleyTukey<T: BinaryFloatingPoint>(_ level: Int, _ real: Unsa
 }
 
 @_inlineable
-@_specialize(Float) @_specialize(Double)
+@_specialize(where T == Float) @_specialize(where T == Double)
 public func InverseRadix2CooleyTukey<T: BinaryFloatingPoint>(_ level: Int, _ input: UnsafePointer<T>, _ in_stride: Int, _ in_count: Int, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int) where T : FloatingMathProtocol {
     
     switch level {
@@ -561,14 +561,14 @@ public func InverseRadix2CooleyTukey<T: BinaryFloatingPoint>(_ level: Int, _ inp
 }
 
 @_inlineable
-@_specialize(Float) @_specialize(Double)
+@_specialize(where T == Float) @_specialize(where T == Double)
 public func InverseRadix2CooleyTukey<T: BinaryFloatingPoint>(_ level: Int, _ real: UnsafePointer<T>, _ imag: UnsafePointer<T>, _ in_stride: Int, _ in_count: Int, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int) where T : FloatingMathProtocol {
     
     Radix2CooleyTukey(level, imag, real, in_stride, in_count, _imag, _real, out_stride)
 }
 
 @_inlineable
-@_specialize(Float) @_specialize(Double)
+@_specialize(where T == Float) @_specialize(where T == Double)
 public func Radix2CooleyTukey<T: BinaryFloatingPoint>(_ level: Int, _ real: UnsafeMutablePointer<T>, _ imag: UnsafeMutablePointer<T>, _ stride: Int) where T : FloatingMathProtocol {
     
     switch level {
@@ -588,11 +588,11 @@ public func Radix2CooleyTukey<T: BinaryFloatingPoint>(_ level: Int, _ real: Unsa
         let count = 1 << level
         
         do {
-            let offset = UIntMax(MemoryLayout<UIntMax>.size << 3) - log2(UIntMax(count))
+            let offset = Int.bitWidth - log2(count)
             var _real = real
             var _imag = imag
             for i in 1..<count - 1 {
-                let _i = Int(UIntMax(i).reverse >> offset)
+                let _i = Int(UInt(i).reverse >> offset)
                 _real += stride
                 _imag += stride
                 if i < _i {
@@ -674,7 +674,7 @@ public func Radix2CooleyTukey<T: BinaryFloatingPoint>(_ level: Int, _ real: Unsa
 }
 
 @_inlineable
-@_specialize(Float) @_specialize(Double)
+@_specialize(where T == Float) @_specialize(where T == Double)
 public func InverseRadix2CooleyTukey<T: BinaryFloatingPoint>(_ level: Int, _ real: UnsafeMutablePointer<T>, _ imag: UnsafeMutablePointer<T>, _ stride: Int) where T : FloatingMathProtocol {
     
     Radix2CooleyTukey(level, imag, real, stride)
@@ -683,7 +683,7 @@ public func InverseRadix2CooleyTukey<T: BinaryFloatingPoint>(_ level: Int, _ rea
 // MARK: Parallel Radix-2 Cooley-Tukey
 
 @_inlineable
-@_specialize(Float) @_specialize(Double)
+@_specialize(where T == Float) @_specialize(where T == Double)
 public func ParallelHalfRadix2CooleyTukey<T: BinaryFloatingPoint>(_ level: Int, _ row: Int, _ input: UnsafePointer<T>, _ in_stride: Int, _ in_count: Int, _ in_total: Int, _ in_interleaved: Bool, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int, _ out_interleaved: Bool) where T : FloatingMathProtocol {
     
     let length = 1 << level
@@ -706,7 +706,7 @@ public func ParallelHalfRadix2CooleyTukey<T: BinaryFloatingPoint>(_ level: Int, 
     }
 }
 @_inlineable
-@_specialize(Float) @_specialize(Double)
+@_specialize(where T == Float) @_specialize(where T == Double)
 public func ParallelHalfInverseRadix2CooleyTukey<T: BinaryFloatingPoint>(_ level: Int, _ row: Int, _ real: UnsafePointer<T>, _ imag: UnsafePointer<T>, _ in_stride: Int, _ in_interleaved: Bool, _ output: UnsafeMutablePointer<T>, _ out_stride: Int, _ out_interleaved: Bool) where T : FloatingMathProtocol {
     
     let length = 1 << level
@@ -728,7 +728,7 @@ public func ParallelHalfInverseRadix2CooleyTukey<T: BinaryFloatingPoint>(_ level
 }
 
 @_inlineable
-@_specialize(Float) @_specialize(Double)
+@_specialize(where T == Float) @_specialize(where T == Double)
 public func ParallelRadix2CooleyTukey<T: BinaryFloatingPoint>(_ level: Int, _ row: Int, _ input: UnsafePointer<T>, _ in_stride: Int, _ in_count: Int, _ in_total: Int, _ in_interleaved: Bool, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int, _ out_interleaved: Bool) where T : FloatingMathProtocol {
     
     let length = 1 << level
@@ -751,7 +751,7 @@ public func ParallelRadix2CooleyTukey<T: BinaryFloatingPoint>(_ level: Int, _ ro
 }
 
 @_inlineable
-@_specialize(Float) @_specialize(Double)
+@_specialize(where T == Float) @_specialize(where T == Double)
 public func ParallelRadix2CooleyTukey<T: BinaryFloatingPoint>(_ level: Int, _ row: Int, _ real: UnsafePointer<T>, _ imag: UnsafePointer<T>, _ in_stride: Int, _ in_count: Int, _ in_total: Int, _ in_interleaved: Bool, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int, _ out_interleaved: Bool) where T : FloatingMathProtocol {
     
     let length = 1 << level
@@ -776,7 +776,7 @@ public func ParallelRadix2CooleyTukey<T: BinaryFloatingPoint>(_ level: Int, _ ro
 }
 
 @_inlineable
-@_specialize(Float) @_specialize(Double)
+@_specialize(where T == Float) @_specialize(where T == Double)
 public func ParallelInverseRadix2CooleyTukey<T: BinaryFloatingPoint>(_ level: Int, _ row: Int, _ input: UnsafePointer<T>, _ in_stride: Int, _ in_count: Int, _ in_total: Int, _ in_interleaved: Bool, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int, _ out_interleaved: Bool) where T : FloatingMathProtocol {
     
     let length = 1 << level
@@ -799,7 +799,7 @@ public func ParallelInverseRadix2CooleyTukey<T: BinaryFloatingPoint>(_ level: In
 }
 
 @_inlineable
-@_specialize(Float) @_specialize(Double)
+@_specialize(where T == Float) @_specialize(where T == Double)
 public func ParallelInverseRadix2CooleyTukey<T: BinaryFloatingPoint>(_ level: Int, _ row: Int, _ real: UnsafePointer<T>, _ imag: UnsafePointer<T>, _ in_stride: Int, _ in_count: Int, _ in_total: Int, _ in_interleaved: Bool, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int, _ out_interleaved: Bool) where T : FloatingMathProtocol {
     
     let length = 1 << level
@@ -824,7 +824,7 @@ public func ParallelInverseRadix2CooleyTukey<T: BinaryFloatingPoint>(_ level: In
 }
 
 @_inlineable
-@_specialize(Float) @_specialize(Double)
+@_specialize(where T == Float) @_specialize(where T == Double)
 public func ParallelRadix2CooleyTukey<T: BinaryFloatingPoint>(_ level: Int, _ row: Int, _ real: UnsafeMutablePointer<T>, _ imag: UnsafeMutablePointer<T>, _ stride: Int, _ interleaved: Bool) where T : FloatingMathProtocol {
     
     let length = 1 << level
@@ -841,7 +841,7 @@ public func ParallelRadix2CooleyTukey<T: BinaryFloatingPoint>(_ level: Int, _ ro
 }
 
 @_inlineable
-@_specialize(Float) @_specialize(Double)
+@_specialize(where T == Float) @_specialize(where T == Double)
 public func ParallelInverseRadix2CooleyTukey<T: BinaryFloatingPoint>(_ level: Int, _ row: Int, _ real: UnsafeMutablePointer<T>, _ imag: UnsafeMutablePointer<T>, _ stride: Int, _ interleaved: Bool) where T : FloatingMathProtocol {
     
     let length = 1 << level
@@ -860,7 +860,7 @@ public func ParallelInverseRadix2CooleyTukey<T: BinaryFloatingPoint>(_ level: In
 // MARK: Dispatch Parallel Radix-2 Cooley-Tukey
 
 @_inlineable
-@_specialize(Float) @_specialize(Double)
+@_specialize(where T == Float) @_specialize(where T == Double)
 public func DispatchParallelHalfRadix2CooleyTukey<T: BinaryFloatingPoint>(_ level: Int, _ row: Int, _ input: UnsafePointer<T>, _ in_stride: Int, _ in_count: Int, _ in_total: Int, _ in_interleaved: Bool, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int, _ out_interleaved: Bool) where T : FloatingMathProtocol {
     
     switch row {
@@ -884,7 +884,7 @@ public func DispatchParallelHalfRadix2CooleyTukey<T: BinaryFloatingPoint>(_ leve
     }
 }
 @_inlineable
-@_specialize(Float) @_specialize(Double)
+@_specialize(where T == Float) @_specialize(where T == Double)
 public func DispatchParallelHalfInverseRadix2CooleyTukey<T: BinaryFloatingPoint>(_ level: Int, _ row: Int, _ real: UnsafePointer<T>, _ imag: UnsafePointer<T>, _ in_stride: Int, _ in_interleaved: Bool, _ output: UnsafeMutablePointer<T>, _ out_stride: Int, _ out_interleaved: Bool) where T : FloatingMathProtocol {
     
     switch row {
@@ -908,7 +908,7 @@ public func DispatchParallelHalfInverseRadix2CooleyTukey<T: BinaryFloatingPoint>
 }
 
 @_inlineable
-@_specialize(Float) @_specialize(Double)
+@_specialize(where T == Float) @_specialize(where T == Double)
 public func DispatchParallelRadix2CooleyTukey<T: BinaryFloatingPoint>(_ level: Int, _ row: Int, _ input: UnsafePointer<T>, _ in_stride: Int, _ in_count: Int, _ in_total: Int, _ in_interleaved: Bool, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int, _ out_interleaved: Bool) where T : FloatingMathProtocol {
     
     switch row {
@@ -932,7 +932,7 @@ public func DispatchParallelRadix2CooleyTukey<T: BinaryFloatingPoint>(_ level: I
 }
 
 @_inlineable
-@_specialize(Float) @_specialize(Double)
+@_specialize(where T == Float) @_specialize(where T == Double)
 public func DispatchParallelRadix2CooleyTukey<T: BinaryFloatingPoint>(_ level: Int, _ row: Int, _ real: UnsafePointer<T>, _ imag: UnsafePointer<T>, _ in_stride: Int, _ in_count: Int, _ in_total: Int, _ in_interleaved: Bool, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int, _ out_interleaved: Bool) where T : FloatingMathProtocol {
     
     switch row {
@@ -957,7 +957,7 @@ public func DispatchParallelRadix2CooleyTukey<T: BinaryFloatingPoint>(_ level: I
 }
 
 @_inlineable
-@_specialize(Float) @_specialize(Double)
+@_specialize(where T == Float) @_specialize(where T == Double)
 public func DispatchParallelInverseRadix2CooleyTukey<T: BinaryFloatingPoint>(_ level: Int, _ row: Int, _ input: UnsafePointer<T>, _ in_stride: Int, _ in_count: Int, _ in_total: Int, _ in_interleaved: Bool, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int, _ out_interleaved: Bool) where T : FloatingMathProtocol {
     
     switch row {
@@ -981,7 +981,7 @@ public func DispatchParallelInverseRadix2CooleyTukey<T: BinaryFloatingPoint>(_ l
 }
 
 @_inlineable
-@_specialize(Float) @_specialize(Double)
+@_specialize(where T == Float) @_specialize(where T == Double)
 public func DispatchParallelInverseRadix2CooleyTukey<T: BinaryFloatingPoint>(_ level: Int, _ row: Int, _ real: UnsafePointer<T>, _ imag: UnsafePointer<T>, _ in_stride: Int, _ in_count: Int, _ in_total: Int, _ in_interleaved: Bool, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int, _ out_interleaved: Bool) where T : FloatingMathProtocol {
     
     switch row {
@@ -1005,7 +1005,7 @@ public func DispatchParallelInverseRadix2CooleyTukey<T: BinaryFloatingPoint>(_ l
     }
 }
 @_inlineable
-@_specialize(Float) @_specialize(Double)
+@_specialize(where T == Float) @_specialize(where T == Double)
 public func DispatchParallelRadix2CooleyTukey<T: BinaryFloatingPoint>(_ level: Int, _ row: Int, _ real: UnsafeMutablePointer<T>, _ imag: UnsafeMutablePointer<T>, _ stride: Int, _ interleaved: Bool) where T : FloatingMathProtocol {
     
     switch row {
@@ -1024,7 +1024,7 @@ public func DispatchParallelRadix2CooleyTukey<T: BinaryFloatingPoint>(_ level: I
     }
 }
 @_inlineable
-@_specialize(Float) @_specialize(Double)
+@_specialize(where T == Float) @_specialize(where T == Double)
 public func DispatchParallelInverseRadix2CooleyTukey<T: BinaryFloatingPoint>(_ level: Int, _ row: Int, _ real: UnsafeMutablePointer<T>, _ imag: UnsafeMutablePointer<T>, _ stride: Int, _ interleaved: Bool) where T : FloatingMathProtocol {
     
     switch row {
@@ -1045,7 +1045,7 @@ public func DispatchParallelInverseRadix2CooleyTukey<T: BinaryFloatingPoint>(_ l
 
 // MARK: Number Theoretic Transform
 
-public func Radix2CooleyTukey<U: UnsignedInteger>(_ level: Int, _ input: UnsafePointer<U>, _ in_stride: Int, _ in_count: Int, _ alpha: U, _ m: U, _ output: UnsafeMutablePointer<U>, _ out_stride: Int) {
+public func Radix2CooleyTukey<U: UnsignedInteger & FixedWidthInteger>(_ level: Int, _ input: UnsafePointer<U>, _ in_stride: Int, _ in_count: Int, _ alpha: U, _ m: U, _ output: UnsafeMutablePointer<U>, _ out_stride: Int) {
     
     switch level {
         
@@ -1073,7 +1073,7 @@ public func Radix2CooleyTukey<U: UnsignedInteger>(_ level: Int, _ input: UnsafeP
         Radix2CooleyTukey(level - 1, input + in_stride, in_stride << 1, in_count >> 1, _alpha_2, m, oph, out_stride)
         
         var _alpha: U = 1
-        let _alpha_k = pow(alpha, U(UIntMax(half)), m)
+        let _alpha_k = pow(alpha, U(half), m)
         for _ in 0..<half {
             let tpr = op.pointee
             let tphr = mulmod(_alpha, oph.pointee, m)
@@ -1086,7 +1086,7 @@ public func Radix2CooleyTukey<U: UnsignedInteger>(_ level: Int, _ input: UnsafeP
     }
 }
 
-public func InverseRadix2CooleyTukey<U: UnsignedInteger>(_ level: Int, _ input: UnsafePointer<U>, _ in_stride: Int, _ in_count: Int, _ alpha: U, _ m: U, _ output: UnsafeMutablePointer<U>, _ out_stride: Int) {
+public func InverseRadix2CooleyTukey<U: UnsignedInteger & FixedWidthInteger>(_ level: Int, _ input: UnsafePointer<U>, _ in_stride: Int, _ in_count: Int, _ alpha: U, _ m: U, _ output: UnsafeMutablePointer<U>, _ out_stride: Int) {
     
     switch level {
         
@@ -1115,7 +1115,7 @@ public func InverseRadix2CooleyTukey<U: UnsignedInteger>(_ level: Int, _ input: 
         
         let _inverse_alpha = modinv(alpha, m)
         var _alpha: U = 1
-        let _alpha_k = modinv(pow(alpha, U(UIntMax(half)), m), m)
+        let _alpha_k = modinv(pow(alpha, U(half), m), m)
         for _ in 0..<half {
             let tpr = op.pointee
             let tphr = mulmod(_alpha, oph.pointee, m)

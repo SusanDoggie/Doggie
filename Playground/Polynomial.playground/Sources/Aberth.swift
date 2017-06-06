@@ -3,7 +3,7 @@ import Doggie
 
 public func Aberth(_ polynomial: Polynomial, eps: Double = 1e-14) -> [Complex] {
     
-    var result = (0..<polynomial.degree).dropFirst().scan(Complex(1)) { $0.0 * Complex(real: 0.4, imag: 0.9) }
+    var result = (0..<polynomial.degree).dropFirst().scan(Complex(1)) { $0.0.0 * Complex(real: 0.4, imag: 0.9) }
     
     let derivative = polynomial.derivative
     
@@ -19,8 +19,8 @@ public func Aberth(_ polynomial: Polynomial, eps: Double = 1e-14) -> [Complex] {
             let p = polynomial.eval(x)
             let q = derivative.eval(x)
             
-            let r = result.prefix(upTo: i).reduce(Complex(0)) { $0 + 1 / (x - $1) }
-            let s = result.suffix(from: i + 1).reduce(r) { $0 + 1 / (x - $1) }
+            let r = result.prefix(upTo: i).reduce(Complex(0)) { $0.0 + 1 / (x - $0.1) }
+            let s = result.suffix(from: i + 1).reduce(r) { $0.0 + 1 / (x - $0.1) }
             
             let t = p / q
             
@@ -33,7 +33,7 @@ public func Aberth(_ polynomial: Polynomial, eps: Double = 1e-14) -> [Complex] {
             return u
         }
         
-        result = result.enumerated().map { $1 - _eval($0, $1) }
+        result = result.enumerated().map { $0.1 - _eval($0.0, $0.1) }
         
         if flag {
             print("Aberth:", iter)

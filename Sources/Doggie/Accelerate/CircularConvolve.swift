@@ -24,7 +24,7 @@
 //
 
 @_inlineable
-@_specialize(Float) @_specialize(Double)
+@_specialize(where T == Float) @_specialize(where T == Double)
 public func Radix2CircularConvolve<T: BinaryFloatingPoint>(_ level: Int, _ signal: UnsafePointer<T>, _ signal_stride: Int, _ signal_count: Int, _ kernel: UnsafePointer<T>, _ kernel_stride: Int, _ kernel_count: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int, _ temp: UnsafeMutablePointer<T>, _ temp_stride: Int) where T : FloatingMathProtocol {
     
     let length = 1 << level
@@ -70,7 +70,7 @@ public func Radix2CircularConvolve<T: BinaryFloatingPoint>(_ level: Int, _ signa
 }
 
 @_inlineable
-@_specialize(Float) @_specialize(Double)
+@_specialize(where T == Float) @_specialize(where T == Double)
 public func Radix2CircularConvolve<T: BinaryFloatingPoint>(_ level: Int, _ sreal: UnsafePointer<T>, _ simag: UnsafePointer<T>, _ signal_stride: Int, _ signal_count: Int, _ kreal: UnsafePointer<T>, _ kimag: UnsafePointer<T>, _ kernel_stride: Int, _ kernel_count: Int, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int, _ treal: UnsafeMutablePointer<T>, _ timag: UnsafeMutablePointer<T>, _ temp_stride: Int) where T : FloatingMathProtocol {
     
     let length = 1 << level
@@ -116,7 +116,7 @@ public func Radix2CircularConvolve<T: BinaryFloatingPoint>(_ level: Int, _ sreal
 }
 
 @_inlineable
-@_specialize(Float) @_specialize(Double)
+@_specialize(where T == Float) @_specialize(where T == Double)
 public func Radix2PowerCircularConvolve<T: BinaryFloatingPoint>(_ level: Int, _ input: UnsafePointer<T>, _ in_stride: Int, _ in_count: Int, _ n: T, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) where T : FloatingMathProtocol {
     
     let length = 1 << level
@@ -154,7 +154,7 @@ public func Radix2PowerCircularConvolve<T: BinaryFloatingPoint>(_ level: Int, _ 
 }
 
 @_inlineable
-@_specialize(Float) @_specialize(Double)
+@_specialize(where T == Float) @_specialize(where T == Double)
 public func Radix2PowerCircularConvolve<T: BinaryFloatingPoint>(_ level: Int, _ real: UnsafePointer<T>, _ imag: UnsafePointer<T>, _ in_stride: Int, _ in_count: Int, _ n: T, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int) where T : FloatingMathProtocol {
     
     let length = 1 << level
@@ -191,7 +191,7 @@ public func Radix2PowerCircularConvolve<T: BinaryFloatingPoint>(_ level: Int, _ 
 }
 
 @_inlineable
-public func Radix2CircularConvolve<U: UnsignedInteger>(_ level: Int, _ signal: UnsafePointer<U>, _ signal_stride: Int, _ signal_count: Int, _ kernel: UnsafePointer<U>, _ kernel_stride: Int, _ kernel_count: Int, _ alpha: U, _ mod: U, _ output: UnsafeMutablePointer<U>, _ out_stride: Int, _ temp: UnsafeMutablePointer<U>, _ temp_stride: Int) {
+public func Radix2CircularConvolve<U: UnsignedInteger & FixedWidthInteger>(_ level: Int, _ signal: UnsafePointer<U>, _ signal_stride: Int, _ signal_count: Int, _ kernel: UnsafePointer<U>, _ kernel_stride: Int, _ kernel_count: Int, _ alpha: U, _ mod: U, _ output: UnsafeMutablePointer<U>, _ out_stride: Int, _ temp: UnsafeMutablePointer<U>, _ temp_stride: Int) {
     
     let length = 1 << level
     
@@ -210,7 +210,7 @@ public func Radix2CircularConvolve<U: UnsignedInteger>(_ level: Int, _ signal: U
     Radix2CooleyTukey(level, signal, signal_stride, signal_count, alpha, mod, _signal, out_stride)
     Radix2CooleyTukey(level, kernel, kernel_stride, kernel_count, alpha, mod, _kernel, temp_stride)
     
-    let _n = modinv(U(UIntMax(length)), mod)
+    let _n = modinv(U(length), mod)
     for _ in 0..<length {
         let _s = _signal.pointee
         let _k = mulmod(_kernel.pointee, _n, mod)

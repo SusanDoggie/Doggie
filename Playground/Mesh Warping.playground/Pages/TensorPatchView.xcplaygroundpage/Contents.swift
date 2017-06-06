@@ -11,3 +11,4 @@ PlaygroundPage.current.liveView = view
 let ellipse = Shape.Ellipse(center: Point(x: 0.5, y: 0.5), radius: Radius(x: 0.4, y: 0.4))
 
 view.shape = ellipse
+

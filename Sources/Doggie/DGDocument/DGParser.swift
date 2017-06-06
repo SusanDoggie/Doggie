@@ -71,7 +71,7 @@ extension DGDocument {
         var count = 0
         var position = position
         
-        loop: for (pos, d) in data.suffix(from: position).dropFirst().indexed() {
+        loop: for (pos, d) in data.indexed().suffix(from: position).dropFirst() {
             switch d {
             case 48...57: count = count * 10 + Int(d - 48)
             case 32:
@@ -98,7 +98,7 @@ extension DGDocument {
         var count = 0
         var position = position
         
-        loop: for (pos, d) in data.suffix(from: position).dropFirst().indexed() {
+        loop: for (pos, d) in data.indexed().suffix(from: position).dropFirst() {
             switch d {
             case 48...57: count = count * 10 + Int(d - 48)
             case 32:
@@ -114,13 +114,13 @@ extension DGDocument {
             throw ParserError.unexpectedEOF
         }
         
-        return (position + count, .stream(Data(stream)))
+        return (position + count, .stream(stream))
     }
     private static func parseReference(data: Data, position: Int) throws -> (Int, DGDocument.Value) {
         
         var ref = 0
         
-        loop: for (pos, d) in data.suffix(from: position).dropFirst().indexed() {
+        loop: for (pos, d) in data.indexed().suffix(from: position).dropFirst() {
             switch d {
             case 48...57: ref = ref * 10 + Int(d - 48)
             default: return (pos, .indirect(ref))
@@ -132,13 +132,13 @@ extension DGDocument {
     private static func parseNumber(data: Data, position: Int) throws -> (Int, DGDocument.Value) {
         
         var sign: Bool?
-        var int: IntMax = 0
+        var int: Int64 = 0
         var float = 0.0
-        var e: IntMax = 0
+        var e: Int64 = 0
         var fflag = false
         var eflag = false
         
-        loop: for (pos, d) in data.suffix(from: position).indexed() {
+        loop: for (pos, d) in data.indexed().suffix(from: position) {
             switch d {
             case 43:
                 if sign != nil {
@@ -165,11 +165,11 @@ extension DGDocument {
             case 48...57:
                 sign = sign ?? false
                 if eflag {
-                    e = e * 10 + IntMax(d - 48)
+                    e = e * 10 + Int64(d - 48)
                 } else if fflag {
                     float = (float + Double(d - 48)) / 10
                 } else {
-                    int = int * 10 + IntMax(d - 48)
+                    int = int * 10 + Int64(d - 48)
                 }
             default:
                 if fflag || eflag {

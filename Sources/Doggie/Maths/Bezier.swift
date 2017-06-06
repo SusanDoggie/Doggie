@@ -25,7 +25,7 @@
 
 import Foundation
 
-public protocol BezierElementProtocol : Additive, Subtractive {
+public protocol BezierElementProtocol : Subtractive {
     
     static func * (_: Double, _: Self) -> Self
     static func * (_: Self, _: Double) -> Self
@@ -196,7 +196,7 @@ extension Bezier where Element == Double {
             for i in result.indices {
                 var sum = 0.0
                 let fact = Array(FactorialList(UInt(i)))
-                for (j, f) in zip(fact, fact.reversed()).map(*).enumerated() {
+                for (j, f) in zip(fact, fact.reversed()).map({ $0.0 * $0.1 }).enumerated() {
                     if (i + j) & 1 == 0 {
                         sum += points[j] / Double(f)
                     } else {
@@ -523,7 +523,7 @@ public func + <Element>(lhs: Bezier<Element>, rhs: Bezier<Element>) -> Bezier<El
     while rhs.degree != degree {
         rhs = rhs.elevated()
     }
-    return Bezier(zip(lhs.points, rhs.points).map(+))
+    return Bezier(zip(lhs.points, rhs.points).map({ $0.0 + $0.1 }))
 }
 @_inlineable
 public func - <Element>(lhs: Bezier<Element>, rhs: Bezier<Element>) -> Bezier<Element> {
@@ -536,7 +536,7 @@ public func - <Element>(lhs: Bezier<Element>, rhs: Bezier<Element>) -> Bezier<El
     while rhs.degree != degree {
         rhs = rhs.elevated()
     }
-    return Bezier(zip(lhs.points, rhs.points).map(-))
+    return Bezier(zip(lhs.points, rhs.points).map({ $0.0 - $0.1 }))
 }
 @_inlineable
 public func * <Element>(lhs: Double, rhs: Bezier<Element>) -> Bezier<Element> {
@@ -703,7 +703,7 @@ private func QuadBezierFitting(_ p: [Point], _ limit: Int, _ inflection_check: B
         return bezier.split(t).flatMap { QuadBezierFitting($0.points, limit - 1, false) }
     }
     
-    let d = zip(p.dropFirst(), p).map { $0 - $1 }
+    let d = zip(p.dropFirst(), p).map { $0.0 - $0.1 }
     
     func split(_ t: Double) -> [[Point]] {
         let (left, right) = bezier.split(t)
@@ -788,9 +788,9 @@ public func CubicBezierFitting(_ p0: Point, _ p3: Point, _ m0: Point, _ m1: Poin
 }
 public func CubicBezierFitting(_ p0: Point, _ p3: Point, _ m0: Point, _ m1: Point, _ points: [Point]) -> (Double, Double)? {
     
-    let ds = zip(CollectionOfOne(p0).concat(points), points).map { ($0 - $1).magnitude }
-    let dt = zip(points, points.dropFirst().concat(CollectionOfOne(p3))).map { ($0 - $1).magnitude }
-    return CubicBezierFitting(p0, p3, m0, m1, Array(zip(zip(ds, dt).map { $0 / ($0 + $1) }, points)))
+    let ds = zip(CollectionOfOne(p0).concat(points), points).map { ($0.0 - $0.1).magnitude }
+    let dt = zip(points, points.dropFirst().concat(CollectionOfOne(p3))).map { ($0.0 - $0.1).magnitude }
+    return CubicBezierFitting(p0, p3, m0, m1, Array(zip(zip(ds, dt).map { $0.0 / ($0.0 + $0.1) }, points)))
 }
 
 @inline(__always)
@@ -808,7 +808,7 @@ private func BezierFitting(start: Double, end: Double, _ passing: [(Double, Doub
         let sn = pow(s, Double(n + 1))
         let st = t / s
         let u = sequence(first: sn * st) { $0 * st }
-        let v = zip(c, u).lazy.map { Double($0) * $1 }
+        let v = zip(c, u).lazy.map { Double($0.0) * $0.1 }
         matrix.append(contentsOf: v.concat(CollectionOfOne(p - sn * start - tn * end)))
     }
     
@@ -828,21 +828,21 @@ public func BezierFitting(start: Double, end: Double, _ passing: (Double, Double
 
 public func BezierFitting(start: Point, end: Point, _ passing: (Double, Point) ...) -> [Point]? {
     
-    let x = BezierFitting(start: start.x, end: end.x, passing.map { ($0, $1.x) })
-    let y = BezierFitting(start: start.y, end: end.y, passing.map { ($0, $1.y) })
+    let x = BezierFitting(start: start.x, end: end.x, passing.map { ($0.0, $0.1.x) })
+    let y = BezierFitting(start: start.y, end: end.y, passing.map { ($0.0, $0.1.y) })
     if let x = x, let y = y {
-        return zip(x, y).map { Point(x: $0, y: $1) }
+        return zip(x, y).map { Point(x: $0.0, y: $0.1) }
     }
     return nil
 }
 
 public func BezierFitting(start: Vector, end: Vector, _ passing: (Double, Vector) ...) -> [Vector]? {
     
-    let x = BezierFitting(start: start.x, end: end.x, passing.map { ($0, $1.x) })
-    let y = BezierFitting(start: start.y, end: end.y, passing.map { ($0, $1.y) })
-    let z = BezierFitting(start: start.z, end: end.z, passing.map { ($0, $1.z) })
+    let x = BezierFitting(start: start.x, end: end.x, passing.map { ($0.0, $0.1.x) })
+    let y = BezierFitting(start: start.y, end: end.y, passing.map { ($0.0, $0.1.y) })
+    let z = BezierFitting(start: start.z, end: end.z, passing.map { ($0.0, $0.1.z) })
     if let x = x, let y = y, let z = z {
-        return zip(zip(x, y), z).map { Vector(x: $0.0, y: $0.1, z: $1) }
+        return zip(zip(x, y), z).map { Vector(x: $0.0.0, y: $0.0.1, z: $0.1) }
     }
     return nil
 }
@@ -882,7 +882,7 @@ public func BezierOffset(_ p: [Point], _ a: Double) -> [[Point]] {
     return QuadBezierFitting(p).flatMap { points -> [[Point]] in
         
         var join: [[Point]]  = []
-        let d = zip(points.dropFirst(), points).map { $0 - $1 }
+        let d = zip(points.dropFirst(), points).map { $0.0 - $0.1 }
         
         if let ph0 = ph0, let ph1 = d.first(where: { !$0.x.almostZero() || !$0.y.almostZero() })?.phase {
             let angle = (ph1 - ph0).remainder(dividingBy: 2 * Double.pi)
@@ -898,7 +898,7 @@ public func BezierOffset(_ p: [Point], _ a: Double) -> [[Point]] {
         ph0 = d.last { !$0.x.almostZero() || !$0.y.almostZero() }?.phase ?? ph0
         
         switch points.count {
-        case 2: return BezierOffset(points[0], points[1], a).map { join + [[$0, $1]] } ?? join
+        case 2: return BezierOffset(points[0], points[1], a).map { join + [[$0.0, $0.1]] } ?? join
         case 3: return join + _BezierOffset(points[0], points[1], points[2], a, 3)
         default: fatalError()
         }
@@ -914,23 +914,23 @@ private func _BezierOffset(_ p0: Point, _ p1: Point, _ p2: Point, _ a: Double, _
     let q1 = p2 - p1
     
     if (q0.x.almostZero() && q0.y.almostZero()) || (q1.x.almostZero() && q1.y.almostZero()) {
-        return BezierOffset(p0, p2, a).map { [[$0, $1]] } ?? []
+        return BezierOffset(p0, p2, a).map { [[$0.0, $0.1]] } ?? []
     }
     let ph0 = q0.phase
     let ph1 = q1.phase
     
     if ph0.almostEqual(ph1) || ph0.almostEqual(ph1 + 2 * Double.pi) || ph0.almostEqual(ph1 - 2 * Double.pi) {
-        return BezierOffset(p0, p2, a).map { [[$0, $1]] } ?? []
+        return BezierOffset(p0, p2, a).map { [[$0.0, $0.1]] } ?? []
     }
     if ph0.almostEqual(ph1 + Double.pi) || ph0.almostEqual(ph1 - Double.pi) {
         if let w = Bezier(p0, p1, p2).stationary.first, !w.almostZero() && !w.almostEqual(1) && 0...1 ~= w {
             let g = Bezier(p0, p1, p2).eval(w)
             let angle = ph0 - 0.5 * Double.pi
             let bezierCircle = BezierCircle.lazy.map { $0 * SDTransform.rotate(angle) * a + g }
-            let v0 = OptionOneCollection(BezierOffset(p0, g, a).map { [$0, $1] })
+            let v0 = OptionOneCollection(BezierOffset(p0, g, a).map { [$0.0, $0.1] })
             let v1 = OptionOneCollection([bezierCircle[0], bezierCircle[1], bezierCircle[2], bezierCircle[3]])
             let v2 = OptionOneCollection([bezierCircle[3], bezierCircle[4], bezierCircle[5], bezierCircle[6]])
-            let v3 = OptionOneCollection(BezierOffset(g, p2, a).map { [$0, $1] })
+            let v3 = OptionOneCollection(BezierOffset(g, p2, a).map { [$0.0, $0.1] })
             return Array([v0, v1, v2, v3].joined())
         }
     }
@@ -956,13 +956,13 @@ private func _BezierOffset(_ p0: Point, _ p1: Point, _ p2: Point, _ a: Double, _
             } else {
                 let m = Bezier(q0, q1).eval(0.5).unit
                 let _mid = Bezier(p0, p1, p2).eval(0.5) + Point(x: a * m.y, y: -a * m.x)
-                return CubicBezierFitting(start, end, q0, -q1, [_mid]).map { [[start, start + abs($0) * q0, end - abs($1) * q1, end]] } ?? [[start, 2 * (_mid - 0.25 * (start + end)), end]]
+                return CubicBezierFitting(start, end, q0, -q1, [_mid]).map { [[start, start + abs($0.0) * q0, end - abs($0.1) * q1, end]] } ?? [[start, 2 * (_mid - 0.25 * (start + end)), end]]
             }
         }
         return [[start, mid, end]]
     }
     
-    return BezierOffset(p0, p2, a).map { [[$0, $1]] } ?? []
+    return BezierOffset(p0, p2, a).map { [[$0.0, $0.1]] } ?? []
 }
 
 // MARK: Shape Tweening
@@ -1111,7 +1111,7 @@ extension CubicBezierPatch {
             y = y.elevated()
         }
         
-        let points = zip(x, y).map { Point(x: $0, y: $1) }
+        let points = zip(x, y).map { Point(x: $0.0, y: $0.1) }
         
         switch degree {
         case 1, 2, 3: return [Bezier(points)]

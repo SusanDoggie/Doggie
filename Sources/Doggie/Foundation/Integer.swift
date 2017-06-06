@@ -25,45 +25,6 @@
 
 import Foundation
 
-extension UInt64 {
-    
-    @_inlineable
-    public var reverse: UInt64 {
-        var x = self
-        x = ((x & 0x5555555555555555) << 1) | ((x & 0xAAAAAAAAAAAAAAAA) >> 1)
-        x = ((x & 0x3333333333333333) << 2) | ((x & 0xCCCCCCCCCCCCCCCC) >> 2)
-        x = ((x & 0x0F0F0F0F0F0F0F0F) << 4) | ((x & 0xF0F0F0F0F0F0F0F0) >> 4)
-        x = ((x & 0x00FF00FF00FF00FF) << 8) | ((x & 0xFF00FF00FF00FF00) >> 8)
-        x = ((x & 0x0000FFFF0000FFFF) << 16) | ((x & 0xFFFF0000FFFF0000) >> 16)
-        x = ((x & 0x00000000FFFFFFFF) << 32) | ((x & 0xFFFFFFFF00000000) >> 32)
-        return x
-    }
-}
-extension UInt32 {
-    
-    @_inlineable
-    public var reverse: UInt32 {
-        var x = self
-        x = ((x & 0x55555555) << 1) | ((x & 0xAAAAAAAA) >> 1)
-        x = ((x & 0x33333333) << 2) | ((x & 0xCCCCCCCC) >> 2)
-        x = ((x & 0x0F0F0F0F) << 4) | ((x & 0xF0F0F0F0) >> 4)
-        x = ((x & 0x00FF00FF) << 8) | ((x & 0xFF00FF00) >> 8)
-        x = ((x & 0x0000FFFF) << 16) | ((x & 0xFFFF0000) >> 16)
-        return x
-    }
-}
-extension UInt16 {
-    
-    @_inlineable
-    public var reverse: UInt16 {
-        var x = self
-        x = ((x & 0x5555) << 1) | ((x & 0xAAAA) >> 1)
-        x = ((x & 0x3333) << 2) | ((x & 0xCCCC) >> 2)
-        x = ((x & 0x0F0F) << 4) | ((x & 0xF0F0) >> 4)
-        x = ((x & 0x00FF) << 8) | ((x & 0xFF00) >> 8)
-        return x
-    }
-}
 extension UInt8 {
     
     @_inlineable
@@ -75,184 +36,50 @@ extension UInt8 {
         return x
     }
 }
-extension Int64 {
+extension FixedWidthInteger {
     
     @_inlineable
-    public var reverse: Int64 {
-        return Int64(bitPattern: UInt64(bitPattern: self).reverse)
-    }
-}
-extension Int32 {
-    
-    @_inlineable
-    public var reverse: Int32 {
-        return Int32(bitPattern: UInt32(bitPattern: self).reverse)
-    }
-}
-extension Int16 {
-    
-    @_inlineable
-    public var reverse: Int16 {
-        return Int16(bitPattern: UInt16(bitPattern: self).reverse)
-    }
-}
-extension Int8 {
-    
-    @_inlineable
-    public var reverse: Int8 {
-        return Int8(bitPattern: UInt8(bitPattern: self).reverse)
+    public var reverse: Self {
+        var r = self
+        var x: Self = 0
+        for _ in 0..<bitWidth >> 3 {
+            x = (x << 8) | Self(UInt8(extendingOrTruncating: r).reverse)
+            r >>= 8
+        }
+        return x
     }
 }
 
 @_inlineable
-public func log2<T: UnsignedInteger>(_ x: T) -> T {
-    var r: T = 0
-    var x = x
-    while x != 0 {
-        x = x >> 1
-        r = r + 1
-    }
-    return r - 1
-}
-@_inlineable
-public func log2(_ x: Int64) -> Int64 {
-    return Int64(bitPattern: log2(UInt64(bitPattern: x)))
-}
-@_inlineable
-public func log2(_ x: Int32) -> Int32 {
-    return Int32(bitPattern: log2(UInt32(bitPattern: x)))
-}
-@_inlineable
-public func log2(_ x: Int16) -> Int16 {
-    return Int16(bitPattern: log2(UInt16(bitPattern: x)))
-}
-@_inlineable
-public func log2(_ x: Int8) -> Int8 {
-    return Int8(bitPattern: log2(UInt8(bitPattern: x)))
-}
-@_inlineable
-public func log2(_ x: Int) -> Int {
-    return Int(bitPattern: log2(UInt(bitPattern: x)))
+public func log2<T: FixedWidthInteger>(_ x: T) -> T {
+    return x == 0 ? 0 : T(x.bitWidth - x.leadingZeroBitCount - 1)
 }
 
-extension UnsignedInteger {
+extension FixedWidthInteger {
     
     @_inlineable
     public var hibit: Self {
-        let mbit: Self = ~(~0 >> 1)
-        if self & mbit != 0 {
-            return mbit
-        }
-        var x = self.toUIntMax()
-        for i in 1..<UIntMax(MemoryLayout<Self>.size) {
-            x |= x >> i
-        }
-        return Self((x + 1) >> 1)
+        return 1 << log2(self)
     }
 }
 
-extension Int64 {
-    
-    @_inlineable
-    public var hibit: Int64 {
-        return Int64(bitPattern: UInt64(bitPattern: self).hibit)
-    }
-}
-extension Int32 {
-    
-    @_inlineable
-    public var hibit: Int32 {
-        return Int32(bitPattern: UInt32(bitPattern: self).hibit)
-    }
-}
-extension Int16 {
-    
-    @_inlineable
-    public var hibit: Int16 {
-        return Int16(bitPattern: UInt16(bitPattern: self).hibit)
-    }
-}
-extension Int8 {
-    
-    @_inlineable
-    public var hibit: Int8 {
-        return Int8(bitPattern: UInt8(bitPattern: self).hibit)
-    }
-}
-extension Int {
-    
-    @_inlineable
-    public var hibit: Int {
-        return Int(bitPattern: UInt(bitPattern: self).hibit)
-    }
-}
-
-extension Integer {
+extension FixedWidthInteger {
     
     @_inlineable
     public var lowbit: Self {
-        return self & (~self &+ 1)
+        return 1 << self.trailingZeroBitCount
     }
 }
 
-extension UnsignedInteger {
-    
-    @_inlineable
-    public var bitCount: Self {
-        var x = self
-        var c: Self = 0
-        while x != 0 {
-            x &= x - 1
-            c += 1 as Self
-        }
-        return c
-    }
-}
-extension Int64 {
-    
-    @_inlineable
-    public var bitCount: Int64 {
-        return Int64(bitPattern: UInt64(bitPattern: self).bitCount)
-    }
-}
-extension Int32 {
-    
-    @_inlineable
-    public var bitCount: Int32 {
-        return Int32(bitPattern: UInt32(bitPattern: self).bitCount)
-    }
-}
-extension Int16 {
-    
-    @_inlineable
-    public var bitCount: Int16 {
-        return Int16(bitPattern: UInt16(bitPattern: self).bitCount)
-    }
-}
-extension Int8 {
-    
-    @_inlineable
-    public var bitCount: Int8 {
-        return Int8(bitPattern: UInt8(bitPattern: self).bitCount)
-    }
-}
-extension Int {
-    
-    @_inlineable
-    public var bitCount: Int {
-        return Int(bitPattern: UInt(bitPattern: self).bitCount)
-    }
-}
-
-extension Integer {
+extension BinaryInteger {
     
     @_inlineable
     public var isPower2 : Bool {
-        return 0 < self && self & (self &- 1) == 0
+        return 0 < self && self & (self - 1) == 0
     }
 }
 
-extension Integer {
+extension BinaryInteger {
     
     @_inlineable
     public func align(_ s: Self) -> Self {
@@ -263,7 +90,7 @@ extension Integer {
 }
 
 @_inlineable
-public func addmod<T: UnsignedInteger>(_ a: T, _ b: T, _ m: T) -> T {
+public func addmod<T: FixedWidthInteger & UnsignedInteger>(_ a: T, _ b: T, _ m: T) -> T {
     assert(m != 0, "divide by zero")
     let a = a % m
     let b = b % m
@@ -271,13 +98,13 @@ public func addmod<T: UnsignedInteger>(_ a: T, _ b: T, _ m: T) -> T {
     return a < c ? a &+ b : a &- c
 }
 @_inlineable
-public func negmod<T: UnsignedInteger>(_ a: T, _ m: T) -> T {
+public func negmod<T: FixedWidthInteger & UnsignedInteger>(_ a: T, _ m: T) -> T {
     assert(m != 0, "divide by zero")
     let a = a % m
     return m &- a
 }
 @_inlineable
-public func submod<T: UnsignedInteger>(_ a: T, _ b: T, _ m: T) -> T {
+public func submod<T: FixedWidthInteger & UnsignedInteger>(_ a: T, _ b: T, _ m: T) -> T {
     assert(m != 0, "divide by zero")
     let a = a % m
     let b = b % m
@@ -286,18 +113,13 @@ public func submod<T: UnsignedInteger>(_ a: T, _ b: T, _ m: T) -> T {
 }
 
 @_inlineable
-public func >><T: UnsignedInteger>(lhs: T, rhs: T) -> T {
-    return T(lhs.toUIntMax() >> rhs.toUIntMax())
-}
-
-@_inlineable
-public func mulmod<T: UnsignedInteger>(_ a: T, _ b: T, _ m: T) -> T {
-    func _mulmod(_ a: UIntMax, _ b: UIntMax, _ m: UIntMax) -> UIntMax {
+public func mulmod<T: FixedWidthInteger & UnsignedInteger>(_ a: T, _ b: T, _ m: T) -> T {
+    func _mulmod(_ a: T, _ b: T, _ m: T) -> T {
         if a == 0 || b == 0 {
             return 0
         }
-        let (mul, overflow) = UIntMax.multiplyWithOverflow(a, b)
-        if overflow {
+        let (mul, overflow) = a.multipliedReportingOverflow(by: b)
+        if overflow == .overflow {
             let c = _mulmod(addmod(a, a, m), b >> 1, m)
             return b & 1 == 1 ? addmod(a, c, m) : c
         }
@@ -312,11 +134,11 @@ public func mulmod<T: UnsignedInteger>(_ a: T, _ b: T, _ m: T) -> T {
     if m.isPower2 {
         return (a &* b) & (m - 1)
     }
-    return T(_mulmod(a.toUIntMax(), b.toUIntMax(), m.toUIntMax()))
+    return _mulmod(a, b, m)
 }
 
 @_inlineable
-public func pow<T: UnsignedInteger>(_ x: T, _ n: T, _ m: T) -> T {
+public func pow<T: FixedWidthInteger & UnsignedInteger>(_ x: T, _ n: T, _ m: T) -> T {
     assert(m != 0, "divide by zero")
     let x = x % m
     if x == 0 || m == 1 {
@@ -457,8 +279,8 @@ public func combination<T: UnsignedInteger>(_ n: T, _ k: T) -> T where T.Stride 
 }
 
 @_inlineable
-public func fibonacci<T: UnsignedInteger>(_ n: T) -> T {
-    func fib(_ n: UIntMax) -> (UIntMax, UIntMax) {
+public func fibonacci<T: FixedWidthInteger & UnsignedInteger>(_ n: T) -> T {
+    func fib(_ n: T) -> (T, T) {
         switch n {
         case 0: return (1, 1)
         case 1: return (1, 2)
@@ -470,5 +292,5 @@ public func fibonacci<T: UnsignedInteger>(_ n: T) -> T {
             return n & 1 == 0 ? (c, d) : (d, c + d)
         }
     }
-    return T(fib(n.toUIntMax()).0)
+    return fib(n).0
 }

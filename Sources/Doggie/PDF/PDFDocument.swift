@@ -121,7 +121,7 @@ extension PDFDocument.View {
         }
     }
     
-    public var keys: LazyMapCollection<PDFDocument.Dictionary, PDFDocument.Name> {
+    public var keys: Dictionary<PDFDocument.Name, PDFDocument.Value>.Keys {
         return self.value.keys
     }
     
@@ -148,7 +148,7 @@ extension PDFDocument.Xref : BidirectionalCollection {
     }
     
     private var _collection: _Collection {
-        return table.indexed().lazy.flatMap { id, objs in objs.indexed().lazy.map { (PDFDocument.ObjectIdentifier(identifier: id, generation: $0), $1) } }.elements
+        return table.indexed().lazy.flatMap { x in x.1.indexed().lazy.map { (PDFDocument.ObjectIdentifier(identifier: x.0, generation: $0.0), $0.1) } }.elements
     }
     
     public var startIndex: Index {
@@ -284,8 +284,8 @@ extension PDFDocument.Value : CustomStringConvertible {
 
 extension PDFDocument.Value {
     
-    public init<T : Integer>(_ value: T) {
-        self = .number(NSNumber(value: value.toIntMax()))
+    public init<T : FixedWidthInteger>(_ value: T) {
+        self = .number(value as! NSNumber)
     }
     public init(_ value: Float) {
         self = .number(NSNumber(value: value))
@@ -642,7 +642,7 @@ extension PDFDocument.Value {
             }
         }
         set {
-            self = newValue.map { .stream($0, $1) } ?? .null
+            self = newValue.map { .stream($0.0, $0.1) } ?? .null
         }
     }
 }
@@ -678,7 +678,7 @@ extension PDFDocument.Value {
         }
     }
     
-    public var keys: LazyMapCollection<PDFDocument.Dictionary, PDFDocument.Name> {
+    public var keys: Dictionary<PDFDocument.Name, PDFDocument.Value>.Keys {
         switch self {
         case let .dictionary(dictionary): return dictionary.keys
         default: fatalError("Not an object.")

@@ -53,16 +53,16 @@ public let _dev_random = RandomGenerator(source: "/dev/random")
 public let _dev_urandom = RandomGenerator(source: "/dev/urandom")
 
 @_inlineable
-public func sec_random_uniform(_ bound: UIntMax) -> UIntMax {
-    let RANDMAX: UIntMax = ~0
-    var _rand: UIntMax = 0
-    _dev_random.read(&_rand, size: MemoryLayout<UIntMax>.size)
+public func sec_random_uniform<T : FixedWidthInteger>(_ bound: T) -> T {
+    let RANDMAX: T = ~0
+    var _rand: T = 0
+    _dev_random.read(&_rand, size: T.bitWidth)
     if bound.isPower2 {
         _rand &= bound &- 1
     } else {
         let limit = RANDMAX - RANDMAX % bound
         while _rand >= limit {
-            _dev_random.read(&_rand, size: MemoryLayout<UIntMax>.size)
+            _dev_random.read(&_rand, size: T.bitWidth)
         }
         _rand %= bound
     }
@@ -70,29 +70,29 @@ public func sec_random_uniform(_ bound: UIntMax) -> UIntMax {
 }
 
 @_inlineable
-public func random_uniform(_ bound: UIntMax) -> UIntMax {
-    let RANDMAX: UIntMax = ~0
-    var _rand: UIntMax = 0
-    _dev_urandom.read(&_rand, size: MemoryLayout<UIntMax>.size)
+public func random_uniform<T : FixedWidthInteger>(_ bound: T) -> T {
+    let RANDMAX: T = ~0
+    var _rand: T = 0
+    _dev_urandom.read(&_rand, size: T.bitWidth)
     if bound.isPower2 {
         _rand &= bound &- 1
     } else {
         let limit = RANDMAX - RANDMAX % bound
         while _rand >= limit {
-            _dev_urandom.read(&_rand, size: MemoryLayout<UIntMax>.size)
+            _dev_urandom.read(&_rand, size: T.bitWidth)
         }
         _rand %= bound
     }
     return _rand
 }
 
-extension BinaryFloatingPoint {
+extension BinaryFloatingPoint where RawSignificand : FixedWidthInteger, RawSignificand.Stride : SignedInteger & FixedWidthInteger {
     
     @_inlineable
     public static func random(includeOne: Bool = false) -> Self {
-        let significandBitCount: UIntMax = numericCast(Self.significandBitCount)
-        let exponentBitPattern = numericCast((1 as Self).exponentBitPattern) << significandBitCount
-        let maxsignificand = 1 << significandBitCount
+        let significandBitCount = Self.significandBitCount
+        let exponentBitPattern: RawSignificand = numericCast((1 as Self).exponentBitPattern) << significandBitCount
+        let maxsignificand: RawSignificand = 1 << significandBitCount
         let rand = includeOne ? (0...maxsignificand).random()! : (0..<maxsignificand).random()!
         let pattern = exponentBitPattern + rand
         let exponent = pattern >> significandBitCount
@@ -101,7 +101,7 @@ extension BinaryFloatingPoint {
     }
 }
 
-public extension Range where Bound : BinaryFloatingPoint {
+public extension Range where Bound : BinaryFloatingPoint, Bound.RawSignificand : FixedWidthInteger, Bound.RawSignificand.Stride : SignedInteger & FixedWidthInteger {
     
     @_inlineable
     public func random() -> Bound {
@@ -109,7 +109,7 @@ public extension Range where Bound : BinaryFloatingPoint {
         return (Bound.random() * diff) + lowerBound
     }
 }
-public extension ClosedRange where Bound : BinaryFloatingPoint {
+public extension ClosedRange where Bound : BinaryFloatingPoint, Bound.RawSignificand : FixedWidthInteger, Bound.RawSignificand.Stride : SignedInteger & FixedWidthInteger {
     
     @_inlineable
     public func random() -> Bound {

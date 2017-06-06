@@ -314,7 +314,7 @@ extension ResamplingAlgorithm {
     
     @_versioned
     @_inlineable
-    @_specialize(ColorPixel<RGBColorModel>) @_specialize(ColorPixel<CMYKColorModel>) @_specialize(ColorPixel<GrayColorModel>) @_specialize(ARGB32ColorPixel)
+    @_specialize(where Pixel == ColorPixel<RGBColorModel>) @_specialize(where Pixel == ColorPixel<CMYKColorModel>) @_specialize(where Pixel == ColorPixel<GrayColorModel>) @_specialize(where Pixel == ARGB32ColorPixel)
     func calculate<Pixel: ColorPixelProtocol>(source: [Pixel], s_width: Int, width: Int, height: Int, pixel: Pixel.Type, transform: SDTransform, antialias: Bool) -> [Pixel] {
         
         var result = [Pixel](repeating: Pixel(), count: width * height)
@@ -468,7 +468,7 @@ extension ResamplingAlgorithm {
     
     @_versioned
     @inline(__always)
-    func convolve<ColorModel: ColorModelProtocol>(source: UnsafePointer<ColorPixel<ColorModel>>, width: Int, height: Int, point: Point, kernel_size: Int, kernel: (Double) -> Double) -> ColorPixel<ColorModel> {
+    func convolve<ColorModel>(source: UnsafePointer<ColorPixel<ColorModel>>, width: Int, height: Int, point: Point, kernel_size: Int, kernel: (Double) -> Double) -> ColorPixel<ColorModel> {
         
         var pixel = ColorPixel<ColorModel>()
         var t: Double = 0
@@ -495,7 +495,7 @@ extension ResamplingAlgorithm {
     
     @_versioned
     @inline(__always)
-    func smapling2<ColorModel: ColorModelProtocol>(source: UnsafePointer<ColorPixel<ColorModel>>, width: Int, height: Int, point: Point, sampler: (Double, Double, Double) -> Double) -> ColorPixel<ColorModel> {
+    func smapling2<ColorModel>(source: UnsafePointer<ColorPixel<ColorModel>>, width: Int, height: Int, point: Point, sampler: (Double, Double, Double) -> Double) -> ColorPixel<ColorModel> {
         
         let _x1 = Int(point.x)
         let _y1 = Int(point.y)
@@ -522,7 +522,7 @@ extension ResamplingAlgorithm {
     
     @_versioned
     @inline(__always)
-    func smapling4<ColorModel: ColorModelProtocol>(source: UnsafePointer<ColorPixel<ColorModel>>, width: Int, height: Int, point: Point, sampler: (Double, Double, Double, Double, Double) -> Double) -> ColorPixel<ColorModel> {
+    func smapling4<ColorModel>(source: UnsafePointer<ColorPixel<ColorModel>>, width: Int, height: Int, point: Point, sampler: (Double, Double, Double, Double, Double) -> Double) -> ColorPixel<ColorModel> {
         
         let _x2 = Int(point.x)
         let _y2 = Int(point.y)

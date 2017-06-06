@@ -37,7 +37,7 @@ public struct SDMarker {
         case object([String: Value])
         case array([Value])
         case template(SDMarker)
-        case integer(IntMax)
+        case integer(Int)
         case boolean(Bool)
         case any(Any)
     }
@@ -174,7 +174,7 @@ extension SDMarker.Value {
         self = .boolean(val)
     }
     public init<S : SignedInteger>(_ val: S) {
-        self = .integer(val.toIntMax())
+        self = .integer(Int(val))
     }
     public init(_ val: Float) {
         self = .any(val)

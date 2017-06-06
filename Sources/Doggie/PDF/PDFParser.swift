@@ -133,7 +133,7 @@ extension PDFDocument {
                             if data.count != _length {
                                 throw ParserError.unexpectedEOF
                             }
-                            table[id][gen] = PDFDocument.Value.stream(dict, Data(data))
+                            table[id][gen] = PDFDocument.Value.stream(dict, data)
                             
                         case .indirect: stream[identifier] = (dict, _tokenEnd)
                         default: throw ParserError.invalidFormat("invalid stream format.")
@@ -165,7 +165,7 @@ extension PDFDocument {
                     if data.count != _length {
                         throw ParserError.unexpectedEOF
                     }
-                    table[identifier.identifier][identifier.generation] = PDFDocument.Value.stream(dict, Data(data))
+                    table[identifier.identifier][identifier.generation] = PDFDocument.Value.stream(dict, data)
                     
                 default: throw ParserError.invalidFormat("obj \(lengthId.identifier) \(lengthId.generation) is not a number.")
                 }
@@ -221,7 +221,7 @@ extension PDFDocument {
         var flag = 0
         var t: UInt8 = 0
         
-        for (pos, d) in data.suffix(from: position).dropFirst().indexed() {
+        for (pos, d) in data.indexed().suffix(from: position).dropFirst() {
             switch d {
             case 1...8, 11, 14...31, 33, 34, 36, 38, 39, 42...46, 48...59, 61, 63...90, 92, 94...122, 124, 126...255:
                 if flag == 0 {
@@ -272,7 +272,7 @@ extension PDFDocument {
         var identifier = 0
         var generation = 0
         
-        for (pos, d) in data.suffix(from: position).indexed() {
+        for (pos, d) in data.indexed().suffix(from: position) {
             switch d {
             case 48...57:
                 switch flag {
@@ -464,7 +464,7 @@ extension PDFDocument {
         var flag = 0
         var t: UInt8 = 0
         
-        for (pos, d) in data.suffix(from: position).dropFirst().indexed() {
+        for (pos, d) in data.indexed().suffix(from: position).dropFirst() {
             switch d {
             case 0, 9, 10, 12, 13, 32: break
             case 48...57:
@@ -502,11 +502,11 @@ extension PDFDocument {
     private static func parseNumber(data: Data, position: Int) throws -> (Int, PDFDocument.Value) {
         
         var sign: Bool?
-        var int: IntMax = 0
+        var int: Int64 = 0
         var float = 0.0
         var fflag = false
         
-        for (pos, d) in data.suffix(from: position).indexed() {
+        for (pos, d) in data.indexed().suffix(from: position) {
             switch d {
             case 43:
                 if sign != nil {
@@ -529,7 +529,7 @@ extension PDFDocument {
                 if fflag {
                     float = (float + Double(d - 48)) / 10
                 } else {
-                    int = int * 10 + IntMax(d - 48)
+                    int = int * 10 + Int64(d - 48)
                 }
             default:
                 if fflag {

@@ -27,7 +27,7 @@ extension Collection where Self == SubSequence {
     
     /// Returns sub-sequence of `self`.
     @_inlineable
-    public var slice: SubSequence {
+    public var subSequence: SubSequence {
         return self
     }
 }
@@ -36,7 +36,7 @@ extension Collection {
     
     /// Returns sub-sequence of `self`.
     @_inlineable
-    public var slice: SubSequence {
+    public var subSequence: SubSequence {
         return self as? SubSequence ?? self[startIndex..<endIndex]
     }
 }
@@ -146,13 +146,13 @@ extension BidirectionalCollection {
     }
 }
 
-extension RandomAccessCollection where Indices.SubSequence.Iterator.Element == Index, Indices.Index == Index {
+extension RandomAccessCollection where Indices : RandomAccessCollection {
     
     /// Returns first range of `pattern` appear in `self`, or `nil` if not match.
     ///
     /// - complexity: Amortized O(`self.count`)
     @_inlineable
-    public func range<C : RandomAccessCollection>(of pattern: C, where isEquivalent: (Iterator.Element, Iterator.Element) throws -> Bool) rethrows -> Range<Index>? where C.Iterator.Element == Iterator.Element {
+    public func range<C : RandomAccessCollection>(of pattern: C, where isEquivalent: (Iterator.Element, Iterator.Element) throws -> Bool) rethrows -> Range<Index>? where C.Indices : RandomAccessCollection, C.Iterator.Element == Iterator.Element {
         
         let pattern_count: IndexDistance = numericCast(pattern.count)
         if count < pattern_count {
@@ -161,7 +161,7 @@ extension RandomAccessCollection where Indices.SubSequence.Iterator.Element == I
         let reverse_pattern = pattern.reversed()
         var cursor = self.index(startIndex, offsetBy: pattern_count - 1, limitedBy: endIndex) ?? endIndex
         while cursor < endIndex {
-            guard let not_match = try zip(self.indices.prefix(through: cursor).reversed(), reverse_pattern).first(where: { try !isEquivalent(self[$0], $1) }) else {
+            guard let not_match = try zip(self.indices.prefix(through: cursor).reversed(), reverse_pattern).first(where: { try !isEquivalent(self[$0.0], $0.1) }) else {
                 let strat = self.index(cursor, offsetBy: 1 - pattern_count)
                 let end = self.index(cursor, offsetBy: 1)
                 return strat..<end
@@ -181,18 +181,18 @@ extension RandomAccessCollection where Indices.SubSequence.Iterator.Element == I
     }
 }
 
-extension RandomAccessCollection where Indices.SubSequence.Iterator.Element == Index, Indices.Index == Index, Iterator.Element : Equatable {
+extension RandomAccessCollection where Indices : RandomAccessCollection, Iterator.Element : Equatable {
     
     /// Returns first range of `pattern` appear in `self`, or `nil` if not match.
     ///
     /// - complexity: Amortized O(`self.count`)
     @_inlineable
-    public func range<C : RandomAccessCollection>(of pattern: C) -> Range<Index>? where C.Iterator.Element == Iterator.Element {
+    public func range<C : RandomAccessCollection>(of pattern: C) -> Range<Index>? where C.Indices : RandomAccessCollection, C.Iterator.Element == Iterator.Element {
         return self.range(of: pattern, where: ==)
     }
 }
 
-extension MutableCollection where Indices.Iterator.Element == Index {
+extension MutableCollection {
     
     @_inlineable
     public mutating func mutateEach(body: (inout Iterator.Element) throws -> ()) rethrows {
@@ -270,7 +270,7 @@ extension Collection where SubSequence : Collection {
     public func rotated(_ n: Int) -> ConcatCollection<SubSequence, SubSequence> {
         let count: Int = numericCast(self.count)
         if count == 0 {
-            return self.slice.concat(self.slice)
+            return self.subSequence.concat(self.subSequence)
         }
         if n < 0 {
             let _n = -n % count
@@ -286,7 +286,7 @@ extension Collection where SubSequence : BidirectionalCollection {
     public func rotated(_ n: Int) -> ConcatBidirectionalCollection<SubSequence, SubSequence> {
         let count: Int = numericCast(self.count)
         if count == 0 {
-            return self.slice.concat(self.slice)
+            return self.subSequence.concat(self.subSequence)
         }
         if n < 0 {
             let _n = -n % count
@@ -302,7 +302,7 @@ extension Collection where SubSequence : RandomAccessCollection {
     public func rotated(_ n: Int) -> ConcatBidirectionalCollection<SubSequence, SubSequence> {
         let count: Int = numericCast(self.count)
         if count == 0 {
-            return self.slice.concat(self.slice)
+            return self.subSequence.concat(self.subSequence)
         }
         if n < 0 {
             let _n = -n % count
@@ -362,7 +362,7 @@ extension LazySequenceProtocol {
     
     /// Return a `Sequence` containing tuples satisfies `predicate` with each elements of two `sources`.
     @_inlineable
-    public func merge<S : Sequence>(with: S, where predicate: @escaping (Elements.Iterator.Element, S.Iterator.Element) -> Bool) -> LazySequence<FlattenSequence<LazyMapSequence<Elements, LazyMapSequence<LazyFilterSequence<S>, (Elements.Iterator.Element, S.Iterator.Element)>>>> {
+    public func merge<S>(with: S, where predicate: @escaping (Elements.Iterator.Element, S.Iterator.Element) -> Bool) -> LazySequence<FlattenSequence<LazyMapSequence<Elements, LazyMapSequence<LazyFilterSequence<S>, (Elements.Iterator.Element, S.Iterator.Element)>>>> {
         return self.flatMap { lhs in with.lazy.filter { rhs in predicate(lhs, rhs) }.map { (lhs, $0) } }
     }
 }
@@ -371,7 +371,7 @@ extension LazyCollectionProtocol {
     
     /// Return a `Collection` containing tuples satisfies `predicate` with each elements of two `sources`.
     @_inlineable
-    public func merge<C : Collection>(with: C, where predicate: @escaping (Elements.Iterator.Element, C.Iterator.Element) -> Bool) -> LazyCollection<FlattenCollection<LazyMapCollection<Elements, LazyMapCollection<LazyFilterCollection<C>, (Elements.Iterator.Element, C.Iterator.Element)>>>> {
+    public func merge<C>(with: C, where predicate: @escaping (Elements.Iterator.Element, C.Iterator.Element) -> Bool) -> LazyCollection<FlattenCollection<LazyMapCollection<Elements, LazyMapCollection<LazyFilterCollection<C>, (Elements.Iterator.Element, C.Iterator.Element)>>>> {
         return self.flatMap { lhs in with.lazy.filter { rhs in predicate(lhs, rhs) }.map { (lhs, $0) } }
     }
 }
@@ -443,32 +443,28 @@ extension Strideable where Stride : SignedInteger {
     }
 }
 
-extension RandomAccessCollection {
+extension RandomAccessCollection where IndexDistance : FixedWidthInteger {
     
     /// Returns a random element in `self` or `nil` if the sequence is empty.
     ///
     /// - complexity: O(1).
     @_inlineable
     public func random() -> Iterator.Element? {
-        let _count = UIntMax(self.count.toIntMax())
-        switch _count {
+        switch count {
         case 0: return nil
         case 1: return self[self.startIndex]
-        default: return self[self.index(self.startIndex, offsetBy: numericCast(random_uniform(_count)))]
+        default: return self[self.index(self.startIndex, offsetBy: random_uniform(count))]
         }
     }
 }
 
-extension MutableCollection where Self : RandomAccessCollection, Indices.Index == Index, Indices.SubSequence : RandomAccessCollection, Indices.SubSequence.Iterator.Element == Index {
+extension MutableCollection where Self : RandomAccessCollection, IndexDistance : FixedWidthInteger {
     
     /// Shuffle `self` in-place.
     @_inlineable
     public mutating func shuffle() {
         for i in self.indices.dropLast() {
-            let j = self.indices.suffix(from: i).random()!
-            if i != j {
-                swap(&self[i], &self[j])
-            }
+            swapAt(i, self.indices.suffix(from: i).random()!)
         }
     }
 }
@@ -491,20 +487,20 @@ extension RangeReplaceableCollection {
     }
 }
 
-extension BidirectionalCollection where Self : MutableCollection, Indices.SubSequence : BidirectionalCollection, Indices.SubSequence.Iterator.Element == Index {
+extension BidirectionalCollection where Self : MutableCollection {
     
     @_inlineable
     public mutating func reverseSubrange(_ range: Indices.SubSequence) {
         for (lhs, rhs) in zip(range, range.reversed()) {
             if lhs < rhs {
-                swap(&self[lhs], &self[rhs])
+                swapAt(lhs, rhs)
             } else {
                 break
             }
         }
     }
 }
-extension BidirectionalCollection where Self : MutableCollection, Indices.SubSequence : BidirectionalCollection, Indices.SubSequence.Iterator.Element == Index, Indices.Index == Index {
+extension BidirectionalCollection where Self : MutableCollection, Indices : BidirectionalCollection {
     
     @_inlineable
     public func nextPermute(by areInIncreasingOrder: (Iterator.Element, Iterator.Element) throws -> Bool) rethrows -> Self {
@@ -512,7 +508,7 @@ extension BidirectionalCollection where Self : MutableCollection, Indices.SubSeq
         if !_self.isEmpty {
             if let k = try _self.indices.dropLast().last(where: { try areInIncreasingOrder(_self[$0], _self[_self.index(after: $0)]) }) {
                 let range = _self.indices.suffix(from: _self.index(after: k))
-                swap(&_self[k], &_self[try range.last { try areInIncreasingOrder(_self[k], _self[$0]) }!])
+                _self.swapAt(k, try range.last { try areInIncreasingOrder(_self[k], _self[$0]) }!)
                 _self.reverseSubrange(range)
             } else {
                 _self.reverse()
@@ -521,7 +517,7 @@ extension BidirectionalCollection where Self : MutableCollection, Indices.SubSeq
         return _self
     }
 }
-extension BidirectionalCollection where Self : MutableCollection, Indices.SubSequence : BidirectionalCollection, Iterator.Element : Comparable, Indices.SubSequence.Iterator.Element == Index, Indices.Index == Index {
+extension BidirectionalCollection where Self : MutableCollection, Indices : BidirectionalCollection, Iterator.Element : Comparable {
     
     @_inlineable
     public func nextPermute() -> Self {
@@ -931,22 +927,22 @@ public struct LazyGatherRandomAccessCollection<C : Collection, I : RandomAccessC
 extension LazyCollectionProtocol {
     
     @_inlineable
-    public func collect<I : Sequence>(_ indices: I) -> LazyGatherSequence<Elements, I> where Elements.Index == I.Iterator.Element {
+    public func collect<I>(_ indices: I) -> LazyGatherSequence<Elements, I> {
         return LazyGatherSequence(base: self.elements, indices: indices)
     }
     
     @_inlineable
-    public func collect<I : Collection>(_ indices: I) -> LazyGatherCollection<Elements, I> where Elements.Index == I.Iterator.Element {
+    public func collect<I>(_ indices: I) -> LazyGatherCollection<Elements, I> {
         return LazyGatherCollection(base: self.elements, indices: indices)
     }
     
     @_inlineable
-    public func collect<I : BidirectionalCollection>(_ indices: I) -> LazyGatherBidirectionalCollection<Elements, I> where Elements.Index == I.Iterator.Element {
+    public func collect<I>(_ indices: I) -> LazyGatherBidirectionalCollection<Elements, I> {
         return LazyGatherBidirectionalCollection(base: self.elements, indices: indices)
     }
     
     @_inlineable
-    public func collect<I : RandomAccessCollection>(_ indices: I) -> LazyGatherRandomAccessCollection<Elements, I> where Elements.Index == I.Iterator.Element {
+    public func collect<I>(_ indices: I) -> LazyGatherRandomAccessCollection<Elements, I> {
         return LazyGatherRandomAccessCollection(base: self.elements, indices: indices)
     }
 }
@@ -1247,7 +1243,7 @@ public struct ConcatBidirectionalCollection<S1 : BidirectionalCollection, S2 : B
 extension Sequence {
     
     @_inlineable
-    public func concat<S : Sequence>(_ with: S) -> ConcatSequence<Self, S> where Iterator.Element == S.Iterator.Element {
+    public func concat<S>(_ with: S) -> ConcatSequence<Self, S> {
         return ConcatSequence(base1: self, base2: with)
     }
 }
@@ -1255,7 +1251,7 @@ extension Sequence {
 extension Collection {
     
     @_inlineable
-    public func concat<S : Collection>(_ with: S) -> ConcatCollection<Self, S> where Iterator.Element == S.Iterator.Element {
+    public func concat<S>(_ with: S) -> ConcatCollection<Self, S> {
         return ConcatCollection(base1: self, base2: with)
     }
 }
@@ -1263,7 +1259,7 @@ extension Collection {
 extension BidirectionalCollection {
     
     @_inlineable
-    public func concat<S : BidirectionalCollection>(_ with: S) -> ConcatBidirectionalCollection<Self, S> where Iterator.Element == S.Iterator.Element {
+    public func concat<S>(_ with: S) -> ConcatBidirectionalCollection<Self, S> {
         return ConcatBidirectionalCollection(base1: self, base2: with)
     }
 }
@@ -1271,7 +1267,7 @@ extension BidirectionalCollection {
 extension LazySequenceProtocol {
     
     @_inlineable
-    public func concat<S : Sequence>(_ with: S) -> LazySequence<ConcatSequence<Elements, S>> where Elements.Iterator.Element == S.Iterator.Element {
+    public func concat<S>(_ with: S) -> LazySequence<ConcatSequence<Elements, S>> {
         return ConcatSequence(base1: self.elements, base2: with).lazy
     }
 }
@@ -1279,7 +1275,7 @@ extension LazySequenceProtocol {
 extension LazyCollectionProtocol {
     
     @_inlineable
-    public func concat<S : Collection>(_ with: S) -> LazyCollection<ConcatCollection<Elements, S>> where Elements.Iterator.Element == S.Iterator.Element {
+    public func concat<S>(_ with: S) -> LazyCollection<ConcatCollection<Elements, S>> {
         return ConcatCollection(base1: self.elements, base2: with).lazy
     }
 }
@@ -1287,7 +1283,7 @@ extension LazyCollectionProtocol {
 extension LazyCollectionProtocol where Elements : BidirectionalCollection {
     
     @_inlineable
-    public func concat<S : BidirectionalCollection>(_ with: S) -> LazyCollection<ConcatBidirectionalCollection<Elements, S>> where Elements.Iterator.Element == S.Iterator.Element {
+    public func concat<S>(_ with: S) -> LazyCollection<ConcatBidirectionalCollection<Elements, S>> {
         return ConcatBidirectionalCollection(base1: self.elements, base2: with).lazy
     }
 }
@@ -1295,7 +1291,7 @@ extension LazyCollectionProtocol where Elements : BidirectionalCollection {
 // MARK: IndexedCollection
 
 @_fixed_layout
-public struct IndexedIterator<C : Collection> : IteratorProtocol where C.Indices.Iterator.Element == C.Index {
+public struct IndexedIterator<C : Collection> : IteratorProtocol {
     
     public let base: C
     
@@ -1318,7 +1314,7 @@ public struct IndexedIterator<C : Collection> : IteratorProtocol where C.Indices
     }
 }
 
-public struct IndexedCollection<C : Collection> : Collection where C.Indices.Iterator.Element == C.Index {
+public struct IndexedCollection<C : Collection> : Collection {
     
     public let base: C
     
@@ -1367,7 +1363,7 @@ public struct IndexedCollection<C : Collection> : Collection where C.Indices.Ite
     }
 }
 
-public struct IndexedBidirectionalCollection<C : BidirectionalCollection> : BidirectionalCollection where C.Indices.Iterator.Element == C.Index {
+public struct IndexedBidirectionalCollection<C : BidirectionalCollection> : BidirectionalCollection {
     
     public let base: C
     
@@ -1421,7 +1417,7 @@ public struct IndexedBidirectionalCollection<C : BidirectionalCollection> : Bidi
     }
 }
 
-public struct IndexedRandomAccessCollection<C : RandomAccessCollection> : RandomAccessCollection where C.Indices.Iterator.Element == C.Index {
+public struct IndexedRandomAccessCollection<C : RandomAccessCollection> : RandomAccessCollection {
     
     public let base: C
     
@@ -1480,21 +1476,21 @@ public struct IndexedRandomAccessCollection<C : RandomAccessCollection> : Random
     }
 }
 
-extension Collection where Indices.Iterator.Element == Index {
+extension Collection {
     
     @_inlineable
     public func indexed() -> IndexedCollection<Self> {
         return IndexedCollection(base: self)
     }
 }
-extension BidirectionalCollection where Indices.Iterator.Element == Index {
+extension BidirectionalCollection {
     
     @_inlineable
     public func indexed() -> IndexedBidirectionalCollection<Self> {
         return IndexedBidirectionalCollection(base: self)
     }
 }
-extension RandomAccessCollection where Indices.Iterator.Element == Index {
+extension RandomAccessCollection {
     
     @_inlineable
     public func indexed() -> IndexedRandomAccessCollection<Self> {

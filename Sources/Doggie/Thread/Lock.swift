@@ -61,7 +61,7 @@ public func synchronized<R>(_ lcks: Lockable ... , block: () throws -> R) rethro
         var waiting = 0
         while true {
             lcks[waiting].lock()
-            if let failed = lcks.enumerated().first(where: { $0 != waiting && !$1.trylock() })?.0 {
+            if let failed = lcks.enumerated().first(where: { $0.0 != waiting && !$0.1.trylock() })?.0 {
                 for (index, item) in lcks.prefix(upTo: failed).enumerated() where index != waiting {
                     item.unlock()
                 }

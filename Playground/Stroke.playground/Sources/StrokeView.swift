@@ -44,13 +44,13 @@ public class StrokeView: NSView, NSGestureRecognizerDelegate {
     public override func draw(_ dirtyRect: NSRect) {
         
         NSColor.white.setFill()
-        NSRectFill(dirtyRect)
+        dirtyRect.fill()
         
         func drawPoint(_ context: CGContext, _ point: Point) {
             context.strokeEllipse(in: CGRect(x: point.x - 2, y: point.y - 2, width: 4, height: 4))
         }
         
-        if let context = NSGraphicsContext.current()?.cgContext {
+        if let context = NSGraphicsContext.current?.cgContext {
             
             let shape: Shape = [Shape.Component(start: p0, segments: [.cubic(p1, p2, p3)])]
             
@@ -94,6 +94,7 @@ public class StrokeView: NSView, NSGestureRecognizerDelegate {
         fatalError("init(coder:) has not been implemented")
     }
     
+    @objc
     func handleGesture(_ sender: NSPanGestureRecognizer) {
         
         switch sender.state {

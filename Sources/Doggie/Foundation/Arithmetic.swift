@@ -32,14 +32,6 @@ public protocol Additive : Equatable {
     static prefix func + (x: Self) -> Self
 }
 
-extension Additive {
-    
-    @_inlineable
-    public static prefix func + (x: Self) -> Self {
-        return x
-    }
-}
-
 public protocol Subtractive : Additive {
     
     static func - (lhs: Self, rhs: Self) -> Self
@@ -63,30 +55,30 @@ public protocol Divisive : Multiplicative {
     static func /= (lhs: inout Self, rhs: Self)
 }
 
-extension Int8 : Additive, Subtractive, Multiplicative, Divisive {
+extension Int8 : Subtractive, Divisive {
     
 }
 
-extension Int16 : Additive, Subtractive, Multiplicative, Divisive {
+extension Int16 : Subtractive, Divisive {
     
 }
 
-extension Int32 : Additive, Subtractive, Multiplicative, Divisive {
+extension Int32 : Subtractive, Divisive {
     
 }
 
-extension Int64 : Additive, Subtractive, Multiplicative, Divisive {
+extension Int64 : Subtractive, Divisive {
     
 }
 
-extension Int : Additive, Subtractive, Multiplicative, Divisive {
+extension Int : Subtractive, Divisive {
     
 }
 
-extension Float : Additive, Subtractive, Multiplicative, Divisive {
+extension Float : Subtractive, Divisive {
     
 }
 
-extension Double : Additive, Subtractive, Multiplicative, Divisive {
+extension Double : Subtractive, Divisive {
     
 }

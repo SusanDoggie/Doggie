@@ -61,7 +61,7 @@ extension DGDocument.Value {
         switch self {
         case let .indirect(identifier): return [identifier]
         case let .array(array): return array.flatMap { $0.identifiers }
-        case let .dictionary(dictionary): return dictionary.flatMap { $1.identifiers }
+        case let .dictionary(dictionary): return dictionary.flatMap { $0.1.identifiers }
         default: return []
         }
     }
@@ -82,7 +82,7 @@ extension DGDocument {
                         checking.append(contentsOf: Set(array.flatMap { Set($0.identifiers).flatMap { trimed[$0] == nil ? $0 : nil } }))
                     case let .dictionary(dictionary):
                         trimed[id] = table[id]
-                        checking.append(contentsOf: Set(dictionary.flatMap { Set($1.identifiers).flatMap { trimed[$0] == nil ? $0 : nil } }))
+                        checking.append(contentsOf: Set(dictionary.flatMap { Set($0.1.identifiers).flatMap { trimed[$0] == nil ? $0 : nil } }))
                     default: trimed[id] = table[id]
                     }
                 }
@@ -113,7 +113,7 @@ extension DGDocument.View {
         }
     }
     
-    public var keys: LazyMapCollection<[String: DGDocument.Value], String> {
+    public var keys: Dictionary<String, DGDocument.Value>.Keys {
         return self.value.keys
     }
     
@@ -169,8 +169,8 @@ extension DGDocument.Value : CustomStringConvertible {
 
 extension DGDocument.Value {
     
-    public init<T : Integer>(_ value: T) {
-        self = .number(NSNumber(value: value.toIntMax()))
+    public init<T : FixedWidthInteger>(_ value: T) {
+        self = .number(value as! NSNumber)
     }
     public init(_ value: Float) {
         self = .number(NSNumber(value: value))
@@ -528,7 +528,7 @@ extension DGDocument.Value {
         }
     }
     
-    public var keys: LazyMapCollection<[String: DGDocument.Value], String> {
+    public var keys: Dictionary<String, DGDocument.Value>.Keys {
         switch self {
         case let .dictionary(dictionary): return dictionary.keys
         default: fatalError("Not an object.")

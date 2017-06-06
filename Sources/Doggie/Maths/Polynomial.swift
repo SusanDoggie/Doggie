@@ -270,12 +270,12 @@ extension Polynomial {
     
     @_inlineable
     public var derivative : Polynomial {
-        return count > 1 ? Polynomial(coeffs.enumerated().dropFirst().lazy.map { Double($0) * $1 }) : Polynomial()
+        return count > 1 ? Polynomial(coeffs.enumerated().dropFirst().lazy.map { Double($0.0) * $0.1 }) : Polynomial()
     }
     
     @_inlineable
     public var integral : Polynomial {
-        let _coeffs = coeffs.enumerated().lazy.map { $1 / Double($0 + 1) }
+        let _coeffs = coeffs.enumerated().lazy.map { $0.1 / Double($0.0 + 1) }
         return Polynomial(CollectionOfOne(0).concat(_coeffs))
     }
 }

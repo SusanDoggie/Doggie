@@ -163,6 +163,8 @@
 		0A53E47F1E35AEF80060FB83 /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A53E45D1E35AEF80060FB83 /* String.swift */; };
 		0A56E9101E35F02E00D93786 /* RectCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A56E90F1E35F02E00D93786 /* RectCollection.swift */; };
 		0A56E9111E35F02E00D93786 /* RectCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A56E90F1E35F02E00D93786 /* RectCollection.swift */; };
+		0A67B1EC1EE68D8100D3B1FE /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 0A67B1EB1EE68D7A00D3B1FE /* libz.tbd */; };
+		0A67B1EE1EE68DB300D3B1FE /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 0A67B1ED1EE68D9600D3B1FE /* libz.tbd */; };
 		0A6CDDA11E612233009DDEEB /* DGDocumentTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A6CDDA01E612233009DDEEB /* DGDocumentTest.swift */; };
 		0A6CDDA21E612233009DDEEB /* DGDocumentTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A6CDDA01E612233009DDEEB /* DGDocumentTest.swift */; };
 		0A6CDDA71E61738A009DDEEB /* PDFPredictor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A6CDDA61E61738A009DDEEB /* PDFPredictor.swift */; };
@@ -171,6 +173,8 @@
 		0A776FC61D9A0BA5005FC88F /* c11_atomic.h in Headers */ = {isa = PBXBuildFile; fileRef = 0A776FC31D9A0BA5005FC88F /* c11_atomic.h */; };
 		0A78E1F81E98B20A00BD91AB /* Geometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A78E1F71E98B20A00BD91AB /* Geometry.swift */; };
 		0A78E1F91E98B20A00BD91AB /* Geometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A78E1F71E98B20A00BD91AB /* Geometry.swift */; };
+		0A7A47701EE69D2C001BA4D2 /* DGParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A92C7D21E56DA960090EBFC /* DGParser.swift */; };
+		0A7A47711EE69D2D001BA4D2 /* DGParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A92C7D21E56DA960090EBFC /* DGParser.swift */; };
 		0A7C97481E558E0C00AB4803 /* DGDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7C97471E558E0C00AB4803 /* DGDocument.swift */; };
 		0A7C97491E558E0C00AB4803 /* DGDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7C97471E558E0C00AB4803 /* DGDocument.swift */; };
 		0A7D3ADB1ECAD5890030DC26 /* ColorBlend.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7D3ADA1ECAD5890030DC26 /* ColorBlend.swift */; };
@@ -181,12 +185,8 @@
 		0A8D98A61E53EE310050E112 /* ImageTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A8D98A21E53ED0F0050E112 /* ImageTest.swift */; };
 		0A92C7B21E56A52E0090EBFC /* zlib.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A92C7B11E56A52E0090EBFC /* zlib.swift */; };
 		0A92C7B31E56A52E0090EBFC /* zlib.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A92C7B11E56A52E0090EBFC /* zlib.swift */; };
-		0A92C7B71E56A5550090EBFC /* zlib_include.h in Headers */ = {isa = PBXBuildFile; fileRef = 0A92C7B61E56A5550090EBFC /* zlib_include.h */; };
-		0A92C7B81E56A5550090EBFC /* zlib_include.h in Headers */ = {isa = PBXBuildFile; fileRef = 0A92C7B61E56A5550090EBFC /* zlib_include.h */; };
 		0A92C7C41E56AB9D0090EBFC /* Data.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A92C7C31E56AB9D0090EBFC /* Data.swift */; };
 		0A92C7C51E56AB9D0090EBFC /* Data.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A92C7C31E56AB9D0090EBFC /* Data.swift */; };
-		0A92C7D31E56DA960090EBFC /* DGParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A92C7D21E56DA960090EBFC /* DGParser.swift */; };
-		0A92C7D41E56DA960090EBFC /* DGParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A92C7D21E56DA960090EBFC /* DGParser.swift */; };
 		0A9AA8401E543748007A2B92 /* PDFDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9AA83F1E543748007A2B92 /* PDFDocument.swift */; };
 		0A9AA8411E543748007A2B92 /* PDFDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9AA83F1E543748007A2B92 /* PDFDocument.swift */; };
 		0AAC4DF41E977906008DCADA /* ShapeRasterize.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AAC4DF31E977906008DCADA /* ShapeRasterize.swift */; };
@@ -303,6 +303,8 @@
 		0A53E45C1E35AEF80060FB83 /* Regex.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Regex.swift; sourceTree = "<group>"; };
 		0A53E45D1E35AEF80060FB83 /* String.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = String.swift; sourceTree = "<group>"; };
 		0A56E90F1E35F02E00D93786 /* RectCollection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RectCollection.swift; sourceTree = "<group>"; };
+		0A67B1EB1EE68D7A00D3B1FE /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
+		0A67B1ED1EE68D9600D3B1FE /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS11.0.sdk/usr/lib/libz.tbd; sourceTree = DEVELOPER_DIR; };
 		0A6CDDA01E612233009DDEEB /* DGDocumentTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DGDocumentTest.swift; sourceTree = "<group>"; };
 		0A6CDDA61E61738A009DDEEB /* PDFPredictor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PDFPredictor.swift; sourceTree = "<group>"; };
 		0A776FC31D9A0BA5005FC88F /* c11_atomic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = c11_atomic.h; sourceTree = "<group>"; };
@@ -313,8 +315,6 @@
 		0A80D1461E66A7000003BB44 /* RangeSet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RangeSet.swift; sourceTree = "<group>"; };
 		0A8D98A21E53ED0F0050E112 /* ImageTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageTest.swift; sourceTree = "<group>"; };
 		0A92C7B11E56A52E0090EBFC /* zlib.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = zlib.swift; sourceTree = "<group>"; };
-		0A92C7B51E56A5550090EBFC /* module.modulemap */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = "sourcecode.module-map"; path = module.modulemap; sourceTree = "<group>"; };
-		0A92C7B61E56A5550090EBFC /* zlib_include.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = zlib_include.h; sourceTree = "<group>"; };
 		0A92C7C31E56AB9D0090EBFC /* Data.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Data.swift; sourceTree = "<group>"; };
 		0A92C7D21E56DA960090EBFC /* DGParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DGParser.swift; sourceTree = "<group>"; };
 		0A9AA83F1E543748007A2B92 /* PDFDocument.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PDFDocument.swift; sourceTree = "<group>"; };
@@ -329,6 +329,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0A67B1EE1EE68DB300D3B1FE /* libz.tbd in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -344,6 +345,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0A67B1EC1EE68D8100D3B1FE /* libz.tbd in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -444,7 +446,6 @@
 		0858DA401C0550B7007FA426 /* Doggie */ = {
 			isa = PBXGroup;
 			children = (
-				0A92C7B41E56A5550090EBFC /* zlib */,
 				0A776FC21D9A0BA5005FC88F /* c11_atomic */,
 				08458AB01E2E627600D01813 /* Accelerate */,
 				0A7C97461E558DE600AB4803 /* DGDocument */,
@@ -474,6 +475,7 @@
 				087FE5B61A372D97005A2E9E /* Doggie_Mac */,
 				087FE5C31A372D97005A2E9E /* Doggie_MacTests */,
 				087FE5971A372D5B005A2E9E /* Products */,
+				0A67B1EA1EE68D7A00D3B1FE /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -634,6 +636,15 @@
 			path = PDFEncoding;
 			sourceTree = "<group>";
 		};
+		0A67B1EA1EE68D7A00D3B1FE /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				0A67B1ED1EE68D9600D3B1FE /* libz.tbd */,
+				0A67B1EB1EE68D7A00D3B1FE /* libz.tbd */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		0A776FC21D9A0BA5005FC88F /* c11_atomic */ = {
 			isa = PBXGroup;
 			children = (
@@ -661,16 +672,6 @@
 			path = Encoding;
 			sourceTree = "<group>";
 		};
-		0A92C7B41E56A5550090EBFC /* zlib */ = {
-			isa = PBXGroup;
-			children = (
-				0A92C7B51E56A5550090EBFC /* module.modulemap */,
-				0A92C7B61E56A5550090EBFC /* zlib_include.h */,
-			);
-			name = zlib;
-			path = Sources/zlib/include;
-			sourceTree = SOURCE_ROOT;
-		};
 		0A9AA83E1E54373E007A2B92 /* PDF */ = {
 			isa = PBXGroup;
 			children = (
@@ -688,7 +689,6 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0A92C7B71E56A5550090EBFC /* zlib_include.h in Headers */,
 				082516261C51C60A00F8F9B0 /* Doggie_iOS.h in Headers */,
 				0A776FC51D9A0BA5005FC88F /* c11_atomic.h in Headers */,
 			);
@@ -698,7 +698,6 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0A92C7B81E56A5550090EBFC /* zlib_include.h in Headers */,
 				087FE5BA1A372D97005A2E9E /* Doggie_Mac.h in Headers */,
 				0A776FC61D9A0BA5005FC88F /* c11_atomic.h in Headers */,
 			);
@@ -786,31 +785,31 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0710;
-				LastUpgradeCheck = 0800;
+				LastUpgradeCheck = 0900;
 				TargetAttributes = {
 					081321D21C11D1840081B2B9 = {
 						CreatedOnToolsVersion = 7.1.1;
 						DevelopmentTeam = MPZ83Y3AFN;
 						DevelopmentTeamName = "Chai Fung Cheng";
-						LastSwiftMigration = 0820;
+						LastSwiftMigration = 0900;
 					};
 					081321DB1C11D1850081B2B9 = {
 						CreatedOnToolsVersion = 7.1.1;
 						DevelopmentTeam = MPZ83Y3AFN;
 						DevelopmentTeamName = "Chai Fung Cheng";
-						LastSwiftMigration = 0800;
+						LastSwiftMigration = 0900;
 					};
 					087FE5B41A372D97005A2E9E = {
 						CreatedOnToolsVersion = 6.1.1;
 						DevelopmentTeam = MPZ83Y3AFN;
 						DevelopmentTeamName = "Chai Fung Cheng";
-						LastSwiftMigration = 0820;
+						LastSwiftMigration = 0900;
 					};
 					087FE5BE1A372D97005A2E9E = {
 						CreatedOnToolsVersion = 6.1.1;
 						DevelopmentTeam = MPZ83Y3AFN;
 						DevelopmentTeamName = "Chai Fung Cheng";
-						LastSwiftMigration = 0800;
+						LastSwiftMigration = 0900;
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -922,6 +921,7 @@
 				0A53E47A1E35AEF80060FB83 /* Random.swift in Sources */,
 				08458AFC1E2E627600D01813 /* Move.swift in Sources */,
 				08458B5A1E2E627600D01813 /* AtomicQueue.swift in Sources */,
+				0A7A47711EE69D2D001BA4D2 /* DGParser.swift in Sources */,
 				08458B321E2E627600D01813 /* Complex.swift in Sources */,
 				0A2107151E5BEEBB00F1E00E /* Shape.swift in Sources */,
 				08458AF61E2E627600D01813 /* ComplexConversion.swift in Sources */,
@@ -934,7 +934,6 @@
 				08458AFE1E2E627600D01813 /* SafeFunction.swift in Sources */,
 				0A39A6BB1ED9347C00804004 /* DrawShape.swift in Sources */,
 				086F064C1EDC65D600BA70C8 /* DrawGradientMesh.swift in Sources */,
-				0A92C7D31E56DA960090EBFC /* DGParser.swift in Sources */,
 				08B68A3A1ED07A8300F8D423 /* LinearToneColorSpace.swift in Sources */,
 				08458AF41E2E627600D01813 /* CircularConvolve.swift in Sources */,
 				08458B121E2E627600D01813 /* Fourier.swift in Sources */,
@@ -1027,6 +1026,7 @@
 				0A53E47B1E35AEF80060FB83 /* Random.swift in Sources */,
 				08458AFD1E2E627600D01813 /* Move.swift in Sources */,
 				08458B5B1E2E627600D01813 /* AtomicQueue.swift in Sources */,
+				0A7A47701EE69D2C001BA4D2 /* DGParser.swift in Sources */,
 				08458B331E2E627600D01813 /* Complex.swift in Sources */,
 				0A2107161E5BEEBB00F1E00E /* Shape.swift in Sources */,
 				08458AF71E2E627600D01813 /* ComplexConversion.swift in Sources */,
@@ -1039,7 +1039,6 @@
 				08458AFF1E2E627600D01813 /* SafeFunction.swift in Sources */,
 				0A39A6BC1ED9347C00804004 /* DrawShape.swift in Sources */,
 				086F064D1EDC65D600BA70C8 /* DrawGradientMesh.swift in Sources */,
-				0A92C7D41E56DA960090EBFC /* DGParser.swift in Sources */,
 				08B68A3B1ED07A8300F8D423 /* LinearToneColorSpace.swift in Sources */,
 				08458AF51E2E627600D01813 /* CircularConvolve.swift in Sources */,
 				08458B131E2E627600D01813 /* Fourier.swift in Sources */,
@@ -1137,7 +1136,8 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 3.0;
+				SWIFT_SWIFT3_OBJC_INFERENCE = On;
+				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
@@ -1183,7 +1183,8 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 3.0;
+				SWIFT_SWIFT3_OBJC_INFERENCE = On;
+				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -1230,7 +1231,8 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.SusanDoggie.Doggie-iOSTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
-				SWIFT_VERSION = 3.0;
+				SWIFT_SWIFT3_OBJC_INFERENCE = On;
+				SWIFT_VERSION = 4.0;
 			};
 			name = Debug;
 		};
@@ -1269,7 +1271,8 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.SusanDoggie.Doggie-iOSTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
-				SWIFT_VERSION = 3.0;
+				SWIFT_SWIFT3_OBJC_INFERENCE = On;
+				SWIFT_VERSION = 4.0;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
@@ -1280,12 +1283,18 @@
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
@@ -1305,7 +1314,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.SusanDoggie.Doggie;
 				PRODUCT_NAME = Doggie;
-				SWIFT_INCLUDE_PATHS = "${SRCROOT}/Sources/c11_atomic/include/** ${SRCROOT}/Sources/zlib/include/**";
+				SWIFT_INCLUDE_PATHS = "${SRCROOT}/Sources/c11_atomic/include/**";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
@@ -1316,12 +1325,18 @@
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
@@ -1339,7 +1354,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				PRODUCT_BUNDLE_IDENTIFIER = com.SusanDoggie.Doggie;
 				PRODUCT_NAME = Doggie;
-				SWIFT_INCLUDE_PATHS = "${SRCROOT}/Sources/c11_atomic/include/** ${SRCROOT}/Sources/zlib/include/**";
+				SWIFT_INCLUDE_PATHS = "${SRCROOT}/Sources/c11_atomic/include/**";
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 			};
 			name = Release;
@@ -1389,7 +1404,8 @@
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 3.0;
+				SWIFT_SWIFT3_OBJC_INFERENCE = On;
+				SWIFT_VERSION = 4.0;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
 			};
@@ -1437,7 +1453,8 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 3.0;
+				SWIFT_SWIFT3_OBJC_INFERENCE = On;
+				SWIFT_VERSION = 4.0;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
 			};
@@ -1488,7 +1505,8 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.SusanDoggie.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
-				SWIFT_VERSION = 3.0;
+				SWIFT_SWIFT3_OBJC_INFERENCE = On;
+				SWIFT_VERSION = 4.0;
 			};
 			name = Debug;
 		};
@@ -1533,7 +1551,8 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.SusanDoggie.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
-				SWIFT_VERSION = 3.0;
+				SWIFT_SWIFT3_OBJC_INFERENCE = On;
+				SWIFT_VERSION = 4.0;
 			};
 			name = Release;
 		};

@@ -46,8 +46,8 @@ extension Json {
     public init(_ value: Bool) {
         self.value = value
     }
-    public init<T : Integer>(_ value: T) {
-        self.value = value.toIntMax()
+    public init<T : FixedWidthInteger>(_ value: T) {
+        self.value = value
     }
     public init(_ value: Float) {
         self.value = value
@@ -424,7 +424,7 @@ extension Json {
         }
     }
     
-    public var keys: LazyMapCollection<Dictionary<String, Any>, String> {
+    public var keys: Dictionary<String, Any>.Keys {
         switch self.value {
         case let dictionary as [String: Any]: return dictionary.keys
         default: fatalError("Not an object.")

@@ -26,25 +26,19 @@
 import Foundation
 
 @_inlineable
-public func FactorialList<T: UnsignedInteger>(_ n: T) -> LazyScanSequence<RandomAccessSlice<CountableClosedRange<T>>, T> where T.Stride : SignedInteger {
+public func FactorialList<T: UnsignedInteger>(_ n: T) -> LazyScanSequence<RandomAccessSlice<CountableClosedRange<T>>, T> {
     
     return (0...n).dropFirst().lazy.scan(1, *)
 }
 @_inlineable
-public func PermutationList<T: UnsignedInteger>(_ n: T) -> LazyScanSequence<ReversedRandomAccessCollection<RandomAccessSlice<CountableClosedRange<T>>>, T> where T.Stride : SignedInteger {
+public func PermutationList<T: UnsignedInteger>(_ n: T) -> LazyScanSequence<ReversedRandomAccessCollection<RandomAccessSlice<CountableClosedRange<T>>>, T> {
     
     return (0...n).dropFirst().reversed().lazy.scan(1, *)
 }
 @_inlineable
-public func CombinationList<T: UnsignedInteger>(_ n: T) -> LazyMapSequence<Zip2Sequence<LazyScanSequence<ReversedRandomAccessCollection<RandomAccessSlice<CountableClosedRange<T>>>, T>, LazyScanSequence<RandomAccessSlice<CountableClosedRange<T>>, T>>, T> where T.Stride : SignedInteger {
+public func CombinationList<T: UnsignedInteger>(_ n: T) -> LazyMapSequence<Zip2Sequence<LazyScanSequence<ReversedRandomAccessCollection<RandomAccessSlice<CountableClosedRange<T>>>, T>, LazyScanSequence<RandomAccessSlice<CountableClosedRange<T>>, T>>, T> {
     
-    return zip(PermutationList(n), FactorialList(n)).lazy.map(/)
-}
-
-@_inlineable
-public func FibonacciList<T: UnsignedInteger>(_ n: T) -> LazyMapSequence<LazyScanSequence<CountableRange<T>, (T, T)>, T> where T.Stride : SignedInteger {
-    
-    return (0..<n).dropLast().lazy.scan((1, 1)) { ($0.0.1, $0.0.0 + $0.0.1) }.map { $0.0 }
+    return zip(PermutationList(n), FactorialList(n)).lazy.map({ $0.0 / $0.1 })
 }
 
 // MARK: Prime

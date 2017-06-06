@@ -36,7 +36,7 @@ func ShapeTween(_ t: Double) -> Shape {
         _s.append([last, first])
     }
     
-    let b = zip(_s, _e).map { BezierTweening(start: $0, end: $1, t) }
+    let b = zip(_s, _e).map { BezierTweening(start: $0.0, end: $0.1, t) }
     
     return [Shape.Component(start: b[0][0], closed: true, segments: b.flatMap {
         switch $0.count {

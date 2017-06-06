@@ -29,7 +29,7 @@ private func _Bairstow(_ poly: Polynomial, eps: Double = 1e-14) -> [(Double, Dou
         
         while true {
             
-            let (g, h, i, j, k) = poly.dropLast().reversed().reduce((0, 1, 0, 0, 0)) { reduce($1, $0.0, $0.1, $0.2, $0.3, $0.4) }
+            let (g, h, i, j, k) = poly.dropLast().reversed().reduce((0, 1, 0, 0, 0)) { reduce($0.1, $0.0.0, $0.0.1, $0.0.2, $0.0.3, $0.0.4) }
             
             let d = k * i - j * j
             

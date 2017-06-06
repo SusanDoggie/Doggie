@@ -62,7 +62,7 @@ public class ImageContext<Model : ColorModelProtocol> {
     @_versioned
     var next: ImageContext<Model>?
     
-    public init<P : ColorPixelProtocol>(image: Image<P>) where P.Model == Model {
+    public init<P>(image: Image<P>) where P.Model == Model {
         
         self._image = Image(image: image)
         self.clip = [Double](repeating: 1, count: image.width * image.height)

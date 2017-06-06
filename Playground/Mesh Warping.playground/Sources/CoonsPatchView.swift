@@ -164,13 +164,13 @@ public class CoonsPatchView: NSView, NSGestureRecognizerDelegate {
     public override func draw(_ dirtyRect: NSRect) {
         
         NSColor.white.setFill()
-        NSRectFill(dirtyRect)
+        dirtyRect.fill()
         
         func drawPoint(_ context: CGContext, _ point: Point) {
             context.strokeEllipse(in: CGRect(x: point.x - 2, y: point.y - 2, width: 4, height: 4))
         }
         
-        if let context = NSGraphicsContext.current()?.cgContext {
+        if let context = NSGraphicsContext.current?.cgContext {
             
             context.setStrokeColor(NSColor(white: 0.9, alpha: 1).cgColor)
             
@@ -241,6 +241,7 @@ public class CoonsPatchView: NSView, NSGestureRecognizerDelegate {
         fatalError("init(coder:) has not been implemented")
     }
     
+    @objc
     func handleGesture(_ sender: NSPanGestureRecognizer) {
         
         switch sender.state {
