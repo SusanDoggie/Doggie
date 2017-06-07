@@ -50,34 +50,17 @@ class ImageTest: XCTestCase {
     
     var sample: Image<ARGB32ColorPixel> = {
         
-        var sample = Image(width: 100, height: 100, colorSpace: CalibratedRGBColorSpace.sRGB.linearTone, pixel: ARGB32ColorPixel())
+        let context = ImageContext(width: 100, height: 100, colorSpace: CalibratedRGBColorSpace.sRGB)
         
-        #if os(macOS)
-            if #available(OSX 10.12, *) {
-                let _colorspace = CGColorSpace(name: CGColorSpace.linearSRGB) ?? CGColorSpaceCreateDeviceRGB()
-                let _bitmapInfo = CGBitmapInfo.byteOrder32Big.rawValue | CGImageAlphaInfo.premultipliedFirst.rawValue
-                
-                sample.withUnsafeMutableBufferPointer {
-                    if let context = CGContext(data: $0.baseAddress!, width: 100, height: 100, bitsPerComponent: 8, bytesPerRow: 400, space: _colorspace, bitmapInfo: _bitmapInfo) {
-                        
-                        context.setStrokeColor(NSColor.black.cgColor)
-                        context.setFillColor(NSColor(calibratedRed: 247/255, green: 217/255, blue: 12/255, alpha: 1).cgColor)
-                        
-                        context.fillEllipse(in: CGRect(x: 10, y: 35, width: 55, height: 55))
-                        context.strokeEllipse(in: CGRect(x: 10, y: 35, width: 55, height: 55))
-                        
-                        context.setFillColor(NSColor(calibratedRed: 234/255, green: 24/255, blue: 71/255, alpha: 1).cgColor)
-                        
-                        context.fillEllipse(in: CGRect(x: 35, y: 10, width: 55, height: 55))
-                        context.strokeEllipse(in: CGRect(x: 35, y: 10, width: 55, height: 55))
-                        
-                    }
-                }
-                
-            }
-        #endif
+        context.draw(shape: Shape.Ellipse(Rect(x: 10, y: 35, width: 55, height: 55)), color: Color(colorSpace: CalibratedRGBColorSpace.sRGB, color: RGBColorModel(red: 247/255, green: 217/255, blue: 12/255)), winding: .nonZero)
         
-        return sample
+        context.draw(shape: Shape.Ellipse(Rect(x: 10, y: 35, width: 55, height: 55)).strokePath(width: 1, cap: .round, join: .round), color: Color(colorSpace: CalibratedRGBColorSpace.sRGB, color: RGBColorModel()), winding: .nonZero)
+        
+        context.draw(shape: Shape.Ellipse(Rect(x: 35, y: 10, width: 55, height: 55)), color: Color(colorSpace: CalibratedRGBColorSpace.sRGB, color: RGBColorModel(red: 234/255, green: 24/255, blue: 71/255)), winding: .nonZero)
+        
+        context.draw(shape: Shape.Ellipse(Rect(x: 35, y: 10, width: 55, height: 55)).strokePath(width: 1, cap: .round, join: .round), color: Color(colorSpace: CalibratedRGBColorSpace.sRGB, color: RGBColorModel()), winding: .nonZero)
+        
+        return Image(image: context.image)
     }()
     
     override func setUp() {
