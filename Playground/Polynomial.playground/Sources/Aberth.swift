@@ -19,8 +19,8 @@ public func Aberth(_ polynomial: Polynomial, eps: Double = 1e-14) -> [Complex] {
             let p = polynomial.eval(x)
             let q = derivative.eval(x)
             
-            let r = result.prefix(upTo: i).reduce(Complex(0)) { $0.0 + 1 / (x - $0.1) }
-            let s = result.suffix(from: i + 1).reduce(r) { $0.0 + 1 / (x - $0.1) }
+            let r = result.prefix(upTo: i).reduce(Complex(0)) { $0 + 1 / (x - $1) }
+            let s = result.suffix(from: i + 1).reduce(r) { $0 + 1 / (x - $1) }
             
             let t = p / q
             

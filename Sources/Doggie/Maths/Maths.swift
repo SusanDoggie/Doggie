@@ -41,6 +41,12 @@ public func CombinationList<T: UnsignedInteger>(_ n: T) -> LazyMapSequence<Zip2S
     return zip(PermutationList(n), FactorialList(n)).lazy.map({ $0.0 / $0.1 })
 }
 
+@_inlineable
+public func FibonacciList<T: UnsignedInteger>(_ n: T) -> LazyMapSequence<LazyScanSequence<CountableRange<T>, (T, T)>, T> {
+    
+    return (0..<n).dropLast().lazy.scan((1, 1)) { x, _ in (x.1, x.0 + x.1) }.map { $0.0 }
+}
+
 // MARK: Prime
 
 @_inlineable

@@ -5,7 +5,7 @@ extension Polynomial {
     
     @_inlineable
     public func eval(_ x: Complex) -> Complex {
-        return self.reversed().reduce(Complex(0)) { x * $0.0 + $0.1 }
+        return self.reversed().reduce(Complex(0)) { x * $0 + $1 }
     }
 }
 
@@ -13,7 +13,7 @@ public func DurandKerner(_ polynomial: Polynomial, eps: Double = 1e-14) -> [Comp
     
     let poly = polynomial / polynomial.last!
     
-    var result = (0..<poly.degree).dropFirst().scan(Complex(1)) { $0.0.0 * Complex(real: 0.4, imag: 0.9) }
+    var result = (0..<poly.degree).dropFirst().scan(Complex(1)) { $0.0 * Complex(real: 0.4, imag: 0.9) }
     
     var _eps = eps
     var iter = 0
@@ -26,8 +26,8 @@ public func DurandKerner(_ polynomial: Polynomial, eps: Double = 1e-14) -> [Comp
             
             let p = poly.eval(x)
             
-            let q = result.prefix(upTo: i).reduce(Complex(1)) { $0.0 * (x - $0.1) }
-            let r = result.suffix(from: i + 1).reduce(q) { $0.0 * (x - $0.1) }
+            let q = result.prefix(upTo: i).reduce(Complex(1)) { $0 * (x - $1) }
+            let r = result.suffix(from: i + 1).reduce(q) { $0 * (x - $1) }
             
             if r != Complex(0) {
                 
