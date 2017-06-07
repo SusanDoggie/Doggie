@@ -48,14 +48,14 @@ public struct SDMarker {
 extension SDMarker {
     
     public init(template: String) {
-        self.elements = SDMarker.parseScope(ArraySlice(template.characters))
+        self.elements = SDMarker.parseScope(ArraySlice(template))
     }
     
-    private static let characterSet = Set("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-_1234567890.:".characters)
-    private static let token_start = Array("{{".characters)
-    private static let scope_token_start = Array("{{#".characters)
-    private static let scope_token_end = Array("#}}".characters)
-    private static let variable_token_end = Array("%}}".characters)
+    private static let characterSet = Set("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-_1234567890.:")
+    private static let token_start = Array("{{")
+    private static let scope_token_start = Array("{{#")
+    private static let scope_token_end = Array("#}}")
+    private static let variable_token_end = Array("%}}")
     
     private static func parseScope(_ chars: ArraySlice<Character>) -> [Element] {
         var result: [Element] = []
@@ -101,7 +101,7 @@ extension SDMarker {
             case "%":
                 if let end_token_index = chars.range(of: variable_token_end)?.lowerBound, chars.startIndex + 1 != end_token_index {
                     let variable_name = String(chars.prefix(upTo: end_token_index).dropFirst()).trimmingCharacters(in: .whitespaces)
-                    if variable_name.characters.all(where: { characterSet.contains($0) }) {
+                    if variable_name.all(where: { characterSet.contains($0) }) {
                         return .variable(variable_name, end_token_index + 3)
                     }
                 }
@@ -109,12 +109,12 @@ extension SDMarker {
                 if let end_token_index = chars.range(of: scope_token_end)?.lowerBound, chars.startIndex + 1 != end_token_index {
                     var flag = true
                     var scope_name = String(chars.prefix(upTo: end_token_index).dropFirst()).trimmingCharacters(in: .whitespaces)
-                    if scope_name.characters.first == "!" {
+                    if scope_name.first == "!" {
                         scope_name.remove(at: scope_name.startIndex)
                         scope_name = scope_name.trimmingCharacters(in: .whitespaces)
                         flag = false
                     }
-                    if scope_name.characters.all(where: { characterSet.contains($0) }) {
+                    if scope_name.all(where: { characterSet.contains($0) }) {
                         return .scope(scope_name, flag, end_token_index + 3)
                     }
                 }

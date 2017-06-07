@@ -392,7 +392,7 @@ private let dataFormatter: NumberFormatter = {
 private func getDataString(_ x: [Double]) -> String {
     var str = ""
     for _x in x.map({ dataFormatter.string(from: NSNumber(value: $0)) ?? "0" }) {
-        if !str.isEmpty && _x.characters.first != "-" {
+        if !str.isEmpty && _x.first != "-" {
             " ".write(to: &str)
         }
         _x.write(to: &str)
@@ -410,7 +410,7 @@ private func getPathDataString(_ command: Character?, _ x: Double ...) -> String
     var result = ""
     command?.write(to: &result)
     let dataStr = getDataString(x)
-    if result.isEmpty && !dataStr.isEmpty && dataStr.characters.first != "-" {
+    if result.isEmpty && !dataStr.isEmpty && dataStr.first != "-" {
         " ".write(to: &result)
     }
     dataStr.write(to: &result)
@@ -445,7 +445,7 @@ private extension Shape.Component {
         relative = self.start
         lastControl = nil
         
-        if move1.characters.count <= move2.characters.count {
+        if move1.count <= move2.count {
             move1.write(to: &data)
         } else {
             move2.write(to: &data)
@@ -468,7 +468,7 @@ private extension Shape.Segment {
         
         let _serialize1 = serialize1(currentState, start, relative, lastControl)
         let _serialize2 = serialize2(currentState, start, relative, lastControl)
-        if _serialize1.0.characters.count <= _serialize2.0.characters.count {
+        if _serialize1.0.count <= _serialize2.0.count {
             currentState = _serialize1.1
             start = _serialize1.2
             relative = _serialize1.3

@@ -52,7 +52,7 @@ extension RandomAccessCollection {
     ///     let cast = ["Vivien", "Marlon", "Kim", "Karl"]
     ///     let lowercaseNames = cast.map { $0.lowercaseString }
     ///     // 'lowercaseNames' == ["vivien", "marlon", "kim", "karl"]
-    ///     let letterCounts = cast.map { $0.characters.count }
+    ///     let letterCounts = cast.map { $0.count }
     ///     // 'letterCounts' == [6, 6, 3, 4]
     ///
     /// - Parameter transform: A mapping closure. `transform` accepts an
