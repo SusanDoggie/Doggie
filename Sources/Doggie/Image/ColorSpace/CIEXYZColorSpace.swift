@@ -34,9 +34,7 @@ public struct CIEXYZColorSpace : ColorSpaceProtocol {
     
     @_inlineable
     public init(white: Point, chromaticAdaptationAlgorithm: ChromaticAdaptationAlgorithm = .default) {
-        self.white = XYZColorModel(luminance: 1, x: white.x, y: white.y)
-        self.black = XYZColorModel(x: 0, y: 0, z: 0)
-        self.chromaticAdaptationAlgorithm = chromaticAdaptationAlgorithm
+        self.init(white: XYZColorModel(luminance: 1, x: white.x, y: white.y), chromaticAdaptationAlgorithm: chromaticAdaptationAlgorithm)
     }
     
     @_inlineable

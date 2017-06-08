@@ -23,6 +23,8 @@
 //  THE SOFTWARE.
 //
 
+import Foundation
+
 public class CalibratedGrayColorSpace : ColorSpaceProtocol {
     
     public typealias Model = GrayColorModel
@@ -76,5 +78,31 @@ extension CalibratedGrayColorSpace {
     public func convertLinearFromXYZ(_ color: XYZColorModel) -> Model {
         let normalized = color * cieXYZ.normalizeMatrix
         return Model(white: normalized.luminance)
+    }
+}
+
+public class CalibratedGammaGrayColorSpace: CalibratedGrayColorSpace {
+    
+    public let gamma: Double
+    
+    @_inlineable
+    public convenience init(white: Point, gamma: Double, chromaticAdaptationAlgorithm: ChromaticAdaptationAlgorithm = .default) {
+        self.init(white: XYZColorModel(luminance: 1, x: white.x, y: white.y), black: XYZColorModel(x: 0, y: 0, z: 0), gamma: gamma, chromaticAdaptationAlgorithm: chromaticAdaptationAlgorithm)
+    }
+    
+    @_inlineable
+    public init(white: XYZColorModel, black: XYZColorModel, gamma: Double, chromaticAdaptationAlgorithm: ChromaticAdaptationAlgorithm = .default) {
+        self.gamma = gamma
+        super.init(white: white, black: black, chromaticAdaptationAlgorithm: chromaticAdaptationAlgorithm)
+    }
+    
+    @_inlineable
+    public override func convertToLinear(_ color: GrayColorModel) -> GrayColorModel {
+        return GrayColorModel(white: exteneded(color.white) { pow($0, gamma) })
+    }
+    
+    @_inlineable
+    public override func convertFromLinear(_ color: GrayColorModel) -> GrayColorModel {
+        return GrayColorModel(white: exteneded(color.white) { pow($0, 1 / gamma) })
     }
 }

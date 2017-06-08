@@ -33,6 +33,11 @@ public class CalibratedRGBColorSpace : ColorSpaceProtocol {
     public let transferMatrix: Matrix
     
     @_inlineable
+    public convenience init(white: Point, red: Point, green: Point, blue: Point, chromaticAdaptationAlgorithm: ChromaticAdaptationAlgorithm = .default) {
+        self.init(white: XYZColorModel(luminance: 1, x: white.x, y: white.y), black: XYZColorModel(x: 0, y: 0, z: 0), red: red, green: green, blue: blue, chromaticAdaptationAlgorithm: chromaticAdaptationAlgorithm)
+    }
+    
+    @_inlineable
     public init(white: XYZColorModel, black: XYZColorModel, red: Point, green: Point, blue: Point, chromaticAdaptationAlgorithm: ChromaticAdaptationAlgorithm = .default) {
         
         self.cieXYZ = CIEXYZColorSpace(white: white, black: black, chromaticAdaptationAlgorithm: chromaticAdaptationAlgorithm)
@@ -102,28 +107,42 @@ extension CalibratedRGBColorSpace {
     }
 }
 
+public class CalibratedGammaRGBColorSpace: CalibratedRGBColorSpace {
+    
+    public let gamma: (Double, Double, Double)
+    
+    @_inlineable
+    public convenience init(white: Point, red: Point, green: Point, blue: Point, gamma: Double, chromaticAdaptationAlgorithm: ChromaticAdaptationAlgorithm = .default) {
+        self.init(white: XYZColorModel(luminance: 1, x: white.x, y: white.y), black: XYZColorModel(x: 0, y: 0, z: 0), red: red, green: green, blue: blue, gamma: (gamma, gamma, gamma), chromaticAdaptationAlgorithm: chromaticAdaptationAlgorithm)
+    }
+    
+    @_inlineable
+    public convenience init(white: XYZColorModel, black: XYZColorModel, red: Point, green: Point, blue: Point, gamma: Double, chromaticAdaptationAlgorithm: ChromaticAdaptationAlgorithm = .default) {
+        self.init(white: white, black: black, red: red, green: green, blue: blue, gamma: (gamma, gamma, gamma), chromaticAdaptationAlgorithm: chromaticAdaptationAlgorithm)
+    }
+    
+    @_inlineable
+    public init(white: XYZColorModel, black: XYZColorModel, red: Point, green: Point, blue: Point, gamma: (Double, Double, Double), chromaticAdaptationAlgorithm: ChromaticAdaptationAlgorithm = .default) {
+        self.gamma = gamma
+        super.init(white: white, black: black, red: red, green: green, blue: blue, chromaticAdaptationAlgorithm: chromaticAdaptationAlgorithm)
+    }
+    
+    @_inlineable
+    public override func convertToLinear(_ color: RGBColorModel) -> RGBColorModel {
+        return RGBColorModel(red: exteneded(color.red) { pow($0, gamma.0) }, green: exteneded(color.green) { pow($0, gamma.1) }, blue: exteneded(color.blue) { pow($0, gamma.2) })
+    }
+    
+    @_inlineable
+    public override func convertFromLinear(_ color: RGBColorModel) -> RGBColorModel {
+        return RGBColorModel(red: exteneded(color.red) { pow($0, 1 / gamma.0) }, green: exteneded(color.green) { pow($0, 1 / gamma.1) }, blue: exteneded(color.blue) { pow($0, 1 / gamma.2) })
+    }
+}
+
 extension CalibratedRGBColorSpace {
     
     public static var adobeRGB: CalibratedRGBColorSpace {
         
-        class adobeRGB: CalibratedRGBColorSpace {
-            
-            init() {
-                super.init(white: XYZColorModel(luminance: 160.00, x: 0.3127, y: 0.3290), black: XYZColorModel(luminance: 0.5557, x: 0.3127, y: 0.3290), red: Point(x: 0.6400, y: 0.3300), green: Point(x: 0.2100, y: 0.7100), blue: Point(x: 0.1500, y: 0.0600))
-            }
-            
-            override func convertToLinear(_ color: RGBColorModel) -> RGBColorModel {
-                
-                return RGBColorModel(red: exteneded(color.red) { pow($0, 2.19921875) }, green: exteneded(color.green) { pow($0, 2.19921875) }, blue: exteneded(color.blue) { pow($0, 2.19921875) })
-            }
-            
-            override func convertFromLinear(_ color: RGBColorModel) -> RGBColorModel {
-                
-                return RGBColorModel(red: exteneded(color.red) { pow($0, 1 / 2.19921875) }, green: exteneded(color.green) { pow($0, 1 / 2.19921875) }, blue: exteneded(color.blue) { pow($0, 1 / 2.19921875) })
-            }
-        }
-        
-        return adobeRGB()
+        return CalibratedGammaRGBColorSpace(white: XYZColorModel(luminance: 160.00, x: 0.3127, y: 0.3290), black: XYZColorModel(luminance: 0.5557, x: 0.3127, y: 0.3290), red: Point(x: 0.6400, y: 0.3300), green: Point(x: 0.2100, y: 0.7100), blue: Point(x: 0.1500, y: 0.0600), gamma: 2.19921875)
     }
 }
 
