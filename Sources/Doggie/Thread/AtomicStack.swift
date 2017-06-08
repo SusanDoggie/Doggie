@@ -39,7 +39,7 @@ private struct AtomicStackContainer<Instance> {
 
 open class AtomicStack<Instance> {
     
-    fileprivate var head: Atomic<AtomicStackContainer<Instance>?>
+    private var head: Atomic<AtomicStackContainer<Instance>?>
     
     public init() {
         self.head = Atomic(value: nil)

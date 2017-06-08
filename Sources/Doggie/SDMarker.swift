@@ -42,7 +42,7 @@ public struct SDMarker {
         case any(Any)
     }
     
-    fileprivate let elements: [Element]
+    private let elements: [Element]
 }
 
 extension SDMarker {

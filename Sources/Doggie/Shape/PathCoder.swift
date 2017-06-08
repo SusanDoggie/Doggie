@@ -58,7 +58,7 @@ extension Shape {
     }
     
     @inline(__always)
-    fileprivate func toDouble(_ str: String?) throws -> Double {
+    private func toDouble(_ str: String?) throws -> Double {
         
         if str != nil, let val = Double(str!) {
             return val
@@ -67,7 +67,7 @@ extension Shape {
     }
     
     @inline(__always)
-    fileprivate func toInt(_ str: String?) throws -> Int {
+    private func toInt(_ str: String?) throws -> Int {
         
         if str != nil, let val = Int(str!) {
             return val

@@ -48,7 +48,7 @@ public struct PDFDocument {
     
     public struct Xref {
         
-        fileprivate let table: [[PDFDocument.Value?]]
+        private let table: [[PDFDocument.Value?]]
         
         public init(_ table: [[PDFDocument.Value?]]) {
             self.table = table
@@ -448,7 +448,7 @@ extension PDFDocument.Value {
 
 extension PDFDocument.Value {
     
-    fileprivate var numberValue: NSNumber? {
+    private var numberValue: NSNumber? {
         switch self {
         case let .number(number): return number
         default: return nil

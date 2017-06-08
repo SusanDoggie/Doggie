@@ -313,7 +313,7 @@ extension DGDocument.Value {
 
 extension DGDocument.Value {
     
-    fileprivate var numberValue: NSNumber? {
+    private var numberValue: NSNumber? {
         switch self {
         case let .number(number): return number
         default: return nil

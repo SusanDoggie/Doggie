@@ -86,7 +86,7 @@ public func synchronized<R>(_ lcks: Lockable ... , block: () throws -> R) rethro
 
 public class SDLock {
     
-    fileprivate var _mtx = pthread_mutex_t()
+    private var _mtx = pthread_mutex_t()
     
     public init() {
         var attr = pthread_mutexattr_t()
@@ -141,12 +141,12 @@ extension SDCondition {
 
 extension SDLock {
     
-    fileprivate func _wait(_ cond: SDCondition, for predicate: @autoclosure () -> Bool) {
+    private func _wait(_ cond: SDCondition, for predicate: @autoclosure () -> Bool) {
         while !predicate() {
             pthread_cond_wait(&cond._cond, &_mtx)
         }
     }
-    fileprivate func _wait(_ cond: SDCondition, for predicate: @autoclosure () -> Bool, until time: DispatchWallTime) -> Bool {
+    private func _wait(_ cond: SDCondition, for predicate: @autoclosure () -> Bool, until time: DispatchWallTime) -> Bool {
         let _time = -Int64(bitPattern: time.rawValue)
         let sec = _time / 1000000000
         let nsec = _time % 1000000000
@@ -224,7 +224,7 @@ extension SDLock {
 
 public class SDConditionLock : SDLock {
     
-    fileprivate var cond = SDCondition()
+    private var cond = SDCondition()
 }
 
 extension SDConditionLock {

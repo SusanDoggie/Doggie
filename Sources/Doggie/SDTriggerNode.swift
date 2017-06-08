@@ -29,8 +29,8 @@ open class SDTriggerGraph<Value> : Collection {
     public typealias Iterator = SDTriggerGraphIterator<Value>
     public typealias NodeID = SDTriggerNode.Identifier
     
-    fileprivate var graph: Graph<NodeID, Value>
-    fileprivate let lck: SDLock
+    private var graph: Graph<NodeID, Value>
+    private let lck: SDLock
     
     fileprivate var identifier: ObjectIdentifier {
         return ObjectIdentifier(self)
@@ -172,7 +172,7 @@ extension SDTriggerNode : Hashable {
         
         fileprivate let graphID: ObjectIdentifier
         fileprivate let nodeID: ObjectIdentifier
-        fileprivate weak var _node: SDTriggerNode?
+        private weak var _node: SDTriggerNode?
         
         public init(node: SDTriggerNode) {
             graphID = node.graphID

@@ -25,11 +25,11 @@
 
 public struct RectCollection {
     
-    fileprivate let bounds: [Rect]
-    fileprivate let minX: [(Int, Double)]
-    fileprivate let maxX: [(Int, Double)]
-    fileprivate let minY: [(Int, Double)]
-    fileprivate let maxY: [(Int, Double)]
+    private let bounds: [Rect]
+    private let minX: [(Int, Double)]
+    private let maxX: [(Int, Double)]
+    private let minY: [(Int, Double)]
+    private let maxY: [(Int, Double)]
     
     public init() {
         self.bounds = []
