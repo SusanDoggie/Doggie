@@ -37,31 +37,3 @@
     
 #endif
 
-#if os(iOS) || os(tvOS) || os(watchOS)
-    
-    import UIKit
-    
-    extension CGColor : CustomPlaygroundQuickLookable {
-        
-        public var customPlaygroundQuickLook: PlaygroundQuickLook {
-            
-            return PlaygroundQuickLook.color(UIColor(cgColor: self))
-        }
-    }
-    
-#endif
-
-#if os(macOS)
-    
-    import AppKit
-    
-    extension CGColor : CustomPlaygroundQuickLookable {
-        
-        public var customPlaygroundQuickLook: PlaygroundQuickLook {
-            
-            return PlaygroundQuickLook.color(NSColor(cgColor: self)!)
-        }
-    }
-    
-#endif
-

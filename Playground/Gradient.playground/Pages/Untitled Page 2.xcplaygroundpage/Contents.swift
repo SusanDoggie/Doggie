@@ -9,4 +9,6 @@ let image = sampleImage(width: 500, height: 500)
 
 t.timeIntervalSinceNow
 
-image.cgImage
+if let image = image.cgImage {
+    NSImage(cgImage: image)
+}

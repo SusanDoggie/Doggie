@@ -44,14 +44,6 @@ public enum SDImageInterpolation {
     
     import UIKit
     
-    extension CGImage : CustomPlaygroundQuickLookable {
-        
-        public var customPlaygroundQuickLook: PlaygroundQuickLook {
-            
-            return PlaygroundQuickLook.image(UIImage(cgImage: self))
-        }
-    }
-    
     public extension UIImage {
         
         static func create(size: CGSize, scale: CGFloat = 0, command: (CGContext!) -> Void) -> UIImage {
@@ -92,14 +84,6 @@ public enum SDImageInterpolation {
 #if os(OSX)
     
     import AppKit
-    
-    extension CGImage : CustomPlaygroundQuickLookable {
-        
-        public var customPlaygroundQuickLook: PlaygroundQuickLook {
-            
-            return PlaygroundQuickLook.image(NSImage(cgImage: self, size: NSZeroSize))
-        }
-    }
     
     public extension NSImage {
         
