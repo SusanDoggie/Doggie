@@ -8,12 +8,12 @@ struct Vertex : ImageContextRenderVertex {
     
     var color: ColorPixel<RGBColorModel>
     
-    static func + (lhs: Vertex2, rhs: Vertex2) -> Vertex2 {
-        return Vertex2(position: lhs.position + rhs.position, color: lhs.color + rhs.color)
+    static func + (lhs: Vertex, rhs: Vertex) -> Vertex {
+        return Vertex(position: lhs.position + rhs.position, color: lhs.color + rhs.color)
     }
     
-    static func * (lhs: Double, rhs: Vertex2) -> Vertex2 {
-        return Vertex2(position: lhs * rhs.position, color: lhs * rhs.color)
+    static func * (lhs: Double, rhs: Vertex) -> Vertex {
+        return Vertex(position: lhs * rhs.position, color: lhs * rhs.color)
     }
 }
 
@@ -65,7 +65,7 @@ public func sampleImage(width: Int, height: Int) -> Image<ARGB32ColorPixel> {
     let t10 = (v7, v3, v2)
     let t11 = (v7, v2, v6)
     
-    func shader(vertex: Vertex2) -> ColorPixel<RGBColorModel> {
+    func shader(vertex: Vertex) -> ColorPixel<RGBColorModel> {
         
         return vertex.color
     }
