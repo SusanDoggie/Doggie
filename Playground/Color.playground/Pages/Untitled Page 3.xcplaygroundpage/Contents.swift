@@ -5,11 +5,9 @@ import Doggie
 
 do {
     
-    let colorSpace = CalibratedRGBColorSpace.adobeRGB.cgColorSpace!
-    
     let cgColor1 = NSColor(colorSpace: NSColorSpace.adobeRGB1998, components: [0.5, 0, 0, 1], count: 4).cgColor
     
-    let cgColor2 = CGColor(colorSpace: colorSpace, components: [0.5, 0, 0, 1])!
+    let cgColor2 = Color(colorSpace: CalibratedRGBColorSpace.adobeRGB, red: 0.5, green: 0, blue: 0).cgColor!
     
     let xyz = CGColorSpace(name: CGColorSpace.genericXYZ)!
     
