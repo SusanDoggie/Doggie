@@ -108,9 +108,7 @@
             
             if let colorSpace = self.colorSpace.cgColorSpace {
                 
-                let isSupportGamma = self.colorSpace.base is _ColorSpaceBase<CalibratedGammaRGBColorSpace>
-                
-                let image = isSupportGamma ? Image<ARGB32ColorPixel>(image: self) : Image<ARGB32ColorPixel>(image: self, colorSpace: self.colorSpace.linearTone)
+                let image = self.colorSpace.isSupportCGColorSpaceGamma ? Image<ARGB32ColorPixel>(image: self) : Image<ARGB32ColorPixel>(image: self, colorSpace: self.colorSpace.linearTone)
                 
                 return image.withUnsafeBufferPointer { buf in
                     

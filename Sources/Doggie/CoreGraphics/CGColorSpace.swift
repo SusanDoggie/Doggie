@@ -30,13 +30,35 @@
     
     fileprivate protocol _CGColorSpaceConvertible {
         
+        var isSupportCGColorSpaceGamma: Bool { get }
+        
         var cgColorSpace : CGColorSpace? { get }
     }
     
     extension _ColorSpaceBase : _CGColorSpaceConvertible {
         
+        fileprivate var isSupportCGColorSpaceGamma : Bool {
+            return self.base.isSupportCGColorSpaceGamma
+        }
+        
         fileprivate var cgColorSpace : CGColorSpace? {
             return self.base.cgColorSpace
+        }
+    }
+    
+    extension ColorSpaceProtocol {
+        
+        var isSupportCGColorSpaceGamma : Bool {
+            switch self {
+            case let colorSpace as ColorSpace<Model>:
+                if let colorSpace = colorSpace.base as? _CGColorSpaceConvertible {
+                    return colorSpace.isSupportCGColorSpaceGamma
+                }
+            case let colorSpace as CalibratedGrayColorSpace: return colorSpace is CalibratedGammaGrayColorSpace
+            case let colorSpace as CalibratedRGBColorSpace: return colorSpace is CalibratedGammaRGBColorSpace
+            default: break
+            }
+            return false
         }
     }
     

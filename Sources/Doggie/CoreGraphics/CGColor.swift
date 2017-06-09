@@ -32,9 +32,7 @@
         
         public var cgColor: CGColor? {
             
-            let isSupportGamma = self.colorSpace.base is _ColorSpaceBase<CalibratedGammaRGBColorSpace>
-            
-            let color = isSupportGamma ? self.color : self.colorSpace.convertToLinear(self.color)
+            let color = self.colorSpace.isSupportCGColorSpaceGamma ? self.color : self.colorSpace.convertToLinear(self.color)
             
             return colorSpace.cgColorSpace.flatMap { CGColor(colorSpace: $0, components: color.components.map { CGFloat($0) } + [CGFloat(opacity)]) }
         }
