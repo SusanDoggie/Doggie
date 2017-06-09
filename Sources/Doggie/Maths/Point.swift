@@ -105,7 +105,7 @@ extension Point {
 extension Point: CustomStringConvertible {
     @_inlineable
     public var description: String {
-        return "{x: \(x), y: \(y)}"
+        return "Point(x: \(x), y: \(y))"
     }
 }
 

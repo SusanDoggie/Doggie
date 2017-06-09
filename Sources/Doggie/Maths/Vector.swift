@@ -73,7 +73,7 @@ extension Vector: CustomStringConvertible {
     
     @_inlineable
     public var description: String {
-        return "{x: \(x), y: \(y), z: \(z)}"
+        return "Vector(x: \(x), y: \(y), z: \(z))"
     }
 }
 

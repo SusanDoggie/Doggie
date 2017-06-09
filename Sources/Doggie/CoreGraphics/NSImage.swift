@@ -44,6 +44,14 @@ public enum SDImageInterpolation {
     
     import UIKit
     
+    extension CGImage : CustomPlaygroundQuickLookable {
+        
+        public var customPlaygroundQuickLook: PlaygroundQuickLook {
+            
+            return PlaygroundQuickLook.image(UIImage(cgImage: self))
+        }
+    }
+    
     public extension UIImage {
         
         static func create(size: CGSize, scale: CGFloat = 0, command: (CGContext!) -> Void) -> UIImage {
@@ -84,6 +92,14 @@ public enum SDImageInterpolation {
 #if os(OSX)
     
     import AppKit
+    
+    extension CGImage : CustomPlaygroundQuickLookable {
+        
+        public var customPlaygroundQuickLook: PlaygroundQuickLook {
+            
+            return PlaygroundQuickLook.image(NSImage(cgImage: self, size: NSZeroSize))
+        }
+    }
     
     public extension NSImage {
         
@@ -130,6 +146,31 @@ public enum SDImageInterpolation {
             imageRep?.draw(in: CGRect(x: 0, y: 0, width: size.width, height: size.height), from: rect, operation: NSCompositingOperation.copy, fraction: 1.0, respectFlipped: true, hints: hints)
             newImage.unlockFocus()
             return newImage
+        }
+    }
+    
+    public extension NSImage {
+        
+        public convenience init(cgImage image: CGImage) {
+            self.init(cgImage: image, size: NSZeroSize)
+        }
+        
+        @available(OSX 10.11, *)
+        public convenience init(ciImage image: CoreImage.CIImage) {
+            self.init(cgImage: CIContext(options: nil).createCGImage(image, from: image.extent)!)
+        }
+        
+        public var cgImage: CGImage? {
+            if let imageData = self.tiffRepresentation, let source = CGImageSourceCreateWithData(imageData as CFData, nil) {
+                return CGImageSourceCreateImageAtIndex(source, 0, nil)
+            }
+            return nil
+        }
+        public var ciImage: CIImage? {
+            if let imageData = self.tiffRepresentation {
+                return CoreImage.CIImage(data: imageData)
+            }
+            return nil
         }
     }
     

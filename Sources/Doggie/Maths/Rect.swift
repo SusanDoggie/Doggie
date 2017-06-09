@@ -50,7 +50,7 @@ extension Size: CustomStringConvertible {
     
     @_inlineable
     public var description: String {
-        return "{w: \(width), h: \(height)}"
+        return "Size(width: \(width), height: \(height))"
     }
 }
 
@@ -180,7 +180,7 @@ extension Rect: CustomStringConvertible {
     
     @_inlineable
     public var description: String {
-        return "{x: \(x), y: \(y), w: \(width), h: \(height)}"
+        return "Rect(x: \(x), y: \(y), width: \(width), height: \(height))"
     }
 }
 

@@ -56,7 +56,7 @@ extension SDTransform : CustomStringConvertible {
     
     @_inlineable
     public var description: String {
-        return "{a: \(a), b: \(b), c: \(c), d: \(d), e: \(e), f: \(f)}"
+        return "SDTransform(a: \(a), b: \(b), c: \(c), d: \(d), e: \(e), f: \(f))"
     }
 }
 

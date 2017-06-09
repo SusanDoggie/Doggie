@@ -52,7 +52,7 @@ extension Radius: CustomStringConvertible {
     
     @_inlineable
     public var description: String {
-        return "{x: \(x), y: \(y)}"
+        return "Radius(x: \(x), y: \(y))"
     }
 }
 

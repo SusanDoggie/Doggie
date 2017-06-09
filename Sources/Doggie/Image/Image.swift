@@ -93,6 +93,22 @@ extension ColorSpace {
     }
 }
 
+extension Image : CustomStringConvertible {
+    
+    @_inlineable
+    public var description: String {
+        return "Image<\(Pixel.self)>(width: \(width), height: \(height), colorSpace: \(colorSpace))"
+    }
+}
+
+extension Image : CustomPlaygroundQuickLookable {
+    
+    @_inlineable
+    public var customPlaygroundQuickLook: PlaygroundQuickLook {
+        return PlaygroundQuickLook.text(description)
+    }
+}
+
 extension Image {
     
     @_inlineable

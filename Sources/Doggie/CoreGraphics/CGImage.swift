@@ -1,0 +1,132 @@
+//
+//  CGImage.swift
+//
+//  The MIT License
+//  Copyright (c) 2015 - 2017 Susan Cheng. All rights reserved.
+//
+//  Permission is hereby granted, free of charge, to any person obtaining a copy
+//  of this software and associated documentation files (the "Software"), to deal
+//  in the Software without restriction, including without limitation the rights
+//  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+//  copies of the Software, and to permit persons to whom the Software is
+//  furnished to do so, subject to the following conditions:
+//
+//  The above copyright notice and this permission notice shall be included in
+//  all copies or substantial portions of the Software.
+//
+//  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+//  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+//  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
+//  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+//  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+//  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+//  THE SOFTWARE.
+//
+
+#if os(macOS) || os(iOS) || os(tvOS) || os(watchOS)
+    
+    import Foundation
+    import CoreGraphics
+    
+    public extension CGImage {
+        
+        static func create(_ buffer: UnsafeRawPointer, width: Int, height: Int, bitsPerComponent: Int, bitsPerPixel: Int, bytesPerRow: Int, space: CGColorSpace, bitmapInfo: UInt32) -> CGImage? {
+            
+            if let providerRef = CGDataProvider(data: Data(bytes: buffer, count: bytesPerRow * height) as CFData) {
+                return CGImage(width: width, height: height, bitsPerComponent: bitsPerComponent, bitsPerPixel: bitsPerPixel, bytesPerRow: bytesPerRow, space: space, bitmapInfo: CGBitmapInfo(rawValue: bitmapInfo), provider: providerRef, decode: nil, shouldInterpolate: false, intent: .defaultIntent)
+            } else {
+                return nil
+            }
+        }
+        
+        func copy(to buffer: UnsafeMutableRawPointer, bitsPerComponent: Int, bytesPerRow: Int, space: CGColorSpace, bitmapInfo: UInt32) {
+            let imageWidth = self.width
+            let imageHeight = self.height
+            if let context = CGContext(data: buffer, width: imageWidth, height: imageHeight, bitsPerComponent: bitsPerComponent, bytesPerRow: bytesPerRow, space: space, bitmapInfo: bitmapInfo) {
+                context.draw(self, in: CGRect(x: 0, y: 0, width: CGFloat(imageWidth), height: CGFloat(imageHeight)))
+            }
+        }
+    }
+    
+    private final class CGPatternCallbackContainer {
+        static var CGPatternCallbackList = [UInt: CGPatternCallbackContainer]()
+        
+        let callback: (CGContext?) -> Void
+        
+        let callbacks_struct: UnsafeMutablePointer<CGPatternCallbacks>
+        
+        init(callback: @escaping (CGContext?) -> Void) {
+            self.callback = callback
+            self.callbacks_struct = UnsafeMutablePointer.allocate(capacity: 1)
+            
+            let id = UInt(bitPattern: ObjectIdentifier(self))
+            CGPatternCallbackContainer.CGPatternCallbackList[id] = self
+            
+            self.callbacks_struct.initialize(to: CGPatternCallbacks(version: 0, drawPattern: {
+                let id = unsafeBitCast($0, to: UInt.self)
+                CGPatternCallbackContainer.CGPatternCallbackList[id]?.callback($1)
+            }, releaseInfo: {
+                let id = unsafeBitCast($0, to: UInt.self)
+                CGPatternCallbackContainer.CGPatternCallbackList[id] = nil
+            }))
+        }
+        
+        deinit {
+            self.callbacks_struct.deinitialize()
+            self.callbacks_struct.deallocate(capacity: 1)
+        }
+    }
+    
+    public func CGPatternCreate(_ bounds: CGRect, _ matrix: CGAffineTransform, _ xStep: CGFloat, _ yStep: CGFloat, _ tiling: CGPatternTiling, _ isColored: Bool, _ callback: @escaping (CGContext?) -> Void) -> CGPattern? {
+        let callbackContainer = CGPatternCallbackContainer(callback: callback)
+        let id = UInt(bitPattern: ObjectIdentifier(callbackContainer))
+        return CGPattern(info: UnsafeMutableRawPointer(bitPattern: id), bounds: bounds, matrix: matrix, xStep: xStep, yStep: yStep, tiling: tiling, isColored: isColored, callbacks: callbackContainer.callbacks_struct)
+    }
+    
+    public func CGContextClipToDrawing(_ context : CGContext, fillBackground: CGFloat = 0, command: (CGContext) -> Void) {
+        
+        let width = context.width
+        let height = context.height
+        
+        if let maskContext = CGContext(data: nil, width: width, height: height, bitsPerComponent: 8, bytesPerRow: width, space: CGColorSpaceCreateDeviceGray(), bitmapInfo: 0) {
+            maskContext.setFillColor(gray: fillBackground, alpha: 1)
+            maskContext.fill(CGRect(x: 0, y: 0, width: width, height: height))
+            maskContext.setFillColor(gray: 1, alpha: 1)
+            let transform = context.ctm
+            maskContext.concatenate(transform)
+            command(maskContext)
+            let alphaMask = maskContext.makeImage()
+            context.concatenate(transform.inverted())
+            context.clip(to: CGRect(x: 0, y: 0, width: width, height: height), mask: alphaMask!)
+            context.concatenate(transform)
+        }
+    }
+    
+    extension Image where Pixel.Model == RGBColorModel {
+        
+        public var cgImage: CGImage? {
+            
+            if let colorSpace = self.colorSpace.cgColorSpace {
+                
+                let isSupportGamma = self.colorSpace.base is _ColorSpaceBase<CalibratedGammaRGBColorSpace>
+                
+                let image = isSupportGamma ? Image<ARGB32ColorPixel>(image: self) : Image<ARGB32ColorPixel>(image: self, colorSpace: self.colorSpace.linearTone)
+                
+                return image.withUnsafeBufferPointer { buf in
+                    
+                    let bitsPerComponent: Int = 8
+                    let bytesPerPixel: Int = 4
+                    let bitsPerPixel: Int = bytesPerPixel * bitsPerComponent
+                    
+                    let bytesPerRow = bytesPerPixel * image.width
+                    
+                    return CGImage.create(buf.baseAddress!, width: image.width, height: image.height, bitsPerComponent: bitsPerComponent, bitsPerPixel: bitsPerPixel, bytesPerRow: bytesPerRow, space: colorSpace, bitmapInfo: CGBitmapInfo.byteOrder32Big.rawValue | CGImageAlphaInfo.first.rawValue)
+                }
+            }
+            
+            return nil
+        }
+    }
+    
+#endif
+
