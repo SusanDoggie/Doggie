@@ -31,7 +31,12 @@
     extension Color {
         
         public var cgColor: CGColor? {
-            return colorSpace.cgColorSpace.flatMap { CGColor(colorSpace: $0, components: self.color.components.map { CGFloat($0) } + [CGFloat(opacity)]) }
+            
+            let isSupportGamma = self.colorSpace.base is _ColorSpaceBase<CalibratedGammaRGBColorSpace>
+            
+            let color = isSupportGamma ? self.color : self.colorSpace.convertToLinear(self.color)
+            
+            return colorSpace.cgColorSpace.flatMap { CGColor(colorSpace: $0, components: color.components.map { CGFloat($0) } + [CGFloat(opacity)]) }
         }
     }
     
