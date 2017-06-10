@@ -178,7 +178,7 @@ extension PDFDocument {
         return PDFDocument(version: _version, trailer: trailer, xref: PDFDocument.Xref(table))
     }
     
-    private static func parseValue(data: Data, position: Int, version: (Int, Int)) throws -> (Int, PDFDocument.Value) {
+    fileprivate static func parseValue(data: Data, position: Int, version: (Int, Int)) throws -> (Int, PDFDocument.Value) {
         
         var position = position
         
@@ -205,7 +205,7 @@ extension PDFDocument {
         }
         throw ParserError.unknownToken(position)
     }
-    private static func parseBool(data: Data, position: Int) throws -> (Int, PDFDocument.Value) {
+    fileprivate static func parseBool(data: Data, position: Int) throws -> (Int, PDFDocument.Value) {
         
         if data.suffix(from: position).starts(with: [116, 114, 117, 101]) {
             return (position + 4, true)
@@ -215,7 +215,7 @@ extension PDFDocument {
         }
         throw ParserError.unexpectedEOF
     }
-    private static func parseName(data: Data, position: Int, version: (Int, Int)) throws -> (Int, PDFDocument.Value) {
+    fileprivate static func parseName(data: Data, position: Int, version: (Int, Int)) throws -> (Int, PDFDocument.Value) {
         
         var name = [UInt8]()
         var flag = 0
@@ -266,7 +266,7 @@ extension PDFDocument {
         
         throw ParserError.unexpectedEOF
     }
-    private static func parseReference(data: Data, position: Int) throws -> (Int, PDFDocument.Value)? {
+    fileprivate static func parseReference(data: Data, position: Int) throws -> (Int, PDFDocument.Value)? {
         
         var flag = 0
         var identifier = 0
@@ -291,7 +291,7 @@ extension PDFDocument {
         
         throw ParserError.unexpectedEOF
     }
-    private static func parseLiteralString(data: Data, position: Int) throws -> (Int, PDFDocument.Value) {
+    fileprivate static func parseLiteralString(data: Data, position: Int) throws -> (Int, PDFDocument.Value) {
         
         var position = position + 1
         
@@ -458,7 +458,7 @@ extension PDFDocument {
         
         throw ParserError.unexpectedEOF
     }
-    private static func parseHexString(data: Data, position: Int) throws -> (Int, PDFDocument.Value) {
+    fileprivate static func parseHexString(data: Data, position: Int) throws -> (Int, PDFDocument.Value) {
         
         var hex = Data()
         var flag = 0
@@ -499,7 +499,7 @@ extension PDFDocument {
         
         throw ParserError.unexpectedEOF
     }
-    private static func parseNumber(data: Data, position: Int) throws -> (Int, PDFDocument.Value) {
+    fileprivate static func parseNumber(data: Data, position: Int) throws -> (Int, PDFDocument.Value) {
         
         var sign: Bool?
         var int: Int64 = 0
@@ -542,7 +542,7 @@ extension PDFDocument {
         
         throw ParserError.unexpectedEOF
     }
-    private static func parseArray(data: Data, position: Int, version: (Int, Int)) throws -> (Int, PDFDocument.Value) {
+    fileprivate static func parseArray(data: Data, position: Int, version: (Int, Int)) throws -> (Int, PDFDocument.Value) {
         
         var array: [PDFDocument.Value] = []
         var position = position
@@ -567,7 +567,7 @@ extension PDFDocument {
         
         throw ParserError.unexpectedEOF
     }
-    private static func parseDictionary(data: Data, position: Int, version: (Int, Int)) throws -> (Int, PDFDocument.Value) {
+    fileprivate static func parseDictionary(data: Data, position: Int, version: (Int, Int)) throws -> (Int, PDFDocument.Value) {
         
         var dictionary: PDFDocument.Dictionary = [:]
         var position = position
@@ -616,7 +616,7 @@ extension PDFDocument {
         throw ParserError.unexpectedEOF
     }
     
-    private static func version(data: Data) throws -> (Int, Int) {
+    fileprivate static func version(data: Data) throws -> (Int, Int) {
         
         var major = 0
         var minor = 0
@@ -643,7 +643,7 @@ extension PDFDocument {
         return (major, minor)
     }
     
-    private static func lineStartPosition(data: Data, position: Int) -> Int {
+    fileprivate static func lineStartPosition(data: Data, position: Int) -> Int {
         if position == 0 {
             return 0
         }
@@ -665,7 +665,7 @@ extension PDFDocument {
         }
         return index
     }
-    private static func lineEndPosition(data: Data, position: Int) -> Int {
+    fileprivate static func lineEndPosition(data: Data, position: Int) -> Int {
         if position == 0 {
             return 0
         }
@@ -687,7 +687,7 @@ extension PDFDocument {
         }
         return index
     }
-    private static func nextLineStartPosition(data: Data, position: Int) -> Int {
+    fileprivate static func nextLineStartPosition(data: Data, position: Int) -> Int {
         
         if position == data.count {
             return position
@@ -705,7 +705,7 @@ extension PDFDocument {
         }
     }
     
-    private static func eofPosition(data: Data) throws -> Int {
+    fileprivate static func eofPosition(data: Data) throws -> Int {
         let _lineEndPosition = lineEndPosition(data: data, position: data.count - 1)
         if data.prefix(upTo: _lineEndPosition).suffix(5).elementsEqual([37, 37, 69, 79, 70]) {
             return _lineEndPosition - 5
@@ -713,7 +713,7 @@ extension PDFDocument {
         throw ParserError.invalidFormat("'%%EOF' not find.")
     }
     
-    private static func xrefPosition(data: Data) throws -> Int {
+    fileprivate static func xrefPosition(data: Data) throws -> Int {
         
         let _eofPosition = try eofPosition(data: data)
         
@@ -739,7 +739,7 @@ extension PDFDocument {
         return offset
     }
     
-    private static func xrefTable(data: Data, version: (Int, Int)) throws -> (PDFDocument.Dictionary, [PDFDocument.ObjectIdentifier: Int]) {
+    fileprivate static func xrefTable(data: Data, version: (Int, Int)) throws -> (PDFDocument.Dictionary, [PDFDocument.ObjectIdentifier: Int]) {
         
         var _xrefPosition = try xrefPosition(data: data)
         
@@ -868,7 +868,7 @@ extension PDFDocument {
         }
     }
     
-    private static func trailer(data: Data, position: Int, version: (Int, Int)) throws -> PDFDocument.Dictionary {
+    fileprivate static func trailer(data: Data, position: Int, version: (Int, Int)) throws -> PDFDocument.Dictionary {
         
         switch try parseValue(data: data, position: position, version: version) {
         case let (_, .dictionary(dictionary)): return dictionary

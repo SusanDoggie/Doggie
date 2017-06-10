@@ -60,7 +60,7 @@ public struct Shape : RandomAccessCollection, MutableCollection, ExpressibleByAr
         }
     }
     
-    private var components: [Component]
+    fileprivate var components: [Component]
     
     public var baseTransform : SDTransform = SDTransform.identity {
         willSet {

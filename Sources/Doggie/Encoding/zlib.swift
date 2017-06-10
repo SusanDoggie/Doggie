@@ -66,7 +66,7 @@ public enum GzipError: Error {
 
 public extension Data {
     
-    private func streamBuffer(body: (z_stream) throws -> Void) rethrows {
+    fileprivate func streamBuffer(body: (z_stream) throws -> Void) rethrows {
         
         try self.withUnsafeBytes { (bytes: UnsafePointer<Bytef>) in
             

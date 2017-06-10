@@ -25,7 +25,7 @@
 
 import Foundation
 
-private let PDFDocDecoding: [UInt16] = [
+fileprivate let PDFDocDecoding: [UInt16] = [
     0x0000, 0x0001, 0x0002, 0x0003, 0x0004, 0x0005, 0x0006, 0x0007,
     0x0008, 0x0009, 0x000A, 0x000B, 0x000C, 0x000D, 0x000E, 0x000F,
     0x0010, 0x0011, 0x0012, 0x0013, 0x0014, 0x0015, 0x0016, 0x0017,
@@ -60,7 +60,7 @@ private let PDFDocDecoding: [UInt16] = [
     0x00F8, 0x00F9, 0x00FA, 0x00FB, 0x00FC, 0x00FD, 0x00FE, 0x00FF
 ]
 
-private let PDFDocEncoding: [UInt16: UInt8] = {
+fileprivate let PDFDocEncoding: [UInt16: UInt8] = {
     var dict: [UInt16: UInt8] = [:]
     for (value, key) in PDFDocDecoding.enumerated() {
         dict[key] = UInt8(value)

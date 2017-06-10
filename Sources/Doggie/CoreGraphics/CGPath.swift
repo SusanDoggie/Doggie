@@ -28,7 +28,7 @@
     import Foundation
     import CoreGraphics
     
-    private let ShapeCacheCGPathKey = "ShapeCacheCGPathKey"
+    fileprivate let ShapeCacheCGPathKey = "ShapeCacheCGPathKey"
     
     extension Shape {
         

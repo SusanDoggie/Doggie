@@ -49,7 +49,7 @@ extension DGDocument {
         return DGDocument(root: root, table: table)
     }
     
-    private static func parseValue(data: Data, position: Int) throws -> (Int, DGDocument.Value) {
+    fileprivate static func parseValue(data: Data, position: Int) throws -> (Int, DGDocument.Value) {
         
         switch data[position] {
         case 110:
@@ -66,7 +66,7 @@ extension DGDocument {
         }
         throw ParserError.unknownToken(position)
     }
-    private static func parseString(data: Data, position: Int) throws -> (Int, DGDocument.Value) {
+    fileprivate static func parseString(data: Data, position: Int) throws -> (Int, DGDocument.Value) {
         
         var count = 0
         var position = position
@@ -93,7 +93,7 @@ extension DGDocument {
         
         throw ParserError.invalidFormat("invalid string format.")
     }
-    private static func parseStream(data: Data, position: Int) throws -> (Int, DGDocument.Value) {
+    fileprivate static func parseStream(data: Data, position: Int) throws -> (Int, DGDocument.Value) {
         
         var count = 0
         var position = position
@@ -116,7 +116,7 @@ extension DGDocument {
         
         return (position + count, .stream(stream))
     }
-    private static func parseReference(data: Data, position: Int) throws -> (Int, DGDocument.Value) {
+    fileprivate static func parseReference(data: Data, position: Int) throws -> (Int, DGDocument.Value) {
         
         var ref = 0
         
@@ -129,7 +129,7 @@ extension DGDocument {
         
         throw ParserError.unexpectedEOF
     }
-    private static func parseNumber(data: Data, position: Int) throws -> (Int, DGDocument.Value) {
+    fileprivate static func parseNumber(data: Data, position: Int) throws -> (Int, DGDocument.Value) {
         
         var sign: Bool?
         var int: Int64 = 0
@@ -182,7 +182,7 @@ extension DGDocument {
         
         throw ParserError.unexpectedEOF
     }
-    private static func parseArray(data: Data, position: Int) throws -> (Int, DGDocument.Value) {
+    fileprivate static func parseArray(data: Data, position: Int) throws -> (Int, DGDocument.Value) {
         
         var array: [DGDocument.Value] = []
         var position = position
@@ -207,7 +207,7 @@ extension DGDocument {
         
         throw ParserError.unexpectedEOF
     }
-    private static func parseDictionary(data: Data, position: Int) throws -> (Int, DGDocument.Value) {
+    fileprivate static func parseDictionary(data: Data, position: Int) throws -> (Int, DGDocument.Value) {
         
         var dictionary: [String: DGDocument.Value] = [:]
         var position = position
@@ -252,7 +252,7 @@ extension DGDocument {
         throw ParserError.unexpectedEOF
     }
     
-    private static func lineStartPosition(data: Data, position: Int) -> Int {
+    fileprivate static func lineStartPosition(data: Data, position: Int) -> Int {
         if position == 0 {
             return 0
         }
@@ -274,7 +274,7 @@ extension DGDocument {
         }
         return index
     }
-    private static func lineEndPosition(data: Data, position: Int) -> Int {
+    fileprivate static func lineEndPosition(data: Data, position: Int) -> Int {
         if position == 0 {
             return 0
         }
@@ -297,7 +297,7 @@ extension DGDocument {
         return index
     }
     
-    private static func xrefTable(data: Data) throws -> (Int, [Int: Int]) {
+    fileprivate static func xrefTable(data: Data) throws -> (Int, [Int: Int]) {
         
         var root = 0
         var table: [Int: Int] = [:]
@@ -327,7 +327,7 @@ extension DGDocument {
         return (root, table)
     }
     
-    private static func xrefDecode(data: Data, position: Int, table: inout [Int: Int]) throws -> Int? {
+    fileprivate static func xrefDecode(data: Data, position: Int, table: inout [Int: Int]) throws -> Int? {
         
         var _lineStart = lineStartPosition(data: data, position: position)
         var _lineEnd = lineEndPosition(data: data, position: position)
@@ -378,7 +378,7 @@ extension DGDocument {
         }
     }
     
-    private static func eofPosition(data: Data) throws -> Int {
+    fileprivate static func eofPosition(data: Data) throws -> Int {
         let _lineEndPosition = lineEndPosition(data: data, position: data.count - 1)
         if data.prefix(upTo: _lineEndPosition).suffix(5).elementsEqual([37, 37, 69, 79, 70]) {
             return _lineEndPosition - 5

@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-private class AtomicStackContainerBox<Instance> {
+fileprivate class AtomicStackContainerBox<Instance> {
     
     var base: AtomicStackContainer<Instance>!
     
@@ -31,7 +31,7 @@ private class AtomicStackContainerBox<Instance> {
         self.base = base
     }
 }
-private struct AtomicStackContainer<Instance> {
+fileprivate struct AtomicStackContainer<Instance> {
     
     let value: Instance
     let next: AtomicStackContainerBox<Instance>?
@@ -39,7 +39,7 @@ private struct AtomicStackContainer<Instance> {
 
 open class AtomicStack<Instance> {
     
-    private var head: Atomic<AtomicStackContainer<Instance>?>
+    fileprivate var head: Atomic<AtomicStackContainer<Instance>?>
     
     public init() {
         self.head = Atomic(value: nil)

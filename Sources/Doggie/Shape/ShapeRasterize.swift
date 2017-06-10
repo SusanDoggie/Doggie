@@ -36,7 +36,7 @@ extension Shape {
 }
 
 @inline(__always)
-private func _cubic(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point, operation: (Shape.RenderOperation) -> Void) {
+fileprivate func _cubic(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point, operation: (Shape.RenderOperation) -> Void) {
     
     let q1 = 3 * (p1 - p0)
     let q2 = 3 * (p2 + p0) - 6 * p1

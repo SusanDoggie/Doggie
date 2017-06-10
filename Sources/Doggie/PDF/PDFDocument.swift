@@ -48,7 +48,7 @@ public struct PDFDocument {
     
     public struct Xref {
         
-        private let table: [[PDFDocument.Value?]]
+        fileprivate let table: [[PDFDocument.Value?]]
         
         public init(_ table: [[PDFDocument.Value?]]) {
             self.table = table
@@ -147,7 +147,7 @@ extension PDFDocument.Xref : BidirectionalCollection {
         fileprivate let base: _Collection.Index
     }
     
-    private var _collection: _Collection {
+    fileprivate var _collection: _Collection {
         return table.indexed().lazy.flatMap { x in x.1.indexed().lazy.map { (PDFDocument.ObjectIdentifier(identifier: x.0, generation: $0.0), $0.1) } }.elements
     }
     
@@ -448,7 +448,7 @@ extension PDFDocument.Value {
 
 extension PDFDocument.Value {
     
-    private var numberValue: NSNumber? {
+    fileprivate var numberValue: NSNumber? {
         switch self {
         case let .number(number): return number
         default: return nil

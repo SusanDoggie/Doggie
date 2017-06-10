@@ -578,7 +578,7 @@ public func != <Element>(lhs: Bezier<Element>, rhs: Bezier<Element>) -> Bool {
 // MARK: Bezier Length
 
 @inline(__always)
-private func QuadBezierLength(_ t: Double, _ a: Double, _ b: Double, _ c: Double) -> Double {
+fileprivate func QuadBezierLength(_ t: Double, _ a: Double, _ b: Double, _ c: Double) -> Double {
     
     if a.almostZero() {
         if b.almostZero() {
@@ -683,12 +683,12 @@ public func QuadBezierFitting(_ p0: Point, _ p2: Point, _ m0: Point, _ m2: Point
 }
 
 @inline(__always)
-private func QuadBezierFittingCurvature(_ p0: Point, _ p1: Point, _ p2: Point) -> Bool {
+fileprivate func QuadBezierFittingCurvature(_ p0: Point, _ p1: Point, _ p2: Point) -> Bool {
     let u = p2 - p0
     let v = p1 - 0.5 * (p2 + p0)
     return u.magnitude < v.magnitude * 4
 }
-private func QuadBezierFitting(_ p: [Point], _ limit: Int, _ inflection_check: Bool) -> [[Point]] {
+fileprivate func QuadBezierFitting(_ p: [Point], _ limit: Int, _ inflection_check: Bool) -> [[Point]] {
     
     if p.count < 4 {
         return [p]
@@ -794,7 +794,7 @@ public func CubicBezierFitting(_ p0: Point, _ p3: Point, _ m0: Point, _ m1: Poin
 }
 
 @inline(__always)
-private func BezierFitting(start: Double, end: Double, _ passing: [(Double, Double)]) -> [Double]? {
+fileprivate func BezierFitting(start: Double, end: Double, _ passing: [(Double, Double)]) -> [Double]? {
     
     let n = passing.count
     
@@ -865,7 +865,7 @@ public func BezierOffset(_ p0: Point, _ p1: Point, _ a: Double) -> (Point, Point
 }
 
 @inline(__always)
-private func BezierOffsetCurvature(_ p0: Point, _ p1: Point, _ p2: Point) -> Bool {
+fileprivate func BezierOffsetCurvature(_ p0: Point, _ p1: Point, _ p2: Point) -> Bool {
     let u = p2 - p0
     let v = p1 - 0.5 * (p2 + p0)
     return u.magnitude < v.magnitude * 3
@@ -904,7 +904,7 @@ public func BezierOffset(_ p: [Point], _ a: Double) -> [[Point]] {
         }
     }
 }
-private func _BezierOffset(_ p0: Point, _ p1: Point, _ p2: Point, _ a: Double, _ limit: Int) -> [[Point]] {
+fileprivate func _BezierOffset(_ p0: Point, _ p1: Point, _ p2: Point, _ a: Double, _ limit: Int) -> [[Point]] {
     
     if a.almostZero() {
         return [[p0, p1, p2]]

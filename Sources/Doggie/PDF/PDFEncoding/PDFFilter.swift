@@ -30,7 +30,7 @@ public struct PDFFilterError: Error {
     public var message: String
 }
 
-private func _PDFFilterDecode(_ name: PDFDocument.Name, _ data: Data) throws -> Data {
+fileprivate func _PDFFilterDecode(_ name: PDFDocument.Name, _ data: Data) throws -> Data {
     
     switch name.name {
     case "ASCIIHexDecode": return try PDFASCIIHexDecode(data)

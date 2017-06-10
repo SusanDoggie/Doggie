@@ -48,7 +48,7 @@
         }
     }
     
-    private final class CGPatternCallbackContainer {
+    fileprivate final class CGPatternCallbackContainer {
         static var CGPatternCallbackList = [UInt: CGPatternCallbackContainer]()
         
         let callback: (CGContext?) -> Void

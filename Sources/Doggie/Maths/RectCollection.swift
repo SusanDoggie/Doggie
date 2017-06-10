@@ -25,11 +25,11 @@
 
 public struct RectCollection {
     
-    private let bounds: [Rect]
-    private let minX: [(Int, Double)]
-    private let maxX: [(Int, Double)]
-    private let minY: [(Int, Double)]
-    private let maxY: [(Int, Double)]
+    fileprivate let bounds: [Rect]
+    fileprivate let minX: [(Int, Double)]
+    fileprivate let maxX: [(Int, Double)]
+    fileprivate let minY: [(Int, Double)]
+    fileprivate let maxY: [(Int, Double)]
     
     public init() {
         self.bounds = []
@@ -70,7 +70,7 @@ extension RectCollection : RandomAccessCollection {
 
 extension RectCollection {
     
-    private func search(_ target: Double, _ elements: [(Int, Double)], _ indices: CountableRange<Int>) -> Int {
+    fileprivate func search(_ target: Double, _ elements: [(Int, Double)], _ indices: CountableRange<Int>) -> Int {
         switch indices.count {
         case 0: return indices.lowerBound
         default:

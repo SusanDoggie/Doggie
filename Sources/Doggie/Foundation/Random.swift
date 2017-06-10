@@ -27,7 +27,7 @@ import Foundation
 
 public class RandomGenerator {
     
-    private let rand_file: Int32
+    fileprivate let rand_file: Int32
     
     fileprivate init(source: String) {
         rand_file = open(source, O_RDONLY)

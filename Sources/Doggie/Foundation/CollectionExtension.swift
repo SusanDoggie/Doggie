@@ -610,11 +610,11 @@ extension Sequence {
 
 public struct LazyScanIterator<Base: IteratorProtocol, Element> : IteratorProtocol, Sequence {
     
-    private var nextElement: Element?
+    fileprivate var nextElement: Element?
     
-    private var base: Base
+    fileprivate var base: Base
     
-    private let combine: (Element, Base.Element) -> Element
+    fileprivate let combine: (Element, Base.Element) -> Element
     
     fileprivate init(nextElement: Element?, base: Base, combine: @escaping (Element, Base.Element) -> Element) {
         self.nextElement = nextElement

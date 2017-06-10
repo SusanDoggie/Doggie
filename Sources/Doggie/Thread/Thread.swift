@@ -39,9 +39,9 @@ let SDDefaultDispatchQueue: DispatchQueue = {
 
 open class Trigger {
     
-    private let queue: DispatchQueue
-    private let block: (Trigger) -> Void
-    private var flag: Int8
+    fileprivate let queue: DispatchQueue
+    fileprivate let block: (Trigger) -> Void
+    fileprivate var flag: Int8
     
     public var qos: DispatchQoS
     public var flags: DispatchWorkItemFlags
@@ -63,7 +63,7 @@ extension Trigger {
         }
     }
     
-    private func dispatchRunloop() {
+    fileprivate func dispatchRunloop() {
         while true {
             flag = 1
             self.block(self)
@@ -78,14 +78,14 @@ extension Trigger {
 
 public class SDTask<Result> {
     
-    private let queue: DispatchQueue
-    private var worker: DispatchWorkItem!
+    fileprivate let queue: DispatchQueue
+    fileprivate var worker: DispatchWorkItem!
     
-    private let lck = SDConditionLock()
+    fileprivate let lck = SDConditionLock()
     
-    private var storage = Atomic<Result?>(value: nil)
+    fileprivate var storage = Atomic<Result?>(value: nil)
     
-    private init(queue: DispatchQueue) {
+    fileprivate init(queue: DispatchQueue) {
         self.queue = queue
     }
     /// Create a SDTask and compute block.
@@ -108,7 +108,7 @@ extension SDTask {
 
 extension SDTask {
     
-    private func createWorker(qos: DispatchQoS, flags: DispatchWorkItemFlags, block: @escaping () -> Result?) -> DispatchWorkItem {
+    fileprivate func createWorker(qos: DispatchQoS, flags: DispatchWorkItemFlags, block: @escaping () -> Result?) -> DispatchWorkItem {
         return DispatchWorkItem(qos: qos, flags: flags) { [weak self] in
             let value = block()
             if let _self = self {

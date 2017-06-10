@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-private class AtomicQueueContainer<Instance> {
+fileprivate class AtomicQueueContainer<Instance> {
     
     var value: Instance?
     var next: Atomic<AtomicQueueContainer<Instance>?>
@@ -36,8 +36,8 @@ private class AtomicQueueContainer<Instance> {
 
 open class AtomicQueue<Instance> {
     
-    private var head: Atomic<AtomicQueueContainer<Instance>>
-    private var tail: AtomicQueueContainer<Instance>
+    fileprivate var head: Atomic<AtomicQueueContainer<Instance>>
+    fileprivate var tail: AtomicQueueContainer<Instance>
     
     public init() {
         let telomere = AtomicQueueContainer<Instance>()
