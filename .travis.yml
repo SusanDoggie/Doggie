@@ -3,7 +3,7 @@ dist: trusty
 sudo: required
 notifications: never
 env:
-  - SWIFT_SNAPSHOT='swift-4.0-DEVELOPMENT-SNAPSHOT-2017-06-07-a'
+  - SWIFT_SNAPSHOT='swift-DEVELOPMENT-SNAPSHOT-2017-06-09-a'
 
 matrix:
   include:
