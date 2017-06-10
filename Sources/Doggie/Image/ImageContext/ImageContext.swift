@@ -62,6 +62,7 @@ public class ImageContext<Model : ColorModelProtocol> {
     @_versioned
     var next: ImageContext<Model>?
     
+    @_inlineable
     public init<P>(image: Image<P>) where P.Model == Model {
         
         self._image = Image(image: image)
@@ -69,6 +70,7 @@ public class ImageContext<Model : ColorModelProtocol> {
         self.depth = [Double](repeating: 1, count: image.width * image.height)
     }
     
+    @_inlineable
     public init(width: Int, height: Int, colorSpace: ColorSpace<Model>) {
         
         self._image = Image(width: width, height: height, colorSpace: colorSpace)
