@@ -1,15 +1,15 @@
-
+language: generic		 
+dist: trusty
+sudo: required
+notifications: never
 env:
   - SWIFT_VERSION=3.1.1
 
 matrix:
   include:
     - os: linux
-      dist: trusty
-      sudo: required
     - os: osx
-      osx_image: xcode8.3
-      sudo: required
+      osx_image: xcode8.3.1
 
 before_install:
   - git clone https://github.com/IBM-Swift/Package-Builder.git
