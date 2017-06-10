@@ -1013,20 +1013,27 @@ public struct CubicBezierPatch {
     public var m32: Point
     public var m33: Point
     
+    @_inlineable
     public init(coonsPatch m00: Point, _ m01: Point, _ m02: Point, _ m03: Point,
                 _ m10: Point, _ m13: Point, _ m20: Point, _ m23: Point,
                 _ m30: Point, _ m31: Point, _ m32: Point, _ m33: Point) {
+        
+        @inline(__always)
+        func _eval(_ a: Point, _ b: Point, _ c: Point, _ d: Point, _ e: Point) -> Point {
+            return (6 * a + 3 * b - 2 * c - 4 * d - e) / 9
+        }
+        
         self.m00 = m00
         self.m01 = m01
         self.m02 = m02
         self.m03 = m03
         self.m10 = m10
-        self.m11 = (6 * (m01 + m10) + 3 * (m31 + m13) - 2 * (m03 + m30) - 4 * m00 - m33) / 9
-        self.m12 = (6 * (m02 + m13) + 3 * (m32 + m10) - 2 * (m00 + m33) - 4 * m03 - m30) / 9
+        self.m11 = _eval(m01 + m10, m31 + m13, m03 + m30, m00, m33)
+        self.m12 = _eval(m02 + m13, m32 + m10, m00 + m33, m03, m30)
         self.m13 = m13
         self.m20 = m20
-        self.m21 = (6 * (m31 + m20) + 3 * (m01 + m23) - 2 * (m33 + m00) - 4 * m30 - m03) / 9
-        self.m22 = (6 * (m32 + m23) + 3 * (m02 + m20) - 2 * (m30 + m03) - 4 * m33 - m00) / 9
+        self.m21 = _eval(m31 + m20, m01 + m23, m33 + m00, m30, m03)
+        self.m22 = _eval(m32 + m23, m02 + m20, m30 + m03, m33, m00)
         self.m23 = m23
         self.m30 = m30
         self.m31 = m31
@@ -1034,6 +1041,7 @@ public struct CubicBezierPatch {
         self.m33 = m33
     }
     
+    @_inlineable
     public init(_ m00: Point, _ m01: Point, _ m02: Point, _ m03: Point,
                 _ m10: Point, _ m11: Point, _ m12: Point, _ m13: Point,
                 _ m20: Point, _ m21: Point, _ m22: Point, _ m23: Point,
@@ -1059,6 +1067,7 @@ public struct CubicBezierPatch {
 
 extension CubicBezierPatch {
     
+    @_inlineable
     public func warping(_ bezier: Bezier<Point>) -> [Bezier<Point>] {
         
         let u = Bezier(bezier.points.map { $0.x }).polynomial
@@ -1122,6 +1131,7 @@ extension CubicBezierPatch {
 
 // MARK: Circle
 
+@_versioned
 var BezierCircle: [Point] {
     
     //
@@ -1148,6 +1158,8 @@ var BezierCircle: [Point] {
         Point(x: 1, y: 0)
     ]
 }
+
+@_inlineable
 public func BezierArc(_ angle: Double) -> [Point] {
     
     //
@@ -1204,6 +1216,7 @@ public func BezierArc(_ angle: Double) -> [Point] {
 
 // MARK: Path Intersection
 
+@_inlineable
 public func CubicBezierSelfIntersect(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point) -> (Double, Double)? {
     
     let q1 = 3 * (p1 - p0)
@@ -1230,6 +1243,7 @@ public func CubicBezierSelfIntersect(_ p0: Point, _ p1: Point, _ p2: Point, _ p3
     return nil
 }
 
+@_inlineable
 public func LinesIntersect(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point) -> Point? {
     
     let d = (p0.x - p1.x) * (p2.y - p3.y) - (p0.y - p1.y) * (p2.x - p3.x)
@@ -1241,6 +1255,7 @@ public func LinesIntersect(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point) -
     return Point(x: (p2.x - p3.x) * a - (p0.x - p1.x) * b, y: (p2.y - p3.y) * a - (p0.y - p1.y) * b)
 }
 
+@_inlineable
 public func QuadBezierLineIntersect(_ b0: Point, _ b1: Point, _ b2: Point, _ l0: Point, _ l1: Point) -> [Double]? {
     
     let a = b0 - l0
@@ -1257,6 +1272,7 @@ public func QuadBezierLineIntersect(_ b0: Point, _ b1: Point, _ b2: Point, _ l0:
     return poly.all(where: { $0.almostZero() }) ? nil : poly.roots
 }
 
+@_inlineable
 public func CubicBezierLineIntersect(_ b0: Point, _ b1: Point, _ b2: Point, _ b3: Point, _ l0: Point, _ l1: Point) -> [Double]? {
     
     let a = b0 - l0
@@ -1274,6 +1290,7 @@ public func CubicBezierLineIntersect(_ b0: Point, _ b1: Point, _ b2: Point, _ b3
     return poly.all(where: { $0.almostZero() }) ? nil : poly.roots
 }
 
+@_inlineable
 public func QuadBeziersIntersect(_ b0: Point, _ b1: Point, _ b2: Point, _ b3: Point, _ b4: Point, _ b5: Point) -> [Double]? {
     
     let a = b0 - b3
@@ -1298,6 +1315,7 @@ public func QuadBeziersIntersect(_ b0: Point, _ b1: Point, _ b2: Point, _ b3: Po
     return det.all(where: { $0.almostZero() }) ? nil : det.roots
 }
 
+@_inlineable
 public func CubicQuadBezierIntersect(_ c0: Point, _ c1: Point, _ c2: Point, _ c3: Point, _ q0: Point, _ q1: Point, _ q2: Point) -> [Double]? {
     
     let a = c0 - q0
@@ -1323,6 +1341,7 @@ public func CubicQuadBezierIntersect(_ c0: Point, _ c1: Point, _ c2: Point, _ c3
     return det.all(where: { $0.almostZero() }) ? nil : det.roots
 }
 
+@_inlineable
 public func CubicBeziersIntersect(_ c0: Point, _ c1: Point, _ c2: Point, _ c3: Point, _ c4: Point, _ c5: Point, _ c6: Point, _ c7: Point) -> [Double]? {
     
     let a = c0 - c4
