@@ -25,29 +25,6 @@
 
 import PackageDescription
 
-#if os(macOS) || os(iOS) || os(tvOS) || os(watchOS)
-    
-let package = Package(
-    name: "Doggie",
-    targets: [
-        Target(name: "Doggie", dependencies: [
-            .Target(name: "c11_atomic")
-            ]),
-        Target(name: "c11_atomic")
-    ],
-    exclude: [
-        "LICENSE", "README.md",
-        "Doggie.xcodeproj",
-        "Doggie.xcworkspace",
-        "Playground",
-        "Doggie_iOS", "Doggie_iOSTests",
-        "Doggie_Mac", "Doggie_MacTests",
-        "Sources/zlib"
-    ]
-)
-    
-#else
-    
 let package = Package(
     name: "Doggie",
     targets: [
@@ -67,5 +44,3 @@ let package = Package(
         "Doggie_Mac", "Doggie_MacTests"
     ]
 )
-    
-#endif
