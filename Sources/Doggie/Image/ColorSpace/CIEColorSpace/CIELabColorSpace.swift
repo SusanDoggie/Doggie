@@ -25,50 +25,57 @@
 
 import Foundation
 
-public struct CIELabColorSpace : ColorSpaceProtocol {
-    
-    public typealias Model = LabColorModel
-    
-    public private(set) var cieXYZ: CIEXYZColorSpace
+extension ColorSpace where Model == LabColorModel {
     
     @_inlineable
-    public init(white: Point, chromaticAdaptationAlgorithm: ChromaticAdaptationAlgorithm = .default) {
-        self.cieXYZ = CIEXYZColorSpace(white: white, chromaticAdaptationAlgorithm: chromaticAdaptationAlgorithm)
+    public static func cieLab<C>(from colorSpace: ColorSpace<C>) -> ColorSpace {
+        return ColorSpace(base: CIELabColorSpace(colorSpace.base.cieXYZ))
     }
+    
     @_inlineable
-    public init(white: XYZColorModel, black: XYZColorModel = XYZColorModel(x: 0, y: 0, z: 0), chromaticAdaptationAlgorithm: ChromaticAdaptationAlgorithm = .default) {
-        self.cieXYZ = CIEXYZColorSpace(white: white, black: black, chromaticAdaptationAlgorithm: chromaticAdaptationAlgorithm)
+    public static func cieLab(white: Point) -> ColorSpace {
+        return cieLab(white: XYZColorModel(luminance: 1, x: white.x, y: white.y))
     }
+    
     @_inlineable
-    public init(_ cieXYZ: CIEXYZColorSpace) {
+    public static func cieLab(white: XYZColorModel, black: XYZColorModel = XYZColorModel(x: 0, y: 0, z: 0)) -> ColorSpace {
+        return ColorSpace(base: CIELabColorSpace(CIEXYZColorSpace(white: white, black: black)))
+    }
+}
+
+@_versioned
+@_fixed_layout
+struct CIELabColorSpace : ColorSpaceBaseProtocol {
+    
+    typealias Model = LabColorModel
+    
+    @_versioned
+    let cieXYZ: CIEXYZColorSpace
+    
+    @_versioned
+    @_inlineable
+    init(_ cieXYZ: CIEXYZColorSpace) {
         self.cieXYZ = cieXYZ
-    }
-    
-    @_inlineable
-    public var chromaticAdaptationAlgorithm: ChromaticAdaptationAlgorithm {
-        get {
-            return cieXYZ.chromaticAdaptationAlgorithm
-        }
-        set {
-            cieXYZ.chromaticAdaptationAlgorithm = newValue
-        }
     }
 }
 
 extension CIELabColorSpace {
     
+    @_versioned
     @_inlineable
-    public func convertToLinear(_ color: Model) -> Model {
+    func convertToLinear(_ color: Model) -> Model {
         return color
     }
     
+    @_versioned
     @_inlineable
-    public func convertFromLinear(_ color: Model) -> Model {
+    func convertFromLinear(_ color: Model) -> Model {
         return color
     }
     
+    @_versioned
     @_inlineable
-    public func convertLinearToXYZ(_ color: Model) -> XYZColorModel {
+    func convertLinearToXYZ(_ color: Model) -> XYZColorModel {
         let s = 216.0 / 24389.0
         let t = 27.0 / 24389.0
         let st = 216.0 / 27.0
@@ -84,8 +91,9 @@ extension CIELabColorSpace {
         return XYZColorModel(x: x * _white.x, y: y * _white.y, z: z * _white.z)
     }
     
+    @_versioned
     @_inlineable
-    public func convertLinearFromXYZ(_ color: XYZColorModel) -> Model {
+    func convertLinearFromXYZ(_ color: XYZColorModel) -> Model {
         let s = 216.0 / 24389.0
         let t = 24389.0 / 27.0
         let _white = XYZColorModel(luminance: 1, point: cieXYZ.normalized.white.point)

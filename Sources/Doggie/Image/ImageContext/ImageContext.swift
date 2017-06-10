@@ -69,7 +69,7 @@ public class ImageContext<Model : ColorModelProtocol> {
         self.depth = [Double](repeating: 1, count: image.width * image.height)
     }
     
-    public init<C : ColorSpaceProtocol>(width: Int, height: Int, colorSpace: C) where C.Model == Model {
+    public init(width: Int, height: Int, colorSpace: ColorSpace<Model>) {
         
         self._image = Image(width: width, height: height, colorSpace: colorSpace)
         self.clip = [Double](repeating: 1, count: width * height)

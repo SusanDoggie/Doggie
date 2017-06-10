@@ -38,12 +38,12 @@ public struct Image<Pixel: ColorPixelProtocol> {
     public var colorSpace: ColorSpace<Pixel.Model>
     
     @_inlineable
-    public init<C : ColorSpaceProtocol>(width: Int, height: Int, colorSpace: C, pixel: Pixel = Pixel()) where C.Model == Pixel.Model {
+    public init(width: Int, height: Int, colorSpace: ColorSpace<Pixel.Model>, pixel: Pixel = Pixel()) {
         precondition(width >= 0, "negative width is not allowed.")
         precondition(height >= 0, "negative height is not allowed.")
         self.width = width
         self.height = height
-        self.colorSpace = ColorSpace(colorSpace)
+        self.colorSpace = colorSpace
         self.pixel = [Pixel](repeating: pixel, count: width * height)
     }
     
@@ -56,11 +56,11 @@ public struct Image<Pixel: ColorPixelProtocol> {
     }
     
     @_inlineable
-    public init<C : ColorSpaceProtocol, P>(image: Image<P>, colorSpace: C) where C.Model == Pixel.Model {
+    public init<P>(image: Image<P>, colorSpace: ColorSpace<Pixel.Model>) {
         self.width = image.width
         self.height = image.height
-        self.colorSpace = ColorSpace(colorSpace)
-        self.pixel = image.colorSpace.convert(image.pixel, colorSpace: self.colorSpace)
+        self.colorSpace = colorSpace
+        self.pixel = image.colorSpace.convert(image.pixel, to: self.colorSpace)
     }
     
     @_inlineable
@@ -80,16 +80,6 @@ public struct Image<Pixel: ColorPixelProtocol> {
         } else {
             self.pixel = algorithm.calculate(source: image.pixel, s_width: image.width, width: width, height: height, pixel: Pixel.self, transform: transform.inverse, antialias: antialias)
         }
-    }
-}
-
-extension ColorSpace {
-    
-    @_versioned
-    @_inlineable
-    func convert<S: ColorPixelProtocol, R: ColorPixelProtocol>(_ source: [S], colorSpace: ColorSpace<R.Model>) -> [R] where S.Model == Model {
-        let matrix = self.cieXYZ.transferMatrix(to: colorSpace.cieXYZ, chromaticAdaptationAlgorithm: chromaticAdaptationAlgorithm)
-        return source.map { R(color: colorSpace.base.convertFromXYZ(self.base.convertToXYZ($0.color) * matrix), opacity: $0.opacity) }
     }
 }
 

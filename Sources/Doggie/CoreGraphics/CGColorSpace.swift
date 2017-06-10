@@ -28,56 +28,64 @@
     import Foundation
     import CoreGraphics
     
-    fileprivate protocol _CGColorSpaceConvertible {
-        
-        var isSupportCGColorSpaceGamma: Bool { get }
-        
-        var cgColorSpace : CGColorSpace? { get }
-    }
-    
-    extension _ColorSpaceBase : _CGColorSpaceConvertible {
-        
-        fileprivate var isSupportCGColorSpaceGamma : Bool {
-            return self.base.isSupportCGColorSpaceGamma
-        }
-        
-        fileprivate var cgColorSpace : CGColorSpace? {
-            return self.base.cgColorSpace
-        }
-    }
-    
-    extension ColorSpaceProtocol {
+    extension ColorSpace {
         
         var isSupportCGColorSpaceGamma : Bool {
+            return base.isSupportCGColorSpaceGamma(linear: false)
+        }
+        
+        public var cgColorSpace : CGColorSpace? {
+            return base.cgColorSpace(linear: false)
+        }
+    }
+    
+    fileprivate protocol _NormalizedColorSpaceBase {
+        
+        var _base: _ColorSpaceBaseProtocol { get }
+    }
+    
+    fileprivate protocol _LinearToneColorSpaceBase {
+        
+        var _base: _ColorSpaceBaseProtocol { get }
+    }
+    
+    extension NormalizedColorSpace : _NormalizedColorSpaceBase {
+        
+        fileprivate var _base: _ColorSpaceBaseProtocol {
+            return base
+        }
+    }
+    
+    extension LinearToneColorSpace : _LinearToneColorSpaceBase {
+        
+        fileprivate var _base: _ColorSpaceBaseProtocol {
+            return base
+        }
+    }
+    
+    extension _ColorSpaceBaseProtocol {
+        
+        fileprivate func isSupportCGColorSpaceGamma(linear: Bool) -> Bool {
             switch self {
-            case let colorSpace as ColorSpace<Model>:
-                if let colorSpace = colorSpace.base as? _CGColorSpaceConvertible {
-                    return colorSpace.isSupportCGColorSpaceGamma
-                }
-            case let colorSpace as CalibratedGrayColorSpace: return colorSpace is CalibratedGammaGrayColorSpace
-            case let colorSpace as CalibratedRGBColorSpace: return colorSpace is CalibratedGammaRGBColorSpace
+            case let colorSpace as _NormalizedColorSpaceBase: return colorSpace._base.isSupportCGColorSpaceGamma(linear: linear)
+            case let colorSpace as _LinearToneColorSpaceBase: return colorSpace._base.isSupportCGColorSpaceGamma(linear: true)
+            case let colorSpace as CalibratedGrayColorSpace: return linear || colorSpace is CalibratedGammaGrayColorSpace
+            case let colorSpace as CalibratedRGBColorSpace: return linear || colorSpace is CalibratedGammaRGBColorSpace
             default: break
             }
             return false
         }
-    }
-    
-    extension ColorSpaceProtocol {
         
-        public var cgColorSpace : CGColorSpace? {
+        fileprivate func cgColorSpace(linear: Bool) -> CGColorSpace? {
             
             switch self {
-            case let colorSpace as ColorSpace<Model>:
-                
-                if let colorSpace = colorSpace.base as? _CGColorSpaceConvertible {
-                    return colorSpace.cgColorSpace
-                }
-                
+            case let colorSpace as _NormalizedColorSpaceBase: return colorSpace._base.cgColorSpace(linear: linear)
+            case let colorSpace as _LinearToneColorSpaceBase: return colorSpace._base.cgColorSpace(linear: true)
             case let colorSpace as CalibratedGrayColorSpace:
                 
                 let gamma: CGFloat
                 
-                if let colorSpace = colorSpace as? CalibratedGammaGrayColorSpace {
+                if !linear, let colorSpace = colorSpace as? CalibratedGammaGrayColorSpace {
                     gamma = CGFloat(colorSpace.gamma)
                 } else {
                     gamma = 1
@@ -91,7 +99,7 @@
                 
                 let gamma: [CGFloat]
                 
-                if let colorSpace = colorSpace as? CalibratedGammaRGBColorSpace {
+                if !linear, let colorSpace = colorSpace as? CalibratedGammaRGBColorSpace {
                     gamma = [CGFloat(colorSpace.gamma.0), CGFloat(colorSpace.gamma.1), CGFloat(colorSpace.gamma.2)]
                 } else {
                     gamma = [1, 1, 1]

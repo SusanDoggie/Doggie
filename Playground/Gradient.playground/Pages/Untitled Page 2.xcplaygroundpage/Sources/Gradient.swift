@@ -4,7 +4,7 @@ import Doggie
 
 public func sampleImage(width: Int, height: Int) -> Image<ARGB32ColorPixel> {
     
-    let context = ImageContext(width: width, height: height, colorSpace: CalibratedRGBColorSpace.sRGB)
+    let context = ImageContext(width: width, height: height, colorSpace: ColorSpace.sRGB)
     
     context.transform = SDTransform.scale(x: Double(width) / 300, y: Double(height) / 300)
     

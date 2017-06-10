@@ -32,15 +32,15 @@ public struct Color<Model : ColorModelProtocol> {
     public var opacity: Double
     
     @_inlineable
-    public init<C : ColorSpaceProtocol, P : ColorPixelProtocol>(colorSpace: C, color: P) where C.Model == Model, C.Model == P.Model {
-        self.colorSpace = ColorSpace(colorSpace)
+    public init<P : ColorPixelProtocol>(colorSpace: ColorSpace<Model>, color: P) where P.Model == Model {
+        self.colorSpace = colorSpace
         self.color = color.color
         self.opacity = color.opacity
     }
     
     @_inlineable
-    public init<C : ColorSpaceProtocol>(colorSpace: C, color: Model, opacity: Double = 1) where C.Model == Model {
-        self.colorSpace = ColorSpace(colorSpace)
+    public init(colorSpace: ColorSpace<Model>, color: Model, opacity: Double = 1) {
+        self.colorSpace = colorSpace
         self.color = color
         self.opacity = opacity
     }
@@ -49,7 +49,7 @@ public struct Color<Model : ColorModelProtocol> {
 extension Color where Model == GrayColorModel {
     
     @_inlineable
-    public init<C : ColorSpaceProtocol>(colorSpace: C, white: Double, opacity: Double = 1) where C.Model == Model {
+    public init(colorSpace: ColorSpace<Model>, white: Double, opacity: Double = 1) {
         self.init(colorSpace: colorSpace, color: GrayColorModel(white: white), opacity: opacity)
     }
 }
@@ -57,7 +57,7 @@ extension Color where Model == GrayColorModel {
 extension Color where Model == RGBColorModel {
     
     @_inlineable
-    public init<C : ColorSpaceProtocol>(colorSpace: C, red: Double, green: Double, blue: Double, opacity: Double = 1) where C.Model == Model {
+    public init(colorSpace: ColorSpace<Model>, red: Double, green: Double, blue: Double, opacity: Double = 1) {
         self.init(colorSpace: colorSpace, color: RGBColorModel(red: red, green: green, blue: blue), opacity: opacity)
     }
 }
@@ -65,7 +65,7 @@ extension Color where Model == RGBColorModel {
 extension Color where Model == CMYKColorModel {
     
     @_inlineable
-    public init<C : ColorSpaceProtocol>(colorSpace: C, cyan: Double, magenta: Double, yellow: Double, black: Double, opacity: Double = 1) where C.Model == Model {
+    public init(colorSpace: ColorSpace<Model>, cyan: Double, magenta: Double, yellow: Double, black: Double, opacity: Double = 1) {
         self.init(colorSpace: colorSpace, color: CMYKColorModel(cyan: cyan, magenta: magenta, yellow: yellow, black: black), opacity: opacity)
     }
 }
@@ -195,8 +195,8 @@ extension Color where Model == CMYKColorModel {
 extension Color {
     
     @_inlineable
-    public func convert<C : ColorSpaceProtocol>(to colorSpace: C) -> Color<C.Model> {
-        return Color<C.Model>(colorSpace: colorSpace, color: self.colorSpace.convert(color, to: colorSpace), opacity: opacity)
+    public func convert<R>(to colorSpace: ColorSpace<R>) -> Color<R> {
+        return Color<R>(colorSpace: colorSpace, color: self.colorSpace.convert(color, to: colorSpace), opacity: opacity)
     }
 }
 

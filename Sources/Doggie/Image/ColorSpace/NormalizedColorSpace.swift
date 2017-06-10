@@ -23,8 +23,9 @@
 //  THE SOFTWARE.
 //
 
+@_versioned
 @_fixed_layout
-public struct NormalizedColorSpace<ColorSpace: ColorSpaceProtocol> : ColorSpaceProtocol {
+struct NormalizedColorSpace<ColorSpace: _ColorSpaceBaseProtocol> : _ColorSpaceBaseProtocol {
     
     @_versioned
     let base: ColorSpace
@@ -35,41 +36,48 @@ public struct NormalizedColorSpace<ColorSpace: ColorSpaceProtocol> : ColorSpaceP
         self.base = base
     }
     
+    @_versioned
     @_inlineable
-    public var cieXYZ: CIEXYZColorSpace {
-        return CIEXYZColorSpace(white: base.cieXYZ.white * base.cieXYZ.normalizeMatrix, chromaticAdaptationAlgorithm: base.chromaticAdaptationAlgorithm)
+    var cieXYZ: CIEXYZColorSpace {
+        return CIEXYZColorSpace(white: base.cieXYZ.white * base.cieXYZ.normalizeMatrix, black: XYZColorModel(x: 0, y: 0, z: 0))
     }
     
+    @_versioned
     @_inlineable
-    public var chromaticAdaptationAlgorithm: ChromaticAdaptationAlgorithm {
-        return base.chromaticAdaptationAlgorithm
-    }
-    
-    @_inlineable
-    public func convertToLinear(_ color: ColorSpace.Model) -> ColorSpace.Model {
+    func convertToLinear<Model: ColorModelProtocol>(_ color: Model) -> Model {
         return base.convertToLinear(color)
     }
     
+    @_versioned
     @_inlineable
-    public func convertFromLinear(_ color: ColorSpace.Model) -> ColorSpace.Model {
+    func convertFromLinear<Model: ColorModelProtocol>(_ color: Model) -> Model {
         return base.convertFromLinear(color)
     }
     
+    @_versioned
     @_inlineable
-    public func convertLinearToXYZ(_ color: ColorSpace.Model) -> XYZColorModel {
+    func convertLinearToXYZ<Model: ColorModelProtocol>(_ color: Model) -> XYZColorModel {
         return base.convertLinearToXYZ(color) * base.cieXYZ.normalizeMatrix
     }
     
+    @_versioned
     @_inlineable
-    public func convertLinearFromXYZ(_ color: XYZColorModel) -> ColorSpace.Model {
+    func convertLinearFromXYZ<Model: ColorModelProtocol>(_ color: XYZColorModel) -> Model {
         return base.convertLinearFromXYZ(color * base.cieXYZ.normalizeMatrix.inverse)
+    }
+    
+    @_versioned
+    @_inlineable
+    var normalized: _ColorSpaceBaseProtocol {
+        return self
     }
 }
 
-extension ColorSpaceProtocol {
+extension _ColorSpaceBaseProtocol {
     
+    @_versioned
     @_inlineable
-    public var normalized: NormalizedColorSpace<Self> {
+    var normalized: _ColorSpaceBaseProtocol {
         return NormalizedColorSpace(self)
     }
 }

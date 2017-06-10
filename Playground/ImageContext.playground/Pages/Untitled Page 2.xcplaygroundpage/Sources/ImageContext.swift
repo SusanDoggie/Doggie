@@ -7,11 +7,11 @@ let path = try! Shape(code: "M83.426 0.439c0.368-0.038 0.564-0.068 0.806-0.183-0
 
 public func sampleImage(width: Int, height: Int) -> Image<ARGB32ColorPixel> {
     
-    let context = ImageContext(width: width, height: height, colorSpace: CalibratedRGBColorSpace.sRGB)
+    let context = ImageContext(width: width, height: height, colorSpace: ColorSpace.sRGB)
     
     context.transform = SDTransform.scale(x: Double(width) / 100, y: Double(height) / 100)
     
-    context.draw(shape: path, color: Color(colorSpace: CalibratedRGBColorSpace.sRGB, color: RGBColorModel(red: 0/255, green: 0/255, blue: 0/255)), winding: .nonZero)
+    context.draw(shape: path, color: Color(colorSpace: ColorSpace.sRGB, color: RGBColorModel(red: 0/255, green: 0/255, blue: 0/255)), winding: .nonZero)
     
     return Image<ARGB32ColorPixel>(image: context.image)
 }

@@ -25,84 +25,98 @@
 
 import Foundation
 
-public class CalibratedGrayColorSpace : ColorSpaceProtocol {
-    
-    public typealias Model = GrayColorModel
-    
-    public private(set) var cieXYZ: CIEXYZColorSpace
+extension ColorSpace where Model == GrayColorModel {
     
     @_inlineable
-    public init(white: Point, chromaticAdaptationAlgorithm: ChromaticAdaptationAlgorithm = .default) {
-        self.cieXYZ = CIEXYZColorSpace(white: white, chromaticAdaptationAlgorithm: chromaticAdaptationAlgorithm)
+    public static func calibratedGray<C>(from colorSpace: ColorSpace<C>) -> ColorSpace {
+        return ColorSpace(base: CalibratedGrayColorSpace(colorSpace.base.cieXYZ))
     }
+    
     @_inlineable
-    public init(white: XYZColorModel, black: XYZColorModel = XYZColorModel(x: 0, y: 0, z: 0), chromaticAdaptationAlgorithm: ChromaticAdaptationAlgorithm = .default) {
-        self.cieXYZ = CIEXYZColorSpace(white: white, black: black, chromaticAdaptationAlgorithm: chromaticAdaptationAlgorithm)
+    public static func calibratedGray(white: Point) -> ColorSpace {
+        return calibratedGray(white: XYZColorModel(luminance: 1, x: white.x, y: white.y))
     }
+    
     @_inlineable
-    public init(_ cieXYZ: CIEXYZColorSpace) {
+    public static func calibratedGray(white: XYZColorModel, black: XYZColorModel = XYZColorModel(x: 0, y: 0, z: 0)) -> ColorSpace {
+        return ColorSpace(base: CalibratedGrayColorSpace(CIEXYZColorSpace(white: white, black: black)))
+    }
+    
+    @_inlineable
+    public static func calibratedGray(white: XYZColorModel, black: XYZColorModel = XYZColorModel(x: 0, y: 0, z: 0), gamma: Double) -> ColorSpace {
+        return ColorSpace(base: CalibratedGammaGrayColorSpace(CIEXYZColorSpace(white: white, black: black), gamma: gamma))
+    }
+}
+
+@_versioned
+@_fixed_layout
+class CalibratedGrayColorSpace : ColorSpaceBaseProtocol {
+    
+    typealias Model = GrayColorModel
+    
+    @_versioned
+    let cieXYZ: CIEXYZColorSpace
+    
+    @_versioned
+    @_inlineable
+    init(_ cieXYZ: CIEXYZColorSpace) {
         self.cieXYZ = cieXYZ
     }
     
+    @_versioned
     @_inlineable
-    public var chromaticAdaptationAlgorithm: ChromaticAdaptationAlgorithm {
-        get {
-            return cieXYZ.chromaticAdaptationAlgorithm
-        }
-        set {
-            cieXYZ.chromaticAdaptationAlgorithm = newValue
-        }
-    }
-    
-    @_inlineable
-    public func convertToLinear(_ color: Model) -> Model {
+    func convertToLinear(_ color: Model) -> Model {
         return color
     }
     
+    @_versioned
     @_inlineable
-    public func convertFromLinear(_ color: Model) -> Model {
+    func convertFromLinear(_ color: Model) -> Model {
         return color
     }
 }
 
 extension CalibratedGrayColorSpace {
     
+    @_versioned
     @_inlineable
-    public func convertLinearToXYZ(_ color: Model) -> XYZColorModel {
+    func convertLinearToXYZ(_ color: Model) -> XYZColorModel {
         let normalizeMatrix = cieXYZ.normalizeMatrix
         let _white = white * normalizeMatrix
         return XYZColorModel(luminance: color.white, point: _white.point) * normalizeMatrix.inverse
     }
     
+    @_versioned
     @_inlineable
-    public func convertLinearFromXYZ(_ color: XYZColorModel) -> Model {
+    func convertLinearFromXYZ(_ color: XYZColorModel) -> Model {
         let normalized = color * cieXYZ.normalizeMatrix
         return Model(white: normalized.luminance)
     }
 }
 
-public class CalibratedGammaGrayColorSpace: CalibratedGrayColorSpace {
+@_versioned
+@_fixed_layout
+class CalibratedGammaGrayColorSpace: CalibratedGrayColorSpace {
     
-    public let gamma: Double
+    @_versioned
+    let gamma: Double
     
+    @_versioned
     @_inlineable
-    public convenience init(white: Point, gamma: Double, chromaticAdaptationAlgorithm: ChromaticAdaptationAlgorithm = .default) {
-        self.init(white: XYZColorModel(luminance: 1, x: white.x, y: white.y), black: XYZColorModel(x: 0, y: 0, z: 0), gamma: gamma, chromaticAdaptationAlgorithm: chromaticAdaptationAlgorithm)
-    }
-    
-    @_inlineable
-    public init(white: XYZColorModel, black: XYZColorModel, gamma: Double, chromaticAdaptationAlgorithm: ChromaticAdaptationAlgorithm = .default) {
+    init(_ cieXYZ: CIEXYZColorSpace, gamma: Double) {
         self.gamma = gamma
-        super.init(white: white, black: black, chromaticAdaptationAlgorithm: chromaticAdaptationAlgorithm)
+        super.init(cieXYZ)
     }
     
+    @_versioned
     @_inlineable
-    public override func convertToLinear(_ color: GrayColorModel) -> GrayColorModel {
+    override func convertToLinear(_ color: GrayColorModel) -> GrayColorModel {
         return GrayColorModel(white: exteneded(color.white) { pow($0, gamma) })
     }
     
+    @_versioned
     @_inlineable
-    public override func convertFromLinear(_ color: GrayColorModel) -> GrayColorModel {
+    override func convertFromLinear(_ color: GrayColorModel) -> GrayColorModel {
         return GrayColorModel(white: exteneded(color.white) { pow($0, 1 / gamma) })
     }
 }

@@ -23,52 +23,73 @@
 //  THE SOFTWARE.
 //
 
-public struct CIEXYZColorSpace : ColorSpaceProtocol {
-    
-    public typealias Model = XYZColorModel
-    
-    public let white: Model
-    public let black: Model
-    
-    public var chromaticAdaptationAlgorithm: ChromaticAdaptationAlgorithm
+extension ColorSpace where Model == XYZColorModel {
     
     @_inlineable
-    public init(white: Point, chromaticAdaptationAlgorithm: ChromaticAdaptationAlgorithm = .default) {
-        self.init(white: XYZColorModel(luminance: 1, x: white.x, y: white.y), chromaticAdaptationAlgorithm: chromaticAdaptationAlgorithm)
+    public static func cieXYZ<C>(from colorSpace: ColorSpace<C>) -> ColorSpace {
+        return ColorSpace(base: colorSpace.base.cieXYZ)
     }
     
     @_inlineable
-    public init(white: Model, black: Model = XYZColorModel(x: 0, y: 0, z: 0), chromaticAdaptationAlgorithm: ChromaticAdaptationAlgorithm = .default) {
+    public static func cieXYZ(white: Point) -> ColorSpace {
+        return cieXYZ(white: XYZColorModel(luminance: 1, x: white.x, y: white.y))
+    }
+    
+    @_inlineable
+    public static func cieXYZ(white: XYZColorModel, black: XYZColorModel = XYZColorModel(x: 0, y: 0, z: 0)) -> ColorSpace {
+        return ColorSpace(base: CIEXYZColorSpace(white: white, black: black))
+    }
+}
+
+@_versioned
+@_fixed_layout
+struct CIEXYZColorSpace : ColorSpaceBaseProtocol {
+    
+    typealias Model = XYZColorModel
+    
+    @_versioned
+    let white: Model
+    
+    @_versioned
+    let black: Model
+    
+    @_versioned
+    @_inlineable
+    init(white: Model, black: Model) {
         self.white = white
         self.black = black
-        self.chromaticAdaptationAlgorithm = chromaticAdaptationAlgorithm
     }
 }
 
 extension CIEXYZColorSpace {
     
+    @_versioned
     @_inlineable
-    public var cieXYZ: CIEXYZColorSpace {
+    var cieXYZ: CIEXYZColorSpace {
         return self
     }
     
+    @_versioned
     @_inlineable
-    public func convertToLinear(_ color: Model) -> Model {
+    func convertToLinear(_ color: Model) -> Model {
         return color
     }
     
+    @_versioned
     @_inlineable
-    public func convertFromLinear(_ color: Model) -> Model {
+    func convertFromLinear(_ color: Model) -> Model {
         return color
     }
     
+    @_versioned
     @_inlineable
-    public func convertLinearToXYZ(_ color: Model) -> XYZColorModel {
+    func convertLinearToXYZ(_ color: Model) -> XYZColorModel {
         return color
     }
     
+    @_versioned
     @_inlineable
-    public func convertLinearFromXYZ(_ color: XYZColorModel) -> Model {
+    func convertLinearFromXYZ(_ color: XYZColorModel) -> Model {
         return color
     }
 }

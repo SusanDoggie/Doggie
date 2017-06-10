@@ -19,7 +19,7 @@ struct Vertex : ImageContextRenderVertex {
 
 public func sampleImage(width: Int, height: Int) -> Image<ARGB32ColorPixel> {
     
-    let context = ImageContext(width: 500, height: 500, colorSpace: CalibratedRGBColorSpace.sRGB)
+    let context = ImageContext(width: 500, height: 500, colorSpace: ColorSpace.sRGB)
     
     func shader(vertex: Vertex) -> ColorPixel<RGBColorModel> {
         

@@ -23,10 +23,10 @@ extension NSImage {
     }
 }
 
-let lab = CIELabColorSpace(white: Point(x: 0.34567, y: 0.35850))
-let luv = CIELuvColorSpace(white: Point(x: 0.34567, y: 0.35850))
+let lab = ColorSpace.cieLab(white: Point(x: 0.34567, y: 0.35850))
+let luv = ColorSpace.cieLuv(white: Point(x: 0.34567, y: 0.35850))
 
-public func showLab(size: Int, x: ClosedRange<Double>, y: ClosedRange<Double>, z: Double, colorSpace: CalibratedRGBColorSpace) -> NSImage? {
+public func showLab(size: Int, x: ClosedRange<Double>, y: ClosedRange<Double>, z: Double, colorSpace: ColorSpace<RGBColorModel>) -> NSImage? {
     
     var buffer = [UInt32](repeating: 0, count: size * size)
     
@@ -55,7 +55,7 @@ public func showLab(size: Int, x: ClosedRange<Double>, y: ClosedRange<Double>, z
     return nil
 }
 
-public func showLuv(size: Int, x: ClosedRange<Double>, y: ClosedRange<Double>, z: Double, colorSpace: CalibratedRGBColorSpace) -> NSImage? {
+public func showLuv(size: Int, x: ClosedRange<Double>, y: ClosedRange<Double>, z: Double, colorSpace: ColorSpace<RGBColorModel>) -> NSImage? {
     
     var buffer = [UInt32](repeating: 0, count: size * size)
     

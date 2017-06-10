@@ -28,8 +28,6 @@ protocol _ColorSpaceBaseProtocol {
     
     var cieXYZ: CIEXYZColorSpace { get }
     
-    var chromaticAdaptationAlgorithm: ChromaticAdaptationAlgorithm { get }
-    
     func convertToLinear<Model: ColorModelProtocol>(_ color: Model) -> Model
     
     func convertFromLinear<Model: ColorModelProtocol>(_ color: Model) -> Model
@@ -38,154 +36,118 @@ protocol _ColorSpaceBaseProtocol {
     
     func convertLinearFromXYZ<Model: ColorModelProtocol>(_ color: XYZColorModel) -> Model
     
-    func convertToXYZ<Model: ColorModelProtocol>(_ color: Model) -> XYZColorModel
-    
-    func convertFromXYZ<Model: ColorModelProtocol>(_ color: XYZColorModel) -> Model
-    
-    func convert<Model: ColorModelProtocol, R : ColorSpaceProtocol>(_ color: Model, to other: R) -> R.Model
-    
     var normalized: _ColorSpaceBaseProtocol { get }
     
     var linearTone: _ColorSpaceBaseProtocol { get }
 }
 
-@_versioned
-@_fixed_layout
-struct _ColorSpaceBase<C : ColorSpaceProtocol> : _ColorSpaceBaseProtocol {
-    
-    @_versioned
-    let base: C
+extension _ColorSpaceBaseProtocol {
     
     @_versioned
     @_inlineable
-    init(base: C) {
-        self.base = base
+    var white: XYZColorModel {
+        return cieXYZ.white
+    }
+    
+    @_versioned
+    @_inlineable
+    var black: XYZColorModel {
+        return cieXYZ.black
     }
 }
 
-extension _ColorSpaceBase {
-    
-    @_versioned
-    @_inlineable
-    var cieXYZ: CIEXYZColorSpace {
-        return base.cieXYZ
-    }
-}
-
-extension _ColorSpaceBase {
-    
-    @_versioned
-    @_inlineable
-    var chromaticAdaptationAlgorithm: ChromaticAdaptationAlgorithm {
-        return base.chromaticAdaptationAlgorithm
-    }
-}
-
-extension _ColorSpaceBase {
-    
-    @_versioned
-    @_inlineable
-    func convertToLinear<Model: ColorModelProtocol>(_ color: Model) -> Model {
-        return base.convertToLinear(color as! C.Model) as! Model
-    }
-    
-    @_versioned
-    @_inlineable
-    func convertFromLinear<Model: ColorModelProtocol>(_ color: Model) -> Model {
-        return base.convertFromLinear(color as! C.Model) as! Model
-    }
-}
-
-extension _ColorSpaceBase {
-    
-    @_versioned
-    @_inlineable
-    func convertLinearToXYZ<Model: ColorModelProtocol>(_ color: Model) -> XYZColorModel {
-        return base.convertLinearToXYZ(color as! C.Model)
-    }
-    
-    @_versioned
-    @_inlineable
-    func convertLinearFromXYZ<Model: ColorModelProtocol>(_ color: XYZColorModel) -> Model {
-        return base.convertLinearFromXYZ(color) as! Model
-    }
-}
-
-extension _ColorSpaceBase {
+extension _ColorSpaceBaseProtocol {
     
     @_versioned
     @_inlineable
     func convertToXYZ<Model: ColorModelProtocol>(_ color: Model) -> XYZColorModel {
-        return base.convertToXYZ(color as! C.Model)
+        return self.convertLinearToXYZ(self.convertToLinear(color))
     }
     
     @_versioned
     @_inlineable
     func convertFromXYZ<Model: ColorModelProtocol>(_ color: XYZColorModel) -> Model {
-        return base.convertFromXYZ(color) as! Model
+        return self.convertFromLinear(self.convertLinearFromXYZ(color))
     }
 }
 
-extension _ColorSpaceBase {
+@_versioned
+protocol ColorSpaceBaseProtocol : _ColorSpaceBaseProtocol {
+    
+    associatedtype Model : ColorModelProtocol
+    
+    func convertToLinear(_ color: Model) -> Model
+    
+    func convertFromLinear(_ color: Model) -> Model
+    
+    func convertLinearToXYZ(_ color: Model) -> XYZColorModel
+    
+    func convertLinearFromXYZ(_ color: XYZColorModel) -> Model
+}
+
+extension ColorSpaceBaseProtocol {
     
     @_versioned
     @_inlineable
-    func convert<Model: ColorModelProtocol, R : ColorSpaceProtocol>(_ color: Model, to other: R) -> R.Model {
-        return base.convert(color as! C.Model, to: other)
+    func convertToLinear<C: ColorModelProtocol>(_ color: C) -> C {
+        return self.convertToLinear(color as! Model) as! C
+    }
+    
+    @_versioned
+    @_inlineable
+    func convertFromLinear<C: ColorModelProtocol>(_ color: C) -> C {
+        return self.convertFromLinear(color as! Model) as! C
+    }
+    
+    @_versioned
+    @_inlineable
+    func convertLinearToXYZ<C: ColorModelProtocol>(_ color: C) -> XYZColorModel {
+        return self.convertLinearToXYZ(color as! Model)
+    }
+    
+    @_versioned
+    @_inlineable
+    func convertLinearFromXYZ<C: ColorModelProtocol>(_ color: XYZColorModel) -> C {
+        return self.convertLinearFromXYZ(color) as! C
     }
 }
 
-extension _ColorSpaceBase {
+extension ColorSpaceBaseProtocol {
     
     @_versioned
     @_inlineable
-    var normalized: _ColorSpaceBaseProtocol {
-        return _ColorSpaceBase<NormalizedColorSpace<C>>(base: base.normalized)
+    func exteneded(_ x: Double, _ gamma: (Double) -> Double) -> Double {
+        return x.sign == .plus ? gamma(x) : -gamma(-x)
     }
+}
+
+public enum ChromaticAdaptationAlgorithm {
+    case xyzScaling
+    case vonKries
+    case bradford
+    case other(Matrix)
+}
+
+extension ChromaticAdaptationAlgorithm {
     
-    @_versioned
     @_inlineable
-    var linearTone: _ColorSpaceBaseProtocol {
-        return _ColorSpaceBase<LinearToneColorSpace<C>>(base: base.linearTone)
+    public static var `default` : ChromaticAdaptationAlgorithm {
+        return .bradford
     }
 }
 
 @_fixed_layout
-public struct ColorSpace<Model : ColorModelProtocol> : ColorSpaceProtocol {
+public struct ColorSpace<Model : ColorModelProtocol> {
     
     @_versioned
     let base : _ColorSpaceBaseProtocol
+    
+    public var chromaticAdaptationAlgorithm: ChromaticAdaptationAlgorithm = .default
     
     @_versioned
     @_inlineable
     init(base : _ColorSpaceBaseProtocol) {
         self.base = base
-    }
-    
-    @_inlineable
-    public init<C : ColorSpaceProtocol>(_ colorSpace: C) where C.Model == Model {
-        
-        if let colorSpace = colorSpace as? ColorSpace<Model> {
-            self.base = colorSpace.base
-        } else {
-            self.base = _ColorSpaceBase(base: colorSpace)
-        }
-    }
-}
-
-extension ColorSpace {
-    
-    @_inlineable
-    public var cieXYZ: CIEXYZColorSpace {
-        return base.cieXYZ
-    }
-}
-
-extension ColorSpace {
-    
-    @_inlineable
-    public var chromaticAdaptationAlgorithm: ChromaticAdaptationAlgorithm {
-        return base.chromaticAdaptationAlgorithm
     }
 }
 
@@ -205,48 +167,50 @@ extension ColorSpace {
 extension ColorSpace {
     
     @_inlineable
-    public func convertLinearToXYZ(_ color: Model) -> XYZColorModel {
-        return base.convertLinearToXYZ(color)
+    public func convert<R>(_ color: Model, to other: ColorSpace<R>) -> R {
+        return other.base.convertFromXYZ(self.base.convertToXYZ(color) * self.base.cieXYZ.transferMatrix(to: other.base.cieXYZ, chromaticAdaptationAlgorithm: chromaticAdaptationAlgorithm))
     }
     
     @_inlineable
-    public func convertLinearFromXYZ(_ color: XYZColorModel) -> Model {
-        return base.convertLinearFromXYZ(color)
-    }
-}
-
-extension ColorSpace {
-    
-    @_inlineable
-    public func convertToXYZ(_ color: Model) -> XYZColorModel {
-        return base.convertToXYZ(color)
+    public func convert<S : Sequence, R>(_ color: S, to other: ColorSpace<R>) -> [R] where S.Iterator.Element == Model {
+        let matrix = self.base.cieXYZ.transferMatrix(to: other.base.cieXYZ, chromaticAdaptationAlgorithm: chromaticAdaptationAlgorithm)
+        return color.map { other.base.convertFromXYZ(self.base.convertToXYZ($0) * matrix) }
     }
     
     @_inlineable
-    public func convertFromXYZ(_ color: XYZColorModel) -> Model {
-        return base.convertFromXYZ(color)
+    public func convert<S: ColorPixelProtocol, R: ColorPixelProtocol>(_ color: S, to other: ColorSpace<R.Model>) -> R where S.Model == Model {
+        return R(color: other.base.convertFromXYZ(self.base.convertToXYZ(color.color) * self.base.cieXYZ.transferMatrix(to: other.base.cieXYZ, chromaticAdaptationAlgorithm: chromaticAdaptationAlgorithm)), opacity: color.opacity)
     }
-}
-
-extension ColorSpace {
     
     @_inlineable
-    public func convert<R : ColorSpaceProtocol>(_ color: Model, to other: R) -> R.Model {
-        return base.convert(color, to: other)
+    public func convert<S : Sequence, R: ColorPixelProtocol>(_ color: S, to other: ColorSpace<R.Model>) -> [R] where S.Iterator.Element: ColorPixelProtocol, S.Iterator.Element.Model == Model {
+        let matrix = self.base.cieXYZ.transferMatrix(to: other.base.cieXYZ, chromaticAdaptationAlgorithm: chromaticAdaptationAlgorithm)
+        return color.map { R(color: other.base.convertFromXYZ(self.base.convertToXYZ($0.color) * matrix), opacity: $0.opacity) }
     }
 }
 
 extension ColorSpace {
     
-    @_versioned
     @_inlineable
-    var normalized: ColorSpace {
+    public var normalized: ColorSpace {
         return ColorSpace(base: base.normalized)
     }
     
-    @_versioned
     @_inlineable
-    var linearTone: ColorSpace {
+    public var linearTone: ColorSpace {
         return ColorSpace(base: base.linearTone)
+    }
+}
+
+extension ColorSpace {
+    
+    @_inlineable
+    public var white: XYZColorModel {
+        return base.white
+    }
+    
+    @_inlineable
+    public var black: XYZColorModel {
+        return base.black
     }
 }

@@ -23,8 +23,9 @@
 //  THE SOFTWARE.
 //
 
+@_versioned
 @_fixed_layout
-public struct LinearToneColorSpace<ColorSpace: ColorSpaceProtocol> : ColorSpaceProtocol {
+struct LinearToneColorSpace<ColorSpace: _ColorSpaceBaseProtocol> : _ColorSpaceBaseProtocol {
     
     @_versioned
     let base: ColorSpace
@@ -35,41 +36,48 @@ public struct LinearToneColorSpace<ColorSpace: ColorSpaceProtocol> : ColorSpaceP
         self.base = base
     }
     
+    @_versioned
     @_inlineable
-    public var cieXYZ: CIEXYZColorSpace {
+    var cieXYZ: CIEXYZColorSpace {
         return base.cieXYZ
     }
     
+    @_versioned
     @_inlineable
-    public var chromaticAdaptationAlgorithm: ChromaticAdaptationAlgorithm {
-        return base.chromaticAdaptationAlgorithm
-    }
-    
-    @_inlineable
-    public func convertToLinear(_ color: ColorSpace.Model) -> ColorSpace.Model {
+    func convertToLinear<Model: ColorModelProtocol>(_ color: Model) -> Model {
         return color
     }
     
+    @_versioned
     @_inlineable
-    public func convertFromLinear(_ color: ColorSpace.Model) -> ColorSpace.Model {
+    func convertFromLinear<Model: ColorModelProtocol>(_ color: Model) -> Model {
         return color
     }
     
+    @_versioned
     @_inlineable
-    public func convertLinearToXYZ(_ color: ColorSpace.Model) -> XYZColorModel {
+    func convertLinearToXYZ<Model: ColorModelProtocol>(_ color: Model) -> XYZColorModel {
         return base.convertLinearToXYZ(color)
     }
     
+    @_versioned
     @_inlineable
-    public func convertLinearFromXYZ(_ color: XYZColorModel) -> ColorSpace.Model {
+    func convertLinearFromXYZ<Model: ColorModelProtocol>(_ color: XYZColorModel) -> Model {
         return base.convertLinearFromXYZ(color)
+    }
+    
+    @_versioned
+    @_inlineable
+    var linearTone: _ColorSpaceBaseProtocol {
+        return self
     }
 }
 
-extension ColorSpaceProtocol {
+extension _ColorSpaceBaseProtocol {
     
+    @_versioned
     @_inlineable
-    public var linearTone: LinearToneColorSpace<Self> {
+    var linearTone: _ColorSpaceBaseProtocol {
         return LinearToneColorSpace(self)
     }
 }

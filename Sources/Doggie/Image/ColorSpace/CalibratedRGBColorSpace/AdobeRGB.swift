@@ -1,5 +1,5 @@
 //
-//  DrawClip.swift
+//  AdobeRGB.swift
 //
 //  The MIT License
 //  Copyright (c) 2015 - 2017 Susan Cheng. All rights reserved.
@@ -23,43 +23,10 @@
 //  THE SOFTWARE.
 //
 
-extension ImageContext {
+extension ColorSpace where Model == RGBColorModel {
     
-    @_inlineable
-    public func withUnsafeClipBufferPointer<R>(_ body: (UnsafeBufferPointer<Double>) throws -> R) rethrows -> R {
+    public static var adobeRGB: ColorSpace {
         
-        if let next = self.next {
-            return try next.withUnsafeClipBufferPointer(body)
-        } else {
-            return try clip.withUnsafeBufferPointer(body)
-        }
-    }
-}
-
-extension ImageContext {
-    
-    @_inlineable
-    public func drawClip(body: (ImageContext<GrayColorModel>) throws -> Void) rethrows {
-        
-        if let next = self.next {
-            try next.drawClip(body: body)
-            return
-        }
-        
-        let width = self.width
-        let height = self.height
-        
-        if width == 0 || height == 0 {
-            return
-        }
-        
-        let _clip = ImageContext<GrayColorModel>(width: width, height: height, colorSpace: ColorSpace.calibratedGray(from: colorSpace))
-        _clip._antialias = self._antialias
-        _clip._transform = self._transform
-        _clip._resamplingAlgorithm = self._resamplingAlgorithm
-        
-        try body(_clip)
-        
-        self.clip = _clip.image.pixel.map { $0.color.white * $0.opacity }
+        return calibratedRGB(white: XYZColorModel(luminance: 160.00, x: 0.3127, y: 0.3290), black: XYZColorModel(luminance: 0.5557, x: 0.3127, y: 0.3290), red: Point(x: 0.6400, y: 0.3300), green: Point(x: 0.2100, y: 0.7100), blue: Point(x: 0.1500, y: 0.0600), gamma: 2.19921875)
     }
 }
