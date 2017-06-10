@@ -31,9 +31,6 @@
       <FileRef
          location = "group:ImageContext.playground">
       </FileRef>
-      <FileRef
-         location = "group:Gradient.playground">
-      </FileRef>
    </Group>
    <FileRef
       location = "group:Doggie.xcodeproj">
