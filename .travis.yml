@@ -9,7 +9,7 @@ matrix:
   include:
     - os: linux
     - os: osx
-      osx_image: xcode8.3.1
+      osx_image: xcode8.3
 
 before_install:
   - git clone https://github.com/IBM-Swift/Package-Builder.git
