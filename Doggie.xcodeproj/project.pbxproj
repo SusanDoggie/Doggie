@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		081321DD1C11D1850081B2B9 /* Doggie.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 081321D31C11D1840081B2B9 /* Doggie.framework */; };
 		081321EB1C11D2C60081B2B9 /* FourierTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08BFF9B91B0715ED00EC88CB /* FourierTest.swift */; };
+		0821D6411EED58FC007E42F5 /* Rendering.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0821D6401EED58FC007E42F5 /* Rendering.swift */; };
+		0821D6421EED58FC007E42F5 /* Rendering.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0821D6401EED58FC007E42F5 /* Rendering.swift */; };
 		082516261C51C60A00F8F9B0 /* Doggie_iOS.h in Headers */ = {isa = PBXBuildFile; fileRef = 087FE59B1A372D5B005A2E9E /* Doggie_iOS.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		08458AF01E2E627600D01813 /* AccelerateWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AB11E2E627600D01813 /* AccelerateWrapper.swift */; };
 		08458AF11E2E627600D01813 /* AccelerateWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AB11E2E627600D01813 /* AccelerateWrapper.swift */; };
@@ -231,6 +233,7 @@
 /* Begin PBXFileReference section */
 		081321D31C11D1840081B2B9 /* Doggie.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Doggie.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		081321DC1C11D1850081B2B9 /* Doggie_iOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Doggie_iOSTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		0821D6401EED58FC007E42F5 /* Rendering.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Rendering.swift; sourceTree = "<group>"; };
 		08458AB11E2E627600D01813 /* AccelerateWrapper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccelerateWrapper.swift; sourceTree = "<group>"; };
 		08458AB21E2E627600D01813 /* AccelerateArithmetic.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccelerateArithmetic.swift; sourceTree = "<group>"; };
 		08458AB31E2E627600D01813 /* CircularConvolve.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CircularConvolve.swift; sourceTree = "<group>"; };
@@ -634,6 +637,7 @@
 				0A39A6BD1ED934B100804004 /* TransparencyLayer.swift */,
 				0A39A6B71ED9345100804004 /* DrawImage.swift */,
 				086F06481EDC623D00BA70C8 /* Rasterizer.swift */,
+				0821D6401EED58FC007E42F5 /* Rendering.swift */,
 				0A39A6BA1ED9347C00804004 /* DrawShape.swift */,
 				0A39A6C31ED937C700804004 /* DrawGradient.swift */,
 				086F064B1EDC65D600BA70C8 /* DrawGradientMesh.swift */,
@@ -920,6 +924,7 @@
 			files = (
 				08458B3C1E2E627600D01813 /* Polynomial.swift in Sources */,
 				0A36612B1EEA54AB00216A26 /* CGPath.swift in Sources */,
+				0821D6411EED58FC007E42F5 /* Rendering.swift in Sources */,
 				086F06491EDC623D00BA70C8 /* Rasterizer.swift in Sources */,
 				0A2A643E1E5C45EE000E21BB /* PDFParser.swift in Sources */,
 				0AD7FA301EBDA86A001C9B21 /* ShapeWinding.swift in Sources */,
@@ -1031,6 +1036,7 @@
 			files = (
 				08458B3D1E2E627600D01813 /* Polynomial.swift in Sources */,
 				0A36612C1EEA54AB00216A26 /* CGPath.swift in Sources */,
+				0821D6421EED58FC007E42F5 /* Rendering.swift in Sources */,
 				086F064A1EDC623D00BA70C8 /* Rasterizer.swift in Sources */,
 				0A2A643F1E5C45EE000E21BB /* PDFParser.swift in Sources */,
 				0AD7FA311EBDA86A001C9B21 /* ShapeWinding.swift in Sources */,
