@@ -72,9 +72,10 @@ public func sampleImage(width: Int, height: Int) -> Image<ARGB32ColorPixel> {
     
     let triangles = [t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11]
     
+    context.renderCullingMode = .back
     context.renderDepthCompareMode = .less
     
-    context.render(triangles, projection: PerspectiveProjectMatrix(angle: degreesToRad(50), nearZ: 1, farZ: 500), culling: .back, shader: shader)
+    context.render(triangles, projection: PerspectiveProjectMatrix(angle: degreesToRad(50), nearZ: 1, farZ: 500), shader: shader)
     
     return Image(image: context.image)
 }

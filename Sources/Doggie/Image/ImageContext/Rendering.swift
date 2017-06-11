@@ -80,91 +80,18 @@ public protocol ImageContextRenderVertex {
     static func * (lhs: Double, rhs: Self) -> Self
 }
 
-public enum ImageContextRenderCullMode {
-    
-    case none
-    case front
-    case back
-}
-
-public enum ImageContextRenderDepthCompareMode {
-    
-    case always
-    case never
-    case equal
-    case notEqual
-    case less
-    case lessEqual
-    case greater
-    case greaterEqual
-}
-
 extension ImageContext {
     
     @_inlineable
-    public func withUnsafeMutableDepthBufferPointer<R>(_ body: (inout UnsafeMutableBufferPointer<Double>) throws -> R) rethrows -> R {
+    public func render<S : Sequence, Vertex : ImageContextRenderVertex, Pixel : ColorPixelProtocol>(_ triangles: S, position: (Vertex.Position) -> Point, depthFun: ((Vertex.Position) -> Double)?, shader: (Vertex) throws -> Pixel?) rethrows where S.Iterator.Element == (Vertex, Vertex, Vertex), Pixel.Model == Model {
         
         if let next = self.next {
-            return try next.withUnsafeMutableDepthBufferPointer(body)
-        } else {
-            return try depth.withUnsafeMutableBufferPointer(body)
-        }
-    }
-    
-    @_inlineable
-    public func withUnsafeDepthBufferPointer<R>(_ body: (UnsafeBufferPointer<Double>) throws -> R) rethrows -> R {
-        
-        if let next = self.next {
-            return try next.withUnsafeDepthBufferPointer(body)
-        } else {
-            return try depth.withUnsafeBufferPointer(body)
-        }
-    }
-}
-
-extension ImageContext {
-    
-    @_inlineable
-    public var renderDepthCompareMode: ImageContextRenderDepthCompareMode {
-        get {
-            return next?.renderDepthCompareMode ?? _renderDepthCompareMode
-        }
-        set {
-            if let next = self.next {
-                next.renderDepthCompareMode = newValue
-            } else {
-                _renderDepthCompareMode = newValue
-            }
-        }
-    }
-    
-    @_inlineable
-    public func clearRenderDepthBuffer(with value: Double = 1) {
-        
-        withUnsafeMutableDepthBufferPointer { buf in
-            
-            if var depth = buf.baseAddress {
-                
-                for _ in 0..<buf.count {
-                    depth.pointee = value
-                    depth += 1
-                }
-            }
-        }
-    }
-}
-
-extension ImageContext {
-    
-    @_inlineable
-    public func render<S : Sequence, Vertex : ImageContextRenderVertex, Pixel : ColorPixelProtocol>(_ triangles: S, culling: ImageContextRenderCullMode, position: (Vertex.Position) -> Point, depthFun: ((Vertex.Position) -> Double)?, shader: (Vertex) throws -> Pixel?) rethrows where S.Iterator.Element == (Vertex, Vertex, Vertex), Pixel.Model == Model {
-        
-        if let next = self.next {
-            try next.render(triangles, culling: culling, position: position, depthFun: depthFun, shader: shader)
+            try next.render(triangles, position: position, depthFun: depthFun, shader: shader)
             return
         }
         
         let transform = self._transform
+        let cullingMode = self._renderCullingMode
         let depthCompareMode = self._renderDepthCompareMode
         
         if _image.width == 0 || _image.height == 0 || transform.determinant.almostZero() {
@@ -196,7 +123,7 @@ extension ImageContext {
                                     let p2 = position(v2.position)
                                     
                                     let _culling: Bool
-                                    switch culling {
+                                    switch cullingMode {
                                     case .none: _culling = false
                                     case .front: _culling = cross(p1 - p0, p2 - p0) > 0
                                     case .back: _culling = cross(p1 - p0, p2 - p0) < 0
@@ -273,9 +200,9 @@ extension ImageContext {
 extension ImageContext {
     
     @_inlineable
-    public func render<S : Sequence, Vertex : ImageContextRenderVertex, Pixel : ColorPixelProtocol>(_ triangles: S, culling: ImageContextRenderCullMode = .none, shader: (Vertex) throws -> Pixel?) rethrows where S.Iterator.Element == (Vertex, Vertex, Vertex), Vertex.Position == Point, Pixel.Model == Model {
+    public func render<S : Sequence, Vertex : ImageContextRenderVertex, Pixel : ColorPixelProtocol>(_ triangles: S, shader: (Vertex) throws -> Pixel?) rethrows where S.Iterator.Element == (Vertex, Vertex, Vertex), Vertex.Position == Point, Pixel.Model == Model {
         
-        try render(triangles, culling: culling, position: { $0 }, depthFun: nil, shader: shader)
+        try render(triangles, position: { $0 }, depthFun: nil, shader: shader)
     }
 }
 
@@ -305,7 +232,7 @@ public func *(lhs: Vector, rhs: PerspectiveProjectMatrix) -> Point {
 extension ImageContext {
     
     @_inlineable
-    public func render<S : Sequence, Vertex : ImageContextRenderVertex, Pixel : ColorPixelProtocol>(_ triangles: S, projection: PerspectiveProjectMatrix, culling: ImageContextRenderCullMode = .none, shader: (Vertex) throws -> Pixel?) rethrows where S.Iterator.Element == (Vertex, Vertex, Vertex), Vertex.Position == Vector, Pixel.Model == Model {
+    public func render<S : Sequence, Vertex : ImageContextRenderVertex, Pixel : ColorPixelProtocol>(_ triangles: S, projection: PerspectiveProjectMatrix, shader: (Vertex) throws -> Pixel?) rethrows where S.Iterator.Element == (Vertex, Vertex, Vertex), Vertex.Position == Vector, Pixel.Model == Model {
         
         let width = Double(self.width)
         let height = Double(self.height)
@@ -317,6 +244,6 @@ extension ImageContext {
             return Point(x: (0.5 + 0.5 * p.x) * width, y: (0.5 + 0.5 * p.y) * height)
         }
         
-        try render(triangles, culling: culling, position: _position, depthFun: { ($0.z - projection.nearZ) / (projection.farZ - projection.nearZ) }, shader: shader)
+        try render(triangles, position: _position, depthFun: { ($0.z - projection.nearZ) / (projection.farZ - projection.nearZ) }, shader: shader)
     }
 }

@@ -39,16 +39,13 @@ public class ImageContext<Model : ColorModelProtocol> {
     var depth: [Double]
     
     @_versioned
-    var _renderDepthCompareMode: ImageContextRenderDepthCompareMode = .always
+    var _opacity: Double = 1
     
     @_versioned
     var _antialias: Bool = true
     
     @_versioned
-    var _resamplingAlgorithm: ResamplingAlgorithm = .default
-    
-    @_versioned
-    var _opacity: Double = 1
+    var _transform: SDTransform = SDTransform.identity
     
     @_versioned
     var _blendMode: ColorBlendMode = .default
@@ -57,7 +54,13 @@ public class ImageContext<Model : ColorModelProtocol> {
     var _compositingMode: ColorCompositingMode = .default
     
     @_versioned
-    var _transform: SDTransform = SDTransform.identity
+    var _resamplingAlgorithm: ResamplingAlgorithm = .default
+    
+    @_versioned
+    var _renderCullingMode: ImageContextRenderCullMode = .none
+    
+    @_versioned
+    var _renderDepthCompareMode: ImageContextRenderDepthCompareMode = .always
     
     @_versioned
     var next: ImageContext<Model>?
@@ -105,6 +108,61 @@ extension ImageContext {
 extension ImageContext {
     
     @_inlineable
+    public func withUnsafeMutableClipBufferPointer<R>(_ body: (inout UnsafeMutableBufferPointer<Double>) throws -> R) rethrows -> R {
+        
+        if let next = self.next {
+            return try next.withUnsafeMutableClipBufferPointer(body)
+        } else {
+            return try clip.withUnsafeMutableBufferPointer(body)
+        }
+    }
+    
+    @_inlineable
+    public func withUnsafeClipBufferPointer<R>(_ body: (UnsafeBufferPointer<Double>) throws -> R) rethrows -> R {
+        
+        if let next = self.next {
+            return try next.withUnsafeClipBufferPointer(body)
+        } else {
+            return try clip.withUnsafeBufferPointer(body)
+        }
+    }
+    
+    @_inlineable
+    public func clearClipBuffer(with value: Double = 1) {
+        
+        withUnsafeMutableClipBufferPointer { buf in
+            
+            if var clip = buf.baseAddress {
+                
+                for _ in 0..<buf.count {
+                    clip.pointee = value
+                    clip += 1
+                }
+            }
+        }
+    }
+}
+
+extension ImageContext {
+    
+    @_inlineable
+    public var opacity: Double {
+        get {
+            return next?.opacity ?? _opacity
+        }
+        set {
+            if let next = self.next {
+                next.opacity = newValue
+            } else {
+                _opacity = newValue
+            }
+        }
+    }
+}
+
+extension ImageContext {
+    
+    @_inlineable
     public var antialias: Bool {
         get {
             return next?.antialias ?? _antialias
@@ -119,29 +177,15 @@ extension ImageContext {
     }
     
     @_inlineable
-    public var resamplingAlgorithm: ResamplingAlgorithm {
+    public var transform: SDTransform {
         get {
-            return next?.resamplingAlgorithm ?? _resamplingAlgorithm
+            return next?.transform ?? _transform
         }
         set {
             if let next = self.next {
-                next.resamplingAlgorithm = newValue
+                next.transform = newValue
             } else {
-                _resamplingAlgorithm = newValue
-            }
-        }
-    }
-    
-    @_inlineable
-    public var opacity: Double {
-        get {
-            return next?.opacity ?? _opacity
-        }
-        set {
-            if let next = self.next {
-                next.opacity = newValue
-            } else {
-                _opacity = newValue
+                _transform = newValue
             }
         }
     }
@@ -175,18 +219,109 @@ extension ImageContext {
     }
     
     @_inlineable
-    public var transform: SDTransform {
+    public var resamplingAlgorithm: ResamplingAlgorithm {
         get {
-            return next?.transform ?? _transform
+            return next?.resamplingAlgorithm ?? _resamplingAlgorithm
         }
         set {
             if let next = self.next {
-                next.transform = newValue
+                next.resamplingAlgorithm = newValue
             } else {
-                _transform = newValue
+                _resamplingAlgorithm = newValue
             }
         }
     }
+}
+
+public enum ImageContextRenderCullMode {
+    
+    case none
+    case front
+    case back
+}
+
+public enum ImageContextRenderDepthCompareMode {
+    
+    case always
+    case never
+    case equal
+    case notEqual
+    case less
+    case lessEqual
+    case greater
+    case greaterEqual
+}
+
+extension ImageContext {
+    
+    @_inlineable
+    public func withUnsafeMutableDepthBufferPointer<R>(_ body: (inout UnsafeMutableBufferPointer<Double>) throws -> R) rethrows -> R {
+        
+        if let next = self.next {
+            return try next.withUnsafeMutableDepthBufferPointer(body)
+        } else {
+            return try depth.withUnsafeMutableBufferPointer(body)
+        }
+    }
+    
+    @_inlineable
+    public func withUnsafeDepthBufferPointer<R>(_ body: (UnsafeBufferPointer<Double>) throws -> R) rethrows -> R {
+        
+        if let next = self.next {
+            return try next.withUnsafeDepthBufferPointer(body)
+        } else {
+            return try depth.withUnsafeBufferPointer(body)
+        }
+    }
+}
+
+extension ImageContext {
+    
+    @_inlineable
+    public var renderCullingMode: ImageContextRenderCullMode {
+        get {
+            return next?.renderCullingMode ?? _renderCullingMode
+        }
+        set {
+            if let next = self.next {
+                next.renderCullingMode = newValue
+            } else {
+                _renderCullingMode = newValue
+            }
+        }
+    }
+    
+    @_inlineable
+    public var renderDepthCompareMode: ImageContextRenderDepthCompareMode {
+        get {
+            return next?.renderDepthCompareMode ?? _renderDepthCompareMode
+        }
+        set {
+            if let next = self.next {
+                next.renderDepthCompareMode = newValue
+            } else {
+                _renderDepthCompareMode = newValue
+            }
+        }
+    }
+    
+    @_inlineable
+    public func clearRenderDepthBuffer(with value: Double = 1) {
+        
+        withUnsafeMutableDepthBufferPointer { buf in
+            
+            if var depth = buf.baseAddress {
+                
+                for _ in 0..<buf.count {
+                    depth.pointee = value
+                    depth += 1
+                }
+            }
+        }
+    }
+}
+
+extension ImageContext {
     
     @_inlineable
     public var colorSpace: ColorSpace<Model> {

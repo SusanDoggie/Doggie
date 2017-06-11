@@ -26,19 +26,6 @@
 extension ImageContext {
     
     @_inlineable
-    public func withUnsafeClipBufferPointer<R>(_ body: (UnsafeBufferPointer<Double>) throws -> R) rethrows -> R {
-        
-        if let next = self.next {
-            return try next.withUnsafeClipBufferPointer(body)
-        } else {
-            return try clip.withUnsafeBufferPointer(body)
-        }
-    }
-}
-
-extension ImageContext {
-    
-    @_inlineable
     public func drawClip(body: (ImageContext<GrayColorModel>) throws -> Void) rethrows {
         
         if let next = self.next {
@@ -56,7 +43,11 @@ extension ImageContext {
         let _clip = ImageContext<GrayColorModel>(width: width, height: height, colorSpace: ColorSpace.calibratedGray(from: colorSpace))
         _clip._antialias = self._antialias
         _clip._transform = self._transform
+        _clip._blendMode = self._blendMode
+        _clip._compositingMode = self._compositingMode
         _clip._resamplingAlgorithm = self._resamplingAlgorithm
+        _clip._renderCullingMode = self._renderCullingMode
+        _clip._renderDepthCompareMode = self._renderDepthCompareMode
         
         try body(_clip)
         
