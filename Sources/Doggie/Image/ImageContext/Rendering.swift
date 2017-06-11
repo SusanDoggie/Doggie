@@ -188,9 +188,7 @@ extension ImageContext {
                                 for (v0, v1, v2) in triangles {
                                     
                                     if let depthFun = depthFun {
-                                        guard 0...1 ~= depthFun(v0.position) else { continue }
-                                        guard 0...1 ~= depthFun(v1.position) else { continue }
-                                        guard 0...1 ~= depthFun(v2.position) else { continue }
+                                        guard 0...1 ~= depthFun(v0.position) || 0...1 ~= depthFun(v1.position) || 0...1 ~= depthFun(v2.position) else { continue }
                                     }
                                     
                                     let p0 = position(v0.position)
