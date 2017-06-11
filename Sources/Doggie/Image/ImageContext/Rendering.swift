@@ -229,6 +229,55 @@ public func *(lhs: Vector, rhs: PerspectiveProjectMatrix) -> Point {
     return Point(x: lhs.x * cotan * _w, y: lhs.y * cotan * _w)
 }
 
+@_versioned
+@_fixed_layout
+struct _PerspectiveProjectVertex<Vertex : ImageContextRenderVertex> : ImageContextRenderVertex where Vertex.Position == Vector {
+    
+    @_versioned
+    var v: Vertex
+    
+    @_versioned
+    var w: Double
+    
+    @_versioned
+    @_inlineable
+    init(v: Vertex, w: Double) {
+        self.v = v
+        self.w = w
+    }
+    
+    @_versioned
+    @_inlineable
+    init(vertex: Vertex) {
+        self.w = 1 / vertex.position.z
+        self.v = w * vertex
+    }
+    
+    @_versioned
+    @_inlineable
+    var vertex: Vertex {
+        return (1 / w) * v
+    }
+    
+    @_versioned
+    @_inlineable
+    var position: Vertex.Position {
+        return vertex.position
+    }
+    
+    @_versioned
+    @_inlineable
+    static func + (lhs: _PerspectiveProjectVertex, rhs: _PerspectiveProjectVertex) -> _PerspectiveProjectVertex {
+        return _PerspectiveProjectVertex(v: lhs.v + rhs.v, w: lhs.w + rhs.w)
+    }
+    
+    @_versioned
+    @_inlineable
+    static func * (lhs: Double, rhs: _PerspectiveProjectVertex) -> _PerspectiveProjectVertex {
+        return _PerspectiveProjectVertex(v: lhs * rhs.v, w: lhs * rhs.w)
+    }
+}
+
 extension ImageContext {
     
     @_inlineable
@@ -244,6 +293,6 @@ extension ImageContext {
             return Point(x: (0.5 + 0.5 * p.x) * width, y: (0.5 + 0.5 * p.y) * height)
         }
         
-        try render(triangles, position: _position, depthFun: { ($0.z - projection.nearZ) / (projection.farZ - projection.nearZ) }, shader: shader)
+        try render(triangles.map { (_PerspectiveProjectVertex(vertex: $0.0), _PerspectiveProjectVertex(vertex: $0.1), _PerspectiveProjectVertex(vertex: $0.2)) }, position: _position, depthFun: { ($0.z - projection.nearZ) / (projection.farZ - projection.nearZ) }, shader: { try shader($0.vertex) })
     }
 }

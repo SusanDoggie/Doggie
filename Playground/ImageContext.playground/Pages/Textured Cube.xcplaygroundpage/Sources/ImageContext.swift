@@ -6,17 +6,7 @@ struct Vertex : ImageContextRenderVertex {
     
     var position: Vector
     
-    var uv: Vector
-    
-    init(position: Vector, uv: Point) {
-        self.position = position
-        self.uv = Vector(x: uv.x, y: uv.y, z: 1) / position.z
-    }
-    
-    init(position: Vector, uv: Vector) {
-        self.position = position
-        self.uv = uv
-    }
+    var uv: Point
     
     static func + (lhs: Vertex, rhs: Vertex) -> Vertex {
         return Vertex(position: lhs.position + rhs.position, uv: lhs.uv + rhs.uv)
@@ -78,8 +68,8 @@ public func sampleImage(width: Int, height: Int) -> Image<ARGB32ColorPixel> {
         
         let uv = vertex.uv
         
-        let u = min(max(Int(uv.x / uv.z * 16), 0), 15)
-        let v = min(max(Int(uv.y / uv.z * 16), 0), 15)
+        let u = min(max(Int(uv.x * 16), 0), 15)
+        let v = min(max(Int(uv.y * 16), 0), 15)
         
         return ColorPixel(texture[u, v])
     }
