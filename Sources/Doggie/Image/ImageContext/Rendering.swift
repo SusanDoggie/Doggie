@@ -278,6 +278,26 @@ struct _PerspectiveProjectVertex<Vertex : ImageContextRenderVertex> : ImageConte
     }
 }
 
+@_versioned
+@_fixed_layout
+struct _PerspectiveProjectTriangleIterator<Base : IteratorProtocol, Vertex : ImageContextRenderVertex> : Sequence, IteratorProtocol where Vertex.Position == Vector, Base.Element == (Vertex, Vertex, Vertex) {
+    
+    @_versioned
+    var base: Base
+    
+    @_versioned
+    @_inlineable
+    init(base: Base) {
+        self.base = base
+    }
+    
+    @_versioned
+    @_inlineable
+    mutating func next() -> (_PerspectiveProjectVertex<Vertex>, _PerspectiveProjectVertex<Vertex>, _PerspectiveProjectVertex<Vertex>)? {
+        return base.next().map { (_PerspectiveProjectVertex(vertex: $0.0), _PerspectiveProjectVertex(vertex: $0.1), _PerspectiveProjectVertex(vertex: $0.2)) }
+    }
+}
+
 extension ImageContext {
     
     @_inlineable
@@ -293,6 +313,6 @@ extension ImageContext {
             return Point(x: (0.5 + 0.5 * p.x) * width, y: (0.5 + 0.5 * p.y) * height)
         }
         
-        try render(triangles.map { (_PerspectiveProjectVertex(vertex: $0.0), _PerspectiveProjectVertex(vertex: $0.1), _PerspectiveProjectVertex(vertex: $0.2)) }, position: _position, depthFun: { ($0.z - projection.nearZ) / (projection.farZ - projection.nearZ) }, shader: { try shader($0.vertex) })
+        try render(_PerspectiveProjectTriangleIterator(base: triangles.makeIterator()), position: _position, depthFun: { ($0.z - projection.nearZ) / (projection.farZ - projection.nearZ) }, shader: { try shader($0.vertex) })
     }
 }
