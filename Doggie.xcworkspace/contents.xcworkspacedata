@@ -1,16 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Workspace
    version = "1.0">
-   <Group
-      location = "group:Playground"
-      name = "Playground">
-      <FileRef
-         location = "group:Doggie.playground">
-      </FileRef>
-      <FileRef
-         location = "group:Image.playground">
-      </FileRef>
-   </Group>
+   <FileRef
+      location = "group:Playground.playground">
+   </FileRef>
    <FileRef
       location = "group:Doggie.xcodeproj">
    </FileRef>

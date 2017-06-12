@@ -39,7 +39,7 @@ let package = Package(
         "LICENSE", "README.md",
         "Doggie.xcodeproj",
         "Doggie.xcworkspace",
-        "Playground",
+        "Playground.playground",
         "Doggie_iOS", "Doggie_iOSTests",
         "Doggie_Mac", "Doggie_MacTests"
     ]
