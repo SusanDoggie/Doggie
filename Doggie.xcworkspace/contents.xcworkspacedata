@@ -8,28 +8,7 @@
          location = "group:Doggie.playground">
       </FileRef>
       <FileRef
-         location = "group:Benchmark.playground">
-      </FileRef>
-      <FileRef
-         location = "group:Polynomial.playground">
-      </FileRef>
-      <FileRef
-         location = "group:Mesh Warping.playground">
-      </FileRef>
-      <FileRef
-         location = "group:ShapeTweening.playground">
-      </FileRef>
-      <FileRef
-         location = "group:Stroke.playground">
-      </FileRef>
-      <FileRef
-         location = "group:Color.playground">
-      </FileRef>
-      <FileRef
-         location = "group:Resampling.playground">
-      </FileRef>
-      <FileRef
-         location = "group:ImageContext.playground">
+         location = "group:/Users/CloudDesign/Doggie/Playground/Image.playground">
       </FileRef>
    </Group>
    <FileRef

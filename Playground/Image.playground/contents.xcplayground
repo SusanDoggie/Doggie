@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<playground version='6.0' target-platform='macos'>
+    <pages>
+        <page name='Resampling'/>
+        <page name='3D Cube'/>
+        <page name='Blending'/>
+        <page name='Circle'/>
+        <page name='Drum'/>
+        <page name='Linear Gradient'/>
+        <page name='Mesh Gradient'/>
+        <page name='Radial Gradient'/>
+        <page name='Textured Cube'/>
+        <page name='Triangle'/>
+    </pages>
+</playground>
