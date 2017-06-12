@@ -63,7 +63,7 @@ struct ShapeRasterizeBuffer : RasterizeBufferProtocol {
 @inline(__always)
 func _render(_ op: Shape.RenderOperation, width: Int, height: Int, transform: SDTransform, stencil: UnsafeMutablePointer<Int16>) {
     
-    let rasterizer = ShapeRasterizeBuffer(stencil: stencil, width: width, height: width)
+    let rasterizer = ShapeRasterizeBuffer(stencil: stencil, width: width, height: height)
     
     switch op {
     case let .triangle(p0, p1, p2):
@@ -145,15 +145,17 @@ extension Shape {
     
     @_versioned
     @inline(__always)
-    func raster(width: Int, height: Int, stencil: inout [Int16]) {
+    func raster(width: Int, height: Int, stencil: inout [Int16]) -> Rect {
         
         assert(stencil.count == width * height, "incorrect size of stencil.")
         
         if stencil.count == 0 {
-            return
+            return Rect()
         }
         
         let transform = self.transform
+        
+        var bound: Rect?
         
         stencil.withUnsafeMutableBufferPointer { stencil in
             
@@ -161,11 +163,42 @@ extension Shape {
                 
                 let group = DispatchGroup()
                 
-                self.render { op in SDDefaultDispatchQueue.async(group: group) { _render(op, width: width, height: width, transform: transform, stencil: ptr) } }
+                self.render { op in
+                    
+                    SDDefaultDispatchQueue.async(group: group) { _render(op, width: width, height: height, transform: transform, stencil: ptr) }
+                    
+                    switch op {
+                    case let .triangle(p0, p1, p2):
+                        
+                        let q0 = p0 * transform
+                        let q1 = p1 * transform
+                        let q2 = p2 * transform
+                        
+                        bound = bound?.union(Rect.bound([q0, q1, q2])) ?? Rect.bound([q0, q1, q2])
+                        
+                    case let .quadratic(p0, p1, p2):
+                        
+                        let q0 = p0 * transform
+                        let q1 = p1 * transform
+                        let q2 = p2 * transform
+                        
+                        bound = bound?.union(Rect.bound([q0, q1, q2])) ?? Rect.bound([q0, q1, q2])
+                        
+                    case let .cubic(p0, p1, p2, _, _, _):
+                        
+                        let q0 = p0 * transform
+                        let q1 = p1 * transform
+                        let q2 = p2 * transform
+                        
+                        bound = bound?.union(Rect.bound([q0, q1, q2])) ?? Rect.bound([q0, q1, q2])
+                    }
+                }
                 
                 group.wait()
             }
         }
+        
+        return bound ?? Rect()
     }
 }
 
@@ -206,7 +239,10 @@ extension ImageContext {
             
             shape.transform = transform * SDTransform.scale(5)
             
-            shape.raster(width: width * 5, height: height * 5, stencil: &stencil)
+            var bound = shape.raster(width: width * 5, height: height * 5, stencil: &stencil)
+            
+            bound.origin /= 5
+            bound.size /= 5
             
             stencil.withUnsafeBufferPointer { stencil in
                 
@@ -220,11 +256,22 @@ extension ImageContext {
                                 
                                 if var _clip = _clip.baseAddress {
                                     
-                                    for _ in 0..<height {
+                                    let offset_x = max(0, min(width - 1, Int(floor(bound.x))))
+                                    let offset_y = max(0, min(height - 1, Int(floor(bound.y))))
+                                    let _width = min(width - offset_x, Int(ceil(bound.width + 1)))
+                                    let _height = min(height - offset_y, Int(ceil(bound.height + 1)))
+                                    
+                                    _stencil += 5 * offset_x + 25 * offset_y * width
+                                    _destination += offset_x + offset_y * width
+                                    _clip += offset_x + offset_y * width
+                                    
+                                    for _ in 0..<_height {
                                         
                                         var __stencil = _stencil
+                                        var __destination = _destination
+                                        var __clip = _clip
                                         
-                                        for _ in 0..<width {
+                                        for _ in 0..<_width {
                                             
                                             var _p = 0
                                             
@@ -241,22 +288,24 @@ extension ImageContext {
                                                 _s += 5 * width
                                             }
                                             
-                                            let _alpha = _clip.pointee * (0.04 * Double(_p))
+                                            let _alpha = __clip.pointee * (0.04 * Double(_p))
                                             
                                             if _alpha > 0 {
                                                 
                                                 var source = color
                                                 source.opacity *= _opacity * _alpha
                                                 
-                                                _destination.pointee.blend(source: source, blendMode: _blendMode, compositingMode: _compositingMode)
+                                                __destination.pointee.blend(source: source, blendMode: _blendMode, compositingMode: _compositingMode)
                                             }
                                             
                                             __stencil += 5
-                                            _destination += 1
-                                            _clip += 1
+                                            __destination += 1
+                                            __clip += 1
                                         }
                                         
                                         _stencil += 25 * width
+                                        _destination += width
+                                        _clip += width
                                     }
                                 }
                             }
@@ -269,7 +318,7 @@ extension ImageContext {
             
             shape.transform = transform
             
-            shape.raster(width: width, height: height, stencil: &stencil)
+            let bound = shape.raster(width: width, height: height, stencil: &stencil)
             
             stencil.withUnsafeBufferPointer { stencil in
                 
@@ -283,21 +332,41 @@ extension ImageContext {
                                 
                                 if var _clip = _clip.baseAddress {
                                     
-                                    for _ in 0..<width * height {
+                                    let offset_x = max(0, min(width - 1, Int(floor(bound.x))))
+                                    let offset_y = max(0, min(height - 1, Int(floor(bound.y))))
+                                    let _width = min(width - offset_x, Int(ceil(bound.width + 1)))
+                                    let _height = min(height - offset_y, Int(ceil(bound.height + 1)))
+                                    
+                                    _stencil += offset_x + offset_y * width
+                                    _destination += offset_x + offset_y * width
+                                    _clip += offset_x + offset_y * width
+                                    
+                                    for _ in 0..<_height {
                                         
-                                        let _alpha = _clip.pointee
+                                        var __stencil = _stencil
+                                        var __destination = _destination
+                                        var __clip = _clip
                                         
-                                        if winding(_stencil.pointee) && _alpha > 0 {
+                                        for _ in 0..<_width {
                                             
-                                            var source = color
-                                            source.opacity *= _opacity * _alpha
+                                            let _alpha = __clip.pointee
                                             
-                                            _destination.pointee.blend(source: source, blendMode: _blendMode, compositingMode: _compositingMode)
+                                            if winding(__stencil.pointee) && _alpha > 0 {
+                                                
+                                                var source = color
+                                                source.opacity *= _opacity * _alpha
+                                                
+                                                __destination.pointee.blend(source: source, blendMode: _blendMode, compositingMode: _compositingMode)
+                                            }
+                                            
+                                            __stencil += 1
+                                            __destination += 1
+                                            __clip += 1
                                         }
                                         
-                                        _stencil += 1
-                                        _destination += 1
-                                        _clip += 1
+                                        _stencil += width
+                                        _destination += width
+                                        _clip += width
                                     }
                                 }
                             }
@@ -321,3 +390,5 @@ extension ImageContext {
         }
     }
 }
+
+

@@ -231,70 +231,67 @@ public func *(lhs: Vector, rhs: PerspectiveProjectMatrix) -> Point {
 
 @_versioned
 @_fixed_layout
-struct _PerspectiveProjectVertex<Vertex : ImageContextRenderVertex> : ImageContextRenderVertex where Vertex.Position == Vector {
-    
-    @_versioned
-    var v: Vertex
-    
-    @_versioned
-    var w: Double
-    
-    @_versioned
-    @_inlineable
-    init(v: Vertex, w: Double) {
-        self.v = v
-        self.w = w
-    }
-    
-    @_versioned
-    @_inlineable
-    init(vertex: Vertex) {
-        self.w = 1 / vertex.position.z
-        self.v = w * vertex
-    }
-    
-    @_versioned
-    @_inlineable
-    var vertex: Vertex {
-        return (1 / w) * v
-    }
-    
-    @_versioned
-    @_inlineable
-    var position: Vertex.Position {
-        return vertex.position
-    }
-    
-    @_versioned
-    @_inlineable
-    static func + (lhs: _PerspectiveProjectVertex, rhs: _PerspectiveProjectVertex) -> _PerspectiveProjectVertex {
-        return _PerspectiveProjectVertex(v: lhs.v + rhs.v, w: lhs.w + rhs.w)
-    }
-    
-    @_versioned
-    @_inlineable
-    static func * (lhs: Double, rhs: _PerspectiveProjectVertex) -> _PerspectiveProjectVertex {
-        return _PerspectiveProjectVertex(v: lhs * rhs.v, w: lhs * rhs.w)
-    }
-}
-
-@_versioned
-@_fixed_layout
 struct _PerspectiveProjectTriangleIterator<Base : IteratorProtocol, Vertex : ImageContextRenderVertex> : Sequence, IteratorProtocol where Vertex.Position == Vector, Base.Element == (Vertex, Vertex, Vertex) {
     
     @_versioned
     var base: Base
     
     @_versioned
-    @_inlineable
+    @inline(__always)
     init(base: Base) {
         self.base = base
     }
     
     @_versioned
-    @_inlineable
-    mutating func next() -> (_PerspectiveProjectVertex<Vertex>, _PerspectiveProjectVertex<Vertex>, _PerspectiveProjectVertex<Vertex>)? {
-        return base.next().map { (_PerspectiveProjectVertex(vertex: $0.0), _PerspectiveProjectVertex(vertex: $0.1), _PerspectiveProjectVertex(vertex: $0.2)) }
+    @inline(__always)
+    mutating func next() -> (_Vertex, _Vertex, _Vertex)? {
+        return base.next().map { (_Vertex(vertex: $0.0), _Vertex(vertex: $0.1), _Vertex(vertex: $0.2)) }
+    }
+}
+
+extension _PerspectiveProjectTriangleIterator {
+    
+    @_versioned
+    @_fixed_layout
+    struct _Vertex : ImageContextRenderVertex {
+        
+        @_versioned
+        var vertex: Vertex
+        
+        @_versioned
+        var w: Double
+        
+        @_versioned
+        @_inlineable
+        init(v: Vertex, w: Double) {
+            self.vertex = (1 / w) * v
+            self.w = w
+        }
+        
+        @_versioned
+        @_inlineable
+        init(vertex: Vertex) {
+            self.vertex = vertex
+            self.w = 1 / vertex.position.z
+        }
+        
+        @_versioned
+        @_inlineable
+        var position: Vertex.Position {
+            return vertex.position
+        }
+        
+        @_versioned
+        @_inlineable
+        static func + (lhs: _Vertex, rhs: _Vertex) -> _Vertex {
+            return _Vertex(v: lhs.w * lhs.vertex + rhs.w * rhs.vertex, w: lhs.w + rhs.w)
+        }
+        
+        @_versioned
+        @_inlineable
+        static func * (lhs: Double, rhs: _Vertex) -> _Vertex {
+            return _Vertex(v: lhs * rhs.w * rhs.vertex, w: lhs * rhs.w)
+        }
     }
 }
 
