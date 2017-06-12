@@ -8,7 +8,7 @@
          location = "group:Doggie.playground">
       </FileRef>
       <FileRef
-         location = "group:/Users/CloudDesign/Doggie/Playground/Image.playground">
+         location = "group:Image.playground">
       </FileRef>
    </Group>
    <FileRef
