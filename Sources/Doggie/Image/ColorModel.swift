@@ -51,10 +51,6 @@ extension ColorModelProtocol {
 
 public struct ColorModelComponentCollection<Model: ColorModelProtocol>: RandomAccessCollection {
     
-    public typealias Indices = CountableRange<Int>
-    
-    public typealias Index = Int
-    
     public let base: Model
     
     @_inlineable

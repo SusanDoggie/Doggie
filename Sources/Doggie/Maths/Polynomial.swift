@@ -71,10 +71,6 @@ extension Polynomial : RandomAccessCollection, MutableCollection {
     
     public typealias SubSequence = MutableRangeReplaceableRandomAccessSlice<Polynomial>
     
-    public typealias Indices = CountableRange<Int>
-    
-    public typealias Index = Int
-    
     @_inlineable
     public var startIndex : Int {
         return coeffs.startIndex

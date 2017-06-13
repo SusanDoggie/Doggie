@@ -82,18 +82,11 @@ extension Bezier : RandomAccessCollection, MutableCollection {
     
     public typealias SubSequence = MutableRandomAccessSlice<Bezier>
     
-    public typealias Indices = CountableRange<Int>
-    
-    public typealias Index = Int
-    
     @_inlineable
     public var degree: Int {
         return points.count - 1
     }
-    @_inlineable
-    public var count: Int {
-        return points.count
-    }
+    
     @_inlineable
     public var startIndex: Int {
         return points.startIndex

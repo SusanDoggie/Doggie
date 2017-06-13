@@ -51,10 +51,6 @@ public struct RectCollection {
 
 extension RectCollection : RandomAccessCollection {
     
-    public typealias Indices = CountableRange<Int>
-    
-    public typealias Index = Int
-    
     public var startIndex: Int {
         return bounds.startIndex
     }

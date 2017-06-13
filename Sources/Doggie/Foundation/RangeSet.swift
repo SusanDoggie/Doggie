@@ -64,15 +64,6 @@ extension RangeSet : RandomAccessCollection {
     public subscript(position: Int) -> Range<Bound> {
         return ranges[position]
     }
-    
-    @_inlineable
-    public func index(before i: Int) -> Int {
-        return ranges.index(before: i)
-    }
-    @_inlineable
-    public func index(after i: Int) -> Int {
-        return ranges.index(after: i)
-    }
 }
 
 extension RangeSet : Equatable {
