@@ -83,7 +83,7 @@ public protocol ImageContextRenderVertex {
 extension ImageContext {
     
     @_inlineable
-    public func render<S : Sequence, Vertex : ImageContextRenderVertex, Pixel : ColorPixelProtocol>(_ triangles: S, position: (Vertex.Position) -> Point, depthFun: ((Vertex.Position) -> Double)?, shader: (Vertex) throws -> Pixel?) rethrows where S.Iterator.Element == (Vertex, Vertex, Vertex), Pixel.Model == Model {
+    public func render<S : Sequence, Vertex : ImageContextRenderVertex, Pixel : ColorPixelProtocol>(_ triangles: S, position: (Vertex.Position) throws -> Point, depthFun: ((Vertex.Position) throws -> Double)?, shader: (Vertex) throws -> Pixel?) rethrows where S.Iterator.Element == (Vertex, Vertex, Vertex), Pixel.Model == Model {
         
         if let next = self.next {
             try next.render(triangles, position: position, depthFun: depthFun, shader: shader)
@@ -115,12 +115,12 @@ extension ImageContext {
                                 for (v0, v1, v2) in triangles {
                                     
                                     if let depthFun = depthFun {
-                                        guard 0...1 ~= depthFun(v0.position) || 0...1 ~= depthFun(v1.position) || 0...1 ~= depthFun(v2.position) else { continue }
+                                        guard try 0...1 ~= depthFun(v0.position) || 0...1 ~= depthFun(v1.position) || 0...1 ~= depthFun(v2.position) else { continue }
                                     }
                                     
-                                    let p0 = position(v0.position)
-                                    let p1 = position(v1.position)
-                                    let p2 = position(v2.position)
+                                    let p0 = try position(v0.position)
+                                    let p1 = try position(v1.position)
+                                    let p2 = try position(v2.position)
                                     
                                     let _culling: Bool
                                     switch cullingMode {
@@ -146,7 +146,7 @@ extension ImageContext {
                                                 let b2 = q.z * v2
                                                 let b = b0 + b1 + b2
                                                 
-                                                if let _depth = depthFun?(b.position) {
+                                                if let _depth = try depthFun?(b.position) {
                                                     
                                                     if 0...1 ~= _depth {
                                                         
