@@ -100,7 +100,7 @@ extension iccProfile {
         
         public var deviceClass: ClassSignature {
             get {
-                return ClassSignature(rawValue: UInt32(bigEndian: _deviceClass))!
+                return ClassSignature(rawValue: UInt32(bigEndian: _deviceClass)) ?? .unknown
             }
             set {
                 _deviceClass = newValue.rawValue.bigEndian
@@ -109,7 +109,7 @@ extension iccProfile {
         
         public var colorSpace: ColorSpaceSignature {
             get {
-                return ColorSpaceSignature(rawValue: UInt32(bigEndian: _colorSpace))!
+                return ColorSpaceSignature(rawValue: UInt32(bigEndian: _colorSpace)) ?? .unknown
             }
             set {
                 _colorSpace = newValue.rawValue.bigEndian
@@ -118,7 +118,7 @@ extension iccProfile {
         
         public var pcs: ColorSpaceSignature {
             get {
-                return ColorSpaceSignature(rawValue: UInt32(bigEndian: _pcs))!
+                return ColorSpaceSignature(rawValue: UInt32(bigEndian: _pcs)) ?? .unknown
             }
             set {
                 _pcs = newValue.rawValue.bigEndian
@@ -204,6 +204,8 @@ extension iccProfile.Header {
     
     public enum ClassSignature: UInt32 {
         
+        case unknown
+        
         case input                     = 0x73636E72  /* 'scnr' */
         case display                   = 0x6D6E7472  /* 'mntr' */
         case output                    = 0x70727472  /* 'prtr' */
@@ -214,6 +216,8 @@ extension iccProfile.Header {
     }
     
     public enum ColorSpaceSignature: UInt32 {
+        
+        case unknown
         
         case XYZ                        = 0x58595A20  /* 'XYZ ' */
         case Lab                        = 0x4C616220  /* 'Lab ' */
@@ -371,13 +375,15 @@ extension iccProfile {
     
     fileprivate func _tagData(position: Int) -> (TagSignature, Data) {
         let tag_offset = 132 + 12 * position
-        let sig = data[tag_offset..<tag_offset + 4].withUnsafeBytes { TagSignature(rawValue: UInt32(bigEndian: $0.pointee))! }
+        let sig = data[tag_offset..<tag_offset + 4].withUnsafeBytes { TagSignature(rawValue: UInt32(bigEndian: $0.pointee)) ?? .unknown }
         let offset = data[tag_offset + 4..<tag_offset + 8].withUnsafeBytes { UInt32(bigEndian: $0.pointee) }
         let size = data[tag_offset + 8..<tag_offset + 12].withUnsafeBytes { UInt32(bigEndian: $0.pointee) }
         return (sig, data[Int(offset)..<Int(offset + size)])
     }
     
     public enum TagSignature : UInt32 {
+        
+        case unknown
         
         case AToB0Tag                          = 0x41324230  /* 'A2B0' */
         case AToB1Tag                          = 0x41324231  /* 'A2B1' */
