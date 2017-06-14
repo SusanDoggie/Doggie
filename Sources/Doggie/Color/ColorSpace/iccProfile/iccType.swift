@@ -103,20 +103,20 @@ extension iccProfile {
     
     public struct S15Fixed16Number : RawRepresentable, Hashable, CustomStringConvertible {
         
-        public typealias RawValue = UInt32
+        public typealias RawValue = Int32
         
-        public var rawValue: UInt32
+        public var rawValue: Int32
         
-        public init(rawValue: UInt32) {
+        public init(rawValue: Int32) {
             self.rawValue = rawValue
         }
         
         public var value: Double {
             get {
-                return Double(UInt32(bigEndian: rawValue)) / 65536.0
+                return Double(Int32(bigEndian: rawValue)) / 65536.0
             }
             set {
-                rawValue = UInt32(newValue.clamped(to: -32768.0...32767.0) * 65536.0).bigEndian
+                rawValue = Int32(newValue.clamped(to: -32768.0...32767.0) * 65536.0).bigEndian
             }
         }
         
@@ -265,3 +265,28 @@ extension iccProfile {
     }
 }
 
+extension iccProfile {
+    
+    public struct PositionNumber {
+        
+        public var offset: UInt32Number
+        public var size: UInt32Number
+    }
+}
+
+extension iccProfile {
+    
+    public struct ParametricCurve {
+        
+        public var funcType: UInt16Number           /* Function Type                */
+                                                    /* 0 = gamma only               */
+        public var pad: UInt16Number                /* Padding for byte alignment   */
+        public var gamma: S15Fixed16Number          /* x°gamma                      */
+        public var a: S15Fixed16Number              /* a                            */
+        public var b: S15Fixed16Number              /* b                            */
+        public var c: S15Fixed16Number              /* c                            */
+        public var d: S15Fixed16Number              /* d                            */
+        public var e: S15Fixed16Number              /* e                            */
+        public var f: S15Fixed16Number              /* f                            */
+    }
+}

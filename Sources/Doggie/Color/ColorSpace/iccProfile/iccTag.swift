@@ -165,7 +165,61 @@ extension iccProfile.TagData {
 extension iccProfile.TagData : CustomStringConvertible {
     
     public var description: String {
-        return "iccProfile.TagData(type:\(type), data:\(data))"
+        
+        switch type {
+        case .UInt16ArrayType: return "\(uInt16Array ?? []))"
+        case .UInt32ArrayType: return "\(uInt32Array ?? []))"
+        case .UInt64ArrayType: return "\(uInt64Array ?? []))"
+        case .UInt8ArrayType: return "\(uInt8Array ?? []))"
+        case .S15Fixed16ArrayType: return "\(s15Fixed16Array ?? []))"
+        case .U16Fixed16ArrayType: return "\(u16Fixed16Array ?? []))"
+        case .XYZArrayType: return "\(XYZArray ?? []))"
+        default: return "TagData(type:\(type), data:\(data))"
+        }
+    }
+}
+
+extension iccProfile.TagData {
+    
+    public var uInt16Array: [iccProfile.UInt16Number]? {
+        
+        return type == .UInt16ArrayType ? data.withUnsafeBytes { Array(UnsafeBufferPointer(start: $0, count: data.count / MemoryLayout<iccProfile.UInt16Number>.stride)) } : nil
+    }
+    
+    public var uInt32Array: [iccProfile.UInt32Number]? {
+        
+        return type == .UInt32ArrayType ? data.withUnsafeBytes { Array(UnsafeBufferPointer(start: $0, count: data.count / MemoryLayout<iccProfile.UInt32Number>.stride)) } : nil
+    }
+    
+    public var uInt64Array: [iccProfile.UInt64Number]? {
+        
+        return type == .UInt64ArrayType ? data.withUnsafeBytes { Array(UnsafeBufferPointer(start: $0, count: data.count / MemoryLayout<iccProfile.UInt64Number>.stride)) } : nil
+    }
+    
+    public var uInt8Array: [UInt8]? {
+        
+        return type == .UInt8ArrayType ? data.withUnsafeBytes { Array(UnsafeBufferPointer(start: $0, count: data.count / MemoryLayout<UInt8>.stride)) } : nil
+    }
+}
+
+extension iccProfile.TagData {
+    
+    public var s15Fixed16Array: [iccProfile.S15Fixed16Number]? {
+        
+        return type == .S15Fixed16ArrayType ? data.withUnsafeBytes { Array(UnsafeBufferPointer(start: $0, count: data.count / MemoryLayout<iccProfile.S15Fixed16Number>.stride)) } : nil
+    }
+    
+    public var u16Fixed16Array: [iccProfile.U16Fixed16Number]? {
+        
+        return type == .U16Fixed16ArrayType ? data.withUnsafeBytes { Array(UnsafeBufferPointer(start: $0, count: data.count / MemoryLayout<iccProfile.U16Fixed16Number>.stride)) } : nil
+    }
+}
+
+extension iccProfile.TagData {
+    
+    public var XYZArray: [iccProfile.XYZNumber]? {
+        
+        return type == .XYZArrayType ? data.withUnsafeBytes { Array(UnsafeBufferPointer(start: $0, count: data.count / MemoryLayout<iccProfile.XYZNumber>.stride)) } : nil
     }
 }
 
@@ -208,6 +262,6 @@ extension iccProfile.TagData {
         case UInt64ArrayType                = 0x75693634  /* 'ui64' */
         case UInt8ArrayType                 = 0x75693038  /* 'ui08' */
         case ViewingConditionsType          = 0x76696577  /* 'view' */
-        case XYZType                        = 0x58595A20  /* 'XYZ ' */
+        case XYZArrayType                   = 0x58595A20  /* 'XYZ ' */
     }
 }
