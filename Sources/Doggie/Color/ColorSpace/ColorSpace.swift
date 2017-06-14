@@ -195,28 +195,60 @@ extension ColorSpace {
     }
 }
 
+public enum RenderingIntent {
+    
+    case absoluteColorimetric
+    case relativeColorimetric
+}
+
+extension RenderingIntent {
+    
+    @_inlineable
+    public static var `default` : RenderingIntent {
+        return .relativeColorimetric
+    }
+}
+
 extension ColorSpace {
     
     @_inlineable
-    public func convert<R>(_ color: Model, to other: ColorSpace<R>) -> R {
-        return other.base.convertFromXYZ(self.base.convertToXYZ(color) * self.chromaticTransferMatrix(to: other))
+    public func convert<R>(_ color: Model, to other: ColorSpace<R>, intent: RenderingIntent = .default) -> R {
+        
+        switch intent {
+        case .absoluteColorimetric: return other.base.convertFromXYZ(self.base.convertToXYZ(color))
+        case .relativeColorimetric: return other.base.convertFromXYZ(self.base.convertToXYZ(color) * self.chromaticTransferMatrix(to: other))
+        }
     }
     
     @_inlineable
-    public func convert<S : Sequence, R>(_ color: S, to other: ColorSpace<R>) -> [R] where S.Iterator.Element == Model {
-        let matrix = self.chromaticTransferMatrix(to: other)
-        return color.map { other.base.convertFromXYZ(self.base.convertToXYZ($0) * matrix) }
+    public func convert<S: ColorPixelProtocol, R: ColorPixelProtocol>(_ color: S, to other: ColorSpace<R.Model>, intent: RenderingIntent = .default) -> R where S.Model == Model {
+        
+        return R(color: self.convert(color.color, to: other, intent: intent), opacity: color.opacity)
+    }
+}
+
+extension ColorSpace {
+    
+    @_inlineable
+    public func convert<S : Sequence, R>(_ color: S, to other: ColorSpace<R>, intent: RenderingIntent = .default) -> [R] where S.Iterator.Element == Model {
+        
+        switch intent {
+        case .absoluteColorimetric: return color.map { other.base.convertFromXYZ(self.base.convertToXYZ($0)) }
+        case .relativeColorimetric:
+            let matrix = self.chromaticTransferMatrix(to: other)
+            return color.map { other.base.convertFromXYZ(self.base.convertToXYZ($0) * matrix) }
+        }
     }
     
     @_inlineable
-    public func convert<S: ColorPixelProtocol, R: ColorPixelProtocol>(_ color: S, to other: ColorSpace<R.Model>) -> R where S.Model == Model {
-        return R(color: other.base.convertFromXYZ(self.base.convertToXYZ(color.color) * self.chromaticTransferMatrix(to: other)), opacity: color.opacity)
-    }
-    
-    @_inlineable
-    public func convert<S : Sequence, R: ColorPixelProtocol>(_ color: S, to other: ColorSpace<R.Model>) -> [R] where S.Iterator.Element: ColorPixelProtocol, S.Iterator.Element.Model == Model {
-        let matrix = self.chromaticTransferMatrix(to: other)
-        return color.map { R(color: other.base.convertFromXYZ(self.base.convertToXYZ($0.color) * matrix), opacity: $0.opacity) }
+    public func convert<S : Sequence, R: ColorPixelProtocol>(_ color: S, to other: ColorSpace<R.Model>, intent: RenderingIntent = .default) -> [R] where S.Iterator.Element: ColorPixelProtocol, S.Iterator.Element.Model == Model {
+        
+        switch intent {
+        case .absoluteColorimetric: return color.map { R(color: other.base.convertFromXYZ(self.base.convertToXYZ($0.color)), opacity: $0.opacity) }
+        case .relativeColorimetric:
+            let matrix = self.chromaticTransferMatrix(to: other)
+            return color.map { R(color: other.base.convertFromXYZ(self.base.convertToXYZ($0.color) * matrix), opacity: $0.opacity) }
+        }
     }
 }
 

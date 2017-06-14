@@ -212,6 +212,10 @@
 		0A9F282E1EF0DB1F00E69976 /* CMYColorModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9F282C1EF0DB1F00E69976 /* CMYColorModel.swift */; };
 		0A9F28311EF0E0CF00E69976 /* DeviceNColorModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9F28301EF0E0CF00E69976 /* DeviceNColorModel.swift */; };
 		0A9F28321EF0E0CF00E69976 /* DeviceNColorModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9F28301EF0E0CF00E69976 /* DeviceNColorModel.swift */; };
+		0A9F28341EF116C900E69976 /* iccTag.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9F28331EF116C900E69976 /* iccTag.swift */; };
+		0A9F28351EF116C900E69976 /* iccTag.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9F28331EF116C900E69976 /* iccTag.swift */; };
+		0A9F28371EF1174600E69976 /* iccType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9F28361EF1174600E69976 /* iccType.swift */; };
+		0A9F28381EF1174600E69976 /* iccType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9F28361EF1174600E69976 /* iccType.swift */; };
 		0AAC4DF41E977906008DCADA /* ShapeRasterize.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AAC4DF31E977906008DCADA /* ShapeRasterize.swift */; };
 		0AAC4DF51E977906008DCADA /* ShapeRasterize.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AAC4DF31E977906008DCADA /* ShapeRasterize.swift */; };
 		0AC527E11EEFEFF900FB239A /* iccProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AC527E01EEFEFF900FB239A /* iccProfile.swift */; };
@@ -363,6 +367,8 @@
 		0A9F28291EF0D9F000E69976 /* GrayColorModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GrayColorModel.swift; sourceTree = "<group>"; };
 		0A9F282C1EF0DB1F00E69976 /* CMYColorModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CMYColorModel.swift; sourceTree = "<group>"; };
 		0A9F28301EF0E0CF00E69976 /* DeviceNColorModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceNColorModel.swift; sourceTree = "<group>"; };
+		0A9F28331EF116C900E69976 /* iccTag.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iccTag.swift; sourceTree = "<group>"; };
+		0A9F28361EF1174600E69976 /* iccType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iccType.swift; sourceTree = "<group>"; };
 		0AAC4DF31E977906008DCADA /* ShapeRasterize.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShapeRasterize.swift; sourceTree = "<group>"; };
 		0AC527E01EEFEFF900FB239A /* iccProfile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = iccProfile.swift; sourceTree = "<group>"; };
 		0AD4D8D71EA6247200C99728 /* Maths misc.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Maths misc.swift"; sourceTree = "<group>"; };
@@ -790,6 +796,8 @@
 			isa = PBXGroup;
 			children = (
 				0AC527E01EEFEFF900FB239A /* iccProfile.swift */,
+				0A9F28331EF116C900E69976 /* iccTag.swift */,
+				0A9F28361EF1174600E69976 /* iccType.swift */,
 			);
 			path = iccProfile;
 			sourceTree = "<group>";
@@ -990,6 +998,7 @@
 				0A2A643E1E5C45EE000E21BB /* PDFParser.swift in Sources */,
 				0AD7FA301EBDA86A001C9B21 /* ShapeWinding.swift in Sources */,
 				0A80D1471E66A7000003BB44 /* RangeSet.swift in Sources */,
+				0A9F28341EF116C900E69976 /* iccTag.swift in Sources */,
 				0A52E2DE1E60266A0065EED6 /* PDFLZWDecode.swift in Sources */,
 				0A78E1F81E98B20A00BD91AB /* Geometry.swift in Sources */,
 				0A9CD5941EEB9A2700094148 /* CIEXYZColorSpace.swift in Sources */,
@@ -1046,6 +1055,7 @@
 				0A9CD5931EEB9A2700094148 /* CIELuvColorSpace.swift in Sources */,
 				08458B5A1E2E627600D01813 /* AtomicQueue.swift in Sources */,
 				0A7A47711EE69D2D001BA4D2 /* DGParser.swift in Sources */,
+				0A9F28371EF1174600E69976 /* iccType.swift in Sources */,
 				08458B321E2E627600D01813 /* Complex.swift in Sources */,
 				0A2107151E5BEEBB00F1E00E /* Shape.swift in Sources */,
 				08458AF61E2E627600D01813 /* ComplexConversion.swift in Sources */,
@@ -1111,6 +1121,7 @@
 				0A2A643F1E5C45EE000E21BB /* PDFParser.swift in Sources */,
 				0AD7FA311EBDA86A001C9B21 /* ShapeWinding.swift in Sources */,
 				0A80D1481E66A7000003BB44 /* RangeSet.swift in Sources */,
+				0A9F28351EF116C900E69976 /* iccTag.swift in Sources */,
 				0A52E2DF1E60266A0065EED6 /* PDFLZWDecode.swift in Sources */,
 				0A78E1F91E98B20A00BD91AB /* Geometry.swift in Sources */,
 				0A9CD5911EEB9A2700094148 /* CIEXYZColorSpace.swift in Sources */,
@@ -1167,6 +1178,7 @@
 				0A9CD5901EEB9A2700094148 /* CIELuvColorSpace.swift in Sources */,
 				08458B5B1E2E627600D01813 /* AtomicQueue.swift in Sources */,
 				0A7A47701EE69D2C001BA4D2 /* DGParser.swift in Sources */,
+				0A9F28381EF1174600E69976 /* iccType.swift in Sources */,
 				08458B331E2E627600D01813 /* Complex.swift in Sources */,
 				0A2107161E5BEEBB00F1E00E /* Shape.swift in Sources */,
 				08458AF71E2E627600D01813 /* ComplexConversion.swift in Sources */,
