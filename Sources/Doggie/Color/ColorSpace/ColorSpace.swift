@@ -164,27 +164,58 @@ extension ColorSpace {
     }
 }
 
+extension ChromaticAdaptationAlgorithm {
+    
+    @_versioned
+    @_inlineable
+    var matrix: Matrix {
+        switch self {
+        case .xyzScaling: return Matrix.identity
+        case .vonKries: return Matrix(a: 0.4002400, b: 0.7076000, c: -0.0808100, d: 0,
+                                      e: -0.2263000, f: 1.1653200, g: 0.0457000, h: 0,
+                                      i: 0.0000000, j: 0.0000000, k: 0.9182200, l: 0)
+        case .bradford: return Matrix(a: 0.8951000, b: 0.2664000, c: -0.1614000, d: 0,
+                                      e: -0.7502000, f: 1.7135000, g: 0.0367000, h: 0,
+                                      i: 0.0389000, j: -0.0685000, k: 1.0296000, l: 0)
+        case let .other(m): return m
+        }
+    }
+}
+
+extension ColorSpace {
+    
+    @_versioned
+    @_inlineable
+    func chromaticTransferMatrix<R>(to other: ColorSpace<R>) -> Matrix {
+        let m1 = self.base.cieXYZ.normalizeMatrix * self.chromaticAdaptationAlgorithm.matrix
+        let m2 = other.base.cieXYZ.normalizeMatrix * other.chromaticAdaptationAlgorithm.matrix
+        let _s = self.white * m1
+        let _d = other.white * m2
+        return m1 * Matrix.scale(x: _d.x / _s.x, y: _d.y / _s.y, z: _d.z / _s.z) * m2.inverse
+    }
+}
+
 extension ColorSpace {
     
     @_inlineable
     public func convert<R>(_ color: Model, to other: ColorSpace<R>) -> R {
-        return other.base.convertFromXYZ(self.base.convertToXYZ(color) * self.base.cieXYZ.transferMatrix(to: other.base.cieXYZ, chromaticAdaptationAlgorithm: chromaticAdaptationAlgorithm))
+        return other.base.convertFromXYZ(self.base.convertToXYZ(color) * self.chromaticTransferMatrix(to: other))
     }
     
     @_inlineable
     public func convert<S : Sequence, R>(_ color: S, to other: ColorSpace<R>) -> [R] where S.Iterator.Element == Model {
-        let matrix = self.base.cieXYZ.transferMatrix(to: other.base.cieXYZ, chromaticAdaptationAlgorithm: chromaticAdaptationAlgorithm)
+        let matrix = self.chromaticTransferMatrix(to: other)
         return color.map { other.base.convertFromXYZ(self.base.convertToXYZ($0) * matrix) }
     }
     
     @_inlineable
     public func convert<S: ColorPixelProtocol, R: ColorPixelProtocol>(_ color: S, to other: ColorSpace<R.Model>) -> R where S.Model == Model {
-        return R(color: other.base.convertFromXYZ(self.base.convertToXYZ(color.color) * self.base.cieXYZ.transferMatrix(to: other.base.cieXYZ, chromaticAdaptationAlgorithm: chromaticAdaptationAlgorithm)), opacity: color.opacity)
+        return R(color: other.base.convertFromXYZ(self.base.convertToXYZ(color.color) * self.chromaticTransferMatrix(to: other)), opacity: color.opacity)
     }
     
     @_inlineable
     public func convert<S : Sequence, R: ColorPixelProtocol>(_ color: S, to other: ColorSpace<R.Model>) -> [R] where S.Iterator.Element: ColorPixelProtocol, S.Iterator.Element.Model == Model {
-        let matrix = self.base.cieXYZ.transferMatrix(to: other.base.cieXYZ, chromaticAdaptationAlgorithm: chromaticAdaptationAlgorithm)
+        let matrix = self.chromaticTransferMatrix(to: other)
         return color.map { R(color: other.base.convertFromXYZ(self.base.convertToXYZ($0.color) * matrix), opacity: $0.opacity) }
     }
 }

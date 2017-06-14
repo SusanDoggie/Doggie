@@ -373,6 +373,13 @@ extension iccProfile : RandomAccessCollection {
 
 extension iccProfile {
     
+    public subscript(signature: TagSignature) -> Data? {
+        return signature == .unknown ? nil : self.first { $0.0 == signature }?.1
+    }
+}
+
+extension iccProfile {
+    
     fileprivate func _tagData(position: Int) -> (TagSignature, Data) {
         let tag_offset = 132 + 12 * position
         let sig = data[tag_offset..<tag_offset + 4].withUnsafeBytes { TagSignature(rawValue: UInt32(bigEndian: $0.pointee)) ?? .unknown }

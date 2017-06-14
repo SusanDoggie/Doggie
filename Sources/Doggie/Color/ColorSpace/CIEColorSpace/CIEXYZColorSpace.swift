@@ -101,33 +101,5 @@ extension CIEXYZColorSpace {
     var normalizeMatrix: Matrix {
         return Matrix.translate(x: -black.x, y: -black.y, z: -black.z) * Matrix.scale(x: white.x / (white.y * (white.x - black.x)), y: 1 / (white.y - black.y), z: white.z / (white.y * (white.z - black.z)))
     }
-    
-    @_versioned
-    @_inlineable
-    func transferMatrix(to other: CIEXYZColorSpace, chromaticAdaptationAlgorithm: ChromaticAdaptationAlgorithm) -> Matrix {
-        let matrix = chromaticAdaptationAlgorithm.matrix
-        let m1 = self.normalizeMatrix * matrix
-        let m2 = other.normalizeMatrix * matrix
-        let _s = self.white * m1
-        let _d = other.white * m2
-        return m1 * Matrix.scale(x: _d.x / _s.x, y: _d.y / _s.y, z: _d.z / _s.z) as Matrix * m2.inverse
-    }
 }
 
-extension ChromaticAdaptationAlgorithm {
-    
-    @_versioned
-    @_inlineable
-    var matrix: Matrix {
-        switch self {
-        case .xyzScaling: return Matrix.identity
-        case .vonKries: return Matrix(a: 0.4002400, b: 0.7076000, c: -0.0808100, d: 0,
-                                      e: -0.2263000, f: 1.1653200, g: 0.0457000, h: 0,
-                                      i: 0.0000000, j: 0.0000000, k: 0.9182200, l: 0)
-        case .bradford: return Matrix(a: 0.8951000, b: 0.2664000, c: -0.1614000, d: 0,
-                                      e: -0.7502000, f: 1.7135000, g: 0.0367000, h: 0,
-                                      i: 0.0389000, j: -0.0685000, k: 1.0296000, l: 0)
-        case let .other(m): return m
-        }
-    }
-}
