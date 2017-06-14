@@ -76,7 +76,7 @@ extension iccProfile {
         case ColorantOrder                  = 0x636C726F  /* 'clro' */
         case ColorantTable                  = 0x636C7274  /* 'clrt' */
         case ColorantTableOut               = 0x636C6F74  /* 'clot' */
-        case ColorimetricIntentImageStateTag   = 0x63696973  /* 'ciis' */
+        case ColorimetricIntentImageState   = 0x63696973  /* 'ciis' */
         case Copyright                      = 0x63707274  /* 'cprt' */
         case CrdInfo                        = 0x63726469  /* 'crdi' Removed in V4 */
         case Data                           = 0x64617461  /* 'data' Removed in V4 */
@@ -103,7 +103,7 @@ extension iccProfile {
         case MetaData                       = 0x6D657461  /* 'meta' */
         case NamedColor2                    = 0x6E636C32  /* 'ncl2' */
         case OutputResponse                 = 0x72657370  /* 'resp' */
-        case PerceptualRenderingIntentGamutTag = 0x72696730  /* 'rig0' */
+        case PerceptualRenderingIntentGamut = 0x72696730  /* 'rig0' */
         case Preview0                       = 0x70726530  /* 'pre0' */
         case Preview1                       = 0x70726531  /* 'pre1' */
         case Preview2                       = 0x70726532  /* 'pre2' */
@@ -119,7 +119,7 @@ extension iccProfile {
         case Ps2RenderingIntent             = 0x70733269  /* 'ps2i' Removed in V4 */
         case RedColorant                    = 0x7258595A  /* 'rXYZ' */
         case RedTRC                         = 0x72545243  /* 'rTRC' */
-        case SaturationRenderingIntentGamutTag = 0x72696732  /* 'rig2' */
+        case SaturationRenderingIntentGamut = 0x72696732  /* 'rig2' */
         case ScreeningDesc                  = 0x73637264  /* 'scrd' Removed in V4 */
         case Screening                      = 0x7363726E  /* 'scrn' Removed in V4 */
         case Technology                     = 0x74656368  /* 'tech' */
@@ -243,11 +243,11 @@ extension iccProfile.TagData {
         case LutAtoB                    = 0x6d414220  /* 'mAB ' */
         case LutBtoA                    = 0x6d424120  /* 'mBA ' */
         case Measurement                = 0x6D656173  /* 'meas' */
-        case MultiLocalizedUnicodeType      = 0x6D6C7563  /* 'mluc' */
-        case MultiProcessElementType        = 0x6D706574  /* 'mpet' */
+        case MultiLocalizedUnicode      = 0x6D6C7563  /* 'mluc' */
+        case MultiProcessElement        = 0x6D706574  /* 'mpet' */
         case NamedColor2                = 0x6E636C32  /* 'ncl2' */
         case ParametricCurve            = 0x70617261  /* 'para' */
-        case ProfileSequenceDescType        = 0x70736571  /* 'pseq' */
+        case ProfileSequenceDesc        = 0x70736571  /* 'pseq' */
         case ProfileSequceId            = 0x70736964  /* 'psid' */
         case ResponseCurveSet16         = 0x72637332  /* 'rcs2' */
         case S15Fixed16Array            = 0x73663332  /* 'sf32' */
