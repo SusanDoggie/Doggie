@@ -28,107 +28,73 @@ private func icRoundOffset<T : BinaryFloatingPoint>(_ v: T) -> T {
     return v < 0 ? v - 0.5 : v + 0.5
 }
 
+public protocol iccUIntNumber : RawRepresentable, Hashable, CustomStringConvertible, ExpressibleByIntegerLiteral where RawValue : FixedWidthInteger {
+    
+    var bigEndian: RawValue { get set }
+    
+    init(bigEndian: RawValue)
+}
+
+extension iccUIntNumber {
+    
+    public var rawValue: RawValue {
+        get {
+            return RawValue(bigEndian: bigEndian)
+        }
+        set {
+            bigEndian = newValue.bigEndian
+        }
+    }
+    
+    public init(rawValue: RawValue) {
+        self.init(bigEndian: rawValue.bigEndian)
+    }
+    
+    public init(integerLiteral value: RawValue) {
+        self.init(bigEndian: value.bigEndian)
+    }
+    
+    public var description: String {
+        return "\(rawValue)"
+    }
+    
+    public var hashValue: Int {
+        return rawValue.hashValue
+    }
+}
+
 extension iccProfile {
     
-    public struct UInt16Number : RawRepresentable, Hashable, CustomStringConvertible, ExpressibleByIntegerLiteral {
+    public struct UInt16Number : iccUIntNumber {
         
         public typealias RawValue = UInt16
         
-        public var rawValue: UInt16
+        public var bigEndian: UInt16
         
-        public init(rawValue: UInt16) {
-            self.rawValue = rawValue
-        }
-        
-        public init(integerLiteral value: UInt16) {
-            self.rawValue = value.bigEndian
-        }
-        
-        public var value: UInt16 {
-            get {
-                return UInt16(bigEndian: rawValue)
-            }
-            set {
-                rawValue = newValue.bigEndian
-            }
-        }
-        
-        public var description: String {
-            return "\(value)"
-        }
-        
-        public var hashValue: Int {
-            return rawValue.hashValue
+        public init(bigEndian: UInt16) {
+            self.bigEndian = bigEndian
         }
     }
-}
-
-extension iccProfile {
     
-    public struct UInt32Number : RawRepresentable, Hashable, CustomStringConvertible, ExpressibleByIntegerLiteral {
+    public struct UInt32Number : iccUIntNumber {
         
         public typealias RawValue = UInt32
         
-        public var rawValue: UInt32
+        public var bigEndian: UInt32
         
-        public init(rawValue: UInt32) {
-            self.rawValue = rawValue
-        }
-        
-        public init(integerLiteral value: UInt32) {
-            self.rawValue = value.bigEndian
-        }
-        
-        public var value: UInt32 {
-            get {
-                return UInt32(bigEndian: rawValue)
-            }
-            set {
-                rawValue = newValue.bigEndian
-            }
-        }
-        
-        public var description: String {
-            return "\(value)"
-        }
-        
-        public var hashValue: Int {
-            return rawValue.hashValue
+        public init(bigEndian: UInt32) {
+            self.bigEndian = bigEndian
         }
     }
-}
-
-extension iccProfile {
     
-    public struct UInt64Number : RawRepresentable, Hashable, CustomStringConvertible, ExpressibleByIntegerLiteral {
+    public struct UInt64Number : iccUIntNumber {
         
         public typealias RawValue = UInt64
         
-        public var rawValue: UInt64
+        public var bigEndian: UInt64
         
-        public init(rawValue: UInt64) {
-            self.rawValue = rawValue
-        }
-        
-        public init(integerLiteral value: UInt64) {
-            self.rawValue = value.bigEndian
-        }
-        
-        public var value: UInt64 {
-            get {
-                return UInt64(bigEndian: rawValue)
-            }
-            set {
-                rawValue = newValue.bigEndian
-            }
-        }
-        
-        public var description: String {
-            return "\(value)"
-        }
-        
-        public var hashValue: Int {
-            return rawValue.hashValue
+        public init(bigEndian: UInt64) {
+            self.bigEndian = bigEndian
         }
     }
 }

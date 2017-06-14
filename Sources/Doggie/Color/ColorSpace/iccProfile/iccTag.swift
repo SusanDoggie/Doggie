@@ -52,8 +52,8 @@ extension iccProfile {
     fileprivate func _tagData(position: Int) -> (TagSignature, TagData) {
         let tag_offset = 132 + 12 * position
         let sig = data[tag_offset..<tag_offset + 4].withUnsafeBytes { TagSignature(rawValue: $0.pointee) } ?? .unknown
-        let offset = data[tag_offset + 4..<tag_offset + 8].withUnsafeBytes { $0.pointee as UInt32Number }.value
-        let size = data[tag_offset + 8..<tag_offset + 12].withUnsafeBytes { $0.pointee as UInt32Number }.value
+        let offset = data[tag_offset + 4..<tag_offset + 8].withUnsafeBytes { $0.pointee as UInt32Number }.rawValue
+        let size = data[tag_offset + 8..<tag_offset + 12].withUnsafeBytes { $0.pointee as UInt32Number }.rawValue
         return (sig, TagData(_data: data[Int(offset)..<Int(offset + size)]))
     }
     
