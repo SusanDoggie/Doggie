@@ -172,6 +172,19 @@ extension ColorPixel where Model == RGBColorModel {
     public init(red: Double, green: Double, blue: Double, opacity: Double = 1) {
         self.init(color: RGBColorModel(red: red, green: green, blue: blue), opacity: opacity)
     }
+    
+    @_inlineable
+    public init(hue: Double, saturation: Double, brightness: Double, opacity: Double = 1) {
+        self.init(color: RGBColorModel(hue: hue, saturation: saturation, brightness: brightness), opacity: opacity)
+    }
+}
+
+extension ColorPixel where Model == CMYColorModel {
+    
+    @_inlineable
+    public init(cyan: Double, magenta: Double, yellow: Double, opacity: Double = 1) {
+        self.init(color: CMYColorModel(cyan: cyan, magenta: magenta, yellow: yellow), opacity: opacity)
+    }
 }
 
 extension ColorPixel where Model == CMYKColorModel {

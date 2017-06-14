@@ -60,6 +60,19 @@ extension Color where Model == RGBColorModel {
     public init(colorSpace: ColorSpace<Model>, red: Double, green: Double, blue: Double, opacity: Double = 1) {
         self.init(colorSpace: colorSpace, color: RGBColorModel(red: red, green: green, blue: blue), opacity: opacity)
     }
+    
+    @_inlineable
+    public init(colorSpace: ColorSpace<Model>, hue: Double, saturation: Double, brightness: Double, opacity: Double = 1) {
+        self.init(colorSpace: colorSpace, color: RGBColorModel(hue: hue, saturation: saturation, brightness: brightness), opacity: opacity)
+    }
+}
+
+extension Color where Model == CMYColorModel {
+    
+    @_inlineable
+    public init(colorSpace: ColorSpace<Model>, cyan: Double, magenta: Double, yellow: Double, opacity: Double = 1) {
+        self.init(colorSpace: colorSpace, color: CMYColorModel(cyan: cyan, magenta: magenta, yellow: yellow), opacity: opacity)
+    }
 }
 
 extension Color where Model == CMYKColorModel {
