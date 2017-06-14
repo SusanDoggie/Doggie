@@ -88,11 +88,11 @@ public prefix func +<Model : ColorModelProtocol>(val: Model) -> Model {
 }
 @_inlineable
 public prefix func -<Model : ColorModelProtocol>(val: Model) -> Model {
-    var val = val
+    var result = Model()
     for i in 0..<Model.count {
-        val.setComponent(i, -val.component(i))
+        result.setComponent(i, -val.component(i))
     }
-    return val
+    return result
 }
 @_inlineable
 public func +<Model : ColorModelProtocol>(lhs: Model, rhs:  Model) -> Model {

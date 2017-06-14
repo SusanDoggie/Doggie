@@ -198,7 +198,7 @@ extension ColorCompositingMode {
 extension ColorPixelProtocol {
     
     @_inlineable
-    public mutating func blend<C : ColorPixelProtocol>(source: C, blendMode: ColorBlendMode, compositingMode: ColorCompositingMode) {
+    public mutating func blend<C : ColorPixelProtocol>(source: C, blendMode: ColorBlendMode, compositingMode: ColorCompositingMode) where C.Model == Model {
         
         let d_alpha = self.opacity
         let s_alpha = source.opacity
@@ -219,7 +219,7 @@ extension ColorPixelProtocol {
     }
     
     @_inlineable
-    public func blended<C : ColorPixelProtocol>(source: C, blendMode: ColorBlendMode, compositingMode: ColorCompositingMode) -> Self {
+    public func blended<C : ColorPixelProtocol>(source: C, blendMode: ColorBlendMode, compositingMode: ColorCompositingMode) -> Self where C.Model == Model {
         var result = self
         result.blend(source: source, blendMode: blendMode, compositingMode: compositingMode)
         return result
