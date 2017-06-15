@@ -25,28 +25,62 @@
 
 import Foundation
 
-extension UInt8 {
-    
-    @_inlineable
-    public var reverse: UInt8 {
-        var x = self
-        x = ((x & 0x55) << 1) | ((x & 0xAA) >> 1)
-        x = ((x & 0x33) << 2) | ((x & 0xCC) >> 2)
-        x = ((x & 0x0F) << 4) | ((x & 0xF0) >> 4)
-        return x
-    }
-}
-extension FixedWidthInteger {
+extension FixedWidthInteger where Self : UnsignedInteger {
     
     @_inlineable
     public var reverse: Self {
-        var r = self
-        var x: Self = 0
+        
+        var m1: Self = 0
         for _ in 0..<bitWidth >> 3 {
-            x = (x << 8) | Self(UInt8(extendingOrTruncating: r).reverse)
-            r >>= 8
+            m1 = (m1 << 8) | 0x0F
         }
+        
+        let m2 = (m1 << 2) ^ m1
+        let m3 = (m2 << 1) ^ m2
+        
+        var x = self.byteSwapped
+        
+        x = ((x & m1) << 4) | ((x & ~m1) >> 4)
+        x = ((x & m2) << 2) | ((x & ~m2) >> 2)
+        x = ((x & m3) << 1) | ((x & ~m3) >> 1)
+        
         return x
+    }
+}
+
+extension Int {
+    
+    @_inlineable
+    public var reverse: Int {
+        return Int(bitPattern: UInt(bitPattern: self).reverse)
+    }
+}
+extension Int64 {
+    
+    @_inlineable
+    public var reverse: Int64 {
+        return Int64(bitPattern: UInt64(bitPattern: self).reverse)
+    }
+}
+extension Int32 {
+    
+    @_inlineable
+    public var reverse: Int32 {
+        return Int32(bitPattern: UInt32(bitPattern: self).reverse)
+    }
+}
+extension Int16 {
+    
+    @_inlineable
+    public var reverse: Int16 {
+        return Int16(bitPattern: UInt16(bitPattern: self).reverse)
+    }
+}
+extension Int8 {
+    
+    @_inlineable
+    public var reverse: Int8 {
+        return Int8(bitPattern: UInt8(bitPattern: self).reverse)
     }
 }
 
@@ -138,7 +172,7 @@ public func mulmod<T: FixedWidthInteger & UnsignedInteger>(_ a: T, _ b: T, _ m: 
 }
 
 @_inlineable
-public func pow<T: FixedWidthInteger & UnsignedInteger>(_ x: T, _ n: T, _ m: T) -> T {
+public func pow<T: FixedWidthInteger & UnsignedInteger>(_ x: T, _ n: T, _ m: T = T.max) -> T {
     assert(m != 0, "divide by zero")
     let x = x % m
     if x == 0 || m == 1 {
@@ -149,27 +183,6 @@ public func pow<T: FixedWidthInteger & UnsignedInteger>(_ x: T, _ n: T, _ m: T) 
     }
     let p = pow(mulmod(x, x, m), n >> 1, m)
     return n & 1 == 1 ? mulmod(x, p, m) : p
-}
-
-@_inlineable
-public func pow(_ x: UInt, _ n: UInt) -> UInt {
-    return pow(x, n, UInt.max)
-}
-@_inlineable
-public func pow(_ x: UInt64, _ n: UInt64) -> UInt64 {
-    return pow(x, n, UInt64.max)
-}
-@_inlineable
-public func pow(_ x: UInt32, _ n: UInt32) -> UInt32 {
-    return pow(x, n, UInt32.max)
-}
-@_inlineable
-public func pow(_ x: UInt16, _ n: UInt16) -> UInt16 {
-    return pow(x, n, UInt16.max)
-}
-@_inlineable
-public func pow(_ x: UInt8, _ n: UInt8) -> UInt8 {
-    return pow(x, n, UInt8.max)
 }
 
 @_inlineable
