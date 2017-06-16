@@ -241,7 +241,7 @@ extension iccProfile {
         
         public var inputChannels: UInt8
         public var outputChannels: UInt8
-        public var clutPoints: UInt8
+        public var grids: UInt8
         public var padding: UInt8
         public var matrix: Matrix3x3
         public var inputEntries: BEUInt16
@@ -255,7 +255,7 @@ extension iccProfile {
         
         public var inputChannels: UInt8
         public var outputChannels: UInt8
-        public var clutPoints: UInt8
+        public var grids: UInt8
         public var padding: UInt8
         public var matrix: Matrix3x3
     }
@@ -265,7 +265,7 @@ extension iccProfile {
     
     public struct CLUTStruct {
         
-        public var gridPoints: (UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8)
+        public var grids: (UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8)
         public var precision: UInt8
         public var pad1: UInt8
         public var pad2: UInt8

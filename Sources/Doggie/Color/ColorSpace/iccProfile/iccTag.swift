@@ -384,8 +384,8 @@ extension iccProfile.TagData {
         public var outputEntries: Int {
             return Int(header.outputEntries)
         }
-        public var clutPoints: Int {
-            return Int(header.clutPoints)
+        public var grids: Int {
+            return Int(header.grids)
         }
         
         public var inputTableSize: Int {
@@ -395,25 +395,25 @@ extension iccProfile.TagData {
             return 2 * outputEntries * outputChannels
         }
         public var clutTableSize: Int {
-            return 2 * Int(pow(UInt(clutPoints), UInt(inputChannels))) * outputChannels
+            return 2 * Int(pow(UInt(grids), UInt(inputChannels))) * outputChannels
         }
         
-        public var inputTable: [BEUInt16] {
+        public var inputTable: [Double] {
             let start = 44
             let end = start + inputTableSize
-            return data[start..<end].withUnsafeBytes { Array(UnsafeBufferPointer(start: $0, count: inputTableSize >> 1)) }
+            return data[start..<end].withUnsafeBytes { UnsafeBufferPointer(start: $0, count: inputTableSize >> 1).map { (v: BEUInt16) in Double(v.representingValue) / 65535 } }
         }
         
-        public var clutTable: [BEUInt16] {
+        public var clutTable: [Double] {
             let start = 44 + inputTableSize
             let end = start + clutTableSize
-            return data[start..<end].withUnsafeBytes { Array(UnsafeBufferPointer(start: $0, count: clutTableSize >> 1)) }
+            return data[start..<end].withUnsafeBytes { UnsafeBufferPointer(start: $0, count: clutTableSize >> 1).map { (v: BEUInt16) in Double(v.representingValue) / 65535 } }
         }
         
-        public var outputTable: [BEUInt16] {
+        public var outputTable: [Double] {
             let start = 44 + inputTableSize + clutTableSize
             let end = start + outputTableSize
-            return data[start..<end].withUnsafeBytes { Array(UnsafeBufferPointer(start: $0, count: outputTableSize >> 1)) }
+            return data[start..<end].withUnsafeBytes { UnsafeBufferPointer(start: $0, count: outputTableSize >> 1).map { (v: BEUInt16) in Double(v.representingValue) / 65535 } }
         }
         
         public var description: String {
@@ -450,8 +450,8 @@ extension iccProfile.TagData {
         public var outputChannels: Int {
             return Int(header.outputChannels)
         }
-        public var clutPoints: Int {
-            return Int(header.clutPoints)
+        public var grids: Int {
+            return Int(header.grids)
         }
         
         public var inputTableSize: Int {
@@ -461,25 +461,25 @@ extension iccProfile.TagData {
             return 256 * outputChannels
         }
         public var clutTableSize: Int {
-            return Int(pow(UInt(clutPoints), UInt(inputChannels))) * outputChannels
+            return Int(pow(UInt(grids), UInt(inputChannels))) * outputChannels
         }
         
-        public var inputTable: [UInt8] {
+        public var inputTable: [Double] {
             let start = 40
             let end = start + inputTableSize
-            return data[start..<end].withUnsafeBytes { Array(UnsafeBufferPointer(start: $0, count: inputTableSize)) }
+            return data[start..<end].withUnsafeBytes { UnsafeBufferPointer(start: $0, count: inputTableSize).map { (v: UInt8) in Double(v) / 255 } }
         }
         
-        public var clutTable: [UInt8] {
+        public var clutTable: [Double] {
             let start = 40 + inputTableSize
             let end = start + clutTableSize
-            return data[start..<end].withUnsafeBytes { Array(UnsafeBufferPointer(start: $0, count: clutTableSize)) }
+            return data[start..<end].withUnsafeBytes { UnsafeBufferPointer(start: $0, count: clutTableSize).map { (v: UInt8) in Double(v) / 255 } }
         }
         
-        public var outputTable: [UInt8] {
+        public var outputTable: [Double] {
             let start = 40 + inputTableSize + clutTableSize
             let end = start + outputTableSize
-            return data[start..<end].withUnsafeBytes { Array(UnsafeBufferPointer(start: $0, count: outputTableSize)) }
+            return data[start..<end].withUnsafeBytes { UnsafeBufferPointer(start: $0, count: outputTableSize).map { (v: UInt8) in Double(v) / 255 } }
         }
         
         public var description: String {
@@ -509,9 +509,9 @@ extension iccProfile.TagData {
         
         public var table: [Double] {
             
-            var gridPoints = header.gridPoints
+            var grids = header.grids
             
-            let count: Int = withUnsafeBytes(of: &gridPoints) {
+            let count: Int = withUnsafeBytes(of: &grids) {
                 
                 if let ptr = $0.baseAddress?.assumingMemoryBound(to: UInt8.self) {
                     return UnsafeBufferPointer(start: ptr, count: 16).prefix(inputChannels).reduce(outputChannels) { $0 * Int($1) }
