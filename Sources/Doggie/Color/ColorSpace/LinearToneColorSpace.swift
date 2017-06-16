@@ -44,26 +44,26 @@ struct LinearToneColorSpace<ColorSpace: _ColorSpaceBaseProtocol> : _ColorSpaceBa
     
     @_versioned
     @_inlineable
-    func convertToLinear<Model: ColorModelProtocol>(_ color: Model) -> Model {
+    func _convertToLinear<Model: ColorModelProtocol>(_ color: Model) -> Model {
         return color
     }
     
     @_versioned
     @_inlineable
-    func convertFromLinear<Model: ColorModelProtocol>(_ color: Model) -> Model {
+    func _convertFromLinear<Model: ColorModelProtocol>(_ color: Model) -> Model {
         return color
     }
     
     @_versioned
     @_inlineable
-    func convertLinearToXYZ<Model: ColorModelProtocol>(_ color: Model) -> XYZColorModel {
-        return base.convertLinearToXYZ(color)
+    func _convertLinearToXYZ<Model: ColorModelProtocol>(_ color: Model) -> XYZColorModel {
+        return base._convertLinearToXYZ(color)
     }
     
     @_versioned
     @_inlineable
-    func convertLinearFromXYZ<Model: ColorModelProtocol>(_ color: XYZColorModel) -> Model {
-        return base.convertLinearFromXYZ(color)
+    func _convertLinearFromXYZ<Model: ColorModelProtocol>(_ color: XYZColorModel) -> Model {
+        return base._convertLinearFromXYZ(color)
     }
     
     @_versioned

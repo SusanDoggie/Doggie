@@ -44,26 +44,26 @@ struct NormalizedColorSpace<ColorSpace: _ColorSpaceBaseProtocol> : _ColorSpaceBa
     
     @_versioned
     @_inlineable
-    func convertToLinear<Model: ColorModelProtocol>(_ color: Model) -> Model {
-        return base.convertToLinear(color)
+    func _convertToLinear<Model: ColorModelProtocol>(_ color: Model) -> Model {
+        return base._convertToLinear(color)
     }
     
     @_versioned
     @_inlineable
-    func convertFromLinear<Model: ColorModelProtocol>(_ color: Model) -> Model {
-        return base.convertFromLinear(color)
+    func _convertFromLinear<Model: ColorModelProtocol>(_ color: Model) -> Model {
+        return base._convertFromLinear(color)
     }
     
     @_versioned
     @_inlineable
-    func convertLinearToXYZ<Model: ColorModelProtocol>(_ color: Model) -> XYZColorModel {
-        return base.convertLinearToXYZ(color) * base.cieXYZ.normalizeMatrix
+    func _convertLinearToXYZ<Model: ColorModelProtocol>(_ color: Model) -> XYZColorModel {
+        return base._convertLinearToXYZ(color) * base.cieXYZ.normalizeMatrix
     }
     
     @_versioned
     @_inlineable
-    func convertLinearFromXYZ<Model: ColorModelProtocol>(_ color: XYZColorModel) -> Model {
-        return base.convertLinearFromXYZ(color * base.cieXYZ.normalizeMatrix.inverse)
+    func _convertLinearFromXYZ<Model: ColorModelProtocol>(_ color: XYZColorModel) -> Model {
+        return base._convertLinearFromXYZ(color * base.cieXYZ.normalizeMatrix.inverse)
     }
     
     @_versioned
