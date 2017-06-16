@@ -83,7 +83,7 @@ public protocol ImageContextRenderVertex {
 extension ImageContext {
     
     @_inlineable
-    public func render<S : Sequence, Vertex : ImageContextRenderVertex, Pixel : ColorPixelProtocol>(_ triangles: S, position: (Vertex.Position) throws -> Point, depthFun: ((Vertex.Position) throws -> Double)?, shader: (Vertex) throws -> Pixel?) rethrows where S.Iterator.Element == (Vertex, Vertex, Vertex), Pixel.Model == Model {
+    public func render<S : Sequence, Vertex : ImageContextRenderVertex, Pixel : ColorPixelProtocol>(_ triangles: S, position: (Vertex.Position) throws -> Point, depthFun: ((Vertex.Position) throws -> Double)?, shader: (Vertex) throws -> Pixel?) rethrows where S.Element == (Vertex, Vertex, Vertex), Pixel.Model == Model {
         
         if let next = self.next {
             try next.render(triangles, position: position, depthFun: depthFun, shader: shader)
@@ -200,7 +200,7 @@ extension ImageContext {
 extension ImageContext {
     
     @_inlineable
-    public func render<S : Sequence, Vertex : ImageContextRenderVertex, Pixel : ColorPixelProtocol>(_ triangles: S, shader: (Vertex) throws -> Pixel?) rethrows where S.Iterator.Element == (Vertex, Vertex, Vertex), Vertex.Position == Point, Pixel.Model == Model {
+    public func render<S : Sequence, Vertex : ImageContextRenderVertex, Pixel : ColorPixelProtocol>(_ triangles: S, shader: (Vertex) throws -> Pixel?) rethrows where S.Element == (Vertex, Vertex, Vertex), Vertex.Position == Point, Pixel.Model == Model {
         
         try render(triangles, position: { $0 }, depthFun: nil, shader: shader)
     }
@@ -298,7 +298,7 @@ extension _PerspectiveProjectTriangleIterator {
 extension ImageContext {
     
     @_inlineable
-    public func render<S : Sequence, Vertex : ImageContextRenderVertex, Pixel : ColorPixelProtocol>(_ triangles: S, projection: PerspectiveProjectMatrix, shader: (Vertex) throws -> Pixel?) rethrows where S.Iterator.Element == (Vertex, Vertex, Vertex), Vertex.Position == Vector, Pixel.Model == Model {
+    public func render<S : Sequence, Vertex : ImageContextRenderVertex, Pixel : ColorPixelProtocol>(_ triangles: S, projection: PerspectiveProjectMatrix, shader: (Vertex) throws -> Pixel?) rethrows where S.Element == (Vertex, Vertex, Vertex), Vertex.Position == Vector, Pixel.Model == Model {
         
         let width = Double(self.width)
         let height = Double(self.height)

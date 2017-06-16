@@ -187,7 +187,7 @@ extension DGDocument.Value {
     public init(_ elements: DGDocument.Value ...) {
         self = .array(elements)
     }
-    public init<S : Sequence>(_ elements: S) where S.Iterator.Element == DGDocument.Value {
+    public init<S : Sequence>(_ elements: S) where S.Element == DGDocument.Value {
         self = .array(Array(elements))
     }
     public init(_ elements: [String: DGDocument.Value]) {

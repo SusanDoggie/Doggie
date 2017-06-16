@@ -56,7 +56,7 @@ public struct Bezier<Element : BezierElementProtocol> {
     }
     
     @_inlineable
-    public init<S : Sequence>(_ s: S) where S.Iterator.Element == Element {
+    public init<S : Sequence>(_ s: S) where S.Element == Element {
         self.points = Array(s)
         precondition(points.count > 1, "count of points less than 2.")
     }

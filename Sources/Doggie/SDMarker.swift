@@ -188,7 +188,7 @@ extension SDMarker.Value {
     public init(_ val: [String: SDMarker.Value]) {
         self = .object(val)
     }
-    public init<S : Sequence>(_ val: S) where S.Iterator.Element == SDMarker.Value {
+    public init<S : Sequence>(_ val: S) where S.Element == SDMarker.Value {
         self = .array(Array(val))
     }
 }

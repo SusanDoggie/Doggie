@@ -38,7 +38,7 @@ public struct RangeSet<Bound : Comparable> {
         self.init(ranges)
     }
     @_inlineable
-    public init<S : Sequence>(_ s: S) where S.Iterator.Element == Range<Bound> {
+    public init<S : Sequence>(_ s: S) where S.Element == Range<Bound> {
         self = s.reduce(RangeSet()) { $0.union($1) }
     }
     
@@ -180,7 +180,7 @@ extension RangeSet where Bound : Strideable, Bound.Stride : SignedInteger {
         self.init(ranges)
     }
     @_inlineable
-    public init<S : Sequence>(_ s: S) where S.Iterator.Element == ClosedRange<Bound> {
+    public init<S : Sequence>(_ s: S) where S.Element == ClosedRange<Bound> {
         self = s.reduce(RangeSet()) { $0.union($1) }
     }
     
@@ -189,7 +189,7 @@ extension RangeSet where Bound : Strideable, Bound.Stride : SignedInteger {
         self.init(ranges)
     }
     @_inlineable
-    public init<S : Sequence>(_ s: S) where S.Iterator.Element == CountableRange<Bound> {
+    public init<S : Sequence>(_ s: S) where S.Element == CountableRange<Bound> {
         self = s.reduce(RangeSet()) { $0.union($1) }
     }
     
@@ -198,7 +198,7 @@ extension RangeSet where Bound : Strideable, Bound.Stride : SignedInteger {
         self.init(ranges)
     }
     @_inlineable
-    public init<S : Sequence>(_ s: S) where S.Iterator.Element == CountableClosedRange<Bound> {
+    public init<S : Sequence>(_ s: S) where S.Element == CountableClosedRange<Bound> {
         self = s.reduce(RangeSet()) { $0.union($1) }
     }
 }

@@ -308,7 +308,7 @@ extension PDFDocument.Value {
     public init(_ elements: PDFDocument.Value ...) {
         self = .array(elements)
     }
-    public init<S : Sequence>(_ elements: S) where S.Iterator.Element == PDFDocument.Value {
+    public init<S : Sequence>(_ elements: S) where S.Element == PDFDocument.Value {
         self = .array(Array(elements))
     }
     public init(_ elements: PDFDocument.Dictionary) {

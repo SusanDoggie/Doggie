@@ -43,7 +43,7 @@ public struct Polynomial {
     /// Construct from an arbitrary sequence of coeffs.
     /// a + b x + c x^2 + d x^3 + ...
     @_inlineable
-    public init<S : Sequence>(_ s: S) where S.Iterator.Element == Double {
+    public init<S : Sequence>(_ s: S) where S.Element == Double {
         self.coeffs = Array(s)
         while self.coeffs.last == 0 {
             self.coeffs.removeLast()
@@ -119,7 +119,7 @@ extension Polynomial : RangeReplaceableCollection {
     }
     
     @_inlineable
-    public mutating func replaceSubrange<C : Collection>(_ subRange: Range<Int>, with newElements: C) where C.Iterator.Element == Double {
+    public mutating func replaceSubrange<C : Collection>(_ subRange: Range<Int>, with newElements: C) where C.Element == Double {
         coeffs.replaceSubrange(subRange, with: newElements)
         while coeffs.last == 0 {
             coeffs.removeLast()

@@ -39,7 +39,7 @@ public struct RectCollection {
         self.maxY = []
     }
     
-    public init<S : Sequence>(_ bounds: S) where S.Iterator.Element == Rect {
+    public init<S : Sequence>(_ bounds: S) where S.Element == Rect {
         let bounds = Array(bounds)
         self.bounds = bounds
         self.minX = bounds.enumerated().map { ($0.offset, $0.element.minX) }.sorted { $0.1 < $1.1 }

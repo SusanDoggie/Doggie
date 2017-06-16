@@ -126,7 +126,7 @@ public struct SDTriggerGraphIterator<Value> : IteratorProtocol, Sequence {
     
     fileprivate var base: Graph<NodeID, Value>.Iterator
     
-    public mutating func next() -> Graph<NodeID, Value>.Iterator.Element? {
+    public mutating func next() -> Graph<NodeID, Value>.Element? {
         return base.next()
     }
 }

@@ -345,7 +345,7 @@ extension Rect {
     }
     
     @_inlineable
-    public static func bound<S : Sequence>(_ points: S) -> Rect where S.Iterator.Element == Point {
+    public static func bound<S : Sequence>(_ points: S) -> Rect where S.Element == Point {
         
         var minX = 0.0
         var maxX = 0.0

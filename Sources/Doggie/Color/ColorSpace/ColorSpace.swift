@@ -230,7 +230,7 @@ extension ColorSpace {
 extension ColorSpace {
     
     @_inlineable
-    public func convert<S : Sequence, R>(_ color: S, to other: ColorSpace<R>, intent: RenderingIntent = .default) -> [R] where S.Iterator.Element == Model {
+    public func convert<S : Sequence, R>(_ color: S, to other: ColorSpace<R>, intent: RenderingIntent = .default) -> [R] where S.Element == Model {
         
         switch intent {
         case .absoluteColorimetric: return color.map { other.base._convertFromXYZ(self.base._convertToXYZ($0)) }
@@ -241,7 +241,7 @@ extension ColorSpace {
     }
     
     @_inlineable
-    public func convert<S : Sequence, R: ColorPixelProtocol>(_ color: S, to other: ColorSpace<R.Model>, intent: RenderingIntent = .default) -> [R] where S.Iterator.Element: ColorPixelProtocol, S.Iterator.Element.Model == Model {
+    public func convert<S : Sequence, R: ColorPixelProtocol>(_ color: S, to other: ColorSpace<R.Model>, intent: RenderingIntent = .default) -> [R] where S.Element: ColorPixelProtocol, S.Element.Model == Model {
         
         switch intent {
         case .absoluteColorimetric: return color.map { R(color: other.base._convertFromXYZ(self.base._convertToXYZ($0.color)), opacity: $0.opacity) }

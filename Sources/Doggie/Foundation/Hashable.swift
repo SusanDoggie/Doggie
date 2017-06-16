@@ -39,7 +39,7 @@ public func hash_combine<T: Hashable>(seed: Int, _ value: T) -> Int {
     return seed ^ c
 }
 @_inlineable
-public func hash_combine<S: Sequence>(seed: Int, _ values: S) -> Int where S.Iterator.Element : Hashable {
+public func hash_combine<S: Sequence>(seed: Int, _ values: S) -> Int where S.Element : Hashable {
     return values.reduce(seed, hash_combine)
 }
 @_inlineable

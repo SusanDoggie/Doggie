@@ -53,7 +53,7 @@ public struct Shape : RandomAccessCollection, MutableCollection, ExpressibleByAr
             self.segments = []
         }
         
-        public init<S : Sequence>(start: Point, closed: Bool = false, segments: S) where S.Iterator.Element == Segment {
+        public init<S : Sequence>(start: Point, closed: Bool = false, segments: S) where S.Element == Segment {
             self.start = start
             self.isClosed = closed
             self.segments = Array(segments)
@@ -118,7 +118,7 @@ public struct Shape : RandomAccessCollection, MutableCollection, ExpressibleByAr
         self.components = elements
     }
     
-    public init<S : Sequence>(_ components: S) where S.Iterator.Element == Component {
+    public init<S : Sequence>(_ components: S) where S.Element == Component {
         self.components = Array(components)
     }
     
@@ -365,7 +365,7 @@ extension Shape.Component : RangeReplaceableCollection {
         segments.removeAll(keepingCapacity: keepingCapacity)
     }
     
-    public mutating func replaceSubrange<C : Collection>(_ subRange: Range<Int>, with newElements: C) where C.Iterator.Element == Shape.Segment {
+    public mutating func replaceSubrange<C : Collection>(_ subRange: Range<Int>, with newElements: C) where C.Element == Shape.Segment {
         cache = Cache()
         segments.replaceSubrange(subRange, with: newElements)
     }
@@ -565,7 +565,7 @@ extension Shape : RangeReplaceableCollection {
         components.removeAll(keepingCapacity: keepingCapacity)
     }
     
-    public mutating func replaceSubrange<C : Collection>(_ subRange: Range<Int>, with newElements: C) where C.Iterator.Element == Component {
+    public mutating func replaceSubrange<C : Collection>(_ subRange: Range<Int>, with newElements: C) where C.Element == Component {
         cache = Cache()
         components.replaceSubrange(subRange, with: newElements)
     }
