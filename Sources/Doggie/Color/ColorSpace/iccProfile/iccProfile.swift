@@ -47,15 +47,15 @@ extension iccProfile {
     
     public struct Header {
         
-        public static let MagicNumber: UInt32Number = 0x61637370
+        public static let MagicNumber: BEUInt32 = 0x61637370
         
-        public var size: UInt32Number                                           /* Profile size in bytes */
-        public var cmmId: UInt32Number                                          /* CMM for this profile */
-        public var version: UInt32Number                                        /* Format version number */
+        public var size: BEUInt32                                           /* Profile size in bytes */
+        public var cmmId: BEUInt32                                          /* CMM for this profile */
+        public var version: BEUInt32                                        /* Format version number */
         
-        private var _deviceClass: UInt32Number                                   /* Type of profile */
-        private var _colorSpace: UInt32Number                                    /* Color space of data */
-        private var _pcs: UInt32Number                                           /* PCS, XYZ or Lab only */
+        private var _deviceClass: BEUInt32                                   /* Type of profile */
+        private var _colorSpace: BEUInt32                                    /* Color space of data */
+        private var _pcs: BEUInt32                                           /* PCS, XYZ or Lab only */
         
         public var deviceClass: ClassSignature {
             get {
@@ -84,17 +84,17 @@ extension iccProfile {
         
         public var date: DateTimeNumber                                         /* Date profile was created */
         
-        public var magic: UInt32Number                                          /* icMagicNumber */
-        public var platform: UInt32Number                                       /* Primary Platform */
-        public var flags: UInt32Number                                          /* Various bit settings */
-        public var manufacturer: UInt32Number                                   /* Device manufacturer */
-        public var model: UInt32Number                                          /* Device model number */
-        public var attributes: UInt64Number                                     /* Device attributes */
-        public var renderingIntent: UInt32Number                                /* Rendering intent */
+        public var magic: BEUInt32                                          /* icMagicNumber */
+        public var platform: BEUInt32                                       /* Primary Platform */
+        public var flags: BEUInt32                                          /* Various bit settings */
+        public var manufacturer: BEUInt32                                   /* Device manufacturer */
+        public var model: BEUInt32                                          /* Device model number */
+        public var attributes: BEUInt64                                     /* Device attributes */
+        public var renderingIntent: BEUInt32                                /* Rendering intent */
         
         public var illuminant: XYZNumber                                        /* Profile illuminant */
         
-        public var creator: UInt32Number                                        /* Profile creator */
+        public var creator: BEUInt32                                        /* Profile creator */
         public var profileID: (UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8)   /* Profile ID using RFC 1321 MD5 128bit fingerprinting */
         public var reserved: (UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8)   /* Reserved for future use */
         
@@ -104,13 +104,13 @@ extension iccProfile {
 extension iccProfile.Header : CustomStringConvertible {
     
     public var description: String {
-        return "iccProfile.Header(size:\(size), cmmId:\(cmmId), version:\(version), deviceClass:\(deviceClass), colorSpace:\(colorSpace), pcs:\(pcs), date:\(date), magic:\(magic), platform:\(platform), flags:\(flags), manufacturer:\(manufacturer), model:\(model), attributes:\(attributes), renderingIntent:\(renderingIntent), illuminant:\(illuminant), creator:\(creator), profileID:\(profileID))"
+        return "iccProfile.Header(size: \(size), cmmId: \(cmmId), version: \(version), deviceClass: \(deviceClass), colorSpace: \(colorSpace), pcs: \(pcs), date: \(date), magic: \(magic), platform: \(platform), flags: \(flags), manufacturer: \(manufacturer), model: \(model), attributes: \(attributes), renderingIntent: \(renderingIntent), illuminant: \(illuminant), creator: \(creator), profileID: \(profileID))"
     }
 }
 
 extension iccProfile.Header {
     
-    public enum ClassSignature: iccProfile.UInt32Number {
+    public enum ClassSignature: BEUInt32 {
         
         case unknown
         
@@ -123,7 +123,7 @@ extension iccProfile.Header {
         case namedColor                = 0x6e6d636c  /* 'nmcl' */
     }
     
-    public enum ColorSpaceSignature: iccProfile.UInt32Number {
+    public enum ColorSpaceSignature: BEUInt32 {
         
         case unknown
         

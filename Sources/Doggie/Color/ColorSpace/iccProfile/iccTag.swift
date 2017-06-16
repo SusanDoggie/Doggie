@@ -52,12 +52,12 @@ extension iccProfile {
     fileprivate func _tagData(position: Int) -> (TagSignature, TagData) {
         let tag_offset = 132 + 12 * position
         let sig = data[tag_offset..<tag_offset + 4].withUnsafeBytes { TagSignature(rawValue: $0.pointee) } ?? .unknown
-        let offset = data[tag_offset + 4..<tag_offset + 8].withUnsafeBytes { $0.pointee as UInt32Number }.rawValue
-        let size = data[tag_offset + 8..<tag_offset + 12].withUnsafeBytes { $0.pointee as UInt32Number }.rawValue
+        let offset = data[tag_offset + 4..<tag_offset + 8].withUnsafeBytes { $0.pointee as BEUInt32 }
+        let size = data[tag_offset + 8..<tag_offset + 12].withUnsafeBytes { $0.pointee as BEUInt32 }
         return (sig, TagData(_data: data[Int(offset)..<Int(offset + size)]))
     }
     
-    public enum TagSignature : UInt32Number {
+    public enum TagSignature : BEUInt32 {
         
         case unknown
         
@@ -144,7 +144,7 @@ extension iccProfile {
         }
         
         public var data: Data {
-            return _data.dropFirst(8)
+            return _data.advanced(by: 8)
         }
     }
 }
@@ -153,7 +153,7 @@ extension iccProfile.TagData {
     
     public struct Header {
         
-        public var signature: iccProfile.UInt32Number            /* Signature */
+        public var signature: BEUInt32            /* Signature */
         public var reserved: (UInt8, UInt8, UInt8, UInt8)
     }
     
@@ -174,26 +174,33 @@ extension iccProfile.TagData : CustomStringConvertible {
         case .S15Fixed16Array: return "\(s15Fixed16Array ?? []))"
         case .U16Fixed16Array: return "\(u16Fixed16Array ?? []))"
         case .XYZArray: return "\(XYZArray ?? []))"
-        default: return "TagData(type:\(type), data:\(data))"
+        case .Curve: return curve.map { "\($0)" } ?? "TagData(type: \(type), data: \(data))"
+        case .ParametricCurve: return parametricCurve.map { "\($0)" } ?? "TagData(type: \(type), data: \(data))"
+        case .MultiLocalizedUnicode: return multiLocalizedUnicode.map { "\($0)" } ?? "TagData(type: \(type), data: \(data))"
+        case .Lut16: return lut16.map { "\($0)" } ?? "TagData(type: \(type), data: \(data))"
+        case .Lut8: return lut8.map { "\($0)" } ?? "TagData(type: \(type), data: \(data))"
+        case .LutAtoB: return lutAtoB.map { "\($0)" } ?? "TagData(type: \(type), data: \(data))"
+        case .LutBtoA: return lutBtoA.map { "\($0)" } ?? "TagData(type: \(type), data: \(data))"
+        default: return "TagData(type: \(type), data: \(data))"
         }
     }
 }
 
 extension iccProfile.TagData {
     
-    public var uInt16Array: [iccProfile.UInt16Number]? {
+    public var uInt16Array: [BEUInt16]? {
         
-        return type == .UInt16Array ? data.withUnsafeBytes { Array(UnsafeBufferPointer(start: $0, count: data.count / MemoryLayout<iccProfile.UInt16Number>.stride)) } : nil
+        return type == .UInt16Array ? data.withUnsafeBytes { Array(UnsafeBufferPointer(start: $0, count: data.count / MemoryLayout<BEUInt16>.stride)) } : nil
     }
     
-    public var uInt32Array: [iccProfile.UInt32Number]? {
+    public var uInt32Array: [BEUInt32]? {
         
-        return type == .UInt32Array ? data.withUnsafeBytes { Array(UnsafeBufferPointer(start: $0, count: data.count / MemoryLayout<iccProfile.UInt32Number>.stride)) } : nil
+        return type == .UInt32Array ? data.withUnsafeBytes { Array(UnsafeBufferPointer(start: $0, count: data.count / MemoryLayout<BEUInt32>.stride)) } : nil
     }
     
-    public var uInt64Array: [iccProfile.UInt64Number]? {
+    public var uInt64Array: [BEUInt64]? {
         
-        return type == .UInt64Array ? data.withUnsafeBytes { Array(UnsafeBufferPointer(start: $0, count: data.count / MemoryLayout<iccProfile.UInt64Number>.stride)) } : nil
+        return type == .UInt64Array ? data.withUnsafeBytes { Array(UnsafeBufferPointer(start: $0, count: data.count / MemoryLayout<BEUInt64>.stride)) } : nil
     }
     
     public var uInt8Array: [UInt8]? {
@@ -225,7 +232,431 @@ extension iccProfile.TagData {
 
 extension iccProfile.TagData {
     
-    public enum `Type` : iccProfile.UInt32Number {
+    public var multiLocalizedUnicode: MultiLocalizedUnicodeView? {
+        
+        return type == .MultiLocalizedUnicode ? MultiLocalizedUnicodeView(data: data) : nil
+    }
+}
+
+extension iccProfile.TagData {
+    
+    public var curve: CurveView? {
+        
+        return type == .Curve ? CurveView(data: data) : nil
+    }
+}
+
+extension iccProfile.TagData {
+    
+    public struct CurveView : RandomAccessCollection, CustomStringConvertible {
+        
+        fileprivate let data: Data
+        
+        fileprivate init(data: Data) {
+            self.data = data
+        }
+        
+        public var startIndex: Int {
+            return 0
+        }
+        
+        public var endIndex: Int {
+            return Int(data.withUnsafeBytes { $0.pointee as BEUInt32 })
+        }
+        
+        public func point(position: Int) -> BEUInt16 {
+            let offset = 4 + 2 * position
+            return data[offset..<offset + 2].withUnsafeBytes { $0.pointee }
+        }
+        
+        public subscript(position: Int) -> Double {
+            return Double(point(position: position).representingValue) / 65535
+        }
+        
+        public var isGamma: Bool {
+            return self.count == 1
+        }
+        
+        public var gamma: iccProfile.U8Fixed8Number? {
+            
+            return isGamma ? iccProfile.U8Fixed8Number(rawValue: point(position: 0)) : nil
+        }
+        
+        public var description: String {
+            if let gamma = gamma {
+                return "CurveView(gamma: \(gamma))"
+            }
+            return "CurveView(curve: \(Array(self)))"
+        }
+    }
+}
+
+extension iccProfile.TagData {
+    
+    public var parametricCurve: iccProfile.ParametricCurve? {
+        
+        if type == .ParametricCurve {
+            var data = self.data
+            data.count = MemoryLayout<iccProfile.ParametricCurve>.stride
+            return data.withUnsafeBytes { $0.pointee }
+        }
+        return nil
+    }
+}
+
+extension iccProfile.TagData {
+    
+    public struct MultiLocalizedUnicodeView : RandomAccessCollection, CustomStringConvertible {
+        
+        fileprivate let data: Data
+        
+        fileprivate init(data: Data) {
+            self.data = data
+        }
+        
+        public var header: iccProfile.MultiLocalizedUnicode {
+            return data.withUnsafeBytes { $0.pointee }
+        }
+        
+        public var startIndex: Int {
+            return 0
+        }
+        
+        public var endIndex: Int {
+            return Int(header.count)
+        }
+        
+        public subscript(position: Int) -> (language: String, country: String, String) {
+            
+            let entry = self.entry(position: position)
+            
+            let offset = Int(entry.offset) - 8
+            let strData = data[offset..<offset + Int(entry.length)]
+            
+            return (entry.language, entry.country, String(bytes: strData, encoding: .utf16BigEndian) ?? "")
+        }
+        
+        public func entry(position: Int) -> iccProfile.MultiLocalizedUnicodeEntry {
+            
+            let size = Int(header.size)
+            let offset = 8 + size * position
+            
+            return data[offset..<offset + size].withUnsafeBytes { $0.pointee }
+        }
+        
+        public var description: String {
+            return "\(Array(self))"
+        }
+    }
+}
+
+extension iccProfile.TagData {
+    
+    public var lut16: Lut16View? {
+        
+        return type == .Lut16 ? Lut16View(data: data) : nil
+    }
+}
+
+extension iccProfile.TagData {
+    
+    public struct Lut16View : CustomStringConvertible {
+        
+        fileprivate let data: Data
+        
+        fileprivate init(data: Data) {
+            self.data = data
+        }
+        
+        public var header: iccProfile.Lut16 {
+            return data.withUnsafeBytes { $0.pointee }
+        }
+        
+        public var inputChannels: Int {
+            return Int(header.inputChannels)
+        }
+        public var outputChannels: Int {
+            return Int(header.outputChannels)
+        }
+        public var inputEntries: Int {
+            return Int(header.inputEntries)
+        }
+        public var outputEntries: Int {
+            return Int(header.outputEntries)
+        }
+        public var clutPoints: Int {
+            return Int(header.clutPoints)
+        }
+        
+        public var inputTableSize: Int {
+            return 2 * inputEntries * inputChannels
+        }
+        public var outputTableSize: Int {
+            return 2 * outputEntries * outputChannels
+        }
+        public var clutTableSize: Int {
+            return 2 * Int(pow(UInt(clutPoints), UInt(inputChannels))) * outputChannels
+        }
+        
+        public var inputTable: [BEUInt16] {
+            let start = 44
+            let end = start + inputTableSize
+            return data[start..<end].withUnsafeBytes { Array(UnsafeBufferPointer(start: $0, count: inputTableSize >> 1)) }
+        }
+        
+        public var clutTable: [BEUInt16] {
+            let start = 44 + inputTableSize
+            let end = start + clutTableSize
+            return data[start..<end].withUnsafeBytes { Array(UnsafeBufferPointer(start: $0, count: clutTableSize >> 1)) }
+        }
+        
+        public var outputTable: [BEUInt16] {
+            let start = 44 + inputTableSize + clutTableSize
+            let end = start + outputTableSize
+            return data[start..<end].withUnsafeBytes { Array(UnsafeBufferPointer(start: $0, count: outputTableSize >> 1)) }
+        }
+        
+        public var description: String {
+            return "Lut16View(header: \(header), inputTable: \(inputTable), clutTable: \(clutTable), outputTable: \(outputTable))"
+        }
+    }
+}
+
+extension iccProfile.TagData {
+    
+    public var lut8: Lut8View? {
+        
+        return type == .Lut8 ? Lut8View(data: data) : nil
+    }
+}
+
+extension iccProfile.TagData {
+    
+    public struct Lut8View : CustomStringConvertible {
+        
+        fileprivate let data: Data
+        
+        fileprivate init(data: Data) {
+            self.data = data
+        }
+        
+        public var header: iccProfile.Lut8 {
+            return data.withUnsafeBytes { $0.pointee }
+        }
+        
+        public var inputChannels: Int {
+            return Int(header.inputChannels)
+        }
+        public var outputChannels: Int {
+            return Int(header.outputChannels)
+        }
+        public var clutPoints: Int {
+            return Int(header.clutPoints)
+        }
+        
+        public var inputTableSize: Int {
+            return 256 * inputChannels
+        }
+        public var outputTableSize: Int {
+            return 256 * outputChannels
+        }
+        public var clutTableSize: Int {
+            return Int(pow(UInt(clutPoints), UInt(inputChannels))) * outputChannels
+        }
+        
+        public var inputTable: [UInt8] {
+            let start = 40
+            let end = start + inputTableSize
+            return data[start..<end].withUnsafeBytes { Array(UnsafeBufferPointer(start: $0, count: inputTableSize)) }
+        }
+        
+        public var clutTable: [UInt8] {
+            let start = 40 + inputTableSize
+            let end = start + clutTableSize
+            return data[start..<end].withUnsafeBytes { Array(UnsafeBufferPointer(start: $0, count: clutTableSize)) }
+        }
+        
+        public var outputTable: [UInt8] {
+            let start = 40 + inputTableSize + clutTableSize
+            let end = start + outputTableSize
+            return data[start..<end].withUnsafeBytes { Array(UnsafeBufferPointer(start: $0, count: outputTableSize)) }
+        }
+        
+        public var description: String {
+            return "Lut8View(header: \(header), inputTable: \(inputTable), clutTable: \(clutTable), outputTable: \(outputTable))"
+        }
+    }
+}
+
+extension iccProfile.TagData {
+    
+    public struct CLUTTableView : CustomStringConvertible {
+        
+        public let inputChannels: Int
+        public let outputChannels: Int
+        
+        fileprivate let data: Data
+        
+        fileprivate init(inputChannels: Int, outputChannels: Int, data: Data) {
+            self.inputChannels = inputChannels
+            self.outputChannels = outputChannels
+            self.data = data
+        }
+        
+        public var header: iccProfile.CLUTStruct {
+            return data.withUnsafeBytes { $0.pointee }
+        }
+        
+        public var table: [Double] {
+            
+            var gridPoints = header.gridPoints
+            
+            let count: Int = withUnsafeBytes(of: &gridPoints) {
+                
+                if let ptr = $0.baseAddress?.assumingMemoryBound(to: UInt8.self) {
+                    return UnsafeBufferPointer(start: ptr, count: 16).prefix(inputChannels).reduce(outputChannels) { $0 * Int($1) }
+                }
+                return 0
+            }
+            
+            let table = data[20..<20 + count * Int(header.precision)]
+            
+            switch header.precision {
+            case 1: return table.withUnsafeBytes { UnsafeBufferPointer(start: $0, count: count).map { (v: UInt8) in Double(v) / 255 } }
+            case 2: return table.withUnsafeBytes { UnsafeBufferPointer(start: $0, count: count).map { (v: BEUInt16) in Double(v.representingValue) / 65535 } }
+            default: return []
+            }
+        }
+        
+        public var description: String {
+            return "CLUTTableView(\(table.count))"
+        }
+    }
+}
+
+extension iccProfile.TagData {
+    
+    public var lutAtoB: LutAtoBView? {
+        
+        return type == .LutAtoB ? LutAtoBView(data: data) : nil
+    }
+}
+
+extension iccProfile.TagData {
+    
+    public struct LutAtoBView : CustomStringConvertible {
+        
+        fileprivate let data: Data
+        
+        fileprivate init(data: Data) {
+            self.data = data
+        }
+        
+        public var header: iccProfile.LutAtoB {
+            return data.withUnsafeBytes { $0.pointee }
+        }
+        
+        public var inputChannels: Int {
+            return Int(header.inputChannels)
+        }
+        public var outputChannels: Int {
+            return Int(header.outputChannels)
+        }
+        
+        public var A: iccProfile.TagData {
+            let offset = Int(header.offsetA) - 8
+            return iccProfile.TagData(_data: data[offset...])
+        }
+        
+        public var B: iccProfile.TagData {
+            let offset = Int(header.offsetB) - 8
+            return iccProfile.TagData(_data: data[offset...])
+        }
+        
+        public var M: iccProfile.TagData {
+            let offset = Int(header.offsetM) - 8
+            return iccProfile.TagData(_data: data[offset...])
+        }
+        
+        public var matrix: iccProfile.Matrix3x4 {
+            let offset = Int(header.offsetMatrix) - 8
+            return data[offset...].withUnsafeBytes { $0.pointee }
+        }
+        
+        public var clutTable: iccProfile.TagData.CLUTTableView {
+            let offset = Int(header.offsetCLUT) - 8
+            return iccProfile.TagData.CLUTTableView(inputChannels: inputChannels, outputChannels: outputChannels, data: data.advanced(by: offset))
+        }
+        
+        public var description: String {
+            return "LutAtoBView(A: \(A), M: \(M), B: \(B), matrix: \(matrix), clutTable: \(clutTable))"
+        }
+    }
+}
+
+extension iccProfile.TagData {
+    
+    public var lutBtoA: LutBtoAView? {
+        
+        return type == .LutBtoA ? LutBtoAView(data: data) : nil
+    }
+}
+
+extension iccProfile.TagData {
+    
+    public struct LutBtoAView : CustomStringConvertible {
+        
+        fileprivate let data: Data
+        
+        fileprivate init(data: Data) {
+            self.data = data
+        }
+        
+        public var header: iccProfile.LutBtoA {
+            return data.withUnsafeBytes { $0.pointee }
+        }
+        
+        public var inputChannels: Int {
+            return Int(header.inputChannels)
+        }
+        public var outputChannels: Int {
+            return Int(header.outputChannels)
+        }
+        
+        public var A: iccProfile.TagData {
+            let offset = Int(header.offsetA) - 8
+            return iccProfile.TagData(_data: data[offset...])
+        }
+        
+        public var B: iccProfile.TagData {
+            let offset = Int(header.offsetB) - 8
+            return iccProfile.TagData(_data: data[offset...])
+        }
+        
+        public var M: iccProfile.TagData {
+            let offset = Int(header.offsetM) - 8
+            return iccProfile.TagData(_data: data[offset...])
+        }
+        
+        public var matrix: iccProfile.Matrix3x4 {
+            let offset = Int(header.offsetMatrix) - 8
+            return data[offset...].withUnsafeBytes { $0.pointee }
+        }
+        
+        public var clutTable: iccProfile.TagData.CLUTTableView {
+            let offset = Int(header.offsetCLUT) - 8
+            return iccProfile.TagData.CLUTTableView(inputChannels: inputChannels, outputChannels: outputChannels, data: data.advanced(by: offset))
+        }
+        
+        public var description: String {
+            return "LutBtoAView(A: \(A), M: \(M), B: \(B), matrix: \(matrix), clutTable: \(clutTable))"
+        }
+    }
+}
+
+extension iccProfile.TagData {
+    
+    public enum `Type` : BEUInt32 {
         
         case unknown
         

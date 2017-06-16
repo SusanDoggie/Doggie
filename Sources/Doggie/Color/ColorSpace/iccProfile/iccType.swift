@@ -28,95 +28,24 @@ private func icRoundOffset<T : BinaryFloatingPoint>(_ v: T) -> T {
     return v < 0 ? v - 0.5 : v + 0.5
 }
 
-public protocol iccUIntNumber : RawRepresentable, Hashable, CustomStringConvertible, ExpressibleByIntegerLiteral where RawValue : FixedWidthInteger {
-    
-    var bigEndian: RawValue { get set }
-    
-    init(bigEndian: RawValue)
-}
-
-extension iccUIntNumber {
-    
-    public var rawValue: RawValue {
-        get {
-            return RawValue(bigEndian: bigEndian)
-        }
-        set {
-            bigEndian = newValue.bigEndian
-        }
-    }
-    
-    public init(rawValue: RawValue) {
-        self.init(bigEndian: rawValue.bigEndian)
-    }
-    
-    public init(integerLiteral value: RawValue) {
-        self.init(bigEndian: value.bigEndian)
-    }
-    
-    public var description: String {
-        return "\(rawValue)"
-    }
-    
-    public var hashValue: Int {
-        return rawValue.hashValue
-    }
-}
-
-extension iccProfile {
-    
-    public struct UInt16Number : iccUIntNumber {
-        
-        public typealias RawValue = UInt16
-        
-        public var bigEndian: UInt16
-        
-        public init(bigEndian: UInt16) {
-            self.bigEndian = bigEndian
-        }
-    }
-    
-    public struct UInt32Number : iccUIntNumber {
-        
-        public typealias RawValue = UInt32
-        
-        public var bigEndian: UInt32
-        
-        public init(bigEndian: UInt32) {
-            self.bigEndian = bigEndian
-        }
-    }
-    
-    public struct UInt64Number : iccUIntNumber {
-        
-        public typealias RawValue = UInt64
-        
-        public var bigEndian: UInt64
-        
-        public init(bigEndian: UInt64) {
-            self.bigEndian = bigEndian
-        }
-    }
-}
-
 extension iccProfile {
     
     public struct S15Fixed16Number : RawRepresentable, Hashable, CustomStringConvertible {
         
-        public typealias RawValue = Int32
+        public typealias RawValue = BEInt32
         
-        public var rawValue: Int32
+        public var rawValue: BEInt32
         
-        public init(rawValue: Int32) {
+        public init(rawValue: BEInt32) {
             self.rawValue = rawValue
         }
         
         public var value: Double {
             get {
-                return Double(Int32(bigEndian: rawValue)) / 65536.0
+                return Double(rawValue.representingValue) / 65536.0
             }
             set {
-                rawValue = Int32(newValue.clamped(to: -32768.0...32767.0) * 65536.0).bigEndian
+                rawValue = BEInt32(newValue.clamped(to: -32768.0...32767.0) * 65536.0)
             }
         }
         
@@ -134,20 +63,20 @@ extension iccProfile {
     
     public struct U16Fixed16Number : RawRepresentable, Hashable, CustomStringConvertible {
         
-        public typealias RawValue = UInt32
+        public typealias RawValue = BEUInt32
         
-        public var rawValue: UInt32
+        public var rawValue: BEUInt32
         
-        public init(rawValue: UInt32) {
+        public init(rawValue: BEUInt32) {
             self.rawValue = rawValue
         }
         
         public var value: Double {
             get {
-                return Double(UInt32(bigEndian: rawValue)) / 65536.0
+                return Double(rawValue.representingValue) / 65536.0
             }
             set {
-                rawValue = UInt32(newValue.clamped(to: 0...65535.0) * 65536.0).bigEndian
+                rawValue = BEUInt32(newValue.clamped(to: 0...65535.0) * 65536.0)
             }
         }
         
@@ -165,20 +94,20 @@ extension iccProfile {
     
     public struct U1Fixed15Number : RawRepresentable, Hashable, CustomStringConvertible {
         
-        public typealias RawValue = UInt16
+        public typealias RawValue = BEUInt16
         
-        public var rawValue: UInt16
+        public var rawValue: BEUInt16
         
-        public init(rawValue: UInt16) {
+        public init(rawValue: BEUInt16) {
             self.rawValue = rawValue
         }
         
         public var value: Double {
             get {
-                return Double(UInt16(bigEndian: rawValue)) / 32768.0
+                return Double(rawValue.representingValue) / 32768.0
             }
             set {
-                rawValue = UInt16(icRoundOffset(newValue.clamped(to: 0...65535.0/32768.0) * 32768.0)).bigEndian
+                rawValue = BEUInt16(icRoundOffset(newValue.clamped(to: 0...65535.0/32768.0) * 32768.0))
             }
         }
         
@@ -196,20 +125,20 @@ extension iccProfile {
     
     public struct U8Fixed8Number : RawRepresentable, Hashable, CustomStringConvertible {
         
-        public typealias RawValue = UInt16
+        public typealias RawValue = BEUInt16
         
-        public var rawValue: UInt16
+        public var rawValue: BEUInt16
         
-        public init(rawValue: UInt16) {
+        public init(rawValue: BEUInt16) {
             self.rawValue = rawValue
         }
         
         public var value: Double {
             get {
-                return Double(UInt16(bigEndian: rawValue)) / 256.0
+                return Double(rawValue.representingValue) / 256.0
             }
             set {
-                rawValue = UInt16(icRoundOffset(newValue.clamped(to: 0...255.0) * 256.0)).bigEndian
+                rawValue = BEUInt16(icRoundOffset(newValue.clamped(to: 0...255.0) * 256.0))
             }
         }
         
@@ -227,12 +156,12 @@ extension iccProfile {
     
     public struct DateTimeNumber {
         
-        public var year: UInt16Number
-        public var month: UInt16Number
-        public var day: UInt16Number
-        public var hours: UInt16Number
-        public var minutes: UInt16Number
-        public var seconds: UInt16Number
+        public var year: BEUInt16
+        public var month: BEUInt16
+        public var day: BEUInt16
+        public var hours: BEUInt16
+        public var minutes: BEUInt16
+        public var seconds: BEUInt16
     }
 }
 
@@ -248,29 +177,45 @@ extension iccProfile {
 
 extension iccProfile {
     
-    public struct ChromaticityNumber {
+    public struct Matrix3x3 : CustomStringConvertible {
         
-        public var x: U16Fixed16Number
-        public var y: U16Fixed16Number
+        public var e00: S15Fixed16Number
+        public var e01: S15Fixed16Number
+        public var e02: S15Fixed16Number
+        public var e10: S15Fixed16Number
+        public var e11: S15Fixed16Number
+        public var e12: S15Fixed16Number
+        public var e20: S15Fixed16Number
+        public var e21: S15Fixed16Number
+        public var e22: S15Fixed16Number
+        
+        public var matrix: Matrix {
+            return Matrix(a: e00.value, b: e01.value, c: e02.value, d: 0,
+                          e: e10.value, f: e11.value, g: e12.value, h: 0,
+                          i: e20.value, j: e21.value, k: e22.value, l: 0)
+        }
+        
+        public var description: String {
+            return "\(matrix))"
+        }
     }
-}
-
-extension iccProfile {
     
-    public struct Response16Number {
+    public struct Matrix3x4 : CustomStringConvertible {
         
-        public var deviceCode: UInt16Number
-        public var reserved: UInt16Number
-        public var measurementValue: S15Fixed16Number
-    }
-}
-
-extension iccProfile {
-    
-    public struct PositionNumber {
+        public var m: Matrix3x3
+        public var e03: S15Fixed16Number
+        public var e13: S15Fixed16Number
+        public var e23: S15Fixed16Number
         
-        public var offset: UInt32Number
-        public var size: UInt32Number
+        public var matrix: Matrix {
+            return Matrix(a: m.e00.value, b: m.e01.value, c: m.e02.value, d: e03.value,
+                          e: m.e10.value, f: m.e11.value, g: m.e12.value, h: e13.value,
+                          i: m.e20.value, j: m.e21.value, k: m.e22.value, l: e23.value)
+        }
+        
+        public var description: String {
+            return "\(matrix))"
+        }
     }
 }
 
@@ -278,15 +223,111 @@ extension iccProfile {
     
     public struct ParametricCurve {
         
-        public var funcType: UInt16Number           /* Function Type                */
-                                                    /* 0 = gamma only               */
-        public var pad: UInt16Number                /* Padding for byte alignment   */
-        public var gamma: S15Fixed16Number          /* x°gamma                      */
-        public var a: S15Fixed16Number              /* a                            */
-        public var b: S15Fixed16Number              /* b                            */
-        public var c: S15Fixed16Number              /* c                            */
-        public var d: S15Fixed16Number              /* d                            */
-        public var e: S15Fixed16Number              /* e                            */
-        public var f: S15Fixed16Number              /* f                            */
+        public var funcType: BEUInt16
+        public var padding: BEUInt16
+        public var gamma: S15Fixed16Number
+        public var a: S15Fixed16Number
+        public var b: S15Fixed16Number
+        public var c: S15Fixed16Number
+        public var d: S15Fixed16Number
+        public var e: S15Fixed16Number
+        public var f: S15Fixed16Number
     }
 }
+
+extension iccProfile {
+    
+    public struct Lut16 {
+        
+        public var inputChannels: UInt8
+        public var outputChannels: UInt8
+        public var clutPoints: UInt8
+        public var padding: UInt8
+        public var matrix: Matrix3x3
+        public var inputEntries: BEUInt16
+        public var outputEntries: BEUInt16
+    }
+}
+
+extension iccProfile {
+    
+    public struct Lut8 {
+        
+        public var inputChannels: UInt8
+        public var outputChannels: UInt8
+        public var clutPoints: UInt8
+        public var padding: UInt8
+        public var matrix: Matrix3x3
+    }
+}
+
+extension iccProfile {
+    
+    public struct CLUTStruct {
+        
+        public var gridPoints: (UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8)
+        public var precision: UInt8
+        public var pad1: UInt8
+        public var pad2: UInt8
+        public var pad3: UInt8
+    }
+}
+
+extension iccProfile {
+    
+    public struct LutAtoB {
+        
+        public var inputChannels: UInt8
+        public var outputChannels: UInt8
+        public var padding1: UInt8
+        public var padding2: UInt8
+        public var offsetB: BEUInt32
+        public var offsetMatrix: BEUInt32
+        public var offsetM: BEUInt32
+        public var offsetCLUT: BEUInt32
+        public var offsetA: BEUInt32
+    }
+}
+
+extension iccProfile {
+    
+    public struct LutBtoA {
+        
+        public var inputChannels: UInt8
+        public var outputChannels: UInt8
+        public var padding1: UInt8
+        public var padding2: UInt8
+        public var offsetB: BEUInt32
+        public var offsetMatrix: BEUInt32
+        public var offsetM: BEUInt32
+        public var offsetCLUT: BEUInt32
+        public var offsetA: BEUInt32
+    }
+}
+
+extension iccProfile {
+    
+    public struct MultiLocalizedUnicode {
+        
+        public var count: BEUInt32
+        public var size: BEUInt32
+    }
+    
+    public struct MultiLocalizedUnicodeEntry {
+        
+        public var languageCode: BEUInt16
+        public var countryCode: BEUInt16
+        public var length: BEUInt32
+        public var offset: BEUInt32
+        
+        public var language: String {
+            var code = self.languageCode
+            return String(bytes: UnsafeRawBufferPointer(start: &code, count: 2), encoding: .ascii) ?? ""
+        }
+        public var country: String {
+            var code = self.countryCode
+            return String(bytes: UnsafeRawBufferPointer(start: &code, count: 2), encoding: .ascii) ?? ""
+        }
+    }
+}
+
