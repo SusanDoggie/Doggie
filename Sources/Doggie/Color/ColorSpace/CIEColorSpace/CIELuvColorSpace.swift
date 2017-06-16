@@ -76,9 +76,10 @@ extension CIELuvColorSpace {
     @_versioned
     @_inlineable
     func convertLinearToXYZ(_ color: Model) -> XYZColorModel {
+        let normalizeMatrix = cieXYZ.normalizeMatrix
+        let _white = white * normalizeMatrix
         let t = 27.0 / 24389.0
         let st = 216.0 / 27.0
-        let _white = XYZColorModel(luminance: 1, point: cieXYZ.normalized.white.point)
         let n = 1 / (_white.x + 15 * _white.y + 3 * _white.z)
         let _uw = 4 * _white.x * n
         let _vw = 9 * _white.y * n
@@ -88,15 +89,17 @@ extension CIELuvColorSpace {
         let b = -5 * y
         let d = y * (39 * color.lightness / (color.v + 13 * color.lightness * _vw) - 5)
         let x = (d - b) / (a + 1)
-        return XYZColorModel(x: 3 * x, y: y, z: x * a + b)
+        return XYZColorModel(x: 3 * x, y: y, z: x * a + b) * normalizeMatrix.inverse
     }
     
     @_versioned
     @_inlineable
     func convertLinearFromXYZ(_ color: XYZColorModel) -> Model {
+        let normalizeMatrix = cieXYZ.normalizeMatrix
+        let _white = white * normalizeMatrix
+        let color = color * normalizeMatrix
         let s = 216.0 / 24389.0
         let t = 24389.0 / 27.0
-        let _white = XYZColorModel(luminance: 1, point: cieXYZ.normalized.white.point)
         let m = 1 / (color.x + 15 * color.y + 3 * color.z)
         let n = 1 / (_white.x + 15 * _white.y + 3 * _white.z)
         let y = color.y / _white.y
