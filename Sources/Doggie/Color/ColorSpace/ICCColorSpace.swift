@@ -241,6 +241,9 @@ enum iccTransform {
 struct ICCColorSpace<Model : ColorModelProtocol, Connection : ColorSpaceBaseProtocol> : ColorSpaceBaseProtocol where Connection.Model : PCSColorModel {
     
     @_versioned
+    let iccData: Data
+    
+    @_versioned
     let connection : Connection
     
     @_versioned
@@ -248,6 +251,9 @@ struct ICCColorSpace<Model : ColorModelProtocol, Connection : ColorSpaceBaseProt
     
     @_versioned
     let b2a: iccTransform
+    
+    @_versioned
+    let chromaticAdaptationMatrix: Matrix
 }
 
 extension ICCColorSpace {

@@ -208,8 +208,8 @@ extension Color where Model == CMYKColorModel {
 extension Color {
     
     @_inlineable
-    public func convert<R>(to colorSpace: ColorSpace<R>) -> Color<R> {
-        return Color<R>(colorSpace: colorSpace, color: self.colorSpace.convert(color, to: colorSpace), opacity: opacity)
+    public func convert<R>(to colorSpace: ColorSpace<R>, intent: RenderingIntent = .default) -> Color<R> {
+        return Color<R>(colorSpace: colorSpace, color: self.colorSpace.convert(color, to: colorSpace, intent: intent), opacity: opacity)
     }
 }
 

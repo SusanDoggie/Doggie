@@ -56,11 +56,11 @@ public struct Image<Pixel: ColorPixelProtocol> {
     }
     
     @_inlineable
-    public init<P>(image: Image<P>, colorSpace: ColorSpace<Pixel.Model>) {
+    public init<P>(image: Image<P>, colorSpace: ColorSpace<Pixel.Model>, intent: RenderingIntent = .default) {
         self.width = image.width
         self.height = image.height
         self.colorSpace = colorSpace
-        self.pixel = image.colorSpace.convert(image.pixel, to: self.colorSpace)
+        self.pixel = image.colorSpace.convert(image.pixel, to: self.colorSpace, intent: intent)
     }
     
     @_inlineable
