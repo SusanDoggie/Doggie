@@ -102,23 +102,31 @@
         }
     }
     
-    extension Image where Pixel.Model == RGBColorModel {
+    extension Image {
         
         public var cgImage: CGImage? {
             
             if let colorSpace = self.colorSpace.cgColorSpace {
                 
-                let image = self.colorSpace.isSupportCGColorSpaceGamma ? Image<ARGB32ColorPixel>(image: self) : Image<ARGB32ColorPixel>(image: self, colorSpace: self.colorSpace.linearTone)
+                let image = self.colorSpace.isSupportCGColorSpaceGamma ? Image<ColorPixel<Pixel.Model>>(image: self) : Image<ColorPixel<Pixel.Model>>(image: self, colorSpace: self.colorSpace.linearTone)
                 
-                return image.withUnsafeBufferPointer { buf in
+                let components = Pixel.Model.count + 1
+                
+                let data = image.withUnsafeBufferPointer { buffer in buffer.baseAddress?.withMemoryRebound(to: Double.self, capacity: components) { UnsafeBufferPointer(start: $0, count: components * buffer.count).map(Float.init) } }
+                
+                return data?.withUnsafeBufferPointer { buf in
                     
-                    let bitsPerComponent: Int = 8
-                    let bytesPerPixel: Int = 4
-                    let bitsPerPixel: Int = bytesPerPixel * bitsPerComponent
+                    let bitsPerComponent = 32
+                    let bytesPerPixel = 4 * components
+                    let bitsPerPixel = 32 * components
                     
                     let bytesPerRow = bytesPerPixel * image.width
                     
-                    return CGImage.create(buf.baseAddress!, width: image.width, height: image.height, bitsPerComponent: bitsPerComponent, bitsPerPixel: bitsPerPixel, bytesPerRow: bytesPerRow, space: colorSpace, bitmapInfo: CGBitmapInfo.byteOrder32Big.rawValue | CGImageAlphaInfo.first.rawValue)
+                    let byteOrder = bitsPerComponent.bigEndian == bitsPerComponent ? CGBitmapInfo.byteOrder32Big : CGBitmapInfo.byteOrder32Little
+                    
+                    let bitmapInfo = byteOrder.rawValue | CGBitmapInfo.floatComponents.rawValue | CGImageAlphaInfo.last.rawValue
+                    
+                    return CGImage.create(buf.baseAddress!, width: image.width, height: image.height, bitsPerComponent: bitsPerComponent, bitsPerPixel: bitsPerPixel, bytesPerRow: bytesPerRow, space: colorSpace, bitmapInfo: bitmapInfo)
                 }
             }
             
@@ -134,10 +142,7 @@
     extension AnyImageBase : CGImageConvertibleProtocol {
         
         var cgImage: CGImage? {
-            if let image = base as? Image<ARGB32ColorPixel> {
-                return image.cgImage
-            }
-            return nil
+            return base.cgImage
         }
     }
     

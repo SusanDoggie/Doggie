@@ -52,7 +52,7 @@ public struct Image<Pixel: ColorPixelProtocol> {
         self.width = image.width
         self.height = image.height
         self.colorSpace = image.colorSpace
-        self.pixel = image.pixel.map(Pixel.init)
+        self.pixel = image.pixel as? [Pixel] ?? image.pixel.map(Pixel.init)
     }
     
     @_inlineable
