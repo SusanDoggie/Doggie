@@ -29,7 +29,7 @@ public struct iccProfile {
     
     public var header: Header
     
-    fileprivate var table: [BEUInt32: Data] = [:]
+    fileprivate var table: [TagSignature: TagData] = [:]
     
     public init(_ data: Data) throws {
         
@@ -41,7 +41,7 @@ public struct iccProfile {
         
         let tag_count = data[128..<132].withUnsafeBytes { $0.pointee as BEUInt32 }
         
-        typealias TagList = (BEUInt32, BEUInt32, BEUInt32)
+        typealias TagList = (TagSignature, BEUInt32, BEUInt32)
         
         let tag_list_size = MemoryLayout<TagList>.stride * Int(tag_count)
         
@@ -56,7 +56,7 @@ public struct iccProfile {
                 
                 guard data.count >= end else { throw InvalidFormat() }
                 
-                table[sig] = data[start..<end]
+                table[sig] = TagData(rawData: data[start..<end])
             }
         }
     }
@@ -71,32 +71,36 @@ extension iccProfile {
 
 extension iccProfile : Collection {
     
-    public var startIndex: Dictionary<BEUInt32, Data>.Index {
+    public var startIndex: Dictionary<TagSignature, TagData>.Index {
         return table.startIndex
     }
     
-    public var endIndex: Dictionary<BEUInt32, Data>.Index {
+    public var endIndex: Dictionary<TagSignature, TagData>.Index {
         return table.endIndex
     }
     
-    public subscript(position: Dictionary<BEUInt32, Data>.Index) -> (String, TagData) {
-        var (code, value) = table[position]
-        return (String(bytes: UnsafeRawBufferPointer(start: &code, count: 4), encoding: .ascii) ?? "", TagData(_data: value))
+    public subscript(position: Dictionary<TagSignature, TagData>.Index) -> (TagSignature, TagData) {
+        return table[position]
     }
     
     public subscript(signature: TagSignature) -> TagData? {
-        return table[signature.rawValue].map { TagData(_data: $0) }
+        get {
+            return table[signature]
+        }
+        set {
+            table[signature] = newValue
+        }
     }
     
-    public func index(after i: Dictionary<BEUInt32, Data>.Index) -> Dictionary<BEUInt32, Data>.Index {
+    public func index(after i: Dictionary<TagSignature, TagData>.Index) -> Dictionary<TagSignature, TagData>.Index {
         return table.index(after: i)
     }
     
-    public var keys: Dictionary<BEUInt32, Data>.Keys {
+    public var keys: Dictionary<TagSignature, TagData>.Keys {
         return table.keys
     }
     
-    public var values: Dictionary<BEUInt32, Data>.Values {
+    public var values: Dictionary<TagSignature, TagData>.Values {
         return table.values
     }
 }

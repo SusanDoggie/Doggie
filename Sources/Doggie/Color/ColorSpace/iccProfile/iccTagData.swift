@@ -29,32 +29,19 @@ extension iccProfile {
     
     public struct TagData {
         
-        fileprivate let _data: Data
+        let rawData: Data
         
-        init(_data: Data) {
-            self._data = _data
+        init(rawData: Data) {
+            self.rawData = rawData
         }
         
         public var type: Type {
-            return Type(rawValue: header.signature)
+            return rawData.withUnsafeBytes { $0.pointee }
         }
         
         public var data: Data {
-            return _data.advanced(by: 8)
+            return rawData.advanced(by: 8)
         }
-    }
-}
-
-extension iccProfile.TagData {
-    
-    public struct Header {
-        
-        public var signature: BEUInt32            /* Signature */
-        public var reserved: (UInt8, UInt8, UInt8, UInt8)
-    }
-    
-    public var header: Header {
-        return _data.withUnsafeBytes { $0.pointee }
     }
 }
 
@@ -465,17 +452,17 @@ extension iccProfile.TagData {
         
         public var A: iccProfile.TagData {
             let offset = Int(header.offsetA) - 8
-            return iccProfile.TagData(_data: data[offset...])
+            return iccProfile.TagData(rawData: data[offset...])
         }
         
         public var B: iccProfile.TagData {
             let offset = Int(header.offsetB) - 8
-            return iccProfile.TagData(_data: data[offset...])
+            return iccProfile.TagData(rawData: data[offset...])
         }
         
         public var M: iccProfile.TagData {
             let offset = Int(header.offsetM) - 8
-            return iccProfile.TagData(_data: data[offset...])
+            return iccProfile.TagData(rawData: data[offset...])
         }
         
         public var matrix: iccProfile.Matrix3x4 {
@@ -525,17 +512,17 @@ extension iccProfile.TagData {
         
         public var A: iccProfile.TagData {
             let offset = Int(header.offsetA) - 8
-            return iccProfile.TagData(_data: data[offset...])
+            return iccProfile.TagData(rawData: data[offset...])
         }
         
         public var B: iccProfile.TagData {
             let offset = Int(header.offsetB) - 8
-            return iccProfile.TagData(_data: data[offset...])
+            return iccProfile.TagData(rawData: data[offset...])
         }
         
         public var M: iccProfile.TagData {
             let offset = Int(header.offsetM) - 8
-            return iccProfile.TagData(_data: data[offset...])
+            return iccProfile.TagData(rawData: data[offset...])
         }
         
         public var matrix: iccProfile.Matrix3x4 {
