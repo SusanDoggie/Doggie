@@ -128,5 +128,27 @@
         }
     }
     
+    protocol CGColorSpaceConvertibleProtocol {
+        
+        var cgColorSpace: CGColorSpace? { get }
+    }
+    
+    extension AnyColorSpaceBase : CGColorSpaceConvertibleProtocol {
+        
+        var cgColorSpace: CGColorSpace? {
+            return base.cgColorSpace
+        }
+    }
+    
+    extension AnyColorSpace {
+        
+        public var cgColorSpace: CGColorSpace? {
+            if let base = base as? CGColorSpaceConvertibleProtocol {
+                return base.cgColorSpace
+            }
+            return nil
+        }
+    }
+    
 #endif
 

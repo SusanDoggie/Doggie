@@ -38,5 +38,27 @@
         }
     }
     
+    protocol CGColorConvertibleProtocol {
+        
+        var cgColor: CGColor? { get }
+    }
+    
+    extension AnyColorBase : CGColorConvertibleProtocol {
+        
+        var cgColor: CGColor? {
+            return base.cgColor
+        }
+    }
+    
+    extension AnyColor {
+        
+        public var cgColor: CGColor? {
+            if let base = base as? CGColorConvertibleProtocol {
+                return base.cgColor
+            }
+            return nil
+        }
+    }
+    
 #endif
 

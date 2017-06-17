@@ -126,5 +126,30 @@
         }
     }
     
+    protocol CGImageConvertibleProtocol {
+        
+        var cgImage: CGImage? { get }
+    }
+    
+    extension AnyImageBase : CGImageConvertibleProtocol {
+        
+        var cgImage: CGImage? {
+            if let image = base as? Image<ARGB32ColorPixel> {
+                return image.cgImage
+            }
+            return nil
+        }
+    }
+    
+    extension AnyImage {
+        
+        public var cgImage: CGImage? {
+            if let base = base as? CGImageConvertibleProtocol {
+                return base.cgImage
+            }
+            return nil
+        }
+    }
+    
 #endif
 
