@@ -38,23 +38,11 @@ extension iccProfile {
         public var cmmId: BEUInt32                                          /* CMM for this profile */
         public var version: BEUInt32                                        /* Format version number */
         
-        private var _deviceClass: BEUInt32                                   /* Type of profile */
-        private var _colorSpace: BEUInt32                                    /* Color space of data */
-        private var _pcs: BEUInt32                                           /* PCS, XYZ or Lab only */
+        public var deviceClass: ClassSignature                              /* Type of profile */
+        public var colorSpace: ColorSpaceSignature                          /* Color space of data */
+        public var pcs: ColorSpaceSignature                                 /* PCS, XYZ or Lab only */
         
-        public var deviceClass: ClassSignature {
-            return ClassSignature(rawValue: self._deviceClass)
-        }
-        
-        public var colorSpace: ColorSpaceSignature {
-            return ColorSpaceSignature(rawValue: self._colorSpace)
-        }
-        
-        public var pcs: ColorSpaceSignature {
-            return ColorSpaceSignature(rawValue: self._pcs)
-        }
-        
-        public var date: DateTimeNumber                                         /* Date profile was created */
+        public var date: DateTimeNumber                                     /* Date profile was created */
         
         public var magic: BEUInt32                                          /* icMagicNumber */
         public var platform: BEUInt32                                       /* Primary Platform */
@@ -64,7 +52,7 @@ extension iccProfile {
         public var attributes: BEUInt64                                     /* Device attributes */
         public var renderingIntent: BEUInt32                                /* Rendering intent */
         
-        public var illuminant: XYZNumber                                        /* Profile illuminant */
+        public var illuminant: XYZNumber                                    /* Profile illuminant */
         
         public var creator: BEUInt32                                        /* Profile creator */
         public var profileID: (UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8)   /* Profile ID using RFC 1321 MD5 128bit fingerprinting */
@@ -73,18 +61,13 @@ extension iccProfile {
     }
 }
 
-extension iccProfile.Header : CustomStringConvertible {
-    
-    public var description: String {
-        return "iccProfile.Header(size: \(size), cmmId: \(cmmId), version: \(version), deviceClass: \(deviceClass), colorSpace: \(colorSpace), pcs: \(pcs), date: \(date), magic: \(magic), platform: \(platform), flags: \(flags), manufacturer: \(manufacturer), model: \(model), attributes: \(attributes), renderingIntent: \(renderingIntent), illuminant: \(illuminant), creator: \(creator), profileID: \(profileID))"
-    }
-}
-
 public protocol iccSignature: RawRepresentable, Hashable, ExpressibleByIntegerLiteral, ExpressibleByStringLiteral, CustomStringConvertible {
     
-    var rawValue: BEUInt32 { get set }
+    associatedtype Bytes : FixedWidthInteger
     
-    init(rawValue: BEUInt32)
+    var rawValue: BEInteger<Bytes> { get set }
+    
+    init(rawValue: BEInteger<Bytes>)
 }
 
 extension iccSignature {
@@ -93,18 +76,18 @@ extension iccSignature {
         return rawValue.hashValue
     }
     
-    public init(integerLiteral value: BEUInt32.IntegerLiteralType) {
-        self.init(rawValue: BEUInt32(integerLiteral: value))
+    public init(integerLiteral value: BEInteger<Bytes>.IntegerLiteralType) {
+        self.init(rawValue: BEInteger<Bytes>(integerLiteral: value))
     }
     
     public init(stringLiteral value: StaticString) {
-        precondition(value.utf8CodeUnitCount == 4)
-        self.init(rawValue: value.utf8Start.withMemoryRebound(to: BEUInt32.self, capacity: 1) { $0.pointee })
+        precondition(value.utf8CodeUnitCount == Bytes.bitWidth >> 3)
+        self.init(rawValue: value.utf8Start.withMemoryRebound(to: BEInteger<Bytes>.self, capacity: 1) { $0.pointee })
     }
     
     public var description: String {
         var code = self.rawValue
-        return String(bytes: UnsafeRawBufferPointer(start: &code, count: 4), encoding: .ascii) ?? ""
+        return String(bytes: UnsafeRawBufferPointer(start: &code, count: Bytes.bitWidth >> 3), encoding: .ascii) ?? ""
     }
 }
 
@@ -570,6 +553,24 @@ extension iccProfile {
 
 extension iccProfile {
     
+    public struct LanguageCode: iccSignature {
+        
+        public var rawValue: BEUInt16
+        
+        public init(rawValue: BEUInt16) {
+            self.rawValue = rawValue
+        }
+    }
+    
+    public struct CountryCode: iccSignature {
+        
+        public var rawValue: BEUInt16
+        
+        public init(rawValue: BEUInt16) {
+            self.rawValue = rawValue
+        }
+    }
+    
     public struct MultiLocalizedUnicode {
         
         public var count: BEUInt32
@@ -578,19 +579,10 @@ extension iccProfile {
     
     public struct MultiLocalizedUnicodeEntry {
         
-        public var languageCode: BEUInt16
-        public var countryCode: BEUInt16
+        public var language: LanguageCode
+        public var country: CountryCode
         public var length: BEUInt32
         public var offset: BEUInt32
-        
-        public var language: String {
-            var code = self.languageCode
-            return String(bytes: UnsafeRawBufferPointer(start: &code, count: 2), encoding: .ascii) ?? ""
-        }
-        public var country: String {
-            var code = self.countryCode
-            return String(bytes: UnsafeRawBufferPointer(start: &code, count: 2), encoding: .ascii) ?? ""
-        }
     }
 }
 

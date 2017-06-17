@@ -213,7 +213,7 @@ extension iccProfile.TagData {
             return Int(header.count)
         }
         
-        public subscript(position: Int) -> (language: String, country: String, String) {
+        public subscript(position: Int) -> (language: iccProfile.LanguageCode, country: iccProfile.CountryCode, String) {
             
             let entry = self.entry(position: position)
             
