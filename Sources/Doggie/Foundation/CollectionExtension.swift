@@ -435,11 +435,11 @@ extension Strideable where Stride : SignedInteger {
     
     @_inlineable
     public func clamped(to range: CountableRange<Self>) -> Self {
-        return min(max(self, range.lowerBound), range.last ?? range.lowerBound)
+        return self.clamped(to: ClosedRange(range))
     }
     @_inlineable
     public func clamped(to range: CountableClosedRange<Self>) -> Self {
-        return min(max(self, range.lowerBound), range.upperBound)
+        return self.clamped(to: ClosedRange(range))
     }
 }
 
