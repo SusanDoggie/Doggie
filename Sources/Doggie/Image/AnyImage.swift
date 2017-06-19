@@ -33,6 +33,8 @@ protocol AnyImageBaseProtocol {
     
     var colorSpace: AnyColorSpaceBaseProtocol { get }
     
+    func draw<Model>(context: ImageContext<Model>, transform: SDTransform)
+    
     func convert(to colorSpace: AnyColorSpaceBaseProtocol, intent: RenderingIntent) -> AnyImageBaseProtocol
     
     func convert<P>(to colorSpace: ColorSpace<P.Model>, intent: RenderingIntent) -> Image<P>
@@ -75,6 +77,12 @@ struct AnyImageBase<Pixel: ColorPixelProtocol> : AnyImageBaseProtocol {
     
     @_versioned
     @_inlineable
+    func draw<Model>(context: ImageContext<Model>, transform: SDTransform) {
+        context.draw(image: base, transform: transform)
+    }
+    
+    @_versioned
+    @_inlineable
     func convert(to colorSpace: AnyColorSpaceBaseProtocol, intent: RenderingIntent) -> AnyImageBaseProtocol {
         return colorSpace.convert(base, intent: intent)
     }
@@ -112,6 +120,11 @@ public struct AnyImage {
 }
 
 extension AnyImage {
+    
+    @_inlineable
+    public init(width: Int, height: Int, colorSpace: AnyColorSpace) {
+        self.init(base: colorSpace.base.createImage(width: width, height: height))
+    }
     
     @_inlineable
     public init<Pixel>(_ image: Image<Pixel>) {
@@ -162,5 +175,13 @@ extension AnyImage {
     @_inlineable
     public var colorSpace: AnyColorSpace {
         return AnyColorSpace(base: base.colorSpace)
+    }
+}
+
+extension ImageContext {
+    
+    @_inlineable
+    public func draw(image: AnyImage, transform: SDTransform) {
+        image.base.draw(context: self, transform: transform)
     }
 }

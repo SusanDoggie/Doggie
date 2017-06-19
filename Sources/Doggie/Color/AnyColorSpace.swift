@@ -28,6 +28,10 @@ protocol AnyColorSpaceBaseProtocol {
     
     var chromaticAdaptationAlgorithm: ChromaticAdaptationAlgorithm { get set }
     
+    func createColor<S : Sequence>(components: S) -> AnyColorBaseProtocol where S.Element == Double
+    
+    func createImage(width: Int, height: Int) -> AnyImageBaseProtocol
+    
     func convert<Model>(_ color: Color<Model>, intent: RenderingIntent) -> AnyColorBaseProtocol
     
     func convert<Pixel>(_ image: Image<Pixel>, intent: RenderingIntent) -> AnyImageBaseProtocol
@@ -63,6 +67,28 @@ struct AnyColorSpaceBase<Model : ColorModelProtocol> : AnyColorSpaceBaseProtocol
         set {
             base.chromaticAdaptationAlgorithm = newValue
         }
+    }
+    
+    @_versioned
+    @_inlineable
+    func createColor<S : Sequence>(components: S) -> AnyColorBaseProtocol where S.Element == Double {
+        
+        var opacity = 0.0
+        var color = Model()
+        for (i, v) in components.enumerated() {
+            switch i {
+            case 0..<Model.count: color.setComponent(i, v)
+            case Model.count: opacity = v
+            default: fatalError()
+            }
+        }
+        return AnyColorBase(base: Color<Model>(colorSpace: base, color: color, opacity: opacity))
+    }
+    
+    @_versioned
+    @_inlineable
+    func createImage(width: Int, height: Int) -> AnyImageBaseProtocol {
+        return AnyImageBase(base: Image<ColorPixel<Model>>(width: width, height: height, colorSpace: base))
     }
     
     @_versioned

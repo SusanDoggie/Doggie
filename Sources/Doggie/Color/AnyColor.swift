@@ -110,6 +110,11 @@ public struct AnyColor {
 extension AnyColor {
     
     @_inlineable
+    public init<S : Sequence>(colorSpace: AnyColorSpace, components: S) where S.Element == Double {
+        self.init(base: colorSpace.base.createColor(components: components))
+    }
+    
+    @_inlineable
     public init<P : ColorPixelProtocol>(colorSpace: ColorSpace<P.Model>, color: P) {
         self.init(Color(colorSpace: colorSpace, color: color))
     }

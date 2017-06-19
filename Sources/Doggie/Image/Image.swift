@@ -129,6 +129,18 @@ extension Image {
         
         return try pixel.withUnsafeMutableBufferPointer(body)
     }
+    
+    @_inlineable
+    public func withUnsafeBytes<R>(_ body: (UnsafeRawBufferPointer) throws -> R) rethrows -> R {
+        
+        return try pixel.withUnsafeBytes(body)
+    }
+    
+    @_inlineable
+    public mutating func withUnsafeMutableBytes<R>(_ body: (UnsafeMutableRawBufferPointer) throws -> R) rethrows -> R {
+        
+        return try pixel.withUnsafeMutableBytes(body)
+    }
 }
 
 public enum ResamplingAlgorithm {
