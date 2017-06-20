@@ -28,7 +28,7 @@ import Foundation
 extension FixedWidthInteger {
     
     @_inlineable
-    public var reverse2: Self {
+    public var reverse: Self {
         
         var m1: Self = 0
         for _ in 0..<bitWidth >> 3 {
