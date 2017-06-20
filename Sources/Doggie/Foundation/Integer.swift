@@ -25,10 +25,10 @@
 
 import Foundation
 
-extension FixedWidthInteger where Self : UnsignedInteger {
+extension FixedWidthInteger {
     
     @_inlineable
-    public var reverse: Self {
+    public var reverse2: Self {
         
         var m1: Self = 0
         for _ in 0..<bitWidth >> 3 {
@@ -38,49 +38,17 @@ extension FixedWidthInteger where Self : UnsignedInteger {
         let m2 = (m1 << 2) ^ m1
         let m3 = (m2 << 1) ^ m2
         
+        let s1 = (0xF0 as Self).byteSwapped
+        let s2 = s1 << 2
+        let s3 = s2 << 1
+        
         var x = self.byteSwapped
         
-        x = ((x & m1) << 4) | ((x & ~m1) >> 4)
-        x = ((x & m2) << 2) | ((x & ~m2) >> 2)
-        x = ((x & m3) << 1) | ((x & ~m3) >> 1)
+        x = ((x & m1) << 4) | (((x & ~m1) >> 4) & ~s1)
+        x = ((x & m2) << 2) | (((x & ~m2) >> 2) & ~s2)
+        x = ((x & m3) << 1) | (((x & ~m3) >> 1) & ~s3)
         
         return x
-    }
-}
-
-extension Int {
-    
-    @_inlineable
-    public var reverse: Int {
-        return Int(bitPattern: UInt(bitPattern: self).reverse)
-    }
-}
-extension Int64 {
-    
-    @_inlineable
-    public var reverse: Int64 {
-        return Int64(bitPattern: UInt64(bitPattern: self).reverse)
-    }
-}
-extension Int32 {
-    
-    @_inlineable
-    public var reverse: Int32 {
-        return Int32(bitPattern: UInt32(bitPattern: self).reverse)
-    }
-}
-extension Int16 {
-    
-    @_inlineable
-    public var reverse: Int16 {
-        return Int16(bitPattern: UInt16(bitPattern: self).reverse)
-    }
-}
-extension Int8 {
-    
-    @_inlineable
-    public var reverse: Int8 {
-        return Int8(bitPattern: UInt8(bitPattern: self).reverse)
     }
 }
 
