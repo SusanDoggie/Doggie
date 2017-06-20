@@ -207,7 +207,7 @@ extension ColorPixelProtocol {
         
         if r_alpha > 0 {
             self.opacity = r_alpha
-            for i in 0..<Model.count {
+            for i in 0..<Model.numberOfComponents {
                 let _source = source.color.component(i)
                 let _destination = self.color.component(i)
                 let blended = (1 - d_alpha) * _source + d_alpha * blendMode.blend(_source, _destination)

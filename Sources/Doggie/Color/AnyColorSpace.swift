@@ -28,17 +28,15 @@ protocol AnyColorSpaceBaseProtocol {
     
     var chromaticAdaptationAlgorithm: ChromaticAdaptationAlgorithm { get set }
     
-    func createColor<S : Sequence>(components: S) -> AnyColorBaseProtocol where S.Element == Double
+    var numberOfComponents: Int { get }
+    
+    func createColor<S : Sequence>(components: S, opacity: Double) -> AnyColorBaseProtocol where S.Element == Double
     
     func createImage(width: Int, height: Int) -> AnyImageBaseProtocol
     
     func convert<Model>(_ color: Color<Model>, intent: RenderingIntent) -> AnyColorBaseProtocol
     
     func convert<Pixel>(_ image: Image<Pixel>, intent: RenderingIntent) -> AnyImageBaseProtocol
-    
-    var normalized: AnyColorSpaceBaseProtocol { get }
-    
-    var linearTone: AnyColorSpaceBaseProtocol { get }
     
     var white: XYZColorModel { get }
     
@@ -71,16 +69,17 @@ struct AnyColorSpaceBase<Model : ColorModelProtocol> : AnyColorSpaceBaseProtocol
     
     @_versioned
     @_inlineable
-    func createColor<S : Sequence>(components: S) -> AnyColorBaseProtocol where S.Element == Double {
+    var numberOfComponents: Int {
+        return Model.numberOfComponents
+    }
+    
+    @_versioned
+    @_inlineable
+    func createColor<S : Sequence>(components: S, opacity: Double) -> AnyColorBaseProtocol where S.Element == Double {
         
-        var opacity = 0.0
         var color = Model()
         for (i, v) in components.enumerated() {
-            switch i {
-            case 0..<Model.count: color.setComponent(i, v)
-            case Model.count: opacity = v
-            default: fatalError()
-            }
+            color.setComponent(i, v)
         }
         return AnyColorBase(base: Color<Model>(colorSpace: base, color: color, opacity: opacity))
     }
@@ -101,18 +100,6 @@ struct AnyColorSpaceBase<Model : ColorModelProtocol> : AnyColorSpaceBaseProtocol
     @_inlineable
     func convert<Pixel>(_ image: Image<Pixel>, intent: RenderingIntent) -> AnyImageBaseProtocol {
         return AnyImageBase(base: Image<ColorPixel<Model>>(image: image, colorSpace: base, intent: intent))
-    }
-    
-    @_versioned
-    @_inlineable
-    var normalized: AnyColorSpaceBaseProtocol {
-        return AnyColorSpaceBase(base: base.normalized)
-    }
-    
-    @_versioned
-    @_inlineable
-    var linearTone: AnyColorSpaceBaseProtocol {
-        return AnyColorSpaceBase(base: base.linearTone)
     }
     
     @_versioned
@@ -162,13 +149,8 @@ extension AnyColorSpace {
     }
     
     @_inlineable
-    public var normalized: AnyColorSpace {
-        return AnyColorSpace(base: base.normalized)
-    }
-    
-    @_inlineable
-    public var linearTone: AnyColorSpace {
-        return AnyColorSpace(base: base.linearTone)
+    public var numberOfComponents: Int {
+        return base.numberOfComponents
     }
     
     @_inlineable

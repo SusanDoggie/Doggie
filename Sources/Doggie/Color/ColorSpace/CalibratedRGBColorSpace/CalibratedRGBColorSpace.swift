@@ -95,27 +95,6 @@ extension CalibratedRGBColorSpace {
     
     @_versioned
     @_inlineable
-    var red: XYZColorModel {
-        return XYZColorModel(x: 1, y: 0, z: 0) * transferMatrix
-    }
-    
-    @_versioned
-    @_inlineable
-    var green: XYZColorModel {
-        return XYZColorModel(x: 0, y: 1, z: 0) * transferMatrix
-    }
-    
-    @_versioned
-    @_inlineable
-    var blue: XYZColorModel {
-        return XYZColorModel(x: 0, y: 0, z: 1) * transferMatrix
-    }
-}
-
-extension CalibratedRGBColorSpace {
-    
-    @_versioned
-    @_inlineable
     func convertLinearToXYZ(_ color: Model) -> XYZColorModel {
         return XYZColorModel(x: color.red, y: color.green, z: color.blue) * transferMatrix
     }

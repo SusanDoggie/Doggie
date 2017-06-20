@@ -30,7 +30,7 @@ public protocol DeviceNColorModelProtocol : ColorModelProtocol {
 public struct Device2ColorModel : DeviceNColorModelProtocol {
     
     @_inlineable
-    public static var count: Int {
+    public static var numberOfComponents: Int {
         return 2
     }
     
@@ -65,7 +65,7 @@ public struct Device2ColorModel : DeviceNColorModelProtocol {
 public struct Device3ColorModel : DeviceNColorModelProtocol {
     
     @_inlineable
-    public static var count: Int {
+    public static var numberOfComponents: Int {
         return 3
     }
     
@@ -104,7 +104,7 @@ public struct Device3ColorModel : DeviceNColorModelProtocol {
 public struct Device4ColorModel : DeviceNColorModelProtocol {
     
     @_inlineable
-    public static var count: Int {
+    public static var numberOfComponents: Int {
         return 4
     }
     
@@ -147,7 +147,7 @@ public struct Device4ColorModel : DeviceNColorModelProtocol {
 public struct Device5ColorModel : DeviceNColorModelProtocol {
     
     @_inlineable
-    public static var count: Int {
+    public static var numberOfComponents: Int {
         return 5
     }
     
@@ -194,7 +194,7 @@ public struct Device5ColorModel : DeviceNColorModelProtocol {
 public struct Device6ColorModel : DeviceNColorModelProtocol {
     
     @_inlineable
-    public static var count: Int {
+    public static var numberOfComponents: Int {
         return 6
     }
     
@@ -245,7 +245,7 @@ public struct Device6ColorModel : DeviceNColorModelProtocol {
 public struct Device7ColorModel : DeviceNColorModelProtocol {
     
     @_inlineable
-    public static var count: Int {
+    public static var numberOfComponents: Int {
         return 7
     }
     
@@ -300,7 +300,7 @@ public struct Device7ColorModel : DeviceNColorModelProtocol {
 public struct Device8ColorModel : DeviceNColorModelProtocol {
     
     @_inlineable
-    public static var count: Int {
+    public static var numberOfComponents: Int {
         return 8
     }
     
@@ -359,7 +359,7 @@ public struct Device8ColorModel : DeviceNColorModelProtocol {
 public struct Device9ColorModel : DeviceNColorModelProtocol {
     
     @_inlineable
-    public static var count: Int {
+    public static var numberOfComponents: Int {
         return 9
     }
     
@@ -422,7 +422,7 @@ public struct Device9ColorModel : DeviceNColorModelProtocol {
 public struct Device10ColorModel : DeviceNColorModelProtocol {
     
     @_inlineable
-    public static var count: Int {
+    public static var numberOfComponents: Int {
         return 10
     }
     
@@ -489,7 +489,7 @@ public struct Device10ColorModel : DeviceNColorModelProtocol {
 public struct Device11ColorModel : DeviceNColorModelProtocol {
     
     @_inlineable
-    public static var count: Int {
+    public static var numberOfComponents: Int {
         return 11
     }
     
@@ -560,7 +560,7 @@ public struct Device11ColorModel : DeviceNColorModelProtocol {
 public struct Device12ColorModel : DeviceNColorModelProtocol {
     
     @_inlineable
-    public static var count: Int {
+    public static var numberOfComponents: Int {
         return 12
     }
     
@@ -635,7 +635,7 @@ public struct Device12ColorModel : DeviceNColorModelProtocol {
 public struct Device13ColorModel : DeviceNColorModelProtocol {
     
     @_inlineable
-    public static var count: Int {
+    public static var numberOfComponents: Int {
         return 13
     }
     
@@ -714,7 +714,7 @@ public struct Device13ColorModel : DeviceNColorModelProtocol {
 public struct Device14ColorModel : DeviceNColorModelProtocol {
     
     @_inlineable
-    public static var count: Int {
+    public static var numberOfComponents: Int {
         return 14
     }
     
@@ -797,7 +797,7 @@ public struct Device14ColorModel : DeviceNColorModelProtocol {
 public struct Device15ColorModel : DeviceNColorModelProtocol {
     
     @_inlineable
-    public static var count: Int {
+    public static var numberOfComponents: Int {
         return 15
     }
     

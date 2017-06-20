@@ -30,38 +30,71 @@ private func icRoundOffset<T : BinaryFloatingPoint>(_ v: T) -> T {
 
 extension iccProfile {
     
-    public struct Header {
+    @_versioned
+    struct Header {
         
-        public static let MagicNumber: BEUInt32 = 0x61637370
+        @_versioned
+        static let MagicNumber: Signature = "acsp"
         
-        public var size: BEUInt32                                           /* Profile size in bytes */
-        public var cmmId: BEUInt32                                          /* CMM for this profile */
-        public var version: BEUInt32                                        /* Format version number */
+        @_versioned
+        var size: BEUInt32                                           /* Profile size in bytes */
         
-        public var deviceClass: ClassSignature                              /* Type of profile */
-        public var colorSpace: ColorSpaceSignature                          /* Color space of data */
-        public var pcs: ColorSpaceSignature                                 /* PCS, XYZ or Lab only */
+        @_versioned
+        var cmmId: Signature                                         /* CMM for this profile */
         
-        public var date: DateTimeNumber                                     /* Date profile was created */
+        @_versioned
+        var version: BEUInt32                                        /* Format version number */
         
-        public var magic: BEUInt32                                          /* icMagicNumber */
-        public var platform: BEUInt32                                       /* Primary Platform */
-        public var flags: BEUInt32                                          /* Various bit settings */
-        public var manufacturer: BEUInt32                                   /* Device manufacturer */
-        public var model: BEUInt32                                          /* Device model number */
-        public var attributes: BEUInt64                                     /* Device attributes */
-        public var renderingIntent: BEUInt32                                /* Rendering intent */
+        @_versioned
+        var deviceClass: ClassSignature                              /* Type of profile */
         
-        public var illuminant: XYZNumber                                    /* Profile illuminant */
+        @_versioned
+        var colorSpace: ColorSpaceSignature                          /* Color space of data */
         
-        public var creator: BEUInt32                                        /* Profile creator */
-        public var profileID: (UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8)   /* Profile ID using RFC 1321 MD5 128bit fingerprinting */
-        public var reserved: (UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8)   /* Reserved for future use */
+        @_versioned
+        var pcs: ColorSpaceSignature                                 /* PCS, XYZ or Lab only */
+        
+        @_versioned
+        var date: DateTimeNumber                                     /* Date profile was created */
+        
+        @_versioned
+        var magic: Signature                                         /* icMagicNumber */
+        
+        @_versioned
+        var platform: Signature                                      /* Primary Platform */
+        
+        @_versioned
+        var flags: BEUInt32                                          /* Various bit settings */
+        
+        @_versioned
+        var manufacturer: Signature                                  /* Device manufacturer */
+        
+        @_versioned
+        var model: Signature                                         /* Device model number */
+        
+        @_versioned
+        var attributes: BEUInt64                                     /* Device attributes */
+        
+        @_versioned
+        var renderingIntent: BEUInt32                                /* Rendering intent */
+        
+        @_versioned
+        var illuminant: XYZNumber                                    /* Profile illuminant */
+        
+        @_versioned
+        var creator: Signature                                       /* Profile creator */
+        
+        @_versioned
+        var profileID: (UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8)   /* Profile ID using RFC 1321 MD5 128bit fingerprinting */
+        
+        @_versioned
+        var reserved: (UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8)   /* Reserved for future use */
         
     }
 }
 
-public protocol iccSignature: RawRepresentable, Hashable, ExpressibleByIntegerLiteral, ExpressibleByStringLiteral, CustomStringConvertible {
+@_versioned
+protocol iccSignatureProtocol: RawRepresentable, Hashable, ExpressibleByIntegerLiteral, ExpressibleByStringLiteral, CustomStringConvertible {
     
     associatedtype Bytes : FixedWidthInteger
     
@@ -70,22 +103,26 @@ public protocol iccSignature: RawRepresentable, Hashable, ExpressibleByIntegerLi
     init(rawValue: BEInteger<Bytes>)
 }
 
-extension iccSignature {
+extension iccSignatureProtocol {
     
-    public var hashValue: Int {
+    @_versioned
+    var hashValue: Int {
         return rawValue.hashValue
     }
     
-    public init(integerLiteral value: BEInteger<Bytes>.IntegerLiteralType) {
+    @_versioned
+    init(integerLiteral value: BEInteger<Bytes>.IntegerLiteralType) {
         self.init(rawValue: BEInteger<Bytes>(integerLiteral: value))
     }
     
-    public init(stringLiteral value: StaticString) {
+    @_versioned
+    init(stringLiteral value: StaticString) {
         precondition(value.utf8CodeUnitCount == Bytes.bitWidth >> 3)
         self.init(rawValue: value.utf8Start.withMemoryRebound(to: BEInteger<Bytes>.self, capacity: 1) { $0.pointee })
     }
     
-    public var description: String {
+    @_versioned
+    var description: String {
         var code = self.rawValue
         return String(bytes: UnsafeRawBufferPointer(start: &code, count: Bytes.bitWidth >> 3), encoding: .ascii) ?? ""
     }
@@ -93,213 +130,253 @@ extension iccSignature {
 
 extension iccProfile.Header {
     
-    public struct ClassSignature: iccSignature {
+    @_versioned
+    struct Signature: iccSignatureProtocol {
         
-        public var rawValue: BEUInt32
+        @_versioned
+        var rawValue: BEUInt32
         
-        public init(rawValue: BEUInt32) {
+        @_versioned
+        init(rawValue: BEUInt32) {
             self.rawValue = rawValue
         }
-        
-        public static let input: ClassSignature                     = "scnr"
-        public static let display: ClassSignature                   = "mntr"
-        public static let output: ClassSignature                    = "prtr"
-        public static let link: ClassSignature                      = "link"
-        public static let abstract: ClassSignature                  = "abst"
-        public static let colorSpace: ClassSignature                = "spac"
-        public static let namedColor: ClassSignature                = "nmcl"
     }
     
-    public struct ColorSpaceSignature: iccSignature {
+    @_versioned
+    struct ClassSignature: iccSignatureProtocol {
         
-        public var rawValue: BEUInt32
+        @_versioned
+        var rawValue: BEUInt32
         
-        public init(rawValue: BEUInt32) {
+        @_versioned
+        init(rawValue: BEUInt32) {
             self.rawValue = rawValue
         }
         
-        public static let XYZ: ColorSpaceSignature                        = "XYZ "
-        public static let Lab: ColorSpaceSignature                        = "Lab "
-        public static let Luv: ColorSpaceSignature                        = "Luv "
-        public static let YCbCr: ColorSpaceSignature                      = "YCbr"
-        public static let Yxy: ColorSpaceSignature                        = "Yxy "
-        public static let Rgb: ColorSpaceSignature                        = "RGB "
-        public static let Gray: ColorSpaceSignature                       = "GRAY"
-        public static let Hsv: ColorSpaceSignature                        = "HSV "
-        public static let Hls: ColorSpaceSignature                        = "HLS "
-        public static let Cmyk: ColorSpaceSignature                       = "CMYK"
-        public static let Cmy: ColorSpaceSignature                        = "CMY "
+        @_versioned static let input: ClassSignature                     = "scnr"
+        @_versioned static let display: ClassSignature                   = "mntr"
+        @_versioned static let output: ClassSignature                    = "prtr"
+        @_versioned static let link: ClassSignature                      = "link"
+        @_versioned static let abstract: ClassSignature                  = "abst"
+        @_versioned static let colorSpace: ClassSignature                = "spac"
+        @_versioned static let namedColor: ClassSignature                = "nmcl"
+    }
+    
+    @_versioned
+    struct ColorSpaceSignature: iccSignatureProtocol {
         
-        public static let Named: ColorSpaceSignature                      = "nmcl"
+        @_versioned
+        var rawValue: BEUInt32
         
-        public static let color2: ColorSpaceSignature                     = "2CLR"
-        public static let color3: ColorSpaceSignature                     = "3CLR"
-        public static let color4: ColorSpaceSignature                     = "4CLR"
-        public static let color5: ColorSpaceSignature                     = "5CLR"
-        public static let color6: ColorSpaceSignature                     = "6CLR"
-        public static let color7: ColorSpaceSignature                     = "7CLR"
-        public static let color8: ColorSpaceSignature                     = "8CLR"
-        public static let color9: ColorSpaceSignature                     = "9CLR"
-        public static let color10: ColorSpaceSignature                    = "ACLR"
-        public static let color11: ColorSpaceSignature                    = "BCLR"
-        public static let color12: ColorSpaceSignature                    = "CCLR"
-        public static let color13: ColorSpaceSignature                    = "DCLR"
-        public static let color14: ColorSpaceSignature                    = "ECLR"
-        public static let color15: ColorSpaceSignature                    = "FCLR"
+        @_versioned
+        init(rawValue: BEUInt32) {
+            self.rawValue = rawValue
+        }
+        
+        @_versioned static let XYZ: ColorSpaceSignature                        = "XYZ "
+        @_versioned static let Lab: ColorSpaceSignature                        = "Lab "
+        @_versioned static let Luv: ColorSpaceSignature                        = "Luv "
+        @_versioned static let YCbCr: ColorSpaceSignature                      = "YCbr"
+        @_versioned static let Yxy: ColorSpaceSignature                        = "Yxy "
+        @_versioned static let Rgb: ColorSpaceSignature                        = "RGB "
+        @_versioned static let Gray: ColorSpaceSignature                       = "GRAY"
+        @_versioned static let Hsv: ColorSpaceSignature                        = "HSV "
+        @_versioned static let Hls: ColorSpaceSignature                        = "HLS "
+        @_versioned static let Cmyk: ColorSpaceSignature                       = "CMYK"
+        @_versioned static let Cmy: ColorSpaceSignature                        = "CMY "
+        
+        @_versioned static let Named: ColorSpaceSignature                      = "nmcl"
+        
+        @_versioned static let color2: ColorSpaceSignature                     = "2CLR"
+        @_versioned static let color3: ColorSpaceSignature                     = "3CLR"
+        @_versioned static let color4: ColorSpaceSignature                     = "4CLR"
+        @_versioned static let color5: ColorSpaceSignature                     = "5CLR"
+        @_versioned static let color6: ColorSpaceSignature                     = "6CLR"
+        @_versioned static let color7: ColorSpaceSignature                     = "7CLR"
+        @_versioned static let color8: ColorSpaceSignature                     = "8CLR"
+        @_versioned static let color9: ColorSpaceSignature                     = "9CLR"
+        @_versioned static let color10: ColorSpaceSignature                    = "ACLR"
+        @_versioned static let color11: ColorSpaceSignature                    = "BCLR"
+        @_versioned static let color12: ColorSpaceSignature                    = "CCLR"
+        @_versioned static let color13: ColorSpaceSignature                    = "DCLR"
+        @_versioned static let color14: ColorSpaceSignature                    = "ECLR"
+        @_versioned static let color15: ColorSpaceSignature                    = "FCLR"
     }
 }
 
 extension iccProfile {
     
-    public struct TagSignature : iccSignature {
+    @_versioned
+    struct TagSignature : iccSignatureProtocol {
         
-        public var rawValue: BEUInt32
+        @_versioned
+        var rawValue: BEUInt32
         
-        public init(rawValue: BEUInt32) {
+        @_versioned
+        init(rawValue: BEUInt32) {
             self.rawValue = rawValue
         }
         
-        public static let AToB0: TagSignature                                = "A2B0"
-        public static let AToB1: TagSignature                                = "A2B1"
-        public static let AToB2: TagSignature                                = "A2B2"
-        public static let BlueColorant: TagSignature                         = "bXYZ"
-        public static let BlueTRC: TagSignature                              = "bTRC"
-        public static let BToA0: TagSignature                                = "B2A0"
-        public static let BToA1: TagSignature                                = "B2A1"
-        public static let BToA2: TagSignature                                = "B2A2"
-        public static let CalibrationDateTime: TagSignature                  = "calt"
-        public static let CharTarget: TagSignature                           = "targ"
-        public static let ChromaticAdaptation: TagSignature                  = "chad"
-        public static let Chromaticity: TagSignature                         = "chrm"
-        public static let ColorantOrder: TagSignature                        = "clro"
-        public static let ColorantTable: TagSignature                        = "clrt"
-        public static let ColorantTableOut: TagSignature                     = "clot"
-        public static let ColorimetricIntentImageState: TagSignature         = "ciis"
-        public static let Copyright: TagSignature                            = "cprt"
-        public static let CrdInfo: TagSignature                              = "crdi"  /* Removed in V4 */
-        public static let Data: TagSignature                                 = "data"  /* Removed in V4 */
-        public static let DateTime: TagSignature                             = "dtim"  /* Removed in V4 */
-        public static let DeviceMfgDesc: TagSignature                        = "dmnd"
-        public static let DeviceModelDesc: TagSignature                      = "dmdd"
-        public static let DeviceSettings: TagSignature                       = "devs"  /* Removed in V4 */
-        public static let DToB0: TagSignature                                = "D2B0"
-        public static let DToB1: TagSignature                                = "D2B1"
-        public static let DToB2: TagSignature                                = "D2B2"
-        public static let DToB3: TagSignature                                = "D2B3"
-        public static let BToD0: TagSignature                                = "B2D0"
-        public static let BToD1: TagSignature                                = "B2D1"
-        public static let BToD2: TagSignature                                = "B2D2"
-        public static let BToD3: TagSignature                                = "B2D3"
-        public static let Gamut: TagSignature                                = "gamt"
-        public static let GrayTRC: TagSignature                              = "kTRC"
-        public static let GreenColorant: TagSignature                        = "gXYZ"
-        public static let GreenTRC: TagSignature                             = "gTRC"
-        public static let Luminance: TagSignature                            = "lumi"
-        public static let Measurement: TagSignature                          = "meas"
-        public static let MediaBlackPoint: TagSignature                      = "bkpt"
-        public static let MediaWhitePoint: TagSignature                      = "wtpt"
-        public static let MetaData: TagSignature                             = "meta"
-        public static let NamedColor2: TagSignature                          = "ncl2"
-        public static let OutputResponse: TagSignature                       = "resp"
-        public static let PerceptualRenderingIntentGamut: TagSignature       = "rig0"
-        public static let Preview0: TagSignature                             = "pre0"
-        public static let Preview1: TagSignature                             = "pre1"
-        public static let Preview2: TagSignature                             = "pre2"
-        public static let PrintCondition: TagSignature                       = "ptcn"
-        public static let ProfileDescription: TagSignature                   = "desc"
-        public static let ProfileSequenceDesc: TagSignature                  = "pseq"
-        public static let ProfileSequceId: TagSignature                      = "psid"
-        public static let Ps2CRD0: TagSignature                              = "psd0"  /* Removed in V4 */
-        public static let Ps2CRD1: TagSignature                              = "psd1"  /* Removed in V4 */
-        public static let Ps2CRD2: TagSignature                              = "psd2"  /* Removed in V4 */
-        public static let Ps2CRD3: TagSignature                              = "psd3"  /* Removed in V4 */
-        public static let Ps2CSA: TagSignature                               = "ps2s"  /* Removed in V4 */
-        public static let Ps2RenderingIntent: TagSignature                   = "ps2i"  /* Removed in V4 */
-        public static let RedColorant: TagSignature                          = "rXYZ"
-        public static let RedTRC: TagSignature                               = "rTRC"
-        public static let SaturationRenderingIntentGamut: TagSignature       = "rig2"
-        public static let ScreeningDesc: TagSignature                        = "scrd"  /* Removed in V4 */
-        public static let Screening: TagSignature                            = "scrn"  /* Removed in V4 */
-        public static let Technology: TagSignature                           = "tech"
-        public static let UcrBg: TagSignature                                = "bfd "  /* Removed in V4 */
-        public static let ViewingCondDesc: TagSignature                      = "vued"
-        public static let ViewingConditions: TagSignature                    = "view"
+        @_versioned static let AToB0: TagSignature                                = "A2B0"
+        @_versioned static let AToB1: TagSignature                                = "A2B1"
+        @_versioned static let AToB2: TagSignature                                = "A2B2"
+        @_versioned static let BlueColorant: TagSignature                         = "bXYZ"
+        @_versioned static let BlueTRC: TagSignature                              = "bTRC"
+        @_versioned static let BToA0: TagSignature                                = "B2A0"
+        @_versioned static let BToA1: TagSignature                                = "B2A1"
+        @_versioned static let BToA2: TagSignature                                = "B2A2"
+        @_versioned static let CalibrationDateTime: TagSignature                  = "calt"
+        @_versioned static let CharTarget: TagSignature                           = "targ"
+        @_versioned static let ChromaticAdaptation: TagSignature                  = "chad"
+        @_versioned static let Chromaticity: TagSignature                         = "chrm"
+        @_versioned static let ColorantOrder: TagSignature                        = "clro"
+        @_versioned static let ColorantTable: TagSignature                        = "clrt"
+        @_versioned static let ColorantTableOut: TagSignature                     = "clot"
+        @_versioned static let ColorimetricIntentImageState: TagSignature         = "ciis"
+        @_versioned static let Copyright: TagSignature                            = "cprt"
+        @_versioned static let CrdInfo: TagSignature                              = "crdi"  /* Removed in V4 */
+        @_versioned static let Data: TagSignature                                 = "data"  /* Removed in V4 */
+        @_versioned static let DateTime: TagSignature                             = "dtim"  /* Removed in V4 */
+        @_versioned static let DeviceMfgDesc: TagSignature                        = "dmnd"
+        @_versioned static let DeviceModelDesc: TagSignature                      = "dmdd"
+        @_versioned static let DeviceSettings: TagSignature                       = "devs"  /* Removed in V4 */
+        @_versioned static let DToB0: TagSignature                                = "D2B0"
+        @_versioned static let DToB1: TagSignature                                = "D2B1"
+        @_versioned static let DToB2: TagSignature                                = "D2B2"
+        @_versioned static let DToB3: TagSignature                                = "D2B3"
+        @_versioned static let BToD0: TagSignature                                = "B2D0"
+        @_versioned static let BToD1: TagSignature                                = "B2D1"
+        @_versioned static let BToD2: TagSignature                                = "B2D2"
+        @_versioned static let BToD3: TagSignature                                = "B2D3"
+        @_versioned static let Gamut: TagSignature                                = "gamt"
+        @_versioned static let GrayTRC: TagSignature                              = "kTRC"
+        @_versioned static let GreenColorant: TagSignature                        = "gXYZ"
+        @_versioned static let GreenTRC: TagSignature                             = "gTRC"
+        @_versioned static let Luminance: TagSignature                            = "lumi"
+        @_versioned static let Measurement: TagSignature                          = "meas"
+        @_versioned static let MediaBlackPoint: TagSignature                      = "bkpt"
+        @_versioned static let MediaWhitePoint: TagSignature                      = "wtpt"
+        @_versioned static let MetaData: TagSignature                             = "meta"
+        @_versioned static let NamedColor2: TagSignature                          = "ncl2"
+        @_versioned static let OutputResponse: TagSignature                       = "resp"
+        @_versioned static let PerceptualRenderingIntentGamut: TagSignature       = "rig0"
+        @_versioned static let Preview0: TagSignature                             = "pre0"
+        @_versioned static let Preview1: TagSignature                             = "pre1"
+        @_versioned static let Preview2: TagSignature                             = "pre2"
+        @_versioned static let PrintCondition: TagSignature                       = "ptcn"
+        @_versioned static let ProfileDescription: TagSignature                   = "desc"
+        @_versioned static let ProfileSequenceDesc: TagSignature                  = "pseq"
+        @_versioned static let ProfileSequceId: TagSignature                      = "psid"
+        @_versioned static let Ps2CRD0: TagSignature                              = "psd0"  /* Removed in V4 */
+        @_versioned static let Ps2CRD1: TagSignature                              = "psd1"  /* Removed in V4 */
+        @_versioned static let Ps2CRD2: TagSignature                              = "psd2"  /* Removed in V4 */
+        @_versioned static let Ps2CRD3: TagSignature                              = "psd3"  /* Removed in V4 */
+        @_versioned static let Ps2CSA: TagSignature                               = "ps2s"  /* Removed in V4 */
+        @_versioned static let Ps2RenderingIntent: TagSignature                   = "ps2i"  /* Removed in V4 */
+        @_versioned static let RedColorant: TagSignature                          = "rXYZ"
+        @_versioned static let RedTRC: TagSignature                               = "rTRC"
+        @_versioned static let SaturationRenderingIntentGamut: TagSignature       = "rig2"
+        @_versioned static let ScreeningDesc: TagSignature                        = "scrd"  /* Removed in V4 */
+        @_versioned static let Screening: TagSignature                            = "scrn"  /* Removed in V4 */
+        @_versioned static let Technology: TagSignature                           = "tech"
+        @_versioned static let UcrBg: TagSignature                                = "bfd "  /* Removed in V4 */
+        @_versioned static let ViewingCondDesc: TagSignature                      = "vued"
+        @_versioned static let ViewingConditions: TagSignature                    = "view"
     }
 }
 
 extension iccProfile.TagData {
     
-    public struct `Type` : iccSignature {
+    @_versioned
+    struct `Type` : iccSignatureProtocol {
         
-        public var rawValue: BEUInt32
+        @_versioned
+        var rawValue: BEUInt32
         
-        public init(rawValue: BEUInt32) {
+        @_versioned
+        init(rawValue: BEUInt32) {
             self.rawValue = rawValue
         }
         
-        public static let Chromaticity: Type               = "chrm"
-        public static let ColorantOrder: Type              = "clro"
-        public static let ColorantTable: Type              = "clrt"
-        public static let CrdInfo: Type                    = "crdi"  /* Removed in V4 */
-        public static let Curve: Type                      = "curv"
-        public static let Data: Type                       = "data"
-        public static let Dict: Type                       = "dict"
-        public static let DateTime: Type                   = "dtim"
-        public static let DeviceSettings: Type             = "devs"  /* Removed in V4 */
-        public static let Lut16: Type                      = "mft2"
-        public static let Lut8: Type                       = "mft1"
-        public static let LutAtoB: Type                    = "mAB "
-        public static let LutBtoA: Type                    = "mBA "
-        public static let Measurement: Type                = "meas"
-        public static let MultiLocalizedUnicode: Type      = "mluc"
-        public static let MultiProcessElement: Type        = "mpet"
-        public static let NamedColor2: Type                = "ncl2"
-        public static let ParametricCurve: Type            = "para"
-        public static let ProfileSequenceDesc: Type        = "pseq"
-        public static let ProfileSequceId: Type            = "psid"
-        public static let ResponseCurveSet16: Type         = "rcs2"
-        public static let S15Fixed16Array: Type            = "sf32"
-        public static let Screening: Type                  = "scrn"  /* Removed in V4 */
-        public static let Signature: Type                  = "sig "
-        public static let Text: Type                       = "text"
-        public static let TextDescription: Type            = "desc"  /* Removed in V4 */
-        public static let U16Fixed16Array: Type            = "uf32"
-        public static let UcrBg: Type                      = "bfd "  /* Removed in V4 */
-        public static let UInt16Array: Type                = "ui16"
-        public static let UInt32Array: Type                = "ui32"
-        public static let UInt64Array: Type                = "ui64"
-        public static let UInt8Array: Type                 = "ui08"
-        public static let ViewingConditions: Type          = "view"
-        public static let XYZArray: Type                   = "XYZ "
+        @_versioned static let Chromaticity: Type               = "chrm"
+        @_versioned static let ColorantOrder: Type              = "clro"
+        @_versioned static let ColorantTable: Type              = "clrt"
+        @_versioned static let CrdInfo: Type                    = "crdi"  /* Removed in V4 */
+        @_versioned static let Curve: Type                      = "curv"
+        @_versioned static let Data: Type                       = "data"
+        @_versioned static let Dict: Type                       = "dict"
+        @_versioned static let DateTime: Type                   = "dtim"
+        @_versioned static let DeviceSettings: Type             = "devs"  /* Removed in V4 */
+        @_versioned static let Lut16: Type                      = "mft2"
+        @_versioned static let Lut8: Type                       = "mft1"
+        @_versioned static let LutAtoB: Type                    = "mAB "
+        @_versioned static let LutBtoA: Type                    = "mBA "
+        @_versioned static let Measurement: Type                = "meas"
+        @_versioned static let MultiLocalizedUnicode: Type      = "mluc"
+        @_versioned static let MultiProcessElement: Type        = "mpet"
+        @_versioned static let NamedColor2: Type                = "ncl2"
+        @_versioned static let ParametricCurve: Type            = "para"
+        @_versioned static let ProfileSequenceDesc: Type        = "pseq"
+        @_versioned static let ProfileSequceId: Type            = "psid"
+        @_versioned static let ResponseCurveSet16: Type         = "rcs2"
+        @_versioned static let S15Fixed16Array: Type            = "sf32"
+        @_versioned static let Screening: Type                  = "scrn"  /* Removed in V4 */
+        @_versioned static let Signature: Type                  = "sig "
+        @_versioned static let Text: Type                       = "text"
+        @_versioned static let TextDescription: Type            = "desc"  /* Removed in V4 */
+        @_versioned static let U16Fixed16Array: Type            = "uf32"
+        @_versioned static let UcrBg: Type                      = "bfd "  /* Removed in V4 */
+        @_versioned static let UInt16Array: Type                = "ui16"
+        @_versioned static let UInt32Array: Type                = "ui32"
+        @_versioned static let UInt64Array: Type                = "ui64"
+        @_versioned static let UInt8Array: Type                 = "ui08"
+        @_versioned static let ViewingConditions: Type          = "view"
+        @_versioned static let XYZArray: Type                   = "XYZ "
     }
 }
 
 extension iccProfile {
     
-    public struct S15Fixed16Number : RawRepresentable, Hashable, CustomStringConvertible {
+    @_versioned
+    struct S15Fixed16Number : RawRepresentable, Hashable, CustomStringConvertible, ExpressibleByFloatLiteral {
         
-        public typealias RawValue = BEInt32
+        typealias RawValue = BEInt32
         
-        public var rawValue: BEInt32
+        @_versioned
+        var rawValue: BEInt32
         
-        public init(rawValue: BEInt32) {
+        @_versioned
+        init(rawValue: BEInt32) {
             self.rawValue = rawValue
         }
         
-        public var value: Double {
+        @_versioned
+        init(floatLiteral value: Double) {
+            self.init(value: value)
+        }
+        
+        @_versioned
+        init(value: Double) {
+            self.rawValue = BEInt32(value.clamped(to: -32768.0...32767.0) * 65536.0)
+        }
+        
+        @_versioned
+        var value: Double {
             get {
                 return Double(rawValue.representingValue) / 65536.0
             }
             set {
-                rawValue = BEInt32(newValue.clamped(to: -32768.0...32767.0) * 65536.0)
+                self = S15Fixed16Number(value: newValue)
             }
         }
         
-        public var description: String {
+        @_versioned
+        var description: String {
             return "\(value)"
         }
         
-        public var hashValue: Int {
+        @_versioned
+        var hashValue: Int {
             return rawValue.hashValue
         }
     }
@@ -307,30 +384,46 @@ extension iccProfile {
 
 extension iccProfile {
     
-    public struct U16Fixed16Number : RawRepresentable, Hashable, CustomStringConvertible {
+    @_versioned
+    struct U16Fixed16Number : RawRepresentable, Hashable, CustomStringConvertible, ExpressibleByFloatLiteral {
         
-        public typealias RawValue = BEUInt32
+        typealias RawValue = BEUInt32
         
-        public var rawValue: BEUInt32
+        @_versioned
+        var rawValue: BEUInt32
         
-        public init(rawValue: BEUInt32) {
+        @_versioned
+        init(rawValue: BEUInt32) {
             self.rawValue = rawValue
         }
         
-        public var value: Double {
+        @_versioned
+        init(floatLiteral value: Double) {
+            self.init(value: value)
+        }
+        
+        @_versioned
+        init(value: Double) {
+            self.rawValue = BEUInt32(value.clamped(to: 0...65535.0) * 65536.0)
+        }
+        
+        @_versioned
+        var value: Double {
             get {
                 return Double(rawValue.representingValue) / 65536.0
             }
             set {
-                rawValue = BEUInt32(newValue.clamped(to: 0...65535.0) * 65536.0)
+                self = U16Fixed16Number(value: newValue)
             }
         }
         
-        public var description: String {
+        @_versioned
+        var description: String {
             return "\(value)"
         }
         
-        public var hashValue: Int {
+        @_versioned
+        var hashValue: Int {
             return rawValue.hashValue
         }
     }
@@ -338,30 +431,46 @@ extension iccProfile {
 
 extension iccProfile {
     
-    public struct U1Fixed15Number : RawRepresentable, Hashable, CustomStringConvertible {
+    @_versioned
+    struct U1Fixed15Number : RawRepresentable, Hashable, CustomStringConvertible, ExpressibleByFloatLiteral {
         
-        public typealias RawValue = BEUInt16
+        typealias RawValue = BEUInt16
         
-        public var rawValue: BEUInt16
+        @_versioned
+        var rawValue: BEUInt16
         
-        public init(rawValue: BEUInt16) {
+        @_versioned
+        init(rawValue: BEUInt16) {
             self.rawValue = rawValue
         }
         
-        public var value: Double {
+        @_versioned
+        init(floatLiteral value: Double) {
+            self.init(value: value)
+        }
+        
+        @_versioned
+        init(value: Double) {
+            self.rawValue = BEUInt16(icRoundOffset(value.clamped(to: 0...65535.0/32768.0) * 32768.0))
+        }
+        
+        @_versioned
+        var value: Double {
             get {
                 return Double(rawValue.representingValue) / 32768.0
             }
             set {
-                rawValue = BEUInt16(icRoundOffset(newValue.clamped(to: 0...65535.0/32768.0) * 32768.0))
+                self = U1Fixed15Number(value: newValue)
             }
         }
         
-        public var description: String {
+        @_versioned
+        var description: String {
             return "\(value)"
         }
         
-        public var hashValue: Int {
+        @_versioned
+        var hashValue: Int {
             return rawValue.hashValue
         }
     }
@@ -369,30 +478,46 @@ extension iccProfile {
 
 extension iccProfile {
     
-    public struct U8Fixed8Number : RawRepresentable, Hashable, CustomStringConvertible {
+    @_versioned
+    struct U8Fixed8Number : RawRepresentable, Hashable, CustomStringConvertible, ExpressibleByFloatLiteral {
         
-        public typealias RawValue = BEUInt16
+        typealias RawValue = BEUInt16
         
-        public var rawValue: BEUInt16
+        @_versioned
+        var rawValue: BEUInt16
         
-        public init(rawValue: BEUInt16) {
+        @_versioned
+        init(rawValue: BEUInt16) {
             self.rawValue = rawValue
         }
         
-        public var value: Double {
+        @_versioned
+        init(floatLiteral value: Double) {
+            self.init(value: value)
+        }
+        
+        @_versioned
+        init(value: Double) {
+            self.rawValue = BEUInt16(icRoundOffset(value.clamped(to: 0...255.0) * 256.0))
+        }
+        
+        @_versioned
+        var value: Double {
             get {
                 return Double(rawValue.representingValue) / 256.0
             }
             set {
-                rawValue = BEUInt16(icRoundOffset(newValue.clamped(to: 0...255.0) * 256.0))
+                self = U8Fixed8Number(value: newValue)
             }
         }
         
-        public var description: String {
+        @_versioned
+        var description: String {
             return "\(value)"
         }
         
-        public var hashValue: Int {
+        @_versioned
+        var hashValue: Int {
             return rawValue.hashValue
         }
     }
@@ -400,189 +525,372 @@ extension iccProfile {
 
 extension iccProfile {
     
-    public struct DateTimeNumber {
+    @_versioned
+    struct DateTimeNumber {
         
-        public var year: BEUInt16
-        public var month: BEUInt16
-        public var day: BEUInt16
-        public var hours: BEUInt16
-        public var minutes: BEUInt16
-        public var seconds: BEUInt16
+        @_versioned
+        var year: BEUInt16
+        
+        @_versioned
+        var month: BEUInt16
+        
+        @_versioned
+        var day: BEUInt16
+        
+        @_versioned
+        var hours: BEUInt16
+        
+        @_versioned
+        var minutes: BEUInt16
+        
+        @_versioned
+        var seconds: BEUInt16
+        
+        @_versioned
+        init(year: BEUInt16, month: BEUInt16, day: BEUInt16, hours: BEUInt16, minutes: BEUInt16, seconds: BEUInt16) {
+            self.year = year
+            self.month = month
+            self.day = day
+            self.hours = hours
+            self.minutes = minutes
+            self.seconds = seconds
+        }
     }
 }
 
 extension iccProfile {
     
-    public struct XYZNumber {
+    @_versioned
+    struct XYZNumber {
         
-        public var X: S15Fixed16Number
-        public var Y: S15Fixed16Number
-        public var Z: S15Fixed16Number
+        @_versioned
+        var x: S15Fixed16Number
+        
+        @_versioned
+        var y: S15Fixed16Number
+        
+        @_versioned
+        var z: S15Fixed16Number
+        
+        @_versioned
+        init(x: S15Fixed16Number, y: S15Fixed16Number, z: S15Fixed16Number) {
+            self.x = x
+            self.y = y
+            self.z = z
+        }
+        
+        @_versioned
+        init(_ xyz: XYZColorModel) {
+            self.x = S15Fixed16Number(value: xyz.x)
+            self.y = S15Fixed16Number(value: xyz.y)
+            self.z = S15Fixed16Number(value: xyz.z)
+        }
     }
 }
 
 extension iccProfile {
     
-    public struct Matrix3x3 : CustomStringConvertible {
+    @_versioned
+    struct Matrix3x3 {
         
-        public var e00: S15Fixed16Number
-        public var e01: S15Fixed16Number
-        public var e02: S15Fixed16Number
-        public var e10: S15Fixed16Number
-        public var e11: S15Fixed16Number
-        public var e12: S15Fixed16Number
-        public var e20: S15Fixed16Number
-        public var e21: S15Fixed16Number
-        public var e22: S15Fixed16Number
+        @_versioned
+        var e00: S15Fixed16Number
         
-        public var matrix: Matrix {
+        @_versioned
+        var e01: S15Fixed16Number
+        
+        @_versioned
+        var e02: S15Fixed16Number
+        
+        @_versioned
+        var e10: S15Fixed16Number
+        
+        @_versioned
+        var e11: S15Fixed16Number
+        
+        @_versioned
+        var e12: S15Fixed16Number
+        
+        @_versioned
+        var e20: S15Fixed16Number
+        
+        @_versioned
+        var e21: S15Fixed16Number
+        
+        @_versioned
+        var e22: S15Fixed16Number
+        
+        @_versioned
+        var matrix: Matrix {
             return Matrix(a: e00.value, b: e01.value, c: e02.value, d: 0,
                           e: e10.value, f: e11.value, g: e12.value, h: 0,
                           i: e20.value, j: e21.value, k: e22.value, l: 0)
         }
-        
-        public var description: String {
-            return "\(matrix))"
-        }
     }
     
-    public struct Matrix3x4 : CustomStringConvertible {
+    @_versioned
+    struct Matrix3x4 {
         
-        public var m: Matrix3x3
-        public var e03: S15Fixed16Number
-        public var e13: S15Fixed16Number
-        public var e23: S15Fixed16Number
+        @_versioned
+        var m: Matrix3x3
         
-        public var matrix: Matrix {
+        @_versioned
+        var e03: S15Fixed16Number
+        
+        @_versioned
+        var e13: S15Fixed16Number
+        
+        @_versioned
+        var e23: S15Fixed16Number
+        
+        @_versioned
+        var matrix: Matrix {
             return Matrix(a: m.e00.value, b: m.e01.value, c: m.e02.value, d: e03.value,
                           e: m.e10.value, f: m.e11.value, g: m.e12.value, h: e13.value,
                           i: m.e20.value, j: m.e21.value, k: m.e22.value, l: e23.value)
         }
-        
-        public var description: String {
-            return "\(matrix))"
-        }
     }
 }
 
 extension iccProfile {
     
-    public struct ParametricCurve {
+    @_versioned
+    struct ParametricCurve {
         
-        public var funcType: BEUInt16
-        public var padding: BEUInt16
-        public var gamma: S15Fixed16Number
-        public var a: S15Fixed16Number
-        public var b: S15Fixed16Number
-        public var c: S15Fixed16Number
-        public var d: S15Fixed16Number
-        public var e: S15Fixed16Number
-        public var f: S15Fixed16Number
+        @_versioned
+        var funcType: BEUInt16
+        
+        @_versioned
+        var padding: BEUInt16
+        
+        @_versioned
+        var gamma: S15Fixed16Number
+        
+        @_versioned
+        var a: S15Fixed16Number
+        
+        @_versioned
+        var b: S15Fixed16Number
+        
+        @_versioned
+        var c: S15Fixed16Number
+        
+        @_versioned
+        var d: S15Fixed16Number
+        
+        @_versioned
+        var e: S15Fixed16Number
+        
+        @_versioned
+        var f: S15Fixed16Number
     }
 }
 
 extension iccProfile {
     
-    public struct Lut16 {
+    @_versioned
+    struct Lut16 {
         
-        public var inputChannels: UInt8
-        public var outputChannels: UInt8
-        public var grids: UInt8
-        public var padding: UInt8
-        public var matrix: Matrix3x3
-        public var inputEntries: BEUInt16
-        public var outputEntries: BEUInt16
+        @_versioned
+        var inputChannels: UInt8
+        
+        @_versioned
+        var outputChannels: UInt8
+        
+        @_versioned
+        var grids: UInt8
+        
+        @_versioned
+        var padding: UInt8
+        
+        @_versioned
+        var matrix: Matrix3x3
+        
+        @_versioned
+        var inputEntries: BEUInt16
+        
+        @_versioned
+        var outputEntries: BEUInt16
     }
 }
 
 extension iccProfile {
     
-    public struct Lut8 {
+    @_versioned
+    struct Lut8 {
         
-        public var inputChannels: UInt8
-        public var outputChannels: UInt8
-        public var grids: UInt8
-        public var padding: UInt8
-        public var matrix: Matrix3x3
+        @_versioned
+        var inputChannels: UInt8
+        
+        @_versioned
+        var outputChannels: UInt8
+        
+        @_versioned
+        var grids: UInt8
+        
+        @_versioned
+        var padding: UInt8
+        
+        @_versioned
+        var matrix: Matrix3x3
     }
 }
 
 extension iccProfile {
     
-    public struct CLUTStruct {
+    @_versioned
+    struct CLUTStruct {
         
-        public var grids: (UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8)
-        public var precision: UInt8
-        public var pad1: UInt8
-        public var pad2: UInt8
-        public var pad3: UInt8
+        @_versioned
+        var grids: (UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8)
+        
+        @_versioned
+        var precision: UInt8
+        
+        @_versioned
+        var pad1: UInt8
+        
+        @_versioned
+        var pad2: UInt8
+        
+        @_versioned
+        var pad3: UInt8
     }
 }
 
 extension iccProfile {
     
-    public struct LutAtoB {
+    @_versioned
+    struct LutAtoB {
         
-        public var inputChannels: UInt8
-        public var outputChannels: UInt8
-        public var padding1: UInt8
-        public var padding2: UInt8
-        public var offsetB: BEUInt32
-        public var offsetMatrix: BEUInt32
-        public var offsetM: BEUInt32
-        public var offsetCLUT: BEUInt32
-        public var offsetA: BEUInt32
+        @_versioned
+        var inputChannels: UInt8
+        
+        @_versioned
+        var outputChannels: UInt8
+        
+        @_versioned
+        var padding1: UInt8
+        
+        @_versioned
+        var padding2: UInt8
+        
+        @_versioned
+        var offsetB: BEUInt32
+        
+        @_versioned
+        var offsetMatrix: BEUInt32
+        
+        @_versioned
+        var offsetM: BEUInt32
+        
+        @_versioned
+        var offsetCLUT: BEUInt32
+        
+        @_versioned
+        var offsetA: BEUInt32
     }
 }
 
 extension iccProfile {
     
-    public struct LutBtoA {
+    @_versioned
+    struct LutBtoA {
         
-        public var inputChannels: UInt8
-        public var outputChannels: UInt8
-        public var padding1: UInt8
-        public var padding2: UInt8
-        public var offsetB: BEUInt32
-        public var offsetMatrix: BEUInt32
-        public var offsetM: BEUInt32
-        public var offsetCLUT: BEUInt32
-        public var offsetA: BEUInt32
+        @_versioned
+        var inputChannels: UInt8
+        
+        @_versioned
+        var outputChannels: UInt8
+        
+        @_versioned
+        var padding1: UInt8
+        
+        @_versioned
+        var padding2: UInt8
+        
+        @_versioned
+        var offsetB: BEUInt32
+        
+        @_versioned
+        var offsetMatrix: BEUInt32
+        
+        @_versioned
+        var offsetM: BEUInt32
+        
+        @_versioned
+        var offsetCLUT: BEUInt32
+        
+        @_versioned
+        var offsetA: BEUInt32
     }
 }
 
 extension iccProfile {
     
-    public struct LanguageCode: iccSignature {
+    @_versioned
+    struct LanguageCode: iccSignatureProtocol {
         
-        public var rawValue: BEUInt16
+        @_versioned
+        var rawValue: BEUInt16
         
-        public init(rawValue: BEUInt16) {
+        @_versioned
+        init(rawValue: BEUInt16) {
             self.rawValue = rawValue
         }
     }
     
-    public struct CountryCode: iccSignature {
+    @_versioned
+    struct CountryCode: iccSignatureProtocol {
         
-        public var rawValue: BEUInt16
+        @_versioned
+        var rawValue: BEUInt16
         
-        public init(rawValue: BEUInt16) {
+        @_versioned
+        init(rawValue: BEUInt16) {
             self.rawValue = rawValue
         }
     }
     
-    public struct MultiLocalizedUnicode {
+    @_versioned
+    struct MultiLocalizedUnicode {
         
-        public var count: BEUInt32
-        public var size: BEUInt32
+        @_versioned
+        var count: BEUInt32
+        
+        @_versioned
+        var size: BEUInt32
+        
+        @_versioned
+        init(count: BEUInt32, size: BEUInt32) {
+            self.count = count
+            self.size = size
+        }
     }
     
-    public struct MultiLocalizedUnicodeEntry {
+    @_versioned
+    struct MultiLocalizedUnicodeEntry {
         
-        public var language: LanguageCode
-        public var country: CountryCode
-        public var length: BEUInt32
-        public var offset: BEUInt32
+        @_versioned
+        var language: LanguageCode
+        
+        @_versioned
+        var country: CountryCode
+        
+        @_versioned
+        var length: BEUInt32
+        
+        @_versioned
+        var offset: BEUInt32
+        
+        @_versioned
+        init(language: LanguageCode, country: CountryCode, length: BEUInt32, offset: BEUInt32) {
+            self.language = language
+            self.country = country
+            self.length = length
+            self.offset = offset
+        }
     }
 }
+
 

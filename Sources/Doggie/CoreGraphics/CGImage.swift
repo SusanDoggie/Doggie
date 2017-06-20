@@ -110,7 +110,7 @@
                 
                 let image = self.colorSpace.isSupportCGColorSpaceGamma ? Image<ColorPixel<Pixel.Model>>(image: self) : Image<ColorPixel<Pixel.Model>>(image: self, colorSpace: self.colorSpace.linearTone)
                 
-                let components = Pixel.Model.count + 1
+                let components = Pixel.Model.numberOfComponents + 1
                 
                 let data = image.withUnsafeBufferPointer { buffer in buffer.baseAddress?.withMemoryRebound(to: Double.self, capacity: components) { UnsafeBufferPointer(start: $0, count: components * buffer.count).map(Float.init) } }
                 

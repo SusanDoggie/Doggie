@@ -25,7 +25,7 @@
 
 public protocol ColorModelProtocol : Hashable {
     
-    static var count: Int { get }
+    static var numberOfComponents: Int { get }
     
     init()
     
@@ -40,7 +40,7 @@ extension ColorModelProtocol {
     @_inlineable
     public var hashValue: Int {
         var hash = 0
-        for i in 0..<Self.count {
+        for i in 0..<Self.numberOfComponents {
             hash = hash_combine(seed: hash, self.component(i))
         }
         return hash
@@ -62,7 +62,7 @@ public struct ColorModelComponentCollection<Model: ColorModelProtocol>: RandomAc
     }
     @_inlineable
     public var endIndex: Int {
-        return Model.count
+        return Model.numberOfComponents
     }
     
     @_inlineable
@@ -87,7 +87,7 @@ public prefix func +<Model : ColorModelProtocol>(val: Model) -> Model {
 @_inlineable
 public prefix func -<Model : ColorModelProtocol>(val: Model) -> Model {
     var result = Model()
-    for i in 0..<Model.count {
+    for i in 0..<Model.numberOfComponents {
         result.setComponent(i, -val.component(i))
     }
     return result
@@ -95,7 +95,7 @@ public prefix func -<Model : ColorModelProtocol>(val: Model) -> Model {
 @_inlineable
 public func +<Model : ColorModelProtocol>(lhs: Model, rhs:  Model) -> Model {
     var result = Model()
-    for i in 0..<Model.count {
+    for i in 0..<Model.numberOfComponents {
         result.setComponent(i, lhs.component(i) + rhs.component(i))
     }
     return result
@@ -103,7 +103,7 @@ public func +<Model : ColorModelProtocol>(lhs: Model, rhs:  Model) -> Model {
 @_inlineable
 public func -<Model : ColorModelProtocol>(lhs: Model, rhs:  Model) -> Model {
     var result = Model()
-    for i in 0..<Model.count {
+    for i in 0..<Model.numberOfComponents {
         result.setComponent(i, lhs.component(i) - rhs.component(i))
     }
     return result
@@ -112,7 +112,7 @@ public func -<Model : ColorModelProtocol>(lhs: Model, rhs:  Model) -> Model {
 @_inlineable
 public func *<Model : ColorModelProtocol>(lhs: Double, rhs:  Model) -> Model {
     var result = Model()
-    for i in 0..<Model.count {
+    for i in 0..<Model.numberOfComponents {
         result.setComponent(i, lhs * rhs.component(i))
     }
     return result
@@ -120,7 +120,7 @@ public func *<Model : ColorModelProtocol>(lhs: Double, rhs:  Model) -> Model {
 @_inlineable
 public func *<Model : ColorModelProtocol>(lhs: Model, rhs:  Double) -> Model {
     var result = Model()
-    for i in 0..<Model.count {
+    for i in 0..<Model.numberOfComponents {
         result.setComponent(i, lhs.component(i) * rhs)
     }
     return result
@@ -129,7 +129,7 @@ public func *<Model : ColorModelProtocol>(lhs: Model, rhs:  Double) -> Model {
 @_inlineable
 public func /<Model : ColorModelProtocol>(lhs: Model, rhs:  Double) -> Model {
     var result = Model()
-    for i in 0..<Model.count {
+    for i in 0..<Model.numberOfComponents {
         result.setComponent(i, lhs.component(i) / rhs)
     }
     return result
@@ -137,38 +137,38 @@ public func /<Model : ColorModelProtocol>(lhs: Model, rhs:  Double) -> Model {
 
 @_inlineable
 public func *=<Model : ColorModelProtocol> (lhs: inout Model, rhs:  Double) {
-    for i in 0..<Model.count {
+    for i in 0..<Model.numberOfComponents {
         lhs.setComponent(i, lhs.component(i) * rhs)
     }
 }
 @_inlineable
 public func /=<Model : ColorModelProtocol> (lhs: inout Model, rhs:  Double) {
-    for i in 0..<Model.count {
+    for i in 0..<Model.numberOfComponents {
         lhs.setComponent(i, lhs.component(i) / rhs)
     }
 }
 @_inlineable
 public func +=<Model : ColorModelProtocol> (lhs: inout Model, rhs:  Model) {
-    for i in 0..<Model.count {
+    for i in 0..<Model.numberOfComponents {
         lhs.setComponent(i, lhs.component(i) + rhs.component(i))
     }
 }
 @_inlineable
 public func -=<Model : ColorModelProtocol> (lhs: inout Model, rhs:  Model) {
-    for i in 0..<Model.count {
+    for i in 0..<Model.numberOfComponents {
         lhs.setComponent(i, lhs.component(i) - rhs.component(i))
     }
 }
 @_inlineable
 public func ==<Model : ColorModelProtocol>(lhs: Model, rhs: Model) -> Bool {
-    for i in 0..<Model.count where lhs.component(i) != rhs.component(i) {
+    for i in 0..<Model.numberOfComponents where lhs.component(i) != rhs.component(i) {
         return false
     }
     return true
 }
 @_inlineable
 public func !=<Model : ColorModelProtocol>(lhs: Model, rhs: Model) -> Bool {
-    for i in 0..<Model.count where lhs.component(i) != rhs.component(i) {
+    for i in 0..<Model.numberOfComponents where lhs.component(i) != rhs.component(i) {
         return true
     }
     return false

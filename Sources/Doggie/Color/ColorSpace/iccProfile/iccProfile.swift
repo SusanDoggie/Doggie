@@ -25,19 +25,22 @@
 
 import Foundation
 
-public struct iccProfile {
+@_versioned
+struct iccProfile {
     
-    public var header: Header
+    @_versioned
+    var header: Header
     
     fileprivate var table: [TagSignature: TagData] = [:]
     
-    public init(_ data: Data) throws {
+    @_versioned
+    init(_ data: Data) throws {
         
-        guard data.count > 132 else { throw InvalidFormat() }
+        guard data.count > 132 else { throw AnyColorSpace.ICCError.invalidFormat(message: "Unexpected end of file.") }
         
         self.header = data.withUnsafeBytes { $0.pointee }
         
-        guard data.count >= header.size else { throw InvalidFormat() }
+        guard data.count >= header.size else { throw AnyColorSpace.ICCError.invalidFormat(message: "Unexpected end of file.") }
         
         let tag_count = data[128..<132].withUnsafeBytes { $0.pointee as BEUInt32 }
         
@@ -45,7 +48,7 @@ public struct iccProfile {
         
         let tag_list_size = MemoryLayout<TagList>.stride * Int(tag_count)
         
-        guard data.count > 132 + tag_list_size else { throw InvalidFormat() }
+        guard data.count > 132 + tag_list_size else { throw AnyColorSpace.ICCError.invalidFormat(message: "Unexpected end of file.") }
         
         try data[132..<132 + tag_list_size].withUnsafeBytes { (ptr: UnsafePointer<TagList>) in
             
@@ -54,7 +57,7 @@ public struct iccProfile {
                 let start = Int(offset)
                 let end = start + Int(size)
                 
-                guard data.count >= end else { throw InvalidFormat() }
+                guard data.count >= end else { throw AnyColorSpace.ICCError.invalidFormat(message: "Unexpected end of file.") }
                 
                 table[sig] = TagData(rawData: data[start..<end])
             }
@@ -62,28 +65,25 @@ public struct iccProfile {
     }
 }
 
-extension iccProfile {
-    
-    public struct InvalidFormat : Error {
-        
-    }
-}
-
 extension iccProfile : Collection {
     
-    public var startIndex: Dictionary<TagSignature, TagData>.Index {
+    @_versioned
+    var startIndex: Dictionary<TagSignature, TagData>.Index {
         return table.startIndex
     }
     
-    public var endIndex: Dictionary<TagSignature, TagData>.Index {
+    @_versioned
+    var endIndex: Dictionary<TagSignature, TagData>.Index {
         return table.endIndex
     }
     
-    public subscript(position: Dictionary<TagSignature, TagData>.Index) -> (TagSignature, TagData) {
+    @_versioned
+    subscript(position: Dictionary<TagSignature, TagData>.Index) -> (TagSignature, TagData) {
         return table[position]
     }
     
-    public subscript(signature: TagSignature) -> TagData? {
+    @_versioned
+    subscript(signature: TagSignature) -> TagData? {
         get {
             return table[signature]
         }
@@ -92,15 +92,18 @@ extension iccProfile : Collection {
         }
     }
     
-    public func index(after i: Dictionary<TagSignature, TagData>.Index) -> Dictionary<TagSignature, TagData>.Index {
+    @_versioned
+    func index(after i: Dictionary<TagSignature, TagData>.Index) -> Dictionary<TagSignature, TagData>.Index {
         return table.index(after: i)
     }
     
-    public var keys: Dictionary<TagSignature, TagData>.Keys {
+    @_versioned
+    var keys: Dictionary<TagSignature, TagData>.Keys {
         return table.keys
     }
     
-    public var values: Dictionary<TagSignature, TagData>.Values {
+    @_versioned
+    var values: Dictionary<TagSignature, TagData>.Values {
         return table.values
     }
 }

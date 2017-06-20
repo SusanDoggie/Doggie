@@ -26,7 +26,7 @@
 public struct GrayColorModel : ColorModelProtocol {
     
     @_inlineable
-    public static var count: Int {
+    public static var numberOfComponents: Int {
         return 1
     }
     

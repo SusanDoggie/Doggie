@@ -530,7 +530,7 @@ extension ResamplingAlgorithm {
         
         var color = ColorModel()
         
-        for i in 0..<ColorModel.count {
+        for i in 0..<ColorModel.numberOfComponents {
             color.setComponent(i, sampler(_ty,sampler(_tx, _s1.color.component(i), _s2.color.component(i)), sampler(_tx, _s3.color.component(i), _s4.color.component(i))))
         }
         
@@ -573,7 +573,7 @@ extension ResamplingAlgorithm {
         
         var color = ColorModel()
         
-        for i in 0..<ColorModel.count {
+        for i in 0..<ColorModel.numberOfComponents {
             let _u1 = sampler(_tx, _s1.color.component(i), _s2.color.component(i), _s3.color.component(i), _s4.color.component(i))
             let _u2 = sampler(_tx, _s5.color.component(i), _s6.color.component(i), _s7.color.component(i), _s8.color.component(i))
             let _u3 = sampler(_tx, _s9.color.component(i), _s10.color.component(i), _s11.color.component(i), _s12.color.component(i))

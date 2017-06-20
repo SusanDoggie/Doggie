@@ -45,7 +45,7 @@ extension ImageContext {
         
         if transform == SDTransform.identity && width == image.width && height == image.height {
             source = Image(image: image, colorSpace: colorSpace)
-        } else if C.Model.count < Model.count || (C.Model.count == Model.count && width * height < image.width * image.height) {
+        } else if C.Model.numberOfComponents < Model.numberOfComponents || (C.Model.numberOfComponents == Model.numberOfComponents && width * height < image.width * image.height) {
             let _temp = Image(image: image, width: width, height: height, transform: transform, resampling: _resamplingAlgorithm, antialias: _antialias)
             source = Image(image: _temp, colorSpace: colorSpace)
         } else {

@@ -26,6 +26,8 @@
 @_versioned
 protocol AnyColorBaseProtocol {
     
+    var numberOfComponents: Int { get }
+    
     var colorSpace: AnyColorSpaceBaseProtocol { get }
     
     func component(_ index: Int) -> Double
@@ -33,6 +35,10 @@ protocol AnyColorBaseProtocol {
     mutating func setComponent(_ index: Int, _ value: Double)
     
     var opacity: Double { get set }
+    
+    func blended<C>(source: Color<C>, blendMode: ColorBlendMode, compositingMode: ColorCompositingMode) -> AnyColorBaseProtocol
+    
+    func blendedTo(destination: AnyColorBaseProtocol, blendMode: ColorBlendMode, compositingMode: ColorCompositingMode) -> AnyColorBaseProtocol
     
     func convert(to colorSpace: AnyColorSpaceBaseProtocol, intent: RenderingIntent) -> AnyColorBaseProtocol
     
@@ -77,6 +83,24 @@ struct AnyColorBase<Model : ColorModelProtocol> : AnyColorBaseProtocol {
     
     @_versioned
     @_inlineable
+    var numberOfComponents: Int {
+        return Model.numberOfComponents
+    }
+    
+    @_versioned
+    @_inlineable
+    func blended<C>(source: Color<C>, blendMode: ColorBlendMode, compositingMode: ColorCompositingMode) -> AnyColorBaseProtocol {
+        return AnyColorBase(base: base.blended(source: source, blendMode: blendMode, compositingMode: compositingMode))
+    }
+    
+    @_versioned
+    @_inlineable
+    func blendedTo(destination: AnyColorBaseProtocol, blendMode: ColorBlendMode, compositingMode: ColorCompositingMode) -> AnyColorBaseProtocol {
+        return destination.blended(source: base, blendMode: blendMode, compositingMode: compositingMode)
+    }
+    
+    @_versioned
+    @_inlineable
     var colorSpace: AnyColorSpaceBaseProtocol {
         return AnyColorSpaceBase(base: base.colorSpace)
     }
@@ -110,8 +134,8 @@ public struct AnyColor {
 extension AnyColor {
     
     @_inlineable
-    public init<S : Sequence>(colorSpace: AnyColorSpace, components: S) where S.Element == Double {
-        self.init(base: colorSpace.base.createColor(components: components))
+    public init<S : Sequence>(colorSpace: AnyColorSpace, components: S, opacity: Double) where S.Element == Double {
+        self.init(base: colorSpace.base.createColor(components: components, opacity: opacity))
     }
     
     @_inlineable
@@ -151,6 +175,11 @@ extension AnyColor {
 extension AnyColor {
     
     @_inlineable
+    public var numberOfComponents: Int {
+        return base.numberOfComponents
+    }
+    
+    @_inlineable
     public var colorSpace: AnyColorSpace {
         return AnyColorSpace(base: base.colorSpace)
     }
@@ -168,6 +197,29 @@ extension AnyColor {
     @_inlineable
     public func convert<Model>(to colorSpace: ColorSpace<Model>, intent: RenderingIntent = .default) -> Color<Model> {
         return base.convert(to: colorSpace, intent: intent)
+    }
+}
+
+extension AnyColor {
+    
+    @_inlineable
+    public func blended<C>(source: Color<C>, blendMode: ColorBlendMode, compositingMode: ColorCompositingMode) -> AnyColor {
+        return AnyColor(base: base.blended(source: source, blendMode: blendMode, compositingMode: compositingMode))
+    }
+    
+    @_inlineable
+    public func blended(source: AnyColor, blendMode: ColorBlendMode, compositingMode: ColorCompositingMode) -> AnyColor {
+        return AnyColor(base: source.base.blendedTo(destination: base, blendMode: blendMode, compositingMode: compositingMode))
+    }
+    
+    @_inlineable
+    public mutating func blend<C>(source: Color<C>, blendMode: ColorBlendMode, compositingMode: ColorCompositingMode) {
+        self = self.blended(source: source, blendMode: blendMode, compositingMode: compositingMode)
+    }
+    
+    @_inlineable
+    public mutating func blend(source: AnyColor, blendMode: ColorBlendMode, compositingMode: ColorCompositingMode) {
+        self = self.blended(source: source, blendMode: blendMode, compositingMode: compositingMode)
     }
 }
 
@@ -199,3 +251,10 @@ extension AnyColor {
     }
 }
 
+extension Color {
+    
+    @_inlineable
+    public func convert(to colorSpace: AnyColorSpace, intent: RenderingIntent = .default) -> AnyColor {
+        return AnyColor(self).convert(to: colorSpace, intent: intent)
+    }
+}
