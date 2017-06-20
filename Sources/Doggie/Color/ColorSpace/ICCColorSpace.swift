@@ -193,14 +193,12 @@ struct MultiDimensionalLUT {
         
         let position = source.components.enumerated().map { _modf($0.1.clamped(to: 0...1) * Double(grids[$0.0] - 1)) }
         
-        print(position)
-        
         func _interpolate(level: Int, offset: Int) -> Destination {
             
             var a = Destination()
             var b = Destination()
             
-            let _p = position[level]
+            let _p = position[Source.numberOfComponents - level - 1]
             let _s = level == 0 ? Destination.numberOfComponents : grids[level - 1]
             
             let offset1 = (offset + _p.0) * _s
@@ -725,21 +723,11 @@ extension ICCColorSpace {
             
         case let .LUT0(_, i, lut, o):
             
-            print(lut.grids)
-            
-            print(color)
-            
             color = i.eval(color)
-            
-            print(color)
             
             result = lut.eval(color)
             
-            print(result)
-            
             result = o.eval(result)
-            
-            print(result)
             
         case let .LUT1(B):
             
