@@ -36,8 +36,6 @@ protocol _ColorSpaceBaseProtocol {
     
     func _convertLinearFromXYZ<Model: ColorModelProtocol>(_ color: XYZColorModel) -> Model
     
-    var normalized: _ColorSpaceBaseProtocol { get }
-    
     var linearTone: _ColorSpaceBaseProtocol { get }
 }
 
@@ -255,13 +253,16 @@ extension ColorSpace {
 extension ColorSpace {
     
     @_inlineable
-    public var normalized: ColorSpace {
-        return ColorSpace(base: base.normalized)
-    }
-    
-    @_inlineable
     public var linearTone: ColorSpace {
         return ColorSpace(base: base.linearTone)
+    }
+}
+
+extension ColorSpace {
+    
+    @_inlineable
+    public var numberOfComponents: Int {
+        return Model.numberOfComponents
     }
 }
 

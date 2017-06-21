@@ -30,88 +30,56 @@ protocol AnyColorSpaceBaseProtocol {
     
     var numberOfComponents: Int { get }
     
-    func createColor<S : Sequence>(components: S, opacity: Double) -> AnyColorBaseProtocol where S.Element == Double
+    func _createColor<S : Sequence>(components: S, opacity: Double) -> AnyColorBaseProtocol where S.Element == Double
     
-    func createImage(width: Int, height: Int) -> AnyImageBaseProtocol
+    func _createImage(width: Int, height: Int) -> AnyImageBaseProtocol
     
-    func convert<Model>(_ color: Color<Model>, intent: RenderingIntent) -> AnyColorBaseProtocol
+    func _convert<Model>(_ color: Color<Model>, intent: RenderingIntent) -> AnyColorBaseProtocol
     
-    func convert<Pixel>(_ image: Image<Pixel>, intent: RenderingIntent) -> AnyImageBaseProtocol
+    func _convert<Pixel>(_ image: Image<Pixel>, intent: RenderingIntent) -> AnyImageBaseProtocol
+    
+    var _linearTone: AnyColorSpaceBaseProtocol { get }
     
     var white: XYZColorModel { get }
     
     var black: XYZColorModel { get }
 }
 
-@_versioned
-@_fixed_layout
-struct AnyColorSpaceBase<Model : ColorModelProtocol> : AnyColorSpaceBaseProtocol {
-    
-    @_versioned
-    var base : ColorSpace<Model>
+extension ColorSpace : AnyColorSpaceBaseProtocol {
     
     @_versioned
     @_inlineable
-    init(base: ColorSpace<Model>) {
-        self.base = base
-    }
-    
-    @_versioned
-    @_inlineable
-    var chromaticAdaptationAlgorithm: ChromaticAdaptationAlgorithm {
-        get {
-            return base.chromaticAdaptationAlgorithm
-        }
-        set {
-            base.chromaticAdaptationAlgorithm = newValue
-        }
-    }
-    
-    @_versioned
-    @_inlineable
-    var numberOfComponents: Int {
-        return Model.numberOfComponents
-    }
-    
-    @_versioned
-    @_inlineable
-    func createColor<S : Sequence>(components: S, opacity: Double) -> AnyColorBaseProtocol where S.Element == Double {
+    func _createColor<S>(components: S, opacity: Double) -> AnyColorBaseProtocol where S : Sequence, S.Element == Double {
         
         var color = Model()
         for (i, v) in components.enumerated() {
             color.setComponent(i, v)
         }
-        return AnyColorBase(base: Color<Model>(colorSpace: base, color: color, opacity: opacity))
+        return Color(colorSpace: self, color: color, opacity: opacity)
     }
     
     @_versioned
     @_inlineable
-    func createImage(width: Int, height: Int) -> AnyImageBaseProtocol {
-        return AnyImageBase(base: Image<ColorPixel<Model>>(width: width, height: height, colorSpace: base))
+    func _createImage(width: Int, height: Int) -> AnyImageBaseProtocol {
+        return Image<ColorPixel<Model>>(width: width, height: height, colorSpace: self)
     }
     
     @_versioned
     @_inlineable
-    func convert<Model>(_ color: Color<Model>, intent: RenderingIntent) -> AnyColorBaseProtocol {
-        return AnyColorBase(base: color.convert(to: base, intent: intent))
+    func _convert<Model>(_ color: Color<Model>, intent: RenderingIntent) -> AnyColorBaseProtocol {
+        return color.convert(to: self, intent: intent)
     }
     
     @_versioned
     @_inlineable
-    func convert<Pixel>(_ image: Image<Pixel>, intent: RenderingIntent) -> AnyImageBaseProtocol {
-        return AnyImageBase(base: Image<ColorPixel<Model>>(image: image, colorSpace: base, intent: intent))
+    func _convert<Pixel>(_ image: Image<Pixel>, intent: RenderingIntent) -> AnyImageBaseProtocol {
+        return Image<ColorPixel<Model>>(image: image, colorSpace: self, intent: intent)
     }
     
     @_versioned
     @_inlineable
-    var white: XYZColorModel {
-        return base.white
-    }
-    
-    @_versioned
-    @_inlineable
-    var black: XYZColorModel {
-        return base.black
+    var _linearTone: AnyColorSpaceBaseProtocol {
+        return self.linearTone
     }
 }
 
@@ -132,7 +100,7 @@ extension AnyColorSpace {
     
     @_inlineable
     public init<Model>(_ colorSpace: ColorSpace<Model>) {
-        self.base = AnyColorSpaceBase(base: colorSpace)
+        self.base = colorSpace
     }
 }
 
@@ -151,6 +119,11 @@ extension AnyColorSpace {
     @_inlineable
     public var numberOfComponents: Int {
         return base.numberOfComponents
+    }
+    
+    @_inlineable
+    public var linearTone: AnyColorSpace {
+        return AnyColorSpace(base: base._linearTone)
     }
     
     @_inlineable

@@ -38,6 +38,14 @@ public protocol ColorModelProtocol : Hashable {
 extension ColorModelProtocol {
     
     @_inlineable
+    public var numberOfComponents: Int {
+        return Self.numberOfComponents
+    }
+}
+
+extension ColorModelProtocol {
+    
+    @_inlineable
     public var hashValue: Int {
         var hash = 0
         for i in 0..<Self.numberOfComponents {

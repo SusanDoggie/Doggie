@@ -208,6 +208,24 @@ extension Color where Model == CMYKColorModel {
 extension Color {
     
     @_inlineable
+    public var numberOfComponents: Int {
+        return Model.numberOfComponents
+    }
+    
+    @_inlineable
+    public func component(_ index: Int) -> Double {
+        return color.component(index)
+    }
+    
+    @_inlineable
+    public mutating func setComponent(_ index: Int, _ value: Double) {
+        color.setComponent(index, value)
+    }
+}
+
+extension Color {
+    
+    @_inlineable
     public func convert<R>(to colorSpace: ColorSpace<R>, intent: RenderingIntent = .default) -> Color<R> {
         return Color<R>(colorSpace: colorSpace, color: self.colorSpace.convert(color, to: colorSpace, intent: intent), opacity: opacity)
     }

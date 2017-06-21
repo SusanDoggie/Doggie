@@ -39,21 +39,9 @@
         }
     }
     
-    fileprivate protocol _NormalizedColorSpaceBase {
-        
-        var _base: _ColorSpaceBaseProtocol { get }
-    }
-    
     fileprivate protocol _LinearToneColorSpaceBase {
         
         var _base: _ColorSpaceBaseProtocol { get }
-    }
-    
-    extension NormalizedColorSpace : _NormalizedColorSpaceBase {
-        
-        fileprivate var _base: _ColorSpaceBaseProtocol {
-            return base
-        }
     }
     
     extension LinearToneColorSpace : _LinearToneColorSpaceBase {
@@ -67,7 +55,6 @@
         
         fileprivate func isSupportCGColorSpaceGamma(linear: Bool) -> Bool {
             switch self {
-            case let colorSpace as _NormalizedColorSpaceBase: return colorSpace._base.isSupportCGColorSpaceGamma(linear: linear)
             case let colorSpace as _LinearToneColorSpaceBase: return colorSpace._base.isSupportCGColorSpaceGamma(linear: true)
             case let colorSpace as CalibratedGrayColorSpace: return linear || colorSpace is CalibratedGammaGrayColorSpace
             case let colorSpace as CalibratedRGBColorSpace: return linear || colorSpace is CalibratedGammaRGBColorSpace
@@ -79,7 +66,6 @@
         fileprivate func cgColorSpace(linear: Bool) -> CGColorSpace? {
             
             switch self {
-            case let colorSpace as _NormalizedColorSpaceBase: return colorSpace._base.cgColorSpace(linear: linear)
             case let colorSpace as _LinearToneColorSpaceBase: return colorSpace._base.cgColorSpace(linear: true)
             case let colorSpace as CalibratedGrayColorSpace:
                 
@@ -91,7 +77,7 @@
                     gamma = 1
                 }
                 
-                let white = colorSpace.normalized.white
+                let white = colorSpace.cieXYZ.normalizedWhite
                 
                 return CGColorSpace(calibratedGrayWhitePoint: [CGFloat(white.x), CGFloat(white.y), CGFloat(white.z)], blackPoint: [0, 0, 0], gamma: gamma)
                 
@@ -105,9 +91,9 @@
                     gamma = [1, 1, 1]
                 }
                 
-                let white = colorSpace.normalized.white
+                let white = colorSpace.white * colorSpace.cieXYZ.normalizeMatrix
                 
-                let matrix = colorSpace.transferMatrix * colorSpace.cieXYZ.normalizeMatrix
+                let white = colorSpace.cieXYZ.normalizedWhite
                 
                 return CGColorSpace(calibratedRGBWhitePoint: [CGFloat(white.x), CGFloat(white.y), CGFloat(white.z)], blackPoint: [0, 0, 0], gamma: gamma,
                                     matrix: [
@@ -118,7 +104,7 @@
                 
             case let colorSpace as CIELabColorSpace:
                 
-                let white = colorSpace.normalized.white
+                let white = colorSpace.cieXYZ.normalizedWhite
                 
                 return CGColorSpace(labWhitePoint: [CGFloat(white.x), CGFloat(white.y), CGFloat(white.z)], blackPoint: [0, 0, 0], range: [-128, 128, -128, 128])
                 

@@ -101,5 +101,11 @@ extension CIEXYZColorSpace {
     var normalizeMatrix: Matrix {
         return Matrix.translate(x: -black.x, y: -black.y, z: -black.z) * Matrix.scale(x: white.x / (white.y * (white.x - black.x)), y: 1 / (white.y - black.y), z: white.z / (white.y * (white.z - black.z)))
     }
+    
+    @_versioned
+    @_inlineable
+    var normalizedWhite: XYZColorModel {
+        return white * normalizeMatrix
+    }
 }
 

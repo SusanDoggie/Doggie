@@ -66,7 +66,7 @@ class CalibratedRGBColorSpace : ColorSpaceBaseProtocol {
         
         self.cieXYZ = CIEXYZColorSpace(white: white, black: black)
         
-        let normalizeMatrix = CIEXYZColorSpace(white: white, black: black).normalizeMatrix
+        let normalizeMatrix = self.cieXYZ.normalizeMatrix
         let _white = white * normalizeMatrix
         
         let p = Matrix(a: red.x, b: green.x, c: blue.x, d: 0,

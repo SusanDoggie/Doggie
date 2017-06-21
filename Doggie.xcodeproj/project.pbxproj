@@ -86,8 +86,6 @@
 		08B68A321ED07A2400F8D423 /* ColorSpace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08B68A301ED07A2400F8D423 /* ColorSpace.swift */; };
 		08B68A3A1ED07A8300F8D423 /* LinearToneColorSpace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08B68A391ED07A8300F8D423 /* LinearToneColorSpace.swift */; };
 		08B68A3B1ED07A8300F8D423 /* LinearToneColorSpace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08B68A391ED07A8300F8D423 /* LinearToneColorSpace.swift */; };
-		08B68A3D1ED07AA500F8D423 /* NormalizedColorSpace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08B68A3C1ED07AA500F8D423 /* NormalizedColorSpace.swift */; };
-		08B68A3E1ED07AA500F8D423 /* NormalizedColorSpace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08B68A3C1ED07AA500F8D423 /* NormalizedColorSpace.swift */; };
 		0A0697581E4D6659005CF664 /* Graphic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0697571E4D6659005CF664 /* Graphic.swift */; };
 		0A0697591E4D6659005CF664 /* Graphic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0697571E4D6659005CF664 /* Graphic.swift */; };
 		0A06975B1E4D66A3005CF664 /* Filter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A06975A1E4D66A3005CF664 /* Filter.swift */; };
@@ -310,7 +308,6 @@
 		08B457E51EDD3223007AA4F0 /* Arithmetic.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Arithmetic.swift; sourceTree = "<group>"; };
 		08B68A301ED07A2400F8D423 /* ColorSpace.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ColorSpace.swift; sourceTree = "<group>"; };
 		08B68A391ED07A8300F8D423 /* LinearToneColorSpace.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LinearToneColorSpace.swift; sourceTree = "<group>"; };
-		08B68A3C1ED07AA500F8D423 /* NormalizedColorSpace.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NormalizedColorSpace.swift; sourceTree = "<group>"; };
 		08BFF9B91B0715ED00EC88CB /* FourierTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FourierTest.swift; sourceTree = "<group>"; };
 		0A0697571E4D6659005CF664 /* Graphic.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Graphic.swift; sourceTree = "<group>"; };
 		0A06975A1E4D66A3005CF664 /* Filter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Filter.swift; sourceTree = "<group>"; };
@@ -644,7 +641,6 @@
 				0AC527DF1EEFEFF900FB239A /* iccProfile */,
 				08B68A301ED07A2400F8D423 /* ColorSpace.swift */,
 				0A95A59D1EF3906000D030D5 /* ICCColorSpace.swift */,
-				08B68A3C1ED07AA500F8D423 /* NormalizedColorSpace.swift */,
 				08B68A391ED07A8300F8D423 /* LinearToneColorSpace.swift */,
 				0A9CD5851EEB98BE00094148 /* CIEColorSpace */,
 				0A9CD5801EEB986F00094148 /* CalibratedGrayColorSpace */,
@@ -1037,7 +1033,6 @@
 				0A39A6B81ED9345100804004 /* DrawImage.swift in Sources */,
 				0A52E2D61E6012140065EED6 /* PDFDocEncoding.swift in Sources */,
 				0A52E2DB1E6012530065EED6 /* PDFRunLengthDecode.swift in Sources */,
-				08B68A3D1ED07AA500F8D423 /* NormalizedColorSpace.swift in Sources */,
 				08458B401E2E627600D01813 /* SDTransform.swift in Sources */,
 				08458B441E2E627600D01813 /* SDTriggerNode.swift in Sources */,
 				0A53E45E1E35AEF80060FB83 /* CollectionExtension.swift in Sources */,
@@ -1165,7 +1160,6 @@
 				0A39A6B91ED9345100804004 /* DrawImage.swift in Sources */,
 				0A52E2D71E6012140065EED6 /* PDFDocEncoding.swift in Sources */,
 				0A52E2DC1E6012530065EED6 /* PDFRunLengthDecode.swift in Sources */,
-				08B68A3E1ED07AA500F8D423 /* NormalizedColorSpace.swift in Sources */,
 				08458B411E2E627600D01813 /* SDTransform.swift in Sources */,
 				08458B451E2E627600D01813 /* SDTriggerNode.swift in Sources */,
 				0A53E45F1E35AEF80060FB83 /* CollectionExtension.swift in Sources */,

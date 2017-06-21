@@ -31,78 +31,55 @@ protocol AnyImageBaseProtocol {
     
     var height: Int { get }
     
-    var colorSpace: AnyColorSpaceBaseProtocol { get }
+    var _colorSpace: AnyColorSpaceBaseProtocol { get }
     
-    func draw<Model>(context: ImageContext<Model>, transform: SDTransform)
+    func _draw<Model>(context: ImageContext<Model>, transform: SDTransform)
     
-    func convert(to colorSpace: AnyColorSpaceBaseProtocol, intent: RenderingIntent) -> AnyImageBaseProtocol
+    func _convert(to colorSpace: AnyColorSpaceBaseProtocol, intent: RenderingIntent) -> AnyImageBaseProtocol
     
-    func convert<P>(to colorSpace: ColorSpace<P.Model>, intent: RenderingIntent) -> Image<P>
+    func _convert<P>(to colorSpace: ColorSpace<P.Model>, intent: RenderingIntent) -> Image<P>
     
-    func resize(width: Int, height: Int, resampling algorithm: ResamplingAlgorithm, antialias: Bool) -> AnyImageBaseProtocol
+    func _resize(width: Int, height: Int, resampling algorithm: ResamplingAlgorithm, antialias: Bool) -> AnyImageBaseProtocol
     
-    func resize(width: Int, height: Int, transform: SDTransform, resampling algorithm: ResamplingAlgorithm, antialias: Bool) -> AnyImageBaseProtocol
+    func _resize(width: Int, height: Int, transform: SDTransform, resampling algorithm: ResamplingAlgorithm, antialias: Bool) -> AnyImageBaseProtocol
 }
 
-@_versioned
-@_fixed_layout
-struct AnyImageBase<Pixel: ColorPixelProtocol> : AnyImageBaseProtocol {
-    
-    @_versioned
-    let base : Image<Pixel>
+extension Image : AnyImageBaseProtocol {
     
     @_versioned
     @_inlineable
-    init(base: Image<Pixel>) {
-        self.base = base
+    var _colorSpace: AnyColorSpaceBaseProtocol {
+        return self.colorSpace
     }
     
     @_versioned
     @_inlineable
-    var width: Int {
-        return base.width
+    func _draw<Model>(context: ImageContext<Model>, transform: SDTransform) {
+        context.draw(image: self, transform: transform)
     }
     
     @_versioned
     @_inlineable
-    var height: Int {
-        return base.height
+    func _convert(to colorSpace: AnyColorSpaceBaseProtocol, intent: RenderingIntent) -> AnyImageBaseProtocol {
+        return colorSpace._convert(self, intent: intent)
     }
     
     @_versioned
     @_inlineable
-    var colorSpace: AnyColorSpaceBaseProtocol {
-        return AnyColorSpaceBase(base: base.colorSpace)
+    func _convert<P>(to colorSpace: ColorSpace<P.Model>, intent: RenderingIntent) -> Image<P> {
+        return Image<P>(image: self, colorSpace: colorSpace, intent: intent)
     }
     
     @_versioned
     @_inlineable
-    func draw<Model>(context: ImageContext<Model>, transform: SDTransform) {
-        context.draw(image: base, transform: transform)
+    func _resize(width: Int, height: Int, resampling algorithm: ResamplingAlgorithm, antialias: Bool) -> AnyImageBaseProtocol {
+        return Image<Pixel>(image: self, width: width, height: height, resampling: algorithm, antialias: antialias)
     }
     
     @_versioned
     @_inlineable
-    func convert(to colorSpace: AnyColorSpaceBaseProtocol, intent: RenderingIntent) -> AnyImageBaseProtocol {
-        return colorSpace.convert(base, intent: intent)
-    }
-    
-    @_versioned
-    @_inlineable
-    func convert<P>(to colorSpace: ColorSpace<P.Model>, intent: RenderingIntent) -> Image<P> {
-        return Image<P>(image: base, colorSpace: colorSpace, intent: intent)
-    }
-    
-    @_versioned
-    @_inlineable
-    func resize(width: Int, height: Int, resampling algorithm: ResamplingAlgorithm, antialias: Bool) -> AnyImageBaseProtocol {
-        return AnyImageBase(base: Image<Pixel>(image: base, width: width, height: height, resampling: algorithm, antialias: antialias))
-    }
-    
-    @_versioned
-    @_inlineable
-    func resize(width: Int, height: Int, transform: SDTransform, resampling algorithm: ResamplingAlgorithm, antialias: Bool) -> AnyImageBaseProtocol {
-        return AnyImageBase(base: Image<Pixel>(image: base, width: width, height: height, transform: transform, resampling: algorithm, antialias: antialias))
+    func _resize(width: Int, height: Int, transform: SDTransform, resampling algorithm: ResamplingAlgorithm, antialias: Bool) -> AnyImageBaseProtocol {
+        return Image<Pixel>(image: self, width: width, height: height, transform: transform, resampling: algorithm, antialias: antialias)
     }
 }
 
@@ -123,12 +100,12 @@ extension AnyImage {
     
     @_inlineable
     public init(width: Int, height: Int, colorSpace: AnyColorSpace) {
-        self.init(base: colorSpace.base.createImage(width: width, height: height))
+        self.init(base: colorSpace.base._createImage(width: width, height: height))
     }
     
     @_inlineable
     public init<Pixel>(_ image: Image<Pixel>) {
-        self.base = AnyImageBase(base: image)
+        self.base = image
     }
     
     @_inlineable
@@ -138,17 +115,17 @@ extension AnyImage {
     
     @_inlineable
     public init(image: AnyImage, colorSpace: AnyColorSpace, intent: RenderingIntent = .default) {
-        self.base = image.base.convert(to: colorSpace.base, intent: intent)
+        self.base = image.base._convert(to: colorSpace.base, intent: intent)
     }
     
     @_inlineable
     public init(image: AnyImage, width: Int, height: Int, resampling algorithm: ResamplingAlgorithm = .default, antialias: Bool = false) {
-        self.base = image.base.resize(width: width, height: height, resampling: algorithm, antialias: antialias)
+        self.base = image.base._resize(width: width, height: height, resampling: algorithm, antialias: antialias)
     }
     
     @_inlineable
     public init(image: AnyImage, width: Int, height: Int, transform: SDTransform, resampling algorithm: ResamplingAlgorithm = .default, antialias: Bool = false) {
-        self.base = image.base.resize(width: width, height: height, transform: transform, resampling: algorithm, antialias: antialias)
+        self.base = image.base._resize(width: width, height: height, transform: transform, resampling: algorithm, antialias: antialias)
     }
 }
 
@@ -156,7 +133,7 @@ extension AnyImage {
     
     @_inlineable
     public func convert<P>(to colorSpace: ColorSpace<P.Model>, intent: RenderingIntent = .default) -> Image<P> {
-        return base.convert(to: colorSpace, intent: intent)
+        return base._convert(to: colorSpace, intent: intent)
     }
 }
 
@@ -174,7 +151,7 @@ extension AnyImage {
     
     @_inlineable
     public var colorSpace: AnyColorSpace {
-        return AnyColorSpace(base: base.colorSpace)
+        return AnyColorSpace(base: base._colorSpace)
     }
 }
 
@@ -182,6 +159,6 @@ extension ImageContext {
     
     @_inlineable
     public func draw(image: AnyImage, transform: SDTransform) {
-        image.base.draw(context: self, transform: transform)
+        image.base._draw(context: self, transform: transform)
     }
 }
