@@ -25,12 +25,18 @@
 
 import Foundation
 
+@_versioned
+@_fixed_layout
 class _sRGB: CalibratedRGBColorSpace {
     
+    @_versioned
+    @_inlineable
     init() {
-        super.init(white: XYZColorModel(luminance: 1, x: 0.3127, y: 0.3290), black: XYZColorModel(luminance: 0, x: 0.3127, y: 0.3290), red: Point(x: 0.6400, y: 0.3300), green: Point(x: 0.3000, y: 0.6000), blue: Point(x: 0.1500, y: 0.0600))
+        super.init(CIEXYZColorSpace(white: XYZColorModel(luminance: 1, x: 0.3127, y: 0.3290), black: XYZColorModel(luminance: 0, x: 0.3127, y: 0.3290)), red: Point(x: 0.6400, y: 0.3300), green: Point(x: 0.3000, y: 0.6000), blue: Point(x: 0.1500, y: 0.0600))
     }
     
+    @_versioned
+    @_inlineable
     override func convertToLinear(_ color: RGBColorModel) -> RGBColorModel {
         
         func toLinear(_ x: Double) -> Double {
@@ -42,6 +48,8 @@ class _sRGB: CalibratedRGBColorSpace {
         return RGBColorModel(red: exteneded(color.red, toLinear), green: exteneded(color.green, toLinear), blue: exteneded(color.blue, toLinear))
     }
     
+    @_versioned
+    @_inlineable
     override func convertFromLinear(_ color: RGBColorModel) -> RGBColorModel {
         
         func toGamma(_ x: Double) -> Double {
@@ -51,6 +59,12 @@ class _sRGB: CalibratedRGBColorSpace {
             return 12.92 * x
         }
         return RGBColorModel(red: exteneded(color.red, toGamma), green: exteneded(color.green, toGamma), blue: exteneded(color.blue, toGamma))
+    }
+    
+    @_versioned
+    @_inlineable
+    override func iccParametricCurve(_ index: Int) -> iccProfile.ParametricCurve {
+        return iccProfile.ParametricCurve(funcType: 3, gamma: 2.4, a: iccProfile.S15Fixed16Number(value: 1 / 1.055), b: iccProfile.S15Fixed16Number(value: 0.055 / 1.055), c: iccProfile.S15Fixed16Number(value: 1 / 12.92), d: 0.04045, e: 0, f: 0)
     }
 }
 

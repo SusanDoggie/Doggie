@@ -31,9 +31,6 @@
     extension Color {
         
         public var cgColor: CGColor? {
-            
-            let color = self.colorSpace.isSupportCGColorSpaceGamma ? self.color : self.colorSpace.convertToLinear(self.color)
-            
             return colorSpace.cgColorSpace.flatMap { CGColor(colorSpace: $0, components: color.components.map { CGFloat($0) } + [CGFloat(opacity)]) }
         }
     }
@@ -43,11 +40,8 @@
         var cgColor: CGColor? { get }
     }
     
-    extension AnyColorBase : CGColorConvertibleProtocol {
+    extension Color : CGColorConvertibleProtocol {
         
-        var cgColor: CGColor? {
-            return base.cgColor
-        }
     }
     
     extension AnyColor {

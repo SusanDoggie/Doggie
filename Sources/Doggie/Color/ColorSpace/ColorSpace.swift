@@ -23,8 +23,12 @@
 //  THE SOFTWARE.
 //
 
+import Foundation
+
 @_versioned
 protocol _ColorSpaceBaseProtocol {
+    
+    var iccData: Data? { get }
     
     var cieXYZ: CIEXYZColorSpace { get }
     
@@ -36,7 +40,16 @@ protocol _ColorSpaceBaseProtocol {
     
     func _convertLinearFromXYZ<Model: ColorModelProtocol>(_ color: XYZColorModel) -> Model
     
-    var linearTone: _ColorSpaceBaseProtocol { get }
+    var _linearTone: _ColorSpaceBaseProtocol { get }
+}
+
+extension _ColorSpaceBaseProtocol {
+    
+    @_versioned
+    @_inlineable
+    var iccData: Data? {
+        return nil
+    }
 }
 
 extension _ColorSpaceBaseProtocol {
@@ -74,6 +87,8 @@ protocol ColorSpaceBaseProtocol : _ColorSpaceBaseProtocol {
     
     associatedtype Model : ColorModelProtocol
     
+    associatedtype LinearTone : _ColorSpaceBaseProtocol = LinearToneColorSpace<Self>
+    
     func convertToLinear(_ color: Model) -> Model
     
     func convertFromLinear(_ color: Model) -> Model
@@ -81,6 +96,8 @@ protocol ColorSpaceBaseProtocol : _ColorSpaceBaseProtocol {
     func convertLinearToXYZ(_ color: Model) -> XYZColorModel
     
     func convertLinearFromXYZ(_ color: XYZColorModel) -> Model
+    
+    var linearTone: LinearTone { get }
 }
 
 extension ColorSpaceBaseProtocol {
@@ -107,6 +124,12 @@ extension ColorSpaceBaseProtocol {
     @_inlineable
     func _convertLinearFromXYZ<C: ColorModelProtocol>(_ color: XYZColorModel) -> C {
         return self.convertLinearFromXYZ(color) as! C
+    }
+    
+    @_versioned
+    @_inlineable
+    var _linearTone: _ColorSpaceBaseProtocol {
+        return self.linearTone
     }
 }
 
@@ -152,6 +175,14 @@ public struct ColorSpace<Model : ColorModelProtocol> {
 extension ColorSpace {
     
     @_inlineable
+    public var iccData: Data? {
+        return base.iccData
+    }
+}
+
+extension ColorSpace {
+    
+    @_inlineable
     public func convertToLinear(_ color: Model) -> Model {
         return base._convertToLinear(color)
     }
@@ -180,16 +211,31 @@ extension ChromaticAdaptationAlgorithm {
     }
 }
 
+extension CIEXYZColorSpace {
+    
+    @_versioned
+    @_inlineable
+    func chromaticAdaptationMatrix(to other: CIEXYZColorSpace, _ chromaticAdaptationAlgorithm: ChromaticAdaptationAlgorithm) -> Matrix {
+        return self.chromaticAdaptationMatrix(to: other, (chromaticAdaptationAlgorithm, chromaticAdaptationAlgorithm))
+    }
+    
+    @_versioned
+    @_inlineable
+    func chromaticAdaptationMatrix(to other: CIEXYZColorSpace, _ chromaticAdaptationAlgorithm: (source: ChromaticAdaptationAlgorithm, destination: ChromaticAdaptationAlgorithm)) -> Matrix {
+        let m1 = self.normalizeMatrix * chromaticAdaptationAlgorithm.source.matrix
+        let m2 = other.normalizeMatrix * chromaticAdaptationAlgorithm.destination.matrix
+        let _s = self.white * m1
+        let _d = other.white * m2
+        return m1 * Matrix.scale(x: _d.x / _s.x, y: _d.y / _s.y, z: _d.z / _s.z) * m2.inverse
+    }
+}
+
 extension ColorSpace {
     
     @_versioned
     @_inlineable
-    func chromaticTransferMatrix<R>(to other: ColorSpace<R>) -> Matrix {
-        let m1 = self.base.cieXYZ.normalizeMatrix * self.chromaticAdaptationAlgorithm.matrix
-        let m2 = other.base.cieXYZ.normalizeMatrix * other.chromaticAdaptationAlgorithm.matrix
-        let _s = self.white * m1
-        let _d = other.white * m2
-        return m1 * Matrix.scale(x: _d.x / _s.x, y: _d.y / _s.y, z: _d.z / _s.z) * m2.inverse
+    func chromaticAdaptationMatrix<R>(to other: ColorSpace<R>) -> Matrix {
+        return self.base.cieXYZ.chromaticAdaptationMatrix(to: other.base.cieXYZ, (self.chromaticAdaptationAlgorithm, other.chromaticAdaptationAlgorithm))
     }
 }
 
@@ -214,7 +260,7 @@ extension ColorSpace {
         
         switch intent {
         case .absoluteColorimetric: return other.base._convertFromXYZ(self.base._convertToXYZ(color))
-        case .relativeColorimetric: return other.base._convertFromXYZ(self.base._convertToXYZ(color) * self.chromaticTransferMatrix(to: other))
+        case .relativeColorimetric: return other.base._convertFromXYZ(self.base._convertToXYZ(color) * self.chromaticAdaptationMatrix(to: other))
         }
     }
     
@@ -228,12 +274,22 @@ extension ColorSpace {
 extension ColorSpace {
     
     @_inlineable
+    public func convertToLinear<Model: ColorModelProtocol>(_ color: Model) -> Model {
+        return base._convertToLinear(color)
+    }
+    
+    @_inlineable
+    public func convertFromLinear<Model: ColorModelProtocol>(_ color: Model) -> Model {
+        return base._convertFromLinear(color)
+    }
+    
+    @_inlineable
     public func convert<S : Sequence, R>(_ color: S, to other: ColorSpace<R>, intent: RenderingIntent = .default) -> [R] where S.Element == Model {
         
         switch intent {
         case .absoluteColorimetric: return color.map { other.base._convertFromXYZ(self.base._convertToXYZ($0)) }
         case .relativeColorimetric:
-            let matrix = self.chromaticTransferMatrix(to: other)
+            let matrix = self.chromaticAdaptationMatrix(to: other)
             return color.map { other.base._convertFromXYZ(self.base._convertToXYZ($0) * matrix) }
         }
     }
@@ -242,9 +298,9 @@ extension ColorSpace {
     public func convert<S : Sequence, R: ColorPixelProtocol>(_ color: S, to other: ColorSpace<R.Model>, intent: RenderingIntent = .default) -> [R] where S.Element: ColorPixelProtocol, S.Element.Model == Model {
         
         switch intent {
-        case .absoluteColorimetric: return color.map { R(color: other.base._convertFromXYZ(self.base._convertToXYZ($0.color)), opacity: $0.opacity) }
+        case .absoluteColorimetric: return color.map { R(color: other.base._convertFromXYZ(self.base._convertToXYZ($0.color) * other.base.cieXYZ.white.y / self.base.cieXYZ.white.y), opacity: $0.opacity) }
         case .relativeColorimetric:
-            let matrix = self.chromaticTransferMatrix(to: other)
+            let matrix = self.chromaticAdaptationMatrix(to: other)
             return color.map { R(color: other.base._convertFromXYZ(self.base._convertToXYZ($0.color) * matrix), opacity: $0.opacity) }
         }
     }
@@ -254,7 +310,7 @@ extension ColorSpace {
     
     @_inlineable
     public var linearTone: ColorSpace {
-        return ColorSpace(base: base.linearTone)
+        return ColorSpace(base: base._linearTone)
     }
 }
 

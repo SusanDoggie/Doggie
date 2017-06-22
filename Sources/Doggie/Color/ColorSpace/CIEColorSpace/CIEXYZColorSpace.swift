@@ -104,8 +104,8 @@ extension CIEXYZColorSpace {
     
     @_versioned
     @_inlineable
-    var normalizedWhite: XYZColorModel {
-        return white * normalizeMatrix
+    var normalized: CIEXYZColorSpace {
+        return CIEXYZColorSpace(white: white * normalizeMatrix, black: XYZColorModel())
     }
 }
 

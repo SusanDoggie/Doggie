@@ -28,10 +28,21 @@ import Foundation
 @_versioned
 struct iccProfile {
     
+    typealias TagList = (TagSignature, BEUInt32, BEUInt32)
+    
     @_versioned
     var header: Header
     
-    fileprivate var table: [TagSignature: TagData] = [:]
+    fileprivate var table: [TagSignature: TagData] = [:] {
+        didSet {
+            header.size = BEUInt32(132 + MemoryLayout<TagList>.stride * Int(table.count) + table.values.reduce(0) { $0 + $1.rawData.count })
+        }
+    }
+    
+    @_versioned
+    init(header: Header) {
+        self.header = header
+    }
     
     @_versioned
     init(_ data: Data) throws {
@@ -43,8 +54,6 @@ struct iccProfile {
         guard data.count >= header.size else { throw AnyColorSpace.ICCError.invalidFormat(message: "Unexpected end of file.") }
         
         let tag_count = data[128..<132].withUnsafeBytes { $0.pointee as BEUInt32 }
-        
-        typealias TagList = (TagSignature, BEUInt32, BEUInt32)
         
         let tag_list_size = MemoryLayout<TagList>.stride * Int(tag_count)
         
@@ -62,6 +71,38 @@ struct iccProfile {
                 table[sig] = TagData(rawData: data[start..<end])
             }
         }
+    }
+}
+
+extension iccProfile {
+    
+    @_versioned
+    var data: Data {
+        
+        var _header = Data(count: 128)
+        
+        _header.withUnsafeMutableBytes { $0.pointee = header }
+        
+        _header.append(UnsafeBufferPointer<BEUInt32>(start: [BEUInt32(table.count)], count: 1))
+        
+        let tag_list_size = MemoryLayout<TagList>.stride * Int(table.count)
+        
+        var tag_list = Data(count: tag_list_size)
+        
+        var _data = Data()
+        
+        tag_list.withUnsafeMutableBytes { (buf: UnsafeMutablePointer<TagList>) in
+            var buf = buf
+            var offset = tag_list_size + 132
+            for (tag, data) in table {
+                buf.pointee = (tag, BEUInt32(offset), BEUInt32(data.rawData.count))
+                _data.append(data.rawData)
+                offset += data.rawData.count
+                buf += 1
+            }
+        }
+        
+        return _header + tag_list + _data
     }
 }
 

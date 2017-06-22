@@ -108,11 +108,9 @@
             
             if let colorSpace = self.colorSpace.cgColorSpace {
                 
-                let image = self.colorSpace.isSupportCGColorSpaceGamma ? Image<ColorPixel<Pixel.Model>>(image: self) : Image<ColorPixel<Pixel.Model>>(image: self, colorSpace: self.colorSpace.linearTone)
-                
                 let components = Pixel.Model.numberOfComponents + 1
                 
-                let data = image.withUnsafeBufferPointer { buffer in buffer.baseAddress?.withMemoryRebound(to: Double.self, capacity: components) { UnsafeBufferPointer(start: $0, count: components * buffer.count).map(Float.init) } }
+                let data = self.withUnsafeBufferPointer { buffer in buffer.baseAddress?.withMemoryRebound(to: Double.self, capacity: components) { UnsafeBufferPointer(start: $0, count: components * buffer.count).map(Float.init) } }
                 
                 return data?.withUnsafeBufferPointer { buf in
                     
@@ -120,13 +118,13 @@
                     let bytesPerPixel = 4 * components
                     let bitsPerPixel = 32 * components
                     
-                    let bytesPerRow = bytesPerPixel * image.width
+                    let bytesPerRow = bytesPerPixel * width
                     
                     let byteOrder = bitsPerComponent.bigEndian == bitsPerComponent ? CGBitmapInfo.byteOrder32Big : CGBitmapInfo.byteOrder32Little
                     
                     let bitmapInfo = byteOrder.rawValue | CGBitmapInfo.floatComponents.rawValue | CGImageAlphaInfo.last.rawValue
                     
-                    return CGImage.create(buf.baseAddress!, width: image.width, height: image.height, bitsPerComponent: bitsPerComponent, bitsPerPixel: bitsPerPixel, bytesPerRow: bytesPerRow, space: colorSpace, bitmapInfo: bitmapInfo)
+                    return CGImage.create(buf.baseAddress!, width: width, height: height, bitsPerComponent: bitsPerComponent, bitsPerPixel: bitsPerPixel, bytesPerRow: bytesPerRow, space: colorSpace, bitmapInfo: bitmapInfo)
                 }
             }
             
@@ -139,11 +137,8 @@
         var cgImage: CGImage? { get }
     }
     
-    extension AnyImageBase : CGImageConvertibleProtocol {
+    extension Image : CGImageConvertibleProtocol {
         
-        var cgImage: CGImage? {
-            return base.cgImage
-        }
     }
     
     extension AnyImage {

@@ -33,18 +33,18 @@ extension ColorSpace where Model == RGBColorModel {
     }
     
     @_inlineable
-    public static func calibratedRGB(white: XYZColorModel, black: XYZColorModel, red: Point, green: Point, blue: Point) -> ColorSpace {
-        return ColorSpace(base: CalibratedRGBColorSpace(white: white, black: black, red: red, green: green, blue: blue))
+    public static func calibratedRGB(white: XYZColorModel, black: XYZColorModel = XYZColorModel(x: 0, y: 0, z: 0), red: Point, green: Point, blue: Point) -> ColorSpace {
+        return ColorSpace(base: CalibratedRGBColorSpace(CIEXYZColorSpace(white: white, black: black), red: red, green: green, blue: blue))
     }
     
     @_inlineable
-    public static func calibratedRGB(white: XYZColorModel, black: XYZColorModel, red: Point, green: Point, blue: Point, gamma: Double) -> ColorSpace {
-        return ColorSpace(base: CalibratedGammaRGBColorSpace(white: white, black: black, red: red, green: green, blue: blue, gamma: (gamma, gamma, gamma)))
+    public static func calibratedRGB(white: XYZColorModel, black: XYZColorModel = XYZColorModel(x: 0, y: 0, z: 0), red: Point, green: Point, blue: Point, gamma: Double) -> ColorSpace {
+        return ColorSpace(base: CalibratedGammaRGBColorSpace(CIEXYZColorSpace(white: white, black: black), red: red, green: green, blue: blue, gamma: (gamma, gamma, gamma)))
     }
     
     @_inlineable
-    public static func calibratedRGB(white: XYZColorModel, black: XYZColorModel, red: Point, green: Point, blue: Point, gamma: (Double, Double, Double)) -> ColorSpace {
-        return ColorSpace(base: CalibratedGammaRGBColorSpace(white: white, black: black, red: red, green: green, blue: blue, gamma: gamma))
+    public static func calibratedRGB(white: XYZColorModel, black: XYZColorModel = XYZColorModel(x: 0, y: 0, z: 0), red: Point, green: Point, blue: Point, gamma: (Double, Double, Double)) -> ColorSpace {
+        return ColorSpace(base: CalibratedGammaRGBColorSpace(CIEXYZColorSpace(white: white, black: black), red: red, green: green, blue: blue, gamma: gamma))
     }
 }
 
@@ -62,12 +62,19 @@ class CalibratedRGBColorSpace : ColorSpaceBaseProtocol {
     
     @_versioned
     @_inlineable
-    init(white: XYZColorModel, black: XYZColorModel, red: Point, green: Point, blue: Point) {
+    init(cieXYZ: CIEXYZColorSpace, transferMatrix: Matrix) {
+        self.cieXYZ = cieXYZ
+        self.transferMatrix = transferMatrix
+    }
+    
+    @_versioned
+    @_inlineable
+    init(_ cieXYZ: CIEXYZColorSpace, red: Point, green: Point, blue: Point) {
         
-        self.cieXYZ = CIEXYZColorSpace(white: white, black: black)
+        self.cieXYZ = cieXYZ
         
-        let normalizeMatrix = self.cieXYZ.normalizeMatrix
-        let _white = white * normalizeMatrix
+        let normalizeMatrix = cieXYZ.normalizeMatrix
+        let _white = cieXYZ.white * normalizeMatrix
         
         let p = Matrix(a: red.x, b: green.x, c: blue.x, d: 0,
                        e: red.y, f: green.y, g: blue.y, h: 0,
@@ -88,6 +95,21 @@ class CalibratedRGBColorSpace : ColorSpaceBaseProtocol {
     @_inlineable
     func convertFromLinear(_ color: Model) -> Model {
         return color
+    }
+    
+    @_versioned
+    @_inlineable
+    func iccParametricCurve(_ index: Int) -> iccProfile.ParametricCurve {
+        return iccProfile.ParametricCurve(funcType: 0, gamma: 1, a: 0, b: 0, c: 0, d: 0, e: 0, f: 0)
+    }
+}
+
+extension CalibratedRGBColorSpace {
+    
+    @_versioned
+    @_inlineable
+    var linearTone: CalibratedRGBColorSpace {
+        return CalibratedRGBColorSpace(cieXYZ: cieXYZ, transferMatrix: transferMatrix)
     }
 }
 
@@ -116,9 +138,9 @@ class CalibratedGammaRGBColorSpace: CalibratedRGBColorSpace {
     
     @_versioned
     @_inlineable
-    init(white: XYZColorModel, black: XYZColorModel, red: Point, green: Point, blue: Point, gamma: (Double, Double, Double)) {
+    init(_ cieXYZ: CIEXYZColorSpace, red: Point, green: Point, blue: Point, gamma: (Double, Double, Double)) {
         self.gamma = gamma
-        super.init(white: white, black: black, red: red, green: green, blue: blue)
+        super.init(cieXYZ, red: red, green: green, blue: blue)
     }
     
     @_versioned
@@ -131,6 +153,17 @@ class CalibratedGammaRGBColorSpace: CalibratedRGBColorSpace {
     @_inlineable
     override func convertFromLinear(_ color: RGBColorModel) -> RGBColorModel {
         return RGBColorModel(red: exteneded(color.red) { pow($0, 1 / gamma.0) }, green: exteneded(color.green) { pow($0, 1 / gamma.1) }, blue: exteneded(color.blue) { pow($0, 1 / gamma.2) })
+    }
+    
+    @_versioned
+    @_inlineable
+    override func iccParametricCurve(_ index: Int) -> iccProfile.ParametricCurve {
+        switch index {
+        case 0: return iccProfile.ParametricCurve(funcType: 0, gamma: iccProfile.S15Fixed16Number(value: gamma.0), a: 0, b: 0, c: 0, d: 0, e: 0, f: 0)
+        case 1: return iccProfile.ParametricCurve(funcType: 0, gamma: iccProfile.S15Fixed16Number(value: gamma.1), a: 0, b: 0, c: 0, d: 0, e: 0, f: 0)
+        case 2: return iccProfile.ParametricCurve(funcType: 0, gamma: iccProfile.S15Fixed16Number(value: gamma.2), a: 0, b: 0, c: 0, d: 0, e: 0, f: 0)
+        default: fatalError()
+        }
     }
 }
 

@@ -23,8 +23,12 @@
 //  THE SOFTWARE.
 //
 
+import Foundation
+
 @_versioned
 protocol AnyColorSpaceBaseProtocol {
+    
+    var iccData: Data? { get }
     
     var chromaticAdaptationAlgorithm: ChromaticAdaptationAlgorithm { get set }
     
@@ -101,6 +105,14 @@ extension AnyColorSpace {
     @_inlineable
     public init<Model>(_ colorSpace: ColorSpace<Model>) {
         self.base = colorSpace
+    }
+}
+
+extension AnyColorSpace {
+    
+    @_inlineable
+    public var iccData: Data? {
+        return base.iccData
     }
 }
 

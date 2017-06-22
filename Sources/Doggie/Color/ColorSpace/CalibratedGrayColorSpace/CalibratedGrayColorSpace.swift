@@ -74,6 +74,21 @@ class CalibratedGrayColorSpace : ColorSpaceBaseProtocol {
     func convertFromLinear(_ color: Model) -> Model {
         return color
     }
+    
+    @_versioned
+    @_inlineable
+    func iccParametricCurve() -> iccProfile.ParametricCurve {
+        return iccProfile.ParametricCurve(funcType: 0, gamma: 1, a: 0, b: 0, c: 0, d: 0, e: 0, f: 0)
+    }
+}
+
+extension CalibratedGrayColorSpace {
+    
+    @_versioned
+    @_inlineable
+    var linearTone: CalibratedGrayColorSpace {
+        return CalibratedGrayColorSpace(cieXYZ)
+    }
 }
 
 extension CalibratedGrayColorSpace {
@@ -118,5 +133,11 @@ class CalibratedGammaGrayColorSpace: CalibratedGrayColorSpace {
     @_inlineable
     override func convertFromLinear(_ color: GrayColorModel) -> GrayColorModel {
         return GrayColorModel(white: exteneded(color.white) { pow($0, 1 / gamma) })
+    }
+    
+    @_versioned
+    @_inlineable
+    override func iccParametricCurve() -> iccProfile.ParametricCurve {
+        return iccProfile.ParametricCurve(funcType: 0, gamma: iccProfile.S15Fixed16Number(value: gamma), a: 0, b: 0, c: 0, d: 0, e: 0, f: 0)
     }
 }

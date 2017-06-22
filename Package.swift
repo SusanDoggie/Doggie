@@ -27,20 +27,13 @@ import PackageDescription
 
 let package = Package(
     name: "Doggie",
+    products: [
+        .library(name: "Doggie", targets: ["Doggie"]),
+        ],
     targets: [
-        Target(name: "Doggie", dependencies: [
-            .Target(name: "c11_atomic"),
-            .Target(name: "zlib")
-            ]),
-        Target(name: "c11_atomic"),
-        Target(name: "zlib")
-    ],
-    exclude: [
-        "LICENSE", "README.md",
-        "Doggie.xcodeproj",
-        "Doggie.xcworkspace",
-        "Playground.playground",
-        "Doggie_iOS", "Doggie_iOSTests",
-        "Doggie_Mac", "Doggie_MacTests"
-    ]
+        .target(name: "Doggie", dependencies: ["c11_atomic", "zlib"]),
+        .target(name: "c11_atomic"),
+        .target(name: "zlib"),
+        .testTarget(name: "DoggieTests", dependencies: ["Doggie"]),
+        ]
 )

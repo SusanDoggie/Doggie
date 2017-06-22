@@ -30,87 +30,44 @@
     
     extension ColorSpace {
         
-        var isSupportCGColorSpaceGamma : Bool {
-            return base.isSupportCGColorSpaceGamma(linear: false)
-        }
-        
         public var cgColorSpace : CGColorSpace? {
-            return base.cgColorSpace(linear: false)
-        }
-    }
-    
-    fileprivate protocol _LinearToneColorSpaceBase {
-        
-        var _base: _ColorSpaceBaseProtocol { get }
-    }
-    
-    extension LinearToneColorSpace : _LinearToneColorSpaceBase {
-        
-        fileprivate var _base: _ColorSpaceBaseProtocol {
-            return base
-        }
-    }
-    
-    extension _ColorSpaceBaseProtocol {
-        
-        fileprivate func isSupportCGColorSpaceGamma(linear: Bool) -> Bool {
-            switch self {
-            case let colorSpace as _LinearToneColorSpaceBase: return colorSpace._base.isSupportCGColorSpaceGamma(linear: true)
-            case let colorSpace as CalibratedGrayColorSpace: return linear || colorSpace is CalibratedGammaGrayColorSpace
-            case let colorSpace as CalibratedRGBColorSpace: return linear || colorSpace is CalibratedGammaRGBColorSpace
-            default: break
-            }
-            return false
-        }
-        
-        fileprivate func cgColorSpace(linear: Bool) -> CGColorSpace? {
             
-            switch self {
-            case let colorSpace as _LinearToneColorSpaceBase: return colorSpace._base.cgColorSpace(linear: true)
-            case let colorSpace as CalibratedGrayColorSpace:
+            if #available(OSX 10.12, iOS 10.0, *) {
                 
-                let gamma: CGFloat
+                return iccData.map { CGColorSpace(iccData: $0 as CFData) }
                 
-                if !linear, let colorSpace = colorSpace as? CalibratedGammaGrayColorSpace {
-                    gamma = CGFloat(colorSpace.gamma)
-                } else {
-                    gamma = 1
+            } else {
+                
+                if Model.numberOfComponents != 1 && Model.numberOfComponents != 3 && Model.numberOfComponents != 4 {
+                    return nil
                 }
                 
-                let white = colorSpace.cieXYZ.normalizedWhite
-                
-                return CGColorSpace(calibratedGrayWhitePoint: [CGFloat(white.x), CGFloat(white.y), CGFloat(white.z)], blackPoint: [0, 0, 0], gamma: gamma)
-                
-            case let colorSpace as CalibratedRGBColorSpace:
-                
-                let gamma: [CGFloat]
-                
-                if !linear, let colorSpace = colorSpace as? CalibratedGammaRGBColorSpace {
-                    gamma = [CGFloat(colorSpace.gamma.0), CGFloat(colorSpace.gamma.1), CGFloat(colorSpace.gamma.2)]
+                if let iccData = iccData.flatMap({ CGDataProvider(data: $0 as CFData) }) {
+                    
+                    var range: [CGFloat] = []
+                    
+                    for i in 0..<Model.numberOfComponents {
+                        switch Model.self {
+                        case is LabColorModel.Type, is LuvColorModel.Type:
+                            if i == 0 {
+                                range.append(0)
+                                range.append(100)
+                            } else {
+                                range.append(-128)
+                                range.append(128)
+                            }
+                        default:
+                            range.append(0)
+                            range.append(1)
+                        }
+                    }
+                    
+                    return CGColorSpace(iccBasedNComponents: Model.numberOfComponents, range: range, profile: iccData, alternate: nil)
+                    
                 } else {
-                    gamma = [1, 1, 1]
+                    return nil
                 }
-                
-                let white = colorSpace.white * colorSpace.cieXYZ.normalizeMatrix
-                
-                let white = colorSpace.cieXYZ.normalizedWhite
-                
-                return CGColorSpace(calibratedRGBWhitePoint: [CGFloat(white.x), CGFloat(white.y), CGFloat(white.z)], blackPoint: [0, 0, 0], gamma: gamma,
-                                    matrix: [
-                                        CGFloat(matrix.a), CGFloat(matrix.e), CGFloat(matrix.i),
-                                        CGFloat(matrix.b), CGFloat(matrix.f), CGFloat(matrix.j),
-                                        CGFloat(matrix.c), CGFloat(matrix.g), CGFloat(matrix.k)
-                    ])
-                
-            case let colorSpace as CIELabColorSpace:
-                
-                let white = colorSpace.cieXYZ.normalizedWhite
-                
-                return CGColorSpace(labWhitePoint: [CGFloat(white.x), CGFloat(white.y), CGFloat(white.z)], blackPoint: [0, 0, 0], range: [-128, 128, -128, 128])
-                
-            default: break
             }
-            return nil
         }
     }
     
@@ -119,11 +76,8 @@
         var cgColorSpace: CGColorSpace? { get }
     }
     
-    extension AnyColorSpaceBase : CGColorSpaceConvertibleProtocol {
+    extension ColorSpace : CGColorSpaceConvertibleProtocol {
         
-        var cgColorSpace: CGColorSpace? {
-            return base.cgColorSpace
-        }
     }
     
     extension AnyColorSpace {

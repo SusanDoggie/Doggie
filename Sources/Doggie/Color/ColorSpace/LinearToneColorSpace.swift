@@ -25,7 +25,7 @@
 
 @_versioned
 @_fixed_layout
-struct LinearToneColorSpace<ColorSpace: _ColorSpaceBaseProtocol> : _ColorSpaceBaseProtocol {
+struct LinearToneColorSpace<ColorSpace: ColorSpaceBaseProtocol> : ColorSpaceBaseProtocol {
     
     @_versioned
     let base: ColorSpace
@@ -44,40 +44,40 @@ struct LinearToneColorSpace<ColorSpace: _ColorSpaceBaseProtocol> : _ColorSpaceBa
     
     @_versioned
     @_inlineable
-    func _convertToLinear<Model: ColorModelProtocol>(_ color: Model) -> Model {
+    func convertToLinear(_ color: ColorSpace.Model) -> ColorSpace.Model {
         return color
     }
     
     @_versioned
     @_inlineable
-    func _convertFromLinear<Model: ColorModelProtocol>(_ color: Model) -> Model {
+    func convertFromLinear(_ color: ColorSpace.Model) -> ColorSpace.Model {
         return color
     }
     
     @_versioned
     @_inlineable
-    func _convertLinearToXYZ<Model: ColorModelProtocol>(_ color: Model) -> XYZColorModel {
-        return base._convertLinearToXYZ(color)
+    func convertLinearToXYZ(_ color: ColorSpace.Model) -> XYZColorModel {
+        return base.convertLinearToXYZ(color)
     }
     
     @_versioned
     @_inlineable
-    func _convertLinearFromXYZ<Model: ColorModelProtocol>(_ color: XYZColorModel) -> Model {
-        return base._convertLinearFromXYZ(color)
+    func convertLinearFromXYZ(_ color: XYZColorModel) -> ColorSpace.Model {
+        return base.convertLinearFromXYZ(color)
     }
     
     @_versioned
     @_inlineable
-    var linearTone: _ColorSpaceBaseProtocol {
+    var linearTone: LinearToneColorSpace {
         return self
     }
 }
 
-extension _ColorSpaceBaseProtocol {
+extension ColorSpaceBaseProtocol where LinearTone == LinearToneColorSpace<Self> {
     
     @_versioned
     @_inlineable
-    var linearTone: _ColorSpaceBaseProtocol {
+    var linearTone: LinearToneColorSpace<Self> {
         return LinearToneColorSpace(self)
     }
 }

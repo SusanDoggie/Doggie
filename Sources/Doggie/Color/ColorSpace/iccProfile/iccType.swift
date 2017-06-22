@@ -90,6 +90,41 @@ extension iccProfile {
         @_versioned
         var reserved: (UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8)   /* Reserved for future use */
         
+        @_versioned
+        init(cmmId: Signature,
+             version: BEUInt32,
+             deviceClass: ClassSignature,
+             colorSpace: ColorSpaceSignature,
+             pcs: ColorSpaceSignature,
+             date: DateTimeNumber,
+             platform: Signature,
+             flags: BEUInt32,
+             manufacturer: Signature,
+             model: Signature,
+             attributes: BEUInt64,
+             renderingIntent: BEUInt32,
+             illuminant: XYZNumber,
+             creator: Signature) {
+            
+            self.size = 0
+            self.cmmId = cmmId
+            self.version = version
+            self.deviceClass = deviceClass
+            self.colorSpace = colorSpace
+            self.pcs = pcs
+            self.date = date
+            self.magic = Header.MagicNumber
+            self.platform = platform
+            self.flags = flags
+            self.manufacturer = manufacturer
+            self.model = model
+            self.attributes = attributes
+            self.renderingIntent = renderingIntent
+            self.illuminant = illuminant
+            self.creator = creator
+            self.profileID = (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+            self.reserved = (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+        }
     }
 }
 
@@ -338,7 +373,7 @@ extension iccProfile.TagData {
 extension iccProfile {
     
     @_versioned
-    struct S15Fixed16Number : RawRepresentable, Hashable, CustomStringConvertible, ExpressibleByFloatLiteral {
+    struct S15Fixed16Number : RawRepresentable, Hashable, CustomStringConvertible, ExpressibleByIntegerLiteral, ExpressibleByFloatLiteral {
         
         typealias RawValue = BEInt32
         
@@ -348,6 +383,11 @@ extension iccProfile {
         @_versioned
         init(rawValue: BEInt32) {
             self.rawValue = rawValue
+        }
+        
+        @_versioned
+        init(integerLiteral value: Double.IntegerLiteralType) {
+            self.init(value: Double(integerLiteral: value))
         }
         
         @_versioned
@@ -385,7 +425,7 @@ extension iccProfile {
 extension iccProfile {
     
     @_versioned
-    struct U16Fixed16Number : RawRepresentable, Hashable, CustomStringConvertible, ExpressibleByFloatLiteral {
+    struct U16Fixed16Number : RawRepresentable, Hashable, CustomStringConvertible, ExpressibleByIntegerLiteral, ExpressibleByFloatLiteral {
         
         typealias RawValue = BEUInt32
         
@@ -395,6 +435,11 @@ extension iccProfile {
         @_versioned
         init(rawValue: BEUInt32) {
             self.rawValue = rawValue
+        }
+        
+        @_versioned
+        init(integerLiteral value: Double.IntegerLiteralType) {
+            self.init(value: Double(integerLiteral: value))
         }
         
         @_versioned
@@ -432,7 +477,7 @@ extension iccProfile {
 extension iccProfile {
     
     @_versioned
-    struct U1Fixed15Number : RawRepresentable, Hashable, CustomStringConvertible, ExpressibleByFloatLiteral {
+    struct U1Fixed15Number : RawRepresentable, Hashable, CustomStringConvertible, ExpressibleByIntegerLiteral, ExpressibleByFloatLiteral {
         
         typealias RawValue = BEUInt16
         
@@ -442,6 +487,11 @@ extension iccProfile {
         @_versioned
         init(rawValue: BEUInt16) {
             self.rawValue = rawValue
+        }
+        
+        @_versioned
+        init(integerLiteral value: Double.IntegerLiteralType) {
+            self.init(value: Double(integerLiteral: value))
         }
         
         @_versioned
@@ -479,7 +529,7 @@ extension iccProfile {
 extension iccProfile {
     
     @_versioned
-    struct U8Fixed8Number : RawRepresentable, Hashable, CustomStringConvertible, ExpressibleByFloatLiteral {
+    struct U8Fixed8Number : RawRepresentable, Hashable, CustomStringConvertible, ExpressibleByIntegerLiteral, ExpressibleByFloatLiteral {
         
         typealias RawValue = BEUInt16
         
@@ -489,6 +539,11 @@ extension iccProfile {
         @_versioned
         init(rawValue: BEUInt16) {
             self.rawValue = rawValue
+        }
+        
+        @_versioned
+        init(integerLiteral value: Double.IntegerLiteralType) {
+            self.init(value: Double(integerLiteral: value))
         }
         
         @_versioned
@@ -683,6 +738,27 @@ extension iccProfile {
         
         @_versioned
         var f: S15Fixed16Number
+        
+        @_versioned
+        init(funcType: BEUInt16,
+             gamma: S15Fixed16Number,
+             a: S15Fixed16Number,
+             b: S15Fixed16Number,
+             c: S15Fixed16Number,
+             d: S15Fixed16Number,
+             e: S15Fixed16Number,
+             f: S15Fixed16Number) {
+            
+            self.funcType = funcType
+            self.padding = 0
+            self.gamma = gamma
+            self.a = a
+            self.b = b
+            self.c = c
+            self.d = d
+            self.e = e
+            self.f = f
+        }
     }
 }
 
