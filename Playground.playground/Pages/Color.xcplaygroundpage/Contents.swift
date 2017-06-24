@@ -3,7 +3,7 @@
 import Cocoa
 import Doggie
 
-let D50 = ColorSpace.cieXYZ(white: XYZColorModel(luminance: 1, x: 0.34567, y: 0.35850))
+let D50 = ColorSpace.cieXYZ(white: Point(x: 0.34567, y: 0.35850))
 
 ColorSpace.adobeRGB.convert(RGBColorModel(red: 0.5, green: 0, blue: 0), to: D50)
 

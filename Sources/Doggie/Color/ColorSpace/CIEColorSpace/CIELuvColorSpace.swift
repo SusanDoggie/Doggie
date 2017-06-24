@@ -34,12 +34,7 @@ extension ColorSpace where Model == LuvColorModel {
     
     @_inlineable
     public static func cieLuv(white: Point) -> ColorSpace {
-        return cieLuv(white: XYZColorModel(luminance: 1, x: white.x, y: white.y))
-    }
-    
-    @_inlineable
-    public static func cieLuv(white: XYZColorModel, black: XYZColorModel = XYZColorModel(x: 0, y: 0, z: 0)) -> ColorSpace {
-        return ColorSpace(base: CIELuvColorSpace(CIEXYZColorSpace(white: white, black: black)))
+        return ColorSpace(base: CIELuvColorSpace(CIEXYZColorSpace(white: white)))
     }
 }
 

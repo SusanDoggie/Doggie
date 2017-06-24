@@ -32,12 +32,7 @@ extension ColorSpace where Model == XYZColorModel {
     
     @_inlineable
     public static func cieXYZ(white: Point) -> ColorSpace {
-        return cieXYZ(white: XYZColorModel(luminance: 1, x: white.x, y: white.y))
-    }
-    
-    @_inlineable
-    public static func cieXYZ(white: XYZColorModel, black: XYZColorModel = XYZColorModel(x: 0, y: 0, z: 0)) -> ColorSpace {
-        return ColorSpace(base: CIEXYZColorSpace(white: white, black: black))
+        return ColorSpace(base: CIEXYZColorSpace(white: white))
     }
 }
 
@@ -52,6 +47,12 @@ struct CIEXYZColorSpace : ColorSpaceBaseProtocol {
     
     @_versioned
     let black: Model
+    
+    @_versioned
+    @_inlineable
+    init(white: Point) {
+        self.init(white: XYZColorModel(luminance: 1, x: white.x, y: white.y), black: XYZColorModel())
+    }
     
     @_versioned
     @_inlineable

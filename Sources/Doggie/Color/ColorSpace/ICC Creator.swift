@@ -25,9 +25,6 @@
 
 import Foundation
 
-@_versioned
-let PCSXYZ = CIEXYZColorSpace(white: XYZColorModel(luminance: 1, x: 0.34567, y: 0.35850), black: XYZColorModel())
-
 extension iccProfile {
     
     @_versioned
@@ -132,9 +129,9 @@ extension CIEXYZColorSpace {
         
         profile.setMessage(.Copyright, ("en", "US", "Copyright (c) 2015 - 2017 Susan Cheng. All rights reserved."))
         
-        profile.setXYZ(.MediaWhitePoint, iccProfile.XYZNumber(self.cieXYZ.normalized.white))
+        profile.setXYZ(.MediaWhitePoint, iccProfile.XYZNumber(self.cieXYZ.white))
         
-        let chromaticAdaptationMatrix = self.cieXYZ.normalized.chromaticAdaptationMatrix(to: PCSXYZ, .default)
+        let chromaticAdaptationMatrix = self.cieXYZ.chromaticAdaptationMatrix(to: PCSXYZ, .default)
         
         profile.setFloat(.ChromaticAdaptation,
                          iccProfile.S15Fixed16Number(value: chromaticAdaptationMatrix.a), iccProfile.S15Fixed16Number(value: chromaticAdaptationMatrix.b), iccProfile.S15Fixed16Number(value: chromaticAdaptationMatrix.c),

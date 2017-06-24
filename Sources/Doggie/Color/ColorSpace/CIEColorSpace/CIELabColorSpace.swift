@@ -34,12 +34,7 @@ extension ColorSpace where Model == LabColorModel {
     
     @_inlineable
     public static func cieLab(white: Point) -> ColorSpace {
-        return cieLab(white: XYZColorModel(luminance: 1, x: white.x, y: white.y))
-    }
-    
-    @_inlineable
-    public static func cieLab(white: XYZColorModel, black: XYZColorModel = XYZColorModel(x: 0, y: 0, z: 0)) -> ColorSpace {
-        return ColorSpace(base: CIELabColorSpace(CIEXYZColorSpace(white: white, black: black)))
+        return ColorSpace(base: CIELabColorSpace(CIEXYZColorSpace(white: white)))
     }
 }
 

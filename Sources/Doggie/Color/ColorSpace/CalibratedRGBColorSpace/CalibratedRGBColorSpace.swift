@@ -29,22 +29,17 @@ extension ColorSpace where Model == RGBColorModel {
     
     @_inlineable
     public static func calibratedRGB(white: Point, red: Point, green: Point, blue: Point) -> ColorSpace {
-        return calibratedRGB(white: XYZColorModel(luminance: 1, x: white.x, y: white.y), black: XYZColorModel(x: 0, y: 0, z: 0), red: red, green: green, blue: blue)
+        return ColorSpace(base: CalibratedRGBColorSpace(CIEXYZColorSpace(white: white), red: red, green: green, blue: blue))
     }
     
     @_inlineable
-    public static func calibratedRGB(white: XYZColorModel, black: XYZColorModel = XYZColorModel(x: 0, y: 0, z: 0), red: Point, green: Point, blue: Point) -> ColorSpace {
-        return ColorSpace(base: CalibratedRGBColorSpace(CIEXYZColorSpace(white: white, black: black), red: red, green: green, blue: blue))
+    public static func calibratedRGB(white: Point, red: Point, green: Point, blue: Point, gamma: Double) -> ColorSpace {
+        return ColorSpace(base: CalibratedGammaRGBColorSpace(CIEXYZColorSpace(white: white), red: red, green: green, blue: blue, gamma: (gamma, gamma, gamma)))
     }
     
     @_inlineable
-    public static func calibratedRGB(white: XYZColorModel, black: XYZColorModel = XYZColorModel(x: 0, y: 0, z: 0), red: Point, green: Point, blue: Point, gamma: Double) -> ColorSpace {
-        return ColorSpace(base: CalibratedGammaRGBColorSpace(CIEXYZColorSpace(white: white, black: black), red: red, green: green, blue: blue, gamma: (gamma, gamma, gamma)))
-    }
-    
-    @_inlineable
-    public static func calibratedRGB(white: XYZColorModel, black: XYZColorModel = XYZColorModel(x: 0, y: 0, z: 0), red: Point, green: Point, blue: Point, gamma: (Double, Double, Double)) -> ColorSpace {
-        return ColorSpace(base: CalibratedGammaRGBColorSpace(CIEXYZColorSpace(white: white, black: black), red: red, green: green, blue: blue, gamma: gamma))
+    public static func calibratedRGB(white: Point, red: Point, green: Point, blue: Point, gamma: (Double, Double, Double)) -> ColorSpace {
+        return ColorSpace(base: CalibratedGammaRGBColorSpace(CIEXYZColorSpace(white: white), red: red, green: green, blue: blue, gamma: gamma))
     }
 }
 

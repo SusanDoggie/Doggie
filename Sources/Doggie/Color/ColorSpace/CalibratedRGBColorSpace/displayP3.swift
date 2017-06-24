@@ -32,7 +32,7 @@ class _displayP3: CalibratedRGBColorSpace {
     @_versioned
     @_inlineable
     init() {
-        super.init(CIEXYZColorSpace(white: XYZColorModel(luminance: 1, x: 0.3127, y: 0.3290), black: XYZColorModel(luminance: 0, x: 0.3127, y: 0.3290)), red: Point(x: 0.6800, y: 0.3200), green: Point(x: 0.2650, y: 0.6900), blue: Point(x: 0.1500, y: 0.0600))
+        super.init(CIEXYZColorSpace(white: Point(x: 0.3127, y: 0.3290)), red: Point(x: 0.6800, y: 0.3200), green: Point(x: 0.2650, y: 0.6900), blue: Point(x: 0.1500, y: 0.0600))
     }
     
     @_versioned

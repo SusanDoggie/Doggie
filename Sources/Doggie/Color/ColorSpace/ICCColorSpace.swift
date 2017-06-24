@@ -26,6 +26,9 @@
 import Foundation
 
 @_versioned
+let PCSXYZ = CIEXYZColorSpace(white: Point(x: 0.34567, y: 0.35850))
+
+@_versioned
 protocol PCSColorModel : ColorModelProtocol {
     
     var luminance: Double { get set }
@@ -459,6 +462,9 @@ struct ICCColorSpace<Model : ColorModelProtocol, Connection : ColorSpaceBaseProt
     let connection : Connection
     
     @_versioned
+    let cieXYZ : CIEXYZColorSpace
+    
+    @_versioned
     let a2b: iccTransform
     
     @_versioned
@@ -469,10 +475,11 @@ struct ICCColorSpace<Model : ColorModelProtocol, Connection : ColorSpaceBaseProt
     
     @_versioned
     @_inlineable
-    init(iccData: Data, profile: iccProfile, connection : Connection, a2b: iccTransform, b2a: iccTransform, chromaticAdaptationMatrix: Matrix) {
+    init(iccData: Data, profile: iccProfile, connection : Connection, cieXYZ : CIEXYZColorSpace, a2b: iccTransform, b2a: iccTransform, chromaticAdaptationMatrix: Matrix) {
         self._iccData = iccData
         self.profile = profile
         self.connection = connection
+        self.cieXYZ = cieXYZ
         self.a2b = a2b
         self.b2a = b2a
         self.chromaticAdaptationMatrix = chromaticAdaptationMatrix
@@ -699,64 +706,25 @@ extension ColorSpace {
             }
         }
         
-        let luminance: Double
-        
         let cieXYZ: CIEXYZColorSpace
         
-        let PCSXYZ = CIEXYZColorSpace(white: XYZColorModel(x: profile.header.illuminant.x.value, y: profile.header.illuminant.y.value, z: profile.header.illuminant.z.value), black: XYZColorModel())
-        
         if let white = profile[.MediaWhitePoint]?.XYZArray?.first {
-            luminance = white.y.value
-            if let black = profile[.MediaBlackPoint]?.XYZArray?.first {
-                cieXYZ = CIEXYZColorSpace(white: XYZColorModel(x: white.x.value, y: white.y.value, z: white.z.value), black: XYZColorModel(x: black.x.value, y: black.y.value, z: black.z.value))
-            } else {
-                cieXYZ = CIEXYZColorSpace(white: XYZColorModel(x: white.x.value, y: white.y.value, z: white.z.value), black: XYZColorModel())
-            }
+            cieXYZ = CIEXYZColorSpace(white: XYZColorModel(x: white.x.value, y: white.y.value, z: white.z.value), black: XYZColorModel())
         } else {
-            luminance = profile.header.illuminant.y.value
-            cieXYZ = PCSXYZ
+            throw AnyColorSpace.ICCError.invalidFormat(message: "MediaWhitePoint not found.")
         }
         
-        let chromaticAdaptationMatrix: Matrix
-        
-        if let matrix = profile[.ChromaticAdaptation]?.s15Fixed16Array, matrix.count == 9 {
-            
-            var matrix = Matrix(a: matrix[0].value, b: matrix[1].value, c: matrix[2].value, d: 0,
-                                e: matrix[3].value, f: matrix[4].value, g: matrix[5].value, h: 0,
-                                i: matrix[6].value, j: matrix[7].value, k: matrix[8].value, l: 0)
-            
-            let s = 1 / (matrix.e + matrix.f + matrix.g)
-            
-            matrix.a *= s
-            matrix.b *= s
-            matrix.c *= s
-            matrix.e *= s
-            matrix.f *= s
-            matrix.g *= s
-            matrix.i *= s
-            matrix.j *= s
-            matrix.k *= s
-            
-            chromaticAdaptationMatrix = matrix
-        } else {
-            chromaticAdaptationMatrix = cieXYZ.chromaticAdaptationMatrix(to: PCSXYZ, .default) * Matrix.scale(luminance)
-        }
+        let chromaticAdaptationMatrix = cieXYZ.chromaticAdaptationMatrix(to: PCSXYZ, .default)
         
         switch profile.header.pcs {
-        case .XYZ: self.base = ICCColorSpace<Model, CIEXYZColorSpace>(iccData: iccData, profile: profile, connection: cieXYZ, a2b: a2b, b2a: b2a, chromaticAdaptationMatrix: chromaticAdaptationMatrix)
-        case .Lab: self.base = ICCColorSpace<Model, CIELabColorSpace>(iccData: iccData, profile: profile, connection: CIELabColorSpace(cieXYZ), a2b: a2b, b2a: b2a, chromaticAdaptationMatrix: chromaticAdaptationMatrix)
+        case .XYZ: self.base = ICCColorSpace<Model, CIEXYZColorSpace>(iccData: iccData, profile: profile, connection: PCSXYZ, cieXYZ: cieXYZ, a2b: a2b, b2a: b2a, chromaticAdaptationMatrix: chromaticAdaptationMatrix)
+        case .Lab: self.base = ICCColorSpace<Model, CIELabColorSpace>(iccData: iccData, profile: profile, connection: CIELabColorSpace(PCSXYZ), cieXYZ: cieXYZ, a2b: a2b, b2a: b2a, chromaticAdaptationMatrix: chromaticAdaptationMatrix)
         default: throw AnyColorSpace.ICCError.invalidFormat(message: "Invalid PCS.")
         }
     }
 }
 
 extension ICCColorSpace {
-    
-    @_versioned
-    @_inlineable
-    var cieXYZ: CIEXYZColorSpace {
-        return connection.cieXYZ
-    }
     
     @_versioned
     @_inlineable
@@ -782,7 +750,9 @@ extension ICCColorSpace {
             result.setComponent(1, curve.1.eval(color.component(1)))
             result.setComponent(2, curve.2.eval(color.component(2)))
             
-        case .LUT0: return color
+        case let .LUT0(_, curve, _, _):
+            
+            result = curve.eval(color)
             
         case let .LUT1(curve):
             
@@ -845,7 +815,9 @@ extension ICCColorSpace {
             result.setComponent(1, curve.1.eval(color.component(1)))
             result.setComponent(2, curve.2.eval(color.component(2)))
             
-        case .LUT0: return color
+        case let .LUT0(_, _, _, curve):
+            
+            result = curve.eval(color)
             
         case let .LUT1(curve):
             
@@ -913,9 +885,7 @@ extension ICCColorSpace {
             
             result *= matrix
             
-        case let .LUT0(matrix, i, lut, o):
-            
-            color = i.eval(color)
+        case let .LUT0(matrix, _, lut, o):
             
             result = lut.eval(color)
             
@@ -1008,7 +978,7 @@ extension ICCColorSpace {
             result.setComponent(1, color.component(1))
             result.setComponent(2, color.component(2))
             
-        case let .LUT0(matrix, i, lut, o):
+        case let .LUT0(matrix, i, lut, _):
             
             if color is XYZColorModel {
                 color *= matrix
@@ -1017,8 +987,6 @@ extension ICCColorSpace {
             color = i.eval(color)
             
             result = lut.eval(color)
-            
-            result = o.eval(result)
             
         case .LUT1:
             

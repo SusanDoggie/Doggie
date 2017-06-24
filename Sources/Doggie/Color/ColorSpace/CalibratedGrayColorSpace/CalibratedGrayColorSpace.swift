@@ -34,17 +34,12 @@ extension ColorSpace where Model == GrayColorModel {
     
     @_inlineable
     public static func calibratedGray(white: Point) -> ColorSpace {
-        return calibratedGray(white: XYZColorModel(luminance: 1, x: white.x, y: white.y))
+        return ColorSpace(base: CalibratedGrayColorSpace(CIEXYZColorSpace(white: white)))
     }
     
     @_inlineable
-    public static func calibratedGray(white: XYZColorModel, black: XYZColorModel = XYZColorModel(x: 0, y: 0, z: 0)) -> ColorSpace {
-        return ColorSpace(base: CalibratedGrayColorSpace(CIEXYZColorSpace(white: white, black: black)))
-    }
-    
-    @_inlineable
-    public static func calibratedGray(white: XYZColorModel, black: XYZColorModel = XYZColorModel(x: 0, y: 0, z: 0), gamma: Double) -> ColorSpace {
-        return ColorSpace(base: CalibratedGammaGrayColorSpace(CIEXYZColorSpace(white: white, black: black), gamma: gamma))
+    public static func calibratedGray(white: Point, gamma: Double) -> ColorSpace {
+        return ColorSpace(base: CalibratedGammaGrayColorSpace(CIEXYZColorSpace(white: white), gamma: gamma))
     }
 }
 
