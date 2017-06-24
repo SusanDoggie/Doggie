@@ -733,7 +733,19 @@ extension ColorSpace {
         let cieXYZ: CIEXYZColorSpace
         
         if let white = profile[.MediaWhitePoint]?.XYZArray?.first {
-            cieXYZ = CIEXYZColorSpace(white: XYZColorModel(x: white.x.value, y: white.y.value, z: white.z.value))
+            if let black = profile[.MediaBlackPoint]?.XYZArray?.first {
+                if let luminance = profile[.Luminance]?.XYZArray?.first?.y {
+                    cieXYZ = CIEXYZColorSpace(white: XYZColorModel(x: white.x.value, y: white.y.value, z: white.z.value), black: XYZColorModel(x: black.x.value, y: black.y.value, z: black.z.value), luminance: luminance.value)
+                } else {
+                    cieXYZ = CIEXYZColorSpace(white: XYZColorModel(x: white.x.value, y: white.y.value, z: white.z.value), black: XYZColorModel(x: black.x.value, y: black.y.value, z: black.z.value))
+                }
+            } else {
+                if let luminance = profile[.Luminance]?.XYZArray?.first?.y {
+                    cieXYZ = CIEXYZColorSpace(white: XYZColorModel(x: white.x.value, y: white.y.value, z: white.z.value), luminance: luminance.value)
+                } else {
+                    cieXYZ = CIEXYZColorSpace(white: XYZColorModel(x: white.x.value, y: white.y.value, z: white.z.value))
+                }
+            }
         } else {
             throw AnyColorSpace.ICCError.invalidFormat(message: "MediaWhitePoint not found.")
         }
