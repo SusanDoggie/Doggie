@@ -94,8 +94,8 @@ class CalibratedRGBColorSpace : ColorSpaceBaseProtocol {
     
     @_versioned
     @_inlineable
-    func iccParametricCurve(_ index: Int) -> iccProfile.ParametricCurve {
-        return iccProfile.ParametricCurve(funcType: 0, gamma: 1, a: 0, b: 0, c: 0, d: 0, e: 0, f: 0)
+    func iccCurve(_ index: Int) -> ICCCurve {
+        return .identity
     }
 }
 
@@ -152,11 +152,11 @@ class CalibratedGammaRGBColorSpace: CalibratedRGBColorSpace {
     
     @_versioned
     @_inlineable
-    override func iccParametricCurve(_ index: Int) -> iccProfile.ParametricCurve {
+    override func iccCurve(_ index: Int) -> ICCCurve {
         switch index {
-        case 0: return iccProfile.ParametricCurve(funcType: 0, gamma: iccProfile.S15Fixed16Number(value: gamma.0), a: 0, b: 0, c: 0, d: 0, e: 0, f: 0)
-        case 1: return iccProfile.ParametricCurve(funcType: 0, gamma: iccProfile.S15Fixed16Number(value: gamma.1), a: 0, b: 0, c: 0, d: 0, e: 0, f: 0)
-        case 2: return iccProfile.ParametricCurve(funcType: 0, gamma: iccProfile.S15Fixed16Number(value: gamma.2), a: 0, b: 0, c: 0, d: 0, e: 0, f: 0)
+        case 0: return .gamma(gamma.0)
+        case 1: return .gamma(gamma.1)
+        case 2: return .gamma(gamma.2)
         default: fatalError()
         }
     }

@@ -262,7 +262,10 @@ enum ICCCurve {
     
     case identity
     case gamma(Double)
-    case parametric(Double, Double, Double, Double, Double, Double, Double)
+    case parametric1(Double, Double, Double)
+    case parametric2(Double, Double, Double, Double)
+    case parametric3(Double, Double, Double, Double, Double)
+    case parametric4(Double, Double, Double, Double, Double, Double, Double)
     case table([Double])
     case inverse_table([Double])
 }
@@ -286,10 +289,10 @@ extension ICCCurve {
             
             switch curve.funcType {
             case 0: self = .gamma(curve.gamma.value)
-            case 1: self = .parametric(curve.gamma.value, curve.a.value, curve.b.value, 0, -curve.b.value / curve.a.value, 0, 0)
-            case 2: self = .parametric(curve.gamma.value, curve.a.value, curve.b.value, 0, -curve.b.value / curve.a.value, curve.c.value, curve.c.value)
-            case 3: self = .parametric(curve.gamma.value, curve.a.value, curve.b.value, curve.c.value, curve.d.value, 0, 0)
-            case 4: self = .parametric(curve.gamma.value, curve.a.value, curve.b.value, curve.c.value, curve.d.value, curve.e.value, curve.f.value)
+            case 1: self = .parametric1(curve.gamma.value, curve.a.value, curve.b.value)
+            case 2: self = .parametric2(curve.gamma.value, curve.a.value, curve.b.value, curve.c.value)
+            case 3: self = .parametric3(curve.gamma.value, curve.a.value, curve.b.value, curve.c.value, curve.d.value)
+            case 4: self = .parametric4(curve.gamma.value, curve.a.value, curve.b.value, curve.c.value, curve.d.value, curve.e.value, curve.f.value)
             default: return nil
             }
         } else {
@@ -306,14 +309,17 @@ extension ICCCurve {
         switch self {
         case .identity: return .identity
         case let .gamma(gamma): return .gamma(1 / gamma)
-        case let .parametric(gamma, a, b, c, d, e, f):
+        case let .parametric1(gamma, a, b): return ICCCurve.parametric4(gamma, a, b, 0, -b / a, 0, 0).inverse
+        case let .parametric2(gamma, a, b, c): return ICCCurve.parametric4(gamma, a, b, 0, -b / a, c, c).inverse
+        case let .parametric3(gamma, a, b, c, d): return ICCCurve.parametric4(gamma, a, b, c, d, 0, 0).inverse
+        case let .parametric4(gamma, a, b, c, d, e, f):
             let _a = pow(a, -gamma)
             let _b = -e * _a
             let _c = c == 0 ? 0 : 1 / c
             let _d = c * d + f
-            let _e = -b / a
+            let _e = a == 0 ? 0 : -b / a
             let _f = c == 0 ? 0 : -f / c
-            return .parametric(1 / gamma, _a, _b, _c, _d, _e, _f)
+            return .parametric4(1 / gamma, _a, _b, _c, _d, _e, _f)
         case let .table(points): return .inverse_table(points)
         case let .inverse_table(points): return .table(points)
         }
@@ -329,7 +335,25 @@ extension ICCCurve {
         switch self {
         case .identity: return x
         case let .gamma(gamma): return pow(x, gamma)
-        case let .parametric(gamma, a, b, c, d, e, f):
+        case let .parametric1(gamma, a, b):
+            if x < -b / a {
+                return 0
+            } else {
+                return pow(a * x + b, gamma)
+            }
+        case let .parametric2(gamma, a, b, c):
+            if x < -b / a {
+                return c
+            } else {
+                return pow(a * x + b, gamma) + c
+            }
+        case let .parametric3(gamma, a, b, c, d):
+            if x < d {
+                return c * x
+            } else {
+                return pow(a * x + b, gamma)
+            }
+        case let .parametric4(gamma, a, b, c, d, e, f):
             if x < d {
                 return c * x + f
             } else {
@@ -908,6 +932,9 @@ extension ICCColorSpace {
             result.setComponent(2, color.component(2))
             
             result *= matrix
+            if result is XYZColorModel {
+                result *= 65535.0 / 32768.0
+            }
             
             result.setComponent(0, B.0.eval(result.component(0)))
             result.setComponent(1, B.1.eval(result.component(1)))
@@ -930,6 +957,9 @@ extension ICCColorSpace {
             result.setComponent(2, M.2.eval(result.component(2)))
             
             result *= matrix
+            if result is XYZColorModel {
+                result *= 65535.0 / 32768.0
+            }
             
             result.setComponent(0, B.0.eval(result.component(0)))
             result.setComponent(1, B.1.eval(result.component(1)))
@@ -1000,6 +1030,9 @@ extension ICCColorSpace {
             color.setComponent(1, B.1.eval(color.component(1)))
             color.setComponent(2, B.2.eval(color.component(2)))
             
+            if color is XYZColorModel {
+                color *= 32768.0 / 65535.0
+            }
             color *= matrix
             
             result.setComponent(0, color.component(0))
@@ -1020,6 +1053,9 @@ extension ICCColorSpace {
             color.setComponent(1, B.1.eval(color.component(1)))
             color.setComponent(2, B.2.eval(color.component(2)))
             
+            if color is XYZColorModel {
+                color *= 32768.0 / 65535.0
+            }
             color *= matrix
             
             color.setComponent(0, M.0.eval(color.component(0)))

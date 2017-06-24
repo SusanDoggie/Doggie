@@ -77,12 +77,43 @@ extension iccProfile {
         self[tag] = TagData(rawData: data)
     }
     
-    @_versioned
-    mutating func setParametricCurve(_ tag: TagSignature, curve: ParametricCurve) {
+    private func curveData(curve: ICCCurve) -> Data {
+        
+        switch curve {
+        case .identity:
+            
+            var data = Data(count: 12)
+            
+            data.withUnsafeMutableBytes { $0.pointee = (iccProfile.TagData.Type.Curve, 0 as BEUInt32, 0 as BEUInt32) }
+            
+            return data
+            
+        case let .gamma(gamma): return parametricCurveData(curve: ParametricCurve(funcType: 0, gamma: S15Fixed16Number(value: gamma), a: 0, b: 0, c: 0, d: 0, e: 0, f: 0))
+        case let .parametric1(gamma, a, b): return parametricCurveData(curve: ParametricCurve(funcType: 1, gamma: S15Fixed16Number(value: gamma), a: S15Fixed16Number(value: a), b: S15Fixed16Number(value: b), c: 0, d: 0, e: 0, f: 0))
+        case let .parametric2(gamma, a, b, c): return parametricCurveData(curve: ParametricCurve(funcType: 2, gamma: S15Fixed16Number(value: gamma), a: S15Fixed16Number(value: a), b: S15Fixed16Number(value: b), c: S15Fixed16Number(value: c), d: 0, e: 0, f: 0))
+        case let .parametric3(gamma, a, b, c, d): return parametricCurveData(curve: ParametricCurve(funcType: 3, gamma: S15Fixed16Number(value: gamma), a: S15Fixed16Number(value: a), b: S15Fixed16Number(value: b), c: S15Fixed16Number(value: c), d: S15Fixed16Number(value: d), e: 0, f: 0))
+        case let .parametric4(gamma, a, b, c, d, e, f): return parametricCurveData(curve: ParametricCurve(funcType: 4, gamma: S15Fixed16Number(value: gamma), a: S15Fixed16Number(value: a), b: S15Fixed16Number(value: b), c: S15Fixed16Number(value: c), d: S15Fixed16Number(value: d), e: S15Fixed16Number(value: e), f: S15Fixed16Number(value: f)))
+        case let .table(points):
+            
+            var data = Data(count: 12)
+            
+            data.withUnsafeMutableBytes { $0.pointee = (iccProfile.TagData.Type.Curve, 0 as BEUInt32, BEUInt32(points.count)) }
+            
+            data.append(UnsafeBufferPointer(start: points.map { BEUInt16(($0 * 65535).clamped(to: 0...65535)) }, count: points.count))
+            
+            return data
+            
+        default: break
+        }
+        
+        return Data()
+    }
+    
+    private func parametricCurveData(curve: ParametricCurve) -> Data {
         
         var data = Data(count: 12)
         
-        data.withUnsafeMutableBytes { $0.pointee = (iccProfile.TagData.Type.ParametricCurve, 0 as BEUInt32, curve.funcType, 0 as BEUInt32) }
+        data.withUnsafeMutableBytes { $0.pointee = (iccProfile.TagData.Type.ParametricCurve, 0 as BEUInt32, curve.funcType, 0 as BEUInt16) }
         
         switch curve.funcType {
         case 0: data.append(UnsafeBufferPointer(start: [curve.gamma], count: 1))
@@ -93,7 +124,109 @@ extension iccProfile {
         default: fatalError()
         }
         
-        self[tag] = TagData(rawData: data)
+        return data
+    }
+    
+    @_versioned
+    mutating func setLutAtoB(_ tag: TagSignature, B: [ICCCurve]) {
+        
+        var B_data = Data()
+        
+        for curve in B {
+            B_data.append(curveData(curve: curve))
+            B_data.count = B_data.count.align(4)
+        }
+        
+        let header_size = MemoryLayout<LutAtoB>.stride + 8
+        
+        var header = Data(count: header_size)
+        
+        header.withUnsafeMutableBytes { $0.pointee = (iccProfile.TagData.Type.LutAtoB, 0 as BEUInt32, LutAtoB(inputChannels: 3, outputChannels: 3, padding1: 0, padding2: 0, offsetB: BEUInt32(header_size), offsetMatrix: 0, offsetM: 0, offsetCLUT: 0, offsetA: 0)) }
+        
+        self[tag] = TagData(rawData: header + B_data)
+    }
+    
+    @_versioned
+    mutating func setLutBtoA(_ tag: TagSignature, B: [ICCCurve]) {
+        
+        var B_data = Data()
+        
+        for curve in B {
+            B_data.append(curveData(curve: curve))
+            B_data.count = B_data.count.align(4)
+        }
+        
+        let header_size = MemoryLayout<LutBtoA>.stride + 8
+        
+        var header = Data(count: header_size)
+        
+        header.withUnsafeMutableBytes { $0.pointee = (iccProfile.TagData.Type.LutBtoA, 0 as BEUInt32, LutBtoA(inputChannels: 3, outputChannels: 3, padding1: 0, padding2: 0, offsetB: BEUInt32(header_size), offsetMatrix: 0, offsetM: 0, offsetCLUT: 0, offsetA: 0)) }
+        
+        self[tag] = TagData(rawData: header + B_data)
+    }
+    
+    @_versioned
+    mutating func setLutAtoB(_ tag: TagSignature, B: [ICCCurve], matrix: Matrix, M: [ICCCurve]) {
+        
+        var B_data = Data()
+        
+        for curve in B {
+            B_data.append(curveData(curve: curve))
+            B_data.count = B_data.count.align(4)
+        }
+        
+        var matrix_data = Data(count: MemoryLayout<Matrix3x4>.stride)
+        matrix_data.withUnsafeMutableBytes { $0.pointee = Matrix3x4(matrix) }
+        
+        var M_data = Data()
+        
+        for curve in M {
+            M_data.append(curveData(curve: curve))
+            M_data.count = M_data.count.align(4)
+        }
+        
+        let header_size = MemoryLayout<LutAtoB>.stride + 8
+        
+        var header = Data(count: header_size)
+        
+        header.withUnsafeMutableBytes { $0.pointee = (iccProfile.TagData.Type.LutAtoB, 0 as BEUInt32, LutAtoB(inputChannels: 3, outputChannels: 3, padding1: 0, padding2: 0, offsetB: BEUInt32(header_size), offsetMatrix: BEUInt32(header_size + B_data.count), offsetM: BEUInt32(header_size + B_data.count + matrix_data.count), offsetCLUT: 0, offsetA: 0)) }
+        
+        self[tag] = TagData(rawData: header + B_data + matrix_data + M_data)
+    }
+    
+    @_versioned
+    mutating func setLutBtoA(_ tag: TagSignature, B: [ICCCurve], matrix: Matrix, M: [ICCCurve]) {
+        
+        var B_data = Data()
+        
+        for curve in B {
+            B_data.append(curveData(curve: curve))
+            B_data.count = B_data.count.align(4)
+        }
+        
+        var matrix_data = Data(count: MemoryLayout<Matrix3x4>.stride)
+        matrix_data.withUnsafeMutableBytes { $0.pointee = Matrix3x4(matrix) }
+        
+        var M_data = Data()
+        
+        for curve in M {
+            M_data.append(curveData(curve: curve))
+            M_data.count = M_data.count.align(4)
+        }
+        
+        let header_size = MemoryLayout<LutBtoA>.stride + 8
+        
+        var header = Data(count: header_size)
+        
+        header.withUnsafeMutableBytes { $0.pointee = (iccProfile.TagData.Type.LutBtoA, 0 as BEUInt32, LutBtoA(inputChannels: 3, outputChannels: 3, padding1: 0, padding2: 0, offsetB: BEUInt32(header_size), offsetMatrix: BEUInt32(header_size + B_data.count), offsetM: BEUInt32(header_size + B_data.count + matrix_data.count), offsetCLUT: 0, offsetA: 0)) }
+        
+        self[tag] = TagData(rawData: header + B_data + matrix_data + M_data)
+    }
+    
+    @_versioned
+    mutating func setCurve(_ tag: TagSignature, curve: ICCCurve) {
+        
+        self[tag] = TagData(rawData: curveData(curve: curve))
     }
 }
 
@@ -101,7 +234,7 @@ extension CIEXYZColorSpace {
     
     @_versioned
     @_inlineable
-    func _iccProfile(deviceClass: iccProfile.Header.ClassSignature, colorSpace: iccProfile.Header.ColorSpaceSignature) -> iccProfile {
+    func _iccProfile(deviceClass: iccProfile.Header.ClassSignature, colorSpace: iccProfile.Header.ColorSpaceSignature, pcs: iccProfile.Header.ColorSpaceSignature) -> iccProfile {
         
         let date = Calendar(identifier: .gregorian).dateComponents(in: TimeZone(secondsFromGMT: 0)!, from: Date())
         
@@ -109,7 +242,7 @@ extension CIEXYZColorSpace {
                                        version: 0x04300000,
                                        deviceClass: deviceClass,
                                        colorSpace: colorSpace,
-                                       pcs: .XYZ,
+                                       pcs: pcs,
                                        date: iccProfile.DateTimeNumber(year: BEUInt16(date.year!),
                                                                        month: BEUInt16(date.month!),
                                                                        day: BEUInt16(date.day!),
@@ -129,9 +262,9 @@ extension CIEXYZColorSpace {
         
         profile.setMessage(.Copyright, ("en", "US", "Copyright (c) 2015 - 2017 Susan Cheng. All rights reserved."))
         
-        profile.setXYZ(.MediaWhitePoint, iccProfile.XYZNumber(self.cieXYZ.white))
+        profile.setXYZ(.MediaWhitePoint, iccProfile.XYZNumber(self.white))
         
-        let chromaticAdaptationMatrix = self.cieXYZ.chromaticAdaptationMatrix(to: PCSXYZ, .default)
+        let chromaticAdaptationMatrix = self.chromaticAdaptationMatrix(to: PCSXYZ, .default)
         
         profile.setFloat(.ChromaticAdaptation,
                          iccProfile.S15Fixed16Number(value: chromaticAdaptationMatrix.a), iccProfile.S15Fixed16Number(value: chromaticAdaptationMatrix.b), iccProfile.S15Fixed16Number(value: chromaticAdaptationMatrix.c),
@@ -142,17 +275,51 @@ extension CIEXYZColorSpace {
     }
 }
 
+extension CIEXYZColorSpace {
+    
+    @_versioned
+    @_inlineable
+    var iccData: Data? {
+        
+        var profile = cieXYZ._iccProfile(deviceClass: .display, colorSpace: .XYZ, pcs: .XYZ)
+        
+        profile.setMessage(.ProfileDescription, ("en", "US", "Doggie CIE XYZ Color Space"))
+        
+        profile.setLutAtoB(.AToB0, B: [.identity, .identity, .identity])
+        profile.setLutBtoA(.BToA0, B: [.identity, .identity, .identity])
+        
+        return profile.data
+    }
+}
+
+extension CIELabColorSpace {
+    
+    @_versioned
+    @_inlineable
+    var iccData: Data? {
+        
+        var profile = cieXYZ._iccProfile(deviceClass: .display, colorSpace: .Lab, pcs: .Lab)
+        
+        profile.setMessage(.ProfileDescription, ("en", "US", "Doggie CIE Lab Color Space"))
+        
+        profile.setLutAtoB(.AToB0, B: [.identity, .identity, .identity])
+        profile.setLutBtoA(.BToA0, B: [.identity, .identity, .identity])
+        
+        return profile.data
+    }
+}
+
 extension CalibratedGrayColorSpace {
     
     @_versioned
     @_inlineable
     var iccData: Data? {
         
-        var profile = cieXYZ._iccProfile(deviceClass: .display, colorSpace: .Gray)
+        var profile = cieXYZ._iccProfile(deviceClass: .display, colorSpace: .Gray, pcs: .XYZ)
         
         profile.setMessage(.ProfileDescription, ("en", "US", "Doggie Calibrated Gray Color Space"))
         
-        profile.setParametricCurve(.GrayTRC, curve: iccParametricCurve())
+        profile.setCurve(.GrayTRC, curve: iccCurve())
         
         return profile.data
     }
@@ -164,19 +331,27 @@ extension CalibratedRGBColorSpace {
     @_inlineable
     var iccData: Data? {
         
-        var profile = cieXYZ._iccProfile(deviceClass: .display, colorSpace: .Rgb)
+        var profile = cieXYZ._iccProfile(deviceClass: .display, colorSpace: .Rgb, pcs: .XYZ)
         
         profile.setMessage(.ProfileDescription, ("en", "US", "Doggie Calibrated RGB Color Space"))
         
-        let matrix = transferMatrix * self.cieXYZ.chromaticAdaptationMatrix(to: PCSXYZ, .default)
+        var matrix = transferMatrix * self.cieXYZ.chromaticAdaptationMatrix(to: PCSXYZ, .default)
         
-        profile.setXYZ(.RedColorant, iccProfile.XYZNumber(x: iccProfile.S15Fixed16Number(value: matrix.a), y: iccProfile.S15Fixed16Number(value: matrix.e), z: iccProfile.S15Fixed16Number(value: matrix.i)))
-        profile.setXYZ(.GreenColorant, iccProfile.XYZNumber(x: iccProfile.S15Fixed16Number(value: matrix.b), y: iccProfile.S15Fixed16Number(value: matrix.f), z: iccProfile.S15Fixed16Number(value: matrix.j)))
-        profile.setXYZ(.BlueColorant, iccProfile.XYZNumber(x: iccProfile.S15Fixed16Number(value: matrix.c), y: iccProfile.S15Fixed16Number(value: matrix.g), z: iccProfile.S15Fixed16Number(value: matrix.k)))
+        matrix.a *= 32768.0 / 65535.0
+        matrix.b *= 32768.0 / 65535.0
+        matrix.c *= 32768.0 / 65535.0
+        matrix.d *= 32768.0 / 65535.0
+        matrix.e *= 32768.0 / 65535.0
+        matrix.f *= 32768.0 / 65535.0
+        matrix.g *= 32768.0 / 65535.0
+        matrix.h *= 32768.0 / 65535.0
+        matrix.i *= 32768.0 / 65535.0
+        matrix.j *= 32768.0 / 65535.0
+        matrix.k *= 32768.0 / 65535.0
+        matrix.l *= 32768.0 / 65535.0
         
-        profile.setParametricCurve(.RedTRC, curve: iccParametricCurve(0))
-        profile.setParametricCurve(.GreenTRC, curve: iccParametricCurve(1))
-        profile.setParametricCurve(.BlueTRC, curve: iccParametricCurve(2))
+        profile.setLutAtoB(.AToB0, B: [.identity, .identity, .identity], matrix: matrix, M: [iccCurve(0), iccCurve(1), iccCurve(2)])
+        profile.setLutBtoA(.BToA0, B: [.identity, .identity, .identity], matrix: matrix.inverse, M: [iccCurve(0).inverse, iccCurve(1).inverse, iccCurve(2).inverse])
         
         return profile.data
     }

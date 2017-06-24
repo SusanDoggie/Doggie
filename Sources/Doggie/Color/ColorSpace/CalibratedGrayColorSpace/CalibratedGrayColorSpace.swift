@@ -72,8 +72,8 @@ class CalibratedGrayColorSpace : ColorSpaceBaseProtocol {
     
     @_versioned
     @_inlineable
-    func iccParametricCurve() -> iccProfile.ParametricCurve {
-        return iccProfile.ParametricCurve(funcType: 0, gamma: 1, a: 0, b: 0, c: 0, d: 0, e: 0, f: 0)
+    func iccCurve() -> ICCCurve {
+        return .identity
     }
 }
 
@@ -132,7 +132,7 @@ class CalibratedGammaGrayColorSpace: CalibratedGrayColorSpace {
     
     @_versioned
     @_inlineable
-    override func iccParametricCurve() -> iccProfile.ParametricCurve {
-        return iccProfile.ParametricCurve(funcType: 0, gamma: iccProfile.S15Fixed16Number(value: gamma), a: 0, b: 0, c: 0, d: 0, e: 0, f: 0)
+    override func iccCurve() -> ICCCurve {
+        return .gamma(gamma)
     }
 }

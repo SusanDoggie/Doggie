@@ -51,7 +51,7 @@ struct CIEXYZColorSpace : ColorSpaceBaseProtocol {
     @_versioned
     @_inlineable
     init(white: Point) {
-        self.init(white: XYZColorModel(luminance: 1, x: white.x, y: white.y), black: XYZColorModel())
+        self.init(white: XYZColorModel(luminance: 1, point: white), black: XYZColorModel())
     }
     
     @_versioned

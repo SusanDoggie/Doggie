@@ -397,7 +397,7 @@ extension iccProfile {
         
         @_versioned
         init(value: Double) {
-            self.rawValue = BEInt32(value.clamped(to: -32768.0...32767.0) * 65536.0)
+            self.rawValue = BEInt32(icRoundOffset(value.clamped(to: -32768.0...32767.0) * 65536.0))
         }
         
         @_versioned
@@ -449,7 +449,7 @@ extension iccProfile {
         
         @_versioned
         init(value: Double) {
-            self.rawValue = BEUInt32(value.clamped(to: 0...65535.0) * 65536.0)
+            self.rawValue = BEUInt32(icRoundOffset(value.clamped(to: 0...65535.0) * 65536.0))
         }
         
         @_versioned
@@ -676,6 +676,19 @@ extension iccProfile {
         var e22: S15Fixed16Number
         
         @_versioned
+        init(_ matrix: Matrix) {
+            self.e00 = S15Fixed16Number(value: matrix.a)
+            self.e01 = S15Fixed16Number(value: matrix.b)
+            self.e02 = S15Fixed16Number(value: matrix.c)
+            self.e10 = S15Fixed16Number(value: matrix.e)
+            self.e11 = S15Fixed16Number(value: matrix.f)
+            self.e12 = S15Fixed16Number(value: matrix.g)
+            self.e20 = S15Fixed16Number(value: matrix.i)
+            self.e21 = S15Fixed16Number(value: matrix.j)
+            self.e22 = S15Fixed16Number(value: matrix.k)
+        }
+        
+        @_versioned
         var matrix: Matrix {
             return Matrix(a: e00.value, b: e01.value, c: e02.value, d: 0,
                           e: e10.value, f: e11.value, g: e12.value, h: 0,
@@ -697,6 +710,14 @@ extension iccProfile {
         
         @_versioned
         var e23: S15Fixed16Number
+        
+        @_versioned
+        init(_ matrix: Matrix) {
+            self.m = Matrix3x3(matrix)
+            self.e03 = S15Fixed16Number(value: matrix.d)
+            self.e13 = S15Fixed16Number(value: matrix.h)
+            self.e23 = S15Fixed16Number(value: matrix.l)
+        }
         
         @_versioned
         var matrix: Matrix {

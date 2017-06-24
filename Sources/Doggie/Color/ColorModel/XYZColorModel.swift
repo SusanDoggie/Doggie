@@ -55,10 +55,16 @@ public struct XYZColorModel : ColorModelProtocol {
     
     @_inlineable
     public init(luminance: Double, x: Double, y: Double) {
-        let _y = 1 / y
-        self.x = x * _y * luminance
-        self.y = luminance
-        self.z = (1 - x - y) * _y * luminance
+        if y == 0 {
+            self.x = 0
+            self.y = 0
+            self.z = 0
+        } else {
+            let _y = 1 / y
+            self.x = x * _y * luminance
+            self.y = luminance
+            self.z = (1 - x - y) * _y * luminance
+        }
     }
     
     @_inlineable

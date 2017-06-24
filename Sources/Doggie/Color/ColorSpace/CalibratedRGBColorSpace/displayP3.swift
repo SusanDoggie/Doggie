@@ -63,8 +63,8 @@ class _displayP3: CalibratedRGBColorSpace {
     
     @_versioned
     @_inlineable
-    override func iccParametricCurve(_ index: Int) -> iccProfile.ParametricCurve {
-        return iccProfile.ParametricCurve(funcType: 3, gamma: 2.4, a: iccProfile.S15Fixed16Number(value: 1 / 1.055), b: iccProfile.S15Fixed16Number(value: 0.055 / 1.055), c: iccProfile.S15Fixed16Number(value: 1 / 12.92), d: 0.04045, e: 0, f: 0)
+    override func iccCurve(_ index: Int) -> ICCCurve {
+        return .parametric3(2.4, 1 / 1.055, 0.055 / 1.055, 1 / 12.92, 0.04045)
     }
 }
 
