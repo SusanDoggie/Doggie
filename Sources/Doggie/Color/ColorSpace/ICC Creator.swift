@@ -264,6 +264,14 @@ extension CIEXYZColorSpace {
         
         profile.setXYZ(.MediaWhitePoint, iccProfile.XYZNumber(self.white))
         
+        if self.black.y != 0 {
+            profile.setXYZ(.MediaBlackPoint, iccProfile.XYZNumber(self.black))
+        }
+        
+        if self.luminance != 1 {
+            profile.setXYZ(.Luminance, iccProfile.XYZNumber(x: 0, y: iccProfile.S15Fixed16Number(value: self.luminance), z: 0))
+        }
+        
         let chromaticAdaptationMatrix = self.chromaticAdaptationMatrix(to: PCSXYZ, .default)
         
         profile.setFloat(.ChromaticAdaptation,
@@ -335,23 +343,15 @@ extension CalibratedRGBColorSpace {
         
         profile.setMessage(.ProfileDescription, ("en", "US", "Doggie Calibrated RGB Color Space"))
         
-        var matrix = transferMatrix * self.cieXYZ.chromaticAdaptationMatrix(to: PCSXYZ, .default)
+        let matrix = transferMatrix * self.cieXYZ.chromaticAdaptationMatrix(to: PCSXYZ, .default)
         
-        matrix.a *= 32768.0 / 65535.0
-        matrix.b *= 32768.0 / 65535.0
-        matrix.c *= 32768.0 / 65535.0
-        matrix.d *= 32768.0 / 65535.0
-        matrix.e *= 32768.0 / 65535.0
-        matrix.f *= 32768.0 / 65535.0
-        matrix.g *= 32768.0 / 65535.0
-        matrix.h *= 32768.0 / 65535.0
-        matrix.i *= 32768.0 / 65535.0
-        matrix.j *= 32768.0 / 65535.0
-        matrix.k *= 32768.0 / 65535.0
-        matrix.l *= 32768.0 / 65535.0
+        profile.setXYZ(.RedColorant, iccProfile.XYZNumber(x: iccProfile.S15Fixed16Number(value: matrix.a), y: iccProfile.S15Fixed16Number(value: matrix.e), z: iccProfile.S15Fixed16Number(value: matrix.i)))
+        profile.setXYZ(.GreenColorant, iccProfile.XYZNumber(x: iccProfile.S15Fixed16Number(value: matrix.b), y: iccProfile.S15Fixed16Number(value: matrix.f), z: iccProfile.S15Fixed16Number(value: matrix.j)))
+        profile.setXYZ(.BlueColorant, iccProfile.XYZNumber(x: iccProfile.S15Fixed16Number(value: matrix.c), y: iccProfile.S15Fixed16Number(value: matrix.g), z: iccProfile.S15Fixed16Number(value: matrix.k)))
         
-        profile.setLutAtoB(.AToB0, B: [.identity, .identity, .identity], matrix: matrix, M: [iccCurve(0), iccCurve(1), iccCurve(2)])
-        profile.setLutBtoA(.BToA0, B: [.identity, .identity, .identity], matrix: matrix.inverse, M: [iccCurve(0).inverse, iccCurve(1).inverse, iccCurve(2).inverse])
+        profile.setCurve(.RedTRC, curve: iccCurve(0))
+        profile.setCurve(.GreenTRC, curve: iccCurve(1))
+        profile.setCurve(.BlueTRC, curve: iccCurve(2))
         
         return profile.data
     }

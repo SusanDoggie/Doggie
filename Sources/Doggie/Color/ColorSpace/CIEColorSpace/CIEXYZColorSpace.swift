@@ -43,6 +43,9 @@ struct CIEXYZColorSpace : ColorSpaceBaseProtocol {
     typealias Model = XYZColorModel
     
     @_versioned
+    let luminance: Double
+    
+    @_versioned
     let white: Model
     
     @_versioned
@@ -51,14 +54,25 @@ struct CIEXYZColorSpace : ColorSpaceBaseProtocol {
     @_versioned
     @_inlineable
     init(white: Point) {
-        self.init(white: XYZColorModel(luminance: 1, point: white), black: XYZColorModel())
+        self.luminance = 1
+        self.white = XYZColorModel(luminance: 1, point: white)
+        self.black = XYZColorModel()
     }
     
     @_versioned
     @_inlineable
-    init(white: Model, black: Model) {
+    init(white: Point, luminance: Double, contrastRatio: Double) {
+        self.luminance = luminance
+        self.white = XYZColorModel(luminance: 1, point: white)
+        self.black = XYZColorModel(luminance: 1 / contrastRatio, point: white)
+    }
+    
+    @_versioned
+    @_inlineable
+    init(white: Model) {
+        self.luminance = 1
         self.white = white
-        self.black = black
+        self.black = XYZColorModel()
     }
 }
 
@@ -101,12 +115,6 @@ extension CIEXYZColorSpace {
     @_inlineable
     var normalizeMatrix: Matrix {
         return Matrix.translate(x: -black.x, y: -black.y, z: -black.z) * Matrix.scale(x: white.x / (white.y * (white.x - black.x)), y: 1 / (white.y - black.y), z: white.z / (white.y * (white.z - black.z)))
-    }
-    
-    @_versioned
-    @_inlineable
-    var normalized: CIEXYZColorSpace {
-        return CIEXYZColorSpace(white: white * normalizeMatrix, black: XYZColorModel())
     }
 }
 

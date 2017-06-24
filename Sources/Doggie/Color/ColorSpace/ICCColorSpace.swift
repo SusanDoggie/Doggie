@@ -733,7 +733,7 @@ extension ColorSpace {
         let cieXYZ: CIEXYZColorSpace
         
         if let white = profile[.MediaWhitePoint]?.XYZArray?.first {
-            cieXYZ = CIEXYZColorSpace(white: XYZColorModel(x: white.x.value, y: white.y.value, z: white.z.value), black: XYZColorModel())
+            cieXYZ = CIEXYZColorSpace(white: XYZColorModel(x: white.x.value, y: white.y.value, z: white.z.value))
         } else {
             throw AnyColorSpace.ICCError.invalidFormat(message: "MediaWhitePoint not found.")
         }

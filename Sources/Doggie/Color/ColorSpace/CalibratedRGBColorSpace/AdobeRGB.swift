@@ -27,6 +27,6 @@ extension ColorSpace where Model == RGBColorModel {
     
     public static var adobeRGB: ColorSpace {
         
-        return calibratedRGB(white: Point(x: 0.3127, y: 0.329), red: Point(x: 0.6400, y: 0.3300), green: Point(x: 0.2100, y: 0.7100), blue: Point(x: 0.1500, y: 0.0600), gamma: 2.19921875)
+        return ColorSpace(base: CalibratedGammaRGBColorSpace(CIEXYZColorSpace(white: Point(x: 0.3127, y: 0.329), luminance: 160.00, contrastRatio: 287.9), red: Point(x: 0.6400, y: 0.3300), green: Point(x: 0.2100, y: 0.7100), blue: Point(x: 0.1500, y: 0.0600), gamma: (2.19921875, 2.19921875, 2.19921875)))
     }
 }
