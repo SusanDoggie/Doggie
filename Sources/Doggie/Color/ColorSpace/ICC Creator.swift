@@ -289,7 +289,7 @@ extension CIEXYZColorSpace {
     @_inlineable
     var iccData: Data? {
         
-        var profile = cieXYZ._iccProfile(deviceClass: .display, colorSpace: .XYZ, pcs: .XYZ)
+        var profile = cieXYZ._iccProfile(deviceClass: .colorSpace, colorSpace: .XYZ, pcs: .XYZ)
         
         profile.setMessage(.ProfileDescription, ("en", "US", "Doggie CIE XYZ Color Space"))
         
@@ -306,7 +306,7 @@ extension CIELabColorSpace {
     @_inlineable
     var iccData: Data? {
         
-        var profile = cieXYZ._iccProfile(deviceClass: .display, colorSpace: .Lab, pcs: .Lab)
+        var profile = cieXYZ._iccProfile(deviceClass: .colorSpace, colorSpace: .Lab, pcs: .Lab)
         
         profile.setMessage(.ProfileDescription, ("en", "US", "Doggie CIE Lab Color Space"))
         
