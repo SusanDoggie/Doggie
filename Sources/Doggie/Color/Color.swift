@@ -208,6 +208,11 @@ extension Color where Model == CMYKColorModel {
 extension Color {
     
     @_inlineable
+    public static var numberOfComponents: Int {
+        return Model.numberOfComponents
+    }
+    
+    @_inlineable
     public var numberOfComponents: Int {
         return Model.numberOfComponents
     }

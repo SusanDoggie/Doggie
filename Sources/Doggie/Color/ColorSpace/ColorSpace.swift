@@ -56,21 +56,6 @@ extension _ColorSpaceBaseProtocol {
     
     @_versioned
     @_inlineable
-    var white: XYZColorModel {
-        return cieXYZ.white
-    }
-    
-    @_versioned
-    @_inlineable
-    var black: XYZColorModel {
-        return cieXYZ.black
-    }
-}
-
-extension _ColorSpaceBaseProtocol {
-    
-    @_versioned
-    @_inlineable
     func _convertToXYZ<Model: ColorModelProtocol>(_ color: Model) -> XYZColorModel {
         return self._convertLinearToXYZ(self._convertToLinear(color))
     }
@@ -317,20 +302,13 @@ extension ColorSpace {
 extension ColorSpace {
     
     @_inlineable
+    public static var numberOfComponents: Int {
+        return Model.numberOfComponents
+    }
+    
+    @_inlineable
     public var numberOfComponents: Int {
         return Model.numberOfComponents
     }
 }
 
-extension ColorSpace {
-    
-    @_inlineable
-    public var white: XYZColorModel {
-        return base.white
-    }
-    
-    @_inlineable
-    public var black: XYZColorModel {
-        return base.black
-    }
-}

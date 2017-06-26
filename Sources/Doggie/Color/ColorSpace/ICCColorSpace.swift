@@ -267,7 +267,6 @@ enum ICCCurve {
     case parametric3(Double, Double, Double, Double, Double)
     case parametric4(Double, Double, Double, Double, Double, Double, Double)
     case table([Double])
-    case inverse_table([Double])
 }
 
 extension ICCCurve {
@@ -313,6 +312,7 @@ extension ICCCurve {
         case let .parametric2(gamma, a, b, c): return ICCCurve.parametric4(gamma, a, b, 0, -b / a, c, c).inverse
         case let .parametric3(gamma, a, b, c, d): return ICCCurve.parametric4(gamma, a, b, c, d, 0, 0).inverse
         case let .parametric4(gamma, a, b, c, d, e, f):
+            
             let _a = pow(a, -gamma)
             let _b = -e * _a
             let _c = c == 0 ? 0 : 1 / c
@@ -320,8 +320,75 @@ extension ICCCurve {
             let _e = a == 0 ? 0 : -b / a
             let _f = c == 0 ? 0 : -f / c
             return .parametric4(1 / gamma, _a, _b, _c, _d, _e, _f)
-        case let .table(points): return .inverse_table(points)
-        case let .inverse_table(points): return .table(points)
+            
+        case let .table(points):
+            
+            var inversed: [Double] = []
+            inversed.reserveCapacity(points.count << 1)
+            
+            let N = Double(points.count - 1)
+            
+            var hint = 0
+            
+            func __interpolate<C : RandomAccessCollection>(_ y: Double, _ points: C) -> Double? where C.Element == Double, C.Index == Int {
+                
+                for (lhs, rhs) in zip(points.indexed(), points.dropFirst().indexed()) {
+                    let _min: Double
+                    let _max: Double
+                    let _min_idx: Int
+                    let _max_idx: Int
+                    if lhs.element <= rhs.element {
+                        _min = lhs.element
+                        _max = rhs.element
+                        _min_idx = lhs.index
+                        _max_idx = rhs.index
+                    } else {
+                        _min = rhs.element
+                        _max = lhs.element
+                        _min_idx = rhs.index
+                        _max_idx = lhs.index
+                    }
+                    if _min..._max ~= y {
+                        hint = lhs.index
+                        let m = (y - _min) / (_max - _min)
+                        let a = (1 - m) * Double(_min_idx) / N
+                        let b = m * Double(_max_idx) / N
+                        return a + b
+                    }
+                }
+                
+                return nil
+            }
+            
+            func _interpolate(_ y: Double) -> Double {
+                
+                if y == 0 && points.first?.almostZero() == true {
+                    return 0
+                } else if y == 1 && points.last?.almostEqual(1) == true {
+                    return 1
+                }
+                
+                if hint != points.count - 1 {
+                    if let value = __interpolate(y, points.suffix(from: hint)) {
+                        return value
+                    }
+                }
+                if let value = __interpolate(y, points) {
+                    return value
+                }
+                if let idx = points.suffix(from: hint).indexed().min(by: { abs($0.1 - y) })?.0 ?? points.indexed().min(by: { abs($0.1 - y) })?.0 {
+                    return Double(idx) / N
+                }
+                return 0
+            }
+            
+            let N2 = Double((points.count << 1) - 1)
+            
+            for i in 0..<points.count << 1 {
+                inversed.append(_interpolate(Double(i) / N2))
+            }
+            
+            return .table(inversed)
         }
     }
 }
@@ -360,9 +427,6 @@ extension ICCCurve {
                 return pow(a * x + b, gamma) + e
             }
         case let .table(points): return interpolate(x, table: points)
-        case let .inverse_table(points):
-            print("unimplemented")
-            return 0
         }
     }
 }

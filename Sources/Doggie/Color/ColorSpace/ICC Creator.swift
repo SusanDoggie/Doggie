@@ -102,11 +102,7 @@ extension iccProfile {
             data.append(UnsafeBufferPointer(start: points.map { BEUInt16(($0 * 65535).clamped(to: 0...65535)) }, count: points.count))
             
             return data
-            
-        default: break
         }
-        
-        return Data()
     }
     
     private func parametricCurveData(curve: ParametricCurve) -> Data {

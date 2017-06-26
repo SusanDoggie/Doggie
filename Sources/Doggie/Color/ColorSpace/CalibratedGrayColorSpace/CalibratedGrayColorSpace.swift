@@ -92,7 +92,7 @@ extension CalibratedGrayColorSpace {
     @_inlineable
     func convertLinearToXYZ(_ color: Model) -> XYZColorModel {
         let normalizeMatrix = cieXYZ.normalizeMatrix
-        let _white = white * normalizeMatrix
+        let _white = cieXYZ.white * normalizeMatrix
         return XYZColorModel(luminance: color.white, point: _white.point) * normalizeMatrix.inverse
     }
     

@@ -43,10 +43,6 @@ protocol AnyColorSpaceBaseProtocol {
     func _convert<Pixel>(_ image: Image<Pixel>, intent: RenderingIntent) -> AnyImageBaseProtocol
     
     var _linearTone: AnyColorSpaceBaseProtocol { get }
-    
-    var white: XYZColorModel { get }
-    
-    var black: XYZColorModel { get }
 }
 
 extension ColorSpace : AnyColorSpaceBaseProtocol {
@@ -136,16 +132,6 @@ extension AnyColorSpace {
     @_inlineable
     public var linearTone: AnyColorSpace {
         return AnyColorSpace(base: base._linearTone)
-    }
-    
-    @_inlineable
-    public var white: XYZColorModel {
-        return base.white
-    }
-    
-    @_inlineable
-    public var black: XYZColorModel {
-        return base.black
     }
 }
 
