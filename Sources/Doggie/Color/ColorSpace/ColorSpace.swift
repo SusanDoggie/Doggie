@@ -30,6 +30,8 @@ protocol _ColorSpaceBaseProtocol {
     
     var iccData: Data? { get }
     
+    var localizedName: String? { get }
+    
     var cieXYZ: CIEXYZColorSpace { get }
     
     func _convertToLinear<Model: ColorModelProtocol>(_ color: Model) -> Model
@@ -154,6 +156,22 @@ public struct ColorSpace<Model : ColorModelProtocol> {
     @_inlineable
     init(base : _ColorSpaceBaseProtocol) {
         self.base = base
+    }
+}
+
+extension ColorSpace {
+    
+    @_inlineable
+    public var localizedName: String? {
+        return base.localizedName
+    }
+}
+
+extension ColorSpace : CustomStringConvertible {
+    
+    @_inlineable
+    public var description: String {
+        return localizedName ?? "\(type(of: base))"
     }
 }
 
@@ -300,7 +318,6 @@ extension ColorSpace {
 }
 
 extension ColorSpace {
-    
     @_inlineable
     public static var numberOfComponents: Int {
         return Model.numberOfComponents

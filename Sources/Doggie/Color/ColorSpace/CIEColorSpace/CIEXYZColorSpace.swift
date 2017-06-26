@@ -79,6 +79,15 @@ extension CIEXYZColorSpace {
     
     @_versioned
     @_inlineable
+    var localizedName: String? {
+        return "Doggie CIE XYZ Color Space"
+    }
+}
+
+extension CIEXYZColorSpace {
+    
+    @_versioned
+    @_inlineable
     var cieXYZ: CIEXYZColorSpace {
         return self
     }

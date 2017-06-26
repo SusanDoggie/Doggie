@@ -103,6 +103,15 @@ extension CalibratedRGBColorSpace {
     
     @_versioned
     @_inlineable
+    var localizedName: String? {
+        return "Doggie Calibrated RGB Color Space"
+    }
+}
+
+extension CalibratedRGBColorSpace {
+    
+    @_versioned
+    @_inlineable
     var linearTone: CalibratedRGBColorSpace {
         return CalibratedRGBColorSpace(cieXYZ: cieXYZ, transferMatrix: transferMatrix)
     }

@@ -58,6 +58,15 @@ extension CIELuvColorSpace {
     
     @_versioned
     @_inlineable
+    var localizedName: String? {
+        return "Doggie CIE Luv Color Space"
+    }
+}
+
+extension CIELuvColorSpace {
+    
+    @_versioned
+    @_inlineable
     func convertToLinear(_ color: Model) -> Model {
         return color
     }

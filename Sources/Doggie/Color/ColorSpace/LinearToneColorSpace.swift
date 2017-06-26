@@ -73,6 +73,15 @@ struct LinearToneColorSpace<ColorSpace: ColorSpaceBaseProtocol> : ColorSpaceBase
     }
 }
 
+extension LinearToneColorSpace {
+    
+    @_versioned
+    @_inlineable
+    var localizedName: String? {
+        return base.localizedName.map { "LinearToneColorSpace<\($0)>" }
+    }
+}
+
 extension ColorSpaceBaseProtocol where LinearTone == LinearToneColorSpace<Self> {
     
     @_versioned

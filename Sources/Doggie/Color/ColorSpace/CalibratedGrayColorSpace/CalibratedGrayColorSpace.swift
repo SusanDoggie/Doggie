@@ -81,6 +81,15 @@ extension CalibratedGrayColorSpace {
     
     @_versioned
     @_inlineable
+    var localizedName: String? {
+        return "Doggie Calibrated Gray Color Space"
+    }
+}
+
+extension CalibratedGrayColorSpace {
+    
+    @_versioned
+    @_inlineable
     var linearTone: CalibratedGrayColorSpace {
         return CalibratedGrayColorSpace(cieXYZ)
     }

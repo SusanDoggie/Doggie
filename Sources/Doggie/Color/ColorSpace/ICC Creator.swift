@@ -287,7 +287,7 @@ extension CIEXYZColorSpace {
         
         var profile = cieXYZ._iccProfile(deviceClass: .colorSpace, colorSpace: .XYZ, pcs: .XYZ)
         
-        profile.setMessage(.ProfileDescription, ("en", "US", "Doggie CIE XYZ Color Space"))
+        profile.setMessage(.ProfileDescription, ("en", "US", self.localizedName!))
         
         profile.setLutAtoB(.AToB0, B: [.identity, .identity, .identity])
         profile.setLutBtoA(.BToA0, B: [.identity, .identity, .identity])
@@ -304,7 +304,7 @@ extension CIELabColorSpace {
         
         var profile = cieXYZ._iccProfile(deviceClass: .colorSpace, colorSpace: .Lab, pcs: .Lab)
         
-        profile.setMessage(.ProfileDescription, ("en", "US", "Doggie CIE Lab Color Space"))
+        profile.setMessage(.ProfileDescription, ("en", "US", self.localizedName!))
         
         profile.setLutAtoB(.AToB0, B: [.identity, .identity, .identity])
         profile.setLutBtoA(.BToA0, B: [.identity, .identity, .identity])
@@ -321,7 +321,7 @@ extension CalibratedGrayColorSpace {
         
         var profile = cieXYZ._iccProfile(deviceClass: .display, colorSpace: .Gray, pcs: .XYZ)
         
-        profile.setMessage(.ProfileDescription, ("en", "US", "Doggie Calibrated Gray Color Space"))
+        profile.setMessage(.ProfileDescription, ("en", "US", self.localizedName!))
         
         profile.setCurve(.GrayTRC, curve: iccCurve())
         
@@ -337,7 +337,7 @@ extension CalibratedRGBColorSpace {
         
         var profile = cieXYZ._iccProfile(deviceClass: .display, colorSpace: .Rgb, pcs: .XYZ)
         
-        profile.setMessage(.ProfileDescription, ("en", "US", "Doggie Calibrated RGB Color Space"))
+        profile.setMessage(.ProfileDescription, ("en", "US", self.localizedName!))
         
         let matrix = transferMatrix * self.cieXYZ.chromaticAdaptationMatrix(to: PCSXYZ, .default)
         

@@ -399,32 +399,45 @@ extension ICCCurve {
     @_inlineable
     func eval(_ x: Double) -> Double {
         
+        @inline(__always)
+        func exteneded(_ x: Double, _ gamma: (Double) -> Double) -> Double {
+            return x.sign == .plus ? gamma(x) : -gamma(-x)
+        }
+        
         switch self {
         case .identity: return x
-        case let .gamma(gamma): return pow(x, gamma)
+        case let .gamma(gamma): return exteneded(x) { pow($0, gamma) }
         case let .parametric1(gamma, a, b):
-            if x < -b / a {
-                return 0
-            } else {
-                return pow(a * x + b, gamma)
+            return exteneded(x) {
+                if $0 < -b / a {
+                    return 0
+                } else {
+                    return pow(a * $0 + b, gamma)
+                }
             }
         case let .parametric2(gamma, a, b, c):
-            if x < -b / a {
-                return c
-            } else {
-                return pow(a * x + b, gamma) + c
+            return exteneded(x) {
+                if $0 < -b / a {
+                    return c
+                } else {
+                    return pow(a * $0 + b, gamma) + c
+                }
             }
         case let .parametric3(gamma, a, b, c, d):
-            if x < d {
-                return c * x
-            } else {
-                return pow(a * x + b, gamma)
+            return exteneded(x) {
+                if $0 < d {
+                    return c * $0
+                } else {
+                    return pow(a * $0 + b, gamma)
+                }
             }
         case let .parametric4(gamma, a, b, c, d, e, f):
-            if x < d {
-                return c * x + f
-            } else {
-                return pow(a * x + b, gamma) + e
+            return exteneded(x) {
+                if $0 < d {
+                    return c * $0 + f
+                } else {
+                    return pow(a * $0 + b, gamma) + e
+                }
             }
         case let .table(points): return interpolate(x, table: points)
         }
@@ -583,16 +596,27 @@ extension ICCColorSpace {
     }
 }
 
-extension ICCColorSpace : CustomStringConvertible {
+extension ICCColorSpace {
     
-    var description: String {
-        if let desc = profile[.ProfileDescription]?.text {
-            return desc
+    @_versioned
+    @_inlineable
+    var localizedName: String? {
+        
+        if let description = profile[.ProfileDescription] {
+            
+            if let desc = description.text {
+                return desc
+            }
+            
+            let language = Locale.current.languageCode ?? "en"
+            let country = Locale.current.regionCode ?? "US"
+            
+            if let desc = description.multiLocalizedUnicode {
+                return desc.first(where: { $0.language.description == language && $0.country.description == country })?.2 ?? desc.first(where: { $0.language.description == language })?.2 ?? desc.first?.2
+            }
         }
-        if let desc = profile[.ProfileDescription]?.multiLocalizedUnicode {
-            return desc.first(where: { $0.language == "en" && $0.country == "US" })?.2 ?? desc.first(where: { $0.language == "en" })?.2 ?? desc.first?.2 ?? "\(ICCColorSpace<Model, Connection>.self)"
-        }
-        return "\(ICCColorSpace<Model, Connection>.self)"
+        
+        return nil
     }
 }
 

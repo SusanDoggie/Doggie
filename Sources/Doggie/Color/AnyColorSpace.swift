@@ -30,6 +30,8 @@ protocol AnyColorSpaceBaseProtocol {
     
     var iccData: Data? { get }
     
+    var localizedName: String? { get }
+    
     var chromaticAdaptationAlgorithm: ChromaticAdaptationAlgorithm { get set }
     
     var numberOfComponents: Int { get }
@@ -50,11 +52,14 @@ extension ColorSpace : AnyColorSpaceBaseProtocol {
     @_versioned
     @_inlineable
     func _createColor<S>(components: S, opacity: Double) -> AnyColorBaseProtocol where S : Sequence, S.Element == Double {
-        
         var color = Model()
+        var counter = 0
         for (i, v) in components.enumerated() {
+            precondition(i < Model.numberOfComponents, "invalid count of components.")
             color.setComponent(i, v)
+            counter = i
         }
+        precondition(counter == Model.numberOfComponents - 1, "invalid count of components.")
         return Color(colorSpace: self, color: color, opacity: opacity)
     }
     
@@ -101,6 +106,14 @@ extension AnyColorSpace {
     @_inlineable
     public init<Model>(_ colorSpace: ColorSpace<Model>) {
         self.base = colorSpace
+    }
+}
+
+extension AnyColorSpace {
+    
+    @_inlineable
+    public var localizedName: String? {
+        return base.localizedName
     }
 }
 
