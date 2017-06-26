@@ -186,10 +186,10 @@ extension ImageContext {
                                                        patch.m10 * transform, patch.m11 * transform, patch.m12 * transform, patch.m13 * transform,
                                                        patch.m20 * transform, patch.m21 * transform, patch.m22 * transform, patch.m23 * transform,
                                                        patch.m30 * transform, patch.m31 * transform, patch.m32 * transform, patch.m33 * transform),
-                                      ColorPixel(c0.convert(to: colorSpace)),
-                                      ColorPixel(c1.convert(to: colorSpace)),
-                                      ColorPixel(c2.convert(to: colorSpace)),
-                                      ColorPixel(c3.convert(to: colorSpace)))
+                                      ColorPixel(c0.convert(to: colorSpace, intent: _renderingIntent)),
+                                      ColorPixel(c1.convert(to: colorSpace, intent: _renderingIntent)),
+                                      ColorPixel(c2.convert(to: colorSpace, intent: _renderingIntent)),
+                                      ColorPixel(c3.convert(to: colorSpace, intent: _renderingIntent)))
                     }
                 }
             }

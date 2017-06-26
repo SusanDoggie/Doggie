@@ -44,12 +44,12 @@ extension ImageContext {
         let source: Image<ColorPixel<Model>>
         
         if transform == SDTransform.identity && width == image.width && height == image.height {
-            source = Image(image: image, colorSpace: colorSpace)
+            source = Image(image: image, colorSpace: colorSpace, intent: _renderingIntent)
         } else if C.Model.numberOfComponents < Model.numberOfComponents || (C.Model.numberOfComponents == Model.numberOfComponents && width * height < image.width * image.height) {
             let _temp = Image(image: image, width: width, height: height, transform: transform, resampling: _resamplingAlgorithm, antialias: _antialias)
-            source = Image(image: _temp, colorSpace: colorSpace)
+            source = Image(image: _temp, colorSpace: colorSpace, intent: _renderingIntent)
         } else {
-            let _temp = Image(image: image, colorSpace: colorSpace) as Image<ColorPixel<Model>>
+            let _temp = Image(image: image, colorSpace: colorSpace, intent: _renderingIntent) as Image<ColorPixel<Model>>
             source = Image(image: _temp, width: width, height: height, transform: transform, resampling: _resamplingAlgorithm, antialias: _antialias)
         }
         

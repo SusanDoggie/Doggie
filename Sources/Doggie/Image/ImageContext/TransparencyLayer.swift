@@ -47,6 +47,8 @@ extension ImageContext {
             layer._resamplingAlgorithm = self._resamplingAlgorithm
             layer._renderCullingMode = self._renderCullingMode
             layer._renderDepthCompareMode = self._renderDepthCompareMode
+            layer._renderingIntent = self._renderingIntent
+            layer._image.colorSpace.chromaticAdaptationAlgorithm = self._image.colorSpace.chromaticAdaptationAlgorithm
             
             self.next = layer
         }

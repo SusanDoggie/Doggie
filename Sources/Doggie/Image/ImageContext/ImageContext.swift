@@ -63,6 +63,9 @@ public class ImageContext<Model : ColorModelProtocol> {
     var _renderDepthCompareMode: ImageContextRenderDepthCompareMode = .always
     
     @_versioned
+    var _renderingIntent: RenderingIntent = .default
+    
+    @_versioned
     var next: ImageContext<Model>?
     
     @_inlineable
@@ -231,6 +234,34 @@ extension ImageContext {
             }
         }
     }
+    
+    @_inlineable
+    public var renderingIntent: RenderingIntent {
+        get {
+            return next?.renderingIntent ?? _renderingIntent
+        }
+        set {
+            if let next = self.next {
+                next.renderingIntent = newValue
+            } else {
+                _renderingIntent = newValue
+            }
+        }
+    }
+    
+    @_inlineable
+    public var chromaticAdaptationAlgorithm: ChromaticAdaptationAlgorithm {
+        get {
+            return next?.chromaticAdaptationAlgorithm ?? _image.colorSpace.chromaticAdaptationAlgorithm
+        }
+        set {
+            if let next = self.next {
+                next.chromaticAdaptationAlgorithm = newValue
+            } else {
+                _image.colorSpace.chromaticAdaptationAlgorithm = newValue
+            }
+        }
+    }
 }
 
 public enum ImageContextRenderCullMode {
@@ -325,7 +356,7 @@ extension ImageContext {
     
     @_inlineable
     public var colorSpace: ColorSpace<Model> {
-        return _image.colorSpace
+        return next?.colorSpace ?? _image.colorSpace
     }
     
     @_inlineable

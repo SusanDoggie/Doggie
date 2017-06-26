@@ -48,6 +48,8 @@ extension ImageContext {
         _clip._resamplingAlgorithm = self._resamplingAlgorithm
         _clip._renderCullingMode = self._renderCullingMode
         _clip._renderDepthCompareMode = self._renderDepthCompareMode
+        _clip._renderingIntent = self._renderingIntent
+        _clip._image.colorSpace.chromaticAdaptationAlgorithm = self._image.colorSpace.chromaticAdaptationAlgorithm
         
         try body(_clip)
         

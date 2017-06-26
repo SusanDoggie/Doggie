@@ -385,8 +385,8 @@ extension ImageContext {
     public func draw<C>(shape: Shape, color: Color<C>, winding: Shape.WindingRule) {
         
         switch winding {
-        case .nonZero: self.draw(shape: shape, color: ColorPixel(color.convert(to: colorSpace))) { $0 != 0 }
-        case .evenOdd: self.draw(shape: shape, color: ColorPixel(color.convert(to: colorSpace))) { $0 & 1 == 1 }
+        case .nonZero: self.draw(shape: shape, color: ColorPixel(color.convert(to: colorSpace, intent: _renderingIntent))) { $0 != 0 }
+        case .evenOdd: self.draw(shape: shape, color: ColorPixel(color.convert(to: colorSpace, intent: _renderingIntent))) { $0 & 1 == 1 }
         }
     }
 }
