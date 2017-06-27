@@ -884,6 +884,10 @@ extension ICCColorSpace {
             result.setComponent(1, curve.1.eval(color.component(1)))
             result.setComponent(2, curve.2.eval(color.component(2)))
             
+            if result is XYZColorModel {
+                result *= 65535.0 / 32768.0
+            }
+            
         case let .LUT2(_, _, curve):
             
             result.setComponent(0, curve.0.eval(color.component(0)))
@@ -944,6 +948,10 @@ extension ICCColorSpace {
             result = curve.eval(color)
             
         case let .LUT1(curve):
+            
+            if color is XYZColorModel {
+                color *= 32768.0 / 65535.0
+            }
             
             result.setComponent(0, curve.0.eval(color.component(0)))
             result.setComponent(1, curve.1.eval(color.component(1)))
@@ -1032,13 +1040,14 @@ extension ICCColorSpace {
             result.setComponent(2, color.component(2))
             
             result *= matrix
-            if result is XYZColorModel {
-                result *= 65535.0 / 32768.0
-            }
             
             result.setComponent(0, B.0.eval(result.component(0)))
             result.setComponent(1, B.1.eval(result.component(1)))
             result.setComponent(2, B.2.eval(result.component(2)))
+            
+            if result is XYZColorModel {
+                result *= 65535.0 / 32768.0
+            }
             
         case let .LUT3(B, lut, _):
             
@@ -1047,6 +1056,10 @@ extension ICCColorSpace {
             result.setComponent(0, B.0.eval(result.component(0)))
             result.setComponent(1, B.1.eval(result.component(1)))
             result.setComponent(2, B.2.eval(result.component(2)))
+            
+            if result is XYZColorModel {
+                result *= 65535.0 / 32768.0
+            }
             
         case let .LUT4(B, matrix, M, lut, _):
             
@@ -1057,13 +1070,14 @@ extension ICCColorSpace {
             result.setComponent(2, M.2.eval(result.component(2)))
             
             result *= matrix
-            if result is XYZColorModel {
-                result *= 65535.0 / 32768.0
-            }
             
             result.setComponent(0, B.0.eval(result.component(0)))
             result.setComponent(1, B.1.eval(result.component(1)))
             result.setComponent(2, B.2.eval(result.component(2)))
+            
+            if result is XYZColorModel {
+                result *= 65535.0 / 32768.0
+            }
             
         default: fatalError()
         }
@@ -1126,13 +1140,14 @@ extension ICCColorSpace {
             
         case let .LUT2(B, matrix, _):
             
+            if color is XYZColorModel {
+                color *= 32768.0 / 65535.0
+            }
+            
             color.setComponent(0, B.0.eval(color.component(0)))
             color.setComponent(1, B.1.eval(color.component(1)))
             color.setComponent(2, B.2.eval(color.component(2)))
             
-            if color is XYZColorModel {
-                color *= 32768.0 / 65535.0
-            }
             color *= matrix
             
             result.setComponent(0, color.component(0))
@@ -1140,6 +1155,10 @@ extension ICCColorSpace {
             result.setComponent(2, color.component(2))
             
         case let .LUT3(B, lut, _):
+            
+            if color is XYZColorModel {
+                color *= 32768.0 / 65535.0
+            }
             
             color.setComponent(0, B.0.eval(color.component(0)))
             color.setComponent(1, B.1.eval(color.component(1)))
@@ -1149,13 +1168,14 @@ extension ICCColorSpace {
             
         case let .LUT4(B, matrix, M, lut, _):
             
+            if color is XYZColorModel {
+                color *= 32768.0 / 65535.0
+            }
+            
             color.setComponent(0, B.0.eval(color.component(0)))
             color.setComponent(1, B.1.eval(color.component(1)))
             color.setComponent(2, B.2.eval(color.component(2)))
             
-            if color is XYZColorModel {
-                color *= 32768.0 / 65535.0
-            }
             color *= matrix
             
             color.setComponent(0, M.0.eval(color.component(0)))
