@@ -28,14 +28,9 @@ extension ImageContext {
     @_inlineable
     public func draw<C>(image: Image<C>, transform: SDTransform) {
         
-        if let next = self.next {
-            next.draw(image: image, transform: transform)
-            return
-        }
-        
         let width = self.width
         let height = self.height
-        let transform = transform * self._transform
+        let transform = transform * self.transform
         
         if width == 0 || height == 0 || image.width == 0 || image.height == 0 || transform.determinant.almostZero() {
             return
@@ -44,24 +39,24 @@ extension ImageContext {
         let source: Image<ColorPixel<Model>>
         
         if transform == SDTransform.identity && width == image.width && height == image.height {
-            source = Image(image: image, colorSpace: colorSpace, intent: _renderingIntent)
+            source = Image(image: image, colorSpace: colorSpace, intent: renderingIntent)
         } else if C.Model.numberOfComponents < Model.numberOfComponents || (C.Model.numberOfComponents == Model.numberOfComponents && width * height < image.width * image.height) {
-            let _temp = Image(image: image, width: width, height: height, transform: transform, resampling: _resamplingAlgorithm, antialias: _antialias)
-            source = Image(image: _temp, colorSpace: colorSpace, intent: _renderingIntent)
+            let _temp = Image(image: image, width: width, height: height, transform: transform, resampling: resamplingAlgorithm, antialias: antialias)
+            source = Image(image: _temp, colorSpace: colorSpace, intent: renderingIntent)
         } else {
-            let _temp = Image(image: image, colorSpace: colorSpace, intent: _renderingIntent) as Image<ColorPixel<Model>>
-            source = Image(image: _temp, width: width, height: height, transform: transform, resampling: _resamplingAlgorithm, antialias: _antialias)
+            let _temp = Image(image: image, colorSpace: colorSpace, intent: renderingIntent) as Image<ColorPixel<Model>>
+            source = Image(image: _temp, width: width, height: height, transform: transform, resampling: resamplingAlgorithm, antialias: antialias)
         }
         
         source.withUnsafeBufferPointer { source in
             
             if var _source = source.baseAddress {
                 
-                _image.withUnsafeMutableBufferPointer { destination in
+                self.withUnsafeMutableImageBufferPointer { destination in
                     
                     if var _destination = destination.baseAddress {
                         
-                        clip.withUnsafeBufferPointer { _clip in
+                        self.withUnsafeClipBufferPointer { _clip in
                             
                             if var _clip = _clip.baseAddress {
                                 
@@ -72,9 +67,9 @@ extension ImageContext {
                                     if _alpha > 0 {
                                         
                                         var __source = _source.pointee
-                                        __source.opacity *= _opacity * _alpha
+                                        __source.opacity *= opacity * _alpha
                                         
-                                        _destination.pointee.blend(source: __source, blendMode: _blendMode, compositingMode: _compositingMode)
+                                        _destination.pointee.blend(source: __source, blendMode: blendMode, compositingMode: compositingMode)
                                     }
                                     
                                     _source += 1

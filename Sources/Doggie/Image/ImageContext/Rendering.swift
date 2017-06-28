@@ -85,28 +85,23 @@ extension ImageContext {
     @_inlineable
     public func render<S : Sequence, Vertex : ImageContextRenderVertex, Pixel : ColorPixelProtocol>(_ triangles: S, position: (Vertex.Position) throws -> Point, depthFun: ((Vertex.Position) throws -> Double)?, shader: (Vertex) throws -> Pixel?) rethrows where S.Element == (Vertex, Vertex, Vertex), Pixel.Model == Model {
         
-        if let next = self.next {
-            try next.render(triangles, position: position, depthFun: depthFun, shader: shader)
+        let transform = self.transform
+        let cullingMode = self.renderCullingMode
+        let depthCompareMode = self.renderDepthCompareMode
+        
+        if self.width == 0 || self.height == 0 || transform.determinant.almostZero() {
             return
         }
         
-        let transform = self._transform
-        let cullingMode = self._renderCullingMode
-        let depthCompareMode = self._renderDepthCompareMode
-        
-        if _image.width == 0 || _image.height == 0 || transform.determinant.almostZero() {
-            return
-        }
-        
-        try _image.withUnsafeMutableBufferPointer { _image in
+        try self.withUnsafeMutableImageBufferPointer { _image in
             
             if let _destination = _image.baseAddress {
                 
-                try clip.withUnsafeBufferPointer { _clip in
+                try self.withUnsafeClipBufferPointer { _clip in
                     
                     if let _clip = _clip.baseAddress {
                         
-                        try depth.withUnsafeMutableBufferPointer { _depth in
+                        try self.withUnsafeMutableDepthBufferPointer { _depth in
                             
                             if let _depth = _depth.baseAddress {
                                 
@@ -168,7 +163,7 @@ extension ImageContext {
                                                             pixel.opacity *= _alpha
                                                             
                                                             if pixel.opacity > 0 {
-                                                                buf.destination.pointee.blend(source: pixel, blendMode: _blendMode, compositingMode: _compositingMode)
+                                                                buf.destination.pointee.blend(source: pixel, blendMode: blendMode, compositingMode: compositingMode)
                                                                 buf.depth.pointee = _depth
                                                             }
                                                         }
@@ -180,7 +175,7 @@ extension ImageContext {
                                                         pixel.opacity *= _alpha
                                                         
                                                         if pixel.opacity > 0 {
-                                                            buf.destination.pointee.blend(source: pixel, blendMode: _blendMode, compositingMode: _compositingMode)
+                                                            buf.destination.pointee.blend(source: pixel, blendMode: blendMode, compositingMode: compositingMode)
                                                         }
                                                     }
                                                 }

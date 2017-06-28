@@ -208,34 +208,23 @@ extension ImageContext {
     @_inlineable
     func draw(shape: Shape, color: ColorPixel<Model>, winding: (Int16) -> Bool) {
         
-        if let next = self.next {
-            next.draw(shape: shape, color: color, winding: winding)
-            return
-        }
-        
         if shape.reduce(0, { $0 + $1.count }) == 0 {
             return
         }
         
         let width = self.width
         let height = self.height
-        let transform = shape.transform * self._transform
+        let transform = shape.transform * self.transform
         
         if width == 0 || height == 0 || transform.determinant.almostZero() {
             return
         }
         
-        let stencil_count = _antialias ? width * height * 25 : width * height
-        
-        if stencil.count != stencil_count {
-            stencil = [Int16](repeating: 0, count: stencil_count)
-        } else {
-            stencil.withUnsafeMutableBytes { _ = memset($0.baseAddress!, 0, $0.count) }
-        }
+        var stencil = [Int16](repeating: 0, count: antialias ? width * height * 25 : width * height)
         
         var shape = shape
         
-        if _antialias {
+        if antialias {
             
             shape.transform = transform * SDTransform.scale(5)
             
@@ -248,11 +237,11 @@ extension ImageContext {
                 
                 if var _stencil = stencil.baseAddress {
                     
-                    _image.withUnsafeMutableBufferPointer { _image in
+                    self.withUnsafeMutableImageBufferPointer { _image in
                         
                         if var _destination = _image.baseAddress {
                             
-                            clip.withUnsafeBufferPointer { _clip in
+                            self.withUnsafeClipBufferPointer { _clip in
                                 
                                 if var _clip = _clip.baseAddress {
                                     
@@ -293,9 +282,9 @@ extension ImageContext {
                                             if _alpha > 0 {
                                                 
                                                 var source = color
-                                                source.opacity *= _opacity * _alpha
+                                                source.opacity *= opacity * _alpha
                                                 
-                                                __destination.pointee.blend(source: source, blendMode: _blendMode, compositingMode: _compositingMode)
+                                                __destination.pointee.blend(source: source, blendMode: blendMode, compositingMode: compositingMode)
                                             }
                                             
                                             __stencil += 5
@@ -324,11 +313,11 @@ extension ImageContext {
                 
                 if var _stencil = stencil.baseAddress {
                     
-                    _image.withUnsafeMutableBufferPointer { _image in
+                    self.withUnsafeMutableImageBufferPointer { _image in
                         
                         if var _destination = _image.baseAddress {
                             
-                            clip.withUnsafeBufferPointer { _clip in
+                            self.withUnsafeClipBufferPointer { _clip in
                                 
                                 if var _clip = _clip.baseAddress {
                                     
@@ -354,9 +343,9 @@ extension ImageContext {
                                             if winding(__stencil.pointee) && _alpha > 0 {
                                                 
                                                 var source = color
-                                                source.opacity *= _opacity * _alpha
+                                                source.opacity *= opacity * _alpha
                                                 
-                                                __destination.pointee.blend(source: source, blendMode: _blendMode, compositingMode: _compositingMode)
+                                                __destination.pointee.blend(source: source, blendMode: blendMode, compositingMode: compositingMode)
                                             }
                                             
                                             __stencil += 1
@@ -385,8 +374,8 @@ extension ImageContext {
     public func draw<C>(shape: Shape, color: Color<C>, winding: Shape.WindingRule) {
         
         switch winding {
-        case .nonZero: self.draw(shape: shape, color: ColorPixel(color.convert(to: colorSpace, intent: _renderingIntent))) { $0 != 0 }
-        case .evenOdd: self.draw(shape: shape, color: ColorPixel(color.convert(to: colorSpace, intent: _renderingIntent))) { $0 & 1 == 1 }
+        case .nonZero: self.draw(shape: shape, color: ColorPixel(color.convert(to: colorSpace, intent: renderingIntent))) { $0 != 0 }
+        case .evenOdd: self.draw(shape: shape, color: ColorPixel(color.convert(to: colorSpace, intent: renderingIntent))) { $0 & 1 == 1 }
         }
     }
 }

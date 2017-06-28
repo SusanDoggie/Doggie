@@ -110,9 +110,9 @@
                 
                 let components = Pixel.Model.numberOfComponents + 1
                 
-                let data = self.withUnsafeBufferPointer { buffer in buffer.baseAddress?.withMemoryRebound(to: Double.self, capacity: components) { UnsafeBufferPointer(start: $0, count: components * buffer.count).map(Float.init) } }
+                let data = self.pixel.flatMap { $0.color.components.appended($0.opacity) }.map { Float($0) }
                 
-                return data?.withUnsafeBufferPointer { buf in
+                return data.withUnsafeBufferPointer { buf in
                     
                     let bitsPerComponent = 32
                     let bytesPerPixel = 4 * components

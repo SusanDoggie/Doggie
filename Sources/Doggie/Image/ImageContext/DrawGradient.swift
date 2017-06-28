@@ -51,22 +51,17 @@ extension ImageContext {
     @_inlineable
     func _shading(_ shader: (Point) throws -> ColorPixel<Model>) rethrows {
         
-        if let next = self.next {
-            try next._shading(shader)
+        if self.width == 0 || self.height == 0 || self.transform.determinant.almostZero() {
             return
         }
         
-        if _image.width == 0 || _image.height == 0 || _transform.determinant.almostZero() {
-            return
-        }
+        let transform = self.transform.inverse
         
-        let transform = self._transform.inverse
-        
-        try _image.withUnsafeMutableBufferPointer { _image in
+        try self.withUnsafeMutableImageBufferPointer { _image in
             
             if var _destination = _image.baseAddress {
                 
-                try clip.withUnsafeBufferPointer { _clip in
+                try self.withUnsafeClipBufferPointer { _clip in
                     
                     if var _clip = _clip.baseAddress {
                         
@@ -86,7 +81,7 @@ extension ImageContext {
                                     pixel.opacity *= _alpha
                                     
                                     if pixel.opacity > 0 {
-                                        _destination.pointee.blend(source: pixel, blendMode: _blendMode, compositingMode: _compositingMode)
+                                        _destination.pointee.blend(source: pixel, blendMode: blendMode, compositingMode: compositingMode)
                                     }
                                 }
                                 
@@ -255,7 +250,7 @@ extension ImageContext {
     @_inlineable
     public func drawLinearGradient<C>(stops: [GradientStop<C>], start: Point, end: Point, startSpread: GradientSpreadMode, endSpread: GradientSpreadMode) {
         
-        let stops = stops.sorted { $0.offset }.map { ($0.offset, ColorPixel($0.color.convert(to: colorSpace, intent: _renderingIntent))) }
+        let stops = stops.sorted { $0.offset }.map { ($0.offset, ColorPixel($0.color.convert(to: colorSpace, intent: renderingIntent))) }
         
         switch stops.count {
         case 0: break
@@ -287,7 +282,7 @@ extension ImageContext {
     @_inlineable
     public func drawRadialGradient<C>(stops: [GradientStop<C>], start: Point, startRadius: Double, end: Point, endRadius: Double, startSpread: GradientSpreadMode, endSpread: GradientSpreadMode) {
         
-        let stops = stops.sorted { $0.offset }.map { ($0.offset, ColorPixel($0.color.convert(to: colorSpace, intent: _renderingIntent))) }
+        let stops = stops.sorted { $0.offset }.map { ($0.offset, ColorPixel($0.color.convert(to: colorSpace, intent: renderingIntent))) }
         
         switch stops.count {
         case 0: break

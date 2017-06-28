@@ -137,7 +137,7 @@ extension ImageContext {
                         pixel.opacity *= _alpha
                         
                         if pixel.opacity > 0 {
-                            buf.destination.pointee.blend(source: pixel, blendMode: _blendMode, compositingMode: _compositingMode)
+                            buf.destination.pointee.blend(source: pixel, blendMode: blendMode, compositingMode: compositingMode)
                         }
                     }
                 }
@@ -160,24 +160,19 @@ extension ImageContext {
     @_inlineable
     public func drawGradient<C>(_ patch: CubicBezierPatch, color c0: Color<C>, _ c1: Color<C>, _ c2: Color<C>, _ c3: Color<C>) {
         
-        if let next = self.next {
-            next.drawGradient(patch, color: c0, c1, c2, c3)
-            return
-        }
-        
         let width = self.width
         let height = self.height
-        let transform = self._transform
+        let transform = self.transform
         
         if width == 0 || height == 0 || transform.determinant.almostZero() {
             return
         }
         
-        _image.withUnsafeMutableBufferPointer { _image in
+        self.withUnsafeMutableImageBufferPointer { _image in
             
             if let _destination = _image.baseAddress {
                 
-                clip.withUnsafeBufferPointer { _clip in
+                self.withUnsafeClipBufferPointer { _clip in
                     
                     if let _clip = _clip.baseAddress {
                         
@@ -186,10 +181,10 @@ extension ImageContext {
                                                        patch.m10 * transform, patch.m11 * transform, patch.m12 * transform, patch.m13 * transform,
                                                        patch.m20 * transform, patch.m21 * transform, patch.m22 * transform, patch.m23 * transform,
                                                        patch.m30 * transform, patch.m31 * transform, patch.m32 * transform, patch.m33 * transform),
-                                      ColorPixel(c0.convert(to: colorSpace, intent: _renderingIntent)),
-                                      ColorPixel(c1.convert(to: colorSpace, intent: _renderingIntent)),
-                                      ColorPixel(c2.convert(to: colorSpace, intent: _renderingIntent)),
-                                      ColorPixel(c3.convert(to: colorSpace, intent: _renderingIntent)))
+                                      ColorPixel(c0.convert(to: colorSpace, intent: renderingIntent)),
+                                      ColorPixel(c1.convert(to: colorSpace, intent: renderingIntent)),
+                                      ColorPixel(c2.convert(to: colorSpace, intent: renderingIntent)),
+                                      ColorPixel(c3.convert(to: colorSpace, intent: renderingIntent)))
                     }
                 }
             }
