@@ -287,56 +287,56 @@ public func cbrt(_ c: Complex) -> Complex {
 }
 
 @_inlineable
-public func +(lhs: Complex, rhs:  Double) -> Complex {
+public func +(lhs: Complex, rhs: Double) -> Complex {
     return Complex(real: lhs.real + rhs, imag: lhs.imag)
 }
 @_inlineable
-public func -(lhs: Complex, rhs:  Double) -> Complex {
+public func -(lhs: Complex, rhs: Double) -> Complex {
     return Complex(real: lhs.real - rhs, imag: lhs.imag)
 }
 @_inlineable
-public func +(lhs: Double, rhs:  Complex) -> Complex {
+public func +(lhs: Double, rhs: Complex) -> Complex {
     return Complex(real: lhs + rhs.real, imag: rhs.imag)
 }
 @_inlineable
-public func -(lhs: Double, rhs:  Complex) -> Complex {
+public func -(lhs: Double, rhs: Complex) -> Complex {
     return Complex(real: lhs - rhs.real, imag: -rhs.imag)
 }
 @_inlineable
-public func +(lhs: Complex, rhs:  Complex) -> Complex {
+public func +(lhs: Complex, rhs: Complex) -> Complex {
     return Complex(real: lhs.real + rhs.real, imag: lhs.imag + rhs.imag)
 }
 @_inlineable
-public func -(lhs: Complex, rhs:  Complex) -> Complex {
+public func -(lhs: Complex, rhs: Complex) -> Complex {
     return Complex(real: lhs.real - rhs.real, imag: lhs.imag - rhs.imag)
 }
 @_inlineable
-public func *(lhs: Complex, rhs:  Double) -> Complex {
+public func *(lhs: Complex, rhs: Double) -> Complex {
     return Complex(real: lhs.real * rhs, imag: lhs.imag * rhs)
 }
 @_inlineable
-public func *(lhs: Double, rhs:  Complex) -> Complex {
+public func *(lhs: Double, rhs: Complex) -> Complex {
     return Complex(real: lhs * rhs.real, imag: lhs * rhs.imag)
 }
 @_inlineable
-public func *(lhs: Complex, rhs:  Complex) -> Complex {
+public func *(lhs: Complex, rhs: Complex) -> Complex {
     let _real = lhs.real * rhs.real - lhs.imag * rhs.imag
     let _imag = lhs.real * rhs.imag + lhs.imag * rhs.real
     return Complex(real: _real, imag: _imag)
 }
 @_inlineable
-public func /(lhs: Complex, rhs:  Double) -> Complex {
+public func /(lhs: Complex, rhs: Double) -> Complex {
     return Complex(real: lhs.real / rhs, imag: lhs.imag / rhs)
 }
 @_inlineable
-public func /(lhs: Double, rhs:  Complex) -> Complex {
+public func /(lhs: Double, rhs: Complex) -> Complex {
     let _norm = norm(rhs)
     let _real = lhs * rhs.real / _norm
     let _imag = -rhs.imag * lhs / _norm
     return Complex(real: _real, imag: _imag)
 }
 @_inlineable
-public func /(lhs: Complex, rhs:  Complex) -> Complex {
+public func /(lhs: Complex, rhs: Complex) -> Complex {
     let _norm = norm(rhs)
     let _real = lhs.real * rhs.real + lhs.imag * rhs.imag
     let _imag = lhs.imag * rhs.real - lhs.real * rhs.imag
@@ -347,46 +347,46 @@ public prefix func + (value: Complex) -> Complex {
     return value
 }
 @_inlineable
-public prefix func -(value:  Complex) -> Complex {
+public prefix func -(value: Complex) -> Complex {
     return Complex(real: -value.real, imag: -value.imag)
 }
 @_inlineable
-public func +=(lhs: inout Complex, rhs:  Double) {
+public func +=(lhs: inout Complex, rhs: Double) {
     lhs.real += rhs
 }
 @_inlineable
-public func -=(lhs: inout Complex, rhs:  Double) {
+public func -=(lhs: inout Complex, rhs: Double) {
     lhs.real -= rhs
 }
 @_inlineable
-public func *=(lhs: inout Complex, rhs:  Double) {
+public func *=(lhs: inout Complex, rhs: Double) {
     lhs.real *= rhs
     lhs.imag *= rhs
 }
 @_inlineable
-public func /=(lhs: inout Complex, rhs:  Double) {
+public func /=(lhs: inout Complex, rhs: Double) {
     lhs.real /= rhs
     lhs.imag /= rhs
 }
 @_inlineable
-public func +=(lhs: inout Complex, rhs:  Complex) {
+public func +=(lhs: inout Complex, rhs: Complex) {
     lhs.real += rhs.real
     lhs.imag += rhs.imag
 }
 @_inlineable
-public func -=(lhs: inout Complex, rhs:  Complex) {
+public func -=(lhs: inout Complex, rhs: Complex) {
     lhs.real -= rhs.real
     lhs.imag -= rhs.imag
 }
 @_inlineable
-public func *=(lhs: inout Complex, rhs:  Complex) {
+public func *=(lhs: inout Complex, rhs: Complex) {
     let _real = lhs.real * rhs.real - lhs.imag * rhs.imag
     let _imag = lhs.real * rhs.imag + lhs.imag * rhs.real
     lhs.real = _real
     lhs.imag = _imag
 }
 @_inlineable
-public func /=(lhs: inout Complex, rhs:  Complex) {
+public func /=(lhs: inout Complex, rhs: Complex) {
     let _norm = norm(rhs)
     let _real = lhs.real * rhs.real + lhs.imag * rhs.imag
     let _imag = lhs.imag * rhs.real - lhs.real * rhs.imag

@@ -106,11 +106,11 @@ extension Vector : Additive, Subtractive {
 }
 
 @_inlineable
-public func dot(_ lhs: Vector, _ rhs:  Vector) -> Double {
+public func dot(_ lhs: Vector, _ rhs: Vector) -> Double {
     return lhs.x * rhs.x + lhs.y * rhs.y + lhs.z * rhs.z
 }
 @_inlineable
-public func cross(_ lhs: Vector, _ rhs:  Vector) -> Vector {
+public func cross(_ lhs: Vector, _ rhs: Vector) -> Vector {
     return Vector(x: lhs.y * rhs.z - lhs.z * rhs.y, y: lhs.z * rhs.x - lhs.x * rhs.z, z: lhs.x * rhs.y - lhs.y * rhs.x)
 }
 
@@ -123,48 +123,48 @@ public prefix func -(val: Vector) -> Vector {
     return Vector(x: -val.x, y: -val.y, z: -val.z)
 }
 @_inlineable
-public func +(lhs: Vector, rhs:  Vector) -> Vector {
+public func +(lhs: Vector, rhs: Vector) -> Vector {
     return Vector(x: lhs.x + rhs.x, y: lhs.y + rhs.y, z: lhs.z + rhs.z)
 }
 @_inlineable
-public func -(lhs: Vector, rhs:  Vector) -> Vector {
+public func -(lhs: Vector, rhs: Vector) -> Vector {
     return Vector(x: lhs.x - rhs.x, y: lhs.y - rhs.y, z: lhs.z - rhs.z)
 }
 
 @_inlineable
-public func *(lhs: Double, rhs:  Vector) -> Vector {
+public func *(lhs: Double, rhs: Vector) -> Vector {
     return Vector(x: lhs * rhs.x, y: lhs * rhs.y, z: lhs * rhs.z)
 }
 @_inlineable
-public func *(lhs: Vector, rhs:  Double) -> Vector {
+public func *(lhs: Vector, rhs: Double) -> Vector {
     return Vector(x: lhs.x * rhs, y: lhs.y * rhs, z: lhs.z * rhs)
 }
 
 @_inlineable
-public func /(lhs: Vector, rhs:  Double) -> Vector {
+public func /(lhs: Vector, rhs: Double) -> Vector {
     return Vector(x: lhs.x / rhs, y: lhs.y / rhs, z: lhs.z / rhs)
 }
 
 @_inlineable
-public func *= (lhs: inout Vector, rhs:  Double) {
+public func *= (lhs: inout Vector, rhs: Double) {
     lhs.x *= rhs
     lhs.y *= rhs
     lhs.z *= rhs
 }
 @_inlineable
-public func /= (lhs: inout Vector, rhs:  Double) {
+public func /= (lhs: inout Vector, rhs: Double) {
     lhs.x /= rhs
     lhs.y /= rhs
     lhs.z /= rhs
 }
 @_inlineable
-public func += (lhs: inout Vector, rhs:  Vector) {
+public func += (lhs: inout Vector, rhs: Vector) {
     lhs.x += rhs.x
     lhs.y += rhs.y
     lhs.z += rhs.z
 }
 @_inlineable
-public func -= (lhs: inout Vector, rhs:  Vector) {
+public func -= (lhs: inout Vector, rhs: Vector) {
     lhs.x -= rhs.x
     lhs.y -= rhs.y
     lhs.z -= rhs.z

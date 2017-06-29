@@ -129,7 +129,7 @@ extension ColorBlendMode {
         case .lighten: return max(destination, source)
         case .colorDodge: return ColorDodge(source, destination)
         case .colorBurn: return ColorBurn(source, destination)
-        case .softLight:  return SoftLight(source, destination)
+        case .softLight: return SoftLight(source, destination)
         case .hardLight: return HardLight(source, destination)
         case .difference: return abs(destination - source)
         case .exclusion: return destination + source - 2 * destination * source

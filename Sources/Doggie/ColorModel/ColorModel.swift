@@ -101,7 +101,7 @@ public prefix func -<Model : ColorModelProtocol>(val: Model) -> Model {
     return result
 }
 @_inlineable
-public func +<Model : ColorModelProtocol>(lhs: Model, rhs:  Model) -> Model {
+public func +<Model : ColorModelProtocol>(lhs: Model, rhs: Model) -> Model {
     var result = Model()
     for i in 0..<Model.numberOfComponents {
         result.setComponent(i, lhs.component(i) + rhs.component(i))
@@ -109,7 +109,7 @@ public func +<Model : ColorModelProtocol>(lhs: Model, rhs:  Model) -> Model {
     return result
 }
 @_inlineable
-public func -<Model : ColorModelProtocol>(lhs: Model, rhs:  Model) -> Model {
+public func -<Model : ColorModelProtocol>(lhs: Model, rhs: Model) -> Model {
     var result = Model()
     for i in 0..<Model.numberOfComponents {
         result.setComponent(i, lhs.component(i) - rhs.component(i))
@@ -118,7 +118,7 @@ public func -<Model : ColorModelProtocol>(lhs: Model, rhs:  Model) -> Model {
 }
 
 @_inlineable
-public func *<Model : ColorModelProtocol>(lhs: Double, rhs:  Model) -> Model {
+public func *<Model : ColorModelProtocol>(lhs: Double, rhs: Model) -> Model {
     var result = Model()
     for i in 0..<Model.numberOfComponents {
         result.setComponent(i, lhs * rhs.component(i))
@@ -126,7 +126,7 @@ public func *<Model : ColorModelProtocol>(lhs: Double, rhs:  Model) -> Model {
     return result
 }
 @_inlineable
-public func *<Model : ColorModelProtocol>(lhs: Model, rhs:  Double) -> Model {
+public func *<Model : ColorModelProtocol>(lhs: Model, rhs: Double) -> Model {
     var result = Model()
     for i in 0..<Model.numberOfComponents {
         result.setComponent(i, lhs.component(i) * rhs)
@@ -135,7 +135,7 @@ public func *<Model : ColorModelProtocol>(lhs: Model, rhs:  Double) -> Model {
 }
 
 @_inlineable
-public func /<Model : ColorModelProtocol>(lhs: Model, rhs:  Double) -> Model {
+public func /<Model : ColorModelProtocol>(lhs: Model, rhs: Double) -> Model {
     var result = Model()
     for i in 0..<Model.numberOfComponents {
         result.setComponent(i, lhs.component(i) / rhs)
@@ -144,25 +144,25 @@ public func /<Model : ColorModelProtocol>(lhs: Model, rhs:  Double) -> Model {
 }
 
 @_inlineable
-public func *=<Model : ColorModelProtocol> (lhs: inout Model, rhs:  Double) {
+public func *=<Model : ColorModelProtocol> (lhs: inout Model, rhs: Double) {
     for i in 0..<Model.numberOfComponents {
         lhs.setComponent(i, lhs.component(i) * rhs)
     }
 }
 @_inlineable
-public func /=<Model : ColorModelProtocol> (lhs: inout Model, rhs:  Double) {
+public func /=<Model : ColorModelProtocol> (lhs: inout Model, rhs: Double) {
     for i in 0..<Model.numberOfComponents {
         lhs.setComponent(i, lhs.component(i) / rhs)
     }
 }
 @_inlineable
-public func +=<Model : ColorModelProtocol> (lhs: inout Model, rhs:  Model) {
+public func +=<Model : ColorModelProtocol> (lhs: inout Model, rhs: Model) {
     for i in 0..<Model.numberOfComponents {
         lhs.setComponent(i, lhs.component(i) + rhs.component(i))
     }
 }
 @_inlineable
-public func -=<Model : ColorModelProtocol> (lhs: inout Model, rhs:  Model) {
+public func -=<Model : ColorModelProtocol> (lhs: inout Model, rhs: Model) {
     for i in 0..<Model.numberOfComponents {
         lhs.setComponent(i, lhs.component(i) - rhs.component(i))
     }

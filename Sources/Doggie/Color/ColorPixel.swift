@@ -88,50 +88,50 @@ public prefix func -<Pixel : ColorPixelProtocol>(val: Pixel) -> Pixel {
     return Pixel(color: -val.color, opacity: -val.opacity)
 }
 @_inlineable
-public func +<Pixel : ColorPixelProtocol>(lhs: Pixel, rhs:  Pixel) -> Pixel {
+public func +<Pixel : ColorPixelProtocol>(lhs: Pixel, rhs: Pixel) -> Pixel {
     
     return Pixel(color: lhs.color + rhs.color, opacity: lhs.opacity + rhs.opacity)
 }
 @_inlineable
-public func -<Pixel : ColorPixelProtocol>(lhs: Pixel, rhs:  Pixel) -> Pixel {
+public func -<Pixel : ColorPixelProtocol>(lhs: Pixel, rhs: Pixel) -> Pixel {
     
     return Pixel(color: lhs.color - rhs.color, opacity: lhs.opacity - rhs.opacity)
 }
 
 @_inlineable
-public func *<Pixel : ColorPixelProtocol>(lhs: Double, rhs:  Pixel) -> Pixel {
+public func *<Pixel : ColorPixelProtocol>(lhs: Double, rhs: Pixel) -> Pixel {
     
     return Pixel(color: lhs * rhs.color, opacity: lhs * rhs.opacity)
 }
 @_inlineable
-public func *<Pixel : ColorPixelProtocol>(lhs: Pixel, rhs:  Double) -> Pixel {
+public func *<Pixel : ColorPixelProtocol>(lhs: Pixel, rhs: Double) -> Pixel {
     
     return Pixel(color: lhs.color * rhs, opacity: lhs.opacity * rhs)
 }
 
 @_inlineable
-public func /<Pixel : ColorPixelProtocol>(lhs: Pixel, rhs:  Double) -> Pixel {
+public func /<Pixel : ColorPixelProtocol>(lhs: Pixel, rhs: Double) -> Pixel {
     
     return Pixel(color: lhs.color / rhs, opacity: lhs.opacity / rhs)
 }
 
 @_inlineable
-public func *=<Pixel : ColorPixelProtocol> (lhs: inout Pixel, rhs:  Double) {
+public func *=<Pixel : ColorPixelProtocol> (lhs: inout Pixel, rhs: Double) {
     lhs.color *= rhs
     lhs.opacity *= rhs
 }
 @_inlineable
-public func /=<Pixel : ColorPixelProtocol> (lhs: inout Pixel, rhs:  Double) {
+public func /=<Pixel : ColorPixelProtocol> (lhs: inout Pixel, rhs: Double) {
     lhs.color /= rhs
     lhs.opacity /= rhs
 }
 @_inlineable
-public func +=<Pixel : ColorPixelProtocol> (lhs: inout Pixel, rhs:  Pixel) {
+public func +=<Pixel : ColorPixelProtocol> (lhs: inout Pixel, rhs: Pixel) {
     lhs.color += rhs.color
     lhs.opacity += rhs.opacity
 }
 @_inlineable
-public func -=<Pixel : ColorPixelProtocol> (lhs: inout Pixel, rhs:  Pixel) {
+public func -=<Pixel : ColorPixelProtocol> (lhs: inout Pixel, rhs: Pixel) {
     lhs.color -= rhs.color
     lhs.opacity -= rhs.opacity
 }

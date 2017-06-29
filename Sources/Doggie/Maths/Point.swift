@@ -122,12 +122,12 @@ extension Point : Additive, Subtractive {
 }
 
 @_inlineable
-public func dot(_ lhs: Point, _ rhs:  Point) -> Double {
+public func dot(_ lhs: Point, _ rhs: Point) -> Double {
     return lhs.x * rhs.x + lhs.y * rhs.y
 }
 
 @_inlineable
-public func cross(_ lhs: Point, _ rhs:  Point) -> Double {
+public func cross(_ lhs: Point, _ rhs: Point) -> Double {
     return lhs.x * rhs.y - lhs.y * rhs.x
 }
 
@@ -140,45 +140,45 @@ public prefix func -(val: Point) -> Point {
     return Point(x: -val.x, y: -val.y)
 }
 @_inlineable
-public func +(lhs: Point, rhs:  Point) -> Point {
+public func +(lhs: Point, rhs: Point) -> Point {
     return Point(x: lhs.x + rhs.x, y: lhs.y + rhs.y)
 }
 @_inlineable
-public func -(lhs: Point, rhs:  Point) -> Point {
+public func -(lhs: Point, rhs: Point) -> Point {
     return Point(x: lhs.x - rhs.x, y: lhs.y - rhs.y)
 }
 
 @_inlineable
-public func *(lhs: Double, rhs:  Point) -> Point {
+public func *(lhs: Double, rhs: Point) -> Point {
     return Point(x: lhs * rhs.x, y: lhs * rhs.y)
 }
 @_inlineable
-public func *(lhs: Point, rhs:  Double) -> Point {
+public func *(lhs: Point, rhs: Double) -> Point {
     return Point(x: lhs.x * rhs, y: lhs.y * rhs)
 }
 
 @_inlineable
-public func /(lhs: Point, rhs:  Double) -> Point {
+public func /(lhs: Point, rhs: Double) -> Point {
     return Point(x: lhs.x / rhs, y: lhs.y / rhs)
 }
 
 @_inlineable
-public func *= (lhs: inout Point, rhs:  Double) {
+public func *= (lhs: inout Point, rhs: Double) {
     lhs.x *= rhs
     lhs.y *= rhs
 }
 @_inlineable
-public func /= (lhs: inout Point, rhs:  Double) {
+public func /= (lhs: inout Point, rhs: Double) {
     lhs.x /= rhs
     lhs.y /= rhs
 }
 @_inlineable
-public func += (lhs: inout Point, rhs:  Point) {
+public func += (lhs: inout Point, rhs: Point) {
     lhs.x += rhs.x
     lhs.y += rhs.y
 }
 @_inlineable
-public func -= (lhs: inout Point, rhs:  Point) {
+public func -= (lhs: inout Point, rhs: Point) {
     lhs.x -= rhs.x
     lhs.y -= rhs.y
 }

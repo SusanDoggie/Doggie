@@ -103,45 +103,45 @@ public prefix func -(val: Size) -> Size {
     return Size(width: -val.width, height: -val.height)
 }
 @_inlineable
-public func +(lhs: Size, rhs:  Size) -> Size {
+public func +(lhs: Size, rhs: Size) -> Size {
     return Size(width: lhs.width + rhs.width, height: lhs.height + rhs.height)
 }
 @_inlineable
-public func -(lhs: Size, rhs:  Size) -> Size {
+public func -(lhs: Size, rhs: Size) -> Size {
     return Size(width: lhs.width - rhs.width, height: lhs.height - rhs.height)
 }
 
 @_inlineable
-public func *(lhs: Double, rhs:  Size) -> Size {
+public func *(lhs: Double, rhs: Size) -> Size {
     return Size(width: lhs * rhs.width, height: lhs * rhs.height)
 }
 @_inlineable
-public func *(lhs: Size, rhs:  Double) -> Size {
+public func *(lhs: Size, rhs: Double) -> Size {
     return Size(width: lhs.width * rhs, height: lhs.height * rhs)
 }
 
 @_inlineable
-public func /(lhs: Size, rhs:  Double) -> Size {
+public func /(lhs: Size, rhs: Double) -> Size {
     return Size(width: lhs.width / rhs, height: lhs.height / rhs)
 }
 
 @_inlineable
-public func *= (lhs: inout Size, rhs:  Double) {
+public func *= (lhs: inout Size, rhs: Double) {
     lhs.width *= rhs
     lhs.height *= rhs
 }
 @_inlineable
-public func /= (lhs: inout Size, rhs:  Double) {
+public func /= (lhs: inout Size, rhs: Double) {
     lhs.width /= rhs
     lhs.height /= rhs
 }
 @_inlineable
-public func += (lhs: inout Size, rhs:  Size) {
+public func += (lhs: inout Size, rhs: Size) {
     lhs.width += rhs.width
     lhs.height += rhs.height
 }
 @_inlineable
-public func -= (lhs: inout Size, rhs:  Size) {
+public func -= (lhs: inout Size, rhs: Size) {
     lhs.width -= rhs.width
     lhs.height -= rhs.height
 }
