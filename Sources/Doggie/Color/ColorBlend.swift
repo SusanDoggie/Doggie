@@ -79,7 +79,7 @@ extension ColorBlendMode {
         @inline(__always)
         func ColorDodge(_ source: Double, _ destination: Double) -> Double {
             
-            if (source < 1) {
+            if source < 1 {
                 return min(1, destination / (1 - source))
             }
             return 1
@@ -88,7 +88,7 @@ extension ColorBlendMode {
         @inline(__always)
         func ColorBurn(_ source: Double, _ destination: Double) -> Double {
             
-            if (source > 0) {
+            if source > 0 {
                 return 1 - min(1, (1 - destination) / source)
             }
             return 0
@@ -97,15 +97,15 @@ extension ColorBlendMode {
         @inline(__always)
         func SoftLight(_ source: Double, _ destination: Double) -> Double {
             
-            let db: Double;
+            let db: Double
             
-            if (destination <= 0.25) {
+            if destination <= 0.25 {
                 db = ((16 * destination - 12) * destination + 4) * destination
             } else {
                 db = sqrt(destination)
             }
             
-            if (source <= 0.5) {
+            if source <= 0.5 {
                 return destination - (1 - 2 * source) * destination * (1 - destination)
             }
             return destination + (2 * source - 1) * (db - destination)
@@ -114,14 +114,14 @@ extension ColorBlendMode {
         @inline(__always)
         func HardLight(_ source: Double, _ destination: Double) -> Double {
             
-            if (source <= 0.5) {
+            if source <= 0.5 {
                 return 2 * source * destination
             }
             return Screen(destination, 2 * source - 1)
         }
         
         switch self {
-        case .normal: return source
+        case .normal: fatalError()
         case .multiply: return destination * source
         case .screen: return Screen(source, destination)
         case .overlay: return HardLight(destination, source)
@@ -198,7 +198,7 @@ extension ColorCompositingMode {
 extension ColorPixelProtocol {
     
     @_inlineable
-    public mutating func blend<C : ColorPixelProtocol>(source: C, blendMode: ColorBlendMode, compositingMode: ColorCompositingMode) where C.Model == Model {
+    public mutating func blend<C : ColorPixelProtocol>(source: C, blendMode: ColorBlendMode = .default, compositingMode: ColorCompositingMode = .default) where C.Model == Model {
         
         let d_alpha = self.opacity
         let s_alpha = source.opacity
@@ -210,7 +210,7 @@ extension ColorPixelProtocol {
             for i in 0..<Model.numberOfComponents {
                 let _source = source.color.component(i)
                 let _destination = self.color.component(i)
-                let blended = (1 - d_alpha) * _source + d_alpha * blendMode.blend(_source, _destination)
+                let blended = blendMode == .normal ? _source : (1 - d_alpha) * _source + d_alpha * blendMode.blend(_source, _destination)
                 self.color.setComponent(i, compositingMode.mix(s_alpha * blended, s_alpha, d_alpha * _destination, d_alpha) / r_alpha)
             }
         } else {
@@ -219,7 +219,7 @@ extension ColorPixelProtocol {
     }
     
     @_inlineable
-    public func blended<C : ColorPixelProtocol>(source: C, blendMode: ColorBlendMode, compositingMode: ColorCompositingMode) -> Self where C.Model == Model {
+    public func blended<C : ColorPixelProtocol>(source: C, blendMode: ColorBlendMode = .default, compositingMode: ColorCompositingMode = .default) -> Self where C.Model == Model {
         var result = self
         result.blend(source: source, blendMode: blendMode, compositingMode: compositingMode)
         return result

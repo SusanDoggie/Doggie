@@ -239,14 +239,14 @@ extension Color {
 extension Color {
     
     @_inlineable
-    public func blended<C>(source: Color<C>, blendMode: ColorBlendMode, compositingMode: ColorCompositingMode) -> Color {
+    public func blended<C>(source: Color<C>, blendMode: ColorBlendMode = .default, compositingMode: ColorCompositingMode = .default) -> Color {
         let source = source.convert(to: colorSpace)
         let color = ColorPixel(color: self.color, opacity: self.opacity).blended(source: ColorPixel(color: source.color, opacity: source.opacity), blendMode: blendMode, compositingMode: compositingMode)
         return Color(colorSpace: colorSpace, color: color.color, opacity: color.opacity)
     }
     
     @_inlineable
-    public mutating func blend<C>(source: Color<C>, blendMode: ColorBlendMode, compositingMode: ColorCompositingMode) {
+    public mutating func blend<C>(source: Color<C>, blendMode: ColorBlendMode = .default, compositingMode: ColorCompositingMode = .default) {
         self = self.blended(source: source, blendMode: blendMode, compositingMode: compositingMode)
     }
 }

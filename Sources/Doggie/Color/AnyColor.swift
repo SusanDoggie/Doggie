@@ -163,22 +163,22 @@ extension AnyColor {
 extension AnyColor {
     
     @_inlineable
-    public func blended<C>(source: Color<C>, blendMode: ColorBlendMode, compositingMode: ColorCompositingMode) -> AnyColor {
+    public func blended<C>(source: Color<C>, blendMode: ColorBlendMode = .default, compositingMode: ColorCompositingMode = .default) -> AnyColor {
         return AnyColor(base: base._blended(source: source, blendMode: blendMode, compositingMode: compositingMode))
     }
     
     @_inlineable
-    public func blended(source: AnyColor, blendMode: ColorBlendMode, compositingMode: ColorCompositingMode) -> AnyColor {
+    public func blended(source: AnyColor, blendMode: ColorBlendMode = .default, compositingMode: ColorCompositingMode = .default) -> AnyColor {
         return AnyColor(base: source.base._blendedTo(destination: base, blendMode: blendMode, compositingMode: compositingMode))
     }
     
     @_inlineable
-    public mutating func blend<C>(source: Color<C>, blendMode: ColorBlendMode, compositingMode: ColorCompositingMode) {
+    public mutating func blend<C>(source: Color<C>, blendMode: ColorBlendMode = .default, compositingMode: ColorCompositingMode = .default) {
         self = self.blended(source: source, blendMode: blendMode, compositingMode: compositingMode)
     }
     
     @_inlineable
-    public mutating func blend(source: AnyColor, blendMode: ColorBlendMode, compositingMode: ColorCompositingMode) {
+    public mutating func blend(source: AnyColor, blendMode: ColorBlendMode = .default, compositingMode: ColorCompositingMode = .default) {
         self = self.blended(source: source, blendMode: blendMode, compositingMode: compositingMode)
     }
 }

@@ -36,6 +36,8 @@ protocol AnyColorSpaceBaseProtocol {
     
     var numberOfComponents: Int { get }
     
+    var _cieXYZ: ColorSpace<XYZColorModel> { get }
+    
     func _createColor<S : Sequence>(components: S, opacity: Double) -> AnyColorBaseProtocol where S.Element == Double
     
     func _createImage(width: Int, height: Int) -> AnyImageBaseProtocol
@@ -48,6 +50,12 @@ protocol AnyColorSpaceBaseProtocol {
 }
 
 extension ColorSpace : AnyColorSpaceBaseProtocol {
+    
+    @_versioned
+    @_inlineable
+    var _cieXYZ: ColorSpace<XYZColorModel> {
+        return ColorSpace<XYZColorModel>.cieXYZ(from: self)
+    }
     
     @_versioned
     @_inlineable
@@ -145,6 +153,58 @@ extension AnyColorSpace {
     @_inlineable
     public var linearTone: AnyColorSpace {
         return AnyColorSpace(base: base._linearTone)
+    }
+}
+
+extension AnyColorSpace {
+    
+    @_inlineable
+    public static func cieXYZ<C>(from colorSpace: ColorSpace<C>) -> AnyColorSpace {
+        return AnyColorSpace(base: ColorSpace.cieXYZ(from: colorSpace))
+    }
+    
+    @_inlineable
+    public static func cieXYZ(from colorSpace: AnyColorSpace) -> AnyColorSpace {
+        return AnyColorSpace(base: colorSpace.base._cieXYZ)
+    }
+}
+
+extension AnyColorSpace {
+    
+    @_inlineable
+    public static func cieLab<C>(from colorSpace: ColorSpace<C>) -> AnyColorSpace {
+        return AnyColorSpace(base: ColorSpace.cieLab(from: colorSpace))
+    }
+    
+    @_inlineable
+    public static func cieLab(from colorSpace: AnyColorSpace) -> AnyColorSpace {
+        return AnyColorSpace(base: ColorSpace.cieLab(from: colorSpace.base._cieXYZ))
+    }
+}
+
+extension AnyColorSpace {
+    
+    @_inlineable
+    public static func cieLuv<C>(from colorSpace: ColorSpace<C>) -> AnyColorSpace {
+        return AnyColorSpace(base: ColorSpace.cieLuv(from: colorSpace))
+    }
+    
+    @_inlineable
+    public static func cieLuv(from colorSpace: AnyColorSpace) -> AnyColorSpace {
+        return AnyColorSpace(base: ColorSpace.cieLuv(from: colorSpace.base._cieXYZ))
+    }
+}
+
+extension AnyColorSpace {
+    
+    @_inlineable
+    public static func calibratedGray<C>(from colorSpace: ColorSpace<C>) -> AnyColorSpace {
+        return AnyColorSpace(base: ColorSpace.calibratedGray(from: colorSpace))
+    }
+    
+    @_inlineable
+    public static func calibratedGray(from colorSpace: AnyColorSpace) -> AnyColorSpace {
+        return AnyColorSpace(base: ColorSpace.calibratedGray(from: colorSpace.base._cieXYZ))
     }
 }
 

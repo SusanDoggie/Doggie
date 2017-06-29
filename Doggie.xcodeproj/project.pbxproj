@@ -471,10 +471,7 @@
 			isa = PBXGroup;
 			children = (
 				0AE719FF1EF517CA0086923C /* AnyImage.swift */,
-				0A7D3ADA1ECAD5890030DC26 /* ColorBlend.swift */,
-				08458AD11E2E627600D01813 /* ColorPixel.swift */,
 				08458AD31E2E627600D01813 /* Image.swift */,
-				0A39A6B31ED9342C00804004 /* ImageContext */,
 			);
 			path = Image;
 			sourceTree = "<group>";
@@ -521,8 +518,11 @@
 				08458ABA1E2E627600D01813 /* Foundation */,
 				08458AC31E2E627600D01813 /* Fourier.swift */,
 				0A0697561E4D6659005CF664 /* CoreGraphics */,
+				0A9F28191EF0D96100E69976 /* ColorModel */,
 				0A9F28181EF0D5FD00E69976 /* Color */,
+				08B68A2F1ED07A2400F8D423 /* ColorSpace */,
 				08458ACE1E2E627600D01813 /* Image */,
+				0A39A6B31ED9342C00804004 /* ImageContext */,
 				08458AD41E2E627600D01813 /* Maths */,
 				0A9AA83E1E54373E007A2B92 /* PDF */,
 				08458AE01E2E627600D01813 /* SDMarker.swift */,
@@ -641,6 +641,7 @@
 		08B68A2F1ED07A2400F8D423 /* ColorSpace */ = {
 			isa = PBXGroup;
 			children = (
+				0AE71A021EF51DF80086923C /* AnyColorSpace.swift */,
 				0AC527DF1EEFEFF900FB239A /* iccProfile */,
 				08B68A301ED07A2400F8D423 /* ColorSpace.swift */,
 				0A95A59D1EF3906000D030D5 /* ICCColorSpace.swift */,
@@ -788,10 +789,9 @@
 			isa = PBXGroup;
 			children = (
 				0AE719F91EF50EEB0086923C /* AnyColor.swift */,
-				0AE71A021EF51DF80086923C /* AnyColorSpace.swift */,
 				08458ACF1E2E627600D01813 /* Color.swift */,
-				0A9F28191EF0D96100E69976 /* ColorModel */,
-				08B68A2F1ED07A2400F8D423 /* ColorSpace */,
+				08458AD11E2E627600D01813 /* ColorPixel.swift */,
+				0A7D3ADA1ECAD5890030DC26 /* ColorBlend.swift */,
 			);
 			path = Color;
 			sourceTree = "<group>";
