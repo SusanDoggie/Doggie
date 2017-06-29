@@ -233,9 +233,9 @@ extension ImageContext {
             bound.origin /= 5
             bound.size /= 5
             
-            stencil.withUnsafeBufferPointer { stencil in
+            stencil.withUnsafeBytes { stencil in
                 
-                if var _stencil = stencil.baseAddress {
+                if var _stencil = stencil.baseAddress?.assumingMemoryBound(to: (Int16, Int16, Int16, Int16, Int16).self) {
                     
                     self.withUnsafeMutableImageBufferPointer { _image in
                         
@@ -250,7 +250,7 @@ extension ImageContext {
                                     let _width = min(width - offset_x, Int(ceil(bound.width + 1)))
                                     let _height = min(height - offset_y, Int(ceil(bound.height + 1)))
                                     
-                                    _stencil += 5 * offset_x + 25 * offset_y * width
+                                    _stencil += offset_x + 5 * offset_y * width
                                     _destination += offset_x + offset_y * width
                                     _clip += offset_x + offset_y * width
                                     
@@ -267,14 +267,13 @@ extension ImageContext {
                                             var _s = __stencil
                                             
                                             for _ in 0..<5 {
-                                                var __s = _s
-                                                for _ in 0..<5 {
-                                                    if winding(__s.pointee) {
-                                                        _p += 1
-                                                    }
-                                                    __s += 1
-                                                }
-                                                _s += 5 * width
+                                                let (s0, s1, s2, s3, s4) = _s.pointee
+                                                if winding(s0) { _p += 1 }
+                                                if winding(s1) { _p += 1 }
+                                                if winding(s2) { _p += 1 }
+                                                if winding(s3) { _p += 1 }
+                                                if winding(s4) { _p += 1 }
+                                                _s += width
                                             }
                                             
                                             let _alpha = __clip.pointee * (0.04 * Double(_p))
@@ -287,12 +286,12 @@ extension ImageContext {
                                                 __destination.pointee.blend(source: source, blendMode: blendMode, compositingMode: compositingMode)
                                             }
                                             
-                                            __stencil += 5
+                                            __stencil += 1
                                             __destination += 1
                                             __clip += 1
                                         }
                                         
-                                        _stencil += 25 * width
+                                        _stencil += 5 * width
                                         _destination += width
                                         _clip += width
                                     }
