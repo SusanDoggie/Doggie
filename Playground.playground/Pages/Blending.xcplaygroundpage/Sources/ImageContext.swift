@@ -4,7 +4,7 @@ import Doggie
 
 public func doggie(blendMode: ColorBlendMode, compositingMode: ColorCompositingMode, opacity: Double) -> Image<ARGB32ColorPixel> {
     
-    let context = ImageContext(width: 500, height: 500, colorSpace: ColorSpace.sRGB)
+    let context = ImageContext<ARGB32ColorPixel>(width: 500, height: 500, colorSpace: ColorSpace.sRGB)
     
     context.transform = SDTransform.scale(5)
     
@@ -22,7 +22,7 @@ public func doggie(blendMode: ColorBlendMode, compositingMode: ColorCompositingM
     
     context.draw(shape: Shape.Ellipse(Rect(x: 35, y: 10, width: 55, height: 55)).strokePath(width: 4, cap: .round, join: .round), color: Color(colorSpace: ColorSpace.sRGB, color: RGBColorModel()), winding: .nonZero)
     
-    return Image<ARGB32ColorPixel>(image: context.image)
+    return context.image
 }
 
 public func coregraphic(blendMode: CGBlendMode, opacity: Double) -> NSImage {

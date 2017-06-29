@@ -36,15 +36,15 @@ extension ImageContext {
             return
         }
         
-        let source: Image<ColorPixel<Model>>
+        let source: Image<ColorPixel<Pixel.Model>>
         
         if transform == SDTransform.identity && width == image.width && height == image.height {
             source = Image(image: image, colorSpace: colorSpace, intent: renderingIntent)
-        } else if C.Model.numberOfComponents < Model.numberOfComponents || (C.Model.numberOfComponents == Model.numberOfComponents && width * height < image.width * image.height) {
+        } else if C.Model.numberOfComponents < Pixel.Model.numberOfComponents || (C.Model.numberOfComponents == Pixel.Model.numberOfComponents && width * height < image.width * image.height) {
             let _temp = Image(image: image, width: width, height: height, transform: transform, resampling: resamplingAlgorithm, antialias: antialias)
             source = Image(image: _temp, colorSpace: colorSpace, intent: renderingIntent)
         } else {
-            let _temp = Image(image: image, colorSpace: colorSpace, intent: renderingIntent) as Image<ColorPixel<Model>>
+            let _temp = Image(image: image, colorSpace: colorSpace, intent: renderingIntent) as Image<ColorPixel<Pixel.Model>>
             source = Image(image: _temp, width: width, height: height, transform: transform, resampling: resamplingAlgorithm, antialias: antialias)
         }
         

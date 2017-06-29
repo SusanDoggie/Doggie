@@ -4,7 +4,7 @@ import Doggie
 
 public func sampleImage(width: Int, height: Int) -> Image<ARGB32ColorPixel> {
     
-    let context = ImageContext(width: width, height: height, colorSpace: ColorSpace.sRGB)
+    let context = ImageContext<ARGB32ColorPixel>(width: width, height: height, colorSpace: ColorSpace.sRGB)
     
     context.transform = SDTransform.scale(x: Double(width) / 300, y: Double(height) / 300)
     
@@ -18,6 +18,6 @@ public func sampleImage(width: Int, height: Int) -> Image<ARGB32ColorPixel> {
                          Color(colorSpace: context.colorSpace, color: RGBColorModel(red: 0, green: 0, blue: 1)),
                          Color(colorSpace: context.colorSpace, color: RGBColorModel(red: 1, green: 1, blue: 1)))
     
-    return Image(image: context.image)
+    return context.image
 }
 

@@ -49,7 +49,7 @@ extension ImageContext {
     
     @_versioned
     @_inlineable
-    func _shading(_ shader: (Point) throws -> ColorPixel<Model>) rethrows {
+    func _shading<P : ColorPixelProtocol>(_ shader: (Point) throws -> P) rethrows where Pixel.Model == P.Model {
         
         if self.width == 0 || self.height == 0 || self.transform.determinant.almostZero() {
             return
@@ -102,7 +102,7 @@ extension ImageContext {
 extension ImageContext {
     
     @_inlineable
-    public func axialShading(start: Point, end: Point, startSpread: GradientSpreadMode, endSpread: GradientSpreadMode, shading: (Double) throws -> ColorPixel<Model>) rethrows {
+    public func axialShading<P : ColorPixelProtocol>(start: Point, end: Point, startSpread: GradientSpreadMode, endSpread: GradientSpreadMode, shading: (Double) throws -> P) rethrows where Pixel.Model == P.Model {
         
         if start.almostEqual(end) {
             return
@@ -111,7 +111,7 @@ extension ImageContext {
         let startColor = try shading(0)
         let endColor = try shading(1)
         
-        try self._shading { point in
+        try self._shading { point -> P in
             
             let a = start - point
             let b = end - start
@@ -161,7 +161,7 @@ extension ImageContext {
 extension ImageContext {
     
     @_inlineable
-    public func radialShading(start: Point, startRadius: Double, end: Point, endRadius: Double, startSpread: GradientSpreadMode, endSpread: GradientSpreadMode, shading: (Double) throws -> ColorPixel<Model>) rethrows {
+    public func radialShading<P : ColorPixelProtocol>(start: Point, startRadius: Double, end: Point, endRadius: Double, startSpread: GradientSpreadMode, endSpread: GradientSpreadMode, shading: (Double) throws -> P) rethrows where Pixel.Model == P.Model {
         
         if start.almostEqual(end) && startRadius.almostEqual(endRadius) {
             return
@@ -170,7 +170,7 @@ extension ImageContext {
         let startColor = try shading(0)
         let endColor = try shading(1)
         
-        try self._shading { point in
+        try self._shading { point -> P in
             
             let p0 = point - start
             let p1 = start - end
@@ -240,7 +240,7 @@ extension ImageContext {
                 }
             }
             
-            return ColorPixel()
+            return P()
         }
     }
 }
@@ -256,7 +256,7 @@ extension ImageContext {
         case 0: break
         case 1: axialShading(start: start, end: end, startSpread: startSpread, endSpread: endSpread) { _ in stops[0].1 }
         default:
-            axialShading(start: start, end: end, startSpread: startSpread, endSpread: endSpread) { t in
+            axialShading(start: start, end: end, startSpread: startSpread, endSpread: endSpread) { t -> ColorPixel<Pixel.Model> in
                 
                 if t <= stops[0].0 {
                     return stops[0].1
@@ -288,7 +288,7 @@ extension ImageContext {
         case 0: break
         case 1: radialShading(start: start, startRadius: startRadius, end: end, endRadius: endRadius, startSpread: startSpread, endSpread: endSpread) { _ in stops[0].1 }
         default:
-            radialShading(start: start, startRadius: startRadius, end: end, endRadius: endRadius, startSpread: startSpread, endSpread: endSpread) { t in
+            radialShading(start: start, startRadius: startRadius, end: end, endRadius: endRadius, startSpread: startSpread, endSpread: endSpread) { t -> ColorPixel<Pixel.Model> in
                 
                 if t <= stops[0].0 {
                     return stops[0].1

@@ -27,10 +27,10 @@ import Foundation
 
 @_versioned
 @_fixed_layout
-struct ImageContextGradientMeshRasterizeBuffer<Model : ColorModelProtocol> : RasterizeBufferProtocol {
+struct ImageContextGradientMeshRasterizeBuffer<P : ColorPixelProtocol> : RasterizeBufferProtocol {
     
     @_versioned
-    var destination: UnsafeMutablePointer<ColorPixel<Model>>
+    var destination: UnsafeMutablePointer<P>
     
     @_versioned
     var clip: UnsafePointer<Double>
@@ -43,7 +43,7 @@ struct ImageContextGradientMeshRasterizeBuffer<Model : ColorModelProtocol> : Ras
     
     @_versioned
     @inline(__always)
-    init(destination: UnsafeMutablePointer<ColorPixel<Model>>, clip: UnsafePointer<Double>, width: Int, height: Int) {
+    init(destination: UnsafeMutablePointer<P>, clip: UnsafePointer<Double>, width: Int, height: Int) {
         self.destination = destination
         self.clip = clip
         self.width = width
@@ -68,7 +68,7 @@ extension ImageContext {
     
     @_versioned
     @_inlineable
-    func _drawGradient(_ destination: UnsafeMutablePointer<ColorPixel<Model>>, _ clip: UnsafePointer<Double>, _ patch: CubicBezierPatch, _ c0: ColorPixel<Model>, _ c1: ColorPixel<Model>, _ c2: ColorPixel<Model>, _ c3: ColorPixel<Model>) {
+    func _drawGradient(_ destination: UnsafeMutablePointer<Pixel>, _ clip: UnsafePointer<Double>, _ patch: CubicBezierPatch, _ c0: ColorPixel<Pixel.Model>, _ c1: ColorPixel<Pixel.Model>, _ c2: ColorPixel<Pixel.Model>, _ c3: ColorPixel<Pixel.Model>) {
         
         let (m0, n0) = Bezier(patch.m00, patch.m01, patch.m02, patch.m03).split(0.5)
         let (m1, n1) = Bezier(patch.m10, patch.m11, patch.m12, patch.m13).split(0.5)
@@ -112,7 +112,7 @@ extension ImageContext {
         let c8 = 0.25 * (c0 + c1 + c2 + c3)
         
         @inline(__always)
-        func _draw(_ patch: CubicBezierPatch, _ c0: ColorPixel<Model>, _ c1: ColorPixel<Model>, _ c2: ColorPixel<Model>, _ c3: ColorPixel<Model>) {
+        func _draw(_ patch: CubicBezierPatch, _ c0: ColorPixel<Pixel.Model>, _ c1: ColorPixel<Pixel.Model>, _ c2: ColorPixel<Pixel.Model>, _ c3: ColorPixel<Pixel.Model>) {
             
             let d0 = patch.m00 - patch.m03
             let d1 = patch.m30 - patch.m33
@@ -127,7 +127,7 @@ extension ImageContext {
                 let rasterizer = ImageContextGradientMeshRasterizeBuffer(destination: destination, clip: clip, width: width, height: height)
                 
                 @inline(__always)
-                func _rasterize(_: Point, buf: ImageContextGradientMeshRasterizeBuffer<Model>) {
+                func _rasterize(_: Point, buf: ImageContextGradientMeshRasterizeBuffer<Pixel>) {
                     
                     let _alpha = buf.clip.pointee
                     

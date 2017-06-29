@@ -4,7 +4,7 @@ import Doggie
 
 public func sampleImage(width: Int, height: Int) -> Image<ARGB32ColorPixel> {
     
-    let context = ImageContext(width: width, height: height, colorSpace: ColorSpace.sRGB)
+    let context = ImageContext<ARGB32ColorPixel>(width: width, height: height, colorSpace: ColorSpace.sRGB)
     
     context.transform = SDTransform.scale(5)
     
@@ -16,6 +16,6 @@ public func sampleImage(width: Int, height: Int) -> Image<ARGB32ColorPixel> {
     
     context.draw(shape: Shape.Ellipse(Rect(x: 35, y: 10, width: 55, height: 55)).strokePath(width: 1, cap: .round, join: .round), color: Color(colorSpace: ColorSpace.sRGB, color: RGBColorModel()), winding: .nonZero)
     
-    return Image(image: context.image)
+    return context.image
 }
 

@@ -26,7 +26,7 @@
 extension ImageContext {
     
     @_inlineable
-    public func drawClip(body: (ImageContext<GrayColorModel>) throws -> Void) rethrows {
+    public func drawClip<P>(body: (ImageContext<P>) throws -> Void) rethrows where P.Model == GrayColorModel {
         
         if let next = self.next {
             try next.drawClip(body: body)
@@ -40,7 +40,7 @@ extension ImageContext {
             return
         }
         
-        let _clip = ImageContext<GrayColorModel>(width: width, height: height, colorSpace: ColorSpace.calibratedGray(from: colorSpace))
+        let _clip = ImageContext<P>(width: width, height: height, colorSpace: ColorSpace.calibratedGray(from: colorSpace))
         _clip._antialias = self._antialias
         _clip._transform = self._transform
         _clip._blendMode = self._blendMode

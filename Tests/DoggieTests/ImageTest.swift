@@ -50,7 +50,7 @@ class ImageTest: XCTestCase {
     
     var sample: Image<ARGB32ColorPixel> = {
         
-        let context = ImageContext(width: 100, height: 100, colorSpace: ColorSpace.sRGB)
+        let context = ImageContext<ARGB32ColorPixel>(width: 100, height: 100, colorSpace: ColorSpace.sRGB)
         
         context.draw(shape: Shape.Ellipse(Rect(x: 10, y: 35, width: 55, height: 55)), color: Color(colorSpace: ColorSpace.sRGB, color: RGBColorModel(red: 247/255, green: 217/255, blue: 12/255)), winding: .nonZero)
         
@@ -60,7 +60,7 @@ class ImageTest: XCTestCase {
         
         context.draw(shape: Shape.Ellipse(Rect(x: 35, y: 10, width: 55, height: 55)).strokePath(width: 1, cap: .round, join: .round), color: Color(colorSpace: ColorSpace.sRGB, color: RGBColorModel()), winding: .nonZero)
         
-        return Image(image: context.image)
+        return context.image
     }()
     
     override func setUp() {

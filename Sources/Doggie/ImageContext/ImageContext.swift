@@ -24,10 +24,10 @@
 //
 
 @_fixed_layout
-public class ImageContext<Model : ColorModelProtocol> {
+public class ImageContext<Pixel: ColorPixelProtocol> {
     
     @_versioned
-    var _image: Image<ColorPixel<Model>>
+    var _image: Image<Pixel>
     
     @_versioned
     var clip: [Double]
@@ -63,19 +63,17 @@ public class ImageContext<Model : ColorModelProtocol> {
     var _renderingIntent: RenderingIntent = .default
     
     @_versioned
-    var next: ImageContext<Model>?
+    var next: ImageContext?
     
     @_inlineable
-    public init<P>(image: Image<P>) where P.Model == Model {
-        
-        self._image = Image(image: image)
+    public init(image: Image<Pixel>) {
+        self._image = image
         self.clip = [Double](repeating: 1, count: image.width * image.height)
         self.depth = [Double](repeating: 1, count: image.width * image.height)
     }
     
     @_inlineable
-    public init(width: Int, height: Int, colorSpace: ColorSpace<Model>) {
-        
+    public init(width: Int, height: Int, colorSpace: ColorSpace<Pixel.Model>) {
         self._image = Image(width: width, height: height, colorSpace: colorSpace)
         self.clip = [Double](repeating: 1, count: width * height)
         self.depth = [Double](repeating: 1, count: width * height)
@@ -85,7 +83,7 @@ public class ImageContext<Model : ColorModelProtocol> {
 extension ImageContext {
     
     @_inlineable
-    public func withUnsafeMutableImageBufferPointer<R>(_ body: (inout UnsafeMutableBufferPointer<ColorPixel<Model>>) throws -> R) rethrows -> R {
+    public func withUnsafeMutableImageBufferPointer<R>(_ body: (inout UnsafeMutableBufferPointer<Pixel>) throws -> R) rethrows -> R {
         
         if let next = self.next {
             return try next.withUnsafeMutableImageBufferPointer(body)
@@ -95,7 +93,7 @@ extension ImageContext {
     }
     
     @_inlineable
-    public func withUnsafeImageBufferPointer<R>(_ body: (UnsafeBufferPointer<ColorPixel<Model>>) throws -> R) rethrows -> R {
+    public func withUnsafeImageBufferPointer<R>(_ body: (UnsafeBufferPointer<Pixel>) throws -> R) rethrows -> R {
         
         if let next = self.next {
             return try next.withUnsafeImageBufferPointer(body)
@@ -352,7 +350,7 @@ extension ImageContext {
 extension ImageContext {
     
     @_inlineable
-    public var colorSpace: ColorSpace<Model> {
+    public var colorSpace: ColorSpace<Pixel.Model> {
         return next?.colorSpace ?? _image.colorSpace
     }
     
@@ -367,7 +365,7 @@ extension ImageContext {
     }
     
     @_inlineable
-    public var image: Image<ColorPixel<Model>> {
+    public var image: Image<Pixel> {
         return _image
     }
 }

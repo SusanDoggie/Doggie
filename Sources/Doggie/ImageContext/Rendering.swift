@@ -27,10 +27,10 @@ import Foundation
 
 @_versioned
 @_fixed_layout
-struct ImageContextRenderBuffer<Model : ColorModelProtocol> : RasterizeBufferProtocol {
+struct ImageContextRenderBuffer<P : ColorPixelProtocol> : RasterizeBufferProtocol {
     
     @_versioned
-    var destination: UnsafeMutablePointer<ColorPixel<Model>>
+    var destination: UnsafeMutablePointer<P>
     
     @_versioned
     var clip: UnsafePointer<Double>
@@ -46,7 +46,7 @@ struct ImageContextRenderBuffer<Model : ColorModelProtocol> : RasterizeBufferPro
     
     @_versioned
     @inline(__always)
-    init(destination: UnsafeMutablePointer<ColorPixel<Model>>, clip: UnsafePointer<Double>, depth: UnsafeMutablePointer<Double>, width: Int, height: Int) {
+    init(destination: UnsafeMutablePointer<P>, clip: UnsafePointer<Double>, depth: UnsafeMutablePointer<Double>, width: Int, height: Int) {
         self.destination = destination
         self.clip = clip
         self.depth = depth
@@ -83,7 +83,7 @@ public protocol ImageContextRenderVertex {
 extension ImageContext {
     
     @_inlineable
-    public func render<S : Sequence, Vertex : ImageContextRenderVertex, Pixel : ColorPixelProtocol>(_ triangles: S, position: (Vertex.Position) throws -> Point, depthFun: ((Vertex.Position) throws -> Double)?, shader: (Vertex) throws -> Pixel?) rethrows where S.Element == (Vertex, Vertex, Vertex), Pixel.Model == Model {
+    public func render<S : Sequence, Vertex : ImageContextRenderVertex, P : ColorPixelProtocol>(_ triangles: S, position: (Vertex.Position) throws -> Point, depthFun: ((Vertex.Position) throws -> Double)?, shader: (Vertex) throws -> P?) rethrows where S.Element == (Vertex, Vertex, Vertex), Pixel.Model == P.Model {
         
         let transform = self.transform
         let cullingMode = self.renderCullingMode
@@ -195,7 +195,7 @@ extension ImageContext {
 extension ImageContext {
     
     @_inlineable
-    public func render<S : Sequence, Vertex : ImageContextRenderVertex, Pixel : ColorPixelProtocol>(_ triangles: S, shader: (Vertex) throws -> Pixel?) rethrows where S.Element == (Vertex, Vertex, Vertex), Vertex.Position == Point, Pixel.Model == Model {
+    public func render<S : Sequence, Vertex : ImageContextRenderVertex, P : ColorPixelProtocol>(_ triangles: S, shader: (Vertex) throws -> P?) rethrows where S.Element == (Vertex, Vertex, Vertex), Vertex.Position == Point, Pixel.Model == P.Model {
         
         try render(triangles, position: { $0 }, depthFun: nil, shader: shader)
     }
@@ -293,7 +293,7 @@ extension _PerspectiveProjectTriangleIterator {
 extension ImageContext {
     
     @_inlineable
-    public func render<S : Sequence, Vertex : ImageContextRenderVertex, Pixel : ColorPixelProtocol>(_ triangles: S, projection: PerspectiveProjectMatrix, shader: (Vertex) throws -> Pixel?) rethrows where S.Element == (Vertex, Vertex, Vertex), Vertex.Position == Vector, Pixel.Model == Model {
+    public func render<S : Sequence, Vertex : ImageContextRenderVertex, P : ColorPixelProtocol>(_ triangles: S, projection: PerspectiveProjectMatrix, shader: (Vertex) throws -> P?) rethrows where S.Element == (Vertex, Vertex, Vertex), Vertex.Position == Vector, Pixel.Model == P.Model {
         
         let width = Double(self.width)
         let height = Double(self.height)

@@ -206,7 +206,7 @@ extension ImageContext {
     
     @_versioned
     @_inlineable
-    func draw(shape: Shape, color: ColorPixel<Model>, winding: (Int16) -> Bool) {
+    func draw(shape: Shape, color: ColorPixel<Pixel.Model>, winding: (Int16) -> Bool) {
         
         if shape.reduce(0, { $0 + $1.count }) == 0 {
             return

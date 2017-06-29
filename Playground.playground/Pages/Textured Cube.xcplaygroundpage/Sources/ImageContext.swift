@@ -27,7 +27,7 @@ public func sampleImage(width: Int, height: Int) -> Image<ARGB32ColorPixel> {
         }
     }
     
-    let context = ImageContext(width: 500, height: 500, colorSpace: ColorSpace.sRGB)
+    let context = ImageContext<ARGB32ColorPixel>(width: 500, height: 500, colorSpace: ColorSpace.sRGB)
     
     let matrix = Matrix.rotateY(degreesToRad(30)) * Matrix.rotateX(degreesToRad(-30)) * Matrix.translate(x: 0, y: 0, z: 100)
     
@@ -81,7 +81,7 @@ public func sampleImage(width: Int, height: Int) -> Image<ARGB32ColorPixel> {
     
     context.render(triangles, projection: PerspectiveProjectMatrix(angle: degreesToRad(50), nearZ: 1, farZ: 500), shader: shader)
     
-    return Image(image: context.image)
+    return context.image
 }
 
 

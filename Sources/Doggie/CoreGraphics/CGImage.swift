@@ -30,6 +30,19 @@
     
     public extension CGImage {
         
+        static func create(width: Int, height: Int, bitsPerComponent: Int, bytesPerRow: Int, space: CGColorSpace, bitmapInfo: UInt32, command: (CGContext) -> ()) -> CGImage? {
+            
+            if let context = CGContext(data: nil, width: width, height: height, bitsPerComponent: bitsPerComponent, bytesPerRow: bytesPerRow, space: space, bitmapInfo: bitmapInfo) {
+                
+                command(context)
+                
+                return context.makeImage()
+                
+            } else {
+                return nil
+            }
+        }
+        
         static func create(_ buffer: UnsafeRawPointer, width: Int, height: Int, bitsPerComponent: Int, bitsPerPixel: Int, bytesPerRow: Int, space: CGColorSpace, bitmapInfo: UInt32) -> CGImage? {
             
             if let providerRef = CGDataProvider(data: Data(bytes: buffer, count: bytesPerRow * height) as CFData) {
@@ -104,15 +117,36 @@
     
     extension Image {
         
+        @_inlineable
         public var cgImage: CGImage? {
             
             if let colorSpace = self.colorSpace.cgColorSpace {
                 
                 let components = Pixel.Model.numberOfComponents + 1
                 
-                let data = self.pixel.flatMap { $0.color.components.appended($0.opacity) }.map { Float($0) }
+                var buffer = [Float](repeating: 0, count: self.pixel.count * components)
                 
-                return data.withUnsafeBufferPointer { buf in
+                return buffer.withUnsafeMutableBufferPointer {
+                    
+                    if var buf = $0.baseAddress {
+                        
+                        self.pixel.withUnsafeBufferPointer {
+                            
+                            for p in $0 {
+                                
+                                let color = p.color
+                                
+                                for i in 0..<Pixel.Model.numberOfComponents {
+                                    buf.pointee = Float(color.component(i))
+                                    buf += 1
+                                }
+                                
+                                buf.pointee = Float(p.opacity)
+                                
+                                buf += 1
+                            }
+                        }
+                    }
                     
                     let bitsPerComponent = 32
                     let bytesPerPixel = 4 * components
@@ -124,7 +158,7 @@
                     
                     let bitmapInfo = byteOrder.rawValue | CGBitmapInfo.floatComponents.rawValue | CGImageAlphaInfo.last.rawValue
                     
-                    return CGImage.create(buf.baseAddress!, width: width, height: height, bitsPerComponent: bitsPerComponent, bitsPerPixel: bitsPerPixel, bytesPerRow: bytesPerRow, space: colorSpace, bitmapInfo: bitmapInfo)
+                    return CGImage.create($0.baseAddress!, width: width, height: height, bitsPerComponent: bitsPerComponent, bitsPerPixel: bitsPerPixel, bytesPerRow: bytesPerRow, space: colorSpace, bitmapInfo: bitmapInfo)
                 }
             }
             
