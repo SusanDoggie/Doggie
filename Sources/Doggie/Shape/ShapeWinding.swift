@@ -32,6 +32,7 @@ extension Shape {
         case evenOdd
     }
     
+    @_inlineable
     public func contains(_ p: Point, winding: WindingRule) -> Bool {
         switch winding {
         case .nonZero: return self.winding(p) != 0
@@ -40,45 +41,103 @@ extension Shape {
     }
 }
 
+@inline(__always)
+private func inTriangle(_ position: Point, _ p0: Point, _ p1: Point, _ p2: Point) -> Bool {
+    
+    var q0 = p0
+    var q1 = p1
+    var q2 = p2
+    
+    sort(&q0, &q1, &q2) { $0.y < $1.y }
+    
+    if q0.y <= position.y && position.y < q2.y {
+        
+        let t1 = (position.y - q0.y) / (q2.y - q0.y)
+        let x1 = q0.x + t1 * (q2.x - q0.x)
+        
+        let t2: Double
+        let x2: Double
+        
+        if position.y < q1.y {
+            t2 = (position.y - q0.y) / (q1.y - q0.y)
+            x2 = q0.x + t2 * (q1.x - q0.x)
+        } else {
+            t2 = (position.y - q1.y) / (q2.y - q1.y)
+            x2 = q1.x + t2 * (q2.x - q1.x)
+        }
+        
+        let mid_t = (q1.y - q0.y) / (q2.y - q0.y)
+        let mid_x = q0.x + mid_t * (q2.x - q0.x)
+        
+        if mid_x < q1.x {
+            return x1 <= position.x && position.x < x2
+        } else {
+            return x2 <= position.x && position.x < x1
+        }
+    }
+    
+    return false
+}
+
 extension Shape.Component {
     
-    public func winding(_ p: Point) -> Int {
+    public func winding(_ position: Point) -> Int {
         
-        var winding = 0
+        var counter = 0
         
-        let maxX = self.boundary.maxX
-        
-        if maxX + 1e-14 < p.x {
-            return 0
-        }
-        
-        if self.count != 0 {
+        self.render {
             
-            let end = self.end
-            
-            let minY = Swift.min(start.y, end.y)
-            let maxY = Swift.max(start.y, end.y)
-            
-            if (minY - 1e-14...maxY + 1e-14).contains(p.y) {
+            switch $0 {
+            case let .triangle(p0, p1, p2):
                 
-                let s = start.y - end.y
-                if !s.almostZero() {
-                    let t = (p.y - end.y) / s
-                    let x = end.x + t * (start.x - end.x)
+                if inTriangle(position, p0, p1, p2) {
                     
-                    if p.x < x {
+                    let d = cross(p1 - p0, p2 - p0)
+                    
+                    if d.sign == .plus {
+                        counter += 1
+                    } else {
+                        counter -= 1
+                    }
+                }
+                
+            case let .quadratic(p0, p1, p2):
+                
+                if inTriangle(position, p0, p1, p2) {
+                    
+                    if let p = Barycentric(p0, p1, p2, position) {
                         
-                        if t.almostZero() || t.almostEqual(1) {
-                            if end.y < start.y {
-                                winding += 1
+                        let _q = p.x * Point(x: 0, y: 0) + p.y * Point(x: 0.5, y: 0) + p.z * Point(x: 1, y: 1)
+                        
+                        if _q.x * _q.x - _q.y < 0 {
+                            
+                            let d = cross(p1 - p0, p2 - p0)
+                            
+                            if d.sign == .plus {
+                                counter += 1
                             } else {
-                                winding -= 1
+                                counter -= 1
                             }
-                        } else {
-                            if end.y < start.y {
-                                winding += 2
+                        }
+                    }
+                }
+                
+            case let .cubic(p0, p1, p2, v0, v1, v2):
+                
+                if inTriangle(position, p0, p1, p2) {
+                    
+                    if let p = Barycentric(p0, p1, p2, position) {
+                        
+                        let v = p.x * v0 + p.y * v1 + p.z * v2
+                        
+                        if v.x * v.x * v.x - v.y * v.z < 0 {
+                            
+                            let d = cross(p1 - p0, p2 - p0)
+                            
+                            if d.sign == .plus {
+                                counter += 1
                             } else {
-                                winding -= 2
+                                counter -= 1
                             }
                         }
                     }
@@ -86,140 +145,14 @@ extension Shape.Component {
             }
         }
         
-        for bezier in self.spaces.search(overlap: Rect.bound([p, Point(x: maxX, y: p.y)]).inset(dx: -1e-14, dy: -1e-14)).lazy.map({ self.bezier[$0] }) {
-            let p0 = bezier.start
-            switch bezier.segment {
-            case let .line(p1):
-                
-                let s = p1.y - p0.y
-                if !s.almostZero() {
-                    let t = (p.y - p0.y) / s
-                    let x = p0.x + t * (p1.x - p0.x)
-                    
-                    if p.x < x {
-                        
-                        if t.almostZero() || t.almostEqual(1) {
-                            if p0.y < p1.y {
-                                winding += 1
-                            } else {
-                                winding -= 1
-                            }
-                        } else {
-                            if p0.y < p1.y {
-                                winding += 2
-                            } else {
-                                winding -= 2
-                            }
-                        }
-                    }
-                }
-                
-            case let .quad(p1, p2):
-                
-                let _poly = Bezier(p0.y, p1.y, p2.y).polynomial - p.y
-                
-                if !_poly.almostZero() {
-                    
-                    let x_bezier = Bezier(p0.x, p1.x, p2.x)
-                    let derivative = Bezier(p0, p1, p2).derivative()
-                    
-                    for t in _poly.roots.filter({ $0.almostZero() || $0.almostEqual(1) || 0...1 ~= $0 }) {
-                        
-                        let x = x_bezier.eval(t)
-                        
-                        if p.x < x {
-                            
-                            let dy = derivative.eval(t).y
-                            
-                            if !dy.almostZero() {
-                                if t.almostZero() || t.almostEqual(1) {
-                                    if dy > 0 {
-                                        winding += 1
-                                    } else {
-                                        winding -= 1
-                                    }
-                                } else {
-                                    if dy > 0 {
-                                        winding += 2
-                                    } else {
-                                        winding -= 2
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                
-            case let .cubic(p1, p2, p3):
-                
-                let _poly = Bezier(p0.y, p1.y, p2.y, p3.y).polynomial - p.y
-                
-                if !_poly.almostZero() {
-                    
-                    let x_bezier = Bezier(p0.x, p1.x, p2.x, p3.x)
-                    let derivative = Bezier(p0, p1, p2, p3).derivative()
-                    
-                    let roots = _poly.roots.filter({ $0.almostZero() || $0.almostEqual(1) || 0...1 ~= $0 })
-                    
-                    for t in roots {
-                        
-                        let x = x_bezier.eval(t)
-                        
-                        if p.x < x {
-                            
-                            let dy = derivative.eval(t).y
-                            
-                            if dy.almostZero() {
-                                if roots.count == 1 {
-                                    if t.almostZero() {
-                                        if p3.y > 0 {
-                                            winding += 1
-                                        } else {
-                                            winding -= 1
-                                        }
-                                    } else if t.almostEqual(1) {
-                                        if p0.y < 0 {
-                                            winding += 1
-                                        } else {
-                                            winding -= 1
-                                        }
-                                    } else if p0.y.sign != p3.y.sign {
-                                        if p0.y < p3.y {
-                                            winding += 2
-                                        } else {
-                                            winding -= 2
-                                        }
-                                    }
-                                }
-                            } else {
-                                if t.almostZero() || t.almostEqual(1) {
-                                    if dy > 0 {
-                                        winding += 1
-                                    } else {
-                                        winding -= 1
-                                    }
-                                } else {
-                                    if dy > 0 {
-                                        winding += 2
-                                    } else {
-                                        winding -= 2
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        
-        return winding >> 1
+        return counter
     }
 }
 
 extension Shape {
     
-    public func winding(_ p: Point) -> Int {
-        return self.identity.reduce(0) { $0 + $1.winding(p) }
+    @_inlineable
+    public func winding(_ position: Point) -> Int {
+        return self.identity.reduce(0) { $0 + $1.winding(position) }
     }
 }
-
