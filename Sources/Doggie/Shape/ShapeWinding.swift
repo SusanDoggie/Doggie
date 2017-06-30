@@ -103,42 +103,36 @@ extension Shape.Component {
                 
             case let .quadratic(p0, p1, p2):
                 
-                if inTriangle(position, p0, p1, p2) {
+                if inTriangle(position, p0, p1, p2), let p = Barycentric(p0, p1, p2, position) {
                     
-                    if let p = Barycentric(p0, p1, p2, position) {
+                    let _q = p.x * Point(x: 0, y: 0) + p.y * Point(x: 0.5, y: 0) + p.z * Point(x: 1, y: 1)
+                    
+                    if _q.x * _q.x - _q.y < 0 {
                         
-                        let _q = p.x * Point(x: 0, y: 0) + p.y * Point(x: 0.5, y: 0) + p.z * Point(x: 1, y: 1)
+                        let d = cross(p1 - p0, p2 - p0)
                         
-                        if _q.x * _q.x - _q.y < 0 {
-                            
-                            let d = cross(p1 - p0, p2 - p0)
-                            
-                            if d.sign == .plus {
-                                counter += 1
-                            } else {
-                                counter -= 1
-                            }
+                        if d.sign == .plus {
+                            counter += 1
+                        } else {
+                            counter -= 1
                         }
                     }
                 }
                 
             case let .cubic(p0, p1, p2, v0, v1, v2):
                 
-                if inTriangle(position, p0, p1, p2) {
+                if inTriangle(position, p0, p1, p2), let p = Barycentric(p0, p1, p2, position) {
                     
-                    if let p = Barycentric(p0, p1, p2, position) {
+                    let v = p.x * v0 + p.y * v1 + p.z * v2
+                    
+                    if v.x * v.x * v.x - v.y * v.z < 0 {
                         
-                        let v = p.x * v0 + p.y * v1 + p.z * v2
+                        let d = cross(p1 - p0, p2 - p0)
                         
-                        if v.x * v.x * v.x - v.y * v.z < 0 {
-                            
-                            let d = cross(p1 - p0, p2 - p0)
-                            
-                            if d.sign == .plus {
-                                counter += 1
-                            } else {
-                                counter -= 1
-                            }
+                        if d.sign == .plus {
+                            counter += 1
+                        } else {
+                            counter -= 1
                         }
                     }
                 }
