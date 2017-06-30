@@ -100,6 +100,8 @@
 		0A2107121E5BEEBB00F1E00E /* PathStroke.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A21070A1E5BEEBB00F1E00E /* PathStroke.swift */; };
 		0A2107151E5BEEBB00F1E00E /* Shape.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A21070C1E5BEEBB00F1E00E /* Shape.swift */; };
 		0A2107161E5BEEBB00F1E00E /* Shape.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A21070C1E5BEEBB00F1E00E /* Shape.swift */; };
+		0A21F0241F061AE2009C4490 /* PixelBlender.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A21F0231F061AE2009C4490 /* PixelBlender.swift */; };
+		0A21F0251F061AE2009C4490 /* PixelBlender.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A21F0231F061AE2009C4490 /* PixelBlender.swift */; };
 		0A266E531D6E95C100ABE6B7 /* SDMarkerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A266E521D6E95C100ABE6B7 /* SDMarkerTest.swift */; };
 		0A2A643E1E5C45EE000E21BB /* PDFParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2A643D1E5C45EE000E21BB /* PDFParser.swift */; };
 		0A2A643F1E5C45EE000E21BB /* PDFParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2A643D1E5C45EE000E21BB /* PDFParser.swift */; };
@@ -319,6 +321,7 @@
 		0A2107081E5BEEBB00F1E00E /* PathCoder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PathCoder.swift; sourceTree = "<group>"; };
 		0A21070A1E5BEEBB00F1E00E /* PathStroke.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PathStroke.swift; sourceTree = "<group>"; };
 		0A21070C1E5BEEBB00F1E00E /* Shape.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Shape.swift; sourceTree = "<group>"; };
+		0A21F0231F061AE2009C4490 /* PixelBlender.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PixelBlender.swift; sourceTree = "<group>"; };
 		0A266E521D6E95C100ABE6B7 /* SDMarkerTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SDMarkerTest.swift; sourceTree = "<group>"; };
 		0A2A643D1E5C45EE000E21BB /* PDFParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PDFParser.swift; sourceTree = "<group>"; };
 		0A36612A1EEA54AB00216A26 /* CGPath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CGPath.swift; sourceTree = "<group>"; };
@@ -690,6 +693,7 @@
 				0A39A6B41ED9342C00804004 /* ImageContext.swift */,
 				0A39A6C01ED934D300804004 /* DrawClip.swift */,
 				0A39A6BD1ED934B100804004 /* TransparencyLayer.swift */,
+				0A21F0231F061AE2009C4490 /* PixelBlender.swift */,
 				0A39A6B71ED9345100804004 /* DrawImage.swift */,
 				086F06481EDC623D00BA70C8 /* Rasterizer.swift */,
 				0821D6401EED58FC007E42F5 /* Rendering.swift */,
@@ -1053,6 +1057,7 @@
 				08458B401E2E627600D01813 /* SDTransform.swift in Sources */,
 				08458B441E2E627600D01813 /* SDTriggerNode.swift in Sources */,
 				0A53E45E1E35AEF80060FB83 /* CollectionExtension.swift in Sources */,
+				0A21F0241F061AE2009C4490 /* PixelBlender.swift in Sources */,
 				0A9AA8401E543748007A2B92 /* PDFDocument.swift in Sources */,
 				08458B301E2E627600D01813 /* Bezier.swift in Sources */,
 				0A39A6BE1ED934B100804004 /* TransparencyLayer.swift in Sources */,
@@ -1182,6 +1187,7 @@
 				08458B411E2E627600D01813 /* SDTransform.swift in Sources */,
 				08458B451E2E627600D01813 /* SDTriggerNode.swift in Sources */,
 				0A53E45F1E35AEF80060FB83 /* CollectionExtension.swift in Sources */,
+				0A21F0251F061AE2009C4490 /* PixelBlender.swift in Sources */,
 				0A9AA8411E543748007A2B92 /* PDFDocument.swift in Sources */,
 				08458B311E2E627600D01813 /* Bezier.swift in Sources */,
 				0A39A6BF1ED934B100804004 /* TransparencyLayer.swift in Sources */,

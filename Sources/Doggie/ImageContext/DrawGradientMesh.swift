@@ -30,10 +30,7 @@ import Foundation
 struct ImageContextGradientMeshRasterizeBuffer<P : ColorPixelProtocol> : RasterizeBufferProtocol {
     
     @_versioned
-    var destination: UnsafeMutablePointer<P>
-    
-    @_versioned
-    var clip: UnsafePointer<Double>
+    var blender: ImageContextPixelBlender<P>
     
     @_versioned
     var width: Int
@@ -43,9 +40,8 @@ struct ImageContextGradientMeshRasterizeBuffer<P : ColorPixelProtocol> : Rasteri
     
     @_versioned
     @inline(__always)
-    init(destination: UnsafeMutablePointer<P>, clip: UnsafePointer<Double>, width: Int, height: Int) {
-        self.destination = destination
-        self.clip = clip
+    init(blender: ImageContextPixelBlender<P>, width: Int, height: Int) {
+        self.blender = blender
         self.width = width
         self.height = height
     }
@@ -53,14 +49,13 @@ struct ImageContextGradientMeshRasterizeBuffer<P : ColorPixelProtocol> : Rasteri
     @_versioned
     @inline(__always)
     static func + (lhs: ImageContextGradientMeshRasterizeBuffer, rhs: Int) -> ImageContextGradientMeshRasterizeBuffer {
-        return ImageContextGradientMeshRasterizeBuffer(destination: lhs.destination + rhs, clip: lhs.clip + rhs, width: lhs.width, height: lhs.height)
+        return ImageContextGradientMeshRasterizeBuffer(blender: lhs.blender + rhs, width: lhs.width, height: lhs.height)
     }
     
     @_versioned
     @inline(__always)
     static func += (lhs: inout ImageContextGradientMeshRasterizeBuffer, rhs: Int) {
-        lhs.destination += rhs
-        lhs.clip += rhs
+        lhs.blender += rhs
     }
 }
 
@@ -68,7 +63,7 @@ extension ImageContext {
     
     @_versioned
     @_inlineable
-    func _drawGradient(_ destination: UnsafeMutablePointer<Pixel>, _ clip: UnsafePointer<Double>, _ patch: CubicBezierPatch, _ c0: ColorPixel<Pixel.Model>, _ c1: ColorPixel<Pixel.Model>, _ c2: ColorPixel<Pixel.Model>, _ c3: ColorPixel<Pixel.Model>) {
+    func _drawGradient(_ blender: ImageContextPixelBlender<Pixel>, _ patch: CubicBezierPatch, _ c0: ColorPixel<Pixel.Model>, _ c1: ColorPixel<Pixel.Model>, _ c2: ColorPixel<Pixel.Model>, _ c3: ColorPixel<Pixel.Model>) {
         
         let (m0, n0) = Bezier(patch.m00, patch.m01, patch.m02, patch.m03).split(0.5)
         let (m1, n1) = Bezier(patch.m10, patch.m11, patch.m12, patch.m13).split(0.5)
@@ -124,29 +119,13 @@ extension ImageContext {
                 let width = self.width
                 let height = self.height
                 
-                let rasterizer = ImageContextGradientMeshRasterizeBuffer(destination: destination, clip: clip, width: width, height: height)
+                let rasterizer = ImageContextGradientMeshRasterizeBuffer(blender: blender, width: width, height: height)
                 
-                @inline(__always)
-                func _rasterize(_: Point, buf: ImageContextGradientMeshRasterizeBuffer<Pixel>) {
-                    
-                    let _alpha = buf.clip.pointee
-                    
-                    if _alpha > 0 {
-                        
-                        var pixel = c8
-                        pixel.opacity *= _alpha
-                        
-                        if pixel.opacity > 0 {
-                            buf.destination.pointee.blend(source: pixel, blendMode: blendMode, compositingMode: compositingMode)
-                        }
-                    }
-                }
-                
-                rasterizer.rasterize(patch.m00, patch.m03, patch.m30, operation: _rasterize)
-                rasterizer.rasterize(patch.m03, patch.m33, patch.m30, operation: _rasterize)
+                rasterizer.rasterize(patch.m00, patch.m03, patch.m30) { _, buf in buf.blender.draw { c8 } }
+                rasterizer.rasterize(patch.m03, patch.m33, patch.m30) { _, buf in buf.blender.draw { c8 } }
                 
             } else {
-                _drawGradient(destination, clip, patch, c0, c1, c2, c3)
+                _drawGradient(blender, patch, c0, c1, c2, c3)
             }
         }
         
@@ -168,27 +147,16 @@ extension ImageContext {
             return
         }
         
-        self.withUnsafeMutableImageBufferPointer { _image in
+        self.withUnsafePixelBlender { blender in
             
-            if let _destination = _image.baseAddress {
-                
-                self.withUnsafeClipBufferPointer { _clip in
-                    
-                    if let _clip = _clip.baseAddress {
-                        
-                        _drawGradient(_destination, _clip,
-                                      CubicBezierPatch(patch.m00 * transform, patch.m01 * transform, patch.m02 * transform, patch.m03 * transform,
-                                                       patch.m10 * transform, patch.m11 * transform, patch.m12 * transform, patch.m13 * transform,
-                                                       patch.m20 * transform, patch.m21 * transform, patch.m22 * transform, patch.m23 * transform,
-                                                       patch.m30 * transform, patch.m31 * transform, patch.m32 * transform, patch.m33 * transform),
-                                      ColorPixel(c0.convert(to: colorSpace, intent: renderingIntent)),
-                                      ColorPixel(c1.convert(to: colorSpace, intent: renderingIntent)),
-                                      ColorPixel(c2.convert(to: colorSpace, intent: renderingIntent)),
-                                      ColorPixel(c3.convert(to: colorSpace, intent: renderingIntent)))
-                    }
-                }
-            }
+            _drawGradient(blender, CubicBezierPatch(patch.m00 * transform, patch.m01 * transform, patch.m02 * transform, patch.m03 * transform,
+                                                    patch.m10 * transform, patch.m11 * transform, patch.m12 * transform, patch.m13 * transform,
+                                                    patch.m20 * transform, patch.m21 * transform, patch.m22 * transform, patch.m23 * transform,
+                                                    patch.m30 * transform, patch.m31 * transform, patch.m32 * transform, patch.m33 * transform),
+                          ColorPixel(c0.convert(to: colorSpace, intent: renderingIntent)),
+                          ColorPixel(c1.convert(to: colorSpace, intent: renderingIntent)),
+                          ColorPixel(c2.convert(to: colorSpace, intent: renderingIntent)),
+                          ColorPixel(c3.convert(to: colorSpace, intent: renderingIntent)))
         }
-        
     }
 }

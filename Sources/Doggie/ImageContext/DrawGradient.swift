@@ -57,42 +57,24 @@ extension ImageContext {
         
         let transform = self.transform.inverse
         
-        try self.withUnsafeMutableImageBufferPointer { _image in
+        try self.withUnsafePixelBlender { blender in
             
-            if var _destination = _image.baseAddress {
-                
-                try self.withUnsafeClipBufferPointer { _clip in
+            var _p = Point(x: 0, y: 0)
+            let _p1 = Point(x: 1, y: 0) * transform
+            let _p2 = Point(x: 0, y: 1) * transform
+            
+            var blender = blender
+            
+            for _ in 0..<height {
+                var p = _p
+                for _ in 0..<width {
                     
-                    if var _clip = _clip.baseAddress {
-                        
-                        var _p = Point(x: 0, y: 0)
-                        let _p1 = Point(x: 1, y: 0) * transform
-                        let _p2 = Point(x: 0, y: 1) * transform
-                        
-                        for _ in 0..<height {
-                            var p = _p
-                            for _ in 0..<width {
-                                
-                                let _alpha = _clip.pointee
-                                
-                                if _alpha > 0 {
-                                    
-                                    var pixel = try shader(p)
-                                    pixel.opacity *= _alpha
-                                    
-                                    if pixel.opacity > 0 {
-                                        _destination.pointee.blend(source: pixel, blendMode: blendMode, compositingMode: compositingMode)
-                                    }
-                                }
-                                
-                                _destination += 1
-                                _clip += 1
-                                p += _p1
-                            }
-                            _p += _p2
-                        }
-                    }
+                    try blender.draw { try shader(p) }
+                    
+                    blender += 1
+                    p += _p1
                 }
+                _p += _p2
             }
         }
         

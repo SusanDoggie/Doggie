@@ -30,10 +30,7 @@ import Foundation
 struct ImageContextRenderBuffer<P : ColorPixelProtocol> : RasterizeBufferProtocol {
     
     @_versioned
-    var destination: UnsafeMutablePointer<P>
-    
-    @_versioned
-    var clip: UnsafePointer<Double>
+    var blender: ImageContextPixelBlender<P>
     
     @_versioned
     var depth: UnsafeMutablePointer<Double>
@@ -46,9 +43,8 @@ struct ImageContextRenderBuffer<P : ColorPixelProtocol> : RasterizeBufferProtoco
     
     @_versioned
     @inline(__always)
-    init(destination: UnsafeMutablePointer<P>, clip: UnsafePointer<Double>, depth: UnsafeMutablePointer<Double>, width: Int, height: Int) {
-        self.destination = destination
-        self.clip = clip
+    init(blender: ImageContextPixelBlender<P>, depth: UnsafeMutablePointer<Double>, width: Int, height: Int) {
+        self.blender = blender
         self.depth = depth
         self.width = width
         self.height = height
@@ -57,14 +53,13 @@ struct ImageContextRenderBuffer<P : ColorPixelProtocol> : RasterizeBufferProtoco
     @_versioned
     @inline(__always)
     static func + (lhs: ImageContextRenderBuffer, rhs: Int) -> ImageContextRenderBuffer {
-        return ImageContextRenderBuffer(destination: lhs.destination + rhs, clip: lhs.clip + rhs, depth: lhs.depth + rhs, width: lhs.width, height: lhs.height)
+        return ImageContextRenderBuffer(blender: lhs.blender + rhs, depth: lhs.depth + rhs, width: lhs.width, height: lhs.height)
     }
     
     @_versioned
     @inline(__always)
     static func += (lhs: inout ImageContextRenderBuffer, rhs: Int) {
-        lhs.destination += rhs
-        lhs.clip += rhs
+        lhs.blender += rhs
         lhs.depth += rhs
     }
 }
@@ -93,95 +88,76 @@ extension ImageContext {
             return
         }
         
-        try self.withUnsafeMutableImageBufferPointer { _image in
+        try self.withUnsafePixelBlender { blender in
             
-            if let _destination = _image.baseAddress {
+            try self.withUnsafeMutableDepthBufferPointer { _depth in
                 
-                try self.withUnsafeClipBufferPointer { _clip in
+                if let _depth = _depth.baseAddress {
                     
-                    if let _clip = _clip.baseAddress {
+                    let rasterizer = ImageContextRenderBuffer(blender: blender, depth: _depth, width: width, height: height)
+                    
+                    for (v0, v1, v2) in triangles {
                         
-                        try self.withUnsafeMutableDepthBufferPointer { _depth in
+                        if let depthFun = depthFun {
+                            guard try 0...1 ~= depthFun(v0.position) || 0...1 ~= depthFun(v1.position) || 0...1 ~= depthFun(v2.position) else { continue }
+                        }
+                        
+                        let p0 = try position(v0.position)
+                        let p1 = try position(v1.position)
+                        let p2 = try position(v2.position)
+                        
+                        let _culling: Bool
+                        switch cullingMode {
+                        case .none: _culling = false
+                        case .front: _culling = cross(p1 - p0, p2 - p0) > 0
+                        case .back: _culling = cross(p1 - p0, p2 - p0) < 0
+                        }
+                        
+                        if !_culling {
                             
-                            if let _depth = _depth.baseAddress {
+                            let _p0 = p0 * transform
+                            let _p1 = p1 * transform
+                            let _p2 = p2 * transform
+                            
+                            try rasterizer.rasterize(_p0, _p1, _p2) { position, buf in
                                 
-                                let rasterizer = ImageContextRenderBuffer(destination: _destination, clip: _clip, depth: _depth, width: width, height: height)
-                                
-                                for (v0, v1, v2) in triangles {
+                                try buf.blender.draw { () -> P? in
                                     
-                                    if let depthFun = depthFun {
-                                        guard try 0...1 ~= depthFun(v0.position) || 0...1 ~= depthFun(v1.position) || 0...1 ~= depthFun(v2.position) else { continue }
-                                    }
-                                    
-                                    let p0 = try position(v0.position)
-                                    let p1 = try position(v1.position)
-                                    let p2 = try position(v2.position)
-                                    
-                                    let _culling: Bool
-                                    switch cullingMode {
-                                    case .none: _culling = false
-                                    case .front: _culling = cross(p1 - p0, p2 - p0) > 0
-                                    case .back: _culling = cross(p1 - p0, p2 - p0) < 0
-                                    }
-                                    
-                                    if !_culling {
+                                    if let q = Barycentric(_p0, _p1, _p2, position) {
                                         
-                                        let _p0 = p0 * transform
-                                        let _p1 = p1 * transform
-                                        let _p2 = p2 * transform
+                                        let b0 = q.x * v0
+                                        let b1 = q.y * v1
+                                        let b2 = q.z * v2
+                                        let b = b0 + b1 + b2
                                         
-                                        try rasterizer.rasterize(_p0, _p1, _p2) { (position, buf) in
+                                        if let _depth = try depthFun?(b.position) {
                                             
-                                            let _alpha = buf.clip.pointee
-                                            
-                                            if _alpha > 0, let q = Barycentric(_p0, _p1, _p2, position) {
+                                            if 0...1 ~= _depth {
                                                 
-                                                let b0 = q.x * v0
-                                                let b1 = q.y * v1
-                                                let b2 = q.z * v2
-                                                let b = b0 + b1 + b2
+                                                let depthPass: Bool
                                                 
-                                                if let _depth = try depthFun?(b.position) {
-                                                    
-                                                    if 0...1 ~= _depth {
-                                                        
-                                                        let depthPass: Bool
-                                                        
-                                                        switch depthCompareMode {
-                                                        case .always: depthPass = true
-                                                        case .never: depthPass = false
-                                                        case .equal: depthPass = _depth == buf.depth.pointee
-                                                        case .notEqual: depthPass = _depth != buf.depth.pointee
-                                                        case .less: depthPass = _depth < buf.depth.pointee
-                                                        case .lessEqual: depthPass = _depth <= buf.depth.pointee
-                                                        case .greater: depthPass = _depth > buf.depth.pointee
-                                                        case .greaterEqual: depthPass = _depth >= buf.depth.pointee
-                                                        }
-                                                        
-                                                        if depthPass, var pixel = try shader(b) {
-                                                            
-                                                            pixel.opacity *= _alpha
-                                                            
-                                                            if pixel.opacity > 0 {
-                                                                buf.destination.pointee.blend(source: pixel, blendMode: blendMode, compositingMode: compositingMode)
-                                                                buf.depth.pointee = _depth
-                                                            }
-                                                        }
-                                                    }
-                                                } else {
-                                                    
-                                                    if var pixel = try shader(b) {
-                                                        
-                                                        pixel.opacity *= _alpha
-                                                        
-                                                        if pixel.opacity > 0 {
-                                                            buf.destination.pointee.blend(source: pixel, blendMode: blendMode, compositingMode: compositingMode)
-                                                        }
-                                                    }
+                                                switch depthCompareMode {
+                                                case .always: depthPass = true
+                                                case .never: depthPass = false
+                                                case .equal: depthPass = _depth == buf.depth.pointee
+                                                case .notEqual: depthPass = _depth != buf.depth.pointee
+                                                case .less: depthPass = _depth < buf.depth.pointee
+                                                case .lessEqual: depthPass = _depth <= buf.depth.pointee
+                                                case .greater: depthPass = _depth > buf.depth.pointee
+                                                case .greaterEqual: depthPass = _depth >= buf.depth.pointee
+                                                }
+                                                
+                                                if depthPass {
+                                                    buf.depth.pointee = _depth
+                                                    return try shader(b)
                                                 }
                                             }
+                                        } else {
+                                            return try shader(b)
                                         }
                                     }
+                                    
+                                    return nil
                                 }
                             }
                         }
