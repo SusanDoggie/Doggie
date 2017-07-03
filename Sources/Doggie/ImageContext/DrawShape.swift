@@ -220,13 +220,13 @@ extension ImageContext {
             return
         }
         
-        var stencil = [Int16](repeating: 0, count: antialias ? width * height * 25 : width * height)
-        
         var shape = shape
         
         if antialias {
             
             shape.transform = transform * SDTransform.scale(5)
+            
+            var stencil = [Int16](repeating: 0, count: width * height * 25)
             
             var bound = shape.raster(width: width * 5, height: height * 5, stencil: &stencil)
             
@@ -284,6 +284,8 @@ extension ImageContext {
         } else {
             
             shape.transform = transform
+            
+            var stencil = [Int16](repeating: 0, count: width * height)
             
             let bound = shape.raster(width: width, height: height, stencil: &stencil)
             
