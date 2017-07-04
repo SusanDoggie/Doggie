@@ -61,6 +61,7 @@ extension ImageContext {
     public func endTransparencyLayer() {
         
         if let next = self.next {
+            
             if next.next != nil {
                 
                 next.endTransparencyLayer()
@@ -69,6 +70,8 @@ extension ImageContext {
                 
                 let width = self.width
                 let height = self.height
+                
+                self.next = nil
                 
                 if width == 0 || height == 0 {
                     return
