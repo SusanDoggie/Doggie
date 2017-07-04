@@ -224,7 +224,7 @@ extension _PerspectiveProjectTriangleIterator {
     struct _Vertex : ImageContextRenderVertex {
         
         @_versioned
-        var vertex: Vertex
+        var v: Vertex
         
         @_versioned
         var w: Double
@@ -232,15 +232,21 @@ extension _PerspectiveProjectTriangleIterator {
         @_versioned
         @_inlineable
         init(v: Vertex, w: Double) {
-            self.vertex = (1 / w) * v
+            self.v = v
             self.w = w
         }
         
         @_versioned
         @_inlineable
         init(vertex: Vertex) {
-            self.vertex = vertex
             self.w = 1 / vertex.position.z
+            self.v = w * vertex
+        }
+        
+        @_versioned
+        @_inlineable
+        var vertex: Vertex {
+            return (1 / w) * v
         }
         
         @_versioned
@@ -252,13 +258,13 @@ extension _PerspectiveProjectTriangleIterator {
         @_versioned
         @_inlineable
         static func + (lhs: _Vertex, rhs: _Vertex) -> _Vertex {
-            return _Vertex(v: lhs.w * lhs.vertex + rhs.w * rhs.vertex, w: lhs.w + rhs.w)
+            return _Vertex(v: lhs.v + rhs.v, w: lhs.w + rhs.w)
         }
         
         @_versioned
         @_inlineable
         static func * (lhs: Double, rhs: _Vertex) -> _Vertex {
-            return _Vertex(v: lhs * rhs.w * rhs.vertex, w: lhs * rhs.w)
+            return _Vertex(v: lhs * rhs.v, w: lhs * rhs.w)
         }
     }
 }
