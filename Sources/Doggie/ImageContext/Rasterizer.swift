@@ -118,8 +118,8 @@ extension RasterizeBufferProtocol {
                     for y in range {
                         let _y = Double(y)
                         if _min_x < _max_x && q0.y..<q2.y ~= _y {
-                            let __min_x = Int(_min_x.rounded().clamped(to: 0...Double(width)))
-                            let __max_x = Int(_max_x.rounded().clamped(to: 0...Double(width)))
+                            let __min_x = Int(_min_x.rounded().clamped(to: 0...Double(width - 1)))
+                            let __max_x = Int(_max_x.rounded().clamped(to: 0...Double(width - 1)))
                             var pixel = buf + __min_x
                             for x in __min_x...__max_x {
                                 let _x = Double(x)
