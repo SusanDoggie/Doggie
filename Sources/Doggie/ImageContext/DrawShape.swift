@@ -86,15 +86,15 @@ func _render(_ op: Shape.RenderOperation, width: Int, height: Int, transform: SD
         
         if cross(q1 - q0, q2 - q0).sign == .plus {
             rasterizer.rasterize(q0, q1, q2) { barycentric, point, pixel in
-                let _q = barycentric.x * Point(x: 0, y: 0) + barycentric.y * Point(x: 0.5, y: 0) + barycentric.z * Point(x: 1, y: 1)
-                if _q.x * _q.x - _q.y < 0 {
+                let s = 0.5 * barycentric.y + barycentric.z
+                if s * s < barycentric.z {
                     pixel.stencil.pointee.fetchStore { $0 + 1 }
                 }
             }
         } else {
             rasterizer.rasterize(q0, q1, q2) { barycentric, point, pixel in
-                let _q = barycentric.x * Point(x: 0, y: 0) + barycentric.y * Point(x: 0.5, y: 0) + barycentric.z * Point(x: 1, y: 1)
-                if _q.x * _q.x - _q.y < 0 {
+                let s = 0.5 * barycentric.y + barycentric.z
+                if s * s < barycentric.z {
                     pixel.stencil.pointee.fetchStore { $0 - 1 }
                 }
             }
@@ -109,14 +109,14 @@ func _render(_ op: Shape.RenderOperation, width: Int, height: Int, transform: SD
         if cross(q1 - q0, q2 - q0).sign == .plus {
             rasterizer.rasterize(q0, q1, q2) { barycentric, point, pixel in
                 let v = barycentric.x * v0 + barycentric.y * v1 + barycentric.z * v2
-                if v.x * v.x * v.x - v.y * v.z < 0 {
+                if v.x * v.x * v.x < v.y * v.z {
                     pixel.stencil.pointee.fetchStore { $0 + 1 }
                 }
             }
         } else {
             rasterizer.rasterize(q0, q1, q2) { barycentric, point, pixel in
                 let v = barycentric.x * v0 + barycentric.y * v1 + barycentric.z * v2
-                if v.x * v.x * v.x - v.y * v.z < 0 {
+                if v.x * v.x * v.x < v.y * v.z {
                     pixel.stencil.pointee.fetchStore { $0 - 1 }
                 }
             }

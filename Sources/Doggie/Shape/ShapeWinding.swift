@@ -105,9 +105,9 @@ extension Shape.Component {
                 
                 if inTriangle(position, p0, p1, p2), let p = Barycentric(p0, p1, p2, position) {
                     
-                    let _q = p.x * Point(x: 0, y: 0) + p.y * Point(x: 0.5, y: 0) + p.z * Point(x: 1, y: 1)
+                    let s = 0.5 * p.y + p.z
                     
-                    if _q.x * _q.x - _q.y < 0 {
+                    if s * s < p.z {
                         
                         let d = cross(p1 - p0, p2 - p0)
                         
@@ -125,7 +125,7 @@ extension Shape.Component {
                     
                     let v = p.x * v0 + p.y * v1 + p.z * v2
                     
-                    if v.x * v.x * v.x - v.y * v.z < 0 {
+                    if v.x * v.x * v.x < v.y * v.z {
                         
                         let d = cross(p1 - p0, p2 - p0)
                         
