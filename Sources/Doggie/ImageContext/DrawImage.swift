@@ -52,32 +52,16 @@ extension ImageContext {
             
             if var _source = source.baseAddress {
                 
-                self.withUnsafeMutableImageBufferPointer { destination in
+                self.withUnsafePixelBlender { blender in
                     
-                    if var _destination = destination.baseAddress {
+                    var blender = blender
+                    
+                    for _ in 0..<width * height {
                         
-                        self.withUnsafeClipBufferPointer { _clip in
-                            
-                            if var _clip = _clip.baseAddress {
-                                
-                                for _ in 0..<width * height {
-                                    
-                                    let _alpha = _clip.pointee
-                                    
-                                    if _alpha > 0 {
-                                        
-                                        var __source = _source.pointee
-                                        __source.opacity *= opacity * _alpha
-                                        
-                                        _destination.pointee.blend(source: __source, blendMode: blendMode, compositingMode: compositingMode)
-                                    }
-                                    
-                                    _source += 1
-                                    _destination += 1
-                                    _clip += 1
-                                }
-                            }
-                        }
+                        blender.draw { _source.pointee }
+                        
+                        blender += 1
+                        _source += 1
                     }
                 }
             }
