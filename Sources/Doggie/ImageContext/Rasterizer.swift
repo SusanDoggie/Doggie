@@ -42,6 +42,33 @@ extension RasterizeBufferProtocol {
     
     @_versioned
     @inline(__always)
+    func rasterize(_ p0: Point, _ p1: Point, _ p2: Point, operation: (Vector, Point, Self) throws -> Void) rethrows {
+        
+        let det = (p1.y - p2.y) * (p0.x - p2.x) + (p2.x - p1.x) * (p0.y - p2.y)
+        
+        if det.almostZero() {
+            return
+        }
+        
+        let s0 = (p1.y - p2.y) / det
+        let s1 = (p2.x - p1.x) / det
+        let t0 = (p2.y - p0.y) / det
+        let t1 = (p0.x - p2.x) / det
+        
+        let s2 = s0 * p2.x + s1 * p2.y
+        let t2 = t0 * p2.x + t1 * p2.y
+        
+        try self.rasterize(p0, p1, p2) { point, buf in
+            
+            let s = s0 * point.x + s1 * point.y - s2
+            let t = t0 * point.x + t1 * point.y - t2
+            
+            try operation(Vector(x: s, y: t, z: 1 - s - t), point, buf)
+        }
+    }
+    
+    @_versioned
+    @inline(__always)
     func rasterize(_ p0: Point, _ p1: Point, _ p2: Point, operation: (Point, Self) throws -> Void) rethrows {
         
         if !Rect.bound([p0, p1, p2]).isIntersect(Rect(x: 0, y: 0, width: Double(width), height: Double(height))) {
