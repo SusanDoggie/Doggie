@@ -695,8 +695,8 @@
 			isa = PBXGroup;
 			children = (
 				0A39A6B41ED9342C00804004 /* ImageContext.swift */,
-				0A39A6C01ED934D300804004 /* DrawClip.swift */,
 				0A39A6BD1ED934B100804004 /* TransparencyLayer.swift */,
+				0A39A6C01ED934D300804004 /* DrawClip.swift */,
 				0A21F0231F061AE2009C4490 /* PixelBlender.swift */,
 				0A39A6B71ED9345100804004 /* DrawImage.swift */,
 				086F06481EDC623D00BA70C8 /* Rasterizer.swift */,

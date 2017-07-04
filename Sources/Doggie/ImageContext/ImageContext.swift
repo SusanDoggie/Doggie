@@ -82,6 +82,24 @@ public class ImageContext<Pixel: ColorPixelProtocol> {
 
 extension ImageContext {
     
+    @_versioned
+    @_inlineable
+    convenience init<P>(copyStates context: ImageContext<P>, colorSpace: ColorSpace<Pixel.Model>) {
+        self.init(width: context.width, height: context.height, colorSpace: colorSpace)
+        self._antialias = context.antialias
+        self._transform = context.transform
+        self._blendMode = context.blendMode
+        self._compositingMode = context.compositingMode
+        self._resamplingAlgorithm = context.resamplingAlgorithm
+        self._renderCullingMode = context.renderCullingMode
+        self._renderDepthCompareMode = context.renderDepthCompareMode
+        self._renderingIntent = context.renderingIntent
+        self._image.colorSpace.chromaticAdaptationAlgorithm = context.colorSpace.chromaticAdaptationAlgorithm
+    }
+}
+
+extension ImageContext {
+    
     @_inlineable
     public func withUnsafeMutableImageBufferPointer<R>(_ body: (inout UnsafeMutableBufferPointer<Pixel>) throws -> R) rethrows -> R {
         

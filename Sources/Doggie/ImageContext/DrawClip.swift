@@ -40,16 +40,7 @@ extension ImageContext {
             return
         }
         
-        let _clip = ImageContext<P>(width: width, height: height, colorSpace: ColorSpace.calibratedGray(from: colorSpace))
-        _clip._antialias = self._antialias
-        _clip._transform = self._transform
-        _clip._blendMode = self._blendMode
-        _clip._compositingMode = self._compositingMode
-        _clip._resamplingAlgorithm = self._resamplingAlgorithm
-        _clip._renderCullingMode = self._renderCullingMode
-        _clip._renderDepthCompareMode = self._renderDepthCompareMode
-        _clip._renderingIntent = self._renderingIntent
-        _clip._image.colorSpace.chromaticAdaptationAlgorithm = self._image.colorSpace.chromaticAdaptationAlgorithm
+        let _clip = ImageContext<P>(copyStates: self, colorSpace: ColorSpace.calibratedGray(from: colorSpace))
         
         try body(_clip)
         

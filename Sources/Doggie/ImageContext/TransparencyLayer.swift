@@ -39,18 +39,7 @@ extension ImageContext {
                 return
             }
             
-            let layer = ImageContext(width: width, height: height, colorSpace: colorSpace)
-            layer._antialias = self._antialias
-            layer._transform = self._transform
-            layer._blendMode = self._blendMode
-            layer._compositingMode = self._compositingMode
-            layer._resamplingAlgorithm = self._resamplingAlgorithm
-            layer._renderCullingMode = self._renderCullingMode
-            layer._renderDepthCompareMode = self._renderDepthCompareMode
-            layer._renderingIntent = self._renderingIntent
-            layer._image.colorSpace.chromaticAdaptationAlgorithm = self._image.colorSpace.chromaticAdaptationAlgorithm
-            
-            self.next = layer
+            self.next = ImageContext(copyStates: self, colorSpace: colorSpace)
         }
     }
 }
