@@ -67,4 +67,4 @@ public func Barycentric(_ p0: Point, _ p1: Point, _ p2: Point, _ q: Point) -> Ve
     
     return Vector(x: s, y: t, z: 1 - s - t)
 }
-        
+

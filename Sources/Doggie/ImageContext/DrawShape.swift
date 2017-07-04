@@ -72,15 +72,10 @@ func _render(_ op: Shape.RenderOperation, width: Int, height: Int, transform: SD
         let q1 = p1 * transform
         let q2 = p2 * transform
         
-        let d = cross(q1 - q0, q2 - q0)
-        
-        rasterizer.rasterize(q0, q1, q2) { point, pixel in
-            
-            if d.sign == .plus {
-                pixel.stencil.pointee.fetchStore { $0 + 1 }
-            } else {
-                pixel.stencil.pointee.fetchStore { $0 - 1 }
-            }
+        if cross(q1 - q0, q2 - q0).sign == .plus {
+            rasterizer.rasterize(q0, q1, q2) { _, pixel in pixel.stencil.pointee.fetchStore { $0 + 1 } }
+        } else {
+            rasterizer.rasterize(q0, q1, q2) { _, pixel in pixel.stencil.pointee.fetchStore { $0 - 1 } }
         }
         
     case let .quadratic(p0, p1, p2):
@@ -98,14 +93,15 @@ func _render(_ op: Shape.RenderOperation, width: Int, height: Int, transform: SD
             return false
         }
         
-        let d = cross(q1 - q0, q2 - q0)
-        
-        rasterizer.rasterize(q0, q1, q2) { point, pixel in
-            
-            if _test(point) {
-                if d.sign == .plus {
+        if cross(q1 - q0, q2 - q0).sign == .plus {
+            rasterizer.rasterize(q0, q1, q2) { point, pixel in
+                if _test(point) {
                     pixel.stencil.pointee.fetchStore { $0 + 1 }
-                } else {
+                }
+            }
+        } else {
+            rasterizer.rasterize(q0, q1, q2) { point, pixel in
+                if _test(point) {
                     pixel.stencil.pointee.fetchStore { $0 - 1 }
                 }
             }
@@ -126,14 +122,15 @@ func _render(_ op: Shape.RenderOperation, width: Int, height: Int, transform: SD
             return false
         }
         
-        let d = cross(q1 - q0, q2 - q0)
-        
-        rasterizer.rasterize(q0, q1, q2) { point, pixel in
-            
-            if _test(point) {
-                if d.sign == .plus {
+        if cross(q1 - q0, q2 - q0).sign == .plus {
+            rasterizer.rasterize(q0, q1, q2) { point, pixel in
+                if _test(point) {
                     pixel.stencil.pointee.fetchStore { $0 + 1 }
-                } else {
+                }
+            }
+        } else {
+            rasterizer.rasterize(q0, q1, q2) { point, pixel in
+                if _test(point) {
                     pixel.stencil.pointee.fetchStore { $0 - 1 }
                 }
             }
