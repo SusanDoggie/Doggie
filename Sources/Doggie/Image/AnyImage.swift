@@ -114,6 +114,31 @@ extension AnyImage {
     }
     
     @_inlineable
+    public init<Pixel, Model>(image: Image<Pixel>, colorSpace: ColorSpace<Model>, intent: RenderingIntent = .default) {
+        self.base = image._convert(to: colorSpace, intent: intent)
+    }
+    
+    @_inlineable
+    public init<Model>(image: AnyImage, colorSpace: ColorSpace<Model>, intent: RenderingIntent = .default) {
+        self.base = image.base._convert(to: colorSpace, intent: intent)
+    }
+    
+    @_inlineable
+    public init<Pixel>(image: Image<Pixel>, colorSpace: AnyColorSpace, intent: RenderingIntent = .default) {
+        self.base = image._convert(to: colorSpace.base, intent: intent)
+    }
+    
+    @_inlineable
+    public init<Pixel>(image: Image<Pixel>, width: Int, height: Int, resampling algorithm: ResamplingAlgorithm = .default, antialias: Bool = false) {
+        self.base = image._resize(width: width, height: height, resampling: algorithm, antialias: antialias)
+    }
+    
+    @_inlineable
+    public init<Pixel>(image: Image<Pixel>, width: Int, height: Int, transform: SDTransform, resampling algorithm: ResamplingAlgorithm = .default, antialias: Bool = false) {
+        self.base = image._resize(width: width, height: height, transform: transform, resampling: algorithm, antialias: antialias)
+    }
+    
+    @_inlineable
     public init(image: AnyImage, colorSpace: AnyColorSpace, intent: RenderingIntent = .default) {
         self.base = image.base._convert(to: colorSpace.base, intent: intent)
     }
