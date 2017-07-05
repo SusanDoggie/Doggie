@@ -54,13 +54,13 @@ do {
         print("Doggie:     ", (0..<3).map { c1.component($0) })
         
         print("CoreGraphic:", c2.components!)
-        print("Doggie:     ", (0..<3).map { c3.component($0) })
+        print("Doggie:     ", (0..<4).map { c3.component($0) })
         
         print("CoreGraphic:", c4.components!)
         print("Doggie:     ", (0..<3).map { c5.component($0) })
         
         print("CoreGraphic:", c6.components!)
-        print("Doggie:     ", (0..<3).map { c7.component($0) })
+        print("Doggie:     ", (0..<4).map { c7.component($0) })
         
         print("")
         
