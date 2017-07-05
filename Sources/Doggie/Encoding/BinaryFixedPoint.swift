@@ -29,7 +29,7 @@ public protocol BinaryFixedPoint : Numeric, Hashable, CustomStringConvertible, E
     
     associatedtype RepresentingValue : BinaryFloatingPoint
     
-    static var fractionalBitCount: Int { get }
+    static var fractionBitCount: Int { get }
     
     var bitPattern: BitPattern { get }
     
@@ -64,7 +64,7 @@ extension BinaryFixedPoint where RepresentingValue.RawSignificand : FixedWidthIn
     @_versioned
     @_inlineable
     static var _fractionOffset: Int {
-        return Self.fractionalBitCount - RepresentingValue.significandBitCount
+        return Self.fractionBitCount - RepresentingValue.significandBitCount
     }
     
     @_versioned
@@ -109,7 +109,7 @@ extension BinaryFixedPoint where RepresentingValue.RawSignificand : FixedWidthIn
                 return 0
             } else {
                 let _bitPattern = RepresentingValue.RawSignificand(bitPattern < 0 ? 0 - bitPattern : bitPattern)
-                let exponent = Int(log2(_bitPattern)) - Self.fractionalBitCount
+                let exponent = Int(log2(_bitPattern)) - Self.fractionBitCount
                 let offset = Self._fractionOffset + exponent
                 let exponentBitPattern = RepresentingValue.RawExponent(Self._exponentBias + exponent)
                 let significandBitMask: RepresentingValue.RawSignificand = (1 << RepresentingValue.significandBitCount) - 1

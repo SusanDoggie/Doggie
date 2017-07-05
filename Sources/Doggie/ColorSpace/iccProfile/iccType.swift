@@ -381,7 +381,7 @@ extension iccProfile {
         }
         
         @_versioned
-        static var fractionalBitCount: Int {
+        static var fractionBitCount: Int {
             return 16
         }
     }
@@ -403,7 +403,7 @@ extension iccProfile {
         }
         
         @_versioned
-        static var fractionalBitCount: Int {
+        static var fractionBitCount: Int {
             return 16
         }
     }
@@ -425,7 +425,7 @@ extension iccProfile {
         }
         
         @_versioned
-        static var fractionalBitCount: Int {
+        static var fractionBitCount: Int {
             return 15
         }
     }
@@ -447,7 +447,7 @@ extension iccProfile {
         }
         
         @_versioned
-        static var fractionalBitCount: Int {
+        static var fractionBitCount: Int {
             return 8
         }
     }
