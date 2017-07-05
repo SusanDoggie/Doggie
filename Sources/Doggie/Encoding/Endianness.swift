@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-public protocol EndianInteger : FixedWidthInteger, CustomStringConvertible {
+public protocol EndianInteger : FixedWidthInteger {
     
     associatedtype RepresentingValue : FixedWidthInteger
     

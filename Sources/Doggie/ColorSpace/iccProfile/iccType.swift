@@ -368,16 +368,16 @@ extension iccProfile.TagData {
 extension iccProfile {
     
     @_versioned
-    struct S15Fixed16Number : FixedPointProtocol {
+    struct S15Fixed16Number : BinaryFixedPoint {
         
         typealias RepresentingValue = Double
         
         @_versioned
-        var rawValue: BEInt32
+        var bitPattern: BEInt32
         
         @_versioned
-        init(rawValue: RawValue) {
-            self.rawValue = rawValue
+        init(bitPattern: BitPattern) {
+            self.bitPattern = bitPattern
         }
         
         @_versioned
@@ -390,16 +390,16 @@ extension iccProfile {
 extension iccProfile {
     
     @_versioned
-    struct U16Fixed16Number : FixedPointProtocol {
+    struct U16Fixed16Number : BinaryFixedPoint {
         
         typealias RepresentingValue = Double
         
         @_versioned
-        var rawValue: BEUInt32
+        var bitPattern: BEUInt32
         
         @_versioned
-        init(rawValue: RawValue) {
-            self.rawValue = rawValue
+        init(bitPattern: BitPattern) {
+            self.bitPattern = bitPattern
         }
         
         @_versioned
@@ -412,16 +412,16 @@ extension iccProfile {
 extension iccProfile {
     
     @_versioned
-    struct U1Fixed15Number : FixedPointProtocol {
+    struct U1Fixed15Number : BinaryFixedPoint {
         
         typealias RepresentingValue = Double
         
         @_versioned
-        var rawValue: BEUInt16
+        var bitPattern: BEUInt16
         
         @_versioned
-        init(rawValue: RawValue) {
-            self.rawValue = rawValue
+        init(bitPattern: BitPattern) {
+            self.bitPattern = bitPattern
         }
         
         @_versioned
@@ -434,16 +434,16 @@ extension iccProfile {
 extension iccProfile {
     
     @_versioned
-    struct U8Fixed8Number : FixedPointProtocol {
+    struct U8Fixed8Number : BinaryFixedPoint {
         
         typealias RepresentingValue = Double
         
         @_versioned
-        var rawValue: BEUInt16
+        var bitPattern: BEUInt16
         
         @_versioned
-        init(rawValue: RawValue) {
-            self.rawValue = rawValue
+        init(bitPattern: BitPattern) {
+            self.bitPattern = bitPattern
         }
         
         @_versioned

@@ -184,7 +184,7 @@ extension iccProfile.TagData {
         @_versioned
         var gamma: iccProfile.U8Fixed8Number? {
             
-            return isGamma ? iccProfile.U8Fixed8Number(rawValue: point(position: 0)) : nil
+            return isGamma ? iccProfile.U8Fixed8Number(bitPattern: point(position: 0)) : nil
         }
     }
 }

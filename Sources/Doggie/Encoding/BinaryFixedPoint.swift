@@ -1,5 +1,5 @@
 //
-//  FixedPointProtocol.swift
+//  BinaryFixedPoint.swift
 //
 //  The MIT License
 //  Copyright (c) 2015 - 2017 Susan Cheng. All rights reserved.
@@ -23,22 +23,24 @@
 //  THE SOFTWARE.
 //
 
-public protocol FixedPointProtocol : Numeric, RawRepresentable, Hashable, CustomStringConvertible, ExpressibleByFloatLiteral where RawValue : FixedWidthInteger, RepresentingValue.RawSignificand : FixedWidthInteger {
+public protocol BinaryFixedPoint : Numeric, Hashable, CustomStringConvertible, ExpressibleByFloatLiteral where RepresentingValue.RawSignificand : FixedWidthInteger {
+    
+    associatedtype BitPattern : FixedWidthInteger
     
     associatedtype RepresentingValue : BinaryFloatingPoint
     
     static var fractionalBitCount: Int { get }
     
+    var bitPattern: BitPattern { get }
+    
+    init(bitPattern: BitPattern)
+    
     var representingValue : RepresentingValue { get set }
-    
-    var rawValue : RawValue { get set }
-    
-    init(rawValue: RawValue)
     
     init(representingValue: RepresentingValue)
 }
 
-extension FixedPointProtocol {
+extension BinaryFixedPoint {
     
     @_inlineable
     public init(integerLiteral value: RepresentingValue.IntegerLiteralType) {
@@ -46,8 +48,8 @@ extension FixedPointProtocol {
     }
     
     @_inlineable
-    public init(floatLiteral value: RepresentingValue) {
-        self.init(representingValue: value)
+    public init(floatLiteral value: RepresentingValue.FloatLiteralType) {
+        self.init(representingValue: RepresentingValue(floatLiteral: value))
     }
     
     @_inlineable
@@ -57,7 +59,7 @@ extension FixedPointProtocol {
     }
 }
 
-extension FixedPointProtocol {
+extension BinaryFixedPoint {
     
     @_versioned
     @_inlineable
@@ -68,23 +70,23 @@ extension FixedPointProtocol {
     @_inlineable
     public init(representingValue: RepresentingValue) {
         if representingValue.exponentBitPattern == 0 && representingValue.significandBitPattern == 0 {
-            self.init(rawValue: 0)
+            self.init(bitPattern: 0)
         } else {
-            if RawValue.isSigned {
+            if BitPattern.isSigned {
                 let offset = Self._fractionOffset + Int(representingValue.exponent)
                 let pattern = RepresentingValue.RawSignificand(1 << RepresentingValue.significandBitCount) | representingValue.significandBitPattern
                 if representingValue.sign == .minus {
-                    self.init(rawValue: 0 - RawValue(clamping: pattern << offset))
+                    self.init(bitPattern: 0 - BitPattern(clamping: pattern << offset))
                 } else {
-                    self.init(rawValue: RawValue(clamping: pattern << offset))
+                    self.init(bitPattern: BitPattern(clamping: pattern << offset))
                 }
             } else {
                 if representingValue.sign == .minus {
-                    self.init(rawValue: 0)
+                    self.init(bitPattern: 0)
                 } else {
                     let offset = Self._fractionOffset + Int(representingValue.exponent)
                     let pattern = RepresentingValue.RawSignificand(1 << RepresentingValue.significandBitCount) | representingValue.significandBitPattern
-                    self.init(rawValue: RawValue(clamping: pattern << offset))
+                    self.init(bitPattern: BitPattern(clamping: pattern << offset))
                 }
             }
         }
@@ -93,17 +95,17 @@ extension FixedPointProtocol {
     @_inlineable
     public var representingValue : RepresentingValue {
         get {
-            if rawValue == 0 {
+            if bitPattern == 0 {
                 return 0
             } else {
-                let _rawValue = RepresentingValue.RawSignificand(rawValue < 0 ? 0 - rawValue : rawValue)
-                let exponent = RepresentingValue.RawSignificand.bitWidth - _rawValue.leadingZeroBitCount - Self.fractionalBitCount - 1
+                let _bitPattern = RepresentingValue.RawSignificand(bitPattern < 0 ? 0 - bitPattern : bitPattern)
+                let exponent = RepresentingValue.RawSignificand.bitWidth - _bitPattern.leadingZeroBitCount - Self.fractionalBitCount - 1
                 let offset = Self._fractionOffset + exponent
                 let exponentBitPattern = Self.RepresentingValue.RawExponent(Int((1 as RepresentingValue).exponentBitPattern) + exponent)
                 let significandBitMask: RepresentingValue.RawSignificand = (1 << RepresentingValue.significandBitCount) - 1
-                let significandBitPattern = (_rawValue & (significandBitMask << offset)) >> offset
-                if RawValue.isSigned {
-                    return RepresentingValue(sign: rawValue < 0 ? .minus : .plus, exponentBitPattern: exponentBitPattern, significandBitPattern: significandBitPattern)
+                let significandBitPattern = (_bitPattern & (significandBitMask << offset)) >> offset
+                if BitPattern.isSigned {
+                    return RepresentingValue(sign: bitPattern < 0 ? .minus : .plus, exponentBitPattern: exponentBitPattern, significandBitPattern: significandBitPattern)
                 } else {
                     return RepresentingValue(sign: .plus, exponentBitPattern: exponentBitPattern, significandBitPattern: significandBitPattern)
                 }
@@ -115,7 +117,7 @@ extension FixedPointProtocol {
     }
 }
 
-extension FixedPointProtocol {
+extension BinaryFixedPoint {
     
     @_inlineable
     public var description: String {
@@ -124,7 +126,7 @@ extension FixedPointProtocol {
     
     @_inlineable
     public var hashValue: Int {
-        return rawValue.hashValue
+        return bitPattern.hashValue
     }
     
     @_inlineable
@@ -133,7 +135,7 @@ extension FixedPointProtocol {
     }
 }
 
-extension FixedPointProtocol {
+extension BinaryFixedPoint {
     
     @_inlineable
     public static func +(lhs: Self, rhs: Self) -> Self {
@@ -177,11 +179,11 @@ extension FixedPointProtocol {
     
     @_inlineable
     public static func ==(lhs: Self, rhs: Self) -> Bool {
-        return lhs.rawValue == rhs.rawValue
+        return lhs.bitPattern == rhs.bitPattern
     }
     
     @_inlineable
     public static func !=(lhs: Self, rhs: Self) -> Bool {
-        return lhs.rawValue != rhs.rawValue
+        return lhs.bitPattern != rhs.bitPattern
     }
 }
