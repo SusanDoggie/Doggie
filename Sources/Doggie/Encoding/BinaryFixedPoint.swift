@@ -79,21 +79,24 @@ extension BinaryFixedPoint where RepresentingValue.RawSignificand : FixedWidthIn
         if representingValue.exponentBitPattern == 0 && representingValue.significandBitPattern == 0 {
             self.init(bitPattern: 0)
         } else {
+            let offset = Self._fractionOffset + Int(representingValue.exponent)
+            let _pattern = RepresentingValue.RawSignificand(1 << RepresentingValue.significandBitCount) | representingValue.significandBitPattern
+            let pattern = _pattern << offset
             if BitPattern.isSigned {
-                let offset = Self._fractionOffset + Int(representingValue.exponent)
-                let pattern = RepresentingValue.RawSignificand(1 << RepresentingValue.significandBitCount) | representingValue.significandBitPattern
                 if representingValue.sign == .minus {
-                    self.init(bitPattern: 0 - BitPattern(clamping: pattern << offset))
+                    if pattern - 1 == ~BitPattern.min {
+                        self.init(bitPattern: BitPattern.min)
+                    } else {
+                        self.init(bitPattern: ~BitPattern(clamping: pattern) + 1)
+                    }
                 } else {
-                    self.init(bitPattern: BitPattern(clamping: pattern << offset))
+                    self.init(bitPattern: BitPattern(clamping: pattern))
                 }
             } else {
                 if representingValue.sign == .minus {
                     self.init(bitPattern: 0)
                 } else {
-                    let offset = Self._fractionOffset + Int(representingValue.exponent)
-                    let pattern = RepresentingValue.RawSignificand(1 << RepresentingValue.significandBitCount) | representingValue.significandBitPattern
-                    self.init(bitPattern: BitPattern(clamping: pattern << offset))
+                    self.init(bitPattern: BitPattern(clamping: pattern))
                 }
             }
         }
@@ -139,6 +142,16 @@ extension BinaryFixedPoint {
     @_inlineable
     public var magnitude: RepresentingValue.Magnitude {
         return representingValue.magnitude
+    }
+    
+    @_inlineable
+    public static var min: Self {
+        return Self(bitPattern: BitPattern.min)
+    }
+    
+    @_inlineable
+    public static var max: Self {
+        return Self(bitPattern: BitPattern.max)
     }
 }
 
