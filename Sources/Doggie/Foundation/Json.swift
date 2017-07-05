@@ -27,13 +27,13 @@ import Foundation
 
 public struct Json {
     
-    fileprivate let value: Any
+    private let value: Any
     
-    fileprivate init(value: Any?) {
+    private init(value: Any?) {
         self.value = value ?? NSNull()
     }
     
-    fileprivate static func unwrap(_ value: Any) -> Any {
+    private static func unwrap(_ value: Any) -> Any {
         if let json = value as? Json {
             return json.value
         }
@@ -221,7 +221,7 @@ extension Json {
 
 extension Json {
     
-    fileprivate var numberValue: NSNumber? {
+    private var numberValue: NSNumber? {
         return value as? NSNumber
     }
     public var boolValue: Bool? {

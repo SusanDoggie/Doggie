@@ -609,7 +609,7 @@ extension OpaquePointer : SDAtomicProtocol {
     }
 }
 
-fileprivate class AtomicBase<Instance> {
+private class AtomicBase<Instance> {
     
     var value: Instance!
     
@@ -620,9 +620,9 @@ fileprivate class AtomicBase<Instance> {
 
 public struct Atomic<Instance> {
     
-    fileprivate var base: AtomicBase<Instance>
+    private var base: AtomicBase<Instance>
     
-    fileprivate init(base: AtomicBase<Instance>) {
+    private init(base: AtomicBase<Instance>) {
         self.base = base
     }
     
@@ -642,7 +642,7 @@ public struct Atomic<Instance> {
 
 extension Atomic {
     
-    fileprivate mutating func _fetch() -> AtomicBase<Instance> {
+    private mutating func _fetch() -> AtomicBase<Instance> {
         @_transparent
         func load(theVal: UnsafeMutablePointer<AtomicBase<Instance>>) -> UnsafeMutableRawPointer {
             return theVal.withMemoryRebound(to: Optional<UnsafeRawPointer>.self, capacity: 1) { _AtomicLoadPtrBarrier($0) }
@@ -651,7 +651,7 @@ extension Atomic {
         return _old.takeUnretainedValue()
     }
     
-    fileprivate mutating func _compareSet(old: AtomicBase<Instance>, new: AtomicBase<Instance>) -> Bool {
+    private mutating func _compareSet(old: AtomicBase<Instance>, new: AtomicBase<Instance>) -> Bool {
         let _old = Unmanaged.passUnretained(old)
         let _new = Unmanaged.passRetained(new)
         @_transparent
@@ -667,7 +667,7 @@ extension Atomic {
         return result
     }
     
-    fileprivate mutating func _compareSetWeak(old: AtomicBase<Instance>, new: AtomicBase<Instance>) -> Bool {
+    private mutating func _compareSetWeak(old: AtomicBase<Instance>, new: AtomicBase<Instance>) -> Bool {
         let _old = Unmanaged.passUnretained(old)
         let _new = Unmanaged.passRetained(new)
         @_transparent
@@ -684,7 +684,7 @@ extension Atomic {
     }
     
     @discardableResult
-    fileprivate mutating func _fetchStore(_ new: AtomicBase<Instance>) -> AtomicBase<Instance> {
+    private mutating func _fetchStore(_ new: AtomicBase<Instance>) -> AtomicBase<Instance> {
         let _new = Unmanaged.passRetained(new)
         @_transparent
         func exchange(theVal: UnsafeMutablePointer<AtomicBase<Instance>>) -> UnsafeMutableRawPointer {

@@ -42,7 +42,7 @@ public struct SDMarker {
         case any(Any)
     }
     
-    fileprivate let elements: [Element]
+    private let elements: [Element]
 }
 
 extension SDMarker {
@@ -51,13 +51,13 @@ extension SDMarker {
         self.elements = SDMarker.parseScope(ArraySlice(template))
     }
     
-    fileprivate static let characterSet = Set("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-_1234567890.:")
-    fileprivate static let token_start = Array("{{")
-    fileprivate static let scope_token_start = Array("{{#")
-    fileprivate static let scope_token_end = Array("#}}")
-    fileprivate static let variable_token_end = Array("%}}")
+    private static let characterSet = Set("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-_1234567890.:")
+    private static let token_start = Array("{{")
+    private static let scope_token_start = Array("{{#")
+    private static let scope_token_end = Array("#}}")
+    private static let variable_token_end = Array("%}}")
     
-    fileprivate static func parseScope(_ chars: ArraySlice<Character>) -> [Element] {
+    private static func parseScope(_ chars: ArraySlice<Character>) -> [Element] {
         var result: [Element] = []
         var chars = chars
         outer: while let index = chars.range(of: token_start)?.lowerBound {
@@ -90,12 +90,12 @@ extension SDMarker {
         return result
     }
     
-    fileprivate enum TokenType {
+    private enum TokenType {
         case variable(String, Int)
         case scope(String, Bool, Int)
     }
     
-    fileprivate static func parseToken(_ chars: ArraySlice<Character>) -> TokenType? {
+    private static func parseToken(_ chars: ArraySlice<Character>) -> TokenType? {
         if let token = chars.first {
             switch token {
             case "%":

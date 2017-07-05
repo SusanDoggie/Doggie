@@ -25,7 +25,7 @@
 
 import Foundation
 
-fileprivate struct PathDataScanner<I : IteratorProtocol> : IteratorProtocol, Sequence where I.Element == String {
+private struct PathDataScanner<I : IteratorProtocol> : IteratorProtocol, Sequence where I.Element == String {
     
     var iterator: I
     var current: String!
@@ -48,7 +48,7 @@ fileprivate struct PathDataScanner<I : IteratorProtocol> : IteratorProtocol, Seq
     }
 }
 
-fileprivate let pathDataMatcher: Regex = "[MmLlHhVvCcSsQqTtAaZz]|[+-]?(\\d+\\.?\\d*|\\.\\d+)([eE][+-]?\\d+)?"
+private let pathDataMatcher: Regex = "[MmLlHhVvCcSsQqTtAaZz]|[+-]?(\\d+\\.?\\d*|\\.\\d+)([eE][+-]?\\d+)?"
 
 extension Shape {
     
@@ -58,7 +58,7 @@ extension Shape {
     }
     
     @inline(__always)
-    fileprivate func toDouble(_ str: String?) throws -> Double {
+    private func toDouble(_ str: String?) throws -> Double {
         
         if str != nil, let val = Double(str!) {
             return val
@@ -67,7 +67,7 @@ extension Shape {
     }
     
     @inline(__always)
-    fileprivate func toInt(_ str: String?) throws -> Int {
+    private func toInt(_ str: String?) throws -> Int {
         
         if str != nil, let val = Int(str!) {
             return val
@@ -341,7 +341,7 @@ extension Shape {
 }
 
 @inline(__always)
-fileprivate func arcDetails(_ start: Point, _ end: Point, _ radius: Radius, _ rotate: Double, _ largeArc: Bool, _ sweep: Bool) -> (Point, Radius) {
+private func arcDetails(_ start: Point, _ end: Point, _ radius: Radius, _ rotate: Double, _ largeArc: Bool, _ sweep: Bool) -> (Point, Radius) {
     let centers = EllipseCenter(radius, rotate, start, end)
     if centers.count == 0 {
         return (0.5 * (start + end), EllipseRadius(start, end, radius, rotate))
@@ -352,7 +352,7 @@ fileprivate func arcDetails(_ start: Point, _ end: Point, _ radius: Radius, _ ro
     }
 }
 @inline(__always)
-fileprivate func bezierArc(_ start: Point, _ end: Point, _ radius: Radius, _ rotate: Double, _ largeArc: Bool, _ sweep: Bool) -> [Shape.Segment] {
+private func bezierArc(_ start: Point, _ end: Point, _ radius: Radius, _ rotate: Double, _ largeArc: Bool, _ sweep: Bool) -> [Shape.Segment] {
     let (center, radius) = arcDetails(start, end, radius, rotate, largeArc, sweep)
     let _arc_transform = SDTransform.scale(x: radius.x, y: radius.y) * SDTransform.rotate(rotate)
     let _arc_transform_inverse = _arc_transform.inverse
@@ -381,7 +381,7 @@ fileprivate func bezierArc(_ start: Point, _ end: Point, _ radius: Radius, _ rot
     return result
 }
 
-fileprivate let dataFormatter: NumberFormatter = {
+private let dataFormatter: NumberFormatter = {
     let formatter = NumberFormatter()
     formatter.negativeFormat = "#.#########"
     formatter.positiveFormat = "#.#########"
@@ -389,7 +389,7 @@ fileprivate let dataFormatter: NumberFormatter = {
     }()
 
 @inline(__always)
-fileprivate func getDataString(_ x: [Double]) -> String {
+private func getDataString(_ x: [Double]) -> String {
     var str = ""
     for _x in x.map({ dataFormatter.string(from: NSNumber(value: $0)) ?? "0" }) {
         if !str.isEmpty && _x.first != "-" {
@@ -401,12 +401,12 @@ fileprivate func getDataString(_ x: [Double]) -> String {
 }
 
 @inline(__always)
-fileprivate func _round(_ x: Double) -> Double {
+private func _round(_ x: Double) -> Double {
     return round(x * 1000000000) / 1000000000
 }
 
 @inline(__always)
-fileprivate func getPathDataString(_ command: Character?, _ x: Double ...) -> String {
+private func getPathDataString(_ command: Character?, _ x: Double ...) -> String {
     var result = ""
     command?.write(to: &result)
     let dataStr = getDataString(x)
@@ -433,7 +433,7 @@ public extension Shape {
     }
 }
 
-fileprivate extension Shape.Component {
+private extension Shape.Component {
     
     func serialize(_ currentState: inout Int, start: inout Point, relative: inout Point, lastControl: inout Point?, _ data: inout String) {
         
@@ -462,7 +462,7 @@ fileprivate extension Shape.Component {
     
 }
 
-fileprivate extension Shape.Segment {
+private extension Shape.Segment {
     
     func serialize(_ currentState: inout Int, start: inout Point, relative: inout Point, lastControl: inout Point?) -> String {
         

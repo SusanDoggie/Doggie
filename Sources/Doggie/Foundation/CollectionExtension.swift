@@ -608,20 +608,27 @@ extension Sequence {
     }
 }
 
+@_fixed_layout
 public struct LazyScanIterator<Base: IteratorProtocol, Element> : IteratorProtocol, Sequence {
     
-    fileprivate var nextElement: Element?
+    @_versioned
+    var nextElement: Element?
     
-    fileprivate var base: Base
+    @_versioned
+    var base: Base
     
-    fileprivate let combine: (Element, Base.Element) -> Element
+    @_versioned
+    let combine: (Element, Base.Element) -> Element
     
-    fileprivate init(nextElement: Element?, base: Base, combine: @escaping (Element, Base.Element) -> Element) {
+    @_versioned
+    @_inlineable
+    init(nextElement: Element?, base: Base, combine: @escaping (Element, Base.Element) -> Element) {
         self.nextElement = nextElement
         self.base = base
         self.combine = combine
     }
     
+    @_inlineable
     public mutating func next() -> Element? {
         return nextElement.map { result in
             nextElement = base.next().map { combine(result, $0) }
@@ -645,6 +652,7 @@ public struct LazyScanSequence<Base: Sequence, Element> : LazySequenceProtocol {
         self.combine = combine
     }
     
+    @_inlineable
     public func makeIterator() -> LazyScanIterator<Base.Iterator, Element> {
         return LazyScanIterator(nextElement: initial, base: base.makeIterator(), combine: combine)
     }
