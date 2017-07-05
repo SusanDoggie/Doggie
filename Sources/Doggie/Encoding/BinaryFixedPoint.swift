@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-public protocol BinaryFixedPoint : Numeric, Hashable, CustomStringConvertible, ExpressibleByFloatLiteral where RepresentingValue.RawSignificand : FixedWidthInteger {
+public protocol BinaryFixedPoint : Numeric, Hashable, CustomStringConvertible, ExpressibleByFloatLiteral {
     
     associatedtype BitPattern : FixedWidthInteger
     
@@ -59,12 +59,19 @@ extension BinaryFixedPoint {
     }
 }
 
-extension BinaryFixedPoint {
+extension BinaryFixedPoint where RepresentingValue.RawSignificand : FixedWidthInteger {
     
     @_versioned
     @_inlineable
     static var _fractionOffset: Int {
         return Self.fractionalBitCount - RepresentingValue.significandBitCount
+    }
+    
+    @_versioned
+    @_inlineable
+    static var _exponentBias: Int {
+        let s = RepresentingValue.exponentBitCount - 1
+        return (1 << s) - 1
     }
     
     @_inlineable
@@ -99,11 +106,11 @@ extension BinaryFixedPoint {
                 return 0
             } else {
                 let _bitPattern = RepresentingValue.RawSignificand(bitPattern < 0 ? 0 - bitPattern : bitPattern)
-                let exponent = RepresentingValue.RawSignificand.bitWidth - _bitPattern.leadingZeroBitCount - Self.fractionalBitCount - 1
+                let exponent = Int(log2(_bitPattern)) - Self.fractionalBitCount
                 let offset = Self._fractionOffset + exponent
-                let exponentBitPattern = Self.RepresentingValue.RawExponent(Int((1 as RepresentingValue).exponentBitPattern) + exponent)
+                let exponentBitPattern = RepresentingValue.RawExponent(Self._exponentBias + exponent)
                 let significandBitMask: RepresentingValue.RawSignificand = (1 << RepresentingValue.significandBitCount) - 1
-                let significandBitPattern = (_bitPattern & (significandBitMask << offset)) >> offset
+                let significandBitPattern = (_bitPattern >> offset) & significandBitMask
                 if BitPattern.isSigned {
                     return RepresentingValue(sign: bitPattern < 0 ? .minus : .plus, exponentBitPattern: exponentBitPattern, significandBitPattern: significandBitPattern)
                 } else {
