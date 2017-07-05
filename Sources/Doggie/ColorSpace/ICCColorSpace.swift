@@ -280,18 +280,18 @@ extension ICCCurve {
             if curve.count == 0 {
                 self = .identity
             } else if let gamma = curve.gamma {
-                self = .gamma(gamma.value)
+                self = .gamma(gamma.representingValue)
             } else {
                 self = .table(Array(curve))
             }
         } else if let curve = tag.parametricCurve {
             
             switch curve.funcType {
-            case 0: self = .gamma(curve.gamma.value)
-            case 1: self = .parametric1(curve.gamma.value, curve.a.value, curve.b.value)
-            case 2: self = .parametric2(curve.gamma.value, curve.a.value, curve.b.value, curve.c.value)
-            case 3: self = .parametric3(curve.gamma.value, curve.a.value, curve.b.value, curve.c.value, curve.d.value)
-            case 4: self = .parametric4(curve.gamma.value, curve.a.value, curve.b.value, curve.c.value, curve.d.value, curve.e.value, curve.f.value)
+            case 0: self = .gamma(curve.gamma.representingValue)
+            case 1: self = .parametric1(curve.gamma.representingValue, curve.a.representingValue, curve.b.representingValue)
+            case 2: self = .parametric2(curve.gamma.representingValue, curve.a.representingValue, curve.b.representingValue, curve.c.representingValue)
+            case 3: self = .parametric3(curve.gamma.representingValue, curve.a.representingValue, curve.b.representingValue, curve.c.representingValue, curve.d.representingValue)
+            case 4: self = .parametric4(curve.gamma.representingValue, curve.a.representingValue, curve.b.representingValue, curve.c.representingValue, curve.d.representingValue, curve.e.representingValue, curve.f.representingValue)
             default: return nil
             }
         } else {
@@ -790,9 +790,9 @@ extension ColorSpace {
                 let gTRC = profile[.GreenTRC].flatMap(ICCCurve.init) ?? .identity
                 let bTRC = profile[.BlueTRC].flatMap(ICCCurve.init) ?? .identity
                 
-                let matrix = Matrix(a: red.x.value, b: green.x.value, c: blue.x.value, d: 0,
-                                    e: red.y.value, f: green.y.value, g: blue.y.value, h: 0,
-                                    i: red.z.value, j: green.z.value, k: blue.z.value, l: 0)
+                let matrix = Matrix(a: red.x.representingValue, b: green.x.representingValue, c: blue.x.representingValue, d: 0,
+                                    e: red.y.representingValue, f: green.y.representingValue, g: blue.y.representingValue, h: 0,
+                                    i: red.z.representingValue, j: green.z.representingValue, k: blue.z.representingValue, l: 0)
                 
                 a2b = .matrix(matrix, (rTRC, gTRC, bTRC))
                 b2a = .matrix(matrix.inverse, (rTRC.inverse, gTRC.inverse, bTRC.inverse))
@@ -823,15 +823,15 @@ extension ColorSpace {
         if let white = profile[.MediaWhitePoint]?.XYZArray?.first {
             if let black = profile[.MediaBlackPoint]?.XYZArray?.first {
                 if let luminance = profile[.Luminance]?.XYZArray?.first?.y {
-                    cieXYZ = CIEXYZColorSpace(white: XYZColorModel(x: white.x.value, y: white.y.value, z: white.z.value), black: XYZColorModel(x: black.x.value, y: black.y.value, z: black.z.value), luminance: luminance.value)
+                    cieXYZ = CIEXYZColorSpace(white: XYZColorModel(x: white.x.representingValue, y: white.y.representingValue, z: white.z.representingValue), black: XYZColorModel(x: black.x.representingValue, y: black.y.representingValue, z: black.z.representingValue), luminance: luminance.representingValue)
                 } else {
-                    cieXYZ = CIEXYZColorSpace(white: XYZColorModel(x: white.x.value, y: white.y.value, z: white.z.value), black: XYZColorModel(x: black.x.value, y: black.y.value, z: black.z.value))
+                    cieXYZ = CIEXYZColorSpace(white: XYZColorModel(x: white.x.representingValue, y: white.y.representingValue, z: white.z.representingValue), black: XYZColorModel(x: black.x.representingValue, y: black.y.representingValue, z: black.z.representingValue))
                 }
             } else {
                 if let luminance = profile[.Luminance]?.XYZArray?.first?.y {
-                    cieXYZ = CIEXYZColorSpace(white: XYZColorModel(x: white.x.value, y: white.y.value, z: white.z.value), luminance: luminance.value)
+                    cieXYZ = CIEXYZColorSpace(white: XYZColorModel(x: white.x.representingValue, y: white.y.representingValue, z: white.z.representingValue), luminance: luminance.representingValue)
                 } else {
-                    cieXYZ = CIEXYZColorSpace(white: XYZColorModel(x: white.x.value, y: white.y.value, z: white.z.value))
+                    cieXYZ = CIEXYZColorSpace(white: XYZColorModel(x: white.x.representingValue, y: white.y.representingValue, z: white.z.representingValue))
                 }
             }
         } else {

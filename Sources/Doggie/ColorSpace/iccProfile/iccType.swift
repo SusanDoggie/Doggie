@@ -23,11 +23,6 @@
 //  THE SOFTWARE.
 //
 
-private func icRoundOffset<T : BinaryFloatingPoint>(_ v: T) -> T {
-    
-    return v < 0 ? v - 0.5 : v + 0.5
-}
-
 extension iccProfile {
     
     @_versioned
@@ -373,51 +368,21 @@ extension iccProfile.TagData {
 extension iccProfile {
     
     @_versioned
-    struct S15Fixed16Number : RawRepresentable, Hashable, CustomStringConvertible, ExpressibleByIntegerLiteral, ExpressibleByFloatLiteral {
+    struct S15Fixed16Number : FixedPointProtocol {
         
-        typealias RawValue = BEInt32
+        typealias RepresentingValue = Double
         
         @_versioned
         var rawValue: BEInt32
         
         @_versioned
-        init(rawValue: BEInt32) {
+        init(rawValue: RawValue) {
             self.rawValue = rawValue
         }
         
         @_versioned
-        init(integerLiteral value: Double.IntegerLiteralType) {
-            self.init(value: Double(integerLiteral: value))
-        }
-        
-        @_versioned
-        init(floatLiteral value: Double) {
-            self.init(value: value)
-        }
-        
-        @_versioned
-        init(value: Double) {
-            self.rawValue = BEInt32(icRoundOffset(value.clamped(to: -32768.0...32767.0) * 65536.0))
-        }
-        
-        @_versioned
-        var value: Double {
-            get {
-                return Double(rawValue.representingValue) / 65536.0
-            }
-            set {
-                self = S15Fixed16Number(value: newValue)
-            }
-        }
-        
-        @_versioned
-        var description: String {
-            return "\(value)"
-        }
-        
-        @_versioned
-        var hashValue: Int {
-            return rawValue.hashValue
+        static var fractionalBitCount: Int {
+            return 16
         }
     }
 }
@@ -425,51 +390,21 @@ extension iccProfile {
 extension iccProfile {
     
     @_versioned
-    struct U16Fixed16Number : RawRepresentable, Hashable, CustomStringConvertible, ExpressibleByIntegerLiteral, ExpressibleByFloatLiteral {
+    struct U16Fixed16Number : FixedPointProtocol {
         
-        typealias RawValue = BEUInt32
+        typealias RepresentingValue = Double
         
         @_versioned
         var rawValue: BEUInt32
         
         @_versioned
-        init(rawValue: BEUInt32) {
+        init(rawValue: RawValue) {
             self.rawValue = rawValue
         }
         
         @_versioned
-        init(integerLiteral value: Double.IntegerLiteralType) {
-            self.init(value: Double(integerLiteral: value))
-        }
-        
-        @_versioned
-        init(floatLiteral value: Double) {
-            self.init(value: value)
-        }
-        
-        @_versioned
-        init(value: Double) {
-            self.rawValue = BEUInt32(icRoundOffset(value.clamped(to: 0...65535.0) * 65536.0))
-        }
-        
-        @_versioned
-        var value: Double {
-            get {
-                return Double(rawValue.representingValue) / 65536.0
-            }
-            set {
-                self = U16Fixed16Number(value: newValue)
-            }
-        }
-        
-        @_versioned
-        var description: String {
-            return "\(value)"
-        }
-        
-        @_versioned
-        var hashValue: Int {
-            return rawValue.hashValue
+        static var fractionalBitCount: Int {
+            return 16
         }
     }
 }
@@ -477,51 +412,21 @@ extension iccProfile {
 extension iccProfile {
     
     @_versioned
-    struct U1Fixed15Number : RawRepresentable, Hashable, CustomStringConvertible, ExpressibleByIntegerLiteral, ExpressibleByFloatLiteral {
+    struct U1Fixed15Number : FixedPointProtocol {
         
-        typealias RawValue = BEUInt16
+        typealias RepresentingValue = Double
         
         @_versioned
         var rawValue: BEUInt16
         
         @_versioned
-        init(rawValue: BEUInt16) {
+        init(rawValue: RawValue) {
             self.rawValue = rawValue
         }
         
         @_versioned
-        init(integerLiteral value: Double.IntegerLiteralType) {
-            self.init(value: Double(integerLiteral: value))
-        }
-        
-        @_versioned
-        init(floatLiteral value: Double) {
-            self.init(value: value)
-        }
-        
-        @_versioned
-        init(value: Double) {
-            self.rawValue = BEUInt16(icRoundOffset(value.clamped(to: 0...65535.0/32768.0) * 32768.0))
-        }
-        
-        @_versioned
-        var value: Double {
-            get {
-                return Double(rawValue.representingValue) / 32768.0
-            }
-            set {
-                self = U1Fixed15Number(value: newValue)
-            }
-        }
-        
-        @_versioned
-        var description: String {
-            return "\(value)"
-        }
-        
-        @_versioned
-        var hashValue: Int {
-            return rawValue.hashValue
+        static var fractionalBitCount: Int {
+            return 15
         }
     }
 }
@@ -529,51 +434,21 @@ extension iccProfile {
 extension iccProfile {
     
     @_versioned
-    struct U8Fixed8Number : RawRepresentable, Hashable, CustomStringConvertible, ExpressibleByIntegerLiteral, ExpressibleByFloatLiteral {
+    struct U8Fixed8Number : FixedPointProtocol {
         
-        typealias RawValue = BEUInt16
+        typealias RepresentingValue = Double
         
         @_versioned
         var rawValue: BEUInt16
         
         @_versioned
-        init(rawValue: BEUInt16) {
+        init(rawValue: RawValue) {
             self.rawValue = rawValue
         }
         
         @_versioned
-        init(integerLiteral value: Double.IntegerLiteralType) {
-            self.init(value: Double(integerLiteral: value))
-        }
-        
-        @_versioned
-        init(floatLiteral value: Double) {
-            self.init(value: value)
-        }
-        
-        @_versioned
-        init(value: Double) {
-            self.rawValue = BEUInt16(icRoundOffset(value.clamped(to: 0...255.0) * 256.0))
-        }
-        
-        @_versioned
-        var value: Double {
-            get {
-                return Double(rawValue.representingValue) / 256.0
-            }
-            set {
-                self = U8Fixed8Number(value: newValue)
-            }
-        }
-        
-        @_versioned
-        var description: String {
-            return "\(value)"
-        }
-        
-        @_versioned
-        var hashValue: Int {
-            return rawValue.hashValue
+        static var fractionalBitCount: Int {
+            return 8
         }
     }
 }
@@ -636,9 +511,9 @@ extension iccProfile {
         
         @_versioned
         init(_ xyz: XYZColorModel) {
-            self.x = S15Fixed16Number(value: xyz.x)
-            self.y = S15Fixed16Number(value: xyz.y)
-            self.z = S15Fixed16Number(value: xyz.z)
+            self.x = S15Fixed16Number(representingValue: xyz.x)
+            self.y = S15Fixed16Number(representingValue: xyz.y)
+            self.z = S15Fixed16Number(representingValue: xyz.z)
         }
     }
 }
@@ -677,22 +552,22 @@ extension iccProfile {
         
         @_versioned
         init(_ matrix: Matrix) {
-            self.e00 = S15Fixed16Number(value: matrix.a)
-            self.e01 = S15Fixed16Number(value: matrix.b)
-            self.e02 = S15Fixed16Number(value: matrix.c)
-            self.e10 = S15Fixed16Number(value: matrix.e)
-            self.e11 = S15Fixed16Number(value: matrix.f)
-            self.e12 = S15Fixed16Number(value: matrix.g)
-            self.e20 = S15Fixed16Number(value: matrix.i)
-            self.e21 = S15Fixed16Number(value: matrix.j)
-            self.e22 = S15Fixed16Number(value: matrix.k)
+            self.e00 = S15Fixed16Number(representingValue: matrix.a)
+            self.e01 = S15Fixed16Number(representingValue: matrix.b)
+            self.e02 = S15Fixed16Number(representingValue: matrix.c)
+            self.e10 = S15Fixed16Number(representingValue: matrix.e)
+            self.e11 = S15Fixed16Number(representingValue: matrix.f)
+            self.e12 = S15Fixed16Number(representingValue: matrix.g)
+            self.e20 = S15Fixed16Number(representingValue: matrix.i)
+            self.e21 = S15Fixed16Number(representingValue: matrix.j)
+            self.e22 = S15Fixed16Number(representingValue: matrix.k)
         }
         
         @_versioned
         var matrix: Matrix {
-            return Matrix(a: e00.value, b: e01.value, c: e02.value, d: 0,
-                          e: e10.value, f: e11.value, g: e12.value, h: 0,
-                          i: e20.value, j: e21.value, k: e22.value, l: 0)
+            return Matrix(a: e00.representingValue, b: e01.representingValue, c: e02.representingValue, d: 0,
+                          e: e10.representingValue, f: e11.representingValue, g: e12.representingValue, h: 0,
+                          i: e20.representingValue, j: e21.representingValue, k: e22.representingValue, l: 0)
         }
     }
     
@@ -714,16 +589,16 @@ extension iccProfile {
         @_versioned
         init(_ matrix: Matrix) {
             self.m = Matrix3x3(matrix)
-            self.e03 = S15Fixed16Number(value: matrix.d)
-            self.e13 = S15Fixed16Number(value: matrix.h)
-            self.e23 = S15Fixed16Number(value: matrix.l)
+            self.e03 = S15Fixed16Number(representingValue: matrix.d)
+            self.e13 = S15Fixed16Number(representingValue: matrix.h)
+            self.e23 = S15Fixed16Number(representingValue: matrix.l)
         }
         
         @_versioned
         var matrix: Matrix {
-            return Matrix(a: m.e00.value, b: m.e01.value, c: m.e02.value, d: e03.value,
-                          e: m.e10.value, f: m.e11.value, g: m.e12.value, h: e13.value,
-                          i: m.e20.value, j: m.e21.value, k: m.e22.value, l: e23.value)
+            return Matrix(a: m.e00.representingValue, b: m.e01.representingValue, c: m.e02.representingValue, d: e03.representingValue,
+                          e: m.e10.representingValue, f: m.e11.representingValue, g: m.e12.representingValue, h: e13.representingValue,
+                          i: m.e20.representingValue, j: m.e21.representingValue, k: m.e22.representingValue, l: e23.representingValue)
         }
     }
 }

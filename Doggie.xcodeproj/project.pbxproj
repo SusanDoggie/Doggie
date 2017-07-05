@@ -208,6 +208,8 @@
 		0A9CD5961EEB9A2A00094148 /* CalibratedGrayColorSpace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9CD5811EEB986F00094148 /* CalibratedGrayColorSpace.swift */; };
 		0A9CD5971EEB9A2D00094148 /* CalibratedRGBColorSpace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9CD57E1EEB983C00094148 /* CalibratedRGBColorSpace.swift */; };
 		0A9CD5981EEB9A2E00094148 /* CalibratedRGBColorSpace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9CD57E1EEB983C00094148 /* CalibratedRGBColorSpace.swift */; };
+		0A9D27E41F0CF629003638D3 /* FixedPointProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9D27E31F0CF629003638D3 /* FixedPointProtocol.swift */; };
+		0A9D27E51F0CF629003638D3 /* FixedPointProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9D27E31F0CF629003638D3 /* FixedPointProtocol.swift */; };
 		0A9F281B1EF0D98400E69976 /* RGBColorModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9F281A1EF0D98400E69976 /* RGBColorModel.swift */; };
 		0A9F281C1EF0D98400E69976 /* RGBColorModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9F281A1EF0D98400E69976 /* RGBColorModel.swift */; };
 		0A9F281E1EF0D9AA00E69976 /* CMYKColorModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9F281D1EF0D9AA00E69976 /* CMYKColorModel.swift */; };
@@ -381,6 +383,7 @@
 		0A9CD5881EEB98BE00094148 /* CIEXYZColorSpace.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CIEXYZColorSpace.swift; sourceTree = "<group>"; };
 		0A9CD5891EEB98E600094148 /* sRGB.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = sRGB.swift; sourceTree = "<group>"; };
 		0A9CD58C1EEB98F300094148 /* displayP3.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = displayP3.swift; sourceTree = "<group>"; };
+		0A9D27E31F0CF629003638D3 /* FixedPointProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FixedPointProtocol.swift; sourceTree = "<group>"; };
 		0A9F281A1EF0D98400E69976 /* RGBColorModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RGBColorModel.swift; sourceTree = "<group>"; };
 		0A9F281D1EF0D9AA00E69976 /* CMYKColorModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CMYKColorModel.swift; sourceTree = "<group>"; };
 		0A9F28201EF0D9BC00E69976 /* LabColorModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabColorModel.swift; sourceTree = "<group>"; };
@@ -461,7 +464,6 @@
 				0A53E44D1E35AEF80060FB83 /* CollectionExtension.swift */,
 				0A53E44F1E35AEF80060FB83 /* Date.swift */,
 				0A92C7C31E56AB9D0090EBFC /* Data.swift */,
-				0A7F24AB1EF37CD500EAD9C7 /* Endianness.swift */,
 				0A53E4501E35AEF80060FB83 /* FloatingPoint.swift */,
 				0A53E4511E35AEF80060FB83 /* Graph.swift */,
 				0A53E4521E35AEF80060FB83 /* Hashable.swift */,
@@ -762,6 +764,8 @@
 		0A92C7B01E56A52E0090EBFC /* Encoding */ = {
 			isa = PBXGroup;
 			children = (
+				0A7F24AB1EF37CD500EAD9C7 /* Endianness.swift */,
+				0A9D27E31F0CF629003638D3 /* FixedPointProtocol.swift */,
 				0A92C7B11E56A52E0090EBFC /* zlib.swift */,
 			);
 			path = Encoding;
@@ -1083,6 +1087,7 @@
 				0A53E46E1E35AEF80060FB83 /* Json.swift in Sources */,
 				0A9F282D1EF0DB1F00E69976 /* CMYColorModel.swift in Sources */,
 				0A9F282A1EF0D9F000E69976 /* GrayColorModel.swift in Sources */,
+				0A9D27E41F0CF629003638D3 /* FixedPointProtocol.swift in Sources */,
 				08458B2E1E2E627600D01813 /* Image.swift in Sources */,
 				0AAC4DF41E977906008DCADA /* ShapeRasterize.swift in Sources */,
 				0A53E4641E35AEF80060FB83 /* FloatingPoint.swift in Sources */,
@@ -1214,6 +1219,7 @@
 				0A53E46F1E35AEF80060FB83 /* Json.swift in Sources */,
 				0A9F282E1EF0DB1F00E69976 /* CMYColorModel.swift in Sources */,
 				0A9F282B1EF0D9F000E69976 /* GrayColorModel.swift in Sources */,
+				0A9D27E51F0CF629003638D3 /* FixedPointProtocol.swift in Sources */,
 				08458B2F1E2E627600D01813 /* Image.swift in Sources */,
 				0AAC4DF51E977906008DCADA /* ShapeRasterize.swift in Sources */,
 				0A53E4651E35AEF80060FB83 /* FloatingPoint.swift in Sources */,
