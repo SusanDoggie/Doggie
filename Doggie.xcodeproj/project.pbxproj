@@ -461,6 +461,8 @@
 			children = (
 				08B085471E9A20720037DECE /* Algorithm.swift */,
 				08B457E51EDD3223007AA4F0 /* Arithmetic.swift */,
+				0A9D27E31F0CF629003638D3 /* BinaryFixedPoint.swift */,
+				0A7F24AB1EF37CD500EAD9C7 /* Endianness.swift */,
 				0A53E44D1E35AEF80060FB83 /* CollectionExtension.swift */,
 				0A53E44F1E35AEF80060FB83 /* Date.swift */,
 				0A92C7C31E56AB9D0090EBFC /* Data.swift */,
@@ -474,6 +476,7 @@
 				0A53E45B1E35AEF80060FB83 /* Random.swift */,
 				0A53E45C1E35AEF80060FB83 /* Regex.swift */,
 				0A53E45D1E35AEF80060FB83 /* String.swift */,
+				0A92C7B11E56A52E0090EBFC /* zlib.swift */,
 			);
 			path = Foundation;
 			sourceTree = "<group>";
@@ -526,7 +529,6 @@
 				0A776FC21D9A0BA5005FC88F /* c11_atomic */,
 				08458AB01E2E627600D01813 /* Accelerate */,
 				0A7C97461E558DE600AB4803 /* DGDocument */,
-				0A92C7B01E56A52E0090EBFC /* Encoding */,
 				08458ABA1E2E627600D01813 /* Foundation */,
 				08458AC31E2E627600D01813 /* Fourier.swift */,
 				0A0697561E4D6659005CF664 /* CoreGraphics */,
@@ -759,16 +761,6 @@
 				0A92C7D21E56DA960090EBFC /* DGParser.swift */,
 			);
 			path = DGDocument;
-			sourceTree = "<group>";
-		};
-		0A92C7B01E56A52E0090EBFC /* Encoding */ = {
-			isa = PBXGroup;
-			children = (
-				0A7F24AB1EF37CD500EAD9C7 /* Endianness.swift */,
-				0A9D27E31F0CF629003638D3 /* BinaryFixedPoint.swift */,
-				0A92C7B11E56A52E0090EBFC /* zlib.swift */,
-			);
-			path = Encoding;
 			sourceTree = "<group>";
 		};
 		0A9AA83E1E54373E007A2B92 /* PDF */ = {
