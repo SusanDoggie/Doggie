@@ -83,7 +83,9 @@ extension BinaryFixedPoint where RepresentingValue.RawSignificand : FixedWidthIn
             let _pattern = RepresentingValue.RawSignificand(1 << RepresentingValue.significandBitCount) | representingValue.significandBitPattern
             let pattern = _pattern << offset
             if BitPattern.isSigned {
-                if representingValue.sign == .minus {
+                if pattern == 0 {
+                    self.init(bitPattern: 0)
+                } else if representingValue.sign == .minus {
                     if pattern - 1 == ~BitPattern.min {
                         self.init(bitPattern: BitPattern.min)
                     } else {
