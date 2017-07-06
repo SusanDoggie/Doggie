@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-public protocol BinaryFixedPoint : Numeric, Hashable, CustomStringConvertible, ExpressibleByFloatLiteral {
+public protocol BinaryFixedPoint : Numeric, Hashable, Strideable, CustomStringConvertible, ExpressibleByFloatLiteral {
     
     associatedtype BitPattern : FixedWidthInteger
     
@@ -132,6 +132,14 @@ extension BinaryFixedPoint where RepresentingValue.RawSignificand : FixedWidthIn
 extension BinaryFixedPoint {
     
     @_inlineable
+    public static var isSigned: Bool {
+        return BitPattern.isSigned
+    }
+}
+
+extension BinaryFixedPoint {
+    
+    @_inlineable
     public var description: String {
         return "\(representingValue)"
     }
@@ -154,6 +162,16 @@ extension BinaryFixedPoint {
     @_inlineable
     public static var max: Self {
         return Self(bitPattern: BitPattern.max)
+    }
+    
+    @_inlineable
+    public func distance(to other: Self) -> RepresentingValue.Stride {
+        return self.representingValue.distance(to: other.representingValue)
+    }
+    
+    @_inlineable
+    public func advanced(by n: RepresentingValue.Stride) -> Self {
+        return Self(representingValue: self.representingValue.advanced(by: n))
     }
 }
 
@@ -207,5 +225,25 @@ extension BinaryFixedPoint {
     @_inlineable
     public static func !=(lhs: Self, rhs: Self) -> Bool {
         return lhs.bitPattern != rhs.bitPattern
+    }
+    
+    @_inlineable
+    public static func <(lhs: Self, rhs: Self) -> Bool {
+        return lhs.representingValue < rhs.representingValue
+    }
+    
+    @_inlineable
+    public static func <=(lhs: Self, rhs: Self) -> Bool {
+        return lhs.representingValue <= rhs.representingValue
+    }
+    
+    @_inlineable
+    public static func >(lhs: Self, rhs: Self) -> Bool {
+        return lhs.representingValue > rhs.representingValue
+    }
+    
+    @_inlineable
+    public static func >=(lhs: Self, rhs: Self) -> Bool {
+        return lhs.representingValue >= rhs.representingValue
     }
 }
