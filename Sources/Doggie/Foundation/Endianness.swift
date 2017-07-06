@@ -23,7 +23,8 @@
 //  THE SOFTWARE.
 //
 
-public protocol EndianInteger : FixedWidthInteger {
+@_versioned
+protocol EndianInteger : FixedWidthInteger {
     
     associatedtype BitPattern : FixedWidthInteger
     
@@ -367,7 +368,7 @@ extension EndianInteger {
     }
 }
 
-public struct BEInteger<Base : FixedWidthInteger> : EndianInteger {
+public struct BEInteger<Base : FixedWidthInteger> : FixedWidthInteger, EndianInteger {
     
     public var bitPattern: Base
     
@@ -376,13 +377,15 @@ public struct BEInteger<Base : FixedWidthInteger> : EndianInteger {
         self.bitPattern = bitPattern
     }
     
+    @_versioned
     @_transparent
-    public init(representingValue: Base) {
+    init(representingValue: Base) {
         self.bitPattern = representingValue.bigEndian
     }
     
+    @_versioned
     @_transparent
-    public var representingValue: Base {
+    var representingValue: Base {
         get {
             return Base(bigEndian: bitPattern)
         }
@@ -392,7 +395,7 @@ public struct BEInteger<Base : FixedWidthInteger> : EndianInteger {
     }
 }
 
-public struct LEInteger<Base : FixedWidthInteger> : EndianInteger {
+public struct LEInteger<Base : FixedWidthInteger> : FixedWidthInteger, EndianInteger {
     
     public var bitPattern: Base
     
@@ -401,13 +404,15 @@ public struct LEInteger<Base : FixedWidthInteger> : EndianInteger {
         self.bitPattern = bitPattern
     }
     
+    @_versioned
     @_transparent
-    public init(representingValue: Base) {
+    init(representingValue: Base) {
         self.bitPattern = representingValue.littleEndian
     }
     
+    @_versioned
     @_transparent
-    public var representingValue: Base {
+    var representingValue: Base {
         get {
             return Base(littleEndian: bitPattern)
         }
