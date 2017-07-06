@@ -254,7 +254,7 @@ extension BinaryFixedPoint {
     
     @_transparent
     public static func +(lhs: Self, rhs: Self) -> Self {
-        return self.init(representingValue: lhs.representingValue + rhs.representingValue)
+        return Self(representingValue: lhs.representingValue + rhs.representingValue)
     }
     
     @_transparent
@@ -264,7 +264,7 @@ extension BinaryFixedPoint {
     
     @_transparent
     public static func -(lhs: Self, rhs: Self) -> Self {
-        return self.init(representingValue: lhs.representingValue - rhs.representingValue)
+        return Self(representingValue: lhs.representingValue - rhs.representingValue)
     }
     
     @_transparent
@@ -274,7 +274,7 @@ extension BinaryFixedPoint {
     
     @_transparent
     public static func *(lhs: Self, rhs: Self) -> Self {
-        return self.init(representingValue: lhs.representingValue * rhs.representingValue)
+        return Self(representingValue: lhs.representingValue * rhs.representingValue)
     }
     
     @_transparent
@@ -284,7 +284,7 @@ extension BinaryFixedPoint {
     
     @_transparent
     public static func /(lhs: Self, rhs: Self) -> Self {
-        return self.init(representingValue: lhs.representingValue / rhs.representingValue)
+        return Self(representingValue: lhs.representingValue / rhs.representingValue)
     }
     
     @_transparent
