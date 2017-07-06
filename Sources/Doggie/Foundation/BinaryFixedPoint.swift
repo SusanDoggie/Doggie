@@ -91,11 +91,7 @@ extension BinaryFixedPoint where RepresentingValue.RawSignificand : FixedWidthIn
                 if pattern == 0 {
                     self.init(bitPattern: 0)
                 } else if representingValue.sign == .minus {
-                    if pattern - 1 == ~BitPattern.min {
-                        self.init(bitPattern: BitPattern.min)
-                    } else {
-                        self.init(bitPattern: ~BitPattern(clamping: pattern) + 1)
-                    }
+                    self.init(bitPattern: ~BitPattern(clamping: pattern - 1))
                 } else {
                     self.init(bitPattern: BitPattern(clamping: pattern))
                 }
@@ -115,7 +111,7 @@ extension BinaryFixedPoint where RepresentingValue.RawSignificand : FixedWidthIn
             if bitPattern == 0 {
                 return 0
             } else {
-                let _bitPattern = RepresentingValue.RawSignificand(bitPattern < 0 ? 0 - bitPattern : bitPattern)
+                let _bitPattern = bitPattern < 0 ? RepresentingValue.RawSignificand(~bitPattern) + 1 : RepresentingValue.RawSignificand(bitPattern)
                 let exponent = Int(log2(_bitPattern)) - Self.fractionBitCount
                 let offset = Self._fractionOffset + exponent
                 let exponentBitPattern = RepresentingValue.RawExponent(Self._exponentBias + exponent)
