@@ -440,9 +440,9 @@ extension iccProfile {
         }
         
         init(_ xyz: XYZColorModel) {
-            self.x = S15Fixed16Number(representingValue: xyz.x)
-            self.y = S15Fixed16Number(representingValue: xyz.y)
-            self.z = S15Fixed16Number(representingValue: xyz.z)
+            self.x = S15Fixed16Number(xyz.x)
+            self.y = S15Fixed16Number(xyz.y)
+            self.z = S15Fixed16Number(xyz.z)
         }
     }
 }
@@ -470,15 +470,15 @@ extension iccProfile {
         var e22: S15Fixed16Number
         
         init(_ matrix: Matrix) {
-            self.e00 = S15Fixed16Number(representingValue: matrix.a)
-            self.e01 = S15Fixed16Number(representingValue: matrix.b)
-            self.e02 = S15Fixed16Number(representingValue: matrix.c)
-            self.e10 = S15Fixed16Number(representingValue: matrix.e)
-            self.e11 = S15Fixed16Number(representingValue: matrix.f)
-            self.e12 = S15Fixed16Number(representingValue: matrix.g)
-            self.e20 = S15Fixed16Number(representingValue: matrix.i)
-            self.e21 = S15Fixed16Number(representingValue: matrix.j)
-            self.e22 = S15Fixed16Number(representingValue: matrix.k)
+            self.e00 = S15Fixed16Number(matrix.a)
+            self.e01 = S15Fixed16Number(matrix.b)
+            self.e02 = S15Fixed16Number(matrix.c)
+            self.e10 = S15Fixed16Number(matrix.e)
+            self.e11 = S15Fixed16Number(matrix.f)
+            self.e12 = S15Fixed16Number(matrix.g)
+            self.e20 = S15Fixed16Number(matrix.i)
+            self.e21 = S15Fixed16Number(matrix.j)
+            self.e22 = S15Fixed16Number(matrix.k)
         }
         
         var matrix: Matrix {
@@ -500,9 +500,9 @@ extension iccProfile {
         
         init(_ matrix: Matrix) {
             self.m = Matrix3x3(matrix)
-            self.e03 = S15Fixed16Number(representingValue: matrix.d)
-            self.e13 = S15Fixed16Number(representingValue: matrix.h)
-            self.e23 = S15Fixed16Number(representingValue: matrix.l)
+            self.e03 = S15Fixed16Number(matrix.d)
+            self.e13 = S15Fixed16Number(matrix.h)
+            self.e23 = S15Fixed16Number(matrix.l)
         }
         
         var matrix: Matrix {

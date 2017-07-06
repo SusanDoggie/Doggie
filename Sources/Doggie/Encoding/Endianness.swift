@@ -25,7 +25,13 @@
 
 public protocol EndianInteger : FixedWidthInteger {
     
+    associatedtype BitPattern : FixedWidthInteger
+    
     associatedtype RepresentingValue : FixedWidthInteger
+    
+    var bitPattern: BitPattern { get }
+    
+    init(bitPattern: BitPattern)
     
     var representingValue : RepresentingValue { get set }
     
@@ -34,54 +40,59 @@ public protocol EndianInteger : FixedWidthInteger {
 
 extension EndianInteger {
     
-    @_inlineable
+    @_transparent
     public init(bigEndian value: Self) {
         self.init(representingValue: value.representingValue.bigEndian)
     }
     
-    @_inlineable
+    @_transparent
     public init(littleEndian value: Self) {
         self.init(representingValue: value.representingValue.littleEndian)
     }
     
-    @_inlineable
+    @_transparent
     public init(integerLiteral value: RepresentingValue.IntegerLiteralType) {
         self.init(representingValue: RepresentingValue(integerLiteral: value))
     }
     
-    @_inlineable
+    @_transparent
     public init?<T>(exactly source: T) where T : BinaryInteger {
         guard let value = RepresentingValue(exactly: source) else { return nil }
         self.init(representingValue: value)
     }
     
-    @_inlineable
+    @_transparent
     public init?<T>(exactly source: T) where T : FloatingPoint {
         guard let value = RepresentingValue(exactly: source) else { return nil }
         self.init(representingValue: value)
     }
     
-    @_inlineable
+    @_transparent
+    public init(_ value: RepresentingValue) {
+        self.init(representingValue: value)
+    }
+    
+    @_transparent
     public init<T>(_ source: T) where T : FloatingPoint {
         self.init(representingValue: RepresentingValue(source))
     }
     
-    @_inlineable
+    @_transparent
     public init<T>(_ source: T) where T : BinaryInteger {
         self.init(representingValue: RepresentingValue(source))
     }
     
-    @_inlineable
+    @_transparent
     public init<T>(extendingOrTruncating source: T) where T : BinaryInteger {
         self.init(representingValue: RepresentingValue(extendingOrTruncating: source))
     }
     
-    @_inlineable
+    @_transparent
     public init<T>(clamping source: T) where T : BinaryInteger {
         self.init(representingValue: RepresentingValue(clamping: source))
     }
     
-    @_inlineable
+    @_transparent
     public init(_truncatingBits bits: UInt) {
         self.init(representingValue: RepresentingValue(_truncatingBits: bits))
     }
@@ -89,22 +100,22 @@ extension EndianInteger {
 
 extension EndianInteger {
     
-    @_inlineable
+    @_transparent
     public static var isSigned: Bool {
         return RepresentingValue.isSigned
     }
     
-    @_inlineable
+    @_transparent
     public static var bitWidth: Int {
         return RepresentingValue.bitWidth
     }
     
-    @_inlineable
+    @_transparent
     public static var max: Self {
         return Self(representingValue: RepresentingValue.max)
     }
     
-    @_inlineable
+    @_transparent
     public static var min: Self {
         return Self(representingValue: RepresentingValue.min)
     }
@@ -112,52 +123,52 @@ extension EndianInteger {
 
 extension EndianInteger {
     
-    @_inlineable
+    @_transparent
     public var hashValue: Int {
         return representingValue.hashValue
     }
     
-    @_inlineable
+    @_transparent
     public var description: String {
         return representingValue.description
     }
     
-    @_inlineable
+    @_transparent
     public var bitWidth: Int {
         return representingValue.bitWidth
     }
     
-    @_inlineable
+    @_transparent
     public var magnitude: RepresentingValue.Magnitude {
         return representingValue.magnitude
     }
     
-    @_inlineable
+    @_transparent
     public var trailingZeroBitCount: Int {
         return representingValue.trailingZeroBitCount
     }
     
-    @_inlineable
+    @_transparent
     public var nonzeroBitCount: Int {
         return representingValue.nonzeroBitCount
     }
     
-    @_inlineable
+    @_transparent
     public var leadingZeroBitCount: Int {
         return representingValue.leadingZeroBitCount
     }
     
-    @_inlineable
+    @_transparent
     public var bigEndian: Self {
         return Self(bigEndian: self)
     }
     
-    @_inlineable
+    @_transparent
     public var littleEndian: Self {
         return Self(littleEndian: self)
     }
     
-    @_inlineable
+    @_transparent
     public var byteSwapped: Self {
         return Self(representingValue: representingValue.byteSwapped)
     }
@@ -165,48 +176,58 @@ extension EndianInteger {
 
 extension EndianInteger {
     
-    @_inlineable
+    @_transparent
     public func _word(at n: Int) -> UInt {
         return representingValue._word(at: n)
     }
     
-    @_inlineable
+    @_transparent
+    public func distance(to other: Self) -> RepresentingValue.Stride {
+        return self.representingValue.distance(to: other.representingValue)
+    }
+    
+    @_transparent
+    public func advanced(by n: RepresentingValue.Stride) -> Self {
+        return Self(representingValue: self.representingValue.advanced(by: n))
+    }
+    
+    @_transparent
     public func addingReportingOverflow(_ rhs: Self) -> (partialValue: Self, overflow: ArithmeticOverflow) {
         let (partialValue, overflow) = representingValue.addingReportingOverflow(rhs.representingValue)
         return (Self(representingValue: partialValue), overflow)
     }
     
-    @_inlineable
+    @_transparent
     public func subtractingReportingOverflow(_ rhs: Self) -> (partialValue: Self, overflow: ArithmeticOverflow) {
         let (partialValue, overflow) = representingValue.subtractingReportingOverflow(rhs.representingValue)
         return (Self(representingValue: partialValue), overflow)
     }
     
-    @_inlineable
+    @_transparent
     public func multipliedReportingOverflow(by rhs: Self) -> (partialValue: Self, overflow: ArithmeticOverflow) {
         let (partialValue, overflow) = representingValue.multipliedReportingOverflow(by: rhs.representingValue)
         return (Self(representingValue: partialValue), overflow)
     }
     
-    @_inlineable
+    @_transparent
     public func dividedReportingOverflow(by rhs: Self) -> (partialValue: Self, overflow: ArithmeticOverflow) {
         let (partialValue, overflow) = representingValue.dividedReportingOverflow(by: rhs.representingValue)
         return (Self(representingValue: partialValue), overflow)
     }
     
-    @_inlineable
+    @_transparent
     public func remainderReportingOverflow(dividingBy rhs: Self) -> (partialValue: Self, overflow: ArithmeticOverflow) {
         let (partialValue, overflow) = representingValue.remainderReportingOverflow(dividingBy: rhs.representingValue)
         return (Self(representingValue: partialValue), overflow)
     }
     
-    @_inlineable
+    @_transparent
     public func multipliedFullWidth(by other: Self) -> (high: Self, low: RepresentingValue.Magnitude) {
         let (high, low) = representingValue.multipliedFullWidth(by: other.representingValue)
         return (Self(representingValue: high), low)
     }
     
-    @_inlineable
+    @_transparent
     public func dividingFullWidth(_ dividend: (high: Self, low: RepresentingValue.Magnitude)) -> (quotient: Self, remainder: Self) {
         let (quotient, remainder) = representingValue.dividingFullWidth((dividend.high.representingValue, dividend.low))
         return (Self(representingValue: quotient), Self(representingValue: remainder))
@@ -215,172 +236,183 @@ extension EndianInteger {
 
 extension EndianInteger {
     
-    @_inlineable
+    @_transparent
+    public static prefix func +(x: Self) -> Self {
+        return x
+    }
+    
+    @_transparent
     public static func +(lhs: Self, rhs: Self) -> Self {
         return Self(representingValue: lhs.representingValue + rhs.representingValue)
     }
     
-    @_inlineable
+    @_transparent
     public static func +=(lhs: inout Self, rhs: Self) {
         lhs.representingValue += rhs.representingValue
     }
     
-    @_inlineable
+    @_transparent
     public static func -(lhs: Self, rhs: Self) -> Self {
         return Self(representingValue: lhs.representingValue - rhs.representingValue)
     }
     
-    @_inlineable
+    @_transparent
     public static func -=(lhs: inout Self, rhs: Self) {
         lhs.representingValue -= rhs.representingValue
     }
     
-    @_inlineable
+    @_transparent
     public static func *(lhs: Self, rhs: Self) -> Self {
         return Self(representingValue: lhs.representingValue * rhs.representingValue)
     }
     
-    @_inlineable
+    @_transparent
     public static func *=(lhs: inout Self, rhs: Self) {
         lhs.representingValue *= rhs.representingValue
     }
     
-    @_inlineable
+    @_transparent
     public static func /(lhs: Self, rhs: Self) -> Self {
         return Self(representingValue: lhs.representingValue / rhs.representingValue)
     }
     
-    @_inlineable
+    @_transparent
     public static func /=(lhs: inout Self, rhs: Self) {
         lhs.representingValue /= rhs.representingValue
     }
     
-    @_inlineable
+    @_transparent
     public static func %(lhs: Self, rhs: Self) -> Self {
         return Self(representingValue: lhs.representingValue % rhs.representingValue)
     }
     
-    @_inlineable
+    @_transparent
     public static func %=(lhs: inout Self, rhs: Self) {
         lhs.representingValue %= rhs.representingValue
     }
     
-    @_inlineable
+    @_transparent
     public static func &(lhs: Self, rhs: Self) -> Self {
         return Self(representingValue: lhs.representingValue & rhs.representingValue)
     }
     
-    @_inlineable
+    @_transparent
     public static func &=(lhs: inout Self, rhs: Self) {
         lhs.representingValue &= rhs.representingValue
     }
     
-    @_inlineable
+    @_transparent
     public static func |(lhs: Self, rhs: Self) -> Self {
         return Self(representingValue: lhs.representingValue | rhs.representingValue)
     }
     
-    @_inlineable
+    @_transparent
     public static func |=(lhs: inout Self, rhs: Self) {
         lhs.representingValue |= rhs.representingValue
     }
     
-    @_inlineable
+    @_transparent
     public static func ^(lhs: Self, rhs: Self) -> Self {
         return Self(representingValue: lhs.representingValue ^ rhs.representingValue)
     }
     
-    @_inlineable
+    @_transparent
     public static func ^=(lhs: inout Self, rhs: Self) {
         lhs.representingValue ^= rhs.representingValue
     }
     
-    @_inlineable
+    @_transparent
     prefix public static func ~(x: Self) -> Self {
         return Self(representingValue: ~x.representingValue)
     }
     
-    @_inlineable
+    @_transparent
     public static func &>>(lhs: Self, rhs: Self) -> Self {
         return Self(representingValue: lhs.representingValue &>> rhs.representingValue)
     }
     
-    @_inlineable
+    @_transparent
     public static func &<<(lhs: Self, rhs: Self) -> Self {
         return Self(representingValue: lhs.representingValue &<< rhs.representingValue)
     }
     
-    @_inlineable
+    @_transparent
     public static func ==(lhs: Self, rhs: Self) -> Bool {
-        return lhs.representingValue == rhs.representingValue
+        return lhs.bitPattern == rhs.bitPattern
     }
     
-    @_inlineable
+    @_transparent
     public static func !=(lhs: Self, rhs: Self) -> Bool {
-        return lhs.representingValue != rhs.representingValue
+        return lhs.bitPattern != rhs.bitPattern
     }
     
-    @_inlineable
+    @_transparent
     public static func >(lhs: Self, rhs: Self) -> Bool {
         return lhs.representingValue > rhs.representingValue
     }
     
-    @_inlineable
+    @_transparent
     public static func <(lhs: Self, rhs: Self) -> Bool {
         return lhs.representingValue < rhs.representingValue
     }
     
-    @_inlineable
+    @_transparent
     public static func >=(lhs: Self, rhs: Self) -> Bool {
         return lhs.representingValue >= rhs.representingValue
     }
     
-    @_inlineable
+    @_transparent
     public static func <=(lhs: Self, rhs: Self) -> Bool {
         return lhs.representingValue <= rhs.representingValue
     }
 }
 
-@_fixed_layout
 public struct BEInteger<Base : FixedWidthInteger> : EndianInteger {
     
-    @_versioned
-    var storage: Base
+    public var bitPattern: Base
     
-    @_inlineable
-    public init(representingValue: Base) {
-        self.storage = representingValue.bigEndian
+    @_transparent
+    public init(bitPattern: Base) {
+        self.bitPattern = bitPattern
     }
     
-    @_inlineable
+    @_transparent
+    public init(representingValue: Base) {
+        self.bitPattern = representingValue.bigEndian
+    }
+    
+    @_transparent
     public var representingValue: Base {
         get {
-            return Base(bigEndian: storage)
+            return Base(bigEndian: bitPattern)
         }
         set {
-            storage = newValue.bigEndian
+            bitPattern = newValue.bigEndian
         }
     }
 }
 
-@_fixed_layout
 public struct LEInteger<Base : FixedWidthInteger> : EndianInteger {
     
-    @_versioned
-    var storage: Base
+    public var bitPattern: Base
     
-    @_inlineable
-    public init(representingValue: Base) {
-        self.storage = representingValue.littleEndian
+    @_transparent
+    public init(bitPattern: Base) {
+        self.bitPattern = bitPattern
     }
     
-    @_inlineable
+    @_transparent
+    public init(representingValue: Base) {
+        self.bitPattern = representingValue.littleEndian
+    }
+    
+    @_transparent
     public var representingValue: Base {
         get {
-            return Base(littleEndian: storage)
+            return Base(littleEndian: bitPattern)
         }
         set {
-            storage = newValue.littleEndian
+            bitPattern = newValue.littleEndian
         }
     }
 }

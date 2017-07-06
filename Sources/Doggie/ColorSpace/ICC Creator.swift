@@ -85,11 +85,11 @@ extension iccProfile {
             
             return data
             
-        case let .gamma(gamma): return parametricCurveData(curve: ParametricCurve(funcType: 0, gamma: S15Fixed16Number(representingValue: gamma), a: 0, b: 0, c: 0, d: 0, e: 0, f: 0))
-        case let .parametric1(gamma, a, b): return parametricCurveData(curve: ParametricCurve(funcType: 1, gamma: S15Fixed16Number(representingValue: gamma), a: S15Fixed16Number(representingValue: a), b: S15Fixed16Number(representingValue: b), c: 0, d: 0, e: 0, f: 0))
-        case let .parametric2(gamma, a, b, c): return parametricCurveData(curve: ParametricCurve(funcType: 2, gamma: S15Fixed16Number(representingValue: gamma), a: S15Fixed16Number(representingValue: a), b: S15Fixed16Number(representingValue: b), c: S15Fixed16Number(representingValue: c), d: 0, e: 0, f: 0))
-        case let .parametric3(gamma, a, b, c, d): return parametricCurveData(curve: ParametricCurve(funcType: 3, gamma: S15Fixed16Number(representingValue: gamma), a: S15Fixed16Number(representingValue: a), b: S15Fixed16Number(representingValue: b), c: S15Fixed16Number(representingValue: c), d: S15Fixed16Number(representingValue: d), e: 0, f: 0))
-        case let .parametric4(gamma, a, b, c, d, e, f): return parametricCurveData(curve: ParametricCurve(funcType: 4, gamma: S15Fixed16Number(representingValue: gamma), a: S15Fixed16Number(representingValue: a), b: S15Fixed16Number(representingValue: b), c: S15Fixed16Number(representingValue: c), d: S15Fixed16Number(representingValue: d), e: S15Fixed16Number(representingValue: e), f: S15Fixed16Number(representingValue: f)))
+        case let .gamma(gamma): return parametricCurveData(curve: ParametricCurve(funcType: 0, gamma: S15Fixed16Number(gamma), a: 0, b: 0, c: 0, d: 0, e: 0, f: 0))
+        case let .parametric1(gamma, a, b): return parametricCurveData(curve: ParametricCurve(funcType: 1, gamma: S15Fixed16Number(gamma), a: S15Fixed16Number(a), b: S15Fixed16Number(b), c: 0, d: 0, e: 0, f: 0))
+        case let .parametric2(gamma, a, b, c): return parametricCurveData(curve: ParametricCurve(funcType: 2, gamma: S15Fixed16Number(gamma), a: S15Fixed16Number(a), b: S15Fixed16Number(b), c: S15Fixed16Number(c), d: 0, e: 0, f: 0))
+        case let .parametric3(gamma, a, b, c, d): return parametricCurveData(curve: ParametricCurve(funcType: 3, gamma: S15Fixed16Number(gamma), a: S15Fixed16Number(a), b: S15Fixed16Number(b), c: S15Fixed16Number(c), d: S15Fixed16Number(d), e: 0, f: 0))
+        case let .parametric4(gamma, a, b, c, d, e, f): return parametricCurveData(curve: ParametricCurve(funcType: 4, gamma: S15Fixed16Number(gamma), a: S15Fixed16Number(a), b: S15Fixed16Number(b), c: S15Fixed16Number(c), d: S15Fixed16Number(d), e: S15Fixed16Number(e), f: S15Fixed16Number(f)))
         case let .table(points):
             
             var data = Data(count: 12)
@@ -255,15 +255,15 @@ extension CIEXYZColorSpace {
         }
         
         if self.luminance != 1 {
-            profile.setXYZ(.Luminance, iccProfile.XYZNumber(x: 0, y: iccProfile.S15Fixed16Number(representingValue: self.luminance), z: 0))
+            profile.setXYZ(.Luminance, iccProfile.XYZNumber(x: 0, y: iccProfile.S15Fixed16Number(self.luminance), z: 0))
         }
         
         let chromaticAdaptationMatrix = self.chromaticAdaptationMatrix(to: PCSXYZ, .default)
         
         profile.setFloat(.ChromaticAdaptation,
-                         iccProfile.S15Fixed16Number(representingValue: chromaticAdaptationMatrix.a), iccProfile.S15Fixed16Number(representingValue: chromaticAdaptationMatrix.b), iccProfile.S15Fixed16Number(representingValue: chromaticAdaptationMatrix.c),
-                         iccProfile.S15Fixed16Number(representingValue: chromaticAdaptationMatrix.e), iccProfile.S15Fixed16Number(representingValue: chromaticAdaptationMatrix.f), iccProfile.S15Fixed16Number(representingValue: chromaticAdaptationMatrix.g),
-                         iccProfile.S15Fixed16Number(representingValue: chromaticAdaptationMatrix.i), iccProfile.S15Fixed16Number(representingValue: chromaticAdaptationMatrix.j), iccProfile.S15Fixed16Number(representingValue: chromaticAdaptationMatrix.k))
+                         iccProfile.S15Fixed16Number(chromaticAdaptationMatrix.a), iccProfile.S15Fixed16Number(chromaticAdaptationMatrix.b), iccProfile.S15Fixed16Number(chromaticAdaptationMatrix.c),
+                         iccProfile.S15Fixed16Number(chromaticAdaptationMatrix.e), iccProfile.S15Fixed16Number(chromaticAdaptationMatrix.f), iccProfile.S15Fixed16Number(chromaticAdaptationMatrix.g),
+                         iccProfile.S15Fixed16Number(chromaticAdaptationMatrix.i), iccProfile.S15Fixed16Number(chromaticAdaptationMatrix.j), iccProfile.S15Fixed16Number(chromaticAdaptationMatrix.k))
         
         return profile
     }
@@ -327,9 +327,9 @@ extension CalibratedRGBColorSpace {
         
         let matrix = transferMatrix * self.cieXYZ.chromaticAdaptationMatrix(to: PCSXYZ, .default)
         
-        profile.setXYZ(.RedColorant, iccProfile.XYZNumber(x: iccProfile.S15Fixed16Number(representingValue: matrix.a), y: iccProfile.S15Fixed16Number(representingValue: matrix.e), z: iccProfile.S15Fixed16Number(representingValue: matrix.i)))
-        profile.setXYZ(.GreenColorant, iccProfile.XYZNumber(x: iccProfile.S15Fixed16Number(representingValue: matrix.b), y: iccProfile.S15Fixed16Number(representingValue: matrix.f), z: iccProfile.S15Fixed16Number(representingValue: matrix.j)))
-        profile.setXYZ(.BlueColorant, iccProfile.XYZNumber(x: iccProfile.S15Fixed16Number(representingValue: matrix.c), y: iccProfile.S15Fixed16Number(representingValue: matrix.g), z: iccProfile.S15Fixed16Number(representingValue: matrix.k)))
+        profile.setXYZ(.RedColorant, iccProfile.XYZNumber(x: iccProfile.S15Fixed16Number(matrix.a), y: iccProfile.S15Fixed16Number(matrix.e), z: iccProfile.S15Fixed16Number(matrix.i)))
+        profile.setXYZ(.GreenColorant, iccProfile.XYZNumber(x: iccProfile.S15Fixed16Number(matrix.b), y: iccProfile.S15Fixed16Number(matrix.f), z: iccProfile.S15Fixed16Number(matrix.j)))
+        profile.setXYZ(.BlueColorant, iccProfile.XYZNumber(x: iccProfile.S15Fixed16Number(matrix.c), y: iccProfile.S15Fixed16Number(matrix.g), z: iccProfile.S15Fixed16Number(matrix.k)))
         
         profile.setCurve(.RedTRC, curve: iccCurve(0))
         profile.setCurve(.GreenTRC, curve: iccCurve(1))

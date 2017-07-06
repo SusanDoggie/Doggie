@@ -42,19 +42,24 @@ public protocol BinaryFixedPoint : Numeric, Hashable, Strideable, CustomStringCo
 
 extension BinaryFixedPoint {
     
-    @_inlineable
+    @_transparent
     public init(integerLiteral value: RepresentingValue.IntegerLiteralType) {
         self.init(representingValue: RepresentingValue(integerLiteral: value))
     }
     
-    @_inlineable
+    @_transparent
     public init(floatLiteral value: RepresentingValue.FloatLiteralType) {
         self.init(representingValue: RepresentingValue(floatLiteral: value))
     }
     
-    @_inlineable
+    @_transparent
     public init?<T>(exactly source: T) where T : BinaryInteger {
         guard let value = RepresentingValue(exactly: source) else { return nil }
+        self.init(representingValue: value)
+    }
+    
+    @_transparent
+    public init(_ value: RepresentingValue) {
         self.init(representingValue: value)
     }
 }
@@ -62,19 +67,19 @@ extension BinaryFixedPoint {
 extension BinaryFixedPoint where RepresentingValue.RawSignificand : FixedWidthInteger {
     
     @_versioned
-    @_inlineable
+    @_transparent
     static var _fractionOffset: Int {
         return Self.fractionBitCount - RepresentingValue.significandBitCount
     }
     
     @_versioned
-    @_inlineable
+    @_transparent
     static var _exponentBias: Int {
         let s = RepresentingValue.exponentBitCount - 1
         return (1 << s) - 1
     }
     
-    @_inlineable
+    @_transparent
     public init(representingValue: RepresentingValue) {
         if representingValue.exponentBitPattern == 0 && representingValue.significandBitPattern == 0 {
             self.init(bitPattern: 0)
@@ -104,7 +109,7 @@ extension BinaryFixedPoint where RepresentingValue.RawSignificand : FixedWidthIn
         }
     }
     
-    @_inlineable
+    @_transparent
     public var representingValue : RepresentingValue {
         get {
             if bitPattern == 0 {
@@ -131,7 +136,7 @@ extension BinaryFixedPoint where RepresentingValue.RawSignificand : FixedWidthIn
 
 extension BinaryFixedPoint {
     
-    @_inlineable
+    @_transparent
     public static var isSigned: Bool {
         return BitPattern.isSigned
     }
@@ -139,111 +144,181 @@ extension BinaryFixedPoint {
 
 extension BinaryFixedPoint {
     
-    @_inlineable
+    @_transparent
     public var description: String {
         return "\(representingValue)"
     }
     
-    @_inlineable
+    @_transparent
     public var hashValue: Int {
         return bitPattern.hashValue
     }
     
-    @_inlineable
+    @_transparent
     public var magnitude: RepresentingValue.Magnitude {
         return representingValue.magnitude
     }
     
-    @_inlineable
+    @_transparent
     public static var min: Self {
         return Self(bitPattern: BitPattern.min)
     }
     
-    @_inlineable
+    @_transparent
     public static var max: Self {
         return Self(bitPattern: BitPattern.max)
     }
     
-    @_inlineable
+    @_transparent
     public func distance(to other: Self) -> RepresentingValue.Stride {
         return self.representingValue.distance(to: other.representingValue)
     }
     
-    @_inlineable
+    @_transparent
     public func advanced(by n: RepresentingValue.Stride) -> Self {
         return Self(representingValue: self.representingValue.advanced(by: n))
+    }
+    
+    @_transparent
+    public func remainder(dividingBy other: Self) -> Self {
+        return Self(representingValue: self.representingValue.remainder(dividingBy: other.representingValue))
+    }
+    
+    @_transparent
+    public mutating func formRemainder(dividingBy other: Self) {
+        self.representingValue.formRemainder(dividingBy: other.representingValue)
+    }
+    
+    @_transparent
+    public func truncatingRemainder(dividingBy other: Self) -> Self {
+        return Self(representingValue: self.representingValue.truncatingRemainder(dividingBy: other.representingValue))
+    }
+    
+    @_transparent
+    public mutating func formTruncatingRemainder(dividingBy other: Self) {
+        self.representingValue.formTruncatingRemainder(dividingBy: other.representingValue)
+    }
+    
+    @_transparent
+    public func squareRoot() -> Self {
+        return Self(representingValue: self.representingValue.squareRoot())
+    }
+    
+    @_transparent
+    public mutating func formSquareRoot() {
+        self.representingValue.formSquareRoot()
+    }
+    
+    @_transparent
+    public func addingProduct(_ lhs: Self, _ rhs: Self) -> Self {
+        return Self(representingValue: self.representingValue.addingProduct(lhs.representingValue, rhs.representingValue))
+    }
+    
+    @_transparent
+    public mutating func addProduct(_ lhs: Self, _ rhs: Self) {
+        self.representingValue.addProduct(lhs.representingValue, rhs.representingValue)
+    }
+    
+    @_transparent
+    public func rounded(_ rule: FloatingPointRoundingRule) -> Self {
+        return Self(representingValue: self.representingValue.rounded(rule))
+    }
+    
+    @_transparent
+    public mutating func round(_ rule: FloatingPointRoundingRule) {
+        self.representingValue.round(rule)
+    }
+    
+    @_transparent
+    public func isEqual(to other: Self) -> Bool {
+        return self.bitPattern == other.bitPattern
+    }
+    
+    @_transparent
+    public func isLess(than other: Self) -> Bool {
+        return self.bitPattern < other.bitPattern
+    }
+    
+    @_transparent
+    public func isLessThanOrEqualTo(_ other: Self) -> Bool {
+        return self.bitPattern <= other.bitPattern
     }
 }
 
 extension BinaryFixedPoint {
     
-    @_inlineable
+    @_transparent
+    public static prefix func +(x: Self) -> Self {
+        return x
+    }
+    
+    @_transparent
     public static func +(lhs: Self, rhs: Self) -> Self {
         return self.init(representingValue: lhs.representingValue + rhs.representingValue)
     }
     
-    @_inlineable
+    @_transparent
     public static func +=(lhs: inout Self, rhs: Self) {
         lhs.representingValue += rhs.representingValue
     }
     
-    @_inlineable
+    @_transparent
     public static func -(lhs: Self, rhs: Self) -> Self {
         return self.init(representingValue: lhs.representingValue - rhs.representingValue)
     }
     
-    @_inlineable
+    @_transparent
     public static func -=(lhs: inout Self, rhs: Self) {
         lhs.representingValue -= rhs.representingValue
     }
     
-    @_inlineable
+    @_transparent
     public static func *(lhs: Self, rhs: Self) -> Self {
         return self.init(representingValue: lhs.representingValue * rhs.representingValue)
     }
     
-    @_inlineable
+    @_transparent
     public static func *=(lhs: inout Self, rhs: Self) {
         lhs.representingValue *= rhs.representingValue
     }
     
-    @_inlineable
+    @_transparent
     public static func /(lhs: Self, rhs: Self) -> Self {
         return self.init(representingValue: lhs.representingValue / rhs.representingValue)
     }
     
-    @_inlineable
+    @_transparent
     public static func /=(lhs: inout Self, rhs: Self) {
         lhs.representingValue /= rhs.representingValue
     }
     
-    @_inlineable
+    @_transparent
     public static func ==(lhs: Self, rhs: Self) -> Bool {
         return lhs.bitPattern == rhs.bitPattern
     }
     
-    @_inlineable
+    @_transparent
     public static func !=(lhs: Self, rhs: Self) -> Bool {
         return lhs.bitPattern != rhs.bitPattern
     }
     
-    @_inlineable
+    @_transparent
     public static func <(lhs: Self, rhs: Self) -> Bool {
-        return lhs.representingValue < rhs.representingValue
+        return lhs.bitPattern < rhs.bitPattern
     }
     
-    @_inlineable
+    @_transparent
     public static func <=(lhs: Self, rhs: Self) -> Bool {
-        return lhs.representingValue <= rhs.representingValue
+        return lhs.bitPattern <= rhs.bitPattern
     }
     
-    @_inlineable
+    @_transparent
     public static func >(lhs: Self, rhs: Self) -> Bool {
-        return lhs.representingValue > rhs.representingValue
+        return lhs.bitPattern > rhs.bitPattern
     }
     
-    @_inlineable
+    @_transparent
     public static func >=(lhs: Self, rhs: Self) -> Bool {
-        return lhs.representingValue >= rhs.representingValue
+        return lhs.bitPattern >= rhs.bitPattern
     }
 }
