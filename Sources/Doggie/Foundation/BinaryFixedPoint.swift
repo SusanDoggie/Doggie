@@ -241,6 +241,14 @@ extension BinaryFixedPoint {
     }
 }
 
+extension BinaryFixedPoint where BitPattern : SignedNumeric {
+    
+    @_transparent
+    public static prefix func -(x: Self) -> Self {
+        return Self(representingValue: -x.representingValue)
+    }
+}
+
 extension BinaryFixedPoint {
     
     @_transparent
