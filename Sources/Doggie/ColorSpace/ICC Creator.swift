@@ -27,7 +27,6 @@ import Foundation
 
 extension iccProfile {
     
-    @_versioned
     mutating func setMessage(_ tag: TagSignature, _ message: (LanguageCode, CountryCode, String) ...) {
         
         var header = Data(count: MemoryLayout<MultiLocalizedUnicode>.stride + 8)
@@ -53,7 +52,6 @@ extension iccProfile {
         self[tag] = TagData(rawData: header + entry + data)
     }
     
-    @_versioned
     mutating func setFloat(_ tag: TagSignature, _ value: iccProfile.S15Fixed16Number ...) {
         
         var data = Data(count: 8)
@@ -65,7 +63,6 @@ extension iccProfile {
         self[tag] = TagData(rawData: data)
     }
     
-    @_versioned
     mutating func setXYZ(_ tag: TagSignature, _ xyz: XYZNumber ...) {
         
         var data = Data(count: 8)
@@ -123,7 +120,6 @@ extension iccProfile {
         return data
     }
     
-    @_versioned
     mutating func setLutAtoB(_ tag: TagSignature, B: [ICCCurve]) {
         
         var B_data = Data()
@@ -142,7 +138,6 @@ extension iccProfile {
         self[tag] = TagData(rawData: header + B_data)
     }
     
-    @_versioned
     mutating func setLutBtoA(_ tag: TagSignature, B: [ICCCurve]) {
         
         var B_data = Data()
@@ -161,7 +156,6 @@ extension iccProfile {
         self[tag] = TagData(rawData: header + B_data)
     }
     
-    @_versioned
     mutating func setLutAtoB(_ tag: TagSignature, B: [ICCCurve], matrix: Matrix, M: [ICCCurve]) {
         
         var B_data = Data()
@@ -190,7 +184,6 @@ extension iccProfile {
         self[tag] = TagData(rawData: header + B_data + matrix_data + M_data)
     }
     
-    @_versioned
     mutating func setLutBtoA(_ tag: TagSignature, B: [ICCCurve], matrix: Matrix, M: [ICCCurve]) {
         
         var B_data = Data()
@@ -219,7 +212,6 @@ extension iccProfile {
         self[tag] = TagData(rawData: header + B_data + matrix_data + M_data)
     }
     
-    @_versioned
     mutating func setCurve(_ tag: TagSignature, curve: ICCCurve) {
         
         self[tag] = TagData(rawData: curveData(curve: curve))
@@ -228,8 +220,6 @@ extension iccProfile {
 
 extension CIEXYZColorSpace {
     
-    @_versioned
-    @_inlineable
     func _iccProfile(deviceClass: iccProfile.Header.ClassSignature, colorSpace: iccProfile.Header.ColorSpaceSignature, pcs: iccProfile.Header.ColorSpaceSignature) -> iccProfile {
         
         let date = Calendar(identifier: .gregorian).dateComponents(in: TimeZone(secondsFromGMT: 0)!, from: Date())
@@ -282,7 +272,6 @@ extension CIEXYZColorSpace {
 extension CIEXYZColorSpace {
     
     @_versioned
-    @_inlineable
     var iccData: Data? {
         
         var profile = cieXYZ._iccProfile(deviceClass: .colorSpace, colorSpace: .XYZ, pcs: .XYZ)
@@ -299,7 +288,6 @@ extension CIEXYZColorSpace {
 extension CIELabColorSpace {
     
     @_versioned
-    @_inlineable
     var iccData: Data? {
         
         var profile = cieXYZ._iccProfile(deviceClass: .colorSpace, colorSpace: .Lab, pcs: .Lab)
@@ -316,7 +304,6 @@ extension CIELabColorSpace {
 extension CalibratedGrayColorSpace {
     
     @_versioned
-    @_inlineable
     var iccData: Data? {
         
         var profile = cieXYZ._iccProfile(deviceClass: .display, colorSpace: .Gray, pcs: .XYZ)
@@ -332,7 +319,6 @@ extension CalibratedGrayColorSpace {
 extension CalibratedRGBColorSpace {
     
     @_versioned
-    @_inlineable
     var iccData: Data? {
         
         var profile = cieXYZ._iccProfile(deviceClass: .display, colorSpace: .Rgb, pcs: .XYZ)

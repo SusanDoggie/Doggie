@@ -142,8 +142,6 @@ struct OneDimensionalLUT {
     @_versioned
     let table: [Double]
     
-    @_versioned
-    @_inlineable
     init(channels: Int, grid: Int, table: [Double]) {
         self.channels = channels
         self.grid = grid
@@ -183,8 +181,6 @@ struct MultiDimensionalLUT {
     @_versioned
     let table: [Double]
     
-    @_versioned
-    @_inlineable
     init(_ tag: iccProfile.TagData.CLUTTableView) {
         self.inputChannels = tag.inputChannels
         self.outputChannels = tag.outputChannels
@@ -192,8 +188,6 @@ struct MultiDimensionalLUT {
         self.table = tag.table
     }
     
-    @_versioned
-    @_inlineable
     init(inputChannels: Int, outputChannels: Int, grids: [Int], table: [Double]) {
         self.inputChannels = inputChannels
         self.outputChannels = outputChannels
@@ -271,8 +265,6 @@ enum ICCCurve {
 
 extension ICCCurve {
     
-    @_versioned
-    @_inlineable
     init?(_ tag: iccProfile.TagData) {
         
         if let curve = tag.curve {
@@ -461,8 +453,6 @@ enum iccTransform {
 
 extension iccTransform {
     
-    @_versioned
-    @_inlineable
     init?(_ tag: iccProfile.TagData) {
         
         if let curve = tag.lut8 {
@@ -556,7 +546,6 @@ struct ICCColorSpace<Model : ColorModelProtocol, Connection : ColorSpaceBaseProt
     @_versioned
     let _iccData: Data
     
-    @_versioned
     let profile: iccProfile
     
     @_versioned
@@ -574,8 +563,6 @@ struct ICCColorSpace<Model : ColorModelProtocol, Connection : ColorSpaceBaseProt
     @_versioned
     let chromaticAdaptationMatrix: Matrix
     
-    @_versioned
-    @_inlineable
     init(iccData: Data, profile: iccProfile, connection : Connection, cieXYZ : CIEXYZColorSpace, a2b: iccTransform, b2a: iccTransform, chromaticAdaptationMatrix: Matrix) {
         self._iccData = iccData
         self.profile = profile
@@ -590,7 +577,6 @@ struct ICCColorSpace<Model : ColorModelProtocol, Connection : ColorSpaceBaseProt
 extension ICCColorSpace {
     
     @_versioned
-    @_inlineable
     var iccData: Data? {
         return _iccData
     }
@@ -599,7 +585,6 @@ extension ICCColorSpace {
 extension ICCColorSpace {
     
     @_versioned
-    @_inlineable
     var localizedName: String? {
         
         if let description = profile[.ProfileDescription] {
@@ -628,7 +613,6 @@ extension AnyColorSpace {
         case unsupported(message: String)
     }
     
-    @_inlineable
     public init(iccData: Data) throws {
         
         let profile = try iccProfile(iccData)
@@ -670,8 +654,6 @@ extension AnyColorSpace {
 
 extension ColorSpace {
     
-    @_versioned
-    @_inlineable
     init(iccData: Data, profile: iccProfile) throws {
         
         func check(_ a2bCurve: iccTransform, _ b2aCurve: iccTransform) throws {

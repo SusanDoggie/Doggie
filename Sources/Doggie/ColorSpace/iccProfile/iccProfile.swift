@@ -25,12 +25,10 @@
 
 import Foundation
 
-@_versioned
 struct iccProfile {
     
     typealias TagList = (TagSignature, BEUInt32, BEUInt32)
     
-    @_versioned
     var header: Header
     
     fileprivate var table: [TagSignature: TagData] = [:] {
@@ -39,12 +37,10 @@ struct iccProfile {
         }
     }
     
-    @_versioned
     init(header: Header) {
         self.header = header
     }
     
-    @_versioned
     init(_ data: Data) throws {
         
         guard data.count > 132 else { throw AnyColorSpace.ICCError.invalidFormat(message: "Unexpected end of file.") }
@@ -76,7 +72,6 @@ struct iccProfile {
 
 extension iccProfile {
     
-    @_versioned
     var data: Data {
         
         var _header = Data(count: 128)
@@ -108,22 +103,18 @@ extension iccProfile {
 
 extension iccProfile : Collection {
     
-    @_versioned
     var startIndex: Dictionary<TagSignature, TagData>.Index {
         return table.startIndex
     }
     
-    @_versioned
     var endIndex: Dictionary<TagSignature, TagData>.Index {
         return table.endIndex
     }
     
-    @_versioned
     subscript(position: Dictionary<TagSignature, TagData>.Index) -> (TagSignature, TagData) {
         return table[position]
     }
     
-    @_versioned
     subscript(signature: TagSignature) -> TagData? {
         get {
             return table[signature]
@@ -133,17 +124,14 @@ extension iccProfile : Collection {
         }
     }
     
-    @_versioned
     func index(after i: Dictionary<TagSignature, TagData>.Index) -> Dictionary<TagSignature, TagData>.Index {
         return table.index(after: i)
     }
     
-    @_versioned
     var keys: Dictionary<TagSignature, TagData>.Keys {
         return table.keys
     }
     
-    @_versioned
     var values: Dictionary<TagSignature, TagData>.Values {
         return table.values
     }

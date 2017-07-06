@@ -27,23 +27,18 @@ import Foundation
 
 extension iccProfile {
     
-    @_versioned
     struct TagData {
         
-        @_versioned
         let rawData: Data
         
-        @_versioned
         init(rawData: Data) {
             self.rawData = rawData
         }
         
-        @_versioned
         var type: Type {
             return rawData.withUnsafeBytes { $0.pointee }
         }
         
-        @_versioned
         var data: Data {
             return rawData.advanced(by: 8)
         }
@@ -77,25 +72,21 @@ extension iccProfile.TagData {
 
 extension iccProfile.TagData {
     
-    @_versioned
     var uInt16Array: [BEUInt16]? {
         
         return type == .UInt16Array ? data.withUnsafeBytes { Array(UnsafeBufferPointer(start: $0, count: data.count / MemoryLayout<BEUInt16>.stride)) } : nil
     }
     
-    @_versioned
     var uInt32Array: [BEUInt32]? {
         
         return type == .UInt32Array ? data.withUnsafeBytes { Array(UnsafeBufferPointer(start: $0, count: data.count / MemoryLayout<BEUInt32>.stride)) } : nil
     }
     
-    @_versioned
     var uInt64Array: [BEUInt64]? {
         
         return type == .UInt64Array ? data.withUnsafeBytes { Array(UnsafeBufferPointer(start: $0, count: data.count / MemoryLayout<BEUInt64>.stride)) } : nil
     }
     
-    @_versioned
     var uInt8Array: [UInt8]? {
         
         return type == .UInt8Array ? data.withUnsafeBytes { Array(UnsafeBufferPointer(start: $0, count: data.count / MemoryLayout<UInt8>.stride)) } : nil
@@ -104,13 +95,11 @@ extension iccProfile.TagData {
 
 extension iccProfile.TagData {
     
-    @_versioned
     var s15Fixed16Array: [iccProfile.S15Fixed16Number]? {
         
         return type == .S15Fixed16Array ? data.withUnsafeBytes { Array(UnsafeBufferPointer(start: $0, count: data.count / MemoryLayout<iccProfile.S15Fixed16Number>.stride)) } : nil
     }
     
-    @_versioned
     var u16Fixed16Array: [iccProfile.U16Fixed16Number]? {
         
         return type == .U16Fixed16Array ? data.withUnsafeBytes { Array(UnsafeBufferPointer(start: $0, count: data.count / MemoryLayout<iccProfile.U16Fixed16Number>.stride)) } : nil
@@ -119,7 +108,6 @@ extension iccProfile.TagData {
 
 extension iccProfile.TagData {
     
-    @_versioned
     var XYZArray: [iccProfile.XYZNumber]? {
         
         return type == .XYZArray ? data.withUnsafeBytes { Array(UnsafeBufferPointer(start: $0, count: data.count / MemoryLayout<iccProfile.XYZNumber>.stride)) } : nil
@@ -128,7 +116,6 @@ extension iccProfile.TagData {
 
 extension iccProfile.TagData {
     
-    @_versioned
     var multiLocalizedUnicode: MultiLocalizedUnicodeView? {
         
         return type == .MultiLocalizedUnicode ? MultiLocalizedUnicodeView(data: data) : nil
@@ -137,7 +124,6 @@ extension iccProfile.TagData {
 
 extension iccProfile.TagData {
     
-    @_versioned
     var curve: CurveView? {
         
         return type == .Curve ? CurveView(data: data) : nil
@@ -146,7 +132,6 @@ extension iccProfile.TagData {
 
 extension iccProfile.TagData {
     
-    @_versioned
     struct CurveView : RandomAccessCollection {
         
         fileprivate let data: Data
@@ -155,33 +140,27 @@ extension iccProfile.TagData {
             self.data = data
         }
         
-        @_versioned
         var startIndex: Int {
             return 0
         }
         
-        @_versioned
         var endIndex: Int {
             return Int(data.withUnsafeBytes { $0.pointee as BEUInt32 })
         }
         
-        @_versioned
         func point(position: Int) -> BEUInt16 {
             let offset = 4 + 2 * position
             return data[offset..<offset + 2].withUnsafeBytes { $0.pointee }
         }
         
-        @_versioned
         subscript(position: Int) -> Double {
             return Double(point(position: position).representingValue) / 65535
         }
         
-        @_versioned
         var isGamma: Bool {
             return self.count == 1
         }
         
-        @_versioned
         var gamma: iccProfile.U8Fixed8Number? {
             
             return isGamma ? iccProfile.U8Fixed8Number(bitPattern: point(position: 0)) : nil
@@ -191,7 +170,6 @@ extension iccProfile.TagData {
 
 extension iccProfile.TagData {
     
-    @_versioned
     var parametricCurve: iccProfile.ParametricCurve? {
         
         if type == .ParametricCurve {
@@ -205,7 +183,6 @@ extension iccProfile.TagData {
 
 extension iccProfile.TagData {
     
-    @_versioned
     var text: String? {
         
         return type == .Text ? String(bytes: data, encoding: .ascii) : nil
@@ -214,7 +191,6 @@ extension iccProfile.TagData {
 
 extension iccProfile.TagData {
     
-    @_versioned
     struct MultiLocalizedUnicodeView : RandomAccessCollection {
         
         fileprivate let data: Data
@@ -223,22 +199,18 @@ extension iccProfile.TagData {
             self.data = data
         }
         
-        @_versioned
         var header: iccProfile.MultiLocalizedUnicode {
             return data.withUnsafeBytes { $0.pointee }
         }
         
-        @_versioned
         var startIndex: Int {
             return 0
         }
         
-        @_versioned
         var endIndex: Int {
             return Int(header.count)
         }
         
-        @_versioned
         subscript(position: Int) -> (language: iccProfile.LanguageCode, country: iccProfile.CountryCode, String) {
             
             let entry = self.entry(position: position)
@@ -249,7 +221,6 @@ extension iccProfile.TagData {
             return (entry.language, entry.country, String(bytes: strData, encoding: .utf16BigEndian) ?? "")
         }
         
-        @_versioned
         func entry(position: Int) -> iccProfile.MultiLocalizedUnicodeEntry {
             
             let size = Int(header.size)
@@ -262,7 +233,6 @@ extension iccProfile.TagData {
 
 extension iccProfile.TagData {
     
-    @_versioned
     var lut16: Lut16View? {
         
         return type == .Lut16 ? Lut16View(data: data) : nil
@@ -271,7 +241,6 @@ extension iccProfile.TagData {
 
 extension iccProfile.TagData {
     
-    @_versioned
     struct Lut16View {
         
         fileprivate let data: Data
@@ -280,60 +249,48 @@ extension iccProfile.TagData {
             self.data = data
         }
         
-        @_versioned
         var header: iccProfile.Lut16 {
             return data.withUnsafeBytes { $0.pointee }
         }
         
-        @_versioned
         var inputChannels: Int {
             return Int(header.inputChannels)
         }
-        @_versioned
         var outputChannels: Int {
             return Int(header.outputChannels)
         }
-        @_versioned
         var inputEntries: Int {
             return Int(header.inputEntries)
         }
-        @_versioned
         var outputEntries: Int {
             return Int(header.outputEntries)
         }
-        @_versioned
         var grids: Int {
             return Int(header.grids)
         }
         
-        @_versioned
         var inputTableSize: Int {
             return 2 * inputEntries * inputChannels
         }
-        @_versioned
         var outputTableSize: Int {
             return 2 * outputEntries * outputChannels
         }
-        @_versioned
         var clutTableSize: Int {
             return 2 * Int(pow(UInt(grids), UInt(inputChannels))) * outputChannels
         }
         
-        @_versioned
         var inputTable: [Double] {
             let start = 44
             let end = start + inputTableSize
             return data[start..<end].withUnsafeBytes { UnsafeBufferPointer(start: $0, count: inputTableSize >> 1).map { (v: BEUInt16) in Double(v.representingValue) / 65535 } }
         }
         
-        @_versioned
         var clutTable: [Double] {
             let start = 44 + inputTableSize
             let end = start + clutTableSize
             return data[start..<end].withUnsafeBytes { UnsafeBufferPointer(start: $0, count: clutTableSize >> 1).map { (v: BEUInt16) in Double(v.representingValue) / 65535 } }
         }
         
-        @_versioned
         var outputTable: [Double] {
             let start = 44 + inputTableSize + clutTableSize
             let end = start + outputTableSize
@@ -344,7 +301,6 @@ extension iccProfile.TagData {
 
 extension iccProfile.TagData {
     
-    @_versioned
     var lut8: Lut8View? {
         
         return type == .Lut8 ? Lut8View(data: data) : nil
@@ -353,7 +309,6 @@ extension iccProfile.TagData {
 
 extension iccProfile.TagData {
     
-    @_versioned
     struct Lut8View {
         
         fileprivate let data: Data
@@ -362,52 +317,42 @@ extension iccProfile.TagData {
             self.data = data
         }
         
-        @_versioned
         var header: iccProfile.Lut8 {
             return data.withUnsafeBytes { $0.pointee }
         }
         
-        @_versioned
         var inputChannels: Int {
             return Int(header.inputChannels)
         }
-        @_versioned
         var outputChannels: Int {
             return Int(header.outputChannels)
         }
-        @_versioned
         var grids: Int {
             return Int(header.grids)
         }
         
-        @_versioned
         var inputTableSize: Int {
             return 256 * inputChannels
         }
-        @_versioned
         var outputTableSize: Int {
             return 256 * outputChannels
         }
-        @_versioned
         var clutTableSize: Int {
             return Int(pow(UInt(grids), UInt(inputChannels))) * outputChannels
         }
         
-        @_versioned
         var inputTable: [Double] {
             let start = 40
             let end = start + inputTableSize
             return data[start..<end].withUnsafeBytes { UnsafeBufferPointer(start: $0, count: inputTableSize).map { (v: UInt8) in Double(v) / 255 } }
         }
         
-        @_versioned
         var clutTable: [Double] {
             let start = 40 + inputTableSize
             let end = start + clutTableSize
             return data[start..<end].withUnsafeBytes { UnsafeBufferPointer(start: $0, count: clutTableSize).map { (v: UInt8) in Double(v) / 255 } }
         }
         
-        @_versioned
         var outputTable: [Double] {
             let start = 40 + inputTableSize + clutTableSize
             let end = start + outputTableSize
@@ -418,13 +363,10 @@ extension iccProfile.TagData {
 
 extension iccProfile.TagData {
     
-    @_versioned
     struct CLUTTableView {
         
-        @_versioned
         let inputChannels: Int
         
-        @_versioned
         let outputChannels: Int
         
         fileprivate let data: Data
@@ -435,18 +377,15 @@ extension iccProfile.TagData {
             self.data = data
         }
         
-        @_versioned
         var header: iccProfile.CLUTStruct {
             return data.withUnsafeBytes { $0.pointee }
         }
         
-        @_versioned
         var grids: [Int] {
             var grids = header.grids
             return withUnsafeBytes(of: &grids) { UnsafeBufferPointer(start: $0.baseAddress!.assumingMemoryBound(to: UInt8.self), count: 16).prefix(inputChannels).map(Int.init) }
         }
         
-        @_versioned
         var table: [Double] {
             
             let count = grids.reduce(outputChannels, *)
@@ -464,7 +403,6 @@ extension iccProfile.TagData {
 
 extension iccProfile.TagData {
     
-    @_versioned
     var lutAtoB: LutAtoBView? {
         
         return type == .LutAtoB ? LutAtoBView(data: data) : nil
@@ -473,7 +411,6 @@ extension iccProfile.TagData {
 
 extension iccProfile.TagData {
     
-    @_versioned
     struct LutAtoBView {
         
         fileprivate let data: Data
@@ -482,21 +419,17 @@ extension iccProfile.TagData {
             self.data = data
         }
         
-        @_versioned
         var header: iccProfile.LutAtoB {
             return data.withUnsafeBytes { $0.pointee }
         }
         
-        @_versioned
         var inputChannels: Int {
             return Int(header.inputChannels)
         }
-        @_versioned
         var outputChannels: Int {
             return Int(header.outputChannels)
         }
         
-        @_versioned
         func readCurves(_ data: Data, count: Int) -> [iccProfile.TagData]? {
             
             var result: [iccProfile.TagData] = []
@@ -543,7 +476,6 @@ extension iccProfile.TagData {
             return result
         }
         
-        @_versioned
         var A: [iccProfile.TagData]? {
             if header.offsetA == 0 {
                 return nil
@@ -552,13 +484,11 @@ extension iccProfile.TagData {
             return readCurves(data[offset...], count: Int(header.inputChannels))
         }
         
-        @_versioned
         var B: [iccProfile.TagData]? {
             let offset = Int(header.offsetB) - 8
             return readCurves(data[offset...], count: Int(header.outputChannels))
         }
         
-        @_versioned
         var M: [iccProfile.TagData]? {
             if header.offsetM == 0 {
                 return nil
@@ -567,7 +497,6 @@ extension iccProfile.TagData {
             return readCurves(data[offset...], count: Int(header.outputChannels))
         }
         
-        @_versioned
         var matrix: iccProfile.Matrix3x4? {
             if header.offsetMatrix == 0 {
                 return nil
@@ -576,7 +505,6 @@ extension iccProfile.TagData {
             return data[offset...].withUnsafeBytes { $0.pointee }
         }
         
-        @_versioned
         var clutTable: iccProfile.TagData.CLUTTableView? {
             if header.offsetCLUT == 0 {
                 return nil
@@ -589,7 +517,6 @@ extension iccProfile.TagData {
 
 extension iccProfile.TagData {
     
-    @_versioned
     var lutBtoA: LutBtoAView? {
         
         return type == .LutBtoA ? LutBtoAView(data: data) : nil
@@ -598,7 +525,6 @@ extension iccProfile.TagData {
 
 extension iccProfile.TagData {
     
-    @_versioned
     struct LutBtoAView {
         
         fileprivate let data: Data
@@ -607,21 +533,17 @@ extension iccProfile.TagData {
             self.data = data
         }
         
-        @_versioned
         var header: iccProfile.LutBtoA {
             return data.withUnsafeBytes { $0.pointee }
         }
         
-        @_versioned
         var inputChannels: Int {
             return Int(header.inputChannels)
         }
-        @_versioned
         var outputChannels: Int {
             return Int(header.outputChannels)
         }
         
-        @_versioned
         func readCurves(_ data: Data, count: Int) -> [iccProfile.TagData]? {
             
             var result: [iccProfile.TagData] = []
@@ -667,7 +589,6 @@ extension iccProfile.TagData {
             return result
         }
         
-        @_versioned
         var A: [iccProfile.TagData]? {
             if header.offsetA == 0 {
                 return nil
@@ -676,13 +597,11 @@ extension iccProfile.TagData {
             return readCurves(data[offset...], count: Int(header.outputChannels))
         }
         
-        @_versioned
         var B: [iccProfile.TagData]? {
             let offset = Int(header.offsetB) - 8
             return readCurves(data[offset...], count: Int(header.inputChannels))
         }
         
-        @_versioned
         var M: [iccProfile.TagData]? {
             if header.offsetM == 0 {
                 return nil
@@ -691,7 +610,6 @@ extension iccProfile.TagData {
             return readCurves(data[offset...], count: Int(header.inputChannels))
         }
         
-        @_versioned
         var matrix: iccProfile.Matrix3x4? {
             if header.offsetMatrix == 0 {
                 return nil
@@ -700,7 +618,6 @@ extension iccProfile.TagData {
             return data[offset...].withUnsafeBytes { $0.pointee }
         }
         
-        @_versioned
         var clutTable: iccProfile.TagData.CLUTTableView? {
             if header.offsetCLUT == 0 {
                 return nil
