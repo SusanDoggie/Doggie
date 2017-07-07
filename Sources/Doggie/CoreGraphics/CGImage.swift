@@ -178,7 +178,7 @@
     extension AnyImage {
         
         public var cgImage: CGImage? {
-            if let base = base as? CGImageConvertibleProtocol {
+            if let base = _base as? CGImageConvertibleProtocol {
                 return base.cgImage
             }
             return nil

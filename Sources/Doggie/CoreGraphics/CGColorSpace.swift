@@ -79,7 +79,7 @@
     extension AnyColorSpace {
         
         public var cgColorSpace: CGColorSpace? {
-            if let base = base as? CGColorSpaceConvertibleProtocol {
+            if let base = _base as? CGColorSpaceConvertibleProtocol {
                 return base.cgColorSpace
             }
             return nil

@@ -82,12 +82,17 @@ extension Color : AnyColorBaseProtocol {
 public struct AnyColor {
     
     @_versioned
-    var base: AnyColorBaseProtocol
+    var _base: AnyColorBaseProtocol
     
     @_versioned
     @_inlineable
     init(base: AnyColorBaseProtocol) {
-        self.base = base
+        self._base = base
+    }
+    
+    @_inlineable
+    public var base: Any {
+        return _base
     }
 }
 
@@ -95,7 +100,7 @@ extension AnyColor {
     
     @_inlineable
     public init<S : Sequence>(colorSpace: AnyColorSpace, components: S, opacity: Double) where S.Element == Double {
-        self.init(base: colorSpace.base._createColor(components: components, opacity: opacity))
+        self.init(base: colorSpace._base._createColor(components: components, opacity: opacity))
     }
     
     @_inlineable
@@ -113,21 +118,21 @@ extension AnyColor {
     
     @_inlineable
     public func component(_ index: Int) -> Double {
-        return base.component(index)
+        return _base.component(index)
     }
     
     @_inlineable
     public mutating func setComponent(_ index: Int, _ value: Double) {
-        base.setComponent(index, value)
+        _base.setComponent(index, value)
     }
     
     @_inlineable
     public var opacity: Double {
         get {
-            return base.opacity
+            return _base.opacity
         }
         set {
-            base.opacity = newValue
+            _base.opacity = newValue
         }
     }
 }
@@ -136,27 +141,27 @@ extension AnyColor {
     
     @_inlineable
     public var numberOfComponents: Int {
-        return base.numberOfComponents
+        return _base.numberOfComponents
     }
     
     @_inlineable
     public var colorSpace: AnyColorSpace {
-        return AnyColorSpace(base: base._colorSpace)
+        return AnyColorSpace(base: _base._colorSpace)
     }
     
     @_inlineable
     public init<Model>(_ color: Color<Model>) {
-        self.base = color
+        self._base = color
     }
     
     @_inlineable
     public func convert(to colorSpace: AnyColorSpace, intent: RenderingIntent = .default) -> AnyColor {
-        return AnyColor(base: base._convert(to: colorSpace.base, intent: intent))
+        return AnyColor(base: _base._convert(to: colorSpace._base, intent: intent))
     }
     
     @_inlineable
     public func convert<Model>(to colorSpace: ColorSpace<Model>, intent: RenderingIntent = .default) -> Color<Model> {
-        return base._convert(to: colorSpace, intent: intent)
+        return _base._convert(to: colorSpace, intent: intent)
     }
 }
 
@@ -164,17 +169,30 @@ extension AnyColor {
     
     @_inlineable
     public func blended<C>(source: Color<C>, blendMode: ColorBlendMode = .default, compositingMode: ColorCompositingMode = .default) -> AnyColor {
-        return AnyColor(base: base._blended(source: source, blendMode: blendMode, compositingMode: compositingMode))
+        return AnyColor(base: _base._blended(source: source, blendMode: blendMode, compositingMode: compositingMode))
     }
     
     @_inlineable
     public func blended(source: AnyColor, blendMode: ColorBlendMode = .default, compositingMode: ColorCompositingMode = .default) -> AnyColor {
-        return AnyColor(base: source.base._blendedTo(destination: base, blendMode: blendMode, compositingMode: compositingMode))
+        return AnyColor(base: source._base._blendedTo(destination: _base, blendMode: blendMode, compositingMode: compositingMode))
     }
     
     @_inlineable
     public mutating func blend<C>(source: Color<C>, blendMode: ColorBlendMode = .default, compositingMode: ColorCompositingMode = .default) {
         self = self.blended(source: source, blendMode: blendMode, compositingMode: compositingMode)
+    }
+    
+    @_inlineable
+    public mutating func blend(source: AnyColor, blendMode: ColorBlendMode = .default, compositingMode: ColorCompositingMode = .default) {
+        self = self.blended(source: source, blendMode: blendMode, compositingMode: compositingMode)
+    }
+}
+
+extension Color {
+    
+    @_inlineable
+    public func blended(source: AnyColor, blendMode: ColorBlendMode = .default, compositingMode: ColorCompositingMode = .default) -> Color {
+        return source._base._blendedTo(destination: self, blendMode: blendMode, compositingMode: compositingMode) as! Color
     }
     
     @_inlineable

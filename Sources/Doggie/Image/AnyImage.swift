@@ -87,12 +87,17 @@ extension Image : AnyImageBaseProtocol {
 public struct AnyImage {
     
     @_versioned
-    var base: AnyImageBaseProtocol
+    var _base: AnyImageBaseProtocol
     
     @_versioned
     @_inlineable
     init(base: AnyImageBaseProtocol) {
-        self.base = base
+        self._base = base
+    }
+    
+    @_inlineable
+    public var base: Any {
+        return _base
     }
 }
 
@@ -100,12 +105,12 @@ extension AnyImage {
     
     @_inlineable
     public init(width: Int, height: Int, colorSpace: AnyColorSpace) {
-        self.init(base: colorSpace.base._createImage(width: width, height: height))
+        self.init(base: colorSpace._base._createImage(width: width, height: height))
     }
     
     @_inlineable
     public init<Pixel>(_ image: Image<Pixel>) {
-        self.base = image
+        self._base = image
     }
     
     @_inlineable
@@ -115,42 +120,42 @@ extension AnyImage {
     
     @_inlineable
     public init<Pixel, Model>(image: Image<Pixel>, colorSpace: ColorSpace<Model>, intent: RenderingIntent = .default) {
-        self.base = image._convert(to: colorSpace, intent: intent)
+        self._base = image._convert(to: colorSpace, intent: intent)
     }
     
     @_inlineable
     public init<Model>(image: AnyImage, colorSpace: ColorSpace<Model>, intent: RenderingIntent = .default) {
-        self.base = image.base._convert(to: colorSpace, intent: intent)
+        self._base = image._base._convert(to: colorSpace, intent: intent)
     }
     
     @_inlineable
     public init<Pixel>(image: Image<Pixel>, colorSpace: AnyColorSpace, intent: RenderingIntent = .default) {
-        self.base = image._convert(to: colorSpace.base, intent: intent)
+        self._base = image._convert(to: colorSpace._base, intent: intent)
     }
     
     @_inlineable
     public init<Pixel>(image: Image<Pixel>, width: Int, height: Int, resampling algorithm: ResamplingAlgorithm = .default, antialias: Bool = false) {
-        self.base = image._resize(width: width, height: height, resampling: algorithm, antialias: antialias)
+        self._base = image._resize(width: width, height: height, resampling: algorithm, antialias: antialias)
     }
     
     @_inlineable
     public init<Pixel>(image: Image<Pixel>, width: Int, height: Int, transform: SDTransform, resampling algorithm: ResamplingAlgorithm = .default, antialias: Bool = false) {
-        self.base = image._resize(width: width, height: height, transform: transform, resampling: algorithm, antialias: antialias)
+        self._base = image._resize(width: width, height: height, transform: transform, resampling: algorithm, antialias: antialias)
     }
     
     @_inlineable
     public init(image: AnyImage, colorSpace: AnyColorSpace, intent: RenderingIntent = .default) {
-        self.base = image.base._convert(to: colorSpace.base, intent: intent)
+        self._base = image._base._convert(to: colorSpace._base, intent: intent)
     }
     
     @_inlineable
     public init(image: AnyImage, width: Int, height: Int, resampling algorithm: ResamplingAlgorithm = .default, antialias: Bool = false) {
-        self.base = image.base._resize(width: width, height: height, resampling: algorithm, antialias: antialias)
+        self._base = image._base._resize(width: width, height: height, resampling: algorithm, antialias: antialias)
     }
     
     @_inlineable
     public init(image: AnyImage, width: Int, height: Int, transform: SDTransform, resampling algorithm: ResamplingAlgorithm = .default, antialias: Bool = false) {
-        self.base = image.base._resize(width: width, height: height, transform: transform, resampling: algorithm, antialias: antialias)
+        self._base = image._base._resize(width: width, height: height, transform: transform, resampling: algorithm, antialias: antialias)
     }
 }
 
@@ -158,7 +163,7 @@ extension AnyImage {
     
     @_inlineable
     public func convert<P>(to colorSpace: ColorSpace<P.Model>, intent: RenderingIntent = .default) -> Image<P> {
-        return base._convert(to: colorSpace, intent: intent)
+        return _base._convert(to: colorSpace, intent: intent)
     }
 }
 
@@ -166,17 +171,17 @@ extension AnyImage {
     
     @_inlineable
     public var width: Int {
-        return base.width
+        return _base.width
     }
     
     @_inlineable
     public var height: Int {
-        return base.height
+        return _base.height
     }
     
     @_inlineable
     public var colorSpace: AnyColorSpace {
-        return AnyColorSpace(base: base._colorSpace)
+        return AnyColorSpace(base: _base._colorSpace)
     }
 }
 
@@ -184,6 +189,6 @@ extension ImageContext {
     
     @_inlineable
     public func draw(image: AnyImage, transform: SDTransform) {
-        image.base._draw(context: self, transform: transform)
+        image._base._draw(context: self, transform: transform)
     }
 }

@@ -47,7 +47,7 @@
     extension AnyColor {
         
         public var cgColor: CGColor? {
-            if let base = base as? CGColorConvertibleProtocol {
+            if let base = _base as? CGColorConvertibleProtocol {
                 return base.cgColor
             }
             return nil

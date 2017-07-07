@@ -106,9 +106,9 @@ protocol iccSignatureProtocol: RawRepresentable, Hashable, ExpressibleByIntegerL
     
     associatedtype Bytes : FixedWidthInteger
     
-    var rawValue: BEInteger<Bytes> { get set }
+    var rawValue: Bytes { get set }
     
-    init(rawValue: BEInteger<Bytes>)
+    init(rawValue: Bytes)
 }
 
 extension iccSignatureProtocol {
@@ -117,17 +117,17 @@ extension iccSignatureProtocol {
         return rawValue.hashValue
     }
     
-    init(integerLiteral value: BEInteger<Bytes>.IntegerLiteralType) {
-        self.init(rawValue: BEInteger<Bytes>(integerLiteral: value))
+    init(integerLiteral value: Bytes.IntegerLiteralType) {
+        self.init(rawValue: Bytes(integerLiteral: value))
     }
     
     init(stringLiteral value: StaticString) {
         precondition(value.utf8CodeUnitCount == Bytes.bitWidth >> 3)
-        self.init(rawValue: value.utf8Start.withMemoryRebound(to: BEInteger<Bytes>.self, capacity: 1) { $0.pointee })
+        self.init(rawValue: value.utf8Start.withMemoryRebound(to: Bytes.self, capacity: 1) { Bytes(bigEndian: $0.pointee) })
     }
     
     var description: String {
-        var code = self.rawValue
+        var code = self.rawValue.bigEndian
         return String(bytes: UnsafeRawBufferPointer(start: &code, count: Bytes.bitWidth >> 3), encoding: .ascii) ?? ""
     }
 }

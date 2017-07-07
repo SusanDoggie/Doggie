@@ -42,16 +42,6 @@ protocol EndianInteger : FixedWidthInteger {
 extension EndianInteger {
     
     @_transparent
-    public init(bigEndian value: Self) {
-        self.init(representingValue: value.representingValue.bigEndian)
-    }
-    
-    @_transparent
-    public init(littleEndian value: Self) {
-        self.init(representingValue: value.representingValue.littleEndian)
-    }
-    
-    @_transparent
     public init(integerLiteral value: RepresentingValue.IntegerLiteralType) {
         self.init(representingValue: RepresentingValue(integerLiteral: value))
     }
@@ -157,16 +147,6 @@ extension EndianInteger {
     @_transparent
     public var leadingZeroBitCount: Int {
         return representingValue.leadingZeroBitCount
-    }
-    
-    @_transparent
-    public var bigEndian: Self {
-        return Self(bigEndian: self)
-    }
-    
-    @_transparent
-    public var littleEndian: Self {
-        return Self(littleEndian: self)
     }
     
     @_transparent
@@ -393,6 +373,26 @@ public struct BEInteger<Base : FixedWidthInteger> : FixedWidthInteger, EndianInt
             bitPattern = newValue.bigEndian
         }
     }
+    
+    @_transparent
+    public init(bigEndian value: BEInteger) {
+        self.bitPattern = value.bitPattern
+    }
+    
+    @_transparent
+    public init(littleEndian value: BEInteger) {
+        self.bitPattern = value.bitPattern.byteSwapped
+    }
+    
+    @_transparent
+    public var bigEndian: BEInteger {
+        return self
+    }
+    
+    @_transparent
+    public var littleEndian: BEInteger {
+        return BEInteger(littleEndian: self)
+    }
 }
 
 public struct LEInteger<Base : FixedWidthInteger> : FixedWidthInteger, EndianInteger {
@@ -419,6 +419,26 @@ public struct LEInteger<Base : FixedWidthInteger> : FixedWidthInteger, EndianInt
         set {
             bitPattern = newValue.littleEndian
         }
+    }
+    
+    @_transparent
+    public init(bigEndian value: LEInteger) {
+        self.bitPattern = value.bitPattern.byteSwapped
+    }
+    
+    @_transparent
+    public init(littleEndian value: LEInteger) {
+        self.bitPattern = value.bitPattern
+    }
+    
+    @_transparent
+    public var bigEndian: LEInteger {
+        return LEInteger(bigEndian: self)
+    }
+    
+    @_transparent
+    public var littleEndian: LEInteger {
+        return self
     }
 }
 
