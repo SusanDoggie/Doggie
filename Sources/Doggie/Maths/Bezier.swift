@@ -25,27 +25,8 @@
 
 import Foundation
 
-public protocol BezierElementProtocol : Subtractive {
-    
-    static func * (_: Double, _: Self) -> Self
-    static func * (_: Self, _: Double) -> Self
-    static func / (_: Self, _: Double) -> Self
-    static func *= (_: inout Self, _: Double)
-    static func /= (_: inout Self, _: Double)
-}
-
-extension Double : BezierElementProtocol {
-    
-}
-extension Point : BezierElementProtocol {
-    
-}
-extension Vector : BezierElementProtocol {
-    
-}
-
 @_fixed_layout
-public struct Bezier<Element : BezierElementProtocol> {
+public struct Bezier<Element : Subtractive & ScalarDivisive> where Element.Scalar == Double {
     
     @_versioned
     var points: [Element]
@@ -493,7 +474,9 @@ extension Bezier where Element == Point {
     }
 }
 
-extension Bezier : Additive, Subtractive {
+extension Bezier : Subtractive, ScalarDivisive {
+    
+    public typealias Scalar = Double
     
 }
 

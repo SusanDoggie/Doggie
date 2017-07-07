@@ -94,6 +94,12 @@ extension Size {
     }
 }
 
+extension Size : Subtractive, ScalarDivisive {
+    
+    public typealias Scalar = Double
+    
+}
+
 @_inlineable
 public prefix func +(val: Size) -> Size {
     return val

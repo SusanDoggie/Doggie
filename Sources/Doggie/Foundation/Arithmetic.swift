@@ -41,6 +41,24 @@ public protocol Subtractive : Additive {
     static prefix func - (x: Self) -> Self
 }
 
+public protocol ScalarMultiplicative : Equatable {
+    
+    associatedtype Scalar : FloatingPoint
+    
+    static func * (lhs: Scalar, rhs: Self) -> Self
+    
+    static func * (lhs: Self, rhs: Scalar) -> Self
+    
+    static func *= (lhs: inout Self, rhs: Scalar)
+}
+
+public protocol ScalarDivisive : ScalarMultiplicative {
+    
+    static func / (lhs: Self, rhs: Scalar) -> Self
+    
+    static func /= (lhs: inout Self, rhs: Scalar)
+}
+
 public protocol Multiplicative : Equatable {
     
     static func * (lhs: Self, rhs: Self) -> Self
@@ -75,10 +93,14 @@ extension Int : Subtractive, Divisive {
     
 }
 
-extension Float : Subtractive, Divisive {
+extension Float : Subtractive, Divisive, ScalarDivisive {
+    
+    public typealias Scalar = Float
     
 }
 
-extension Double : Subtractive, Divisive {
+extension Double : Subtractive, Divisive, ScalarDivisive {
+    
+    public typealias Scalar = Double
     
 }

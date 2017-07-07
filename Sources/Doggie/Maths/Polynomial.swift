@@ -276,7 +276,9 @@ extension Polynomial {
     }
 }
 
-extension Polynomial : Additive, Subtractive, Multiplicative, Divisive {
+extension Polynomial : Subtractive, Divisive, ScalarDivisive {
+    
+    public typealias Scalar = Double
     
 }
 

@@ -117,7 +117,9 @@ extension Point: Hashable {
     }
 }
 
-extension Point : Additive, Subtractive {
+extension Point : Subtractive, ScalarDivisive {
+    
+    public typealias Scalar = Double
     
 }
 
