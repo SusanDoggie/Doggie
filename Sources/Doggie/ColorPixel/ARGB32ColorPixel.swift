@@ -38,7 +38,7 @@ public struct ARGB32ColorPixel : ColorPixelProtocol {
         self.b = 0
     }
     @_inlineable
-    public init(red: UInt8, green: UInt8, blue: UInt8, opacity: UInt8) {
+    public init(red: UInt8, green: UInt8, blue: UInt8, opacity: UInt8 = 0xFF) {
         self.a = opacity
         self.r = red
         self.g = green

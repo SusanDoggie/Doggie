@@ -152,13 +152,13 @@ public struct ColorPixel<Model : ColorModelProtocol> : ColorPixelProtocol {
     public var opacity: Double
     
     @_inlineable
-    public init(color: Model, opacity: Double) {
+    public init(color: Model, opacity: Double = 1) {
         self.color = color
         self.opacity = opacity
     }
 }
 
-extension ColorPixel where Model == GrayColorModel {
+extension ColorPixelProtocol where Model == GrayColorModel {
     
     @_inlineable
     public init(white: Double, opacity: Double = 1) {
@@ -166,7 +166,7 @@ extension ColorPixel where Model == GrayColorModel {
     }
 }
 
-extension ColorPixel where Model == RGBColorModel {
+extension ColorPixelProtocol where Model == RGBColorModel {
     
     @_inlineable
     public init(red: Double, green: Double, blue: Double, opacity: Double = 1) {
@@ -179,7 +179,7 @@ extension ColorPixel where Model == RGBColorModel {
     }
 }
 
-extension ColorPixel where Model == CMYColorModel {
+extension ColorPixelProtocol where Model == CMYColorModel {
     
     @_inlineable
     public init(cyan: Double, magenta: Double, yellow: Double, opacity: Double = 1) {
@@ -187,7 +187,7 @@ extension ColorPixel where Model == CMYColorModel {
     }
 }
 
-extension ColorPixel where Model == CMYKColorModel {
+extension ColorPixelProtocol where Model == CMYKColorModel {
     
     @_inlineable
     public init(cyan: Double, magenta: Double, yellow: Double, black: Double, opacity: Double = 1) {
@@ -195,7 +195,7 @@ extension ColorPixel where Model == CMYKColorModel {
     }
 }
 
-extension ColorPixel where Model == GrayColorModel {
+extension ColorPixelProtocol where Model == GrayColorModel {
     
     @_inlineable
     public var white: Double {
@@ -208,7 +208,7 @@ extension ColorPixel where Model == GrayColorModel {
     }
 }
 
-extension ColorPixel where Model == RGBColorModel {
+extension ColorPixelProtocol where Model == RGBColorModel {
     
     @_inlineable
     public var red: Double {
@@ -241,7 +241,7 @@ extension ColorPixel where Model == RGBColorModel {
     }
 }
 
-extension ColorPixel where Model == RGBColorModel {
+extension ColorPixelProtocol where Model == RGBColorModel {
     
     @_inlineable
     public var hue: Double {
@@ -274,7 +274,7 @@ extension ColorPixel where Model == RGBColorModel {
     }
 }
 
-extension ColorPixel where Model == CMYKColorModel {
+extension ColorPixelProtocol where Model == CMYKColorModel {
     
     @_inlineable
     public var cyan: Double {
