@@ -25,12 +25,6 @@
 
 import Foundation
 
-enum BMPImageDecoderError : Error {
-    
-    case invalidFormat(String)
-    case invalidData(String)
-}
-
 struct BMPImageDecoder : ImageDecoder {
     
     let data: Data
@@ -45,21 +39,21 @@ struct BMPImageDecoder : ImageDecoder {
     
     func image() throws -> AnyImage {
         
-        guard header.offset <= data.count else { throw BMPImageDecoderError.invalidFormat("Unexpected end of data.") }
+        guard header.offset <= data.count else { throw AnyImage.DecoderError.InvalidFormat("Unexpected end of data.") }
         
         if let pixelArraySize = header.pixelArraySize {
-            guard Int(header.offset) + pixelArraySize <= data.count else { throw BMPImageDecoderError.invalidFormat("Unexpected end of data.") }
+            guard Int(header.offset) + pixelArraySize <= data.count else { throw AnyImage.DecoderError.InvalidFormat("Unexpected end of data.") }
         }
         
         if header.paletteSize != 0 {
-            guard header.DIB.size + 14 <= header.paletteOffset else { throw BMPImageDecoderError.invalidFormat("Palette overlap with header.") }
+            guard header.DIB.size + 14 <= header.paletteOffset else { throw AnyImage.DecoderError.InvalidFormat("Palette overlap with header.") }
             
             let paletteCount = header.paletteSize
             
             if header.DIB is BITMAPCOREHEADER {
-                guard header.paletteOffset + 3 * header.paletteSize <= header.offset else { throw BMPImageDecoderError.invalidFormat("Pixel array overlap with palette.") }
+                guard header.paletteOffset + 3 * header.paletteSize <= header.offset else { throw AnyImage.DecoderError.InvalidFormat("Pixel array overlap with palette.") }
             } else {
-                guard header.paletteOffset + 4 * header.paletteSize <= header.offset else { throw BMPImageDecoderError.invalidFormat("Pixel array overlap with palette.") }
+                guard header.paletteOffset + 4 * header.paletteSize <= header.offset else { throw AnyImage.DecoderError.InvalidFormat("Pixel array overlap with palette.") }
             }
         }
         
@@ -68,13 +62,13 @@ struct BMPImageDecoder : ImageDecoder {
         let _colorSpace: AnyColorSpace
         
         if header.colorSpaceOffset != 0 && header.colorSpaceSize != 0 {
-            guard header.colorSpaceOffset + header.colorSpaceSize <= data.count else { throw BMPImageDecoderError.invalidFormat("Unexpected end of data.") }
+            guard header.colorSpaceOffset + header.colorSpaceSize <= data.count else { throw AnyImage.DecoderError.InvalidFormat("Unexpected end of data.") }
             _colorSpace = try AnyColorSpace(iccData: data.advanced(by: header.colorSpaceOffset))
         } else {
             _colorSpace = header.colorSpace
         }
         
-        guard let colorSpace = _colorSpace.base as? ColorSpace<RGBColorModel> else { throw BMPImageDecoderError.invalidFormat("Invalid color space.") }
+        guard let colorSpace = _colorSpace.base as? ColorSpace<RGBColorModel> else { throw AnyImage.DecoderError.InvalidFormat("Invalid color space.") }
         
         let width = abs(header.width)
         let height = abs(header.height)
@@ -106,10 +100,10 @@ struct BMPImageDecoder : ImageDecoder {
             let bMax = bMask >> bOffset
             let aMax = aMask >> aOffset
             
-            guard (rMax + 1).isPower2 else { throw BMPImageDecoderError.invalidData("Invalid red component bit mask.") }
-            guard (gMax + 1).isPower2 else { throw BMPImageDecoderError.invalidData("Invalid green component bit mask.") }
-            guard (bMax + 1).isPower2 else { throw BMPImageDecoderError.invalidData("Invalid blue component bit mask.") }
-            guard (aMax + 1).isPower2 else { throw BMPImageDecoderError.invalidData("Invalid alpha component bit mask.") }
+            guard (rMax + 1).isPower2 else { throw AnyImage.DecoderError.InvalidFormat("Invalid red component bit mask.") }
+            guard (gMax + 1).isPower2 else { throw AnyImage.DecoderError.InvalidFormat("Invalid green component bit mask.") }
+            guard (bMax + 1).isPower2 else { throw AnyImage.DecoderError.InvalidFormat("Invalid blue component bit mask.") }
+            guard (aMax + 1).isPower2 else { throw AnyImage.DecoderError.InvalidFormat("Invalid alpha component bit mask.") }
             
             var image = Image<ColorPixel<RGBColorModel>>(width: width, height: height, colorSpace: colorSpace)
             
@@ -377,30 +371,30 @@ struct BMPImageDecoder : ImageDecoder {
                                         switch code {
                                         case 0:
                                             
-                                            guard let mode = stream.popFirst() else { throw BMPImageDecoderError.invalidData("Unexpected end of data.") }
+                                            guard let mode = stream.popFirst() else { throw AnyImage.DecoderError.InvalidFormat("Unexpected end of data.") }
                                             
                                             switch mode {
                                             case 0:
+                                                
                                                 line += row
                                                 _destination = line
                                                 x = 0
                                                 y += 1
-                                                if y >= height {
-                                                    return
-                                                }
+                                                
+                                                guard y < height else { return }
+                                                
                                             case 1: return
                                             case 2:
                                                 
-                                                guard let hDelta = stream.popFirst() else { throw BMPImageDecoderError.invalidData("Unexpected end of data.") }
-                                                guard let vDelta = stream.popFirst() else { throw BMPImageDecoderError.invalidData("Unexpected end of data.") }
+                                                guard let hDelta = stream.popFirst() else { throw AnyImage.DecoderError.InvalidFormat("Unexpected end of data.") }
+                                                guard let vDelta = stream.popFirst() else { throw AnyImage.DecoderError.InvalidFormat("Unexpected end of data.") }
                                                 
                                                 x += Int(hDelta)
                                                 y += Int(vDelta)
                                                 line += Int(vDelta)
                                                 _destination = line + x
                                                 
-                                                guard x < width else { throw BMPImageDecoderError.invalidData("Drawing outside of image.") }
-                                                guard y < height else { throw BMPImageDecoderError.invalidData("Drawing outside of image.") }
+                                                guard y < height else { return }
                                                 
                                             case let count:
                                                 
@@ -411,30 +405,30 @@ struct BMPImageDecoder : ImageDecoder {
                                                     let values = stream.prefix(Int(length))
                                                     stream.removeFirst(Int(length.align(2)))
                                                     
-                                                    guard values.count == length else { throw BMPImageDecoderError.invalidData("Unexpected end of data.") }
+                                                    guard values.count == length else { throw AnyImage.DecoderError.InvalidFormat("Unexpected end of data.") }
                                                     
                                                     for (c, value) in values.enumerated() {
                                                         if c + 1 == length && count & 1 == 1 {
-                                                            guard x < width else { throw BMPImageDecoderError.invalidData("Drawing outside of image.") }
-                                                            let index = Int((value & 0xF0) >> 4)
-                                                            _destination.pointee = index < palette.count ? palette[Int(index)] : ARGB32ColorPixel()
-                                                            _destination += 1
-                                                            x += 1
+                                                            if x < width && y < height {
+                                                                let index = Int((value & 0xF0) >> 4)
+                                                                _destination.pointee = index < palette.count ? palette[Int(index)] : ARGB32ColorPixel()
+                                                                _destination += 1
+                                                                x += 1
+                                                            }
                                                         } else {
-                                                            guard x + 1 < width else { throw BMPImageDecoderError.invalidData("Drawing outside of image.") }
-                                                            
                                                             let index = Int(value)
-                                                            
-                                                            let i0 = (index & 0xF0) >> 4
-                                                            let i1 = index & 0x0F
-                                                            
-                                                            _destination.pointee = i0 < palette.count ? palette[Int(i0)] : ARGB32ColorPixel()
-                                                            _destination += 1
-                                                            
-                                                            _destination.pointee = i1 < palette.count ? palette[Int(i1)] : ARGB32ColorPixel()
-                                                            _destination += 1
-                                                            
-                                                            x += 2
+                                                            if x < width && y < height {
+                                                                let i0 = (index & 0xF0) >> 4
+                                                                _destination.pointee = i0 < palette.count ? palette[Int(i0)] : ARGB32ColorPixel()
+                                                                _destination += 1
+                                                                x += 1
+                                                            }
+                                                            if x < width && y < height {
+                                                                let i1 = index & 0x0F
+                                                                _destination.pointee = i1 < palette.count ? palette[Int(i1)] : ARGB32ColorPixel()
+                                                                _destination += 1
+                                                                x += 1
+                                                            }
                                                         }
                                                     }
                                                     
@@ -442,33 +436,35 @@ struct BMPImageDecoder : ImageDecoder {
                                                     let values = stream.prefix(Int(count))
                                                     stream.removeFirst(Int(count.align(2)))
                                                     
-                                                    guard values.count == count else { throw BMPImageDecoderError.invalidData("Unexpected end of data.") }
+                                                    guard values.count == count else { throw AnyImage.DecoderError.InvalidFormat("Unexpected end of data.") }
                                                     
                                                     for value in values {
-                                                        guard x < width else { throw BMPImageDecoderError.invalidData("Drawing outside of image.") }
-                                                        let index = Int(value)
-                                                        _destination.pointee = index < palette.count ? palette[Int(index)] : ARGB32ColorPixel()
-                                                        _destination += 1
-                                                        x += 1
+                                                        if x < width && y < height {
+                                                            let index = Int(value)
+                                                            _destination.pointee = index < palette.count ? palette[Int(index)] : ARGB32ColorPixel()
+                                                            _destination += 1
+                                                            x += 1
+                                                        }
                                                     }
                                                 }
                                             }
                                             
                                         case let count:
                                             
-                                            guard let value = stream.popFirst() else { throw BMPImageDecoderError.invalidData("Unexpected end of data.") }
+                                            guard let value = stream.popFirst() else { throw AnyImage.DecoderError.InvalidFormat("Unexpected end of data.") }
                                             
                                             for i in 0..<count {
-                                                guard x < width else { throw BMPImageDecoderError.invalidData("Drawing outside of image.") }
-                                                let index: Int
-                                                if bitWidth == 4 {
-                                                    index = i & 1 == 0 ? Int((value & 0xF0) >> 4) : Int(value & 0x0F)
-                                                } else {
-                                                    index = Int(value)
+                                                if x < width && y < height {
+                                                    let index: Int
+                                                    if bitWidth == 4 {
+                                                        index = i & 1 == 0 ? Int((value & 0xF0) >> 4) : Int(value & 0x0F)
+                                                    } else {
+                                                        index = Int(value)
+                                                    }
+                                                    _destination.pointee = index < palette.count ? palette[Int(index)] : ARGB32ColorPixel()
+                                                    _destination += 1
+                                                    x += 1
                                                 }
-                                                _destination.pointee = index < palette.count ? palette[Int(index)] : ARGB32ColorPixel()
-                                                _destination += 1
-                                                x += 1
                                             }
                                         }
                                     }

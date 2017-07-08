@@ -34,29 +34,25 @@ protocol ImageDecoder {
 
 extension AnyImage {
     
-    public init?(data: Data) {
+    public enum DecoderError : Error {
+        
+        case UnknownFormat
+        case InvalidFormat(String)
+    }
+    
+    public init(data: Data) throws {
         
         let decoders: [ImageDecoder.Type] = [
             BMPImageDecoder.self,
         ]
         
         for Decoder in decoders {
-            
             if let decoder = Decoder.init(data: data) {
-                
-                do {
-                    
-                    self = try decoder.image()
-                    return
-                    
-                } catch let error {
-                    print("AnyImage error: \(error)")
-                    return nil
-                }
+                self = try decoder.image()
+                return
             }
         }
         
-        print("AnyImage error: unknown format.")
-        return nil
+        throw DecoderError.UnknownFormat
     }
 }
