@@ -34,7 +34,7 @@ protocol ImageDecoder {
 
 extension AnyImage {
     
-    public enum DecoderError : Error {
+    public enum DecodeError : Error {
         
         case UnknownFormat
         case InvalidFormat(String)
@@ -53,6 +53,6 @@ extension AnyImage {
             }
         }
         
-        throw DecoderError.UnknownFormat
+        throw DecodeError.UnknownFormat
     }
 }

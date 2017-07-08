@@ -39,21 +39,21 @@ struct BMPImageDecoder : ImageDecoder {
     
     func image() throws -> AnyImage {
         
-        guard header.offset <= data.count else { throw AnyImage.DecoderError.InvalidFormat("Unexpected end of data.") }
+        guard header.offset <= data.count else { throw AnyImage.DecodeError.InvalidFormat("Unexpected end of data.") }
         
         if let pixelArraySize = header.pixelArraySize {
-            guard Int(header.offset) + pixelArraySize <= data.count else { throw AnyImage.DecoderError.InvalidFormat("Unexpected end of data.") }
+            guard Int(header.offset) + pixelArraySize <= data.count else { throw AnyImage.DecodeError.InvalidFormat("Unexpected end of data.") }
         }
         
         if header.paletteSize != 0 {
-            guard header.DIB.size + 14 <= header.paletteOffset else { throw AnyImage.DecoderError.InvalidFormat("Palette overlap with header.") }
+            guard header.DIB.size + 14 <= header.paletteOffset else { throw AnyImage.DecodeError.InvalidFormat("Palette overlap with header.") }
             
             let paletteCount = header.paletteSize
             
             if header.DIB is BITMAPCOREHEADER {
-                guard header.paletteOffset + 3 * header.paletteSize <= header.offset else { throw AnyImage.DecoderError.InvalidFormat("Pixel array overlap with palette.") }
+                guard header.paletteOffset + 3 * header.paletteSize <= header.offset else { throw AnyImage.DecodeError.InvalidFormat("Pixel array overlap with palette.") }
             } else {
-                guard header.paletteOffset + 4 * header.paletteSize <= header.offset else { throw AnyImage.DecoderError.InvalidFormat("Pixel array overlap with palette.") }
+                guard header.paletteOffset + 4 * header.paletteSize <= header.offset else { throw AnyImage.DecodeError.InvalidFormat("Pixel array overlap with palette.") }
             }
         }
         
@@ -62,13 +62,13 @@ struct BMPImageDecoder : ImageDecoder {
         let _colorSpace: AnyColorSpace
         
         if header.colorSpaceOffset != 0 && header.colorSpaceSize != 0 {
-            guard header.colorSpaceOffset + header.colorSpaceSize <= data.count else { throw AnyImage.DecoderError.InvalidFormat("Unexpected end of data.") }
+            guard header.colorSpaceOffset + header.colorSpaceSize <= data.count else { throw AnyImage.DecodeError.InvalidFormat("Unexpected end of data.") }
             _colorSpace = try AnyColorSpace(iccData: data.advanced(by: header.colorSpaceOffset))
         } else {
             _colorSpace = header.colorSpace
         }
         
-        guard let colorSpace = _colorSpace.base as? ColorSpace<RGBColorModel> else { throw AnyImage.DecoderError.InvalidFormat("Invalid color space.") }
+        guard let colorSpace = _colorSpace.base as? ColorSpace<RGBColorModel> else { throw AnyImage.DecodeError.InvalidFormat("Invalid color space.") }
         
         let width = abs(header.width)
         let height = abs(header.height)
@@ -100,10 +100,10 @@ struct BMPImageDecoder : ImageDecoder {
             let bMax = bMask >> bOffset
             let aMax = aMask >> aOffset
             
-            guard (rMax + 1).isPower2 else { throw AnyImage.DecoderError.InvalidFormat("Invalid red component bit mask.") }
-            guard (gMax + 1).isPower2 else { throw AnyImage.DecoderError.InvalidFormat("Invalid green component bit mask.") }
-            guard (bMax + 1).isPower2 else { throw AnyImage.DecoderError.InvalidFormat("Invalid blue component bit mask.") }
-            guard (aMax + 1).isPower2 else { throw AnyImage.DecoderError.InvalidFormat("Invalid alpha component bit mask.") }
+            guard (rMax + 1).isPower2 else { throw AnyImage.DecodeError.InvalidFormat("Invalid red component bit mask.") }
+            guard (gMax + 1).isPower2 else { throw AnyImage.DecodeError.InvalidFormat("Invalid green component bit mask.") }
+            guard (bMax + 1).isPower2 else { throw AnyImage.DecodeError.InvalidFormat("Invalid blue component bit mask.") }
+            guard (aMax + 1).isPower2 else { throw AnyImage.DecodeError.InvalidFormat("Invalid alpha component bit mask.") }
             
             var image = Image<ColorPixel<RGBColorModel>>(width: width, height: height, colorSpace: colorSpace)
             
@@ -258,19 +258,19 @@ struct BMPImageDecoder : ImageDecoder {
                 palette = data.advanced(by: header.paletteOffset).withUnsafeBytes { UnsafeBufferPointer(start: $0 as UnsafePointer<Palette>, count: paletteCount).map { ARGB32ColorPixel(red: $0.red, green: $0.green, blue: $0.blue) } }
             }
             
-            func UncompressedPixelReader() throws -> Image<ARGB32ColorPixel> {
+            func UncompressedPixelReader() -> Image<ARGB32ColorPixel> {
                 
                 let bitWidth = UInt8(header.bitsPerPixel)
                 
                 var image = Image<ARGB32ColorPixel>(width: width, height: height, colorSpace: colorSpace)
                 
-                try palette.withUnsafeBufferPointer { palette in
+                palette.withUnsafeBufferPointer { palette in
                     
-                    try pixels.withUnsafeBytes { (source: UnsafePointer<UInt8>) in
+                    pixels.withUnsafeBytes { (source: UnsafePointer<UInt8>) in
                         
                         var source = source
                         
-                        try image.withUnsafeMutableBufferPointer { destination in
+                        image.withUnsafeMutableBufferPointer { destination in
                             
                             if var destination = destination.baseAddress {
                                 
@@ -371,7 +371,7 @@ struct BMPImageDecoder : ImageDecoder {
                                         switch code {
                                         case 0:
                                             
-                                            guard let mode = stream.popFirst() else { throw AnyImage.DecoderError.InvalidFormat("Unexpected end of data.") }
+                                            guard let mode = stream.popFirst() else { throw AnyImage.DecodeError.InvalidFormat("Unexpected end of data.") }
                                             
                                             switch mode {
                                             case 0:
@@ -386,8 +386,8 @@ struct BMPImageDecoder : ImageDecoder {
                                             case 1: return
                                             case 2:
                                                 
-                                                guard let hDelta = stream.popFirst() else { throw AnyImage.DecoderError.InvalidFormat("Unexpected end of data.") }
-                                                guard let vDelta = stream.popFirst() else { throw AnyImage.DecoderError.InvalidFormat("Unexpected end of data.") }
+                                                guard let hDelta = stream.popFirst() else { throw AnyImage.DecodeError.InvalidFormat("Unexpected end of data.") }
+                                                guard let vDelta = stream.popFirst() else { throw AnyImage.DecodeError.InvalidFormat("Unexpected end of data.") }
                                                 
                                                 x += Int(hDelta)
                                                 y += Int(vDelta)
@@ -405,7 +405,7 @@ struct BMPImageDecoder : ImageDecoder {
                                                     let values = stream.prefix(Int(length))
                                                     stream.removeFirst(Int(length.align(2)))
                                                     
-                                                    guard values.count == length else { throw AnyImage.DecoderError.InvalidFormat("Unexpected end of data.") }
+                                                    guard values.count == length else { throw AnyImage.DecodeError.InvalidFormat("Unexpected end of data.") }
                                                     
                                                     for (c, value) in values.enumerated() {
                                                         if c + 1 == length && count & 1 == 1 {
@@ -436,7 +436,7 @@ struct BMPImageDecoder : ImageDecoder {
                                                     let values = stream.prefix(Int(count))
                                                     stream.removeFirst(Int(count.align(2)))
                                                     
-                                                    guard values.count == count else { throw AnyImage.DecoderError.InvalidFormat("Unexpected end of data.") }
+                                                    guard values.count == count else { throw AnyImage.DecodeError.InvalidFormat("Unexpected end of data.") }
                                                     
                                                     for value in values {
                                                         if x < width && y < height {
@@ -451,7 +451,7 @@ struct BMPImageDecoder : ImageDecoder {
                                             
                                         case let count:
                                             
-                                            guard let value = stream.popFirst() else { throw AnyImage.DecoderError.InvalidFormat("Unexpected end of data.") }
+                                            guard let value = stream.popFirst() else { throw AnyImage.DecodeError.InvalidFormat("Unexpected end of data.") }
                                             
                                             for i in 0..<count {
                                                 if x < width && y < height {
@@ -475,10 +475,10 @@ struct BMPImageDecoder : ImageDecoder {
                     
                     return AnyImage(image)
                     
-                default: return AnyImage(try UncompressedPixelReader())
+                default: return AnyImage(UncompressedPixelReader())
                 }
             } else {
-                 return AnyImage(try UncompressedPixelReader())
+                 return AnyImage(UncompressedPixelReader())
             }
         }
     }
