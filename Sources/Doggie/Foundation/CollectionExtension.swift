@@ -23,24 +23,6 @@
 //  THE SOFTWARE.
 //
 
-extension Collection where Self == SubSequence {
-    
-    /// Returns sub-sequence of `self`.
-    @_inlineable
-    public var subSequence: SubSequence {
-        return self
-    }
-}
-
-extension Collection {
-    
-    /// Returns sub-sequence of `self`.
-    @_inlineable
-    public var subSequence: SubSequence {
-        return self as? SubSequence ?? self[startIndex..<endIndex]
-    }
-}
-
 extension Sequence where Element : Equatable {
     
     /// Return `true` if all of elements in `seq` is `x`.
@@ -270,7 +252,7 @@ extension Collection where SubSequence : Collection {
     public func rotated(_ n: Int) -> ConcatCollection<SubSequence, SubSequence> {
         let count: Int = numericCast(self.count)
         if count == 0 {
-            return self.subSequence.concat(self.subSequence)
+            return self[...].concat(self[...])
         }
         if n < 0 {
             let _n = -n % count
@@ -286,7 +268,7 @@ extension Collection where SubSequence : BidirectionalCollection {
     public func rotated(_ n: Int) -> ConcatBidirectionalCollection<SubSequence, SubSequence> {
         let count: Int = numericCast(self.count)
         if count == 0 {
-            return self.subSequence.concat(self.subSequence)
+            return self[...].concat(self[...])
         }
         if n < 0 {
             let _n = -n % count
@@ -302,7 +284,7 @@ extension Collection where SubSequence : RandomAccessCollection {
     public func rotated(_ n: Int) -> ConcatBidirectionalCollection<SubSequence, SubSequence> {
         let count: Int = numericCast(self.count)
         if count == 0 {
-            return self.subSequence.concat(self.subSequence)
+            return self[...].concat(self[...])
         }
         if n < 0 {
             let _n = -n % count
