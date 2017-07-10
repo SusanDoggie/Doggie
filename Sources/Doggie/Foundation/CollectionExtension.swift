@@ -662,18 +662,10 @@ extension LazySequenceProtocol {
     }
 }
 
-// MARK: LazyGatherCollection
-
-extension Collection {
-    
-    @_inlineable
-    public func collect<I : Sequence>(_ indices: I) -> [Element] where Index == I.Element {
-        return indices.map { self[$0] }
-    }
-}
+// MARK: GatheringCollection
 
 @_fixed_layout
-public struct LazyGatherIterator<C: Collection, I: IteratorProtocol> : IteratorProtocol, Sequence where C.Index == I.Element {
+public struct GatheringIterator<C: Collection, I: IteratorProtocol> : IteratorProtocol, Sequence where C.Index == I.Element {
     
     public let base : C
     
@@ -696,9 +688,9 @@ public struct LazyGatherIterator<C: Collection, I: IteratorProtocol> : IteratorP
 }
 
 @_fixed_layout
-public struct LazyGatherSequence<C : Collection, I : Sequence> : LazySequenceProtocol where C.Index == I.Element {
+public struct GatheringSequence<C : Collection, I : Sequence> : Sequence where C.Index == I.Element {
     
-    public typealias Iterator = LazyGatherIterator<C, I.Iterator>
+    public typealias Iterator = GatheringIterator<C, I.Iterator>
     
     public let base: C
     
@@ -714,7 +706,7 @@ public struct LazyGatherSequence<C : Collection, I : Sequence> : LazySequencePro
     
     @_inlineable
     public func makeIterator() -> Iterator {
-        return LazyGatherIterator(base: base, indices: indices.makeIterator())
+        return GatheringIterator(base: base, indices: indices.makeIterator())
     }
     
     @_inlineable
@@ -724,9 +716,9 @@ public struct LazyGatherSequence<C : Collection, I : Sequence> : LazySequencePro
 }
 
 @_fixed_layout
-public struct LazyGatherCollection<C : Collection, I : Collection> : LazyCollectionProtocol where C.Index == I.Element {
+public struct GatheringCollection<C : Collection, I : Collection> : Collection where C.Index == I.Element {
     
-    public typealias Iterator = LazyGatherIterator<C, I.Iterator>
+    public typealias Iterator = GatheringIterator<C, I.Iterator>
     
     public let base: C
     
@@ -771,7 +763,7 @@ public struct LazyGatherCollection<C : Collection, I : Collection> : LazyCollect
     
     @_inlineable
     public func makeIterator() -> Iterator {
-        return LazyGatherIterator(base: base, indices: _indices.makeIterator())
+        return GatheringIterator(base: base, indices: _indices.makeIterator())
     }
     
     @_inlineable
@@ -781,9 +773,9 @@ public struct LazyGatherCollection<C : Collection, I : Collection> : LazyCollect
 }
 
 @_fixed_layout
-public struct LazyGatherBidirectionalCollection<C : Collection, I : BidirectionalCollection> : LazyCollectionProtocol, BidirectionalCollection where C.Index == I.Element {
+public struct GatheringBidirectionalCollection<C : Collection, I : BidirectionalCollection> : BidirectionalCollection where C.Index == I.Element {
     
-    public typealias Iterator = LazyGatherIterator<C, I.Iterator>
+    public typealias Iterator = GatheringIterator<C, I.Iterator>
     
     public let base: C
     
@@ -833,7 +825,7 @@ public struct LazyGatherBidirectionalCollection<C : Collection, I : Bidirectiona
     
     @_inlineable
     public func makeIterator() -> Iterator {
-        return LazyGatherIterator(base: base, indices: _indices.makeIterator())
+        return GatheringIterator(base: base, indices: _indices.makeIterator())
     }
     
     @_inlineable
@@ -843,9 +835,9 @@ public struct LazyGatherBidirectionalCollection<C : Collection, I : Bidirectiona
 }
 
 @_fixed_layout
-public struct LazyGatherRandomAccessCollection<C : Collection, I : RandomAccessCollection> : LazyCollectionProtocol, RandomAccessCollection where C.Index == I.Element {
+public struct GatheringRandomAccessCollection<C : Collection, I : RandomAccessCollection> : RandomAccessCollection where C.Index == I.Element {
     
-    public typealias Iterator = LazyGatherIterator<C, I.Iterator>
+    public typealias Iterator = GatheringIterator<C, I.Iterator>
     
     public let base: C
     
@@ -905,7 +897,7 @@ public struct LazyGatherRandomAccessCollection<C : Collection, I : RandomAccessC
     
     @_inlineable
     public func makeIterator() -> Iterator {
-        return LazyGatherIterator(base: base, indices: _indices.makeIterator())
+        return GatheringIterator(base: base, indices: _indices.makeIterator())
     }
     
     @_inlineable
@@ -914,26 +906,49 @@ public struct LazyGatherRandomAccessCollection<C : Collection, I : RandomAccessC
     }
 }
 
+extension Collection {
+    
+    @_inlineable
+    public subscript<I>(_ indices: I) -> GatheringSequence<Self, I> {
+        return GatheringSequence(base: self, indices: indices)
+    }
+    
+    @_inlineable
+    public subscript<I>(_ indices: I) -> GatheringCollection<Self, I> {
+        return GatheringCollection(base: self, indices: indices)
+    }
+    
+    @_inlineable
+    public subscript<I>(_ indices: I) -> GatheringBidirectionalCollection<Self, I> {
+        return GatheringBidirectionalCollection(base: self, indices: indices)
+    }
+    
+    @_inlineable
+    public subscript<I>(_ indices: I) -> GatheringRandomAccessCollection<Self, I> {
+        return GatheringRandomAccessCollection(base: self, indices: indices)
+    }
+}
+
 extension LazyCollectionProtocol {
     
     @_inlineable
-    public func collect<I>(_ indices: I) -> LazyGatherSequence<Elements, I> {
-        return LazyGatherSequence(base: self.elements, indices: indices)
+    public subscript<I>(_ indices: I) -> LazySequence<GatheringSequence<Elements, I>> {
+        return self.elements[indices].lazy
     }
     
     @_inlineable
-    public func collect<I>(_ indices: I) -> LazyGatherCollection<Elements, I> {
-        return LazyGatherCollection(base: self.elements, indices: indices)
+    public subscript<I>(_ indices: I) -> LazyCollection<GatheringCollection<Elements, I>> {
+        return self.elements[indices].lazy
     }
     
     @_inlineable
-    public func collect<I>(_ indices: I) -> LazyGatherBidirectionalCollection<Elements, I> {
-        return LazyGatherBidirectionalCollection(base: self.elements, indices: indices)
+    public subscript<I>(_ indices: I) -> LazyBidirectionalCollection<GatheringBidirectionalCollection<Elements, I>> {
+        return self.elements[indices].lazy
     }
     
     @_inlineable
-    public func collect<I>(_ indices: I) -> LazyGatherRandomAccessCollection<Elements, I> {
-        return LazyGatherRandomAccessCollection(base: self.elements, indices: indices)
+    public subscript<I>(_ indices: I) -> LazyRandomAccessCollection<GatheringRandomAccessCollection<Elements, I>> {
+        return self.elements[indices].lazy
     }
 }
 
