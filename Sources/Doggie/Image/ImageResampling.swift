@@ -59,10 +59,10 @@ extension Image {
         self.width = width
         self.height = height
         self.colorSpace = image.colorSpace
-        if image.pixel.count == 0 || transform.determinant.almostZero() {
-            self.pixel = [Pixel](repeating: Pixel(), count: width * height)
+        if image.pixels.count == 0 || transform.determinant.almostZero() {
+            self.pixels = [Pixel](repeating: Pixel(), count: width * height)
         } else {
-            self.pixel = algorithm.calculate(source: image.pixel, s_width: image.width, width: width, height: height, pixel: Pixel.self, transform: transform.inverse, antialias: antialias)
+            self.pixels = algorithm.calculate(source: image.pixels, s_width: image.width, width: width, height: height, pixel: Pixel.self, transform: transform.inverse, antialias: antialias)
         }
     }
 }

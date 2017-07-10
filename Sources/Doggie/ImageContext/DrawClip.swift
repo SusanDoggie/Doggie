@@ -44,6 +44,6 @@ extension ImageContext {
         
         try body(_clip)
         
-        self.clip = _clip.image.pixel.map { $0.color.white * $0.opacity }
+        self.clip = _clip.image.pixels.map { $0.color.white * $0.opacity }
     }
 }

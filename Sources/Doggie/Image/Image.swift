@@ -23,14 +23,12 @@
 //  THE SOFTWARE.
 //
 
-@_fixed_layout
 public struct Image<Pixel: ColorPixelProtocol> {
     
     public let width: Int
     public let height: Int
     
-    @_versioned
-    var pixel: [Pixel]
+    public internal(set) var pixels: [Pixel]
     
     public var colorSpace: ColorSpace<Pixel.Model>
     
@@ -41,7 +39,7 @@ public struct Image<Pixel: ColorPixelProtocol> {
         self.width = width
         self.height = height
         self.colorSpace = colorSpace
-        self.pixel = [Pixel](repeating: pixel, count: width * height)
+        self.pixels = [Pixel](repeating: pixel, count: width * height)
     }
     
     @_inlineable
@@ -49,7 +47,7 @@ public struct Image<Pixel: ColorPixelProtocol> {
         self.width = image.width
         self.height = image.height
         self.colorSpace = image.colorSpace
-        self.pixel = image.pixel as? [Pixel] ?? image.pixel.map(Pixel.init)
+        self.pixels = image.pixels as? [Pixel] ?? image.pixels.map(Pixel.init)
     }
     
     @_inlineable
@@ -57,7 +55,7 @@ public struct Image<Pixel: ColorPixelProtocol> {
         self.width = image.width
         self.height = image.height
         self.colorSpace = colorSpace
-        self.pixel = image.colorSpace.convert(image.pixel, to: self.colorSpace, intent: intent)
+        self.pixels = image.colorSpace.convert(image.pixels, to: self.colorSpace, intent: intent)
     }
 }
 
@@ -82,14 +80,12 @@ extension Image {
     @_inlineable
     public subscript(x: Int, y: Int) -> Color<Pixel.Model> {
         get {
-            precondition(0..<width ~= x)
-            precondition(0..<height ~= y)
-            return Color(colorSpace: colorSpace, color: pixel[width * y + x])
+            precondition(0..<width ~= x && 0..<height ~= y)
+            return Color(colorSpace: colorSpace, color: pixels[width * y + x])
         }
         set {
-            precondition(0..<width ~= x)
-            precondition(0..<height ~= y)
-            pixel[width * y + x] = Pixel(newValue.convert(to: colorSpace))
+            precondition(0..<width ~= x && 0..<height ~= y)
+            pixels[width * y + x] = Pixel(newValue.convert(to: colorSpace))
         }
     }
 }
@@ -99,25 +95,25 @@ extension Image {
     @_inlineable
     public func withUnsafeBufferPointer<R>(_ body: (UnsafeBufferPointer<Pixel>) throws -> R) rethrows -> R {
         
-        return try pixel.withUnsafeBufferPointer(body)
+        return try pixels.withUnsafeBufferPointer(body)
     }
     
     @_inlineable
     public mutating func withUnsafeMutableBufferPointer<R>(_ body: (inout UnsafeMutableBufferPointer<Pixel>) throws -> R) rethrows -> R {
         
-        return try pixel.withUnsafeMutableBufferPointer(body)
+        return try pixels.withUnsafeMutableBufferPointer(body)
     }
     
     @_inlineable
     public func withUnsafeBytes<R>(_ body: (UnsafeRawBufferPointer) throws -> R) rethrows -> R {
         
-        return try pixel.withUnsafeBytes(body)
+        return try pixels.withUnsafeBytes(body)
     }
     
     @_inlineable
     public mutating func withUnsafeMutableBytes<R>(_ body: (UnsafeMutableRawBufferPointer) throws -> R) rethrows -> R {
         
-        return try pixel.withUnsafeMutableBytes(body)
+        return try pixels.withUnsafeMutableBytes(body)
     }
 }
 

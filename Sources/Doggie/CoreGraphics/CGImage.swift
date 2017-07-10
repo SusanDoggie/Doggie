@@ -124,29 +124,17 @@
                 
                 let components = Pixel.Model.numberOfComponents + 1
                 
-                var buffer = [Float](repeating: 0, count: self.pixel.count * components)
+                var buffer = [Float]()
+                buffer.reserveCapacity(self.pixels.count * components)
                 
-                return buffer.withUnsafeMutableBufferPointer {
-                    
-                    if var buf = $0.baseAddress {
-                        
-                        self.pixel.withUnsafeBufferPointer {
-                            
-                            for p in $0 {
-                                
-                                let color = p.color
-                                
-                                for i in 0..<Pixel.Model.numberOfComponents {
-                                    buf.pointee = Float(color.component(i))
-                                    buf += 1
-                                }
-                                
-                                buf.pointee = Float(p.opacity)
-                                
-                                buf += 1
-                            }
-                        }
+                for pixel in self.pixels {
+                    for i in 0..<Pixel.Model.numberOfComponents {
+                        buffer.append(Float(pixel.color.component(i)))
                     }
+                    buffer.append(Float(pixel.opacity))
+                }
+                
+                return buffer.withUnsafeBufferPointer {
                     
                     let bitsPerComponent = 32
                     let bytesPerPixel = 4 * components

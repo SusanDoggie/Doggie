@@ -35,6 +35,8 @@ protocol AnyImageBaseProtocol {
     
     func _draw<Model>(context: ImageContext<Model>, transform: SDTransform)
     
+    func _convert<Model>() -> Image<ColorPixel<Model>>?
+    
     func _convert(to colorSpace: AnyColorSpaceBaseProtocol, intent: RenderingIntent) -> AnyImageBaseProtocol
     
     func _convert<P>(to colorSpace: ColorSpace<P.Model>, intent: RenderingIntent) -> Image<P>
@@ -56,6 +58,13 @@ extension Image : AnyImageBaseProtocol {
     @_inlineable
     func _draw<Model>(context: ImageContext<Model>, transform: SDTransform) {
         context.draw(image: self, transform: transform)
+    }
+    
+    @_versioned
+    @_inlineable
+    func _convert<Model>() -> Image<ColorPixel<Model>>? {
+        let image = self as? Image<ColorPixel<Pixel.Model>> ?? Image<ColorPixel<Pixel.Model>>(image: self)
+        return image as? Image<ColorPixel<Model>>
     }
     
     @_versioned
@@ -162,14 +171,6 @@ extension AnyImage {
 extension AnyImage {
     
     @_inlineable
-    public func convert<P>(to colorSpace: ColorSpace<P.Model>, intent: RenderingIntent = .default) -> Image<P> {
-        return _base._convert(to: colorSpace, intent: intent)
-    }
-}
-
-extension AnyImage {
-    
-    @_inlineable
     public var width: Int {
         return _base.width
     }
@@ -182,6 +183,24 @@ extension AnyImage {
     @_inlineable
     public var colorSpace: AnyColorSpace {
         return AnyColorSpace(base: _base._colorSpace)
+    }
+}
+
+extension Image {
+    
+    @_inlineable
+    public init(image: AnyImage, colorSpace: ColorSpace<Pixel.Model>, intent: RenderingIntent = .default) {
+        self = image._base._convert(to: colorSpace, intent: intent)
+    }
+    
+    @_inlineable
+    public init?(image: AnyImage) {
+        if let image = image._base as? Image {
+            self.init(image: image)
+        } else {
+            guard let image: Image<ColorPixel<Pixel.Model>> = image._base._convert() else { return nil }
+            self.init(image: image)
+        }
     }
 }
 
