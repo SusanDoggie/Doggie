@@ -31,7 +31,7 @@ extension iccProfile {
         
         var header = Data(count: MemoryLayout<MultiLocalizedUnicode>.stride + 8)
         
-        header.withUnsafeMutableBytes { $0.pointee = (iccProfile.TagData.Type.MultiLocalizedUnicode, 0 as BEUInt32, MultiLocalizedUnicode(count: BEUInt32(message.count), size: BEUInt32(MemoryLayout<MultiLocalizedUnicodeEntry>.stride))) }
+        header.withUnsafeMutableBytes { $0.pointee = (iccProfile.TagData.TagType.MultiLocalizedUnicode, 0 as BEUInt32, MultiLocalizedUnicode(count: BEUInt32(message.count), size: BEUInt32(MemoryLayout<MultiLocalizedUnicodeEntry>.stride))) }
         
         let entry_size = message.count * MemoryLayout<MultiLocalizedUnicodeEntry>.stride
         var entry = Data(count: entry_size)
@@ -56,7 +56,7 @@ extension iccProfile {
         
         var data = Data(count: 8)
         
-        data.withUnsafeMutableBytes { $0.pointee = (iccProfile.TagData.Type.S15Fixed16Array, 0 as BEUInt32) }
+        data.withUnsafeMutableBytes { $0.pointee = (iccProfile.TagData.TagType.S15Fixed16Array, 0 as BEUInt32) }
         
         data.append(UnsafeBufferPointer(start: value, count: value.count))
         
@@ -67,7 +67,7 @@ extension iccProfile {
         
         var data = Data(count: 8)
         
-        data.withUnsafeMutableBytes { $0.pointee = (iccProfile.TagData.Type.XYZArray, 0 as BEUInt32) }
+        data.withUnsafeMutableBytes { $0.pointee = (iccProfile.TagData.TagType.XYZArray, 0 as BEUInt32) }
         
         data.append(UnsafeBufferPointer(start: xyz, count: xyz.count))
         
@@ -81,7 +81,7 @@ extension iccProfile {
             
             var data = Data(count: 12)
             
-            data.withUnsafeMutableBytes { $0.pointee = (iccProfile.TagData.Type.Curve, 0 as BEUInt32, 0 as BEUInt32) }
+            data.withUnsafeMutableBytes { $0.pointee = (iccProfile.TagData.TagType.Curve, 0 as BEUInt32, 0 as BEUInt32) }
             
             return data
             
@@ -94,7 +94,7 @@ extension iccProfile {
             
             var data = Data(count: 12)
             
-            data.withUnsafeMutableBytes { $0.pointee = (iccProfile.TagData.Type.Curve, 0 as BEUInt32, BEUInt32(points.count)) }
+            data.withUnsafeMutableBytes { $0.pointee = (iccProfile.TagData.TagType.Curve, 0 as BEUInt32, BEUInt32(points.count)) }
             
             data.append(UnsafeBufferPointer(start: points.map { BEUInt16(($0 * 65535).clamped(to: 0...65535)) }, count: points.count))
             
@@ -106,7 +106,7 @@ extension iccProfile {
         
         var data = Data(count: 12)
         
-        data.withUnsafeMutableBytes { $0.pointee = (iccProfile.TagData.Type.ParametricCurve, 0 as BEUInt32, curve.funcType, 0 as BEUInt16) }
+        data.withUnsafeMutableBytes { $0.pointee = (iccProfile.TagData.TagType.ParametricCurve, 0 as BEUInt32, curve.funcType, 0 as BEUInt16) }
         
         switch curve.funcType {
         case 0: data.append(UnsafeBufferPointer(start: [curve.gamma], count: 1))
@@ -133,7 +133,7 @@ extension iccProfile {
         
         var header = Data(count: header_size)
         
-        header.withUnsafeMutableBytes { $0.pointee = (iccProfile.TagData.Type.LutAtoB, 0 as BEUInt32, LutAtoB(inputChannels: 3, outputChannels: 3, padding1: 0, padding2: 0, offsetB: BEUInt32(header_size), offsetMatrix: 0, offsetM: 0, offsetCLUT: 0, offsetA: 0)) }
+        header.withUnsafeMutableBytes { $0.pointee = (iccProfile.TagData.TagType.LutAtoB, 0 as BEUInt32, LutAtoB(inputChannels: 3, outputChannels: 3, padding1: 0, padding2: 0, offsetB: BEUInt32(header_size), offsetMatrix: 0, offsetM: 0, offsetCLUT: 0, offsetA: 0)) }
         
         self[tag] = TagData(rawData: header + B_data)
     }
@@ -151,7 +151,7 @@ extension iccProfile {
         
         var header = Data(count: header_size)
         
-        header.withUnsafeMutableBytes { $0.pointee = (iccProfile.TagData.Type.LutBtoA, 0 as BEUInt32, LutBtoA(inputChannels: 3, outputChannels: 3, padding1: 0, padding2: 0, offsetB: BEUInt32(header_size), offsetMatrix: 0, offsetM: 0, offsetCLUT: 0, offsetA: 0)) }
+        header.withUnsafeMutableBytes { $0.pointee = (iccProfile.TagData.TagType.LutBtoA, 0 as BEUInt32, LutBtoA(inputChannels: 3, outputChannels: 3, padding1: 0, padding2: 0, offsetB: BEUInt32(header_size), offsetMatrix: 0, offsetM: 0, offsetCLUT: 0, offsetA: 0)) }
         
         self[tag] = TagData(rawData: header + B_data)
     }
@@ -179,7 +179,7 @@ extension iccProfile {
         
         var header = Data(count: header_size)
         
-        header.withUnsafeMutableBytes { $0.pointee = (iccProfile.TagData.Type.LutAtoB, 0 as BEUInt32, LutAtoB(inputChannels: 3, outputChannels: 3, padding1: 0, padding2: 0, offsetB: BEUInt32(header_size), offsetMatrix: BEUInt32(header_size + B_data.count), offsetM: BEUInt32(header_size + B_data.count + matrix_data.count), offsetCLUT: 0, offsetA: 0)) }
+        header.withUnsafeMutableBytes { $0.pointee = (iccProfile.TagData.TagType.LutAtoB, 0 as BEUInt32, LutAtoB(inputChannels: 3, outputChannels: 3, padding1: 0, padding2: 0, offsetB: BEUInt32(header_size), offsetMatrix: BEUInt32(header_size + B_data.count), offsetM: BEUInt32(header_size + B_data.count + matrix_data.count), offsetCLUT: 0, offsetA: 0)) }
         
         self[tag] = TagData(rawData: header + B_data + matrix_data + M_data)
     }
@@ -207,7 +207,7 @@ extension iccProfile {
         
         var header = Data(count: header_size)
         
-        header.withUnsafeMutableBytes { $0.pointee = (iccProfile.TagData.Type.LutBtoA, 0 as BEUInt32, LutBtoA(inputChannels: 3, outputChannels: 3, padding1: 0, padding2: 0, offsetB: BEUInt32(header_size), offsetMatrix: BEUInt32(header_size + B_data.count), offsetM: BEUInt32(header_size + B_data.count + matrix_data.count), offsetCLUT: 0, offsetA: 0)) }
+        header.withUnsafeMutableBytes { $0.pointee = (iccProfile.TagData.TagType.LutBtoA, 0 as BEUInt32, LutBtoA(inputChannels: 3, outputChannels: 3, padding1: 0, padding2: 0, offsetB: BEUInt32(header_size), offsetMatrix: BEUInt32(header_size + B_data.count), offsetM: BEUInt32(header_size + B_data.count + matrix_data.count), offsetCLUT: 0, offsetA: 0)) }
         
         self[tag] = TagData(rawData: header + B_data + matrix_data + M_data)
     }

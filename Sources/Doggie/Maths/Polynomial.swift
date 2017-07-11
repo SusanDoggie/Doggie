@@ -266,7 +266,7 @@ extension Polynomial {
     
     @_inlineable
     public var derivative : Polynomial {
-        return count > 1 ? Polynomial(coeffs.enumerated().dropFirst().lazy.map { Double($0.0) * $0.1 }) : Polynomial()
+        return count > 1 ? Polynomial(coeffs.enumerated().dropFirst().map { Double($0.0) * $0.1 }) : Polynomial()
     }
     
     @_inlineable
@@ -276,7 +276,7 @@ extension Polynomial {
     }
 }
 
-extension Polynomial : Subtractive, Divisive, ScalarDivisive {
+extension Polynomial : Divisive, ScalarMultiplicative {
     
     public typealias Scalar = Double
     

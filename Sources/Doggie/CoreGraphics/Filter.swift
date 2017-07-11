@@ -228,9 +228,9 @@ import Foundation
         }
         
         open let name: String
-        fileprivate var params: [String : Any]?
+        fileprivate var params: [String : Any]
         
-        public init(name: String, withInputParameters params: [String : Any]?) {
+        public init(name: String, withInputParameters params: [String : Any]) {
             self.strength = 1
             self.name = name
             self.params = params
@@ -244,21 +244,18 @@ import Foundation
         
         open subscript(key: String) -> Any? {
             get {
-                return params?[key]
+                return params[key]
             }
             set {
-                if params == nil {
-                    params = [:]
-                }
-                params![key] = newValue
+                params[key] = newValue
             }
         }
     }
     
     public extension CGImage {
         
-        func applyingFilter(_ filterName: String, withInputParameters params: [String : Any]?) -> CIImage {
-            return CIImage(cgImage: self).applyingFilter(filterName, withInputParameters: params)
+        func applyingFilter(_ filterName: String, withInputParameters params: [String : Any]) -> CIImage {
+            return CIImage(cgImage: self).applyingFilter(filterName, parameters: params)
         }
     }
     
@@ -269,9 +266,9 @@ import Foundation
                 return self
             }
             if filter.strength == 1 {
-                return self.applyingFilter(filter.name, withInputParameters: filter.params)
+                return self.applyingFilter(filter.name, parameters: filter.params)
             }
-            return self.applyingFilter("CIDissolveTransition", withInputParameters: ["inputTargetImage": self.applyingFilter(filter.name, withInputParameters: filter.params), kCIAttributeTypeTime: filter.strength])
+            return self.applyingFilter("CIDissolveTransition", parameters: ["inputTargetImage": self.applyingFilter(filter.name, parameters: filter.params), kCIAttributeTypeTime: filter.strength])
         }
         
         func apply(_ filters: [SDFilter]) -> CIImage {

@@ -35,7 +35,7 @@ extension iccProfile {
             self.rawData = rawData
         }
         
-        var type: Type {
+        var type: TagType {
             return rawData.withUnsafeBytes { $0.pointee }
         }
         

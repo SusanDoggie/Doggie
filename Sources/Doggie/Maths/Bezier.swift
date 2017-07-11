@@ -26,7 +26,7 @@
 import Foundation
 
 @_fixed_layout
-public struct Bezier<Element : Subtractive & ScalarDivisive> where Element.Scalar == Double {
+public struct Bezier<Element : Subtractive & ScalarMultiplicative> where Element.Scalar == Double {
     
     @_versioned
     var points: [Element]
@@ -170,7 +170,7 @@ extension Bezier where Element == Double {
             for i in result.indices {
                 var sum = 0.0
                 let fact = Array(FactorialList(UInt(i)))
-                for (j, f) in zip(fact, fact.reversed()).map({ $0.0 * $0.1 }).enumerated() {
+                for (j, f) in zip(fact, fact.reversed()).map(*).enumerated() {
                     if (i + j) & 1 == 0 {
                         sum += points[j] / Double(f)
                     } else {
@@ -474,7 +474,7 @@ extension Bezier where Element == Point {
     }
 }
 
-extension Bezier : Subtractive, ScalarDivisive {
+extension Bezier : ScalarMultiplicative {
     
     public typealias Scalar = Double
     
@@ -499,7 +499,7 @@ public func + <Element>(lhs: Bezier<Element>, rhs: Bezier<Element>) -> Bezier<El
     while rhs.degree != degree {
         rhs = rhs.elevated()
     }
-    return Bezier(zip(lhs.points, rhs.points).map({ $0.0 + $0.1 }))
+    return Bezier(zip(lhs.points, rhs.points).map(+))
 }
 @_inlineable
 public func - <Element>(lhs: Bezier<Element>, rhs: Bezier<Element>) -> Bezier<Element> {
@@ -512,7 +512,7 @@ public func - <Element>(lhs: Bezier<Element>, rhs: Bezier<Element>) -> Bezier<El
     while rhs.degree != degree {
         rhs = rhs.elevated()
     }
-    return Bezier(zip(lhs.points, rhs.points).map({ $0.0 - $0.1 }))
+    return Bezier(zip(lhs.points, rhs.points).map(-))
 }
 @_inlineable
 public func * <Element>(lhs: Double, rhs: Bezier<Element>) -> Bezier<Element> {
@@ -679,7 +679,7 @@ private func QuadBezierFitting(_ p: [Point], _ limit: Int, _ inflection_check: B
         return bezier.split(t).flatMap { QuadBezierFitting($0.points, limit - 1, false) }
     }
     
-    let d = zip(p.dropFirst(), p).map { $0.0 - $0.1 }
+    let d = zip(p.dropFirst(), p).map(-)
     
     func split(_ t: Double) -> [[Point]] {
         let (left, right) = bezier.split(t)
@@ -738,7 +738,9 @@ public func CubicBezierFitting(_ p0: Point, _ p3: Point, _ m0: Point, _ m1: Poin
         
         let _a = t_t2 * m0
         let _b = t2_t * m1
-        let _c = (_t3 + t_t2) * p0 + (t3 + t2_t) * p3 - p
+        let _c0 = (_t3 + t_t2) * p0
+        let _c3 = (t3 + t2_t) * p3
+        let _c = _c0 + _c3 - p
         
         _a1 += dot(_a, _a)
         _b1 += dot(_a, _b)
@@ -858,7 +860,7 @@ public func BezierOffset(_ p: [Point], _ a: Double) -> [[Point]] {
     return QuadBezierFitting(p).flatMap { points -> [[Point]] in
         
         var join: [[Point]]  = []
-        let d = zip(points.dropFirst(), points).map { $0.0 - $0.1 }
+        let d = zip(points.dropFirst(), points).map(-)
         
         if let ph0 = ph0, let ph1 = d.first(where: { !$0.x.almostZero() || !$0.y.almostZero() })?.phase {
             let angle = (ph1 - ph0).remainder(dividingBy: 2 * Double.pi)
@@ -996,7 +998,11 @@ public struct CubicBezierPatch {
         
         @inline(__always)
         func _eval(_ a: Point, _ b: Point, _ c: Point, _ d: Point, _ e: Point) -> Point {
-            return (6 * a + 3 * b - 2 * c - 4 * d - e) / 9
+            let _a = 6 * a
+            let _b = 3 * b
+            let _c = 2 * c
+            let _d = 4 * d
+            return (_a + _b - _c - _d - e) / 9
         }
         
         self.m00 = m00
@@ -1065,14 +1071,47 @@ extension CubicBezierPatch {
         let v_v2 = 3 * _v2 * v
         let v2_v = 3 * _v * v2
         
-        let c0x = _u3 * m00.x + u_u2 * m01.x + u2_u * m02.x + u3 * m03.x
-        let c0y = _u3 * m00.y + u_u2 * m01.y + u2_u * m02.y + u3 * m03.y
-        let c1x = _u3 * m10.x + u_u2 * m11.x + u2_u * m12.x + u3 * m13.x
-        let c1y = _u3 * m10.y + u_u2 * m11.y + u2_u * m12.y + u3 * m13.y
-        let c2x = _u3 * m20.x + u_u2 * m21.x + u2_u * m22.x + u3 * m23.x
-        let c2y = _u3 * m20.y + u_u2 * m21.y + u2_u * m22.y + u3 * m23.y
-        let c3x = _u3 * m30.x + u_u2 * m31.x + u2_u * m32.x + u3 * m33.x
-        let c3y = _u3 * m30.y + u_u2 * m31.y + u2_u * m32.y + u3 * m33.y
+        let n00x = m00.x * _u3
+        let n01x = m01.x * u_u2
+        let n02x = m02.x * u2_u
+        let n03x = m03.x * u3
+        let n10x = m00.x * _u3
+        let n11x = m01.x * u_u2
+        let n12x = m02.x * u2_u
+        let n13x = m03.x * u3
+        let n20x = m00.x * _u3
+        let n21x = m01.x * u_u2
+        let n22x = m02.x * u2_u
+        let n23x = m03.x * u3
+        let n30x = m00.x * _u3
+        let n31x = m01.x * u_u2
+        let n32x = m02.x * u2_u
+        let n33x = m03.x * u3
+        let n00y = m00.y * _u3
+        let n01y = m01.y * u_u2
+        let n02y = m02.y * u2_u
+        let n03y = m03.y * u3
+        let n10y = m00.y * _u3
+        let n11y = m01.y * u_u2
+        let n12y = m02.y * u2_u
+        let n13y = m03.y * u3
+        let n20y = m00.y * _u3
+        let n21y = m01.y * u_u2
+        let n22y = m02.y * u2_u
+        let n23y = m03.y * u3
+        let n30y = m00.y * _u3
+        let n31y = m01.y * u_u2
+        let n32y = m02.y * u2_u
+        let n33y = m03.y * u3
+        
+        let c0x = n00x + n01x + n02x + n03x
+        let c1x = n10x + n11x + n12x + n13x
+        let c2x = n20x + n21x + n22x + n23x
+        let c3x = n30x + n31x + n32x + n33x
+        let c0y = n00y + n01y + n02y + n03y
+        let c1y = n10y + n11y + n12y + n13y
+        let c2y = n20y + n21y + n22y + n23y
+        let c3y = n30y + n31y + n32y + n33y
         
         var _x = _v3 * c0x + v_v2 * c1x + v2_v * c2x + v3 * c3x
         var _y = _v3 * c0y + v_v2 * c1y + v2_v * c2y + v3 * c3y
@@ -1349,6 +1388,9 @@ public func CubicBeziersIntersect(_ c0: Point, _ c1: Point, _ c2: Point, _ c3: P
     let _a = m11 * m22 - m12 * m21
     let _b = m12 * m20 - m10 * m22
     let _c = m10 * m21 - m11 * m20
-    let det = m00 * _a + m01 * _b + m02 * _c
+    let _d = m00 * _a
+    let _e = m01 * _b
+    let _f = m02 * _c
+    let det = _d + _e + _f
     return det.all(where: { $0.almostZero() }) ? nil : det.roots
 }

@@ -123,7 +123,10 @@ extension Shape.Component {
                 
                 if inTriangle(position, p0, p1, p2), let p = Barycentric(p0, p1, p2, position) {
                     
-                    let v = p.x * v0 + p.y * v1 + p.z * v2
+                    let u0 = p.x * v0
+                    let u1 = p.y * v1
+                    let u2 = p.z * v2
+                    let v = u0 + u1 + u2
                     
                     if v.x * v.x * v.x < v.y * v.z {
                         

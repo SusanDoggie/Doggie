@@ -94,7 +94,7 @@ extension Size {
     }
 }
 
-extension Size : Subtractive, ScalarDivisive {
+extension Size : ScalarMultiplicative {
     
     public typealias Scalar = Double
     

@@ -38,7 +38,7 @@ public func PermutationList<T: UnsignedInteger>(_ n: T) -> LazyScanSequence<Reve
 @_inlineable
 public func CombinationList<T: UnsignedInteger>(_ n: T) -> LazyMapSequence<Zip2Sequence<LazyScanSequence<ReversedRandomAccessCollection<RandomAccessSlice<CountableClosedRange<T>>>, T>, LazyScanSequence<RandomAccessSlice<CountableClosedRange<T>>, T>>, T> {
     
-    return zip(PermutationList(n), FactorialList(n)).lazy.map({ $0.0 / $0.1 })
+    return zip(PermutationList(n), FactorialList(n)).lazy.map(/)
 }
 
 @_inlineable

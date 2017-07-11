@@ -108,14 +108,20 @@ func _render(_ op: Shape.RenderOperation, width: Int, height: Int, transform: SD
         
         if cross(q1 - q0, q2 - q0).sign == .plus {
             rasterizer.rasterize(q0, q1, q2) { barycentric, point, pixel in
-                let v = barycentric.x * v0 + barycentric.y * v1 + barycentric.z * v2
+                let u0 = barycentric.x * v0
+                let u1 = barycentric.y * v1
+                let u2 = barycentric.z * v2
+                let v = u0 + u1 + u2
                 if v.x * v.x * v.x < v.y * v.z {
                     pixel.stencil.pointee.fetchStore { $0 + 1 }
                 }
             }
         } else {
             rasterizer.rasterize(q0, q1, q2) { barycentric, point, pixel in
-                let v = barycentric.x * v0 + barycentric.y * v1 + barycentric.z * v2
+                let u0 = barycentric.x * v0
+                let u1 = barycentric.y * v1
+                let u2 = barycentric.z * v2
+                let v = u0 + u1 + u2
                 if v.x * v.x * v.x < v.y * v.z {
                     pixel.stencil.pointee.fetchStore { $0 - 1 }
                 }

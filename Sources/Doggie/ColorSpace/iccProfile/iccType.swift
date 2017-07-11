@@ -292,7 +292,7 @@ extension iccProfile {
 
 extension iccProfile.TagData {
     
-    struct `Type` : iccSignatureProtocol {
+    struct TagType : iccSignatureProtocol {
         
         var rawValue: BEUInt32
         
@@ -300,40 +300,40 @@ extension iccProfile.TagData {
             self.rawValue = rawValue
         }
         
-        static let Chromaticity: Type               = "chrm"
-        static let ColorantOrder: Type              = "clro"
-        static let ColorantTable: Type              = "clrt"
-        static let CrdInfo: Type                    = "crdi"  /* Removed in V4 */
-        static let Curve: Type                      = "curv"
-        static let Data: Type                       = "data"
-        static let Dict: Type                       = "dict"
-        static let DateTime: Type                   = "dtim"
-        static let DeviceSettings: Type             = "devs"  /* Removed in V4 */
-        static let Lut16: Type                      = "mft2"
-        static let Lut8: Type                       = "mft1"
-        static let LutAtoB: Type                    = "mAB "
-        static let LutBtoA: Type                    = "mBA "
-        static let Measurement: Type                = "meas"
-        static let MultiLocalizedUnicode: Type      = "mluc"
-        static let MultiProcessElement: Type        = "mpet"
-        static let NamedColor2: Type                = "ncl2"
-        static let ParametricCurve: Type            = "para"
-        static let ProfileSequenceDesc: Type        = "pseq"
-        static let ProfileSequceId: Type            = "psid"
-        static let ResponseCurveSet16: Type         = "rcs2"
-        static let S15Fixed16Array: Type            = "sf32"
-        static let Screening: Type                  = "scrn"  /* Removed in V4 */
-        static let Signature: Type                  = "sig "
-        static let Text: Type                       = "text"
-        static let TextDescription: Type            = "desc"  /* Removed in V4 */
-        static let U16Fixed16Array: Type            = "uf32"
-        static let UcrBg: Type                      = "bfd "  /* Removed in V4 */
-        static let UInt16Array: Type                = "ui16"
-        static let UInt32Array: Type                = "ui32"
-        static let UInt64Array: Type                = "ui64"
-        static let UInt8Array: Type                 = "ui08"
-        static let ViewingConditions: Type          = "view"
-        static let XYZArray: Type                   = "XYZ "
+        static let Chromaticity: TagType               = "chrm"
+        static let ColorantOrder: TagType              = "clro"
+        static let ColorantTable: TagType              = "clrt"
+        static let CrdInfo: TagType                    = "crdi"  /* Removed in V4 */
+        static let Curve: TagType                      = "curv"
+        static let Data: TagType                       = "data"
+        static let Dict: TagType                       = "dict"
+        static let DateTime: TagType                   = "dtim"
+        static let DeviceSettings: TagType             = "devs"  /* Removed in V4 */
+        static let Lut16: TagType                      = "mft2"
+        static let Lut8: TagType                       = "mft1"
+        static let LutAtoB: TagType                    = "mAB "
+        static let LutBtoA: TagType                    = "mBA "
+        static let Measurement: TagType                = "meas"
+        static let MultiLocalizedUnicode: TagType      = "mluc"
+        static let MultiProcessElement: TagType        = "mpet"
+        static let NamedColor2: TagType                = "ncl2"
+        static let ParametricCurve: TagType            = "para"
+        static let ProfileSequenceDesc: TagType        = "pseq"
+        static let ProfileSequceId: TagType            = "psid"
+        static let ResponseCurveSet16: TagType         = "rcs2"
+        static let S15Fixed16Array: TagType            = "sf32"
+        static let Screening: TagType                  = "scrn"  /* Removed in V4 */
+        static let Signature: TagType                  = "sig "
+        static let Text: TagType                       = "text"
+        static let TextDescription: TagType            = "desc"  /* Removed in V4 */
+        static let U16Fixed16Array: TagType            = "uf32"
+        static let UcrBg: TagType                      = "bfd "  /* Removed in V4 */
+        static let UInt16Array: TagType                = "ui16"
+        static let UInt32Array: TagType                = "ui32"
+        static let UInt64Array: TagType                = "ui64"
+        static let UInt8Array: TagType                 = "ui08"
+        static let ViewingConditions: TagType          = "view"
+        static let XYZArray: TagType                   = "XYZ "
     }
 }
 

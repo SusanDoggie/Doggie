@@ -121,7 +121,7 @@ extension Complex: Hashable {
     }
 }
 
-extension Complex : Subtractive, Divisive, ScalarDivisive {
+extension Complex : Divisive, ScalarMultiplicative {
     
     public typealias Scalar = Double
     

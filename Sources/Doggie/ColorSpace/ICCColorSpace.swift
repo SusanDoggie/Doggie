@@ -887,7 +887,6 @@ extension ICCColorSpace {
             for i in 0..<Model.numberOfComponents {
                 result.setComponent(i, curve[i].eval(color.component(i)))
             }
-        default: fatalError()
         }
         
         if let _Model = Model.self as? NonnormalizedColorModel.Type {
@@ -956,7 +955,6 @@ extension ICCColorSpace {
             for i in 0..<Model.numberOfComponents {
                 result.setComponent(i, curve[i].eval(color.component(i)))
             }
-        default: fatalError()
         }
         
         if let _Model = Model.self as? NonnormalizedColorModel.Type {
@@ -1060,8 +1058,6 @@ extension ICCColorSpace {
             if result is XYZColorModel {
                 result *= 65535.0 / 32768.0
             }
-            
-        default: fatalError()
         }
         
         if let _Model = Connection.Model.self as? NonnormalizedColorModel.Type {
@@ -1165,8 +1161,6 @@ extension ICCColorSpace {
             color.setComponent(2, M.2.eval(color.component(2)))
             
             result = lut.eval(color)
-            
-        default: fatalError()
         }
         
         if let _Model = Model.self as? NonnormalizedColorModel.Type {

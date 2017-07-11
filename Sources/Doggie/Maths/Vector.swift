@@ -101,7 +101,7 @@ extension Vector {
     }
 }
 
-extension Vector : Subtractive, ScalarDivisive {
+extension Vector : ScalarMultiplicative {
     
     public typealias Scalar = Double
     
