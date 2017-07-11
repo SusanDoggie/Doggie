@@ -35,6 +35,15 @@ public protocol DataDecodable {
     init(from: inout Data) throws
 }
 
+extension DataDecodable {
+    
+    @_inlineable
+    public init(_ data: Data) throws {
+        var data = data
+        try self.init(from: &data)
+    }
+}
+
 public typealias DataCodable = DataEncodable & DataDecodable
 
 public enum DataDecodeError : Error {
@@ -55,13 +64,24 @@ extension Data {
     }
 }
 
-extension FixedWidthInteger {
+extension Data {
     
     @_inlineable
-    public func encode(to data: inout Data) {
-        var value = self
-        withUnsafeBytes(of: &value) { data.append(contentsOf: $0) }
+    public mutating func encode<T : DataEncodable>(_ values: T ... ) {
+        for value in values {
+            value.encode(to: &self)
+        }
     }
+    
+    @_inlineable
+    public mutating func encode<S : Sequence>(_ values: S) where S.Element : DataEncodable {
+        for value in values {
+            value.encode(to: &self)
+        }
+    }
+}
+
+extension FixedWidthInteger {
     
     @_inlineable
     public init(from data: inout Data) throws {
@@ -69,6 +89,12 @@ extension FixedWidthInteger {
         guard data.count >= size else { throw DataDecodeError.endOfData }
         self = data.suffix(size).withUnsafeBytes { $0.pointee }
         data.removeFirst(size)
+    }
+    
+    @_inlineable
+    public func encode(to data: inout Data) {
+        var value = self
+        withUnsafeBytes(of: &value) { data.append(contentsOf: $0) }
     }
 }
 

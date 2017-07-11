@@ -74,30 +74,26 @@ extension iccProfile {
     
     var data: Data {
         
-        var _header = Data(count: 128)
-        
-        _header.withUnsafeMutableBytes { $0.pointee = header }
-        
-        _header.append(UnsafeBufferPointer<BEUInt32>(start: [BEUInt32(table.count)], count: 1))
-        
         let tag_list_size = MemoryLayout<TagList>.stride * Int(table.count)
         
-        var tag_list = Data(count: tag_list_size)
+        var buffer = Data(capacity: 128 + tag_list_size)
+        
+        buffer.encode(header)
+        buffer.encode(BEUInt32(table.count))
         
         var _data = Data()
         
-        tag_list.withUnsafeMutableBytes { (buf: UnsafeMutablePointer<TagList>) in
-            var buf = buf
-            var offset = tag_list_size + 132
-            for (tag, data) in table {
-                buf.pointee = (tag, BEUInt32(offset), BEUInt32(data.rawData.count))
-                _data.append(data.rawData)
-                offset += data.rawData.count
-                buf += 1
-            }
+        var offset = tag_list_size + 132
+        
+        for (tag, data) in table {
+            buffer.encode(tag)
+            buffer.encode(BEUInt32(offset))
+            buffer.encode(BEUInt32(data.rawData.count))
+            _data.append(data.rawData)
+            offset += data.rawData.count
         }
         
-        return _header + tag_list + _data
+        return buffer + _data
     }
 }
 
