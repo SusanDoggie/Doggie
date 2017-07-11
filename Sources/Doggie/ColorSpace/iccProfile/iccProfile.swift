@@ -43,21 +43,20 @@ struct iccProfile {
     
     init(_ data: Data) throws {
         
-        guard data.count > 132 else { throw AnyColorSpace.ICCError.invalidFormat(message: "Unexpected end of file.") }
+        let data = Data(data)
+        var _data = data
         
-        self.header = data.withUnsafeBytes { $0.pointee }
-        
-        guard data.count >= header.size else { throw AnyColorSpace.ICCError.invalidFormat(message: "Unexpected end of file.") }
-        
-        let tag_count = data[128..<132].withUnsafeBytes { $0.pointee as BEUInt32 }
-        
-        let tag_list_size = MemoryLayout<TagList>.stride * Int(tag_count)
-        
-        guard data.count > 132 + tag_list_size else { throw AnyColorSpace.ICCError.invalidFormat(message: "Unexpected end of file.") }
-        
-        try data[132..<132 + tag_list_size].withUnsafeBytes { (ptr: UnsafePointer<TagList>) in
+        do {
             
-            for (sig, offset, size) in UnsafeBufferPointer(start: ptr, count: Int(tag_count)) {
+            self.header = try _data.decode(Header.self)
+            
+            let tag_count = try _data.decode(BEUInt32.self)
+            
+            for _ in 0..<Int(tag_count) {
+                
+                let sig = try _data.decode(TagSignature.self)
+                let offset = try _data.decode(BEUInt32.self)
+                let size = try _data.decode(BEUInt32.self)
                 
                 let start = Int(offset)
                 let end = start + Int(size)
@@ -66,6 +65,9 @@ struct iccProfile {
                 
                 table[sig] = TagData(rawData: data[start..<end])
             }
+            
+        } catch {
+            throw AnyColorSpace.ICCError.invalidFormat(message: "Unexpected end of file.")
         }
     }
 }

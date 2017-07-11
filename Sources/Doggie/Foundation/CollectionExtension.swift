@@ -84,6 +84,28 @@ extension Collection {
     }
 }
 
+extension Collection where SubSequence == Self {
+    
+    @_inlineable
+    public mutating func popFirst(_ n: Int) -> SubSequence {
+        precondition(n >= 0, "Can't drop a negative number of elements from a collection")
+        let result = self.prefix(n)
+        self.removeFirst(n)
+        return result
+    }
+}
+
+extension BidirectionalCollection where SubSequence == Self {
+    
+    @_inlineable
+    public mutating func popLast(_ n: Int) -> SubSequence {
+        precondition(n >= 0, "Can't drop a negative number of elements from a collection")
+        let result = self.suffix(n)
+        self.removeLast(n)
+        return result
+    }
+}
+
 extension BidirectionalCollection {
     
     /// Returns the last element of the sequence that satisfies the given
