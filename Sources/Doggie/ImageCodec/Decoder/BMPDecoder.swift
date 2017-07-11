@@ -25,7 +25,7 @@
 
 import Foundation
 
-struct BMPImageDecoder : ImageDecoder {
+struct BMPImageDecoder : ImageRepDecoder {
     
     let data: Data
     
@@ -37,23 +37,35 @@ struct BMPImageDecoder : ImageDecoder {
         self.header = header
     }
     
+    var width: Int {
+        return header.width
+    }
+    
+    var height: Int {
+        return header.height
+    }
+    
+    var colorSpace: AnyColorSpace {
+        return header.colorSpace
+    }
+    
     func image() throws -> AnyImage {
         
-        guard header.offset <= data.count else { throw AnyImage.DecodeError.InvalidFormat("Unexpected end of data.") }
+        guard header.offset <= data.count else { throw ImageRep.FormatError.InvalidFormat("Unexpected end of data.") }
         
         if let pixelArraySize = header.pixelArraySize {
-            guard Int(header.offset) + pixelArraySize <= data.count else { throw AnyImage.DecodeError.InvalidFormat("Unexpected end of data.") }
+            guard Int(header.offset) + pixelArraySize <= data.count else { throw ImageRep.FormatError.InvalidFormat("Unexpected end of data.") }
         }
         
         if header.paletteSize != 0 {
-            guard header.DIB.size + 14 <= header.paletteOffset else { throw AnyImage.DecodeError.InvalidFormat("Palette overlap with header.") }
+            guard header.DIB.size + 14 <= header.paletteOffset else { throw ImageRep.FormatError.InvalidFormat("Palette overlap with header.") }
             
             let paletteCount = header.paletteSize
             
             if header.DIB is BITMAPCOREHEADER {
-                guard header.paletteOffset + 3 * header.paletteSize <= header.offset else { throw AnyImage.DecodeError.InvalidFormat("Pixel array overlap with palette.") }
+                guard header.paletteOffset + 3 * header.paletteSize <= header.offset else { throw ImageRep.FormatError.InvalidFormat("Pixel array overlap with palette.") }
             } else {
-                guard header.paletteOffset + 4 * header.paletteSize <= header.offset else { throw AnyImage.DecodeError.InvalidFormat("Pixel array overlap with palette.") }
+                guard header.paletteOffset + 4 * header.paletteSize <= header.offset else { throw ImageRep.FormatError.InvalidFormat("Pixel array overlap with palette.") }
             }
         }
         
@@ -62,13 +74,13 @@ struct BMPImageDecoder : ImageDecoder {
         let _colorSpace: AnyColorSpace
         
         if header.colorSpaceOffset != 0 && header.colorSpaceSize != 0 {
-            guard header.colorSpaceOffset + header.colorSpaceSize <= data.count else { throw AnyImage.DecodeError.InvalidFormat("Unexpected end of data.") }
+            guard header.colorSpaceOffset + header.colorSpaceSize <= data.count else { throw ImageRep.FormatError.InvalidFormat("Unexpected end of data.") }
             _colorSpace = try AnyColorSpace(iccData: data.advanced(by: header.colorSpaceOffset))
         } else {
             _colorSpace = header.colorSpace
         }
         
-        guard let colorSpace = _colorSpace.base as? ColorSpace<RGBColorModel> else { throw AnyImage.DecodeError.InvalidFormat("Invalid color space.") }
+        guard let colorSpace = _colorSpace.base as? ColorSpace<RGBColorModel> else { throw ImageRep.FormatError.InvalidFormat("Invalid color space.") }
         
         let width = abs(header.width)
         let height = abs(header.height)
@@ -100,10 +112,10 @@ struct BMPImageDecoder : ImageDecoder {
             let bMax = bMask >> bOffset
             let aMax = aMask >> aOffset
             
-            guard (rMax + 1).isPower2 else { throw AnyImage.DecodeError.InvalidFormat("Invalid red component bit mask.") }
-            guard (gMax + 1).isPower2 else { throw AnyImage.DecodeError.InvalidFormat("Invalid green component bit mask.") }
-            guard (bMax + 1).isPower2 else { throw AnyImage.DecodeError.InvalidFormat("Invalid blue component bit mask.") }
-            guard (aMax + 1).isPower2 else { throw AnyImage.DecodeError.InvalidFormat("Invalid alpha component bit mask.") }
+            guard (rMax + 1).isPower2 else { throw ImageRep.FormatError.InvalidFormat("Invalid red component bit mask.") }
+            guard (gMax + 1).isPower2 else { throw ImageRep.FormatError.InvalidFormat("Invalid green component bit mask.") }
+            guard (bMax + 1).isPower2 else { throw ImageRep.FormatError.InvalidFormat("Invalid blue component bit mask.") }
+            guard (aMax + 1).isPower2 else { throw ImageRep.FormatError.InvalidFormat("Invalid alpha component bit mask.") }
             
             var image = Image<ColorPixel<RGBColorModel>>(width: width, height: height, colorSpace: colorSpace)
             
@@ -350,7 +362,7 @@ struct BMPImageDecoder : ImageDecoder {
                         
                         try pixels.withUnsafeBytes { (source: UnsafePointer<UInt8>) in
                             
-                            var stream = UnsafeBufferPointer(start: source, count: pixels.count).subSequence
+                            var stream = UnsafeBufferPointer(start: source, count: pixels.count)[...]
                             
                             try image.withUnsafeMutableBufferPointer { destination in
                                 
@@ -371,7 +383,7 @@ struct BMPImageDecoder : ImageDecoder {
                                         switch code {
                                         case 0:
                                             
-                                            guard let mode = stream.popFirst() else { throw AnyImage.DecodeError.InvalidFormat("Unexpected end of data.") }
+                                            guard let mode = stream.popFirst() else { throw ImageRep.FormatError.InvalidFormat("Unexpected end of data.") }
                                             
                                             switch mode {
                                             case 0:
@@ -386,8 +398,8 @@ struct BMPImageDecoder : ImageDecoder {
                                             case 1: return
                                             case 2:
                                                 
-                                                guard let hDelta = stream.popFirst() else { throw AnyImage.DecodeError.InvalidFormat("Unexpected end of data.") }
-                                                guard let vDelta = stream.popFirst() else { throw AnyImage.DecodeError.InvalidFormat("Unexpected end of data.") }
+                                                guard let hDelta = stream.popFirst() else { throw ImageRep.FormatError.InvalidFormat("Unexpected end of data.") }
+                                                guard let vDelta = stream.popFirst() else { throw ImageRep.FormatError.InvalidFormat("Unexpected end of data.") }
                                                 
                                                 x += Int(hDelta)
                                                 y += Int(vDelta)
@@ -405,7 +417,7 @@ struct BMPImageDecoder : ImageDecoder {
                                                     let values = stream.prefix(Int(length))
                                                     stream.removeFirst(Int(length.align(2)))
                                                     
-                                                    guard values.count == length else { throw AnyImage.DecodeError.InvalidFormat("Unexpected end of data.") }
+                                                    guard values.count == length else { throw ImageRep.FormatError.InvalidFormat("Unexpected end of data.") }
                                                     
                                                     for (c, value) in values.enumerated() {
                                                         if c + 1 == length && count & 1 == 1 {
@@ -436,7 +448,7 @@ struct BMPImageDecoder : ImageDecoder {
                                                     let values = stream.prefix(Int(count))
                                                     stream.removeFirst(Int(count.align(2)))
                                                     
-                                                    guard values.count == count else { throw AnyImage.DecodeError.InvalidFormat("Unexpected end of data.") }
+                                                    guard values.count == count else { throw ImageRep.FormatError.InvalidFormat("Unexpected end of data.") }
                                                     
                                                     for value in values {
                                                         if x < width && y < height {
@@ -451,7 +463,7 @@ struct BMPImageDecoder : ImageDecoder {
                                             
                                         case let count:
                                             
-                                            guard let value = stream.popFirst() else { throw AnyImage.DecodeError.InvalidFormat("Unexpected end of data.") }
+                                            guard let value = stream.popFirst() else { throw ImageRep.FormatError.InvalidFormat("Unexpected end of data.") }
                                             
                                             for i in 0..<count {
                                                 if x < width && y < height {
@@ -733,13 +745,18 @@ struct BITMAPINFOHEADER : DIBHeader {
     var intent: IntentType = 0
     var profileData: LEUInt32 = 0
     var profileSize: LEUInt32 = 0
-    var reserved2: LEUInt32 = 0
+    var reserved: LEUInt32 = 0
     
     init?(data: Data) {
         
         self.size = data[0..<4].withUnsafeBytes { $0.pointee }
         
         guard self.size <= data.count else { return nil }
+        
+        switch self.size {
+        case 40, 52, 56, 108, 124: break
+        default: return nil
+        }
         
         self.width = data[4..<8].withUnsafeBytes { $0.pointee }
         self.height = data[8..<12].withUnsafeBytes { $0.pointee }
@@ -764,18 +781,17 @@ struct BITMAPINFOHEADER : DIBHeader {
             }
         }
         
-        switch self.size {
-            
-        case 124:
-            
-            self.intent = data[108..<112].withUnsafeBytes { $0.pointee }
-            self.profileData = data[112..<116].withUnsafeBytes { $0.pointee }
-            self.profileSize = data[116..<120].withUnsafeBytes { $0.pointee }
-            self.reserved2 = data[120..<124].withUnsafeBytes { $0.pointee }
-            fallthrough
-            
-        case 108:
-            
+        if self.size >= 52 {
+            self.redBitmask = data[40..<44].withUnsafeBytes { $0.pointee }
+            self.greenBitmask = data[44..<48].withUnsafeBytes { $0.pointee }
+            self.blueBitmask = data[48..<52].withUnsafeBytes { $0.pointee }
+        }
+        
+        if self.size >= 56 {
+            self.alphaBitmask = data[52..<56].withUnsafeBytes { $0.pointee }
+        }
+        
+        if self.size >= 108 {
             self.colorSpaceType = data[56..<60].withUnsafeBytes { $0.pointee }
             self.redX = data[60..<64].withUnsafeBytes { $0.pointee }
             self.redY = data[64..<68].withUnsafeBytes { $0.pointee }
@@ -789,24 +805,14 @@ struct BITMAPINFOHEADER : DIBHeader {
             self.redGamma = data[96..<100].withUnsafeBytes { $0.pointee }
             self.greenGamma = data[100..<104].withUnsafeBytes { $0.pointee }
             self.blueGamma = data[104..<108].withUnsafeBytes { $0.pointee }
-            fallthrough
-            
-        case 56:
-            
-            self.alphaBitmask = data[52..<56].withUnsafeBytes { $0.pointee }
-            fallthrough
-            
-        case 52:
-            
-            self.redBitmask = data[40..<44].withUnsafeBytes { $0.pointee }
-            self.greenBitmask = data[44..<48].withUnsafeBytes { $0.pointee }
-            self.blueBitmask = data[48..<52].withUnsafeBytes { $0.pointee }
-            
-        case 40: break
-            
-        default: return nil
         }
         
+        if self.size >= 124 {
+            self.intent = data[108..<112].withUnsafeBytes { $0.pointee }
+            self.profileData = data[112..<116].withUnsafeBytes { $0.pointee }
+            self.profileSize = data[116..<120].withUnsafeBytes { $0.pointee }
+            self.reserved = data[120..<124].withUnsafeBytes { $0.pointee }
+        }
     }
     
     var _width: Int {
@@ -883,7 +889,7 @@ struct BITMAPINFOHEADER : DIBHeader {
     }
 }
 
-protocol BMPSignatureProtocol: RawRepresentable, Hashable, ExpressibleByIntegerLiteral, ExpressibleByStringLiteral, CustomStringConvertible {
+protocol BMPSignatureProtocol: RawRepresentable, Hashable, ExpressibleByIntegerLiteral, ExpressibleByStringLiteral, CustomStringConvertible, DataCodable {
     
     associatedtype Bytes : FixedWidthInteger
     
@@ -913,6 +919,17 @@ extension BMPSignatureProtocol {
     }
 }
 
+extension BMPSignatureProtocol {
+    
+    func encode(to data: inout Data) {
+        self.rawValue.encode(to: &data)
+    }
+    
+    init(from data: inout Data) throws {
+        self.init(rawValue: try Bytes(from: &data))
+    }
+}
+
 extension BMPHeader {
     
     struct Signature: BMPSignatureProtocol {
@@ -927,7 +944,7 @@ extension BMPHeader {
 
 extension BITMAPINFOHEADER {
     
-    struct CompressionType: RawRepresentable, Hashable, ExpressibleByIntegerLiteral {
+    struct CompressionType: RawRepresentable, Hashable, ExpressibleByIntegerLiteral, DataCodable {
         
         var rawValue: LEUInt32
         
@@ -948,6 +965,14 @@ extension BITMAPINFOHEADER {
         static let BI_RLE4: CompressionType                                 = 0x00000002
         static let BI_BITFIELDS: CompressionType                            = 0x00000003
         static let BI_ALPHABITFIELDS: CompressionType                       = 0x00000004
+        
+        func encode(to data: inout Data) {
+            self.rawValue.encode(to: &data)
+        }
+        
+        init(from data: inout Data) throws {
+            self.init(rawValue: try LEUInt32(from: &data))
+        }
     }
     
     struct ColorSpaceType: BMPSignatureProtocol {
@@ -959,13 +984,13 @@ extension BITMAPINFOHEADER {
         }
         
         static let LCS_CALIBRATED_RGB: ColorSpaceType                      = 0x00000000
-        static let LCS_sRGB: ColorSpaceType                                = 0x73524742
-        static let LCS_WINDOWS_COLOR_SPACE: ColorSpaceType                 = 0x57696E20
-        static let LCS_PROFILE_LINKED: ColorSpaceType                      = 0x4C494E4B
-        static let LCS_PROFILE_EMBEDDED: ColorSpaceType                    = 0x4D424544
+        static let LCS_sRGB: ColorSpaceType                                = "sRGB"
+        static let LCS_WINDOWS_COLOR_SPACE: ColorSpaceType                 = "Win "
+        static let LCS_PROFILE_LINKED: ColorSpaceType                      = "LINK"
+        static let LCS_PROFILE_EMBEDDED: ColorSpaceType                    = "MBED"
     }
     
-    struct IntentType: RawRepresentable, Hashable, ExpressibleByIntegerLiteral {
+    struct IntentType: RawRepresentable, Hashable, ExpressibleByIntegerLiteral, DataCodable {
         
         var rawValue: LEUInt32
         
@@ -985,12 +1010,20 @@ extension BITMAPINFOHEADER {
         static let LCS_GM_BUSINESS: IntentType                             = 0x00000001
         static let LCS_GM_GRAPHICS: IntentType                             = 0x00000002
         static let LCS_GM_IMAGES: IntentType                               = 0x00000004
+        
+        func encode(to data: inout Data) {
+            self.rawValue.encode(to: &data)
+        }
+        
+        init(from data: inout Data) throws {
+            self.init(rawValue: try LEUInt32(from: &data))
+        }
     }
 }
 
 extension BITMAPINFOHEADER {
     
-    struct FXPT2DOT30 : BinaryFixedPoint {
+    struct FXPT2DOT30 : BinaryFixedPoint, DataCodable {
         
         typealias RepresentingValue = Double
         
@@ -1005,7 +1038,7 @@ extension BITMAPINFOHEADER {
         }
     }
     
-    struct U16Fixed16Number : BinaryFixedPoint {
+    struct U16Fixed16Number : BinaryFixedPoint, DataCodable {
         
         typealias RepresentingValue = Double
         

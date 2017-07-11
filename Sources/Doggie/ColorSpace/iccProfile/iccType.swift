@@ -23,6 +23,8 @@
 //  THE SOFTWARE.
 //
 
+import Foundation
+
 extension iccProfile {
     
     struct Header {
@@ -102,7 +104,7 @@ extension iccProfile {
     }
 }
 
-protocol iccSignatureProtocol: RawRepresentable, Hashable, ExpressibleByIntegerLiteral, ExpressibleByStringLiteral, CustomStringConvertible {
+protocol iccSignatureProtocol: RawRepresentable, Hashable, ExpressibleByIntegerLiteral, ExpressibleByStringLiteral, CustomStringConvertible, DataCodable {
     
     associatedtype Bytes : FixedWidthInteger
     
@@ -129,6 +131,17 @@ extension iccSignatureProtocol {
     var description: String {
         var code = self.rawValue.bigEndian
         return String(bytes: UnsafeRawBufferPointer(start: &code, count: Bytes.bitWidth >> 3), encoding: .ascii) ?? ""
+    }
+}
+
+extension iccSignatureProtocol {
+    
+    func encode(to data: inout Data) {
+        self.rawValue.encode(to: &data)
+    }
+    
+    init(from data: inout Data) throws {
+        self.init(rawValue: try Bytes(from: &data))
     }
 }
 
@@ -326,7 +339,7 @@ extension iccProfile.TagData {
 
 extension iccProfile {
     
-    struct S15Fixed16Number : BinaryFixedPoint {
+    struct S15Fixed16Number : BinaryFixedPoint, DataCodable {
         
         typealias RepresentingValue = Double
         
@@ -344,7 +357,7 @@ extension iccProfile {
 
 extension iccProfile {
     
-    struct U16Fixed16Number : BinaryFixedPoint {
+    struct U16Fixed16Number : BinaryFixedPoint, DataCodable {
         
         typealias RepresentingValue = Double
         
@@ -362,7 +375,7 @@ extension iccProfile {
 
 extension iccProfile {
     
-    struct U1Fixed15Number : BinaryFixedPoint {
+    struct U1Fixed15Number : BinaryFixedPoint, DataCodable {
         
         typealias RepresentingValue = Double
         
@@ -380,7 +393,7 @@ extension iccProfile {
 
 extension iccProfile {
     
-    struct U8Fixed8Number : BinaryFixedPoint {
+    struct U8Fixed8Number : BinaryFixedPoint, DataCodable {
         
         typealias RepresentingValue = Double
         

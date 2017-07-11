@@ -1,5 +1,5 @@
 //
-//  ImageDecoder.swift
+//  TIFFEncoder.swift
 //
 //  The MIT License
 //  Copyright (c) 2015 - 2017 Susan Cheng. All rights reserved.
@@ -25,34 +25,12 @@
 
 import Foundation
 
-protocol ImageDecoder {
+struct TIFFEncoder : ImageRepEncoder {
     
-    init?(data: Data)
+    static func encode(image: AnyImage, properties: [ImageRep.PropertyKey : Any]) -> Data? {
+        
+        return nil
+    }
     
-    func image() throws -> AnyImage
 }
 
-extension AnyImage {
-    
-    public enum DecodeError : Error {
-        
-        case UnknownFormat
-        case InvalidFormat(String)
-    }
-    
-    public init(data: Data) throws {
-        
-        let decoders: [ImageDecoder.Type] = [
-            BMPImageDecoder.self,
-        ]
-        
-        for Decoder in decoders {
-            if let decoder = Decoder.init(data: data) {
-                self = try decoder.image()
-                return
-            }
-        }
-        
-        throw DecodeError.UnknownFormat
-    }
-}
