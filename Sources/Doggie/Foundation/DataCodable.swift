@@ -44,10 +44,12 @@ public enum DataDecodeError : Error {
 
 extension Data {
     
+    @_inlineable
     public mutating func encode<T : DataEncodable>(_ value: T) {
         value.encode(to: &self)
     }
     
+    @_inlineable
     public mutating func decode<T : DataDecodable>(_ type: T.Type) throws -> T {
         return try T(from: &self)
     }
@@ -55,17 +57,59 @@ extension Data {
 
 extension FixedWidthInteger {
     
+    @_inlineable
     public func encode(to data: inout Data) {
         var value = self
         withUnsafeBytes(of: &value) { data.append(contentsOf: $0) }
     }
     
+    @_inlineable
     public init(from data: inout Data) throws {
         let size = Self.bitWidth >> 3
         guard data.count >= size else { throw DataDecodeError.endOfData }
         self = data.suffix(size).withUnsafeBytes { $0.pointee }
         data.removeFirst(size)
     }
+}
+
+extension UInt : DataCodable {
+    
+}
+
+extension UInt8 : DataCodable {
+    
+}
+
+extension UInt16 : DataCodable {
+    
+}
+
+extension UInt32 : DataCodable {
+    
+}
+
+extension UInt64 : DataCodable {
+    
+}
+
+extension Int : DataCodable {
+    
+}
+
+extension Int8 : DataCodable {
+    
+}
+
+extension Int16 : DataCodable {
+    
+}
+
+extension Int32 : DataCodable {
+    
+}
+
+extension Int64 : DataCodable {
+    
 }
 
 extension BEInteger : DataCodable {

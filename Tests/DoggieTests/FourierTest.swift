@@ -89,8 +89,8 @@ class FourierTest: XCTestCase {
             Radix2CooleyTukey(sample, &result)
             
             for i in 0..<answer.count {
-                XCTAssertEqualWithAccuracy(answer[i].real, result[i].real, accuracy: accuracy)
-                XCTAssertEqualWithAccuracy(answer[i].imag, result[i].imag, accuracy: accuracy)
+                XCTAssertEqual(answer[i].real, result[i].real, accuracy: accuracy)
+                XCTAssertEqual(answer[i].imag, result[i].imag, accuracy: accuracy)
             }
         }
     }
@@ -110,8 +110,8 @@ class FourierTest: XCTestCase {
             let result = Radix2CooleyTukey(sample)
             
             for i in 0..<answer.count {
-                XCTAssertEqualWithAccuracy(answer[i].real, result[i].real, accuracy: accuracy)
-                XCTAssertEqualWithAccuracy(answer[i].imag, result[i].imag, accuracy: accuracy)
+                XCTAssertEqual(answer[i].real, result[i].real, accuracy: accuracy)
+                XCTAssertEqual(answer[i].imag, result[i].imag, accuracy: accuracy)
             }
         }
     }
@@ -132,8 +132,8 @@ class FourierTest: XCTestCase {
             InverseRadix2CooleyTukey(sample, &result)
             
             for i in 0..<answer.count {
-                XCTAssertEqualWithAccuracy(answer[i].real, result[i].real, accuracy: accuracy)
-                XCTAssertEqualWithAccuracy(answer[i].imag, result[i].imag, accuracy: accuracy)
+                XCTAssertEqual(answer[i].real, result[i].real, accuracy: accuracy)
+                XCTAssertEqual(answer[i].imag, result[i].imag, accuracy: accuracy)
             }
         }
     }
@@ -153,8 +153,8 @@ class FourierTest: XCTestCase {
             let result = InverseRadix2CooleyTukey(sample)
             
             for i in 0..<answer.count {
-                XCTAssertEqualWithAccuracy(answer[i].real, result[i].real, accuracy: accuracy)
-                XCTAssertEqualWithAccuracy(answer[i].imag, result[i].imag, accuracy: accuracy)
+                XCTAssertEqual(answer[i].real, result[i].real, accuracy: accuracy)
+                XCTAssertEqual(answer[i].imag, result[i].imag, accuracy: accuracy)
             }
         }
     }
@@ -173,8 +173,8 @@ class FourierTest: XCTestCase {
             Fourier(sample, &result)
             
             for i in 0..<answer.count {
-                XCTAssertEqualWithAccuracy(answer[i].real, result[i].real, accuracy: accuracy)
-                XCTAssertEqualWithAccuracy(answer[i].imag, result[i].imag, accuracy: accuracy)
+                XCTAssertEqual(answer[i].real, result[i].real, accuracy: accuracy)
+                XCTAssertEqual(answer[i].imag, result[i].imag, accuracy: accuracy)
             }
         }
     }
@@ -193,8 +193,8 @@ class FourierTest: XCTestCase {
             Fourier(sample, &result)
             
             for i in 0..<answer.count {
-                XCTAssertEqualWithAccuracy(answer[i].real, result[i].real, accuracy: accuracy)
-                XCTAssertEqualWithAccuracy(answer[i].imag, result[i].imag, accuracy: accuracy)
+                XCTAssertEqual(answer[i].real, result[i].real, accuracy: accuracy)
+                XCTAssertEqual(answer[i].imag, result[i].imag, accuracy: accuracy)
             }
         }
     }
@@ -213,8 +213,8 @@ class FourierTest: XCTestCase {
             InverseFourier(sample, &result)
             
             for i in 0..<answer.count {
-                XCTAssertEqualWithAccuracy(answer[i].real, result[i].real, accuracy: accuracy)
-                XCTAssertEqualWithAccuracy(answer[i].imag, result[i].imag, accuracy: accuracy)
+                XCTAssertEqual(answer[i].real, result[i].real, accuracy: accuracy)
+                XCTAssertEqual(answer[i].imag, result[i].imag, accuracy: accuracy)
             }
         }
     }
@@ -233,8 +233,8 @@ class FourierTest: XCTestCase {
             InverseFourier(sample, &result)
             
             for i in 0..<answer.count {
-                XCTAssertEqualWithAccuracy(answer[i].real, result[i].real, accuracy: accuracy)
-                XCTAssertEqualWithAccuracy(answer[i].imag, result[i].imag, accuracy: accuracy)
+                XCTAssertEqual(answer[i].real, result[i].real, accuracy: accuracy)
+                XCTAssertEqual(answer[i].imag, result[i].imag, accuracy: accuracy)
             }
         }
     }
@@ -257,7 +257,7 @@ class FourierTest: XCTestCase {
             Convolve(a, b, &result)
             
             for i in 0..<answer.count {
-                XCTAssertEqualWithAccuracy(answer[i], result[i], accuracy: accuracy)
+                XCTAssertEqual(answer[i], result[i], accuracy: accuracy)
             }
         }
     }
@@ -280,8 +280,8 @@ class FourierTest: XCTestCase {
             Convolve(a, b, &result)
             
             for i in 0..<answer.count {
-                XCTAssertEqualWithAccuracy(answer[i].real, result[i].real, accuracy: accuracy)
-                XCTAssertEqualWithAccuracy(answer[i].imag, result[i].imag, accuracy: accuracy)
+                XCTAssertEqual(answer[i].real, result[i].real, accuracy: accuracy)
+                XCTAssertEqual(answer[i].imag, result[i].imag, accuracy: accuracy)
             }
         }
     }
@@ -309,7 +309,7 @@ class FourierTest: XCTestCase {
             CircularConvolve(a, b, &result)
             
             for i in 0..<answer.count {
-                XCTAssertEqualWithAccuracy(answer[i], result[i], accuracy: accuracy)
+                XCTAssertEqual(answer[i], result[i], accuracy: accuracy)
             }
         }
     }
@@ -337,8 +337,8 @@ class FourierTest: XCTestCase {
             CircularConvolve(a, b, &result)
             
             for i in 0..<answer.count {
-                XCTAssertEqualWithAccuracy(answer[i].real, result[i].real, accuracy: accuracy)
-                XCTAssertEqualWithAccuracy(answer[i].imag, result[i].imag, accuracy: accuracy)
+                XCTAssertEqual(answer[i].real, result[i].real, accuracy: accuracy)
+                XCTAssertEqual(answer[i].imag, result[i].imag, accuracy: accuracy)
             }
         }
     }
@@ -366,7 +366,7 @@ class FourierTest: XCTestCase {
             NegacyclicConvolve(a, b, &result)
             
             for i in 0..<answer.count {
-                XCTAssertEqualWithAccuracy(answer[i], result[i], accuracy: accuracy)
+                XCTAssertEqual(answer[i], result[i], accuracy: accuracy)
             }
         }
     }
@@ -394,8 +394,8 @@ class FourierTest: XCTestCase {
             NegacyclicConvolve(a, b, &result)
             
             for i in 0..<answer.count {
-                XCTAssertEqualWithAccuracy(answer[i].real, result[i].real, accuracy: accuracy)
-                XCTAssertEqualWithAccuracy(answer[i].imag, result[i].imag, accuracy: accuracy)
+                XCTAssertEqual(answer[i].real, result[i].real, accuracy: accuracy)
+                XCTAssertEqual(answer[i].imag, result[i].imag, accuracy: accuracy)
             }
         }
     }
@@ -415,7 +415,7 @@ class FourierTest: XCTestCase {
             DCTII(sample, &result)
             
             for i in 0..<answer.count {
-                XCTAssertEqualWithAccuracy(answer[i], result[i], accuracy: accuracy)
+                XCTAssertEqual(answer[i], result[i], accuracy: accuracy)
             }
         }
     }
@@ -434,7 +434,7 @@ class FourierTest: XCTestCase {
             DCTIII(sample, &result)
             
             for i in 0..<answer.count {
-                XCTAssertEqualWithAccuracy(answer[i], result[i], accuracy: accuracy)
+                XCTAssertEqual(answer[i], result[i], accuracy: accuracy)
             }
         }
     }
@@ -453,7 +453,7 @@ class FourierTest: XCTestCase {
             DCTIV(sample, &result)
             
             for i in 0..<answer.count {
-                XCTAssertEqualWithAccuracy(answer[i], result[i], accuracy: accuracy)
+                XCTAssertEqual(answer[i], result[i], accuracy: accuracy)
             }
         }
     }
@@ -472,7 +472,7 @@ class FourierTest: XCTestCase {
             DSTII(sample, &result)
             
             for i in 0..<answer.count {
-                XCTAssertEqualWithAccuracy(answer[i], result[i], accuracy: accuracy)
+                XCTAssertEqual(answer[i], result[i], accuracy: accuracy)
             }
         }
     }
@@ -491,7 +491,7 @@ class FourierTest: XCTestCase {
             DSTIII(sample, &result)
             
             for i in 0..<answer.count {
-                XCTAssertEqualWithAccuracy(answer[i], result[i], accuracy: accuracy)
+                XCTAssertEqual(answer[i], result[i], accuracy: accuracy)
             }
         }
     }
@@ -510,7 +510,7 @@ class FourierTest: XCTestCase {
             DSTIV(sample, &result)
             
             for i in 0..<answer.count {
-                XCTAssertEqualWithAccuracy(answer[i], result[i], accuracy: accuracy)
+                XCTAssertEqual(answer[i], result[i], accuracy: accuracy)
             }
         }
     }
