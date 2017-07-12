@@ -93,6 +93,14 @@ extension Image {
 extension Image {
     
     @_inlineable
+    public var isOpaque: Bool {
+        return pixels.all { $0.isOpaque }
+    }
+}
+
+extension Image {
+    
+    @_inlineable
     public func withUnsafeBufferPointer<R>(_ body: (UnsafeBufferPointer<Pixel>) throws -> R) rethrows -> R {
         
         return try pixels.withUnsafeBufferPointer(body)

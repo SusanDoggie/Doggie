@@ -35,6 +35,8 @@ public protocol ColorPixelProtocol : Hashable {
     
     var opacity: Double { get set }
     
+    var isOpaque: Bool { get }
+    
     var hashValue: Int { get }
     
     func with(opacity: Double) -> Self
@@ -66,6 +68,14 @@ extension ColorPixelProtocol {
     @_inlineable
     public func with(opacity: Double) -> Self {
         return Self(color: color, opacity: opacity)
+    }
+}
+
+extension ColorPixelProtocol {
+    
+    @_inlineable
+    public var isOpaque: Bool {
+        return opacity >= 1
     }
 }
 
@@ -149,7 +159,11 @@ public func !=<Pixel : ColorPixelProtocol>(lhs: Pixel, rhs: Pixel) -> Bool {
 public struct ColorPixel<Model : ColorModelProtocol> : ColorPixelProtocol {
     
     public var color: Model
-    public var opacity: Double
+    public var opacity: Double {
+        didSet {
+            opacity = opacity.clamped(to: 0...1)
+        }
+    }
     
     @_inlineable
     public init(color: Model, opacity: Double = 1) {

@@ -34,6 +34,8 @@ protocol AnyColorBaseProtocol {
     
     var opacity: Double { get set }
     
+    var isOpaque: Bool { get }
+    
     var _colorSpace: AnyColorSpaceBaseProtocol { get }
     
     func _blended<C>(source: Color<C>, blendMode: ColorBlendMode, compositingMode: ColorCompositingMode) -> AnyColorBaseProtocol
@@ -134,6 +136,14 @@ extension AnyColor {
         set {
             _base.opacity = newValue
         }
+    }
+}
+
+extension AnyColor {
+    
+    @_inlineable
+    public var isOpaque: Bool {
+        return _base.isOpaque
     }
 }
 

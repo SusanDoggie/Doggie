@@ -31,6 +31,8 @@ protocol AnyImageBaseProtocol {
     
     var height: Int { get }
     
+    var isOpaque: Bool { get }
+    
     var _colorSpace: AnyColorSpaceBaseProtocol { get }
     
     func _draw<Model>(context: ImageContext<Model>, transform: SDTransform)
@@ -183,6 +185,14 @@ extension AnyImage {
     @_inlineable
     public var colorSpace: AnyColorSpace {
         return AnyColorSpace(base: _base._colorSpace)
+    }
+}
+
+extension AnyImage {
+    
+    @_inlineable
+    public var isOpaque: Bool {
+        return _base.isOpaque
     }
 }
 

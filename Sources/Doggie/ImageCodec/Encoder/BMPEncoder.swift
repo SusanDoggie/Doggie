@@ -31,43 +31,91 @@ struct BMPEncoder : ImageRepEncoder {
         
         let image = Image<ARGB32ColorPixel>(image: image, colorSpace: .sRGB)
         
-        let pixel_size = image.pixels.count << 2
-        
-        var buffer = Data(capacity: 70 + pixel_size)
-        
-        buffer.encode("BM" as BMPHeader.Signature)
-        buffer.encode(LEUInt32(70 + pixel_size))
-        buffer.encode(0 as LEUInt16)
-        buffer.encode(0 as LEUInt16)
-        buffer.encode(70 as LEUInt32)
-        
-        buffer.encode(56 as LEUInt32)
-        
-        buffer.encode(LEInt32(image.width))
-        buffer.encode(LEInt32(-image.height))
-        buffer.encode(1 as LEUInt16)
-        buffer.encode(32 as LEUInt16)
-        
-        buffer.encode(BITMAPINFOHEADER.CompressionType.BI_BITFIELDS)
-        buffer.encode(LEUInt32(pixel_size))
-        buffer.encode(LEUInt32(round(72.0 / 0.0254)))
-        buffer.encode(LEUInt32(round(72.0 / 0.0254)))
-        buffer.encode(0 as LEUInt32)
-        buffer.encode(0 as LEUInt32)
-        
-        buffer.encode(0x00FF0000 as LEUInt32)
-        buffer.encode(0x0000FF00 as LEUInt32)
-        buffer.encode(0x000000FF as LEUInt32)
-        buffer.encode(0xFF000000 as LEUInt32)
-        
-        for pixel in image.pixels {
-            buffer.encode(pixel.b)
-            buffer.encode(pixel.g)
-            buffer.encode(pixel.r)
-            buffer.encode(pixel.a)
+        if image.isOpaque {
+            
+            let _width = image.width * 3
+            let row = _width.align(4)
+            
+            let pixel_size = row * image.height
+            
+            var buffer = Data(capacity: 54 + pixel_size)
+            
+            buffer.encode("BM" as BMPHeader.Signature)
+            buffer.encode(LEUInt32(54 + pixel_size))
+            buffer.encode(0 as LEUInt16)
+            buffer.encode(0 as LEUInt16)
+            buffer.encode(54 as LEUInt32)
+            
+            buffer.encode(40 as LEUInt32)
+            
+            buffer.encode(LEInt32(image.width))
+            buffer.encode(LEInt32(-image.height))
+            buffer.encode(1 as LEUInt16)
+            buffer.encode(24 as LEUInt16)
+            
+            buffer.encode(BITMAPINFOHEADER.CompressionType.BI_RGB)
+            buffer.encode(LEUInt32(pixel_size))
+            buffer.encode(LEUInt32(round(72.0 / 0.0254)))
+            buffer.encode(LEUInt32(round(72.0 / 0.0254)))
+            buffer.encode(0 as LEUInt32)
+            buffer.encode(0 as LEUInt32)
+            
+            var counter = 0
+            
+            for pixel in image.pixels {
+                buffer.encode(pixel.b)
+                buffer.encode(pixel.g)
+                buffer.encode(pixel.r)
+                if counter != 0 && counter % row == 0 {
+                    for _ in 0..<row - _width {
+                        buffer.encode(0 as UInt8)
+                    }
+                }
+                counter += 1
+            }
+            
+            return buffer
+            
+        } else {
+            
+            let pixel_size = image.pixels.count << 2
+            
+            var buffer = Data(capacity: 70 + pixel_size)
+            
+            buffer.encode("BM" as BMPHeader.Signature)
+            buffer.encode(LEUInt32(70 + pixel_size))
+            buffer.encode(0 as LEUInt16)
+            buffer.encode(0 as LEUInt16)
+            buffer.encode(70 as LEUInt32)
+            
+            buffer.encode(56 as LEUInt32)
+            
+            buffer.encode(LEInt32(image.width))
+            buffer.encode(LEInt32(-image.height))
+            buffer.encode(1 as LEUInt16)
+            buffer.encode(32 as LEUInt16)
+            
+            buffer.encode(BITMAPINFOHEADER.CompressionType.BI_BITFIELDS)
+            buffer.encode(LEUInt32(pixel_size))
+            buffer.encode(LEUInt32(round(72.0 / 0.0254)))
+            buffer.encode(LEUInt32(round(72.0 / 0.0254)))
+            buffer.encode(0 as LEUInt32)
+            buffer.encode(0 as LEUInt32)
+            
+            buffer.encode(0x00FF0000 as LEUInt32)
+            buffer.encode(0x0000FF00 as LEUInt32)
+            buffer.encode(0x000000FF as LEUInt32)
+            buffer.encode(0xFF000000 as LEUInt32)
+            
+            for pixel in image.pixels {
+                buffer.encode(pixel.b)
+                buffer.encode(pixel.g)
+                buffer.encode(pixel.r)
+                buffer.encode(pixel.a)
+            }
+            
+            return buffer
         }
-        
-        return buffer
     }
     
 }

@@ -95,6 +95,11 @@ public struct ARGB32ColorPixel : ColorPixelProtocol {
     }
     
     @_inlineable
+    public var isOpaque: Bool {
+        return a == 255
+    }
+    
+    @_inlineable
     public func with(opacity: Double) -> ARGB32ColorPixel {
         var c = self
         c.opacity = opacity

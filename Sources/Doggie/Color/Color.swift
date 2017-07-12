@@ -29,7 +29,11 @@ public struct Color<Model : ColorModelProtocol> {
     
     public var color: Model
     
-    public var opacity: Double
+    public var opacity: Double {
+        didSet {
+            opacity = opacity.clamped(to: 0...1)
+        }
+    }
     
     @_inlineable
     public init<P : ColorPixelProtocol>(colorSpace: ColorSpace<Model>, color: P) where P.Model == Model {
@@ -225,6 +229,14 @@ extension Color {
     @_inlineable
     public mutating func setComponent(_ index: Int, _ value: Double) {
         color.setComponent(index, value)
+    }
+}
+
+extension Color {
+    
+    @_inlineable
+    public var isOpaque: Bool {
+        return opacity >= 1
     }
 }
 
