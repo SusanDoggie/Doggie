@@ -56,7 +56,7 @@ extension ImageRep {
             ]
         
         for Decoder in decoders {
-            if let decoder = Decoder.init(data: data) {
+            if let decoder = Decoder.init(data: Data(data)) {
                 self.base = decoder
                 return
             }
@@ -146,12 +146,12 @@ extension AnyImage : ImageRepBase {
 
 extension AnyImage {
     
-    public init(ImageRep: ImageRep) throws {
-        self = try ImageRep.base.image()
+    public init(imageRep: ImageRep) throws {
+        self = try imageRep.base.image()
     }
     
     public init(data: Data) throws {
-        self = try ImageRep(data: data).base.image()
+        try self.init(imageRep: try ImageRep(data: data))
     }
 }
 

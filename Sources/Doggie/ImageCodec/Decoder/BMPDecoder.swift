@@ -51,11 +51,7 @@ struct BMPImageDecoder : ImageRepDecoder {
     
     func image() throws -> AnyImage {
         
-        guard header.offset <= data.count else { throw ImageRep.FormatError.InvalidFormat("Unexpected end of data.") }
-        
-        if let pixelArraySize = header.pixelArraySize {
-            guard Int(header.offset) + pixelArraySize <= data.count else { throw ImageRep.FormatError.InvalidFormat("Unexpected end of data.") }
-        }
+        guard header.offset <= data.count else { throw ImageRep.FormatError.InvalidFormat("Pixel data not found.") }
         
         if header.paletteSize != 0 {
             guard header.DIB.size + 14 <= header.paletteOffset else { throw ImageRep.FormatError.InvalidFormat("Palette overlap with header.") }
@@ -74,8 +70,11 @@ struct BMPImageDecoder : ImageRepDecoder {
         let _colorSpace: AnyColorSpace
         
         if header.colorSpaceOffset != 0 && header.colorSpaceSize != 0 {
-            guard header.colorSpaceOffset + header.colorSpaceSize <= data.count else { throw ImageRep.FormatError.InvalidFormat("Unexpected end of data.") }
-            _colorSpace = try AnyColorSpace(iccData: data.advanced(by: header.colorSpaceOffset))
+            if header.colorSpaceOffset + header.colorSpaceSize <= data.count {
+                _colorSpace = (try? AnyColorSpace(iccData: data.advanced(by: header.colorSpaceOffset))) ?? AnyColorSpace(.sRGB)
+            } else {
+                _colorSpace = AnyColorSpace(.sRGB)
+            }
         } else {
             _colorSpace = header.colorSpace
         }
@@ -121,6 +120,7 @@ struct BMPImageDecoder : ImageRepDecoder {
             
             pixels.withUnsafeBytes { (source: UnsafePointer<LEInteger<Pixel>>) in
                 
+                let endOfData = pixels.count + Int(bitPattern: source)
                 var source = source
                 
                 image.withUnsafeMutableBufferPointer { destination in
@@ -140,6 +140,8 @@ struct BMPImageDecoder : ImageRepDecoder {
                             var _destination = destination
                             
                             for _ in 0..<width {
+                                
+                                guard Int(bitPattern: _source) < endOfData else { return }
                                 
                                 let color = UInt32(_source.pointee)
                                 
@@ -193,6 +195,7 @@ struct BMPImageDecoder : ImageRepDecoder {
             
             pixels.withUnsafeBytes { (source: UnsafePointer<UInt8>) in
                 
+                let endOfData = pixels.count + Int(bitPattern: source)
                 var source = source
                 
                 image.withUnsafeMutableBufferPointer { destination in
@@ -221,6 +224,8 @@ struct BMPImageDecoder : ImageRepDecoder {
                                 var _destination = destination
                                 
                                 for _ in 0..<width {
+                                    
+                                    guard Int(bitPattern: _source) < endOfData else { return }
                                     
                                     let color = _source.pointee
                                     
@@ -280,6 +285,7 @@ struct BMPImageDecoder : ImageRepDecoder {
                     
                     pixels.withUnsafeBytes { (source: UnsafePointer<UInt8>) in
                         
+                        let endOfData = pixels.count + Int(bitPattern: source)
                         var source = source
                         
                         image.withUnsafeMutableBufferPointer { destination in
@@ -301,6 +307,8 @@ struct BMPImageDecoder : ImageRepDecoder {
                                     var counter = width
                                     
                                     while counter > 0 {
+                                        
+                                        guard Int(bitPattern: _source) < endOfData else { return }
                                         
                                         var p = _source.pointee
                                         
@@ -358,13 +366,13 @@ struct BMPImageDecoder : ImageRepDecoder {
                     
                     var image = Image<ARGB32ColorPixel>(width: width, height: height, colorSpace: colorSpace)
                     
-                    try palette.withUnsafeBufferPointer { palette in
+                    palette.withUnsafeBufferPointer { palette in
                         
-                        try pixels.withUnsafeBytes { (source: UnsafePointer<UInt8>) in
+                        pixels.withUnsafeBytes { (source: UnsafePointer<UInt8>) in
                             
                             var stream = UnsafeBufferPointer(start: source, count: pixels.count)[...]
                             
-                            try image.withUnsafeMutableBufferPointer { destination in
+                            image.withUnsafeMutableBufferPointer { destination in
                                 
                                 if var line = destination.baseAddress {
                                     
@@ -383,7 +391,7 @@ struct BMPImageDecoder : ImageRepDecoder {
                                         switch code {
                                         case 0:
                                             
-                                            guard let mode = stream.popFirst() else { throw ImageRep.FormatError.InvalidFormat("Unexpected end of data.") }
+                                            guard let mode = stream.popFirst() else { return }
                                             
                                             switch mode {
                                             case 0:
@@ -398,8 +406,8 @@ struct BMPImageDecoder : ImageRepDecoder {
                                             case 1: return
                                             case 2:
                                                 
-                                                guard let hDelta = stream.popFirst() else { throw ImageRep.FormatError.InvalidFormat("Unexpected end of data.") }
-                                                guard let vDelta = stream.popFirst() else { throw ImageRep.FormatError.InvalidFormat("Unexpected end of data.") }
+                                                guard let hDelta = stream.popFirst() else { return }
+                                                guard let vDelta = stream.popFirst() else { return }
                                                 
                                                 x += Int(hDelta)
                                                 y += Int(vDelta)
@@ -415,9 +423,11 @@ struct BMPImageDecoder : ImageRepDecoder {
                                                     let length = (count + 1) >> 1
                                                     
                                                     let values = stream.prefix(Int(length))
+                                                    
+                                                    guard stream.count >= Int(length.align(2)) else { return }
                                                     stream.removeFirst(Int(length.align(2)))
                                                     
-                                                    guard values.count == length else { throw ImageRep.FormatError.InvalidFormat("Unexpected end of data.") }
+                                                    guard values.count == length else { return }
                                                     
                                                     for (c, value) in values.enumerated() {
                                                         if c + 1 == length && count & 1 == 1 {
@@ -446,9 +456,11 @@ struct BMPImageDecoder : ImageRepDecoder {
                                                     
                                                 } else {
                                                     let values = stream.prefix(Int(count))
+                                                    
+                                                    guard stream.count >= Int(count.align(2)) else { return }
                                                     stream.removeFirst(Int(count.align(2)))
                                                     
-                                                    guard values.count == count else { throw ImageRep.FormatError.InvalidFormat("Unexpected end of data.") }
+                                                    guard values.count == count else { return }
                                                     
                                                     for value in values {
                                                         if x < width && y < height {
@@ -463,7 +475,7 @@ struct BMPImageDecoder : ImageRepDecoder {
                                             
                                         case let count:
                                             
-                                            guard let value = stream.popFirst() else { throw ImageRep.FormatError.InvalidFormat("Unexpected end of data.") }
+                                            guard let value = stream.popFirst() else { return }
                                             
                                             for i in 0..<count {
                                                 if x < width && y < height {
@@ -568,10 +580,6 @@ struct BMPHeader {
         return DIB.colorSpaceSize
     }
     
-    var pixelArraySize: Int? {
-        return DIB.pixelArrayRowSize.map { $0 * DIB._height }
-    }
-    
     var paletteOffset: Int {
         return DIB.paletteOffset
     }
@@ -612,8 +620,6 @@ protocol DIBHeader {
     var colorSpaceOffset: Int { get }
     
     var colorSpaceSize: Int { get }
-    
-    var pixelArrayRowSize: Int? { get }
     
     var paletteOffset: Int { get }
     
@@ -664,10 +670,6 @@ struct BITMAPCOREHEADER : DIBHeader {
     
     var colorSpaceSize: Int {
         return 0
-    }
-    
-    var pixelArrayRowSize: Int? {
-        return Int(bitsPerPixel * width).align(32) >> 3
     }
     
     var paletteOffset: Int {
@@ -864,13 +866,6 @@ struct BITMAPINFOHEADER : DIBHeader {
         default: break
         }
         return 0
-    }
-    
-    var pixelArrayRowSize: Int? {
-        switch compression {
-        case .BI_RGB, .BI_BITFIELDS, .BI_ALPHABITFIELDS: return (Int(bitsPerPixel) * Int(width)).align(32) >> 3
-        default: return nil
-        }
     }
     
     var paletteOffset: Int {
