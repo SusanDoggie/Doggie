@@ -187,6 +187,8 @@
 		0A8D98A51E53EE310050E112 /* ImageTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A8D98A21E53ED0F0050E112 /* ImageTest.swift */; };
 		0A92062C1F14A1FA00AF5C49 /* FourierTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08BFF9B91B0715ED00EC88CB /* FourierTest.swift */; };
 		0A92062D1F14A29E00AF5C49 /* ImageTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A8D98A21E53ED0F0050E112 /* ImageTest.swift */; };
+		0A92063A1F14C83A00AF5C49 /* PNGDecoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9206391F14C83A00AF5C49 /* PNGDecoder.swift */; };
+		0A92063B1F14C83A00AF5C49 /* PNGDecoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9206391F14C83A00AF5C49 /* PNGDecoder.swift */; };
 		0A92C7B21E56A52E0090EBFC /* zlib.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A92C7B11E56A52E0090EBFC /* zlib.swift */; };
 		0A92C7B31E56A52E0090EBFC /* zlib.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A92C7B11E56A52E0090EBFC /* zlib.swift */; };
 		0A92C7C41E56AB9D0090EBFC /* Data.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A92C7C31E56AB9D0090EBFC /* Data.swift */; };
@@ -388,6 +390,7 @@
 		0A8398B51F0B98D000D7CF3B /* ImageResampling.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageResampling.swift; sourceTree = "<group>"; };
 		0A89938C1EFA488900E9CDD9 /* ICC Creator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ICC Creator.swift"; sourceTree = "<group>"; };
 		0A8D98A21E53ED0F0050E112 /* ImageTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageTest.swift; sourceTree = "<group>"; };
+		0A9206391F14C83A00AF5C49 /* PNGDecoder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PNGDecoder.swift; sourceTree = "<group>"; };
 		0A92C7B11E56A52E0090EBFC /* zlib.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = zlib.swift; sourceTree = "<group>"; };
 		0A92C7C31E56AB9D0090EBFC /* Data.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Data.swift; sourceTree = "<group>"; };
 		0A92C7D21E56DA960090EBFC /* DGParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DGParser.swift; sourceTree = "<group>"; };
@@ -806,6 +809,7 @@
 			isa = PBXGroup;
 			children = (
 				0A94BE941F1087B600F1BCD2 /* BMPDecoder.swift */,
+				0A9206391F14C83A00AF5C49 /* PNGDecoder.swift */,
 			);
 			path = Decoder;
 			sourceTree = "<group>";
@@ -1190,6 +1194,7 @@
 				0A7C97481E558E0C00AB4803 /* DGDocument.swift in Sources */,
 				08458B381E2E627600D01813 /* Matrix.swift in Sources */,
 				0A53E47E1E35AEF80060FB83 /* String.swift in Sources */,
+				0A92063A1F14C83A00AF5C49 /* PNGDecoder.swift in Sources */,
 				0A53E4681E35AEF80060FB83 /* Hashable.swift in Sources */,
 				0A9CD5921EEB9A2700094148 /* CIELabColorSpace.swift in Sources */,
 				0AD4D8D81EA6247200C99728 /* Maths misc.swift in Sources */,
@@ -1331,6 +1336,7 @@
 				0A7C97491E558E0C00AB4803 /* DGDocument.swift in Sources */,
 				08458B391E2E627600D01813 /* Matrix.swift in Sources */,
 				0A53E47F1E35AEF80060FB83 /* String.swift in Sources */,
+				0A92063B1F14C83A00AF5C49 /* PNGDecoder.swift in Sources */,
 				0A53E4691E35AEF80060FB83 /* Hashable.swift in Sources */,
 				0A9CD58F1EEB9A2700094148 /* CIELabColorSpace.swift in Sources */,
 				0AD4D8D91EA6247200C99728 /* Maths misc.swift in Sources */,
