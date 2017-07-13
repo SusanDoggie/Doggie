@@ -130,6 +130,14 @@ extension AnyColorSpace {
     }
 }
 
+extension AnyColorSpace : CustomStringConvertible {
+    
+    @_inlineable
+    public var description: String {
+        return "\(_base)"
+    }
+}
+
 extension AnyColorSpace {
     
     @_inlineable
