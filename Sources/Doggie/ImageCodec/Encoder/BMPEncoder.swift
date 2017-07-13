@@ -37,6 +37,7 @@ struct BMPEncoder : ImageRepEncoder {
             
             let _width = image.width * 3
             let row = _width.align(4)
+            let padding = row - _width
             
             let pixel_size = row * image.height
             
@@ -62,18 +63,17 @@ struct BMPEncoder : ImageRepEncoder {
             buffer.encode(0 as LEUInt32)
             buffer.encode(0 as LEUInt32)
             
-            var counter = 0
+            var counter = image.width
             
             for pixel in image.pixels {
                 buffer.encode(pixel.b)
                 buffer.encode(pixel.g)
                 buffer.encode(pixel.r)
-                if counter != 0 && counter % row == 0 {
-                    for _ in 0..<row - _width {
-                        buffer.encode(0 as UInt8)
-                    }
+                counter -= 1
+                if counter == 0 {
+                    buffer.append(contentsOf: repeatElement(0, count: padding))
+                    counter = image.width
                 }
-                counter += 1
             }
             
             return buffer

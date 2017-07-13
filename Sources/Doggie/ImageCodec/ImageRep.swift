@@ -137,7 +137,7 @@ extension ImageRep {
 extension ImageRep : CustomStringConvertible {
     
     public var description: String {
-        return "ImageRep(width: \(width), height: \(height), colorSpace: \(colorSpace), base: \(base))"
+        return "ImageRep(width: \(width), height: \(height), colorSpace: \(colorSpace), resolution: \(resolution), base: \(base))"
     }
 }
 
