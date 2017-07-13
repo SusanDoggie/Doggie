@@ -103,7 +103,7 @@ extension Deflate {
                 
                 let status = deflate(&stream, flag)
                 
-                guard status == Z_OK || status == Z_STREAM_END else { throw Error(code: status, msg: stream.msg) }
+                guard status == Z_OK || status == Z_BUF_ERROR || status == Z_STREAM_END else { throw Error(code: status, msg: stream.msg) }
                 
                 written = result.count - Int(stream.avail_out)
             }
@@ -198,7 +198,7 @@ extension Inflate {
                 
                 let status = inflate(&stream, flag)
                 
-                guard status == Z_OK || status == Z_STREAM_END else { throw Error(code: status, msg: stream.msg) }
+                guard status == Z_OK || status == Z_BUF_ERROR || status == Z_STREAM_END else { throw Error(code: status, msg: stream.msg) }
                 
                 written = result.count - Int(stream.avail_out)
             }
