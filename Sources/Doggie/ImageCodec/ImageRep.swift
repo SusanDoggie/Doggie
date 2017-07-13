@@ -31,6 +31,8 @@ protocol ImageRepBase {
     
     var height: Int { get }
     
+    var resolution: Resolution { get }
+    
     var colorSpace: AnyColorSpace { get }
     
     func image() throws -> AnyImage
@@ -53,6 +55,7 @@ extension ImageRep {
         
         let decoders: [ImageRepDecoder.Type] = [
             BMPImageDecoder.self,
+            PNGImageDecoder.self,
             ]
         
         for Decoder in decoders {
@@ -85,6 +88,10 @@ extension ImageRep {
     
     public var height: Int {
         return base.height
+    }
+    
+    public var resolution: Resolution {
+        return base.resolution
     }
     
     public var colorSpace: AnyColorSpace {
@@ -124,6 +131,13 @@ extension ImageRep {
         }
         
         return Encoder.encode(image: image, properties: properties)
+    }
+}
+
+extension ImageRep : CustomStringConvertible {
+    
+    public var description: String {
+        return "ImageRep(width: \(width), height: \(height), colorSpace: \(colorSpace), base: \(base))"
     }
 }
 

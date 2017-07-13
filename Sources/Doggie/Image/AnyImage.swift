@@ -31,6 +31,8 @@ protocol AnyImageBaseProtocol {
     
     var height: Int { get }
     
+    var resolution: Resolution { get set }
+    
     var isOpaque: Bool { get }
     
     var _colorSpace: AnyColorSpaceBaseProtocol { get }
@@ -180,6 +182,16 @@ extension AnyImage {
     @_inlineable
     public var height: Int {
         return _base.height
+    }
+    
+    @_inlineable
+    public var resolution: Resolution {
+        get {
+            return _base.resolution
+        }
+        set {
+            _base.resolution = newValue
+        }
     }
     
     @_inlineable

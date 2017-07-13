@@ -31,6 +31,8 @@ struct BMPEncoder : ImageRepEncoder {
         
         let image = Image<ARGB32ColorPixel>(image: image, colorSpace: .sRGB)
         
+        let resolution = image.resolution.convert(to: .meter)
+        
         if image.isOpaque {
             
             let _width = image.width * 3
@@ -55,8 +57,8 @@ struct BMPEncoder : ImageRepEncoder {
             
             buffer.encode(BITMAPINFOHEADER.CompressionType.BI_RGB)
             buffer.encode(LEUInt32(pixel_size))
-            buffer.encode(LEUInt32(round(72.0 / 0.0254)))
-            buffer.encode(LEUInt32(round(72.0 / 0.0254)))
+            buffer.encode(LEUInt32(round(resolution.horizontal)))
+            buffer.encode(LEUInt32(round(resolution.vertical)))
             buffer.encode(0 as LEUInt32)
             buffer.encode(0 as LEUInt32)
             
@@ -97,8 +99,8 @@ struct BMPEncoder : ImageRepEncoder {
             
             buffer.encode(BITMAPINFOHEADER.CompressionType.BI_BITFIELDS)
             buffer.encode(LEUInt32(pixel_size))
-            buffer.encode(LEUInt32(round(72.0 / 0.0254)))
-            buffer.encode(LEUInt32(round(72.0 / 0.0254)))
+            buffer.encode(LEUInt32(round(resolution.horizontal)))
+            buffer.encode(LEUInt32(round(resolution.vertical)))
             buffer.encode(0 as LEUInt32)
             buffer.encode(0 as LEUInt32)
             

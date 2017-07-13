@@ -58,6 +58,7 @@ extension Image {
         precondition(height >= 0, "negative height is not allowed.")
         self.width = width
         self.height = height
+        self.resolution = image.resolution
         self.colorSpace = image.colorSpace
         if image.pixels.count == 0 || transform.determinant.almostZero() {
             self.pixels = [Pixel](repeating: Pixel(), count: width * height)

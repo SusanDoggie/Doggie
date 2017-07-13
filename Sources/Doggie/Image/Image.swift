@@ -23,21 +23,82 @@
 //  THE SOFTWARE.
 //
 
+public struct Resolution {
+    
+    public var horizontal: Double
+    public var vertical: Double
+    public var unit: Unit
+    
+    public init(horizontal: Double, vertical: Double, unit: Unit) {
+        self.horizontal = horizontal
+        self.vertical = vertical
+        self.unit = unit
+    }
+}
+
+extension Resolution {
+    
+    public enum Unit {
+        
+        case point
+        case pica
+        case meter
+        case centimeter
+        case millimeter
+        case inch
+    }
+}
+
+extension Resolution.Unit {
+    
+    @_versioned
+    var inchScale : Double {
+        switch self {
+        case .point: return 72
+        case .pica: return 6
+        case .meter: return 0.0254
+        case .centimeter: return 2.54
+        case .millimeter: return 25.4
+        case .inch: return 1
+        }
+    }
+}
+
+extension Resolution {
+    
+    @_inlineable
+    public func convert(to toUnit: Resolution.Unit) -> Resolution {
+        let scale = unit.inchScale / toUnit.inchScale
+        return Resolution(horizontal: scale * horizontal, vertical: scale * vertical, unit: toUnit)
+    }
+}
+
+extension Resolution : CustomStringConvertible {
+    
+    @_inlineable
+    public var description: String {
+        return "Resolution(horizontal: \(horizontal), vertical: \(vertical), unit: \(unit))"
+    }
+}
+
 public struct Image<Pixel: ColorPixelProtocol> {
     
     public let width: Int
     public let height: Int
+    
+    public var resolution: Resolution
     
     public internal(set) var pixels: [Pixel]
     
     public var colorSpace: ColorSpace<Pixel.Model>
     
     @_inlineable
-    public init(width: Int, height: Int, colorSpace: ColorSpace<Pixel.Model>, pixel: Pixel = Pixel()) {
+    public init(width: Int, height: Int, colorSpace: ColorSpace<Pixel.Model>, pixel: Pixel = Pixel(), resolution: Resolution = Resolution(horizontal: 1, vertical: 1, unit: .point)) {
         precondition(width >= 0, "negative width is not allowed.")
         precondition(height >= 0, "negative height is not allowed.")
         self.width = width
         self.height = height
+        self.resolution = resolution
         self.colorSpace = colorSpace
         self.pixels = [Pixel](repeating: pixel, count: width * height)
     }
@@ -46,6 +107,7 @@ public struct Image<Pixel: ColorPixelProtocol> {
     public init<P>(image: Image<P>) where P.Model == Pixel.Model {
         self.width = image.width
         self.height = image.height
+        self.resolution = image.resolution
         self.colorSpace = image.colorSpace
         self.pixels = image.pixels as? [Pixel] ?? image.pixels.map(Pixel.init)
     }
@@ -54,6 +116,7 @@ public struct Image<Pixel: ColorPixelProtocol> {
     public init<P>(image: Image<P>, colorSpace: ColorSpace<Pixel.Model>, intent: RenderingIntent = .default) {
         self.width = image.width
         self.height = image.height
+        self.resolution = image.resolution
         self.colorSpace = colorSpace
         self.pixels = image.colorSpace.convert(image.pixels, to: self.colorSpace, intent: intent)
     }
@@ -63,7 +126,7 @@ extension Image : CustomStringConvertible {
     
     @_inlineable
     public var description: String {
-        return "Image<\(Pixel.self)>(width: \(width), height: \(height), colorSpace: \(colorSpace))"
+        return "Image<\(Pixel.self)>(width: \(width), height: \(height), colorSpace: \(colorSpace), resolution: \(resolution))"
     }
 }
 

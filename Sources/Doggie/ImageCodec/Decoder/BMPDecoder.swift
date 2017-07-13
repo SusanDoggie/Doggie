@@ -45,6 +45,10 @@ struct BMPImageDecoder : ImageRepDecoder {
         return header.height
     }
     
+    var resolution: Resolution {
+        return header.resolution
+    }
+    
     var colorSpace: AnyColorSpace {
         return header.colorSpace
     }
@@ -83,8 +87,9 @@ struct BMPImageDecoder : ImageRepDecoder {
         
         let width = abs(header.width)
         let height = abs(header.height)
+        let resolution = header.resolution
         
-        guard width > 0 && height > 0 else { return AnyImage(Image<ARGB32ColorPixel>(width: width, height: height, colorSpace: colorSpace)) }
+        guard width > 0 && height > 0 else { return AnyImage(Image<ARGB32ColorPixel>(width: width, height: height, colorSpace: colorSpace, resolution: resolution)) }
         
         func UncompressedPixelReader<Pixel : FixedWidthInteger>(_ rMask: Pixel, _ gMask: Pixel, _ bMask: Pixel, _ aMask: Pixel) throws -> Image<ColorPixel<RGBColorModel>> {
             
@@ -116,7 +121,7 @@ struct BMPImageDecoder : ImageRepDecoder {
             guard (bMax + 1).isPower2 else { throw ImageRep.FormatError.InvalidFormat("Invalid blue component bit mask.") }
             guard (aMax + 1).isPower2 else { throw ImageRep.FormatError.InvalidFormat("Invalid alpha component bit mask.") }
             
-            var image = Image<ColorPixel<RGBColorModel>>(width: width, height: height, colorSpace: colorSpace)
+            var image = Image<ColorPixel<RGBColorModel>>(width: width, height: height, colorSpace: colorSpace, resolution: resolution)
             
             pixels.withUnsafeBytes { (source: UnsafePointer<LEInteger<Pixel>>) in
                 
@@ -191,7 +196,7 @@ struct BMPImageDecoder : ImageRepDecoder {
             
         case 24:
             
-            var image = Image<ARGB32ColorPixel>(width: width, height: height, colorSpace: colorSpace)
+            var image = Image<ARGB32ColorPixel>(width: width, height: height, colorSpace: colorSpace, resolution: resolution)
             
             pixels.withUnsafeBytes { (source: UnsafePointer<UInt8>) in
                 
@@ -279,7 +284,7 @@ struct BMPImageDecoder : ImageRepDecoder {
                 
                 let bitWidth = UInt8(header.bitsPerPixel)
                 
-                var image = Image<ARGB32ColorPixel>(width: width, height: height, colorSpace: colorSpace)
+                var image = Image<ARGB32ColorPixel>(width: width, height: height, colorSpace: colorSpace, resolution: resolution)
                 
                 palette.withUnsafeBufferPointer { palette in
                     
@@ -364,7 +369,7 @@ struct BMPImageDecoder : ImageRepDecoder {
                     
                     let bitWidth = UInt8(header.bitsPerPixel)
                     
-                    var image = Image<ARGB32ColorPixel>(width: width, height: height, colorSpace: colorSpace)
+                    var image = Image<ARGB32ColorPixel>(width: width, height: height, colorSpace: colorSpace, resolution: resolution)
                     
                     palette.withUnsafeBufferPointer { palette in
                         
@@ -564,6 +569,10 @@ struct BMPHeader {
         return DIB._height
     }
     
+    var resolution: Resolution {
+        return Resolution(horizontal: Double(DIB.hResolution.representingValue), vertical: Double(DIB.vResolution.representingValue), unit: .meter)
+    }
+    
     var bitsPerPixel: Int {
         return Int(DIB.bitsPerPixel)
     }
@@ -610,6 +619,9 @@ protocol DIBHeader {
     
     var _width: Int { get }
     var _height: Int { get }
+    
+    var hResolution: LEUInt32 { get }
+    var vResolution: LEUInt32 { get }
     
     var size: LEUInt32 { get }
     
@@ -658,6 +670,13 @@ struct BITMAPCOREHEADER : DIBHeader {
     }
     var _height: Int {
         return Int(height)
+    }
+    
+    var hResolution: LEUInt32 {
+        return 2835
+    }
+    var vResolution: LEUInt32 {
+        return 2835
     }
     
     var colorSpace: AnyColorSpace {
