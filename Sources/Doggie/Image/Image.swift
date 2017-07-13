@@ -34,6 +34,12 @@ public struct Resolution {
         self.vertical = vertical
         self.unit = unit
     }
+    
+    public init(resolution: Double, unit: Unit) {
+        self.horizontal = resolution
+        self.vertical = resolution
+        self.unit = unit
+    }
 }
 
 extension Resolution {
@@ -93,7 +99,7 @@ public struct Image<Pixel: ColorPixelProtocol> {
     public var colorSpace: ColorSpace<Pixel.Model>
     
     @_inlineable
-    public init(width: Int, height: Int, colorSpace: ColorSpace<Pixel.Model>, pixel: Pixel = Pixel(), resolution: Resolution = Resolution(horizontal: 1, vertical: 1, unit: .point)) {
+    public init(width: Int, height: Int, colorSpace: ColorSpace<Pixel.Model>, pixel: Pixel = Pixel(), resolution: Resolution = Resolution(resolution: 1, unit: .point)) {
         precondition(width >= 0, "negative width is not allowed.")
         precondition(height >= 0, "negative height is not allowed.")
         self.width = width
