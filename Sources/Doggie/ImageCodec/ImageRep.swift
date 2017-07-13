@@ -45,10 +45,11 @@ public struct ImageRep {
 
 extension ImageRep {
     
-    public enum FormatError : Error {
+    public enum Error : Swift.Error {
         
         case UnknownFormat
         case InvalidFormat(String)
+        case DecoderError(String)
     }
     
     public init(data: Data) throws {
@@ -65,7 +66,7 @@ extension ImageRep {
             }
         }
         
-        throw FormatError.UnknownFormat
+        throw Error.UnknownFormat
     }
 }
 

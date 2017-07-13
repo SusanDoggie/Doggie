@@ -44,11 +44,11 @@ struct PNGImageDecoder : ImageRepDecoder {
         while _chunks.last?.signature != "IEND" {
             guard let chunk = PNGChunk(data: _data) else { break }
             _chunks.append(chunk)
-            guard _data.count > 12 + Int(chunk.length) else { break }
-            _data = _data.advanced(by: 12 + Int(chunk.length))
+            guard _data.count > 12 + Int(chunk.data.count) else { break }
+            _data = _data.advanced(by: 12 + Int(chunk.data.count))
         }
         
-        guard let first = _chunks.first, first.length >= 13 && first.signature == "IHDR" else { return nil }
+        guard let first = _chunks.first, first.data.count >= 13 && first.signature == "IHDR" else { return nil }
         
         self.data = data
         self.chunks = _chunks
@@ -63,14 +63,27 @@ struct PNGImageDecoder : ImageRepDecoder {
     }
     
     var resolution: Resolution {
-        return Resolution(horizontal: 2835, vertical: 2835, unit: .meter)
+        
+        if let phys = chunks.first(where: { $0.signature == "pHYs" }), phys.data.count >= 9 {
+            
+            let horizontal = phys.data[0..<4].withUnsafeBytes { $0.pointee as BEUInt32 }
+            let vertical = phys.data[4..<8].withUnsafeBytes { $0.pointee as BEUInt32 }
+            let unit = phys.data[8..<9].withUnsafeBytes { $0.pointee as UInt8 }
+            
+            switch unit {
+            case 1: return Resolution(horizontal: Double(horizontal.representingValue), vertical: Double(vertical.representingValue), unit: .meter)
+            default: break
+            }
+        }
+        
+        return Resolution(horizontal: 1, vertical: 1, unit: .point)
     }
     
     var palette : [ARGB32ColorPixel]? {
         
-        guard let plte = chunks.first(where: { $0.signature == "PLTE" }), plte.length % 3 == 0 else { return nil }
+        guard let plte = chunks.first(where: { $0.signature == "PLTE" }), plte.data.count % 3 == 0 else { return nil }
         
-        let count = Int(plte.length) / 3
+        let count = Int(plte.data.count) / 3
         
         var palette = [ARGB32ColorPixel]()
         palette.reserveCapacity(count)
@@ -98,12 +111,13 @@ struct PNGImageDecoder : ImageRepDecoder {
             
             let compression = icc.data[separator + 1..<separator + 2].withUnsafeBytes { $0.pointee as UInt8 }
             
-            guard let iccData = decompress(data: icc.data.suffix(from: separator + 2), compression: compression) else { return AnyColorSpace(.sRGB) }
+            guard let _iccData = try? decompress(data: icc.data.suffix(from: separator + 2), compression: compression) else { return AnyColorSpace(.sRGB) }
+            guard let iccData = _iccData else { return AnyColorSpace(.sRGB) }
             
             return (try? AnyColorSpace(iccData: iccData)) ?? AnyColorSpace(.sRGB)
         }
         
-        guard let chrm = chunks.first(where: { $0.signature == "cHRM" }), chrm.length >= 32 else { return AnyColorSpace(.sRGB) }
+        guard let chrm = chunks.first(where: { $0.signature == "cHRM" }), chrm.data.count >= 32 else { return AnyColorSpace(.sRGB) }
         
         let whiteX = chrm.data[0..<4].withUnsafeBytes { $0.pointee as BEUInt32 }
         let whiteY = chrm.data[4..<8].withUnsafeBytes { $0.pointee as BEUInt32 }
@@ -119,7 +133,7 @@ struct PNGImageDecoder : ImageRepDecoder {
         let green = Point(x: 0.00001 * Double(greenX.representingValue), y: 0.00001 * Double(greenY.representingValue))
         let blue = Point(x: 0.00001 * Double(blueX.representingValue), y: 0.00001 * Double(blueY.representingValue))
         
-        if let gama = chunks.first(where: { $0.signature == "gAMA" }), gama.length >= 4 {
+        if let gama = chunks.first(where: { $0.signature == "gAMA" }), gama.data.count >= 4 {
             let gamma = gama.data.withUnsafeBytes { $0.pointee as BEUInt32 }
             return AnyColorSpace(ColorSpace.calibratedRGB(white: white, red: red, green: green, blue: blue, gamma: 0.00001 * Double(gamma.representingValue)))
         } else {
@@ -127,9 +141,11 @@ struct PNGImageDecoder : ImageRepDecoder {
         }
     }
     
-    func decompress(data: Data, compression: UInt8) -> Data? {
+    func decompress(data: Data, compression: UInt8) throws -> Data? {
         switch compression {
-        case 0: return try? data.gunzipped()
+        case 0:
+            guard let inflate = try? Inflate() else { throw ImageRep.Error.DecoderError("Inflate initialize failed.") }
+            return try? inflate.process(data: data) + inflate.final()
         default: return nil
         }
     }
@@ -138,43 +154,51 @@ struct PNGImageDecoder : ImageRepDecoder {
         
         let ihdr = self.ihdr
         
+        print(ihdr)
+        
+        let IDAT_data = Data(chunks.filter { $0.signature == "IDAT" }.flatMap { $0.data })
+        
+        guard let data = try decompress(data: IDAT_data, compression: ihdr.compression) else { throw ImageRep.Error.InvalidFormat("Invalid IDAT format.") }
+        
+        print(IDAT_data, data.count)
+        
         switch ihdr.colour {
         case 0:
             switch ihdr.bitDepth {
             case 1, 2, 4, 8, 16: break
-            default: throw ImageRep.FormatError.InvalidFormat("Disllowed bit depths.")
+            default: throw ImageRep.Error.InvalidFormat("Disllowed bit depths.")
             }
             
         case 2:
             switch ihdr.bitDepth {
             case 8, 16: break
-            default: throw ImageRep.FormatError.InvalidFormat("Disllowed bit depths.")
+            default: throw ImageRep.Error.InvalidFormat("Disllowed bit depths.")
             }
             
         case 3:
             switch ihdr.bitDepth {
             case 1, 2, 4, 8: break
-            default: throw ImageRep.FormatError.InvalidFormat("Disllowed bit depths.")
+            default: throw ImageRep.Error.InvalidFormat("Disllowed bit depths.")
             }
             
-            guard let palette = self.palette else { throw ImageRep.FormatError.InvalidFormat("Palette not found.") }
+            guard let palette = self.palette else { throw ImageRep.Error.InvalidFormat("Palette not found.") }
             
         case 4:
             switch ihdr.bitDepth {
             case 8, 16: break
-            default: throw ImageRep.FormatError.InvalidFormat("Disllowed bit depths.")
+            default: throw ImageRep.Error.InvalidFormat("Disllowed bit depths.")
             }
             
         case 6:
             switch ihdr.bitDepth {
             case 8, 16: break
-            default: throw ImageRep.FormatError.InvalidFormat("Disllowed bit depths.")
+            default: throw ImageRep.Error.InvalidFormat("Disllowed bit depths.")
             }
             
-        default: throw ImageRep.FormatError.InvalidFormat("Unknown colour type.")
+        default: throw ImageRep.Error.InvalidFormat("Unknown colour type.")
         }
         
-        throw ImageRep.FormatError.InvalidFormat("Unimplement.")
+        throw ImageRep.Error.InvalidFormat("Unimplement.")
     }
 }
 
@@ -208,32 +232,24 @@ extension PNGImageDecoder {
 
 struct PNGChunk {
     
-    var length: BEUInt32
     var signature: Signature
     var data: Data
-    var CRC: BEUInt32
     
     init(signature: Signature, data: Data) {
-        self.length = BEUInt32(data.count)
         self.signature = signature
         self.data = Data(data)
-        self.CRC = BEUInt32(PNGCRC32(signature, data))
     }
     
     init?(data: Data) {
         
         guard data.count >= 12 else { return nil }
         
-        self.length = data[0..<4].withUnsafeBytes { $0.pointee }
+        let length = data[0..<4].withUnsafeBytes { $0.pointee as BEUInt32 }
         self.signature = data[4..<8].withUnsafeBytes { $0.pointee }
         
-        guard data.count >= 12 + Int(length) else { return nil }
         guard signature.description.characters.all(where: { "a"..."z" ~= $0 || "A"..."Z" ~= $0 }) else { return nil }
         
-        self.data = Data(data[8..<8 + Int(length)])
-        self.CRC = data[8 + Int(length)..<12 + Int(length)].withUnsafeBytes { $0.pointee }
-        
-        guard self.CRC == calculateCRC() else { return nil }
+        self.data = Data(data.dropFirst(8).prefix(Int(length)) as Data)
     }
     
     func calculateCRC() -> BEUInt32 {

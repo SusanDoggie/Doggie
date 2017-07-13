@@ -607,7 +607,7 @@ extension ICCColorSpace {
 
 extension AnyColorSpace {
     
-    public enum ICCError : Error {
+    public enum ParserError : Error {
         
         case invalidFormat(message: String)
         case unsupported(message: String)
@@ -631,7 +631,7 @@ extension AnyColorSpace {
         case .Cmyk: self._base = try ColorSpace<CMYKColorModel>(iccData: iccData, profile: profile)
         case .Cmy: self._base = try ColorSpace<CMYColorModel>(iccData: iccData, profile: profile)
             
-        case .Named: throw AnyColorSpace.ICCError.unsupported(message: "ColorSpace: \(profile.header.colorSpace)")
+        case .Named: throw AnyColorSpace.ParserError.unsupported(message: "ColorSpace: \(profile.header.colorSpace)")
             
         case .color2: self._base = try ColorSpace<Device2ColorModel>(iccData: iccData, profile: profile)
         case .color3: self._base = try ColorSpace<Device3ColorModel>(iccData: iccData, profile: profile)
@@ -647,7 +647,7 @@ extension AnyColorSpace {
         case .color13: self._base = try ColorSpace<Device13ColorModel>(iccData: iccData, profile: profile)
         case .color14: self._base = try ColorSpace<Device14ColorModel>(iccData: iccData, profile: profile)
         case .color15: self._base = try ColorSpace<Device15ColorModel>(iccData: iccData, profile: profile)
-        default: throw AnyColorSpace.ICCError.unsupported(message: "ColorSpace: \(profile.header.colorSpace)")
+        default: throw AnyColorSpace.ParserError.unsupported(message: "ColorSpace: \(profile.header.colorSpace)")
         }
     }
 }
@@ -661,31 +661,31 @@ extension ColorSpace {
             switch a2bCurve {
             case let .LUT0(_, i, lut, o):
                 if lut.inputChannels != Model.numberOfComponents || lut.outputChannels != 3 {
-                    throw AnyColorSpace.ICCError.invalidFormat(message: "Invalid LUT size.")
+                    throw AnyColorSpace.ParserError.invalidFormat(message: "Invalid LUT size.")
                 }
                 if i.channels != Model.numberOfComponents {
-                    throw AnyColorSpace.ICCError.invalidFormat(message: "Invalid LUT size.")
+                    throw AnyColorSpace.ParserError.invalidFormat(message: "Invalid LUT size.")
                 }
                 if o.channels != 3 {
-                    throw AnyColorSpace.ICCError.invalidFormat(message: "Invalid LUT size.")
+                    throw AnyColorSpace.ParserError.invalidFormat(message: "Invalid LUT size.")
                 }
             case .LUT1, .LUT2:
                 if Model.numberOfComponents != 3 {
-                    throw AnyColorSpace.ICCError.invalidFormat(message: "Invalid LUT size.")
+                    throw AnyColorSpace.ParserError.invalidFormat(message: "Invalid LUT size.")
                 }
             case let .LUT3(_, lut, A):
                 if lut.inputChannels != Model.numberOfComponents || lut.outputChannels != 3 {
-                    throw AnyColorSpace.ICCError.invalidFormat(message: "Invalid LUT size.")
+                    throw AnyColorSpace.ParserError.invalidFormat(message: "Invalid LUT size.")
                 }
                 if A.count != Model.numberOfComponents {
-                    throw AnyColorSpace.ICCError.invalidFormat(message: "Invalid LUT size.")
+                    throw AnyColorSpace.ParserError.invalidFormat(message: "Invalid LUT size.")
                 }
             case let .LUT4(_, _, _, lut, A):
                 if lut.inputChannels != Model.numberOfComponents || lut.outputChannels != 3 {
-                    throw AnyColorSpace.ICCError.invalidFormat(message: "Invalid LUT size.")
+                    throw AnyColorSpace.ParserError.invalidFormat(message: "Invalid LUT size.")
                 }
                 if A.count != Model.numberOfComponents {
-                    throw AnyColorSpace.ICCError.invalidFormat(message: "Invalid LUT size.")
+                    throw AnyColorSpace.ParserError.invalidFormat(message: "Invalid LUT size.")
                 }
             default: break
             }
@@ -693,31 +693,31 @@ extension ColorSpace {
             switch b2aCurve {
             case let .LUT0(_, i, lut, o):
                 if lut.inputChannels != 3 || lut.outputChannels != Model.numberOfComponents {
-                    throw AnyColorSpace.ICCError.invalidFormat(message: "Invalid LUT size.")
+                    throw AnyColorSpace.ParserError.invalidFormat(message: "Invalid LUT size.")
                 }
                 if i.channels != 3 {
-                    throw AnyColorSpace.ICCError.invalidFormat(message: "Invalid LUT size.")
+                    throw AnyColorSpace.ParserError.invalidFormat(message: "Invalid LUT size.")
                 }
                 if o.channels != Model.numberOfComponents {
-                    throw AnyColorSpace.ICCError.invalidFormat(message: "Invalid LUT size.")
+                    throw AnyColorSpace.ParserError.invalidFormat(message: "Invalid LUT size.")
                 }
             case .LUT1, .LUT2:
                 if Model.numberOfComponents != 3 {
-                    throw AnyColorSpace.ICCError.invalidFormat(message: "Invalid LUT size.")
+                    throw AnyColorSpace.ParserError.invalidFormat(message: "Invalid LUT size.")
                 }
             case let .LUT3(_, lut, A):
                 if lut.inputChannels != 3 || lut.outputChannels != Model.numberOfComponents {
-                    throw AnyColorSpace.ICCError.invalidFormat(message: "Invalid LUT size.")
+                    throw AnyColorSpace.ParserError.invalidFormat(message: "Invalid LUT size.")
                 }
                 if A.count != Model.numberOfComponents {
-                    throw AnyColorSpace.ICCError.invalidFormat(message: "Invalid LUT size.")
+                    throw AnyColorSpace.ParserError.invalidFormat(message: "Invalid LUT size.")
                 }
             case let .LUT4(_, _, _, lut, A):
                 if lut.inputChannels != 3 || lut.outputChannels != Model.numberOfComponents {
-                    throw AnyColorSpace.ICCError.invalidFormat(message: "Invalid LUT size.")
+                    throw AnyColorSpace.ParserError.invalidFormat(message: "Invalid LUT size.")
                 }
                 if A.count != Model.numberOfComponents {
-                    throw AnyColorSpace.ICCError.invalidFormat(message: "Invalid LUT size.")
+                    throw AnyColorSpace.ParserError.invalidFormat(message: "Invalid LUT size.")
                 }
             default: break
             }
@@ -761,7 +761,7 @@ extension ColorSpace {
                 b2a = b2aCurve
                 
             } else {
-                throw AnyColorSpace.ICCError.invalidFormat(message: "LUT not found.")
+                throw AnyColorSpace.ParserError.invalidFormat(message: "LUT not found.")
             }
             
         case 3 where profile.header.pcs == .XYZ:
@@ -785,7 +785,7 @@ extension ColorSpace {
                 b2a = b2aCurve
                 
             } else {
-                throw AnyColorSpace.ICCError.invalidFormat(message: "LUT not found.")
+                throw AnyColorSpace.ParserError.invalidFormat(message: "LUT not found.")
             }
             
         default:
@@ -796,7 +796,7 @@ extension ColorSpace {
                 b2a = b2aCurve
                 
             } else {
-                throw AnyColorSpace.ICCError.invalidFormat(message: "LUT not found.")
+                throw AnyColorSpace.ParserError.invalidFormat(message: "LUT not found.")
             }
         }
         
@@ -817,7 +817,7 @@ extension ColorSpace {
                 }
             }
         } else {
-            throw AnyColorSpace.ICCError.invalidFormat(message: "MediaWhitePoint not found.")
+            throw AnyColorSpace.ParserError.invalidFormat(message: "MediaWhitePoint not found.")
         }
         
         let chromaticAdaptationMatrix = cieXYZ.chromaticAdaptationMatrix(to: PCSXYZ, .default)
@@ -825,7 +825,7 @@ extension ColorSpace {
         switch profile.header.pcs {
         case .XYZ: self.base = ICCColorSpace<Model, CIEXYZColorSpace>(iccData: iccData, profile: profile, connection: PCSXYZ, cieXYZ: cieXYZ, a2b: a2b, b2a: b2a, chromaticAdaptationMatrix: chromaticAdaptationMatrix)
         case .Lab: self.base = ICCColorSpace<Model, CIELabColorSpace>(iccData: iccData, profile: profile, connection: CIELabColorSpace(PCSXYZ), cieXYZ: cieXYZ, a2b: a2b, b2a: b2a, chromaticAdaptationMatrix: chromaticAdaptationMatrix)
-        default: throw AnyColorSpace.ICCError.invalidFormat(message: "Invalid PCS.")
+        default: throw AnyColorSpace.ParserError.invalidFormat(message: "Invalid PCS.")
         }
     }
 }

@@ -55,17 +55,17 @@ struct BMPImageDecoder : ImageRepDecoder {
     
     func image() throws -> AnyImage {
         
-        guard header.offset <= data.count else { throw ImageRep.FormatError.InvalidFormat("Pixel data not found.") }
+        guard header.offset <= data.count else { throw ImageRep.Error.InvalidFormat("Pixel data not found.") }
         
         if header.paletteSize != 0 {
-            guard header.DIB.size + 14 <= header.paletteOffset else { throw ImageRep.FormatError.InvalidFormat("Palette overlap with header.") }
+            guard header.DIB.size + 14 <= header.paletteOffset else { throw ImageRep.Error.InvalidFormat("Palette overlap with header.") }
             
             let paletteCount = header.paletteSize
             
             if header.DIB is BITMAPCOREHEADER {
-                guard header.paletteOffset + 3 * header.paletteSize <= header.offset else { throw ImageRep.FormatError.InvalidFormat("Pixel array overlap with palette.") }
+                guard header.paletteOffset + 3 * header.paletteSize <= header.offset else { throw ImageRep.Error.InvalidFormat("Pixel array overlap with palette.") }
             } else {
-                guard header.paletteOffset + 4 * header.paletteSize <= header.offset else { throw ImageRep.FormatError.InvalidFormat("Pixel array overlap with palette.") }
+                guard header.paletteOffset + 4 * header.paletteSize <= header.offset else { throw ImageRep.Error.InvalidFormat("Pixel array overlap with palette.") }
             }
         }
         
@@ -83,7 +83,7 @@ struct BMPImageDecoder : ImageRepDecoder {
             _colorSpace = header.colorSpace
         }
         
-        guard let colorSpace = _colorSpace.base as? ColorSpace<RGBColorModel> else { throw ImageRep.FormatError.InvalidFormat("Invalid color space.") }
+        guard let colorSpace = _colorSpace.base as? ColorSpace<RGBColorModel> else { throw ImageRep.Error.InvalidFormat("Invalid color space.") }
         
         let width = abs(header.width)
         let height = abs(header.height)
@@ -116,10 +116,10 @@ struct BMPImageDecoder : ImageRepDecoder {
             let bMax = bMask >> bOffset
             let aMax = aMask >> aOffset
             
-            guard (rMax + 1).isPower2 else { throw ImageRep.FormatError.InvalidFormat("Invalid red component bit mask.") }
-            guard (gMax + 1).isPower2 else { throw ImageRep.FormatError.InvalidFormat("Invalid green component bit mask.") }
-            guard (bMax + 1).isPower2 else { throw ImageRep.FormatError.InvalidFormat("Invalid blue component bit mask.") }
-            guard (aMax + 1).isPower2 else { throw ImageRep.FormatError.InvalidFormat("Invalid alpha component bit mask.") }
+            guard (rMax + 1).isPower2 else { throw ImageRep.Error.InvalidFormat("Invalid red component bit mask.") }
+            guard (gMax + 1).isPower2 else { throw ImageRep.Error.InvalidFormat("Invalid green component bit mask.") }
+            guard (bMax + 1).isPower2 else { throw ImageRep.Error.InvalidFormat("Invalid blue component bit mask.") }
+            guard (aMax + 1).isPower2 else { throw ImageRep.Error.InvalidFormat("Invalid alpha component bit mask.") }
             
             var image = Image<ColorPixel<RGBColorModel>>(width: width, height: height, colorSpace: colorSpace, resolution: resolution)
             

@@ -52,7 +52,7 @@ private let pathDataMatcher: Regex = "[MmLlHhVvCcSsQqTtAaZz]|[+-]?(\\d+\\.?\\d*|
 
 extension Shape {
     
-    public struct DecoderError : Error {
+    public struct ParserError : Error {
         
         var command: String?
     }
@@ -63,7 +63,7 @@ extension Shape {
         if str != nil, let val = Double(str!) {
             return val
         }
-        throw DecoderError(command: str)
+        throw ParserError(command: str)
     }
     
     @inline(__always)
@@ -72,7 +72,7 @@ extension Shape {
         if str != nil, let val = Int(str!) {
             return val
         }
-        throw DecoderError(command: str)
+        throw ParserError(command: str)
     }
     
     public init(code: String) throws {
@@ -267,10 +267,10 @@ extension Shape {
                         case "11":
                             largeArc = true
                             sweep = true
-                        default: throw DecoderError(command: val)
+                        default: throw ParserError(command: val)
                         }
                     } else {
-                        throw DecoderError(command: nil)
+                        throw ParserError(command: nil)
                     }
                     let x = try toDouble(g.next())
                     let y = try toDouble(g.next())
@@ -307,10 +307,10 @@ extension Shape {
                         case "11":
                             largeArc = true
                             sweep = true
-                        default: throw DecoderError(command: val)
+                        default: throw ParserError(command: val)
                         }
                     } else {
-                        throw DecoderError(command: nil)
+                        throw ParserError(command: nil)
                     }
                     let x = try toDouble(g.next()) + relative.x
                     let y = try toDouble(g.next()) + relative.y
@@ -331,7 +331,7 @@ extension Shape {
                     lastbezier = 0
                 }
             default:
-                throw DecoderError(command: command)
+                throw ParserError(command: command)
             }
         }
         if component.count != 0 {
