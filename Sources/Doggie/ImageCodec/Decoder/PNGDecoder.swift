@@ -214,6 +214,47 @@ struct PNGImageDecoder : ImageRepDecoder {
         }
     }
     
+    func filter(_ data: Data, _ ihdr: IHDR) -> Data? {
+        
+        let bitsPerPixel: UInt8
+        
+        switch ihdr.colour {
+        case 0: bitsPerPixel = 1 * ihdr.bitDepth
+        case 2: bitsPerPixel = 3 * ihdr.bitDepth
+        case 3: bitsPerPixel = 1 * ihdr.bitDepth
+        case 4: bitsPerPixel = 2 * ihdr.bitDepth
+        case 6: bitsPerPixel = 4 * ihdr.bitDepth
+        default: fatalError()
+        }
+        
+        if ihdr.interlace == 0 {
+            switch ihdr.filter {
+            case 0:
+            
+                var result = Data(capacity: data.count)
+                var previous: Data?
+                
+                let row = Int(bitsPerPixel >> 3) * Int(ihdr.width)
+                
+                for scanline in data.lazy.slice(by: row + 1) as LazySliceSequence {
+                    PNGFilter0(scanline, previous, bitsPerPixel, false, &result)
+                    previous = result.suffix(row)
+                }
+                
+                return result
+                
+            default: break
+            }
+        } else {
+            switch ihdr.filter {
+            case 0: break
+            default: break
+            }
+        }
+        
+        return nil
+    }
+    
     func image() -> AnyImage {
         
         let ihdr = self.ihdr
@@ -223,51 +264,297 @@ struct PNGImageDecoder : ImageRepDecoder {
         let IDAT_data = Data(chunks.filter { $0.signature == "IDAT" }.flatMap { $0.data })
         
         guard let data = decompress(data: IDAT_data, compression: ihdr.compression) else { return AnyImage(width: width, height: height, colorSpace: colorSpace, resolution: resolution) }
+        guard let pixels = filter(data, ihdr) else { return AnyImage(width: width, height: height, colorSpace: colorSpace, resolution: resolution) }
         
-        print(IDAT_data, data.count)
+        let bitsPerPixel: UInt8
+        
+        switch ihdr.colour {
+        case 0: bitsPerPixel = 1 * ihdr.bitDepth
+        case 2: bitsPerPixel = 3 * ihdr.bitDepth
+        case 3: bitsPerPixel = 1 * ihdr.bitDepth
+        case 4: bitsPerPixel = 2 * ihdr.bitDepth
+        case 6: bitsPerPixel = 4 * ihdr.bitDepth
+        default: fatalError()
+        }
+        
+        let pixels_count = (pixels.count << 3) / Int(bitsPerPixel)
+        
+        print(IDAT_data.count, data.count, pixels.count)
         
         switch ihdr.colour {
         case 0:
             
-            let colorSpace = ColorSpace.calibratedGray(from: _colorSpace)
-            
-            var image = Image<ColorPixel<GrayColorModel>>(width: width, height: height, colorSpace: colorSpace, resolution: resolution)
-            
-            return AnyImage(image)
+            switch ihdr.bitDepth {
+            case 1, 2, 4:
+                var image = Image<ColorPixel<GrayColorModel>>(width: width, height: height, colorSpace: ColorSpace.calibratedGray(from: _colorSpace), resolution: resolution)
+                
+                return AnyImage(image)
+                
+            case 8:
+                var image = Image<Gray16ColorPixel>(width: width, height: height, colorSpace: ColorSpace.calibratedGray(from: _colorSpace), resolution: resolution)
+                
+                pixels.withUnsafeBytes { (source: UnsafePointer<UInt8>) in
+                    
+                    var source = source
+                    
+                    image.withUnsafeMutableBufferPointer { destination in
+                        
+                        if var destination = destination.baseAddress {
+                            
+                            for _ in 0..<pixels_count {
+                                destination.pointee = Gray16ColorPixel(white: source.pointee)
+                                source += 1
+                                destination += 1
+                            }
+                        }
+                    }
+                }
+                
+                return AnyImage(image)
+                
+            case 16:
+                
+                var image = Image<Gray32ColorPixel>(width: width, height: height, colorSpace: ColorSpace.calibratedGray(from: _colorSpace), resolution: resolution)
+                
+                pixels.withUnsafeBytes { (source: UnsafePointer<BEUInt16>) in
+                    
+                    var source = source
+                    
+                    image.withUnsafeMutableBufferPointer { destination in
+                        
+                        if var destination = destination.baseAddress {
+                            
+                            for _ in 0..<pixels_count {
+                                destination.pointee = Gray32ColorPixel(white: source.pointee.representingValue)
+                                source += 1
+                                destination += 1
+                            }
+                        }
+                    }
+                }
+                
+                return AnyImage(image)
+                
+            default: fatalError()
+            }
             
         case 2:
             
-            let colorSpace = _colorSpace
-            
-            var image = Image<ColorPixel<RGBColorModel>>(width: width, height: height, colorSpace: colorSpace, resolution: resolution)
-            
-            return AnyImage(image)
+            switch ihdr.bitDepth {
+            case 8:
+                var image = Image<ARGB32ColorPixel>(width: width, height: height, colorSpace: _colorSpace, resolution: resolution)
+                
+                pixels.withUnsafeBytes { (source: UnsafePointer<(UInt8, UInt8, UInt8)>) in
+                    
+                    var source = source
+                    
+                    image.withUnsafeMutableBufferPointer { destination in
+                        
+                        if var destination = destination.baseAddress {
+                            
+                            for _ in 0..<pixels_count {
+                                let (r, g, b) = source.pointee
+                                destination.pointee = ARGB32ColorPixel(red: r, green: g, blue: b)
+                                source += 1
+                                destination += 1
+                            }
+                        }
+                    }
+                }
+                
+                return AnyImage(image)
+                
+            case 16:
+                var image = Image<ARGB64ColorPixel>(width: width, height: height, colorSpace: _colorSpace, resolution: resolution)
+                
+                pixels.withUnsafeBytes { (source: UnsafePointer<(BEUInt16, BEUInt16, BEUInt16)>) in
+                    
+                    var source = source
+                    
+                    image.withUnsafeMutableBufferPointer { destination in
+                        
+                        if var destination = destination.baseAddress {
+                            
+                            for _ in 0..<pixels_count {
+                                let (r, g, b) = source.pointee
+                                destination.pointee = ARGB64ColorPixel(red: r.representingValue, green: g.representingValue, blue: b.representingValue)
+                                source += 1
+                                destination += 1
+                            }
+                        }
+                    }
+                }
+                
+                return AnyImage(image)
+                
+            default: fatalError()
+            }
             
         case 3:
             
-            let colorSpace = _colorSpace
-            
-            var image = Image<ARGB32ColorPixel>(width: width, height: height, colorSpace: colorSpace, resolution: resolution)
+            var image = Image<ARGB32ColorPixel>(width: width, height: height, colorSpace: _colorSpace, resolution: resolution)
             
             guard let palette = self.palette else { return AnyImage(image) }
+            
+            palette.withUnsafeBufferPointer { palette in
+                
+                pixels.withUnsafeBytes { (source: UnsafePointer<UInt8>) in
+                    
+                    var source = source
+                    
+                    image.withUnsafeMutableBufferPointer { destination in
+                        
+                        if var destination = destination.baseAddress {
+                            
+                            var counter = pixels_count
+                            
+                            while counter > 0 {
+                                
+                                var p = source.pointee
+                                
+                                let _count: Int
+                                let shift: Int
+                                let mask: UInt8
+                                
+                                switch bitsPerPixel {
+                                case 1:
+                                    _count = 8
+                                    shift = 7
+                                    mask = 0x80
+                                case 2:
+                                    _count = 4
+                                    shift = 6
+                                    mask = 0xC0
+                                case 4:
+                                    _count = 2
+                                    shift = 4
+                                    mask = 0xF0
+                                case 8:
+                                    _count = 1
+                                    shift = 0
+                                    mask = 0xFF
+                                default: fatalError()
+                                }
+                                
+                                for _ in 0..<min(counter, _count) {
+                                    let index = (p & mask) >> shift
+                                    p <<= bitsPerPixel
+                                    counter -= 1
+                                    destination.pointee = index < palette.count ? palette[Int(index)] : ARGB32ColorPixel()
+                                    destination += 1
+                                }
+                                
+                                source += 1
+                            }
+                        }
+                    }
+                }
+            }
             
             return AnyImage(image)
             
         case 4:
-            
-            let colorSpace = ColorSpace.calibratedGray(from: _colorSpace)
-            
-            var image = Image<ColorPixel<GrayColorModel>>(width: width, height: height, colorSpace: colorSpace, resolution: resolution)
-            
-            return AnyImage(image)
-            
+            switch ihdr.bitDepth {
+            case 8:
+                var image = Image<Gray16ColorPixel>(width: width, height: height, colorSpace: ColorSpace.calibratedGray(from: _colorSpace), resolution: resolution)
+                
+                pixels.withUnsafeBytes { (source: UnsafePointer<(UInt8, UInt8)>) in
+                    
+                    var source = source
+                    
+                    image.withUnsafeMutableBufferPointer { destination in
+                        
+                        if var destination = destination.baseAddress {
+                            
+                            for _ in 0..<pixels_count {
+                                let (w, a) = source.pointee
+                                destination.pointee = Gray16ColorPixel(white: w, opacity: a)
+                                source += 1
+                                destination += 1
+                            }
+                        }
+                    }
+                }
+                
+                return AnyImage(image)
+                
+            case 16:
+                
+                var image = Image<Gray32ColorPixel>(width: width, height: height, colorSpace: ColorSpace.calibratedGray(from: _colorSpace), resolution: resolution)
+                
+                pixels.withUnsafeBytes { (source: UnsafePointer<(BEUInt16, BEUInt16)>) in
+                    
+                    var source = source
+                    
+                    image.withUnsafeMutableBufferPointer { destination in
+                        
+                        if var destination = destination.baseAddress {
+                            
+                            for _ in 0..<pixels_count {
+                                let (w, a) = source.pointee
+                                destination.pointee = Gray32ColorPixel(white: w.representingValue, opacity: a.representingValue)
+                                source += 1
+                                destination += 1
+                            }
+                        }
+                    }
+                }
+                
+                return AnyImage(image)
+                
+            default: fatalError()
+            }
         case 6:
             
-            let colorSpace = _colorSpace
-            
-            var image = Image<ColorPixel<RGBColorModel>>(width: width, height: height, colorSpace: colorSpace, resolution: resolution)
-            
-            return AnyImage(image)
+            switch ihdr.bitDepth {
+            case 8:
+                var image = Image<ARGB32ColorPixel>(width: width, height: height, colorSpace: _colorSpace, resolution: resolution)
+                
+                pixels.withUnsafeBytes { (source: UnsafePointer<(UInt8, UInt8, UInt8, UInt8)>) in
+                    
+                    var source = source
+                    
+                    image.withUnsafeMutableBufferPointer { destination in
+                        
+                        if var destination = destination.baseAddress {
+                            
+                            for _ in 0..<pixels_count {
+                                let (r, g, b, a) = source.pointee
+                                destination.pointee = ARGB32ColorPixel(red: r, green: g, blue: b, opacity: a)
+                                source += 1
+                                destination += 1
+                            }
+                        }
+                    }
+                }
+                
+                return AnyImage(image)
+                
+            case 16:
+                var image = Image<ARGB64ColorPixel>(width: width, height: height, colorSpace: _colorSpace, resolution: resolution)
+                
+                pixels.withUnsafeBytes { (source: UnsafePointer<(BEUInt16, BEUInt16, BEUInt16, BEUInt16)>) in
+                    
+                    var source = source
+                    
+                    image.withUnsafeMutableBufferPointer { destination in
+                        
+                        if var destination = destination.baseAddress {
+                            
+                            for _ in 0..<pixels_count {
+                                let (r, g, b, a) = source.pointee
+                                destination.pointee = ARGB64ColorPixel(red: r.representingValue, green: g.representingValue, blue: b.representingValue, opacity: a.representingValue)
+                                source += 1
+                                destination += 1
+                            }
+                        }
+                    }
+                }
+                
+                return AnyImage(image)
+                
+            default: fatalError()
+            }
             
         default: fatalError()
         }
@@ -298,6 +585,161 @@ extension PNGImageDecoder {
             self.compression = data[10..<11].withUnsafeBytes { $0.pointee }
             self.filter = data[11..<12].withUnsafeBytes { $0.pointee }
             self.interlace = data[12..<13].withUnsafeBytes { $0.pointee }
+        }
+    }
+}
+
+func PNGFilter0(_ data: Data, _ previous: Data?, _ bitsPerPixel: UInt8, _ encode: Bool, _ result: inout Data) {
+    
+    func average(_ a: UInt8, _ b: UInt8) -> UInt8 {
+        return (a &+ b) >> 1
+    }
+    func paeth(_ a: UInt8, _ b: UInt8, _ c: UInt8) -> UInt8 {
+        let _a = Int16(a)
+        let _b = Int16(b)
+        let _c = Int16(c)
+        let p = _a &+ _b &- _c
+        let pa = abs(p - _a)
+        let pb = abs(p - _b)
+        let pc = abs(p - _c)
+        if pa <= pb && pa <= pc {
+            return a
+        } else if pb <= pc {
+            return b
+        } else {
+            return c
+        }
+    }
+    
+    let stride = max(1, Int(bitsPerPixel >> 3))
+    
+    if let type = data.first {
+        
+        let pixel = data.advanced(by: 1)
+        let pixel_count = pixel.count
+        
+        func proccess(_ r: UnsafeMutablePointer<UInt8>, _ x: UnsafePointer<UInt8>) {
+            
+            let _min = min(pixel_count, stride)
+            
+            var r = r + _min
+            var x = x + _min
+            var a = x - stride
+            
+            if encode {
+                for _ in _min..<pixel_count {
+                    switch type {
+                    case 1: r.pointee = x.pointee &- a.pointee
+                    case 3: r.pointee = x.pointee &- average(a.pointee, 0)
+                    case 4: r.pointee = x.pointee &- paeth(a.pointee, 0, 0)
+                    default: break
+                    }
+                    r += 1
+                    x += 1
+                    a += 1
+                }
+            } else {
+                for _ in _min..<pixel_count {
+                    switch type {
+                    case 1: r.pointee = x.pointee &+ a.pointee
+                    case 3: r.pointee = x.pointee &+ average(a.pointee, 0)
+                    case 4: r.pointee = x.pointee &+ paeth(a.pointee, 0, 0)
+                    default: break
+                    }
+                    r += 1
+                    x += 1
+                    a += 1
+                }
+            }
+        }
+        
+        func proccess2(_ r: UnsafeMutablePointer<UInt8>, _ x: UnsafePointer<UInt8>, _ b: UnsafePointer<UInt8>) {
+            
+            let _min = min(pixel_count, stride)
+            
+            var r = r
+            var x = x
+            var a = x - stride
+            var b = b
+            var c = b - stride
+            
+            if encode {
+                for _ in 0..<_min {
+                    switch type {
+                    case 2: r.pointee = x.pointee &- b.pointee
+                    case 3: r.pointee = x.pointee &- average(0, b.pointee)
+                    case 4: r.pointee = x.pointee &- paeth(0, b.pointee, 0)
+                    default: break
+                    }
+                    r += 1
+                    x += 1
+                    a += 1
+                    b += 1
+                    c += 1
+                }
+                for _ in _min..<pixel_count {
+                    switch type {
+                    case 1: r.pointee = x.pointee &- a.pointee
+                    case 2: r.pointee = x.pointee &- b.pointee
+                    case 3: r.pointee = x.pointee &- average(a.pointee, b.pointee)
+                    case 4: r.pointee = x.pointee &- paeth(a.pointee, b.pointee, c.pointee)
+                    default: break
+                    }
+                    r += 1
+                    x += 1
+                    a += 1
+                    b += 1
+                    c += 1
+                }
+            } else {
+                for _ in 0..<_min {
+                    switch type {
+                    case 2: r.pointee = x.pointee &+ b.pointee
+                    case 3: r.pointee = x.pointee &+ average(0, b.pointee)
+                    case 4: r.pointee = x.pointee &+ paeth(0, b.pointee, 0)
+                    default: break
+                    }
+                    r += 1
+                    x += 1
+                    a += 1
+                    b += 1
+                    c += 1
+                }
+                for _ in _min..<pixel_count {
+                    switch type {
+                    case 1: r.pointee = x.pointee &+ a.pointee
+                    case 2: r.pointee = x.pointee &+ b.pointee
+                    case 3: r.pointee = x.pointee &+ average(a.pointee, b.pointee)
+                    case 4: r.pointee = x.pointee &+ paeth(a.pointee, b.pointee, c.pointee)
+                    default: break
+                    }
+                    r += 1
+                    x += 1
+                    a += 1
+                    b += 1
+                    c += 1
+                }
+            }
+        }
+        
+        let offset = result.count
+        result.append(pixel)
+        
+        if type != 0 {
+            
+            if encode {
+                if let previous = previous {
+                    result.withUnsafeMutableBytes { _r in pixel.withUnsafeBytes { _x in previous.withUnsafeBytes { _b in proccess2(_r + offset, _x, _b) } } }
+                } else {
+                    result.withUnsafeMutableBytes { _r in pixel.withUnsafeBytes { _x in proccess(_r + offset, _x) } }
+                }
+            } else {
+                if let previous = previous {
+                    result.withUnsafeMutableBytes { _r in previous.withUnsafeBytes { _b in proccess2(_r + offset, _r + offset, _b) } }
+                } else {
+                    result.withUnsafeMutableBytes { _r in proccess(_r + offset, _r + offset) }
+                }
+            }
         }
     }
 }

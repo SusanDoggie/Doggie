@@ -40,7 +40,25 @@ protocol ImageRepBase {
 
 public struct ImageRep {
     
-    let base: ImageRepBase
+    private let base: ImageRepBase
+    private let cache: Cache
+}
+
+extension ImageRep {
+    
+    private class Cache {
+        var image: AnyImage?
+    }
+}
+
+extension ImageRep {
+    
+    public var image: AnyImage {
+        if cache.image == nil {
+            cache.image = base.image()
+        }
+        return cache.image!
+    }
 }
 
 extension ImageRep {
@@ -62,6 +80,7 @@ extension ImageRep {
         for Decoder in decoders {
             if let decoder = try Decoder.init(data: Data(data)) {
                 self.base = decoder
+                self.cache = Cache()
                 return
             }
         }
@@ -74,10 +93,19 @@ extension ImageRep {
     
     public init<Pixel>(image: Image<Pixel>) {
         self.base = AnyImage(image)
+        self.cache = Cache()
     }
     
     public init(image: AnyImage) {
         self.base = image
+        self.cache = Cache()
+    }
+}
+
+extension AnyImage : ImageRepBase {
+    
+    func image() -> AnyImage {
+        return self
     }
 }
 
@@ -140,31 +168,14 @@ extension ImageRep : CustomStringConvertible {
     }
 }
 
-protocol ImageRepDecoder : ImageRepBase {
-    
-    init?(data: Data) throws
-}
-
-protocol ImageRepEncoder {
-    
-    static func encode(image: AnyImage, properties: [ImageRep.PropertyKey : Any]) -> Data?
-}
-
-extension AnyImage : ImageRepBase {
-    
-    func image() -> AnyImage {
-        return self
-    }
-}
-
 extension AnyImage {
     
     public init(imageRep: ImageRep) {
-        self = imageRep.base.image()
+        self = imageRep.image
     }
     
     public init(data: Data) throws {
-        self.init(imageRep: try ImageRep(data: data))
+        self = try ImageRep(data: data).image
     }
 }
 
