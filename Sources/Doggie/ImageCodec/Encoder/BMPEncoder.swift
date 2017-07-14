@@ -43,7 +43,7 @@ struct BMPEncoder : ImageRepEncoder {
             
             var buffer = Data(capacity: 54 + pixel_size)
             
-            buffer.encode("BM" as BMPHeader.Signature)
+            buffer.encode("BM" as Signature<BEUInt16>)
             buffer.encode(LEUInt32(54 + pixel_size))
             buffer.encode(0 as LEUInt16)
             buffer.encode(0 as LEUInt16)
@@ -84,7 +84,7 @@ struct BMPEncoder : ImageRepEncoder {
             
             var buffer = Data(capacity: 70 + pixel_size)
             
-            buffer.encode("BM" as BMPHeader.Signature)
+            buffer.encode("BM" as Signature<BEUInt16>)
             buffer.encode(LEUInt32(70 + pixel_size))
             buffer.encode(0 as LEUInt16)
             buffer.encode(0 as LEUInt16)

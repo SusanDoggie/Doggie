@@ -514,7 +514,7 @@ struct BMPImageDecoder : ImageRepDecoder {
 
 struct BMPHeader {
     
-    var signature: Signature
+    var signature: Signature<BEUInt16>
     var size: LEUInt32
     var reserved1: LEUInt16
     var reserved2: LEUInt16
@@ -747,18 +747,18 @@ struct BITMAPINFOHEADER : DIBHeader {
     // BITMAPV4HEADER
     
     var colorSpaceType: ColorSpaceType = 0
-    var redX: FXPT2DOT30 = 0
-    var redY: FXPT2DOT30 = 0
-    var redZ: FXPT2DOT30 = 0
-    var greenX: FXPT2DOT30 = 0
-    var greenY: FXPT2DOT30 = 0
-    var greenZ: FXPT2DOT30 = 0
-    var blueX: FXPT2DOT30 = 0
-    var blueY: FXPT2DOT30 = 0
-    var blueZ: FXPT2DOT30 = 0
-    var redGamma: U16Fixed16Number = 0
-    var greenGamma: U16Fixed16Number = 0
-    var blueGamma: U16Fixed16Number = 0
+    var redX: Fixed30Number<LEUInt32> = 0
+    var redY: Fixed30Number<LEUInt32> = 0
+    var redZ: Fixed30Number<LEUInt32> = 0
+    var greenX: Fixed30Number<LEUInt32> = 0
+    var greenY: Fixed30Number<LEUInt32> = 0
+    var greenZ: Fixed30Number<LEUInt32> = 0
+    var blueX: Fixed30Number<LEUInt32> = 0
+    var blueY: Fixed30Number<LEUInt32> = 0
+    var blueZ: Fixed30Number<LEUInt32> = 0
+    var redGamma: Fixed16Number<LEUInt32> = 0
+    var greenGamma: Fixed16Number<LEUInt32> = 0
+    var blueGamma: Fixed16Number<LEUInt32> = 0
     
     // BITMAPV5HEADER
     
@@ -902,59 +902,6 @@ struct BITMAPINFOHEADER : DIBHeader {
     }
 }
 
-protocol BMPSignatureProtocol: RawRepresentable, Hashable, ExpressibleByIntegerLiteral, ExpressibleByStringLiteral, CustomStringConvertible, DataCodable {
-    
-    associatedtype Bytes : FixedWidthInteger
-    
-    var rawValue: Bytes { get set }
-    
-    init(rawValue: Bytes)
-}
-
-extension BMPSignatureProtocol {
-    
-    var hashValue: Int {
-        return rawValue.hashValue
-    }
-    
-    init(integerLiteral value: Bytes.IntegerLiteralType) {
-        self.init(rawValue: Bytes(integerLiteral: value))
-    }
-    
-    init(stringLiteral value: StaticString) {
-        precondition(value.utf8CodeUnitCount == Bytes.bitWidth >> 3)
-        self.init(rawValue: value.utf8Start.withMemoryRebound(to: Bytes.self, capacity: 1) { Bytes(bigEndian: $0.pointee) })
-    }
-    
-    var description: String {
-        var code = self.rawValue.bigEndian
-        return String(bytes: UnsafeRawBufferPointer(start: &code, count: Bytes.bitWidth >> 3), encoding: .ascii) ?? ""
-    }
-}
-
-extension BMPSignatureProtocol {
-    
-    func encode(to data: inout Data) {
-        self.rawValue.encode(to: &data)
-    }
-    
-    init(from data: inout Data) throws {
-        self.init(rawValue: try Bytes(from: &data))
-    }
-}
-
-extension BMPHeader {
-    
-    struct Signature: BMPSignatureProtocol {
-        
-        var rawValue: BEUInt16
-        
-        init(rawValue: BEUInt16) {
-            self.rawValue = rawValue
-        }
-    }
-}
-
 extension BITMAPINFOHEADER {
     
     struct CompressionType: RawRepresentable, Hashable, ExpressibleByIntegerLiteral, DataCodable {
@@ -988,7 +935,7 @@ extension BITMAPINFOHEADER {
         }
     }
     
-    struct ColorSpaceType: BMPSignatureProtocol {
+    struct ColorSpaceType: SignatureProtocol {
         
         var rawValue: LEUInt32
         
@@ -1034,35 +981,3 @@ extension BITMAPINFOHEADER {
     }
 }
 
-extension BITMAPINFOHEADER {
-    
-    struct FXPT2DOT30 : BinaryFixedPoint, DataCodable {
-        
-        typealias RepresentingValue = Double
-        
-        var bitPattern: LEUInt32
-        
-        init(bitPattern: BitPattern) {
-            self.bitPattern = bitPattern
-        }
-        
-        static var fractionBitCount: Int {
-            return 30
-        }
-    }
-    
-    struct U16Fixed16Number : BinaryFixedPoint, DataCodable {
-        
-        typealias RepresentingValue = Double
-        
-        var bitPattern: LEUInt32
-        
-        init(bitPattern: BitPattern) {
-            self.bitPattern = bitPattern
-        }
-        
-        static var fractionBitCount: Int {
-            return 16
-        }
-    }
-}
