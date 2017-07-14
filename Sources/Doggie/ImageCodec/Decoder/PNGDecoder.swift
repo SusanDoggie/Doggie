@@ -162,8 +162,7 @@ struct PNGImageDecoder : ImageRepDecoder {
             
             let compression = icc.data[separator + 1..<separator + 2].withUnsafeBytes { $0.pointee as UInt8 }
             
-            guard let _iccData = try? decompress(data: icc.data.suffix(from: separator + 2), compression: compression) else { return .sRGB }
-            guard let iccData = _iccData else { return .sRGB }
+            guard let iccData = decompress(data: icc.data.suffix(from: separator + 2), compression: compression) else { return .sRGB }
             guard let iccColorSpace = try? AnyColorSpace(iccData: iccData) else { return .sRGB }
             
             return iccColorSpace.base as? ColorSpace<RGBColorModel> ?? .sRGB
@@ -201,16 +200,21 @@ struct PNGImageDecoder : ImageRepDecoder {
         }
     }
     
-    func decompress(data: Data, compression: UInt8) throws -> Data? {
+    func decompress(data: Data, compression: UInt8) -> Data? {
         switch compression {
         case 0:
-            guard let inflate = try? Inflate() else { throw ImageRep.Error.DecoderError("Inflate initialize failed.") }
-            return try? inflate.process(data: data) + inflate.final()
+            do {
+                let inflate = try Inflate()
+                return try? inflate.process(data: data) + inflate.final()
+            } catch let error {
+                print(error)
+                return nil
+            }
         default: return nil
         }
     }
     
-    func image() throws -> AnyImage {
+    func image() -> AnyImage {
         
         let ihdr = self.ihdr
         
@@ -218,7 +222,7 @@ struct PNGImageDecoder : ImageRepDecoder {
         
         let IDAT_data = Data(chunks.filter { $0.signature == "IDAT" }.flatMap { $0.data })
         
-        guard let data = try decompress(data: IDAT_data, compression: ihdr.compression) else { throw ImageRep.Error.InvalidFormat("Invalid IDAT format.") }
+        guard let data = decompress(data: IDAT_data, compression: ihdr.compression) else { return AnyImage(width: width, height: height, colorSpace: colorSpace, resolution: resolution) }
         
         print(IDAT_data, data.count)
         
@@ -243,9 +247,9 @@ struct PNGImageDecoder : ImageRepDecoder {
             
             let colorSpace = _colorSpace
             
-            guard let palette = self.palette else { throw ImageRep.Error.InvalidFormat("Palette not found.") }
-            
             var image = Image<ARGB32ColorPixel>(width: width, height: height, colorSpace: colorSpace, resolution: resolution)
+            
+            guard let palette = self.palette else { return AnyImage(image) }
             
             return AnyImage(image)
             

@@ -35,7 +35,7 @@ protocol ImageRepBase {
     
     var colorSpace: AnyColorSpace { get }
     
-    func image() throws -> AnyImage
+    func image() -> AnyImage
 }
 
 public struct ImageRep {
@@ -118,8 +118,6 @@ extension ImageRep {
     
     public func representation(using storageType: FileType, properties: [PropertyKey : Any]) -> Data? {
         
-        guard let image = try? base.image() else { return nil }
-        
         let Encoder: ImageRepEncoder.Type
         
         switch storageType {
@@ -131,7 +129,7 @@ extension ImageRep {
         case .tiff: Encoder = TIFFEncoder.self
         }
         
-        return Encoder.encode(image: image, properties: properties)
+        return Encoder.encode(image: base.image(), properties: properties)
     }
 }
 
@@ -154,19 +152,19 @@ protocol ImageRepEncoder {
 
 extension AnyImage : ImageRepBase {
     
-    func image() throws -> AnyImage {
+    func image() -> AnyImage {
         return self
     }
 }
 
 extension AnyImage {
     
-    public init(imageRep: ImageRep) throws {
-        self = try imageRep.base.image()
+    public init(imageRep: ImageRep) {
+        self = imageRep.base.image()
     }
     
     public init(data: Data) throws {
-        try self.init(imageRep: try ImageRep(data: data))
+        self.init(imageRep: try ImageRep(data: data))
     }
 }
 

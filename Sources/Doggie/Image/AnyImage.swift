@@ -117,8 +117,8 @@ public struct AnyImage {
 extension AnyImage {
     
     @_inlineable
-    public init(width: Int, height: Int, colorSpace: AnyColorSpace) {
-        self.init(base: colorSpace._base._createImage(width: width, height: height))
+    public init(width: Int, height: Int, colorSpace: AnyColorSpace, resolution: Resolution = Resolution(resolution: 1, unit: .point)) {
+        self.init(base: colorSpace._base._createImage(width: width, height: height, resolution: resolution))
     }
     
     @_inlineable
@@ -127,8 +127,8 @@ extension AnyImage {
     }
     
     @_inlineable
-    public init<Pixel: ColorPixelProtocol>(width: Int, height: Int, colorSpace: ColorSpace<Pixel.Model>, pixel: Pixel = Pixel()) {
-        self.init(Image(width: width, height: height, colorSpace: colorSpace, pixel: pixel))
+    public init<Pixel: ColorPixelProtocol>(width: Int, height: Int, colorSpace: ColorSpace<Pixel.Model>, pixel: Pixel = Pixel(), resolution: Resolution = Resolution(resolution: 1, unit: .point)) {
+        self.init(Image(width: width, height: height, colorSpace: colorSpace, pixel: pixel, resolution: resolution))
     }
     
     @_inlineable

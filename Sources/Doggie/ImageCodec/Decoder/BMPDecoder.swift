@@ -78,7 +78,7 @@ struct BMPImageDecoder : ImageRepDecoder {
         return AnyColorSpace(_colorSpace)
     }
     
-    func image() throws -> AnyImage {
+    func image() -> AnyImage {
         
         let pixels = data.advanced(by: Int(header.offset))
         
@@ -90,7 +90,7 @@ struct BMPImageDecoder : ImageRepDecoder {
         
         guard width > 0 && height > 0 else { return AnyImage(Image<ARGB32ColorPixel>(width: width, height: height, colorSpace: colorSpace, resolution: resolution)) }
         
-        func UncompressedPixelReader<Pixel : FixedWidthInteger>(_ rMask: Pixel, _ gMask: Pixel, _ bMask: Pixel, _ aMask: Pixel) throws -> Image<ColorPixel<RGBColorModel>> {
+        func UncompressedPixelReader<Pixel : FixedWidthInteger>(_ rMask: Pixel, _ gMask: Pixel, _ bMask: Pixel, _ aMask: Pixel) -> Image<ColorPixel<RGBColorModel>> {
             
             var rMask = UInt32(rMask)
             var gMask = UInt32(gMask)
@@ -115,12 +115,12 @@ struct BMPImageDecoder : ImageRepDecoder {
             let bMax = bMask >> bOffset
             let aMax = aMask >> aOffset
             
-            guard (rMax + 1).isPower2 else { throw ImageRep.Error.InvalidFormat("Invalid red component bit mask.") }
-            guard (gMax + 1).isPower2 else { throw ImageRep.Error.InvalidFormat("Invalid green component bit mask.") }
-            guard (bMax + 1).isPower2 else { throw ImageRep.Error.InvalidFormat("Invalid blue component bit mask.") }
-            guard (aMax + 1).isPower2 else { throw ImageRep.Error.InvalidFormat("Invalid alpha component bit mask.") }
-            
             var image = Image<ColorPixel<RGBColorModel>>(width: width, height: height, colorSpace: colorSpace, resolution: resolution)
+            
+            guard (rMax + 1).isPower2 else { return image }
+            guard (gMax + 1).isPower2 else { return image }
+            guard (bMax + 1).isPower2 else { return image }
+            guard (aMax + 1).isPower2 else { return image }
             
             pixels.withUnsafeBytes { (source: UnsafePointer<LEInteger<Pixel>>) in
                 
@@ -178,7 +178,7 @@ struct BMPImageDecoder : ImageRepDecoder {
             let rMask: UInt16 = 0x7C00
             let aMask: UInt16 = 0x0000
             
-            let image = try UncompressedPixelReader(rMask, gMask, bMask, aMask)
+            let image = UncompressedPixelReader(rMask, gMask, bMask, aMask)
             
             return AnyImage(image)
             
@@ -189,7 +189,7 @@ struct BMPImageDecoder : ImageRepDecoder {
             let rMask: UInt32 = 0x00FF0000
             let aMask: UInt32 = 0x00000000
             
-            let image = try UncompressedPixelReader(rMask, gMask, bMask, aMask)
+            let image = UncompressedPixelReader(rMask, gMask, bMask, aMask)
             
             return AnyImage(image)
             

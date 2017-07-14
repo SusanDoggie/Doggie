@@ -40,7 +40,7 @@ protocol AnyColorSpaceBaseProtocol {
     
     func _createColor<S : Sequence>(components: S, opacity: Double) -> AnyColorBaseProtocol where S.Element == Double
     
-    func _createImage(width: Int, height: Int) -> AnyImageBaseProtocol
+    func _createImage(width: Int, height: Int, resolution: Resolution) -> AnyImageBaseProtocol
     
     func _convert<Model>(_ color: Color<Model>, intent: RenderingIntent) -> AnyColorBaseProtocol
     
@@ -73,8 +73,8 @@ extension ColorSpace : AnyColorSpaceBaseProtocol {
     
     @_versioned
     @_inlineable
-    func _createImage(width: Int, height: Int) -> AnyImageBaseProtocol {
-        return Image<ColorPixel<Model>>(width: width, height: height, colorSpace: self)
+    func _createImage(width: Int, height: Int, resolution: Resolution) -> AnyImageBaseProtocol {
+        return Image<ColorPixel<Model>>(width: width, height: height, colorSpace: self, resolution: resolution)
     }
     
     @_versioned
