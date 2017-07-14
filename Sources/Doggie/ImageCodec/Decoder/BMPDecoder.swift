@@ -31,10 +31,22 @@ struct BMPImageDecoder : ImageRepDecoder {
     
     let header: BMPHeader
     
-    init?(data: Data) {
+    init?(data: Data) throws {
         guard let header = BMPHeader(data: data) else { return nil }
         self.data = data
         self.header = header
+        
+        guard header.offset <= data.count else { throw ImageRep.Error.InvalidFormat("Pixel data not found.") }
+        
+        if header.paletteSize != 0 {
+            guard header.DIB.size + 14 <= header.paletteOffset else { throw ImageRep.Error.InvalidFormat("Palette overlap with header.") }
+            
+            if header.DIB is BITMAPCOREHEADER {
+                guard header.paletteOffset + 3 * header.paletteSize <= header.offset else { throw ImageRep.Error.InvalidFormat("Pixel array overlap with palette.") }
+            } else {
+                guard header.paletteOffset + 4 * header.paletteSize <= header.offset else { throw ImageRep.Error.InvalidFormat("Pixel array overlap with palette.") }
+            }
+        }
     }
     
     var width: Int {
@@ -49,41 +61,28 @@ struct BMPImageDecoder : ImageRepDecoder {
         return header.resolution
     }
     
+    var _colorSpace: ColorSpace<RGBColorModel> {
+        if header.colorSpaceOffset != 0 && header.colorSpaceSize != 0 {
+            if header.colorSpaceOffset + header.colorSpaceSize <= data.count {
+                guard let iccColorSpace = try? AnyColorSpace(iccData: data.advanced(by: header.colorSpaceOffset)) else { return .sRGB }
+                return iccColorSpace.base as? ColorSpace<RGBColorModel> ?? .sRGB
+            } else {
+                return .sRGB
+            }
+        } else {
+            return header.colorSpace
+        }
+    }
+    
     var colorSpace: AnyColorSpace {
-        return header.colorSpace
+        return AnyColorSpace(_colorSpace)
     }
     
     func image() throws -> AnyImage {
         
-        guard header.offset <= data.count else { throw ImageRep.Error.InvalidFormat("Pixel data not found.") }
-        
-        if header.paletteSize != 0 {
-            guard header.DIB.size + 14 <= header.paletteOffset else { throw ImageRep.Error.InvalidFormat("Palette overlap with header.") }
-            
-            let paletteCount = header.paletteSize
-            
-            if header.DIB is BITMAPCOREHEADER {
-                guard header.paletteOffset + 3 * header.paletteSize <= header.offset else { throw ImageRep.Error.InvalidFormat("Pixel array overlap with palette.") }
-            } else {
-                guard header.paletteOffset + 4 * header.paletteSize <= header.offset else { throw ImageRep.Error.InvalidFormat("Pixel array overlap with palette.") }
-            }
-        }
-        
         let pixels = data.advanced(by: Int(header.offset))
         
-        let _colorSpace: AnyColorSpace
-        
-        if header.colorSpaceOffset != 0 && header.colorSpaceSize != 0 {
-            if header.colorSpaceOffset + header.colorSpaceSize <= data.count {
-                _colorSpace = (try? AnyColorSpace(iccData: data.advanced(by: header.colorSpaceOffset))) ?? AnyColorSpace(.sRGB)
-            } else {
-                _colorSpace = AnyColorSpace(.sRGB)
-            }
-        } else {
-            _colorSpace = header.colorSpace
-        }
-        
-        guard let colorSpace = _colorSpace.base as? ColorSpace<RGBColorModel> else { throw ImageRep.Error.InvalidFormat("Invalid color space.") }
+        let colorSpace = self._colorSpace
         
         let width = abs(header.width)
         let height = abs(header.height)
@@ -577,7 +576,7 @@ struct BMPHeader {
         return Int(DIB.bitsPerPixel)
     }
     
-    var colorSpace: AnyColorSpace {
+    var colorSpace: ColorSpace<RGBColorModel> {
         return DIB.colorSpace
     }
     
@@ -627,7 +626,7 @@ protocol DIBHeader {
     
     var bitsPerPixel: LEUInt16 { get }
     
-    var colorSpace: AnyColorSpace { get }
+    var colorSpace: ColorSpace<RGBColorModel> { get }
     
     var colorSpaceOffset: Int { get }
     
@@ -679,8 +678,8 @@ struct BITMAPCOREHEADER : DIBHeader {
         return 2835
     }
     
-    var colorSpace: AnyColorSpace {
-        return AnyColorSpace(.sRGB)
+    var colorSpace: ColorSpace<RGBColorModel> {
+        return .sRGB
     }
     
     var colorSpaceOffset: Int {
@@ -843,10 +842,10 @@ struct BITMAPINFOHEADER : DIBHeader {
         return Int(height)
     }
     
-    var colorSpace: AnyColorSpace {
+    var colorSpace: ColorSpace<RGBColorModel> {
         
         if self.size < 108 {
-            return AnyColorSpace(.sRGB)
+            return .sRGB
         }
         
         switch colorSpaceType {
@@ -860,15 +859,15 @@ struct BITMAPINFOHEADER : DIBHeader {
             
             let colorSpace = ColorSpace.calibratedRGB(white: white.point, red: red.point, green: green.point, blue: blue.point, gamma: (redGamma.representingValue, greenGamma.representingValue, blueGamma.representingValue))
             
-            return AnyColorSpace(colorSpace)
+            return colorSpace
             
-        case .LCS_sRGB: return AnyColorSpace(.sRGB)
-        case .LCS_WINDOWS_COLOR_SPACE: return AnyColorSpace(.sRGB)
+        case .LCS_sRGB: return .sRGB
+        case .LCS_WINDOWS_COLOR_SPACE: return .sRGB
         case .LCS_PROFILE_LINKED: break
         case .LCS_PROFILE_EMBEDDED: break
         default: break
         }
-        return AnyColorSpace(.sRGB)
+        return .sRGB
     }
     
     var colorSpaceOffset: Int {

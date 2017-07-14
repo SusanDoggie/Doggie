@@ -60,7 +60,7 @@ extension ImageRep {
             ]
         
         for Decoder in decoders {
-            if let decoder = Decoder.init(data: Data(data)) {
+            if let decoder = try Decoder.init(data: Data(data)) {
                 self.base = decoder
                 return
             }
@@ -144,7 +144,7 @@ extension ImageRep : CustomStringConvertible {
 
 protocol ImageRepDecoder : ImageRepBase {
     
-    init?(data: Data)
+    init?(data: Data) throws
 }
 
 protocol ImageRepEncoder {

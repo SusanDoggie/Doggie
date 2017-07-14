@@ -31,7 +31,7 @@ struct PNGImageDecoder : ImageRepDecoder {
     
     let chunks: [PNGChunk]
     
-    init?(data: Data) {
+    init?(data: Data) throws {
         
         let signature = data[0..<8].withUnsafeBytes { $0.pointee as (UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8) }
         
@@ -52,6 +52,37 @@ struct PNGImageDecoder : ImageRepDecoder {
         
         self.data = data
         self.chunks = _chunks
+        
+        let ihdr = self.ihdr
+        
+        switch ihdr.colour {
+        case 0:
+            switch ihdr.bitDepth {
+            case 1, 2, 4, 8, 16: break
+            default: throw ImageRep.Error.InvalidFormat("Disllowed bit depths.")
+            }
+        case 2:
+            switch ihdr.bitDepth {
+            case 8, 16: break
+            default: throw ImageRep.Error.InvalidFormat("Disllowed bit depths.")
+            }
+        case 3:
+            switch ihdr.bitDepth {
+            case 1, 2, 4, 8: break
+            default: throw ImageRep.Error.InvalidFormat("Disllowed bit depths.")
+            }
+        case 4:
+            switch ihdr.bitDepth {
+            case 8, 16: break
+            default: throw ImageRep.Error.InvalidFormat("Disllowed bit depths.")
+            }
+        case 6:
+            switch ihdr.bitDepth {
+            case 8, 16: break
+            default: throw ImageRep.Error.InvalidFormat("Disllowed bit depths.")
+            }
+        default: throw ImageRep.Error.InvalidFormat("Unknown colour type.")
+        }
     }
     
     var width: Int {
@@ -89,35 +120,56 @@ struct PNGImageDecoder : ImageRepDecoder {
         palette.reserveCapacity(count)
         
         plte.data.withUnsafeBytes { (ptr: UnsafePointer<(UInt8, UInt8, UInt8)>) in
-            var ptr = ptr
-            for _ in 0..<count {
-                let (r, g, b) = ptr.pointee
-                palette.append(ARGB32ColorPixel(red: r, green: g, blue: b))
-                ptr += 1
+            
+            if let tRNS = chunks.first(where: { $0.signature == "tRNS" }) {
+                
+                var counter = tRNS.data.count
+                
+                tRNS.data.withUnsafeBytes { (ptr2: UnsafePointer<UInt8>) in
+                    var ptr = ptr
+                    var ptr2 = ptr2
+                    for _ in 0..<count {
+                        let (r, g, b) = ptr.pointee
+                        palette.append(ARGB32ColorPixel(red: r, green: g, blue: b, opacity: counter > 0 ? ptr2.pointee : 255))
+                        ptr += 1
+                        ptr2 += 1
+                        counter -= 1
+                    }
+                }
+                
+            } else {
+                var ptr = ptr
+                for _ in 0..<count {
+                    let (r, g, b) = ptr.pointee
+                    palette.append(ARGB32ColorPixel(red: r, green: g, blue: b))
+                    ptr += 1
+                }
             }
         }
         
         return palette
     }
     
-    var colorSpace: AnyColorSpace {
+    var _colorSpace: ColorSpace<RGBColorModel> {
         
         if chunks.contains(where: { $0.signature == "sRGB" }) {
-            return AnyColorSpace(.sRGB)
+            return .sRGB
         }
+        
         if let icc = chunks.first(where: { $0.signature == "iCCP" }) {
             
-            guard let separator = icc.data.index(of: 0), 1...80 ~= separator && icc.data.count > separator + 2 else { return AnyColorSpace(.sRGB) }
+            guard let separator = icc.data.index(of: 0), 1...80 ~= separator && icc.data.count > separator + 2 else { return .sRGB }
             
             let compression = icc.data[separator + 1..<separator + 2].withUnsafeBytes { $0.pointee as UInt8 }
             
-            guard let _iccData = try? decompress(data: icc.data.suffix(from: separator + 2), compression: compression) else { return AnyColorSpace(.sRGB) }
-            guard let iccData = _iccData else { return AnyColorSpace(.sRGB) }
+            guard let _iccData = try? decompress(data: icc.data.suffix(from: separator + 2), compression: compression) else { return .sRGB }
+            guard let iccData = _iccData else { return .sRGB }
+            guard let iccColorSpace = try? AnyColorSpace(iccData: iccData) else { return .sRGB }
             
-            return (try? AnyColorSpace(iccData: iccData)) ?? AnyColorSpace(.sRGB)
+            return iccColorSpace.base as? ColorSpace<RGBColorModel> ?? .sRGB
         }
         
-        guard let chrm = chunks.first(where: { $0.signature == "cHRM" }), chrm.data.count >= 32 else { return AnyColorSpace(.sRGB) }
+        guard let chrm = chunks.first(where: { $0.signature == "cHRM" }), chrm.data.count >= 32 else { return .sRGB }
         
         let whiteX = chrm.data[0..<4].withUnsafeBytes { $0.pointee as BEUInt32 }
         let whiteY = chrm.data[4..<8].withUnsafeBytes { $0.pointee as BEUInt32 }
@@ -135,9 +187,17 @@ struct PNGImageDecoder : ImageRepDecoder {
         
         if let gama = chunks.first(where: { $0.signature == "gAMA" }), gama.data.count >= 4 {
             let gamma = gama.data.withUnsafeBytes { $0.pointee as BEUInt32 }
-            return AnyColorSpace(ColorSpace.calibratedRGB(white: white, red: red, green: green, blue: blue, gamma: 0.00001 * Double(gamma.representingValue)))
+            return ColorSpace.calibratedRGB(white: white, red: red, green: green, blue: blue, gamma: 0.00001 * Double(gamma.representingValue))
         } else {
-            return AnyColorSpace(ColorSpace.calibratedRGB(white: white, red: red, green: green, blue: blue))
+            return ColorSpace.calibratedRGB(white: white, red: red, green: green, blue: blue)
+        }
+    }
+    
+    var colorSpace: AnyColorSpace {
+        switch ihdr.colour {
+        case 0, 4: return AnyColorSpace(ColorSpace.calibratedGray(from: _colorSpace))
+        case 2, 3, 6: return AnyColorSpace(_colorSpace)
+        default: fatalError()
         }
     }
     
@@ -164,41 +224,49 @@ struct PNGImageDecoder : ImageRepDecoder {
         
         switch ihdr.colour {
         case 0:
-            switch ihdr.bitDepth {
-            case 1, 2, 4, 8, 16: break
-            default: throw ImageRep.Error.InvalidFormat("Disllowed bit depths.")
-            }
+            
+            let colorSpace = ColorSpace.calibratedGray(from: _colorSpace)
+            
+            var image = Image<ColorPixel<GrayColorModel>>(width: width, height: height, colorSpace: colorSpace, resolution: resolution)
+            
+            return AnyImage(image)
             
         case 2:
-            switch ihdr.bitDepth {
-            case 8, 16: break
-            default: throw ImageRep.Error.InvalidFormat("Disllowed bit depths.")
-            }
+            
+            let colorSpace = _colorSpace
+            
+            var image = Image<ColorPixel<RGBColorModel>>(width: width, height: height, colorSpace: colorSpace, resolution: resolution)
+            
+            return AnyImage(image)
             
         case 3:
-            switch ihdr.bitDepth {
-            case 1, 2, 4, 8: break
-            default: throw ImageRep.Error.InvalidFormat("Disllowed bit depths.")
-            }
+            
+            let colorSpace = _colorSpace
             
             guard let palette = self.palette else { throw ImageRep.Error.InvalidFormat("Palette not found.") }
             
+            var image = Image<ARGB32ColorPixel>(width: width, height: height, colorSpace: colorSpace, resolution: resolution)
+            
+            return AnyImage(image)
+            
         case 4:
-            switch ihdr.bitDepth {
-            case 8, 16: break
-            default: throw ImageRep.Error.InvalidFormat("Disllowed bit depths.")
-            }
+            
+            let colorSpace = ColorSpace.calibratedGray(from: _colorSpace)
+            
+            var image = Image<ColorPixel<GrayColorModel>>(width: width, height: height, colorSpace: colorSpace, resolution: resolution)
+            
+            return AnyImage(image)
             
         case 6:
-            switch ihdr.bitDepth {
-            case 8, 16: break
-            default: throw ImageRep.Error.InvalidFormat("Disllowed bit depths.")
-            }
             
-        default: throw ImageRep.Error.InvalidFormat("Unknown colour type.")
+            let colorSpace = _colorSpace
+            
+            var image = Image<ColorPixel<RGBColorModel>>(width: width, height: height, colorSpace: colorSpace, resolution: resolution)
+            
+            return AnyImage(image)
+            
+        default: fatalError()
         }
-        
-        throw ImageRep.Error.InvalidFormat("Unimplement.")
     }
 }
 
