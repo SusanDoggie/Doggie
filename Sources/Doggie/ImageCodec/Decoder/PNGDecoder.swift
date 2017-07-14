@@ -592,7 +592,7 @@ extension PNGImageDecoder {
 func PNGFilter0(_ data: Data, _ previous: Data?, _ bitsPerPixel: UInt8, _ encode: Bool, _ result: inout Data) {
     
     func average(_ a: UInt8, _ b: UInt8) -> UInt8 {
-        return (a &+ b) >> 1
+        return UInt8((UInt16(a) &+ UInt16(b)) >> 1)
     }
     func paeth(_ a: UInt8, _ b: UInt8, _ c: UInt8) -> UInt8 {
         let _a = Int16(a)
