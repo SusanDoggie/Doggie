@@ -556,7 +556,7 @@ extension ICCColorSpace {
         switch a2b {
         case .monochrome:
             
-            result = self.connection._convertFromXYZ(cieXYZ.white)
+            result = self.connection._convertFromXYZ(cieXYZ.white * cieXYZ.normalizeMatrix)
             result.luminance = color.component(0)
             
         case let .matrix(matrix, _):
