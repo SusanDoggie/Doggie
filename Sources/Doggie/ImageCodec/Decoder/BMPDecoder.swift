@@ -289,7 +289,7 @@ struct BMPImageDecoder : ImageRepDecoder {
                     
                     pixels.withUnsafeBytes { (source: UnsafePointer<UInt8>) in
                         
-                        let endOfData = pixels.count + Int(bitPattern: source)
+                        let start = source
                         var source = source
                         
                         image.withUnsafeMutableBufferPointer { destination in
@@ -305,50 +305,24 @@ struct BMPImageDecoder : ImageRepDecoder {
                                 
                                 for _ in 0..<height {
                                     
-                                    var _source = source
                                     var _destination = destination
                                     
-                                    var counter = width
+                                    let count: Int
                                     
-                                    while counter > 0 {
+                                    switch bitWidth {
+                                    case 1: count = min(width, min((width + 7) >> 3, pixels.count - (source - start)) << 3)
+                                    case 2: count = min(width, min((width + 3) >> 2, pixels.count - (source - start)) << 2)
+                                    case 4: count = min(width, min((width + 1) >> 1, pixels.count - (source - start)) << 1)
+                                    case 8: count = min(width, pixels.count - (source - start))
+                                    default: fatalError()
+                                    }
+                                    
+                                    guard count > 0 else { return }
+                                    
+                                    for index in ImageRepDecoderBitStream(buffer: source, count: count, bitWidth: Int(bitWidth)) {
                                         
-                                        guard Int(bitPattern: _source) < endOfData else { return }
-                                        
-                                        var p = _source.pointee
-                                        
-                                        let _count: Int
-                                        let shift: Int
-                                        let mask: UInt8
-                                        
-                                        switch bitWidth {
-                                        case 1:
-                                            _count = 8
-                                            shift = 7
-                                            mask = 0x80
-                                        case 2:
-                                            _count = 4
-                                            shift = 6
-                                            mask = 0xC0
-                                        case 4:
-                                            _count = 2
-                                            shift = 4
-                                            mask = 0xF0
-                                        case 8:
-                                            _count = 1
-                                            shift = 0
-                                            mask = 0xFF
-                                        default: fatalError()
-                                        }
-                                        
-                                        for _ in 0..<min(counter, _count) {
-                                            let index = (p & mask) >> shift
-                                            p <<= bitWidth
-                                            counter -= 1
-                                            _destination.pointee = index < palette.count ? palette[Int(index)] : ARGB32ColorPixel()
-                                            _destination += 1
-                                        }
-                                        
-                                        _source += 1
+                                        _destination.pointee = index < palette.count ? palette[Int(index)] : ARGB32ColorPixel()
+                                        _destination += 1
                                     }
                                     
                                     source += row1

@@ -30,3 +30,63 @@ protocol ImageRepDecoder : ImageRepBase {
     init?(data: Data) throws
 }
 
+struct ImageRepDecoderBitStream : Sequence, IteratorProtocol {
+    
+    let mask: UInt8
+    let shift: Int
+    let bitWidth: Int
+    let count1: Int
+    let count2: Int
+    
+    var counter1: Int
+    var counter2: Int
+    var byte: UInt8
+    var buffer: UnsafePointer<UInt8>
+    
+    init(buffer: UnsafePointer<UInt8>, count: Int, bitWidth: Int) {
+        switch bitWidth {
+        case 1:
+            self.count1 = 8
+            self.shift = 7
+            self.mask = 0x80
+        case 2:
+            self.count1 = 4
+            self.shift = 6
+            self.mask = 0xC0
+        case 4:
+            self.count1 = 2
+            self.shift = 4
+            self.mask = 0xF0
+        case 8:
+            self.count1 = 1
+            self.shift = 0
+            self.mask = 0xFF
+        default: fatalError()
+        }
+        self.count2 = count
+        self.bitWidth = bitWidth
+        self.counter1 = 0
+        self.counter2 = 0
+        self.byte = 0
+        self.buffer = buffer
+    }
+    
+    mutating func next() -> UInt8? {
+        
+        guard counter2 < count2 else { return nil }
+        
+        if counter1 == 0 {
+            byte = buffer.pointee
+            buffer += 1
+            counter1 = count1
+        }
+        
+        let value = (byte & mask) >> shift
+        byte <<= bitWidth
+        
+        counter1 -= 1
+        counter2 += 1
+        
+        return value
+    }
+}

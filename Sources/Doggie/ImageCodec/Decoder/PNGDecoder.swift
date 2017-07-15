@@ -254,62 +254,141 @@ struct PNGImageDecoder : ImageRepDecoder {
             switch ihdr.filter {
             case 0:
                 
-                if bitsPerPixel >= 8 {
+                var result = Data(count: max(1, Int(bitsPerPixel >> 3)) * width * height)
+                
+                let starting_row = [0, 0, 4, 0, 2, 0, 1]
+                let starting_col = [0, 4, 0, 2, 0, 1, 0]
+                let row_increment = [8, 8, 8, 4, 4, 2, 2]
+                let col_increment = [8, 8, 4, 4, 2, 2, 1]
+                let block_height = [8, 8, 4, 4, 2, 2, 1]
+                let block_width = [8, 4, 4, 2, 2, 1, 1]
+                
+                var data = data
+                
+                result.withUnsafeMutableBytes { (destination: UnsafeMutablePointer<UInt8>) in
                     
-                    var result = Data(count: Int(bitsPerPixel >> 3) * width * height)
-                    
-                    let starting_row = [0, 0, 4, 0, 2, 0, 1]
-                    let starting_col = [0, 4, 0, 2, 0, 1, 0]
-                    let row_increment = [8, 8, 8, 4, 4, 2, 2]
-                    let col_increment = [8, 8, 4, 4, 2, 2, 1]
-                    let block_height = [8, 8, 4, 4, 2, 2, 1]
-                    let block_width = [8, 4, 4, 2, 2, 1, 1]
-                    
-                    var data = data
-                    
-                    result.withUnsafeMutableBytes { (destination: UnsafeMutablePointer<UInt8>) in
+                    for pass in 0..<7 {
                         
-                        for pass in 0..<7 {
+                        let _starting_row = starting_row[pass]
+                        let _starting_col = starting_col[pass]
+                        let _row_increment = row_increment[pass]
+                        let _col_increment = col_increment[pass]
+                        let _block_height = block_height[pass]
+                        let _block_width = block_width[pass]
+                        
+                        var previous: Data?
+                        
+                        for row in stride(from: _starting_row, to: height, by: _row_increment) {
                             
-                            let _starting_row = starting_row[pass]
-                            let _starting_col = starting_col[pass]
-                            let _row_increment = row_increment[pass]
-                            let _col_increment = col_increment[pass]
-                            let _block_height = block_height[pass]
-                            let _block_width = block_width[pass]
+                            let s = width - _starting_col
+                            let sample_count = s / _col_increment + (s % _col_increment == 0 ? 0 : 1)
                             
-                            var previous: Data?
+                            let scanline_bitSize = Int(bitsPerPixel) * sample_count
+                            let scanline_size = scanline_bitSize >> 3 + (scanline_bitSize & 7 == 0 ? 0 : 1)
+                            var scanline = Data(capacity: scanline_size)
                             
-                            for row in stride(from: _starting_row, to: height, by: _row_increment) {
+                            guard data.count >= scanline_size + 1 else { return }
+                            
+                            PNGFilter0(data.popFirst(scanline_size + 1), previous, bitsPerPixel, false, &scanline)
+                            
+                            func filling(_ value: UInt8, _ column: Int, _ row: Int, _ _width: Int, _ _height: Int) {
                                 
-                                let s = width - _starting_col
-                                let sample_count = s / _col_increment + (s % _col_increment == 0 ? 0 : 1)
+                                let position = row * width + column
+                                var destination = destination + position
                                 
-                                let scanline_size = Int(bitsPerPixel >> 3) * sample_count
-                                var scanline = Data(capacity: scanline_size)
-                                
-                                PNGFilter0(data.popFirst(scanline_size + 1), previous, bitsPerPixel, false, &scanline)
-                                
-                                scanline.withUnsafeBytes { (source: UnsafePointer<UInt8>) in
+                                for _ in 0..<_height {
                                     
+                                    var _destination = destination
+                                    
+                                    for _ in 0..<_width {
+                                        _destination.pointee = value
+                                        _destination += 1
+                                    }
+                                    
+                                    destination += width
+                                }
+                            }
+                            
+                            func filling2(_ offset: Int, _ value: UnsafePointer<UInt8>, _ column: Int, _ row: Int, _ _width: Int, _ _height: Int) {
+                                
+                                let position = row * width + column
+                                var destination = destination + position * offset
+                                
+                                for _ in 0..<_height {
+                                    
+                                    var _destination = destination
+                                    
+                                    for _ in 0..<_width {
+                                        memcpy(_destination, value, offset)
+                                        _destination += offset
+                                    }
+                                    
+                                    destination += width * offset
+                                }
+                            }
+                            
+                            scanline.withUnsafeBytes { (source: UnsafePointer<UInt8>) in
+                                
+                                var source = source
+                                
+                                switch bitsPerPixel {
+                                case 1:
+                                    
+                                    var _col = stride(from: _starting_col, to: width, by: _col_increment).makeIterator()
+                                    loop: while true {
+                                        var p = source.pointee
+                                        for _ in 0..<8 {
+                                            guard let col = _col.next() else { break loop }
+                                            let index = (p & 0x80) >> 7
+                                            p <<= bitsPerPixel
+                                            filling(index, col, row, min(_block_width, width - col), min(_block_height, height - row))
+                                        }
+                                        source += 1
+                                    }
+                                    
+                                case 2:
+                                    
+                                    var _col = stride(from: _starting_col, to: width, by: _col_increment).makeIterator()
+                                    loop: while true {
+                                        var p = source.pointee
+                                        for _ in 0..<4 {
+                                            guard let col = _col.next() else { break loop }
+                                            let index = (p & 0xC0) >> 6
+                                            p <<= bitsPerPixel
+                                            filling(index, col, row, min(_block_width, width - col), min(_block_height, height - row))
+                                        }
+                                        source += 1
+                                    }
+                                    
+                                case 4:
+                                    
+                                    var _col = stride(from: _starting_col, to: width, by: _col_increment).makeIterator()
+                                    loop: while true {
+                                        var p = source.pointee
+                                        for _ in 0..<2 {
+                                            guard let col = _col.next() else { break loop }
+                                            let index = (p & 0xF0) >> 4
+                                            p <<= bitsPerPixel
+                                            filling(index, col, row, min(_block_width, width - col), min(_block_height, height - row))
+                                        }
+                                        source += 1
+                                    }
+                                    
+                                default:
+                                    let offset = Int(bitsPerPixel >> 3)
                                     for col in stride(from: _starting_col, to: width, by: _col_increment) {
-                                        
-                                        let _width = min(_block_width, width - col)
-                                        let _height = min(_block_height, height - row)
-                                        
-                                        let position = row * width + col
-                                        
-                                        var destination = destination + position * Int(bitsPerPixel >> 3)
-                                        
+                                        filling2(offset, source, col, row, min(_block_width, width - col), min(_block_height, height - row))
+                                        source += offset
                                     }
                                 }
-                                
-                                previous = scanline
                             }
+                            
+                            previous = scanline
                         }
                     }
-                    
                 }
+                
+                return result
                 
             default: break
             }
@@ -332,9 +411,9 @@ struct PNGImageDecoder : ImageRepDecoder {
         let bitsPerPixel: UInt8
         
         switch ihdr.colour {
-        case 0: bitsPerPixel = 1 * ihdr.bitDepth
+        case 0: bitsPerPixel = ihdr.interlace == 0 ? ihdr.bitDepth : max(8, ihdr.bitDepth)
         case 2: bitsPerPixel = 3 * ihdr.bitDepth
-        case 3: bitsPerPixel = 1 * ihdr.bitDepth
+        case 3: bitsPerPixel = ihdr.interlace == 0 ? ihdr.bitDepth : max(8, ihdr.bitDepth)
         case 4: bitsPerPixel = 2 * ihdr.bitDepth
         case 6: bitsPerPixel = 4 * ihdr.bitDepth
         default: fatalError()
@@ -349,7 +428,45 @@ struct PNGImageDecoder : ImageRepDecoder {
             
             switch ihdr.bitDepth {
             case 1, 2, 4:
+                
                 var image = Image<ColorPixel<GrayColorModel>>(width: width, height: height, colorSpace: ColorSpace.calibratedGray(from: _colorSpace), resolution: resolution)
+                
+                pixels.withUnsafeBytes { (source: UnsafePointer<UInt8>) in
+                    
+                    var source = source
+                    
+                    image.withUnsafeMutableBufferPointer { destination in
+                        
+                        if var destination = destination.baseAddress {
+                            
+                            if ihdr.interlace == 0 {
+                                
+                                let d: Double
+                                
+                                switch bitsPerPixel {
+                                case 1: d = 1
+                                case 2: d = 3
+                                case 4: d = 15
+                                default: fatalError()
+                                }
+                                
+                                for value in ImageRepDecoderBitStream(buffer: source, count: pixels_count, bitWidth: Int(bitsPerPixel)) {
+                                    
+                                    destination.pointee = ColorPixel(white: Double(value) / d)
+                                    destination += 1
+                                }
+                                
+                            } else {
+                                let d = Double(1 << ihdr.bitDepth)
+                                for _ in 0..<pixels_count {
+                                    destination.pointee = ColorPixel(white: Double(source.pointee) / d)
+                                    source += 1
+                                    destination += 1
+                                }
+                            }
+                        }
+                    }
+                }
                 
                 return AnyImage(image)
                 
@@ -469,45 +586,21 @@ struct PNGImageDecoder : ImageRepDecoder {
                         
                         if var destination = destination.baseAddress {
                             
-                            var counter = pixels_count
-                            
-                            while counter > 0 {
+                            if ihdr.interlace == 0 {
                                 
-                                var p = source.pointee
-                                
-                                let _count: Int
-                                let shift: Int
-                                let mask: UInt8
-                                
-                                switch bitsPerPixel {
-                                case 1:
-                                    _count = 8
-                                    shift = 7
-                                    mask = 0x80
-                                case 2:
-                                    _count = 4
-                                    shift = 6
-                                    mask = 0xC0
-                                case 4:
-                                    _count = 2
-                                    shift = 4
-                                    mask = 0xF0
-                                case 8:
-                                    _count = 1
-                                    shift = 0
-                                    mask = 0xFF
-                                default: fatalError()
-                                }
-                                
-                                for _ in 0..<min(counter, _count) {
-                                    let index = (p & mask) >> shift
-                                    p <<= bitsPerPixel
-                                    counter -= 1
+                                for index in ImageRepDecoderBitStream(buffer: source, count: pixels_count, bitWidth: Int(bitsPerPixel)) {
+                                    
                                     destination.pointee = index < palette.count ? palette[Int(index)] : ARGB32ColorPixel()
                                     destination += 1
                                 }
                                 
-                                source += 1
+                            } else {
+                                for _ in 0..<pixels_count {
+                                    let index = source.pointee
+                                    destination.pointee = index < palette.count ? palette[Int(index)] : ARGB32ColorPixel()
+                                    source += 1
+                                    destination += 1
+                                }
                             }
                         }
                     }
