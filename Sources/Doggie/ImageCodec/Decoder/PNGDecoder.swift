@@ -33,6 +33,8 @@ struct PNGImageDecoder : ImageRepDecoder {
     
     init?(data: Data) throws {
         
+        guard data.count > 8 else { return nil }
+        
         let signature = data[0..<8].withUnsafeBytes { $0.pointee as (UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8) }
         
         guard (signature.0, signature.1, signature.2, signature.3) == (0x89, 0x50, 0x4E, 0x47) else { return nil }
@@ -227,14 +229,17 @@ struct PNGImageDecoder : ImageRepDecoder {
         default: fatalError()
         }
         
+        let width = Int(ihdr.width)
+        let height = Int(ihdr.height)
+        
         if ihdr.interlace == 0 {
             switch ihdr.filter {
             case 0:
             
-                var result = Data(capacity: data.count)
-                var previous: Data?
+                let row = Int(bitsPerPixel >> 3) * width
                 
-                let row = Int(bitsPerPixel >> 3) * Int(ihdr.width)
+                var result = Data(capacity: row * height)
+                var previous: Data?
                 
                 for scanline in data.lazy.slice(by: row + 1) as LazySliceSequence {
                     PNGFilter0(scanline, previous, bitsPerPixel, false, &result)
@@ -247,7 +252,65 @@ struct PNGImageDecoder : ImageRepDecoder {
             }
         } else {
             switch ihdr.filter {
-            case 0: break
+            case 0:
+                
+                if bitsPerPixel >= 8 {
+                    
+                    var result = Data(count: Int(bitsPerPixel >> 3) * width * height)
+                    
+                    let starting_row = [0, 0, 4, 0, 2, 0, 1]
+                    let starting_col = [0, 4, 0, 2, 0, 1, 0]
+                    let row_increment = [8, 8, 8, 4, 4, 2, 2]
+                    let col_increment = [8, 8, 4, 4, 2, 2, 1]
+                    let block_height = [8, 8, 4, 4, 2, 2, 1]
+                    let block_width = [8, 4, 4, 2, 2, 1, 1]
+                    
+                    var data = data
+                    
+                    result.withUnsafeMutableBytes { (destination: UnsafeMutablePointer<UInt8>) in
+                        
+                        for pass in 0..<7 {
+                            
+                            let _starting_row = starting_row[pass]
+                            let _starting_col = starting_col[pass]
+                            let _row_increment = row_increment[pass]
+                            let _col_increment = col_increment[pass]
+                            let _block_height = block_height[pass]
+                            let _block_width = block_width[pass]
+                            
+                            var previous: Data?
+                            
+                            for row in stride(from: _starting_row, to: height, by: _row_increment) {
+                                
+                                let s = width - _starting_col
+                                let sample_count = s / _col_increment + (s % _col_increment == 0 ? 0 : 1)
+                                
+                                let scanline_size = Int(bitsPerPixel >> 3) * sample_count
+                                var scanline = Data(capacity: scanline_size)
+                                
+                                PNGFilter0(data.popFirst(scanline_size + 1), previous, bitsPerPixel, false, &scanline)
+                                
+                                scanline.withUnsafeBytes { (source: UnsafePointer<UInt8>) in
+                                    
+                                    for col in stride(from: _starting_col, to: width, by: _col_increment) {
+                                        
+                                        let _width = min(_block_width, width - col)
+                                        let _height = min(_block_height, height - row)
+                                        
+                                        let position = row * width + col
+                                        
+                                        var destination = destination + position * Int(bitsPerPixel >> 3)
+                                        
+                                    }
+                                }
+                                
+                                previous = scanline
+                            }
+                        }
+                    }
+                    
+                }
+                
             default: break
             }
         }
@@ -613,7 +676,7 @@ func PNGFilter0(_ data: Data, _ previous: Data?, _ bitsPerPixel: UInt8, _ encode
     
     let stride = max(1, Int(bitsPerPixel >> 3))
     
-    if let type = data.first {
+    if let type = data.first, data.count > 1 {
         
         let pixel = data.advanced(by: 1)
         let pixel_count = pixel.count

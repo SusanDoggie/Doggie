@@ -510,6 +510,7 @@ extension iccProfile.TagData {
                 return nil
             }
             let offset = Int(header.offsetCLUT) - 8
+            guard data.count > offset else { return nil }
             return iccProfile.TagData.CLUTTableView(inputChannels: inputChannels, outputChannels: outputChannels, data: data.advanced(by: offset))
         }
     }
@@ -623,6 +624,7 @@ extension iccProfile.TagData {
                 return nil
             }
             let offset = Int(header.offsetCLUT) - 8
+            guard data.count > offset else { return nil }
             return iccProfile.TagData.CLUTTableView(inputChannels: inputChannels, outputChannels: outputChannels, data: data.advanced(by: offset))
         }
     }

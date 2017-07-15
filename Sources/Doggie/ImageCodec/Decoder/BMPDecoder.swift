@@ -36,7 +36,7 @@ struct BMPImageDecoder : ImageRepDecoder {
         self.data = data
         self.header = header
         
-        guard header.offset <= data.count else { throw ImageRep.Error.InvalidFormat("Pixel data not found.") }
+        guard header.offset < data.count else { throw ImageRep.Error.InvalidFormat("Pixel data not found.") }
         
         if header.paletteSize != 0 {
             guard header.DIB.size + 14 <= header.paletteOffset else { throw ImageRep.Error.InvalidFormat("Palette overlap with header.") }
@@ -529,6 +529,8 @@ struct BMPHeader {
         self.reserved1 = data[6..<8].withUnsafeBytes { $0.pointee }
         self.reserved2 = data[8..<10].withUnsafeBytes { $0.pointee }
         self.offset = data[10..<14].withUnsafeBytes { $0.pointee }
+        
+        guard data.count > 18 else { return nil }
         
         let DIBSize: LEUInt32 = data.advanced(by: 14).withUnsafeBytes { $0.pointee }
         

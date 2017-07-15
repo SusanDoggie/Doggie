@@ -58,6 +58,8 @@ struct iccProfile {
                 let offset = try _data.decode(BEUInt32.self)
                 let size = try _data.decode(BEUInt32.self)
                 
+                guard size > 8 else { continue }
+                
                 let start = Int(offset)
                 let end = start + Int(size)
                 
