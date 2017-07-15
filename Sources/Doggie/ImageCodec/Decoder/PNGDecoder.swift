@@ -809,10 +809,10 @@ func PNGFilter0(_ data: Data, _ previous: Data?, _ bitsPerPixel: UInt8, _ encode
 
 struct PNGChunk {
     
-    var signature: Signature
+    var signature: Signature<BEUInt32>
     var data: Data
     
-    init(signature: Signature, data: Data) {
+    init(signature: Signature<BEUInt32>, data: Data) {
         self.signature = signature
         self.data = Data(data)
     }
@@ -834,7 +834,7 @@ struct PNGChunk {
     }
 }
 
-func PNGCRC32(_ signature: PNGChunk.Signature, _ data: Data) -> UInt32 {
+func PNGCRC32(_ signature: Signature<BEUInt32>, _ data: Data) -> UInt32 {
     
     let table: [UInt32] = [
         0x00000000, 0x77073096, 0xEE0E612C, 0x990951BA, 0x076DC419, 0x706AF48F, 0xE963A535, 0x9E6495A3,
@@ -885,48 +885,3 @@ func PNGCRC32(_ signature: PNGChunk.Signature, _ data: Data) -> UInt32 {
     return ~c
 }
 
-extension PNGChunk {
-    
-    struct Signature: RawRepresentable, Hashable, ExpressibleByIntegerLiteral, ExpressibleByStringLiteral, CustomStringConvertible, DataCodable {
-        
-        typealias Bytes = BEUInt32
-        
-        var rawValue: Bytes
-        
-        init(rawValue: Bytes) {
-            self.rawValue = rawValue
-        }
-    }
-}
-
-extension PNGChunk.Signature {
-    
-    var hashValue: Int {
-        return rawValue.hashValue
-    }
-    
-    init(integerLiteral value: Bytes.IntegerLiteralType) {
-        self.init(rawValue: Bytes(integerLiteral: value))
-    }
-    
-    init(stringLiteral value: StaticString) {
-        precondition(value.utf8CodeUnitCount == Bytes.bitWidth >> 3)
-        self.init(rawValue: value.utf8Start.withMemoryRebound(to: Bytes.self, capacity: 1) { Bytes(bigEndian: $0.pointee) })
-    }
-    
-    var description: String {
-        var code = self.rawValue.bigEndian
-        return String(bytes: UnsafeRawBufferPointer(start: &code, count: Bytes.bitWidth >> 3), encoding: .ascii) ?? ""
-    }
-}
-
-extension PNGChunk.Signature {
-    
-    func encode(to data: inout Data) {
-        self.rawValue.encode(to: &data)
-    }
-    
-    init(from data: inout Data) throws {
-        self.init(rawValue: try Bytes(from: &data))
-    }
-}

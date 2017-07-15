@@ -95,14 +95,14 @@ extension iccProfile.TagData {
 
 extension iccProfile.TagData {
     
-    var s15Fixed16Array: [iccProfile.S15Fixed16Number]? {
+    var s15Fixed16Array: [Fixed16Number<BEInt32>]? {
         
-        return type == .S15Fixed16Array ? data.withUnsafeBytes { Array(UnsafeBufferPointer(start: $0, count: data.count / MemoryLayout<iccProfile.S15Fixed16Number>.stride)) } : nil
+        return type == .S15Fixed16Array ? data.withUnsafeBytes { Array(UnsafeBufferPointer(start: $0, count: data.count / MemoryLayout<Fixed16Number<BEInt32>>.stride)) } : nil
     }
     
-    var u16Fixed16Array: [iccProfile.U16Fixed16Number]? {
+    var u16Fixed16Array: [Fixed16Number<BEUInt32>]? {
         
-        return type == .U16Fixed16Array ? data.withUnsafeBytes { Array(UnsafeBufferPointer(start: $0, count: data.count / MemoryLayout<iccProfile.U16Fixed16Number>.stride)) } : nil
+        return type == .U16Fixed16Array ? data.withUnsafeBytes { Array(UnsafeBufferPointer(start: $0, count: data.count / MemoryLayout<Fixed16Number<BEUInt32>>.stride)) } : nil
     }
 }
 
@@ -161,9 +161,9 @@ extension iccProfile.TagData {
             return self.count == 1
         }
         
-        var gamma: iccProfile.U8Fixed8Number? {
+        var gamma: Fixed8Number<BEUInt16>? {
             
-            return isGamma ? iccProfile.U8Fixed8Number(bitPattern: point(position: 0)) : nil
+            return isGamma ? Fixed8Number<BEUInt16>(bitPattern: point(position: 0)) : nil
         }
     }
 }

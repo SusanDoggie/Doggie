@@ -76,6 +76,10 @@
 		086F064D1EDC65D600BA70C8 /* DrawGradientMesh.swift in Sources */ = {isa = PBXBuildFile; fileRef = 086F064B1EDC65D600BA70C8 /* DrawGradientMesh.swift */; };
 		087FE5BA1A372D97005A2E9E /* Doggie_Mac.h in Headers */ = {isa = PBXBuildFile; fileRef = 087FE5B91A372D97005A2E9E /* Doggie_Mac.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		087FE5C01A372D97005A2E9E /* Doggie.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 087FE5B51A372D97005A2E9E /* Doggie.framework */; settings = {ATTRIBUTES = (Required, ); }; };
+		0889F2C81F18FF1D0020E750 /* FixedNumber.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0889F2C71F18FF1D0020E750 /* FixedNumber.swift */; };
+		0889F2C91F18FF1D0020E750 /* FixedNumber.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0889F2C71F18FF1D0020E750 /* FixedNumber.swift */; };
+		0889F2CB1F1904EB0020E750 /* Signature.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0889F2CA1F1904EB0020E750 /* Signature.swift */; };
+		0889F2CC1F1904EB0020E750 /* Signature.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0889F2CA1F1904EB0020E750 /* Signature.swift */; };
 		08B085481E9A20720037DECE /* Algorithm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08B085471E9A20720037DECE /* Algorithm.swift */; };
 		08B085491E9A20720037DECE /* Algorithm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08B085471E9A20720037DECE /* Algorithm.swift */; };
 		08B457E61EDD3223007AA4F0 /* Arithmetic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08B457E51EDD3223007AA4F0 /* Arithmetic.swift */; };
@@ -345,6 +349,8 @@
 		087FE5B91A372D97005A2E9E /* Doggie_Mac.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Doggie_Mac.h; sourceTree = "<group>"; };
 		087FE5BF1A372D97005A2E9E /* Doggie_MacTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Doggie_MacTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		087FE5C51A372D97005A2E9E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		0889F2C71F18FF1D0020E750 /* FixedNumber.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FixedNumber.swift; sourceTree = "<group>"; };
+		0889F2CA1F1904EB0020E750 /* Signature.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Signature.swift; sourceTree = "<group>"; };
 		08B085471E9A20720037DECE /* Algorithm.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Algorithm.swift; sourceTree = "<group>"; };
 		08B457E51EDD3223007AA4F0 /* Arithmetic.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Arithmetic.swift; sourceTree = "<group>"; };
 		08B68A301ED07A2400F8D423 /* ColorSpace.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ColorSpace.swift; sourceTree = "<group>"; };
@@ -585,6 +591,7 @@
 				0A7A1FAC1F04FBFC0016B3FB /* ColorPixel */,
 				0A9F28181EF0D5FD00E69976 /* Color */,
 				08B68A2F1ED07A2400F8D423 /* ColorSpace */,
+				0889F2C61F18FEF30020E750 /* CommonFormat */,
 				08458ACE1E2E627600D01813 /* Image */,
 				0A94BE9E1F108E8100F1BCD2 /* ImageCodec */,
 				0A39A6B31ED9342C00804004 /* ImageContext */,
@@ -688,6 +695,15 @@
 				087FE5C51A372D97005A2E9E /* Info.plist */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		0889F2C61F18FEF30020E750 /* CommonFormat */ = {
+			isa = PBXGroup;
+			children = (
+				0889F2C71F18FF1D0020E750 /* FixedNumber.swift */,
+				0889F2CA1F1904EB0020E750 /* Signature.swift */,
+			);
+			path = CommonFormat;
 			sourceTree = "<group>";
 		};
 		08AF77AE1A3A10510042491F /* Tests */ = {
@@ -1221,6 +1237,7 @@
 				086F064C1EDC65D600BA70C8 /* DrawGradientMesh.swift in Sources */,
 				08B68A3A1ED07A8300F8D423 /* LinearToneColorSpace.swift in Sources */,
 				08458AF41E2E627600D01813 /* CircularConvolve.swift in Sources */,
+				0889F2CB1F1904EB0020E750 /* Signature.swift in Sources */,
 				08458B121E2E627600D01813 /* Fourier.swift in Sources */,
 				08458B601E2E627600D01813 /* Thread.swift in Sources */,
 				0AE71A031EF51DF80086923C /* AnyColorSpace.swift in Sources */,
@@ -1245,6 +1262,7 @@
 				0A53E4661E35AEF80060FB83 /* Graph.swift in Sources */,
 				0A06975E1E4D6732005CF664 /* NSImage.swift in Sources */,
 				0A9F28271EF0D9DF00E69976 /* XYZColorModel.swift in Sources */,
+				0889F2C81F18FF1D0020E750 /* FixedNumber.swift in Sources */,
 				0A1C14291EF3C5A5001ADB7F /* ICCColorSpace.swift in Sources */,
 				0A06975B1E4D66A3005CF664 /* Filter.swift in Sources */,
 				0A967E4F1F132DC0007E38E4 /* JPEG2000Encoder.swift in Sources */,
@@ -1369,6 +1387,7 @@
 				086F064D1EDC65D600BA70C8 /* DrawGradientMesh.swift in Sources */,
 				08B68A3B1ED07A8300F8D423 /* LinearToneColorSpace.swift in Sources */,
 				08458AF51E2E627600D01813 /* CircularConvolve.swift in Sources */,
+				0889F2CC1F1904EB0020E750 /* Signature.swift in Sources */,
 				08458B131E2E627600D01813 /* Fourier.swift in Sources */,
 				08458B611E2E627600D01813 /* Thread.swift in Sources */,
 				0AE71A041EF51DF80086923C /* AnyColorSpace.swift in Sources */,
@@ -1393,6 +1412,7 @@
 				0A53E4671E35AEF80060FB83 /* Graph.swift in Sources */,
 				0A06975F1E4D6732005CF664 /* NSImage.swift in Sources */,
 				0A9F28281EF0D9DF00E69976 /* XYZColorModel.swift in Sources */,
+				0889F2C91F18FF1D0020E750 /* FixedNumber.swift in Sources */,
 				0A1C14281EF3C5A5001ADB7F /* ICCColorSpace.swift in Sources */,
 				0A06975C1E4D66A3005CF664 /* Filter.swift in Sources */,
 				0A967E551F132DC0007E38E4 /* JPEG2000Encoder.swift in Sources */,

@@ -29,41 +29,41 @@ extension iccProfile {
     
     struct Header : DataCodable {
         
-        static let MagicNumber: Signature = "acsp"
+        static let MagicNumber: Signature<BEUInt32> = "acsp"
         
         var size: BEUInt32                                           /* Profile size in bytes */
-        var cmmId: Signature                                         /* CMM for this profile */
+        var cmmId: Signature<BEUInt32>                                         /* CMM for this profile */
         var version: BEUInt32                                        /* Format version number */
         var deviceClass: ClassSignature                              /* Type of profile */
         var colorSpace: ColorSpaceSignature                          /* Color space of data */
         var pcs: ColorSpaceSignature                                 /* PCS, XYZ or Lab only */
         var date: DateTimeNumber                                     /* Date profile was created */
-        var magic: Signature                                         /* icMagicNumber */
-        var platform: Signature                                      /* Primary Platform */
+        var magic: Signature<BEUInt32>                                         /* icMagicNumber */
+        var platform: Signature<BEUInt32>                                      /* Primary Platform */
         var flags: BEUInt32                                          /* Various bit settings */
-        var manufacturer: Signature                                  /* Device manufacturer */
-        var model: Signature                                         /* Device model number */
+        var manufacturer: Signature<BEUInt32>                                  /* Device manufacturer */
+        var model: Signature<BEUInt32>                                         /* Device model number */
         var attributes: BEUInt64                                     /* Device attributes */
         var renderingIntent: BEUInt32                                /* Rendering intent */
         var illuminant: XYZNumber                                    /* Profile illuminant */
-        var creator: Signature                                       /* Profile creator */
+        var creator: Signature<BEUInt32>                                       /* Profile creator */
         var profileID: (UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8)   /* Profile ID using RFC 1321 MD5 128bit fingerprinting */
         var reserved: (UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8)   /* Reserved for future use */
         
-        init(cmmId: Signature,
+        init(cmmId: Signature<BEUInt32>,
              version: BEUInt32,
              deviceClass: ClassSignature,
              colorSpace: ColorSpaceSignature,
              pcs: ColorSpaceSignature,
              date: DateTimeNumber,
-             platform: Signature,
+             platform: Signature<BEUInt32>,
              flags: BEUInt32,
-             manufacturer: Signature,
-             model: Signature,
+             manufacturer: Signature<BEUInt32>,
+             model: Signature<BEUInt32>,
              attributes: BEUInt64,
              renderingIntent: BEUInt32,
              illuminant: XYZNumber,
-             creator: Signature) {
+             creator: Signature<BEUInt32>) {
             
             self.size = 0
             self.cmmId = cmmId
@@ -147,59 +147,9 @@ extension iccProfile {
     }
 }
 
-protocol iccSignatureProtocol: RawRepresentable, Hashable, ExpressibleByIntegerLiteral, ExpressibleByStringLiteral, CustomStringConvertible, DataCodable {
-    
-    associatedtype Bytes : FixedWidthInteger
-    
-    var rawValue: Bytes { get set }
-    
-    init(rawValue: Bytes)
-}
-
-extension iccSignatureProtocol {
-    
-    var hashValue: Int {
-        return rawValue.hashValue
-    }
-    
-    init(integerLiteral value: Bytes.IntegerLiteralType) {
-        self.init(rawValue: Bytes(integerLiteral: value))
-    }
-    
-    init(stringLiteral value: StaticString) {
-        precondition(value.utf8CodeUnitCount == Bytes.bitWidth >> 3)
-        self.init(rawValue: value.utf8Start.withMemoryRebound(to: Bytes.self, capacity: 1) { Bytes(bigEndian: $0.pointee) })
-    }
-    
-    var description: String {
-        var code = self.rawValue.bigEndian
-        return String(bytes: UnsafeRawBufferPointer(start: &code, count: Bytes.bitWidth >> 3), encoding: .ascii) ?? ""
-    }
-}
-
-extension iccSignatureProtocol {
-    
-    func encode(to data: inout Data) {
-        self.rawValue.encode(to: &data)
-    }
-    
-    init(from data: inout Data) throws {
-        self.init(rawValue: try Bytes(from: &data))
-    }
-}
-
 extension iccProfile.Header {
     
-    struct Signature: iccSignatureProtocol {
-        
-        var rawValue: BEUInt32
-        
-        init(rawValue: BEUInt32) {
-            self.rawValue = rawValue
-        }
-    }
-    
-    struct ClassSignature: iccSignatureProtocol {
+    struct ClassSignature: SignatureProtocol {
         
         var rawValue: BEUInt32
         
@@ -216,7 +166,7 @@ extension iccProfile.Header {
         static let namedColor: ClassSignature                = "nmcl"
     }
     
-    struct ColorSpaceSignature: iccSignatureProtocol {
+    struct ColorSpaceSignature: SignatureProtocol {
         
         var rawValue: BEUInt32
         
@@ -257,7 +207,7 @@ extension iccProfile.Header {
 
 extension iccProfile {
     
-    struct TagSignature : iccSignatureProtocol {
+    struct TagSignature : SignatureProtocol {
         
         var rawValue: BEUInt32
         
@@ -335,7 +285,7 @@ extension iccProfile {
 
 extension iccProfile.TagData {
     
-    struct TagType : iccSignatureProtocol {
+    struct TagType : SignatureProtocol {
         
         var rawValue: BEUInt32
         
@@ -382,78 +332,6 @@ extension iccProfile.TagData {
 
 extension iccProfile {
     
-    struct S15Fixed16Number : BinaryFixedPoint, DataCodable {
-        
-        typealias RepresentingValue = Double
-        
-        var bitPattern: BEInt32
-        
-        init(bitPattern: BitPattern) {
-            self.bitPattern = bitPattern
-        }
-        
-        static var fractionBitCount: Int {
-            return 16
-        }
-    }
-}
-
-extension iccProfile {
-    
-    struct U16Fixed16Number : BinaryFixedPoint, DataCodable {
-        
-        typealias RepresentingValue = Double
-        
-        var bitPattern: BEUInt32
-        
-        init(bitPattern: BitPattern) {
-            self.bitPattern = bitPattern
-        }
-        
-        static var fractionBitCount: Int {
-            return 16
-        }
-    }
-}
-
-extension iccProfile {
-    
-    struct U1Fixed15Number : BinaryFixedPoint, DataCodable {
-        
-        typealias RepresentingValue = Double
-        
-        var bitPattern: BEUInt16
-        
-        init(bitPattern: BitPattern) {
-            self.bitPattern = bitPattern
-        }
-        
-        static var fractionBitCount: Int {
-            return 15
-        }
-    }
-}
-
-extension iccProfile {
-    
-    struct U8Fixed8Number : BinaryFixedPoint, DataCodable {
-        
-        typealias RepresentingValue = Double
-        
-        var bitPattern: BEUInt16
-        
-        init(bitPattern: BitPattern) {
-            self.bitPattern = bitPattern
-        }
-        
-        static var fractionBitCount: Int {
-            return 8
-        }
-    }
-}
-
-extension iccProfile {
-    
     struct DateTimeNumber : DataCodable {
         
         var year: BEUInt16
@@ -491,26 +369,26 @@ extension iccProfile {
     
     struct XYZNumber : DataCodable {
         
-        var x: S15Fixed16Number
-        var y: S15Fixed16Number
-        var z: S15Fixed16Number
+        var x: Fixed16Number<BEInt32>
+        var y: Fixed16Number<BEInt32>
+        var z: Fixed16Number<BEInt32>
         
-        init(x: S15Fixed16Number, y: S15Fixed16Number, z: S15Fixed16Number) {
+        init(x: Fixed16Number<BEInt32>, y: Fixed16Number<BEInt32>, z: Fixed16Number<BEInt32>) {
             self.x = x
             self.y = y
             self.z = z
         }
         
         init(_ xyz: XYZColorModel) {
-            self.x = S15Fixed16Number(xyz.x)
-            self.y = S15Fixed16Number(xyz.y)
-            self.z = S15Fixed16Number(xyz.z)
+            self.x = Fixed16Number<BEInt32>(xyz.x)
+            self.y = Fixed16Number<BEInt32>(xyz.y)
+            self.z = Fixed16Number<BEInt32>(xyz.z)
         }
         
         init(from data: inout Data) throws {
-            self.x = try data.decode(S15Fixed16Number.self)
-            self.y = try data.decode(S15Fixed16Number.self)
-            self.z = try data.decode(S15Fixed16Number.self)
+            self.x = try data.decode(Fixed16Number<BEInt32>.self)
+            self.y = try data.decode(Fixed16Number<BEInt32>.self)
+            self.z = try data.decode(Fixed16Number<BEInt32>.self)
         }
         
         func encode(to data: inout Data) {
@@ -523,26 +401,26 @@ extension iccProfile {
     
     struct Matrix3x3 : DataCodable {
         
-        var e00: S15Fixed16Number
-        var e01: S15Fixed16Number
-        var e02: S15Fixed16Number
-        var e10: S15Fixed16Number
-        var e11: S15Fixed16Number
-        var e12: S15Fixed16Number
-        var e20: S15Fixed16Number
-        var e21: S15Fixed16Number
-        var e22: S15Fixed16Number
+        var e00: Fixed16Number<BEInt32>
+        var e01: Fixed16Number<BEInt32>
+        var e02: Fixed16Number<BEInt32>
+        var e10: Fixed16Number<BEInt32>
+        var e11: Fixed16Number<BEInt32>
+        var e12: Fixed16Number<BEInt32>
+        var e20: Fixed16Number<BEInt32>
+        var e21: Fixed16Number<BEInt32>
+        var e22: Fixed16Number<BEInt32>
         
         init(_ matrix: Matrix) {
-            self.e00 = S15Fixed16Number(matrix.a)
-            self.e01 = S15Fixed16Number(matrix.b)
-            self.e02 = S15Fixed16Number(matrix.c)
-            self.e10 = S15Fixed16Number(matrix.e)
-            self.e11 = S15Fixed16Number(matrix.f)
-            self.e12 = S15Fixed16Number(matrix.g)
-            self.e20 = S15Fixed16Number(matrix.i)
-            self.e21 = S15Fixed16Number(matrix.j)
-            self.e22 = S15Fixed16Number(matrix.k)
+            self.e00 = Fixed16Number<BEInt32>(matrix.a)
+            self.e01 = Fixed16Number<BEInt32>(matrix.b)
+            self.e02 = Fixed16Number<BEInt32>(matrix.c)
+            self.e10 = Fixed16Number<BEInt32>(matrix.e)
+            self.e11 = Fixed16Number<BEInt32>(matrix.f)
+            self.e12 = Fixed16Number<BEInt32>(matrix.g)
+            self.e20 = Fixed16Number<BEInt32>(matrix.i)
+            self.e21 = Fixed16Number<BEInt32>(matrix.j)
+            self.e22 = Fixed16Number<BEInt32>(matrix.k)
         }
         
         var matrix: Matrix {
@@ -552,15 +430,15 @@ extension iccProfile {
         }
         
         init(from data: inout Data) throws {
-            self.e00 = try data.decode(S15Fixed16Number.self)
-            self.e01 = try data.decode(S15Fixed16Number.self)
-            self.e02 = try data.decode(S15Fixed16Number.self)
-            self.e10 = try data.decode(S15Fixed16Number.self)
-            self.e11 = try data.decode(S15Fixed16Number.self)
-            self.e12 = try data.decode(S15Fixed16Number.self)
-            self.e20 = try data.decode(S15Fixed16Number.self)
-            self.e21 = try data.decode(S15Fixed16Number.self)
-            self.e22 = try data.decode(S15Fixed16Number.self)
+            self.e00 = try data.decode(Fixed16Number<BEInt32>.self)
+            self.e01 = try data.decode(Fixed16Number<BEInt32>.self)
+            self.e02 = try data.decode(Fixed16Number<BEInt32>.self)
+            self.e10 = try data.decode(Fixed16Number<BEInt32>.self)
+            self.e11 = try data.decode(Fixed16Number<BEInt32>.self)
+            self.e12 = try data.decode(Fixed16Number<BEInt32>.self)
+            self.e20 = try data.decode(Fixed16Number<BEInt32>.self)
+            self.e21 = try data.decode(Fixed16Number<BEInt32>.self)
+            self.e22 = try data.decode(Fixed16Number<BEInt32>.self)
         }
         
         func encode(to data: inout Data) {
@@ -574,15 +452,15 @@ extension iccProfile {
         
         var m: Matrix3x3
         
-        var e03: S15Fixed16Number
-        var e13: S15Fixed16Number
-        var e23: S15Fixed16Number
+        var e03: Fixed16Number<BEInt32>
+        var e13: Fixed16Number<BEInt32>
+        var e23: Fixed16Number<BEInt32>
         
         init(_ matrix: Matrix) {
             self.m = Matrix3x3(matrix)
-            self.e03 = S15Fixed16Number(matrix.d)
-            self.e13 = S15Fixed16Number(matrix.h)
-            self.e23 = S15Fixed16Number(matrix.l)
+            self.e03 = Fixed16Number<BEInt32>(matrix.d)
+            self.e13 = Fixed16Number<BEInt32>(matrix.h)
+            self.e23 = Fixed16Number<BEInt32>(matrix.l)
         }
         
         var matrix: Matrix {
@@ -593,9 +471,9 @@ extension iccProfile {
         
         init(from data: inout Data) throws {
             self.m = try data.decode(Matrix3x3.self)
-            self.e03 = try data.decode(S15Fixed16Number.self)
-            self.e13 = try data.decode(S15Fixed16Number.self)
-            self.e23 = try data.decode(S15Fixed16Number.self)
+            self.e03 = try data.decode(Fixed16Number<BEInt32>.self)
+            self.e13 = try data.decode(Fixed16Number<BEInt32>.self)
+            self.e23 = try data.decode(Fixed16Number<BEInt32>.self)
         }
         
         func encode(to data: inout Data) {
@@ -613,28 +491,28 @@ extension iccProfile {
         
         var padding: BEUInt16
         
-        var gamma: S15Fixed16Number
+        var gamma: Fixed16Number<BEInt32>
         
-        var a: S15Fixed16Number
+        var a: Fixed16Number<BEInt32>
         
-        var b: S15Fixed16Number
+        var b: Fixed16Number<BEInt32>
         
-        var c: S15Fixed16Number
+        var c: Fixed16Number<BEInt32>
         
-        var d: S15Fixed16Number
+        var d: Fixed16Number<BEInt32>
         
-        var e: S15Fixed16Number
+        var e: Fixed16Number<BEInt32>
         
-        var f: S15Fixed16Number
+        var f: Fixed16Number<BEInt32>
         
         init(funcType: BEUInt16,
-             gamma: S15Fixed16Number,
-             a: S15Fixed16Number,
-             b: S15Fixed16Number,
-             c: S15Fixed16Number,
-             d: S15Fixed16Number,
-             e: S15Fixed16Number,
-             f: S15Fixed16Number) {
+             gamma: Fixed16Number<BEInt32>,
+             a: Fixed16Number<BEInt32>,
+             b: Fixed16Number<BEInt32>,
+             c: Fixed16Number<BEInt32>,
+             d: Fixed16Number<BEInt32>,
+             e: Fixed16Number<BEInt32>,
+             f: Fixed16Number<BEInt32>) {
             
             self.funcType = funcType
             self.padding = 0
@@ -751,7 +629,7 @@ extension iccProfile {
 
 extension iccProfile {
     
-    struct LanguageCode: iccSignatureProtocol {
+    struct LanguageCode: SignatureProtocol {
         
         var rawValue: BEUInt16
         
@@ -760,7 +638,7 @@ extension iccProfile {
         }
     }
     
-    struct CountryCode: iccSignatureProtocol {
+    struct CountryCode: SignatureProtocol {
         
         var rawValue: BEUInt16
         
