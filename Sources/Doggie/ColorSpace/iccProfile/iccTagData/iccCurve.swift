@@ -95,31 +95,31 @@ extension iccCurve : DataCodable {
             
             data.encode(iccProfile.TagType.parametricCurve)
             data.encode(0 as BEUInt32)
-            data.encode(ParametricCurve(funcType: 0, gamma: Fixed16Number<BEInt32>(gamma), a: 0, b: 0, c: 0, d: 0, e: 0, f: 0))
+            data.encode(ParametricCurve(funcType: 0, gamma: Fixed16Number(gamma), a: 0, b: 0, c: 0, d: 0, e: 0, f: 0))
             
         case let .parametric1(gamma, a, b):
             
             data.encode(iccProfile.TagType.parametricCurve)
             data.encode(0 as BEUInt32)
-            data.encode(ParametricCurve(funcType: 1, gamma: Fixed16Number<BEInt32>(gamma), a: Fixed16Number<BEInt32>(a), b: Fixed16Number<BEInt32>(b), c: 0, d: 0, e: 0, f: 0))
+            data.encode(ParametricCurve(funcType: 1, gamma: Fixed16Number(gamma), a: Fixed16Number(a), b: Fixed16Number(b), c: 0, d: 0, e: 0, f: 0))
             
         case let .parametric2(gamma, a, b, c):
             
             data.encode(iccProfile.TagType.parametricCurve)
             data.encode(0 as BEUInt32)
-            data.encode(ParametricCurve(funcType: 2, gamma: Fixed16Number<BEInt32>(gamma), a: Fixed16Number<BEInt32>(a), b: Fixed16Number<BEInt32>(b), c: Fixed16Number<BEInt32>(c), d: 0, e: 0, f: 0))
+            data.encode(ParametricCurve(funcType: 2, gamma: Fixed16Number(gamma), a: Fixed16Number(a), b: Fixed16Number(b), c: Fixed16Number(c), d: 0, e: 0, f: 0))
             
         case let .parametric3(gamma, a, b, c, d):
             
             data.encode(iccProfile.TagType.parametricCurve)
             data.encode(0 as BEUInt32)
-            data.encode(ParametricCurve(funcType: 3, gamma: Fixed16Number<BEInt32>(gamma), a: Fixed16Number<BEInt32>(a), b: Fixed16Number<BEInt32>(b), c: Fixed16Number<BEInt32>(c), d: Fixed16Number<BEInt32>(d), e: 0, f: 0))
+            data.encode(ParametricCurve(funcType: 3, gamma: Fixed16Number(gamma), a: Fixed16Number(a), b: Fixed16Number(b), c: Fixed16Number(c), d: Fixed16Number(d), e: 0, f: 0))
             
         case let .parametric4(gamma, a, b, c, d, e, f):
             
             data.encode(iccProfile.TagType.parametricCurve)
             data.encode(0 as BEUInt32)
-            data.encode(ParametricCurve(funcType: 4, gamma: Fixed16Number<BEInt32>(gamma), a: Fixed16Number<BEInt32>(a), b: Fixed16Number<BEInt32>(b), c: Fixed16Number<BEInt32>(c), d: Fixed16Number<BEInt32>(d), e: Fixed16Number<BEInt32>(e), f: Fixed16Number<BEInt32>(f)))
+            data.encode(ParametricCurve(funcType: 4, gamma: Fixed16Number(gamma), a: Fixed16Number(a), b: Fixed16Number(b), c: Fixed16Number(c), d: Fixed16Number(d), e: Fixed16Number(e), f: Fixed16Number(f)))
             
         case let .table(points):
             
@@ -172,7 +172,7 @@ extension iccCurve {
             
             switch funcType {
             case 0:
-                self.gamma = try data.decode(Fixed16Number<BEInt32>.self)
+                self.gamma = try data.decode(Fixed16Number.self)
                 self.a = 0
                 self.b = 0
                 self.c = 0
@@ -180,37 +180,37 @@ extension iccCurve {
                 self.e = 0
                 self.f = 0
             case 1:
-                self.gamma = try data.decode(Fixed16Number<BEInt32>.self)
-                self.a = try data.decode(Fixed16Number<BEInt32>.self)
-                self.b = try data.decode(Fixed16Number<BEInt32>.self)
+                self.gamma = try data.decode(Fixed16Number.self)
+                self.a = try data.decode(Fixed16Number.self)
+                self.b = try data.decode(Fixed16Number.self)
                 self.c = 0
                 self.d = 0
                 self.e = 0
                 self.f = 0
             case 2:
-                self.gamma = try data.decode(Fixed16Number<BEInt32>.self)
-                self.a = try data.decode(Fixed16Number<BEInt32>.self)
-                self.b = try data.decode(Fixed16Number<BEInt32>.self)
-                self.c = try data.decode(Fixed16Number<BEInt32>.self)
+                self.gamma = try data.decode(Fixed16Number.self)
+                self.a = try data.decode(Fixed16Number.self)
+                self.b = try data.decode(Fixed16Number.self)
+                self.c = try data.decode(Fixed16Number.self)
                 self.d = 0
                 self.e = 0
                 self.f = 0
             case 3:
-                self.gamma = try data.decode(Fixed16Number<BEInt32>.self)
-                self.a = try data.decode(Fixed16Number<BEInt32>.self)
-                self.b = try data.decode(Fixed16Number<BEInt32>.self)
-                self.c = try data.decode(Fixed16Number<BEInt32>.self)
-                self.d = try data.decode(Fixed16Number<BEInt32>.self)
+                self.gamma = try data.decode(Fixed16Number.self)
+                self.a = try data.decode(Fixed16Number.self)
+                self.b = try data.decode(Fixed16Number.self)
+                self.c = try data.decode(Fixed16Number.self)
+                self.d = try data.decode(Fixed16Number.self)
                 self.e = 0
                 self.f = 0
             case 4:
-                self.gamma = try data.decode(Fixed16Number<BEInt32>.self)
-                self.a = try data.decode(Fixed16Number<BEInt32>.self)
-                self.b = try data.decode(Fixed16Number<BEInt32>.self)
-                self.c = try data.decode(Fixed16Number<BEInt32>.self)
-                self.d = try data.decode(Fixed16Number<BEInt32>.self)
-                self.e = try data.decode(Fixed16Number<BEInt32>.self)
-                self.f = try data.decode(Fixed16Number<BEInt32>.self)
+                self.gamma = try data.decode(Fixed16Number.self)
+                self.a = try data.decode(Fixed16Number.self)
+                self.b = try data.decode(Fixed16Number.self)
+                self.c = try data.decode(Fixed16Number.self)
+                self.d = try data.decode(Fixed16Number.self)
+                self.e = try data.decode(Fixed16Number.self)
+                self.f = try data.decode(Fixed16Number.self)
             default: throw AnyColorSpace.ParserError.invalidFormat(message: "Invalid parametricCurve.")
             }
         }

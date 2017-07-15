@@ -189,15 +189,15 @@ extension CIEXYZColorSpace {
         }
         
         if self.luminance != 1 {
-            profile.setXYZ(.Luminance, iccXYZNumber(x: 0, y: Fixed16Number<BEInt32>(self.luminance), z: 0))
+            profile.setXYZ(.Luminance, iccXYZNumber(x: 0, y: Fixed16Number(self.luminance), z: 0))
         }
         
         let chromaticAdaptationMatrix = self.chromaticAdaptationMatrix(to: PCSXYZ, .default)
         
         profile.setFloat(.ChromaticAdaptation,
-                         Fixed16Number<BEInt32>(chromaticAdaptationMatrix.a), Fixed16Number<BEInt32>(chromaticAdaptationMatrix.b), Fixed16Number<BEInt32>(chromaticAdaptationMatrix.c),
-                         Fixed16Number<BEInt32>(chromaticAdaptationMatrix.e), Fixed16Number<BEInt32>(chromaticAdaptationMatrix.f), Fixed16Number<BEInt32>(chromaticAdaptationMatrix.g),
-                         Fixed16Number<BEInt32>(chromaticAdaptationMatrix.i), Fixed16Number<BEInt32>(chromaticAdaptationMatrix.j), Fixed16Number<BEInt32>(chromaticAdaptationMatrix.k))
+                         Fixed16Number(chromaticAdaptationMatrix.a), Fixed16Number(chromaticAdaptationMatrix.b), Fixed16Number(chromaticAdaptationMatrix.c),
+                         Fixed16Number(chromaticAdaptationMatrix.e), Fixed16Number(chromaticAdaptationMatrix.f), Fixed16Number(chromaticAdaptationMatrix.g),
+                         Fixed16Number(chromaticAdaptationMatrix.i), Fixed16Number(chromaticAdaptationMatrix.j), Fixed16Number(chromaticAdaptationMatrix.k))
         
         return profile
     }
@@ -261,9 +261,9 @@ extension CalibratedRGBColorSpace {
         
         let matrix = transferMatrix * self.cieXYZ.chromaticAdaptationMatrix(to: PCSXYZ, .default)
         
-        profile.setXYZ(.RedColorant, iccXYZNumber(x: Fixed16Number<BEInt32>(matrix.a), y: Fixed16Number<BEInt32>(matrix.e), z: Fixed16Number<BEInt32>(matrix.i)))
-        profile.setXYZ(.GreenColorant, iccXYZNumber(x: Fixed16Number<BEInt32>(matrix.b), y: Fixed16Number<BEInt32>(matrix.f), z: Fixed16Number<BEInt32>(matrix.j)))
-        profile.setXYZ(.BlueColorant, iccXYZNumber(x: Fixed16Number<BEInt32>(matrix.c), y: Fixed16Number<BEInt32>(matrix.g), z: Fixed16Number<BEInt32>(matrix.k)))
+        profile.setXYZ(.RedColorant, iccXYZNumber(x: Fixed16Number(matrix.a), y: Fixed16Number(matrix.e), z: Fixed16Number(matrix.i)))
+        profile.setXYZ(.GreenColorant, iccXYZNumber(x: Fixed16Number(matrix.b), y: Fixed16Number(matrix.f), z: Fixed16Number(matrix.j)))
+        profile.setXYZ(.BlueColorant, iccXYZNumber(x: Fixed16Number(matrix.c), y: Fixed16Number(matrix.g), z: Fixed16Number(matrix.k)))
         
         profile.setCurve(.RedTRC, curve: iccCurve(0))
         profile.setCurve(.GreenTRC, curve: iccCurve(1))

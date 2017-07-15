@@ -38,15 +38,15 @@ struct iccXYZNumber : DataCodable {
     }
     
     init(_ xyz: XYZColorModel) {
-        self.x = Fixed16Number<BEInt32>(xyz.x)
-        self.y = Fixed16Number<BEInt32>(xyz.y)
-        self.z = Fixed16Number<BEInt32>(xyz.z)
+        self.x = Fixed16Number(xyz.x)
+        self.y = Fixed16Number(xyz.y)
+        self.z = Fixed16Number(xyz.z)
     }
     
     init(from data: inout Data) throws {
-        self.x = try data.decode(Fixed16Number<BEInt32>.self)
-        self.y = try data.decode(Fixed16Number<BEInt32>.self)
-        self.z = try data.decode(Fixed16Number<BEInt32>.self)
+        self.x = try data.decode(Fixed16Number.self)
+        self.y = try data.decode(Fixed16Number.self)
+        self.z = try data.decode(Fixed16Number.self)
     }
     
     func encode(to data: inout Data) {

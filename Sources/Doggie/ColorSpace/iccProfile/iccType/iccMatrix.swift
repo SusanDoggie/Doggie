@@ -38,15 +38,15 @@ struct iccMatrix3x3 : DataCodable {
     var e22: Fixed16Number<BEInt32>
     
     init(_ matrix: Matrix) {
-        self.e00 = Fixed16Number<BEInt32>(matrix.a)
-        self.e01 = Fixed16Number<BEInt32>(matrix.b)
-        self.e02 = Fixed16Number<BEInt32>(matrix.c)
-        self.e10 = Fixed16Number<BEInt32>(matrix.e)
-        self.e11 = Fixed16Number<BEInt32>(matrix.f)
-        self.e12 = Fixed16Number<BEInt32>(matrix.g)
-        self.e20 = Fixed16Number<BEInt32>(matrix.i)
-        self.e21 = Fixed16Number<BEInt32>(matrix.j)
-        self.e22 = Fixed16Number<BEInt32>(matrix.k)
+        self.e00 = Fixed16Number(matrix.a)
+        self.e01 = Fixed16Number(matrix.b)
+        self.e02 = Fixed16Number(matrix.c)
+        self.e10 = Fixed16Number(matrix.e)
+        self.e11 = Fixed16Number(matrix.f)
+        self.e12 = Fixed16Number(matrix.g)
+        self.e20 = Fixed16Number(matrix.i)
+        self.e21 = Fixed16Number(matrix.j)
+        self.e22 = Fixed16Number(matrix.k)
     }
     
     var matrix: Matrix {
@@ -56,15 +56,15 @@ struct iccMatrix3x3 : DataCodable {
     }
     
     init(from data: inout Data) throws {
-        self.e00 = try data.decode(Fixed16Number<BEInt32>.self)
-        self.e01 = try data.decode(Fixed16Number<BEInt32>.self)
-        self.e02 = try data.decode(Fixed16Number<BEInt32>.self)
-        self.e10 = try data.decode(Fixed16Number<BEInt32>.self)
-        self.e11 = try data.decode(Fixed16Number<BEInt32>.self)
-        self.e12 = try data.decode(Fixed16Number<BEInt32>.self)
-        self.e20 = try data.decode(Fixed16Number<BEInt32>.self)
-        self.e21 = try data.decode(Fixed16Number<BEInt32>.self)
-        self.e22 = try data.decode(Fixed16Number<BEInt32>.self)
+        self.e00 = try data.decode(Fixed16Number.self)
+        self.e01 = try data.decode(Fixed16Number.self)
+        self.e02 = try data.decode(Fixed16Number.self)
+        self.e10 = try data.decode(Fixed16Number.self)
+        self.e11 = try data.decode(Fixed16Number.self)
+        self.e12 = try data.decode(Fixed16Number.self)
+        self.e20 = try data.decode(Fixed16Number.self)
+        self.e21 = try data.decode(Fixed16Number.self)
+        self.e22 = try data.decode(Fixed16Number.self)
     }
     
     func encode(to data: inout Data) {
@@ -84,9 +84,9 @@ struct iccMatrix3x4 : DataCodable {
     
     init(_ matrix: Matrix) {
         self.m = iccMatrix3x3(matrix)
-        self.e03 = Fixed16Number<BEInt32>(matrix.d)
-        self.e13 = Fixed16Number<BEInt32>(matrix.h)
-        self.e23 = Fixed16Number<BEInt32>(matrix.l)
+        self.e03 = Fixed16Number(matrix.d)
+        self.e13 = Fixed16Number(matrix.h)
+        self.e23 = Fixed16Number(matrix.l)
     }
     
     var matrix: Matrix {
@@ -97,9 +97,9 @@ struct iccMatrix3x4 : DataCodable {
     
     init(from data: inout Data) throws {
         self.m = try data.decode(iccMatrix3x3.self)
-        self.e03 = try data.decode(Fixed16Number<BEInt32>.self)
-        self.e13 = try data.decode(Fixed16Number<BEInt32>.self)
-        self.e23 = try data.decode(Fixed16Number<BEInt32>.self)
+        self.e03 = try data.decode(Fixed16Number.self)
+        self.e13 = try data.decode(Fixed16Number.self)
+        self.e23 = try data.decode(Fixed16Number.self)
     }
     
     func encode(to data: inout Data) {
