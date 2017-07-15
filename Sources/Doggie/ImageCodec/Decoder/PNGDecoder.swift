@@ -401,8 +401,6 @@ struct PNGImageDecoder : ImageRepDecoder {
         
         let ihdr = self.ihdr
         
-        print(ihdr)
-        
         let IDAT_data = Data(chunks.filter { $0.signature == "IDAT" }.flatMap { $0.data })
         
         guard let data = decompress(data: IDAT_data, compression: ihdr.compression) else { return AnyImage(width: width, height: height, colorSpace: colorSpace, resolution: resolution) }
@@ -420,8 +418,6 @@ struct PNGImageDecoder : ImageRepDecoder {
         }
         
         let pixels_count = (pixels.count << 3) / Int(bitsPerPixel)
-        
-        print(IDAT_data.count, data.count, pixels.count)
         
         switch ihdr.colour {
         case 0:
