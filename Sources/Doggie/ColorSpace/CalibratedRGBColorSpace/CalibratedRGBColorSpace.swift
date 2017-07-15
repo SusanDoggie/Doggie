@@ -94,7 +94,7 @@ class CalibratedRGBColorSpace : ColorSpaceBaseProtocol {
     
     @_versioned
     @_inlineable
-    func iccCurve(_ index: Int) -> ICCCurve {
+    func iccCurve(_ index: Int) -> iccCurve {
         return .identity
     }
 }
@@ -161,7 +161,7 @@ class CalibratedGammaRGBColorSpace: CalibratedRGBColorSpace {
     
     @_versioned
     @_inlineable
-    override func iccCurve(_ index: Int) -> ICCCurve {
+    override func iccCurve(_ index: Int) -> iccCurve {
         switch index {
         case 0: return .gamma(gamma.0)
         case 1: return .gamma(gamma.1)

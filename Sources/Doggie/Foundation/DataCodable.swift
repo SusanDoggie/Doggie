@@ -54,6 +54,23 @@ public enum DataDecodeError : Error {
 extension Data {
     
     @_inlineable
+    public init<T : DataEncodable>(encoding value: T) {
+        self.init()
+        value.encode(to: &self)
+    }
+    
+    @_inlineable
+    public init<S : Sequence>(encoding values: S) where S.Element : DataEncodable {
+        self.init()
+        for value in values {
+            value.encode(to: &self)
+        }
+    }
+}
+
+extension Data {
+    
+    @_inlineable
     public mutating func encode<T : DataEncodable>(_ value: T) {
         value.encode(to: &self)
     }

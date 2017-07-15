@@ -99,447 +99,6 @@ extension LabColorModel : NonnormalizedColorModel {
 }
 
 @_versioned
-@_inlineable
-func _interpolate_index(_ x: Double, _ count: Int) -> (Int, Double) {
-    var _i = 0.0
-    let _count = count - 1
-    let m = modf(x * Double(_count), &_i)
-    let i = Int(_i)
-    switch i {
-    case ..<0: return (0, 0)
-    case _count...: return (_count, 0)
-    default: return (i, m)
-    }
-}
-
-@_versioned
-@_inlineable
-func interpolate<C : RandomAccessCollection>(_ x: Double, table: C) -> Double where C.Index == Int, C.IndexDistance == Int, C.Element == Double {
-    
-    let (i, m) = _interpolate_index(x, table.count)
-    
-    let offset = table.startIndex
-    
-    if i == table.count - 1 {
-        return table[offset + i]
-    } else {
-        let a = (1 - m) * table[offset + i]
-        let b = m * table[offset + i + 1]
-        return a + b
-    }
-}
-
-@_versioned
-@_fixed_layout
-struct OneDimensionalLUT {
-    
-    @_versioned
-    let channels: Int
-    
-    @_versioned
-    let grid: Int
-    
-    @_versioned
-    let table: [Double]
-    
-    init(channels: Int, grid: Int, table: [Double]) {
-        self.channels = channels
-        self.grid = grid
-        self.table = table
-    }
-    
-    @_versioned
-    @_inlineable
-    func eval<Model: ColorModelProtocol>(_ color: Model) -> Model {
-        
-        precondition(Model.numberOfComponents == channels)
-        
-        var result = Model()
-        
-        for i in 0..<Model.numberOfComponents {
-            let offset = grid * i
-            result.setComponent(i, interpolate(color.component(i), table: table[offset..<offset + grid]))
-        }
-        
-        return result
-    }
-}
-
-@_versioned
-@_fixed_layout
-struct MultiDimensionalLUT {
-    
-    @_versioned
-    let inputChannels: Int
-    
-    @_versioned
-    let outputChannels: Int
-    
-    @_versioned
-    let grids: [Int]
-    
-    @_versioned
-    let table: [Double]
-    
-    init(_ tag: iccProfile.TagData.CLUTTableView) {
-        self.inputChannels = tag.inputChannels
-        self.outputChannels = tag.outputChannels
-        self.grids = tag.grids
-        self.table = tag.table
-    }
-    
-    init(inputChannels: Int, outputChannels: Int, grids: [Int], table: [Double]) {
-        self.inputChannels = inputChannels
-        self.outputChannels = outputChannels
-        self.grids = grids
-        self.table = table
-    }
-    
-    @_versioned
-    @_inlineable
-    func eval<Source: ColorModelProtocol, Destination: ColorModelProtocol>(_ source: Source) -> Destination {
-        
-        let position = source.components.enumerated().map { _interpolate_index($0.1, grids[$0.0]) }
-        
-        func _interpolate(level: Int, offset: Int) -> Destination {
-            
-            let _p = position[Source.numberOfComponents - level - 1]
-            let _s = level == 0 ? Destination.numberOfComponents : grids[level - 1]
-            
-            if _p.0 == grids[level] - 1 {
-                
-                var r = Destination()
-                
-                let offset = (offset + _p.0) * _s
-                
-                if level == 0 {
-                    for i in 0..<Destination.numberOfComponents {
-                        r.setComponent(i, table[offset + i])
-                    }
-                } else {
-                    let _level = level - 1
-                    r = _interpolate(level: _level, offset: offset)
-                }
-                
-                return r
-                
-            } else {
-                
-                var a = Destination()
-                var b = Destination()
-                
-                let offset1 = (offset + _p.0) * _s
-                let offset2 = offset1 + _s
-                
-                if level == 0 {
-                    for i in 0..<Destination.numberOfComponents {
-                        a.setComponent(i, table[offset1 + i])
-                        b.setComponent(i, table[offset2 + i])
-                    }
-                } else {
-                    let _level = level - 1
-                    a = _interpolate(level: _level, offset: offset1)
-                    b = _interpolate(level: _level, offset: offset2)
-                }
-                
-                return (1 - _p.1) * a + _p.1 * b
-            }
-        }
-        
-        return _interpolate(level: Source.numberOfComponents - 1, offset: 0)
-    }
-}
-
-@_versioned
-@_fixed_layout
-enum ICCCurve {
-    
-    case identity
-    case gamma(Double)
-    case parametric1(Double, Double, Double)
-    case parametric2(Double, Double, Double, Double)
-    case parametric3(Double, Double, Double, Double, Double)
-    case parametric4(Double, Double, Double, Double, Double, Double, Double)
-    case table([Double])
-}
-
-extension ICCCurve {
-    
-    init?(_ tag: iccProfile.TagData) {
-        
-        if let curve = tag.curve {
-            
-            if curve.count == 0 {
-                self = .identity
-            } else if let gamma = curve.gamma {
-                self = .gamma(gamma.representingValue)
-            } else {
-                self = .table(Array(curve))
-            }
-        } else if let curve = tag.parametricCurve {
-            
-            switch curve.funcType {
-            case 0: self = .gamma(curve.gamma.representingValue)
-            case 1: self = .parametric1(curve.gamma.representingValue, curve.a.representingValue, curve.b.representingValue)
-            case 2: self = .parametric2(curve.gamma.representingValue, curve.a.representingValue, curve.b.representingValue, curve.c.representingValue)
-            case 3: self = .parametric3(curve.gamma.representingValue, curve.a.representingValue, curve.b.representingValue, curve.c.representingValue, curve.d.representingValue)
-            case 4: self = .parametric4(curve.gamma.representingValue, curve.a.representingValue, curve.b.representingValue, curve.c.representingValue, curve.d.representingValue, curve.e.representingValue, curve.f.representingValue)
-            default: return nil
-            }
-        } else {
-            return nil
-        }
-    }
-}
-
-extension ICCCurve {
-    
-    @_versioned
-    @_inlineable
-    var inverse: ICCCurve {
-        switch self {
-        case .identity: return .identity
-        case let .gamma(gamma): return .gamma(1 / gamma)
-        case let .parametric1(gamma, a, b): return ICCCurve.parametric4(gamma, a, b, 0, -b / a, 0, 0).inverse
-        case let .parametric2(gamma, a, b, c): return ICCCurve.parametric4(gamma, a, b, 0, -b / a, c, c).inverse
-        case let .parametric3(gamma, a, b, c, d): return ICCCurve.parametric4(gamma, a, b, c, d, 0, 0).inverse
-        case let .parametric4(gamma, a, b, c, d, e, f):
-            
-            let _a = pow(a, -gamma)
-            let _b = -e * _a
-            let _c = c == 0 ? 0 : 1 / c
-            let _d = c * d + f
-            let _e = a == 0 ? 0 : -b / a
-            let _f = c == 0 ? 0 : -f / c
-            return .parametric4(1 / gamma, _a, _b, _c, _d, _e, _f)
-            
-        case let .table(points):
-            
-            var inversed: [Double] = []
-            inversed.reserveCapacity(points.count << 1)
-            
-            let N = Double(points.count - 1)
-            
-            var hint = 0
-            
-            func __interpolate<C : RandomAccessCollection>(_ y: Double, _ points: C) -> Double? where C.Element == Double, C.Index == Int {
-                
-                for (lhs, rhs) in zip(points.indexed(), points.dropFirst().indexed()) {
-                    let _min: Double
-                    let _max: Double
-                    let _min_idx: Int
-                    let _max_idx: Int
-                    if lhs.element <= rhs.element {
-                        _min = lhs.element
-                        _max = rhs.element
-                        _min_idx = lhs.index
-                        _max_idx = rhs.index
-                    } else {
-                        _min = rhs.element
-                        _max = lhs.element
-                        _min_idx = rhs.index
-                        _max_idx = lhs.index
-                    }
-                    if _min..._max ~= y {
-                        hint = lhs.index
-                        let m = (y - _min) / (_max - _min)
-                        let a = (1 - m) * Double(_min_idx) / N
-                        let b = m * Double(_max_idx) / N
-                        return a + b
-                    }
-                }
-                
-                return nil
-            }
-            
-            func _interpolate(_ y: Double) -> Double {
-                
-                if y == 0 && points.first?.almostZero() == true {
-                    return 0
-                } else if y == 1 && points.last?.almostEqual(1) == true {
-                    return 1
-                }
-                
-                if hint != points.count - 1 {
-                    if let value = __interpolate(y, points.suffix(from: hint)) {
-                        return value
-                    }
-                }
-                if let value = __interpolate(y, points) {
-                    return value
-                }
-                if let idx = points.suffix(from: hint).indexed().min(by: { abs($0.1 - y) })?.0 ?? points.indexed().min(by: { abs($0.1 - y) })?.0 {
-                    return Double(idx) / N
-                }
-                return 0
-            }
-            
-            let N2 = Double((points.count << 1) - 1)
-            
-            for i in 0..<points.count << 1 {
-                inversed.append(_interpolate(Double(i) / N2))
-            }
-            
-            return .table(inversed)
-        }
-    }
-}
-
-extension ICCCurve {
-    
-    @_versioned
-    @_inlineable
-    func eval(_ x: Double) -> Double {
-        
-        @inline(__always)
-        func exteneded(_ x: Double, _ gamma: (Double) -> Double) -> Double {
-            return x.sign == .plus ? gamma(x) : -gamma(-x)
-        }
-        
-        switch self {
-        case .identity: return x
-        case let .gamma(gamma): return exteneded(x) { pow($0, gamma) }
-        case let .parametric1(gamma, a, b):
-            return exteneded(x) {
-                if $0 < -b / a {
-                    return 0
-                } else {
-                    return pow(a * $0 + b, gamma)
-                }
-            }
-        case let .parametric2(gamma, a, b, c):
-            return exteneded(x) {
-                if $0 < -b / a {
-                    return c
-                } else {
-                    return pow(a * $0 + b, gamma) + c
-                }
-            }
-        case let .parametric3(gamma, a, b, c, d):
-            return exteneded(x) {
-                if $0 < d {
-                    return c * $0
-                } else {
-                    return pow(a * $0 + b, gamma)
-                }
-            }
-        case let .parametric4(gamma, a, b, c, d, e, f):
-            return exteneded(x) {
-                if $0 < d {
-                    return c * $0 + f
-                } else {
-                    return pow(a * $0 + b, gamma) + e
-                }
-            }
-        case let .table(points): return interpolate(x, table: points)
-        }
-    }
-}
-
-@_versioned
-@_fixed_layout
-enum iccTransform {
-    
-    typealias Curves = (ICCCurve, ICCCurve, ICCCurve)
-    
-    case monochrome(ICCCurve)
-    case matrix(Matrix, Curves)
-    case LUT0(Matrix, OneDimensionalLUT, MultiDimensionalLUT, OneDimensionalLUT)
-    case LUT1(Curves)
-    case LUT2(Curves, Matrix, Curves)
-    case LUT3(Curves, MultiDimensionalLUT, [ICCCurve])
-    case LUT4(Curves, Matrix, Curves, MultiDimensionalLUT, [ICCCurve])
-}
-
-extension iccTransform {
-    
-    init?(_ tag: iccProfile.TagData) {
-        
-        if let curve = tag.lut8 {
-            
-            let input = OneDimensionalLUT(channels: curve.inputChannels, grid: 256, table: curve.inputTable)
-            
-            let output = OneDimensionalLUT(channels: curve.outputChannels, grid: 256, table: curve.outputTable)
-            
-            let m = MultiDimensionalLUT(inputChannels: curve.inputChannels, outputChannels: curve.outputChannels, grids: Array(repeating: curve.grids, count: curve.inputChannels), table: curve.clutTable)
-            
-            self = .LUT0(curve.header.matrix.matrix, input, m, output)
-            
-        } else if let curve = tag.lut16 {
-            
-            let input = OneDimensionalLUT(channels: curve.inputChannels, grid: curve.inputEntries, table: curve.inputTable)
-            
-            let output = OneDimensionalLUT(channels: curve.outputChannels, grid: curve.outputEntries, table: curve.outputTable)
-            
-            let m = MultiDimensionalLUT(inputChannels: curve.inputChannels, outputChannels: curve.outputChannels, grids: Array(repeating: curve.grids, count: curve.inputChannels), table: curve.clutTable)
-            
-            self = .LUT0(curve.header.matrix.matrix, input, m, output)
-            
-        } else if let curve = tag.lutAtoB {
-            
-            if let B = curve.B, B.count == 3, let B0 = ICCCurve(B[0]), let B1 = ICCCurve(B[1]), let B2 = ICCCurve(B[2]) {
-                if let A = curve.A, let LUT = curve.clutTable {
-                    let _A = A.map(ICCCurve.init)
-                    if _A.contains(where: { $0 == nil }) || LUT.inputChannels != _A.count || LUT.outputChannels != 3 {
-                        return nil
-                    }
-                    if let M = curve.M, let matrix = curve.matrix {
-                        if M.count == 3, let M0 = ICCCurve(M[0]), let M1 = ICCCurve(M[1]), let M2 = ICCCurve(M[2]) {
-                            self = .LUT4((B0, B1, B2), matrix.matrix, (M0, M1, M2), MultiDimensionalLUT(LUT), _A.map { $0! })
-                        } else {
-                            return nil
-                        }
-                    } else {
-                        self = .LUT3((B0, B1, B2), MultiDimensionalLUT(LUT), _A.map { $0! })
-                    }
-                } else if let M = curve.M, let matrix = curve.matrix {
-                    if M.count == 3, let M0 = ICCCurve(M[0]), let M1 = ICCCurve(M[1]), let M2 = ICCCurve(M[2]) {
-                        self = .LUT2((B0, B1, B2), matrix.matrix, (M0, M1, M2))
-                    } else {
-                        return nil
-                    }
-                } else {
-                    self = .LUT1((B0, B1, B2))
-                }
-            } else {
-                return nil
-            }
-        } else if let curve = tag.lutBtoA {
-            
-            if let B = curve.B, B.count == 3, let B0 = ICCCurve(B[0]), let B1 = ICCCurve(B[1]), let B2 = ICCCurve(B[2]) {
-                if let A = curve.A, let LUT = curve.clutTable {
-                    let _A = A.map(ICCCurve.init)
-                    if _A.contains(where: { $0 == nil }) || LUT.outputChannels != _A.count || LUT.inputChannels != 3 {
-                        return nil
-                    }
-                    if let M = curve.M, let matrix = curve.matrix {
-                        if M.count == 3, let M0 = ICCCurve(M[0]), let M1 = ICCCurve(M[1]), let M2 = ICCCurve(M[2]) {
-                            self = .LUT4((B0, B1, B2), matrix.matrix, (M0, M1, M2), MultiDimensionalLUT(LUT), _A.map { $0! })
-                        } else {
-                            return nil
-                        }
-                    } else {
-                        self = .LUT3((B0, B1, B2), MultiDimensionalLUT(LUT), _A.map { $0! })
-                    }
-                } else if let M = curve.M, let matrix = curve.matrix {
-                    if M.count == 3, let M0 = ICCCurve(M[0]), let M1 = ICCCurve(M[1]), let M2 = ICCCurve(M[2]) {
-                        self = .LUT2((B0, B1, B2), matrix.matrix, (M0, M1, M2))
-                    } else {
-                        return nil
-                    }
-                } else {
-                    self = .LUT1((B0, B1, B2))
-                }
-            } else {
-                return nil
-            }
-        } else {
-            return nil
-        }
-    }
-}
-
-@_versioned
 @_fixed_layout
 struct ICCColorSpace<Model : ColorModelProtocol, Connection : ColorSpaceBaseProtocol> : ColorSpaceBaseProtocol where Connection.Model : PCSColorModel {
     
@@ -592,6 +151,9 @@ extension ICCColorSpace {
             if let desc = description.text {
                 return desc
             }
+            if let desc = description.textDescription {
+                return desc.ascii ?? desc.unicode
+            }
             
             let language = Locale.current.languageCode ?? "en"
             let country = Locale.current.regionCode ?? "US"
@@ -609,6 +171,7 @@ extension AnyColorSpace {
     
     public enum ParserError : Error {
         
+        case endOfData
         case invalidFormat(message: String)
         case unsupported(message: String)
     }
@@ -726,15 +289,15 @@ extension ColorSpace {
         
         func ABCurve() throws -> (iccTransform, iccTransform)? {
             
-            if let a2bCurve = profile[.AToB1].flatMap(iccTransform.init), let b2aCurve = profile[.BToA1].flatMap(iccTransform.init) {
+            if let a2bCurve = profile[.AToB1].flatMap({ $0.transform }), let b2aCurve = profile[.BToA1].flatMap({ $0.transform }) {
                 try check(a2bCurve, b2aCurve)
                 return (a2bCurve, b2aCurve)
             }
-            if let a2bCurve = profile[.AToB0].flatMap(iccTransform.init), let b2aCurve = profile[.BToA0].flatMap(iccTransform.init) {
+            if let a2bCurve = profile[.AToB0].flatMap({ $0.transform }), let b2aCurve = profile[.BToA0].flatMap({ $0.transform }) {
                 try check(a2bCurve, b2aCurve)
                 return (a2bCurve, b2aCurve)
             }
-            if let a2bCurve = profile[.AToB2].flatMap(iccTransform.init), let b2aCurve = profile[.BToA2].flatMap(iccTransform.init) {
+            if let a2bCurve = profile[.AToB2].flatMap({ $0.transform }), let b2aCurve = profile[.BToA2].flatMap({ $0.transform }){
                 try check(a2bCurve, b2aCurve)
                 return (a2bCurve, b2aCurve)
             }
@@ -750,7 +313,7 @@ extension ColorSpace {
             
             if let curve = profile[.GrayTRC] {
                 
-                let kTRC = ICCCurve(curve) ?? .identity
+                let kTRC = curve.curve ?? .identity
                 
                 a2b = .monochrome(kTRC)
                 b2a = .monochrome(kTRC.inverse)
@@ -768,9 +331,9 @@ extension ColorSpace {
             
             if let red = profile[.RedColorant]?.XYZArray?.first, let green = profile[.GreenColorant]?.XYZArray?.first, let blue = profile[.BlueColorant]?.XYZArray?.first {
                 
-                let rTRC = profile[.RedTRC].flatMap(ICCCurve.init) ?? .identity
-                let gTRC = profile[.GreenTRC].flatMap(ICCCurve.init) ?? .identity
-                let bTRC = profile[.BlueTRC].flatMap(ICCCurve.init) ?? .identity
+                let rTRC = profile[.RedTRC].flatMap { $0.curve } ?? .identity
+                let gTRC = profile[.GreenTRC].flatMap { $0.curve } ?? .identity
+                let bTRC = profile[.BlueTRC].flatMap { $0.curve } ?? .identity
                 
                 let matrix = Matrix(a: red.x.representingValue, b: green.x.representingValue, c: blue.x.representingValue, d: 0,
                                     e: red.y.representingValue, f: green.y.representingValue, g: blue.y.representingValue, h: 0,
@@ -985,9 +548,9 @@ extension ICCColorSpace {
         }
         
         switch a2b {
-        case let .monochrome(ICCCurve):
+        case let .monochrome(iccCurve):
             
-            result.setComponent(0, ICCCurve.eval(color.component(0)))
+            result.setComponent(0, iccCurve.eval(color.component(0)))
             
         case let .matrix(matrix, _):
             
@@ -1088,9 +651,9 @@ extension ICCColorSpace {
         }
         
         switch b2a {
-        case let .monochrome(ICCCurve):
+        case let .monochrome(iccCurve):
             
-            result.setComponent(0, ICCCurve.eval(color.component(0)))
+            result.setComponent(0, iccCurve.eval(color.component(0)))
             
         case let .matrix(matrix, _):
             

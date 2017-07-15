@@ -31,21 +31,21 @@ extension iccProfile {
         
         static let MagicNumber: Signature<BEUInt32> = "acsp"
         
-        var size: BEUInt32                                           /* Profile size in bytes */
+        var size: BEUInt32                                                     /* Profile size in bytes */
         var cmmId: Signature<BEUInt32>                                         /* CMM for this profile */
-        var version: BEUInt32                                        /* Format version number */
-        var deviceClass: ClassSignature                              /* Type of profile */
-        var colorSpace: ColorSpaceSignature                          /* Color space of data */
-        var pcs: ColorSpaceSignature                                 /* PCS, XYZ or Lab only */
-        var date: DateTimeNumber                                     /* Date profile was created */
+        var version: BEUInt32                                                  /* Format version number */
+        var deviceClass: ClassSignature                                        /* Type of profile */
+        var colorSpace: ColorSpaceSignature                                    /* Color space of data */
+        var pcs: ColorSpaceSignature                                           /* PCS, XYZ or Lab only */
+        var date: iccDateTimeNumber                                            /* Date profile was created */
         var magic: Signature<BEUInt32>                                         /* icMagicNumber */
         var platform: Signature<BEUInt32>                                      /* Primary Platform */
-        var flags: BEUInt32                                          /* Various bit settings */
+        var flags: BEUInt32                                                    /* Various bit settings */
         var manufacturer: Signature<BEUInt32>                                  /* Device manufacturer */
         var model: Signature<BEUInt32>                                         /* Device model number */
-        var attributes: BEUInt64                                     /* Device attributes */
-        var renderingIntent: BEUInt32                                /* Rendering intent */
-        var illuminant: XYZNumber                                    /* Profile illuminant */
+        var attributes: BEUInt64                                               /* Device attributes */
+        var renderingIntent: BEUInt32                                          /* Rendering intent */
+        var illuminant: iccXYZNumber                                           /* Profile illuminant */
         var creator: Signature<BEUInt32>                                       /* Profile creator */
         var profileID: (UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8)   /* Profile ID using RFC 1321 MD5 128bit fingerprinting */
         var reserved: (UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8)   /* Reserved for future use */
@@ -55,14 +55,14 @@ extension iccProfile {
              deviceClass: ClassSignature,
              colorSpace: ColorSpaceSignature,
              pcs: ColorSpaceSignature,
-             date: DateTimeNumber,
+             date: iccDateTimeNumber,
              platform: Signature<BEUInt32>,
              flags: BEUInt32,
              manufacturer: Signature<BEUInt32>,
              model: Signature<BEUInt32>,
              attributes: BEUInt64,
              renderingIntent: BEUInt32,
-             illuminant: XYZNumber,
+             illuminant: iccXYZNumber,
              creator: Signature<BEUInt32>) {
             
             self.size = 0
@@ -92,7 +92,7 @@ extension iccProfile {
             self.deviceClass = try data.decode(ClassSignature.self)
             self.colorSpace = try data.decode(ColorSpaceSignature.self)
             self.pcs = try data.decode(ColorSpaceSignature.self)
-            self.date = try data.decode(DateTimeNumber.self)
+            self.date = try data.decode(iccDateTimeNumber.self)
             self.magic = try data.decode(Signature.self)
             self.platform = try data.decode(Signature.self)
             self.flags = try data.decode(BEUInt32.self)
@@ -100,7 +100,7 @@ extension iccProfile {
             self.model = try data.decode(Signature.self)
             self.attributes = try data.decode(BEUInt64.self)
             self.renderingIntent = try data.decode(BEUInt32.self)
-            self.illuminant = try data.decode(XYZNumber.self)
+            self.illuminant = try data.decode(iccXYZNumber.self)
             self.creator = try data.decode(Signature.self)
             self.profileID = (try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self),
                               try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self),
@@ -283,7 +283,7 @@ extension iccProfile {
     }
 }
 
-extension iccProfile.TagData {
+extension iccProfile {
     
     struct TagType : SignatureProtocol {
         
@@ -293,389 +293,40 @@ extension iccProfile.TagData {
             self.rawValue = rawValue
         }
         
-        static let Chromaticity: TagType               = "chrm"
-        static let ColorantOrder: TagType              = "clro"
-        static let ColorantTable: TagType              = "clrt"
-        static let CrdInfo: TagType                    = "crdi"  /* Removed in V4 */
-        static let Curve: TagType                      = "curv"
-        static let Data: TagType                       = "data"
-        static let Dict: TagType                       = "dict"
-        static let DateTime: TagType                   = "dtim"
-        static let DeviceSettings: TagType             = "devs"  /* Removed in V4 */
-        static let Lut16: TagType                      = "mft2"
-        static let Lut8: TagType                       = "mft1"
-        static let LutAtoB: TagType                    = "mAB "
-        static let LutBtoA: TagType                    = "mBA "
-        static let Measurement: TagType                = "meas"
-        static let MultiLocalizedUnicode: TagType      = "mluc"
-        static let MultiProcessElement: TagType        = "mpet"
-        static let NamedColor2: TagType                = "ncl2"
-        static let ParametricCurve: TagType            = "para"
-        static let ProfileSequenceDesc: TagType        = "pseq"
-        static let ProfileSequceId: TagType            = "psid"
-        static let ResponseCurveSet16: TagType         = "rcs2"
-        static let S15Fixed16Array: TagType            = "sf32"
-        static let Screening: TagType                  = "scrn"  /* Removed in V4 */
-        static let Signature: TagType                  = "sig "
-        static let Text: TagType                       = "text"
-        static let TextDescription: TagType            = "desc"  /* Removed in V4 */
-        static let U16Fixed16Array: TagType            = "uf32"
-        static let UcrBg: TagType                      = "bfd "  /* Removed in V4 */
-        static let UInt16Array: TagType                = "ui16"
-        static let UInt32Array: TagType                = "ui32"
-        static let UInt64Array: TagType                = "ui64"
-        static let UInt8Array: TagType                 = "ui08"
-        static let ViewingConditions: TagType          = "view"
+        static let chromaticity: TagType               = "chrm"
+        static let colorantOrder: TagType              = "clro"
+        static let colorantTable: TagType              = "clrt"
+        static let crdInfo: TagType                    = "crdi"  /* Removed in V4 */
+        static let curve: TagType                      = "curv"
+        static let data: TagType                       = "data"
+        static let dict: TagType                       = "dict"
+        static let dateTime: TagType                   = "dtim"
+        static let deviceSettings: TagType             = "devs"  /* Removed in V4 */
+        static let lut16: TagType                      = "mft2"
+        static let lut8: TagType                       = "mft1"
+        static let lutAtoB: TagType                    = "mAB "
+        static let lutBtoA: TagType                    = "mBA "
+        static let measurement: TagType                = "meas"
+        static let multiLocalizedUnicode: TagType      = "mluc"
+        static let multiProcessElement: TagType        = "mpet"
+        static let namedColor2: TagType                = "ncl2"
+        static let parametricCurve: TagType            = "para"
+        static let profileSequenceDesc: TagType        = "pseq"
+        static let profileSequceId: TagType            = "psid"
+        static let responseCurveSet16: TagType         = "rcs2"
+        static let s15Fixed16Array: TagType            = "sf32"
+        static let screening: TagType                  = "scrn"  /* Removed in V4 */
+        static let signature: TagType                  = "sig "
+        static let text: TagType                       = "text"
+        static let textDescription: TagType            = "desc"  /* Removed in V4 */
+        static let u16Fixed16Array: TagType            = "uf32"
+        static let ucrBg: TagType                      = "bfd "  /* Removed in V4 */
+        static let uInt16Array: TagType                = "ui16"
+        static let uInt32Array: TagType                = "ui32"
+        static let uInt64Array: TagType                = "ui64"
+        static let uInt8Array: TagType                 = "ui08"
+        static let viewingConditions: TagType          = "view"
         static let XYZArray: TagType                   = "XYZ "
     }
 }
-
-extension iccProfile {
-    
-    struct DateTimeNumber : DataCodable {
-        
-        var year: BEUInt16
-        var month: BEUInt16
-        var day: BEUInt16
-        var hours: BEUInt16
-        var minutes: BEUInt16
-        var seconds: BEUInt16
-        
-        init(year: BEUInt16, month: BEUInt16, day: BEUInt16, hours: BEUInt16, minutes: BEUInt16, seconds: BEUInt16) {
-            self.year = year
-            self.month = month
-            self.day = day
-            self.hours = hours
-            self.minutes = minutes
-            self.seconds = seconds
-        }
-        
-        init(from data: inout Data) throws {
-            self.year = try data.decode(BEUInt16.self)
-            self.month = try data.decode(BEUInt16.self)
-            self.day = try data.decode(BEUInt16.self)
-            self.hours = try data.decode(BEUInt16.self)
-            self.minutes = try data.decode(BEUInt16.self)
-            self.seconds = try data.decode(BEUInt16.self)
-        }
-        
-        func encode(to data: inout Data) {
-            data.encode(year, month, day, hours, minutes, seconds)
-        }
-    }
-}
-
-extension iccProfile {
-    
-    struct XYZNumber : DataCodable {
-        
-        var x: Fixed16Number<BEInt32>
-        var y: Fixed16Number<BEInt32>
-        var z: Fixed16Number<BEInt32>
-        
-        init(x: Fixed16Number<BEInt32>, y: Fixed16Number<BEInt32>, z: Fixed16Number<BEInt32>) {
-            self.x = x
-            self.y = y
-            self.z = z
-        }
-        
-        init(_ xyz: XYZColorModel) {
-            self.x = Fixed16Number<BEInt32>(xyz.x)
-            self.y = Fixed16Number<BEInt32>(xyz.y)
-            self.z = Fixed16Number<BEInt32>(xyz.z)
-        }
-        
-        init(from data: inout Data) throws {
-            self.x = try data.decode(Fixed16Number<BEInt32>.self)
-            self.y = try data.decode(Fixed16Number<BEInt32>.self)
-            self.z = try data.decode(Fixed16Number<BEInt32>.self)
-        }
-        
-        func encode(to data: inout Data) {
-            data.encode(x, y, z)
-        }
-    }
-}
-
-extension iccProfile {
-    
-    struct Matrix3x3 : DataCodable {
-        
-        var e00: Fixed16Number<BEInt32>
-        var e01: Fixed16Number<BEInt32>
-        var e02: Fixed16Number<BEInt32>
-        var e10: Fixed16Number<BEInt32>
-        var e11: Fixed16Number<BEInt32>
-        var e12: Fixed16Number<BEInt32>
-        var e20: Fixed16Number<BEInt32>
-        var e21: Fixed16Number<BEInt32>
-        var e22: Fixed16Number<BEInt32>
-        
-        init(_ matrix: Matrix) {
-            self.e00 = Fixed16Number<BEInt32>(matrix.a)
-            self.e01 = Fixed16Number<BEInt32>(matrix.b)
-            self.e02 = Fixed16Number<BEInt32>(matrix.c)
-            self.e10 = Fixed16Number<BEInt32>(matrix.e)
-            self.e11 = Fixed16Number<BEInt32>(matrix.f)
-            self.e12 = Fixed16Number<BEInt32>(matrix.g)
-            self.e20 = Fixed16Number<BEInt32>(matrix.i)
-            self.e21 = Fixed16Number<BEInt32>(matrix.j)
-            self.e22 = Fixed16Number<BEInt32>(matrix.k)
-        }
-        
-        var matrix: Matrix {
-            return Matrix(a: e00.representingValue, b: e01.representingValue, c: e02.representingValue, d: 0,
-                          e: e10.representingValue, f: e11.representingValue, g: e12.representingValue, h: 0,
-                          i: e20.representingValue, j: e21.representingValue, k: e22.representingValue, l: 0)
-        }
-        
-        init(from data: inout Data) throws {
-            self.e00 = try data.decode(Fixed16Number<BEInt32>.self)
-            self.e01 = try data.decode(Fixed16Number<BEInt32>.self)
-            self.e02 = try data.decode(Fixed16Number<BEInt32>.self)
-            self.e10 = try data.decode(Fixed16Number<BEInt32>.self)
-            self.e11 = try data.decode(Fixed16Number<BEInt32>.self)
-            self.e12 = try data.decode(Fixed16Number<BEInt32>.self)
-            self.e20 = try data.decode(Fixed16Number<BEInt32>.self)
-            self.e21 = try data.decode(Fixed16Number<BEInt32>.self)
-            self.e22 = try data.decode(Fixed16Number<BEInt32>.self)
-        }
-        
-        func encode(to data: inout Data) {
-            data.encode(e00, e01, e02,
-                        e10, e11, e12,
-                        e20, e21, e22)
-        }
-    }
-    
-    struct Matrix3x4 : DataCodable {
-        
-        var m: Matrix3x3
-        
-        var e03: Fixed16Number<BEInt32>
-        var e13: Fixed16Number<BEInt32>
-        var e23: Fixed16Number<BEInt32>
-        
-        init(_ matrix: Matrix) {
-            self.m = Matrix3x3(matrix)
-            self.e03 = Fixed16Number<BEInt32>(matrix.d)
-            self.e13 = Fixed16Number<BEInt32>(matrix.h)
-            self.e23 = Fixed16Number<BEInt32>(matrix.l)
-        }
-        
-        var matrix: Matrix {
-            return Matrix(a: m.e00.representingValue, b: m.e01.representingValue, c: m.e02.representingValue, d: e03.representingValue,
-                          e: m.e10.representingValue, f: m.e11.representingValue, g: m.e12.representingValue, h: e13.representingValue,
-                          i: m.e20.representingValue, j: m.e21.representingValue, k: m.e22.representingValue, l: e23.representingValue)
-        }
-        
-        init(from data: inout Data) throws {
-            self.m = try data.decode(Matrix3x3.self)
-            self.e03 = try data.decode(Fixed16Number<BEInt32>.self)
-            self.e13 = try data.decode(Fixed16Number<BEInt32>.self)
-            self.e23 = try data.decode(Fixed16Number<BEInt32>.self)
-        }
-        
-        func encode(to data: inout Data) {
-            data.encode(m)
-            data.encode(e03, e13, e23)
-        }
-    }
-}
-
-extension iccProfile {
-    
-    struct ParametricCurve {
-        
-        var funcType: BEUInt16
-        
-        var padding: BEUInt16
-        
-        var gamma: Fixed16Number<BEInt32>
-        
-        var a: Fixed16Number<BEInt32>
-        
-        var b: Fixed16Number<BEInt32>
-        
-        var c: Fixed16Number<BEInt32>
-        
-        var d: Fixed16Number<BEInt32>
-        
-        var e: Fixed16Number<BEInt32>
-        
-        var f: Fixed16Number<BEInt32>
-        
-        init(funcType: BEUInt16,
-             gamma: Fixed16Number<BEInt32>,
-             a: Fixed16Number<BEInt32>,
-             b: Fixed16Number<BEInt32>,
-             c: Fixed16Number<BEInt32>,
-             d: Fixed16Number<BEInt32>,
-             e: Fixed16Number<BEInt32>,
-             f: Fixed16Number<BEInt32>) {
-            
-            self.funcType = funcType
-            self.padding = 0
-            self.gamma = gamma
-            self.a = a
-            self.b = b
-            self.c = c
-            self.d = d
-            self.e = e
-            self.f = f
-        }
-    }
-}
-
-extension iccProfile {
-    
-    struct Lut16 {
-        
-        var inputChannels: UInt8
-        
-        var outputChannels: UInt8
-        
-        var grids: UInt8
-        
-        var padding: UInt8
-        
-        var matrix: Matrix3x3
-        
-        var inputEntries: BEUInt16
-        
-        var outputEntries: BEUInt16
-    }
-}
-
-extension iccProfile {
-    
-    struct Lut8 {
-        
-        var inputChannels: UInt8
-        
-        var outputChannels: UInt8
-        
-        var grids: UInt8
-        
-        var padding: UInt8
-        
-        var matrix: Matrix3x3
-    }
-}
-
-extension iccProfile {
-    
-    struct CLUTStruct {
-        
-        var grids: (UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8)
-        
-        var precision: UInt8
-        
-        var pad1: UInt8
-        
-        var pad2: UInt8
-        
-        var pad3: UInt8
-    }
-}
-
-extension iccProfile {
-    
-    struct LutAtoB {
-        
-        var inputChannels: UInt8
-        
-        var outputChannels: UInt8
-        
-        var padding1: UInt8
-        
-        var padding2: UInt8
-        
-        var offsetB: BEUInt32
-        
-        var offsetMatrix: BEUInt32
-        
-        var offsetM: BEUInt32
-        
-        var offsetCLUT: BEUInt32
-        
-        var offsetA: BEUInt32
-    }
-}
-
-extension iccProfile {
-    
-    struct LutBtoA {
-        
-        var inputChannels: UInt8
-        
-        var outputChannels: UInt8
-        
-        var padding1: UInt8
-        
-        var padding2: UInt8
-        
-        var offsetB: BEUInt32
-        
-        var offsetMatrix: BEUInt32
-        
-        var offsetM: BEUInt32
-        
-        var offsetCLUT: BEUInt32
-        
-        var offsetA: BEUInt32
-    }
-}
-
-extension iccProfile {
-    
-    struct LanguageCode: SignatureProtocol {
-        
-        var rawValue: BEUInt16
-        
-        init(rawValue: BEUInt16) {
-            self.rawValue = rawValue
-        }
-    }
-    
-    struct CountryCode: SignatureProtocol {
-        
-        var rawValue: BEUInt16
-        
-        init(rawValue: BEUInt16) {
-            self.rawValue = rawValue
-        }
-    }
-    
-    struct MultiLocalizedUnicode {
-        
-        var count: BEUInt32
-        
-        var size: BEUInt32
-        
-        init(count: BEUInt32, size: BEUInt32) {
-            self.count = count
-            self.size = size
-        }
-    }
-    
-    struct MultiLocalizedUnicodeEntry {
-        
-        var language: LanguageCode
-        
-        var country: CountryCode
-        
-        var length: BEUInt32
-        
-        var offset: BEUInt32
-        
-        init(language: LanguageCode, country: CountryCode, length: BEUInt32, offset: BEUInt32) {
-            self.language = language
-            self.country = country
-            self.length = length
-            self.offset = offset
-        }
-    }
-}
-
 

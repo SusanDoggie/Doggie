@@ -72,7 +72,7 @@ class CalibratedGrayColorSpace : ColorSpaceBaseProtocol {
     
     @_versioned
     @_inlineable
-    func iccCurve() -> ICCCurve {
+    func iccCurve() -> iccCurve {
         return .identity
     }
 }
@@ -141,7 +141,7 @@ class CalibratedGammaGrayColorSpace: CalibratedGrayColorSpace {
     
     @_versioned
     @_inlineable
-    override func iccCurve() -> ICCCurve {
+    override func iccCurve() -> iccCurve {
         return .gamma(gamma)
     }
 }
