@@ -412,7 +412,10 @@ extension ICCColorSpace {
         }
         
         switch a2b {
-        case .monochrome: return color
+        case let .monochrome(curve):
+            
+            result.setComponent(0, curve.eval(color.component(0)))
+            
         case let .matrix(_, curve):
             
             result.setComponent(0, curve.0.eval(color.component(0)))
@@ -480,7 +483,10 @@ extension ICCColorSpace {
         }
         
         switch b2a {
-        case .monochrome: return color
+        case let .monochrome(curve):
+            
+            result.setComponent(0, curve.eval(color.component(0)))
+            
         case let .matrix(_, curve):
             
             result.setComponent(0, curve.0.eval(color.component(0)))
@@ -548,9 +554,10 @@ extension ICCColorSpace {
         }
         
         switch a2b {
-        case let .monochrome(iccCurve):
+        case .monochrome:
             
-            result.setComponent(0, iccCurve.eval(color.component(0)))
+            result = self.connection._convertFromXYZ(cieXYZ.white)
+            result.luminance = color.component(0)
             
         case let .matrix(matrix, _):
             
@@ -651,9 +658,9 @@ extension ICCColorSpace {
         }
         
         switch b2a {
-        case let .monochrome(iccCurve):
+        case .monochrome:
             
-            result.setComponent(0, iccCurve.eval(color.component(0)))
+            result.setComponent(0, color.luminance)
             
         case let .matrix(matrix, _):
             
