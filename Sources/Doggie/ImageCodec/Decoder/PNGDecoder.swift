@@ -271,8 +271,11 @@ struct PNGImageDecoder : ImageRepDecoder {
                 var result = Data(capacity: row * height)
                 var previous: Data?
                 
-                for scanline in data.lazy.slice(by: row + 1) as LazySliceSequence {
-                    PNGFilter0(scanline, previous, bitsPerPixel, false, &result)
+                var data = data
+                
+                for _ in 0..<height {
+                    guard let type = data.popFirst(), data.count > 0 else { return result }
+                    PNGFilter0(type, data.popFirst(row), previous, bitsPerPixel, false, &result)
                     previous = result.suffix(row)
                 }
                 
@@ -309,18 +312,18 @@ struct PNGImageDecoder : ImageRepDecoder {
                         guard width > _starting_col else { continue }
                         guard height > _starting_row else { continue }
                         
+                        let sample_count = (width - _starting_col + (_col_increment - 1)) / _col_increment
+                        let scanline_bitSize = Int(bitsPerPixel) * sample_count
+                        let scanline_size = (scanline_bitSize + 7) >> 3
+                        
                         var previous: Data?
                         
                         for row in stride(from: _starting_row, to: height, by: _row_increment) {
                             
-                            let sample_count = (width - _starting_col + (_col_increment - 1)) / _col_increment
-                            let scanline_bitSize = Int(bitsPerPixel) * sample_count
-                            let scanline_size = (scanline_bitSize + 7) >> 3
                             var scanline = Data(capacity: scanline_size)
                             
-                            guard data.count >= scanline_size + 1 else { return }
-                            
-                            PNGFilter0(data.popFirst(scanline_size + 1), previous, bitsPerPixel, false, &scanline)
+                            guard let type = data.popFirst(), data.count > 0 else { return }
+                            PNGFilter0(type, data.popFirst(scanline_size), previous, bitsPerPixel, false, &scanline)
                             
                             previous = scanline
                             
@@ -368,10 +371,10 @@ struct PNGImageDecoder : ImageRepDecoder {
                                 case 1:
                                     
                                     var _col = stride(from: _starting_col, to: width, by: _col_increment).makeIterator()
-                                    loop: while true {
+                                    for _ in 0..<scanline.count {
                                         var p = source.pointee
                                         for _ in 0..<8 {
-                                            guard let col = _col.next() else { break loop }
+                                            guard let col = _col.next() else { return }
                                             let index = (p & 0x80) >> 7
                                             p <<= bitsPerPixel
                                             filling(index, col, row, min(_block_width, width - col), min(_block_height, height - row))
@@ -382,10 +385,10 @@ struct PNGImageDecoder : ImageRepDecoder {
                                 case 2:
                                     
                                     var _col = stride(from: _starting_col, to: width, by: _col_increment).makeIterator()
-                                    loop: while true {
+                                    for _ in 0..<scanline.count {
                                         var p = source.pointee
                                         for _ in 0..<4 {
-                                            guard let col = _col.next() else { break loop }
+                                            guard let col = _col.next() else { return }
                                             let index = (p & 0xC0) >> 6
                                             p <<= bitsPerPixel
                                             filling(index, col, row, min(_block_width, width - col), min(_block_height, height - row))
@@ -396,10 +399,10 @@ struct PNGImageDecoder : ImageRepDecoder {
                                 case 4:
                                     
                                     var _col = stride(from: _starting_col, to: width, by: _col_increment).makeIterator()
-                                    loop: while true {
+                                    for _ in 0..<scanline.count {
                                         var p = source.pointee
                                         for _ in 0..<2 {
-                                            guard let col = _col.next() else { break loop }
+                                            guard let col = _col.next() else { return }
                                             let index = (p & 0xF0) >> 4
                                             p <<= bitsPerPixel
                                             filling(index, col, row, min(_block_width, width - col), min(_block_height, height - row))
@@ -408,9 +411,12 @@ struct PNGImageDecoder : ImageRepDecoder {
                                     }
                                     
                                 default:
+                                    var counter = 0
                                     let offset = Int(bitsPerPixel >> 3)
                                     for col in stride(from: _starting_col, to: width, by: _col_increment) {
+                                        guard counter < scanline.count else { return }
                                         filling2(offset, source, col, row, min(_block_width, width - col), min(_block_height, height - row))
+                                        counter += offset
                                         source += offset
                                     }
                                 }
@@ -823,7 +829,7 @@ extension PNGImageDecoder {
     }
 }
 
-func PNGFilter0(_ data: Data, _ previous: Data?, _ bitsPerPixel: UInt8, _ encode: Bool, _ result: inout Data) {
+func PNGFilter0(_ type: UInt8, _ pixel: Data, _ previous: Data?, _ bitsPerPixel: UInt8, _ encode: Bool, _ result: inout Data) {
     
     func average(_ a: UInt8, _ b: UInt8) -> UInt8 {
         return UInt8((UInt16(a) &+ UInt16(b)) >> 1)
@@ -847,57 +853,65 @@ func PNGFilter0(_ data: Data, _ previous: Data?, _ bitsPerPixel: UInt8, _ encode
     
     let stride = max(1, Int(bitsPerPixel >> 3))
     
-    if let type = data.first, data.count > 1 {
+    let pixel_count = pixel.count
+    
+    func proccess(_ r: UnsafeMutablePointer<UInt8>, _ x: UnsafePointer<UInt8>) {
         
-        let pixel = data.advanced(by: 1)
-        let pixel_count = pixel.count
+        let _min = min(pixel_count, stride)
         
-        func proccess(_ r: UnsafeMutablePointer<UInt8>, _ x: UnsafePointer<UInt8>) {
-            
-            let _min = min(pixel_count, stride)
-            
-            var r = r + _min
-            var x = x + _min
-            var a = x - stride
-            
-            if encode {
-                for _ in _min..<pixel_count {
-                    switch type {
-                    case 1: r.pointee = x.pointee &- a.pointee
-                    case 3: r.pointee = x.pointee &- average(a.pointee, 0)
-                    case 4: r.pointee = x.pointee &- paeth(a.pointee, 0, 0)
-                    default: break
-                    }
-                    r += 1
-                    x += 1
-                    a += 1
-                }
-            } else {
-                for _ in _min..<pixel_count {
-                    switch type {
-                    case 1: r.pointee = x.pointee &+ a.pointee
-                    case 3: r.pointee = x.pointee &+ average(a.pointee, 0)
-                    case 4: r.pointee = x.pointee &+ paeth(a.pointee, 0, 0)
-                    default: break
-                    }
-                    r += 1
-                    x += 1
-                    a += 1
-                }
-            }
+        var r = r + _min
+        var x = x + _min
+        var a = x - stride
+        
+        if type == 2 {
+            return
         }
         
-        func proccess2(_ r: UnsafeMutablePointer<UInt8>, _ x: UnsafePointer<UInt8>, _ b: UnsafePointer<UInt8>) {
-            
-            let _min = min(pixel_count, stride)
-            
-            var r = r
-            var x = x
-            var a = x - stride
-            var b = b
-            var c = b - stride
-            
-            if encode {
+        if encode {
+            for _ in _min..<pixel_count {
+                switch type {
+                case 1: r.pointee = x.pointee &- a.pointee
+                case 3: r.pointee = x.pointee &- average(a.pointee, 0)
+                case 4: r.pointee = x.pointee &- paeth(a.pointee, 0, 0)
+                default: break
+                }
+                r += 1
+                x += 1
+                a += 1
+            }
+        } else {
+            for _ in _min..<pixel_count {
+                switch type {
+                case 1: r.pointee = x.pointee &+ a.pointee
+                case 3: r.pointee = x.pointee &+ average(a.pointee, 0)
+                case 4: r.pointee = x.pointee &+ paeth(a.pointee, 0, 0)
+                default: break
+                }
+                r += 1
+                x += 1
+                a += 1
+            }
+        }
+    }
+    
+    func proccess2(_ r: UnsafeMutablePointer<UInt8>, _ x: UnsafePointer<UInt8>, _ b: UnsafePointer<UInt8>) {
+        
+        let _min = min(pixel_count, stride)
+        
+        var r = r
+        var x = x
+        var a = x - stride
+        var b = b
+        var c = b - stride
+        
+        if encode {
+            if type == 1 {
+                r += _min
+                x += _min
+                a += _min
+                b += _min
+                c += _min
+            } else {
                 for _ in 0..<_min {
                     switch type {
                     case 2: r.pointee = x.pointee &- b.pointee
@@ -911,20 +925,28 @@ func PNGFilter0(_ data: Data, _ previous: Data?, _ bitsPerPixel: UInt8, _ encode
                     b += 1
                     c += 1
                 }
-                for _ in _min..<pixel_count {
-                    switch type {
-                    case 1: r.pointee = x.pointee &- a.pointee
-                    case 2: r.pointee = x.pointee &- b.pointee
-                    case 3: r.pointee = x.pointee &- average(a.pointee, b.pointee)
-                    case 4: r.pointee = x.pointee &- paeth(a.pointee, b.pointee, c.pointee)
-                    default: break
-                    }
-                    r += 1
-                    x += 1
-                    a += 1
-                    b += 1
-                    c += 1
+            }
+            for _ in _min..<pixel_count {
+                switch type {
+                case 1: r.pointee = x.pointee &- a.pointee
+                case 2: r.pointee = x.pointee &- b.pointee
+                case 3: r.pointee = x.pointee &- average(a.pointee, b.pointee)
+                case 4: r.pointee = x.pointee &- paeth(a.pointee, b.pointee, c.pointee)
+                default: break
                 }
+                r += 1
+                x += 1
+                a += 1
+                b += 1
+                c += 1
+            }
+        } else {
+            if type == 1 {
+                r += _min
+                x += _min
+                a += _min
+                b += _min
+                c += _min
             } else {
                 for _ in 0..<_min {
                     switch type {
@@ -939,40 +961,39 @@ func PNGFilter0(_ data: Data, _ previous: Data?, _ bitsPerPixel: UInt8, _ encode
                     b += 1
                     c += 1
                 }
-                for _ in _min..<pixel_count {
-                    switch type {
-                    case 1: r.pointee = x.pointee &+ a.pointee
-                    case 2: r.pointee = x.pointee &+ b.pointee
-                    case 3: r.pointee = x.pointee &+ average(a.pointee, b.pointee)
-                    case 4: r.pointee = x.pointee &+ paeth(a.pointee, b.pointee, c.pointee)
-                    default: break
-                    }
-                    r += 1
-                    x += 1
-                    a += 1
-                    b += 1
-                    c += 1
+            }
+            for _ in _min..<pixel_count {
+                switch type {
+                case 1: r.pointee = x.pointee &+ a.pointee
+                case 2: r.pointee = x.pointee &+ b.pointee
+                case 3: r.pointee = x.pointee &+ average(a.pointee, b.pointee)
+                case 4: r.pointee = x.pointee &+ paeth(a.pointee, b.pointee, c.pointee)
+                default: break
                 }
+                r += 1
+                x += 1
+                a += 1
+                b += 1
+                c += 1
             }
         }
-        
-        let offset = result.count
-        result.append(pixel)
-        
-        if type != 0 {
-            
-            if encode {
-                if let previous = previous {
-                    result.withUnsafeMutableBytes { _r in pixel.withUnsafeBytes { _x in previous.withUnsafeBytes { _b in proccess2(_r + offset, _x, _b) } } }
-                } else {
-                    result.withUnsafeMutableBytes { _r in pixel.withUnsafeBytes { _x in proccess(_r + offset, _x) } }
-                }
+    }
+    
+    let offset = result.count
+    result.append(Data(pixel))
+    
+    if type != 0 {
+        if encode {
+            if let previous = previous {
+                result.withUnsafeMutableBytes { _r in pixel.withUnsafeBytes { _x in previous.withUnsafeBytes { _b in proccess2(_r + offset, _x, _b) } } }
             } else {
-                if let previous = previous {
-                    result.withUnsafeMutableBytes { _r in previous.withUnsafeBytes { _b in proccess2(_r + offset, _r + offset, _b) } }
-                } else {
-                    result.withUnsafeMutableBytes { _r in proccess(_r + offset, _r + offset) }
-                }
+                result.withUnsafeMutableBytes { _r in pixel.withUnsafeBytes { _x in proccess(_r + offset, _x) } }
+            }
+        } else {
+            if let previous = previous {
+                result.withUnsafeMutableBytes { _r in previous.withUnsafeBytes { _b in proccess2(_r + offset, _r + offset, _b) } }
+            } else {
+                result.withUnsafeMutableBytes { _r in proccess(_r + offset, _r + offset) }
             }
         }
     }

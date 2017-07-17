@@ -142,6 +142,7 @@ extension ImageRep {
     public enum PropertyKey : Int {
         
         case compressionFactor
+        case interlaced
     }
     
     public func representation(using storageType: FileType, properties: [PropertyKey : Any]) -> Data? {
