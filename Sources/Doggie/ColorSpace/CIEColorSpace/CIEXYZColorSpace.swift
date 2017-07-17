@@ -80,7 +80,7 @@ extension CIEXYZColorSpace {
     @_versioned
     @_inlineable
     var localizedName: String? {
-        return "Doggie CIE XYZ Color Space"
+        return "Doggie CIE XYZ Color Space (white = \(white.point))"
     }
 }
 

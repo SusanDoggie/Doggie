@@ -97,14 +97,11 @@ class CalibratedRGBColorSpace : ColorSpaceBaseProtocol {
     func iccCurve(_ index: Int) -> iccCurve {
         return .identity
     }
-}
-
-extension CalibratedRGBColorSpace {
     
     @_versioned
     @_inlineable
     var localizedName: String? {
-        return "Doggie Calibrated RGB Color Space"
+        return "Doggie Calibrated RGB Color Space (white = \(cieXYZ.white.point))"
     }
 }
 
@@ -168,6 +165,12 @@ class CalibratedGammaRGBColorSpace: CalibratedRGBColorSpace {
         case 2: return .gamma(gamma.2)
         default: fatalError()
         }
+    }
+    
+    @_versioned
+    @_inlineable
+    override var localizedName: String? {
+        return "Doggie Calibrated RGB Color Space (white = \(cieXYZ.white.point), gamma = \(gamma))"
     }
 }
 

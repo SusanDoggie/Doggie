@@ -73,8 +73,8 @@ public class ImageContext<Pixel: ColorPixelProtocol> {
     }
     
     @_inlineable
-    public init(width: Int, height: Int, colorSpace: ColorSpace<Pixel.Model>, resolution: Resolution = Resolution(resolution: 1, unit: .point)) {
-        self._image = Image(width: width, height: height, colorSpace: colorSpace, resolution: resolution)
+    public init(width: Int, height: Int, resolution: Resolution = Resolution(resolution: 1, unit: .point), colorSpace: ColorSpace<Pixel.Model>) {
+        self._image = Image(width: width, height: height, resolution: resolution, colorSpace: colorSpace)
         self.clip = [Double](repeating: 1, count: width * height)
         self.depth = [Double](repeating: 1, count: width * height)
     }

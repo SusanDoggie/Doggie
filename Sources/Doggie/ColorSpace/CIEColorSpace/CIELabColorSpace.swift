@@ -59,7 +59,7 @@ extension CIELabColorSpace {
     @_versioned
     @_inlineable
     var localizedName: String? {
-        return "Doggie CIE Lab Color Space"
+        return "Doggie CIE Lab Color Space (white = \(cieXYZ.white.point))"
     }
 }
 

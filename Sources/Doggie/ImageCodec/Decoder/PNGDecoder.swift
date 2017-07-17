@@ -52,6 +52,8 @@ struct PNGImageDecoder : ImageRepDecoder {
         
         guard let first = _chunks.first, first.data.count >= 13 && first.signature == "IHDR" else { return nil }
         
+        guard _chunks.contains(where: { $0.signature == "IDAT" }) else { return nil }
+        
         self.data = data
         self.chunks = _chunks
         
@@ -152,53 +154,19 @@ struct PNGImageDecoder : ImageRepDecoder {
         return palette
     }
     
-    var _GrayColorSpace: ColorSpace<GrayColorModel> {
+    var gAMA: Double {
         
-        let D65 = Point(x: 0.3127, y: 0.3290)
+        guard let gama = chunks.first(where: { $0.signature == "gAMA" }), gama.data.count >= 4 else { return 100000.0 / 45455.0 }
         
-        if chunks.contains(where: { $0.signature == "sRGB" }) {
-            return ColorSpace.calibratedGray(white: D65)
-        }
-        
-        if let icc = chunks.first(where: { $0.signature == "iCCP" }) {
-            
-            guard let separator = icc.data.index(of: 0), 1...80 ~= separator && icc.data.count > separator + 2 else { return ColorSpace.calibratedGray(white: D65) }
-            
-            let compression = icc.data[separator + 1..<separator + 2].withUnsafeBytes { $0.pointee as UInt8 }
-            
-            guard let iccData = decompress(data: icc.data.suffix(from: separator + 2), compression: compression) else { return ColorSpace.calibratedGray(white: D65) }
-            guard let iccColorSpace = try? AnyColorSpace(iccData: iccData) else { return ColorSpace.calibratedGray(white: D65) }
-            
-            return iccColorSpace.base as? ColorSpace<GrayColorModel> ?? ColorSpace.calibratedGray(white: D65)
-        }
-        
-        if let gama = chunks.first(where: { $0.signature == "gAMA" }), gama.data.count >= 4 {
-            let gamma = gama.data.withUnsafeBytes { $0.pointee as BEUInt32 }
-            return ColorSpace.calibratedGray(white: D65, gamma: 0.00001 * Double(gamma.representingValue))
-        } else {
-            return ColorSpace.calibratedGray(white: D65)
-        }
+        let gamma = gama.data.withUnsafeBytes { $0.pointee as BEUInt32 }
+        return 100000.0 / Double(gamma.representingValue)
     }
     
-    var _RGBColorSpace: ColorSpace<RGBColorModel> {
+    var cHRM: (Point, Point, Point, Point) {
         
-        if chunks.contains(where: { $0.signature == "sRGB" }) {
-            return .sRGB
+        guard let chrm = chunks.first(where: { $0.signature == "cHRM" }), chrm.data.count >= 32 else {
+            return (Point(x: 0.3127, y: 0.3290), Point(x: 0.6400, y: 0.3300), Point(x: 0.3000, y: 0.6000), Point(x: 0.1500, y: 0.0600))
         }
-        
-        if let icc = chunks.first(where: { $0.signature == "iCCP" }) {
-            
-            guard let separator = icc.data.index(of: 0), 1...80 ~= separator && icc.data.count > separator + 2 else { return .sRGB }
-            
-            let compression = icc.data[separator + 1..<separator + 2].withUnsafeBytes { $0.pointee as UInt8 }
-            
-            guard let iccData = decompress(data: icc.data.suffix(from: separator + 2), compression: compression) else { return .sRGB }
-            guard let iccColorSpace = try? AnyColorSpace(iccData: iccData) else { return .sRGB }
-            
-            return iccColorSpace.base as? ColorSpace<RGBColorModel> ?? .sRGB
-        }
-        
-        guard let chrm = chunks.first(where: { $0.signature == "cHRM" }), chrm.data.count >= 32 else { return .sRGB }
         
         let whiteX = chrm.data[0..<4].withUnsafeBytes { $0.pointee as BEUInt32 }
         let whiteY = chrm.data[4..<8].withUnsafeBytes { $0.pointee as BEUInt32 }
@@ -214,12 +182,45 @@ struct PNGImageDecoder : ImageRepDecoder {
         let green = Point(x: 0.00001 * Double(greenX.representingValue), y: 0.00001 * Double(greenY.representingValue))
         let blue = Point(x: 0.00001 * Double(blueX.representingValue), y: 0.00001 * Double(blueY.representingValue))
         
-        if let gama = chunks.first(where: { $0.signature == "gAMA" }), gama.data.count >= 4 {
-            let gamma = gama.data.withUnsafeBytes { $0.pointee as BEUInt32 }
-            return ColorSpace.calibratedRGB(white: white, red: red, green: green, blue: blue, gamma: 0.00001 * Double(gamma.representingValue))
-        } else {
-            return ColorSpace.calibratedRGB(white: white, red: red, green: green, blue: blue)
+        return (white, red, green, blue)
+    }
+    
+    var _GrayColorSpace: ColorSpace<GrayColorModel> {
+        
+        let D65 = Point(x: 0.3127, y: 0.3290)
+        let _colorSpace = ColorSpace.calibratedGray(white: D65, gamma: gAMA)
+        
+        guard let icc = chunks.first(where: { $0.signature == "iCCP" }) else { return _colorSpace }
+        
+        guard let separator = icc.data.index(of: 0), 1...80 ~= separator && icc.data.count > separator + 2 else { return _colorSpace }
+        
+        let compression = icc.data[separator + 1..<separator + 2].withUnsafeBytes { $0.pointee as UInt8 }
+        
+        guard let iccData = decompress(data: icc.data.suffix(from: separator + 2), compression: compression) else { return _colorSpace }
+        guard let iccColorSpace = try? AnyColorSpace(iccData: iccData) else { return _colorSpace }
+        
+        return iccColorSpace.base as? ColorSpace<GrayColorModel> ?? _colorSpace
+    }
+    
+    var _RGBColorSpace: ColorSpace<RGBColorModel> {
+        
+        if chunks.contains(where: { $0.signature == "sRGB" }) {
+            return .sRGB
         }
+        
+        let cHRM = self.cHRM
+        let _colorSpace = ColorSpace.calibratedRGB(white: cHRM.0, red: cHRM.1, green: cHRM.2, blue: cHRM.3, gamma: gAMA)
+        
+        guard let icc = chunks.first(where: { $0.signature == "iCCP" }) else { return _colorSpace }
+        
+        guard let separator = icc.data.index(of: 0), 1...80 ~= separator && icc.data.count > separator + 2 else { return _colorSpace }
+        
+        let compression = icc.data[separator + 1..<separator + 2].withUnsafeBytes { $0.pointee as UInt8 }
+        
+        guard let iccData = decompress(data: icc.data.suffix(from: separator + 2), compression: compression) else { return _colorSpace }
+        guard let iccColorSpace = try? AnyColorSpace(iccData: iccData) else { return _colorSpace }
+        
+        return iccColorSpace.base as? ColorSpace<RGBColorModel> ?? _colorSpace
     }
     
     var colorSpace: AnyColorSpace {
@@ -305,13 +306,14 @@ struct PNGImageDecoder : ImageRepDecoder {
                         let _block_height = block_height[pass]
                         let _block_width = block_width[pass]
                         
+                        guard width > _starting_col else { continue }
+                        guard height > _starting_row else { continue }
+                        
                         var previous: Data?
                         
                         for row in stride(from: _starting_row, to: height, by: _row_increment) {
                             
-                            let s = width - _starting_col
-                            let sample_count = (s + (_col_increment - 1)) / _col_increment
-                            
+                            let sample_count = (width - _starting_col + (_col_increment - 1)) / _col_increment
                             let scanline_bitSize = Int(bitsPerPixel) * sample_count
                             let scanline_size = (scanline_bitSize + 7) >> 3
                             var scanline = Data(capacity: scanline_size)
@@ -319,6 +321,8 @@ struct PNGImageDecoder : ImageRepDecoder {
                             guard data.count >= scanline_size + 1 else { return }
                             
                             PNGFilter0(data.popFirst(scanline_size + 1), previous, bitsPerPixel, false, &scanline)
+                            
+                            previous = scanline
                             
                             func filling(_ value: UInt8, _ column: Int, _ row: Int, _ _width: Int, _ _height: Int) {
                                 
@@ -411,8 +415,6 @@ struct PNGImageDecoder : ImageRepDecoder {
                                     }
                                 }
                             }
-                            
-                            previous = scanline
                         }
                     }
                 }
@@ -435,8 +437,8 @@ struct PNGImageDecoder : ImageRepDecoder {
         
         let IDAT_data = Data(chunks.filter { $0.signature == "IDAT" }.flatMap { $0.data })
         
-        guard let data = decompress(data: IDAT_data, compression: ihdr.compression) else { return AnyImage(width: width, height: height, colorSpace: colorSpace, resolution: resolution) }
-        guard let pixels = filter(data, ihdr) else { return AnyImage(width: width, height: height, colorSpace: colorSpace, resolution: resolution) }
+        guard let data = decompress(data: IDAT_data, compression: ihdr.compression) else { return AnyImage(width: width, height: height, resolution: resolution, colorSpace: colorSpace) }
+        guard let pixels = filter(data, ihdr) else { return AnyImage(width: width, height: height, resolution: resolution, colorSpace: colorSpace) }
         
         let bitsPerPixel: UInt8
         
@@ -457,7 +459,7 @@ struct PNGImageDecoder : ImageRepDecoder {
             switch ihdr.bitDepth {
             case 1, 2, 4:
                 
-                var image = Image<ColorPixel<GrayColorModel>>(width: width, height: height, colorSpace: _GrayColorSpace, resolution: resolution)
+                var image = Image<ColorPixel<GrayColorModel>>(width: width, height: height, resolution: resolution, colorSpace: _GrayColorSpace)
                 
                 pixels.withUnsafeBytes { (source: UnsafePointer<UInt8>) in
                     
@@ -523,7 +525,7 @@ struct PNGImageDecoder : ImageRepDecoder {
                 return AnyImage(image)
                 
             case 8:
-                var image = Image<Gray16ColorPixel>(width: width, height: height, colorSpace: _GrayColorSpace, resolution: resolution)
+                var image = Image<Gray16ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: _GrayColorSpace)
                 
                 pixels.withUnsafeBytes { (source: UnsafePointer<UInt8>) in
                     
@@ -546,7 +548,7 @@ struct PNGImageDecoder : ImageRepDecoder {
                 
             case 16:
                 
-                var image = Image<Gray32ColorPixel>(width: width, height: height, colorSpace: _GrayColorSpace, resolution: resolution)
+                var image = Image<Gray32ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: _GrayColorSpace)
                 
                 pixels.withUnsafeBytes { (source: UnsafePointer<BEUInt16>) in
                     
@@ -574,7 +576,7 @@ struct PNGImageDecoder : ImageRepDecoder {
             
             switch ihdr.bitDepth {
             case 8:
-                var image = Image<ARGB32ColorPixel>(width: width, height: height, colorSpace: _RGBColorSpace, resolution: resolution)
+                var image = Image<ARGB32ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: _RGBColorSpace)
                 
                 pixels.withUnsafeBytes { (source: UnsafePointer<(UInt8, UInt8, UInt8)>) in
                     
@@ -597,7 +599,7 @@ struct PNGImageDecoder : ImageRepDecoder {
                 return AnyImage(image)
                 
             case 16:
-                var image = Image<ARGB64ColorPixel>(width: width, height: height, colorSpace: _RGBColorSpace, resolution: resolution)
+                var image = Image<ARGB64ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: _RGBColorSpace)
                 
                 pixels.withUnsafeBytes { (source: UnsafePointer<(BEUInt16, BEUInt16, BEUInt16)>) in
                     
@@ -624,7 +626,7 @@ struct PNGImageDecoder : ImageRepDecoder {
             
         case 3:
             
-            var image = Image<ARGB32ColorPixel>(width: width, height: height, colorSpace: _RGBColorSpace, resolution: resolution)
+            var image = Image<ARGB32ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: _RGBColorSpace)
             
             guard let palette = self.palette else { return AnyImage(image) }
             
@@ -688,7 +690,7 @@ struct PNGImageDecoder : ImageRepDecoder {
         case 4:
             switch ihdr.bitDepth {
             case 8:
-                var image = Image<Gray16ColorPixel>(width: width, height: height, colorSpace: _GrayColorSpace, resolution: resolution)
+                var image = Image<Gray16ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: _GrayColorSpace)
                 
                 pixels.withUnsafeBytes { (source: UnsafePointer<(UInt8, UInt8)>) in
                     
@@ -712,7 +714,7 @@ struct PNGImageDecoder : ImageRepDecoder {
                 
             case 16:
                 
-                var image = Image<Gray32ColorPixel>(width: width, height: height, colorSpace: _GrayColorSpace, resolution: resolution)
+                var image = Image<Gray32ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: _GrayColorSpace)
                 
                 pixels.withUnsafeBytes { (source: UnsafePointer<(BEUInt16, BEUInt16)>) in
                     
@@ -740,7 +742,7 @@ struct PNGImageDecoder : ImageRepDecoder {
             
             switch ihdr.bitDepth {
             case 8:
-                var image = Image<ARGB32ColorPixel>(width: width, height: height, colorSpace: _RGBColorSpace, resolution: resolution)
+                var image = Image<ARGB32ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: _RGBColorSpace)
                 
                 pixels.withUnsafeBytes { (source: UnsafePointer<(UInt8, UInt8, UInt8, UInt8)>) in
                     
@@ -763,7 +765,7 @@ struct PNGImageDecoder : ImageRepDecoder {
                 return AnyImage(image)
                 
             case 16:
-                var image = Image<ARGB64ColorPixel>(width: width, height: height, colorSpace: _RGBColorSpace, resolution: resolution)
+                var image = Image<ARGB64ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: _RGBColorSpace)
                 
                 pixels.withUnsafeBytes { (source: UnsafePointer<(BEUInt16, BEUInt16, BEUInt16, BEUInt16)>) in
                     

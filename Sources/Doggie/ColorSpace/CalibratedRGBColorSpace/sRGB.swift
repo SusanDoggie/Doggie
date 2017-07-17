@@ -66,6 +66,12 @@ class _sRGB: CalibratedRGBColorSpace {
     override func iccCurve(_ index: Int) -> iccCurve {
         return .parametric3(2.4, 1 / 1.055, 0.055 / 1.055, 1 / 12.92, 0.04045)
     }
+    
+    @_versioned
+    @_inlineable
+    override var localizedName: String? {
+        return "Doggie Calibrated RGB Color Space (sRGB)"
+    }
 }
 
 extension ColorSpace where Model == RGBColorModel {

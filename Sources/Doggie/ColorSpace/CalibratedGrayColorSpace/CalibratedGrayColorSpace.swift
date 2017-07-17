@@ -75,14 +75,11 @@ class CalibratedGrayColorSpace : ColorSpaceBaseProtocol {
     func iccCurve() -> iccCurve {
         return .identity
     }
-}
-
-extension CalibratedGrayColorSpace {
     
     @_versioned
     @_inlineable
     var localizedName: String? {
-        return "Doggie Calibrated Gray Color Space"
+        return "Doggie Calibrated Gray Color Space (white = \(cieXYZ.white.point))"
     }
 }
 
@@ -143,5 +140,11 @@ class CalibratedGammaGrayColorSpace: CalibratedGrayColorSpace {
     @_inlineable
     override func iccCurve() -> iccCurve {
         return .gamma(gamma)
+    }
+    
+    @_versioned
+    @_inlineable
+    override var localizedName: String? {
+        return "Doggie Calibrated Gray Color Space (white = \(cieXYZ.white.point), gamma = \(gamma))"
     }
 }

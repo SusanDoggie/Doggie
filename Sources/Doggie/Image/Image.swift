@@ -99,7 +99,7 @@ public struct Image<Pixel: ColorPixelProtocol> {
     public var colorSpace: ColorSpace<Pixel.Model>
     
     @_inlineable
-    public init(width: Int, height: Int, colorSpace: ColorSpace<Pixel.Model>, pixel: Pixel = Pixel(), resolution: Resolution = Resolution(resolution: 1, unit: .point)) {
+    public init(width: Int, height: Int, resolution: Resolution = Resolution(resolution: 1, unit: .point), colorSpace: ColorSpace<Pixel.Model>, pixel: Pixel = Pixel()) {
         precondition(width >= 0, "negative width is not allowed.")
         precondition(height >= 0, "negative height is not allowed.")
         self.width = width

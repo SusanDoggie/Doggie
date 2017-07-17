@@ -74,7 +74,7 @@ extension ColorSpace : AnyColorSpaceBaseProtocol {
     @_versioned
     @_inlineable
     func _createImage(width: Int, height: Int, resolution: Resolution) -> AnyImageBaseProtocol {
-        return Image<ColorPixel<Model>>(width: width, height: height, colorSpace: self, resolution: resolution)
+        return Image<ColorPixel<Model>>(width: width, height: height, resolution: resolution, colorSpace: self)
     }
     
     @_versioned
