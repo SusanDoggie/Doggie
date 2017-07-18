@@ -30,14 +30,39 @@ public class Deflate : CompressionCodec {
     
     private var stream: z_stream
     
-    public init(level: Level = .default) throws {
+    public init(level: Level = .default, windowBits: Int32 = MAX_WBITS, memLevel: Int32 = MAX_MEM_LEVEL, strategy: Strategy = .default) throws {
         self.stream = z_stream()
-        let status = deflateInit2_(&stream, level.rawValue, Z_DEFLATED, MAX_WBITS + 16 as Int32, MAX_MEM_LEVEL, Z_DEFAULT_STRATEGY, ZLIB_VERSION, Int32(MemoryLayout<z_stream>.size))
+        let status = deflateInit2_(&stream, level.rawValue, Z_DEFLATED, windowBits, memLevel, strategy.rawValue, ZLIB_VERSION, Int32(MemoryLayout<z_stream>.size))
         guard status == Z_OK else { throw Error(code: status, msg: stream.msg) }
     }
     
     deinit {
         deflateEnd(&stream)
+    }
+}
+
+extension Deflate {
+    
+    public enum Strategy {
+        
+        case `default`
+        case filtered
+        case huffmanOnly
+        case rle
+        case fixed
+    }
+}
+
+extension Deflate.Strategy {
+    
+    var rawValue: Int32 {
+        switch self {
+        case .default: return Z_DEFAULT_STRATEGY
+        case .filtered: return Z_FILTERED
+        case .huffmanOnly: return Z_HUFFMAN_ONLY
+        case .rle: return Z_RLE
+        case .fixed: return Z_FIXED
+        }
     }
 }
 
