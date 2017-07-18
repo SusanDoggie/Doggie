@@ -171,7 +171,7 @@ extension ColorSpace : CustomStringConvertible {
     
     @_inlineable
     public var description: String {
-        return localizedName.map { "\(type(of: base))(localizedName: \($0))" } ?? "\(type(of: base))"
+        return localizedName.map { "\(ColorSpace.self)(localizedName: \($0))" } ?? "\(ColorSpace.self)"
     }
 }
 
