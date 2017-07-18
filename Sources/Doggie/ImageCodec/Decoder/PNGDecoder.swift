@@ -25,7 +25,7 @@
 
 import Foundation
 
-struct PNGImageDecoder : ImageRepDecoder {
+struct PNGDecoder : ImageRepDecoder {
     
     let data: Data
     
@@ -801,7 +801,7 @@ struct PNGImageDecoder : ImageRepDecoder {
     }
 }
 
-extension PNGImageDecoder {
+extension PNGDecoder {
     
     var ihdr: IHDR {
         return IHDR(data: chunks.first!.data)

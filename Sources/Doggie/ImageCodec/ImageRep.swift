@@ -73,8 +73,8 @@ extension ImageRep {
     public init(data: Data) throws {
         
         let decoders: [ImageRepDecoder.Type] = [
-            BMPImageDecoder.self,
-            PNGImageDecoder.self,
+            BMPDecoder.self,
+            PNGDecoder.self,
             ]
         
         for Decoder in decoders {

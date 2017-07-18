@@ -25,7 +25,7 @@
 
 import Foundation
 
-struct BMPImageDecoder : ImageRepDecoder {
+struct BMPDecoder : ImageRepDecoder {
     
     let data: Data
     
