@@ -154,7 +154,7 @@ struct PNGEncoder : ImageRepEncoder {
                                 body(&scanline, destination.pointee)
                             }
                             
-                            filter0(scanline, previous, 16, &idat_data)
+                            filter0(scanline, previous, bitsPerPixel, &idat_data)
                             
                             previous = scanline
                         }
