@@ -104,8 +104,27 @@ struct PNGEncoder : ImageRepEncoder {
     }
     
     static func filter0(_ pixel: Data, _ previous: Data?, _ bitsPerPixel: UInt8, _ result: inout Data) {
-        result.encode(0 as UInt8)
-        result.append(pixel)
+        
+        let d = 1 / Double(pixel.count)
+        
+        var s = pixel.reduce(0.0) { $0 + abs(Double(Int8(bitPattern: $1)) * d) }
+        
+        var filtered = pixel
+        var type = 0
+        
+        for i in 1...4 {
+            var buffer = Data(capacity: pixel.count)
+            PNGFilter0(UInt8(i), pixel, previous, bitsPerPixel, true, &buffer)
+            let t = buffer.reduce(0.0) { $0 + abs(Double(Int8(bitPattern: $1)) * d) }
+            if t < s {
+                s = t
+                filtered = buffer
+                type = i
+            }
+        }
+        
+        result.encode(UInt8(type))
+        result.append(filtered)
     }
     
     static func encodeIDAT<Pixel>(image: Image<Pixel>, bitsPerPixel: UInt8, interlace: Bool, _ body: (inout Data, Pixel) -> Void) -> PNGChunk? {
