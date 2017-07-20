@@ -147,6 +147,9 @@ extension ImageRep {
     
     public func representation(using storageType: FileType, properties: [PropertyKey : Any]) -> Data? {
         
+        let image = base.image()
+        guard image.width > 0 && image.height > 0 else { return nil }
+        
         let Encoder: ImageRepEncoder.Type
         
         switch storageType {
@@ -158,7 +161,7 @@ extension ImageRep {
         case .tiff: Encoder = TIFFEncoder.self
         }
         
-        return Encoder.encode(image: base.image(), properties: properties)
+        return Encoder.encode(image: image, properties: properties)
     }
 }
 
