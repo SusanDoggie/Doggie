@@ -198,7 +198,11 @@
 		0A8398B71F0B98D000D7CF3B /* ImageResampling.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A8398B51F0B98D000D7CF3B /* ImageResampling.swift */; };
 		0A89938D1EFA488900E9CDD9 /* ICC Creator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A89938C1EFA488900E9CDD9 /* ICC Creator.swift */; };
 		0A89938E1EFA488900E9CDD9 /* ICC Creator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A89938C1EFA488900E9CDD9 /* ICC Creator.swift */; };
+		0A8B10501F1DE69B00D93CF9 /* JPEGDecoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A8B104F1F1DE69B00D93CF9 /* JPEGDecoder.swift */; };
+		0A8B10511F1DE69B00D93CF9 /* JPEGDecoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A8B104F1F1DE69B00D93CF9 /* JPEGDecoder.swift */; };
 		0A8D98A51E53EE310050E112 /* ImageTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A8D98A21E53ED0F0050E112 /* ImageTest.swift */; };
+		0A8DD8781F1F2FC200457676 /* TIFFDecoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A8DD8771F1F2FC200457676 /* TIFFDecoder.swift */; };
+		0A8DD8791F1F2FC200457676 /* TIFFDecoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A8DD8771F1F2FC200457676 /* TIFFDecoder.swift */; };
 		0A8EDDBF1F19B1CD00C917CC /* iccCurve.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A8EDDBE1F19B1CD00C917CC /* iccCurve.swift */; };
 		0A8EDDC01F19B1CD00C917CC /* iccCurve.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A8EDDBE1F19B1CD00C917CC /* iccCurve.swift */; };
 		0A8EDDC21F19B67800C917CC /* iccTransform.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A8EDDC11F19B67800C917CC /* iccTransform.swift */; };
@@ -426,7 +430,9 @@
 		0A831A911F18952C0007932A /* ImageRepEncoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageRepEncoder.swift; sourceTree = "<group>"; };
 		0A8398B51F0B98D000D7CF3B /* ImageResampling.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageResampling.swift; sourceTree = "<group>"; };
 		0A89938C1EFA488900E9CDD9 /* ICC Creator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ICC Creator.swift"; sourceTree = "<group>"; };
+		0A8B104F1F1DE69B00D93CF9 /* JPEGDecoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JPEGDecoder.swift; sourceTree = "<group>"; };
 		0A8D98A21E53ED0F0050E112 /* ImageTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageTest.swift; sourceTree = "<group>"; };
+		0A8DD8771F1F2FC200457676 /* TIFFDecoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TIFFDecoder.swift; sourceTree = "<group>"; };
 		0A8EDDBE1F19B1CD00C917CC /* iccCurve.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iccCurve.swift; sourceTree = "<group>"; };
 		0A8EDDC11F19B67800C917CC /* iccTransform.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iccTransform.swift; sourceTree = "<group>"; };
 		0A8EDDC41F19B7F900C917CC /* iccMatrix.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iccMatrix.swift; sourceTree = "<group>"; };
@@ -892,6 +898,8 @@
 				0A831A8E1F1895200007932A /* ImageRepDecoder.swift */,
 				0A94BE941F1087B600F1BCD2 /* BMPDecoder.swift */,
 				0A9206391F14C83A00AF5C49 /* PNGDecoder.swift */,
+				0A8B104F1F1DE69B00D93CF9 /* JPEGDecoder.swift */,
+				0A8DD8771F1F2FC200457676 /* TIFFDecoder.swift */,
 			);
 			path = Decoder;
 			sourceTree = "<group>";
@@ -1249,6 +1257,7 @@
 				0A9F282D1EF0DB1F00E69976 /* CMYColorModel.swift in Sources */,
 				0A9F282A1EF0D9F000E69976 /* GrayColorModel.swift in Sources */,
 				0A9D27E41F0CF629003638D3 /* BinaryFixedPoint.swift in Sources */,
+				0A8DD8781F1F2FC200457676 /* TIFFDecoder.swift in Sources */,
 				08458B2E1E2E627600D01813 /* Image.swift in Sources */,
 				0A831A861F186E6F0007932A /* ARGB64ColorPixel.swift in Sources */,
 				0AAC4DF41E977906008DCADA /* ShapeRasterize.swift in Sources */,
@@ -1260,6 +1269,7 @@
 				08458B581E2E627600D01813 /* Atomic.swift in Sources */,
 				08458B5C1E2E627600D01813 /* AtomicStack.swift in Sources */,
 				08458B261E2E627600D01813 /* Color.swift in Sources */,
+				0A8B10501F1DE69B00D93CF9 /* JPEGDecoder.swift in Sources */,
 				0A53E47A1E35AEF80060FB83 /* Random.swift in Sources */,
 				08458AFC1E2E627600D01813 /* Move.swift in Sources */,
 				0A831A8A1F1872770007932A /* Gray32ColorPixel.swift in Sources */,
@@ -1406,6 +1416,7 @@
 				0A9F282E1EF0DB1F00E69976 /* CMYColorModel.swift in Sources */,
 				0A9F282B1EF0D9F000E69976 /* GrayColorModel.swift in Sources */,
 				0A9D27E51F0CF629003638D3 /* BinaryFixedPoint.swift in Sources */,
+				0A8DD8791F1F2FC200457676 /* TIFFDecoder.swift in Sources */,
 				08458B2F1E2E627600D01813 /* Image.swift in Sources */,
 				0A831A871F186E6F0007932A /* ARGB64ColorPixel.swift in Sources */,
 				0AAC4DF51E977906008DCADA /* ShapeRasterize.swift in Sources */,
@@ -1417,6 +1428,7 @@
 				08458B591E2E627600D01813 /* Atomic.swift in Sources */,
 				08458B5D1E2E627600D01813 /* AtomicStack.swift in Sources */,
 				08458B271E2E627600D01813 /* Color.swift in Sources */,
+				0A8B10511F1DE69B00D93CF9 /* JPEGDecoder.swift in Sources */,
 				0A53E47B1E35AEF80060FB83 /* Random.swift in Sources */,
 				08458AFD1E2E627600D01813 /* Move.swift in Sources */,
 				0A831A8B1F1872770007932A /* Gray32ColorPixel.swift in Sources */,

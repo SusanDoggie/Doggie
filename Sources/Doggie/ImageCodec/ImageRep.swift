@@ -67,6 +67,7 @@ extension ImageRep {
         
         case UnknownFormat
         case InvalidFormat(String)
+        case Unsupported(String)
         case DecoderError(String)
     }
     
