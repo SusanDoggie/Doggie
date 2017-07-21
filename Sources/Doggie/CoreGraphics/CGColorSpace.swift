@@ -47,15 +47,9 @@
                     var range: [CGFloat] = []
                     
                     for i in 0..<Model.numberOfComponents {
-                        switch Model.self {
-                        case let model as NonnormalizedColorModel.Type:
-                            let _range = model.rangeOfComponent(i)
-                            range.append(CGFloat(_range.lowerBound))
-                            range.append(CGFloat(_range.upperBound))
-                        default:
-                            range.append(0)
-                            range.append(1)
-                        }
+                        let _range = Model.rangeOfComponent(i)
+                        range.append(CGFloat(_range.lowerBound))
+                        range.append(CGFloat(_range.upperBound))
                     }
                     
                     return CGColorSpace(iccBasedNComponents: Model.numberOfComponents, range: range, profile: iccData, alternate: nil)

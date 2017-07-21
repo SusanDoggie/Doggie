@@ -30,6 +30,12 @@ public struct CMYKColorModel : ColorModelProtocol {
         return 4
     }
     
+    @_inlineable
+    public static func rangeOfComponent(_ i: Int) -> ClosedRange<Double> {
+        precondition(0..<numberOfComponents ~= i, "Index out of range.")
+        return 0...1
+    }
+    
     public var cyan: Double
     public var magenta: Double
     public var yellow: Double

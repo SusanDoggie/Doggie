@@ -37,8 +37,6 @@ public protocol ColorPixelProtocol : Hashable {
     
     var isOpaque: Bool { get }
     
-    var hashValue: Int { get }
-    
     func with(opacity: Double) -> Self
 }
 
@@ -68,6 +66,82 @@ extension ColorPixelProtocol {
     @_inlineable
     public func with(opacity: Double) -> Self {
         return Self(color: color, opacity: opacity)
+    }
+}
+
+extension ColorPixelProtocol {
+    
+    @_inlineable
+    public static var numberOfComponents: Int {
+        return Model.numberOfComponents + 1
+    }
+    
+    @_inlineable
+    public var numberOfComponents: Int {
+        return Self.numberOfComponents
+    }
+    
+    @_inlineable
+    public static func rangeOfComponent(_ i: Int) -> ClosedRange<Double> {
+        if i < Model.numberOfComponents {
+            return Model.rangeOfComponent(i)
+        } else if i == Model.numberOfComponents {
+            return 0...1
+        } else {
+            fatalError()
+        }
+    }
+    
+    @_inlineable
+    public func rangeOfComponent(_ i: Int) -> ClosedRange<Double> {
+        return Self.rangeOfComponent(i)
+    }
+    
+    @_inlineable
+    public func component(_ index: Int) -> Double {
+        if index < Model.numberOfComponents {
+            return color.component(index)
+        } else if index == Model.numberOfComponents {
+            return opacity
+        } else {
+            fatalError()
+        }
+    }
+    
+    @_inlineable
+    public mutating func setComponent(_ index: Int, _ value: Double) {
+        if index < Model.numberOfComponents {
+            color.setComponent(index, value)
+        } else if index == Model.numberOfComponents {
+            opacity = value
+        } else {
+            fatalError()
+        }
+    }
+}
+
+extension ColorPixelProtocol {
+    
+    @_inlineable
+    public func normalizedComponent(_ index: Int) -> Double {
+        if index < Model.numberOfComponents {
+            return color.normalizedComponent(index)
+        } else if index == Model.numberOfComponents {
+            return opacity
+        } else {
+            fatalError()
+        }
+    }
+    
+    @_inlineable
+    public mutating func setNormalizedComponent(_ index: Int, _ value: Double) {
+        if index < Model.numberOfComponents {
+            color.setNormalizedComponent(index, value)
+        } else if index == Model.numberOfComponents {
+            opacity = value
+        } else {
+            fatalError()
+        }
     }
 }
 

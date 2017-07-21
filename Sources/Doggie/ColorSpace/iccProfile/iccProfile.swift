@@ -63,13 +63,13 @@ struct iccProfile {
                 let start = Int(offset)
                 let end = start + Int(size)
                 
-                guard data.count >= end else { throw AnyColorSpace.ParserError.invalidFormat(message: "Unexpected end of file.") }
+                guard data.count >= end else { throw AnyColorSpace.ICCError.invalidFormat(message: "Unexpected end of file.") }
                 
                 table[sig] = TagData(rawData: data[start..<end])
             }
             
         } catch {
-            throw AnyColorSpace.ParserError.invalidFormat(message: "Unexpected end of file.")
+            throw AnyColorSpace.ICCError.invalidFormat(message: "Unexpected end of file.")
         }
     }
 }

@@ -42,7 +42,7 @@ extension iccCurve : DataCodable {
     
     init(from data: inout Data) throws {
         
-        guard data.count > 8 else { throw AnyColorSpace.ParserError.endOfData }
+        guard data.count > 8 else { throw AnyColorSpace.ICCError.endOfData }
         
         let type = try data.decode(iccProfile.TagType.self)
         
@@ -75,10 +75,10 @@ extension iccCurve : DataCodable {
             case 2: self = .parametric2(curve.gamma.representingValue, curve.a.representingValue, curve.b.representingValue, curve.c.representingValue)
             case 3: self = .parametric3(curve.gamma.representingValue, curve.a.representingValue, curve.b.representingValue, curve.c.representingValue, curve.d.representingValue)
             case 4: self = .parametric4(curve.gamma.representingValue, curve.a.representingValue, curve.b.representingValue, curve.c.representingValue, curve.d.representingValue, curve.e.representingValue, curve.f.representingValue)
-            default: throw AnyColorSpace.ParserError.invalidFormat(message: "Invalid parametricCurve.")
+            default: throw AnyColorSpace.ICCError.invalidFormat(message: "Invalid parametricCurve.")
             }
             
-        default: throw AnyColorSpace.ParserError.invalidFormat(message: "Unknown curve type.")
+        default: throw AnyColorSpace.ICCError.invalidFormat(message: "Unknown curve type.")
         }
     }
     
@@ -211,7 +211,7 @@ extension iccCurve {
                 self.d = try data.decode(Fixed16Number.self)
                 self.e = try data.decode(Fixed16Number.self)
                 self.f = try data.decode(Fixed16Number.self)
-            default: throw AnyColorSpace.ParserError.invalidFormat(message: "Invalid parametricCurve.")
+            default: throw AnyColorSpace.ICCError.invalidFormat(message: "Invalid parametricCurve.")
             }
         }
         

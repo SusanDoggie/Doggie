@@ -36,6 +36,8 @@ protocol AnyColorSpaceBaseProtocol {
     
     var numberOfComponents: Int { get }
     
+    func rangeOfComponent(_ i: Int) -> ClosedRange<Double>
+    
     var _cieXYZ: ColorSpace<XYZColorModel> { get }
     
     func _createColor<S : Sequence>(components: S, opacity: Double) -> AnyColorBaseProtocol where S.Element == Double
@@ -161,6 +163,11 @@ extension AnyColorSpace {
     @_inlineable
     public var numberOfComponents: Int {
         return _base.numberOfComponents
+    }
+    
+    @_inlineable
+    public func rangeOfComponent(_ i: Int) -> ClosedRange<Double> {
+        return _base.rangeOfComponent(i)
     }
     
     @_inlineable

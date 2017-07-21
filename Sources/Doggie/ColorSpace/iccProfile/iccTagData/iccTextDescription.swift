@@ -33,9 +33,9 @@ struct iccTextDescription : DataDecodable {
     
     init(from data: inout Data) throws {
         
-        guard data.count > 8 else { throw AnyColorSpace.ParserError.endOfData }
+        guard data.count > 8 else { throw AnyColorSpace.ICCError.endOfData }
         
-        guard try data.decode(iccProfile.TagType.self) == .textDescription else { throw AnyColorSpace.ParserError.invalidFormat(message: "Invalid textDescription.") }
+        guard try data.decode(iccProfile.TagType.self) == .textDescription else { throw AnyColorSpace.ICCError.invalidFormat(message: "Invalid textDescription.") }
         
         data.removeFirst(4)
         

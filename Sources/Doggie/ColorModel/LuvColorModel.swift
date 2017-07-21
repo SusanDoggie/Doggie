@@ -32,6 +32,15 @@ public struct LuvColorModel : ColorModelProtocol {
         return 3
     }
     
+    @_inlineable
+    public static func rangeOfComponent(_ i: Int) -> ClosedRange<Double> {
+        precondition(0..<numberOfComponents ~= i, "Index out of range.")
+        switch i {
+        case 0: return 0...100
+        default: return -128...128
+        }
+    }
+
     /// The lightness dimension.
     public var lightness: Double
     /// The u color component.

@@ -27,12 +27,13 @@ public protocol ColorModelProtocol : Hashable {
     
     static var numberOfComponents: Int { get }
     
+    static func rangeOfComponent(_ i: Int) -> ClosedRange<Double>
+    
     init()
     
     func component(_ index: Int) -> Double
-    mutating func setComponent(_ index: Int, _ value: Double)
     
-    var hashValue: Int { get }
+    mutating func setComponent(_ index: Int, _ value: Double)
 }
 
 extension ColorModelProtocol {
@@ -40,6 +41,26 @@ extension ColorModelProtocol {
     @_inlineable
     public var numberOfComponents: Int {
         return Self.numberOfComponents
+    }
+    
+    @_inlineable
+    public func rangeOfComponent(_ i: Int) -> ClosedRange<Double> {
+        return Self.rangeOfComponent(i)
+    }
+}
+
+extension ColorModelProtocol {
+    
+    @_inlineable
+    public func normalizedComponent(_ index: Int) -> Double {
+        let range = Self.rangeOfComponent(index)
+        return (self.component(index) - range.lowerBound) / (range.upperBound - range.lowerBound)
+    }
+    
+    @_inlineable
+    public mutating func setNormalizedComponent(_ index: Int, _ value: Double) {
+        let range = Self.rangeOfComponent(index)
+        self.setComponent(index, value * (range.upperBound - range.lowerBound) + range.lowerBound)
     }
 }
 

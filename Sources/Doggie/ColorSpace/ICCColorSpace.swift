@@ -69,36 +69,6 @@ extension LabColorModel : PCSColorModel {
 }
 
 @_versioned
-protocol NonnormalizedColorModel {
-    
-    static func rangeOfComponent(_ i: Int) -> ClosedRange<Double>
-}
-
-extension LuvColorModel : NonnormalizedColorModel {
-    
-    @_versioned
-    @_inlineable
-    static func rangeOfComponent(_ i: Int) -> ClosedRange<Double> {
-        switch i {
-        case 0: return 0...100
-        default: return -128...128
-        }
-    }
-}
-
-extension LabColorModel : NonnormalizedColorModel {
-    
-    @_versioned
-    @_inlineable
-    static func rangeOfComponent(_ i: Int) -> ClosedRange<Double> {
-        switch i {
-        case 0: return 0...100
-        default: return -128...128
-        }
-    }
-}
-
-@_versioned
 @_fixed_layout
 struct ICCColorSpace<Model : ColorModelProtocol, Connection : ColorSpaceBaseProtocol> : ColorSpaceBaseProtocol where Connection.Model : PCSColorModel {
     
@@ -169,7 +139,7 @@ extension ICCColorSpace {
 
 extension AnyColorSpace {
     
-    public enum ParserError : Error {
+    public enum ICCError : Error {
         
         case endOfData
         case invalidFormat(message: String)
@@ -194,7 +164,7 @@ extension AnyColorSpace {
         case .Cmyk: self._base = try ColorSpace<CMYKColorModel>(iccData: iccData, profile: profile)
         case .Cmy: self._base = try ColorSpace<CMYColorModel>(iccData: iccData, profile: profile)
             
-        case .Named: throw AnyColorSpace.ParserError.unsupported(message: "ColorSpace: \(profile.header.colorSpace)")
+        case .Named: throw AnyColorSpace.ICCError.unsupported(message: "ColorSpace: \(profile.header.colorSpace)")
             
         case .color2: self._base = try ColorSpace<Device2ColorModel>(iccData: iccData, profile: profile)
         case .color3: self._base = try ColorSpace<Device3ColorModel>(iccData: iccData, profile: profile)
@@ -210,7 +180,7 @@ extension AnyColorSpace {
         case .color13: self._base = try ColorSpace<Device13ColorModel>(iccData: iccData, profile: profile)
         case .color14: self._base = try ColorSpace<Device14ColorModel>(iccData: iccData, profile: profile)
         case .color15: self._base = try ColorSpace<Device15ColorModel>(iccData: iccData, profile: profile)
-        default: throw AnyColorSpace.ParserError.unsupported(message: "ColorSpace: \(profile.header.colorSpace)")
+        default: throw AnyColorSpace.ICCError.unsupported(message: "ColorSpace: \(profile.header.colorSpace)")
         }
     }
 }
@@ -224,31 +194,31 @@ extension ColorSpace {
             switch a2bCurve {
             case let .LUT0(_, i, lut, o):
                 if lut.inputChannels != Model.numberOfComponents || lut.outputChannels != 3 {
-                    throw AnyColorSpace.ParserError.invalidFormat(message: "Invalid LUT size.")
+                    throw AnyColorSpace.ICCError.invalidFormat(message: "Invalid LUT size.")
                 }
                 if i.channels != Model.numberOfComponents {
-                    throw AnyColorSpace.ParserError.invalidFormat(message: "Invalid LUT size.")
+                    throw AnyColorSpace.ICCError.invalidFormat(message: "Invalid LUT size.")
                 }
                 if o.channels != 3 {
-                    throw AnyColorSpace.ParserError.invalidFormat(message: "Invalid LUT size.")
+                    throw AnyColorSpace.ICCError.invalidFormat(message: "Invalid LUT size.")
                 }
             case .LUT1, .LUT2:
                 if Model.numberOfComponents != 3 {
-                    throw AnyColorSpace.ParserError.invalidFormat(message: "Invalid LUT size.")
+                    throw AnyColorSpace.ICCError.invalidFormat(message: "Invalid LUT size.")
                 }
             case let .LUT3(_, lut, A):
                 if lut.inputChannels != Model.numberOfComponents || lut.outputChannels != 3 {
-                    throw AnyColorSpace.ParserError.invalidFormat(message: "Invalid LUT size.")
+                    throw AnyColorSpace.ICCError.invalidFormat(message: "Invalid LUT size.")
                 }
                 if A.count != Model.numberOfComponents {
-                    throw AnyColorSpace.ParserError.invalidFormat(message: "Invalid LUT size.")
+                    throw AnyColorSpace.ICCError.invalidFormat(message: "Invalid LUT size.")
                 }
             case let .LUT4(_, _, _, lut, A):
                 if lut.inputChannels != Model.numberOfComponents || lut.outputChannels != 3 {
-                    throw AnyColorSpace.ParserError.invalidFormat(message: "Invalid LUT size.")
+                    throw AnyColorSpace.ICCError.invalidFormat(message: "Invalid LUT size.")
                 }
                 if A.count != Model.numberOfComponents {
-                    throw AnyColorSpace.ParserError.invalidFormat(message: "Invalid LUT size.")
+                    throw AnyColorSpace.ICCError.invalidFormat(message: "Invalid LUT size.")
                 }
             default: break
             }
@@ -256,31 +226,31 @@ extension ColorSpace {
             switch b2aCurve {
             case let .LUT0(_, i, lut, o):
                 if lut.inputChannels != 3 || lut.outputChannels != Model.numberOfComponents {
-                    throw AnyColorSpace.ParserError.invalidFormat(message: "Invalid LUT size.")
+                    throw AnyColorSpace.ICCError.invalidFormat(message: "Invalid LUT size.")
                 }
                 if i.channels != 3 {
-                    throw AnyColorSpace.ParserError.invalidFormat(message: "Invalid LUT size.")
+                    throw AnyColorSpace.ICCError.invalidFormat(message: "Invalid LUT size.")
                 }
                 if o.channels != Model.numberOfComponents {
-                    throw AnyColorSpace.ParserError.invalidFormat(message: "Invalid LUT size.")
+                    throw AnyColorSpace.ICCError.invalidFormat(message: "Invalid LUT size.")
                 }
             case .LUT1, .LUT2:
                 if Model.numberOfComponents != 3 {
-                    throw AnyColorSpace.ParserError.invalidFormat(message: "Invalid LUT size.")
+                    throw AnyColorSpace.ICCError.invalidFormat(message: "Invalid LUT size.")
                 }
             case let .LUT3(_, lut, A):
                 if lut.inputChannels != 3 || lut.outputChannels != Model.numberOfComponents {
-                    throw AnyColorSpace.ParserError.invalidFormat(message: "Invalid LUT size.")
+                    throw AnyColorSpace.ICCError.invalidFormat(message: "Invalid LUT size.")
                 }
                 if A.count != Model.numberOfComponents {
-                    throw AnyColorSpace.ParserError.invalidFormat(message: "Invalid LUT size.")
+                    throw AnyColorSpace.ICCError.invalidFormat(message: "Invalid LUT size.")
                 }
             case let .LUT4(_, _, _, lut, A):
                 if lut.inputChannels != 3 || lut.outputChannels != Model.numberOfComponents {
-                    throw AnyColorSpace.ParserError.invalidFormat(message: "Invalid LUT size.")
+                    throw AnyColorSpace.ICCError.invalidFormat(message: "Invalid LUT size.")
                 }
                 if A.count != Model.numberOfComponents {
-                    throw AnyColorSpace.ParserError.invalidFormat(message: "Invalid LUT size.")
+                    throw AnyColorSpace.ICCError.invalidFormat(message: "Invalid LUT size.")
                 }
             default: break
             }
@@ -324,7 +294,7 @@ extension ColorSpace {
                 b2a = b2aCurve
                 
             } else {
-                throw AnyColorSpace.ParserError.invalidFormat(message: "LUT not found.")
+                throw AnyColorSpace.ICCError.invalidFormat(message: "LUT not found.")
             }
             
         case 3 where profile.header.pcs == .XYZ:
@@ -348,7 +318,7 @@ extension ColorSpace {
                 b2a = b2aCurve
                 
             } else {
-                throw AnyColorSpace.ParserError.invalidFormat(message: "LUT not found.")
+                throw AnyColorSpace.ICCError.invalidFormat(message: "LUT not found.")
             }
             
         default:
@@ -359,7 +329,7 @@ extension ColorSpace {
                 b2a = b2aCurve
                 
             } else {
-                throw AnyColorSpace.ParserError.invalidFormat(message: "LUT not found.")
+                throw AnyColorSpace.ICCError.invalidFormat(message: "LUT not found.")
             }
         }
         
@@ -380,7 +350,7 @@ extension ColorSpace {
                 }
             }
         } else {
-            throw AnyColorSpace.ParserError.invalidFormat(message: "MediaWhitePoint not found.")
+            throw AnyColorSpace.ICCError.invalidFormat(message: "MediaWhitePoint not found.")
         }
         
         let chromaticAdaptationMatrix = cieXYZ.chromaticAdaptationMatrix(to: PCSXYZ, .default)
@@ -388,7 +358,7 @@ extension ColorSpace {
         switch profile.header.pcs {
         case .XYZ: self.base = ICCColorSpace<Model, CIEXYZColorSpace>(iccData: iccData, profile: profile, connection: PCSXYZ, cieXYZ: cieXYZ, a2b: a2b, b2a: b2a, chromaticAdaptationMatrix: chromaticAdaptationMatrix)
         case .Lab: self.base = ICCColorSpace<Model, CIELabColorSpace>(iccData: iccData, profile: profile, connection: CIELabColorSpace(PCSXYZ), cieXYZ: cieXYZ, a2b: a2b, b2a: b2a, chromaticAdaptationMatrix: chromaticAdaptationMatrix)
-        default: throw AnyColorSpace.ParserError.invalidFormat(message: "Invalid PCS.")
+        default: throw AnyColorSpace.ICCError.invalidFormat(message: "Invalid PCS.")
         }
     }
 }
@@ -403,11 +373,19 @@ extension ICCColorSpace {
         
         var color = color
         
-        if let _Model = Model.self as? NonnormalizedColorModel.Type {
-            for i in 0..<Model.numberOfComponents {
-                let upperBound = _Model.rangeOfComponent(i).upperBound
-                let lowerBound = _Model.rangeOfComponent(i).lowerBound
-                color.setComponent(i, (color.component(i) - lowerBound) / (upperBound - lowerBound))
+        for i in 0..<Model.numberOfComponents {
+            color.setComponent(i, color.normalizedComponent(i))
+        }
+        
+        switch a2b {
+        case .monochrome, .matrix, .LUT0:
+            if color is XYZColorModel {
+                color.setComponent(0, color.component(0) * 2)
+                color.setComponent(2, color.component(2) * 2)
+            }
+        case .LUT1, .LUT2, .LUT3, .LUT4:
+            if color is XYZColorModel {
+                color.setComponent(1, color.component(1) * 0.5)
             }
         }
         
@@ -432,10 +410,6 @@ extension ICCColorSpace {
             result.setComponent(1, curve.1.eval(color.component(1)))
             result.setComponent(2, curve.2.eval(color.component(2)))
             
-            if result is XYZColorModel {
-                result *= 65535.0 / 32768.0
-            }
-            
         case let .LUT2(_, _, curve):
             
             result.setComponent(0, curve.0.eval(color.component(0)))
@@ -455,12 +429,20 @@ extension ICCColorSpace {
             }
         }
         
-        if let _Model = Model.self as? NonnormalizedColorModel.Type {
-            for i in 0..<Model.numberOfComponents {
-                let upperBound = _Model.rangeOfComponent(i).upperBound
-                let lowerBound = _Model.rangeOfComponent(i).lowerBound
-                result.setComponent(i, result.component(i) * (upperBound - lowerBound) + lowerBound)
+        switch a2b {
+        case .monochrome, .matrix, .LUT0:
+            if result is XYZColorModel {
+                result.setComponent(0, result.component(0) * 0.5)
+                result.setComponent(2, result.component(2) * 0.5)
             }
+        case .LUT1, .LUT2, .LUT3, .LUT4:
+            if result is XYZColorModel {
+                result.setComponent(1, result.component(1) * 2)
+            }
+        }
+        
+        for i in 0..<Model.numberOfComponents {
+            result.setNormalizedComponent(i, result.component(i))
         }
         
         return result
@@ -474,11 +456,19 @@ extension ICCColorSpace {
         
         var color = color
         
-        if let _Model = Model.self as? NonnormalizedColorModel.Type {
-            for i in 0..<Model.numberOfComponents {
-                let upperBound = _Model.rangeOfComponent(i).upperBound
-                let lowerBound = _Model.rangeOfComponent(i).lowerBound
-                color.setComponent(i, (color.component(i) - lowerBound) / (upperBound - lowerBound))
+        for i in 0..<Model.numberOfComponents {
+            color.setComponent(i, color.normalizedComponent(i))
+        }
+        
+        switch b2a {
+        case .monochrome, .matrix, .LUT0:
+            if color is XYZColorModel {
+                color.setComponent(0, color.component(0) * 2)
+                color.setComponent(2, color.component(2) * 2)
+            }
+        case .LUT1, .LUT2, .LUT3, .LUT4:
+            if color is XYZColorModel {
+                color.setComponent(1, color.component(1) * 0.5)
             }
         }
         
@@ -499,10 +489,6 @@ extension ICCColorSpace {
             
         case let .LUT1(curve):
             
-            if color is XYZColorModel {
-                color *= 32768.0 / 65535.0
-            }
-            
             result.setComponent(0, curve.0.eval(color.component(0)))
             result.setComponent(1, curve.1.eval(color.component(1)))
             result.setComponent(2, curve.2.eval(color.component(2)))
@@ -526,12 +512,20 @@ extension ICCColorSpace {
             }
         }
         
-        if let _Model = Model.self as? NonnormalizedColorModel.Type {
-            for i in 0..<Model.numberOfComponents {
-                let upperBound = _Model.rangeOfComponent(i).upperBound
-                let lowerBound = _Model.rangeOfComponent(i).lowerBound
-                result.setComponent(i, result.component(i) * (upperBound - lowerBound) + lowerBound)
+        switch b2a {
+        case .monochrome, .matrix, .LUT0:
+            if result is XYZColorModel {
+                result.setComponent(0, result.component(0) * 0.5)
+                result.setComponent(2, result.component(2) * 0.5)
             }
+        case .LUT1, .LUT2, .LUT3, .LUT4:
+            if result is XYZColorModel {
+                result.setComponent(1, result.component(1) * 2)
+            }
+        }
+        
+        for i in 0..<Model.numberOfComponents {
+            result.setNormalizedComponent(i, result.component(i))
         }
         
         return result
@@ -545,11 +539,19 @@ extension ICCColorSpace {
         
         var color = color
         
-        if let _Model = Model.self as? NonnormalizedColorModel.Type {
-            for i in 0..<Model.numberOfComponents {
-                let upperBound = _Model.rangeOfComponent(i).upperBound
-                let lowerBound = _Model.rangeOfComponent(i).lowerBound
-                color.setComponent(i, (color.component(i) - lowerBound) / (upperBound - lowerBound))
+        for i in 0..<Model.numberOfComponents {
+            color.setComponent(i, color.normalizedComponent(i))
+        }
+        
+        switch a2b {
+        case .monochrome, .matrix, .LUT0:
+            if color is XYZColorModel {
+                color.setComponent(0, color.component(0) * 2)
+                color.setComponent(2, color.component(2) * 2)
+            }
+        case .LUT1, .LUT2, .LUT3, .LUT4:
+            if color is XYZColorModel {
+                color.setComponent(1, color.component(1) * 0.5)
             }
         }
         
@@ -596,10 +598,6 @@ extension ICCColorSpace {
             result.setComponent(1, B.1.eval(result.component(1)))
             result.setComponent(2, B.2.eval(result.component(2)))
             
-            if result is XYZColorModel {
-                result *= 65535.0 / 32768.0
-            }
-            
         case let .LUT3(B, lut, _):
             
             result = lut.eval(color)
@@ -607,10 +605,6 @@ extension ICCColorSpace {
             result.setComponent(0, B.0.eval(result.component(0)))
             result.setComponent(1, B.1.eval(result.component(1)))
             result.setComponent(2, B.2.eval(result.component(2)))
-            
-            if result is XYZColorModel {
-                result *= 65535.0 / 32768.0
-            }
             
         case let .LUT4(B, matrix, M, lut, _):
             
@@ -625,18 +619,22 @@ extension ICCColorSpace {
             result.setComponent(0, B.0.eval(result.component(0)))
             result.setComponent(1, B.1.eval(result.component(1)))
             result.setComponent(2, B.2.eval(result.component(2)))
-            
+        }
+        
+        switch a2b {
+        case .monochrome, .matrix, .LUT0:
             if result is XYZColorModel {
-                result *= 65535.0 / 32768.0
+                result.setComponent(0, result.component(0) * 0.5)
+                result.setComponent(2, result.component(2) * 0.5)
+            }
+        case .LUT1, .LUT2, .LUT3, .LUT4:
+            if result is XYZColorModel {
+                result.setComponent(1, result.component(1) * 2)
             }
         }
         
-        if let _Model = Connection.Model.self as? NonnormalizedColorModel.Type {
-            for i in 0..<Connection.Model.numberOfComponents {
-                let upperBound = _Model.rangeOfComponent(i).upperBound
-                let lowerBound = _Model.rangeOfComponent(i).lowerBound
-                result.setComponent(i, result.component(i) * (upperBound - lowerBound) + lowerBound)
-            }
+        for i in 0..<Connection.Model.numberOfComponents {
+            result.setNormalizedComponent(i, result.component(i))
         }
         
         return result
@@ -650,11 +648,19 @@ extension ICCColorSpace {
         
         var color = color
         
-        if let _Model = Connection.Model.self as? NonnormalizedColorModel.Type {
-            for i in 0..<Connection.Model.numberOfComponents {
-                let upperBound = _Model.rangeOfComponent(i).upperBound
-                let lowerBound = _Model.rangeOfComponent(i).lowerBound
-                color.setComponent(i, (color.component(i) - lowerBound) / (upperBound - lowerBound))
+        for i in 0..<Connection.Model.numberOfComponents {
+            color.setComponent(i, color.normalizedComponent(i))
+        }
+        
+        switch b2a {
+        case .monochrome, .matrix, .LUT0:
+            if color is XYZColorModel {
+                color.setComponent(0, color.component(0) * 2)
+                color.setComponent(2, color.component(2) * 2)
+            }
+        case .LUT1, .LUT2, .LUT3, .LUT4:
+            if color is XYZColorModel {
+                color.setComponent(1, color.component(1) * 0.5)
             }
         }
         
@@ -689,10 +695,6 @@ extension ICCColorSpace {
             
         case let .LUT2(B, matrix, _):
             
-            if color is XYZColorModel {
-                color *= 32768.0 / 65535.0
-            }
-            
             color.setComponent(0, B.0.eval(color.component(0)))
             color.setComponent(1, B.1.eval(color.component(1)))
             color.setComponent(2, B.2.eval(color.component(2)))
@@ -705,10 +707,6 @@ extension ICCColorSpace {
             
         case let .LUT3(B, lut, _):
             
-            if color is XYZColorModel {
-                color *= 32768.0 / 65535.0
-            }
-            
             color.setComponent(0, B.0.eval(color.component(0)))
             color.setComponent(1, B.1.eval(color.component(1)))
             color.setComponent(2, B.2.eval(color.component(2)))
@@ -716,10 +714,6 @@ extension ICCColorSpace {
             result = lut.eval(color)
             
         case let .LUT4(B, matrix, M, lut, _):
-            
-            if color is XYZColorModel {
-                color *= 32768.0 / 65535.0
-            }
             
             color.setComponent(0, B.0.eval(color.component(0)))
             color.setComponent(1, B.1.eval(color.component(1)))
@@ -734,12 +728,20 @@ extension ICCColorSpace {
             result = lut.eval(color)
         }
         
-        if let _Model = Model.self as? NonnormalizedColorModel.Type {
-            for i in 0..<Model.numberOfComponents {
-                let upperBound = _Model.rangeOfComponent(i).upperBound
-                let lowerBound = _Model.rangeOfComponent(i).lowerBound
-                result.setComponent(i, result.component(i) * (upperBound - lowerBound) + lowerBound)
+        switch b2a {
+        case .monochrome, .matrix, .LUT0:
+            if result is XYZColorModel {
+                result.setComponent(0, result.component(0) * 0.5)
+                result.setComponent(2, result.component(2) * 0.5)
             }
+        case .LUT1, .LUT2, .LUT3, .LUT4:
+            if result is XYZColorModel {
+                result.setComponent(1, result.component(1) * 2)
+            }
+        }
+        
+        for i in 0..<Model.numberOfComponents {
+            result.setNormalizedComponent(i, result.component(i))
         }
         
         return result
@@ -748,13 +750,13 @@ extension ICCColorSpace {
     @_versioned
     @_inlineable
     func convertLinearToXYZ(_ color: Model) -> XYZColorModel {
-        return self.connection._convertToXYZ(self.convertLinearToConnection(color)) * chromaticAdaptationMatrix.inverse
+        return self.connection.convertToXYZ(self.convertLinearToConnection(color)) * chromaticAdaptationMatrix.inverse
     }
     
     @_versioned
     @_inlineable
     func convertLinearFromXYZ(_ color: XYZColorModel) -> Model {
-        return self.convertLinearFromConnection(self.connection._convertFromXYZ(color * chromaticAdaptationMatrix))
+        return self.convertLinearFromConnection(self.connection.convertFromXYZ(color * chromaticAdaptationMatrix))
     }
 }
 

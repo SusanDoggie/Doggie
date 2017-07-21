@@ -42,6 +42,10 @@ protocol _ColorSpaceBaseProtocol {
     
     func _convertLinearFromXYZ<Model: ColorModelProtocol>(_ color: XYZColorModel) -> Model
     
+    func _convertToXYZ<Model: ColorModelProtocol>(_ color: Model) -> XYZColorModel
+    
+    func _convertFromXYZ<Model: ColorModelProtocol>(_ color: XYZColorModel) -> Model
+    
     var _linearTone: _ColorSpaceBaseProtocol { get }
 }
 
@@ -51,21 +55,6 @@ extension _ColorSpaceBaseProtocol {
     @_inlineable
     var iccData: Data? {
         return nil
-    }
-}
-
-extension _ColorSpaceBaseProtocol {
-    
-    @_versioned
-    @_inlineable
-    func _convertToXYZ<Model: ColorModelProtocol>(_ color: Model) -> XYZColorModel {
-        return self._convertLinearToXYZ(self._convertToLinear(color))
-    }
-    
-    @_versioned
-    @_inlineable
-    func _convertFromXYZ<Model: ColorModelProtocol>(_ color: XYZColorModel) -> Model {
-        return self._convertFromLinear(self._convertLinearFromXYZ(color))
     }
 }
 
@@ -85,6 +74,21 @@ protocol ColorSpaceBaseProtocol : _ColorSpaceBaseProtocol {
     func convertLinearFromXYZ(_ color: XYZColorModel) -> Model
     
     var linearTone: LinearTone { get }
+}
+
+extension ColorSpaceBaseProtocol {
+    
+    @_versioned
+    @_inlineable
+    func convertToXYZ(_ color: Model) -> XYZColorModel {
+        return self.convertLinearToXYZ(self.convertToLinear(color))
+    }
+    
+    @_versioned
+    @_inlineable
+    func convertFromXYZ(_ color: XYZColorModel) -> Model {
+        return self.convertFromLinear(self.convertLinearFromXYZ(color))
+    }
 }
 
 extension ColorSpaceBaseProtocol {
@@ -111,6 +115,18 @@ extension ColorSpaceBaseProtocol {
     @_inlineable
     func _convertLinearFromXYZ<C: ColorModelProtocol>(_ color: XYZColorModel) -> C {
         return self.convertLinearFromXYZ(color) as! C
+    }
+    
+    @_versioned
+    @_inlineable
+    func _convertToXYZ<C: ColorModelProtocol>(_ color: C) -> XYZColorModel {
+        return self.convertToXYZ(color as! Model)
+    }
+    
+    @_versioned
+    @_inlineable
+    func _convertFromXYZ<C: ColorModelProtocol>(_ color: XYZColorModel) -> C {
+        return self.convertFromXYZ(color) as! C
     }
     
     @_versioned
@@ -318,6 +334,7 @@ extension ColorSpace {
 }
 
 extension ColorSpace {
+    
     @_inlineable
     public static var numberOfComponents: Int {
         return Model.numberOfComponents
@@ -326,6 +343,16 @@ extension ColorSpace {
     @_inlineable
     public var numberOfComponents: Int {
         return Model.numberOfComponents
+    }
+    
+    @_inlineable
+    public static func rangeOfComponent(_ i: Int) -> ClosedRange<Double> {
+        return Model.rangeOfComponent(i)
+    }
+    
+    @_inlineable
+    public func rangeOfComponent(_ i: Int) -> ClosedRange<Double> {
+        return Model.rangeOfComponent(i)
     }
 }
 

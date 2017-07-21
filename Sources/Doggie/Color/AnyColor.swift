@@ -28,9 +28,15 @@ protocol AnyColorBaseProtocol {
     
     var numberOfComponents: Int { get }
     
+    func rangeOfComponent(_ i: Int) -> ClosedRange<Double>
+    
     func component(_ index: Int) -> Double
     
     mutating func setComponent(_ index: Int, _ value: Double)
+    
+    func normalizedComponent(_ index: Int) -> Double
+    
+    mutating func setNormalizedComponent(_ index: Int, _ value: Double)
     
     var opacity: Double { get set }
     
@@ -129,6 +135,16 @@ extension AnyColor {
     }
     
     @_inlineable
+    public func normalizedComponent(_ index: Int) -> Double {
+        return _base.normalizedComponent(index)
+    }
+    
+    @_inlineable
+    public mutating func setNormalizedComponent(_ index: Int, _ value: Double) {
+        _base.setNormalizedComponent(index, value)
+    }
+    
+    @_inlineable
     public var opacity: Double {
         get {
             return _base.opacity
@@ -152,6 +168,11 @@ extension AnyColor {
     @_inlineable
     public var numberOfComponents: Int {
         return _base.numberOfComponents
+    }
+    
+    @_inlineable
+    public func rangeOfComponent(_ i: Int) -> ClosedRange<Double> {
+        return _base.rangeOfComponent(i)
     }
     
     @_inlineable

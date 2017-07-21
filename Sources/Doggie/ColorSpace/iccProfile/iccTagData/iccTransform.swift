@@ -77,7 +77,7 @@ extension iccTransform : DataDecodable {
         
         let _data = data
         
-        guard data.count > 8 else { throw AnyColorSpace.ParserError.endOfData }
+        guard data.count > 8 else { throw AnyColorSpace.ICCError.endOfData }
         
         let type = try data.decode(iccProfile.TagType.self)
         
@@ -146,12 +146,12 @@ extension iccTransform : DataDecodable {
             
             var type: Int = 0
             
-            if header.offsetM == 0 || header.offsetMatrix == 0 { type += 1 }
-            if header.offsetA == 0 || header.offsetCLUT == 0 { type += 2 }
+            if header.offsetM != 0 && header.offsetMatrix != 0 { type += 1 }
+            if header.offsetA != 0 && header.offsetCLUT != 0 { type += 2 }
             
-            guard header.outputChannels == 3 else { throw AnyColorSpace.ParserError.invalidFormat(message: "Invalid lutA2B.") }
+            guard header.outputChannels == 3 else { throw AnyColorSpace.ICCError.invalidFormat(message: "Invalid lutA2B.") }
             
-            var dataB = _data[Int(header.offsetB)...]
+            var dataB = _data.dropFirst(Int(header.offsetB))
             let B = try iccTransform.readCurves(&dataB, count: 3)
             
             switch type {
@@ -162,8 +162,8 @@ extension iccTransform : DataDecodable {
                 
             case 1:
                 
-                var dataM = _data[Int(header.offsetM)...]
-                var dataMatrix = _data[Int(header.offsetMatrix)...]
+                var dataM = _data.dropFirst(Int(header.offsetM))
+                var dataMatrix = _data.dropFirst(Int(header.offsetMatrix))
                 
                 let M = try iccTransform.readCurves(&dataM, count: 3)
                 let matrix = try dataMatrix.decode(iccMatrix3x4.self)
@@ -172,8 +172,8 @@ extension iccTransform : DataDecodable {
                 
             case 2:
                 
-                var dataA = _data[Int(header.offsetA)...]
-                var dataCLUT = _data[Int(header.offsetCLUT)...]
+                var dataA = _data.dropFirst(Int(header.offsetA))
+                var dataCLUT = _data.dropFirst(Int(header.offsetCLUT))
                 
                 let A = try iccTransform.readCurves(&dataA, count: Int(header.inputChannels))
                 let CLUT = try iccTransform.readCLUT(&dataCLUT, inputChannels: Int(header.inputChannels), outputChannels: 3)
@@ -182,10 +182,10 @@ extension iccTransform : DataDecodable {
                 
             case 3:
                 
-                var dataA = _data[Int(header.offsetA)...]
-                var dataCLUT = _data[Int(header.offsetCLUT)...]
-                var dataM = _data[Int(header.offsetM)...]
-                var dataMatrix = _data[Int(header.offsetMatrix)...]
+                var dataA = _data.dropFirst(Int(header.offsetA))
+                var dataCLUT = _data.dropFirst(Int(header.offsetCLUT))
+                var dataM = _data.dropFirst(Int(header.offsetM))
+                var dataMatrix = _data.dropFirst(Int(header.offsetMatrix))
                 
                 let A = try iccTransform.readCurves(&dataA, count: Int(header.inputChannels))
                 let CLUT = try iccTransform.readCLUT(&dataCLUT, inputChannels: Int(header.inputChannels), outputChannels: 3)
@@ -194,7 +194,7 @@ extension iccTransform : DataDecodable {
                 
                 self = .LUT4((B[0], B[1], B[2]), matrix.matrix, (M[0], M[1], M[2]), CLUT, A)
                 
-            default: throw AnyColorSpace.ParserError.invalidFormat(message: "Invalid lutA2B.")
+            default: throw AnyColorSpace.ICCError.invalidFormat(message: "Invalid lutA2B.")
             }
             
         case "mBA ":
@@ -203,12 +203,12 @@ extension iccTransform : DataDecodable {
             
             var type: Int = 0
             
-            if header.offsetM == 0 || header.offsetMatrix == 0 { type += 1 }
-            if header.offsetA == 0 || header.offsetCLUT == 0 { type += 2 }
+            if header.offsetM != 0 && header.offsetMatrix != 0 { type += 1 }
+            if header.offsetA != 0 && header.offsetCLUT != 0 { type += 2 }
             
-            guard header.inputChannels == 3 else { throw AnyColorSpace.ParserError.invalidFormat(message: "Invalid lutB2A.") }
+            guard header.inputChannels == 3 else { throw AnyColorSpace.ICCError.invalidFormat(message: "Invalid lutB2A.") }
             
-            var dataB = _data[Int(header.offsetB)...]
+            var dataB = _data.dropFirst(Int(header.offsetB))
             let B = try iccTransform.readCurves(&dataB, count: 3)
             
             switch type {
@@ -219,8 +219,8 @@ extension iccTransform : DataDecodable {
                 
             case 1:
                 
-                var dataM = _data[Int(header.offsetM)...]
-                var dataMatrix = _data[Int(header.offsetMatrix)...]
+                var dataM = _data.dropFirst(Int(header.offsetM))
+                var dataMatrix = _data.dropFirst(Int(header.offsetMatrix))
                 
                 let M = try iccTransform.readCurves(&dataM, count: 3)
                 let matrix = try dataMatrix.decode(iccMatrix3x4.self)
@@ -229,8 +229,8 @@ extension iccTransform : DataDecodable {
                 
             case 2:
                 
-                var dataA = _data[Int(header.offsetA)...]
-                var dataCLUT = _data[Int(header.offsetCLUT)...]
+                var dataA = _data.dropFirst(Int(header.offsetA))
+                var dataCLUT = _data.dropFirst(Int(header.offsetCLUT))
                 
                 let A = try iccTransform.readCurves(&dataA, count: Int(header.outputChannels))
                 let CLUT = try iccTransform.readCLUT(&dataCLUT, inputChannels: Int(header.outputChannels), outputChannels: 3)
@@ -239,10 +239,10 @@ extension iccTransform : DataDecodable {
                 
             case 3:
                 
-                var dataA = _data[Int(header.offsetA)...]
-                var dataCLUT = _data[Int(header.offsetCLUT)...]
-                var dataM = _data[Int(header.offsetM)...]
-                var dataMatrix = _data[Int(header.offsetMatrix)...]
+                var dataA = _data.dropFirst(Int(header.offsetA))
+                var dataCLUT = _data.dropFirst(Int(header.offsetCLUT))
+                var dataM = _data.dropFirst(Int(header.offsetM))
+                var dataMatrix = _data.dropFirst(Int(header.offsetMatrix))
                 
                 let A = try iccTransform.readCurves(&dataA, count: Int(header.outputChannels))
                 let CLUT = try iccTransform.readCLUT(&dataCLUT, inputChannels: Int(header.outputChannels), outputChannels: 3)
@@ -251,10 +251,10 @@ extension iccTransform : DataDecodable {
                 
                 self = .LUT4((B[0], B[1], B[2]), matrix.matrix, (M[0], M[1], M[2]), CLUT, A)
                 
-            default: throw AnyColorSpace.ParserError.invalidFormat(message: "Invalid lutB2A.")
+            default: throw AnyColorSpace.ICCError.invalidFormat(message: "Invalid lutB2A.")
             }
             
-        default: throw AnyColorSpace.ParserError.invalidFormat(message: "Unknown transform type.")
+        default: throw AnyColorSpace.ICCError.invalidFormat(message: "Unknown transform type.")
         }
     }
     
@@ -264,8 +264,8 @@ extension iccTransform : DataDecodable {
         for _ in 0..<count {
             let record = data.count
             result.append(try data.decode(iccCurve.self))
-            let size = data.count - record
-            data = data.dropFirst(size.align(4))
+            let size = record - data.count
+            data = data.dropFirst(size.align(4) - size)
         }
         return result
     }
@@ -290,7 +290,7 @@ extension iccTransform : DataDecodable {
             for _ in 0..<count {
                 table.append(Double(try data.decode(BEUInt16.self).representingValue) / 65535)
             }
-        default: throw AnyColorSpace.ParserError.invalidFormat(message: "Invalid clut precision.")
+        default: throw AnyColorSpace.ICCError.invalidFormat(message: "Invalid clut precision.")
         }
         
         return MultiDimensionalLUT(inputChannels: inputChannels, outputChannels: outputChannels, grids: grids, table: table)

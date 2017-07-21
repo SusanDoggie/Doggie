@@ -37,9 +37,9 @@ struct iccMultiLocalizedUnicode : RandomAccessCollection, DataCodable {
         
         let _data = Data(data)
         
-        guard data.count > 8 else { throw AnyColorSpace.ParserError.endOfData }
+        guard data.count > 8 else { throw AnyColorSpace.ICCError.endOfData }
         
-        guard try data.decode(iccProfile.TagType.self) == .multiLocalizedUnicode else { throw AnyColorSpace.ParserError.invalidFormat(message: "Invalid multiLocalizedUnicode.") }
+        guard try data.decode(iccProfile.TagType.self) == .multiLocalizedUnicode else { throw AnyColorSpace.ICCError.invalidFormat(message: "Invalid multiLocalizedUnicode.") }
         
         data.removeFirst(4)
         
@@ -57,7 +57,7 @@ struct iccMultiLocalizedUnicode : RandomAccessCollection, DataCodable {
             let offset = Int(entry.offset)
             let length = Int(entry.length)
             
-            guard _data.count >= offset + length else { throw AnyColorSpace.ParserError.endOfData }
+            guard _data.count >= offset + length else { throw AnyColorSpace.ICCError.endOfData }
             
             let strData = _data[offset..<offset + length]
             

@@ -122,16 +122,15 @@
             
             if let colorSpace = self.colorSpace.cgColorSpace {
                 
-                let components = Pixel.Model.numberOfComponents + 1
+                let components = Pixel.numberOfComponents
                 
                 var buffer = [Float]()
                 buffer.reserveCapacity(self.pixels.count * components)
                 
                 for pixel in self.pixels {
-                    for i in 0..<Pixel.Model.numberOfComponents {
-                        buffer.append(Float(pixel.color.component(i)))
+                    for i in 0..<components {
+                        buffer.append(Float(pixel.component(i)))
                     }
-                    buffer.append(Float(pixel.opacity))
                 }
                 
                 return buffer.withUnsafeBufferPointer {

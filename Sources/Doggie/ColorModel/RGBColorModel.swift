@@ -30,6 +30,12 @@ public struct RGBColorModel : ColorModelProtocol {
         return 3
     }
     
+    @_inlineable
+    public static func rangeOfComponent(_ i: Int) -> ClosedRange<Double> {
+        precondition(0..<numberOfComponents ~= i, "Index out of range.")
+        return 0...1
+    }
+    
     public var red: Double
     public var green: Double
     public var blue: Double

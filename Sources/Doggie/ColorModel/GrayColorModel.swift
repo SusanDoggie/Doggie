@@ -30,6 +30,12 @@ public struct GrayColorModel : ColorModelProtocol {
         return 1
     }
     
+    @_inlineable
+    public static func rangeOfComponent(_ i: Int) -> ClosedRange<Double> {
+        precondition(0..<numberOfComponents ~= i, "Index out of range.")
+        return 0...1
+    }
+    
     public var white: Double
     
     @_inlineable

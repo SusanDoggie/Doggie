@@ -34,6 +34,12 @@ public struct Device2ColorModel : DeviceNColorModelProtocol {
         return 2
     }
     
+    @_inlineable
+    public static func rangeOfComponent(_ i: Int) -> ClosedRange<Double> {
+        precondition(0..<numberOfComponents ~= i, "Index out of range.")
+        return 0...1
+    }
+    
     public var component_0: Double
     public var component_1: Double
     
@@ -67,6 +73,12 @@ public struct Device3ColorModel : DeviceNColorModelProtocol {
     @_inlineable
     public static var numberOfComponents: Int {
         return 3
+    }
+    
+    @_inlineable
+    public static func rangeOfComponent(_ i: Int) -> ClosedRange<Double> {
+        precondition(0..<numberOfComponents ~= i, "Index out of range.")
+        return 0...1
     }
     
     public var component_0: Double
@@ -106,6 +118,12 @@ public struct Device4ColorModel : DeviceNColorModelProtocol {
     @_inlineable
     public static var numberOfComponents: Int {
         return 4
+    }
+    
+    @_inlineable
+    public static func rangeOfComponent(_ i: Int) -> ClosedRange<Double> {
+        precondition(0..<numberOfComponents ~= i, "Index out of range.")
+        return 0...1
     }
     
     public var component_0: Double
@@ -149,6 +167,12 @@ public struct Device5ColorModel : DeviceNColorModelProtocol {
     @_inlineable
     public static var numberOfComponents: Int {
         return 5
+    }
+    
+    @_inlineable
+    public static func rangeOfComponent(_ i: Int) -> ClosedRange<Double> {
+        precondition(0..<numberOfComponents ~= i, "Index out of range.")
+        return 0...1
     }
     
     public var component_0: Double
@@ -196,6 +220,12 @@ public struct Device6ColorModel : DeviceNColorModelProtocol {
     @_inlineable
     public static var numberOfComponents: Int {
         return 6
+    }
+    
+    @_inlineable
+    public static func rangeOfComponent(_ i: Int) -> ClosedRange<Double> {
+        precondition(0..<numberOfComponents ~= i, "Index out of range.")
+        return 0...1
     }
     
     public var component_0: Double
@@ -247,6 +277,12 @@ public struct Device7ColorModel : DeviceNColorModelProtocol {
     @_inlineable
     public static var numberOfComponents: Int {
         return 7
+    }
+    
+    @_inlineable
+    public static func rangeOfComponent(_ i: Int) -> ClosedRange<Double> {
+        precondition(0..<numberOfComponents ~= i, "Index out of range.")
+        return 0...1
     }
     
     public var component_0: Double
@@ -302,6 +338,12 @@ public struct Device8ColorModel : DeviceNColorModelProtocol {
     @_inlineable
     public static var numberOfComponents: Int {
         return 8
+    }
+    
+    @_inlineable
+    public static func rangeOfComponent(_ i: Int) -> ClosedRange<Double> {
+        precondition(0..<numberOfComponents ~= i, "Index out of range.")
+        return 0...1
     }
     
     public var component_0: Double
@@ -361,6 +403,12 @@ public struct Device9ColorModel : DeviceNColorModelProtocol {
     @_inlineable
     public static var numberOfComponents: Int {
         return 9
+    }
+    
+    @_inlineable
+    public static func rangeOfComponent(_ i: Int) -> ClosedRange<Double> {
+        precondition(0..<numberOfComponents ~= i, "Index out of range.")
+        return 0...1
     }
     
     public var component_0: Double
@@ -424,6 +472,12 @@ public struct Device10ColorModel : DeviceNColorModelProtocol {
     @_inlineable
     public static var numberOfComponents: Int {
         return 10
+    }
+    
+    @_inlineable
+    public static func rangeOfComponent(_ i: Int) -> ClosedRange<Double> {
+        precondition(0..<numberOfComponents ~= i, "Index out of range.")
+        return 0...1
     }
     
     public var component_0: Double
@@ -491,6 +545,12 @@ public struct Device11ColorModel : DeviceNColorModelProtocol {
     @_inlineable
     public static var numberOfComponents: Int {
         return 11
+    }
+    
+    @_inlineable
+    public static func rangeOfComponent(_ i: Int) -> ClosedRange<Double> {
+        precondition(0..<numberOfComponents ~= i, "Index out of range.")
+        return 0...1
     }
     
     public var component_0: Double
@@ -562,6 +622,12 @@ public struct Device12ColorModel : DeviceNColorModelProtocol {
     @_inlineable
     public static var numberOfComponents: Int {
         return 12
+    }
+    
+    @_inlineable
+    public static func rangeOfComponent(_ i: Int) -> ClosedRange<Double> {
+        precondition(0..<numberOfComponents ~= i, "Index out of range.")
+        return 0...1
     }
     
     public var component_0: Double
@@ -637,6 +703,12 @@ public struct Device13ColorModel : DeviceNColorModelProtocol {
     @_inlineable
     public static var numberOfComponents: Int {
         return 13
+    }
+    
+    @_inlineable
+    public static func rangeOfComponent(_ i: Int) -> ClosedRange<Double> {
+        precondition(0..<numberOfComponents ~= i, "Index out of range.")
+        return 0...1
     }
     
     public var component_0: Double
@@ -716,6 +788,12 @@ public struct Device14ColorModel : DeviceNColorModelProtocol {
     @_inlineable
     public static var numberOfComponents: Int {
         return 14
+    }
+    
+    @_inlineable
+    public static func rangeOfComponent(_ i: Int) -> ClosedRange<Double> {
+        precondition(0..<numberOfComponents ~= i, "Index out of range.")
+        return 0...1
     }
     
     public var component_0: Double
@@ -799,6 +877,12 @@ public struct Device15ColorModel : DeviceNColorModelProtocol {
     @_inlineable
     public static var numberOfComponents: Int {
         return 15
+    }
+    
+    @_inlineable
+    public static func rangeOfComponent(_ i: Int) -> ClosedRange<Double> {
+        precondition(0..<numberOfComponents ~= i, "Index out of range.")
+        return 0...1
     }
     
     public var component_0: Double

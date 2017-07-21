@@ -30,6 +30,15 @@ public struct XYZColorModel : ColorModelProtocol {
         return 3
     }
     
+    @_inlineable
+    public static func rangeOfComponent(_ i: Int) -> ClosedRange<Double> {
+        precondition(0..<numberOfComponents ~= i, "Index out of range.")
+        switch i {
+        case 1: return 0...1
+        default: return 0...2
+        }
+    }
+    
     public var x: Double
     public var y: Double
     public var z: Double

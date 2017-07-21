@@ -440,13 +440,13 @@ extension ResamplingAlgorithm {
         let _s3 = read_source(source, width, height, _x1, _y2)
         let _s4 = read_source(source, width, height, _x2, _y2)
         
-        var color = ColorModel()
+        var color = ColorPixel<ColorModel>()
         
-        for i in 0..<ColorModel.numberOfComponents {
-            color.setComponent(i, sampler(_ty,sampler(_tx, _s1.color.component(i), _s2.color.component(i)), sampler(_tx, _s3.color.component(i), _s4.color.component(i))))
+        for i in 0..<ColorPixel<ColorModel>.numberOfComponents {
+            color.setComponent(i, sampler(_ty,sampler(_tx, _s1.component(i), _s2.component(i)), sampler(_tx, _s3.component(i), _s4.component(i))))
         }
         
-        return ColorPixel<ColorModel>(color: color, opacity: sampler(_ty, sampler(_tx, _s1.opacity, _s2.opacity), sampler(_tx, _s3.opacity, _s4.opacity)))
+        return color
         
     }
     
@@ -483,22 +483,17 @@ extension ResamplingAlgorithm {
         let _s15 = read_source(source, width, height, _x3, _y4)
         let _s16 = read_source(source, width, height, _x4, _y4)
         
-        var color = ColorModel()
+        var color = ColorPixel<ColorModel>()
         
-        for i in 0..<ColorModel.numberOfComponents {
-            let _u1 = sampler(_tx, _s1.color.component(i), _s2.color.component(i), _s3.color.component(i), _s4.color.component(i))
-            let _u2 = sampler(_tx, _s5.color.component(i), _s6.color.component(i), _s7.color.component(i), _s8.color.component(i))
-            let _u3 = sampler(_tx, _s9.color.component(i), _s10.color.component(i), _s11.color.component(i), _s12.color.component(i))
-            let _u4 = sampler(_tx, _s13.color.component(i), _s14.color.component(i), _s15.color.component(i), _s16.color.component(i))
+        for i in 0..<ColorPixel<ColorModel>.numberOfComponents {
+            let _u1 = sampler(_tx, _s1.component(i), _s2.component(i), _s3.component(i), _s4.component(i))
+            let _u2 = sampler(_tx, _s5.component(i), _s6.component(i), _s7.component(i), _s8.component(i))
+            let _u3 = sampler(_tx, _s9.component(i), _s10.component(i), _s11.component(i), _s12.component(i))
+            let _u4 = sampler(_tx, _s13.component(i), _s14.component(i), _s15.component(i), _s16.component(i))
             color.setComponent(i, sampler(_ty, _u1, _u2, _u3, _u4))
         }
         
-        let a1 = sampler(_tx, _s1.opacity, _s2.opacity, _s3.opacity, _s4.opacity)
-        let a2 = sampler(_tx, _s5.opacity, _s6.opacity, _s7.opacity, _s8.opacity)
-        let a3 = sampler(_tx, _s9.opacity, _s10.opacity, _s11.opacity, _s12.opacity)
-        let a4 = sampler(_tx, _s13.opacity, _s14.opacity, _s15.opacity, _s16.opacity)
-        
-        return ColorPixel<ColorModel>(color: color, opacity: sampler(_ty, a1, a2, a3, a4))
+        return color
         
     }
 }
