@@ -37,6 +37,12 @@ protocol AnyImageBaseProtocol {
     
     var _colorSpace: AnyColorSpaceBaseProtocol { get }
     
+    func _transposed() -> AnyImageBaseProtocol
+    
+    func _verticalFlipped() -> AnyImageBaseProtocol
+    
+    func _horizontalFlipped() -> AnyImageBaseProtocol
+    
     func _draw<Model>(context: ImageContext<Model>, transform: SDTransform)
     
     func _convert<Model>() -> Image<ColorPixel<Model>>?
@@ -54,6 +60,24 @@ extension Image : AnyImageBaseProtocol {
     @_inlineable
     var _colorSpace: AnyColorSpaceBaseProtocol {
         return self.colorSpace
+    }
+    
+    @_versioned
+    @_inlineable
+    func _transposed() -> AnyImageBaseProtocol {
+        return self.transposed()
+    }
+    
+    @_versioned
+    @_inlineable
+    func _verticalFlipped() -> AnyImageBaseProtocol {
+        return self.verticalFlipped()
+    }
+    
+    @_versioned
+    @_inlineable
+    func _horizontalFlipped() -> AnyImageBaseProtocol {
+        return self.horizontalFlipped()
     }
     
     @_versioned
@@ -197,6 +221,24 @@ extension AnyImage {
     @_inlineable
     public var isOpaque: Bool {
         return _base.isOpaque
+    }
+}
+
+extension AnyImage {
+    
+    @_inlineable
+    public func transposed() -> AnyImage {
+        return AnyImage(base: _base._transposed())
+    }
+    
+    @_inlineable
+    public func verticalFlipped() -> AnyImage {
+        return AnyImage(base: _base._verticalFlipped())
+    }
+    
+    @_inlineable
+    public func horizontalFlipped() -> AnyImage {
+        return AnyImage(base: _base._horizontalFlipped())
     }
 }
 

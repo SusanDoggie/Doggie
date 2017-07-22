@@ -45,8 +45,8 @@ public struct Gray16ColorPixel : ColorPixelProtocol {
     }
     @_inlineable
     public init(color: GrayColorModel, opacity: Double) {
-        self.a = UInt8((opacity * 255).clamped(to: 0...255))
-        self.w = UInt8((color.white * 255).clamped(to: 0...255))
+        self.a = UInt8((opacity * 255).clamped(to: 0...255).rounded())
+        self.w = UInt8((color.white * 255).clamped(to: 0...255).rounded())
     }
     
     @_inlineable
@@ -55,7 +55,7 @@ public struct Gray16ColorPixel : ColorPixelProtocol {
             return GrayColorModel(white: Double(w) / 255)
         }
         set {
-            self.w = UInt8((newValue.white * 255).clamped(to: 0...255))
+            self.w = UInt8((newValue.white * 255).clamped(to: 0...255).rounded())
         }
     }
     @_inlineable
@@ -64,7 +64,7 @@ public struct Gray16ColorPixel : ColorPixelProtocol {
             return Double(a) / 255
         }
         set {
-            self.a = UInt8((newValue * 255).clamped(to: 0...255))
+            self.a = UInt8((newValue * 255).clamped(to: 0...255).rounded())
         }
     }
     

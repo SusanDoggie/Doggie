@@ -98,6 +98,19 @@ public struct Image<Pixel: ColorPixelProtocol> {
     
     public var colorSpace: ColorSpace<Pixel.Model>
     
+    @_versioned
+    @_inlineable
+    init(width: Int, height: Int, resolution: Resolution, pixels: [Pixel], colorSpace: ColorSpace<Pixel.Model>) {
+        precondition(width >= 0, "negative width is not allowed.")
+        precondition(height >= 0, "negative height is not allowed.")
+        precondition(width * height == pixels.count, "mismatch pixels count.")
+        self.width = width
+        self.height = height
+        self.resolution = resolution
+        self.pixels = pixels
+        self.colorSpace = colorSpace
+    }
+    
     @_inlineable
     public init(width: Int, height: Int, resolution: Resolution = Resolution(resolution: 1, unit: .point), colorSpace: ColorSpace<Pixel.Model>, pixel: Pixel = Pixel()) {
         precondition(width >= 0, "negative width is not allowed.")
@@ -164,6 +177,67 @@ extension Image {
     @_inlineable
     public var isOpaque: Bool {
         return pixels.all { $0.isOpaque }
+    }
+}
+
+extension Image {
+    
+    @_inlineable
+    public func transposed() -> Image {
+        if pixels.count == 0 {
+            return Image(width: height, height: width, resolution: Resolution(horizontal: resolution.vertical, vertical: resolution.horizontal, unit: resolution.unit), pixels: [], colorSpace: colorSpace)
+        }
+        return Image(width: height, height: width, resolution: Resolution(horizontal: resolution.vertical, vertical: resolution.horizontal, unit: resolution.unit), pixels: transpose(height, width, pixels), colorSpace: colorSpace)
+    }
+    
+    @_inlineable
+    public func verticalFlipped() -> Image {
+        
+        var pixels = self.pixels
+        
+        if pixels.count != 0 {
+            
+            pixels.withUnsafeMutableBufferPointer {
+                
+                guard let buffer = $0.baseAddress else { return }
+                
+                var buf1 = buffer
+                var buf2 = buffer + width * (height - 1)
+                
+                for _ in 0..<height >> 1 {
+                    Swap(width, buf1, 1, buf2, 1)
+                    buf1 += width
+                    buf2 -= width
+                }
+            }
+        }
+        
+        return Image(width: width, height: height, resolution: resolution, pixels: pixels, colorSpace: colorSpace)
+    }
+    
+    @_inlineable
+    public func horizontalFlipped() -> Image {
+        
+        var pixels = self.pixels
+        
+        if pixels.count != 0 {
+            
+            pixels.withUnsafeMutableBufferPointer {
+                
+                guard let buffer = $0.baseAddress else { return }
+                
+                var buf1 = buffer
+                var buf2 = buffer + width - 1
+                
+                for _ in 0..<width >> 1 {
+                    Swap(height, buf1, width, buf2, width)
+                    buf1 += 1
+                    buf2 -= 1
+                }
+            }
+        }
+        
+        return Image(width: width, height: height, resolution: resolution, pixels: pixels, colorSpace: colorSpace)
     }
 }
 

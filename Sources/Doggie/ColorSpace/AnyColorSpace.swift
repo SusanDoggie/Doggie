@@ -44,6 +44,8 @@ protocol AnyColorSpaceBaseProtocol {
     
     func _createImage(width: Int, height: Int, resolution: Resolution) -> AnyImageBaseProtocol
     
+    func _createImage(width: Int, height: Int, resolution: Resolution, channels: [RawBitmapChannel], bitmaps: [Data], premultiplied: Bool) -> AnyImageBaseProtocol
+    
     func _convert<Model>(_ color: Color<Model>, intent: RenderingIntent) -> AnyColorBaseProtocol
     
     func _convert<Pixel>(_ image: Image<Pixel>, intent: RenderingIntent) -> AnyImageBaseProtocol
@@ -77,6 +79,12 @@ extension ColorSpace : AnyColorSpaceBaseProtocol {
     @_inlineable
     func _createImage(width: Int, height: Int, resolution: Resolution) -> AnyImageBaseProtocol {
         return Image<ColorPixel<Model>>(width: width, height: height, resolution: resolution, colorSpace: self)
+    }
+    
+    @_versioned
+    @_inlineable
+    func _createImage(width: Int, height: Int, resolution: Resolution, channels: [RawBitmapChannel], bitmaps: [Data], premultiplied: Bool) -> AnyImageBaseProtocol {
+        return Image<ColorPixel<Model>>(width: width, height: height, resolution: resolution, channels: channels, bitmaps: bitmaps, premultiplied: premultiplied, colorSpace: self)
     }
     
     @_versioned

@@ -53,10 +53,10 @@ public struct ARGB64ColorPixel : ColorPixelProtocol {
     }
     @_inlineable
     public init(color: RGBColorModel, opacity: Double) {
-        self.a = UInt16((opacity * 65535).clamped(to: 0...65535))
-        self.r = UInt16((color.red * 65535).clamped(to: 0...65535))
-        self.g = UInt16((color.green * 65535).clamped(to: 0...65535))
-        self.b = UInt16((color.blue * 65535).clamped(to: 0...65535))
+        self.a = UInt16((opacity * 65535).clamped(to: 0...65535).rounded())
+        self.r = UInt16((color.red * 65535).clamped(to: 0...65535).rounded())
+        self.g = UInt16((color.green * 65535).clamped(to: 0...65535).rounded())
+        self.b = UInt16((color.blue * 65535).clamped(to: 0...65535).rounded())
     }
     
     @_inlineable
@@ -65,9 +65,9 @@ public struct ARGB64ColorPixel : ColorPixelProtocol {
             return RGBColorModel(red: Double(r) / 65535, green: Double(g) / 65535, blue: Double(b) / 65535)
         }
         set {
-            self.r = UInt16((newValue.red * 65535).clamped(to: 0...65535))
-            self.g = UInt16((newValue.green * 65535).clamped(to: 0...65535))
-            self.b = UInt16((newValue.blue * 65535).clamped(to: 0...65535))
+            self.r = UInt16((newValue.red * 65535).clamped(to: 0...65535).rounded())
+            self.g = UInt16((newValue.green * 65535).clamped(to: 0...65535).rounded())
+            self.b = UInt16((newValue.blue * 65535).clamped(to: 0...65535).rounded())
         }
     }
     @_inlineable
@@ -76,7 +76,7 @@ public struct ARGB64ColorPixel : ColorPixelProtocol {
             return Double(a) / 65535
         }
         set {
-            self.a = UInt16((newValue * 65535).clamped(to: 0...65535))
+            self.a = UInt16((newValue * 65535).clamped(to: 0...65535).rounded())
         }
     }
     

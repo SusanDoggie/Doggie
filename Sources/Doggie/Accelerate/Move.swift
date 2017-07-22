@@ -90,9 +90,9 @@ public func Transpose<T>(_ row: Int, _ column: Int, _ input: UnsafePointer<T>, _
     var output = output
     
     let _in_stride = in_stride * column
-    let _out_stride = out_stride * column
-    for _ in 0..<row {
-        Move(column, input, _in_stride, output, out_stride)
+    let _out_stride = out_stride * row
+    for _ in 0..<column {
+        Move(row, input, _in_stride, output, out_stride)
         input += in_stride
         output += _out_stride
     }
@@ -107,9 +107,9 @@ public func Transpose<T: FloatingPoint>(_ row: Int, _ column: Int, _ real: Unsaf
     var _imag = _imag
     
     let _in_stride = in_stride * column
-    let _out_stride = out_stride * column
-    for _ in 0..<row {
-        Move(column, real, imag, _in_stride, _real, _imag, out_stride)
+    let _out_stride = out_stride * row
+    for _ in 0..<column {
+        Move(row, real, imag, _in_stride, _real, _imag, out_stride)
         real += in_stride
         imag += in_stride
         _real += _out_stride
