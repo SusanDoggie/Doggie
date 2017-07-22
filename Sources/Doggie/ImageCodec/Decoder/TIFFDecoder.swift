@@ -158,7 +158,7 @@ struct TIFFPage {
     var extraSamples: [Int] = [] // unspecified == 0, premultiplied == 1, straight == 2
     var bitsPerSample: [Int] = []
     
-    var palette: Data?
+    var palette: [(UInt16, UInt16, UInt16)] = []
     
     var photometric: Int
     
@@ -252,8 +252,47 @@ struct TIFFPage {
             guard self.bitsPerSample[0] == 8 else { throw ImageRep.Error.Unsupported("Unsupported bits per sample.") }
             if let colorMap = tags.first(where: { $0.tag == .ColorMap }) {
                 let offset = colorMap.offset
-                let length = 3 << self.bitsPerSample[0]
-                self.palette = data.dropFirst(offset).prefix(length)
+                let _count = 1 << self.bitsPerSample[0]
+                let _size = _count << 1
+                let _red = data.dropFirst(offset).prefix(_size) as Data
+                let _green = data.dropFirst(offset + _size).prefix(_size) as Data
+                let _blue = data.dropFirst(offset + _size << 1).prefix(_size) as Data
+                
+                guard _red.count == _size && _green.count == _size && _blue.count == _size else { throw ImageRep.Error.Unsupported("Unexpected end of palette data.") }
+                
+                self.palette.reserveCapacity(_count)
+                
+                switch self.endianness {
+                case .BIG:
+                    _red.withUnsafeBytes { (_red: UnsafePointer<BEUInt16>) in _green.withUnsafeBytes { (_green: UnsafePointer<BEUInt16>) in _blue.withUnsafeBytes { (_blue: UnsafePointer<BEUInt16>) in
+                        
+                        var _red = _red
+                        var _green = _green
+                        var _blue = _blue
+                        for _ in 0..<_count {
+                            self.palette.append((_red.pointee.representingValue, _green.pointee.representingValue, _blue.pointee.representingValue))
+                            _red += 1
+                            _green += 1
+                            _blue += 1
+                        }
+                        
+                        } } }
+                case .LITTLE:
+                    _red.withUnsafeBytes { (_red: UnsafePointer<LEUInt16>) in _green.withUnsafeBytes { (_green: UnsafePointer<LEUInt16>) in _blue.withUnsafeBytes { (_blue: UnsafePointer<LEUInt16>) in
+                        
+                        var _red = _red
+                        var _green = _green
+                        var _blue = _blue
+                        for _ in 0..<_count {
+                            self.palette.append((_red.pointee.representingValue, _green.pointee.representingValue, _blue.pointee.representingValue))
+                            _red += 1
+                            _green += 1
+                            _blue += 1
+                        }
+                        
+                        } } }
+                default: fatalError()
+                }
             }
         case 4: guard self.samplesPerPixel == 1 else { throw ImageRep.Error.InvalidFormat("Invalid samples count.") }
         default: guard self.samplesPerPixel >= self.colorSpace.numberOfComponents else { throw ImageRep.Error.InvalidFormat("Invalid samples count.") }
@@ -392,7 +431,7 @@ struct TIFFPage {
         case 1:
             if photometric == 3 {
                 
-                var image = Image<ARGB32ColorPixel>(width: width, height: height, colorSpace: colorSpace.base as! ColorSpace<RGBColorModel>)
+                var image = Image<ARGB64ColorPixel>(width: width, height: height, colorSpace: colorSpace.base as! ColorSpace<RGBColorModel>)
                 
                 image.withUnsafeMutableBufferPointer { uncompressedPalettePixelReader($0.baseAddress) }
                 
@@ -525,7 +564,7 @@ struct TIFFPage {
         return AnyImage(width: 0, height: 0, colorSpace: colorSpace)
     }
     
-    func uncompressedPalettePixelReader(_ pixel: UnsafeMutablePointer<ARGB32ColorPixel>?) {
+    func uncompressedPalettePixelReader(_ pixel: UnsafeMutablePointer<ARGB64ColorPixel>?) {
         
         guard let pixel = pixel else { return }
         
@@ -554,9 +593,11 @@ struct TIFFPage {
             }
         }
         
-        palette?.withUnsafeBytes { (palette: UnsafePointer<(UInt8, UInt8, UInt8)>) in
+        palette.withUnsafeBufferPointer {
             
-            let palette_count = self.palette!.count / 3
+            guard let palette = $0.baseAddress else { return }
+            
+            let palette_count = self.palette.count
             
             var remain = height
             let rowSize = width
@@ -577,7 +618,7 @@ struct TIFFPage {
                             let index = Int(_source.pointee)
                             if index < palette_count {
                                 let (r, g, b) = palette[index]
-                                _destination.pointee = ARGB32ColorPixel(red: r, green: g, blue: b)
+                                _destination.pointee = ARGB64ColorPixel(red: r, green: g, blue: b)
                             }
                             
                             _source += 1
