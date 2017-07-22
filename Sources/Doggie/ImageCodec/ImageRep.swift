@@ -75,7 +75,9 @@ extension ImageRep {
         
         let decoders: [ImageRepDecoder.Type] = [
             BMPDecoder.self,
+            TIFFDecoder.self,
             PNGDecoder.self,
+            JPEGDecoder.self,
             ]
         
         for Decoder in decoders {
