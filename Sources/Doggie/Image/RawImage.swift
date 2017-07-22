@@ -107,7 +107,7 @@ struct RawImage<Model : ColorModelProtocol> {
 extension UnsafePointer where Pointee == UInt8 {
     
     @inline(__always)
-    fileprivate func _bitPattern(from range: Range<Int>) -> UInt64 {
+    func _bitPattern(from range: Range<Int>) -> UInt64 {
         
         let bitWidth = range.count
         

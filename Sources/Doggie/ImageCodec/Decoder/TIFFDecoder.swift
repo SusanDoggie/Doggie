@@ -249,7 +249,7 @@ struct TIFFPage {
         switch self.photometric {
         case 3:
             guard self.samplesPerPixel == 1 else { throw ImageRep.Error.InvalidFormat("Invalid samples count.") }
-            guard self.bitsPerSample[0] == 8 else { throw ImageRep.Error.Unsupported("Unsupported bits per sample.") }
+            guard self.bitsPerSample[0] < min(64, UInt.bitWidth) else { throw ImageRep.Error.Unsupported("Unsupported bits per sample.") }
             if let colorMap = tags.first(where: { $0.tag == .ColorMap }) {
                 let offset = colorMap.offset
                 let _count = 1 << self.bitsPerSample[0]
@@ -597,31 +597,35 @@ struct TIFFPage {
             
             guard let palette = $0.baseAddress else { return }
             
-            let palette_count = self.palette.count
+            let bitWidth = self.bitsPerSample[0]
             
             var remain = height
-            let rowSize = width
+            let rowSize = width * ((bitWidth + 7) >> 3)
             
             for strip in strips {
                 
-                let rowCount = min(rowsPerStrip, strip.count / rowSize, remain)
+                let rowCount = min(rowsPerStrip, remain)
+                
+                let bitmapBitsLegnth = strip.count << 3
                 
                 strip.withUnsafeBytes { (buf: UnsafePointer<UInt8>) in
                     var source = buf
                     for _ in 0..<rowCount {
                         
-                        var _source = source
                         var _destination = destination
+                        
+                        var offset = 0
                         
                         for _ in 0..<width {
                             
-                            let index = Int(_source.pointee)
-                            if index < palette_count {
-                                let (r, g, b) = palette[index]
-                                _destination.pointee = ARGB64ColorPixel(red: r, green: g, blue: b)
-                            }
+                            let patternBitRange = offset..<offset + bitWidth
                             
-                            _source += 1
+                            guard patternBitRange.upperBound <= bitmapBitsLegnth else { return }
+                            
+                            let (r, g, b) = palette[Int(source._bitPattern(from: Range(patternBitRange)))]
+                            _destination.pointee = ARGB64ColorPixel(red: r, green: g, blue: b)
+                            
+                            offset += bitWidth
                             _destination += col
                         }
                         
