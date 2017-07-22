@@ -292,7 +292,7 @@ struct TIFFPage {
                         return colorSpace
                     }
                 case 2, 3:
-                    if colorSpace.base is ColorSpace<GrayColorModel> {
+                    if colorSpace.base is ColorSpace<RGBColorModel> {
                         return colorSpace
                     }
                 case 5: return colorSpace
