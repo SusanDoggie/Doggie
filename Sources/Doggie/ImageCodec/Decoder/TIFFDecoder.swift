@@ -242,6 +242,15 @@ struct TIFFPage {
         
         guard self.samplesPerPixel == self.bitsPerSample.count else { throw ImageRep.Error.InvalidFormat("Invalid samples count.") }
         
+        switch self.endianness {
+        case .BIG: break
+        case .LITTLE:
+            for bits in self.bitsPerSample {
+                guard bits % 8 == 0 else { throw ImageRep.Error.InvalidFormat("Unsupported bits per sample.") }
+            }
+        default: fatalError()
+        }
+        
         for (bits, format) in zip(self.bitsPerSample, self.sampleFormat) where format == 3 {
             guard bits == 32 || bits == 64 else { throw ImageRep.Error.InvalidFormat("Unsupported bits per sample.") }
         }
@@ -444,110 +453,78 @@ struct TIFFPage {
                 let row = columnX ? height : width
                 let column = columnX ? width : height
                 
+                let endianness: RawBitmap.Endianness
+                
+                switch self.endianness {
+                case .BIG: endianness = .big
+                case .LITTLE: endianness = .little
+                default: fatalError()
+                }
+                
                 switch planarConfiguration {
                 case 1:
                     
-                    var channels = [RawBitmapChannel]()
+                    var bitmaps = [RawBitmap]()
                     
                     let bitsPerPixel = self.bitsPerSample.reduce(0, +)
                     
                     var offset = 0
+                    
+                    var channels = [RawBitmap.Channel]()
+                    
                     for (i, (bits, format)) in zip(self.bitsPerSample, self.sampleFormat).enumerated() {
-                        if i < colorSpace.numberOfComponents {
-                            for j in 0..<stripsPerImage {
-                                if photometric == 8 && i != 0 && format == 1 {
-                                    channels.append(RawBitmapChannel(channel: i, format: .signed, endianness: .big, startsRow: j * rowsPerStrip, bitmapIndex: j, bitsPerPixel: bitsPerPixel, bitsPerRow: (bitsPerPixel * column).align(8), bitRange: offset..<offset + bits))
-                                } else {
-                                    switch format {
-                                    case 1: channels.append(RawBitmapChannel(channel: i, format: .unsigned, endianness: .big, startsRow: j * rowsPerStrip, bitmapIndex: j, bitsPerPixel: bitsPerPixel, bitsPerRow: (bitsPerPixel * column).align(8), bitRange: offset..<offset + bits))
-                                    case 2: channels.append(RawBitmapChannel(channel: i, format: .signed, endianness: .big, startsRow: j * rowsPerStrip, bitmapIndex: j, bitsPerPixel: bitsPerPixel, bitsPerRow: (bitsPerPixel * column).align(8), bitRange: offset..<offset + bits))
-                                    case 3:
-                                        switch endianness {
-                                        case .BIG: channels.append(RawBitmapChannel(channel: i, format: .float, endianness: .big, startsRow: j * rowsPerStrip, bitmapIndex: j, bitsPerPixel: bitsPerPixel, bitsPerRow: (bitsPerPixel * column).align(8), bitRange: offset..<offset + bits))
-                                        case .LITTLE: channels.append(RawBitmapChannel(channel: i, format: .float, endianness: .little, startsRow: j * rowsPerStrip, bitmapIndex: j, bitsPerPixel: bitsPerPixel, bitsPerRow: (bitsPerPixel * column).align(8), bitRange: offset..<offset + bits))
-                                        default: fatalError()
-                                        }
-                                    default: break
-                                    }
-                                }
-                            }
+                        
+                        if photometric == 8 && (i == 1 || i == 2) && format == 1 {
+                            channels.append(RawBitmap.Channel(index: i, format: .signed, endianness: endianness, bitRange: offset..<offset + bits))
                         } else {
-                            let flag = extraSamples[i - colorSpace.numberOfComponents]
-                            if flag == 1 || flag == 2 {
-                                for j in 0..<stripsPerImage {
-                                    switch format {
-                                    case 1: channels.append(RawBitmapChannel(channel: colorSpace.numberOfComponents, format: .unsigned, endianness: .big, startsRow: j * rowsPerStrip, bitmapIndex: j, bitsPerPixel: bitsPerPixel, bitsPerRow: (bitsPerPixel * column).align(8), bitRange: offset..<offset + bits))
-                                    case 2: channels.append(RawBitmapChannel(channel: colorSpace.numberOfComponents, format: .signed, endianness: .big, startsRow: j * rowsPerStrip, bitmapIndex: j, bitsPerPixel: bitsPerPixel, bitsPerRow: (bitsPerPixel * column).align(8), bitRange: offset..<offset + bits))
-                                    case 3:
-                                        switch endianness {
-                                        case .BIG: channels.append(RawBitmapChannel(channel: colorSpace.numberOfComponents, format: .float, endianness: .big, startsRow: j * rowsPerStrip, bitmapIndex: j, bitsPerPixel: bitsPerPixel, bitsPerRow: (bitsPerPixel * column).align(8), bitRange: offset..<offset + bits))
-                                        case .LITTLE: channels.append(RawBitmapChannel(channel: colorSpace.numberOfComponents, format: .float, endianness: .little, startsRow: j * rowsPerStrip, bitmapIndex: j, bitsPerPixel: bitsPerPixel, bitsPerRow: (bitsPerPixel * column).align(8), bitRange: offset..<offset + bits))
-                                        default: fatalError()
-                                        }
-                                    default: break
-                                    }
-                                }
+                            switch format {
+                            case 1: channels.append(RawBitmap.Channel(index: i, format: .unsigned, endianness: endianness, bitRange: offset..<offset + bits))
+                            case 2: channels.append(RawBitmap.Channel(index: i, format: .signed, endianness: endianness, bitRange: offset..<offset + bits))
+                            case 3: channels.append(RawBitmap.Channel(index: i, format: .float, endianness: endianness, bitRange: offset..<offset + bits))
+                            default: break
                             }
                         }
+                        
                         offset += bits
                     }
                     
-                    image = AnyImage(width: column, height: row, resolution: resolution, channels: channels, bitmaps: strips, premultiplied: extraSamples.contains(1), colorSpace: colorSpace)
-                    
-                    if !columnX {
-                        image = image.transposed()
+                    for (i, data) in strips.enumerated() {
+                        bitmaps.append(RawBitmap(bitsPerPixel: bitsPerPixel, bitsPerRow: (bitsPerPixel * column).align(8), startsRow: i * rowsPerStrip, endianness: .big, channels: channels, data: data))
                     }
+                    
+                    image = AnyImage(width: column, height: row, resolution: resolution, colorSpace: colorSpace, bitmaps: bitmaps, premultiplied: extraSamples.contains(1))
                     
                 case 2:
                     
-                    var channels = [RawBitmapChannel]()
+                    var bitmaps = [RawBitmap]()
                     
-                    for (i, (bits, format)) in zip(self.bitsPerSample, self.sampleFormat).enumerated() {
-                        if i < colorSpace.numberOfComponents {
-                            for j in 0..<stripsPerImage {
-                                if photometric == 8 && i != 0 && format == 1 {
-                                    channels.append(RawBitmapChannel(channel: i, format: .signed, endianness: .big, startsRow: j * rowsPerStrip, bitmapIndex: i * stripsPerImage + j, bitsPerPixel: bits, bitsPerRow: (bits * column).align(8), bitRange: 0..<bits))
-                                } else {
-                                    switch format {
-                                    case 1: channels.append(RawBitmapChannel(channel: i, format: .unsigned, endianness: .big, startsRow: j * rowsPerStrip, bitmapIndex: i * stripsPerImage + j, bitsPerPixel: bits, bitsPerRow: (bits * column).align(8), bitRange: 0..<bits))
-                                    case 2: channels.append(RawBitmapChannel(channel: i, format: .signed, endianness: .big, startsRow: j * rowsPerStrip, bitmapIndex: i * stripsPerImage + j, bitsPerPixel: bits, bitsPerRow: (bits * column).align(8), bitRange: 0..<bits))
-                                    case 3:
-                                        switch endianness {
-                                        case .BIG: channels.append(RawBitmapChannel(channel: i, format: .float, endianness: .big, startsRow: j * rowsPerStrip, bitmapIndex: i * stripsPerImage + j, bitsPerPixel: bits, bitsPerRow: (bits * column).align(8), bitRange: 0..<bits))
-                                        case .LITTLE: channels.append(RawBitmapChannel(channel: i, format: .float, endianness: .little, startsRow: j * rowsPerStrip, bitmapIndex: i * stripsPerImage + j, bitsPerPixel: bits, bitsPerRow: (bits * column).align(8), bitRange: 0..<bits))
-                                        default: fatalError()
-                                        }
-                                    default: break
-                                    }
-                                }
-                            }
-                        } else {
-                            let flag = extraSamples[i - colorSpace.numberOfComponents]
-                            if flag == 1 || flag == 2 {
-                                for j in 0..<stripsPerImage {
-                                    switch format {
-                                    case 1: channels.append(RawBitmapChannel(channel: colorSpace.numberOfComponents, format: .unsigned, endianness: .big, startsRow: j * rowsPerStrip, bitmapIndex: i * stripsPerImage + j, bitsPerPixel: bits, bitsPerRow: (bits * column).align(8), bitRange: 0..<bits))
-                                    case 2: channels.append(RawBitmapChannel(channel: colorSpace.numberOfComponents, format: .signed, endianness: .big, startsRow: j * rowsPerStrip, bitmapIndex: i * stripsPerImage + j, bitsPerPixel: bits, bitsPerRow: (bits * column).align(8), bitRange: 0..<bits))
-                                    case 3:
-                                        switch endianness {
-                                        case .BIG: channels.append(RawBitmapChannel(channel: colorSpace.numberOfComponents, format: .float, endianness: .big, startsRow: j * rowsPerStrip, bitmapIndex: i * stripsPerImage + j, bitsPerPixel: bits, bitsPerRow: (bits * column).align(8), bitRange: 0..<bits))
-                                        case .LITTLE: channels.append(RawBitmapChannel(channel: colorSpace.numberOfComponents, format: .float, endianness: .little, startsRow: j * rowsPerStrip, bitmapIndex: i * stripsPerImage + j, bitsPerPixel: bits, bitsPerRow: (bits * column).align(8), bitRange: 0..<bits))
-                                        default: fatalError()
-                                        }
-                                    default: break
-                                    }
+                    for (i, strips) in strips.slice(by: stripsPerImage).enumerated() {
+                        
+                        let bits = bitsPerSample[i]
+                        let format = sampleFormat[i]
+                        
+                        for (j, strip) in strips.enumerated() {
+                            
+                            if photometric == 8 && (i == 1 || i == 2) && format == 1 {
+                                bitmaps.append(RawBitmap(bitsPerPixel: bits, bitsPerRow: (bits * column).align(8), startsRow: j * rowsPerStrip, endianness: .big, channels: [RawBitmap.Channel(index: i, format: .signed, endianness: endianness, bitRange: 0..<bits)], data: strip))
+                            } else {
+                                switch format {
+                                case 1: bitmaps.append(RawBitmap(bitsPerPixel: bits, bitsPerRow: (bits * column).align(8), startsRow: j * rowsPerStrip, endianness: .big, channels: [RawBitmap.Channel(index: i, format: .unsigned, endianness: endianness, bitRange: 0..<bits)], data: strip))
+                                case 2: bitmaps.append(RawBitmap(bitsPerPixel: bits, bitsPerRow: (bits * column).align(8), startsRow: j * rowsPerStrip, endianness: .big, channels: [RawBitmap.Channel(index: i, format: .signed, endianness: endianness, bitRange: 0..<bits)], data: strip))
+                                case 3: bitmaps.append(RawBitmap(bitsPerPixel: bits, bitsPerRow: (bits * column).align(8), startsRow: j * rowsPerStrip, endianness: .big, channels: [RawBitmap.Channel(index: i, format: .float, endianness: endianness, bitRange: 0..<bits)], data: strip))
+                                default: break
                                 }
                             }
                         }
                     }
                     
-                    image = AnyImage(width: column, height: row, resolution: resolution, channels: channels, bitmaps: strips, premultiplied: extraSamples.contains(1), colorSpace: colorSpace)
-                    
-                    if !columnX {
-                        image = image.transposed()
-                    }
+                    image = AnyImage(width: column, height: row, resolution: resolution, colorSpace: colorSpace, bitmaps: bitmaps, premultiplied: extraSamples.contains(1))
                     
                 default: fatalError()
+                }
+                
+                if !columnX {
+                    image = image.transposed()
                 }
                 if flipX {
                     image = image.horizontalFlipped()
@@ -608,28 +585,48 @@ struct TIFFPage {
                 
                 let bitmapBitsLegnth = strip.count << 3
                 
-                strip.withUnsafeBytes { (buf: UnsafePointer<UInt8>) in
-                    var source = buf
+                let dataBitSize = strip.count << 3
+                
+                strip.withUnsafeBytes { (source: UnsafePointer<UInt8>) in
+                    
+                    var bitsOffset = 0
+                    
                     for _ in 0..<rowCount {
                         
+                        var _bitsOffset = bitsOffset
                         var _destination = destination
-                        
-                        var offset = 0
                         
                         for _ in 0..<width {
                             
-                            let patternBitRange = offset..<offset + bitWidth
+                            guard _bitsOffset + bitWidth <= dataBitSize else { return }
                             
-                            guard patternBitRange.upperBound <= bitmapBitsLegnth else { return }
+                            let bytesOffset = _bitsOffset >> 3
+                            let source = source + bytesOffset
                             
-                            let (r, g, b) = palette[Int(source._bitPattern(from: Range(patternBitRange)))]
+                            let bytesPerPixel = bitWidth >> 3
+                            
+                            func pixelByte(_ i: Int) -> UInt8 {
+                                switch self.endianness {
+                                case .BIG: return source[i]
+                                case .LITTLE: return source[bytesPerPixel - i - 1]
+                                default: fatalError()
+                                }
+                            }
+                            
+                            var bitPattern: UInt64 = 0
+                            
+                            for offset in 0..<bytesPerPixel {
+                                bitPattern = (bitPattern << 8) | UInt64(pixelByte(offset))
+                            }
+                            
+                            let (r, g, b) = palette[Int(bitPattern)]
                             _destination.pointee = ARGB64ColorPixel(red: r, green: g, blue: b)
                             
-                            offset += bitWidth
+                            _bitsOffset += bitWidth
                             _destination += col
                         }
                         
-                        source += rowSize
+                        bitsOffset += rowSize << 3
                         destination += row
                     }
                 }
@@ -646,6 +643,12 @@ struct TIFFHeader : DataCodable {
     var endianness: Endianness
     var version: UInt16
     var IFD: UInt32
+    
+    init(endianness: Endianness, version: UInt16, IFD: UInt32) {
+        self.endianness = endianness
+        self.version = version
+        self.IFD = IFD
+    }
     
     init(from data: inout Data) throws {
         
@@ -747,30 +750,48 @@ extension TIFFTag {
             let offset = self.offset
             switch self.type {
             case 1:
-                guard offset + Int(self.count) <= data.count else { throw ImageRep.Error.InvalidFormat("Invalid tag type: \(tag)") }
-                return data.dropFirst(offset).withUnsafeBytes { UnsafeBufferPointer(start: $0 as UnsafePointer<UInt8>, count: Int(self.count)).map(Int.init) }
+                switch self.count {
+                case 2, 3, 4:
+                    return self.data.withUnsafeBytes { UnsafeBufferPointer(start: $0 as UnsafePointer<UInt8>, count: Int(self.count)).map(Int.init) }
+                default:
+                    guard offset + Int(self.count) <= data.count else { throw ImageRep.Error.InvalidFormat("Invalid tag type: \(self)") }
+                    return data.dropFirst(offset).withUnsafeBytes { UnsafeBufferPointer(start: $0 as UnsafePointer<UInt8>, count: Int(self.count)).map(Int.init) }
+                }
             case 3:
-                guard offset + Int(self.count) << 1 <= data.count else { throw ImageRep.Error.InvalidFormat("Invalid tag type: \(tag)") }
-                return data.dropFirst(offset).withUnsafeBytes { UnsafeBufferPointer(start: $0 as UnsafePointer<BEUInt16>, count: Int(self.count)).map(Int.init) }
+                if self.count == 2 {
+                    return self.data.withUnsafeBytes { UnsafeBufferPointer(start: $0 as UnsafePointer<BEUInt16>, count: Int(self.count)).map(Int.init) }
+                } else {
+                    guard offset + Int(self.count) << 1 <= data.count else { throw ImageRep.Error.InvalidFormat("Invalid tag type: \(self)") }
+                    return data.dropFirst(offset).withUnsafeBytes { UnsafeBufferPointer(start: $0 as UnsafePointer<BEUInt16>, count: Int(self.count)).map(Int.init) }
+                }
             case 4:
-                guard offset + Int(self.count) << 2 <= data.count else { throw ImageRep.Error.InvalidFormat("Invalid tag type: \(tag)") }
+                guard offset + Int(self.count) << 2 <= data.count else { throw ImageRep.Error.InvalidFormat("Invalid tag type: \(self)") }
                 return data.dropFirst(offset).withUnsafeBytes { UnsafeBufferPointer(start: $0 as UnsafePointer<BEUInt32>, count: Int(self.count)).map(Int.init) }
-            default: throw ImageRep.Error.InvalidFormat("Invalid tag type: \(tag)")
+            default: throw ImageRep.Error.InvalidFormat("Invalid tag type: \(self)")
             }
         case .LITTLE:
             
             let offset = self.offset
             switch self.type {
             case 1:
-                guard offset + Int(self.count) <= data.count else { throw ImageRep.Error.InvalidFormat("Invalid tag type: \(tag)") }
-                return data.dropFirst(offset).withUnsafeBytes { UnsafeBufferPointer(start: $0 as UnsafePointer<UInt8>, count: Int(self.count)).map(Int.init) }
+                switch self.count {
+                case 2, 3, 4:
+                    return self.data.withUnsafeBytes { UnsafeBufferPointer(start: $0 as UnsafePointer<UInt8>, count: Int(self.count)).map(Int.init) }
+                default:
+                    guard offset + Int(self.count) <= data.count else { throw ImageRep.Error.InvalidFormat("Invalid tag type: \(self)") }
+                    return data.dropFirst(offset).withUnsafeBytes { UnsafeBufferPointer(start: $0 as UnsafePointer<UInt8>, count: Int(self.count)).map(Int.init) }
+                }
             case 3:
-                guard offset + Int(self.count) << 1 <= data.count else { throw ImageRep.Error.InvalidFormat("Invalid tag type: \(tag)") }
-                return data.dropFirst(offset).withUnsafeBytes { UnsafeBufferPointer(start: $0 as UnsafePointer<LEUInt16>, count: Int(self.count)).map(Int.init) }
+                if self.count == 2 {
+                    return self.data.withUnsafeBytes { UnsafeBufferPointer(start: $0 as UnsafePointer<LEUInt16>, count: Int(self.count)).map(Int.init) }
+                } else {
+                    guard offset + Int(self.count) << 1 <= data.count else { throw ImageRep.Error.InvalidFormat("Invalid tag type: \(self)") }
+                    return data.dropFirst(offset).withUnsafeBytes { UnsafeBufferPointer(start: $0 as UnsafePointer<LEUInt16>, count: Int(self.count)).map(Int.init) }
+                }
             case 4:
-                guard offset + Int(self.count) << 2 <= data.count else { throw ImageRep.Error.InvalidFormat("Invalid tag type: \(tag)") }
+                guard offset + Int(self.count) << 2 <= data.count else { throw ImageRep.Error.InvalidFormat("Invalid tag type: \(self)") }
                 return data.dropFirst(offset).withUnsafeBytes { UnsafeBufferPointer(start: $0 as UnsafePointer<LEUInt32>, count: Int(self.count)).map(Int.init) }
-            default: throw ImageRep.Error.InvalidFormat("Invalid tag type: \(tag)")
+            default: throw ImageRep.Error.InvalidFormat("Invalid tag type: \(self)")
             }
         default: fatalError()
         }

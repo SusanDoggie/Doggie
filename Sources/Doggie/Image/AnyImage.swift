@@ -23,6 +23,7 @@
 //  THE SOFTWARE.
 //
 
+import Foundation
 
 @_versioned
 protocol AnyImageBaseProtocol {
@@ -34,6 +35,8 @@ protocol AnyImageBaseProtocol {
     var resolution: Resolution { get set }
     
     var isOpaque: Bool { get }
+    
+    func rawData(format: RawBitmap.Format, bitsPerChannel: Int, bitsPerPixel: Int, bytesPerRow: Int, alphaChannel: RawBitmap.AlphaChannelFormat, channelEndianness: RawBitmap.Endianness, pixelEndianness: RawBitmap.Endianness, separated: Bool) -> [Data]
     
     var _colorSpace: AnyColorSpaceBaseProtocol { get }
     
