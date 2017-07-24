@@ -162,7 +162,7 @@ struct TIFFPage {
     
     var photometric: Int
     
-    var rowsPerStrip: Int = ~0
+    var rowsPerStrip: Int
     var stripsPerImage: Int
     var strips: [Data] = []
     
@@ -192,11 +192,25 @@ struct TIFFPage {
         
         self.colorSpace = try TIFFPage.fatchColorSpace(tags: tags, photometric: self.photometric, data)
         
-        if let rowsPerStrip = tags.first(where: { $0.tag == .RowsPerStrip }), let _rowsPerStrip = try? rowsPerStrip.fatchInteger() {
-            self.rowsPerStrip = _rowsPerStrip
+        if let orientation = tags.first(where: { $0.tag == .Orientation }), let _orientation = try? orientation.fatchInteger() {
+            self.orientation = _orientation
         }
         
-        self.stripsPerImage = (self.height + self.rowsPerStrip - 1) / self.rowsPerStrip
+        if let rowsPerStrip = tags.first(where: { $0.tag == .RowsPerStrip }), let _rowsPerStrip = try? rowsPerStrip.fatchInteger() {
+            self.rowsPerStrip = _rowsPerStrip
+        } else {
+            switch self.orientation {
+            case 1...4: self.rowsPerStrip = self.height
+            case 5...8: self.rowsPerStrip = self.width
+            default: throw ImageRep.Error.InvalidFormat("Invalid orientation.")
+            }
+        }
+        
+        switch self.orientation {
+        case 1...4: self.stripsPerImage = (self.height + self.rowsPerStrip - 1) / self.rowsPerStrip
+        case 5...8: self.stripsPerImage = (self.width + self.rowsPerStrip - 1) / self.rowsPerStrip
+        default: throw ImageRep.Error.InvalidFormat("Invalid orientation.")
+        }
         
         for (offset, length) in zip(try stripOffsets.fatchIntegers(data), try stripByteCounts.fatchIntegers(data)) {
             self.strips.append(data.dropFirst(offset).prefix(length))
@@ -216,10 +230,6 @@ struct TIFFPage {
             self.sampleFormat = Array(_sampleFormat.prefix(self.samplesPerPixel))
         }
         self.sampleFormat.append(contentsOf: repeatElement(1, count: self.samplesPerPixel - self.sampleFormat.count))
-        
-        if let orientation = tags.first(where: { $0.tag == .Orientation }), let _orientation = try? orientation.fatchInteger() {
-            self.orientation = _orientation
-        }
         
         if let unit = tags.first(where: { $0.tag == .ResolutionUnit }), let _unit = try? unit.fatchInteger() {
             self.resolutionUnit = _unit
@@ -344,10 +354,6 @@ struct TIFFPage {
                         return colorSpace
                     }
                 case 5: return colorSpace
-                case 9:
-                    if colorSpace.base is ColorSpace<LabColorModel> {
-                        return colorSpace
-                    }
                 default: break
                 }
             }
@@ -671,7 +677,7 @@ struct TIFFHeader : DataCodable {
     
     func encode(to data: inout Data) {
         
-        data.encode(data)
+        data.encode(endianness)
         
         switch endianness {
         case .BIG:

@@ -221,6 +221,10 @@ extension Image {
                                     }
                                 }
                                 
+                                if !value.isNormal && !value.isSubnormal && !value.isZero {
+                                    value = 0
+                                }
+                                
                                 pixel.setNormalizedComponent(channel.index, value)
                             }
                             

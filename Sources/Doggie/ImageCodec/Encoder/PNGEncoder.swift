@@ -27,7 +27,7 @@ import Foundation
 
 struct PNGEncoder : ImageRepEncoder {
     
-    static func encode(_ chunks: PNGChunk ... ) -> Data {
+    private static func encode(_ chunks: PNGChunk ... ) -> Data {
         
         var result = Data()
         
@@ -50,7 +50,7 @@ struct PNGEncoder : ImageRepEncoder {
         return result
     }
     
-    static func IHDR(width: Int, height: Int, bitDepth: UInt8, colour: UInt8, interlace: Bool) -> PNGChunk {
+    private static func IHDR(width: Int, height: Int, bitDepth: UInt8, colour: UInt8, interlace: Bool) -> PNGChunk {
         
         let width: BEUInt32 = BEUInt32(width)
         let height: BEUInt32 = BEUInt32(height)
@@ -73,7 +73,7 @@ struct PNGEncoder : ImageRepEncoder {
         return PNGChunk(signature: "IHDR", data: ihdr)
     }
     
-    static func iCCP<C>(_ colorSpace: ColorSpace<C>) -> PNGChunk? {
+    private static func iCCP<C>(_ colorSpace: ColorSpace<C>) -> PNGChunk? {
         
         if let iccData = colorSpace.iccData, let deflate = try? Deflate(), let data = try? deflate.process(data: iccData) + deflate.final() {
             
@@ -90,7 +90,7 @@ struct PNGEncoder : ImageRepEncoder {
         return nil
     }
     
-    static func pHYs(_ resolution: Resolution) -> PNGChunk {
+    private static func pHYs(_ resolution: Resolution) -> PNGChunk {
         
         var phys = Data()
         
@@ -103,7 +103,7 @@ struct PNGEncoder : ImageRepEncoder {
         return PNGChunk(signature: "pHYs", data: phys)
     }
     
-    static func filter0(_ pixel: Data, _ previous: Data?, _ bitsPerPixel: UInt8, _ result: inout Data) {
+    private static func filter0(_ pixel: Data, _ previous: Data?, _ bitsPerPixel: UInt8, _ result: inout Data) {
         
         var s = pixel.reduce(0.0) { $0 + abs(Double(Int8(bitPattern: $1))) }
         
@@ -125,7 +125,7 @@ struct PNGEncoder : ImageRepEncoder {
         result.append(filtered)
     }
     
-    static func encodeIDAT<Pixel>(image: Image<Pixel>, bitsPerPixel: UInt8, interlace: Bool, _ body: (inout Data, Pixel) -> Void) -> PNGChunk? {
+    private static func encodeIDAT<Pixel>(image: Image<Pixel>, bitsPerPixel: UInt8, interlace: Bool, _ body: (inout Data, Pixel) -> Void) -> PNGChunk? {
         
         let width = image.width
         let height = image.height
@@ -213,7 +213,7 @@ struct PNGEncoder : ImageRepEncoder {
         return nil
     }
     
-    static func encodeRGB(image: Image<ARGB64ColorPixel>, interlace: Bool) -> Data? {
+    private static func encodeRGB(image: Image<ARGB64ColorPixel>, interlace: Bool) -> Data? {
         
         let opaque = image.isOpaque
         
@@ -246,7 +246,7 @@ struct PNGEncoder : ImageRepEncoder {
         return encode(ihdr, phys, iccp, idat)
     }
     
-    static func encodeRGB(image: Image<ARGB32ColorPixel>, interlace: Bool) -> Data? {
+    private static func encodeRGB(image: Image<ARGB32ColorPixel>, interlace: Bool) -> Data? {
         
         let opaque = image.isOpaque
         
@@ -279,7 +279,7 @@ struct PNGEncoder : ImageRepEncoder {
         return encode(ihdr, phys, iccp, idat)
     }
     
-    static func encodeGray(image: Image<Gray32ColorPixel>, interlace: Bool) -> Data? {
+    private static func encodeGray(image: Image<Gray32ColorPixel>, interlace: Bool) -> Data? {
         
         let opaque = image.isOpaque
         
@@ -308,7 +308,7 @@ struct PNGEncoder : ImageRepEncoder {
         return encode(ihdr, phys, iccp, idat)
     }
     
-    static func encodeGray(image: Image<Gray16ColorPixel>, interlace: Bool) -> Data? {
+    private static func encodeGray(image: Image<Gray16ColorPixel>, interlace: Bool) -> Data? {
         
         let opaque = image.isOpaque
         
