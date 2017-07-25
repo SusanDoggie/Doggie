@@ -29,11 +29,7 @@ struct JPEGDecoder : ImageRepDecoder {
     
     var APP0: JPEGAPP0
     
-    var coding: UInt8 = 0
-    var SOF: JPEGSOF!
-    
-    var huffman: [JPEGHuffmanTable] = []
-    var quantization: [JPEGQuantizationTable] = []
+    var frame: [JPEGFrame] = []
     
     init?(data: Data) throws {
         
@@ -48,18 +44,25 @@ struct JPEGDecoder : ImageRepDecoder {
         
         var segment = try data.decode(JPEGSegment.self)
         
+        var quantization = [JPEGQuantizationTable]()
+        var huffman = [JPEGHuffmanTable]()
+        
         while segment.marker != 0xDA {
             
             switch segment.marker {
             case 0xC0, 0xC2: // Start Of Frame
                 
-                guard coding == 0 else { throw ImageRep.Error.InvalidFormat("Repeated SOF.") }
+                self.frame.append(JPEGFrame(SOF: try JPEGSOF(segment), quantization: quantization, scan: []))
                 
-                coding = segment.marker
+                quantization = []
                 
-                self.SOF = try JPEGSOF(segment)
+            case 0xDA: // Start Of Scan
                 
-                guard self.SOF.precision == 8 else { return nil }
+                guard self.frame.count != 0 else { return nil }
+                
+                self.frame[self.frame.count - 1].scan.append(JPEGScan(SOS: try JPEGSOS(segment), huffman: huffman))
+                
+                huffman = []
                 
             case 0xC4: // Huffman Table
                 
@@ -77,16 +80,16 @@ struct JPEGDecoder : ImageRepDecoder {
             segment = try data.decode(JPEGSegment.self)
         }
         
-        guard coding != 0 else { return nil }
+        guard frame.count != 0 else { return nil }
         
     }
     
     var width: Int {
-        return Int(SOF.samplesPerLine)
+        return Int(self.frame[0].SOF.samplesPerLine)
     }
     
     var height: Int {
-        return Int(SOF.lines)
+        return Int(self.frame[0].SOF.lines)
     }
     
     var resolution: Resolution {
@@ -305,6 +308,19 @@ struct JPEGAPP0 {
     
 }
 
+struct JPEGFrame {
+    
+    var SOF: JPEGSOF
+    var quantization: [JPEGQuantizationTable]
+    var scan: [JPEGScan]
+}
+
+struct JPEGScan {
+    
+    var SOS: JPEGSOS
+    var huffman: [JPEGHuffmanTable]
+}
+
 struct JPEGSOF {
     
     var precision: UInt8
@@ -328,7 +344,29 @@ struct JPEGSOF {
             self.sampling.append((try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self)))
         }
     }
+}
+
+struct JPEGSOS {
     
+    var components: UInt8
+    var selector: [(UInt8, UInt8)]
+    var spectralSelection: (UInt8, UInt8)
+    var successiveApproximation: UInt8
+    
+    init(_ segment: JPEGSegment) throws {
+        
+        var data = segment.data
+        
+        self.components = try data.decode(UInt8.self)
+        
+        self.selector = []
+        for _ in 0..<self.components {
+            self.selector.append((try data.decode(UInt8.self), try data.decode(UInt8.self)))
+        }
+        
+        self.spectralSelection = (try data.decode(UInt8.self), try data.decode(UInt8.self))
+        self.successiveApproximation = try data.decode(UInt8.self)
+    }
 }
 
 struct JPEGSegment : DataCodable {
