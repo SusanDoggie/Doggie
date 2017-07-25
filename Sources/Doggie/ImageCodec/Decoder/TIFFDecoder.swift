@@ -829,11 +829,11 @@ extension TIFFTag {
         case .BIG:
             let offset = self.offset
             guard offset + Int(self.count) << 3 <= data.count else { throw ImageRep.Error.InvalidFormat("Invalid tag type: \(self)") }
-            return data.dropFirst(offset).withUnsafeBytes { UnsafeBufferPointer(start: $0 as UnsafePointer<(BEUInt32, BEUInt32)>, count: Int(self.count)).map { Double($0.0.representingValue) / Double($0.1.representingValue) } }
+            return data.dropFirst(offset).withUnsafeBytes { UnsafeBufferPointer(start: $0 as UnsafePointer<(BEUInt32, BEUInt32)>, count: Int(self.count)).map { Double($0.representingValue) / Double($1.representingValue) } }
         case .LITTLE:
             let offset = self.offset
             guard offset + Int(self.count) << 3 <= data.count else { throw ImageRep.Error.InvalidFormat("Invalid tag type: \(self)") }
-            return data.dropFirst(offset).withUnsafeBytes { UnsafeBufferPointer(start: $0 as UnsafePointer<(LEUInt32, LEUInt32)>, count: Int(self.count)).map { Double($0.0.representingValue) / Double($0.1.representingValue) } }
+            return data.dropFirst(offset).withUnsafeBytes { UnsafeBufferPointer(start: $0 as UnsafePointer<(LEUInt32, LEUInt32)>, count: Int(self.count)).map { Double($0.representingValue) / Double($1.representingValue) } }
         default: fatalError()
         }
     }

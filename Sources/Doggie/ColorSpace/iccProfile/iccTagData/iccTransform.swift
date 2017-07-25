@@ -569,7 +569,7 @@ struct MultiDimensionalLUT {
     @_inlineable
     func eval<Source: ColorModelProtocol, Destination: ColorModelProtocol>(_ source: Source) -> Destination {
         
-        let position = source.components.enumerated().map { _interpolate_index($0.1, grids[$0.0]) }
+        let position = source.components.enumerated().map { _interpolate_index($1, grids[$0]) }
         
         func _interpolate(level: Int, offset: Int) -> Destination {
             

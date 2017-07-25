@@ -165,7 +165,7 @@ extension RandomAccessCollection where Indices : RandomAccessCollection {
         let reverse_pattern = pattern.reversed()
         var cursor = self.index(startIndex, offsetBy: pattern_count - 1, limitedBy: endIndex) ?? endIndex
         while cursor < endIndex {
-            guard let not_match = try zip(self.indices.prefix(through: cursor).reversed(), reverse_pattern).first(where: { try !isEquivalent(self[$0.0], $0.1) }) else {
+            guard let not_match = try zip(self.indices.prefix(through: cursor).reversed(), reverse_pattern).first(where: { try !isEquivalent(self[$0], $1) }) else {
                 let strat = self.index(cursor, offsetBy: 1 - pattern_count)
                 let end = self.index(cursor, offsetBy: 1)
                 return strat..<end

@@ -43,7 +43,7 @@ public func DurandKerner(_ polynomial: Polynomial, eps: Double = 1e-14) -> [Comp
             return Complex(0)
         }
         
-        result = result.enumerated().map { $0.1 - _eval($0.0, $0.1) }
+        result = result.enumerated().map { $1 - _eval($0, $1) }
         
         if flag {
             print("DurandKerner:", iter)

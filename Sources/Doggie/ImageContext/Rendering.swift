@@ -213,7 +213,7 @@ struct _PerspectiveProjectTriangleIterator<Base : IteratorProtocol, Vertex : Ima
     @_versioned
     @inline(__always)
     mutating func next() -> (_Vertex, _Vertex, _Vertex)? {
-        return base.next().map { (_Vertex(vertex: $0.0), _Vertex(vertex: $0.1), _Vertex(vertex: $0.2)) }
+        return base.next().map { (_Vertex(vertex: $0), _Vertex(vertex: $1), _Vertex(vertex: $2)) }
     }
 }
 

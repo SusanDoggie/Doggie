@@ -227,7 +227,7 @@ extension JPEGHuffmanTable.Key : CustomStringConvertible {
 extension JPEGHuffmanTable : CustomStringConvertible {
     
     var description: String {
-        return "JPEGHuffmanTable(info: \(info), table: [\(table.map { "\($0.0): \(String($0.1, radix: 16))" }.joined(separator: ", "))])"
+        return "JPEGHuffmanTable(info: \(info), table: [\(table.map { "\($0): \(String($1, radix: 16))" }.joined(separator: ", "))])"
     }
 }
 

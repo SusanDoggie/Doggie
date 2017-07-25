@@ -148,7 +148,7 @@ extension PDFDocument.Xref : BidirectionalCollection {
     }
     
     fileprivate var _collection: _Collection {
-        return table.indexed().lazy.flatMap { x in x.1.indexed().lazy.map { (PDFDocument.ObjectIdentifier(identifier: x.0, generation: $0.0), $0.1) } }.elements
+        return table.indexed().lazy.flatMap { x in x.1.indexed().lazy.map { (PDFDocument.ObjectIdentifier(identifier: x.0, generation: $0), $1) } }.elements
     }
     
     public var startIndex: Index {
@@ -642,7 +642,7 @@ extension PDFDocument.Value {
             }
         }
         set {
-            self = newValue.map { .stream($0.0, $0.1) } ?? .null
+            self = newValue.map { .stream($0, $1) } ?? .null
         }
     }
 }

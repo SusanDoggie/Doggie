@@ -33,7 +33,7 @@ public func Aberth(_ polynomial: Polynomial, eps: Double = 1e-14) -> [Complex] {
             return u
         }
         
-        result = result.enumerated().map { $0.1 - _eval($0.0, $0.1) }
+        result = result.enumerated().map { $1 - _eval($0, $1) }
         
         if flag {
             print("Aberth:", iter)
