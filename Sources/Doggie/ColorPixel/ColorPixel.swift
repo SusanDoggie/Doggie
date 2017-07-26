@@ -42,7 +42,7 @@ public protocol ColorPixelProtocol : Hashable {
 
 extension ColorPixelProtocol {
     
-    @_inlineable
+    @_transparent
     public init(_ color: Color<Model>) {
         self.init(color: color.color, opacity: color.opacity)
     }
@@ -50,12 +50,12 @@ extension ColorPixelProtocol {
 
 extension ColorPixelProtocol {
     
-    @_inlineable
+    @_transparent
     public init() {
         self.init(color: Model(), opacity: 0)
     }
     
-    @_inlineable
+    @_transparent
     public init<C : ColorPixelProtocol>(_ color: C) where Model == C.Model {
         self.init(color: color.color, opacity: color.opacity)
     }
@@ -63,7 +63,7 @@ extension ColorPixelProtocol {
 
 extension ColorPixelProtocol {
     
-    @_inlineable
+    @_transparent
     public func with(opacity: Double) -> Self {
         return Self(color: color, opacity: opacity)
     }
@@ -71,17 +71,17 @@ extension ColorPixelProtocol {
 
 extension ColorPixelProtocol {
     
-    @_inlineable
+    @_transparent
     public static var numberOfComponents: Int {
         return Model.numberOfComponents + 1
     }
     
-    @_inlineable
+    @_transparent
     public var numberOfComponents: Int {
         return Self.numberOfComponents
     }
     
-    @_inlineable
+    @_transparent
     public static func rangeOfComponent(_ i: Int) -> ClosedRange<Double> {
         if i < Model.numberOfComponents {
             return Model.rangeOfComponent(i)
@@ -92,12 +92,12 @@ extension ColorPixelProtocol {
         }
     }
     
-    @_inlineable
+    @_transparent
     public func rangeOfComponent(_ i: Int) -> ClosedRange<Double> {
         return Self.rangeOfComponent(i)
     }
     
-    @_inlineable
+    @_transparent
     public func component(_ index: Int) -> Double {
         if index < Model.numberOfComponents {
             return color.component(index)
@@ -108,7 +108,7 @@ extension ColorPixelProtocol {
         }
     }
     
-    @_inlineable
+    @_transparent
     public mutating func setComponent(_ index: Int, _ value: Double) {
         if index < Model.numberOfComponents {
             color.setComponent(index, value)
@@ -122,7 +122,7 @@ extension ColorPixelProtocol {
 
 extension ColorPixelProtocol {
     
-    @_inlineable
+    @_transparent
     public func normalizedComponent(_ index: Int) -> Double {
         if index < Model.numberOfComponents {
             return color.normalizedComponent(index)
@@ -133,7 +133,7 @@ extension ColorPixelProtocol {
         }
     }
     
-    @_inlineable
+    @_transparent
     public mutating func setNormalizedComponent(_ index: Int, _ value: Double) {
         if index < Model.numberOfComponents {
             color.setNormalizedComponent(index, value)
@@ -147,7 +147,7 @@ extension ColorPixelProtocol {
 
 extension ColorPixelProtocol {
     
-    @_inlineable
+    @_transparent
     public var isOpaque: Bool {
         return opacity >= 1
     }
@@ -155,76 +155,76 @@ extension ColorPixelProtocol {
 
 extension ColorPixelProtocol {
     
-    @_inlineable
+    @_transparent
     public var hashValue: Int {
         return hash_combine(seed: 0, self.opacity.hashValue, self.color.hashValue)
     }
 }
 
-@_inlineable
+@_transparent
 public prefix func +<Pixel : ColorPixelProtocol>(val: Pixel) -> Pixel {
     
     return val
 }
-@_inlineable
+@_transparent
 public prefix func -<Pixel : ColorPixelProtocol>(val: Pixel) -> Pixel {
     
     return Pixel(color: -val.color, opacity: -val.opacity)
 }
-@_inlineable
+@_transparent
 public func +<Pixel : ColorPixelProtocol>(lhs: Pixel, rhs: Pixel) -> Pixel {
     
     return Pixel(color: lhs.color + rhs.color, opacity: lhs.opacity + rhs.opacity)
 }
-@_inlineable
+@_transparent
 public func -<Pixel : ColorPixelProtocol>(lhs: Pixel, rhs: Pixel) -> Pixel {
     
     return Pixel(color: lhs.color - rhs.color, opacity: lhs.opacity - rhs.opacity)
 }
 
-@_inlineable
+@_transparent
 public func *<Pixel : ColorPixelProtocol>(lhs: Double, rhs: Pixel) -> Pixel {
     
     return Pixel(color: lhs * rhs.color, opacity: lhs * rhs.opacity)
 }
-@_inlineable
+@_transparent
 public func *<Pixel : ColorPixelProtocol>(lhs: Pixel, rhs: Double) -> Pixel {
     
     return Pixel(color: lhs.color * rhs, opacity: lhs.opacity * rhs)
 }
 
-@_inlineable
+@_transparent
 public func /<Pixel : ColorPixelProtocol>(lhs: Pixel, rhs: Double) -> Pixel {
     
     return Pixel(color: lhs.color / rhs, opacity: lhs.opacity / rhs)
 }
 
-@_inlineable
+@_transparent
 public func *=<Pixel : ColorPixelProtocol> (lhs: inout Pixel, rhs: Double) {
     lhs.color *= rhs
     lhs.opacity *= rhs
 }
-@_inlineable
+@_transparent
 public func /=<Pixel : ColorPixelProtocol> (lhs: inout Pixel, rhs: Double) {
     lhs.color /= rhs
     lhs.opacity /= rhs
 }
-@_inlineable
+@_transparent
 public func +=<Pixel : ColorPixelProtocol> (lhs: inout Pixel, rhs: Pixel) {
     lhs.color += rhs.color
     lhs.opacity += rhs.opacity
 }
-@_inlineable
+@_transparent
 public func -=<Pixel : ColorPixelProtocol> (lhs: inout Pixel, rhs: Pixel) {
     lhs.color -= rhs.color
     lhs.opacity -= rhs.opacity
 }
-@_inlineable
+@_transparent
 public func ==<Pixel : ColorPixelProtocol>(lhs: Pixel, rhs: Pixel) -> Bool {
     
     return lhs.color == rhs.color && lhs.opacity == rhs.opacity
 }
-@_inlineable
+@_transparent
 public func !=<Pixel : ColorPixelProtocol>(lhs: Pixel, rhs: Pixel) -> Bool {
     
     return lhs.color != rhs.color || lhs.opacity != rhs.opacity
@@ -239,7 +239,7 @@ public struct ColorPixel<Model : ColorModelProtocol> : ColorPixelProtocol {
         }
     }
     
-    @_inlineable
+    @_transparent
     public init(color: Model, opacity: Double = 1) {
         self.color = color
         self.opacity = opacity
@@ -248,7 +248,7 @@ public struct ColorPixel<Model : ColorModelProtocol> : ColorPixelProtocol {
 
 extension ColorPixelProtocol where Model == GrayColorModel {
     
-    @_inlineable
+    @_transparent
     public init(white: Double, opacity: Double = 1) {
         self.init(color: GrayColorModel(white: white), opacity: opacity)
     }
@@ -256,12 +256,12 @@ extension ColorPixelProtocol where Model == GrayColorModel {
 
 extension ColorPixelProtocol where Model == RGBColorModel {
     
-    @_inlineable
+    @_transparent
     public init(red: Double, green: Double, blue: Double, opacity: Double = 1) {
         self.init(color: RGBColorModel(red: red, green: green, blue: blue), opacity: opacity)
     }
     
-    @_inlineable
+    @_transparent
     public init(hue: Double, saturation: Double, brightness: Double, opacity: Double = 1) {
         self.init(color: RGBColorModel(hue: hue, saturation: saturation, brightness: brightness), opacity: opacity)
     }
@@ -269,7 +269,7 @@ extension ColorPixelProtocol where Model == RGBColorModel {
 
 extension ColorPixelProtocol where Model == CMYColorModel {
     
-    @_inlineable
+    @_transparent
     public init(cyan: Double, magenta: Double, yellow: Double, opacity: Double = 1) {
         self.init(color: CMYColorModel(cyan: cyan, magenta: magenta, yellow: yellow), opacity: opacity)
     }
@@ -277,7 +277,7 @@ extension ColorPixelProtocol where Model == CMYColorModel {
 
 extension ColorPixelProtocol where Model == CMYKColorModel {
     
-    @_inlineable
+    @_transparent
     public init(cyan: Double, magenta: Double, yellow: Double, black: Double, opacity: Double = 1) {
         self.init(color: CMYKColorModel(cyan: cyan, magenta: magenta, yellow: yellow, black: black), opacity: opacity)
     }
@@ -285,7 +285,7 @@ extension ColorPixelProtocol where Model == CMYKColorModel {
 
 extension ColorPixelProtocol where Model == GrayColorModel {
     
-    @_inlineable
+    @_transparent
     public var white: Double {
         get {
             return color.white
@@ -298,7 +298,7 @@ extension ColorPixelProtocol where Model == GrayColorModel {
 
 extension ColorPixelProtocol where Model == RGBColorModel {
     
-    @_inlineable
+    @_transparent
     public var red: Double {
         get {
             return color.red
@@ -308,7 +308,7 @@ extension ColorPixelProtocol where Model == RGBColorModel {
         }
     }
     
-    @_inlineable
+    @_transparent
     public var green: Double {
         get {
             return color.green
@@ -318,7 +318,7 @@ extension ColorPixelProtocol where Model == RGBColorModel {
         }
     }
     
-    @_inlineable
+    @_transparent
     public var blue: Double {
         get {
             return color.blue
@@ -331,7 +331,7 @@ extension ColorPixelProtocol where Model == RGBColorModel {
 
 extension ColorPixelProtocol where Model == RGBColorModel {
     
-    @_inlineable
+    @_transparent
     public var hue: Double {
         get {
             return color.hue
@@ -341,7 +341,7 @@ extension ColorPixelProtocol where Model == RGBColorModel {
         }
     }
     
-    @_inlineable
+    @_transparent
     public var saturation: Double {
         get {
             return color.saturation
@@ -351,7 +351,7 @@ extension ColorPixelProtocol where Model == RGBColorModel {
         }
     }
     
-    @_inlineable
+    @_transparent
     public var brightness: Double {
         get {
             return color.brightness
@@ -364,7 +364,7 @@ extension ColorPixelProtocol where Model == RGBColorModel {
 
 extension ColorPixelProtocol where Model == CMYKColorModel {
     
-    @_inlineable
+    @_transparent
     public var cyan: Double {
         get {
             return color.cyan
@@ -374,7 +374,7 @@ extension ColorPixelProtocol where Model == CMYKColorModel {
         }
     }
     
-    @_inlineable
+    @_transparent
     public var magenta: Double {
         get {
             return color.magenta
@@ -384,7 +384,7 @@ extension ColorPixelProtocol where Model == CMYKColorModel {
         }
     }
     
-    @_inlineable
+    @_transparent
     public var yellow: Double {
         get {
             return color.yellow
@@ -394,7 +394,7 @@ extension ColorPixelProtocol where Model == CMYKColorModel {
         }
     }
     
-    @_inlineable
+    @_transparent
     public var black: Double {
         get {
             return color.black
