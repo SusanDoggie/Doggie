@@ -41,7 +41,7 @@ public struct SDTransform {
     public var e: Double
     public var f: Double
     
-    @_inlineable
+    @_transparent
     public init(a: Double, b: Double, c: Double, d: Double, e: Double, f: Double) {
         self.a = a
         self.b = b
@@ -54,7 +54,7 @@ public struct SDTransform {
 
 extension SDTransform : CustomStringConvertible {
     
-    @_inlineable
+    @_transparent
     public var description: String {
         return "SDTransform(a: \(a), b: \(b), c: \(c), d: \(d), e: \(e), f: \(f))"
     }
@@ -62,7 +62,7 @@ extension SDTransform : CustomStringConvertible {
 
 extension SDTransform : Hashable {
     
-    @_inlineable
+    @_transparent
     public var hashValue: Int {
         return hash_combine(seed: 0, a, b, c, d, e, f)
     }
@@ -70,7 +70,7 @@ extension SDTransform : Hashable {
 
 extension SDTransform {
     
-    @_inlineable
+    @_transparent
     public var determinant : Double {
         return a * e - b * d
     }
@@ -78,7 +78,7 @@ extension SDTransform {
 
 extension SDTransform {
     
-    @_inlineable
+    @_transparent
     public var inverse : SDTransform {
         let det = self.determinant
         return SDTransform(a: e / det, b: -b / det, c: (b * f - c * e) / det, d: -d / det, e: a / det, f: (c * d - a * f) / det)
@@ -87,7 +87,7 @@ extension SDTransform {
 
 extension SDTransform {
     
-    @_inlineable
+    @_transparent
     public var tx: Double {
         get {
             return c
@@ -97,7 +97,7 @@ extension SDTransform {
         }
     }
     
-    @_inlineable
+    @_transparent
     public var ty: Double {
         get {
             return f
@@ -117,7 +117,7 @@ extension SDTransform {
     ///     ⎜ 0 1 0 ⎟
     ///     ⎝ 0 0 1 ⎠
     ///
-    @_inlineable
+    @_transparent
     public static var identity : SDTransform {
         
         return SDTransform(a: 1, b: 0, c: 0,
@@ -131,7 +131,7 @@ extension SDTransform {
     ///     ⎜ -sin(a) cos(a) 0 ⎟
     ///     ⎝    0      0    1 ⎠
     ///
-    @_inlineable
+    @_transparent
     public static func rotate(_ angle: Double) -> SDTransform {
         
         return SDTransform(a: cos(angle), b: -sin(angle), c: 0,
@@ -145,7 +145,7 @@ extension SDTransform {
     ///     ⎜ tan(a) 1 0 ⎟
     ///     ⎝   0    0 1 ⎠
     ///
-    @_inlineable
+    @_transparent
     public static func skewX(_ angle: Double) -> SDTransform {
         
         return SDTransform(a: 1, b: tan(angle), c: 0,
@@ -159,7 +159,7 @@ extension SDTransform {
     ///     ⎜ 0   1    0 ⎟
     ///     ⎝ 0   0    1 ⎠
     ///
-    @_inlineable
+    @_transparent
     public static func skewY(_ angle: Double) -> SDTransform {
         
         return SDTransform(a: 1, b: 0, c: 0,
@@ -173,7 +173,7 @@ extension SDTransform {
     ///     ⎜ 0 y 0 ⎟
     ///     ⎝ 0 0 1 ⎠
     ///
-    @_inlineable
+    @_transparent
     public static func scale(_ scale: Double) -> SDTransform {
         
         return SDTransform(a: scale, b: 0, c: 0,
@@ -187,7 +187,7 @@ extension SDTransform {
     ///     ⎜ 0 y 0 ⎟
     ///     ⎝ 0 0 1 ⎠
     ///
-    @_inlineable
+    @_transparent
     public static func scale(x: Double = 1, y: Double = 1) -> SDTransform {
         
         return SDTransform(a: x, b: 0, c: 0,
@@ -201,7 +201,7 @@ extension SDTransform {
     ///     ⎜ 0 1 0 ⎟
     ///     ⎝ x y 1 ⎠
     ///
-    @_inlineable
+    @_transparent
     public static func translate(x: Double = 0, y: Double = 0) -> SDTransform {
         
         return SDTransform(a: 1, b: 0, c: x,
@@ -215,7 +215,7 @@ extension SDTransform {
     ///     ⎜  0 1 0 ⎟
     ///     ⎝ 2x 0 1 ⎠
     ///
-    @_inlineable
+    @_transparent
     public static func reflectX(_ x: Double = 0) -> SDTransform {
         
         return SDTransform(a: -1, b: 0, c: 2 * x,
@@ -229,7 +229,7 @@ extension SDTransform {
     ///     ⎜ 0 -1 0 ⎟
     ///     ⎝ 0 2y 1 ⎠
     ///
-    @_inlineable
+    @_transparent
     public static func reflectY(_ y: Double = 0) -> SDTransform {
         
         return SDTransform(a: 1, b: 0, c: 0,
@@ -241,16 +241,16 @@ extension SDTransform : Multiplicative {
     
 }
 
-@_inlineable
+@_transparent
 public func ==(lhs: SDTransform, rhs: SDTransform) -> Bool {
     return lhs.a == rhs.a && lhs.b == rhs.b && lhs.c == rhs.c && lhs.d == rhs.d && lhs.e == rhs.e && lhs.f == rhs.f
 }
-@_inlineable
+@_transparent
 public func !=(lhs: SDTransform, rhs: SDTransform) -> Bool {
     return lhs.a != rhs.a || lhs.b != rhs.b || lhs.c != rhs.c || lhs.d != rhs.d || lhs.e != rhs.e || lhs.f != rhs.f
 }
 
-@_inlineable
+@_transparent
 public func *(lhs: SDTransform, rhs: SDTransform) -> SDTransform {
     let a = lhs.a * rhs.a + lhs.d * rhs.b
     let b = lhs.b * rhs.a + lhs.e * rhs.b
@@ -261,17 +261,17 @@ public func *(lhs: SDTransform, rhs: SDTransform) -> SDTransform {
     return SDTransform(a: a, b: b, c: c, d: d, e: e, f: f)
 }
 
-@_inlineable
+@_transparent
 public func *=(lhs: inout SDTransform, rhs: SDTransform) {
     lhs = lhs * rhs
 }
 
-@_inlineable
+@_transparent
 public func *(lhs: Point, rhs: SDTransform) -> Point {
     return Point(x: lhs.x * rhs.a + lhs.y * rhs.b + rhs.c, y: lhs.x * rhs.d + lhs.y * rhs.e + rhs.f)
 }
 
-@_inlineable
+@_transparent
 public func *=(lhs: inout Point, rhs: SDTransform) {
     lhs = lhs * rhs
 }

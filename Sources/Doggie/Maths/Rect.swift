@@ -28,18 +28,18 @@ public struct Size {
     public var width: Double
     public var height: Double
     
-    @_inlineable
+    @_transparent
     public init() {
         self.width = 0
         self.height = 0
     }
     
-    @_inlineable
+    @_transparent
     public init(width: Double, height: Double) {
         self.width = width
         self.height = height
     }
-    @_inlineable
+    @_transparent
     public init(width: Int, height: Int) {
         self.width = Double(width)
         self.height = Double(height)
@@ -48,7 +48,7 @@ public struct Size {
 
 extension Size: CustomStringConvertible {
     
-    @_inlineable
+    @_transparent
     public var description: String {
         return "Size(width: \(width), height: \(height))"
     }
@@ -56,17 +56,17 @@ extension Size: CustomStringConvertible {
 
 extension Size: Hashable {
     
-    @_inlineable
+    @_transparent
     public var hashValue: Int {
         return hash_combine(seed: 0, width, height)
     }
 }
 
-@_inlineable
+@_transparent
 public func == (lhs: Size, rhs: Size) -> Bool {
     return lhs.width == rhs.width && lhs.height == rhs.height
 }
-@_inlineable
+@_transparent
 public func != (lhs: Size, rhs: Size) -> Bool {
     return lhs.width != rhs.width || lhs.height != rhs.height
 }
@@ -100,53 +100,53 @@ extension Size : ScalarMultiplicative {
     
 }
 
-@_inlineable
+@_transparent
 public prefix func +(val: Size) -> Size {
     return val
 }
-@_inlineable
+@_transparent
 public prefix func -(val: Size) -> Size {
     return Size(width: -val.width, height: -val.height)
 }
-@_inlineable
+@_transparent
 public func +(lhs: Size, rhs: Size) -> Size {
     return Size(width: lhs.width + rhs.width, height: lhs.height + rhs.height)
 }
-@_inlineable
+@_transparent
 public func -(lhs: Size, rhs: Size) -> Size {
     return Size(width: lhs.width - rhs.width, height: lhs.height - rhs.height)
 }
 
-@_inlineable
+@_transparent
 public func *(lhs: Double, rhs: Size) -> Size {
     return Size(width: lhs * rhs.width, height: lhs * rhs.height)
 }
-@_inlineable
+@_transparent
 public func *(lhs: Size, rhs: Double) -> Size {
     return Size(width: lhs.width * rhs, height: lhs.height * rhs)
 }
 
-@_inlineable
+@_transparent
 public func /(lhs: Size, rhs: Double) -> Size {
     return Size(width: lhs.width / rhs, height: lhs.height / rhs)
 }
 
-@_inlineable
+@_transparent
 public func *= (lhs: inout Size, rhs: Double) {
     lhs.width *= rhs
     lhs.height *= rhs
 }
-@_inlineable
+@_transparent
 public func /= (lhs: inout Size, rhs: Double) {
     lhs.width /= rhs
     lhs.height /= rhs
 }
-@_inlineable
+@_transparent
 public func += (lhs: inout Size, rhs: Size) {
     lhs.width += rhs.width
     lhs.height += rhs.height
 }
-@_inlineable
+@_transparent
 public func -= (lhs: inout Size, rhs: Size) {
     lhs.width -= rhs.width
     lhs.height -= rhs.height
@@ -157,25 +157,25 @@ public struct Rect {
     public var origin : Point
     public var size : Size
     
-    @_inlineable
+    @_transparent
     public init() {
         self.origin = Point()
         self.size = Size()
     }
     
-    @_inlineable
+    @_transparent
     public init(origin: Point, size: Size) {
         self.origin = origin
         self.size = size
     }
     
-    @_inlineable
+    @_transparent
     public init(x: Double, y: Double, width: Double, height: Double) {
         self.origin = Point(x: x, y: y)
         self.size = Size(width: width, height: height)
     }
     
-    @_inlineable
+    @_transparent
     public init(x: Int, y: Int, width: Int, height: Int) {
         self.origin = Point(x: x, y: y)
         self.size = Size(width: width, height: height)
@@ -184,7 +184,7 @@ public struct Rect {
 
 extension Rect: CustomStringConvertible {
     
-    @_inlineable
+    @_transparent
     public var description: String {
         return "Rect(x: \(x), y: \(y), width: \(width), height: \(height))"
     }
@@ -192,24 +192,24 @@ extension Rect: CustomStringConvertible {
 
 extension Rect: Hashable {
     
-    @_inlineable
+    @_transparent
     public var hashValue: Int {
         return hash_combine(seed: 0, origin.hashValue, size.hashValue)
     }
 }
 
-@_inlineable
+@_transparent
 public func == (lhs: Rect, rhs: Rect) -> Bool {
     return lhs.origin == rhs.origin && lhs.size == rhs.size
 }
-@_inlineable
+@_transparent
 public func != (lhs: Rect, rhs: Rect) -> Bool {
     return lhs.origin != rhs.origin || lhs.size != rhs.size
 }
 
 extension Rect {
     
-    @_inlineable
+    @_transparent
     public var x : Double {
         get {
             return origin.x
@@ -219,7 +219,7 @@ extension Rect {
         }
     }
     
-    @_inlineable
+    @_transparent
     public var y : Double {
         get {
             return origin.y
@@ -229,7 +229,7 @@ extension Rect {
         }
     }
     
-    @_inlineable
+    @_transparent
     public var width : Double {
         get {
             return size.width
@@ -239,7 +239,7 @@ extension Rect {
         }
     }
     
-    @_inlineable
+    @_transparent
     public var height : Double {
         get {
             return size.height
@@ -252,7 +252,7 @@ extension Rect {
 
 extension Rect {
     
-    @_inlineable
+    @_transparent
     public var minX : Double {
         get {
             return x
@@ -261,7 +261,7 @@ extension Rect {
             x = newValue
         }
     }
-    @_inlineable
+    @_transparent
     public var minY : Double {
         get {
             return y
@@ -270,7 +270,7 @@ extension Rect {
             y = newValue
         }
     }
-    @_inlineable
+    @_transparent
     public var maxX : Double {
         get {
             return x + width
@@ -279,7 +279,7 @@ extension Rect {
             x = newValue - width
         }
     }
-    @_inlineable
+    @_transparent
     public var maxY : Double {
         get {
             return y + height
@@ -288,7 +288,7 @@ extension Rect {
             y = newValue - height
         }
     }
-    @_inlineable
+    @_transparent
     public var midX : Double {
         get {
             return 0.5 * width + x
@@ -297,7 +297,7 @@ extension Rect {
             x = newValue - 0.5 * width
         }
     }
-    @_inlineable
+    @_transparent
     public var midY : Double {
         get {
             return 0.5 * height + y
@@ -306,7 +306,7 @@ extension Rect {
             y = newValue - 0.5 * height
         }
     }
-    @_inlineable
+    @_transparent
     public var center : Point {
         get {
             return Point(x: midX, y: midY)

@@ -30,18 +30,18 @@ public struct Point {
     public var x: Double
     public var y: Double
     
-    @_inlineable
+    @_transparent
     public init() {
         self.x = 0
         self.y = 0
     }
     
-    @_inlineable
+    @_transparent
     public init(x: Double, y: Double) {
         self.x = x
         self.y = y
     }
-    @_inlineable
+    @_transparent
     public init(x: Int, y: Int) {
         self.x = Double(x)
         self.y = Double(y)
@@ -50,13 +50,13 @@ public struct Point {
 
 extension Point {
     
-    @_inlineable
+    @_transparent
     public init(magnitude: Double, phase: Double) {
         self.x = magnitude * cos(phase)
         self.y = magnitude * sin(phase)
     }
     
-    @_inlineable
+    @_transparent
     public var magnitude: Double {
         get {
             return sqrt(x * x + y * y)
@@ -66,7 +66,7 @@ extension Point {
         }
     }
     
-    @_inlineable
+    @_transparent
     public var phase: Double {
         get {
             return atan2(y, x)
@@ -79,7 +79,7 @@ extension Point {
 
 extension Point {
     
-    @_inlineable
+    @_transparent
     public var unit: Point {
         let d = magnitude
         return d == 0 ? Point() : self / d
@@ -88,7 +88,7 @@ extension Point {
 
 extension Point {
     
-    @_inlineable
+    @_transparent
     public func offset(dx: Double, dy: Double) -> Point {
         return Point(x: self.x + dx, y: self.y + dy)
     }
@@ -96,14 +96,14 @@ extension Point {
 
 extension Point {
     
-    @_inlineable
+    @_transparent
     public func distance(to: Point) -> Double {
         return Point(x: to.x - self.x, y: to.y - self.y).magnitude
     }
 }
 
 extension Point: CustomStringConvertible {
-    @_inlineable
+    @_transparent
     public var description: String {
         return "Point(x: \(x), y: \(y))"
     }
@@ -111,7 +111,7 @@ extension Point: CustomStringConvertible {
 
 extension Point: Hashable {
     
-    @_inlineable
+    @_transparent
     public var hashValue: Int {
         return hash_combine(seed: 0, x, y)
     }
@@ -123,73 +123,73 @@ extension Point : ScalarMultiplicative {
     
 }
 
-@_inlineable
+@_transparent
 public func dot(_ lhs: Point, _ rhs: Point) -> Double {
     return lhs.x * rhs.x + lhs.y * rhs.y
 }
 
-@_inlineable
+@_transparent
 public func cross(_ lhs: Point, _ rhs: Point) -> Double {
     return lhs.x * rhs.y - lhs.y * rhs.x
 }
 
-@_inlineable
+@_transparent
 public prefix func +(val: Point) -> Point {
     return val
 }
-@_inlineable
+@_transparent
 public prefix func -(val: Point) -> Point {
     return Point(x: -val.x, y: -val.y)
 }
-@_inlineable
+@_transparent
 public func +(lhs: Point, rhs: Point) -> Point {
     return Point(x: lhs.x + rhs.x, y: lhs.y + rhs.y)
 }
-@_inlineable
+@_transparent
 public func -(lhs: Point, rhs: Point) -> Point {
     return Point(x: lhs.x - rhs.x, y: lhs.y - rhs.y)
 }
 
-@_inlineable
+@_transparent
 public func *(lhs: Double, rhs: Point) -> Point {
     return Point(x: lhs * rhs.x, y: lhs * rhs.y)
 }
-@_inlineable
+@_transparent
 public func *(lhs: Point, rhs: Double) -> Point {
     return Point(x: lhs.x * rhs, y: lhs.y * rhs)
 }
 
-@_inlineable
+@_transparent
 public func /(lhs: Point, rhs: Double) -> Point {
     return Point(x: lhs.x / rhs, y: lhs.y / rhs)
 }
 
-@_inlineable
+@_transparent
 public func *= (lhs: inout Point, rhs: Double) {
     lhs.x *= rhs
     lhs.y *= rhs
 }
-@_inlineable
+@_transparent
 public func /= (lhs: inout Point, rhs: Double) {
     lhs.x /= rhs
     lhs.y /= rhs
 }
-@_inlineable
+@_transparent
 public func += (lhs: inout Point, rhs: Point) {
     lhs.x += rhs.x
     lhs.y += rhs.y
 }
-@_inlineable
+@_transparent
 public func -= (lhs: inout Point, rhs: Point) {
     lhs.x -= rhs.x
     lhs.y -= rhs.y
 }
 
-@_inlineable
+@_transparent
 public func == (lhs: Point, rhs: Point) -> Bool {
     return lhs.x == rhs.x && lhs.y == rhs.y
 }
-@_inlineable
+@_transparent
 public func != (lhs: Point, rhs: Point) -> Bool {
     return lhs.x != rhs.x || lhs.y != rhs.y
 }

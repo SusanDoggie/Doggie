@@ -29,10 +29,12 @@ struct Fixed8Number<BitPattern : FixedWidthInteger & DataCodable> : BinaryFixedP
     
     var bitPattern: BitPattern
     
+    @_transparent
     init(bitPattern: BitPattern) {
         self.bitPattern = bitPattern
     }
     
+    @_transparent
     static var fractionBitCount: Int {
         return 8
     }
@@ -44,10 +46,12 @@ struct Fixed15Number<BitPattern : FixedWidthInteger & DataCodable> : BinaryFixed
     
     var bitPattern: BitPattern
     
+    @_transparent
     init(bitPattern: BitPattern) {
         self.bitPattern = bitPattern
     }
     
+    @_transparent
     static var fractionBitCount: Int {
         return 15
     }
@@ -59,10 +63,12 @@ struct Fixed16Number<BitPattern : FixedWidthInteger & DataCodable> : BinaryFixed
     
     var bitPattern: BitPattern
     
+    @_transparent
     init(bitPattern: BitPattern) {
         self.bitPattern = bitPattern
     }
     
+    @_transparent
     static var fractionBitCount: Int {
         return 16
     }
@@ -74,10 +80,12 @@ struct Fixed30Number<BitPattern : FixedWidthInteger & DataCodable> : BinaryFixed
     
     var bitPattern: BitPattern
     
+    @_transparent
     init(bitPattern: BitPattern) {
         self.bitPattern = bitPattern
     }
     
+    @_transparent
     static var fractionBitCount: Int {
         return 30
     }

@@ -36,19 +36,23 @@ protocol SignatureProtocol: RawRepresentable, Hashable, ExpressibleByIntegerLite
 
 extension SignatureProtocol {
     
+    @_transparent
     var hashValue: Int {
         return rawValue.hashValue
     }
     
+    @_transparent
     init(integerLiteral value: Bytes.IntegerLiteralType) {
         self.init(rawValue: Bytes(integerLiteral: value))
     }
     
+    @_transparent
     init(stringLiteral value: StaticString) {
         precondition(value.utf8CodeUnitCount == Bytes.bitWidth >> 3)
         self.init(rawValue: value.utf8Start.withMemoryRebound(to: Bytes.self, capacity: 1) { Bytes(bigEndian: $0.pointee) })
     }
     
+    @_transparent
     var description: String {
         var code = self.rawValue.bigEndian
         return String(bytes: UnsafeRawBufferPointer(start: &code, count: Bytes.bitWidth >> 3), encoding: .ascii) ?? ""
@@ -57,12 +61,14 @@ extension SignatureProtocol {
 
 extension SignatureProtocol where Bytes : DataEncodable {
     
+    @_transparent
     func encode(to data: inout Data) {
         self.rawValue.encode(to: &data)
     }
 }
 extension SignatureProtocol where Bytes : DataDecodable {
     
+    @_transparent
     init(from data: inout Data) throws {
         self.init(rawValue: try Bytes(from: &data))
     }
@@ -72,6 +78,7 @@ struct Signature<Bytes : FixedWidthInteger & DataCodable> : SignatureProtocol {
     
     var rawValue: Bytes
     
+    @_transparent
     init(rawValue: Bytes) {
         self.rawValue = rawValue
     }
