@@ -183,9 +183,9 @@ extension Image {
                                 switch channel.format {
                                 case .unsigned:
                                     for (i, slice) in channel.bitRange.slice(by: 8).enumerated() {
-                                        value = value * pow(2, Double(slice.count)) + Double(channelByte(i) & UInt8((1 << slice.count) - 1))
+                                        value = Double(sign: value.sign, exponentBitPattern: value.exponentBitPattern + UInt(slice.count), significandBitPattern: value.significandBitPattern) + Double(channelByte(i) & UInt8((1 << slice.count) - 1))
                                     }
-                                    value /= pow(2, Double(channel.bitRange.count)) - 1
+                                    value /= Double(sign: .plus, exponent: channel.bitRange.count, significand: 1) - 1
                                     
                                 case .signed:
                                     
@@ -196,15 +196,12 @@ extension Image {
                                         if i == 0 && byte & 0x80 != 0 {
                                             signed = true
                                         }
-                                        value = value * pow(2, Double(slice.count)) + Double(byte & UInt8((1 << slice.count) - 1))
+                                        value = Double(sign: value.sign, exponentBitPattern: value.exponentBitPattern + UInt(slice.count), significandBitPattern: value.significandBitPattern) + Double(byte & UInt8((1 << slice.count) - 1))
                                     }
                                     
-                                    value *= pow(2, Double(-channel.bitRange.count))
+                                    value = Double(sign: value.sign, exponentBitPattern: value.exponentBitPattern - UInt(channel.bitRange.count), significandBitPattern: value.significandBitPattern)
                                     
-                                    if signed {
-                                        value -= 1
-                                    }
-                                    value += 0.5
+                                    value += signed ? -0.5 : 0.5
                                     
                                 case .float:
                                     
