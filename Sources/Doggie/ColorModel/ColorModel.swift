@@ -26,8 +26,6 @@
 public protocol ColorModelProtocol : Hashable, Tensor where Scalar == Double {
     
     static func rangeOfComponent(_ i: Int) -> ClosedRange<Double>
-    
-    init()
 }
 
 extension ColorModelProtocol {
