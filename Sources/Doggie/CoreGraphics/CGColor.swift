@@ -31,7 +31,7 @@
     extension Color {
         
         public var cgColor: CGColor? {
-            return colorSpace.cgColorSpace.flatMap { CGColor(colorSpace: $0, components: color.components.map { CGFloat($0) } + [CGFloat(opacity)]) }
+            return colorSpace.cgColorSpace.flatMap { CGColor(colorSpace: $0, components: color.map { CGFloat($0) } + [CGFloat(opacity)]) }
         }
     }
     

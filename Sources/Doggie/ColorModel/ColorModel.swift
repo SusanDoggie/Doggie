@@ -23,25 +23,14 @@
 //  THE SOFTWARE.
 //
 
-public protocol ColorModelProtocol : Hashable {
-    
-    static var numberOfComponents: Int { get }
+public protocol ColorModelProtocol : Hashable, Tensor where Scalar == Double {
     
     static func rangeOfComponent(_ i: Int) -> ClosedRange<Double>
     
     init()
-    
-    func component(_ index: Int) -> Double
-    
-    mutating func setComponent(_ index: Int, _ value: Double)
 }
 
 extension ColorModelProtocol {
-    
-    @_transparent
-    public var numberOfComponents: Int {
-        return Self.numberOfComponents
-    }
     
     @_transparent
     public func rangeOfComponent(_ i: Int) -> ClosedRange<Double> {
@@ -54,13 +43,13 @@ extension ColorModelProtocol {
     @_transparent
     public func normalizedComponent(_ index: Int) -> Double {
         let range = Self.rangeOfComponent(index)
-        return (self.component(index) - range.lowerBound) / (range.upperBound - range.lowerBound)
+        return (self[index] - range.lowerBound) / (range.upperBound - range.lowerBound)
     }
     
     @_transparent
     public mutating func setNormalizedComponent(_ index: Int, _ value: Double) {
         let range = Self.rangeOfComponent(index)
-        self.setComponent(index, value * (range.upperBound - range.lowerBound) + range.lowerBound)
+        self[index] = value * (range.upperBound - range.lowerBound) + range.lowerBound
     }
 }
 
@@ -70,136 +59,9 @@ extension ColorModelProtocol {
     public var hashValue: Int {
         var hash = 0
         for i in 0..<Self.numberOfComponents {
-            hash = hash_combine(seed: hash, self.component(i))
+            hash = hash_combine(seed: hash, self[i])
         }
         return hash
     }
-}
-
-public struct ColorModelComponentCollection<Model: ColorModelProtocol>: RandomAccessCollection {
-    
-    public let base: Model
-    
-    @_transparent
-    public init(base: Model) {
-        self.base = base
-    }
-    
-    @_transparent
-    public var startIndex: Int {
-        return 0
-    }
-    @_transparent
-    public var endIndex: Int {
-        return Model.numberOfComponents
-    }
-    
-    @_inlineable
-    public subscript(position: Int) -> Double {
-        _failEarlyRangeCheck(position, bounds: startIndex..<endIndex)
-        return base.component(position)
-    }
-}
-
-extension ColorModelProtocol {
-    
-    @_transparent
-    public var components: ColorModelComponentCollection<Self> {
-        return ColorModelComponentCollection(base: self)
-    }
-}
-
-@_transparent
-public prefix func +<Model : ColorModelProtocol>(val: Model) -> Model {
-    return val
-}
-@_transparent
-public prefix func -<Model : ColorModelProtocol>(val: Model) -> Model {
-    var result = Model()
-    for i in 0..<Model.numberOfComponents {
-        result.setComponent(i, -val.component(i))
-    }
-    return result
-}
-@_transparent
-public func +<Model : ColorModelProtocol>(lhs: Model, rhs: Model) -> Model {
-    var result = Model()
-    for i in 0..<Model.numberOfComponents {
-        result.setComponent(i, lhs.component(i) + rhs.component(i))
-    }
-    return result
-}
-@_transparent
-public func -<Model : ColorModelProtocol>(lhs: Model, rhs: Model) -> Model {
-    var result = Model()
-    for i in 0..<Model.numberOfComponents {
-        result.setComponent(i, lhs.component(i) - rhs.component(i))
-    }
-    return result
-}
-
-@_transparent
-public func *<Model : ColorModelProtocol>(lhs: Double, rhs: Model) -> Model {
-    var result = Model()
-    for i in 0..<Model.numberOfComponents {
-        result.setComponent(i, lhs * rhs.component(i))
-    }
-    return result
-}
-@_transparent
-public func *<Model : ColorModelProtocol>(lhs: Model, rhs: Double) -> Model {
-    var result = Model()
-    for i in 0..<Model.numberOfComponents {
-        result.setComponent(i, lhs.component(i) * rhs)
-    }
-    return result
-}
-
-@_transparent
-public func /<Model : ColorModelProtocol>(lhs: Model, rhs: Double) -> Model {
-    var result = Model()
-    for i in 0..<Model.numberOfComponents {
-        result.setComponent(i, lhs.component(i) / rhs)
-    }
-    return result
-}
-
-@_transparent
-public func *=<Model : ColorModelProtocol> (lhs: inout Model, rhs: Double) {
-    for i in 0..<Model.numberOfComponents {
-        lhs.setComponent(i, lhs.component(i) * rhs)
-    }
-}
-@_transparent
-public func /=<Model : ColorModelProtocol> (lhs: inout Model, rhs: Double) {
-    for i in 0..<Model.numberOfComponents {
-        lhs.setComponent(i, lhs.component(i) / rhs)
-    }
-}
-@_transparent
-public func +=<Model : ColorModelProtocol> (lhs: inout Model, rhs: Model) {
-    for i in 0..<Model.numberOfComponents {
-        lhs.setComponent(i, lhs.component(i) + rhs.component(i))
-    }
-}
-@_transparent
-public func -=<Model : ColorModelProtocol> (lhs: inout Model, rhs: Model) {
-    for i in 0..<Model.numberOfComponents {
-        lhs.setComponent(i, lhs.component(i) - rhs.component(i))
-    }
-}
-@_transparent
-public func ==<Model : ColorModelProtocol>(lhs: Model, rhs: Model) -> Bool {
-    for i in 0..<Model.numberOfComponents where lhs.component(i) != rhs.component(i) {
-        return false
-    }
-    return true
-}
-@_transparent
-public func !=<Model : ColorModelProtocol>(lhs: Model, rhs: Model) -> Bool {
-    for i in 0..<Model.numberOfComponents where lhs.component(i) != rhs.component(i) {
-        return true
-    }
-    return false
 }
 

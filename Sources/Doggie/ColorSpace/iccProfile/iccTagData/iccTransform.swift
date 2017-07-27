@@ -535,7 +535,7 @@ struct OneDimensionalLUT {
         
         for i in 0..<Model.numberOfComponents {
             let offset = grid * i
-            result.setComponent(i, interpolate(color.component(i), table: table[offset..<offset + grid]))
+            result[i] = interpolate(color[i], table: table[offset..<offset + grid])
         }
         
         return result
@@ -569,7 +569,7 @@ struct MultiDimensionalLUT {
     @_inlineable
     func eval<Source: ColorModelProtocol, Destination: ColorModelProtocol>(_ source: Source) -> Destination {
         
-        let position = source.components.enumerated().map { _interpolate_index($1, grids[$0]) }
+        let position = source.enumerated().map { _interpolate_index($1, grids[$0]) }
         
         func _interpolate(level: Int, offset: Int) -> Destination {
             
@@ -584,7 +584,7 @@ struct MultiDimensionalLUT {
                 
                 if level == 0 {
                     for i in 0..<Destination.numberOfComponents {
-                        r.setComponent(i, table[offset + i])
+                        r[i] = table[offset + i]
                     }
                 } else {
                     let _level = level - 1
@@ -603,8 +603,8 @@ struct MultiDimensionalLUT {
                 
                 if level == 0 {
                     for i in 0..<Destination.numberOfComponents {
-                        a.setComponent(i, table[offset1 + i])
-                        b.setComponent(i, table[offset2 + i])
+                        a[i] = table[offset1 + i]
+                        b[i] = table[offset2 + i]
                     }
                 } else {
                     let _level = level - 1

@@ -29,6 +29,8 @@ public protocol DeviceNColorModelProtocol : ColorModelProtocol {
 
 public struct Device2ColorModel : DeviceNColorModelProtocol {
     
+    public typealias Scalar = Double
+    
     @_inlineable
     public static var numberOfComponents: Int {
         return 2
@@ -50,25 +52,27 @@ public struct Device2ColorModel : DeviceNColorModelProtocol {
     }
     
     @_inlineable
-    public func component(_ index: Int) -> Double {
-        switch index {
-        case 0: return component_0
-        case 1: return component_1
-        default: fatalError()
+    public subscript(position: Int) -> Double {
+        get {
+            switch position {
+            case 0: return component_0
+            case 1: return component_1
+            default: fatalError()
+            }
         }
-    }
-    
-    @_inlineable
-    public mutating func setComponent(_ index: Int, _ value: Double) {
-        switch index {
-        case 0: component_0 = value
-        case 1: component_1 = value
-        default: fatalError()
+        set {
+            switch position {
+            case 0: component_0 = newValue
+            case 1: component_1 = newValue
+            default: fatalError()
+            }
         }
     }
 }
 
 public struct Device3ColorModel : DeviceNColorModelProtocol {
+    
+    public typealias Scalar = Double
     
     @_inlineable
     public static var numberOfComponents: Int {
@@ -93,27 +97,29 @@ public struct Device3ColorModel : DeviceNColorModelProtocol {
     }
     
     @_inlineable
-    public func component(_ index: Int) -> Double {
-        switch index {
-        case 0: return component_0
-        case 1: return component_1
-        case 2: return component_2
-        default: fatalError()
+    public subscript(position: Int) -> Double {
+        get {
+            switch position {
+            case 0: return component_0
+            case 1: return component_1
+            case 2: return component_2
+            default: fatalError()
+            }
         }
-    }
-    
-    @_inlineable
-    public mutating func setComponent(_ index: Int, _ value: Double) {
-        switch index {
-        case 0: component_0 = value
-        case 1: component_1 = value
-        case 2: component_2 = value
-        default: fatalError()
+        set {
+            switch position {
+            case 0: component_0 = newValue
+            case 1: component_1 = newValue
+            case 2: component_2 = newValue
+            default: fatalError()
+            }
         }
     }
 }
 
 public struct Device4ColorModel : DeviceNColorModelProtocol {
+    
+    public typealias Scalar = Double
     
     @_inlineable
     public static var numberOfComponents: Int {
@@ -140,29 +146,31 @@ public struct Device4ColorModel : DeviceNColorModelProtocol {
     }
     
     @_inlineable
-    public func component(_ index: Int) -> Double {
-        switch index {
-        case 0: return component_0
-        case 1: return component_1
-        case 2: return component_2
-        case 3: return component_3
-        default: fatalError()
+    public subscript(position: Int) -> Double {
+        get {
+            switch position {
+            case 0: return component_0
+            case 1: return component_1
+            case 2: return component_2
+            case 3: return component_3
+            default: fatalError()
+            }
         }
-    }
-    
-    @_inlineable
-    public mutating func setComponent(_ index: Int, _ value: Double) {
-        switch index {
-        case 0: component_0 = value
-        case 1: component_1 = value
-        case 2: component_2 = value
-        case 3: component_3 = value
-        default: fatalError()
+        set {
+            switch position {
+            case 0: component_0 = newValue
+            case 1: component_1 = newValue
+            case 2: component_2 = newValue
+            case 3: component_3 = newValue
+            default: fatalError()
+            }
         }
     }
 }
 
 public struct Device5ColorModel : DeviceNColorModelProtocol {
+    
+    public typealias Scalar = Double
     
     @_inlineable
     public static var numberOfComponents: Int {
@@ -191,31 +199,33 @@ public struct Device5ColorModel : DeviceNColorModelProtocol {
     }
     
     @_inlineable
-    public func component(_ index: Int) -> Double {
-        switch index {
-        case 0: return component_0
-        case 1: return component_1
-        case 2: return component_2
-        case 3: return component_3
-        case 4: return component_4
-        default: fatalError()
+    public subscript(position: Int) -> Double {
+        get {
+            switch position {
+            case 0: return component_0
+            case 1: return component_1
+            case 2: return component_2
+            case 3: return component_3
+            case 4: return component_4
+            default: fatalError()
+            }
         }
-    }
-    
-    @_inlineable
-    public mutating func setComponent(_ index: Int, _ value: Double) {
-        switch index {
-        case 0: component_0 = value
-        case 1: component_1 = value
-        case 2: component_2 = value
-        case 3: component_3 = value
-        case 4: component_4 = value
-        default: fatalError()
+        set {
+            switch position {
+            case 0: component_0 = newValue
+            case 1: component_1 = newValue
+            case 2: component_2 = newValue
+            case 3: component_3 = newValue
+            case 4: component_4 = newValue
+            default: fatalError()
+            }
         }
     }
 }
 
 public struct Device6ColorModel : DeviceNColorModelProtocol {
+    
+    public typealias Scalar = Double
     
     @_inlineable
     public static var numberOfComponents: Int {
@@ -246,33 +256,35 @@ public struct Device6ColorModel : DeviceNColorModelProtocol {
     }
     
     @_inlineable
-    public func component(_ index: Int) -> Double {
-        switch index {
-        case 0: return component_0
-        case 1: return component_1
-        case 2: return component_2
-        case 3: return component_3
-        case 4: return component_4
-        case 5: return component_5
-        default: fatalError()
+    public subscript(position: Int) -> Double {
+        get {
+            switch position {
+            case 0: return component_0
+            case 1: return component_1
+            case 2: return component_2
+            case 3: return component_3
+            case 4: return component_4
+            case 5: return component_5
+            default: fatalError()
+            }
         }
-    }
-    
-    @_inlineable
-    public mutating func setComponent(_ index: Int, _ value: Double) {
-        switch index {
-        case 0: component_0 = value
-        case 1: component_1 = value
-        case 2: component_2 = value
-        case 3: component_3 = value
-        case 4: component_4 = value
-        case 5: component_5 = value
-        default: fatalError()
+        set {
+            switch position {
+            case 0: component_0 = newValue
+            case 1: component_1 = newValue
+            case 2: component_2 = newValue
+            case 3: component_3 = newValue
+            case 4: component_4 = newValue
+            case 5: component_5 = newValue
+            default: fatalError()
+            }
         }
     }
 }
 
 public struct Device7ColorModel : DeviceNColorModelProtocol {
+    
+    public typealias Scalar = Double
     
     @_inlineable
     public static var numberOfComponents: Int {
@@ -305,35 +317,37 @@ public struct Device7ColorModel : DeviceNColorModelProtocol {
     }
     
     @_inlineable
-    public func component(_ index: Int) -> Double {
-        switch index {
-        case 0: return component_0
-        case 1: return component_1
-        case 2: return component_2
-        case 3: return component_3
-        case 4: return component_4
-        case 5: return component_5
-        case 6: return component_6
-        default: fatalError()
+    public subscript(position: Int) -> Double {
+        get {
+            switch position {
+            case 0: return component_0
+            case 1: return component_1
+            case 2: return component_2
+            case 3: return component_3
+            case 4: return component_4
+            case 5: return component_5
+            case 6: return component_6
+            default: fatalError()
+            }
         }
-    }
-    
-    @_inlineable
-    public mutating func setComponent(_ index: Int, _ value: Double) {
-        switch index {
-        case 0: component_0 = value
-        case 1: component_1 = value
-        case 2: component_2 = value
-        case 3: component_3 = value
-        case 4: component_4 = value
-        case 5: component_5 = value
-        case 6: component_6 = value
-        default: fatalError()
+        set {
+            switch position {
+            case 0: component_0 = newValue
+            case 1: component_1 = newValue
+            case 2: component_2 = newValue
+            case 3: component_3 = newValue
+            case 4: component_4 = newValue
+            case 5: component_5 = newValue
+            case 6: component_6 = newValue
+            default: fatalError()
+            }
         }
     }
 }
 
 public struct Device8ColorModel : DeviceNColorModelProtocol {
+    
+    public typealias Scalar = Double
     
     @_inlineable
     public static var numberOfComponents: Int {
@@ -368,37 +382,39 @@ public struct Device8ColorModel : DeviceNColorModelProtocol {
     }
     
     @_inlineable
-    public func component(_ index: Int) -> Double {
-        switch index {
-        case 0: return component_0
-        case 1: return component_1
-        case 2: return component_2
-        case 3: return component_3
-        case 4: return component_4
-        case 5: return component_5
-        case 6: return component_6
-        case 7: return component_7
-        default: fatalError()
+    public subscript(position: Int) -> Double {
+        get {
+            switch position {
+            case 0: return component_0
+            case 1: return component_1
+            case 2: return component_2
+            case 3: return component_3
+            case 4: return component_4
+            case 5: return component_5
+            case 6: return component_6
+            case 7: return component_7
+            default: fatalError()
+            }
         }
-    }
-    
-    @_inlineable
-    public mutating func setComponent(_ index: Int, _ value: Double) {
-        switch index {
-        case 0: component_0 = value
-        case 1: component_1 = value
-        case 2: component_2 = value
-        case 3: component_3 = value
-        case 4: component_4 = value
-        case 5: component_5 = value
-        case 6: component_6 = value
-        case 7: component_7 = value
-        default: fatalError()
+        set {
+            switch position {
+            case 0: component_0 = newValue
+            case 1: component_1 = newValue
+            case 2: component_2 = newValue
+            case 3: component_3 = newValue
+            case 4: component_4 = newValue
+            case 5: component_5 = newValue
+            case 6: component_6 = newValue
+            case 7: component_7 = newValue
+            default: fatalError()
+            }
         }
     }
 }
 
 public struct Device9ColorModel : DeviceNColorModelProtocol {
+    
+    public typealias Scalar = Double
     
     @_inlineable
     public static var numberOfComponents: Int {
@@ -435,39 +451,41 @@ public struct Device9ColorModel : DeviceNColorModelProtocol {
     }
     
     @_inlineable
-    public func component(_ index: Int) -> Double {
-        switch index {
-        case 0: return component_0
-        case 1: return component_1
-        case 2: return component_2
-        case 3: return component_3
-        case 4: return component_4
-        case 5: return component_5
-        case 6: return component_6
-        case 7: return component_7
-        case 8: return component_8
-        default: fatalError()
+    public subscript(position: Int) -> Double {
+        get {
+            switch position {
+            case 0: return component_0
+            case 1: return component_1
+            case 2: return component_2
+            case 3: return component_3
+            case 4: return component_4
+            case 5: return component_5
+            case 6: return component_6
+            case 7: return component_7
+            case 8: return component_8
+            default: fatalError()
+            }
         }
-    }
-    
-    @_inlineable
-    public mutating func setComponent(_ index: Int, _ value: Double) {
-        switch index {
-        case 0: component_0 = value
-        case 1: component_1 = value
-        case 2: component_2 = value
-        case 3: component_3 = value
-        case 4: component_4 = value
-        case 5: component_5 = value
-        case 6: component_6 = value
-        case 7: component_7 = value
-        case 8: component_8 = value
-        default: fatalError()
+        set {
+            switch position {
+            case 0: component_0 = newValue
+            case 1: component_1 = newValue
+            case 2: component_2 = newValue
+            case 3: component_3 = newValue
+            case 4: component_4 = newValue
+            case 5: component_5 = newValue
+            case 6: component_6 = newValue
+            case 7: component_7 = newValue
+            case 8: component_8 = newValue
+            default: fatalError()
+            }
         }
     }
 }
 
 public struct Device10ColorModel : DeviceNColorModelProtocol {
+    
+    public typealias Scalar = Double
     
     @_inlineable
     public static var numberOfComponents: Int {
@@ -506,41 +524,43 @@ public struct Device10ColorModel : DeviceNColorModelProtocol {
     }
     
     @_inlineable
-    public func component(_ index: Int) -> Double {
-        switch index {
-        case 0: return component_0
-        case 1: return component_1
-        case 2: return component_2
-        case 3: return component_3
-        case 4: return component_4
-        case 5: return component_5
-        case 6: return component_6
-        case 7: return component_7
-        case 8: return component_8
-        case 9: return component_9
-        default: fatalError()
+    public subscript(position: Int) -> Double {
+        get {
+            switch position {
+            case 0: return component_0
+            case 1: return component_1
+            case 2: return component_2
+            case 3: return component_3
+            case 4: return component_4
+            case 5: return component_5
+            case 6: return component_6
+            case 7: return component_7
+            case 8: return component_8
+            case 9: return component_9
+            default: fatalError()
+            }
         }
-    }
-    
-    @_inlineable
-    public mutating func setComponent(_ index: Int, _ value: Double) {
-        switch index {
-        case 0: component_0 = value
-        case 1: component_1 = value
-        case 2: component_2 = value
-        case 3: component_3 = value
-        case 4: component_4 = value
-        case 5: component_5 = value
-        case 6: component_6 = value
-        case 7: component_7 = value
-        case 8: component_8 = value
-        case 9: component_9 = value
-        default: fatalError()
+        set {
+            switch position {
+            case 0: component_0 = newValue
+            case 1: component_1 = newValue
+            case 2: component_2 = newValue
+            case 3: component_3 = newValue
+            case 4: component_4 = newValue
+            case 5: component_5 = newValue
+            case 6: component_6 = newValue
+            case 7: component_7 = newValue
+            case 8: component_8 = newValue
+            case 9: component_9 = newValue
+            default: fatalError()
+            }
         }
     }
 }
 
 public struct Device11ColorModel : DeviceNColorModelProtocol {
+    
+    public typealias Scalar = Double
     
     @_inlineable
     public static var numberOfComponents: Int {
@@ -581,43 +601,45 @@ public struct Device11ColorModel : DeviceNColorModelProtocol {
     }
     
     @_inlineable
-    public func component(_ index: Int) -> Double {
-        switch index {
-        case 0: return component_0
-        case 1: return component_1
-        case 2: return component_2
-        case 3: return component_3
-        case 4: return component_4
-        case 5: return component_5
-        case 6: return component_6
-        case 7: return component_7
-        case 8: return component_8
-        case 9: return component_9
-        case 10: return component_10
-        default: fatalError()
+    public subscript(position: Int) -> Double {
+        get {
+            switch position {
+            case 0: return component_0
+            case 1: return component_1
+            case 2: return component_2
+            case 3: return component_3
+            case 4: return component_4
+            case 5: return component_5
+            case 6: return component_6
+            case 7: return component_7
+            case 8: return component_8
+            case 9: return component_9
+            case 10: return component_10
+            default: fatalError()
+            }
         }
-    }
-    
-    @_inlineable
-    public mutating func setComponent(_ index: Int, _ value: Double) {
-        switch index {
-        case 0: component_0 = value
-        case 1: component_1 = value
-        case 2: component_2 = value
-        case 3: component_3 = value
-        case 4: component_4 = value
-        case 5: component_5 = value
-        case 6: component_6 = value
-        case 7: component_7 = value
-        case 8: component_8 = value
-        case 9: component_9 = value
-        case 10: component_10 = value
-        default: fatalError()
+        set {
+            switch position {
+            case 0: component_0 = newValue
+            case 1: component_1 = newValue
+            case 2: component_2 = newValue
+            case 3: component_3 = newValue
+            case 4: component_4 = newValue
+            case 5: component_5 = newValue
+            case 6: component_6 = newValue
+            case 7: component_7 = newValue
+            case 8: component_8 = newValue
+            case 9: component_9 = newValue
+            case 10: component_10 = newValue
+            default: fatalError()
+            }
         }
     }
 }
 
 public struct Device12ColorModel : DeviceNColorModelProtocol {
+    
+    public typealias Scalar = Double
     
     @_inlineable
     public static var numberOfComponents: Int {
@@ -660,45 +682,47 @@ public struct Device12ColorModel : DeviceNColorModelProtocol {
     }
     
     @_inlineable
-    public func component(_ index: Int) -> Double {
-        switch index {
-        case 0: return component_0
-        case 1: return component_1
-        case 2: return component_2
-        case 3: return component_3
-        case 4: return component_4
-        case 5: return component_5
-        case 6: return component_6
-        case 7: return component_7
-        case 8: return component_8
-        case 9: return component_9
-        case 10: return component_10
-        case 11: return component_11
-        default: fatalError()
+    public subscript(position: Int) -> Double {
+        get {
+            switch position {
+            case 0: return component_0
+            case 1: return component_1
+            case 2: return component_2
+            case 3: return component_3
+            case 4: return component_4
+            case 5: return component_5
+            case 6: return component_6
+            case 7: return component_7
+            case 8: return component_8
+            case 9: return component_9
+            case 10: return component_10
+            case 11: return component_11
+            default: fatalError()
+            }
         }
-    }
-    
-    @_inlineable
-    public mutating func setComponent(_ index: Int, _ value: Double) {
-        switch index {
-        case 0: component_0 = value
-        case 1: component_1 = value
-        case 2: component_2 = value
-        case 3: component_3 = value
-        case 4: component_4 = value
-        case 5: component_5 = value
-        case 6: component_6 = value
-        case 7: component_7 = value
-        case 8: component_8 = value
-        case 9: component_9 = value
-        case 10: component_10 = value
-        case 11: component_11 = value
-        default: fatalError()
+        set {
+            switch position {
+            case 0: component_0 = newValue
+            case 1: component_1 = newValue
+            case 2: component_2 = newValue
+            case 3: component_3 = newValue
+            case 4: component_4 = newValue
+            case 5: component_5 = newValue
+            case 6: component_6 = newValue
+            case 7: component_7 = newValue
+            case 8: component_8 = newValue
+            case 9: component_9 = newValue
+            case 10: component_10 = newValue
+            case 11: component_11 = newValue
+            default: fatalError()
+            }
         }
     }
 }
 
 public struct Device13ColorModel : DeviceNColorModelProtocol {
+    
+    public typealias Scalar = Double
     
     @_inlineable
     public static var numberOfComponents: Int {
@@ -743,47 +767,49 @@ public struct Device13ColorModel : DeviceNColorModelProtocol {
     }
     
     @_inlineable
-    public func component(_ index: Int) -> Double {
-        switch index {
-        case 0: return component_0
-        case 1: return component_1
-        case 2: return component_2
-        case 3: return component_3
-        case 4: return component_4
-        case 5: return component_5
-        case 6: return component_6
-        case 7: return component_7
-        case 8: return component_8
-        case 9: return component_9
-        case 10: return component_10
-        case 11: return component_11
-        case 12: return component_12
-        default: fatalError()
+    public subscript(position: Int) -> Double {
+        get {
+            switch position {
+            case 0: return component_0
+            case 1: return component_1
+            case 2: return component_2
+            case 3: return component_3
+            case 4: return component_4
+            case 5: return component_5
+            case 6: return component_6
+            case 7: return component_7
+            case 8: return component_8
+            case 9: return component_9
+            case 10: return component_10
+            case 11: return component_11
+            case 12: return component_12
+            default: fatalError()
+            }
         }
-    }
-    
-    @_inlineable
-    public mutating func setComponent(_ index: Int, _ value: Double) {
-        switch index {
-        case 0: component_0 = value
-        case 1: component_1 = value
-        case 2: component_2 = value
-        case 3: component_3 = value
-        case 4: component_4 = value
-        case 5: component_5 = value
-        case 6: component_6 = value
-        case 7: component_7 = value
-        case 8: component_8 = value
-        case 9: component_9 = value
-        case 10: component_10 = value
-        case 11: component_11 = value
-        case 12: component_12 = value
-        default: fatalError()
+        set {
+            switch position {
+            case 0: component_0 = newValue
+            case 1: component_1 = newValue
+            case 2: component_2 = newValue
+            case 3: component_3 = newValue
+            case 4: component_4 = newValue
+            case 5: component_5 = newValue
+            case 6: component_6 = newValue
+            case 7: component_7 = newValue
+            case 8: component_8 = newValue
+            case 9: component_9 = newValue
+            case 10: component_10 = newValue
+            case 11: component_11 = newValue
+            case 12: component_12 = newValue
+            default: fatalError()
+            }
         }
     }
 }
 
 public struct Device14ColorModel : DeviceNColorModelProtocol {
+    
+    public typealias Scalar = Double
     
     @_inlineable
     public static var numberOfComponents: Int {
@@ -830,49 +856,51 @@ public struct Device14ColorModel : DeviceNColorModelProtocol {
     }
     
     @_inlineable
-    public func component(_ index: Int) -> Double {
-        switch index {
-        case 0: return component_0
-        case 1: return component_1
-        case 2: return component_2
-        case 3: return component_3
-        case 4: return component_4
-        case 5: return component_5
-        case 6: return component_6
-        case 7: return component_7
-        case 8: return component_8
-        case 9: return component_9
-        case 10: return component_10
-        case 11: return component_11
-        case 12: return component_12
-        case 13: return component_13
-        default: fatalError()
+    public subscript(position: Int) -> Double {
+        get {
+            switch position {
+            case 0: return component_0
+            case 1: return component_1
+            case 2: return component_2
+            case 3: return component_3
+            case 4: return component_4
+            case 5: return component_5
+            case 6: return component_6
+            case 7: return component_7
+            case 8: return component_8
+            case 9: return component_9
+            case 10: return component_10
+            case 11: return component_11
+            case 12: return component_12
+            case 13: return component_13
+            default: fatalError()
+            }
         }
-    }
-    
-    @_inlineable
-    public mutating func setComponent(_ index: Int, _ value: Double) {
-        switch index {
-        case 0: component_0 = value
-        case 1: component_1 = value
-        case 2: component_2 = value
-        case 3: component_3 = value
-        case 4: component_4 = value
-        case 5: component_5 = value
-        case 6: component_6 = value
-        case 7: component_7 = value
-        case 8: component_8 = value
-        case 9: component_9 = value
-        case 10: component_10 = value
-        case 11: component_11 = value
-        case 12: component_12 = value
-        case 13: component_13 = value
-        default: fatalError()
+        set {
+            switch position {
+            case 0: component_0 = newValue
+            case 1: component_1 = newValue
+            case 2: component_2 = newValue
+            case 3: component_3 = newValue
+            case 4: component_4 = newValue
+            case 5: component_5 = newValue
+            case 6: component_6 = newValue
+            case 7: component_7 = newValue
+            case 8: component_8 = newValue
+            case 9: component_9 = newValue
+            case 10: component_10 = newValue
+            case 11: component_11 = newValue
+            case 12: component_12 = newValue
+            case 13: component_13 = newValue
+            default: fatalError()
+            }
         }
     }
 }
 
 public struct Device15ColorModel : DeviceNColorModelProtocol {
+    
+    public typealias Scalar = Double
     
     @_inlineable
     public static var numberOfComponents: Int {
@@ -921,46 +949,46 @@ public struct Device15ColorModel : DeviceNColorModelProtocol {
     }
     
     @_inlineable
-    public func component(_ index: Int) -> Double {
-        switch index {
-        case 0: return component_0
-        case 1: return component_1
-        case 2: return component_2
-        case 3: return component_3
-        case 4: return component_4
-        case 5: return component_5
-        case 6: return component_6
-        case 7: return component_7
-        case 8: return component_8
-        case 9: return component_9
-        case 10: return component_10
-        case 11: return component_11
-        case 12: return component_12
-        case 13: return component_13
-        case 14: return component_14
-        default: fatalError()
+    public subscript(position: Int) -> Double {
+        get {
+            switch position {
+            case 0: return component_0
+            case 1: return component_1
+            case 2: return component_2
+            case 3: return component_3
+            case 4: return component_4
+            case 5: return component_5
+            case 6: return component_6
+            case 7: return component_7
+            case 8: return component_8
+            case 9: return component_9
+            case 10: return component_10
+            case 11: return component_11
+            case 12: return component_12
+            case 13: return component_13
+            case 14: return component_14
+            default: fatalError()
+            }
         }
-    }
-    
-    @_inlineable
-    public mutating func setComponent(_ index: Int, _ value: Double) {
-        switch index {
-        case 0: component_0 = value
-        case 1: component_1 = value
-        case 2: component_2 = value
-        case 3: component_3 = value
-        case 4: component_4 = value
-        case 5: component_5 = value
-        case 6: component_6 = value
-        case 7: component_7 = value
-        case 8: component_8 = value
-        case 9: component_9 = value
-        case 10: component_10 = value
-        case 11: component_11 = value
-        case 12: component_12 = value
-        case 13: component_13 = value
-        case 14: component_14 = value
-        default: fatalError()
+        set {
+            switch position {
+            case 0: component_0 = newValue
+            case 1: component_1 = newValue
+            case 2: component_2 = newValue
+            case 3: component_3 = newValue
+            case 4: component_4 = newValue
+            case 5: component_5 = newValue
+            case 6: component_6 = newValue
+            case 7: component_7 = newValue
+            case 8: component_8 = newValue
+            case 9: component_9 = newValue
+            case 10: component_10 = newValue
+            case 11: component_11 = newValue
+            case 12: component_12 = newValue
+            case 13: component_13 = newValue
+            case 14: component_14 = newValue
+            default: fatalError()
+            }
         }
     }
 }

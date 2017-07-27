@@ -68,7 +68,7 @@ extension ColorSpace : AnyColorSpaceBaseProtocol {
         var counter = 0
         for (i, v) in components.enumerated() {
             precondition(i < Model.numberOfComponents, "invalid count of components.")
-            color.setComponent(i, v)
+            color[i] = v
             counter = i
         }
         precondition(counter == Model.numberOfComponents - 1, "invalid count of components.")

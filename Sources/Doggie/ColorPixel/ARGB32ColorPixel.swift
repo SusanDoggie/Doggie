@@ -25,6 +25,8 @@
 
 public struct ARGB32ColorPixel : ColorPixelProtocol {
     
+    public typealias Scalar = Double
+    
     public var a: UInt8
     public var r: UInt8
     public var g: UInt8

@@ -240,7 +240,7 @@ extension Color {
     @_inlineable
     public func component(_ index: Int) -> Double {
         if index < Model.numberOfComponents {
-            return color.component(index)
+            return color[index]
         } else if index == Model.numberOfComponents {
             return opacity
         } else {
@@ -251,7 +251,7 @@ extension Color {
     @_inlineable
     public mutating func setComponent(_ index: Int, _ value: Double) {
         if index < Model.numberOfComponents {
-            color.setComponent(index, value)
+            color[index] = value
         } else if index == Model.numberOfComponents {
             opacity = value
         } else {

@@ -25,6 +25,8 @@
 
 public struct CMYKColorModel : ColorModelProtocol {
     
+    public typealias Scalar = Double
+    
     @_inlineable
     public static var numberOfComponents: Int {
         return 4
@@ -50,23 +52,24 @@ public struct CMYKColorModel : ColorModelProtocol {
     }
     
     @_inlineable
-    public func component(_ index: Int) -> Double {
-        switch index {
-        case 0: return cyan
-        case 1: return magenta
-        case 2: return yellow
-        case 3: return black
-        default: fatalError()
+    public subscript(position: Int) -> Double {
+        get {
+            switch position {
+            case 0: return cyan
+            case 1: return magenta
+            case 2: return yellow
+            case 3: return black
+            default: fatalError()
+            }
         }
-    }
-    @_inlineable
-    public mutating func setComponent(_ index: Int, _ value: Double) {
-        switch index {
-        case 0: cyan = value
-        case 1: magenta = value
-        case 2: yellow = value
-        case 3: black = value
-        default: fatalError()
+        set {
+            switch position {
+            case 0: cyan = newValue
+            case 1: magenta = newValue
+            case 2: yellow = newValue
+            case 3: black = newValue
+            default: fatalError()
+            }
         }
     }
 }
@@ -107,7 +110,7 @@ extension CMYKColorModel {
     
     @_inlineable
     public init(_ cmy: CMYColorModel) {
-        self.black = min(cmy.cyan, cmy.magenta, cmy.yellow)
+        self.black = Swift.min(cmy.cyan, cmy.magenta, cmy.yellow)
         if black == 1 {
             self.cyan = 0
             self.magenta = 0
@@ -119,4 +122,72 @@ extension CMYKColorModel {
             self.yellow = _k * (cmy.yellow - black)
         }
     }
+}
+
+@_inlineable
+public prefix func +(val: CMYKColorModel) -> CMYKColorModel {
+    return val
+}
+@_inlineable
+public prefix func -(val: CMYKColorModel) -> CMYKColorModel {
+    return CMYKColorModel(cyan: -val.cyan, magenta: -val.magenta, yellow: -val.yellow, black: -val.black)
+}
+@_inlineable
+public func +(lhs: CMYKColorModel, rhs: CMYKColorModel) -> CMYKColorModel {
+    return CMYKColorModel(cyan: lhs.cyan + rhs.cyan, magenta: lhs.magenta + rhs.magenta, yellow: lhs.yellow + rhs.yellow, black: lhs.black + rhs.black)
+}
+@_inlineable
+public func -(lhs: CMYKColorModel, rhs: CMYKColorModel) -> CMYKColorModel {
+    return CMYKColorModel(cyan: lhs.cyan - rhs.cyan, magenta: lhs.magenta - rhs.magenta, yellow: lhs.yellow - rhs.yellow, black: lhs.black - rhs.black)
+}
+
+@_inlineable
+public func *(lhs: Double, rhs: CMYKColorModel) -> CMYKColorModel {
+    return CMYKColorModel(cyan: lhs * rhs.cyan, magenta: lhs * rhs.magenta, yellow: lhs * rhs.yellow, black: lhs * rhs.black)
+}
+@_inlineable
+public func *(lhs: CMYKColorModel, rhs: Double) -> CMYKColorModel {
+    return CMYKColorModel(cyan: lhs.cyan * rhs, magenta: lhs.magenta * rhs, yellow: lhs.yellow * rhs, black: lhs.black * rhs)
+}
+
+@_inlineable
+public func /(lhs: CMYKColorModel, rhs: Double) -> CMYKColorModel {
+    return CMYKColorModel(cyan: lhs.cyan / rhs, magenta: lhs.magenta / rhs, yellow: lhs.yellow / rhs, black: lhs.black / rhs)
+}
+
+@_inlineable
+public func *= (lhs: inout CMYKColorModel, rhs: Double) {
+    lhs.cyan *= rhs
+    lhs.magenta *= rhs
+    lhs.yellow *= rhs
+    lhs.black *= rhs
+}
+@_inlineable
+public func /= (lhs: inout CMYKColorModel, rhs: Double) {
+    lhs.cyan /= rhs
+    lhs.magenta /= rhs
+    lhs.yellow /= rhs
+    lhs.black /= rhs
+}
+@_inlineable
+public func += (lhs: inout CMYKColorModel, rhs: CMYKColorModel) {
+    lhs.cyan += rhs.cyan
+    lhs.magenta += rhs.magenta
+    lhs.yellow += rhs.yellow
+    lhs.black += rhs.black
+}
+@_inlineable
+public func -= (lhs: inout CMYKColorModel, rhs: CMYKColorModel) {
+    lhs.cyan -= rhs.cyan
+    lhs.magenta -= rhs.magenta
+    lhs.yellow -= rhs.yellow
+    lhs.black -= rhs.black
+}
+@_inlineable
+public func ==(lhs: CMYKColorModel, rhs: CMYKColorModel) -> Bool {
+    return lhs.cyan == rhs.cyan && lhs.magenta == rhs.magenta && lhs.yellow == rhs.yellow && lhs.black == rhs.black
+}
+@_inlineable
+public func !=(lhs: CMYKColorModel, rhs: CMYKColorModel) -> Bool {
+    return lhs.cyan != rhs.cyan || lhs.magenta != rhs.magenta || lhs.yellow != rhs.yellow || lhs.black != rhs.black
 }

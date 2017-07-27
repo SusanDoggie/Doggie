@@ -374,31 +374,31 @@ extension ICCColorSpace {
         var color = color
         
         for i in 0..<Model.numberOfComponents {
-            color.setComponent(i, color.normalizedComponent(i))
+            color[i] = color.normalizedComponent(i)
         }
         
         switch a2b {
         case .monochrome, .matrix, .LUT0:
             if color is XYZColorModel {
-                color.setComponent(0, color.component(0) * 2)
-                color.setComponent(2, color.component(2) * 2)
+                color[0] = color[0] * 2
+                color[2] = color[2] * 2
             }
         case .LUT1, .LUT2, .LUT3, .LUT4:
             if color is XYZColorModel {
-                color.setComponent(1, color.component(1) * 0.5)
+                color[1] = color[1] * 0.5
             }
         }
         
         switch a2b {
         case let .monochrome(curve):
             
-            result.setComponent(0, curve.eval(color.component(0)))
+            result[0] = curve.eval(color[0])
             
         case let .matrix(_, curve):
             
-            result.setComponent(0, curve.0.eval(color.component(0)))
-            result.setComponent(1, curve.1.eval(color.component(1)))
-            result.setComponent(2, curve.2.eval(color.component(2)))
+            result[0] = curve.0.eval(color[0])
+            result[1] = curve.1.eval(color[1])
+            result[2] = curve.2.eval(color[2])
             
         case let .LUT0(_, curve, _, _):
             
@@ -406,43 +406,43 @@ extension ICCColorSpace {
             
         case let .LUT1(curve):
             
-            result.setComponent(0, curve.0.eval(color.component(0)))
-            result.setComponent(1, curve.1.eval(color.component(1)))
-            result.setComponent(2, curve.2.eval(color.component(2)))
+            result[0] = curve.0.eval(color[0])
+            result[1] = curve.1.eval(color[1])
+            result[2] = curve.2.eval(color[2])
             
         case let .LUT2(_, _, curve):
             
-            result.setComponent(0, curve.0.eval(color.component(0)))
-            result.setComponent(1, curve.1.eval(color.component(1)))
-            result.setComponent(2, curve.2.eval(color.component(2)))
+            result[0] = curve.0.eval(color[0])
+            result[1] = curve.1.eval(color[1])
+            result[2] = curve.2.eval(color[2])
             
         case let .LUT3(_, _, curve):
             
             for i in 0..<Model.numberOfComponents {
-                result.setComponent(i, curve[i].eval(color.component(i)))
+                result[i] = curve[i].eval(color[i])
             }
             
         case let .LUT4(_, _, _, _, curve):
             
             for i in 0..<Model.numberOfComponents {
-                result.setComponent(i, curve[i].eval(color.component(i)))
+                result[i] = curve[i].eval(color[i])
             }
         }
         
         switch a2b {
         case .monochrome, .matrix, .LUT0:
             if result is XYZColorModel {
-                result.setComponent(0, result.component(0) * 0.5)
-                result.setComponent(2, result.component(2) * 0.5)
+                result[0] = result[0] * 0.5
+                result[2] = result[2] * 0.5
             }
         case .LUT1, .LUT2, .LUT3, .LUT4:
             if result is XYZColorModel {
-                result.setComponent(1, result.component(1) * 2)
+                result[1] = result[1] * 2
             }
         }
         
         for i in 0..<Model.numberOfComponents {
-            result.setNormalizedComponent(i, result.component(i))
+            result.setNormalizedComponent(i, result[i])
         }
         
         return result
@@ -457,31 +457,31 @@ extension ICCColorSpace {
         var color = color
         
         for i in 0..<Model.numberOfComponents {
-            color.setComponent(i, color.normalizedComponent(i))
+            color[i] = color.normalizedComponent(i)
         }
         
         switch b2a {
         case .monochrome, .matrix, .LUT0:
             if color is XYZColorModel {
-                color.setComponent(0, color.component(0) * 2)
-                color.setComponent(2, color.component(2) * 2)
+                color[0] = color[0] * 2
+                color[2] = color[2] * 2
             }
         case .LUT1, .LUT2, .LUT3, .LUT4:
             if color is XYZColorModel {
-                color.setComponent(1, color.component(1) * 0.5)
+                color[1] = color[1] * 0.5
             }
         }
         
         switch b2a {
         case let .monochrome(curve):
             
-            result.setComponent(0, curve.eval(color.component(0)))
+            result[0] = curve.eval(color[0])
             
         case let .matrix(_, curve):
             
-            result.setComponent(0, curve.0.eval(color.component(0)))
-            result.setComponent(1, curve.1.eval(color.component(1)))
-            result.setComponent(2, curve.2.eval(color.component(2)))
+            result[0] = curve.0.eval(color[0])
+            result[1] = curve.1.eval(color[1])
+            result[2] = curve.2.eval(color[2])
             
         case let .LUT0(_, _, _, curve):
             
@@ -489,43 +489,43 @@ extension ICCColorSpace {
             
         case let .LUT1(curve):
             
-            result.setComponent(0, curve.0.eval(color.component(0)))
-            result.setComponent(1, curve.1.eval(color.component(1)))
-            result.setComponent(2, curve.2.eval(color.component(2)))
+            result[0] = curve.0.eval(color[0])
+            result[1] = curve.1.eval(color[1])
+            result[2] = curve.2.eval(color[2])
             
         case let .LUT2(_, _, curve):
             
-            result.setComponent(0, curve.0.eval(color.component(0)))
-            result.setComponent(1, curve.1.eval(color.component(1)))
-            result.setComponent(2, curve.2.eval(color.component(2)))
+            result[0] = curve.0.eval(color[0])
+            result[1] = curve.1.eval(color[1])
+            result[2] = curve.2.eval(color[2])
             
         case let .LUT3(_, _, curve):
             
             for i in 0..<Model.numberOfComponents {
-                result.setComponent(i, curve[i].eval(color.component(i)))
+                result[i] = curve[i].eval(color[i])
             }
             
         case let .LUT4(_, _, _, _, curve):
             
             for i in 0..<Model.numberOfComponents {
-                result.setComponent(i, curve[i].eval(color.component(i)))
+                result[i] = curve[i].eval(color[i])
             }
         }
         
         switch b2a {
         case .monochrome, .matrix, .LUT0:
             if result is XYZColorModel {
-                result.setComponent(0, result.component(0) * 0.5)
-                result.setComponent(2, result.component(2) * 0.5)
+                result[0] = result[0] * 0.5
+                result[2] = result[2] * 0.5
             }
         case .LUT1, .LUT2, .LUT3, .LUT4:
             if result is XYZColorModel {
-                result.setComponent(1, result.component(1) * 2)
+                result[1] = result[1] * 2
             }
         }
         
         for i in 0..<Model.numberOfComponents {
-            result.setNormalizedComponent(i, result.component(i))
+            result.setNormalizedComponent(i, result[i])
         }
         
         return result
@@ -540,18 +540,18 @@ extension ICCColorSpace {
         var color = color
         
         for i in 0..<Model.numberOfComponents {
-            color.setComponent(i, color.normalizedComponent(i))
+            color[i] = color.normalizedComponent(i)
         }
         
         switch a2b {
         case .monochrome, .matrix, .LUT0:
             if color is XYZColorModel {
-                color.setComponent(0, color.component(0) * 2)
-                color.setComponent(2, color.component(2) * 2)
+                color[0] = color[0] * 2
+                color[2] = color[2] * 2
             }
         case .LUT1, .LUT2, .LUT3, .LUT4:
             if color is XYZColorModel {
-                color.setComponent(1, color.component(1) * 0.5)
+                color[1] = color[1] * 0.5
             }
         }
         
@@ -559,14 +559,14 @@ extension ICCColorSpace {
         case .monochrome:
             
             let normalizeMatrix = self.connection.cieXYZ.normalizeMatrix
-            let white = self.connection.cieXYZ.white * normalizeMatrix * color.component(0) * normalizeMatrix.inverse
+            let white = self.connection.cieXYZ.white * normalizeMatrix * color[0] * normalizeMatrix.inverse
             result = self.connection._convertFromXYZ(white)
             
         case let .matrix(matrix, _):
             
-            result.setComponent(0, color.component(0))
-            result.setComponent(1, color.component(1))
-            result.setComponent(2, color.component(2))
+            result[0] = color[0]
+            result[1] = color[1]
+            result[2] = color[2]
             
             result *= matrix
             
@@ -582,59 +582,59 @@ extension ICCColorSpace {
             
         case .LUT1:
             
-            result.setComponent(0, color.component(0))
-            result.setComponent(1, color.component(1))
-            result.setComponent(2, color.component(2))
+            result[0] = color[0]
+            result[1] = color[1]
+            result[2] = color[2]
             
         case let .LUT2(B, matrix, _):
             
-            result.setComponent(0, color.component(0))
-            result.setComponent(1, color.component(1))
-            result.setComponent(2, color.component(2))
+            result[0] = color[0]
+            result[1] = color[1]
+            result[2] = color[2]
             
             result *= matrix
             
-            result.setComponent(0, B.0.eval(result.component(0)))
-            result.setComponent(1, B.1.eval(result.component(1)))
-            result.setComponent(2, B.2.eval(result.component(2)))
+            result[0] = B.0.eval(result[0])
+            result[1] = B.1.eval(result[1])
+            result[2] = B.2.eval(result[2])
             
         case let .LUT3(B, lut, _):
             
             result = lut.eval(color)
             
-            result.setComponent(0, B.0.eval(result.component(0)))
-            result.setComponent(1, B.1.eval(result.component(1)))
-            result.setComponent(2, B.2.eval(result.component(2)))
+            result[0] = B.0.eval(result[0])
+            result[1] = B.1.eval(result[1])
+            result[2] = B.2.eval(result[2])
             
         case let .LUT4(B, matrix, M, lut, _):
             
             result = lut.eval(color)
             
-            result.setComponent(0, M.0.eval(result.component(0)))
-            result.setComponent(1, M.1.eval(result.component(1)))
-            result.setComponent(2, M.2.eval(result.component(2)))
+            result[0] = M.0.eval(result[0])
+            result[1] = M.1.eval(result[1])
+            result[2] = M.2.eval(result[2])
             
             result *= matrix
             
-            result.setComponent(0, B.0.eval(result.component(0)))
-            result.setComponent(1, B.1.eval(result.component(1)))
-            result.setComponent(2, B.2.eval(result.component(2)))
+            result[0] = B.0.eval(result[0])
+            result[1] = B.1.eval(result[1])
+            result[2] = B.2.eval(result[2])
         }
         
         switch a2b {
         case .monochrome, .matrix, .LUT0:
             if result is XYZColorModel {
-                result.setComponent(0, result.component(0) * 0.5)
-                result.setComponent(2, result.component(2) * 0.5)
+                result[0] = result[0] * 0.5
+                result[2] = result[2] * 0.5
             }
         case .LUT1, .LUT2, .LUT3, .LUT4:
             if result is XYZColorModel {
-                result.setComponent(1, result.component(1) * 2)
+                result[1] = result[1] * 2
             }
         }
         
         for i in 0..<Connection.Model.numberOfComponents {
-            result.setNormalizedComponent(i, result.component(i))
+            result.setNormalizedComponent(i, result[i])
         }
         
         return result
@@ -649,33 +649,33 @@ extension ICCColorSpace {
         var color = color
         
         for i in 0..<Connection.Model.numberOfComponents {
-            color.setComponent(i, color.normalizedComponent(i))
+            color[i] = color.normalizedComponent(i)
         }
         
         switch b2a {
         case .monochrome, .matrix, .LUT0:
             if color is XYZColorModel {
-                color.setComponent(0, color.component(0) * 2)
-                color.setComponent(2, color.component(2) * 2)
+                color[0] = color[0] * 2
+                color[2] = color[2] * 2
             }
         case .LUT1, .LUT2, .LUT3, .LUT4:
             if color is XYZColorModel {
-                color.setComponent(1, color.component(1) * 0.5)
+                color[1] = color[1] * 0.5
             }
         }
         
         switch b2a {
         case .monochrome:
             
-            result.setComponent(0, color.luminance)
+            result[0] = color.luminance
             
         case let .matrix(matrix, _):
             
             color *= matrix
             
-            result.setComponent(0, color.component(0))
-            result.setComponent(1, color.component(1))
-            result.setComponent(2, color.component(2))
+            result[0] = color[0]
+            result[1] = color[1]
+            result[2] = color[2]
             
         case let .LUT0(matrix, i, lut, _):
             
@@ -689,41 +689,41 @@ extension ICCColorSpace {
             
         case .LUT1:
             
-            result.setComponent(0, color.component(0))
-            result.setComponent(1, color.component(1))
-            result.setComponent(2, color.component(2))
+            result[0] = color[0]
+            result[1] = color[1]
+            result[2] = color[2]
             
         case let .LUT2(B, matrix, _):
             
-            color.setComponent(0, B.0.eval(color.component(0)))
-            color.setComponent(1, B.1.eval(color.component(1)))
-            color.setComponent(2, B.2.eval(color.component(2)))
+            color[0] = B.0.eval(color[0])
+            color[1] = B.1.eval(color[1])
+            color[2] = B.2.eval(color[2])
             
             color *= matrix
             
-            result.setComponent(0, color.component(0))
-            result.setComponent(1, color.component(1))
-            result.setComponent(2, color.component(2))
+            result[0] = color[0]
+            result[1] = color[1]
+            result[2] = color[2]
             
         case let .LUT3(B, lut, _):
             
-            color.setComponent(0, B.0.eval(color.component(0)))
-            color.setComponent(1, B.1.eval(color.component(1)))
-            color.setComponent(2, B.2.eval(color.component(2)))
+            color[0] = B.0.eval(color[0])
+            color[1] = B.1.eval(color[1])
+            color[2] = B.2.eval(color[2])
             
             result = lut.eval(color)
             
         case let .LUT4(B, matrix, M, lut, _):
             
-            color.setComponent(0, B.0.eval(color.component(0)))
-            color.setComponent(1, B.1.eval(color.component(1)))
-            color.setComponent(2, B.2.eval(color.component(2)))
+            color[0] = B.0.eval(color[0])
+            color[1] = B.1.eval(color[1])
+            color[2] = B.2.eval(color[2])
             
             color *= matrix
             
-            color.setComponent(0, M.0.eval(color.component(0)))
-            color.setComponent(1, M.1.eval(color.component(1)))
-            color.setComponent(2, M.2.eval(color.component(2)))
+            color[0] = M.0.eval(color[0])
+            color[1] = M.1.eval(color[1])
+            color[2] = M.2.eval(color[2])
             
             result = lut.eval(color)
         }
@@ -731,17 +731,17 @@ extension ICCColorSpace {
         switch b2a {
         case .monochrome, .matrix, .LUT0:
             if result is XYZColorModel {
-                result.setComponent(0, result.component(0) * 0.5)
-                result.setComponent(2, result.component(2) * 0.5)
+                result[0] = result[0] * 0.5
+                result[2] = result[2] * 0.5
             }
         case .LUT1, .LUT2, .LUT3, .LUT4:
             if result is XYZColorModel {
-                result.setComponent(1, result.component(1) * 2)
+                result[1] = result[1] * 2
             }
         }
         
         for i in 0..<Model.numberOfComponents {
-            result.setNormalizedComponent(i, result.component(i))
+            result.setNormalizedComponent(i, result[i])
         }
         
         return result

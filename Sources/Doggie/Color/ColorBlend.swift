@@ -208,10 +208,10 @@ extension ColorPixelProtocol {
         if r_alpha > 0 {
             self.opacity = r_alpha
             for i in 0..<Model.numberOfComponents {
-                let _source = source.color.component(i)
-                let _destination = self.color.component(i)
+                let _source = source.color[i]
+                let _destination = self.color[i]
                 let blended = blendMode == .normal ? _source : (1 - d_alpha) * _source + d_alpha * blendMode.blend(_source, _destination)
-                self.color.setComponent(i, compositingMode.mix(s_alpha * blended, s_alpha, d_alpha * _destination, d_alpha) / r_alpha)
+                self.color[i] = compositingMode.mix(s_alpha * blended, s_alpha, d_alpha * _destination, d_alpha) / r_alpha
             }
         } else {
             self = Self()

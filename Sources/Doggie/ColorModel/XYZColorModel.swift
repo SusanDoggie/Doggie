@@ -25,6 +25,8 @@
 
 public struct XYZColorModel : ColorModelProtocol {
     
+    public typealias Scalar = Double
+    
     @_inlineable
     public static var numberOfComponents: Int {
         return 3
@@ -77,21 +79,22 @@ public struct XYZColorModel : ColorModelProtocol {
     }
     
     @_inlineable
-    public func component(_ index: Int) -> Double {
-        switch index {
-        case 0: return x
-        case 1: return y
-        case 2: return z
-        default: fatalError()
+    public subscript(position: Int) -> Double {
+        get {
+            switch position {
+            case 0: return x
+            case 1: return y
+            case 2: return z
+            default: fatalError()
+            }
         }
-    }
-    @_inlineable
-    public mutating func setComponent(_ index: Int, _ value: Double) {
-        switch index {
-        case 0: x = value
-        case 1: y = value
-        case 2: z = value
-        default: fatalError()
+        set {
+            switch position {
+            case 0: x = newValue
+            case 1: y = newValue
+            case 2: z = newValue
+            default: fatalError()
+            }
         }
     }
 }
@@ -134,4 +137,68 @@ public func * (lhs: XYZColorModel, rhs: Matrix) -> XYZColorModel {
 @_inlineable
 public func *= (lhs: inout XYZColorModel, rhs: Matrix) {
     lhs = lhs * rhs
+}
+
+@_inlineable
+public prefix func +(val: XYZColorModel) -> XYZColorModel {
+    return val
+}
+@_inlineable
+public prefix func -(val: XYZColorModel) -> XYZColorModel {
+    return XYZColorModel(x: -val.x, y: -val.y, z: -val.z)
+}
+@_inlineable
+public func +(lhs: XYZColorModel, rhs: XYZColorModel) -> XYZColorModel {
+    return XYZColorModel(x: lhs.x + rhs.x, y: lhs.y + rhs.y, z: lhs.z + rhs.z)
+}
+@_inlineable
+public func -(lhs: XYZColorModel, rhs: XYZColorModel) -> XYZColorModel {
+    return XYZColorModel(x: lhs.x - rhs.x, y: lhs.y - rhs.y, z: lhs.z - rhs.z)
+}
+
+@_inlineable
+public func *(lhs: Double, rhs: XYZColorModel) -> XYZColorModel {
+    return XYZColorModel(x: lhs * rhs.x, y: lhs * rhs.y, z: lhs * rhs.z)
+}
+@_inlineable
+public func *(lhs: XYZColorModel, rhs: Double) -> XYZColorModel {
+    return XYZColorModel(x: lhs.x * rhs, y: lhs.y * rhs, z: lhs.z * rhs)
+}
+
+@_inlineable
+public func /(lhs: XYZColorModel, rhs: Double) -> XYZColorModel {
+    return XYZColorModel(x: lhs.x / rhs, y: lhs.y / rhs, z: lhs.z / rhs)
+}
+
+@_inlineable
+public func *= (lhs: inout XYZColorModel, rhs: Double) {
+    lhs.x *= rhs
+    lhs.y *= rhs
+    lhs.z *= rhs
+}
+@_inlineable
+public func /= (lhs: inout XYZColorModel, rhs: Double) {
+    lhs.x /= rhs
+    lhs.y /= rhs
+    lhs.z /= rhs
+}
+@_inlineable
+public func += (lhs: inout XYZColorModel, rhs: XYZColorModel) {
+    lhs.x += rhs.x
+    lhs.y += rhs.y
+    lhs.z += rhs.z
+}
+@_inlineable
+public func -= (lhs: inout XYZColorModel, rhs: XYZColorModel) {
+    lhs.x -= rhs.x
+    lhs.y -= rhs.y
+    lhs.z -= rhs.z
+}
+@_inlineable
+public func ==(lhs: XYZColorModel, rhs: XYZColorModel) -> Bool {
+    return lhs.x == rhs.x && lhs.y == rhs.y && lhs.z == rhs.z
+}
+@_inlineable
+public func !=(lhs: XYZColorModel, rhs: XYZColorModel) -> Bool {
+    return lhs.x != rhs.x || lhs.y != rhs.y || lhs.z != rhs.z
 }

@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-public protocol ColorPixelProtocol : Hashable {
+public protocol ColorPixelProtocol : Hashable, ScalarMultiplicative where Scalar == Double {
     
     associatedtype Model : ColorModelProtocol
     
@@ -100,7 +100,7 @@ extension ColorPixelProtocol {
     @_transparent
     public func component(_ index: Int) -> Double {
         if index < Model.numberOfComponents {
-            return color.component(index)
+            return color[index]
         } else if index == Model.numberOfComponents {
             return opacity
         } else {
@@ -111,7 +111,7 @@ extension ColorPixelProtocol {
     @_transparent
     public mutating func setComponent(_ index: Int, _ value: Double) {
         if index < Model.numberOfComponents {
-            color.setComponent(index, value)
+            color[index] = value
         } else if index == Model.numberOfComponents {
             opacity = value
         } else {
@@ -231,6 +231,8 @@ public func !=<Pixel : ColorPixelProtocol>(lhs: Pixel, rhs: Pixel) -> Bool {
 }
 
 public struct ColorPixel<Model : ColorModelProtocol> : ColorPixelProtocol {
+    
+    public typealias Scalar = Double
     
     public var color: Model
     public var opacity: Double {

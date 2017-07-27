@@ -702,7 +702,9 @@ private func QuadBezierFitting(_ p: [Point], _ limit: Int, _ inflection_check: B
                 if limit > 0 {
                     return split(0.5)
                 } else {
-                    return [[start, 2 * (Bezier(p).eval(0.5) - 0.25 * (start + end)), end]]
+                    let u = Bezier(p).eval(0.5)
+                    let v = 0.25 * (start + end)
+                    return [[start, 2 * (u - v), end]]
                 }
             }
             return [[start, mid, end]]
@@ -934,7 +936,12 @@ private func _BezierOffset(_ p0: Point, _ p1: Point, _ p2: Point, _ a: Double, _
             } else {
                 let m = Bezier(q0, q1).eval(0.5).unit
                 let _mid = Bezier(p0, p1, p2).eval(0.5) + Point(x: a * m.y, y: -a * m.x)
-                return CubicBezierFitting(start, end, q0, -q1, [_mid]).map { [[start, start + abs($0) * q0, end - abs($1) * q1, end]] } ?? [[start, 2 * (_mid - 0.25 * (start + end)), end]]
+                if let (lhs, rhs) = CubicBezierFitting(start, end, q0, -q1, [_mid]) {
+                    let _lhs = start + abs(lhs) * q0
+                    let _rhs = end - abs(rhs) * q1
+                    return [[start, _lhs, _rhs, end]]
+                }
+                return [[start, 2 * (_mid - 0.25 * (start + end)), end]]
             }
         }
         return [[start, mid, end]]

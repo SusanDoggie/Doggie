@@ -24,6 +24,8 @@
 //
 
 public struct GrayColorModel : ColorModelProtocol {
+
+    public typealias Scalar = Double
     
     @_inlineable
     public static var numberOfComponents: Int {
@@ -44,17 +46,18 @@ public struct GrayColorModel : ColorModelProtocol {
     }
     
     @_inlineable
-    public func component(_ index: Int) -> Double {
-        switch index {
-        case 0: return white
-        default: fatalError()
+    public subscript(position: Int) -> Double {
+        get {
+            switch position {
+            case 0: return white
+            default: fatalError()
+            }
         }
-    }
-    @_inlineable
-    public mutating func setComponent(_ index: Int, _ value: Double) {
-        switch index {
-        case 0: white = value
-        default: fatalError()
+        set {
+            switch position {
+            case 0: white = newValue
+            default: fatalError()
+            }
         }
     }
 }
@@ -65,4 +68,60 @@ extension GrayColorModel {
     public init() {
         self.white = 0
     }
+}
+
+@_inlineable
+public prefix func +(val: GrayColorModel) -> GrayColorModel {
+    return val
+}
+@_inlineable
+public prefix func -(val: GrayColorModel) -> GrayColorModel {
+    return GrayColorModel(white: -val.white)
+}
+@_inlineable
+public func +(lhs: GrayColorModel, rhs: GrayColorModel) -> GrayColorModel {
+    return GrayColorModel(white: lhs.white + rhs.white)
+}
+@_inlineable
+public func -(lhs: GrayColorModel, rhs: GrayColorModel) -> GrayColorModel {
+    return GrayColorModel(white: lhs.white - rhs.white)
+}
+
+@_inlineable
+public func *(lhs: Double, rhs: GrayColorModel) -> GrayColorModel {
+    return GrayColorModel(white: lhs * rhs.white)
+}
+@_inlineable
+public func *(lhs: GrayColorModel, rhs: Double) -> GrayColorModel {
+    return GrayColorModel(white: lhs.white * rhs)
+}
+
+@_inlineable
+public func /(lhs: GrayColorModel, rhs: Double) -> GrayColorModel {
+    return GrayColorModel(white: lhs.white / rhs)
+}
+
+@_inlineable
+public func *= (lhs: inout GrayColorModel, rhs: Double) {
+    lhs.white *= rhs
+}
+@_inlineable
+public func /= (lhs: inout GrayColorModel, rhs: Double) {
+    lhs.white /= rhs
+}
+@_inlineable
+public func += (lhs: inout GrayColorModel, rhs: GrayColorModel) {
+    lhs.white += rhs.white
+}
+@_inlineable
+public func -= (lhs: inout GrayColorModel, rhs: GrayColorModel) {
+    lhs.white -= rhs.white
+}
+@_inlineable
+public func ==(lhs: GrayColorModel, rhs: GrayColorModel) -> Bool {
+    return lhs.white == rhs.white
+}
+@_inlineable
+public func !=(lhs: GrayColorModel, rhs: GrayColorModel) -> Bool {
+    return lhs.white != rhs.white
 }

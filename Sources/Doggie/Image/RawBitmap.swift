@@ -32,7 +32,7 @@ extension ColorPixelProtocol {
     func premultipliedNormalizedComponent(_ index: Int) -> Double {
         if index < Model.numberOfComponents {
             let range = Model.rangeOfComponent(index)
-            return (self.color.component(index) * self.opacity - range.lowerBound) / (range.upperBound - range.lowerBound)
+            return (self.color[index] * self.opacity - range.lowerBound) / (range.upperBound - range.lowerBound)
         } else if index == Model.numberOfComponents {
             return opacity
         } else {

@@ -27,6 +27,8 @@ import Foundation
 
 public struct LuvColorModel : ColorModelProtocol {
     
+    public typealias Scalar = Double
+    
     @_inlineable
     public static var numberOfComponents: Int {
         return 3
@@ -68,21 +70,22 @@ public struct LuvColorModel : ColorModelProtocol {
     }
     
     @_inlineable
-    public func component(_ index: Int) -> Double {
-        switch index {
-        case 0: return lightness
-        case 1: return u
-        case 2: return v
-        default: fatalError()
+    public subscript(position: Int) -> Double {
+        get {
+            switch position {
+            case 0: return lightness
+            case 1: return u
+            case 2: return v
+            default: fatalError()
+            }
         }
-    }
-    @_inlineable
-    public mutating func setComponent(_ index: Int, _ value: Double) {
-        switch index {
-        case 0: lightness = value
-        case 1: u = value
-        case 2: v = value
-        default: fatalError()
+        set {
+            switch position {
+            case 0: lightness = newValue
+            case 1: u = newValue
+            case 2: v = newValue
+            default: fatalError()
+            }
         }
     }
 }
@@ -116,4 +119,68 @@ extension LuvColorModel {
             self = LuvColorModel(lightness: lightness, chroma: newValue, hue: hue)
         }
     }
+}
+
+@_inlineable
+public prefix func +(val: LuvColorModel) -> LuvColorModel {
+    return val
+}
+@_inlineable
+public prefix func -(val: LuvColorModel) -> LuvColorModel {
+    return LuvColorModel(lightness: -val.lightness, u: -val.u, v: -val.v)
+}
+@_inlineable
+public func +(lhs: LuvColorModel, rhs: LuvColorModel) -> LuvColorModel {
+    return LuvColorModel(lightness: lhs.lightness + rhs.lightness, u: lhs.u + rhs.u, v: lhs.v + rhs.v)
+}
+@_inlineable
+public func -(lhs: LuvColorModel, rhs: LuvColorModel) -> LuvColorModel {
+    return LuvColorModel(lightness: lhs.lightness - rhs.lightness, u: lhs.u - rhs.u, v: lhs.v - rhs.v)
+}
+
+@_inlineable
+public func *(lhs: Double, rhs: LuvColorModel) -> LuvColorModel {
+    return LuvColorModel(lightness: lhs * rhs.lightness, u: lhs * rhs.u, v: lhs * rhs.v)
+}
+@_inlineable
+public func *(lhs: LuvColorModel, rhs: Double) -> LuvColorModel {
+    return LuvColorModel(lightness: lhs.lightness * rhs, u: lhs.u * rhs, v: lhs.v * rhs)
+}
+
+@_inlineable
+public func /(lhs: LuvColorModel, rhs: Double) -> LuvColorModel {
+    return LuvColorModel(lightness: lhs.lightness / rhs, u: lhs.u / rhs, v: lhs.v / rhs)
+}
+
+@_inlineable
+public func *= (lhs: inout LuvColorModel, rhs: Double) {
+    lhs.lightness *= rhs
+    lhs.u *= rhs
+    lhs.v *= rhs
+}
+@_inlineable
+public func /= (lhs: inout LuvColorModel, rhs: Double) {
+    lhs.lightness /= rhs
+    lhs.u /= rhs
+    lhs.v /= rhs
+}
+@_inlineable
+public func += (lhs: inout LuvColorModel, rhs: LuvColorModel) {
+    lhs.lightness += rhs.lightness
+    lhs.u += rhs.u
+    lhs.v += rhs.v
+}
+@_inlineable
+public func -= (lhs: inout LuvColorModel, rhs: LuvColorModel) {
+    lhs.lightness -= rhs.lightness
+    lhs.u -= rhs.u
+    lhs.v -= rhs.v
+}
+@_inlineable
+public func ==(lhs: LuvColorModel, rhs: LuvColorModel) -> Bool {
+    return lhs.lightness == rhs.lightness && lhs.u == rhs.u && lhs.v == rhs.v
+}
+@_inlineable
+public func !=(lhs: LuvColorModel, rhs: LuvColorModel) -> Bool {
+    return lhs.lightness != rhs.lightness || lhs.u != rhs.u || lhs.v != rhs.v
 }

@@ -117,10 +117,32 @@ extension Point: Hashable {
     }
 }
 
-extension Point : ScalarMultiplicative {
+extension Point : Tensor {
     
     public typealias Scalar = Double
     
+    @_transparent
+    public static var numberOfComponents: Int {
+        return 2
+    }
+    
+    @_inlineable
+    public subscript(position: Int) -> Double {
+        get {
+            switch position {
+            case 0: return x
+            case 1: return y
+            default: fatalError()
+            }
+        }
+        set {
+            switch position {
+            case 0: x = newValue
+            case 1: y = newValue
+            default: fatalError()
+            }
+        }
+    }
 }
 
 @_transparent

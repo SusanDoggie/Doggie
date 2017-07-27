@@ -25,6 +25,8 @@
 
 public struct CMYColorModel : ColorModelProtocol {
     
+    public typealias Scalar = Double
+    
     @_inlineable
     public static var numberOfComponents: Int {
         return 3
@@ -48,21 +50,22 @@ public struct CMYColorModel : ColorModelProtocol {
     }
     
     @_inlineable
-    public func component(_ index: Int) -> Double {
-        switch index {
-        case 0: return cyan
-        case 1: return magenta
-        case 2: return yellow
-        default: fatalError()
+    public subscript(position: Int) -> Double {
+        get {
+            switch position {
+            case 0: return cyan
+            case 1: return magenta
+            case 2: return yellow
+            default: fatalError()
+            }
         }
-    }
-    @_inlineable
-    public mutating func setComponent(_ index: Int, _ value: Double) {
-        switch index {
-        case 0: cyan = value
-        case 1: magenta = value
-        case 2: yellow = value
-        default: fatalError()
+        set {
+            switch position {
+            case 0: cyan = newValue
+            case 1: magenta = newValue
+            case 2: yellow = newValue
+            default: fatalError()
+            }
         }
     }
 }
@@ -108,5 +111,69 @@ extension CMYColorModel {
         self.magenta = cmyk.magenta * _k + cmyk.black
         self.yellow = cmyk.yellow * _k + cmyk.black
     }
+}
+
+@_inlineable
+public prefix func +(val: CMYColorModel) -> CMYColorModel {
+    return val
+}
+@_inlineable
+public prefix func -(val: CMYColorModel) -> CMYColorModel {
+    return CMYColorModel(cyan: -val.cyan, magenta: -val.magenta, yellow: -val.yellow)
+}
+@_inlineable
+public func +(lhs: CMYColorModel, rhs: CMYColorModel) -> CMYColorModel {
+    return CMYColorModel(cyan: lhs.cyan + rhs.cyan, magenta: lhs.magenta + rhs.magenta, yellow: lhs.yellow + rhs.yellow)
+}
+@_inlineable
+public func -(lhs: CMYColorModel, rhs: CMYColorModel) -> CMYColorModel {
+    return CMYColorModel(cyan: lhs.cyan - rhs.cyan, magenta: lhs.magenta - rhs.magenta, yellow: lhs.yellow - rhs.yellow)
+}
+
+@_inlineable
+public func *(lhs: Double, rhs: CMYColorModel) -> CMYColorModel {
+    return CMYColorModel(cyan: lhs * rhs.cyan, magenta: lhs * rhs.magenta, yellow: lhs * rhs.yellow)
+}
+@_inlineable
+public func *(lhs: CMYColorModel, rhs: Double) -> CMYColorModel {
+    return CMYColorModel(cyan: lhs.cyan * rhs, magenta: lhs.magenta * rhs, yellow: lhs.yellow * rhs)
+}
+
+@_inlineable
+public func /(lhs: CMYColorModel, rhs: Double) -> CMYColorModel {
+    return CMYColorModel(cyan: lhs.cyan / rhs, magenta: lhs.magenta / rhs, yellow: lhs.yellow / rhs)
+}
+
+@_inlineable
+public func *= (lhs: inout CMYColorModel, rhs: Double) {
+    lhs.cyan *= rhs
+    lhs.magenta *= rhs
+    lhs.yellow *= rhs
+}
+@_inlineable
+public func /= (lhs: inout CMYColorModel, rhs: Double) {
+    lhs.cyan /= rhs
+    lhs.magenta /= rhs
+    lhs.yellow /= rhs
+}
+@_inlineable
+public func += (lhs: inout CMYColorModel, rhs: CMYColorModel) {
+    lhs.cyan += rhs.cyan
+    lhs.magenta += rhs.magenta
+    lhs.yellow += rhs.yellow
+}
+@_inlineable
+public func -= (lhs: inout CMYColorModel, rhs: CMYColorModel) {
+    lhs.cyan -= rhs.cyan
+    lhs.magenta -= rhs.magenta
+    lhs.yellow -= rhs.yellow
+}
+@_inlineable
+public func ==(lhs: CMYColorModel, rhs: CMYColorModel) -> Bool {
+    return lhs.cyan == rhs.cyan && lhs.magenta == rhs.magenta && lhs.yellow == rhs.yellow
+}
+@_inlineable
+public func !=(lhs: CMYColorModel, rhs: CMYColorModel) -> Bool {
+    return lhs.cyan != rhs.cyan || lhs.magenta != rhs.magenta || lhs.yellow != rhs.yellow
 }
 

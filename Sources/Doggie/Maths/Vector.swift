@@ -101,10 +101,34 @@ extension Vector {
     }
 }
 
-extension Vector : ScalarMultiplicative {
+extension Vector : Tensor {
     
     public typealias Scalar = Double
     
+    @_transparent
+    public static var numberOfComponents: Int {
+        return 3
+    }
+    
+    @_inlineable
+    public subscript(position: Int) -> Double {
+        get {
+            switch position {
+            case 0: return x
+            case 1: return y
+            case 2: return z
+            default: fatalError()
+            }
+        }
+        set {
+            switch position {
+            case 0: x = newValue
+            case 1: y = newValue
+            case 2: z = newValue
+            default: fatalError()
+            }
+        }
+    }
 }
 
 @_transparent

@@ -27,6 +27,8 @@ import Foundation
 
 public struct LabColorModel : ColorModelProtocol {
     
+    public typealias Scalar = Double
+    
     @_inlineable
     public static var numberOfComponents: Int {
         return 3
@@ -69,21 +71,22 @@ public struct LabColorModel : ColorModelProtocol {
     }
     
     @_inlineable
-    public func component(_ index: Int) -> Double {
-        switch index {
-        case 0: return lightness
-        case 1: return a
-        case 2: return b
-        default: fatalError()
+    public subscript(position: Int) -> Double {
+        get {
+            switch position {
+            case 0: return lightness
+            case 1: return a
+            case 2: return b
+            default: fatalError()
+            }
         }
-    }
-    @_inlineable
-    public mutating func setComponent(_ index: Int, _ value: Double) {
-        switch index {
-        case 0: lightness = value
-        case 1: a = value
-        case 2: b = value
-        default: fatalError()
+        set {
+            switch position {
+            case 0: lightness = newValue
+            case 1: a = newValue
+            case 2: b = newValue
+            default: fatalError()
+            }
         }
     }
 }
@@ -117,4 +120,68 @@ extension LabColorModel {
             self = LabColorModel(lightness: lightness, chroma: newValue, hue: hue)
         }
     }
+}
+
+@_inlineable
+public prefix func +(val: LabColorModel) -> LabColorModel {
+    return val
+}
+@_inlineable
+public prefix func -(val: LabColorModel) -> LabColorModel {
+    return LabColorModel(lightness: -val.lightness, a: -val.a, b: -val.b)
+}
+@_inlineable
+public func +(lhs: LabColorModel, rhs: LabColorModel) -> LabColorModel {
+    return LabColorModel(lightness: lhs.lightness + rhs.lightness, a: lhs.a + rhs.a, b: lhs.b + rhs.b)
+}
+@_inlineable
+public func -(lhs: LabColorModel, rhs: LabColorModel) -> LabColorModel {
+    return LabColorModel(lightness: lhs.lightness - rhs.lightness, a: lhs.a - rhs.a, b: lhs.b - rhs.b)
+}
+
+@_inlineable
+public func *(lhs: Double, rhs: LabColorModel) -> LabColorModel {
+    return LabColorModel(lightness: lhs * rhs.lightness, a: lhs * rhs.a, b: lhs * rhs.b)
+}
+@_inlineable
+public func *(lhs: LabColorModel, rhs: Double) -> LabColorModel {
+    return LabColorModel(lightness: lhs.lightness * rhs, a: lhs.a * rhs, b: lhs.b * rhs)
+}
+
+@_inlineable
+public func /(lhs: LabColorModel, rhs: Double) -> LabColorModel {
+    return LabColorModel(lightness: lhs.lightness / rhs, a: lhs.a / rhs, b: lhs.b / rhs)
+}
+
+@_inlineable
+public func *= (lhs: inout LabColorModel, rhs: Double) {
+    lhs.lightness *= rhs
+    lhs.a *= rhs
+    lhs.b *= rhs
+}
+@_inlineable
+public func /= (lhs: inout LabColorModel, rhs: Double) {
+    lhs.lightness /= rhs
+    lhs.a /= rhs
+    lhs.b /= rhs
+}
+@_inlineable
+public func += (lhs: inout LabColorModel, rhs: LabColorModel) {
+    lhs.lightness += rhs.lightness
+    lhs.a += rhs.a
+    lhs.b += rhs.b
+}
+@_inlineable
+public func -= (lhs: inout LabColorModel, rhs: LabColorModel) {
+    lhs.lightness -= rhs.lightness
+    lhs.a -= rhs.a
+    lhs.b -= rhs.b
+}
+@_inlineable
+public func ==(lhs: LabColorModel, rhs: LabColorModel) -> Bool {
+    return lhs.lightness == rhs.lightness && lhs.a == rhs.a && lhs.b == rhs.b
+}
+@_inlineable
+public func !=(lhs: LabColorModel, rhs: LabColorModel) -> Bool {
+    return lhs.lightness != rhs.lightness || lhs.a != rhs.a || lhs.b != rhs.b
 }
