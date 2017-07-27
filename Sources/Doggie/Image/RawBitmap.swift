@@ -342,15 +342,14 @@ extension Image {
             case .float:
                 switch bitsPerChannel {
                 case 32:
-                    let value = Float(value)
                     switch channelEndianness {
-                    case .big: data.encode(value.bitPattern.bigEndian)
-                    case .little: data.encode(value.bitPattern.littleEndian)
+                    case .big: data.encode(Float(value).clamped(to: 0...1).bitPattern.bigEndian)
+                    case .little: data.encode(Float(value).clamped(to: 0...1).bitPattern.littleEndian)
                     }
                 case 64:
                     switch channelEndianness {
-                    case .big: data.encode(value.bitPattern.bigEndian)
-                    case .little: data.encode(value.bitPattern.littleEndian)
+                    case .big: data.encode(value.clamped(to: 0...1).bitPattern.bigEndian)
+                    case .little: data.encode(value.clamped(to: 0...1).bitPattern.littleEndian)
                     }
                 default: fatalError()
                 }
