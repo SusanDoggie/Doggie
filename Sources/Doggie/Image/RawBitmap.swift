@@ -252,9 +252,7 @@ extension Image {
                     let opacity = pixel.opacity
                     
                     if opacity != 0 {
-                        for i in 0..<numberOfComponents {
-                            pixel.setComponent(i, pixel.component(i) / opacity)
-                        }
+                        pixel.color /= opacity
                     }
                     
                     destination += 1
