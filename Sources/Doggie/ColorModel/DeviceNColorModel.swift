@@ -52,6 +52,12 @@ public struct Device2ColorModel : DeviceNColorModelProtocol {
     }
     
     @_inlineable
+    public init(_ component_0: Double, _ component_1: Double) {
+        self.component_0 = component_0
+        self.component_1 = component_1
+    }
+    
+    @_inlineable
     public subscript(position: Int) -> Double {
         get {
             switch position {
@@ -69,6 +75,67 @@ public struct Device2ColorModel : DeviceNColorModelProtocol {
         }
     }
 }
+
+@_inlineable
+public prefix func +(val: Device2ColorModel) -> Device2ColorModel {
+    return val
+}
+@_inlineable
+public prefix func -(val: Device2ColorModel) -> Device2ColorModel {
+    return Device2ColorModel(-val.component_0, -val.component_1)
+}
+@_inlineable
+public func +(lhs: Device2ColorModel, rhs: Device2ColorModel) -> Device2ColorModel {
+    return Device2ColorModel(lhs.component_0 + rhs.component_0, lhs.component_1 + rhs.component_1)
+}
+@_inlineable
+public func -(lhs: Device2ColorModel, rhs: Device2ColorModel) -> Device2ColorModel {
+    return Device2ColorModel(lhs.component_0 - rhs.component_0, lhs.component_1 - rhs.component_1)
+}
+
+@_inlineable
+public func *(lhs: Double, rhs: Device2ColorModel) -> Device2ColorModel {
+    return Device2ColorModel(lhs * rhs.component_0, lhs * rhs.component_1)
+}
+@_inlineable
+public func *(lhs: Device2ColorModel, rhs: Double) -> Device2ColorModel {
+    return Device2ColorModel(lhs.component_0 * rhs, lhs.component_1 * rhs)
+}
+
+@_inlineable
+public func /(lhs: Device2ColorModel, rhs: Double) -> Device2ColorModel {
+    return Device2ColorModel(lhs.component_0 / rhs, lhs.component_1 / rhs)
+}
+
+@_inlineable
+public func *= (lhs: inout Device2ColorModel, rhs: Double) {
+    lhs.component_0 *= rhs
+    lhs.component_1 *= rhs
+}
+@_inlineable
+public func /= (lhs: inout Device2ColorModel, rhs: Double) {
+    lhs.component_0 /= rhs
+    lhs.component_1 /= rhs
+}
+@_inlineable
+public func += (lhs: inout Device2ColorModel, rhs: Device2ColorModel) {
+    lhs.component_0 += rhs.component_0
+    lhs.component_1 += rhs.component_1
+}
+@_inlineable
+public func -= (lhs: inout Device2ColorModel, rhs: Device2ColorModel) {
+    lhs.component_0 -= rhs.component_0
+    lhs.component_1 -= rhs.component_1
+}
+@_inlineable
+public func ==(lhs: Device2ColorModel, rhs: Device2ColorModel) -> Bool {
+    return lhs.component_0 == rhs.component_0 && lhs.component_1 == rhs.component_1
+}
+@_inlineable
+public func !=(lhs: Device2ColorModel, rhs: Device2ColorModel) -> Bool {
+    return lhs.component_0 != rhs.component_0 || lhs.component_1 != rhs.component_1
+}
+
 
 public struct Device3ColorModel : DeviceNColorModelProtocol {
     
@@ -97,6 +164,13 @@ public struct Device3ColorModel : DeviceNColorModelProtocol {
     }
     
     @_inlineable
+    public init(_ component_0: Double, _ component_1: Double, _ component_2: Double) {
+        self.component_0 = component_0
+        self.component_1 = component_1
+        self.component_2 = component_2
+    }
+    
+    @_inlineable
     public subscript(position: Int) -> Double {
         get {
             switch position {
@@ -116,6 +190,71 @@ public struct Device3ColorModel : DeviceNColorModelProtocol {
         }
     }
 }
+
+@_inlineable
+public prefix func +(val: Device3ColorModel) -> Device3ColorModel {
+    return val
+}
+@_inlineable
+public prefix func -(val: Device3ColorModel) -> Device3ColorModel {
+    return Device3ColorModel(-val.component_0, -val.component_1, -val.component_2)
+}
+@_inlineable
+public func +(lhs: Device3ColorModel, rhs: Device3ColorModel) -> Device3ColorModel {
+    return Device3ColorModel(lhs.component_0 + rhs.component_0, lhs.component_1 + rhs.component_1, lhs.component_2 + rhs.component_2)
+}
+@_inlineable
+public func -(lhs: Device3ColorModel, rhs: Device3ColorModel) -> Device3ColorModel {
+    return Device3ColorModel(lhs.component_0 - rhs.component_0, lhs.component_1 - rhs.component_1, lhs.component_2 - rhs.component_2)
+}
+
+@_inlineable
+public func *(lhs: Double, rhs: Device3ColorModel) -> Device3ColorModel {
+    return Device3ColorModel(lhs * rhs.component_0, lhs * rhs.component_1, lhs * rhs.component_2)
+}
+@_inlineable
+public func *(lhs: Device3ColorModel, rhs: Double) -> Device3ColorModel {
+    return Device3ColorModel(lhs.component_0 * rhs, lhs.component_1 * rhs, lhs.component_2 * rhs)
+}
+
+@_inlineable
+public func /(lhs: Device3ColorModel, rhs: Double) -> Device3ColorModel {
+    return Device3ColorModel(lhs.component_0 / rhs, lhs.component_1 / rhs, lhs.component_2 / rhs)
+}
+
+@_inlineable
+public func *= (lhs: inout Device3ColorModel, rhs: Double) {
+    lhs.component_0 *= rhs
+    lhs.component_1 *= rhs
+    lhs.component_2 *= rhs
+}
+@_inlineable
+public func /= (lhs: inout Device3ColorModel, rhs: Double) {
+    lhs.component_0 /= rhs
+    lhs.component_1 /= rhs
+    lhs.component_2 /= rhs
+}
+@_inlineable
+public func += (lhs: inout Device3ColorModel, rhs: Device3ColorModel) {
+    lhs.component_0 += rhs.component_0
+    lhs.component_1 += rhs.component_1
+    lhs.component_2 += rhs.component_2
+}
+@_inlineable
+public func -= (lhs: inout Device3ColorModel, rhs: Device3ColorModel) {
+    lhs.component_0 -= rhs.component_0
+    lhs.component_1 -= rhs.component_1
+    lhs.component_2 -= rhs.component_2
+}
+@_inlineable
+public func ==(lhs: Device3ColorModel, rhs: Device3ColorModel) -> Bool {
+    return lhs.component_0 == rhs.component_0 && lhs.component_1 == rhs.component_1 && lhs.component_2 == rhs.component_2
+}
+@_inlineable
+public func !=(lhs: Device3ColorModel, rhs: Device3ColorModel) -> Bool {
+    return lhs.component_0 != rhs.component_0 || lhs.component_1 != rhs.component_1 || lhs.component_2 != rhs.component_2
+}
+
 
 public struct Device4ColorModel : DeviceNColorModelProtocol {
     
@@ -146,6 +285,14 @@ public struct Device4ColorModel : DeviceNColorModelProtocol {
     }
     
     @_inlineable
+    public init(_ component_0: Double, _ component_1: Double, _ component_2: Double, _ component_3: Double) {
+        self.component_0 = component_0
+        self.component_1 = component_1
+        self.component_2 = component_2
+        self.component_3 = component_3
+    }
+    
+    @_inlineable
     public subscript(position: Int) -> Double {
         get {
             switch position {
@@ -167,6 +314,75 @@ public struct Device4ColorModel : DeviceNColorModelProtocol {
         }
     }
 }
+
+@_inlineable
+public prefix func +(val: Device4ColorModel) -> Device4ColorModel {
+    return val
+}
+@_inlineable
+public prefix func -(val: Device4ColorModel) -> Device4ColorModel {
+    return Device4ColorModel(-val.component_0, -val.component_1, -val.component_2, -val.component_3)
+}
+@_inlineable
+public func +(lhs: Device4ColorModel, rhs: Device4ColorModel) -> Device4ColorModel {
+    return Device4ColorModel(lhs.component_0 + rhs.component_0, lhs.component_1 + rhs.component_1, lhs.component_2 + rhs.component_2, lhs.component_3 + rhs.component_3)
+}
+@_inlineable
+public func -(lhs: Device4ColorModel, rhs: Device4ColorModel) -> Device4ColorModel {
+    return Device4ColorModel(lhs.component_0 - rhs.component_0, lhs.component_1 - rhs.component_1, lhs.component_2 - rhs.component_2, lhs.component_3 - rhs.component_3)
+}
+
+@_inlineable
+public func *(lhs: Double, rhs: Device4ColorModel) -> Device4ColorModel {
+    return Device4ColorModel(lhs * rhs.component_0, lhs * rhs.component_1, lhs * rhs.component_2, lhs * rhs.component_3)
+}
+@_inlineable
+public func *(lhs: Device4ColorModel, rhs: Double) -> Device4ColorModel {
+    return Device4ColorModel(lhs.component_0 * rhs, lhs.component_1 * rhs, lhs.component_2 * rhs, lhs.component_3 * rhs)
+}
+
+@_inlineable
+public func /(lhs: Device4ColorModel, rhs: Double) -> Device4ColorModel {
+    return Device4ColorModel(lhs.component_0 / rhs, lhs.component_1 / rhs, lhs.component_2 / rhs, lhs.component_3 / rhs)
+}
+
+@_inlineable
+public func *= (lhs: inout Device4ColorModel, rhs: Double) {
+    lhs.component_0 *= rhs
+    lhs.component_1 *= rhs
+    lhs.component_2 *= rhs
+    lhs.component_3 *= rhs
+}
+@_inlineable
+public func /= (lhs: inout Device4ColorModel, rhs: Double) {
+    lhs.component_0 /= rhs
+    lhs.component_1 /= rhs
+    lhs.component_2 /= rhs
+    lhs.component_3 /= rhs
+}
+@_inlineable
+public func += (lhs: inout Device4ColorModel, rhs: Device4ColorModel) {
+    lhs.component_0 += rhs.component_0
+    lhs.component_1 += rhs.component_1
+    lhs.component_2 += rhs.component_2
+    lhs.component_3 += rhs.component_3
+}
+@_inlineable
+public func -= (lhs: inout Device4ColorModel, rhs: Device4ColorModel) {
+    lhs.component_0 -= rhs.component_0
+    lhs.component_1 -= rhs.component_1
+    lhs.component_2 -= rhs.component_2
+    lhs.component_3 -= rhs.component_3
+}
+@_inlineable
+public func ==(lhs: Device4ColorModel, rhs: Device4ColorModel) -> Bool {
+    return lhs.component_0 == rhs.component_0 && lhs.component_1 == rhs.component_1 && lhs.component_2 == rhs.component_2 && lhs.component_3 == rhs.component_3
+}
+@_inlineable
+public func !=(lhs: Device4ColorModel, rhs: Device4ColorModel) -> Bool {
+    return lhs.component_0 != rhs.component_0 || lhs.component_1 != rhs.component_1 || lhs.component_2 != rhs.component_2 || lhs.component_3 != rhs.component_3
+}
+
 
 public struct Device5ColorModel : DeviceNColorModelProtocol {
     
@@ -199,6 +415,16 @@ public struct Device5ColorModel : DeviceNColorModelProtocol {
     }
     
     @_inlineable
+    public init(_ component_0: Double, _ component_1: Double, _ component_2: Double,
+                _ component_3: Double, _ component_4: Double) {
+        self.component_0 = component_0
+        self.component_1 = component_1
+        self.component_2 = component_2
+        self.component_3 = component_3
+        self.component_4 = component_4
+    }
+    
+    @_inlineable
     public subscript(position: Int) -> Double {
         get {
             switch position {
@@ -222,6 +448,99 @@ public struct Device5ColorModel : DeviceNColorModelProtocol {
         }
     }
 }
+
+@_inlineable
+public prefix func +(val: Device5ColorModel) -> Device5ColorModel {
+    return val
+}
+@_inlineable
+public prefix func -(val: Device5ColorModel) -> Device5ColorModel {
+    return Device5ColorModel(
+        -val.component_0, -val.component_1, -val.component_2,
+        -val.component_3, -val.component_4
+    )
+}
+@_inlineable
+public func +(lhs: Device5ColorModel, rhs: Device5ColorModel) -> Device5ColorModel {
+    return Device5ColorModel(
+        lhs.component_0 + rhs.component_0, lhs.component_1 + rhs.component_1, lhs.component_2 + rhs.component_2,
+        lhs.component_3 + rhs.component_3, lhs.component_4 + rhs.component_4
+    )
+}
+@_inlineable
+public func -(lhs: Device5ColorModel, rhs: Device5ColorModel) -> Device5ColorModel {
+    return Device5ColorModel(
+        lhs.component_0 - rhs.component_0, lhs.component_1 - rhs.component_1, lhs.component_2 - rhs.component_2,
+        lhs.component_3 - rhs.component_3, lhs.component_4 - rhs.component_4
+    )
+}
+
+@_inlineable
+public func *(lhs: Double, rhs: Device5ColorModel) -> Device5ColorModel {
+    return Device5ColorModel(
+        lhs * rhs.component_0, lhs * rhs.component_1, lhs * rhs.component_2,
+        lhs * rhs.component_3, lhs * rhs.component_4
+    )
+}
+@_inlineable
+public func *(lhs: Device5ColorModel, rhs: Double) -> Device5ColorModel {
+    return Device5ColorModel(
+        lhs.component_0 * rhs, lhs.component_1 * rhs, lhs.component_2 * rhs,
+        lhs.component_3 * rhs, lhs.component_4 * rhs
+    )
+}
+
+@_inlineable
+public func /(lhs: Device5ColorModel, rhs: Double) -> Device5ColorModel {
+    return Device5ColorModel(
+        lhs.component_0 / rhs, lhs.component_1 / rhs, lhs.component_2 / rhs,
+        lhs.component_3 / rhs, lhs.component_4 / rhs
+    )
+}
+
+@_inlineable
+public func *= (lhs: inout Device5ColorModel, rhs: Double) {
+    lhs.component_0 *= rhs
+    lhs.component_1 *= rhs
+    lhs.component_2 *= rhs
+    lhs.component_3 *= rhs
+    lhs.component_4 *= rhs
+}
+@_inlineable
+public func /= (lhs: inout Device5ColorModel, rhs: Double) {
+    lhs.component_0 /= rhs
+    lhs.component_1 /= rhs
+    lhs.component_2 /= rhs
+    lhs.component_3 /= rhs
+    lhs.component_4 /= rhs
+}
+@_inlineable
+public func += (lhs: inout Device5ColorModel, rhs: Device5ColorModel) {
+    lhs.component_0 += rhs.component_0
+    lhs.component_1 += rhs.component_1
+    lhs.component_2 += rhs.component_2
+    lhs.component_3 += rhs.component_3
+    lhs.component_4 += rhs.component_4
+}
+@_inlineable
+public func -= (lhs: inout Device5ColorModel, rhs: Device5ColorModel) {
+    lhs.component_0 -= rhs.component_0
+    lhs.component_1 -= rhs.component_1
+    lhs.component_2 -= rhs.component_2
+    lhs.component_3 -= rhs.component_3
+    lhs.component_4 -= rhs.component_4
+}
+@_inlineable
+public func ==(lhs: Device5ColorModel, rhs: Device5ColorModel) -> Bool {
+    return lhs.component_0 == rhs.component_0 && lhs.component_1 == rhs.component_1 && lhs.component_2 == rhs.component_2
+        && lhs.component_3 == rhs.component_3 && lhs.component_4 == rhs.component_4
+}
+@_inlineable
+public func !=(lhs: Device5ColorModel, rhs: Device5ColorModel) -> Bool {
+    return lhs.component_0 != rhs.component_0 || lhs.component_1 != rhs.component_1 || lhs.component_2 != rhs.component_2
+        || lhs.component_3 != rhs.component_3 || lhs.component_4 != rhs.component_4
+}
+
 
 public struct Device6ColorModel : DeviceNColorModelProtocol {
     
@@ -256,6 +575,17 @@ public struct Device6ColorModel : DeviceNColorModelProtocol {
     }
     
     @_inlineable
+    public init(_ component_0: Double, _ component_1: Double, _ component_2: Double,
+                _ component_3: Double, _ component_4: Double, _ component_5: Double) {
+        self.component_0 = component_0
+        self.component_1 = component_1
+        self.component_2 = component_2
+        self.component_3 = component_3
+        self.component_4 = component_4
+        self.component_5 = component_5
+    }
+    
+    @_inlineable
     public subscript(position: Int) -> Double {
         get {
             switch position {
@@ -281,6 +611,103 @@ public struct Device6ColorModel : DeviceNColorModelProtocol {
         }
     }
 }
+
+@_inlineable
+public prefix func +(val: Device6ColorModel) -> Device6ColorModel {
+    return val
+}
+@_inlineable
+public prefix func -(val: Device6ColorModel) -> Device6ColorModel {
+    return Device6ColorModel(
+        -val.component_0, -val.component_1, -val.component_2,
+        -val.component_3, -val.component_4, -val.component_5
+    )
+}
+@_inlineable
+public func +(lhs: Device6ColorModel, rhs: Device6ColorModel) -> Device6ColorModel {
+    return Device6ColorModel(
+        lhs.component_0 + rhs.component_0, lhs.component_1 + rhs.component_1, lhs.component_2 + rhs.component_2,
+        lhs.component_3 + rhs.component_3, lhs.component_4 + rhs.component_4, lhs.component_5 + rhs.component_5
+    )
+}
+@_inlineable
+public func -(lhs: Device6ColorModel, rhs: Device6ColorModel) -> Device6ColorModel {
+    return Device6ColorModel(
+        lhs.component_0 - rhs.component_0, lhs.component_1 - rhs.component_1, lhs.component_2 - rhs.component_2,
+        lhs.component_3 - rhs.component_3, lhs.component_4 - rhs.component_4, lhs.component_5 - rhs.component_5
+    )
+}
+
+@_inlineable
+public func *(lhs: Double, rhs: Device6ColorModel) -> Device6ColorModel {
+    return Device6ColorModel(
+        lhs * rhs.component_0, lhs * rhs.component_1, lhs * rhs.component_2,
+        lhs * rhs.component_3, lhs * rhs.component_4, lhs * rhs.component_5
+    )
+}
+@_inlineable
+public func *(lhs: Device6ColorModel, rhs: Double) -> Device6ColorModel {
+    return Device6ColorModel(
+        lhs.component_0 * rhs, lhs.component_1 * rhs, lhs.component_2 * rhs,
+        lhs.component_3 * rhs, lhs.component_4 * rhs, lhs.component_5 * rhs
+    )
+}
+
+@_inlineable
+public func /(lhs: Device6ColorModel, rhs: Double) -> Device6ColorModel {
+    return Device6ColorModel(
+        lhs.component_0 / rhs, lhs.component_1 / rhs, lhs.component_2 / rhs,
+        lhs.component_3 / rhs, lhs.component_4 / rhs, lhs.component_5 / rhs
+    )
+}
+
+@_inlineable
+public func *= (lhs: inout Device6ColorModel, rhs: Double) {
+    lhs.component_0 *= rhs
+    lhs.component_1 *= rhs
+    lhs.component_2 *= rhs
+    lhs.component_3 *= rhs
+    lhs.component_4 *= rhs
+    lhs.component_5 *= rhs
+}
+@_inlineable
+public func /= (lhs: inout Device6ColorModel, rhs: Double) {
+    lhs.component_0 /= rhs
+    lhs.component_1 /= rhs
+    lhs.component_2 /= rhs
+    lhs.component_3 /= rhs
+    lhs.component_4 /= rhs
+    lhs.component_5 /= rhs
+}
+@_inlineable
+public func += (lhs: inout Device6ColorModel, rhs: Device6ColorModel) {
+    lhs.component_0 += rhs.component_0
+    lhs.component_1 += rhs.component_1
+    lhs.component_2 += rhs.component_2
+    lhs.component_3 += rhs.component_3
+    lhs.component_4 += rhs.component_4
+    lhs.component_5 += rhs.component_5
+}
+@_inlineable
+public func -= (lhs: inout Device6ColorModel, rhs: Device6ColorModel) {
+    lhs.component_0 -= rhs.component_0
+    lhs.component_1 -= rhs.component_1
+    lhs.component_2 -= rhs.component_2
+    lhs.component_3 -= rhs.component_3
+    lhs.component_4 -= rhs.component_4
+    lhs.component_5 -= rhs.component_5
+}
+@_inlineable
+public func ==(lhs: Device6ColorModel, rhs: Device6ColorModel) -> Bool {
+    return lhs.component_0 == rhs.component_0 && lhs.component_1 == rhs.component_1 && lhs.component_2 == rhs.component_2
+        && lhs.component_3 == rhs.component_3 && lhs.component_4 == rhs.component_4 && lhs.component_5 == rhs.component_5
+}
+@_inlineable
+public func !=(lhs: Device6ColorModel, rhs: Device6ColorModel) -> Bool {
+    return lhs.component_0 != rhs.component_0 || lhs.component_1 != rhs.component_1 || lhs.component_2 != rhs.component_2
+        || lhs.component_3 != rhs.component_3 || lhs.component_4 != rhs.component_4 || lhs.component_5 != rhs.component_5
+}
+
 
 public struct Device7ColorModel : DeviceNColorModelProtocol {
     
@@ -317,6 +744,19 @@ public struct Device7ColorModel : DeviceNColorModelProtocol {
     }
     
     @_inlineable
+    public init(_ component_0: Double, _ component_1: Double, _ component_2: Double,
+                _ component_3: Double, _ component_4: Double, _ component_5: Double,
+                _ component_6: Double) {
+        self.component_0 = component_0
+        self.component_1 = component_1
+        self.component_2 = component_2
+        self.component_3 = component_3
+        self.component_4 = component_4
+        self.component_5 = component_5
+        self.component_6 = component_6
+    }
+    
+    @_inlineable
     public subscript(position: Int) -> Double {
         get {
             switch position {
@@ -344,6 +784,115 @@ public struct Device7ColorModel : DeviceNColorModelProtocol {
         }
     }
 }
+
+@_inlineable
+public prefix func +(val: Device7ColorModel) -> Device7ColorModel {
+    return val
+}
+@_inlineable
+public prefix func -(val: Device7ColorModel) -> Device7ColorModel {
+    return Device7ColorModel(
+        -val.component_0, -val.component_1, -val.component_2,
+        -val.component_3, -val.component_4, -val.component_5,
+        -val.component_6
+    )
+}
+@_inlineable
+public func +(lhs: Device7ColorModel, rhs: Device7ColorModel) -> Device7ColorModel {
+    return Device7ColorModel(
+        lhs.component_0 + rhs.component_0, lhs.component_1 + rhs.component_1, lhs.component_2 + rhs.component_2,
+        lhs.component_3 + rhs.component_3, lhs.component_4 + rhs.component_4, lhs.component_5 + rhs.component_5,
+        lhs.component_6 + rhs.component_6
+    )
+}
+@_inlineable
+public func -(lhs: Device7ColorModel, rhs: Device7ColorModel) -> Device7ColorModel {
+    return Device7ColorModel(
+        lhs.component_0 - rhs.component_0, lhs.component_1 - rhs.component_1, lhs.component_2 - rhs.component_2,
+        lhs.component_3 - rhs.component_3, lhs.component_4 - rhs.component_4, lhs.component_5 - rhs.component_5,
+        lhs.component_6 - rhs.component_6
+    )
+}
+
+@_inlineable
+public func *(lhs: Double, rhs: Device7ColorModel) -> Device7ColorModel {
+    return Device7ColorModel(
+        lhs * rhs.component_0, lhs * rhs.component_1, lhs * rhs.component_2,
+        lhs * rhs.component_3, lhs * rhs.component_4, lhs * rhs.component_5,
+        lhs * rhs.component_6
+    )
+}
+@_inlineable
+public func *(lhs: Device7ColorModel, rhs: Double) -> Device7ColorModel {
+    return Device7ColorModel(
+        lhs.component_0 * rhs, lhs.component_1 * rhs, lhs.component_2 * rhs,
+        lhs.component_3 * rhs, lhs.component_4 * rhs, lhs.component_5 * rhs,
+        lhs.component_6 * rhs
+    )
+}
+
+@_inlineable
+public func /(lhs: Device7ColorModel, rhs: Double) -> Device7ColorModel {
+    return Device7ColorModel(
+        lhs.component_0 / rhs, lhs.component_1 / rhs, lhs.component_2 / rhs,
+        lhs.component_3 / rhs, lhs.component_4 / rhs, lhs.component_5 / rhs,
+        lhs.component_6 / rhs
+    )
+}
+
+@_inlineable
+public func *= (lhs: inout Device7ColorModel, rhs: Double) {
+    lhs.component_0 *= rhs
+    lhs.component_1 *= rhs
+    lhs.component_2 *= rhs
+    lhs.component_3 *= rhs
+    lhs.component_4 *= rhs
+    lhs.component_5 *= rhs
+    lhs.component_6 *= rhs
+}
+@_inlineable
+public func /= (lhs: inout Device7ColorModel, rhs: Double) {
+    lhs.component_0 /= rhs
+    lhs.component_1 /= rhs
+    lhs.component_2 /= rhs
+    lhs.component_3 /= rhs
+    lhs.component_4 /= rhs
+    lhs.component_5 /= rhs
+    lhs.component_6 /= rhs
+}
+@_inlineable
+public func += (lhs: inout Device7ColorModel, rhs: Device7ColorModel) {
+    lhs.component_0 += rhs.component_0
+    lhs.component_1 += rhs.component_1
+    lhs.component_2 += rhs.component_2
+    lhs.component_3 += rhs.component_3
+    lhs.component_4 += rhs.component_4
+    lhs.component_5 += rhs.component_5
+    lhs.component_6 += rhs.component_6
+}
+@_inlineable
+public func -= (lhs: inout Device7ColorModel, rhs: Device7ColorModel) {
+    lhs.component_0 -= rhs.component_0
+    lhs.component_1 -= rhs.component_1
+    lhs.component_2 -= rhs.component_2
+    lhs.component_3 -= rhs.component_3
+    lhs.component_4 -= rhs.component_4
+    lhs.component_5 -= rhs.component_5
+    lhs.component_6 -= rhs.component_6
+}
+@_inlineable
+public func ==(lhs: Device7ColorModel, rhs: Device7ColorModel) -> Bool {
+    return lhs.component_0 == rhs.component_0 && lhs.component_1 == rhs.component_1 && lhs.component_2 == rhs.component_2
+        && lhs.component_3 == rhs.component_3 && lhs.component_4 == rhs.component_4 && lhs.component_5 == rhs.component_5
+        && lhs.component_6 == rhs.component_6
+}
+@_inlineable
+public func !=(lhs: Device7ColorModel, rhs: Device7ColorModel) -> Bool {
+    return lhs.component_0 != rhs.component_0 || lhs.component_1 != rhs.component_1 || lhs.component_2 != rhs.component_2
+        || lhs.component_3 != rhs.component_3 || lhs.component_4 != rhs.component_4 || lhs.component_5 != rhs.component_5
+        || lhs.component_6 != rhs.component_6
+}
+
 
 public struct Device8ColorModel : DeviceNColorModelProtocol {
     
@@ -382,6 +931,20 @@ public struct Device8ColorModel : DeviceNColorModelProtocol {
     }
     
     @_inlineable
+    public init(_ component_0: Double, _ component_1: Double, _ component_2: Double,
+                _ component_3: Double, _ component_4: Double, _ component_5: Double,
+                _ component_6: Double, _ component_7: Double) {
+        self.component_0 = component_0
+        self.component_1 = component_1
+        self.component_2 = component_2
+        self.component_3 = component_3
+        self.component_4 = component_4
+        self.component_5 = component_5
+        self.component_6 = component_6
+        self.component_7 = component_7
+    }
+    
+    @_inlineable
     public subscript(position: Int) -> Double {
         get {
             switch position {
@@ -411,6 +974,119 @@ public struct Device8ColorModel : DeviceNColorModelProtocol {
         }
     }
 }
+
+@_inlineable
+public prefix func +(val: Device8ColorModel) -> Device8ColorModel {
+    return val
+}
+@_inlineable
+public prefix func -(val: Device8ColorModel) -> Device8ColorModel {
+    return Device8ColorModel(
+        -val.component_0, -val.component_1, -val.component_2,
+        -val.component_3, -val.component_4, -val.component_5,
+        -val.component_6, -val.component_7
+    )
+}
+@_inlineable
+public func +(lhs: Device8ColorModel, rhs: Device8ColorModel) -> Device8ColorModel {
+    return Device8ColorModel(
+        lhs.component_0 + rhs.component_0, lhs.component_1 + rhs.component_1, lhs.component_2 + rhs.component_2,
+        lhs.component_3 + rhs.component_3, lhs.component_4 + rhs.component_4, lhs.component_5 + rhs.component_5,
+        lhs.component_6 + rhs.component_6, lhs.component_7 + rhs.component_7
+    )
+}
+@_inlineable
+public func -(lhs: Device8ColorModel, rhs: Device8ColorModel) -> Device8ColorModel {
+    return Device8ColorModel(
+        lhs.component_0 - rhs.component_0, lhs.component_1 - rhs.component_1, lhs.component_2 - rhs.component_2,
+        lhs.component_3 - rhs.component_3, lhs.component_4 - rhs.component_4, lhs.component_5 - rhs.component_5,
+        lhs.component_6 - rhs.component_6, lhs.component_7 - rhs.component_7
+    )
+}
+
+@_inlineable
+public func *(lhs: Double, rhs: Device8ColorModel) -> Device8ColorModel {
+    return Device8ColorModel(
+        lhs * rhs.component_0, lhs * rhs.component_1, lhs * rhs.component_2,
+        lhs * rhs.component_3, lhs * rhs.component_4, lhs * rhs.component_5,
+        lhs * rhs.component_6, lhs * rhs.component_7
+    )
+}
+@_inlineable
+public func *(lhs: Device8ColorModel, rhs: Double) -> Device8ColorModel {
+    return Device8ColorModel(
+        lhs.component_0 * rhs, lhs.component_1 * rhs, lhs.component_2 * rhs,
+        lhs.component_3 * rhs, lhs.component_4 * rhs, lhs.component_5 * rhs,
+        lhs.component_6 * rhs, lhs.component_7 * rhs
+    )
+}
+
+@_inlineable
+public func /(lhs: Device8ColorModel, rhs: Double) -> Device8ColorModel {
+    return Device8ColorModel(
+        lhs.component_0 / rhs, lhs.component_1 / rhs, lhs.component_2 / rhs,
+        lhs.component_3 / rhs, lhs.component_4 / rhs, lhs.component_5 / rhs,
+        lhs.component_6 / rhs, lhs.component_7 / rhs
+    )
+}
+
+@_inlineable
+public func *= (lhs: inout Device8ColorModel, rhs: Double) {
+    lhs.component_0 *= rhs
+    lhs.component_1 *= rhs
+    lhs.component_2 *= rhs
+    lhs.component_3 *= rhs
+    lhs.component_4 *= rhs
+    lhs.component_5 *= rhs
+    lhs.component_6 *= rhs
+    lhs.component_7 *= rhs
+}
+@_inlineable
+public func /= (lhs: inout Device8ColorModel, rhs: Double) {
+    lhs.component_0 /= rhs
+    lhs.component_1 /= rhs
+    lhs.component_2 /= rhs
+    lhs.component_3 /= rhs
+    lhs.component_4 /= rhs
+    lhs.component_5 /= rhs
+    lhs.component_6 /= rhs
+    lhs.component_7 /= rhs
+}
+@_inlineable
+public func += (lhs: inout Device8ColorModel, rhs: Device8ColorModel) {
+    lhs.component_0 += rhs.component_0
+    lhs.component_1 += rhs.component_1
+    lhs.component_2 += rhs.component_2
+    lhs.component_3 += rhs.component_3
+    lhs.component_4 += rhs.component_4
+    lhs.component_5 += rhs.component_5
+    lhs.component_6 += rhs.component_6
+    lhs.component_7 += rhs.component_7
+}
+@_inlineable
+public func -= (lhs: inout Device8ColorModel, rhs: Device8ColorModel) {
+    lhs.component_0 -= rhs.component_0
+    lhs.component_1 -= rhs.component_1
+    lhs.component_2 -= rhs.component_2
+    lhs.component_3 -= rhs.component_3
+    lhs.component_4 -= rhs.component_4
+    lhs.component_5 -= rhs.component_5
+    lhs.component_6 -= rhs.component_6
+    lhs.component_7 -= rhs.component_7
+}
+@_inlineable
+public func ==(lhs: Device8ColorModel, rhs: Device8ColorModel) -> Bool {
+    return lhs.component_0 == rhs.component_0 && lhs.component_1 == rhs.component_1 && lhs.component_2 == rhs.component_2
+        && lhs.component_3 == rhs.component_3 && lhs.component_4 == rhs.component_4 && lhs.component_5 == rhs.component_5
+        && lhs.component_6 == rhs.component_6 && lhs.component_7 == rhs.component_7
+}
+@_inlineable
+public func !=(lhs: Device8ColorModel, rhs: Device8ColorModel) -> Bool {
+    return lhs.component_0 != rhs.component_0 || lhs.component_1 != rhs.component_1 || lhs.component_2 != rhs.component_2
+        || lhs.component_3 != rhs.component_3 || lhs.component_4 != rhs.component_4 || lhs.component_5 != rhs.component_5
+        || lhs.component_6 != rhs.component_6 || lhs.component_7 != rhs.component_7
+}
+
 
 public struct Device9ColorModel : DeviceNColorModelProtocol {
     
@@ -451,6 +1127,21 @@ public struct Device9ColorModel : DeviceNColorModelProtocol {
     }
     
     @_inlineable
+    public init(_ component_0: Double, _ component_1: Double, _ component_2: Double,
+                _ component_3: Double, _ component_4: Double, _ component_5: Double,
+                _ component_6: Double, _ component_7: Double, _ component_8: Double) {
+        self.component_0 = component_0
+        self.component_1 = component_1
+        self.component_2 = component_2
+        self.component_3 = component_3
+        self.component_4 = component_4
+        self.component_5 = component_5
+        self.component_6 = component_6
+        self.component_7 = component_7
+        self.component_8 = component_8
+    }
+    
+    @_inlineable
     public subscript(position: Int) -> Double {
         get {
             switch position {
@@ -482,6 +1173,123 @@ public struct Device9ColorModel : DeviceNColorModelProtocol {
         }
     }
 }
+
+@_inlineable
+public prefix func +(val: Device9ColorModel) -> Device9ColorModel {
+    return val
+}
+@_inlineable
+public prefix func -(val: Device9ColorModel) -> Device9ColorModel {
+    return Device9ColorModel(
+        -val.component_0, -val.component_1, -val.component_2,
+        -val.component_3, -val.component_4, -val.component_5,
+        -val.component_6, -val.component_7, -val.component_8
+    )
+}
+@_inlineable
+public func +(lhs: Device9ColorModel, rhs: Device9ColorModel) -> Device9ColorModel {
+    return Device9ColorModel(
+        lhs.component_0 + rhs.component_0, lhs.component_1 + rhs.component_1, lhs.component_2 + rhs.component_2,
+        lhs.component_3 + rhs.component_3, lhs.component_4 + rhs.component_4, lhs.component_5 + rhs.component_5,
+        lhs.component_6 + rhs.component_6, lhs.component_7 + rhs.component_7, lhs.component_8 + rhs.component_8
+    )
+}
+@_inlineable
+public func -(lhs: Device9ColorModel, rhs: Device9ColorModel) -> Device9ColorModel {
+    return Device9ColorModel(
+        lhs.component_0 - rhs.component_0, lhs.component_1 - rhs.component_1, lhs.component_2 - rhs.component_2,
+        lhs.component_3 - rhs.component_3, lhs.component_4 - rhs.component_4, lhs.component_5 - rhs.component_5,
+        lhs.component_6 - rhs.component_6, lhs.component_7 - rhs.component_7, lhs.component_8 - rhs.component_8
+    )
+}
+
+@_inlineable
+public func *(lhs: Double, rhs: Device9ColorModel) -> Device9ColorModel {
+    return Device9ColorModel(
+        lhs * rhs.component_0, lhs * rhs.component_1, lhs * rhs.component_2,
+        lhs * rhs.component_3, lhs * rhs.component_4, lhs * rhs.component_5,
+        lhs * rhs.component_6, lhs * rhs.component_7, lhs * rhs.component_8
+    )
+}
+@_inlineable
+public func *(lhs: Device9ColorModel, rhs: Double) -> Device9ColorModel {
+    return Device9ColorModel(
+        lhs.component_0 * rhs, lhs.component_1 * rhs, lhs.component_2 * rhs,
+        lhs.component_3 * rhs, lhs.component_4 * rhs, lhs.component_5 * rhs,
+        lhs.component_6 * rhs, lhs.component_7 * rhs, lhs.component_8 * rhs
+    )
+}
+
+@_inlineable
+public func /(lhs: Device9ColorModel, rhs: Double) -> Device9ColorModel {
+    return Device9ColorModel(
+        lhs.component_0 / rhs, lhs.component_1 / rhs, lhs.component_2 / rhs,
+        lhs.component_3 / rhs, lhs.component_4 / rhs, lhs.component_5 / rhs,
+        lhs.component_6 / rhs, lhs.component_7 / rhs, lhs.component_8 / rhs
+    )
+}
+
+@_inlineable
+public func *= (lhs: inout Device9ColorModel, rhs: Double) {
+    lhs.component_0 *= rhs
+    lhs.component_1 *= rhs
+    lhs.component_2 *= rhs
+    lhs.component_3 *= rhs
+    lhs.component_4 *= rhs
+    lhs.component_5 *= rhs
+    lhs.component_6 *= rhs
+    lhs.component_7 *= rhs
+    lhs.component_8 *= rhs
+}
+@_inlineable
+public func /= (lhs: inout Device9ColorModel, rhs: Double) {
+    lhs.component_0 /= rhs
+    lhs.component_1 /= rhs
+    lhs.component_2 /= rhs
+    lhs.component_3 /= rhs
+    lhs.component_4 /= rhs
+    lhs.component_5 /= rhs
+    lhs.component_6 /= rhs
+    lhs.component_7 /= rhs
+    lhs.component_8 /= rhs
+}
+@_inlineable
+public func += (lhs: inout Device9ColorModel, rhs: Device9ColorModel) {
+    lhs.component_0 += rhs.component_0
+    lhs.component_1 += rhs.component_1
+    lhs.component_2 += rhs.component_2
+    lhs.component_3 += rhs.component_3
+    lhs.component_4 += rhs.component_4
+    lhs.component_5 += rhs.component_5
+    lhs.component_6 += rhs.component_6
+    lhs.component_7 += rhs.component_7
+    lhs.component_8 += rhs.component_8
+}
+@_inlineable
+public func -= (lhs: inout Device9ColorModel, rhs: Device9ColorModel) {
+    lhs.component_0 -= rhs.component_0
+    lhs.component_1 -= rhs.component_1
+    lhs.component_2 -= rhs.component_2
+    lhs.component_3 -= rhs.component_3
+    lhs.component_4 -= rhs.component_4
+    lhs.component_5 -= rhs.component_5
+    lhs.component_6 -= rhs.component_6
+    lhs.component_7 -= rhs.component_7
+    lhs.component_8 -= rhs.component_8
+}
+@_inlineable
+public func ==(lhs: Device9ColorModel, rhs: Device9ColorModel) -> Bool {
+    return lhs.component_0 == rhs.component_0 && lhs.component_1 == rhs.component_1 && lhs.component_2 == rhs.component_2
+        && lhs.component_3 == rhs.component_3 && lhs.component_4 == rhs.component_4 && lhs.component_5 == rhs.component_5
+        && lhs.component_6 == rhs.component_6 && lhs.component_7 == rhs.component_7 && lhs.component_8 == rhs.component_8
+}
+@_inlineable
+public func !=(lhs: Device9ColorModel, rhs: Device9ColorModel) -> Bool {
+    return lhs.component_0 != rhs.component_0 || lhs.component_1 != rhs.component_1 || lhs.component_2 != rhs.component_2
+        || lhs.component_3 != rhs.component_3 || lhs.component_4 != rhs.component_4 || lhs.component_5 != rhs.component_5
+        || lhs.component_6 != rhs.component_6 || lhs.component_7 != rhs.component_7 || lhs.component_8 != rhs.component_8
+}
+
 
 public struct Device10ColorModel : DeviceNColorModelProtocol {
     
@@ -524,6 +1332,23 @@ public struct Device10ColorModel : DeviceNColorModelProtocol {
     }
     
     @_inlineable
+    public init(_ component_0: Double, _ component_1: Double, _ component_2: Double,
+                _ component_3: Double, _ component_4: Double, _ component_5: Double,
+                _ component_6: Double, _ component_7: Double, _ component_8: Double,
+                _ component_9: Double) {
+        self.component_0 = component_0
+        self.component_1 = component_1
+        self.component_2 = component_2
+        self.component_3 = component_3
+        self.component_4 = component_4
+        self.component_5 = component_5
+        self.component_6 = component_6
+        self.component_7 = component_7
+        self.component_8 = component_8
+        self.component_9 = component_9
+    }
+    
+    @_inlineable
     public subscript(position: Int) -> Double {
         get {
             switch position {
@@ -557,6 +1382,135 @@ public struct Device10ColorModel : DeviceNColorModelProtocol {
         }
     }
 }
+
+@_inlineable
+public prefix func +(val: Device10ColorModel) -> Device10ColorModel {
+    return val
+}
+@_inlineable
+public prefix func -(val: Device10ColorModel) -> Device10ColorModel {
+    return Device10ColorModel(
+        -val.component_0, -val.component_1, -val.component_2,
+        -val.component_3, -val.component_4, -val.component_5,
+        -val.component_6, -val.component_7, -val.component_8,
+        -val.component_9
+    )
+}
+@_inlineable
+public func +(lhs: Device10ColorModel, rhs: Device10ColorModel) -> Device10ColorModel {
+    return Device10ColorModel(
+        lhs.component_0 + rhs.component_0, lhs.component_1 + rhs.component_1, lhs.component_2 + rhs.component_2,
+        lhs.component_3 + rhs.component_3, lhs.component_4 + rhs.component_4, lhs.component_5 + rhs.component_5,
+        lhs.component_6 + rhs.component_6, lhs.component_7 + rhs.component_7, lhs.component_8 + rhs.component_8,
+        lhs.component_9 + rhs.component_9
+    )
+}
+@_inlineable
+public func -(lhs: Device10ColorModel, rhs: Device10ColorModel) -> Device10ColorModel {
+    return Device10ColorModel(
+        lhs.component_0 - rhs.component_0, lhs.component_1 - rhs.component_1, lhs.component_2 - rhs.component_2,
+        lhs.component_3 - rhs.component_3, lhs.component_4 - rhs.component_4, lhs.component_5 - rhs.component_5,
+        lhs.component_6 - rhs.component_6, lhs.component_7 - rhs.component_7, lhs.component_8 - rhs.component_8,
+        lhs.component_9 - rhs.component_9
+    )
+}
+
+@_inlineable
+public func *(lhs: Double, rhs: Device10ColorModel) -> Device10ColorModel {
+    return Device10ColorModel(
+        lhs * rhs.component_0, lhs * rhs.component_1, lhs * rhs.component_2,
+        lhs * rhs.component_3, lhs * rhs.component_4, lhs * rhs.component_5,
+        lhs * rhs.component_6, lhs * rhs.component_7, lhs * rhs.component_8,
+        lhs * rhs.component_9
+    )
+}
+@_inlineable
+public func *(lhs: Device10ColorModel, rhs: Double) -> Device10ColorModel {
+    return Device10ColorModel(
+        lhs.component_0 * rhs, lhs.component_1 * rhs, lhs.component_2 * rhs,
+        lhs.component_3 * rhs, lhs.component_4 * rhs, lhs.component_5 * rhs,
+        lhs.component_6 * rhs, lhs.component_7 * rhs, lhs.component_8 * rhs,
+        lhs.component_9 * rhs
+    )
+}
+
+@_inlineable
+public func /(lhs: Device10ColorModel, rhs: Double) -> Device10ColorModel {
+    return Device10ColorModel(
+        lhs.component_0 / rhs, lhs.component_1 / rhs, lhs.component_2 / rhs,
+        lhs.component_3 / rhs, lhs.component_4 / rhs, lhs.component_5 / rhs,
+        lhs.component_6 / rhs, lhs.component_7 / rhs, lhs.component_8 / rhs,
+        lhs.component_9 / rhs
+    )
+}
+
+@_inlineable
+public func *= (lhs: inout Device10ColorModel, rhs: Double) {
+    lhs.component_0 *= rhs
+    lhs.component_1 *= rhs
+    lhs.component_2 *= rhs
+    lhs.component_3 *= rhs
+    lhs.component_4 *= rhs
+    lhs.component_5 *= rhs
+    lhs.component_6 *= rhs
+    lhs.component_7 *= rhs
+    lhs.component_8 *= rhs
+    lhs.component_9 *= rhs
+}
+@_inlineable
+public func /= (lhs: inout Device10ColorModel, rhs: Double) {
+    lhs.component_0 /= rhs
+    lhs.component_1 /= rhs
+    lhs.component_2 /= rhs
+    lhs.component_3 /= rhs
+    lhs.component_4 /= rhs
+    lhs.component_5 /= rhs
+    lhs.component_6 /= rhs
+    lhs.component_7 /= rhs
+    lhs.component_8 /= rhs
+    lhs.component_9 /= rhs
+}
+@_inlineable
+public func += (lhs: inout Device10ColorModel, rhs: Device10ColorModel) {
+    lhs.component_0 += rhs.component_0
+    lhs.component_1 += rhs.component_1
+    lhs.component_2 += rhs.component_2
+    lhs.component_3 += rhs.component_3
+    lhs.component_4 += rhs.component_4
+    lhs.component_5 += rhs.component_5
+    lhs.component_6 += rhs.component_6
+    lhs.component_7 += rhs.component_7
+    lhs.component_8 += rhs.component_8
+    lhs.component_9 += rhs.component_9
+}
+@_inlineable
+public func -= (lhs: inout Device10ColorModel, rhs: Device10ColorModel) {
+    lhs.component_0 -= rhs.component_0
+    lhs.component_1 -= rhs.component_1
+    lhs.component_2 -= rhs.component_2
+    lhs.component_3 -= rhs.component_3
+    lhs.component_4 -= rhs.component_4
+    lhs.component_5 -= rhs.component_5
+    lhs.component_6 -= rhs.component_6
+    lhs.component_7 -= rhs.component_7
+    lhs.component_8 -= rhs.component_8
+    lhs.component_9 -= rhs.component_9
+}
+@_inlineable
+public func ==(lhs: Device10ColorModel, rhs: Device10ColorModel) -> Bool {
+    return lhs.component_0 == rhs.component_0 && lhs.component_1 == rhs.component_1 && lhs.component_2 == rhs.component_2
+        && lhs.component_3 == rhs.component_3 && lhs.component_4 == rhs.component_4 && lhs.component_5 == rhs.component_5
+        && lhs.component_6 == rhs.component_6 && lhs.component_7 == rhs.component_7 && lhs.component_8 == rhs.component_8
+        && lhs.component_9 == rhs.component_9
+}
+@_inlineable
+public func !=(lhs: Device10ColorModel, rhs: Device10ColorModel) -> Bool {
+    return lhs.component_0 != rhs.component_0 || lhs.component_1 != rhs.component_1 || lhs.component_2 != rhs.component_2
+        || lhs.component_3 != rhs.component_3 || lhs.component_4 != rhs.component_4 || lhs.component_5 != rhs.component_5
+        || lhs.component_6 != rhs.component_6 || lhs.component_7 != rhs.component_7 || lhs.component_8 != rhs.component_8
+        || lhs.component_9 != rhs.component_9
+}
+
 
 public struct Device11ColorModel : DeviceNColorModelProtocol {
     
@@ -601,6 +1555,24 @@ public struct Device11ColorModel : DeviceNColorModelProtocol {
     }
     
     @_inlineable
+    public init(_ component_0: Double, _ component_1: Double, _ component_2: Double,
+                _ component_3: Double, _ component_4: Double, _ component_5: Double,
+                _ component_6: Double, _ component_7: Double, _ component_8: Double,
+                _ component_9: Double, _ component_10: Double) {
+        self.component_0 = component_0
+        self.component_1 = component_1
+        self.component_2 = component_2
+        self.component_3 = component_3
+        self.component_4 = component_4
+        self.component_5 = component_5
+        self.component_6 = component_6
+        self.component_7 = component_7
+        self.component_8 = component_8
+        self.component_9 = component_9
+        self.component_10 = component_10
+    }
+    
+    @_inlineable
     public subscript(position: Int) -> Double {
         get {
             switch position {
@@ -636,6 +1608,139 @@ public struct Device11ColorModel : DeviceNColorModelProtocol {
         }
     }
 }
+
+@_inlineable
+public prefix func +(val: Device11ColorModel) -> Device11ColorModel {
+    return val
+}
+@_inlineable
+public prefix func -(val: Device11ColorModel) -> Device11ColorModel {
+    return Device11ColorModel(
+        -val.component_0, -val.component_1, -val.component_2,
+        -val.component_3, -val.component_4, -val.component_5,
+        -val.component_6, -val.component_7, -val.component_8,
+        -val.component_9, -val.component_10
+    )
+}
+@_inlineable
+public func +(lhs: Device11ColorModel, rhs: Device11ColorModel) -> Device11ColorModel {
+    return Device11ColorModel(
+        lhs.component_0 + rhs.component_0, lhs.component_1 + rhs.component_1, lhs.component_2 + rhs.component_2,
+        lhs.component_3 + rhs.component_3, lhs.component_4 + rhs.component_4, lhs.component_5 + rhs.component_5,
+        lhs.component_6 + rhs.component_6, lhs.component_7 + rhs.component_7, lhs.component_8 + rhs.component_8,
+        lhs.component_9 + rhs.component_9, lhs.component_10 + rhs.component_10
+    )
+}
+@_inlineable
+public func -(lhs: Device11ColorModel, rhs: Device11ColorModel) -> Device11ColorModel {
+    return Device11ColorModel(
+        lhs.component_0 - rhs.component_0, lhs.component_1 - rhs.component_1, lhs.component_2 - rhs.component_2,
+        lhs.component_3 - rhs.component_3, lhs.component_4 - rhs.component_4, lhs.component_5 - rhs.component_5,
+        lhs.component_6 - rhs.component_6, lhs.component_7 - rhs.component_7, lhs.component_8 - rhs.component_8,
+        lhs.component_9 - rhs.component_9, lhs.component_10 - rhs.component_10
+    )
+}
+
+@_inlineable
+public func *(lhs: Double, rhs: Device11ColorModel) -> Device11ColorModel {
+    return Device11ColorModel(
+        lhs * rhs.component_0, lhs * rhs.component_1, lhs * rhs.component_2,
+        lhs * rhs.component_3, lhs * rhs.component_4, lhs * rhs.component_5,
+        lhs * rhs.component_6, lhs * rhs.component_7, lhs * rhs.component_8,
+        lhs * rhs.component_9, lhs * rhs.component_10
+    )
+}
+@_inlineable
+public func *(lhs: Device11ColorModel, rhs: Double) -> Device11ColorModel {
+    return Device11ColorModel(
+        lhs.component_0 * rhs, lhs.component_1 * rhs, lhs.component_2 * rhs,
+        lhs.component_3 * rhs, lhs.component_4 * rhs, lhs.component_5 * rhs,
+        lhs.component_6 * rhs, lhs.component_7 * rhs, lhs.component_8 * rhs,
+        lhs.component_9 * rhs, lhs.component_10 * rhs
+    )
+}
+
+@_inlineable
+public func /(lhs: Device11ColorModel, rhs: Double) -> Device11ColorModel {
+    return Device11ColorModel(
+        lhs.component_0 / rhs, lhs.component_1 / rhs, lhs.component_2 / rhs,
+        lhs.component_3 / rhs, lhs.component_4 / rhs, lhs.component_5 / rhs,
+        lhs.component_6 / rhs, lhs.component_7 / rhs, lhs.component_8 / rhs,
+        lhs.component_9 / rhs, lhs.component_10 / rhs
+    )
+}
+
+@_inlineable
+public func *= (lhs: inout Device11ColorModel, rhs: Double) {
+    lhs.component_0 *= rhs
+    lhs.component_1 *= rhs
+    lhs.component_2 *= rhs
+    lhs.component_3 *= rhs
+    lhs.component_4 *= rhs
+    lhs.component_5 *= rhs
+    lhs.component_6 *= rhs
+    lhs.component_7 *= rhs
+    lhs.component_8 *= rhs
+    lhs.component_9 *= rhs
+    lhs.component_10 *= rhs
+}
+@_inlineable
+public func /= (lhs: inout Device11ColorModel, rhs: Double) {
+    lhs.component_0 /= rhs
+    lhs.component_1 /= rhs
+    lhs.component_2 /= rhs
+    lhs.component_3 /= rhs
+    lhs.component_4 /= rhs
+    lhs.component_5 /= rhs
+    lhs.component_6 /= rhs
+    lhs.component_7 /= rhs
+    lhs.component_8 /= rhs
+    lhs.component_9 /= rhs
+    lhs.component_10 /= rhs
+}
+@_inlineable
+public func += (lhs: inout Device11ColorModel, rhs: Device11ColorModel) {
+    lhs.component_0 += rhs.component_0
+    lhs.component_1 += rhs.component_1
+    lhs.component_2 += rhs.component_2
+    lhs.component_3 += rhs.component_3
+    lhs.component_4 += rhs.component_4
+    lhs.component_5 += rhs.component_5
+    lhs.component_6 += rhs.component_6
+    lhs.component_7 += rhs.component_7
+    lhs.component_8 += rhs.component_8
+    lhs.component_9 += rhs.component_9
+    lhs.component_10 += rhs.component_10
+}
+@_inlineable
+public func -= (lhs: inout Device11ColorModel, rhs: Device11ColorModel) {
+    lhs.component_0 -= rhs.component_0
+    lhs.component_1 -= rhs.component_1
+    lhs.component_2 -= rhs.component_2
+    lhs.component_3 -= rhs.component_3
+    lhs.component_4 -= rhs.component_4
+    lhs.component_5 -= rhs.component_5
+    lhs.component_6 -= rhs.component_6
+    lhs.component_7 -= rhs.component_7
+    lhs.component_8 -= rhs.component_8
+    lhs.component_9 -= rhs.component_9
+    lhs.component_10 -= rhs.component_10
+}
+@_inlineable
+public func ==(lhs: Device11ColorModel, rhs: Device11ColorModel) -> Bool {
+    return lhs.component_0 == rhs.component_0 && lhs.component_1 == rhs.component_1 && lhs.component_2 == rhs.component_2
+        && lhs.component_3 == rhs.component_3 && lhs.component_4 == rhs.component_4 && lhs.component_5 == rhs.component_5
+        && lhs.component_6 == rhs.component_6 && lhs.component_7 == rhs.component_7 && lhs.component_8 == rhs.component_8
+        && lhs.component_9 == rhs.component_9 && lhs.component_10 == rhs.component_10
+}
+@_inlineable
+public func !=(lhs: Device11ColorModel, rhs: Device11ColorModel) -> Bool {
+    return lhs.component_0 != rhs.component_0 || lhs.component_1 != rhs.component_1 || lhs.component_2 != rhs.component_2
+        || lhs.component_3 != rhs.component_3 || lhs.component_4 != rhs.component_4 || lhs.component_5 != rhs.component_5
+        || lhs.component_6 != rhs.component_6 || lhs.component_7 != rhs.component_7 || lhs.component_8 != rhs.component_8
+        || lhs.component_9 != rhs.component_9 || lhs.component_10 != rhs.component_10
+}
+
 
 public struct Device12ColorModel : DeviceNColorModelProtocol {
     
@@ -682,6 +1787,25 @@ public struct Device12ColorModel : DeviceNColorModelProtocol {
     }
     
     @_inlineable
+    public init(_ component_0: Double, _ component_1: Double, _ component_2: Double,
+                _ component_3: Double, _ component_4: Double, _ component_5: Double,
+                _ component_6: Double, _ component_7: Double, _ component_8: Double,
+                _ component_9: Double, _ component_10: Double, _ component_11: Double) {
+        self.component_0 = component_0
+        self.component_1 = component_1
+        self.component_2 = component_2
+        self.component_3 = component_3
+        self.component_4 = component_4
+        self.component_5 = component_5
+        self.component_6 = component_6
+        self.component_7 = component_7
+        self.component_8 = component_8
+        self.component_9 = component_9
+        self.component_10 = component_10
+        self.component_11 = component_11
+    }
+    
+    @_inlineable
     public subscript(position: Int) -> Double {
         get {
             switch position {
@@ -719,6 +1843,143 @@ public struct Device12ColorModel : DeviceNColorModelProtocol {
         }
     }
 }
+
+@_inlineable
+public prefix func +(val: Device12ColorModel) -> Device12ColorModel {
+    return val
+}
+@_inlineable
+public prefix func -(val: Device12ColorModel) -> Device12ColorModel {
+    return Device12ColorModel(
+        -val.component_0, -val.component_1, -val.component_2,
+        -val.component_3, -val.component_4, -val.component_5,
+        -val.component_6, -val.component_7, -val.component_8,
+        -val.component_9, -val.component_10, -val.component_11
+    )
+}
+@_inlineable
+public func +(lhs: Device12ColorModel, rhs: Device12ColorModel) -> Device12ColorModel {
+    return Device12ColorModel(
+        lhs.component_0 + rhs.component_0, lhs.component_1 + rhs.component_1, lhs.component_2 + rhs.component_2,
+        lhs.component_3 + rhs.component_3, lhs.component_4 + rhs.component_4, lhs.component_5 + rhs.component_5,
+        lhs.component_6 + rhs.component_6, lhs.component_7 + rhs.component_7, lhs.component_8 + rhs.component_8,
+        lhs.component_9 + rhs.component_9, lhs.component_10 + rhs.component_10, lhs.component_11 + rhs.component_11
+    )
+}
+@_inlineable
+public func -(lhs: Device12ColorModel, rhs: Device12ColorModel) -> Device12ColorModel {
+    return Device12ColorModel(
+        lhs.component_0 - rhs.component_0, lhs.component_1 - rhs.component_1, lhs.component_2 - rhs.component_2,
+        lhs.component_3 - rhs.component_3, lhs.component_4 - rhs.component_4, lhs.component_5 - rhs.component_5,
+        lhs.component_6 - rhs.component_6, lhs.component_7 - rhs.component_7, lhs.component_8 - rhs.component_8,
+        lhs.component_9 - rhs.component_9, lhs.component_10 - rhs.component_10, lhs.component_11 - rhs.component_11
+    )
+}
+
+@_inlineable
+public func *(lhs: Double, rhs: Device12ColorModel) -> Device12ColorModel {
+    return Device12ColorModel(
+        lhs * rhs.component_0, lhs * rhs.component_1, lhs * rhs.component_2,
+        lhs * rhs.component_3, lhs * rhs.component_4, lhs * rhs.component_5,
+        lhs * rhs.component_6, lhs * rhs.component_7, lhs * rhs.component_8,
+        lhs * rhs.component_9, lhs * rhs.component_10, lhs * rhs.component_11
+    )
+}
+@_inlineable
+public func *(lhs: Device12ColorModel, rhs: Double) -> Device12ColorModel {
+    return Device12ColorModel(
+        lhs.component_0 * rhs, lhs.component_1 * rhs, lhs.component_2 * rhs,
+        lhs.component_3 * rhs, lhs.component_4 * rhs, lhs.component_5 * rhs,
+        lhs.component_6 * rhs, lhs.component_7 * rhs, lhs.component_8 * rhs,
+        lhs.component_9 * rhs, lhs.component_10 * rhs, lhs.component_11 * rhs
+    )
+}
+
+@_inlineable
+public func /(lhs: Device12ColorModel, rhs: Double) -> Device12ColorModel {
+    return Device12ColorModel(
+        lhs.component_0 / rhs, lhs.component_1 / rhs, lhs.component_2 / rhs,
+        lhs.component_3 / rhs, lhs.component_4 / rhs, lhs.component_5 / rhs,
+        lhs.component_6 / rhs, lhs.component_7 / rhs, lhs.component_8 / rhs,
+        lhs.component_9 / rhs, lhs.component_10 / rhs, lhs.component_11 / rhs
+    )
+}
+
+@_inlineable
+public func *= (lhs: inout Device12ColorModel, rhs: Double) {
+    lhs.component_0 *= rhs
+    lhs.component_1 *= rhs
+    lhs.component_2 *= rhs
+    lhs.component_3 *= rhs
+    lhs.component_4 *= rhs
+    lhs.component_5 *= rhs
+    lhs.component_6 *= rhs
+    lhs.component_7 *= rhs
+    lhs.component_8 *= rhs
+    lhs.component_9 *= rhs
+    lhs.component_10 *= rhs
+    lhs.component_11 *= rhs
+}
+@_inlineable
+public func /= (lhs: inout Device12ColorModel, rhs: Double) {
+    lhs.component_0 /= rhs
+    lhs.component_1 /= rhs
+    lhs.component_2 /= rhs
+    lhs.component_3 /= rhs
+    lhs.component_4 /= rhs
+    lhs.component_5 /= rhs
+    lhs.component_6 /= rhs
+    lhs.component_7 /= rhs
+    lhs.component_8 /= rhs
+    lhs.component_9 /= rhs
+    lhs.component_10 /= rhs
+    lhs.component_11 /= rhs
+}
+@_inlineable
+public func += (lhs: inout Device12ColorModel, rhs: Device12ColorModel) {
+    lhs.component_0 += rhs.component_0
+    lhs.component_1 += rhs.component_1
+    lhs.component_2 += rhs.component_2
+    lhs.component_3 += rhs.component_3
+    lhs.component_4 += rhs.component_4
+    lhs.component_5 += rhs.component_5
+    lhs.component_6 += rhs.component_6
+    lhs.component_7 += rhs.component_7
+    lhs.component_8 += rhs.component_8
+    lhs.component_9 += rhs.component_9
+    lhs.component_10 += rhs.component_10
+    lhs.component_11 += rhs.component_11
+}
+@_inlineable
+public func -= (lhs: inout Device12ColorModel, rhs: Device12ColorModel) {
+    lhs.component_0 -= rhs.component_0
+    lhs.component_1 -= rhs.component_1
+    lhs.component_2 -= rhs.component_2
+    lhs.component_3 -= rhs.component_3
+    lhs.component_4 -= rhs.component_4
+    lhs.component_5 -= rhs.component_5
+    lhs.component_6 -= rhs.component_6
+    lhs.component_7 -= rhs.component_7
+    lhs.component_8 -= rhs.component_8
+    lhs.component_9 -= rhs.component_9
+    lhs.component_10 -= rhs.component_10
+    lhs.component_11 -= rhs.component_11
+}
+@_inlineable
+public func ==(lhs: Device12ColorModel, rhs: Device12ColorModel) -> Bool {
+    return lhs.component_0 == rhs.component_0 && lhs.component_1 == rhs.component_1 && lhs.component_2 == rhs.component_2
+        && lhs.component_3 == rhs.component_3 && lhs.component_4 == rhs.component_4 && lhs.component_5 == rhs.component_5
+        && lhs.component_6 == rhs.component_6 && lhs.component_7 == rhs.component_7 && lhs.component_8 == rhs.component_8
+        && lhs.component_9 == rhs.component_9 && lhs.component_10 == rhs.component_10 && lhs.component_11 == rhs.component_11
+}
+@_inlineable
+public func !=(lhs: Device12ColorModel, rhs: Device12ColorModel) -> Bool {
+    return lhs.component_0 != rhs.component_0 || lhs.component_1 != rhs.component_1 || lhs.component_2 != rhs.component_2
+        || lhs.component_3 != rhs.component_3 || lhs.component_4 != rhs.component_4 || lhs.component_5 != rhs.component_5
+        || lhs.component_6 != rhs.component_6 || lhs.component_7 != rhs.component_7 || lhs.component_8 != rhs.component_8
+        || lhs.component_9 != rhs.component_9 || lhs.component_10 != rhs.component_10 || lhs.component_11 != rhs.component_11
+}
+
 
 public struct Device13ColorModel : DeviceNColorModelProtocol {
     
@@ -767,6 +2028,27 @@ public struct Device13ColorModel : DeviceNColorModelProtocol {
     }
     
     @_inlineable
+    public init(_ component_0: Double, _ component_1: Double, _ component_2: Double,
+                _ component_3: Double, _ component_4: Double, _ component_5: Double,
+                _ component_6: Double, _ component_7: Double, _ component_8: Double,
+                _ component_9: Double, _ component_10: Double, _ component_11: Double,
+                _ component_12: Double) {
+        self.component_0 = component_0
+        self.component_1 = component_1
+        self.component_2 = component_2
+        self.component_3 = component_3
+        self.component_4 = component_4
+        self.component_5 = component_5
+        self.component_6 = component_6
+        self.component_7 = component_7
+        self.component_8 = component_8
+        self.component_9 = component_9
+        self.component_10 = component_10
+        self.component_11 = component_11
+        self.component_12 = component_12
+    }
+    
+    @_inlineable
     public subscript(position: Int) -> Double {
         get {
             switch position {
@@ -806,6 +2088,155 @@ public struct Device13ColorModel : DeviceNColorModelProtocol {
         }
     }
 }
+
+@_inlineable
+public prefix func +(val: Device13ColorModel) -> Device13ColorModel {
+    return val
+}
+@_inlineable
+public prefix func -(val: Device13ColorModel) -> Device13ColorModel {
+    return Device13ColorModel(
+        -val.component_0, -val.component_1, -val.component_2,
+        -val.component_3, -val.component_4, -val.component_5,
+        -val.component_6, -val.component_7, -val.component_8,
+        -val.component_9, -val.component_10, -val.component_11,
+        -val.component_12
+    )
+}
+@_inlineable
+public func +(lhs: Device13ColorModel, rhs: Device13ColorModel) -> Device13ColorModel {
+    return Device13ColorModel(
+        lhs.component_0 + rhs.component_0, lhs.component_1 + rhs.component_1, lhs.component_2 + rhs.component_2,
+        lhs.component_3 + rhs.component_3, lhs.component_4 + rhs.component_4, lhs.component_5 + rhs.component_5,
+        lhs.component_6 + rhs.component_6, lhs.component_7 + rhs.component_7, lhs.component_8 + rhs.component_8,
+        lhs.component_9 + rhs.component_9, lhs.component_10 + rhs.component_10, lhs.component_11 + rhs.component_11,
+        lhs.component_12 + rhs.component_12
+    )
+}
+@_inlineable
+public func -(lhs: Device13ColorModel, rhs: Device13ColorModel) -> Device13ColorModel {
+    return Device13ColorModel(
+        lhs.component_0 - rhs.component_0, lhs.component_1 - rhs.component_1, lhs.component_2 - rhs.component_2,
+        lhs.component_3 - rhs.component_3, lhs.component_4 - rhs.component_4, lhs.component_5 - rhs.component_5,
+        lhs.component_6 - rhs.component_6, lhs.component_7 - rhs.component_7, lhs.component_8 - rhs.component_8,
+        lhs.component_9 - rhs.component_9, lhs.component_10 - rhs.component_10, lhs.component_11 - rhs.component_11,
+        lhs.component_12 - rhs.component_12
+    )
+}
+
+@_inlineable
+public func *(lhs: Double, rhs: Device13ColorModel) -> Device13ColorModel {
+    return Device13ColorModel(
+        lhs * rhs.component_0, lhs * rhs.component_1, lhs * rhs.component_2,
+        lhs * rhs.component_3, lhs * rhs.component_4, lhs * rhs.component_5,
+        lhs * rhs.component_6, lhs * rhs.component_7, lhs * rhs.component_8,
+        lhs * rhs.component_9, lhs * rhs.component_10, lhs * rhs.component_11,
+        lhs * rhs.component_12
+    )
+}
+@_inlineable
+public func *(lhs: Device13ColorModel, rhs: Double) -> Device13ColorModel {
+    return Device13ColorModel(
+        lhs.component_0 * rhs, lhs.component_1 * rhs, lhs.component_2 * rhs,
+        lhs.component_3 * rhs, lhs.component_4 * rhs, lhs.component_5 * rhs,
+        lhs.component_6 * rhs, lhs.component_7 * rhs, lhs.component_8 * rhs,
+        lhs.component_9 * rhs, lhs.component_10 * rhs, lhs.component_11 * rhs,
+        lhs.component_12 * rhs
+    )
+}
+
+@_inlineable
+public func /(lhs: Device13ColorModel, rhs: Double) -> Device13ColorModel {
+    return Device13ColorModel(
+        lhs.component_0 / rhs, lhs.component_1 / rhs, lhs.component_2 / rhs,
+        lhs.component_3 / rhs, lhs.component_4 / rhs, lhs.component_5 / rhs,
+        lhs.component_6 / rhs, lhs.component_7 / rhs, lhs.component_8 / rhs,
+        lhs.component_9 / rhs, lhs.component_10 / rhs, lhs.component_11 / rhs,
+        lhs.component_12 / rhs
+    )
+}
+
+@_inlineable
+public func *= (lhs: inout Device13ColorModel, rhs: Double) {
+    lhs.component_0 *= rhs
+    lhs.component_1 *= rhs
+    lhs.component_2 *= rhs
+    lhs.component_3 *= rhs
+    lhs.component_4 *= rhs
+    lhs.component_5 *= rhs
+    lhs.component_6 *= rhs
+    lhs.component_7 *= rhs
+    lhs.component_8 *= rhs
+    lhs.component_9 *= rhs
+    lhs.component_10 *= rhs
+    lhs.component_11 *= rhs
+    lhs.component_12 *= rhs
+}
+@_inlineable
+public func /= (lhs: inout Device13ColorModel, rhs: Double) {
+    lhs.component_0 /= rhs
+    lhs.component_1 /= rhs
+    lhs.component_2 /= rhs
+    lhs.component_3 /= rhs
+    lhs.component_4 /= rhs
+    lhs.component_5 /= rhs
+    lhs.component_6 /= rhs
+    lhs.component_7 /= rhs
+    lhs.component_8 /= rhs
+    lhs.component_9 /= rhs
+    lhs.component_10 /= rhs
+    lhs.component_11 /= rhs
+    lhs.component_12 /= rhs
+}
+@_inlineable
+public func += (lhs: inout Device13ColorModel, rhs: Device13ColorModel) {
+    lhs.component_0 += rhs.component_0
+    lhs.component_1 += rhs.component_1
+    lhs.component_2 += rhs.component_2
+    lhs.component_3 += rhs.component_3
+    lhs.component_4 += rhs.component_4
+    lhs.component_5 += rhs.component_5
+    lhs.component_6 += rhs.component_6
+    lhs.component_7 += rhs.component_7
+    lhs.component_8 += rhs.component_8
+    lhs.component_9 += rhs.component_9
+    lhs.component_10 += rhs.component_10
+    lhs.component_11 += rhs.component_11
+    lhs.component_12 += rhs.component_12
+}
+@_inlineable
+public func -= (lhs: inout Device13ColorModel, rhs: Device13ColorModel) {
+    lhs.component_0 -= rhs.component_0
+    lhs.component_1 -= rhs.component_1
+    lhs.component_2 -= rhs.component_2
+    lhs.component_3 -= rhs.component_3
+    lhs.component_4 -= rhs.component_4
+    lhs.component_5 -= rhs.component_5
+    lhs.component_6 -= rhs.component_6
+    lhs.component_7 -= rhs.component_7
+    lhs.component_8 -= rhs.component_8
+    lhs.component_9 -= rhs.component_9
+    lhs.component_10 -= rhs.component_10
+    lhs.component_11 -= rhs.component_11
+    lhs.component_12 -= rhs.component_12
+}
+@_inlineable
+public func ==(lhs: Device13ColorModel, rhs: Device13ColorModel) -> Bool {
+    return lhs.component_0 == rhs.component_0 && lhs.component_1 == rhs.component_1 && lhs.component_2 == rhs.component_2
+        && lhs.component_3 == rhs.component_3 && lhs.component_4 == rhs.component_4 && lhs.component_5 == rhs.component_5
+        && lhs.component_6 == rhs.component_6 && lhs.component_7 == rhs.component_7 && lhs.component_8 == rhs.component_8
+        && lhs.component_9 == rhs.component_9 && lhs.component_10 == rhs.component_10 && lhs.component_11 == rhs.component_11
+        && lhs.component_12 == rhs.component_12
+}
+@_inlineable
+public func !=(lhs: Device13ColorModel, rhs: Device13ColorModel) -> Bool {
+    return lhs.component_0 != rhs.component_0 || lhs.component_1 != rhs.component_1 || lhs.component_2 != rhs.component_2
+        || lhs.component_3 != rhs.component_3 || lhs.component_4 != rhs.component_4 || lhs.component_5 != rhs.component_5
+        || lhs.component_6 != rhs.component_6 || lhs.component_7 != rhs.component_7 || lhs.component_8 != rhs.component_8
+        || lhs.component_9 != rhs.component_9 || lhs.component_10 != rhs.component_10 || lhs.component_11 != rhs.component_11
+        || lhs.component_12 != rhs.component_12
+}
+
 
 public struct Device14ColorModel : DeviceNColorModelProtocol {
     
@@ -856,6 +2287,28 @@ public struct Device14ColorModel : DeviceNColorModelProtocol {
     }
     
     @_inlineable
+    public init(_ component_0: Double, _ component_1: Double, _ component_2: Double,
+                _ component_3: Double, _ component_4: Double, _ component_5: Double,
+                _ component_6: Double, _ component_7: Double, _ component_8: Double,
+                _ component_9: Double, _ component_10: Double, _ component_11: Double,
+                _ component_12: Double, _ component_13: Double) {
+        self.component_0 = component_0
+        self.component_1 = component_1
+        self.component_2 = component_2
+        self.component_3 = component_3
+        self.component_4 = component_4
+        self.component_5 = component_5
+        self.component_6 = component_6
+        self.component_7 = component_7
+        self.component_8 = component_8
+        self.component_9 = component_9
+        self.component_10 = component_10
+        self.component_11 = component_11
+        self.component_12 = component_12
+        self.component_13 = component_13
+    }
+    
+    @_inlineable
     public subscript(position: Int) -> Double {
         get {
             switch position {
@@ -897,6 +2350,159 @@ public struct Device14ColorModel : DeviceNColorModelProtocol {
         }
     }
 }
+
+@_inlineable
+public prefix func +(val: Device14ColorModel) -> Device14ColorModel {
+    return val
+}
+@_inlineable
+public prefix func -(val: Device14ColorModel) -> Device14ColorModel {
+    return Device14ColorModel(
+        -val.component_0, -val.component_1, -val.component_2,
+        -val.component_3, -val.component_4, -val.component_5,
+        -val.component_6, -val.component_7, -val.component_8,
+        -val.component_9, -val.component_10, -val.component_11,
+        -val.component_12, -val.component_13
+    )
+}
+@_inlineable
+public func +(lhs: Device14ColorModel, rhs: Device14ColorModel) -> Device14ColorModel {
+    return Device14ColorModel(
+        lhs.component_0 + rhs.component_0, lhs.component_1 + rhs.component_1, lhs.component_2 + rhs.component_2,
+        lhs.component_3 + rhs.component_3, lhs.component_4 + rhs.component_4, lhs.component_5 + rhs.component_5,
+        lhs.component_6 + rhs.component_6, lhs.component_7 + rhs.component_7, lhs.component_8 + rhs.component_8,
+        lhs.component_9 + rhs.component_9, lhs.component_10 + rhs.component_10, lhs.component_11 + rhs.component_11,
+        lhs.component_12 + rhs.component_12, lhs.component_13 + rhs.component_13
+    )
+}
+@_inlineable
+public func -(lhs: Device14ColorModel, rhs: Device14ColorModel) -> Device14ColorModel {
+    return Device14ColorModel(
+        lhs.component_0 - rhs.component_0, lhs.component_1 - rhs.component_1, lhs.component_2 - rhs.component_2,
+        lhs.component_3 - rhs.component_3, lhs.component_4 - rhs.component_4, lhs.component_5 - rhs.component_5,
+        lhs.component_6 - rhs.component_6, lhs.component_7 - rhs.component_7, lhs.component_8 - rhs.component_8,
+        lhs.component_9 - rhs.component_9, lhs.component_10 - rhs.component_10, lhs.component_11 - rhs.component_11,
+        lhs.component_12 - rhs.component_12, lhs.component_13 - rhs.component_13
+    )
+}
+
+@_inlineable
+public func *(lhs: Double, rhs: Device14ColorModel) -> Device14ColorModel {
+    return Device14ColorModel(
+        lhs * rhs.component_0, lhs * rhs.component_1, lhs * rhs.component_2,
+        lhs * rhs.component_3, lhs * rhs.component_4, lhs * rhs.component_5,
+        lhs * rhs.component_6, lhs * rhs.component_7, lhs * rhs.component_8,
+        lhs * rhs.component_9, lhs * rhs.component_10, lhs * rhs.component_11,
+        lhs * rhs.component_12, lhs * rhs.component_13
+    )
+}
+@_inlineable
+public func *(lhs: Device14ColorModel, rhs: Double) -> Device14ColorModel {
+    return Device14ColorModel(
+        lhs.component_0 * rhs, lhs.component_1 * rhs, lhs.component_2 * rhs,
+        lhs.component_3 * rhs, lhs.component_4 * rhs, lhs.component_5 * rhs,
+        lhs.component_6 * rhs, lhs.component_7 * rhs, lhs.component_8 * rhs,
+        lhs.component_9 * rhs, lhs.component_10 * rhs, lhs.component_11 * rhs,
+        lhs.component_12 * rhs, lhs.component_13 * rhs
+    )
+}
+
+@_inlineable
+public func /(lhs: Device14ColorModel, rhs: Double) -> Device14ColorModel {
+    return Device14ColorModel(
+        lhs.component_0 / rhs, lhs.component_1 / rhs, lhs.component_2 / rhs,
+        lhs.component_3 / rhs, lhs.component_4 / rhs, lhs.component_5 / rhs,
+        lhs.component_6 / rhs, lhs.component_7 / rhs, lhs.component_8 / rhs,
+        lhs.component_9 / rhs, lhs.component_10 / rhs, lhs.component_11 / rhs,
+        lhs.component_12 / rhs, lhs.component_13 / rhs
+    )
+}
+
+@_inlineable
+public func *= (lhs: inout Device14ColorModel, rhs: Double) {
+    lhs.component_0 *= rhs
+    lhs.component_1 *= rhs
+    lhs.component_2 *= rhs
+    lhs.component_3 *= rhs
+    lhs.component_4 *= rhs
+    lhs.component_5 *= rhs
+    lhs.component_6 *= rhs
+    lhs.component_7 *= rhs
+    lhs.component_8 *= rhs
+    lhs.component_9 *= rhs
+    lhs.component_10 *= rhs
+    lhs.component_11 *= rhs
+    lhs.component_12 *= rhs
+    lhs.component_13 *= rhs
+}
+@_inlineable
+public func /= (lhs: inout Device14ColorModel, rhs: Double) {
+    lhs.component_0 /= rhs
+    lhs.component_1 /= rhs
+    lhs.component_2 /= rhs
+    lhs.component_3 /= rhs
+    lhs.component_4 /= rhs
+    lhs.component_5 /= rhs
+    lhs.component_6 /= rhs
+    lhs.component_7 /= rhs
+    lhs.component_8 /= rhs
+    lhs.component_9 /= rhs
+    lhs.component_10 /= rhs
+    lhs.component_11 /= rhs
+    lhs.component_12 /= rhs
+    lhs.component_13 /= rhs
+}
+@_inlineable
+public func += (lhs: inout Device14ColorModel, rhs: Device14ColorModel) {
+    lhs.component_0 += rhs.component_0
+    lhs.component_1 += rhs.component_1
+    lhs.component_2 += rhs.component_2
+    lhs.component_3 += rhs.component_3
+    lhs.component_4 += rhs.component_4
+    lhs.component_5 += rhs.component_5
+    lhs.component_6 += rhs.component_6
+    lhs.component_7 += rhs.component_7
+    lhs.component_8 += rhs.component_8
+    lhs.component_9 += rhs.component_9
+    lhs.component_10 += rhs.component_10
+    lhs.component_11 += rhs.component_11
+    lhs.component_12 += rhs.component_12
+    lhs.component_13 += rhs.component_13
+}
+@_inlineable
+public func -= (lhs: inout Device14ColorModel, rhs: Device14ColorModel) {
+    lhs.component_0 -= rhs.component_0
+    lhs.component_1 -= rhs.component_1
+    lhs.component_2 -= rhs.component_2
+    lhs.component_3 -= rhs.component_3
+    lhs.component_4 -= rhs.component_4
+    lhs.component_5 -= rhs.component_5
+    lhs.component_6 -= rhs.component_6
+    lhs.component_7 -= rhs.component_7
+    lhs.component_8 -= rhs.component_8
+    lhs.component_9 -= rhs.component_9
+    lhs.component_10 -= rhs.component_10
+    lhs.component_11 -= rhs.component_11
+    lhs.component_12 -= rhs.component_12
+    lhs.component_13 -= rhs.component_13
+}
+@_inlineable
+public func ==(lhs: Device14ColorModel, rhs: Device14ColorModel) -> Bool {
+    return lhs.component_0 == rhs.component_0 && lhs.component_1 == rhs.component_1 && lhs.component_2 == rhs.component_2
+        && lhs.component_3 == rhs.component_3 && lhs.component_4 == rhs.component_4 && lhs.component_5 == rhs.component_5
+        && lhs.component_6 == rhs.component_6 && lhs.component_7 == rhs.component_7 && lhs.component_8 == rhs.component_8
+        && lhs.component_9 == rhs.component_9 && lhs.component_10 == rhs.component_10 && lhs.component_11 == rhs.component_11
+        && lhs.component_12 == rhs.component_12 && lhs.component_13 == rhs.component_13
+}
+@_inlineable
+public func !=(lhs: Device14ColorModel, rhs: Device14ColorModel) -> Bool {
+    return lhs.component_0 != rhs.component_0 || lhs.component_1 != rhs.component_1 || lhs.component_2 != rhs.component_2
+        || lhs.component_3 != rhs.component_3 || lhs.component_4 != rhs.component_4 || lhs.component_5 != rhs.component_5
+        || lhs.component_6 != rhs.component_6 || lhs.component_7 != rhs.component_7 || lhs.component_8 != rhs.component_8
+        || lhs.component_9 != rhs.component_9 || lhs.component_10 != rhs.component_10 || lhs.component_11 != rhs.component_11
+        || lhs.component_12 != rhs.component_12 || lhs.component_13 != rhs.component_13
+}
+
 
 public struct Device15ColorModel : DeviceNColorModelProtocol {
     
@@ -949,6 +2555,29 @@ public struct Device15ColorModel : DeviceNColorModelProtocol {
     }
     
     @_inlineable
+    public init(_ component_0: Double, _ component_1: Double, _ component_2: Double,
+                _ component_3: Double, _ component_4: Double, _ component_5: Double,
+                _ component_6: Double, _ component_7: Double, _ component_8: Double,
+                _ component_9: Double, _ component_10: Double, _ component_11: Double,
+                _ component_12: Double, _ component_13: Double, _ component_14: Double) {
+        self.component_0 = component_0
+        self.component_1 = component_1
+        self.component_2 = component_2
+        self.component_3 = component_3
+        self.component_4 = component_4
+        self.component_5 = component_5
+        self.component_6 = component_6
+        self.component_7 = component_7
+        self.component_8 = component_8
+        self.component_9 = component_9
+        self.component_10 = component_10
+        self.component_11 = component_11
+        self.component_12 = component_12
+        self.component_13 = component_13
+        self.component_14 = component_14
+    }
+    
+    @_inlineable
     public subscript(position: Int) -> Double {
         get {
             switch position {
@@ -991,5 +2620,161 @@ public struct Device15ColorModel : DeviceNColorModelProtocol {
             }
         }
     }
+}
+
+@_inlineable
+public prefix func +(val: Device15ColorModel) -> Device15ColorModel {
+    return val
+}
+@_inlineable
+public prefix func -(val: Device15ColorModel) -> Device15ColorModel {
+    return Device15ColorModel(
+        -val.component_0, -val.component_1, -val.component_2,
+        -val.component_3, -val.component_4, -val.component_5,
+        -val.component_6, -val.component_7, -val.component_8,
+        -val.component_9, -val.component_10, -val.component_11,
+        -val.component_12, -val.component_13, -val.component_14
+    )
+}
+@_inlineable
+public func +(lhs: Device15ColorModel, rhs: Device15ColorModel) -> Device15ColorModel {
+    return Device15ColorModel(
+        lhs.component_0 + rhs.component_0, lhs.component_1 + rhs.component_1, lhs.component_2 + rhs.component_2,
+        lhs.component_3 + rhs.component_3, lhs.component_4 + rhs.component_4, lhs.component_5 + rhs.component_5,
+        lhs.component_6 + rhs.component_6, lhs.component_7 + rhs.component_7, lhs.component_8 + rhs.component_8,
+        lhs.component_9 + rhs.component_9, lhs.component_10 + rhs.component_10, lhs.component_11 + rhs.component_11,
+        lhs.component_12 + rhs.component_12, lhs.component_13 + rhs.component_13, lhs.component_14 + rhs.component_14
+    )
+}
+@_inlineable
+public func -(lhs: Device15ColorModel, rhs: Device15ColorModel) -> Device15ColorModel {
+    return Device15ColorModel(
+        lhs.component_0 - rhs.component_0, lhs.component_1 - rhs.component_1, lhs.component_2 - rhs.component_2,
+        lhs.component_3 - rhs.component_3, lhs.component_4 - rhs.component_4, lhs.component_5 - rhs.component_5,
+        lhs.component_6 - rhs.component_6, lhs.component_7 - rhs.component_7, lhs.component_8 - rhs.component_8,
+        lhs.component_9 - rhs.component_9, lhs.component_10 - rhs.component_10, lhs.component_11 - rhs.component_11,
+        lhs.component_12 - rhs.component_12, lhs.component_13 - rhs.component_13, lhs.component_14 - rhs.component_14
+    )
+}
+
+@_inlineable
+public func *(lhs: Double, rhs: Device15ColorModel) -> Device15ColorModel {
+    return Device15ColorModel(
+        lhs * rhs.component_0, lhs * rhs.component_1, lhs * rhs.component_2,
+        lhs * rhs.component_3, lhs * rhs.component_4, lhs * rhs.component_5,
+        lhs * rhs.component_6, lhs * rhs.component_7, lhs * rhs.component_8,
+        lhs * rhs.component_9, lhs * rhs.component_10, lhs * rhs.component_11,
+        lhs * rhs.component_12, lhs * rhs.component_13, lhs * rhs.component_14
+    )
+}
+@_inlineable
+public func *(lhs: Device15ColorModel, rhs: Double) -> Device15ColorModel {
+    return Device15ColorModel(
+        lhs.component_0 * rhs, lhs.component_1 * rhs, lhs.component_2 * rhs,
+        lhs.component_3 * rhs, lhs.component_4 * rhs, lhs.component_5 * rhs,
+        lhs.component_6 * rhs, lhs.component_7 * rhs, lhs.component_8 * rhs,
+        lhs.component_9 * rhs, lhs.component_10 * rhs, lhs.component_11 * rhs,
+        lhs.component_12 * rhs, lhs.component_13 * rhs, lhs.component_14 * rhs
+    )
+}
+
+@_inlineable
+public func /(lhs: Device15ColorModel, rhs: Double) -> Device15ColorModel {
+    return Device15ColorModel(
+        lhs.component_0 / rhs, lhs.component_1 / rhs, lhs.component_2 / rhs,
+        lhs.component_3 / rhs, lhs.component_4 / rhs, lhs.component_5 / rhs,
+        lhs.component_6 / rhs, lhs.component_7 / rhs, lhs.component_8 / rhs,
+        lhs.component_9 / rhs, lhs.component_10 / rhs, lhs.component_11 / rhs,
+        lhs.component_12 / rhs, lhs.component_13 / rhs, lhs.component_14 / rhs
+    )
+}
+
+@_inlineable
+public func *= (lhs: inout Device15ColorModel, rhs: Double) {
+    lhs.component_0 *= rhs
+    lhs.component_1 *= rhs
+    lhs.component_2 *= rhs
+    lhs.component_3 *= rhs
+    lhs.component_4 *= rhs
+    lhs.component_5 *= rhs
+    lhs.component_6 *= rhs
+    lhs.component_7 *= rhs
+    lhs.component_8 *= rhs
+    lhs.component_9 *= rhs
+    lhs.component_10 *= rhs
+    lhs.component_11 *= rhs
+    lhs.component_12 *= rhs
+    lhs.component_13 *= rhs
+    lhs.component_14 *= rhs
+}
+@_inlineable
+public func /= (lhs: inout Device15ColorModel, rhs: Double) {
+    lhs.component_0 /= rhs
+    lhs.component_1 /= rhs
+    lhs.component_2 /= rhs
+    lhs.component_3 /= rhs
+    lhs.component_4 /= rhs
+    lhs.component_5 /= rhs
+    lhs.component_6 /= rhs
+    lhs.component_7 /= rhs
+    lhs.component_8 /= rhs
+    lhs.component_9 /= rhs
+    lhs.component_10 /= rhs
+    lhs.component_11 /= rhs
+    lhs.component_12 /= rhs
+    lhs.component_13 /= rhs
+    lhs.component_14 /= rhs
+}
+@_inlineable
+public func += (lhs: inout Device15ColorModel, rhs: Device15ColorModel) {
+    lhs.component_0 += rhs.component_0
+    lhs.component_1 += rhs.component_1
+    lhs.component_2 += rhs.component_2
+    lhs.component_3 += rhs.component_3
+    lhs.component_4 += rhs.component_4
+    lhs.component_5 += rhs.component_5
+    lhs.component_6 += rhs.component_6
+    lhs.component_7 += rhs.component_7
+    lhs.component_8 += rhs.component_8
+    lhs.component_9 += rhs.component_9
+    lhs.component_10 += rhs.component_10
+    lhs.component_11 += rhs.component_11
+    lhs.component_12 += rhs.component_12
+    lhs.component_13 += rhs.component_13
+    lhs.component_14 += rhs.component_14
+}
+@_inlineable
+public func -= (lhs: inout Device15ColorModel, rhs: Device15ColorModel) {
+    lhs.component_0 -= rhs.component_0
+    lhs.component_1 -= rhs.component_1
+    lhs.component_2 -= rhs.component_2
+    lhs.component_3 -= rhs.component_3
+    lhs.component_4 -= rhs.component_4
+    lhs.component_5 -= rhs.component_5
+    lhs.component_6 -= rhs.component_6
+    lhs.component_7 -= rhs.component_7
+    lhs.component_8 -= rhs.component_8
+    lhs.component_9 -= rhs.component_9
+    lhs.component_10 -= rhs.component_10
+    lhs.component_11 -= rhs.component_11
+    lhs.component_12 -= rhs.component_12
+    lhs.component_13 -= rhs.component_13
+    lhs.component_14 -= rhs.component_14
+}
+@_inlineable
+public func ==(lhs: Device15ColorModel, rhs: Device15ColorModel) -> Bool {
+    return lhs.component_0 == rhs.component_0 && lhs.component_1 == rhs.component_1 && lhs.component_2 == rhs.component_2
+        && lhs.component_3 == rhs.component_3 && lhs.component_4 == rhs.component_4 && lhs.component_5 == rhs.component_5
+        && lhs.component_6 == rhs.component_6 && lhs.component_7 == rhs.component_7 && lhs.component_8 == rhs.component_8
+        && lhs.component_9 == rhs.component_9 && lhs.component_10 == rhs.component_10 && lhs.component_11 == rhs.component_11
+        && lhs.component_12 == rhs.component_12 && lhs.component_13 == rhs.component_13 && lhs.component_14 == rhs.component_14
+}
+@_inlineable
+public func !=(lhs: Device15ColorModel, rhs: Device15ColorModel) -> Bool {
+    return lhs.component_0 != rhs.component_0 || lhs.component_1 != rhs.component_1 || lhs.component_2 != rhs.component_2
+        || lhs.component_3 != rhs.component_3 || lhs.component_4 != rhs.component_4 || lhs.component_5 != rhs.component_5
+        || lhs.component_6 != rhs.component_6 || lhs.component_7 != rhs.component_7 || lhs.component_8 != rhs.component_8
+        || lhs.component_9 != rhs.component_9 || lhs.component_10 != rhs.component_10 || lhs.component_11 != rhs.component_11
+        || lhs.component_12 != rhs.component_12 || lhs.component_13 != rhs.component_13 || lhs.component_14 != rhs.component_14
 }
 

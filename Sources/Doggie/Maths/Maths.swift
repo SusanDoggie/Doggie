@@ -282,11 +282,11 @@ public func logScale(_ f: UInt, _ x: Double) -> UInt {
 
 @_inlineable
 public func degreesToRad(_ alpha: Float) -> Float {
-    return alpha * Float.pi / 180.0
+    return alpha * Float.pi / 180
 }
 @_inlineable
 public func degreesToRad(_ alpha: Double) -> Double {
-    return alpha * Double.pi / 180.0
+    return alpha * Double.pi / 180
 }
 
 @_inlineable
@@ -298,41 +298,61 @@ public func LogarithmicDynamicRangeCompression(_ x: Double, _ m: Double) -> Doub
 }
 
 @_inlineable
-public func LinearInterpolate(_ t: Double, _ a: Double, _ b: Double) -> Double {
+public func LinearInterpolate<T: ScalarMultiplicative>(_ t: T.Scalar, _ a: T, _ b: T) -> T {
     return a + t * (b - a)
 }
 
 @_inlineable
-public func CosineInterpolate(_ t: Double, _ a: Double, _ b: Double) -> Double {
-    return LinearInterpolate((1.0 - cos(t * Double.pi)) * 0.5, a, b)
+public func CosineInterpolate<T: ScalarMultiplicative>(_ t: T.Scalar, _ a: T, _ b: T) -> T where T.Scalar : FloatingMathProtocol {
+    let u = 1 - T.Scalar.cos(t * T.Scalar.pi)
+    let v = 0.5 * u
+    return LinearInterpolate(v, a, b)
 }
 
 @_inlineable
-public func CubicInterpolate(_ t: Double, _ a: Double, _ b: Double, _ c: Double, _ d: Double) -> Double {
+public func CubicInterpolate<T: ScalarMultiplicative>(_ t: T.Scalar, _ a: T, _ b: T, _ c: T, _ d: T) -> T {
     let t2 = t * t
     let m0 = d - c - a + b
     let m1 = a - b - m0
     let m2 = c - a
     let m3 = b
-    return m0 * t * t2 + m1 * t2 + m2 * t + m3
+    let n0 = m0 * t * t2
+    let n1 = m1 * t2
+    let n2 = m2 * t
+    return n0 + n1 + n2 + m3
 }
 
 @_inlineable
-public func HermiteInterpolate(_ t: Double, _ a: Double, _ b: Double, _ c: Double, _ d: Double, _ s: Double, _ e: Double) -> Double {
+public func HermiteInterpolate<T: ScalarMultiplicative>(_ t: T.Scalar, _ a: T, _ b: T, _ c: T, _ d: T, _ s: T.Scalar, _ e: T.Scalar) -> T {
     let t2 = t * t
     let t3 = t2 * t
-    let m0 = ((b - a) * (1.0 + e) + (c - b) * (1.0 - e)) * (1.0 - s) * 0.5
-    let m1 = ((c - b) * (1.0 + e) + (d - c) * (1.0 - e)) * (1.0 - s) * 0.5
-    let a0 = 2.0 * t3 - 3.0 * t2 + 1.0
-    let a1 = t3 - 2.0 * t2 + t
+    let _2t3 = 2 * t3
+    let _3t2 = 3 * t2
+    let s0 = 0.5 * (1 - s)
+    let e0 = 1 + e
+    let e1 = 1 - e
+    let e2 = s0 * e0
+    let e3 = s0 * e1
+    let u0 = (b - a) * e2
+    let u1 = (c - b) * e3
+    let v0 = (c - b) * e2
+    let v1 = (d - c) * e3
+    let m0 = u0 + u1
+    let m1 = v0 + v1
+    let a0 = _2t3 - _3t2 + 1
+    let a1 = t3 - 2 * t2 + t
     let a2 = t3 - t2
-    let a3 = -2.0 * t3 + 3.0 * t2
-    return a0 * b + a1 * m0 + a2 * m1 + a3 * c
+    let a3 = -_2t3 + _3t2
+    let b0 = a0 * b
+    let b1 = a1 * m0
+    let b2 = a2 * m1
+    let b3 = a3 * c
+    return b0 + b1 + b2 + b3
 }
 
 @_inlineable
 public func Phase(_ x: Double, _ shift: Double, _ frequency: Double, _ maxFrequency: Double) -> Double {
-    return abs((x / maxFrequency + shift) * frequency).truncatingRemainder(dividingBy: 1.0)
+    return abs((x / maxFrequency + shift) * frequency).truncatingRemainder(dividingBy: 1)
 }
 @_inlineable
 public func SineWave(_ phase: Double) -> Double {
@@ -344,10 +364,10 @@ public func SquareWave(_ phase: Double) -> Double {
 }
 @_inlineable
 public func SawtoothWave(_ phase: Double) -> Double {
-    return phase * 2 - 1.0
+    return phase * 2 - 1
 }
 @_inlineable
 public func TriangleWave(_ phase: Double) -> Double {
-    return phase < 0.5 ? phase * 4 - 1.0 : 3.0 - phase * 4
+    return phase < 0.5 ? phase * 4 - 1 : 3 - phase * 4
 }
 

@@ -25,7 +25,7 @@
 
 import Foundation
 
-public protocol FloatingMathProtocol : FloatingPoint {
+public protocol FloatingMathProtocol : FloatingPoint, ExpressibleByFloatLiteral {
     
     static func exp(_ x: Self) -> Self
     static func exp2(_ x: Self) -> Self

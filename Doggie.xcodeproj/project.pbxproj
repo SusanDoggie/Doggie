@@ -535,7 +535,6 @@
 			isa = PBXGroup;
 			children = (
 				08B085471E9A20720037DECE /* Algorithm.swift */,
-				08B457E51EDD3223007AA4F0 /* Arithmetic.swift */,
 				0A9D27E31F0CF629003638D3 /* BinaryFixedPoint.swift */,
 				0A7F24AB1EF37CD500EAD9C7 /* Endianness.swift */,
 				0A53E44D1E35AEF80060FB83 /* CollectionExtension.swift */,
@@ -569,6 +568,7 @@
 		08458AD41E2E627600D01813 /* Maths */ = {
 			isa = PBXGroup;
 			children = (
+				08B457E51EDD3223007AA4F0 /* Arithmetic.swift */,
 				08458AD51E2E627600D01813 /* Bezier.swift */,
 				08458AD61E2E627600D01813 /* Complex.swift */,
 				08458AD71E2E627600D01813 /* Ellipse.swift */,

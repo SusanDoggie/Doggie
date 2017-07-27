@@ -306,7 +306,7 @@ extension ResamplingAlgorithm {
                         case let .hermite(s, e):
                             
                             @inline(__always)
-                            func _kernel(_ t: Double, _ a: Double, _ b: Double, _ c: Double, _ d: Double) -> Double {
+                            func _kernel(_ t: Double, _ a: ColorPixel<Pixel.Model>, _ b: ColorPixel<Pixel.Model>, _ c: ColorPixel<Pixel.Model>, _ d: ColorPixel<Pixel.Model>) -> ColorPixel<Pixel.Model> {
                                 return HermiteInterpolate(t, a, b, c, d, s, e)
                             }
                             
@@ -398,9 +398,9 @@ extension ResamplingAlgorithm {
     
     @_versioned
     @inline(__always)
-    func convolve<ColorModel>(source: UnsafePointer<ColorPixel<ColorModel>>, width: Int, height: Int, point: Point, kernel_size: Int, kernel: (Double) -> Double) -> ColorPixel<ColorModel> {
+    func convolve<Pixel: ColorPixelProtocol>(source: UnsafePointer<Pixel>, width: Int, height: Int, point: Point, kernel_size: Int, kernel: (Double) -> Double) -> Pixel {
         
-        var pixel = ColorPixel<ColorModel>()
+        var pixel = Pixel()
         var t: Double = 0
         
         let _x = Int(point.x)
@@ -420,12 +420,12 @@ extension ResamplingAlgorithm {
                 t += k
             }
         }
-        return t == 0 ? ColorPixel<ColorModel>() : pixel / t
+        return t == 0 ? Pixel() : pixel / t
     }
     
     @_versioned
     @inline(__always)
-    func smapling2<ColorModel>(source: UnsafePointer<ColorPixel<ColorModel>>, width: Int, height: Int, point: Point, sampler: (Double, Double, Double) -> Double) -> ColorPixel<ColorModel> {
+    func smapling2<Pixel: ColorPixelProtocol>(source: UnsafePointer<Pixel>, width: Int, height: Int, point: Point, sampler: (Double, Pixel, Pixel) -> Pixel) -> Pixel {
         
         let _x1 = Int(point.x)
         let _y1 = Int(point.y)
@@ -440,19 +440,13 @@ extension ResamplingAlgorithm {
         let _s3 = read_source(source, width, height, _x1, _y2)
         let _s4 = read_source(source, width, height, _x2, _y2)
         
-        var color = ColorPixel<ColorModel>()
-        
-        for i in 0..<ColorPixel<ColorModel>.numberOfComponents {
-            color.setComponent(i, sampler(_ty,sampler(_tx, _s1.component(i), _s2.component(i)), sampler(_tx, _s3.component(i), _s4.component(i))))
-        }
-        
-        return color
+        return sampler(_ty, sampler(_tx, _s1, _s2), sampler(_tx, _s3, _s4))
         
     }
     
     @_versioned
     @inline(__always)
-    func smapling4<ColorModel>(source: UnsafePointer<ColorPixel<ColorModel>>, width: Int, height: Int, point: Point, sampler: (Double, Double, Double, Double, Double) -> Double) -> ColorPixel<ColorModel> {
+    func smapling4<Pixel: ColorPixelProtocol>(source: UnsafePointer<Pixel>, width: Int, height: Int, point: Point, sampler: (Double, Pixel, Pixel, Pixel, Pixel) -> Pixel) -> Pixel {
         
         let _x2 = Int(point.x)
         let _y2 = Int(point.y)
@@ -483,17 +477,12 @@ extension ResamplingAlgorithm {
         let _s15 = read_source(source, width, height, _x3, _y4)
         let _s16 = read_source(source, width, height, _x4, _y4)
         
-        var color = ColorPixel<ColorModel>()
+        let _u1 = sampler(_tx, _s1, _s2, _s3, _s4)
+        let _u2 = sampler(_tx, _s5, _s6, _s7, _s8)
+        let _u3 = sampler(_tx, _s9, _s10, _s11, _s12)
+        let _u4 = sampler(_tx, _s13, _s14, _s15, _s16)
         
-        for i in 0..<ColorPixel<ColorModel>.numberOfComponents {
-            let _u1 = sampler(_tx, _s1.component(i), _s2.component(i), _s3.component(i), _s4.component(i))
-            let _u2 = sampler(_tx, _s5.component(i), _s6.component(i), _s7.component(i), _s8.component(i))
-            let _u3 = sampler(_tx, _s9.component(i), _s10.component(i), _s11.component(i), _s12.component(i))
-            let _u4 = sampler(_tx, _s13.component(i), _s14.component(i), _s15.component(i), _s16.component(i))
-            color.setComponent(i, sampler(_ty, _u1, _u2, _u3, _u4))
-        }
-        
-        return color
+        return sampler(_ty, _u1, _u2, _u3, _u4)
         
     }
 }

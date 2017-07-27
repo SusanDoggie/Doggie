@@ -43,7 +43,7 @@ public protocol Subtractive : Additive {
 
 public protocol ScalarMultiplicative : Subtractive {
     
-    associatedtype Scalar : FloatingPoint
+    associatedtype Scalar : FloatingPoint, ExpressibleByFloatLiteral
     
     static func * (lhs: Scalar, rhs: Self) -> Self
     

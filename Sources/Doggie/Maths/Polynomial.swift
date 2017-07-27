@@ -232,7 +232,9 @@ func _root(_ p: Polynomial) -> [Double] {
             
             while true {
                 var mid = (pos * negVal - neg * posVal) / (negVal - posVal)
-                if 3 * abs(mid - previous) < abs(neg - pos) {
+                let u = 3.0 * abs(mid - previous)
+                let v = abs(neg - pos)
+                if u < v {
                     mid = 0.5 * (neg + pos)
                 }
                 let midVal = p.eval(mid)
