@@ -82,3 +82,47 @@
     
 #endif
 
+#if os(macOS)
+    
+    extension AnyColorSpace {
+        
+        @available(OSX 10.11, *)
+        public static var availableColorSpaces: [AnyColorSpace] {
+            
+            var availableColorSpaces: [AnyColorSpace] = []
+            
+            var searchPaths = FileManager.default.urls(for: .libraryDirectory, in: .allDomainsMask).map { URL(fileURLWithPath: "ColorSync/Profiles/", relativeTo: $0) }
+            
+            while let url = searchPaths.popLast() {
+                
+                if let enumerator = FileManager.default.enumerator(at: url.resolvingSymlinksInPath(), includingPropertiesForKeys: nil, options: [], errorHandler: nil) {
+                    
+                    for url in enumerator {
+                        
+                        if let url = url as? URL, let resourceValues = try? url.resourceValues(forKeys: [.isAliasFileKey]) {
+                            
+                            if resourceValues.isAliasFile == true {
+                                
+                                if let url = try? URL(resolvingAliasFileAt: url) {
+                                    searchPaths.append(url)
+                                }
+                                
+                            } else if url.isFileURL {
+                                
+                                if let data = try? Data(contentsOf: url), let colorSpace = try? AnyColorSpace(iccData: data) {
+                                    availableColorSpaces.append(colorSpace)
+                                }
+                            }
+                        }
+                        
+                    }
+                }
+            }
+            
+            return availableColorSpaces
+        }
+        
+    }
+    
+#endif
+
