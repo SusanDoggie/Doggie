@@ -32,6 +32,22 @@ extension Data : ExpressibleByArrayLiteral {
     }
 }
 
+extension Data {
+    
+    public func write(to url: URL, withIntermediateDirectories createIntermediates: Bool, options: Data.WritingOptions = []) throws {
+        
+        let manager = FileManager.default
+        
+        let directory = url.deletingLastPathComponent()
+        
+        if !manager.fileExists(atPath: directory.path) {
+            try manager.createDirectory(at: directory, withIntermediateDirectories: true, attributes: nil)
+        }
+        
+        try self.write(to: url, options: options)
+    }
+}
+
 public protocol DataEncodable {
     
     func encode(to: inout Data)
