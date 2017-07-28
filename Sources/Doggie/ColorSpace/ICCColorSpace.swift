@@ -367,27 +367,9 @@ extension ICCColorSpace {
     
     @_versioned
     @_inlineable
-    func convertToLinear(_ color: Model) -> Model {
+    func _convertToLinear(_ color: Model) -> Model {
         
         var result = Model()
-        
-        var color = color
-        
-        for i in 0..<Model.numberOfComponents {
-            color[i] = color.normalizedComponent(i)
-        }
-        
-        switch a2b {
-        case .monochrome, .matrix, .LUT0:
-            if color is XYZColorModel {
-                color[0] = color[0] * 2
-                color[2] = color[2] * 2
-            }
-        case .LUT1, .LUT2, .LUT3, .LUT4:
-            if color is XYZColorModel {
-                color[1] = color[1] * 0.5
-            }
-        }
         
         switch a2b {
         case let .monochrome(curve):
@@ -429,48 +411,14 @@ extension ICCColorSpace {
             }
         }
         
-        switch a2b {
-        case .monochrome, .matrix, .LUT0:
-            if result is XYZColorModel {
-                result[0] = result[0] * 0.5
-                result[2] = result[2] * 0.5
-            }
-        case .LUT1, .LUT2, .LUT3, .LUT4:
-            if result is XYZColorModel {
-                result[1] = result[1] * 2
-            }
-        }
-        
-        for i in 0..<Model.numberOfComponents {
-            result.setNormalizedComponent(i, result[i])
-        }
-        
         return result
     }
     
     @_versioned
     @_inlineable
-    func convertFromLinear(_ color: Model) -> Model {
+    func _convertFromLinear(_ color: Model) -> Model {
         
         var result = Model()
-        
-        var color = color
-        
-        for i in 0..<Model.numberOfComponents {
-            color[i] = color.normalizedComponent(i)
-        }
-        
-        switch b2a {
-        case .monochrome, .matrix, .LUT0:
-            if color is XYZColorModel {
-                color[0] = color[0] * 2
-                color[2] = color[2] * 2
-            }
-        case .LUT1, .LUT2, .LUT3, .LUT4:
-            if color is XYZColorModel {
-                color[1] = color[1] * 0.5
-            }
-        }
         
         switch b2a {
         case let .monochrome(curve):
@@ -512,48 +460,14 @@ extension ICCColorSpace {
             }
         }
         
-        switch b2a {
-        case .monochrome, .matrix, .LUT0:
-            if result is XYZColorModel {
-                result[0] = result[0] * 0.5
-                result[2] = result[2] * 0.5
-            }
-        case .LUT1, .LUT2, .LUT3, .LUT4:
-            if result is XYZColorModel {
-                result[1] = result[1] * 2
-            }
-        }
-        
-        for i in 0..<Model.numberOfComponents {
-            result.setNormalizedComponent(i, result[i])
-        }
-        
         return result
     }
     
     @_versioned
     @_inlineable
-    func convertLinearToConnection(_ color: Model) -> Connection.Model {
+    func _convertLinearToConnection(_ color: Model) -> Connection.Model {
         
         var result = Connection.Model()
-        
-        var color = color
-        
-        for i in 0..<Model.numberOfComponents {
-            color[i] = color.normalizedComponent(i)
-        }
-        
-        switch a2b {
-        case .monochrome, .matrix, .LUT0:
-            if color is XYZColorModel {
-                color[0] = color[0] * 2
-                color[2] = color[2] * 2
-            }
-        case .LUT1, .LUT2, .LUT3, .LUT4:
-            if color is XYZColorModel {
-                color[1] = color[1] * 0.5
-            }
-        }
         
         switch a2b {
         case .monochrome:
@@ -621,48 +535,16 @@ extension ICCColorSpace {
             result[2] = B.2.eval(result[2])
         }
         
-        switch a2b {
-        case .monochrome, .matrix, .LUT0:
-            if result is XYZColorModel {
-                result[0] = result[0] * 0.5
-                result[2] = result[2] * 0.5
-            }
-        case .LUT1, .LUT2, .LUT3, .LUT4:
-            if result is XYZColorModel {
-                result[1] = result[1] * 2
-            }
-        }
-        
-        for i in 0..<Connection.Model.numberOfComponents {
-            result.setNormalizedComponent(i, result[i])
-        }
-        
         return result
     }
     
     @_versioned
     @_inlineable
-    func convertLinearFromConnection(_ color: Connection.Model) -> Model {
+    func _convertLinearFromConnection(_ color: Connection.Model) -> Model {
         
         var result = Model()
         
         var color = color
-        
-        for i in 0..<Connection.Model.numberOfComponents {
-            color[i] = color.normalizedComponent(i)
-        }
-        
-        switch b2a {
-        case .monochrome, .matrix, .LUT0:
-            if color is XYZColorModel {
-                color[0] = color[0] * 2
-                color[2] = color[2] * 2
-            }
-        case .LUT1, .LUT2, .LUT3, .LUT4:
-            if color is XYZColorModel {
-                color[1] = color[1] * 0.5
-            }
-        }
         
         switch b2a {
         case .monochrome:
@@ -728,6 +610,76 @@ extension ICCColorSpace {
             result = lut.eval(color)
         }
         
+        return result
+    }
+    
+    @_versioned
+    @_inlineable
+    func convertToLinear(_ color: Model) -> Model {
+        
+        var color = color
+        
+        for i in 0..<Model.numberOfComponents {
+            color[i] = color.normalizedComponent(i)
+        }
+        
+        switch b2a {
+        case .monochrome, .matrix, .LUT0:
+            if color is XYZColorModel {
+                color[0] = color[0] * 2
+                color[2] = color[2] * 2
+            }
+        case .LUT1, .LUT2, .LUT3, .LUT4:
+            if color is XYZColorModel {
+                color[1] = color[1] * 0.5
+            }
+        }
+        
+        var result = _convertToLinear(color)
+        
+        switch a2b {
+        case .monochrome, .matrix, .LUT0:
+            if result is XYZColorModel {
+                result[0] = result[0] * 0.5
+                result[2] = result[2] * 0.5
+            }
+        case .LUT1, .LUT2, .LUT3, .LUT4:
+            if result is XYZColorModel {
+                result[1] = result[1] * 2
+            }
+        }
+        
+        for i in 0..<Model.numberOfComponents {
+            result.setNormalizedComponent(i, result[i])
+        }
+        
+        return result
+    }
+    
+    @_versioned
+    @_inlineable
+    func convertFromLinear(_ color: Model) -> Model {
+        
+        var color = color
+        
+        for i in 0..<Model.numberOfComponents {
+            color[i] = color.normalizedComponent(i)
+        }
+        
+        switch b2a {
+        case .monochrome, .matrix, .LUT0:
+            if color is XYZColorModel {
+                color[0] = color[0] * 2
+                color[2] = color[2] * 2
+            }
+        case .LUT1, .LUT2, .LUT3, .LUT4:
+            if color is XYZColorModel {
+                color[1] = color[1] * 0.5
+            }
+        }
+        
+        var result = _convertFromLinear(color)
+        
         switch b2a {
         case .monochrome, .matrix, .LUT0:
             if result is XYZColorModel {
@@ -750,13 +702,173 @@ extension ICCColorSpace {
     @_versioned
     @_inlineable
     func convertLinearToXYZ(_ color: Model) -> XYZColorModel {
-        return self.connection.convertToXYZ(self.convertLinearToConnection(color)) * chromaticAdaptationMatrix.inverse
+        
+        var color = color
+        
+        for i in 0..<Model.numberOfComponents {
+            color[i] = color.normalizedComponent(i)
+        }
+        
+        switch b2a {
+        case .monochrome, .matrix, .LUT0:
+            if color is XYZColorModel {
+                color[0] = color[0] * 2
+                color[2] = color[2] * 2
+            }
+        case .LUT1, .LUT2, .LUT3, .LUT4:
+            if color is XYZColorModel {
+                color[1] = color[1] * 0.5
+            }
+        }
+        
+        var result = _convertLinearToConnection(color)
+        
+        switch b2a {
+        case .monochrome, .matrix, .LUT0:
+            if result is XYZColorModel {
+                result[0] = result[0] * 0.5
+                result[2] = result[2] * 0.5
+            }
+        case .LUT1, .LUT2, .LUT3, .LUT4:
+            if result is XYZColorModel {
+                result[1] = result[1] * 2
+            }
+        }
+        
+        for i in 0..<Model.numberOfComponents {
+            result.setNormalizedComponent(i, result[i])
+        }
+        
+        return self.connection.convertToXYZ(result) * chromaticAdaptationMatrix.inverse
     }
     
     @_versioned
     @_inlineable
     func convertLinearFromXYZ(_ color: XYZColorModel) -> Model {
-        return self.convertLinearFromConnection(self.connection.convertFromXYZ(color * chromaticAdaptationMatrix))
+        
+        var color = self.connection.convertFromXYZ(color * chromaticAdaptationMatrix)
+        
+        for i in 0..<Model.numberOfComponents {
+            color[i] = color.normalizedComponent(i)
+        }
+        
+        switch b2a {
+        case .monochrome, .matrix, .LUT0:
+            if color is XYZColorModel {
+                color[0] = color[0] * 2
+                color[2] = color[2] * 2
+            }
+        case .LUT1, .LUT2, .LUT3, .LUT4:
+            if color is XYZColorModel {
+                color[1] = color[1] * 0.5
+            }
+        }
+        
+        var result = _convertLinearFromConnection(color)
+        
+        switch b2a {
+        case .monochrome, .matrix, .LUT0:
+            if result is XYZColorModel {
+                result[0] = result[0] * 0.5
+                result[2] = result[2] * 0.5
+            }
+        case .LUT1, .LUT2, .LUT3, .LUT4:
+            if result is XYZColorModel {
+                result[1] = result[1] * 2
+            }
+        }
+        
+        for i in 0..<Model.numberOfComponents {
+            result.setNormalizedComponent(i, result[i])
+        }
+        
+        return result
+    }
+    
+    @_versioned
+    @_inlineable
+    func convertToXYZ(_ color: Model) -> XYZColorModel {
+        
+        var color = color
+        
+        for i in 0..<Model.numberOfComponents {
+            color[i] = color.normalizedComponent(i)
+        }
+        
+        switch b2a {
+        case .monochrome, .matrix, .LUT0:
+            if color is XYZColorModel {
+                color[0] = color[0] * 2
+                color[2] = color[2] * 2
+            }
+        case .LUT1, .LUT2, .LUT3, .LUT4:
+            if color is XYZColorModel {
+                color[1] = color[1] * 0.5
+            }
+        }
+        
+        var result = _convertLinearToConnection(_convertToLinear(color))
+        
+        switch b2a {
+        case .monochrome, .matrix, .LUT0:
+            if result is XYZColorModel {
+                result[0] = result[0] * 0.5
+                result[2] = result[2] * 0.5
+            }
+        case .LUT1, .LUT2, .LUT3, .LUT4:
+            if result is XYZColorModel {
+                result[1] = result[1] * 2
+            }
+        }
+        
+        for i in 0..<Model.numberOfComponents {
+            result.setNormalizedComponent(i, result[i])
+        }
+        
+        return self.connection.convertToXYZ(result) * chromaticAdaptationMatrix.inverse
+    }
+    
+    @_versioned
+    @_inlineable
+    func convertFromXYZ(_ color: XYZColorModel) -> Model {
+        
+        var color = self.connection.convertFromXYZ(color * chromaticAdaptationMatrix)
+        
+        for i in 0..<Model.numberOfComponents {
+            color[i] = color.normalizedComponent(i)
+        }
+        
+        switch b2a {
+        case .monochrome, .matrix, .LUT0:
+            if color is XYZColorModel {
+                color[0] = color[0] * 2
+                color[2] = color[2] * 2
+            }
+        case .LUT1, .LUT2, .LUT3, .LUT4:
+            if color is XYZColorModel {
+                color[1] = color[1] * 0.5
+            }
+        }
+        
+        var result = _convertFromLinear(_convertLinearFromConnection(color))
+        
+        switch b2a {
+        case .monochrome, .matrix, .LUT0:
+            if result is XYZColorModel {
+                result[0] = result[0] * 0.5
+                result[2] = result[2] * 0.5
+            }
+        case .LUT1, .LUT2, .LUT3, .LUT4:
+            if result is XYZColorModel {
+                result[1] = result[1] * 2
+            }
+        }
+        
+        for i in 0..<Model.numberOfComponents {
+            result.setNormalizedComponent(i, result[i])
+        }
+        
+        return result
     }
 }
 

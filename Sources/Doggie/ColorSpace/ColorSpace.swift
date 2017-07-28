@@ -73,6 +73,10 @@ protocol ColorSpaceBaseProtocol : _ColorSpaceBaseProtocol {
     
     func convertLinearFromXYZ(_ color: XYZColorModel) -> Model
     
+    func convertToXYZ(_ color: Model) -> XYZColorModel
+    
+    func convertFromXYZ(_ color: XYZColorModel) -> Model
+    
     var linearTone: LinearTone { get }
 }
 
