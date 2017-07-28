@@ -244,7 +244,11 @@ extension ResamplingAlgorithm {
     @_specialize(where Pixel == ARGB64ColorPixel)
     @_specialize(where Pixel == ColorPixel<RGBColorModel>)
     @_specialize(where Pixel == ColorPixel<CMYKColorModel>)
+    @_specialize(where Pixel == ColorPixel<CMYColorModel>)
     @_specialize(where Pixel == ColorPixel<GrayColorModel>)
+    @_specialize(where Pixel == ColorPixel<LabColorModel>)
+    @_specialize(where Pixel == ColorPixel<LuvColorModel>)
+    @_specialize(where Pixel == ColorPixel<XYZColorModel>)
     func calculate<Pixel: ColorPixelProtocol>(source: [Pixel], s_width: Int, width: Int, height: Int, pixel: Pixel.Type, transform: SDTransform, antialias: Bool) -> [Pixel] {
         
         var result = [Pixel](repeating: Pixel(), count: width * height)
