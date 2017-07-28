@@ -735,9 +735,9 @@ extension ICCColorSpace {
             }
         }
         
-        for i in 0..<Model.numberOfComponents {
-            result.setNormalizedComponent(i, result[i])
-        }
+        result.setNormalizedComponent(0, result[0])
+        result.setNormalizedComponent(1, result[1])
+        result.setNormalizedComponent(2, result[2])
         
         return self.connection.convertToXYZ(result) * chromaticAdaptationMatrix.inverse
     }
@@ -748,9 +748,9 @@ extension ICCColorSpace {
         
         var color = self.connection.convertFromXYZ(color * chromaticAdaptationMatrix)
         
-        for i in 0..<Model.numberOfComponents {
-            color[i] = color.normalizedComponent(i)
-        }
+        color[0] = color.normalizedComponent(0)
+        color[1] = color.normalizedComponent(1)
+        color[2] = color.normalizedComponent(2)
         
         switch b2a {
         case .monochrome, .matrix, .LUT0:
@@ -821,9 +821,9 @@ extension ICCColorSpace {
             }
         }
         
-        for i in 0..<Model.numberOfComponents {
-            result.setNormalizedComponent(i, result[i])
-        }
+        result.setNormalizedComponent(0, result[0])
+        result.setNormalizedComponent(1, result[1])
+        result.setNormalizedComponent(2, result[2])
         
         return self.connection.convertToXYZ(result) * chromaticAdaptationMatrix.inverse
     }
@@ -834,9 +834,9 @@ extension ICCColorSpace {
         
         var color = self.connection.convertFromXYZ(color * chromaticAdaptationMatrix)
         
-        for i in 0..<Model.numberOfComponents {
-            color[i] = color.normalizedComponent(i)
-        }
+        color[0] = color.normalizedComponent(0)
+        color[1] = color.normalizedComponent(1)
+        color[2] = color.normalizedComponent(2)
         
         switch b2a {
         case .monochrome, .matrix, .LUT0:
