@@ -175,6 +175,14 @@ extension Image {
 extension Image {
     
     @_inlineable
+    public func linearTone() -> Image {
+        return Image(width: height, height: width, resolution: resolution, pixels: colorSpace.convertToLinear(pixels), colorSpace: colorSpace.linearTone)
+    }
+}
+
+extension Image {
+    
+    @_inlineable
     public var isOpaque: Bool {
         return pixels.all { $0.isOpaque }
     }

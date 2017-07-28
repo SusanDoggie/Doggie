@@ -44,6 +44,8 @@ protocol AnyColorBaseProtocol {
     
     var _colorSpace: AnyColorSpaceBaseProtocol { get }
     
+    func _linearTone() -> AnyColorBaseProtocol
+    
     func _blended<C>(source: Color<C>, blendMode: ColorBlendMode, compositingMode: ColorCompositingMode) -> AnyColorBaseProtocol
     
     func _blendedTo(destination: AnyColorBaseProtocol, blendMode: ColorBlendMode, compositingMode: ColorCompositingMode) -> AnyColorBaseProtocol
@@ -59,6 +61,12 @@ extension Color : AnyColorBaseProtocol {
     @_inlineable
     var _colorSpace: AnyColorSpaceBaseProtocol {
         return self.colorSpace
+    }
+    
+    @_versioned
+    @_inlineable
+    func _linearTone() -> AnyColorBaseProtocol {
+        return self.linearTone()
     }
     
     @_versioned
@@ -193,6 +201,14 @@ extension AnyColor {
     @_inlineable
     public func convert<Model>(to colorSpace: ColorSpace<Model>, intent: RenderingIntent = .default) -> Color<Model> {
         return _base._convert(to: colorSpace, intent: intent)
+    }
+}
+
+extension AnyColor {
+    
+    @_inlineable
+    public func linearTone() -> AnyColor {
+        return AnyColor(base: _base._linearTone())
     }
 }
 

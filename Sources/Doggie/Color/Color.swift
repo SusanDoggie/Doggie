@@ -288,6 +288,14 @@ extension Color {
 extension Color {
     
     @_inlineable
+    public func linearTone() -> Color {
+        return Color(colorSpace: colorSpace.linearTone, color: colorSpace.convertToLinear(color), opacity: opacity)
+    }
+}
+
+extension Color {
+    
+    @_inlineable
     public var isOpaque: Bool {
         return opacity >= 1
     }

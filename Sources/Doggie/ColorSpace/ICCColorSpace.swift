@@ -474,7 +474,7 @@ extension ICCColorSpace {
             
             let normalizeMatrix = self.connection.cieXYZ.normalizeMatrix
             let white = self.connection.cieXYZ.white * normalizeMatrix * color[0] * normalizeMatrix.inverse
-            result = self.connection._convertFromXYZ(white)
+            result = self.connection.convertFromXYZ(white)
             
         case let .matrix(matrix, _):
             

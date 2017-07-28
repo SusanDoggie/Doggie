@@ -40,6 +40,8 @@ protocol AnyImageBaseProtocol {
     
     var _colorSpace: AnyColorSpaceBaseProtocol { get }
     
+    func _linearTone() -> AnyImageBaseProtocol
+    
     func _transposed() -> AnyImageBaseProtocol
     
     func _verticalFlipped() -> AnyImageBaseProtocol
@@ -63,6 +65,12 @@ extension Image : AnyImageBaseProtocol {
     @_inlineable
     var _colorSpace: AnyColorSpaceBaseProtocol {
         return self.colorSpace
+    }
+    
+    @_versioned
+    @_inlineable
+    func _linearTone() -> AnyImageBaseProtocol {
+        return self.linearTone()
     }
     
     @_versioned
@@ -216,6 +224,14 @@ extension AnyImage {
     @_inlineable
     public var colorSpace: AnyColorSpace {
         return AnyColorSpace(base: _base._colorSpace)
+    }
+}
+
+extension AnyImage {
+    
+    @_inlineable
+    public func linearTone() -> AnyImage {
+        return AnyImage(base: _base._linearTone())
     }
 }
 
