@@ -103,7 +103,7 @@ struct PNGEncoder : ImageRepEncoder {
         return PNGChunk(signature: "pHYs", data: phys)
     }
     
-    private static func filter0(_ pixel: Data, _ previous: Data?, _ bitsPerPixel: UInt8, _ result: inout Data) {
+    private static func filter0(_ pixel: Data, _ previous: Data?, _ bitsPerPixel: UInt8) -> Data {
         
         var s = pixel.reduce(0.0) { $0 + abs(Double(Int8(bitPattern: $1))) }
         
@@ -121,8 +121,12 @@ struct PNGEncoder : ImageRepEncoder {
             }
         }
         
+        var result = Data(capacity: filtered.count + 1)
+        
         result.encode(UInt8(type))
         result.append(filtered)
+        
+        return result
     }
     
     private static func encodeIDAT<Pixel>(image: Image<Pixel>, bitsPerPixel: UInt8, interlace: Bool, _ body: (inout Data, Pixel) -> Void) -> PNGChunk? {
@@ -130,48 +134,79 @@ struct PNGEncoder : ImageRepEncoder {
         let width = image.width
         let height = image.height
         
-        var idat_data = Data(capacity: height * width * Int(bitsPerPixel >> 3) + height << 1)
+        guard let deflate = try? Deflate(windowBits: 15) else { return nil }
         
-        if interlace {
+        var compressed = Data(capacity: height * width * Int(bitsPerPixel >> 3))
+        
+        do {
             
-            image.withUnsafeBufferPointer {
+            if interlace {
                 
-                if let buffer = $0.baseAddress {
+                try image.withUnsafeBufferPointer {
                     
-                    let starting_row = [0, 0, 4, 0, 2, 0, 1]
-                    let starting_col = [0, 4, 0, 2, 0, 1, 0]
-                    let row_increment = [8, 8, 8, 4, 4, 2, 2]
-                    let col_increment = [8, 8, 4, 4, 2, 2, 1]
+                    if let buffer = $0.baseAddress {
+                        
+                        let starting_row = [0, 0, 4, 0, 2, 0, 1]
+                        let starting_col = [0, 4, 0, 2, 0, 1, 0]
+                        let row_increment = [8, 8, 8, 4, 4, 2, 2]
+                        let col_increment = [8, 8, 4, 4, 2, 2, 1]
+                        
+                        for pass in 0..<7 {
+                            
+                            let _starting_row = starting_row[pass]
+                            let _starting_col = starting_col[pass]
+                            let _row_increment = row_increment[pass]
+                            let _col_increment = col_increment[pass]
+                            
+                            guard width > _starting_col else { continue }
+                            guard height > _starting_row else { continue }
+                            
+                            let sample_count = (width - _starting_col + (_col_increment - 1)) / _col_increment
+                            let scanline_bitSize = Int(bitsPerPixel) * sample_count
+                            let scanline_size = (scanline_bitSize + 7) >> 3
+                            
+                            var previous: Data?
+                            
+                            for row in stride(from: _starting_row, to: height, by: _row_increment) {
+                                
+                                var scanline = Data(capacity: scanline_size)
+                                
+                                for col in stride(from: _starting_col, to: width, by: _col_increment) {
+                                    
+                                    let position = row * width + col
+                                    let destination = buffer + position
+                                    
+                                    body(&scanline, destination.pointee)
+                                }
+                                
+                                compressed.append(try deflate.process(data: filter0(scanline, previous, bitsPerPixel)))
+                                
+                                previous = scanline
+                            }
+                        }
+                    }
+                }
+                
+            } else {
+                
+                let scanline_capacity = width * Int(bitsPerPixel >> 3)
+                
+                try image.withUnsafeBufferPointer {
                     
-                    for pass in 0..<7 {
-                        
-                        let _starting_row = starting_row[pass]
-                        let _starting_col = starting_col[pass]
-                        let _row_increment = row_increment[pass]
-                        let _col_increment = col_increment[pass]
-                        
-                        guard width > _starting_col else { continue }
-                        guard height > _starting_row else { continue }
-                        
-                        let sample_count = (width - _starting_col + (_col_increment - 1)) / _col_increment
-                        let scanline_bitSize = Int(bitsPerPixel) * sample_count
-                        let scanline_size = (scanline_bitSize + 7) >> 3
+                    if var buffer = $0.baseAddress {
                         
                         var previous: Data?
                         
-                        for row in stride(from: _starting_row, to: height, by: _row_increment) {
+                        for _ in 0..<height {
                             
-                            var scanline = Data(capacity: scanline_size)
+                            var scanline = Data(capacity: scanline_capacity)
                             
-                            for col in stride(from: _starting_col, to: width, by: _col_increment) {
-                                
-                                let position = row * width + col
-                                let destination = buffer + position
-                                
-                                body(&scanline, destination.pointee)
+                            for _ in 0..<width {
+                                body(&scanline, buffer.pointee)
+                                buffer += 1
                             }
                             
-                            filter0(scanline, previous, bitsPerPixel, &idat_data)
+                            compressed.append(try deflate.process(data: filter0(scanline, previous, bitsPerPixel)))
                             
                             previous = scanline
                         }
@@ -179,38 +214,13 @@ struct PNGEncoder : ImageRepEncoder {
                 }
             }
             
-        } else {
+            compressed.append(try deflate.final())
             
-            let scanline_capacity = width * Int(bitsPerPixel >> 3)
-            
-            image.withUnsafeBufferPointer {
-                
-                if var buffer = $0.baseAddress {
-                    
-                    var previous: Data?
-                    
-                    for _ in 0..<height {
-                        
-                        var scanline = Data(capacity: scanline_capacity)
-                        
-                        for _ in 0..<width {
-                            body(&scanline, buffer.pointee)
-                            buffer += 1
-                        }
-                        
-                        filter0(scanline, previous, bitsPerPixel, &idat_data)
-                        
-                        previous = scanline
-                    }
-                }
-            }
+        } catch {
+            return nil
         }
         
-        if let deflate = try? Deflate(windowBits: 15), let data = try? deflate.process(data: idat_data) + deflate.final() {
-            return PNGChunk(signature: "IDAT", data: data)
-        }
-        
-        return nil
+        return PNGChunk(signature: "IDAT", data: compressed)
     }
     
     private static func encodeRGB(image: Image<ARGB64ColorPixel>, interlace: Bool) -> Data? {
