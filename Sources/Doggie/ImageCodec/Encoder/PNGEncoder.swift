@@ -96,8 +96,8 @@ struct PNGEncoder : ImageRepEncoder {
         
         let resolution = resolution.convert(to: .meter)
         
-        phys.encode(BEUInt32(round(resolution.horizontal)))
-        phys.encode(BEUInt32(round(resolution.vertical)))
+        phys.encode(BEUInt32(round(resolution.horizontal).clamped(to: 0...4294967295)))
+        phys.encode(BEUInt32(round(resolution.vertical).clamped(to: 0...4294967295)))
         phys.encode(0 as UInt8)
         
         return PNGChunk(signature: "pHYs", data: phys)

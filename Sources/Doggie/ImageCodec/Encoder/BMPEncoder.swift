@@ -58,8 +58,8 @@ struct BMPEncoder : ImageRepEncoder {
             
             buffer.encode(BITMAPINFOHEADER.CompressionType.BI_RGB)
             buffer.encode(LEUInt32(pixel_size))
-            buffer.encode(LEUInt32(round(resolution.horizontal)))
-            buffer.encode(LEUInt32(round(resolution.vertical)))
+            buffer.encode(LEUInt32(round(resolution.horizontal).clamped(to: 0...4294967295)))
+            buffer.encode(LEUInt32(round(resolution.vertical).clamped(to: 0...4294967295)))
             buffer.encode(0 as LEUInt32)
             buffer.encode(0 as LEUInt32)
             
@@ -99,8 +99,8 @@ struct BMPEncoder : ImageRepEncoder {
             
             buffer.encode(BITMAPINFOHEADER.CompressionType.BI_BITFIELDS)
             buffer.encode(LEUInt32(pixel_size))
-            buffer.encode(LEUInt32(round(resolution.horizontal)))
-            buffer.encode(LEUInt32(round(resolution.vertical)))
+            buffer.encode(LEUInt32(round(resolution.horizontal).clamped(to: 0...4294967295)))
+            buffer.encode(LEUInt32(round(resolution.vertical).clamped(to: 0...4294967295)))
             buffer.encode(0 as LEUInt32)
             buffer.encode(0 as LEUInt32)
             

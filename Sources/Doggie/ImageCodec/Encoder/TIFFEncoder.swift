@@ -330,8 +330,9 @@ struct TIFFEncoder : ImageRepEncoder {
             data.encode(UInt32(1).bigEndian)
             data.encode(UInt32(offset + _data.count).bigEndian)
             
-            _data.encode(UInt32(resolutionX * 10000).bigEndian)
-            _data.encode(UInt32(10000).bigEndian)
+            let m = pow(10, (9 - ceil(log10(resolutionX))).clamped(to: 0...9))
+            _data.encode(UInt32((resolutionX * m).clamped(to: 0...4294967295)).bigEndian)
+            _data.encode(UInt32(m).bigEndian)
         }
         
         do {
@@ -341,8 +342,9 @@ struct TIFFEncoder : ImageRepEncoder {
             data.encode(UInt32(1).bigEndian)
             data.encode(UInt32(offset + _data.count).bigEndian)
             
-            _data.encode(UInt32(resolutionY * 10000).bigEndian)
-            _data.encode(UInt32(10000).bigEndian)
+            let m = pow(10, (9 - ceil(log10(resolutionY))).clamped(to: 0...9))
+            _data.encode(UInt32((resolutionY * m).clamped(to: 0...4294967295)).bigEndian)
+            _data.encode(UInt32(m).bigEndian)
         }
         
         if samplesPerPixel > 2 {
