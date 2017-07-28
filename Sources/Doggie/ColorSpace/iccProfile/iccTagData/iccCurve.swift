@@ -397,7 +397,7 @@ extension iccCurve {
                     return pow(a * $0 + b, gamma) + e
                 }
             }
-        case let .table(points): return interpolate(x, table: points)
+        case let .table(points): return points.withUnsafeBufferPointer { interpolate(x, table: $0) }
         }
     }
 }

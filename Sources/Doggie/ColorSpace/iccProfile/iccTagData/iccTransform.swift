@@ -533,9 +533,12 @@ struct OneDimensionalLUT {
         
         var result = Model()
         
-        for i in 0..<Model.numberOfComponents {
-            let offset = grid * i
-            result[i] = interpolate(color[i], table: table[offset..<offset + grid])
+        table.withUnsafeBufferPointer { table in
+            
+            for i in 0..<Model.numberOfComponents {
+                let offset = grid * i
+                result[i] = interpolate(color[i], table: table[offset..<offset + grid])
+            }
         }
         
         return result
@@ -569,53 +572,57 @@ struct MultiDimensionalLUT {
     @_inlineable
     func eval<Source: ColorModelProtocol, Destination: ColorModelProtocol>(_ source: Source) -> Destination {
         
-        let position = source.enumerated().map { _interpolate_index($1, grids[$0]) }
+        let position = zip(source, grids).map { _interpolate_index($0, $1) }
         
-        func _interpolate(level: Int, offset: Int) -> Destination {
+        return table.withUnsafeBufferPointer { table in
             
-            let _p = position[Source.numberOfComponents - level - 1]
-            let _s = level == 0 ? Destination.numberOfComponents : grids[level - 1]
-            
-            if _p.0 == grids[level] - 1 {
+            func _interpolate(level: Int, offset: Int) -> Destination {
                 
-                var r = Destination()
+                let _p = position[Source.numberOfComponents - level - 1]
+                let _s = level == 0 ? Destination.numberOfComponents : grids[level - 1]
                 
-                let offset = (offset + _p.0) * _s
-                
-                if level == 0 {
-                    for i in 0..<Destination.numberOfComponents {
-                        r[i] = table[offset + i]
+                if _p.0 == grids[level] - 1 {
+                    
+                    var r = Destination()
+                    
+                    let offset = (offset + _p.0) * _s
+                    
+                    if level == 0 {
+                        for i in 0..<Destination.numberOfComponents {
+                            r[i] = table[offset + i]
+                        }
+                    } else {
+                        let _level = level - 1
+                        r = _interpolate(level: _level, offset: offset)
                     }
+                    
+                    return r
+                    
                 } else {
-                    let _level = level - 1
-                    r = _interpolate(level: _level, offset: offset)
-                }
-                
-                return r
-                
-            } else {
-                
-                var a = Destination()
-                var b = Destination()
-                
-                let offset1 = (offset + _p.0) * _s
-                let offset2 = offset1 + _s
-                
-                if level == 0 {
-                    for i in 0..<Destination.numberOfComponents {
-                        a[i] = table[offset1 + i]
-                        b[i] = table[offset2 + i]
+                    
+                    var a = Destination()
+                    var b = Destination()
+                    
+                    let offset1 = (offset + _p.0) * _s
+                    let offset2 = offset1 + _s
+                    
+                    if level == 0 {
+                        for i in 0..<Destination.numberOfComponents {
+                            a[i] = table[offset1 + i]
+                            b[i] = table[offset2 + i]
+                        }
+                    } else {
+                        let _level = level - 1
+                        a = _interpolate(level: _level, offset: offset1)
+                        b = _interpolate(level: _level, offset: offset2)
                     }
-                } else {
-                    let _level = level - 1
-                    a = _interpolate(level: _level, offset: offset1)
-                    b = _interpolate(level: _level, offset: offset2)
+                    
+                    return (1 - _p.1) * a + _p.1 * b
                 }
-                
-                return (1 - _p.1) * a + _p.1 * b
             }
+            
+            return _interpolate(level: Source.numberOfComponents - 1, offset: 0)
         }
         
-        return _interpolate(level: Source.numberOfComponents - 1, offset: 0)
     }
 }
