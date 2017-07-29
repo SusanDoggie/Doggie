@@ -31,6 +31,8 @@ public protocol ColorPixelProtocol : Hashable, ScalarMultiplicative where Scalar
     
     init(color: Model, opacity: Double)
     
+    init<C : ColorPixelProtocol>(_ color: C) where Model == C.Model
+    
     var color: Model { get set }
     
     var opacity: Double { get set }
@@ -57,7 +59,7 @@ extension ColorPixelProtocol {
     
     @_transparent
     public init<C : ColorPixelProtocol>(_ color: C) where Model == C.Model {
-        self.init(color: color.color, opacity: color.opacity)
+        self = color as? Self ?? Self(color: color.color, opacity: color.opacity)
     }
 }
 
