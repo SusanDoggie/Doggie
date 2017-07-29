@@ -60,26 +60,18 @@ extension CIEXYZColorSpace {
     
     @_versioned
     @_inlineable
-    func chromaticAdaptationMatrix(to other: CIEXYZColorSpace, _ chromaticAdaptationAlgorithm: ChromaticAdaptationAlgorithm) -> Matrix {
-        return self.chromaticAdaptationMatrix(to: other, (chromaticAdaptationAlgorithm, chromaticAdaptationAlgorithm))
+    func chromaticAdaptationMatrix(to other: CIEXYZColorSpace, _ algorithm: ChromaticAdaptationAlgorithm) -> Matrix {
+        return self.chromaticAdaptationMatrix(to: other, (algorithm, algorithm))
     }
     
     @_versioned
     @_inlineable
-    func chromaticAdaptationMatrix(to other: CIEXYZColorSpace, _ chromaticAdaptationAlgorithm: (source: ChromaticAdaptationAlgorithm, destination: ChromaticAdaptationAlgorithm)) -> Matrix {
-        let m1 = self.normalizeMatrix * chromaticAdaptationAlgorithm.source.matrix
-        let m2 = other.normalizeMatrix * chromaticAdaptationAlgorithm.destination.matrix
+    func chromaticAdaptationMatrix(to other: CIEXYZColorSpace, _ algorithm: (source: ChromaticAdaptationAlgorithm, destination: ChromaticAdaptationAlgorithm)) -> Matrix {
+        let m1 = self.normalizeMatrix * algorithm.source.matrix
+        let m2 = other.normalizeMatrix * algorithm.destination.matrix
         let _s = self.white * m1
         let _d = other.white * m2
         return m1 * Matrix.scale(x: _d.x / _s.x, y: _d.y / _s.y, z: _d.z / _s.z) * m2.inverse
     }
 }
 
-extension ColorSpaceBaseProtocol {
-    
-    @_versioned
-    @_inlineable
-    func chromaticAdaptationMatrix<Destination: ColorSpaceBaseProtocol>(to other: Destination, _ chromaticAdaptationAlgorithm: (source: ChromaticAdaptationAlgorithm, destination: ChromaticAdaptationAlgorithm)) -> Matrix {
-        return self.cieXYZ.chromaticAdaptationMatrix(to: other.cieXYZ, chromaticAdaptationAlgorithm)
-    }
-}

@@ -36,3 +36,19 @@ extension RenderingIntent {
         return .relativeColorimetric
     }
 }
+
+extension RenderingIntent {
+    
+    @_versioned
+    @_inlineable
+    func _convert<S : Sequence, R>(_ color: S, _ cieXYZ: (source: CIEXYZColorSpace, destination: CIEXYZColorSpace), _ algorithm: (source: ChromaticAdaptationAlgorithm, destination: ChromaticAdaptationAlgorithm), toXYZ: (S.Element) -> XYZColorModel, fromXYZ: (XYZColorModel, S.Element) -> R) -> [R] {
+        switch self {
+        case .absoluteColorimetric: return color.map { fromXYZ(toXYZ($0), $0) }
+        case .relativeColorimetric:
+            let matrix = cieXYZ.source.chromaticAdaptationMatrix(to: cieXYZ.destination, algorithm)
+            return color.map { fromXYZ(toXYZ($0) * matrix, $0) }
+        }
+    }
+
+}
+
