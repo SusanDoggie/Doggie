@@ -21,12 +21,12 @@
 //  THE SOFTWARE.
 //
 
-#import <Cocoa/Cocoa.h>
+#import <Foundation/Foundation.h>
 
-//! Project version number for Doggie_Mac.
-FOUNDATION_EXPORT double Doggie_MacVersionNumber;
+//! Project version number for Doggie.
+FOUNDATION_EXPORT double Doggie_VersionNumber;
 
-//! Project version string for Doggie_Mac.
-FOUNDATION_EXPORT const unsigned char Doggie_MacVersionString[];
+//! Project version string for Doggie.
+FOUNDATION_EXPORT const unsigned char Doggie_VersionString[];
 
-// In this header, you should import all the public headers of your framework using statements like #import <Doggie_Mac/PublicHeader.h>
+// In this header, you should import all the public headers of your framework using statements like #import <Doggie/PublicHeader.h>

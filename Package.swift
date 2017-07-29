@@ -1,3 +1,4 @@
+// swift-tools-version:4.0
 //
 //  Package.swift
 //
@@ -32,8 +33,8 @@ let package = Package(
         ],
     targets: [
         .target(name: "Doggie", dependencies: ["c11_atomic", "zlib"]),
-        .target(name: "c11_atomic"),
-        .target(name: "zlib"),
+        .target(name: "c11_atomic", dependencies: []),
+        .target(name: "zlib", dependencies: []),
         .testTarget(name: "DoggieTests", dependencies: ["Doggie"]),
         ]
 )

@@ -124,7 +124,8 @@ extension RGBColorModel {
         let _hue = positive_mod(hue, 1) * 6
         let __hue = Int(_hue)
         let c = brightness * saturation
-        let x = c * (1 - abs(positive_mod(_hue, 2) - 1))
+        let _mod = positive_mod(_hue, 2)
+        let x = c * (1 - abs(_mod - 1))
         let m = brightness - c
         switch __hue {
         case 0:
