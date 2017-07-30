@@ -931,22 +931,22 @@ public struct GatheringRandomAccessCollection<C : Collection, I : RandomAccessCo
 extension Collection {
     
     @_inlineable
-    public subscript<I>(_ indices: I) -> GatheringSequence<Self, I> {
+    public func collect<I>(_ indices: I) -> GatheringSequence<Self, I> {
         return GatheringSequence(base: self, indices: indices)
     }
     
     @_inlineable
-    public subscript<I>(_ indices: I) -> GatheringCollection<Self, I> {
+    public func collect<I>(_ indices: I) -> GatheringCollection<Self, I> {
         return GatheringCollection(base: self, indices: indices)
     }
     
     @_inlineable
-    public subscript<I>(_ indices: I) -> GatheringBidirectionalCollection<Self, I> {
+    public func collect<I>(_ indices: I) -> GatheringBidirectionalCollection<Self, I> {
         return GatheringBidirectionalCollection(base: self, indices: indices)
     }
     
     @_inlineable
-    public subscript<I>(_ indices: I) -> GatheringRandomAccessCollection<Self, I> {
+    public func collect<I>(_ indices: I) -> GatheringRandomAccessCollection<Self, I> {
         return GatheringRandomAccessCollection(base: self, indices: indices)
     }
 }
@@ -954,23 +954,23 @@ extension Collection {
 extension LazyCollectionProtocol {
     
     @_inlineable
-    public subscript<I>(_ indices: I) -> LazySequence<GatheringSequence<Elements, I>> {
-        return self.elements[indices].lazy
+    public func collect<I>(_ indices: I) -> LazySequence<GatheringSequence<Elements, I>> {
+        return self.elements.collect(indices).lazy
     }
     
     @_inlineable
-    public subscript<I>(_ indices: I) -> LazyCollection<GatheringCollection<Elements, I>> {
-        return self.elements[indices].lazy
+    public func collect<I>(_ indices: I) -> LazyCollection<GatheringCollection<Elements, I>> {
+        return self.elements.collect(indices).lazy
     }
     
     @_inlineable
-    public subscript<I>(_ indices: I) -> LazyBidirectionalCollection<GatheringBidirectionalCollection<Elements, I>> {
-        return self.elements[indices].lazy
+    public func collect<I>(_ indices: I) -> LazyBidirectionalCollection<GatheringBidirectionalCollection<Elements, I>> {
+        return self.elements.collect(indices).lazy
     }
     
     @_inlineable
-    public subscript<I>(_ indices: I) -> LazyRandomAccessCollection<GatheringRandomAccessCollection<Elements, I>> {
-        return self.elements[indices].lazy
+    public func collect<I>(_ indices: I) -> LazyRandomAccessCollection<GatheringRandomAccessCollection<Elements, I>> {
+        return self.elements.collect(indices).lazy
     }
 }
 
