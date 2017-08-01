@@ -156,6 +156,7 @@ extension Image {
                             let bytesPerPixel = bitmap.bitsPerPixel >> 3
                             let pixelShift = _bitsOffset & 7
                             
+                            @inline(__always)
                             func pixelByte(_ i: Int) -> UInt8 {
                                 switch bitmap.endianness {
                                 case .big: return pixelShift == 0 ? source[i] : (source[i] << pixelShift) | (source[i + 1] >> (8 - pixelShift))
@@ -173,6 +174,7 @@ extension Image {
                                 let channelShift = channel.bitRange.lowerBound & 7
                                 let bytesPerChannel = channel.bitRange.count >> 3
                                 
+                                @inline(__always)
                                 func channelByte(_ i: Int) -> UInt8 {
                                     switch channel.endianness {
                                     case .big: return channelShift == 0 ? pixelByte(i + channelBytesOffset) : (pixelByte(i + channelBytesOffset) << channelShift) | (pixelByte(i + 1 + channelBytesOffset) >> (8 - channelShift))
@@ -182,21 +184,43 @@ extension Image {
                                 
                                 switch channel.format {
                                 case .unsigned:
-                                    for (i, slice) in channel.bitRange.slice(by: 8).enumerated() {
-                                        value = Double(sign: value.sign, exponentBitPattern: value.exponentBitPattern + UInt(slice.count), significandBitPattern: value.significandBitPattern) + Double(channelByte(i) & UInt8((1 << slice.count) - 1))
+                                    
+                                    if channel.bitRange.count > 64 {
+                                        for (i, slice) in channel.bitRange.slice(by: 8).enumerated() {
+                                            value = Double(sign: value.sign, exponentBitPattern: value.exponentBitPattern + UInt(slice.count), significandBitPattern: value.significandBitPattern) + Double(channelByte(i) & UInt8((1 << slice.count) - 1))
+                                        }
+                                    } else {
+                                        var bitPattern: UInt64 = 0
+                                        for (i, slice) in channel.bitRange.slice(by: 8).enumerated() {
+                                            bitPattern = (bitPattern << slice.count) | UInt64(channelByte(i))
+                                        }
+                                        value = Double(bitPattern)
                                     }
+                                    
                                     value /= Double(sign: .plus, exponent: channel.bitRange.count, significand: 1) - 1
                                     
                                 case .signed:
                                     
                                     var signed = false
                                     
-                                    for (i, slice) in channel.bitRange.slice(by: 8).enumerated() {
-                                        let byte = channelByte(i)
-                                        if i == 0 && byte & 0x80 != 0 {
-                                            signed = true
+                                    if channel.bitRange.count > 64 {
+                                        for (i, slice) in channel.bitRange.slice(by: 8).enumerated() {
+                                            let byte = channelByte(i)
+                                            if i == 0 && byte & 0x80 != 0 {
+                                                signed = true
+                                            }
+                                            value = Double(sign: value.sign, exponentBitPattern: value.exponentBitPattern + UInt(slice.count), significandBitPattern: value.significandBitPattern) + Double(byte & UInt8((1 << slice.count) - 1))
                                         }
-                                        value = Double(sign: value.sign, exponentBitPattern: value.exponentBitPattern + UInt(slice.count), significandBitPattern: value.significandBitPattern) + Double(byte & UInt8((1 << slice.count) - 1))
+                                    } else {
+                                        var bitPattern: UInt64 = 0
+                                        for (i, slice) in channel.bitRange.slice(by: 8).enumerated() {
+                                            let byte = channelByte(i)
+                                            if i == 0 && byte & 0x80 != 0 {
+                                                signed = true
+                                            }
+                                            bitPattern = (bitPattern << slice.count) | UInt64(byte)
+                                        }
+                                        value = Double(bitPattern)
                                     }
                                     
                                     value = Double(sign: value.sign, exponentBitPattern: value.exponentBitPattern - UInt(channel.bitRange.count), significandBitPattern: value.significandBitPattern)
@@ -289,6 +313,7 @@ extension Image {
 
         var data = [Data]()
         
+        @inline(__always)
         func encode(_ value: Double, _ data: inout Data) {
             switch format {
             case .unsigned:
@@ -356,6 +381,7 @@ extension Image {
             }
         }
         
+        @inline(__always)
         func swapPixel(_ data: inout Data) {
             
             data.withUnsafeMutableBytes { (buffer: UnsafeMutablePointer<UInt8>) in
