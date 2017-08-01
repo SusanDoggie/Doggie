@@ -237,11 +237,7 @@ public struct ColorPixel<Model : ColorModelProtocol> : ColorPixelProtocol {
     public typealias Scalar = Double
     
     public var color: Model
-    public var opacity: Double {
-        didSet {
-            opacity = opacity.clamped(to: 0...1)
-        }
-    }
+    public var opacity: Double
     
     @_transparent
     public init(color: Model, opacity: Double = 1) {
