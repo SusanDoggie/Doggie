@@ -97,7 +97,6 @@
 		0A831A8D1F1872770007932A /* Gray16ColorPixel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A831A891F1872760007932A /* Gray16ColorPixel.swift */; };
 		0A831A901F1895200007932A /* ImageRepDecoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A831A8E1F1895200007932A /* ImageRepDecoder.swift */; };
 		0A831A931F18952C0007932A /* ImageRepEncoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A831A911F18952C0007932A /* ImageRepEncoder.swift */; };
-		0A8398B71F0B98D000D7CF3B /* ImageResampling.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A8398B51F0B98D000D7CF3B /* ImageResampling.swift */; };
 		0A89938E1EFA488900E9CDD9 /* ICC Creator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A89938C1EFA488900E9CDD9 /* ICC Creator.swift */; };
 		0A8B10511F1DE69B00D93CF9 /* JPEGDecoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A8B104F1F1DE69B00D93CF9 /* JPEGDecoder.swift */; };
 		0A8DD8791F1F2FC200457676 /* TIFFDecoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A8DD8771F1F2FC200457676 /* TIFFDecoder.swift */; };
@@ -263,7 +262,6 @@
 		0A831A891F1872760007932A /* Gray16ColorPixel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Gray16ColorPixel.swift; sourceTree = "<group>"; };
 		0A831A8E1F1895200007932A /* ImageRepDecoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageRepDecoder.swift; sourceTree = "<group>"; };
 		0A831A911F18952C0007932A /* ImageRepEncoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageRepEncoder.swift; sourceTree = "<group>"; };
-		0A8398B51F0B98D000D7CF3B /* ImageResampling.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageResampling.swift; sourceTree = "<group>"; };
 		0A89938C1EFA488900E9CDD9 /* ICC Creator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ICC Creator.swift"; sourceTree = "<group>"; };
 		0A8B104F1F1DE69B00D93CF9 /* JPEGDecoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JPEGDecoder.swift; sourceTree = "<group>"; };
 		0A8D98A21E53ED0F0050E112 /* ImageTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageTest.swift; sourceTree = "<group>"; };
@@ -385,7 +383,6 @@
 				0AE719FF1EF517CA0086923C /* AnyImage.swift */,
 				08458AD31E2E627600D01813 /* Image.swift */,
 				0AB23E441F22E4980033462E /* RawBitmap.swift */,
-				0A8398B51F0B98D000D7CF3B /* ImageResampling.swift */,
 			);
 			path = Image;
 			sourceTree = "<group>";
@@ -1006,7 +1003,6 @@
 				0AD4D8D91EA6247200C99728 /* Maths misc.swift in Sources */,
 				0A53E4631E35AEF80060FB83 /* Date.swift in Sources */,
 				0A9CD58B1EEB98E600094148 /* sRGB.swift in Sources */,
-				0A8398B71F0B98D000D7CF3B /* ImageResampling.swift in Sources */,
 				0AE719FB1EF50EEB0086923C /* AnyColor.swift in Sources */,
 				0A967E501F132DC0007E38E4 /* BMPEncoder.swift in Sources */,
 				08458AFB1E2E627600D01813 /* DiscreteConvolve.swift in Sources */,

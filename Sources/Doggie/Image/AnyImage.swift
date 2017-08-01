@@ -55,8 +55,6 @@ protocol AnyImageBaseProtocol {
     func _convert(to colorSpace: AnyColorSpaceBaseProtocol, intent: RenderingIntent) -> AnyImageBaseProtocol
     
     func _convert<P>(to colorSpace: ColorSpace<P.Model>, intent: RenderingIntent) -> Image<P>
-    
-    func _resize(width: Int, height: Int, transform: SDTransform, resampling algorithm: ResamplingAlgorithm, antialias: Bool) -> AnyImageBaseProtocol
 }
 
 extension Image : AnyImageBaseProtocol {
@@ -115,12 +113,6 @@ extension Image : AnyImageBaseProtocol {
     func _convert<P>(to colorSpace: ColorSpace<P.Model>, intent: RenderingIntent) -> Image<P> {
         return Image<P>(image: self, colorSpace: colorSpace, intent: intent)
     }
-    
-    @_versioned
-    @_inlineable
-    func _resize(width: Int, height: Int, transform: SDTransform, resampling algorithm: ResamplingAlgorithm, antialias: Bool) -> AnyImageBaseProtocol {
-        return Image<Pixel>(image: self, width: width, height: height, transform: transform, resampling: algorithm, antialias: antialias)
-    }
 }
 
 @_fixed_layout
@@ -174,28 +166,8 @@ extension AnyImage {
     }
     
     @_inlineable
-    public init<Pixel>(image: Image<Pixel>, width: Int, height: Int, resampling algorithm: ResamplingAlgorithm = .default, antialias: Bool = false) {
-        self._base = image._resize(width: width, height: height, transform: SDTransform.scale(x: Double(width) / Double(image.width), y: Double(height) / Double(image.height)), resampling: algorithm, antialias: antialias)
-    }
-    
-    @_inlineable
-    public init<Pixel>(image: Image<Pixel>, width: Int, height: Int, transform: SDTransform, resampling algorithm: ResamplingAlgorithm = .default, antialias: Bool = false) {
-        self._base = image._resize(width: width, height: height, transform: transform, resampling: algorithm, antialias: antialias)
-    }
-    
-    @_inlineable
     public init(image: AnyImage, colorSpace: AnyColorSpace, intent: RenderingIntent = .default) {
         self._base = image._base._convert(to: colorSpace._base, intent: intent)
-    }
-    
-    @_inlineable
-    public init(image: AnyImage, width: Int, height: Int, resampling algorithm: ResamplingAlgorithm = .default, antialias: Bool = false) {
-        self._base = image._base._resize(width: width, height: height, transform: SDTransform.scale(x: Double(width) / Double(image.width), y: Double(height) / Double(image.height)), resampling: algorithm, antialias: antialias)
-    }
-    
-    @_inlineable
-    public init(image: AnyImage, width: Int, height: Int, transform: SDTransform, resampling algorithm: ResamplingAlgorithm = .default, antialias: Bool = false) {
-        self._base = image._base._resize(width: width, height: height, transform: transform, resampling: algorithm, antialias: antialias)
     }
 }
 
