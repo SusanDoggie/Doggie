@@ -213,6 +213,9 @@ extension ImageContext {
     @inline(__always)
     func filling(_ transform: SDTransform, _ operation: (Point) -> ColorPixel<Pixel.Model>) {
         
+        let width = self.width
+        let height = self.height
+        
         self.withUnsafePixelBlender { blender in
             
             var blender = blender
