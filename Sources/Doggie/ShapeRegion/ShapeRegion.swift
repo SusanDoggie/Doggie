@@ -88,7 +88,7 @@ extension ShapeRegion {
         return solids.reduce(0) { $0 + abs($1.component.area) - abs($1.holes.area) }
     }
     
-    func components(positive: Bool) -> [Shape.Component] {
+    private func components(positive: Bool) -> [Shape.Component] {
         
         var result: [Shape.Component] = []
         result.reserveCapacity(solids.count)
