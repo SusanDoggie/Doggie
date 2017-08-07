@@ -23,3 +23,66 @@
 //  THE SOFTWARE.
 //
 
+let ShapeCacheNonZeroRegionKey = "ShapeCacheNonZeroRegionKey"
+let ShapeCacheEvenOddRegionKey = "ShapeCacheEvenOddRegionKey"
+
+let ShapeRegionBoundInset: Double = -1e-8
+
+public struct ShapeRegion {
+    
+    let solids: [Solid]
+    let spacePartition: RectCollection
+    
+    public let bound: Rect
+    
+    let cache: Cache
+    
+    public init() {
+        self.solids = []
+        self.spacePartition = RectCollection()
+        self.bound = Rect()
+        self.cache = Cache()
+    }
+    
+    public init(_ solid: ShapeRegion.Solid) {
+        self.init(CollectionOfOne(solid))
+    }
+    
+    init<S : Sequence>(_ solids: S) where S.Iterator.Element == ShapeRegion.Solid {
+        let solids = solids.filter { !$0.segments.isEmpty && !$0.segments.area.almostZero() }
+        self.solids = solids
+        self.spacePartition = RectCollection(solids.map { $0.bigBound })
+        self.bound = solids.first.map { solids.dropFirst().reduce($0.boundary) { $0.union($1.boundary) } } ?? Rect()
+        self.cache = Cache()
+    }
+}
+
+extension ShapeRegion {
+    
+    class Cache {
+        
+    }
+}
+
+extension ShapeRegion : RandomAccessCollection {
+    
+    public var startIndex: Int {
+        return solids.startIndex
+    }
+    
+    public var endIndex: Int {
+        return solids.endIndex
+    }
+    
+    public subscript(position: Int) -> Solid {
+        return solids[position]
+    }
+}
+
+extension ShapeRegion {
+    
+    public var area: Double {
+        return solids.reduce(0) { $0 + abs($1.area) }
+    }
+}
+

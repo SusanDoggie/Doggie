@@ -22,3 +22,51 @@
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 //  THE SOFTWARE.
 //
+
+extension ShapeRegion {
+    
+    public struct Solid {
+        
+        let segments: Shape.Component
+        public let holes: ShapeRegion
+        
+        let cache: Cache
+        
+        init(segments: Shape.Component, holes: ShapeRegion = ShapeRegion()) {
+            self.segments = segments
+            self.holes = holes
+            self.cache = Cache()
+        }
+        
+        init<S : Sequence>(segments: Shape.Component, holes: S) where S.Iterator.Element == ShapeRegion.Solid {
+            self.segments = segments
+            self.holes = ShapeRegion(holes)
+            self.cache = Cache()
+        }
+    }
+}
+
+extension ShapeRegion.Solid {
+    
+    class Cache {
+        
+    }
+}
+
+extension ShapeRegion.Solid {
+    
+    public var area: Double {
+        return abs(segments.area) - holes.area
+    }
+    public var boundary: Rect {
+        return segments.boundary
+    }
+    
+    public var solid: ShapeRegion.Solid {
+        return ShapeRegion.Solid(segments: segments)
+    }
+    
+    var bigBound: Rect {
+        return boundary.inset(dx: ShapeRegionBoundInset, dy: ShapeRegionBoundInset)
+    }
+}
