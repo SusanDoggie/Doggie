@@ -30,10 +30,10 @@ let ShapeRegionBoundInset: Double = -1e-8
 
 public struct ShapeRegion {
     
+    public let boundary: Rect
+    
     let solids: [(component: Shape.Component, holes: ShapeRegion)]
     let spacePartition: RectCollection
-    
-    public let boundary: Rect
     
     let cache: Cache
     
@@ -46,13 +46,13 @@ public struct ShapeRegion {
     
     init<S : Sequence>(_ solids: S) where S.Element == (Shape.Component, ShapeRegion) {
         self.solids = Array(solids)
-    }
-    
-    init(component: Shape.Component, holes: ShapeRegion = ShapeRegion()) {
-        self.solids = [(component, holes)]
         self.spacePartition = RectCollection()
         self.boundary = Rect()
         self.cache = Cache()
+    }
+    
+    init(component: Shape.Component, holes: ShapeRegion = ShapeRegion()) {
+        self.init([(component, holes)])
     }
 }
 
@@ -88,14 +88,26 @@ extension ShapeRegion {
         return solids.reduce(0) { $0 + abs($1.component.area) - abs($1.holes.area) }
     }
     
+    func components(positive: Bool) -> [Shape.Component] {
+        
+        var result: [Shape.Component] = []
+        result.reserveCapacity(solids.count)
+        
+        for (component, holes) in solids {
+            let isPositive = component.area.sign == .plus
+            result.append(isPositive == positive ? component : component.reversed())
+            result.append(contentsOf: holes.components(positive: !positive))
+        }
+        
+        return result
+    }
+    
     public var shape: Shape {
-        let _path = Shape(solids.flatMap { $0.component.area.sign == .plus ? $0.component : $0.reversed().component })
+        let _path = Shape(self.components(positive: true))
         _path.cacheTable[ShapeCacheNonZeroRegionKey] = self
         _path.cacheTable[ShapeCacheEvenOddRegionKey] = self
         return _path
     }
-    
-    
 }
 
 extension ShapeRegion {
