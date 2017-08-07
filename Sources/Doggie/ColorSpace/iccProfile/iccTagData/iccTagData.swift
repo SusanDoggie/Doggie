@@ -58,6 +58,7 @@ extension iccProfile.TagData {
         case .u16Fixed16Array: return u16Fixed16Array
         case .XYZArray: return XYZArray
         case .curve, .parametricCurve: return curve
+        case .namedColor2: return namedColor
         case .text: return text
         case .multiLocalizedUnicode: return multiLocalizedUnicode
         case .lut8, .lut16, .lutAtoB, .lutBtoA: return transform
@@ -123,6 +124,14 @@ extension iccProfile.TagData {
     var curve: iccCurve? {
         var data = self.rawData
         return type == .curve || type == .parametricCurve ? try? iccCurve(from: &data) : nil
+    }
+}
+
+extension iccProfile.TagData {
+    
+    var namedColor: iccNamedColor? {
+        var data = self.rawData
+        return type == .namedColor2 ? try? iccNamedColor(from: &data) : nil
     }
 }
 

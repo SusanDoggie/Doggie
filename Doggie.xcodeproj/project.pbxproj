@@ -56,6 +56,7 @@
 		0A2107121E5BEEBB00F1E00E /* PathStroke.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A21070A1E5BEEBB00F1E00E /* PathStroke.swift */; };
 		0A2107161E5BEEBB00F1E00E /* Shape.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A21070C1E5BEEBB00F1E00E /* Shape.swift */; };
 		0A21F0251F061AE2009C4490 /* PixelBlender.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A21F0231F061AE2009C4490 /* PixelBlender.swift */; };
+		0A2406741F38109900B0EC28 /* iccNamedColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2406731F38109900B0EC28 /* iccNamedColor.swift */; };
 		0A2A643F1E5C45EE000E21BB /* PDFParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2A643D1E5C45EE000E21BB /* PDFParser.swift */; };
 		0A32D9991F28825F0027F384 /* Tensor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A32D9971F28825F0027F384 /* Tensor.swift */; };
 		0A36612C1EEA54AB00216A26 /* CGPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A36612A1EEA54AB00216A26 /* CGPath.swift */; };
@@ -224,6 +225,7 @@
 		0A21070A1E5BEEBB00F1E00E /* PathStroke.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PathStroke.swift; sourceTree = "<group>"; };
 		0A21070C1E5BEEBB00F1E00E /* Shape.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Shape.swift; sourceTree = "<group>"; };
 		0A21F0231F061AE2009C4490 /* PixelBlender.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PixelBlender.swift; sourceTree = "<group>"; };
+		0A2406731F38109900B0EC28 /* iccNamedColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iccNamedColor.swift; sourceTree = "<group>"; };
 		0A266E521D6E95C100ABE6B7 /* SDMarkerTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SDMarkerTest.swift; sourceTree = "<group>"; };
 		0A2A643D1E5C45EE000E21BB /* PDFParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PDFParser.swift; sourceTree = "<group>"; };
 		0A32D9971F28825F0027F384 /* Tensor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tensor.swift; sourceTree = "<group>"; };
@@ -639,6 +641,7 @@
 				0A8EDDC11F19B67800C917CC /* iccTransform.swift */,
 				0A8EDDC71F19D16B00C917CC /* iccMultiLocalizedUnicode.swift */,
 				0A8EDDD21F19E74000C917CC /* iccTextDescription.swift */,
+				0A2406731F38109900B0EC28 /* iccNamedColor.swift */,
 			);
 			path = iccTagData;
 			sourceTree = "<group>";
@@ -960,6 +963,7 @@
 				0A92C7C51E56AB9D0090EBFC /* Data.swift in Sources */,
 				0A831A931F18952C0007932A /* ImageRepEncoder.swift in Sources */,
 				0A7A1FB21F04FC230016B3FB /* ARGB32ColorPixel.swift in Sources */,
+				0A2406741F38109900B0EC28 /* iccNamedColor.swift in Sources */,
 				0A53E46D1E35AEF80060FB83 /* Integer.swift in Sources */,
 				0A967E521F132DC0007E38E4 /* GIFEncoder.swift in Sources */,
 				0A9F28251EF0D9CE00E69976 /* LuvColorModel.swift in Sources */,

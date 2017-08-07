@@ -25,7 +25,6 @@
 
 import Foundation
 
-
 struct iccTextDescription : DataDecodable {
     
     var ascii: String?
