@@ -30,7 +30,7 @@ let ShapeRegionBoundInset: Double = -1e-8
 
 public struct ShapeRegion {
     
-    let solids: [Solid]
+    let solids: [(component: Shape.Component, holes: ShapeRegion)]
     let spacePartition: RectCollection
     
     public let boundary: Rect
@@ -44,15 +44,14 @@ public struct ShapeRegion {
         self.cache = Cache()
     }
     
-    public init(_ solid: ShapeRegion.Solid) {
-        self.init(CollectionOfOne(solid))
+    init<S : Sequence>(_ solids: S) where S.Element == (Shape.Component, ShapeRegion) {
+        self.solids = Array(solids)
     }
     
-    init<S : Sequence>(_ solids: S) where S.Iterator.Element == ShapeRegion.Solid {
-        let solids = solids.filter { !$0.segments.isEmpty && !$0.segments.area.almostZero() }
-        self.solids = solids
-        self.spacePartition = RectCollection(solids.map { $0.bigBound })
-        self.boundary = solids.first.map { solids.dropFirst().reduce($0.boundary) { $0.union($1.boundary) } } ?? Rect()
+    init(component: Shape.Component, holes: ShapeRegion = ShapeRegion()) {
+        self.solids = [(component, holes)]
+        self.spacePartition = RectCollection()
+        self.boundary = Rect()
         self.cache = Cache()
     }
 }
@@ -77,23 +76,26 @@ extension ShapeRegion : RandomAccessCollection {
         return solids.endIndex
     }
     
-    public subscript(position: Int) -> Solid {
-        return solids[position]
+    public subscript(position: Int) -> ShapeRegion {
+        let (component, holes) = solids[position]
+        return ShapeRegion(component: component, holes: holes)
     }
 }
 
 extension ShapeRegion {
     
     public var area: Double {
-        return solids.reduce(0) { $0 + abs($1.area) }
+        return solids.reduce(0) { $0 + abs($1.component.area) - abs($1.holes.area) }
     }
     
     public var shape: Shape {
-        let _path = Shape(solids.flatMap { $0.segments.area.sign == .plus ? $0.component : $0.reversed().component })
+        let _path = Shape(solids.flatMap { $0.component.area.sign == .plus ? $0.component : $0.reversed().component })
         _path.cacheTable[ShapeCacheNonZeroRegionKey] = self
         _path.cacheTable[ShapeCacheEvenOddRegionKey] = self
         return _path
     }
+    
+    
 }
 
 extension ShapeRegion {
@@ -108,8 +110,9 @@ extension ShapeRegion {
 }
 
 public func * (lhs: ShapeRegion, rhs: SDTransform) -> ShapeRegion {
-    return rhs.determinant.almostZero() ? ShapeRegion() : ShapeRegion(lhs.solids.map { $0 * rhs })
+    return rhs.determinant.almostZero() ? ShapeRegion() : ShapeRegion(lhs.solids.map { ($0.component * rhs, $0.holes * rhs) })
 }
+
 public func *= (lhs: inout ShapeRegion, rhs: SDTransform) {
     lhs = lhs * rhs
 }
