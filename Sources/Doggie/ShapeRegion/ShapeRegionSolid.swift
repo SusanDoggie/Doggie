@@ -49,7 +49,10 @@ extension ShapeRegion {
 extension ShapeRegion.Solid {
     
     class Cache {
-        
+        var process: [ObjectIdentifier: [Shape.Component]] = [:]
+        var process_regions: [ObjectIdentifier: (ShapeRegion, ShapeRegion)] = [:]
+        var intersect_table: [ObjectIdentifier: IntersectionTable] = [:]
+        var reversed: ShapeRegion.Solid?
     }
 }
 
@@ -66,7 +69,39 @@ extension ShapeRegion.Solid {
         return ShapeRegion.Solid(segments: segments)
     }
     
+    public var shape: Shape {
+        let _path = Shape(segments.area.sign == .plus ? component : reversed().component)
+        _path.cacheTable[ShapeCacheNonZeroRegionKey] = ShapeRegion(self)
+        _path.cacheTable[ShapeCacheEvenOddRegionKey] = ShapeRegion(self)
+        return _path
+    }
+}
+
+extension ShapeRegion.Solid {
+    
+    var cacheId: ObjectIdentifier {
+        return ObjectIdentifier(cache)
+    }
+    
     var bigBound: Rect {
         return boundary.inset(dx: ShapeRegionBoundInset, dy: ShapeRegionBoundInset)
     }
+    
+    func reversed() -> ShapeRegion.Solid {
+        if cache.reversed == nil {
+            cache.reversed = ShapeRegion.Solid(segments: segments.reversed(), holes: holes.solids.map { self.segments.area.sign == $0.segments.area.sign ? $0 : $0.reversed() })
+        }
+        return cache.reversed!
+    }
+    
+    var component: [Shape.Component] {
+        return [segments] + holes.solids.flatMap { self.segments.area.sign != $0.segments.area.sign ? $0.component : $0.reversed().component }
+    }
+}
+
+public func * (lhs: ShapeRegion.Solid, rhs: SDTransform) -> ShapeRegion.Solid {
+    return rhs.determinant.almostZero() ? ShapeRegion.Solid(segments: Shape.Component(start: lhs.segments.start * rhs, closed: true, segments: [])) : ShapeRegion.Solid(segments: lhs.segments * rhs, holes: lhs.holes * rhs)
+}
+public func *= (lhs: inout ShapeRegion.Solid, rhs: SDTransform) {
+    lhs = lhs * rhs
 }

@@ -22,3 +22,38 @@
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 //  THE SOFTWARE.
 //
+
+struct IntersectionTable {
+    
+    var graph: Graph<Int, [(Type, Split, Split)]> = Graph()
+    var overlap: Overlap = .none
+    var looping_left: [(Split, Split)] = []
+    var looping_right: [(Split, Split)] = []
+}
+
+extension IntersectionTable {
+    
+    enum Overlap {
+        case none, equal, superset, subset
+    }
+    enum `Type` {
+        case left
+        case right
+    }
+    
+    struct Split {
+        let index: Int
+        let split: Double
+    }
+}
+
+extension IntersectionTable.Split {
+    
+    func almostEqual(_ other: IntersectionTable.Split) -> Bool {
+        return self.index == other.index && self.split.almostEqual(other.split)
+    }
+    
+    func ordering(_ other: IntersectionTable.Split) -> Bool {
+        return (self.index, self.split) < (other.index, other.split)
+    }
+}

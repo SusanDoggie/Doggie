@@ -33,14 +33,14 @@ public struct ShapeRegion {
     let solids: [Solid]
     let spacePartition: RectCollection
     
-    public let bound: Rect
+    public let boundary: Rect
     
     let cache: Cache
     
     public init() {
         self.solids = []
         self.spacePartition = RectCollection()
-        self.bound = Rect()
+        self.boundary = Rect()
         self.cache = Cache()
     }
     
@@ -52,7 +52,7 @@ public struct ShapeRegion {
         let solids = solids.filter { !$0.segments.isEmpty && !$0.segments.area.almostZero() }
         self.solids = solids
         self.spacePartition = RectCollection(solids.map { $0.bigBound })
-        self.bound = solids.first.map { solids.dropFirst().reduce($0.boundary) { $0.union($1.boundary) } } ?? Rect()
+        self.boundary = solids.first.map { solids.dropFirst().reduce($0.boundary) { $0.union($1.boundary) } } ?? Rect()
         self.cache = Cache()
     }
 }
@@ -60,7 +60,10 @@ public struct ShapeRegion {
 extension ShapeRegion {
     
     class Cache {
-        
+        var subtracting: [ObjectIdentifier: ShapeRegion] = [:]
+        var intersection: [ObjectIdentifier: ShapeRegion] = [:]
+        var union: [ObjectIdentifier: ShapeRegion] = [:]
+        var symmetricDifference: [ObjectIdentifier: ShapeRegion] = [:]
     }
 }
 
@@ -84,5 +87,29 @@ extension ShapeRegion {
     public var area: Double {
         return solids.reduce(0) { $0 + abs($1.area) }
     }
+    
+    public var shape: Shape {
+        let _path = Shape(solids.flatMap { $0.segments.area.sign == .plus ? $0.component : $0.reversed().component })
+        _path.cacheTable[ShapeCacheNonZeroRegionKey] = self
+        _path.cacheTable[ShapeCacheEvenOddRegionKey] = self
+        return _path
+    }
 }
 
+extension ShapeRegion {
+    
+    var cacheId: ObjectIdentifier {
+        return ObjectIdentifier(cache)
+    }
+    
+    var bigBound: Rect {
+        return boundary.inset(dx: ShapeRegionBoundInset, dy: ShapeRegionBoundInset)
+    }
+}
+
+public func * (lhs: ShapeRegion, rhs: SDTransform) -> ShapeRegion {
+    return rhs.determinant.almostZero() ? ShapeRegion() : ShapeRegion(lhs.solids.map { $0 * rhs })
+}
+public func *= (lhs: inout ShapeRegion, rhs: SDTransform) {
+    lhs = lhs * rhs
+}
