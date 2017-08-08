@@ -236,7 +236,7 @@ extension Image {
                                     }
                                     
                                     switch channel.bitRange.count {
-                                    case 32: value = Double(Float(bitPattern: UInt32(extendingOrTruncating: bitPattern)))
+                                    case 32: value = Double(Float(bitPattern: UInt32(truncatingIfNeeded: bitPattern)))
                                     case 64: value = Double(bitPattern: bitPattern)
                                     default: break
                                     }

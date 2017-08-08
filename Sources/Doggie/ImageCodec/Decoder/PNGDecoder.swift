@@ -1069,10 +1069,10 @@ func PNGCRC32(_ signature: Signature<BEUInt32>, _ data: Data) -> UInt32 {
     signature.encode(to: &_signature)
     
     for byte in _signature {
-        c = table[Int(UInt8(extendingOrTruncating: c) ^ byte)] ^ (c >> 8)
+        c = table[Int(UInt8(truncatingIfNeeded: c) ^ byte)] ^ (c >> 8)
     }
     for byte in data {
-        c = table[Int(UInt8(extendingOrTruncating: c) ^ byte)] ^ (c >> 8)
+        c = table[Int(UInt8(truncatingIfNeeded: c) ^ byte)] ^ (c >> 8)
     }
     return ~c
 }

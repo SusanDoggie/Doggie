@@ -42,13 +42,19 @@ extension FixedWidthInteger {
         let s2 = s1 << 2
         let s3 = s2 << 1
         
-        var x = self.byteSwapped
+        let x0 = self.byteSwapped
+        let u0 = (x0 & m1) << 4
+        let v0 = ((x0 & ~m1) >> 4) & ~s1
         
-        x = ((x & m1) << 4) | (((x & ~m1) >> 4) & ~s1)
-        x = ((x & m2) << 2) | (((x & ~m2) >> 2) & ~s2)
-        x = ((x & m3) << 1) | (((x & ~m3) >> 1) & ~s3)
+        let x1 = u0 | v0
+        let u1 = (x1 & m2) << 2
+        let v1 = ((x1 & ~m2) >> 2) & ~s2
         
-        return x
+        let x2 = u1 | v1
+        let u2 = (x2 & m3) << 1
+        let v2 = ((x2 & ~m3) >> 1) & ~s3
+        
+        return u2 | v2
     }
 }
 
@@ -121,7 +127,7 @@ public func mulmod<T: FixedWidthInteger & UnsignedInteger>(_ a: T, _ b: T, _ m: 
             return 0
         }
         let (mul, overflow) = a.multipliedReportingOverflow(by: b)
-        if overflow == .overflow {
+        if overflow {
             let c = _mulmod(addmod(a, a, m), b >> 1, m)
             return b & 1 == 1 ? addmod(a, c, m) : c
         }

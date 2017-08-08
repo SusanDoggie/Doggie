@@ -53,7 +53,7 @@ extension EndianInteger {
     }
     
     @_transparent
-    public init?<T>(exactly source: T) where T : FloatingPoint {
+    public init?<T>(exactly source: T) where T : BinaryFloatingPoint {
         guard let value = RepresentingValue(exactly: source) else { return nil }
         self.init(representingValue: value)
     }
@@ -64,7 +64,7 @@ extension EndianInteger {
     }
     
     @_transparent
-    public init<T>(_ source: T) where T : FloatingPoint {
+    public init<T>(_ source: T) where T : BinaryFloatingPoint {
         self.init(representingValue: RepresentingValue(source))
     }
     
@@ -74,8 +74,8 @@ extension EndianInteger {
     }
     
     @_transparent
-    public init<T>(extendingOrTruncating source: T) where T : BinaryInteger {
-        self.init(representingValue: RepresentingValue(extendingOrTruncating: source))
+    public init<T>(truncatingIfNeeded source: T) where T : BinaryInteger {
+        self.init(representingValue: RepresentingValue(truncatingIfNeeded: source))
     }
     
     @_transparent
@@ -158,8 +158,8 @@ extension EndianInteger {
 extension EndianInteger {
     
     @_transparent
-    public func _word(at n: Int) -> UInt {
-        return representingValue._word(at: n)
+    public var words: RepresentingValue.Words {
+        return self.representingValue.words
     }
     
     @_transparent
@@ -173,31 +173,31 @@ extension EndianInteger {
     }
     
     @_transparent
-    public func addingReportingOverflow(_ rhs: Self) -> (partialValue: Self, overflow: ArithmeticOverflow) {
+    public func addingReportingOverflow(_ rhs: Self) -> (partialValue: Self, overflow: Bool) {
         let (partialValue, overflow) = representingValue.addingReportingOverflow(rhs.representingValue)
         return (Self(representingValue: partialValue), overflow)
     }
     
     @_transparent
-    public func subtractingReportingOverflow(_ rhs: Self) -> (partialValue: Self, overflow: ArithmeticOverflow) {
+    public func subtractingReportingOverflow(_ rhs: Self) -> (partialValue: Self, overflow: Bool) {
         let (partialValue, overflow) = representingValue.subtractingReportingOverflow(rhs.representingValue)
         return (Self(representingValue: partialValue), overflow)
     }
     
     @_transparent
-    public func multipliedReportingOverflow(by rhs: Self) -> (partialValue: Self, overflow: ArithmeticOverflow) {
+    public func multipliedReportingOverflow(by rhs: Self) -> (partialValue: Self, overflow: Bool) {
         let (partialValue, overflow) = representingValue.multipliedReportingOverflow(by: rhs.representingValue)
         return (Self(representingValue: partialValue), overflow)
     }
     
     @_transparent
-    public func dividedReportingOverflow(by rhs: Self) -> (partialValue: Self, overflow: ArithmeticOverflow) {
+    public func dividedReportingOverflow(by rhs: Self) -> (partialValue: Self, overflow: Bool) {
         let (partialValue, overflow) = representingValue.dividedReportingOverflow(by: rhs.representingValue)
         return (Self(representingValue: partialValue), overflow)
     }
     
     @_transparent
-    public func remainderReportingOverflow(dividingBy rhs: Self) -> (partialValue: Self, overflow: ArithmeticOverflow) {
+    public func remainderReportingOverflow(dividingBy rhs: Self) -> (partialValue: Self, overflow: Bool) {
         let (partialValue, overflow) = representingValue.remainderReportingOverflow(dividingBy: rhs.representingValue)
         return (Self(representingValue: partialValue), overflow)
     }
