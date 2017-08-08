@@ -125,10 +125,14 @@ extension ShapeRegion.Region {
 extension ShapeRegion {
     
     class Cache {
+        
         var subtracting: [ObjectIdentifier: ShapeRegion] = [:]
         var intersection: [ObjectIdentifier: ShapeRegion] = [:]
         var union: [ObjectIdentifier: ShapeRegion] = [:]
         var symmetricDifference: [ObjectIdentifier: ShapeRegion] = [:]
+        
+        var solids: ShapeRegion?
+        var holes: ShapeRegion?
     }
 }
 
@@ -150,11 +154,17 @@ extension ShapeRegion : RandomAccessCollection {
 extension ShapeRegion {
     
     public var solids: ShapeRegion {
-        return ShapeRegion(regions.map { Region(component: $0.component) })
+        if cache.solids == nil {
+            cache.solids = ShapeRegion(regions.map { Region(component: $0.component) })
+        }
+        return cache.solids!
     }
     
     public var holes: ShapeRegion {
-        return ShapeRegion(regions.flatMap { $0.holes.regions })
+        if cache.holes == nil {
+            cache.holes = ShapeRegion(regions.flatMap { $0.holes.regions })
+        }
+        return cache.holes!
     }
 }
 
