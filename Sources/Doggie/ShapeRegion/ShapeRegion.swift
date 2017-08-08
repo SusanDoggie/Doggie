@@ -32,27 +32,93 @@ public struct ShapeRegion {
     
     public let boundary: Rect
     
-    let solids: [(component: Shape.Component, holes: ShapeRegion)]
+    let regions: [Region]
     let spacePartition: RectCollection
     
     let cache: Cache
     
     public init() {
-        self.solids = []
+        self.regions = []
         self.spacePartition = RectCollection()
         self.boundary = Rect()
         self.cache = Cache()
     }
     
-    init<S : Sequence>(_ solids: S) where S.Element == (Shape.Component, ShapeRegion) {
-        self.solids = Array(solids)
-        self.spacePartition = RectCollection()
-        self.boundary = Rect()
+    init(_ region: Region) {
+        self.regions = [region]
+        self.spacePartition = RectCollection([region.bigBound])
+        self.boundary = region.boundary
         self.cache = Cache()
     }
     
-    init(component: Shape.Component, holes: ShapeRegion = ShapeRegion()) {
-        self.init([(component, holes)])
+    init<S : Sequence>(_ regions: S) where S.Element == Region {
+        let regions = Array(regions)
+        self.regions = regions
+        self.spacePartition = RectCollection(regions.map { $0.bigBound })
+        self.boundary = regions.first.map { regions.dropFirst().reduce($0.boundary) { $0.union($1.boundary) } } ?? Rect()
+        self.cache = Cache()
+    }
+}
+
+extension ShapeRegion {
+    
+    struct Region {
+        
+        let component: Shape.Component
+        let holes: ShapeRegion
+        
+        let cache: Cache
+        
+        init(component: Shape.Component, holes: ShapeRegion = ShapeRegion()) {
+            self.component = component
+            self.holes = holes
+            self.cache = Cache()
+        }
+        
+        init<S : Sequence>(component: Shape.Component, holes: S) where S.Element == Region {
+            self.init(component: component, holes: ShapeRegion(holes))
+        }
+    }
+}
+
+extension ShapeRegion.Region {
+    
+    var cacheId: ObjectIdentifier {
+        return ObjectIdentifier(cache)
+    }
+    
+    class Cache {
+        
+        var subtracting: [ObjectIdentifier: [ShapeRegion.Region]] = [:]
+        var intersection: [ObjectIdentifier: [ShapeRegion.Region]] = [:]
+        var union: [ObjectIdentifier: ([ShapeRegion.Region], Bool)] = [:]
+        
+        var process: [ObjectIdentifier: [ShapeRegion.Region]] = [:]
+        var process_regions: [ObjectIdentifier: (ShapeRegion, ShapeRegion)] = [:]
+        var intersect_table: [ObjectIdentifier: IntersectionTable] = [:]
+        
+        var reversed: ShapeRegion.Region?
+    }
+}
+
+extension ShapeRegion.Region {
+    
+    func reversed() -> ShapeRegion.Region {
+        if cache.reversed == nil {
+            cache.reversed = ShapeRegion.Region(component: component.reversed(), holes: holes.regions.map { self.component.area.sign == $0.component.area.sign ? $0 : $0.reversed() })
+        }
+        return cache.reversed!
+    }
+}
+
+extension ShapeRegion.Region {
+    
+    var boundary: Rect {
+        return component.boundary
+    }
+    
+    var bigBound: Rect {
+        return boundary.inset(dx: ShapeRegionBoundInset, dy: ShapeRegionBoundInset)
     }
 }
 
@@ -69,34 +135,44 @@ extension ShapeRegion {
 extension ShapeRegion : RandomAccessCollection {
     
     public var startIndex: Int {
-        return solids.startIndex
+        return regions.startIndex
     }
     
     public var endIndex: Int {
-        return solids.endIndex
+        return regions.endIndex
     }
     
     public subscript(position: Int) -> ShapeRegion {
-        let (component, holes) = solids[position]
-        return ShapeRegion(component: component, holes: holes)
+        return ShapeRegion(regions[position])
+    }
+}
+
+extension ShapeRegion {
+    
+    public var solids: ShapeRegion {
+        return ShapeRegion(regions.map { Region(component: $0.component) })
+    }
+    
+    public var holes: ShapeRegion {
+        return ShapeRegion(regions.flatMap { $0.holes.regions })
     }
 }
 
 extension ShapeRegion {
     
     public var area: Double {
-        return solids.reduce(0) { $0 + abs($1.component.area) - abs($1.holes.area) }
+        return regions.reduce(0) { $0 + abs($1.component.area) - abs($1.holes.area) }
     }
     
     private func components(positive: Bool) -> [Shape.Component] {
         
         var result: [Shape.Component] = []
-        result.reserveCapacity(solids.count)
+        result.reserveCapacity(regions.count)
         
-        for (component, holes) in solids {
-            let isPositive = component.area.sign == .plus
-            result.append(isPositive == positive ? component : component.reversed())
-            result.append(contentsOf: holes.components(positive: !positive))
+        for region in regions {
+            let isPositive = region.component.area.sign == .plus
+            result.append(isPositive == positive ? region.component : region.component.reversed())
+            result.append(contentsOf: region.holes.components(positive: !positive))
         }
         
         return result
@@ -122,7 +198,7 @@ extension ShapeRegion {
 }
 
 public func * (lhs: ShapeRegion, rhs: SDTransform) -> ShapeRegion {
-    return rhs.determinant.almostZero() ? ShapeRegion() : ShapeRegion(lhs.solids.map { ($0.component * rhs, $0.holes * rhs) })
+    return rhs.determinant.almostZero() ? ShapeRegion() : ShapeRegion(lhs.regions.map { ShapeRegion.Region(component: $0.component * rhs, holes: $0.holes * rhs) })
 }
 
 public func *= (lhs: inout ShapeRegion, rhs: SDTransform) {
