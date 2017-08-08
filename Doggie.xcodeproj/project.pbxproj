@@ -155,10 +155,6 @@
 		0AE71A041EF51DF80086923C /* AnyColorSpace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE71A021EF51DF80086923C /* AnyColorSpace.swift */; };
 		0AE762561EE9475400E926D5 /* CGColorSpace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE762541EE9475400E926D5 /* CGColorSpace.swift */; };
 		0AE762591EE9583400E926D5 /* CGImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE762571EE9583400E926D5 /* CGImage.swift */; };
-		0AFF7C001F3418CC0010AAFE /* ShapeRegion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AFF7BFF1F3418CC0010AAFE /* ShapeRegion.swift */; };
-		0AFF7C041F3419560010AAFE /* ShapeRegionProcess.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AFF7C031F3419560010AAFE /* ShapeRegionProcess.swift */; };
-		0AFF7C061F3419960010AAFE /* ShapeRegionBreakLoop.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AFF7C051F3419960010AAFE /* ShapeRegionBreakLoop.swift */; };
-		0AFF7C081F341A100010AAFE /* ShapeRegionSegment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AFF7C071F341A100010AAFE /* ShapeRegionSegment.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -324,10 +320,6 @@
 		0AE762541EE9475400E926D5 /* CGColorSpace.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CGColorSpace.swift; sourceTree = "<group>"; };
 		0AE762571EE9583400E926D5 /* CGImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CGImage.swift; sourceTree = "<group>"; };
 		0AFCA14F1D9E1F130034AB10 /* AtomicTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AtomicTest.swift; sourceTree = "<group>"; };
-		0AFF7BFF1F3418CC0010AAFE /* ShapeRegion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShapeRegion.swift; sourceTree = "<group>"; };
-		0AFF7C031F3419560010AAFE /* ShapeRegionProcess.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShapeRegionProcess.swift; sourceTree = "<group>"; };
-		0AFF7C051F3419960010AAFE /* ShapeRegionBreakLoop.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShapeRegionBreakLoop.swift; sourceTree = "<group>"; };
-		0AFF7C071F341A100010AAFE /* ShapeRegionSegment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShapeRegionSegment.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -453,7 +445,6 @@
 				08458AE01E2E627600D01813 /* SDMarker.swift */,
 				08458ADF1E2E627600D01813 /* SDTriggerNode.swift */,
 				0A2107071E5BEEBB00F1E00E /* Shape */,
-				0AFF7BFE1F3418A70010AAFE /* ShapeRegion */,
 				08458AEA1E2E627600D01813 /* Thread */,
 			);
 			name = Doggie;
@@ -775,17 +766,6 @@
 			path = iccProfile;
 			sourceTree = "<group>";
 		};
-		0AFF7BFE1F3418A70010AAFE /* ShapeRegion */ = {
-			isa = PBXGroup;
-			children = (
-				0AFF7BFF1F3418CC0010AAFE /* ShapeRegion.swift */,
-				0AFF7C051F3419960010AAFE /* ShapeRegionBreakLoop.swift */,
-				0AFF7C071F341A100010AAFE /* ShapeRegionSegment.swift */,
-				0AFF7C031F3419560010AAFE /* ShapeRegionProcess.swift */,
-			);
-			path = ShapeRegion;
-			sourceTree = "<group>";
-		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -926,7 +906,6 @@
 				0A8EDDD11F19E33200C917CC /* iccDateTimeNumber.swift in Sources */,
 				0A3D5C641EEA498E00A9CDEA /* CGColor.swift in Sources */,
 				0A53E4791E35AEF80060FB83 /* Parallel.swift in Sources */,
-				0AFF7C061F3419960010AAFE /* ShapeRegionBreakLoop.swift in Sources */,
 				0AC527E21EEFEFF900FB239A /* iccProfile.swift in Sources */,
 				0A94BE961F1087B600F1BCD2 /* BMPDecoder.swift in Sources */,
 				0A967E511F132DC0007E38E4 /* JPEGEncoder.swift in Sources */,
@@ -1001,7 +980,6 @@
 				08B68A321ED07A2400F8D423 /* ColorSpace.swift in Sources */,
 				0A39A6C51ED937C700804004 /* DrawGradient.swift in Sources */,
 				0A56E9111E35F02E00D93786 /* RectCollection.swift in Sources */,
-				0AFF7C001F3418CC0010AAFE /* ShapeRegion.swift in Sources */,
 				0A52E2D91E6012140065EED6 /* PDFFilter.swift in Sources */,
 				0A7F24AD1EF37CD500EAD9C7 /* Endianness.swift in Sources */,
 				08458AFF1E2E627600D01813 /* SafeFunction.swift in Sources */,
@@ -1022,7 +1000,6 @@
 				0A89938E1EFA488900E9CDD9 /* ICC Creator.swift in Sources */,
 				0A39A6C21ED934D300804004 /* DrawClip.swift in Sources */,
 				08458B391E2E627600D01813 /* Matrix.swift in Sources */,
-				0AFF7C041F3419560010AAFE /* ShapeRegionProcess.swift in Sources */,
 				0A53E47F1E35AEF80060FB83 /* String.swift in Sources */,
 				0A92063B1F14C83A00AF5C49 /* PNGDecoder.swift in Sources */,
 				0A53E4691E35AEF80060FB83 /* Hashable.swift in Sources */,
@@ -1031,7 +1008,6 @@
 				0A53E4631E35AEF80060FB83 /* Date.swift in Sources */,
 				0A9CD58B1EEB98E600094148 /* sRGB.swift in Sources */,
 				0AE719FB1EF50EEB0086923C /* AnyColor.swift in Sources */,
-				0AFF7C081F341A100010AAFE /* ShapeRegionSegment.swift in Sources */,
 				0A967E501F132DC0007E38E4 /* BMPEncoder.swift in Sources */,
 				08458AFB1E2E627600D01813 /* DiscreteConvolve.swift in Sources */,
 				0A53E4671E35AEF80060FB83 /* Graph.swift in Sources */,
