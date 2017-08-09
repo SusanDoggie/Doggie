@@ -438,6 +438,17 @@ extension Bezier where Element == Point {
 
 extension Shape.Component.BezierCollection.Element {
     
+    public var boundary: Rect {
+        switch self.segment {
+        case let .line(p1): return Rect.bound([self.start, p1])
+        case let .quad(p1, p2): return Bezier(self.start, p1, p2).boundary
+        case let .cubic(p1, p2, p3): return Bezier(self.start, p1, p2, p3).boundary
+        }
+    }
+}
+
+extension Shape.Component.BezierCollection.Element {
+    
     public var end: Point {
         get {
             return segment.end
