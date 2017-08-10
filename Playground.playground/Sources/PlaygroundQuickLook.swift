@@ -32,3 +32,17 @@ extension Shape : CustomPlaygroundQuickLookable {
         return .bezierPath(NSBezierPath(self))
     }
 }
+
+extension ShapeRegion : CustomPlaygroundQuickLookable {
+    
+    public var customPlaygroundQuickLook: PlaygroundQuickLook {
+        return .bezierPath(NSBezierPath(self.shape))
+    }
+}
+
+extension ShapeRegion.Solid : CustomPlaygroundQuickLookable {
+    
+    public var customPlaygroundQuickLook: PlaygroundQuickLook {
+        return .bezierPath(NSBezierPath(self.shape))
+    }
+}
