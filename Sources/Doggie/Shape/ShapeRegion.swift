@@ -1434,7 +1434,7 @@ extension ShapeRegion.Solid {
     
     fileprivate func _union(_ other: ShapeRegion.Solid) -> ShapeRegion? {
         
-        let other = self.area.sign == other.area.sign ? other : other.reversed()
+        let other = self.solid.area.sign == other.solid.area.sign ? other : other.reversed()
         
         switch process(other) {
         case let .overlap(overlap):
@@ -1445,14 +1445,14 @@ extension ShapeRegion.Solid {
             }
         case let .regions(left, right): return left.union(right)
         case let .segments(loops):
-            let forward = loops.filter { !$0.area.almostZero() && self.area.sign == $0.area.sign }
-            let backward = loops.filter { !$0.area.almostZero() && self.area.sign != $0.area.sign }
+            let forward = loops.filter { self.solid.area.sign == $0.solid.area.sign }
+            let backward = loops.filter { self.solid.area.sign != $0.solid.area.sign }
             return ShapeRegion(solids: forward.enumerated().filter { arg in !forward.enumerated().contains { $0.0 != arg.0 && $0.1.solid._overlap(arg.1.solid) } }.map { arg in ShapeRegion.Solid(components: [arg.1.solid] + backward.filter { arg.1.solid._overlap($0.solid) }.map { $0.solid }) })
         }
     }
     fileprivate func _intersection(_ other: ShapeRegion.Solid) -> ShapeRegion {
         
-        let other = self.area.sign == other.area.sign ? other : other.reversed()
+        let other = self.solid.area.sign == other.solid.area.sign ? other : other.reversed()
         
         switch process(other) {
         case let .overlap(overlap):
@@ -1463,13 +1463,13 @@ extension ShapeRegion.Solid {
             }
         case let .regions(left, right): return left.intersection(right)
         case let .segments(loops):
-            let forward = loops.filter { !$0.area.almostZero() && self.area.sign == $0.area.sign }
+            let forward = loops.filter { self.solid.area.sign == $0.solid.area.sign }
             return ShapeRegion(solids: forward.enumerated().filter { arg in forward.enumerated().contains { $0.0 != arg.0 && $0.1.solid._overlap(arg.1.solid) } }.map { ShapeRegion.Solid(solid: $0.1.solid) })
         }
     }
     fileprivate func _subtracting(_ other: ShapeRegion.Solid) -> (ShapeRegion?, Bool) {
         
-        let other = self.area.sign == other.area.sign ? other.reversed() : other
+        let other = self.solid.area.sign == other.solid.area.sign ? other.reversed() : other
         
         switch process(other) {
         case let .overlap(overlap):
@@ -1479,7 +1479,7 @@ extension ShapeRegion.Solid {
             case .none: return (nil, false)
             }
         case let .regions(left, right): return (left.subtracting(right), false)
-        case let .segments(loops): return (ShapeRegion(solids: loops.filter { !$0.area.almostZero() && self.area.sign == $0.area.sign }.map { ShapeRegion.Solid(solid: $0.solid) }), false)
+        case let .segments(loops): return (ShapeRegion(solids: loops.filter { self.solid.area.sign == $0.solid.area.sign }.map { ShapeRegion.Solid(solid: $0.solid) }), false)
         }
     }
 }
