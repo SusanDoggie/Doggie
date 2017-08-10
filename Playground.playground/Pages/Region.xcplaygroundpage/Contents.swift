@@ -27,7 +27,6 @@ let region4 = ShapeRegion(ellipse2, winding: .nonZero)
 path2 + ellipse2
 
 region3.union(region4)
-
 region3.intersection(region4)
 region3.subtracting(region4)
 region4.subtracting(region3)
