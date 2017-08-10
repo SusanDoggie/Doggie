@@ -147,7 +147,7 @@ extension ShapeRegion {
             self.components = [solid]
             self.cache = Cache()
             self.boundary = self.components[0].boundary
-            self.area = self.components[0].area
+            self.area = abs(self.components[0].area)
         }
     }
 }
@@ -496,7 +496,7 @@ extension ShapeRegion {
         
         for loop in loops {
             var remain = ShapeRegion(solid: loop)
-            if loop.area.sign == .minus {
+            if loop.solid.area.sign == .minus {
                 for index in negative.indices {
                     (negative[index], remain) = (negative[index].union(remain), negative[index].intersection(remain))
                     if remain.isEmpty {
@@ -863,7 +863,7 @@ extension Shape.Component {
                 }
             }
         }
-        return result.filter { !$0.area.almostZero() }
+        return result
     }
 }
 
