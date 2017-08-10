@@ -23,8 +23,6 @@
 //  THE SOFTWARE.
 //
 
-import Foundation
-
 private let ShapeCacheNonZeroRegionKey = "ShapeCacheNonZeroRegionKey"
 private let ShapeCacheEvenOddRegionKey = "ShapeCacheEvenOddRegionKey"
 
@@ -143,16 +141,16 @@ extension ShapeRegion {
             self.components = Array(components)
             self.spacePartition = RectCollection(self.components.map { $0.bigBound })
             self.cache = Cache()
-            self.boundary = solid.boundary
-            self.area = holes.reduce(abs(solid.area)) { $0 - abs($1.area) }
+            self.boundary = self.components[0].boundary
+            self.area = self.components.dropFirst().reduce(abs(self.components[0].area)) { $0 - abs($1.area) }
         }
         
         fileprivate init(solid: Shape.Component) {
             self.components = [solid]
             self.spacePartition = RectCollection(self.components.map { $0.bigBound })
             self.cache = Cache()
-            self.boundary = solid.boundary
-            self.area = holes.reduce(abs(solid.area)) { $0 - abs($1.area) }
+            self.boundary = self.components[0].boundary
+            self.area = self.components[0].area
         }
     }
 }
@@ -238,9 +236,11 @@ extension ShapeRegion.Solid {
         
         if cache.union[other.cacheId] == nil && other.cache.union[cacheId] == nil {
             if let union = self._union(other) {
-                let a = ShapeRegion(solids: self.holes).intersection(ShapeRegion(solids: other.holes)).solids
-                let b = ShapeRegion(solids: self.holes).subtracting(other.solid)
-                let c = ShapeRegion(solids: other.holes).subtracting(self.solid)
+                let self_holes = ShapeRegion(solids: self.holes.flatMap { ShapeRegion.Solid(solid: $0) })
+                let other_holes = ShapeRegion(solids: other.holes.flatMap { ShapeRegion.Solid(solid: $0) })
+                let a = self_holes.intersection(other_holes).solids
+                let b = self_holes.subtracting(ShapeRegion.Solid(solid: other.solid))
+                let c = other_holes.subtracting(ShapeRegion.Solid(solid: self.solid))
                 cache.union[other.cacheId] = (union.subtracting(ShapeRegion(solids: a.concat(b).concat(c))).solids, true)
             } else {
                 cache.union[other.cacheId] = ([self, other], false)
@@ -257,7 +257,9 @@ extension ShapeRegion.Solid {
         if cache.intersection[other.cacheId] == nil && other.cache.intersection[cacheId] == nil {
             let intersection = self._intersection(other)
             if intersection.count != 0 {
-                cache.intersection[other.cacheId] = intersection.subtracting(self.holes).subtracting(other.holes).solids
+                let self_holes = ShapeRegion(solids: self.holes.flatMap { ShapeRegion.Solid(solid: $0) })
+                let other_holes = ShapeRegion(solids: other.holes.flatMap { ShapeRegion.Solid(solid: $0) })
+                cache.intersection[other.cacheId] = intersection.subtracting(self_holes).subtracting(other_holes).solids
             } else {
                 cache.intersection[other.cacheId] = []
             }
@@ -273,10 +275,14 @@ extension ShapeRegion.Solid {
         if cache.subtracting[other.cacheId] == nil {
             let (_subtracting, superset) = self._subtracting(other)
             if superset {
-                cache.subtracting[other.cacheId] = [other.segments.isEmpty ? self : ShapeRegion.Solid(segments: self.segments, holes: self.holes.union(ShapeRegion(solid: other)))]
+                let self_holes = ShapeRegion(solids: self.holes.flatMap { ShapeRegion.Solid(solid: $0) })
+                let a = self_holes.union(ShapeRegion(solid: other))
+                cache.subtracting[other.cacheId] = [ShapeRegion.Solid(components: [self.solid] + a.solids.map { $0.solid })] + a.solids.flatMap { $0.holes.map { ShapeRegion.Solid(solid: $0) } }
             } else if let subtracting = _subtracting {
-                let a = subtracting.concat(other.holes.intersection(self.solid))
-                cache.subtracting[other.cacheId] = self.holes.isEmpty ? Array(a) : ShapeRegion(solids: a).subtracting(self.holes).solids
+                let self_holes = ShapeRegion(solids: self.holes.flatMap { ShapeRegion.Solid(solid: $0) })
+                let other_holes = ShapeRegion(solids: other.holes.flatMap { ShapeRegion.Solid(solid: $0) })
+                let a = subtracting.concat(other_holes.intersection(ShapeRegion.Solid(solid: self.solid)))
+                cache.subtracting[other.cacheId] = self.holes.isEmpty ? Array(a) : ShapeRegion(solids: a).subtracting(self_holes).solids
             } else {
                 cache.subtracting[other.cacheId] = [self]
             }
@@ -453,6 +459,81 @@ extension ShapeRegion {
             ShapeRegion.Solid.Segment(points[3], points[0])
         ]
         self.init(solid: ShapeRegion.Solid(segments: segments)!)
+    }
+}
+
+extension ShapeRegion {
+    
+    public init(_ path: Shape, winding: Shape.WindingRule) {
+        self.init()
+        let cacheKey: String
+        switch winding {
+        case .nonZero: cacheKey = ShapeCacheNonZeroRegionKey
+        case .evenOdd: cacheKey = ShapeCacheEvenOddRegionKey
+        }
+        if let region = path.identity.cacheTable[cacheKey] as? ShapeRegion {
+            self = region
+        } else {
+            if let region = path.cacheTable[cacheKey] as? ShapeRegion {
+                self = region
+            } else {
+                switch winding {
+                case .nonZero: self.addLoopWithNonZeroWinding(loops: path.breakLoop())
+                case .evenOdd: self.addLoopWithEvenOddWinding(loops: path.breakLoop())
+                }
+                path.cacheTable[cacheKey] = self
+            }
+            self *= path.transform
+            path.identity.cacheTable[cacheKey] = self
+        }
+    }
+    
+    fileprivate mutating func addLoopWithNonZeroWinding(loops: [ShapeRegion.Solid]) {
+        
+        var positive: [ShapeRegion] = []
+        var negative: [ShapeRegion] = []
+        
+        for loop in loops {
+            var remain = ShapeRegion(solid: loop)
+            if loop.area.sign == .minus {
+                for index in negative.indices {
+                    (negative[index], remain) = (negative[index].union(remain), negative[index].intersection(remain))
+                    if remain.isEmpty {
+                        break
+                    }
+                }
+                if !remain.isEmpty {
+                    negative.append(remain)
+                }
+            } else {
+                for index in positive.indices {
+                    (positive[index], remain) = (positive[index].union(remain), positive[index].intersection(remain))
+                    if remain.isEmpty {
+                        break
+                    }
+                }
+                if !remain.isEmpty {
+                    positive.append(remain)
+                }
+            }
+        }
+        for n_index in negative.indices.reversed() {
+            for p_index in positive.indices.reversed() {
+                (positive[p_index], negative[n_index]) = (positive[p_index].subtracting(negative[n_index]), negative[n_index].subtracting(positive[p_index]))
+                if positive[p_index].isEmpty {
+                    positive.removeLast()
+                }
+                if negative[n_index].isEmpty {
+                    break
+                }
+            }
+        }
+        self = ShapeRegion(solids: OptionOneCollection(positive.first?.solids).concat(OptionOneCollection(negative.first?.solids)).joined())
+    }
+    
+    fileprivate mutating func addLoopWithEvenOddWinding(loops: [ShapeRegion.Solid]) {
+        
+        self = loops.reduce(ShapeRegion()) { $0.symmetricDifference(ShapeRegion(solid: $1)) }
     }
 }
 
@@ -1158,16 +1239,16 @@ private struct IntersectionTable {
 
 extension IntersectionTable {
     
-    enum Overlap {
+    fileprivate enum Overlap {
         case none, equal, superset, subset
     }
     
-    enum `Type` {
+    fileprivate enum `Type` {
         case left
         case right
     }
     
-    struct Split {
+    fileprivate struct Split {
         let index: Int
         let split: Double
     }
