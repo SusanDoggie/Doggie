@@ -69,7 +69,7 @@ public struct ShapeRegion {
     }
     
     fileprivate init<S : Sequence>(solids: S) where S.Iterator.Element == ShapeRegion.Solid {
-        let solids = solids.filter { !$0.area.almostZero() }
+        let solids = Array(solids)
         self.solids = solids
         self.spacePartition = RectCollection(solids.map { $0.bigBound })
         self.boundary = solids.first.map { solids.dropFirst().reduce($0.boundary) { $0.union($1.boundary) } } ?? Rect()
@@ -158,7 +158,7 @@ extension ShapeRegion.Solid {
     
     fileprivate init?<S : Sequence>(segments: S) where S.Element == Segment {
         
-        var segments = Array(segments)
+        var segments = segments.filter { !$0.isPoint }
         
         guard segments.count > 0 else { return nil }
         
@@ -166,7 +166,11 @@ extension ShapeRegion.Solid {
             segments.append(Segment(segments.last!.end, segments[0].start))
         }
         
-        self.init(solid: Shape.Component(start: segments[0].start, closed: true, segments: segments.map { $0.segment }))
+        let solid = Shape.Component(start: segments[0].start, closed: true, segments: segments.map { $0.segment })
+        
+        guard !solid.area.almostZero() else { return nil }
+        
+        self.init(solid: solid)
     }
 }
 
