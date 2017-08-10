@@ -1301,18 +1301,39 @@ extension Shape.Component {
 
 extension Shape.Component {
     
-    fileprivate func contains(_ loop: Shape.Component, hint: Set<Int>) -> Bool {
+    fileprivate func contains(_ other: Shape.Component, hint: Set<Int> = []) -> Bool {
         
-        if !self.bigBound.contains(loop.boundary) {
+        if !self.bigBound.contains(other.boundary) {
             return false
         }
-        if abs(self.area) < abs(loop.area) {
+        if abs(self.area) < abs(other.area) {
             return false
         }
         
         for index in hint {
-            let point = loop.bezier[index].point(0.5)
-            return self.winding(point) != 0
+            return self.winding(other.bezier[index].point(0.5)) != 0
+        }
+        
+        let self_spaces = self.spaces
+        let other_spaces = other.spaces
+        
+        loop: for index in 0..<other.count {
+            let overlap = self_spaces.search(overlap: other_spaces[index])
+            if overlap.count == 0 {
+                return self.winding(other.bezier[index].point(0.5)) != 0
+            }
+            var t: [Double] = [0, 1]
+            for index2 in overlap {
+                if let intersect = self.bezier[index2].intersect(other.bezier[index]) {
+                    t += intersect.map { $0.1 }
+                } else {
+                    continue loop
+                }
+            }
+            t.sort()
+            for (u, v) in zip(t.dropLast(), t.dropFirst()) {
+                return self.winding(other.bezier[index].point(0.5 * (u + v))) != 0
+            }
         }
         
         return false
