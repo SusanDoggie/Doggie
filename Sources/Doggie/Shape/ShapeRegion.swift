@@ -1005,6 +1005,15 @@ private struct IntersectionTable {
         if looping_left.count != 0 || looping_right.count != 0 {
             return
         }
+        if _data.count < 2 {
+            if left.contains(right, hint: Set(0..<right.count).subtracting(overlap_r_index)) {
+                overlap = .superset
+            } else if right.contains(left, hint: Set(0..<left.count).subtracting(overlap_l_index)) {
+                overlap = .subset
+            }
+            return
+        }
+        
         func signCheck(_ p0: Point, _ p1: Point, _ q: Point) -> FloatingPointSign {
             
             let p0u = p0.unit
@@ -1088,14 +1097,6 @@ private struct IntersectionTable {
             }
             return (lesser_left_segment.point(lesser_left), greater_left_segment.point(greater_left), lesser_right_segment.point(lesser_right), greater_right_segment.point(greater_right))
         }
-        if _data.count < 2 {
-            if left.contains(right) {
-                overlap = .superset
-            } else if right.contains(left) {
-                overlap = .subset
-            }
-            return
-        }
         
         _data.sort { $0.left.ordering($1.left) }
         var uncheck = Set(0..<_data.count)
@@ -1152,9 +1153,9 @@ private struct IntersectionTable {
             
         }
         if _data2.count < 2 {
-            if left.contains(right) {
+            if left.contains(right, hint: Set(0..<right.count).subtracting(overlap_r_index)) {
                 overlap = .superset
-            } else if right.contains(left) {
+            } else if right.contains(left, hint: Set(0..<left.count).subtracting(overlap_l_index)) {
                 overlap = .subset
             }
             return
@@ -1300,7 +1301,7 @@ extension Shape.Component {
 
 extension Shape.Component {
     
-    fileprivate func contains(_ loop: Shape.Component) -> Bool {
+    fileprivate func contains(_ loop: Shape.Component, hint: Set<Int>) -> Bool {
         
         if !self.bigBound.contains(loop.boundary) {
             return false
@@ -1309,7 +1310,12 @@ extension Shape.Component {
             return false
         }
         
-        fatalError("Unimplement.")
+        for index in hint {
+            let point = loop.bezier[index].point(0.5)
+            return self.winding(point) != 0
+        }
+        
+        return false
     }
 }
 
