@@ -130,7 +130,6 @@ extension ShapeRegion {
     public struct Solid {
         
         fileprivate let components: [Shape.Component]
-        fileprivate let spacePartition: RectCollection
         
         fileprivate let cache: Cache
         
@@ -139,7 +138,6 @@ extension ShapeRegion {
         
         fileprivate init<S : Sequence>(components: S) where S.Element == Shape.Component {
             self.components = Array(components)
-            self.spacePartition = RectCollection(self.components.map { $0.bigBound })
             self.cache = Cache()
             self.boundary = self.components[0].boundary
             self.area = self.components.dropFirst().reduce(abs(self.components[0].area)) { $0 - abs($1.area) }
@@ -147,7 +145,6 @@ extension ShapeRegion {
         
         fileprivate init(solid: Shape.Component) {
             self.components = [solid]
-            self.spacePartition = RectCollection(self.components.map { $0.bigBound })
             self.cache = Cache()
             self.boundary = self.components[0].boundary
             self.area = self.components[0].area
