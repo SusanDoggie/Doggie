@@ -111,7 +111,7 @@ extension ShapeRegion {
     }
     
     public var area: Double {
-        return solids.reduce(0) { $0 + abs($1.area) }
+        return solids.reduce(0) { $0 + $1.area }
     }
     
     fileprivate var bigBound: Rect {
