@@ -185,6 +185,9 @@ extension ShapeRegion.Solid {
         var union: [ObjectIdentifier: ([ShapeRegion.Solid], Bool)] = [:]
         
         var reversed: ShapeRegion.Solid?
+        
+        var solid: ShapeRegion.Solid?
+        var holes: ShapeRegion?
     }
 }
 
@@ -196,6 +199,20 @@ extension ShapeRegion.Solid {
     
     public var holes: ArraySlice<Shape.Component> {
         return components.dropFirst()
+    }
+    
+    fileprivate var _solid: ShapeRegion.Solid {
+        if cache.solid == nil {
+            cache.solid = ShapeRegion.Solid(solid: self.solid)
+        }
+        return cache.solid!
+    }
+    
+    fileprivate var _holes: ShapeRegion {
+        if cache.holes == nil {
+            cache.holes = ShapeRegion(solids: self.holes.map { ShapeRegion.Solid(solid: $0) })
+        }
+        return cache.holes!
     }
     
     fileprivate var cacheId: ObjectIdentifier {
@@ -280,11 +297,9 @@ extension ShapeRegion.Solid {
         
         if cache.union[other.cacheId] == nil && other.cache.union[cacheId] == nil {
             if let union = self.solid._union(other.solid) {
-                let self_holes = ShapeRegion(solids: self.holes.flatMap { ShapeRegion.Solid(solid: $0) })
-                let other_holes = ShapeRegion(solids: other.holes.flatMap { ShapeRegion.Solid(solid: $0) })
-                let a = self_holes.intersection(other_holes).solids
-                let b = self_holes.subtracting(ShapeRegion.Solid(solid: other.solid))
-                let c = other_holes.subtracting(ShapeRegion.Solid(solid: self.solid))
+                let a = self._holes.intersection(other._holes).solids
+                let b = self._holes.subtracting(other._solid)
+                let c = other._holes.subtracting(self._solid)
                 cache.union[other.cacheId] = (union.subtracting(ShapeRegion(solids: a.concat(b).concat(c))).solids, true)
             } else {
                 cache.union[other.cacheId] = ([self, other], false)
@@ -303,9 +318,7 @@ extension ShapeRegion.Solid {
         if cache.intersection[other.cacheId] == nil && other.cache.intersection[cacheId] == nil {
             let intersection = self.solid._intersection(other.solid)
             if intersection.count != 0 {
-                let self_holes = ShapeRegion(solids: self.holes.flatMap { ShapeRegion.Solid(solid: $0) })
-                let other_holes = ShapeRegion(solids: other.holes.flatMap { ShapeRegion.Solid(solid: $0) })
-                cache.intersection[other.cacheId] = intersection.subtracting(self_holes).subtracting(other_holes).solids
+                cache.intersection[other.cacheId] = intersection.subtracting(self._holes).subtracting(other._holes).solids
             } else {
                 cache.intersection[other.cacheId] = []
             }
@@ -323,14 +336,11 @@ extension ShapeRegion.Solid {
         if cache.subtracting[other.cacheId] == nil {
             let (_subtracting, superset) = self.solid._subtracting(other.solid)
             if superset {
-                let self_holes = ShapeRegion(solids: self.holes.flatMap { ShapeRegion.Solid(solid: $0) })
-                let a = self_holes.union(ShapeRegion(solid: other))
+                let a = self._holes.union(ShapeRegion(solid: other))
                 cache.subtracting[other.cacheId] = [ShapeRegion.Solid(solid: self.solid, holes: a.solids.map { $0.solid })] + a.solids.flatMap { $0.holes.map { ShapeRegion.Solid(solid: $0) } }
             } else if let subtracting = _subtracting {
-                let self_holes = ShapeRegion(solids: self.holes.flatMap { ShapeRegion.Solid(solid: $0) })
-                let other_holes = ShapeRegion(solids: other.holes.flatMap { ShapeRegion.Solid(solid: $0) })
-                let a = subtracting.concat(other_holes.intersection(ShapeRegion.Solid(solid: self.solid)))
-                cache.subtracting[other.cacheId] = self.holes.isEmpty ? Array(a) : ShapeRegion(solids: a).subtracting(self_holes).solids
+                let a = subtracting.concat(other._holes.intersection(self._solid))
+                cache.subtracting[other.cacheId] = self.holes.isEmpty ? Array(a) : ShapeRegion(solids: a).subtracting(self._holes).solids
             } else {
                 cache.subtracting[other.cacheId] = [self]
             }
