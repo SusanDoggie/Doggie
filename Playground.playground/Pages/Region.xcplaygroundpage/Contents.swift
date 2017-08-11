@@ -66,6 +66,7 @@ ShapeRegion(square3, winding: .nonZero).symmetricDifference(ShapeRegion(square4,
 let circle2 = Shape.Ellipse(x: 100, y: 100, rx: 100, ry: 100)
 let circle3 = Shape.Ellipse(x: 149, y: 100, rx: 80, ry: 80)
 let circle4 = ShapeRegion(circle2, winding: .nonZero).union(ShapeRegion(circle3, winding: .nonZero))
+ShapeRegion(circle2, winding: .nonZero).intersection(ShapeRegion(circle3, winding: .nonZero))
 
 circle4.shape + circle3
 
