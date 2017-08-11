@@ -25,6 +25,7 @@
 
 private let ShapeCacheNonZeroRegionKey = "ShapeCacheNonZeroRegionKey"
 private let ShapeCacheEvenOddRegionKey = "ShapeCacheEvenOddRegionKey"
+private let ShapeCacheConstructiveSolidResultKey = "ShapeCacheConstructiveSolidResultKey"
 
 private let _boundInset: Double = -1e-8
 
@@ -183,8 +184,6 @@ extension ShapeRegion.Solid {
         var union: [ObjectIdentifier: ([ShapeRegion.Solid], Bool)] = [:]
         
         var reversed: ShapeRegion.Solid?
-        
-        var constructiveSolidResult: [ObjectIdentifier: ConstructiveSolidResult] = [:]
     }
 }
 
@@ -225,6 +224,60 @@ extension ShapeRegion.Solid {
     }
 }
 
+extension Shape.Component {
+    
+    fileprivate func _union(_ other: Shape.Component) -> ShapeRegion? {
+        
+        let other = self.area.sign == other.area.sign ? other : other.reversed()
+        
+        switch process(other) {
+        case let .overlap(overlap):
+            switch overlap {
+            case .equal, .superset: return ShapeRegion(solid: ShapeRegion.Solid(solid: self))
+            case .subset: return ShapeRegion(solid: ShapeRegion.Solid(solid: other))
+            case .none: return nil
+            }
+        case let .regions(left, right): return left.union(right)
+        case let .segments(loops):
+            let forward = loops.filter { self.area.sign == $0.solid.area.sign }
+            let backward = loops.filter { self.area.sign != $0.solid.area.sign }
+            return ShapeRegion(solids: forward.enumerated().filter { arg in !forward.enumerated().contains { $0.0 != arg.0 && $0.1.solid._contains(arg.1.solid) } }.map { arg in ShapeRegion.Solid(components: [arg.1.solid] + backward.filter { arg.1.solid._contains($0.solid) }.map { $0.solid }) })
+        }
+    }
+    fileprivate func _intersection(_ other: Shape.Component) -> ShapeRegion {
+        
+        let other = self.area.sign == other.area.sign ? other : other.reversed()
+        
+        switch process(other) {
+        case let .overlap(overlap):
+            switch overlap {
+            case .equal, .subset: return ShapeRegion(solid: ShapeRegion.Solid(solid: self))
+            case .superset: return ShapeRegion(solid: ShapeRegion.Solid(solid: other))
+            case .none: return ShapeRegion()
+            }
+        case let .regions(left, right): return left.intersection(right)
+        case let .segments(loops):
+            let forward = loops.filter { self.area.sign == $0.solid.area.sign }
+            return ShapeRegion(solids: forward.enumerated().filter { arg in forward.enumerated().contains { $0.0 != arg.0 && $0.1.solid._contains(arg.1.solid) } }.map { ShapeRegion.Solid(solid: $0.1.solid) })
+        }
+    }
+    fileprivate func _subtracting(_ other: Shape.Component) -> (ShapeRegion?, Bool) {
+        
+        let other = self.area.sign == other.area.sign ? other.reversed() : other
+        
+        switch process(other) {
+        case let .overlap(overlap):
+            switch overlap {
+            case .equal, .subset: return (ShapeRegion(), false)
+            case .superset: return (nil, true)
+            case .none: return (nil, false)
+            }
+        case let .regions(left, right): return (left.subtracting(right), false)
+        case let .segments(loops): return (ShapeRegion(solids: loops.filter { self.area.sign == $0.solid.area.sign }.map { ShapeRegion.Solid(solid: $0.solid) }), false)
+        }
+    }
+}
+
 extension ShapeRegion.Solid {
     
     fileprivate func union(_ other: ShapeRegion.Solid) -> ([ShapeRegion.Solid], Bool) {
@@ -234,7 +287,7 @@ extension ShapeRegion.Solid {
         }
         
         if cache.union[other.cacheId] == nil && other.cache.union[cacheId] == nil {
-            if let union = self._union(other) {
+            if let union = self.solid._union(other.solid) {
                 let self_holes = ShapeRegion(solids: self.holes.flatMap { ShapeRegion.Solid(solid: $0) })
                 let other_holes = ShapeRegion(solids: other.holes.flatMap { ShapeRegion.Solid(solid: $0) })
                 let a = self_holes.intersection(other_holes).solids
@@ -254,7 +307,7 @@ extension ShapeRegion.Solid {
         }
         
         if cache.intersection[other.cacheId] == nil && other.cache.intersection[cacheId] == nil {
-            let intersection = self._intersection(other)
+            let intersection = self.solid._intersection(other.solid)
             if intersection.count != 0 {
                 let self_holes = ShapeRegion(solids: self.holes.flatMap { ShapeRegion.Solid(solid: $0) })
                 let other_holes = ShapeRegion(solids: other.holes.flatMap { ShapeRegion.Solid(solid: $0) })
@@ -272,7 +325,7 @@ extension ShapeRegion.Solid {
         }
         
         if cache.subtracting[other.cacheId] == nil {
-            let (_subtracting, superset) = self._subtracting(other)
+            let (_subtracting, superset) = self.solid._subtracting(other.solid)
             if superset {
                 let self_holes = ShapeRegion(solids: self.holes.flatMap { ShapeRegion.Solid(solid: $0) })
                 let a = self_holes.union(ShapeRegion(solid: other))
@@ -552,281 +605,8 @@ public func *= (lhs: inout ShapeRegion, rhs: SDTransform) {
 
 extension ShapeRegion.Solid.Segment {
     
-    fileprivate init(_ p0: Point, _ p1: Point) {
-        self.init(start: p0, segment: .line(p1))
-    }
-    fileprivate init(_ p0: Point, _ p1: Point, _ p2: Point) {
-        if cross(p1 - p0, p2 - p0).almostZero() {
-            self.init(start: p0, segment: .line(p2))
-        } else {
-            self.init(start: p0, segment: .quad(p1, p2))
-        }
-    }
-    fileprivate init(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point) {
-        if cross(p1 - p0, p2 - p0).almostZero() && cross(p1 - p0, p3 - p0).almostZero() && cross(p2 - p0, p3 - p0).almostZero() {
-            self.init(start: p0, segment: .line(p3))
-        } else {
-            self.init(start: p0, segment: .cubic(p1, p2, p3))
-        }
-    }
-}
-
-private func split_check(_ t: Double) -> Double? {
-    if t.almostZero() {
-        return 0
-    } else if (t - 1).almostZero() {
-        return 1
-    } else if 0...1 ~= t {
-        return t
-    }
-    return nil
-}
-private func split_check(_ t: (Double?, Double?)) -> (Double, Double)? {
-    if let lhs = t.0, let rhs = t.1 {
-        return (lhs, rhs)
-    }
-    return nil
-}
-private func split_check(_ t: (Double?, Double)) -> (Double, Double)? {
-    if let lhs = t.0, let rhs = split_check(t.1) {
-        return (lhs, rhs)
-    }
-    return nil
-}
-private func split_check(_ t: (Double, Double?)) -> (Double, Double)? {
-    if let lhs = split_check(t.0), let rhs = t.1 {
-        return (lhs, rhs)
-    }
-    return nil
-}
-
-extension ShapeRegion.Solid.Segment {
-    
-    fileprivate var isPoint: Bool {
-        switch self.segment {
-        case let .line(p1): return start.almostEqual(p1)
-        default: return false
-        }
-    }
-    
-    fileprivate func point(_ t: Double) -> Point {
-        switch self.segment {
-        case let .line(p1): return Bezier(start, p1).eval(t)
-        case let .quad(p1, p2): return Bezier(start, p1, p2).eval(t)
-        case let .cubic(p1, p2, p3): return Bezier(start, p1, p2, p3).eval(t)
-        }
-    }
-    
     fileprivate var bigBound: Rect {
         return boundary.inset(dx: _boundInset * Swift.max(1, abs(boundary.x), abs(boundary.width)), dy: _boundInset * Swift.max(1, abs(boundary.y), abs(boundary.height)))
-    }
-    
-    fileprivate func fromPoint(_ p: Point) -> Double? {
-        switch self.segment {
-        case let .line(p1):
-            return Bezier(start, p1).closest(p).lazy.flatMap(split_check).first { p.almostEqual(self.point($0)) }
-        case let .quad(p1, p2):
-            return Bezier(start, p1, p2).closest(p).lazy.flatMap(split_check).first { p.almostEqual(self.point($0)) }
-        case let .cubic(p1, p2, p3):
-            return Bezier(start, p1, p2, p3).closest(p).lazy.flatMap(split_check).first { p.almostEqual(self.point($0)) }
-        }
-    }
-    
-    fileprivate func split(_ t: Double) -> (ShapeRegion.Solid.Segment, ShapeRegion.Solid.Segment) {
-        switch self.segment {
-        case let .line(p1):
-            let _split = Bezier(start, p1).split(t)
-            return (ShapeRegion.Solid.Segment(_split.0[0], _split.0[1]), ShapeRegion.Solid.Segment(_split.1[0], _split.1[1]))
-        case let .quad(p1, p2):
-            let _split = Bezier(start, p1, p2).split(t)
-            return (ShapeRegion.Solid.Segment(_split.0[0], _split.0[1], _split.0[2]), ShapeRegion.Solid.Segment(_split.1[0], _split.1[1], _split.1[2]))
-        case let .cubic(p1, p2, p3):
-            let _split = Bezier(start, p1, p2, p3).split(t)
-            return (ShapeRegion.Solid.Segment(_split.0[0], _split.0[1], _split.0[2], _split.0[3]), ShapeRegion.Solid.Segment(_split.1[0], _split.1[1], _split.1[2], _split.1[3]))
-        }
-    }
-    fileprivate func split(_ t: [Double]) -> [ShapeRegion.Solid.Segment] {
-        switch self.segment {
-        case let .line(p1): return Bezier(start, p1).split(t).map { ShapeRegion.Solid.Segment($0[0], $0[1]) }
-        case let .quad(p1, p2): return Bezier(start, p1, p2).split(t).map { ShapeRegion.Solid.Segment($0[0], $0[1], $0[2]) }
-        case let .cubic(p1, p2, p3): return Bezier(start, p1, p2, p3).split(t).map { ShapeRegion.Solid.Segment($0[0], $0[1], $0[2], $0[3]) }
-        }
-    }
-    
-    fileprivate func overlap(_ other: ShapeRegion.Solid.Segment) -> Bool {
-        
-        switch self.segment {
-        case let .line(p1):
-            switch other.segment {
-            case let .line(q1):
-                if LinesIntersect(start, p1, other.start, q1) != nil {
-                    return false
-                }
-            case let .quad(q1, q2):
-                if !QuadBezierLineOverlap(other.start, q1, q2, start, p1) {
-                    return false
-                }
-            case let .cubic(q1, q2, q3):
-                if !CubicBezierLineOverlap(other.start, q1, q2, q3, start, p1) {
-                    return false
-                }
-            }
-        case let .quad(p1, p2):
-            switch other.segment {
-            case let .line(q1):
-                if !QuadBezierLineOverlap(start, p1, p2, other.start, q1) {
-                    return false
-                }
-            case let .quad(q1, q2):
-                if !QuadBeziersOverlap(start, p1, p2, other.start, q1, q2) {
-                    return false
-                }
-            case let .cubic(q1, q2, q3):
-                if !CubicQuadBezierOverlap(other.start, q1, q2, q3, start, p1, p2) {
-                    return false
-                }
-            }
-        case let .cubic(p1, p2, p3):
-            switch other.segment {
-            case let .line(q1):
-                if !CubicBezierLineOverlap(start, p1, p2, p3, other.start, q1) {
-                    return false
-                }
-            case let .quad(q1, q2):
-                if !CubicQuadBezierOverlap(start, p1, p2, p3, other.start, q1, q2) {
-                    return false
-                }
-            case let .cubic(q1, q2, q3):
-                if !CubicBeziersOverlap(start, p1, p2, p3, other.start, q1, q2, q3) {
-                    return false
-                }
-            }
-        }
-        
-        let check_1 = self.fromPoint(other.start)
-        let check_2 = self.fromPoint(other.end)
-        let check_3 = other.fromPoint(self.start)
-        let check_4 = other.fromPoint(self.end)
-        if check_1 == 0 {
-            if check_2 != nil && check_2 != 0 { return true }
-            if check_4 != nil && check_4 != 0 { return true }
-        } else if check_2 == 0 {
-            if check_1 != nil && check_1 != 0 { return true }
-            if check_4 != nil && check_4 != 1 { return true }
-        } else if check_3 == 0 {
-            if check_4 != nil && check_4 != 0 { return true }
-            if check_2 != nil && check_2 != 0 { return true }
-        } else if check_4 == 0 {
-            if check_3 != nil && check_3 != 0 { return true }
-            if check_2 != nil && check_2 != 1 { return true }
-        } else if check_1 == 1 {
-            if check_2 != nil && check_2 != 1 { return true }
-            if check_3 != nil && check_3 != 0 { return true }
-        } else if check_2 == 1 {
-            if check_1 != nil && check_1 != 1 { return true }
-            if check_3 != nil && check_3 != 1 { return true }
-        } else if check_3 == 1 {
-            if check_4 != nil && check_4 != 1 { return true }
-            if check_1 != nil && check_1 != 0 { return true }
-        } else if check_4 == 1 {
-            if check_3 != nil && check_3 != 1 { return true }
-            if check_1 != nil && check_1 != 1 { return true }
-        } else if check_1 != nil && check_2 != nil && check_3 == nil && check_4 == nil { return true
-        } else if check_1 == nil && check_2 == nil && check_3 != nil && check_4 != nil { return true
-        }
-        
-        return false
-    }
-    fileprivate func intersect(_ q0: Point, _ q1: Point) -> [Double]? {
-        switch self.segment {
-        case let .line(p1): return LinesIntersect(start, p1, q0, q1).flatMap { fromPoint($0) }.map { [$0] }
-        case let .quad(p1, p2): return QuadBezierLineIntersect(start, p1, p2, q0, q1)?.sorted { $0 }
-        case let .cubic(p1, p2, p3): return CubicBezierLineIntersect(start, p1, p2, p3, q0, q1)?.sorted { $0 }
-        }
-    }
-    fileprivate func intersect(_ other: ShapeRegion.Solid.Segment) -> [(Double, Double)]? {
-        var result: [(Double, Double)]? = nil
-        switch self.segment {
-        case let .line(p1):
-            switch other.segment {
-            case let .line(q1):
-                if let p = LinesIntersect(start, p1, other.start, q1) {
-                    result = [(fromPoint(p), other.fromPoint(p))].flatMap(split_check)
-                }
-            case let .quad(q1, q2):
-                if let t = QuadBezierLineIntersect(other.start, q1, q2, start, p1) {
-                    result = t.map { (fromPoint(Bezier(other.start, q1, q2).eval($0)), $0) }.flatMap(split_check).sorted { $0.0 }
-                }
-            case let .cubic(q1, q2, q3):
-                if let t = CubicBezierLineIntersect(other.start, q1, q2, q3, start, p1) {
-                    result = t.map { (fromPoint(Bezier(other.start, q1, q2, q3).eval($0)), $0) }.flatMap(split_check).sorted { $0.0 }
-                }
-            }
-        case let .quad(p1, p2):
-            switch other.segment {
-            case let .line(q1):
-                if let t = QuadBezierLineIntersect(start, p1, p2, other.start, q1) {
-                    result = t.map { ($0, other.fromPoint(Bezier(start, p1, p2).eval($0))) }.flatMap(split_check).sorted { $0.0 }
-                }
-            case let .quad(q1, q2):
-                if let t = QuadBeziersIntersect(start, p1, p2, other.start, q1, q2) {
-                    result = t.map { ($0, other.fromPoint(Bezier(start, p1, p2).eval($0))) }.flatMap(split_check).sorted { $0.0 }
-                }
-            case let .cubic(q1, q2, q3):
-                if let t = CubicQuadBezierIntersect(other.start, q1, q2, q3, start, p1, p2) {
-                    result = t.map { (fromPoint(Bezier(other.start, q1, q2, q3).eval($0)), $0) }.flatMap(split_check).sorted { $0.0 }
-                }
-            }
-        case let .cubic(p1, p2, p3):
-            switch other.segment {
-            case let .line(q1):
-                if let t = CubicBezierLineIntersect(start, p1, p2, p3, other.start, q1) {
-                    result = t.map { ($0, other.fromPoint(Bezier(start, p1, p2, p3).eval($0))) }.flatMap(split_check).sorted { $0.0 }
-                }
-            case let .quad(q1, q2):
-                if let t = CubicQuadBezierIntersect(start, p1, p2, p3, other.start, q1, q2) {
-                    result = t.map { ($0, other.fromPoint(Bezier(start, p1, p2, p3).eval($0))) }.flatMap(split_check).sorted { $0.0 }
-                }
-            case let .cubic(q1, q2, q3):
-                if let t = CubicBeziersIntersect(start, p1, p2, p3, other.start, q1, q2, q3) {
-                    result = t.map { ($0, other.fromPoint(Bezier(start, p1, p2, p3).eval($0))) }.flatMap(split_check).sorted { $0.0 }
-                }
-            }
-        }
-        if result == nil {
-            let check_1 = self.fromPoint(other.start)
-            let check_2 = self.fromPoint(other.end)
-            let check_3 = other.fromPoint(self.start)
-            let check_4 = other.fromPoint(self.end)
-            if check_1 == 0 {
-                if check_2 != nil && check_2 != 0 { return nil }
-                if check_4 != nil && check_4 != 0 { return nil }
-            } else if check_2 == 0 {
-                if check_1 != nil && check_1 != 0 { return nil }
-                if check_4 != nil && check_4 != 1 { return nil }
-            } else if check_3 == 0 {
-                if check_4 != nil && check_4 != 0 { return nil }
-                if check_2 != nil && check_2 != 0 { return nil }
-            } else if check_4 == 0 {
-                if check_3 != nil && check_3 != 0 { return nil }
-                if check_2 != nil && check_2 != 1 { return nil }
-            } else if check_1 == 1 {
-                if check_2 != nil && check_2 != 1 { return nil }
-                if check_3 != nil && check_3 != 0 { return nil }
-            } else if check_2 == 1 {
-                if check_1 != nil && check_1 != 1 { return nil }
-                if check_3 != nil && check_3 != 1 { return nil }
-            } else if check_3 == 1 {
-                if check_4 != nil && check_4 != 1 { return nil }
-                if check_1 != nil && check_1 != 0 { return nil }
-            } else if check_4 == 1 {
-                if check_3 != nil && check_3 != 1 { return nil }
-                if check_1 != nil && check_1 != 1 { return nil }
-            } else if check_1 != nil && check_2 != nil && check_3 == nil && check_4 == nil { return nil
-            } else if check_1 == nil && check_2 == nil && check_3 != nil && check_4 != nil { return nil
-            }
-        }
-        return result ?? []
     }
 }
 
@@ -1427,9 +1207,18 @@ extension Shape.Component {
     }
 }
 
-extension ShapeRegion.Solid {
+extension Shape.Component {
     
-    private func createSegments(_ other: ShapeRegion.Solid, _ graph: Graph<Int, [(ConstructiveSolidResult.Table.`Type`, ConstructiveSolidResult.Table.Split, ConstructiveSolidResult.Table.Split)]>) -> [ShapeRegion.Solid] {
+    private var constructiveSolidResultCache: [ObjectIdentifier: ConstructiveSolidResult] {
+        get {
+            return cacheTable[ShapeCacheConstructiveSolidResultKey] as? [ObjectIdentifier: ConstructiveSolidResult] ?? [:]
+        }
+        nonmutating set {
+            cacheTable[ShapeCacheConstructiveSolidResultKey] = newValue
+        }
+    }
+    
+    private func createSegments(_ other: Shape.Component, _ graph: Graph<Int, [(ConstructiveSolidResult.Table.`Type`, ConstructiveSolidResult.Table.Split, ConstructiveSolidResult.Table.Split)]>) -> [ShapeRegion.Solid] {
         
         var result: [ShapeRegion.Solid] = []
         
@@ -1439,8 +1228,8 @@ extension ShapeRegion.Solid {
             if let splits = graph[from: node, to: node] {
                 for split in splits {
                     switch split.0 {
-                    case .left: result.append(contentsOf: OptionOneCollection(ShapeRegion.Solid(segments: self.solid.splitPath(split.1, split.2))))
-                    case .right: result.append(contentsOf: OptionOneCollection(ShapeRegion.Solid(segments: other.solid.splitPath(split.1, split.2))))
+                    case .left: result.append(contentsOf: OptionOneCollection(ShapeRegion.Solid(segments: self.splitPath(split.1, split.2))))
+                    case .right: result.append(contentsOf: OptionOneCollection(ShapeRegion.Solid(segments: other.splitPath(split.1, split.2))))
                     }
                 }
                 graph[from: node, to: node] = nil
@@ -1460,8 +1249,8 @@ extension ShapeRegion.Solid {
                         if var splits = graph[from: left, to: right] {
                             let split = splits[_idx]
                             switch split.0 {
-                            case .left: segments.append(contentsOf: self.solid.splitPath(split.1, split.2))
-                            case .right: segments.append(contentsOf: other.solid.splitPath(split.1, split.2))
+                            case .left: segments.append(contentsOf: self.splitPath(split.1, split.2))
+                            case .right: segments.append(contentsOf: other.splitPath(split.1, split.2))
                             }
                             splits.remove(at: _idx)
                             graph[from: left, to: right] = splits.count == 0 ? nil : splits
@@ -1484,10 +1273,10 @@ extension ShapeRegion.Solid {
         return result
     }
     
-    private func process(_ other: ShapeRegion.Solid) -> ConstructiveSolidResult {
+    fileprivate func process(_ other: Shape.Component) -> ConstructiveSolidResult {
         
-        if cache.constructiveSolidResult[other.cacheId] == nil {
-            if let result = other.cache.constructiveSolidResult[other.cacheId] {
+        if constructiveSolidResultCache[other.cacheId] == nil {
+            if let result = other.constructiveSolidResultCache[other.cacheId] {
                 switch result {
                 case let .overlap(overlap):
                     switch overlap {
@@ -1501,72 +1290,22 @@ extension ShapeRegion.Solid {
                 }
             } else {
                 
-                let intersectTable = ConstructiveSolidResult.Table(self.solid, other.solid)
+                let intersectTable = ConstructiveSolidResult.Table(self, other)
                 
                 if intersectTable.looping_left.count != 0 || intersectTable.looping_right.count != 0 {
-                    cache.constructiveSolidResult[other.cacheId] = .regions(ShapeRegion(solids: self.solid.breakLoop(intersectTable.looping_left).map { ShapeRegion.Solid(solid: $0.solid) }),
-                                                                            ShapeRegion(solids: other.solid.breakLoop(intersectTable.looping_right).map { ShapeRegion.Solid(solid: $0.solid) }))
+                    constructiveSolidResultCache[other.cacheId] = .regions(ShapeRegion(solids: self.breakLoop(intersectTable.looping_left).map { ShapeRegion.Solid(solid: $0.solid) }),
+                                                                            ShapeRegion(solids: other.breakLoop(intersectTable.looping_right).map { ShapeRegion.Solid(solid: $0.solid) }))
                 } else {
                     
                     if intersectTable.graph.count == 0 {
-                        cache.constructiveSolidResult[other.cacheId] = .overlap(intersectTable.overlap)
+                        constructiveSolidResultCache[other.cacheId] = .overlap(intersectTable.overlap)
                     } else {
-                        cache.constructiveSolidResult[other.cacheId] = .segments(createSegments(other, intersectTable.graph))
+                        constructiveSolidResultCache[other.cacheId] = .segments(createSegments(other, intersectTable.graph))
                     }
                 }
             }
         }
-        return cache.constructiveSolidResult[other.cacheId]!
-    }
-    
-    fileprivate func _union(_ other: ShapeRegion.Solid) -> ShapeRegion? {
-        
-        let other = self.solid.area.sign == other.solid.area.sign ? other : other.reversed()
-        
-        switch process(other) {
-        case let .overlap(overlap):
-            switch overlap {
-            case .equal, .superset: return ShapeRegion(solid: ShapeRegion.Solid(solid: self.solid))
-            case .subset: return ShapeRegion(solid: ShapeRegion.Solid(solid: other.solid))
-            case .none: return nil
-            }
-        case let .regions(left, right): return left.union(right)
-        case let .segments(loops):
-            let forward = loops.filter { self.solid.area.sign == $0.solid.area.sign }
-            let backward = loops.filter { self.solid.area.sign != $0.solid.area.sign }
-            return ShapeRegion(solids: forward.enumerated().filter { arg in !forward.enumerated().contains { $0.0 != arg.0 && $0.1.solid._contains(arg.1.solid) } }.map { arg in ShapeRegion.Solid(components: [arg.1.solid] + backward.filter { arg.1.solid._contains($0.solid) }.map { $0.solid }) })
-        }
-    }
-    fileprivate func _intersection(_ other: ShapeRegion.Solid) -> ShapeRegion {
-        
-        let other = self.solid.area.sign == other.solid.area.sign ? other : other.reversed()
-        
-        switch process(other) {
-        case let .overlap(overlap):
-            switch overlap {
-            case .equal, .subset: return ShapeRegion(solid: ShapeRegion.Solid(solid: self.solid))
-            case .superset: return ShapeRegion(solid: ShapeRegion.Solid(solid: other.solid))
-            case .none: return ShapeRegion()
-            }
-        case let .regions(left, right): return left.intersection(right)
-        case let .segments(loops):
-            let forward = loops.filter { self.solid.area.sign == $0.solid.area.sign }
-            return ShapeRegion(solids: forward.enumerated().filter { arg in forward.enumerated().contains { $0.0 != arg.0 && $0.1.solid._contains(arg.1.solid) } }.map { ShapeRegion.Solid(solid: $0.1.solid) })
-        }
-    }
-    fileprivate func _subtracting(_ other: ShapeRegion.Solid) -> (ShapeRegion?, Bool) {
-        
-        let other = self.solid.area.sign == other.solid.area.sign ? other.reversed() : other
-        
-        switch process(other) {
-        case let .overlap(overlap):
-            switch overlap {
-            case .equal, .subset: return (ShapeRegion(), false)
-            case .superset: return (nil, true)
-            case .none: return (nil, false)
-            }
-        case let .regions(left, right): return (left.subtracting(right), false)
-        case let .segments(loops): return (ShapeRegion(solids: loops.filter { self.solid.area.sign == $0.solid.area.sign }.map { ShapeRegion.Solid(solid: $0.solid) }), false)
-        }
+        return constructiveSolidResultCache[other.cacheId]!
     }
 }
+

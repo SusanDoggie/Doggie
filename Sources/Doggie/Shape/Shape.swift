@@ -204,6 +204,9 @@ extension Shape {
         }
     }
     
+    var cacheId: ObjectIdentifier {
+        return ObjectIdentifier(cache)
+    }
 }
 
 extension Shape.Component {
@@ -214,13 +217,19 @@ extension Shape.Component {
         var boundary: Rect?
         var area: Double?
         
+        var table: [String : Any]
+        
         init() {
             self.spaces = nil
             self.boundary = nil
             self.area = nil
+            self.table = [:]
         }
     }
     
+    var cacheId: ObjectIdentifier {
+        return ObjectIdentifier(cache)
+    }
 }
 
 extension Shape.Component {
@@ -548,6 +557,19 @@ extension Shape {
 }
 
 extension Shape {
+    
+    @_transparent
+    var cacheTable: [String: Any] {
+        get {
+            return cache.table
+        }
+        nonmutating set {
+            cache.table = newValue
+        }
+    }
+}
+
+extension Shape.Component {
     
     @_transparent
     var cacheTable: [String: Any] {
