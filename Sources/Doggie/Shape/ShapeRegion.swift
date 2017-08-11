@@ -145,10 +145,11 @@ extension ShapeRegion {
         }
         
         fileprivate init(solid: Shape.Component) {
-            self.components = [solid]
-            self.cache = Cache()
-            self.boundary = self.components[0].boundary
-            self.area = abs(self.components[0].area)
+            self.init(components: [solid])
+        }
+        
+        fileprivate init<S : Sequence>(solid: Shape.Component, holes: S) where S.Element == Shape.Component {
+            self.init(components: [solid] + holes)
         }
     }
 }
@@ -236,10 +237,7 @@ extension Shape.Component {
             case .none: return nil
             }
         case let .regions(left, right): return left.union(right)
-        case let .segments(loops):
-            let forward = loops.filter { self.area.sign == $0.solid.area.sign }
-            let backward = loops.filter { self.area.sign != $0.solid.area.sign }
-            return ShapeRegion(solids: forward.enumerated().filter { arg in !forward.enumerated().contains { $0.0 != arg.0 && $0.1.solid._contains(arg.1.solid) } }.map { arg in ShapeRegion.Solid(components: [arg.1.solid] + backward.filter { arg.1.solid._contains($0.solid) }.map { $0.solid }) })
+        case let .segments(forward, backward): return ShapeRegion(solids: forward.enumerated().flatMap { arg in forward.enumerated().contains { $0.0 != arg.0 && $0.1.solid._contains(arg.1.solid) } ? nil : ShapeRegion.Solid(solid: arg.1.solid, holes: backward.flatMap { arg.1.solid._contains($0.solid) ? $0.solid : nil }) })
         }
     }
     fileprivate func _intersection(_ other: Shape.Component) -> ShapeRegion {
@@ -252,9 +250,7 @@ extension Shape.Component {
             case .none: return ShapeRegion()
             }
         case let .regions(left, right): return left.intersection(right)
-        case let .segments(loops):
-            let forward = loops.filter { self.area.sign == $0.solid.area.sign }
-            return ShapeRegion(solids: forward.enumerated().filter { arg in forward.enumerated().contains { $0.0 != arg.0 && $0.1.solid._contains(arg.1.solid) } }.map { ShapeRegion.Solid(solid: $0.1.solid) })
+        case let .segments(forward, _): return ShapeRegion(solids: forward.enumerated().flatMap { arg in forward.enumerated().contains { $0.0 != arg.0 && $0.1.solid._contains(arg.1.solid) } ? arg.1 : nil })
         }
     }
     fileprivate func _subtracting(_ other: Shape.Component) -> (ShapeRegion?, Bool) {
@@ -267,7 +263,7 @@ extension Shape.Component {
             case .none: return (nil, false)
             }
         case let .regions(left, right): return (left.subtracting(right), false)
-        case let .segments(loops): return (ShapeRegion(solids: loops.filter { self.area.sign == $0.solid.area.sign }.map { ShapeRegion.Solid(solid: $0.solid) }), false)
+        case let .segments(forward, _): return (ShapeRegion(solids: forward), false)
         }
     }
 }
@@ -329,7 +325,7 @@ extension ShapeRegion.Solid {
             if superset {
                 let self_holes = ShapeRegion(solids: self.holes.flatMap { ShapeRegion.Solid(solid: $0) })
                 let a = self_holes.union(ShapeRegion(solid: other))
-                cache.subtracting[other.cacheId] = [ShapeRegion.Solid(components: [self.solid] + a.solids.map { $0.solid })] + a.solids.flatMap { $0.holes.map { ShapeRegion.Solid(solid: $0) } }
+                cache.subtracting[other.cacheId] = [ShapeRegion.Solid(solid: self.solid, holes: a.solids.map { $0.solid })] + a.solids.flatMap { $0.holes.map { ShapeRegion.Solid(solid: $0) } }
             } else if let subtracting = _subtracting {
                 let self_holes = ShapeRegion(solids: self.holes.flatMap { ShapeRegion.Solid(solid: $0) })
                 let other_holes = ShapeRegion(solids: other.holes.flatMap { ShapeRegion.Solid(solid: $0) })
@@ -810,7 +806,7 @@ private enum ConstructiveSolidResult {
     
     case overlap(Overlap)
     case regions(ShapeRegion, ShapeRegion)
-    case segments([ShapeRegion.Solid])
+    case segments([ShapeRegion.Solid], [ShapeRegion.Solid])
 }
 
 extension ConstructiveSolidResult {
@@ -1286,21 +1282,21 @@ extension Shape.Component {
                     case .subset: return .overlap(.superset)
                     }
                 case let .regions(lhs, rhs): return .regions(rhs, lhs)
-                case let .segments(segments): return .segments(segments)
+                case let .segments(forward, backward): return self.area.sign == other.area.sign ? .segments(forward, backward) : .segments(backward, forward)
                 }
             } else {
-                
                 let intersectTable = ConstructiveSolidResult.Table(self, other)
-                
                 if intersectTable.looping_left.count != 0 || intersectTable.looping_right.count != 0 {
-                    constructiveSolidResultCache[other.cacheId] = .regions(ShapeRegion(solids: self.breakLoop(intersectTable.looping_left).map { ShapeRegion.Solid(solid: $0.solid) }),
-                                                                           ShapeRegion(solids: other.breakLoop(intersectTable.looping_right).map { ShapeRegion.Solid(solid: $0.solid) }))
+                    constructiveSolidResultCache[other.cacheId] = .regions(ShapeRegion(solids: self.breakLoop(intersectTable.looping_left)), ShapeRegion(solids: other.breakLoop(intersectTable.looping_right)))
                 } else {
                     
                     if intersectTable.graph.count == 0 {
                         constructiveSolidResultCache[other.cacheId] = .overlap(intersectTable.overlap)
                     } else {
-                        constructiveSolidResultCache[other.cacheId] = .segments(createSegments(other, intersectTable.graph))
+                        let segments = createSegments(other, intersectTable.graph)
+                        let forward = segments.filter { self.area.sign == $0.solid.area.sign }
+                        let backward = segments.filter { self.area.sign != $0.solid.area.sign }
+                        constructiveSolidResultCache[other.cacheId] = .segments(forward, backward)
                     }
                 }
             }
