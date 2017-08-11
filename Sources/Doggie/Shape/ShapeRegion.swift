@@ -228,8 +228,6 @@ extension Shape.Component {
     
     fileprivate func _union(_ other: Shape.Component) -> ShapeRegion? {
         
-        let other = self.area.sign == other.area.sign ? other : other.reversed()
-        
         switch process(other) {
         case let .overlap(overlap):
             switch overlap {
@@ -246,8 +244,6 @@ extension Shape.Component {
     }
     fileprivate func _intersection(_ other: Shape.Component) -> ShapeRegion {
         
-        let other = self.area.sign == other.area.sign ? other : other.reversed()
-        
         switch process(other) {
         case let .overlap(overlap):
             switch overlap {
@@ -262,8 +258,6 @@ extension Shape.Component {
         }
     }
     fileprivate func _subtracting(_ other: Shape.Component) -> (ShapeRegion?, Bool) {
-        
-        let other = self.area.sign == other.area.sign ? other.reversed() : other
         
         switch process(other) {
         case let .overlap(overlap):
@@ -286,6 +280,8 @@ extension ShapeRegion.Solid {
             return ([self, other], false)
         }
         
+        let other = self.solid.area.sign == other.solid.area.sign ? other : other.reversed()
+        
         if cache.union[other.cacheId] == nil && other.cache.union[cacheId] == nil {
             if let union = self.solid._union(other.solid) {
                 let self_holes = ShapeRegion(solids: self.holes.flatMap { ShapeRegion.Solid(solid: $0) })
@@ -306,6 +302,8 @@ extension ShapeRegion.Solid {
             return []
         }
         
+        let other = self.solid.area.sign == other.solid.area.sign ? other : other.reversed()
+        
         if cache.intersection[other.cacheId] == nil && other.cache.intersection[cacheId] == nil {
             let intersection = self.solid._intersection(other.solid)
             if intersection.count != 0 {
@@ -323,6 +321,8 @@ extension ShapeRegion.Solid {
         if !self.bigBound.isIntersect(other.bigBound) {
             return [self]
         }
+        
+        let other = self.solid.area.sign == other.solid.area.sign ? other.reversed() : other
         
         if cache.subtracting[other.cacheId] == nil {
             let (_subtracting, superset) = self.solid._subtracting(other.solid)
@@ -1276,7 +1276,7 @@ extension Shape.Component {
     fileprivate func process(_ other: Shape.Component) -> ConstructiveSolidResult {
         
         if constructiveSolidResultCache[other.cacheId] == nil {
-            if let result = other.constructiveSolidResultCache[other.cacheId] {
+            if let result = other.constructiveSolidResultCache[self.cacheId] {
                 switch result {
                 case let .overlap(overlap):
                     switch overlap {
@@ -1294,7 +1294,7 @@ extension Shape.Component {
                 
                 if intersectTable.looping_left.count != 0 || intersectTable.looping_right.count != 0 {
                     constructiveSolidResultCache[other.cacheId] = .regions(ShapeRegion(solids: self.breakLoop(intersectTable.looping_left).map { ShapeRegion.Solid(solid: $0.solid) }),
-                                                                            ShapeRegion(solids: other.breakLoop(intersectTable.looping_right).map { ShapeRegion.Solid(solid: $0.solid) }))
+                                                                           ShapeRegion(solids: other.breakLoop(intersectTable.looping_right).map { ShapeRegion.Solid(solid: $0.solid) }))
                 } else {
                     
                     if intersectTable.graph.count == 0 {
