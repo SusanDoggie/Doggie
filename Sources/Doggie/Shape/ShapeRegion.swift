@@ -184,9 +184,7 @@ extension ShapeRegion.Solid {
         
         var reversed: ShapeRegion.Solid?
         
-        var process: [ObjectIdentifier: [ShapeRegion.Solid]] = [:]
-        var process_regions: [ObjectIdentifier: (ShapeRegion, ShapeRegion)] = [:]
-        var intersect_table: [ObjectIdentifier: IntersectionTable] = [:]
+        var constructiveSolidResult: [ObjectIdentifier: ConstructiveSolidResult] = [:]
     }
 }
 
@@ -752,7 +750,7 @@ extension Shape.Component {
     
     fileprivate func breakLoop() -> [ShapeRegion.Solid] {
         
-        var intersects: [(IntersectionTable.Split, IntersectionTable.Split)] = []
+        var intersects: [(ConstructiveSolidResult.Table.Split, ConstructiveSolidResult.Table.Split)] = []
         for (index1, segment1) in bezier.enumerated() {
             for (index2, segment2) in bezier.suffix(from: index1 + 1).indexed() {
                 if !segment2.boundary.inset(dx: -1e-6, dy: -1e-6).isIntersect(segment1.boundary.inset(dx: -1e-6, dy: -1e-6)) {
@@ -773,7 +771,7 @@ extension Shape.Component {
                         if intersects.contains(where: { $0.1.index == _l_idx && $0.1.split.almostEqual(_t1) && $0.0.index == _r_idx && $0.0.split.almostEqual(_t2) }) {
                             continue
                         }
-                        intersects.append((IntersectionTable.Split(index: _l_idx, split: _t1), IntersectionTable.Split(index: _r_idx, split: _t2)))
+                        intersects.append((ConstructiveSolidResult.Table.Split(index: _l_idx, split: _t1), ConstructiveSolidResult.Table.Split(index: _r_idx, split: _t2)))
                     }
                 } else {
                     if let a = segment2.fromPoint(segment1.end) {
@@ -789,7 +787,7 @@ extension Shape.Component {
                         if intersects.contains(where: { $0.1.index == _l_idx && $0.1.split.almostEqual(0) && $0.0.index == _r_idx && $0.0.split.almostEqual(_t2) }) {
                             continue
                         }
-                        intersects.append((IntersectionTable.Split(index: _l_idx, split: 0), IntersectionTable.Split(index: _r_idx, split: _t2)))
+                        intersects.append((ConstructiveSolidResult.Table.Split(index: _l_idx, split: 0), ConstructiveSolidResult.Table.Split(index: _r_idx, split: _t2)))
                     }
                     if let b = segment1.fromPoint(segment2.start) {
                         let _l_idx = b == 1 ? self.indexMod(index1 + 1) : index1
@@ -804,7 +802,7 @@ extension Shape.Component {
                         if intersects.contains(where: { $0.1.index == _l_idx && $0.1.split.almostEqual(_t1) && $0.0.index == _r_idx && $0.0.split.almostEqual(0) }) {
                             continue
                         }
-                        intersects.append((IntersectionTable.Split(index: _l_idx, split: _t1), IntersectionTable.Split(index: _r_idx, split: 0)))
+                        intersects.append((ConstructiveSolidResult.Table.Split(index: _l_idx, split: _t1), ConstructiveSolidResult.Table.Split(index: _r_idx, split: 0)))
                     }
                 }
             }
@@ -812,7 +810,7 @@ extension Shape.Component {
         return breakLoop(intersects.filter { !$0.0.almostEqual($0.1) })
     }
     
-    fileprivate func breakLoop(_ points: [(IntersectionTable.Split, IntersectionTable.Split)]) -> [ShapeRegion.Solid] {
+    fileprivate func breakLoop(_ points: [(ConstructiveSolidResult.Table.Split, ConstructiveSolidResult.Table.Split)]) -> [ShapeRegion.Solid] {
         
         if points.count == 0 {
             return Array(OptionOneCollection(ShapeRegion.Solid(segments: self.bezier)))
@@ -820,7 +818,7 @@ extension Shape.Component {
         
         var result: [ShapeRegion.Solid] = []
         
-        var graph = Graph<Int, [(IntersectionTable.Split, IntersectionTable.Split)]>()
+        var graph = Graph<Int, [(ConstructiveSolidResult.Table.Split, ConstructiveSolidResult.Table.Split)]>()
         
         let _points = points.enumerated().flatMap { [($0.0, $0.1.0), ($0.0, $0.1.1)] }.sorted { $0.1.ordering($1.1) }
         
@@ -944,14 +942,34 @@ extension Shape {
     }
 }
 
-private struct IntersectionTable {
+private enum ConstructiveSolidResult {
     
-    var graph: Graph<Int, [(Type, Split, Split)]> = Graph()
-    var overlap: Overlap = .none
-    var looping_left: [(Split, Split)] = []
-    var looping_right: [(Split, Split)] = []
+    case overlap(Overlap)
+    case regions(ShapeRegion, ShapeRegion)
+    case segments([ShapeRegion.Solid])
+}
+
+extension ConstructiveSolidResult {
     
-    init(_ left: Shape.Component, _ right: Shape.Component) {
+    fileprivate enum Overlap {
+        case none, equal, superset, subset
+    }
+}
+
+extension ConstructiveSolidResult {
+    
+    fileprivate struct Table {
+        
+        var graph: Graph<Int, [(Type, Split, Split)]> = Graph()
+        var overlap: Overlap = .none
+        var looping_left: [(Split, Split)] = []
+        var looping_right: [(Split, Split)] = []
+    }
+}
+
+extension ConstructiveSolidResult.Table {
+    
+    fileprivate init(_ left: Shape.Component, _ right: Shape.Component) {
         
         struct SplitData {
             
@@ -959,8 +977,8 @@ private struct IntersectionTable {
             let data2: Data?
             
             struct Data {
-                fileprivate let left: IntersectionTable.Split
-                fileprivate let right: IntersectionTable.Split
+                fileprivate let left: ConstructiveSolidResult.Table.Split
+                fileprivate let right: ConstructiveSolidResult.Table.Split
                 let point: Point
             }
         }
@@ -1115,7 +1133,7 @@ private struct IntersectionTable {
                 continue
             }
             
-            func check(_ index: Int) -> Bool {
+            func check_backward(_ index: Int) -> Bool {
                 let split = _data[index]
                 let left_index_m1 = split.left.split == 0 ? left.indexMod(split.left.index - 1) : split.left.index
                 let right_index_m1 = split.right.split == 0 ? right.indexMod(split.right.index - 1) : split.right.index
@@ -1123,12 +1141,20 @@ private struct IntersectionTable {
                     || (overlaps_index.contains(where: { split.left.index == $0.0 && right_index_m1 == $0.1 }) && overlaps_index.contains(where: { left_index_m1 == $0.0 && split.right.index == $0.1 }))
             }
             
+            func check_forward(_ index: Int) -> Bool {
+                let split = _data[index]
+                let left_index_m1 = split.left.split == 0 ? left.indexMod(split.left.index - 1) : split.left.index
+                let right_index_m1 = split.right.split == 0 ? right.indexMod(split.right.index - 1) : split.right.index
+                return overlaps_index.contains(where: { split.left.index == $0.0 && split.right.index == $0.1 })
+                    || (overlaps_index.contains(where: { split.left.index == $0.0 && right_index_m1 == $0.1 }) && overlaps_index.contains(where: { left_index_m1 == $0.0 && split.right.index == $0.1 }))
+            }
+            
             var start = index
-            while check(start) {
+            while check_backward(start) {
                 start = _data.indexMod(start - 1)
             }
             var end = index
-            while check(end) {
+            while check_forward(end) {
                 end = _data.indexMod(end + 1)
             }
             
@@ -1239,11 +1265,7 @@ private struct IntersectionTable {
     }
 }
 
-extension IntersectionTable {
-    
-    fileprivate enum Overlap {
-        case none, equal, superset, subset
-    }
+extension ConstructiveSolidResult.Table {
     
     fileprivate enum `Type` {
         case left
@@ -1256,20 +1278,20 @@ extension IntersectionTable {
     }
 }
 
-extension IntersectionTable.Split {
+extension ConstructiveSolidResult.Table.Split {
     
-    fileprivate func almostEqual(_ other: IntersectionTable.Split) -> Bool {
+    fileprivate func almostEqual(_ other: ConstructiveSolidResult.Table.Split) -> Bool {
         return self.index == other.index && self.split.almostEqual(other.split)
     }
     
-    fileprivate func ordering(_ other: IntersectionTable.Split) -> Bool {
+    fileprivate func ordering(_ other: ConstructiveSolidResult.Table.Split) -> Bool {
         return (self.index, self.split) < (other.index, other.split)
     }
 }
 
 extension Shape.Component {
     
-    fileprivate func splitPath(_ start: IntersectionTable.Split, _ end: IntersectionTable.Split) -> [ShapeRegion.Solid.Segment] {
+    fileprivate func splitPath(_ start: ConstructiveSolidResult.Table.Split, _ end: ConstructiveSolidResult.Table.Split) -> [ShapeRegion.Solid.Segment] {
         
         if start.index == end.index && start.split.almostEqual(end.split) {
             return []
@@ -1331,20 +1353,7 @@ extension Shape.Component {
 
 extension ShapeRegion.Solid {
     
-    fileprivate func intersectTable(_ other: ShapeRegion.Solid) -> IntersectionTable {
-        if cache.intersect_table[other.cacheId] == nil {
-            cache.intersect_table[other.cacheId] = IntersectionTable(self.solid, other.solid)
-        }
-        return cache.intersect_table[other.cacheId]!
-    }
-    
-    private enum ProcessResult {
-        case overlap(IntersectionTable.Overlap)
-        case regions(ShapeRegion, ShapeRegion)
-        case segments([ShapeRegion.Solid])
-    }
-    
-    private func createSegments(_ other: ShapeRegion.Solid, _ graph: Graph<Int, [(IntersectionTable.`Type`, IntersectionTable.Split, IntersectionTable.Split)]>) -> [ShapeRegion.Solid] {
+    private func createSegments(_ other: ShapeRegion.Solid, _ graph: Graph<Int, [(ConstructiveSolidResult.Table.`Type`, ConstructiveSolidResult.Table.Split, ConstructiveSolidResult.Table.Split)]>) -> [ShapeRegion.Solid] {
         
         var result: [ShapeRegion.Solid] = []
         
@@ -1399,25 +1408,39 @@ extension ShapeRegion.Solid {
         return result
     }
     
-    private func process(_ other: ShapeRegion.Solid) -> ProcessResult {
+    private func process(_ other: ShapeRegion.Solid) -> ConstructiveSolidResult {
         
-        if cache.process[other.cacheId] == nil && other.cache.process[cacheId] == nil {
-            
-            let intersectTable = self.intersectTable(other)
-            
-            if intersectTable.looping_left.count != 0 || intersectTable.looping_right.count != 0 {
-                if cache.process_regions[other.cacheId] == nil && other.cache.process_regions[cacheId] == nil {
-                    cache.process_regions[other.cacheId] = (ShapeRegion(solids: self.solid.breakLoop(intersectTable.looping_left).map { ShapeRegion.Solid(solid: $0.solid) }), ShapeRegion(solids: other.solid.breakLoop(intersectTable.looping_right).map { ShapeRegion.Solid(solid: $0.solid) }))
+        if cache.constructiveSolidResult[other.cacheId] == nil {
+            if let result = other.cache.constructiveSolidResult[other.cacheId] {
+                switch result {
+                case let .overlap(overlap):
+                    switch overlap {
+                    case .none: return .overlap(.none)
+                    case .equal: return .overlap(.equal)
+                    case .superset: return .overlap(.subset)
+                    case .subset: return .overlap(.superset)
+                    }
+                case let .regions(lhs, rhs): return .regions(rhs, lhs)
+                case let .segments(segments): return .segments(segments)
                 }
-                return .regions(cache.process_regions[other.cacheId]?.0 ?? other.cache.process_regions[cacheId]!.1, cache.process_regions[other.cacheId]?.1 ?? other.cache.process_regions[cacheId]!.0)
-            }
-            if intersectTable.graph.count == 0 {
-                return .overlap(intersectTable.overlap)
             } else {
-                cache.process[other.cacheId] = createSegments(other, intersectTable.graph)
+                
+                let intersectTable = ConstructiveSolidResult.Table(self.solid, other.solid)
+                
+                if intersectTable.looping_left.count != 0 || intersectTable.looping_right.count != 0 {
+                    cache.constructiveSolidResult[other.cacheId] = .regions(ShapeRegion(solids: self.solid.breakLoop(intersectTable.looping_left).map { ShapeRegion.Solid(solid: $0.solid) }),
+                                                                            ShapeRegion(solids: other.solid.breakLoop(intersectTable.looping_right).map { ShapeRegion.Solid(solid: $0.solid) }))
+                } else {
+                    
+                    if intersectTable.graph.count == 0 {
+                        cache.constructiveSolidResult[other.cacheId] = .overlap(intersectTable.overlap)
+                    } else {
+                        cache.constructiveSolidResult[other.cacheId] = .segments(createSegments(other, intersectTable.graph))
+                    }
+                }
             }
         }
-        return .segments(cache.process[other.cacheId] ?? other.cache.process[cacheId]!)
+        return cache.constructiveSolidResult[other.cacheId]!
     }
     
     fileprivate func _union(_ other: ShapeRegion.Solid) -> ShapeRegion? {
