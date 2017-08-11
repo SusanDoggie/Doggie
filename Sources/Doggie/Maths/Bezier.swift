@@ -1278,6 +1278,131 @@ public func LinesIntersect(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point) -
 }
 
 @_inlineable
+public func QuadBezierLineOverlap(_ b0: Point, _ b1: Point, _ b2: Point, _ l0: Point, _ l1: Point) -> Bool {
+    
+    let a = b0 - l0
+    let b = 2 * (b1 - b0)
+    let c = b0 - 2 * b1 + b2
+    
+    let u0: Polynomial = [a.x, b.x, c.x]
+    let u1 = l0.x - l1.x
+    
+    let v0: Polynomial = [a.y, b.y, c.y]
+    let v1 = l0.y - l1.y
+    
+    let poly = u1 * v0 - u0 * v1
+    return poly.all(where: { $0.almostZero() })
+}
+
+@_inlineable
+public func CubicBezierLineOverlap(_ b0: Point, _ b1: Point, _ b2: Point, _ b3: Point, _ l0: Point, _ l1: Point) -> Bool {
+    
+    let a = b0 - l0
+    let b = 3 * (b1 - b0)
+    let c = 3 * (b2 + b0) - 6 * b1
+    let d = b3 - b0 + 3 * (b1 - b2)
+    
+    let u0: Polynomial = [a.x, b.x, c.x, d.x]
+    let u1 = l0.x - l1.x
+    
+    let v0: Polynomial = [a.y, b.y, c.y, d.y]
+    let v1 = l0.y - l1.y
+    
+    let poly = u1 * v0 - u0 * v1
+    return poly.all(where: { $0.almostZero() })
+}
+
+@_inlineable
+public func QuadBeziersOverlap(_ b0: Point, _ b1: Point, _ b2: Point, _ b3: Point, _ b4: Point, _ b5: Point) -> Bool {
+    
+    let a = b0 - b3
+    let b = 2 * (b1 - b0)
+    let c = b0 - 2 * b1 + b2
+    
+    let u0: Polynomial = [a.x, b.x, c.x]
+    let u1 = 2 * (b3.x - b4.x)
+    let u2 = 2 * b4.x - b3.x -  b5.x
+    
+    let v0: Polynomial = [a.y, b.y, c.y]
+    let v1 = 2 * (b3.y - b4.y)
+    let v2 = 2 * b4.y - b3.y -  b5.y
+    
+    // Bézout matrix
+    let m00 = u2 * v1 - u1 * v2
+    let m01 = u2 * v0 - u0 * v2
+    let m10 = m01
+    let m11 = u1 * v0 - u0 * v1
+    
+    let det = m00 * m11 - m01 * m10
+    return det.all(where: { $0.almostZero() })
+}
+
+@_inlineable
+public func CubicQuadBezierOverlap(_ c0: Point, _ c1: Point, _ c2: Point, _ c3: Point, _ q0: Point, _ q1: Point, _ q2: Point) -> Bool {
+    
+    let a = c0 - q0
+    let b = 3 * (c1 - c0)
+    let c = 3 * (c2 + c0) - 6 * c1
+    let d = c3 - c0 + 3 * (c1 - c2)
+    
+    let u0: Polynomial = [a.x, b.x, c.x, d.x]
+    let u1 = 2 * (q0.x - q1.x)
+    let u2 = 2 * q1.x - q0.x - q2.x
+    
+    let v0: Polynomial = [a.y, b.y, c.y, d.y]
+    let v1 = 2 * (q0.y - q1.y)
+    let v2 = 2 * q1.y - q0.y - q2.y
+    
+    // Bézout matrix
+    let m00 = u2 * v1 - u1 * v2
+    let m01 = u2 * v0 - u0 * v2
+    let m10 = m01
+    let m11 = u1 * v0 - u0 * v1
+    
+    let det = m00 * m11 - m01 * m10
+    return det.all(where: { $0.almostZero() })
+}
+
+@_inlineable
+public func CubicBeziersOverlap(_ c0: Point, _ c1: Point, _ c2: Point, _ c3: Point, _ c4: Point, _ c5: Point, _ c6: Point, _ c7: Point) -> Bool {
+    
+    let a = c0 - c4
+    let b = 3 * (c1 - c0)
+    let c = 3 * (c2 + c0) - 6 * c1
+    let d = c3 - c0 + 3 * (c1 - c2)
+    
+    let u0: Polynomial = [a.x, b.x, c.x, d.x]
+    let u1 = 3 * (c4.x - c5.x)
+    let u2 = 6 * c5.x - 3 * (c6.x + c4.x)
+    let u3 = c4.x - c7.x + 3 * (c6.x - c5.x)
+    
+    let v0: Polynomial = [a.y, b.y, c.y, d.y]
+    let v1 = 3 * (c4.y - c5.y)
+    let v2 = 6 * c5.y - 3 * (c6.y + c4.y)
+    let v3 = c4.y - c7.y + 3 * (c6.y - c5.y)
+    
+    // Bézout matrix
+    let m00 = u3 * v2 - u2 * v3
+    let m01 = u3 * v1 - u1 * v3
+    let m02 = u3 * v0 - u0 * v3
+    let m10 = m01
+    let m11 = u2 * v1 - u1 * v2 + m02
+    let m12 = u2 * v0 - u0 * v2
+    let m20 = m02
+    let m21 = m12
+    let m22 = u1 * v0 - u0 * v1
+    
+    let _a = m11 * m22 - m12 * m21
+    let _b = m12 * m20 - m10 * m22
+    let _c = m10 * m21 - m11 * m20
+    let _d = m00 * _a
+    let _e = m01 * _b
+    let _f = m02 * _c
+    let det = _d + _e + _f
+    return det.all(where: { $0.almostZero() })
+}
+
+@_inlineable
 public func QuadBezierLineIntersect(_ b0: Point, _ b1: Point, _ b2: Point, _ l0: Point, _ l1: Point) -> [Double]? {
     
     let a = b0 - l0

@@ -653,6 +653,90 @@ extension ShapeRegion.Solid.Segment {
         }
     }
     
+    fileprivate func overlap(_ other: ShapeRegion.Solid.Segment) -> Bool {
+        
+        switch self.segment {
+        case let .line(p1):
+            switch other.segment {
+            case let .line(q1):
+                if LinesIntersect(start, p1, other.start, q1) != nil {
+                    return false
+                }
+            case let .quad(q1, q2):
+                if !QuadBezierLineOverlap(other.start, q1, q2, start, p1) {
+                    return false
+                }
+            case let .cubic(q1, q2, q3):
+                if !CubicBezierLineOverlap(other.start, q1, q2, q3, start, p1) {
+                    return false
+                }
+            }
+        case let .quad(p1, p2):
+            switch other.segment {
+            case let .line(q1):
+                if !QuadBezierLineOverlap(start, p1, p2, other.start, q1) {
+                    return false
+                }
+            case let .quad(q1, q2):
+                if !QuadBeziersOverlap(start, p1, p2, other.start, q1, q2) {
+                    return false
+                }
+            case let .cubic(q1, q2, q3):
+                if !CubicQuadBezierOverlap(other.start, q1, q2, q3, start, p1, p2) {
+                    return false
+                }
+            }
+        case let .cubic(p1, p2, p3):
+            switch other.segment {
+            case let .line(q1):
+                if !CubicBezierLineOverlap(start, p1, p2, p3, other.start, q1) {
+                    return false
+                }
+            case let .quad(q1, q2):
+                if !CubicQuadBezierOverlap(start, p1, p2, p3, other.start, q1, q2) {
+                    return false
+                }
+            case let .cubic(q1, q2, q3):
+                if !CubicBeziersOverlap(start, p1, p2, p3, other.start, q1, q2, q3) {
+                    return false
+                }
+            }
+        }
+        
+        let check_1 = self.fromPoint(other.start)
+        let check_2 = self.fromPoint(other.end)
+        let check_3 = other.fromPoint(self.start)
+        let check_4 = other.fromPoint(self.end)
+        if check_1 == 0 {
+            if check_2 != nil && check_2 != 0 { return true }
+            if check_4 != nil && check_4 != 0 { return true }
+        } else if check_2 == 0 {
+            if check_1 != nil && check_1 != 0 { return true }
+            if check_4 != nil && check_4 != 1 { return true }
+        } else if check_3 == 0 {
+            if check_4 != nil && check_4 != 0 { return true }
+            if check_2 != nil && check_2 != 0 { return true }
+        } else if check_4 == 0 {
+            if check_3 != nil && check_3 != 0 { return true }
+            if check_2 != nil && check_2 != 1 { return true }
+        } else if check_1 == 1 {
+            if check_2 != nil && check_2 != 1 { return true }
+            if check_3 != nil && check_3 != 0 { return true }
+        } else if check_2 == 1 {
+            if check_1 != nil && check_1 != 1 { return true }
+            if check_3 != nil && check_3 != 1 { return true }
+        } else if check_3 == 1 {
+            if check_4 != nil && check_4 != 1 { return true }
+            if check_1 != nil && check_1 != 0 { return true }
+        } else if check_4 == 1 {
+            if check_3 != nil && check_3 != 1 { return true }
+            if check_1 != nil && check_1 != 1 { return true }
+        } else if check_1 != nil && check_2 != nil && check_3 == nil && check_4 == nil { return true
+        } else if check_1 == nil && check_2 == nil && check_3 != nil && check_4 != nil { return true
+        }
+        
+        return false
+    }
     fileprivate func intersect(_ q0: Point, _ q1: Point) -> [Double]? {
         switch self.segment {
         case let .line(p1): return LinesIntersect(start, p1, q0, q1).flatMap { fromPoint($0) }.map { [$0] }
@@ -1334,7 +1418,7 @@ extension Shape.Component {
         
         for index in 0..<other.count {
             let overlap = self_spaces.search(overlap: other_spaces[index])
-            if overlap.all(where: { self.bezier[$0].intersect(other.bezier[index]) != nil }) {
+            if overlap.all(where: { !self.bezier[$0].overlap(other.bezier[index]) }) {
                 return self.winding(other.bezier[index].point(0.5)) != 0
             }
         }
