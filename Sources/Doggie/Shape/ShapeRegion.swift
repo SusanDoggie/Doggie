@@ -1133,7 +1133,7 @@ extension ConstructiveSolidResult.Table {
                 continue
             }
             
-            func check_backward(_ index: Int) -> Bool {
+            func check(_ index: Int) -> Bool {
                 let split = _data[index]
                 let left_index_m1 = split.left.split == 0 ? left.indexMod(split.left.index - 1) : split.left.index
                 let right_index_m1 = split.right.split == 0 ? right.indexMod(split.right.index - 1) : split.right.index
@@ -1141,20 +1141,12 @@ extension ConstructiveSolidResult.Table {
                     || (overlaps_index.contains(where: { split.left.index == $0.0 && right_index_m1 == $0.1 }) && overlaps_index.contains(where: { left_index_m1 == $0.0 && split.right.index == $0.1 }))
             }
             
-            func check_forward(_ index: Int) -> Bool {
-                let split = _data[index]
-                let left_index_m1 = split.left.split == 0 ? left.indexMod(split.left.index - 1) : split.left.index
-                let right_index_m1 = split.right.split == 0 ? right.indexMod(split.right.index - 1) : split.right.index
-                return overlaps_index.contains(where: { split.left.index == $0.0 && split.right.index == $0.1 })
-                    || (overlaps_index.contains(where: { split.left.index == $0.0 && right_index_m1 == $0.1 }) && overlaps_index.contains(where: { left_index_m1 == $0.0 && split.right.index == $0.1 }))
-            }
-            
             var start = index
-            while check_backward(start) {
+            while check(start) {
                 start = _data.indexMod(start - 1)
             }
             var end = index
-            while check_forward(end) {
+            while check(end) {
                 end = _data.indexMod(end + 1)
             }
             
