@@ -57,7 +57,7 @@ open class SDTriggerGraph<Value> : Collection {
         return Index(base: graph.index(after: i.base))
     }
     
-    public subscript(position: Index) -> (from: NodeID, to: NodeID, Value) {
+    public subscript(position: Index) -> Iterator.Element {
         return graph[position.base]
     }
     
