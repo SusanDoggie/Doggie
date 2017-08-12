@@ -719,28 +719,17 @@ extension Shape {
         
         for item in self {
             var path: [ShapeRegion.Solid.Segment] = []
-            var last = item.start
-            loop: for segment in item {
+            for segment in item.bezier {
                 
-                switch segment {
-                    
-                case let .line(point):
-                    path.append(ShapeRegion.Solid.Segment(last, point))
-                    
-                    last = point
-                    
-                case let .quad(p1, p2):
-                    path.append(ShapeRegion.Solid.Segment(last, p1, p2))
-                    
-                    last = p2
-                    
+                switch segment.segment {
                 case let .cubic(p1, p2, p3):
-                    if last.almostEqual(p3) {
-                        solids.append(ShapeRegion.Solid(segments: CollectionOfOne(ShapeRegion.Solid.Segment(last, p1, p2, p3)))!)
+                    
+                    if segment.start.almostEqual(p3) {
+                        solids.append(ShapeRegion.Solid(segments: CollectionOfOne(segment))!)
                     } else {
                         
-                        var segment = ShapeRegion.Solid.Segment(last, p1, p2, p3)
-                        if let (_a, _b) = CubicBezierSelfIntersect(last, p1, p2, p3) {
+                        var segment = segment
+                        if let (_a, _b) = CubicBezierSelfIntersect(segment.start, p1, p2, p3) {
                             
                             let a = Swift.min(_a, _b)
                             let b = Swift.max(_a, _b)
@@ -752,34 +741,31 @@ extension Shape {
                             
                             if check_1 && check_4 {
                                 
-                                let split = Bezier(last, p1, p2, p3).split(b)
-                                solids.append(ShapeRegion.Solid(segments: CollectionOfOne(ShapeRegion.Solid.Segment(split.0[0], split.0[1], split.0[2], split.0[3])))!)
-                                segment = ShapeRegion.Solid.Segment(split.1[0], split.1[1], split.1[2], split.1[3])
+                                let split = segment.split(b)
+                                solids.append(ShapeRegion.Solid(segments: CollectionOfOne(split.0))!)
+                                segment = split.1
                                 
                             } else if check_2 && check_3 {
                                 
-                                let split = Bezier(last, p1, p2, p3).split(a)
-                                solids.append(ShapeRegion.Solid(segments: CollectionOfOne(ShapeRegion.Solid.Segment(split.1[0], split.1[1], split.1[2], split.1[3])))!)
-                                segment = ShapeRegion.Solid.Segment(split.0[0], split.0[1], split.0[2], split.0[3])
+                                let split = segment.split(a)
+                                solids.append(ShapeRegion.Solid(segments: CollectionOfOne(split.1))!)
+                                segment = split.0
                                 
                             } else if check_2 && check_4 {
                                 
-                                let split = Bezier(last, p1, p2, p3).split([a, b]).map { ShapeRegion.Solid.Segment($0[0], $0[1], $0[2], $0[3]) }
+                                let split = segment.split([a, b])
                                 solids.append(ShapeRegion.Solid(segments: CollectionOfOne(split[1]))!)
                                 path.append(split[0])
                                 segment = split[2]
                             }
                         }
                         path.append(segment)
-                        
                     }
                     
-                    last = p3
-                    
+                default: path.append(segment)
                 }
             }
             if path.count != 0 {
-                path.append(ShapeRegion.Solid.Segment(last, item.start))
                 solids.append(contentsOf: OptionOneCollection(ShapeRegion.Solid(segments: path)))
             }
         }
