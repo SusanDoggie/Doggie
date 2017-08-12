@@ -437,6 +437,12 @@ public func * (lhs: Polynomial, rhs: Polynomial) -> Polynomial {
     if lhs.count == 0 || rhs.count == 0 {
         return Polynomial()
     }
+    if lhs.count == 1 {
+        return lhs[0] * rhs
+    }
+    if rhs.count == 1 {
+        return lhs * rhs[0]
+    }
     var result = [Double](repeating: 0, count: lhs.count + rhs.count - 1)
     DiscreteConvolve(lhs.count, lhs.coeffs, 1, rhs.count, rhs.coeffs, 1, &result, 1)
     return Polynomial(result)
