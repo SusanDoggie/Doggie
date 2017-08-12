@@ -379,7 +379,7 @@ public func < <Node, Link>(lhs: GraphIndex<Node, Link>, rhs: GraphIndex<Node, Li
 @_fixed_layout
 public struct GraphIterator<Node : Hashable, Link> : IteratorProtocol, Sequence {
     
-    public typealias Element = (from: Node, to: Node, Link)
+    public typealias Element = (from: Node, to: Node, value: Link)
     
     @_versioned
     var base: FlattenIterator<LazyMapIterator<DictionaryIterator<Node, [Node : Link]>, LazyMapCollection<[Node : Link], (Node, Node, Link)>>>
