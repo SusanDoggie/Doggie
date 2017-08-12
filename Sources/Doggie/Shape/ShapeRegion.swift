@@ -27,8 +27,6 @@ private let ShapeCacheNonZeroRegionKey = "ShapeCacheNonZeroRegionKey"
 private let ShapeCacheEvenOddRegionKey = "ShapeCacheEvenOddRegionKey"
 private let ShapeCacheConstructiveSolidResultKey = "ShapeCacheConstructiveSolidResultKey"
 
-private let _boundInset: Double = -1e-8
-
 extension RandomAccessCollection where Index : SignedInteger {
     
     fileprivate func indexMod(_ index: Index) -> Index {
@@ -72,7 +70,7 @@ public struct ShapeRegion {
     fileprivate init<S : Sequence>(solids: S) where S.Iterator.Element == ShapeRegion.Solid {
         let solids = Array(solids)
         self.solids = solids
-        self.spacePartition = RectCollection(solids.map { $0.bigBound })
+        self.spacePartition = RectCollection(solids.map { $0.boundary })
         self.boundary = solids.first.map { solids.dropFirst().reduce($0.boundary) { $0.union($1.boundary) } } ?? Rect()
         self.cache = Cache()
     }
@@ -112,10 +110,6 @@ extension ShapeRegion {
     
     public var area: Double {
         return solids.reduce(0) { $0 + $1.area }
-    }
-    
-    fileprivate var bigBound: Rect {
-        return boundary.inset(dx: _boundInset * Swift.max(1, abs(boundary.x), abs(boundary.width)), dy: _boundInset * Swift.max(1, abs(boundary.y), abs(boundary.height)))
     }
     
     public var shape: Shape {
@@ -219,10 +213,6 @@ extension ShapeRegion.Solid {
         return ObjectIdentifier(cache)
     }
     
-    fileprivate var bigBound: Rect {
-        return boundary.inset(dx: _boundInset * Swift.max(1, abs(boundary.x), abs(boundary.width)), dy: _boundInset * Swift.max(1, abs(boundary.y), abs(boundary.height)))
-    }
-    
     fileprivate func reversed() -> ShapeRegion.Solid {
         if cache.reversed == nil {
             if solid.area.sign == .plus {
@@ -289,7 +279,7 @@ extension ShapeRegion.Solid {
     
     fileprivate func union(_ other: ShapeRegion.Solid) -> ([ShapeRegion.Solid], Bool) {
         
-        if !self.bigBound.isIntersect(other.bigBound) {
+        if !self.boundary.isIntersect(other.boundary) {
             return ([self, other], false)
         }
         
@@ -309,7 +299,7 @@ extension ShapeRegion.Solid {
     }
     fileprivate func intersection(_ other: ShapeRegion.Solid) -> [ShapeRegion.Solid] {
         
-        if !self.bigBound.isIntersect(other.bigBound) {
+        if !self.boundary.isIntersect(other.boundary) {
             return []
         }
         
@@ -327,7 +317,7 @@ extension ShapeRegion.Solid {
     }
     fileprivate func subtracting(_ other: ShapeRegion.Solid) -> [ShapeRegion.Solid] {
         
-        if !self.bigBound.isIntersect(other.bigBound) {
+        if !self.boundary.isIntersect(other.boundary) {
             return [self]
         }
         
@@ -362,7 +352,7 @@ extension ShapeRegion {
         if !self.isEmpty && other.isEmpty {
             return self
         }
-        if !self.bigBound.isIntersect(other.bigBound) {
+        if !self.boundary.isIntersect(other.boundary) {
             return ShapeRegion(solids: self.solids.concat(other.solids))
         }
         
@@ -388,22 +378,22 @@ extension ShapeRegion {
     
     fileprivate func intersection(_ other: ShapeRegion.Solid) -> [ShapeRegion.Solid] {
         
-        if self.isEmpty || !self.bigBound.isIntersect(other.bigBound) {
+        if self.isEmpty || !self.boundary.isIntersect(other.boundary) {
             return []
         }
         
-        let overlap = self.spacePartition.search(overlap: other.bigBound)
+        let overlap = self.spacePartition.search(overlap: other.boundary)
         return overlap.flatMap { solids[$0].intersection(other) }
     }
     
     public func intersection(_ other: ShapeRegion) -> ShapeRegion {
         
-        if self.isEmpty || other.isEmpty || !self.bigBound.isIntersect(other.bigBound) {
+        if self.isEmpty || other.isEmpty || !self.boundary.isIntersect(other.boundary) {
             return ShapeRegion()
         }
         
         if cache.intersection[other.cacheId] == nil && other.cache.intersection[cacheId] == nil {
-            let overlap = self.spacePartition.search(overlap: other.bigBound)
+            let overlap = self.spacePartition.search(overlap: other.boundary)
             cache.intersection[other.cacheId] = ShapeRegion(solids: overlap.flatMap { other.intersection(self.solids[$0]) })
         }
         return cache.intersection[other.cacheId] ?? other.cache.intersection[cacheId]!
@@ -413,11 +403,11 @@ extension ShapeRegion {
         if self.isEmpty {
             return []
         }
-        if !self.bigBound.isIntersect(other.bigBound) {
+        if !self.boundary.isIntersect(other.boundary) {
             return self.solids
         }
         
-        let overlap = self.spacePartition.search(overlap: other.bigBound)
+        let overlap = self.spacePartition.search(overlap: other.boundary)
         var result: [ShapeRegion.Solid] = []
         result.reserveCapacity(solids.count)
         for (index, solid) in solids.enumerated() {
@@ -434,17 +424,17 @@ extension ShapeRegion {
         if self.isEmpty {
             return ShapeRegion()
         }
-        if other.isEmpty || !self.bigBound.isIntersect(other.bigBound) {
+        if other.isEmpty || !self.boundary.isIntersect(other.boundary) {
             return self
         }
         
         if cache.subtracting[other.cacheId] == nil {
-            let overlap = self.spacePartition.search(overlap: other.bigBound)
+            let overlap = self.spacePartition.search(overlap: other.boundary)
             var result: [Solid] = []
             result.reserveCapacity(solids.count)
             for (index, item) in self.solids.enumerated() {
                 if overlap.contains(index) {
-                    let overlap2 = other.spacePartition.search(overlap: item.bigBound)
+                    let overlap2 = other.spacePartition.search(overlap: item.boundary)
                     result.append(contentsOf: overlap2.reduce([item]) { remains, idx in remains.flatMap { $0.subtracting(other.solids[idx]) } })
                 } else {
                     result.append(item)
@@ -465,7 +455,7 @@ extension ShapeRegion {
         if !self.isEmpty && other.isEmpty {
             return self
         }
-        if !self.bigBound.isIntersect(other.bigBound) {
+        if !self.boundary.isIntersect(other.boundary) {
             return ShapeRegion(solids: self.solids.concat(other.solids))
         }
         
@@ -595,25 +585,11 @@ extension ShapeRegion {
     }
 }
 
-extension Shape.Component {
-    
-    fileprivate var bigBound: Rect {
-        return boundary.inset(dx: _boundInset * Swift.max(1, abs(boundary.x), abs(boundary.width)), dy: _boundInset * Swift.max(1, abs(boundary.y), abs(boundary.height)))
-    }
-}
-
 public func * (lhs: ShapeRegion, rhs: SDTransform) -> ShapeRegion {
     return rhs.determinant.almostZero() ? ShapeRegion() : ShapeRegion(solids: lhs.solids.map { ShapeRegion.Solid(components: $0.components.map { $0 * rhs }) })
 }
 public func *= (lhs: inout ShapeRegion, rhs: SDTransform) {
     lhs = lhs * rhs
-}
-
-extension ShapeRegion.Solid.Segment {
-    
-    fileprivate var bigBound: Rect {
-        return boundary.inset(dx: _boundInset * Swift.max(1, abs(boundary.x), abs(boundary.width)), dy: _boundInset * Swift.max(1, abs(boundary.y), abs(boundary.height)))
-    }
 }
 
 extension Shape.Component {
@@ -860,9 +836,9 @@ extension ConstructiveSolidResult.Table {
         var overlaps_index: [(Int, Int)] = []
         var overlap_r_index: Set<Int> = []
         var overlap_l_index: Set<Int> = []
-        for r_idx in right_spaces.search(overlap: left.bigBound) {
+        for r_idx in right_spaces.search(overlap: left.boundary) {
             let r_segment = right.bezier[r_idx]
-            for l_idx in left_spaces.search(overlap: r_segment.bigBound) {
+            for l_idx in left_spaces.search(overlap: r_segment.boundary) {
                 let l_segment = left.bezier[l_idx]
                 if let intersect = l_segment.intersect(r_segment) {
                     for (t1, t2) in intersect {
@@ -1188,7 +1164,7 @@ extension Shape.Component {
     
     fileprivate func _contains(_ other: Shape.Component, hint: Set<Int> = []) -> Bool {
         
-        if !self.bigBound.contains(other.boundary) {
+        if !self.boundary.contains(other.boundary) {
             return false
         }
         if abs(self.area) < abs(other.area) {
