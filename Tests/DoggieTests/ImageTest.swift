@@ -103,7 +103,7 @@ class ImageTest: XCTestCase {
         
         self.measure() {
             
-            context.draw(image: image, transform: SDTransform.scale(x: Double(context.width) / Double(sample.width), y: Double(context.height) / Double(sample.height)))
+            context.draw(image: sample, transform: SDTransform.scale(x: Double(context.width) / Double(sample.width), y: Double(context.height) / Double(sample.height)))
         }
     }
     
@@ -111,14 +111,14 @@ class ImageTest: XCTestCase {
         
         let sample = self.sample
         
-        let context = ImageContext<ARGB32ColorPixel>(width: 3840, height: 2160, colorSpace: image.colorSpace)
+        let context = ImageContext<ARGB32ColorPixel>(width: 3840, height: 2160, colorSpace: sample.colorSpace)
         
         context.antialias = false
         context.resamplingAlgorithm = .none
         
         self.measure() {
             
-            context.draw(image: image, transform: SDTransform.scale(x: Double(context.width) / Double(image.width), y: Double(context.height) / Double(image.height)))
+            context.draw(image: sample, transform: SDTransform.scale(x: Double(context.width) / Double(sample.width), y: Double(context.height) / Double(sample.height)))
         }
     }
     
@@ -133,7 +133,7 @@ class ImageTest: XCTestCase {
         
         self.measure() {
             
-            context.draw(image: image, transform: SDTransform.scale(x: Double(context.width) / Double(image.width), y: Double(context.height) / Double(image.height)))
+            context.draw(image: sample, transform: SDTransform.scale(x: Double(context.width) / Double(sample.width), y: Double(context.height) / Double(sample.height)))
         }
     }
     
@@ -148,7 +148,7 @@ class ImageTest: XCTestCase {
         
         self.measure() {
             
-            context.draw(image: image, transform: SDTransform.scale(x: Double(context.width) / Double(image.width), y: Double(context.height) / Double(image.height)))
+            context.draw(image: sample, transform: SDTransform.scale(x: Double(context.width) / Double(sample.width), y: Double(context.height) / Double(sample.height)))
         }
     }
     
@@ -163,7 +163,7 @@ class ImageTest: XCTestCase {
         
         self.measure() {
             
-            context.draw(image: image, transform: SDTransform.scale(x: Double(context.width) / Double(image.width), y: Double(context.height) / Double(image.height)))
+            context.draw(image: sample, transform: SDTransform.scale(x: Double(context.width) / Double(sample.width), y: Double(context.height) / Double(sample.height)))
         }
     }
     
@@ -178,7 +178,7 @@ class ImageTest: XCTestCase {
         
         self.measure() {
             
-            context.draw(image: image, transform: SDTransform.scale(x: Double(context.width) / Double(image.width), y: Double(context.height) / Double(image.height)))
+            context.draw(image: sample, transform: SDTransform.scale(x: Double(context.width) / Double(sample.width), y: Double(context.height) / Double(sample.height)))
         }
     }
     
@@ -193,7 +193,7 @@ class ImageTest: XCTestCase {
         
         self.measure() {
             
-            context.draw(image: image, transform: SDTransform.scale(x: Double(context.width) / Double(image.width), y: Double(context.height) / Double(image.height)))
+            context.draw(image: sample, transform: SDTransform.scale(x: Double(context.width) / Double(sample.width), y: Double(context.height) / Double(sample.height)))
         }
     }
     
@@ -208,7 +208,7 @@ class ImageTest: XCTestCase {
         
         self.measure() {
             
-            context.draw(image: image, transform: SDTransform.scale(x: Double(context.width) / Double(image.width), y: Double(context.height) / Double(image.height)))
+            context.draw(image: sample, transform: SDTransform.scale(x: Double(context.width) / Double(sample.width), y: Double(context.height) / Double(sample.height)))
         }
     }
     
@@ -223,7 +223,7 @@ class ImageTest: XCTestCase {
         
         self.measure() {
             
-            context.draw(image: image, transform: SDTransform.scale(x: Double(context.width) / Double(image.width), y: Double(context.height) / Double(image.height)))
+            context.draw(image: sample, transform: SDTransform.scale(x: Double(context.width) / Double(sample.width), y: Double(context.height) / Double(sample.height)))
         }
     }
     
@@ -238,7 +238,7 @@ class ImageTest: XCTestCase {
         
         self.measure() {
             
-            context.draw(image: image, transform: SDTransform.scale(x: Double(context.width) / Double(image.width), y: Double(context.height) / Double(image.height)))
+            context.draw(image: sample, transform: SDTransform.scale(x: Double(context.width) / Double(sample.width), y: Double(context.height) / Double(sample.height)))
         }
     }
     
@@ -253,7 +253,7 @@ class ImageTest: XCTestCase {
         
         self.measure() {
             
-            context.draw(image: image, transform: SDTransform.scale(x: Double(context.width) / Double(image.width), y: Double(context.height) / Double(image.height)))
+            context.draw(image: sample, transform: SDTransform.scale(x: Double(context.width) / Double(sample.width), y: Double(context.height) / Double(sample.height)))
         }
     }
     
@@ -268,7 +268,7 @@ class ImageTest: XCTestCase {
         
         self.measure() {
             
-            context.draw(image: image, transform: SDTransform.scale(x: Double(context.width) / Double(image.width), y: Double(context.height) / Double(image.height)))
+            context.draw(image: sample, transform: SDTransform.scale(x: Double(context.width) / Double(sample.width), y: Double(context.height) / Double(sample.height)))
         }
     }
     
@@ -283,7 +283,7 @@ class ImageTest: XCTestCase {
         
         self.measure() {
             
-            context.draw(image: image, transform: SDTransform.scale(x: Double(context.width) / Double(image.width), y: Double(context.height) / Double(image.height)))
+            context.draw(image: sample, transform: SDTransform.scale(x: Double(context.width) / Double(sample.width), y: Double(context.height) / Double(sample.height)))
         }
     }
     
@@ -298,7 +298,7 @@ class ImageTest: XCTestCase {
         
         self.measure() {
             
-            context.draw(image: image, transform: SDTransform.scale(x: Double(context.width) / Double(image.width), y: Double(context.height) / Double(image.height)))
+            context.draw(image: sample, transform: SDTransform.scale(x: Double(context.width) / Double(sample.width), y: Double(context.height) / Double(sample.height)))
         }
     }
     
@@ -313,7 +313,7 @@ class ImageTest: XCTestCase {
         
         self.measure() {
             
-            context.draw(image: image, transform: SDTransform.scale(x: Double(context.width) / Double(image.width), y: Double(context.height) / Double(image.height)))
+            context.draw(image: sample, transform: SDTransform.scale(x: Double(context.width) / Double(sample.width), y: Double(context.height) / Double(sample.height)))
         }
     }
     
