@@ -75,10 +75,16 @@ class ImageTest: XCTestCase {
     
     func testColorSpaceConvertionPerformance() {
         
-        
         let sampleA = self.sample
         
-        let sampleB = Image(image: sampleA, width: 1000, height: 1000, resampling: .none)
+        let context = ImageContext<ARGB32ColorPixel>(width: 1000, height: 1000, colorSpace: sampleA.colorSpace)
+        
+        context.antialias = false
+        context.resamplingAlgorithm = .none
+        
+        context.draw(image: sampleA, transform: SDTransform.scale(x: Double(context.width) / Double(sampleA.width), y: Double(context.height) / Double(sampleA.height)))
+        
+        let sampleB = context.image
         
         self.measure() {
             
@@ -88,168 +94,226 @@ class ImageTest: XCTestCase {
     
     func testResamplingNonePerformance() {
         
-        
         let sample = self.sample
+        
+        let context = ImageContext<ARGB32ColorPixel>(width: 1000, height: 1000, colorSpace: sample.colorSpace)
+        
+        context.antialias = false
+        context.resamplingAlgorithm = .none
         
         self.measure() {
             
-            _ = Image(image: sample, width: 1000, height: 1000, resampling: .none)
+            context.draw(image: image, transform: SDTransform.scale(x: Double(context.width) / Double(sample.width), y: Double(context.height) / Double(sample.height)))
         }
     }
     
     func testResamplingNonePerformanceB() {
         
+        let sample = self.sample
         
-        let sampleA = self.sample
+        let context = ImageContext<ARGB32ColorPixel>(width: 3840, height: 2160, colorSpace: image.colorSpace)
         
-        let sampleB = Image(image: sampleA, width: 1920, height: 1080, resampling: .none)
+        context.antialias = false
+        context.resamplingAlgorithm = .none
         
         self.measure() {
             
-            _ = Image(image: sampleB, width: 3840, height: 2160, resampling: .none)
+            context.draw(image: image, transform: SDTransform.scale(x: Double(context.width) / Double(image.width), y: Double(context.height) / Double(image.height)))
         }
     }
     
     func testResamplingLinearPerformance() {
         
-        
         let sample = self.sample
+        
+        let context = ImageContext<ARGB32ColorPixel>(width: 1000, height: 1000, colorSpace: sample.colorSpace)
+        
+        context.antialias = false
+        context.resamplingAlgorithm = .linear
         
         self.measure() {
             
-            _ = Image(image: sample, width: 1000, height: 1000, resampling: .linear)
+            context.draw(image: image, transform: SDTransform.scale(x: Double(context.width) / Double(image.width), y: Double(context.height) / Double(image.height)))
         }
     }
     
     func testResamplingCosinePerformance() {
         
-        
         let sample = self.sample
+        
+        let context = ImageContext<ARGB32ColorPixel>(width: 1000, height: 1000, colorSpace: sample.colorSpace)
+        
+        context.antialias = false
+        context.resamplingAlgorithm = .cosine
         
         self.measure() {
             
-            _ = Image(image: sample, width: 1000, height: 1000, resampling: .cosine)
+            context.draw(image: image, transform: SDTransform.scale(x: Double(context.width) / Double(image.width), y: Double(context.height) / Double(image.height)))
         }
     }
     
     func testResamplingCubicPerformance() {
         
-        
         let sample = self.sample
+        
+        let context = ImageContext<ARGB32ColorPixel>(width: 1000, height: 1000, colorSpace: sample.colorSpace)
+        
+        context.antialias = false
+        context.resamplingAlgorithm = .cubic
         
         self.measure() {
             
-            _ = Image(image: sample, width: 1000, height: 1000, resampling: .cubic)
+            context.draw(image: image, transform: SDTransform.scale(x: Double(context.width) / Double(image.width), y: Double(context.height) / Double(image.height)))
         }
     }
     
     func testResamplingHermitePerformance() {
         
-        
         let sample = self.sample
+        
+        let context = ImageContext<ARGB32ColorPixel>(width: 1000, height: 1000, colorSpace: sample.colorSpace)
+        
+        context.antialias = false
+        context.resamplingAlgorithm = .hermite(0.5, 0)
         
         self.measure() {
             
-            _ = Image(image: sample, width: 1000, height: 1000, resampling: .hermite(0.5, 0))
+            context.draw(image: image, transform: SDTransform.scale(x: Double(context.width) / Double(image.width), y: Double(context.height) / Double(image.height)))
         }
     }
     
     func testResamplingMitchellPerformance() {
         
-        
         let sample = self.sample
+        
+        let context = ImageContext<ARGB32ColorPixel>(width: 1000, height: 1000, colorSpace: sample.colorSpace)
+        
+        context.antialias = false
+        context.resamplingAlgorithm = .mitchell(1/3, 1/3)
         
         self.measure() {
             
-            _ = Image(image: sample, width: 1000, height: 1000, resampling: .mitchell(1/3, 1/3))
+            context.draw(image: image, transform: SDTransform.scale(x: Double(context.width) / Double(image.width), y: Double(context.height) / Double(image.height)))
         }
     }
     
     func testResamplingLanczosPerformance() {
         
-        
         let sample = self.sample
+        
+        let context = ImageContext<ARGB32ColorPixel>(width: 1000, height: 1000, colorSpace: sample.colorSpace)
+        
+        context.antialias = false
+        context.resamplingAlgorithm = .lanczos(3)
         
         self.measure() {
             
-            _ = Image(image: sample, width: 1000, height: 1000, resampling: .lanczos(3))
+            context.draw(image: image, transform: SDTransform.scale(x: Double(context.width) / Double(image.width), y: Double(context.height) / Double(image.height)))
         }
     }
     
     func testResamplingNoneAntialiasPerformance() {
         
-        
         let sample = self.sample
+        
+        let context = ImageContext<ARGB32ColorPixel>(width: 200, height: 200, colorSpace: sample.colorSpace)
+        
+        context.antialias = true
+        context.resamplingAlgorithm = .none
         
         self.measure() {
             
-            _ = Image(image: sample, width: 200, height: 200, resampling: .none, antialias: true)
+            context.draw(image: image, transform: SDTransform.scale(x: Double(context.width) / Double(image.width), y: Double(context.height) / Double(image.height)))
         }
     }
     
     func testResamplingLinearAntialiasPerformance() {
         
-        
         let sample = self.sample
+        
+        let context = ImageContext<ARGB32ColorPixel>(width: 200, height: 200, colorSpace: sample.colorSpace)
+        
+        context.antialias = true
+        context.resamplingAlgorithm = .linear
         
         self.measure() {
             
-            _ = Image(image: sample, width: 200, height: 200, resampling: .linear, antialias: true)
+            context.draw(image: image, transform: SDTransform.scale(x: Double(context.width) / Double(image.width), y: Double(context.height) / Double(image.height)))
         }
     }
     
     func testResamplingCosineAntialiasPerformance() {
         
-        
         let sample = self.sample
+        
+        let context = ImageContext<ARGB32ColorPixel>(width: 200, height: 200, colorSpace: sample.colorSpace)
+        
+        context.antialias = true
+        context.resamplingAlgorithm = .cosine
         
         self.measure() {
             
-            _ = Image(image: sample, width: 200, height: 200, resampling: .cosine, antialias: true)
+            context.draw(image: image, transform: SDTransform.scale(x: Double(context.width) / Double(image.width), y: Double(context.height) / Double(image.height)))
         }
     }
     
     func testResamplingCubicAntialiasPerformance() {
         
-        
         let sample = self.sample
+        
+        let context = ImageContext<ARGB32ColorPixel>(width: 200, height: 200, colorSpace: sample.colorSpace)
+        
+        context.antialias = true
+        context.resamplingAlgorithm = .cubic
         
         self.measure() {
             
-            _ = Image(image: sample, width: 200, height: 200, resampling: .cubic, antialias: true)
+            context.draw(image: image, transform: SDTransform.scale(x: Double(context.width) / Double(image.width), y: Double(context.height) / Double(image.height)))
         }
     }
     
     func testResamplingHermiteAntialiasPerformance() {
         
-        
         let sample = self.sample
+        
+        let context = ImageContext<ARGB32ColorPixel>(width: 200, height: 200, colorSpace: sample.colorSpace)
+        
+        context.antialias = true
+        context.resamplingAlgorithm = .hermite(0.5, 0)
         
         self.measure() {
             
-            _ = Image(image: sample, width: 200, height: 200, resampling: .hermite(0.5, 0), antialias: true)
+            context.draw(image: image, transform: SDTransform.scale(x: Double(context.width) / Double(image.width), y: Double(context.height) / Double(image.height)))
         }
     }
     
     func testResamplingMitchellAntialiasPerformance() {
         
-        
         let sample = self.sample
+        
+        let context = ImageContext<ARGB32ColorPixel>(width: 200, height: 200, colorSpace: sample.colorSpace)
+        
+        context.antialias = true
+        context.resamplingAlgorithm = .mitchell(1/3, 1/3)
         
         self.measure() {
             
-            _ = Image(image: sample, width: 200, height: 200, resampling: .mitchell(1/3, 1/3), antialias: true)
+            context.draw(image: image, transform: SDTransform.scale(x: Double(context.width) / Double(image.width), y: Double(context.height) / Double(image.height)))
         }
     }
     
     func testResamplingLanczosAntialiasPerformance() {
         
-        
         let sample = self.sample
+        
+        let context = ImageContext<ARGB32ColorPixel>(width: 200, height: 200, colorSpace: sample.colorSpace)
+        
+        context.antialias = true
+        context.resamplingAlgorithm = .lanczos(3)
         
         self.measure() {
             
-            _ = Image(image: sample, width: 200, height: 200, resampling: .lanczos(3), antialias: true)
+            context.draw(image: image, transform: SDTransform.scale(x: Double(context.width) / Double(image.width), y: Double(context.height) / Double(image.height)))
         }
     }
     
