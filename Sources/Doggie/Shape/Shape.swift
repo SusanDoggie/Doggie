@@ -527,19 +527,18 @@ extension Shape {
     public static func Ellipse(center: Point, radius: Double) -> Shape {
         return Ellipse(center: center, radius: Radius(x: radius, y: radius))
     }
-    public static func Ellipse(center: Point, radius: Radius) -> Shape {
-        let scale = SDTransform.scale(x: radius.x, y: radius.y)
-        let points = BezierCircle.lazy.map { $0 * scale + center }
-        let segments: [Shape.Segment] = [.cubic(points[1], points[2], points[3]), .cubic(points[4], points[5], points[6]), .cubic(points[7], points[8], points[9]), .cubic(points[10], points[11], points[12])]
-        return [Component(start: points[0], closed: true, segments: segments)]
-    }
     public static func Ellipse(x: Double, y: Double, radius: Double) -> Shape {
         return Ellipse(center: Point(x: x, y: y), radius: Radius(x: radius, y: radius))
     }
     public static func Ellipse(x: Double, y: Double, rx: Double, ry: Double) -> Shape {
         return Ellipse(center: Point(x: x, y: y), radius: Radius(x: rx, y: ry))
     }
-    
+    public static func Ellipse(center: Point, radius: Radius) -> Shape {
+        let scale = SDTransform.scale(x: radius.x, y: radius.y)
+        let points = BezierCircle.lazy.map { $0 * scale + center }
+        let segments: [Shape.Segment] = [.cubic(points[1], points[2], points[3]), .cubic(points[4], points[5], points[6]), .cubic(points[7], points[8], points[9]), .cubic(points[10], points[11], points[12])]
+        return [Component(start: points[0], closed: true, segments: segments)]
+    }
 }
 
 extension Shape {

@@ -486,7 +486,39 @@ extension ShapeRegion {
 
 extension ShapeRegion {
     
-    public init(center: Point, radius: Radius) {
+    public static func Rectangle(origin: Point, size: Size) -> ShapeRegion {
+        return Rectangle(Rect(origin: origin, size: size))
+    }
+    public static func Rectangle(x: Double, y: Double, width: Double, height: Double) -> ShapeRegion {
+        return Rectangle(Rect(x: x, y: y, width: width, height: height))
+    }
+    public static func Rectangle(_ rect: Rect) -> ShapeRegion {
+        let points = rect.points
+        let segments: [ShapeRegion.Solid.Segment] = [
+            ShapeRegion.Solid.Segment(points[0], points[1]),
+            ShapeRegion.Solid.Segment(points[1], points[2]),
+            ShapeRegion.Solid.Segment(points[2], points[3]),
+            ShapeRegion.Solid.Segment(points[3], points[0])
+        ]
+        return ShapeRegion(solid: ShapeRegion.Solid(segments: segments)!)
+    }
+}
+
+extension ShapeRegion {
+    
+    public static func Ellipse(_ rect: Rect) -> ShapeRegion {
+        return Ellipse(center: rect.center, radius: Radius(x: 0.5 * rect.width, y: 0.5 * rect.height))
+    }
+    public static func Ellipse(center: Point, radius: Double) -> ShapeRegion {
+        return Ellipse(center: center, radius: Radius(x: radius, y: radius))
+    }
+    public static func Ellipse(x: Double, y: Double, radius: Double) -> ShapeRegion {
+        return Ellipse(center: Point(x: x, y: y), radius: Radius(x: radius, y: radius))
+    }
+    public static func Ellipse(x: Double, y: Double, rx: Double, ry: Double) -> ShapeRegion {
+        return Ellipse(center: Point(x: x, y: y), radius: Radius(x: rx, y: ry))
+    }
+    public static func Ellipse(center: Point, radius: Radius) -> ShapeRegion {
         let scale = SDTransform.scale(x: radius.x, y: radius.y)
         let point = BezierCircle.map { $0 * scale + center }
         let segments: [ShapeRegion.Solid.Segment] = [
@@ -495,18 +527,7 @@ extension ShapeRegion {
             ShapeRegion.Solid.Segment(point[6], point[7], point[8], point[9]),
             ShapeRegion.Solid.Segment(point[9], point[10], point[11], point[12])
         ]
-        self.init(solid: ShapeRegion.Solid(segments: segments)!)
-    }
-    
-    public init(rect: Rect) {
-        let points = rect.points
-        let segments: [ShapeRegion.Solid.Segment] = [
-            ShapeRegion.Solid.Segment(points[0], points[1]),
-            ShapeRegion.Solid.Segment(points[1], points[2]),
-            ShapeRegion.Solid.Segment(points[2], points[3]),
-            ShapeRegion.Solid.Segment(points[3], points[0])
-        ]
-        self.init(solid: ShapeRegion.Solid(segments: segments)!)
+        return ShapeRegion(solid: ShapeRegion.Solid(segments: segments)!)
     }
 }
 
