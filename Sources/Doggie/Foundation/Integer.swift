@@ -122,17 +122,6 @@ public func submod<T: FixedWidthInteger & UnsignedInteger>(_ a: T, _ b: T, _ m: 
 
 @_inlineable
 public func mulmod<T: FixedWidthInteger & UnsignedInteger>(_ a: T, _ b: T, _ m: T) -> T {
-    func _mulmod(_ a: T, _ b: T, _ m: T) -> T {
-        if a == 0 || b == 0 {
-            return 0
-        }
-        let (mul, overflow) = a.multipliedReportingOverflow(by: b)
-        if overflow {
-            let c = _mulmod(addmod(a, a, m), b >> 1, m)
-            return b & 1 == 1 ? addmod(a, c, m) : c
-        }
-        return mul % m
-    }
     assert(m != 0, "divide by zero")
     let a = a % m
     let b = b % m
@@ -142,7 +131,7 @@ public func mulmod<T: FixedWidthInteger & UnsignedInteger>(_ a: T, _ b: T, _ m: 
     if m.isPower2 {
         return (a &* b) & (m - 1)
     }
-    return _mulmod(a, b, m)
+    return m.dividingFullWidth(a.multipliedFullWidth(by: b)).remainder
 }
 
 @_inlineable
