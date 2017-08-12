@@ -818,8 +818,8 @@ extension ConstructiveSolidResult {
     
     fileprivate struct Table {
         
-        var l_graph: Graph<Int, (Split, Split)> = Graph()
-        var r_graph: Graph<Int, (Split, Split)> = Graph()
+        var l_graph: [Int: (Int, Split, Split)] = [:]
+        var r_graph: [Int: (Int, Split, Split)] = [:]
         var overlap: Overlap = .none
         var looping_left: [(Split, Split)] = []
         var looping_right: [(Split, Split)] = []
@@ -887,38 +887,34 @@ extension ConstructiveSolidResult.Table {
         }
         
         let _l_list = data.enumerated().sorted { $0.1.left.ordering($1.1.left) }
-        let _r_list = data.enumerated().sorted { $0.1.right.ordering($1.1.right) }
-        
-        print("\n\nConstructiveSolidResult.Table")
-        
-        print(_l_list.map { $0.0 })
         
         if var s0 = _l_list.first {
-            var first_index = s0.0
+            
+            let first_index = s0.0
             var first_winding = false
             var winding: Bool?
+            
             var flag = true
+            
             for (t0, t1) in _l_list.rotateZip() where !overlaps_index.contains(where: { t0.1.right.ordering(t1.1.right) ? $0 == t0.1.left.index && $1 == t0.1.right.index : $0 == t1.1.left.index && $1 == t1.1.right.index }) {
                 let point = left.bezier[t0.1.left.index].point(t0.1.left.index == t1.1.left.index ? 0.5 * (t0.1.left.split + t1.1.left.split) : 0.5 * (t0.1.left.split + 1))
                 let _winding = right.winding(point) != 0
-                print(t0.0, t1.0, _winding, s0.0, winding)
                 if winding == nil {
-                    first_index = t0.0
                     first_winding = _winding
                     winding = _winding
                 } else if winding != _winding {
-                    l_graph[from: s0.0, to: t0.0] = (s0.1.left, t0.1.left)
+                    l_graph[s0.0] = (t0.0, s0.1.left, t0.1.left)
                     winding = _winding
                     s0 = t0
                     flag = false
                 }
-                if t1.0 == first_index {
+                if !flag && t1.0 == first_index {
                     if first_winding == _winding {
-                        let (end_index, (_, t1)) = l_graph.nodes(from: first_index).first!
-                        l_graph[from: first_index, to: end_index] = nil
-                        l_graph[from: s0.0, to: end_index] = (s0.1.left, t1)
+                        let (end_index, _, t1) = l_graph[first_index]!
+                        l_graph[first_index] = nil
+                        l_graph[s0.0] = (end_index, s0.1.left, t1)
                     } else {
-                        l_graph[from: s0.0, to: t1.0] = (s0.1.left, t1.1.left)
+                        l_graph[s0.0] = (t1.0, s0.1.left, t1.1.left)
                     }
                 }
             }
@@ -934,35 +930,9 @@ extension ConstructiveSolidResult.Table {
             }
         }
         
-        print(_r_list.map { $0.0 })
-        
-        if var s0 = _r_list.first {
-            var first_index = s0.0
-            var first_winding = false
-            var winding: Bool?
-            for (t0, t1) in _r_list.rotateZip() where !overlaps_index.contains(where: { t0.1.left.ordering(t1.1.left) ? $0 == t0.1.left.index && $1 == t0.1.right.index : $0 == t1.1.left.index && $1 == t1.1.right.index }) {
-                let point = right.bezier[t0.1.right.index].point(t0.1.right.index == t1.1.right.index ? 0.5 * (t0.1.right.split + t1.1.right.split) : 0.5 * (t0.1.right.split + 1))
-                let _winding = left.winding(point) != 0
-                print(t0.0, t1.0, _winding, s0.0, winding)
-                if winding == nil {
-                    first_index = t0.0
-                    first_winding = _winding
-                    winding = _winding
-                } else if winding != _winding {
-                    r_graph[from: s0.0, to: t0.0] = (s0.1.right, t0.1.right)
-                    winding = _winding
-                    s0 = t0
-                }
-                if t1.0 == first_index {
-                    if first_winding == _winding {
-                        let (end_index, (_, t1)) = r_graph.nodes(from: first_index).first!
-                        r_graph[from: first_index, to: end_index] = nil
-                        r_graph[from: s0.0, to: end_index] = (s0.1.right, t1)
-                    } else {
-                        r_graph[from: s0.0, to: t1.0] = (s0.1.right, t1.1.right)
-                    }
-                }
-            }
+        let _r_list = data.enumerated().sorted { $0.1.right.ordering($1.1.right) }
+        for (s0, s1) in _r_list.filter({ l_graph.keys.contains($0.0) }).rotateZip() {
+            r_graph[s0.0] = (s1.0, s0.1.right, s1.1.right)
         }
     }
 }
@@ -1051,37 +1021,31 @@ extension Shape.Component {
         }
     }
     
-    private func create_solids(_ other: Shape.Component, _ l_graph: Graph<Int, (ConstructiveSolidResult.Split, ConstructiveSolidResult.Split)>, _ r_graph: Graph<Int, (ConstructiveSolidResult.Split, ConstructiveSolidResult.Split)>) -> [ShapeRegion.Solid] {
+    private func create_solids(_ other: Shape.Component, _ l_graph: [Int: (Int, ConstructiveSolidResult.Split, ConstructiveSolidResult.Split)], _ r_graph: [Int: (Int, ConstructiveSolidResult.Split, ConstructiveSolidResult.Split)]) -> [ShapeRegion.Solid] {
         
         var result: [ShapeRegion.Solid] = []
         
         var l_graph = l_graph
         var r_graph = r_graph
         
-        print("\n\ncreate_solids")
-        print(l_graph.map { (from: $0.from, to: $0.to) })
-        print(r_graph.map { (from: $0.from, to: $0.to) })
-        
-        while let (first_from, first_to, first_splits) = l_graph.first {
+        while let (first_from, (first_to, first_s0, first_s1)) = l_graph.first {
             
-            var segments: [ShapeRegion.Solid.Segment] = self.splitPath(first_splits.0, first_splits.1)
+            var segments: [ShapeRegion.Solid.Segment] = self.splitPath(first_s0, first_s1)
             var last_idx = first_to
             var flag = true
             
-            print(first_from, first_to)
-            l_graph[from: first_from, to: first_to] = nil
+            l_graph[first_from] = nil
             
             while last_idx != first_from {
-                print(last_idx)
                 if flag {
-                    let (next, splits) = r_graph.nodes(from: last_idx).first!
-                    segments.append(contentsOf: other.splitPath(splits.0, splits.1))
-                    r_graph[from: last_idx, to: next] = nil
+                    let (next, s0, s1) = r_graph[last_idx]!
+                    segments.append(contentsOf: other.splitPath(s0, s1))
+                    r_graph[last_idx] = nil
                     last_idx = next
                 } else {
-                    let (next, splits) = l_graph.nodes(from: last_idx).first!
-                    segments.append(contentsOf: self.splitPath(splits.0, splits.1))
-                    l_graph[from: last_idx, to: next] = nil
+                    let (next, s0, s1) = l_graph[last_idx]!
+                    segments.append(contentsOf: self.splitPath(s0, s1))
+                    l_graph[last_idx] = nil
                     last_idx = next
                 }
                 flag = !flag
