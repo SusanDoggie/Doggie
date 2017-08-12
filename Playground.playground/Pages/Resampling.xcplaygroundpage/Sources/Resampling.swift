@@ -17,12 +17,14 @@ public func sampleImage(width: Int, height: Int) -> Image<ARGB32ColorPixel> {
     return context.image
 }
 
-public func resampling<Pixel>(image: Image<Pixel>, resampling: ResamplingAlgorithm) -> Image<Pixel> {
+public func resampling<Pixel>(image: Image<Pixel>, width: Int, height: Int, resampling algorithm: ResamplingAlgorithm, antialias: Bool) -> Image<Pixel> {
     
-    let context = ImageContext<Pixel>(width: image.width, height: image.height, colorSpace: image.colorSpace)
+    let context = ImageContext<Pixel>(width: width, height: height, colorSpace: image.colorSpace)
     
     context.antialias = false
     context.resamplingAlgorithm = resampling
+    
+    context.draw(image: image, transform: SDTransform.scale(x: Double(width) / Double(image.width), y: Double(height) / Double(image.height)))
     
     return context.image
 }
