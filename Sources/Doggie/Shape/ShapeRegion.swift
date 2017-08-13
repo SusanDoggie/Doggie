@@ -202,8 +202,8 @@ extension ShapeRegion.Solid {
         return cache.reversed!
     }
     
-    fileprivate func components(_ sign: FloatingPointSign) -> [Shape.Component] {
-        return [solid.area.sign == sign ? solid : solid.reversed()] + holes.components(sign == .plus ? .minus : .plus)
+    fileprivate func components(_ sign: FloatingPointSign) -> ConcatBidirectionalCollection<CollectionOfOne<Shape.Component>, [Shape.Component]> {
+        return CollectionOfOne(solid.area.sign == sign ? solid : solid.reversed()).concat(holes.components(sign == .plus ? .minus : .plus))
     }
     
     public var shape: Shape {
