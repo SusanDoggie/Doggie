@@ -112,8 +112,12 @@ extension ShapeRegion {
         return solids.reduce(0) { $0 + $1.area }
     }
     
+    fileprivate func components(_ sign: FloatingPointSign) -> [Shape.Component] {
+        return solids.flatMap { $0.components(sign) }
+    }
+    
     public var shape: Shape {
-        let _path = Shape(solids.flatMap { $0.components.enumerated().map { $1.area.sign == ($0 == 0 ? .plus : .minus) ? $1 : $1.reversed() } })
+        let _path = Shape(components(.plus))
         _path.cacheTable[ShapeCacheNonZeroRegionKey] = self
         _path.cacheTable[ShapeCacheEvenOddRegionKey] = self
         return _path
@@ -124,26 +128,28 @@ extension ShapeRegion {
     
     public struct Solid {
         
-        fileprivate let components: [Shape.Component]
+        public let solid: Shape.Component
+        public let holes: ShapeRegion
         
         fileprivate let cache: Cache
         
         public let boundary: Rect
         public let area: Double
         
-        fileprivate init<S : Sequence>(components: S) where S.Element == Shape.Component {
-            self.components = Array(components)
+        fileprivate init(solid: Shape.Component, holes: ShapeRegion = ShapeRegion()) {
+            self.solid = solid
+            self.holes = holes
             self.cache = Cache()
-            self.boundary = self.components[0].boundary
-            self.area = self.components.dropFirst().reduce(abs(self.components[0].area)) { $0 - abs($1.area) }
-        }
-        
-        fileprivate init(solid: Shape.Component) {
-            self.init(components: [solid])
+            self.boundary = solid.boundary
+            self.area = holes.reduce(abs(solid.area)) { $0 - abs($1.area) }
         }
         
         fileprivate init<S : Sequence>(solid: Shape.Component, holes: S) where S.Element == Shape.Component {
-            self.init(components: [solid] + holes)
+            self.solid = solid
+            self.holes = ShapeRegion(solids: holes.map { ShapeRegion.Solid(solid: $0) })
+            self.cache = Cache()
+            self.boundary = solid.boundary
+            self.area = holes.reduce(abs(solid.area)) { $0 - abs($1.area) }
         }
     }
 }
@@ -181,19 +187,10 @@ extension ShapeRegion.Solid {
         var reversed: ShapeRegion.Solid?
         
         var solid: ShapeRegion.Solid?
-        var holes: ShapeRegion?
     }
 }
 
 extension ShapeRegion.Solid {
-    
-    public var solid: Shape.Component {
-        return components[0]
-    }
-    
-    public var holes: ArraySlice<Shape.Component> {
-        return components.dropFirst()
-    }
     
     fileprivate var _solid: ShapeRegion.Solid {
         if cache.solid == nil {
@@ -202,30 +199,23 @@ extension ShapeRegion.Solid {
         return cache.solid!
     }
     
-    fileprivate var _holes: ShapeRegion {
-        if cache.holes == nil {
-            cache.holes = ShapeRegion(solids: self.holes.map { ShapeRegion.Solid(solid: $0) })
-        }
-        return cache.holes!
-    }
-    
     fileprivate var cacheId: ObjectIdentifier {
         return ObjectIdentifier(cache)
     }
     
     fileprivate func reversed() -> ShapeRegion.Solid {
         if cache.reversed == nil {
-            if solid.area.sign == .plus {
-                cache.reversed = ShapeRegion.Solid(components: self.components.enumerated().map { $1.area.sign == ($0 == 0 ? .minus : .plus) ? $1 : $1.reversed() })
-            } else {
-                cache.reversed = ShapeRegion.Solid(components: self.components.enumerated().map { $1.area.sign == ($0 == 0 ? .plus : .minus) ? $1 : $1.reversed() })
-            }
+            cache.reversed = ShapeRegion.Solid(solid: solid.reversed(), holes: holes)
         }
         return cache.reversed!
     }
     
+    fileprivate func components(_ sign: FloatingPointSign) -> [Shape.Component] {
+        return [solid.area.sign == sign ? solid : solid.reversed()] + holes.components(sign == .plus ? .minus : .plus)
+    }
+    
     public var shape: Shape {
-        let _path = Shape(self.components.enumerated().map { $1.area.sign == ($0 == 0 ? .plus : .minus) ? $1 : $1.reversed() })
+        let _path = Shape(components(.plus))
         _path.cacheTable[ShapeCacheNonZeroRegionKey] = ShapeRegion(solid: self)
         _path.cacheTable[ShapeCacheEvenOddRegionKey] = ShapeRegion(solid: self)
         return _path
@@ -287,9 +277,9 @@ extension ShapeRegion.Solid {
         
         if cache.union[other.cacheId] == nil && other.cache.union[cacheId] == nil {
             if let union = self.solid._union(other.solid) {
-                let a = self._holes.intersection(other._holes).solids
-                let b = self._holes.subtracting(other._solid)
-                let c = other._holes.subtracting(self._solid)
+                let a = self.holes.intersection(other.holes).solids
+                let b = self.holes.subtracting(other._solid)
+                let c = other.holes.subtracting(self._solid)
                 cache.union[other.cacheId] = (union.subtracting(ShapeRegion(solids: a.concat(b).concat(c))).solids, true)
             } else {
                 cache.union[other.cacheId] = ([self, other], false)
@@ -308,7 +298,7 @@ extension ShapeRegion.Solid {
         if cache.intersection[other.cacheId] == nil && other.cache.intersection[cacheId] == nil {
             let intersection = self.solid._intersection(other.solid)
             if intersection.count != 0 {
-                cache.intersection[other.cacheId] = intersection.subtracting(self._holes).subtracting(other._holes).solids
+                cache.intersection[other.cacheId] = intersection.subtracting(self.holes).subtracting(other.holes).solids
             } else {
                 cache.intersection[other.cacheId] = []
             }
@@ -326,11 +316,10 @@ extension ShapeRegion.Solid {
         if cache.subtracting[other.cacheId] == nil {
             let (_subtracting, superset) = self.solid._subtracting(other.solid)
             if superset {
-                let a = self._holes.union(ShapeRegion(solid: other))
-                cache.subtracting[other.cacheId] = [ShapeRegion.Solid(solid: self.solid, holes: a.solids.map { $0.solid })] + a.solids.flatMap { $0.holes.map { ShapeRegion.Solid(solid: $0) } }
+                cache.subtracting[other.cacheId] = [ShapeRegion.Solid(solid: self.solid, holes: self.holes.union(ShapeRegion(solid: other)))]
             } else if let subtracting = _subtracting {
-                let a = subtracting.concat(other._holes.intersection(self._solid))
-                cache.subtracting[other.cacheId] = self.holes.isEmpty ? Array(a) : ShapeRegion(solids: a).subtracting(self._holes).solids
+                let a = subtracting.concat(other.holes.intersection(self._solid))
+                cache.subtracting[other.cacheId] = self.holes.isEmpty ? Array(a) : ShapeRegion(solids: a).subtracting(self.holes).solids
             } else {
                 cache.subtracting[other.cacheId] = [self]
             }
@@ -607,7 +596,7 @@ extension ShapeRegion {
 }
 
 public func * (lhs: ShapeRegion, rhs: SDTransform) -> ShapeRegion {
-    return rhs.determinant.almostZero() ? ShapeRegion() : ShapeRegion(solids: lhs.solids.map { ShapeRegion.Solid(components: $0.components.map { $0 * rhs }) })
+    return rhs.determinant.almostZero() ? ShapeRegion() : ShapeRegion(solids: lhs.solids.map { ShapeRegion.Solid(solid: $0.solid * rhs, holes: $0.holes * rhs) })
 }
 public func *= (lhs: inout ShapeRegion, rhs: SDTransform) {
     lhs = lhs * rhs
@@ -896,7 +885,7 @@ extension ConstructiveSolidResult.Table {
             
             var flag = true
             
-            for (t0, t1) in _l_list.rotateZip() where !overlaps_index.contains(where: { t0.1.right.ordering(t1.1.right) ? $0 == t0.1.left.index && $1 == t0.1.right.index : $0 == t1.1.left.index && $1 == t1.1.right.index }) {
+            for (t0, t1) in _l_list.rotateZip() where !overlaps_index.contains(where: { $0 == t0.1.left.index && $1 == t0.1.right.index }) {
                 let point = left.bezier[t0.1.left.index].point(t0.1.left.index == t1.1.left.index ? 0.5 * (t0.1.left.split + t1.1.left.split) : 0.5 * (t0.1.left.split + 1))
                 let _winding = right.winding(point) != 0
                 if winding == nil {
