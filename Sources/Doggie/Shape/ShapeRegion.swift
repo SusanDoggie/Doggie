@@ -143,14 +143,6 @@ extension ShapeRegion {
             self.boundary = solid.boundary
             self.area = holes.reduce(abs(solid.area)) { $0 - abs($1.area) }
         }
-        
-        fileprivate init<S : Sequence>(solid: Shape.Component, holes: S) where S.Element == Shape.Component {
-            self.solid = solid
-            self.holes = ShapeRegion(solids: holes.map { ShapeRegion.Solid(solid: $0) })
-            self.cache = Cache()
-            self.boundary = solid.boundary
-            self.area = holes.reduce(abs(solid.area)) { $0 - abs($1.area) }
-        }
     }
 }
 
@@ -234,7 +226,7 @@ extension Shape.Component {
             case .none: return nil
             }
         case let .regions(left, right): return left.union(right)
-        case let .segments(forward, backward): return ShapeRegion(solids: forward.enumerated().flatMap { arg in forward.enumerated().contains { $0.0 != arg.0 && $0.1.solid._contains(arg.1.solid) } ? nil : ShapeRegion.Solid(solid: arg.1.solid, holes: backward.flatMap { arg.1.solid._contains($0.solid) ? $0.solid : nil }) })
+        case let .segments(forward, backward): return ShapeRegion(solids: forward.enumerated().flatMap { arg in forward.enumerated().contains { $0.0 != arg.0 && $0.1.solid._contains(arg.1.solid) } ? nil : ShapeRegion.Solid(solid: arg.1.solid, holes: ShapeRegion(solids: backward.filter { arg.1.solid._contains($0.solid) })) })
         }
     }
     fileprivate func _intersection(_ other: Shape.Component) -> ShapeRegion {
