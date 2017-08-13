@@ -213,14 +213,6 @@ extension Shape.Component.BezierCollection.Element {
         return _overlap(other)
     }
     
-    public func intersect(_ q0: Point, _ q1: Point) -> [Double]? {
-        switch self.segment {
-        case let .line(p1): return LinesIntersect(start, p1, q0, q1).flatMap { fromPoint($0) }.map { [$0] }
-        case let .quad(p1, p2): return QuadBezierLineIntersect(start, p1, p2, q0, q1)?.sorted { $0 }
-        case let .cubic(p1, p2, p3): return CubicBezierLineIntersect(start, p1, p2, p3, q0, q1)?.sorted { $0 }
-        }
-    }
-    
     public func intersect(_ other: Shape.Component.BezierCollection.Element) -> [(Double, Double)]? {
         var result: [(Double, Double)]? = nil
         switch self.segment {
