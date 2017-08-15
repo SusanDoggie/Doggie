@@ -53,6 +53,8 @@ protocol AnyColorBaseProtocol {
     func _convert<Model>(to colorSpace: ColorSpace<Model>, intent: RenderingIntent) -> Color<Model>
     
     func _convert(to colorSpace: AnyColorSpaceBaseProtocol, intent: RenderingIntent) -> AnyColorBaseProtocol
+    
+    func _draw<Model>(context: ImageContext<Model>, shape: Shape, winding: Shape.WindingRule)
 }
 
 extension Color : AnyColorBaseProtocol {
@@ -91,6 +93,12 @@ extension Color : AnyColorBaseProtocol {
     @_inlineable
     func _convert(to colorSpace: AnyColorSpaceBaseProtocol, intent: RenderingIntent) -> AnyColorBaseProtocol {
         return colorSpace._convert(self, intent: intent)
+    }
+    
+    @_versioned
+    @_inlineable
+    func _draw<Model>(context: ImageContext<Model>, shape: Shape, winding: Shape.WindingRule) {
+        context.draw(shape: shape, color: self, winding: winding)
     }
 }
 
@@ -273,6 +281,14 @@ extension AnyColor {
     @_inlineable
     public init(colorSpace: ColorSpace<CMYKColorModel>, cyan: Double, magenta: Double, yellow: Double, black: Double, opacity: Double = 1) {
         self.init(colorSpace: colorSpace, color: CMYKColorModel(cyan: cyan, magenta: magenta, yellow: yellow, black: black), opacity: opacity)
+    }
+}
+
+extension ImageContext {
+    
+    @_inlineable
+    public func draw(shape: Shape, color: AnyColor, winding: Shape.WindingRule) {
+        color._base._draw(context: self, shape: shape, winding: winding)
     }
 }
 
