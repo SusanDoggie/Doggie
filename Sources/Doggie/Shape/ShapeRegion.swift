@@ -886,7 +886,7 @@ extension ConstructiveSolidResult.Table {
             if overlaps_index.contains(where: { $0 == s0.1.left.index && $1 == s1.1.right.index }) {
                 _winding.append((s0.0, s1.0, nil))
             } else {
-                let point = left.bezier[s0.1.left.index].point(s0.1.left.index == s1.1.left.index ? 0.5 * (s0.1.left.split + s1.1.left.split) : 0.5 * (s0.1.left.split + 1))
+                let point = left.mid_point(s0.1.left, s1.1.left)
                 _winding.append((s0.0, s1.0, right.winding(point) != 0))
             }
         }
@@ -948,6 +948,18 @@ extension ConstructiveSolidResult.Split {
 }
 
 extension Shape.Component {
+    
+    fileprivate func mid_point(_ start: ConstructiveSolidResult.Split, _ end: ConstructiveSolidResult.Split) -> Point {
+        
+        if start.index == end.index {
+            if start.split < end.split {
+                return self.bezier[start.index].point(0.5 * (start.split + end.split))
+            } else {
+                return self.bezier[end.index].end
+            }
+        }
+        return self.bezier[start.index].end
+    }
     
     fileprivate func splitPath(_ start: ConstructiveSolidResult.Split, _ end: ConstructiveSolidResult.Split) -> [ShapeRegion.Solid.Segment] {
         
