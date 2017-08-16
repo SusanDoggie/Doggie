@@ -507,9 +507,9 @@ extension Shape.Component {
 
 extension Shape {
     
-    public static func Polygon(center: Point, radius: Double, side: Int) -> Shape {
-        precondition(side >= 3, "Side is less than 3")
-        let _n = 2 * Double.pi / Double(side)
+    public static func Polygon(center: Point, radius: Double, edges: Int) -> Shape {
+        precondition(edges >= 3, "Edges is less than 3")
+        let _n = 2 * Double.pi / Double(edges)
         let segments: [Shape.Segment] = (1..<side).map { .line(Point(x: center.x + radius * cos(_n * Double($0)), y: center.y + radius * sin(_n * Double($0)))) }
         return [Component(start: Point(x: center.x + radius, y: center.y), closed: true, segments: segments)]
     }
