@@ -869,45 +869,53 @@ extension ConstructiveSolidResult.Table {
         
         let _l_list = data.enumerated().sorted { $0.1.left.ordering($1.1.left) }
         
-        if var s0 = _l_list.first {
-            
-            let first_index = s0.0
-            var first_winding = false
-            var winding: Bool?
-            
-            var flag = true
-            
-            for (t0, t1) in _l_list.rotateZip() where !overlaps_index.contains(where: { $0 == t0.1.left.index && $1 == t0.1.right.index }) {
-                let point = left.bezier[t0.1.left.index].point(t0.1.left.index == t1.1.left.index ? 0.5 * (t0.1.left.split + t1.1.left.split) : 0.5 * (t0.1.left.split + 1))
-                let _winding = right.winding(point) != 0
-                if winding == nil {
-                    first_winding = _winding
-                    winding = _winding
-                } else if winding != _winding {
-                    l_graph[s0.0] = (t0.0, s0.1.left, t0.1.left)
-                    winding = _winding
-                    s0 = t0
-                    flag = false
-                }
-                if !flag && t1.0 == first_index {
-                    if first_winding == _winding {
-                        let (end_index, _, t1) = l_graph[first_index]!
-                        l_graph[first_index] = nil
-                        l_graph[s0.0] = (end_index, s0.1.left, t1)
-                    } else {
-                        l_graph[s0.0] = (t1.0, s0.1.left, t1.1.left)
-                    }
-                }
+        var _winding: [(Int, Int, Bool?)] = []
+        _winding.reserveCapacity(data.count)
+        
+        for (s0, s1) in _l_list.rotateZip() {
+            if overlaps_index.contains(where: { $0 == s0.1.left.index && $1 == s1.1.right.index }) {
+                _winding.append((s0.0, s1.0, nil))
+            } else {
+                let point = left.bezier[s0.1.left.index].point(s0.1.left.index == s1.1.left.index ? 0.5 * (s0.1.left.split + s1.1.left.split) : 0.5 * (s0.1.left.split + 1))
+                _winding.append((s0.0, s1.0, right.winding(point) != 0))
             }
+        }
+        
+        guard let check = _winding.lazy.flatMap({ $0.2 }).first, _winding.contains(where: { $0.2 != nil && $0.2 != check }) else {
             
-            if flag {
-                l_graph.removeAll()
-                if left._contains(right, hint: Set(0..<right.count).subtracting(overlap_r_index)) {
-                    overlap = .superset
-                } else if right._contains(left, hint: Set(0..<left.count).subtracting(overlap_l_index)) {
-                    overlap = .subset
-                }
-                return
+            if left._contains(right, hint: Set(0..<right.count).subtracting(overlap_r_index)) {
+                overlap = .superset
+            } else if right._contains(left, hint: Set(0..<left.count).subtracting(overlap_l_index)) {
+                overlap = .subset
+            }
+            return
+        }
+        
+        for (i, t0) in _winding.enumerated() {
+            let s0 = data[t0.0]
+            let s1 = data[t0.1]
+            if t0.2 == nil && s0.right.ordering(s1.right) {
+                _winding[i].2 = _winding.rotated(i).lazy.flatMap({ $0.2 }).first
+            }
+        }
+        
+        var begin: Int?
+        var last: Int?
+        var record: Bool?
+        for (i0, i1, winding) in _winding.rotated(_winding.index { $0.2 != _winding[0].2 }!) {
+            if begin == nil {
+                begin = i0
+                last = i0
+                record = winding
+                continue
+            }
+            if record != winding {
+                l_graph[last!] = (i0, data[last!].left, data[i0].left)
+                last = i0
+                record = winding
+            }
+            if i1 == begin {
+                l_graph[last!] = (i1, data[last!].left, data[i1].left)
             }
         }
         
