@@ -470,7 +470,7 @@ extension ShapeRegion {
     public static func Polygon(center: Point, radius: Double, edges: Int) -> ShapeRegion {
         precondition(edges >= 3, "Edges is less than 3")
         let _n = 2 * Double.pi / Double(edges)
-        let points = (0..<side).map { Point(x: center.x + radius * cos(_n * Double($0)), y: center.y + radius * sin(_n * Double($0))) }
+        let points = (0..<edges).map { Point(x: center.x + radius * cos(_n * Double($0)), y: center.y + radius * sin(_n * Double($0))) }
         return ShapeRegion(solid: ShapeRegion.Solid(segments: points.rotateZip().map { ShapeRegion.Solid.Segment($0, $1) })!)
     }
 }
