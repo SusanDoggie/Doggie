@@ -23,6 +23,8 @@
 //  THE SOFTWARE.
 //
 
+import Foundation
+
 private let ShapeCacheNonZeroRegionKey = "ShapeCacheNonZeroRegionKey"
 private let ShapeCacheEvenOddRegionKey = "ShapeCacheEvenOddRegionKey"
 private let ShapeCacheConstructiveSolidResultKey = "ShapeCacheConstructiveSolidResultKey"
