@@ -23,6 +23,8 @@
 //  THE SOFTWARE.
 //
 
+import Foundation
+
 public enum ResamplingAlgorithm {
     
     case none
