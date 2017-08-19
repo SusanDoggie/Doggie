@@ -31,7 +31,6 @@
 		08458B411E2E627600D01813 /* SDTransform.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458ADD1E2E627600D01813 /* SDTransform.swift */; };
 		08458B431E2E627600D01813 /* Vector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458ADE1E2E627600D01813 /* Vector.swift */; };
 		08458B451E2E627600D01813 /* SDTriggerNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458ADF1E2E627600D01813 /* SDTriggerNode.swift */; };
-		08458B471E2E627600D01813 /* SDMarker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AE01E2E627600D01813 /* SDMarker.swift */; };
 		08458B591E2E627600D01813 /* Atomic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AEB1E2E627600D01813 /* Atomic.swift */; };
 		08458B5B1E2E627600D01813 /* AtomicQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AEC1E2E627600D01813 /* AtomicQueue.swift */; };
 		08458B5D1E2E627600D01813 /* AtomicStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AED1E2E627600D01813 /* AtomicStack.swift */; };
@@ -149,7 +148,6 @@
 		0ABDF1AD1F2B3520007EC7B2 /* RenderingIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ABDF1AB1F2B3520007EC7B2 /* RenderingIntent.swift */; };
 		0AC527E21EEFEFF900FB239A /* iccProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AC527E01EEFEFF900FB239A /* iccProfile.swift */; };
 		0ACD21331EEBA55000C5811F /* AtomicTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AFCA14F1D9E1F130034AB10 /* AtomicTest.swift */; };
-		0ACD21361EEBA55000C5811F /* SDMarkerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A266E521D6E95C100ABE6B7 /* SDMarkerTest.swift */; };
 		0AD4D8D91EA6247200C99728 /* Maths misc.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD4D8D71EA6247200C99728 /* Maths misc.swift */; };
 		0AD7FA311EBDA86A001C9B21 /* ShapeWinding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD7FA2F1EBDA86A001C9B21 /* ShapeWinding.swift */; };
 		0AE719FB1EF50EEB0086923C /* AnyColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE719F91EF50EEB0086923C /* AnyColor.swift */; };
@@ -194,7 +192,6 @@
 		08458ADD1E2E627600D01813 /* SDTransform.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SDTransform.swift; sourceTree = "<group>"; };
 		08458ADE1E2E627600D01813 /* Vector.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Vector.swift; sourceTree = "<group>"; };
 		08458ADF1E2E627600D01813 /* SDTriggerNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SDTriggerNode.swift; sourceTree = "<group>"; };
-		08458AE01E2E627600D01813 /* SDMarker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SDMarker.swift; sourceTree = "<group>"; };
 		08458AEB1E2E627600D01813 /* Atomic.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Atomic.swift; sourceTree = "<group>"; };
 		08458AEC1E2E627600D01813 /* AtomicQueue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AtomicQueue.swift; sourceTree = "<group>"; };
 		08458AED1E2E627600D01813 /* AtomicStack.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AtomicStack.swift; sourceTree = "<group>"; };
@@ -223,7 +220,6 @@
 		0A21070C1E5BEEBB00F1E00E /* Shape.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Shape.swift; sourceTree = "<group>"; };
 		0A21F0231F061AE2009C4490 /* PixelBlender.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PixelBlender.swift; sourceTree = "<group>"; };
 		0A2406731F38109900B0EC28 /* iccNamedColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iccNamedColor.swift; sourceTree = "<group>"; };
-		0A266E521D6E95C100ABE6B7 /* SDMarkerTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SDMarkerTest.swift; sourceTree = "<group>"; };
 		0A2A643D1E5C45EE000E21BB /* PDFParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PDFParser.swift; sourceTree = "<group>"; };
 		0A32D9971F28825F0027F384 /* Tensor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tensor.swift; sourceTree = "<group>"; };
 		0A36612A1EEA54AB00216A26 /* CGPath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CGPath.swift; sourceTree = "<group>"; };
@@ -446,7 +442,6 @@
 				0A39A6B31ED9342C00804004 /* ImageContext */,
 				08458AD41E2E627600D01813 /* Maths */,
 				0A9AA83E1E54373E007A2B92 /* PDF */,
-				08458AE01E2E627600D01813 /* SDMarker.swift */,
 				08458ADF1E2E627600D01813 /* SDTriggerNode.swift */,
 				0A2107071E5BEEBB00F1E00E /* Shape */,
 				08458AEA1E2E627600D01813 /* Thread */,
@@ -523,7 +518,6 @@
 				0AFCA14F1D9E1F130034AB10 /* AtomicTest.swift */,
 				08BFF9B91B0715ED00EC88CB /* FourierTest.swift */,
 				0A8D98A21E53ED0F0050E112 /* ImageTest.swift */,
-				0A266E521D6E95C100ABE6B7 /* SDMarkerTest.swift */,
 			);
 			name = Tests;
 			path = Tests/DoggieTests;
@@ -940,7 +934,6 @@
 				08B085491E9A20720037DECE /* Algorithm.swift in Sources */,
 				0A831A901F1895200007932A /* ImageRepDecoder.swift in Sources */,
 				0A9CD58E1EEB98F300094148 /* displayP3.swift in Sources */,
-				08458B471E2E627600D01813 /* SDMarker.swift in Sources */,
 				0A92C7C51E56AB9D0090EBFC /* Data.swift in Sources */,
 				0A831A931F18952C0007932A /* ImageRepEncoder.swift in Sources */,
 				0A7A1FB21F04FC230016B3FB /* ARGB32ColorPixel.swift in Sources */,
@@ -1039,7 +1032,6 @@
 				0A92062D1F14A29E00AF5C49 /* ImageTest.swift in Sources */,
 				0ACD21331EEBA55000C5811F /* AtomicTest.swift in Sources */,
 				0A92062C1F14A1FA00AF5C49 /* FourierTest.swift in Sources */,
-				0ACD21361EEBA55000C5811F /* SDMarkerTest.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
