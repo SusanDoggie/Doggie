@@ -174,9 +174,6 @@ extension ImageContext {
             }
         }
     }
-}
-
-extension ImageContext {
     
     @_inlineable
     public var antialias: Bool {
