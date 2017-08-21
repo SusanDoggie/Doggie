@@ -29,15 +29,15 @@ import Dispatch
 open class Trigger {
     
     private let queue: DispatchQueue
-    private let block: (Trigger) -> Void
+    private let callback: (Trigger) -> Void
     private var flag: Int8
     
     public var qos: DispatchQoS
     public var flags: DispatchWorkItemFlags
     
-    public init(queue: DispatchQueue = SDDefaultDispatchQueue, qos: DispatchQoS = .unspecified, flags: DispatchWorkItemFlags = [], block: @escaping (Trigger) -> Void) {
+    public init(queue: DispatchQueue = SDDefaultDispatchQueue, qos: DispatchQoS = .unspecified, flags: DispatchWorkItemFlags = [], callback: @escaping (Trigger) -> Void) {
         self.queue = queue
-        self.block = block
+        self.callback = callback
         self.flag = 0
         self.qos = qos
         self.flags = flags
@@ -55,7 +55,7 @@ extension Trigger {
     private func dispatchRunloop() {
         while true {
             flag = 1
-            self.block(self)
+            self.callback(self)
             if flag.compareSet(old: 1, new: 0) {
                 return
             }
