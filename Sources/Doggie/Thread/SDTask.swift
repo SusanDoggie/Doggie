@@ -1,5 +1,5 @@
 //
-//  Thread.swift
+//  SDTask.swift
 //
 //  The MIT License
 //  Copyright (c) 2015 - 2017 Susan Cheng. All rights reserved.
@@ -26,8 +26,6 @@
 import Foundation
 import Dispatch
 
-// MARK: Trigger
-
 @_versioned
 let SDDefaultDispatchQueue: DispatchQueue = {
     if #available(OSX 10.12, iOS 10.0, tvOS 10.0, watchOS 3.0, *) {
@@ -36,45 +34,6 @@ let SDDefaultDispatchQueue: DispatchQueue = {
         return DispatchQueue(label: "com.SusanDoggie.Thread", attributes: .concurrent)
     }
 }()
-
-open class Trigger {
-    
-    private let queue: DispatchQueue
-    private let block: (Trigger) -> Void
-    private var flag: Int8
-    
-    public var qos: DispatchQoS
-    public var flags: DispatchWorkItemFlags
-    
-    public init(queue: DispatchQueue = SDDefaultDispatchQueue, qos: DispatchQoS = .unspecified, flags: DispatchWorkItemFlags = [], block: @escaping (Trigger) -> Void) {
-        self.queue = queue
-        self.block = block
-        self.flag = 0
-        self.qos = qos
-        self.flags = flags
-    }
-}
-
-extension Trigger {
-    
-    public func signal() {
-        if flag.fetchStore(2) == 0 {
-            queue.async(qos: qos, flags: flags, execute: dispatchRunloop)
-        }
-    }
-    
-    private func dispatchRunloop() {
-        while true {
-            flag = 1
-            self.block(self)
-            if flag.compareSet(old: 1, new: 0) {
-                return
-            }
-        }
-    }
-}
-
-// MARK: SDTask
 
 public class SDTask<Result> {
     

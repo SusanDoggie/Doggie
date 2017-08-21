@@ -1,5 +1,5 @@
 //
-//  SDTriggerNode.swift
+//  Actor.swift
 //
 //  The MIT License
 //  Copyright (c) 2015 - 2017 Susan Cheng. All rights reserved.
