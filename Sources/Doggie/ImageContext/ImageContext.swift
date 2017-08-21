@@ -23,7 +23,6 @@
 //  THE SOFTWARE.
 //
 
-@_fixed_layout
 public class ImageContext<Pixel: ColorPixelProtocol> {
     
     public private(set) var image: Image<Pixel>
@@ -58,7 +57,7 @@ public class ImageContext<Pixel: ColorPixelProtocol> {
 
 extension ImageContext {
     
-    convenience init<P>(copyStates context: ImageContext<P>, colorSpace: ColorSpace<Pixel.Model>) {
+    private convenience init<P>(copyStates context: ImageContext<P>, colorSpace: ColorSpace<Pixel.Model>) {
         self.init(width: context.width, height: context.height, colorSpace: colorSpace)
         self._antialias = context.antialias
         self._transform = context.transform
@@ -324,17 +323,14 @@ extension ImageContext {
         return next?.colorSpace ?? image.colorSpace
     }
     
-    @_inlineable
     public var width: Int {
         return image.width
     }
     
-    @_inlineable
     public var height: Int {
         return image.height
     }
     
-    @_inlineable
     public var resolution: Resolution {
         return image.resolution
     }
