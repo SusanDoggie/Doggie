@@ -63,6 +63,10 @@ ShapeRegion(square3, winding: .nonZero).subtracting(ShapeRegion(square4, winding
 ShapeRegion(square4, winding: .nonZero).subtracting(ShapeRegion(square3, winding: .nonZero))
 ShapeRegion(square3, winding: .nonZero).symmetricDifference(ShapeRegion(square4, winding: .nonZero))
 
+var square5 = ShapeRegion(square3, winding: .nonZero).union(ShapeRegion(Shape.Rectangle(x:50, y: 0, width: 100, height: 50), winding: .nonZero))
+
+square5.subtracting(ShapeRegion(square4, winding: .nonZero))
+
 let circle2 = Shape.Ellipse(x: 100, y: 100, rx: 100, ry: 100)
 let circle3 = Shape.Ellipse(x: 149, y: 100, rx: 80, ry: 80)
 let circle4 = ShapeRegion(circle2, winding: .nonZero).union(ShapeRegion(circle3, winding: .nonZero))
