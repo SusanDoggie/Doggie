@@ -56,7 +56,8 @@ public extension Lockable {
 }
 
 @discardableResult
-public func synchronized<R>(_ lcks: Lockable ... , block: () throws -> R) rethrows -> R {
+public func synchronized<S : Sequence, R>(_ lcks: S, block: () throws -> R) rethrows -> R where S.Element == Lockable {
+    let lcks = Array(lcks)
     if lcks.count > 1 {
         var waiting = 0
         while true {
@@ -80,6 +81,11 @@ public func synchronized<R>(_ lcks: Lockable ... , block: () throws -> R) rethro
         }
     }
     return try block()
+}
+
+@discardableResult
+public func synchronized<R>(_ lcks: Lockable ... , block: () throws -> R) rethrows -> R {
+    return try synchronized(lcks, block: block)
 }
 
 // MARK: Lock
