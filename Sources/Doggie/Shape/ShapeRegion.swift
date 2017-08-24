@@ -680,7 +680,7 @@ extension Shape.Component {
         
         var graph = Graph<Int, [(ConstructiveSolidResult.Split, ConstructiveSolidResult.Split)]>()
         
-        let _points = points.enumerated().flatMap { [($0.0, $0.1.0), ($0.0, $0.1.1)] }.sorted { $0.1.ordering($1.1) }
+        let _points = points.enumerated().flatMap { [($0.0, $0.1.0), ($0.0, $0.1.1)] }.sorted { $0.1 < $1.1 }
         
         for (left, right) in _points.rotateZip() {
             if left.0 == right.0 {
@@ -833,12 +833,12 @@ extension ConstructiveSolidResult.Table {
         let right_spaces = right.spaces
         
         var data: [SplitData] = []
-        var overlaps_index: [(Int, Int)] = []
         var overlap_r_index: Set<Int> = []
         var overlap_l_index: Set<Int> = []
-        for r_idx in right_spaces.search(overlap: left.boundary) {
+        var overlap_l: [ConstructiveSolidResult.Split] = []
+        for r_idx in right_spaces.search(overlap: left.boundary.inset(dx: -1e-8, dy: -1e-8)) {
             let r_segment = right.bezier[r_idx]
-            for l_idx in left_spaces.search(overlap: r_segment.boundary) {
+            for l_idx in left_spaces.search(overlap: r_segment.boundary.inset(dx: -1e-8, dy: -1e-8)) {
                 let l_segment = left.bezier[l_idx]
                 if let intersect = l_segment.intersect(r_segment) {
                     for (t1, t2) in intersect {
@@ -854,7 +854,7 @@ extension ConstructiveSolidResult.Table {
                 } else {
                     overlap_l_index.insert(l_idx)
                     overlap_r_index.insert(r_idx)
-                    overlaps_index.append((l_idx, r_idx))
+                    overlap_l.append(ConstructiveSolidResult.Split(index: l_idx, split: [r_segment.start, r_segment.end].flatMap { l_segment.fromPoint($0) }.min() ?? 0))
                 }
             }
         }
@@ -879,21 +879,20 @@ extension ConstructiveSolidResult.Table {
             return
         }
         
-        let _l_list = data.enumerated().sorted { $0.1.left.ordering($1.1.left) }
+        let _l_list = data.enumerated().sorted { $0.1.left < $1.1.left }
         
-        var _winding: [(Int, Int, Bool?)] = []
+        var _winding: [((Int, SplitData), (Int, SplitData), Bool?)] = []
         _winding.reserveCapacity(data.count)
         
         for (s0, s1) in _l_list.rotateZip() {
-            if overlaps_index.contains(where: { $0 == s0.1.left.index && $1 == s1.1.right.index }) {
-                _winding.append((s0.0, s1.0, nil))
+            if overlap_l.contains(where: { $0.almostEqual(s0.1.left) }) {
+                _winding.append((s0, s1, nil))
             } else {
-                let point = left.mid_point(s0.1.left, s1.1.left)
-                _winding.append((s0.0, s1.0, right.winding(point) != 0))
+                _winding.append((s0, s1, right.winding(left.mid_point(s0.1.left, s1.1.left)) != 0))
             }
         }
         
-        guard let check = _winding.lazy.flatMap({ $0.2 }).first, _winding.contains(where: { $0.2 != nil && $0.2 != check }) else {
+        guard let check = _winding.lazy.flatMap({ $0.2 }).first, _winding.contains(where: { $2 == nil ? $1.1.right < $0.1.right : $2 != check }) else {
             
             if left._contains(right, hint: Set(0..<right.count).subtracting(overlap_r_index)) {
                 overlap = .superset
@@ -904,9 +903,7 @@ extension ConstructiveSolidResult.Table {
         }
         
         for (i, t0) in _winding.enumerated() {
-            let s0 = data[t0.0]
-            let s1 = data[t0.1]
-            if t0.2 == nil && s0.right.ordering(s1.right) {
+            if t0.2 == nil && t0.0.1.right < t0.1.1.right {
                 _winding[i].2 = _winding.rotated(i).lazy.flatMap({ $0.2 }).first
             }
         }
@@ -914,38 +911,42 @@ extension ConstructiveSolidResult.Table {
         var begin: Int?
         var last: Int?
         var record: Bool?
-        for (i0, i1, winding) in _winding.rotated(_winding.index { $0.2 != _winding[0].2 }!) {
+        for (i0, i1, winding) in _winding.rotated(_winding.index { $0.2 != _winding[0].2 } ?? 0) {
             if begin == nil {
-                begin = i0
-                last = i0
+                begin = i0.0
+                last = i0.0
                 record = winding
                 continue
             }
             if record != winding {
-                l_graph[last!] = (i0, data[last!].left, data[i0].left)
-                last = i0
+                l_graph[last!] = (i0.0, data[last!].left, i0.1.left)
+                last = i0.0
                 record = winding
             }
-            if i1 == begin {
-                l_graph[last!] = (i1, data[last!].left, data[i1].left)
+            if i1.0 == begin {
+                l_graph[last!] = (i1.0, data[last!].left, i1.1.left)
             }
         }
         
-        let _r_list = data.enumerated().sorted { $0.1.right.ordering($1.1.right) }
+        let _r_list = data.enumerated().sorted { $0.1.right < $1.1.right }
         for (s0, s1) in _r_list.filter({ l_graph.keys.contains($0.0) }).rotateZip() {
             r_graph[s0.0] = (s1.0, s0.1.right, s1.1.right)
         }
     }
 }
 
-extension ConstructiveSolidResult.Split {
+extension ConstructiveSolidResult.Split : Comparable {
     
     fileprivate func almostEqual(_ other: ConstructiveSolidResult.Split) -> Bool {
         return self.index == other.index && self.split.almostEqual(other.split)
     }
     
-    fileprivate func ordering(_ other: ConstructiveSolidResult.Split) -> Bool {
-        return (self.index, self.split) < (other.index, other.split)
+    fileprivate static func ==(lhs: ConstructiveSolidResult.Split, rhs: ConstructiveSolidResult.Split) -> Bool {
+        return (lhs.index, lhs.split) == (rhs.index, rhs.split)
+    }
+    
+    fileprivate static func <(lhs: ConstructiveSolidResult.Split, rhs: ConstructiveSolidResult.Split) -> Bool {
+        return (lhs.index, lhs.split) < (rhs.index, rhs.split)
     }
 }
 
