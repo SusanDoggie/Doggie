@@ -921,16 +921,12 @@ extension ConstructiveSolidResult.Table {
                 continue
             }
             if record != winding {
-                if record != nil {
-                    l_graph[last!] = (i0.0, data[last!].left, i0.1.left)
-                }
+                l_graph[last!] = (i0.0, data[last!].left, i0.1.left)
                 last = i0.0
                 record = winding
             }
             if i1.0 == begin {
-                if record != nil {
-                    l_graph[last!] = (i1.0, data[last!].left, i1.1.left)
-                }
+                l_graph[last!] = (i1.0, data[last!].left, i1.1.left)
             }
         }
         
