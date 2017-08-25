@@ -1044,7 +1044,7 @@ extension Shape.Component {
         var l_graph = l_graph
         var r_graph = r_graph
         
-        while let (first_from, (first_to, first_s0, first_s1)) = l_graph.first {
+        outer: while let (first_from, (first_to, first_s0, first_s1)) = l_graph.first {
             
             var segments: [ShapeRegion.Solid.Segment] = self.splitPath(first_s0, first_s1)
             var last_idx = first_to
@@ -1059,7 +1059,7 @@ extension Shape.Component {
                         r_graph[last_idx] = nil
                         last_idx = next
                     } else {
-                        return []
+                        continue outer
                     }
                 } else {
                     if let (next, s0, s1) = l_graph[last_idx] {
@@ -1067,7 +1067,7 @@ extension Shape.Component {
                         l_graph[last_idx] = nil
                         last_idx = next
                     } else {
-                        return []
+                        continue outer
                     }
                 }
                 flag = !flag
