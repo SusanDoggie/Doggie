@@ -474,6 +474,138 @@ extension Bezier where Element == Point {
     }
 }
 
+extension Bezier where Element == Point {
+    
+    private enum BézoutElement {
+        
+        case number(Double)
+        case polynomial(Polynomial)
+        
+        var polynomial: Polynomial {
+            switch self {
+            case let .number(x): return [x]
+            case let .polynomial(x): return x
+            }
+        }
+        
+        static prefix func -(x: BézoutElement) -> BézoutElement {
+            switch x {
+            case let .number(x): return .number(-x)
+            case let .polynomial(x): return .polynomial(-x)
+            }
+        }
+        
+        static func +(lhs: BézoutElement, rhs: BézoutElement) -> BézoutElement {
+            switch lhs {
+            case let .number(lhs):
+                switch rhs {
+                case let .number(rhs): return .number(lhs + rhs)
+                case let .polynomial(rhs): return .polynomial(lhs + rhs)
+                }
+            case let .polynomial(lhs):
+                switch rhs {
+                case let .number(rhs): return .polynomial(lhs + rhs)
+                case let .polynomial(rhs): return .polynomial(lhs + rhs)
+                }
+            }
+        }
+        
+        static func -(lhs: BézoutElement, rhs: BézoutElement) -> BézoutElement {
+            switch lhs {
+            case let .number(lhs):
+                switch rhs {
+                case let .number(rhs): return .number(lhs - rhs)
+                case let .polynomial(rhs): return .polynomial(lhs - rhs)
+                }
+            case let .polynomial(lhs):
+                switch rhs {
+                case let .number(rhs): return .polynomial(lhs - rhs)
+                case let .polynomial(rhs): return .polynomial(lhs - rhs)
+                }
+            }
+        }
+        
+        static func *(lhs: BézoutElement, rhs: BézoutElement) -> BézoutElement {
+            switch lhs {
+            case let .number(lhs):
+                switch rhs {
+                case let .number(rhs): return .number(lhs * rhs)
+                case let .polynomial(rhs): return .polynomial(lhs * rhs)
+                }
+            case let .polynomial(lhs):
+                switch rhs {
+                case let .number(rhs): return .polynomial(lhs * rhs)
+                case let .polynomial(rhs): return .polynomial(lhs * rhs)
+                }
+            }
+        }
+    }
+    
+    private func _resultant(_ other: Bezier) -> Polynomial {
+        
+        let p1_x = Bezier<Double>(self.points.map { $0.x }).polynomial
+        let p1_y = Bezier<Double>(self.points.map { $0.y }).polynomial
+        let p2_x = Bezier<Double>(other.points.map { $0.x }).polynomial
+        let p2_y = Bezier<Double>(other.points.map { $0.y }).polynomial
+        
+        let u = [BézoutElement.polynomial(p1_x - p2_x[0])] + p2_x.dropFirst().map { BézoutElement.number(-$0) }
+        let v = [BézoutElement.polynomial(p1_y - p2_y[0])] + p2_y.dropFirst().map { BézoutElement.number(-$0) }
+        
+        let n = other.degree
+        var bézout: [BézoutElement] = []
+        bézout.reserveCapacity(n * n)
+        
+        for j in 1...n {
+            for i in 1...n {
+                let m = Swift.min(i, n + 1 - j)
+                var b: BézoutElement?
+                for k in 1...m {
+                    let c1 = u[j + k - 1] * v[i - k]
+                    let c2 = u[i - k] * v[j + k - 1]
+                    let c3 = c1 - c2
+                    b = b.map { $0 + c3 } ?? c3
+                }
+                bézout.append(b!)
+            }
+        }
+        
+        func det(_ n: Int, _ matrix: UnsafePointer<BézoutElement>) -> BézoutElement {
+            
+            guard n != 1 else { return matrix.pointee }
+            
+            let _n = n - 1
+            var result: BézoutElement?
+            
+            for k in 0..<n {
+                var matrix = matrix
+                let c = matrix[k]
+                var sub_matrix: [BézoutElement] = []
+                sub_matrix.reserveCapacity(_n * _n)
+                for _ in 1..<n {
+                    matrix += n
+                    for j in 0..<n where j != k {
+                        sub_matrix.append(matrix[j])
+                    }
+                }
+                let r = k & 1 == 0 ? c * det(_n, sub_matrix) : -c * det(_n, sub_matrix)
+                result = result.map { $0 + r } ?? r
+            }
+            return result!
+        }
+        
+        return det(n, bézout).polynomial
+    }
+    
+    public func overlap(_ other: Bezier) -> Bool {
+        return _resultant(other).all(where: { $0.almostZero() })
+    }
+    
+    public func intersect(_ other: Bezier) -> [Double]? {
+        let resultant = _resultant(other)
+        return resultant.all(where: { $0.almostZero() }) ? nil : resultant.roots
+    }
+}
+
 extension Bezier : ScalarMultiplicative {
     
     public typealias Scalar = Double
@@ -1203,7 +1335,7 @@ public func BezierArc(_ angle: Double) -> [Point] {
     return angle.sign == .minus ? result.map { Point(x: $0.x, y: -$0.y) } : result
 }
 
-// MARK: Path Intersection
+// MARK: Self Intersection
 
 @_inlineable
 public func CubicBezierSelfIntersect(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point) -> (Double, Double)? {
@@ -1493,3 +1625,4 @@ public func CubicBeziersIntersect(_ c0: Point, _ c1: Point, _ c2: Point, _ c3: P
     let det = _d + _e + _f
     return det.all(where: { $0.almostZero() }) ? nil : det.roots
 }
+
