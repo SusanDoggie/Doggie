@@ -838,7 +838,7 @@ extension ConstructiveSolidResult.Table {
         var overlap_l: [(ConstructiveSolidResult.Split, Bool)] = []
         for r_idx in right_spaces.search(overlap: left.boundary.inset(dx: -1e-8, dy: -1e-8)) {
             let r_segment = right.bezier[r_idx]
-            for l_idx in left_spaces.search(overlap: r_segment.boundary.inset(dx: -1e-8, dy: -1e-8)) {
+            for l_idx in left_spaces.search(overlap: right_spaces[r_idx].inset(dx: -1e-8, dy: -1e-8)) {
                 let l_segment = left.bezier[l_idx]
                 if let intersect = l_segment.intersect(r_segment) {
                     for (t1, t2) in intersect {
@@ -1001,7 +1001,7 @@ extension Shape.Component {
     
     fileprivate func _contains(_ other: Shape.Component, hint: Set<Int> = []) -> Bool {
         
-        if !self.boundary.contains(other.boundary) {
+        if !self.boundary.isIntersect(other.boundary) {
             return false
         }
         if abs(self.area) < abs(other.area) {
@@ -1016,7 +1016,7 @@ extension Shape.Component {
         let other_spaces = other.spaces
         
         for index in 0..<other.count {
-            let overlap = self_spaces.search(overlap: other_spaces[index])
+            let overlap = self_spaces.search(overlap: other_spaces[index].inset(dx: -1e-8, dy: -1e-8))
             if overlap.all(where: { !self.bezier[$0].overlap(other.bezier[index]) }) {
                 return self.winding(other.bezier[index].point(0.5)) != 0
             }
