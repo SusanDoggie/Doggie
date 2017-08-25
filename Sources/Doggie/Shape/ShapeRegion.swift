@@ -1054,15 +1054,21 @@ extension Shape.Component {
             
             while last_idx != first_from {
                 if flag {
-                    let (next, s0, s1) = r_graph[last_idx]!
-                    segments.append(contentsOf: other.splitPath(s0, s1))
-                    r_graph[last_idx] = nil
-                    last_idx = next
+                    if let (next, s0, s1) = r_graph[last_idx] {
+                        segments.append(contentsOf: other.splitPath(s0, s1))
+                        r_graph[last_idx] = nil
+                        last_idx = next
+                    } else {
+                        return []
+                    }
                 } else {
-                    let (next, s0, s1) = l_graph[last_idx]!
-                    segments.append(contentsOf: self.splitPath(s0, s1))
-                    l_graph[last_idx] = nil
-                    last_idx = next
+                    if let (next, s0, s1) = l_graph[last_idx] {
+                        segments.append(contentsOf: self.splitPath(s0, s1))
+                        l_graph[last_idx] = nil
+                        last_idx = next
+                    } else {
+                        return []
+                    }
                 }
                 flag = !flag
             }
