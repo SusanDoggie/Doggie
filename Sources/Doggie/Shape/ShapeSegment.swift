@@ -125,39 +125,22 @@ extension Shape.Component.BezierCollection.Element {
     
     private func _overlap(_ other: Shape.Component.BezierCollection.Element) -> Bool {
         
+        guard !self.start.almostEqual(self.end) else { return false }
+        guard !other.start.almostEqual(other.end) else { return false }
+        
         let check_1 = self.fromPoint(other.start)
         let check_2 = self.fromPoint(other.end)
         let check_3 = other.fromPoint(self.start)
         let check_4 = other.fromPoint(self.end)
-        if check_1 == 0 {
-            if check_2 != nil && check_2 != 0 { return true }
-            if check_4 != nil && check_4 != 0 { return true }
-        } else if check_2 == 0 {
-            if check_1 != nil && check_1 != 0 { return true }
-            if check_4 != nil && check_4 != 1 { return true }
-        } else if check_3 == 0 {
-            if check_4 != nil && check_4 != 0 { return true }
-            if check_2 != nil && check_2 != 0 { return true }
-        } else if check_4 == 0 {
-            if check_3 != nil && check_3 != 0 { return true }
-            if check_2 != nil && check_2 != 1 { return true }
-        } else if check_1 == 1 {
-            if check_2 != nil && check_2 != 1 { return true }
-            if check_3 != nil && check_3 != 0 { return true }
-        } else if check_2 == 1 {
-            if check_1 != nil && check_1 != 1 { return true }
-            if check_3 != nil && check_3 != 1 { return true }
-        } else if check_3 == 1 {
-            if check_4 != nil && check_4 != 1 { return true }
-            if check_1 != nil && check_1 != 0 { return true }
-        } else if check_4 == 1 {
-            if check_3 != nil && check_3 != 1 { return true }
-            if check_1 != nil && check_1 != 1 { return true }
-        } else if check_1 != nil && check_2 != nil && check_3 == nil && check_4 == nil { return true
-        } else if check_1 == nil && check_2 == nil && check_3 != nil && check_4 != nil { return true
-        }
         
-        return false
+        var counter = 0
+        
+        if check_1 != nil { counter += 1 }
+        if check_2 != nil { counter += 1 }
+        if check_3 != nil { counter += 1 }
+        if check_4 != nil { counter += 1 }
+        
+        return check_1 == 0 || check_1 == 1 || check_2 == 0 || check_2 == 1 || check_3 == 0 || check_3 == 1 || check_4 == 0 || check_4 == 1 ? counter > 2 : counter == 2
     }
     
     public func overlap(_ other: Shape.Component.BezierCollection.Element) -> Bool {
