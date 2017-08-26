@@ -39,7 +39,7 @@ context.draw(shape: ellipse1.strokePath(width: 1, cap: .round, join: .round), co
 context.draw(shape: ellipse2, color: red, winding: .nonZero)
 context.draw(shape: ellipse2.strokePath(width: 1, cap: .round, join: .round), color: black, winding: .nonZero)
         
-let image = context.image
+let image: Image<ARGB32ColorPixel> = context.image
 ```
 
 ## Supporting
