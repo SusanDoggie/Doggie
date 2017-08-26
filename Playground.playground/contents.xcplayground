@@ -2,8 +2,8 @@
 <playground version='6.0' target-platform='macos'>
     <pages>
         <page name='Benchmark'/>
-        <page name='Bézout'/>
         <page name='Doggie'/>
+        <page name='Random'/>
         <page name='Polynomial'/>
         <page name='3D Cube'/>
         <page name='Blending'/>
@@ -22,5 +22,6 @@
         <page name='TensorPatchView'/>
         <page name='Textured Cube'/>
         <page name='Triangle'/>
+        <page name='Bezier Intersection'/>
     </pages>
 </playground>

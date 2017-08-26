@@ -25,65 +25,35 @@
 
 import Foundation
 
-public class RandomGenerator {
-    
-    private let rand_file: Int32
-    
-    fileprivate init(source: String) {
-        rand_file = open(source, O_RDONLY)
-    }
-    
-    deinit {
-        close(rand_file)
-    }
-    
-    public func read(_ buffer: UnsafeMutableRawPointer, size: Int) {
-        let buffer = buffer.assumingMemoryBound(to: UInt8.self)
-        var read_bytes = 0
-        while read_bytes < size {
-            let r = Foundation.read(rand_file, buffer + read_bytes, size - read_bytes)
-            if r > 0 {
-                read_bytes += r
-            }
-        }
-    }
-}
-
-public let _dev_random = RandomGenerator(source: "/dev/random")
-public let _dev_urandom = RandomGenerator(source: "/dev/urandom")
-
+@_versioned
 @_inlineable
-public func sec_random_uniform<T : FixedWidthInteger>(_ bound: T) -> T {
-    let RANDMAX: T = ~0
+func _random_uniform<T : FixedWidthInteger>(_ path: UnsafePointer<CChar>, _ bound: T) -> T {
+    let fd = open(path, O_RDONLY)
+    defer { close(fd) }
     var _rand: T = 0
-    _dev_random.read(&_rand, size: T.bitWidth)
+    Foundation.read(fd, &_rand, T.bitWidth)
+    _rand &= T.max
     if bound.isPower2 {
         _rand &= bound &- 1
     } else {
-        let limit = RANDMAX - RANDMAX % bound
+        let limit = T.max - T.max % bound
         while _rand >= limit {
-            _dev_random.read(&_rand, size: T.bitWidth)
+            Foundation.read(fd, &_rand, T.bitWidth)
+            _rand &= T.max
         }
         _rand %= bound
     }
     return _rand
+}
+
+@_inlineable
+public func sec_random_uniform<T : FixedWidthInteger>(_ bound: T) -> T {
+    return _random_uniform("/dev/random", bound)
 }
 
 @_inlineable
 public func random_uniform<T : FixedWidthInteger>(_ bound: T) -> T {
-    let RANDMAX: T = ~0
-    var _rand: T = 0
-    _dev_urandom.read(&_rand, size: T.bitWidth)
-    if bound.isPower2 {
-        _rand &= bound &- 1
-    } else {
-        let limit = RANDMAX - RANDMAX % bound
-        while _rand >= limit {
-            _dev_urandom.read(&_rand, size: T.bitWidth)
-        }
-        _rand %= bound
-    }
-    return _rand
+    return _random_uniform("/dev/urandom", bound)
 }
 
 extension BinaryFloatingPoint where RawSignificand : FixedWidthInteger, RawSignificand.Stride : SignedInteger & FixedWidthInteger {
