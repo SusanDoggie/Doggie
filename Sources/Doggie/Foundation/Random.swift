@@ -25,10 +25,9 @@
 
 import Foundation
 
-@_versioned
 @_inlineable
-func _random_uniform<T : FixedWidthInteger>(_ path: UnsafePointer<CChar>, _ bound: T) -> T {
-    let fd = open(path, O_RDONLY)
+public func random_uniform<T : FixedWidthInteger>(_ bound: T) -> T {
+    let fd = open("/dev/urandom", O_RDONLY)
     defer { close(fd) }
     var _rand: T = 0
     Foundation.read(fd, &_rand, T.bitWidth)
@@ -44,16 +43,6 @@ func _random_uniform<T : FixedWidthInteger>(_ path: UnsafePointer<CChar>, _ boun
         _rand %= bound
     }
     return _rand
-}
-
-@_inlineable
-public func sec_random_uniform<T : FixedWidthInteger>(_ bound: T) -> T {
-    return _random_uniform("/dev/random", bound)
-}
-
-@_inlineable
-public func random_uniform<T : FixedWidthInteger>(_ bound: T) -> T {
-    return _random_uniform("/dev/urandom", bound)
 }
 
 extension BinaryFloatingPoint where RawSignificand : FixedWidthInteger, RawSignificand.Stride : SignedInteger & FixedWidthInteger {
