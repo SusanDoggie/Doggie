@@ -119,6 +119,10 @@ Log(n) | vDSP - vDSP_fft_zopD | Doggie - Radix2CooleyTukey
 19 | 0.0501573 | 0.0610655
 20 | 0.1102911 | 0.1287243
 
+## Supporting
+
+<a href='https://pledgie.com/campaigns/34662'><img alt='Click here to lend your support to: Doggie - Swift Foundation Library and make a donation at pledgie.com !' src='https://pledgie.com/campaigns/34662.png?skin_name=chrome' border='0' ></a>
+
 ## License
 
 Doggie is licensed under the [MIT license](LICENSE).
