@@ -13,12 +13,29 @@ Doggie is a foundational support library for Apple's swift. It includes Function
 - complex number
 - [polynomial](Documents/Polynomial.md)
 - [color and color space](Documents/Color.md)
-- [shape](Documents/Shape.md)
+- [shape and boolean operation](Documents/Shape.md)
 ```swift
 let path = try SDPath(code: "M100 0c0-100-236.60 36.60-150 86.60S36.60-136.60-50-86.60 100 100 100 0z")
 ```
 - [image](Documents/Image.md)
+```swift
+let imageRep = try ImageRep(data: imageData)
+let image = AnyImage(imageRep)
+```
 - [graphics](Documents/ImageContext.md)
+```swift
+let context = ImageContext<ARGB32ColorPixel>(width: 100, height: 100, colorSpace: ColorSpace.sRGB)
+
+context.draw(shape: Shape.Ellipse(Rect(x: 10, y: 35, width: 55, height: 55)), color: Color(colorSpace: ColorSpace.sRGB, color: RGBColorModel(red: 247/255, green: 217/255, blue: 12/255)), winding: .nonZero)
+
+context.draw(shape: Shape.Ellipse(Rect(x: 10, y: 35, width: 55, height: 55)).strokePath(width: 1, cap: .round, join: .round), color: Color(colorSpace: ColorSpace.sRGB, color: RGBColorModel()), winding: .nonZero)
+
+context.draw(shape: Shape.Ellipse(Rect(x: 35, y: 10, width: 55, height: 55)), color: Color(colorSpace: ColorSpace.sRGB, color: RGBColorModel(red: 234/255, green: 24/255, blue: 71/255)), winding: .nonZero)
+
+context.draw(shape: Shape.Ellipse(Rect(x: 35, y: 10, width: 55, height: 55)).strokePath(width: 1, cap: .round, join: .round), color: Color(colorSpace: ColorSpace.sRGB, color: RGBColorModel()), winding: .nonZero)
+        
+let image = context.image
+```
 
 ## Supporting
 
