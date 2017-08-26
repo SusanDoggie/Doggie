@@ -78,6 +78,12 @@ let image: Image<ARGB32ColorPixel> = context.image
 - [x] png
 - [x] tiff
 
+### Fonts (planned)
+- [ ] OpenType
+- [ ] TrueType
+- [ ] WOFF
+- [ ] WOFF2
+
 ## Supporting
 
 <a href='https://pledgie.com/campaigns/34662'><img alt='Click here to lend your support to: Doggie - Swift Foundation Library and make a donation at pledgie.com !' src='https://pledgie.com/campaigns/34662.png?skin_name=chrome' border='0' ></a>
