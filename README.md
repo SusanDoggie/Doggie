@@ -16,6 +16,18 @@ Doggie is a foundational support library for Apple's swift. It includes Function
 - [shape and boolean operation](Documents/Shape.md)
 ```swift
 let path = try SDPath(code: "M100 0c0-100-236.60 36.60-150 86.60S36.60-136.60-50-86.60 100 100 100 0z")
+
+let region = ShapeRegion(path, winding: .nonZero)
+let ellipse = ShapeRegion.Ellipse(path.boundary)
+
+region.union(ellipse)
+
+region.intersection(ellipse)
+
+region.subtracting(ellipse)
+ellipse.subtracting(region)
+
+region.symmetricDifference(ellipse)
 ```
 - [image](Documents/Image.md)
 ```swift
