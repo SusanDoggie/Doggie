@@ -49,14 +49,13 @@ extension BinaryFloatingPoint where RawSignificand : FixedWidthInteger, RawSigni
     
     @_inlineable
     public static func random(includeOne: Bool = false) -> Self {
-        let significandBitCount = Self.significandBitCount
-        let exponentBitPattern: RawSignificand = numericCast((1 as Self).exponentBitPattern) << significandBitCount
+        let exponentBitPattern = RawSignificand((1 as Self).exponentBitPattern) << significandBitCount
         let maxsignificand: RawSignificand = 1 << significandBitCount
         let rand = includeOne ? (0...maxsignificand).random()! : (0..<maxsignificand).random()!
         let pattern = exponentBitPattern + rand
         let exponent = pattern >> significandBitCount
         let significand = pattern & (maxsignificand - 1)
-        return Self(sign: .plus, exponentBitPattern: numericCast(exponent), significandBitPattern: numericCast(significand)) - 1
+        return Self(sign: .plus, exponentBitPattern: RawExponent(exponent), significandBitPattern: RawSignificand(significand)) - 1
     }
 }
 
