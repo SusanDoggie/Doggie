@@ -10,6 +10,7 @@ Doggie is a foundational support library for Apple's swift. It includes Function
 
 ## Features
 
+- complex number
 - [polynomial](Documents/Polynomial.md)
 - [color and color space](Documents/Color.md)
 - [shape](Documents/Shape.md)
@@ -18,7 +19,6 @@ let path = try SDPath(code: "M100 0c0-100-236.60 36.60-150 86.60S36.60-136.60-50
 ```
 - [image](Documents/Image.md)
 - [graphics](Documents/ImageContext.md)
-- atomic and lockable class (threading)
 
 ## Supporting
 
