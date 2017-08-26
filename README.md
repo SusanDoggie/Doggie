@@ -54,6 +54,30 @@ context.draw(shape: ellipse2.strokePath(width: 1, cap: .round, join: .round), co
 let image: Image<ARGB32ColorPixel> = context.image
 ```
 
+## Status
+
+### ColorSpace
+- [x] ICC
+- [x] CIEXYZ
+- [x] CIELab
+- [x] CIELuv
+- [x] Calibrated Gray
+- [x] Calibrated RGB
+
+### ColorSpace Rendering Intent
+- [ ] perceptual
+- [ ] saturation
+- [x] absolute colorimetric
+- [x] relative colorimetric
+
+### ImageRep
+- [x] bmp
+- [ ] gif
+- [ ] jpeg
+- [ ] jpeg2000
+- [x] png
+- [x] tiff
+
 ## Supporting
 
 <a href='https://pledgie.com/campaigns/34662'><img alt='Click here to lend your support to: Doggie - Swift Foundation Library and make a donation at pledgie.com !' src='https://pledgie.com/campaigns/34662.png?skin_name=chrome' border='0' ></a>
