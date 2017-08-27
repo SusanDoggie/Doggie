@@ -24,6 +24,7 @@
 //
 
 import Foundation
+import Dispatch
 
 @_versioned
 @_fixed_layout

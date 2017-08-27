@@ -24,7 +24,6 @@
 //
 
 import Foundation
-import Dispatch
 
 extension Shape {
     
@@ -36,7 +35,7 @@ extension Shape {
 }
 
 @inline(__always)
-private func _cubic(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point, operation: (Shape.RenderOperation) -> Void) {
+private func _cubic(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point, operation: (Shape.RenderOperation) throws -> Void) rethrows {
     
     let q1 = 3 * (p1 - p0)
     let q2 = 3 * (p2 + p0) - 6 * p1
@@ -51,7 +50,7 @@ private func _cubic(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point, operatio
     let area = Bezier(p0, p1, p2, p3).area + Bezier(p3, p0).area
     
     @inline(__always)
-    func draw(_ k0: Vector, _ k1: Vector, _ k2: Vector, _ k3: Vector, operation: (Shape.RenderOperation) -> Void) {
+    func draw(_ k0: Vector, _ k1: Vector, _ k2: Vector, _ k3: Vector, operation: (Shape.RenderOperation) throws -> Void) rethrows {
         
         var v0 = k0
         var v1 = k0 + k1 / 3
@@ -69,8 +68,8 @@ private func _cubic(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point, operatio
             v3.y = -v3.y
         }
         
-        operation(.cubic(p0, p1, p2, v0, v1, v2))
-        operation(.cubic(p0, p2, p3, v0, v2, v3))
+        try operation(.cubic(p0, p1, p2, v0, v1, v2))
+        try operation(.cubic(p0, p2, p3, v0, v2, v3))
     }
     
     if d1.almostZero() {
@@ -78,7 +77,7 @@ private func _cubic(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point, operatio
         if d2.almostZero() {
             
             if !d3.almostZero(), let intersect = LinesIntersect(p0, p1, p2, p3) {
-                operation(.quadratic(p0, intersect, p3))
+                try operation(.quadratic(p0, intersect, p3))
             }
         } else {
             
@@ -95,7 +94,7 @@ private func _cubic(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point, operatio
             let k2 = Vector(x: 0, y: 3 * sl2 * tl, z: 0)
             let k3 = Vector(x: 0, y: -sl2 * sl, z: 0)
             
-            draw(k0, k1, k2, k3, operation: operation)
+            try draw(k0, k1, k2, k3, operation: operation)
         }
         
     } else {
@@ -132,7 +131,7 @@ private func _cubic(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point, operatio
                 k3.y = -k3.y
             }
             
-            draw(k0, k1, k2, k3, operation: operation)
+            try draw(k0, k1, k2, k3, operation: operation)
             
         } else {
             
@@ -167,17 +166,17 @@ private func _cubic(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point, operatio
                 k3.y = -k3.y
             }
             
-            draw(k0, k1, k2, k3, operation: operation)
+            try draw(k0, k1, k2, k3, operation: operation)
         }
     }
 }
 
 extension Shape.Component {
     
-    public func render(_ operation: (Shape.RenderOperation) -> Void) {
+    public func render(_ operation: (Shape.RenderOperation) throws -> Void) rethrows {
         
         @inline(__always)
-        func drawCubic(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point, operation: (Shape.RenderOperation) -> Void) {
+        func drawCubic(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point, operation: (Shape.RenderOperation) throws -> Void) rethrows {
             
             let bezier = Bezier(p0, p1, p2, p3)
             
@@ -187,17 +186,15 @@ extension Shape.Component {
                 
                 if split_t.count == 0 {
                     
-                    _cubic(p0, p1, p2, p3, operation: operation)
+                    try _cubic(p0, p1, p2, p3, operation: operation)
                     
                 } else {
                     
                     let beziers = bezier.split(split_t)
                     
-                    operation(.triangle(p0, beziers.last![0], beziers.last![3]))
+                    try operation(.triangle(p0, beziers.last![0], beziers.last![3]))
                     
-                    beziers.forEach {
-                        _cubic($0[0], $0[1], $0[2], $0[3], operation: operation)
-                    }
+                    try beziers.forEach { try _cubic($0[0], $0[1], $0[2], $0[3], operation: operation) }
                 }
                 
             } else {
@@ -206,7 +203,7 @@ extension Shape.Component {
                 
                 if inflection.count == 0 {
                     
-                    _cubic(p0, p1, p2, p3, operation: operation)
+                    try _cubic(p0, p1, p2, p3, operation: operation)
                     
                 } else {
                     
@@ -214,9 +211,9 @@ extension Shape.Component {
                     
                     for b in bezier.split(inflection) {
                         if let last = last {
-                            operation(.triangle(p0, last, b[3]))
+                            try operation(.triangle(p0, last, b[3]))
                         }
-                        _cubic(b[0], b[1], b[2], b[3], operation: operation)
+                        try _cubic(b[0], b[1], b[2], b[3], operation: operation)
                         last = b[3]
                     }
                 }
@@ -230,24 +227,24 @@ extension Shape.Component {
             switch first {
             case let .line(q1): last = q1
             case let .quad(q1, q2):
-                operation(.quadratic(last, q1, q2))
+                try operation(.quadratic(last, q1, q2))
                 last = q2
             case let .cubic(q1, q2, q3):
-                drawCubic(last, q1, q2, q3, operation: operation)
+                try drawCubic(last, q1, q2, q3, operation: operation)
                 last = q3
             }
             for segment in self.dropFirst() {
                 switch segment {
                 case let .line(q1):
-                    operation(.triangle(self.start, last, q1))
+                    try operation(.triangle(self.start, last, q1))
                     last = q1
                 case let .quad(q1, q2):
-                    operation(.triangle(self.start, last, q2))
-                    operation(.quadratic(last, q1, q2))
+                    try operation(.triangle(self.start, last, q2))
+                    try operation(.quadratic(last, q1, q2))
                     last = q2
                 case let .cubic(q1, q2, q3):
-                    operation(.triangle(self.start, last, q3))
-                    drawCubic(last, q1, q2, q3, operation: operation)
+                    try operation(.triangle(self.start, last, q3))
+                    try drawCubic(last, q1, q2, q3, operation: operation)
                     last = q3
                 }
             }
@@ -258,10 +255,10 @@ extension Shape.Component {
 extension Shape {
     
     @_inlineable
-    public func render(_ operation: (Shape.RenderOperation) -> Void) {
-        
+    public func render(_ operation: (Shape.RenderOperation) throws -> Void) rethrows {
         for component in self {
-            component.render(operation)
+            try component.render(operation)
         }
     }
 }
+
