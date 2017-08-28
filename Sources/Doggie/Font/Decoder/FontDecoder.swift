@@ -25,7 +25,7 @@
 
 import Foundation
 
-protocol FontDecoder : FontBase {
+protocol FontDecoder : FontFamilyBase {
     
     init?(data: Data) throws
 }

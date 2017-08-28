@@ -25,13 +25,19 @@
 
 import Foundation
 
-protocol FontBase {
+protocol FontFamilyBase {
+    
+    // var faces: [FontFaceBase] { get }
+}
+
+protocol FontFaceBase {
     
 }
 
 public struct Font {
     
-    private let base: FontBase
+    private let family: FontFamilyBase
+    // private let face: FontFaceBase
 }
 
 extension Font {
@@ -54,7 +60,7 @@ extension Font {
         
         for Decoder in decoders {
             if let decoder = try Decoder.init(data: Data(data)) {
-                self.base = decoder
+                self.family = decoder
                 return
             }
         }
