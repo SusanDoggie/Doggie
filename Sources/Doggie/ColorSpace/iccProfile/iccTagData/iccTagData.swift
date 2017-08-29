@@ -114,32 +114,28 @@ extension iccProfile.TagData {
 extension iccProfile.TagData {
     
     var multiLocalizedUnicode: iccMultiLocalizedUnicode? {
-        var data = self.rawData
-        return type == .multiLocalizedUnicode ? try? iccMultiLocalizedUnicode(from: &data) : nil
+        return type == .multiLocalizedUnicode ? try? iccMultiLocalizedUnicode(self.rawData) : nil
     }
 }
 
 extension iccProfile.TagData {
     
     var curve: iccCurve? {
-        var data = self.rawData
-        return type == .curve || type == .parametricCurve ? try? iccCurve(from: &data) : nil
+        return type == .curve || type == .parametricCurve ? try? iccCurve(self.rawData) : nil
     }
 }
 
 extension iccProfile.TagData {
     
     var namedColor: iccNamedColor? {
-        var data = self.rawData
-        return type == .namedColor2 ? try? iccNamedColor(from: &data) : nil
+        return type == .namedColor2 ? try? iccNamedColor(self.rawData) : nil
     }
 }
 
 extension iccProfile.TagData {
     
     var transform: iccTransform? {
-        var data = self.rawData
-        return type == .lut8 || type == .lut16 || type == .lutAtoB || type == .lutBtoA ? try? iccTransform(from: &data) : nil
+        return type == .lut8 || type == .lut16 || type == .lutAtoB || type == .lutBtoA ? try? iccTransform(self.rawData) : nil
     }
 }
 
@@ -154,8 +150,7 @@ extension iccProfile.TagData {
 extension iccProfile.TagData {
     
     var textDescription: iccTextDescription? {
-        var data = self.rawData
-        return type == .textDescription ? try? iccTextDescription(from: &data) : nil
+        return type == .textDescription ? try? iccTextDescription(self.rawData) : nil
     }
 }
 
