@@ -81,7 +81,6 @@
 		0A53E4791E35AEF80060FB83 /* Parallel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A53E45A1E35AEF80060FB83 /* Parallel.swift */; };
 		0A53E47B1E35AEF80060FB83 /* Random.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A53E45B1E35AEF80060FB83 /* Random.swift */; };
 		0A53E47D1E35AEF80060FB83 /* Regex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A53E45C1E35AEF80060FB83 /* Regex.swift */; };
-		0A53E47F1E35AEF80060FB83 /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A53E45D1E35AEF80060FB83 /* String.swift */; };
 		0A56E9111E35F02E00D93786 /* RectCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A56E90F1E35F02E00D93786 /* RectCollection.swift */; };
 		0A6CDDA81E61738A009DDEEB /* PDFPredictor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A6CDDA61E61738A009DDEEB /* PDFPredictor.swift */; };
 		0A72EF151F54FD2C00F0550A /* TTFHead.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A72EF141F54FD2C00F0550A /* TTFHead.swift */; };
@@ -252,7 +251,6 @@
 		0A53E45A1E35AEF80060FB83 /* Parallel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Parallel.swift; sourceTree = "<group>"; };
 		0A53E45B1E35AEF80060FB83 /* Random.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Random.swift; sourceTree = "<group>"; };
 		0A53E45C1E35AEF80060FB83 /* Regex.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Regex.swift; sourceTree = "<group>"; };
-		0A53E45D1E35AEF80060FB83 /* String.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = String.swift; sourceTree = "<group>"; };
 		0A56E90F1E35F02E00D93786 /* RectCollection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RectCollection.swift; sourceTree = "<group>"; };
 		0A6CDDA61E61738A009DDEEB /* PDFPredictor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PDFPredictor.swift; sourceTree = "<group>"; };
 		0A72EF141F54FD2C00F0550A /* TTFHead.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TTFHead.swift; sourceTree = "<group>"; };
@@ -388,7 +386,6 @@
 				0A53E45A1E35AEF80060FB83 /* Parallel.swift */,
 				0A53E45B1E35AEF80060FB83 /* Random.swift */,
 				0A53E45C1E35AEF80060FB83 /* Regex.swift */,
-				0A53E45D1E35AEF80060FB83 /* String.swift */,
 			);
 			path = Foundation;
 			sourceTree = "<group>";
@@ -1049,7 +1046,6 @@
 				0A0697591E4D6659005CF664 /* Graphic.swift in Sources */,
 				0A89938E1EFA488900E9CDD9 /* ICC Creator.swift in Sources */,
 				08458B391E2E627600D01813 /* Matrix.swift in Sources */,
-				0A53E47F1E35AEF80060FB83 /* String.swift in Sources */,
 				0A92063B1F14C83A00AF5C49 /* PNGDecoder.swift in Sources */,
 				0A53E4691E35AEF80060FB83 /* Hashable.swift in Sources */,
 				0A9CD58F1EEB9A2700094148 /* CIELabColorSpace.swift in Sources */,
