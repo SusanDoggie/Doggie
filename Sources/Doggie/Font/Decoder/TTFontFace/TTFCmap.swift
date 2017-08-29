@@ -186,9 +186,31 @@ extension TTFCmap {
             self.groups = data.popFirst(Int(nGroups))
         }
         
-        subscript(code: UInt32) -> Int {
+        func search(_ code: UInt32, _ groups: UnsafePointer<Group>, _ range: CountableRange<Int>) -> Int {
             
-            return 0
+            guard range.count != 0 else { return 0 }
+            
+            if range.count == 1 {
+                
+                let startCharCode = UInt32(groups[range.startIndex].startCharCode)
+                let endCharCode = UInt32(groups[range.startIndex].endCharCode)
+                return startCharCode...endCharCode ~= code ? Int(code - startCharCode) + Int(groups[range.startIndex].startGlyphCode) : 0
+                
+            } else {
+                
+                let mid = range.count >> 1
+                
+                let startCharCode = UInt32(groups[range.startIndex + mid].startCharCode)
+                let endCharCode = UInt32(groups[range.startIndex + mid].endCharCode)
+                if startCharCode...endCharCode ~= code {
+                    return Int(code - startCharCode) + Int(groups[range.startIndex].startGlyphCode)
+                }
+                return code < startCharCode ? search(code, groups, range.prefix(upTo: mid)) : search(code, groups, range.suffix(from: mid).dropFirst())
+            }
+        }
+        
+        subscript(code: UInt32) -> Int {
+            return groups.withUnsafeBytes { search(code, $0, 0..<Int(self.nGroups)) }
         }
     }
     
@@ -209,9 +231,31 @@ extension TTFCmap {
             self.groups = data.popFirst(Int(nGroups))
         }
         
-        subscript(code: UInt32) -> Int {
+        func search(_ code: UInt32, _ groups: UnsafePointer<Group>, _ range: CountableRange<Int>) -> Int {
             
-            return 0
+            guard range.count != 0 else { return 0 }
+            
+            if range.count == 1 {
+                
+                let startCharCode = UInt32(groups[range.startIndex].startCharCode)
+                let endCharCode = UInt32(groups[range.startIndex].endCharCode)
+                return startCharCode...endCharCode ~= code ? Int(groups[range.startIndex].startGlyphCode) : 0
+                
+            } else {
+                
+                let mid = range.count >> 1
+                
+                let startCharCode = UInt32(groups[range.startIndex + mid].startCharCode)
+                let endCharCode = UInt32(groups[range.startIndex + mid].endCharCode)
+                if startCharCode...endCharCode ~= code {
+                    return Int(groups[range.startIndex].startGlyphCode)
+                }
+                return code < startCharCode ? search(code, groups, range.prefix(upTo: mid)) : search(code, groups, range.suffix(from: mid).dropFirst())
+            }
+        }
+        
+        subscript(code: UInt32) -> Int {
+            return groups.withUnsafeBytes { search(code, $0, 0..<Int(self.nGroups)) }
         }
     }
     
