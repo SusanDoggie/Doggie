@@ -27,27 +27,26 @@ import Foundation
 
 protocol TTFCmapTableFormat : DataDecodable {
     
-    func parse(_ body: (UInt32, Int) -> Void)
+    subscript(code: UInt32) -> Int { get }
 }
 
 struct TTFCmap : DataDecodable {
     
     var version: BEUInt16
     var numTables: BEUInt16
-    var table: [Character: Int]
+    var table: Table
     
     init(from data: inout Data) throws {
         let copy = data
         self.version = try data.decode(BEUInt16.self)
         self.numTables = try data.decode(BEUInt16.self)
-        self.table = [:]
         
         var tables: [Table] = []
         for _ in 0..<Int(numTables) {
             let platformID = try data.decode(BEUInt16.self)
             let platformSpecificID = try data.decode(BEUInt16.self)
             let offset = try data.decode(BEUInt32.self)
-            let tableData = copy.advanced(by: Int(offset))
+            let tableData = copy.dropFirst(Int(offset))
             switch Int(try BEUInt16(tableData)) {
             case 0: tables.append(Table(platformID: platformID, platformSpecificID: platformSpecificID, format: try Format0(tableData)))
             case 4: tables.append(Table(platformID: platformID, platformSpecificID: platformSpecificID, format: try Format4(tableData)))
@@ -57,29 +56,28 @@ struct TTFCmap : DataDecodable {
             }
         }
         
-        let _table: Table
-        
         if let table = tables.lazy.filter({ $0.platformID == 0 && $0.platformSpecificID <= 4 }).max(by: { $0.platformSpecificID }) {
-            _table = table
+            self.table = table
         } else if let table = tables.first(where: { $0.platformID == 3 && $0.platformSpecificID == 10 }) {
-            _table = table
+            self.table = table
         } else if let table = tables.first(where: { $0.platformID == 3 && $0.platformSpecificID == 1 }) {
-            _table = table
+            self.table = table
         } else if let table = tables.first(where: { $0.platformID == 3 && $0.platformSpecificID == 0 }) {
-            _table = table
+            self.table = table
         } else {
             throw Font.Error.Unsupported("Unsupported cmap format.")
         }
-        
-        _table.format.parse { char, index in
-            if let scalar = UnicodeScalar(char) {
-                self.table[Character(scalar)] = index
-            }
-        }
     }
     
-    subscript(char: Character) -> Int {
-        return table[char] ?? 0
+    subscript(unit: UnicodeScalar) -> Int {
+        return table.format[unit.value]
+    }
+}
+
+extension TTFCmap : CustomStringConvertible {
+    
+    var description: String {
+        return "TTFCmap(version: \(version), numTables: \(numTables))"
     }
 }
 
@@ -97,24 +95,18 @@ extension TTFCmap {
         var format: BEUInt16
         var length: BEUInt16
         var language: BEUInt16
-        var glyphIndexArray: [UInt8]
+        var data: Data
         
         init(from data: inout Data) throws {
             self.format = try data.decode(BEUInt16.self)
             self.length = try data.decode(BEUInt16.self)
             self.language = try data.decode(BEUInt16.self)
-            self.glyphIndexArray = []
-            self.glyphIndexArray.reserveCapacity(256)
-            for _ in 0..<256 {
-                self.glyphIndexArray.append(try data.decode(UInt8.self))
-            }
+            self.data = data.popFirst(256)
         }
         
-        func parse(_ body: (UInt32, Int) -> Void) {
-            
-            for (code, index) in glyphIndexArray.enumerated() {
-                body(UInt32(code), Int(index))
-            }
+        subscript(code: UInt32) -> Int {
+            guard code < 256 else { return 0 }
+            return Int(data[Int(code)])
         }
     }
     
@@ -172,8 +164,8 @@ extension TTFCmap {
             }
         }
         
-        func parse(_ body: (UInt32, Int) -> Void) {
-            
+        subscript(code: UInt32) -> Int {
+            return 0
         }
     }
     
@@ -183,29 +175,20 @@ extension TTFCmap {
         var length: BEUInt32
         var language: BEUInt32
         var nGroups: BEUInt32
-        var groups: [Group]
+        var groups: Data
         
         init(from data: inout Data) throws {
             self.format = try data.decode(Fixed16Number<BEUInt32>.self)
             self.length = try data.decode(BEUInt32.self)
             self.language = try data.decode(BEUInt32.self)
             self.nGroups = try data.decode(BEUInt32.self)
-            self.groups = []
-            self.groups.reserveCapacity(Int(nGroups))
-            for _ in 0..<Int(nGroups) {
-                self.groups.append(try data.decode(Group.self))
-            }
+            guard data.count >= Int(nGroups) * MemoryLayout<Group>.stride else { throw DataDecodeError.endOfData }
+            self.groups = data.popFirst(Int(nGroups))
         }
         
-        func parse(_ body: (UInt32, Int) -> Void) {
+        subscript(code: UInt32) -> Int {
             
-            for group in groups {
-                var index = Int(group.startGlyphCode)
-                for code in UInt32(group.startCharCode)...UInt32(group.endCharCode) {
-                    body(code, index)
-                    index += 1
-                }
-            }
+            return 0
         }
     }
     
@@ -215,41 +198,27 @@ extension TTFCmap {
         var length: BEUInt32
         var language: BEUInt32
         var nGroups: BEUInt32
-        var groups: [Group]
+        var groups: Data
         
         init(from data: inout Data) throws {
             self.format = try data.decode(Fixed16Number<BEUInt32>.self)
             self.length = try data.decode(BEUInt32.self)
             self.language = try data.decode(BEUInt32.self)
             self.nGroups = try data.decode(BEUInt32.self)
-            self.groups = []
-            self.groups.reserveCapacity(Int(nGroups))
-            for _ in 0..<Int(nGroups) {
-                self.groups.append(try data.decode(Group.self))
-            }
+            guard data.count >= Int(nGroups) * MemoryLayout<Group>.stride else { throw DataDecodeError.endOfData }
+            self.groups = data.popFirst(Int(nGroups))
         }
         
-        func parse(_ body: (UInt32, Int) -> Void) {
+        subscript(code: UInt32) -> Int {
             
-            for group in groups {
-                let index = Int(group.startGlyphCode)
-                for code in UInt32(group.startCharCode)...UInt32(group.endCharCode) {
-                    body(code, index)
-                }
-            }
+            return 0
         }
     }
     
-    struct Group : DataDecodable {
+    struct Group {
         
         var startCharCode: BEUInt32
         var endCharCode: BEUInt32
         var startGlyphCode: BEUInt32
-        
-        init(from data: inout Data) throws {
-            self.startCharCode = try data.decode(BEUInt32.self)
-            self.endCharCode = try data.decode(BEUInt32.self)
-            self.startGlyphCode = try data.decode(BEUInt32.self)
-        }
     }
 }
