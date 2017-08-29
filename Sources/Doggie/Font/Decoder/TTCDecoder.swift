@@ -36,8 +36,8 @@ struct TTCDecoder : FontDecoder {
         
         self.header = header
         
-        for offset in header.offsetTable {
-            guard let font = try OpenTypeDecoder(data: data.advanced(by: Int(offset))) else { throw Font.Error.InvalidFormat("Invalid font.") }
+        for offset in header.offsetTable where offset != 0 {
+            guard let font = try OpenTypeDecoder(data: data, entry: Int(offset)) else { throw Font.Error.InvalidFormat("Invalid font.") }
             self.collection.append(font)
         }
     }
