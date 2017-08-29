@@ -1016,7 +1016,7 @@ struct PNGChunk {
         let length = data[0..<4].withUnsafeBytes { $0.pointee as BEUInt32 }
         self.signature = data[4..<8].withUnsafeBytes { $0.pointee }
         
-        guard signature.description.characters.all(where: { "a"..."z" ~= $0 || "A"..."Z" ~= $0 }) else { return nil }
+        guard signature.description.all(where: { "a"..."z" ~= $0 || "A"..."Z" ~= $0 }) else { return nil }
         
         self.data = Data(data.dropFirst(8).prefix(Int(length)) as Data)
     }
