@@ -27,36 +27,59 @@ import Foundation
 
 protocol TTFCmapTableFormat : DataDecodable {
     
+    func parse(_ body: (UInt32, Int) -> Void)
 }
 
 struct TTFCmap : DataDecodable {
     
     var version: BEUInt16
     var numTables: BEUInt16
-    var table: [Table]
+    var table: [Character: Int]
     
     init(from data: inout Data) throws {
         let copy = data
         self.version = try data.decode(BEUInt16.self)
         self.numTables = try data.decode(BEUInt16.self)
-        self.table = []
+        self.table = [:]
+        
+        var tables: [Table] = []
         for _ in 0..<Int(numTables) {
             let platformID = try data.decode(BEUInt16.self)
             let platformSpecificID = try data.decode(BEUInt16.self)
             let offset = try data.decode(BEUInt32.self)
             let tableData = copy.advanced(by: Int(offset))
             switch Int(try BEUInt16(tableData)) {
-            case 0: table.append(Table(platformID: platformID, platformSpecificID: platformSpecificID, format: try Format0(tableData)))
-            case 2: table.append(Table(platformID: platformID, platformSpecificID: platformSpecificID, format: try Format2(tableData)))
-            case 4: table.append(Table(platformID: platformID, platformSpecificID: platformSpecificID, format: try Format4(tableData)))
-            case 6: table.append(Table(platformID: platformID, platformSpecificID: platformSpecificID, format: try Format6(tableData)))
-            case 8: table.append(Table(platformID: platformID, platformSpecificID: platformSpecificID, format: try Format8(tableData)))
-            case 10: table.append(Table(platformID: platformID, platformSpecificID: platformSpecificID, format: try Format10(tableData)))
-            case 12: table.append(Table(platformID: platformID, platformSpecificID: platformSpecificID, format: try Format12(tableData)))
-            case 14: table.append(Table(platformID: platformID, platformSpecificID: platformSpecificID, format: try Format14(tableData)))
-            default: throw Font.Error.Unsupported("Unsupported cmap format.")
+            case 0: tables.append(Table(platformID: platformID, platformSpecificID: platformSpecificID, format: try Format0(tableData)))
+            case 4: tables.append(Table(platformID: platformID, platformSpecificID: platformSpecificID, format: try Format4(tableData)))
+            case 12: tables.append(Table(platformID: platformID, platformSpecificID: platformSpecificID, format: try Format12(tableData)))
+            case 13: tables.append(Table(platformID: platformID, platformSpecificID: platformSpecificID, format: try Format13(tableData)))
+            default: break
             }
         }
+        
+        let _table: Table
+        
+        if let table = tables.lazy.filter({ $0.platformID == 0 && $0.platformSpecificID <= 4 }).max(by: { $0.platformSpecificID }) {
+            _table = table
+        } else if let table = tables.first(where: { $0.platformID == 3 && $0.platformSpecificID == 10 }) {
+            _table = table
+        } else if let table = tables.first(where: { $0.platformID == 3 && $0.platformSpecificID == 1 }) {
+            _table = table
+        } else if let table = tables.first(where: { $0.platformID == 3 && $0.platformSpecificID == 0 }) {
+            _table = table
+        } else {
+            throw Font.Error.Unsupported("Unsupported cmap format.")
+        }
+        
+        _table.format.parse { char, index in
+            if let scalar = UnicodeScalar(char) {
+                self.table[Character(scalar)] = index
+            }
+        }
+    }
+    
+    subscript(char: Character) -> Int {
+        return table[char] ?? 0
     }
 }
 
@@ -86,42 +109,11 @@ extension TTFCmap {
                 self.glyphIndexArray.append(try data.decode(UInt8.self))
             }
         }
-    }
-    
-    struct Format2 : TTFCmapTableFormat {
         
-        var format: BEUInt16
-        var length: BEUInt16
-        var language: BEUInt16
-        var subHeaderKeys: [BEUInt16]
-        var subHeaders: [SubHeader]
-        var glyphIndexArray: [BEUInt16]
-        
-        init(from data: inout Data) throws {
-            self.format = try data.decode(BEUInt16.self)
-            self.length = try data.decode(BEUInt16.self)
-            self.language = try data.decode(BEUInt16.self)
-            self.subHeaderKeys = []
-            self.subHeaders = []
-            self.glyphIndexArray = []
-            self.subHeaderKeys.reserveCapacity(256)
-            for _ in 0..<256 {
-                self.subHeaderKeys.append(try data.decode(BEUInt16.self))
-            }
-        }
-        
-        struct SubHeader : DataDecodable {
+        func parse(_ body: (UInt32, Int) -> Void) {
             
-            var firstCode: BEUInt16
-            var entryCount: BEUInt16
-            var idDelta: BEInt16
-            var idRangeOffset: BEUInt16
-            
-            init(from data: inout Data) throws {
-                self.firstCode = try data.decode(BEUInt16.self)
-                self.entryCount = try data.decode(BEUInt16.self)
-                self.idDelta = try data.decode(BEInt16.self)
-                self.idRangeOffset = try data.decode(BEUInt16.self)
+            for (code, index) in glyphIndexArray.enumerated() {
+                body(UInt32(code), Int(index))
             }
         }
     }
@@ -179,78 +171,9 @@ extension TTFCmap {
                 self.idRangeOffset.append(try data.decode(BEUInt16.self))
             }
         }
-    }
-    
-    struct Format6 : TTFCmapTableFormat {
         
-        var format: BEUInt16
-        var length: BEUInt16
-        var language: BEUInt16
-        var firstCode: BEUInt16
-        var entryCount: BEUInt16
-        var glyphIndexArray: [BEUInt16]
-        
-        init(from data: inout Data) throws {
-            self.format = try data.decode(BEUInt16.self)
-            self.length = try data.decode(BEUInt16.self)
-            self.language = try data.decode(BEUInt16.self)
-            self.firstCode = try data.decode(BEUInt16.self)
-            self.entryCount = try data.decode(BEUInt16.self)
-            self.glyphIndexArray = []
-            self.glyphIndexArray.reserveCapacity(Int(entryCount))
-            for _ in 0..<Int(entryCount) {
-                self.glyphIndexArray.append(try data.decode(BEUInt16.self))
-            }
-        }
-    }
-    
-    struct Format8 : TTFCmapTableFormat {
-        
-        var format: Fixed16Number<BEUInt32>
-        var length: BEUInt32
-        var language: BEUInt32
-        var is32: [UInt8]
-        var nGroups: BEUInt32
-        var groups: [Group]
-        
-        init(from data: inout Data) throws {
-            self.format = try data.decode(Fixed16Number<BEUInt32>.self)
-            self.length = try data.decode(BEUInt32.self)
-            self.language = try data.decode(BEUInt32.self)
-            self.is32 = []
-            self.is32.reserveCapacity(65536)
-            for _ in 0..<65536 {
-                self.is32.append(try data.decode(UInt8.self))
-            }
-            self.nGroups = try data.decode(BEUInt32.self)
-            self.groups = []
-            self.groups.reserveCapacity(Int(nGroups))
-            for _ in 0..<Int(nGroups) {
-                self.groups.append(try data.decode(Group.self))
-            }
-        }
-    }
-    
-    struct Format10 : TTFCmapTableFormat {
-        
-        var format: Fixed16Number<BEUInt32>
-        var length: BEUInt32
-        var language: BEUInt32
-        var startCharCode: BEUInt32
-        var numChars: BEUInt32
-        var glyphs: [BEUInt16]
-        
-        init(from data: inout Data) throws {
-            self.format = try data.decode(Fixed16Number<BEUInt32>.self)
-            self.length = try data.decode(BEUInt32.self)
-            self.language = try data.decode(BEUInt32.self)
-            self.startCharCode = try data.decode(BEUInt32.self)
-            self.numChars = try data.decode(BEUInt32.self)
-            self.glyphs = []
-            self.glyphs.reserveCapacity(Int(numChars))
-            for _ in 0..<Int(numChars) {
-                self.glyphs.append(try data.decode(BEUInt16.self))
-            }
+        func parse(_ body: (UInt32, Int) -> Void) {
+            
         }
     }
     
@@ -273,88 +196,46 @@ extension TTFCmap {
                 self.groups.append(try data.decode(Group.self))
             }
         }
+        
+        func parse(_ body: (UInt32, Int) -> Void) {
+            
+            for group in groups {
+                var index = Int(group.startGlyphCode)
+                for code in UInt32(group.startCharCode)...UInt32(group.endCharCode) {
+                    body(code, index)
+                    index += 1
+                }
+            }
+        }
     }
     
-    struct Format14 : TTFCmapTableFormat {
+    struct Format13 : TTFCmapTableFormat {
         
-        var format: BEUInt16
+        var format: Fixed16Number<BEUInt32>
         var length: BEUInt32
-        var numVarSelectorRecords: BEUInt32
-        var records: [Record]
+        var language: BEUInt32
+        var nGroups: BEUInt32
+        var groups: [Group]
         
         init(from data: inout Data) throws {
-            self.format = try data.decode(BEUInt16.self)
+            self.format = try data.decode(Fixed16Number<BEUInt32>.self)
             self.length = try data.decode(BEUInt32.self)
-            self.numVarSelectorRecords = try data.decode(BEUInt32.self)
-            self.records = []
-            self.records.reserveCapacity(Int(numVarSelectorRecords))
-            for _ in 0..<Int(numVarSelectorRecords) {
-                self.records.append(try data.decode(Record.self))
+            self.language = try data.decode(BEUInt32.self)
+            self.nGroups = try data.decode(BEUInt32.self)
+            self.groups = []
+            self.groups.reserveCapacity(Int(nGroups))
+            for _ in 0..<Int(nGroups) {
+                self.groups.append(try data.decode(Group.self))
             }
         }
         
-        struct Record : DataDecodable {
+        func parse(_ body: (UInt32, Int) -> Void) {
             
-            var varSelector: (UInt8, UInt8, UInt8)
-            var defaultUVSOffset: BEUInt32
-            var nonDefaultUVSOffset: BEUInt32
-            
-            init(from data: inout Data) throws {
-                self.varSelector = (try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self))
-                self.defaultUVSOffset = try data.decode(BEUInt32.self)
-                self.nonDefaultUVSOffset = try data.decode(BEUInt32.self)
-            }
-        }
-        
-        struct DefaultUVS : DataDecodable {
-            
-            var numUnicodeValueRanges: BEUInt32
-            var ranges: [UnicodeValueRange]
-            
-            init(from data: inout Data) throws {
-                self.numUnicodeValueRanges = try data.decode(BEUInt32.self)
-                self.ranges = []
-                self.ranges.reserveCapacity(Int(numUnicodeValueRanges))
-                for _ in 0..<Int(numUnicodeValueRanges) {
-                    self.ranges.append(try data.decode(UnicodeValueRange.self))
+            for group in groups {
+                let index = Int(group.startGlyphCode)
+                for code in UInt32(group.startCharCode)...UInt32(group.endCharCode) {
+                    body(code, index)
                 }
-            }
-        }
-        
-        struct NonDefaultUVS : DataDecodable {
-            
-            var numUVSMappings: BEUInt32
-            var mappings: [UVSMapping]
-            
-            init(from data: inout Data) throws {
-                self.numUVSMappings = try data.decode(BEUInt32.self)
-                self.mappings = []
-                self.mappings.reserveCapacity(Int(numUVSMappings))
-                for _ in 0..<Int(numUVSMappings) {
-                    self.mappings.append(try data.decode(UVSMapping.self))
-                }
-            }
-        }
-        
-        struct UnicodeValueRange : DataDecodable {
-            
-            var startUnicodeValue: (UInt8, UInt8, UInt8)
-            var additionalCount: UInt8
-            
-            init(from data: inout Data) throws {
-                self.startUnicodeValue = (try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self))
-                self.additionalCount = try data.decode(UInt8.self)
-            }
-        }
-        
-        struct UVSMapping : DataDecodable {
-            
-            var unicodeValue: (UInt8, UInt8, UInt8)
-            var glyphID: BEUInt16
-            
-            init(from data: inout Data) throws {
-                self.unicodeValue = (try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self))
-                self.glyphID = try data.decode(BEUInt16.self)
             }
         }
     }
