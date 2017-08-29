@@ -64,7 +64,7 @@ struct BMPDecoder : ImageRepDecoder {
     var _colorSpace: ColorSpace<RGBColorModel> {
         if header.colorSpaceOffset != 0 && header.colorSpaceSize != 0 {
             if header.colorSpaceOffset + header.colorSpaceSize <= data.count {
-                guard let iccColorSpace = try? AnyColorSpace(iccData: data.advanced(by: header.colorSpaceOffset)) else { return .sRGB }
+                guard let iccColorSpace = try? AnyColorSpace(iccData: data.dropFirst(header.colorSpaceOffset)) else { return .sRGB }
                 return iccColorSpace.base as? ColorSpace<RGBColorModel> ?? .sRGB
             } else {
                 return .sRGB
@@ -80,7 +80,7 @@ struct BMPDecoder : ImageRepDecoder {
     
     func image() -> AnyImage {
         
-        let pixels = data.advanced(by: Int(header.offset))
+        let pixels = data.dropFirst(Int(header.offset))
         
         let colorSpace = self._colorSpace
         
@@ -264,7 +264,7 @@ struct BMPDecoder : ImageRepDecoder {
                     var red: UInt8
                 }
                 
-                palette = data.advanced(by: header.paletteOffset).withUnsafeBytes { UnsafeBufferPointer(start: $0 as UnsafePointer<Palette>, count: paletteCount).map { ARGB32ColorPixel(red: $0.red, green: $0.green, blue: $0.blue) } }
+                palette = data.dropFirst(header.paletteOffset).withUnsafeBytes { UnsafeBufferPointer(start: $0 as UnsafePointer<Palette>, count: paletteCount).map { ARGB32ColorPixel(red: $0.red, green: $0.green, blue: $0.blue) } }
                 
             } else {
                 
@@ -276,7 +276,7 @@ struct BMPDecoder : ImageRepDecoder {
                     var reserved: UInt8
                 }
                 
-                palette = data.advanced(by: header.paletteOffset).withUnsafeBytes { UnsafeBufferPointer(start: $0 as UnsafePointer<Palette>, count: paletteCount).map { ARGB32ColorPixel(red: $0.red, green: $0.green, blue: $0.blue) } }
+                palette = data.dropFirst(header.paletteOffset).withUnsafeBytes { UnsafeBufferPointer(start: $0 as UnsafePointer<Palette>, count: paletteCount).map { ARGB32ColorPixel(red: $0.red, green: $0.green, blue: $0.blue) } }
             }
             
             func UncompressedPixelReader() -> Image<ARGB32ColorPixel> {
@@ -498,19 +498,19 @@ struct BMPHeader {
     
     init?(data: Data) {
         
-        self.signature = data[0..<2].withUnsafeBytes { $0.pointee }
-        self.size = data[2..<6].withUnsafeBytes { $0.pointee }
-        self.reserved1 = data[6..<8].withUnsafeBytes { $0.pointee }
-        self.reserved2 = data[8..<10].withUnsafeBytes { $0.pointee }
-        self.offset = data[10..<14].withUnsafeBytes { $0.pointee }
+        self.signature = data.withUnsafeBytes { $0.pointee }
+        self.size = data.dropFirst(2).withUnsafeBytes { $0.pointee }
+        self.reserved1 = data.dropFirst(6).withUnsafeBytes { $0.pointee }
+        self.reserved2 = data.dropFirst(8).withUnsafeBytes { $0.pointee }
+        self.offset = data.dropFirst(10).withUnsafeBytes { $0.pointee }
         
         guard data.count > 18 else { return nil }
         
-        let DIBSize: LEUInt32 = data.advanced(by: 14).withUnsafeBytes { $0.pointee }
+        let DIBSize: LEUInt32 = data.dropFirst(14).withUnsafeBytes { $0.pointee }
         
         if DIBSize == 12 {
             
-            guard let DIB = BITMAPCOREHEADER(data: data.advanced(by: 14)) else { return nil }
+            guard let DIB = BITMAPCOREHEADER(data: data.dropFirst(14)) else { return nil }
             
             switch DIB.bitsPerPixel {
             case 1, 4, 8, 24: break
@@ -521,7 +521,7 @@ struct BMPHeader {
             
         } else {
             
-            guard let DIB = BITMAPINFOHEADER(data: data.advanced(by: 14)) else { return nil }
+            guard let DIB = BITMAPINFOHEADER(data: data.dropFirst(14)) else { return nil }
             
             switch DIB.bitsPerPixel {
             case 1, 2: guard DIB.compression == .BI_RGB else { return nil }
@@ -630,14 +630,14 @@ struct BITMAPCOREHEADER : DIBHeader {
     
     init?(data: Data) {
         
-        self.size = data[0..<4].withUnsafeBytes { $0.pointee }
+        self.size = data.withUnsafeBytes { $0.pointee }
         
         guard self.size <= data.count else { return nil }
         
-        self.width = data[4..<6].withUnsafeBytes { $0.pointee }
-        self.height = data[6..<8].withUnsafeBytes { $0.pointee }
-        self.planes = data[8..<10].withUnsafeBytes { $0.pointee }
-        self.bitsPerPixel = data[10..<12].withUnsafeBytes { $0.pointee }
+        self.width = data.dropFirst(4).withUnsafeBytes { $0.pointee }
+        self.height = data.dropFirst(6).withUnsafeBytes { $0.pointee }
+        self.planes = data.dropFirst(8).withUnsafeBytes { $0.pointee }
+        self.bitsPerPixel = data.dropFirst(10).withUnsafeBytes { $0.pointee }
     }
     
     var _width: Int {
@@ -745,7 +745,7 @@ struct BITMAPINFOHEADER : DIBHeader {
     
     init?(data: Data) {
         
-        self.size = data[0..<4].withUnsafeBytes { $0.pointee }
+        self.size = data.prefix(4).withUnsafeBytes { $0.pointee }
         
         guard self.size <= data.count else { return nil }
         
@@ -754,17 +754,17 @@ struct BITMAPINFOHEADER : DIBHeader {
         default: return nil
         }
         
-        self.width = data[4..<8].withUnsafeBytes { $0.pointee }
-        self.height = data[8..<12].withUnsafeBytes { $0.pointee }
-        self.planes = data[12..<14].withUnsafeBytes { $0.pointee }
-        self.bitsPerPixel = data[14..<16].withUnsafeBytes { $0.pointee }
+        self.width = data.dropFirst(4).withUnsafeBytes { $0.pointee }
+        self.height = data.dropFirst(8).withUnsafeBytes { $0.pointee }
+        self.planes = data.dropFirst(12).withUnsafeBytes { $0.pointee }
+        self.bitsPerPixel = data.dropFirst(14).withUnsafeBytes { $0.pointee }
         
-        self.compression = data[16..<20].withUnsafeBytes { $0.pointee }
-        self.imageSize = data[20..<24].withUnsafeBytes { $0.pointee }
-        self.hResolution = data[24..<28].withUnsafeBytes { $0.pointee }
-        self.vResolution = data[28..<32].withUnsafeBytes { $0.pointee }
-        self.paletteCount = data[32..<36].withUnsafeBytes { $0.pointee }
-        self.importantColorCount = data[36..<40].withUnsafeBytes { $0.pointee }
+        self.compression = data.dropFirst(16).withUnsafeBytes { $0.pointee }
+        self.imageSize = data.dropFirst(20).withUnsafeBytes { $0.pointee }
+        self.hResolution = data.dropFirst(24).withUnsafeBytes { $0.pointee }
+        self.vResolution = data.dropFirst(28).withUnsafeBytes { $0.pointee }
+        self.paletteCount = data.dropFirst(32).withUnsafeBytes { $0.pointee }
+        self.importantColorCount = data.dropFirst(36).withUnsafeBytes { $0.pointee }
         
         if self.size == 40 {
             if self.bitsPerPixel == 16 || self.bitsPerPixel == 32 {
@@ -778,36 +778,36 @@ struct BITMAPINFOHEADER : DIBHeader {
         }
         
         if self.size >= 52 {
-            self.redBitmask = data[40..<44].withUnsafeBytes { $0.pointee }
-            self.greenBitmask = data[44..<48].withUnsafeBytes { $0.pointee }
-            self.blueBitmask = data[48..<52].withUnsafeBytes { $0.pointee }
+            self.redBitmask = data.dropFirst(40).withUnsafeBytes { $0.pointee }
+            self.greenBitmask = data.dropFirst(44).withUnsafeBytes { $0.pointee }
+            self.blueBitmask = data.dropFirst(48).withUnsafeBytes { $0.pointee }
         }
         
         if self.size >= 56 {
-            self.alphaBitmask = data[52..<56].withUnsafeBytes { $0.pointee }
+            self.alphaBitmask = data.dropFirst(52).withUnsafeBytes { $0.pointee }
         }
         
         if self.size >= 108 {
-            self.colorSpaceType = data[56..<60].withUnsafeBytes { $0.pointee }
-            self.redX = data[60..<64].withUnsafeBytes { $0.pointee }
-            self.redY = data[64..<68].withUnsafeBytes { $0.pointee }
-            self.redZ = data[68..<72].withUnsafeBytes { $0.pointee }
-            self.greenX = data[72..<76].withUnsafeBytes { $0.pointee }
-            self.greenY = data[76..<80].withUnsafeBytes { $0.pointee }
-            self.greenZ = data[80..<84].withUnsafeBytes { $0.pointee }
-            self.blueX = data[84..<88].withUnsafeBytes { $0.pointee }
-            self.blueY = data[88..<92].withUnsafeBytes { $0.pointee }
-            self.blueZ = data[92..<96].withUnsafeBytes { $0.pointee }
-            self.redGamma = data[96..<100].withUnsafeBytes { $0.pointee }
-            self.greenGamma = data[100..<104].withUnsafeBytes { $0.pointee }
-            self.blueGamma = data[104..<108].withUnsafeBytes { $0.pointee }
+            self.colorSpaceType = data.dropFirst(56).withUnsafeBytes { $0.pointee }
+            self.redX = data.dropFirst(60).withUnsafeBytes { $0.pointee }
+            self.redY = data.dropFirst(64).withUnsafeBytes { $0.pointee }
+            self.redZ = data.dropFirst(68).withUnsafeBytes { $0.pointee }
+            self.greenX = data.dropFirst(72).withUnsafeBytes { $0.pointee }
+            self.greenY = data.dropFirst(76).withUnsafeBytes { $0.pointee }
+            self.greenZ = data.dropFirst(80).withUnsafeBytes { $0.pointee }
+            self.blueX = data.dropFirst(84).withUnsafeBytes { $0.pointee }
+            self.blueY = data.dropFirst(88).withUnsafeBytes { $0.pointee }
+            self.blueZ = data.dropFirst(92).withUnsafeBytes { $0.pointee }
+            self.redGamma = data.dropFirst(96).withUnsafeBytes { $0.pointee }
+            self.greenGamma = data.dropFirst(100).withUnsafeBytes { $0.pointee }
+            self.blueGamma = data.dropFirst(104).withUnsafeBytes { $0.pointee }
         }
         
         if self.size >= 124 {
-            self.intent = data[108..<112].withUnsafeBytes { $0.pointee }
-            self.profileData = data[112..<116].withUnsafeBytes { $0.pointee }
-            self.profileSize = data[116..<120].withUnsafeBytes { $0.pointee }
-            self.reserved = data[120..<124].withUnsafeBytes { $0.pointee }
+            self.intent = data.dropFirst(108).withUnsafeBytes { $0.pointee }
+            self.profileData = data.dropFirst(112).withUnsafeBytes { $0.pointee }
+            self.profileSize = data.dropFirst(116).withUnsafeBytes { $0.pointee }
+            self.reserved = data.dropFirst(120).withUnsafeBytes { $0.pointee }
         }
     }
     

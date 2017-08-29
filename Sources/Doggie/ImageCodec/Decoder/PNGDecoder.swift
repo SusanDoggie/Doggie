@@ -35,19 +35,19 @@ struct PNGDecoder : ImageRepDecoder {
         
         guard data.count > 8 else { return nil }
         
-        let signature = data[0..<8].withUnsafeBytes { $0.pointee as (UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8) }
+        let signature = data.withUnsafeBytes { $0.pointee as (UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8) }
         
         guard (signature.0, signature.1, signature.2, signature.3) == (0x89, 0x50, 0x4E, 0x47) else { return nil }
         guard (signature.4, signature.5, signature.6, signature.7) == (0x0D, 0x0A, 0x1A, 0x0A) else { return nil }
         
         var _chunks = [PNGChunk]()
-        var _data = data.advanced(by: 8)
+        var _data = data.dropFirst(8)
         
         while _chunks.last?.signature != "IEND" {
             guard let chunk = PNGChunk(data: _data) else { break }
             _chunks.append(chunk)
             guard _data.count > 12 + Int(chunk.data.count) else { break }
-            _data = _data.advanced(by: 12 + Int(chunk.data.count))
+            _data = _data.dropFirst(12 + Int(chunk.data.count))
         }
         
         guard let first = _chunks.first, first.data.count >= 13 && first.signature == "IHDR" else { return nil }
@@ -101,9 +101,9 @@ struct PNGDecoder : ImageRepDecoder {
         
         if let phys = chunks.first(where: { $0.signature == "pHYs" }), phys.data.count >= 9 {
             
-            let horizontal = phys.data[0..<4].withUnsafeBytes { $0.pointee as BEUInt32 }
-            let vertical = phys.data[4..<8].withUnsafeBytes { $0.pointee as BEUInt32 }
-            let unit = phys.data[8..<9].withUnsafeBytes { $0.pointee as UInt8 }
+            let horizontal = phys.data.withUnsafeBytes { $0.pointee as BEUInt32 }
+            let vertical = phys.data.dropFirst(4).withUnsafeBytes { $0.pointee as BEUInt32 }
+            let unit = phys.data.dropFirst(8).withUnsafeBytes { $0.pointee as UInt8 }
             
             switch unit {
             case 1: return Resolution(horizontal: Double(horizontal.representingValue), vertical: Double(vertical.representingValue), unit: .meter)
@@ -168,14 +168,14 @@ struct PNGDecoder : ImageRepDecoder {
             return (Point(x: 0.3127, y: 0.3290), Point(x: 0.6400, y: 0.3300), Point(x: 0.3000, y: 0.6000), Point(x: 0.1500, y: 0.0600))
         }
         
-        let whiteX = chrm.data[0..<4].withUnsafeBytes { $0.pointee as BEUInt32 }
-        let whiteY = chrm.data[4..<8].withUnsafeBytes { $0.pointee as BEUInt32 }
-        let redX = chrm.data[8..<12].withUnsafeBytes { $0.pointee as BEUInt32 }
-        let redY = chrm.data[12..<16].withUnsafeBytes { $0.pointee as BEUInt32 }
-        let greenX = chrm.data[16..<20].withUnsafeBytes { $0.pointee as BEUInt32 }
-        let greenY = chrm.data[20..<24].withUnsafeBytes { $0.pointee as BEUInt32 }
-        let blueX = chrm.data[24..<28].withUnsafeBytes { $0.pointee as BEUInt32 }
-        let blueY = chrm.data[28..<32].withUnsafeBytes { $0.pointee as BEUInt32 }
+        let whiteX = chrm.data.withUnsafeBytes { $0.pointee as BEUInt32 }
+        let whiteY = chrm.data.dropFirst(4).withUnsafeBytes { $0.pointee as BEUInt32 }
+        let redX = chrm.data.dropFirst(8).withUnsafeBytes { $0.pointee as BEUInt32 }
+        let redY = chrm.data.dropFirst(12).withUnsafeBytes { $0.pointee as BEUInt32 }
+        let greenX = chrm.data.dropFirst(16).withUnsafeBytes { $0.pointee as BEUInt32 }
+        let greenY = chrm.data.dropFirst(20).withUnsafeBytes { $0.pointee as BEUInt32 }
+        let blueX = chrm.data.dropFirst(24).withUnsafeBytes { $0.pointee as BEUInt32 }
+        let blueY = chrm.data.dropFirst(28).withUnsafeBytes { $0.pointee as BEUInt32 }
         
         let white = Point(x: 0.00001 * Double(whiteX.representingValue), y: 0.00001 * Double(whiteY.representingValue))
         let red = Point(x: 0.00001 * Double(redX.representingValue), y: 0.00001 * Double(redY.representingValue))
@@ -818,13 +818,13 @@ extension PNGDecoder {
         var interlace: UInt8
         
         init(data: Data) {
-            self.width = data[0..<4].withUnsafeBytes { $0.pointee }
-            self.height = data[4..<8].withUnsafeBytes { $0.pointee }
-            self.bitDepth = data[8..<9].withUnsafeBytes { $0.pointee }
-            self.colour = data[9..<10].withUnsafeBytes { $0.pointee }
-            self.compression = data[10..<11].withUnsafeBytes { $0.pointee }
-            self.filter = data[11..<12].withUnsafeBytes { $0.pointee }
-            self.interlace = data[12..<13].withUnsafeBytes { $0.pointee }
+            self.width = data.withUnsafeBytes { $0.pointee }
+            self.height = data.dropFirst(4).withUnsafeBytes { $0.pointee }
+            self.bitDepth = data.dropFirst(8).withUnsafeBytes { $0.pointee }
+            self.colour = data.dropFirst(9).withUnsafeBytes { $0.pointee }
+            self.compression = data.dropFirst(10).withUnsafeBytes { $0.pointee }
+            self.filter = data.dropFirst(11).withUnsafeBytes { $0.pointee }
+            self.interlace = data.dropFirst(12).withUnsafeBytes { $0.pointee }
         }
     }
 }
@@ -1013,8 +1013,8 @@ struct PNGChunk {
         
         guard data.count >= 12 else { return nil }
         
-        let length = data[0..<4].withUnsafeBytes { $0.pointee as BEUInt32 }
-        self.signature = data[4..<8].withUnsafeBytes { $0.pointee }
+        let length = data.withUnsafeBytes { $0.pointee as BEUInt32 }
+        self.signature = data.dropFirst(4).withUnsafeBytes { $0.pointee }
         
         guard signature.description.all(where: { "a"..."z" ~= $0 || "A"..."Z" ~= $0 }) else { return nil }
         

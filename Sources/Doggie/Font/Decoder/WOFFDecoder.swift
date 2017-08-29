@@ -40,10 +40,10 @@ struct WOFFDecoder : FontDecoder {
         for _ in 0..<Int(header.numTables) {
             let record = try _header.decode(WOFFTableRecord.self)
             if record.compLength == record.origLength {
-                table[record.tag] = data.advanced(by: Int(record.offset)).prefix(Int(record.origLength))
+                table[record.tag] = data.dropFirst(Int(record.offset)).prefix(Int(record.origLength))
             } else {
                 let inflate = try Inflate()
-                table[record.tag] = try inflate.process(data: data.advanced(by: Int(record.offset)).prefix(Int(record.compLength))) + inflate.final()
+                table[record.tag] = try inflate.process(data: data.dropFirst(Int(record.offset)).prefix(Int(record.compLength))) + inflate.final()
             }
         }
         self.faces = [try TTFontFace(table: table)]

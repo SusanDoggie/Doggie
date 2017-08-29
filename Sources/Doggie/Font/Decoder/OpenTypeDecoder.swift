@@ -31,7 +31,7 @@ struct OpenTypeDecoder : FontDecoder {
     var faces: [FontFaceBase]
     
     init?(data: Data, entry: Int) throws {
-        var _header = data.advanced(by: entry)
+        var _header = data.dropFirst(entry)
         guard let header = try? _header.decode(SFNTHeader.self), header.version == 0x00010000 || header.version == 0x4F54544F else { return nil }
         
         self.header = header
@@ -39,7 +39,7 @@ struct OpenTypeDecoder : FontDecoder {
         var table: [Signature<BEUInt32>: Data] = [:]
         for _ in 0..<Int(header.numTables) {
             let record = try _header.decode(SFNTTableRecord.self)
-            table[record.tag] = data.advanced(by: Int(record.offset)).prefix(Int(record.length))
+            table[record.tag] = data.dropFirst(Int(record.offset)).prefix(Int(record.length))
         }
         self.faces = [try TTFontFace(table: table)]
     }

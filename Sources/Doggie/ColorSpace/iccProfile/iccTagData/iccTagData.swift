@@ -40,7 +40,7 @@ extension iccProfile {
         }
         
         var data: Data {
-            return rawData.advanced(by: 8)
+            return rawData.dropFirst(8)
         }
     }
 }
