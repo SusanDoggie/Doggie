@@ -27,7 +27,7 @@ import Foundation
 
 protocol FontFamilyBase {
     
-    // var faces: [FontFaceBase] { get }
+    var faces: [FontFaceBase] { get }
 }
 
 protocol FontFaceBase {

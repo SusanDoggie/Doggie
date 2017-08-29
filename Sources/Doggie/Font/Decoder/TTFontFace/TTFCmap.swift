@@ -1,5 +1,5 @@
 //
-//  TTCDecoder.swift
+//  TTFCmap.swift
 //
 //  The MIT License
 //  Copyright (c) 2015 - 2017 Susan Cheng. All rights reserved.
@@ -25,45 +25,13 @@
 
 import Foundation
 
-struct TTCDecoder : FontDecoder {
+struct TTFCmap : DataDecodable {
     
-    var header: TTCHeader
-    var collection: [OpenTypeDecoder] = []
-    
-    init?(data: Data) throws {
-        
-        guard let header = try? TTCHeader(data), header.tag == "ttcf" else { return nil }
-        
-        self.header = header
-        
-        for offset in header.offsetTable {
-            guard let font = try OpenTypeDecoder(data: data.advanced(by: Int(offset))) else { throw Font.Error.InvalidFormat("Invalid font.") }
-            self.collection.append(font)
-        }
-    }
-    
-    var faces: [FontFaceBase] {
-        return collection.flatMap { $0.faces }
-    }
-}
-
-struct TTCHeader : DataDecodable {
-    
-    var tag: Signature<BEUInt32>
-    var majorVersion: BEUInt16
-    var minorVersion: BEUInt16
-    var numFonts: BEUInt32
-    var offsetTable: [BEUInt32]
+    var version: BEUInt16
+    var numTables: BEUInt16
     
     init(from data: inout Data) throws {
-        self.tag = try data.decode(Signature<BEUInt32>.self)
-        self.majorVersion = try data.decode(BEUInt16.self)
-        self.minorVersion = try data.decode(BEUInt16.self)
-        self.numFonts = try data.decode(BEUInt32.self)
-        self.offsetTable = []
-        for _ in 0..<Int(numFonts) {
-            self.offsetTable.append(try data.decode(BEUInt32.self))
-        }
+        self.version = try data.decode(BEUInt16.self)
+        self.numTables = try data.decode(BEUInt16.self)
     }
 }
-

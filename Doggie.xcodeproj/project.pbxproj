@@ -84,6 +84,9 @@
 		0A53E47F1E35AEF80060FB83 /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A53E45D1E35AEF80060FB83 /* String.swift */; };
 		0A56E9111E35F02E00D93786 /* RectCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A56E90F1E35F02E00D93786 /* RectCollection.swift */; };
 		0A6CDDA81E61738A009DDEEB /* PDFPredictor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A6CDDA61E61738A009DDEEB /* PDFPredictor.swift */; };
+		0A72EF151F54FD2C00F0550A /* TTFHead.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A72EF141F54FD2C00F0550A /* TTFHead.swift */; };
+		0A72EF181F54FED200F0550A /* TTFCmap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A72EF171F54FED200F0550A /* TTFCmap.swift */; };
+		0A72EF1C1F55035200F0550A /* TTFontFace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A72EF1B1F55035200F0550A /* TTFontFace.swift */; };
 		0A7314C01F3D7B720008461E /* ShapeSegment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7314BF1F3D7B720008461E /* ShapeSegment.swift */; };
 		0A776FC61D9A0BA5005FC88F /* c11_atomic.h in Headers */ = {isa = PBXBuildFile; fileRef = 0A776FC31D9A0BA5005FC88F /* c11_atomic.h */; };
 		0A78E1F91E98B20A00BD91AB /* Geometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A78E1F71E98B20A00BD91AB /* Geometry.swift */; };
@@ -252,6 +255,9 @@
 		0A53E45D1E35AEF80060FB83 /* String.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = String.swift; sourceTree = "<group>"; };
 		0A56E90F1E35F02E00D93786 /* RectCollection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RectCollection.swift; sourceTree = "<group>"; };
 		0A6CDDA61E61738A009DDEEB /* PDFPredictor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PDFPredictor.swift; sourceTree = "<group>"; };
+		0A72EF141F54FD2C00F0550A /* TTFHead.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TTFHead.swift; sourceTree = "<group>"; };
+		0A72EF171F54FED200F0550A /* TTFCmap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TTFCmap.swift; sourceTree = "<group>"; };
+		0A72EF1B1F55035200F0550A /* TTFontFace.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TTFontFace.swift; sourceTree = "<group>"; };
 		0A7314BF1F3D7B720008461E /* ShapeSegment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShapeSegment.swift; sourceTree = "<group>"; };
 		0A776FC31D9A0BA5005FC88F /* c11_atomic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = c11_atomic.h; sourceTree = "<group>"; };
 		0A776FC41D9A0BA5005FC88F /* module.modulemap */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = "sourcecode.module-map"; path = module.modulemap; sourceTree = "<group>"; };
@@ -608,6 +614,16 @@
 			path = PDFEncoding;
 			sourceTree = "<group>";
 		};
+		0A72EF161F54FD4300F0550A /* TTFontFace */ = {
+			isa = PBXGroup;
+			children = (
+				0A72EF1B1F55035200F0550A /* TTFontFace.swift */,
+				0A72EF141F54FD2C00F0550A /* TTFHead.swift */,
+				0A72EF171F54FED200F0550A /* TTFCmap.swift */,
+			);
+			path = TTFontFace;
+			sourceTree = "<group>";
+		};
 		0A776FC21D9A0BA5005FC88F /* c11_atomic */ = {
 			isa = PBXGroup;
 			children = (
@@ -786,6 +802,7 @@
 		0AD3E6331F53DAE3003CC21A /* Decoder */ = {
 			isa = PBXGroup;
 			children = (
+				0A72EF161F54FD4300F0550A /* TTFontFace */,
 				0AD3E6311F53DA9B003CC21A /* FontDecoder.swift */,
 				0AD3E63F1F54018B003CC21A /* TTCDecoder.swift */,
 				0AD3E6341F53DB6C003CC21A /* OpenTypeDecoder.swift */,
@@ -927,6 +944,7 @@
 				0A52E2D31E6012140065EED6 /* PDFASCII85Decode.swift in Sources */,
 				08B457E71EDD3223007AA4F0 /* Arithmetic.swift in Sources */,
 				0A7A1FAF1F04FBFC0016B3FB /* ColorPixel.swift in Sources */,
+				0A72EF1C1F55035200F0550A /* TTFontFace.swift in Sources */,
 				0A8EDDC01F19B1CD00C917CC /* iccCurve.swift in Sources */,
 				0AB2E23E1F17766C00B0CA84 /* zlib.swift in Sources */,
 				0A8EDDD41F19E74000C917CC /* iccTextDescription.swift in Sources */,
@@ -963,6 +981,7 @@
 				0A39436A1F4A77A700573372 /* Trigger.swift in Sources */,
 				08458B3B1E2E627600D01813 /* Point.swift in Sources */,
 				08B085491E9A20720037DECE /* Algorithm.swift in Sources */,
+				0A72EF151F54FD2C00F0550A /* TTFHead.swift in Sources */,
 				0A831A901F1895200007932A /* ImageRepDecoder.swift in Sources */,
 				0A9CD58E1EEB98F300094148 /* displayP3.swift in Sources */,
 				0A92C7C51E56AB9D0090EBFC /* Data.swift in Sources */,
@@ -1022,6 +1041,7 @@
 				0ABDF1AA1F2B34E6007EC7B2 /* ChromaticAdaptationAlgorithm.swift in Sources */,
 				08458B131E2E627600D01813 /* Fourier.swift in Sources */,
 				0AD3E6351F53DB6C003CC21A /* OpenTypeDecoder.swift in Sources */,
+				0A72EF181F54FED200F0550A /* TTFCmap.swift in Sources */,
 				08458B611E2E627600D01813 /* SDTask.swift in Sources */,
 				0AE71A041EF51DF80086923C /* AnyColorSpace.swift in Sources */,
 				08458AF91E2E627600D01813 /* CooleyTukey.swift in Sources */,
