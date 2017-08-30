@@ -48,16 +48,32 @@ public struct Font {
     
     private let base: FontFaceBase
     
+    public var pointSize: Double = 0
+    public var transform: SDTransform = SDTransform.identity
+    
     init?(_ base: FontFaceBase) {
         guard base.fontName != nil else { return nil }
         self.base = base
+    }
+    
+    public init(font: Font, size: Double, transform: SDTransform = SDTransform.identity) {
+        self.base = font.base
+        self.pointSize = size
+        self.transform = transform
     }
 }
 
 extension Font : CustomStringConvertible {
     
     public var description: String {
-        return "Font(name: \(self.fontName))"
+        return "Font(name: \(self.fontName), pointSize: \(self.pointSize), transform: \(self.transform))"
+    }
+}
+
+extension Font {
+    
+    public func with(size pointSize: Double) -> Font {
+        return Font(font: self, size: pointSize, transform: transform)
     }
 }
 

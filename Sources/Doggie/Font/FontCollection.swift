@@ -25,24 +25,11 @@
 
 import Foundation
 
-private struct _FontSetElementWrapper : Hashable {
-    
-    var font: Font
-    
-    var hashValue: Int {
-        return font.fontName.hashValue
-    }
-    
-    static func ==(lhs: _FontSetElementWrapper, rhs: _FontSetElementWrapper) -> Bool {
-        return lhs.font.fontName == rhs.font.fontName
-    }
-}
-
 public struct FontCollection : SetAlgebra, Hashable, Collection, ExpressibleByArrayLiteral {
     
-    private var fonts: Set<_FontSetElementWrapper>
+    private var fonts: Set<_ElementWrapper>
     
-    private init(fonts: Set<_FontSetElementWrapper>) {
+    private init(fonts: Set<_ElementWrapper>) {
         self.fonts = fonts
     }
     
@@ -51,15 +38,35 @@ public struct FontCollection : SetAlgebra, Hashable, Collection, ExpressibleByAr
     }
     
     public init(arrayLiteral elements: Font ...) {
-        self.fonts = Set(elements.map(_FontSetElementWrapper.init))
+        self.fonts = Set(elements.map(_ElementWrapper.init))
     }
     
     public init(_ elements: Font ...) {
-        self.fonts = Set(elements.map(_FontSetElementWrapper.init))
+        self.fonts = Set(elements.map(_ElementWrapper.init))
     }
     
     public init<S : Sequence>(_ components: S) where S.Element == Font {
-        self.fonts = Set(components.map(_FontSetElementWrapper.init))
+        self.fonts = Set(components.map(_ElementWrapper.init))
+    }
+}
+
+extension FontCollection {
+    
+    fileprivate struct _ElementWrapper : Hashable {
+        
+        let font: Font
+        
+        init(font: Font) {
+            self.font = font.with(size: 0)
+        }
+        
+        var hashValue: Int {
+            return font.fontName.hashValue
+        }
+        
+        static func ==(lhs: _ElementWrapper, rhs: _ElementWrapper) -> Bool {
+            return lhs.font.fontName == rhs.font.fontName
+        }
     }
 }
 
@@ -67,7 +74,7 @@ extension FontCollection {
     
     public struct Index : Comparable {
         
-        fileprivate let base: Set<_FontSetElementWrapper>.Index
+        fileprivate let base: Set<_ElementWrapper>.Index
         
         public static func ==(lhs: Index, rhs: Index) -> Bool {
             return lhs.base == rhs.base
@@ -80,7 +87,7 @@ extension FontCollection {
     
     public struct Iterator : IteratorProtocol {
         
-        fileprivate var base: SetIterator<_FontSetElementWrapper>
+        fileprivate var base: SetIterator<_ElementWrapper>
         
         public mutating func next() -> Font? {
             return base.next()?.font
@@ -134,7 +141,7 @@ extension FontCollection {
 extension FontCollection {
     
     public func contains(_ member: Font) -> Bool {
-        return fonts.contains(_FontSetElementWrapper(font: member))
+        return fonts.contains(_ElementWrapper(font: member))
     }
     
     public func union(_ other: FontCollection) -> FontCollection {
@@ -150,16 +157,16 @@ extension FontCollection {
     }
     
     public mutating func insert(_ newMember: Font) -> (inserted: Bool, memberAfterInsert: Font) {
-        let result = fonts.insert(_FontSetElementWrapper(font: newMember))
+        let result = fonts.insert(_ElementWrapper(font: newMember))
         return (result.0, result.1.font)
     }
     
     public mutating func remove(_ member: Font) -> Font? {
-        return fonts.remove(_FontSetElementWrapper(font: member))?.font
+        return fonts.remove(_ElementWrapper(font: member))?.font
     }
     
     public mutating func update(with newMember: Font) -> Font? {
-        return fonts.update(with: _FontSetElementWrapper(font: newMember))?.font
+        return fonts.update(with: _ElementWrapper(font: newMember))?.font
     }
     
     public mutating func formUnion(_ other: FontCollection) {
@@ -178,7 +185,7 @@ extension FontCollection {
 extension FontCollection : CustomStringConvertible {
     
     public var description: String {
-        return "\(fonts)"
+        return "\(fonts.map { $0.font })"
     }
 }
 
