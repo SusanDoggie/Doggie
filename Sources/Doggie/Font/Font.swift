@@ -25,46 +25,71 @@
 
 import Foundation
 
-protocol FontFamilyBase {
-    
-    var faces: [FontFaceBase] { get }
-}
-
 protocol FontFaceBase {
+    
+    var fontName: String? { get }
+    var displayName: String? { get }
+    var familyName: String? { get }
+    var subfamilyName: String? { get }
+    
+    var designer: String? { get }
+    var description: String? { get }
+    
+    var version: String? { get }
+    
+    var trademark: String? { get }
+    var manufacturer: String? { get }
+    var license: String? { get }
+    var copyright: String? { get }
     
 }
 
 public struct Font {
     
-    private let family: FontFamilyBase
-    // private let face: FontFaceBase
+    private let base: FontFaceBase
+    
+    init(_ base: FontFaceBase) {
+        self.base = base
+    }
 }
 
 extension Font {
     
-    public enum Error : Swift.Error {
-        
-        case UnknownFormat
-        case InvalidFormat(String)
-        case Unsupported(String)
-        case DecoderError(String)
+    public var fontName: String {
+        return base.fontName!
+    }
+    public var displayName: String? {
+        return base.displayName
+    }
+    public var familyName: String? {
+        return base.familyName
+    }
+    public var subfamilyName: String? {
+        return base.subfamilyName
     }
     
-    public init(data: Data) throws {
-        
-        let decoders: [FontDecoder.Type] = [
-            TTCDecoder.self,
-            OpenTypeDecoder.self,
-            WOFFDecoder.self,
-            ]
-        
-        for Decoder in decoders {
-            if let decoder = try Decoder.init(data: Data(data)) {
-                self.family = decoder
-                return
-            }
-        }
-        
-        throw Error.UnknownFormat
+    public var designer: String? {
+        return base.designer
     }
+    public var description: String? {
+        return base.description
+    }
+    
+    public var version: String? {
+        return base.version
+    }
+    
+    public var trademark: String? {
+        return base.trademark
+    }
+    public var manufacturer: String? {
+        return base.manufacturer
+    }
+    public var license: String? {
+        return base.license
+    }
+    public var copyright: String? {
+        return base.copyright
+    }
+    
 }

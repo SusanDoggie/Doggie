@@ -43,29 +43,28 @@ struct SFNTCMAP : DataDecodable {
         
         var tables: [Table] = []
         for _ in 0..<Int(numTables) {
-            let platformID = try data.decode(BEUInt16.self)
-            let platformSpecificID = try data.decode(BEUInt16.self)
+            let platform = try data.decode(SFNTPlatform.self)
             let offset = try data.decode(BEUInt32.self)
             let tableData = copy.dropFirst(Int(offset))
             switch Int(try BEUInt16(tableData)) {
-            case 0: tables.append(Table(platformID: platformID, platformSpecificID: platformSpecificID, format: try Format0(tableData)))
-            case 4: tables.append(Table(platformID: platformID, platformSpecificID: platformSpecificID, format: try Format4(tableData)))
-            case 12: tables.append(Table(platformID: platformID, platformSpecificID: platformSpecificID, format: try Format12(tableData)))
-            case 13: tables.append(Table(platformID: platformID, platformSpecificID: platformSpecificID, format: try Format13(tableData)))
+            case 0: tables.append(Table(platform: platform, format: try Format0(tableData)))
+            case 4: tables.append(Table(platform: platform, format: try Format4(tableData)))
+            case 12: tables.append(Table(platform: platform, format: try Format12(tableData)))
+            case 13: tables.append(Table(platform: platform, format: try Format13(tableData)))
             default: break
             }
         }
         
-        if let table = tables.lazy.filter({ $0.platformID == 0 && $0.platformSpecificID <= 4 }).max(by: { $0.platformSpecificID }) {
+        if let table = tables.lazy.filter({ $0.platform.platform == 0 && $0.platform.specific <= 4 }).max(by: { $0.platform.specific }) {
             self.table = table
-        } else if let table = tables.first(where: { $0.platformID == 3 && $0.platformSpecificID == 10 }) {
+        } else if let table = tables.first(where: { $0.platform.platform == 3 && $0.platform.specific == 10 }) {
             self.table = table
-        } else if let table = tables.first(where: { $0.platformID == 3 && $0.platformSpecificID == 1 }) {
+        } else if let table = tables.first(where: { $0.platform.platform == 3 && $0.platform.specific == 1 }) {
             self.table = table
-        } else if let table = tables.first(where: { $0.platformID == 3 && $0.platformSpecificID == 0 }) {
+        } else if let table = tables.first(where: { $0.platform.platform == 3 && $0.platform.specific == 0 }) {
             self.table = table
         } else {
-            throw Font.Error.Unsupported("Unsupported cmap format.")
+            throw FontCollection.Error.Unsupported("Unsupported cmap format.")
         }
     }
     
@@ -85,8 +84,7 @@ extension SFNTCMAP {
     
     struct Table {
         
-        var platformID: BEUInt16
-        var platformSpecificID: BEUInt16
+        var platform: SFNTPlatform
         var format: SFNTCMAPTableFormat
     }
     

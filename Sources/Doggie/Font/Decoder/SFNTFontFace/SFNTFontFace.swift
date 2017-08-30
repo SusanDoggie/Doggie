@@ -33,19 +33,74 @@ struct SFNTFontFace : FontFaceBase {
     let cmap: SFNTCMAP
     let post: SFNTPOST
     let os2: SFNTOS2
+    let name: SFNTNAME
     
     init(table: [Signature<BEUInt32>: Data]) throws {
         
-        guard let head = try table["head"].map({ try SFNTHEAD($0) }) else { throw Font.Error.InvalidFormat("head not found.") }
-        guard let cmap = try table["cmap"].map({ try SFNTCMAP($0) }) else { throw Font.Error.InvalidFormat("cmap not found.") }
-        guard let post = try table["post"].map({ try SFNTPOST($0) }) else { throw Font.Error.InvalidFormat("post not found.") }
-        guard let os2 = try table["OS/2"].map({ try SFNTOS2($0) }) else { throw Font.Error.InvalidFormat("OS/2 not found.") }
+        guard let head = try table["head"].map({ try SFNTHEAD($0) }) else { throw FontCollection.Error.InvalidFormat("head not found.") }
+        guard let cmap = try table["cmap"].map({ try SFNTCMAP($0) }) else { throw FontCollection.Error.InvalidFormat("cmap not found.") }
+        guard let post = try table["post"].map({ try SFNTPOST($0) }) else { throw FontCollection.Error.InvalidFormat("post not found.") }
+        guard let os2 = try table["OS/2"].map({ try SFNTOS2($0) }) else { throw FontCollection.Error.InvalidFormat("OS/2 not found.") }
+        guard let name = try table["name"].map({ try SFNTNAME($0) }) else { throw FontCollection.Error.InvalidFormat("name not found.") }
         
         self.table = table
         self.head = head
         self.cmap = cmap
         self.post = post
         self.os2 = os2
+        self.name = name
+        
+        print("fontName: \(self.fontName)")
+        print("displayName: \(self.displayName)")
+        print("familyName: \(self.familyName)")
+        print("subfamilyName: \(self.subfamilyName)")
+    }
+}
+
+extension SFNTFontFace {
+    
+    var copyright: String? {
+        return name.copyright.filter { $0.platform.platform == 0 }.map { $0.value }.first
+    }
+    
+    var fontName: String? {
+        return name.postscript.filter { $0.platform.platform == 0 }.map { $0.value }.first
+    }
+    
+    var familyName: String? {
+        return name.family.filter { $0.platform.platform == 0 }.map { $0.value }.first
+    }
+    
+    var subfamilyName: String? {
+        return name.subfamily.filter { $0.platform.platform == 0 }.map { $0.value }.first
+    }
+    
+    var displayName: String? {
+        return name.fullname.filter { $0.platform.platform == 0 }.map { $0.value }.first
+    }
+    
+    var version: String? {
+        return name.version.filter { $0.platform.platform == 0 }.map { $0.value }.first
+    }
+    
+    var trademark: String? {
+        return name.trademark.filter { $0.platform.platform == 0 }.map { $0.value }.first
+    }
+    
+    var manufacturer: String? {
+        return name.manufacturer.filter { $0.platform.platform == 0 }.map { $0.value }.first
+    }
+    
+    var designer: String? {
+        return name.designer.filter { $0.platform.platform == 0 }.map { $0.value }.first
+    }
+    
+    var description: String? {
+        return name.description.filter { $0.platform.platform == 0 }.map { $0.value }.first
+    }
+    
+    var license: String? {
+        return name.license.filter { $0.platform.platform == 0 }.map { $0.value }.first
     }
 }
 

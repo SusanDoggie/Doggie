@@ -82,6 +82,7 @@
 		0A53E47B1E35AEF80060FB83 /* Random.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A53E45B1E35AEF80060FB83 /* Random.swift */; };
 		0A53E47D1E35AEF80060FB83 /* Regex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A53E45C1E35AEF80060FB83 /* Regex.swift */; };
 		0A56E9111E35F02E00D93786 /* RectCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A56E90F1E35F02E00D93786 /* RectCollection.swift */; };
+		0A5E8D421F56B428000D51E3 /* FontCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A5E8D411F56B428000D51E3 /* FontCollection.swift */; };
 		0A6CDDA81E61738A009DDEEB /* PDFPredictor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A6CDDA61E61738A009DDEEB /* PDFPredictor.swift */; };
 		0A72EF151F54FD2C00F0550A /* SFNTHEAD.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A72EF141F54FD2C00F0550A /* SFNTHEAD.swift */; };
 		0A72EF181F54FED200F0550A /* SFNTCMAP.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A72EF171F54FED200F0550A /* SFNTCMAP.swift */; };
@@ -143,6 +144,8 @@
 		0A9F28381EF1174600E69976 /* iccType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9F28361EF1174600E69976 /* iccType.swift */; };
 		0A9F993F1F56649C0008D36D /* SFNTPOST.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9F993E1F56649C0008D36D /* SFNTPOST.swift */; };
 		0A9F99421F566A450008D36D /* SFNTOS2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9F99411F566A450008D36D /* SFNTOS2.swift */; };
+		0A9F99441F56734A0008D36D /* SFNTNAME.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9F99431F56734A0008D36D /* SFNTNAME.swift */; };
+		0A9F99471F568FD40008D36D /* SFNTPlatform.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9F99461F568FD40008D36D /* SFNTPlatform.swift */; };
 		0AAC4DF51E977906008DCADA /* ShapeRasterize.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AAC4DF31E977906008DCADA /* ShapeRasterize.swift */; };
 		0AB0DA121F3AEF8B0004E43F /* ShapeRegion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AB0DA111F3AEF7B0004E43F /* ShapeRegion.swift */; };
 		0AB23E461F22E4980033462E /* RawBitmap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AB23E441F22E4980033462E /* RawBitmap.swift */; };
@@ -254,6 +257,7 @@
 		0A53E45B1E35AEF80060FB83 /* Random.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Random.swift; sourceTree = "<group>"; };
 		0A53E45C1E35AEF80060FB83 /* Regex.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Regex.swift; sourceTree = "<group>"; };
 		0A56E90F1E35F02E00D93786 /* RectCollection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RectCollection.swift; sourceTree = "<group>"; };
+		0A5E8D411F56B428000D51E3 /* FontCollection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FontCollection.swift; sourceTree = "<group>"; };
 		0A6CDDA61E61738A009DDEEB /* PDFPredictor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PDFPredictor.swift; sourceTree = "<group>"; };
 		0A72EF141F54FD2C00F0550A /* SFNTHEAD.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SFNTHEAD.swift; sourceTree = "<group>"; };
 		0A72EF171F54FED200F0550A /* SFNTCMAP.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SFNTCMAP.swift; sourceTree = "<group>"; };
@@ -316,6 +320,8 @@
 		0A9F28361EF1174600E69976 /* iccType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iccType.swift; sourceTree = "<group>"; };
 		0A9F993E1F56649C0008D36D /* SFNTPOST.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SFNTPOST.swift; sourceTree = "<group>"; };
 		0A9F99411F566A450008D36D /* SFNTOS2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SFNTOS2.swift; sourceTree = "<group>"; };
+		0A9F99431F56734A0008D36D /* SFNTNAME.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SFNTNAME.swift; sourceTree = "<group>"; };
+		0A9F99461F568FD40008D36D /* SFNTPlatform.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SFNTPlatform.swift; sourceTree = "<group>"; };
 		0AAC4DF31E977906008DCADA /* ShapeRasterize.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShapeRasterize.swift; sourceTree = "<group>"; };
 		0AB0DA111F3AEF7B0004E43F /* ShapeRegion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShapeRegion.swift; sourceTree = "<group>"; };
 		0AB23E441F22E4980033462E /* RawBitmap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RawBitmap.swift; sourceTree = "<group>"; };
@@ -619,10 +625,12 @@
 			isa = PBXGroup;
 			children = (
 				0A72EF1B1F55035200F0550A /* SFNTFontFace.swift */,
+				0A9F99461F568FD40008D36D /* SFNTPlatform.swift */,
 				0A72EF141F54FD2C00F0550A /* SFNTHEAD.swift */,
 				0A72EF171F54FED200F0550A /* SFNTCMAP.swift */,
 				0A9F993E1F56649C0008D36D /* SFNTPOST.swift */,
 				0A9F99411F566A450008D36D /* SFNTOS2.swift */,
+				0A9F99431F56734A0008D36D /* SFNTNAME.swift */,
 			);
 			path = SFNTFontFace;
 			sourceTree = "<group>";
@@ -797,6 +805,7 @@
 			isa = PBXGroup;
 			children = (
 				0AD3E62E1F53D9FC003CC21A /* Font.swift */,
+				0A5E8D411F56B428000D51E3 /* FontCollection.swift */,
 				0AD3E6331F53DAE3003CC21A /* Decoder */,
 			);
 			path = Font;
@@ -931,6 +940,7 @@
 				0A94BE9D1F1087EA00F1BCD2 /* ImageRep.swift in Sources */,
 				0A967E531F132DC0007E38E4 /* PNGEncoder.swift in Sources */,
 				0A1158471EF4E04700EFE3E3 /* iccTagData.swift in Sources */,
+				0A5E8D421F56B428000D51E3 /* FontCollection.swift in Sources */,
 				08458B3D1E2E627600D01813 /* Polynomial.swift in Sources */,
 				0A36612C1EEA54AB00216A26 /* CGPath.swift in Sources */,
 				0821D6421EED58FC007E42F5 /* Rendering.swift in Sources */,
@@ -943,6 +953,7 @@
 				0AB23E461F22E4980033462E /* RawBitmap.swift in Sources */,
 				0A80D1481E66A7000003BB44 /* RangeSet.swift in Sources */,
 				0A52E2DF1E60266A0065EED6 /* PDFLZWDecode.swift in Sources */,
+				0A9F99441F56734A0008D36D /* SFNTNAME.swift in Sources */,
 				0A78E1F91E98B20A00BD91AB /* Geometry.swift in Sources */,
 				0A9CD5911EEB9A2700094148 /* CIEXYZColorSpace.swift in Sources */,
 				0A52E2D31E6012140065EED6 /* PDFASCII85Decode.swift in Sources */,
@@ -972,6 +983,7 @@
 				0A52E2DC1E6012530065EED6 /* PDFRunLengthDecode.swift in Sources */,
 				08458B411E2E627600D01813 /* SDTransform.swift in Sources */,
 				08458B451E2E627600D01813 /* Actor.swift in Sources */,
+				0A9F99471F568FD40008D36D /* SFNTPlatform.swift in Sources */,
 				0A9F993F1F56649C0008D36D /* SFNTPOST.swift in Sources */,
 				0A53E45F1E35AEF80060FB83 /* CollectionExtension.swift in Sources */,
 				0A21F0251F061AE2009C4490 /* PixelBlender.swift in Sources */,
