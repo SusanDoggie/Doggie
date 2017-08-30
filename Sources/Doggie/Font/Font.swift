@@ -47,19 +47,55 @@ protocol FontFaceBase {
 public struct Font {
     
     private let base: FontFaceBase
+    private let details: Details
     
     public var pointSize: Double = 0
     public var transform: SDTransform = SDTransform.identity
     
     init?(_ base: FontFaceBase) {
-        guard base.fontName != nil else { return nil }
+        guard let details = Details(base) else { return nil }
+        self.details = details
         self.base = base
     }
     
     public init(font: Font, size: Double, transform: SDTransform = SDTransform.identity) {
+        self.details = font.details
         self.base = font.base
         self.pointSize = size
         self.transform = transform
+    }
+}
+
+extension Font {
+    
+    private struct Details {
+        
+        let fontName: String
+        let displayName: String?
+        let uniqueName: String?
+        let familyName: String?
+        let subfamilyName: String?
+        let designer: String?
+        let version: String?
+        let trademark: String?
+        let manufacturer: String?
+        let license: String?
+        let copyright: String?
+        
+        init?(_ base: FontFaceBase) {
+            guard let fontName = base.fontName else { return nil }
+            self.fontName = fontName
+            self.displayName = base.displayName
+            self.uniqueName = base.uniqueName
+            self.familyName = base.familyName
+            self.subfamilyName = base.subfamilyName
+            self.designer = base.designer
+            self.version = base.version
+            self.trademark = base.trademark
+            self.manufacturer = base.manufacturer
+            self.license = base.license
+            self.copyright = base.copyright
+        }
     }
 }
 
@@ -80,40 +116,40 @@ extension Font {
 extension Font {
     
     public var fontName: String {
-        return base.fontName!
+        return self.details.fontName
     }
     public var displayName: String? {
-        return base.displayName
+        return self.details.displayName
     }
     public var uniqueName: String? {
-        return base.uniqueName
+        return self.details.uniqueName
     }
     public var familyName: String? {
-        return base.familyName
+        return self.details.familyName
     }
     public var subfamilyName: String? {
-        return base.subfamilyName
+        return self.details.subfamilyName
     }
     
     public var designer: String? {
-        return base.designer
+        return self.details.designer
     }
     
     public var version: String? {
-        return base.version
+        return self.details.version
     }
     
     public var trademark: String? {
-        return base.trademark
+        return self.details.trademark
     }
     public var manufacturer: String? {
-        return base.manufacturer
+        return self.details.manufacturer
     }
     public var license: String? {
-        return base.license
+        return self.details.license
     }
     public var copyright: String? {
-        return base.copyright
+        return self.details.copyright
     }
     
 }

@@ -110,10 +110,6 @@ extension FontCollection {
         return fonts.isEmpty
     }
     
-    public var first: Font? {
-        return fonts.first?.font
-    }
-    
     public subscript(position: Index) -> Font {
         return fonts[position.base].font
     }
@@ -140,8 +136,19 @@ extension FontCollection {
 
 extension FontCollection {
     
+    public var familyNames: Set<String> {
+        return Set(fonts.flatMap { $0.font.familyName })
+    }
+}
+
+extension FontCollection {
+    
     public func contains(_ member: Font) -> Bool {
         return fonts.contains(_ElementWrapper(font: member))
+    }
+    
+    public func filter(_ isIncluded: (Font) throws -> Bool) rethrows -> FontCollection {
+        return FontCollection(fonts: try fonts.filter { try isIncluded($0.font) })
     }
     
     public func union(_ other: FontCollection) -> FontCollection {

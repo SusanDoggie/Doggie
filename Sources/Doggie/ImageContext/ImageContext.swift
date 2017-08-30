@@ -23,6 +23,20 @@
 //  THE SOFTWARE.
 //
 
+private struct ImageContextStyles {
+    
+    var opacity: Double = 1
+    var antialias: Bool = true
+    var transform: SDTransform = SDTransform.identity
+    var blendMode: ColorBlendMode = .default
+    var compositingMode: ColorCompositingMode = .default
+    var resamplingAlgorithm: ResamplingAlgorithm = .default
+    var renderCullingMode: ImageContextRenderCullMode = .none
+    var renderDepthCompareMode: ImageContextRenderDepthCompareMode = .always
+    var renderingIntent: RenderingIntent = .default
+    
+}
+
 public class ImageContext<Pixel: ColorPixelProtocol> {
     
     public private(set) var image: Image<Pixel>
@@ -30,15 +44,7 @@ public class ImageContext<Pixel: ColorPixelProtocol> {
     private var clip: [Double]
     private var depth: [Double]
     
-    private var _opacity: Double = 1
-    private var _antialias: Bool = true
-    private var _transform: SDTransform = SDTransform.identity
-    private var _blendMode: ColorBlendMode = .default
-    private var _compositingMode: ColorCompositingMode = .default
-    private var _resamplingAlgorithm: ResamplingAlgorithm = .default
-    private var _renderCullingMode: ImageContextRenderCullMode = .none
-    private var _renderDepthCompareMode: ImageContextRenderDepthCompareMode = .always
-    private var _renderingIntent: RenderingIntent = .default
+    private var styles: ImageContextStyles = ImageContextStyles()
     
     private var next: ImageContext?
     
@@ -59,14 +65,8 @@ extension ImageContext {
     
     private convenience init<P>(copyStates context: ImageContext<P>, colorSpace: ColorSpace<Pixel.Model>) {
         self.init(width: context.width, height: context.height, colorSpace: colorSpace)
-        self._antialias = context.antialias
-        self._transform = context.transform
-        self._blendMode = context.blendMode
-        self._compositingMode = context.compositingMode
-        self._resamplingAlgorithm = context.resamplingAlgorithm
-        self._renderCullingMode = context.renderCullingMode
-        self._renderDepthCompareMode = context.renderDepthCompareMode
-        self._renderingIntent = context.renderingIntent
+        self.styles = context.styles
+        self.styles.opacity = 1
         self.image.colorSpace.chromaticAdaptationAlgorithm = context.colorSpace.chromaticAdaptationAlgorithm
     }
 }
@@ -131,91 +131,91 @@ extension ImageContext {
     
     public var opacity: Double {
         get {
-            return next?.opacity ?? _opacity
+            return next?.opacity ?? styles.opacity
         }
         set {
             if let next = self.next {
                 next.opacity = newValue
             } else {
-                _opacity = newValue
+                styles.opacity = newValue
             }
         }
     }
     
     public var antialias: Bool {
         get {
-            return next?.antialias ?? _antialias
+            return next?.antialias ?? styles.antialias
         }
         set {
             if let next = self.next {
                 next.antialias = newValue
             } else {
-                _antialias = newValue
+                styles.antialias = newValue
             }
         }
     }
     
     public var transform: SDTransform {
         get {
-            return next?.transform ?? _transform
+            return next?.transform ?? styles.transform
         }
         set {
             if let next = self.next {
                 next.transform = newValue
             } else {
-                _transform = newValue
+                styles.transform = newValue
             }
         }
     }
     
     public var blendMode: ColorBlendMode {
         get {
-            return next?.blendMode ?? _blendMode
+            return next?.blendMode ?? styles.blendMode
         }
         set {
             if let next = self.next {
                 next.blendMode = newValue
             } else {
-                _blendMode = newValue
+                styles.blendMode = newValue
             }
         }
     }
     
     public var compositingMode: ColorCompositingMode {
         get {
-            return next?.compositingMode ?? _compositingMode
+            return next?.compositingMode ?? styles.compositingMode
         }
         set {
             if let next = self.next {
                 next.compositingMode = newValue
             } else {
-                _compositingMode = newValue
+                styles.compositingMode = newValue
             }
         }
     }
     
     public var resamplingAlgorithm: ResamplingAlgorithm {
         get {
-            return next?.resamplingAlgorithm ?? _resamplingAlgorithm
+            return next?.resamplingAlgorithm ?? styles.resamplingAlgorithm
         }
         set {
             if let next = self.next {
                 next.resamplingAlgorithm = newValue
             } else {
-                _resamplingAlgorithm = newValue
+                styles.resamplingAlgorithm = newValue
             }
         }
     }
     
     public var renderingIntent: RenderingIntent {
         get {
-            return next?.renderingIntent ?? _renderingIntent
+            return next?.renderingIntent ?? styles.renderingIntent
         }
         set {
             if let next = self.next {
                 next.renderingIntent = newValue
             } else {
-                _renderingIntent = newValue
+                styles.renderingIntent = newValue
             }
         }
     }
@@ -278,26 +278,26 @@ extension ImageContext {
     
     public var renderCullingMode: ImageContextRenderCullMode {
         get {
-            return next?.renderCullingMode ?? _renderCullingMode
+            return next?.renderCullingMode ?? styles.renderCullingMode
         }
         set {
             if let next = self.next {
                 next.renderCullingMode = newValue
             } else {
-                _renderCullingMode = newValue
+                styles.renderCullingMode = newValue
             }
         }
     }
     
     public var renderDepthCompareMode: ImageContextRenderDepthCompareMode {
         get {
-            return next?.renderDepthCompareMode ?? _renderDepthCompareMode
+            return next?.renderDepthCompareMode ?? styles.renderDepthCompareMode
         }
         set {
             if let next = self.next {
                 next.renderDepthCompareMode = newValue
             } else {
-                _renderDepthCompareMode = newValue
+                styles.renderDepthCompareMode = newValue
             }
         }
     }
