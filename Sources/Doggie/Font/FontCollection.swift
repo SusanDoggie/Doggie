@@ -25,66 +25,153 @@
 
 import Foundation
 
-public struct FontCollection : RandomAccessCollection, MutableCollection, ExpressibleByArrayLiteral {
+private struct _FontSetElementWrapper : Hashable {
     
-    public typealias SubSequence = MutableRangeReplaceableRandomAccessSlice<FontCollection>
+    var font: Font
     
-    public typealias Indices = CountableRange<Int>
+    var hashValue: Int {
+        return font.fontName.hashValue
+    }
     
-    public typealias Index = Int
+    static func ==(lhs: _FontSetElementWrapper, rhs: _FontSetElementWrapper) -> Bool {
+        return lhs.font.fontName == rhs.font.fontName
+    }
+}
+
+public struct FontCollection : SetAlgebra, Hashable, Collection, ExpressibleByArrayLiteral {
     
-    private var fonts: [Font]
+    private var fonts: Set<_FontSetElementWrapper>
+    
+    private init(fonts: Set<_FontSetElementWrapper>) {
+        self.fonts = fonts
+    }
     
     public init() {
         self.fonts = []
     }
     
     public init(arrayLiteral elements: Font ...) {
-        self.fonts = elements
+        self.fonts = Set(elements.map(_FontSetElementWrapper.init))
     }
     
     public init(_ elements: Font ...) {
-        self.fonts = elements
+        self.fonts = Set(elements.map(_FontSetElementWrapper.init))
     }
     
     public init<S : Sequence>(_ components: S) where S.Element == Font {
-        self.fonts = Array(components)
-    }
-    
-    public subscript(position : Int) -> Font {
-        get {
-            return fonts[position]
-        }
-        set {
-            fonts[position] = newValue
-        }
-    }
-    
-    public var startIndex: Int {
-        return fonts.startIndex
-    }
-    
-    public var endIndex: Int {
-        return fonts.endIndex
+        self.fonts = Set(components.map(_FontSetElementWrapper.init))
     }
 }
 
-extension FontCollection : RangeReplaceableCollection {
+extension FontCollection {
     
-    public mutating func append(_ x: Font) {
-        fonts.append(x)
+    public struct Index : Comparable {
+        
+        fileprivate let base: Set<_FontSetElementWrapper>.Index
+        
+        public static func ==(lhs: Index, rhs: Index) -> Bool {
+            return lhs.base == rhs.base
+        }
+        
+        public static func <(lhs: Index, rhs: Index) -> Bool {
+            return lhs.base < rhs.base
+        }
     }
     
-    public mutating func reserveCapacity(_ minimumCapacity: Int) {
-        fonts.reserveCapacity(minimumCapacity)
+    public struct Iterator : IteratorProtocol {
+        
+        fileprivate var base: SetIterator<_FontSetElementWrapper>
+        
+        public mutating func next() -> Font? {
+            return base.next()?.font
+        }
     }
     
-    public mutating func removeAll(keepingCapacity: Bool = false) {
-        fonts.removeAll(keepingCapacity: keepingCapacity)
+    public var startIndex: Index {
+        return Index(base: fonts.startIndex)
     }
     
-    public mutating func replaceSubrange<C : Collection>(_ subRange: Range<Int>, with newElements: C) where C.Element == Font {
-        fonts.replaceSubrange(subRange, with: newElements)
+    public var endIndex: Index {
+        return Index(base: fonts.endIndex)
+    }
+    
+    public var count: Int {
+        return fonts.count
+    }
+    
+    public var isEmpty: Bool {
+        return fonts.isEmpty
+    }
+    
+    public var first: Font? {
+        return fonts.first?.font
+    }
+    
+    public subscript(position: Index) -> Font {
+        return fonts[position.base].font
+    }
+    
+    public func index(after i: Index) -> Index {
+        return Index(base: fonts.index(after: i.base))
+    }
+    
+    public func makeIterator() -> Iterator {
+        return Iterator(base: fonts.makeIterator())
+    }
+}
+
+extension FontCollection {
+    
+    public var hashValue: Int {
+        return fonts.hashValue
+    }
+    
+    public static func ==(lhs: FontCollection, rhs: FontCollection) -> Bool {
+        return lhs.fonts == rhs.fonts
+    }
+}
+
+extension FontCollection {
+    
+    public func contains(_ member: Font) -> Bool {
+        return fonts.contains(_FontSetElementWrapper(font: member))
+    }
+    
+    public func union(_ other: FontCollection) -> FontCollection {
+        return FontCollection(fonts: fonts.union(other.fonts))
+    }
+    
+    public func intersection(_ other: FontCollection) -> FontCollection {
+        return FontCollection(fonts: fonts.intersection(other.fonts))
+    }
+    
+    public func symmetricDifference(_ other: FontCollection) -> FontCollection {
+        return FontCollection(fonts: fonts.symmetricDifference(other.fonts))
+    }
+    
+    public mutating func insert(_ newMember: Font) -> (inserted: Bool, memberAfterInsert: Font) {
+        let result = fonts.insert(_FontSetElementWrapper(font: newMember))
+        return (result.0, result.1.font)
+    }
+    
+    public mutating func remove(_ member: Font) -> Font? {
+        return fonts.remove(_FontSetElementWrapper(font: member))?.font
+    }
+    
+    public mutating func update(with newMember: Font) -> Font? {
+        return fonts.update(with: _FontSetElementWrapper(font: newMember))?.font
+    }
+    
+    public mutating func formUnion(_ other: FontCollection) {
+        fonts.formUnion(other.fonts)
+    }
+    
+    public mutating func formIntersection(_ other: FontCollection) {
+        fonts.formIntersection(other.fonts)
+    }
+    
+    public mutating func formSymmetricDifference(_ other: FontCollection) {
+        fonts.formSymmetricDifference(other.fonts)
     }
 }
 
@@ -120,7 +207,7 @@ extension FontCollection {
         
         for Decoder in decoders {
             if let decoder = try Decoder.init(data: Data(data)) {
-                self.fonts = decoder.faces.flatMap { $0.fontName != nil ? Font($0) : nil }
+                self.init(decoder.faces.flatMap(Font.init))
                 return
             }
         }

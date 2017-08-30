@@ -48,7 +48,8 @@ public struct Font {
     
     private let base: FontFaceBase
     
-    init(_ base: FontFaceBase) {
+    init?(_ base: FontFaceBase) {
+        guard base.fontName != nil else { return nil }
         self.base = base
     }
 }
