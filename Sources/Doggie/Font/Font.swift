@@ -56,7 +56,7 @@ public struct Font {
 extension Font : CustomStringConvertible {
     
     public var description: String {
-        return "\(Font.self)(name: \(self.fontName))"
+        return "Font(name: \(self.fontName))"
     }
 }
 
