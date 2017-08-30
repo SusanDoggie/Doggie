@@ -194,7 +194,7 @@ extension TTFCmap {
                 
                 let startCharCode = UInt32(groups[range.startIndex].startCharCode)
                 let endCharCode = UInt32(groups[range.startIndex].endCharCode)
-                return startCharCode...endCharCode ~= code ? Int(code - startCharCode) + Int(groups[range.startIndex].startGlyphCode) : 0
+                return startCharCode <= endCharCode && startCharCode...endCharCode ~= code ? Int(code - startCharCode) + Int(groups[range.startIndex].startGlyphCode) : 0
                 
             } else {
                 
@@ -202,7 +202,7 @@ extension TTFCmap {
                 
                 let startCharCode = UInt32(groups[range.startIndex + mid].startCharCode)
                 let endCharCode = UInt32(groups[range.startIndex + mid].endCharCode)
-                if startCharCode...endCharCode ~= code {
+                if startCharCode <= endCharCode && startCharCode...endCharCode ~= code {
                     return Int(code - startCharCode) + Int(groups[range.startIndex].startGlyphCode)
                 }
                 return code < startCharCode ? search(code, groups, range.prefix(upTo: mid)) : search(code, groups, range.suffix(from: mid).dropFirst())
@@ -239,7 +239,7 @@ extension TTFCmap {
                 
                 let startCharCode = UInt32(groups[range.startIndex].startCharCode)
                 let endCharCode = UInt32(groups[range.startIndex].endCharCode)
-                return startCharCode...endCharCode ~= code ? Int(groups[range.startIndex].startGlyphCode) : 0
+                return startCharCode <= endCharCode && startCharCode...endCharCode ~= code ? Int(groups[range.startIndex].startGlyphCode) : 0
                 
             } else {
                 
@@ -247,7 +247,7 @@ extension TTFCmap {
                 
                 let startCharCode = UInt32(groups[range.startIndex + mid].startCharCode)
                 let endCharCode = UInt32(groups[range.startIndex + mid].endCharCode)
-                if startCharCode...endCharCode ~= code {
+                if startCharCode <= endCharCode && startCharCode...endCharCode ~= code {
                     return Int(groups[range.startIndex].startGlyphCode)
                 }
                 return code < startCharCode ? search(code, groups, range.prefix(upTo: mid)) : search(code, groups, range.suffix(from: mid).dropFirst())
