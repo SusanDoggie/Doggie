@@ -55,47 +55,47 @@ struct SFNTFontFace : FontFaceBase {
 extension SFNTFontFace {
     
     var copyright: String? {
-        return name.copyright.filter { $0.platform.platform == 0 }.map { $0.value }.first
+        return name.name.lazy.filter { $0.platform.platform == 0 && $0.name == 0 }.map { $0.value }.first
     }
     
     var fontName: String? {
-        return name.postscript.filter { $0.platform.platform == 0 }.map { $0.value }.first
+        return name.name.lazy.filter { $0.platform.platform == 0 && $0.name == 6 }.map { $0.value }.first
     }
     
     var familyName: String? {
-        return name.family.filter { $0.platform.platform == 0 }.map { $0.value }.first
+        return name.name.lazy.filter { $0.platform.platform == 0 && $0.name == 1 }.map { $0.value }.first
     }
     
     var subfamilyName: String? {
-        return name.subfamily.filter { $0.platform.platform == 0 }.map { $0.value }.first
+        return name.name.lazy.filter { $0.platform.platform == 0 && $0.name == 2 }.map { $0.value }.first
+    }
+    
+    var uniqueName: String? {
+        return name.name.lazy.filter { $0.platform.platform == 0 && $0.name == 3 }.map { $0.value }.first
     }
     
     var displayName: String? {
-        return name.fullname.filter { $0.platform.platform == 0 }.map { $0.value }.first
+        return name.name.lazy.filter { $0.platform.platform == 0 && $0.name == 4 }.map { $0.value }.first
     }
     
     var version: String? {
-        return name.version.filter { $0.platform.platform == 0 }.map { $0.value }.first
+        return name.name.lazy.filter { $0.platform.platform == 0 && $0.name == 5 }.map { $0.value }.first
     }
     
     var trademark: String? {
-        return name.trademark.filter { $0.platform.platform == 0 }.map { $0.value }.first
+        return name.name.lazy.filter { $0.platform.platform == 0 && $0.name == 7 }.map { $0.value }.first
     }
     
     var manufacturer: String? {
-        return name.manufacturer.filter { $0.platform.platform == 0 }.map { $0.value }.first
+        return name.name.lazy.filter { $0.platform.platform == 0 && $0.name == 8 }.map { $0.value }.first
     }
     
     var designer: String? {
-        return name.designer.filter { $0.platform.platform == 0 }.map { $0.value }.first
-    }
-    
-    var description: String? {
-        return name.description.filter { $0.platform.platform == 0 }.map { $0.value }.first
+        return name.name.lazy.filter { $0.platform.platform == 0 && $0.name == 9 }.map { $0.value }.first
     }
     
     var license: String? {
-        return name.license.filter { $0.platform.platform == 0 }.map { $0.value }.first
+        return name.name.lazy.filter { $0.platform.platform == 0 && $0.name == 13 }.map { $0.value }.first
     }
 }
 

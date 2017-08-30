@@ -29,11 +29,11 @@ protocol FontFaceBase {
     
     var fontName: String? { get }
     var displayName: String? { get }
+    var uniqueName: String? { get }
     var familyName: String? { get }
     var subfamilyName: String? { get }
     
     var designer: String? { get }
-    var description: String? { get }
     
     var version: String? { get }
     
@@ -53,6 +53,13 @@ public struct Font {
     }
 }
 
+extension Font : CustomStringConvertible {
+    
+    public var description: String {
+        return "\(Font.self)(\(self.fontName))"
+    }
+}
+
 extension Font {
     
     public var fontName: String {
@@ -60,6 +67,9 @@ extension Font {
     }
     public var displayName: String? {
         return base.displayName
+    }
+    public var uniqueName: String? {
+        return base.uniqueName
     }
     public var familyName: String? {
         return base.familyName
@@ -70,9 +80,6 @@ extension Font {
     
     public var designer: String? {
         return base.designer
-    }
-    public var description: String? {
-        return base.description
     }
     
     public var version: String? {
