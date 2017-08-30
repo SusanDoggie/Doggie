@@ -54,48 +54,54 @@ struct SFNTFontFace : FontFaceBase {
 
 extension SFNTFontFace {
     
+    func queryName(_ id: Int) -> String? {
+        let macOSRoman = name.name.lazy.filter { $0.platform.platform == 1 && $0.platform.specific == 0 && $0.name == id }
+        let unicode = name.name.lazy.filter { $0.platform.platform == 0 && $0.name == id }
+        return macOSRoman.map { $0.value }.first ?? unicode.map { $0.value }.first
+    }
+    
     var copyright: String? {
-        return name.name.lazy.filter { $0.platform.platform == 0 && $0.name == 0 }.map { $0.value }.first
+        return queryName(0)
     }
     
     var fontName: String? {
-        return name.name.lazy.filter { $0.platform.platform == 0 && $0.name == 6 }.map { $0.value }.first
+        return queryName(6)
     }
     
     var familyName: String? {
-        return name.name.lazy.filter { $0.platform.platform == 0 && $0.name == 1 }.map { $0.value }.first
+        return queryName(1)
     }
     
     var subfamilyName: String? {
-        return name.name.lazy.filter { $0.platform.platform == 0 && $0.name == 2 }.map { $0.value }.first
+        return queryName(2)
     }
     
     var uniqueName: String? {
-        return name.name.lazy.filter { $0.platform.platform == 0 && $0.name == 3 }.map { $0.value }.first
+        return queryName(3)
     }
     
     var displayName: String? {
-        return name.name.lazy.filter { $0.platform.platform == 0 && $0.name == 4 }.map { $0.value }.first
+        return queryName(4)
     }
     
     var version: String? {
-        return name.name.lazy.filter { $0.platform.platform == 0 && $0.name == 5 }.map { $0.value }.first
+        return queryName(5)
     }
     
     var trademark: String? {
-        return name.name.lazy.filter { $0.platform.platform == 0 && $0.name == 7 }.map { $0.value }.first
+        return queryName(7)
     }
     
     var manufacturer: String? {
-        return name.name.lazy.filter { $0.platform.platform == 0 && $0.name == 8 }.map { $0.value }.first
+        return queryName(8)
     }
     
     var designer: String? {
-        return name.name.lazy.filter { $0.platform.platform == 0 && $0.name == 9 }.map { $0.value }.first
+        return queryName(9)
     }
     
     var license: String? {
-        return name.name.lazy.filter { $0.platform.platform == 0 && $0.name == 13 }.map { $0.value }.first
+        return queryName(13)
     }
 }
 
