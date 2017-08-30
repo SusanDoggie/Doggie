@@ -49,11 +49,6 @@ struct SFNTFontFace : FontFaceBase {
         self.post = post
         self.os2 = os2
         self.name = name
-        
-        print("fontName: \(self.fontName)")
-        print("displayName: \(self.displayName)")
-        print("familyName: \(self.familyName)")
-        print("subfamilyName: \(self.subfamilyName)")
     }
 }
 
