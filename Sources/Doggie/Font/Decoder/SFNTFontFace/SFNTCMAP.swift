@@ -1,5 +1,5 @@
 //
-//  SFNTCmap.swift
+//  SFNTCMAP.swift
 //
 //  The MIT License
 //  Copyright (c) 2015 - 2017 Susan Cheng. All rights reserved.
@@ -25,12 +25,12 @@
 
 import Foundation
 
-protocol SFNTCmapTableFormat : DataDecodable {
+protocol SFNTCMAPTableFormat : DataDecodable {
     
     subscript(code: UInt32) -> Int { get }
 }
 
-struct SFNTCmap : DataDecodable {
+struct SFNTCMAP : DataDecodable {
     
     var version: BEUInt16
     var numTables: BEUInt16
@@ -74,23 +74,23 @@ struct SFNTCmap : DataDecodable {
     }
 }
 
-extension SFNTCmap : CustomStringConvertible {
+extension SFNTCMAP : CustomStringConvertible {
     
     var description: String {
-        return "SFNTCmap(version: \(version), numTables: \(numTables))"
+        return "SFNTCMAP(version: \(version), numTables: \(numTables))"
     }
 }
 
-extension SFNTCmap {
+extension SFNTCMAP {
     
     struct Table {
         
         var platformID: BEUInt16
         var platformSpecificID: BEUInt16
-        var format: SFNTCmapTableFormat
+        var format: SFNTCMAPTableFormat
     }
     
-    struct Format0 : SFNTCmapTableFormat {
+    struct Format0 : SFNTCMAPTableFormat {
         
         var format: BEUInt16
         var length: BEUInt16
@@ -110,7 +110,7 @@ extension SFNTCmap {
         }
     }
     
-    struct Format4 : SFNTCmapTableFormat {
+    struct Format4 : SFNTCMAPTableFormat {
         
         var format: BEUInt16
         var length: BEUInt16
@@ -169,7 +169,7 @@ extension SFNTCmap {
         }
     }
     
-    struct Format12 : SFNTCmapTableFormat {
+    struct Format12 : SFNTCMAPTableFormat {
         
         var format: Fixed16Number<BEUInt32>
         var length: BEUInt32
@@ -214,7 +214,7 @@ extension SFNTCmap {
         }
     }
     
-    struct Format13 : SFNTCmapTableFormat {
+    struct Format13 : SFNTCMAPTableFormat {
         
         var format: Fixed16Number<BEUInt32>
         var length: BEUInt32

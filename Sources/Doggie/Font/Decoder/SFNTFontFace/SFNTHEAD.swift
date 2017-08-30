@@ -1,5 +1,5 @@
 //
-//  SFNTHead.swift
+//  SFNTHEAD.swift
 //
 //  The MIT License
 //  Copyright (c) 2015 - 2017 Susan Cheng. All rights reserved.
@@ -25,7 +25,7 @@
 
 import Foundation
 
-struct SFNTHead : DataDecodable {
+struct SFNTHEAD : DataDecodable {
     
     var version: Fixed16Number<BEUInt32>
     var fontRevision: Fixed16Number<BEUInt32>
