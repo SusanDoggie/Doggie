@@ -46,7 +46,7 @@ struct WOFFDecoder : FontDecoder {
                 table[record.tag] = try inflate.process(data: data.dropFirst(Int(record.offset)).prefix(Int(record.compLength))) + inflate.final()
             }
         }
-        self.faces = [try TTFontFace(table: table)]
+        self.faces = [try SFNTFontFace(table: table)]
     }
 }
 

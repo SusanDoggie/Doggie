@@ -27,21 +27,21 @@ import Foundation
 
 struct OpenTypeDecoder : FontDecoder {
     
-    var header: SFNTHeader
+    var header: OTFHeader
     var faces: [FontFaceBase]
     
     init?(data: Data, entry: Int) throws {
         var _header = data.dropFirst(entry)
-        guard let header = try? _header.decode(SFNTHeader.self), header.version == 0x00010000 || header.version == 0x4F54544F else { return nil }
+        guard let header = try? _header.decode(OTFHeader.self), header.version == 0x00010000 || header.version == 0x4F54544F else { return nil }
         
         self.header = header
         
         var table: [Signature<BEUInt32>: Data] = [:]
         for _ in 0..<Int(header.numTables) {
-            let record = try _header.decode(SFNTTableRecord.self)
+            let record = try _header.decode(OTFTableRecord.self)
             table[record.tag] = data.dropFirst(Int(record.offset)).prefix(Int(record.length))
         }
-        self.faces = [try TTFontFace(table: table)]
+        self.faces = [try SFNTFontFace(table: table)]
     }
     
     init?(data: Data) throws {
@@ -49,7 +49,7 @@ struct OpenTypeDecoder : FontDecoder {
     }
 }
 
-struct SFNTHeader : DataDecodable {
+struct OTFHeader : DataDecodable {
     
     var version: BEUInt32
     var numTables: BEUInt16
@@ -66,7 +66,7 @@ struct SFNTHeader : DataDecodable {
     }
 }
 
-struct SFNTTableRecord : DataDecodable {
+struct OTFTableRecord : DataDecodable {
     
     var tag: Signature<BEUInt32>
     var checkSum: BEUInt32

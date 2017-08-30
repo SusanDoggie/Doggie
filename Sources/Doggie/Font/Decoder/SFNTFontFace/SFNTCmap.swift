@@ -1,5 +1,5 @@
 //
-//  TTFCmap.swift
+//  SFNTCmap.swift
 //
 //  The MIT License
 //  Copyright (c) 2015 - 2017 Susan Cheng. All rights reserved.
@@ -25,12 +25,12 @@
 
 import Foundation
 
-protocol TTFCmapTableFormat : DataDecodable {
+protocol SFNTCmapTableFormat : DataDecodable {
     
     subscript(code: UInt32) -> Int { get }
 }
 
-struct TTFCmap : DataDecodable {
+struct SFNTCmap : DataDecodable {
     
     var version: BEUInt16
     var numTables: BEUInt16
@@ -74,23 +74,23 @@ struct TTFCmap : DataDecodable {
     }
 }
 
-extension TTFCmap : CustomStringConvertible {
+extension SFNTCmap : CustomStringConvertible {
     
     var description: String {
-        return "TTFCmap(version: \(version), numTables: \(numTables))"
+        return "SFNTCmap(version: \(version), numTables: \(numTables))"
     }
 }
 
-extension TTFCmap {
+extension SFNTCmap {
     
     struct Table {
         
         var platformID: BEUInt16
         var platformSpecificID: BEUInt16
-        var format: TTFCmapTableFormat
+        var format: SFNTCmapTableFormat
     }
     
-    struct Format0 : TTFCmapTableFormat {
+    struct Format0 : SFNTCmapTableFormat {
         
         var format: BEUInt16
         var length: BEUInt16
@@ -110,7 +110,7 @@ extension TTFCmap {
         }
     }
     
-    struct Format4 : TTFCmapTableFormat {
+    struct Format4 : SFNTCmapTableFormat {
         
         var format: BEUInt16
         var length: BEUInt16
@@ -169,7 +169,7 @@ extension TTFCmap {
         }
     }
     
-    struct Format12 : TTFCmapTableFormat {
+    struct Format12 : SFNTCmapTableFormat {
         
         var format: Fixed16Number<BEUInt32>
         var length: BEUInt32
@@ -214,7 +214,7 @@ extension TTFCmap {
         }
     }
     
-    struct Format13 : TTFCmapTableFormat {
+    struct Format13 : SFNTCmapTableFormat {
         
         var format: Fixed16Number<BEUInt32>
         var length: BEUInt32

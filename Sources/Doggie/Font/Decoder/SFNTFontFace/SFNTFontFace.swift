@@ -1,5 +1,5 @@
 //
-//  TTFontFace.swift
+//  SFNTFontFace.swift
 //
 //  The MIT License
 //  Copyright (c) 2015 - 2017 Susan Cheng. All rights reserved.
@@ -25,15 +25,15 @@
 
 import Foundation
 
-struct TTFontFace : FontFaceBase {
+struct SFNTFontFace : FontFaceBase {
     
-    let head: TTFHead
-    let cmap: TTFCmap
+    let head: SFNTHead
+    let cmap: SFNTCmap
     
     init(table: [Signature<BEUInt32>: Data]) throws {
         
-        guard let head = try table["head"].map({ try TTFHead($0) }) else { throw Font.Error.InvalidFormat("head not found.") }
-        guard let cmap = try table["cmap"].map({ try TTFCmap($0) }) else { throw Font.Error.InvalidFormat("cmap not found.") }
+        guard let head = try table["head"].map({ try SFNTHead($0) }) else { throw Font.Error.InvalidFormat("head not found.") }
+        guard let cmap = try table["cmap"].map({ try SFNTCmap($0) }) else { throw Font.Error.InvalidFormat("cmap not found.") }
         
         self.head = head
         self.cmap = cmap
