@@ -88,6 +88,13 @@ extension FontCollection : RangeReplaceableCollection {
     }
 }
 
+extension FontCollection : CustomStringConvertible {
+    
+    public var description: String {
+        return "\(fonts)"
+    }
+}
+
 protocol FontCollectionBase {
     
     var faces: [FontFaceBase] { get }
