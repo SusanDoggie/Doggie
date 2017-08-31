@@ -152,7 +152,7 @@ extension SFNTFontFace {
         precondition(glyph < numberOfGlyphs, "Index out of range.")
         if let vhea = self.vhea, let vmtx = self.vmtx {
             let vMetricCount = Int(vhea.numOfLongVerMetrics)
-            if glyph < hMetricCount {
+            if glyph < vMetricCount {
                 return vmtx.withUnsafeBytes { (metrics: UnsafePointer<Metric>) in Double(metrics[glyph].bearing.representingValue) }
             } else {
                 return vmtx.dropFirst(vMetricCount << 2).withUnsafeBytes { (metrics: UnsafePointer<BEInt16>) in Double(metrics[glyph].representingValue) }
