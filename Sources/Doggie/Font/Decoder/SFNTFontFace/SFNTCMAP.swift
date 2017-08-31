@@ -201,11 +201,9 @@ extension SFNTCMAP {
                 return startCharCode <= endCharCode && startCharCode...endCharCode ~= code ? Int(code - startCharCode) + Int(groups[range.startIndex].startGlyphCode) : 0
                 
             } else {
-                
                 let mid = (range.lowerBound + range.upperBound) >> 1
-                
-                let startCharCode = UInt32(groups[range.startIndex + mid].startCharCode)
-                let endCharCode = UInt32(groups[range.startIndex + mid].endCharCode)
+                let startCharCode = UInt32(groups[mid].startCharCode)
+                let endCharCode = UInt32(groups[mid].endCharCode)
                 if startCharCode <= endCharCode && startCharCode...endCharCode ~= code {
                     return Int(code - startCharCode) + Int(groups[range.startIndex].startGlyphCode)
                 }
@@ -283,11 +281,9 @@ extension SFNTCMAP {
                 return startCharCode <= endCharCode && startCharCode...endCharCode ~= code ? Int(groups[range.startIndex].startGlyphCode) : 0
                 
             } else {
-                
                 let mid = (range.lowerBound + range.upperBound) >> 1
-                
-                let startCharCode = UInt32(groups[range.startIndex + mid].startCharCode)
-                let endCharCode = UInt32(groups[range.startIndex + mid].endCharCode)
+                let startCharCode = UInt32(groups[mid].startCharCode)
+                let endCharCode = UInt32(groups[mid].endCharCode)
                 if startCharCode <= endCharCode && startCharCode...endCharCode ~= code {
                     return Int(groups[range.startIndex].startGlyphCode)
                 }
