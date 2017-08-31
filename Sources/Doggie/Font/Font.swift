@@ -30,8 +30,6 @@ protocol FontFaceBase {
     func glyph(unicode: UnicodeScalar) -> Int
     func advanceWidth(glyph: Int) -> Double
     func advanceHeight(glyph: Int) -> Double
-    func bearingX(glyph: Int) -> Double
-    func bearingY(glyph: Int) -> Double
     
     var numberOfGlyphs: Int { get }
     
@@ -151,12 +149,6 @@ extension Font {
     }
     public func advanceHeight(forGlyph glyph: Int) -> Double {
         return base.advanceHeight(glyph: glyph) * _pointScale
-    }
-    public func bearingX(forGlyph glyph: Int) -> Double {
-        return base.bearingX(glyph: glyph) * _pointScale
-    }
-    public func bearingY(forGlyph glyph: Int) -> Double {
-        return base.bearingY(glyph: glyph) * _pointScale
     }
     
     public var coveredCharacterSet: CharacterSet {

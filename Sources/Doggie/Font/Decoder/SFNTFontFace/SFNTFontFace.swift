@@ -119,6 +119,7 @@ extension SFNTFontFace {
 extension SFNTFontFace {
     
     private struct Metric {
+        
         var advance: BEUInt16
         var bearing: BEInt16
     }
@@ -134,29 +135,6 @@ extension SFNTFontFace {
         if let vhea = self.vhea, let vmtx = self.vmtx {
             let vMetricCount = Int(vhea.numOfLongVerMetrics)
             return vmtx.withUnsafeBytes { (metrics: UnsafePointer<Metric>) in Double(metrics[glyph < vMetricCount ? glyph : vMetricCount - 1].advance.representingValue) }
-        }
-        return 0
-    }
-    
-    func bearingX(glyph: Int) -> Double {
-        precondition(glyph < numberOfGlyphs, "Index out of range.")
-        let hMetricCount = Int(hhea.numOfLongHorMetrics)
-        if glyph < hMetricCount {
-            return hmtx.withUnsafeBytes { (metrics: UnsafePointer<Metric>) in Double(metrics[glyph].bearing.representingValue) }
-        } else {
-            return hmtx.dropFirst(hMetricCount << 2).withUnsafeBytes { (metrics: UnsafePointer<BEInt16>) in Double(metrics[glyph - hMetricCount].representingValue) }
-        }
-    }
-    
-    func bearingY(glyph: Int) -> Double {
-        precondition(glyph < numberOfGlyphs, "Index out of range.")
-        if let vhea = self.vhea, let vmtx = self.vmtx {
-            let vMetricCount = Int(vhea.numOfLongVerMetrics)
-            if glyph < vMetricCount {
-                return vmtx.withUnsafeBytes { (metrics: UnsafePointer<Metric>) in Double(metrics[glyph].bearing.representingValue) }
-            } else {
-                return vmtx.dropFirst(vMetricCount << 2).withUnsafeBytes { (metrics: UnsafePointer<BEInt16>) in Double(metrics[glyph - vMetricCount].representingValue) }
-            }
         }
         return 0
     }
