@@ -144,7 +144,7 @@ extension SFNTFontFace {
         if glyph < hMetricCount {
             return hmtx.withUnsafeBytes { (metrics: UnsafePointer<Metric>) in Double(metrics[glyph].bearing.representingValue) }
         } else {
-            return hmtx.dropFirst(hMetricCount << 2).withUnsafeBytes { (metrics: UnsafePointer<BEInt16>) in Double(metrics[glyph].representingValue) }
+            return hmtx.dropFirst(hMetricCount << 2).withUnsafeBytes { (metrics: UnsafePointer<BEInt16>) in Double(metrics[glyph - hMetricCount].representingValue) }
         }
     }
     
@@ -155,7 +155,7 @@ extension SFNTFontFace {
             if glyph < vMetricCount {
                 return vmtx.withUnsafeBytes { (metrics: UnsafePointer<Metric>) in Double(metrics[glyph].bearing.representingValue) }
             } else {
-                return vmtx.dropFirst(vMetricCount << 2).withUnsafeBytes { (metrics: UnsafePointer<BEInt16>) in Double(metrics[glyph].representingValue) }
+                return vmtx.dropFirst(vMetricCount << 2).withUnsafeBytes { (metrics: UnsafePointer<BEInt16>) in Double(metrics[glyph - hMetricCount].representingValue) }
             }
         }
         return 0
