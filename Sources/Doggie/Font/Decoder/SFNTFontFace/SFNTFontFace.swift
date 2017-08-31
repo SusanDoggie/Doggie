@@ -31,24 +31,34 @@ struct SFNTFontFace : FontFaceBase {
     
     let head: SFNTHEAD
     let cmap: SFNTCMAP
+    let maxp: SFNTMAXP
     let post: SFNTPOST
-    let os2: SFNTOS2
     let name: SFNTNAME
+    let hhea: SFNTHHEA
+    let hmtx: SFNTHMTX
+    let vhea: SFNTVHEA?
+    let vmtx: SFNTVMTX?
     
     init(table: [Signature<BEUInt32>: Data]) throws {
         
         guard let head = try table["head"].map({ try SFNTHEAD($0) }) else { throw FontCollection.Error.InvalidFormat("head not found.") }
         guard let cmap = try table["cmap"].map({ try SFNTCMAP($0) }) else { throw FontCollection.Error.InvalidFormat("cmap not found.") }
+        guard let maxp = try table["maxp"].map({ try SFNTMAXP($0) }) else { throw FontCollection.Error.InvalidFormat("maxp not found.") }
         guard let post = try table["post"].map({ try SFNTPOST($0) }) else { throw FontCollection.Error.InvalidFormat("post not found.") }
-        guard let os2 = try table["OS/2"].map({ try SFNTOS2($0) }) else { throw FontCollection.Error.InvalidFormat("OS/2 not found.") }
         guard let name = try table["name"].map({ try SFNTNAME($0) }) else { throw FontCollection.Error.InvalidFormat("name not found.") }
+        guard let hhea = try table["hhea"].map({ try SFNTHHEA($0) }) else { throw FontCollection.Error.InvalidFormat("hhea not found.") }
+        guard let hmtx = try table["hmtx"].map({ try SFNTHMTX($0) }) else { throw FontCollection.Error.InvalidFormat("hmtx not found.") }
         
         self.table = table
         self.head = head
         self.cmap = cmap
+        self.maxp = maxp
         self.post = post
-        self.os2 = os2
         self.name = name
+        self.hhea = hhea
+        self.hmtx = hmtx
+        self.vhea = try table["vhea"].map({ try SFNTVHEA($0) })
+        self.vmtx = try table["vmtx"].map({ try SFNTVMTX($0) })
     }
 }
 
@@ -60,6 +70,26 @@ extension SFNTFontFace {
 }
 
 extension SFNTFontFace {
+    
+    var ascender: Double {
+        return Double(hhea.ascent.representingValue)
+    }
+    var descender: Double {
+        return Double(hhea.descent.representingValue)
+    }
+    var lineGap: Double {
+        return Double(hhea.lineGap.representingValue)
+    }
+    
+    var verticalAscender: Double? {
+        return (vhea?.vertTypoAscender.representingValue).map(Double.init)
+    }
+    var verticalDescender: Double? {
+        return (vhea?.vertTypoDescender.representingValue).map(Double.init)
+    }
+    var verticalLineGap: Double? {
+        return (vhea?.vertTypoLineGap.representingValue).map(Double.init)
+    }
     
     var unitsPerEm: Double {
         return Double(head.unitsPerEm.representingValue)

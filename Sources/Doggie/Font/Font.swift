@@ -29,6 +29,14 @@ protocol FontFaceBase {
     
     var coveredCharacterSet: CharacterSet { get }
     
+    var ascender: Double { get }
+    var descender: Double { get }
+    var lineGap: Double { get }
+    
+    var verticalAscender: Double? { get }
+    var verticalDescender: Double? { get }
+    var verticalLineGap: Double? { get }
+    
     var unitsPerEm: Double { get }
     var boundingRectForFont: Rect { get }
     
@@ -131,6 +139,26 @@ extension Font {
     
     private var _pointScale: Double {
         return pointSize / unitsPerEm
+    }
+    
+    public var ascender: Double {
+        return base.ascender * _pointScale
+    }
+    public var descender: Double {
+        return base.descender * _pointScale
+    }
+    public var lineGap: Double {
+        return base.lineGap * _pointScale
+    }
+    
+    public var verticalAscender: Double? {
+        return base.verticalAscender.map { $0 * _pointScale }
+    }
+    public var verticalDescender: Double? {
+        return base.verticalDescender.map { $0 * _pointScale }
+    }
+    public var verticalLineGap: Double? {
+        return base.verticalLineGap.map { $0 * _pointScale }
     }
     
     public var unitsPerEm: Double {
