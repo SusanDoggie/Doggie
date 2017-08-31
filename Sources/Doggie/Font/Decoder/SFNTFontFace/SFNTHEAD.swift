@@ -27,8 +27,8 @@ import Foundation
 
 struct SFNTHEAD : DataDecodable {
     
-    var version: Fixed16Number<BEUInt32>
-    var fontRevision: Fixed16Number<BEUInt32>
+    var version: Fixed16Number<BEInt32>
+    var fontRevision: Fixed16Number<BEInt32>
     var checkSumAdjustment: BEUInt32
     var magicNumber: BEUInt32
     var flags: BEUInt16
@@ -46,8 +46,8 @@ struct SFNTHEAD : DataDecodable {
     var glyphDataFormat: BEInt16
     
     init(from data: inout Data) throws {
-        self.version = try data.decode(Fixed16Number<BEUInt32>.self)
-        self.fontRevision = try data.decode(Fixed16Number<BEUInt32>.self)
+        self.version = try data.decode(Fixed16Number<BEInt32>.self)
+        self.fontRevision = try data.decode(Fixed16Number<BEInt32>.self)
         self.checkSumAdjustment = try data.decode(BEUInt32.self)
         self.magicNumber = try data.decode(BEUInt32.self)
         self.flags = try data.decode(BEUInt16.self)

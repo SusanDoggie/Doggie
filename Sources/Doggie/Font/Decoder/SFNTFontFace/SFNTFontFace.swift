@@ -54,6 +54,43 @@ struct SFNTFontFace : FontFaceBase {
 
 extension SFNTFontFace {
     
+    var coveredCharacterSet: CharacterSet {
+        return cmap.coveredCharacterSet
+    }
+}
+
+extension SFNTFontFace {
+    
+    var unitsPerEm: Double {
+        return Double(head.unitsPerEm.representingValue)
+    }
+    
+    var boundingRectForFont: Rect {
+        let minX = Double(head.xMin.representingValue)
+        let minY = Double(head.yMin.representingValue)
+        let maxX = Double(head.xMax.representingValue)
+        let maxY = Double(head.yMax.representingValue)
+        return Rect(x: minX, y: minY, width: maxX - minX, height: maxY - minY)
+    }
+    
+    var italicAngle: Double {
+        return post.italicAngle.representingValue
+    }
+    
+    var isFixedPitch: Bool {
+        return post.isFixedPitch != 0
+    }
+    
+    var underlinePosition: Double {
+        return Double(post.underlinePosition.representingValue)
+    }
+    var underlineThickness: Double {
+        return Double(post.underlineThickness.representingValue)
+    }
+}
+
+extension SFNTFontFace {
+    
     func queryName(_ id: Int) -> String? {
         let macOSRoman = name.name.lazy.filter { $0.platform.platform == 1 && $0.platform.specific == 0 && $0.name == id }
         let unicode = name.name.lazy.filter { $0.platform.platform == 0 && $0.name == id }
@@ -72,7 +109,7 @@ extension SFNTFontFace {
         return queryName(1)
     }
     
-    var subfamilyName: String? {
+    var faceName: String? {
         return queryName(2)
     }
     

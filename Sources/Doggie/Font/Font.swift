@@ -27,11 +27,21 @@ import Foundation
 
 protocol FontFaceBase {
     
+    var coveredCharacterSet: CharacterSet { get }
+    
+    var unitsPerEm: Double { get }
+    var boundingRectForFont: Rect { get }
+    
+    var italicAngle: Double { get }
+    var isFixedPitch: Bool { get }
+    var underlinePosition: Double { get }
+    var underlineThickness: Double { get }
+    
     var fontName: String? { get }
     var displayName: String? { get }
     var uniqueName: String? { get }
     var familyName: String? { get }
-    var subfamilyName: String? { get }
+    var faceName: String? { get }
     
     var designer: String? { get }
     
@@ -41,7 +51,6 @@ protocol FontFaceBase {
     var manufacturer: String? { get }
     var license: String? { get }
     var copyright: String? { get }
-    
 }
 
 public struct Font {
@@ -72,7 +81,7 @@ extension Font {
         let displayName: String?
         let uniqueName: String?
         let familyName: String?
-        let subfamilyName: String?
+        let faceName: String?
         let designer: String?
         let version: String?
         let trademark: String?
@@ -86,7 +95,7 @@ extension Font {
             self.displayName = base.displayName
             self.uniqueName = base.uniqueName
             self.familyName = base.familyName
-            self.subfamilyName = base.subfamilyName
+            self.faceName = base.faceName
             self.designer = base.designer
             self.version = base.version
             self.trademark = base.trademark
@@ -113,41 +122,79 @@ extension Font {
 
 extension Font {
     
+    public var coveredCharacterSet: CharacterSet {
+        return base.coveredCharacterSet
+    }
+}
+
+extension Font {
+    
+    private var _pointScale: Double {
+        return pointSize / unitsPerEm
+    }
+    
+    public var unitsPerEm: Double {
+        return base.unitsPerEm
+    }
+    
+    public var boundingRectForFont: Rect {
+        let _pointScale = self._pointScale
+        let bound = base.boundingRectForFont
+        return Rect(origin: bound.origin * _pointScale, size: bound.size * _pointScale)
+    }
+    
+    public var italicAngle: Double {
+        return base.italicAngle
+    }
+    public var isFixedPitch: Bool {
+        return base.isFixedPitch
+    }
+    
+    public var underlinePosition: Double {
+        return base.underlinePosition * _pointScale
+    }
+    public var underlineThickness: Double {
+        return base.underlineThickness * _pointScale
+    }
+}
+
+extension Font {
+    
     public var fontName: String {
-        return self.details.fontName
+        return details.fontName
     }
     public var displayName: String? {
-        return self.details.displayName
+        return details.displayName
     }
     public var uniqueName: String? {
-        return self.details.uniqueName
+        return details.uniqueName
     }
     public var familyName: String? {
-        return self.details.familyName
+        return details.familyName
     }
-    public var subfamilyName: String? {
-        return self.details.subfamilyName
+    public var faceName: String? {
+        return details.faceName
     }
     
     public var designer: String? {
-        return self.details.designer
+        return details.designer
     }
     
     public var version: String? {
-        return self.details.version
+        return details.version
     }
     
     public var trademark: String? {
-        return self.details.trademark
+        return details.trademark
     }
     public var manufacturer: String? {
-        return self.details.manufacturer
+        return details.manufacturer
     }
     public var license: String? {
-        return self.details.license
+        return details.license
     }
     public var copyright: String? {
-        return self.details.copyright
+        return details.copyright
     }
     
 }

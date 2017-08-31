@@ -28,6 +28,8 @@ import Foundation
 protocol SFNTCMAPTableFormat : DataDecodable {
     
     subscript(code: UInt32) -> Int { get }
+    
+    var coveredCharacterSet: CharacterSet { get }
 }
 
 struct SFNTCMAP : DataDecodable {
@@ -71,6 +73,10 @@ struct SFNTCMAP : DataDecodable {
     subscript(unit: UnicodeScalar) -> Int {
         return table.format[unit.value]
     }
+    
+    var coveredCharacterSet: CharacterSet {
+        return table.format.coveredCharacterSet
+    }
 }
 
 extension SFNTCMAP : CustomStringConvertible {
@@ -105,6 +111,10 @@ extension SFNTCMAP {
         subscript(code: UInt32) -> Int {
             guard code < 256 else { return 0 }
             return Int(data[Int(code)])
+        }
+        
+        var coveredCharacterSet: CharacterSet {
+            return CharacterSet(data.enumerated().flatMap { $1 != 0 ? UnicodeScalar($0) : nil })
         }
     }
     
@@ -165,18 +175,22 @@ extension SFNTCMAP {
         subscript(code: UInt32) -> Int {
             return 0
         }
+        
+        var coveredCharacterSet: CharacterSet {
+            return CharacterSet()
+        }
     }
     
     struct Format12 : SFNTCMAPTableFormat {
         
-        var format: Fixed16Number<BEUInt32>
+        var format: Fixed16Number<BEInt32>
         var length: BEUInt32
         var language: BEUInt32
         var nGroups: BEUInt32
         var groups: Data
         
         init(from data: inout Data) throws {
-            self.format = try data.decode(Fixed16Number<BEUInt32>.self)
+            self.format = try data.decode(Fixed16Number<BEInt32>.self)
             self.length = try data.decode(BEUInt32.self)
             self.language = try data.decode(BEUInt32.self)
             self.nGroups = try data.decode(BEUInt32.self)
@@ -210,18 +224,55 @@ extension SFNTCMAP {
         subscript(code: UInt32) -> Int {
             return groups.withUnsafeBytes { search(code, $0, 0..<Int(self.nGroups)) }
         }
+        
+        var coveredCharacterSet: CharacterSet {
+            
+            var result = CharacterSet()
+            
+            groups.withUnsafeBytes { (groups: UnsafePointer<Group>) in
+                
+                for group in UnsafeBufferPointer(start: groups, count: Int(self.nGroups)) {
+                    
+                    let startCharCode: UnicodeScalar
+                    let endCharCode: UnicodeScalar
+                    
+                    if group.startGlyphCode == 0 {
+                        
+                        guard let _startCharCode = UnicodeScalar(UInt32(group.startCharCode) + 1) else { continue }
+                        guard let _endCharCode = UnicodeScalar(UInt32(group.endCharCode)) else { continue }
+                        
+                        startCharCode = _startCharCode
+                        endCharCode = _endCharCode
+                        
+                    } else {
+                        
+                        guard let _startCharCode = UnicodeScalar(UInt32(group.startCharCode)) else { continue }
+                        guard let _endCharCode = UnicodeScalar(UInt32(group.endCharCode)) else { continue }
+                        
+                        startCharCode = _startCharCode
+                        endCharCode = _endCharCode
+                    }
+                    
+                    if startCharCode <= endCharCode {
+                        result.formUnion(CharacterSet(charactersIn: startCharCode...endCharCode))
+                    }
+                }
+            }
+            
+            return result
+        }
     }
     
     struct Format13 : SFNTCMAPTableFormat {
         
-        var format: Fixed16Number<BEUInt32>
+        var format: Fixed16Number<BEInt32>
         var length: BEUInt32
         var language: BEUInt32
         var nGroups: BEUInt32
         var groups: Data
         
         init(from data: inout Data) throws {
-            self.format = try data.decode(Fixed16Number<BEUInt32>.self)
+            self.format = try data.decode(Fixed16Number<BEInt32>.self)
             self.length = try data.decode(BEUInt32.self)
             self.language = try data.decode(BEUInt32.self)
             self.nGroups = try data.decode(BEUInt32.self)
@@ -254,6 +305,27 @@ extension SFNTCMAP {
         
         subscript(code: UInt32) -> Int {
             return groups.withUnsafeBytes { search(code, $0, 0..<Int(self.nGroups)) }
+        }
+        
+        var coveredCharacterSet: CharacterSet {
+            
+            var result = CharacterSet()
+            
+            groups.withUnsafeBytes { (groups: UnsafePointer<Group>) in
+                
+                for group in UnsafeBufferPointer(start: groups, count: Int(self.nGroups)) {
+                    
+                    guard group.startGlyphCode != 0 else { continue }
+                    guard let startCharCode = UnicodeScalar(UInt32(group.startCharCode)) else { continue }
+                    guard let endCharCode = UnicodeScalar(UInt32(group.endCharCode)) else { continue }
+                    
+                    if startCharCode <= endCharCode {
+                        result.formUnion(CharacterSet(charactersIn: startCharCode...endCharCode))
+                    }
+                }
+            }
+            
+            return result
         }
     }
     

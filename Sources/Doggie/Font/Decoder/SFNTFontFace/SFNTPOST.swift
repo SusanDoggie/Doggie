@@ -27,8 +27,8 @@ import Foundation
 
 struct SFNTPOST : DataDecodable {
     
-    var format: Fixed16Number<BEUInt32>
-    var italicAngle: Fixed16Number<BEUInt32>
+    var format: Fixed16Number<BEInt32>
+    var italicAngle: Fixed16Number<BEInt32>
     var underlinePosition: BEInt16
     var underlineThickness: BEInt16
     var isFixedPitch: BEUInt32
@@ -38,8 +38,8 @@ struct SFNTPOST : DataDecodable {
     var maxMemType1: BEUInt32
     
     init(from data: inout Data) throws {
-        self.format = try data.decode(Fixed16Number<BEUInt32>.self)
-        self.italicAngle = try data.decode(Fixed16Number<BEUInt32>.self)
+        self.format = try data.decode(Fixed16Number<BEInt32>.self)
+        self.italicAngle = try data.decode(Fixed16Number<BEInt32>.self)
         self.underlinePosition = try data.decode(BEInt16.self)
         self.underlineThickness = try data.decode(BEInt16.self)
         self.isFixedPitch = try data.decode(BEUInt32.self)
