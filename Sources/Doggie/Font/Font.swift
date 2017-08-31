@@ -27,6 +27,14 @@ import Foundation
 
 protocol FontFaceBase {
     
+    func glyph(unicode: UnicodeScalar) -> Int
+    func advanceWidth(glyph: Int) -> Double
+    func advanceHeight(glyph: Int) -> Double
+    func bearingX(glyph: Int) -> Double
+    func bearingY(glyph: Int) -> Double
+    
+    var numberOfGlyphs: Int { get }
+    
     var coveredCharacterSet: CharacterSet { get }
     
     var ascender: Double { get }
@@ -129,6 +137,27 @@ extension Font {
 }
 
 extension Font {
+    
+    public var numberOfGlyphs: Int {
+        return base.numberOfGlyphs
+    }
+    
+    public func glyph(with unicode: UnicodeScalar) -> Int {
+        return base.glyph(unicode: unicode)
+    }
+    
+    public func advanceWidth(forGlyph glyph: Int) -> Double {
+        return base.advanceWidth(glyph: glyph) * _pointScale
+    }
+    public func advanceHeight(forGlyph glyph: Int) -> Double {
+        return base.advanceHeight(glyph: glyph) * _pointScale
+    }
+    public func bearingX(forGlyph glyph: Int) -> Double {
+        return base.bearingX(glyph: glyph) * _pointScale
+    }
+    public func bearingY(forGlyph glyph: Int) -> Double {
+        return base.bearingY(glyph: glyph) * _pointScale
+    }
     
     public var coveredCharacterSet: CharacterSet {
         return base.coveredCharacterSet

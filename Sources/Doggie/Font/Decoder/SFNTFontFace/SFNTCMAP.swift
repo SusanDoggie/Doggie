@@ -69,14 +69,6 @@ struct SFNTCMAP : DataDecodable {
             throw FontCollection.Error.Unsupported("Unsupported cmap format.")
         }
     }
-    
-    subscript(unit: UnicodeScalar) -> Int {
-        return table.format[unit.value]
-    }
-    
-    var coveredCharacterSet: CharacterSet {
-        return table.format.coveredCharacterSet
-    }
 }
 
 extension SFNTCMAP : CustomStringConvertible {

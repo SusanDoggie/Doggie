@@ -1,5 +1,5 @@
 //
-//  SFNTVMTX.swift
+//  SFNTGLYF.swift
 //
 //  The MIT License
 //  Copyright (c) 2015 - 2017 Susan Cheng. All rights reserved.
@@ -25,8 +25,11 @@
 
 import Foundation
 
-struct SFNTVMTX : DataDecodable {
+struct SFNTGLYF {
     
-    init(from data: inout Data) throws {
+    var data: Data
+    
+    init(_ data: Data) {
+        self.data = data
     }
 }

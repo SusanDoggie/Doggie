@@ -27,19 +27,23 @@ import Foundation
 
 struct SFNTFontFace : FontFaceBase {
     
-    let table: [Signature<BEUInt32>: Data]
+    var table: [Signature<BEUInt32>: Data]
     
-    let head: SFNTHEAD
-    let cmap: SFNTCMAP
-    let maxp: SFNTMAXP
-    let post: SFNTPOST
-    let name: SFNTNAME
-    let hhea: SFNTHHEA
-    let hmtx: SFNTHMTX
-    let vhea: SFNTVHEA?
-    let vmtx: SFNTVMTX?
+    var head: SFNTHEAD
+    var cmap: SFNTCMAP
+    var maxp: SFNTMAXP
+    var post: SFNTPOST
+    var name: SFNTNAME
+    var hhea: SFNTHHEA
+    var hmtx: Data
+    var vhea: SFNTVHEA?
+    var vmtx: Data?
+    var loca: SFNTLOCA?
+    var glyf: SFNTGLYF?
     
     init(table: [Signature<BEUInt32>: Data]) throws {
+        
+        print(Array(table.keys))
         
         guard let head = try table["head"].map({ try SFNTHEAD($0) }) else { throw FontCollection.Error.InvalidFormat("head not found.") }
         guard let cmap = try table["cmap"].map({ try SFNTCMAP($0) }) else { throw FontCollection.Error.InvalidFormat("cmap not found.") }
@@ -47,7 +51,13 @@ struct SFNTFontFace : FontFaceBase {
         guard let post = try table["post"].map({ try SFNTPOST($0) }) else { throw FontCollection.Error.InvalidFormat("post not found.") }
         guard let name = try table["name"].map({ try SFNTNAME($0) }) else { throw FontCollection.Error.InvalidFormat("name not found.") }
         guard let hhea = try table["hhea"].map({ try SFNTHHEA($0) }) else { throw FontCollection.Error.InvalidFormat("hhea not found.") }
-        guard let hmtx = try table["hmtx"].map({ try SFNTHMTX($0) }) else { throw FontCollection.Error.InvalidFormat("hmtx not found.") }
+        guard let hmtx = table["hmtx"] else { throw FontCollection.Error.InvalidFormat("hmtx not found.") }
+        guard maxp.numGlyphs >= hhea.numOfLongHorMetrics else { throw DataDecodeError.endOfData }
+        
+        let hMetricSize = Int(hhea.numOfLongHorMetrics) << 2
+        let hBearingSize = (Int(maxp.numGlyphs) - Int(hhea.numOfLongHorMetrics)) << 1
+        
+        guard hmtx.count >= hMetricSize + hBearingSize else { throw DataDecodeError.endOfData }
         
         self.table = table
         self.head = head
@@ -57,15 +67,98 @@ struct SFNTFontFace : FontFaceBase {
         self.name = name
         self.hhea = hhea
         self.hmtx = hmtx
-        self.vhea = try table["vhea"].map({ try SFNTVHEA($0) })
-        self.vmtx = try table["vmtx"].map({ try SFNTVMTX($0) })
+        
+        if let loca = table["loca"], let glyf = table["glyf"] {
+            
+            let locaSize = head.indexToLocFormat == 0 ? Int(maxp.numGlyphs) << 1 : Int(maxp.numGlyphs) << 2
+            
+            guard loca.count >= locaSize else { throw DataDecodeError.endOfData }
+            
+            self.loca = SFNTLOCA(loca)
+            self.glyf = SFNTGLYF(glyf)
+            
+        } else if let cff = table["CFF "] {
+            
+        } else if let cff2 = table["CFF2"] {
+            
+        } else {
+            throw FontCollection.Error.InvalidFormat("outlines not found.")
+        }
+        
+        if let vhea = table["vhea"].flatMap({ try? SFNTVHEA($0) }), maxp.numGlyphs >= vhea.numOfLongVerMetrics, let vmtx = table["vmtx"] {
+            
+            let vMetricSize = Int(vhea.numOfLongVerMetrics) << 2
+            let vBearingSize = (Int(maxp.numGlyphs) - Int(vhea.numOfLongVerMetrics)) << 1
+            
+            if vmtx.count >= vMetricSize + vBearingSize {
+                self.vhea = vhea
+                self.vmtx = vmtx
+            }
+        }
     }
 }
 
 extension SFNTFontFace {
     
+    var numberOfGlyphs: Int {
+        return Int(maxp.numGlyphs)
+    }
+    
     var coveredCharacterSet: CharacterSet {
-        return cmap.coveredCharacterSet
+        return cmap.table.format.coveredCharacterSet
+    }
+}
+
+extension SFNTFontFace {
+    
+    func glyph(unicode: UnicodeScalar) -> Int {
+        return cmap.table.format[unicode.value]
+    }
+}
+
+extension SFNTFontFace {
+    
+    private struct Metric {
+        var advance: BEUInt16
+        var bearing: BEInt16
+    }
+    
+    func advanceWidth(glyph: Int) -> Double {
+        precondition(glyph < numberOfGlyphs, "Index out of range.")
+        let hMetricCount = Int(hhea.numOfLongHorMetrics)
+        return hmtx.withUnsafeBytes { (metrics: UnsafePointer<Metric>) in Double(metrics[glyph < hMetricCount ? glyph : hMetricCount - 1].advance.representingValue) }
+    }
+    
+    func advanceHeight(glyph: Int) -> Double {
+        precondition(glyph < numberOfGlyphs, "Index out of range.")
+        if let vhea = self.vhea, let vmtx = self.vmtx {
+            let vMetricCount = Int(vhea.numOfLongVerMetrics)
+            return vmtx.withUnsafeBytes { (metrics: UnsafePointer<Metric>) in Double(metrics[glyph < vMetricCount ? glyph : vMetricCount - 1].advance.representingValue) }
+        }
+        return 0
+    }
+    
+    func bearingX(glyph: Int) -> Double {
+        precondition(glyph < numberOfGlyphs, "Index out of range.")
+        let hMetricCount = Int(hhea.numOfLongHorMetrics)
+        if glyph < hMetricCount {
+            return hmtx.withUnsafeBytes { (metrics: UnsafePointer<Metric>) in Double(metrics[glyph].bearing.representingValue) }
+        } else {
+            return hmtx.dropFirst(hMetricCount << 2).withUnsafeBytes { (metrics: UnsafePointer<BEInt16>) in Double(metrics[glyph].representingValue) }
+        }
+    }
+    
+    func bearingY(glyph: Int) -> Double {
+        precondition(glyph < numberOfGlyphs, "Index out of range.")
+        if let vhea = self.vhea, let vmtx = self.vmtx {
+            let vMetricCount = Int(vhea.numOfLongVerMetrics)
+            if glyph < hMetricCount {
+                return vmtx.withUnsafeBytes { (metrics: UnsafePointer<Metric>) in Double(metrics[glyph].bearing.representingValue) }
+            } else {
+                return vmtx.dropFirst(vMetricCount << 2).withUnsafeBytes { (metrics: UnsafePointer<BEInt16>) in Double(metrics[glyph].representingValue) }
+            }
+        }
+        return 0
     }
 }
 
