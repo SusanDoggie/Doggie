@@ -202,7 +202,7 @@ extension SFNTCMAP {
                 
             } else {
                 
-                let mid = range.count >> 1
+                let mid = (range.lowerBound + range.upperBound) >> 1
                 
                 let startCharCode = UInt32(groups[range.startIndex + mid].startCharCode)
                 let endCharCode = UInt32(groups[range.startIndex + mid].endCharCode)
@@ -284,7 +284,7 @@ extension SFNTCMAP {
                 
             } else {
                 
-                let mid = range.count >> 1
+                let mid = (range.lowerBound + range.upperBound) >> 1
                 
                 let startCharCode = UInt32(groups[range.startIndex + mid].startCharCode)
                 let endCharCode = UInt32(groups[range.startIndex + mid].endCharCode)
