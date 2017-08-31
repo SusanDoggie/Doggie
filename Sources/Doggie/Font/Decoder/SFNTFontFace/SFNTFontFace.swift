@@ -155,7 +155,7 @@ extension SFNTFontFace {
             if glyph < vMetricCount {
                 return vmtx.withUnsafeBytes { (metrics: UnsafePointer<Metric>) in Double(metrics[glyph].bearing.representingValue) }
             } else {
-                return vmtx.dropFirst(vMetricCount << 2).withUnsafeBytes { (metrics: UnsafePointer<BEInt16>) in Double(metrics[glyph - hMetricCount].representingValue) }
+                return vmtx.dropFirst(vMetricCount << 2).withUnsafeBytes { (metrics: UnsafePointer<BEInt16>) in Double(metrics[glyph - vMetricCount].representingValue) }
             }
         }
         return 0
