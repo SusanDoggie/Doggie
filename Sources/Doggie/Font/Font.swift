@@ -50,7 +50,6 @@ public struct Font {
     private let details: Details
     
     public var pointSize: Double = 0
-    public var transform: SDTransform = SDTransform.identity
     
     init?(_ base: FontFaceBase) {
         guard let details = Details(base) else { return nil }
@@ -58,11 +57,10 @@ public struct Font {
         self.base = base
     }
     
-    public init(font: Font, size: Double, transform: SDTransform = SDTransform.identity) {
+    public init(font: Font, size: Double) {
         self.details = font.details
         self.base = font.base
         self.pointSize = size
-        self.transform = transform
     }
 }
 
@@ -102,14 +100,14 @@ extension Font {
 extension Font : CustomStringConvertible {
     
     public var description: String {
-        return "Font(name: \(self.fontName), pointSize: \(self.pointSize), transform: \(self.transform))"
+        return "Font(name: \(self.fontName), pointSize: \(self.pointSize))"
     }
 }
 
 extension Font {
     
     public func with(size pointSize: Double) -> Font {
-        return Font(font: self, size: pointSize, transform: transform)
+        return Font(font: self, size: pointSize)
     }
 }
 
