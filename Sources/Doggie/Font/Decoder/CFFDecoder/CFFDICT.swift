@@ -139,9 +139,29 @@ struct CFFDICT : DataDecodable {
 
 extension CFFDICT {
     
+    var fdArrayOffset: Int? {
+        if case let .some(.integer(offset)) = dict[17]?.first {
+            return offset
+        }
+        return nil
+    }
+    var fdSelectOffset: Int? {
+        if case let .some(.integer(offset)) = dict[17]?.first {
+            return offset
+        }
+        return nil
+    }
+    
     var pDICTRange: CountableRange<Int>? {
         if let operands = dict[18], operands.count == 2, case let .integer(size) = operands[0], case let .integer(offset) = operands[1] {
             return offset..<offset + size
+        }
+        return nil
+    }
+    
+    var subrsOffset: Int? {
+        if case let .some(.integer(offset)) = dict[19]?.first {
+            return offset
         }
         return nil
     }

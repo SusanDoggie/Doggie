@@ -109,6 +109,7 @@
 		0A8535311F5911D0006FB85D /* CFF2Decoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A85352E1F59103C006FB85D /* CFF2Decoder.swift */; };
 		0A8535331F591C57006FB85D /* CFFDICT.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A8535321F591C57006FB85D /* CFFDICT.swift */; };
 		0A8535351F5937DA006FB85D /* CFFFontFace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A8535341F5937DA006FB85D /* CFFFontFace.swift */; };
+		0A8535371F59543E006FB85D /* CFFFDSelect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A8535361F59543E006FB85D /* CFFFDSelect.swift */; };
 		0A89938E1EFA488900E9CDD9 /* ICC Creator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A89938C1EFA488900E9CDD9 /* ICC Creator.swift */; };
 		0A8B10511F1DE69B00D93CF9 /* JPEGDecoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A8B104F1F1DE69B00D93CF9 /* JPEGDecoder.swift */; };
 		0A8B8DE61F57EAE10048FD19 /* SFNTGLYF.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A8B8DE51F57EAE10048FD19 /* SFNTGLYF.swift */; };
@@ -295,6 +296,7 @@
 		0A85352F1F59103C006FB85D /* CFF2INDEX.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CFF2INDEX.swift; sourceTree = "<group>"; };
 		0A8535321F591C57006FB85D /* CFFDICT.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CFFDICT.swift; sourceTree = "<group>"; };
 		0A8535341F5937DA006FB85D /* CFFFontFace.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CFFFontFace.swift; sourceTree = "<group>"; };
+		0A8535361F59543E006FB85D /* CFFFDSelect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CFFFDSelect.swift; sourceTree = "<group>"; };
 		0A89938C1EFA488900E9CDD9 /* ICC Creator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ICC Creator.swift"; sourceTree = "<group>"; };
 		0A8B104F1F1DE69B00D93CF9 /* JPEGDecoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JPEGDecoder.swift; sourceTree = "<group>"; };
 		0A8B8DE51F57EAE10048FD19 /* SFNTGLYF.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SFNTGLYF.swift; sourceTree = "<group>"; };
@@ -688,6 +690,7 @@
 				0A8535341F5937DA006FB85D /* CFFFontFace.swift */,
 				0A8535291F5901E1006FB85D /* CFFINDEX.swift */,
 				0A8535321F591C57006FB85D /* CFFDICT.swift */,
+				0A8535361F59543E006FB85D /* CFFFDSelect.swift */,
 			);
 			path = CFFDecoder;
 			sourceTree = "<group>";
@@ -1036,6 +1039,7 @@
 				0A21F0251F061AE2009C4490 /* PixelBlender.swift in Sources */,
 				0A9AA8411E543748007A2B92 /* PDFDocument.swift in Sources */,
 				08458B311E2E627600D01813 /* Bezier.swift in Sources */,
+				0A8535371F59543E006FB85D /* CFFFDSelect.swift in Sources */,
 				08458B431E2E627600D01813 /* Vector.swift in Sources */,
 				0A32D9991F28825F0027F384 /* Tensor.swift in Sources */,
 				0A9CD5971EEB9A2D00094148 /* CalibratedRGBColorSpace.swift in Sources */,

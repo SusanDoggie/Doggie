@@ -1,5 +1,5 @@
 //
-//  CFF2Decoder.swift
+//  CFFFDSelect.swift
 //
 //  The MIT License
 //  Copyright (c) 2015 - 2017 Susan Cheng. All rights reserved.
@@ -25,29 +25,44 @@
 
 import Foundation
 
-struct CFF2Decoder {
+struct CFFFDSelect {
     
-    var header: CFF2Header
-    var DICT: CFFDICT
+    var format: UInt8
     
-    init(_ data: Data) throws {
-        self.header = try CFF2Header(data)
-        self.DICT = try CFFDICT(data.dropFirst(Int(header.headerSize)).prefix(Int(header.topDictLength)))
+    var fds: Data
+    
+    var nRanges: BEUInt16
+    var range: Data
+    var sentinel: BEUInt16
+    
+    init(_ data: Data, _ nGlyphs: Int) throws {
+        
+        var data = data
+        
+        self.format = try data.decode(UInt8.self)
+        
+        fds = Data()
+        nRanges = 0
+        range = Data()
+        sentinel = 0
+        
+        switch format {
+        case 0:
+            
+            self.fds = data.popFirst(nGlyphs)
+            guard self.fds.count == nGlyphs else { throw DataDecodeError.endOfData }
+            
+        case 3:
+            
+            self.nRanges = try data.decode(BEUInt16.self)
+            
+            self.range = data.popFirst(Int(nRanges) * 3)
+            guard self.range.count == Int(nRanges) * 3 else { throw DataDecodeError.endOfData }
+            
+            self.sentinel = try data.decode(BEUInt16.self)
+            
+        default: throw FontCollection.Error.InvalidFormat("Invalid CFF FDSelect format.")
+        }
+        
     }
 }
-
-struct CFF2Header : DataDecodable {
-    
-    var majorVersion: UInt8
-    var minorVersion: UInt8
-    var headerSize: UInt8
-    var topDictLength: BEUInt16
-    
-    init(from data: inout Data) throws {
-        self.majorVersion = try data.decode(UInt8.self)
-        self.minorVersion = try data.decode(UInt8.self)
-        self.headerSize = try data.decode(UInt8.self)
-        self.topDictLength = try data.decode(BEUInt16.self)
-    }
-}
-
