@@ -31,6 +31,8 @@ struct CFFFontFace {
     var DICT: CFFDICT
     var string: CFFINDEX
     var subroutine: CFFINDEX
+    
+    var pDICT: CFFDICT?
     var charstringType: Int
     var charStrings: CFFINDEX
     
@@ -39,8 +41,15 @@ struct CFFFontFace {
         self.DICT = DICT
         self.string = string
         self.subroutine = subroutine
+        
         self.charstringType = DICT.charstringType
         guard let charStringsOffset = DICT.charStringsOffset else { throw FontCollection.Error.InvalidFormat("Invalid CFF format.") }
         self.charStrings = try CFFINDEX(data.dropFirst(charStringsOffset))
+        
+        if let range = DICT.pDICTRange {
+            let _pDICT: Data = data.dropFirst(range.lowerBound).prefix(range.count)
+            guard _pDICT.count == range.count else { throw DataDecodeError.endOfData }
+            self.pDICT = try CFFDICT(_pDICT)
+        }
     }
 }

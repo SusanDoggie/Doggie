@@ -139,6 +139,13 @@ struct CFFDICT : DataDecodable {
 
 extension CFFDICT {
     
+    var pDICTRange: CountableRange<Int>? {
+        if let operands = dict[18], operands.count == 2, case let .integer(size) = operands[0], case let .integer(offset) = operands[1] {
+            return offset..<offset + size
+        }
+        return nil
+    }
+    
     var charstringType: Int {
         if case let .some(.integer(type)) = dict[1206]?.first {
             return type
