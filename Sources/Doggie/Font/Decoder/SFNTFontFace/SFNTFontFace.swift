@@ -40,10 +40,10 @@ struct SFNTFontFace : FontFaceBase {
     var vmtx: Data?
     var loca: SFNTLOCA?
     var glyf: SFNTGLYF?
+    var cff: CFFFontFace?
+    var cff2: CFF2Decoder?
     
     init(table: [Signature<BEUInt32>: Data]) throws {
-        
-        print(Array(table.keys))
         
         guard let head = try table["head"].map({ try SFNTHEAD($0) }) else { throw FontCollection.Error.InvalidFormat("head not found.") }
         guard let cmap = try table["cmap"].map({ try SFNTCMAP($0) }) else { throw FontCollection.Error.InvalidFormat("cmap not found.") }
@@ -68,23 +68,6 @@ struct SFNTFontFace : FontFaceBase {
         self.hhea = hhea
         self.hmtx = hmtx
         
-        if let loca = table["loca"], let glyf = table["glyf"] {
-            
-            let locaSize = head.indexToLocFormat == 0 ? Int(maxp.numGlyphs) << 1 : Int(maxp.numGlyphs) << 2
-            
-            guard loca.count >= locaSize else { throw DataDecodeError.endOfData }
-            
-            self.loca = SFNTLOCA(loca)
-            self.glyf = SFNTGLYF(glyf)
-            
-        } else if let cff = table["CFF "] {
-            
-        } else if let cff2 = table["CFF2"] {
-            
-        } else {
-            throw FontCollection.Error.InvalidFormat("outlines not found.")
-        }
-        
         if let vhea = table["vhea"].flatMap({ try? SFNTVHEA($0) }), maxp.numGlyphs >= vhea.numOfLongVerMetrics, let vmtx = table["vmtx"] {
             
             let vMetricSize = Int(vhea.numOfLongVerMetrics) << 2
@@ -94,6 +77,27 @@ struct SFNTFontFace : FontFaceBase {
                 self.vhea = vhea
                 self.vmtx = vmtx
             }
+        }
+        
+        if let cff2 = table["CFF2"] {
+            
+            self.cff2 = try CFF2Decoder(cff2)
+            
+        } else if let cff = try table["CFF "].flatMap({ try CFFDecoder($0).faces.first }) {
+            
+            self.cff = cff
+            
+        } else if let loca = table["loca"], let glyf = table["glyf"] {
+            
+            let locaSize = head.indexToLocFormat == 0 ? Int(maxp.numGlyphs) << 1 : Int(maxp.numGlyphs) << 2
+            
+            guard loca.count >= locaSize else { throw DataDecodeError.endOfData }
+            
+            self.loca = SFNTLOCA(loca)
+            self.glyf = SFNTGLYF(glyf)
+            
+        } else {
+            throw FontCollection.Error.InvalidFormat("outlines not found.")
         }
     }
 }
