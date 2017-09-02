@@ -3,7 +3,12 @@
    version = "3.0">
    <TimelineItems>
       <LoggerValueHistoryTimelineItem
-         documentLocation = "file:///Users/Susan/Programming/Source%20Control/Doggie/Playground.playground/Pages/Font.xcplaygroundpage#CharacterRangeLen=27&amp;CharacterRangeLoc=894&amp;EndingColumnNumber=0&amp;EndingLineNumber=49&amp;StartingColumnNumber=5&amp;StartingLineNumber=48&amp;Timestamp=526055828.060555"
+         documentLocation = "file:///Users/Susan/Programming/Source%20Control/Doggie/Playground.playground/Pages/Font.xcplaygroundpage#CharacterRangeLen=27&amp;CharacterRangeLoc=935&amp;EndingColumnNumber=27&amp;EndingLineNumber=50&amp;StartingColumnNumber=0&amp;StartingLineNumber=50&amp;Timestamp=526055900.295746"
+         selectedRepresentationIndex = "0"
+         shouldTrackSuperviewWidth = "NO">
+      </LoggerValueHistoryTimelineItem>
+      <LoggerValueHistoryTimelineItem
+         documentLocation = "file:///Users/Susan/Programming/Source%20Control/Doggie/Playground.playground/Pages/Font.xcplaygroundpage#CharacterRangeLen=27&amp;CharacterRangeLoc=940&amp;EndingColumnNumber=0&amp;EndingLineNumber=51&amp;StartingColumnNumber=5&amp;StartingLineNumber=50&amp;Timestamp=526055900.295878"
          selectedRepresentationIndex = "0"
          shouldTrackSuperviewWidth = "NO">
       </LoggerValueHistoryTimelineItem>

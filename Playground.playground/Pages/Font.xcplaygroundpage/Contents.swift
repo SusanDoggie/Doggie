@@ -46,6 +46,8 @@ if let font = collection.first?.with(size: 14) {
     
     font.boundary(forGlyph: glyph)
     
+    font.shape(forGlyph: glyph).encode()
+    
     font.shape(forGlyph: glyph)
     
 }
