@@ -24,6 +24,8 @@ if let font = collection.first?.with(size: 14) {
     font.license
     font.copyright
     
+    font.numberOfGlyphs
+    
     font.ascender
     font.descender
     font.lineGap
@@ -45,6 +47,9 @@ if let font = collection.first?.with(size: 14) {
     let glyph = font.glyph(with: "a")
     
     font.boundary(forGlyph: glyph)
+    
+    font.advanceWidth(forGlyph: glyph)
+    font.advanceHeight(forGlyph: glyph)
     
     font.shape(forGlyph: glyph).encode()
     
