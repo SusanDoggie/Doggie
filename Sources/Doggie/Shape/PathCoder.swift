@@ -224,7 +224,7 @@ extension Shape {
                 } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
             case "T":
                 repeat {
-                    let p1 = lastbezier == 2 ? 2 * relative - lastcontrol : relative
+                    let p1 = lastbezier == 1 ? 2 * relative - lastcontrol : relative
                     let p2 = Point(x: try toDouble(g.current), y: try toDouble(g.next()))
                     relative = p2
                     lastcontrol = p1
@@ -233,7 +233,7 @@ extension Shape {
                 } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
             case "t":
                 repeat {
-                    let p1 = lastbezier == 2 ? 2 * relative - lastcontrol : relative
+                    let p1 = lastbezier == 1 ? 2 * relative - lastcontrol : relative
                     let p2 = Point(x: try toDouble(g.current) + relative.x, y: try toDouble(g.next()) + relative.y)
                     relative = p2
                     lastcontrol = p1
@@ -452,7 +452,19 @@ private extension Shape.Component {
         }
         
         for item in self {
-            item.serialize(&currentState, start: &start, relative: &relative, lastControl: &lastControl).write(to: &data)
+            let _serialize1 = item.serialize1(currentState, relative, lastControl)
+            let _serialize2 = item.serialize2(currentState, relative, lastControl)
+            if _serialize1.0.count <= _serialize2.0.count {
+                _serialize1.0.write(to: &data)
+                currentState = _serialize1.1
+                relative = _serialize1.2
+                lastControl = _serialize1.3
+            } else {
+                _serialize2.0.write(to: &data)
+                currentState = _serialize2.1
+                relative = _serialize2.2
+                lastControl = _serialize2.3
+            }
         }
         
         if self.isClosed {
@@ -465,24 +477,6 @@ private extension Shape.Component {
 
 private extension Shape.Segment {
     
-    func serialize(_ currentState: inout Int, start: inout Point, relative: inout Point, lastControl: inout Point?) -> String {
-        
-        let _serialize1 = serialize1(currentState, start, relative, lastControl)
-        let _serialize2 = serialize2(currentState, start, relative, lastControl)
-        if _serialize1.0.count <= _serialize2.0.count {
-            currentState = _serialize1.1
-            start = _serialize1.2
-            relative = _serialize1.3
-            lastControl = _serialize1.4
-            return _serialize1.0
-        }
-        currentState = _serialize2.1
-        start = _serialize2.2
-        relative = _serialize2.3
-        lastControl = _serialize2.4
-        return _serialize2.0
-    }
-    
     @inline(__always)
     func isSmooth(_ p: Point, _ relative: Point, _ lastControl: Point?) -> Bool {
         
@@ -493,7 +487,7 @@ private extension Shape.Segment {
         return false
     }
     
-    func serialize1(_ currentState: Int, _ start: Point, _ relative: Point, _ lastControl: Point?) -> (String, Int, Point, Point, Point?) {
+    func serialize1(_ currentState: Int, _ relative: Point, _ lastControl: Point?) -> (String, Int, Point, Point?) {
         
         switch self {
         case let .line(point):
@@ -501,72 +495,44 @@ private extension Shape.Segment {
             var currentState = currentState
             let str: String
             if _round(relative.x) == _round(point.x) {
-                if currentState == 1 {
-                    str = getPathDataString(nil, point.y)
-                } else {
-                    str = getPathDataString("V", point.y)
-                }
+                str = getPathDataString(currentState == 1 ? nil : "V", point.y)
                 currentState = 1
             } else if _round(relative.y) == _round(point.y) {
-                if currentState == 3 {
-                    str = getPathDataString(nil, point.x)
-                } else {
-                    str = getPathDataString("H", point.x)
-                }
+                str = getPathDataString(currentState == 3 ? nil : "H", point.x)
                 currentState = 3
             } else {
-                if currentState == 5 {
-                    str = getPathDataString(nil, point.x, point.y)
-                } else {
-                    str = getPathDataString("L", point.x, point.y)
-                }
+                str = getPathDataString(currentState == 5 ? nil : "L", point.x, point.y)
                 currentState = 5
             }
-            return (str, currentState, start, point, nil)
+            return (str, currentState, point, nil)
         case let .quad(p1, p2):
             
             var currentState = currentState
             let str: String
-            if isSmooth(p2, relative, lastControl) && 7...10 ~= currentState {
-                if currentState == 7 {
-                    str = getPathDataString(nil, p2.x, p2.y)
-                } else {
-                    str = getPathDataString("T", p2.x, p2.y)
-                }
+            if isSmooth(p1, relative, lastControl) && 7...10 ~= currentState {
+                str = getPathDataString(currentState == 7 ? nil : "T", p2.x, p2.y)
                 currentState = 7
             } else {
-                if currentState == 9 {
-                    str = getPathDataString(nil, p1.x, p1.y, p2.x, p2.y)
-                } else {
-                    str = getPathDataString("Q", p1.x, p1.y, p2.x, p2.y)
-                }
+                str = getPathDataString(currentState == 9 ? nil : "Q", p1.x, p1.y, p2.x, p2.y)
                 currentState = 9
             }
-            return (str, currentState, start, p2, p1)
+            return (str, currentState, p2, p1)
         case let .cubic(p1, p2, p3):
             
             var currentState = currentState
             let str: String
-            if isSmooth(p3, relative, lastControl) && 11...14 ~= currentState {
-                if currentState == 11 {
-                    str = getPathDataString(nil, p2.x, p2.y, p3.x, p3.y)
-                } else {
-                    str = getPathDataString("S", p2.x, p2.y, p3.x, p3.y)
-                }
+            if isSmooth(p1, relative, lastControl) && 11...14 ~= currentState {
+                str = getPathDataString(currentState == 11 ? nil : "S", p2.x, p2.y, p3.x, p3.y)
                 currentState = 11
             } else {
-                if currentState == 13 {
-                    str = getPathDataString(nil, p1.x, p1.y, p2.x, p2.y, p3.x, p3.y)
-                } else {
-                    str = getPathDataString("C", p1.x, p1.y, p2.x, p2.y, p3.x, p3.y)
-                }
+                str = getPathDataString(currentState == 13 ? nil : "C", p1.x, p1.y, p2.x, p2.y, p3.x, p3.y)
                 currentState = 13
             }
-            return (str, currentState, start, p3, p2)
+            return (str, currentState, p3, p2)
         }
     }
     
-    func serialize2(_ currentState: Int, _ start: Point, _ relative: Point, _ lastControl: Point?) -> (String, Int, Point, Point, Point?) {
+    func serialize2(_ currentState: Int, _ relative: Point, _ lastControl: Point?) -> (String, Int, Point, Point?) {
         
         switch self {
         case let .line(point):
@@ -574,68 +540,40 @@ private extension Shape.Segment {
             var currentState = currentState
             let str: String
             if _round(relative.x) == _round(point.x) {
-                if currentState == 2 {
-                    str = getPathDataString(nil, point.y - relative.y)
-                } else {
-                    str = getPathDataString("v", point.y - relative.y)
-                }
+                str = getPathDataString(currentState == 2 ? nil : "v", point.y - relative.y)
                 currentState = 2
             } else if _round(relative.y) == _round(point.y) {
-                if currentState == 4 {
-                    str = getPathDataString(nil, point.x - relative.x)
-                } else {
-                    str = getPathDataString("h", point.x - relative.x)
-                }
+                str = getPathDataString(currentState == 4 ? nil : "h", point.x - relative.x)
                 currentState = 4
             } else {
-                if currentState == 6 {
-                    str = getPathDataString(nil, point.x - relative.x, point.y - relative.y)
-                } else {
-                    str = getPathDataString("l", point.x - relative.x, point.y - relative.y)
-                }
+                str = getPathDataString(currentState == 6 ? nil : "l", point.x - relative.x, point.y - relative.y)
                 currentState = 6
             }
-            return (str, currentState, start, point, nil)
+            return (str, currentState, point, nil)
         case let .quad(p1, p2):
             
             var currentState = currentState
             let str: String
-            if isSmooth(p2, relative, lastControl) && 7...10 ~= currentState {
-                if currentState == 8 {
-                    str = getPathDataString(nil, p2.x - relative.x, p2.y - relative.y)
-                } else {
-                    str = getPathDataString("t", p2.x - relative.x, p2.y - relative.y)
-                }
+            if isSmooth(p1, relative, lastControl) && 7...10 ~= currentState {
+                str = getPathDataString(currentState == 8 ? nil : "t", p2.x - relative.x, p2.y - relative.y)
                 currentState = 8
             } else {
-                if currentState == 10 {
-                    str = getPathDataString(nil, p1.x - relative.x, p1.y - relative.y, p2.x - relative.x, p2.y - relative.y)
-                } else {
-                    str = getPathDataString("q", p1.x - relative.x, p1.y - relative.y, p2.x - relative.x, p2.y - relative.y)
-                }
+                str = getPathDataString(currentState == 10 ? nil : "q", p1.x - relative.x, p1.y - relative.y, p2.x - relative.x, p2.y - relative.y)
                 currentState = 10
             }
-            return (str, currentState, start, p2, p1)
+            return (str, currentState, p2, p1)
         case let .cubic(p1, p2, p3):
             
             var currentState = currentState
             let str: String
-            if isSmooth(p3, relative, lastControl) && 11...14 ~= currentState {
-                if currentState == 12 {
-                    str = getPathDataString(nil, p2.x - relative.x, p2.y - relative.y, p3.x - relative.x, p3.y - relative.y)
-                } else {
-                    str = getPathDataString("s", p2.x - relative.x, p2.y - relative.y, p3.x - relative.x, p3.y - relative.y)
-                }
+            if isSmooth(p1, relative, lastControl) && 11...14 ~= currentState {
+                str = getPathDataString(currentState == 12 ? nil : "s", p2.x - relative.x, p2.y - relative.y, p3.x - relative.x, p3.y - relative.y)
                 currentState = 12
             } else {
-                if currentState == 14 {
-                    str = getPathDataString(nil, p1.x - relative.x, p1.y - relative.y, p2.x - relative.x, p2.y - relative.y, p3.x - relative.x, p3.y - relative.y)
-                } else {
-                    str = getPathDataString("c", p1.x - relative.x, p1.y - relative.y, p2.x - relative.x, p2.y - relative.y, p3.x - relative.x, p3.y - relative.y)
-                }
+                str = getPathDataString(currentState == 14 ? nil : "c", p1.x - relative.x, p1.y - relative.y, p2.x - relative.x, p2.y - relative.y, p3.x - relative.x, p3.y - relative.y)
                 currentState = 14
             }
-            return (str, currentState, start, p3, p2)
+            return (str, currentState, p3, p2)
         }
     }
 }
