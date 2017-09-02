@@ -393,7 +393,7 @@ private func getDataString(_ x: [Double]) -> String {
     var str = ""
     for _x in x.map({ dataFormatter.string(from: NSNumber(value: $0)) ?? "0" }) {
         if !str.isEmpty && _x.first != "-" {
-            " ".write(to: &str)
+            str.append(" ")
         }
         _x.write(to: &str)
     }
@@ -411,7 +411,7 @@ private func getPathDataString(_ command: Character?, _ x: Double ...) -> String
     command?.write(to: &result)
     let dataStr = getDataString(x)
     if result.isEmpty && !dataStr.isEmpty && dataStr.first != "-" {
-        " ".write(to: &result)
+        result.append(" ")
     }
     dataStr.write(to: &result)
     return result
@@ -456,7 +456,8 @@ private extension Shape.Component {
         }
         
         if self.isClosed {
-            "z".write(to: &data)
+            data.append("z")
+            relative = self.start
         }
     }
     
