@@ -38,8 +38,8 @@ struct SFNTFontFace : FontFaceBase {
     var hmtx: Data
     var vhea: SFNTVHEA?
     var vmtx: Data?
-    var loca: SFNTLOCA?
-    var glyf: SFNTGLYF?
+    var loca: Data?
+    var glyf: Data?
     var cff: CFFFontFace?
     var cff2: CFF2Decoder?
     
@@ -89,12 +89,12 @@ struct SFNTFontFace : FontFaceBase {
             
         } else if let loca = table["loca"], let glyf = table["glyf"] {
             
-            let locaSize = head.indexToLocFormat == 0 ? Int(maxp.numGlyphs) << 1 : Int(maxp.numGlyphs) << 2
+            let locaSize = head.indexToLocFormat == 0 ? (Int(maxp.numGlyphs) + 1) << 1 : (Int(maxp.numGlyphs) + 1) << 2
             
             guard loca.count >= locaSize else { throw DataDecodeError.endOfData }
             
-            self.loca = SFNTLOCA(loca)
-            self.glyf = SFNTGLYF(glyf)
+            self.loca = loca
+            self.glyf = glyf
             
         } else {
             throw FontCollection.Error.InvalidFormat("outlines not found.")
@@ -110,6 +110,265 @@ extension SFNTFontFace {
     
     var coveredCharacterSet: CharacterSet {
         return cmap.table.format.coveredCharacterSet
+    }
+}
+
+extension SFNTFontFace {
+    
+    private func _glyfData(glyph: Int) -> Data? {
+        precondition(glyph < numberOfGlyphs, "Index out of range.")
+        guard let loca = self.loca, let glyf = self.glyf else { return nil }
+        if head.indexToLocFormat == 0 {
+            let startIndex = loca.withUnsafeBytes { $0[glyph] as UInt8 }
+            let endIndex = loca.withUnsafeBytes { $0[glyph + 1] as UInt8 }
+            return glyf.dropFirst(Int(startIndex)).prefix(Int(endIndex))
+        } else {
+            let startIndex = loca.withUnsafeBytes { $0[glyph] as BEUInt16 }
+            let endIndex = loca.withUnsafeBytes { $0[glyph + 1] as BEUInt16 }
+            return glyf.dropFirst(Int(startIndex)).prefix(Int(endIndex))
+        }
+    }
+    
+    func boundary(glyph: Int) -> Rect {
+        
+        if var data = _glyfData(glyph: glyph) {
+            
+            guard let _ = try? data.decode(BEInt16.self) else { return Rect() }
+            guard let xMin = try? data.decode(BEInt16.self) else { return Rect() }
+            guard let yMin = try? data.decode(BEInt16.self) else { return Rect() }
+            guard let xMax = try? data.decode(BEInt16.self) else { return Rect() }
+            guard let yMax = try? data.decode(BEInt16.self) else { return Rect() }
+            
+            let minX = Double(xMin.representingValue)
+            let minY = Double(yMin.representingValue)
+            let maxX = Double(xMax.representingValue)
+            let maxY = Double(yMax.representingValue)
+            return Rect(x: minX, y: minY, width: maxX - minX, height: maxY - minY)
+        }
+        
+        return Rect()
+    }
+    
+    private func _glyfOutline(_ glyph: Int) -> ([Point], Shape.Component)? {
+        
+        guard var data = _glyfData(glyph: glyph) else { return nil }
+        
+        guard let numberOfContours = try? data.decode(BEInt16.self), numberOfContours > 0 else { return nil }
+        guard let _ = try? data.decode(BEInt16.self) else { return nil }
+        guard let _ = try? data.decode(BEInt16.self) else { return nil }
+        guard let _ = try? data.decode(BEInt16.self) else { return nil }
+        guard let _ = try? data.decode(BEInt16.self) else { return nil }
+        
+        let count = Int(numberOfContours)
+        
+        var endPtsOfContours = [BEUInt16]()
+        endPtsOfContours.reserveCapacity(count)
+        
+        for _ in 0..<count {
+            guard let i = try? data.decode(BEUInt16.self) else { return nil }
+            endPtsOfContours.append(i)
+        }
+        
+        guard let instructionLength = try? data.decode(BEUInt16.self) else { return nil }
+        
+        var instructions = [UInt8]()
+        instructions.reserveCapacity(Int(instructionLength))
+        
+        for _ in 0..<Int(instructionLength) {
+            guard let i = try? data.decode(UInt8.self) else { return nil }
+            instructions.append(i)
+        }
+        
+        var flags = [UInt8]()
+        flags.reserveCapacity(count)
+        while flags.count < count {
+            guard let flag = try? data.decode(UInt8.self) else { return nil }
+            flags.append(flag)
+            if flag & 8 != 0 {
+                guard let _repeat = try? data.decode(UInt8.self) else { return nil }
+                for _ in 0..<_repeat {
+                    flags.append(flag)
+                }
+            }
+        }
+        guard flags.count == count else { return nil }
+        
+        func coordinate(_ flag: UInt8, _ previousValue: Int16, _ bitMask: (UInt8, UInt8)) throws -> Int16 {
+            var code: Int16
+            if flag & bitMask.0 != 0 {
+                code = Int16(try data.decode(Int8.self))
+                if flag & bitMask.1 == 0 {
+                    code = -code
+                }
+                code = previousValue + code
+            } else {
+                if flag & bitMask.1 != 0 {
+                    code = previousValue
+                } else {
+                    code = try previousValue + data.decode(Int16.self)
+                }
+            }
+            return code
+        }
+        
+        var x_coordinate: [Int16] = []
+        var y_coordinate: [Int16] = []
+        x_coordinate.reserveCapacity(count)
+        y_coordinate.reserveCapacity(count)
+        
+        for flag in flags {
+            guard let _x = try? coordinate(flag, x_coordinate.last ?? 0, (2, 16)) else { return nil }
+            x_coordinate.append(_x)
+        }
+        
+        for flag in flags {
+            guard let _y = try? coordinate(flag, y_coordinate.last ?? 0, (4, 32)) else { return nil }
+            y_coordinate.append(_y)
+        }
+        
+        let points = zip(x_coordinate, y_coordinate).map { Point(x: Double($0), y: Double($1)) }
+        
+        var component = Shape.Component(start: Point(), closed: true, segments: [])
+        
+        if flags[count - 1] & 1 == 1 {
+            component.start = points[count - 1]
+        } else if flags[0] & 1 == 1 {
+            component.start = points[0]
+        } else {
+            component.start = 0.5 * (points[count - 1] + points[0])
+        }
+        
+        var record = (flags[count - 1], points[count - 1])
+        
+        for (f, p) in zip(zip(flags, flags.rotated(1)), zip(points, points.rotated(1))) {
+            
+            if f.0 & 1 == 0 {
+                if f.1 & 1 == 1 {
+                    component.append(.quad(p.0, p.1))
+                } else {
+                    component.append(.quad(p.0, 0.5 * (p.0 + p.1)))
+                }
+            } else {
+                if record.0 & 1 == 0 {
+                    component.append(.quad(0.5 * (p.0 + record.1), p.0))
+                } else {
+                    component.append(.line(p.0))
+                }
+            }
+            
+            record = (f.0, p.0)
+        }
+        
+        return (points, component)
+    }
+    
+    func shape(glyph: Int) -> Shape {
+        
+        if var data = _glyfData(glyph: glyph) {
+            
+            guard let numberOfContours = try? BEInt16(data), numberOfContours != 0 else { return Shape() }
+            
+            if numberOfContours > 0 {
+                
+                return self._glyfOutline(glyph).map { Shape($0.1) } ?? Shape()
+                
+            } else {
+                
+                var shape = Shape()
+                
+                var _continue = true
+                
+                var points = [Point]()
+                
+                while _continue {
+                    
+                    guard let flags = try? data.decode(BEUInt16.self) else { return Shape() }
+                    guard let glyphIndex = try? data.decode(BEUInt16.self), glyphIndex != glyph else { return Shape() }
+                    
+                    guard let (_points, component) = self._glyfOutline(Int(glyphIndex)) else { return Shape() }
+                    
+                    var transform = SDTransform.identity
+                    
+                    if flags & 1 != 0 {
+                        
+                        if flags & 2 != 0 {
+                            
+                            guard let dx = try? data.decode(BEInt16.self) else { return Shape() }
+                            guard let dy = try? data.decode(BEInt16.self) else { return Shape() }
+                            
+                            transform.c = Double(dx.representingValue)
+                            transform.f = Double(dy.representingValue)
+                            
+                        } else {
+                            
+                            guard let m0 = try? data.decode(BEUInt16.self), m0 < points.count else { return Shape() }
+                            guard let m1 = try? data.decode(BEUInt16.self), m1 < _points.count else { return Shape() }
+                            
+                            let offset = points[Int(m0)] - _points[Int(m1)]
+                            
+                            transform.c = offset.x
+                            transform.f = offset.y
+                        }
+                    } else {
+                        
+                        if flags & 2 != 0 {
+                            
+                            guard let dx = try? data.decode(Int8.self) else { return Shape() }
+                            guard let dy = try? data.decode(Int8.self) else { return Shape() }
+                            
+                            transform.c = Double(dx)
+                            transform.f = Double(dy)
+                            
+                        } else {
+                            
+                            guard let m0 = try? data.decode(UInt8.self), m0 < points.count else { return Shape() }
+                            guard let m1 = try? data.decode(UInt8.self), m1 < _points.count else { return Shape() }
+                            
+                            let offset = points[Int(m0)] - _points[Int(m1)]
+                            
+                            transform.c = offset.x
+                            transform.f = offset.y
+                        }
+                    }
+                    
+                    if flags & 8 != 0 {
+                        
+                        guard let scale = try? data.decode(Fixed14Number<BEInt16>.self) else { return Shape() }
+                        
+                        transform.a = scale.representingValue
+                        transform.e = scale.representingValue
+                        
+                    } else if flags & 64 != 0 {
+                        
+                        guard let x_scale = try? data.decode(Fixed14Number<BEInt16>.self) else { return Shape() }
+                        guard let y_scale = try? data.decode(Fixed14Number<BEInt16>.self) else { return Shape() }
+                        
+                        transform.a = x_scale.representingValue
+                        transform.e = y_scale.representingValue
+                        
+                    } else if flags & 128 != 0 {
+                        
+                        guard let m00 = try? data.decode(Fixed14Number<BEInt16>.self) else { return Shape() }
+                        guard let m01 = try? data.decode(Fixed14Number<BEInt16>.self) else { return Shape() }
+                        guard let m10 = try? data.decode(Fixed14Number<BEInt16>.self) else { return Shape() }
+                        guard let m11 = try? data.decode(Fixed14Number<BEInt16>.self) else { return Shape() }
+                        
+                        transform.a = m00.representingValue
+                        transform.b = m01.representingValue
+                        transform.d = m10.representingValue
+                        transform.e = m11.representingValue
+                    }
+                    
+                    points.append(contentsOf: _points)
+                    shape.append(component * transform)
+                    _continue = flags & 32 != 0
+                }
+                
+                return shape
+            }
+        }
+        
+        return Shape()
     }
 }
 

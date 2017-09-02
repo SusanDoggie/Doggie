@@ -27,6 +27,8 @@ import Foundation
 
 protocol FontFaceBase {
     
+    func boundary(glyph: Int) -> Rect
+    func shape(glyph: Int) -> Shape
     func glyph(unicode: UnicodeScalar) -> Int
     func advanceWidth(glyph: Int) -> Double
     func advanceHeight(glyph: Int) -> Double
@@ -138,6 +140,16 @@ extension Font {
     
     public var numberOfGlyphs: Int {
         return base.numberOfGlyphs
+    }
+    
+    public func boundary(forGlyph glyph: Int) -> Rect {
+        let _pointScale = self._pointScale
+        let bound = base.boundary(glyph: glyph)
+        return Rect(origin: bound.origin * _pointScale, size: bound.size * _pointScale)
+    }
+    
+    public func shape(forGlyph glyph: Int) -> Shape {
+        return Shape(base.shape(glyph: glyph).map { $0 * SDTransform.scale(_pointScale) })
     }
     
     public func glyph(with unicode: UnicodeScalar) -> Int {

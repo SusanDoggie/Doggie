@@ -40,6 +40,23 @@ struct Fixed8Number<BitPattern : FixedWidthInteger & DataCodable> : BinaryFixedP
     }
 }
 
+struct Fixed14Number<BitPattern : FixedWidthInteger & DataCodable> : BinaryFixedPoint, DataCodable {
+    
+    typealias RepresentingValue = Double
+    
+    var bitPattern: BitPattern
+    
+    @_transparent
+    init(bitPattern: BitPattern) {
+        self.bitPattern = bitPattern
+    }
+    
+    @_transparent
+    static var fractionBitCount: Int {
+        return 14
+    }
+}
+
 struct Fixed15Number<BitPattern : FixedWidthInteger & DataCodable> : BinaryFixedPoint, DataCodable {
     
     typealias RepresentingValue = Double
