@@ -52,7 +52,6 @@ struct SFNTCMAP : DataDecodable {
             case 0: tables.append(Table(platform: platform, format: try Format0(tableData)))
             case 4: tables.append(Table(platform: platform, format: try Format4(tableData)))
             case 12: tables.append(Table(platform: platform, format: try Format12(tableData)))
-            case 13: tables.append(Table(platform: platform, format: try Format13(tableData)))
             default: break
             }
         }
@@ -123,10 +122,12 @@ extension SFNTCMAP {
         var reservedPad: BEUInt16
         var startCode: [BEUInt16]
         var idDelta: [BEInt16]
-        var idRangeOffset: [BEUInt16]
-        var glyphIndexArray: [BEUInt16]
+        var idRangeOffset: Data
         
         init(from data: inout Data) throws {
+            
+            let record = data.count
+            
             self.format = try data.decode(BEUInt16.self)
             self.length = try data.decode(BEUInt16.self)
             self.language = try data.decode(BEUInt16.self)
@@ -141,11 +142,9 @@ extension SFNTCMAP {
             self.startCode = []
             self.idDelta = []
             self.idRangeOffset = []
-            self.glyphIndexArray = []
             self.endCode.reserveCapacity(segCount)
             self.startCode.reserveCapacity(segCount)
             self.idDelta.reserveCapacity(segCount)
-            self.idRangeOffset.reserveCapacity(segCount)
             
             for _ in 0..<segCount {
                 self.endCode.append(try data.decode(BEUInt16.self))
@@ -159,9 +158,12 @@ extension SFNTCMAP {
             for _ in 0..<segCount {
                 self.idDelta.append(try data.decode(BEInt16.self))
             }
-            for _ in 0..<segCount {
-                self.idRangeOffset.append(try data.decode(BEUInt16.self))
-            }
+            
+            let ramainSize = Int(self.length) - (record - data.count)
+            guard ramainSize > 0 else { throw FontCollection.Error.InvalidFormat("Invalid cmap format.") }
+            guard data.count >= ramainSize else { throw DataDecodeError.endOfData }
+            
+            self.idRangeOffset = data.popFirst(ramainSize)
         }
         
         subscript(code: UInt32) -> Int {
@@ -242,70 +244,6 @@ extension SFNTCMAP {
                         startCharCode = _startCharCode
                         endCharCode = _endCharCode
                     }
-                    
-                    if startCharCode <= endCharCode {
-                        result.formUnion(CharacterSet(charactersIn: startCharCode...endCharCode))
-                    }
-                }
-            }
-            
-            return result
-        }
-    }
-    
-    struct Format13 : SFNTCMAPTableFormat {
-        
-        var format: Fixed16Number<BEInt32>
-        var length: BEUInt32
-        var language: BEUInt32
-        var nGroups: BEUInt32
-        var groups: Data
-        
-        init(from data: inout Data) throws {
-            self.format = try data.decode(Fixed16Number<BEInt32>.self)
-            self.length = try data.decode(BEUInt32.self)
-            self.language = try data.decode(BEUInt32.self)
-            self.nGroups = try data.decode(BEUInt32.self)
-            guard data.count >= Int(nGroups) * MemoryLayout<Group>.stride else { throw DataDecodeError.endOfData }
-            self.groups = data.popFirst(Int(nGroups))
-        }
-        
-        func search(_ code: UInt32, _ groups: UnsafePointer<Group>, _ range: CountableRange<Int>) -> Int {
-            
-            guard range.count != 0 else { return 0 }
-            
-            if range.count == 1 {
-                
-                let startCharCode = UInt32(groups[range.startIndex].startCharCode)
-                let endCharCode = UInt32(groups[range.startIndex].endCharCode)
-                return startCharCode <= endCharCode && startCharCode...endCharCode ~= code ? Int(groups[range.startIndex].startGlyphCode) : 0
-                
-            } else {
-                let mid = (range.lowerBound + range.upperBound) >> 1
-                let startCharCode = UInt32(groups[mid].startCharCode)
-                let endCharCode = UInt32(groups[mid].endCharCode)
-                if startCharCode <= endCharCode && startCharCode...endCharCode ~= code {
-                    return Int(groups[range.startIndex].startGlyphCode)
-                }
-                return code < startCharCode ? search(code, groups, range.prefix(upTo: mid)) : search(code, groups, range.suffix(from: mid).dropFirst())
-            }
-        }
-        
-        subscript(code: UInt32) -> Int {
-            return groups.withUnsafeBytes { search(code, $0, 0..<Int(self.nGroups)) }
-        }
-        
-        var coveredCharacterSet: CharacterSet {
-            
-            var result = CharacterSet()
-            
-            groups.withUnsafeBytes { (groups: UnsafePointer<Group>) in
-                
-                for group in UnsafeBufferPointer(start: groups, count: Int(self.nGroups)) {
-                    
-                    guard group.startGlyphCode != 0 else { continue }
-                    guard let startCharCode = UnicodeScalar(UInt32(group.startCharCode)) else { continue }
-                    guard let endCharCode = UnicodeScalar(UInt32(group.endCharCode)) else { continue }
                     
                     if startCharCode <= endCharCode {
                         result.formUnion(CharacterSet(charactersIn: startCharCode...endCharCode))
