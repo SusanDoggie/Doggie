@@ -47,22 +47,6 @@ public class SDTask<Result> {
     private init(queue: DispatchQueue) {
         self.queue = queue
     }
-    /// Create a SDTask and compute block.
-    public init(queue: DispatchQueue = SDDefaultDispatchQueue, qos: DispatchQoS = .unspecified, flags: DispatchWorkItemFlags = [], block: @escaping () -> Result) {
-        self.queue = queue
-        let worker = createWorker(qos: qos, flags: flags, block: block)
-        self.worker = worker
-        self.queue.async(execute: worker)
-    }
-}
-
-extension SDTask {
-    
-    /// Create a SDTask and compute block.
-    @discardableResult
-    public static func async(queue: DispatchQueue = SDDefaultDispatchQueue, qos: DispatchQoS = .unspecified, flags: DispatchWorkItemFlags = [], block: @escaping () -> Result) -> SDTask {
-        return SDTask(queue: queue, qos: qos, flags: flags, block: block)
-    }
 }
 
 extension SDTask {
@@ -75,6 +59,15 @@ extension SDTask {
                 _self.lck.broadcast()
             }
         }
+    }
+    
+    /// Create a SDTask and compute block.
+    @discardableResult
+    public static func async(queue: DispatchQueue = SDDefaultDispatchQueue, qos: DispatchQoS = .unspecified, flags: DispatchWorkItemFlags = [], block: @escaping () -> Result) -> SDTask {
+        let task = SDTask(queue: queue)
+        task.worker = task.createWorker(qos: qos, flags: flags, block: block)
+        task.queue.async(execute: task.worker)
+        return task
     }
 }
 
@@ -125,10 +118,12 @@ extension SDTask {
 
 extension SDTask {
     
+    @discardableResult
     public func wait(deadline: DispatchTime, qos: DispatchQoS = .unspecified, flags: DispatchWorkItemFlags = []) -> SDTask<Result?> {
         return self.wait(queue: queue, deadline: deadline, qos: qos, flags: flags)
     }
     
+    @discardableResult
     public func wait(queue: DispatchQueue, deadline: DispatchTime, qos: DispatchQoS = .unspecified, flags: DispatchWorkItemFlags = []) -> SDTask<Result?> {
         var storage: Result?
         let result = SDTask<Result?>(queue: queue)
@@ -141,10 +136,12 @@ extension SDTask {
         return result
     }
     
+    @discardableResult
     public func wait(wallDeadline: DispatchWallTime, qos: DispatchQoS = .unspecified, flags: DispatchWorkItemFlags = []) -> SDTask<Result?> {
         return self.wait(queue: queue, wallDeadline: wallDeadline, qos: qos, flags: flags)
     }
     
+    @discardableResult
     public func wait(queue: DispatchQueue, wallDeadline: DispatchWallTime, qos: DispatchQoS = .unspecified, flags: DispatchWorkItemFlags = []) -> SDTask<Result?> {
         var storage: Result?
         let result = SDTask<Result?>(queue: queue)
