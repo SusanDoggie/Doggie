@@ -4,6 +4,7 @@
         <page name='Benchmark'/>
         <page name='Doggie'/>
         <page name='Random'/>
+        <page name='Font'/>
         <page name='Polynomial'/>
         <page name='3D Cube'/>
         <page name='Blending'/>
