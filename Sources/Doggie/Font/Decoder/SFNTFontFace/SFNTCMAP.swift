@@ -150,6 +150,8 @@ extension SFNTCMAP {
                 self.endCode.append(try data.decode(BEUInt16.self))
             }
             
+            guard self.endCode.last == 0xFFFF else { throw FontCollection.Error.InvalidFormat("Invalid cmap format.") }
+            
             self.reservedPad = try data.decode(BEUInt16.self)
             
             for _ in 0..<segCount {
@@ -166,12 +168,61 @@ extension SFNTCMAP {
             self.idRangeOffset = data.popFirst(ramainSize)
         }
         
+        func search(_ code: UInt32, _ startCode: UnsafePointer<BEUInt16>, _ endCode: UnsafePointer<BEUInt16>, _ range: CountableRange<Int>) -> Int? {
+            
+            var range = range
+            
+            while range.count != 0 {
+                
+                let mid = (range.lowerBound + range.upperBound) >> 1
+                let startCharCode = UInt32(startCode[mid])
+                let endCharCode = UInt32(endCode[mid])
+                if startCharCode <= endCharCode && startCharCode...endCharCode ~= code {
+                    return mid
+                }
+                range = code < startCharCode ? range.prefix(upTo: mid) : range.suffix(from: mid).dropFirst()
+            }
+            
+            return nil
+        }
+        
         subscript(code: UInt32) -> Int {
+            
+            if let i = search(code, startCode, endCode, 0..<startCode.count) {
+                
+                let glyphIndex: Int
+                
+                let _idRangeOffset: BEUInt16 = self.idRangeOffset.withUnsafeBytes { $0[i] }
+                
+                if _idRangeOffset == 0 {
+                    glyphIndex = Int(code)
+                } else {
+                    let offset = i + (Int(_idRangeOffset) >> 1) + (Int(code) - Int(startCode[i]))
+                    guard offset < idRangeOffset.count >> 1 else { return 0 }
+                    glyphIndex = Int(self.idRangeOffset.withUnsafeBytes { $0[offset] as BEUInt16 })
+                }
+                
+                return glyphIndex == 0 ? 0 : (Int(idDelta[i]) + glyphIndex) % 0xFFFF
+            }
+            
             return 0
         }
         
         var coveredCharacterSet: CharacterSet {
-            return CharacterSet()
+            
+            var result = CharacterSet()
+            
+            for (startCode, endCode) in zip(startCode, endCode) {
+                
+                guard let startCharCode = UnicodeScalar(startCode == 0 ? UInt32(startCode) + 1 : UInt32(startCode)) else { continue }
+                guard let endCharCode = UnicodeScalar(endCode == 0xFFFF ? UInt32(endCode) - 1 : UInt32(endCode)) else { continue }
+                
+                if startCharCode <= endCharCode {
+                    result.formUnion(CharacterSet(charactersIn: startCharCode...endCharCode))
+                }
+            }
+            
+            return result
         }
     }
     
@@ -194,23 +245,20 @@ extension SFNTCMAP {
         
         func search(_ code: UInt32, _ groups: UnsafePointer<Group>, _ range: CountableRange<Int>) -> Int {
             
-            guard range.count != 0 else { return 0 }
+            var range = range
             
-            if range.count == 1 {
+            while range.count != 0 {
                 
-                let startCharCode = UInt32(groups[range.startIndex].startCharCode)
-                let endCharCode = UInt32(groups[range.startIndex].endCharCode)
-                return startCharCode <= endCharCode && startCharCode...endCharCode ~= code ? Int(code - startCharCode) + Int(groups[range.startIndex].startGlyphCode) : 0
-                
-            } else {
                 let mid = (range.lowerBound + range.upperBound) >> 1
                 let startCharCode = UInt32(groups[mid].startCharCode)
                 let endCharCode = UInt32(groups[mid].endCharCode)
                 if startCharCode <= endCharCode && startCharCode...endCharCode ~= code {
-                    return Int(code - startCharCode) + Int(groups[range.startIndex].startGlyphCode)
+                    return Int(code - startCharCode) + Int(groups[mid].startGlyphCode)
                 }
-                return code < startCharCode ? search(code, groups, range.prefix(upTo: mid)) : search(code, groups, range.suffix(from: mid).dropFirst())
+                range = code < startCharCode ? range.prefix(upTo: mid) : range.suffix(from: mid).dropFirst()
             }
+            
+            return 0
         }
         
         subscript(code: UInt32) -> Int {
@@ -225,25 +273,8 @@ extension SFNTCMAP {
                 
                 for group in UnsafeBufferPointer(start: groups, count: Int(self.nGroups)) {
                     
-                    let startCharCode: UnicodeScalar
-                    let endCharCode: UnicodeScalar
-                    
-                    if group.startGlyphCode == 0 {
-                        
-                        guard let _startCharCode = UnicodeScalar(UInt32(group.startCharCode) + 1) else { continue }
-                        guard let _endCharCode = UnicodeScalar(UInt32(group.endCharCode)) else { continue }
-                        
-                        startCharCode = _startCharCode
-                        endCharCode = _endCharCode
-                        
-                    } else {
-                        
-                        guard let _startCharCode = UnicodeScalar(UInt32(group.startCharCode)) else { continue }
-                        guard let _endCharCode = UnicodeScalar(UInt32(group.endCharCode)) else { continue }
-                        
-                        startCharCode = _startCharCode
-                        endCharCode = _endCharCode
-                    }
+                    guard let startCharCode = UnicodeScalar(group.startGlyphCode == 0 ? UInt32(group.startCharCode) + 1 : UInt32(group.startCharCode)) else { continue }
+                    guard let endCharCode = UnicodeScalar(UInt32(group.endCharCode)) else { continue }
                     
                     if startCharCode <= endCharCode {
                         result.formUnion(CharacterSet(charactersIn: startCharCode...endCharCode))
