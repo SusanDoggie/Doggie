@@ -121,11 +121,11 @@ extension SFNTFontFace {
         if head.indexToLocFormat == 0 {
             let startIndex = loca.withUnsafeBytes { $0[glyph] as UInt8 }
             let endIndex = loca.withUnsafeBytes { $0[glyph + 1] as UInt8 }
-            return glyf.dropFirst(Int(startIndex)).prefix(Int(endIndex))
+            return glyf.dropFirst(Int(startIndex)).prefix(Int(endIndex) - Int(startIndex))
         } else {
             let startIndex = loca.withUnsafeBytes { $0[glyph] as BEUInt16 }
             let endIndex = loca.withUnsafeBytes { $0[glyph + 1] as BEUInt16 }
-            return glyf.dropFirst(Int(startIndex)).prefix(Int(endIndex))
+            return glyf.dropFirst(Int(startIndex)).prefix(Int(endIndex) - Int(startIndex))
         }
     }
     
