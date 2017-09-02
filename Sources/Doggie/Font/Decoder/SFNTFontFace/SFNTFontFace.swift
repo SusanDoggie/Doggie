@@ -262,19 +262,19 @@ extension SFNTFontFace {
         return (points, component)
     }
     
-    func shape(glyph: Int) -> Shape {
+    func shape(glyph: Int) -> [Shape.Component] {
         
         if var data = _glyfData(glyph: glyph) {
             
-            guard let numberOfContours = try? BEInt16(data), numberOfContours != 0 else { return Shape() }
+            guard let numberOfContours = try? BEInt16(data), numberOfContours != 0 else { return [] }
             
             if numberOfContours > 0 {
                 
-                return self._glyfOutline(glyph).map { Shape($0.1) } ?? Shape()
+                return self._glyfOutline(glyph).map { [$0.1] } ?? []
                 
             } else {
                 
-                var shape = Shape()
+                var components = [Shape.Component]()
                 
                 var _continue = true
                 
@@ -282,10 +282,10 @@ extension SFNTFontFace {
                 
                 while _continue {
                     
-                    guard let flags = try? data.decode(BEUInt16.self) else { return Shape() }
-                    guard let glyphIndex = try? data.decode(BEUInt16.self), glyphIndex != glyph else { return Shape() }
+                    guard let flags = try? data.decode(BEUInt16.self) else { return [] }
+                    guard let glyphIndex = try? data.decode(BEUInt16.self), glyphIndex != glyph else { return [] }
                     
-                    guard let (_points, component) = self._glyfOutline(Int(glyphIndex)) else { return Shape() }
+                    guard let (_points, component) = self._glyfOutline(Int(glyphIndex)) else { return [] }
                     
                     var transform = SDTransform.identity
                     
@@ -293,16 +293,16 @@ extension SFNTFontFace {
                         
                         if flags & 2 != 0 {
                             
-                            guard let dx = try? data.decode(BEInt16.self) else { return Shape() }
-                            guard let dy = try? data.decode(BEInt16.self) else { return Shape() }
+                            guard let dx = try? data.decode(BEInt16.self) else { return [] }
+                            guard let dy = try? data.decode(BEInt16.self) else { return [] }
                             
                             transform.c = Double(dx.representingValue)
                             transform.f = Double(dy.representingValue)
                             
                         } else {
                             
-                            guard let m0 = try? data.decode(BEUInt16.self), m0 < points.count else { return Shape() }
-                            guard let m1 = try? data.decode(BEUInt16.self), m1 < _points.count else { return Shape() }
+                            guard let m0 = try? data.decode(BEUInt16.self), m0 < points.count else { return [] }
+                            guard let m1 = try? data.decode(BEUInt16.self), m1 < _points.count else { return [] }
                             
                             let offset = points[Int(m0)] - _points[Int(m1)]
                             
@@ -313,16 +313,16 @@ extension SFNTFontFace {
                         
                         if flags & 2 != 0 {
                             
-                            guard let dx = try? data.decode(Int8.self) else { return Shape() }
-                            guard let dy = try? data.decode(Int8.self) else { return Shape() }
+                            guard let dx = try? data.decode(Int8.self) else { return [] }
+                            guard let dy = try? data.decode(Int8.self) else { return [] }
                             
                             transform.c = Double(dx)
                             transform.f = Double(dy)
                             
                         } else {
                             
-                            guard let m0 = try? data.decode(UInt8.self), m0 < points.count else { return Shape() }
-                            guard let m1 = try? data.decode(UInt8.self), m1 < _points.count else { return Shape() }
+                            guard let m0 = try? data.decode(UInt8.self), m0 < points.count else { return [] }
+                            guard let m1 = try? data.decode(UInt8.self), m1 < _points.count else { return [] }
                             
                             let offset = points[Int(m0)] - _points[Int(m1)]
                             
@@ -333,25 +333,25 @@ extension SFNTFontFace {
                     
                     if flags & 8 != 0 {
                         
-                        guard let scale = try? data.decode(Fixed14Number<BEInt16>.self) else { return Shape() }
+                        guard let scale = try? data.decode(Fixed14Number<BEInt16>.self) else { return [] }
                         
                         transform.a = scale.representingValue
                         transform.e = scale.representingValue
                         
                     } else if flags & 64 != 0 {
                         
-                        guard let x_scale = try? data.decode(Fixed14Number<BEInt16>.self) else { return Shape() }
-                        guard let y_scale = try? data.decode(Fixed14Number<BEInt16>.self) else { return Shape() }
+                        guard let x_scale = try? data.decode(Fixed14Number<BEInt16>.self) else { return [] }
+                        guard let y_scale = try? data.decode(Fixed14Number<BEInt16>.self) else { return [] }
                         
                         transform.a = x_scale.representingValue
                         transform.e = y_scale.representingValue
                         
                     } else if flags & 128 != 0 {
                         
-                        guard let m00 = try? data.decode(Fixed14Number<BEInt16>.self) else { return Shape() }
-                        guard let m01 = try? data.decode(Fixed14Number<BEInt16>.self) else { return Shape() }
-                        guard let m10 = try? data.decode(Fixed14Number<BEInt16>.self) else { return Shape() }
-                        guard let m11 = try? data.decode(Fixed14Number<BEInt16>.self) else { return Shape() }
+                        guard let m00 = try? data.decode(Fixed14Number<BEInt16>.self) else { return [] }
+                        guard let m01 = try? data.decode(Fixed14Number<BEInt16>.self) else { return [] }
+                        guard let m10 = try? data.decode(Fixed14Number<BEInt16>.self) else { return [] }
+                        guard let m11 = try? data.decode(Fixed14Number<BEInt16>.self) else { return [] }
                         
                         transform.a = m00.representingValue
                         transform.b = m01.representingValue
@@ -360,15 +360,15 @@ extension SFNTFontFace {
                     }
                     
                     points.append(contentsOf: _points)
-                    shape.append(component * transform)
+                    components.append(component * transform)
                     _continue = flags & 32 != 0
                 }
                 
-                return shape
+                return components
             }
         }
         
-        return Shape()
+        return []
     }
 }
 

@@ -28,7 +28,7 @@ import Foundation
 protocol FontFaceBase {
     
     func boundary(glyph: Int) -> Rect
-    func shape(glyph: Int) -> Shape
+    func shape(glyph: Int) -> [Shape.Component]
     func glyph(unicode: UnicodeScalar) -> Int
     func advanceWidth(glyph: Int) -> Double
     func advanceHeight(glyph: Int) -> Double
