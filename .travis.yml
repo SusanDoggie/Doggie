@@ -15,4 +15,6 @@ before_install:
   - git clone https://github.com/IBM-Swift/Package-Builder.git
 
 script:
+  - while true; do echo "..."; sleep 60; done &
   - ./Package-Builder/build-package.sh -projectDir $TRAVIS_BUILD_DIR
+  - kill %1
