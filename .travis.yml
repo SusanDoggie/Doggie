@@ -10,10 +10,10 @@ matrix:
     - os: linux
     - os: linux
       services: docker
-      env: DOCKER_IMAGE=ubuntu:16.04 SWIFT_SNAPSHOT=$SWIFT_SNAPSHOT
+      env: DOCKER_IMAGE=ubuntu:16.04 SWIFT_SNAPSHOT='swift-4.0-DEVELOPMENT-SNAPSHOT-2017-09-02-a'
     - os: linux
       services: docker
-      env: DOCKER_IMAGE=ubuntu:16.10 SWIFT_SNAPSHOT=$SWIFT_SNAPSHOT
+      env: DOCKER_IMAGE=ubuntu:16.10 SWIFT_SNAPSHOT='swift-4.0-DEVELOPMENT-SNAPSHOT-2017-09-02-a'
     - os: osx
       osx_image: xcode8.3
 
