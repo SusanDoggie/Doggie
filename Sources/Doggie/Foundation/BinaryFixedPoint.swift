@@ -40,6 +40,14 @@ public protocol BinaryFixedPoint : Numeric, Hashable, Strideable, CustomStringCo
     init(representingValue: RepresentingValue)
 }
 
+extension BinaryFloatingPoint {
+    
+    @_transparent
+    public init<T: BinaryFixedPoint>(_ value: T) where T.RepresentingValue == Self {
+        self = value.representingValue
+    }
+}
+
 extension BinaryFixedPoint {
     
     @_transparent

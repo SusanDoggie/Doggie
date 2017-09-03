@@ -402,6 +402,8 @@
 				08B085471E9A20720037DECE /* Algorithm.swift */,
 				0A9D27E31F0CF629003638D3 /* BinaryFixedPoint.swift */,
 				0A7F24AB1EF37CD500EAD9C7 /* Endianness.swift */,
+				0889F2C71F18FF1D0020E750 /* FixedNumber.swift */,
+				0889F2CA1F1904EB0020E750 /* Signature.swift */,
 				0A53E44D1E35AEF80060FB83 /* CollectionExtension.swift */,
 				0A53E44F1E35AEF80060FB83 /* Date.swift */,
 				0A92C7C31E56AB9D0090EBFC /* Data.swift */,
@@ -478,7 +480,6 @@
 				0A7A1FAC1F04FBFC0016B3FB /* ColorPixel */,
 				0A9F28181EF0D5FD00E69976 /* Color */,
 				08B68A2F1ED07A2400F8D423 /* ColorSpace */,
-				0889F2C61F18FEF30020E750 /* CommonFormat */,
 				08458ACE1E2E627600D01813 /* Image */,
 				0A94BE9E1F108E8100F1BCD2 /* ImageCodec */,
 				0A39A6B31ED9342C00804004 /* ImageContext */,
@@ -542,15 +543,6 @@
 				087FE5C51A372D97005A2E9E /* Info.plist */,
 			);
 			name = "Supporting Files";
-			sourceTree = "<group>";
-		};
-		0889F2C61F18FEF30020E750 /* CommonFormat */ = {
-			isa = PBXGroup;
-			children = (
-				0889F2C71F18FF1D0020E750 /* FixedNumber.swift */,
-				0889F2CA1F1904EB0020E750 /* Signature.swift */,
-			);
-			path = CommonFormat;
 			sourceTree = "<group>";
 		};
 		08AF77AE1A3A10510042491F /* Tests */ = {

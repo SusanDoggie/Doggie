@@ -442,6 +442,19 @@ public struct LEInteger<Base : FixedWidthInteger> : FixedWidthInteger, EndianInt
     }
 }
 
+extension FixedWidthInteger {
+    
+    @_transparent
+    public init(_ value: BEInteger<Self>) {
+        self = value.representingValue
+    }
+    
+    @_transparent
+    public init(_ value: LEInteger<Self>) {
+        self = value.representingValue
+    }
+}
+
 public typealias BEInt = BEInteger<Int>
 public typealias BEInt8 = BEInteger<Int8>
 public typealias BEInt16 = BEInteger<Int16>
