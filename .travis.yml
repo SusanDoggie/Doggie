@@ -2,20 +2,20 @@ language: generic
 dist: trusty
 sudo: required
 notifications: never
-env:
-  - SWIFT_SNAPSHOT='swift-4.0-DEVELOPMENT-SNAPSHOT-2017-09-02-a'
 
 matrix:
   include:
     - os: linux
+      env: SWIFT_SNAPSHOT=$SWIFT_4_DEV_SNAPSHOT
     - os: linux
       services: docker
-      env: DOCKER_IMAGE=ubuntu:16.04
+      env: DOCKER_IMAGE=ubuntu:16.04 SWIFT_SNAPSHOT=$SWIFT_4_DEV_SNAPSHOT
     - os: linux
       services: docker
-      env: DOCKER_IMAGE=ubuntu:16.10
+      env: DOCKER_IMAGE=ubuntu:16.10 SWIFT_SNAPSHOT=$SWIFT_4_DEV_SNAPSHOT
     - os: osx
       osx_image: xcode8.3
+      env: SWIFT_SNAPSHOT=$SWIFT_4_DEV_SNAPSHOT
 
 before_install:
   - git clone https://github.com/IBM-Swift/Package-Builder.git
