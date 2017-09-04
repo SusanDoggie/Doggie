@@ -121,15 +121,16 @@ extension SFNTFontFace {
     private func _glyfData(glyph: Int) -> Data? {
         precondition(glyph < numberOfGlyphs, "Index out of range.")
         guard let loca = self.loca, let glyf = self.glyf else { return nil }
+        let startIndex: Int
+        let endIndex: Int
         if head.indexToLocFormat == 0 {
-            let startIndex = loca.withUnsafeBytes { $0[glyph] as BEUInt16 }
-            let endIndex = loca.withUnsafeBytes { $0[glyph + 1] as BEUInt16 }
-            return glyf.dropFirst(Int(startIndex)).prefix(Int(endIndex) - Int(startIndex))
+            startIndex = Int(loca.withUnsafeBytes { $0[glyph] as BEUInt16 }) << 1
+            endIndex = Int(loca.withUnsafeBytes { $0[glyph + 1] as BEUInt16 }) << 1
         } else {
-            let startIndex = loca.withUnsafeBytes { $0[glyph] as BEUInt32 }
-            let endIndex = loca.withUnsafeBytes { $0[glyph + 1] as BEUInt32 }
-            return glyf.dropFirst(Int(startIndex)).prefix(Int(endIndex) - Int(startIndex))
+            startIndex = Int(loca.withUnsafeBytes { $0[glyph] as BEUInt32 })
+            endIndex = Int(loca.withUnsafeBytes { $0[glyph + 1] as BEUInt32 })
         }
+        return glyf.dropFirst(startIndex).prefix(endIndex - startIndex)
     }
     
     func boundary(glyph: Int) -> Rect {
@@ -162,17 +163,17 @@ extension SFNTFontFace {
         guard let _ = try? data.decode(BEInt16.self) else { return nil }
         guard let _ = try? data.decode(BEInt16.self) else { return nil }
         
-        let count = Int(numberOfContours)
-        
-        guard let endPtsOfContours = try? (0..<count).map({ _ in try data.decode(BEUInt16.self) }) else { return nil }
+        guard let endPtsOfContours = try? (0..<Int(numberOfContours)).map({ _ in try data.decode(BEUInt16.self) }) else { return nil }
         
         guard let instructionLength = try? data.decode(BEUInt16.self) else { return nil }
         
         guard let instructions = try? (0..<Int(instructionLength)).map({ _ in try data.decode(UInt8.self) }) else { return nil }
         
+        let numberOfCoordinates = Int(endPtsOfContours.last!) + 1
+        
         var flags = [UInt8]()
-        flags.reserveCapacity(count)
-        while flags.count < count {
+        flags.reserveCapacity(numberOfCoordinates)
+        while flags.count < numberOfCoordinates {
             guard let flag = try? data.decode(UInt8.self) else { return nil }
             flags.append(flag)
             if flag & 8 != 0 {
@@ -182,7 +183,7 @@ extension SFNTFontFace {
                 }
             }
         }
-        guard flags.count == count else { return nil }
+        guard flags.count == numberOfCoordinates else { return nil }
         
         func coordinate(_ flag: UInt8, _ previousValue: Int16, _ bitMask: (UInt8, UInt8)) throws -> Int16 {
             var code: Int16
@@ -196,7 +197,7 @@ extension SFNTFontFace {
                 if flag & bitMask.1 != 0 {
                     code = previousValue
                 } else {
-                    code = try previousValue + data.decode(Int16.self)
+                    code = previousValue + Int16(try data.decode(BEInt16.self))
                 }
             }
             return code
@@ -204,8 +205,8 @@ extension SFNTFontFace {
         
         var x_coordinate: [Int16] = []
         var y_coordinate: [Int16] = []
-        x_coordinate.reserveCapacity(count)
-        y_coordinate.reserveCapacity(count)
+        x_coordinate.reserveCapacity(numberOfCoordinates)
+        y_coordinate.reserveCapacity(numberOfCoordinates)
         
         for flag in flags {
             guard let _x = try? coordinate(flag, x_coordinate.last ?? 0, (2, 16)) else { return nil }
@@ -221,15 +222,15 @@ extension SFNTFontFace {
         
         var component = Shape.Component(start: Point(), closed: true, segments: [])
         
-        if flags[count - 1] & 1 == 1 {
-            component.start = points[count - 1]
+        if flags[numberOfCoordinates - 1] & 1 == 1 {
+            component.start = points[numberOfCoordinates - 1]
         } else if flags[0] & 1 == 1 {
             component.start = points[0]
         } else {
-            component.start = 0.5 * (points[count - 1] + points[0])
+            component.start = 0.5 * (points[numberOfCoordinates - 1] + points[0])
         }
         
-        var record = (flags[count - 1], points[count - 1])
+        var record = (flags[numberOfCoordinates - 1], points[numberOfCoordinates - 1])
         
         for (f, p) in zip(zip(flags, flags.rotated(1)), zip(points, points.rotated(1))) {
             
@@ -441,6 +442,22 @@ extension SFNTFontFace {
         return (os2?.usWidthClass).map(Int.init)
     }
     
+    var familyClass: Font.FamilyClass? {
+        switch Int(os2?.sFamilyClass ?? 0) >> 8 {
+        case 1: return .oldStyleSerifs
+        case 2: return .transitionalSerifs
+        case 3: return .modernSerifs
+        case 4: return .clarendonSerifs
+        case 5: return .slabSerifs
+        case 7: return .freeformSerifs
+        case 8: return .sansSerif
+        case 9: return .ornamentals
+        case 10: return .scripts
+        case 12: return .symbolic
+        default: return nil
+        }
+    }
+    
     var isFixedPitch: Bool {
         return post.isFixedPitch != 0
     }
@@ -495,22 +512,6 @@ extension SFNTFontFace {
     
     var displayName: String? {
         return queryName(4)
-    }
-    
-    var familyClass: Font.FamilyClass? {
-        switch Int(os2?.sFamilyClass ?? 0) >> 8 {
-        case 1: return .oldStyleSerifs
-        case 2: return .transitionalSerifs
-        case 3: return .modernSerifs
-        case 4: return .clarendonSerifs
-        case 5: return .slabSerifs
-        case 7: return .freeformSerifs
-        case 8: return .sansSerif
-        case 9: return .ornamentals
-        case 10: return .scripts
-        case 12: return .symbolic
-        default: return nil
-        }
     }
     
     var version: String? {
