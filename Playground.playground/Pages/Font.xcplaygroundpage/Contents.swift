@@ -15,6 +15,11 @@ if let font = collection.first?.with(size: 14) {
     font.familyName
     font.faceName
     
+    font.familyClass
+    
+    font.weight
+    font.stretch
+    
     font.designer
     
     font.version
