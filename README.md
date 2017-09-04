@@ -30,7 +30,7 @@ ellipse.subtracting(region)
 region.symmetricDifference(ellipse)
 ```
 - [font](Documents/Font.md)
-```
+```swift
 let collection = try FontCollection(data: fontFileData)
 
 if let font = collection.first?.with(size: 64) {
