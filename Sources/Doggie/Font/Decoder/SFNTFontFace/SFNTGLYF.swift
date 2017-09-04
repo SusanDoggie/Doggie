@@ -87,7 +87,7 @@ extension SFNTGLYF {
         
         var data = _glyfData(glyph: glyph)
         
-        guard let numberOfContours = try? BEInt16(data), numberOfContours != 0 else { return nil }
+        guard let numberOfContours = try? data.decode(BEInt16.self), numberOfContours != 0 else { return nil }
         guard let _ = try? data.decode(BEInt16.self) else { return nil }
         guard let _ = try? data.decode(BEInt16.self) else { return nil }
         guard let _ = try? data.decode(BEInt16.self) else { return nil }
