@@ -91,7 +91,7 @@ struct SFNTFontFace : FontFaceBase {
             
         } else if let loca = table["loca"], let glyf = table["glyf"] {
             
-            self.glyf = try SFNTGLYF(format: Int(head.indexToLocFormat), numGlyphs: Int(maxp.numGlyphs), loca: loca, glyf: glyf)
+            self.glyf = try SFNTGLYF(format: Int(head.indexToLocFormat), numberOfGlyphs: Int(maxp.numGlyphs), loca: loca, glyf: glyf)
             
         } else {
             throw FontCollection.Error.InvalidFormat("outlines not found.")
@@ -114,8 +114,6 @@ extension SFNTFontFace {
     
     func boundary(glyph: Int) -> Rect {
         
-        precondition(glyph < numberOfGlyphs, "Index out of range.")
-        
         if let boundary = glyf?.boundary(glyph: glyph) {
             return boundary
         }
@@ -125,9 +123,7 @@ extension SFNTFontFace {
     
     func shape(glyph: Int) -> [Shape.Component] {
         
-        precondition(glyph < numberOfGlyphs, "Index out of range.")
-        
-        if let shape = glyf?.shape(glyph: glyph) {
+        if let shape = glyf?.outline(glyph: glyph)?.1 {
             return shape
         }
         
