@@ -11,6 +11,7 @@ Doggie is a foundational library for Apple's swift. It includes mathematics, acc
 ## Features
 
 - complex number
+- accelerate and signal processing
 - [polynomial](Documents/Polynomial.md)
 - [color and color space](Documents/Color.md)
 - [shape and boolean operation](Documents/Shape.md)
