@@ -119,12 +119,12 @@ extension SFNTFontFace {
         precondition(glyph < numberOfGlyphs, "Index out of range.")
         guard let loca = self.loca, let glyf = self.glyf else { return nil }
         if head.indexToLocFormat == 0 {
-            let startIndex = loca.withUnsafeBytes { $0[glyph] as UInt8 }
-            let endIndex = loca.withUnsafeBytes { $0[glyph + 1] as UInt8 }
-            return glyf.dropFirst(Int(startIndex)).prefix(Int(endIndex) - Int(startIndex))
-        } else {
             let startIndex = loca.withUnsafeBytes { $0[glyph] as BEUInt16 }
             let endIndex = loca.withUnsafeBytes { $0[glyph + 1] as BEUInt16 }
+            return glyf.dropFirst(Int(startIndex)).prefix(Int(endIndex) - Int(startIndex))
+        } else {
+            let startIndex = loca.withUnsafeBytes { $0[glyph] as BEUInt32 }
+            let endIndex = loca.withUnsafeBytes { $0[glyph + 1] as BEUInt32 }
             return glyf.dropFirst(Int(startIndex)).prefix(Int(endIndex) - Int(startIndex))
         }
     }
@@ -269,6 +269,9 @@ extension SFNTFontFace {
             guard let numberOfContours = try? BEInt16(data), numberOfContours != 0 else { return [] }
             
             if numberOfContours > 0 {
+                
+                print("data:", data)
+                print("numberOfContours:", numberOfContours)
                 
                 return self._glyfOutline(glyph).map { [$0.1] } ?? []
                 
