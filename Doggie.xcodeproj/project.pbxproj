@@ -143,6 +143,7 @@
 		0A9CD5951EEB9A2A00094148 /* CalibratedGrayColorSpace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9CD5811EEB986F00094148 /* CalibratedGrayColorSpace.swift */; };
 		0A9CD5971EEB9A2D00094148 /* CalibratedRGBColorSpace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9CD57E1EEB983C00094148 /* CalibratedRGBColorSpace.swift */; };
 		0A9D27E51F0CF629003638D3 /* BinaryFixedPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9D27E31F0CF629003638D3 /* BinaryFixedPoint.swift */; };
+		0A9ED9D41F5CF5B000205C1B /* SFNTOS2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9ED9D31F5CF5AF00205C1B /* SFNTOS2.swift */; };
 		0A9F281C1EF0D98400E69976 /* RGBColorModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9F281A1EF0D98400E69976 /* RGBColorModel.swift */; };
 		0A9F281F1EF0D9AA00E69976 /* CMYKColorModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9F281D1EF0D9AA00E69976 /* CMYKColorModel.swift */; };
 		0A9F28221EF0D9BC00E69976 /* LabColorModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9F28201EF0D9BC00E69976 /* LabColorModel.swift */; };
@@ -328,6 +329,7 @@
 		0A9CD5891EEB98E600094148 /* sRGB.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = sRGB.swift; sourceTree = "<group>"; };
 		0A9CD58C1EEB98F300094148 /* displayP3.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = displayP3.swift; sourceTree = "<group>"; };
 		0A9D27E31F0CF629003638D3 /* BinaryFixedPoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BinaryFixedPoint.swift; sourceTree = "<group>"; };
+		0A9ED9D31F5CF5AF00205C1B /* SFNTOS2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SFNTOS2.swift; sourceTree = "<group>"; };
 		0A9F281A1EF0D98400E69976 /* RGBColorModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RGBColorModel.swift; sourceTree = "<group>"; };
 		0A9F281D1EF0D9AA00E69976 /* CMYKColorModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CMYKColorModel.swift; sourceTree = "<group>"; };
 		0A9F28201EF0D9BC00E69976 /* LabColorModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabColorModel.swift; sourceTree = "<group>"; };
@@ -637,6 +639,7 @@
 				0A72EF1B1F55035200F0550A /* SFNTFontFace.swift */,
 				0A9F99461F568FD40008D36D /* SFNTPlatform.swift */,
 				0A72EF141F54FD2C00F0550A /* SFNTHEAD.swift */,
+				0A9ED9D31F5CF5AF00205C1B /* SFNTOS2.swift */,
 				0A72EF171F54FED200F0550A /* SFNTCMAP.swift */,
 				0A5E8D4D1F57CC07000D51E3 /* SFNTMAXP.swift */,
 				0A5E8D451F57BE5C000D51E3 /* SFNTHHEA.swift */,
@@ -992,6 +995,7 @@
 				0A78E1F91E98B20A00BD91AB /* Geometry.swift in Sources */,
 				0A9CD5911EEB9A2700094148 /* CIEXYZColorSpace.swift in Sources */,
 				0A52E2D31E6012140065EED6 /* PDFASCII85Decode.swift in Sources */,
+				0A9ED9D41F5CF5B000205C1B /* SFNTOS2.swift in Sources */,
 				08B457E71EDD3223007AA4F0 /* Arithmetic.swift in Sources */,
 				0A7A1FAF1F04FBFC0016B3FB /* ColorPixel.swift in Sources */,
 				0A72EF1C1F55035200F0550A /* SFNTFontFace.swift in Sources */,

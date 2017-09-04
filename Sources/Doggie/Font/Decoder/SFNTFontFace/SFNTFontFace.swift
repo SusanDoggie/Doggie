@@ -30,6 +30,7 @@ struct SFNTFontFace : FontFaceBase {
     var table: [Signature<BEUInt32>: Data]
     
     var head: SFNTHEAD
+    var os2: SFNTOS2?
     var cmap: SFNTCMAP
     var maxp: SFNTMAXP
     var post: SFNTPOST
@@ -67,6 +68,8 @@ struct SFNTFontFace : FontFaceBase {
         self.name = name
         self.hhea = hhea
         self.hmtx = hmtx
+        
+        self.os2 = try table["OS/2"].map({ try SFNTOS2($0) })
         
         if let vhea = table["vhea"].flatMap({ try? SFNTVHEA($0) }), maxp.numGlyphs >= vhea.numOfLongVerMetrics, let vmtx = table["vmtx"] {
             
@@ -431,9 +434,27 @@ extension SFNTFontFace {
     var italicAngle: Double {
         return post.italicAngle.representingValue
     }
+    var weight: Int? {
+        return (os2?.usWeightClass).map(Int.init)
+    }
+    var stretch: Int? {
+        return (os2?.usWidthClass).map(Int.init)
+    }
     
     var isFixedPitch: Bool {
         return post.isFixedPitch != 0
+    }
+    var isItalic: Bool {
+        return head.macStyle & 2 != 0
+    }
+    var isBold: Bool {
+        return head.macStyle & 1 != 0
+    }
+    var isExpanded: Bool {
+        return head.macStyle & 64 != 0
+    }
+    var isCondensed: Bool {
+        return head.macStyle & 32 != 0
     }
     
     var underlinePosition: Double {
@@ -474,6 +495,22 @@ extension SFNTFontFace {
     
     var displayName: String? {
         return queryName(4)
+    }
+    
+    var familyClass: FamilyClass? {
+        switch Int(os2?.sFamilyClass ?? 0) >> 8 {
+        case 1: return .oldStyleSerifs
+        case 2: return .transitionalSerifs
+        case 3: return .modernSerifs
+        case 4: return .clarendonSerifs
+        case 5: return .slabSerifs
+        case 7: return .freeformSerifs
+        case 8: return .sansSerif
+        case 9: return .ornamentals
+        case 10: return .scripts
+        case 12: return .symbolic
+        default: return nil
+        }
     }
     
     var version: String? {

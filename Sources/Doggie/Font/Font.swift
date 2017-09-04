@@ -25,6 +25,20 @@
 
 import Foundation
 
+public enum FamilyClass {
+    
+    case oldStyleSerifs
+    case transitionalSerifs
+    case modernSerifs
+    case clarendonSerifs
+    case slabSerifs
+    case freeformSerifs
+    case sansSerif
+    case ornamentals
+    case scripts
+    case symbolic
+}
+
 protocol FontFaceBase {
     
     func boundary(glyph: Int) -> Rect
@@ -49,7 +63,13 @@ protocol FontFaceBase {
     var boundingRectForFont: Rect { get }
     
     var italicAngle: Double { get }
+    var weight: Int? { get }
+    var stretch: Int? { get }
     var isFixedPitch: Bool { get }
+    var isItalic: Bool { get }
+    var isBold: Bool { get }
+    var isExpanded: Bool { get }
+    var isCondensed: Bool { get }
     var underlinePosition: Double { get }
     var underlineThickness: Double { get }
     
@@ -58,6 +78,8 @@ protocol FontFaceBase {
     var uniqueName: String? { get }
     var familyName: String? { get }
     var faceName: String? { get }
+    
+    var familyClass: FamilyClass? { get }
     
     var designer: String? { get }
     
@@ -207,8 +229,26 @@ extension Font {
     public var italicAngle: Double {
         return base.italicAngle
     }
+    public var weight: Int? {
+        return base.weight
+    }
+    public var stretch: Int? {
+        return base.stretch
+    }
     public var isFixedPitch: Bool {
         return base.isFixedPitch
+    }
+    public var isItalic: Bool {
+        return base.isItalic
+    }
+    public var isBold: Bool {
+        return base.isBold
+    }
+    public var isExpanded: Bool {
+        return base.isExpanded
+    }
+    public var isCondensed: Bool {
+        return base.isCondensed
     }
     
     public var underlinePosition: Double {
@@ -235,6 +275,10 @@ extension Font {
     }
     public var faceName: String? {
         return details.faceName
+    }
+    
+    public var familyClass: FamilyClass? {
+        return base.familyClass
     }
     
     public var designer: String? {
