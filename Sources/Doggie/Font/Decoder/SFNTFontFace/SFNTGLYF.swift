@@ -167,34 +167,41 @@ extension SFNTGLYF {
                 let points = points[range]
                 
                 var component = Shape.Component(start: Point(), closed: true, segments: [])
+                var record: (UInt8, Point)?
+                var rotate = 0
                 
                 if flags[endIndex] & 1 == 1 {
                     component.start = points[endIndex]
+                    record = (flags[endIndex], component.start)
                 } else if flags[startIndex] & 1 == 1 {
                     component.start = points[startIndex]
+                    record = (flags[startIndex], component.start)
+                    rotate = 1
                 } else {
                     component.start = 0.5 * (points[endIndex] + points[startIndex])
                 }
                 
-                var record = (flags[endIndex], points[endIndex])
-                
-                for (f, p) in zip(zip(flags, flags.rotated(1)), zip(points, points.rotated(1))) {
-                    
-                    if f.0 & 1 == 0 {
-                        if f.1 & 1 == 1 {
-                            component.append(.quad(p.0, p.1))
+                for (flag, point) in zip(flags.rotated(rotate), points.rotated(rotate)) {
+                    if let record = record {
+                        if record.0 & 1 == 1 {
+                            if flag & 1 == 1 {
+                                component.append(.line(point))
+                            }
                         } else {
-                            component.append(.quad(p.0, 0.5 * (p.0 + p.1)))
+                            if flag & 1 == 1 {
+                                component.append(.quad(record.1, point))
+                            } else {
+                                component.append(.quad(record.1, 0.5 * (record.1 + point)))
+                            }
                         }
-                    } else {
-                        if record.0 & 1 == 0 {
-                            component.append(.quad(0.5 * (p.0 + record.1), p.0))
-                        } else {
-                            component.append(.line(p.0))
-                        }
+                    } else if flag & 1 == 1 {
+                        component.append(.line(point))
                     }
-                    
-                    record = (f.0, p.0)
+                    record = (flag, point)
+                }
+                
+                if let record = record, record.0 & 1 == 0 {
+                    component.append(.quad(record.1, component.start))
                 }
                 
                 components.append(component)
