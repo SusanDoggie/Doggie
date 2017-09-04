@@ -97,6 +97,8 @@ extension SFNTGLYF {
             
             guard let endPtsOfContours = try? (0..<Int(numberOfContours)).map({ _ in try data.decode(BEUInt16.self) }) else { return nil }
             
+            guard zip(endPtsOfContours, endPtsOfContours.dropFirst()).all(where: { $0 < $1 }) else { return nil }
+            
             guard let instructionLength = try? data.decode(BEUInt16.self) else { return nil }
             
             guard let instructions = try? (0..<Int(instructionLength)).map({ _ in try data.decode(UInt8.self) }) else { return nil }
@@ -159,8 +161,6 @@ extension SFNTGLYF {
             for _endIndex in endPtsOfContours {
                 
                 let endIndex = Int(_endIndex)
-                
-                guard startIndex < endIndex else { return nil }
                 
                 let range = startIndex...endIndex
                 let flags = flags[range]
