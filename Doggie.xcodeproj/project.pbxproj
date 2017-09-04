@@ -144,6 +144,7 @@
 		0A9CD5971EEB9A2D00094148 /* CalibratedRGBColorSpace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9CD57E1EEB983C00094148 /* CalibratedRGBColorSpace.swift */; };
 		0A9D27E51F0CF629003638D3 /* BinaryFixedPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9D27E31F0CF629003638D3 /* BinaryFixedPoint.swift */; };
 		0A9ED9D41F5CF5B000205C1B /* SFNTOS2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9ED9D31F5CF5AF00205C1B /* SFNTOS2.swift */; };
+		0A9ED9D71F5D360E00205C1B /* SFNTGLYF.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9ED9D61F5D360E00205C1B /* SFNTGLYF.swift */; };
 		0A9F281C1EF0D98400E69976 /* RGBColorModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9F281A1EF0D98400E69976 /* RGBColorModel.swift */; };
 		0A9F281F1EF0D9AA00E69976 /* CMYKColorModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9F281D1EF0D9AA00E69976 /* CMYKColorModel.swift */; };
 		0A9F28221EF0D9BC00E69976 /* LabColorModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9F28201EF0D9BC00E69976 /* LabColorModel.swift */; };
@@ -330,6 +331,7 @@
 		0A9CD58C1EEB98F300094148 /* displayP3.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = displayP3.swift; sourceTree = "<group>"; };
 		0A9D27E31F0CF629003638D3 /* BinaryFixedPoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BinaryFixedPoint.swift; sourceTree = "<group>"; };
 		0A9ED9D31F5CF5AF00205C1B /* SFNTOS2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SFNTOS2.swift; sourceTree = "<group>"; };
+		0A9ED9D61F5D360E00205C1B /* SFNTGLYF.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SFNTGLYF.swift; sourceTree = "<group>"; };
 		0A9F281A1EF0D98400E69976 /* RGBColorModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RGBColorModel.swift; sourceTree = "<group>"; };
 		0A9F281D1EF0D9AA00E69976 /* CMYKColorModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CMYKColorModel.swift; sourceTree = "<group>"; };
 		0A9F28201EF0D9BC00E69976 /* LabColorModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabColorModel.swift; sourceTree = "<group>"; };
@@ -640,6 +642,7 @@
 				0A9F99461F568FD40008D36D /* SFNTPlatform.swift */,
 				0A72EF141F54FD2C00F0550A /* SFNTHEAD.swift */,
 				0A9ED9D31F5CF5AF00205C1B /* SFNTOS2.swift */,
+				0A9ED9D61F5D360E00205C1B /* SFNTGLYF.swift */,
 				0A72EF171F54FED200F0550A /* SFNTCMAP.swift */,
 				0A5E8D4D1F57CC07000D51E3 /* SFNTMAXP.swift */,
 				0A5E8D451F57BE5C000D51E3 /* SFNTHHEA.swift */,
@@ -1049,6 +1052,7 @@
 				0A8535271F58F757006FB85D /* CFFDecoder.swift in Sources */,
 				0A7A1FB21F04FC230016B3FB /* ARGB32ColorPixel.swift in Sources */,
 				0A2406741F38109900B0EC28 /* iccNamedColor.swift in Sources */,
+				0A9ED9D71F5D360E00205C1B /* SFNTGLYF.swift in Sources */,
 				0A53E46D1E35AEF80060FB83 /* Integer.swift in Sources */,
 				0A967E521F132DC0007E38E4 /* GIFEncoder.swift in Sources */,
 				0A9F28251EF0D9CE00E69976 /* LuvColorModel.swift in Sources */,
