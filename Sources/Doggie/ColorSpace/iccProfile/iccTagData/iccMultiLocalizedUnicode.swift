@@ -45,10 +45,7 @@ struct iccMultiLocalizedUnicode : RandomAccessCollection, DataCodable {
         
         let header = try data.decode(Header.self)
         
-        var entries = [Entry]()
-        for _ in 0..<Int(header.count) {
-            entries.append(try data.decode(Entry.self))
-        }
+        let entries = try (0..<Int(header.count)).map { _ in try data.decode(Entry.self) }
         
         self.messages = []
         

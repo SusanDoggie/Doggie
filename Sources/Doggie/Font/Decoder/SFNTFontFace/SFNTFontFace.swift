@@ -161,23 +161,11 @@ extension SFNTFontFace {
         
         let count = Int(numberOfContours)
         
-        var endPtsOfContours = [BEUInt16]()
-        endPtsOfContours.reserveCapacity(count)
-        
-        for _ in 0..<count {
-            guard let i = try? data.decode(BEUInt16.self) else { return nil }
-            endPtsOfContours.append(i)
-        }
+        guard let endPtsOfContours = try? (0..<count).map({ _ in try data.decode(BEUInt16.self) }) else { return nil }
         
         guard let instructionLength = try? data.decode(BEUInt16.self) else { return nil }
         
-        var instructions = [UInt8]()
-        instructions.reserveCapacity(Int(instructionLength))
-        
-        for _ in 0..<Int(instructionLength) {
-            guard let i = try? data.decode(UInt8.self) else { return nil }
-            instructions.append(i)
-        }
+        guard let instructions = try? (0..<Int(instructionLength)).map({ _ in try data.decode(UInt8.self) }) else { return nil }
         
         var flags = [UInt8]()
         flags.reserveCapacity(count)

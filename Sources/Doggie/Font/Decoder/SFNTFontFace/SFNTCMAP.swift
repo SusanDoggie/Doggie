@@ -138,28 +138,14 @@ extension SFNTCMAP {
             
             let segCount = Int(segCountX2) >> 1
             
-            self.endCode = []
-            self.startCode = []
-            self.idDelta = []
-            self.idRangeOffset = []
-            self.endCode.reserveCapacity(segCount)
-            self.startCode.reserveCapacity(segCount)
-            self.idDelta.reserveCapacity(segCount)
-            
-            for _ in 0..<segCount {
-                self.endCode.append(try data.decode(BEUInt16.self))
-            }
+            self.endCode = try (0..<segCount).map { _ in try data.decode(BEUInt16.self) }
             
             guard self.endCode.last == 0xFFFF else { throw FontCollection.Error.InvalidFormat("Invalid cmap format.") }
             
             self.reservedPad = try data.decode(BEUInt16.self)
             
-            for _ in 0..<segCount {
-                self.startCode.append(try data.decode(BEUInt16.self))
-            }
-            for _ in 0..<segCount {
-                self.idDelta.append(try data.decode(BEInt16.self))
-            }
+            self.startCode = try (0..<segCount).map { _ in try data.decode(BEUInt16.self) }
+            self.idDelta = try (0..<segCount).map { _ in try data.decode(BEInt16.self) }
             
             let ramainSize = Int(self.length) - (record - data.count)
             guard ramainSize > 0 else { throw FontCollection.Error.InvalidFormat("Invalid cmap format.") }

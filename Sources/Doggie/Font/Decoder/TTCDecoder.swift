@@ -60,10 +60,7 @@ struct TTCHeader : DataDecodable {
         self.majorVersion = try data.decode(BEUInt16.self)
         self.minorVersion = try data.decode(BEUInt16.self)
         self.numFonts = try data.decode(BEUInt32.self)
-        self.offsetTable = []
-        for _ in 0..<Int(numFonts) {
-            self.offsetTable.append(try data.decode(BEUInt32.self))
-        }
+        self.offsetTable = try (0..<Int(numFonts)).map { _ in try data.decode(BEUInt32.self) }
     }
 }
 
