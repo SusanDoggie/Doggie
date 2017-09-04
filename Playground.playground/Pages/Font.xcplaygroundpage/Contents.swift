@@ -7,57 +7,20 @@ let data = try Data(contentsOf: URL(fileURLWithPath: "/Library/Fonts/Arial.ttf")
 
 let collection = try FontCollection(data: data)
 
-if let font = collection.first?.with(size: 14) {
+if let font = collection.first?.with(size: 64) {
     
-    font.fontName
-    font.displayName
-    font.uniqueName
-    font.familyName
-    font.faceName
+    let string = "Doggie\u{0301}".precomposedStringWithCompatibilityMapping
     
-    font.familyClass
+    let glyphs = string.unicodeScalars.map { font.glyph(with: $0) }
+    let advances = glyphs.map { font.advanceWidth(forGlyph: $0) }.scan(0, +)
     
-    font.weight
-    font.stretch
+    var shape = Shape()
     
-    font.designer
+    for (advance, glyph) in zip(advances, glyphs) {
+        var outline = font.shape(forGlyph: glyph)
+        outline.center.x += advance
+        shape.append(contentsOf: outline.identity)
+    }
     
-    font.version
-    
-    font.trademark
-    font.manufacturer
-    font.license
-    font.copyright
-    
-    font.numberOfGlyphs
-    
-    font.ascender
-    font.descender
-    font.lineGap
-    
-    font.verticalAscender
-    font.verticalDescender
-    font.verticalLineGap
-    
-    font.unitsPerEm
-    
-    font.boundingRectForFont
-    
-    font.italicAngle
-    font.isFixedPitch
-    
-    font.underlinePosition
-    font.underlineThickness
-    
-    let glyph = font.glyph(with: "a")
-    
-    font.boundary(forGlyph: glyph)
-    
-    font.advanceWidth(forGlyph: glyph)
-    font.advanceHeight(forGlyph: glyph)
-    
-    font.shape(forGlyph: glyph).encode()
-    
-    font.shape(forGlyph: glyph)
-    
+    shape
 }

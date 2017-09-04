@@ -78,9 +78,9 @@ let image: Image<ARGB32ColorPixel> = context.image
 - [x] png
 - [x] tiff
 
-### Fonts (planned)
+### Fonts
+- [x] TrueType
 - [ ] OpenType
-- [ ] TrueType
 - [ ] WOFF
 - [ ] WOFF2
 
