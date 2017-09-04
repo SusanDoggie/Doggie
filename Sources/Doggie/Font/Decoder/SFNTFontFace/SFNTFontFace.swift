@@ -497,7 +497,7 @@ extension SFNTFontFace {
         return queryName(4)
     }
     
-    var familyClass: FamilyClass? {
+    var familyClass: Font.FamilyClass? {
         switch Int(os2?.sFamilyClass ?? 0) >> 8 {
         case 1: return .oldStyleSerifs
         case 2: return .transitionalSerifs

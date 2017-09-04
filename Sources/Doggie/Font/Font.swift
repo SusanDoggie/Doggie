@@ -25,20 +25,6 @@
 
 import Foundation
 
-public enum FamilyClass {
-    
-    case oldStyleSerifs
-    case transitionalSerifs
-    case modernSerifs
-    case clarendonSerifs
-    case slabSerifs
-    case freeformSerifs
-    case sansSerif
-    case ornamentals
-    case scripts
-    case symbolic
-}
-
 protocol FontFaceBase {
     
     func boundary(glyph: Int) -> Rect
@@ -79,7 +65,7 @@ protocol FontFaceBase {
     var familyName: String? { get }
     var faceName: String? { get }
     
-    var familyClass: FamilyClass? { get }
+    var familyClass: Font.FamilyClass? { get }
     
     var designer: String? { get }
     
@@ -141,6 +127,23 @@ extension Font {
             self.license = base.license
             self.copyright = base.copyright
         }
+    }
+}
+
+extension Font {
+    
+    public enum FamilyClass {
+        
+        case oldStyleSerifs
+        case transitionalSerifs
+        case modernSerifs
+        case clarendonSerifs
+        case slabSerifs
+        case freeformSerifs
+        case sansSerif
+        case ornamentals
+        case scripts
+        case symbolic
     }
 }
 
