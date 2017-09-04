@@ -1,4 +1,4 @@
-# Doggie - Foundation Library for Swift
+# Doggie - A Cross-platform Foundation Library for Swift
 
 [![Build Status](https://travis-ci.org/SusanDoggie/Doggie.svg?branch=master)](https://travis-ci.org/SusanDoggie/Doggie)
 ![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20iOS%20%7C%20Linux-lightgrey.svg?style=flat)
