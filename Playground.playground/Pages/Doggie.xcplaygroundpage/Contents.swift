@@ -13,7 +13,7 @@ Array(concated)  // [1, 2, 3, 4, 5, 6, 7, 8]
 
 
 
-let task = SDTask { () -> Int in
+let task = SDTask.async { () -> Int in
     sleep(2)
     return 5
 }
