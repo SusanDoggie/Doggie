@@ -51,12 +51,7 @@ if let font = collection.first?.with(size: 64) {
     print(shape.encode())
 }
 ```
-- [image](Documents/Image.md)
-```swift
-let imageRep = try ImageRep(data: imageData)
-let image = AnyImage(imageRep)
-```
-- [graphics](Documents/ImageContext.md)
+- [image](Documents/Image.md) and [graphics](Documents/ImageContext.md)
 ```swift
 
 let context = ImageContext<ARGB32ColorPixel>(width: 100, height: 100, colorSpace: ColorSpace.sRGB)
