@@ -29,6 +29,28 @@ ellipse.subtracting(region)
 
 region.symmetricDifference(ellipse)
 ```
+- [font](Documents/Font.md)
+```
+let collection = try FontCollection(data: fontFileData)
+
+if let font = collection.first?.with(size: 64) {
+
+    let string = "Doggie\u{0301}".precomposedStringWithCompatibilityMapping
+
+    let glyphs = string.unicodeScalars.map { font.glyph(with: $0) }
+    let advances = glyphs.map { font.advanceWidth(forGlyph: $0) }.scan(0, +)
+
+    var shape = Shape()
+
+    for (advance, glyph) in zip(advances, glyphs) {
+        var outline = font.shape(forGlyph: glyph)
+        outline.center.x += advance
+        shape.append(contentsOf: outline.identity)
+    }
+
+    print(shape.encode())
+}
+```
 - [image](Documents/Image.md)
 ```swift
 let imageRep = try ImageRep(data: imageData)
@@ -78,7 +100,7 @@ let image: Image<ARGB32ColorPixel> = context.image
 - [x] png
 - [x] tiff
 
-### Fonts
+### Font
 - [x] TrueType
 - [ ] OpenType
 - [ ] WOFF
