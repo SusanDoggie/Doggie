@@ -131,6 +131,24 @@ let image: Image<ARGB32ColorPixel> = context.image
 - [ ] LCAR
 - [ ] KERN
 
+#### CMAP
+
+##### Platform
+
+The table below lists the available platform/specific values in the order.
+
+platformID | specificID
+--- | ---
+0 | max( <= 4 )
+3 | 10
+3 | 1
+3 | 0
+
+##### Format
+- [x] Format 0
+- [x] Format 4
+- [x] Format 12
+
 ## How To Contribute
 
 It's welcome everyone to create a pull request.
