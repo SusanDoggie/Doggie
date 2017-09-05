@@ -8,6 +8,34 @@ A graphical context to draw.
 
 ![3D coordinate system](images/3D_coordinate_system.png)
 
+# protocol
+
+## ImageContextRenderVertex
+
+### Overview
+
+### Associated type
+
+```swift
+associatedtype Position
+```
+
+### Properties
+
+```swift
+var position: Self.Position { get }
+```
+
+### Methods
+
+```swift
+static func +(lhs: Self, rhs: Self) -> Self
+```
+
+```swift
+static func *(lhs: Double, rhs: Self) -> Self
+```
+
 # class
 
 ## ImageContext
