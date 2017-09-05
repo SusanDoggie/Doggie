@@ -118,16 +118,20 @@ let image: Image<ARGB32ColorPixel> = context.image
 - [ ] WOFF2
 
 #### SFNT Tables
+- [x] HEAD
+- [x] POST
+- [x] OS/2
+- [x] MAXP
 - [x] CMAP
+- [x] NAME
+- [x] HHEA
+- [x] HMTX
+- [x] VHEA
+- [x] VMTX
 - [x] LOCA
 - [x] GLYF
-- [x] HEAD
-- [x] HHEA
-- [x] MAXP
-- [x] NAME
-- [x] OS/2
-- [x] POST
-- [x] VHEA
+- [ ] CFF
+- [ ] CFF2
 - [ ] LCAR
 - [ ] KERN
 
@@ -137,12 +141,11 @@ let image: Image<ARGB32ColorPixel> = context.image
 
 The table below lists the available platform/specific values in the order.
 
-platformID | specificID
---- | ---
-0 | max( <= 4 )
-3 | 10
-3 | 1
-3 | 0
+platform | specific | Description
+--- | --- | ---
+0 | max( <= 4 ) | Unicode
+3 | 10 | Windows, Unicode UCS-4
+3 | 1 | Windows, Unicode BMP (UCS-2)
 
 ##### Format
 - [x] Format 0
