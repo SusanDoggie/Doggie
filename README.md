@@ -18,9 +18,9 @@ Check out the Doggie.xcworkspace and build the project. It's suggested building 
 - accelerate, signal processing, fourier and convolution
 - complex number, point, vector and 2D/3D transformation
 - bezier curve
-- [polynomial](Documents/Polynomial.md)
-- [color](Documents/Color.md) and [color space](Documents/ColorSpace.md)
-- [shape](Documents/Shape.md) and [boolean operation](Documents/ShapeRegion.md)
+- [polynomial](docs/Polynomial.md)
+- [color](docs/Color.md) and [color space](docs/ColorSpace.md)
+- [shape](docs/Shape.md) and [boolean operation](docs/ShapeRegion.md)
 ```swift
 let shape = try Shape(code: "M100 0c0-100-236.60 36.60-150 86.60S36.60-136.60-50-86.60 100 100 100 0z")
 
@@ -36,7 +36,7 @@ ellipse.subtracting(region)
 
 region.symmetricDifference(ellipse)
 ```
-- [font](Documents/Font.md)
+- [font](docs/Font.md)
 ```swift
 let collection = try FontCollection(data: fontFileData)
 
@@ -58,7 +58,7 @@ if let font = collection.first?.with(size: 64) {
     print(shape.encode())
 }
 ```
-- [image](Documents/Image.md) and [graphics](Documents/ImageContext.md) with 2D/3D rendering
+- [image](docs/Image.md) and [graphics](docs/ImageContext.md) with 2D/3D rendering
 ```swift
 
 let context = ImageContext<ARGB32ColorPixel>(width: 100, height: 100, colorSpace: ColorSpace.sRGB)
