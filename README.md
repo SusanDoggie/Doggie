@@ -81,6 +81,8 @@ let image: Image<ARGB32ColorPixel> = context.image
 ## Status
 
 ### ColorSpace
+
+#### Format
 - [x] ICC
 - [x] CIEXYZ
 - [x] CIELab
@@ -88,7 +90,7 @@ let image: Image<ARGB32ColorPixel> = context.image
 - [x] Calibrated Gray
 - [x] Calibrated RGB
 
-### ColorSpace Rendering Intent
+#### Rendering Intent
 - [ ] perceptual
 - [ ] saturation
 - [x] absolute colorimetric
@@ -103,10 +105,31 @@ let image: Image<ARGB32ColorPixel> = context.image
 - [x] tiff
 
 ### Font
+
+#### Format
 - [x] TrueType
-- [ ] OpenType
-- [ ] WOFF
+- [x] TrueType/TTC
+- [x] OpenType
+- [ ] OpenType/CFF
+- [ ] OpenType/CFF2
+- [x] WOFF
+- [ ] WOFF/CFF
+- [ ] WOFF/CFF2
 - [ ] WOFF2
+
+#### SFNT Tables
+- [x] CMAP
+- [x] LOCA
+- [x] GLYF
+- [x] HEAD
+- [x] HHEA
+- [x] MAXP
+- [x] NAME
+- [x] OS/2
+- [x] POST
+- [x] VHEA
+- [ ] LCAR
+- [ ] KERN
 
 ## How To Contribute
 
