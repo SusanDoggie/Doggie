@@ -70,7 +70,7 @@ struct SFNTFontFace : FontFaceBase {
         
         self.os2 = try table["OS/2"].map({ try SFNTOS2($0) })
         
-        if let vhea = table["vhea"].flatMap({ try? SFNTVHEA($0) }), maxp.numGlyphs >= vhea.numOfLongVerMetrics, let vmtx = table["vmtx"] {
+        if let vhea = try table["vhea"].map({ try SFNTVHEA($0) }), maxp.numGlyphs >= vhea.numOfLongVerMetrics, let vmtx = table["vmtx"] {
             
             let vMetricSize = Int(vhea.numOfLongVerMetrics) << 2
             let vBearingSize = (Int(maxp.numGlyphs) - Int(vhea.numOfLongVerMetrics)) << 1
