@@ -11,8 +11,9 @@ Doggie is a foundational library for Apple's swift. It includes mathematics, acc
 ## Features
 
 - atomic operation, async task and actor
-- complex number
-- accelerate and signal processing
+- accelerate, signal processing, fourier and convolution
+- complex number, point, vector and 2D/3D transformation
+- bezier curve
 - [polynomial](Documents/Polynomial.md)
 - [color](Documents/Color.md) and [color space](Documents/ColorSpace.md)
 - [shape](Documents/Shape.md) and [boolean operation](Documents/ShapeRegion.md)
@@ -53,7 +54,7 @@ if let font = collection.first?.with(size: 64) {
     print(shape.encode())
 }
 ```
-- [image](Documents/Image.md) and [graphics](Documents/ImageContext.md)
+- [image](Documents/Image.md) and [graphics](Documents/ImageContext.md) with 2D/3D rendering
 ```swift
 
 let context = ImageContext<ARGB32ColorPixel>(width: 100, height: 100, colorSpace: ColorSpace.sRGB)
