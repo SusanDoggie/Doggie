@@ -30,6 +30,28 @@
 #include <stdbool.h>
 #include <stdatomic.h>
 
+#define _ATOMIC_IS_LOCK_FREE(NAME, x) static inline bool                                                            \
+_Atomic##NAME##IsLockFree(const volatile x * address)                                                               \
+{                                                                                                                   \
+    return atomic_is_lock_free((_Atomic(x)*)address);                                                               \
+}
+
+#define _ATOMIC_FIXED_INT_IS_LOCK_FREE(n) _ATOMIC_IS_LOCK_FREE(n, int##n##_t)
+#define _ATOMIC_FIXED_UINT_IS_LOCK_FREE(n) _ATOMIC_IS_LOCK_FREE(U##n, uint##n##_t)
+
+_ATOMIC_IS_LOCK_FREE(Bool, bool)
+_ATOMIC_FIXED_INT_IS_LOCK_FREE(8)
+_ATOMIC_FIXED_INT_IS_LOCK_FREE(16)
+_ATOMIC_FIXED_INT_IS_LOCK_FREE(32)
+_ATOMIC_FIXED_INT_IS_LOCK_FREE(64)
+_ATOMIC_FIXED_UINT_IS_LOCK_FREE(8)
+_ATOMIC_FIXED_UINT_IS_LOCK_FREE(16)
+_ATOMIC_FIXED_UINT_IS_LOCK_FREE(32)
+_ATOMIC_FIXED_UINT_IS_LOCK_FREE(64)
+_ATOMIC_IS_LOCK_FREE(Long, long)
+_ATOMIC_IS_LOCK_FREE(ULong, unsigned long)
+_ATOMIC_IS_LOCK_FREE(Ptr, void*)
+
 static inline bool _AtomicCompareAndSwapWeakPtrBarrier(void* oldValue, void* newValue, volatile void** address) {
     
     return atomic_compare_exchange_weak((_Atomic(void*)*)address, &oldValue, newValue);
@@ -126,5 +148,110 @@ _ATOMIC_STORE_FIXED_UINT_BARRIER(64)
 _ATOMIC_STORE_BARRIER(Long, long)
 _ATOMIC_STORE_BARRIER(ULong, unsigned long)
 _ATOMIC_STORE_BARRIER(Ptr, void*)
+
+#define _ATOMIC_FETCHADD_BARRIER(NAME, x) static inline x                                                           \
+_AtomicFetchAdd##NAME##Barrier(x            arg,                                                                    \
+                               volatile x * address)                                                                \
+{                                                                                                                   \
+    return atomic_fetch_add((_Atomic(x)*)address, arg);                                                             \
+}
+
+#define _ATOMIC_FETCHADD_FIXED_INT_BARRIER(n) _ATOMIC_FETCHADD_BARRIER(n, int##n##_t)
+#define _ATOMIC_FETCHADD_FIXED_UINT_BARRIER(n) _ATOMIC_FETCHADD_BARRIER(U##n, uint##n##_t)
+
+_ATOMIC_FETCHADD_FIXED_INT_BARRIER(8)
+_ATOMIC_FETCHADD_FIXED_INT_BARRIER(16)
+_ATOMIC_FETCHADD_FIXED_INT_BARRIER(32)
+_ATOMIC_FETCHADD_FIXED_INT_BARRIER(64)
+_ATOMIC_FETCHADD_FIXED_UINT_BARRIER(8)
+_ATOMIC_FETCHADD_FIXED_UINT_BARRIER(16)
+_ATOMIC_FETCHADD_FIXED_UINT_BARRIER(32)
+_ATOMIC_FETCHADD_FIXED_UINT_BARRIER(64)
+_ATOMIC_FETCHADD_BARRIER(Long, long)
+_ATOMIC_FETCHADD_BARRIER(ULong, unsigned long)
+
+#define _ATOMIC_FETCHSUB_BARRIER(NAME, x) static inline x                                                           \
+_AtomicFetchSub##NAME##Barrier(x            arg,                                                                    \
+                               volatile x * address)                                                                \
+{                                                                                                                   \
+    return atomic_fetch_sub((_Atomic(x)*)address, arg);                                                             \
+}
+
+#define _ATOMIC_FETCHSUB_FIXED_INT_BARRIER(n) _ATOMIC_FETCHSUB_BARRIER(n, int##n##_t)
+#define _ATOMIC_FETCHSUB_FIXED_UINT_BARRIER(n) _ATOMIC_FETCHSUB_BARRIER(U##n, uint##n##_t)
+
+_ATOMIC_FETCHSUB_FIXED_INT_BARRIER(8)
+_ATOMIC_FETCHSUB_FIXED_INT_BARRIER(16)
+_ATOMIC_FETCHSUB_FIXED_INT_BARRIER(32)
+_ATOMIC_FETCHSUB_FIXED_INT_BARRIER(64)
+_ATOMIC_FETCHSUB_FIXED_UINT_BARRIER(8)
+_ATOMIC_FETCHSUB_FIXED_UINT_BARRIER(16)
+_ATOMIC_FETCHSUB_FIXED_UINT_BARRIER(32)
+_ATOMIC_FETCHSUB_FIXED_UINT_BARRIER(64)
+_ATOMIC_FETCHSUB_BARRIER(Long, long)
+_ATOMIC_FETCHSUB_BARRIER(ULong, unsigned long)
+
+#define _ATOMIC_FETCHXOR_BARRIER(NAME, x) static inline x                                                           \
+_AtomicFetchXor##NAME##Barrier(x            arg,                                                                    \
+                               volatile x * address)                                                                \
+{                                                                                                                   \
+    return atomic_fetch_xor((_Atomic(x)*)address, arg);                                                             \
+}
+
+#define _ATOMIC_FETCHXOR_FIXED_INT_BARRIER(n) _ATOMIC_FETCHXOR_BARRIER(n, int##n##_t)
+#define _ATOMIC_FETCHXOR_FIXED_UINT_BARRIER(n) _ATOMIC_FETCHXOR_BARRIER(U##n, uint##n##_t)
+
+_ATOMIC_FETCHXOR_FIXED_INT_BARRIER(8)
+_ATOMIC_FETCHXOR_FIXED_INT_BARRIER(16)
+_ATOMIC_FETCHXOR_FIXED_INT_BARRIER(32)
+_ATOMIC_FETCHXOR_FIXED_INT_BARRIER(64)
+_ATOMIC_FETCHXOR_FIXED_UINT_BARRIER(8)
+_ATOMIC_FETCHXOR_FIXED_UINT_BARRIER(16)
+_ATOMIC_FETCHXOR_FIXED_UINT_BARRIER(32)
+_ATOMIC_FETCHXOR_FIXED_UINT_BARRIER(64)
+_ATOMIC_FETCHXOR_BARRIER(Long, long)
+_ATOMIC_FETCHXOR_BARRIER(ULong, unsigned long)
+
+#define _ATOMIC_FETCHAND_BARRIER(NAME, x) static inline x                                                           \
+_AtomicFetchAnd##NAME##Barrier(x            arg,                                                                    \
+                               volatile x * address)                                                                \
+{                                                                                                                   \
+    return atomic_fetch_and((_Atomic(x)*)address, arg);                                                             \
+}
+
+#define _ATOMIC_FETCHAND_FIXED_INT_BARRIER(n) _ATOMIC_FETCHAND_BARRIER(n, int##n##_t)
+#define _ATOMIC_FETCHAND_FIXED_UINT_BARRIER(n) _ATOMIC_FETCHAND_BARRIER(U##n, uint##n##_t)
+
+_ATOMIC_FETCHAND_FIXED_INT_BARRIER(8)
+_ATOMIC_FETCHAND_FIXED_INT_BARRIER(16)
+_ATOMIC_FETCHAND_FIXED_INT_BARRIER(32)
+_ATOMIC_FETCHAND_FIXED_INT_BARRIER(64)
+_ATOMIC_FETCHAND_FIXED_UINT_BARRIER(8)
+_ATOMIC_FETCHAND_FIXED_UINT_BARRIER(16)
+_ATOMIC_FETCHAND_FIXED_UINT_BARRIER(32)
+_ATOMIC_FETCHAND_FIXED_UINT_BARRIER(64)
+_ATOMIC_FETCHAND_BARRIER(Long, long)
+_ATOMIC_FETCHAND_BARRIER(ULong, unsigned long)
+
+#define _ATOMIC_FETCHOR_BARRIER(NAME, x) static inline x                                                            \
+_AtomicFetchOr##NAME##Barrier(x            arg,                                                                     \
+                              volatile x * address)                                                                 \
+{                                                                                                                   \
+    return atomic_fetch_or((_Atomic(x)*)address, arg);                                                              \
+}
+
+#define _ATOMIC_FETCHOR_FIXED_INT_BARRIER(n) _ATOMIC_FETCHOR_BARRIER(n, int##n##_t)
+#define _ATOMIC_FETCHOR_FIXED_UINT_BARRIER(n) _ATOMIC_FETCHOR_BARRIER(U##n, uint##n##_t)
+
+_ATOMIC_FETCHOR_FIXED_INT_BARRIER(8)
+_ATOMIC_FETCHOR_FIXED_INT_BARRIER(16)
+_ATOMIC_FETCHOR_FIXED_INT_BARRIER(32)
+_ATOMIC_FETCHOR_FIXED_INT_BARRIER(64)
+_ATOMIC_FETCHOR_FIXED_UINT_BARRIER(8)
+_ATOMIC_FETCHOR_FIXED_UINT_BARRIER(16)
+_ATOMIC_FETCHOR_FIXED_UINT_BARRIER(32)
+_ATOMIC_FETCHOR_FIXED_UINT_BARRIER(64)
+_ATOMIC_FETCHOR_BARRIER(Long, long)
+_ATOMIC_FETCHOR_BARRIER(ULong, unsigned long)
 
 #endif /* c11_atomic_h */

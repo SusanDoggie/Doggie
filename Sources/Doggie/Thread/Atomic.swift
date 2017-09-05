@@ -29,6 +29,8 @@ public protocol SDAtomicProtocol {
     
     associatedtype Atom
     
+    mutating func isLockFree() -> Bool
+    
     /// Atomic fetch the current value.
     mutating func fetchSelf() -> (current: Self, value: Atom)
     
@@ -84,6 +86,11 @@ public extension SDAtomicProtocol {
 
 extension Bool : SDAtomicProtocol {
     
+    @_inlineable
+    public mutating func isLockFree() -> Bool {
+        return _AtomicBoolIsLockFree(&self)
+    }
+    
     /// Atomic fetch the current value with barrier.
     @_inlineable
     public mutating func fetchSelf() -> (current: Bool, value: Bool) {
@@ -112,6 +119,11 @@ extension Bool : SDAtomicProtocol {
 
 extension Int8 : SDAtomicProtocol {
     
+    @_inlineable
+    public mutating func isLockFree() -> Bool {
+        return _Atomic8IsLockFree(&self)
+    }
+    
     /// Atomic fetch the current value with barrier.
     @_inlineable
     public mutating func fetchSelf() -> (current: Int8, value: Int8) {
@@ -136,9 +148,40 @@ extension Int8 : SDAtomicProtocol {
     public mutating func fetchStore(_ new: Int8) -> Int8 {
         return _AtomicExchange8Barrier(new, &self)
     }
+    
+    @_inlineable
+    @discardableResult
+    public mutating func fetchAdd(_ value: Int8) -> Int8 {
+        return _AtomicFetchAdd8Barrier(value, &self)
+    }
+    @_inlineable
+    @discardableResult
+    public mutating func fetchSub(_ value: Int8) -> Int8 {
+        return _AtomicFetchSub8Barrier(value, &self)
+    }
+    @_inlineable
+    @discardableResult
+    public mutating func fetchAnd(_ value: Int8) -> Int8 {
+        return _AtomicFetchAnd8Barrier(value, &self)
+    }
+    @_inlineable
+    @discardableResult
+    public mutating func fetchXor(_ value: Int8) -> Int8 {
+        return _AtomicFetchXor8Barrier(value, &self)
+    }
+    @_inlineable
+    @discardableResult
+    public mutating func fetchOr(_ value: Int8) -> Int8 {
+        return _AtomicFetchOr8Barrier(value, &self)
+    }
 }
 
 extension Int16 : SDAtomicProtocol {
+    
+    @_inlineable
+    public mutating func isLockFree() -> Bool {
+        return _Atomic16IsLockFree(&self)
+    }
     
     /// Atomic fetch the current value with barrier.
     @_inlineable
@@ -164,9 +207,40 @@ extension Int16 : SDAtomicProtocol {
     public mutating func fetchStore(_ new: Int16) -> Int16 {
         return _AtomicExchange16Barrier(new, &self)
     }
+    
+    @_inlineable
+    @discardableResult
+    public mutating func fetchAdd(_ value: Int16) -> Int16 {
+        return _AtomicFetchAdd16Barrier(value, &self)
+    }
+    @_inlineable
+    @discardableResult
+    public mutating func fetchSub(_ value: Int16) -> Int16 {
+        return _AtomicFetchSub16Barrier(value, &self)
+    }
+    @_inlineable
+    @discardableResult
+    public mutating func fetchAnd(_ value: Int16) -> Int16 {
+        return _AtomicFetchAnd16Barrier(value, &self)
+    }
+    @_inlineable
+    @discardableResult
+    public mutating func fetchXor(_ value: Int16) -> Int16 {
+        return _AtomicFetchXor16Barrier(value, &self)
+    }
+    @_inlineable
+    @discardableResult
+    public mutating func fetchOr(_ value: Int16) -> Int16 {
+        return _AtomicFetchOr16Barrier(value, &self)
+    }
 }
 
 extension Int32 : SDAtomicProtocol {
+    
+    @_inlineable
+    public mutating func isLockFree() -> Bool {
+        return _Atomic32IsLockFree(&self)
+    }
     
     /// Atomic fetch the current value with barrier.
     @_inlineable
@@ -192,9 +266,40 @@ extension Int32 : SDAtomicProtocol {
     public mutating func fetchStore(_ new: Int32) -> Int32 {
         return _AtomicExchange32Barrier(new, &self)
     }
+    
+    @_inlineable
+    @discardableResult
+    public mutating func fetchAdd(_ value: Int32) -> Int32 {
+        return _AtomicFetchAdd32Barrier(value, &self)
+    }
+    @_inlineable
+    @discardableResult
+    public mutating func fetchSub(_ value: Int32) -> Int32 {
+        return _AtomicFetchSub32Barrier(value, &self)
+    }
+    @_inlineable
+    @discardableResult
+    public mutating func fetchAnd(_ value: Int32) -> Int32 {
+        return _AtomicFetchAnd32Barrier(value, &self)
+    }
+    @_inlineable
+    @discardableResult
+    public mutating func fetchXor(_ value: Int32) -> Int32 {
+        return _AtomicFetchXor32Barrier(value, &self)
+    }
+    @_inlineable
+    @discardableResult
+    public mutating func fetchOr(_ value: Int32) -> Int32 {
+        return _AtomicFetchOr32Barrier(value, &self)
+    }
 }
 
 extension Int64 : SDAtomicProtocol {
+    
+    @_inlineable
+    public mutating func isLockFree() -> Bool {
+        return _Atomic64IsLockFree(&self)
+    }
     
     /// Atomic fetch the current value with barrier.
     @_inlineable
@@ -220,9 +325,40 @@ extension Int64 : SDAtomicProtocol {
     public mutating func fetchStore(_ new: Int64) -> Int64 {
         return _AtomicExchange64Barrier(new, &self)
     }
+    
+    @_inlineable
+    @discardableResult
+    public mutating func fetchAdd(_ value: Int64) -> Int64 {
+        return _AtomicFetchAdd64Barrier(value, &self)
+    }
+    @_inlineable
+    @discardableResult
+    public mutating func fetchSub(_ value: Int64) -> Int64 {
+        return _AtomicFetchSub64Barrier(value, &self)
+    }
+    @_inlineable
+    @discardableResult
+    public mutating func fetchAnd(_ value: Int64) -> Int64 {
+        return _AtomicFetchAnd64Barrier(value, &self)
+    }
+    @_inlineable
+    @discardableResult
+    public mutating func fetchXor(_ value: Int64) -> Int64 {
+        return _AtomicFetchXor64Barrier(value, &self)
+    }
+    @_inlineable
+    @discardableResult
+    public mutating func fetchOr(_ value: Int64) -> Int64 {
+        return _AtomicFetchOr64Barrier(value, &self)
+    }
 }
 
 extension Int : SDAtomicProtocol {
+    
+    @_inlineable
+    public mutating func isLockFree() -> Bool {
+        return _AtomicLongIsLockFree(&self)
+    }
     
     /// Atomic fetch the current value with barrier.
     @_inlineable
@@ -248,9 +384,40 @@ extension Int : SDAtomicProtocol {
     public mutating func fetchStore(_ new: Int) -> Int {
         return _AtomicExchangeLongBarrier(new, &self)
     }
+    
+    @_inlineable
+    @discardableResult
+    public mutating func fetchAdd(_ value: Int) -> Int {
+        return _AtomicFetchAddLongBarrier(value, &self)
+    }
+    @_inlineable
+    @discardableResult
+    public mutating func fetchSub(_ value: Int) -> Int {
+        return _AtomicFetchSubLongBarrier(value, &self)
+    }
+    @_inlineable
+    @discardableResult
+    public mutating func fetchAnd(_ value: Int) -> Int {
+        return _AtomicFetchAndLongBarrier(value, &self)
+    }
+    @_inlineable
+    @discardableResult
+    public mutating func fetchXor(_ value: Int) -> Int {
+        return _AtomicFetchXorLongBarrier(value, &self)
+    }
+    @_inlineable
+    @discardableResult
+    public mutating func fetchOr(_ value: Int) -> Int {
+        return _AtomicFetchOrLongBarrier(value, &self)
+    }
 }
 
 extension UInt8 : SDAtomicProtocol {
+    
+    @_inlineable
+    public mutating func isLockFree() -> Bool {
+        return _AtomicU8IsLockFree(&self)
+    }
     
     /// Atomic fetch the current value with barrier.
     @_inlineable
@@ -276,9 +443,40 @@ extension UInt8 : SDAtomicProtocol {
     public mutating func fetchStore(_ new: UInt8) -> UInt8 {
         return _AtomicExchangeU8Barrier(new, &self)
     }
+    
+    @_inlineable
+    @discardableResult
+    public mutating func fetchAdd(_ value: UInt8) -> UInt8 {
+        return _AtomicFetchAddU8Barrier(value, &self)
+    }
+    @_inlineable
+    @discardableResult
+    public mutating func fetchSub(_ value: UInt8) -> UInt8 {
+        return _AtomicFetchSubU8Barrier(value, &self)
+    }
+    @_inlineable
+    @discardableResult
+    public mutating func fetchAnd(_ value: UInt8) -> UInt8 {
+        return _AtomicFetchAndU8Barrier(value, &self)
+    }
+    @_inlineable
+    @discardableResult
+    public mutating func fetchXor(_ value: UInt8) -> UInt8 {
+        return _AtomicFetchXorU8Barrier(value, &self)
+    }
+    @_inlineable
+    @discardableResult
+    public mutating func fetchOr(_ value: UInt8) -> UInt8 {
+        return _AtomicFetchOrU8Barrier(value, &self)
+    }
 }
 
 extension UInt16 : SDAtomicProtocol {
+    
+    @_inlineable
+    public mutating func isLockFree() -> Bool {
+        return _AtomicU16IsLockFree(&self)
+    }
     
     /// Atomic fetch the current value with barrier.
     @_inlineable
@@ -304,9 +502,40 @@ extension UInt16 : SDAtomicProtocol {
     public mutating func fetchStore(_ new: UInt16) -> UInt16 {
         return _AtomicExchangeU16Barrier(new, &self)
     }
+    
+    @_inlineable
+    @discardableResult
+    public mutating func fetchAdd(_ value: UInt16) -> UInt16 {
+        return _AtomicFetchAddU16Barrier(value, &self)
+    }
+    @_inlineable
+    @discardableResult
+    public mutating func fetchSub(_ value: UInt16) -> UInt16 {
+        return _AtomicFetchSubU16Barrier(value, &self)
+    }
+    @_inlineable
+    @discardableResult
+    public mutating func fetchAnd(_ value: UInt16) -> UInt16 {
+        return _AtomicFetchAndU16Barrier(value, &self)
+    }
+    @_inlineable
+    @discardableResult
+    public mutating func fetchXor(_ value: UInt16) -> UInt16 {
+        return _AtomicFetchXorU16Barrier(value, &self)
+    }
+    @_inlineable
+    @discardableResult
+    public mutating func fetchOr(_ value: UInt16) -> UInt16 {
+        return _AtomicFetchOrU16Barrier(value, &self)
+    }
 }
 
 extension UInt32 : SDAtomicProtocol {
+    
+    @_inlineable
+    public mutating func isLockFree() -> Bool {
+        return _AtomicU32IsLockFree(&self)
+    }
     
     /// Atomic fetch the current value with barrier.
     @_inlineable
@@ -332,9 +561,40 @@ extension UInt32 : SDAtomicProtocol {
     public mutating func fetchStore(_ new: UInt32) -> UInt32 {
         return _AtomicExchangeU32Barrier(new, &self)
     }
+    
+    @_inlineable
+    @discardableResult
+    public mutating func fetchAdd(_ value: UInt32) -> UInt32 {
+        return _AtomicFetchAddU32Barrier(value, &self)
+    }
+    @_inlineable
+    @discardableResult
+    public mutating func fetchSub(_ value: UInt32) -> UInt32 {
+        return _AtomicFetchSubU32Barrier(value, &self)
+    }
+    @_inlineable
+    @discardableResult
+    public mutating func fetchAnd(_ value: UInt32) -> UInt32 {
+        return _AtomicFetchAndU32Barrier(value, &self)
+    }
+    @_inlineable
+    @discardableResult
+    public mutating func fetchXor(_ value: UInt32) -> UInt32 {
+        return _AtomicFetchXorU32Barrier(value, &self)
+    }
+    @_inlineable
+    @discardableResult
+    public mutating func fetchOr(_ value: UInt32) -> UInt32 {
+        return _AtomicFetchOrU32Barrier(value, &self)
+    }
 }
 
 extension UInt64 : SDAtomicProtocol {
+    
+    @_inlineable
+    public mutating func isLockFree() -> Bool {
+        return _AtomicU64IsLockFree(&self)
+    }
     
     /// Atomic fetch the current value with barrier.
     @_inlineable
@@ -360,9 +620,40 @@ extension UInt64 : SDAtomicProtocol {
     public mutating func fetchStore(_ new: UInt64) -> UInt64 {
         return _AtomicExchangeU64Barrier(new, &self)
     }
+    
+    @_inlineable
+    @discardableResult
+    public mutating func fetchAdd(_ value: UInt64) -> UInt64 {
+        return _AtomicFetchAddU64Barrier(value, &self)
+    }
+    @_inlineable
+    @discardableResult
+    public mutating func fetchSub(_ value: UInt64) -> UInt64 {
+        return _AtomicFetchSubU64Barrier(value, &self)
+    }
+    @_inlineable
+    @discardableResult
+    public mutating func fetchAnd(_ value: UInt64) -> UInt64 {
+        return _AtomicFetchAndU64Barrier(value, &self)
+    }
+    @_inlineable
+    @discardableResult
+    public mutating func fetchXor(_ value: UInt64) -> UInt64 {
+        return _AtomicFetchXorU64Barrier(value, &self)
+    }
+    @_inlineable
+    @discardableResult
+    public mutating func fetchOr(_ value: UInt64) -> UInt64 {
+        return _AtomicFetchOrU64Barrier(value, &self)
+    }
 }
 
 extension UInt : SDAtomicProtocol {
+    
+    @_inlineable
+    public mutating func isLockFree() -> Bool {
+        return _AtomicULongIsLockFree(&self)
+    }
     
     /// Atomic fetch the current value with barrier.
     @_inlineable
@@ -388,9 +679,44 @@ extension UInt : SDAtomicProtocol {
     public mutating func fetchStore(_ new: UInt) -> UInt {
         return _AtomicExchangeULongBarrier(new, &self)
     }
+    
+    @_inlineable
+    @discardableResult
+    public mutating func fetchAdd(_ value: UInt) -> UInt {
+        return _AtomicFetchAddULongBarrier(value, &self)
+    }
+    @_inlineable
+    @discardableResult
+    public mutating func fetchSub(_ value: UInt) -> UInt {
+        return _AtomicFetchSubULongBarrier(value, &self)
+    }
+    @_inlineable
+    @discardableResult
+    public mutating func fetchAnd(_ value: UInt) -> UInt {
+        return _AtomicFetchAndULongBarrier(value, &self)
+    }
+    @_inlineable
+    @discardableResult
+    public mutating func fetchXor(_ value: UInt) -> UInt {
+        return _AtomicFetchXorULongBarrier(value, &self)
+    }
+    @_inlineable
+    @discardableResult
+    public mutating func fetchOr(_ value: UInt) -> UInt {
+        return _AtomicFetchOrULongBarrier(value, &self)
+    }
 }
 
 extension UnsafePointer : SDAtomicProtocol {
+    
+    @_inlineable
+    public mutating func isLockFree() -> Bool {
+        @_transparent
+        func _isLockFree(_ theVal: UnsafeMutablePointer<UnsafePointer<Pointee>>) -> Bool {
+            return theVal.withMemoryRebound(to: Optional<UnsafeRawPointer>.self, capacity: 1) { _AtomicPtrIsLockFree($0) }
+        }
+        return _isLockFree(&self)
+    }
     
     /// Atomic fetch the current value with barrier.
     @_inlineable
@@ -436,6 +762,15 @@ extension UnsafePointer : SDAtomicProtocol {
 
 extension UnsafeMutablePointer : SDAtomicProtocol {
     
+    @_inlineable
+    public mutating func isLockFree() -> Bool {
+        @_transparent
+        func _isLockFree(_ theVal: UnsafeMutablePointer<UnsafeMutablePointer<Pointee>>) -> Bool {
+            return theVal.withMemoryRebound(to: Optional<UnsafeRawPointer>.self, capacity: 1) { _AtomicPtrIsLockFree($0) }
+        }
+        return _isLockFree(&self)
+    }
+    
     /// Atomic fetch the current value with barrier.
     @_inlineable
     public mutating func fetchSelf() -> (current: UnsafeMutablePointer, value: UnsafeMutablePointer) {
@@ -478,6 +813,15 @@ extension UnsafeMutablePointer : SDAtomicProtocol {
     }
 }
 extension UnsafeRawPointer : SDAtomicProtocol {
+    
+    @_inlineable
+    public mutating func isLockFree() -> Bool {
+        @_transparent
+        func _isLockFree(_ theVal: UnsafeMutablePointer<UnsafeRawPointer>) -> Bool {
+            return theVal.withMemoryRebound(to: Optional<UnsafeRawPointer>.self, capacity: 1) { _AtomicPtrIsLockFree($0) }
+        }
+        return _isLockFree(&self)
+    }
     
     /// Atomic fetch the current value with barrier.
     @_inlineable
@@ -523,6 +867,15 @@ extension UnsafeRawPointer : SDAtomicProtocol {
 
 extension UnsafeMutableRawPointer : SDAtomicProtocol {
     
+    @_inlineable
+    public mutating func isLockFree() -> Bool {
+        @_transparent
+        func _isLockFree(_ theVal: UnsafeMutablePointer<UnsafeMutableRawPointer>) -> Bool {
+            return theVal.withMemoryRebound(to: Optional<UnsafeRawPointer>.self, capacity: 1) { _AtomicPtrIsLockFree($0) }
+        }
+        return _isLockFree(&self)
+    }
+    
     /// Atomic fetch the current value with barrier.
     @_inlineable
     public mutating func fetchSelf() -> (current: UnsafeMutableRawPointer, value: UnsafeMutableRawPointer) {
@@ -566,6 +919,15 @@ extension UnsafeMutableRawPointer : SDAtomicProtocol {
 }
 
 extension OpaquePointer : SDAtomicProtocol {
+    
+    @_inlineable
+    public mutating func isLockFree() -> Bool {
+        @_transparent
+        func _isLockFree(_ theVal: UnsafeMutablePointer<OpaquePointer>) -> Bool {
+            return theVal.withMemoryRebound(to: Optional<UnsafeRawPointer>.self, capacity: 1) { _AtomicPtrIsLockFree($0) }
+        }
+        return _isLockFree(&self)
+    }
     
     /// Atomic fetch the current value with barrier.
     @_inlineable
@@ -641,6 +1003,14 @@ public struct Atomic<Instance> {
 }
 
 extension Atomic {
+    
+    public mutating func isLockFree() -> Bool {
+        @_transparent
+        func _isLockFree(_ theVal: UnsafeMutablePointer<AtomicBase<Instance>>) -> Bool {
+            return theVal.withMemoryRebound(to: Optional<UnsafeRawPointer>.self, capacity: 1) { _AtomicPtrIsLockFree($0) }
+        }
+        return _isLockFree(&base)
+    }
     
     private mutating func _fetch() -> AtomicBase<Instance> {
         @_transparent
