@@ -8,6 +8,10 @@
 
 Doggie is a foundational library for Apple's swift. It includes mathematics, accelerate, signal processing and graphic functions.
 
+## Playgrounds
+
+Check out the Doggie.xcworkspace and build the project. It's suggested building in Release mode for the performance.
+
 ## Features
 
 - atomic operation, async task and actor
