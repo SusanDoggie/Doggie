@@ -132,8 +132,10 @@ let image: Image<ARGB32ColorPixel> = context.image
 - [x] GLYF
 - [ ] CFF
 - [ ] CFF2
-- [ ] LCAR
 - [ ] KERN
+- [ ] GSUB
+- [ ] GPOS
+- [ ] GDEF
 
 #### CMAP
 
