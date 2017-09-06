@@ -33,15 +33,19 @@ struct OTFGDEF : DataDecodable {
     var ligCaretListOffset: BEUInt16
     var markAttachClassDefOffset: BEUInt16
     
+    var glyphClassDef: GlyphClassDef
+    
     init(from data: inout Data) throws {
+        let copy = data
         self.version = try data.decode(Fixed16Number<BEInt32>.self)
         self.glyphClassDefOffset = try data.decode(BEUInt16.self)
         self.attachListOffset = try data.decode(BEUInt16.self)
         self.ligCaretListOffset = try data.decode(BEUInt16.self)
         self.markAttachClassDefOffset = try data.decode(BEUInt16.self)
+        self.glyphClassDef = try GlyphClassDef(copy.dropFirst(Int(glyphClassDefOffset)))
     }
     
-    struct ClassDefTable : DataDecodable {
+    struct GlyphClassDef : DataDecodable {
         
         var classFormat: BEUInt16
         
@@ -75,6 +79,50 @@ struct OTFGDEF : DataDecodable {
                 
             default: throw FontCollection.Error.InvalidFormat("Invalid GDEF format.")
             }
+        }
+        
+        func classOf(glyph: BEUInt16) -> BEUInt16 {
+            
+            let glyph = UInt16(glyph)
+            
+            switch classFormat {
+            case 1:
+                let startGlyphID = UInt16(self.startGlyphID)
+                if glyph >= startGlyphID {
+                    let offset = Int(glyph - startGlyphID)
+                    if offset < glyphCount {
+                        return data.withUnsafeBytes { $0[offset] }
+                    }
+                }
+            case 2:
+                
+                var range = 0..<Int(classRangeCount)
+                
+                return data.withUnsafeBytes { (record: UnsafePointer<ClassRangeRecord>) in
+                    
+                    while range.count != 0 {
+                        
+                        let mid = (range.lowerBound + range.upperBound) >> 1
+                        let startGlyphID = UInt16(record[mid].startGlyphID)
+                        let endGlyphID = UInt16(record[mid].endGlyphID)
+                        if startGlyphID <= endGlyphID && startGlyphID...endGlyphID ~= glyph {
+                            return record[mid]._class
+                        }
+                        range = glyph < startGlyphID ? range.prefix(upTo: mid) : range.suffix(from: mid).dropFirst()
+                    }
+                    
+                    return 0
+                }
+            default: break
+            }
+            return 0
+        }
+        
+        struct ClassRangeRecord {
+            
+            var startGlyphID: BEUInt16
+            var endGlyphID: BEUInt16
+            var _class: BEUInt16
         }
     }
 }
