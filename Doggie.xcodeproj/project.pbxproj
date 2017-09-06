@@ -96,6 +96,12 @@
 		0A7A1FAF1F04FBFC0016B3FB /* ColorPixel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7A1FAD1F04FBFC0016B3FB /* ColorPixel.swift */; };
 		0A7A1FB21F04FC230016B3FB /* ARGB32ColorPixel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7A1FB01F04FC230016B3FB /* ARGB32ColorPixel.swift */; };
 		0A7D3ADC1ECAD5890030DC26 /* ColorBlend.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7D3ADA1ECAD5890030DC26 /* ColorBlend.swift */; };
+		0A7E3E911F5FD3B40020A507 /* OTFGPOS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7E3E901F5FD3B40020A507 /* OTFGPOS.swift */; };
+		0A7E3E941F5FD3E40020A507 /* OTFGSUB.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7E3E921F5FD3E30020A507 /* OTFGSUB.swift */; };
+		0A7E3E951F5FD3E40020A507 /* OTFGDEF.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7E3E931F5FD3E40020A507 /* OTFGDEF.swift */; };
+		0A7E3E971F5FD8C90020A507 /* OTFScriptList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7E3E961F5FD8C90020A507 /* OTFScriptList.swift */; };
+		0A7E3E991F5FD8F80020A507 /* OTFFeatureList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7E3E981F5FD8F80020A507 /* OTFFeatureList.swift */; };
+		0A7E3E9B1F5FD9090020A507 /* OTFLookupList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7E3E9A1F5FD9090020A507 /* OTFLookupList.swift */; };
 		0A7F24AD1EF37CD500EAD9C7 /* Endianness.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7F24AB1EF37CD500EAD9C7 /* Endianness.swift */; };
 		0A80D1481E66A7000003BB44 /* RangeSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A80D1461E66A7000003BB44 /* RangeSet.swift */; };
 		0A831A871F186E6F0007932A /* ARGB64ColorPixel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A831A851F186E6F0007932A /* ARGB64ColorPixel.swift */; };
@@ -283,6 +289,12 @@
 		0A7A1FAD1F04FBFC0016B3FB /* ColorPixel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ColorPixel.swift; sourceTree = "<group>"; };
 		0A7A1FB01F04FC230016B3FB /* ARGB32ColorPixel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARGB32ColorPixel.swift; sourceTree = "<group>"; };
 		0A7D3ADA1ECAD5890030DC26 /* ColorBlend.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ColorBlend.swift; sourceTree = "<group>"; };
+		0A7E3E901F5FD3B40020A507 /* OTFGPOS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OTFGPOS.swift; sourceTree = "<group>"; };
+		0A7E3E921F5FD3E30020A507 /* OTFGSUB.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OTFGSUB.swift; sourceTree = "<group>"; };
+		0A7E3E931F5FD3E40020A507 /* OTFGDEF.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OTFGDEF.swift; sourceTree = "<group>"; };
+		0A7E3E961F5FD8C90020A507 /* OTFScriptList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OTFScriptList.swift; sourceTree = "<group>"; };
+		0A7E3E981F5FD8F80020A507 /* OTFFeatureList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OTFFeatureList.swift; sourceTree = "<group>"; };
+		0A7E3E9A1F5FD9090020A507 /* OTFLookupList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OTFLookupList.swift; sourceTree = "<group>"; };
 		0A7F24AB1EF37CD500EAD9C7 /* Endianness.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Endianness.swift; sourceTree = "<group>"; };
 		0A80D1461E66A7000003BB44 /* RangeSet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RangeSet.swift; sourceTree = "<group>"; };
 		0A831A851F186E6F0007932A /* ARGB64ColorPixel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ARGB64ColorPixel.swift; sourceTree = "<group>"; };
@@ -649,6 +661,12 @@
 				0A5E8D4A1F57BF28000D51E3 /* SFNTVHEA.swift */,
 				0A9F993E1F56649C0008D36D /* SFNTPOST.swift */,
 				0A9F99431F56734A0008D36D /* SFNTNAME.swift */,
+				0A7E3E931F5FD3E40020A507 /* OTFGDEF.swift */,
+				0A7E3E901F5FD3B40020A507 /* OTFGPOS.swift */,
+				0A7E3E921F5FD3E30020A507 /* OTFGSUB.swift */,
+				0A7E3E961F5FD8C90020A507 /* OTFScriptList.swift */,
+				0A7E3E981F5FD8F80020A507 /* OTFFeatureList.swift */,
+				0A7E3E9A1F5FD9090020A507 /* OTFLookupList.swift */,
 			);
 			path = SFNTFontFace;
 			sourceTree = "<group>";
@@ -999,8 +1017,10 @@
 				0A9CD5911EEB9A2700094148 /* CIEXYZColorSpace.swift in Sources */,
 				0A52E2D31E6012140065EED6 /* PDFASCII85Decode.swift in Sources */,
 				0A9ED9D41F5CF5B000205C1B /* SFNTOS2.swift in Sources */,
+				0A7E3E941F5FD3E40020A507 /* OTFGSUB.swift in Sources */,
 				08B457E71EDD3223007AA4F0 /* Arithmetic.swift in Sources */,
 				0A7A1FAF1F04FBFC0016B3FB /* ColorPixel.swift in Sources */,
+				0A7E3E991F5FD8F80020A507 /* OTFFeatureList.swift in Sources */,
 				0A72EF1C1F55035200F0550A /* SFNTFontFace.swift in Sources */,
 				0A8EDDC01F19B1CD00C917CC /* iccCurve.swift in Sources */,
 				0AB2E23E1F17766C00B0CA84 /* zlib.swift in Sources */,
@@ -1080,6 +1100,8 @@
 				0A8B10511F1DE69B00D93CF9 /* JPEGDecoder.swift in Sources */,
 				0A53E47B1E35AEF80060FB83 /* Random.swift in Sources */,
 				0A5E8D4C1F57BF28000D51E3 /* SFNTVHEA.swift in Sources */,
+				0A7E3E951F5FD3E40020A507 /* OTFGDEF.swift in Sources */,
+				0A7E3E971F5FD8C90020A507 /* OTFScriptList.swift in Sources */,
 				08458AFD1E2E627600D01813 /* Move.swift in Sources */,
 				0A831A8B1F1872770007932A /* Gray32ColorPixel.swift in Sources */,
 				0A9F28221EF0D9BC00E69976 /* LabColorModel.swift in Sources */,
@@ -1122,10 +1144,12 @@
 				0A53E4691E35AEF80060FB83 /* Hashable.swift in Sources */,
 				0A9CD58F1EEB9A2700094148 /* CIELabColorSpace.swift in Sources */,
 				0AD4D8D91EA6247200C99728 /* Maths misc.swift in Sources */,
+				0A7E3E911F5FD3B40020A507 /* OTFGPOS.swift in Sources */,
 				0A53E4631E35AEF80060FB83 /* Date.swift in Sources */,
 				0A9CD58B1EEB98E600094148 /* sRGB.swift in Sources */,
 				0AD3E6321F53DA9B003CC21A /* FontDecoder.swift in Sources */,
 				0AE719FB1EF50EEB0086923C /* AnyColor.swift in Sources */,
+				0A7E3E9B1F5FD9090020A507 /* OTFLookupList.swift in Sources */,
 				0A7314C01F3D7B720008461E /* ShapeSegment.swift in Sources */,
 				0A967E501F132DC0007E38E4 /* BMPEncoder.swift in Sources */,
 				08458AFB1E2E627600D01813 /* DiscreteConvolve.swift in Sources */,
