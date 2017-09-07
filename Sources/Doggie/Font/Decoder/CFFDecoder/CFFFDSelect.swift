@@ -28,6 +28,7 @@ import Foundation
 struct CFFFDSelect {
     
     var format: UInt8
+    var nGlyphs: Int
     
     var fds: Data
     
@@ -38,6 +39,8 @@ struct CFFFDSelect {
     init(_ data: Data, _ nGlyphs: Int) throws {
         
         var data = data
+        
+        self.nGlyphs = nGlyphs
         
         self.format = try data.decode(UInt8.self)
         
@@ -63,6 +66,44 @@ struct CFFFDSelect {
             
         default: throw FontCollection.Error.InvalidFormat("Invalid CFF FDSelect format.")
         }
+    }
+    
+    func fdIndex(glyph: UInt16) -> UInt8 {
         
+        switch format {
+        case 0:
+            if glyph < nGlyphs {
+                return self.fds[Int(glyph)]
+            }
+        case 3:
+            
+            let limit = min(UInt16(sentinel), UInt16(nGlyphs))
+            let rangeCount = Int(nRanges)
+            var range = 0..<rangeCount
+            
+            return self.range.withUnsafeBytes { (record: UnsafePointer<Range3>) in
+                
+                while range.count != 0 {
+                    
+                    let mid = (range.lowerBound + range.upperBound) >> 1
+                    let startGlyphID = UInt16(record[mid].first)
+                    let endGlyphID = mid + 1 < rangeCount ? UInt16(record[mid + 1].first) : limit - 1
+                    if startGlyphID <= endGlyphID && startGlyphID...endGlyphID ~= glyph {
+                        return record[mid].fd
+                    }
+                    range = glyph < startGlyphID ? range.prefix(upTo: mid) : range.suffix(from: mid).dropFirst()
+                }
+                
+                return 0
+            }
+        default: break
+        }
+        return 0
+    }
+    
+    struct Range3 {
+        
+        var first: BEUInt16
+        var fd: UInt8
     }
 }
