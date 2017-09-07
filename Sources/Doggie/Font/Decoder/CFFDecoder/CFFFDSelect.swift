@@ -68,7 +68,7 @@ struct CFFFDSelect {
         }
     }
     
-    func fdIndex(glyph: UInt16) -> UInt8 {
+    func fdIndex(glyph: UInt16) -> UInt8? {
         
         switch format {
         case 0:
@@ -94,11 +94,11 @@ struct CFFFDSelect {
                     range = glyph < startGlyphID ? range.prefix(upTo: mid) : range.suffix(from: mid).dropFirst()
                 }
                 
-                return 0
+                return nil
             }
         default: break
         }
-        return 0
+        return nil
     }
     
     struct Range3 {
