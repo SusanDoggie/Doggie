@@ -176,6 +176,7 @@
 		0AD3E6351F53DB6C003CC21A /* OpenTypeDecoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD3E6341F53DB6C003CC21A /* OpenTypeDecoder.swift */; };
 		0AD3E63B1F53DBEE003CC21A /* WOFFDecoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD3E6371F53DBEE003CC21A /* WOFFDecoder.swift */; };
 		0AD3E6401F54018B003CC21A /* TTCDecoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD3E63F1F54018B003CC21A /* TTCDecoder.swift */; };
+		0AD4B6D01F61394D00A9A6B8 /* CFFCharsets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD4B6CF1F61394D00A9A6B8 /* CFFCharsets.swift */; };
 		0AD4D8D91EA6247200C99728 /* Maths misc.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD4D8D71EA6247200C99728 /* Maths misc.swift */; };
 		0AD7FA311EBDA86A001C9B21 /* ShapeWinding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD7FA2F1EBDA86A001C9B21 /* ShapeWinding.swift */; };
 		0AE719FB1EF50EEB0086923C /* AnyColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE719F91EF50EEB0086923C /* AnyColor.swift */; };
@@ -368,6 +369,7 @@
 		0AD3E6341F53DB6C003CC21A /* OpenTypeDecoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenTypeDecoder.swift; sourceTree = "<group>"; };
 		0AD3E6371F53DBEE003CC21A /* WOFFDecoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WOFFDecoder.swift; sourceTree = "<group>"; };
 		0AD3E63F1F54018B003CC21A /* TTCDecoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TTCDecoder.swift; sourceTree = "<group>"; };
+		0AD4B6CF1F61394D00A9A6B8 /* CFFCharsets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CFFCharsets.swift; sourceTree = "<group>"; };
 		0AD4D8D71EA6247200C99728 /* Maths misc.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Maths misc.swift"; sourceTree = "<group>"; };
 		0AD7FA2F1EBDA86A001C9B21 /* ShapeWinding.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShapeWinding.swift; sourceTree = "<group>"; };
 		0AE719F91EF50EEB0086923C /* AnyColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnyColor.swift; sourceTree = "<group>"; };
@@ -701,6 +703,7 @@
 				0A8535291F5901E1006FB85D /* CFFINDEX.swift */,
 				0A8535321F591C57006FB85D /* CFFDICT.swift */,
 				0A8535361F59543E006FB85D /* CFFFDSelect.swift */,
+				0AD4B6CF1F61394D00A9A6B8 /* CFFCharsets.swift */,
 			);
 			path = CFFDecoder;
 			sourceTree = "<group>";
@@ -1124,6 +1127,7 @@
 				0A8EDDCE1F19E26D00C917CC /* iccXYZNumber.swift in Sources */,
 				0A8EDDC61F19B7F900C917CC /* iccMatrix.swift in Sources */,
 				0A39A6BC1ED9347C00804004 /* DrawShape.swift in Sources */,
+				0AD4B6D01F61394D00A9A6B8 /* CFFCharsets.swift in Sources */,
 				0A85352A1F5901E1006FB85D /* CFFINDEX.swift in Sources */,
 				086F064D1EDC65D600BA70C8 /* DrawGradientMesh.swift in Sources */,
 				08B68A3B1ED07A8300F8D423 /* LinearToneColorSpace.swift in Sources */,

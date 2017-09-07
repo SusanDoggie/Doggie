@@ -27,8 +27,8 @@ import Foundation
 
 struct CFFFDSelect {
     
-    var format: UInt8
     var nGlyphs: Int
+    var format: UInt8
     
     var fds: Data
     
@@ -41,7 +41,6 @@ struct CFFFDSelect {
         var data = data
         
         self.nGlyphs = nGlyphs
-        
         self.format = try data.decode(UInt8.self)
         
         fds = Data()

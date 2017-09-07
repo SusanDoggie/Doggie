@@ -179,5 +179,12 @@ extension CFFDICT {
         }
         return nil
     }
+    
+    var charsetsOffset: Int? {
+        if case let .some(.integer(offset)) = dict[15]?.first, offset != 0 {
+            return offset
+        }
+        return nil
+    }
 }
 
