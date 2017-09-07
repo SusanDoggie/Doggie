@@ -78,24 +78,29 @@ struct CFFFDSelect {
         case 3:
             
             let limit = min(UInt16(sentinel), UInt16(nGlyphs))
-            let rangeCount = Int(nRanges)
-            var range = 0..<rangeCount
             
-            return self.range.withUnsafeBytes { (record: UnsafePointer<Range3>) in
+            if glyph < limit {
                 
-                while range.count != 0 {
+                let rangeCount = Int(nRanges)
+                var range = 0..<rangeCount
+                
+                return self.range.withUnsafeBytes { (record: UnsafePointer<Range3>) in
                     
-                    let mid = (range.lowerBound + range.upperBound) >> 1
-                    let startGlyphID = UInt16(record[mid].first)
-                    let endGlyphID = mid + 1 < rangeCount ? UInt16(record[mid + 1].first) : limit - 1
-                    if startGlyphID <= endGlyphID && startGlyphID...endGlyphID ~= glyph {
-                        return record[mid].fd
+                    while range.count != 0 {
+                        
+                        let mid = (range.lowerBound + range.upperBound) >> 1
+                        let startGlyphID = UInt16(record[mid].first)
+                        let endGlyphID = mid + 1 < rangeCount ? UInt16(record[mid + 1].first) : limit - 1
+                        if startGlyphID <= endGlyphID && startGlyphID...endGlyphID ~= glyph {
+                            return record[mid].fd
+                        }
+                        range = glyph < startGlyphID ? range.prefix(upTo: mid) : range.suffix(from: mid).dropFirst()
                     }
-                    range = glyph < startGlyphID ? range.prefix(upTo: mid) : range.suffix(from: mid).dropFirst()
+                    
+                    return nil
                 }
-                
-                return nil
             }
+            
         default: break
         }
         return nil
