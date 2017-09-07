@@ -25,35 +25,14 @@
 
 import Foundation
 
-struct CFFFontFace {
+struct CFFFontDICT {
     
-    var name: String
     var DICT: CFFDICT
-    var string: CFFINDEX
-    
-    var charstringType: Int
-    var charStrings: CFFINDEX
-    
-    var subroutine: CFFINDEX
-    
     var pDICT: CFFDICT?
     var pSubroutine: CFFINDEX?
     
-    var fontDICTArray: CFFINDEX?
-    var fdSelect: CFFFDSelect?
-    
-    init(_ data: Data, _ name: String, _ DICT: CFFDICT, _ string: CFFINDEX, _ subroutine: CFFINDEX) throws {
-        
-        self.name = name
+    init(_ data: Data, _ DICT: CFFDICT) throws {
         self.DICT = DICT
-        self.string = string
-        
-        self.charstringType = DICT.charstringType
-        guard let charStringsOffset = DICT.charStringsOffset else { throw FontCollection.Error.InvalidFormat("Invalid CFF format.") }
-        self.charStrings = try CFFINDEX(data.dropFirst(charStringsOffset))
-        
-        self.subroutine = subroutine
-        
         if let range = DICT.pDICTRange {
             let _pDICT: Data = data.dropFirst(range.lowerBound).prefix(range.count)
             guard _pDICT.count == range.count else { throw DataDecodeError.endOfData }
@@ -63,9 +42,37 @@ struct CFFFontFace {
                 self.pSubroutine = try CFFINDEX(data.dropFirst(range.lowerBound + subrsOffset))
             }
         }
+    }
+}
+
+struct CFFFontFace {
+    
+    var name: String
+    var DICT: CFFFontDICT
+    var string: CFFINDEX
+    
+    var charstringType: Int
+    var charStrings: CFFINDEX
+    
+    var subroutine: CFFINDEX
+    
+    var fontDICTArray: [CFFFontDICT]?
+    var fdSelect: CFFFDSelect?
+    
+    init(_ data: Data, _ name: String, _ DICT: CFFDICT, _ string: CFFINDEX, _ subroutine: CFFINDEX) throws {
+        
+        self.name = name
+        self.DICT = try CFFFontDICT(data, DICT)
+        self.string = string
+        
+        self.charstringType = DICT.charstringType
+        guard let charStringsOffset = DICT.charStringsOffset else { throw FontCollection.Error.InvalidFormat("Invalid CFF format.") }
+        self.charStrings = try CFFINDEX(data.dropFirst(charStringsOffset))
+        
+        self.subroutine = subroutine
         
         if let fdArrayOffset = DICT.fdArrayOffset, let fdSelectOffset = DICT.fdSelectOffset {
-            self.fontDICTArray = try CFFINDEX(data.dropFirst(fdArrayOffset))
+            self.fontDICTArray = try CFFINDEX(data.dropFirst(fdArrayOffset)).map { try CFFFontDICT(data, try CFFDICT($0)) }
             self.fdSelect = try CFFFDSelect(data.dropFirst(fdSelectOffset), self.charStrings.count)
         }
     }

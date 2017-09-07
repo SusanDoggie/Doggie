@@ -43,8 +43,10 @@ struct OTFLookupList : DataDecodable {
         var subTableCount: BEUInt16
         var subtableOffsets: [BEUInt16]
         var markFilteringSet: BEUInt16
+        var data: Data
         
         init(from data: inout Data) throws {
+            self.data = data
             self.lookupType = try data.decode(BEUInt16.self)
             self.lookupFlag = try data.decode(BEUInt16.self)
             self.subTableCount = try data.decode(BEUInt16.self)
