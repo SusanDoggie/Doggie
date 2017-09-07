@@ -276,7 +276,6 @@ extension ImageContext {
         
         let width = Double(self.width)
         let height = Double(self.height)
-        let aspect = height / width
         
         @inline(__always)
         func _position(_ v: Vector) -> Point {
