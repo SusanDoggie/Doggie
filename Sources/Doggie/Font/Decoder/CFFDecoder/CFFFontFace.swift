@@ -55,6 +55,8 @@ struct CFFFontFace {
     var charstringType: Int
     var charStrings: CFFINDEX
     
+    var encoding: CFFEncoding?
+    
     var fontDICTArray: [CFFFontDICT]?
     var fdSelect: CFFFDSelect?
     
@@ -68,6 +70,8 @@ struct CFFFontFace {
         self.charstringType = DICT.charstringType
         guard let charStringsOffset = DICT.charStringsOffset else { throw FontCollection.Error.InvalidFormat("Invalid CFF format.") }
         self.charStrings = try CFFINDEX(data.dropFirst(charStringsOffset))
+        
+        self.encoding = try DICT.encodingOffset.map { try CFFEncoding(data.dropFirst($0)) }
         
         if let fdArrayOffset = DICT.fdArrayOffset, let fdSelectOffset = DICT.fdSelectOffset {
             self.fontDICTArray = try CFFINDEX(data.dropFirst(fdArrayOffset)).map { try CFFFontDICT(data, try CFFDICT($0)) }

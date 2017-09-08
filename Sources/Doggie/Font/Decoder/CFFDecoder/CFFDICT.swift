@@ -180,8 +180,8 @@ extension CFFDICT {
         return nil
     }
     
-    var charsetsOffset: Int? {
-        if case let .some(.integer(offset)) = dict[15]?.first, offset != 0 {
+    var encodingOffset: Int? {
+        if case let .some(.integer(offset)) = dict[16]?.first, offset != 0 {
             return offset
         }
         return nil
