@@ -237,8 +237,6 @@ extension CFFFontFace {
                             let c4 = c3 + Point(x: dx5, y: 0)
                             point.x = c4.x + dx6
                             
-                            stack.removeFirst()
-                            
                             component.append(.cubic(c1, c2, md))
                             component.append(.cubic(c3, c4, point))
                             
@@ -260,8 +258,6 @@ extension CFFFontFace {
                             let c3 = md + Point(x: dx4, y: 0)
                             let c4 = c3 + Point(x: dx5, y: dy5)
                             point.x = c4.x + dx6
-                            
-                            stack.removeFirst()
                             
                             component.append(.cubic(c1, c2, md))
                             component.append(.cubic(c3, c4, point))
@@ -290,8 +286,6 @@ extension CFFFontFace {
                             } else {
                                 point.y = c4.y + d6
                             }
-                            
-                            stack.removeFirst()
                             
                             component.append(.cubic(c1, c2, md))
                             component.append(.cubic(c3, c4, point))
