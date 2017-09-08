@@ -9,6 +9,7 @@
         <page name='Polynomial'/>
         <page name='3D Cube'/>
         <page name='Blending'/>
+        <page name='Clip'/>
         <page name='Circle'/>
         <page name='Color'/>
         <page name='CoonsPatchView'/>
