@@ -49,7 +49,6 @@ extension CFFFontFace {
         
         guard glyph < charStrings.count else { return [] }
         
-        let charString = charStrings[glyph]
         let fontDICT = self.fontDICT(glyph: UInt16(glyph))
         let subroutine = self.subroutine
         
@@ -59,14 +58,523 @@ extension CFFFontFace {
             let subroutineBias = self.subroutineBias(subroutine)
             let pSubroutineBias = pSubroutine.map { self.subroutineBias($0) }
             
-            print("fontDICT:", fontDICT)
-            print("subroutine:", subroutine)
-            print("pDICT:", pDICT)
-            print("pSubroutine:", pSubroutine)
-            print("subroutineBias:", subroutineBias)
-            print("pSubroutineBias:", pSubroutineBias)
+            var components: [Shape.Component] = []
+            var component = Shape.Component(start: Point(), closed: true, segments: [])
+            
+            var stack: ArraySlice<Double> = []
+            var _stems_count = 0
+            var point = Point()
+            var flag = false
+            
+            struct ParserError : Error {
+                
+            }
+            
+            func _stems() {
+                
+                if stack.count & 1 != 0 && !flag {
+                    stack.removeFirst()
+                }
+                
+                _stems_count += stack.count >> 1
+                stack.removeAll(keepingCapacity: true)
+                flag = true
+            }
+            
+            func _parser(_ data: Data, tracing: (Set<Int>, Set<Int>)) throws {
+                
+                var data = data
+                
+                while let code = try? data.decode(UInt8.self) {
+                    
+                    switch code {
+                    case 1: // hstem
+                        
+                        _stems()
+                        
+                    case 3: // vstem
+                        
+                        _stems()
+                        
+                    case 4: // vmoveto
+                        
+                        if stack.count > 1 && !flag {
+                            stack.removeFirst()
+                            flag = true
+                        }
+                        
+                        guard let dy = stack.popLast() else { throw ParserError() }
+                        
+                        point.y += dy
+                        
+                        components.append(component)
+                        component.removeAll(keepingCapacity: true)
+                        component.start = point
+                        
+                    case 5: // rlineto
+                        
+                        while stack.count != 0 {
+                            
+                            guard let dx = stack.popFirst() else { throw ParserError() }
+                            guard let dy = stack.popFirst() else { throw ParserError() }
+                            
+                            point.x += dx
+                            point.y += dy
+                            component.append(.line(point))
+                        }
+                        
+                    case 6: // hlineto
+                        
+                        while stack.count != 0 {
+                            
+                            guard let dx = stack.popFirst() else { throw ParserError() }
+                            
+                            point.x += dx
+                            component.append(.line(point))
+                            if let dy = stack.popFirst() {
+                                point.y += dy
+                                component.append(.line(point))
+                            }
+                        }
+                        
+                    case 7: // vlineto
+                        
+                        while stack.count != 0 {
+                            
+                            guard let dy = stack.popFirst() else { throw ParserError() }
+                            
+                            point.y += dy
+                            component.append(.line(point))
+                            if let dx = stack.popFirst() {
+                                point.x += dx
+                                component.append(.line(point))
+                            }
+                        }
+                        
+                    case 8: // rrcurveto
+                        
+                        while stack.count != 0 {
+                            
+                            guard let c1dx = stack.popFirst() else { throw ParserError() }
+                            guard let c1dy = stack.popFirst() else { throw ParserError() }
+                            guard let c2dx = stack.popFirst() else { throw ParserError() }
+                            guard let c2dy = stack.popFirst() else { throw ParserError() }
+                            guard let dx = stack.popFirst() else { throw ParserError() }
+                            guard let dy = stack.popFirst() else { throw ParserError() }
+                            
+                            let c1 = point + Point(x: c1dx, y: c1dy)
+                            let c2 = c1 + Point(x: c2dx, y: c2dy)
+                            point = c2 + Point(x: dx, y: dy)
+                            component.append(.cubic(c1, c2, point))
+                        }
+                        
+                    case 10: // callsubr
+                        
+                        guard let code = stack.popLast() else { throw ParserError() }
+                        
+                        let codeIndex = Int(code) + subroutineBias
+                        
+                        guard !tracing.0.contains(codeIndex) else { throw ParserError() }
+                        
+                        var tracing = tracing
+                        tracing.0.insert(glyph)
+                        
+                        if subroutine.count > codeIndex {
+                            try _parser(subroutine[codeIndex], tracing: tracing)
+                        }
+                        
+                    case 11: // return
+                        
+                        return
+                        
+                    case 12: // flex operators
+                        
+                        let code = try data.decode(UInt8.self)
+                        
+                        switch code {
+                            
+                        case 35: // flex
+                            
+                            guard let dx1 = stack.popFirst() else { throw ParserError() }
+                            guard let dy1 = stack.popFirst() else { throw ParserError() }
+                            guard let dx2 = stack.popFirst() else { throw ParserError() }
+                            guard let dy2 = stack.popFirst() else { throw ParserError() }
+                            guard let dx3 = stack.popFirst() else { throw ParserError() }
+                            guard let dy3 = stack.popFirst() else { throw ParserError() }
+                            guard let dx4 = stack.popFirst() else { throw ParserError() }
+                            guard let dy4 = stack.popFirst() else { throw ParserError() }
+                            guard let dx5 = stack.popFirst() else { throw ParserError() }
+                            guard let dy5 = stack.popFirst() else { throw ParserError() }
+                            guard let dx6 = stack.popFirst() else { throw ParserError() }
+                            guard let dy6 = stack.popFirst() else { throw ParserError() }
+                            
+                            let c1 = point + Point(x: dx1, y: dy1)
+                            let c2 = c1 + Point(x: dx2, y: dy2)
+                            let md = c2 + Point(x: dx3, y: dy3)
+                            let c3 = md + Point(x: dx4, y: dy4)
+                            let c4 = c3 + Point(x: dx5, y: dy5)
+                            point = c4 + Point(x: dx6, y: dy6)
+                            
+                            stack.removeFirst()
+                            
+                            component.append(.cubic(c1, c2, md))
+                            component.append(.cubic(c3, c4, point))
+                            
+                        case 34: // hflex
+                            
+                            guard let dx1 = stack.popFirst() else { throw ParserError() }
+                            guard let dx2 = stack.popFirst() else { throw ParserError() }
+                            guard let dy2 = stack.popFirst() else { throw ParserError() }
+                            guard let dx3 = stack.popFirst() else { throw ParserError() }
+                            guard let dx4 = stack.popFirst() else { throw ParserError() }
+                            guard let dx5 = stack.popFirst() else { throw ParserError() }
+                            guard let dx6 = stack.popFirst() else { throw ParserError() }
+                            
+                            let c1 = point + Point(x: dx1, y: 0)
+                            let c2 = c1 + Point(x: dx2, y: dy2)
+                            let md = c2 + Point(x: dx3, y: 0)
+                            let c3 = md + Point(x: dx4, y: 0)
+                            let c4 = c3 + Point(x: dx5, y: 0)
+                            point.x = c4.x + dx6
+                            
+                            stack.removeFirst()
+                            
+                            component.append(.cubic(c1, c2, md))
+                            component.append(.cubic(c3, c4, point))
+                            
+                        case 36: // hflex1
+                            
+                            guard let dx1 = stack.popFirst() else { throw ParserError() }
+                            guard let dy1 = stack.popFirst() else { throw ParserError() }
+                            guard let dx2 = stack.popFirst() else { throw ParserError() }
+                            guard let dy2 = stack.popFirst() else { throw ParserError() }
+                            guard let dx3 = stack.popFirst() else { throw ParserError() }
+                            guard let dx4 = stack.popFirst() else { throw ParserError() }
+                            guard let dx5 = stack.popFirst() else { throw ParserError() }
+                            guard let dy5 = stack.popFirst() else { throw ParserError() }
+                            guard let dx6 = stack.popFirst() else { throw ParserError() }
+                            
+                            let c1 = point + Point(x: dx1, y: dy1)
+                            let c2 = c1 + Point(x: dx2, y: dy2)
+                            let md = c2 + Point(x: dx3, y: 0)
+                            let c3 = md + Point(x: dx4, y: 0)
+                            let c4 = c3 + Point(x: dx5, y: dy5)
+                            point.x = c4.x + dx6
+                            
+                            stack.removeFirst()
+                            
+                            component.append(.cubic(c1, c2, md))
+                            component.append(.cubic(c3, c4, point))
+                            
+                        case 37: // flex1
+                            
+                            guard let dx1 = stack.popFirst() else { throw ParserError() }
+                            guard let dy1 = stack.popFirst() else { throw ParserError() }
+                            guard let dx2 = stack.popFirst() else { throw ParserError() }
+                            guard let dy2 = stack.popFirst() else { throw ParserError() }
+                            guard let dx3 = stack.popFirst() else { throw ParserError() }
+                            guard let dy3 = stack.popFirst() else { throw ParserError() }
+                            guard let dx4 = stack.popFirst() else { throw ParserError() }
+                            guard let dy4 = stack.popFirst() else { throw ParserError() }
+                            guard let dx5 = stack.popFirst() else { throw ParserError() }
+                            guard let dy5 = stack.popFirst() else { throw ParserError() }
+                            guard let d6 = stack.popFirst() else { throw ParserError() }
+                            
+                            let c1 = point + Point(x: dx1, y: dy1)
+                            let c2 = c1 + Point(x: dx2, y: dy2)
+                            let md = c2 + Point(x: dx3, y: dy3)
+                            let c3 = md + Point(x: dx4, y: dy4)
+                            let c4 = c3 + Point(x: dx5, y: dy5)
+                            if abs(c4.x - point.x) > abs(c4.y - point.y) {
+                                point.x = c4.x + d6
+                            } else {
+                                point.y = c4.y + d6
+                            }
+                            
+                            stack.removeFirst()
+                            
+                            component.append(.cubic(c1, c2, md))
+                            component.append(.cubic(c3, c4, point))
+                            
+                        default: throw ParserError()
+                        }
+                        
+                    case 14: // endchar
+                        
+                        if stack.count != 0 && !flag {
+                            stack.removeFirst()
+                            flag = true
+                        }
+                        
+                        components.append(component)
+                        component.removeAll(keepingCapacity: true)
+                        
+                    case 18: // hstemhm
+                        
+                        _stems()
+                        
+                    case 19: // hintmask
+                        
+                        break
+                        
+                    case 20: // cntrmask
+                        
+                        _stems()
+                        data.removeFirst((_stems_count + 7) >> 3)
+                        
+                    case 21: // rmoveto
+                        
+                        if stack.count > 2 && !flag {
+                            stack.removeFirst()
+                            flag = true
+                        }
+                        
+                        guard let dx = stack.popLast() else { throw ParserError() }
+                        guard let dy = stack.popLast() else { throw ParserError() }
+                        
+                        point.x += dx
+                        point.y += dy
+                        
+                        components.append(component)
+                        component.removeAll(keepingCapacity: true)
+                        component.start = point
+                        
+                    case 22: // hmoveto
+                        
+                        if stack.count > 1 && !flag {
+                            stack.removeFirst()
+                            flag = true
+                        }
+                        
+                        guard let dx = stack.popLast() else { throw ParserError() }
+                        
+                        point.x += dx
+                        
+                        components.append(component)
+                        component.removeAll(keepingCapacity: true)
+                        component.start = point
+                        
+                    case 23: // vstemhm
+                        
+                        _stems()
+                        
+                    case 24: // rcurveline
+                        
+                        while stack.count > 2 {
+                            
+                            guard let c1dx = stack.popFirst() else { throw ParserError() }
+                            guard let c1dy = stack.popFirst() else { throw ParserError() }
+                            guard let c2dx = stack.popFirst() else { throw ParserError() }
+                            guard let c2dy = stack.popFirst() else { throw ParserError() }
+                            guard let dx = stack.popFirst() else { throw ParserError() }
+                            guard let dy = stack.popFirst() else { throw ParserError() }
+                            
+                            let c1 = point + Point(x: c1dx, y: c1dy)
+                            let c2 = c1 + Point(x: c2dx, y: c2dy)
+                            point = c2 + Point(x: dx, y: dy)
+                            component.append(.cubic(c1, c2, point))
+                        }
+                        
+                        guard let dx = stack.popFirst() else { throw ParserError() }
+                        guard let dy = stack.popFirst() else { throw ParserError() }
+                        
+                        point.x += dx
+                        point.y += dy
+                        component.append(.line(point))
+                        
+                    case 25: // rlinecurve
+                        
+                        while stack.count > 6 {
+                            
+                            guard let dx = stack.popFirst() else { throw ParserError() }
+                            guard let dy = stack.popFirst() else { throw ParserError() }
+                            
+                            point.x += dx
+                            point.y += dy
+                            component.append(.line(point))
+                        }
+                        
+                        guard let c1dx = stack.popFirst() else { throw ParserError() }
+                        guard let c1dy = stack.popFirst() else { throw ParserError() }
+                        guard let c2dx = stack.popFirst() else { throw ParserError() }
+                        guard let c2dy = stack.popFirst() else { throw ParserError() }
+                        guard let dx = stack.popFirst() else { throw ParserError() }
+                        guard let dy = stack.popFirst() else { throw ParserError() }
+                        
+                        let c1 = point + Point(x: c1dx, y: c1dy)
+                        let c2 = c1 + Point(x: c2dx, y: c2dy)
+                        point = c2 + Point(x: dx, y: dy)
+                        component.append(.cubic(c1, c2, point))
+                        
+                    case 26: // vvcurveto
+                        
+                        if stack.count & 1 == 1 {
+                            guard let dx = stack.popFirst() else { throw ParserError() }
+                            point.x += dx
+                        }
+                        
+                        while stack.count != 0 {
+                            
+                            guard let c1dy = stack.popFirst() else { throw ParserError() }
+                            guard let c2dx = stack.popFirst() else { throw ParserError() }
+                            guard let c2dy = stack.popFirst() else { throw ParserError() }
+                            guard let dy = stack.popFirst() else { throw ParserError() }
+                            
+                            let c1 = Point(x: point.x, y: point.y + c1dy)
+                            let c2 = c1 + Point(x: c2dx, y: c2dy)
+                            point = Point(x: c2.x, y: c2.y + dy)
+                            component.append(.cubic(c1, c2, point))
+                        }
+                        
+                    case 27: // hhcurveto
+                        
+                        if stack.count & 1 == 1 {
+                            guard let dy = stack.popFirst() else { throw ParserError() }
+                            point.y += dy
+                        }
+                        
+                        while stack.count != 0 {
+                            
+                            guard let c1dx = stack.popFirst() else { throw ParserError() }
+                            guard let c2dx = stack.popFirst() else { throw ParserError() }
+                            guard let c2dy = stack.popFirst() else { throw ParserError() }
+                            guard let dx = stack.popFirst() else { throw ParserError() }
+                            
+                            let c1 = Point(x: point.x + c1dx, y: point.y)
+                            let c2 = c1 + Point(x: c2dx, y: c2dy)
+                            point = Point(x: c2.x + dx, y: c2.y)
+                            component.append(.cubic(c1, c2, point))
+                        }
+                        
+                    case 28: // shortint
+                        
+                        let b1 = try data.decode(UInt8.self)
+                        let b2 = try data.decode(UInt8.self)
+                        
+                        stack.append(Double(((Int(b1) << 24) | (Int(b2) << 16)) >> 16))
+                        
+                    case 29: // callgsubr
+                        
+                        guard let code = stack.popLast() else { throw ParserError() }
+                        
+                        if let pSubroutine = pSubroutine, let pSubroutineBias = pSubroutineBias {
+                            
+                            let codeIndex = Int(code) + pSubroutineBias
+                            
+                            guard !tracing.1.contains(codeIndex) else { throw ParserError() }
+                            
+                            var tracing = tracing
+                            tracing.1.insert(glyph)
+                            
+                            if pSubroutine.count > codeIndex {
+                                try _parser(pSubroutine[codeIndex], tracing: tracing)
+                            }
+                        }
+                        
+                    case 30: // vhcurveto
+                        
+                        while stack.count != 0 {
+                            
+                            guard let c1dy = stack.popFirst() else { throw ParserError() }
+                            guard let c2dx = stack.popFirst() else { throw ParserError() }
+                            guard let c2dy = stack.popFirst() else { throw ParserError() }
+                            guard let dx = stack.popFirst() else { throw ParserError() }
+                            let dy = stack.count == 1 ? stack.popFirst()! : 0
+                            
+                            let c1 = Point(x: point.x, y: point.y + c1dy)
+                            let c2 = c1 + Point(x: c2dx, y: c2dy)
+                            point = Point(x: c2.x + dx, y: c2.y + dy)
+                            component.append(.cubic(c1, c2, point))
+                            
+                            if stack.count != 0 {
+                                
+                                guard let c1dx = stack.popFirst() else { throw ParserError() }
+                                guard let c2dx = stack.popFirst() else { throw ParserError() }
+                                guard let c2dy = stack.popFirst() else { throw ParserError() }
+                                guard let dy = stack.popFirst() else { throw ParserError() }
+                                let dx = stack.count == 1 ? stack.popFirst()! : 0
+                                
+                                let c1 = Point(x: point.x + c1dx, y: point.y)
+                                let c2 = c1 + Point(x: c2dx, y: c2dy)
+                                point = Point(x: c2.x + dx, y: c2.y + dy)
+                                component.append(.cubic(c1, c2, point))
+                            }
+                        }
+                        
+                    case 31: // hvcurveto
+                        
+                        while stack.count != 0 {
+                            
+                            guard let c1dx = stack.popFirst() else { throw ParserError() }
+                            guard let c2dx = stack.popFirst() else { throw ParserError() }
+                            guard let c2dy = stack.popFirst() else { throw ParserError() }
+                            guard let dy = stack.popFirst() else { throw ParserError() }
+                            let dx = stack.count == 1 ? stack.popFirst()! : 0
+                            
+                            let c1 = Point(x: point.x + c1dx, y: point.y)
+                            let c2 = c1 + Point(x: c2dx, y: c2dy)
+                            point = Point(x: c2.x + dx, y: c2.y + dy)
+                            component.append(.cubic(c1, c2, point))
+                            
+                            if stack.count != 0 {
+                                
+                                guard let c1dy = stack.popFirst() else { throw ParserError() }
+                                guard let c2dx = stack.popFirst() else { throw ParserError() }
+                                guard let c2dy = stack.popFirst() else { throw ParserError() }
+                                guard let dx = stack.popFirst() else { throw ParserError() }
+                                let dy = stack.count == 1 ? stack.popFirst()! : 0
+                                
+                                let c1 = Point(x: point.x, y: point.y + c1dy)
+                                let c2 = c1 + Point(x: c2dx, y: c2dy)
+                                point = Point(x: c2.x + dx, y: c2.y + dy)
+                                component.append(.cubic(c1, c2, point))
+                            }
+                        }
+                        
+                    default:
+                        if code < 32 {
+                            
+                            throw ParserError()
+                            
+                        } else if code < 247 {
+                            
+                            stack.append(Double(code) - 139)
+                            
+                        } else if code < 251 {
+                            
+                            let b1 = try data.decode(UInt8.self)
+                            
+                            stack.append((Double(code) - 247) * 256 + Double(b1) + 108)
+                            
+                        } else if code < 255 {
+                            
+                            let b1 = try data.decode(UInt8.self)
+                            
+                            stack.append(-(Double(code) - 251) * 256 - Double(b1) - 108)
+                            
+                        } else {
+                            
+                            let b1 = try data.decode(Fixed16Number<BEInt32>.self)
+                            
+                            stack.append(b1.representingValue)
+                        }
+                    }
+                    
+                }
+                
+            }
+            
+            do {
+                
+                try _parser(charStrings[glyph], tracing: ([], []))
+                return components
+                
+            } catch {
+                return []
+            }
         }
         
         return []
     }
 }
+
