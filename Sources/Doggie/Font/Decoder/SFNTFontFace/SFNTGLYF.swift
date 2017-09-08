@@ -61,26 +61,6 @@ extension SFNTGLYF {
         return glyf.dropFirst(startIndex).prefix(endIndex - startIndex)
     }
     
-    func boundary(glyph: Int) -> Rect {
-        
-        guard glyph < numberOfGlyphs else { return Rect() }
-        
-        var data = _glyfData(glyph: glyph)
-        
-        guard let _ = try? data.decode(BEInt16.self) else { return Rect() }
-        guard let xMin = try? data.decode(BEInt16.self) else { return Rect() }
-        guard let yMin = try? data.decode(BEInt16.self) else { return Rect() }
-        guard let xMax = try? data.decode(BEInt16.self) else { return Rect() }
-        guard let yMax = try? data.decode(BEInt16.self) else { return Rect() }
-        
-        let minX = Double(xMin.representingValue)
-        let minY = Double(yMin.representingValue)
-        let maxX = Double(xMax.representingValue)
-        let maxY = Double(yMax.representingValue)
-        
-        return Rect(x: minX, y: minY, width: maxX - minX, height: maxY - minY)
-    }
-    
     func outline(glyph: Int, tracing: Set<Int> = []) -> ([Point], [Shape.Component])? {
         
         guard glyph < numberOfGlyphs else { return nil }

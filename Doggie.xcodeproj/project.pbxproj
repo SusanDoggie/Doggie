@@ -128,6 +128,7 @@
 		0A8EDDD41F19E74000C917CC /* iccTextDescription.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A8EDDD21F19E74000C917CC /* iccTextDescription.swift */; };
 		0A8F4F681F622B020062FD11 /* Stencil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A8F4F671F622B020062FD11 /* Stencil.swift */; };
 		0A8F4F6A1F622C850062FD11 /* SetClip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A8F4F691F622C850062FD11 /* SetClip.swift */; };
+		0A8F4F6D1F6273390062FD11 /* CFFCharStrings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A8F4F6C1F6273390062FD11 /* CFFCharStrings.swift */; };
 		0A92062C1F14A1FA00AF5C49 /* FourierTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08BFF9B91B0715ED00EC88CB /* FourierTest.swift */; };
 		0A92062D1F14A29E00AF5C49 /* ImageTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A8D98A21E53ED0F0050E112 /* ImageTest.swift */; };
 		0A92063B1F14C83A00AF5C49 /* PNGDecoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9206391F14C83A00AF5C49 /* PNGDecoder.swift */; };
@@ -325,6 +326,7 @@
 		0A8EDDD21F19E74000C917CC /* iccTextDescription.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iccTextDescription.swift; sourceTree = "<group>"; };
 		0A8F4F671F622B020062FD11 /* Stencil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Stencil.swift; sourceTree = "<group>"; };
 		0A8F4F691F622C850062FD11 /* SetClip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetClip.swift; sourceTree = "<group>"; };
+		0A8F4F6C1F6273390062FD11 /* CFFCharStrings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CFFCharStrings.swift; sourceTree = "<group>"; };
 		0A9206391F14C83A00AF5C49 /* PNGDecoder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PNGDecoder.swift; sourceTree = "<group>"; };
 		0A92C7B11E56A52E0090EBFC /* CompressionCodec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CompressionCodec.swift; sourceTree = "<group>"; };
 		0A92C7C31E56AB9D0090EBFC /* Data.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Data.swift; sourceTree = "<group>"; };
@@ -706,6 +708,7 @@
 			children = (
 				0A8535261F58F757006FB85D /* CFFDecoder.swift */,
 				0A8535341F5937DA006FB85D /* CFFFontFace.swift */,
+				0A8F4F6C1F6273390062FD11 /* CFFCharStrings.swift */,
 				0A8535291F5901E1006FB85D /* CFFINDEX.swift */,
 				0A8535321F591C57006FB85D /* CFFDICT.swift */,
 				0A8535361F59543E006FB85D /* CFFFDSelect.swift */,
@@ -1019,6 +1022,7 @@
 				0AD3E62F1F53D9FC003CC21A /* Font.swift in Sources */,
 				0AB23E461F22E4980033462E /* RawBitmap.swift in Sources */,
 				0A80D1481E66A7000003BB44 /* RangeSet.swift in Sources */,
+				0A8F4F6D1F6273390062FD11 /* CFFCharStrings.swift in Sources */,
 				0A52E2DF1E60266A0065EED6 /* PDFLZWDecode.swift in Sources */,
 				0A8535311F5911D0006FB85D /* CFF2Decoder.swift in Sources */,
 				0A9F99441F56734A0008D36D /* SFNTNAME.swift in Sources */,

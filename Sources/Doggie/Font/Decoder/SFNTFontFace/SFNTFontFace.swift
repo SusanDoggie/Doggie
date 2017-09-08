@@ -119,16 +119,11 @@ extension SFNTFontFace {
 
 extension SFNTFontFace {
     
-    func boundary(glyph: Int) -> Rect {
-        
-        if let boundary = glyf?.boundary(glyph: glyph) {
-            return boundary
-        }
-        
-        return Rect()
-    }
-    
     func shape(glyph: Int) -> [Shape.Component] {
+        
+        if let shape = cff?.shape(glyph: glyph) {
+            return shape
+        }
         
         if let shape = glyf?.outline(glyph: glyph)?.1 {
             return shape

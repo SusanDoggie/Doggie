@@ -27,7 +27,6 @@ import Foundation
 
 protocol FontFaceBase {
     
-    func boundary(glyph: Int) -> Rect
     func shape(glyph: Int) -> [Shape.Component]
     func glyph(unicode: UnicodeScalar) -> Int
     func advanceWidth(glyph: Int) -> Double
@@ -79,8 +78,9 @@ protocol FontFaceBase {
 
 public struct Font {
     
-    private let base: FontFaceBase
     private let details: Details
+    private let base: FontFaceBase
+    private let cache: Cache
     
     public var pointSize: Double = 0
     
@@ -88,12 +88,22 @@ public struct Font {
         guard let details = Details(base) else { return nil }
         self.details = details
         self.base = base
+        self.cache = Cache()
     }
     
     public init(font: Font, size: Double) {
         self.details = font.details
         self.base = font.base
+        self.cache = font.cache
         self.pointSize = size
+    }
+}
+
+extension Font {
+    
+    private class Cache {
+        
+        var glyphs: [Int: [Shape.Component]] = [:]
     }
 }
 
@@ -163,18 +173,28 @@ extension Font {
 
 extension Font {
     
-    public var numberOfGlyphs: Int {
-        return base.numberOfGlyphs
+    private func _shape(glyph: Int) -> [Shape.Component] {
+        if cache.glyphs[glyph] == nil {
+            cache.glyphs[glyph] = base.shape(glyph: glyph)
+        }
+        return cache.glyphs[glyph]!
     }
     
     public func boundary(forGlyph glyph: Int) -> Rect {
         let _pointScale = self._pointScale
-        let bound = base.boundary(glyph: glyph)
+        let bound = self._shape(glyph: glyph).reduce(nil) { $0?.union($1.boundary) ?? $1.boundary } ?? Rect()
         return Rect(origin: bound.origin * _pointScale, size: bound.size * _pointScale)
     }
     
     public func shape(forGlyph glyph: Int) -> Shape {
-        return Shape(base.shape(glyph: glyph).map { $0 * SDTransform.scale(_pointScale) })
+        return Shape(self._shape(glyph: glyph).map { $0 * SDTransform.scale(_pointScale) })
+    }
+}
+
+extension Font {
+    
+    public var numberOfGlyphs: Int {
+        return base.numberOfGlyphs
     }
     
     public func glyph(with unicode: UnicodeScalar) -> Int {

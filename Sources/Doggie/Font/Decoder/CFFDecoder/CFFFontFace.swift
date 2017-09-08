@@ -78,23 +78,4 @@ struct CFFFontFace {
             self.fdSelect = try CFFFDSelect(data.dropFirst(fdSelectOffset), self.charStrings.count)
         }
     }
-    
-    func fontDICT(glyph: UInt16) -> CFFFontDICT {
-        guard let fdSelect = self.fdSelect else { return self.DICT }
-        guard let fontDICTArray = self.fontDICTArray else { return self.DICT }
-        guard let index = fdSelect.fdIndex(glyph: glyph), index < fontDICTArray.count else { return self.DICT }
-        return fontDICTArray[Int(index)]
-    }
-    
-    func subroutineBias(_ subroutine: CFFINDEX) -> Int {
-        if self.charstringType == 1 {
-            return 0
-        } else if subroutine.count < 1240 {
-            return 107
-        } else if subroutine.count < 33900 {
-            return 1131
-        } else {
-            return 32768
-        }
-    }
 }
