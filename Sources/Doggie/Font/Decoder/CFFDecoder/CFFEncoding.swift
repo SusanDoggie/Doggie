@@ -1,5 +1,5 @@
 //
-//  CFFCharsets.swift
+//  CFFEncoding.swift
 //
 //  The MIT License
 //  Copyright (c) 2015 - 2017 Susan Cheng. All rights reserved.
@@ -95,40 +95,3 @@ private let CFFExpertEncoding: [UInt16] = [
     371, 372, 373, 374, 375, 376, 377, 378
 ]
 
-struct CFFCharsets {
-    
-    var nGlyphs: Int
-    var format: UInt8
-    
-    var data: Data
-    
-    init(_ data: Data, _ nGlyphs: Int) throws {
-        
-        var data = data
-        
-        self.nGlyphs = nGlyphs
-        self.format = try data.decode(UInt8.self)
-        
-        switch format {
-        case 0:
-            
-            let size = Int(nGlyphs - 1) << 1
-            self.data = data.popFirst(size)
-            guard self.data.count == size else { throw DataDecodeError.endOfData }
-            
-        case 1:
-            
-            let size = Int(nGlyphs - 1) * 3
-            self.data = data.popFirst(size)
-            guard self.data.count == size else { throw DataDecodeError.endOfData }
-            
-        case 2:
-            
-            let size = Int(nGlyphs - 1) << 2
-            self.data = data.popFirst(size)
-            guard self.data.count == size else { throw DataDecodeError.endOfData }
-            
-        default: throw FontCollection.Error.InvalidFormat("Invalid CFF Charsets format.")
-        }
-    }
-}
