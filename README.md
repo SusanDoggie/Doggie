@@ -114,10 +114,10 @@ Check out the Doggie.xcworkspace and build the project. It's suggested building 
 - [x] TrueType
 - [x] TrueType/TTC
 - [x] OpenType
-- [ ] OpenType/CFF
+- [x] OpenType/CFF
 - [ ] OpenType/CFF2
 - [x] WOFF
-- [ ] WOFF/CFF
+- [x] WOFF/CFF
 - [ ] WOFF/CFF2
 - [ ] WOFF2
 
@@ -134,7 +134,7 @@ Check out the Doggie.xcworkspace and build the project. It's suggested building 
 - [x] VMTX
 - [x] LOCA
 - [x] GLYF
-- [ ] CFF
+- [x] CFF
 - [ ] CFF2
 - [ ] KERN
 - [ ] GSUB
