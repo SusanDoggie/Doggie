@@ -93,15 +93,11 @@ extension CFFFontFace {
                         
                         return
                         
-                    case 19:
-                        
-                        break
-                        
                     case 1, 3, 18, 23:
                         
                         _stems()
                         
-                    case 20:
+                    case 19, 20:
                         
                         _stems()
                         data.removeFirst((_stems_count + 7) >> 3)
@@ -230,12 +226,12 @@ extension CFFFontFace {
                             guard let dy1 = stack.popFirst() else { throw ParserError() }
                             guard let dx2 = stack.popFirst() else { throw ParserError() }
                             guard let dy2 = stack.popFirst() else { throw ParserError() }
-                            guard let dx = stack.popFirst() else { throw ParserError() }
-                            guard let dy = stack.popFirst() else { throw ParserError() }
+                            guard let dx3 = stack.popFirst() else { throw ParserError() }
+                            guard let dy3 = stack.popFirst() else { throw ParserError() }
                             
                             let c1 = point + Point(x: dx1, y: dy1)
                             let c2 = c1 + Point(x: dx2, y: dy2)
-                            point = c2 + Point(x: dx, y: dy)
+                            point = c2 + Point(x: dx3, y: dy3)
                             component.append(.cubic(c1, c2, point))
                         }
                         
