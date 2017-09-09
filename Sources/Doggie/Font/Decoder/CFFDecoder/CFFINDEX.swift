@@ -91,8 +91,6 @@ struct CFFINDEX : DataDecodable, RandomAccessCollection {
     subscript(position: Int) -> Data {
         precondition(position < count, "Index out of range.")
         let range = CFFINDEX._offset(position, offSize, offset)
-        let lowerBound = data.startIndex + range.lowerBound
-        let upperBound = data.startIndex + range.upperBound
-        return data[lowerBound..<upperBound]
+        return data.dropFirst(range.lowerBound).prefix(range.count)
     }
 }
