@@ -115,9 +115,9 @@ extension CFFFontFace {
                         guard !tracing.0.contains(codeIndex) else { throw ParserError() }
                         
                         var tracing = tracing
-                        tracing.0.insert(glyph)
+                        tracing.0.insert(codeIndex)
                         
-                        if subroutine.count > codeIndex {
+                        if codeIndex < subroutine.count {
                             try _parser(subroutine[codeIndex], tracing: tracing)
                         }
                         
@@ -132,9 +132,9 @@ extension CFFFontFace {
                             guard !tracing.1.contains(codeIndex) else { throw ParserError() }
                             
                             var tracing = tracing
-                            tracing.1.insert(glyph)
+                            tracing.1.insert(codeIndex)
                             
-                            if pSubroutine.count > codeIndex {
+                            if codeIndex < pSubroutine.count {
                                 try _parser(pSubroutine[codeIndex], tracing: tracing)
                             }
                         }
