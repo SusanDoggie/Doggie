@@ -116,12 +116,7 @@ extension Font {
         let uniqueName: String?
         let familyName: String?
         let faceName: String?
-        let designer: String?
-        let version: String?
-        let trademark: String?
-        let manufacturer: String?
-        let license: String?
-        let copyright: String?
+        let familyClass: FamilyClass?
         
         init?(_ base: FontFaceBase) {
             guard let fontName = base.fontName else { return nil }
@@ -130,12 +125,7 @@ extension Font {
             self.uniqueName = base.uniqueName
             self.familyName = base.familyName
             self.faceName = base.faceName
-            self.designer = base.designer
-            self.version = base.version
-            self.trademark = base.trademark
-            self.manufacturer = base.manufacturer
-            self.license = base.license
-            self.copyright = base.copyright
+            self.familyClass = base.familyClass
         }
     }
 }
@@ -301,28 +291,28 @@ extension Font {
     }
     
     public var familyClass: FamilyClass? {
-        return base.familyClass
+        return details.familyClass
     }
     
     public var designer: String? {
-        return details.designer
+        return base.designer
     }
     
     public var version: String? {
-        return details.version
+        return base.version
     }
     
     public var trademark: String? {
-        return details.trademark
+        return base.trademark
     }
     public var manufacturer: String? {
-        return details.manufacturer
+        return base.manufacturer
     }
     public var license: String? {
-        return details.license
+        return base.license
     }
     public var copyright: String? {
-        return details.copyright
+        return base.copyright
     }
     
 }
