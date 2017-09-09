@@ -485,38 +485,31 @@ extension CFFFontFace {
                         
                     case 28:
                         
+                        stack.append(Double(try data.decode(BEInt16.self).representingValue))
+                        
+                    case 32...246:
+                        
+                        stack.append(Double(Int32(code) - 139))
+                        
+                    case 247...250:
+                        
                         let b1 = try data.decode(UInt8.self)
-                        let b2 = try data.decode(UInt8.self)
+                        let b2 = (Int32(code) - 247) << 8 + Int32(b1) + 108
                         
-                        stack.append(Double(((Int(b1) << 24) | (Int(b2) << 16)) >> 16))
+                        stack.append(Double(b2))
                         
-                    default:
-                        if code < 32 {
-                            
-                            throw ParserError()
-                            
-                        } else if code < 247 {
-                            
-                            stack.append(Double(code) - 139)
-                            
-                        } else if code < 251 {
-                            
-                            let b1 = try data.decode(UInt8.self)
-                            
-                            stack.append((Double(code) - 247) * 256 + Double(b1) + 108)
-                            
-                        } else if code < 255 {
-                            
-                            let b1 = try data.decode(UInt8.self)
-                            
-                            stack.append(-(Double(code) - 251) * 256 - Double(b1) - 108)
-                            
-                        } else {
-                            
-                            let b1 = try data.decode(Fixed16Number<BEInt32>.self)
-                            
-                            stack.append(b1.representingValue)
-                        }
+                    case 251...254:
+                        
+                        let b1 = try data.decode(UInt8.self)
+                        let b2 = -(Int32(code) - 251) << 8 - Int32(b1) - 108
+                        
+                        stack.append(Double(b2))
+                        
+                    case 255:
+                        
+                        stack.append(try data.decode(Fixed16Number<BEInt32>.self).representingValue)
+                        
+                    default: throw ParserError()
                     }
                     
                 }
