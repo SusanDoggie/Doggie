@@ -27,7 +27,7 @@ let PingFang = try FontCollection(data: try Data(contentsOf: URL(fileURLWithPath
 
 if let font = PingFang.first?.with(size: 64) {
     
-    let string = "Doggie\u{0301}".precomposedStringWithCompatibilityMapping
+    let string = "中文字".precomposedStringWithCompatibilityMapping
     
     let glyphs = string.unicodeScalars.map { font.glyph(with: $0) }
     let advances = glyphs.map { font.advanceWidth(forGlyph: $0) }.scan(0, +)
