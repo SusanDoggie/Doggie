@@ -504,6 +504,7 @@ extension PDFDocument {
         var sign: Bool?
         var int: Int64 = 0
         var float = 0.0
+        var fpow = 1.0
         var fflag = false
         
         for (pos, d) in data.indexed().suffix(from: position) {
@@ -527,7 +528,8 @@ extension PDFDocument {
             case 48...57:
                 sign = sign ?? false
                 if fflag {
-                    float = (float + Double(d - 48)) / 10
+                    fpow /= 10
+                    float += Double(d - 48) * fpow
                 } else {
                     int = int * 10 + Int64(d - 48)
                 }
