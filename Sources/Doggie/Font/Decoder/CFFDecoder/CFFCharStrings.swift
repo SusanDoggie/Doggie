@@ -88,13 +88,71 @@ extension CFFFontFace {
                 while let code = try? data.decode(UInt8.self) {
                     
                     switch code {
-                    case 1:
+                        
+                    case 11, 14:
+                        
+                        return
+                        
+                    case 19:
+                        
+                        break
+                        
+                    case 1, 3, 18, 23:
                         
                         _stems()
                         
-                    case 3:
+                    case 20:
                         
                         _stems()
+                        data.removeFirst((_stems_count + 7) >> 3)
+                        
+                    case 10:
+                        
+                        guard let code = stack.popLast() else { throw ParserError() }
+                        
+                        let codeIndex = Int(code) + subroutineBias
+                        
+                        guard !tracing.0.contains(codeIndex) else { throw ParserError() }
+                        
+                        var tracing = tracing
+                        tracing.0.insert(glyph)
+                        
+                        if subroutine.count > codeIndex {
+                            try _parser(subroutine[codeIndex], tracing: tracing)
+                        }
+                        
+                    case 29:
+                        
+                        guard let code = stack.popLast() else { throw ParserError() }
+                        
+                        if let pSubroutine = pSubroutine, let pSubroutineBias = pSubroutineBias {
+                            
+                            let codeIndex = Int(code) + pSubroutineBias
+                            
+                            guard !tracing.1.contains(codeIndex) else { throw ParserError() }
+                            
+                            var tracing = tracing
+                            tracing.1.insert(glyph)
+                            
+                            if pSubroutine.count > codeIndex {
+                                try _parser(pSubroutine[codeIndex], tracing: tracing)
+                            }
+                        }
+                        
+                    case 22:
+                        
+                        if stack.count > 1 && !flag {
+                            stack.removeFirst()
+                            flag = true
+                        }
+                        
+                        guard let dx = stack.popLast() else { throw ParserError() }
+                        
+                        point.x += dx
+                        
+                        components.append(component)
+                        component.removeAll(keepingCapacity: true)
+                        component.start = point
                         
                     case 4:
                         
@@ -111,16 +169,22 @@ extension CFFFontFace {
                         component.removeAll(keepingCapacity: true)
                         component.start = point
                         
-                    case 5:
+                    case 21:
                         
-                        while let dx = stack.popFirst() {
-                            
-                            guard let dy = stack.popFirst() else { throw ParserError() }
-                            
-                            point.x += dx
-                            point.y += dy
-                            component.append(.line(point))
+                        if stack.count > 2 && !flag {
+                            stack.removeFirst()
+                            flag = true
                         }
+                        
+                        guard let dy = stack.popLast() else { throw ParserError() }
+                        guard let dx = stack.popLast() else { throw ParserError() }
+                        
+                        point.x += dx
+                        point.y += dy
+                        
+                        components.append(component)
+                        component.removeAll(keepingCapacity: true)
+                        component.start = point
                         
                     case 6:
                         
@@ -148,6 +212,17 @@ extension CFFFontFace {
                             }
                         }
                         
+                    case 5:
+                        
+                        while let dx = stack.popFirst() {
+                            
+                            guard let dy = stack.popFirst() else { throw ParserError() }
+                            
+                            point.x += dx
+                            point.y += dy
+                            component.append(.line(point))
+                        }
+                        
                     case 8:
                         
                         while let dx1 = stack.popFirst() {
@@ -164,24 +239,147 @@ extension CFFFontFace {
                             component.append(.cubic(c1, c2, point))
                         }
                         
-                    case 10:
+                    case 24:
                         
-                        guard let code = stack.popLast() else { throw ParserError() }
-                        
-                        let codeIndex = Int(code) + subroutineBias
-                        
-                        guard !tracing.0.contains(codeIndex) else { throw ParserError() }
-                        
-                        var tracing = tracing
-                        tracing.0.insert(glyph)
-                        
-                        if subroutine.count > codeIndex {
-                            try _parser(subroutine[codeIndex], tracing: tracing)
+                        while stack.count > 2 {
+                            
+                            guard let dx1 = stack.popFirst() else { throw ParserError() }
+                            guard let dy1 = stack.popFirst() else { throw ParserError() }
+                            guard let dx2 = stack.popFirst() else { throw ParserError() }
+                            guard let dy2 = stack.popFirst() else { throw ParserError() }
+                            guard let dx3 = stack.popFirst() else { throw ParserError() }
+                            guard let dy3 = stack.popFirst() else { throw ParserError() }
+                            
+                            let c1 = point + Point(x: dx1, y: dy1)
+                            let c2 = c1 + Point(x: dx2, y: dy2)
+                            point = c2 + Point(x: dx3, y: dy3)
+                            component.append(.cubic(c1, c2, point))
                         }
                         
-                    case 11:
+                        guard let dx = stack.popFirst() else { throw ParserError() }
+                        guard let dy = stack.popFirst() else { throw ParserError() }
                         
-                        return
+                        point.x += dx
+                        point.y += dy
+                        component.append(.line(point))
+                        
+                    case 25:
+                        
+                        while stack.count > 6 {
+                            
+                            guard let dx = stack.popFirst() else { throw ParserError() }
+                            guard let dy = stack.popFirst() else { throw ParserError() }
+                            
+                            point.x += dx
+                            point.y += dy
+                            component.append(.line(point))
+                        }
+                        
+                        guard let dx1 = stack.popFirst() else { throw ParserError() }
+                        guard let dy1 = stack.popFirst() else { throw ParserError() }
+                        guard let dx2 = stack.popFirst() else { throw ParserError() }
+                        guard let dy2 = stack.popFirst() else { throw ParserError() }
+                        guard let dx3 = stack.popFirst() else { throw ParserError() }
+                        guard let dy3 = stack.popFirst() else { throw ParserError() }
+                        
+                        let c1 = point + Point(x: dx1, y: dy1)
+                        let c2 = c1 + Point(x: dx2, y: dy2)
+                        point = c2 + Point(x: dx3, y: dy3)
+                        component.append(.cubic(c1, c2, point))
+                        
+                    case 26:
+                        
+                        if stack.count & 1 == 1 {
+                            guard let dx = stack.popFirst() else { throw ParserError() }
+                            point.x += dx
+                        }
+                        
+                        while let dy1 = stack.popFirst() {
+                            
+                            guard let dx2 = stack.popFirst() else { throw ParserError() }
+                            guard let dy2 = stack.popFirst() else { throw ParserError() }
+                            guard let dy3 = stack.popFirst() else { throw ParserError() }
+                            
+                            let c1 = point + Point(x: 0, y: dy1)
+                            let c2 = c1 + Point(x: dx2, y: dy2)
+                            point = c2 + Point(x: 0, y: dy3)
+                            component.append(.cubic(c1, c2, point))
+                        }
+                        
+                    case 27:
+                        
+                        if stack.count & 1 == 1 {
+                            guard let dy = stack.popFirst() else { throw ParserError() }
+                            point.y += dy
+                        }
+                        
+                        while let dx1 = stack.popFirst() {
+                            
+                            guard let dx2 = stack.popFirst() else { throw ParserError() }
+                            guard let dy2 = stack.popFirst() else { throw ParserError() }
+                            guard let dx3 = stack.popFirst() else { throw ParserError() }
+                            
+                            let c1 = point + Point(x: dx1, y: 0)
+                            let c2 = c1 + Point(x: dx2, y: dy2)
+                            point = c2 + Point(x: dx3, y: 0)
+                            component.append(.cubic(c1, c2, point))
+                        }
+                        
+                    case 30:
+                        
+                        while let dy1 = stack.popFirst() {
+                            
+                            guard let dx2 = stack.popFirst() else { throw ParserError() }
+                            guard let dy2 = stack.popFirst() else { throw ParserError() }
+                            guard let dx3 = stack.popFirst() else { throw ParserError() }
+                            let dy3 = stack.count == 1 ? stack.popFirst()! : 0
+                            
+                            let c1 = point + Point(x: 0, y: dy1)
+                            let c2 = c1 + Point(x: dx2, y: dy2)
+                            point = c2 + Point(x: dx3, y: dy3)
+                            component.append(.cubic(c1, c2, point))
+                            
+                            if let dx1 = stack.popFirst() {
+                                
+                                guard let dx2 = stack.popFirst() else { throw ParserError() }
+                                guard let dy2 = stack.popFirst() else { throw ParserError() }
+                                guard let dy3 = stack.popFirst() else { throw ParserError() }
+                                let dx3 = stack.count == 1 ? stack.popFirst()! : 0
+                                
+                                let c1 = point + Point(x: dx1, y: 0)
+                                let c2 = c1 + Point(x: dx2, y: dy2)
+                                point = c2 + Point(x: dx3, y: dy3)
+                                component.append(.cubic(c1, c2, point))
+                            }
+                        }
+                        
+                    case 31:
+                        
+                        while let dx1 = stack.popFirst() {
+                            
+                            guard let dx2 = stack.popFirst() else { throw ParserError() }
+                            guard let dy2 = stack.popFirst() else { throw ParserError() }
+                            guard let dy3 = stack.popFirst() else { throw ParserError() }
+                            let dx3 = stack.count == 1 ? stack.popFirst()! : 0
+                            
+                            let c1 = point + Point(x: dx1, y: 0)
+                            let c2 = c1 + Point(x: dx2, y: dy2)
+                            point = c2 + Point(x: dx3, y: dy3)
+                            component.append(.cubic(c1, c2, point))
+                            
+                            if let dy1 = stack.popFirst() {
+                                
+                                guard let dx2 = stack.popFirst() else { throw ParserError() }
+                                guard let dy2 = stack.popFirst() else { throw ParserError() }
+                                guard let dx3 = stack.popFirst() else { throw ParserError() }
+                                let dy3 = stack.count == 1 ? stack.popFirst()! : 0
+                                
+                                let c1 = point + Point(x: 0, y: dy1)
+                                let c2 = c1 + Point(x: dx2, y: dy2)
+                                point = c2 + Point(x: dx3, y: dy3)
+                                component.append(.cubic(c1, c2, point))
+                            }
+                        }
                         
                     case 12:
                         
@@ -289,231 +487,12 @@ extension CFFFontFace {
                         default: throw ParserError()
                         }
                         
-                    case 14:
-                        
-                        if stack.count != 0 && !flag {
-                            stack.removeFirst()
-                            flag = true
-                        }
-                        
-                        components.append(component)
-                        component.removeAll(keepingCapacity: true)
-                        
-                    case 18:
-                        
-                        _stems()
-                        
-                    case 19:
-                        
-                        break
-                        
-                    case 20:
-                        
-                        _stems()
-                        data.removeFirst((_stems_count + 7) >> 3)
-                        
-                    case 21:
-                        
-                        if stack.count > 2 && !flag {
-                            stack.removeFirst()
-                            flag = true
-                        }
-                        
-                        guard let dx = stack.popLast() else { throw ParserError() }
-                        guard let dy = stack.popLast() else { throw ParserError() }
-                        
-                        point.x += dx
-                        point.y += dy
-                        
-                        components.append(component)
-                        component.removeAll(keepingCapacity: true)
-                        component.start = point
-                        
-                    case 22:
-                        
-                        if stack.count > 1 && !flag {
-                            stack.removeFirst()
-                            flag = true
-                        }
-                        
-                        guard let dx = stack.popLast() else { throw ParserError() }
-                        
-                        point.x += dx
-                        
-                        components.append(component)
-                        component.removeAll(keepingCapacity: true)
-                        component.start = point
-                        
-                    case 23:
-                        
-                        _stems()
-                        
-                    case 24:
-                        
-                        while stack.count > 2 {
-                            
-                            guard let dx1 = stack.popFirst() else { throw ParserError() }
-                            guard let dy1 = stack.popFirst() else { throw ParserError() }
-                            guard let dx2 = stack.popFirst() else { throw ParserError() }
-                            guard let dy2 = stack.popFirst() else { throw ParserError() }
-                            guard let dx3 = stack.popFirst() else { throw ParserError() }
-                            guard let dy3 = stack.popFirst() else { throw ParserError() }
-                            
-                            let c1 = point + Point(x: dx1, y: dy1)
-                            let c2 = c1 + Point(x: dx2, y: dy2)
-                            point = c2 + Point(x: dx3, y: dy3)
-                            component.append(.cubic(c1, c2, point))
-                        }
-                        
-                        guard let dx = stack.popFirst() else { throw ParserError() }
-                        guard let dy = stack.popFirst() else { throw ParserError() }
-                        
-                        point.x += dx
-                        point.y += dy
-                        component.append(.line(point))
-                        
-                    case 25:
-                        
-                        while stack.count > 6 {
-                            
-                            guard let dx = stack.popFirst() else { throw ParserError() }
-                            guard let dy = stack.popFirst() else { throw ParserError() }
-                            
-                            point.x += dx
-                            point.y += dy
-                            component.append(.line(point))
-                        }
-                        
-                        guard let dx1 = stack.popFirst() else { throw ParserError() }
-                        guard let dy1 = stack.popFirst() else { throw ParserError() }
-                        guard let dx2 = stack.popFirst() else { throw ParserError() }
-                        guard let dy2 = stack.popFirst() else { throw ParserError() }
-                        guard let dx3 = stack.popFirst() else { throw ParserError() }
-                        guard let dy3 = stack.popFirst() else { throw ParserError() }
-                        
-                        let c1 = point + Point(x: dx1, y: dy1)
-                        let c2 = c1 + Point(x: dx2, y: dy2)
-                        point = c2 + Point(x: dx3, y: dy3)
-                        component.append(.cubic(c1, c2, point))
-                        
-                    case 26:
-                        
-                        if stack.count & 1 == 1 {
-                            guard let dx = stack.popFirst() else { throw ParserError() }
-                            point.x += dx
-                        }
-                        
-                        while let dy1 = stack.popFirst() {
-                            
-                            guard let dx2 = stack.popFirst() else { throw ParserError() }
-                            guard let dy2 = stack.popFirst() else { throw ParserError() }
-                            guard let dy3 = stack.popFirst() else { throw ParserError() }
-                            
-                            let c1 = point + Point(x: 0, y: dy1)
-                            let c2 = c1 + Point(x: dx2, y: dy2)
-                            point = c2 + Point(x: 0, y: dy3)
-                            component.append(.cubic(c1, c2, point))
-                        }
-                        
-                    case 27:
-                        
-                        if stack.count & 1 == 1 {
-                            guard let dy = stack.popFirst() else { throw ParserError() }
-                            point.y += dy
-                        }
-                        
-                        while let dx1 = stack.popFirst() {
-                            
-                            guard let dx2 = stack.popFirst() else { throw ParserError() }
-                            guard let dy2 = stack.popFirst() else { throw ParserError() }
-                            guard let dx3 = stack.popFirst() else { throw ParserError() }
-                            
-                            let c1 = point + Point(x: dx1, y: 0)
-                            let c2 = c1 + Point(x: dx2, y: dy2)
-                            point = c2 + Point(x: dx3, y: 0)
-                            component.append(.cubic(c1, c2, point))
-                        }
-                        
                     case 28:
                         
                         let b1 = try data.decode(UInt8.self)
                         let b2 = try data.decode(UInt8.self)
                         
                         stack.append(Double(((Int(b1) << 24) | (Int(b2) << 16)) >> 16))
-                        
-                    case 29:
-                        
-                        guard let code = stack.popLast() else { throw ParserError() }
-                        
-                        if let pSubroutine = pSubroutine, let pSubroutineBias = pSubroutineBias {
-                            
-                            let codeIndex = Int(code) + pSubroutineBias
-                            
-                            guard !tracing.1.contains(codeIndex) else { throw ParserError() }
-                            
-                            var tracing = tracing
-                            tracing.1.insert(glyph)
-                            
-                            if pSubroutine.count > codeIndex {
-                                try _parser(pSubroutine[codeIndex], tracing: tracing)
-                            }
-                        }
-                        
-                    case 30:
-                        
-                        while let dy1 = stack.popFirst() {
-                            
-                            guard let dx2 = stack.popFirst() else { throw ParserError() }
-                            guard let dy2 = stack.popFirst() else { throw ParserError() }
-                            guard let dx3 = stack.popFirst() else { throw ParserError() }
-                            let dy3 = stack.count == 1 ? stack.popFirst()! : 0
-                            
-                            let c1 = point + Point(x: 0, y: dy1)
-                            let c2 = c1 + Point(x: dx2, y: dy2)
-                            point = c2 + Point(x: dx3, y: dy3)
-                            component.append(.cubic(c1, c2, point))
-                            
-                            if let dx1 = stack.popFirst() {
-                                
-                                guard let dx2 = stack.popFirst() else { throw ParserError() }
-                                guard let dy2 = stack.popFirst() else { throw ParserError() }
-                                guard let dy3 = stack.popFirst() else { throw ParserError() }
-                                let dx3 = stack.count == 1 ? stack.popFirst()! : 0
-                                
-                                let c1 = point + Point(x: dx1, y: 0)
-                                let c2 = c1 + Point(x: dx2, y: dy2)
-                                point = c2 + Point(x: dx3, y: dy3)
-                                component.append(.cubic(c1, c2, point))
-                            }
-                        }
-                        
-                    case 31:
-                        
-                        while let dx1 = stack.popFirst() {
-                            
-                            guard let dx2 = stack.popFirst() else { throw ParserError() }
-                            guard let dy2 = stack.popFirst() else { throw ParserError() }
-                            guard let dy3 = stack.popFirst() else { throw ParserError() }
-                            let dx3 = stack.count == 1 ? stack.popFirst()! : 0
-                            
-                            let c1 = point + Point(x: dx1, y: 0)
-                            let c2 = c1 + Point(x: dx2, y: dy2)
-                            point = c2 + Point(x: dx3, y: dy3)
-                            component.append(.cubic(c1, c2, point))
-                            
-                            if let dy1 = stack.popFirst() {
-                                
-                                guard let dx2 = stack.popFirst() else { throw ParserError() }
-                                guard let dy2 = stack.popFirst() else { throw ParserError() }
-                                guard let dx3 = stack.popFirst() else { throw ParserError() }
-                                let dy3 = stack.count == 1 ? stack.popFirst()! : 0
-                                
-                                let c1 = point + Point(x: 0, y: dy1)
-                                let c2 = c1 + Point(x: dx2, y: dy2)
-                                point = c2 + Point(x: dx3, y: dy3)
-                                component.append(.cubic(c1, c2, point))
-                            }
-                        }
                         
                     default:
                         if code < 32 {
@@ -551,6 +530,11 @@ extension CFFFontFace {
             do {
                 
                 try _parser(charStrings[glyph], tracing: ([], []))
+                
+                if component.count != 0 {
+                    components.append(component)
+                }
+                
                 return components
                 
             } catch {

@@ -175,7 +175,7 @@ extension Font {
     
     private func _shape(glyph: Int) -> [Shape.Component] {
         if cache.glyphs[glyph] == nil {
-            cache.glyphs[glyph] = base.shape(glyph: glyph)
+            cache.glyphs[glyph] = base.shape(glyph: glyph).filter { $0.count != 0 }
         }
         return cache.glyphs[glyph]!
     }
