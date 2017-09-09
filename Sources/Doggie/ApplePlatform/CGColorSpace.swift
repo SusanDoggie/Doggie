@@ -109,7 +109,7 @@
                                 
                             } else if url.isFileURL {
                                 
-                                if let data = try? Data(contentsOf: url), let colorSpace = try? AnyColorSpace(iccData: data) {
+                                if let data = try? Data(contentsOf: url, options: .mappedIfSafe), let colorSpace = try? AnyColorSpace(iccData: data) {
                                     availableColorSpaces.append(colorSpace)
                                 }
                             }

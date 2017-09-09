@@ -192,7 +192,7 @@ extension FontCollection {
 extension FontCollection : CustomStringConvertible {
     
     public var description: String {
-        return "\(fonts.map { $0.font })"
+        return "FontCollection(count: \(fonts.count))"
     }
 }
 

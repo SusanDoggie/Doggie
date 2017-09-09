@@ -3,35 +3,47 @@
    version = "3.0">
    <TimelineItems>
       <LoggerValueHistoryTimelineItem
-         documentLocation = "file:///Users/CloudDesign/Doggie/Playground.playground/Pages/Font.xcplaygroundpage#CharacterRangeLen=239&amp;CharacterRangeLoc=471&amp;EndingColumnNumber=9&amp;EndingLineNumber=22&amp;StartingColumnNumber=4&amp;StartingLineNumber=13&amp;Timestamp=526617943.911617"
+         documentLocation = "file:///Users/CloudDesign/Doggie/Playground.playground/Pages/Font.xcplaygroundpage#CharacterRangeLen=239&amp;CharacterRangeLoc=542&amp;EndingColumnNumber=45&amp;EndingLineNumber=27&amp;StartingColumnNumber=55&amp;StartingLineNumber=20&amp;Timestamp=526621682.895776"
          selectedRepresentationIndex = "0"
          shouldTrackSuperviewWidth = "NO">
       </LoggerValueHistoryTimelineItem>
       <LoggerValueHistoryTimelineItem
-         documentLocation = "file:///Users/CloudDesign/Doggie/Playground.playground/Pages/Font.xcplaygroundpage#CharacterRangeLen=239&amp;CharacterRangeLoc=471&amp;EndingColumnNumber=9&amp;EndingLineNumber=22&amp;StartingColumnNumber=4&amp;StartingLineNumber=13&amp;Timestamp=526617943.911755"
+         documentLocation = "file:///Users/CloudDesign/Doggie/Playground.playground/Pages/Font.xcplaygroundpage#CharacterRangeLen=239&amp;CharacterRangeLoc=542&amp;EndingColumnNumber=45&amp;EndingLineNumber=27&amp;StartingColumnNumber=55&amp;StartingLineNumber=20&amp;Timestamp=526621682.895911"
          selectedRepresentationIndex = "0"
          shouldTrackSuperviewWidth = "NO">
       </LoggerValueHistoryTimelineItem>
       <LoggerValueHistoryTimelineItem
-         documentLocation = "file:///Users/CloudDesign/Doggie/Playground.playground/Pages/Font.xcplaygroundpage#CharacterRangeLen=5&amp;CharacterRangeLoc=706&amp;EndingColumnNumber=0&amp;EndingLineNumber=23&amp;StartingColumnNumber=5&amp;StartingLineNumber=22&amp;Timestamp=526617943.911849"
+         documentLocation = "file:///Users/CloudDesign/Doggie/Playground.playground/Pages/Font.xcplaygroundpage#CharacterRangeLen=5&amp;CharacterRangeLoc=777&amp;EndingColumnNumber=46&amp;EndingLineNumber=27&amp;StartingColumnNumber=41&amp;StartingLineNumber=27&amp;Timestamp=526621682.896006"
          selectedRepresentationIndex = "0"
          shouldTrackSuperviewWidth = "NO">
       </LoggerValueHistoryTimelineItem>
       <LoggerValueHistoryTimelineItem
-         documentLocation = "file:///Users/CloudDesign/Doggie/Playground.playground/Pages/Font.xcplaygroundpage#CharacterRangeLen=5&amp;CharacterRangeLoc=1337&amp;EndingColumnNumber=4&amp;EndingLineNumber=42&amp;StartingColumnNumber=4&amp;StartingLineNumber=41&amp;Timestamp=526617943.911941"
+         documentLocation = "file:///Users/CloudDesign/Doggie/Playground.playground/Pages/Font.xcplaygroundpage#CharacterRangeLen=0&amp;CharacterRangeLoc=805&amp;EndingColumnNumber=7&amp;EndingLineNumber=30&amp;StartingColumnNumber=7&amp;StartingLineNumber=30&amp;Timestamp=526621682.896099"
          lockedSize = "{453, 148}"
          selectedRepresentationIndex = "0"
          shouldTrackSuperviewWidth = "NO">
       </LoggerValueHistoryTimelineItem>
       <LoggerValueHistoryTimelineItem
-         documentLocation = "file:///Users/CloudDesign/Doggie/Playground.playground/Pages/Font.xcplaygroundpage#CharacterRangeLen=5&amp;CharacterRangeLoc=1341&amp;EndingColumnNumber=8&amp;EndingLineNumber=42&amp;StartingColumnNumber=3&amp;StartingLineNumber=42&amp;Timestamp=526617943.912049"
+         documentLocation = "file:///Users/CloudDesign/Doggie/Playground.playground/Pages/Font.xcplaygroundpage#CharacterRangeLen=0&amp;CharacterRangeLoc=805&amp;EndingColumnNumber=7&amp;EndingLineNumber=30&amp;StartingColumnNumber=7&amp;StartingLineNumber=30&amp;Timestamp=526621682.896195"
          lockedSize = "{372, 159}"
          selectedRepresentationIndex = "0"
          shouldTrackSuperviewWidth = "NO">
       </LoggerValueHistoryTimelineItem>
       <LoggerValueHistoryTimelineItem
-         documentLocation = "file:///Users/CloudDesign/Doggie/Playground.playground/Pages/Font.xcplaygroundpage#CharacterRangeLen=5&amp;CharacterRangeLoc=1343&amp;EndingColumnNumber=0&amp;EndingLineNumber=43&amp;StartingColumnNumber=5&amp;StartingLineNumber=42&amp;Timestamp=526617943.912213"
+         documentLocation = "file:///Users/CloudDesign/Doggie/Playground.playground/Pages/Font.xcplaygroundpage#CharacterRangeLen=0&amp;CharacterRangeLoc=805&amp;EndingColumnNumber=7&amp;EndingLineNumber=30&amp;StartingColumnNumber=7&amp;StartingLineNumber=30&amp;Timestamp=526621682.89629"
          selectedRepresentationIndex = "0"
+         shouldTrackSuperviewWidth = "NO">
+      </LoggerValueHistoryTimelineItem>
+      <LoggerValueHistoryTimelineItem
+         documentLocation = "file:///Users/CloudDesign/Doggie/Playground.playground/Pages/Font.xcplaygroundpage#CharacterRangeLen=5&amp;CharacterRangeLoc=798&amp;EndingColumnNumber=5&amp;EndingLineNumber=30&amp;StartingColumnNumber=0&amp;StartingLineNumber=30&amp;Timestamp=526621682.896391"
+         lockedSize = "{394, 445}"
+         selectedRepresentationIndex = "1"
+         shouldTrackSuperviewWidth = "NO">
+      </LoggerValueHistoryTimelineItem>
+      <LoggerValueHistoryTimelineItem
+         documentLocation = "file:///Users/CloudDesign/Doggie/Playground.playground/Pages/Font.xcplaygroundpage#CharacterRangeLen=5&amp;CharacterRangeLoc=803&amp;EndingColumnNumber=0&amp;EndingLineNumber=31&amp;StartingColumnNumber=5&amp;StartingLineNumber=30&amp;Timestamp=526621682.896488"
+         lockedSize = "{258, 612}"
+         selectedRepresentationIndex = "1"
          shouldTrackSuperviewWidth = "NO">
       </LoggerValueHistoryTimelineItem>
    </TimelineItems>
