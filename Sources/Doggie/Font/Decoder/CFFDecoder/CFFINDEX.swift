@@ -42,6 +42,8 @@ struct CFFINDEX : DataDecodable, RandomAccessCollection {
             
             self.offSize = try data.decode(UInt8.self)
             
+            guard 1...4 ~= offSize else { throw FontCollection.Error.InvalidFormat("Invalid CFF INDEX format.") }
+            
             let offsetSize = Int(offSize) * Int(_count + 1)
             self.offset = data.popFirst(offsetSize)
             guard offset.count == offsetSize else { throw DataDecodeError.endOfData }
@@ -74,7 +76,7 @@ struct CFFINDEX : DataDecodable, RandomAccessCollection {
             startIndex -= 1
             endIndex -= 1
             
-            return startIndex..<endIndex
+            return startIndex..<Swift.max(startIndex, endIndex)
         }
     }
     
