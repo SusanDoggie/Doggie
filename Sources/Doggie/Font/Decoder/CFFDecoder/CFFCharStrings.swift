@@ -102,7 +102,7 @@ extension CFFFontFace {
                         _stems()
                         data.removeFirst((_stems_count + 7) >> 3)
                         
-                    case 10:
+                    case 29:
                         
                         guard let code = stack.popLast() else { throw ParserError() }
                         
@@ -117,7 +117,7 @@ extension CFFFontFace {
                             try _parser(subroutine[codeIndex], tracing: tracing)
                         }
                         
-                    case 29:
+                    case 10:
                         
                         guard let code = stack.popLast() else { throw ParserError() }
                         
