@@ -47,6 +47,7 @@ struct CFFFontDICT {
 
 struct CFFFontFace {
     
+    var data: Data
     var name: String
     var string: CFFINDEX
     var subroutine: CFFINDEX
@@ -57,11 +58,12 @@ struct CFFFontFace {
     
     var encoding: CFFEncoding?
     
-    var fontDICTArray: [CFFFontDICT]?
+    var fontDICTArray: CFFINDEX?
     var fdSelect: CFFFDSelect?
     
     init(_ data: Data, _ name: String, _ DICT: CFFDICT, _ string: CFFINDEX, _ subroutine: CFFINDEX) throws {
         
+        self.data = data
         self.name = name
         self.string = string
         self.subroutine = subroutine
@@ -74,7 +76,7 @@ struct CFFFontFace {
         self.encoding = try DICT.encodingOffset.map { try CFFEncoding(data.dropFirst($0)) }
         
         if let fdArrayOffset = DICT.fdArrayOffset, let fdSelectOffset = DICT.fdSelectOffset {
-            self.fontDICTArray = try CFFINDEX(data.dropFirst(fdArrayOffset)).map { try CFFFontDICT(data, try CFFDICT($0)) }
+            self.fontDICTArray = try CFFINDEX(data.dropFirst(fdArrayOffset))
             self.fdSelect = try CFFFDSelect(data.dropFirst(fdSelectOffset), self.charStrings.count)
         }
     }
