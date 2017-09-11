@@ -75,6 +75,43 @@ public extension ClosedRange where Bound : BinaryFloatingPoint, Bound.RawSignifi
         return (Bound.random(includeOne: true) * diff) + lowerBound
     }
 }
+
+extension RandomAccessCollection where IndexDistance : FixedWidthInteger {
+    
+    /// Returns a random element in `self` or `nil` if the sequence is empty.
+    ///
+    /// - complexity: O(1).
+    @_inlineable
+    public func random() -> Element? {
+        switch count {
+        case 0: return nil
+        case 1: return self[self.startIndex]
+        default: return self[self.index(self.startIndex, offsetBy: random_uniform(count))]
+        }
+    }
+}
+
+extension MutableCollection where Self : RandomAccessCollection, IndexDistance : FixedWidthInteger {
+    
+    /// Shuffle `self` in-place.
+    @_inlineable
+    public mutating func shuffle() {
+        for i in self.indices.dropLast() {
+            swapAt(i, self.indices.suffix(from: i).random()!)
+        }
+    }
+}
+extension Sequence {
+    
+    /// Return an `Array` containing the shuffled elements of `self`.
+    @_inlineable
+    public func shuffled() -> [Element] {
+        var list = ContiguousArray(self)
+        list.shuffle()
+        return Array(list)
+    }
+}
+
 @_inlineable
 public func normal_distribution(mean: Double, variance: Double) -> Double {
     let u = 1 - Double.random(includeOne: false)
