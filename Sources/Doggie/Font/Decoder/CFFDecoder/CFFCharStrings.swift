@@ -61,7 +61,7 @@ extension CFFFontFace {
             var components: [Shape.Component] = []
             var component = Shape.Component(start: Point(), closed: true, segments: [])
             
-            var stack: ArraySlice<Double> = []
+            var stack: ArraySlice<Fixed16Number<Int32>> = []
             var _stems_count = 0
             var point = Point()
             var flag = false
@@ -104,36 +104,33 @@ extension CFFFontFace {
                         
                     case 29:
                         
-                        guard let code = stack.popLast() else { throw ParserError() }
+                        guard let code = stack.popLast()?.bitPattern else { throw ParserError() }
                         
-                        let codeIndex = Int(code) + subroutineBias
+                        let codeIndex = Int(code >> 16) + subroutineBias
                         
+                        guard subroutine.indices ~= codeIndex else { throw ParserError() }
                         guard !tracing.0.contains(codeIndex) else { throw ParserError() }
                         
                         var tracing = tracing
                         tracing.0.insert(codeIndex)
                         
-                        if codeIndex < subroutine.count {
-                            try _parser(subroutine[codeIndex], tracing: tracing)
-                        }
+                        try _parser(subroutine[codeIndex], tracing: tracing)
                         
                     case 10:
                         
-                        guard let code = stack.popLast() else { throw ParserError() }
+                        guard let code = stack.popLast()?.bitPattern else { throw ParserError() }
+                        guard let pSubroutine = pSubroutine else { throw ParserError() }
+                        guard let pSubroutineBias = pSubroutineBias else { throw ParserError() }
                         
-                        if let pSubroutine = pSubroutine, let pSubroutineBias = pSubroutineBias {
-                            
-                            let codeIndex = Int(code) + pSubroutineBias
-                            
-                            guard !tracing.1.contains(codeIndex) else { throw ParserError() }
-                            
-                            var tracing = tracing
-                            tracing.1.insert(codeIndex)
-                            
-                            if codeIndex < pSubroutine.count {
-                                try _parser(pSubroutine[codeIndex], tracing: tracing)
-                            }
-                        }
+                        let codeIndex = Int(code >> 16) + pSubroutineBias
+                        
+                        guard pSubroutine.indices ~= codeIndex else { throw ParserError() }
+                        guard !tracing.1.contains(codeIndex) else { throw ParserError() }
+                        
+                        var tracing = tracing
+                        tracing.1.insert(codeIndex)
+                        
+                        try _parser(pSubroutine[codeIndex], tracing: tracing)
                         
                     case 22:
                         
@@ -142,7 +139,7 @@ extension CFFFontFace {
                             flag = true
                         }
                         
-                        guard let dx = stack.popLast() else { throw ParserError() }
+                        guard let dx = stack.popLast()?.representingValue else { throw ParserError() }
                         
                         point.x += dx
                         
@@ -157,7 +154,7 @@ extension CFFFontFace {
                             flag = true
                         }
                         
-                        guard let dy = stack.popLast() else { throw ParserError() }
+                        guard let dy = stack.popLast()?.representingValue else { throw ParserError() }
                         
                         point.y += dy
                         
@@ -172,8 +169,8 @@ extension CFFFontFace {
                             flag = true
                         }
                         
-                        guard let dy = stack.popLast() else { throw ParserError() }
-                        guard let dx = stack.popLast() else { throw ParserError() }
+                        guard let dy = stack.popLast()?.representingValue else { throw ParserError() }
+                        guard let dx = stack.popLast()?.representingValue else { throw ParserError() }
                         
                         point.x += dx
                         point.y += dy
@@ -184,12 +181,12 @@ extension CFFFontFace {
                         
                     case 6:
                         
-                        while let dx = stack.popFirst() {
+                        while let dx = stack.popFirst()?.representingValue {
                             
                             point.x += dx
                             component.append(.line(point))
                             
-                            if let dy = stack.popFirst() {
+                            if let dy = stack.popFirst()?.representingValue {
                                 point.y += dy
                                 component.append(.line(point))
                             }
@@ -197,12 +194,12 @@ extension CFFFontFace {
                         
                     case 7:
                         
-                        while let dy = stack.popFirst() {
+                        while let dy = stack.popFirst()?.representingValue {
                             
                             point.y += dy
                             component.append(.line(point))
                             
-                            if let dx = stack.popFirst() {
+                            if let dx = stack.popFirst()?.representingValue {
                                 point.x += dx
                                 component.append(.line(point))
                             }
@@ -210,9 +207,9 @@ extension CFFFontFace {
                         
                     case 5:
                         
-                        while let dx = stack.popFirst() {
+                        while let dx = stack.popFirst()?.representingValue {
                             
-                            guard let dy = stack.popFirst() else { throw ParserError() }
+                            guard let dy = stack.popFirst()?.representingValue else { throw ParserError() }
                             
                             point.x += dx
                             point.y += dy
@@ -221,13 +218,13 @@ extension CFFFontFace {
                         
                     case 8:
                         
-                        while let dx1 = stack.popFirst() {
+                        while let dx1 = stack.popFirst()?.representingValue {
                             
-                            guard let dy1 = stack.popFirst() else { throw ParserError() }
-                            guard let dx2 = stack.popFirst() else { throw ParserError() }
-                            guard let dy2 = stack.popFirst() else { throw ParserError() }
-                            guard let dx3 = stack.popFirst() else { throw ParserError() }
-                            guard let dy3 = stack.popFirst() else { throw ParserError() }
+                            guard let dy1 = stack.popFirst()?.representingValue else { throw ParserError() }
+                            guard let dx2 = stack.popFirst()?.representingValue else { throw ParserError() }
+                            guard let dy2 = stack.popFirst()?.representingValue else { throw ParserError() }
+                            guard let dx3 = stack.popFirst()?.representingValue else { throw ParserError() }
+                            guard let dy3 = stack.popFirst()?.representingValue else { throw ParserError() }
                             
                             let c1 = point + Point(x: dx1, y: dy1)
                             let c2 = c1 + Point(x: dx2, y: dy2)
@@ -239,12 +236,12 @@ extension CFFFontFace {
                         
                         while stack.count > 2 {
                             
-                            guard let dx1 = stack.popFirst() else { throw ParserError() }
-                            guard let dy1 = stack.popFirst() else { throw ParserError() }
-                            guard let dx2 = stack.popFirst() else { throw ParserError() }
-                            guard let dy2 = stack.popFirst() else { throw ParserError() }
-                            guard let dx3 = stack.popFirst() else { throw ParserError() }
-                            guard let dy3 = stack.popFirst() else { throw ParserError() }
+                            guard let dx1 = stack.popFirst()?.representingValue else { throw ParserError() }
+                            guard let dy1 = stack.popFirst()?.representingValue else { throw ParserError() }
+                            guard let dx2 = stack.popFirst()?.representingValue else { throw ParserError() }
+                            guard let dy2 = stack.popFirst()?.representingValue else { throw ParserError() }
+                            guard let dx3 = stack.popFirst()?.representingValue else { throw ParserError() }
+                            guard let dy3 = stack.popFirst()?.representingValue else { throw ParserError() }
                             
                             let c1 = point + Point(x: dx1, y: dy1)
                             let c2 = c1 + Point(x: dx2, y: dy2)
@@ -252,8 +249,8 @@ extension CFFFontFace {
                             component.append(.cubic(c1, c2, point))
                         }
                         
-                        guard let dx = stack.popFirst() else { throw ParserError() }
-                        guard let dy = stack.popFirst() else { throw ParserError() }
+                        guard let dx = stack.popFirst()?.representingValue else { throw ParserError() }
+                        guard let dy = stack.popFirst()?.representingValue else { throw ParserError() }
                         
                         point.x += dx
                         point.y += dy
@@ -263,20 +260,20 @@ extension CFFFontFace {
                         
                         while stack.count > 6 {
                             
-                            guard let dx = stack.popFirst() else { throw ParserError() }
-                            guard let dy = stack.popFirst() else { throw ParserError() }
+                            guard let dx = stack.popFirst()?.representingValue else { throw ParserError() }
+                            guard let dy = stack.popFirst()?.representingValue else { throw ParserError() }
                             
                             point.x += dx
                             point.y += dy
                             component.append(.line(point))
                         }
                         
-                        guard let dx1 = stack.popFirst() else { throw ParserError() }
-                        guard let dy1 = stack.popFirst() else { throw ParserError() }
-                        guard let dx2 = stack.popFirst() else { throw ParserError() }
-                        guard let dy2 = stack.popFirst() else { throw ParserError() }
-                        guard let dx3 = stack.popFirst() else { throw ParserError() }
-                        guard let dy3 = stack.popFirst() else { throw ParserError() }
+                        guard let dx1 = stack.popFirst()?.representingValue else { throw ParserError() }
+                        guard let dy1 = stack.popFirst()?.representingValue else { throw ParserError() }
+                        guard let dx2 = stack.popFirst()?.representingValue else { throw ParserError() }
+                        guard let dy2 = stack.popFirst()?.representingValue else { throw ParserError() }
+                        guard let dx3 = stack.popFirst()?.representingValue else { throw ParserError() }
+                        guard let dy3 = stack.popFirst()?.representingValue else { throw ParserError() }
                         
                         let c1 = point + Point(x: dx1, y: dy1)
                         let c2 = c1 + Point(x: dx2, y: dy2)
@@ -286,15 +283,15 @@ extension CFFFontFace {
                     case 26:
                         
                         if stack.count & 1 == 1 {
-                            guard let dx = stack.popFirst() else { throw ParserError() }
+                            guard let dx = stack.popFirst()?.representingValue else { throw ParserError() }
                             point.x += dx
                         }
                         
-                        while let dy1 = stack.popFirst() {
+                        while let dy1 = stack.popFirst()?.representingValue {
                             
-                            guard let dx2 = stack.popFirst() else { throw ParserError() }
-                            guard let dy2 = stack.popFirst() else { throw ParserError() }
-                            guard let dy3 = stack.popFirst() else { throw ParserError() }
+                            guard let dx2 = stack.popFirst()?.representingValue else { throw ParserError() }
+                            guard let dy2 = stack.popFirst()?.representingValue else { throw ParserError() }
+                            guard let dy3 = stack.popFirst()?.representingValue else { throw ParserError() }
                             
                             let c1 = point + Point(x: 0, y: dy1)
                             let c2 = c1 + Point(x: dx2, y: dy2)
@@ -305,15 +302,15 @@ extension CFFFontFace {
                     case 27:
                         
                         if stack.count & 1 == 1 {
-                            guard let dy = stack.popFirst() else { throw ParserError() }
+                            guard let dy = stack.popFirst()?.representingValue else { throw ParserError() }
                             point.y += dy
                         }
                         
-                        while let dx1 = stack.popFirst() {
+                        while let dx1 = stack.popFirst()?.representingValue {
                             
-                            guard let dx2 = stack.popFirst() else { throw ParserError() }
-                            guard let dy2 = stack.popFirst() else { throw ParserError() }
-                            guard let dx3 = stack.popFirst() else { throw ParserError() }
+                            guard let dx2 = stack.popFirst()?.representingValue else { throw ParserError() }
+                            guard let dy2 = stack.popFirst()?.representingValue else { throw ParserError() }
+                            guard let dx3 = stack.popFirst()?.representingValue else { throw ParserError() }
                             
                             let c1 = point + Point(x: dx1, y: 0)
                             let c2 = c1 + Point(x: dx2, y: dy2)
@@ -323,24 +320,24 @@ extension CFFFontFace {
                         
                     case 30:
                         
-                        while let dy1 = stack.popFirst() {
+                        while let dy1 = stack.popFirst()?.representingValue {
                             
-                            guard let dx2 = stack.popFirst() else { throw ParserError() }
-                            guard let dy2 = stack.popFirst() else { throw ParserError() }
-                            guard let dx3 = stack.popFirst() else { throw ParserError() }
-                            let dy3 = stack.count == 1 ? stack.popFirst()! : 0
+                            guard let dx2 = stack.popFirst()?.representingValue else { throw ParserError() }
+                            guard let dy2 = stack.popFirst()?.representingValue else { throw ParserError() }
+                            guard let dx3 = stack.popFirst()?.representingValue else { throw ParserError() }
+                            let dy3 = stack.count == 1 ? stack.popFirst()!.representingValue : 0
                             
                             let c1 = point + Point(x: 0, y: dy1)
                             let c2 = c1 + Point(x: dx2, y: dy2)
                             point = c2 + Point(x: dx3, y: dy3)
                             component.append(.cubic(c1, c2, point))
                             
-                            if let dx1 = stack.popFirst() {
+                            if let dx1 = stack.popFirst()?.representingValue {
                                 
-                                guard let dx2 = stack.popFirst() else { throw ParserError() }
-                                guard let dy2 = stack.popFirst() else { throw ParserError() }
-                                guard let dy3 = stack.popFirst() else { throw ParserError() }
-                                let dx3 = stack.count == 1 ? stack.popFirst()! : 0
+                                guard let dx2 = stack.popFirst()?.representingValue else { throw ParserError() }
+                                guard let dy2 = stack.popFirst()?.representingValue else { throw ParserError() }
+                                guard let dy3 = stack.popFirst()?.representingValue else { throw ParserError() }
+                                let dx3 = stack.count == 1 ? stack.popFirst()!.representingValue : 0
                                 
                                 let c1 = point + Point(x: dx1, y: 0)
                                 let c2 = c1 + Point(x: dx2, y: dy2)
@@ -351,24 +348,24 @@ extension CFFFontFace {
                         
                     case 31:
                         
-                        while let dx1 = stack.popFirst() {
+                        while let dx1 = stack.popFirst()?.representingValue {
                             
-                            guard let dx2 = stack.popFirst() else { throw ParserError() }
-                            guard let dy2 = stack.popFirst() else { throw ParserError() }
-                            guard let dy3 = stack.popFirst() else { throw ParserError() }
-                            let dx3 = stack.count == 1 ? stack.popFirst()! : 0
+                            guard let dx2 = stack.popFirst()?.representingValue else { throw ParserError() }
+                            guard let dy2 = stack.popFirst()?.representingValue else { throw ParserError() }
+                            guard let dy3 = stack.popFirst()?.representingValue else { throw ParserError() }
+                            let dx3 = stack.count == 1 ? stack.popFirst()!.representingValue : 0
                             
                             let c1 = point + Point(x: dx1, y: 0)
                             let c2 = c1 + Point(x: dx2, y: dy2)
                             point = c2 + Point(x: dx3, y: dy3)
                             component.append(.cubic(c1, c2, point))
                             
-                            if let dy1 = stack.popFirst() {
+                            if let dy1 = stack.popFirst()?.representingValue {
                                 
-                                guard let dx2 = stack.popFirst() else { throw ParserError() }
-                                guard let dy2 = stack.popFirst() else { throw ParserError() }
-                                guard let dx3 = stack.popFirst() else { throw ParserError() }
-                                let dy3 = stack.count == 1 ? stack.popFirst()! : 0
+                                guard let dx2 = stack.popFirst()?.representingValue else { throw ParserError() }
+                                guard let dy2 = stack.popFirst()?.representingValue else { throw ParserError() }
+                                guard let dx3 = stack.popFirst()?.representingValue else { throw ParserError() }
+                                let dy3 = stack.count == 1 ? stack.popFirst()!.representingValue : 0
                                 
                                 let c1 = point + Point(x: 0, y: dy1)
                                 let c2 = c1 + Point(x: dx2, y: dy2)
@@ -385,13 +382,13 @@ extension CFFFontFace {
                             
                         case 34:
                             
-                            guard let dx1 = stack.popFirst() else { throw ParserError() }
-                            guard let dx2 = stack.popFirst() else { throw ParserError() }
-                            guard let dy2 = stack.popFirst() else { throw ParserError() }
-                            guard let dx3 = stack.popFirst() else { throw ParserError() }
-                            guard let dx4 = stack.popFirst() else { throw ParserError() }
-                            guard let dx5 = stack.popFirst() else { throw ParserError() }
-                            guard let dx6 = stack.popFirst() else { throw ParserError() }
+                            guard let dx1 = stack.popFirst()?.representingValue else { throw ParserError() }
+                            guard let dx2 = stack.popFirst()?.representingValue else { throw ParserError() }
+                            guard let dy2 = stack.popFirst()?.representingValue else { throw ParserError() }
+                            guard let dx3 = stack.popFirst()?.representingValue else { throw ParserError() }
+                            guard let dx4 = stack.popFirst()?.representingValue else { throw ParserError() }
+                            guard let dx5 = stack.popFirst()?.representingValue else { throw ParserError() }
+                            guard let dx6 = stack.popFirst()?.representingValue else { throw ParserError() }
                             
                             let c1 = point + Point(x: dx1, y: 0)
                             let c2 = c1 + Point(x: dx2, y: dy2)
@@ -405,18 +402,18 @@ extension CFFFontFace {
                             
                         case 35:
                             
-                            guard let dx1 = stack.popFirst() else { throw ParserError() }
-                            guard let dy1 = stack.popFirst() else { throw ParserError() }
-                            guard let dx2 = stack.popFirst() else { throw ParserError() }
-                            guard let dy2 = stack.popFirst() else { throw ParserError() }
-                            guard let dx3 = stack.popFirst() else { throw ParserError() }
-                            guard let dy3 = stack.popFirst() else { throw ParserError() }
-                            guard let dx4 = stack.popFirst() else { throw ParserError() }
-                            guard let dy4 = stack.popFirst() else { throw ParserError() }
-                            guard let dx5 = stack.popFirst() else { throw ParserError() }
-                            guard let dy5 = stack.popFirst() else { throw ParserError() }
-                            guard let dx6 = stack.popFirst() else { throw ParserError() }
-                            guard let dy6 = stack.popFirst() else { throw ParserError() }
+                            guard let dx1 = stack.popFirst()?.representingValue else { throw ParserError() }
+                            guard let dy1 = stack.popFirst()?.representingValue else { throw ParserError() }
+                            guard let dx2 = stack.popFirst()?.representingValue else { throw ParserError() }
+                            guard let dy2 = stack.popFirst()?.representingValue else { throw ParserError() }
+                            guard let dx3 = stack.popFirst()?.representingValue else { throw ParserError() }
+                            guard let dy3 = stack.popFirst()?.representingValue else { throw ParserError() }
+                            guard let dx4 = stack.popFirst()?.representingValue else { throw ParserError() }
+                            guard let dy4 = stack.popFirst()?.representingValue else { throw ParserError() }
+                            guard let dx5 = stack.popFirst()?.representingValue else { throw ParserError() }
+                            guard let dy5 = stack.popFirst()?.representingValue else { throw ParserError() }
+                            guard let dx6 = stack.popFirst()?.representingValue else { throw ParserError() }
+                            guard let dy6 = stack.popFirst()?.representingValue else { throw ParserError() }
                             
                             let c1 = point + Point(x: dx1, y: dy1)
                             let c2 = c1 + Point(x: dx2, y: dy2)
@@ -432,15 +429,15 @@ extension CFFFontFace {
                             
                         case 36:
                             
-                            guard let dx1 = stack.popFirst() else { throw ParserError() }
-                            guard let dy1 = stack.popFirst() else { throw ParserError() }
-                            guard let dx2 = stack.popFirst() else { throw ParserError() }
-                            guard let dy2 = stack.popFirst() else { throw ParserError() }
-                            guard let dx3 = stack.popFirst() else { throw ParserError() }
-                            guard let dx4 = stack.popFirst() else { throw ParserError() }
-                            guard let dx5 = stack.popFirst() else { throw ParserError() }
-                            guard let dy5 = stack.popFirst() else { throw ParserError() }
-                            guard let dx6 = stack.popFirst() else { throw ParserError() }
+                            guard let dx1 = stack.popFirst()?.representingValue else { throw ParserError() }
+                            guard let dy1 = stack.popFirst()?.representingValue else { throw ParserError() }
+                            guard let dx2 = stack.popFirst()?.representingValue else { throw ParserError() }
+                            guard let dy2 = stack.popFirst()?.representingValue else { throw ParserError() }
+                            guard let dx3 = stack.popFirst()?.representingValue else { throw ParserError() }
+                            guard let dx4 = stack.popFirst()?.representingValue else { throw ParserError() }
+                            guard let dx5 = stack.popFirst()?.representingValue else { throw ParserError() }
+                            guard let dy5 = stack.popFirst()?.representingValue else { throw ParserError() }
+                            guard let dx6 = stack.popFirst()?.representingValue else { throw ParserError() }
                             
                             let c1 = point + Point(x: dx1, y: dy1)
                             let c2 = c1 + Point(x: dx2, y: dy2)
@@ -454,17 +451,17 @@ extension CFFFontFace {
                             
                         case 37:
                             
-                            guard let dx1 = stack.popFirst() else { throw ParserError() }
-                            guard let dy1 = stack.popFirst() else { throw ParserError() }
-                            guard let dx2 = stack.popFirst() else { throw ParserError() }
-                            guard let dy2 = stack.popFirst() else { throw ParserError() }
-                            guard let dx3 = stack.popFirst() else { throw ParserError() }
-                            guard let dy3 = stack.popFirst() else { throw ParserError() }
-                            guard let dx4 = stack.popFirst() else { throw ParserError() }
-                            guard let dy4 = stack.popFirst() else { throw ParserError() }
-                            guard let dx5 = stack.popFirst() else { throw ParserError() }
-                            guard let dy5 = stack.popFirst() else { throw ParserError() }
-                            guard let d6 = stack.popFirst() else { throw ParserError() }
+                            guard let dx1 = stack.popFirst()?.representingValue else { throw ParserError() }
+                            guard let dy1 = stack.popFirst()?.representingValue else { throw ParserError() }
+                            guard let dx2 = stack.popFirst()?.representingValue else { throw ParserError() }
+                            guard let dy2 = stack.popFirst()?.representingValue else { throw ParserError() }
+                            guard let dx3 = stack.popFirst()?.representingValue else { throw ParserError() }
+                            guard let dy3 = stack.popFirst()?.representingValue else { throw ParserError() }
+                            guard let dx4 = stack.popFirst()?.representingValue else { throw ParserError() }
+                            guard let dy4 = stack.popFirst()?.representingValue else { throw ParserError() }
+                            guard let dx5 = stack.popFirst()?.representingValue else { throw ParserError() }
+                            guard let dy5 = stack.popFirst()?.representingValue else { throw ParserError() }
+                            guard let d6 = stack.popFirst()?.representingValue else { throw ParserError() }
                             
                             let c1 = point + Point(x: dx1, y: dy1)
                             let c2 = c1 + Point(x: dx2, y: dy2)
@@ -485,35 +482,33 @@ extension CFFFontFace {
                         
                     case 28:
                         
-                        stack.append(Double(try data.decode(BEInt16.self).representingValue))
+                        stack.append(Fixed16Number(bitPattern: Int32(try data.decode(BEInt16.self)) << 16))
                         
                     case 32...246:
                         
-                        stack.append(Double(Int32(code) - 139))
+                        stack.append(Fixed16Number(bitPattern: (Int32(code) - 139) << 16))
                         
                     case 247...250:
                         
                         let b1 = try data.decode(UInt8.self)
                         let b2 = (Int32(code) - 247) << 8 + Int32(b1) + 108
                         
-                        stack.append(Double(b2))
+                        stack.append(Fixed16Number(bitPattern: b2 << 16))
                         
                     case 251...254:
                         
                         let b1 = try data.decode(UInt8.self)
                         let b2 = -(Int32(code) - 251) << 8 - Int32(b1) - 108
                         
-                        stack.append(Double(b2))
+                        stack.append(Fixed16Number(bitPattern: b2 << 16))
                         
                     case 255:
                         
-                        stack.append(try data.decode(Fixed16Number<BEInt32>.self).representingValue)
+                        stack.append(Fixed16Number(bitPattern: try data.decode(BEInt32.self).representingValue))
                         
                     default: throw ParserError()
                     }
-                    
                 }
-                
             }
             
             do {
