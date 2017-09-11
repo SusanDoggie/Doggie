@@ -711,52 +711,34 @@ extension UnsafePointer : SDAtomicProtocol {
     
     @_inlineable
     public mutating func isLockFree() -> Bool {
-        @_transparent
-        func _isLockFree(_ theVal: UnsafeMutablePointer<UnsafePointer<Pointee>>) -> Bool {
-            return theVal.withMemoryRebound(to: Optional<UnsafeRawPointer>.self, capacity: 1) { _AtomicPtrIsLockFree($0) }
-        }
-        return _isLockFree(&self)
+        return withUnsafeMutablePointer(to: &self) { $0.withMemoryRebound(to: Optional<UnsafeRawPointer>.self, capacity: 1) { _AtomicPtrIsLockFree($0) } }
     }
     
     /// Atomic fetch the current value with barrier.
     @_inlineable
     public mutating func fetchSelf() -> (current: UnsafePointer, value: UnsafePointer) {
-        @_transparent
-        func load(_ theVal: UnsafeMutablePointer<UnsafePointer<Pointee>>) -> UnsafeMutableRawPointer {
-            return theVal.withMemoryRebound(to: Optional<UnsafeRawPointer>.self, capacity: 1) { _AtomicLoadPtrBarrier($0) }
-        }
-        let val = UnsafePointer(load(&self).assumingMemoryBound(to: Pointee.self))
+        let result = withUnsafeMutablePointer(to: &self) { $0.withMemoryRebound(to: Optional<UnsafeRawPointer>.self, capacity: 1) { _AtomicLoadPtrBarrier($0) } }
+        let val = UnsafePointer(result!.assumingMemoryBound(to: Pointee.self))
         return (val, val)
     }
     
     /// Atomic sets the value with barrier.
     @_inlineable
     public mutating func store(_ new: UnsafePointer) {
-        @_transparent
-        func store(_ theVal: UnsafeMutablePointer<UnsafePointer<Pointee>>) {
-            theVal.withMemoryRebound(to: Optional<UnsafeMutableRawPointer>.self, capacity: 1) { _AtomicStorePtrBarrier(UnsafeMutableRawPointer(mutating: new), $0) }
-        }
-        store(&self)
+        withUnsafeMutablePointer(to: &self) { $0.withMemoryRebound(to: Optional<UnsafeMutableRawPointer>.self, capacity: 1) { _AtomicStorePtrBarrier(UnsafeMutableRawPointer(mutating: new), $0) } }
     }
     
     /// Compare and set pointers with barrier.
     @_inlineable
     public mutating func compareSet(old: UnsafePointer, new: UnsafePointer) -> Bool {
-        @_transparent
-        func cas(_ theVal: UnsafeMutablePointer<UnsafePointer<Pointee>>) -> Bool {
-            return theVal.withMemoryRebound(to: Optional<UnsafeMutableRawPointer>.self, capacity: 1) { _AtomicCompareAndSwapPtrBarrier(UnsafeMutableRawPointer(mutating: old), UnsafeMutableRawPointer(mutating: new), $0) }
-        }
-        return cas(&self)
+        return withUnsafeMutablePointer(to: &self) { $0.withMemoryRebound(to: Optional<UnsafeMutableRawPointer>.self, capacity: 1) { _AtomicCompareAndSwapPtrBarrier(UnsafeMutableRawPointer(mutating: old), UnsafeMutableRawPointer(mutating: new), $0) } }
     }
     
     /// Set pointers with barrier.
     @_inlineable
     public mutating func fetchStore(_ new: UnsafePointer) -> UnsafePointer {
-        @_transparent
-        func exchange(_ theVal: UnsafeMutablePointer<UnsafePointer<Pointee>>) -> UnsafeMutableRawPointer {
-            return theVal.withMemoryRebound(to: Optional<UnsafeMutableRawPointer>.self, capacity: 1) { _AtomicExchangePtrBarrier(UnsafeMutableRawPointer(mutating: new), $0) }
-        }
-        return UnsafePointer(exchange(&self).assumingMemoryBound(to: Pointee.self))
+        let result = withUnsafeMutablePointer(to: &self) { $0.withMemoryRebound(to: Optional<UnsafeMutableRawPointer>.self, capacity: 1) { _AtomicExchangePtrBarrier(UnsafeMutableRawPointer(mutating: new), $0) } }
+        return UnsafePointer(result!.assumingMemoryBound(to: Pointee.self))
     }
 }
 
@@ -764,104 +746,68 @@ extension UnsafeMutablePointer : SDAtomicProtocol {
     
     @_inlineable
     public mutating func isLockFree() -> Bool {
-        @_transparent
-        func _isLockFree(_ theVal: UnsafeMutablePointer<UnsafeMutablePointer<Pointee>>) -> Bool {
-            return theVal.withMemoryRebound(to: Optional<UnsafeRawPointer>.self, capacity: 1) { _AtomicPtrIsLockFree($0) }
-        }
-        return _isLockFree(&self)
+        return withUnsafeMutablePointer(to: &self) { $0.withMemoryRebound(to: Optional<UnsafeRawPointer>.self, capacity: 1) { _AtomicPtrIsLockFree($0) } }
     }
     
     /// Atomic fetch the current value with barrier.
     @_inlineable
     public mutating func fetchSelf() -> (current: UnsafeMutablePointer, value: UnsafeMutablePointer) {
-        @_transparent
-        func load(_ theVal: UnsafeMutablePointer<UnsafeMutablePointer<Pointee>>) -> UnsafeMutableRawPointer {
-            return theVal.withMemoryRebound(to: Optional<UnsafeRawPointer>.self, capacity: 1) { _AtomicLoadPtrBarrier($0) }
-        }
-        let val = load(&self).assumingMemoryBound(to: Pointee.self)
+        let result = withUnsafeMutablePointer(to: &self) { $0.withMemoryRebound(to: Optional<UnsafeRawPointer>.self, capacity: 1) { _AtomicLoadPtrBarrier($0) } }
+        let val = result!.assumingMemoryBound(to: Pointee.self)
         return (val, val)
     }
     
     /// Atomic sets the value with barrier.
     @_inlineable
     public mutating func store(_ new: UnsafeMutablePointer) {
-        @_transparent
-        func store(_ theVal: UnsafeMutablePointer<UnsafeMutablePointer<Pointee>>) {
-            theVal.withMemoryRebound(to: Optional<UnsafeMutableRawPointer>.self, capacity: 1) { _AtomicStorePtrBarrier(UnsafeMutableRawPointer(new), $0) }
-        }
-        store(&self)
+        withUnsafeMutablePointer(to: &self) { $0.withMemoryRebound(to: Optional<UnsafeMutableRawPointer>.self, capacity: 1) { _AtomicStorePtrBarrier(UnsafeMutableRawPointer(new), $0) } }
     }
     
     /// Compare and set pointers with barrier.
     @_inlineable
     public mutating func compareSet(old: UnsafeMutablePointer, new: UnsafeMutablePointer) -> Bool {
-        @_transparent
-        func cas(_ theVal: UnsafeMutablePointer<UnsafeMutablePointer<Pointee>>) -> Bool {
-            return theVal.withMemoryRebound(to: Optional<UnsafeMutableRawPointer>.self, capacity: 1) { _AtomicCompareAndSwapPtrBarrier(UnsafeMutableRawPointer(old), UnsafeMutableRawPointer(new), $0) }
-        }
-        return cas(&self)
+        return withUnsafeMutablePointer(to: &self) { $0.withMemoryRebound(to: Optional<UnsafeMutableRawPointer>.self, capacity: 1) { _AtomicCompareAndSwapPtrBarrier(UnsafeMutableRawPointer(old), UnsafeMutableRawPointer(new), $0) } }
     }
     
     /// Set pointers with barrier.
     @_inlineable
     public mutating func fetchStore(_ new: UnsafeMutablePointer) -> UnsafeMutablePointer {
-        @_transparent
-        func exchange(_ theVal: UnsafeMutablePointer<UnsafeMutablePointer<Pointee>>) -> UnsafeMutableRawPointer {
-            return theVal.withMemoryRebound(to: Optional<UnsafeMutableRawPointer>.self, capacity: 1) { _AtomicExchangePtrBarrier(UnsafeMutableRawPointer(new), $0) }
-        }
-        return exchange(&self).assumingMemoryBound(to: Pointee.self)
+        let result = withUnsafeMutablePointer(to: &self) { $0.withMemoryRebound(to: Optional<UnsafeMutableRawPointer>.self, capacity: 1) { _AtomicExchangePtrBarrier(UnsafeMutableRawPointer(new), $0) } }
+        return result!.assumingMemoryBound(to: Pointee.self)
     }
 }
 extension UnsafeRawPointer : SDAtomicProtocol {
     
     @_inlineable
     public mutating func isLockFree() -> Bool {
-        @_transparent
-        func _isLockFree(_ theVal: UnsafeMutablePointer<UnsafeRawPointer>) -> Bool {
-            return theVal.withMemoryRebound(to: Optional<UnsafeRawPointer>.self, capacity: 1) { _AtomicPtrIsLockFree($0) }
-        }
-        return _isLockFree(&self)
+        return withUnsafeMutablePointer(to: &self) { $0.withMemoryRebound(to: Optional<UnsafeRawPointer>.self, capacity: 1) { _AtomicPtrIsLockFree($0) } }
     }
     
     /// Atomic fetch the current value with barrier.
     @_inlineable
     public mutating func fetchSelf() -> (current: UnsafeRawPointer, value: UnsafeRawPointer) {
-        @_transparent
-        func load(_ theVal: UnsafeMutablePointer<UnsafeRawPointer>) -> UnsafeMutableRawPointer {
-            return theVal.withMemoryRebound(to: Optional<UnsafeRawPointer>.self, capacity: 1) { _AtomicLoadPtrBarrier($0) }
-        }
-        let val = UnsafeRawPointer(load(&self))
+        let result = withUnsafeMutablePointer(to: &self) { $0.withMemoryRebound(to: Optional<UnsafeRawPointer>.self, capacity: 1) { _AtomicLoadPtrBarrier($0) } }
+        let val = UnsafeRawPointer(result!)
         return (val, val)
     }
     
     /// Atomic sets the value with barrier.
     @_inlineable
     public mutating func store(_ new: UnsafeRawPointer) {
-        @_transparent
-        func store(_ theVal: UnsafeMutablePointer<UnsafeRawPointer>) {
-            theVal.withMemoryRebound(to: Optional<UnsafeMutableRawPointer>.self, capacity: 1) { _AtomicStorePtrBarrier(UnsafeMutableRawPointer(mutating: new), $0) }
-        }
-        store(&self)
+        withUnsafeMutablePointer(to: &self) { $0.withMemoryRebound(to: Optional<UnsafeMutableRawPointer>.self, capacity: 1) { _AtomicStorePtrBarrier(UnsafeMutableRawPointer(mutating: new), $0) } }
     }
     
     /// Compare and set pointers with barrier.
     @_inlineable
     public mutating func compareSet(old: UnsafeRawPointer, new: UnsafeRawPointer) -> Bool {
-        @_transparent
-        func cas(_ theVal: UnsafeMutablePointer<UnsafeRawPointer>) -> Bool {
-            return theVal.withMemoryRebound(to: Optional<UnsafeMutableRawPointer>.self, capacity: 1) { _AtomicCompareAndSwapPtrBarrier(UnsafeMutableRawPointer(mutating: old), UnsafeMutableRawPointer(mutating: new), $0) }
-        }
-        return cas(&self)
+        return withUnsafeMutablePointer(to: &self) { $0.withMemoryRebound(to: Optional<UnsafeMutableRawPointer>.self, capacity: 1) { _AtomicCompareAndSwapPtrBarrier(UnsafeMutableRawPointer(mutating: old), UnsafeMutableRawPointer(mutating: new), $0) } }
     }
     
     /// Set pointers with barrier.
     @_inlineable
     public mutating func fetchStore(_ new: UnsafeRawPointer) -> UnsafeRawPointer {
-        @_transparent
-        func exchange(_ theVal: UnsafeMutablePointer<UnsafeRawPointer>) -> UnsafeMutableRawPointer {
-            return theVal.withMemoryRebound(to: Optional<UnsafeMutableRawPointer>.self, capacity: 1) { _AtomicExchangePtrBarrier(UnsafeMutableRawPointer(mutating: new), $0) }
-        }
-        return UnsafeRawPointer(exchange(&self))
+        let result = withUnsafeMutablePointer(to: &self) { $0.withMemoryRebound(to: Optional<UnsafeMutableRawPointer>.self, capacity: 1) { _AtomicExchangePtrBarrier(UnsafeMutableRawPointer(mutating: new), $0) } }
+        return UnsafeRawPointer(result!)
     }
 }
 
@@ -869,52 +815,34 @@ extension UnsafeMutableRawPointer : SDAtomicProtocol {
     
     @_inlineable
     public mutating func isLockFree() -> Bool {
-        @_transparent
-        func _isLockFree(_ theVal: UnsafeMutablePointer<UnsafeMutableRawPointer>) -> Bool {
-            return theVal.withMemoryRebound(to: Optional<UnsafeRawPointer>.self, capacity: 1) { _AtomicPtrIsLockFree($0) }
-        }
-        return _isLockFree(&self)
+        return withUnsafeMutablePointer(to: &self) { $0.withMemoryRebound(to: Optional<UnsafeRawPointer>.self, capacity: 1) { _AtomicPtrIsLockFree($0) } }
     }
     
     /// Atomic fetch the current value with barrier.
     @_inlineable
     public mutating func fetchSelf() -> (current: UnsafeMutableRawPointer, value: UnsafeMutableRawPointer) {
-        @_transparent
-        func load(_ theVal: UnsafeMutablePointer<UnsafeMutableRawPointer>) -> UnsafeMutableRawPointer {
-            return theVal.withMemoryRebound(to: Optional<UnsafeRawPointer>.self, capacity: 1) { _AtomicLoadPtrBarrier($0) }
-        }
-        let val = load(&self)
+        let result = withUnsafeMutablePointer(to: &self) { $0.withMemoryRebound(to: Optional<UnsafeRawPointer>.self, capacity: 1) { _AtomicLoadPtrBarrier($0) } }
+        let val = UnsafeMutableRawPointer(result!)
         return (val, val)
     }
     
     /// Atomic sets the value with barrier.
     @_inlineable
     public mutating func store(_ new: UnsafeMutableRawPointer) {
-        @_transparent
-        func store(_ theVal: UnsafeMutablePointer<UnsafeMutableRawPointer>) {
-            theVal.withMemoryRebound(to: Optional<UnsafeMutableRawPointer>.self, capacity: 1) { _AtomicStorePtrBarrier(new, $0) }
-        }
-        store(&self)
+        withUnsafeMutablePointer(to: &self) { $0.withMemoryRebound(to: Optional<UnsafeMutableRawPointer>.self, capacity: 1) { _AtomicStorePtrBarrier(UnsafeMutableRawPointer(new), $0) } }
     }
     
     /// Compare and set pointers with barrier.
     @_inlineable
     public mutating func compareSet(old: UnsafeMutableRawPointer, new: UnsafeMutableRawPointer) -> Bool {
-        @_transparent
-        func cas(_ theVal: UnsafeMutablePointer<UnsafeMutableRawPointer>) -> Bool {
-            return theVal.withMemoryRebound(to: Optional<UnsafeMutableRawPointer>.self, capacity: 1) { _AtomicCompareAndSwapPtrBarrier(old, new, $0) }
-        }
-        return cas(&self)
+        return withUnsafeMutablePointer(to: &self) { $0.withMemoryRebound(to: Optional<UnsafeMutableRawPointer>.self, capacity: 1) { _AtomicCompareAndSwapPtrBarrier(UnsafeMutableRawPointer(old), UnsafeMutableRawPointer(new), $0) } }
     }
     
     /// Set pointers with barrier.
     @_inlineable
     public mutating func fetchStore(_ new: UnsafeMutableRawPointer) -> UnsafeMutableRawPointer {
-        @_transparent
-        func exchange(_ theVal: UnsafeMutablePointer<UnsafeMutableRawPointer>) -> UnsafeMutableRawPointer {
-            return theVal.withMemoryRebound(to: Optional<UnsafeMutableRawPointer>.self, capacity: 1) { _AtomicExchangePtrBarrier(new, $0) }
-        }
-        return exchange(&self)
+        let result = withUnsafeMutablePointer(to: &self) { $0.withMemoryRebound(to: Optional<UnsafeMutableRawPointer>.self, capacity: 1) { _AtomicExchangePtrBarrier(UnsafeMutableRawPointer(new), $0) } }
+        return UnsafeMutableRawPointer(result!)
     }
 }
 
@@ -922,52 +850,34 @@ extension OpaquePointer : SDAtomicProtocol {
     
     @_inlineable
     public mutating func isLockFree() -> Bool {
-        @_transparent
-        func _isLockFree(_ theVal: UnsafeMutablePointer<OpaquePointer>) -> Bool {
-            return theVal.withMemoryRebound(to: Optional<UnsafeRawPointer>.self, capacity: 1) { _AtomicPtrIsLockFree($0) }
-        }
-        return _isLockFree(&self)
+        return withUnsafeMutablePointer(to: &self) { $0.withMemoryRebound(to: Optional<UnsafeRawPointer>.self, capacity: 1) { _AtomicPtrIsLockFree($0) } }
     }
     
     /// Atomic fetch the current value with barrier.
     @_inlineable
     public mutating func fetchSelf() -> (current: OpaquePointer, value: OpaquePointer) {
-        @_transparent
-        func load(_ theVal: UnsafeMutablePointer<OpaquePointer>) -> UnsafeMutableRawPointer {
-            return theVal.withMemoryRebound(to: Optional<UnsafeRawPointer>.self, capacity: 1) { _AtomicLoadPtrBarrier($0) }
-        }
-        let val = OpaquePointer(load(&self))
+        let result = withUnsafeMutablePointer(to: &self) { $0.withMemoryRebound(to: Optional<UnsafeRawPointer>.self, capacity: 1) { _AtomicLoadPtrBarrier($0) } }
+        let val = OpaquePointer(result!)
         return (val, val)
     }
     
     /// Atomic sets the value with barrier.
     @_inlineable
     public mutating func store(_ new: OpaquePointer) {
-        @_transparent
-        func store(_ theVal: UnsafeMutablePointer<OpaquePointer>) {
-            theVal.withMemoryRebound(to: Optional<UnsafeMutableRawPointer>.self, capacity: 1) { _AtomicStorePtrBarrier(UnsafeMutableRawPointer(new), $0) }
-        }
-        store(&self)
+        withUnsafeMutablePointer(to: &self) { $0.withMemoryRebound(to: Optional<UnsafeMutableRawPointer>.self, capacity: 1) { _AtomicStorePtrBarrier(UnsafeMutableRawPointer(new), $0) } }
     }
     
     /// Compare and set pointers with barrier.
     @_inlineable
     public mutating func compareSet(old: OpaquePointer, new: OpaquePointer) -> Bool {
-        @_transparent
-        func cas(_ theVal: UnsafeMutablePointer<OpaquePointer>) -> Bool {
-            return theVal.withMemoryRebound(to: Optional<UnsafeMutableRawPointer>.self, capacity: 1) { _AtomicCompareAndSwapPtrBarrier(UnsafeMutableRawPointer(old), UnsafeMutableRawPointer(new), $0) }
-        }
-        return cas(&self)
+        return withUnsafeMutablePointer(to: &self) { $0.withMemoryRebound(to: Optional<UnsafeMutableRawPointer>.self, capacity: 1) { _AtomicCompareAndSwapPtrBarrier(UnsafeMutableRawPointer(old), UnsafeMutableRawPointer(new), $0) } }
     }
     
     /// Set pointers with barrier.
     @_inlineable
     public mutating func fetchStore(_ new: OpaquePointer) -> OpaquePointer {
-        @_transparent
-        func exchange(_ theVal: UnsafeMutablePointer<OpaquePointer>) -> UnsafeMutableRawPointer {
-            return theVal.withMemoryRebound(to: Optional<UnsafeMutableRawPointer>.self, capacity: 1) { _AtomicExchangePtrBarrier(UnsafeMutableRawPointer(new), $0) }
-        }
-        return OpaquePointer(exchange(&self))
+        let result = withUnsafeMutablePointer(to: &self) { $0.withMemoryRebound(to: Optional<UnsafeMutableRawPointer>.self, capacity: 1) { _AtomicExchangePtrBarrier(UnsafeMutableRawPointer(new), $0) } }
+        return OpaquePointer(result!)
     }
 }
 
@@ -984,6 +894,7 @@ public struct Atomic<Instance> {
     
     private var base: AtomicBase<Instance>
     
+    @_transparent
     private init(base: AtomicBase<Instance>) {
         self.base = base
     }
@@ -1005,30 +916,21 @@ public struct Atomic<Instance> {
 extension Atomic {
     
     public mutating func isLockFree() -> Bool {
-        @_transparent
-        func _isLockFree(_ theVal: UnsafeMutablePointer<AtomicBase<Instance>>) -> Bool {
-            return theVal.withMemoryRebound(to: Optional<UnsafeRawPointer>.self, capacity: 1) { _AtomicPtrIsLockFree($0) }
-        }
-        return _isLockFree(&base)
+        return withUnsafeMutablePointer(to: &base) { $0.withMemoryRebound(to: Optional<UnsafeRawPointer>.self, capacity: 1) { _AtomicPtrIsLockFree($0) } }
     }
     
+    @_transparent
     private mutating func _fetch() -> AtomicBase<Instance> {
-        @_transparent
-        func load(theVal: UnsafeMutablePointer<AtomicBase<Instance>>) -> UnsafeMutableRawPointer {
-            return theVal.withMemoryRebound(to: Optional<UnsafeRawPointer>.self, capacity: 1) { _AtomicLoadPtrBarrier($0) }
-        }
-        let _old = Unmanaged<AtomicBase<Instance>>.fromOpaque(UnsafeRawPointer(load(theVal: &base)))
+        let result = withUnsafeMutablePointer(to: &base) { $0.withMemoryRebound(to: Optional<UnsafeRawPointer>.self, capacity: 1) { _AtomicLoadPtrBarrier($0) } }
+        let _old = Unmanaged<AtomicBase<Instance>>.fromOpaque(UnsafeRawPointer(result!))
         return _old.takeUnretainedValue()
     }
     
+    @_transparent
     private mutating func _compareSet(old: AtomicBase<Instance>, new: AtomicBase<Instance>) -> Bool {
         let _old = Unmanaged.passUnretained(old)
         let _new = Unmanaged.passRetained(new)
-        @_transparent
-        func cas(theVal: UnsafeMutablePointer<AtomicBase<Instance>>) -> Bool {
-            return theVal.withMemoryRebound(to: Optional<UnsafeMutableRawPointer>.self, capacity: 1) { _AtomicCompareAndSwapPtrBarrier(_old.toOpaque(), _new.toOpaque(), $0) }
-        }
-        let result = cas(theVal: &base)
+        let result = withUnsafeMutablePointer(to: &base) { $0.withMemoryRebound(to: Optional<UnsafeMutableRawPointer>.self, capacity: 1) { _AtomicCompareAndSwapPtrBarrier(_old.toOpaque(), _new.toOpaque(), $0) } }
         if result {
             _old.release()
         } else {
@@ -1037,14 +939,11 @@ extension Atomic {
         return result
     }
     
+    @_transparent
     private mutating func _compareSetWeak(old: AtomicBase<Instance>, new: AtomicBase<Instance>) -> Bool {
         let _old = Unmanaged.passUnretained(old)
         let _new = Unmanaged.passRetained(new)
-        @_transparent
-        func cas(theVal: UnsafeMutablePointer<AtomicBase<Instance>>) -> Bool {
-            return theVal.withMemoryRebound(to: Optional<UnsafeMutableRawPointer>.self, capacity: 1) { _AtomicCompareAndSwapWeakPtrBarrier(_old.toOpaque(), _new.toOpaque(), $0) }
-        }
-        let result = cas(theVal: &base)
+        let result = withUnsafeMutablePointer(to: &base) { $0.withMemoryRebound(to: Optional<UnsafeMutableRawPointer>.self, capacity: 1) { _AtomicCompareAndSwapWeakPtrBarrier(_old.toOpaque(), _new.toOpaque(), $0) } }
         if result {
             _old.release()
         } else {
@@ -1053,14 +952,12 @@ extension Atomic {
         return result
     }
     
+    @_transparent
     @discardableResult
     private mutating func _fetchStore(_ new: AtomicBase<Instance>) -> AtomicBase<Instance> {
         let _new = Unmanaged.passRetained(new)
-        @_transparent
-        func exchange(theVal: UnsafeMutablePointer<AtomicBase<Instance>>) -> UnsafeMutableRawPointer {
-            return theVal.withMemoryRebound(to: Optional<UnsafeMutableRawPointer>.self, capacity: 1) { _AtomicExchangePtrBarrier(_new.toOpaque(), $0) }
-        }
-        let _old = Unmanaged<AtomicBase<Instance>>.fromOpaque(UnsafeRawPointer(exchange(theVal: &base)))
+        let result = withUnsafeMutablePointer(to: &base) { $0.withMemoryRebound(to: Optional<UnsafeMutableRawPointer>.self, capacity: 1) { _AtomicExchangePtrBarrier(_new.toOpaque(), $0) } }
+        let _old = Unmanaged<AtomicBase<Instance>>.fromOpaque(UnsafeRawPointer(result!))
         return _old.takeRetainedValue()
     }
 }
