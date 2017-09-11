@@ -81,33 +81,38 @@ struct CFFFDSelect {
             if glyph < limit {
                 
                 let rangeCount = Int(nRanges)
-                var range = 0..<rangeCount
+                var _range = 0..<rangeCount
                 
-                return self.range.withUnsafeBytes { (record: UnsafePointer<Range3>) in
+                while _range.count != 0 {
                     
-                    while range.count != 0 {
-                        
-                        let mid = (range.lowerBound + range.upperBound) >> 1
-                        let startGlyphID = UInt16(record[mid].first)
-                        let endGlyphID = mid + 1 < rangeCount ? UInt16(record[mid + 1].first) : limit - 1
-                        if startGlyphID <= endGlyphID && startGlyphID...endGlyphID ~= glyph {
-                            return record[mid].fd
-                        }
-                        range = glyph < startGlyphID ? range.prefix(upTo: mid) : range.suffix(from: mid).dropFirst()
+                    let mid = (_range.lowerBound + _range.upperBound) >> 1
+                    var records = self.range.dropFirst(mid * 3)
+                    
+                    guard let _startGlyphID = try? records.decode(BEUInt16.self) else { return nil }
+                    guard let fd = try? records.decode(UInt8.self) else { return nil }
+                    
+                    let startGlyphID = UInt16(_startGlyphID)
+                    let endGlyphID: UInt16
+                    
+                    if mid + 1 < rangeCount {
+                        guard let _endGlyphID = try? records.decode(BEUInt16.self) else { return nil }
+                        endGlyphID = UInt16(_endGlyphID)
+                    } else {
+                        endGlyphID = limit - 1
                     }
                     
-                    return nil
+                    if startGlyphID <= endGlyphID && startGlyphID...endGlyphID ~= glyph {
+                        return fd
+                    }
+                    
+                    _range = glyph < startGlyphID ? _range.prefix(upTo: mid) : _range.suffix(from: mid).dropFirst()
                 }
+                
+                return nil
             }
             
         default: break
         }
         return nil
-    }
-    
-    struct Range3 {
-        
-        var first: BEUInt16
-        var fd: UInt8
     }
 }
