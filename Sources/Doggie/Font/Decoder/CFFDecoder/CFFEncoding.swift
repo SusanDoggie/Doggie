@@ -147,10 +147,4 @@ struct CFFEncoding: DataDecodable {
         var first: UInt8
         var nLeft: UInt8
     }
-    
-    struct Supplement {
-        
-        var code: UInt8
-        var glyph: BEUInt16
-    }
 }

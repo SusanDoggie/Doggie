@@ -51,11 +51,11 @@ extension CFFFontFace {
         
         let fontDICT = self.fontDICT(glyph: UInt16(glyph))
         let subroutine = self.subroutine
+        let subroutineBias = self.subroutineBias(subroutine)
         
         if let pDICT = fontDICT.pDICT {
             
             let pSubroutine = fontDICT.pSubroutine
-            let subroutineBias = self.subroutineBias(subroutine)
             let pSubroutineBias = pSubroutine.map { self.subroutineBias($0) }
             
             var components: [Shape.Component] = []
