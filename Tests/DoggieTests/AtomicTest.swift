@@ -34,6 +34,8 @@ class AtomicTest: XCTestCase {
         ("testAtomicA", testAtomicA),
         ("testAtomicQueueA", testAtomicQueueA),
         ("testAtomicStackA", testAtomicStackA),
+        ("testAtomicQueueB", testAtomicQueueB),
+        ("testAtomicStackB", testAtomicStackB),
         ]
     
     override func setUp() {
@@ -104,5 +106,29 @@ class AtomicTest: XCTestCase {
         XCTAssertEqual(stack.next(), 2)
         XCTAssertEqual(stack.next(), 1)
         XCTAssertEqual(stack.next(), nil)
+    }
+    func testAtomicQueueB() {
+        
+        let queue = AtomicQueue<Int>()
+        
+        DispatchQueue.concurrentPerform(iterations: 10) {
+            queue.push($0)
+        }
+        
+        let result = Set(AnyIterator(queue.next))
+        
+        XCTAssertEqual(result, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
+    }
+    func testAtomicStackB() {
+        
+        let stack = AtomicStack<Int>()
+        
+        DispatchQueue.concurrentPerform(iterations: 10) {
+            stack.push($0)
+        }
+        
+        let result = Set(AnyIterator(stack.next))
+        
+        XCTAssertEqual(result, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
     }
 }
