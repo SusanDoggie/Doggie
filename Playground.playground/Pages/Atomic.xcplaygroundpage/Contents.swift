@@ -27,12 +27,3 @@ h.isLockFree()
 i.isLockFree()
 j.isLockFree()
 
-withUnsafePointer(to: &a) {
-    var ptr = $0
-    ptr.isLockFree()
-}
-
-withUnsafeMutablePointer(to: &a) {
-    var ptr = $0
-    ptr.isLockFree()
-}
