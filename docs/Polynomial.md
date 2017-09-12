@@ -2,7 +2,6 @@
 
 Polynomial is a abstract struct for algebraic calculation. It conforms to `CollectionType`.
 
-
 # Usage
 
 Define a polynomial:
