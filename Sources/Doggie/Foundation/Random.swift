@@ -25,19 +25,18 @@
 
 import Foundation
 
-@_inlineable
 public func random_uniform<T : FixedWidthInteger>(_ bound: T) -> T {
     let fd = open("/dev/urandom", O_RDONLY)
     defer { close(fd) }
     var _rand: T = 0
-    Foundation.read(fd, &_rand, T.bitWidth)
+    withUnsafeMutableBytes(of: &_rand) { _ = Foundation.read(fd, $0.baseAddress, T.bitWidth) }
     _rand &= T.max
     if bound.isPower2 {
         _rand &= bound &- 1
     } else {
         let limit = T.max - T.max % bound
         while _rand >= limit {
-            Foundation.read(fd, &_rand, T.bitWidth)
+            withUnsafeMutableBytes(of: &_rand) { _ = Foundation.read(fd, $0.baseAddress, T.bitWidth) }
             _rand &= T.max
         }
         _rand %= bound
