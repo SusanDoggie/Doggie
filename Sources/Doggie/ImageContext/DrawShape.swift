@@ -140,13 +140,30 @@ extension ImageContext {
 extension ImageContext {
     
     @_inlineable
-    public func draw<C>(shape: Shape, color: Color<C>, winding: Shape.WindingRule) {
-        
+    public func draw(shape: Shape, winding: Shape.WindingRule, color: Pixel.Model, opacity: Double = 1) {
         switch winding {
-        case .nonZero: self.draw(shape: shape, color: ColorPixel(color.convert(to: colorSpace, intent: renderingIntent))) { $0 != 0 }
-        case .evenOdd: self.draw(shape: shape, color: ColorPixel(color.convert(to: colorSpace, intent: renderingIntent))) { $0 & 1 == 1 }
+        case .nonZero: self.draw(shape: shape, color: ColorPixel(color: color, opacity: opacity)) { $0 != 0 }
+        case .evenOdd: self.draw(shape: shape, color: ColorPixel(color: color, opacity: opacity)) { $0 & 1 == 1 }
         }
+    }
+    
+    @_inlineable
+    public func draw<C>(shape: Shape, winding: Shape.WindingRule, color: Color<C>) {
+        let color = color.convert(to: colorSpace, intent: renderingIntent)
+        self.draw(shape: shape, winding: winding, color: color.color, opacity: color.opacity)
     }
 }
 
-
+extension ImageContext {
+    
+    @_inlineable
+    public func stroke(shape: Shape, width: Double, cap: Shape.LineCap, join: Shape.LineJoin, color: Pixel.Model, opacity: Double = 1) {
+        self.draw(shape: shape.strokePath(width: width, cap: cap, join: join), winding: .nonZero, color: color, opacity: opacity)
+    }
+    
+    @_inlineable
+    public func stroke<C>(shape: Shape, width: Double, cap: Shape.LineCap, join: Shape.LineJoin, color: Color<C>) {
+        let color = color.convert(to: colorSpace, intent: renderingIntent)
+        self.stroke(shape: shape, width: width, cap: cap, join: join, color: color.color, opacity: color.opacity)
+    }
+}

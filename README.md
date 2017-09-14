@@ -59,17 +59,13 @@ if let font = collection.first?.with(size: 64) {
 
 let context = ImageContext<ARGB32ColorPixel>(width: 100, height: 100, colorSpace: ColorSpace.sRGB)
 
-let black = Color(colorSpace: ColorSpace.sRGB, color: RGBColorModel())
-let yellow = Color(colorSpace: ColorSpace.sRGB, color: RGBColorModel(red: 247/255, green: 217/255, blue: 12/255))
-let red = Color(colorSpace: ColorSpace.sRGB, color: RGBColorModel(red: 234/255, green: 24/255, blue: 71/255))
-
 let ellipse1 = Shape.Ellipse(Rect(x: 10, y: 35, width: 55, height: 55))
 let ellipse2 = Shape.Ellipse(Rect(x: 35, y: 10, width: 55, height: 55))
 
-context.draw(shape: ellipse1, color: yellow, winding: .nonZero)
-context.draw(shape: ellipse1.strokePath(width: 1, cap: .round, join: .round), color: black, winding: .nonZero)
-context.draw(shape: ellipse2, color: red, winding: .nonZero)
-context.draw(shape: ellipse2.strokePath(width: 1, cap: .round, join: .round), color: black, winding: .nonZero)
+context.draw(shape: ellipse1, winding: .nonZero, color: RGBColorModel(red: 247/255, green: 217/255, blue: 12/255))
+context.stroke(shape: ellipse1, width: 1, cap: .round, join: .round, color: RGBColorModel())
+context.draw(shape: ellipse2, winding: .nonZero, color: RGBColorModel(red: 234/255, green: 24/255, blue: 71/255))
+context.stroke(shape: ellipse2, width: 1, cap: .round, join: .round, color: RGBColorModel())
         
 let image: Image<ARGB32ColorPixel> = context.image
 ```

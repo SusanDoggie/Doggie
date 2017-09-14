@@ -98,7 +98,7 @@ extension Color : AnyColorBaseProtocol {
     @_versioned
     @_inlineable
     func _draw<Model>(context: ImageContext<Model>, shape: Shape, winding: Shape.WindingRule) {
-        context.draw(shape: shape, color: self, winding: winding)
+        context.draw(shape: shape, winding: winding, color: self)
     }
 }
 
@@ -287,7 +287,7 @@ extension AnyColor {
 extension ImageContext {
     
     @_inlineable
-    public func draw(shape: Shape, color: AnyColor, winding: Shape.WindingRule) {
+    public func draw(shape: Shape, winding: Shape.WindingRule, color: AnyColor) {
         color._base._draw(context: self, shape: shape, winding: winding)
     }
 }

@@ -11,7 +11,7 @@ public func sampleImage(width: Int, height: Int) -> Image<ARGB32ColorPixel> {
     
     context.transform = SDTransform.scale(x: Double(width) / 100, y: Double(height) / 100)
     
-    context.draw(shape: path, color: Color(colorSpace: ColorSpace.sRGB, color: RGBColorModel(red: 0/255, green: 0/255, blue: 0/255)), winding: .nonZero)
+    context.draw(shape: path, winding: .nonZero, color: RGBColorModel(red: 0/255, green: 0/255, blue: 0/255))
     
     return context.image
 }
