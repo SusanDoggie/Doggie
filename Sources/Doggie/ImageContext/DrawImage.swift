@@ -48,19 +48,22 @@ extension ImageContext {
     
     @_inlineable
     public func draw<C>(image: Image<C>, transform: SDTransform) {
+        self._draw(source: Image<ColorPixel<Pixel.Model>>(image: image, colorSpace: colorSpace, intent: renderingIntent), transform: transform)
+    }
+    
+    @_versioned
+    @inline(__always)
+    func _draw(source: Image<ColorPixel<Pixel.Model>>, transform: SDTransform) {
         
         let width = self.width
         let height = self.height
+        let s_width = source.width
+        let s_height = source.height
         let transform = transform * self.transform
         
-        if width == 0 || height == 0 || image.width == 0 || image.height == 0 || transform.determinant.almostZero() {
+        if width == 0 || height == 0 || s_width == 0 || s_height == 0 || transform.determinant.almostZero() {
             return
         }
-        
-        let s_width = image.width
-        let s_height = image.height
-        
-        let source = Image<ColorPixel<Pixel.Model>>(image: image, colorSpace: colorSpace, intent: renderingIntent)
         
         source.withUnsafeBufferPointer { source in
             
