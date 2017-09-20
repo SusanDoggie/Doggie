@@ -2,16 +2,18 @@ language: generic
 dist: trusty
 sudo: required
 notifications: never
+env:
+  - VERSION="4.0"
 
 matrix:
   include:
     - os: linux
     - os: linux
       services: docker
-      env: DOCKER_IMAGE=ubuntu:16.04
+      env: DOCKER_IMAGE=ubuntu:16.04 VERSION="4.0"
     - os: linux
       services: docker
-      env: DOCKER_IMAGE=ubuntu:16.10
+      env: DOCKER_IMAGE=ubuntu:16.10 VERSION="4.0"
     - os: osx
       osx_image: xcode9
 
@@ -22,4 +24,3 @@ script:
   - while true; do echo "..."; sleep 60; done &
   - ./Package-Builder/build-package.sh -projectDir $TRAVIS_BUILD_DIR
   - kill %1
-  
