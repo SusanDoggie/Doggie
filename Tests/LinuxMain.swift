@@ -31,7 +31,6 @@
     XCTMain([
         testCase(AtomicTest.allTests),
         testCase(FourierTest.allTests),
-        testCase(ImageTest.allTests),
     ])
     
 #endif

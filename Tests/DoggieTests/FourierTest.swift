@@ -50,14 +50,6 @@ class FourierTest: XCTestCase {
         ("testDSTII", testDSTII),
         ("testDSTIII", testDSTIII),
         ("testDSTIV", testDSTIV),
-        ("testFourierBPerformance", testFourierBPerformance),
-        ("testFourierCPerformance", testFourierCPerformance),
-        ("testFourierBPerformanceX2", testFourierBPerformanceX2),
-        ("testFourierCPerformanceX2", testFourierCPerformanceX2),
-        ("testFourierCPerformanceX3", testFourierCPerformanceX3),
-        ("testCircularConvolvePerformance", testCircularConvolvePerformance),
-        ("testCircularConvolvePerformanceX2", testCircularConvolvePerformanceX2),
-        ("testCircularConvolvePerformanceX3", testCircularConvolvePerformanceX3),
         ]
     
     let accuracy = 0.00000001
