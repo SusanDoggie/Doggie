@@ -3,17 +3,17 @@ dist: trusty
 sudo: required
 notifications: never
 env:
-  - VERSION="4.0"
+  - SWIFT_SNAPSHOT="4.0"
 
 matrix:
   include:
     - os: linux
     - os: linux
       services: docker
-      env: DOCKER_IMAGE=ubuntu:16.04 VERSION="4.0"
+      env: DOCKER_IMAGE=ubuntu:16.04 SWIFT_SNAPSHOT="4.0"
     - os: linux
       services: docker
-      env: DOCKER_IMAGE=ubuntu:16.10 VERSION="4.0"
+      env: DOCKER_IMAGE=ubuntu:16.10 SWIFT_SNAPSHOT="4.0"
     - os: osx
       osx_image: xcode9
 
