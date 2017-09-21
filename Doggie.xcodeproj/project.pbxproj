@@ -95,6 +95,8 @@
 		0A78E1F91E98B20A00BD91AB /* Geometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A78E1F71E98B20A00BD91AB /* Geometry.swift */; };
 		0A7A1FAF1F04FBFC0016B3FB /* ColorPixel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7A1FAD1F04FBFC0016B3FB /* ColorPixel.swift */; };
 		0A7A1FB21F04FC230016B3FB /* ARGB32ColorPixel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7A1FB01F04FC230016B3FB /* ARGB32ColorPixel.swift */; };
+		0A7A4C001F738D18005F44CD /* XMLTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7A4BFF1F738D18005F44CD /* XMLTest.swift */; };
+		0A7A4C021F739235005F44CD /* DGXMLString.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7A4BFD1F73765B005F44CD /* DGXMLString.swift */; };
 		0A7D3ADC1ECAD5890030DC26 /* ColorBlend.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7D3ADA1ECAD5890030DC26 /* ColorBlend.swift */; };
 		0A7E3E911F5FD3B40020A507 /* OTFGPOS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7E3E901F5FD3B40020A507 /* OTFGPOS.swift */; };
 		0A7E3E941F5FD3E40020A507 /* OTFGSUB.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7E3E921F5FD3E30020A507 /* OTFGSUB.swift */; };
@@ -188,6 +190,9 @@
 		0AE71A041EF51DF80086923C /* AnyColorSpace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE71A021EF51DF80086923C /* AnyColorSpace.swift */; };
 		0AE762561EE9475400E926D5 /* CGColorSpace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE762541EE9475400E926D5 /* CGColorSpace.swift */; };
 		0AE762591EE9583400E926D5 /* CGImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE762571EE9583400E926D5 /* CGImage.swift */; };
+		0AFC4E331F7268AE00E5FD5A /* DGXMLParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AFC4E321F7268AE00E5FD5A /* DGXMLParser.swift */; };
+		0AFC4E351F72715600E5FD5A /* DGXMLElement.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AFC4E341F72715600E5FD5A /* DGXMLElement.swift */; };
+		0AFC4E371F72716900E5FD5A /* DGXMLDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AFC4E361F72716900E5FD5A /* DGXMLDocument.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -293,6 +298,8 @@
 		0A78E1F71E98B20A00BD91AB /* Geometry.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Geometry.swift; sourceTree = "<group>"; };
 		0A7A1FAD1F04FBFC0016B3FB /* ColorPixel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ColorPixel.swift; sourceTree = "<group>"; };
 		0A7A1FB01F04FC230016B3FB /* ARGB32ColorPixel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARGB32ColorPixel.swift; sourceTree = "<group>"; };
+		0A7A4BFD1F73765B005F44CD /* DGXMLString.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DGXMLString.swift; sourceTree = "<group>"; };
+		0A7A4BFF1F738D18005F44CD /* XMLTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XMLTest.swift; sourceTree = "<group>"; };
 		0A7D3ADA1ECAD5890030DC26 /* ColorBlend.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ColorBlend.swift; sourceTree = "<group>"; };
 		0A7E3E901F5FD3B40020A507 /* OTFGPOS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OTFGPOS.swift; sourceTree = "<group>"; };
 		0A7E3E921F5FD3E30020A507 /* OTFGSUB.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OTFGSUB.swift; sourceTree = "<group>"; };
@@ -385,6 +392,9 @@
 		0AE71A021EF51DF80086923C /* AnyColorSpace.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnyColorSpace.swift; sourceTree = "<group>"; };
 		0AE762541EE9475400E926D5 /* CGColorSpace.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CGColorSpace.swift; sourceTree = "<group>"; };
 		0AE762571EE9583400E926D5 /* CGImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CGImage.swift; sourceTree = "<group>"; };
+		0AFC4E321F7268AE00E5FD5A /* DGXMLParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DGXMLParser.swift; sourceTree = "<group>"; };
+		0AFC4E341F72715600E5FD5A /* DGXMLElement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DGXMLElement.swift; sourceTree = "<group>"; };
+		0AFC4E361F72716900E5FD5A /* DGXMLDocument.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DGXMLDocument.swift; sourceTree = "<group>"; };
 		0AFCA14F1D9E1F130034AB10 /* AtomicTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AtomicTest.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -499,6 +509,7 @@
 				08458AB01E2E627600D01813 /* Accelerate */,
 				08458ABA1E2E627600D01813 /* Foundation */,
 				08458AC31E2E627600D01813 /* Fourier.swift */,
+				0AFC4E311F7268A200E5FD5A /* XML */,
 				0AD3E6301F53DA03003CC21A /* Font */,
 				0AB2E23B1F17765900B0CA84 /* Compression */,
 				0A0697561E4D6659005CF664 /* ApplePlatform */,
@@ -574,6 +585,7 @@
 		08AF77AE1A3A10510042491F /* Tests */ = {
 			isa = PBXGroup;
 			children = (
+				0A7A4BFF1F738D18005F44CD /* XMLTest.swift */,
 				0AFCA14F1D9E1F130034AB10 /* AtomicTest.swift */,
 				08BFF9B91B0715ED00EC88CB /* FourierTest.swift */,
 				0A8D98A21E53ED0F0050E112 /* ImageTest.swift */,
@@ -897,6 +909,17 @@
 			path = Decoder;
 			sourceTree = "<group>";
 		};
+		0AFC4E311F7268A200E5FD5A /* XML */ = {
+			isa = PBXGroup;
+			children = (
+				0AFC4E321F7268AE00E5FD5A /* DGXMLParser.swift */,
+				0A7A4BFD1F73765B005F44CD /* DGXMLString.swift */,
+				0AFC4E341F72715600E5FD5A /* DGXMLElement.swift */,
+				0AFC4E361F72716900E5FD5A /* DGXMLDocument.swift */,
+			);
+			path = XML;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -1024,6 +1047,7 @@
 				0AD7FA311EBDA86A001C9B21 /* ShapeWinding.swift in Sources */,
 				0AD3E62F1F53D9FC003CC21A /* Font.swift in Sources */,
 				0AB23E461F22E4980033462E /* RawBitmap.swift in Sources */,
+				0AFC4E371F72716900E5FD5A /* DGXMLDocument.swift in Sources */,
 				0A80D1481E66A7000003BB44 /* RangeSet.swift in Sources */,
 				0A8F4F6D1F6273390062FD11 /* CFFCharStrings.swift in Sources */,
 				0A52E2DF1E60266A0065EED6 /* PDFLZWDecode.swift in Sources */,
@@ -1066,6 +1090,7 @@
 				0A9F99471F568FD40008D36D /* SFNTPlatform.swift in Sources */,
 				0A9F993F1F56649C0008D36D /* SFNTPOST.swift in Sources */,
 				0A53E45F1E35AEF80060FB83 /* CollectionExtension.swift in Sources */,
+				0A7A4C021F739235005F44CD /* DGXMLString.swift in Sources */,
 				0A21F0251F061AE2009C4490 /* PixelBlender.swift in Sources */,
 				0A9AA8411E543748007A2B92 /* PDFDocument.swift in Sources */,
 				08458B311E2E627600D01813 /* Bezier.swift in Sources */,
@@ -1121,6 +1146,7 @@
 				0A7E3E951F5FD3E40020A507 /* OTFGDEF.swift in Sources */,
 				0A7E3E971F5FD8C90020A507 /* OTFScriptList.swift in Sources */,
 				08458AFD1E2E627600D01813 /* Move.swift in Sources */,
+				0AFC4E351F72715600E5FD5A /* DGXMLElement.swift in Sources */,
 				0A831A8B1F1872770007932A /* Gray32ColorPixel.swift in Sources */,
 				0A9F28221EF0D9BC00E69976 /* LabColorModel.swift in Sources */,
 				0A9CD5901EEB9A2700094148 /* CIELuvColorSpace.swift in Sources */,
@@ -1128,6 +1154,7 @@
 				0A9F28381EF1174600E69976 /* iccType.swift in Sources */,
 				0A8F4F6A1F622C850062FD11 /* SetClip.swift in Sources */,
 				08458B331E2E627600D01813 /* Complex.swift in Sources */,
+				0AFC4E331F7268AE00E5FD5A /* DGXMLParser.swift in Sources */,
 				0A2107161E5BEEBB00F1E00E /* Shape.swift in Sources */,
 				08458AF71E2E627600D01813 /* ComplexConversion.swift in Sources */,
 				0A9CD5951EEB9A2A00094148 /* CalibratedGrayColorSpace.swift in Sources */,
@@ -1194,6 +1221,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				0A92062D1F14A29E00AF5C49 /* ImageTest.swift in Sources */,
+				0A7A4C001F738D18005F44CD /* XMLTest.swift in Sources */,
 				0ACD21331EEBA55000C5811F /* AtomicTest.swift in Sources */,
 				0A92062C1F14A1FA00AF5C49 /* FourierTest.swift in Sources */,
 			);
