@@ -54,7 +54,7 @@ extension DGXMLDocument : CustomStringConvertible {
 
 extension DGXMLElement {
     
-    fileprivate func _xml(_ terminator: String, prefixMap: [String: Substring], _ output: inout String) {
+    fileprivate func _xml(_ terminator: String, prefixMap: [String: String], _ output: inout String) {
         
         switch kind {
         case let .node(_name, namespace):
@@ -62,8 +62,8 @@ extension DGXMLElement {
             var prefixMap = prefixMap
             
             for (key, value) in attributes.filter({ $0.key.hasPrefix("xmlns:") }) {
-                let substr = key.dropFirst(6)
-                if !substr.contains(":") {
+                let substr = key.dropFirst(6).trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
+                if !substr.isEmpty && !substr.contains(":") {
                     prefixMap[value] = substr
                 }
             }
