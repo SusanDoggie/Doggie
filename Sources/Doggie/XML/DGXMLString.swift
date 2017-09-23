@@ -62,7 +62,7 @@ extension DGXMLElement {
             var prefixMap = prefixMap
             
             for (key, value) in attributes.filter({ $0.key.hasPrefix("xmlns:") }) {
-                let substr = key.dropFirst(6).trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
+                let substr = String(key.dropFirst(6)).trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
                 if !substr.isEmpty && !substr.contains(":") {
                     prefixMap[value] = substr
                 }
