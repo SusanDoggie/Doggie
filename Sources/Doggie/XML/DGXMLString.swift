@@ -69,27 +69,21 @@ extension DGXMLElement {
             }
             
             let name = namespace.flatMap { prefixMap[$0].map { "\($0):\(_name)" } } ?? _name
+            let _attributes = self.attributes.map { " \($0)=\"\($1)\"" }.joined()
             
-            if attributes.count == 0 {
-                if self.count == 0 {
-                    "\(terminator)<\(name) />".write(to: &output)
-                } else {
-                    "\(terminator)<\(name)>".write(to: &output)
-                    for element in self {
-                        element._xml(terminator == "" ? terminator : "\(terminator)  ", prefixMap: prefixMap, &output)
-                    }
-                    "\(terminator)</\(name)>".write(to: &output)
-                }
+            if self.count == 0 {
+                "\(terminator)<\(name)\(_attributes) />".write(to: &output)
             } else {
-                let attributes = self.attributes.map { "\($0)=\"\($1)\"" }.joined(separator: " ")
-                if self.count == 0 {
-                    "\(terminator)<\(name) \(attributes) />".write(to: &output)
-                } else {
-                    "\(terminator)<\(name) \(attributes)>".write(to: &output)
-                    for element in self {
-                        element._xml(terminator == "" ? terminator : "\(terminator)  ", prefixMap: prefixMap, &output)
-                    }
+                "\(terminator)<\(name)\(_attributes)>".write(to: &output)
+                var flag = false
+                for element in self {
+                    flag = element.isNode || flag
+                    element._xml(terminator == "" ? terminator : "\(terminator)  ", prefixMap: prefixMap, &output)
+                }
+                if flag {
                     "\(terminator)</\(name)>".write(to: &output)
+                } else {
+                    "</\(name)>".write(to: &output)
                 }
             }
             
