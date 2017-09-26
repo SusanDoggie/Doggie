@@ -91,11 +91,11 @@ extension MappedBuffer {
     
     public subscript(position: Int) -> Element {
         get {
-            precondition(position < buffer.count, "Index out of range.")
+            precondition(0..<buffer.count ~= position, "Index out of range.")
             return self.withUnsafeBufferPointer { $0[position] }
         }
         set {
-            precondition(position < buffer.count, "Index out of range.")
+            precondition(0..<buffer.count ~= position, "Index out of range.")
             self.withUnsafeMutableBufferPointer { $0[position] = newValue }
         }
     }
@@ -270,10 +270,10 @@ private class MappedBufferTempFile<Element> {
         self.mapped_size = (max(capacity, 1) * MemoryLayout<Element>.stride).align(Int(PAGE_SIZE))
         self.capacity = mapped_size / MemoryLayout<Element>.stride
         
-        let path = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("com.SusanDoggie.MappedBuffer.\(UUID().uuidString)")
-        let path_buffer = path.withUnsafeFileSystemRepresentation { Array(UnsafeBufferPointer(start: $0, count: $0 == nil ? 0 : Int(PATH_MAX))) }
+        let path = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("com.SusanDoggie.MappedBuffer.\(UUID().uuidString).XXXXXX")
+        var path_buffer = path.withUnsafeFileSystemRepresentation { Array(UnsafeBufferPointer(start: $0, count: $0 == nil ? 0 : Int(PATH_MAX))) }
         
-        self.fd = open(path_buffer, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR)
+        self.fd = mkstemp(&path_buffer)
         
         guard self.fd != -1 else { fatalError("\(String(cString: strerror(errno))): \(path)") }
         guard ftruncate(self.fd, off_t(mapped_size)) != -1 else { fatalError("\(String(cString: strerror(errno)))") }
