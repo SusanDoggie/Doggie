@@ -4,6 +4,7 @@
         <page name='Atomic'/>
         <page name='Benchmark'/>
         <page name='Doggie'/>
+        <page name='MappedBuffer'/>
         <page name='Random'/>
         <page name='Font'/>
         <page name='Polynomial'/>

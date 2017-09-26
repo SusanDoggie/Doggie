@@ -79,10 +79,6 @@ extension DGXMLDocument : RangeReplaceableCollection {
         elements.reserveCapacity(minimumCapacity)
     }
     
-    public mutating func removeAll(keepingCapacity: Bool = false) {
-        elements.removeAll(keepingCapacity: keepingCapacity)
-    }
-    
     public mutating func replaceSubrange<C : Collection>(_ subRange: Range<Int>, with newElements: C) where C.Element == DGXMLElement {
         elements.replaceSubrange(subRange, with: newElements)
     }

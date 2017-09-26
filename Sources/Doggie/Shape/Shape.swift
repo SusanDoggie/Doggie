@@ -371,11 +371,6 @@ extension Shape.Component : RangeReplaceableCollection {
         segments.reserveCapacity(minimumCapacity)
     }
     
-    public mutating func removeAll(keepingCapacity: Bool = false) {
-        cache = Cache()
-        segments.removeAll(keepingCapacity: keepingCapacity)
-    }
-    
     public mutating func replaceSubrange<C : Collection>(_ subRange: Range<Int>, with newElements: C) where C.Element == Shape.Segment {
         cache = Cache()
         segments.replaceSubrange(subRange, with: newElements)
@@ -602,11 +597,6 @@ extension Shape : RangeReplaceableCollection {
     
     public mutating func reserveCapacity(_ minimumCapacity: Int) {
         components.reserveCapacity(minimumCapacity)
-    }
-    
-    public mutating func removeAll(keepingCapacity: Bool = false) {
-        cache = Cache()
-        components.removeAll(keepingCapacity: keepingCapacity)
     }
     
     public mutating func replaceSubrange<C : Collection>(_ subRange: Range<Int>, with newElements: C) where C.Element == Component {

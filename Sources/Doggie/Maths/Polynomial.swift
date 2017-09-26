@@ -114,11 +114,6 @@ extension Polynomial : RangeReplaceableCollection {
     }
     
     @_inlineable
-    public mutating func removeAll(keepingCapacity: Bool = false) {
-        coeffs.removeAll(keepingCapacity: keepingCapacity)
-    }
-    
-    @_inlineable
     public mutating func replaceSubrange<C : Collection>(_ subRange: Range<Int>, with newElements: C) where C.Element == Double {
         coeffs.replaceSubrange(subRange, with: newElements)
         while coeffs.last == 0 {
