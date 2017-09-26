@@ -85,57 +85,57 @@ public protocol RegularExpressionMatchable {
     associatedtype Replacement
     
     /// Returns an array containing all the matches of the regular expression.
-    func match(_ regex: Regex) -> [Matching]
+    func match(regex: Regex) -> [Matching]
     
     /// Returns a new string containing matching regular expressions replaced with the template.
-    func replace(_ regex: Regex, template: Replacement) -> Replacement
+    func replace(regex: Regex, template: Replacement) -> Replacement
     
     /// Returns the number of matches of the regular expression.
-    func count(_ regex: Regex) -> Int
+    func count(regex: Regex) -> Int
     
     /// Returns the first match of the regular expression.
-    func firstMatch(_ regex: Regex) -> Matching?
+    func firstMatch(regex: Regex) -> Matching?
     
     /// Returns true if any match of the regular expression.
-    func isMatch(_ regex: Regex) -> Bool
+    func isMatch(regex: Regex) -> Bool
 }
 
 public extension RegularExpressionMatchable {
     
     /// Returns the number of matches of the regular expression.
-    func count(_ regex: Regex) -> Int {
-        return self.match(regex).count
+    func count(regex: Regex) -> Int {
+        return self.match(regex: regex).count
     }
     
     /// Returns the first match of the regular expression.
-    func firstMatch(_ regex: Regex) -> Matching? {
-        return self.match(regex).first
+    func firstMatch(regex: Regex) -> Matching? {
+        return self.match(regex: regex).first
     }
     
     /// Returns true if any match of the regular expression.
-    func isMatch(_ regex: Regex) -> Bool {
-        return self.firstMatch(regex) != nil
+    func isMatch(regex: Regex) -> Bool {
+        return self.firstMatch(regex: regex) != nil
     }
 }
 
 extension String: RegularExpressionMatchable {
     
     /// Returns the number of matches of the regular expression in the string.
-    public func count(_ regex: Regex) -> Int {
+    public func count(regex: Regex) -> Int {
         let nsstring = NSString(string: self)
         let range = NSRange(location: 0, length: nsstring.length)
         return regex.matcher.numberOfMatches(in: self, options: [], range: range)
     }
     
     /// Returns true if any match of the regular expression in the string.
-    public func isMatch(_ regex: Regex) -> Bool {
+    public func isMatch(regex: Regex) -> Bool {
         let nsstring = NSString(string: self)
         let range = NSRange(location: 0, length: nsstring.length)
         return regex.matcher.firstMatch(in: self, options: [], range: range) != nil
     }
     
     /// Returns the first match of the regular expression in the string.
-    public func firstMatch(_ regex: Regex) -> String? {
+    public func firstMatch(regex: Regex) -> String? {
         let nsstring = NSString(string: self)
         let range = NSRange(location: 0, length: nsstring.length)
         let match_result = regex.matcher.firstMatch(in: self, options: [], range: range)
@@ -143,7 +143,7 @@ extension String: RegularExpressionMatchable {
     }
     
     /// Returns an array containing all the matches of the regular expression in the string.
-    public func match(_ regex: Regex) -> [String] {
+    public func match(regex: Regex) -> [String] {
         let nsstring = NSString(string: self)
         let range = NSRange(location: 0, length: nsstring.length)
         var match_result = [String]()
@@ -160,7 +160,7 @@ extension String: RegularExpressionMatchable {
     /// The replacement is treated as a template, with $0 being replaced by the contents of the matched range, $1 by the contents of the first capture group, and so on.
     /// Additional digits beyond the maximum required to represent the number of capture groups will be treated as ordinary characters, as will a $ not followed by digits.
     /// Backslash will escape both $ and itself.
-    public func replace(_ regex: Regex, template: String) -> String {
+    public func replace(regex: Regex, template: String) -> String {
         let nsstring = NSString(string: self)
         let range = NSRange(location: 0, length: nsstring.length)
         return regex.matcher.stringByReplacingMatches(in: self, options: [], range: range, withTemplate: template)
@@ -169,7 +169,7 @@ extension String: RegularExpressionMatchable {
 
 @_inlineable
 public func ~=<T: RegularExpressionMatchable> (lhs: Regex, rhs: T) -> Bool {
-    return rhs.isMatch(lhs)
+    return rhs.isMatch(regex: lhs)
 }
 
 @_inlineable

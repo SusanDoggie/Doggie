@@ -78,7 +78,7 @@ extension Shape {
     public init(code: String) throws {
         self.init()
         
-        var g = PathDataScanner(code.match(pathDataMatcher))
+        var g = PathDataScanner(code.match(regex: pathDataMatcher))
         var component = Component()
         var relative = Point()
         var lastcontrol = Point()
