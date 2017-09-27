@@ -285,7 +285,7 @@ private class MappedBufferTempFile<Element> {
     
     init(capacity: Int) {
         
-        self.mapped_size = (max(capacity, 1) * MemoryLayout<Element>.stride).align(Int(PAGE_SIZE))
+        self.mapped_size = (max(capacity, 1) * MemoryLayout<Element>.stride).align(Int(getpagesize()))
         self.capacity = mapped_size / MemoryLayout<Element>.stride
         
         let path = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("com.SusanDoggie.MappedBuffer.\(UUID().uuidString).XXXXXX")
@@ -315,7 +315,7 @@ private class MappedBufferTempFile<Element> {
         
         munmap(raw_address, mapped_size)
         
-        self.mapped_size = (max(capacity, 1) * MemoryLayout<Element>.stride).align(Int(PAGE_SIZE))
+        self.mapped_size = (max(capacity, 1) * MemoryLayout<Element>.stride).align(Int(getpagesize()))
         self.capacity = mapped_size / MemoryLayout<Element>.stride
         
         guard ftruncate(self.fd, off_t(mapped_size)) != -1 else { fatalError("\(String(cString: strerror(errno)))") }
