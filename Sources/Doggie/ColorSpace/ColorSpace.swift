@@ -34,21 +34,17 @@ protocol _ColorSpaceBaseProtocol {
     
     var cieXYZ: CIEXYZColorSpace { get }
     
-    func _convertToLinear<S : Sequence>(_ color: S) -> [S.Element] where S.Element: ColorModelProtocol
+    func _convertToLinear<Model : ColorModelProtocol>(_ color: Model) -> Model
     
-    func _convertToLinear<S : Sequence>(_ color: S) -> [S.Element] where S.Element: ColorPixelProtocol
+    func _convertFromLinear<Model : ColorModelProtocol>(_ color: Model) -> Model
     
-    func _convertFromLinear<S : Sequence>(_ color: S) -> [S.Element] where S.Element: ColorModelProtocol
+    func _convertLinearToXYZ<Model : ColorModelProtocol>(_ color: Model) -> XYZColorModel
     
-    func _convertFromLinear<S : Sequence>(_ color: S) -> [S.Element] where S.Element: ColorPixelProtocol
+    func _convertLinearFromXYZ<Model : ColorModelProtocol>(_ color: XYZColorModel) -> Model
     
-    func _convert<S : Sequence, Destination: ColorSpaceBaseProtocol, R>(_ color: S, to other: Destination, intent: RenderingIntent, _ algorithm: (source: ChromaticAdaptationAlgorithm, destination: ChromaticAdaptationAlgorithm)) -> [R] where S.Element: ColorModelProtocol
+    func _convertToXYZ<Model : ColorModelProtocol>(_ color: Model) -> XYZColorModel
     
-    func _convert<S : Sequence, Destination: ColorSpaceBaseProtocol, R: ColorPixelProtocol>(_ color: S, to other: Destination, intent: RenderingIntent, _ algorithm: (source: ChromaticAdaptationAlgorithm, destination: ChromaticAdaptationAlgorithm)) -> [R] where S.Element: ColorPixelProtocol
-    
-    func _convert<S : Sequence, R>(_ color: S, from other: _ColorSpaceBaseProtocol, intent: RenderingIntent, _ algorithm: (source: ChromaticAdaptationAlgorithm, destination: ChromaticAdaptationAlgorithm)) -> [R] where S.Element: ColorModelProtocol
-    
-    func _convert<S : Sequence, R: ColorPixelProtocol>(_ color: S, from other: _ColorSpaceBaseProtocol, intent: RenderingIntent, _ algorithm: (source: ChromaticAdaptationAlgorithm, destination: ChromaticAdaptationAlgorithm)) -> [R] where S.Element: ColorPixelProtocol
+    func _convertFromXYZ<Model : ColorModelProtocol>(_ color: XYZColorModel) -> Model
     
     var _linearTone: _ColorSpaceBaseProtocol { get }
 }
@@ -103,50 +99,38 @@ extension ColorSpaceBaseProtocol {
     
     @_versioned
     @_inlineable
-    func _convertToLinear<S : Sequence>(_ color: S) -> [S.Element] where S.Element: ColorModelProtocol {
-        return color.map { self.convertToLinear($0 as! Model) as! S.Element }
+    func _convertToLinear<RModel : ColorModelProtocol>(_ color: RModel) -> RModel {
+        return self.convertToLinear(color as! Model) as! RModel
     }
     
     @_versioned
     @_inlineable
-    func _convertToLinear<S : Sequence>(_ color: S) -> [S.Element] where S.Element: ColorPixelProtocol {
-        return color.map { S.Element(color: self.convertToLinear($0.color as! Model) as! S.Element.Model, opacity: $0.opacity) }
+    func _convertFromLinear<RModel : ColorModelProtocol>(_ color: RModel) -> RModel {
+        return self.convertFromLinear(color as! Model) as! RModel
     }
     
     @_versioned
     @_inlineable
-    func _convertFromLinear<S : Sequence>(_ color: S) -> [S.Element] where S.Element: ColorModelProtocol {
-        return color.map { self.convertFromLinear($0 as! Model) as! S.Element }
+    func _convertLinearToXYZ<RModel : ColorModelProtocol>(_ color: RModel) -> XYZColorModel {
+        return self.convertLinearToXYZ(color as! Model)
     }
     
     @_versioned
     @_inlineable
-    func _convertFromLinear<S : Sequence>(_ color: S) -> [S.Element] where S.Element: ColorPixelProtocol {
-        return color.map { S.Element(color: self.convertFromLinear($0.color as! Model) as! S.Element.Model, opacity: $0.opacity) }
+    func _convertLinearFromXYZ<RModel : ColorModelProtocol>(_ color: XYZColorModel) -> RModel {
+        return self.convertLinearFromXYZ(color) as! RModel
     }
     
     @_versioned
     @_inlineable
-    func _convert<S : Sequence, Destination: ColorSpaceBaseProtocol, R>(_ color: S, to other: Destination, intent: RenderingIntent, _ algorithm: (source: ChromaticAdaptationAlgorithm, destination: ChromaticAdaptationAlgorithm)) -> [R] where S.Element: ColorModelProtocol {
-        return intent._convert(color, (self.cieXYZ, other.cieXYZ), algorithm, toXYZ: { self.convertToXYZ($0 as! Model) }, fromXYZ: { xyz, _ in other.convertFromXYZ(xyz) }) as! [R]
+    func _convertToXYZ<RModel : ColorModelProtocol>(_ color: RModel) -> XYZColorModel {
+        return self.convertToXYZ(color as! Model)
     }
     
     @_versioned
     @_inlineable
-    func _convert<S : Sequence, Destination: ColorSpaceBaseProtocol, R: ColorPixelProtocol>(_ color: S, to other: Destination, intent: RenderingIntent, _ algorithm: (source: ChromaticAdaptationAlgorithm, destination: ChromaticAdaptationAlgorithm)) -> [R] where S.Element: ColorPixelProtocol {
-        return intent._convert(color, (self.cieXYZ, other.cieXYZ), algorithm, toXYZ: { self.convertToXYZ($0.color as! Model) }, fromXYZ: { xyz, pixel in R(color: other.convertFromXYZ(xyz) as! R.Model, opacity: pixel.opacity) })
-    }
-    
-    @_versioned
-    @_inlineable
-    func _convert<S : Sequence, R>(_ color: S, from other: _ColorSpaceBaseProtocol, intent: RenderingIntent, _ algorithm: (source: ChromaticAdaptationAlgorithm, destination: ChromaticAdaptationAlgorithm)) -> [R] where S.Element: ColorModelProtocol {
-        return other._convert(color, to: self, intent: intent, algorithm)
-    }
-    
-    @_versioned
-    @_inlineable
-    func _convert<S : Sequence, R: ColorPixelProtocol>(_ color: S, from other: _ColorSpaceBaseProtocol, intent: RenderingIntent, _ algorithm: (source: ChromaticAdaptationAlgorithm, destination: ChromaticAdaptationAlgorithm)) -> [R] where S.Element: ColorPixelProtocol {
-        return other._convert(color, to: self, intent: intent, algorithm)
+    func _convertFromXYZ<RModel : ColorModelProtocol>(_ color: XYZColorModel) -> RModel {
+        return self.convertFromXYZ(color) as! RModel
     }
     
     @_versioned
@@ -208,68 +192,136 @@ extension ColorSpace {
     
     @_inlineable
     public func convertToLinear(_ color: Model) -> Model {
-        return self.convertToLinear(CollectionOfOne(color))[0]
+        return self.base._convertToLinear(color)
     }
     
     @_inlineable
-    public func convertToLinear<S: ColorPixelProtocol>(_ color: S) -> S where S.Model == Model {
-        return self.convertToLinear(CollectionOfOne(color))[0]
+    public func convertFromLinear(_ color: Model) -> Model {
+        return self.base._convertFromLinear(color)
     }
     
     @_inlineable
-    public func convertToLinear<S : Sequence>(_ color: S) -> [S.Element] where S.Element == Model {
-        return base._convertToLinear(color)
+    public func convertLinearToXYZ(_ color: Model) -> XYZColorModel {
+        return self.base._convertLinearToXYZ(color)
     }
     
     @_inlineable
-    public func convertToLinear<S : Sequence>(_ color: S) -> [S.Element] where S.Element: ColorPixelProtocol, S.Element.Model == Model {
-        return base._convertToLinear(color)
+    public func convertLinearFromXYZ(_ color: XYZColorModel) -> Model {
+        return self.base._convertLinearFromXYZ(color)
+    }
+    
+    @_inlineable
+    public func convertToXYZ(_ color: Model) -> XYZColorModel {
+        return self.base._convertToXYZ(color)
+    }
+    
+    @_inlineable
+    public func convertFromXYZ(_ color: XYZColorModel) -> Model {
+        return self.base._convertFromXYZ(color)
     }
 }
 
 extension ColorSpace {
     
     @_inlineable
-    public func convertFromLinear(_ color: Model) -> Model {
-        return self.convertFromLinear(CollectionOfOne(color))[0]
+    public func convertToLinear<S: ColorPixelProtocol>(_ color: S) -> S where S.Model == Model {
+        return S(color: self.convertToLinear(color.color), opacity: color.opacity)
     }
     
     @_inlineable
     public func convertFromLinear<S: ColorPixelProtocol>(_ color: S) -> S where S.Model == Model {
-        return self.convertFromLinear(CollectionOfOne(color))[0]
+        return S(color: self.convertFromLinear(color.color), opacity: color.opacity)
     }
     
     @_inlineable
-    public func convertFromLinear<S : Sequence>(_ color: S) -> [S.Element] where S.Element == Model {
-        return base._convertFromLinear(color)
+    public func convertLinearToXYZ<S: ColorPixelProtocol, T: ColorPixelProtocol>(_ color: S) -> T where S.Model == Model, T.Model == XYZColorModel {
+        return T(color: self.convertLinearToXYZ(color.color), opacity: color.opacity)
     }
     
     @_inlineable
-    public func convertFromLinear<S : Sequence>(_ color: S) -> [S.Element] where S.Element: ColorPixelProtocol, S.Element.Model == Model {
-        return base._convertFromLinear(color)
+    public func convertLinearFromXYZ<S: ColorPixelProtocol, T: ColorPixelProtocol>(_ color: T) -> S where S.Model == Model, T.Model == XYZColorModel {
+        return S(color: self.convertLinearFromXYZ(color.color), opacity: color.opacity)
+    }
+    
+    @_inlineable
+    public func convertToXYZ<S: ColorPixelProtocol, T: ColorPixelProtocol>(_ color: S) -> T where S.Model == Model, T.Model == XYZColorModel {
+        return T(color: self.convertToXYZ(color.color), opacity: color.opacity)
+    }
+    
+    @_inlineable
+    public func convertFromXYZ<S: ColorPixelProtocol, T: ColorPixelProtocol>(_ color: T) -> S where S.Model == Model, T.Model == XYZColorModel {
+        return S(color: self.convertFromXYZ(color.color), opacity: color.opacity)
     }
 }
 
 extension ColorSpace {
     
     @_inlineable
+    public func convertToLinear<C : Collection, R : RangeReplaceableCollection>(_ color: C) -> R where C.Element == Model, C.Element == R.Element {
+        return R(color.lazy.map { self.convertToLinear($0) })
+    }
+    
+    @_inlineable
+    public func convertToLinear<C : Collection, R : RangeReplaceableCollection>(_ color: C) -> R where C.Element: ColorPixelProtocol, C.Element.Model == Model, C.Element == R.Element {
+        return R(color.lazy.map { self.convertToLinear($0) })
+    }
+}
+
+extension ColorSpace {
+    
+    @_inlineable
+    public func convertFromLinear<C : Collection, R : RangeReplaceableCollection>(_ color: C) -> R where C.Element == Model, C.Element == R.Element {
+        return R(color.lazy.map { self.convertFromLinear($0) })
+    }
+    
+    @_inlineable
+    public func convertFromLinear<C : Collection, R : RangeReplaceableCollection>(_ color: C) -> R where C.Element: ColorPixelProtocol, C.Element.Model == Model, C.Element == R.Element {
+        return R(color.lazy.map { self.convertFromLinear($0) })
+    }
+}
+
+extension ColorSpace {
+    
+    @_versioned
+    @_inlineable
+    func _convert<C : Collection, R>(_ color: C, to other: ColorSpace<R>, intent: RenderingIntent) -> LazyMapCollection<C, R> where C.Element == Model {
+        switch intent {
+        case .absoluteColorimetric: return color.lazy.map { other.convertFromXYZ(self.convertToXYZ($0)) }
+        case .relativeColorimetric:
+            let matrix = self.base.cieXYZ.chromaticAdaptationMatrix(to: other.base.cieXYZ, chromaticAdaptationAlgorithm)
+            return color.lazy.map { other.convertFromXYZ(self.convertToXYZ($0) * matrix) }
+        }
+    }
+    
+    @_versioned
+    @_inlineable
+    func _convert<C : Collection, R: ColorPixelProtocol>(_ color: C, to other: ColorSpace<R.Model>, intent: RenderingIntent) -> LazyMapCollection<C, R> where C.Element: ColorPixelProtocol, C.Element.Model == Model {
+        switch intent {
+        case .absoluteColorimetric: return color.lazy.map { R(color: other.convertFromXYZ(self.convertToXYZ($0.color)), opacity: $0.opacity) }
+        case .relativeColorimetric:
+            let matrix = self.base.cieXYZ.chromaticAdaptationMatrix(to: other.base.cieXYZ, chromaticAdaptationAlgorithm)
+            return color.lazy.map { R(color: other.convertFromXYZ(self.convertToXYZ($0.color) * matrix), opacity: $0.opacity) }
+        }
+    }
+    
+    @_inlineable
     public func convert<R>(_ color: Model, to other: ColorSpace<R>, intent: RenderingIntent = .default) -> R {
-        return self.convert(CollectionOfOne(color), to: other, intent: intent)[0]
+        return self._convert(CollectionOfOne(color), to: other, intent: intent)[0]
     }
     
     @_inlineable
     public func convert<S: ColorPixelProtocol, R: ColorPixelProtocol>(_ color: S, to other: ColorSpace<R.Model>, intent: RenderingIntent = .default) -> R where S.Model == Model {
-        return self.convert(CollectionOfOne(color), to: other, intent: intent)[0]
+        return self._convert(CollectionOfOne(color), to: other, intent: intent)[0]
     }
     
     @_inlineable
-    public func convert<S : Sequence, R>(_ color: S, to other: ColorSpace<R>, intent: RenderingIntent = .default) -> [R] where S.Element == Model {
-        return other.base._convert(color, from: self.base, intent: intent, (self.chromaticAdaptationAlgorithm, other.chromaticAdaptationAlgorithm))
+    public func convert<C : Collection, R : RangeReplaceableCollection>(_ color: C, to other: ColorSpace<R.Element>, intent: RenderingIntent = .default) -> R where C.Element == Model {
+        return R(self._convert(color, to: other, intent: intent))
     }
     
     @_inlineable
-    public func convert<S : Sequence, R: ColorPixelProtocol>(_ color: S, to other: ColorSpace<R.Model>, intent: RenderingIntent = .default) -> [R] where S.Element: ColorPixelProtocol, S.Element.Model == Model {
-        return other.base._convert(color, from: self.base, intent: intent, (self.chromaticAdaptationAlgorithm, other.chromaticAdaptationAlgorithm))
+    public func convert<C : Collection, R : RangeReplaceableCollection>(_ color: C, to other: ColorSpace<R.Element.Model>, intent: RenderingIntent = .default) -> R where C.Element: ColorPixelProtocol, C.Element.Model == Model, R.Element: ColorPixelProtocol {
+        return R(self._convert(color, to: other, intent: intent))
     }
 }
 
