@@ -30,13 +30,13 @@ public struct Image<Pixel: ColorPixelProtocol> {
     
     public var resolution: Resolution
     
-    public internal(set) var pixels: [Pixel]
+    public internal(set) var pixels: MappedBuffer<Pixel>
     
     public var colorSpace: ColorSpace<Pixel.Model>
     
     @_versioned
     @_inlineable
-    init(width: Int, height: Int, resolution: Resolution, pixels: [Pixel], colorSpace: ColorSpace<Pixel.Model>) {
+    init(width: Int, height: Int, resolution: Resolution, pixels: MappedBuffer<Pixel>, colorSpace: ColorSpace<Pixel.Model>) {
         precondition(width >= 0, "negative width is not allowed.")
         precondition(height >= 0, "negative height is not allowed.")
         precondition(width * height == pixels.count, "mismatch pixels count.")
@@ -55,7 +55,7 @@ public struct Image<Pixel: ColorPixelProtocol> {
         self.height = height
         self.resolution = resolution
         self.colorSpace = colorSpace
-        self.pixels = [Pixel](repeating: pixel, count: width * height)
+        self.pixels = MappedBuffer<Pixel>(repeating: pixel, count: width * height)
     }
     
     @_inlineable
@@ -64,7 +64,7 @@ public struct Image<Pixel: ColorPixelProtocol> {
         self.height = image.height
         self.resolution = image.resolution
         self.colorSpace = image.colorSpace
-        self.pixels = image.pixels as? [Pixel] ?? image.pixels.map(Pixel.init)
+        self.pixels = image.pixels as? MappedBuffer<Pixel> ?? MappedBuffer<Pixel>(image.pixels.lazy.map(Pixel.init))
     }
     
     @_inlineable
@@ -131,7 +131,9 @@ extension Image {
         if pixels.count == 0 {
             return Image(width: height, height: width, resolution: Resolution(horizontal: resolution.vertical, vertical: resolution.horizontal, unit: resolution.unit), pixels: [], colorSpace: colorSpace)
         }
-        return Image(width: height, height: width, resolution: Resolution(horizontal: resolution.vertical, vertical: resolution.horizontal, unit: resolution.unit), pixels: transpose(height, width, pixels), colorSpace: colorSpace)
+        var copy = pixels
+        pixels.withUnsafeBufferPointer { source in copy.withUnsafeMutableBufferPointer { destination in Transpose(height, width, source.baseAddress!, 1, destination.baseAddress!, 1) } }
+        return Image(width: height, height: width, resolution: Resolution(horizontal: resolution.vertical, vertical: resolution.horizontal, unit: resolution.unit), pixels: copy, colorSpace: colorSpace)
     }
     
     @_inlineable

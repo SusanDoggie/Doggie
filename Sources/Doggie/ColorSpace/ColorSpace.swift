@@ -258,12 +258,12 @@ extension ColorSpace {
     
     @_inlineable
     public func convertToLinear<C : Collection, R : RangeReplaceableCollection>(_ color: C) -> R where C.Element == Model, C.Element == R.Element {
-        return R(color.lazy.map { self.convertToLinear($0) })
+        return R(color.lazy.map(self.convertToLinear))
     }
     
     @_inlineable
     public func convertToLinear<C : Collection, R : RangeReplaceableCollection>(_ color: C) -> R where C.Element: ColorPixelProtocol, C.Element.Model == Model, C.Element == R.Element {
-        return R(color.lazy.map { self.convertToLinear($0) })
+        return R(color.lazy.map(self.convertToLinear))
     }
 }
 
@@ -271,12 +271,12 @@ extension ColorSpace {
     
     @_inlineable
     public func convertFromLinear<C : Collection, R : RangeReplaceableCollection>(_ color: C) -> R where C.Element == Model, C.Element == R.Element {
-        return R(color.lazy.map { self.convertFromLinear($0) })
+        return R(color.lazy.map(self.convertFromLinear))
     }
     
     @_inlineable
     public func convertFromLinear<C : Collection, R : RangeReplaceableCollection>(_ color: C) -> R where C.Element: ColorPixelProtocol, C.Element.Model == Model, C.Element == R.Element {
-        return R(color.lazy.map { self.convertFromLinear($0) })
+        return R(color.lazy.map(self.convertFromLinear))
     }
 }
 

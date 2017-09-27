@@ -277,7 +277,7 @@ extension MappedBuffer {
 private class MappedBufferTempFile<Element> {
     
     let fd: Int32
-    private(set) var raw_address: UnsafeMutableRawPointer
+    let path: String
     private(set) var address: UnsafeMutablePointer<Element>
     private(set) var mapped_size: Int
     private(set) var capacity: Int
@@ -288,40 +288,49 @@ private class MappedBufferTempFile<Element> {
         self.mapped_size = (max(capacity, 1) * MemoryLayout<Element>.stride).align(Int(getpagesize()))
         self.capacity = mapped_size / MemoryLayout<Element>.stride
         
-        let path = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("com.SusanDoggie.MappedBuffer.\(UUID().uuidString).XXXXXX")
-        var path_buffer = path.withUnsafeFileSystemRepresentation { Array(UnsafeBufferPointer(start: $0, count: $0 == nil ? 0 : Int(PATH_MAX))) }
+        var fd: Int32 = 0
+        var path = ""
         
-        self.fd = mkstemp(&path_buffer)
+        while true {
+            let path_url = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("com.SusanDoggie.MappedBuffer.\(UUID().uuidString)")
+            path = path_url.withUnsafeFileSystemRepresentation { String(cString: $0!) }
+            fd = open(path, O_RDWR | O_CREAT | O_EXCL, S_IRUSR | S_IWUSR)
+            guard fd == -1 && errno == EEXIST else { break }
+        }
         
-        guard self.fd != -1 else { fatalError("\(String(cString: strerror(errno))): \(path)") }
-        guard ftruncate(self.fd, off_t(mapped_size)) != -1 else { fatalError("\(String(cString: strerror(errno)))") }
+        self.fd = fd
+        self.path = path
         
-        self.raw_address = mmap(nil, mapped_size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0)
-        self.address = raw_address.bindMemory(to: Element.self, capacity: capacity)
+        guard fd != -1 else { fatalError("\(String(cString: strerror(errno))): \(path)") }
+        guard flock(fd, LOCK_EX) != -1 else { fatalError(String(cString: strerror(errno))) }
+        guard ftruncate(fd, off_t(mapped_size)) != -1 else { fatalError(String(cString: strerror(errno))) }
+        
+        self.address = mmap(nil, mapped_size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0).bindMemory(to: Element.self, capacity: capacity)
     }
     
     deinit {
         if count != 0 {
             address.deinitialize(count: count)
         }
-        munmap(raw_address, mapped_size)
+        munmap(address, mapped_size)
         ftruncate(fd, 0)
+        flock(fd, LOCK_UN)
         close(fd)
+        remove(path)
     }
     
     func extend_capacity(capacity: Int) {
         
         precondition(self.capacity <= capacity)
         
-        munmap(raw_address, mapped_size)
+        munmap(address, mapped_size)
         
         self.mapped_size = (max(capacity, 1) * MemoryLayout<Element>.stride).align(Int(getpagesize()))
         self.capacity = mapped_size / MemoryLayout<Element>.stride
         
-        guard ftruncate(self.fd, off_t(mapped_size)) != -1 else { fatalError("\(String(cString: strerror(errno)))") }
+        guard ftruncate(self.fd, off_t(mapped_size)) != -1 else { fatalError(String(cString: strerror(errno))) }
         
-        self.raw_address = mmap(nil, mapped_size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0)
-        self.address = raw_address.bindMemory(to: Element.self, capacity: capacity)
+        self.address = mmap(nil, mapped_size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0).bindMemory(to: Element.self, capacity: capacity)
     }
 }
 
