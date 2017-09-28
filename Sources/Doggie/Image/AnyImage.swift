@@ -36,6 +36,8 @@ protocol AnyImageBaseProtocol {
     
     var isOpaque: Bool { get }
     
+    var option: MappedBufferOption { get }
+    
     func rawData(format: RawBitmap.Format, bitsPerChannel: Int, bitsPerPixel: Int, bytesPerRow: Int, alphaChannel: RawBitmap.AlphaChannelFormat, channelEndianness: RawBitmap.Endianness, pixelEndianness: RawBitmap.Endianness, separated: Bool) -> [Data]
     
     var _colorSpace: AnyColorSpaceBaseProtocol { get }
@@ -52,9 +54,9 @@ protocol AnyImageBaseProtocol {
     
     func _convert<Model>() -> Image<ColorPixel<Model>>?
     
-    func _convert(to colorSpace: AnyColorSpaceBaseProtocol, intent: RenderingIntent) -> AnyImageBaseProtocol
+    func _convert(to colorSpace: AnyColorSpaceBaseProtocol, intent: RenderingIntent, option: MappedBufferOption) -> AnyImageBaseProtocol
     
-    func _convert<P>(to colorSpace: ColorSpace<P.Model>, intent: RenderingIntent) -> Image<P>
+    func _convert<P>(to colorSpace: ColorSpace<P.Model>, intent: RenderingIntent, option: MappedBufferOption) -> Image<P>
 }
 
 extension Image : AnyImageBaseProtocol {
@@ -104,14 +106,14 @@ extension Image : AnyImageBaseProtocol {
     
     @_versioned
     @_inlineable
-    func _convert(to colorSpace: AnyColorSpaceBaseProtocol, intent: RenderingIntent) -> AnyImageBaseProtocol {
-        return colorSpace._convert(self, intent: intent)
+    func _convert(to colorSpace: AnyColorSpaceBaseProtocol, intent: RenderingIntent, option: MappedBufferOption) -> AnyImageBaseProtocol {
+        return colorSpace._convert(self, intent: intent, option: option)
     }
     
     @_versioned
     @_inlineable
-    func _convert<P>(to colorSpace: ColorSpace<P.Model>, intent: RenderingIntent) -> Image<P> {
-        return Image<P>(image: self, colorSpace: colorSpace, intent: intent)
+    func _convert<P>(to colorSpace: ColorSpace<P.Model>, intent: RenderingIntent, option: MappedBufferOption) -> Image<P> {
+        return Image<P>(image: self, colorSpace: colorSpace, intent: intent, option: option)
     }
 }
 
@@ -136,8 +138,8 @@ public struct AnyImage {
 extension AnyImage {
     
     @_inlineable
-    public init(width: Int, height: Int, resolution: Resolution = Resolution(resolution: 1, unit: .point), colorSpace: AnyColorSpace) {
-        self.init(base: colorSpace._base._createImage(width: width, height: height, resolution: resolution))
+    public init(width: Int, height: Int, resolution: Resolution = Resolution(resolution: 1, unit: .point), colorSpace: AnyColorSpace, option: MappedBufferOption = .default) {
+        self.init(base: colorSpace._base._createImage(width: width, height: height, resolution: resolution, option: option))
     }
     
     @_inlineable
@@ -146,28 +148,48 @@ extension AnyImage {
     }
     
     @_inlineable
-    public init<Pixel: ColorPixelProtocol>(width: Int, height: Int, resolution: Resolution = Resolution(resolution: 1, unit: .point), colorSpace: ColorSpace<Pixel.Model>, pixel: Pixel = Pixel()) {
-        self.init(Image(width: width, height: height, resolution: resolution, colorSpace: colorSpace, pixel: pixel))
+    public init<Pixel: ColorPixelProtocol>(width: Int, height: Int, resolution: Resolution = Resolution(resolution: 1, unit: .point), colorSpace: ColorSpace<Pixel.Model>, pixel: Pixel = Pixel(), option: MappedBufferOption = .default) {
+        self.init(Image(width: width, height: height, resolution: resolution, colorSpace: colorSpace, pixel: pixel, option: option))
+    }
+    
+    @_inlineable
+    public init<Pixel, Model>(image: Image<Pixel>, colorSpace: ColorSpace<Model>, intent: RenderingIntent = .default, option: MappedBufferOption) {
+        self._base = image._convert(to: colorSpace, intent: intent, option: option)
+    }
+    
+    @_inlineable
+    public init<Model>(image: AnyImage, colorSpace: ColorSpace<Model>, intent: RenderingIntent = .default, option: MappedBufferOption) {
+        self._base = image._base._convert(to: colorSpace, intent: intent, option: option)
+    }
+    
+    @_inlineable
+    public init<Pixel>(image: Image<Pixel>, colorSpace: AnyColorSpace, intent: RenderingIntent = .default, option: MappedBufferOption) {
+        self._base = image._convert(to: colorSpace._base, intent: intent, option: option)
+    }
+    
+    @_inlineable
+    public init(image: AnyImage, colorSpace: AnyColorSpace, intent: RenderingIntent = .default, option: MappedBufferOption) {
+        self._base = image._base._convert(to: colorSpace._base, intent: intent, option: option)
     }
     
     @_inlineable
     public init<Pixel, Model>(image: Image<Pixel>, colorSpace: ColorSpace<Model>, intent: RenderingIntent = .default) {
-        self._base = image._convert(to: colorSpace, intent: intent)
+        self.init(image: image, colorSpace: colorSpace, intent: intent, option: image.option)
     }
     
     @_inlineable
     public init<Model>(image: AnyImage, colorSpace: ColorSpace<Model>, intent: RenderingIntent = .default) {
-        self._base = image._base._convert(to: colorSpace, intent: intent)
+        self.init(image: image, colorSpace: colorSpace, intent: intent, option: image._base.option)
     }
     
     @_inlineable
     public init<Pixel>(image: Image<Pixel>, colorSpace: AnyColorSpace, intent: RenderingIntent = .default) {
-        self._base = image._convert(to: colorSpace._base, intent: intent)
+        self.init(image: image, colorSpace: colorSpace, intent: intent, option: image.option)
     }
     
     @_inlineable
     public init(image: AnyImage, colorSpace: AnyColorSpace, intent: RenderingIntent = .default) {
-        self._base = image._base._convert(to: colorSpace._base, intent: intent)
+        self.init(image: image, colorSpace: colorSpace, intent: intent, option: image._base.option)
     }
 }
 
@@ -236,8 +258,13 @@ extension AnyImage {
 extension Image {
     
     @_inlineable
+    public init(image: AnyImage, colorSpace: ColorSpace<Pixel.Model>, intent: RenderingIntent = .default, option: MappedBufferOption) {
+        self = image._base._convert(to: colorSpace, intent: intent, option: option)
+    }
+    
+    @_inlineable
     public init(image: AnyImage, colorSpace: ColorSpace<Pixel.Model>, intent: RenderingIntent = .default) {
-        self = image._base._convert(to: colorSpace, intent: intent)
+        self.init(image: image, colorSpace: colorSpace, intent: intent, option: image._base.option)
     }
     
     @_inlineable

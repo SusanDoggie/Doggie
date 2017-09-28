@@ -323,6 +323,12 @@ extension ColorSpace {
     public func convert<C : Collection, R : RangeReplaceableCollection>(_ color: C, to other: ColorSpace<R.Element.Model>, intent: RenderingIntent = .default) -> R where C.Element: ColorPixelProtocol, C.Element.Model == Model, R.Element: ColorPixelProtocol {
         return R(self._convert(color, to: other, intent: intent))
     }
+    
+    @_versioned
+    @_inlineable
+    func convert<C : Collection, R>(_ color: C, to other: ColorSpace<R.Model>, intent: RenderingIntent = .default, option: MappedBufferOption = .default) -> MappedBuffer<R> where C.Element: ColorPixelProtocol, C.Element.Model == Model, R: ColorPixelProtocol {
+        return MappedBuffer<R>(self._convert(color, to: other, intent: intent), option: option)
+    }
 }
 
 extension ColorSpace {

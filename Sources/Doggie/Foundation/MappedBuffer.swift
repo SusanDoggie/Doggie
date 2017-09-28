@@ -25,6 +25,20 @@
 
 import Foundation
 
+public enum MappedBufferOption {
+    
+    case inMemory
+    case fileBacked
+}
+
+extension MappedBufferOption {
+    
+    @_inlineable
+    public static var `default` : MappedBufferOption {
+        return .inMemory
+    }
+}
+
 public struct MappedBuffer<Element> : RandomAccessCollection, MutableCollection, ExpressibleByArrayLiteral {
     
     public typealias SubSequence = MutableRangeReplaceableRandomAccessSlice<MappedBuffer>
@@ -36,17 +50,21 @@ public struct MappedBuffer<Element> : RandomAccessCollection, MutableCollection,
     private var buffer: MappedBufferTempFile<Element>
     
     public init() {
-        self.buffer = MappedBufferTempFile<Element>(capacity: 0)
+        self.buffer = MappedBufferTempFile<Element>(capacity: 0, option: .default)
     }
     
-    public init(repeating repeatedValue: Element, count: Int) {
-        self.buffer = MappedBufferTempFile<Element>(capacity: count)
+    public init(option: MappedBufferOption) {
+        self.buffer = MappedBufferTempFile<Element>(capacity: 0, option: option)
+    }
+    
+    public init(repeating repeatedValue: Element, count: Int, option: MappedBufferOption = .default) {
+        self.buffer = MappedBufferTempFile<Element>(capacity: count, option: option)
         self.buffer.count = count
         self.buffer.address.initialize(to: repeatedValue, count: count)
     }
     
     public init(arrayLiteral elements: Element ...) {
-        self.buffer = MappedBufferTempFile<Element>(capacity: elements.count)
+        self.buffer = MappedBufferTempFile<Element>(capacity: elements.count, option: .default)
         self.buffer.count = count
         
         var address = self.buffer.address
@@ -55,9 +73,38 @@ public struct MappedBuffer<Element> : RandomAccessCollection, MutableCollection,
             address += 1
         }
     }
+    
+    public init(_ other: MappedBuffer<Element>) {
+        self = other
+    }
+    
+    public init<S : Sequence>(_ elements: S, option: MappedBufferOption = .default) where Element == S.Element {
+        
+        var underestimatedCount = elements.underestimatedCount
+        
+        self.buffer = MappedBufferTempFile<Element>(capacity: underestimatedCount, option: option)
+        self.buffer.count = underestimatedCount
+        
+        var address = self.buffer.address
+        var iterator = elements.makeIterator()
+        
+        while underestimatedCount != 0, let item = iterator.next() {
+            address.initialize(to: item)
+            address += 1
+            underestimatedCount -= 1
+        }
+        
+        while let item = iterator.next() {
+            self.append(item)
+        }
+    }
 }
 
 extension MappedBuffer {
+    
+    public var option: MappedBufferOption {
+        return buffer.fd == -1 ? .inMemory : .fileBacked
+    }
     
     public var capacity: Int {
         return buffer.capacity
@@ -80,7 +127,7 @@ extension MappedBuffer {
             return
         }
         
-        let new_buffer = MappedBufferTempFile<Element>(capacity: buffer.capacity)
+        let new_buffer = MappedBufferTempFile<Element>(capacity: buffer.capacity, option: self.option)
         
         new_buffer.count = buffer.count
         new_buffer.address.initialize(from: buffer.address, count: buffer.count)
@@ -129,7 +176,7 @@ extension MappedBuffer : RangeReplaceableCollection {
             
         } else {
             
-            let new_buffer = MappedBufferTempFile<Element>(capacity: new_count)
+            let new_buffer = MappedBufferTempFile<Element>(capacity: new_count, option: self.option)
             
             new_buffer.count = new_count
             new_buffer.address.initialize(from: buffer.address, count: buffer.count)
@@ -151,7 +198,7 @@ extension MappedBuffer : RangeReplaceableCollection {
             
         } else {
             
-            let new_buffer = MappedBufferTempFile<Element>(capacity: minimumCapacity)
+            let new_buffer = MappedBufferTempFile<Element>(capacity: minimumCapacity, option: self.option)
             
             new_buffer.count = buffer.count
             new_buffer.address.initialize(from: buffer.address, count: buffer.count)
@@ -198,7 +245,7 @@ extension MappedBuffer : RangeReplaceableCollection {
             
         } else {
             
-            let new_buffer = MappedBufferTempFile<Element>(capacity: Swift.max(buffer.capacity, new_count))
+            let new_buffer = MappedBufferTempFile<Element>(capacity: Swift.max(buffer.capacity, new_count), option: self.option)
             
             new_buffer.count = new_count
             
@@ -283,54 +330,88 @@ private class MappedBufferTempFile<Element> {
     private(set) var capacity: Int
     var count: Int = 0
     
-    init(capacity: Int) {
+    init(capacity: Int, option: MappedBufferOption) {
         
         self.mapped_size = (max(capacity, 1) * MemoryLayout<Element>.stride).align(Int(getpagesize()))
         self.capacity = mapped_size / MemoryLayout<Element>.stride
         
-        var fd: Int32 = 0
-        var path = ""
-        
-        while true {
-            let path_url = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("com.SusanDoggie.MappedBuffer.\(UUID().uuidString)")
-            path = path_url.withUnsafeFileSystemRepresentation { String(cString: $0!) }
-            fd = open(path, O_RDWR | O_CREAT | O_EXCL, S_IRUSR | S_IWUSR)
-            guard fd == -1 && errno == EEXIST else { break }
+        switch option {
+        case .inMemory:
+            
+            self.fd = -1
+            self.path = ""
+            
+            self.address = mmap(nil, mapped_size, PROT_READ | PROT_WRITE, MAP_ANONYMOUS | MAP_PRIVATE, fd, 0).bindMemory(to: Element.self, capacity: self.capacity)
+            
+        case .fileBacked:
+            
+            var fd: Int32 = 0
+            var path = ""
+            
+            while true {
+                let path_url = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("com.SusanDoggie.MappedBuffer.\(UUID().uuidString)")
+                path = path_url.withUnsafeFileSystemRepresentation { String(cString: $0!) }
+                fd = open(path, O_RDWR | O_CREAT | O_EXCL, S_IRUSR | S_IWUSR)
+                guard fd == -1 && errno == EEXIST else { break }
+            }
+            
+            self.fd = fd
+            self.path = path
+            
+            guard fd != -1 else { fatalError("\(String(cString: strerror(errno))): \(path)") }
+            guard flock(fd, LOCK_EX) != -1 else { fatalError(String(cString: strerror(errno))) }
+            guard ftruncate(fd, off_t(mapped_size)) != -1 else { fatalError(String(cString: strerror(errno))) }
+            
+            self.address = mmap(nil, mapped_size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0).bindMemory(to: Element.self, capacity: self.capacity)
         }
-        
-        self.fd = fd
-        self.path = path
-        
-        guard fd != -1 else { fatalError("\(String(cString: strerror(errno))): \(path)") }
-        guard flock(fd, LOCK_EX) != -1 else { fatalError(String(cString: strerror(errno))) }
-        guard ftruncate(fd, off_t(mapped_size)) != -1 else { fatalError(String(cString: strerror(errno))) }
-        
-        self.address = mmap(nil, mapped_size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0).bindMemory(to: Element.self, capacity: capacity)
     }
     
     deinit {
+        
         if count != 0 {
             address.deinitialize(count: count)
         }
+        
         munmap(address, mapped_size)
-        ftruncate(fd, 0)
-        flock(fd, LOCK_UN)
-        close(fd)
-        remove(path)
+        
+        if fd != -1 {
+            ftruncate(fd, 0)
+            flock(fd, LOCK_UN)
+            close(fd)
+            remove(path)
+        }
     }
     
     func extend_capacity(capacity: Int) {
         
-        precondition(self.capacity <= capacity)
+        guard self.capacity < capacity else { return }
         
-        munmap(address, mapped_size)
+        let new_mapped_size = (max(capacity, 1) * MemoryLayout<Element>.stride).align(Int(getpagesize()))
+        let new_capacity = new_mapped_size / MemoryLayout<Element>.stride
         
-        self.mapped_size = (max(capacity, 1) * MemoryLayout<Element>.stride).align(Int(getpagesize()))
-        self.capacity = mapped_size / MemoryLayout<Element>.stride
-        
-        guard ftruncate(self.fd, off_t(mapped_size)) != -1 else { fatalError(String(cString: strerror(errno))) }
-        
-        self.address = mmap(nil, mapped_size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0).bindMemory(to: Element.self, capacity: capacity)
+        if fd == -1 {
+            
+            let new_buffer = mmap(nil, new_mapped_size, PROT_READ | PROT_WRITE, MAP_ANONYMOUS | MAP_PRIVATE, fd, 0).bindMemory(to: Element.self, capacity: new_capacity)
+            
+            new_buffer.moveInitialize(from: address, count: count)
+            
+            munmap(address, mapped_size)
+            
+            self.mapped_size = new_mapped_size
+            self.capacity = new_capacity
+            self.address = new_buffer
+            
+        } else {
+            
+            munmap(address, mapped_size)
+            
+            self.mapped_size = new_mapped_size
+            self.capacity = new_capacity
+            
+            guard ftruncate(self.fd, off_t(mapped_size)) != -1 else { fatalError(String(cString: strerror(errno))) }
+            
+            self.address = mmap(nil, mapped_size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0).bindMemory(to: Element.self, capacity: new_capacity)
+        }
     }
 }
 

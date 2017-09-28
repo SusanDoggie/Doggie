@@ -48,32 +48,53 @@ public struct Image<Pixel: ColorPixelProtocol> {
     }
     
     @_inlineable
-    public init(width: Int, height: Int, resolution: Resolution = Resolution(resolution: 1, unit: .point), colorSpace: ColorSpace<Pixel.Model>, pixel: Pixel = Pixel()) {
+    public init(width: Int, height: Int, resolution: Resolution = Resolution(resolution: 1, unit: .point), colorSpace: ColorSpace<Pixel.Model>, pixel: Pixel = Pixel(), option: MappedBufferOption = .default) {
         precondition(width >= 0, "negative width is not allowed.")
         precondition(height >= 0, "negative height is not allowed.")
         self.width = width
         self.height = height
         self.resolution = resolution
         self.colorSpace = colorSpace
-        self.pixels = MappedBuffer<Pixel>(repeating: pixel, count: width * height)
+        self.pixels = MappedBuffer(repeating: pixel, count: width * height, option: option)
     }
     
     @_inlineable
-    public init<P>(image: Image<P>) where P.Model == Pixel.Model {
+    public init<P>(image: Image<P>, option: MappedBufferOption) where P.Model == Pixel.Model {
         self.width = image.width
         self.height = image.height
         self.resolution = image.resolution
         self.colorSpace = image.colorSpace
-        self.pixels = image.pixels as? MappedBuffer<Pixel> ?? MappedBuffer<Pixel>(image.pixels.lazy.map(Pixel.init))
+        if let buffer = image.pixels as? MappedBuffer<Pixel> {
+            if buffer.option == option {
+                self.pixels = buffer
+            } else {
+                self.pixels = MappedBuffer(buffer, option: option)
+            }
+        } else {
+            self.pixels = MappedBuffer(image.pixels.lazy.map(Pixel.init), option: option)
+        }
     }
     
     @_inlineable
-    public init<P>(image: Image<P>, colorSpace: ColorSpace<Pixel.Model>, intent: RenderingIntent = .default) {
+    public init<P>(image: Image<P>, colorSpace: ColorSpace<Pixel.Model>, intent: RenderingIntent = .default, option: MappedBufferOption) {
         self.width = image.width
         self.height = image.height
         self.resolution = image.resolution
         self.colorSpace = colorSpace
-        self.pixels = image.colorSpace.convert(image.pixels, to: self.colorSpace, intent: intent)
+        self.pixels = image.colorSpace.convert(image.pixels, to: self.colorSpace, intent: intent, option: option)
+    }
+}
+
+extension Image {
+    
+    @_inlineable
+    public init<P>(image: Image<P>) where P.Model == Pixel.Model {
+        self.init(image: image, option: image.option)
+    }
+    
+    @_inlineable
+    public init<P>(image: Image<P>, colorSpace: ColorSpace<Pixel.Model>, intent: RenderingIntent = .default) {
+        self.init(image: image, colorSpace: colorSpace, intent: intent, option: image.option)
     }
 }
 
@@ -90,6 +111,14 @@ extension Image : CustomPlaygroundQuickLookable {
     @_inlineable
     public var customPlaygroundQuickLook: PlaygroundQuickLook {
         return PlaygroundQuickLook.text(description)
+    }
+}
+
+extension Image {
+    
+    @_inlineable
+    public var option: MappedBufferOption {
+        return pixels.option
     }
 }
 

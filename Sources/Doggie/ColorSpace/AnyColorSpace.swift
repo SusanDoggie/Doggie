@@ -42,13 +42,13 @@ protocol AnyColorSpaceBaseProtocol {
     
     func _createColor<S : Sequence>(components: S, opacity: Double) -> AnyColorBaseProtocol where S.Element == Double
     
-    func _createImage(width: Int, height: Int, resolution: Resolution) -> AnyImageBaseProtocol
+    func _createImage(width: Int, height: Int, resolution: Resolution, option: MappedBufferOption) -> AnyImageBaseProtocol
     
-    func _createImage(width: Int, height: Int, resolution: Resolution, bitmaps: [RawBitmap], premultiplied: Bool) -> AnyImageBaseProtocol
+    func _createImage(width: Int, height: Int, resolution: Resolution, bitmaps: [RawBitmap], premultiplied: Bool, option: MappedBufferOption) -> AnyImageBaseProtocol
     
     func _convert<Model>(_ color: Color<Model>, intent: RenderingIntent) -> AnyColorBaseProtocol
     
-    func _convert<Pixel>(_ image: Image<Pixel>, intent: RenderingIntent) -> AnyImageBaseProtocol
+    func _convert<Pixel>(_ image: Image<Pixel>, intent: RenderingIntent, option: MappedBufferOption) -> AnyImageBaseProtocol
     
     var _linearTone: AnyColorSpaceBaseProtocol { get }
 }
@@ -77,14 +77,14 @@ extension ColorSpace : AnyColorSpaceBaseProtocol {
     
     @_versioned
     @_inlineable
-    func _createImage(width: Int, height: Int, resolution: Resolution) -> AnyImageBaseProtocol {
-        return Image<ColorPixel<Model>>(width: width, height: height, resolution: resolution, colorSpace: self)
+    func _createImage(width: Int, height: Int, resolution: Resolution, option: MappedBufferOption) -> AnyImageBaseProtocol {
+        return Image<ColorPixel<Model>>(width: width, height: height, resolution: resolution, colorSpace: self, option: option)
     }
     
     @_versioned
     @_inlineable
-    func _createImage(width: Int, height: Int, resolution: Resolution, bitmaps: [RawBitmap], premultiplied: Bool) -> AnyImageBaseProtocol {
-        return Image<ColorPixel<Model>>(width: width, height: height, resolution: resolution, colorSpace: self, bitmaps: bitmaps, premultiplied: premultiplied)
+    func _createImage(width: Int, height: Int, resolution: Resolution, bitmaps: [RawBitmap], premultiplied: Bool, option: MappedBufferOption) -> AnyImageBaseProtocol {
+        return Image<ColorPixel<Model>>(width: width, height: height, resolution: resolution, colorSpace: self, bitmaps: bitmaps, premultiplied: premultiplied, option: option)
     }
     
     @_versioned
@@ -95,8 +95,8 @@ extension ColorSpace : AnyColorSpaceBaseProtocol {
     
     @_versioned
     @_inlineable
-    func _convert<Pixel>(_ image: Image<Pixel>, intent: RenderingIntent) -> AnyImageBaseProtocol {
-        return Image<ColorPixel<Model>>(image: image, colorSpace: self, intent: intent)
+    func _convert<Pixel>(_ image: Image<Pixel>, intent: RenderingIntent, option: MappedBufferOption) -> AnyImageBaseProtocol {
+        return Image<ColorPixel<Model>>(image: image, colorSpace: self, intent: intent, option: option)
     }
     
     @_versioned

@@ -54,8 +54,8 @@ public class ImageContext<Pixel: ColorPixelProtocol> {
         self.depth = [Double](repeating: 1, count: image.width * image.height)
     }
     
-    public init(width: Int, height: Int, resolution: Resolution = Resolution(resolution: 1, unit: .point), colorSpace: ColorSpace<Pixel.Model>) {
-        self.image = Image(width: width, height: height, resolution: resolution, colorSpace: colorSpace)
+    public init(width: Int, height: Int, resolution: Resolution = Resolution(resolution: 1, unit: .point), colorSpace: ColorSpace<Pixel.Model>, option: MappedBufferOption = .default) {
+        self.image = Image(width: width, height: height, resolution: resolution, colorSpace: colorSpace, option: option)
         self.clip = [Double](repeating: 1, count: width * height)
         self.depth = [Double](repeating: 1, count: width * height)
     }
@@ -64,7 +64,7 @@ public class ImageContext<Pixel: ColorPixelProtocol> {
 extension ImageContext {
     
     private convenience init<P>(copyStates context: ImageContext<P>, colorSpace: ColorSpace<Pixel.Model>) {
-        self.init(width: context.width, height: context.height, colorSpace: colorSpace)
+        self.init(width: context.width, height: context.height, colorSpace: colorSpace, option: context.image.option)
         self.styles = context.styles
         self.styles.opacity = 1
         self.image.colorSpace.chromaticAdaptationAlgorithm = context.colorSpace.chromaticAdaptationAlgorithm

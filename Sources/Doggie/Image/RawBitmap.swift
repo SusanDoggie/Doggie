@@ -119,9 +119,9 @@ extension RawBitmap {
 
 extension Image {
     
-    public init(width: Int, height: Int, resolution: Resolution = Resolution(resolution: 1, unit: .point), colorSpace: ColorSpace<Pixel.Model>, bitmaps: [RawBitmap], premultiplied: Bool) {
+    public init(width: Int, height: Int, resolution: Resolution = Resolution(resolution: 1, unit: .point), colorSpace: ColorSpace<Pixel.Model>, bitmaps: [RawBitmap], premultiplied: Bool, option: MappedBufferOption = .default) {
         
-        self.init(width: width, height: height, resolution: resolution, colorSpace: colorSpace)
+        self.init(width: width, height: height, resolution: resolution, colorSpace: colorSpace, option: option)
         
         let numberOfComponents = colorSpace.numberOfComponents
         
@@ -538,8 +538,8 @@ extension Image {
 extension AnyImage {
     
     @_inlineable
-    public init(width: Int, height: Int, resolution: Resolution = Resolution(resolution: 1, unit: .point), colorSpace: AnyColorSpace, bitmaps: [RawBitmap], premultiplied: Bool) {
-        self.init(base: colorSpace._base._createImage(width: width, height: height, resolution: resolution, bitmaps: bitmaps, premultiplied: premultiplied))
+    public init(width: Int, height: Int, resolution: Resolution = Resolution(resolution: 1, unit: .point), colorSpace: AnyColorSpace, bitmaps: [RawBitmap], premultiplied: Bool, option: MappedBufferOption = .default) {
+        self.init(base: colorSpace._base._createImage(width: width, height: height, resolution: resolution, bitmaps: bitmaps, premultiplied: premultiplied, option: option))
     }
     
     @_inlineable
