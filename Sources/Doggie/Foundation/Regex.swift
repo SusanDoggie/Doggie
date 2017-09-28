@@ -74,6 +74,7 @@ extension Regex: ExpressibleByStringLiteral {
 }
 
 extension Regex: CustomStringConvertible {
+    
     public var description: String {
         return pattern
     }

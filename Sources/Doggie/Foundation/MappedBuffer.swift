@@ -47,22 +47,27 @@ public struct MappedBuffer<Element> : RandomAccessCollection, MutableCollection,
     
     public typealias Index = Int
     
-    private var buffer: MappedBufferTempFile<Element>
+    @_versioned
+    var buffer: MappedBufferTempFile<Element>
     
+    @_inlineable
     public init() {
         self.buffer = MappedBufferTempFile<Element>(capacity: 0, option: .default)
     }
     
+    @_inlineable
     public init(option: MappedBufferOption) {
         self.buffer = MappedBufferTempFile<Element>(capacity: 0, option: option)
     }
     
+    @_inlineable
     public init(repeating repeatedValue: Element, count: Int, option: MappedBufferOption = .default) {
         self.buffer = MappedBufferTempFile<Element>(capacity: count, option: option)
         self.buffer.count = count
         self.buffer.address.initialize(to: repeatedValue, count: count)
     }
     
+    @_inlineable
     public init(arrayLiteral elements: Element ...) {
         self.buffer = MappedBufferTempFile<Element>(capacity: elements.count, option: .default)
         self.buffer.count = count
@@ -74,19 +79,20 @@ public struct MappedBuffer<Element> : RandomAccessCollection, MutableCollection,
         }
     }
     
+    @_inlineable
     public init(_ other: MappedBuffer<Element>) {
         self = other
     }
     
+    @_inlineable
     public init<S : Sequence>(_ elements: S, option: MappedBufferOption = .default) where Element == S.Element {
         
         let underestimatedCount = elements.underestimatedCount
         
         self.buffer = MappedBufferTempFile<Element>(capacity: underestimatedCount, option: option)
+        self.buffer.count = underestimatedCount
         
-        var (iterator, copied) = UnsafeMutableBufferPointer(start: self.buffer.address, count: underestimatedCount).initialize(from: elements)
-        
-        self.buffer.count = copied
+        var iterator = UnsafeMutableBufferPointer(start: self.buffer.address, count: underestimatedCount).initialize(from: elements).0
         
         while let item = iterator.next() {
             self.append(item)
@@ -96,10 +102,12 @@ public struct MappedBuffer<Element> : RandomAccessCollection, MutableCollection,
 
 extension MappedBuffer {
     
+    @_inlineable
     public var option: MappedBufferOption {
         return buffer.fd == -1 ? .inMemory : .fileBacked
     }
     
+    @_inlineable
     public var capacity: Int {
         return buffer.capacity
     }
@@ -115,7 +123,9 @@ extension MappedBuffer : CustomStringConvertible {
 
 extension MappedBuffer {
     
-    private mutating func make_unique_if_need() {
+    @_versioned
+    @_inlineable
+    mutating func make_unique_if_need() {
         
         if isKnownUniquelyReferenced(&buffer) {
             return
@@ -134,6 +144,7 @@ extension MappedBuffer {
         return 0
     }
     
+    @_inlineable
     public var endIndex: Int {
         return buffer.count
     }
@@ -153,6 +164,7 @@ extension MappedBuffer {
 
 extension MappedBuffer : RangeReplaceableCollection {
     
+    @_inlineable
     public mutating func append(_ x: Element) {
         
         let new_count = buffer.count + 1
@@ -182,6 +194,7 @@ extension MappedBuffer : RangeReplaceableCollection {
         }
     }
     
+    @_inlineable
     public mutating func reserveCapacity(_ minimumCapacity: Int) {
         
         guard buffer.capacity < minimumCapacity else { return }
@@ -201,6 +214,7 @@ extension MappedBuffer : RangeReplaceableCollection {
         }
     }
     
+    @_inlineable
     public mutating func replaceSubrange<C : Collection>(_ subRange: Range<Int>, with newElements: C) where C.Element == Element {
         
         precondition(0 <= subRange.lowerBound, "Index out of range.")
@@ -285,11 +299,13 @@ extension MappedBuffer {
 
 extension MappedBuffer {
     
+    @_inlineable
     public func withUnsafeBufferPointer<R>(_ body: (UnsafeBufferPointer<Element>) throws -> R) rethrows -> R {
         
         return try body(UnsafeBufferPointer(start: buffer.address, count: buffer.count))
     }
     
+    @_inlineable
     public mutating func withUnsafeMutableBufferPointer<R>(_ body: (inout UnsafeMutableBufferPointer<Element>) throws -> R) rethrows -> R {
         
         self.make_unique_if_need()
@@ -302,11 +318,13 @@ extension MappedBuffer {
         return try body(&buf)
     }
     
+    @_inlineable
     public func withUnsafeBytes<R>(_ body: (UnsafeRawBufferPointer) throws -> R) rethrows -> R {
         
         return try body(UnsafeRawBufferPointer(start: buffer.address, count: buffer.count * MemoryLayout<Element>.stride))
     }
     
+    @_inlineable
     public mutating func withUnsafeMutableBytes<R>(_ body: (UnsafeMutableRawBufferPointer) throws -> R) rethrows -> R {
         
         self.make_unique_if_need()
@@ -315,15 +333,27 @@ extension MappedBuffer {
     }
 }
 
-private class MappedBufferTempFile<Element> {
+@_versioned
+@_fixed_layout
+class MappedBufferTempFile<Element> {
     
+    @_versioned
     let fd: Int32
+    
     let path: String
-    private(set) var address: UnsafeMutablePointer<Element>
-    private(set) var mapped_size: Int
-    private(set) var capacity: Int
+    
+    @_versioned
+    var address: UnsafeMutablePointer<Element>
+    
+    var mapped_size: Int
+    
+    @_versioned
+    var capacity: Int
+    
+    @_versioned
     var count: Int = 0
     
+    @_versioned
     init(capacity: Int, option: MappedBufferOption) {
         
         self.mapped_size = (max(capacity, 1) * MemoryLayout<Element>.stride).align(Int(getpagesize()))
@@ -376,6 +406,7 @@ private class MappedBufferTempFile<Element> {
         }
     }
     
+    @_versioned
     func extend_capacity(capacity: Int) {
         
         guard self.capacity < capacity else { return }

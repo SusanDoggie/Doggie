@@ -103,6 +103,7 @@ extension Point {
 }
 
 extension Point: CustomStringConvertible {
+    
     @_transparent
     public var description: String {
         return "Point(x: \(x), y: \(y))"
