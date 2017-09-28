@@ -35,30 +35,12 @@ protocol ImageRepBase {
     
     var colorSpace: AnyColorSpace { get }
     
-    func image() -> AnyImage
+    func image(option: MappedBufferOption) -> AnyImage
 }
 
 public struct ImageRep {
     
-    private let base: ImageRepBase
-    private let cache: Cache
-}
-
-extension ImageRep {
-    
-    private class Cache {
-        var image: AnyImage?
-    }
-}
-
-extension ImageRep {
-    
-    public var image: AnyImage {
-        if cache.image == nil {
-            cache.image = base.image()
-        }
-        return cache.image!
-    }
+    fileprivate let base: ImageRepBase
 }
 
 extension ImageRep {
@@ -83,7 +65,6 @@ extension ImageRep {
         for Decoder in decoders {
             if let decoder = try Decoder.init(data: Data(data)) {
                 self.base = decoder
-                self.cache = Cache()
                 return
             }
         }
@@ -96,19 +77,17 @@ extension ImageRep {
     
     public init<Pixel>(image: Image<Pixel>) {
         self.base = AnyImage(image)
-        self.cache = Cache()
     }
     
     public init(image: AnyImage) {
         self.base = image
-        self.cache = Cache()
     }
 }
 
 extension AnyImage : ImageRepBase {
     
-    func image() -> AnyImage {
-        return self
+    func image(option: MappedBufferOption) -> AnyImage {
+        return AnyImage(self, option: option)
     }
 }
 
@@ -150,7 +129,7 @@ extension ImageRep {
     
     public func representation(using storageType: FileType, properties: [PropertyKey : Any]) -> Data? {
         
-        let image = base.image()
+        let image = base.image(option: .fileBacked)
         guard image.width > 0 && image.height > 0 else { return nil }
         
         let Encoder: ImageRepEncoder.Type
@@ -177,12 +156,12 @@ extension ImageRep : CustomStringConvertible {
 
 extension AnyImage {
     
-    public init(imageRep: ImageRep) {
-        self = imageRep.image
+    public init(imageRep: ImageRep, option: MappedBufferOption = .default) {
+        self = imageRep.base.image(option: option)
     }
     
-    public init(data: Data) throws {
-        self = try ImageRep(data: data).image
+    public init(data: Data, option: MappedBufferOption = .default) throws {
+        self = try ImageRep(data: data).base.image(option: option)
     }
 }
 

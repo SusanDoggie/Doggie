@@ -107,9 +107,9 @@ struct JPEGDecoder : ImageRepDecoder {
         return AnyColorSpace(ColorSpace.sRGB)
     }
     
-    func image() -> AnyImage {
+    func image(option: MappedBufferOption) -> AnyImage {
         
-        return AnyImage(Image<ARGB32ColorPixel>(width: 0, height: 0, colorSpace: ColorSpace.sRGB))
+        return AnyImage(Image<ARGB32ColorPixel>(width: 0, height: 0, colorSpace: ColorSpace.sRGB, option: option))
     }
 }
 

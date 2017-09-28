@@ -434,7 +434,7 @@ struct PNGDecoder : ImageRepDecoder {
         return nil
     }
     
-    func image() -> AnyImage {
+    func image(option: MappedBufferOption) -> AnyImage {
         
         let ihdr = self.ihdr
         
@@ -443,8 +443,8 @@ struct PNGDecoder : ImageRepDecoder {
         
         let IDAT_data = Data(chunks.filter { $0.signature == "IDAT" }.flatMap { $0.data })
         
-        guard let data = decompress(data: IDAT_data, compression: ihdr.compression) else { return AnyImage(width: width, height: height, resolution: resolution, colorSpace: colorSpace) }
-        guard let pixels = filter(data, ihdr) else { return AnyImage(width: width, height: height, resolution: resolution, colorSpace: colorSpace) }
+        guard let data = decompress(data: IDAT_data, compression: ihdr.compression) else { return AnyImage(width: width, height: height, resolution: resolution, colorSpace: colorSpace, option: option) }
+        guard let pixels = filter(data, ihdr) else { return AnyImage(width: width, height: height, resolution: resolution, colorSpace: colorSpace, option: option) }
         
         let bitsPerPixel: UInt8
         
@@ -465,7 +465,7 @@ struct PNGDecoder : ImageRepDecoder {
             switch ihdr.bitDepth {
             case 1, 2, 4:
                 
-                var image = Image<ColorPixel<GrayColorModel>>(width: width, height: height, resolution: resolution, colorSpace: _GrayColorSpace)
+                var image = Image<ColorPixel<GrayColorModel>>(width: width, height: height, resolution: resolution, colorSpace: _GrayColorSpace, option: option)
                 
                 pixels.withUnsafeBytes { (source: UnsafePointer<UInt8>) in
                     
@@ -531,7 +531,7 @@ struct PNGDecoder : ImageRepDecoder {
                 return AnyImage(image)
                 
             case 8:
-                var image = Image<Gray16ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: _GrayColorSpace)
+                var image = Image<Gray16ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: _GrayColorSpace, option: option)
                 
                 pixels.withUnsafeBytes { (source: UnsafePointer<UInt8>) in
                     
@@ -554,7 +554,7 @@ struct PNGDecoder : ImageRepDecoder {
                 
             case 16:
                 
-                var image = Image<Gray32ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: _GrayColorSpace)
+                var image = Image<Gray32ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: _GrayColorSpace, option: option)
                 
                 pixels.withUnsafeBytes { (source: UnsafePointer<BEUInt16>) in
                     
@@ -582,7 +582,7 @@ struct PNGDecoder : ImageRepDecoder {
             
             switch ihdr.bitDepth {
             case 8:
-                var image = Image<ARGB32ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: _RGBColorSpace)
+                var image = Image<ARGB32ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: _RGBColorSpace, option: option)
                 
                 pixels.withUnsafeBytes { (source: UnsafePointer<(UInt8, UInt8, UInt8)>) in
                     
@@ -605,7 +605,7 @@ struct PNGDecoder : ImageRepDecoder {
                 return AnyImage(image)
                 
             case 16:
-                var image = Image<ARGB64ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: _RGBColorSpace)
+                var image = Image<ARGB64ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: _RGBColorSpace, option: option)
                 
                 pixels.withUnsafeBytes { (source: UnsafePointer<(BEUInt16, BEUInt16, BEUInt16)>) in
                     
@@ -632,7 +632,7 @@ struct PNGDecoder : ImageRepDecoder {
             
         case 3:
             
-            var image = Image<ARGB32ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: _RGBColorSpace)
+            var image = Image<ARGB32ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: _RGBColorSpace, option: option)
             
             guard let palette = self.palette else { return AnyImage(image) }
             
@@ -696,7 +696,7 @@ struct PNGDecoder : ImageRepDecoder {
         case 4:
             switch ihdr.bitDepth {
             case 8:
-                var image = Image<Gray16ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: _GrayColorSpace)
+                var image = Image<Gray16ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: _GrayColorSpace, option: option)
                 
                 pixels.withUnsafeBytes { (source: UnsafePointer<(UInt8, UInt8)>) in
                     
@@ -720,7 +720,7 @@ struct PNGDecoder : ImageRepDecoder {
                 
             case 16:
                 
-                var image = Image<Gray32ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: _GrayColorSpace)
+                var image = Image<Gray32ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: _GrayColorSpace, option: option)
                 
                 pixels.withUnsafeBytes { (source: UnsafePointer<(BEUInt16, BEUInt16)>) in
                     
@@ -748,7 +748,7 @@ struct PNGDecoder : ImageRepDecoder {
             
             switch ihdr.bitDepth {
             case 8:
-                var image = Image<ARGB32ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: _RGBColorSpace)
+                var image = Image<ARGB32ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: _RGBColorSpace, option: option)
                 
                 pixels.withUnsafeBytes { (source: UnsafePointer<(UInt8, UInt8, UInt8, UInt8)>) in
                     
@@ -771,7 +771,7 @@ struct PNGDecoder : ImageRepDecoder {
                 return AnyImage(image)
                 
             case 16:
-                var image = Image<ARGB64ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: _RGBColorSpace)
+                var image = Image<ARGB64ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: _RGBColorSpace, option: option)
                 
                 pixels.withUnsafeBytes { (source: UnsafePointer<(BEUInt16, BEUInt16, BEUInt16, BEUInt16)>) in
                     

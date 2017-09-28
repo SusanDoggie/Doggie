@@ -54,6 +54,8 @@ protocol AnyImageBaseProtocol {
     
     func _convert<Model>() -> Image<ColorPixel<Model>>?
     
+    func _convert(option: MappedBufferOption) -> AnyImageBaseProtocol
+    
     func _convert(to colorSpace: AnyColorSpaceBaseProtocol, intent: RenderingIntent, option: MappedBufferOption) -> AnyImageBaseProtocol
     
     func _convert<P>(to colorSpace: ColorSpace<P.Model>, intent: RenderingIntent, option: MappedBufferOption) -> Image<P>
@@ -106,6 +108,12 @@ extension Image : AnyImageBaseProtocol {
     
     @_versioned
     @_inlineable
+    func _convert(option: MappedBufferOption) -> AnyImageBaseProtocol {
+        return Image(image: self, option: option)
+    }
+    
+    @_versioned
+    @_inlineable
     func _convert(to colorSpace: AnyColorSpaceBaseProtocol, intent: RenderingIntent, option: MappedBufferOption) -> AnyImageBaseProtocol {
         return colorSpace._convert(self, intent: intent, option: option)
     }
@@ -143,8 +151,13 @@ extension AnyImage {
     }
     
     @_inlineable
-    public init<Pixel>(_ image: Image<Pixel>) {
-        self._base = image
+    public init<Pixel>(_ image: Image<Pixel>, option: MappedBufferOption = .default) {
+        self._base = image._convert(option: option)
+    }
+    
+    @_inlineable
+    public init(_ image: AnyImage, option: MappedBufferOption = .default) {
+        self._base = image._base._convert(option: option)
     }
     
     @_inlineable
