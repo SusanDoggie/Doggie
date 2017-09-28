@@ -80,19 +80,13 @@ public struct MappedBuffer<Element> : RandomAccessCollection, MutableCollection,
     
     public init<S : Sequence>(_ elements: S, option: MappedBufferOption = .default) where Element == S.Element {
         
-        var underestimatedCount = elements.underestimatedCount
+        let underestimatedCount = elements.underestimatedCount
         
         self.buffer = MappedBufferTempFile<Element>(capacity: underestimatedCount, option: option)
-        self.buffer.count = underestimatedCount
         
-        var address = self.buffer.address
-        var iterator = elements.makeIterator()
+        var (iterator, copied) = UnsafeMutableBufferPointer(start: self.buffer.address, count: underestimatedCount).initialize(from: elements)
         
-        while underestimatedCount != 0, let item = iterator.next() {
-            address.initialize(to: item)
-            address += 1
-            underestimatedCount -= 1
-        }
+        self.buffer.count = copied
         
         while let item = iterator.next() {
             self.append(item)
