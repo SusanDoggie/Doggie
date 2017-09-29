@@ -137,7 +137,7 @@ extension ImageContext {
     }
     
     @_inlineable
-    public func drawGradient<C>(_ patch: CubicBezierPatch, color c0: Color<C>, _ c1: Color<C>, _ c2: Color<C>, _ c3: Color<C>) {
+    public func drawGradient<C: ColorProtocol>(_ patch: CubicBezierPatch, color c0: C, _ c1: C, _ c2: C, _ c3: C) {
         
         let width = self.width
         let height = self.height

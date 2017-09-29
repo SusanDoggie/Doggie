@@ -539,7 +539,7 @@ extension AnyImage {
     
     @_inlineable
     public init(width: Int, height: Int, resolution: Resolution = Resolution(resolution: 1, unit: .point), colorSpace: AnyColorSpace, bitmaps: [RawBitmap], premultiplied: Bool, option: MappedBufferOption = .default) {
-        self.init(base: colorSpace._base._createImage(width: width, height: height, resolution: resolution, bitmaps: bitmaps, premultiplied: premultiplied, option: option))
+        self.init(base: colorSpace._base._create_image(width: width, height: height, resolution: resolution, bitmaps: bitmaps, premultiplied: premultiplied, option: option))
     }
     
     @_inlineable

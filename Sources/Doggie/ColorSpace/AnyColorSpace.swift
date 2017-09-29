@@ -38,32 +38,26 @@ protocol AnyColorSpaceBaseProtocol {
     
     func rangeOfComponent(_ i: Int) -> ClosedRange<Double>
     
-    var _cieXYZ: ColorSpace<XYZColorModel> { get }
+    var cieXYZ: ColorSpace<XYZColorModel> { get }
     
-    func _createColor<S : Sequence>(components: S, opacity: Double) -> AnyColorBaseProtocol where S.Element == Double
+    func _create_color<S : Sequence>(components: S, opacity: Double) -> AnyColorBaseProtocol where S.Element == Double
     
-    func _createImage(width: Int, height: Int, resolution: Resolution, option: MappedBufferOption) -> AnyImageBaseProtocol
+    func _create_image(width: Int, height: Int, resolution: Resolution, option: MappedBufferOption) -> AnyImageBaseProtocol
     
-    func _createImage(width: Int, height: Int, resolution: Resolution, bitmaps: [RawBitmap], premultiplied: Bool, option: MappedBufferOption) -> AnyImageBaseProtocol
+    func _create_image<P>(image: Image<P>, intent: RenderingIntent, option: MappedBufferOption) -> AnyImageBaseProtocol
     
-    func _convert<Model>(_ color: Color<Model>, intent: RenderingIntent) -> AnyColorBaseProtocol
+    func _create_image(image: AnyImage, intent: RenderingIntent, option: MappedBufferOption) -> AnyImageBaseProtocol
     
-    func _convert<Pixel>(_ image: Image<Pixel>, intent: RenderingIntent, option: MappedBufferOption) -> AnyImageBaseProtocol
+    func _create_image(width: Int, height: Int, resolution: Resolution, bitmaps: [RawBitmap], premultiplied: Bool, option: MappedBufferOption) -> AnyImageBaseProtocol
     
-    var _linearTone: AnyColorSpaceBaseProtocol { get }
+    func _convert<Model>(color: Color<Model>, intent: RenderingIntent) -> AnyColorBaseProtocol
 }
 
 extension ColorSpace : AnyColorSpaceBaseProtocol {
     
     @_versioned
     @_inlineable
-    var _cieXYZ: ColorSpace<XYZColorModel> {
-        return ColorSpace<XYZColorModel>.cieXYZ(from: self)
-    }
-    
-    @_versioned
-    @_inlineable
-    func _createColor<S>(components: S, opacity: Double) -> AnyColorBaseProtocol where S : Sequence, S.Element == Double {
+    func _create_color<S>(components: S, opacity: Double) -> AnyColorBaseProtocol where S : Sequence, S.Element == Double {
         var color = Model()
         var counter = 0
         for (i, v) in components.enumerated() {
@@ -77,38 +71,38 @@ extension ColorSpace : AnyColorSpaceBaseProtocol {
     
     @_versioned
     @_inlineable
-    func _createImage(width: Int, height: Int, resolution: Resolution, option: MappedBufferOption) -> AnyImageBaseProtocol {
+    func _create_image(width: Int, height: Int, resolution: Resolution, option: MappedBufferOption) -> AnyImageBaseProtocol {
         return Image<ColorPixel<Model>>(width: width, height: height, resolution: resolution, colorSpace: self, option: option)
     }
     
     @_versioned
     @_inlineable
-    func _createImage(width: Int, height: Int, resolution: Resolution, bitmaps: [RawBitmap], premultiplied: Bool, option: MappedBufferOption) -> AnyImageBaseProtocol {
-        return Image<ColorPixel<Model>>(width: width, height: height, resolution: resolution, colorSpace: self, bitmaps: bitmaps, premultiplied: premultiplied, option: option)
-    }
-    
-    @_versioned
-    @_inlineable
-    func _convert<Model>(_ color: Color<Model>, intent: RenderingIntent) -> AnyColorBaseProtocol {
-        return color.convert(to: self, intent: intent)
-    }
-    
-    @_versioned
-    @_inlineable
-    func _convert<Pixel>(_ image: Image<Pixel>, intent: RenderingIntent, option: MappedBufferOption) -> AnyImageBaseProtocol {
+    func _create_image<P>(image: Image<P>, intent: RenderingIntent, option: MappedBufferOption) -> AnyImageBaseProtocol {
         return Image<ColorPixel<Model>>(image: image, colorSpace: self, intent: intent, option: option)
     }
     
     @_versioned
     @_inlineable
-    var _linearTone: AnyColorSpaceBaseProtocol {
-        return self.linearTone
+    func _create_image(width: Int, height: Int, resolution: Resolution, bitmaps: [RawBitmap], premultiplied: Bool, option: MappedBufferOption) -> AnyImageBaseProtocol {
+        return Image<ColorPixel<Model>>(width: width, height: height, resolution: resolution, colorSpace: self, bitmaps: bitmaps, premultiplied: premultiplied, option: option)
+    }
+    
+    @_versioned
+    @_inlineable
+    func _create_image(image: AnyImage, intent: RenderingIntent, option: MappedBufferOption) -> AnyImageBaseProtocol {
+        return Image<ColorPixel<Model>>(image: image, colorSpace: self, intent: intent, option: option)
+    }
+    
+    @_versioned
+    @_inlineable
+    func _convert<Model>(color: Color<Model>, intent: RenderingIntent) -> AnyColorBaseProtocol {
+        return color.convert(to: self, intent: intent)
     }
 }
 
 @_fixed_layout
-public struct AnyColorSpace {
-    
+public struct AnyColorSpace : ColorSpaceProtocol {
+
     @_versioned
     var _base: AnyColorSpaceBaseProtocol
     
@@ -130,21 +124,10 @@ extension AnyColorSpace {
     public init<Model>(_ colorSpace: ColorSpace<Model>) {
         self._base = colorSpace
     }
-}
-
-extension AnyColorSpace {
     
     @_inlineable
-    public var localizedName: String? {
-        return _base.localizedName
-    }
-}
-
-extension AnyColorSpace : CustomStringConvertible {
-    
-    @_inlineable
-    public var description: String {
-        return "\(_base)"
+    public init(_ colorSpace: AnyColorSpace) {
+        self = colorSpace
     }
 }
 
@@ -154,9 +137,11 @@ extension AnyColorSpace {
     public var iccData: Data? {
         return _base.iccData
     }
-}
-
-extension AnyColorSpace {
+    
+    @_inlineable
+    public var localizedName: String? {
+        return _base.localizedName
+    }
     
     @_inlineable
     public var chromaticAdaptationAlgorithm: ChromaticAdaptationAlgorithm {
@@ -179,40 +164,16 @@ extension AnyColorSpace {
     }
     
     @_inlineable
-    public var linearTone: AnyColorSpace {
-        return AnyColorSpace(base: _base._linearTone)
+    public var cieXYZ: ColorSpace<XYZColorModel> {
+        return _base.cieXYZ
     }
 }
 
-extension ColorSpace where Model == XYZColorModel {
+extension AnyColorSpace : CustomStringConvertible {
     
     @_inlineable
-    public static func cieXYZ(from colorSpace: AnyColorSpace) -> ColorSpace {
-        return colorSpace._base._cieXYZ
-    }
-}
-
-extension ColorSpace where Model == LabColorModel {
-    
-    @_inlineable
-    public static func cieLab(from colorSpace: AnyColorSpace) -> ColorSpace {
-        return ColorSpace.cieLab(from: colorSpace._base._cieXYZ)
-    }
-}
-
-extension ColorSpace where Model == LuvColorModel {
-    
-    @_inlineable
-    public static func cieLuv(from colorSpace: AnyColorSpace) -> ColorSpace {
-        return ColorSpace.cieLuv(from: colorSpace._base._cieXYZ)
-    }
-}
-
-extension ColorSpace where Model == GrayColorModel {
-    
-    @_inlineable
-    public static func calibratedGray(from colorSpace: AnyColorSpace) -> ColorSpace {
-        return ColorSpace.calibratedGray(from: colorSpace._base._cieXYZ)
+    public var description: String {
+        return "\(_base)"
     }
 }
 

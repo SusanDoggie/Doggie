@@ -225,3 +225,4 @@ extension ColorPixelProtocol {
         return result
     }
 }
+

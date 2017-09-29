@@ -33,13 +33,13 @@ public enum GradientSpreadMode {
     case `repeat`
 }
 
-public struct GradientStop<Model : ColorModelProtocol> {
+public struct GradientStop<C: ColorProtocol> {
     
     public var offset: Double
-    public var color: Color<Model>
+    public var color: C
     
     @_inlineable
-    public init(offset: Double, color: Color<Model>) {
+    public init(offset: Double, color: C) {
         self.offset = offset
         self.color = color
     }

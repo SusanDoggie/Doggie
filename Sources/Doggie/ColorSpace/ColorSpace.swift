@@ -191,6 +191,11 @@ extension ColorSpace {
 extension ColorSpace {
     
     @_inlineable
+    public var cieXYZ: ColorSpace<XYZColorModel> {
+        return ColorSpace<XYZColorModel>(base: self.base.cieXYZ)
+    }
+    
+    @_inlineable
     public func convertToLinear(_ color: Model) -> Model {
         return self.base._convertToLinear(color)
     }

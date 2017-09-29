@@ -59,6 +59,19 @@ public struct Image<Pixel: ColorPixelProtocol> {
     }
     
     @_inlineable
+    public init(image: Image, option: MappedBufferOption) {
+        self.width = image.width
+        self.height = image.height
+        self.resolution = image.resolution
+        self.colorSpace = image.colorSpace
+        if image.pixels.option == option {
+            self.pixels = image.pixels
+        } else {
+            self.pixels = MappedBuffer(image.pixels, option: option)
+        }
+    }
+    
+    @_inlineable
     public init<P>(image: Image<P>, option: MappedBufferOption) where P.Model == Pixel.Model {
         self.width = image.width
         self.height = image.height
@@ -90,11 +103,6 @@ extension Image {
     @_inlineable
     public init<P>(image: Image<P>) where P.Model == Pixel.Model {
         self.init(image: image, option: image.option)
-    }
-    
-    @_inlineable
-    public init<P>(image: Image<P>, colorSpace: ColorSpace<Pixel.Model>, intent: RenderingIntent = .default) {
-        self.init(image: image, colorSpace: colorSpace, intent: intent, option: image.option)
     }
 }
 

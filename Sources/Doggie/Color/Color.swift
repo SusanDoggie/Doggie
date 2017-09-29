@@ -25,7 +25,7 @@
 
 public struct Color<Model : ColorModelProtocol> {
     
-    public var colorSpace: ColorSpace<Model>
+    public var colorSpace: Doggie.ColorSpace<Model>
     
     public var color: Model
     
@@ -36,14 +36,14 @@ public struct Color<Model : ColorModelProtocol> {
     }
     
     @_inlineable
-    public init<P : ColorPixelProtocol>(colorSpace: ColorSpace<Model>, color: P) where P.Model == Model {
+    public init<P : ColorPixelProtocol>(colorSpace: Doggie.ColorSpace<Model>, color: P) where P.Model == Model {
         self.colorSpace = colorSpace
         self.color = color.color
         self.opacity = color.opacity
     }
     
     @_inlineable
-    public init(colorSpace: ColorSpace<Model>, color: Model, opacity: Double = 1) {
+    public init(colorSpace: Doggie.ColorSpace<Model>, color: Model, opacity: Double = 1) {
         self.colorSpace = colorSpace
         self.color = color
         self.opacity = opacity
@@ -53,7 +53,7 @@ public struct Color<Model : ColorModelProtocol> {
 extension Color where Model == GrayColorModel {
     
     @_inlineable
-    public init(colorSpace: ColorSpace<Model>, white: Double, opacity: Double = 1) {
+    public init(colorSpace: Doggie.ColorSpace<Model>, white: Double, opacity: Double = 1) {
         self.init(colorSpace: colorSpace, color: GrayColorModel(white: white), opacity: opacity)
     }
 }
@@ -61,12 +61,12 @@ extension Color where Model == GrayColorModel {
 extension Color where Model == RGBColorModel {
     
     @_inlineable
-    public init(colorSpace: ColorSpace<Model>, red: Double, green: Double, blue: Double, opacity: Double = 1) {
+    public init(colorSpace: Doggie.ColorSpace<Model>, red: Double, green: Double, blue: Double, opacity: Double = 1) {
         self.init(colorSpace: colorSpace, color: RGBColorModel(red: red, green: green, blue: blue), opacity: opacity)
     }
     
     @_inlineable
-    public init(colorSpace: ColorSpace<Model>, hue: Double, saturation: Double, brightness: Double, opacity: Double = 1) {
+    public init(colorSpace: Doggie.ColorSpace<Model>, hue: Double, saturation: Double, brightness: Double, opacity: Double = 1) {
         self.init(colorSpace: colorSpace, color: RGBColorModel(hue: hue, saturation: saturation, brightness: brightness), opacity: opacity)
     }
 }
@@ -74,7 +74,7 @@ extension Color where Model == RGBColorModel {
 extension Color where Model == CMYColorModel {
     
     @_inlineable
-    public init(colorSpace: ColorSpace<Model>, cyan: Double, magenta: Double, yellow: Double, opacity: Double = 1) {
+    public init(colorSpace: Doggie.ColorSpace<Model>, cyan: Double, magenta: Double, yellow: Double, opacity: Double = 1) {
         self.init(colorSpace: colorSpace, color: CMYColorModel(cyan: cyan, magenta: magenta, yellow: yellow), opacity: opacity)
     }
 }
@@ -82,7 +82,7 @@ extension Color where Model == CMYColorModel {
 extension Color where Model == CMYKColorModel {
     
     @_inlineable
-    public init(colorSpace: ColorSpace<Model>, cyan: Double, magenta: Double, yellow: Double, black: Double, opacity: Double = 1) {
+    public init(colorSpace: Doggie.ColorSpace<Model>, cyan: Double, magenta: Double, yellow: Double, black: Double, opacity: Double = 1) {
         self.init(colorSpace: colorSpace, color: CMYKColorModel(cyan: cyan, magenta: magenta, yellow: yellow, black: black), opacity: opacity)
     }
 }
@@ -288,6 +288,14 @@ extension Color {
 extension Color {
     
     @_inlineable
+    public var cieXYZ: Color<XYZColorModel> {
+        return Color<XYZColorModel>(colorSpace: colorSpace.cieXYZ, color: colorSpace.convertToXYZ(color), opacity: opacity)
+    }
+}
+
+extension Color {
+    
+    @_inlineable
     public func linearTone() -> Color {
         return Color(colorSpace: colorSpace.linearTone, color: colorSpace.convertToLinear(color), opacity: opacity)
     }
@@ -304,22 +312,15 @@ extension Color {
 extension Color {
     
     @_inlineable
-    public func convert<R>(to colorSpace: ColorSpace<R>, intent: RenderingIntent = .default) -> Color<R> {
-        return Color<R>(colorSpace: colorSpace, color: self.colorSpace.convert(color, to: colorSpace, intent: intent), opacity: opacity)
-    }
-}
-
-extension Color {
-    
-    @_inlineable
-    public func blended<C>(source: Color<C>, blendMode: ColorBlendMode = .default, compositingMode: ColorCompositingMode = .default) -> Color {
-        let source = source.convert(to: colorSpace)
+    public func blended<C: ColorProtocol>(source: C, blendMode: ColorBlendMode = .default, compositingMode: ColorCompositingMode = .default) -> Color {
+        let source = source.convert(to: colorSpace, intent: .default)
         let color = ColorPixel(color: self.color, opacity: self.opacity).blended(source: ColorPixel(color: source.color, opacity: source.opacity), blendMode: blendMode, compositingMode: compositingMode)
         return Color(colorSpace: colorSpace, color: color.color, opacity: color.opacity)
     }
     
     @_inlineable
-    public mutating func blend<C>(source: Color<C>, blendMode: ColorBlendMode = .default, compositingMode: ColorCompositingMode = .default) {
+    public mutating func blend<C: ColorProtocol>(source: C, blendMode: ColorBlendMode = .default, compositingMode: ColorCompositingMode = .default) {
         self = self.blended(source: source, blendMode: blendMode, compositingMode: compositingMode)
     }
 }
+

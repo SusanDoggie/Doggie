@@ -28,6 +28,8 @@ import Foundation
 @_versioned
 protocol AnyImageBaseProtocol {
     
+    var _colorSpace: AnyColorSpaceBaseProtocol { get }
+    
     var width: Int { get }
     
     var height: Int { get }
@@ -40,8 +42,6 @@ protocol AnyImageBaseProtocol {
     
     func rawData(format: RawBitmap.Format, bitsPerChannel: Int, bitsPerPixel: Int, bytesPerRow: Int, alphaChannel: RawBitmap.AlphaChannelFormat, channelEndianness: RawBitmap.Endianness, pixelEndianness: RawBitmap.Endianness, separated: Bool) -> [Data]
     
-    var _colorSpace: AnyColorSpaceBaseProtocol { get }
-    
     func _linearTone() -> AnyImageBaseProtocol
     
     func _transposed() -> AnyImageBaseProtocol
@@ -50,15 +50,11 @@ protocol AnyImageBaseProtocol {
     
     func _horizontalFlipped() -> AnyImageBaseProtocol
     
-    func _draw<Model>(context: ImageContext<Model>, transform: SDTransform)
+    func _convert<Pixel>(colorSpace: Image<Pixel>.ColorSpace, intent: RenderingIntent, option: MappedBufferOption) -> Image<Pixel>
     
-    func _convert<Model>() -> Image<ColorPixel<Model>>?
+    func _copy(option: MappedBufferOption) -> AnyImageBaseProtocol
     
-    func _convert(option: MappedBufferOption) -> AnyImageBaseProtocol
-    
-    func _convert(to colorSpace: AnyColorSpaceBaseProtocol, intent: RenderingIntent, option: MappedBufferOption) -> AnyImageBaseProtocol
-    
-    func _convert<P>(to colorSpace: ColorSpace<P.Model>, intent: RenderingIntent, option: MappedBufferOption) -> Image<P>
+    func _copy<Model>() -> Image<ColorPixel<Model>>?
 }
 
 extension Image : AnyImageBaseProtocol {
@@ -72,61 +68,49 @@ extension Image : AnyImageBaseProtocol {
     @_versioned
     @_inlineable
     func _linearTone() -> AnyImageBaseProtocol {
-        return self.linearTone()
+        return self._linearTone()
     }
     
     @_versioned
     @_inlineable
     func _transposed() -> AnyImageBaseProtocol {
-        return self.transposed()
+        return self._transposed()
     }
     
     @_versioned
     @_inlineable
     func _verticalFlipped() -> AnyImageBaseProtocol {
-        return self.verticalFlipped()
+        return self._verticalFlipped()
     }
     
     @_versioned
     @_inlineable
     func _horizontalFlipped() -> AnyImageBaseProtocol {
-        return self.horizontalFlipped()
+        return self._horizontalFlipped()
     }
     
     @_versioned
     @_inlineable
-    func _draw<Model>(context: ImageContext<Model>, transform: SDTransform) {
-        context.draw(image: self, transform: transform)
+    func _convert<Pixel>(colorSpace: Image<Pixel>.ColorSpace, intent: RenderingIntent, option: MappedBufferOption) -> Image<Pixel> {
+        return Image<Pixel>(image: self, colorSpace: colorSpace, intent: intent, option: option)
     }
     
     @_versioned
     @_inlineable
-    func _convert<Model>() -> Image<ColorPixel<Model>>? {
-        let image = self as? Image<ColorPixel<Pixel.Model>> ?? Image<ColorPixel<Pixel.Model>>(image: self)
-        return image as? Image<ColorPixel<Model>>
-    }
-    
-    @_versioned
-    @_inlineable
-    func _convert(option: MappedBufferOption) -> AnyImageBaseProtocol {
+    func _copy(option: MappedBufferOption) -> AnyImageBaseProtocol {
         return Image(image: self, option: option)
     }
     
     @_versioned
     @_inlineable
-    func _convert(to colorSpace: AnyColorSpaceBaseProtocol, intent: RenderingIntent, option: MappedBufferOption) -> AnyImageBaseProtocol {
-        return colorSpace._convert(self, intent: intent, option: option)
-    }
-    
-    @_versioned
-    @_inlineable
-    func _convert<P>(to colorSpace: ColorSpace<P.Model>, intent: RenderingIntent, option: MappedBufferOption) -> Image<P> {
-        return Image<P>(image: self, colorSpace: colorSpace, intent: intent, option: option)
+    func _copy<Model>() -> Image<ColorPixel<Model>>? {
+        let image = self as? Image<ColorPixel<Pixel.Model>> ?? Image<ColorPixel<Pixel.Model>>(image: self, option: self.option)
+        return image as? Image<ColorPixel<Model>>
     }
 }
 
 @_fixed_layout
-public struct AnyImage {
+public struct AnyImage : ImageProtocol {
     
     @_versioned
     var _base: AnyImageBaseProtocol
@@ -146,67 +130,47 @@ public struct AnyImage {
 extension AnyImage {
     
     @_inlineable
-    public init(width: Int, height: Int, resolution: Resolution = Resolution(resolution: 1, unit: .point), colorSpace: AnyColorSpace, option: MappedBufferOption = .default) {
-        self.init(base: colorSpace._base._createImage(width: width, height: height, resolution: resolution, option: option))
+    public init<Model>(_ image: Image<Model>) {
+        self._base = image
     }
     
     @_inlineable
-    public init<Pixel>(_ image: Image<Pixel>, option: MappedBufferOption = .default) {
-        self._base = image._convert(option: option)
-    }
-    
-    @_inlineable
-    public init(_ image: AnyImage, option: MappedBufferOption = .default) {
-        self._base = image._base._convert(option: option)
+    public init(_ image: AnyImage) {
+        self = image
     }
     
     @_inlineable
     public init<Pixel: ColorPixelProtocol>(width: Int, height: Int, resolution: Resolution = Resolution(resolution: 1, unit: .point), colorSpace: ColorSpace<Pixel.Model>, pixel: Pixel = Pixel(), option: MappedBufferOption = .default) {
-        self.init(Image(width: width, height: height, resolution: resolution, colorSpace: colorSpace, pixel: pixel, option: option))
+        self._base = Image<Pixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, pixel: pixel, option: option)
     }
     
     @_inlineable
-    public init<Pixel, Model>(image: Image<Pixel>, colorSpace: ColorSpace<Model>, intent: RenderingIntent = .default, option: MappedBufferOption) {
-        self._base = image._convert(to: colorSpace, intent: intent, option: option)
-    }
-    
-    @_inlineable
-    public init<Model>(image: AnyImage, colorSpace: ColorSpace<Model>, intent: RenderingIntent = .default, option: MappedBufferOption) {
-        self._base = image._base._convert(to: colorSpace, intent: intent, option: option)
-    }
-    
-    @_inlineable
-    public init<Pixel>(image: Image<Pixel>, colorSpace: AnyColorSpace, intent: RenderingIntent = .default, option: MappedBufferOption) {
-        self._base = image._convert(to: colorSpace._base, intent: intent, option: option)
-    }
-    
-    @_inlineable
-    public init(image: AnyImage, colorSpace: AnyColorSpace, intent: RenderingIntent = .default, option: MappedBufferOption) {
-        self._base = image._base._convert(to: colorSpace._base, intent: intent, option: option)
-    }
-    
-    @_inlineable
-    public init<Pixel, Model>(image: Image<Pixel>, colorSpace: ColorSpace<Model>, intent: RenderingIntent = .default) {
-        self.init(image: image, colorSpace: colorSpace, intent: intent, option: image.option)
-    }
-    
-    @_inlineable
-    public init<Model>(image: AnyImage, colorSpace: ColorSpace<Model>, intent: RenderingIntent = .default) {
-        self.init(image: image, colorSpace: colorSpace, intent: intent, option: image._base.option)
-    }
-    
-    @_inlineable
-    public init<Pixel>(image: Image<Pixel>, colorSpace: AnyColorSpace, intent: RenderingIntent = .default) {
-        self.init(image: image, colorSpace: colorSpace, intent: intent, option: image.option)
-    }
-    
-    @_inlineable
-    public init(image: AnyImage, colorSpace: AnyColorSpace, intent: RenderingIntent = .default) {
-        self.init(image: image, colorSpace: colorSpace, intent: intent, option: image._base.option)
+    public init(width: Int, height: Int, resolution: Resolution = Resolution(resolution: 1, unit: .point), colorSpace: AnyColorSpace, option: MappedBufferOption = .default) {
+        self.init(base: colorSpace._base._create_image(width: width, height: height, resolution: resolution, option: option))
     }
 }
 
 extension AnyImage {
+    
+    @_inlineable
+    public init(image: AnyImage, option: MappedBufferOption) {
+        self.init(base: image._base._copy(option: option))
+    }
+    
+    @_inlineable
+    public init<P>(image: Image<P>, colorSpace: AnyColorSpace, intent: RenderingIntent = .default, option: MappedBufferOption = .default) {
+        self.init(base: colorSpace._base._create_image(image: image, intent: intent, option: option))
+    }
+    
+    @_inlineable
+    public init(image: AnyImage, colorSpace: AnyColorSpace, intent: RenderingIntent = .default, option: MappedBufferOption) {
+        self.init(base: colorSpace._base._create_image(image: image, intent: intent, option: option))
+    }
+    
+    @_inlineable
+    public var colorSpace: AnyColorSpace {
+        return AnyColorSpace(base: _base._colorSpace)
+    }
     
     @_inlineable
     public var width: Int {
@@ -229,28 +193,19 @@ extension AnyImage {
     }
     
     @_inlineable
-    public var colorSpace: AnyColorSpace {
-        return AnyColorSpace(base: _base._colorSpace)
+    public var isOpaque: Bool {
+        return _base.isOpaque
     }
-}
-
-extension AnyImage {
+    
+    @_inlineable
+    public var option: MappedBufferOption {
+        return _base.option
+    }
     
     @_inlineable
     public func linearTone() -> AnyImage {
         return AnyImage(base: _base._linearTone())
     }
-}
-
-extension AnyImage {
-    
-    @_inlineable
-    public var isOpaque: Bool {
-        return _base.isOpaque
-    }
-}
-
-extension AnyImage {
     
     @_inlineable
     public func transposed() -> AnyImage {
@@ -272,29 +227,16 @@ extension Image {
     
     @_inlineable
     public init(image: AnyImage, colorSpace: ColorSpace<Pixel.Model>, intent: RenderingIntent = .default, option: MappedBufferOption) {
-        self = image._base._convert(to: colorSpace, intent: intent, option: option)
-    }
-    
-    @_inlineable
-    public init(image: AnyImage, colorSpace: ColorSpace<Pixel.Model>, intent: RenderingIntent = .default) {
-        self.init(image: image, colorSpace: colorSpace, intent: intent, option: image._base.option)
+        self = image._base._convert(colorSpace: colorSpace, intent: intent, option: option)
     }
     
     @_inlineable
     public init?(image: AnyImage) {
         if let image = image._base as? Image {
-            self.init(image: image)
+            self.init(image: image, option: image.option)
         } else {
-            guard let image: Image<ColorPixel<Pixel.Model>> = image._base._convert() else { return nil }
-            self.init(image: image)
+            guard let image: Image<ColorPixel<Pixel.Model>> = image._base._copy() else { return nil }
+            self.init(image: image, option: image.option)
         }
-    }
-}
-
-extension ImageContext {
-    
-    @_inlineable
-    public func draw(image: AnyImage, transform: SDTransform) {
-        image._base._draw(context: self, transform: transform)
     }
 }

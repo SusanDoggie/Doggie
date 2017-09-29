@@ -47,8 +47,8 @@ extension ResamplingAlgorithm {
 extension ImageContext {
     
     @_inlineable
-    public func draw<C>(image: Image<C>, transform: SDTransform) {
-        self._draw(source: Image<ColorPixel<Pixel.Model>>(image: image, colorSpace: colorSpace, intent: renderingIntent), transform: transform)
+    public func draw<Image: ImageProtocol>(image: Image, transform: SDTransform) {
+        self._draw(source: image.convert(to: colorSpace, intent: renderingIntent), transform: transform)
     }
     
     @_versioned

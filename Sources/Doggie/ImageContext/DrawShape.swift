@@ -148,7 +148,7 @@ extension ImageContext {
     }
     
     @_inlineable
-    public func draw<C>(shape: Shape, winding: Shape.WindingRule, color: Color<C>) {
+    public func draw<C: ColorProtocol>(shape: Shape, winding: Shape.WindingRule, color: C) {
         let color = color.convert(to: colorSpace, intent: renderingIntent)
         self.draw(shape: shape, winding: winding, color: color.color, opacity: color.opacity)
     }
@@ -162,7 +162,7 @@ extension ImageContext {
     }
     
     @_inlineable
-    public func stroke<C>(shape: Shape, width: Double, cap: Shape.LineCap, join: Shape.LineJoin, color: Color<C>) {
+    public func stroke<C: ColorProtocol>(shape: Shape, width: Double, cap: Shape.LineCap, join: Shape.LineJoin, color: C) {
         let color = color.convert(to: colorSpace, intent: renderingIntent)
         self.stroke(shape: shape, width: width, cap: cap, join: join, color: color.color, opacity: color.opacity)
     }
