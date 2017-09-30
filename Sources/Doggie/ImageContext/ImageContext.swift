@@ -41,8 +41,8 @@ public class ImageContext<Pixel: ColorPixelProtocol> {
     
     public private(set) var image: Image<Pixel>
     
-    private var clip: [Double]
-    private var depth: [Double]
+    private var clip: MappedBuffer<Double>
+    private var depth: MappedBuffer<Double>
     
     private var styles: ImageContextStyles = ImageContextStyles()
     
@@ -50,14 +50,14 @@ public class ImageContext<Pixel: ColorPixelProtocol> {
     
     public init(image: Image<Pixel>) {
         self.image = image
-        self.clip = [Double](repeating: 1, count: image.width * image.height)
-        self.depth = [Double](repeating: 1, count: image.width * image.height)
+        self.clip = MappedBuffer(repeating: 1, count: image.width * image.height, option: image.option)
+        self.depth = MappedBuffer(repeating: 1, count: image.width * image.height, option: image.option)
     }
     
     public init(width: Int, height: Int, resolution: Resolution = Resolution(resolution: 1, unit: .point), colorSpace: ColorSpace<Pixel.Model>, option: MappedBufferOption = .default) {
         self.image = Image(width: width, height: height, resolution: resolution, colorSpace: colorSpace, option: option)
-        self.clip = [Double](repeating: 1, count: width * height)
-        self.depth = [Double](repeating: 1, count: width * height)
+        self.clip = MappedBuffer(repeating: 1, count: width * height, option: option)
+        self.depth = MappedBuffer(repeating: 1, count: width * height, option: option)
     }
 }
 
@@ -417,6 +417,6 @@ extension ImageContext {
         
         try body(_clip)
         
-        self.clip = _clip.image.pixels.map { $0.color.white * $0.opacity }
+        self.clip = MappedBuffer(_clip.image.pixels.lazy.map { $0.color.white * $0.opacity }, option: image.option)
     }
 }
