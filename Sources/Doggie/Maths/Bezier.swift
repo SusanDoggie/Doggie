@@ -202,9 +202,10 @@ extension Bezier {
         let p = self.points
         let n = Double(p.count)
         var result = [p[0]]
+        result.reserveCapacity(p.count + 1)
         for (k, points) in zip(p, p.dropFirst()).enumerated() {
             let t = Double(k + 1) / n
-            result.append(t * points.0 + (1 - t) * points.1)
+            result.append(t * (points.0 - points.1) + points.1)
         }
         result.append(p.last!)
         return Bezier(result)
@@ -214,21 +215,40 @@ extension Bezier {
 extension Bezier {
     
     @_versioned
+    @_inlineable
     static func split(_ t: Double, _ p: [Element]) -> ([Element], [Element]) {
-        let _t = 1 - t
-        if p.count == 2 {
-            let split = _t * p.first! + t * p.last!
-            return ([p.first!, split], [split, p.last!])
+        switch p.count {
+        case 2:
+            let p0 = p[0]
+            let p1 = p[1]
+            let q0 = p0 + t * (p1 - p0)
+            return ([p0, q0], [q0, p1])
+        case 3:
+            let p0 = p[0]
+            let p1 = p[1]
+            let p2 = p[2]
+            let q0 = p0 + t * (p1 - p0)
+            let q1 = p1 + t * (p2 - p1)
+            let u0 = q0 + t * (q1 - q0)
+            return ([p0, q0, u0], [u0, q1, p2])
+        case 4:
+            let p0 = p[0]
+            let p1 = p[1]
+            let p2 = p[2]
+            let p3 = p[3]
+            let q0 = p0 + t * (p1 - p0)
+            let q1 = p1 + t * (p2 - p1)
+            let q2 = p2 + t * (p3 - p2)
+            let u0 = q0 + t * (q1 - q0)
+            let u1 = q1 + t * (q2 - q1)
+            let v0 = u0 + t * (u1 - u0)
+            return ([p0, q0, u0, v0], [v0, u1, q2, p3])
+        default:
+            let _split = split(t, zip(p, p.dropFirst()).map { $0 + t * ($1 - $0) })
+            return ([p[0]] + _split.0, _split.1 + [p.last!])
         }
-        var subpath = [Element]()
-        var lastPoint = p.first!
-        for current in p.dropFirst() {
-            subpath.append(_t * lastPoint + t * current)
-            lastPoint = current
-        }
-        let _split = split(t, subpath)
-        return ([p.first!] + _split.0, _split.1 + [p.last!])
     }
+    
     @_inlineable
     public func split(_ t: Double) -> (Bezier, Bezier) {
         let points = self.points
@@ -245,6 +265,7 @@ extension Bezier {
     @_inlineable
     public func split(_ t: [Double]) -> [Bezier] {
         var result: [Bezier] = []
+        result.reserveCapacity(t.count + 1)
         var remain = self
         var last_t = 0.0
         for _t in t.sorted() {
@@ -262,15 +283,8 @@ extension Bezier {
     
     @_inlineable
     public func derivative() -> Bezier {
-        let p = self.points
-        let n = Double(p.count - 1)
-        var de = [Element]()
-        var lastPoint = p.first!
-        for current in p.dropFirst() {
-            de.append(n * (current - lastPoint))
-            lastPoint = current
-        }
-        return Bezier(de)
+        let n = Double(points.count - 1)
+        return Bezier(zip(points, points.dropFirst()).map { n * ($1 - $0) })
     }
 }
 
