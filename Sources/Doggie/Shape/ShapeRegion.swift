@@ -686,12 +686,7 @@ extension Shape.Component {
             if left.0 == right.0 {
                 result.append(contentsOf: OptionOneCollection(ShapeRegion.Solid(segments: self.splitPath(left.1, right.1))))
             } else {
-                if var splits = graph[from: left.0, to: right.0] {
-                    splits.append((left.1, right.1))
-                    graph[from: left.0, to: right.0] = splits
-                } else {
-                    graph[from: left.0, to: right.0] = [(left.1, right.1)]
-                }
+                graph[from: left.0, to: right.0, default: []].append((left.1, right.1))
             }
         }
         while let graph_first = graph.first {

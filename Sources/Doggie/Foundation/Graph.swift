@@ -23,18 +23,53 @@
 //  THE SOFTWARE.
 //
 
+@_versioned
 @_fixed_layout
-public struct Graph<Node : Hashable, Link> : Collection {
+enum GraphError : Error {
+    case keyCollision
+}
+
+@_fixed_layout
+public struct Graph<Node : Hashable, Link> : Collection, ExpressibleByDictionaryLiteral {
     
     public typealias Iterator = GraphIterator<Node, Link>
     
     @_versioned
     var table: [Node:[Node:Link]]
     
+    @_versioned
+    @_inlineable
+    init(table: [Node:[Node:Link]]) {
+        self.table = table
+    }
+    
     /// Create an empty graph.
     @_inlineable
     public init() {
         table = Dictionary()
+    }
+    
+    @_inlineable
+    public init(dictionaryLiteral elements: ((Node, Node), Link)...) {
+        self.init(uniqueKeysWithValues: elements.lazy.map { ($0.0, $0.1, $1) })
+    }
+    
+    @_inlineable
+    public init<S: Sequence>(uniqueKeysWithValues keysAndValues: S) where S.Element == (Node, Node, Link) {
+        do {
+            try self.init(keysAndValues, uniquingKeysWith: { _, _ in throw GraphError.keyCollision })
+        } catch {
+            fatalError("Key collision.")
+        }
+    }
+    
+    @_inlineable
+    public init<S: Sequence>(_ keysAndValues: S, uniquingKeysWith combine: (Link, Link) throws -> Link) rethrows where S.Element == (Node, Node, Link) {
+        if let graph = keysAndValues as? Graph {
+            self = graph
+        } else {
+            self.table = try Dictionary(grouping: keysAndValues) { $0.0 }.mapValues { try Dictionary($0.lazy.map { ($0.1, $0.2) }, uniquingKeysWith: combine) }
+        }
     }
     
     @_inlineable
@@ -73,6 +108,7 @@ public struct Graph<Node : Hashable, Link> : Collection {
         }
     }
     
+    @_inlineable
     public subscript(position: GraphIndex<Node, Link>) -> Iterator.Element {
         let (from, to_val) = table[position.index1]
         let (to, val) = to_val[position.index2!]
@@ -80,6 +116,7 @@ public struct Graph<Node : Hashable, Link> : Collection {
     }
     
     /// - complexity: Amortized O(1)
+    @_inlineable
     public subscript(from fromNode: Node, to toNode: Node) -> Link? {
         get {
             return linkValue(from: fromNode, to: toNode)
@@ -90,6 +127,16 @@ public struct Graph<Node : Hashable, Link> : Collection {
             } else {
                 removeLink(from: fromNode, to: toNode)
             }
+        }
+    }
+    
+    @_inlineable
+    public subscript(from fromNode: Node, to toNode: Node, default defaultValue: @autoclosure () -> Link) -> Link {
+        get {
+            return self[from: fromNode, to: toNode] ?? defaultValue()
+        }
+        set {
+            self[from: fromNode, to: toNode] = newValue
         }
     }
     
@@ -132,11 +179,7 @@ public struct Graph<Node : Hashable, Link> : Collection {
     @discardableResult
     @_inlineable
     public mutating func updateLink(from fromNode: Node, to toNode: Node, with link: Link) -> Link? {
-        if table[fromNode] == nil {
-            table[fromNode] = [toNode: link]
-            return nil
-        }
-        return table[fromNode]!.updateValue(link, forKey: toNode)
+        return table[fromNode, default: [:]].updateValue(link, forKey: toNode)
     }
     
     /// - complexity: Amortized O(1)
@@ -246,7 +289,34 @@ public struct Graph<Node : Hashable, Link> : Collection {
     /// A collection of nodes which connected to `toNode`.
     @_inlineable
     public func nodes(to toNode: Node) -> AnyCollection<(Node, Link)> {
-        return AnyCollection(table.lazy.flatMap { arg in arg.1[toNode].map { (arg.0, $0) } })
+        return AnyCollection(table.lazy.flatMap { from, list in list[toNode].map { (from, $0) } })
+    }
+    
+    @_inlineable
+    public func filter(_ isIncluded: (Element) throws -> Bool) rethrows -> Graph {
+        return try Graph(table: Dictionary(uniqueKeysWithValues: table.flatMap { from, list in
+            let list = try list.filter { try isIncluded((from, $0, $1)) }
+            return list.count == 0 ? nil : (from, list)
+        }))
+    }
+    
+    @_inlineable
+    public func mapValues<T>(_ transform: (Link) throws -> T) rethrows -> Graph<Node, T> {
+        return try Graph<Node, T>(table: table.mapValues { try $0.mapValues(transform) })
+    }
+    
+    @_inlineable
+    public mutating func merge<S: Sequence>(_ keysAndValues: S, uniquingKeysWith combine: (Link, Link) throws -> Link) rethrows where S.Element == (Node, Node, Link) {
+        for (key, list) in Dictionary(grouping: keysAndValues, by: { $0.0 }) {
+            try table[key, default: [:]].merge(list.lazy.map { ($0.1, $0.2) }, uniquingKeysWith: combine)
+        }
+    }
+    
+    @_inlineable
+    public func merging<S: Sequence>(_ keysAndValues: S, uniquingKeysWith combine: (Link, Link) throws -> Link) rethrows -> Graph where S.Element == (Node, Node, Link) {
+        var result = self
+        try result.merge(keysAndValues, uniquingKeysWith: combine)
+        return result
     }
 }
 
