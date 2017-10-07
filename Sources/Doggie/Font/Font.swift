@@ -103,6 +103,7 @@ extension Font {
     
     private class Cache {
         
+        var coveredCharacterSet: CharacterSet?
         var glyphs: [Int: [Shape.Component]] = [:]
     }
 }
@@ -199,7 +200,10 @@ extension Font {
     }
     
     public var coveredCharacterSet: CharacterSet {
-        return base.coveredCharacterSet
+        if cache.coveredCharacterSet == nil {
+            cache.coveredCharacterSet = base.coveredCharacterSet
+        }
+        return cache.coveredCharacterSet!
     }
 }
 
