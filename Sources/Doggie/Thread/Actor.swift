@@ -33,7 +33,7 @@ open class Actor<Message> : Trigger {
         case request((Actor) -> Void)
     }
     
-    private var messages: AtomicQueue<Action>
+    private let messages: AtomicQueue<Action>
     
     public init(queue: DispatchQueue = SDDefaultDispatchQueue, qos: DispatchQoS = .unspecified, flags: DispatchWorkItemFlags = []) {
         self.messages = AtomicQueue()
