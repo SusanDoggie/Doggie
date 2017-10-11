@@ -50,11 +50,15 @@ protocol FontFaceBase {
     var italicAngle: Double { get }
     var weight: Int? { get }
     var stretch: Int? { get }
+    var xHeight: Double? { get }
+    var capHeight: Double? { get }
     var isFixedPitch: Bool { get }
     var isItalic: Bool { get }
     var isBold: Bool { get }
     var isExpanded: Bool { get }
     var isCondensed: Bool { get }
+    var strikeoutPosition: Double? { get }
+    var strikeoutThickness: Double? { get }
     var underlinePosition: Double { get }
     var underlineThickness: Double { get }
     
@@ -252,6 +256,12 @@ extension Font {
     public var stretch: Int? {
         return base.stretch
     }
+    public var xHeight: Double? {
+        return base.xHeight.map { $0 * _pointScale }
+    }
+    public var capHeight: Double? {
+        return base.capHeight.map { $0 * _pointScale }
+    }
     public var isFixedPitch: Bool {
         return base.isFixedPitch
     }
@@ -267,7 +277,12 @@ extension Font {
     public var isCondensed: Bool {
         return base.isCondensed
     }
-    
+    public var strikeoutPosition: Double? {
+        return base.strikeoutPosition.map { $0 * _pointScale }
+    }
+    public var strikeoutThickness: Double? {
+        return base.strikeoutThickness.map { $0 * _pointScale }
+    }
     public var underlinePosition: Double {
         return base.underlinePosition * _pointScale
     }

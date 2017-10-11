@@ -50,6 +50,19 @@ struct SFNTOS2 : DataDecodable {
     var fsFirstCharIndex: BEUInt16
     var fsLastCharIndex: BEUInt16
     
+    var sTypoAscender: BEInt16?
+    var sTypoDescender: BEInt16?
+    var sTypoLineGap: BEInt16?
+    var usWinAscent: BEUInt16?
+    var usWinDescent: BEUInt16?
+    var ulCodePageRange1: BEUInt32?
+    var ulCodePageRange2: BEUInt32?
+    var sxHeight: BEInt16?
+    var sCapHeight: BEInt16?
+    var usDefaultChar: BEUInt16?
+    var usBreakChar: BEUInt16?
+    var usMaxContext: BEUInt16?
+    
     init(from data: inout Data) throws {
         self.version = try data.decode(BEUInt16.self)
         self.xAvgCharWidth = try data.decode(BEInt16.self)
@@ -73,6 +86,19 @@ struct SFNTOS2 : DataDecodable {
         self.fsSelection = try data.decode(BEUInt16.self)
         self.fsFirstCharIndex = try data.decode(BEUInt16.self)
         self.fsLastCharIndex = try data.decode(BEUInt16.self)
+        
+        self.sTypoAscender = try? data.decode(BEInt16.self)
+        self.sTypoDescender = try? data.decode(BEInt16.self)
+        self.sTypoLineGap = try? data.decode(BEInt16.self)
+        self.usWinAscent = try? data.decode(BEUInt16.self)
+        self.usWinDescent = try? data.decode(BEUInt16.self)
+        self.ulCodePageRange1 = try? data.decode(BEUInt32.self)
+        self.ulCodePageRange2 = try? data.decode(BEUInt32.self)
+        self.sxHeight = try? data.decode(BEInt16.self)
+        self.sCapHeight = try? data.decode(BEInt16.self)
+        self.usDefaultChar = try? data.decode(BEUInt16.self)
+        self.usBreakChar = try? data.decode(BEUInt16.self)
+        self.usMaxContext = try? data.decode(BEUInt16.self)
     }
     
     struct PANOSE : DataDecodable {

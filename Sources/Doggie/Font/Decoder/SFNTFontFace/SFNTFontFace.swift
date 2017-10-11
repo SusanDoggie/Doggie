@@ -207,6 +207,12 @@ extension SFNTFontFace {
     var stretch: Int? {
         return (os2?.usWidthClass).map(Int.init)
     }
+    var xHeight: Double? {
+        return (os2?.sxHeight?.representingValue).map(Double.init)
+    }
+    var capHeight: Double? {
+        return (os2?.sCapHeight?.representingValue).map(Double.init)
+    }
     
     var familyClass: Font.FamilyClass? {
         switch Int(os2?.sFamilyClass ?? 0) >> 8 {
@@ -238,6 +244,13 @@ extension SFNTFontFace {
     }
     var isCondensed: Bool {
         return head.macStyle & 32 != 0
+    }
+    
+    var strikeoutPosition: Double? {
+        return (os2?.yStrikeoutPosition.representingValue).map(Double.init)
+    }
+    var strikeoutThickness: Double? {
+        return (os2?.yStrikeoutSize.representingValue).map(Double.init)
     }
     
     var underlinePosition: Double {
