@@ -68,6 +68,16 @@ extension ColorBlendMode {
     
     @_versioned
     @inline(__always)
+    func blend<Model : ColorModelProtocol>(_ source: Model, _ destination: Model) -> Model {
+        var result = Model()
+        for i in 0..<Model.numberOfComponents {
+            result[i] = self.blend(source[i], destination[i])
+        }
+        return result
+    }
+    
+    @_versioned
+    @inline(__always)
     func blend(_ source: Double, _ destination: Double) -> Double {
         
         @inline(__always)
@@ -177,10 +187,10 @@ extension ColorCompositingMode {
     
     @_versioned
     @inline(__always)
-    func mix(_ source: Double, _ source_alpha: Double, _ destination: Double, _ destination_alpha: Double) -> Double {
+    func mix<T : ScalarMultiplicative>(_ source: T, _ source_alpha: T.Scalar, _ destination: T, _ destination_alpha: T.Scalar) -> T {
         
         switch self {
-        case .clear: return 0
+        case .clear: return T()
         case .copy: return source
         case .sourceOver: return source + destination * (1 - source_alpha)
         case .sourceIn: return source * destination_alpha
@@ -190,7 +200,10 @@ extension ColorCompositingMode {
         case .destinationIn: return destination * source_alpha
         case .destinationOut: return destination * (1 - source_alpha)
         case .destinationAtop: return source * (1 - destination_alpha) + destination * source_alpha
-        case .xor: return source * (1 - destination_alpha) + destination * (1 - source_alpha)
+        case .xor:
+            let _s = source * (1 - destination_alpha)
+            let _d = destination * (1 - source_alpha)
+            return _s + _d
         }
     }
 }
@@ -206,13 +219,10 @@ extension ColorPixelProtocol {
         let r_alpha = compositingMode.mix(s_alpha, s_alpha, d_alpha, d_alpha)
         
         if r_alpha > 0 {
-            self.opacity = r_alpha
-            for i in 0..<Model.numberOfComponents {
-                let _source = source.color[i]
-                let _destination = self.color[i]
-                let blended = blendMode == .normal ? _source : (1 - d_alpha) * _source + d_alpha * blendMode.blend(_source, _destination)
-                self.color[i] = compositingMode.mix(s_alpha * blended, s_alpha, d_alpha * _destination, d_alpha) / r_alpha
-            }
+            let _source = source.color
+            let _destination = self.color
+            let blended = blendMode == .normal ? _source : (1 - d_alpha) * _source + d_alpha * blendMode.blend(_source, _destination)
+            self = Self(color: compositingMode.mix(s_alpha * blended, s_alpha, d_alpha * _destination, d_alpha) / r_alpha, opacity: r_alpha)
         } else {
             self = Self()
         }

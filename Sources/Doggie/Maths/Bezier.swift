@@ -32,6 +32,11 @@ public struct Bezier<Element : Subtractive & ScalarMultiplicative> where Element
     var points: [Element]
     
     @_inlineable
+    public init() {
+        self.init(Element(), Element())
+    }
+    
+    @_inlineable
     public init(_ p: Element ... ) {
         self.init(p)
     }
@@ -39,7 +44,9 @@ public struct Bezier<Element : Subtractive & ScalarMultiplicative> where Element
     @_inlineable
     public init<S : Sequence>(_ s: S) where S.Element == Element {
         self.points = Array(s)
-        precondition(points.count > 1, "count of points less than 2.")
+        while points.count < 2 {
+            points.append(points.first ?? Element())
+        }
     }
 }
 

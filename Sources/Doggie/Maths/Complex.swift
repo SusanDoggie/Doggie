@@ -31,9 +31,14 @@ public struct Complex {
     public var imag: Double
     
     @_transparent
+    public init() {
+        self.real = 0
+        self.imag = 0
+    }
+    @_transparent
     public init(_ real: Double) {
         self.real = real
-        self.imag = 0.0
+        self.imag = 0
     }
     @_transparent
     public init(real: Double, imag: Double) {
@@ -43,7 +48,7 @@ public struct Complex {
     @_transparent
     public init(_ real: Int) {
         self.real = Double(real)
-        self.imag = 0.0
+        self.imag = 0
     }
     @_transparent
     public init(real: Int, imag: Int) {

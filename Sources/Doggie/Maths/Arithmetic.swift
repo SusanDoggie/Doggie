@@ -45,6 +45,8 @@ public protocol ScalarMultiplicative : Subtractive {
     
     associatedtype Scalar : FloatingPoint, ExpressibleByFloatLiteral
     
+    init()
+    
     static func * (lhs: Scalar, rhs: Self) -> Self
     
     static func * (lhs: Self, rhs: Scalar) -> Self

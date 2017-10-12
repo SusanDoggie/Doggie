@@ -26,8 +26,6 @@
 public protocol Tensor : ScalarMultiplicative, RandomAccessCollection, MutableCollection where Element == Scalar, Index == Int, IndexDistance == Int {
     
     static var numberOfComponents: Int { get }
-    
-    init()
 }
 
 extension Tensor {
