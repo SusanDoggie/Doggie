@@ -52,23 +52,6 @@ public struct Vector {
     }
 }
 
-extension Vector {
-    
-    @_transparent
-    public var magnitude: Double {
-        return sqrt(x * x + y * y + z * z)
-    }
-}
-
-extension Vector {
-    
-    @_transparent
-    public var unit: Vector {
-        let d = magnitude
-        return d == 0 ? Vector() : self / d
-    }
-}
-
 extension Vector: CustomStringConvertible {
     
     @_transparent
@@ -90,14 +73,6 @@ extension Vector {
     @_transparent
     public func offset(dx: Double, dy: Double, dz: Double) -> Vector {
         return Vector(x: self.x + dx, y: self.y + dy, z: self.z + dz)
-    }
-}
-
-extension Vector {
-    
-    @_transparent
-    public func distance(to: Vector) -> Double {
-        return Vector(x: to.x - self.x, y: to.y - self.y, z: to.z - self.z).magnitude
     }
 }
 

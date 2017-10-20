@@ -26,6 +26,12 @@
 public protocol Tensor : ScalarMultiplicative, RandomAccessCollection, MutableCollection where Element == Scalar, Index == Int, IndexDistance == Int {
     
     static var numberOfComponents: Int { get }
+    
+    var magnitude: Scalar { get set }
+    
+    var unit: Self { get }
+    
+    func distance(to: Self) -> Scalar
 }
 
 extension Tensor {
@@ -60,16 +66,8 @@ extension Tensor {
         }
         set {
             let m = self.magnitude
-            if m == 0 {
-                for i in 0..<Self.numberOfComponents {
-                    self[i] = 0
-                }
-            } else {
-                let scale = newValue / m
-                for i in 0..<Self.numberOfComponents {
-                    self[i] *= scale
-                }
-            }
+            let scale = m == 0 ? 0 : newValue / m
+            self *= scale
         }
     }
     
@@ -78,9 +76,6 @@ extension Tensor {
         let m = self.magnitude
         return m == 0 ? Self() : self / m
     }
-}
-
-extension Tensor {
     
     @_transparent
     public func distance(to: Self) -> Scalar {

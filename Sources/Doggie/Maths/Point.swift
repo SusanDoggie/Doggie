@@ -57,16 +57,6 @@ extension Point {
     }
     
     @_transparent
-    public var magnitude: Double {
-        get {
-            return sqrt(x * x + y * y)
-        }
-        set {
-            self = Point(magnitude: newValue, phase: phase)
-        }
-    }
-    
-    @_transparent
     public var phase: Double {
         get {
             return atan2(y, x)
@@ -80,25 +70,8 @@ extension Point {
 extension Point {
     
     @_transparent
-    public var unit: Point {
-        let d = magnitude
-        return d == 0 ? Point() : self / d
-    }
-}
-
-extension Point {
-    
-    @_transparent
     public func offset(dx: Double, dy: Double) -> Point {
         return Point(x: self.x + dx, y: self.y + dy)
-    }
-}
-
-extension Point {
-    
-    @_transparent
-    public func distance(to: Point) -> Double {
-        return Point(x: to.x - self.x, y: to.y - self.y).magnitude
     }
 }
 
