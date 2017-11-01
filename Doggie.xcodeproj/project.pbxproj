@@ -56,6 +56,7 @@
 		0A2107161E5BEEBB00F1E00E /* Shape.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A21070C1E5BEEBB00F1E00E /* Shape.swift */; };
 		0A21F0251F061AE2009C4490 /* PixelBlender.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A21F0231F061AE2009C4490 /* PixelBlender.swift */; };
 		0A2406741F38109900B0EC28 /* iccNamedColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2406731F38109900B0EC28 /* iccNamedColor.swift */; };
+		0A26A0921FA98A1B008BEADB /* CompressionTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A26A0901FA98994008BEADB /* CompressionTest.swift */; };
 		0A2A643F1E5C45EE000E21BB /* PDFParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2A643D1E5C45EE000E21BB /* PDFParser.swift */; };
 		0A32D9991F28825F0027F384 /* Tensor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A32D9971F28825F0027F384 /* Tensor.swift */; };
 		0A36612C1EEA54AB00216A26 /* CGPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A36612A1EEA54AB00216A26 /* CGPath.swift */; };
@@ -263,6 +264,7 @@
 		0A21070C1E5BEEBB00F1E00E /* Shape.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Shape.swift; sourceTree = "<group>"; };
 		0A21F0231F061AE2009C4490 /* PixelBlender.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PixelBlender.swift; sourceTree = "<group>"; };
 		0A2406731F38109900B0EC28 /* iccNamedColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iccNamedColor.swift; sourceTree = "<group>"; };
+		0A26A0901FA98994008BEADB /* CompressionTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CompressionTest.swift; sourceTree = "<group>"; };
 		0A2A643D1E5C45EE000E21BB /* PDFParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PDFParser.swift; sourceTree = "<group>"; };
 		0A32D9971F28825F0027F384 /* Tensor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tensor.swift; sourceTree = "<group>"; };
 		0A36612A1EEA54AB00216A26 /* CGPath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CGPath.swift; sourceTree = "<group>"; };
@@ -598,10 +600,11 @@
 		08AF77AE1A3A10510042491F /* Tests */ = {
 			isa = PBXGroup;
 			children = (
-				0A7A4BFF1F738D18005F44CD /* XMLTest.swift */,
 				0AFCA14F1D9E1F130034AB10 /* AtomicTest.swift */,
+				0A26A0901FA98994008BEADB /* CompressionTest.swift */,
 				08BFF9B91B0715ED00EC88CB /* FourierTest.swift */,
 				0A8D98A21E53ED0F0050E112 /* ImageTest.swift */,
+				0A7A4BFF1F738D18005F44CD /* XMLTest.swift */,
 			);
 			name = Tests;
 			path = Tests/DoggieTests;
@@ -1240,6 +1243,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0A26A0921FA98A1B008BEADB /* CompressionTest.swift in Sources */,
 				0A92062D1F14A29E00AF5C49 /* ImageTest.swift in Sources */,
 				0A7A4C001F738D18005F44CD /* XMLTest.swift in Sources */,
 				0ACD21331EEBA55000C5811F /* AtomicTest.swift in Sources */,

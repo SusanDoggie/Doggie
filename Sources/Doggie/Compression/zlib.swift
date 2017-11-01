@@ -109,54 +109,44 @@ extension Deflate {
 
 extension Deflate {
     
-    private func _process(_ capacity: Int, _ flag: Int32) throws -> Data {
+    private func _process<C : RangeReplaceableCollection>(_ flag: Int32, _ output: inout C) throws where C.Element == UInt8 {
         
-        var result = Data(capacity: capacity)
+        var buffer = [UInt8](repeating: 0, count: 4096)
         
-        stream.avail_out = 0
-        
-        var written = 0
-        
-        while stream.avail_in != 0 || stream.avail_out == 0 {
+        try buffer.withUnsafeMutableBufferPointer { buf in
             
-            result.count = written + 32
-            
-            try result.withUnsafeMutableBytes { (bytes: UnsafeMutablePointer<Bytef>) in
+            repeat {
                 
-                stream.next_out = bytes.advanced(by: written)
-                stream.avail_out = 32
+                stream.next_out = buf.baseAddress
+                stream.avail_out = 4096
                 
                 let status = deflate(&stream, flag)
                 
                 guard status == Z_OK || status == Z_BUF_ERROR || status == Z_STREAM_END else { throw Error(code: status, msg: stream.msg) }
                 
-                written = result.count - Int(stream.avail_out)
-            }
+                output.append(contentsOf: buf.prefix(4096 - Int(stream.avail_out)))
+                
+            } while stream.avail_in != 0 || stream.avail_out == 0
         }
-        
-        result.count -= Int(stream.avail_out)
-        stream.avail_out = 0
-        
-        return result
     }
     
-    public func process(data: Data) throws -> Data {
+    public func process<C : RangeReplaceableCollection>(_ source: Data, _ output: inout C) throws where C.Element == UInt8 {
         
-        return try data.withUnsafeBytes { (bytes: UnsafePointer<Bytef>) in
+        try source.withUnsafeBytes { (bytes: UnsafePointer<Bytef>) in
             
             stream.next_in = UnsafeMutablePointer<Bytef>(mutating: bytes)
-            stream.avail_in = uInt(data.count)
+            stream.avail_in = uInt(source.count)
             
-            return try _process(data.count, Z_NO_FLUSH)
+            try _process(Z_NO_FLUSH, &output)
         }
     }
     
-    public func final() throws -> Data {
+    public func final<C : RangeReplaceableCollection>(_ output: inout C) throws where C.Element == UInt8 {
         
         stream.next_in = nil
         stream.avail_in = 0
         
-        return try _process(0, Z_FINISH)
+        try _process(Z_FINISH, &output)
     }
 }
 
@@ -204,53 +194,44 @@ extension Inflate {
 
 extension Inflate {
     
-    private func _process(_ capacity: Int, _ flag: Int32) throws -> Data {
+    private func _process<C : RangeReplaceableCollection>(_ flag: Int32, _ output: inout C) throws where C.Element == UInt8 {
         
-        var result = Data(capacity: capacity)
+        var buffer = [UInt8](repeating: 0, count: 4096)
         
-        stream.avail_out = 0
-        
-        var written = 0
-        
-        while stream.avail_in != 0 || stream.avail_out == 0 {
+        try buffer.withUnsafeMutableBufferPointer { buf in
             
-            result.count = written + 32
-            
-            try result.withUnsafeMutableBytes { (bytes: UnsafeMutablePointer<Bytef>) in
+            repeat {
                 
-                stream.next_out = bytes.advanced(by: written)
-                stream.avail_out = 32
+                stream.next_out = buf.baseAddress
+                stream.avail_out = 4096
                 
                 let status = inflate(&stream, flag)
                 
                 guard status == Z_OK || status == Z_BUF_ERROR || status == Z_STREAM_END else { throw Error(code: status, msg: stream.msg) }
                 
-                written = result.count - Int(stream.avail_out)
-            }
+                output.append(contentsOf: buf.prefix(4096 - Int(stream.avail_out)))
+                
+            } while stream.avail_in != 0 || stream.avail_out == 0
         }
-        
-        result.count -= Int(stream.avail_out)
-        stream.avail_out = 0
-        
-        return result
     }
     
-    public func process(data: Data) throws -> Data {
+    public func process<C : RangeReplaceableCollection>(_ source: Data, _ output: inout C) throws where C.Element == UInt8 {
         
-        return try data.withUnsafeBytes { (bytes: UnsafePointer<Bytef>) in
+        try source.withUnsafeBytes { (bytes: UnsafePointer<Bytef>) in
             
             stream.next_in = UnsafeMutablePointer<Bytef>(mutating: bytes)
-            stream.avail_in = uInt(data.count)
+            stream.avail_in = uInt(source.count)
             
-            return try _process(data.count, Z_NO_FLUSH)
+            try _process(Z_NO_FLUSH, &output)
         }
     }
     
-    public func final() throws -> Data {
+    public func final<C : RangeReplaceableCollection>(_ output: inout C) throws where C.Element == UInt8 {
         
         stream.next_in = nil
         stream.avail_in = 0
         
-        return try _process(0, Z_FINISH)
+        try _process(Z_FINISH, &output)
     }
 }
+

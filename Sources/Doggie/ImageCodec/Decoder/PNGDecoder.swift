@@ -233,14 +233,7 @@ struct PNGDecoder : ImageRepDecoder {
     
     func decompress(data: Data, compression: UInt8) -> Data? {
         switch compression {
-        case 0:
-            do {
-                let inflate = try Inflate()
-                return try? inflate.process(data: data) + inflate.final()
-            } catch let error {
-                print(error)
-                return nil
-            }
+        case 0: return try? Inflate().process(data)
         default: return nil
         }
     }

@@ -75,7 +75,7 @@ struct PNGEncoder : ImageRepEncoder {
     
     private static func iCCP<C>(_ colorSpace: ColorSpace<C>) -> PNGChunk? {
         
-        if let iccData = colorSpace.iccData, let deflate = try? Deflate(), let data = try? deflate.process(data: iccData) + deflate.final() {
+        if let iccData = colorSpace.iccData, let data = try? Deflate(windowBits: 15).process(iccData) {
             
             var iccp = Data()
             
@@ -179,7 +179,7 @@ struct PNGEncoder : ImageRepEncoder {
                                     body(&scanline, destination.pointee)
                                 }
                                 
-                                compressed.append(try deflate.process(data: filter0(scanline, previous, bitsPerPixel)))
+                                try deflate.process(filter0(scanline, previous, bitsPerPixel), &compressed)
                                 
                                 previous = scanline
                             }
@@ -206,7 +206,7 @@ struct PNGEncoder : ImageRepEncoder {
                                 buffer += 1
                             }
                             
-                            compressed.append(try deflate.process(data: filter0(scanline, previous, bitsPerPixel)))
+                            try deflate.process(filter0(scanline, previous, bitsPerPixel), &compressed)
                             
                             previous = scanline
                         }
@@ -214,7 +214,7 @@ struct PNGEncoder : ImageRepEncoder {
                 }
             }
             
-            compressed.append(try deflate.final())
+            try deflate.final(&compressed)
             
         } catch {
             return nil

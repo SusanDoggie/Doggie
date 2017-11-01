@@ -29,6 +29,7 @@
     @testable import DoggieTests
     
     XCTMain([
+        testCase(CompressionTest.allTests),
         testCase(AtomicTest.allTests),
         testCase(FourierTest.allTests),
         testCase(ImageTest.allTests),

@@ -27,8 +27,21 @@ import Foundation
 
 public protocol CompressionCodec {
     
-    func process(data: Data) throws -> Data
+    func process<C : RangeReplaceableCollection>(_ source: Data, _ output: inout C) throws where C.Element == UInt8
     
-    func final() throws -> Data
+    func final<C : RangeReplaceableCollection>(_ output: inout C) throws where C.Element == UInt8
 }
 
+extension CompressionCodec {
+    
+    @_inlineable
+    public func process(_ source: Data) throws -> Data {
+        
+        var result = Data(capacity: source.count)
+        
+        try self.process(source, &result)
+        try self.final(&result)
+        
+        return result
+    }
+}

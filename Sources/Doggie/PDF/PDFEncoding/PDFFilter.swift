@@ -36,9 +36,7 @@ fileprivate func _PDFFilterDecode(_ name: PDFDocument.Name, _ data: Data) throws
     case "ASCIIHexDecode": return try PDFASCIIHexDecode(data)
     case "ASCII85Decode": return try PDFASCII85Decode(data)
     case "LZWDecode": return try PDFLZWDecode(data)
-    case "FlateDecode":
-        let inflate = try Inflate()
-        return try inflate.process(data: data) + inflate.final()
+    case "FlateDecode": return try Inflate().process(data)
     case "RunLengthDecode": return try PDFRunLengthDecode(data)
     default: return data
     }

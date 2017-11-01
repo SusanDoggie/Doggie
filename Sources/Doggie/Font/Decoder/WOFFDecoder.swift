@@ -42,8 +42,7 @@ struct WOFFDecoder : FontDecoder {
             if record.compLength == record.origLength {
                 table[record.tag] = data.dropFirst(Int(record.offset)).prefix(Int(record.origLength))
             } else {
-                let inflate = try Inflate()
-                table[record.tag] = try inflate.process(data: data.dropFirst(Int(record.offset)).prefix(Int(record.compLength))) + inflate.final()
+                table[record.tag] = try Inflate().process(data.dropFirst(Int(record.offset)).prefix(Int(record.compLength)))
             }
         }
         self.faces = [try SFNTFontFace(table: table)]
