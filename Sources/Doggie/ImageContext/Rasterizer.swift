@@ -42,7 +42,7 @@ extension RasterizeBufferProtocol {
     
     @_versioned
     @inline(__always)
-    func rasterize(_ p0: Point, _ p1: Point, _ p2: Point, operation: (Vector, Point, Self) throws -> Void) rethrows {
+    func rasterize(_ p0: Point, _ p1: Point, _ p2: Point, operation: (Vector, Point, Self) -> Void) {
         
         let det = (p1.y - p2.y) * (p0.x - p2.x) + (p2.x - p1.x) * (p0.y - p2.y)
         
@@ -60,18 +60,18 @@ extension RasterizeBufferProtocol {
         let s2 = s0 * p2.x + s1 * p2.y
         let t2 = t0 * p2.x + t1 * p2.y
         
-        try self.rasterize(p0, p1, p2) { point, buf in
+        self.rasterize(p0, p1, p2) { point, buf in
             
             let s = s0 * point.x + s1 * point.y - s2
             let t = t0 * point.x + t1 * point.y - t2
             
-            try operation(Vector(x: s, y: t, z: 1 - s - t), point, buf)
+            operation(Vector(x: s, y: t, z: 1 - s - t), point, buf)
         }
     }
     
     @_versioned
     @inline(__always)
-    func rasterize(_ p0: Point, _ p1: Point, _ p2: Point, operation: (Point, Self) throws -> Void) rethrows {
+    func rasterize(_ p0: Point, _ p1: Point, _ p2: Point, operation: (Point, Self) -> Void) {
         
         if !Rect.bound([p0, p1, p2]).isIntersect(Rect(x: 0, y: 0, width: Double(width), height: Double(height))) {
             return
@@ -114,7 +114,7 @@ extension RasterizeBufferProtocol {
         guard let (mid_x, _) = scan(q0, q2, q1.y) else { return }
         
         @inline(__always)
-        func _drawLoop(_ s0: Point, _ s1: Point, operation: (Point, Self) throws -> Void) rethrows {
+        func _drawLoop(_ s0: Point, _ s1: Point, operation: (Point, Self) -> Void) {
             
             let y_range = intRange(s0.y, s1.y, 0..<height)
             
@@ -133,7 +133,7 @@ extension RasterizeBufferProtocol {
                     let x_range = intRange(_min_x, _max_x, 0..<width)
                     var pixel = buf + x_range.lowerBound
                     for x in x_range {
-                        try operation(Point(x: x, y: y), pixel)
+                        operation(Point(x: x, y: y), pixel)
                         pixel += 1
                     }
                 }
@@ -143,8 +143,8 @@ extension RasterizeBufferProtocol {
             }
         }
         
-        try _drawLoop(q0, q1, operation: operation)
-        try _drawLoop(q1, q2, operation: operation)
+        _drawLoop(q0, q1, operation: operation)
+        _drawLoop(q1, q2, operation: operation)
     }
     
 }

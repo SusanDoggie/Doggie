@@ -24,7 +24,6 @@
 //
 
 import Foundation
-import Dispatch
 
 @_versioned
 @_fixed_layout
@@ -74,9 +73,9 @@ func _render(_ op: Shape.RenderOperation, width: Int, height: Int, transform: SD
         let q2 = p2 * transform
         
         if cross(q1 - q0, q2 - q0).sign == .plus {
-            rasterizer.rasterize(q0, q1, q2) { _, pixel in pixel.stencil.pointee.fetchAdd(1) }
+            rasterizer.rasterize(q0, q1, q2) { _, pixel in pixel.stencil.pointee += 1 }
         } else {
-            rasterizer.rasterize(q0, q1, q2) { _, pixel in pixel.stencil.pointee.fetchSub(1) }
+            rasterizer.rasterize(q0, q1, q2) { _, pixel in pixel.stencil.pointee -= 1 }
         }
         
     case let .quadratic(p0, p1, p2):
@@ -89,14 +88,14 @@ func _render(_ op: Shape.RenderOperation, width: Int, height: Int, transform: SD
             rasterizer.rasterize(q0, q1, q2) { barycentric, point, pixel in
                 let s = 0.5 * barycentric.y + barycentric.z
                 if s * s < barycentric.z {
-                    pixel.stencil.pointee.fetchAdd(1)
+                    pixel.stencil.pointee += 1
                 }
             }
         } else {
             rasterizer.rasterize(q0, q1, q2) { barycentric, point, pixel in
                 let s = 0.5 * barycentric.y + barycentric.z
                 if s * s < barycentric.z {
-                    pixel.stencil.pointee.fetchSub(1)
+                    pixel.stencil.pointee -= 1
                 }
             }
         }
@@ -114,7 +113,7 @@ func _render(_ op: Shape.RenderOperation, width: Int, height: Int, transform: SD
                 let u2 = barycentric.z * v2
                 let v = u0 + u1 + u2
                 if v.x * v.x * v.x < v.y * v.z {
-                    pixel.stencil.pointee.fetchAdd(1)
+                    pixel.stencil.pointee += 1
                 }
             }
         } else {
@@ -124,7 +123,7 @@ func _render(_ op: Shape.RenderOperation, width: Int, height: Int, transform: SD
                 let u2 = barycentric.z * v2
                 let v = u0 + u1 + u2
                 if v.x * v.x * v.x < v.y * v.z {
-                    pixel.stencil.pointee.fetchSub(1)
+                    pixel.stencil.pointee -= 1
                 }
             }
         }
@@ -151,11 +150,9 @@ extension Shape {
             
             if let ptr = stencil.baseAddress {
                 
-                let group = DispatchGroup()
-                
                 self.render { op in
                     
-                    SDDefaultDispatchQueue.async(group: group) { _render(op, width: width, height: height, transform: transform, stencil: ptr) }
+                    _render(op, width: width, height: height, transform: transform, stencil: ptr)
                     
                     switch op {
                     case let .triangle(p0, p1, p2):
@@ -183,8 +180,6 @@ extension Shape {
                         bound = bound?.union(Rect.bound([q0, q1, q2])) ?? Rect.bound([q0, q1, q2])
                     }
                 }
-                
-                group.wait()
             }
         }
         

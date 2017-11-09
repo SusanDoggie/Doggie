@@ -78,7 +78,7 @@ public protocol ImageContextRenderVertex {
 extension ImageContext {
     
     @_inlineable
-    public func render<S : Sequence, Vertex : ImageContextRenderVertex, P : ColorPixelProtocol>(_ triangles: S, position: (Vertex.Position) throws -> Point, depthFun: ((Vertex.Position) throws -> Double)?, shader: (Vertex) throws -> P?) rethrows where S.Element == (Vertex, Vertex, Vertex), Pixel.Model == P.Model {
+    public func render<S : Sequence, Vertex : ImageContextRenderVertex, P : ColorPixelProtocol>(_ triangles: S, position: (Vertex.Position) -> Point, depthFun: ((Vertex.Position) -> Double)?, shader: (Vertex) -> P?) where S.Element == (Vertex, Vertex, Vertex), Pixel.Model == P.Model {
         
         let transform = self.transform
         let cullingMode = self.renderCullingMode
@@ -88,9 +88,9 @@ extension ImageContext {
             return
         }
         
-        try self.withUnsafePixelBlender { blender in
+        self.withUnsafePixelBlender { blender in
             
-            try self.withUnsafeMutableDepthBufferPointer { _depth in
+            self.withUnsafeMutableDepthBufferPointer { _depth in
                 
                 if let _depth = _depth.baseAddress {
                     
@@ -99,12 +99,12 @@ extension ImageContext {
                     for (v0, v1, v2) in triangles {
                         
                         if let depthFun = depthFun {
-                            guard try 0...1 ~= depthFun(v0.position) || 0...1 ~= depthFun(v1.position) || 0...1 ~= depthFun(v2.position) else { continue }
+                            guard 0...1 ~= depthFun(v0.position) || 0...1 ~= depthFun(v1.position) || 0...1 ~= depthFun(v2.position) else { continue }
                         }
                         
-                        let p0 = try position(v0.position)
-                        let p1 = try position(v1.position)
-                        let p2 = try position(v2.position)
+                        let p0 = position(v0.position)
+                        let p1 = position(v1.position)
+                        let p2 = position(v2.position)
                         
                         let _culling: Bool
                         switch cullingMode {
@@ -119,16 +119,16 @@ extension ImageContext {
                             let _p1 = p1 * transform
                             let _p2 = p2 * transform
                             
-                            try rasterizer.rasterize(_p0, _p1, _p2) { barycentric, position, buf in
+                            rasterizer.rasterize(_p0, _p1, _p2) { barycentric, position, buf in
                                 
-                                try buf.blender.draw { () -> P? in
+                                buf.blender.draw { () -> P? in
                                     
                                     let b0 = barycentric.x * v0
                                     let b1 = barycentric.y * v1
                                     let b2 = barycentric.z * v2
                                     let b = b0 + b1 + b2
                                     
-                                    if let _depth = try depthFun?(b.position) {
+                                    if let _depth = depthFun?(b.position) {
                                         
                                         if 0...1 ~= _depth {
                                             
@@ -147,11 +147,11 @@ extension ImageContext {
                                             
                                             if depthPass {
                                                 buf.depth.pointee = _depth
-                                                return try shader(b)
+                                                return shader(b)
                                             }
                                         }
                                     } else {
-                                        return try shader(b)
+                                        return shader(b)
                                     }
                                     
                                     return nil
@@ -168,9 +168,9 @@ extension ImageContext {
 extension ImageContext {
     
     @_inlineable
-    public func render<S : Sequence, Vertex : ImageContextRenderVertex, P : ColorPixelProtocol>(_ triangles: S, shader: (Vertex) throws -> P?) rethrows where S.Element == (Vertex, Vertex, Vertex), Vertex.Position == Point, Pixel.Model == P.Model {
+    public func render<S : Sequence, Vertex : ImageContextRenderVertex, P : ColorPixelProtocol>(_ triangles: S, shader: (Vertex) -> P?) where S.Element == (Vertex, Vertex, Vertex), Vertex.Position == Point, Pixel.Model == P.Model {
         
-        try render(triangles, position: { $0 }, depthFun: nil, shader: shader)
+        render(triangles, position: { $0 }, depthFun: nil, shader: shader)
     }
 }
 
@@ -272,7 +272,7 @@ extension _PerspectiveProjectTriangleIterator {
 extension ImageContext {
     
     @_inlineable
-    public func render<S : Sequence, Vertex : ImageContextRenderVertex, P : ColorPixelProtocol>(_ triangles: S, projection: PerspectiveProjectMatrix, shader: (Vertex) throws -> P?) rethrows where S.Element == (Vertex, Vertex, Vertex), Vertex.Position == Vector, Pixel.Model == P.Model {
+    public func render<S : Sequence, Vertex : ImageContextRenderVertex, P : ColorPixelProtocol>(_ triangles: S, projection: PerspectiveProjectMatrix, shader: (Vertex) -> P?) where S.Element == (Vertex, Vertex, Vertex), Vertex.Position == Vector, Pixel.Model == P.Model {
         
         let width = Double(self.width)
         let height = Double(self.height)
@@ -283,6 +283,6 @@ extension ImageContext {
             return Point(x: (0.5 + 0.5 * p.x) * width, y: (0.5 + 0.5 * p.y) * height)
         }
         
-        try render(_PerspectiveProjectTriangleIterator(base: triangles.makeIterator()), position: _position, depthFun: { ($0.z - projection.nearZ) / (projection.farZ - projection.nearZ) }, shader: { try shader($0.vertex) })
+        render(_PerspectiveProjectTriangleIterator(base: triangles.makeIterator()), position: _position, depthFun: { ($0.z - projection.nearZ) / (projection.farZ - projection.nearZ) }, shader: { shader($0.vertex) })
     }
 }

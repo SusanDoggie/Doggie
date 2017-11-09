@@ -49,7 +49,7 @@ extension ImageContext {
     
     @_versioned
     @_inlineable
-    func _shading<P : ColorPixelProtocol>(_ shader: (Point) throws -> P) rethrows where Pixel.Model == P.Model {
+    func _shading<P : ColorPixelProtocol>(_ shader: (Point) -> P) where Pixel.Model == P.Model {
         
         if self.width == 0 || self.height == 0 || self.transform.determinant.almostZero() {
             return
@@ -57,7 +57,7 @@ extension ImageContext {
         
         let transform = self.transform.inverse
         
-        try self.withUnsafePixelBlender { blender in
+        self.withUnsafePixelBlender { blender in
             
             var _p = Point(x: 0, y: 0)
             let _p1 = Point(x: 1, y: 0) * transform
@@ -69,7 +69,7 @@ extension ImageContext {
                 var p = _p
                 for _ in 0..<width {
                     
-                    try blender.draw { try shader(p) }
+                    blender.draw { shader(p) }
                     
                     blender += 1
                     p += _p1
@@ -84,16 +84,16 @@ extension ImageContext {
 extension ImageContext {
     
     @_inlineable
-    public func axialShading<P : ColorPixelProtocol>(start: Point, end: Point, startSpread: GradientSpreadMode, endSpread: GradientSpreadMode, shading: (Double) throws -> P) rethrows where Pixel.Model == P.Model {
+    public func axialShading<P : ColorPixelProtocol>(start: Point, end: Point, startSpread: GradientSpreadMode, endSpread: GradientSpreadMode, shading: (Double) -> P) where Pixel.Model == P.Model {
         
         if start.almostEqual(end) {
             return
         }
         
-        let startColor = try shading(0)
-        let endColor = try shading(1)
+        let startColor = shading(0)
+        let endColor = shading(1)
         
-        try self._shading { point -> P in
+        self._shading { point -> P in
             
             let a = start - point
             let b = end - start
@@ -104,7 +104,7 @@ extension ImageContext {
             
             if 0...1 ~= t {
                 
-                return try shading(t)
+                return shading(t)
                 
             } else if t > 1 {
                 
@@ -114,11 +114,11 @@ extension ImageContext {
                 case .reflect:
                     var _t = 0.0
                     let s = modf(t, &_t)
-                    return try shading(Int(_t) & 1 == 0 ? s : 1 - s)
+                    return shading(Int(_t) & 1 == 0 ? s : 1 - s)
                 case .repeat:
                     var _t = 0.0
                     let s = modf(t, &_t)
-                    return try shading(s)
+                    return shading(s)
                 }
                 
             } else {
@@ -129,11 +129,11 @@ extension ImageContext {
                 case .reflect:
                     var _t = 0.0
                     let s = modf(t, &_t)
-                    return try shading(Int(_t) & 1 == 0 ? -s : 1 + s)
+                    return shading(Int(_t) & 1 == 0 ? -s : 1 + s)
                 case .repeat:
                     var _t = 0.0
                     let s = modf(t, &_t)
-                    return try shading(1 + s)
+                    return shading(1 + s)
                 }
             }
         }
@@ -143,16 +143,16 @@ extension ImageContext {
 extension ImageContext {
     
     @_inlineable
-    public func radialShading<P : ColorPixelProtocol>(start: Point, startRadius: Double, end: Point, endRadius: Double, startSpread: GradientSpreadMode, endSpread: GradientSpreadMode, shading: (Double) throws -> P) rethrows where Pixel.Model == P.Model {
+    public func radialShading<P : ColorPixelProtocol>(start: Point, startRadius: Double, end: Point, endRadius: Double, startSpread: GradientSpreadMode, endSpread: GradientSpreadMode, shading: (Double) -> P) where Pixel.Model == P.Model {
         
         if start.almostEqual(end) && startRadius.almostEqual(endRadius) {
             return
         }
         
-        let startColor = try shading(0)
-        let endColor = try shading(1)
+        let startColor = shading(0)
+        let endColor = shading(1)
         
-        try self._shading { point -> P in
+        self._shading { point -> P in
             
             let p0 = point - start
             let p1 = start - end
@@ -188,7 +188,7 @@ extension ImageContext {
                 
                 if 0...1 ~= t {
                     
-                    return try shading(t)
+                    return shading(t)
                     
                 } else if t > 1 {
                     
@@ -198,11 +198,11 @@ extension ImageContext {
                     case .reflect:
                         var _t = 0.0
                         let s = modf(t, &_t)
-                        return try shading(Int(_t) & 1 == 0 ? s : 1 - s)
+                        return shading(Int(_t) & 1 == 0 ? s : 1 - s)
                     case .repeat:
                         var _t = 0.0
                         let s = modf(t, &_t)
-                        return try shading(s)
+                        return shading(s)
                     }
                     
                 } else {
@@ -213,11 +213,11 @@ extension ImageContext {
                     case .reflect:
                         var _t = 0.0
                         let s = modf(t, &_t)
-                        return try shading(Int(_t) & 1 == 0 ? -s : 1 + s)
+                        return shading(Int(_t) & 1 == 0 ? -s : 1 + s)
                     case .repeat:
                         var _t = 0.0
                         let s = modf(t, &_t)
-                        return try shading(1 + s)
+                        return shading(1 + s)
                     }
                 }
             }
