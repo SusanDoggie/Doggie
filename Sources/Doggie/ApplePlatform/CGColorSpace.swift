@@ -80,13 +80,9 @@
         }
     }
     
-#endif
-
-#if os(macOS)
-    
     extension AnyColorSpace {
         
-        @available(OSX 10.11, *)
+        @available(OSX 10.11, iOS 9.0, *)
         public static var availableColorSpaces: [AnyColorSpace] {
             
             var availableColorSpaces: [AnyColorSpace] = []

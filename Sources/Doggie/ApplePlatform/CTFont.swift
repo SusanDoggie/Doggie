@@ -25,11 +25,11 @@
 
 import Foundation
 
-#if os(macOS)
-
+#if os(macOS) || os(iOS) || os(tvOS) || os(watchOS)
+    
     extension FontCollection {
         
-        @available(OSX 10.11, *)
+        @available(OSX 10.11, iOS 9.0, *)
         public static var availableFonts: FontCollection {
             
             var availableFonts = FontCollection()
