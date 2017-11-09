@@ -24,6 +24,7 @@
 //
 
 import Foundation
+import Dispatch
 
 public enum ResamplingAlgorithm {
     
@@ -223,9 +224,6 @@ extension ImageContext {
         
         self.withUnsafePixelBlender { blender in
             
-            var blender = blender
-            
-            var _p = Point(x: 0, y: 0)
             let _p1 = Point(x: 1, y: 0) * transform
             let _p2 = Point(x: 0, y: 1) * transform
             
@@ -234,36 +232,60 @@ extension ImageContext {
                 let _q1 = Point(x: 0.2, y: 0) * transform
                 let _q2 = Point(x: 0, y: 0.2) * transform
                 
-                for _ in 0..<height {
-                    var p = _p
-                    for _ in 0..<width {
-                        var _q = p
-                        var pixel = ColorPixel<Pixel.Model>()
-                        for _ in 0..<5 {
-                            var q = _q
+                let n = ProcessInfo.processInfo.activeProcessorCount
+                
+                let _count = height / n
+                let _remain = height % n
+                
+                DispatchQueue.concurrentPerform(iterations: _remain == 0 ? n : n + 1) {
+                    
+                    var _p = Double($0 * _count) * _p2
+                    var blender = blender + $0 * _count * width
+                    
+                    for _ in 0..<($0 != n ? _count : _remain) {
+                        
+                        var p = _p
+                        for _ in 0..<width {
+                            var _q = p
+                            var pixel = ColorPixel<Pixel.Model>()
                             for _ in 0..<5 {
-                                pixel += operation(q)
-                                q += _q1
+                                var q = _q
+                                for _ in 0..<5 {
+                                    pixel += operation(q)
+                                    q += _q1
+                                }
+                                _q += _q2
                             }
-                            _q += _q2
+                            blender.draw { pixel * 0.04 }
+                            blender += 1
+                            p += _p1
                         }
-                        blender.draw { pixel * 0.04 }
-                        blender += 1
-                        p += _p1
+                        _p += _p2
                     }
-                    _p += _p2
                 }
                 
             } else {
                 
-                for _ in 0..<height {
-                    var p = _p
-                    for _ in 0..<width {
-                        blender.draw { operation(p) }
-                        blender += 1
-                        p += _p1
+                let n = ProcessInfo.processInfo.activeProcessorCount
+                
+                let _count = height / n
+                let _remain = height % n
+                
+                DispatchQueue.concurrentPerform(iterations: _remain == 0 ? n : n + 1) {
+                    
+                    var _p = Double($0 * _count) * _p2
+                    var blender = blender + $0 * _count * width
+                    
+                    for _ in 0..<($0 != n ? _count : _remain) {
+                        
+                        var p = _p
+                        for _ in 0..<width {
+                            blender.draw { operation(p) }
+                            blender += 1
+                            p += _p1
+                        }
+                        _p += _p2
                     }
-                    _p += _p2
                 }
             }
         }

@@ -23,6 +23,9 @@
 //  THE SOFTWARE.
 //
 
+import Foundation
+import Dispatch
+
 private struct ImageContextStyles {
     
     var opacity: Double = 1
@@ -376,18 +379,26 @@ extension ImageContext {
                 
                 next.image.withUnsafeBufferPointer { source in
                     
-                    if var _source = source.baseAddress {
+                    if let source = source.baseAddress {
                         
                         self.withUnsafePixelBlender { blender in
                             
-                            var blender = blender
+                            let n = ProcessInfo.processInfo.activeProcessorCount
                             
-                            for _ in 0..<width * height {
+                            let count = width * height
+                            let _count = count / n
+                            let _remain = count % n
+                            
+                            DispatchQueue.concurrentPerform(iterations: _remain == 0 ? n : n + 1) {
                                 
-                                blender.draw { _source.pointee }
+                                var _blender = blender + $0 * _count
+                                var _source = source + $0 * _count
                                 
-                                blender += 1
-                                _source += 1
+                                for _ in 0..<($0 != n ? _count : _remain) {
+                                    _blender.draw { _source.pointee }
+                                    _blender += 1
+                                    _source += 1
+                                }
                             }
                         }
                     }

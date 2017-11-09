@@ -24,6 +24,7 @@
 //
 
 import Foundation
+import Dispatch
 
 extension ImageContext {
     
@@ -62,38 +63,49 @@ extension ImageContext {
                             let _width = min(width - offset_x, Int(ceil(bound.width + 1)))
                             let _height = min(height - offset_y, Int(ceil(bound.height + 1)))
                             
-                            var clip = clip + offset_x + offset_y * width
+                            let clip = clip + offset_x + offset_y * width
                             _stencil += offset_x + 5 * offset_y * width
                             
-                            for _ in 0..<_height {
+                            let n = ProcessInfo.processInfo.activeProcessorCount
+                            
+                            let _count = _height / n
+                            let _remain = _height % n
+                            
+                            DispatchQueue.concurrentPerform(iterations: _remain == 0 ? n : n + 1) {
                                 
-                                var _clip = clip
-                                var __stencil = _stencil
+                                var clip = clip + $0 * _count * width
+                                var _stencil = _stencil + 5 * $0 * _count * width
                                 
-                                for _ in 0..<_width {
+                                for _ in 0..<($0 != n ? _count : _remain) {
                                     
-                                    var _p = 0
+                                    var _clip = clip
+                                    var __stencil = _stencil
                                     
-                                    var _s = __stencil
-                                    
-                                    for _ in 0..<5 {
-                                        let (s0, s1, s2, s3, s4) = _s.pointee
-                                        if winding(s0) { _p += 1 }
-                                        if winding(s1) { _p += 1 }
-                                        if winding(s2) { _p += 1 }
-                                        if winding(s3) { _p += 1 }
-                                        if winding(s4) { _p += 1 }
-                                        _s += width
+                                    for _ in 0..<_width {
+                                        
+                                        var _p = 0
+                                        
+                                        var _s = __stencil
+                                        
+                                        for _ in 0..<5 {
+                                            let (s0, s1, s2, s3, s4) = _s.pointee
+                                            if winding(s0) { _p += 1 }
+                                            if winding(s1) { _p += 1 }
+                                            if winding(s2) { _p += 1 }
+                                            if winding(s3) { _p += 1 }
+                                            if winding(s4) { _p += 1 }
+                                            _s += width
+                                        }
+                                        
+                                        _clip.pointee = 0.04 * Double(_p)
+                                        
+                                        _clip += 1
+                                        __stencil += 1
                                     }
                                     
-                                    _clip.pointee = 0.04 * Double(_p)
-                                    
-                                    _clip += 1
-                                    __stencil += 1
+                                    clip += width
+                                    _stencil += 5 * width
                                 }
-                                
-                                clip += width
-                                _stencil += 5 * width
                             }
                         }
                     }
@@ -114,26 +126,37 @@ extension ImageContext {
                             let _width = min(width - offset_x, Int(ceil(bound.width + 1)))
                             let _height = min(height - offset_y, Int(ceil(bound.height + 1)))
                             
-                            var clip = clip + offset_x + offset_y * width
+                            let clip = clip + offset_x + offset_y * width
                             _stencil += offset_x + offset_y * width
                             
-                            for _ in 0..<_height {
+                            let n = ProcessInfo.processInfo.activeProcessorCount
+                            
+                            let _count = _height / n
+                            let _remain = _height % n
+                            
+                            DispatchQueue.concurrentPerform(iterations: _remain == 0 ? n : n + 1) {
                                 
-                                var _clip = clip
-                                var __stencil = _stencil
+                                var clip = clip + $0 * _count * width
+                                var _stencil = _stencil + $0 * _count * width
                                 
-                                for _ in 0..<_width {
+                                for _ in 0..<($0 != n ? _count : _remain) {
                                     
-                                    if winding(__stencil.pointee) {
-                                        _clip.pointee = 1
+                                    var _clip = clip
+                                    var __stencil = _stencil
+                                    
+                                    for _ in 0..<_width {
+                                        
+                                        if winding(__stencil.pointee) {
+                                            _clip.pointee = 1
+                                        }
+                                        
+                                        _clip += 1
+                                        __stencil += 1
                                     }
                                     
-                                    _clip += 1
-                                    __stencil += 1
+                                    clip += width
+                                    _stencil += width
                                 }
-                                
-                                clip += width
-                                _stencil += width
                             }
                         }
                     }
