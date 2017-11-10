@@ -50,58 +50,57 @@ extension ImageContext {
             
             stencil.withUnsafeBytes { stencil in
                 
-                if var _stencil = stencil.baseAddress?.assumingMemoryBound(to: (Int16, Int16, Int16, Int16, Int16).self) {
+                guard var _stencil = stencil.baseAddress?.assumingMemoryBound(to: (Int16, Int16, Int16, Int16, Int16).self) else { return }
+                
+                self.withUnsafePixelBlender { blender in
                     
-                    self.withUnsafePixelBlender { blender in
+                    let offset_x = max(0, min(width - 1, Int(floor(bound.x))))
+                    let offset_y = max(0, min(height - 1, Int(floor(bound.y))))
+                    let _width = min(width - offset_x, Int(ceil(bound.width + 1)))
+                    let _height = min(height - offset_y, Int(ceil(bound.height + 1)))
+                    
+                    let blender = blender + offset_x + offset_y * width
+                    _stencil += offset_x + 5 * offset_y * width
+                    
+                    let n = ProcessInfo.processInfo.activeProcessorCount
+                    
+                    let _count = _height / n
+                    let _remain = _height % n
+                    
+                    DispatchQueue.concurrentPerform(iterations: _remain == 0 ? n : n + 1) {
                         
-                        let offset_x = max(0, min(width - 1, Int(floor(bound.x))))
-                        let offset_y = max(0, min(height - 1, Int(floor(bound.y))))
-                        let _width = min(width - offset_x, Int(ceil(bound.width + 1)))
-                        let _height = min(height - offset_y, Int(ceil(bound.height + 1)))
+                        var blender = blender + $0 * _count * width
+                        var _stencil = _stencil + 5 * $0 * _count * width
                         
-                        let blender = blender + offset_x + offset_y * width
-                        _stencil += offset_x + 5 * offset_y * width
-                        
-                        let n = ProcessInfo.processInfo.activeProcessorCount
-                        
-                        let _count = _height / n
-                        let _remain = _height % n
-                        
-                        DispatchQueue.concurrentPerform(iterations: _remain == 0 ? n : n + 1) {
+                        for _ in 0..<($0 != n ? _count : _remain) {
                             
-                            var blender = blender + $0 * _count * width
-                            var _stencil = _stencil + 5 * $0 * _count * width
+                            var _blender = blender
+                            var __stencil = _stencil
                             
-                            for _ in 0..<($0 != n ? _count : _remain) {
+                            for _ in 0..<_width {
                                 
-                                var _blender = blender
-                                var __stencil = _stencil
+                                var _p = 0
                                 
-                                for _ in 0..<_width {
-                                    
-                                    var _p = 0
-                                    
-                                    var _s = __stencil
-                                    
-                                    for _ in 0..<5 {
-                                        let (s0, s1, s2, s3, s4) = _s.pointee
-                                        if winding(s0) { _p += 1 }
-                                        if winding(s1) { _p += 1 }
-                                        if winding(s2) { _p += 1 }
-                                        if winding(s3) { _p += 1 }
-                                        if winding(s4) { _p += 1 }
-                                        _s += width
-                                    }
-                                    
-                                    _blender.draw(opacity: 0.04 * Double(_p)) { color }
-                                    
-                                    _blender += 1
-                                    __stencil += 1
+                                var _s = __stencil
+                                
+                                for _ in 0..<5 {
+                                    let (s0, s1, s2, s3, s4) = _s.pointee
+                                    if winding(s0) { _p += 1 }
+                                    if winding(s1) { _p += 1 }
+                                    if winding(s2) { _p += 1 }
+                                    if winding(s3) { _p += 1 }
+                                    if winding(s4) { _p += 1 }
+                                    _s += width
                                 }
                                 
-                                blender += width
-                                _stencil += 5 * width
+                                _blender.draw(opacity: 0.04 * Double(_p)) { color }
+                                
+                                _blender += 1
+                                __stencil += 1
                             }
+                            
+                            blender += width
+                            _stencil += 5 * width
                         }
                     }
                 }
@@ -111,51 +110,49 @@ extension ImageContext {
             
             stencil.withUnsafeBufferPointer { stencil in
                 
-                if var _stencil = stencil.baseAddress {
+                guard var _stencil = stencil.baseAddress else { return }
+                
+                self.withUnsafePixelBlender { blender in
                     
-                    self.withUnsafePixelBlender { blender in
+                    let offset_x = max(0, min(width - 1, Int(floor(bound.x))))
+                    let offset_y = max(0, min(height - 1, Int(floor(bound.y))))
+                    let _width = min(width - offset_x, Int(ceil(bound.width + 1)))
+                    let _height = min(height - offset_y, Int(ceil(bound.height + 1)))
+                    
+                    let blender = blender + offset_x + offset_y * width
+                    _stencil += offset_x + offset_y * width
+                    
+                    let n = ProcessInfo.processInfo.activeProcessorCount
+                    
+                    let _count = _height / n
+                    let _remain = _height % n
+                    
+                    DispatchQueue.concurrentPerform(iterations: _remain == 0 ? n : n + 1) {
                         
-                        let offset_x = max(0, min(width - 1, Int(floor(bound.x))))
-                        let offset_y = max(0, min(height - 1, Int(floor(bound.y))))
-                        let _width = min(width - offset_x, Int(ceil(bound.width + 1)))
-                        let _height = min(height - offset_y, Int(ceil(bound.height + 1)))
+                        var blender = blender + $0 * _count * width
+                        var _stencil = _stencil + $0 * _count * width
                         
-                        let blender = blender + offset_x + offset_y * width
-                        _stencil += offset_x + offset_y * width
-                        
-                        let n = ProcessInfo.processInfo.activeProcessorCount
-                        
-                        let _count = _height / n
-                        let _remain = _height % n
-                        
-                        DispatchQueue.concurrentPerform(iterations: _remain == 0 ? n : n + 1) {
+                        for _ in 0..<($0 != n ? _count : _remain) {
                             
-                            var blender = blender + $0 * _count * width
-                            var _stencil = _stencil + $0 * _count * width
+                            var _blender = blender
+                            var __stencil = _stencil
                             
-                            for _ in 0..<($0 != n ? _count : _remain) {
+                            for _ in 0..<_width {
                                 
-                                var _blender = blender
-                                var __stencil = _stencil
-                                
-                                for _ in 0..<_width {
-                                    
-                                    if winding(__stencil.pointee) {
-                                        _blender.draw { color }
-                                    }
-                                    
-                                    _blender += 1
-                                    __stencil += 1
+                                if winding(__stencil.pointee) {
+                                    _blender.draw { color }
                                 }
                                 
-                                blender += width
-                                _stencil += width
+                                _blender += 1
+                                __stencil += 1
                             }
+                            
+                            blender += width
+                            _stencil += width
                         }
                     }
                 }
             }
-            
         }
     }
 }

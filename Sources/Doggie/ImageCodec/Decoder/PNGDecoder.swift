@@ -467,55 +467,54 @@ struct PNGDecoder : ImageRepDecoder {
                     
                     image.withUnsafeMutableBufferPointer { destination in
                         
-                        if var destination = destination.baseAddress {
+                        guard var destination = destination.baseAddress else { return }
+                        
+                        if ihdr.interlace == 0 {
                             
-                            if ihdr.interlace == 0 {
+                            let rowBits = Int(bitsPerPixel) * width
+                            let row = (rowBits + 7) >> 3
+                            
+                            for _ in 0..<height {
                                 
-                                let rowBits = Int(bitsPerPixel) * width
-                                let row = (rowBits + 7) >> 3
+                                var _destination = destination
                                 
-                                for _ in 0..<height {
+                                let count: Int
+                                
+                                switch bitsPerPixel {
+                                case 1: count = min(width, min((width + 7) >> 3, pixels.count - (source - start)) << 3)
+                                case 2: count = min(width, min((width + 3) >> 2, pixels.count - (source - start)) << 2)
+                                case 4: count = min(width, min((width + 1) >> 1, pixels.count - (source - start)) << 1)
+                                case 8: count = min(width, pixels.count - (source - start))
+                                default: fatalError()
+                                }
+                                
+                                guard count > 0 else { return }
+                                
+                                for value in ImageRepDecoderBitStream(buffer: source, count: count, bitWidth: Int(bitsPerPixel)) {
                                     
-                                    var _destination = destination
-                                    
-                                    let count: Int
+                                    let d: Double
                                     
                                     switch bitsPerPixel {
-                                    case 1: count = min(width, min((width + 7) >> 3, pixels.count - (source - start)) << 3)
-                                    case 2: count = min(width, min((width + 3) >> 2, pixels.count - (source - start)) << 2)
-                                    case 4: count = min(width, min((width + 1) >> 1, pixels.count - (source - start)) << 1)
-                                    case 8: count = min(width, pixels.count - (source - start))
+                                    case 1: d = 1
+                                    case 2: d = 3
+                                    case 4: d = 15
                                     default: fatalError()
                                     }
                                     
-                                    guard count > 0 else { return }
-                                    
-                                    for value in ImageRepDecoderBitStream(buffer: source, count: count, bitWidth: Int(bitsPerPixel)) {
-                                        
-                                        let d: Double
-                                        
-                                        switch bitsPerPixel {
-                                        case 1: d = 1
-                                        case 2: d = 3
-                                        case 4: d = 15
-                                        default: fatalError()
-                                        }
-                                        
-                                        _destination.pointee = ColorPixel(white: Double(value) / d)
-                                        _destination += 1
-                                    }
-                                    
-                                    source += row
-                                    destination += width
+                                    _destination.pointee = ColorPixel(white: Double(value) / d)
+                                    _destination += 1
                                 }
                                 
-                            } else {
-                                let d = Double(1 << ihdr.bitDepth - 1)
-                                for _ in 0..<pixels_count {
-                                    destination.pointee = ColorPixel(white: Double(source.pointee) / d)
-                                    source += 1
-                                    destination += 1
-                                }
+                                source += row
+                                destination += width
+                            }
+                            
+                        } else {
+                            let d = Double(1 << ihdr.bitDepth - 1)
+                            for _ in 0..<pixels_count {
+                                destination.pointee = ColorPixel(white: Double(source.pointee) / d)
+                                source += 1
+                                destination += 1
                             }
                         }
                     }
@@ -532,13 +531,12 @@ struct PNGDecoder : ImageRepDecoder {
                     
                     image.withUnsafeMutableBufferPointer { destination in
                         
-                        if var destination = destination.baseAddress {
-                            
-                            for _ in 0..<pixels_count {
-                                destination.pointee = Gray16ColorPixel(white: source.pointee)
-                                source += 1
-                                destination += 1
-                            }
+                        guard var destination = destination.baseAddress else { return }
+                        
+                        for _ in 0..<pixels_count {
+                            destination.pointee = Gray16ColorPixel(white: source.pointee)
+                            source += 1
+                            destination += 1
                         }
                     }
                 }
@@ -555,13 +553,12 @@ struct PNGDecoder : ImageRepDecoder {
                     
                     image.withUnsafeMutableBufferPointer { destination in
                         
-                        if var destination = destination.baseAddress {
-                            
-                            for _ in 0..<pixels_count {
-                                destination.pointee = Gray32ColorPixel(white: source.pointee.representingValue)
-                                source += 1
-                                destination += 1
-                            }
+                        guard var destination = destination.baseAddress else { return }
+                        
+                        for _ in 0..<pixels_count {
+                            destination.pointee = Gray32ColorPixel(white: source.pointee.representingValue)
+                            source += 1
+                            destination += 1
                         }
                     }
                 }
@@ -583,14 +580,13 @@ struct PNGDecoder : ImageRepDecoder {
                     
                     image.withUnsafeMutableBufferPointer { destination in
                         
-                        if var destination = destination.baseAddress {
-                            
-                            for _ in 0..<pixels_count {
-                                let (r, g, b) = source.pointee
-                                destination.pointee = ARGB32ColorPixel(red: r, green: g, blue: b)
-                                source += 1
-                                destination += 1
-                            }
+                        guard var destination = destination.baseAddress else { return }
+                        
+                        for _ in 0..<pixels_count {
+                            let (r, g, b) = source.pointee
+                            destination.pointee = ARGB32ColorPixel(red: r, green: g, blue: b)
+                            source += 1
+                            destination += 1
                         }
                     }
                 }
@@ -606,14 +602,13 @@ struct PNGDecoder : ImageRepDecoder {
                     
                     image.withUnsafeMutableBufferPointer { destination in
                         
-                        if var destination = destination.baseAddress {
-                            
-                            for _ in 0..<pixels_count {
-                                let (r, g, b) = source.pointee
-                                destination.pointee = ARGB64ColorPixel(red: r.representingValue, green: g.representingValue, blue: b.representingValue)
-                                source += 1
-                                destination += 1
-                            }
+                        guard var destination = destination.baseAddress else { return }
+                        
+                        for _ in 0..<pixels_count {
+                            let (r, g, b) = source.pointee
+                            destination.pointee = ARGB64ColorPixel(red: r.representingValue, green: g.representingValue, blue: b.representingValue)
+                            source += 1
+                            destination += 1
                         }
                     }
                 }
@@ -638,46 +633,45 @@ struct PNGDecoder : ImageRepDecoder {
                     
                     image.withUnsafeMutableBufferPointer { destination in
                         
-                        if var destination = destination.baseAddress {
+                        guard var destination = destination.baseAddress else { return }
+                        
+                        if ihdr.interlace == 0 {
                             
-                            if ihdr.interlace == 0 {
+                            let rowBits = Int(bitsPerPixel) * width
+                            let row = (rowBits + 7) >> 3
+                            
+                            for _ in 0..<height {
                                 
-                                let rowBits = Int(bitsPerPixel) * width
-                                let row = (rowBits + 7) >> 3
+                                var _destination = destination
                                 
-                                for _ in 0..<height {
-                                    
-                                    var _destination = destination
-                                    
-                                    let count: Int
-                                    
-                                    switch bitsPerPixel {
-                                    case 1: count = min(width, min((width + 7) >> 3, pixels.count - (source - start)) << 3)
-                                    case 2: count = min(width, min((width + 3) >> 2, pixels.count - (source - start)) << 2)
-                                    case 4: count = min(width, min((width + 1) >> 1, pixels.count - (source - start)) << 1)
-                                    case 8: count = min(width, pixels.count - (source - start))
-                                    default: fatalError()
-                                    }
-                                    
-                                    guard count > 0 else { return }
-                                    
-                                    for index in ImageRepDecoderBitStream(buffer: source, count: count, bitWidth: Int(bitsPerPixel)) {
-                                        
-                                        _destination.pointee = index < palette.count ? palette[Int(index)] : ARGB32ColorPixel()
-                                        _destination += 1
-                                    }
-                                    
-                                    source += row
-                                    destination += width
+                                let count: Int
+                                
+                                switch bitsPerPixel {
+                                case 1: count = min(width, min((width + 7) >> 3, pixels.count - (source - start)) << 3)
+                                case 2: count = min(width, min((width + 3) >> 2, pixels.count - (source - start)) << 2)
+                                case 4: count = min(width, min((width + 1) >> 1, pixels.count - (source - start)) << 1)
+                                case 8: count = min(width, pixels.count - (source - start))
+                                default: fatalError()
                                 }
                                 
-                            } else {
-                                for _ in 0..<pixels_count {
-                                    let index = source.pointee
-                                    destination.pointee = index < palette.count ? palette[Int(index)] : ARGB32ColorPixel()
-                                    source += 1
-                                    destination += 1
+                                guard count > 0 else { return }
+                                
+                                for index in ImageRepDecoderBitStream(buffer: source, count: count, bitWidth: Int(bitsPerPixel)) {
+                                    
+                                    _destination.pointee = index < palette.count ? palette[Int(index)] : ARGB32ColorPixel()
+                                    _destination += 1
                                 }
+                                
+                                source += row
+                                destination += width
+                            }
+                            
+                        } else {
+                            for _ in 0..<pixels_count {
+                                let index = source.pointee
+                                destination.pointee = index < palette.count ? palette[Int(index)] : ARGB32ColorPixel()
+                                source += 1
+                                destination += 1
                             }
                         }
                     }
@@ -697,14 +691,13 @@ struct PNGDecoder : ImageRepDecoder {
                     
                     image.withUnsafeMutableBufferPointer { destination in
                         
-                        if var destination = destination.baseAddress {
-                            
-                            for _ in 0..<pixels_count {
-                                let (w, a) = source.pointee
-                                destination.pointee = Gray16ColorPixel(white: w, opacity: a)
-                                source += 1
-                                destination += 1
-                            }
+                        guard var destination = destination.baseAddress else { return }
+                        
+                        for _ in 0..<pixels_count {
+                            let (w, a) = source.pointee
+                            destination.pointee = Gray16ColorPixel(white: w, opacity: a)
+                            source += 1
+                            destination += 1
                         }
                     }
                 }
@@ -721,14 +714,13 @@ struct PNGDecoder : ImageRepDecoder {
                     
                     image.withUnsafeMutableBufferPointer { destination in
                         
-                        if var destination = destination.baseAddress {
-                            
-                            for _ in 0..<pixels_count {
-                                let (w, a) = source.pointee
-                                destination.pointee = Gray32ColorPixel(white: w.representingValue, opacity: a.representingValue)
-                                source += 1
-                                destination += 1
-                            }
+                        guard var destination = destination.baseAddress else { return }
+                        
+                        for _ in 0..<pixels_count {
+                            let (w, a) = source.pointee
+                            destination.pointee = Gray32ColorPixel(white: w.representingValue, opacity: a.representingValue)
+                            source += 1
+                            destination += 1
                         }
                     }
                 }
@@ -749,14 +741,13 @@ struct PNGDecoder : ImageRepDecoder {
                     
                     image.withUnsafeMutableBufferPointer { destination in
                         
-                        if var destination = destination.baseAddress {
-                            
-                            for _ in 0..<pixels_count {
-                                let (r, g, b, a) = source.pointee
-                                destination.pointee = ARGB32ColorPixel(red: r, green: g, blue: b, opacity: a)
-                                source += 1
-                                destination += 1
-                            }
+                        guard var destination = destination.baseAddress else { return }
+                        
+                        for _ in 0..<pixels_count {
+                            let (r, g, b, a) = source.pointee
+                            destination.pointee = ARGB32ColorPixel(red: r, green: g, blue: b, opacity: a)
+                            source += 1
+                            destination += 1
                         }
                     }
                 }
@@ -772,14 +763,13 @@ struct PNGDecoder : ImageRepDecoder {
                     
                     image.withUnsafeMutableBufferPointer { destination in
                         
-                        if var destination = destination.baseAddress {
-                            
-                            for _ in 0..<pixels_count {
-                                let (r, g, b, a) = source.pointee
-                                destination.pointee = ARGB64ColorPixel(red: r.representingValue, green: g.representingValue, blue: b.representingValue, opacity: a.representingValue)
-                                source += 1
-                                destination += 1
-                            }
+                        guard var destination = destination.baseAddress else { return }
+                        
+                        for _ in 0..<pixels_count {
+                            let (r, g, b, a) = source.pointee
+                            destination.pointee = ARGB64ColorPixel(red: r.representingValue, green: g.representingValue, blue: b.representingValue, opacity: a.representingValue)
+                            source += 1
+                            destination += 1
                         }
                     }
                 }

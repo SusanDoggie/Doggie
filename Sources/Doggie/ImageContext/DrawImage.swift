@@ -68,131 +68,130 @@ extension ImageContext {
         
         source.withUnsafeBufferPointer { source in
             
-            if var _source = source.baseAddress {
+            guard let _source = source.baseAddress else { return }
+            
+            switch self.resamplingAlgorithm {
+            case .none:
                 
-                switch self.resamplingAlgorithm {
-                case .none:
-                    
-                    @inline(__always)
-                    func op(point: Point) -> ColorPixel<Pixel.Model> {
-                        return read_source(source.baseAddress!, s_width, s_height, Int(point.x), Int(point.y))
-                    }
-                    
-                    self.filling(transform.inverse, op)
-                    
-                case .linear:
-                    
-                    @inline(__always)
-                    func op(point: Point) -> ColorPixel<Pixel.Model> {
-                        return smapling2(source: source.baseAddress!, width: s_width, height: s_height, point: point, sampler: LinearInterpolate)
-                    }
-                    
-                    self.filling(transform.inverse, op)
-                    
-                case .cosine:
-                    
-                    @inline(__always)
-                    func op(point: Point) -> ColorPixel<Pixel.Model> {
-                        return smapling2(source: source.baseAddress!, width: s_width, height: s_height, point: point, sampler: CosineInterpolate)
-                    }
-                    
-                    self.filling(transform.inverse, op)
-                    
-                case .cubic:
-                    
-                    @inline(__always)
-                    func op(point: Point) -> ColorPixel<Pixel.Model> {
-                        return smapling4(source: source.baseAddress!, width: s_width, height: s_height, point: point, sampler: CubicInterpolate)
-                    }
-                    
-                    self.filling(transform.inverse, op)
-                    
-                case let .hermite(s, e):
-                    
-                    @inline(__always)
-                    func _kernel(_ t: Double, _ a: ColorPixel<Pixel.Model>, _ b: ColorPixel<Pixel.Model>, _ c: ColorPixel<Pixel.Model>, _ d: ColorPixel<Pixel.Model>) -> ColorPixel<Pixel.Model> {
-                        return HermiteInterpolate(t, a, b, c, d, s, e)
-                    }
-                    
-                    @inline(__always)
-                    func op(point: Point) -> ColorPixel<Pixel.Model> {
-                        return smapling4(source: source.baseAddress!, width: s_width, height: s_height, point: point, sampler: _kernel)
-                    }
-                    
-                    self.filling(transform.inverse, op)
-                    
-                case let .mitchell(B, C):
-                    
-                    let a1 = 12 - 9 * B - 6 * C
-                    let b1 = -18 + 12 * B + 6 * C
-                    let c1 = 6 - 2 * B
-                    let a2 = -B - 6 * C
-                    let b2 = 6 * B + 30 * C
-                    let c2 = -12 * B - 48 * C
-                    let d2 = 8 * B + 24 * C
-                    
-                    @inline(__always)
-                    func _kernel(_ x: Double) -> Double {
-                        if x < 1 {
-                            return (a1 * x + b1) * x * x + c1
-                        }
-                        if x < 2 {
-                            return ((a2 * x + b2) * x + c2) * x + d2
-                        }
-                        return 0
-                    }
-                    
-                    @inline(__always)
-                    func op(point: Point) -> ColorPixel<Pixel.Model> {
-                        return convolve(source: source.baseAddress!, width: s_width, height: s_height, point: point, kernel_size: 5, kernel: _kernel)
-                    }
-                    
-                    self.filling(transform.inverse, op)
-                    
-                case .lanczos(1):
-                    
-                    @inline(__always)
-                    func _kernel(_ x: Double) -> Double {
-                        if x == 0 {
-                            return 1
-                        }
-                        if x < 1 {
-                            let _x = Double.pi * x
-                            let _sinc = sin(_x) / _x
-                            return _sinc * _sinc
-                        }
-                        return 0
-                    }
-                    
-                    @inline(__always)
-                    func op(point: Point) -> ColorPixel<Pixel.Model> {
-                        return convolve(source: source.baseAddress!, width: s_width, height: s_height, point: point, kernel_size: 2, kernel: _kernel)
-                    }
-                    
-                    self.filling(transform.inverse, op)
-                    
-                case let .lanczos(a):
-                    
-                    @inline(__always)
-                    func _kernel(_ x: Double) -> Double {
-                        let a = Double(a)
-                        if x == 0 {
-                            return 1
-                        }
-                        if x < a {
-                            let _x = Double.pi * x
-                            return a * sin(_x) * sin(_x / a) / (_x * _x)
-                        }
-                        return 0
-                    }
-                    
-                    @inline(__always)
-                    func op(point: Point) -> ColorPixel<Pixel.Model> {
-                        return convolve(source: source.baseAddress!, width: s_width, height: s_height, point: point, kernel_size: Int(a) << 1, kernel: _kernel)
-                    }
-                    
-                    self.filling(transform.inverse, op)
+                @inline(__always)
+                func op(point: Point) -> ColorPixel<Pixel.Model> {
+                    return read_source(_source, s_width, s_height, Int(point.x), Int(point.y))
                 }
+                
+                self.filling(transform.inverse, op)
+                
+            case .linear:
+                
+                @inline(__always)
+                func op(point: Point) -> ColorPixel<Pixel.Model> {
+                    return smapling2(source: _source, width: s_width, height: s_height, point: point, sampler: LinearInterpolate)
+                }
+                
+                self.filling(transform.inverse, op)
+                
+            case .cosine:
+                
+                @inline(__always)
+                func op(point: Point) -> ColorPixel<Pixel.Model> {
+                    return smapling2(source: _source, width: s_width, height: s_height, point: point, sampler: CosineInterpolate)
+                }
+                
+                self.filling(transform.inverse, op)
+                
+            case .cubic:
+                
+                @inline(__always)
+                func op(point: Point) -> ColorPixel<Pixel.Model> {
+                    return smapling4(source: _source, width: s_width, height: s_height, point: point, sampler: CubicInterpolate)
+                }
+                
+                self.filling(transform.inverse, op)
+                
+            case let .hermite(s, e):
+                
+                @inline(__always)
+                func _kernel(_ t: Double, _ a: ColorPixel<Pixel.Model>, _ b: ColorPixel<Pixel.Model>, _ c: ColorPixel<Pixel.Model>, _ d: ColorPixel<Pixel.Model>) -> ColorPixel<Pixel.Model> {
+                    return HermiteInterpolate(t, a, b, c, d, s, e)
+                }
+                
+                @inline(__always)
+                func op(point: Point) -> ColorPixel<Pixel.Model> {
+                    return smapling4(source: _source, width: s_width, height: s_height, point: point, sampler: _kernel)
+                }
+                
+                self.filling(transform.inverse, op)
+                
+            case let .mitchell(B, C):
+                
+                let a1 = 12 - 9 * B - 6 * C
+                let b1 = -18 + 12 * B + 6 * C
+                let c1 = 6 - 2 * B
+                let a2 = -B - 6 * C
+                let b2 = 6 * B + 30 * C
+                let c2 = -12 * B - 48 * C
+                let d2 = 8 * B + 24 * C
+                
+                @inline(__always)
+                func _kernel(_ x: Double) -> Double {
+                    if x < 1 {
+                        return (a1 * x + b1) * x * x + c1
+                    }
+                    if x < 2 {
+                        return ((a2 * x + b2) * x + c2) * x + d2
+                    }
+                    return 0
+                }
+                
+                @inline(__always)
+                func op(point: Point) -> ColorPixel<Pixel.Model> {
+                    return convolve(source: _source, width: s_width, height: s_height, point: point, kernel_size: 5, kernel: _kernel)
+                }
+                
+                self.filling(transform.inverse, op)
+                
+            case .lanczos(1):
+                
+                @inline(__always)
+                func _kernel(_ x: Double) -> Double {
+                    if x == 0 {
+                        return 1
+                    }
+                    if x < 1 {
+                        let _x = Double.pi * x
+                        let _sinc = sin(_x) / _x
+                        return _sinc * _sinc
+                    }
+                    return 0
+                }
+                
+                @inline(__always)
+                func op(point: Point) -> ColorPixel<Pixel.Model> {
+                    return convolve(source: _source, width: s_width, height: s_height, point: point, kernel_size: 2, kernel: _kernel)
+                }
+                
+                self.filling(transform.inverse, op)
+                
+            case let .lanczos(a):
+                
+                @inline(__always)
+                func _kernel(_ x: Double) -> Double {
+                    let a = Double(a)
+                    if x == 0 {
+                        return 1
+                    }
+                    if x < a {
+                        let _x = Double.pi * x
+                        return a * sin(_x) * sin(_x / a) / (_x * _x)
+                    }
+                    return 0
+                }
+                
+                @inline(__always)
+                func op(point: Point) -> ColorPixel<Pixel.Model> {
+                    return convolve(source: _source, width: s_width, height: s_height, point: point, kernel_size: Int(a) << 1, kernel: _kernel)
+                }
+                
+                self.filling(transform.inverse, op)
             }
         }
     }
@@ -205,7 +204,6 @@ extension ImageContext {
         let y_range = 0..<height
         
         if x_range ~= x && y_range ~= y {
-            
             return source[y * width + x]
         }
         
@@ -336,7 +334,6 @@ extension ImageContext {
         let _s4 = read_source(source, width, height, _x2, _y2)
         
         return sampler(_ty, sampler(_tx, _s1, _s2), sampler(_tx, _s3, _s4))
-        
     }
     
     @_versioned
@@ -378,7 +375,6 @@ extension ImageContext {
         let _u4 = sampler(_tx, _s13, _s14, _s15, _s16)
         
         return sampler(_ty, _u1, _u2, _u3, _u4)
-        
     }
 }
 

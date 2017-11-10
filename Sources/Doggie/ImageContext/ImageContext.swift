@@ -119,12 +119,11 @@ extension ImageContext {
         
         withUnsafeMutableClipBufferPointer { buf in
             
-            if var clip = buf.baseAddress {
-                
-                for _ in 0..<buf.count {
-                    clip.pointee = value
-                    clip += 1
-                }
+            guard var clip = buf.baseAddress else { return }
+            
+            for _ in 0..<buf.count {
+                clip.pointee = value
+                clip += 1
             }
         }
     }
@@ -309,12 +308,11 @@ extension ImageContext {
         
         withUnsafeMutableDepthBufferPointer { buf in
             
-            if var depth = buf.baseAddress {
-                
-                for _ in 0..<buf.count {
-                    depth.pointee = value
-                    depth += 1
-                }
+            guard var depth = buf.baseAddress else { return }
+            
+            for _ in 0..<buf.count {
+                depth.pointee = value
+                depth += 1
             }
         }
     }
@@ -379,26 +377,25 @@ extension ImageContext {
                 
                 next.image.withUnsafeBufferPointer { source in
                     
-                    if let source = source.baseAddress {
+                    guard let source = source.baseAddress else { return }
+                    
+                    self.withUnsafePixelBlender { blender in
                         
-                        self.withUnsafePixelBlender { blender in
+                        let n = ProcessInfo.processInfo.activeProcessorCount
+                        
+                        let count = width * height
+                        let _count = count / n
+                        let _remain = count % n
+                        
+                        DispatchQueue.concurrentPerform(iterations: _remain == 0 ? n : n + 1) {
                             
-                            let n = ProcessInfo.processInfo.activeProcessorCount
+                            var _blender = blender + $0 * _count
+                            var _source = source + $0 * _count
                             
-                            let count = width * height
-                            let _count = count / n
-                            let _remain = count % n
-                            
-                            DispatchQueue.concurrentPerform(iterations: _remain == 0 ? n : n + 1) {
-                                
-                                var _blender = blender + $0 * _count
-                                var _source = source + $0 * _count
-                                
-                                for _ in 0..<($0 != n ? _count : _remain) {
-                                    _blender.draw { _source.pointee }
-                                    _blender += 1
-                                    _source += 1
-                                }
+                            for _ in 0..<($0 != n ? _count : _remain) {
+                                _blender.draw { _source.pointee }
+                                _blender += 1
+                                _source += 1
                             }
                         }
                     }
@@ -431,3 +428,4 @@ extension ImageContext {
         self.clip = MappedBuffer(_clip.image.pixels.lazy.map { $0.color.white * $0.opacity }, option: image.option)
     }
 }
+

@@ -129,40 +129,39 @@ struct BMPDecoder : ImageRepDecoder {
                 
                 image.withUnsafeMutableBufferPointer { destination in
                     
-                    if var destination = destination.baseAddress {
+                    guard var destination = destination.baseAddress else { return }
+                    
+                    let row1 = width & 1 == 0 || Pixel.bitWidth == 32 ? width : width + 1
+                    let row2 = header.height > 0 ? -width : width
+                    
+                    if header.height > 0 {
+                        destination += width * (height - 1)
+                    }
+                    
+                    for _ in 0..<height {
                         
-                        let row1 = width & 1 == 0 || Pixel.bitWidth == 32 ? width : width + 1
-                        let row2 = header.height > 0 ? -width : width
+                        var _source = source
+                        var _destination = destination
                         
-                        if header.height > 0 {
-                            destination += width * (height - 1)
+                        for _ in 0..<width {
+                            
+                            guard Int(bitPattern: _source) < endOfData else { return }
+                            
+                            let color = UInt32(_source.pointee)
+                            
+                            let r = rMax == 0 ? 0 : Double((color & rMask) >> rOffset) / Double(rMax)
+                            let g = gMax == 0 ? 0 : Double((color & gMask) >> gOffset) / Double(gMax)
+                            let b = bMax == 0 ? 0 : Double((color & bMask) >> bOffset) / Double(bMax)
+                            let a = aMax == 0 ? 1 : Double((color & aMask) >> aOffset) / Double(aMax)
+                            
+                            _destination.pointee = ColorPixel(red: r, green: g, blue: b, opacity: a)
+                            
+                            _source += 1
+                            _destination += 1
                         }
                         
-                        for _ in 0..<height {
-                            
-                            var _source = source
-                            var _destination = destination
-                            
-                            for _ in 0..<width {
-                                
-                                guard Int(bitPattern: _source) < endOfData else { return }
-                                
-                                let color = UInt32(_source.pointee)
-                                
-                                let r = rMax == 0 ? 0 : Double((color & rMask) >> rOffset) / Double(rMax)
-                                let g = gMax == 0 ? 0 : Double((color & gMask) >> gOffset) / Double(gMax)
-                                let b = bMax == 0 ? 0 : Double((color & bMask) >> bOffset) / Double(bMax)
-                                let a = aMax == 0 ? 1 : Double((color & aMask) >> aOffset) / Double(aMax)
-                                
-                                _destination.pointee = ColorPixel(red: r, green: g, blue: b, opacity: a)
-                                
-                                _source += 1
-                                _destination += 1
-                            }
-                            
-                            source += row1
-                            destination += row2
-                        }
+                        source += row1
+                        destination += row2
                     }
                 }
             }
@@ -204,45 +203,44 @@ struct BMPDecoder : ImageRepDecoder {
                 
                 image.withUnsafeMutableBufferPointer { destination in
                     
-                    if var destination = destination.baseAddress {
+                    guard var destination = destination.baseAddress else { return }
+                    
+                    let row1 = (3 * width).align(4)
+                    let row2 = header.height > 0 ? -width : width
+                    
+                    if header.height > 0 {
+                        destination += width * (height - 1)
+                    }
+                    
+                    for _ in 0..<height {
                         
-                        let row1 = (3 * width).align(4)
-                        let row2 = header.height > 0 ? -width : width
-                        
-                        if header.height > 0 {
-                            destination += width * (height - 1)
+                        struct RGB24 {
+                            
+                            var blue: UInt8
+                            var green: UInt8
+                            var red: UInt8
                         }
                         
-                        for _ in 0..<height {
+                        source.withMemoryRebound(to: RGB24.self, capacity: 1) { source in
                             
-                            struct RGB24 {
+                            var _source = source
+                            var _destination = destination
+                            
+                            for _ in 0..<width {
                                 
-                                var blue: UInt8
-                                var green: UInt8
-                                var red: UInt8
+                                guard Int(bitPattern: _source) < endOfData else { return }
+                                
+                                let color = _source.pointee
+                                
+                                _destination.pointee = ARGB32ColorPixel(red: color.red, green: color.green, blue: color.blue)
+                                
+                                _source += 1
+                                _destination += 1
                             }
-                            
-                            source.withMemoryRebound(to: RGB24.self, capacity: 1) { source in
-                                
-                                var _source = source
-                                var _destination = destination
-                                
-                                for _ in 0..<width {
-                                    
-                                    guard Int(bitPattern: _source) < endOfData else { return }
-                                    
-                                    let color = _source.pointee
-                                    
-                                    _destination.pointee = ARGB32ColorPixel(red: color.red, green: color.green, blue: color.blue)
-                                    
-                                    _source += 1
-                                    _destination += 1
-                                }
-                            }
-                            
-                            source += row1
-                            destination += row2
                         }
+                        
+                        source += row1
+                        destination += row2
                     }
                 }
             }
@@ -294,40 +292,39 @@ struct BMPDecoder : ImageRepDecoder {
                         
                         image.withUnsafeMutableBufferPointer { destination in
                             
-                            if var destination = destination.baseAddress {
+                            guard var destination = destination.baseAddress else { return }
+                            
+                            let row1 = (width * Int(bitWidth)).align(32) >> 3
+                            let row2 = header.height > 0 ? -width : width
+                            
+                            if header.height > 0 {
+                                destination += width * (height - 1)
+                            }
+                            
+                            for _ in 0..<height {
                                 
-                                let row1 = (width * Int(bitWidth)).align(32) >> 3
-                                let row2 = header.height > 0 ? -width : width
+                                var _destination = destination
                                 
-                                if header.height > 0 {
-                                    destination += width * (height - 1)
+                                let count: Int
+                                
+                                switch bitWidth {
+                                case 1: count = min(width, min((width + 7) >> 3, pixels.count - (source - start)) << 3)
+                                case 2: count = min(width, min((width + 3) >> 2, pixels.count - (source - start)) << 2)
+                                case 4: count = min(width, min((width + 1) >> 1, pixels.count - (source - start)) << 1)
+                                case 8: count = min(width, pixels.count - (source - start))
+                                default: fatalError()
                                 }
                                 
-                                for _ in 0..<height {
+                                guard count > 0 else { return }
+                                
+                                for index in ImageRepDecoderBitStream(buffer: source, count: count, bitWidth: Int(bitWidth)) {
                                     
-                                    var _destination = destination
-                                    
-                                    let count: Int
-                                    
-                                    switch bitWidth {
-                                    case 1: count = min(width, min((width + 7) >> 3, pixels.count - (source - start)) << 3)
-                                    case 2: count = min(width, min((width + 3) >> 2, pixels.count - (source - start)) << 2)
-                                    case 4: count = min(width, min((width + 1) >> 1, pixels.count - (source - start)) << 1)
-                                    case 8: count = min(width, pixels.count - (source - start))
-                                    default: fatalError()
-                                    }
-                                    
-                                    guard count > 0 else { return }
-                                    
-                                    for index in ImageRepDecoderBitStream(buffer: source, count: count, bitWidth: Int(bitWidth)) {
-                                        
-                                        _destination.pointee = index < palette.count ? palette[Int(index)] : ARGB32ColorPixel()
-                                        _destination += 1
-                                    }
-                                    
-                                    source += row1
-                                    destination += row2
+                                    _destination.pointee = index < palette.count ? palette[Int(index)] : ARGB32ColorPixel()
+                                    _destination += 1
                                 }
+                                
+                                source += row1
+                                destination += row2
                             }
                         }
                     }
@@ -352,121 +349,120 @@ struct BMPDecoder : ImageRepDecoder {
                             
                             image.withUnsafeMutableBufferPointer { destination in
                                 
-                                if var line = destination.baseAddress {
-                                    
-                                    let row = header.height > 0 ? -width : width
-                                    
-                                    if header.height > 0 {
-                                        line += width * (height - 1)
-                                    }
-                                    
-                                    var _destination = line
-                                    
-                                    var x = 0
-                                    var y = 0
-                                    
-                                    while let code = stream.popFirst() {
-                                        switch code {
+                                guard var line = destination.baseAddress else { return }
+                                
+                                let row = header.height > 0 ? -width : width
+                                
+                                if header.height > 0 {
+                                    line += width * (height - 1)
+                                }
+                                
+                                var _destination = line
+                                
+                                var x = 0
+                                var y = 0
+                                
+                                while let code = stream.popFirst() {
+                                    switch code {
+                                    case 0:
+                                        
+                                        guard let mode = stream.popFirst() else { return }
+                                        
+                                        switch mode {
                                         case 0:
                                             
-                                            guard let mode = stream.popFirst() else { return }
+                                            line += row
+                                            _destination = line
+                                            x = 0
+                                            y += 1
                                             
-                                            switch mode {
-                                            case 0:
+                                            guard y < height else { return }
+                                            
+                                        case 1: return
+                                        case 2:
+                                            
+                                            guard let hDelta = stream.popFirst() else { return }
+                                            guard let vDelta = stream.popFirst() else { return }
+                                            
+                                            x += Int(hDelta)
+                                            y += Int(vDelta)
+                                            line += Int(vDelta)
+                                            _destination = line + x
+                                            
+                                            guard y < height else { return }
+                                            
+                                        case let count:
+                                            
+                                            if bitWidth == 4 {
                                                 
-                                                line += row
-                                                _destination = line
-                                                x = 0
-                                                y += 1
+                                                let length = (count + 1) >> 1
                                                 
-                                                guard y < height else { return }
+                                                let values = stream.prefix(Int(length))
                                                 
-                                            case 1: return
-                                            case 2:
+                                                guard stream.count >= Int(length.align(2)) else { return }
+                                                stream.removeFirst(Int(length.align(2)))
                                                 
-                                                guard let hDelta = stream.popFirst() else { return }
-                                                guard let vDelta = stream.popFirst() else { return }
+                                                guard values.count == length else { return }
                                                 
-                                                x += Int(hDelta)
-                                                y += Int(vDelta)
-                                                line += Int(vDelta)
-                                                _destination = line + x
-                                                
-                                                guard y < height else { return }
-                                                
-                                            case let count:
-                                                
-                                                if bitWidth == 4 {
-                                                    
-                                                    let length = (count + 1) >> 1
-                                                    
-                                                    let values = stream.prefix(Int(length))
-                                                    
-                                                    guard stream.count >= Int(length.align(2)) else { return }
-                                                    stream.removeFirst(Int(length.align(2)))
-                                                    
-                                                    guard values.count == length else { return }
-                                                    
-                                                    for (c, value) in values.enumerated() {
-                                                        if c + 1 == length && count & 1 == 1 {
-                                                            if x < width && y < height {
-                                                                let index = Int((value & 0xF0) >> 4)
-                                                                _destination.pointee = index < palette.count ? palette[Int(index)] : ARGB32ColorPixel()
-                                                                _destination += 1
-                                                                x += 1
-                                                            }
-                                                        } else {
-                                                            let index = Int(value)
-                                                            if x < width && y < height {
-                                                                let i0 = (index & 0xF0) >> 4
-                                                                _destination.pointee = i0 < palette.count ? palette[Int(i0)] : ARGB32ColorPixel()
-                                                                _destination += 1
-                                                                x += 1
-                                                            }
-                                                            if x < width && y < height {
-                                                                let i1 = index & 0x0F
-                                                                _destination.pointee = i1 < palette.count ? palette[Int(i1)] : ARGB32ColorPixel()
-                                                                _destination += 1
-                                                                x += 1
-                                                            }
-                                                        }
-                                                    }
-                                                    
-                                                } else {
-                                                    let values = stream.prefix(Int(count))
-                                                    
-                                                    guard stream.count >= Int(count.align(2)) else { return }
-                                                    stream.removeFirst(Int(count.align(2)))
-                                                    
-                                                    guard values.count == count else { return }
-                                                    
-                                                    for value in values {
+                                                for (c, value) in values.enumerated() {
+                                                    if c + 1 == length && count & 1 == 1 {
                                                         if x < width && y < height {
-                                                            let index = Int(value)
+                                                            let index = Int((value & 0xF0) >> 4)
                                                             _destination.pointee = index < palette.count ? palette[Int(index)] : ARGB32ColorPixel()
+                                                            _destination += 1
+                                                            x += 1
+                                                        }
+                                                    } else {
+                                                        let index = Int(value)
+                                                        if x < width && y < height {
+                                                            let i0 = (index & 0xF0) >> 4
+                                                            _destination.pointee = i0 < palette.count ? palette[Int(i0)] : ARGB32ColorPixel()
+                                                            _destination += 1
+                                                            x += 1
+                                                        }
+                                                        if x < width && y < height {
+                                                            let i1 = index & 0x0F
+                                                            _destination.pointee = i1 < palette.count ? palette[Int(i1)] : ARGB32ColorPixel()
                                                             _destination += 1
                                                             x += 1
                                                         }
                                                     }
                                                 }
-                                            }
-                                            
-                                        case let count:
-                                            
-                                            guard let value = stream.popFirst() else { return }
-                                            
-                                            for i in 0..<count {
-                                                if x < width && y < height {
-                                                    let index: Int
-                                                    if bitWidth == 4 {
-                                                        index = i & 1 == 0 ? Int((value & 0xF0) >> 4) : Int(value & 0x0F)
-                                                    } else {
-                                                        index = Int(value)
+                                                
+                                            } else {
+                                                let values = stream.prefix(Int(count))
+                                                
+                                                guard stream.count >= Int(count.align(2)) else { return }
+                                                stream.removeFirst(Int(count.align(2)))
+                                                
+                                                guard values.count == count else { return }
+                                                
+                                                for value in values {
+                                                    if x < width && y < height {
+                                                        let index = Int(value)
+                                                        _destination.pointee = index < palette.count ? palette[Int(index)] : ARGB32ColorPixel()
+                                                        _destination += 1
+                                                        x += 1
                                                     }
-                                                    _destination.pointee = index < palette.count ? palette[Int(index)] : ARGB32ColorPixel()
-                                                    _destination += 1
-                                                    x += 1
                                                 }
+                                            }
+                                        }
+                                        
+                                    case let count:
+                                        
+                                        guard let value = stream.popFirst() else { return }
+                                        
+                                        for i in 0..<count {
+                                            if x < width && y < height {
+                                                let index: Int
+                                                if bitWidth == 4 {
+                                                    index = i & 1 == 0 ? Int((value & 0xF0) >> 4) : Int(value & 0x0F)
+                                                } else {
+                                                    index = Int(value)
+                                                }
+                                                _destination.pointee = index < palette.count ? palette[Int(index)] : ARGB32ColorPixel()
+                                                _destination += 1
+                                                x += 1
                                             }
                                         }
                                     }
@@ -480,7 +476,7 @@ struct BMPDecoder : ImageRepDecoder {
                 default: return AnyImage(UncompressedPixelReader())
                 }
             } else {
-                 return AnyImage(UncompressedPixelReader())
+                return AnyImage(UncompressedPixelReader())
             }
         }
     }

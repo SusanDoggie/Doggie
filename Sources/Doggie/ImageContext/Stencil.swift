@@ -148,37 +148,36 @@ extension Shape {
         
         stencil.withUnsafeMutableBufferPointer { stencil in
             
-            if let ptr = stencil.baseAddress {
+            guard let ptr = stencil.baseAddress else { return }
+            
+            self.render { op in
                 
-                self.render { op in
+                _render(op, width: width, height: height, transform: transform, stencil: ptr)
+                
+                switch op {
+                case let .triangle(p0, p1, p2):
                     
-                    _render(op, width: width, height: height, transform: transform, stencil: ptr)
+                    let q0 = p0 * transform
+                    let q1 = p1 * transform
+                    let q2 = p2 * transform
                     
-                    switch op {
-                    case let .triangle(p0, p1, p2):
-                        
-                        let q0 = p0 * transform
-                        let q1 = p1 * transform
-                        let q2 = p2 * transform
-                        
-                        bound = bound?.union(Rect.bound([q0, q1, q2])) ?? Rect.bound([q0, q1, q2])
-                        
-                    case let .quadratic(p0, p1, p2):
-                        
-                        let q0 = p0 * transform
-                        let q1 = p1 * transform
-                        let q2 = p2 * transform
-                        
-                        bound = bound?.union(Rect.bound([q0, q1, q2])) ?? Rect.bound([q0, q1, q2])
-                        
-                    case let .cubic(p0, p1, p2, _, _, _):
-                        
-                        let q0 = p0 * transform
-                        let q1 = p1 * transform
-                        let q2 = p2 * transform
-                        
-                        bound = bound?.union(Rect.bound([q0, q1, q2])) ?? Rect.bound([q0, q1, q2])
-                    }
+                    bound = bound?.union(Rect.bound([q0, q1, q2])) ?? Rect.bound([q0, q1, q2])
+                    
+                case let .quadratic(p0, p1, p2):
+                    
+                    let q0 = p0 * transform
+                    let q1 = p1 * transform
+                    let q2 = p2 * transform
+                    
+                    bound = bound?.union(Rect.bound([q0, q1, q2])) ?? Rect.bound([q0, q1, q2])
+                    
+                case let .cubic(p0, p1, p2, _, _, _):
+                    
+                    let q0 = p0 * transform
+                    let q1 = p1 * transform
+                    let q2 = p2 * transform
+                    
+                    bound = bound?.union(Rect.bound([q0, q1, q2])) ?? Rect.bound([q0, q1, q2])
                 }
             }
         }

@@ -86,15 +86,13 @@ extension ImageContext {
         
         try self.withUnsafeMutableImageBufferPointer { _image in
             
-            if let _destination = _image.baseAddress {
+            guard let _destination = _image.baseAddress else { return }
+            
+            try self.withUnsafeClipBufferPointer { _clip in
                 
-                try self.withUnsafeClipBufferPointer { _clip in
-                    
-                    if let _clip = _clip.baseAddress {
-                        
-                        try body(ImageContextPixelBlender(destination: _destination, clip: _clip, opacity: opacity, blendMode: blendMode, compositingMode: compositingMode))
-                    }
-                }
+                guard let _clip = _clip.baseAddress else { return }
+                
+                try body(ImageContextPixelBlender(destination: _destination, clip: _clip, opacity: opacity, blendMode: blendMode, compositingMode: compositingMode))
             }
         }
     }
