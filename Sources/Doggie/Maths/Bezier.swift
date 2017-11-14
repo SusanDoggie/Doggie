@@ -26,7 +26,7 @@
 import Foundation
 
 @_fixed_layout
-public struct Bezier<Element : Subtractive & ScalarMultiplicative> where Element.Scalar == Double {
+public struct Bezier<Element : ScalarMultiplicative> where Element.Scalar == Double {
     
     @_versioned
     var points: [Element]
