@@ -61,6 +61,25 @@
         }
     }
     
+    extension AnyColorSpace {
+        
+        public init?(cgColorSpace: CGColorSpace) {
+            
+            if #available(OSX 10.12, iOS 10.0, *) {
+                
+                guard let iccData = cgColorSpace.copyICCData() as Data? else { return nil }
+                
+                try? self.init(iccData: iccData)
+                
+            } else {
+                
+                guard let iccData = cgColorSpace.iccData as Data? else { return nil }
+                
+                try? self.init(iccData: iccData)
+            }
+        }
+    }
+    
     protocol CGColorSpaceConvertibleProtocol {
         
         var cgColorSpace: CGColorSpace? { get }

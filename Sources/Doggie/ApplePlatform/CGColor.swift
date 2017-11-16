@@ -46,6 +46,18 @@
     
     extension AnyColor {
         
+        public init?(cgColor: CGColor) {
+            
+            guard let colorSpace = cgColor.colorSpace.flatMap(AnyColorSpace.init) else { return nil }
+            guard let components = cgColor.components, components.count == colorSpace.numberOfComponents + 1 else { return nil }
+            guard let opacity = components.last else { return nil }
+            
+            self.init(colorSpace: colorSpace, components: components.dropLast().lazy.map(Double.init), opacity: Double(opacity))
+        }
+    }
+    
+    extension AnyColor {
+        
         public var cgColor: CGColor? {
             if let base = _base as? CGColorConvertibleProtocol {
                 return base.cgColor
