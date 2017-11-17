@@ -734,6 +734,7 @@ public struct Atomic<Instance> {
             return base.value
         }
         set {
+            defer { _fixLifetime(base) }
             _fetchStore(AtomicBase(value: newValue))
         }
     }
@@ -742,13 +743,11 @@ public struct Atomic<Instance> {
 extension Atomic {
     
     public mutating func isLockFree() -> Bool {
-        defer { _fixLifetime(base) }
         return withUnsafeMutablePointer(to: &base) { $0.withMemoryRebound(to: Optional<UnsafeRawPointer>.self, capacity: 1) { _AtomicPtrIsLockFree($0) } }
     }
     
     @_transparent
     private mutating func _fetch() -> AtomicBase<Instance> {
-        defer { _fixLifetime(base) }
         let result = withUnsafeMutablePointer(to: &base) { $0.withMemoryRebound(to: Optional<UnsafeRawPointer>.self, capacity: 1) { _AtomicLoadPtrBarrier($0) } }
         let _old = Unmanaged<AtomicBase<Instance>>.fromOpaque(UnsafeRawPointer(result!))
         return _old.takeUnretainedValue()
@@ -756,9 +755,6 @@ extension Atomic {
     
     @_transparent
     private mutating func _compareSet(old: AtomicBase<Instance>, new: AtomicBase<Instance>) -> Bool {
-        defer { _fixLifetime(base) }
-        defer { _fixLifetime(old) }
-        defer { _fixLifetime(new) }
         let _old = Unmanaged.passUnretained(old)
         let _new = Unmanaged.passRetained(new)
         let result = withUnsafeMutablePointer(to: &base) { $0.withMemoryRebound(to: Optional<UnsafeMutableRawPointer>.self, capacity: 1) { _AtomicCompareAndSwapPtrBarrier(_old.toOpaque(), _new.toOpaque(), $0) } }
@@ -772,9 +768,6 @@ extension Atomic {
     
     @_transparent
     private mutating func _compareSetWeak(old: AtomicBase<Instance>, new: AtomicBase<Instance>) -> Bool {
-        defer { _fixLifetime(base) }
-        defer { _fixLifetime(old) }
-        defer { _fixLifetime(new) }
         let _old = Unmanaged.passUnretained(old)
         let _new = Unmanaged.passRetained(new)
         let result = withUnsafeMutablePointer(to: &base) { $0.withMemoryRebound(to: Optional<UnsafeMutableRawPointer>.self, capacity: 1) { _AtomicCompareAndSwapWeakPtrBarrier(_old.toOpaque(), _new.toOpaque(), $0) } }
@@ -789,8 +782,6 @@ extension Atomic {
     @_transparent
     @discardableResult
     private mutating func _fetchStore(_ new: AtomicBase<Instance>) -> AtomicBase<Instance> {
-        defer { _fixLifetime(base) }
-        defer { _fixLifetime(new) }
         let _new = Unmanaged.passRetained(new)
         let result = withUnsafeMutablePointer(to: &base) { $0.withMemoryRebound(to: Optional<UnsafeMutableRawPointer>.self, capacity: 1) { _AtomicExchangePtrBarrier(_new.toOpaque(), $0) } }
         let _old = Unmanaged<AtomicBase<Instance>>.fromOpaque(UnsafeRawPointer(result!))
@@ -802,6 +793,7 @@ extension Atomic : SDAtomicProtocol {
     
     /// Atomic fetch the current value.
     public mutating func fetchSelf() -> (current: Atomic, value: Instance) {
+        defer { _fixLifetime(base) }
         let _base = _fetch()
         return (Atomic(base: _base), _base.value)
     }
@@ -813,6 +805,7 @@ extension Atomic : SDAtomicProtocol {
     
     /// Set the value, and returns the previous value.
     public mutating func fetchStore(_ new: Instance) -> Instance {
+        defer { _fixLifetime(base) }
         return _fetchStore(AtomicBase(value: new)).value
     }
     
