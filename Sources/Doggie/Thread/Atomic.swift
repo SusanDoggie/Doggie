@@ -72,8 +72,8 @@ public extension SDAtomicProtocol {
     }
     
     /// Set the value, and returns the previous value. `block` is called repeatedly until result accepted.
-    @discardableResult
     @_inlineable
+    @discardableResult
     public mutating func fetchStore(block: (Atom) throws -> Atom) rethrows -> Atom {
         while true {
             let (old, oldVal) = self.fetchSelf()
@@ -707,26 +707,17 @@ extension UInt : SDAtomicProtocol {
     }
 }
 
-private class AtomicBase<Instance> {
-    
-    var value: Instance!
-    
-    init(value: Instance! = nil) {
-        self.value = value
-    }
-}
-
 public struct Atomic<Instance> {
     
-    private var base: AtomicBase<Instance>
+    private var base: Base
     
     @_transparent
-    private init(base: AtomicBase<Instance>) {
+    private init(base: Base) {
         self.base = base
     }
     
     public init(value: Instance) {
-        self.base = AtomicBase(value: value)
+        self.base = Base(value: value)
     }
     
     public var value : Instance {
@@ -734,30 +725,45 @@ public struct Atomic<Instance> {
             return base.value
         }
         set {
-            defer { _fixLifetime(base) }
-            _fetchStore(AtomicBase(value: newValue))
+            _fetchStore(Base(value: newValue))
         }
     }
 }
 
 extension Atomic {
     
+    private class Base {
+        
+        var value: Instance
+        
+        init(value: Instance) {
+            self.value = value
+        }
+    }
+}
+
+extension Atomic {
+    
+    @_transparent
+    private mutating func withBasePointer<Result, Raw>(_ body: (UnsafeMutablePointer<Raw>) -> Result) -> Result {
+        return withUnsafeMutablePointer(to: &base) { $0.withMemoryRebound(to: Raw.self, capacity: 1) { body($0) } }
+    }
+    
+    @inline(never)
     public mutating func isLockFree() -> Bool {
-        return withUnsafeMutablePointer(to: &base) { $0.withMemoryRebound(to: Optional<UnsafeRawPointer>.self, capacity: 1) { _AtomicPtrIsLockFree($0) } }
+        return withBasePointer { _AtomicPtrIsLockFree($0) }
     }
     
-    @_transparent
-    private mutating func _fetch() -> AtomicBase<Instance> {
-        let result = withUnsafeMutablePointer(to: &base) { $0.withMemoryRebound(to: Optional<UnsafeRawPointer>.self, capacity: 1) { _AtomicLoadPtrBarrier($0) } }
-        let _old = Unmanaged<AtomicBase<Instance>>.fromOpaque(UnsafeRawPointer(result!))
-        return _old.takeUnretainedValue()
+    @inline(never)
+    private mutating func _fetch() -> Base {
+        return withBasePointer { Unmanaged<Base>.fromOpaque(UnsafeRawPointer(_AtomicLoadPtrBarrier($0))).takeUnretainedValue() }
     }
     
-    @_transparent
-    private mutating func _compareSet(old: AtomicBase<Instance>, new: AtomicBase<Instance>) -> Bool {
+    @inline(never)
+    private mutating func _compareSet(old: Base, new: Base) -> Bool {
         let _old = Unmanaged.passUnretained(old)
         let _new = Unmanaged.passRetained(new)
-        let result = withUnsafeMutablePointer(to: &base) { $0.withMemoryRebound(to: Optional<UnsafeMutableRawPointer>.self, capacity: 1) { _AtomicCompareAndSwapPtrBarrier(_old.toOpaque(), _new.toOpaque(), $0) } }
+        let result = withBasePointer { _AtomicCompareAndSwapPtrBarrier(_old.toOpaque(), _new.toOpaque(), $0) }
         if result {
             _old.release()
         } else {
@@ -766,11 +772,11 @@ extension Atomic {
         return result
     }
     
-    @_transparent
-    private mutating func _compareSetWeak(old: AtomicBase<Instance>, new: AtomicBase<Instance>) -> Bool {
+    @inline(never)
+    private mutating func _compareSetWeak(old: Base, new: Base) -> Bool {
         let _old = Unmanaged.passUnretained(old)
         let _new = Unmanaged.passRetained(new)
-        let result = withUnsafeMutablePointer(to: &base) { $0.withMemoryRebound(to: Optional<UnsafeMutableRawPointer>.self, capacity: 1) { _AtomicCompareAndSwapWeakPtrBarrier(_old.toOpaque(), _new.toOpaque(), $0) } }
+        let result = withBasePointer { _AtomicCompareAndSwapWeakPtrBarrier(_old.toOpaque(), _new.toOpaque(), $0) }
         if result {
             _old.release()
         } else {
@@ -779,13 +785,10 @@ extension Atomic {
         return result
     }
     
-    @_transparent
+    @inline(never)
     @discardableResult
-    private mutating func _fetchStore(_ new: AtomicBase<Instance>) -> AtomicBase<Instance> {
-        let _new = Unmanaged.passRetained(new)
-        let result = withUnsafeMutablePointer(to: &base) { $0.withMemoryRebound(to: Optional<UnsafeMutableRawPointer>.self, capacity: 1) { _AtomicExchangePtrBarrier(_new.toOpaque(), $0) } }
-        let _old = Unmanaged<AtomicBase<Instance>>.fromOpaque(UnsafeRawPointer(result!))
-        return _old.takeRetainedValue()
+    private mutating func _fetchStore(_ new: Base) -> Base {
+        return withBasePointer { Unmanaged<Base>.fromOpaque(UnsafeRawPointer(_AtomicExchangePtrBarrier(Unmanaged.passRetained(new).toOpaque(), $0))).takeRetainedValue() }
     }
 }
 
@@ -793,31 +796,29 @@ extension Atomic : SDAtomicProtocol {
     
     /// Atomic fetch the current value.
     public mutating func fetchSelf() -> (current: Atomic, value: Instance) {
-        defer { _fixLifetime(base) }
-        let _base = _fetch()
+        let _base = self._fetch()
         return (Atomic(base: _base), _base.value)
     }
     
     /// Compare and set the value.
     public mutating func compareSet(old: Atomic, new: Instance) -> Bool {
-        return self._compareSet(old: old.base, new: AtomicBase(value: new))
+        return self._compareSet(old: old.base, new: Base(value: new))
     }
     
     /// Set the value, and returns the previous value.
     public mutating func fetchStore(_ new: Instance) -> Instance {
-        defer { _fixLifetime(base) }
-        return _fetchStore(AtomicBase(value: new)).value
+        return self._fetchStore(Base(value: new)).value
     }
     
     /// Set the value.
     @discardableResult
     public mutating func fetchStore(block: (Instance) throws -> Instance) rethrows -> Instance {
-        let new = AtomicBase<Instance>()
+        let new = Base(value: base.value)
         while true {
-            let old = self.base
-            new.value = try block(old.value)
-            if self._compareSetWeak(old: old, new: new) {
-                return old.value
+            let _base = self._fetch()
+            new.value = try block(_base.value)
+            if self._compareSetWeak(old: _base, new: new) {
+                return _base.value
             }
         }
     }
@@ -827,12 +828,13 @@ extension Atomic where Instance : Equatable {
     
     /// Compare and set the value.
     public mutating func compareSet(old: Instance, new: Instance) -> Bool {
+        let new = Base(value: new)
         while true {
-            let (current, currentVal) = self.fetchSelf()
-            if currentVal != old {
+            let _base = self._fetch()
+            if _base.value != old {
                 return false
             }
-            if compareSet(old: current, new: new) {
+            if self._compareSetWeak(old: _base, new: new) {
                 return true
             }
         }
