@@ -59,22 +59,13 @@ extension ImageContext {
         
         self.withUnsafePixelBlender { blender in
             
-            var _p = Point(x: 0, y: 0)
-            let _p1 = Point(x: 1, y: 0) * transform
-            let _p2 = Point(x: 0, y: 1) * transform
-            
             var blender = blender
             
-            for _ in 0..<height {
-                var p = _p
-                for _ in 0..<width {
-                    
-                    blender.draw { shader(p) }
-                    
+            for y in 0..<height {
+                for x in 0..<width {
+                    blender.draw { shader(Point(x: x, y: y) * transform) }
                     blender += 1
-                    p += _p1
                 }
-                _p += _p2
             }
         }
         
