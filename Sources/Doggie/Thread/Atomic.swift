@@ -731,11 +731,12 @@ public struct Atomic<Instance> {
     }
     
     public var value : Instance {
-        @inline(never) get {
-            return base.value
+        get {
+            var copy = self
+            return copy.fetch()
         }
-        @inline(never) set {
-            self.base = Base(value: newValue)
+        set {
+            self.store(newValue)
         }
     }
 }
