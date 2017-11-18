@@ -33,8 +33,8 @@ private class AtomicStackContainerBox<Instance> {
 }
 private struct AtomicStackContainer<Instance> {
     
-    let value: Instance
     let next: AtomicStackContainerBox<Instance>?
+    let value: Instance
 }
 
 open class AtomicStack<Instance> {
@@ -49,10 +49,10 @@ open class AtomicStack<Instance> {
         let box = AtomicStackContainerBox<Instance>()
         head.fetchStore {
             if $0 == nil {
-                return AtomicStackContainer(value: newElement, next: nil)
+                return AtomicStackContainer(next: nil, value: newElement)
             } else {
                 box.base = $0
-                return AtomicStackContainer(value: newElement, next: box)
+                return AtomicStackContainer(next: box, value: newElement)
             }
         }
     }

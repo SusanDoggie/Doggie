@@ -102,7 +102,6 @@ _ATOMIC_EXCHANGE_FIXED_UINT_BARRIER(32)
 _ATOMIC_EXCHANGE_FIXED_UINT_BARRIER(64)
 _ATOMIC_EXCHANGE_BARRIER(Long, long)
 _ATOMIC_EXCHANGE_BARRIER(ULong, unsigned long)
-_ATOMIC_EXCHANGE_BARRIER(Ptr, void*)
 
 #define _ATOMIC_LOAD_BARRIER(NAME, x) static inline x                                                               \
 _AtomicLoad##NAME##Barrier(const volatile x * address)                                                              \
@@ -124,7 +123,6 @@ _ATOMIC_LOAD_FIXED_UINT_BARRIER(32)
 _ATOMIC_LOAD_FIXED_UINT_BARRIER(64)
 _ATOMIC_LOAD_BARRIER(Long, long)
 _ATOMIC_LOAD_BARRIER(ULong, unsigned long)
-_ATOMIC_LOAD_BARRIER(Ptr, void*)
 
 #define _ATOMIC_STORE_BARRIER(NAME, x) static inline void                                                           \
 _AtomicStore##NAME##Barrier(x            newValue,                                                                  \
@@ -147,7 +145,6 @@ _ATOMIC_STORE_FIXED_UINT_BARRIER(32)
 _ATOMIC_STORE_FIXED_UINT_BARRIER(64)
 _ATOMIC_STORE_BARRIER(Long, long)
 _ATOMIC_STORE_BARRIER(ULong, unsigned long)
-_ATOMIC_STORE_BARRIER(Ptr, void*)
 
 #define _ATOMIC_FETCHADD_BARRIER(NAME, x) static inline x                                                           \
 _AtomicFetchAdd##NAME##Barrier(x            arg,                                                                    \

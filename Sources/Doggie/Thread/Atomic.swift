@@ -51,7 +51,7 @@ public protocol SDAtomicProtocol {
     mutating func fetchStore(block: (Atom) throws -> Atom) rethrows -> Atom
 }
 
-public extension SDAtomicProtocol {
+extension SDAtomicProtocol {
     
     /// Atomic fetch the current value.
     @_inlineable
@@ -81,6 +81,16 @@ public extension SDAtomicProtocol {
                 return oldVal
             }
         }
+    }
+}
+
+extension SDAtomicProtocol where Atom : Equatable {
+    
+    /// Compare and set the value.
+    @_inlineable
+    public mutating func compareSet(old: Atom, new: Atom) -> Bool {
+        let (current, value) = self.fetchSelf()
+        return value == old && self.compareSet(old: current, new: new)
     }
 }
 
@@ -725,7 +735,7 @@ public struct Atomic<Instance> {
             return base.value
         }
         set {
-            _fetchStore(Base(value: newValue))
+            self.base = Base(value: newValue)
         }
     }
 }
@@ -755,11 +765,6 @@ extension Atomic {
     }
     
     @inline(never)
-    private mutating func _fetch() -> Base {
-        return withBasePointer { Unmanaged<Base>.fromOpaque(UnsafeRawPointer(_AtomicLoadPtrBarrier($0))).takeUnretainedValue() }
-    }
-    
-    @inline(never)
     private mutating func _compareSet(old: Base, new: Base) -> Bool {
         let _old = Unmanaged.passUnretained(old)
         let _new = Unmanaged.passRetained(new)
@@ -784,20 +789,19 @@ extension Atomic {
         }
         return result
     }
-    
-    @inline(never)
-    @discardableResult
-    private mutating func _fetchStore(_ new: Base) -> Base {
-        return withBasePointer { Unmanaged<Base>.fromOpaque(UnsafeRawPointer(_AtomicExchangePtrBarrier(Unmanaged.passRetained(new).toOpaque(), $0))).takeRetainedValue() }
-    }
 }
 
 extension Atomic : SDAtomicProtocol {
     
     /// Atomic fetch the current value.
     public mutating func fetchSelf() -> (current: Atomic, value: Instance) {
-        let _base = self._fetch()
+        let _base = self.base
         return (Atomic(base: _base), _base.value)
+    }
+    
+    /// Atomic set the value.
+    public mutating func store(_ new: Instance) {
+        self.base = Base(value: new)
     }
     
     /// Compare and set the value.
@@ -805,37 +809,15 @@ extension Atomic : SDAtomicProtocol {
         return self._compareSet(old: old.base, new: Base(value: new))
     }
     
-    /// Set the value, and returns the previous value.
-    public mutating func fetchStore(_ new: Instance) -> Instance {
-        return self._fetchStore(Base(value: new)).value
-    }
-    
     /// Set the value.
     @discardableResult
     public mutating func fetchStore(block: (Instance) throws -> Instance) rethrows -> Instance {
         let new = Base(value: base.value)
         while true {
-            let _base = self._fetch()
+            let _base = self.base
             new.value = try block(_base.value)
             if self._compareSetWeak(old: _base, new: new) {
                 return _base.value
-            }
-        }
-    }
-}
-
-extension Atomic where Instance : Equatable {
-    
-    /// Compare and set the value.
-    public mutating func compareSet(old: Instance, new: Instance) -> Bool {
-        let new = Base(value: new)
-        while true {
-            let _base = self._fetch()
-            if _base.value != old {
-                return false
-            }
-            if self._compareSetWeak(old: _base, new: new) {
-                return true
             }
         }
     }
