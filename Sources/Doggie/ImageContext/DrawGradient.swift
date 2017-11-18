@@ -51,7 +51,10 @@ extension ImageContext {
     @_inlineable
     func _shading<P : ColorPixelProtocol>(_ shader: (Point) -> P) where Pixel.Model == P.Model {
         
-        if self.width == 0 || self.height == 0 || self.transform.determinant.almostZero() {
+        let width = self.width
+        let height = self.height
+        
+        if width == 0 || height == 0 || self.transform.determinant.almostZero() {
             return
         }
         
