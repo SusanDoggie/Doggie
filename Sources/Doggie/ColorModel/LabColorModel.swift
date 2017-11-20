@@ -91,11 +91,11 @@ public struct LabColorModel : ColorModelProtocol {
     }
 }
 
-extension LabColorModel : CustomStringConvertible {
+extension LabColorModel {
     
     @_inlineable
-    public var description: String {
-        return "LabColorModel(lightness: \(lightness), a: \(a), b: \(b))"
+    public static var black: LabColorModel {
+        return LabColorModel()
     }
 }
 

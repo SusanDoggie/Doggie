@@ -74,14 +74,6 @@ public struct CMYKColorModel : ColorModelProtocol {
     }
 }
 
-extension CMYKColorModel : CustomStringConvertible {
-    
-    @_inlineable
-    public var description: String {
-        return "CMYKColorModel(cyan: \(cyan), magenta: \(magenta), yellow: \(yellow), black: \(black))"
-    }
-}
-
 extension CMYKColorModel {
     
     @_inlineable
@@ -121,6 +113,49 @@ extension CMYKColorModel {
             self.magenta = _k * (cmy.magenta - black)
             self.yellow = _k * (cmy.yellow - black)
         }
+    }
+}
+
+extension CMYKColorModel {
+    
+    @_inlineable
+    public static var black: CMYKColorModel {
+        return CMYKColorModel(cyan: 0, magenta: 0, yellow: 0, black: 1)
+    }
+    
+    @_inlineable
+    public static var white: CMYKColorModel {
+        return CMYKColorModel(cyan: 0, magenta: 0, yellow: 0, black: 0)
+    }
+    
+    @_inlineable
+    public static var red: CMYKColorModel {
+        return CMYKColorModel(cyan: 0, magenta: 1, yellow: 1, black: 0)
+    }
+    
+    @_inlineable
+    public static var green: CMYKColorModel {
+        return CMYKColorModel(cyan: 1, magenta: 0, yellow: 1, black: 0)
+    }
+    
+    @_inlineable
+    public static var blue: CMYKColorModel {
+        return CMYKColorModel(cyan: 1, magenta: 1, yellow: 0, black: 0)
+    }
+    
+    @_inlineable
+    public static var cyan: CMYKColorModel {
+        return CMYKColorModel(cyan: 1, magenta: 0, yellow: 0, black: 0)
+    }
+    
+    @_inlineable
+    public static var magenta: CMYKColorModel {
+        return CMYKColorModel(cyan: 0, magenta: 1, yellow: 0, black: 0)
+    }
+    
+    @_inlineable
+    public static var yellow: CMYKColorModel {
+        return CMYKColorModel(cyan: 0, magenta: 0, yellow: 1, black: 0)
     }
 }
 

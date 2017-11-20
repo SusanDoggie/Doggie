@@ -90,11 +90,11 @@ public struct LuvColorModel : ColorModelProtocol {
     }
 }
 
-extension LuvColorModel : CustomStringConvertible {
+extension LuvColorModel {
     
     @_inlineable
-    public var description: String {
-        return "LuvColorModel(lightness: \(lightness), u: \(u), v: \(v))"
+    public static var black: LuvColorModel {
+        return LuvColorModel()
     }
 }
 

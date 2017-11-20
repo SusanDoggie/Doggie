@@ -122,11 +122,11 @@ extension XYZColorModel {
     }
 }
 
-extension XYZColorModel : CustomStringConvertible {
+extension XYZColorModel {
     
     @_inlineable
-    public var description: String {
-        return "XYZColorModel(x: \(x), y: \(y), z: \(z))"
+    public static var black: XYZColorModel {
+        return XYZColorModel()
     }
 }
 

@@ -77,11 +77,46 @@ public struct RGBColorModel : ColorModelProtocol {
     }
 }
 
-extension RGBColorModel : CustomStringConvertible {
+extension RGBColorModel {
     
     @_inlineable
-    public var description: String {
-        return "RGBColorModel(red: \(red), green: \(green), blue: \(blue))"
+    public static var black: RGBColorModel {
+        return RGBColorModel()
+    }
+    
+    @_inlineable
+    public static var white: RGBColorModel {
+        return RGBColorModel(red: 1, green: 1, blue: 1)
+    }
+    
+    @_inlineable
+    public static var red: RGBColorModel {
+        return RGBColorModel(red: 1, green: 0, blue: 0)
+    }
+    
+    @_inlineable
+    public static var green: RGBColorModel {
+        return RGBColorModel(red: 0, green: 1, blue: 0)
+    }
+    
+    @_inlineable
+    public static var blue: RGBColorModel {
+        return RGBColorModel(red: 0, green: 0, blue: 1)
+    }
+    
+    @_inlineable
+    public static var cyan: RGBColorModel {
+        return RGBColorModel(red: 0, green: 1, blue: 1)
+    }
+    
+    @_inlineable
+    public static var magenta: RGBColorModel {
+        return RGBColorModel(red: 1, green: 0, blue: 1)
+    }
+    
+    @_inlineable
+    public static var yellow: RGBColorModel {
+        return RGBColorModel(red: 1, green: 1, blue: 0)
     }
 }
 

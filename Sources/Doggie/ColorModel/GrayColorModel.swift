@@ -70,6 +70,19 @@ extension GrayColorModel {
     }
 }
 
+extension GrayColorModel {
+    
+    @_inlineable
+    public static var black: GrayColorModel {
+        return GrayColorModel()
+    }
+    
+    @_inlineable
+    public static var white: GrayColorModel {
+        return GrayColorModel(white: 1)
+    }
+}
+
 @_inlineable
 public prefix func +(val: GrayColorModel) -> GrayColorModel {
     return val
