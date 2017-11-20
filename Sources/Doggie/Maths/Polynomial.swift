@@ -102,9 +102,17 @@ extension Polynomial : RandomAccessCollection, MutableCollection {
 extension Polynomial : RangeReplaceableCollection {
     
     @_inlineable
-    public mutating func append(_ x: Double) {
-        if x != 0 {
-            coeffs.append(x)
+    public mutating func append(_ newElement: Double) {
+        if newElement != 0 {
+            coeffs.append(newElement)
+        }
+    }
+    
+    @_inlineable
+    public mutating func append<S : Sequence>(contentsOf newElements: S) where S.Element == Double {
+        coeffs.append(contentsOf: newElements)
+        while coeffs.last == 0 {
+            coeffs.removeLast()
         }
     }
     

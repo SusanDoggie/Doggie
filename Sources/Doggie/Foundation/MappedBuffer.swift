@@ -85,18 +85,9 @@ public struct MappedBuffer<Element> : RandomAccessCollection, MutableCollection,
     }
     
     @_inlineable
-    public init<S : Sequence>(_ elements: S, option: MappedBufferOption = .default) where Element == S.Element {
-        
-        let underestimatedCount = elements.underestimatedCount
-        
-        self.buffer = MappedBufferTempFile<Element>(capacity: underestimatedCount, option: option)
-        self.buffer.count = underestimatedCount
-        
-        var iterator = UnsafeMutableBufferPointer(start: self.buffer.address, count: underestimatedCount).initialize(from: elements).0
-        
-        while let item = iterator.next() {
-            self.append(item)
-        }
+    public init<S : Sequence>(_ elements: S, option: MappedBufferOption = .default) where S.Element == Element {
+        self.buffer = MappedBufferTempFile<Element>(capacity: elements.underestimatedCount, option: option)
+        self.append(contentsOf: elements)
     }
 }
 
@@ -165,32 +156,50 @@ extension MappedBuffer {
 extension MappedBuffer : RangeReplaceableCollection {
     
     @_inlineable
-    public mutating func append(_ x: Element) {
+    public mutating func append(_ newElement: Element) {
         
-        let new_count = buffer.count + 1
+        let old_count = buffer.count
+        let new_count = old_count + 1
         
         if isKnownUniquelyReferenced(&buffer) {
-            
             if buffer.capacity < new_count {
                 buffer.extend_capacity(capacity: new_count)
             }
-            
-            let append = buffer.address + buffer.count
-            append.initialize(to: x)
-            
-            buffer.count = new_count
-            
         } else {
-            
-            let new_buffer = MappedBufferTempFile<Element>(capacity: new_count, option: self.option)
-            
-            new_buffer.count = new_count
-            new_buffer.address.initialize(from: buffer.address, count: buffer.count)
-            
-            let append = new_buffer.address + buffer.count
-            append.initialize(to: x)
+            let new_buffer = MappedBufferTempFile<Element>(capacity: Swift.max(buffer.capacity, new_count), option: self.option)
+            new_buffer.address.initialize(from: buffer.address, count: old_count)
             
             self.buffer = new_buffer
+        }
+        
+        let append = buffer.address + old_count
+        append.initialize(to: newElement)
+        
+        buffer.count = new_count
+    }
+    
+    @_inlineable
+    public mutating func append<S : Sequence>(contentsOf newElements: S) where S.Element == Element {
+        
+        let old_count = buffer.count
+        let new_count = old_count + newElements.underestimatedCount
+        
+        if isKnownUniquelyReferenced(&buffer) {
+            if buffer.capacity < new_count {
+                buffer.extend_capacity(capacity: new_count)
+            }
+        } else {
+            let new_buffer = MappedBufferTempFile<Element>(capacity: Swift.max(buffer.capacity, new_count), option: self.option)
+            new_buffer.address.initialize(from: buffer.address, count: old_count)
+            
+            self.buffer = new_buffer
+        }
+        
+        var iterator = UnsafeMutableBufferPointer(start: buffer.address + old_count, count: new_count - old_count).initialize(from: newElements).0
+        buffer.count = new_count
+        
+        while let item = iterator.next() {
+            self.append(item)
         }
     }
     

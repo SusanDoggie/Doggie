@@ -145,11 +145,11 @@ extension DGXMLElement : RandomAccessCollection, MutableCollection {
 
 extension DGXMLElement {
     
-    public mutating func append(_ x: DGXMLElement) {
-        elements.append(x)
+    public mutating func append(_ newElement: DGXMLElement) {
+        elements.append(newElement)
     }
     
-    public mutating func append<S : Sequence>(contentsOf newElements: S) where DGXMLElement == S.Element {
+    public mutating func append<S : Sequence>(contentsOf newElements: S) where S.Element == DGXMLElement {
         elements.append(contentsOf: newElements)
     }
     
@@ -163,25 +163,5 @@ extension DGXMLElement {
     
     public mutating func replaceSubrange<C : Collection>(_ subRange: Range<Int>, with newElements: C) where C.Element == DGXMLElement {
         elements.replaceSubrange(subRange, with: newElements)
-    }
-    
-    public mutating func insert(_ newElement: DGXMLElement, at i: Int) {
-        elements.insert(newElement, at: i)
-    }
-    
-    public mutating func insert<S : Collection>(contentsOf newElements: S, at i: Int) where DGXMLElement == S.Element {
-        elements.insert(contentsOf: newElements, at: i)
-    }
-    
-    public mutating func remove(at i: Int) -> DGXMLElement {
-        return elements.remove(at: i)
-    }
-    
-    public mutating func removeFirst() -> DGXMLElement {
-        return elements.removeFirst()
-    }
-    
-    public mutating func removeFirst(_ n: Int) {
-        elements.removeFirst(n)
     }
 }

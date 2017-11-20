@@ -362,9 +362,14 @@ extension Shape.Component {
 
 extension Shape.Component : RangeReplaceableCollection {
     
-    public mutating func append(_ x: Shape.Segment) {
+    public mutating func append(_ newElement: Shape.Segment) {
         cache = Cache()
-        segments.append(x)
+        segments.append(newElement)
+    }
+    
+    public mutating func append<S : Sequence>(contentsOf newElements: S) where S.Element == Shape.Segment {
+        cache = Cache()
+        segments.append(contentsOf: newElements)
     }
     
     public mutating func reserveCapacity(_ minimumCapacity: Int) {
@@ -590,9 +595,14 @@ extension Shape.Component {
 
 extension Shape : RangeReplaceableCollection {
     
-    public mutating func append(_ x: Component) {
+    public mutating func append(_ newElement: Component) {
         cache = Cache()
-        components.append(x)
+        components.append(newElement)
+    }
+    
+    public mutating func append<S : Sequence>(contentsOf newElements: S) where S.Element == Component {
+        cache = Cache()
+        components.append(contentsOf: newElements)
     }
     
     public mutating func reserveCapacity(_ minimumCapacity: Int) {

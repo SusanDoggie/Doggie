@@ -69,7 +69,7 @@ public struct ShapeRegion {
         self.init(solids: CollectionOfOne(solid))
     }
     
-    fileprivate init<S : Sequence>(solids: S) where S.Iterator.Element == ShapeRegion.Solid {
+    fileprivate init<S : Sequence>(solids: S) where S.Element == ShapeRegion.Solid {
         let solids = Array(solids)
         self.solids = solids
         self.spacePartition = RectCollection(solids.map { $0.boundary })

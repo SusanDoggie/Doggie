@@ -71,8 +71,12 @@ extension DGXMLDocument : RandomAccessCollection, MutableCollection {
 
 extension DGXMLDocument : RangeReplaceableCollection {
     
-    public mutating func append(_ x: DGXMLElement) {
-        elements.append(x)
+    public mutating func append(_ newElement: DGXMLElement) {
+        elements.append(newElement)
+    }
+    
+    public mutating func append<S : Sequence>(contentsOf newElements: S) where S.Element == DGXMLElement {
+        elements.append(contentsOf: newElements)
     }
     
     public mutating func reserveCapacity(_ minimumCapacity: Int) {
