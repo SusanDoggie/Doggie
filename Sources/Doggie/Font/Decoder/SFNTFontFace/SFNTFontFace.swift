@@ -146,25 +146,31 @@ extension SFNTFontFace {
         
         var advance: BEUInt16
         var bearing: BEInt16
+        
+        func _font_metric() -> Font.Metric {
+            return Font.Metric(advance: Double(advance.representingValue), bearing: Double(bearing.representingValue))
+        }
     }
     
-    func advanceWidth(glyph: Int) -> Double {
-        precondition(glyph < numberOfGlyphs, "Index out of range.")
+    func metric(glyph: Int) -> Font.Metric {
         let hMetricCount = Int(hhea.numOfLongHorMetrics)
-        return hmtx.withUnsafeBytes { (metrics: UnsafePointer<Metric>) in Double(metrics[glyph < hMetricCount ? glyph : hMetricCount - 1].advance.representingValue) }
+        return hmtx.withUnsafeBytes { (metrics: UnsafePointer<Metric>) in metrics[glyph < hMetricCount ? glyph : hMetricCount - 1]._font_metric() }
     }
     
-    func advanceHeight(glyph: Int) -> Double {
-        precondition(glyph < numberOfGlyphs, "Index out of range.")
+    func verticalMetric(glyph: Int) -> Font.Metric {
         if let vhea = self.vhea, let vmtx = self.vmtx {
             let vMetricCount = Int(vhea.numOfLongVerMetrics)
-            return vmtx.withUnsafeBytes { (metrics: UnsafePointer<Metric>) in Double(metrics[glyph < vMetricCount ? glyph : vMetricCount - 1].advance.representingValue) }
+            return vmtx.withUnsafeBytes { (metrics: UnsafePointer<Metric>) in metrics[glyph < vMetricCount ? glyph : vMetricCount - 1]._font_metric() }
         }
-        return 0
+        return Font.Metric(advance: 0, bearing: 0)
     }
 }
 
 extension SFNTFontFace {
+    
+    var isVertical: Bool {
+        return self.vhea != nil && self.vmtx != nil
+    }
     
     var ascender: Double {
         return Double(hhea.ascent.representingValue)

@@ -29,8 +29,10 @@ protocol FontFaceBase {
     
     func shape(glyph: Int) -> [Shape.Component]
     func glyph(unicode: UnicodeScalar) -> Int
-    func advanceWidth(glyph: Int) -> Double
-    func advanceHeight(glyph: Int) -> Double
+    func metric(glyph: Int) -> Font.Metric
+    func verticalMetric(glyph: Int) -> Font.Metric
+    
+    var isVertical: Bool { get }
     
     var numberOfGlyphs: Int { get }
     
@@ -89,6 +91,7 @@ public struct Font {
     public var pointSize: Double = 0
     
     init?(_ base: FontFaceBase) {
+        guard base.numberOfGlyphs > 0 else { return nil }
         guard let details = Details(base) else { return nil }
         self.details = details
         self.base = base
@@ -169,6 +172,7 @@ extension Font {
 extension Font {
     
     private func _shape(glyph: Int) -> [Shape.Component] {
+        precondition(0..<base.numberOfGlyphs ~= glyph, "Index out of range.")
         if cache.glyphs[glyph] == nil {
             cache.glyphs[glyph] = base.shape(glyph: glyph).filter { $0.count != 0 }
         }
@@ -188,19 +192,47 @@ extension Font {
 
 extension Font {
     
+    public struct Metric {
+        
+        public var advance: Double
+        public var bearing: Double
+    }
+    
     public var numberOfGlyphs: Int {
         return base.numberOfGlyphs
     }
     
     public func glyph(with unicode: UnicodeScalar) -> Int {
-        return base.glyph(unicode: unicode)
+        let glyph = base.glyph(unicode: unicode)
+        return 0..<base.numberOfGlyphs ~= glyph ? glyph : 0
     }
     
-    public func advanceWidth(forGlyph glyph: Int) -> Double {
-        return base.advanceWidth(glyph: glyph) * _pointScale
+    public func metric(forGlyph glyph: Int) -> Metric {
+        precondition(0..<base.numberOfGlyphs ~= glyph, "Index out of range.")
+        let metric = base.metric(glyph: glyph)
+        return Metric(advance: metric.advance * _pointScale, bearing: metric.bearing * _pointScale)
     }
-    public func advanceHeight(forGlyph glyph: Int) -> Double {
-        return base.advanceHeight(glyph: glyph) * _pointScale
+    
+    public func verticalMetric(forGlyph glyph: Int) -> Metric {
+        precondition(0..<base.numberOfGlyphs ~= glyph, "Index out of range.")
+        let metric = base.verticalMetric(glyph: glyph)
+        return Metric(advance: metric.advance * _pointScale, bearing: metric.bearing * _pointScale)
+    }
+    
+    public func advance(forGlyph glyph: Int) -> Double {
+        return metric(forGlyph: glyph).advance
+    }
+    
+    public func verticalAdvance(forGlyph glyph: Int) -> Double {
+        return verticalMetric(forGlyph: glyph).advance
+    }
+    
+    public func bearing(forGlyph glyph: Int) -> Double {
+        return metric(forGlyph: glyph).bearing
+    }
+    
+    public func verticalBearing(forGlyph glyph: Int) -> Double {
+        return verticalMetric(forGlyph: glyph).bearing
     }
     
     public var coveredCharacterSet: CharacterSet {
@@ -262,6 +294,11 @@ extension Font {
     public var capHeight: Double? {
         return base.capHeight.map { $0 * _pointScale }
     }
+    
+    public var isVertical: Bool {
+        return base.isVertical
+    }
+    
     public var isFixedPitch: Bool {
         return base.isFixedPitch
     }
