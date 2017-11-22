@@ -15,7 +15,7 @@ for font in Arial {
     
     let font = font.with(size: 64)
     
-    let string = "Doggie\u{0301}".precomposedStringWithCompatibilityMapping
+    let string = "Doggie\u{0301}".precomposedStringWithCanonicalMapping
     
     let glyphs = string.unicodeScalars.map { font.glyph(with: $0) }
     let advances = glyphs.map { font.advanceWidth(forGlyph: $0) }.scan(0, +)
