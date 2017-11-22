@@ -27,6 +27,8 @@ import Foundation
 
 protocol SFNTCMAPTableFormat : DataDecodable {
     
+    var _format: Int { get }
+    
     subscript(code: UInt32) -> Int { get }
     
     var coveredCharacterSet: CharacterSet { get }
@@ -56,16 +58,29 @@ struct SFNTCMAP : DataDecodable {
             }
         }
         
-        if let table = tables.lazy.filter({ $0.platform.platform == 0 && $0.platform.specific <= 4 }).max(by: { $0.platform.specific }) {
-            self.table = table
-        } else if let table = tables.first(where: { $0.platform.platform == 3 && $0.platform.specific == 10 }) {
-            self.table = table
-        } else if let table = tables.first(where: { $0.platform.platform == 3 && $0.platform.specific == 1 }) {
-            self.table = table
-        } else if let table = tables.first(where: { $0.platform.platform == 3 && $0.platform.specific == 0 }) {
+        tables.sort { ($0.platform._ordering, $0.format._format) < ($1.platform._ordering, $1.format._format) }
+        
+        if let table = tables.first(where: { $0.platform._ordering != -1 }) {
             self.table = table
         } else {
             throw FontCollection.Error.Unsupported("Unsupported cmap format.")
+        }
+    }
+}
+
+extension SFNTPlatform {
+    
+    fileprivate var _ordering: Int {
+        switch (self.platform, self.specific) {
+        case (0, 4): return 7
+        case (0, 3): return 6
+        case (0, 2): return 5
+        case (0, 1): return 4
+        case (0, 0): return 3
+        case (3, 10): return 2
+        case (3, 1): return 1
+        case (3, 0): return 0
+        default: return -1
         }
     }
 }
@@ -91,6 +106,10 @@ extension SFNTCMAP {
         var length: BEUInt16
         var language: BEUInt16
         var data: Data
+        
+        var _format: Int {
+            return Int(format)
+        }
         
         init(from data: inout Data) throws {
             self.format = try data.decode(BEUInt16.self)
@@ -123,6 +142,10 @@ extension SFNTCMAP {
         var startCode: [BEUInt16]
         var idDelta: [BEInt16]
         var idRangeOffset: Data
+        
+        var _format: Int {
+            return Int(format)
+        }
         
         init(from data: inout Data) throws {
             
@@ -219,6 +242,10 @@ extension SFNTCMAP {
         var language: BEUInt32
         var nGroups: BEUInt32
         var groups: Data
+        
+        var _format: Int {
+            return Int(format.representingValue)
+        }
         
         init(from data: inout Data) throws {
             self.format = try data.decode(Fixed16Number<BEInt32>.self)
