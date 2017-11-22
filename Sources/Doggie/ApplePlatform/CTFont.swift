@@ -52,7 +52,7 @@ import Foundation
                                 
                             } else if url.isFileURL {
                                 
-                                if let data = try? Data(contentsOf: url, options: .mappedIfSafe), let fonts = try? FontCollection(data: data) {
+                                if let data = try? Data(contentsOf: url, options: .alwaysMapped), let fonts = try? FontCollection(data: data) {
                                     availableFonts.formUnion(fonts)
                                 }
                             }
