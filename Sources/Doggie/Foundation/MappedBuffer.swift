@@ -61,6 +61,11 @@ public struct MappedBuffer<Element> : RandomAccessCollection, MutableCollection,
     }
     
     @_inlineable
+    public init(capacity: Int, option: MappedBufferOption = .default) {
+        self.buffer = MappedBufferTempFile<Element>(capacity: capacity, option: option)
+    }
+    
+    @_inlineable
     public init(repeating repeatedValue: Element, count: Int, option: MappedBufferOption = .default) {
         self.buffer = MappedBufferTempFile<Element>(capacity: count, option: option)
         self.buffer.count = count
@@ -70,18 +75,25 @@ public struct MappedBuffer<Element> : RandomAccessCollection, MutableCollection,
     @_inlineable
     public init(arrayLiteral elements: Element ...) {
         self.buffer = MappedBufferTempFile<Element>(capacity: elements.count, option: .default)
-        self.buffer.count = count
-        
-        var address = self.buffer.address
-        for item in elements {
-            address.initialize(to: item)
-            address += 1
-        }
+        self.buffer.count = elements.count
+        self.buffer.address.initialize(from: elements, count: elements.count)
     }
     
     @_inlineable
     public init(_ other: MappedBuffer<Element>) {
         self = other
+    }
+    
+    @_inlineable
+    public init(_ other: MappedBuffer<Element>, option: MappedBufferOption) {
+        if other.option == option {
+            self = other
+        } else {
+            let _other = other.buffer
+            self.buffer = MappedBufferTempFile<Element>(capacity: _other.capacity, option: option)
+            self.buffer.count = _other.count
+            self.buffer.address.initialize(from: _other.address, count: _other.count)
+        }
     }
     
     @_inlineable
@@ -374,7 +386,10 @@ class MappedBufferTempFile<Element> {
             self.fd = -1
             self.path = ""
             
-            self.address = mmap(nil, mapped_size, PROT_READ | PROT_WRITE, MAP_ANONYMOUS | MAP_PRIVATE, fd, 0).bindMemory(to: Element.self, capacity: self.capacity)
+            let _address = mmap(nil, mapped_size, PROT_READ | PROT_WRITE, MAP_ANONYMOUS | MAP_PRIVATE, fd, 0)!
+            guard _address != UnsafeMutableRawPointer(bitPattern: -1) else { fatalError(String(cString: strerror(errno))) }
+            
+            self.address = _address.bindMemory(to: Element.self, capacity: self.capacity)
             
         case .fileBacked:
             
@@ -395,7 +410,10 @@ class MappedBufferTempFile<Element> {
             guard flock(fd, LOCK_EX) != -1 else { fatalError(String(cString: strerror(errno))) }
             guard ftruncate(fd, off_t(mapped_size)) != -1 else { fatalError(String(cString: strerror(errno))) }
             
-            self.address = mmap(nil, mapped_size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0).bindMemory(to: Element.self, capacity: self.capacity)
+            let _address = mmap(nil, mapped_size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0)!
+            guard _address != UnsafeMutableRawPointer(bitPattern: -1) else { fatalError(String(cString: strerror(errno))) }
+            
+            self.address = _address.bindMemory(to: Element.self, capacity: self.capacity)
         }
     }
     

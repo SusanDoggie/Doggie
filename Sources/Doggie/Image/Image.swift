@@ -78,11 +78,7 @@ public struct Image<Pixel: ColorPixelProtocol> {
         self.resolution = image.resolution
         self.colorSpace = image.colorSpace
         if let buffer = image.pixels as? MappedBuffer<Pixel> {
-            if buffer.option == option {
-                self.pixels = buffer
-            } else {
-                self.pixels = MappedBuffer(buffer, option: option)
-            }
+            self.pixels = MappedBuffer(buffer, option: option)
         } else {
             self.pixels = MappedBuffer(image.pixels.lazy.map(Pixel.init), option: option)
         }
