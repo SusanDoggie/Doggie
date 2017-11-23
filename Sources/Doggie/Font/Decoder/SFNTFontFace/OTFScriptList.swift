@@ -25,7 +25,7 @@
 
 import Foundation
 
-struct OTFScriptList : DataDecodable {
+struct OTFScriptList : ByteDecodable {
     
     var scriptCount: BEUInt16
     var records: [Record]
@@ -37,7 +37,7 @@ struct OTFScriptList : DataDecodable {
         self.records = try (0..<Int(scriptCount)).map { _ in try data.decode(Record.self) }
     }
     
-    struct Record : DataDecodable {
+    struct Record : ByteDecodable {
         
         var scriptTag: Signature<UInt32>
         var scriptOffset: BEUInt16

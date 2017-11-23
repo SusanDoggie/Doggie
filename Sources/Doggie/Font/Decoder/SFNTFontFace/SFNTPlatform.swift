@@ -25,7 +25,7 @@
 
 import Foundation
 
-struct SFNTPlatform : DataDecodable {
+struct SFNTPlatform : ByteDecodable {
     
     var platform: BEUInt16
     var specific: BEUInt16

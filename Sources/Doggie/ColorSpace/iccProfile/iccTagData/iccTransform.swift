@@ -71,7 +71,7 @@ enum iccTransform {
     case LUT4(Curves, Matrix, Curves, MultiDimensionalLUT, [iccCurve])
 }
 
-extension iccTransform : DataDecodable {
+extension iccTransform : ByteDecodable {
     
     init(from data: inout Data) throws {
         
@@ -296,7 +296,7 @@ extension iccTransform : DataDecodable {
         return MultiDimensionalLUT(inputChannels: inputChannels, outputChannels: outputChannels, grids: grids, table: table)
     }
     
-    struct iccCLUT : DataCodable {
+    struct iccCLUT : ByteCodable {
         
         var grids: (UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8)
         var precision: UInt8
@@ -315,7 +315,7 @@ extension iccTransform : DataDecodable {
             self.pad3 = try data.decode(UInt8.self)
         }
         
-        func encode(to data: inout Data) {
+        func encode<C : RangeReplaceableCollection>(to data: inout C) where C.Element == UInt8 {
             data.encode(grids.0, grids.1, grids.2, grids.3,
                         grids.4, grids.5, grids.6, grids.7,
                         grids.8, grids.9, grids.10, grids.11,
@@ -330,7 +330,7 @@ extension iccTransform : DataDecodable {
 
 extension iccTransform {
     
-    struct Lut8 : DataCodable {
+    struct Lut8 : ByteCodable {
         
         var inputChannels: UInt8
         var outputChannels: UInt8
@@ -346,7 +346,7 @@ extension iccTransform {
             self.matrix = try data.decode(iccMatrix3x3.self)
         }
         
-        func encode(to data: inout Data) {
+        func encode<C : RangeReplaceableCollection>(to data: inout C) where C.Element == UInt8 {
             data.encode(inputChannels)
             data.encode(outputChannels)
             data.encode(grids)
@@ -365,7 +365,7 @@ extension iccTransform {
         }
     }
     
-    struct Lut16 : DataCodable {
+    struct Lut16 : ByteCodable {
         
         var inputChannels: UInt8
         var outputChannels: UInt8
@@ -385,7 +385,7 @@ extension iccTransform {
             self.outputEntries = try data.decode(BEUInt16.self)
         }
         
-        func encode(to data: inout Data) {
+        func encode<C : RangeReplaceableCollection>(to data: inout C) where C.Element == UInt8 {
             data.encode(inputChannels)
             data.encode(outputChannels)
             data.encode(grids)
@@ -407,7 +407,7 @@ extension iccTransform {
         
     }
     
-    struct LutAtoB : DataCodable {
+    struct LutAtoB : ByteCodable {
         
         var inputChannels: UInt8
         var outputChannels: UInt8
@@ -443,7 +443,7 @@ extension iccTransform {
             self.offsetA = try data.decode(BEUInt32.self)
         }
         
-        func encode(to data: inout Data) {
+        func encode<C : RangeReplaceableCollection>(to data: inout C) where C.Element == UInt8 {
             data.encode(inputChannels)
             data.encode(outputChannels)
             data.encode(padding1)
@@ -456,7 +456,7 @@ extension iccTransform {
         }
     }
     
-    struct LutBtoA : DataCodable {
+    struct LutBtoA : ByteCodable {
         
         var inputChannels: UInt8
         var outputChannels: UInt8
@@ -492,7 +492,7 @@ extension iccTransform {
             self.offsetA = try data.decode(BEUInt32.self)
         }
         
-        func encode(to data: inout Data) {
+        func encode<C : RangeReplaceableCollection>(to data: inout C) where C.Element == UInt8 {
             data.encode(inputChannels)
             data.encode(outputChannels)
             data.encode(padding1)

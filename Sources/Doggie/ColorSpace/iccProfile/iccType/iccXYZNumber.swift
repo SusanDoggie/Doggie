@@ -25,7 +25,7 @@
 
 import Foundation
 
-struct iccXYZNumber : DataCodable {
+struct iccXYZNumber : ByteCodable {
     
     var x: Fixed16Number<BEInt32>
     var y: Fixed16Number<BEInt32>
@@ -49,7 +49,7 @@ struct iccXYZNumber : DataCodable {
         self.z = try data.decode(Fixed16Number.self)
     }
     
-    func encode(to data: inout Data) {
+    func encode<C : RangeReplaceableCollection>(to data: inout C) where C.Element == UInt8 {
         data.encode(x, y, z)
     }
 }

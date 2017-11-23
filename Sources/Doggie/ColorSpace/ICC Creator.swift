@@ -29,7 +29,10 @@ extension iccProfile {
     
     mutating func setMessage(_ tag: TagSignature, _ message: (iccMultiLocalizedUnicode.LanguageCode, iccMultiLocalizedUnicode.CountryCode, String) ...) {
         
-        self[tag] = TagData(rawData: Data(encoding: iccMultiLocalizedUnicode(message)))
+        var data = Data()
+        data.encode(iccMultiLocalizedUnicode(message))
+        
+        self[tag] = TagData(rawData: data)
     }
     
     mutating func setFloat(_ tag: TagSignature, _ value: Fixed16Number<BEInt32> ...) {
@@ -148,7 +151,10 @@ extension iccProfile {
     
     mutating func setCurve(_ tag: TagSignature, curve: iccCurve) {
         
-        self[tag] = TagData(rawData: Data(encoding: curve))
+        var data = Data()
+        data.encode(curve)
+        
+        self[tag] = TagData(rawData: data)
     }
 }
 

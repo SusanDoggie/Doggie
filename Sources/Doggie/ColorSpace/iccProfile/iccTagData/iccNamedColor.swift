@@ -27,7 +27,7 @@ import Foundation
 
 @_versioned
 @_fixed_layout
-struct iccNamedColor : DataDecodable {
+struct iccNamedColor : ByteDecodable {
     
     @_versioned
     var flag: BEUInt32

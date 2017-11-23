@@ -25,7 +25,7 @@
 
 import Foundation
 
-struct CFFDICT : DataDecodable {
+struct CFFDICT : ByteDecodable {
     
     var dict: [Int: [Operand]] = [:]
     
@@ -34,7 +34,7 @@ struct CFFDICT : DataDecodable {
         while let byte = data.popFirst() {
             if byte <= 21 {
                 if byte == 12 {
-                    guard let op = data.popFirst() else { throw DataDecodeError.endOfData }
+                    guard let op = data.popFirst() else { throw ByteDecodeError.endOfData }
                     dict[1200 + Int(op)] = operands
                 } else {
                     dict[Int(byte)] = operands
@@ -45,16 +45,16 @@ struct CFFDICT : DataDecodable {
                 switch byte {
                 case 28:
                     
-                    guard let b1 = data.popFirst().map(Int.init) else { throw DataDecodeError.endOfData }
-                    guard let b2 = data.popFirst().map(Int.init) else { throw DataDecodeError.endOfData }
+                    guard let b1 = data.popFirst().map(Int.init) else { throw ByteDecodeError.endOfData }
+                    guard let b2 = data.popFirst().map(Int.init) else { throw ByteDecodeError.endOfData }
                     operands.append(.integer(b1 << 8 | b2))
                     
                 case 29:
                     
-                    guard let b1 = data.popFirst().map(Int.init) else { throw DataDecodeError.endOfData }
-                    guard let b2 = data.popFirst().map(Int.init) else { throw DataDecodeError.endOfData }
-                    guard let b3 = data.popFirst().map(Int.init) else { throw DataDecodeError.endOfData }
-                    guard let b4 = data.popFirst().map(Int.init) else { throw DataDecodeError.endOfData }
+                    guard let b1 = data.popFirst().map(Int.init) else { throw ByteDecodeError.endOfData }
+                    guard let b2 = data.popFirst().map(Int.init) else { throw ByteDecodeError.endOfData }
+                    guard let b3 = data.popFirst().map(Int.init) else { throw ByteDecodeError.endOfData }
+                    guard let b4 = data.popFirst().map(Int.init) else { throw ByteDecodeError.endOfData }
                     operands.append(.integer(b1 << 24 | b2 << 16 | b3 << 8 | b4))
                     
                 case 30:
@@ -63,7 +63,7 @@ struct CFFDICT : DataDecodable {
                     
                     loop: while true {
                         
-                        guard let b1 = data.popFirst() else { throw DataDecodeError.endOfData }
+                        guard let b1 = data.popFirst() else { throw ByteDecodeError.endOfData }
                         
                         switch b1 >> 4 {
                         case 0x0: numberStr.append("0")
@@ -117,12 +117,12 @@ struct CFFDICT : DataDecodable {
                     
                 case 247...250:
                     
-                    guard let b1 = data.popFirst().map(Int.init) else { throw DataDecodeError.endOfData }
+                    guard let b1 = data.popFirst().map(Int.init) else { throw ByteDecodeError.endOfData }
                     operands.append(.integer((Int(byte) - 247) << 8 + b1 + 108))
                     
                 case 251...254:
                     
-                    guard let b1 = data.popFirst().map(Int.init) else { throw DataDecodeError.endOfData }
+                    guard let b1 = data.popFirst().map(Int.init) else { throw ByteDecodeError.endOfData }
                     operands.append(.integer(-(Int(byte) - 251) << 8 - b1 - 108))
                     
                 default: throw FontCollection.Error.InvalidFormat("Invalid CFF DICT operand.")

@@ -95,7 +95,7 @@ private let CFFExpertEncoding: [UInt16] = [
     371, 372, 373, 374, 375, 376, 377, 378
 ]
 
-struct CFFEncoding: DataDecodable {
+struct CFFEncoding: ByteDecodable {
     
     var format: UInt8
     
@@ -124,13 +124,13 @@ struct CFFEncoding: DataDecodable {
             
             self.nCodes = try data.decode(UInt8.self)
             self.code = data.popFirst(Int(nCodes))
-            guard self.code.count == Int(nCodes) else { throw DataDecodeError.endOfData }
+            guard self.code.count == Int(nCodes) else { throw ByteDecodeError.endOfData }
             
         case 1:
             
             self.nRanges = try data.decode(UInt8.self)
             self.range = data.popFirst(Int(nRanges) << 1)
-            guard self.range.count == Int(nRanges) << 1 else { throw DataDecodeError.endOfData }
+            guard self.range.count == Int(nRanges) << 1 else { throw ByteDecodeError.endOfData }
             
         default: throw FontCollection.Error.InvalidFormat("Invalid CFF Encoding format.")
         }
@@ -138,7 +138,7 @@ struct CFFEncoding: DataDecodable {
         if format & 0x80 != 0 {
             self.nSups = try data.decode(UInt8.self)
             self.supplement = data.popFirst(Int(nSups) * 3)
-            guard self.supplement.count == Int(nSups) * 3 else { throw DataDecodeError.endOfData }
+            guard self.supplement.count == Int(nSups) * 3 else { throw ByteDecodeError.endOfData }
         }
     }
     

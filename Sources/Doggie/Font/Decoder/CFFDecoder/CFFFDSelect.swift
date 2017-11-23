@@ -52,14 +52,14 @@ struct CFFFDSelect {
         case 0:
             
             self.fds = data.popFirst(nGlyphs)
-            guard self.fds.count == nGlyphs else { throw DataDecodeError.endOfData }
+            guard self.fds.count == nGlyphs else { throw ByteDecodeError.endOfData }
             
         case 3:
             
             self.nRanges = try data.decode(BEUInt16.self)
             
             self.range = data.popFirst(Int(nRanges) * 3)
-            guard self.range.count == Int(nRanges) * 3 else { throw DataDecodeError.endOfData }
+            guard self.range.count == Int(nRanges) * 3 else { throw ByteDecodeError.endOfData }
             
             self.sentinel = try data.decode(BEUInt16.self)
             

@@ -25,7 +25,7 @@
 
 import Foundation
 
-struct OTFGSUB : DataDecodable {
+struct OTFGSUB : ByteDecodable {
     
     var version: Fixed16Number<BEInt32>
     var scriptListOffset: BEUInt16

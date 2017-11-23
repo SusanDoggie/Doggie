@@ -25,7 +25,7 @@
 
 import Foundation
 
-struct OTFGPOS : DataDecodable {
+struct OTFGPOS : ByteDecodable {
     
     var version: Fixed16Number<BEInt32>
     var scriptListOffset: BEUInt16

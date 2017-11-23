@@ -876,7 +876,7 @@ struct BITMAPINFOHEADER : DIBHeader {
 
 extension BITMAPINFOHEADER {
     
-    struct CompressionType: RawRepresentable, Hashable, ExpressibleByIntegerLiteral, DataCodable {
+    struct CompressionType: RawRepresentable, Hashable, ExpressibleByIntegerLiteral, ByteCodable {
         
         var rawValue: LEUInt32
         
@@ -898,7 +898,7 @@ extension BITMAPINFOHEADER {
         static let BI_BITFIELDS: CompressionType                            = 0x00000003
         static let BI_ALPHABITFIELDS: CompressionType                       = 0x00000004
         
-        func encode(to data: inout Data) {
+        func encode<C : RangeReplaceableCollection>(to data: inout C) where C.Element == UInt8 {
             self.rawValue.encode(to: &data)
         }
         
@@ -922,7 +922,7 @@ extension BITMAPINFOHEADER {
         static let LCS_PROFILE_EMBEDDED: ColorSpaceType                    = "MBED"
     }
     
-    struct IntentType: RawRepresentable, Hashable, ExpressibleByIntegerLiteral, DataCodable {
+    struct IntentType: RawRepresentable, Hashable, ExpressibleByIntegerLiteral, ByteCodable {
         
         var rawValue: LEUInt32
         
@@ -943,7 +943,7 @@ extension BITMAPINFOHEADER {
         static let LCS_GM_GRAPHICS: IntentType                             = 0x00000002
         static let LCS_GM_IMAGES: IntentType                               = 0x00000004
         
-        func encode(to data: inout Data) {
+        func encode<C : RangeReplaceableCollection>(to data: inout C) where C.Element == UInt8 {
             self.rawValue.encode(to: &data)
         }
         

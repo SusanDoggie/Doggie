@@ -38,7 +38,7 @@ enum iccCurve {
     case table([Double])
 }
 
-extension iccCurve : DataCodable {
+extension iccCurve : ByteCodable {
     
     init(from data: inout Data) throws {
         
@@ -82,7 +82,7 @@ extension iccCurve : DataCodable {
         }
     }
     
-    func encode(to data: inout Data) {
+    func encode<C : RangeReplaceableCollection>(to data: inout C) where C.Element == UInt8 {
         
         switch self {
         case .identity:
@@ -133,7 +133,7 @@ extension iccCurve : DataCodable {
 
 extension iccCurve {
     
-    struct ParametricCurve : DataCodable {
+    struct ParametricCurve : ByteCodable {
         
         var funcType: BEUInt16
         var padding: BEUInt16
@@ -215,7 +215,7 @@ extension iccCurve {
             }
         }
         
-        func encode(to data: inout Data) {
+        func encode<C : RangeReplaceableCollection>(to data: inout C) where C.Element == UInt8 {
             switch funcType {
             case 0:
                 data.encode(funcType)

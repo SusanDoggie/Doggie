@@ -25,7 +25,7 @@
 
 import Foundation
 
-struct iccMatrix3x3 : DataCodable {
+struct iccMatrix3x3 : ByteCodable {
     
     var e00: Fixed16Number<BEInt32>
     var e01: Fixed16Number<BEInt32>
@@ -67,14 +67,14 @@ struct iccMatrix3x3 : DataCodable {
         self.e22 = try data.decode(Fixed16Number.self)
     }
     
-    func encode(to data: inout Data) {
+    func encode<C : RangeReplaceableCollection>(to data: inout C) where C.Element == UInt8 {
         data.encode(e00, e01, e02,
                     e10, e11, e12,
                     e20, e21, e22)
     }
 }
 
-struct iccMatrix3x4 : DataCodable {
+struct iccMatrix3x4 : ByteCodable {
     
     var m: iccMatrix3x3
     
@@ -102,7 +102,7 @@ struct iccMatrix3x4 : DataCodable {
         self.e23 = try data.decode(Fixed16Number.self)
     }
     
-    func encode(to data: inout Data) {
+    func encode<C : RangeReplaceableCollection>(to data: inout C) where C.Element == UInt8 {
         data.encode(m)
         data.encode(e03, e13, e23)
     }

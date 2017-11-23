@@ -25,7 +25,7 @@
 
 import Foundation
 
-struct SFNTPOST : DataDecodable {
+struct SFNTPOST : ByteDecodable {
     
     var format: Fixed16Number<BEInt32>
     var italicAngle: Fixed16Number<BEInt32>

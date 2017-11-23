@@ -25,7 +25,7 @@
 
 import Foundation
 
-struct SFNTOS2 : DataDecodable {
+struct SFNTOS2 : ByteDecodable {
     
     var version: BEUInt16
     var xAvgCharWidth: BEInt16
@@ -101,7 +101,7 @@ struct SFNTOS2 : DataDecodable {
         self.usMaxContext = try? data.decode(BEUInt16.self)
     }
     
-    struct PANOSE : DataDecodable {
+    struct PANOSE : ByteDecodable {
         
         var bFamilyType: UInt8
         var bSerifStyle: UInt8

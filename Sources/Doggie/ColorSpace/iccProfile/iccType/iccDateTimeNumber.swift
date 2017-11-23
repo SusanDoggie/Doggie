@@ -25,7 +25,7 @@
 
 import Foundation
 
-struct iccDateTimeNumber : DataCodable {
+struct iccDateTimeNumber : ByteCodable {
     
     var year: BEUInt16
     var month: BEUInt16
@@ -52,7 +52,7 @@ struct iccDateTimeNumber : DataCodable {
         self.seconds = try data.decode(BEUInt16.self)
     }
     
-    func encode(to data: inout Data) {
+    func encode<C : RangeReplaceableCollection>(to data: inout C) where C.Element == UInt8 {
         data.encode(year, month, day, hours, minutes, seconds)
     }
 }

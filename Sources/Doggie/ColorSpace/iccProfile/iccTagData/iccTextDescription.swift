@@ -25,7 +25,7 @@
 
 import Foundation
 
-struct iccTextDescription : DataDecodable {
+struct iccTextDescription : ByteDecodable {
     
     var ascii: String?
     var unicode: String?

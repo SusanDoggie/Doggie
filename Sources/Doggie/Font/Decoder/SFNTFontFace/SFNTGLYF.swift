@@ -34,7 +34,7 @@ struct SFNTGLYF {
     
     init(format: Int, numberOfGlyphs: Int, loca: Data, glyf: Data) throws {
         let locaSize = format == 0 ? (numberOfGlyphs + 1) << 1 : (numberOfGlyphs + 1) << 2
-        guard loca.count >= locaSize else { throw DataDecodeError.endOfData }
+        guard loca.count >= locaSize else { throw ByteDecodeError.endOfData }
         self.format = format
         self.numberOfGlyphs = numberOfGlyphs
         self.loca = loca

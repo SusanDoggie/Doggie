@@ -25,7 +25,7 @@
 
 import Foundation
 
-struct OTFGDEF : DataDecodable {
+struct OTFGDEF : ByteDecodable {
     
     var version: Fixed16Number<BEInt32>
     var glyphClassDefOffset: BEUInt16
@@ -45,7 +45,7 @@ struct OTFGDEF : DataDecodable {
         self.glyphClassDef = try GlyphClassDef(copy.dropFirst(Int(glyphClassDefOffset)))
     }
     
-    struct GlyphClassDef : DataDecodable {
+    struct GlyphClassDef : ByteDecodable {
         
         var classFormat: BEUInt16
         
@@ -69,13 +69,13 @@ struct OTFGDEF : DataDecodable {
                 self.startGlyphID = try data.decode(BEUInt16.self)
                 self.glyphCount = try data.decode(BEUInt16.self)
                 self.data = data.popFirst(Int(glyphCount) << 1)
-                guard self.data.count == Int(glyphCount) << 1 else { throw DataDecodeError.endOfData }
+                guard self.data.count == Int(glyphCount) << 1 else { throw ByteDecodeError.endOfData }
                 
             case 2:
                 
                 self.classRangeCount = try data.decode(BEUInt16.self)
                 self.data = data.popFirst(Int(classRangeCount) * 6)
-                guard self.data.count == Int(classRangeCount) * 6 else { throw DataDecodeError.endOfData }
+                guard self.data.count == Int(classRangeCount) * 6 else { throw ByteDecodeError.endOfData }
                 
             default: throw FontCollection.Error.InvalidFormat("Invalid GDEF format.")
             }

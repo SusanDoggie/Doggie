@@ -49,7 +49,7 @@ struct OpenTypeDecoder : FontDecoder {
     }
 }
 
-struct OTFHeader : DataDecodable {
+struct OTFHeader : ByteDecodable {
     
     var version: BEUInt32
     var numTables: BEUInt16
@@ -66,7 +66,7 @@ struct OTFHeader : DataDecodable {
     }
 }
 
-struct OTFTableRecord : DataDecodable {
+struct OTFTableRecord : ByteDecodable {
     
     var tag: Signature<BEUInt32>
     var checkSum: BEUInt32

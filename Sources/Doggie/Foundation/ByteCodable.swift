@@ -1,5 +1,5 @@
 //
-//  DataCodable.swift
+//  ByteCodable.swift
 //
 //  The MIT License
 //  Copyright (c) 2015 - 2017 Susan Cheng. All rights reserved.
@@ -25,17 +25,17 @@
 
 import Foundation
 
-public protocol DataEncodable {
+public protocol ByteEncodable {
     
-    func encode(to: inout Data)
+    func encode<C : RangeReplaceableCollection>(to: inout C) where C.Element == UInt8
 }
 
-public protocol DataDecodable {
+public protocol ByteDecodable {
     
     init(from: inout Data) throws
 }
 
-extension DataDecodable {
+extension ByteDecodable {
     
     @_inlineable
     public init(_ data: Data) throws {
@@ -44,54 +44,40 @@ extension DataDecodable {
     }
 }
 
-public typealias DataCodable = DataEncodable & DataDecodable
+public typealias ByteCodable = ByteEncodable & ByteDecodable
 
-public enum DataDecodeError : Error {
+public enum ByteDecodeError : Error {
     
     case endOfData
 }
 
-extension Data {
+extension RangeReplaceableCollection where Element == UInt8 {
     
     @_inlineable
-    public init<T : DataEncodable>(encoding value: T) {
-        self.init()
+    public mutating func encode<T : ByteEncodable>(_ value: T) {
         value.encode(to: &self)
-    }
-    
-    @_inlineable
-    public init<S : Sequence>(encoding values: S) where S.Element : DataEncodable {
-        self.init()
-        for value in values {
-            value.encode(to: &self)
-        }
     }
 }
 
 extension Data {
     
     @_inlineable
-    public mutating func encode<T : DataEncodable>(_ value: T) {
-        value.encode(to: &self)
-    }
-    
-    @_inlineable
-    public mutating func decode<T : DataDecodable>(_ type: T.Type) throws -> T {
+    public mutating func decode<T : ByteDecodable>(_ type: T.Type) throws -> T {
         return try T(from: &self)
     }
 }
 
-extension Data {
+extension RangeReplaceableCollection where Element == UInt8 {
     
     @_inlineable
-    public mutating func encode<T : DataEncodable>(_ values: T ... ) {
+    public mutating func encode<T : ByteEncodable>(_ values: T ... ) {
         for value in values {
             value.encode(to: &self)
         }
     }
     
     @_inlineable
-    public mutating func encode<S : Sequence>(_ values: S) where S.Element : DataEncodable {
+    public mutating func encode<S : Sequence>(_ values: S) where S.Element : ByteEncodable {
         for value in values {
             value.encode(to: &self)
         }
@@ -103,74 +89,74 @@ extension FixedWidthInteger {
     @_inlineable
     public init(from data: inout Data) throws {
         let size = Self.bitWidth >> 3
-        guard data.count >= size else { throw DataDecodeError.endOfData }
+        guard data.count >= size else { throw ByteDecodeError.endOfData }
         self = data.popFirst(size).withUnsafeBytes { $0.pointee }
     }
     
     @_inlineable
-    public func encode(to data: inout Data) {
+    public func encode<C : RangeReplaceableCollection>(to data: inout C) where C.Element == UInt8 {
         var value = self
         withUnsafeBytes(of: &value) { data.append(contentsOf: $0) }
     }
 }
 
-extension UInt : DataCodable {
+extension UInt : ByteCodable {
     
 }
 
-extension UInt8 : DataCodable {
+extension UInt8 : ByteCodable {
     
 }
 
-extension UInt16 : DataCodable {
+extension UInt16 : ByteCodable {
     
 }
 
-extension UInt32 : DataCodable {
+extension UInt32 : ByteCodable {
     
 }
 
-extension UInt64 : DataCodable {
+extension UInt64 : ByteCodable {
     
 }
 
-extension Int : DataCodable {
+extension Int : ByteCodable {
     
 }
 
-extension Int8 : DataCodable {
+extension Int8 : ByteCodable {
     
 }
 
-extension Int16 : DataCodable {
+extension Int16 : ByteCodable {
     
 }
 
-extension Int32 : DataCodable {
+extension Int32 : ByteCodable {
     
 }
 
-extension Int64 : DataCodable {
+extension Int64 : ByteCodable {
     
 }
 
-extension BEInteger : DataCodable {
+extension BEInteger : ByteCodable {
     
 }
 
-extension LEInteger : DataCodable {
+extension LEInteger : ByteCodable {
     
 }
 
-extension BinaryFixedPoint where BitPattern : DataEncodable {
+extension BinaryFixedPoint where BitPattern : ByteEncodable {
     
     @_inlineable
-    public func encode(to data: inout Data) {
+    public func encode<C : RangeReplaceableCollection>(to data: inout C) where C.Element == UInt8 {
         self.bitPattern.encode(to: &data)
     }
 }
 
-extension BinaryFixedPoint where BitPattern : DataDecodable {
+extension BinaryFixedPoint where BitPattern : ByteDecodable {
     
     @_inlineable
     public init(from data: inout Data) throws {

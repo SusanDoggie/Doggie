@@ -55,12 +55,12 @@ struct SFNTFontFace : FontFaceBase {
         guard let name = try table["name"].map({ try SFNTNAME($0) }) else { throw FontCollection.Error.InvalidFormat("name not found.") }
         guard let hhea = try table["hhea"].map({ try SFNTHHEA($0) }) else { throw FontCollection.Error.InvalidFormat("hhea not found.") }
         guard let hmtx = table["hmtx"] else { throw FontCollection.Error.InvalidFormat("hmtx not found.") }
-        guard maxp.numGlyphs >= hhea.numOfLongHorMetrics else { throw DataDecodeError.endOfData }
+        guard maxp.numGlyphs >= hhea.numOfLongHorMetrics else { throw ByteDecodeError.endOfData }
         
         let hMetricSize = Int(hhea.numOfLongHorMetrics) << 2
         let hBearingSize = (Int(maxp.numGlyphs) - Int(hhea.numOfLongHorMetrics)) << 1
         
-        guard hmtx.count >= hMetricSize + hBearingSize else { throw DataDecodeError.endOfData }
+        guard hmtx.count >= hMetricSize + hBearingSize else { throw ByteDecodeError.endOfData }
         
         self.table = table
         self.head = head

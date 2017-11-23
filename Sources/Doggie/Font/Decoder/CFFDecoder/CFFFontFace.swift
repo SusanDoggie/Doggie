@@ -35,7 +35,7 @@ struct CFFFontDICT {
         self.DICT = DICT
         if let range = DICT.pDICTRange {
             let _pDICT: Data = data.dropFirst(range.lowerBound).prefix(range.count)
-            guard _pDICT.count == range.count else { throw DataDecodeError.endOfData }
+            guard _pDICT.count == range.count else { throw ByteDecodeError.endOfData }
             self.pDICT = try CFFDICT(_pDICT)
             
             if let subrsOffset = self.pDICT?.subrsOffset {

@@ -25,7 +25,7 @@
 
 import Foundation
 
-struct OTFFeatureList : DataDecodable {
+struct OTFFeatureList : ByteDecodable {
     
     var featuretCount: BEUInt16
     var records: [Record]

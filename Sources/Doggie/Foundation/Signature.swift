@@ -25,7 +25,7 @@
 
 import Foundation
 
-protocol SignatureProtocol: RawRepresentable, Hashable, ExpressibleByIntegerLiteral, ExpressibleByStringLiteral, CustomStringConvertible, DataCodable {
+protocol SignatureProtocol: RawRepresentable, Hashable, ExpressibleByIntegerLiteral, ExpressibleByStringLiteral, CustomStringConvertible, ByteCodable {
     
     associatedtype Bytes : FixedWidthInteger
     
@@ -59,14 +59,14 @@ extension SignatureProtocol {
     }
 }
 
-extension SignatureProtocol where Bytes : DataEncodable {
+extension SignatureProtocol where Bytes : ByteEncodable {
     
     @_transparent
-    func encode(to data: inout Data) {
+    func encode<C : RangeReplaceableCollection>(to data: inout C) where C.Element == UInt8 {
         self.rawValue.encode(to: &data)
     }
 }
-extension SignatureProtocol where Bytes : DataDecodable {
+extension SignatureProtocol where Bytes : ByteDecodable {
     
     @_transparent
     init(from data: inout Data) throws {
@@ -74,7 +74,7 @@ extension SignatureProtocol where Bytes : DataDecodable {
     }
 }
 
-struct Signature<Bytes : FixedWidthInteger & DataCodable> : SignatureProtocol {
+struct Signature<Bytes : FixedWidthInteger & ByteCodable> : SignatureProtocol {
     
     var rawValue: Bytes
     

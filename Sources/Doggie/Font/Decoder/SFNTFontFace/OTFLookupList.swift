@@ -25,7 +25,7 @@
 
 import Foundation
 
-struct OTFLookupList : DataDecodable {
+struct OTFLookupList : ByteDecodable {
     
     var lookupCount: BEUInt16
     var lookups: [Lookups]
@@ -36,7 +36,7 @@ struct OTFLookupList : DataDecodable {
         self.lookups = try (0..<Int(lookupCount)).map { _ in try Lookups(copy.dropFirst(Int(try data.decode(BEUInt16.self)))) }
     }
     
-    struct Lookups : DataDecodable {
+    struct Lookups : ByteDecodable {
         
         var lookupType: BEUInt16
         var lookupFlag: BEUInt16

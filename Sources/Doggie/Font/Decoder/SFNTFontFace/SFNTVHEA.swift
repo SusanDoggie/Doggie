@@ -25,7 +25,7 @@
 
 import Foundation
 
-struct SFNTVHEA : DataDecodable {
+struct SFNTVHEA : ByteDecodable {
     
     var version: Fixed16Number<BEInt32>
     var vertTypoAscender: BEInt16

@@ -25,7 +25,7 @@
 
 import Foundation
 
-struct CFFINDEX : DataDecodable, RandomAccessCollection {
+struct CFFINDEX : ByteDecodable, RandomAccessCollection {
     
     var _count: BEUInt16
     var offSize: UInt8
@@ -46,11 +46,11 @@ struct CFFINDEX : DataDecodable, RandomAccessCollection {
             
             let offsetSize = Int(offSize) * Int(_count + 1)
             self.offset = data.popFirst(offsetSize)
-            guard offset.count == offsetSize else { throw DataDecodeError.endOfData }
+            guard offset.count == offsetSize else { throw ByteDecodeError.endOfData }
             
             let dataSize = CFFINDEX._offset(Int(_count) - 1, offSize, offset).upperBound
             self.data = data.popFirst(dataSize)
-            guard self.data.count == dataSize else { throw DataDecodeError.endOfData }
+            guard self.data.count == dataSize else { throw ByteDecodeError.endOfData }
         }
     }
     

@@ -49,7 +49,7 @@ struct CFFDecoder {
     }
 }
 
-struct CFFHeader : DataDecodable {
+struct CFFHeader : ByteDecodable {
     
     var majorVersion: UInt8
     var minorVersion: UInt8

@@ -113,7 +113,7 @@ struct JPEGDecoder : ImageRepDecoder {
     }
 }
 
-struct JPEGHuffmanTable : DataCodable {
+struct JPEGHuffmanTable : ByteCodable {
     
     var info: UInt8
     
@@ -142,7 +142,7 @@ struct JPEGHuffmanTable : DataCodable {
         }
     }
     
-    func encode(to data: inout Data) {
+    func encode<C : RangeReplaceableCollection>(to data: inout C) where C.Element == UInt8 {
         
         data.encode(info)
         
@@ -234,7 +234,7 @@ extension JPEGHuffmanTable : CustomStringConvertible {
     }
 }
 
-struct JPEGQuantizationTable : DataCodable {
+struct JPEGQuantizationTable : ByteCodable {
     
     var destination: UInt8
     
@@ -263,7 +263,7 @@ struct JPEGQuantizationTable : DataCodable {
                       try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self))
     }
     
-    func encode(to data: inout Data) {
+    func encode<C : RangeReplaceableCollection>(to data: inout C) where C.Element == UInt8 {
         
         data.encode(destination)
         data.encode(table.0, table.1, table.2, table.3, table.4, table.5, table.6, table.7)
@@ -369,7 +369,7 @@ struct JPEGSOS {
     }
 }
 
-struct JPEGSegment : DataCodable {
+struct JPEGSegment : ByteCodable {
     
     var marker: UInt8
     var data: Data
@@ -387,14 +387,14 @@ struct JPEGSegment : DataCodable {
         }
     }
     
-    func encode(to data: inout Data) {
+    func encode<C : RangeReplaceableCollection>(to data: inout C) where C.Element == UInt8 {
         data.encode(0xFF as UInt8)
         data.encode(marker)
         switch marker {
         case 0xD0...0xD9: break
         default:
-            data.encode(BEUInt16(data.count + 2))
-            data.append(data)
+            data.encode(BEUInt16(self.data.count + 2))
+            data.append(contentsOf: self.data)
         }
     }
 }

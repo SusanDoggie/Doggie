@@ -644,7 +644,7 @@ struct TIFFPage {
     }
 }
 
-struct TIFFHeader : DataCodable {
+struct TIFFHeader : ByteCodable {
     
     var endianness: Endianness
     var version: UInt16
@@ -675,7 +675,7 @@ struct TIFFHeader : DataCodable {
         }
     }
     
-    func encode(to data: inout Data) {
+    func encode<C : RangeReplaceableCollection>(to data: inout C) where C.Element == UInt8 {
         
         data.encode(endianness)
         

@@ -47,7 +47,7 @@ struct TTCDecoder : FontDecoder {
     }
 }
 
-struct TTCHeader : DataDecodable {
+struct TTCHeader : ByteDecodable {
     
     var tag: Signature<BEUInt32>
     var majorVersion: BEUInt16

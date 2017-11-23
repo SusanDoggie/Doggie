@@ -25,7 +25,7 @@
 
 import Foundation
 
-struct iccMultiLocalizedUnicode : RandomAccessCollection, DataCodable {
+struct iccMultiLocalizedUnicode : RandomAccessCollection, ByteCodable {
     
     var messages: [(LanguageCode, CountryCode, String)]
     
@@ -62,7 +62,7 @@ struct iccMultiLocalizedUnicode : RandomAccessCollection, DataCodable {
         }
     }
     
-    func encode(to data: inout Data) {
+    func encode<C : RangeReplaceableCollection>(to data: inout C) where C.Element == UInt8 {
         
         data.encode(iccProfile.TagType.multiLocalizedUnicode)
         data.encode(0 as BEUInt32)
@@ -71,7 +71,7 @@ struct iccMultiLocalizedUnicode : RandomAccessCollection, DataCodable {
         let entry_size = messages.count * MemoryLayout<Entry>.stride
         var strData = Data()
         
-        var offset = data.count + entry_size
+        var offset = Int(data.count) + entry_size
         
         for (language, country, string) in messages {
             var str = string.data(using: .utf16BigEndian)!
@@ -80,7 +80,7 @@ struct iccMultiLocalizedUnicode : RandomAccessCollection, DataCodable {
             offset += str.count
         }
         
-        data.append(strData)
+        data.append(contentsOf: strData)
     }
     
     var startIndex: Int {
@@ -117,7 +117,7 @@ extension iccMultiLocalizedUnicode {
         }
     }
     
-    struct Header : DataCodable {
+    struct Header : ByteCodable {
         
         var count: BEUInt32
         var size: BEUInt32
@@ -132,13 +132,13 @@ extension iccMultiLocalizedUnicode {
             self.size = try data.decode(BEUInt32.self)
         }
         
-        func encode(to data: inout Data) {
+        func encode<C : RangeReplaceableCollection>(to data: inout C) where C.Element == UInt8 {
             data.encode(count)
             data.encode(size)
         }
     }
     
-    struct Entry : DataCodable {
+    struct Entry : ByteCodable {
         
         var language: LanguageCode
         var country: CountryCode
@@ -159,7 +159,7 @@ extension iccMultiLocalizedUnicode {
             self.offset = try data.decode(BEUInt32.self)
         }
         
-        func encode(to data: inout Data) {
+        func encode<C : RangeReplaceableCollection>(to data: inout C) where C.Element == UInt8 {
             data.encode(language)
             data.encode(country)
             data.encode(length)

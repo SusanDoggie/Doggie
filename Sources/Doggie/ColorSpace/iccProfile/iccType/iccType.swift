@@ -27,7 +27,7 @@ import Foundation
 
 extension iccProfile {
     
-    struct Header : DataCodable {
+    struct Header : ByteCodable {
         
         static let MagicNumber: Signature<BEUInt32> = "acsp"
         
@@ -115,7 +115,7 @@ extension iccProfile {
                              try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self))
         }
         
-        func encode(to data: inout Data) {
+        func encode<C : RangeReplaceableCollection>(to data: inout C) where C.Element == UInt8 {
             data.encode(size)
             data.encode(cmmId)
             data.encode(version)

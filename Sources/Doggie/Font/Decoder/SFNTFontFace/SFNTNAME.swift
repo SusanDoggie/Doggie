@@ -25,7 +25,7 @@
 
 import Foundation
 
-struct SFNTNAME : DataDecodable {
+struct SFNTNAME : ByteDecodable {
     
     var format: BEUInt16
     var count: BEUInt16
@@ -46,7 +46,7 @@ struct SFNTNAME : DataDecodable {
             let offset = try data.decode(BEUInt16.self)
             if let encoding = platform.encoding {
                 let strData: Data = copy.dropFirst(Int(stringOffset) + Int(offset)).prefix(Int(length))
-                guard strData.count == Int(length) else { throw DataDecodeError.endOfData }
+                guard strData.count == Int(length) else { throw ByteDecodeError.endOfData }
                 guard let string = String(data: strData, encoding: encoding) else { continue }
                 self.name.append(Name(platform: platform, language: language, name: name, value: string))
             }

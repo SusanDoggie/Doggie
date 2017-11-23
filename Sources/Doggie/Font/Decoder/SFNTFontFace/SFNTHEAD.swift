@@ -25,7 +25,7 @@
 
 import Foundation
 
-struct SFNTHEAD : DataDecodable {
+struct SFNTHEAD : ByteDecodable {
     
     var version: Fixed16Number<BEInt32>
     var fontRevision: Fixed16Number<BEInt32>

@@ -49,7 +49,7 @@ struct WOFFDecoder : FontDecoder {
     }
 }
 
-struct WOFFHeader : DataDecodable {
+struct WOFFHeader : ByteDecodable {
     
     var signature: Signature<BEUInt32>
     var flavor: BEUInt32
@@ -82,7 +82,7 @@ struct WOFFHeader : DataDecodable {
     }
 }
 
-struct WOFFTableRecord : DataDecodable {
+struct WOFFTableRecord : ByteDecodable {
     
     var tag: Signature<BEUInt32>
     var offset: BEUInt32

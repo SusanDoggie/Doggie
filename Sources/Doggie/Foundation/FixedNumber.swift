@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-struct Fixed8Number<BitPattern : FixedWidthInteger & DataCodable> : BinaryFixedPoint, DataCodable {
+struct Fixed8Number<BitPattern : FixedWidthInteger & ByteCodable> : BinaryFixedPoint, ByteCodable {
     
     typealias RepresentingValue = Double
     
@@ -40,7 +40,7 @@ struct Fixed8Number<BitPattern : FixedWidthInteger & DataCodable> : BinaryFixedP
     }
 }
 
-struct Fixed14Number<BitPattern : FixedWidthInteger & DataCodable> : BinaryFixedPoint, DataCodable {
+struct Fixed14Number<BitPattern : FixedWidthInteger & ByteCodable> : BinaryFixedPoint, ByteCodable {
     
     typealias RepresentingValue = Double
     
@@ -57,7 +57,7 @@ struct Fixed14Number<BitPattern : FixedWidthInteger & DataCodable> : BinaryFixed
     }
 }
 
-struct Fixed15Number<BitPattern : FixedWidthInteger & DataCodable> : BinaryFixedPoint, DataCodable {
+struct Fixed15Number<BitPattern : FixedWidthInteger & ByteCodable> : BinaryFixedPoint, ByteCodable {
     
     typealias RepresentingValue = Double
     
@@ -74,7 +74,7 @@ struct Fixed15Number<BitPattern : FixedWidthInteger & DataCodable> : BinaryFixed
     }
 }
 
-struct Fixed16Number<BitPattern : FixedWidthInteger & DataCodable> : BinaryFixedPoint, DataCodable {
+struct Fixed16Number<BitPattern : FixedWidthInteger & ByteCodable> : BinaryFixedPoint, ByteCodable {
     
     typealias RepresentingValue = Double
     
@@ -91,7 +91,7 @@ struct Fixed16Number<BitPattern : FixedWidthInteger & DataCodable> : BinaryFixed
     }
 }
 
-struct Fixed30Number<BitPattern : FixedWidthInteger & DataCodable> : BinaryFixedPoint, DataCodable {
+struct Fixed30Number<BitPattern : FixedWidthInteger & ByteCodable> : BinaryFixedPoint, ByteCodable {
     
     typealias RepresentingValue = Double
     

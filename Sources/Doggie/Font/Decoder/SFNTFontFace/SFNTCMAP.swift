@@ -25,14 +25,14 @@
 
 import Foundation
 
-protocol SFNTCMAPTableFormat : DataDecodable {
+protocol SFNTCMAPTableFormat : ByteDecodable {
     
     subscript(code: UInt32) -> Int { get }
     
     var coveredCharacterSet: CharacterSet { get }
 }
 
-struct SFNTCMAP : DataDecodable {
+struct SFNTCMAP : ByteDecodable {
     
     var version: BEUInt16
     var numTables: BEUInt16
@@ -175,7 +175,7 @@ extension SFNTCMAP {
             
             let ramainSize = Int(self.length) - (record - data.count)
             guard ramainSize > 0 else { throw FontCollection.Error.InvalidFormat("Invalid cmap format.") }
-            guard data.count >= ramainSize else { throw DataDecodeError.endOfData }
+            guard data.count >= ramainSize else { throw ByteDecodeError.endOfData }
             
             self.idRangeOffset = data.popFirst(ramainSize)
         }
@@ -251,7 +251,7 @@ extension SFNTCMAP {
             self.length = try data.decode(BEUInt32.self)
             self.language = try data.decode(BEUInt32.self)
             self.nGroups = try data.decode(BEUInt32.self)
-            guard data.count >= Int(nGroups) * MemoryLayout<Group>.stride else { throw DataDecodeError.endOfData }
+            guard data.count >= Int(nGroups) * MemoryLayout<Group>.stride else { throw ByteDecodeError.endOfData }
             self.groups = data.popFirst(Int(nGroups))
         }
         

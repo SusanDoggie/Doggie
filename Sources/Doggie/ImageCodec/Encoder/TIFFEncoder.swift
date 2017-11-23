@@ -217,7 +217,8 @@ struct TIFFEncoder : ImageRepEncoder {
     
     static func encode(image: AnyImage, properties: [ImageRep.PropertyKey : Any]) -> Data? {
         
-        var data = Data(encoding: TIFFHeader(endianness: .BIG, version: 42, IFD: 8))
+        var data = Data()
+        data.encode(TIFFHeader(endianness: .BIG, version: 42, IFD: 8))
         
         let isOpaque = image.isOpaque
         let samplesPerPixel = isOpaque ? image.colorSpace.numberOfComponents : image.colorSpace.numberOfComponents + 1
