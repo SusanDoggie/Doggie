@@ -34,6 +34,43 @@ extension Data : ExpressibleByArrayLiteral {
 
 extension Data {
     
+    public static func fileBacked(_ buffer: UnsafeRawBufferPointer) -> Data {
+        
+        guard let bytes = buffer.baseAddress, buffer.count != 0 else { return Data() }
+        
+        var fd: Int32 = 0
+        var path = ""
+        
+        while true {
+            let path_url = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("com.SusanDoggie.FileBackedData.\(UUID().uuidString)")
+            path = path_url.withUnsafeFileSystemRepresentation { String(cString: $0!) }
+            fd = open(path, O_RDWR | O_CREAT | O_EXCL, S_IRUSR | S_IWUSR)
+            guard fd == -1 && errno == EEXIST else { break }
+        }
+        
+        guard fd != -1 else { fatalError("\(String(cString: strerror(errno))): \(path)") }
+        guard flock(fd, LOCK_EX) != -1 else { fatalError(String(cString: strerror(errno))) }
+        guard ftruncate(fd, off_t(buffer.count)) != -1 else { fatalError(String(cString: strerror(errno))) }
+        
+        let address = mmap(nil, buffer.count, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0)!
+        guard address != UnsafeMutableRawPointer(bitPattern: -1) else { fatalError(String(cString: strerror(errno))) }
+        
+        address.copyBytes(from: bytes, count: buffer.count)
+        
+        func deallocator(address: UnsafeMutableRawPointer, mapped_size: Int) {
+            munmap(address, mapped_size)
+            ftruncate(fd, 0)
+            flock(fd, LOCK_UN)
+            close(fd)
+            Foundation.remove(path)
+        }
+        
+        return Data(bytesNoCopy: address, count: buffer.count, deallocator: .custom(deallocator))
+    }
+}
+
+extension Data {
+    
     public func write(to url: URL, withIntermediateDirectories createIntermediates: Bool, options: Data.WritingOptions = []) throws {
         
         let manager = FileManager.default
