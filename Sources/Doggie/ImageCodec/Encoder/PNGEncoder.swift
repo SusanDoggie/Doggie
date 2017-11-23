@@ -27,9 +27,9 @@ import Foundation
 
 struct PNGEncoder : ImageRepEncoder {
     
-    private static func encode(_ chunks: PNGChunk ... ) -> Data {
+    private static func encode(_ chunks: PNGChunk ... ) -> FileBuffer {
         
-        var result = Data()
+        var result = FileBuffer()
         
         result.encode(0x89 as UInt8)
         result.encode(0x50 as UInt8)
@@ -43,7 +43,7 @@ struct PNGEncoder : ImageRepEncoder {
         for chunk in chunks.appended(PNGChunk(signature: "IEND", data: Data())) {
             result.encode(BEUInt32(chunk.data.count))
             result.encode(chunk.signature)
-            result.append(chunk.data)
+            result.append(contentsOf: chunk.data)
             result.encode(chunk.calculateCRC())
         }
         
@@ -136,7 +136,7 @@ struct PNGEncoder : ImageRepEncoder {
         
         guard let deflate = try? Deflate(windowBits: 15) else { return nil }
         
-        var compressed = Data(capacity: height * width * Int(bitsPerPixel >> 3))
+        var compressed = FileBuffer(capacity: height * width * Int(bitsPerPixel >> 3))
         
         do {
             
@@ -218,10 +218,10 @@ struct PNGEncoder : ImageRepEncoder {
             return nil
         }
         
-        return PNGChunk(signature: "IDAT", data: compressed)
+        return PNGChunk(signature: "IDAT", data: compressed.data)
     }
     
-    private static func encodeRGB(image: Image<ARGB64ColorPixel>, interlace: Bool) -> Data? {
+    private static func encodeRGB(image: Image<ARGB64ColorPixel>, interlace: Bool) -> FileBuffer? {
         
         let opaque = image.isOpaque
         
@@ -254,7 +254,7 @@ struct PNGEncoder : ImageRepEncoder {
         return encode(ihdr, phys, iccp, idat)
     }
     
-    private static func encodeRGB(image: Image<ARGB32ColorPixel>, interlace: Bool) -> Data? {
+    private static func encodeRGB(image: Image<ARGB32ColorPixel>, interlace: Bool) -> FileBuffer? {
         
         let opaque = image.isOpaque
         
@@ -287,7 +287,7 @@ struct PNGEncoder : ImageRepEncoder {
         return encode(ihdr, phys, iccp, idat)
     }
     
-    private static func encodeGray(image: Image<Gray32ColorPixel>, interlace: Bool) -> Data? {
+    private static func encodeGray(image: Image<Gray32ColorPixel>, interlace: Bool) -> FileBuffer? {
         
         let opaque = image.isOpaque
         
@@ -316,7 +316,7 @@ struct PNGEncoder : ImageRepEncoder {
         return encode(ihdr, phys, iccp, idat)
     }
     
-    private static func encodeGray(image: Image<Gray16ColorPixel>, interlace: Bool) -> Data? {
+    private static func encodeGray(image: Image<Gray16ColorPixel>, interlace: Bool) -> FileBuffer? {
         
         let opaque = image.isOpaque
         
@@ -350,22 +350,22 @@ struct PNGEncoder : ImageRepEncoder {
         let interlaced = properties[ImageRep.PropertyKey.interlaced] as? Bool == true
         
         if let image = image.base as? Image<Gray32ColorPixel> {
-            return encodeGray(image: image, interlace: interlaced)
+            return encodeGray(image: image, interlace: interlaced)?.data
         }
         
         if let image = Image<Gray16ColorPixel>(image: image) {
-            return encodeGray(image: image, interlace: interlaced)
+            return encodeGray(image: image, interlace: interlaced)?.data
         }
         
         if let image = image.base as? Image<ARGB64ColorPixel> {
-            return encodeRGB(image: image, interlace: interlaced)
+            return encodeRGB(image: image, interlace: interlaced)?.data
         }
         
         if let image = Image<ARGB32ColorPixel>(image: image) {
-            return encodeRGB(image: image, interlace: interlaced)
+            return encodeRGB(image: image, interlace: interlaced)?.data
         }
         
-        return encodeRGB(image: Image<ARGB32ColorPixel>(image: image, colorSpace: .sRGB), interlace: interlaced)
+        return encodeRGB(image: Image<ARGB32ColorPixel>(image: image, colorSpace: .sRGB), interlace: interlaced)?.data
     }
 }
 

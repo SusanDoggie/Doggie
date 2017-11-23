@@ -41,7 +41,7 @@ struct BMPEncoder : ImageRepEncoder {
             
             let pixel_size = row * image.height
             
-            var buffer = Data(capacity: 54 + pixel_size)
+            var buffer = FileBuffer(capacity: 54 + pixel_size)
             
             buffer.encode("BM" as Signature<BEUInt16>)
             buffer.encode(LEUInt32(54 + pixel_size))
@@ -76,13 +76,13 @@ struct BMPEncoder : ImageRepEncoder {
                 }
             }
             
-            return buffer
+            return buffer.data
             
         } else {
             
             let pixel_size = image.pixels.count << 2
             
-            var buffer = Data(capacity: 70 + pixel_size)
+            var buffer = FileBuffer(capacity: 70 + pixel_size)
             
             buffer.encode("BM" as Signature<BEUInt16>)
             buffer.encode(LEUInt32(70 + pixel_size))
@@ -116,7 +116,7 @@ struct BMPEncoder : ImageRepEncoder {
                 buffer.encode(pixel.a)
             }
             
-            return buffer
+            return buffer.data
         }
     }
     
