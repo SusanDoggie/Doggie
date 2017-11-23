@@ -40,8 +40,6 @@ protocol AnyImageBaseProtocol {
     
     var option: MappedBufferOption { get }
     
-    func rawData(format: RawBitmap.Format, bitsPerChannel: Int, bitsPerPixel: Int, bytesPerRow: Int, alphaChannel: RawBitmap.AlphaChannelFormat, channelEndianness: RawBitmap.Endianness, pixelEndianness: RawBitmap.Endianness, separated: Bool) -> [Data]
-    
     func _linearTone() -> AnyImageBaseProtocol
     
     func _transposed() -> AnyImageBaseProtocol
