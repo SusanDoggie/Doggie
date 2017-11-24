@@ -91,7 +91,7 @@ Check out the Doggie.xcworkspace and build the project. It's suggested building 
 - [x] Calibrated RGB
 
 #### Rendering Intent
-- [ ] perceptual
+- [x] perceptual
 - [ ] saturation
 - [x] absolute colorimetric
 - [x] relative colorimetric

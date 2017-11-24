@@ -333,27 +333,44 @@ extension ColorSpace {
             }
         }
         
-        let cieXYZ: CIEXYZColorSpace
+        let white: XYZColorModel
+        let black: XYZColorModel
         
-        if let white = profile[.MediaWhitePoint]?.XYZArray?.first {
-            if let black = profile[.MediaBlackPoint]?.XYZArray?.first {
-                if let luminance = profile[.Luminance]?.XYZArray?.first?.y {
-                    cieXYZ = CIEXYZColorSpace(white: XYZColorModel(x: white.x.representingValue, y: white.y.representingValue, z: white.z.representingValue), black: XYZColorModel(x: black.x.representingValue, y: black.y.representingValue, z: black.z.representingValue), luminance: luminance.representingValue)
-                } else {
-                    cieXYZ = CIEXYZColorSpace(white: XYZColorModel(x: white.x.representingValue, y: white.y.representingValue, z: white.z.representingValue), black: XYZColorModel(x: black.x.representingValue, y: black.y.representingValue, z: black.z.representingValue))
-                }
+        if let _white = profile[.MediaWhitePoint]?.XYZArray?.first {
+            
+             white = XYZColorModel(x: _white.x.representingValue, y: _white.y.representingValue, z: _white.z.representingValue)
+            
+            if let _black = profile[.MediaBlackPoint]?.XYZArray?.first {
+                
+                 black = XYZColorModel(x: _black.x.representingValue, y: _black.y.representingValue, z: _black.z.representingValue)
+                
             } else {
-                if let luminance = profile[.Luminance]?.XYZArray?.first?.y {
-                    cieXYZ = CIEXYZColorSpace(white: XYZColorModel(x: white.x.representingValue, y: white.y.representingValue, z: white.z.representingValue), luminance: luminance.representingValue)
-                } else {
-                    cieXYZ = CIEXYZColorSpace(white: XYZColorModel(x: white.x.representingValue, y: white.y.representingValue, z: white.z.representingValue))
+                
+                var _black: XYZColorModel
+                
+                switch profile.header.pcs {
+                case .XYZ: _black = ColorSpace._PCSXYZ_black_point(a2b: a2b, b2a: b2a)
+                case .Lab: _black = ColorSpace._PCSLab_black_point(a2b: a2b, b2a: b2a)
+                default: throw AnyColorSpace.ICCError.invalidFormat(message: "Invalid PCS.")
                 }
+                
+                black = _black * PCSXYZ.chromaticAdaptationMatrix(to: CIEXYZColorSpace(white: white), .default)
             }
+            
         } else {
             throw AnyColorSpace.ICCError.invalidFormat(message: "MediaWhitePoint not found.")
         }
         
-        let chromaticAdaptationMatrix = cieXYZ.chromaticAdaptationMatrix(to: PCSXYZ, .default)
+        let cieXYZ: CIEXYZColorSpace
+        if let luminance = profile[.Luminance]?.XYZArray?.first?.y {
+            cieXYZ = CIEXYZColorSpace(white: white, black: black, luminance: luminance.representingValue)
+        } else {
+            cieXYZ = CIEXYZColorSpace(white: white, black: black)
+        }
+        
+        let _PCSXYZ = CIEXYZColorSpace(white: PCSXYZ.white, black: black * CIEXYZColorSpace(white: white).chromaticAdaptationMatrix(to: PCSXYZ, .default))
+        
+        let chromaticAdaptationMatrix = cieXYZ.chromaticAdaptationMatrix(to: _PCSXYZ, .default)
         
         switch profile.header.pcs {
         case .XYZ: self.base = ICCColorSpace<Model, CIEXYZColorSpace>(iccData: iccData, profile: profile, connection: PCSXYZ, cieXYZ: cieXYZ, a2b: a2b, b2a: b2a, chromaticAdaptationMatrix: chromaticAdaptationMatrix)
@@ -361,21 +378,71 @@ extension ColorSpace {
         default: throw AnyColorSpace.ICCError.invalidFormat(message: "Invalid PCS.")
         }
     }
+    
+    static func _PCSXYZ_black_point(a2b: iccTransform, b2a: iccTransform) -> XYZColorModel {
+        
+        let color: Model
+        var black = XYZColorModel()
+        
+        switch b2a {
+        case .monochrome: return XYZColorModel()
+        default: color = b2a._convertFromLinear(b2a._convertLinearFromConnection(black))
+        }
+        
+        switch a2b {
+        case .monochrome: return XYZColorModel()
+        default: black = a2b._convertLinearToConnection(a2b._convertToLinear(color))
+        }
+        
+        switch a2b {
+        case .matrix, .LUT0:
+            black.x *= 0.5
+            black.z *= 0.5
+        case .LUT1, .LUT2, .LUT3, .LUT4:
+            black.y *= 2
+        default: fatalError()
+        }
+        
+        black.setNormalizedComponent(0, black.x)
+        black.setNormalizedComponent(1, black.y)
+        black.setNormalizedComponent(2, black.z)
+        
+        return black
+    }
+    
+    static func _PCSLab_black_point(a2b: iccTransform, b2a: iccTransform) -> XYZColorModel {
+        
+        let color: Model
+        var black = LabColorModel(lightness: 0, a: 0.5, b: 0.5)
+        
+        switch b2a {
+        case .monochrome: return XYZColorModel()
+        default: color = b2a._convertFromLinear(b2a._convertLinearFromConnection(black))
+        }
+        
+        switch a2b {
+        case .monochrome: return XYZColorModel()
+        default: black = a2b._convertLinearToConnection(a2b._convertToLinear(color))
+        }
+        
+        black.setNormalizedComponent(0, black.lightness)
+        black.setNormalizedComponent(1, black.a)
+        black.setNormalizedComponent(2, black.b)
+        
+        return CIELabColorSpace(PCSXYZ).convertToXYZ(black)
+    }
+    
 }
 
-extension ICCColorSpace {
+extension iccTransform {
     
     @_versioned
     @_inlineable
-    func _convertToLinear(_ color: Model) -> Model {
+    func _convertToLinear<Model: ColorModelProtocol>(_ color: Model) -> Model {
         
         var result = Model()
         
-        switch a2b {
-        case let .monochrome(curve):
-            
-            result[0] = curve.eval(color[0])
-            
+        switch self {
         case let .matrix(_, curve):
             
             result[0] = curve.0.eval(color[0])
@@ -409,6 +476,8 @@ extension ICCColorSpace {
             for i in 0..<Model.numberOfComponents {
                 result[i] = curve[i].eval(color[i])
             }
+            
+        default: fatalError()
         }
         
         return result
@@ -416,15 +485,11 @@ extension ICCColorSpace {
     
     @_versioned
     @_inlineable
-    func _convertFromLinear(_ color: Model) -> Model {
+    func _convertFromLinear<Model: ColorModelProtocol>(_ color: Model) -> Model {
         
         var result = Model()
         
-        switch b2a {
-        case let .monochrome(curve):
-            
-            result[0] = curve.eval(color[0])
-            
+        switch self {
         case let .matrix(_, curve):
             
             result[0] = curve.0.eval(color[0])
@@ -458,6 +523,8 @@ extension ICCColorSpace {
             for i in 0..<Model.numberOfComponents {
                 result[i] = curve[i].eval(color[i])
             }
+            
+        default: fatalError()
         }
         
         return result
@@ -465,17 +532,11 @@ extension ICCColorSpace {
     
     @_versioned
     @_inlineable
-    func _convertLinearToConnection(_ color: Model) -> Connection.Model {
+    func _convertLinearToConnection<Model: ColorModelProtocol, PCSColor: PCSColorModel>(_ color: Model) -> PCSColor {
         
-        var result = Connection.Model()
+        var result = PCSColor()
         
-        switch a2b {
-        case .monochrome:
-            
-            let normalizeMatrix = self.connection.cieXYZ.normalizeMatrix
-            let white = self.connection.cieXYZ.white * normalizeMatrix * color[0] * normalizeMatrix.inverse
-            result = self.connection.convertFromXYZ(white)
-            
+        switch self {
         case let .matrix(matrix, _):
             
             result[0] = color[0]
@@ -533,6 +594,8 @@ extension ICCColorSpace {
             result[0] = B.0.eval(result[0])
             result[1] = B.1.eval(result[1])
             result[2] = B.2.eval(result[2])
+            
+        default: fatalError()
         }
         
         return result
@@ -540,17 +603,13 @@ extension ICCColorSpace {
     
     @_versioned
     @_inlineable
-    func _convertLinearFromConnection(_ color: Connection.Model) -> Model {
+    func _convertLinearFromConnection<Model: ColorModelProtocol, PCSColor: PCSColorModel>(_ color: PCSColor) -> Model {
         
         var result = Model()
         
         var color = color
         
-        switch b2a {
-        case .monochrome:
-            
-            result[0] = color.luminance
-            
+        switch self {
         case let .matrix(matrix, _):
             
             color *= matrix
@@ -608,9 +667,84 @@ extension ICCColorSpace {
             color[2] = M.2.eval(color[2])
             
             result = lut.eval(color)
+            
+        default: fatalError()
         }
         
         return result
+    }
+}
+
+extension ICCColorSpace {
+    
+    @_versioned
+    @_inlineable
+    func _convertToLinear(_ color: Model) -> Model {
+        
+        switch a2b {
+        case let .monochrome(curve):
+            
+            var result = Model()
+            
+            result[0] = curve.eval(color[0])
+            
+            return result
+            
+        default: return a2b._convertToLinear(color)
+        }
+    }
+    
+    @_versioned
+    @_inlineable
+    func _convertFromLinear(_ color: Model) -> Model {
+        
+        switch b2a {
+        case let .monochrome(curve):
+            
+            var result = Model()
+            
+            result[0] = curve.eval(color[0])
+            
+            return result
+            
+        default: return b2a._convertFromLinear(color)
+        }
+    }
+    
+    @_versioned
+    @_inlineable
+    func _convertLinearToConnection(_ color: Model) -> Connection.Model {
+        
+        switch a2b {
+        case .monochrome:
+            
+            var result = Connection.Model()
+            
+            let normalizeMatrix = self.connection.cieXYZ.normalizeMatrix
+            let white = self.connection.cieXYZ.white * normalizeMatrix * color[0] * normalizeMatrix.inverse
+            result = self.connection.convertFromXYZ(white)
+            
+            return result
+            
+        default: return a2b._convertLinearToConnection(color)
+        }
+    }
+    
+    @_versioned
+    @_inlineable
+    func _convertLinearFromConnection(_ color: Connection.Model) -> Model {
+        
+        switch b2a {
+        case .monochrome:
+            
+            var result = Model()
+            
+            result[0] = color.luminance
+            
+            return result
+            
+        default: return b2a._convertLinearFromConnection(color)
+        }
     }
     
     @_versioned
@@ -626,12 +760,12 @@ extension ICCColorSpace {
         switch b2a {
         case .monochrome, .matrix, .LUT0:
             if color is XYZColorModel {
-                color[0] = color[0] * 2
-                color[2] = color[2] * 2
+                color[0] *= 2
+                color[2] *= 2
             }
         case .LUT1, .LUT2, .LUT3, .LUT4:
             if color is XYZColorModel {
-                color[1] = color[1] * 0.5
+                color[1] *= 0.5
             }
         }
         
@@ -640,12 +774,12 @@ extension ICCColorSpace {
         switch a2b {
         case .monochrome, .matrix, .LUT0:
             if result is XYZColorModel {
-                result[0] = result[0] * 0.5
-                result[2] = result[2] * 0.5
+                result[0] *= 0.5
+                result[2] *= 0.5
             }
         case .LUT1, .LUT2, .LUT3, .LUT4:
             if result is XYZColorModel {
-                result[1] = result[1] * 2
+                result[1] *= 2
             }
         }
         
@@ -669,12 +803,12 @@ extension ICCColorSpace {
         switch b2a {
         case .monochrome, .matrix, .LUT0:
             if color is XYZColorModel {
-                color[0] = color[0] * 2
-                color[2] = color[2] * 2
+                color[0] *= 2
+                color[2] *= 2
             }
         case .LUT1, .LUT2, .LUT3, .LUT4:
             if color is XYZColorModel {
-                color[1] = color[1] * 0.5
+                color[1] *= 0.5
             }
         }
         
@@ -683,12 +817,12 @@ extension ICCColorSpace {
         switch b2a {
         case .monochrome, .matrix, .LUT0:
             if result is XYZColorModel {
-                result[0] = result[0] * 0.5
-                result[2] = result[2] * 0.5
+                result[0] *= 0.5
+                result[2] *= 0.5
             }
         case .LUT1, .LUT2, .LUT3, .LUT4:
             if result is XYZColorModel {
-                result[1] = result[1] * 2
+                result[1] *= 2
             }
         }
         
@@ -712,12 +846,12 @@ extension ICCColorSpace {
         switch b2a {
         case .monochrome, .matrix, .LUT0:
             if color is XYZColorModel {
-                color[0] = color[0] * 2
-                color[2] = color[2] * 2
+                color[0] *= 2
+                color[2] *= 2
             }
         case .LUT1, .LUT2, .LUT3, .LUT4:
             if color is XYZColorModel {
-                color[1] = color[1] * 0.5
+                color[1] *= 0.5
             }
         }
         
@@ -726,12 +860,12 @@ extension ICCColorSpace {
         switch b2a {
         case .monochrome, .matrix, .LUT0:
             if result is XYZColorModel {
-                result[0] = result[0] * 0.5
-                result[2] = result[2] * 0.5
+                result[0] *= 0.5
+                result[2] *= 0.5
             }
         case .LUT1, .LUT2, .LUT3, .LUT4:
             if result is XYZColorModel {
-                result[1] = result[1] * 2
+                result[1] *= 2
             }
         }
         
@@ -755,12 +889,12 @@ extension ICCColorSpace {
         switch b2a {
         case .monochrome, .matrix, .LUT0:
             if color is XYZColorModel {
-                color[0] = color[0] * 2
-                color[2] = color[2] * 2
+                color[0] *= 2
+                color[2] *= 2
             }
         case .LUT1, .LUT2, .LUT3, .LUT4:
             if color is XYZColorModel {
-                color[1] = color[1] * 0.5
+                color[1] *= 0.5
             }
         }
         
@@ -769,12 +903,12 @@ extension ICCColorSpace {
         switch b2a {
         case .monochrome, .matrix, .LUT0:
             if result is XYZColorModel {
-                result[0] = result[0] * 0.5
-                result[2] = result[2] * 0.5
+                result[0] *= 0.5
+                result[2] *= 0.5
             }
         case .LUT1, .LUT2, .LUT3, .LUT4:
             if result is XYZColorModel {
-                result[1] = result[1] * 2
+                result[1] *= 2
             }
         }
         
@@ -798,12 +932,12 @@ extension ICCColorSpace {
         switch b2a {
         case .monochrome, .matrix, .LUT0:
             if color is XYZColorModel {
-                color[0] = color[0] * 2
-                color[2] = color[2] * 2
+                color[0] *= 2
+                color[2] *= 2
             }
         case .LUT1, .LUT2, .LUT3, .LUT4:
             if color is XYZColorModel {
-                color[1] = color[1] * 0.5
+                color[1] *= 0.5
             }
         }
         
@@ -812,12 +946,12 @@ extension ICCColorSpace {
         switch b2a {
         case .monochrome, .matrix, .LUT0:
             if result is XYZColorModel {
-                result[0] = result[0] * 0.5
-                result[2] = result[2] * 0.5
+                result[0] *= 0.5
+                result[2] *= 0.5
             }
         case .LUT1, .LUT2, .LUT3, .LUT4:
             if result is XYZColorModel {
-                result[1] = result[1] * 2
+                result[1] *= 2
             }
         }
         
@@ -841,12 +975,12 @@ extension ICCColorSpace {
         switch b2a {
         case .monochrome, .matrix, .LUT0:
             if color is XYZColorModel {
-                color[0] = color[0] * 2
-                color[2] = color[2] * 2
+                color[0] *= 2
+                color[2] *= 2
             }
         case .LUT1, .LUT2, .LUT3, .LUT4:
             if color is XYZColorModel {
-                color[1] = color[1] * 0.5
+                color[1] *= 0.5
             }
         }
         
@@ -855,12 +989,12 @@ extension ICCColorSpace {
         switch b2a {
         case .monochrome, .matrix, .LUT0:
             if result is XYZColorModel {
-                result[0] = result[0] * 0.5
-                result[2] = result[2] * 0.5
+                result[0] *= 0.5
+                result[2] *= 0.5
             }
         case .LUT1, .LUT2, .LUT3, .LUT4:
             if result is XYZColorModel {
-                result[1] = result[1] * 2
+                result[1] *= 2
             }
         }
         

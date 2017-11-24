@@ -25,6 +25,7 @@
 
 public enum RenderingIntent {
     
+    case perceptual
     case absoluteColorimetric
     case relativeColorimetric
 }
@@ -33,6 +34,6 @@ extension RenderingIntent {
     
     @_inlineable
     public static var `default` : RenderingIntent {
-        return .relativeColorimetric
+        return .perceptual
     }
 }

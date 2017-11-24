@@ -285,28 +285,33 @@ extension ColorSpace {
     }
 }
 
+extension CIEXYZColorSpace {
+    
+    @_versioned
+    @_inlineable
+    func _intentMatrix(to other: CIEXYZColorSpace, chromaticAdaptationAlgorithm: ChromaticAdaptationAlgorithm, intent: RenderingIntent) -> Matrix {
+        switch intent {
+        case .perceptual: return self.chromaticAdaptationMatrix(to: other, chromaticAdaptationAlgorithm)
+        case .absoluteColorimetric: return Matrix.identity
+        case .relativeColorimetric: return CIEXYZColorSpace(white: self.white).chromaticAdaptationMatrix(to: CIEXYZColorSpace(white: other.white), chromaticAdaptationAlgorithm)
+        }
+    }
+}
+
 extension ColorSpace {
     
     @_versioned
     @_inlineable
     func _convert<C : Collection, R>(_ color: C, to other: ColorSpace<R>, intent: RenderingIntent) -> LazyMapCollection<C, R> where C.Element == Model {
-        switch intent {
-        case .absoluteColorimetric: return color.lazy.map { other.convertFromXYZ(self.convertToXYZ($0)) }
-        case .relativeColorimetric:
-            let matrix = self.base.cieXYZ.chromaticAdaptationMatrix(to: other.base.cieXYZ, chromaticAdaptationAlgorithm)
-            return color.lazy.map { other.convertFromXYZ(self.convertToXYZ($0) * matrix) }
-        }
+        let matrix = self.base.cieXYZ._intentMatrix(to: other.base.cieXYZ, chromaticAdaptationAlgorithm: chromaticAdaptationAlgorithm, intent: intent)
+        return color.lazy.map { other.convertFromXYZ(self.convertToXYZ($0) * matrix) }
     }
     
     @_versioned
     @_inlineable
     func _convert<C : Collection, R: ColorPixelProtocol>(_ color: C, to other: ColorSpace<R.Model>, intent: RenderingIntent) -> LazyMapCollection<C, R> where C.Element: ColorPixelProtocol, C.Element.Model == Model {
-        switch intent {
-        case .absoluteColorimetric: return color.lazy.map { R(color: other.convertFromXYZ(self.convertToXYZ($0.color)), opacity: $0.opacity) }
-        case .relativeColorimetric:
-            let matrix = self.base.cieXYZ.chromaticAdaptationMatrix(to: other.base.cieXYZ, chromaticAdaptationAlgorithm)
-            return color.lazy.map { R(color: other.convertFromXYZ(self.convertToXYZ($0.color) * matrix), opacity: $0.opacity) }
-        }
+        let matrix = self.base.cieXYZ._intentMatrix(to: other.base.cieXYZ, chromaticAdaptationAlgorithm: chromaticAdaptationAlgorithm, intent: intent)
+        return color.lazy.map { R(color: other.convertFromXYZ(self.convertToXYZ($0.color) * matrix), opacity: $0.opacity) }
     }
     
     @_inlineable
