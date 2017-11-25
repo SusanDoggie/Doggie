@@ -437,7 +437,7 @@ extension ColorSpace {
 extension iccTransform {
     
     @_versioned
-    @_inlineable
+    @inline(__always)
     func _convertToLinear<Model: ColorModelProtocol>(_ color: Model) -> Model {
         
         var result = Model()
@@ -484,7 +484,7 @@ extension iccTransform {
     }
     
     @_versioned
-    @_inlineable
+    @inline(__always)
     func _convertFromLinear<Model: ColorModelProtocol>(_ color: Model) -> Model {
         
         var result = Model()
@@ -531,7 +531,7 @@ extension iccTransform {
     }
     
     @_versioned
-    @_inlineable
+    @inline(__always)
     func _convertLinearToConnection<Model: ColorModelProtocol, PCSColor: PCSColorModel>(_ color: Model) -> PCSColor {
         
         var result = PCSColor()
@@ -602,7 +602,7 @@ extension iccTransform {
     }
     
     @_versioned
-    @_inlineable
+    @inline(__always)
     func _convertLinearFromConnection<Model: ColorModelProtocol, PCSColor: PCSColorModel>(_ color: PCSColor) -> Model {
         
         var result = Model()
@@ -678,7 +678,7 @@ extension iccTransform {
 extension ICCColorSpace {
     
     @_versioned
-    @_inlineable
+    @inline(__always)
     func _convertToLinear(_ color: Model) -> Model {
         
         switch a2b {
@@ -695,7 +695,7 @@ extension ICCColorSpace {
     }
     
     @_versioned
-    @_inlineable
+    @inline(__always)
     func _convertFromLinear(_ color: Model) -> Model {
         
         switch b2a {
@@ -712,7 +712,7 @@ extension ICCColorSpace {
     }
     
     @_versioned
-    @_inlineable
+    @inline(__always)
     func _convertLinearToConnection(_ color: Model) -> Connection.Model {
         
         switch a2b {
@@ -731,7 +731,7 @@ extension ICCColorSpace {
     }
     
     @_versioned
-    @_inlineable
+    @inline(__always)
     func _convertLinearFromConnection(_ color: Connection.Model) -> Model {
         
         switch b2a {
