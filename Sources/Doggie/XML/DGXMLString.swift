@@ -57,41 +57,44 @@ extension DGXMLElement {
     fileprivate func _xml(_ terminator: String, prefixMap: [String: String], _ output: inout String) {
         
         switch kind {
-        case let .node(_name, namespace):
-            
-            var prefixMap = prefixMap
-            
-            for (key, value) in attributes.filter({ $0.key.hasPrefix("xmlns:") }) {
-                let substr = String(key.dropFirst(6)).trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
-                if !substr.isEmpty && !substr.contains(":") {
-                    prefixMap[value] = substr
-                }
-            }
-            
-            let name = namespace.flatMap { prefixMap[$0].map { "\($0):\(_name)" } } ?? _name
-            let _attributes = self.attributes.map { " \($0)=\"\($1)\"" }.joined()
-            
-            if self.count == 0 {
-                "\(terminator)<\(name)\(_attributes) />".write(to: &output)
-            } else {
-                "\(terminator)<\(name)\(_attributes)>".write(to: &output)
-                var flag = false
-                for element in self {
-                    flag = element.isNode || flag
-                    element._xml(terminator == "" ? terminator : "\(terminator)  ", prefixMap: prefixMap, &output)
-                }
-                if flag {
-                    "\(terminator)</\(name)>".write(to: &output)
-                } else {
-                    "</\(name)>".write(to: &output)
-                }
-            }
-            
+        case let .node(node): node._xml(terminator, prefixMap: prefixMap, &output)
         case let .characters(value): value.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).write(to: &output)
         case let .comment(value): "\(terminator)<!--\(value)-->".write(to: &output)
         case let .CDATA(value): "\(terminator)<![CDATA[\(value)]]>".write(to: &output)
         }
-        
     }
+}
+
+extension DGXMLNode {
     
+    fileprivate func _xml(_ terminator: String, prefixMap: [String: String], _ output: inout String) {
+        
+        var prefixMap = prefixMap
+        
+        for (key, value) in self.attributes.filter({ $0.key.hasPrefix("xmlns:") }) {
+            let substr = String(key.dropFirst(6)).trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
+            if !substr.isEmpty && !substr.contains(":") {
+                prefixMap[value] = substr
+            }
+        }
+        
+        let name = self.namespace.flatMap { prefixMap[$0].map { "\($0):\(self.name)" } } ?? self.name
+        let attributes = self.attributes.map { " \($0)=\"\($1)\"" }.joined()
+        
+        if self.count == 0 {
+            "\(terminator)<\(name)\(attributes) />".write(to: &output)
+        } else {
+            "\(terminator)<\(name)\(attributes)>".write(to: &output)
+            var flag = false
+            for element in self {
+                flag = element.isNode || flag
+                element._xml(terminator == "" ? terminator : "\(terminator)  ", prefixMap: prefixMap, &output)
+            }
+            if flag {
+                "\(terminator)</\(name)>".write(to: &output)
+            } else {
+                "</\(name)>".write(to: &output)
+            }
+        }
+    }
 }
