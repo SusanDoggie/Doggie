@@ -79,6 +79,33 @@ extension Resolution {
     }
 }
 
+extension Resolution.Unit {
+    
+    @_inlineable
+    public func convert(length: Double, to toUnit: Resolution.Unit) -> Double {
+        let scale = toUnit.inchScale / self.inchScale
+        return length * scale
+    }
+    
+    @_inlineable
+    public func convert(point: Point, to toUnit: Resolution.Unit) -> Point {
+        let scale = toUnit.inchScale / self.inchScale
+        return point * scale
+    }
+    
+    @_inlineable
+    public func convert(size: Size, to toUnit: Resolution.Unit) -> Size {
+        let scale = toUnit.inchScale / self.inchScale
+        return size * scale
+    }
+    
+    @_inlineable
+    public func convert(rect: Rect, to toUnit: Resolution.Unit) -> Rect {
+        let scale = toUnit.inchScale / self.inchScale
+        return Rect(origin: rect.origin * scale, size: rect.size * scale)
+    }
+}
+
 extension Resolution : CustomStringConvertible {
     
     @_inlineable
