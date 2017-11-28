@@ -189,87 +189,84 @@ extension ColorSpace {
     
     init(iccData: Data, profile: iccProfile) throws {
         
-        func check(_ a2bCurve: iccTransform, _ b2aCurve: iccTransform) throws {
+        func check(_ a2bCurve: iccLUTTransform, _ b2aCurve: iccLUTTransform) throws {
             
             switch a2bCurve {
-            case let .LUT0(_, i, lut, o):
-                if lut.inputChannels != Model.numberOfComponents || lut.outputChannels != 3 {
+            case let .LUT0(lut):
+                if lut.clut.inputChannels != Model.numberOfComponents || lut.clut.outputChannels != 3 {
                     throw AnyColorSpace.ICCError.invalidFormat(message: "Invalid LUT size.")
                 }
-                if i.channels != Model.numberOfComponents {
+                if lut.input.channels != Model.numberOfComponents {
                     throw AnyColorSpace.ICCError.invalidFormat(message: "Invalid LUT size.")
                 }
-                if o.channels != 3 {
+                if lut.output.channels != 3 {
                     throw AnyColorSpace.ICCError.invalidFormat(message: "Invalid LUT size.")
                 }
             case .LUT1, .LUT2:
                 if Model.numberOfComponents != 3 {
                     throw AnyColorSpace.ICCError.invalidFormat(message: "Invalid LUT size.")
                 }
-            case let .LUT3(_, lut, A):
-                if lut.inputChannels != Model.numberOfComponents || lut.outputChannels != 3 {
+            case let .LUT3(lut):
+                if lut.lut.inputChannels != Model.numberOfComponents || lut.lut.outputChannels != 3 {
                     throw AnyColorSpace.ICCError.invalidFormat(message: "Invalid LUT size.")
                 }
-                if A.count != Model.numberOfComponents {
+                if lut.A.count != Model.numberOfComponents {
                     throw AnyColorSpace.ICCError.invalidFormat(message: "Invalid LUT size.")
                 }
-            case let .LUT4(_, _, _, lut, A):
-                if lut.inputChannels != Model.numberOfComponents || lut.outputChannels != 3 {
+            case let .LUT4(lut):
+                if lut.lut.inputChannels != Model.numberOfComponents || lut.lut.outputChannels != 3 {
                     throw AnyColorSpace.ICCError.invalidFormat(message: "Invalid LUT size.")
                 }
-                if A.count != Model.numberOfComponents {
+                if lut.A.count != Model.numberOfComponents {
                     throw AnyColorSpace.ICCError.invalidFormat(message: "Invalid LUT size.")
                 }
-            default: break
             }
             
             switch b2aCurve {
-            case let .LUT0(_, i, lut, o):
-                if lut.inputChannels != 3 || lut.outputChannels != Model.numberOfComponents {
+            case let .LUT0(lut):
+                if lut.clut.inputChannels != 3 || lut.clut.outputChannels != Model.numberOfComponents {
                     throw AnyColorSpace.ICCError.invalidFormat(message: "Invalid LUT size.")
                 }
-                if i.channels != 3 {
+                if lut.input.channels != 3 {
                     throw AnyColorSpace.ICCError.invalidFormat(message: "Invalid LUT size.")
                 }
-                if o.channels != Model.numberOfComponents {
+                if lut.output.channels != Model.numberOfComponents {
                     throw AnyColorSpace.ICCError.invalidFormat(message: "Invalid LUT size.")
                 }
             case .LUT1, .LUT2:
                 if Model.numberOfComponents != 3 {
                     throw AnyColorSpace.ICCError.invalidFormat(message: "Invalid LUT size.")
                 }
-            case let .LUT3(_, lut, A):
-                if lut.inputChannels != 3 || lut.outputChannels != Model.numberOfComponents {
+            case let .LUT3(lut):
+                if lut.lut.inputChannels != 3 || lut.lut.outputChannels != Model.numberOfComponents {
                     throw AnyColorSpace.ICCError.invalidFormat(message: "Invalid LUT size.")
                 }
-                if A.count != Model.numberOfComponents {
+                if lut.A.count != Model.numberOfComponents {
                     throw AnyColorSpace.ICCError.invalidFormat(message: "Invalid LUT size.")
                 }
-            case let .LUT4(_, _, _, lut, A):
-                if lut.inputChannels != 3 || lut.outputChannels != Model.numberOfComponents {
+            case let .LUT4(lut):
+                if lut.lut.inputChannels != 3 || lut.lut.outputChannels != Model.numberOfComponents {
                     throw AnyColorSpace.ICCError.invalidFormat(message: "Invalid LUT size.")
                 }
-                if A.count != Model.numberOfComponents {
+                if lut.A.count != Model.numberOfComponents {
                     throw AnyColorSpace.ICCError.invalidFormat(message: "Invalid LUT size.")
                 }
-            default: break
             }
-            
         }
         
         func ABCurve() throws -> (iccTransform, iccTransform)? {
             
             if let a2bCurve = profile[.AToB1].flatMap({ $0.transform }), let b2aCurve = profile[.BToA1].flatMap({ $0.transform }) {
                 try check(a2bCurve, b2aCurve)
-                return (a2bCurve, b2aCurve)
+                return (a2bCurve._iccTransform, b2aCurve._iccTransform)
             }
             if let a2bCurve = profile[.AToB0].flatMap({ $0.transform }), let b2aCurve = profile[.BToA0].flatMap({ $0.transform }) {
                 try check(a2bCurve, b2aCurve)
-                return (a2bCurve, b2aCurve)
+                return (a2bCurve._iccTransform, b2aCurve._iccTransform)
             }
             if let a2bCurve = profile[.AToB2].flatMap({ $0.transform }), let b2aCurve = profile[.BToA2].flatMap({ $0.transform }){
                 try check(a2bCurve, b2aCurve)
-                return (a2bCurve, b2aCurve)
+                return (a2bCurve._iccTransform, b2aCurve._iccTransform)
             }
             
             return nil
@@ -285,8 +282,8 @@ extension ColorSpace {
                 
                 let kTRC = curve.curve ?? .identity
                 
-                a2b = .monochrome(kTRC)
-                b2a = .monochrome(kTRC.inverse)
+                a2b = iccMonochromeTransform(curve: kTRC)
+                b2a = iccMonochromeTransform(curve: kTRC.inverse)
                 
             } else if let (a2bCurve, b2aCurve) = try ABCurve() {
                 
@@ -309,8 +306,8 @@ extension ColorSpace {
                                     e: red.y.representingValue, f: green.y.representingValue, g: blue.y.representingValue, h: 0,
                                     i: red.z.representingValue, j: green.z.representingValue, k: blue.z.representingValue, l: 0)
                 
-                a2b = .matrix(matrix, (rTRC, gTRC, bTRC))
-                b2a = .matrix(matrix.inverse, (rTRC.inverse, gTRC.inverse, bTRC.inverse))
+                a2b = iccMatrixTransform(matrix: matrix, curve: (rTRC, gTRC, bTRC))
+                b2a = iccMatrixTransform(matrix: matrix.inverse, curve: (rTRC.inverse, gTRC.inverse, bTRC.inverse))
                 
             } else if let (a2bCurve, b2aCurve) = try ABCurve() {
                 
@@ -385,23 +382,16 @@ extension ColorSpace {
         var black = XYZColorModel()
         
         switch b2a {
-        case .monochrome: return XYZColorModel()
-        default: color = b2a._convertFromLinear(b2a._convertLinearFromConnection(black))
+        case is iccMonochromeTransform: return XYZColorModel()
+        default: color = b2a.convertFromLinear(b2a.convertLinearFromConnection(black))
         }
         
         switch a2b {
-        case .monochrome: return XYZColorModel()
-        default: black = a2b._convertLinearToConnection(a2b._convertToLinear(color))
+        case is iccMonochromeTransform: return XYZColorModel()
+        default: black = a2b.convertLinearToConnection(a2b.convertToLinear(color))
         }
         
-        switch a2b {
-        case .matrix, .LUT0:
-            black.x *= 0.5
-            black.z *= 0.5
-        case .LUT1, .LUT2, .LUT3, .LUT4:
-            black.y *= 2
-        default: fatalError()
-        }
+        black = a2b.denormalize(black)
         
         black.setNormalizedComponent(0, black.x)
         black.setNormalizedComponent(1, black.y)
@@ -416,13 +406,13 @@ extension ColorSpace {
         var black = LabColorModel(lightness: 0, a: 0.5, b: 0.5)
         
         switch b2a {
-        case .monochrome: return XYZColorModel()
-        default: color = b2a._convertFromLinear(b2a._convertLinearFromConnection(black))
+        case is iccMonochromeTransform: return XYZColorModel()
+        default: color = b2a.convertFromLinear(b2a.convertLinearFromConnection(black))
         }
         
         switch a2b {
-        case .monochrome: return XYZColorModel()
-        default: black = a2b._convertLinearToConnection(a2b._convertToLinear(color))
+        case is iccMonochromeTransform: return XYZColorModel()
+        default: black = a2b.convertLinearToConnection(a2b.convertToLinear(color))
         }
         
         black.setNormalizedComponent(0, black.lightness)
@@ -434,281 +424,18 @@ extension ColorSpace {
     
 }
 
-extension iccTransform {
-    
-    @_versioned
-    @inline(__always)
-    func _convertToLinear<Model: ColorModelProtocol>(_ color: Model) -> Model {
-        
-        var result = Model()
-        
-        switch self {
-        case let .matrix(_, curve):
-            
-            result[0] = curve.0.eval(color[0])
-            result[1] = curve.1.eval(color[1])
-            result[2] = curve.2.eval(color[2])
-            
-        case let .LUT0(_, curve, _, _):
-            
-            result = curve.eval(color)
-            
-        case let .LUT1(curve):
-            
-            result[0] = curve.0.eval(color[0])
-            result[1] = curve.1.eval(color[1])
-            result[2] = curve.2.eval(color[2])
-            
-        case let .LUT2(_, _, curve):
-            
-            result[0] = curve.0.eval(color[0])
-            result[1] = curve.1.eval(color[1])
-            result[2] = curve.2.eval(color[2])
-            
-        case let .LUT3(_, _, curve):
-            
-            for i in 0..<Model.numberOfComponents {
-                result[i] = curve[i].eval(color[i])
-            }
-            
-        case let .LUT4(_, _, _, _, curve):
-            
-            for i in 0..<Model.numberOfComponents {
-                result[i] = curve[i].eval(color[i])
-            }
-            
-        default: fatalError()
-        }
-        
-        return result
-    }
-    
-    @_versioned
-    @inline(__always)
-    func _convertFromLinear<Model: ColorModelProtocol>(_ color: Model) -> Model {
-        
-        var result = Model()
-        
-        switch self {
-        case let .matrix(_, curve):
-            
-            result[0] = curve.0.eval(color[0])
-            result[1] = curve.1.eval(color[1])
-            result[2] = curve.2.eval(color[2])
-            
-        case let .LUT0(_, _, _, curve):
-            
-            result = curve.eval(color)
-            
-        case let .LUT1(curve):
-            
-            result[0] = curve.0.eval(color[0])
-            result[1] = curve.1.eval(color[1])
-            result[2] = curve.2.eval(color[2])
-            
-        case let .LUT2(_, _, curve):
-            
-            result[0] = curve.0.eval(color[0])
-            result[1] = curve.1.eval(color[1])
-            result[2] = curve.2.eval(color[2])
-            
-        case let .LUT3(_, _, curve):
-            
-            for i in 0..<Model.numberOfComponents {
-                result[i] = curve[i].eval(color[i])
-            }
-            
-        case let .LUT4(_, _, _, _, curve):
-            
-            for i in 0..<Model.numberOfComponents {
-                result[i] = curve[i].eval(color[i])
-            }
-            
-        default: fatalError()
-        }
-        
-        return result
-    }
-    
-    @_versioned
-    @inline(__always)
-    func _convertLinearToConnection<Model: ColorModelProtocol, PCSColor: PCSColorModel>(_ color: Model) -> PCSColor {
-        
-        var result = PCSColor()
-        
-        switch self {
-        case let .matrix(matrix, _):
-            
-            result[0] = color[0]
-            result[1] = color[1]
-            result[2] = color[2]
-            
-            result *= matrix
-            
-        case let .LUT0(matrix, _, lut, o):
-            
-            result = lut.eval(color)
-            
-            result = o.eval(result)
-            
-            if result is XYZColorModel {
-                result *= matrix
-            }
-            
-        case .LUT1:
-            
-            result[0] = color[0]
-            result[1] = color[1]
-            result[2] = color[2]
-            
-        case let .LUT2(B, matrix, _):
-            
-            result[0] = color[0]
-            result[1] = color[1]
-            result[2] = color[2]
-            
-            result *= matrix
-            
-            result[0] = B.0.eval(result[0])
-            result[1] = B.1.eval(result[1])
-            result[2] = B.2.eval(result[2])
-            
-        case let .LUT3(B, lut, _):
-            
-            result = lut.eval(color)
-            
-            result[0] = B.0.eval(result[0])
-            result[1] = B.1.eval(result[1])
-            result[2] = B.2.eval(result[2])
-            
-        case let .LUT4(B, matrix, M, lut, _):
-            
-            result = lut.eval(color)
-            
-            result[0] = M.0.eval(result[0])
-            result[1] = M.1.eval(result[1])
-            result[2] = M.2.eval(result[2])
-            
-            result *= matrix
-            
-            result[0] = B.0.eval(result[0])
-            result[1] = B.1.eval(result[1])
-            result[2] = B.2.eval(result[2])
-            
-        default: fatalError()
-        }
-        
-        return result
-    }
-    
-    @_versioned
-    @inline(__always)
-    func _convertLinearFromConnection<Model: ColorModelProtocol, PCSColor: PCSColorModel>(_ color: PCSColor) -> Model {
-        
-        var result = Model()
-        
-        var color = color
-        
-        switch self {
-        case let .matrix(matrix, _):
-            
-            color *= matrix
-            
-            result[0] = color[0]
-            result[1] = color[1]
-            result[2] = color[2]
-            
-        case let .LUT0(matrix, i, lut, _):
-            
-            if color is XYZColorModel {
-                color *= matrix
-            }
-            
-            color = i.eval(color)
-            
-            result = lut.eval(color)
-            
-        case .LUT1:
-            
-            result[0] = color[0]
-            result[1] = color[1]
-            result[2] = color[2]
-            
-        case let .LUT2(B, matrix, _):
-            
-            color[0] = B.0.eval(color[0])
-            color[1] = B.1.eval(color[1])
-            color[2] = B.2.eval(color[2])
-            
-            color *= matrix
-            
-            result[0] = color[0]
-            result[1] = color[1]
-            result[2] = color[2]
-            
-        case let .LUT3(B, lut, _):
-            
-            color[0] = B.0.eval(color[0])
-            color[1] = B.1.eval(color[1])
-            color[2] = B.2.eval(color[2])
-            
-            result = lut.eval(color)
-            
-        case let .LUT4(B, matrix, M, lut, _):
-            
-            color[0] = B.0.eval(color[0])
-            color[1] = B.1.eval(color[1])
-            color[2] = B.2.eval(color[2])
-            
-            color *= matrix
-            
-            color[0] = M.0.eval(color[0])
-            color[1] = M.1.eval(color[1])
-            color[2] = M.2.eval(color[2])
-            
-            result = lut.eval(color)
-            
-        default: fatalError()
-        }
-        
-        return result
-    }
-}
-
 extension ICCColorSpace {
     
     @_versioned
     @inline(__always)
     func _convertToLinear(_ color: Model) -> Model {
-        
-        switch a2b {
-        case let .monochrome(curve):
-            
-            var result = Model()
-            
-            result[0] = curve.eval(color[0])
-            
-            return result
-            
-        default: return a2b._convertToLinear(color)
-        }
+        return a2b.convertToLinear(color)
     }
     
     @_versioned
     @inline(__always)
     func _convertFromLinear(_ color: Model) -> Model {
-        
-        switch b2a {
-        case let .monochrome(curve):
-            
-            var result = Model()
-            
-            result[0] = curve.eval(color[0])
-            
-            return result
-            
-        default: return b2a._convertFromLinear(color)
-        }
+        return b2a.convertFromLinear(color)
     }
     
     @_versioned
@@ -716,7 +443,7 @@ extension ICCColorSpace {
     func _convertLinearToConnection(_ color: Model) -> Connection.Model {
         
         switch a2b {
-        case .monochrome:
+        case is iccMonochromeTransform:
             
             var result = Connection.Model()
             
@@ -726,71 +453,18 @@ extension ICCColorSpace {
             
             return result
             
-        default: return a2b._convertLinearToConnection(color)
+        default: return a2b.convertLinearToConnection(color)
         }
     }
     
     @_versioned
     @inline(__always)
     func _convertLinearFromConnection(_ color: Connection.Model) -> Model {
-        
-        switch b2a {
-        case .monochrome:
-            
-            var result = Model()
-            
-            result[0] = color.luminance
-            
-            return result
-            
-        default: return b2a._convertLinearFromConnection(color)
-        }
+        return b2a.convertLinearFromConnection(color)
     }
     
     @_versioned
-    @_inlineable
-    @_specialize(where Model == GrayColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == GrayColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == XYZColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == XYZColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == LabColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == LabColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == LuvColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == LuvColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == RGBColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == RGBColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == CMYColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == CMYColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == CMYKColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == CMYKColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == Device2ColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == Device2ColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == Device3ColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == Device3ColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == Device4ColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == Device4ColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == Device5ColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == Device5ColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == Device6ColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == Device6ColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == Device7ColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == Device7ColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == Device8ColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == Device8ColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == Device9ColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == Device9ColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == Device10ColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == Device10ColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == Device11ColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == Device11ColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == Device12ColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == Device12ColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == Device13ColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == Device13ColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == Device14ColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == Device14ColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == Device15ColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == Device15ColorModel, Connection == CIELabColorSpace)
+    @inline(__always)
     func convertToLinear(_ color: Model) -> Model {
         
         var color = color
@@ -799,30 +473,14 @@ extension ICCColorSpace {
             color[i] = color.normalizedComponent(i)
         }
         
-        switch b2a {
-        case .monochrome, .matrix, .LUT0:
-            if color is XYZColorModel {
-                color[0] *= 2
-                color[2] *= 2
-            }
-        case .LUT1, .LUT2, .LUT3, .LUT4:
-            if color is XYZColorModel {
-                color[1] *= 0.5
-            }
+        if let xyz = color as? XYZColorModel {
+            color = a2b.normalize(xyz) as! Model
         }
         
         var result = _convertToLinear(color)
         
-        switch a2b {
-        case .monochrome, .matrix, .LUT0:
-            if result is XYZColorModel {
-                result[0] *= 0.5
-                result[2] *= 0.5
-            }
-        case .LUT1, .LUT2, .LUT3, .LUT4:
-            if result is XYZColorModel {
-                result[1] *= 2
-            }
+        if let xyz = result as? XYZColorModel {
+            result = a2b.denormalize(xyz) as! Model
         }
         
         for i in 0..<Model.numberOfComponents {
@@ -833,49 +491,7 @@ extension ICCColorSpace {
     }
     
     @_versioned
-    @_inlineable
-    @_specialize(where Model == GrayColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == GrayColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == XYZColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == XYZColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == LabColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == LabColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == LuvColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == LuvColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == RGBColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == RGBColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == CMYColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == CMYColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == CMYKColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == CMYKColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == Device2ColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == Device2ColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == Device3ColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == Device3ColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == Device4ColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == Device4ColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == Device5ColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == Device5ColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == Device6ColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == Device6ColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == Device7ColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == Device7ColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == Device8ColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == Device8ColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == Device9ColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == Device9ColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == Device10ColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == Device10ColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == Device11ColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == Device11ColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == Device12ColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == Device12ColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == Device13ColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == Device13ColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == Device14ColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == Device14ColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == Device15ColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == Device15ColorModel, Connection == CIELabColorSpace)
+    @inline(__always)
     func convertFromLinear(_ color: Model) -> Model {
         
         var color = color
@@ -884,30 +500,14 @@ extension ICCColorSpace {
             color[i] = color.normalizedComponent(i)
         }
         
-        switch b2a {
-        case .monochrome, .matrix, .LUT0:
-            if color is XYZColorModel {
-                color[0] *= 2
-                color[2] *= 2
-            }
-        case .LUT1, .LUT2, .LUT3, .LUT4:
-            if color is XYZColorModel {
-                color[1] *= 0.5
-            }
+        if let xyz = color as? XYZColorModel {
+            color = b2a.normalize(xyz) as! Model
         }
         
         var result = _convertFromLinear(color)
         
-        switch b2a {
-        case .monochrome, .matrix, .LUT0:
-            if result is XYZColorModel {
-                result[0] *= 0.5
-                result[2] *= 0.5
-            }
-        case .LUT1, .LUT2, .LUT3, .LUT4:
-            if result is XYZColorModel {
-                result[1] *= 2
-            }
+        if let xyz = result as? XYZColorModel {
+            result = b2a.denormalize(xyz) as! Model
         }
         
         for i in 0..<Model.numberOfComponents {
@@ -918,49 +518,7 @@ extension ICCColorSpace {
     }
     
     @_versioned
-    @_inlineable
-    @_specialize(where Model == GrayColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == GrayColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == XYZColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == XYZColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == LabColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == LabColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == LuvColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == LuvColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == RGBColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == RGBColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == CMYColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == CMYColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == CMYKColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == CMYKColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == Device2ColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == Device2ColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == Device3ColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == Device3ColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == Device4ColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == Device4ColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == Device5ColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == Device5ColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == Device6ColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == Device6ColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == Device7ColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == Device7ColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == Device8ColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == Device8ColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == Device9ColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == Device9ColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == Device10ColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == Device10ColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == Device11ColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == Device11ColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == Device12ColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == Device12ColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == Device13ColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == Device13ColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == Device14ColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == Device14ColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == Device15ColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == Device15ColorModel, Connection == CIELabColorSpace)
+    @inline(__always)
     func convertLinearToXYZ(_ color: Model) -> XYZColorModel {
         
         var color = color
@@ -969,30 +527,14 @@ extension ICCColorSpace {
             color[i] = color.normalizedComponent(i)
         }
         
-        switch b2a {
-        case .monochrome, .matrix, .LUT0:
-            if color is XYZColorModel {
-                color[0] *= 2
-                color[2] *= 2
-            }
-        case .LUT1, .LUT2, .LUT3, .LUT4:
-            if color is XYZColorModel {
-                color[1] *= 0.5
-            }
+        if let xyz = color as? XYZColorModel {
+            color = a2b.normalize(xyz) as! Model
         }
         
         var result = _convertLinearToConnection(color)
         
-        switch b2a {
-        case .monochrome, .matrix, .LUT0:
-            if result is XYZColorModel {
-                result[0] *= 0.5
-                result[2] *= 0.5
-            }
-        case .LUT1, .LUT2, .LUT3, .LUT4:
-            if result is XYZColorModel {
-                result[1] *= 2
-            }
+        if let xyz = result as? XYZColorModel {
+            result = a2b.denormalize(xyz) as! Connection.Model
         }
         
         result.setNormalizedComponent(0, result[0])
@@ -1003,49 +545,7 @@ extension ICCColorSpace {
     }
     
     @_versioned
-    @_inlineable
-    @_specialize(where Model == GrayColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == GrayColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == XYZColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == XYZColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == LabColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == LabColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == LuvColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == LuvColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == RGBColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == RGBColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == CMYColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == CMYColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == CMYKColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == CMYKColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == Device2ColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == Device2ColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == Device3ColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == Device3ColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == Device4ColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == Device4ColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == Device5ColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == Device5ColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == Device6ColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == Device6ColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == Device7ColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == Device7ColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == Device8ColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == Device8ColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == Device9ColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == Device9ColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == Device10ColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == Device10ColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == Device11ColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == Device11ColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == Device12ColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == Device12ColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == Device13ColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == Device13ColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == Device14ColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == Device14ColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == Device15ColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == Device15ColorModel, Connection == CIELabColorSpace)
+    @inline(__always)
     func convertLinearFromXYZ(_ color: XYZColorModel) -> Model {
         
         var color = self.connection.convertFromXYZ(color * chromaticAdaptationMatrix)
@@ -1054,30 +554,14 @@ extension ICCColorSpace {
         color[1] = color.normalizedComponent(1)
         color[2] = color.normalizedComponent(2)
         
-        switch b2a {
-        case .monochrome, .matrix, .LUT0:
-            if color is XYZColorModel {
-                color[0] *= 2
-                color[2] *= 2
-            }
-        case .LUT1, .LUT2, .LUT3, .LUT4:
-            if color is XYZColorModel {
-                color[1] *= 0.5
-            }
+        if let xyz = color as? XYZColorModel {
+            color = b2a.normalize(xyz) as! Connection.Model
         }
         
         var result = _convertLinearFromConnection(color)
         
-        switch b2a {
-        case .monochrome, .matrix, .LUT0:
-            if result is XYZColorModel {
-                result[0] *= 0.5
-                result[2] *= 0.5
-            }
-        case .LUT1, .LUT2, .LUT3, .LUT4:
-            if result is XYZColorModel {
-                result[1] *= 2
-            }
+        if let xyz = result as? XYZColorModel {
+            result = b2a.denormalize(xyz) as! Model
         }
         
         for i in 0..<Model.numberOfComponents {
@@ -1088,49 +572,7 @@ extension ICCColorSpace {
     }
     
     @_versioned
-    @_inlineable
-    @_specialize(where Model == GrayColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == GrayColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == XYZColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == XYZColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == LabColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == LabColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == LuvColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == LuvColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == RGBColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == RGBColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == CMYColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == CMYColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == CMYKColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == CMYKColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == Device2ColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == Device2ColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == Device3ColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == Device3ColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == Device4ColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == Device4ColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == Device5ColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == Device5ColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == Device6ColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == Device6ColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == Device7ColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == Device7ColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == Device8ColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == Device8ColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == Device9ColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == Device9ColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == Device10ColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == Device10ColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == Device11ColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == Device11ColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == Device12ColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == Device12ColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == Device13ColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == Device13ColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == Device14ColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == Device14ColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == Device15ColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == Device15ColorModel, Connection == CIELabColorSpace)
+    @inline(__always)
     func convertToXYZ(_ color: Model) -> XYZColorModel {
         
         var color = color
@@ -1139,30 +581,14 @@ extension ICCColorSpace {
             color[i] = color.normalizedComponent(i)
         }
         
-        switch b2a {
-        case .monochrome, .matrix, .LUT0:
-            if color is XYZColorModel {
-                color[0] *= 2
-                color[2] *= 2
-            }
-        case .LUT1, .LUT2, .LUT3, .LUT4:
-            if color is XYZColorModel {
-                color[1] *= 0.5
-            }
+        if let xyz = color as? XYZColorModel {
+            color = a2b.normalize(xyz) as! Model
         }
         
         var result = _convertLinearToConnection(_convertToLinear(color))
         
-        switch b2a {
-        case .monochrome, .matrix, .LUT0:
-            if result is XYZColorModel {
-                result[0] *= 0.5
-                result[2] *= 0.5
-            }
-        case .LUT1, .LUT2, .LUT3, .LUT4:
-            if result is XYZColorModel {
-                result[1] *= 2
-            }
+        if let xyz = result as? XYZColorModel {
+            result = a2b.denormalize(xyz) as! Connection.Model
         }
         
         result.setNormalizedComponent(0, result[0])
@@ -1173,49 +599,7 @@ extension ICCColorSpace {
     }
     
     @_versioned
-    @_inlineable
-    @_specialize(where Model == GrayColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == GrayColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == XYZColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == XYZColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == LabColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == LabColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == LuvColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == LuvColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == RGBColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == RGBColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == CMYColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == CMYColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == CMYKColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == CMYKColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == Device2ColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == Device2ColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == Device3ColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == Device3ColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == Device4ColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == Device4ColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == Device5ColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == Device5ColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == Device6ColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == Device6ColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == Device7ColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == Device7ColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == Device8ColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == Device8ColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == Device9ColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == Device9ColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == Device10ColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == Device10ColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == Device11ColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == Device11ColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == Device12ColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == Device12ColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == Device13ColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == Device13ColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == Device14ColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == Device14ColorModel, Connection == CIELabColorSpace)
-    @_specialize(where Model == Device15ColorModel, Connection == CIEXYZColorSpace)
-    @_specialize(where Model == Device15ColorModel, Connection == CIELabColorSpace)
+    @inline(__always)
     func convertFromXYZ(_ color: XYZColorModel) -> Model {
         
         var color = self.connection.convertFromXYZ(color * chromaticAdaptationMatrix)
@@ -1224,30 +608,14 @@ extension ICCColorSpace {
         color[1] = color.normalizedComponent(1)
         color[2] = color.normalizedComponent(2)
         
-        switch b2a {
-        case .monochrome, .matrix, .LUT0:
-            if color is XYZColorModel {
-                color[0] *= 2
-                color[2] *= 2
-            }
-        case .LUT1, .LUT2, .LUT3, .LUT4:
-            if color is XYZColorModel {
-                color[1] *= 0.5
-            }
+        if let xyz = color as? XYZColorModel {
+            color = b2a.normalize(xyz) as! Connection.Model
         }
         
         var result = _convertFromLinear(_convertLinearFromConnection(color))
         
-        switch b2a {
-        case .monochrome, .matrix, .LUT0:
-            if result is XYZColorModel {
-                result[0] *= 0.5
-                result[2] *= 0.5
-            }
-        case .LUT1, .LUT2, .LUT3, .LUT4:
-            if result is XYZColorModel {
-                result[1] *= 2
-            }
+        if let xyz = result as? XYZColorModel {
+            result = b2a.denormalize(xyz) as! Model
         }
         
         for i in 0..<Model.numberOfComponents {

@@ -134,8 +134,8 @@ extension iccProfile.TagData {
 
 extension iccProfile.TagData {
     
-    var transform: iccTransform? {
-        return type == .lut8 || type == .lut16 || type == .lutAtoB || type == .lutBtoA ? try? iccTransform(self.rawData) : nil
+    var transform: iccLUTTransform? {
+        return type == .lut8 || type == .lut16 || type == .lutAtoB || type == .lutBtoA ? try? iccLUTTransform(self.rawData) : nil
     }
 }
 
