@@ -23,67 +23,59 @@
 //  THE SOFTWARE.
 //
 
-public struct DGXMLElement {
+public enum DGXMLElement {
     
-    public var kind: Kind
+    case node(DGXMLNode)
+    case characters(String)
+    case comment(String)
+    case CDATA(String)
     
-    public init(name: String, namespace: String? = nil, attributes: [String: String] = [:], elements: [DGXMLElement] = []) {
-        self.kind = .node(DGXMLNode(name: name, namespace: namespace, attributes: attributes, elements: elements))
+    public init(name: String, namespace: String = "", attributes: [DGXMLAttribute: String] = [:], elements: [DGXMLElement] = []) {
+        self = .node(DGXMLNode(name: name, namespace: namespace, attributes: attributes, elements: elements))
     }
     
     public init(_ value: DGXMLNode) {
-        self.kind = .node(value)
+        self = .node(value)
     }
     
     public init(CDATA value: String) {
-        self.kind = .CDATA(value)
+        self = .CDATA(value)
     }
     
     public init(comment value: String) {
-        self.kind = .comment(value)
+        self = .comment(value)
     }
     
     public init(characters value: String) {
-        self.kind = .characters(value)
-    }
-}
-
-extension DGXMLElement {
-    
-    public enum Kind {
-        
-        case node(DGXMLNode)
-        case characters(String)
-        case comment(String)
-        case CDATA(String)
+        self = .characters(value)
     }
 }
 
 extension DGXMLElement {
     
     public var isNode: Bool {
-        switch kind {
+        switch self {
         case .node: return true
         default: return false
         }
     }
     
     public var isCharacters: Bool {
-        switch kind {
+        switch self {
         case .characters: return true
         default: return false
         }
     }
     
     public var isComment: Bool {
-        switch kind {
+        switch self {
         case .comment: return true
         default: return false
         }
     }
     
     public var isCDATA: Bool {
-        switch kind {
+        switch self {
         case .CDATA: return true
         default: return false
         }
@@ -93,42 +85,58 @@ extension DGXMLElement {
 extension DGXMLElement {
     
     public var name: String? {
-        switch kind {
+        switch self {
         case let .node(node): return node.name
         default: return nil
         }
     }
     
     public var namespace: String? {
-        switch kind {
+        switch self {
         case let .node(node): return node.namespace
         default: return nil
         }
     }
     
     public var value: String? {
-        switch kind {
+        switch self {
         case let .characters(value): return value
         case let .comment(value): return value
         case let .CDATA(value): return value
         default: return nil
         }
     }
+}
+
+extension DGXMLElement {
     
-    public var attributes: [String: String] {
-        get {
-            switch kind {
-            case let .node(node): return node.attributes
-            default: return [:]
-            }
+    public mutating func setAttribute(for attribute: String, namespace: String = "", value: String?) {
+        switch self {
+        case var .node(node):
+            node.attributes[DGXMLAttribute(attribute: attribute, namespace: namespace)] = value
+            self = .node(node)
+        default: break
         }
-        set {
-            switch kind {
-            case var .node(node):
-                node.attributes = newValue
-                self.kind = .node(node)
-            default: break
-            }
+    }
+    
+    public func attributes() -> [DGXMLAttribute: String] {
+        switch self {
+        case let .node(node): return node.attributes
+        default: return [:]
+        }
+    }
+    
+    public func attributes(for attribute: String) -> [DGXMLAttribute: String] {
+        switch self {
+        case let .node(node): return node.attributes.filter { $0.key.attribute == attribute }
+        default: return [:]
+        }
+    }
+    
+    public func attributes(for attribute: String, namespace: String) -> String? {
+        switch self {
+        case let .node(node): return node.attributes[DGXMLAttribute(attribute: attribute, namespace: namespace)]
+        default: return nil
         }
     }
 }
@@ -142,14 +150,14 @@ extension DGXMLElement : RandomAccessCollection, MutableCollection {
     public typealias Index = Int
     
     public var startIndex: Int {
-        switch kind {
+        switch self {
         case let .node(node): return node.startIndex
         default: return 0
         }
     }
     
     public var endIndex: Int {
-        switch kind {
+        switch self {
         case let .node(node): return node.endIndex
         default: return 0
         }
@@ -157,16 +165,16 @@ extension DGXMLElement : RandomAccessCollection, MutableCollection {
     
     public subscript(position : Int) -> DGXMLElement {
         get {
-            switch kind {
+            switch self {
             case let .node(node): return node[position]
             default: fatalError()
             }
         }
         set {
-            switch kind {
+            switch self {
             case var .node(node):
                 node[position] = newValue
-                self.kind = .node(node)
+                self = .node(node)
             default: fatalError()
             }
         }
@@ -176,46 +184,46 @@ extension DGXMLElement : RandomAccessCollection, MutableCollection {
 extension DGXMLElement {
     
     public mutating func append(_ newElement: DGXMLElement) {
-        switch kind {
+        switch self {
         case var .node(node):
             node.append(newElement)
-            self.kind = .node(node)
+            self = .node(node)
         default: fatalError()
         }
     }
     
     public mutating func append<S : Sequence>(contentsOf newElements: S) where S.Element == DGXMLElement {
-        switch kind {
+        switch self {
         case var .node(node):
             node.append(contentsOf: newElements)
-            self.kind = .node(node)
+            self = .node(node)
         default: fatalError()
         }
     }
     
     public mutating func reserveCapacity(_ minimumCapacity: Int) {
-        switch kind {
+        switch self {
         case var .node(node):
             node.reserveCapacity(minimumCapacity)
-            self.kind = .node(node)
+            self = .node(node)
         default: fatalError()
         }
     }
     
     public mutating func removeAll(keepingCapacity: Bool = false) {
-        switch kind {
+        switch self {
         case var .node(node):
             node.removeAll(keepingCapacity: keepingCapacity)
-            self.kind = .node(node)
+            self = .node(node)
         default: fatalError()
         }
     }
     
     public mutating func replaceSubrange<C : Collection>(_ subRange: Range<Int>, with newElements: C) where C.Element == DGXMLElement {
-        switch kind {
+        switch self {
         case var .node(node):
             node.replaceSubrange(subRange, with: newElements)
-            self.kind = .node(node)
+            self = .node(node)
         default: fatalError()
         }
     }

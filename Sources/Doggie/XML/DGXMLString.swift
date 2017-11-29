@@ -54,9 +54,9 @@ extension DGXMLDocument : CustomStringConvertible {
 
 extension DGXMLElement {
     
-    fileprivate func _xml(_ terminator: String, prefixMap: [String: String], _ output: inout String) {
+    fileprivate func _xml(_ terminator: String, prefixMap: [String: Substring], _ output: inout String) {
         
-        switch kind {
+        switch self {
         case let .node(node): node._xml(terminator, prefixMap: prefixMap, &output)
         case let .characters(value): value.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).write(to: &output)
         case let .comment(value): "\(terminator)<!--\(value)-->".write(to: &output)
@@ -67,19 +67,19 @@ extension DGXMLElement {
 
 extension DGXMLNode {
     
-    fileprivate func _xml(_ terminator: String, prefixMap: [String: String], _ output: inout String) {
+    fileprivate func _xml(_ terminator: String, prefixMap: [String: Substring], _ output: inout String) {
         
         var prefixMap = prefixMap
         
-        for (key, value) in self.attributes.filter({ $0.key.hasPrefix("xmlns:") }) {
-            let substr = String(key.dropFirst(6)).trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
+        for (key, value) in self.attributes.filter({ $0.key.attribute.hasPrefix("xmlns:") }) {
+            let substr = key.attribute.dropFirst(6)
             if !substr.isEmpty && !substr.contains(":") {
                 prefixMap[value] = substr
             }
         }
         
-        let name = self.namespace.flatMap { prefixMap[$0].map { "\($0):\(self.name)" } } ?? self.name
-        let attributes = self.attributes.map { " \($0)=\"\($1)\"" }.joined()
+        let name = prefixMap[self.namespace].map { "\($0):\(self.name)" } ?? self.name
+        let attributes = self.attributes.map { attribute, value in " \(prefixMap[attribute.namespace].map { "\($0):\(attribute.attribute)" } ?? attribute.attribute)=\"\(value)\"" }.joined()
         
         if self.count == 0 {
             "\(terminator)<\(name)\(attributes) />".write(to: &output)
