@@ -70,7 +70,7 @@ extension LabColorModel : PCSColorModel {
 
 @_versioned
 @_fixed_layout
-struct ICCColorSpace<Model : ColorModelProtocol, Connection : ColorSpaceBaseProtocol> : ColorSpaceBaseProtocol where Connection.Model : PCSColorModel {
+struct ICCColorSpace<Model : ColorModelProtocol, Connection : ColorSpaceBaseProtocol, A2BTransform: iccTransform, B2ATransform: iccTransform> : ColorSpaceBaseProtocol where Connection.Model : PCSColorModel {
     
     @_versioned
     let _iccData: Data
@@ -84,15 +84,15 @@ struct ICCColorSpace<Model : ColorModelProtocol, Connection : ColorSpaceBaseProt
     let cieXYZ : CIEXYZColorSpace
     
     @_versioned
-    let a2b: iccTransform
+    let a2b: A2BTransform
     
     @_versioned
-    let b2a: iccTransform
+    let b2a: B2ATransform
     
     @_versioned
     let chromaticAdaptationMatrix: Matrix
     
-    init(iccData: Data, profile: iccProfile, connection : Connection, cieXYZ : CIEXYZColorSpace, a2b: iccTransform, b2a: iccTransform, chromaticAdaptationMatrix: Matrix) {
+    init(iccData: Data, profile: iccProfile, model: Model.Type, connection : Connection, cieXYZ : CIEXYZColorSpace, a2b: A2BTransform, b2a: B2ATransform, chromaticAdaptationMatrix: Matrix) {
         self._iccData = iccData
         self.profile = profile
         self.connection = connection
@@ -185,92 +185,105 @@ extension AnyColorSpace {
     }
 }
 
+extension iccLUTTransform {
+    
+    var _iccTransform: iccTransform {
+        switch self {
+        case let .LUT0(lut): return lut
+        case let .LUT1(lut): return lut
+        case let .LUT2(lut): return lut
+        case let .LUT3(lut): return lut
+        case let .LUT4(lut): return lut
+        }
+    }
+}
+
 extension ColorSpace {
     
+    static func check(_ a2bCurve: iccLUTTransform, _ b2aCurve: iccLUTTransform) throws {
+        
+        switch a2bCurve {
+        case let .LUT0(lut):
+            if lut.clut.inputChannels != Model.numberOfComponents || lut.clut.outputChannels != 3 {
+                throw AnyColorSpace.ICCError.invalidFormat(message: "Invalid LUT size.")
+            }
+            if lut.input.channels != Model.numberOfComponents {
+                throw AnyColorSpace.ICCError.invalidFormat(message: "Invalid LUT size.")
+            }
+            if lut.output.channels != 3 {
+                throw AnyColorSpace.ICCError.invalidFormat(message: "Invalid LUT size.")
+            }
+        case .LUT1, .LUT2:
+            if Model.numberOfComponents != 3 {
+                throw AnyColorSpace.ICCError.invalidFormat(message: "Invalid LUT size.")
+            }
+        case let .LUT3(lut):
+            if lut.lut.inputChannels != Model.numberOfComponents || lut.lut.outputChannels != 3 {
+                throw AnyColorSpace.ICCError.invalidFormat(message: "Invalid LUT size.")
+            }
+            if lut.A.count != Model.numberOfComponents {
+                throw AnyColorSpace.ICCError.invalidFormat(message: "Invalid LUT size.")
+            }
+        case let .LUT4(lut):
+            if lut.lut.inputChannels != Model.numberOfComponents || lut.lut.outputChannels != 3 {
+                throw AnyColorSpace.ICCError.invalidFormat(message: "Invalid LUT size.")
+            }
+            if lut.A.count != Model.numberOfComponents {
+                throw AnyColorSpace.ICCError.invalidFormat(message: "Invalid LUT size.")
+            }
+        }
+        
+        switch b2aCurve {
+        case let .LUT0(lut):
+            if lut.clut.inputChannels != 3 || lut.clut.outputChannels != Model.numberOfComponents {
+                throw AnyColorSpace.ICCError.invalidFormat(message: "Invalid LUT size.")
+            }
+            if lut.input.channels != 3 {
+                throw AnyColorSpace.ICCError.invalidFormat(message: "Invalid LUT size.")
+            }
+            if lut.output.channels != Model.numberOfComponents {
+                throw AnyColorSpace.ICCError.invalidFormat(message: "Invalid LUT size.")
+            }
+        case .LUT1, .LUT2:
+            if Model.numberOfComponents != 3 {
+                throw AnyColorSpace.ICCError.invalidFormat(message: "Invalid LUT size.")
+            }
+        case let .LUT3(lut):
+            if lut.lut.inputChannels != 3 || lut.lut.outputChannels != Model.numberOfComponents {
+                throw AnyColorSpace.ICCError.invalidFormat(message: "Invalid LUT size.")
+            }
+            if lut.A.count != Model.numberOfComponents {
+                throw AnyColorSpace.ICCError.invalidFormat(message: "Invalid LUT size.")
+            }
+        case let .LUT4(lut):
+            if lut.lut.inputChannels != 3 || lut.lut.outputChannels != Model.numberOfComponents {
+                throw AnyColorSpace.ICCError.invalidFormat(message: "Invalid LUT size.")
+            }
+            if lut.A.count != Model.numberOfComponents {
+                throw AnyColorSpace.ICCError.invalidFormat(message: "Invalid LUT size.")
+            }
+        }
+    }
+    
+    static func ABCurve(profile: iccProfile) throws -> (iccLUTTransform, iccLUTTransform)? {
+        
+        if let a2bCurve = profile[.AToB1].flatMap({ $0.transform }), let b2aCurve = profile[.BToA1].flatMap({ $0.transform }) {
+            try check(a2bCurve, b2aCurve)
+            return (a2bCurve, b2aCurve)
+        }
+        if let a2bCurve = profile[.AToB0].flatMap({ $0.transform }), let b2aCurve = profile[.BToA0].flatMap({ $0.transform }) {
+            try check(a2bCurve, b2aCurve)
+            return (a2bCurve, b2aCurve)
+        }
+        if let a2bCurve = profile[.AToB2].flatMap({ $0.transform }), let b2aCurve = profile[.BToA2].flatMap({ $0.transform }){
+            try check(a2bCurve, b2aCurve)
+            return (a2bCurve, b2aCurve)
+        }
+        
+        return nil
+    }
+    
     init(iccData: Data, profile: iccProfile) throws {
-        
-        func check(_ a2bCurve: iccLUTTransform, _ b2aCurve: iccLUTTransform) throws {
-            
-            switch a2bCurve {
-            case let .LUT0(lut):
-                if lut.clut.inputChannels != Model.numberOfComponents || lut.clut.outputChannels != 3 {
-                    throw AnyColorSpace.ICCError.invalidFormat(message: "Invalid LUT size.")
-                }
-                if lut.input.channels != Model.numberOfComponents {
-                    throw AnyColorSpace.ICCError.invalidFormat(message: "Invalid LUT size.")
-                }
-                if lut.output.channels != 3 {
-                    throw AnyColorSpace.ICCError.invalidFormat(message: "Invalid LUT size.")
-                }
-            case .LUT1, .LUT2:
-                if Model.numberOfComponents != 3 {
-                    throw AnyColorSpace.ICCError.invalidFormat(message: "Invalid LUT size.")
-                }
-            case let .LUT3(lut):
-                if lut.lut.inputChannels != Model.numberOfComponents || lut.lut.outputChannels != 3 {
-                    throw AnyColorSpace.ICCError.invalidFormat(message: "Invalid LUT size.")
-                }
-                if lut.A.count != Model.numberOfComponents {
-                    throw AnyColorSpace.ICCError.invalidFormat(message: "Invalid LUT size.")
-                }
-            case let .LUT4(lut):
-                if lut.lut.inputChannels != Model.numberOfComponents || lut.lut.outputChannels != 3 {
-                    throw AnyColorSpace.ICCError.invalidFormat(message: "Invalid LUT size.")
-                }
-                if lut.A.count != Model.numberOfComponents {
-                    throw AnyColorSpace.ICCError.invalidFormat(message: "Invalid LUT size.")
-                }
-            }
-            
-            switch b2aCurve {
-            case let .LUT0(lut):
-                if lut.clut.inputChannels != 3 || lut.clut.outputChannels != Model.numberOfComponents {
-                    throw AnyColorSpace.ICCError.invalidFormat(message: "Invalid LUT size.")
-                }
-                if lut.input.channels != 3 {
-                    throw AnyColorSpace.ICCError.invalidFormat(message: "Invalid LUT size.")
-                }
-                if lut.output.channels != Model.numberOfComponents {
-                    throw AnyColorSpace.ICCError.invalidFormat(message: "Invalid LUT size.")
-                }
-            case .LUT1, .LUT2:
-                if Model.numberOfComponents != 3 {
-                    throw AnyColorSpace.ICCError.invalidFormat(message: "Invalid LUT size.")
-                }
-            case let .LUT3(lut):
-                if lut.lut.inputChannels != 3 || lut.lut.outputChannels != Model.numberOfComponents {
-                    throw AnyColorSpace.ICCError.invalidFormat(message: "Invalid LUT size.")
-                }
-                if lut.A.count != Model.numberOfComponents {
-                    throw AnyColorSpace.ICCError.invalidFormat(message: "Invalid LUT size.")
-                }
-            case let .LUT4(lut):
-                if lut.lut.inputChannels != 3 || lut.lut.outputChannels != Model.numberOfComponents {
-                    throw AnyColorSpace.ICCError.invalidFormat(message: "Invalid LUT size.")
-                }
-                if lut.A.count != Model.numberOfComponents {
-                    throw AnyColorSpace.ICCError.invalidFormat(message: "Invalid LUT size.")
-                }
-            }
-        }
-        
-        func ABCurve() throws -> (iccTransform, iccTransform)? {
-            
-            if let a2bCurve = profile[.AToB1].flatMap({ $0.transform }), let b2aCurve = profile[.BToA1].flatMap({ $0.transform }) {
-                try check(a2bCurve, b2aCurve)
-                return (a2bCurve._iccTransform, b2aCurve._iccTransform)
-            }
-            if let a2bCurve = profile[.AToB0].flatMap({ $0.transform }), let b2aCurve = profile[.BToA0].flatMap({ $0.transform }) {
-                try check(a2bCurve, b2aCurve)
-                return (a2bCurve._iccTransform, b2aCurve._iccTransform)
-            }
-            if let a2bCurve = profile[.AToB2].flatMap({ $0.transform }), let b2aCurve = profile[.BToA2].flatMap({ $0.transform }){
-                try check(a2bCurve, b2aCurve)
-                return (a2bCurve._iccTransform, b2aCurve._iccTransform)
-            }
-            
-            return nil
-        }
         
         let a2b: iccTransform
         let b2a: iccTransform
@@ -285,10 +298,10 @@ extension ColorSpace {
                 a2b = iccMonochromeTransform(curve: kTRC)
                 b2a = iccMonochromeTransform(curve: kTRC.inverse)
                 
-            } else if let (a2bCurve, b2aCurve) = try ABCurve() {
+            } else if let (a2bCurve, b2aCurve) = try ColorSpace.ABCurve(profile: profile) {
                 
-                a2b = a2bCurve
-                b2a = b2aCurve
+                a2b = a2bCurve._iccTransform
+                b2a = b2aCurve._iccTransform
                 
             } else {
                 throw AnyColorSpace.ICCError.invalidFormat(message: "LUT not found.")
@@ -309,10 +322,10 @@ extension ColorSpace {
                 a2b = iccMatrixTransform(matrix: matrix, curve: (rTRC, gTRC, bTRC))
                 b2a = iccMatrixTransform(matrix: matrix.inverse, curve: (rTRC.inverse, gTRC.inverse, bTRC.inverse))
                 
-            } else if let (a2bCurve, b2aCurve) = try ABCurve() {
+            } else if let (a2bCurve, b2aCurve) = try ColorSpace.ABCurve(profile: profile) {
                 
-                a2b = a2bCurve
-                b2a = b2aCurve
+                a2b = a2bCurve._iccTransform
+                b2a = b2aCurve._iccTransform
                 
             } else {
                 throw AnyColorSpace.ICCError.invalidFormat(message: "LUT not found.")
@@ -320,10 +333,10 @@ extension ColorSpace {
             
         default:
             
-            if let (a2bCurve, b2aCurve) = try ABCurve() {
+            if let (a2bCurve, b2aCurve) = try ColorSpace.ABCurve(profile: profile) {
                 
-                a2b = a2bCurve
-                b2a = b2aCurve
+                a2b = a2bCurve._iccTransform
+                b2a = b2aCurve._iccTransform
                 
             } else {
                 throw AnyColorSpace.ICCError.invalidFormat(message: "LUT not found.")
@@ -369,11 +382,41 @@ extension ColorSpace {
         
         let chromaticAdaptationMatrix = cieXYZ.chromaticAdaptationMatrix(to: _PCSXYZ, .default)
         
-        switch profile.header.pcs {
-        case .XYZ: self.base = ICCColorSpace<Model, CIEXYZColorSpace>(iccData: iccData, profile: profile, connection: PCSXYZ, cieXYZ: cieXYZ, a2b: a2b, b2a: b2a, chromaticAdaptationMatrix: chromaticAdaptationMatrix)
-        case .Lab: self.base = ICCColorSpace<Model, CIELabColorSpace>(iccData: iccData, profile: profile, connection: CIELabColorSpace(PCSXYZ), cieXYZ: cieXYZ, a2b: a2b, b2a: b2a, chromaticAdaptationMatrix: chromaticAdaptationMatrix)
-        default: throw AnyColorSpace.ICCError.invalidFormat(message: "Invalid PCS.")
+        func _createICCColorSpace3<A2BTransform: iccTransform, B2ATransform: iccTransform>(_ a2b: A2BTransform, _ b2a: B2ATransform) throws -> _ColorSpaceBaseProtocol {
+            switch profile.header.pcs {
+            case .XYZ: return ICCColorSpace(iccData: iccData, profile: profile, model: Model.self, connection: PCSXYZ, cieXYZ: cieXYZ, a2b: a2b, b2a: b2a, chromaticAdaptationMatrix: chromaticAdaptationMatrix)
+            case .Lab: return ICCColorSpace(iccData: iccData, profile: profile, model: Model.self, connection: CIELabColorSpace(PCSXYZ), cieXYZ: cieXYZ, a2b: a2b, b2a: b2a, chromaticAdaptationMatrix: chromaticAdaptationMatrix)
+            default: throw AnyColorSpace.ICCError.invalidFormat(message: "Invalid PCS.")
+            }
         }
+        
+        func _createICCColorSpace2<A2BTransform: iccTransform>(_ a2b: A2BTransform) throws -> _ColorSpaceBaseProtocol {
+            switch b2a {
+            case let b2a as iccMonochromeTransform: return try _createICCColorSpace3(a2b, b2a)
+            case let b2a as iccMatrixTransform: return try _createICCColorSpace3(a2b, b2a)
+            case let b2a as iccLUT0Transform: return try _createICCColorSpace3(a2b, b2a)
+            case let b2a as iccLUT1Transform: return try _createICCColorSpace3(a2b, b2a)
+            case let b2a as iccLUT2Transform: return try _createICCColorSpace3(a2b, b2a)
+            case let b2a as iccLUT3Transform: return try _createICCColorSpace3(a2b, b2a)
+            case let b2a as iccLUT4Transform: return try _createICCColorSpace3(a2b, b2a)
+            default: throw AnyColorSpace.ICCError.invalidFormat(message: "Invalid LUT.")
+            }
+        }
+        
+        func _createICCColorSpace() throws -> _ColorSpaceBaseProtocol {
+            switch a2b {
+            case let a2b as iccMonochromeTransform: return try _createICCColorSpace2(a2b)
+            case let a2b as iccMatrixTransform: return try _createICCColorSpace2(a2b)
+            case let a2b as iccLUT0Transform: return try _createICCColorSpace2(a2b)
+            case let a2b as iccLUT1Transform: return try _createICCColorSpace2(a2b)
+            case let a2b as iccLUT2Transform: return try _createICCColorSpace2(a2b)
+            case let a2b as iccLUT3Transform: return try _createICCColorSpace2(a2b)
+            case let a2b as iccLUT4Transform: return try _createICCColorSpace2(a2b)
+            default: throw AnyColorSpace.ICCError.invalidFormat(message: "Invalid LUT.")
+            }
+        }
+        
+        self.base = try _createICCColorSpace()
     }
     
     static func _PCSXYZ_black_point(a2b: iccTransform, b2a: iccTransform) -> XYZColorModel {

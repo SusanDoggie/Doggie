@@ -67,19 +67,6 @@ enum iccLUTTransform {
     case LUT4(iccLUT4Transform)
 }
 
-extension iccLUTTransform {
-    
-    var _iccTransform: iccTransform {
-        switch self {
-        case let .LUT0(lut): return lut
-        case let .LUT1(lut): return lut
-        case let .LUT2(lut): return lut
-        case let .LUT3(lut): return lut
-        case let .LUT4(lut): return lut
-        }
-    }
-}
-
 extension iccLUTTransform : ByteDecodable {
     
     init(from data: inout Data) throws {
