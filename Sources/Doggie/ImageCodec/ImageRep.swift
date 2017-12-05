@@ -59,7 +59,7 @@ extension ImageRep {
             BMPDecoder.self,
             TIFFDecoder.self,
             PNGDecoder.self,
-            JPEGDecoder.self,
+            //JPEGDecoder.self,
             ]
         
         for Decoder in decoders {
