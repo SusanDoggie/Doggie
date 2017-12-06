@@ -568,13 +568,12 @@ struct MultiDimensionalLUT {
     @_inlineable
     func eval<Source: ColorModelProtocol, Destination: ColorModelProtocol>(_ source: Source) -> Destination {
         
-        let position = zip(source, grids).map { _interpolate_index($0, $1) }
-        
         return table.withUnsafeBufferPointer { table in
             
             func _interpolate(level: Int, offset: Int) -> Destination {
                 
-                let _p = position[Source.numberOfComponents - level - 1]
+                let _i = Source.numberOfComponents - level - 1
+                let _p = _interpolate_index(source[_i], grids[_i])
                 let _s = level == 0 ? Destination.numberOfComponents : grids[level - 1]
                 
                 if _p.0 == grids[level] - 1 {
