@@ -576,7 +576,7 @@ struct MultiDimensionalLUT {
                 let _p = _interpolate_index(source[_i], grids[_i])
                 let _s = level == 0 ? Destination.numberOfComponents : grids[level - 1]
                 
-                if _p.0 == grids[level] - 1 {
+                if _p.1 == 0 || _p.0 == grids[level] - 1 {
                     
                     var r = Destination()
                     
