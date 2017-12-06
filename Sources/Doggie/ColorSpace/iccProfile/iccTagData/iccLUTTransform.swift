@@ -593,23 +593,6 @@ struct MultiDimensionalLUT {
                     
                     return r
                     
-                } else if _p.1 == 1 {
-                    
-                    var r = Destination()
-                    
-                    let offset = (offset + _p.0 + 1) * _s
-                    
-                    if level == 0 {
-                        for i in 0..<Destination.numberOfComponents {
-                            r[i] = table[offset + i]
-                        }
-                    } else {
-                        let _level = level - 1
-                        r = _interpolate(level: _level, offset: offset)
-                    }
-                    
-                    return r
-                    
                 } else {
                     
                     var a = Destination()
