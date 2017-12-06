@@ -38,6 +38,8 @@ public protocol ColorSpaceProtocol {
     func rangeOfComponent(_ i: Int) -> ClosedRange<Double>
     
     var cieXYZ: ColorSpace<XYZColorModel> { get }
+    
+    var linearTone: Self { get }
 }
 
 extension ColorSpace : ColorSpaceProtocol {

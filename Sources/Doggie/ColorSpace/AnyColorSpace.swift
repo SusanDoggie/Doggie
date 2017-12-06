@@ -40,6 +40,8 @@ protocol AnyColorSpaceBaseProtocol {
     
     var cieXYZ: ColorSpace<XYZColorModel> { get }
     
+    var _linearTone: AnyColorSpaceBaseProtocol { get }
+    
     func _create_color<S : Sequence>(components: S, opacity: Double) -> AnyColorBaseProtocol where S.Element == Double
     
     func _create_image(width: Int, height: Int, resolution: Resolution, option: MappedBufferOption) -> AnyImageBaseProtocol
@@ -54,6 +56,12 @@ protocol AnyColorSpaceBaseProtocol {
 }
 
 extension ColorSpace : AnyColorSpaceBaseProtocol {
+    
+    @_versioned
+    @_inlineable
+    var _linearTone: AnyColorSpaceBaseProtocol {
+        return self
+    }
     
     @_versioned
     @_inlineable
@@ -166,6 +174,11 @@ extension AnyColorSpace {
     @_inlineable
     public var cieXYZ: ColorSpace<XYZColorModel> {
         return _base.cieXYZ
+    }
+    
+    @_inlineable
+    public var linearTone: AnyColorSpace {
+        return AnyColorSpace(base: _base._linearTone)
     }
 }
 
