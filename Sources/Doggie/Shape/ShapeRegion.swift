@@ -36,7 +36,7 @@ extension RandomAccessCollection where Index : SignedInteger {
             return endIndex
         }
         let count = self.count
-        let offset = numericCast(index - startIndex) % count
+        let offset = IndexDistance(index - startIndex) % count
         return self.index(startIndex, offsetBy: offset < 0 ? offset + count : offset)
     }
 }

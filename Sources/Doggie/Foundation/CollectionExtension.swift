@@ -158,7 +158,7 @@ extension RandomAccessCollection where Indices : RandomAccessCollection {
     @_inlineable
     public func range<C : RandomAccessCollection>(of pattern: C, where isEquivalent: (Element, Element) throws -> Bool) rethrows -> Range<Index>? where C.Indices : RandomAccessCollection, C.Element == Element {
         
-        let pattern_count: IndexDistance = numericCast(pattern.count)
+        let pattern_count = IndexDistance(pattern.count)
         if count < pattern_count {
             return nil
         }
@@ -172,7 +172,7 @@ extension RandomAccessCollection where Indices : RandomAccessCollection {
             }
             let notMatchValue = self[not_match.0]
             if let pos = try reverse_pattern.dropFirst().index(where: { try isEquivalent(notMatchValue, $0) }) {
-                cursor = self.index(not_match.0, offsetBy: numericCast(reverse_pattern.distance(from: reverse_pattern.startIndex, to: pos)), limitedBy: endIndex) ?? endIndex
+                cursor = self.index(not_match.0, offsetBy: IndexDistance(reverse_pattern.distance(from: reverse_pattern.startIndex, to: pos)), limitedBy: endIndex) ?? endIndex
             } else {
                 cursor = self.index(not_match.0, offsetBy: pattern_count, limitedBy: endIndex) ?? endIndex
             }
@@ -272,7 +272,7 @@ extension Collection where SubSequence : Collection {
     
     @_inlineable
     public func rotated(_ n: Int) -> ConcatCollection<SubSequence, SubSequence> {
-        let count: Int = numericCast(self.count)
+        let count = Int(self.count)
         if count == 0 {
             return self[...].concat(self[...])
         }
@@ -288,7 +288,7 @@ extension Collection where SubSequence : BidirectionalCollection {
     
     @_inlineable
     public func rotated(_ n: Int) -> ConcatBidirectionalCollection<SubSequence, SubSequence> {
-        let count: Int = numericCast(self.count)
+        let count = Int(self.count)
         if count == 0 {
             return self[...].concat(self[...])
         }
@@ -304,7 +304,7 @@ extension Collection where SubSequence : RandomAccessCollection {
     
     @_inlineable
     public func rotated(_ n: Int) -> ConcatBidirectionalCollection<SubSequence, SubSequence> {
-        let count: Int = numericCast(self.count)
+        let count = Int(self.count)
         if count == 0 {
             return self[...].concat(self[...])
         }
@@ -536,7 +536,7 @@ public struct LazySliceSequence<Base : RandomAccessCollection> : IteratorProtoco
     
     @_inlineable
     public var underestimatedCount: Int {
-        return base.underestimatedCount / numericCast(maxLength)
+        return base.underestimatedCount / Int(maxLength)
     }
 }
 
@@ -1115,7 +1115,7 @@ public struct ConcatCollection<S1 : Collection, S2 : Collection> : Collection wh
     
     @_inlineable
     public var count : Int {
-        return numericCast(base1.count) + numericCast(base2.count)
+        return Int(base1.count) + Int(base2.count)
     }
     
     @_inlineable
@@ -1185,7 +1185,7 @@ public struct ConcatBidirectionalCollection<S1 : BidirectionalCollection, S2 : B
     
     @_inlineable
     public var count : Int {
-        return numericCast(base1.count) + numericCast(base2.count)
+        return Int(base1.count) + Int(base2.count)
     }
     
     @_inlineable
