@@ -97,7 +97,7 @@ public class SDLock {
     public init() {
         var attr = pthread_mutexattr_t()
         pthread_mutexattr_init(&attr)
-        pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE)
+        pthread_mutexattr_settype(&attr, numericCast(PTHREAD_MUTEX_RECURSIVE))
         pthread_mutex_init(&_mtx, &attr)
         pthread_mutexattr_destroy(&attr)
     }
