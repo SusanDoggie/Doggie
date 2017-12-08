@@ -47,7 +47,8 @@ extension FileManager {
                 
                 if resourceValues.isAliasFile == true {
                     
-                    searchPaths.append(contentsOf: OptionOneCollection(try? URL(resolvingAliasFileAt: url)))
+                    guard let url = try? URL(resolvingAliasFileAt: url) else { continue }
+                    searchPaths.append(url)
                     
                 } else if url.isFileURL {
                     
