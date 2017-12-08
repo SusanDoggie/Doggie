@@ -31,14 +31,17 @@ struct TTCDecoder : FontDecoder {
     var collection: [OpenTypeDecoder] = []
     
     init?(data: Data) throws {
-        
-        guard let header = try? TTCHeader(data), header.tag == "ttcf" else { return nil }
+        var _header = data
+        guard let header = try? _header.decode(TTCHeader.self), header.tag == "ttcf" else { return nil }
         
         self.header = header
         
-        for offset in header.offsetTable where offset != 0 {
-            guard let font = try OpenTypeDecoder(data: data, entry: Int(offset)) else { throw FontCollection.Error.InvalidFormat("Invalid font.") }
-            self.collection.append(font)
+        for _ in 0..<Int(header.numFonts) {
+            let offset = try _header.decode(BEUInt32.self)
+            if offset != 0 {
+                guard let font = try OpenTypeDecoder(data: data, entry: Int(offset)) else { throw FontCollection.Error.InvalidFormat("Invalid font.") }
+                self.collection.append(font)
+            }
         }
     }
     
@@ -53,14 +56,12 @@ struct TTCHeader : ByteDecodable {
     var majorVersion: BEUInt16
     var minorVersion: BEUInt16
     var numFonts: BEUInt32
-    var offsetTable: [BEUInt32]
     
     init(from data: inout Data) throws {
         self.tag = try data.decode(Signature<BEUInt32>.self)
         self.majorVersion = try data.decode(BEUInt16.self)
         self.minorVersion = try data.decode(BEUInt16.self)
         self.numFonts = try data.decode(BEUInt32.self)
-        self.offsetTable = try (0..<Int(numFonts)).map { _ in try data.decode(BEUInt32.self) }
     }
 }
 
