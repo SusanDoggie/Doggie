@@ -1,5 +1,5 @@
 //
-//  CTFont.swift
+//  FileManager.swift
 //
 //  The MIT License
 //  Copyright (c) 2015 - 2017 Susan Cheng. All rights reserved.
@@ -25,15 +25,38 @@
 
 import Foundation
 
-#if os(macOS) || os(iOS) || os(tvOS) || os(watchOS)
+extension FileManager {
     
-    extension FontCollection {
+    func fileUrls<S : Sequence>(_ urls: S) -> Set<URL> where S.Element == URL {
         
-        @available(OSX 10.11, iOS 9.0, *)
-        public static var availableFonts: FontCollection {
-            return FontCollection(FileManager.default.urls(for: .libraryDirectory, in: .allDomainsMask).map { URL(fileURLWithPath: "Fonts", relativeTo: $0) })
+        var result: Set<URL> = []
+        
+        var checked: Set<URL> = []
+        var searchPaths = Array(urls)
+        
+        while let url = searchPaths.popLast()?.resolvingSymlinksInPath() {
+            
+            guard !checked.contains(url) else { continue }
+            guard let enumerator = self.enumerator(at: url, includingPropertiesForKeys: nil, options: [], errorHandler: nil) else { continue }
+            
+            checked.insert(url)
+            
+            for url in enumerator {
+                
+                guard let url = url as? URL, let resourceValues = try? url.resourceValues(forKeys: [.isAliasFileKey]) else { continue }
+                
+                if resourceValues.isAliasFile == true {
+                    
+                    searchPaths.append(contentsOf: OptionOneCollection(try? URL(resolvingAliasFileAt: url)))
+                    
+                } else if url.isFileURL {
+                    
+                    result.insert(url)
+                }
+            }
         }
         
+        return result
     }
-    
-#endif
+}
+

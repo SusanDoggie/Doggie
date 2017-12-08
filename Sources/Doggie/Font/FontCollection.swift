@@ -225,3 +225,23 @@ extension FontCollection {
         throw Error.UnknownFormat
     }
 }
+
+extension FontCollection {
+    
+    public init<S : Sequence>(_ urls: S) where S.Element == URL {
+        
+        self.init()
+        
+        for url in FileManager.default.fileUrls(urls) {
+            
+            if let data = try? Data(contentsOf: url, options: .alwaysMapped), let fonts = try? FontCollection(data: data) {
+                self.formUnion(fonts)
+            }
+        }
+    }
+        
+    public init(_ url: URL) {
+        self.init([url])
+    }
+}
+

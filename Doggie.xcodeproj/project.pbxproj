@@ -97,6 +97,7 @@
 		0A78E1F91E98B20A00BD91AB /* Geometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A78E1F71E98B20A00BD91AB /* Geometry.swift */; };
 		0A792C751FDA28DB003C0290 /* PathBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A792C741FDA28DB003C0290 /* PathBuilder.swift */; };
 		0A792C771FDA2996003C0290 /* BreakLoop.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A792C761FDA2996003C0290 /* BreakLoop.swift */; };
+		0A792CA01FDA9742003C0290 /* FileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A792C9F1FDA9742003C0290 /* FileManager.swift */; };
 		0A7A1FAF1F04FBFC0016B3FB /* ColorPixel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7A1FAD1F04FBFC0016B3FB /* ColorPixel.swift */; };
 		0A7A1FB21F04FC230016B3FB /* ARGB32ColorPixel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7A1FB01F04FC230016B3FB /* ARGB32ColorPixel.swift */; };
 		0A7A4C001F738D18005F44CD /* XMLTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7A4BFF1F738D18005F44CD /* XMLTest.swift */; };
@@ -312,6 +313,7 @@
 		0A78E1F71E98B20A00BD91AB /* Geometry.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Geometry.swift; sourceTree = "<group>"; };
 		0A792C741FDA28DB003C0290 /* PathBuilder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = PathBuilder.swift; sourceTree = "<group>"; };
 		0A792C761FDA2996003C0290 /* BreakLoop.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = BreakLoop.swift; sourceTree = "<group>"; };
+		0A792C9F1FDA9742003C0290 /* FileManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileManager.swift; sourceTree = "<group>"; };
 		0A7A1FAD1F04FBFC0016B3FB /* ColorPixel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = ColorPixel.swift; sourceTree = "<group>"; };
 		0A7A1FB01F04FC230016B3FB /* ARGB32ColorPixel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = ARGB32ColorPixel.swift; sourceTree = "<group>"; };
 		0A7A4BFD1F73765B005F44CD /* DGXMLString.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = DGXMLString.swift; sourceTree = "<group>"; };
@@ -479,6 +481,7 @@
 				0A53E45C1E35AEF80060FB83 /* Regex.swift */,
 				0A7F5B661F79F13600685AA0 /* MappedBuffer.swift */,
 				0ABFA6C61FC67CA8009D42E2 /* FileBuffer.swift */,
+				0A792C9F1FDA9742003C0290 /* FileManager.swift */,
 			);
 			path = Foundation;
 			sourceTree = "<group>";
@@ -1227,6 +1230,7 @@
 				0A85352A1F5901E1006FB85D /* CFFINDEX.swift in Sources */,
 				086F064D1EDC65D600BA70C8 /* DrawGradientMesh.swift in Sources */,
 				08B68A3B1ED07A8300F8D423 /* LinearToneColorSpace.swift in Sources */,
+				0A792CA01FDA9742003C0290 /* FileManager.swift in Sources */,
 				08458AF51E2E627600D01813 /* CircularConvolve.swift in Sources */,
 				0889F2CC1F1904EB0020E750 /* Signature.swift in Sources */,
 				0ABDF1AA1F2B34E6007EC7B2 /* ChromaticAdaptationAlgorithm.swift in Sources */,
