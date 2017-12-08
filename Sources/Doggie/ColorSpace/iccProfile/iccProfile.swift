@@ -43,7 +43,6 @@ struct iccProfile {
     
     init(_ data: Data) throws {
         
-        let data = Data(data)
         var _data = data
         
         do {
@@ -60,12 +59,9 @@ struct iccProfile {
                 
                 guard size > 8 else { continue }
                 
-                let start = Int(offset)
-                let end = start + Int(size)
+                guard data.count >= Int(offset) + Int(size) else { throw AnyColorSpace.ICCError.invalidFormat(message: "Unexpected end of file.") }
                 
-                guard data.count >= end else { throw AnyColorSpace.ICCError.invalidFormat(message: "Unexpected end of file.") }
-                
-                table[sig] = TagData(rawData: data[start..<end])
+                table[sig] = TagData(rawData: data.dropFirst(Int(offset)).prefix(Int(size)))
             }
             
         } catch {

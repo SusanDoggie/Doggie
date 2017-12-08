@@ -192,7 +192,10 @@ struct PNGDecoder : ImageRepDecoder {
         
         guard let icc = chunks.first(where: { $0.signature == "iCCP" }) else { return _colorSpace }
         
-        guard let separator = icc.data.index(of: 0), 1...80 ~= separator && icc.data.count > separator + 2 else { return _colorSpace }
+        guard let separator = icc.data.index(of: 0) else { return _colorSpace }
+        
+        let _offset = separator - icc.data.startIndex
+        guard 1...80 ~= _offset && icc.data.count > _offset + 2 else { return _colorSpace }
         
         let compression = icc.data[separator + 1..<separator + 2].withUnsafeBytes { $0.pointee as UInt8 }
         
@@ -213,7 +216,10 @@ struct PNGDecoder : ImageRepDecoder {
         
         guard let icc = chunks.first(where: { $0.signature == "iCCP" }) else { return _colorSpace }
         
-        guard let separator = icc.data.index(of: 0), 1...80 ~= separator && icc.data.count > separator + 2 else { return _colorSpace }
+        guard let separator = icc.data.index(of: 0) else { return _colorSpace }
+        
+        let _offset = separator - icc.data.startIndex
+        guard 1...80 ~= _offset && icc.data.count > _offset + 2 else { return _colorSpace }
         
         let compression = icc.data[separator + 1..<separator + 2].withUnsafeBytes { $0.pointee as UInt8 }
         
@@ -989,7 +995,7 @@ struct PNGChunk {
     
     init(signature: Signature<BEUInt32>, data: Data) {
         self.signature = signature
-        self.data = Data(data)
+        self.data = data
     }
     
     init?(data: Data) {
@@ -1001,7 +1007,7 @@ struct PNGChunk {
         
         guard signature.description.all(where: { "a"..."z" ~= $0 || "A"..."Z" ~= $0 }) else { return nil }
         
-        self.data = Data(data.dropFirst(8).prefix(Int(length)) as Data)
+        self.data = data.dropFirst(8).prefix(Int(length))
     }
     
     func calculateCRC() -> BEUInt32 {

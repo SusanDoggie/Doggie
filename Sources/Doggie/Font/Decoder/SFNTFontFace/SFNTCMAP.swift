@@ -127,7 +127,7 @@ extension SFNTCMAP {
         
         subscript(code: UInt32) -> Int {
             guard code < 256 else { return 0 }
-            return Int(data[Int(code)])
+            return Int(data.withUnsafeBytes { $0[Int(code)] as UInt8 })
         }
         
         var coveredCharacterSet: CharacterSet {

@@ -35,7 +35,7 @@ struct iccMultiLocalizedUnicode : RandomAccessCollection, ByteCodable {
     
     init(from data: inout Data) throws {
         
-        let _data = Data(data)
+        let _data = data
         
         guard data.count > 8 else { throw AnyColorSpace.ICCError.endOfData }
         
@@ -56,7 +56,7 @@ struct iccMultiLocalizedUnicode : RandomAccessCollection, ByteCodable {
             
             guard _data.count >= offset + length else { throw AnyColorSpace.ICCError.endOfData }
             
-            let strData = _data[offset..<offset + length]
+            let strData = _data.dropFirst(offset).prefix(length)
             
             messages.append((entry.language, entry.country, String(bytes: strData, encoding: .utf16BigEndian) ?? ""))
         }
