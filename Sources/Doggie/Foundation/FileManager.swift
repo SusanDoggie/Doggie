@@ -43,16 +43,12 @@ extension FileManager {
             
             for url in enumerator {
                 
-                guard let url = url as? URL, let resourceValues = try? url.resourceValues(forKeys: [.isAliasFileKey]) else { continue }
+                guard let url = url as? URL, let resourceValues = try? url.resourceValues(forKeys: [.isRegularFileKey]) else { continue }
                 
-                if resourceValues.isAliasFile == true {
-                    
-                    guard let url = try? URL(resolvingAliasFileAt: url) else { continue }
-                    searchPaths.append(url)
-                    
-                } else if url.isFileURL {
-                    
+                if resourceValues.isRegularFile == true {
                     result.insert(url)
+                } else {
+                    searchPaths.append(url)
                 }
             }
         }
