@@ -220,7 +220,7 @@ extension FontCollection {
             ]
         
         for Decoder in decoders {
-            if let decoder = try Decoder.init(data: Data(data)) {
+            if let decoder = try Decoder.init(data: data) {
                 self.init(decoder.faces.flatMap(Font.init))
                 return
             }
