@@ -41,10 +41,6 @@ public struct FontCollection : SetAlgebra, Hashable, Collection, ExpressibleByAr
         self.fonts = Set(elements.map(_ElementWrapper.init))
     }
     
-    public init(_ elements: Font ...) {
-        self.fonts = Set(elements.map(_ElementWrapper.init))
-    }
-    
     public init<S : Sequence>(_ components: S) where S.Element == Font {
         self.fonts = Set(components.map(_ElementWrapper.init))
     }

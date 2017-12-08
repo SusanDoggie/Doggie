@@ -116,10 +116,6 @@ public struct Shape : RandomAccessCollection, MutableCollection, ExpressibleByAr
         self.components = elements
     }
     
-    public init(_ elements: Component ...) {
-        self.components = elements
-    }
-    
     public init<S : Sequence>(_ components: S) where S.Element == Component {
         self.components = Array(components)
     }
