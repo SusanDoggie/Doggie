@@ -61,3 +61,16 @@ extension Color : ColorProtocol {
         return Color<Model>(colorSpace: colorSpace, color: self.colorSpace.convert(self.color, to: colorSpace, intent: intent), opacity: self.opacity)
     }
 }
+
+extension ColorProtocol {
+    
+    @_transparent
+    public func almostEqual<C: ColorProtocol>(_ other: C, intent: RenderingIntent = .default, epsilon: Double = Double.defaultAlmostEqualEpsilon) -> Bool {
+        let _cieXYZ = self.colorSpace.cieXYZ
+        let _self = self.convert(to: _cieXYZ, intent: intent)
+        let _other = other.convert(to: _cieXYZ, intent: intent)
+        return _self.color.x.almostEqual(_other.color.x, epsilon: epsilon)
+            && _self.color.y.almostEqual(_other.color.y, epsilon: epsilon)
+            && _self.color.z.almostEqual(_other.color.z, epsilon: epsilon)
+    }
+}
