@@ -65,7 +65,7 @@ extension Color : ColorProtocol {
 extension ColorProtocol {
     
     @_transparent
-    public func almostEqual<C: ColorProtocol>(_ other: C, intent: RenderingIntent = .default, epsilon: Double = Double.defaultAlmostEqualEpsilon) -> Bool {
+    public func almostEqual<C: ColorProtocol>(_ other: C, intent: RenderingIntent = .default, epsilon: Double = 0.0001) -> Bool {
         let _cieXYZ = self.colorSpace.cieXYZ
         let _self = self.convert(to: _cieXYZ, intent: intent)
         let _other = other.convert(to: _cieXYZ, intent: intent)
