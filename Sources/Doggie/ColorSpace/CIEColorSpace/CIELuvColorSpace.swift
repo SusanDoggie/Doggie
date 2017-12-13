@@ -76,6 +76,15 @@ extension CIELuvColorSpace {
     
     @_versioned
     @_inlineable
+    var linearTone: CIELuvColorSpace {
+        return self
+    }
+}
+
+extension CIELuvColorSpace {
+    
+    @_versioned
+    @_inlineable
     func convertToLinear(_ color: Model) -> Model {
         return color
     }

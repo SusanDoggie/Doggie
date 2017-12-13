@@ -76,6 +76,15 @@ extension CIELabColorSpace {
     
     @_versioned
     @_inlineable
+    var linearTone: CIELabColorSpace {
+        return self
+    }
+}
+
+extension CIELabColorSpace {
+    
+    @_versioned
+    @_inlineable
     func convertToLinear(_ color: Model) -> Model {
         return color
     }

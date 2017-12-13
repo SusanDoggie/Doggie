@@ -96,6 +96,15 @@ extension CIEXYZColorSpace {
     
     @_versioned
     @_inlineable
+    var linearTone: CIEXYZColorSpace {
+        return self
+    }
+}
+
+extension CIEXYZColorSpace {
+    
+    @_versioned
+    @_inlineable
     var cieXYZ: CIEXYZColorSpace {
         return self
     }
