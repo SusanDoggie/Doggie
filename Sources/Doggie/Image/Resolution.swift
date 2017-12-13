@@ -23,22 +23,37 @@
 //  THE SOFTWARE.
 //
 
-public struct Resolution {
+public struct Resolution : Hashable {
     
     public var horizontal: Double
     public var vertical: Double
     public var unit: Unit
     
+    @_inlineable
     public init(horizontal: Double, vertical: Double, unit: Unit) {
         self.horizontal = horizontal
         self.vertical = vertical
         self.unit = unit
     }
     
+    @_inlineable
     public init(resolution: Double, unit: Unit) {
         self.horizontal = resolution
         self.vertical = resolution
         self.unit = unit
+    }
+}
+
+extension Resolution {
+    
+    @_inlineable
+    public var hashValue: Int {
+        return hash_combine(seed: 0, horizontal.hashValue, vertical.hashValue, unit.hashValue)
+    }
+    
+    @_inlineable
+    public static func ==(lhs: Resolution, rhs: Resolution) -> Bool {
+        return lhs.horizontal == rhs.horizontal && lhs.vertical == rhs.vertical && lhs.unit == rhs.unit
     }
 }
 
