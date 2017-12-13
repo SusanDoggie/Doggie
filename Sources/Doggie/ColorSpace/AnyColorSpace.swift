@@ -42,6 +42,10 @@ protocol AnyColorSpaceBaseProtocol {
     
     var _linearTone: AnyColorSpaceBaseProtocol { get }
     
+    var hashValue: Int { get }
+    
+    func isEqualTo(_ other: AnyColorSpaceBaseProtocol) -> Bool
+    
     func _create_color<S : Sequence>(components: S, opacity: Double) -> AnyColorBaseProtocol where S.Element == Double
     
     func _create_image(width: Int, height: Int, resolution: Resolution, option: MappedBufferOption) -> AnyImageBaseProtocol
@@ -53,6 +57,16 @@ protocol AnyColorSpaceBaseProtocol {
     func _create_image(width: Int, height: Int, resolution: Resolution, bitmaps: [RawBitmap], premultiplied: Bool, option: MappedBufferOption) -> AnyImageBaseProtocol
     
     func _convert<Model>(color: Color<Model>, intent: RenderingIntent) -> AnyColorBaseProtocol
+}
+
+extension AnyColorSpaceBaseProtocol where Self : Equatable {
+    
+    @_versioned
+    @_inlineable
+    func isEqualTo(_ other: AnyColorSpaceBaseProtocol) -> Bool {
+        guard let other = other as? Self else { return false }
+        return self == other
+    }
 }
 
 extension ColorSpace : AnyColorSpaceBaseProtocol {
@@ -109,7 +123,7 @@ extension ColorSpace : AnyColorSpaceBaseProtocol {
 }
 
 @_fixed_layout
-public struct AnyColorSpace : ColorSpaceProtocol {
+public struct AnyColorSpace : ColorSpaceProtocol, Hashable {
 
     @_versioned
     var _base: AnyColorSpaceBaseProtocol
@@ -123,6 +137,19 @@ public struct AnyColorSpace : ColorSpaceProtocol {
     @_inlineable
     public var base: Any {
         return _base
+    }
+}
+
+extension AnyColorSpace {
+    
+    @_inlineable
+    public var hashValue: Int {
+        return _base.hashValue
+    }
+    
+    @_inlineable
+    public static func ==(lhs: AnyColorSpace, rhs: AnyColorSpace) -> Bool {
+        return lhs._base.isEqualTo(rhs._base)
     }
 }
 

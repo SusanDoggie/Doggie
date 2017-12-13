@@ -42,7 +42,3 @@ public protocol ColorSpaceProtocol {
     var linearTone: Self { get }
 }
 
-extension ColorSpace : ColorSpaceProtocol {
-    
-}
-

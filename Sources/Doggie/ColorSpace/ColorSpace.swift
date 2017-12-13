@@ -34,6 +34,8 @@ protocol _ColorSpaceBaseProtocol {
     
     var cieXYZ: CIEXYZColorSpace { get }
     
+    func isEqualTo(_ other: _ColorSpaceBaseProtocol) -> Bool
+    
     func _convertToLinear<Model : ColorModelProtocol>(_ color: Model) -> Model
     
     func _convertFromLinear<Model : ColorModelProtocol>(_ color: Model) -> Model
@@ -58,8 +60,18 @@ extension _ColorSpaceBaseProtocol {
     }
 }
 
+extension _ColorSpaceBaseProtocol where Self : Equatable {
+    
+    @_versioned
+    @_inlineable
+    func isEqualTo(_ other: _ColorSpaceBaseProtocol) -> Bool {
+        guard let other = other as? Self else { return false }
+        return self == other
+    }
+}
+
 @_versioned
-protocol ColorSpaceBaseProtocol : _ColorSpaceBaseProtocol {
+protocol ColorSpaceBaseProtocol : _ColorSpaceBaseProtocol, Equatable {
     
     associatedtype Model : ColorModelProtocol
     
@@ -150,7 +162,7 @@ extension ColorSpaceBaseProtocol {
 }
 
 @_fixed_layout
-public struct ColorSpace<Model : ColorModelProtocol> {
+public struct ColorSpace<Model : ColorModelProtocol> : ColorSpaceProtocol, Hashable {
     
     @_versioned
     let base : _ColorSpaceBaseProtocol
@@ -161,6 +173,19 @@ public struct ColorSpace<Model : ColorModelProtocol> {
     @_inlineable
     init(base : _ColorSpaceBaseProtocol) {
         self.base = base
+    }
+}
+
+extension ColorSpace {
+    
+    @_inlineable
+    public var hashValue: Int {
+        return description.hashValue
+    }
+    
+    @_inlineable
+    public static func ==(lhs: ColorSpace<Model>, rhs: ColorSpace<Model>) -> Bool {
+        return lhs.base.isEqualTo(rhs.base)
     }
 }
 

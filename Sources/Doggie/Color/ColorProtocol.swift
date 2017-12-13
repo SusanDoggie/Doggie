@@ -54,14 +54,6 @@ public protocol ColorProtocol {
     func convert(to colorSpace: AnyColorSpace, intent: RenderingIntent) -> AnyColor
 }
 
-extension Color : ColorProtocol {
-    
-    @_inlineable
-    public func convert<Model>(to colorSpace: Doggie.ColorSpace<Model>, intent: RenderingIntent = .default) -> Color<Model> {
-        return Color<Model>(colorSpace: colorSpace, color: self.colorSpace.convert(self.color, to: colorSpace, intent: intent), opacity: self.opacity)
-    }
-}
-
 extension ColorProtocol {
     
     @_inlineable

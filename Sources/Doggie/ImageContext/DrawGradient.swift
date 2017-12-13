@@ -45,6 +45,30 @@ public struct GradientStop<C: ColorProtocol> {
     }
 }
 
+extension GradientStop where C : Equatable {
+    
+    @_inlineable
+    public static func ==(lhs: GradientStop, rhs: GradientStop) -> Bool {
+        return lhs.offset == rhs.offset && lhs.color == rhs.color
+    }
+}
+
+extension GradientStop where C : Hashable {
+    
+    @_inlineable
+    public var hashValue: Int {
+        return hash_combine(seed: 0, offset.hashValue, color.hashValue)
+    }
+}
+
+extension GradientStop where C == AnyColor {
+    
+    @_inlineable
+    public init<M>(offset: Double, color: Color<M>) {
+        self.init(offset: offset, color: AnyColor(color))
+    }
+}
+
 extension ImageContext {
     
     @_versioned

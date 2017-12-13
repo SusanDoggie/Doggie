@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-public struct Color<Model : ColorModelProtocol> {
+public struct Color<Model : ColorModelProtocol> : ColorProtocol, Hashable {
     
     public var colorSpace: Doggie.ColorSpace<Model>
     
@@ -47,6 +47,19 @@ public struct Color<Model : ColorModelProtocol> {
         self.colorSpace = colorSpace
         self.color = color
         self.opacity = opacity
+    }
+}
+
+extension Color {
+    
+    @_inlineable
+    public var hashValue: Int {
+        return hash_combine(seed: 0, colorSpace.hashValue, color.hashValue, opacity.hashValue)
+    }
+    
+    @_inlineable
+    public static func ==(lhs: Color, rhs: Color) -> Bool {
+        return lhs.colorSpace == rhs.colorSpace && lhs.color == rhs.color && lhs.opacity == rhs.opacity
     }
 }
 
@@ -306,6 +319,14 @@ extension Color {
     @_inlineable
     public var isOpaque: Bool {
         return opacity >= 1
+    }
+}
+
+extension Color {
+    
+    @_inlineable
+    public func convert<Model>(to colorSpace: Doggie.ColorSpace<Model>, intent: RenderingIntent = .default) -> Color<Model> {
+        return Color<Model>(colorSpace: colorSpace, color: self.colorSpace.convert(self.color, to: colorSpace, intent: intent), opacity: self.opacity)
     }
 }
 

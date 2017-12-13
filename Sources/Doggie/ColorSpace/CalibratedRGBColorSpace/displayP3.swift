@@ -72,6 +72,12 @@ class _displayP3: CalibratedRGBColorSpace {
     override var localizedName: String? {
         return "Doggie Calibrated RGB Color Space (DisplayP3)"
     }
+    
+    @_versioned
+    @_inlineable
+    override func _isEqualTo(_ other: CalibratedRGBColorSpace) -> Bool {
+        return type(of: other) == _displayP3.self
+    }
 }
 
 extension ColorSpace where Model == RGBColorModel {

@@ -106,6 +106,15 @@ struct ICCColorSpace<Model : ColorModelProtocol, Connection : ColorSpaceBaseProt
 extension ICCColorSpace {
     
     @_versioned
+    @_inlineable
+    static func ==(lhs: ICCColorSpace, rhs: ICCColorSpace) -> Bool {
+        return lhs._iccData == rhs._iccData
+    }
+}
+
+extension ICCColorSpace {
+    
+    @_versioned
     var iccData: Data? {
         return _iccData
     }

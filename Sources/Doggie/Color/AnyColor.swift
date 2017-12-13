@@ -32,6 +32,10 @@ protocol AnyColorBaseProtocol {
     
     var cieXYZ: Color<XYZColorModel> { get }
     
+    var hashValue: Int { get }
+    
+    func isEqualTo(_ other: AnyColorBaseProtocol) -> Bool
+    
     var numberOfComponents: Int { get }
     
     func rangeOfComponent(_ i: Int) -> ClosedRange<Double>
@@ -53,6 +57,16 @@ protocol AnyColorBaseProtocol {
     func convert(to colorSpace: AnyColorSpace, intent: RenderingIntent) -> AnyColor
     
     func _blended<C: ColorProtocol>(source: C, blendMode: ColorBlendMode, compositingMode: ColorCompositingMode) -> AnyColorBaseProtocol
+}
+
+extension AnyColorBaseProtocol where Self : Equatable {
+    
+    @_versioned
+    @_inlineable
+    func isEqualTo(_ other: AnyColorBaseProtocol) -> Bool {
+        guard let other = other as? Self else { return false }
+        return self == other
+    }
 }
 
 extension Color : AnyColorBaseProtocol {
@@ -77,7 +91,7 @@ extension Color : AnyColorBaseProtocol {
 }
 
 @_fixed_layout
-public struct AnyColor : ColorProtocol {
+public struct AnyColor : ColorProtocol, Hashable {
     
     @_versioned
     var _base: AnyColorBaseProtocol
@@ -97,17 +111,30 @@ public struct AnyColor : ColorProtocol {
 extension AnyColor {
     
     @_inlineable
+    public var hashValue: Int {
+        return _base.hashValue
+    }
+    
+    @_inlineable
+    public static func ==(lhs: AnyColor, rhs: AnyColor) -> Bool {
+        return lhs._base.isEqualTo(rhs._base)
+    }
+}
+
+extension AnyColor {
+    
+    @_inlineable
     public init<S : Sequence>(colorSpace: AnyColorSpace, components: S, opacity: Double = 1) where S.Element == Double {
         self.init(base: colorSpace._base._create_color(components: components, opacity: opacity))
     }
     
     @_inlineable
-    public init<P : ColorPixelProtocol>(colorSpace: ColorSpace<P.Model>, color: P) {
+    public init<P : ColorPixelProtocol>(colorSpace: Doggie.ColorSpace<P.Model>, color: P) {
         self.init(Color(colorSpace: colorSpace, color: color))
     }
     
     @_inlineable
-    public init<Model>(colorSpace: ColorSpace<Model>, color: Model, opacity: Double = 1) {
+    public init<Model>(colorSpace: Doggie.ColorSpace<Model>, color: Model, opacity: Double = 1) {
         self.init(Color(colorSpace: colorSpace, color: color, opacity: opacity))
     }
     
@@ -119,6 +146,34 @@ extension AnyColor {
     @_inlineable
     public init(_ color: AnyColor) {
         self = color
+    }
+}
+
+extension AnyColor {
+    
+    @_inlineable
+    public init(colorSpace: Doggie.ColorSpace<GrayColorModel>, white: Double, opacity: Double = 1) {
+        self.init(colorSpace: colorSpace, color: GrayColorModel(white: white), opacity: opacity)
+    }
+    
+    @_inlineable
+    public init(colorSpace: Doggie.ColorSpace<RGBColorModel>, red: Double, green: Double, blue: Double, opacity: Double = 1) {
+        self.init(colorSpace: colorSpace, color: RGBColorModel(red: red, green: green, blue: blue), opacity: opacity)
+    }
+    
+    @_inlineable
+    public init(colorSpace: Doggie.ColorSpace<RGBColorModel>, hue: Double, saturation: Double, brightness: Double, opacity: Double = 1) {
+        self.init(colorSpace: colorSpace, color: RGBColorModel(hue: hue, saturation: saturation, brightness: brightness), opacity: opacity)
+    }
+    
+    @_inlineable
+    public init(colorSpace: Doggie.ColorSpace<CMYColorModel>, cyan: Double, magenta: Double, yellow: Double, opacity: Double = 1) {
+        self.init(colorSpace: colorSpace, color: CMYColorModel(cyan: cyan, magenta: magenta, yellow: yellow), opacity: opacity)
+    }
+    
+    @_inlineable
+    public init(colorSpace: Doggie.ColorSpace<CMYKColorModel>, cyan: Double, magenta: Double, yellow: Double, black: Double, opacity: Double = 1) {
+        self.init(colorSpace: colorSpace, color: CMYKColorModel(cyan: cyan, magenta: magenta, yellow: yellow, black: black), opacity: opacity)
     }
 }
 

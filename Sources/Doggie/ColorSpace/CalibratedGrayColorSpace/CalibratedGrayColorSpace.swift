@@ -81,6 +81,19 @@ class CalibratedGrayColorSpace : ColorSpaceBaseProtocol {
     var localizedName: String? {
         return "Doggie Calibrated Gray Color Space (white = \(cieXYZ.white.point))"
     }
+    
+    @_versioned
+    @_inlineable
+    func _isEqualTo(_ other: CalibratedGrayColorSpace) -> Bool {
+        guard type(of: other) == CalibratedGrayColorSpace.self else { return false }
+        return self.cieXYZ == other.cieXYZ
+    }
+    
+    @_versioned
+    @_inlineable
+    static func ==(lhs: CalibratedGrayColorSpace, rhs: CalibratedGrayColorSpace) -> Bool {
+        return lhs._isEqualTo(rhs)
+    }
 }
 
 extension CalibratedGrayColorSpace {
@@ -146,5 +159,13 @@ class CalibratedGammaGrayColorSpace: CalibratedGrayColorSpace {
     @_inlineable
     override var localizedName: String? {
         return "Doggie Calibrated Gray Color Space (white = \(cieXYZ.white.point), gamma = \(gamma))"
+    }
+    
+    @_versioned
+    @_inlineable
+    override func _isEqualTo(_ other: CalibratedGrayColorSpace) -> Bool {
+        guard type(of: other) == CalibratedGammaGrayColorSpace.self else { return false }
+        guard let other = other as? CalibratedGammaGrayColorSpace else { return false }
+        return self.cieXYZ == other.cieXYZ && self.gamma == other.gamma
     }
 }
