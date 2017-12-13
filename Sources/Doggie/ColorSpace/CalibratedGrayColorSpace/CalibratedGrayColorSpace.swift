@@ -28,24 +28,19 @@ import Foundation
 extension ColorSpace where Model == GrayColorModel {
     
     @_inlineable
-    public static func calibratedGray<C>(from colorSpace: ColorSpace<C>) -> ColorSpace {
-        return ColorSpace(base: CalibratedGrayColorSpace(colorSpace.base.cieXYZ))
+    public static func calibratedGray<C>(from colorSpace: ColorSpace<C>, gamma: Double = 1) -> ColorSpace {
+        return ColorSpace(base: CalibratedGrayColorSpace(colorSpace.base.cieXYZ, gamma: gamma))
     }
     
     @_inlineable
-    public static func calibratedGray(white: Point) -> ColorSpace {
-        return ColorSpace(base: CalibratedGrayColorSpace(CIEXYZColorSpace(white: white)))
-    }
-    
-    @_inlineable
-    public static func calibratedGray(white: Point, gamma: Double) -> ColorSpace {
-        return ColorSpace(base: CalibratedGammaGrayColorSpace(CIEXYZColorSpace(white: white), gamma: gamma))
+    public static func calibratedGray(white: Point, gamma: Double = 1) -> ColorSpace {
+        return ColorSpace(base: CalibratedGrayColorSpace(CIEXYZColorSpace(white: white), gamma: gamma))
     }
 }
 
 @_versioned
 @_fixed_layout
-class CalibratedGrayColorSpace : ColorSpaceBaseProtocol {
+struct CalibratedGrayColorSpace : ColorSpaceBaseProtocol {
     
     typealias Model = GrayColorModel
     
@@ -53,46 +48,40 @@ class CalibratedGrayColorSpace : ColorSpaceBaseProtocol {
     let cieXYZ: CIEXYZColorSpace
     
     @_versioned
+    let gamma: Double
+    
+    @_versioned
     @_inlineable
-    init(_ cieXYZ: CIEXYZColorSpace) {
+    init(_ cieXYZ: CIEXYZColorSpace, gamma: Double) {
         self.cieXYZ = cieXYZ
+        self.gamma = gamma
     }
-    
-    @_versioned
-    @_inlineable
-    func convertToLinear(_ color: Model) -> Model {
-        return color
-    }
-    
-    @_versioned
-    @_inlineable
-    func convertFromLinear(_ color: Model) -> Model {
-        return color
-    }
+}
+
+extension CalibratedGrayColorSpace {
     
     @_versioned
     @_inlineable
     func iccCurve() -> iccCurve {
-        return .identity
+        return .gamma(gamma)
     }
+}
+
+extension CalibratedGrayColorSpace {
     
     @_versioned
     @_inlineable
     var localizedName: String? {
-        return "Doggie Calibrated Gray Color Space (white = \(cieXYZ.white.point))"
+        return "Doggie Calibrated Gray Color Space (white = \(cieXYZ.white.point), gamma = \(gamma))"
     }
-    
-    @_versioned
-    @_inlineable
-    func _isEqualTo(_ other: CalibratedGrayColorSpace) -> Bool {
-        guard type(of: other) == CalibratedGrayColorSpace.self else { return false }
-        return self.cieXYZ == other.cieXYZ
-    }
+}
+
+extension CalibratedGrayColorSpace {
     
     @_versioned
     @_inlineable
     static func ==(lhs: CalibratedGrayColorSpace, rhs: CalibratedGrayColorSpace) -> Bool {
-        return lhs._isEqualTo(rhs)
+        return lhs.cieXYZ == rhs.cieXYZ && lhs.gamma == rhs.gamma
     }
 }
 
@@ -101,11 +90,23 @@ extension CalibratedGrayColorSpace {
     @_versioned
     @_inlineable
     var linearTone: CalibratedGrayColorSpace {
-        return CalibratedGrayColorSpace(cieXYZ)
+        return CalibratedGrayColorSpace(cieXYZ, gamma: 1)
     }
 }
 
 extension CalibratedGrayColorSpace {
+    
+    @_versioned
+    @_inlineable
+    func convertToLinear(_ color: GrayColorModel) -> GrayColorModel {
+        return GrayColorModel(white: exteneded(color.white) { pow($0, gamma) })
+    }
+    
+    @_versioned
+    @_inlineable
+    func convertFromLinear(_ color: GrayColorModel) -> GrayColorModel {
+        return GrayColorModel(white: exteneded(color.white) { pow($0, 1 / gamma) })
+    }
     
     @_versioned
     @_inlineable
@@ -123,49 +124,3 @@ extension CalibratedGrayColorSpace {
     }
 }
 
-@_versioned
-@_fixed_layout
-class CalibratedGammaGrayColorSpace: CalibratedGrayColorSpace {
-    
-    @_versioned
-    let gamma: Double
-    
-    @_versioned
-    @_inlineable
-    init(_ cieXYZ: CIEXYZColorSpace, gamma: Double) {
-        self.gamma = gamma
-        super.init(cieXYZ)
-    }
-    
-    @_versioned
-    @_inlineable
-    override func convertToLinear(_ color: GrayColorModel) -> GrayColorModel {
-        return GrayColorModel(white: exteneded(color.white) { pow($0, gamma) })
-    }
-    
-    @_versioned
-    @_inlineable
-    override func convertFromLinear(_ color: GrayColorModel) -> GrayColorModel {
-        return GrayColorModel(white: exteneded(color.white) { pow($0, 1 / gamma) })
-    }
-    
-    @_versioned
-    @_inlineable
-    override func iccCurve() -> iccCurve {
-        return .gamma(gamma)
-    }
-    
-    @_versioned
-    @_inlineable
-    override var localizedName: String? {
-        return "Doggie Calibrated Gray Color Space (white = \(cieXYZ.white.point), gamma = \(gamma))"
-    }
-    
-    @_versioned
-    @_inlineable
-    override func _isEqualTo(_ other: CalibratedGrayColorSpace) -> Bool {
-        guard type(of: other) == CalibratedGammaGrayColorSpace.self else { return false }
-        guard let other = other as? CalibratedGammaGrayColorSpace else { return false }
-        return self.cieXYZ == other.cieXYZ && self.gamma == other.gamma
-    }
-}
