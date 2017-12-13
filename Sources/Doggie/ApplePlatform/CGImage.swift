@@ -27,6 +27,7 @@
     
     import Foundation
     import CoreGraphics
+    import ImageIO
     
     public extension CGImage {
         
@@ -163,6 +164,19 @@
     }
     
     extension AnyImage {
+        
+        public init?(cgImage: CGImage, option: MappedBufferOption = .default) {
+            
+            let data = NSMutableData()
+            
+            guard let destination = CGImageDestinationCreateWithData(data, kUTTypeTIFF, 1, nil) else { return nil }
+            
+            CGImageDestinationAddImage(destination, cgImage, nil)
+            
+            guard CGImageDestinationFinalize(destination) else { return nil }
+            
+            try? self.init(data: data as Data, option: option)
+        }
         
         public var cgImage: CGImage? {
             if let base = _base as? CGImageConvertibleProtocol {
