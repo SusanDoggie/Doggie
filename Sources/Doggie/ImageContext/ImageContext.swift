@@ -408,7 +408,7 @@ extension ImageContext {
 extension ImageContext {
     
     public func drawClip<P>(body: (ImageContext<P>) throws -> Void) rethrows where P.Model == GrayColorModel {
-        try self.drawClip(colorSpace: ColorSpace.calibratedGray(from: colorSpace), body: body)
+        try self.drawClip(colorSpace: ColorSpace.calibratedGray(from: colorSpace, gamma: 2.2), body: body)
     }
     
     public func drawClip<P>(colorSpace: ColorSpace<GrayColorModel>, body: (ImageContext<P>) throws -> Void) rethrows where P.Model == GrayColorModel {
