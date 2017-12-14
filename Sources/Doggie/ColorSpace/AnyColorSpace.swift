@@ -42,6 +42,12 @@ protocol AnyColorSpaceBaseProtocol {
     
     var _linearTone: AnyColorSpaceBaseProtocol { get }
     
+    var referenceWhite: XYZColorModel { get }
+    
+    var referenceBlack: XYZColorModel { get }
+    
+    var luminance: Double { get }
+    
     var hashValue: Int { get }
     
     func isEqualTo(_ other: AnyColorSpaceBaseProtocol) -> Bool
@@ -206,6 +212,21 @@ extension AnyColorSpace {
     @_inlineable
     public var linearTone: AnyColorSpace {
         return AnyColorSpace(base: _base._linearTone)
+    }
+    
+    @_inlineable
+    public var referenceWhite: XYZColorModel {
+        return _base.referenceWhite
+    }
+    
+    @_inlineable
+    public var referenceBlack: XYZColorModel {
+        return _base.referenceBlack
+    }
+    
+    @_inlineable
+    public var luminance: Double {
+        return _base.luminance
     }
 }
 

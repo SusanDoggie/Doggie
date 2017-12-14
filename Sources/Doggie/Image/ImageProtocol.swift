@@ -25,7 +25,9 @@
 
 public protocol ImageProtocol {
     
-    associatedtype ColorSpace: ColorSpaceProtocol
+    associatedtype Color: ColorProtocol
+    
+    typealias ColorSpace = Color.ColorSpace
     
     init(image: Self, option: MappedBufferOption)
     
@@ -43,6 +45,8 @@ public protocol ImageProtocol {
     
     var height: Int { get }
     
+    subscript(x: Int, y: Int) -> Color { get set }
+    
     var resolution: Resolution { get set }
     
     var isOpaque: Bool { get }
@@ -56,6 +60,8 @@ public protocol ImageProtocol {
     func verticalFlipped() -> Self
     
     func horizontalFlipped() -> Self
+    
+    mutating func setWhiteBalance(_ white: Point)
     
     func convert<P>(to colorSpace: Doggie.ColorSpace<P.Model>, intent: RenderingIntent) -> Image<P>
     

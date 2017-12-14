@@ -40,6 +40,12 @@ protocol AnyImageBaseProtocol {
     
     var option: MappedBufferOption { get }
     
+    func _color(x: Int, y: Int) -> AnyColorBaseProtocol
+    
+    mutating func _setColor(x: Int, y: Int, color: AnyColor)
+    
+    mutating func setWhiteBalance(_ white: Point)
+    
     func _linearTone() -> AnyImageBaseProtocol
     
     func _transposed() -> AnyImageBaseProtocol
@@ -85,6 +91,19 @@ extension Image : AnyImageBaseProtocol {
     @_inlineable
     func _horizontalFlipped() -> AnyImageBaseProtocol {
         return self._horizontalFlipped()
+    }
+    
+    @_versioned
+    @_inlineable
+    func _color(x: Int, y: Int) -> AnyColorBaseProtocol {
+        return self[x, y]
+    }
+    
+    @_versioned
+    @_inlineable
+    mutating func _setColor(x: Int, y: Int, color: AnyColor) {
+        precondition(0..<width ~= x && 0..<height ~= y)
+        pixels[width * y + x] = Pixel(color.convert(to: colorSpace))
     }
     
     @_versioned
@@ -181,6 +200,16 @@ extension AnyImage {
     }
     
     @_inlineable
+    public subscript(x: Int, y: Int) -> AnyColor {
+        get {
+            return AnyColor(base: _base._color(x: x, y: y))
+        }
+        set {
+            _base._setColor(x: x, y: y, color: newValue)
+        }
+    }
+    
+    @_inlineable
     public var resolution: Resolution {
         get {
             return _base.resolution
@@ -198,6 +227,11 @@ extension AnyImage {
     @_inlineable
     public var option: MappedBufferOption {
         return _base.option
+    }
+    
+    @_inlineable
+    public mutating func setWhiteBalance(_ white: Point) {
+        return _base.setWhiteBalance(white)
     }
     
     @_inlineable

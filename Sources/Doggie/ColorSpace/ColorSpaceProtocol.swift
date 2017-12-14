@@ -39,6 +39,12 @@ public protocol ColorSpaceProtocol {
     
     var cieXYZ: ColorSpace<XYZColorModel> { get }
     
+    var referenceWhite: XYZColorModel { get }
+    
+    var referenceBlack: XYZColorModel { get }
+    
+    var luminance: Double { get }
+    
     var linearTone: Self { get }
 }
 

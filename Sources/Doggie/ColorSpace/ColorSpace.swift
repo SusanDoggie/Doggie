@@ -372,6 +372,21 @@ extension ColorSpace {
     public var linearTone: ColorSpace {
         return ColorSpace(base: base._linearTone)
     }
+    
+    @_inlineable
+    public var referenceWhite: XYZColorModel {
+        return base.cieXYZ.white
+    }
+    
+    @_inlineable
+    public var referenceBlack: XYZColorModel {
+        return base.cieXYZ.black
+    }
+    
+    @_inlineable
+    public var luminance: Double {
+        return base.cieXYZ.luminance
+    }
 }
 
 extension ColorSpace {

@@ -147,6 +147,27 @@ extension Image {
     public func linearTone() -> Image {
         return Image(width: height, height: width, resolution: resolution, pixels: colorSpace.convertToLinear(pixels), colorSpace: colorSpace.linearTone)
     }
+    
+    @_inlineable
+    public mutating func setWhiteBalance(_ white: Point) {
+        
+        let colorSpace = self.colorSpace
+        
+        let m1 = colorSpace.base.cieXYZ._intentMatrix(to: CIEXYZColorSpace(white: colorSpace.referenceWhite.point), chromaticAdaptationAlgorithm: colorSpace.chromaticAdaptationAlgorithm, intent: .default)
+        let m2 = CIEXYZColorSpace(white: white)._intentMatrix(to: colorSpace.base.cieXYZ, chromaticAdaptationAlgorithm: colorSpace.chromaticAdaptationAlgorithm, intent: .default)
+        
+        let matrix = m1 * m2
+        
+        pixels.withUnsafeMutableBufferPointer {
+            
+            guard var buffer = $0.baseAddress else { return }
+            
+            for _ in 0..<$0.count {
+                buffer.pointee.color = colorSpace.convertFromXYZ(colorSpace.convertToXYZ(buffer.pointee.color) * matrix)
+                buffer += 1
+            }
+        }
+    }
 }
 
 extension Image {
