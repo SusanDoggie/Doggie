@@ -316,6 +316,12 @@ extension Shape.Component {
         return result
     }
     
+    private func _breakLoop(_ points: [(ConstructiveSolidResult.Split, ConstructiveSolidResult.Split)]) -> ShapeRegion {
+        let area = self.area
+        let loops = self.breakLoop(points)
+        return ShapeRegion(solids: loops.filter { $0.area.sign == area.sign }).subtracting(ShapeRegion(solids: loops.filter { $0.area.sign != area.sign }))
+    }
+    
     func process(_ other: Shape.Component) -> ConstructiveSolidResult {
         
         if constructiveSolidResultCache[other.cacheId] == nil {
@@ -334,7 +340,7 @@ extension Shape.Component {
             } else {
                 let intersectTable = ConstructiveSolidResult.Table(self, other)
                 if intersectTable.looping_left.count != 0 || intersectTable.looping_right.count != 0 {
-                    constructiveSolidResultCache[other.cacheId] = .regions(ShapeRegion(solids: self.breakLoop(intersectTable.looping_left)), ShapeRegion(solids: other.breakLoop(intersectTable.looping_right)))
+                    constructiveSolidResultCache[other.cacheId] = .regions(self._breakLoop(intersectTable.looping_left), other._breakLoop(intersectTable.looping_right))
                 } else {
                     
                     if intersectTable.l_graph.count == 0 {
