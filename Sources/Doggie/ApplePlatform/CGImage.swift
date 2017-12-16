@@ -29,6 +29,16 @@
     import CoreGraphics
     import ImageIO
     
+#endif
+
+#if os(iOS) || os(tvOS) || os(watchOS)
+    
+    import MobileCoreServices
+    
+#endif
+
+#if os(macOS) || os(iOS) || os(tvOS) || os(watchOS)
+    
     public extension CGImage {
         
         static func create(width: Int, height: Int, bitsPerComponent: Int, bytesPerRow: Int, space: CGColorSpace, bitmapInfo: UInt32, command: (CGContext) -> ()) -> CGImage? {

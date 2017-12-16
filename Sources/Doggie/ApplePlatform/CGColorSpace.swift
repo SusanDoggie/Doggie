@@ -32,7 +32,7 @@
         
         public var cgColorSpace : CGColorSpace? {
             
-            if #available(OSX 10.12, iOS 10.0, *) {
+            if #available(OSX 10.12, iOS 10.0, tvOS 10.0, watchOS 3.0, *) {
                 
                 return iccData.map { CGColorSpace(iccData: $0 as CFData) }
                 
@@ -65,7 +65,7 @@
         
         public init?(cgColorSpace: CGColorSpace) {
             
-            if #available(OSX 10.12, iOS 10.0, *) {
+            if #available(OSX 10.12, iOS 10.0, tvOS 10.0, watchOS 3.0, *) {
                 
                 guard let iccData = cgColorSpace.copyICCData() as Data? else { return nil }
                 

@@ -25,7 +25,7 @@
 
 import Foundation
 
-#if os(iOS) || os(tvOS) || os(watchOS)
+#if os(iOS) || os(tvOS)
     import CoreImage
 #endif
 
@@ -33,7 +33,7 @@ import Foundation
     import QuartzCore
 #endif
 
-#if os(macOS) || os(iOS) || os(tvOS) || os(watchOS)
+#if os(macOS) || os(iOS) || os(tvOS)
     
     extension CIFilter {
         
