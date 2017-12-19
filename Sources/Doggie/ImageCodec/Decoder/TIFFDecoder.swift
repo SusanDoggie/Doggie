@@ -123,6 +123,14 @@ struct TIFFDecoder : ImageRepDecoder {
     func image(option: MappedBufferOption) -> AnyImage {
         return defaultPage.image(option: option)
     }
+    
+    var numberOfPages: Int {
+        return pages.count
+    }
+    
+    func image(page: Int, option: MappedBufferOption) -> AnyImage {
+        return pages[page].image(option: option)
+    }
 }
 
 struct TIFFPage {
