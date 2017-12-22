@@ -27,20 +27,6 @@ import Foundation
 
 extension FileManager {
     
-    public func fileExists(atPath path: String, isDirectory: inout Bool) -> Bool {
-        
-        var _isDirectory: ObjCBool = false
-        
-        let result = self.fileExists(atPath: path, isDirectory: &_isDirectory)
-        
-        isDirectory = _isDirectory.boolValue
-        
-        return result
-    }
-}
-
-extension FileManager {
-    
     func fileUrls<S : Sequence>(_ urls: S) -> Set<URL> where S.Element == URL {
         
         var result: Set<URL> = []
