@@ -1,5 +1,5 @@
 //
-//  DGXMLNode.swift
+//  SDXMLNode.swift
 //
 //  The MIT License
 //  Copyright (c) 2015 - 2017 Susan Cheng. All rights reserved.
@@ -25,7 +25,7 @@
 
 import Foundation
 
-public struct DGXMLAttribute {
+public struct SDXMLAttribute {
     
     public var attribute: String {
         didSet {
@@ -46,14 +46,14 @@ public struct DGXMLAttribute {
     }
 }
 
-extension DGXMLAttribute : Hashable {
+extension SDXMLAttribute : Hashable {
     
     public var hashValue: Int {
         return hash_combine(seed: 0, attribute.hashValue, namespace.hashValue)
     }
 }
 
-extension DGXMLAttribute: ExpressibleByStringLiteral {
+extension SDXMLAttribute: ExpressibleByStringLiteral {
     
     public typealias ExtendedGraphemeClusterLiteralType = StringLiteralType
     public typealias UnicodeScalarLiteralType = StringLiteralType
@@ -71,24 +71,24 @@ extension DGXMLAttribute: ExpressibleByStringLiteral {
     }
 }
 
-public func ==(lhs: DGXMLAttribute, rhs: DGXMLAttribute) -> Bool {
+public func ==(lhs: SDXMLAttribute, rhs: SDXMLAttribute) -> Bool {
     return lhs.attribute == rhs.attribute && lhs.namespace == rhs.namespace
 }
 
-public struct DGXMLNode {
+public struct SDXMLNode {
     
     public var name: String
     public var namespace: String
     
-    public var attributes: [DGXMLAttribute: String] = [:] {
+    public var attributes: [SDXMLAttribute: String] = [:] {
         didSet {
             attributes = attributes.filter { $0.key.attribute != "" }
         }
     }
     
-    private var elements: [DGXMLElement] = []
+    private var elements: [SDXMLElement] = []
     
-    public init(name: String, namespace: String = "", attributes: [DGXMLAttribute: String] = [:], elements: [DGXMLElement] = []) {
+    public init(name: String, namespace: String = "", attributes: [SDXMLAttribute: String] = [:], elements: [SDXMLElement] = []) {
         self.name = name
         self.namespace = namespace
         self.attributes = attributes.filter { $0.key.attribute != "" }
@@ -96,9 +96,9 @@ public struct DGXMLNode {
     }
 }
 
-extension DGXMLElement {
+extension SDXMLElement {
     
-    fileprivate func _apply_global_namespace(_ namespace: String) -> DGXMLElement {
+    fileprivate func _apply_global_namespace(_ namespace: String) -> SDXMLElement {
         switch self {
         case let .node(node): return .node(node._apply_global_namespace(namespace))
         default: return self
@@ -106,28 +106,28 @@ extension DGXMLElement {
     }
 }
 
-extension DGXMLNode {
+extension SDXMLNode {
     
-    fileprivate func _apply_global_namespace(_ namespace: String) -> DGXMLNode {
+    fileprivate func _apply_global_namespace(_ namespace: String) -> SDXMLNode {
         
-        var attributes: [DGXMLAttribute: String] = [:]
+        var attributes: [SDXMLAttribute: String] = [:]
         attributes.reserveCapacity(self.attributes.count)
         
         for (attribute, value) in self.attributes {
             if attribute.namespace != "" || attribute.attribute == "xmlns" || attribute.attribute.contains(":") {
                 attributes[attribute] = value
             } else {
-                attributes[DGXMLAttribute(attribute: attribute.attribute, namespace: namespace)] = value
+                attributes[SDXMLAttribute(attribute: attribute.attribute, namespace: namespace)] = value
             }
         }
         
-        return DGXMLNode(name: self.name, namespace: self.namespace == "" ? namespace : self.namespace, attributes: attributes, elements: self.elements.map { $0._apply_global_namespace(namespace) })
+        return SDXMLNode(name: self.name, namespace: self.namespace == "" ? namespace : self.namespace, attributes: attributes, elements: self.elements.map { $0._apply_global_namespace(namespace) })
     }
 }
 
-extension DGXMLNode : RandomAccessCollection, MutableCollection {
+extension SDXMLNode : RandomAccessCollection, MutableCollection {
     
-    public typealias SubSequence = MutableRandomAccessSlice<DGXMLNode>
+    public typealias SubSequence = MutableRandomAccessSlice<SDXMLNode>
     
     public typealias Indices = CountableRange<Int>
     
@@ -141,7 +141,7 @@ extension DGXMLNode : RandomAccessCollection, MutableCollection {
         return elements.endIndex
     }
     
-    public subscript(position : Int) -> DGXMLElement {
+    public subscript(position : Int) -> SDXMLElement {
         get {
             return elements[position]
         }
@@ -155,9 +155,9 @@ extension DGXMLNode : RandomAccessCollection, MutableCollection {
     }
 }
 
-extension DGXMLNode {
+extension SDXMLNode {
     
-    public mutating func append(_ newElement: DGXMLElement) {
+    public mutating func append(_ newElement: SDXMLElement) {
         if let xmlns = attributes["xmlns"] {
             elements.append(newElement._apply_global_namespace(xmlns))
         } else {
@@ -165,7 +165,7 @@ extension DGXMLNode {
         }
     }
     
-    public mutating func append<S : Sequence>(contentsOf newElements: S) where S.Element == DGXMLElement {
+    public mutating func append<S : Sequence>(contentsOf newElements: S) where S.Element == SDXMLElement {
         if let xmlns = attributes["xmlns"] {
             elements.append(contentsOf: newElements.lazy.map { $0._apply_global_namespace(xmlns) })
         } else {
@@ -181,7 +181,7 @@ extension DGXMLNode {
         elements.removeAll(keepingCapacity: keepingCapacity)
     }
     
-    public mutating func replaceSubrange<C : Collection>(_ subRange: Range<Int>, with newElements: C) where C.Element == DGXMLElement {
+    public mutating func replaceSubrange<C : Collection>(_ subRange: Range<Int>, with newElements: C) where C.Element == SDXMLElement {
         if let xmlns = attributes["xmlns"] {
             elements.replaceSubrange(subRange, with: newElements.lazy.map { $0._apply_global_namespace(xmlns) })
         } else {

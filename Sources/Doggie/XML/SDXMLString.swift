@@ -1,5 +1,5 @@
 //
-//  DGXMLString.swift
+//  SDXMLString.swift
 //
 //  The MIT License
 //  Copyright (c) 2015 - 2017 Susan Cheng. All rights reserved.
@@ -25,7 +25,7 @@
 
 import Foundation
 
-extension DGXMLDocument {
+extension SDXMLDocument {
     
     public func xmlString(prettyPrinted: Bool = false) -> String {
         var result = "<?xml version=\"1.0\" encoding=\"utf-8\"?>"
@@ -45,14 +45,14 @@ extension DGXMLDocument {
     }
 }
 
-extension DGXMLDocument : CustomStringConvertible {
+extension SDXMLDocument : CustomStringConvertible {
     
     public var description: String {
         return xmlString()
     }
 }
 
-extension DGXMLElement {
+extension SDXMLElement {
     
     fileprivate func _xml(_ terminator: String, prefixMap: [String: Substring], _ output: inout String) {
         
@@ -65,7 +65,7 @@ extension DGXMLElement {
     }
 }
 
-extension DGXMLNode {
+extension SDXMLNode {
     
     fileprivate func _xml(_ terminator: String, prefixMap: [String: Substring], _ output: inout String) {
         

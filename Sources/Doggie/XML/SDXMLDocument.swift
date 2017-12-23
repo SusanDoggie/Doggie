@@ -1,5 +1,5 @@
 //
-//  DGXMLDocument.swift
+//  SDXMLDocument.swift
 //
 //  The MIT License
 //  Copyright (c) 2015 - 2017 Susan Cheng. All rights reserved.
@@ -23,29 +23,29 @@
 //  THE SOFTWARE.
 //
 
-public struct DGXMLDocument : ExpressibleByArrayLiteral {
+public struct SDXMLDocument : ExpressibleByArrayLiteral {
     
-    private var elements: [DGXMLElement]
+    private var elements: [SDXMLElement]
     
     public init() {
         self.elements = []
     }
     
-    public init(arrayLiteral elements: DGXMLElement...) {
+    public init(arrayLiteral elements: SDXMLElement...) {
         self.elements = elements
     }
 }
 
-extension DGXMLDocument {
+extension SDXMLDocument {
     
-    public var root: DGXMLElement? {
+    public var root: SDXMLElement? {
         return elements.first { $0.isNode }
     }
 }
 
-extension DGXMLDocument : RandomAccessCollection, MutableCollection {
+extension SDXMLDocument : RandomAccessCollection, MutableCollection {
     
-    public typealias SubSequence = MutableRangeReplaceableRandomAccessSlice<DGXMLDocument>
+    public typealias SubSequence = MutableRangeReplaceableRandomAccessSlice<SDXMLDocument>
     
     public typealias Indices = CountableRange<Int>
     
@@ -59,7 +59,7 @@ extension DGXMLDocument : RandomAccessCollection, MutableCollection {
         return elements.endIndex
     }
     
-    public subscript(position : Int) -> DGXMLElement {
+    public subscript(position : Int) -> SDXMLElement {
         get {
             return elements[position]
         }
@@ -69,13 +69,13 @@ extension DGXMLDocument : RandomAccessCollection, MutableCollection {
     }
 }
 
-extension DGXMLDocument : RangeReplaceableCollection {
+extension SDXMLDocument : RangeReplaceableCollection {
     
-    public mutating func append(_ newElement: DGXMLElement) {
+    public mutating func append(_ newElement: SDXMLElement) {
         elements.append(newElement)
     }
     
-    public mutating func append<S : Sequence>(contentsOf newElements: S) where S.Element == DGXMLElement {
+    public mutating func append<S : Sequence>(contentsOf newElements: S) where S.Element == SDXMLElement {
         elements.append(contentsOf: newElements)
     }
     
@@ -83,7 +83,7 @@ extension DGXMLDocument : RangeReplaceableCollection {
         elements.reserveCapacity(minimumCapacity)
     }
     
-    public mutating func replaceSubrange<C : Collection>(_ subRange: Range<Int>, with newElements: C) where C.Element == DGXMLElement {
+    public mutating func replaceSubrange<C : Collection>(_ subRange: Range<Int>, with newElements: C) where C.Element == SDXMLElement {
         elements.replaceSubrange(subRange, with: newElements)
     }
 }

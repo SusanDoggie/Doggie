@@ -1,5 +1,5 @@
 //
-//  DGXMLParser.swift
+//  SDXMLParser.swift
 //
 //  The MIT License
 //  Copyright (c) 2015 - 2017 Susan Cheng. All rights reserved.
@@ -25,7 +25,7 @@
 
 import Foundation
 
-extension DGXMLDocument {
+extension SDXMLDocument {
     
     enum Error : Swift.Error {
         
@@ -39,16 +39,16 @@ extension DGXMLDocument {
     }
     
     public init(data: Data) throws {
-        let parser = DGXMLParser(data: data)
+        let parser = SDXMLParser(data: data)
         guard parser.parse() else { throw parser.parserError.map { Error.parser($0.localizedDescription) } ?? Error.unknown }
         self = parser.document
     }
 }
 
-class DGXMLParser : XMLParser, XMLParserDelegate {
+class SDXMLParser : XMLParser, XMLParserDelegate {
     
-    var document = DGXMLDocument()
-    var stack: [(DGXMLElement, [String: String])] = []
+    var document = SDXMLDocument()
+    var stack: [(SDXMLElement, [String: String])] = []
     var namespaces: [String: String] = [:]
     
     override init(data: Data) {
@@ -70,7 +70,7 @@ class DGXMLParser : XMLParser, XMLParserDelegate {
             attributeDict[prefix == "" ? "xmlns" : "xmlns:\(prefix)"] = uri
         }
         
-        var attributes: [DGXMLAttribute: String] = [:]
+        var attributes: [SDXMLAttribute: String] = [:]
         
         for (_attribute, value) in attributeDict {
             
@@ -100,13 +100,13 @@ class DGXMLParser : XMLParser, XMLParserDelegate {
             }
             
             if let namespace = namespace {
-                attributes[DGXMLAttribute(attribute: attribute, namespace: namespace)] = value
+                attributes[SDXMLAttribute(attribute: attribute, namespace: namespace)] = value
             } else {
-                attributes[DGXMLAttribute(attribute: _attribute)] = value
+                attributes[SDXMLAttribute(attribute: _attribute)] = value
             }
         }
         
-        stack.append((DGXMLElement(name: elementName, namespace: namespaceURI ?? "", attributes: attributes), namespaces))
+        stack.append((SDXMLElement(name: elementName, namespace: namespaceURI ?? "", attributes: attributes), namespaces))
         namespaces = [:]
     }
     
@@ -126,26 +126,26 @@ class DGXMLParser : XMLParser, XMLParserDelegate {
         
         if string != "" {
             if stack.count == 0 {
-                document.append(DGXMLElement(characters: string))
+                document.append(SDXMLElement(characters: string))
             } else {
-                stack[stack.count - 1].0.append(DGXMLElement(characters: string))
+                stack[stack.count - 1].0.append(SDXMLElement(characters: string))
             }
         }
     }
     
     func parser(_ parser: XMLParser, foundComment comment: String) {
         if stack.count == 0 {
-            document.append(DGXMLElement(comment: comment))
+            document.append(SDXMLElement(comment: comment))
         } else {
-            stack[stack.count - 1].0.append(DGXMLElement(comment: comment))
+            stack[stack.count - 1].0.append(SDXMLElement(comment: comment))
         }
     }
     
     func parser(_ parser: XMLParser, foundCDATA CDATABlock: Data) {
         if stack.count == 0 {
-            document.append(DGXMLElement(CDATA: String(data: CDATABlock, encoding: .utf8) ?? ""))
+            document.append(SDXMLElement(CDATA: String(data: CDATABlock, encoding: .utf8) ?? ""))
         } else {
-            stack[stack.count - 1].0.append(DGXMLElement(CDATA: String(data: CDATABlock, encoding: .utf8) ?? ""))
+            stack[stack.count - 1].0.append(SDXMLElement(CDATA: String(data: CDATABlock, encoding: .utf8) ?? ""))
         }
     }
 }

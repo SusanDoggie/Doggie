@@ -1,5 +1,5 @@
 //
-//  DGXMLElement.swift
+//  SDXMLElement.swift
 //
 //  The MIT License
 //  Copyright (c) 2015 - 2017 Susan Cheng. All rights reserved.
@@ -23,18 +23,18 @@
 //  THE SOFTWARE.
 //
 
-public enum DGXMLElement {
+public enum SDXMLElement {
     
-    case node(DGXMLNode)
+    case node(SDXMLNode)
     case characters(String)
     case comment(String)
     case CDATA(String)
     
-    public init(name: String, namespace: String = "", attributes: [DGXMLAttribute: String] = [:], elements: [DGXMLElement] = []) {
-        self = .node(DGXMLNode(name: name, namespace: namespace, attributes: attributes, elements: elements))
+    public init(name: String, namespace: String = "", attributes: [SDXMLAttribute: String] = [:], elements: [SDXMLElement] = []) {
+        self = .node(SDXMLNode(name: name, namespace: namespace, attributes: attributes, elements: elements))
     }
     
-    public init(_ value: DGXMLNode) {
+    public init(_ value: SDXMLNode) {
         self = .node(value)
     }
     
@@ -51,7 +51,7 @@ public enum DGXMLElement {
     }
 }
 
-extension DGXMLElement {
+extension SDXMLElement {
     
     public var isNode: Bool {
         switch self {
@@ -82,7 +82,7 @@ extension DGXMLElement {
     }
 }
 
-extension DGXMLElement {
+extension SDXMLElement {
     
     public var name: String? {
         switch self {
@@ -108,25 +108,25 @@ extension DGXMLElement {
     }
 }
 
-extension DGXMLElement {
+extension SDXMLElement {
     
     public mutating func setAttribute(for attribute: String, namespace: String = "", value: String?) {
         switch self {
         case var .node(node):
-            node.attributes[DGXMLAttribute(attribute: attribute, namespace: namespace)] = value
+            node.attributes[SDXMLAttribute(attribute: attribute, namespace: namespace)] = value
             self = .node(node)
         default: break
         }
     }
     
-    public func attributes() -> [DGXMLAttribute: String] {
+    public func attributes() -> [SDXMLAttribute: String] {
         switch self {
         case let .node(node): return node.attributes
         default: return [:]
         }
     }
     
-    public func attributes(for attribute: String) -> [DGXMLAttribute: String] {
+    public func attributes(for attribute: String) -> [SDXMLAttribute: String] {
         switch self {
         case let .node(node): return node.attributes.filter { $0.key.attribute == attribute }
         default: return [:]
@@ -135,15 +135,15 @@ extension DGXMLElement {
     
     public func attributes(for attribute: String, namespace: String) -> String? {
         switch self {
-        case let .node(node): return node.attributes[DGXMLAttribute(attribute: attribute, namespace: namespace)]
+        case let .node(node): return node.attributes[SDXMLAttribute(attribute: attribute, namespace: namespace)]
         default: return nil
         }
     }
 }
 
-extension DGXMLElement : RandomAccessCollection, MutableCollection {
+extension SDXMLElement : RandomAccessCollection, MutableCollection {
     
-    public typealias SubSequence = MutableRandomAccessSlice<DGXMLElement>
+    public typealias SubSequence = MutableRandomAccessSlice<SDXMLElement>
     
     public typealias Indices = CountableRange<Int>
     
@@ -163,7 +163,7 @@ extension DGXMLElement : RandomAccessCollection, MutableCollection {
         }
     }
     
-    public subscript(position : Int) -> DGXMLElement {
+    public subscript(position : Int) -> SDXMLElement {
         get {
             switch self {
             case let .node(node): return node[position]
@@ -181,9 +181,9 @@ extension DGXMLElement : RandomAccessCollection, MutableCollection {
     }
 }
 
-extension DGXMLElement {
+extension SDXMLElement {
     
-    public mutating func append(_ newElement: DGXMLElement) {
+    public mutating func append(_ newElement: SDXMLElement) {
         switch self {
         case var .node(node):
             node.append(newElement)
@@ -192,7 +192,7 @@ extension DGXMLElement {
         }
     }
     
-    public mutating func append<S : Sequence>(contentsOf newElements: S) where S.Element == DGXMLElement {
+    public mutating func append<S : Sequence>(contentsOf newElements: S) where S.Element == SDXMLElement {
         switch self {
         case var .node(node):
             node.append(contentsOf: newElements)
@@ -219,7 +219,7 @@ extension DGXMLElement {
         }
     }
     
-    public mutating func replaceSubrange<C : Collection>(_ subRange: Range<Int>, with newElements: C) where C.Element == DGXMLElement {
+    public mutating func replaceSubrange<C : Collection>(_ subRange: Range<Int>, with newElements: C) where C.Element == SDXMLElement {
         switch self {
         case var .node(node):
             node.replaceSubrange(subRange, with: newElements)

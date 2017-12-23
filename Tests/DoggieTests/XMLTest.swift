@@ -59,7 +59,7 @@ class XMLTest: XCTestCase {
         
         do {
             
-            let doc = try DGXMLDocument(xml: xmlString)
+            let doc = try SDXMLDocument(xml: xmlString)
             
             XCTAssertEqual(doc.count, 1)
             
