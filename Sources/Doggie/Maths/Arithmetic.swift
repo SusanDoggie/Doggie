@@ -43,7 +43,7 @@ public protocol Subtractive : Additive {
 
 public protocol ScalarMultiplicative : Subtractive {
     
-    associatedtype Scalar : FloatingPoint, ExpressibleByFloatLiteral
+    associatedtype Scalar : SignedNumeric, ExpressibleByFloatLiteral
     
     init()
     

@@ -57,7 +57,7 @@ extension Tensor {
     }
 }
 
-extension Tensor {
+extension Tensor where Scalar : FloatingPoint {
     
     @_transparent
     public var magnitude: Scalar {
