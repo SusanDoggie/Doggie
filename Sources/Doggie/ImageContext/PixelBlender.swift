@@ -67,11 +67,11 @@ struct ImageContextPixelBlender<P : ColorPixelProtocol> {
     
     @_versioned
     @inline(__always)
-    func draw<C : ColorPixelProtocol>(opacity: Double = 1, _ color: () throws -> C?) rethrows where C.Model == P.Model {
+    func draw<C : ColorPixelProtocol>(opacity: Double = 1, _ color: () -> C?) where C.Model == P.Model {
         
         let _alpha = clip.pointee * opacity
         
-        if _alpha > 0, var source = try color() {
+        if _alpha > 0, var source = color() {
             source.opacity *= self.opacity * _alpha
             destination.pointee.blend(source: source, blendMode: blendMode, compositingMode: compositingMode)
         }
@@ -82,17 +82,17 @@ extension ImageContext {
     
     @_versioned
     @inline(__always)
-    func withUnsafePixelBlender(_ body: (ImageContextPixelBlender<Pixel>) throws -> Void) rethrows {
+    func withUnsafePixelBlender(_ body: (ImageContextPixelBlender<Pixel>) -> Void) {
         
-        try self.withUnsafeMutableImageBufferPointer { _image in
+        self.withUnsafeMutableImageBufferPointer { _image in
             
             guard let _destination = _image.baseAddress else { return }
             
-            try self.withUnsafeClipBufferPointer { _clip in
+            self.withUnsafeClipBufferPointer { _clip in
                 
                 guard let _clip = _clip.baseAddress else { return }
                 
-                try body(ImageContextPixelBlender(destination: _destination, clip: _clip, opacity: opacity, blendMode: blendMode, compositingMode: compositingMode))
+                body(ImageContextPixelBlender(destination: _destination, clip: _clip, opacity: opacity, blendMode: blendMode, compositingMode: compositingMode))
             }
         }
     }
