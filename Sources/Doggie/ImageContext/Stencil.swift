@@ -23,8 +23,6 @@
 //  THE SOFTWARE.
 //
 
-import Foundation
-
 @_versioned
 @_fixed_layout
 struct ShapeRasterizeBuffer : RasterizeBufferProtocol {

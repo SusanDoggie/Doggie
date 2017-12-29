@@ -68,3 +68,41 @@ public func Barycentric(_ p0: Point, _ p1: Point, _ p2: Point, _ q: Point) -> Ve
     return Vector(x: s, y: t, z: 1 - s - t)
 }
 
+@_inlineable
+public func inTriangle(_ p0: Point, _ p1: Point, _ p2: Point, _ position: Point) -> Bool {
+    
+    var q0 = p0
+    var q1 = p1
+    var q2 = p2
+    
+    sort(&q0, &q1, &q2) { $0.y < $1.y }
+    
+    if q0.y <= position.y && position.y < q2.y {
+        
+        let t1 = (position.y - q0.y) / (q2.y - q0.y)
+        let x1 = q0.x + t1 * (q2.x - q0.x)
+        
+        let t2: Double
+        let x2: Double
+        
+        if position.y < q1.y {
+            t2 = (position.y - q0.y) / (q1.y - q0.y)
+            x2 = q0.x + t2 * (q1.x - q0.x)
+        } else {
+            t2 = (position.y - q1.y) / (q2.y - q1.y)
+            x2 = q1.x + t2 * (q2.x - q1.x)
+        }
+        
+        let mid_t = (q1.y - q0.y) / (q2.y - q0.y)
+        let mid_x = q0.x + mid_t * (q2.x - q0.x)
+        
+        if mid_x < q1.x {
+            return x1 <= position.x && position.x < x2
+        } else {
+            return x2 <= position.x && position.x < x1
+        }
+    }
+    
+    return false
+}
+
