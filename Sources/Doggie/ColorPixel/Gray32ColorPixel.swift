@@ -27,28 +27,24 @@ public struct Gray32ColorPixel : ColorPixelProtocol {
     
     public typealias Scalar = Double
     
-    public var a: UInt16
     public var w: UInt16
+    public var a: UInt16
     
     @_inlineable
     public init() {
-        self.a = 0
         self.w = 0
+        self.a = 0
     }
     @_inlineable
     public init(white: UInt16, opacity: UInt16 = 0xFFFF) {
-        self.a = opacity
         self.w = white
+        self.a = opacity
     }
-    @_inlineable
-    public init(_ hex: UInt32) {
-        self.a = UInt16((hex >> 16) & 0xFFFF)
-        self.w = UInt16(hex & 0xFFFF)
-    }
+    
     @_inlineable
     public init(color: GrayColorModel, opacity: Double) {
-        self.a = UInt16((opacity * 65535).clamped(to: 0...65535).rounded())
         self.w = UInt16((color.white * 65535).clamped(to: 0...65535).rounded())
+        self.a = UInt16((opacity * 65535).clamped(to: 0...65535).rounded())
     }
     
     @_inlineable
@@ -71,15 +67,8 @@ public struct Gray32ColorPixel : ColorPixelProtocol {
     }
     
     @_inlineable
-    public var hex: UInt32 {
-        let _a = UInt32(a) << 16
-        let _w = UInt32(w)
-        return _a | _w
-    }
-    
-    @_inlineable
     public var hashValue: Int {
-        return hex.hashValue
+        return hash_combine(seed: 0, w, a)
     }
     
     @_inlineable
@@ -98,11 +87,11 @@ public struct Gray32ColorPixel : ColorPixelProtocol {
 @_inlineable
 public func ==(lhs: Gray32ColorPixel, rhs: Gray32ColorPixel) -> Bool {
     
-    return (lhs.a, lhs.w) == (rhs.a, rhs.w)
+    return (lhs.w, lhs.a) == (rhs.w, rhs.a)
 }
 
 @_inlineable
 public func !=(lhs: Gray32ColorPixel, rhs: Gray32ColorPixel) -> Bool {
     
-    return (lhs.a, lhs.w) != (rhs.a, rhs.w)
+    return (lhs.w, lhs.a) != (rhs.w, rhs.a)
 }

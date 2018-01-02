@@ -159,7 +159,7 @@ extension ColorPixelProtocol {
     
     @_transparent
     public var hashValue: Int {
-        return hash_combine(seed: 0, self.opacity.hashValue, self.color.hashValue)
+        return hash_combine(seed: 0, self.color.hashValue, self.opacity.hashValue)
     }
 }
 
