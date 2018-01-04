@@ -130,6 +130,14 @@ extension XYZColorModel {
     }
 }
 
+extension XYZColorModel {
+    
+    @_inlineable
+    public func blended(source: XYZColorModel, blending: (Double, Double) -> Double) -> XYZColorModel {
+        return XYZColorModel(x: blending(source.x, self.x), y: blending(source.y, self.y), z: blending(source.z, self.z))
+    }
+}
+
 @_inlineable
 public func * (lhs: XYZColorModel, rhs: Matrix) -> XYZColorModel {
     return XYZColorModel(x: lhs.x * rhs.a + lhs.y * rhs.b + lhs.z * rhs.c + rhs.d, y: lhs.x * rhs.e + lhs.y * rhs.f + lhs.z * rhs.g + rhs.h, z: lhs.x * rhs.i + lhs.y * rhs.j + lhs.z * rhs.k + rhs.l)

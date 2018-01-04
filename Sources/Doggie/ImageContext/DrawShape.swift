@@ -79,17 +79,17 @@ extension ImageContext {
                             
                             for _ in 0..<_width {
                                 
-                                var _p = 0
+                                var _p: UInt8 = 0
                                 
                                 var _s = __stencil
                                 
                                 for _ in 0..<5 {
                                     let (s0, s1, s2, s3, s4) = _s.pointee
-                                    if winding(s0) { _p += 1 }
-                                    if winding(s1) { _p += 1 }
-                                    if winding(s2) { _p += 1 }
-                                    if winding(s3) { _p += 1 }
-                                    if winding(s4) { _p += 1 }
+                                    if winding(s0) { _p = _p &+ 1 }
+                                    if winding(s1) { _p = _p &+ 1 }
+                                    if winding(s2) { _p = _p &+ 1 }
+                                    if winding(s3) { _p = _p &+ 1 }
+                                    if winding(s4) { _p = _p &+ 1 }
                                     _s += width
                                 }
                                 

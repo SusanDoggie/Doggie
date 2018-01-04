@@ -102,7 +102,8 @@
 		0A7A1FB21F04FC230016B3FB /* ARGB32ColorPixel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7A1FB01F04FC230016B3FB /* ARGB32ColorPixel.swift */; };
 		0A7A4C001F738D18005F44CD /* XMLTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7A4BFF1F738D18005F44CD /* XMLTest.swift */; };
 		0A7A4C021F739235005F44CD /* SDXMLString.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7A4BFD1F73765B005F44CD /* SDXMLString.swift */; };
-		0A7D3ADC1ECAD5890030DC26 /* ColorBlend.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7D3ADA1ECAD5890030DC26 /* ColorBlend.swift */; };
+		0A7CC3D21FFDBE1200DEAC6D /* CompositingMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7CC3D11FFDBE1200DEAC6D /* CompositingMode.swift */; };
+		0A7D3ADC1ECAD5890030DC26 /* BlendMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7D3ADA1ECAD5890030DC26 /* BlendMode.swift */; };
 		0A7E3E911F5FD3B40020A507 /* OTFGPOS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7E3E901F5FD3B40020A507 /* OTFGPOS.swift */; };
 		0A7E3E941F5FD3E40020A507 /* OTFGSUB.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7E3E921F5FD3E30020A507 /* OTFGSUB.swift */; };
 		0A7E3E951F5FD3E40020A507 /* OTFGDEF.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7E3E931F5FD3E40020A507 /* OTFGDEF.swift */; };
@@ -318,7 +319,8 @@
 		0A7A1FB01F04FC230016B3FB /* ARGB32ColorPixel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = ARGB32ColorPixel.swift; sourceTree = "<group>"; };
 		0A7A4BFD1F73765B005F44CD /* SDXMLString.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = SDXMLString.swift; sourceTree = "<group>"; };
 		0A7A4BFF1F738D18005F44CD /* XMLTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = XMLTest.swift; sourceTree = "<group>"; };
-		0A7D3ADA1ECAD5890030DC26 /* ColorBlend.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = ColorBlend.swift; sourceTree = "<group>"; };
+		0A7CC3D11FFDBE1200DEAC6D /* CompositingMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompositingMode.swift; sourceTree = "<group>"; };
+		0A7D3ADA1ECAD5890030DC26 /* BlendMode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = BlendMode.swift; sourceTree = "<group>"; };
 		0A7E3E901F5FD3B40020A507 /* OTFGPOS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = OTFGPOS.swift; sourceTree = "<group>"; };
 		0A7E3E921F5FD3E30020A507 /* OTFGSUB.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = OTFGSUB.swift; sourceTree = "<group>"; };
 		0A7E3E931F5FD3E40020A507 /* OTFGDEF.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = OTFGDEF.swift; sourceTree = "<group>"; };
@@ -754,6 +756,7 @@
 			isa = PBXGroup;
 			children = (
 				0A7A1FAD1F04FBFC0016B3FB /* ColorPixel.swift */,
+				0A7CC3D11FFDBE1200DEAC6D /* CompositingMode.swift */,
 				0A7A1FB01F04FC230016B3FB /* ARGB32ColorPixel.swift */,
 				0A831A851F186E6F0007932A /* ARGB64ColorPixel.swift */,
 				0A831A891F1872760007932A /* Gray16ColorPixel.swift */,
@@ -891,7 +894,6 @@
 				0A8D863E1F7DF13E00F9530E /* ColorProtocol.swift */,
 				0AE719F91EF50EEB0086923C /* AnyColor.swift */,
 				08458ACF1E2E627600D01813 /* Color.swift */,
-				0A7D3ADA1ECAD5890030DC26 /* ColorBlend.swift */,
 			);
 			path = Color;
 			sourceTree = "<group>";
@@ -900,6 +902,7 @@
 			isa = PBXGroup;
 			children = (
 				08458AD01E2E627600D01813 /* ColorModel.swift */,
+				0A7D3ADA1ECAD5890030DC26 /* BlendMode.swift */,
 				0A9F28291EF0D9F000E69976 /* GrayColorModel.swift */,
 				0A9F28261EF0D9DF00E69976 /* XYZColorModel.swift */,
 				0A9F28231EF0D9CE00E69976 /* LuvColorModel.swift */,
@@ -1086,6 +1089,7 @@
 				0A1158471EF4E04700EFE3E3 /* iccTagData.swift in Sources */,
 				0A5E8D421F56B428000D51E3 /* FontCollection.swift in Sources */,
 				08458B3D1E2E627600D01813 /* Polynomial.swift in Sources */,
+				0A7CC3D21FFDBE1200DEAC6D /* CompositingMode.swift in Sources */,
 				0A36612C1EEA54AB00216A26 /* CGPath.swift in Sources */,
 				0821D6421EED58FC007E42F5 /* Rendering.swift in Sources */,
 				086F064A1EDC623D00BA70C8 /* Rasterizer.swift in Sources */,
@@ -1125,7 +1129,7 @@
 				0A39A6B61ED9342C00804004 /* ImageContext.swift in Sources */,
 				0AE762591EE9583400E926D5 /* CGImage.swift in Sources */,
 				0AE71A011EF517CA0086923C /* AnyImage.swift in Sources */,
-				0A7D3ADC1ECAD5890030DC26 /* ColorBlend.swift in Sources */,
+				0A7D3ADC1ECAD5890030DC26 /* BlendMode.swift in Sources */,
 				0A9F281F1EF0D9AA00E69976 /* CMYKColorModel.swift in Sources */,
 				0AA4D8451F63908200AFF16B /* CTFont.swift in Sources */,
 				0A831A8D1F1872770007932A /* Gray16ColorPixel.swift in Sources */,

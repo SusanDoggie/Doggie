@@ -239,6 +239,14 @@ extension RGBColorModel {
     }
 }
 
+extension RGBColorModel {
+    
+    @_inlineable
+    public func blended(source: RGBColorModel, blending: (Double, Double) -> Double) -> RGBColorModel {
+        return RGBColorModel(red: blending(source.red, self.red), green: blending(source.green, self.green), blue: blending(source.blue, self.blue))
+    }
+}
+
 @_inlineable
 public prefix func +(val: RGBColorModel) -> RGBColorModel {
     return val

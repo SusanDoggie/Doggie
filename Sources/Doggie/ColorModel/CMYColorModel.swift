@@ -148,6 +148,14 @@ extension CMYColorModel {
     }
 }
 
+extension CMYColorModel {
+    
+    @_inlineable
+    public func blended(source: CMYColorModel, blending: (Double, Double) -> Double) -> CMYColorModel {
+        return CMYColorModel(cyan: blending(source.cyan, self.cyan), magenta: blending(source.magenta, self.magenta), yellow: blending(source.yellow, self.yellow))
+    }
+}
+
 @_inlineable
 public prefix func +(val: CMYColorModel) -> CMYColorModel {
     return val

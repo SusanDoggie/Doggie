@@ -76,6 +76,16 @@ public struct Device2ColorModel : DeviceNColorModelProtocol {
     }
 }
 
+extension Device2ColorModel {
+    
+    @_inlineable
+    public func blended(source: Device2ColorModel, blending: (Double, Double) -> Double) -> Device2ColorModel {
+        let component_0 = blending(source.component_0, self.component_0)
+        let component_1 = blending(source.component_1, self.component_1)
+        return Device2ColorModel(component_0, component_1)
+    }
+}
+
 @_inlineable
 public prefix func +(val: Device2ColorModel) -> Device2ColorModel {
     return val
@@ -188,6 +198,17 @@ public struct Device3ColorModel : DeviceNColorModelProtocol {
             default: fatalError()
             }
         }
+    }
+}
+
+extension Device3ColorModel {
+    
+    @_inlineable
+    public func blended(source: Device3ColorModel, blending: (Double, Double) -> Double) -> Device3ColorModel {
+        let component_0 = blending(source.component_0, self.component_0)
+        let component_1 = blending(source.component_1, self.component_1)
+        let component_2 = blending(source.component_2, self.component_2)
+        return Device3ColorModel(component_0, component_1, component_2)
     }
 }
 
@@ -312,6 +333,18 @@ public struct Device4ColorModel : DeviceNColorModelProtocol {
             default: fatalError()
             }
         }
+    }
+}
+
+extension Device4ColorModel {
+    
+    @_inlineable
+    public func blended(source: Device4ColorModel, blending: (Double, Double) -> Double) -> Device4ColorModel {
+        let component_0 = blending(source.component_0, self.component_0)
+        let component_1 = blending(source.component_1, self.component_1)
+        let component_2 = blending(source.component_2, self.component_2)
+        let component_3 = blending(source.component_3, self.component_3)
+        return Device4ColorModel(component_0, component_1, component_2, component_3)
     }
 }
 
@@ -446,6 +479,22 @@ public struct Device5ColorModel : DeviceNColorModelProtocol {
             default: fatalError()
             }
         }
+    }
+}
+
+extension Device5ColorModel {
+    
+    @_inlineable
+    public func blended(source: Device5ColorModel, blending: (Double, Double) -> Double) -> Device5ColorModel {
+        let component_0 = blending(source.component_0, self.component_0)
+        let component_1 = blending(source.component_1, self.component_1)
+        let component_2 = blending(source.component_2, self.component_2)
+        let component_3 = blending(source.component_3, self.component_3)
+        let component_4 = blending(source.component_4, self.component_4)
+        return Device5ColorModel(
+            component_0, component_1, component_2,
+            component_3, component_4
+        )
     }
 }
 
@@ -609,6 +658,23 @@ public struct Device6ColorModel : DeviceNColorModelProtocol {
             default: fatalError()
             }
         }
+    }
+}
+
+extension Device6ColorModel {
+    
+    @_inlineable
+    public func blended(source: Device6ColorModel, blending: (Double, Double) -> Double) -> Device6ColorModel {
+        let component_0 = blending(source.component_0, self.component_0)
+        let component_1 = blending(source.component_1, self.component_1)
+        let component_2 = blending(source.component_2, self.component_2)
+        let component_3 = blending(source.component_3, self.component_3)
+        let component_4 = blending(source.component_4, self.component_4)
+        let component_5 = blending(source.component_5, self.component_5)
+        return Device6ColorModel(
+            component_0, component_1, component_2,
+            component_3, component_4, component_5
+        )
     }
 }
 
@@ -782,6 +848,25 @@ public struct Device7ColorModel : DeviceNColorModelProtocol {
             default: fatalError()
             }
         }
+    }
+}
+
+extension Device7ColorModel {
+    
+    @_inlineable
+    public func blended(source: Device7ColorModel, blending: (Double, Double) -> Double) -> Device7ColorModel {
+        let component_0 = blending(source.component_0, self.component_0)
+        let component_1 = blending(source.component_1, self.component_1)
+        let component_2 = blending(source.component_2, self.component_2)
+        let component_3 = blending(source.component_3, self.component_3)
+        let component_4 = blending(source.component_4, self.component_4)
+        let component_5 = blending(source.component_5, self.component_5)
+        let component_6 = blending(source.component_6, self.component_6)
+        return Device7ColorModel(
+            component_0, component_1, component_2,
+            component_3, component_4, component_5,
+            component_6
+        )
     }
 }
 
@@ -972,6 +1057,26 @@ public struct Device8ColorModel : DeviceNColorModelProtocol {
             default: fatalError()
             }
         }
+    }
+}
+
+extension Device8ColorModel {
+    
+    @_inlineable
+    public func blended(source: Device8ColorModel, blending: (Double, Double) -> Double) -> Device8ColorModel {
+        let component_0 = blending(source.component_0, self.component_0)
+        let component_1 = blending(source.component_1, self.component_1)
+        let component_2 = blending(source.component_2, self.component_2)
+        let component_3 = blending(source.component_3, self.component_3)
+        let component_4 = blending(source.component_4, self.component_4)
+        let component_5 = blending(source.component_5, self.component_5)
+        let component_6 = blending(source.component_6, self.component_6)
+        let component_7 = blending(source.component_7, self.component_7)
+        return Device8ColorModel(
+            component_0, component_1, component_2,
+            component_3, component_4, component_5,
+            component_6, component_7
+        )
     }
 }
 
@@ -1171,6 +1276,27 @@ public struct Device9ColorModel : DeviceNColorModelProtocol {
             default: fatalError()
             }
         }
+    }
+}
+
+extension Device9ColorModel {
+    
+    @_inlineable
+    public func blended(source: Device9ColorModel, blending: (Double, Double) -> Double) -> Device9ColorModel {
+        let component_0 = blending(source.component_0, self.component_0)
+        let component_1 = blending(source.component_1, self.component_1)
+        let component_2 = blending(source.component_2, self.component_2)
+        let component_3 = blending(source.component_3, self.component_3)
+        let component_4 = blending(source.component_4, self.component_4)
+        let component_5 = blending(source.component_5, self.component_5)
+        let component_6 = blending(source.component_6, self.component_6)
+        let component_7 = blending(source.component_7, self.component_7)
+        let component_8 = blending(source.component_8, self.component_8)
+        return Device9ColorModel(
+            component_0, component_1, component_2,
+            component_3, component_4, component_5,
+            component_6, component_7, component_8
+        )
     }
 }
 
@@ -1380,6 +1506,29 @@ public struct Device10ColorModel : DeviceNColorModelProtocol {
             default: fatalError()
             }
         }
+    }
+}
+
+extension Device10ColorModel {
+    
+    @_inlineable
+    public func blended(source: Device10ColorModel, blending: (Double, Double) -> Double) -> Device10ColorModel {
+        let component_0 = blending(source.component_0, self.component_0)
+        let component_1 = blending(source.component_1, self.component_1)
+        let component_2 = blending(source.component_2, self.component_2)
+        let component_3 = blending(source.component_3, self.component_3)
+        let component_4 = blending(source.component_4, self.component_4)
+        let component_5 = blending(source.component_5, self.component_5)
+        let component_6 = blending(source.component_6, self.component_6)
+        let component_7 = blending(source.component_7, self.component_7)
+        let component_8 = blending(source.component_8, self.component_8)
+        let component_9 = blending(source.component_9, self.component_9)
+        return Device10ColorModel(
+            component_0, component_1, component_2,
+            component_3, component_4, component_5,
+            component_6, component_7, component_8,
+            component_9
+        )
     }
 }
 
@@ -1606,6 +1755,30 @@ public struct Device11ColorModel : DeviceNColorModelProtocol {
             default: fatalError()
             }
         }
+    }
+}
+
+extension Device11ColorModel {
+    
+    @_inlineable
+    public func blended(source: Device11ColorModel, blending: (Double, Double) -> Double) -> Device11ColorModel {
+        let component_0 = blending(source.component_0, self.component_0)
+        let component_1 = blending(source.component_1, self.component_1)
+        let component_2 = blending(source.component_2, self.component_2)
+        let component_3 = blending(source.component_3, self.component_3)
+        let component_4 = blending(source.component_4, self.component_4)
+        let component_5 = blending(source.component_5, self.component_5)
+        let component_6 = blending(source.component_6, self.component_6)
+        let component_7 = blending(source.component_7, self.component_7)
+        let component_8 = blending(source.component_8, self.component_8)
+        let component_9 = blending(source.component_9, self.component_9)
+        let component_10 = blending(source.component_10, self.component_10)
+        return Device11ColorModel(
+            component_0, component_1, component_2,
+            component_3, component_4, component_5,
+            component_6, component_7, component_8,
+            component_9, component_10
+        )
     }
 }
 
@@ -1841,6 +2014,31 @@ public struct Device12ColorModel : DeviceNColorModelProtocol {
             default: fatalError()
             }
         }
+    }
+}
+
+extension Device12ColorModel {
+    
+    @_inlineable
+    public func blended(source: Device12ColorModel, blending: (Double, Double) -> Double) -> Device12ColorModel {
+        let component_0 = blending(source.component_0, self.component_0)
+        let component_1 = blending(source.component_1, self.component_1)
+        let component_2 = blending(source.component_2, self.component_2)
+        let component_3 = blending(source.component_3, self.component_3)
+        let component_4 = blending(source.component_4, self.component_4)
+        let component_5 = blending(source.component_5, self.component_5)
+        let component_6 = blending(source.component_6, self.component_6)
+        let component_7 = blending(source.component_7, self.component_7)
+        let component_8 = blending(source.component_8, self.component_8)
+        let component_9 = blending(source.component_9, self.component_9)
+        let component_10 = blending(source.component_10, self.component_10)
+        let component_11 = blending(source.component_11, self.component_11)
+        return Device12ColorModel(
+            component_0, component_1, component_2,
+            component_3, component_4, component_5,
+            component_6, component_7, component_8,
+            component_9, component_10, component_11
+        )
     }
 }
 
@@ -2086,6 +2284,33 @@ public struct Device13ColorModel : DeviceNColorModelProtocol {
             default: fatalError()
             }
         }
+    }
+}
+
+extension Device13ColorModel {
+    
+    @_inlineable
+    public func blended(source: Device13ColorModel, blending: (Double, Double) -> Double) -> Device13ColorModel {
+        let component_0 = blending(source.component_0, self.component_0)
+        let component_1 = blending(source.component_1, self.component_1)
+        let component_2 = blending(source.component_2, self.component_2)
+        let component_3 = blending(source.component_3, self.component_3)
+        let component_4 = blending(source.component_4, self.component_4)
+        let component_5 = blending(source.component_5, self.component_5)
+        let component_6 = blending(source.component_6, self.component_6)
+        let component_7 = blending(source.component_7, self.component_7)
+        let component_8 = blending(source.component_8, self.component_8)
+        let component_9 = blending(source.component_9, self.component_9)
+        let component_10 = blending(source.component_10, self.component_10)
+        let component_11 = blending(source.component_11, self.component_11)
+        let component_12 = blending(source.component_12, self.component_12)
+        return Device13ColorModel(
+            component_0, component_1, component_2,
+            component_3, component_4, component_5,
+            component_6, component_7, component_8,
+            component_9, component_10, component_11,
+            component_12
+        )
     }
 }
 
@@ -2348,6 +2573,34 @@ public struct Device14ColorModel : DeviceNColorModelProtocol {
             default: fatalError()
             }
         }
+    }
+}
+
+extension Device14ColorModel {
+    
+    @_inlineable
+    public func blended(source: Device14ColorModel, blending: (Double, Double) -> Double) -> Device14ColorModel {
+        let component_0 = blending(source.component_0, self.component_0)
+        let component_1 = blending(source.component_1, self.component_1)
+        let component_2 = blending(source.component_2, self.component_2)
+        let component_3 = blending(source.component_3, self.component_3)
+        let component_4 = blending(source.component_4, self.component_4)
+        let component_5 = blending(source.component_5, self.component_5)
+        let component_6 = blending(source.component_6, self.component_6)
+        let component_7 = blending(source.component_7, self.component_7)
+        let component_8 = blending(source.component_8, self.component_8)
+        let component_9 = blending(source.component_9, self.component_9)
+        let component_10 = blending(source.component_10, self.component_10)
+        let component_11 = blending(source.component_11, self.component_11)
+        let component_12 = blending(source.component_12, self.component_12)
+        let component_13 = blending(source.component_13, self.component_13)
+        return Device14ColorModel(
+            component_0, component_1, component_2,
+            component_3, component_4, component_5,
+            component_6, component_7, component_8,
+            component_9, component_10, component_11,
+            component_12, component_13
+        )
     }
 }
 
@@ -2619,6 +2872,35 @@ public struct Device15ColorModel : DeviceNColorModelProtocol {
             default: fatalError()
             }
         }
+    }
+}
+
+extension Device15ColorModel {
+    
+    @_inlineable
+    public func blended(source: Device15ColorModel, blending: (Double, Double) -> Double) -> Device15ColorModel {
+        let component_0 = blending(source.component_0, self.component_0)
+        let component_1 = blending(source.component_1, self.component_1)
+        let component_2 = blending(source.component_2, self.component_2)
+        let component_3 = blending(source.component_3, self.component_3)
+        let component_4 = blending(source.component_4, self.component_4)
+        let component_5 = blending(source.component_5, self.component_5)
+        let component_6 = blending(source.component_6, self.component_6)
+        let component_7 = blending(source.component_7, self.component_7)
+        let component_8 = blending(source.component_8, self.component_8)
+        let component_9 = blending(source.component_9, self.component_9)
+        let component_10 = blending(source.component_10, self.component_10)
+        let component_11 = blending(source.component_11, self.component_11)
+        let component_12 = blending(source.component_12, self.component_12)
+        let component_13 = blending(source.component_13, self.component_13)
+        let component_14 = blending(source.component_14, self.component_14)
+        return Device15ColorModel(
+            component_0, component_1, component_2,
+            component_3, component_4, component_5,
+            component_6, component_7, component_8,
+            component_9, component_10, component_11,
+            component_12, component_13, component_14
+        )
     }
 }
 

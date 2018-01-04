@@ -121,6 +121,14 @@ extension LuvColorModel {
     }
 }
 
+extension LuvColorModel {
+    
+    @_inlineable
+    public func blended(source: LuvColorModel, blending: (Double, Double) -> Double) -> LuvColorModel {
+        return LuvColorModel(lightness: blending(source.lightness, self.lightness), u: blending(source.u, self.u), v: blending(source.v, self.v))
+    }
+}
+
 @_inlineable
 public prefix func +(val: LuvColorModel) -> LuvColorModel {
     return val

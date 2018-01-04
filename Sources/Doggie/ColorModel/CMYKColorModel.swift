@@ -159,6 +159,14 @@ extension CMYKColorModel {
     }
 }
 
+extension CMYKColorModel {
+    
+    @_inlineable
+    public func blended(source: CMYKColorModel, blending: (Double, Double) -> Double) -> CMYKColorModel {
+        return CMYKColorModel(cyan: blending(source.cyan, self.cyan), magenta: blending(source.magenta, self.magenta), yellow: blending(source.yellow, self.yellow), black: blending(source.black, self.black))
+    }
+}
+
 @_inlineable
 public prefix func +(val: CMYKColorModel) -> CMYKColorModel {
     return val

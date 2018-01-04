@@ -26,6 +26,16 @@
 public protocol ColorModelProtocol : Hashable, Tensor where Scalar == Double {
     
     static func rangeOfComponent(_ i: Int) -> ClosedRange<Double>
+    
+    func blended(source: Self, blending: (Double, Double) -> Double) -> Self
+}
+
+extension ColorModelProtocol {
+    
+    @_inlineable
+    public mutating func blend(source: Self, blending: (Double, Double) -> Double) {
+        self = self.blended(source: source, blending: blending)
+    }
 }
 
 extension ColorModelProtocol {

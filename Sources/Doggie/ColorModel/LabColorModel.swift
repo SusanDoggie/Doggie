@@ -122,6 +122,14 @@ extension LabColorModel {
     }
 }
 
+extension LabColorModel {
+    
+    @_inlineable
+    public func blended(source: LabColorModel, blending: (Double, Double) -> Double) -> LabColorModel {
+        return LabColorModel(lightness: blending(source.lightness, self.lightness), a: blending(source.a, self.a), b: blending(source.b, self.b))
+    }
+}
+
 @_inlineable
 public prefix func +(val: LabColorModel) -> LabColorModel {
     return val

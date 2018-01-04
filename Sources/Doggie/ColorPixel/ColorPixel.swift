@@ -40,6 +40,10 @@ public protocol ColorPixelProtocol : Hashable, ScalarMultiplicative where Scalar
     var isOpaque: Bool { get }
     
     func with(opacity: Double) -> Self
+    
+    func blended<C : ColorPixelProtocol>(source: C, compositingMode: ColorCompositingMode, blending: (Double, Double) -> Double) -> Self where C.Model == Model
+    
+    func blended<C : ColorPixelProtocol>(source: C, blendMode: ColorBlendMode, compositingMode: ColorCompositingMode) -> Self where C.Model == Model
 }
 
 extension ColorPixelProtocol {
@@ -160,6 +164,18 @@ extension ColorPixelProtocol {
     @_transparent
     public var hashValue: Int {
         return hash_combine(seed: 0, self.color.hashValue, self.opacity.hashValue)
+    }
+}
+
+extension ColorPixelProtocol {
+    
+    @_inlineable
+    public mutating func blend<C : ColorPixelProtocol>(source: C, compositingMode: ColorCompositingMode = .default, blending: (Double, Double) -> Double) where C.Model == Model {
+        self = self.blended(source: source, compositingMode: compositingMode, blending: blending)
+    }
+    @_inlineable
+    public mutating func blend<C : ColorPixelProtocol>(source: C, blendMode: ColorBlendMode = .default, compositingMode: ColorCompositingMode = .default) where C.Model == Model {
+        self = self.blended(source: source, blendMode: blendMode, compositingMode: compositingMode)
     }
 }
 

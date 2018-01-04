@@ -83,6 +83,14 @@ extension GrayColorModel {
     }
 }
 
+extension GrayColorModel {
+    
+    @_inlineable
+    public func blended(source: GrayColorModel, blending: (Double, Double) -> Double) -> GrayColorModel {
+        return GrayColorModel(white: blending(source.white, self.white))
+    }
+}
+
 @_inlineable
 public prefix func +(val: GrayColorModel) -> GrayColorModel {
     return val
