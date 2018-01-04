@@ -30,24 +30,24 @@ public struct Gray32ColorPixel : ColorPixelProtocol {
     public var w: UInt16
     public var a: UInt16
     
-    @_inlineable
+    @_transparent
     public init() {
         self.w = 0
         self.a = 0
     }
-    @_inlineable
+    @_transparent
     public init(white: UInt16, opacity: UInt16 = 0xFFFF) {
         self.w = white
         self.a = opacity
     }
     
-    @_inlineable
+    @_transparent
     public init(color: GrayColorModel, opacity: Double) {
         self.w = UInt16((color.white * 65535).clamped(to: 0...65535).rounded())
         self.a = UInt16((opacity * 65535).clamped(to: 0...65535).rounded())
     }
     
-    @_inlineable
+    @_transparent
     public var color: GrayColorModel {
         get {
             return GrayColorModel(white: Double(w) / 65535)
@@ -56,7 +56,7 @@ public struct Gray32ColorPixel : ColorPixelProtocol {
             self.w = UInt16((newValue.white * 65535).clamped(to: 0...65535).rounded())
         }
     }
-    @_inlineable
+    @_transparent
     public var opacity: Double {
         get {
             return Double(a) / 65535
@@ -66,17 +66,17 @@ public struct Gray32ColorPixel : ColorPixelProtocol {
         }
     }
     
-    @_inlineable
+    @_transparent
     public var hashValue: Int {
         return hash_combine(seed: 0, w, a)
     }
     
-    @_inlineable
+    @_transparent
     public var isOpaque: Bool {
         return a == 65535
     }
     
-    @_inlineable
+    @_transparent
     public func with(opacity: Double) -> Gray32ColorPixel {
         var c = self
         c.opacity = opacity
@@ -84,14 +84,20 @@ public struct Gray32ColorPixel : ColorPixelProtocol {
     }
 }
 
-@_inlineable
+@_transparent
+public prefix func +(val: Gray32ColorPixel) -> Gray32ColorPixel {
+    return val
+}
+@_transparent
+public prefix func -(val: Gray32ColorPixel) -> Gray32ColorPixel {
+    return Gray32ColorPixel()
+}
+@_transparent
 public func ==(lhs: Gray32ColorPixel, rhs: Gray32ColorPixel) -> Bool {
-    
     return (lhs.w, lhs.a) == (rhs.w, rhs.a)
 }
 
-@_inlineable
+@_transparent
 public func !=(lhs: Gray32ColorPixel, rhs: Gray32ColorPixel) -> Bool {
-    
     return (lhs.w, lhs.a) != (rhs.w, rhs.a)
 }

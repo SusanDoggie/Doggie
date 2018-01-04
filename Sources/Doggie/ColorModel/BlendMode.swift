@@ -180,12 +180,12 @@ extension ColorBlendMode {
 
 extension ColorModelProtocol {
     
-    @_inlineable
+    @_transparent
     public mutating func blend(source: Self, blendMode: ColorBlendMode = .default) {
         self = self.blended(source: source, blendMode: blendMode)
     }
     
-    @inline(__always)
+    @_transparent
     public func blended(source: Self, blendMode: ColorBlendMode) -> Self {
         switch blendMode {
         case .normal: return source

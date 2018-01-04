@@ -27,12 +27,12 @@ public struct CMYKColorModel : ColorModelProtocol {
     
     public typealias Scalar = Double
     
-    @_inlineable
+    @_transparent
     public static var numberOfComponents: Int {
         return 4
     }
     
-    @_inlineable
+    @_transparent
     public static func rangeOfComponent(_ i: Int) -> ClosedRange<Double> {
         precondition(0..<numberOfComponents ~= i, "Index out of range.")
         return 0...1
@@ -43,7 +43,7 @@ public struct CMYKColorModel : ColorModelProtocol {
     public var yellow: Double
     public var black: Double
     
-    @_inlineable
+    @_transparent
     public init(cyan: Double, magenta: Double, yellow: Double, black: Double) {
         self.cyan = cyan
         self.magenta = magenta
@@ -76,7 +76,7 @@ public struct CMYKColorModel : ColorModelProtocol {
 
 extension CMYKColorModel {
     
-    @_inlineable
+    @_transparent
     public init() {
         self.cyan = 0
         self.magenta = 0
@@ -118,42 +118,42 @@ extension CMYKColorModel {
 
 extension CMYKColorModel {
     
-    @_inlineable
+    @_transparent
     public static var black: CMYKColorModel {
         return CMYKColorModel(cyan: 0, magenta: 0, yellow: 0, black: 1)
     }
     
-    @_inlineable
+    @_transparent
     public static var white: CMYKColorModel {
         return CMYKColorModel(cyan: 0, magenta: 0, yellow: 0, black: 0)
     }
     
-    @_inlineable
+    @_transparent
     public static var red: CMYKColorModel {
         return CMYKColorModel(cyan: 0, magenta: 1, yellow: 1, black: 0)
     }
     
-    @_inlineable
+    @_transparent
     public static var green: CMYKColorModel {
         return CMYKColorModel(cyan: 1, magenta: 0, yellow: 1, black: 0)
     }
     
-    @_inlineable
+    @_transparent
     public static var blue: CMYKColorModel {
         return CMYKColorModel(cyan: 1, magenta: 1, yellow: 0, black: 0)
     }
     
-    @_inlineable
+    @_transparent
     public static var cyan: CMYKColorModel {
         return CMYKColorModel(cyan: 1, magenta: 0, yellow: 0, black: 0)
     }
     
-    @_inlineable
+    @_transparent
     public static var magenta: CMYKColorModel {
         return CMYKColorModel(cyan: 0, magenta: 1, yellow: 0, black: 0)
     }
     
-    @_inlineable
+    @_transparent
     public static var yellow: CMYKColorModel {
         return CMYKColorModel(cyan: 0, magenta: 0, yellow: 1, black: 0)
     }
@@ -161,76 +161,76 @@ extension CMYKColorModel {
 
 extension CMYKColorModel {
     
-    @_inlineable
+    @_transparent
     public func blended(source: CMYKColorModel, blending: (Double, Double) -> Double) -> CMYKColorModel {
         return CMYKColorModel(cyan: blending(source.cyan, self.cyan), magenta: blending(source.magenta, self.magenta), yellow: blending(source.yellow, self.yellow), black: blending(source.black, self.black))
     }
 }
 
-@_inlineable
+@_transparent
 public prefix func +(val: CMYKColorModel) -> CMYKColorModel {
     return val
 }
-@_inlineable
+@_transparent
 public prefix func -(val: CMYKColorModel) -> CMYKColorModel {
     return CMYKColorModel(cyan: -val.cyan, magenta: -val.magenta, yellow: -val.yellow, black: -val.black)
 }
-@_inlineable
+@_transparent
 public func +(lhs: CMYKColorModel, rhs: CMYKColorModel) -> CMYKColorModel {
     return CMYKColorModel(cyan: lhs.cyan + rhs.cyan, magenta: lhs.magenta + rhs.magenta, yellow: lhs.yellow + rhs.yellow, black: lhs.black + rhs.black)
 }
-@_inlineable
+@_transparent
 public func -(lhs: CMYKColorModel, rhs: CMYKColorModel) -> CMYKColorModel {
     return CMYKColorModel(cyan: lhs.cyan - rhs.cyan, magenta: lhs.magenta - rhs.magenta, yellow: lhs.yellow - rhs.yellow, black: lhs.black - rhs.black)
 }
 
-@_inlineable
+@_transparent
 public func *(lhs: Double, rhs: CMYKColorModel) -> CMYKColorModel {
     return CMYKColorModel(cyan: lhs * rhs.cyan, magenta: lhs * rhs.magenta, yellow: lhs * rhs.yellow, black: lhs * rhs.black)
 }
-@_inlineable
+@_transparent
 public func *(lhs: CMYKColorModel, rhs: Double) -> CMYKColorModel {
     return CMYKColorModel(cyan: lhs.cyan * rhs, magenta: lhs.magenta * rhs, yellow: lhs.yellow * rhs, black: lhs.black * rhs)
 }
 
-@_inlineable
+@_transparent
 public func /(lhs: CMYKColorModel, rhs: Double) -> CMYKColorModel {
     return CMYKColorModel(cyan: lhs.cyan / rhs, magenta: lhs.magenta / rhs, yellow: lhs.yellow / rhs, black: lhs.black / rhs)
 }
 
-@_inlineable
+@_transparent
 public func *= (lhs: inout CMYKColorModel, rhs: Double) {
     lhs.cyan *= rhs
     lhs.magenta *= rhs
     lhs.yellow *= rhs
     lhs.black *= rhs
 }
-@_inlineable
+@_transparent
 public func /= (lhs: inout CMYKColorModel, rhs: Double) {
     lhs.cyan /= rhs
     lhs.magenta /= rhs
     lhs.yellow /= rhs
     lhs.black /= rhs
 }
-@_inlineable
+@_transparent
 public func += (lhs: inout CMYKColorModel, rhs: CMYKColorModel) {
     lhs.cyan += rhs.cyan
     lhs.magenta += rhs.magenta
     lhs.yellow += rhs.yellow
     lhs.black += rhs.black
 }
-@_inlineable
+@_transparent
 public func -= (lhs: inout CMYKColorModel, rhs: CMYKColorModel) {
     lhs.cyan -= rhs.cyan
     lhs.magenta -= rhs.magenta
     lhs.yellow -= rhs.yellow
     lhs.black -= rhs.black
 }
-@_inlineable
+@_transparent
 public func ==(lhs: CMYKColorModel, rhs: CMYKColorModel) -> Bool {
     return lhs.cyan == rhs.cyan && lhs.magenta == rhs.magenta && lhs.yellow == rhs.yellow && lhs.black == rhs.black
 }
-@_inlineable
+@_transparent
 public func !=(lhs: CMYKColorModel, rhs: CMYKColorModel) -> Bool {
     return lhs.cyan != rhs.cyan || lhs.magenta != rhs.magenta || lhs.yellow != rhs.yellow || lhs.black != rhs.black
 }

@@ -32,7 +32,7 @@ public protocol ColorModelProtocol : Hashable, Tensor where Scalar == Double {
 
 extension ColorModelProtocol {
     
-    @_inlineable
+    @_transparent
     public mutating func blend(source: Self, blending: (Double, Double) -> Double) {
         self = self.blended(source: source, blending: blending)
     }

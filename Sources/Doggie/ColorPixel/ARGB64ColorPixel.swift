@@ -32,28 +32,28 @@ public struct ARGB64ColorPixel : ColorPixelProtocol {
     public var g: UInt16
     public var b: UInt16
     
-    @_inlineable
+    @_transparent
     public init() {
         self.a = 0
         self.r = 0
         self.g = 0
         self.b = 0
     }
-    @_inlineable
+    @_transparent
     public init(red: UInt16, green: UInt16, blue: UInt16, opacity: UInt16 = 0xFFFF) {
         self.a = opacity
         self.r = red
         self.g = green
         self.b = blue
     }
-    @_inlineable
+    @_transparent
     public init(_ hex: UInt64) {
         self.a = UInt16((hex >> 48) & 0xFFFF)
         self.r = UInt16((hex >> 32) & 0xFFFF)
         self.g = UInt16((hex >> 16) & 0xFFFF)
         self.b = UInt16(hex & 0xFFFF)
     }
-    @_inlineable
+    @_transparent
     public init(color: RGBColorModel, opacity: Double) {
         self.a = UInt16((opacity * 65535).clamped(to: 0...65535).rounded())
         self.r = UInt16((color.red * 65535).clamped(to: 0...65535).rounded())
@@ -61,7 +61,7 @@ public struct ARGB64ColorPixel : ColorPixelProtocol {
         self.b = UInt16((color.blue * 65535).clamped(to: 0...65535).rounded())
     }
     
-    @_inlineable
+    @_transparent
     public var color: RGBColorModel {
         get {
             return RGBColorModel(red: Double(r) / 65535, green: Double(g) / 65535, blue: Double(b) / 65535)
@@ -72,7 +72,7 @@ public struct ARGB64ColorPixel : ColorPixelProtocol {
             self.b = UInt16((newValue.blue * 65535).clamped(to: 0...65535).rounded())
         }
     }
-    @_inlineable
+    @_transparent
     public var opacity: Double {
         get {
             return Double(a) / 65535
@@ -82,7 +82,7 @@ public struct ARGB64ColorPixel : ColorPixelProtocol {
         }
     }
     
-    @_inlineable
+    @_transparent
     public var hex: UInt64 {
         let _a = UInt64(a) << 48
         let _r = UInt64(r) << 32
@@ -91,17 +91,17 @@ public struct ARGB64ColorPixel : ColorPixelProtocol {
         return _a | _r | _g | _b
     }
     
-    @_inlineable
+    @_transparent
     public var hashValue: Int {
         return hex.hashValue
     }
     
-    @_inlineable
+    @_transparent
     public var isOpaque: Bool {
         return a == 65535
     }
     
-    @_inlineable
+    @_transparent
     public func with(opacity: Double) -> ARGB64ColorPixel {
         var c = self
         c.opacity = opacity
@@ -109,14 +109,20 @@ public struct ARGB64ColorPixel : ColorPixelProtocol {
     }
 }
 
-@_inlineable
+@_transparent
+public prefix func +(val: ARGB64ColorPixel) -> ARGB64ColorPixel {
+    return val
+}
+@_transparent
+public prefix func -(val: ARGB64ColorPixel) -> ARGB64ColorPixel {
+    return ARGB64ColorPixel()
+}
+@_transparent
 public func ==(lhs: ARGB64ColorPixel, rhs: ARGB64ColorPixel) -> Bool {
-    
     return (lhs.a, lhs.r, lhs.g, lhs.b) == (rhs.a, rhs.r, rhs.g, rhs.b)
 }
 
-@_inlineable
+@_transparent
 public func !=(lhs: ARGB64ColorPixel, rhs: ARGB64ColorPixel) -> Bool {
-    
     return (lhs.a, lhs.r, lhs.g, lhs.b) != (rhs.a, rhs.r, rhs.g, rhs.b)
 }

@@ -29,12 +29,12 @@ public struct LuvColorModel : ColorModelProtocol {
     
     public typealias Scalar = Double
     
-    @_inlineable
+    @_transparent
     public static var numberOfComponents: Int {
         return 3
     }
     
-    @_inlineable
+    @_transparent
     public static func rangeOfComponent(_ i: Int) -> ClosedRange<Double> {
         precondition(0..<numberOfComponents ~= i, "Index out of range.")
         switch i {
@@ -50,19 +50,19 @@ public struct LuvColorModel : ColorModelProtocol {
     /// The v color component.
     public var v: Double
     
-    @_inlineable
+    @_transparent
     public init() {
         self.lightness = 0
         self.u = 0
         self.v = 0
     }
-    @_inlineable
+    @_transparent
     public init(lightness: Double, u: Double, v: Double) {
         self.lightness = lightness
         self.u = u
         self.v = v
     }
-    @_inlineable
+    @_transparent
     public init(lightness: Double, chroma: Double, hue: Double) {
         self.lightness = lightness
         self.u = chroma * cos(2 * Double.pi * hue)
@@ -92,7 +92,7 @@ public struct LuvColorModel : ColorModelProtocol {
 
 extension LuvColorModel {
     
-    @_inlineable
+    @_transparent
     public static var black: LuvColorModel {
         return LuvColorModel()
     }
@@ -100,7 +100,7 @@ extension LuvColorModel {
 
 extension LuvColorModel {
     
-    @_inlineable
+    @_transparent
     public var hue: Double {
         get {
             return positive_mod(0.5 * atan2(v, u) / Double.pi, 1)
@@ -110,7 +110,7 @@ extension LuvColorModel {
         }
     }
     
-    @_inlineable
+    @_transparent
     public var chroma: Double {
         get {
             return sqrt(u * u + v * v)
@@ -123,72 +123,72 @@ extension LuvColorModel {
 
 extension LuvColorModel {
     
-    @_inlineable
+    @_transparent
     public func blended(source: LuvColorModel, blending: (Double, Double) -> Double) -> LuvColorModel {
         return LuvColorModel(lightness: blending(source.lightness, self.lightness), u: blending(source.u, self.u), v: blending(source.v, self.v))
     }
 }
 
-@_inlineable
+@_transparent
 public prefix func +(val: LuvColorModel) -> LuvColorModel {
     return val
 }
-@_inlineable
+@_transparent
 public prefix func -(val: LuvColorModel) -> LuvColorModel {
     return LuvColorModel(lightness: -val.lightness, u: -val.u, v: -val.v)
 }
-@_inlineable
+@_transparent
 public func +(lhs: LuvColorModel, rhs: LuvColorModel) -> LuvColorModel {
     return LuvColorModel(lightness: lhs.lightness + rhs.lightness, u: lhs.u + rhs.u, v: lhs.v + rhs.v)
 }
-@_inlineable
+@_transparent
 public func -(lhs: LuvColorModel, rhs: LuvColorModel) -> LuvColorModel {
     return LuvColorModel(lightness: lhs.lightness - rhs.lightness, u: lhs.u - rhs.u, v: lhs.v - rhs.v)
 }
 
-@_inlineable
+@_transparent
 public func *(lhs: Double, rhs: LuvColorModel) -> LuvColorModel {
     return LuvColorModel(lightness: lhs * rhs.lightness, u: lhs * rhs.u, v: lhs * rhs.v)
 }
-@_inlineable
+@_transparent
 public func *(lhs: LuvColorModel, rhs: Double) -> LuvColorModel {
     return LuvColorModel(lightness: lhs.lightness * rhs, u: lhs.u * rhs, v: lhs.v * rhs)
 }
 
-@_inlineable
+@_transparent
 public func /(lhs: LuvColorModel, rhs: Double) -> LuvColorModel {
     return LuvColorModel(lightness: lhs.lightness / rhs, u: lhs.u / rhs, v: lhs.v / rhs)
 }
 
-@_inlineable
+@_transparent
 public func *= (lhs: inout LuvColorModel, rhs: Double) {
     lhs.lightness *= rhs
     lhs.u *= rhs
     lhs.v *= rhs
 }
-@_inlineable
+@_transparent
 public func /= (lhs: inout LuvColorModel, rhs: Double) {
     lhs.lightness /= rhs
     lhs.u /= rhs
     lhs.v /= rhs
 }
-@_inlineable
+@_transparent
 public func += (lhs: inout LuvColorModel, rhs: LuvColorModel) {
     lhs.lightness += rhs.lightness
     lhs.u += rhs.u
     lhs.v += rhs.v
 }
-@_inlineable
+@_transparent
 public func -= (lhs: inout LuvColorModel, rhs: LuvColorModel) {
     lhs.lightness -= rhs.lightness
     lhs.u -= rhs.u
     lhs.v -= rhs.v
 }
-@_inlineable
+@_transparent
 public func ==(lhs: LuvColorModel, rhs: LuvColorModel) -> Bool {
     return lhs.lightness == rhs.lightness && lhs.u == rhs.u && lhs.v == rhs.v
 }
-@_inlineable
+@_transparent
 public func !=(lhs: LuvColorModel, rhs: LuvColorModel) -> Bool {
     return lhs.lightness != rhs.lightness || lhs.u != rhs.u || lhs.v != rhs.v
 }

@@ -30,23 +30,23 @@ public struct Gray16ColorPixel : ColorPixelProtocol {
     public var w: UInt8
     public var a: UInt8
     
-    @_inlineable
+    @_transparent
     public init() {
         self.w = 0
         self.a = 0
     }
-    @_inlineable
+    @_transparent
     public init(white: UInt8, opacity: UInt8 = 0xFF) {
         self.w = white
         self.a = opacity
     }
-    @_inlineable
+    @_transparent
     public init(color: GrayColorModel, opacity: Double) {
         self.w = UInt8((color.white * 255).clamped(to: 0...255).rounded())
         self.a = UInt8((opacity * 255).clamped(to: 0...255).rounded())
     }
     
-    @_inlineable
+    @_transparent
     public var color: GrayColorModel {
         get {
             return GrayColorModel(white: Double(w) / 255)
@@ -55,7 +55,7 @@ public struct Gray16ColorPixel : ColorPixelProtocol {
             self.w = UInt8((newValue.white * 255).clamped(to: 0...255).rounded())
         }
     }
-    @_inlineable
+    @_transparent
     public var opacity: Double {
         get {
             return Double(a) / 255
@@ -65,17 +65,17 @@ public struct Gray16ColorPixel : ColorPixelProtocol {
         }
     }
     
-    @_inlineable
+    @_transparent
     public var hashValue: Int {
         return hash_combine(seed: 0, w, a)
     }
     
-    @_inlineable
+    @_transparent
     public var isOpaque: Bool {
         return a == 255
     }
     
-    @_inlineable
+    @_transparent
     public func with(opacity: Double) -> Gray16ColorPixel {
         var c = self
         c.opacity = opacity
@@ -83,15 +83,21 @@ public struct Gray16ColorPixel : ColorPixelProtocol {
     }
 }
 
-@_inlineable
+@_transparent
+public prefix func +(val: Gray16ColorPixel) -> Gray16ColorPixel {
+    return val
+}
+@_transparent
+public prefix func -(val: Gray16ColorPixel) -> Gray16ColorPixel {
+    return Gray16ColorPixel()
+}
+@_transparent
 public func ==(lhs: Gray16ColorPixel, rhs: Gray16ColorPixel) -> Bool {
-    
     return (lhs.w, lhs.a) == (rhs.w, rhs.a)
 }
 
-@_inlineable
+@_transparent
 public func !=(lhs: Gray16ColorPixel, rhs: Gray16ColorPixel) -> Bool {
-    
     return (lhs.w, lhs.a) != (rhs.w, rhs.a)
 }
 

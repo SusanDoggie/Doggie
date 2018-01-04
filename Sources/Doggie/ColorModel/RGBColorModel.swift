@@ -27,12 +27,12 @@ public struct RGBColorModel : ColorModelProtocol {
     
     public typealias Scalar = Double
     
-    @_inlineable
+    @_transparent
     public static var numberOfComponents: Int {
         return 3
     }
     
-    @_inlineable
+    @_transparent
     public static func rangeOfComponent(_ i: Int) -> ClosedRange<Double> {
         precondition(0..<numberOfComponents ~= i, "Index out of range.")
         return 0...1
@@ -42,14 +42,14 @@ public struct RGBColorModel : ColorModelProtocol {
     public var green: Double
     public var blue: Double
     
-    @_inlineable
+    @_transparent
     public init() {
         self.red = 0
         self.green = 0
         self.blue = 0
     }
     
-    @_inlineable
+    @_transparent
     public init(red: Double, green: Double, blue: Double) {
         self.red = red
         self.green = green
@@ -79,42 +79,42 @@ public struct RGBColorModel : ColorModelProtocol {
 
 extension RGBColorModel {
     
-    @_inlineable
+    @_transparent
     public static var black: RGBColorModel {
         return RGBColorModel()
     }
     
-    @_inlineable
+    @_transparent
     public static var white: RGBColorModel {
         return RGBColorModel(red: 1, green: 1, blue: 1)
     }
     
-    @_inlineable
+    @_transparent
     public static var red: RGBColorModel {
         return RGBColorModel(red: 1, green: 0, blue: 0)
     }
     
-    @_inlineable
+    @_transparent
     public static var green: RGBColorModel {
         return RGBColorModel(red: 0, green: 1, blue: 0)
     }
     
-    @_inlineable
+    @_transparent
     public static var blue: RGBColorModel {
         return RGBColorModel(red: 0, green: 0, blue: 1)
     }
     
-    @_inlineable
+    @_transparent
     public static var cyan: RGBColorModel {
         return RGBColorModel(red: 0, green: 1, blue: 1)
     }
     
-    @_inlineable
+    @_transparent
     public static var magenta: RGBColorModel {
         return RGBColorModel(red: 1, green: 0, blue: 1)
     }
     
-    @_inlineable
+    @_transparent
     public static var yellow: RGBColorModel {
         return RGBColorModel(red: 1, green: 1, blue: 0)
     }
@@ -122,7 +122,7 @@ extension RGBColorModel {
 
 extension RGBColorModel {
     
-    @_inlineable
+    @_transparent
     public init(_ hex: UInt32) {
         self.red = Double((hex >> 16) & 0xFF) / 255
         self.green = Double((hex >> 8) & 0xFF) / 255
@@ -154,7 +154,7 @@ extension RGBColorModel {
 
 extension RGBColorModel {
     
-    @_inlineable
+    @_transparent
     public init(hue: Double, saturation: Double, brightness: Double) {
         let _hue = positive_mod(hue, 1) * 6
         let __hue = Int(_hue)
@@ -193,7 +193,7 @@ extension RGBColorModel {
 
 extension RGBColorModel {
     
-    @_inlineable
+    @_transparent
     public var hue: Double {
         get {
             let _max = Swift.max(red, green, blue)
@@ -216,7 +216,7 @@ extension RGBColorModel {
         }
     }
     
-    @_inlineable
+    @_transparent
     public var saturation: Double {
         get {
             let _max = Swift.max(red, green, blue)
@@ -228,7 +228,7 @@ extension RGBColorModel {
         }
     }
     
-    @_inlineable
+    @_transparent
     public var brightness: Double {
         get {
             return Swift.max(red, green, blue)
@@ -241,72 +241,72 @@ extension RGBColorModel {
 
 extension RGBColorModel {
     
-    @_inlineable
+    @_transparent
     public func blended(source: RGBColorModel, blending: (Double, Double) -> Double) -> RGBColorModel {
         return RGBColorModel(red: blending(source.red, self.red), green: blending(source.green, self.green), blue: blending(source.blue, self.blue))
     }
 }
 
-@_inlineable
+@_transparent
 public prefix func +(val: RGBColorModel) -> RGBColorModel {
     return val
 }
-@_inlineable
+@_transparent
 public prefix func -(val: RGBColorModel) -> RGBColorModel {
     return RGBColorModel(red: -val.red, green: -val.green, blue: -val.blue)
 }
-@_inlineable
+@_transparent
 public func +(lhs: RGBColorModel, rhs: RGBColorModel) -> RGBColorModel {
     return RGBColorModel(red: lhs.red + rhs.red, green: lhs.green + rhs.green, blue: lhs.blue + rhs.blue)
 }
-@_inlineable
+@_transparent
 public func -(lhs: RGBColorModel, rhs: RGBColorModel) -> RGBColorModel {
     return RGBColorModel(red: lhs.red - rhs.red, green: lhs.green - rhs.green, blue: lhs.blue - rhs.blue)
 }
 
-@_inlineable
+@_transparent
 public func *(lhs: Double, rhs: RGBColorModel) -> RGBColorModel {
     return RGBColorModel(red: lhs * rhs.red, green: lhs * rhs.green, blue: lhs * rhs.blue)
 }
-@_inlineable
+@_transparent
 public func *(lhs: RGBColorModel, rhs: Double) -> RGBColorModel {
     return RGBColorModel(red: lhs.red * rhs, green: lhs.green * rhs, blue: lhs.blue * rhs)
 }
 
-@_inlineable
+@_transparent
 public func /(lhs: RGBColorModel, rhs: Double) -> RGBColorModel {
     return RGBColorModel(red: lhs.red / rhs, green: lhs.green / rhs, blue: lhs.blue / rhs)
 }
 
-@_inlineable
+@_transparent
 public func *= (lhs: inout RGBColorModel, rhs: Double) {
     lhs.red *= rhs
     lhs.green *= rhs
     lhs.blue *= rhs
 }
-@_inlineable
+@_transparent
 public func /= (lhs: inout RGBColorModel, rhs: Double) {
     lhs.red /= rhs
     lhs.green /= rhs
     lhs.blue /= rhs
 }
-@_inlineable
+@_transparent
 public func += (lhs: inout RGBColorModel, rhs: RGBColorModel) {
     lhs.red += rhs.red
     lhs.green += rhs.green
     lhs.blue += rhs.blue
 }
-@_inlineable
+@_transparent
 public func -= (lhs: inout RGBColorModel, rhs: RGBColorModel) {
     lhs.red -= rhs.red
     lhs.green -= rhs.green
     lhs.blue -= rhs.blue
 }
-@_inlineable
+@_transparent
 public func ==(lhs: RGBColorModel, rhs: RGBColorModel) -> Bool {
     return lhs.red == rhs.red && lhs.green == rhs.green && lhs.blue == rhs.blue
 }
-@_inlineable
+@_transparent
 public func !=(lhs: RGBColorModel, rhs: RGBColorModel) -> Bool {
     return lhs.red != rhs.red || lhs.green != rhs.green || lhs.blue != rhs.blue
 }

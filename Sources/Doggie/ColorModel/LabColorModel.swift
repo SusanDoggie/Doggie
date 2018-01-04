@@ -29,12 +29,12 @@ public struct LabColorModel : ColorModelProtocol {
     
     public typealias Scalar = Double
     
-    @_inlineable
+    @_transparent
     public static var numberOfComponents: Int {
         return 3
     }
     
-    @_inlineable
+    @_transparent
     public static func rangeOfComponent(_ i: Int) -> ClosedRange<Double> {
         precondition(0..<numberOfComponents ~= i, "Index out of range.")
         switch i {
@@ -50,20 +50,20 @@ public struct LabColorModel : ColorModelProtocol {
     /// The b color component.
     public var b: Double
     
-    @_inlineable
+    @_transparent
     public init() {
         self.lightness = 0
         self.a = 0
         self.b = 0
     }
     
-    @_inlineable
+    @_transparent
     public init(lightness: Double, a: Double, b: Double) {
         self.lightness = lightness
         self.a = a
         self.b = b
     }
-    @_inlineable
+    @_transparent
     public init(lightness: Double, chroma: Double, hue: Double) {
         self.lightness = lightness
         self.a = chroma * cos(2 * Double.pi * hue)
@@ -93,7 +93,7 @@ public struct LabColorModel : ColorModelProtocol {
 
 extension LabColorModel {
     
-    @_inlineable
+    @_transparent
     public static var black: LabColorModel {
         return LabColorModel()
     }
@@ -101,7 +101,7 @@ extension LabColorModel {
 
 extension LabColorModel {
     
-    @_inlineable
+    @_transparent
     public var hue: Double {
         get {
             return positive_mod(0.5 * atan2(b, a) / Double.pi, 1)
@@ -111,7 +111,7 @@ extension LabColorModel {
         }
     }
     
-    @_inlineable
+    @_transparent
     public var chroma: Double {
         get {
             return sqrt(a * a + b * b)
@@ -124,72 +124,72 @@ extension LabColorModel {
 
 extension LabColorModel {
     
-    @_inlineable
+    @_transparent
     public func blended(source: LabColorModel, blending: (Double, Double) -> Double) -> LabColorModel {
         return LabColorModel(lightness: blending(source.lightness, self.lightness), a: blending(source.a, self.a), b: blending(source.b, self.b))
     }
 }
 
-@_inlineable
+@_transparent
 public prefix func +(val: LabColorModel) -> LabColorModel {
     return val
 }
-@_inlineable
+@_transparent
 public prefix func -(val: LabColorModel) -> LabColorModel {
     return LabColorModel(lightness: -val.lightness, a: -val.a, b: -val.b)
 }
-@_inlineable
+@_transparent
 public func +(lhs: LabColorModel, rhs: LabColorModel) -> LabColorModel {
     return LabColorModel(lightness: lhs.lightness + rhs.lightness, a: lhs.a + rhs.a, b: lhs.b + rhs.b)
 }
-@_inlineable
+@_transparent
 public func -(lhs: LabColorModel, rhs: LabColorModel) -> LabColorModel {
     return LabColorModel(lightness: lhs.lightness - rhs.lightness, a: lhs.a - rhs.a, b: lhs.b - rhs.b)
 }
 
-@_inlineable
+@_transparent
 public func *(lhs: Double, rhs: LabColorModel) -> LabColorModel {
     return LabColorModel(lightness: lhs * rhs.lightness, a: lhs * rhs.a, b: lhs * rhs.b)
 }
-@_inlineable
+@_transparent
 public func *(lhs: LabColorModel, rhs: Double) -> LabColorModel {
     return LabColorModel(lightness: lhs.lightness * rhs, a: lhs.a * rhs, b: lhs.b * rhs)
 }
 
-@_inlineable
+@_transparent
 public func /(lhs: LabColorModel, rhs: Double) -> LabColorModel {
     return LabColorModel(lightness: lhs.lightness / rhs, a: lhs.a / rhs, b: lhs.b / rhs)
 }
 
-@_inlineable
+@_transparent
 public func *= (lhs: inout LabColorModel, rhs: Double) {
     lhs.lightness *= rhs
     lhs.a *= rhs
     lhs.b *= rhs
 }
-@_inlineable
+@_transparent
 public func /= (lhs: inout LabColorModel, rhs: Double) {
     lhs.lightness /= rhs
     lhs.a /= rhs
     lhs.b /= rhs
 }
-@_inlineable
+@_transparent
 public func += (lhs: inout LabColorModel, rhs: LabColorModel) {
     lhs.lightness += rhs.lightness
     lhs.a += rhs.a
     lhs.b += rhs.b
 }
-@_inlineable
+@_transparent
 public func -= (lhs: inout LabColorModel, rhs: LabColorModel) {
     lhs.lightness -= rhs.lightness
     lhs.a -= rhs.a
     lhs.b -= rhs.b
 }
-@_inlineable
+@_transparent
 public func ==(lhs: LabColorModel, rhs: LabColorModel) -> Bool {
     return lhs.lightness == rhs.lightness && lhs.a == rhs.a && lhs.b == rhs.b
 }
-@_inlineable
+@_transparent
 public func !=(lhs: LabColorModel, rhs: LabColorModel) -> Bool {
     return lhs.lightness != rhs.lightness || lhs.a != rhs.a || lhs.b != rhs.b
 }

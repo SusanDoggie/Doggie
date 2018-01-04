@@ -86,7 +86,7 @@ extension ColorCompositingMode {
 
 extension ColorPixelProtocol {
     
-    @_inlineable
+    @_transparent
     public func blended<C : ColorPixelProtocol>(source: C, compositingMode: ColorCompositingMode, blending: (Double, Double) -> Double) -> Self where C.Model == Model {
         
         let d_alpha = self.opacity
@@ -104,7 +104,7 @@ extension ColorPixelProtocol {
         }
     }
     
-    @_inlineable
+    @_transparent
     public func blended<C : ColorPixelProtocol>(source: C, blendMode: ColorBlendMode = .default, compositingMode: ColorCompositingMode = .default) -> Self where C.Model == Model {
         
         let d_alpha = self.opacity

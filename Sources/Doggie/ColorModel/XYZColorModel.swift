@@ -27,12 +27,12 @@ public struct XYZColorModel : ColorModelProtocol {
     
     public typealias Scalar = Double
     
-    @_inlineable
+    @_transparent
     public static var numberOfComponents: Int {
         return 3
     }
     
-    @_inlineable
+    @_transparent
     public static func rangeOfComponent(_ i: Int) -> ClosedRange<Double> {
         precondition(0..<numberOfComponents ~= i, "Index out of range.")
         switch i {
@@ -45,26 +45,26 @@ public struct XYZColorModel : ColorModelProtocol {
     public var y: Double
     public var z: Double
     
-    @_inlineable
+    @_transparent
     public init() {
         self.x = 0
         self.y = 0
         self.z = 0
     }
     
-    @_inlineable
+    @_transparent
     public init(x: Double, y: Double, z: Double) {
         self.x = x
         self.y = y
         self.z = z
     }
     
-    @_inlineable
+    @_transparent
     public init(luminance: Double, point: Point) {
         self.init(luminance: luminance, x: point.x, y: point.y)
     }
     
-    @_inlineable
+    @_transparent
     public init(luminance: Double, x: Double, y: Double) {
         if y == 0 {
             self.x = 0
@@ -101,7 +101,7 @@ public struct XYZColorModel : ColorModelProtocol {
 
 extension XYZColorModel {
     
-    @_inlineable
+    @_transparent
     public var luminance: Double {
         get {
             return y
@@ -111,7 +111,7 @@ extension XYZColorModel {
         }
     }
     
-    @_inlineable
+    @_transparent
     public var point: Point {
         get {
             return Point(x: x, y: y) / (x + y + z)
@@ -124,7 +124,7 @@ extension XYZColorModel {
 
 extension XYZColorModel {
     
-    @_inlineable
+    @_transparent
     public static var black: XYZColorModel {
         return XYZColorModel()
     }
@@ -132,81 +132,81 @@ extension XYZColorModel {
 
 extension XYZColorModel {
     
-    @_inlineable
+    @_transparent
     public func blended(source: XYZColorModel, blending: (Double, Double) -> Double) -> XYZColorModel {
         return XYZColorModel(x: blending(source.x, self.x), y: blending(source.y, self.y), z: blending(source.z, self.z))
     }
 }
 
-@_inlineable
+@_transparent
 public func * (lhs: XYZColorModel, rhs: Matrix) -> XYZColorModel {
     return XYZColorModel(x: lhs.x * rhs.a + lhs.y * rhs.b + lhs.z * rhs.c + rhs.d, y: lhs.x * rhs.e + lhs.y * rhs.f + lhs.z * rhs.g + rhs.h, z: lhs.x * rhs.i + lhs.y * rhs.j + lhs.z * rhs.k + rhs.l)
 }
-@_inlineable
+@_transparent
 public func *= (lhs: inout XYZColorModel, rhs: Matrix) {
     lhs = lhs * rhs
 }
 
-@_inlineable
+@_transparent
 public prefix func +(val: XYZColorModel) -> XYZColorModel {
     return val
 }
-@_inlineable
+@_transparent
 public prefix func -(val: XYZColorModel) -> XYZColorModel {
     return XYZColorModel(x: -val.x, y: -val.y, z: -val.z)
 }
-@_inlineable
+@_transparent
 public func +(lhs: XYZColorModel, rhs: XYZColorModel) -> XYZColorModel {
     return XYZColorModel(x: lhs.x + rhs.x, y: lhs.y + rhs.y, z: lhs.z + rhs.z)
 }
-@_inlineable
+@_transparent
 public func -(lhs: XYZColorModel, rhs: XYZColorModel) -> XYZColorModel {
     return XYZColorModel(x: lhs.x - rhs.x, y: lhs.y - rhs.y, z: lhs.z - rhs.z)
 }
 
-@_inlineable
+@_transparent
 public func *(lhs: Double, rhs: XYZColorModel) -> XYZColorModel {
     return XYZColorModel(x: lhs * rhs.x, y: lhs * rhs.y, z: lhs * rhs.z)
 }
-@_inlineable
+@_transparent
 public func *(lhs: XYZColorModel, rhs: Double) -> XYZColorModel {
     return XYZColorModel(x: lhs.x * rhs, y: lhs.y * rhs, z: lhs.z * rhs)
 }
 
-@_inlineable
+@_transparent
 public func /(lhs: XYZColorModel, rhs: Double) -> XYZColorModel {
     return XYZColorModel(x: lhs.x / rhs, y: lhs.y / rhs, z: lhs.z / rhs)
 }
 
-@_inlineable
+@_transparent
 public func *= (lhs: inout XYZColorModel, rhs: Double) {
     lhs.x *= rhs
     lhs.y *= rhs
     lhs.z *= rhs
 }
-@_inlineable
+@_transparent
 public func /= (lhs: inout XYZColorModel, rhs: Double) {
     lhs.x /= rhs
     lhs.y /= rhs
     lhs.z /= rhs
 }
-@_inlineable
+@_transparent
 public func += (lhs: inout XYZColorModel, rhs: XYZColorModel) {
     lhs.x += rhs.x
     lhs.y += rhs.y
     lhs.z += rhs.z
 }
-@_inlineable
+@_transparent
 public func -= (lhs: inout XYZColorModel, rhs: XYZColorModel) {
     lhs.x -= rhs.x
     lhs.y -= rhs.y
     lhs.z -= rhs.z
 }
-@_inlineable
+@_transparent
 public func ==(lhs: XYZColorModel, rhs: XYZColorModel) -> Bool {
     return lhs.x == rhs.x && lhs.y == rhs.y && lhs.z == rhs.z
 }
-@_inlineable
+@_transparent
 public func !=(lhs: XYZColorModel, rhs: XYZColorModel) -> Bool {
     return lhs.x != rhs.x || lhs.y != rhs.y || lhs.z != rhs.z
 }

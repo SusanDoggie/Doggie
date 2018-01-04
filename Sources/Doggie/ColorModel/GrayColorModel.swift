@@ -27,12 +27,12 @@ public struct GrayColorModel : ColorModelProtocol {
 
     public typealias Scalar = Double
     
-    @_inlineable
+    @_transparent
     public static var numberOfComponents: Int {
         return 1
     }
     
-    @_inlineable
+    @_transparent
     public static func rangeOfComponent(_ i: Int) -> ClosedRange<Double> {
         precondition(0..<numberOfComponents ~= i, "Index out of range.")
         return 0...1
@@ -40,7 +40,7 @@ public struct GrayColorModel : ColorModelProtocol {
     
     public var white: Double
     
-    @_inlineable
+    @_transparent
     public init(white: Double) {
         self.white = white
     }
@@ -64,7 +64,7 @@ public struct GrayColorModel : ColorModelProtocol {
 
 extension GrayColorModel {
     
-    @_inlineable
+    @_transparent
     public init() {
         self.white = 0
     }
@@ -72,12 +72,12 @@ extension GrayColorModel {
 
 extension GrayColorModel {
     
-    @_inlineable
+    @_transparent
     public static var black: GrayColorModel {
         return GrayColorModel()
     }
     
-    @_inlineable
+    @_transparent
     public static var white: GrayColorModel {
         return GrayColorModel(white: 1)
     }
@@ -85,64 +85,64 @@ extension GrayColorModel {
 
 extension GrayColorModel {
     
-    @_inlineable
+    @_transparent
     public func blended(source: GrayColorModel, blending: (Double, Double) -> Double) -> GrayColorModel {
         return GrayColorModel(white: blending(source.white, self.white))
     }
 }
 
-@_inlineable
+@_transparent
 public prefix func +(val: GrayColorModel) -> GrayColorModel {
     return val
 }
-@_inlineable
+@_transparent
 public prefix func -(val: GrayColorModel) -> GrayColorModel {
     return GrayColorModel(white: -val.white)
 }
-@_inlineable
+@_transparent
 public func +(lhs: GrayColorModel, rhs: GrayColorModel) -> GrayColorModel {
     return GrayColorModel(white: lhs.white + rhs.white)
 }
-@_inlineable
+@_transparent
 public func -(lhs: GrayColorModel, rhs: GrayColorModel) -> GrayColorModel {
     return GrayColorModel(white: lhs.white - rhs.white)
 }
 
-@_inlineable
+@_transparent
 public func *(lhs: Double, rhs: GrayColorModel) -> GrayColorModel {
     return GrayColorModel(white: lhs * rhs.white)
 }
-@_inlineable
+@_transparent
 public func *(lhs: GrayColorModel, rhs: Double) -> GrayColorModel {
     return GrayColorModel(white: lhs.white * rhs)
 }
 
-@_inlineable
+@_transparent
 public func /(lhs: GrayColorModel, rhs: Double) -> GrayColorModel {
     return GrayColorModel(white: lhs.white / rhs)
 }
 
-@_inlineable
+@_transparent
 public func *= (lhs: inout GrayColorModel, rhs: Double) {
     lhs.white *= rhs
 }
-@_inlineable
+@_transparent
 public func /= (lhs: inout GrayColorModel, rhs: Double) {
     lhs.white /= rhs
 }
-@_inlineable
+@_transparent
 public func += (lhs: inout GrayColorModel, rhs: GrayColorModel) {
     lhs.white += rhs.white
 }
-@_inlineable
+@_transparent
 public func -= (lhs: inout GrayColorModel, rhs: GrayColorModel) {
     lhs.white -= rhs.white
 }
-@_inlineable
+@_transparent
 public func ==(lhs: GrayColorModel, rhs: GrayColorModel) -> Bool {
     return lhs.white == rhs.white
 }
-@_inlineable
+@_transparent
 public func !=(lhs: GrayColorModel, rhs: GrayColorModel) -> Bool {
     return lhs.white != rhs.white
 }
