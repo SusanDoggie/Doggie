@@ -97,6 +97,11 @@ public struct XYZColorModel : ColorModelProtocol {
             }
         }
     }
+    
+    @_transparent
+    public var hashValue: Int {
+        return hash_combine(seed: 0, x, y, z)
+    }
 }
 
 extension XYZColorModel {
@@ -135,6 +140,89 @@ extension XYZColorModel {
     @_transparent
     public func blended(source: XYZColorModel, blending: (Double, Double) -> Double) -> XYZColorModel {
         return XYZColorModel(x: blending(source.x, self.x), y: blending(source.y, self.y), z: blending(source.z, self.z))
+    }
+}
+
+extension XYZColorModel {
+    
+    @_transparent
+    public init(floatComponents: FloatComponents) {
+        self.x = Double(floatComponents.x)
+        self.y = Double(floatComponents.y)
+        self.z = Double(floatComponents.z)
+    }
+    
+    @_transparent
+    public var floatComponents: FloatComponents {
+        get {
+            return FloatComponents(x: Float(self.x), y: Float(self.y), z: Float(self.z))
+        }
+        set {
+            self.x = Double(newValue.x)
+            self.y = Double(newValue.y)
+            self.z = Double(newValue.z)
+        }
+    }
+    
+    public struct FloatComponents : FloatColorComponents {
+        
+        public typealias Scalar = Float
+        
+        @_transparent
+        public static var numberOfComponents: Int {
+            return 3
+        }
+        
+        public var x: Float
+        public var y: Float
+        public var z: Float
+        
+        @_transparent
+        public init() {
+            self.x = 0
+            self.y = 0
+            self.z = 0
+        }
+        
+        @_transparent
+        public init(x: Float, y: Float, z: Float) {
+            self.x = x
+            self.y = y
+            self.z = z
+        }
+        
+        @_inlineable
+        public subscript(position: Int) -> Float {
+            get {
+                switch position {
+                case 0: return x
+                case 1: return y
+                case 2: return z
+                default: fatalError()
+                }
+            }
+            set {
+                switch position {
+                case 0: x = newValue
+                case 1: y = newValue
+                case 2: z = newValue
+                default: fatalError()
+                }
+            }
+        }
+        
+        @_transparent
+        public var hashValue: Int {
+            return hash_combine(seed: 0, x, y, z)
+        }
+    }
+}
+
+extension XYZColorModel.FloatComponents {
+    
+    @_transparent
+    public func blended(source: XYZColorModel.FloatComponents, blending: (Float, Float) -> Float) -> XYZColorModel.FloatComponents {
+        return XYZColorModel.FloatComponents(x: blending(source.x, self.x), y: blending(source.y, self.y), z: blending(source.z, self.z))
     }
 }
 
@@ -208,5 +296,69 @@ public func ==(lhs: XYZColorModel, rhs: XYZColorModel) -> Bool {
 }
 @_transparent
 public func !=(lhs: XYZColorModel, rhs: XYZColorModel) -> Bool {
+    return lhs.x != rhs.x || lhs.y != rhs.y || lhs.z != rhs.z
+}
+
+@_transparent
+public prefix func +(val: XYZColorModel.FloatComponents) -> XYZColorModel.FloatComponents {
+    return val
+}
+@_transparent
+public prefix func -(val: XYZColorModel.FloatComponents) -> XYZColorModel.FloatComponents {
+    return XYZColorModel.FloatComponents(x: -val.x, y: -val.y, z: -val.z)
+}
+@_transparent
+public func +(lhs: XYZColorModel.FloatComponents, rhs: XYZColorModel.FloatComponents) -> XYZColorModel.FloatComponents {
+    return XYZColorModel.FloatComponents(x: lhs.x + rhs.x, y: lhs.y + rhs.y, z: lhs.z + rhs.z)
+}
+@_transparent
+public func -(lhs: XYZColorModel.FloatComponents, rhs: XYZColorModel.FloatComponents) -> XYZColorModel.FloatComponents {
+    return XYZColorModel.FloatComponents(x: lhs.x - rhs.x, y: lhs.y - rhs.y, z: lhs.z - rhs.z)
+}
+
+@_transparent
+public func *(lhs: Float, rhs: XYZColorModel.FloatComponents) -> XYZColorModel.FloatComponents {
+    return XYZColorModel.FloatComponents(x: lhs * rhs.x, y: lhs * rhs.y, z: lhs * rhs.z)
+}
+@_transparent
+public func *(lhs: XYZColorModel.FloatComponents, rhs: Float) -> XYZColorModel.FloatComponents {
+    return XYZColorModel.FloatComponents(x: lhs.x * rhs, y: lhs.y * rhs, z: lhs.z * rhs)
+}
+
+@_transparent
+public func /(lhs: XYZColorModel.FloatComponents, rhs: Float) -> XYZColorModel.FloatComponents {
+    return XYZColorModel.FloatComponents(x: lhs.x / rhs, y: lhs.y / rhs, z: lhs.z / rhs)
+}
+
+@_transparent
+public func *= (lhs: inout XYZColorModel.FloatComponents, rhs: Float) {
+    lhs.x *= rhs
+    lhs.y *= rhs
+    lhs.z *= rhs
+}
+@_transparent
+public func /= (lhs: inout XYZColorModel.FloatComponents, rhs: Float) {
+    lhs.x /= rhs
+    lhs.y /= rhs
+    lhs.z /= rhs
+}
+@_transparent
+public func += (lhs: inout XYZColorModel.FloatComponents, rhs: XYZColorModel.FloatComponents) {
+    lhs.x += rhs.x
+    lhs.y += rhs.y
+    lhs.z += rhs.z
+}
+@_transparent
+public func -= (lhs: inout XYZColorModel.FloatComponents, rhs: XYZColorModel.FloatComponents) {
+    lhs.x -= rhs.x
+    lhs.y -= rhs.y
+    lhs.z -= rhs.z
+}
+@_transparent
+public func ==(lhs: XYZColorModel.FloatComponents, rhs: XYZColorModel.FloatComponents) -> Bool {
+    return lhs.x == rhs.x && lhs.y == rhs.y && lhs.z == rhs.z
+}
+@_transparent
+public func !=(lhs: XYZColorModel.FloatComponents, rhs: XYZColorModel.FloatComponents) -> Bool {
     return lhs.x != rhs.x || lhs.y != rhs.y || lhs.z != rhs.z
 }

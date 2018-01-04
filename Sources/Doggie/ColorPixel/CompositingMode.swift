@@ -123,3 +123,46 @@ extension ColorPixelProtocol {
     }
 }
 
+extension FloatColorPixel {
+    
+    @_transparent
+    public func blended<C : ColorPixelProtocol>(source: C, compositingMode: ColorCompositingMode, blending: (Float, Float) -> Float) -> FloatColorPixel where C.Model == Model {
+        
+        let source = FloatColorPixel(source)
+        
+        let d_alpha = self._opacity
+        let s_alpha = source._opacity
+        
+        let r_alpha = compositingMode.mix(s_alpha, s_alpha, d_alpha, d_alpha)
+        
+        if r_alpha > 0 {
+            let _source = source._color
+            let _destination = self._color
+            let blended = (1 - d_alpha) * _source + d_alpha * _destination.blended(source: _source, blending: blending)
+            return FloatColorPixel(color: compositingMode.mix(s_alpha * blended, s_alpha, d_alpha * _destination, d_alpha) / r_alpha, opacity: r_alpha)
+        } else {
+            return FloatColorPixel()
+        }
+    }
+    
+    @_transparent
+    public func blended<C : ColorPixelProtocol>(source: C, blendMode: ColorBlendMode = .default, compositingMode: ColorCompositingMode = .default) -> FloatColorPixel where C.Model == Model {
+        
+        let source = FloatColorPixel(source)
+        
+        let d_alpha = self._opacity
+        let s_alpha = source._opacity
+        
+        let r_alpha = compositingMode.mix(s_alpha, s_alpha, d_alpha, d_alpha)
+        
+        if r_alpha > 0 {
+            let _source = source._color
+            let _destination = self._color
+            let blended = blendMode == .normal ? _source : (1 - d_alpha) * _source + d_alpha * _destination.blended(source: _source, blendMode: blendMode)
+            return FloatColorPixel(color: compositingMode.mix(s_alpha * blended, s_alpha, d_alpha * _destination, d_alpha) / r_alpha, opacity: r_alpha)
+        } else {
+            return FloatColorPixel()
+        }
+    }
+}
+

@@ -88,6 +88,11 @@ public struct LuvColorModel : ColorModelProtocol {
             }
         }
     }
+    
+    @_transparent
+    public var hashValue: Int {
+        return hash_combine(seed: 0, lightness, u, v)
+    }
 }
 
 extension LuvColorModel {
@@ -126,6 +131,89 @@ extension LuvColorModel {
     @_transparent
     public func blended(source: LuvColorModel, blending: (Double, Double) -> Double) -> LuvColorModel {
         return LuvColorModel(lightness: blending(source.lightness, self.lightness), u: blending(source.u, self.u), v: blending(source.v, self.v))
+    }
+}
+
+extension LuvColorModel {
+    
+    @_transparent
+    public init(floatComponents: FloatComponents) {
+        self.lightness = Double(floatComponents.lightness)
+        self.u = Double(floatComponents.u)
+        self.v = Double(floatComponents.v)
+    }
+    
+    @_transparent
+    public var floatComponents: FloatComponents {
+        get {
+            return FloatComponents(lightness: Float(self.lightness), u: Float(self.u), v: Float(self.v))
+        }
+        set {
+            self.lightness = Double(newValue.lightness)
+            self.u = Double(newValue.u)
+            self.v = Double(newValue.v)
+        }
+    }
+    
+    public struct FloatComponents : FloatColorComponents {
+        
+        public typealias Scalar = Float
+        
+        @_transparent
+        public static var numberOfComponents: Int {
+            return 3
+        }
+        
+        public var lightness: Float
+        public var u: Float
+        public var v: Float
+        
+        @_transparent
+        public init() {
+            self.lightness = 0
+            self.u = 0
+            self.v = 0
+        }
+        
+        @_transparent
+        public init(lightness: Float, u: Float, v: Float) {
+            self.lightness = lightness
+            self.u = u
+            self.v = v
+        }
+        
+        @_inlineable
+        public subscript(position: Int) -> Float {
+            get {
+                switch position {
+                case 0: return lightness
+                case 1: return u
+                case 2: return v
+                default: fatalError()
+                }
+            }
+            set {
+                switch position {
+                case 0: lightness = newValue
+                case 1: u = newValue
+                case 2: v = newValue
+                default: fatalError()
+                }
+            }
+        }
+        
+        @_transparent
+        public var hashValue: Int {
+            return hash_combine(seed: 0, lightness, u, v)
+        }
+    }
+}
+
+extension LuvColorModel.FloatComponents {
+    
+    @_transparent
+    public func blended(source: LuvColorModel.FloatComponents, blending: (Float, Float) -> Float) -> LuvColorModel.FloatComponents {
+        return LuvColorModel.FloatComponents(lightness: blending(source.lightness, self.lightness), u: blending(source.u, self.u), v: blending(source.v, self.v))
     }
 }
 
@@ -190,5 +278,69 @@ public func ==(lhs: LuvColorModel, rhs: LuvColorModel) -> Bool {
 }
 @_transparent
 public func !=(lhs: LuvColorModel, rhs: LuvColorModel) -> Bool {
+    return lhs.lightness != rhs.lightness || lhs.u != rhs.u || lhs.v != rhs.v
+}
+
+@_transparent
+public prefix func +(val: LuvColorModel.FloatComponents) -> LuvColorModel.FloatComponents {
+    return val
+}
+@_transparent
+public prefix func -(val: LuvColorModel.FloatComponents) -> LuvColorModel.FloatComponents {
+    return LuvColorModel.FloatComponents(lightness: -val.lightness, u: -val.u, v: -val.v)
+}
+@_transparent
+public func +(lhs: LuvColorModel.FloatComponents, rhs: LuvColorModel.FloatComponents) -> LuvColorModel.FloatComponents {
+    return LuvColorModel.FloatComponents(lightness: lhs.lightness + rhs.lightness, u: lhs.u + rhs.u, v: lhs.v + rhs.v)
+}
+@_transparent
+public func -(lhs: LuvColorModel.FloatComponents, rhs: LuvColorModel.FloatComponents) -> LuvColorModel.FloatComponents {
+    return LuvColorModel.FloatComponents(lightness: lhs.lightness - rhs.lightness, u: lhs.u - rhs.u, v: lhs.v - rhs.v)
+}
+
+@_transparent
+public func *(lhs: Float, rhs: LuvColorModel.FloatComponents) -> LuvColorModel.FloatComponents {
+    return LuvColorModel.FloatComponents(lightness: lhs * rhs.lightness, u: lhs * rhs.u, v: lhs * rhs.v)
+}
+@_transparent
+public func *(lhs: LuvColorModel.FloatComponents, rhs: Float) -> LuvColorModel.FloatComponents {
+    return LuvColorModel.FloatComponents(lightness: lhs.lightness * rhs, u: lhs.u * rhs, v: lhs.v * rhs)
+}
+
+@_transparent
+public func /(lhs: LuvColorModel.FloatComponents, rhs: Float) -> LuvColorModel.FloatComponents {
+    return LuvColorModel.FloatComponents(lightness: lhs.lightness / rhs, u: lhs.u / rhs, v: lhs.v / rhs)
+}
+
+@_transparent
+public func *= (lhs: inout LuvColorModel.FloatComponents, rhs: Float) {
+    lhs.lightness *= rhs
+    lhs.u *= rhs
+    lhs.v *= rhs
+}
+@_transparent
+public func /= (lhs: inout LuvColorModel.FloatComponents, rhs: Float) {
+    lhs.lightness /= rhs
+    lhs.u /= rhs
+    lhs.v /= rhs
+}
+@_transparent
+public func += (lhs: inout LuvColorModel.FloatComponents, rhs: LuvColorModel.FloatComponents) {
+    lhs.lightness += rhs.lightness
+    lhs.u += rhs.u
+    lhs.v += rhs.v
+}
+@_transparent
+public func -= (lhs: inout LuvColorModel.FloatComponents, rhs: LuvColorModel.FloatComponents) {
+    lhs.lightness -= rhs.lightness
+    lhs.u -= rhs.u
+    lhs.v -= rhs.v
+}
+@_transparent
+public func ==(lhs: LuvColorModel.FloatComponents, rhs: LuvColorModel.FloatComponents) -> Bool {
+    return lhs.lightness == rhs.lightness && lhs.u == rhs.u && lhs.v == rhs.v
+}
+@_transparent
+public func !=(lhs: LuvColorModel.FloatComponents, rhs: LuvColorModel.FloatComponents) -> Bool {
     return lhs.lightness != rhs.lightness || lhs.u != rhs.u || lhs.v != rhs.v
 }

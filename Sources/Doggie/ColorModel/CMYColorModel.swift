@@ -68,6 +68,11 @@ public struct CMYColorModel : ColorModelProtocol {
             }
         }
     }
+    
+    @_transparent
+    public var hashValue: Int {
+        return hash_combine(seed: 0, cyan, magenta, yellow)
+    }
 }
 
 extension CMYColorModel {
@@ -156,6 +161,89 @@ extension CMYColorModel {
     }
 }
 
+extension CMYColorModel {
+    
+    @_transparent
+    public init(floatComponents: FloatComponents) {
+        self.cyan = Double(floatComponents.cyan)
+        self.magenta = Double(floatComponents.magenta)
+        self.yellow = Double(floatComponents.yellow)
+    }
+    
+    @_transparent
+    public var floatComponents: FloatComponents {
+        get {
+            return FloatComponents(cyan: Float(self.cyan), magenta: Float(self.magenta), yellow: Float(self.yellow))
+        }
+        set {
+            self.cyan = Double(newValue.cyan)
+            self.magenta = Double(newValue.magenta)
+            self.yellow = Double(newValue.yellow)
+        }
+    }
+    
+    public struct FloatComponents : FloatColorComponents {
+        
+        public typealias Scalar = Float
+        
+        @_transparent
+        public static var numberOfComponents: Int {
+            return 3
+        }
+        
+        public var cyan: Float
+        public var magenta: Float
+        public var yellow: Float
+        
+        @_transparent
+        public init() {
+            self.cyan = 0
+            self.magenta = 0
+            self.yellow = 0
+        }
+        
+        @_transparent
+        public init(cyan: Float, magenta: Float, yellow: Float) {
+            self.cyan = cyan
+            self.magenta = magenta
+            self.yellow = yellow
+        }
+        
+        @_inlineable
+        public subscript(position: Int) -> Float {
+            get {
+                switch position {
+                case 0: return cyan
+                case 1: return magenta
+                case 2: return yellow
+                default: fatalError()
+                }
+            }
+            set {
+                switch position {
+                case 0: cyan = newValue
+                case 1: magenta = newValue
+                case 2: yellow = newValue
+                default: fatalError()
+                }
+            }
+        }
+        
+        @_transparent
+        public var hashValue: Int {
+            return hash_combine(seed: 0, cyan, magenta, yellow)
+        }
+    }
+}
+
+extension CMYColorModel.FloatComponents {
+    
+    @_transparent
+    public func blended(source: CMYColorModel.FloatComponents, blending: (Float, Float) -> Float) -> CMYColorModel.FloatComponents {
+        return CMYColorModel.FloatComponents(cyan: blending(source.cyan, self.cyan), magenta: blending(source.magenta, self.magenta), yellow: blending(source.yellow, self.yellow))
+    }
+}
+
 @_transparent
 public prefix func +(val: CMYColorModel) -> CMYColorModel {
     return val
@@ -217,6 +305,70 @@ public func ==(lhs: CMYColorModel, rhs: CMYColorModel) -> Bool {
 }
 @_transparent
 public func !=(lhs: CMYColorModel, rhs: CMYColorModel) -> Bool {
+    return lhs.cyan != rhs.cyan || lhs.magenta != rhs.magenta || lhs.yellow != rhs.yellow
+}
+
+@_transparent
+public prefix func +(val: CMYColorModel.FloatComponents) -> CMYColorModel.FloatComponents {
+    return val
+}
+@_transparent
+public prefix func -(val: CMYColorModel.FloatComponents) -> CMYColorModel.FloatComponents {
+    return CMYColorModel.FloatComponents(cyan: -val.cyan, magenta: -val.magenta, yellow: -val.yellow)
+}
+@_transparent
+public func +(lhs: CMYColorModel.FloatComponents, rhs: CMYColorModel.FloatComponents) -> CMYColorModel.FloatComponents {
+    return CMYColorModel.FloatComponents(cyan: lhs.cyan + rhs.cyan, magenta: lhs.magenta + rhs.magenta, yellow: lhs.yellow + rhs.yellow)
+}
+@_transparent
+public func -(lhs: CMYColorModel.FloatComponents, rhs: CMYColorModel.FloatComponents) -> CMYColorModel.FloatComponents {
+    return CMYColorModel.FloatComponents(cyan: lhs.cyan - rhs.cyan, magenta: lhs.magenta - rhs.magenta, yellow: lhs.yellow - rhs.yellow)
+}
+
+@_transparent
+public func *(lhs: Float, rhs: CMYColorModel.FloatComponents) -> CMYColorModel.FloatComponents {
+    return CMYColorModel.FloatComponents(cyan: lhs * rhs.cyan, magenta: lhs * rhs.magenta, yellow: lhs * rhs.yellow)
+}
+@_transparent
+public func *(lhs: CMYColorModel.FloatComponents, rhs: Float) -> CMYColorModel.FloatComponents {
+    return CMYColorModel.FloatComponents(cyan: lhs.cyan * rhs, magenta: lhs.magenta * rhs, yellow: lhs.yellow * rhs)
+}
+
+@_transparent
+public func /(lhs: CMYColorModel.FloatComponents, rhs: Float) -> CMYColorModel.FloatComponents {
+    return CMYColorModel.FloatComponents(cyan: lhs.cyan / rhs, magenta: lhs.magenta / rhs, yellow: lhs.yellow / rhs)
+}
+
+@_transparent
+public func *= (lhs: inout CMYColorModel.FloatComponents, rhs: Float) {
+    lhs.cyan *= rhs
+    lhs.magenta *= rhs
+    lhs.yellow *= rhs
+}
+@_transparent
+public func /= (lhs: inout CMYColorModel.FloatComponents, rhs: Float) {
+    lhs.cyan /= rhs
+    lhs.magenta /= rhs
+    lhs.yellow /= rhs
+}
+@_transparent
+public func += (lhs: inout CMYColorModel.FloatComponents, rhs: CMYColorModel.FloatComponents) {
+    lhs.cyan += rhs.cyan
+    lhs.magenta += rhs.magenta
+    lhs.yellow += rhs.yellow
+}
+@_transparent
+public func -= (lhs: inout CMYColorModel.FloatComponents, rhs: CMYColorModel.FloatComponents) {
+    lhs.cyan -= rhs.cyan
+    lhs.magenta -= rhs.magenta
+    lhs.yellow -= rhs.yellow
+}
+@_transparent
+public func ==(lhs: CMYColorModel.FloatComponents, rhs: CMYColorModel.FloatComponents) -> Bool {
+    return lhs.cyan == rhs.cyan && lhs.magenta == rhs.magenta && lhs.yellow == rhs.yellow
+}
+@_transparent
+public func !=(lhs: CMYColorModel.FloatComponents, rhs: CMYColorModel.FloatComponents) -> Bool {
     return lhs.cyan != rhs.cyan || lhs.magenta != rhs.magenta || lhs.yellow != rhs.yellow
 }
 

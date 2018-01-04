@@ -89,6 +89,11 @@ public struct LabColorModel : ColorModelProtocol {
             }
         }
     }
+    
+    @_transparent
+    public var hashValue: Int {
+        return hash_combine(seed: 0, lightness, a, b)
+    }
 }
 
 extension LabColorModel {
@@ -127,6 +132,89 @@ extension LabColorModel {
     @_transparent
     public func blended(source: LabColorModel, blending: (Double, Double) -> Double) -> LabColorModel {
         return LabColorModel(lightness: blending(source.lightness, self.lightness), a: blending(source.a, self.a), b: blending(source.b, self.b))
+    }
+}
+
+extension LabColorModel {
+    
+    @_transparent
+    public init(floatComponents: FloatComponents) {
+        self.lightness = Double(floatComponents.lightness)
+        self.a = Double(floatComponents.a)
+        self.b = Double(floatComponents.b)
+    }
+    
+    @_transparent
+    public var floatComponents: FloatComponents {
+        get {
+            return FloatComponents(lightness: Float(self.lightness), a: Float(self.a), b: Float(self.b))
+        }
+        set {
+            self.lightness = Double(newValue.lightness)
+            self.a = Double(newValue.a)
+            self.b = Double(newValue.b)
+        }
+    }
+    
+    public struct FloatComponents : FloatColorComponents {
+        
+        public typealias Scalar = Float
+        
+        @_transparent
+        public static var numberOfComponents: Int {
+            return 3
+        }
+        
+        public var lightness: Float
+        public var a: Float
+        public var b: Float
+        
+        @_transparent
+        public init() {
+            self.lightness = 0
+            self.a = 0
+            self.b = 0
+        }
+        
+        @_transparent
+        public init(lightness: Float, a: Float, b: Float) {
+            self.lightness = lightness
+            self.a = a
+            self.b = b
+        }
+        
+        @_inlineable
+        public subscript(position: Int) -> Float {
+            get {
+                switch position {
+                case 0: return lightness
+                case 1: return a
+                case 2: return b
+                default: fatalError()
+                }
+            }
+            set {
+                switch position {
+                case 0: lightness = newValue
+                case 1: a = newValue
+                case 2: b = newValue
+                default: fatalError()
+                }
+            }
+        }
+        
+        @_transparent
+        public var hashValue: Int {
+            return hash_combine(seed: 0, lightness, a, b)
+        }
+    }
+}
+
+extension LabColorModel.FloatComponents {
+    
+    @_transparent
+    public func blended(source: LabColorModel.FloatComponents, blending: (Float, Float) -> Float) -> LabColorModel.FloatComponents {
+        return LabColorModel.FloatComponents(lightness: blending(source.lightness, self.lightness), a: blending(source.a, self.a), b: blending(source.b, self.b))
     }
 }
 
@@ -191,5 +279,69 @@ public func ==(lhs: LabColorModel, rhs: LabColorModel) -> Bool {
 }
 @_transparent
 public func !=(lhs: LabColorModel, rhs: LabColorModel) -> Bool {
+    return lhs.lightness != rhs.lightness || lhs.a != rhs.a || lhs.b != rhs.b
+}
+
+@_transparent
+public prefix func +(val: LabColorModel.FloatComponents) -> LabColorModel.FloatComponents {
+    return val
+}
+@_transparent
+public prefix func -(val: LabColorModel.FloatComponents) -> LabColorModel.FloatComponents {
+    return LabColorModel.FloatComponents(lightness: -val.lightness, a: -val.a, b: -val.b)
+}
+@_transparent
+public func +(lhs: LabColorModel.FloatComponents, rhs: LabColorModel.FloatComponents) -> LabColorModel.FloatComponents {
+    return LabColorModel.FloatComponents(lightness: lhs.lightness + rhs.lightness, a: lhs.a + rhs.a, b: lhs.b + rhs.b)
+}
+@_transparent
+public func -(lhs: LabColorModel.FloatComponents, rhs: LabColorModel.FloatComponents) -> LabColorModel.FloatComponents {
+    return LabColorModel.FloatComponents(lightness: lhs.lightness - rhs.lightness, a: lhs.a - rhs.a, b: lhs.b - rhs.b)
+}
+
+@_transparent
+public func *(lhs: Float, rhs: LabColorModel.FloatComponents) -> LabColorModel.FloatComponents {
+    return LabColorModel.FloatComponents(lightness: lhs * rhs.lightness, a: lhs * rhs.a, b: lhs * rhs.b)
+}
+@_transparent
+public func *(lhs: LabColorModel.FloatComponents, rhs: Float) -> LabColorModel.FloatComponents {
+    return LabColorModel.FloatComponents(lightness: lhs.lightness * rhs, a: lhs.a * rhs, b: lhs.b * rhs)
+}
+
+@_transparent
+public func /(lhs: LabColorModel.FloatComponents, rhs: Float) -> LabColorModel.FloatComponents {
+    return LabColorModel.FloatComponents(lightness: lhs.lightness / rhs, a: lhs.a / rhs, b: lhs.b / rhs)
+}
+
+@_transparent
+public func *= (lhs: inout LabColorModel.FloatComponents, rhs: Float) {
+    lhs.lightness *= rhs
+    lhs.a *= rhs
+    lhs.b *= rhs
+}
+@_transparent
+public func /= (lhs: inout LabColorModel.FloatComponents, rhs: Float) {
+    lhs.lightness /= rhs
+    lhs.a /= rhs
+    lhs.b /= rhs
+}
+@_transparent
+public func += (lhs: inout LabColorModel.FloatComponents, rhs: LabColorModel.FloatComponents) {
+    lhs.lightness += rhs.lightness
+    lhs.a += rhs.a
+    lhs.b += rhs.b
+}
+@_transparent
+public func -= (lhs: inout LabColorModel.FloatComponents, rhs: LabColorModel.FloatComponents) {
+    lhs.lightness -= rhs.lightness
+    lhs.a -= rhs.a
+    lhs.b -= rhs.b
+}
+@_transparent
+public func ==(lhs: LabColorModel.FloatComponents, rhs: LabColorModel.FloatComponents) -> Bool {
+    return lhs.lightness == rhs.lightness && lhs.a == rhs.a && lhs.b == rhs.b
+}
+@_transparent
+public func !=(lhs: LabColorModel.FloatComponents, rhs: LabColorModel.FloatComponents) -> Bool {
     return lhs.lightness != rhs.lightness || lhs.a != rhs.a || lhs.b != rhs.b
 }

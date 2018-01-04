@@ -25,15 +25,34 @@
 
 public protocol ColorModelProtocol : Hashable, Tensor where Scalar == Double {
     
+    associatedtype FloatComponents : FloatColorComponents
+    
     static func rangeOfComponent(_ i: Int) -> ClosedRange<Double>
     
+    init(floatComponents: FloatComponents)
+    
+    var floatComponents: FloatComponents { get set }
+    
     func blended(source: Self, blending: (Double, Double) -> Double) -> Self
+}
+
+public protocol FloatColorComponents : Hashable, Tensor where Scalar == Float {
+    
+    func blended(source: Self, blending: (Float, Float) -> Float) -> Self
 }
 
 extension ColorModelProtocol {
     
     @_transparent
     public mutating func blend(source: Self, blending: (Double, Double) -> Double) {
+        self = self.blended(source: source, blending: blending)
+    }
+}
+
+extension FloatColorComponents {
+    
+    @_transparent
+    public mutating func blend(source: Self, blending: (Float, Float) -> Float) {
         self = self.blended(source: source, blending: blending)
     }
 }
@@ -60,16 +79,3 @@ extension ColorModelProtocol {
         self[index] = value * (range.upperBound - range.lowerBound) + range.lowerBound
     }
 }
-
-extension ColorModelProtocol {
-    
-    @_transparent
-    public var hashValue: Int {
-        var hash = 0
-        for i in 0..<Self.numberOfComponents {
-            hash = hash_combine(seed: hash, self[i])
-        }
-        return hash
-    }
-}
-

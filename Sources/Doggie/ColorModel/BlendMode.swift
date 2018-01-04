@@ -68,42 +68,42 @@ extension ColorBlendMode {
     
     @_versioned
     @inline(__always)
-    static func Multiply(_ source: Double, _ destination: Double) -> Double {
+    static func Multiply<T: BinaryFloatingPoint>(_ source: T, _ destination: T) -> T {
         
         return destination * source
     }
     
     @_versioned
     @inline(__always)
-    static func Screen(_ source: Double, _ destination: Double) -> Double {
+    static func Screen<T: BinaryFloatingPoint>(_ source: T, _ destination: T) -> T {
         
         return destination + source - (destination * source)
     }
     
     @_versioned
     @inline(__always)
-    static func Overlay(_ source: Double, _ destination: Double) -> Double {
+    static func Overlay<T: BinaryFloatingPoint>(_ source: T, _ destination: T) -> T {
         
         return HardLight(destination, source)
     }
     
     @_versioned
     @inline(__always)
-    static func Darken(_ source: Double, _ destination: Double) -> Double {
+    static func Darken<T: BinaryFloatingPoint>(_ source: T, _ destination: T) -> T {
         
         return min(destination, source)
     }
     
     @_versioned
     @inline(__always)
-    static func Lighten(_ source: Double, _ destination: Double) -> Double {
+    static func Lighten<T: BinaryFloatingPoint>(_ source: T, _ destination: T) -> T {
         
         return max(destination, source)
     }
     
     @_versioned
     @inline(__always)
-    static func ColorDodge(_ source: Double, _ destination: Double) -> Double {
+    static func ColorDodge<T: BinaryFloatingPoint>(_ source: T, _ destination: T) -> T {
         
         if source < 1 {
             return min(1, destination / (1 - source))
@@ -113,7 +113,7 @@ extension ColorBlendMode {
     
     @_versioned
     @inline(__always)
-    static func ColorBurn(_ source: Double, _ destination: Double) -> Double {
+    static func ColorBurn<T: BinaryFloatingPoint>(_ source: T, _ destination: T) -> T {
         
         if source > 0 {
             return 1 - min(1, (1 - destination) / source)
@@ -123,25 +123,29 @@ extension ColorBlendMode {
     
     @_versioned
     @inline(__always)
-    static func SoftLight(_ source: Double, _ destination: Double) -> Double {
+    static func SoftLight<T: BinaryFloatingPoint>(_ source: T, _ destination: T) -> T {
         
-        let db: Double
+        let db: T
         
         if destination <= 0.25 {
-            db = ((16 * destination - 12) * destination + 4) * destination
+            let s = 16 * destination - 12
+            let t = s * destination + 4
+            db = t * destination
         } else {
             db = sqrt(destination)
         }
         
+        let u = 1 - 2 * source
+        
         if source <= 0.5 {
-            return destination - (1 - 2 * source) * destination * (1 - destination)
+            return destination - u * destination * (1 - destination)
         }
-        return destination + (2 * source - 1) * (db - destination)
+        return destination - u * (db - destination)
     }
     
     @_versioned
     @inline(__always)
-    static func HardLight(_ source: Double, _ destination: Double) -> Double {
+    static func HardLight<T: BinaryFloatingPoint>(_ source: T, _ destination: T) -> T {
         
         if source <= 0.5 {
             return 2 * source * destination
@@ -151,34 +155,62 @@ extension ColorBlendMode {
     
     @_versioned
     @inline(__always)
-    static func Difference(_ source: Double, _ destination: Double) -> Double {
+    static func Difference<T: BinaryFloatingPoint>(_ source: T, _ destination: T) -> T {
         
         return abs(destination - source)
     }
     
     @_versioned
     @inline(__always)
-    static func Exclusion(_ source: Double, _ destination: Double) -> Double {
+    static func Exclusion<T: BinaryFloatingPoint>(_ source: T, _ destination: T) -> T {
         
         return destination + source - 2 * destination * source
     }
     
     @_versioned
     @inline(__always)
-    static func PlusDarker(_ source: Double, _ destination: Double) -> Double {
+    static func PlusDarker<T: BinaryFloatingPoint>(_ source: T, _ destination: T) -> T {
         
         return max(0, 1 - ((1 - destination) + (1 - source)))
     }
     
     @_versioned
     @inline(__always)
-    static func PlusLighter(_ source: Double, _ destination: Double) -> Double {
+    static func PlusLighter<T: BinaryFloatingPoint>(_ source: T, _ destination: T) -> T {
         
         return min(1, destination + source)
     }
 }
 
 extension ColorModelProtocol {
+    
+    @_transparent
+    public mutating func blend(source: Self, blendMode: ColorBlendMode = .default) {
+        self = self.blended(source: source, blendMode: blendMode)
+    }
+    
+    @_transparent
+    public func blended(source: Self, blendMode: ColorBlendMode) -> Self {
+        switch blendMode {
+        case .normal: return source
+        case .multiply: return self.blended(source: source, blending: ColorBlendMode.Multiply)
+        case .screen: return self.blended(source: source, blending: ColorBlendMode.Screen)
+        case .overlay: return self.blended(source: source, blending: ColorBlendMode.Overlay)
+        case .darken: return self.blended(source: source, blending: ColorBlendMode.Darken)
+        case .lighten: return self.blended(source: source, blending: ColorBlendMode.Lighten)
+        case .colorDodge: return self.blended(source: source, blending: ColorBlendMode.ColorDodge)
+        case .colorBurn: return self.blended(source: source, blending: ColorBlendMode.ColorBurn)
+        case .softLight: return self.blended(source: source, blending: ColorBlendMode.SoftLight)
+        case .hardLight: return self.blended(source: source, blending: ColorBlendMode.HardLight)
+        case .difference: return self.blended(source: source, blending: ColorBlendMode.Difference)
+        case .exclusion: return self.blended(source: source, blending: ColorBlendMode.Exclusion)
+        case .plusDarker: return self.blended(source: source, blending: ColorBlendMode.PlusDarker)
+        case .plusLighter: return self.blended(source: source, blending: ColorBlendMode.PlusLighter)
+        }
+    }
+}
+
+extension FloatColorComponents {
     
     @_transparent
     public mutating func blend(source: Self, blendMode: ColorBlendMode = .default) {

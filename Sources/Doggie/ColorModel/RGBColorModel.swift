@@ -75,6 +75,11 @@ public struct RGBColorModel : ColorModelProtocol {
             }
         }
     }
+    
+    @_transparent
+    public var hashValue: Int {
+        return hash_combine(seed: 0, red, green, blue)
+    }
 }
 
 extension RGBColorModel {
@@ -247,6 +252,89 @@ extension RGBColorModel {
     }
 }
 
+extension RGBColorModel {
+    
+    @_transparent
+    public init(floatComponents: FloatComponents) {
+        self.red = Double(floatComponents.red)
+        self.green = Double(floatComponents.green)
+        self.blue = Double(floatComponents.blue)
+    }
+    
+    @_transparent
+    public var floatComponents: FloatComponents {
+        get {
+            return FloatComponents(red: Float(self.red), green: Float(self.green), blue: Float(self.blue))
+        }
+        set {
+            self.red = Double(newValue.red)
+            self.green = Double(newValue.green)
+            self.blue = Double(newValue.blue)
+        }
+    }
+    
+    public struct FloatComponents : FloatColorComponents {
+        
+        public typealias Scalar = Float
+        
+        @_transparent
+        public static var numberOfComponents: Int {
+            return 3
+        }
+        
+        public var red: Float
+        public var green: Float
+        public var blue: Float
+        
+        @_transparent
+        public init() {
+            self.red = 0
+            self.green = 0
+            self.blue = 0
+        }
+        
+        @_transparent
+        public init(red: Float, green: Float, blue: Float) {
+            self.red = red
+            self.green = green
+            self.blue = blue
+        }
+        
+        @_inlineable
+        public subscript(position: Int) -> Float {
+            get {
+                switch position {
+                case 0: return red
+                case 1: return green
+                case 2: return blue
+                default: fatalError()
+                }
+            }
+            set {
+                switch position {
+                case 0: red = newValue
+                case 1: green = newValue
+                case 2: blue = newValue
+                default: fatalError()
+                }
+            }
+        }
+        
+        @_transparent
+        public var hashValue: Int {
+            return hash_combine(seed: 0, red, green, blue)
+        }
+    }
+}
+
+extension RGBColorModel.FloatComponents {
+    
+    @_transparent
+    public func blended(source: RGBColorModel.FloatComponents, blending: (Float, Float) -> Float) -> RGBColorModel.FloatComponents {
+        return RGBColorModel.FloatComponents(red: blending(source.red, self.red), green: blending(source.green, self.green), blue: blending(source.blue, self.blue))
+    }
+}
+
 @_transparent
 public prefix func +(val: RGBColorModel) -> RGBColorModel {
     return val
@@ -308,6 +396,70 @@ public func ==(lhs: RGBColorModel, rhs: RGBColorModel) -> Bool {
 }
 @_transparent
 public func !=(lhs: RGBColorModel, rhs: RGBColorModel) -> Bool {
+    return lhs.red != rhs.red || lhs.green != rhs.green || lhs.blue != rhs.blue
+}
+
+@_transparent
+public prefix func +(val: RGBColorModel.FloatComponents) -> RGBColorModel.FloatComponents {
+    return val
+}
+@_transparent
+public prefix func -(val: RGBColorModel.FloatComponents) -> RGBColorModel.FloatComponents {
+    return RGBColorModel.FloatComponents(red: -val.red, green: -val.green, blue: -val.blue)
+}
+@_transparent
+public func +(lhs: RGBColorModel.FloatComponents, rhs: RGBColorModel.FloatComponents) -> RGBColorModel.FloatComponents {
+    return RGBColorModel.FloatComponents(red: lhs.red + rhs.red, green: lhs.green + rhs.green, blue: lhs.blue + rhs.blue)
+}
+@_transparent
+public func -(lhs: RGBColorModel.FloatComponents, rhs: RGBColorModel.FloatComponents) -> RGBColorModel.FloatComponents {
+    return RGBColorModel.FloatComponents(red: lhs.red - rhs.red, green: lhs.green - rhs.green, blue: lhs.blue - rhs.blue)
+}
+
+@_transparent
+public func *(lhs: Float, rhs: RGBColorModel.FloatComponents) -> RGBColorModel.FloatComponents {
+    return RGBColorModel.FloatComponents(red: lhs * rhs.red, green: lhs * rhs.green, blue: lhs * rhs.blue)
+}
+@_transparent
+public func *(lhs: RGBColorModel.FloatComponents, rhs: Float) -> RGBColorModel.FloatComponents {
+    return RGBColorModel.FloatComponents(red: lhs.red * rhs, green: lhs.green * rhs, blue: lhs.blue * rhs)
+}
+
+@_transparent
+public func /(lhs: RGBColorModel.FloatComponents, rhs: Float) -> RGBColorModel.FloatComponents {
+    return RGBColorModel.FloatComponents(red: lhs.red / rhs, green: lhs.green / rhs, blue: lhs.blue / rhs)
+}
+
+@_transparent
+public func *= (lhs: inout RGBColorModel.FloatComponents, rhs: Float) {
+    lhs.red *= rhs
+    lhs.green *= rhs
+    lhs.blue *= rhs
+}
+@_transparent
+public func /= (lhs: inout RGBColorModel.FloatComponents, rhs: Float) {
+    lhs.red /= rhs
+    lhs.green /= rhs
+    lhs.blue /= rhs
+}
+@_transparent
+public func += (lhs: inout RGBColorModel.FloatComponents, rhs: RGBColorModel.FloatComponents) {
+    lhs.red += rhs.red
+    lhs.green += rhs.green
+    lhs.blue += rhs.blue
+}
+@_transparent
+public func -= (lhs: inout RGBColorModel.FloatComponents, rhs: RGBColorModel.FloatComponents) {
+    lhs.red -= rhs.red
+    lhs.green -= rhs.green
+    lhs.blue -= rhs.blue
+}
+@_transparent
+public func ==(lhs: RGBColorModel.FloatComponents, rhs: RGBColorModel.FloatComponents) -> Bool {
+    return lhs.red == rhs.red && lhs.green == rhs.green && lhs.blue == rhs.blue
+}
+@_transparent
+public func !=(lhs: RGBColorModel.FloatComponents, rhs: RGBColorModel.FloatComponents) -> Bool {
     return lhs.red != rhs.red || lhs.green != rhs.green || lhs.blue != rhs.blue
 }
 

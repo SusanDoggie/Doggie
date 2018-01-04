@@ -33,19 +33,19 @@ public enum GradientSpreadMode {
     case `repeat`
 }
 
-public struct GradientStop<C: ColorProtocol> {
+public struct GradientStop<Color: ColorProtocol> {
     
     public var offset: Double
-    public var color: C
+    public var color: Color
     
     @_inlineable
-    public init(offset: Double, color: C) {
+    public init(offset: Double, color: Color) {
         self.offset = offset
         self.color = color
     }
 }
 
-extension GradientStop where C : Equatable {
+extension GradientStop where Color : Equatable {
     
     @_inlineable
     public static func ==(lhs: GradientStop, rhs: GradientStop) -> Bool {
@@ -53,7 +53,7 @@ extension GradientStop where C : Equatable {
     }
 }
 
-extension GradientStop where C : Hashable {
+extension GradientStop where Color : Hashable {
     
     @_inlineable
     public var hashValue: Int {
@@ -61,10 +61,10 @@ extension GradientStop where C : Hashable {
     }
 }
 
-extension GradientStop where C == AnyColor {
+extension GradientStop where Color == AnyColor {
     
     @_inlineable
-    public init<M>(offset: Double, color: Color<M>) {
+    public init<M>(offset: Double, color: Doggie.Color<M>) {
         self.init(offset: offset, color: AnyColor(color))
     }
 }

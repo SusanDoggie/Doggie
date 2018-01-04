@@ -84,14 +84,6 @@ public struct Gray16ColorPixel : ColorPixelProtocol {
 }
 
 @_transparent
-public prefix func +(val: Gray16ColorPixel) -> Gray16ColorPixel {
-    return val
-}
-@_transparent
-public prefix func -(val: Gray16ColorPixel) -> Gray16ColorPixel {
-    return Gray16ColorPixel()
-}
-@_transparent
 public func ==(lhs: Gray16ColorPixel, rhs: Gray16ColorPixel) -> Bool {
     return (lhs.w, lhs.a) == (rhs.w, rhs.a)
 }

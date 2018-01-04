@@ -110,14 +110,6 @@ public struct ARGB32ColorPixel : ColorPixelProtocol {
 }
 
 @_transparent
-public prefix func +(val: ARGB32ColorPixel) -> ARGB32ColorPixel {
-    return val
-}
-@_transparent
-public prefix func -(val: ARGB32ColorPixel) -> ARGB32ColorPixel {
-    return ARGB32ColorPixel()
-}
-@_transparent
 public func ==(lhs: ARGB32ColorPixel, rhs: ARGB32ColorPixel) -> Bool {
     return (lhs.a, lhs.r, lhs.g, lhs.b) == (rhs.a, rhs.r, rhs.g, rhs.b)
 }
