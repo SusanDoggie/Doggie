@@ -248,7 +248,7 @@ extension RGBColorModel {
     
     @_transparent
     public func blended(source: RGBColorModel, blending: (Double, Double) -> Double) -> RGBColorModel {
-        return RGBColorModel(red: blending(source.red, self.red), green: blending(source.green, self.green), blue: blending(source.blue, self.blue))
+        return RGBColorModel(red: blending(self.red, source.red), green: blending(self.green, source.green), blue: blending(self.blue, source.blue))
     }
 }
 
@@ -331,7 +331,7 @@ extension RGBColorModel.FloatComponents {
     
     @_transparent
     public func blended(source: RGBColorModel.FloatComponents, blending: (Float, Float) -> Float) -> RGBColorModel.FloatComponents {
-        return RGBColorModel.FloatComponents(red: blending(source.red, self.red), green: blending(source.green, self.green), blue: blending(source.blue, self.blue))
+        return RGBColorModel.FloatComponents(red: blending(self.red, source.red), green: blending(self.green, source.green), blue: blending(self.blue, source.blue))
     }
 }
 

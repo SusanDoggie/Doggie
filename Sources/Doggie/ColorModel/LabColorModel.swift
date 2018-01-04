@@ -131,7 +131,7 @@ extension LabColorModel {
     
     @_transparent
     public func blended(source: LabColorModel, blending: (Double, Double) -> Double) -> LabColorModel {
-        return LabColorModel(lightness: blending(source.lightness, self.lightness), a: blending(source.a, self.a), b: blending(source.b, self.b))
+        return LabColorModel(lightness: blending(self.lightness, source.lightness), a: blending(self.a, source.a), b: blending(self.b, source.b))
     }
 }
 
@@ -214,7 +214,7 @@ extension LabColorModel.FloatComponents {
     
     @_transparent
     public func blended(source: LabColorModel.FloatComponents, blending: (Float, Float) -> Float) -> LabColorModel.FloatComponents {
-        return LabColorModel.FloatComponents(lightness: blending(source.lightness, self.lightness), a: blending(source.a, self.a), b: blending(source.b, self.b))
+        return LabColorModel.FloatComponents(lightness: blending(self.lightness, source.lightness), a: blending(self.a, source.a), b: blending(self.b, source.b))
     }
 }
 

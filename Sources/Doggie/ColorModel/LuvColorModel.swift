@@ -130,7 +130,7 @@ extension LuvColorModel {
     
     @_transparent
     public func blended(source: LuvColorModel, blending: (Double, Double) -> Double) -> LuvColorModel {
-        return LuvColorModel(lightness: blending(source.lightness, self.lightness), u: blending(source.u, self.u), v: blending(source.v, self.v))
+        return LuvColorModel(lightness: blending(self.lightness, source.lightness), u: blending(self.u, source.u), v: blending(self.v, source.v))
     }
 }
 
@@ -213,7 +213,7 @@ extension LuvColorModel.FloatComponents {
     
     @_transparent
     public func blended(source: LuvColorModel.FloatComponents, blending: (Float, Float) -> Float) -> LuvColorModel.FloatComponents {
-        return LuvColorModel.FloatComponents(lightness: blending(source.lightness, self.lightness), u: blending(source.u, self.u), v: blending(source.v, self.v))
+        return LuvColorModel.FloatComponents(lightness: blending(self.lightness, source.lightness), u: blending(self.u, source.u), v: blending(self.v, source.v))
     }
 }
 
