@@ -27,15 +27,15 @@ import Foundation
 
 struct OTFFeatureList : ByteDecodable {
     
-    var featuretCount: BEUInt16
+    var featureCount: BEUInt16
     var records: [Record]
     
     init(from data: inout Data) throws {
         let copy = data
-        self.featuretCount = try data.decode(BEUInt16.self)
+        self.featureCount = try data.decode(BEUInt16.self)
         self.records = []
-        self.records.reserveCapacity(Int(featuretCount))
-        for _ in 0..<Int(featuretCount) {
+        self.records.reserveCapacity(Int(featureCount))
+        for _ in 0..<Int(featureCount) {
             let featureTag = try data.decode(Signature<UInt32>.self)
             let featureOffset = try data.decode(BEUInt16.self)
             
