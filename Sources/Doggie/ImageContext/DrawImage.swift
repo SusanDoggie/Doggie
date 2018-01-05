@@ -102,7 +102,7 @@ extension ImageContext {
                 
                 @inline(__always)
                 func op(point: Point) -> ColorPixel<Pixel.Model> {
-                    return smapling4(source: _source, width: s_width, height: s_height, point: point, sampler: CubicInterpolate)
+                    return sampling4(source: _source, width: s_width, height: s_height, point: point, sampler: CubicInterpolate)
                 }
                 
                 self.filling(transform.inverse, op)
@@ -116,7 +116,7 @@ extension ImageContext {
                 
                 @inline(__always)
                 func op(point: Point) -> ColorPixel<Pixel.Model> {
-                    return smapling4(source: _source, width: s_width, height: s_height, point: point, sampler: _kernel)
+                    return sampling4(source: _source, width: s_width, height: s_height, point: point, sampler: _kernel)
                 }
                 
                 self.filling(transform.inverse, op)
@@ -321,7 +321,7 @@ extension ImageContext {
     
     @_versioned
     @inline(__always)
-    func smapling4(source: UnsafePointer<ColorPixel<Pixel.Model>>, width: Int, height: Int, point: Point, sampler: (Double, ColorPixel<Pixel.Model>, ColorPixel<Pixel.Model>, ColorPixel<Pixel.Model>, ColorPixel<Pixel.Model>) -> ColorPixel<Pixel.Model>) -> ColorPixel<Pixel.Model> {
+    func sampling4(source: UnsafePointer<ColorPixel<Pixel.Model>>, width: Int, height: Int, point: Point, sampler: (Double, ColorPixel<Pixel.Model>, ColorPixel<Pixel.Model>, ColorPixel<Pixel.Model>, ColorPixel<Pixel.Model>) -> ColorPixel<Pixel.Model>) -> ColorPixel<Pixel.Model> {
         
         let _x2 = Int(point.x)
         let _y2 = Int(point.y)
