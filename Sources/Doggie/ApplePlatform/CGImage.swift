@@ -133,18 +133,9 @@
             
             if let colorSpace = self.colorSpace.cgColorSpace {
                 
-                let components = Pixel.numberOfComponents
-                
-                var buffer = [Float]()
-                buffer.reserveCapacity(self.pixels.count * components)
-                
-                for pixel in self.pixels {
-                    for i in 0..<components {
-                        buffer.append(Float(pixel.component(i)))
-                    }
-                }
-                
-                return buffer.withUnsafeBufferPointer {
+                return Image<FloatColorPixel<Pixel.Model>>(image: self).withUnsafeBufferPointer {
+                    
+                    let components = Pixel.numberOfComponents
                     
                     let bitsPerComponent = 32
                     let bytesPerPixel = 4 * components
