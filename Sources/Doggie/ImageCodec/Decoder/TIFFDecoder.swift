@@ -597,7 +597,7 @@ struct TIFFPage {
                 
                 let rowCount = min(rowsPerStrip, remain)
                 
-                let bitmapBitsLegnth = strip.count << 3
+                let bitmapBitsLength = strip.count << 3
                 
                 let dataBitSize = strip.count << 3
                 

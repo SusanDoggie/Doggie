@@ -30,7 +30,7 @@ import XCTest
 class ImageTest: XCTestCase {
     
     static let allTests = [
-        ("testColorSpaceConvertionPerformance", testColorSpaceConvertionPerformance),
+        ("testColorSpaceConversionPerformance", testColorSpaceConversionPerformance),
         ("testResamplingNonePerformance", testResamplingNonePerformance),
         ("testResamplingLinearPerformance", testResamplingLinearPerformance),
         ("testResamplingCosinePerformance", testResamplingCosinePerformance),
@@ -72,7 +72,7 @@ class ImageTest: XCTestCase {
         super.tearDown()
     }
     
-    func testColorSpaceConvertionPerformance() {
+    func testColorSpaceConversionPerformance() {
         
         let sampleA = self.sample
         
