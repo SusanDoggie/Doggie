@@ -271,35 +271,3 @@ public func Radix2PowerCircularConvolve(_ signal: [Complex], _ n: Double) -> [Co
     return result
 }
 
-@_inlineable
-public func Radix2CooleyTukey<U: UnsignedInteger & FixedWidthInteger>(_ buffer: [U], _ alpha: U, _ mod: U) -> [U] {
-    assert(buffer.count.isPower2, "size of buffer must be power of 2.")
-    if buffer.count == 1 {
-        return buffer
-    }
-    var result = buffer
-    Radix2CooleyTukey(log2(buffer.count), buffer, 1, buffer.count, alpha, mod, &result, 1)
-    return result
-}
-@_inlineable
-public func InverseRadix2CooleyTukey<U: UnsignedInteger & FixedWidthInteger>(_ buffer: [U], _ alpha: U, _ mod: U) -> [U] {
-    assert(buffer.count.isPower2, "size of buffer must be power of 2.")
-    if buffer.count == 1 {
-        return buffer
-    }
-    var result = buffer
-    InverseRadix2CooleyTukey(log2(buffer.count), buffer, 1, buffer.count, alpha, mod, &result, 1)
-    return result
-}
-@_inlineable
-public func Radix2CircularConvolve<U: UnsignedInteger & FixedWidthInteger>(_ signal: [U], _ kernel: [U], _ alpha: U, _ mod: U) -> [U] {
-    assert(signal.count.isPower2, "size of signal must be power of 2.")
-    assert(signal.count == kernel.count, "mismatch count of inputs.")
-    if signal.count == 1 {
-        return [signal[0] * kernel[0]]
-    }
-    var result = signal
-    var temp = signal
-    Radix2CircularConvolve(log2(signal.count), signal, 1, signal.count, kernel, 1, kernel.count, alpha, mod, &result, 1, &temp, 1)
-    return result
-}

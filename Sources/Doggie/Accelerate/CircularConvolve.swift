@@ -187,38 +187,6 @@ public func Radix2PowerCircularConvolve<T: BinaryFloatingPoint>(_ level: Int, _ 
 }
 
 @_inlineable
-public func Radix2CircularConvolve<U: UnsignedInteger & FixedWidthInteger>(_ level: Int, _ signal: UnsafePointer<U>, _ signal_stride: Int, _ signal_count: Int, _ kernel: UnsafePointer<U>, _ kernel_stride: Int, _ kernel_count: Int, _ alpha: U, _ mod: U, _ output: UnsafeMutablePointer<U>, _ out_stride: Int, _ temp: UnsafeMutablePointer<U>, _ temp_stride: Int) {
-    
-    let length = 1 << level
-    
-    if signal_count == 0 || kernel_count == 0 {
-        var output = output
-        for _ in 0..<length {
-            output.pointee = 0
-            output += out_stride
-        }
-        return
-    }
-    
-    var _signal = output
-    var _kernel = temp
-    
-    Radix2CooleyTukey(level, signal, signal_stride, signal_count, alpha, mod, _signal, out_stride)
-    Radix2CooleyTukey(level, kernel, kernel_stride, kernel_count, alpha, mod, _kernel, temp_stride)
-    
-    let _n = modinv(U(length), mod)
-    for _ in 0..<length {
-        let _s = _signal.pointee
-        let _k = mulmod(_kernel.pointee, _n, mod)
-        _kernel.pointee = mulmod(_s, _k, mod)
-        _signal += out_stride
-        _kernel += temp_stride
-    }
-    
-    InverseRadix2CooleyTukey(level, temp, temp_stride, length, alpha, mod, output, out_stride)
-}
-
-@_inlineable
 public func Radix2FiniteImpulseFilter(_ level: Int, _ signal: UnsafePointer<Double>, _ signal_stride: Int, _ signal_count: Int, _ kernel: UnsafePointer<Complex>, _ kernel_stride: Int, _ output: UnsafeMutablePointer<Double>, _ out_stride: Int) {
     
     let length = 1 << level
