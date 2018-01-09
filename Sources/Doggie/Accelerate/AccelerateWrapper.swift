@@ -159,3 +159,13 @@ public func Radix2CircularConvolve(_ level: Int, _ signal: UnsafePointer<Complex
 public func Radix2PowerCircularConvolve(_ level: Int, _ input: UnsafePointer<Complex>, _ in_stride: Int, _ in_count: Int, _ n: Double, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int) {
     input._reboundToDouble { _input in output._reboundToDouble { Radix2PowerCircularConvolve(level, _input, _input.successor(), in_stride << 1, in_count, n, $0, $0.successor(), out_stride << 1) } }
 }
+
+@_inlineable
+public func Radix2FiniteImpulseFilter(_ level: Int, _ signal: UnsafePointer<Double>, _ signal_stride: Int, _ signal_count: Int, _ kernel: UnsafePointer<Complex>, _ kernel_stride: Int, _ output: UnsafeMutablePointer<Double>, _ out_stride: Int) {
+    kernel._reboundToDouble { Radix2FiniteImpulseFilter(level, signal, signal_stride, signal_count, $0, $0.successor(), kernel_stride << 1, output, out_stride) }
+}
+
+@_inlineable
+public func Radix2FiniteImpulseFilter(_ level: Int, _ signal: UnsafePointer<Complex>, _ signal_stride: Int, _ signal_count: Int, _ kernel: UnsafePointer<Complex>, _ kernel_stride: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int) {
+    signal._reboundToDouble { _signal in kernel._reboundToDouble { _kernel in output._reboundToDouble { Radix2FiniteImpulseFilter(level, _signal, _signal.successor(), signal_stride << 1, signal_count, _kernel, _kernel.successor(), kernel_stride << 1, $0, $0.successor(), out_stride << 1) } } }
+}

@@ -187,7 +187,7 @@ public func Radix2PowerCircularConvolve<T: BinaryFloatingPoint>(_ level: Int, _ 
 }
 
 @_inlineable
-public func Radix2FiniteImpulseFilter(_ level: Int, _ signal: UnsafePointer<Double>, _ signal_stride: Int, _ signal_count: Int, _ kernel: UnsafePointer<Complex>, _ kernel_stride: Int, _ output: UnsafeMutablePointer<Double>, _ out_stride: Int) {
+public func Radix2FiniteImpulseFilter<T: BinaryFloatingPoint>(_ level: Int, _ signal: UnsafePointer<T>, _ signal_stride: Int, _ signal_count: Int, _ kreal: UnsafePointer<T>, _ kimag: UnsafePointer<T>, _ kernel_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) where T : FloatingMathProtocol {
     
     let length = 1 << level
     let half = length >> 1
@@ -203,22 +203,24 @@ public func Radix2FiniteImpulseFilter(_ level: Int, _ signal: UnsafePointer<Doub
     
     var _treal = output
     var _timag = output + out_stride
-    var _kernel = kernel
+    var _kreal = kreal
+    var _kimag = kimag
     
     let t_stride = out_stride << 1
     
     HalfRadix2CooleyTukey(level, signal, signal_stride, signal_count, _treal, _timag, t_stride)
     
-    _treal.pointee *= _kernel.pointee.real
-    _timag.pointee *= _kernel.pointee.imag
+    _treal.pointee *= _kreal.pointee
+    _timag.pointee *= _kimag.pointee
     for _ in 1..<half {
         _treal += t_stride
         _timag += t_stride
-        _kernel += kernel_stride
+        _kreal += kernel_stride
+        _kimag += kernel_stride
         let _tr = _treal.pointee
         let _ti = _timag.pointee
-        let _kr = _kernel.pointee.real
-        let _ki = _kernel.pointee.imag
+        let _kr = _kreal.pointee
+        let _ki = _kimag.pointee
         _treal.pointee = _tr * _kr - _ti * _ki
         _timag.pointee = _tr * _ki + _ti * _kr
     }
@@ -227,34 +229,41 @@ public func Radix2FiniteImpulseFilter(_ level: Int, _ signal: UnsafePointer<Doub
 }
 
 @_inlineable
-public func Radix2FiniteImpulseFilter(_ level: Int, _ signal: UnsafePointer<Complex>, _ signal_stride: Int, _ signal_count: Int, _ kernel: UnsafePointer<Complex>, _ kernel_stride: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int) {
+public func Radix2FiniteImpulseFilter<T: BinaryFloatingPoint>(_ level: Int, _ sreal: UnsafePointer<T>, _ simag: UnsafePointer<T>, _ signal_stride: Int, _ signal_count: Int, _ kreal: UnsafePointer<T>, _ kimag: UnsafePointer<T>, _ kernel_stride: Int, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int) where T : FloatingMathProtocol {
     
     let length = 1 << level
     
     if signal_count == 0 {
-        var output = output
+        var _real = _real
+        var _imag = _imag
         for _ in 0..<length {
-            output.pointee = Complex(0)
-            output += out_stride
+            _real.pointee = 0
+            _imag.pointee = 0
+            _real += out_stride
+            _imag += out_stride
         }
         return
     }
     
-    Radix2CooleyTukey(level, signal, signal_stride, signal_count, output, out_stride)
+    Radix2CooleyTukey(level, sreal, simag, signal_stride, signal_count, _real, _imag, out_stride)
     
-    var _output = output
-    var _kernel = kernel
+    var _oreal = _real
+    var _oimag = _imag
+    var _kreal = kreal
+    var _kimag = kimag
     
     for _ in 0..<length {
-        let _treal = _output.pointee.real
-        let _timag = _output.pointee.imag
-        let _kreal = _kernel.pointee.real
-        let _kimag = _kernel.pointee.imag
-        _output.pointee.real = _treal * _kreal - _timag * _kimag
-        _output.pointee.imag = _treal * _kimag + _timag * _kreal
-        _output += out_stride
-        _kernel += kernel_stride
+        let _tr = _oreal.pointee
+        let _ti = _oimag.pointee
+        let _kr = _kreal.pointee
+        let _ki = _kimag.pointee
+        _oreal.pointee = _tr * _kr - _ti * _ki
+        _oimag.pointee = _tr * _ki + _ti * _kr
+        _oreal += out_stride
+        _oimag += out_stride
+        _kreal += kernel_stride
+        _kimag += kernel_stride
     }
     
-    InverseRadix2CooleyTukey(level, output, out_stride)
+    InverseRadix2CooleyTukey(level, _real, _imag, out_stride)
 }
