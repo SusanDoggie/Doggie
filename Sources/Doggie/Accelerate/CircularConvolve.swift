@@ -29,7 +29,7 @@ public func Radix2CircularConvolve<T: BinaryFloatingPoint>(_ level: Int, _ signa
     let length = 1 << level
     let half = length >> 1
     
-    if signal_count == 0 || kernel_count == 0 {
+    if _slowPath(signal_count == 0 || kernel_count == 0) {
         var output = output
         for _ in 0..<length {
             output.pointee = 0
@@ -73,7 +73,7 @@ public func Radix2CircularConvolve<T: BinaryFloatingPoint>(_ level: Int, _ sreal
     
     let length = 1 << level
     
-    if signal_count == 0 || kernel_count == 0 {
+    if _slowPath(signal_count == 0 || kernel_count == 0) {
         var _real = _real
         var _imag = _imag
         for _ in 0..<length {
@@ -119,7 +119,7 @@ public func Radix2PowerCircularConvolve<T: BinaryFloatingPoint>(_ level: Int, _ 
     let length = 1 << level
     let half = length >> 1
     
-    if in_count == 0 {
+    if _slowPath(in_count == 0) {
         var output = output
         for _ in 0..<length {
             output.pointee = 0
@@ -155,7 +155,7 @@ public func Radix2PowerCircularConvolve<T: BinaryFloatingPoint>(_ level: Int, _ 
     
     let length = 1 << level
     
-    if in_count == 0 {
+    if _slowPath(in_count == 0) {
         var _real = _real
         var _imag = _imag
         for _ in 0..<length {
@@ -192,7 +192,7 @@ public func Radix2FiniteImpulseFilter<T: BinaryFloatingPoint>(_ level: Int, _ si
     let length = 1 << level
     let half = length >> 1
     
-    if signal_count == 0 {
+    if _slowPath(signal_count == 0) {
         var output = output
         for _ in 0..<length {
             output.pointee = 0
@@ -233,7 +233,7 @@ public func Radix2FiniteImpulseFilter<T: BinaryFloatingPoint>(_ level: Int, _ sr
     
     let length = 1 << level
     
-    if signal_count == 0 {
+    if _slowPath(signal_count == 0) {
         var _real = _real
         var _imag = _imag
         for _ in 0..<length {

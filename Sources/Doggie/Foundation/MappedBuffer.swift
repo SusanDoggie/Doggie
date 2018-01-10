@@ -1,5 +1,5 @@
 //
-//  MappedBuffer.swift
+//  Mappedbase.swift
 //
 //  The MIT License
 //  Copyright (c) 2015 - 2018 Susan Cheng. All rights reserved.
@@ -48,35 +48,35 @@ public struct MappedBuffer<Element> : RandomAccessCollection, MutableCollection,
     public typealias Index = Int
     
     @_versioned
-    var buffer: MappedBufferTempFile<Element>
+    var base: Base
     
     @_inlineable
     public init() {
-        self.buffer = MappedBufferTempFile<Element>(capacity: 0, option: .default)
+        self.base = Base(capacity: 0, option: .default)
     }
     
     @_inlineable
     public init(option: MappedBufferOption) {
-        self.buffer = MappedBufferTempFile<Element>(capacity: 0, option: option)
+        self.base = Base(capacity: 0, option: option)
     }
     
     @_inlineable
     public init(capacity: Int, option: MappedBufferOption = .default) {
-        self.buffer = MappedBufferTempFile<Element>(capacity: capacity, option: option)
+        self.base = Base(capacity: capacity, option: option)
     }
     
     @_inlineable
     public init(repeating repeatedValue: Element, count: Int, option: MappedBufferOption = .default) {
-        self.buffer = MappedBufferTempFile<Element>(capacity: count, option: option)
-        self.buffer.count = count
-        self.buffer.address.initialize(to: repeatedValue, count: count)
+        self.base = Base(capacity: count, option: option)
+        self.base.count = count
+        self.base.address.initialize(to: repeatedValue, count: count)
     }
     
     @_inlineable
     public init(arrayLiteral elements: Element ...) {
-        self.buffer = MappedBufferTempFile<Element>(capacity: elements.count, option: .default)
-        self.buffer.count = elements.count
-        self.buffer.address.initialize(from: elements, count: elements.count)
+        self.base = Base(capacity: elements.count, option: .default)
+        self.base.count = elements.count
+        self.base.address.initialize(from: elements, count: elements.count)
     }
     
     @_inlineable
@@ -89,16 +89,16 @@ public struct MappedBuffer<Element> : RandomAccessCollection, MutableCollection,
         if other.option == option {
             self = other
         } else {
-            let _other = other.buffer
-            self.buffer = MappedBufferTempFile<Element>(capacity: _other.capacity, option: option)
-            self.buffer.count = _other.count
-            self.buffer.address.initialize(from: _other.address, count: _other.count)
+            let _other = other.base
+            self.base = Base(capacity: _other.capacity, option: option)
+            self.base.count = _other.count
+            self.base.address.initialize(from: _other.address, count: _other.count)
         }
     }
     
     @_inlineable
     public init<S : Sequence>(_ elements: S, option: MappedBufferOption = .default) where S.Element == Element {
-        self.buffer = MappedBufferTempFile<Element>(capacity: elements.underestimatedCount, option: option)
+        self.base = Base(capacity: elements.underestimatedCount, option: option)
         self.append(contentsOf: elements)
     }
 }
@@ -107,12 +107,12 @@ extension MappedBuffer {
     
     @_inlineable
     public var option: MappedBufferOption {
-        return buffer.fd == -1 ? .inMemory : .fileBacked
+        return base.fd == -1 ? .inMemory : .fileBacked
     }
     
     @_inlineable
     public var capacity: Int {
-        return buffer.capacity
+        return base.capacity
     }
 }
 
@@ -130,16 +130,16 @@ extension MappedBuffer {
     @_inlineable
     mutating func make_unique_if_need() {
         
-        if isKnownUniquelyReferenced(&buffer) {
+        if _fastPath(isKnownUniquelyReferenced(&base)) {
             return
         }
         
-        let new_buffer = MappedBufferTempFile<Element>(capacity: buffer.capacity, option: self.option)
+        let new_base = Base(capacity: base.capacity, option: self.option)
         
-        new_buffer.count = buffer.count
-        new_buffer.address.initialize(from: buffer.address, count: buffer.count)
+        new_base.count = base.count
+        new_base.address.initialize(from: base.address, count: base.count)
         
-        self.buffer = new_buffer
+        self.base = new_base
     }
     
     @_inlineable
@@ -149,7 +149,7 @@ extension MappedBuffer {
     
     @_inlineable
     public var endIndex: Int {
-        return buffer.count
+        return base.count
     }
     
     @_inlineable
@@ -170,45 +170,45 @@ extension MappedBuffer : RangeReplaceableCollection {
     @_inlineable
     public mutating func append(_ newElement: Element) {
         
-        let old_count = buffer.count
+        let old_count = base.count
         let new_count = old_count + 1
         
-        if isKnownUniquelyReferenced(&buffer) {
-            if buffer.capacity < new_count {
-                buffer.extend_capacity(capacity: new_count)
+        if _fastPath(isKnownUniquelyReferenced(&base)) {
+            if base.capacity < new_count {
+                base.extend_capacity(capacity: new_count)
             }
         } else {
-            let new_buffer = MappedBufferTempFile<Element>(capacity: Swift.max(buffer.capacity, new_count), option: self.option)
-            new_buffer.address.initialize(from: buffer.address, count: old_count)
+            let new_base = Base(capacity: Swift.max(base.capacity, new_count), option: self.option)
+            new_base.address.initialize(from: base.address, count: old_count)
             
-            self.buffer = new_buffer
+            self.base = new_base
         }
         
-        let append = buffer.address + old_count
+        let append = base.address + old_count
         append.initialize(to: newElement)
         
-        buffer.count = new_count
+        base.count = new_count
     }
     
     @_inlineable
     public mutating func append<S : Sequence>(contentsOf newElements: S) where S.Element == Element {
         
-        let old_count = buffer.count
+        let old_count = base.count
         let new_count = old_count + newElements.underestimatedCount
         
-        if isKnownUniquelyReferenced(&buffer) {
-            if buffer.capacity < new_count {
-                buffer.extend_capacity(capacity: new_count)
+        if _fastPath(isKnownUniquelyReferenced(&base)) {
+            if base.capacity < new_count {
+                base.extend_capacity(capacity: new_count)
             }
         } else {
-            let new_buffer = MappedBufferTempFile<Element>(capacity: Swift.max(buffer.capacity, new_count), option: self.option)
-            new_buffer.address.initialize(from: buffer.address, count: old_count)
+            let new_base = Base(capacity: Swift.max(base.capacity, new_count), option: self.option)
+            new_base.address.initialize(from: base.address, count: old_count)
             
-            self.buffer = new_buffer
+            self.base = new_base
         }
         
-        var iterator = UnsafeMutableBufferPointer(start: buffer.address + old_count, count: new_count - old_count).initialize(from: newElements).0
-        buffer.count = new_count
+        var iterator = UnsafeMutableBufferPointer(start: base.address + old_count, count: new_count - old_count).initialize(from: newElements).0
+        base.count = new_count
         
         while let item = iterator.next() {
             self.append(item)
@@ -218,20 +218,20 @@ extension MappedBuffer : RangeReplaceableCollection {
     @_inlineable
     public mutating func reserveCapacity(_ minimumCapacity: Int) {
         
-        guard buffer.capacity < minimumCapacity else { return }
+        guard base.capacity < minimumCapacity else { return }
         
-        if isKnownUniquelyReferenced(&buffer) {
+        if _fastPath(isKnownUniquelyReferenced(&base)) {
             
-            buffer.extend_capacity(capacity: minimumCapacity)
+            base.extend_capacity(capacity: minimumCapacity)
             
         } else {
             
-            let new_buffer = MappedBufferTempFile<Element>(capacity: minimumCapacity, option: self.option)
+            let new_base = Base(capacity: minimumCapacity, option: self.option)
             
-            new_buffer.count = buffer.count
-            new_buffer.address.initialize(from: buffer.address, count: buffer.count)
+            new_base.count = base.count
+            new_base.address.initialize(from: base.address, count: base.count)
             
-            self.buffer = new_buffer
+            self.base = new_base
         }
     }
     
@@ -239,49 +239,49 @@ extension MappedBuffer : RangeReplaceableCollection {
     public mutating func replaceSubrange<C : Collection>(_ subRange: Range<Int>, with newElements: C) where C.Element == Element {
         
         precondition(0 <= subRange.lowerBound, "Index out of range.")
-        precondition(subRange.upperBound <= buffer.count, "Index out of range.")
+        precondition(subRange.upperBound <= base.count, "Index out of range.")
         
         let newElements_count = Int(newElements.count)
-        let new_count = buffer.count - subRange.count + newElements_count
+        let new_count = base.count - subRange.count + newElements_count
         
-        if isKnownUniquelyReferenced(&buffer) {
+        if _fastPath(isKnownUniquelyReferenced(&base)) {
             
-            if buffer.capacity < new_count {
-                buffer.extend_capacity(capacity: new_count)
+            if base.capacity < new_count {
+                base.extend_capacity(capacity: new_count)
             }
             
-            let destroy = buffer.address + subRange.lowerBound
+            let destroy = base.address + subRange.lowerBound
             destroy.deinitialize(count: subRange.count)
             
-            if subRange.upperBound != buffer.count {
+            if subRange.upperBound != base.count {
                 
-                let move_count = buffer.count - subRange.upperBound
+                let move_count = base.count - subRange.upperBound
                 
-                let move_from = buffer.address + subRange.upperBound
-                let move_to = buffer.address + subRange.lowerBound + newElements_count
+                let move_from = base.address + subRange.upperBound
+                let move_to = base.address + subRange.lowerBound + newElements_count
                 
                 move_to.moveInitialize(from: move_from, count: move_count)
             }
             
-            var address = buffer.address + subRange.lowerBound
+            var address = base.address + subRange.lowerBound
             
             for item in newElements {
                 address.initialize(to: item)
                 address += 1
             }
             
-            buffer.count = new_count
+            base.count = new_count
             
         } else {
             
-            let new_buffer = MappedBufferTempFile<Element>(capacity: Swift.max(buffer.capacity, new_count), option: self.option)
+            let new_base = Base(capacity: Swift.max(base.capacity, new_count), option: self.option)
             
-            new_buffer.count = new_count
+            new_base.count = new_count
             
-            var address = new_buffer.address
+            var address = new_base.address
             
             if subRange.lowerBound != 0 {
-                address.initialize(from: buffer.address, count: subRange.lowerBound)
+                address.initialize(from: base.address, count: subRange.lowerBound)
                 address += subRange.lowerBound
             }
             
@@ -290,11 +290,11 @@ extension MappedBuffer : RangeReplaceableCollection {
                 address += 1
             }
             
-            if subRange.upperBound != buffer.count {
-                address.initialize(from: buffer.address + subRange.upperBound, count: buffer.count - subRange.upperBound)
+            if subRange.upperBound != base.count {
+                address.initialize(from: base.address + subRange.upperBound, count: base.count - subRange.upperBound)
             }
             
-            self.buffer = new_buffer
+            self.base = new_base
         }
     }
 }
@@ -323,7 +323,7 @@ extension MappedBuffer {
     @_inlineable
     public func withUnsafeBufferPointer<R>(_ body: (UnsafeBufferPointer<Element>) throws -> R) rethrows -> R {
         
-        return try body(UnsafeBufferPointer(start: buffer.address, count: buffer.count))
+        return try body(UnsafeBufferPointer(start: base.address, count: base.count))
     }
     
     @_inlineable
@@ -331,10 +331,10 @@ extension MappedBuffer {
         
         self.make_unique_if_need()
         
-        var buf = UnsafeMutableBufferPointer(start: buffer.address, count: buffer.count)
+        var buf = UnsafeMutableBufferPointer(start: base.address, count: base.count)
         
-        defer { precondition(buf.baseAddress == buffer.address) }
-        defer { precondition(buf.count == buffer.count) }
+        defer { precondition(buf.baseAddress == base.address) }
+        defer { precondition(buf.count == base.count) }
         
         return try body(&buf)
     }
@@ -342,7 +342,7 @@ extension MappedBuffer {
     @_inlineable
     public func withUnsafeBytes<R>(_ body: (UnsafeRawBufferPointer) throws -> R) rethrows -> R {
         
-        return try body(UnsafeRawBufferPointer(start: buffer.address, count: buffer.count * MemoryLayout<Element>.stride))
+        return try body(UnsafeRawBufferPointer(start: base.address, count: base.count * MemoryLayout<Element>.stride))
     }
     
     @_inlineable
@@ -350,120 +350,122 @@ extension MappedBuffer {
         
         self.make_unique_if_need()
         
-        return try body(UnsafeMutableRawBufferPointer(start: buffer.address, count: buffer.count * MemoryLayout<Element>.stride))
+        return try body(UnsafeMutableRawBufferPointer(start: base.address, count: base.count * MemoryLayout<Element>.stride))
     }
 }
 
-@_versioned
-@_fixed_layout
-class MappedBufferTempFile<Element> {
+extension MappedBuffer {
     
     @_versioned
-    let fd: Int32
-    
-    let path: String
-    
-    @_versioned
-    var address: UnsafeMutablePointer<Element>
-    
-    var mapped_size: Int
-    
-    @_versioned
-    var capacity: Int
-    
-    @_versioned
-    var count: Int = 0
-    
-    @_versioned
-    init(capacity: Int, option: MappedBufferOption) {
+    @_fixed_layout
+    class Base {
         
-        self.mapped_size = (max(capacity, 1) * MemoryLayout<Element>.stride).align(Int(getpagesize()))
-        self.capacity = mapped_size / MemoryLayout<Element>.stride
+        @_versioned
+        let fd: Int32
         
-        switch option {
-        case .inMemory:
+        let path: String
+        
+        @_versioned
+        var address: UnsafeMutablePointer<Element>
+        
+        var mapped_size: Int
+        
+        @_versioned
+        var capacity: Int
+        
+        @_versioned
+        var count: Int = 0
+        
+        @_versioned
+        init(capacity: Int, option: MappedBufferOption) {
             
-            self.fd = -1
-            self.path = ""
+            self.mapped_size = (Swift.max(capacity, 1) * MemoryLayout<Element>.stride).align(Int(getpagesize()))
+            self.capacity = mapped_size / MemoryLayout<Element>.stride
             
-            let _address = mmap(nil, mapped_size, PROT_READ | PROT_WRITE, MAP_ANONYMOUS | MAP_PRIVATE, fd, 0)!
-            guard _address != UnsafeMutableRawPointer(bitPattern: -1) else { fatalError(String(cString: strerror(errno))) }
+            switch option {
+            case .inMemory:
+                
+                self.fd = -1
+                self.path = ""
+                
+                let _address = mmap(nil, mapped_size, PROT_READ | PROT_WRITE, MAP_ANONYMOUS | MAP_PRIVATE, fd, 0)!
+                guard _address != UnsafeMutableRawPointer(bitPattern: -1) else { fatalError(String(cString: strerror(errno))) }
+                
+                self.address = _address.bindMemory(to: Element.self, capacity: self.capacity)
+                
+            case .fileBacked:
+                
+                var fd: Int32 = 0
+                var path = ""
+                
+                while true {
+                    let path_url = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("com.SusanDoggie.MappedBuffer.\(UUID().uuidString)")
+                    path = path_url.withUnsafeFileSystemRepresentation { String(cString: $0!) }
+                    fd = open(path, O_RDWR | O_CREAT | O_EXCL, S_IRUSR | S_IWUSR)
+                    guard fd == -1 && errno == EEXIST else { break }
+                }
+                
+                self.fd = fd
+                self.path = path
+                
+                guard fd != -1 else { fatalError("\(String(cString: strerror(errno))): \(path)") }
+                guard flock(fd, LOCK_EX) != -1 else { fatalError(String(cString: strerror(errno))) }
+                guard ftruncate(fd, off_t(mapped_size)) != -1 else { fatalError(String(cString: strerror(errno))) }
+                
+                let _address = mmap(nil, mapped_size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0)!
+                guard _address != UnsafeMutableRawPointer(bitPattern: -1) else { fatalError(String(cString: strerror(errno))) }
+                
+                self.address = _address.bindMemory(to: Element.self, capacity: self.capacity)
+            }
+        }
+        
+        deinit {
             
-            self.address = _address.bindMemory(to: Element.self, capacity: self.capacity)
-            
-        case .fileBacked:
-            
-            var fd: Int32 = 0
-            var path = ""
-            
-            while true {
-                let path_url = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("com.SusanDoggie.MappedBuffer.\(UUID().uuidString)")
-                path = path_url.withUnsafeFileSystemRepresentation { String(cString: $0!) }
-                fd = open(path, O_RDWR | O_CREAT | O_EXCL, S_IRUSR | S_IWUSR)
-                guard fd == -1 && errno == EEXIST else { break }
+            if count != 0 {
+                address.deinitialize(count: count)
             }
             
-            self.fd = fd
-            self.path = path
-            
-            guard fd != -1 else { fatalError("\(String(cString: strerror(errno))): \(path)") }
-            guard flock(fd, LOCK_EX) != -1 else { fatalError(String(cString: strerror(errno))) }
-            guard ftruncate(fd, off_t(mapped_size)) != -1 else { fatalError(String(cString: strerror(errno))) }
-            
-            let _address = mmap(nil, mapped_size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0)!
-            guard _address != UnsafeMutableRawPointer(bitPattern: -1) else { fatalError(String(cString: strerror(errno))) }
-            
-            self.address = _address.bindMemory(to: Element.self, capacity: self.capacity)
-        }
-    }
-    
-    deinit {
-        
-        if count != 0 {
-            address.deinitialize(count: count)
-        }
-        
-        munmap(address, mapped_size)
-        
-        if fd != -1 {
-            ftruncate(fd, 0)
-            flock(fd, LOCK_UN)
-            close(fd)
-            remove(path)
-        }
-    }
-    
-    @_versioned
-    func extend_capacity(capacity: Int) {
-        
-        guard self.capacity < capacity else { return }
-        
-        let new_mapped_size = (max(capacity, 1) * MemoryLayout<Element>.stride).align(Int(getpagesize()))
-        let new_capacity = new_mapped_size / MemoryLayout<Element>.stride
-        
-        if fd == -1 {
-            
-            let new_buffer = mmap(nil, new_mapped_size, PROT_READ | PROT_WRITE, MAP_ANONYMOUS | MAP_PRIVATE, fd, 0).bindMemory(to: Element.self, capacity: new_capacity)
-            
-            new_buffer.moveInitialize(from: address, count: count)
-            
             munmap(address, mapped_size)
             
-            self.mapped_size = new_mapped_size
-            self.capacity = new_capacity
-            self.address = new_buffer
+            if fd != -1 {
+                ftruncate(fd, 0)
+                flock(fd, LOCK_UN)
+                close(fd)
+                Foundation.remove(path)
+            }
+        }
+        
+        @_versioned
+        func extend_capacity(capacity: Int) {
             
-        } else {
+            guard self.capacity < capacity else { return }
             
-            munmap(address, mapped_size)
+            let new_mapped_size = (Swift.max(capacity, 1) * MemoryLayout<Element>.stride).align(Int(getpagesize()))
+            let new_capacity = new_mapped_size / MemoryLayout<Element>.stride
             
-            self.mapped_size = new_mapped_size
-            self.capacity = new_capacity
-            
-            guard ftruncate(self.fd, off_t(mapped_size)) != -1 else { fatalError(String(cString: strerror(errno))) }
-            
-            self.address = mmap(nil, mapped_size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0).bindMemory(to: Element.self, capacity: new_capacity)
+            if fd == -1 {
+                
+                let new_buffer = mmap(nil, new_mapped_size, PROT_READ | PROT_WRITE, MAP_ANONYMOUS | MAP_PRIVATE, fd, 0).bindMemory(to: Element.self, capacity: new_capacity)
+                
+                new_buffer.moveInitialize(from: address, count: count)
+                
+                munmap(address, mapped_size)
+                
+                self.mapped_size = new_mapped_size
+                self.capacity = new_capacity
+                self.address = new_buffer
+                
+            } else {
+                
+                munmap(address, mapped_size)
+                
+                self.mapped_size = new_mapped_size
+                self.capacity = new_capacity
+                
+                guard ftruncate(self.fd, off_t(mapped_size)) != -1 else { fatalError(String(cString: strerror(errno))) }
+                
+                self.address = mmap(nil, mapped_size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0).bindMemory(to: Element.self, capacity: new_capacity)
+            }
         }
     }
 }
-

@@ -575,7 +575,7 @@
 				0858DA401C0550B7007FA426 /* Doggie */,
 				08AF77AE1A3A10510042491F /* Tests */,
 				087FE5B61A372D97005A2E9E /* Doggie */,
-				087FE5C31A372D97005A2E9E /* Doggie_Tests */,
+				087FE5C31A372D97005A2E9E /* DoggieTests */,
 				087FE5971A372D5B005A2E9E /* Products */,
 			);
 			sourceTree = "<group>";
@@ -606,12 +606,12 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
-		087FE5C31A372D97005A2E9E /* Doggie_Tests */ = {
+		087FE5C31A372D97005A2E9E /* DoggieTests */ = {
 			isa = PBXGroup;
 			children = (
 				087FE5C41A372D97005A2E9E /* Supporting Files */,
 			);
-			path = Doggie_Tests;
+			path = DoggieTests;
 			sourceTree = "<group>";
 		};
 		087FE5C41A372D97005A2E9E /* Supporting Files */ = {
@@ -1017,9 +1017,9 @@
 			productReference = 087FE5B51A372D97005A2E9E /* Doggie.framework */;
 			productType = "com.apple.product-type.framework";
 		};
-		087FE5BE1A372D97005A2E9E /* Doggie_Tests */ = {
+		087FE5BE1A372D97005A2E9E /* DoggieTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 087FE5CB1A372D98005A2E9E /* Build configuration list for PBXNativeTarget "Doggie_Tests" */;
+			buildConfigurationList = 087FE5CB1A372D98005A2E9E /* Build configuration list for PBXNativeTarget "DoggieTests" */;
 			buildPhases = (
 				087FE5BB1A372D97005A2E9E /* Sources */,
 				087FE5BC1A372D97005A2E9E /* Frameworks */,
@@ -1030,7 +1030,7 @@
 			dependencies = (
 				087FE5C21A372D97005A2E9E /* PBXTargetDependency */,
 			);
-			name = Doggie_Tests;
+			name = DoggieTests;
 			productName = Doggie_MacTests;
 			productReference = 087FE5BF1A372D97005A2E9E /* Doggie_Tests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
@@ -1071,7 +1071,7 @@
 			projectRoot = "";
 			targets = (
 				087FE5B41A372D97005A2E9E /* Doggie */,
-				087FE5BE1A372D97005A2E9E /* Doggie_Tests */,
+				087FE5BE1A372D97005A2E9E /* DoggieTests */,
 			);
 		};
 /* End PBXProject section */
@@ -1567,7 +1567,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		087FE5CB1A372D98005A2E9E /* Build configuration list for PBXNativeTarget "Doggie_Tests" */ = {
+		087FE5CB1A372D98005A2E9E /* Build configuration list for PBXNativeTarget "DoggieTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				087FE5CC1A372D98005A2E9E /* Debug */,

@@ -48,7 +48,7 @@ public func HalfRadix2CooleyTukey<T: BinaryFloatingPoint>(_ level: Int, _ input:
         let half = length >> 1
         let fourth = length >> 2
         
-        if in_count == 0 {
+        if _slowPath(in_count == 0) {
             var _real = _real
             var _imag = _imag
             for _ in 0..<half {
@@ -229,7 +229,7 @@ public func Radix2CooleyTukey<T: BinaryFloatingPoint>(_ level: Int, _ input: Uns
         let half = length >> 1
         let fourth = length >> 2
         
-        if in_count == 0 {
+        if _slowPath(in_count == 0) {
             var _real = _real
             var _imag = _imag
             for _ in 0..<length {
@@ -342,7 +342,7 @@ public func Radix2CooleyTukey<T: BinaryFloatingPoint>(_ level: Int, _ real: Unsa
     default:
         let count = 1 << level
         
-        if in_count == 0 {
+        if _slowPath(in_count == 0) {
             var _real = _real
             var _imag = _imag
             for _ in 0..<count {
@@ -462,7 +462,7 @@ public func InverseRadix2CooleyTukey<T: BinaryFloatingPoint>(_ level: Int, _ inp
         let half = length >> 1
         let fourth = length >> 2
         
-        if in_count == 0 {
+        if _slowPath(in_count == 0) {
             var _real = _real
             var _imag = _imag
             for _ in 0..<length {
@@ -676,7 +676,7 @@ public func InverseRadix2CooleyTukey<T: BinaryFloatingPoint>(_ level: Int, _ rea
 @inline(__always)
 func HalfRadix2CooleyTukey_2<T: FloatingPoint>(_ input: UnsafePointer<T>, _ in_stride: Int, _ in_count: Int, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>) {
     
-    if in_count == 0 {
+    if _slowPath(in_count == 0) {
         _real.pointee = 0
         _imag.pointee = 0
         return
@@ -700,7 +700,7 @@ func HalfRadix2CooleyTukey_4<T: FloatingPoint>(_ input: UnsafePointer<T>, _ in_s
     var _real = _real
     var _imag = _imag
     
-    if in_count == 0 {
+    if _slowPath(in_count == 0) {
         _real.pointee = 0
         _imag.pointee = 0
         _real += out_stride
@@ -740,7 +740,7 @@ func HalfRadix2CooleyTukey_8<T: BinaryFloatingPoint>(_ input: UnsafePointer<T>, 
     var _real = _real
     var _imag = _imag
     
-    if in_count == 0 {
+    if _slowPath(in_count == 0) {
         _real.pointee = 0
         _imag.pointee = 0
         _real += out_stride
@@ -828,7 +828,7 @@ func HalfRadix2CooleyTukey_16<T: BinaryFloatingPoint>(_ input: UnsafePointer<T>,
     var _real = _real
     var _imag = _imag
     
-    if in_count == 0 {
+    if _slowPath(in_count == 0) {
         _real.pointee = 0
         _imag.pointee = 0
         _real += out_stride
@@ -1010,7 +1010,7 @@ func HalfInverseRadix2CooleyTukey_2<T: FloatingPoint>(_ real: UnsafePointer<T>, 
     
     var output = output
     
-    if in_count == 0 {
+    if _slowPath(in_count == 0) {
         output.pointee = 0
         output += out_stride
         output.pointee = 0
@@ -1033,7 +1033,7 @@ func HalfInverseRadix2CooleyTukey_4<T: FloatingPoint>(_ real: UnsafePointer<T>, 
     var imag = imag
     var output = output
     
-    if in_count == 0 {
+    if _slowPath(in_count == 0) {
         output.pointee = 0
         output += out_stride
         output.pointee = 0
@@ -1076,7 +1076,7 @@ func HalfInverseRadix2CooleyTukey_8<T: BinaryFloatingPoint>(_ real: UnsafePointe
     var imag = imag
     var output = output
     
-    if in_count == 0 {
+    if _slowPath(in_count == 0) {
         output.pointee = 0
         output += out_stride
         output.pointee = 0
@@ -1173,7 +1173,7 @@ func HalfInverseRadix2CooleyTukey_16<T: BinaryFloatingPoint>(_ real: UnsafePoint
     var imag = imag
     var output = output
     
-    if in_count == 0 {
+    if _slowPath(in_count == 0) {
         output.pointee = 0
         output += out_stride
         output.pointee = 0
@@ -1399,7 +1399,7 @@ func Radix2CooleyTukey_2<T: FloatingPoint>(_ input: UnsafePointer<T>, _ in_strid
     var _real = _real
     var _imag = _imag
     
-    if in_count == 0 {
+    if _slowPath(in_count == 0) {
         _real.pointee = 0
         _imag.pointee = 0
         _real += out_stride
@@ -1432,7 +1432,7 @@ func Radix2CooleyTukey_2<T: FloatingPoint>(_ real: UnsafePointer<T>, _ imag: Uns
     var _real = _real
     var _imag = _imag
     
-    if in_count == 0 {
+    if _slowPath(in_count == 0) {
         _real.pointee = 0
         _imag.pointee = 0
         _real += out_stride
@@ -1467,7 +1467,7 @@ func Radix2CooleyTukey_4<T: FloatingPoint>(_ input: UnsafePointer<T>, _ in_strid
     var _real = _real
     var _imag = _imag
     
-    if in_count == 0 {
+    if _slowPath(in_count == 0) {
         _real.pointee = 0
         _imag.pointee = 0
         _real += out_stride
@@ -1529,7 +1529,7 @@ func Radix2CooleyTukey_4<T: FloatingPoint>(_ real: UnsafePointer<T>, _ imag: Uns
     var _real = _real
     var _imag = _imag
     
-    if in_count == 0 {
+    if _slowPath(in_count == 0) {
         _real.pointee = 0
         _imag.pointee = 0
         _real += out_stride
@@ -1601,7 +1601,7 @@ func Radix2CooleyTukey_8<T: BinaryFloatingPoint>(_ input: UnsafePointer<T>, _ in
     var _real = _real
     var _imag = _imag
     
-    if in_count == 0 {
+    if _slowPath(in_count == 0) {
         _real.pointee = 0
         _imag.pointee = 0
         _real += out_stride
@@ -1725,7 +1725,7 @@ func Radix2CooleyTukey_8<T: BinaryFloatingPoint>(_ real: UnsafePointer<T>, _ ima
     var _real = _real
     var _imag = _imag
     
-    if in_count == 0 {
+    if _slowPath(in_count == 0) {
         _real.pointee = 0
         _imag.pointee = 0
         _real += out_stride
@@ -1884,7 +1884,7 @@ func Radix2CooleyTukey_16<T: BinaryFloatingPoint>(_ input: UnsafePointer<T>, _ i
     var _real = _real
     var _imag = _imag
     
-    if in_count == 0 {
+    if _slowPath(in_count == 0) {
         _real.pointee = 0
         _imag.pointee = 0
         _real += out_stride
@@ -2140,7 +2140,7 @@ func Radix2CooleyTukey_16<T: BinaryFloatingPoint>(_ real: UnsafePointer<T>, _ im
     var _real = _real
     var _imag = _imag
     
-    if in_count == 0 {
+    if _slowPath(in_count == 0) {
         _real.pointee = 0
         _imag.pointee = 0
         _real += out_stride
@@ -2789,7 +2789,7 @@ func InverseRadix2CooleyTukey_2<T: FloatingPoint>(_ input: UnsafePointer<T>, _ i
     var _real = _real
     var _imag = _imag
     
-    if in_count == 0 {
+    if _slowPath(in_count == 0) {
         _real.pointee = 0
         _imag.pointee = 0
         _real += out_stride
@@ -2821,7 +2821,7 @@ func InverseRadix2CooleyTukey_4<T: FloatingPoint>(_ input: UnsafePointer<T>, _ i
     var _real = _real
     var _imag = _imag
     
-    if in_count == 0 {
+    if _slowPath(in_count == 0) {
         _real.pointee = 0
         _imag.pointee = 0
         _real += out_stride
@@ -2882,7 +2882,7 @@ func InverseRadix2CooleyTukey_8<T: BinaryFloatingPoint>(_ input: UnsafePointer<T
     var _real = _real
     var _imag = _imag
     
-    if in_count == 0 {
+    if _slowPath(in_count == 0) {
         _real.pointee = 0
         _imag.pointee = 0
         _real += out_stride
@@ -3005,7 +3005,7 @@ func InverseRadix2CooleyTukey_16<T: BinaryFloatingPoint>(_ input: UnsafePointer<
     var _real = _real
     var _imag = _imag
     
-    if in_count == 0 {
+    if _slowPath(in_count == 0) {
         _real.pointee = 0
         _imag.pointee = 0
         _real += out_stride
