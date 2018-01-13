@@ -454,7 +454,7 @@ extension MappedBuffer {
                 let _extended_size = new_mapped_size - old_mapped_size
                 let _tail = UnsafeMutableRawPointer(old_address) + old_mapped_size
 
-                let _extended = mmap(_tail, _extended_size, PROT_READ | PROT_WRITE, MAP_ANONYMOUS | MAP_PRIVATE | MAP_FIXED, fd, 0)
+                let _extended = mmap(_tail, _extended_size, PROT_READ | PROT_WRITE, MAP_ANONYMOUS | MAP_PRIVATE, fd, 0)
                 
                 if _extended != MAP_FAILED {
                     if _extended == _tail {
