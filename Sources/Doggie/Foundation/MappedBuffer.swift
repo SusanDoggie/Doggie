@@ -371,16 +371,18 @@ extension MappedBuffer {
         var mapped_size: Int
         
         @_versioned
-        var capacity: Int
+        var count: Int = 0
         
         @_versioned
-        var count: Int = 0
+        var capacity: Int {
+            return self.mapped_size / MemoryLayout<Element>.stride
+        }
         
         @_versioned
         init(capacity: Int, option: MappedBufferOption) {
             
             self.mapped_size = (Swift.max(capacity, 1) * MemoryLayout<Element>.stride).align(Int(getpagesize()))
-            self.capacity = mapped_size / MemoryLayout<Element>.stride
+            let capacity = mapped_size / MemoryLayout<Element>.stride
             
             switch option {
             case .inMemory:
@@ -388,10 +390,10 @@ extension MappedBuffer {
                 self.fd = -1
                 self.path = ""
                 
-                let _address = mmap(nil, mapped_size, PROT_READ | PROT_WRITE, MAP_ANONYMOUS | MAP_PRIVATE, fd, 0)!
+                let _address = mmap(nil, mapped_size, PROT_READ | PROT_WRITE, MAP_ANONYMOUS | MAP_PRIVATE, fd, 0)
                 guard _address != UnsafeMutableRawPointer(bitPattern: -1) else { fatalError(String(cString: strerror(errno))) }
                 
-                self.address = _address.bindMemory(to: Element.self, capacity: self.capacity)
+                self.address = _address!.bindMemory(to: Element.self, capacity: capacity)
                 
             case .fileBacked:
                 
@@ -412,10 +414,10 @@ extension MappedBuffer {
                 guard flock(fd, LOCK_EX) != -1 else { fatalError(String(cString: strerror(errno))) }
                 guard ftruncate(fd, off_t(mapped_size)) != -1 else { fatalError(String(cString: strerror(errno))) }
                 
-                let _address = mmap(nil, mapped_size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0)!
+                let _address = mmap(nil, mapped_size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0)
                 guard _address != UnsafeMutableRawPointer(bitPattern: -1) else { fatalError(String(cString: strerror(errno))) }
                 
-                self.address = _address.bindMemory(to: Element.self, capacity: self.capacity)
+                self.address = _address!.bindMemory(to: Element.self, capacity: capacity)
             }
         }
         
@@ -445,14 +447,31 @@ extension MappedBuffer {
             
             if fd == -1 {
                 
-                let new_buffer = mmap(nil, new_mapped_size, PROT_READ | PROT_WRITE, MAP_ANONYMOUS | MAP_PRIVATE, fd, 0).bindMemory(to: Element.self, capacity: new_capacity)
+                let _extended_size = new_mapped_size - mapped_size
+                
+                let _tail = UnsafeMutableRawPointer(address) + mapped_size
+                
+                let _extended = mmap(_tail, _extended_size, PROT_READ | PROT_WRITE, MAP_ANONYMOUS | MAP_PRIVATE, fd, 0)
+                
+                if _extended != UnsafeMutableRawPointer(bitPattern: -1) {
+                    if _extended == _tail {
+                        self.mapped_size = new_mapped_size
+                        return
+                    } else {
+                        munmap(_extended, _extended_size)
+                    }
+                }
+                
+                let _address = mmap(nil, new_mapped_size, PROT_READ | PROT_WRITE, MAP_ANONYMOUS | MAP_PRIVATE, fd, 0)
+                guard _address != UnsafeMutableRawPointer(bitPattern: -1) else { fatalError(String(cString: strerror(errno))) }
+                
+                let new_buffer = _address!.bindMemory(to: Element.self, capacity: new_capacity)
                 
                 new_buffer.moveInitialize(from: address, count: count)
                 
                 munmap(address, mapped_size)
                 
                 self.mapped_size = new_mapped_size
-                self.capacity = new_capacity
                 self.address = new_buffer
                 
             } else {
@@ -460,11 +479,13 @@ extension MappedBuffer {
                 munmap(address, mapped_size)
                 
                 self.mapped_size = new_mapped_size
-                self.capacity = new_capacity
                 
-                guard ftruncate(self.fd, off_t(mapped_size)) != -1 else { fatalError(String(cString: strerror(errno))) }
+                guard ftruncate(self.fd, off_t(new_mapped_size)) != -1 else { fatalError(String(cString: strerror(errno))) }
                 
-                self.address = mmap(nil, mapped_size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0).bindMemory(to: Element.self, capacity: new_capacity)
+                let _address = mmap(nil, new_mapped_size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0)
+                guard _address != UnsafeMutableRawPointer(bitPattern: -1) else { fatalError(String(cString: strerror(errno))) }
+                
+                self.address = _address!.bindMemory(to: Element.self, capacity: new_capacity)
             }
         }
     }
