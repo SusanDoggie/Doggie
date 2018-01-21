@@ -181,6 +181,18 @@ extension Image {
 extension Image {
     
     @_inlineable
+    public func map<P>(_ transform: (Pixel) throws -> P) rethrows -> Image<P> where P.Model == Pixel.Model {
+        var _pixels = MappedBuffer<P>(capacity: pixels.count, option: pixels.option)
+        for pixel in pixels {
+            _pixels.append(try transform(pixel))
+        }
+        return Image<P>(width: height, height: width, resolution: resolution, pixels: _pixels, colorSpace: colorSpace)
+    }
+}
+
+extension Image {
+    
+    @_inlineable
     public func transposed() -> Image {
         if pixels.count == 0 {
             return Image(width: height, height: width, resolution: Resolution(horizontal: resolution.vertical, vertical: resolution.horizontal, unit: resolution.unit), pixels: [], colorSpace: colorSpace)
