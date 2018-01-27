@@ -179,32 +179,23 @@ extension SDXMLElement {
 extension SDXMLElement {
     
     public mutating func setAttribute(for attribute: String, namespace: String = "", value: String?) {
-        switch kind {
-        case .node:
-            _attributes[SDXMLAttribute(attribute: attribute, namespace: namespace)] = value
-        default: break
-        }
+        guard kind == .node else { fatalError() }
+        _attributes[SDXMLAttribute(attribute: attribute, namespace: namespace)] = value
     }
     
     public func attributes() -> [SDXMLAttribute: String] {
-        switch kind {
-        case .node: return _attributes
-        default: return [:]
-        }
+        guard kind == .node else { fatalError() }
+        return _attributes
     }
     
     public func attributes(for attribute: String) -> [SDXMLAttribute: String] {
-        switch kind {
-        case .node: return _attributes.filter { $0.key.attribute == attribute }
-        default: return [:]
-        }
+        guard kind == .node else { fatalError() }
+        return _attributes.filter { $0.key.attribute == attribute }
     }
     
     public func attributes(for attribute: String, namespace: String) -> String? {
-        switch kind {
-        case .node: return _attributes[SDXMLAttribute(attribute: attribute, namespace: namespace)]
-        default: return nil
-        }
+        guard kind == .node else { fatalError() }
+        return _attributes[SDXMLAttribute(attribute: attribute, namespace: namespace)]
     }
 }
 
@@ -212,24 +203,18 @@ extension SDXMLElement {
     
     private func _apply_global_namespace(_ namespace: String) -> SDXMLElement {
         
-        switch kind {
-        case .node:
-            
-            var attributes: [SDXMLAttribute: String] = [:]
-            attributes.reserveCapacity(self._attributes.count)
-            
-            for (attribute, value) in self._attributes {
-                if attribute.namespace != "" || attribute.attribute == "xmlns" || attribute.attribute.contains(":") {
-                    attributes[attribute] = value
-                } else {
-                    attributes[SDXMLAttribute(attribute: attribute.attribute, namespace: namespace)] = value
-                }
+        var attributes: [SDXMLAttribute: String] = [:]
+        attributes.reserveCapacity(self._attributes.count)
+        
+        for (attribute, value) in self._attributes {
+            if attribute.namespace != "" || attribute.attribute == "xmlns" || attribute.attribute.contains(":") {
+                attributes[attribute] = value
+            } else {
+                attributes[SDXMLAttribute(attribute: attribute.attribute, namespace: namespace)] = value
             }
-            
-            return SDXMLElement(name: self._name, namespace: self._namespace == "" ? namespace : self._namespace, attributes: _attributes, elements: self._elements.map { $0._apply_global_namespace(namespace) })
-            
-        default: return self
         }
+        
+        return SDXMLElement(name: self._name, namespace: self._namespace == "" ? namespace : self._namespace, attributes: _attributes, elements: self._elements.map { $0._apply_global_namespace(namespace) })
     }
     
     func _detach() -> SDXMLElement {
@@ -257,11 +242,13 @@ extension SDXMLElement : RandomAccessCollection, MutableCollection {
     
     public subscript(position : Int) -> SDXMLElement {
         get {
+            guard kind == .node else { fatalError() }
             var element = _elements[position]
             element._parent = [self]
             return element
         }
         set {
+            guard kind == .node else { fatalError() }
             if let xmlns = _attributes["xmlns"] {
                 _elements[position] = newValue._apply_global_namespace(xmlns)._detach()
             } else {
@@ -274,6 +261,7 @@ extension SDXMLElement : RandomAccessCollection, MutableCollection {
 extension SDXMLElement {
     
     public mutating func append(_ newElement: SDXMLElement) {
+        guard kind == .node else { fatalError() }
         if let xmlns = _attributes["xmlns"] {
             _elements.append(newElement._apply_global_namespace(xmlns)._detach())
         } else {
@@ -282,6 +270,7 @@ extension SDXMLElement {
     }
     
     public mutating func append<S : Sequence>(contentsOf newElements: S) where S.Element == SDXMLElement {
+        guard kind == .node else { fatalError() }
         if let xmlns = _attributes["xmlns"] {
             _elements.append(contentsOf: newElements.lazy.map { $0._apply_global_namespace(xmlns)._detach() })
         } else {
@@ -290,14 +279,17 @@ extension SDXMLElement {
     }
     
     public mutating func reserveCapacity(_ minimumCapacity: Int) {
+        guard kind == .node else { fatalError() }
         _elements.reserveCapacity(minimumCapacity)
     }
     
     public mutating func removeAll(keepingCapacity: Bool = false) {
+        guard kind == .node else { fatalError() }
         _elements.removeAll(keepingCapacity: keepingCapacity)
     }
     
     public mutating func replaceSubrange<C : Collection>(_ subRange: Range<Int>, with newElements: C) where C.Element == SDXMLElement {
+        guard kind == .node else { fatalError() }
         if let xmlns = _attributes["xmlns"] {
             _elements.replaceSubrange(subRange, with: newElements.lazy.map { $0._apply_global_namespace(xmlns)._detach() })
         } else {
