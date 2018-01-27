@@ -203,6 +203,8 @@ extension SDXMLElement {
     
     private func _apply_global_namespace(_ namespace: String) -> SDXMLElement {
         
+        guard kind == .node else { return self }
+        
         var attributes: [SDXMLAttribute: String] = [:]
         attributes.reserveCapacity(self._attributes.count)
         
