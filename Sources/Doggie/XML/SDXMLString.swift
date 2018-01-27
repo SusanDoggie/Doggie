@@ -52,49 +52,54 @@ extension SDXMLDocument : CustomStringConvertible {
     }
 }
 
+extension SDXMLElement : CustomStringConvertible {
+    
+    public var description: String {
+        var result = ""
+        self._xml("", prefixMap: [:], &result)
+        return result
+    }
+}
+
 extension SDXMLElement {
     
     fileprivate func _xml(_ terminator: String, prefixMap: [String: Substring], _ output: inout String) {
         
-        switch self {
-        case let .node(node): node._xml(terminator, prefixMap: prefixMap, &output)
-        case let .characters(value): value.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).write(to: &output)
-        case let .comment(value): "\(terminator)<!--\(value)-->".write(to: &output)
-        case let .CDATA(value): "\(terminator)<![CDATA[\(value)]]>".write(to: &output)
+        switch kind {
+        case .node:
+            
+            var prefixMap = prefixMap
+            
+            for (key, value) in self._attributes.filter({ $0.key.attribute.hasPrefix("xmlns:") }) {
+                let substr = key.attribute.dropFirst(6)
+                if !substr.isEmpty && !substr.contains(":") {
+                    prefixMap[value] = substr
+                }
+            }
+            
+            let name = prefixMap[self._namespace].map { "\($0):\(self._name)" } ?? self._name
+            let attributes = self._attributes.map { attribute, value in " \(prefixMap[attribute.namespace].map { "\($0):\(attribute.attribute)" } ?? attribute.attribute)=\"\(value)\"" }.joined()
+            
+            if self.count == 0 {
+                "\(terminator)<\(name)\(attributes) />".write(to: &output)
+            } else {
+                "\(terminator)<\(name)\(attributes)>".write(to: &output)
+                var flag = false
+                for element in self._elements {
+                    flag = element.isNode || flag
+                    element._xml(terminator == "" ? terminator : "\(terminator)  ", prefixMap: prefixMap, &output)
+                }
+                if flag {
+                    "\(terminator)</\(name)>".write(to: &output)
+                } else {
+                    "</\(name)>".write(to: &output)
+                }
+            }
+            
+        case .characters: _string.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).write(to: &output)
+        case .comment: "\(terminator)<!--\(_string)-->".write(to: &output)
+        case .CDATA: "\(terminator)<![CDATA[\(_string)]]>".write(to: &output)
         }
     }
 }
 
-extension SDXMLNode {
-    
-    fileprivate func _xml(_ terminator: String, prefixMap: [String: Substring], _ output: inout String) {
-        
-        var prefixMap = prefixMap
-        
-        for (key, value) in self.attributes.filter({ $0.key.attribute.hasPrefix("xmlns:") }) {
-            let substr = key.attribute.dropFirst(6)
-            if !substr.isEmpty && !substr.contains(":") {
-                prefixMap[value] = substr
-            }
-        }
-        
-        let name = prefixMap[self.namespace].map { "\($0):\(self.name)" } ?? self.name
-        let attributes = self.attributes.map { attribute, value in " \(prefixMap[attribute.namespace].map { "\($0):\(attribute.attribute)" } ?? attribute.attribute)=\"\(value)\"" }.joined()
-        
-        if self.count == 0 {
-            "\(terminator)<\(name)\(attributes) />".write(to: &output)
-        } else {
-            "\(terminator)<\(name)\(attributes)>".write(to: &output)
-            var flag = false
-            for element in self {
-                flag = element.isNode || flag
-                element._xml(terminator == "" ? terminator : "\(terminator)  ", prefixMap: prefixMap, &output)
-            }
-            if flag {
-                "\(terminator)</\(name)>".write(to: &output)
-            } else {
-                "</\(name)>".write(to: &output)
-            }
-        }
-    }
-}

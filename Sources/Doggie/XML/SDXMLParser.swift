@@ -27,7 +27,7 @@ import Foundation
 
 extension SDXMLDocument {
     
-    enum Error : Swift.Error {
+    public enum Error : Swift.Error {
         
         case unknown
         case parser(String)

@@ -32,14 +32,16 @@ public struct SDXMLDocument : ExpressibleByArrayLiteral {
     }
     
     public init(arrayLiteral elements: SDXMLElement...) {
-        self.elements = elements
+        self.elements = elements.map { $0._detach() }
     }
 }
 
 extension SDXMLDocument {
     
     public var root: SDXMLElement? {
-        return elements.first { $0.isNode }
+        guard var element = elements.first(where: { $0.isNode }) else { return nil }
+        element._parent = [self]
+        return element
     }
 }
 
@@ -61,10 +63,12 @@ extension SDXMLDocument : RandomAccessCollection, MutableCollection {
     
     public subscript(position : Int) -> SDXMLElement {
         get {
-            return elements[position]
+            var element = elements[position]
+            element._parent = [self]
+            return element
         }
         set {
-            elements[position] = newValue
+            elements[position] = newValue._detach()
         }
     }
 }
@@ -72,11 +76,11 @@ extension SDXMLDocument : RandomAccessCollection, MutableCollection {
 extension SDXMLDocument : RangeReplaceableCollection {
     
     public mutating func append(_ newElement: SDXMLElement) {
-        elements.append(newElement)
+        elements.append(newElement._detach())
     }
     
     public mutating func append<S : Sequence>(contentsOf newElements: S) where S.Element == SDXMLElement {
-        elements.append(contentsOf: newElements)
+        elements.append(contentsOf: newElements.lazy.map { $0._detach() })
     }
     
     public mutating func reserveCapacity(_ minimumCapacity: Int) {
@@ -84,6 +88,6 @@ extension SDXMLDocument : RangeReplaceableCollection {
     }
     
     public mutating func replaceSubrange<C : Collection>(_ subRange: Range<Int>, with newElements: C) where C.Element == SDXMLElement {
-        elements.replaceSubrange(subRange, with: newElements)
+        elements.replaceSubrange(subRange, with: newElements.lazy.map { $0._detach() })
     }
 }

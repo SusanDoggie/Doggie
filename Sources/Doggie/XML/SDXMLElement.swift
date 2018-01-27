@@ -23,59 +23,112 @@
 //  THE SOFTWARE.
 //
 
-public enum SDXMLElement {
+public struct SDXMLElement {
     
-    case node(SDXMLNode)
-    case characters(String)
-    case comment(String)
-    case CDATA(String)
-    
-    public init(name: String, namespace: String = "", attributes: [SDXMLAttribute: String] = [:], elements: [SDXMLElement] = []) {
-        self = .node(SDXMLNode(name: name, namespace: namespace, attributes: attributes, elements: elements))
+    enum Kind {
+        case node
+        case characters
+        case comment
+        case CDATA
     }
     
-    public init(_ value: SDXMLNode) {
-        self = .node(value)
+    let kind: Kind
+    
+    let _name: String
+    let _namespace: String
+    
+    var _attributes: [SDXMLAttribute: String] {
+        didSet {
+            _attributes = _attributes.filter { $0.key.attribute != "" }
+        }
+    }
+    
+    var _elements: [SDXMLElement]
+    
+    let _string: String
+    
+    var _parent: [Any] = []
+    
+    public init(name: String, namespace: String = "", attributes: [SDXMLAttribute: String] = [:], elements: [SDXMLElement] = []) {
+        self.kind = .node
+        self._name = name
+        self._namespace = namespace
+        self._attributes = attributes.filter { $0.key.attribute != "" }
+        self._elements = elements.map { $0._detach() }
+        self._string = ""
     }
     
     public init(CDATA value: String) {
-        self = .CDATA(value)
+        self.kind = .CDATA
+        self._name = ""
+        self._namespace = ""
+        self._attributes = [:]
+        self._elements = []
+        self._string = value
     }
     
     public init(comment value: String) {
-        self = .comment(value)
+        self.kind = .comment
+        self._name = ""
+        self._namespace = ""
+        self._attributes = [:]
+        self._elements = []
+        self._string = value
     }
     
     public init(characters value: String) {
-        self = .characters(value)
+        self.kind = .characters
+        self._name = ""
+        self._namespace = ""
+        self._attributes = [:]
+        self._elements = []
+        self._string = value
+    }
+}
+
+extension SDXMLElement: ExpressibleByStringLiteral {
+    
+    public typealias ExtendedGraphemeClusterLiteralType = StringLiteralType
+    public typealias UnicodeScalarLiteralType = StringLiteralType
+    
+    public init(stringLiteral value: StringLiteralType) {
+        self.init(characters: value)
+    }
+    
+    public init(extendedGraphemeClusterLiteral value: ExtendedGraphemeClusterLiteralType) {
+        self.init(characters: value)
+    }
+    
+    public init(unicodeScalarLiteral value: UnicodeScalarLiteralType) {
+        self.init(characters: value)
     }
 }
 
 extension SDXMLElement {
     
     public var isNode: Bool {
-        switch self {
+        switch kind {
         case .node: return true
         default: return false
         }
     }
     
     public var isCharacters: Bool {
-        switch self {
+        switch kind {
         case .characters: return true
         default: return false
         }
     }
     
     public var isComment: Bool {
-        switch self {
+        switch kind {
         case .comment: return true
         default: return false
         }
     }
     
     public var isCDATA: Bool {
-        switch self {
+        switch kind {
         case .CDATA: return true
         default: return false
         }
@@ -85,24 +138,24 @@ extension SDXMLElement {
 extension SDXMLElement {
     
     public var name: String? {
-        switch self {
-        case let .node(node): return node.name
+        switch kind {
+        case .node: return _name
         default: return nil
         }
     }
     
     public var namespace: String? {
-        switch self {
-        case let .node(node): return node.namespace
+        switch kind {
+        case .node: return _namespace
         default: return nil
         }
     }
     
     public var value: String? {
-        switch self {
-        case let .characters(value): return value
-        case let .comment(value): return value
-        case let .CDATA(value): return value
+        switch kind {
+        case .characters: return _string
+        case .comment: return _string
+        case .CDATA: return _string
         default: return nil
         }
     }
@@ -110,34 +163,79 @@ extension SDXMLElement {
 
 extension SDXMLElement {
     
+    public var rootDocument: SDXMLDocument? {
+        return _parent.first as? SDXMLDocument ?? parent?.rootDocument
+    }
+    
+    public var root: SDXMLElement? {
+        return rootDocument?.root
+    }
+    
+    public var parent: SDXMLElement? {
+        return _parent.first as? SDXMLElement
+    }
+}
+
+extension SDXMLElement {
+    
     public mutating func setAttribute(for attribute: String, namespace: String = "", value: String?) {
-        switch self {
-        case var .node(node):
-            node.attributes[SDXMLAttribute(attribute: attribute, namespace: namespace)] = value
-            self = .node(node)
+        switch kind {
+        case .node:
+            _attributes[SDXMLAttribute(attribute: attribute, namespace: namespace)] = value
         default: break
         }
     }
     
     public func attributes() -> [SDXMLAttribute: String] {
-        switch self {
-        case let .node(node): return node.attributes
+        switch kind {
+        case .node: return _attributes
         default: return [:]
         }
     }
     
     public func attributes(for attribute: String) -> [SDXMLAttribute: String] {
-        switch self {
-        case let .node(node): return node.attributes.filter { $0.key.attribute == attribute }
+        switch kind {
+        case .node: return _attributes.filter { $0.key.attribute == attribute }
         default: return [:]
         }
     }
     
     public func attributes(for attribute: String, namespace: String) -> String? {
-        switch self {
-        case let .node(node): return node.attributes[SDXMLAttribute(attribute: attribute, namespace: namespace)]
+        switch kind {
+        case .node: return _attributes[SDXMLAttribute(attribute: attribute, namespace: namespace)]
         default: return nil
         }
+    }
+}
+
+extension SDXMLElement {
+    
+    private func _apply_global_namespace(_ namespace: String) -> SDXMLElement {
+        
+        switch kind {
+        case .node:
+            
+            var attributes: [SDXMLAttribute: String] = [:]
+            attributes.reserveCapacity(self._attributes.count)
+            
+            for (attribute, value) in self._attributes {
+                if attribute.namespace != "" || attribute.attribute == "xmlns" || attribute.attribute.contains(":") {
+                    attributes[attribute] = value
+                } else {
+                    attributes[SDXMLAttribute(attribute: attribute.attribute, namespace: namespace)] = value
+                }
+            }
+            
+            return SDXMLElement(name: self._name, namespace: self._namespace == "" ? namespace : self._namespace, attributes: _attributes, elements: self._elements.map { $0._apply_global_namespace(namespace) })
+            
+        default: return self
+        }
+    }
+    
+    func _detach() -> SDXMLElement {
+        var copy = self
+        copy._parent = []
+        return copy
     }
 }
 
@@ -150,32 +248,24 @@ extension SDXMLElement : RandomAccessCollection, MutableCollection {
     public typealias Index = Int
     
     public var startIndex: Int {
-        switch self {
-        case let .node(node): return node.startIndex
-        default: return 0
-        }
+        return _elements.startIndex
     }
     
     public var endIndex: Int {
-        switch self {
-        case let .node(node): return node.endIndex
-        default: return 0
-        }
+        return _elements.endIndex
     }
     
     public subscript(position : Int) -> SDXMLElement {
         get {
-            switch self {
-            case let .node(node): return node[position]
-            default: fatalError()
-            }
+            var element = _elements[position]
+            element._parent = [self]
+            return element
         }
         set {
-            switch self {
-            case var .node(node):
-                node[position] = newValue
-                self = .node(node)
-            default: fatalError()
+            if let xmlns = _attributes["xmlns"] {
+                _elements[position] = newValue._apply_global_namespace(xmlns)._detach()
+            } else {
+                _elements[position] = newValue._detach()
             }
         }
     }
@@ -184,47 +274,34 @@ extension SDXMLElement : RandomAccessCollection, MutableCollection {
 extension SDXMLElement {
     
     public mutating func append(_ newElement: SDXMLElement) {
-        switch self {
-        case var .node(node):
-            node.append(newElement)
-            self = .node(node)
-        default: fatalError()
+        if let xmlns = _attributes["xmlns"] {
+            _elements.append(newElement._apply_global_namespace(xmlns)._detach())
+        } else {
+            _elements.append(newElement._detach())
         }
     }
     
     public mutating func append<S : Sequence>(contentsOf newElements: S) where S.Element == SDXMLElement {
-        switch self {
-        case var .node(node):
-            node.append(contentsOf: newElements)
-            self = .node(node)
-        default: fatalError()
+        if let xmlns = _attributes["xmlns"] {
+            _elements.append(contentsOf: newElements.lazy.map { $0._apply_global_namespace(xmlns)._detach() })
+        } else {
+            _elements.append(contentsOf: newElements.lazy.map { $0._detach() })
         }
     }
     
     public mutating func reserveCapacity(_ minimumCapacity: Int) {
-        switch self {
-        case var .node(node):
-            node.reserveCapacity(minimumCapacity)
-            self = .node(node)
-        default: fatalError()
-        }
+        _elements.reserveCapacity(minimumCapacity)
     }
     
     public mutating func removeAll(keepingCapacity: Bool = false) {
-        switch self {
-        case var .node(node):
-            node.removeAll(keepingCapacity: keepingCapacity)
-            self = .node(node)
-        default: fatalError()
-        }
+        _elements.removeAll(keepingCapacity: keepingCapacity)
     }
     
     public mutating func replaceSubrange<C : Collection>(_ subRange: Range<Int>, with newElements: C) where C.Element == SDXMLElement {
-        switch self {
-        case var .node(node):
-            node.replaceSubrange(subRange, with: newElements)
-            self = .node(node)
-        default: fatalError()
+        if let xmlns = _attributes["xmlns"] {
+            _elements.replaceSubrange(subRange, with: newElements.lazy.map { $0._apply_global_namespace(xmlns)._detach() })
+        } else {
+            _elements.replaceSubrange(subRange, with: newElements.lazy.map { $0._detach() })
         }
     }
 }
