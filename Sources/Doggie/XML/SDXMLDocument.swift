@@ -39,8 +39,9 @@ public struct SDXMLDocument : ExpressibleByArrayLiteral {
 extension SDXMLDocument {
     
     public var root: SDXMLElement? {
-        guard var element = elements.first(where: { $0.isNode }) else { return nil }
-        element._parent = [self]
+        guard let index = elements.index(where: { $0.isNode }) else { return nil }
+        var element = elements[index]
+        element._tree = SDXMLElement._Tree(root: self, parent: nil, level: 1, index: index)
         return element
     }
 }
@@ -64,7 +65,7 @@ extension SDXMLDocument : RandomAccessCollection, MutableCollection {
     public subscript(position : Int) -> SDXMLElement {
         get {
             var element = elements[position]
-            element._parent = [self]
+            element._tree = SDXMLElement._Tree(root: self, parent: nil, level: 1, index: position)
             return element
         }
         set {

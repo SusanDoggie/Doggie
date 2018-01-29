@@ -47,7 +47,22 @@ public struct SDXMLElement {
     
     let _string: String
     
-    var _parent: [Any] = []
+    class _Tree {
+        
+        let root: SDXMLDocument?
+        let parent: SDXMLElement?
+        let level: Int?
+        let index: Int
+        
+        init(root: SDXMLDocument?, parent: SDXMLElement?, level: Int?, index: Int) {
+            self.root = root
+            self.parent = parent
+            self.level = level
+            self.index = index
+        }
+    }
+    
+    var _tree: _Tree?
     
     public init(name: String, namespace: String = "", attributes: [SDXMLAttribute: String] = [:], elements: [SDXMLElement] = []) {
         self.kind = .node
@@ -164,7 +179,7 @@ extension SDXMLElement {
 extension SDXMLElement {
     
     public var rootDocument: SDXMLDocument? {
-        return _parent.first as? SDXMLDocument ?? parent?.rootDocument
+        return _tree?.root
     }
     
     public var root: SDXMLElement? {
@@ -172,7 +187,15 @@ extension SDXMLElement {
     }
     
     public var parent: SDXMLElement? {
-        return _parent.first as? SDXMLElement
+        return _tree?.parent
+    }
+    
+    public var level: Int? {
+        return _tree?.level
+    }
+    
+    public var index: Int? {
+        return _tree?.index
     }
 }
 
@@ -221,7 +244,7 @@ extension SDXMLElement {
     
     func _detach() -> SDXMLElement {
         var copy = self
-        copy._parent = []
+        copy._tree = nil
         return copy
     }
 }
@@ -246,7 +269,7 @@ extension SDXMLElement : RandomAccessCollection, MutableCollection {
         get {
             guard kind == .node else { fatalError() }
             var element = _elements[position]
-            element._parent = [self]
+            element._tree = _tree.map { _Tree(root: $0.root, parent: self, level: $0.level.map { $0 + 1 }, index: position) } ?? _Tree(root: nil, parent: self, level: nil, index: position)
             return element
         }
         set {
@@ -278,6 +301,54 @@ extension SDXMLElement {
         } else {
             _elements.append(contentsOf: newElements.lazy.map { $0._detach() })
         }
+    }
+    
+    public mutating func insert(_ newElement: SDXMLElement, at i: Int) {
+        guard kind == .node else { fatalError() }
+        if let xmlns = _attributes["xmlns"] {
+            _elements.insert(newElement._apply_global_namespace(xmlns)._detach(), at: i)
+        } else {
+            _elements.insert(newElement._detach(), at: i)
+        }
+    }
+    
+    public mutating func insert<C : Collection>(contentsOf newElements: C, at i: Int) where C.Element == SDXMLElement {
+        guard kind == .node else { fatalError() }
+        if let xmlns = _attributes["xmlns"] {
+            _elements.insert(contentsOf: newElements.lazy.map { $0._apply_global_namespace(xmlns)._detach() }, at: i)
+        } else {
+            _elements.insert(contentsOf: newElements.lazy.map { $0._detach() }, at: i)
+        }
+    }
+    
+    public mutating func remove(at position: Int) -> SDXMLElement {
+        guard kind == .node else { fatalError() }
+        return _elements.remove(at: position)
+    }
+    
+    public mutating func removeSubrange(_ bounds: Range<Index>) {
+        guard kind == .node else { fatalError() }
+        _elements.removeSubrange(bounds)
+    }
+    
+    public mutating func removeFirst(_ n: Int) {
+        guard kind == .node else { fatalError() }
+        _elements.removeFirst(n)
+    }
+    
+    public mutating func removeFirst() -> SDXMLElement {
+        guard kind == .node else { fatalError() }
+        return _elements.removeFirst()
+    }
+    
+    public mutating func removeLast(_ n: Int) {
+        guard kind == .node else { fatalError() }
+        _elements.removeLast(n)
+    }
+    
+    public mutating func removeLast() -> SDXMLElement {
+        guard kind == .node else { fatalError() }
+        return _elements.removeLast()
     }
     
     public mutating func reserveCapacity(_ minimumCapacity: Int) {
