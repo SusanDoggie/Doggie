@@ -38,6 +38,20 @@ extension ChromaticAdaptationAlgorithm {
     }
 }
 
+extension ChromaticAdaptationAlgorithm: Equatable {
+    
+    @_inlineable
+    public static func ==(lhs: ChromaticAdaptationAlgorithm, rhs: ChromaticAdaptationAlgorithm) -> Bool {
+        switch (lhs, rhs) {
+        case (.xyzScaling, .xyzScaling): return true
+        case (.vonKries, .vonKries): return true
+        case (.bradford, .bradford): return true
+        case let (.other(_lhs), .other(_rhs)): return _lhs == _rhs
+        default: return false
+        }
+    }
+}
+
 extension ChromaticAdaptationAlgorithm {
     
     @_versioned
@@ -74,4 +88,3 @@ extension CIEXYZColorSpace {
         return m1 * Matrix.scale(x: _d.x / _s.x, y: _d.y / _s.y, z: _d.z / _s.z) * m2.inverse
     }
 }
-

@@ -168,6 +168,9 @@ public struct ColorSpace<Model : ColorModelProtocol> : ColorSpaceProtocol, Hasha
     let base : _ColorSpaceBaseProtocol
     
     public var chromaticAdaptationAlgorithm: ChromaticAdaptationAlgorithm = .default
+
+    @_versioned
+    var cache = Cache<String>()
     
     @_versioned
     @_inlineable
@@ -185,7 +188,7 @@ extension ColorSpace {
     
     @_inlineable
     public static func ==(lhs: ColorSpace<Model>, rhs: ColorSpace<Model>) -> Bool {
-        return lhs.base.isEqualTo(rhs.base)
+        return lhs.chromaticAdaptationAlgorithm == rhs.chromaticAdaptationAlgorithm && (lhs.cache.identifier == rhs.cache.identifier || lhs.base.isEqualTo(rhs.base))
     }
 }
 

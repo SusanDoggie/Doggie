@@ -104,6 +104,7 @@
 		0A7A1FB21F04FC230016B3FB /* ARGB32ColorPixel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7A1FB01F04FC230016B3FB /* ARGB32ColorPixel.swift */; };
 		0A7A4C001F738D18005F44CD /* XMLTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7A4BFF1F738D18005F44CD /* XMLTest.swift */; };
 		0A7A4C021F739235005F44CD /* SDXMLString.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7A4BFD1F73765B005F44CD /* SDXMLString.swift */; };
+		0A7C9D052022D01400927674 /* Cache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7C9D042022D01400927674 /* Cache.swift */; };
 		0A7CC3D21FFDBE1200DEAC6D /* CompositingMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7CC3D11FFDBE1200DEAC6D /* CompositingMode.swift */; };
 		0A7D3ADC1ECAD5890030DC26 /* BlendMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7D3ADA1ECAD5890030DC26 /* BlendMode.swift */; };
 		0A7E3E911F5FD3B40020A507 /* OTFGPOS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7E3E901F5FD3B40020A507 /* OTFGPOS.swift */; };
@@ -323,6 +324,7 @@
 		0A7A1FB01F04FC230016B3FB /* ARGB32ColorPixel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = ARGB32ColorPixel.swift; sourceTree = "<group>"; };
 		0A7A4BFD1F73765B005F44CD /* SDXMLString.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = SDXMLString.swift; sourceTree = "<group>"; };
 		0A7A4BFF1F738D18005F44CD /* XMLTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = XMLTest.swift; sourceTree = "<group>"; };
+		0A7C9D042022D01400927674 /* Cache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Cache.swift; sourceTree = "<group>"; };
 		0A7CC3D11FFDBE1200DEAC6D /* CompositingMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompositingMode.swift; sourceTree = "<group>"; };
 		0A7D3ADA1ECAD5890030DC26 /* BlendMode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = BlendMode.swift; sourceTree = "<group>"; };
 		0A7E3E901F5FD3B40020A507 /* OTFGPOS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = OTFGPOS.swift; sourceTree = "<group>"; };
@@ -488,6 +490,7 @@
 				0A7F5B661F79F13600685AA0 /* MappedBuffer.swift */,
 				0ABFA6C61FC67CA8009D42E2 /* FileBuffer.swift */,
 				0A792C9F1FDA9742003C0290 /* FileManager.swift */,
+				0A7C9D042022D01400927674 /* Cache.swift */,
 			);
 			path = Foundation;
 			sourceTree = "<group>";
@@ -1234,6 +1237,7 @@
 				08458B351E2E627600D01813 /* Ellipse.swift in Sources */,
 				0A8535351F5937DA006FB85D /* CFFFontFace.swift in Sources */,
 				08B68A321ED07A2400F8D423 /* ColorSpace.swift in Sources */,
+				0A7C9D052022D01400927674 /* Cache.swift in Sources */,
 				0A74D68820047BA600330C86 /* ImageConvolution.swift in Sources */,
 				0A39A6C51ED937C700804004 /* DrawGradient.swift in Sources */,
 				0A56E9111E35F02E00D93786 /* RectCollection.swift in Sources */,

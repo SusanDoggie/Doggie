@@ -28,34 +28,39 @@
     import Foundation
     import CoreGraphics
     
+    fileprivate let ColorSpaceCacheCGColorSpaceKey = "ColorSpaceCacheCGColorSpaceKey"
+    
     extension ColorSpace {
         
         public var cgColorSpace : CGColorSpace? {
             
-            if #available(OSX 10.12, iOS 10.0, tvOS 10.0, watchOS 3.0, *) {
+            return self.cache[ColorSpaceCacheCGColorSpaceKey] {
                 
-                return iccData.map { CGColorSpace(iccData: $0 as CFData) }
-                
-            } else {
-                
-                if Model.numberOfComponents != 1 && Model.numberOfComponents != 3 && Model.numberOfComponents != 4 {
-                    return nil
-                }
-                
-                if let iccData = iccData.flatMap({ CGDataProvider(data: $0 as CFData) }) {
+                if #available(OSX 10.12, iOS 10.0, tvOS 10.0, watchOS 3.0, *) {
                     
-                    var range: [CGFloat] = []
-                    
-                    for i in 0..<Model.numberOfComponents {
-                        let _range = Model.rangeOfComponent(i)
-                        range.append(CGFloat(_range.lowerBound))
-                        range.append(CGFloat(_range.upperBound))
-                    }
-                    
-                    return CGColorSpace(iccBasedNComponents: Model.numberOfComponents, range: range, profile: iccData, alternate: nil)
+                    return iccData.map { CGColorSpace(iccData: $0 as CFData) }
                     
                 } else {
-                    return nil
+                    
+                    if Model.numberOfComponents != 1 && Model.numberOfComponents != 3 && Model.numberOfComponents != 4 {
+                        return nil
+                    }
+                    
+                    if let iccData = iccData.flatMap({ CGDataProvider(data: $0 as CFData) }) {
+                        
+                        var range: [CGFloat] = []
+                        
+                        for i in 0..<Model.numberOfComponents {
+                            let _range = Model.rangeOfComponent(i)
+                            range.append(CGFloat(_range.lowerBound))
+                            range.append(CGFloat(_range.upperBound))
+                        }
+                        
+                        return CGColorSpace(iccBasedNComponents: Model.numberOfComponents, range: range, profile: iccData, alternate: nil)
+                        
+                    } else {
+                        return nil
+                    }
                 }
             }
         }
