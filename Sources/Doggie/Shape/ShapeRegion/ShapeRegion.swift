@@ -80,6 +80,9 @@ public struct ShapeRegion {
 extension ShapeRegion {
     
     fileprivate class Cache {
+        
+        let lck = SDLock()
+        
         var subtracting: [ObjectIdentifier: ShapeRegion] = [:]
         var intersection: [ObjectIdentifier: ShapeRegion] = [:]
         var union: [ObjectIdentifier: ShapeRegion] = [:]
@@ -173,6 +176,8 @@ extension ShapeRegion.Solid {
     
     fileprivate class Cache {
         
+        let lck = SDLock()
+        
         var subtracting: [ObjectIdentifier: [ShapeRegion.Solid]] = [:]
         var intersection: [ObjectIdentifier: [ShapeRegion.Solid]] = [:]
         var union: [ObjectIdentifier: ([ShapeRegion.Solid], Bool)] = [:]
@@ -186,10 +191,12 @@ extension ShapeRegion.Solid {
 extension ShapeRegion.Solid {
     
     fileprivate var _solid: ShapeRegion.Solid {
-        if cache.solid == nil {
-            cache.solid = ShapeRegion.Solid(solid: self.solid)
+        return cache.lck.synchronized {
+            if cache.solid == nil {
+                cache.solid = ShapeRegion.Solid(solid: self.solid)
+            }
+            return cache.solid!
         }
-        return cache.solid!
     }
     
     fileprivate var cacheId: ObjectIdentifier {
@@ -197,10 +204,12 @@ extension ShapeRegion.Solid {
     }
     
     fileprivate func reversed() -> ShapeRegion.Solid {
-        if cache.reversed == nil {
-            cache.reversed = ShapeRegion.Solid(solid: solid.reversed(), holes: holes)
+        return cache.lck.synchronized {
+            if cache.reversed == nil {
+                cache.reversed = ShapeRegion.Solid(solid: solid.reversed(), holes: holes)
+            }
+            return cache.reversed!
         }
-        return cache.reversed!
     }
     
     fileprivate func components(_ sign: FloatingPointSign) -> ConcatBidirectionalCollection<CollectionOfOne<Shape.Component>, [Shape.Component]> {
@@ -268,17 +277,20 @@ extension ShapeRegion.Solid {
         
         let other = self.solid.area.sign == other.solid.area.sign ? other : other.reversed()
         
-        if cache.union[other.cacheId] == nil && other.cache.union[cacheId] == nil {
-            if let union = self.solid._union(other.solid) {
-                let a = self.holes.intersection(other.holes).solids
-                let b = self.holes.subtracting(other._solid)
-                let c = other.holes.subtracting(self._solid)
-                cache.union[other.cacheId] = (union.subtracting(ShapeRegion(solids: a.concat(b).concat(c))).solids, true)
-            } else {
-                cache.union[other.cacheId] = ([self, other], false)
+        return synchronized([cache.lck, other.cache.lck]) {
+            
+            if cache.union[other.cacheId] == nil && other.cache.union[cacheId] == nil {
+                if let union = self.solid._union(other.solid) {
+                    let a = self.holes.intersection(other.holes).solids
+                    let b = self.holes.subtracting(other._solid)
+                    let c = other.holes.subtracting(self._solid)
+                    cache.union[other.cacheId] = (union.subtracting(ShapeRegion(solids: a.concat(b).concat(c))).solids, true)
+                } else {
+                    cache.union[other.cacheId] = ([self, other], false)
+                }
             }
+            return cache.union[other.cacheId] ?? other.cache.union[cacheId]!
         }
-        return cache.union[other.cacheId] ?? other.cache.union[cacheId]!
     }
     fileprivate func intersection(_ other: ShapeRegion.Solid) -> [ShapeRegion.Solid] {
         
@@ -288,15 +300,18 @@ extension ShapeRegion.Solid {
         
         let other = self.solid.area.sign == other.solid.area.sign ? other : other.reversed()
         
-        if cache.intersection[other.cacheId] == nil && other.cache.intersection[cacheId] == nil {
-            let intersection = self.solid._intersection(other.solid)
-            if intersection.count != 0 {
-                cache.intersection[other.cacheId] = intersection.subtracting(self.holes).subtracting(other.holes).solids
-            } else {
-                cache.intersection[other.cacheId] = []
+        return synchronized([cache.lck, other.cache.lck]) {
+            
+            if cache.intersection[other.cacheId] == nil && other.cache.intersection[cacheId] == nil {
+                let intersection = self.solid._intersection(other.solid)
+                if intersection.count != 0 {
+                    cache.intersection[other.cacheId] = intersection.subtracting(self.holes).subtracting(other.holes).solids
+                } else {
+                    cache.intersection[other.cacheId] = []
+                }
             }
+            return cache.intersection[other.cacheId] ?? other.cache.intersection[cacheId]!
         }
-        return cache.intersection[other.cacheId] ?? other.cache.intersection[cacheId]!
     }
     fileprivate func subtracting(_ other: ShapeRegion.Solid) -> [ShapeRegion.Solid] {
         
@@ -306,18 +321,21 @@ extension ShapeRegion.Solid {
         
         let other = self.solid.area.sign == other.solid.area.sign ? other.reversed() : other
         
-        if cache.subtracting[other.cacheId] == nil {
-            let (_subtracting, superset) = self.solid._subtracting(other.solid)
-            if superset {
-                cache.subtracting[other.cacheId] = [ShapeRegion.Solid(solid: self.solid, holes: self.holes.union(ShapeRegion(solid: other)))]
-            } else if let subtracting = _subtracting {
-                let a = subtracting.concat(other.holes.intersection(self._solid))
-                cache.subtracting[other.cacheId] = self.holes.isEmpty ? Array(a) : ShapeRegion(solids: a).subtracting(self.holes).solids
-            } else {
-                cache.subtracting[other.cacheId] = [self]
+        return cache.lck.synchronized {
+            
+            if cache.subtracting[other.cacheId] == nil {
+                let (_subtracting, superset) = self.solid._subtracting(other.solid)
+                if superset {
+                    cache.subtracting[other.cacheId] = [ShapeRegion.Solid(solid: self.solid, holes: self.holes.union(ShapeRegion(solid: other)))]
+                } else if let subtracting = _subtracting {
+                    let a = subtracting.concat(other.holes.intersection(self._solid))
+                    cache.subtracting[other.cacheId] = self.holes.isEmpty ? Array(a) : ShapeRegion(solids: a).subtracting(self.holes).solids
+                } else {
+                    cache.subtracting[other.cacheId] = [self]
+                }
             }
+            return cache.subtracting[other.cacheId]!
         }
-        return cache.subtracting[other.cacheId]!
     }
 }
 
@@ -338,24 +356,27 @@ extension ShapeRegion {
             return ShapeRegion(solids: self.solids.concat(other.solids))
         }
         
-        if cache.union[other.cacheId] == nil && other.cache.union[cacheId] == nil {
-            var result1 = self.solids
-            var result2: [ShapeRegion.Solid] = []
-            var remain = other.solids
-            outer: while let rhs = remain.popLast() {
-                for idx in result1.indices {
-                    let (union, flag) = result1[idx].union(rhs)
-                    if flag {
-                        result1.remove(at: idx)
-                        remain.append(contentsOf: union)
-                        continue outer
+        return synchronized([cache.lck, other.cache.lck]) {
+            
+            if cache.union[other.cacheId] == nil && other.cache.union[cacheId] == nil {
+                var result1 = self.solids
+                var result2: [ShapeRegion.Solid] = []
+                var remain = other.solids
+                outer: while let rhs = remain.popLast() {
+                    for idx in result1.indices {
+                        let (union, flag) = result1[idx].union(rhs)
+                        if flag {
+                            result1.remove(at: idx)
+                            remain.append(contentsOf: union)
+                            continue outer
+                        }
                     }
+                    result2.append(rhs)
                 }
-                result2.append(rhs)
+                cache.union[other.cacheId] = ShapeRegion(solids: result1.concat(result2))
             }
-            cache.union[other.cacheId] = ShapeRegion(solids: result1.concat(result2))
+            return cache.union[other.cacheId] ?? other.cache.union[cacheId]!
         }
-        return cache.union[other.cacheId] ?? other.cache.union[cacheId]!
     }
     
     fileprivate func intersection(_ other: ShapeRegion.Solid) -> [ShapeRegion.Solid] {
@@ -374,11 +395,14 @@ extension ShapeRegion {
             return ShapeRegion()
         }
         
-        if cache.intersection[other.cacheId] == nil && other.cache.intersection[cacheId] == nil {
-            let overlap = self.spacePartition.search(overlap: other.boundary)
-            cache.intersection[other.cacheId] = ShapeRegion(solids: overlap.flatMap { other.intersection(self.solids[$0]) })
+        return synchronized([cache.lck, other.cache.lck]) {
+            
+            if cache.intersection[other.cacheId] == nil && other.cache.intersection[cacheId] == nil {
+                let overlap = self.spacePartition.search(overlap: other.boundary)
+                cache.intersection[other.cacheId] = ShapeRegion(solids: overlap.flatMap { other.intersection(self.solids[$0]) })
+            }
+            return cache.intersection[other.cacheId] ?? other.cache.intersection[cacheId]!
         }
-        return cache.intersection[other.cacheId] ?? other.cache.intersection[cacheId]!
     }
     fileprivate func subtracting(_ other: ShapeRegion.Solid) -> [ShapeRegion.Solid] {
         
@@ -410,21 +434,24 @@ extension ShapeRegion {
             return self
         }
         
-        if cache.subtracting[other.cacheId] == nil {
-            let overlap = self.spacePartition.search(overlap: other.boundary)
-            var result: [Solid] = []
-            result.reserveCapacity(solids.count)
-            for (index, item) in self.solids.enumerated() {
-                if overlap.contains(index) {
-                    let overlap2 = other.spacePartition.search(overlap: item.boundary)
-                    result.append(contentsOf: overlap2.reduce([item]) { remains, idx in remains.flatMap { $0.subtracting(other.solids[idx]) } })
-                } else {
-                    result.append(item)
+        return cache.lck.synchronized {
+            
+            if cache.subtracting[other.cacheId] == nil {
+                let overlap = self.spacePartition.search(overlap: other.boundary)
+                var result: [Solid] = []
+                result.reserveCapacity(solids.count)
+                for (index, item) in self.solids.enumerated() {
+                    if overlap.contains(index) {
+                        let overlap2 = other.spacePartition.search(overlap: item.boundary)
+                        result.append(contentsOf: overlap2.reduce([item]) { remains, idx in remains.flatMap { $0.subtracting(other.solids[idx]) } })
+                    } else {
+                        result.append(item)
+                    }
                 }
+                cache.subtracting[other.cacheId] = ShapeRegion(solids: result)
             }
-            cache.subtracting[other.cacheId] = ShapeRegion(solids: result)
+            return cache.subtracting[other.cacheId]!
         }
-        return cache.subtracting[other.cacheId]!
     }
     public func symmetricDifference(_ other: ShapeRegion) -> ShapeRegion {
         
@@ -441,12 +468,15 @@ extension ShapeRegion {
             return ShapeRegion(solids: self.solids.concat(other.solids))
         }
         
-        if cache.symmetricDifference[other.cacheId] == nil && other.cache.symmetricDifference[cacheId] == nil {
-            let a = self.subtracting(other).solids
-            let b = other.subtracting(self).solids
-            cache.symmetricDifference[other.cacheId] = ShapeRegion(solids: a.concat(b))
+        return synchronized([cache.lck, other.cache.lck]) {
+            
+            if cache.symmetricDifference[other.cacheId] == nil && other.cache.symmetricDifference[cacheId] == nil {
+                let a = self.subtracting(other).solids
+                let b = other.subtracting(self).solids
+                cache.symmetricDifference[other.cacheId] = ShapeRegion(solids: a.concat(b))
+            }
+            return cache.symmetricDifference[other.cacheId] ?? other.cache.symmetricDifference[cacheId]!
         }
-        return cache.symmetricDifference[other.cacheId] ?? other.cache.symmetricDifference[cacheId]!
     }
 }
 
