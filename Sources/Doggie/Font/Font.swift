@@ -110,6 +110,8 @@ extension Font {
     
     private class Cache {
         
+        let lck = SDLock()
+        
         var coveredCharacterSet: CharacterSet?
         var glyphs: [Int: [Shape.Component]] = [:]
     }
@@ -173,10 +175,12 @@ extension Font {
     
     private func _shape(glyph: Int) -> [Shape.Component] {
         precondition(0..<base.numberOfGlyphs ~= glyph, "Index out of range.")
-        if cache.glyphs[glyph] == nil {
-            cache.glyphs[glyph] = base.shape(glyph: glyph).filter { $0.count != 0 }
+        return cache.lck.synchronized {
+            if cache.glyphs[glyph] == nil {
+                cache.glyphs[glyph] = base.shape(glyph: glyph).filter { $0.count != 0 }
+            }
+            return cache.glyphs[glyph]!
         }
-        return cache.glyphs[glyph]!
     }
     
     public func boundary(forGlyph glyph: Int) -> Rect {
@@ -236,10 +240,12 @@ extension Font {
     }
     
     public var coveredCharacterSet: CharacterSet {
-        if cache.coveredCharacterSet == nil {
-            cache.coveredCharacterSet = base.coveredCharacterSet
+        return cache.lck.synchronized {
+            if cache.coveredCharacterSet == nil {
+                cache.coveredCharacterSet = base.coveredCharacterSet
+            }
+            return cache.coveredCharacterSet!
         }
-        return cache.coveredCharacterSet!
     }
 }
 

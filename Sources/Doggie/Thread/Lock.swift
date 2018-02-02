@@ -36,25 +36,18 @@ public protocol Lockable : class {
     func synchronized<R>(block: () throws -> R) rethrows -> R
 }
 
-public extension Lockable {
+extension Lockable {
     
-    func lock() {
-        while !trylock() {
-            sched_yield()
-        }
-    }
-}
-
-public extension Lockable {
-    
+    @_inlineable
     @discardableResult
-    func synchronized<R>(block: () throws -> R) rethrows -> R {
+    public func synchronized<R>(block: () throws -> R) rethrows -> R {
         self.lock()
         defer { self.unlock() }
         return try block()
     }
 }
 
+@_inlineable
 @discardableResult
 public func synchronized<S : Sequence, R>(_ lcks: S, block: () throws -> R) rethrows -> R where S.Element == Lockable {
     let lcks = Array(lcks)
@@ -83,6 +76,7 @@ public func synchronized<S : Sequence, R>(_ lcks: S, block: () throws -> R) reth
     return try block()
 }
 
+@_inlineable
 @discardableResult
 public func synchronized<R>(_ lcks: Lockable ... , block: () throws -> R) rethrows -> R {
     return try synchronized(lcks, block: block)
@@ -210,12 +204,15 @@ extension SDLock {
 
 extension SDLock {
     
+    @_inlineable
     @discardableResult
     public func synchronized<R>(_ cond: SDCondition, for predicate: @autoclosure () -> Bool, block: () throws -> R) rethrows -> R {
         self.lock(cond, for: predicate)
         defer { self.unlock() }
         return try block()
     }
+    
+    @_inlineable
     @discardableResult
     public func synchronized<R>(_ cond: SDCondition, for predicate: @autoclosure () -> Bool, until time: DispatchWallTime, block: () throws -> R) rethrows -> R? {
         if self.lock(cond, for: predicate, until: time) {

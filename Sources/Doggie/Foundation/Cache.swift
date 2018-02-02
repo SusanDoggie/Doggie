@@ -65,6 +65,9 @@ extension Cache {
     class Base {
         
         @_versioned
+        let lck = SDLock()
+        
+        @_versioned
         var table: [Key: Any]
         
         @_versioned
@@ -84,32 +87,32 @@ extension Cache {
     
     @_inlineable
     public var startIndex: Index {
-        return base.table.startIndex
+        return base.lck.synchronized { base.table.startIndex }
     }
     
     @_inlineable
     public var endIndex: Index {
-        return base.table.endIndex
+        return base.lck.synchronized { base.table.endIndex }
     }
     
     @_inlineable
     public var count: Int {
-        return base.table.count
+        return base.lck.synchronized { base.table.count }
     }
     
     @_inlineable
     public var isEmpty: Bool {
-        return base.table.isEmpty
+        return base.lck.synchronized { base.table.isEmpty }
     }
     
     @_inlineable
     public func index(after i: Index) -> Index {
-        return base.table.index(after: i)
+        return base.lck.synchronized { base.table.index(after: i) }
     }
     
     @_inlineable
     public subscript(position: Index) -> Element {
-        return base.table[position]
+        return base.lck.synchronized { base.table[position] }
     }
 }
 
@@ -117,19 +120,19 @@ extension Cache {
     
     @_inlineable
     public var keys: Dictionary<Key, Any>.Keys {
-        return base.table.keys
+        return base.lck.synchronized { base.table.keys }
     }
     
     @_inlineable
     public var values: Dictionary<Key, Any>.Values {
         get {
-            return base.table.values
+            return base.lck.synchronized { base.table.values }
         }
         set {
             if _fastPath(isKnownUniquelyReferenced(&base)) {
-                base.table.values = newValue
+                base.lck.synchronized { base.table.values = newValue }
             } else {
-                var table = base.table
+                var table = base.lck.synchronized { base.table }
                 table.values = newValue
                 base = Base(table: table)
             }
@@ -142,10 +145,10 @@ extension Cache {
     @_inlineable
     public mutating func removeAll(keepingCapacity keepCapacity: Bool = false) {
         if _fastPath(isKnownUniquelyReferenced(&base)) {
-            base.table.removeAll(keepingCapacity: keepCapacity)
+            base.lck.synchronized { base.table.removeAll(keepingCapacity: keepCapacity) }
         } else {
             if keepCapacity {
-                var table = base.table
+                var table = base.lck.synchronized { base.table }
                 table.removeAll(keepingCapacity: true)
                 base = Base(table: table)
             } else {
@@ -157,13 +160,13 @@ extension Cache {
     @_inlineable
     public subscript<Value>(key: Key) -> Value? {
         get {
-            return base.table[key] as? Value
+            return base.lck.synchronized { base.table[key] as? Value }
         }
         set {
             if _fastPath(isKnownUniquelyReferenced(&base)) {
-                base.table[key] = newValue
+                base.lck.synchronized { base.table[key] = newValue }
             } else {
-                var table = base.table
+                var table = base.lck.synchronized { base.table }
                 table[key] = newValue
                 base = Base(table: table)
             }
@@ -182,11 +185,15 @@ extension Cache {
     
     @_inlineable
     public subscript<Value>(key: Key, body: () -> Value) -> Value {
-        if let value = base.table[key] as? Value {
+        
+        return base.lck.synchronized {
+            
+            if let value = base.table[key] as? Value {
+                return value
+            }
+            let value = body()
+            base.table[key] = value
             return value
         }
-        let value = body()
-        base.table[key] = value
-        return value
     }
 }
