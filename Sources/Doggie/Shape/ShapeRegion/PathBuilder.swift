@@ -267,10 +267,10 @@ extension Shape.Component {
     
     private var constructiveSolidResultCache: [ObjectIdentifier: ConstructiveSolidResult] {
         get {
-            return cacheTable[ShapeCacheConstructiveSolidResultKey] as? [ObjectIdentifier: ConstructiveSolidResult] ?? [:]
+            return cache[ShapeCacheConstructiveSolidResultKey, default: [:]]
         }
         nonmutating set {
-            cacheTable[ShapeCacheConstructiveSolidResultKey] = newValue
+            cache[ShapeCacheConstructiveSolidResultKey] = newValue
         }
     }
     

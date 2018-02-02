@@ -33,13 +33,11 @@
     extension Shape {
         
         public var cgPath : CGPath {
-            if let path = self.identity.cacheTable[ShapeCacheCGPathKey].map({ $0 as! CGPath }) {
-                return path
-            } else {
-                let _path: CGPath
-                if let path = self.cacheTable[ShapeCacheCGPathKey].map({ $0 as! CGPath }) {
-                    _path = path
-                } else {
+            
+            return self.identity.cache[ShapeCacheCGPathKey] {
+                
+                let _path: CGPath = self.cache[ShapeCacheCGPathKey] {
+                    
                     let path = CGMutablePath()
                     for item in self {
                         path.move(to: CGPoint(item.start))
@@ -54,13 +52,11 @@
                             path.closeSubpath()
                         }
                     }
-                    self.cacheTable[ShapeCacheCGPathKey] = path
-                    _path = path
+                    return path
                 }
+                
                 var _transform = CGAffineTransform(transform)
-                let path = _path.copy(using: &_transform) ?? _path
-                self.identity.cacheTable[ShapeCacheCGPathKey] = path
-                return path
+                return _path.copy(using: &_transform) ?? _path
             }
         }
     }
@@ -96,7 +92,7 @@
                     path.pointee[path.pointee.count - 1].isClosed = true
                 }
             }
-            self.cacheTable[ShapeCacheCGPathKey] = path.copy()
+            self.cache[ShapeCacheCGPathKey] = path.copy()
         }
     }
     

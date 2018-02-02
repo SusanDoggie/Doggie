@@ -119,8 +119,8 @@ extension ShapeRegion {
     
     public var shape: Shape {
         let _path = Shape(components(.plus))
-        _path.cacheTable[ShapeCacheNonZeroRegionKey] = self
-        _path.cacheTable[ShapeCacheEvenOddRegionKey] = self
+        _path.cache[ShapeCacheNonZeroRegionKey] = self
+        _path.cache[ShapeCacheEvenOddRegionKey] = self
         return _path
     }
 }
@@ -209,8 +209,8 @@ extension ShapeRegion.Solid {
     
     public var shape: Shape {
         let _path = Shape(components(.plus))
-        _path.cacheTable[ShapeCacheNonZeroRegionKey] = ShapeRegion(solid: self)
-        _path.cacheTable[ShapeCacheEvenOddRegionKey] = ShapeRegion(solid: self)
+        _path.cache[ShapeCacheNonZeroRegionKey] = ShapeRegion(solid: self)
+        _path.cache[ShapeCacheEvenOddRegionKey] = ShapeRegion(solid: self)
         return _path
     }
 }
@@ -551,26 +551,30 @@ extension ShapeRegion {
 extension ShapeRegion {
     
     public init(_ path: Shape, winding: Shape.WindingRule) {
-        self.init()
+        
         let cacheKey: String
+        
         switch winding {
         case .nonZero: cacheKey = ShapeCacheNonZeroRegionKey
         case .evenOdd: cacheKey = ShapeCacheEvenOddRegionKey
         }
-        if let region = path.identity.cacheTable[cacheKey] as? ShapeRegion {
-            self = region
-        } else {
-            if let region = path.cacheTable[cacheKey] as? ShapeRegion {
-                self = region
-            } else {
+        
+        self = path.identity.cache[cacheKey] {
+            
+            var region: ShapeRegion = path.cache[cacheKey] {
+                
+                var region = ShapeRegion()
+                
                 switch winding {
-                case .nonZero: self.addLoopWithNonZeroWinding(loops: path.breakLoop())
-                case .evenOdd: self.addLoopWithEvenOddWinding(loops: path.breakLoop())
+                case .nonZero: region.addLoopWithNonZeroWinding(loops: path.breakLoop())
+                case .evenOdd: region.addLoopWithEvenOddWinding(loops: path.breakLoop())
                 }
-                path.cacheTable[cacheKey] = self
+                
+                return region
             }
-            self *= path.transform
-            path.identity.cacheTable[cacheKey] = self
+            
+            region *= path.transform
+            return region
         }
     }
     

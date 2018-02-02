@@ -217,6 +217,40 @@ extension Shape {
     }
 }
 
+extension Shape.Cache {
+    
+    subscript<Value>(key: String) -> Value? {
+        get {
+            return lck.synchronized { table[key] as? Value }
+        }
+        set {
+            lck.synchronized { table[key] = newValue }
+        }
+    }
+    
+    subscript<Value>(key: String, default defaultValue: @autoclosure () -> Value) -> Value {
+        get {
+            return self[key] ?? defaultValue()
+        }
+        set {
+            self[key] = newValue
+        }
+    }
+    
+    subscript<Value>(key: String, body: () -> Value) -> Value {
+        
+        return lck.synchronized {
+            
+            if let value = table[key] as? Value {
+                return value
+            }
+            let value = body()
+            table[key] = value
+            return value
+        }
+    }
+}
+
 extension Shape.Component {
     
     class Cache {
@@ -239,6 +273,40 @@ extension Shape.Component {
     
     var cacheId: ObjectIdentifier {
         return ObjectIdentifier(cache)
+    }
+}
+
+extension Shape.Component.Cache {
+    
+    subscript<Value>(key: String) -> Value? {
+        get {
+            return lck.synchronized { table[key] as? Value }
+        }
+        set {
+            lck.synchronized { table[key] = newValue }
+        }
+    }
+    
+    subscript<Value>(key: String, default defaultValue: @autoclosure () -> Value) -> Value {
+        get {
+            return self[key] ?? defaultValue()
+        }
+        set {
+            self[key] = newValue
+        }
+    }
+    
+    subscript<Value>(key: String, body: () -> Value) -> Value {
+        
+        return lck.synchronized {
+            
+            if let value = table[key] as? Value {
+                return value
+            }
+            let value = body()
+            table[key] = value
+            return value
+        }
     }
 }
 
@@ -582,32 +650,6 @@ extension Shape {
     
     public var area: Double {
         return identity.originalArea
-    }
-}
-
-extension Shape {
-    
-    @_transparent
-    var cacheTable: [String: Any] {
-        get {
-            return cache.lck.synchronized { cache.table }
-        }
-        nonmutating set {
-            cache.lck.synchronized { cache.table = newValue }
-        }
-    }
-}
-
-extension Shape.Component {
-    
-    @_transparent
-    var cacheTable: [String: Any] {
-        get {
-            return cache.lck.synchronized { cache.table }
-        }
-        nonmutating set {
-            cache.lck.synchronized { cache.table = newValue }
-        }
     }
 }
 
