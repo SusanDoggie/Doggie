@@ -133,22 +133,22 @@
             
             guard let colorSpace = self.colorSpace.cgColorSpace else { return nil }
             
-            return Image<FloatColorPixel<Pixel.Model>>(image: self).withUnsafeBufferPointer {
-                
-                let components = Pixel.numberOfComponents
-                
-                let bitsPerComponent = 32
-                let bytesPerPixel = 4 * components
-                let bitsPerPixel = 32 * components
-                
-                let bytesPerRow = bytesPerPixel * width
-                
-                let byteOrder = bitsPerComponent.bigEndian == bitsPerComponent ? CGBitmapInfo.byteOrder32Big : CGBitmapInfo.byteOrder32Little
-                
-                let bitmapInfo = byteOrder.rawValue | CGBitmapInfo.floatComponents.rawValue | CGImageAlphaInfo.last.rawValue
-                
-                return CGImage.create($0.baseAddress!, width: width, height: height, bitsPerComponent: bitsPerComponent, bitsPerPixel: bitsPerPixel, bytesPerRow: bytesPerRow, space: colorSpace, bitmapInfo: bitmapInfo)
-            }
+            let _image = Image<FloatColorPixel<Pixel.Model>>(image: self)
+            guard let providerRef = CGDataProvider(data: _image.pixels.data as CFData) else { return nil }
+            
+            let components = Pixel.numberOfComponents
+            
+            let bitsPerComponent = 32
+            let bytesPerPixel = 4 * components
+            let bitsPerPixel = 32 * components
+            
+            let bytesPerRow = bytesPerPixel * width
+            
+            let byteOrder = bitsPerComponent.bigEndian == bitsPerComponent ? CGBitmapInfo.byteOrder32Big : CGBitmapInfo.byteOrder32Little
+            
+            let bitmapInfo = byteOrder.rawValue | CGBitmapInfo.floatComponents.rawValue | CGImageAlphaInfo.last.rawValue
+            
+            return CGImage(width: width, height: height, bitsPerComponent: bitsPerComponent, bitsPerPixel: bitsPerPixel, bytesPerRow: bytesPerRow, space: colorSpace, bitmapInfo: CGBitmapInfo(rawValue: bitmapInfo), provider: providerRef, decode: nil, shouldInterpolate: true, intent: .defaultIntent)
         }
     }
     
