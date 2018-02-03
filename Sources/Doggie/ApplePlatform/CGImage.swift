@@ -165,15 +165,84 @@
         
         public init?(cgImage: CGImage, option: MappedBufferOption = .default) {
             
-            let data = NSMutableData()
+            guard let colorSpace = cgImage.colorSpace.flatMap(AnyColorSpace.init) else { return nil }
             
-            guard let destination = CGImageDestinationCreateWithData(data, kUTTypeTIFF, 1, nil) else { return nil }
+            guard let data = cgImage.dataProvider?.data as Data? else { return nil }
             
-            CGImageDestinationAddImage(destination, cgImage, nil)
+            let bitsPerComponent = cgImage.bitsPerComponent
+            let bitsPerPixel = cgImage.bitsPerPixel
             
-            guard CGImageDestinationFinalize(destination) else { return nil }
+            let byteOrder = cgImage.bitmapInfo.intersection(.byteOrderMask)
+            let channel_endian: RawBitmap.Endianness
+            let pixel_endian: RawBitmap.Endianness
             
-            try? self.init(data: data as Data, option: option)
+            switch (bitsPerComponent, byteOrder) {
+            case (16, .byteOrder16Little), (32, .byteOrder32Little): channel_endian = .little
+            default: channel_endian = .big
+            }
+            switch (bitsPerPixel, byteOrder) {
+            case (16, .byteOrder16Little), (32, .byteOrder32Little): pixel_endian = .little
+            default: pixel_endian = .big
+            }
+            
+            let alphaInfo = cgImage.alphaInfo
+            let premultiplied = alphaInfo == .premultipliedLast || alphaInfo == .premultipliedFirst
+            
+            let floatInfo = cgImage.bitmapInfo.intersection(.floatInfoMask)
+            let channelFormat: RawBitmap.Format = floatInfo == .floatComponents ? .float : .unsigned
+            var channels = [RawBitmap.Channel]()
+            
+            switch cgImage.alphaInfo {
+            case .premultipliedLast, .last:
+                
+                var start = 0
+                for index in 0...colorSpace.numberOfComponents {
+                    let end = start + bitsPerComponent
+                    channels.append(RawBitmap.Channel(index: index, format: channelFormat, endianness: channel_endian, bitRange: start..<end))
+                    start = end
+                    guard end <= bitsPerPixel else { return nil }
+                }
+                
+            case .premultipliedFirst, .first:
+                
+                channels = [RawBitmap.Channel(index: colorSpace.numberOfComponents, format: channelFormat, endianness: channel_endian, bitRange: 0..<bitsPerComponent)]
+                
+                var start = bitsPerComponent
+                for index in 0..<colorSpace.numberOfComponents {
+                    let end = start + bitsPerComponent
+                    channels.append(RawBitmap.Channel(index: index, format: channelFormat, endianness: channel_endian, bitRange: start..<end))
+                    start = end
+                    guard end <= bitsPerPixel else { return nil }
+                }
+                
+            case .none, .noneSkipLast:
+                
+                var start = 0
+                for index in 0..<colorSpace.numberOfComponents {
+                    let end = start + bitsPerComponent
+                    channels.append(RawBitmap.Channel(index: index, format: channelFormat, endianness: channel_endian, bitRange: start..<end))
+                    start = end
+                    guard end <= bitsPerPixel else { return nil }
+                }
+                
+            case .noneSkipFirst:
+                
+                var start = bitsPerPixel - bitsPerComponent * colorSpace.numberOfComponents
+                guard start >= 0 else { return nil }
+                
+                for index in 0..<colorSpace.numberOfComponents {
+                    let end = start + bitsPerComponent
+                    channels.append(RawBitmap.Channel(index: index, format: channelFormat, endianness: channel_endian, bitRange: start..<end))
+                    start = end
+                    guard end <= bitsPerPixel else { return nil }
+                }
+                
+            default: return nil
+            }
+            
+            let bitmap = RawBitmap(bitsPerPixel: bitsPerPixel, bitsPerRow: cgImage.bytesPerRow << 3, startsRow: 0, endianness: pixel_endian, channels: channels, data: data)
+            
+            self.init(width: cgImage.width, height: cgImage.height, colorSpace: colorSpace, bitmaps: [bitmap], premultiplied: premultiplied, option: option)
         }
         
         public var cgImage: CGImage? {
