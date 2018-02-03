@@ -158,10 +158,6 @@ platform | specific | Description
 
 It's welcome everyone to create a pull request.
 
-## Supporting
-
-<a href='https://pledgie.com/campaigns/34662'><img alt='Click here to lend your support to: Doggie - Swift Foundation Library and make a donation at pledgie.com !' src='https://pledgie.com/campaigns/34662.png?skin_name=chrome' border='0' ></a>
-
 ## License
 
 Doggie is licensed under the [MIT license](LICENSE).
