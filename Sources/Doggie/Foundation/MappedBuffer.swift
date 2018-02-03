@@ -356,6 +356,15 @@ extension MappedBuffer {
 
 extension MappedBuffer {
     
+    @_inlineable
+    public var data: Data {
+        var ref: MappedBuffer<Element>.Base? = base
+        return Data(bytesNoCopy: base.address, count: base.count * MemoryLayout<Element>.stride, deallocator: .custom { _, _ in ref = nil })
+    }
+}
+
+extension MappedBuffer {
+    
     @_versioned
     @_fixed_layout
     class Base {

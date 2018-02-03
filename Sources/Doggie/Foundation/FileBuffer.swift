@@ -161,6 +161,6 @@ extension FileBuffer {
     
     @_inlineable
     public var data: Data {
-        return buffer.withUnsafeBytes(Data.fileBacked)
+        return buffer.data
     }
 }
