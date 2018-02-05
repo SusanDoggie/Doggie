@@ -80,26 +80,20 @@ public struct MappedBuffer<Element> : RandomAccessCollection, MutableCollection,
     }
     
     @_inlineable
-    public init(_ other: MappedBuffer<Element>) {
-        self = other
-    }
-    
-    @_inlineable
-    public init(_ other: MappedBuffer<Element>, option: MappedBufferOption) {
-        if other.option == option {
-            self = other
-        } else {
-            let _other = other.base
-            self.base = Base(capacity: _other.capacity, option: option)
-            self.base.count = _other.count
-            self.base.address.initialize(from: _other.address, count: _other.count)
-        }
-    }
-    
-    @_inlineable
     public init<S : Sequence>(_ elements: S, option: MappedBufferOption = .default) where S.Element == Element {
-        self.base = Base(capacity: elements.underestimatedCount, option: option)
-        self.append(contentsOf: elements)
+        if let elements = elements as? MappedBuffer {
+            if elements.option == option {
+                self = elements
+            } else {
+                let _base = elements.base
+                self.base = Base(capacity: _base.capacity, option: option)
+                self.base.count = _base.count
+                self.base.address.initialize(from: _base.address, count: _base.count)
+            }
+        } else {
+            self.base = Base(capacity: elements.underestimatedCount, option: option)
+            self.append(contentsOf: elements)
+        }
     }
 }
 
@@ -356,10 +350,24 @@ extension MappedBuffer {
 
 extension MappedBuffer {
     
+    @_versioned
+    @_fixed_layout
+    struct _Box {
+        
+        @_versioned
+        var ref: Base?
+        
+        @_versioned
+        @_inlineable
+        init(ref: Base) {
+            self.ref = ref
+        }
+    }
+    
     @_inlineable
     public var data: Data {
-        var ref: MappedBuffer<Element>.Base? = base
-        return Data(bytesNoCopy: base.address, count: base.count * MemoryLayout<Element>.stride, deallocator: .custom { _, _ in ref = nil })
+        var box = _Box(ref: base)
+        return Data(bytesNoCopy: base.address, count: base.count * MemoryLayout<Element>.stride, deallocator: .custom { _, _ in box.ref = nil })
     }
 }
 

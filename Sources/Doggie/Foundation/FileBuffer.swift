@@ -63,7 +63,11 @@ public struct FileBuffer : RandomAccessCollection, MutableCollection, Expressibl
     
     @_inlineable
     public init<S : Sequence>(_ elements: S) where S.Element == UInt8 {
-        self.buffer = MappedBuffer(elements, option: .fileBacked)
+        if let elements = elements as? FileBuffer {
+            self = elements
+        } else {
+            self.buffer = MappedBuffer(elements, option: .fileBacked)
+        }
     }
 }
 

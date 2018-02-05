@@ -64,11 +64,7 @@ public struct Image<Pixel: ColorPixelProtocol> {
         self.height = image.height
         self.resolution = image.resolution
         self.colorSpace = image.colorSpace
-        if image.pixels.option == option {
-            self.pixels = image.pixels
-        } else {
-            self.pixels = MappedBuffer(image.pixels, option: option)
-        }
+        self.pixels = MappedBuffer(image.pixels, option: option)
     }
     
     @_inlineable
