@@ -133,6 +133,12 @@ extension FileBuffer {
     }
     
     @_inlineable
+    public func _copyContents(initializing buffer: UnsafeMutableBufferPointer<Element>) -> (IndexingIterator<FileBuffer>, UnsafeMutableBufferPointer<Element>.Index) {
+        let written = buffer._copyContents(initializing: buffer).1
+        return (Iterator(_elements: self, _position: written), written)
+    }
+    
+    @_inlineable
     public func _copyToContiguousArray() -> ContiguousArray<UInt8> {
         return buffer._copyToContiguousArray()
     }
