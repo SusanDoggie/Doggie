@@ -75,7 +75,7 @@ class _displayP3: CalibratedRGBColorSpace {
     
     @_versioned
     @_inlineable
-    override func _isEqualTo(_ other: CalibratedRGBColorSpace) -> Bool {
+    override func __equalTo(_ other: CalibratedRGBColorSpace) -> Bool {
         return type(of: other) == _displayP3.self
     }
 }

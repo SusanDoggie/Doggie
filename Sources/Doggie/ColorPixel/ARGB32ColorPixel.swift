@@ -92,11 +92,6 @@ public struct ARGB32ColorPixel : ColorPixelProtocol {
     }
     
     @_transparent
-    public var hashValue: Int {
-        return hex.hashValue
-    }
-    
-    @_transparent
     public var isOpaque: Bool {
         return a == 255
     }
@@ -109,12 +104,3 @@ public struct ARGB32ColorPixel : ColorPixelProtocol {
     }
 }
 
-@_transparent
-public func ==(lhs: ARGB32ColorPixel, rhs: ARGB32ColorPixel) -> Bool {
-    return (lhs.a, lhs.r, lhs.g, lhs.b) == (rhs.a, rhs.r, rhs.g, rhs.b)
-}
-
-@_transparent
-public func !=(lhs: ARGB32ColorPixel, rhs: ARGB32ColorPixel) -> Bool {
-    return (lhs.a, lhs.r, lhs.g, lhs.b) != (rhs.a, rhs.r, rhs.g, rhs.b)
-}

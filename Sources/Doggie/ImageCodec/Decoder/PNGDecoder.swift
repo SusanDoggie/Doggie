@@ -46,8 +46,8 @@ struct PNGDecoder : ImageRepDecoder {
         while _chunks.last?.signature != "IEND" {
             guard let chunk = PNGChunk(data: _data) else { break }
             _chunks.append(chunk)
-            guard _data.count > 12 + Int(chunk.data.count) else { break }
-            _data = _data.dropFirst(12 + Int(chunk.data.count))
+            guard _data.count > 12 + chunk.data.count else { break }
+            _data = _data.dropFirst(12 + chunk.data.count)
         }
         
         guard let first = _chunks.first, first.data.count >= 13 && first.signature == "IHDR" else { return nil }
@@ -118,7 +118,7 @@ struct PNGDecoder : ImageRepDecoder {
         
         guard let plte = chunks.first(where: { $0.signature == "PLTE" }), plte.data.count % 3 == 0 else { return nil }
         
-        let count = Int(plte.data.count) / 3
+        let count = plte.data.count / 3
         
         var palette = [ARGB32ColorPixel]()
         palette.reserveCapacity(count)

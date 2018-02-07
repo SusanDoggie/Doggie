@@ -270,9 +270,14 @@ extension SFNTFontFace {
 extension SFNTFontFace {
     
     func queryName(_ id: Int) -> String? {
-        let macOSRoman = name.record.indexed().lazy.filter { $0.1.platform.platform == 1 && $0.1.platform.specific == 0 && $0.1.name == id }
-        let unicode = name.record.indexed().lazy.filter { $0.1.platform.platform == 0 && $0.1.name == id }
-        return macOSRoman.map { self.name[$0.0] }.first ?? unicode.map { self.name[$0.0] }.first
+        
+        if let macOSRoman = name.record.index(where: { $0.platform.platform == 1 && $0.platform.specific == 0 && $0.name == id }) {
+            return self.name[macOSRoman]
+        }
+        if let unicode = name.record.index(where: { $0.platform.platform == 0 && $0.name == id }) {
+            return self.name[unicode]
+        }
+        return nil
     }
     
     var copyright: String? {

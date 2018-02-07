@@ -25,7 +25,7 @@
 
 import Foundation
 
-public struct Complex {
+public struct Complex : Hashable {
     
     public var real: Double
     public var imag: Double
@@ -115,14 +115,6 @@ extension Complex: CustomStringConvertible {
             print = "0.0"
         }
         return print
-    }
-}
-
-extension Complex: Hashable {
-    
-    @_transparent
-    public var hashValue: Int {
-        return hash_combine(seed: 0, real, imag)
     }
 }
 

@@ -115,11 +115,6 @@ extension EndianInteger {
 extension EndianInteger {
     
     @_transparent
-    public var hashValue: Int {
-        return representingValue.hashValue
-    }
-    
-    @_transparent
     public var description: String {
         return representingValue.description
     }
@@ -318,16 +313,6 @@ extension EndianInteger {
     }
     
     @_transparent
-    public static func ==(lhs: Self, rhs: Self) -> Bool {
-        return lhs.bitPattern == rhs.bitPattern
-    }
-    
-    @_transparent
-    public static func !=(lhs: Self, rhs: Self) -> Bool {
-        return lhs.bitPattern != rhs.bitPattern
-    }
-    
-    @_transparent
     public static func >(lhs: Self, rhs: Self) -> Bool {
         return lhs.representingValue > rhs.representingValue
     }
@@ -395,6 +380,23 @@ public struct BEInteger<Base : FixedWidthInteger> : FixedWidthInteger, EndianInt
     }
 }
 
+extension BEInteger: SignedNumeric where Base : SignedNumeric {
+    
+    @_transparent
+    public static prefix func -(x: BEInteger) -> BEInteger {
+        return BEInteger(representingValue: -x.representingValue)
+    }
+    
+    @_transparent
+    public mutating func negate() {
+        self.representingValue.negate()
+    }
+}
+
+extension BEInteger: SignedInteger where Base : SignedInteger {
+    
+}
+
 public struct LEInteger<Base : FixedWidthInteger> : FixedWidthInteger, EndianInteger {
     
     public var bitPattern: Base
@@ -440,6 +442,23 @@ public struct LEInteger<Base : FixedWidthInteger> : FixedWidthInteger, EndianInt
     public var littleEndian: LEInteger {
         return self
     }
+}
+
+extension LEInteger: SignedNumeric where Base : SignedNumeric {
+    
+    @_transparent
+    public static prefix func -(x: LEInteger) -> LEInteger {
+        return LEInteger(representingValue: -x.representingValue)
+    }
+    
+    @_transparent
+    public mutating func negate() {
+        self.representingValue.negate()
+    }
+}
+
+extension LEInteger: SignedInteger where Base : SignedInteger {
+    
 }
 
 extension FixedWidthInteger {

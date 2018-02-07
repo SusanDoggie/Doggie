@@ -37,11 +37,6 @@ protocol SignatureProtocol: RawRepresentable, Hashable, ExpressibleByIntegerLite
 extension SignatureProtocol {
     
     @_transparent
-    var hashValue: Int {
-        return rawValue.hashValue
-    }
-    
-    @_transparent
     init(integerLiteral value: Bytes.IntegerLiteralType) {
         self.init(rawValue: Bytes(integerLiteral: value))
     }

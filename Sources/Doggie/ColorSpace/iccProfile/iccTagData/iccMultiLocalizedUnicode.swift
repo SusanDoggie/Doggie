@@ -71,7 +71,7 @@ struct iccMultiLocalizedUnicode : RandomAccessCollection, ByteCodable {
         let entry_size = messages.count * MemoryLayout<Entry>.stride
         var strData = Data()
         
-        var offset = Int(data.count) + entry_size
+        var offset = data.count + entry_size
         
         for (language, country, string) in messages {
             var str = string.data(using: .utf16BigEndian)!

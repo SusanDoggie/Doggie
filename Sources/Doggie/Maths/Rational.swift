@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-public struct Rational: Comparable {
+public struct Rational: Comparable, Hashable {
     
     public let numerator: Int64
     public let denominator: Int64
@@ -117,14 +117,6 @@ extension Rational: CustomStringConvertible {
     }
 }
 
-extension Rational: Hashable {
-    
-    @_transparent
-    public var hashValue: Int {
-        return hash_combine(seed: 0, numerator, denominator)
-    }
-}
-
 extension Rational: SignedNumeric {
     
     @_transparent
@@ -167,11 +159,6 @@ extension Rational : Divisive, ScalarMultiplicative {
     public init() {
         self.init(0)
     }
-}
-
-@_transparent
-public func ==(lhs: Rational, rhs: Rational) -> Bool {
-    return lhs.numerator == rhs.numerator && lhs.denominator == rhs.denominator
 }
 
 @_transparent

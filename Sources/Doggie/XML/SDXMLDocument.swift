@@ -48,8 +48,6 @@ extension SDXMLDocument {
 
 extension SDXMLDocument : RandomAccessCollection, MutableCollection {
     
-    public typealias SubSequence = MutableRangeReplaceableRandomAccessSlice<SDXMLDocument>
-    
     public typealias Indices = CountableRange<Int>
     
     public typealias Index = Int

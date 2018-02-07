@@ -27,8 +27,6 @@ import Foundation
 
 public struct FileBuffer : RandomAccessCollection, MutableCollection, ExpressibleByArrayLiteral {
     
-    public typealias SubSequence = MutableRangeReplaceableRandomAccessSlice<FileBuffer>
-    
     public typealias Indices = CountableRange<Int>
     
     public typealias Index = Int

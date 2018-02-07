@@ -80,15 +80,6 @@ extension CalibratedGrayColorSpace {
     
     @_versioned
     @_inlineable
-    static func ==(lhs: CalibratedGrayColorSpace, rhs: CalibratedGrayColorSpace) -> Bool {
-        return lhs.cieXYZ == rhs.cieXYZ && lhs.gamma == rhs.gamma
-    }
-}
-
-extension CalibratedGrayColorSpace {
-    
-    @_versioned
-    @_inlineable
     var linearTone: CalibratedGrayColorSpace {
         return CalibratedGrayColorSpace(cieXYZ, gamma: 1)
     }

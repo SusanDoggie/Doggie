@@ -26,17 +26,17 @@
 import Foundation
 
 @_inlineable
-public func FactorialList<T: UnsignedInteger>(_ n: T) -> LazyScanSequence<RandomAccessSlice<CountableClosedRange<T>>, T> {
+public func FactorialList<T: UnsignedInteger>(_ n: T) -> LazyScanSequence<Slice<CountableClosedRange<T>>, T> {
     
     return (0...n).dropFirst().lazy.scan(1, *)
 }
 @_inlineable
-public func PermutationList<T: UnsignedInteger>(_ n: T) -> LazyScanSequence<ReversedRandomAccessCollection<RandomAccessSlice<CountableClosedRange<T>>>, T> {
+public func PermutationList<T: UnsignedInteger>(_ n: T) -> LazyScanSequence<ReversedCollection<Slice<CountableClosedRange<T>>>, T> {
     
     return (0...n).dropFirst().reversed().lazy.scan(1, *)
 }
 @_inlineable
-public func CombinationList<T: UnsignedInteger>(_ n: T) -> LazyMapSequence<Zip2Sequence<LazyScanSequence<ReversedRandomAccessCollection<RandomAccessSlice<CountableClosedRange<T>>>, T>, LazyScanSequence<RandomAccessSlice<CountableClosedRange<T>>, T>>, T> {
+public func CombinationList<T: UnsignedInteger>(_ n: T) -> LazyMapSequence<Zip2Sequence<LazyScanSequence<ReversedCollection<Slice<CountableClosedRange<T>>>, T>, LazyScanSequence<Slice<CountableClosedRange<T>>, T>>, T> {
     
     return zip(PermutationList(n), FactorialList(n)).lazy.map(/)
 }

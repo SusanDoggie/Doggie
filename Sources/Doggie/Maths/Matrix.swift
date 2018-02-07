@@ -33,7 +33,7 @@ import Foundation
 ///     ⎜ c g k 0 ⎟
 ///     ⎝ d h l 1 ⎠
 ///
-public struct Matrix {
+public struct Matrix : Hashable {
     
     public var a: Double
     public var b: Double
@@ -126,14 +126,6 @@ extension Matrix {
         set {
             l = newValue
         }
-    }
-}
-
-extension Matrix : Hashable {
-    
-    @_transparent
-    public var hashValue: Int {
-        return hash_combine(seed: 0, a, b, c, d, e, f, g, h, i, j, k, l)
     }
 }
 
@@ -345,19 +337,6 @@ extension Matrix {
 
 extension Matrix : Multiplicative {
     
-}
-
-@_transparent
-public func ==(lhs: Matrix, rhs: Matrix) -> Bool {
-    return lhs.a == rhs.a && lhs.b == rhs.b && lhs.c == rhs.c && lhs.d == rhs.d
-        && lhs.e == rhs.e && lhs.f == rhs.f && lhs.g == rhs.g && lhs.h == rhs.h
-        && lhs.i == rhs.i && lhs.j == rhs.j && lhs.k == rhs.k && lhs.l == rhs.l
-}
-@_transparent
-public func !=(lhs: Matrix, rhs: Matrix) -> Bool {
-    return lhs.a != rhs.a || lhs.b != rhs.b || lhs.c != rhs.c || lhs.d != rhs.d
-        || lhs.e != rhs.e || lhs.f != rhs.f || lhs.g != rhs.g || lhs.h != rhs.h
-        || lhs.i != rhs.i || lhs.j != rhs.j || lhs.k != rhs.k || lhs.l != rhs.l
 }
 
 @_transparent

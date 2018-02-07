@@ -32,7 +32,7 @@ import Foundation
 ///     ⎜ b e 0 ⎟
 ///     ⎝ c f 1 ⎠
 ///
-public struct SDTransform {
+public struct SDTransform : Hashable {
     
     public var a: Double
     public var b: Double
@@ -57,14 +57,6 @@ extension SDTransform : CustomStringConvertible {
     @_transparent
     public var description: String {
         return "SDTransform(a: \(a), b: \(b), c: \(c), d: \(d), e: \(e), f: \(f))"
-    }
-}
-
-extension SDTransform : Hashable {
-    
-    @_transparent
-    public var hashValue: Int {
-        return hash_combine(seed: 0, a, b, c, d, e, f)
     }
 }
 
@@ -239,15 +231,6 @@ extension SDTransform {
 
 extension SDTransform : Multiplicative {
     
-}
-
-@_transparent
-public func ==(lhs: SDTransform, rhs: SDTransform) -> Bool {
-    return lhs.a == rhs.a && lhs.b == rhs.b && lhs.c == rhs.c && lhs.d == rhs.d && lhs.e == rhs.e && lhs.f == rhs.f
-}
-@_transparent
-public func !=(lhs: SDTransform, rhs: SDTransform) -> Bool {
-    return lhs.a != rhs.a || lhs.b != rhs.b || lhs.c != rhs.c || lhs.d != rhs.d || lhs.e != rhs.e || lhs.f != rhs.f
 }
 
 @_transparent

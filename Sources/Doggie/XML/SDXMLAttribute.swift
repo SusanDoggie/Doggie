@@ -25,7 +25,7 @@
 
 import Foundation
 
-public struct SDXMLAttribute {
+public struct SDXMLAttribute : Hashable {
     
     public var attribute: String {
         didSet {
@@ -43,13 +43,6 @@ public struct SDXMLAttribute {
         precondition(namespace.rangeOfCharacter(from: .whitespacesAndNewlines) == nil, "Invalid whitespaces.")
         self.attribute = attribute
         self.namespace = namespace
-    }
-}
-
-extension SDXMLAttribute : Hashable {
-    
-    public var hashValue: Int {
-        return hash_combine(seed: 0, attribute.hashValue, namespace.hashValue)
     }
 }
 
@@ -71,6 +64,3 @@ extension SDXMLAttribute: ExpressibleByStringLiteral {
     }
 }
 
-public func ==(lhs: SDXMLAttribute, rhs: SDXMLAttribute) -> Bool {
-    return lhs.attribute == rhs.attribute && lhs.namespace == rhs.namespace
-}

@@ -41,8 +41,6 @@ extension MappedBufferOption {
 
 public struct MappedBuffer<Element> : RandomAccessCollection, MutableCollection, ExpressibleByArrayLiteral {
     
-    public typealias SubSequence = MutableRangeReplaceableRandomAccessSlice<MappedBuffer>
-    
     public typealias Indices = CountableRange<Int>
     
     public typealias Index = Int
@@ -69,7 +67,7 @@ public struct MappedBuffer<Element> : RandomAccessCollection, MutableCollection,
     public init(repeating repeatedValue: Element, count: Int, option: MappedBufferOption = .default) {
         self.base = Base(capacity: count, option: option)
         self.base.count = count
-        self.base.address.initialize(to: repeatedValue, count: count)
+        self.base.address.initialize(repeating: repeatedValue, count: count)
     }
     
     @_inlineable
@@ -236,7 +234,7 @@ extension MappedBuffer : RangeReplaceableCollection {
         precondition(0 <= subRange.lowerBound, "Index out of range.")
         precondition(subRange.upperBound <= base.count, "Index out of range.")
         
-        let newElements_count = Int(newElements.count)
+        let newElements_count = newElements.count
         let new_count = base.count - subRange.count + newElements_count
         
         if _fastPath(isKnownUniquelyReferenced(&base)) {

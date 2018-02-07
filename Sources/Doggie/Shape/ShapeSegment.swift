@@ -203,45 +203,45 @@ extension Shape.Component.BezierCollection.Element {
             switch other.segment {
             case let .line(q1):
                 if let p = LinesIntersect(start, p1, other.start, q1) {
-                    result = [(fromPoint(p), other.fromPoint(p))].flatMap(split_check)
+                    result = [(fromPoint(p), other.fromPoint(p))].compactMap(split_check)
                 }
             case let .quad(q1, q2):
                 if let t = QuadBezierLineIntersect(other.start, q1, q2, start, p1) {
-                    result = t.map { (fromPoint(Bezier(other.start, q1, q2).eval($0)), $0) }.flatMap(split_check).sorted { $0.0 }
+                    result = t.map { (fromPoint(Bezier(other.start, q1, q2).eval($0)), $0) }.compactMap(split_check).sorted { $0.0 }
                 }
             case let .cubic(q1, q2, q3):
                 if let t = CubicBezierLineIntersect(other.start, q1, q2, q3, start, p1) {
-                    result = t.map { (fromPoint(Bezier(other.start, q1, q2, q3).eval($0)), $0) }.flatMap(split_check).sorted { $0.0 }
+                    result = t.map { (fromPoint(Bezier(other.start, q1, q2, q3).eval($0)), $0) }.compactMap(split_check).sorted { $0.0 }
                 }
             }
         case let .quad(p1, p2):
             switch other.segment {
             case let .line(q1):
                 if let t = QuadBezierLineIntersect(start, p1, p2, other.start, q1) {
-                    result = t.map { ($0, other.fromPoint(Bezier(start, p1, p2).eval($0))) }.flatMap(split_check).sorted { $0.0 }
+                    result = t.map { ($0, other.fromPoint(Bezier(start, p1, p2).eval($0))) }.compactMap(split_check).sorted { $0.0 }
                 }
             case let .quad(q1, q2):
                 if let t = QuadBeziersIntersect(start, p1, p2, other.start, q1, q2) {
-                    result = t.map { ($0, other.fromPoint(Bezier(start, p1, p2).eval($0))) }.flatMap(split_check).sorted { $0.0 }
+                    result = t.map { ($0, other.fromPoint(Bezier(start, p1, p2).eval($0))) }.compactMap(split_check).sorted { $0.0 }
                 }
             case let .cubic(q1, q2, q3):
                 if let t = CubicQuadBezierIntersect(other.start, q1, q2, q3, start, p1, p2) {
-                    result = t.map { (fromPoint(Bezier(other.start, q1, q2, q3).eval($0)), $0) }.flatMap(split_check).sorted { $0.0 }
+                    result = t.map { (fromPoint(Bezier(other.start, q1, q2, q3).eval($0)), $0) }.compactMap(split_check).sorted { $0.0 }
                 }
             }
         case let .cubic(p1, p2, p3):
             switch other.segment {
             case let .line(q1):
                 if let t = CubicBezierLineIntersect(start, p1, p2, p3, other.start, q1) {
-                    result = t.map { ($0, other.fromPoint(Bezier(start, p1, p2, p3).eval($0))) }.flatMap(split_check).sorted { $0.0 }
+                    result = t.map { ($0, other.fromPoint(Bezier(start, p1, p2, p3).eval($0))) }.compactMap(split_check).sorted { $0.0 }
                 }
             case let .quad(q1, q2):
                 if let t = CubicQuadBezierIntersect(start, p1, p2, p3, other.start, q1, q2) {
-                    result = t.map { ($0, other.fromPoint(Bezier(start, p1, p2, p3).eval($0))) }.flatMap(split_check).sorted { $0.0 }
+                    result = t.map { ($0, other.fromPoint(Bezier(start, p1, p2, p3).eval($0))) }.compactMap(split_check).sorted { $0.0 }
                 }
             case let .cubic(q1, q2, q3):
                 if let t = CubicBeziersIntersect(start, p1, p2, p3, other.start, q1, q2, q3) {
-                    result = t.map { ($0, other.fromPoint(Bezier(start, p1, p2, p3).eval($0))) }.flatMap(split_check).sorted { $0.0 }
+                    result = t.map { ($0, other.fromPoint(Bezier(start, p1, p2, p3).eval($0))) }.compactMap(split_check).sorted { $0.0 }
                 }
             }
         }

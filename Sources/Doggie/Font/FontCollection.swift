@@ -68,13 +68,9 @@ extension FontCollection {
 
 extension FontCollection {
     
-    public struct Index : Comparable {
+    public struct Index : Comparable, Hashable {
         
         fileprivate let base: Set<_ElementWrapper>.Index
-        
-        public static func ==(lhs: Index, rhs: Index) -> Bool {
-            return lhs.base == rhs.base
-        }
         
         public static func <(lhs: Index, rhs: Index) -> Bool {
             return lhs.base < rhs.base
@@ -121,19 +117,8 @@ extension FontCollection {
 
 extension FontCollection {
     
-    public var hashValue: Int {
-        return fonts.hashValue
-    }
-    
-    public static func ==(lhs: FontCollection, rhs: FontCollection) -> Bool {
-        return lhs.fonts == rhs.fonts
-    }
-}
-
-extension FontCollection {
-    
     public var familyNames: Set<String> {
-        return Set(fonts.flatMap { $0.font.familyName })
+        return Set(fonts.compactMap { $0.font.familyName })
     }
 }
 
@@ -217,7 +202,7 @@ extension FontCollection {
         
         for Decoder in decoders {
             if let decoder = try Decoder.init(data: data) {
-                self.init(decoder.faces.flatMap(Font.init))
+                self.init(decoder.faces.compactMap(Font.init))
                 return
             }
         }

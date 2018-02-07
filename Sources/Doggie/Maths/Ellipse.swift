@@ -25,7 +25,7 @@
 
 import Foundation
 
-public struct Radius {
+public struct Radius : Hashable {
     
     public var x: Double
     public var y: Double
@@ -54,23 +54,6 @@ extension Radius: CustomStringConvertible {
     public var description: String {
         return "Radius(x: \(x), y: \(y))"
     }
-}
-
-extension Radius: Hashable {
-    
-    @_transparent
-    public var hashValue: Int {
-        return hash_combine(seed: 0, x, y)
-    }
-}
-
-@_transparent
-public func == (lhs: Radius, rhs: Radius) -> Bool {
-    return lhs.x == rhs.x && lhs.y == rhs.y
-}
-@_transparent
-public func != (lhs: Radius, rhs: Radius) -> Bool {
-    return lhs.x != rhs.x || lhs.y != rhs.y
 }
 
 @_inlineable

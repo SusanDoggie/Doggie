@@ -251,8 +251,6 @@ extension SDXMLElement {
 
 extension SDXMLElement : RandomAccessCollection, MutableCollection {
     
-    public typealias SubSequence = MutableRandomAccessSlice<SDXMLElement>
-    
     public typealias Indices = CountableRange<Int>
     
     public typealias Index = Int

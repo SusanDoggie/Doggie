@@ -75,11 +75,6 @@ public struct RGBColorModel : ColorModelProtocol {
             }
         }
     }
-    
-    @_transparent
-    public var hashValue: Int {
-        return hash_combine(seed: 0, red, green, blue)
-    }
 }
 
 extension RGBColorModel {
@@ -319,11 +314,6 @@ extension RGBColorModel {
                 }
             }
         }
-        
-        @_transparent
-        public var hashValue: Int {
-            return hash_combine(seed: 0, red, green, blue)
-        }
     }
 }
 
@@ -390,14 +380,6 @@ public func -= (lhs: inout RGBColorModel, rhs: RGBColorModel) {
     lhs.green -= rhs.green
     lhs.blue -= rhs.blue
 }
-@_transparent
-public func ==(lhs: RGBColorModel, rhs: RGBColorModel) -> Bool {
-    return lhs.red == rhs.red && lhs.green == rhs.green && lhs.blue == rhs.blue
-}
-@_transparent
-public func !=(lhs: RGBColorModel, rhs: RGBColorModel) -> Bool {
-    return lhs.red != rhs.red || lhs.green != rhs.green || lhs.blue != rhs.blue
-}
 
 @_transparent
 public prefix func +(val: RGBColorModel.FloatComponents) -> RGBColorModel.FloatComponents {
@@ -453,13 +435,5 @@ public func -= (lhs: inout RGBColorModel.FloatComponents, rhs: RGBColorModel.Flo
     lhs.red -= rhs.red
     lhs.green -= rhs.green
     lhs.blue -= rhs.blue
-}
-@_transparent
-public func ==(lhs: RGBColorModel.FloatComponents, rhs: RGBColorModel.FloatComponents) -> Bool {
-    return lhs.red == rhs.red && lhs.green == rhs.green && lhs.blue == rhs.blue
-}
-@_transparent
-public func !=(lhs: RGBColorModel.FloatComponents, rhs: RGBColorModel.FloatComponents) -> Bool {
-    return lhs.red != rhs.red || lhs.green != rhs.green || lhs.blue != rhs.blue
 }
 

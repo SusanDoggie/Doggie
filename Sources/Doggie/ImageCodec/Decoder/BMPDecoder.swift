@@ -884,10 +884,6 @@ extension BITMAPINFOHEADER {
             self.rawValue = rawValue
         }
         
-        var hashValue: Int {
-            return rawValue.hashValue
-        }
-        
         init(integerLiteral value: LEUInt32.IntegerLiteralType) {
             self.init(rawValue: LEUInt32(integerLiteral: value))
         }
@@ -928,10 +924,6 @@ extension BITMAPINFOHEADER {
         
         init(rawValue: LEUInt32) {
             self.rawValue = rawValue
-        }
-        
-        var hashValue: Int {
-            return rawValue.hashValue
         }
         
         init(integerLiteral value: LEUInt32.IntegerLiteralType) {

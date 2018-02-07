@@ -172,14 +172,6 @@ extension ColorPixelProtocol {
 extension ColorPixelProtocol {
     
     @_transparent
-    public var hashValue: Int {
-        return hash_combine(seed: 0, self.color.hashValue, self.opacity.hashValue)
-    }
-}
-
-extension ColorPixelProtocol {
-    
-    @_transparent
     public mutating func blend<C : ColorPixelProtocol>(source: C, compositingMode: ColorCompositingMode = .default, blending: (Double, Double) -> Double) where C.Model == Model {
         self = self.blended(source: source, compositingMode: compositingMode, blending: blending)
     }
@@ -420,15 +412,6 @@ public func -=<Model> (lhs: inout ColorPixel<Model>, rhs: ColorPixel<Model>) {
     lhs.opacity -= rhs.opacity
 }
 
-@_transparent
-public func ==<Model>(lhs: ColorPixel<Model>, rhs: ColorPixel<Model>) -> Bool {
-    return lhs.color == rhs.color && lhs.opacity == rhs.opacity
-}
-@_transparent
-public func !=<Model>(lhs: ColorPixel<Model>, rhs: ColorPixel<Model>) -> Bool {
-    return lhs.color != rhs.color || lhs.opacity != rhs.opacity
-}
-
 @_fixed_layout
 public struct FloatColorPixel<Model : ColorModelProtocol> : ColorPixelProtocol, ScalarMultiplicative {
     
@@ -531,11 +514,3 @@ public func -=<Model> (lhs: inout FloatColorPixel<Model>, rhs: FloatColorPixel<M
     lhs._opacity -= rhs._opacity
 }
 
-@_transparent
-public func ==<Model>(lhs: FloatColorPixel<Model>, rhs: FloatColorPixel<Model>) -> Bool {
-    return lhs._color == rhs._color && lhs._opacity == rhs._opacity
-}
-@_transparent
-public func !=<Model>(lhs: FloatColorPixel<Model>, rhs: FloatColorPixel<Model>) -> Bool {
-    return lhs._color != rhs._color || lhs._opacity != rhs._opacity
-}

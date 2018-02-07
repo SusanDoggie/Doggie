@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-public struct Size {
+public struct Size: Hashable {
     
     public var width: Double
     public var height: Double
@@ -52,23 +52,6 @@ extension Size: CustomStringConvertible {
     public var description: String {
         return "Size(width: \(width), height: \(height))"
     }
-}
-
-extension Size: Hashable {
-    
-    @_transparent
-    public var hashValue: Int {
-        return hash_combine(seed: 0, width, height)
-    }
-}
-
-@_transparent
-public func == (lhs: Size, rhs: Size) -> Bool {
-    return lhs.width == rhs.width && lhs.height == rhs.height
-}
-@_transparent
-public func != (lhs: Size, rhs: Size) -> Bool {
-    return lhs.width != rhs.width || lhs.height != rhs.height
 }
 
 extension Size {
@@ -152,7 +135,7 @@ public func -= (lhs: inout Size, rhs: Size) {
     lhs.height -= rhs.height
 }
 
-public struct Rect {
+public struct Rect: Hashable {
     
     public var origin : Point
     public var size : Size
@@ -188,23 +171,6 @@ extension Rect: CustomStringConvertible {
     public var description: String {
         return "Rect(x: \(x), y: \(y), width: \(width), height: \(height))"
     }
-}
-
-extension Rect: Hashable {
-    
-    @_transparent
-    public var hashValue: Int {
-        return hash_combine(seed: 0, origin.hashValue, size.hashValue)
-    }
-}
-
-@_transparent
-public func == (lhs: Rect, rhs: Rect) -> Bool {
-    return lhs.origin == rhs.origin && lhs.size == rhs.size
-}
-@_transparent
-public func != (lhs: Rect, rhs: Rect) -> Bool {
-    return lhs.origin != rhs.origin || lhs.size != rhs.size
 }
 
 extension Rect {

@@ -40,6 +40,19 @@ struct Fixed8Number<BitPattern : FixedWidthInteger & ByteCodable> : BinaryFixedP
     }
 }
 
+extension Fixed8Number : SignedNumeric where BitPattern : SignedNumeric {
+    
+    @_transparent
+    static prefix func -(x: Fixed8Number) -> Fixed8Number {
+        return Fixed8Number(representingValue: -x.representingValue)
+    }
+    
+    @_transparent
+    mutating func negate() {
+        self.representingValue.negate()
+    }
+}
+
 struct Fixed14Number<BitPattern : FixedWidthInteger & ByteCodable> : BinaryFixedPoint, ByteCodable {
     
     typealias RepresentingValue = Double
@@ -54,6 +67,19 @@ struct Fixed14Number<BitPattern : FixedWidthInteger & ByteCodable> : BinaryFixed
     @_transparent
     static var fractionBitCount: Int {
         return 14
+    }
+}
+
+extension Fixed14Number : SignedNumeric where BitPattern : SignedNumeric {
+    
+    @_transparent
+    static prefix func -(x: Fixed14Number) -> Fixed14Number {
+        return Fixed14Number(representingValue: -x.representingValue)
+    }
+    
+    @_transparent
+    mutating func negate() {
+        self.representingValue.negate()
     }
 }
 
@@ -74,6 +100,19 @@ struct Fixed15Number<BitPattern : FixedWidthInteger & ByteCodable> : BinaryFixed
     }
 }
 
+extension Fixed15Number : SignedNumeric where BitPattern : SignedNumeric {
+    
+    @_transparent
+    static prefix func -(x: Fixed15Number) -> Fixed15Number {
+        return Fixed15Number(representingValue: -x.representingValue)
+    }
+    
+    @_transparent
+    mutating func negate() {
+        self.representingValue.negate()
+    }
+}
+
 struct Fixed16Number<BitPattern : FixedWidthInteger & ByteCodable> : BinaryFixedPoint, ByteCodable {
     
     typealias RepresentingValue = Double
@@ -91,6 +130,19 @@ struct Fixed16Number<BitPattern : FixedWidthInteger & ByteCodable> : BinaryFixed
     }
 }
 
+extension Fixed16Number : SignedNumeric where BitPattern : SignedNumeric {
+    
+    @_transparent
+    static prefix func -(x: Fixed16Number) -> Fixed16Number {
+        return Fixed16Number(representingValue: -x.representingValue)
+    }
+    
+    @_transparent
+    mutating func negate() {
+        self.representingValue.negate()
+    }
+}
+
 struct Fixed30Number<BitPattern : FixedWidthInteger & ByteCodable> : BinaryFixedPoint, ByteCodable {
     
     typealias RepresentingValue = Double
@@ -105,6 +157,19 @@ struct Fixed30Number<BitPattern : FixedWidthInteger & ByteCodable> : BinaryFixed
     @_transparent
     static var fractionBitCount: Int {
         return 30
+    }
+}
+
+extension Fixed30Number : SignedNumeric where BitPattern : SignedNumeric {
+    
+    @_transparent
+    static prefix func -(x: Fixed30Number) -> Fixed30Number {
+        return Fixed30Number(representingValue: -x.representingValue)
+    }
+    
+    @_transparent
+    mutating func negate() {
+        self.representingValue.negate()
     }
 }
 

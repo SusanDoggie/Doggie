@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-public protocol Tensor : ScalarMultiplicative, RandomAccessCollection, MutableCollection where Element == Scalar, Index == Int, IndexDistance == Int {
+public protocol Tensor : ScalarMultiplicative, RandomAccessCollection, MutableCollection where Element == Scalar, Index == Int {
     
     static var numberOfComponents: Int { get }
     

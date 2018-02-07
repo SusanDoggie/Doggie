@@ -89,11 +89,6 @@ public struct LabColorModel : ColorModelProtocol {
             }
         }
     }
-    
-    @_transparent
-    public var hashValue: Int {
-        return hash_combine(seed: 0, lightness, a, b)
-    }
 }
 
 extension LabColorModel {
@@ -202,11 +197,6 @@ extension LabColorModel {
                 }
             }
         }
-        
-        @_transparent
-        public var hashValue: Int {
-            return hash_combine(seed: 0, lightness, a, b)
-        }
     }
 }
 
@@ -273,14 +263,6 @@ public func -= (lhs: inout LabColorModel, rhs: LabColorModel) {
     lhs.a -= rhs.a
     lhs.b -= rhs.b
 }
-@_transparent
-public func ==(lhs: LabColorModel, rhs: LabColorModel) -> Bool {
-    return lhs.lightness == rhs.lightness && lhs.a == rhs.a && lhs.b == rhs.b
-}
-@_transparent
-public func !=(lhs: LabColorModel, rhs: LabColorModel) -> Bool {
-    return lhs.lightness != rhs.lightness || lhs.a != rhs.a || lhs.b != rhs.b
-}
 
 @_transparent
 public prefix func +(val: LabColorModel.FloatComponents) -> LabColorModel.FloatComponents {
@@ -336,12 +318,4 @@ public func -= (lhs: inout LabColorModel.FloatComponents, rhs: LabColorModel.Flo
     lhs.lightness -= rhs.lightness
     lhs.a -= rhs.a
     lhs.b -= rhs.b
-}
-@_transparent
-public func ==(lhs: LabColorModel.FloatComponents, rhs: LabColorModel.FloatComponents) -> Bool {
-    return lhs.lightness == rhs.lightness && lhs.a == rhs.a && lhs.b == rhs.b
-}
-@_transparent
-public func !=(lhs: LabColorModel.FloatComponents, rhs: LabColorModel.FloatComponents) -> Bool {
-    return lhs.lightness != rhs.lightness || lhs.a != rhs.a || lhs.b != rhs.b
 }

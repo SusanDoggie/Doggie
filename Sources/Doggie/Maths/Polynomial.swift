@@ -24,7 +24,7 @@
 //
 
 @_fixed_layout
-public struct Polynomial {
+public struct Polynomial : Hashable {
     
     @_versioned
     var coeffs: [Double]
@@ -68,8 +68,6 @@ extension Polynomial : CustomStringConvertible {
 }
 
 extension Polynomial : RandomAccessCollection, MutableCollection {
-    
-    public typealias SubSequence = MutableRangeReplaceableRandomAccessSlice<Polynomial>
     
     @_inlineable
     public var startIndex : Int {
@@ -130,7 +128,7 @@ extension Polynomial : RangeReplaceableCollection {
     }
 }
 
-extension Polynomial : Hashable {
+extension Polynomial {
     
     @_inlineable
     public var hashValue: Int {

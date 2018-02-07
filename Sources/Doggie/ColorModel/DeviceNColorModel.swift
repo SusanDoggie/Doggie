@@ -70,11 +70,6 @@ public struct Device2ColorModel : ColorModelProtocol {
             }
         }
     }
-    
-    @_transparent
-    public var hashValue: Int {
-        return hash_combine(seed: 0, component_0, component_1)
-    }
 }
 
 extension Device2ColorModel {
@@ -138,14 +133,6 @@ public func -= (lhs: inout Device2ColorModel, rhs: Device2ColorModel) {
     lhs.component_0 -= rhs.component_0
     lhs.component_1 -= rhs.component_1
 }
-@_transparent
-public func ==(lhs: Device2ColorModel, rhs: Device2ColorModel) -> Bool {
-    return lhs.component_0 == rhs.component_0 && lhs.component_1 == rhs.component_1
-}
-@_transparent
-public func !=(lhs: Device2ColorModel, rhs: Device2ColorModel) -> Bool {
-    return lhs.component_0 != rhs.component_0 || lhs.component_1 != rhs.component_1
-}
 
 
 public struct Device3ColorModel : ColorModelProtocol {
@@ -199,11 +186,6 @@ public struct Device3ColorModel : ColorModelProtocol {
             default: fatalError()
             }
         }
-    }
-    
-    @_transparent
-    public var hashValue: Int {
-        return hash_combine(seed: 0, component_0, component_1, component_2)
     }
 }
 
@@ -273,14 +255,6 @@ public func -= (lhs: inout Device3ColorModel, rhs: Device3ColorModel) {
     lhs.component_1 -= rhs.component_1
     lhs.component_2 -= rhs.component_2
 }
-@_transparent
-public func ==(lhs: Device3ColorModel, rhs: Device3ColorModel) -> Bool {
-    return lhs.component_0 == rhs.component_0 && lhs.component_1 == rhs.component_1 && lhs.component_2 == rhs.component_2
-}
-@_transparent
-public func !=(lhs: Device3ColorModel, rhs: Device3ColorModel) -> Bool {
-    return lhs.component_0 != rhs.component_0 || lhs.component_1 != rhs.component_1 || lhs.component_2 != rhs.component_2
-}
 
 
 public struct Device4ColorModel : ColorModelProtocol {
@@ -339,11 +313,6 @@ public struct Device4ColorModel : ColorModelProtocol {
             default: fatalError()
             }
         }
-    }
-    
-    @_transparent
-    public var hashValue: Int {
-        return hash_combine(seed: 0, component_0, component_1, component_2, component_3)
     }
 }
 
@@ -418,14 +387,6 @@ public func -= (lhs: inout Device4ColorModel, rhs: Device4ColorModel) {
     lhs.component_2 -= rhs.component_2
     lhs.component_3 -= rhs.component_3
 }
-@_transparent
-public func ==(lhs: Device4ColorModel, rhs: Device4ColorModel) -> Bool {
-    return lhs.component_0 == rhs.component_0 && lhs.component_1 == rhs.component_1 && lhs.component_2 == rhs.component_2 && lhs.component_3 == rhs.component_3
-}
-@_transparent
-public func !=(lhs: Device4ColorModel, rhs: Device4ColorModel) -> Bool {
-    return lhs.component_0 != rhs.component_0 || lhs.component_1 != rhs.component_1 || lhs.component_2 != rhs.component_2 || lhs.component_3 != rhs.component_3
-}
 
 
 public struct Device5ColorModel : ColorModelProtocol {
@@ -490,14 +451,6 @@ public struct Device5ColorModel : ColorModelProtocol {
             default: fatalError()
             }
         }
-    }
-    
-    @_transparent
-    public var hashValue: Int {
-        return hash_combine(seed: 0,
-                            component_0, component_1, component_2,
-                            component_3, component_4
-        )
     }
 }
 
@@ -598,16 +551,6 @@ public func -= (lhs: inout Device5ColorModel, rhs: Device5ColorModel) {
     lhs.component_3 -= rhs.component_3
     lhs.component_4 -= rhs.component_4
 }
-@_transparent
-public func ==(lhs: Device5ColorModel, rhs: Device5ColorModel) -> Bool {
-    return lhs.component_0 == rhs.component_0 && lhs.component_1 == rhs.component_1 && lhs.component_2 == rhs.component_2
-        && lhs.component_3 == rhs.component_3 && lhs.component_4 == rhs.component_4
-}
-@_transparent
-public func !=(lhs: Device5ColorModel, rhs: Device5ColorModel) -> Bool {
-    return lhs.component_0 != rhs.component_0 || lhs.component_1 != rhs.component_1 || lhs.component_2 != rhs.component_2
-        || lhs.component_3 != rhs.component_3 || lhs.component_4 != rhs.component_4
-}
 
 
 public struct Device6ColorModel : ColorModelProtocol {
@@ -677,14 +620,6 @@ public struct Device6ColorModel : ColorModelProtocol {
             default: fatalError()
             }
         }
-    }
-    
-    @_transparent
-    public var hashValue: Int {
-        return hash_combine(seed: 0,
-                            component_0, component_1, component_2,
-                            component_3, component_4, component_5
-        )
     }
 }
 
@@ -790,16 +725,6 @@ public func -= (lhs: inout Device6ColorModel, rhs: Device6ColorModel) {
     lhs.component_4 -= rhs.component_4
     lhs.component_5 -= rhs.component_5
 }
-@_transparent
-public func ==(lhs: Device6ColorModel, rhs: Device6ColorModel) -> Bool {
-    return lhs.component_0 == rhs.component_0 && lhs.component_1 == rhs.component_1 && lhs.component_2 == rhs.component_2
-        && lhs.component_3 == rhs.component_3 && lhs.component_4 == rhs.component_4 && lhs.component_5 == rhs.component_5
-}
-@_transparent
-public func !=(lhs: Device6ColorModel, rhs: Device6ColorModel) -> Bool {
-    return lhs.component_0 != rhs.component_0 || lhs.component_1 != rhs.component_1 || lhs.component_2 != rhs.component_2
-        || lhs.component_3 != rhs.component_3 || lhs.component_4 != rhs.component_4 || lhs.component_5 != rhs.component_5
-}
 
 
 public struct Device7ColorModel : ColorModelProtocol {
@@ -875,15 +800,6 @@ public struct Device7ColorModel : ColorModelProtocol {
             default: fatalError()
             }
         }
-    }
-    
-    @_transparent
-    public var hashValue: Int {
-        return hash_combine(seed: 0,
-                            component_0, component_1, component_2,
-                            component_3, component_4, component_5,
-                            component_6
-        )
     }
 }
 
@@ -1001,18 +917,6 @@ public func -= (lhs: inout Device7ColorModel, rhs: Device7ColorModel) {
     lhs.component_5 -= rhs.component_5
     lhs.component_6 -= rhs.component_6
 }
-@_transparent
-public func ==(lhs: Device7ColorModel, rhs: Device7ColorModel) -> Bool {
-    return lhs.component_0 == rhs.component_0 && lhs.component_1 == rhs.component_1 && lhs.component_2 == rhs.component_2
-        && lhs.component_3 == rhs.component_3 && lhs.component_4 == rhs.component_4 && lhs.component_5 == rhs.component_5
-        && lhs.component_6 == rhs.component_6
-}
-@_transparent
-public func !=(lhs: Device7ColorModel, rhs: Device7ColorModel) -> Bool {
-    return lhs.component_0 != rhs.component_0 || lhs.component_1 != rhs.component_1 || lhs.component_2 != rhs.component_2
-        || lhs.component_3 != rhs.component_3 || lhs.component_4 != rhs.component_4 || lhs.component_5 != rhs.component_5
-        || lhs.component_6 != rhs.component_6
-}
 
 
 public struct Device8ColorModel : ColorModelProtocol {
@@ -1093,15 +997,6 @@ public struct Device8ColorModel : ColorModelProtocol {
             default: fatalError()
             }
         }
-    }
-    
-    @_transparent
-    public var hashValue: Int {
-        return hash_combine(seed: 0,
-                            component_0, component_1, component_2,
-                            component_3, component_4, component_5,
-                            component_6, component_7
-        )
     }
 }
 
@@ -1224,18 +1119,6 @@ public func -= (lhs: inout Device8ColorModel, rhs: Device8ColorModel) {
     lhs.component_6 -= rhs.component_6
     lhs.component_7 -= rhs.component_7
 }
-@_transparent
-public func ==(lhs: Device8ColorModel, rhs: Device8ColorModel) -> Bool {
-    return lhs.component_0 == rhs.component_0 && lhs.component_1 == rhs.component_1 && lhs.component_2 == rhs.component_2
-        && lhs.component_3 == rhs.component_3 && lhs.component_4 == rhs.component_4 && lhs.component_5 == rhs.component_5
-        && lhs.component_6 == rhs.component_6 && lhs.component_7 == rhs.component_7
-}
-@_transparent
-public func !=(lhs: Device8ColorModel, rhs: Device8ColorModel) -> Bool {
-    return lhs.component_0 != rhs.component_0 || lhs.component_1 != rhs.component_1 || lhs.component_2 != rhs.component_2
-        || lhs.component_3 != rhs.component_3 || lhs.component_4 != rhs.component_4 || lhs.component_5 != rhs.component_5
-        || lhs.component_6 != rhs.component_6 || lhs.component_7 != rhs.component_7
-}
 
 
 public struct Device9ColorModel : ColorModelProtocol {
@@ -1321,15 +1204,6 @@ public struct Device9ColorModel : ColorModelProtocol {
             default: fatalError()
             }
         }
-    }
-    
-    @_transparent
-    public var hashValue: Int {
-        return hash_combine(seed: 0,
-                            component_0, component_1, component_2,
-                            component_3, component_4, component_5,
-                            component_6, component_7, component_8
-        )
     }
 }
 
@@ -1457,18 +1331,6 @@ public func -= (lhs: inout Device9ColorModel, rhs: Device9ColorModel) {
     lhs.component_7 -= rhs.component_7
     lhs.component_8 -= rhs.component_8
 }
-@_transparent
-public func ==(lhs: Device9ColorModel, rhs: Device9ColorModel) -> Bool {
-    return lhs.component_0 == rhs.component_0 && lhs.component_1 == rhs.component_1 && lhs.component_2 == rhs.component_2
-        && lhs.component_3 == rhs.component_3 && lhs.component_4 == rhs.component_4 && lhs.component_5 == rhs.component_5
-        && lhs.component_6 == rhs.component_6 && lhs.component_7 == rhs.component_7 && lhs.component_8 == rhs.component_8
-}
-@_transparent
-public func !=(lhs: Device9ColorModel, rhs: Device9ColorModel) -> Bool {
-    return lhs.component_0 != rhs.component_0 || lhs.component_1 != rhs.component_1 || lhs.component_2 != rhs.component_2
-        || lhs.component_3 != rhs.component_3 || lhs.component_4 != rhs.component_4 || lhs.component_5 != rhs.component_5
-        || lhs.component_6 != rhs.component_6 || lhs.component_7 != rhs.component_7 || lhs.component_8 != rhs.component_8
-}
 
 
 public struct Device10ColorModel : ColorModelProtocol {
@@ -1560,16 +1422,6 @@ public struct Device10ColorModel : ColorModelProtocol {
             default: fatalError()
             }
         }
-    }
-    
-    @_transparent
-    public var hashValue: Int {
-        return hash_combine(seed: 0,
-                            component_0, component_1, component_2,
-                            component_3, component_4, component_5,
-                            component_6, component_7, component_8,
-                            component_9
-        )
     }
 }
 
@@ -1709,20 +1561,6 @@ public func -= (lhs: inout Device10ColorModel, rhs: Device10ColorModel) {
     lhs.component_8 -= rhs.component_8
     lhs.component_9 -= rhs.component_9
 }
-@_transparent
-public func ==(lhs: Device10ColorModel, rhs: Device10ColorModel) -> Bool {
-    return lhs.component_0 == rhs.component_0 && lhs.component_1 == rhs.component_1 && lhs.component_2 == rhs.component_2
-        && lhs.component_3 == rhs.component_3 && lhs.component_4 == rhs.component_4 && lhs.component_5 == rhs.component_5
-        && lhs.component_6 == rhs.component_6 && lhs.component_7 == rhs.component_7 && lhs.component_8 == rhs.component_8
-        && lhs.component_9 == rhs.component_9
-}
-@_transparent
-public func !=(lhs: Device10ColorModel, rhs: Device10ColorModel) -> Bool {
-    return lhs.component_0 != rhs.component_0 || lhs.component_1 != rhs.component_1 || lhs.component_2 != rhs.component_2
-        || lhs.component_3 != rhs.component_3 || lhs.component_4 != rhs.component_4 || lhs.component_5 != rhs.component_5
-        || lhs.component_6 != rhs.component_6 || lhs.component_7 != rhs.component_7 || lhs.component_8 != rhs.component_8
-        || lhs.component_9 != rhs.component_9
-}
 
 
 public struct Device11ColorModel : ColorModelProtocol {
@@ -1819,16 +1657,6 @@ public struct Device11ColorModel : ColorModelProtocol {
             default: fatalError()
             }
         }
-    }
-    
-    @_transparent
-    public var hashValue: Int {
-        return hash_combine(seed: 0,
-                            component_0, component_1, component_2,
-                            component_3, component_4, component_5,
-                            component_6, component_7, component_8,
-                            component_9, component_10
-        )
     }
 }
 
@@ -1973,20 +1801,6 @@ public func -= (lhs: inout Device11ColorModel, rhs: Device11ColorModel) {
     lhs.component_9 -= rhs.component_9
     lhs.component_10 -= rhs.component_10
 }
-@_transparent
-public func ==(lhs: Device11ColorModel, rhs: Device11ColorModel) -> Bool {
-    return lhs.component_0 == rhs.component_0 && lhs.component_1 == rhs.component_1 && lhs.component_2 == rhs.component_2
-        && lhs.component_3 == rhs.component_3 && lhs.component_4 == rhs.component_4 && lhs.component_5 == rhs.component_5
-        && lhs.component_6 == rhs.component_6 && lhs.component_7 == rhs.component_7 && lhs.component_8 == rhs.component_8
-        && lhs.component_9 == rhs.component_9 && lhs.component_10 == rhs.component_10
-}
-@_transparent
-public func !=(lhs: Device11ColorModel, rhs: Device11ColorModel) -> Bool {
-    return lhs.component_0 != rhs.component_0 || lhs.component_1 != rhs.component_1 || lhs.component_2 != rhs.component_2
-        || lhs.component_3 != rhs.component_3 || lhs.component_4 != rhs.component_4 || lhs.component_5 != rhs.component_5
-        || lhs.component_6 != rhs.component_6 || lhs.component_7 != rhs.component_7 || lhs.component_8 != rhs.component_8
-        || lhs.component_9 != rhs.component_9 || lhs.component_10 != rhs.component_10
-}
 
 
 public struct Device12ColorModel : ColorModelProtocol {
@@ -2088,16 +1902,6 @@ public struct Device12ColorModel : ColorModelProtocol {
             default: fatalError()
             }
         }
-    }
-    
-    @_transparent
-    public var hashValue: Int {
-        return hash_combine(seed: 0,
-                            component_0, component_1, component_2,
-                            component_3, component_4, component_5,
-                            component_6, component_7, component_8,
-                            component_9, component_10, component_11
-        )
     }
 }
 
@@ -2247,20 +2051,6 @@ public func -= (lhs: inout Device12ColorModel, rhs: Device12ColorModel) {
     lhs.component_10 -= rhs.component_10
     lhs.component_11 -= rhs.component_11
 }
-@_transparent
-public func ==(lhs: Device12ColorModel, rhs: Device12ColorModel) -> Bool {
-    return lhs.component_0 == rhs.component_0 && lhs.component_1 == rhs.component_1 && lhs.component_2 == rhs.component_2
-        && lhs.component_3 == rhs.component_3 && lhs.component_4 == rhs.component_4 && lhs.component_5 == rhs.component_5
-        && lhs.component_6 == rhs.component_6 && lhs.component_7 == rhs.component_7 && lhs.component_8 == rhs.component_8
-        && lhs.component_9 == rhs.component_9 && lhs.component_10 == rhs.component_10 && lhs.component_11 == rhs.component_11
-}
-@_transparent
-public func !=(lhs: Device12ColorModel, rhs: Device12ColorModel) -> Bool {
-    return lhs.component_0 != rhs.component_0 || lhs.component_1 != rhs.component_1 || lhs.component_2 != rhs.component_2
-        || lhs.component_3 != rhs.component_3 || lhs.component_4 != rhs.component_4 || lhs.component_5 != rhs.component_5
-        || lhs.component_6 != rhs.component_6 || lhs.component_7 != rhs.component_7 || lhs.component_8 != rhs.component_8
-        || lhs.component_9 != rhs.component_9 || lhs.component_10 != rhs.component_10 || lhs.component_11 != rhs.component_11
-}
 
 
 public struct Device13ColorModel : ColorModelProtocol {
@@ -2368,17 +2158,6 @@ public struct Device13ColorModel : ColorModelProtocol {
             default: fatalError()
             }
         }
-    }
-    
-    @_transparent
-    public var hashValue: Int {
-        return hash_combine(seed: 0,
-                            component_0, component_1, component_2,
-                            component_3, component_4, component_5,
-                            component_6, component_7, component_8,
-                            component_9, component_10, component_11,
-                            component_12
-        )
     }
 }
 
@@ -2540,22 +2319,6 @@ public func -= (lhs: inout Device13ColorModel, rhs: Device13ColorModel) {
     lhs.component_11 -= rhs.component_11
     lhs.component_12 -= rhs.component_12
 }
-@_transparent
-public func ==(lhs: Device13ColorModel, rhs: Device13ColorModel) -> Bool {
-    return lhs.component_0 == rhs.component_0 && lhs.component_1 == rhs.component_1 && lhs.component_2 == rhs.component_2
-        && lhs.component_3 == rhs.component_3 && lhs.component_4 == rhs.component_4 && lhs.component_5 == rhs.component_5
-        && lhs.component_6 == rhs.component_6 && lhs.component_7 == rhs.component_7 && lhs.component_8 == rhs.component_8
-        && lhs.component_9 == rhs.component_9 && lhs.component_10 == rhs.component_10 && lhs.component_11 == rhs.component_11
-        && lhs.component_12 == rhs.component_12
-}
-@_transparent
-public func !=(lhs: Device13ColorModel, rhs: Device13ColorModel) -> Bool {
-    return lhs.component_0 != rhs.component_0 || lhs.component_1 != rhs.component_1 || lhs.component_2 != rhs.component_2
-        || lhs.component_3 != rhs.component_3 || lhs.component_4 != rhs.component_4 || lhs.component_5 != rhs.component_5
-        || lhs.component_6 != rhs.component_6 || lhs.component_7 != rhs.component_7 || lhs.component_8 != rhs.component_8
-        || lhs.component_9 != rhs.component_9 || lhs.component_10 != rhs.component_10 || lhs.component_11 != rhs.component_11
-        || lhs.component_12 != rhs.component_12
-}
 
 
 public struct Device14ColorModel : ColorModelProtocol {
@@ -2668,17 +2431,6 @@ public struct Device14ColorModel : ColorModelProtocol {
             default: fatalError()
             }
         }
-    }
-    
-    @_transparent
-    public var hashValue: Int {
-        return hash_combine(seed: 0,
-                            component_0, component_1, component_2,
-                            component_3, component_4, component_5,
-                            component_6, component_7, component_8,
-                            component_9, component_10, component_11,
-                            component_12, component_13
-        )
     }
 }
 
@@ -2845,22 +2597,6 @@ public func -= (lhs: inout Device14ColorModel, rhs: Device14ColorModel) {
     lhs.component_12 -= rhs.component_12
     lhs.component_13 -= rhs.component_13
 }
-@_transparent
-public func ==(lhs: Device14ColorModel, rhs: Device14ColorModel) -> Bool {
-    return lhs.component_0 == rhs.component_0 && lhs.component_1 == rhs.component_1 && lhs.component_2 == rhs.component_2
-        && lhs.component_3 == rhs.component_3 && lhs.component_4 == rhs.component_4 && lhs.component_5 == rhs.component_5
-        && lhs.component_6 == rhs.component_6 && lhs.component_7 == rhs.component_7 && lhs.component_8 == rhs.component_8
-        && lhs.component_9 == rhs.component_9 && lhs.component_10 == rhs.component_10 && lhs.component_11 == rhs.component_11
-        && lhs.component_12 == rhs.component_12 && lhs.component_13 == rhs.component_13
-}
-@_transparent
-public func !=(lhs: Device14ColorModel, rhs: Device14ColorModel) -> Bool {
-    return lhs.component_0 != rhs.component_0 || lhs.component_1 != rhs.component_1 || lhs.component_2 != rhs.component_2
-        || lhs.component_3 != rhs.component_3 || lhs.component_4 != rhs.component_4 || lhs.component_5 != rhs.component_5
-        || lhs.component_6 != rhs.component_6 || lhs.component_7 != rhs.component_7 || lhs.component_8 != rhs.component_8
-        || lhs.component_9 != rhs.component_9 || lhs.component_10 != rhs.component_10 || lhs.component_11 != rhs.component_11
-        || lhs.component_12 != rhs.component_12 || lhs.component_13 != rhs.component_13
-}
 
 
 public struct Device15ColorModel : ColorModelProtocol {
@@ -2978,17 +2714,6 @@ public struct Device15ColorModel : ColorModelProtocol {
             default: fatalError()
             }
         }
-    }
-    
-    @_transparent
-    public var hashValue: Int {
-        return hash_combine(seed: 0,
-                            component_0, component_1, component_2,
-                            component_3, component_4, component_5,
-                            component_6, component_7, component_8,
-                            component_9, component_10, component_11,
-                            component_12, component_13, component_14
-        )
     }
 }
 
@@ -3160,22 +2885,6 @@ public func -= (lhs: inout Device15ColorModel, rhs: Device15ColorModel) {
     lhs.component_13 -= rhs.component_13
     lhs.component_14 -= rhs.component_14
 }
-@_transparent
-public func ==(lhs: Device15ColorModel, rhs: Device15ColorModel) -> Bool {
-    return lhs.component_0 == rhs.component_0 && lhs.component_1 == rhs.component_1 && lhs.component_2 == rhs.component_2
-        && lhs.component_3 == rhs.component_3 && lhs.component_4 == rhs.component_4 && lhs.component_5 == rhs.component_5
-        && lhs.component_6 == rhs.component_6 && lhs.component_7 == rhs.component_7 && lhs.component_8 == rhs.component_8
-        && lhs.component_9 == rhs.component_9 && lhs.component_10 == rhs.component_10 && lhs.component_11 == rhs.component_11
-        && lhs.component_12 == rhs.component_12 && lhs.component_13 == rhs.component_13 && lhs.component_14 == rhs.component_14
-}
-@_transparent
-public func !=(lhs: Device15ColorModel, rhs: Device15ColorModel) -> Bool {
-    return lhs.component_0 != rhs.component_0 || lhs.component_1 != rhs.component_1 || lhs.component_2 != rhs.component_2
-        || lhs.component_3 != rhs.component_3 || lhs.component_4 != rhs.component_4 || lhs.component_5 != rhs.component_5
-        || lhs.component_6 != rhs.component_6 || lhs.component_7 != rhs.component_7 || lhs.component_8 != rhs.component_8
-        || lhs.component_9 != rhs.component_9 || lhs.component_10 != rhs.component_10 || lhs.component_11 != rhs.component_11
-        || lhs.component_12 != rhs.component_12 || lhs.component_13 != rhs.component_13 || lhs.component_14 != rhs.component_14
-}
 
 // MARK: FloatComponents
 
@@ -3238,11 +2947,6 @@ extension Device2ColorModel {
                 default: fatalError()
                 }
             }
-        }
-        
-        @_transparent
-        public var hashValue: Int {
-            return hash_combine(seed: 0, component_0, component_1)
         }
     }
 }
@@ -3307,14 +3011,6 @@ public func += (lhs: inout Device2ColorModel.FloatComponents, rhs: Device2ColorM
 public func -= (lhs: inout Device2ColorModel.FloatComponents, rhs: Device2ColorModel.FloatComponents) {
     lhs.component_0 -= rhs.component_0
     lhs.component_1 -= rhs.component_1
-}
-@_transparent
-public func ==(lhs: Device2ColorModel.FloatComponents, rhs: Device2ColorModel.FloatComponents) -> Bool {
-    return lhs.component_0 == rhs.component_0 && lhs.component_1 == rhs.component_1
-}
-@_transparent
-public func !=(lhs: Device2ColorModel.FloatComponents, rhs: Device2ColorModel.FloatComponents) -> Bool {
-    return lhs.component_0 != rhs.component_0 || lhs.component_1 != rhs.component_1
 }
 
 
@@ -3385,11 +3081,6 @@ extension Device3ColorModel {
                 }
             }
         }
-        
-        @_transparent
-        public var hashValue: Int {
-            return hash_combine(seed: 0, component_0, component_1, component_2)
-        }
     }
 }
 
@@ -3458,14 +3149,6 @@ public func -= (lhs: inout Device3ColorModel.FloatComponents, rhs: Device3ColorM
     lhs.component_0 -= rhs.component_0
     lhs.component_1 -= rhs.component_1
     lhs.component_2 -= rhs.component_2
-}
-@_transparent
-public func ==(lhs: Device3ColorModel.FloatComponents, rhs: Device3ColorModel.FloatComponents) -> Bool {
-    return lhs.component_0 == rhs.component_0 && lhs.component_1 == rhs.component_1 && lhs.component_2 == rhs.component_2
-}
-@_transparent
-public func !=(lhs: Device3ColorModel.FloatComponents, rhs: Device3ColorModel.FloatComponents) -> Bool {
-    return lhs.component_0 != rhs.component_0 || lhs.component_1 != rhs.component_1 || lhs.component_2 != rhs.component_2
 }
 
 
@@ -3543,11 +3226,6 @@ extension Device4ColorModel {
                 }
             }
         }
-        
-        @_transparent
-        public var hashValue: Int {
-            return hash_combine(seed: 0, component_0, component_1, component_2, component_3)
-        }
     }
 }
 
@@ -3621,14 +3299,6 @@ public func -= (lhs: inout Device4ColorModel.FloatComponents, rhs: Device4ColorM
     lhs.component_1 -= rhs.component_1
     lhs.component_2 -= rhs.component_2
     lhs.component_3 -= rhs.component_3
-}
-@_transparent
-public func ==(lhs: Device4ColorModel.FloatComponents, rhs: Device4ColorModel.FloatComponents) -> Bool {
-    return lhs.component_0 == rhs.component_0 && lhs.component_1 == rhs.component_1 && lhs.component_2 == rhs.component_2 && lhs.component_3 == rhs.component_3
-}
-@_transparent
-public func !=(lhs: Device4ColorModel.FloatComponents, rhs: Device4ColorModel.FloatComponents) -> Bool {
-    return lhs.component_0 != rhs.component_0 || lhs.component_1 != rhs.component_1 || lhs.component_2 != rhs.component_2 || lhs.component_3 != rhs.component_3
 }
 
 
@@ -3716,14 +3386,6 @@ extension Device5ColorModel {
                 default: fatalError()
                 }
             }
-        }
-        
-        @_transparent
-        public var hashValue: Int {
-            return hash_combine(seed: 0,
-                                component_0, component_1, component_2,
-                                component_3, component_4
-            )
         }
     }
 }
@@ -3825,16 +3487,6 @@ public func -= (lhs: inout Device5ColorModel.FloatComponents, rhs: Device5ColorM
     lhs.component_3 -= rhs.component_3
     lhs.component_4 -= rhs.component_4
 }
-@_transparent
-public func ==(lhs: Device5ColorModel.FloatComponents, rhs: Device5ColorModel.FloatComponents) -> Bool {
-    return lhs.component_0 == rhs.component_0 && lhs.component_1 == rhs.component_1 && lhs.component_2 == rhs.component_2
-        && lhs.component_3 == rhs.component_3 && lhs.component_4 == rhs.component_4
-}
-@_transparent
-public func !=(lhs: Device5ColorModel.FloatComponents, rhs: Device5ColorModel.FloatComponents) -> Bool {
-    return lhs.component_0 != rhs.component_0 || lhs.component_1 != rhs.component_1 || lhs.component_2 != rhs.component_2
-        || lhs.component_3 != rhs.component_3 || lhs.component_4 != rhs.component_4
-}
 
 
 extension Device6ColorModel {
@@ -3928,14 +3580,6 @@ extension Device6ColorModel {
                 default: fatalError()
                 }
             }
-        }
-        
-        @_transparent
-        public var hashValue: Int {
-            return hash_combine(seed: 0,
-                                component_0, component_1, component_2,
-                                component_3, component_4, component_5
-            )
         }
     }
 }
@@ -4042,16 +3686,6 @@ public func -= (lhs: inout Device6ColorModel.FloatComponents, rhs: Device6ColorM
     lhs.component_4 -= rhs.component_4
     lhs.component_5 -= rhs.component_5
 }
-@_transparent
-public func ==(lhs: Device6ColorModel.FloatComponents, rhs: Device6ColorModel.FloatComponents) -> Bool {
-    return lhs.component_0 == rhs.component_0 && lhs.component_1 == rhs.component_1 && lhs.component_2 == rhs.component_2
-        && lhs.component_3 == rhs.component_3 && lhs.component_4 == rhs.component_4 && lhs.component_5 == rhs.component_5
-}
-@_transparent
-public func !=(lhs: Device6ColorModel.FloatComponents, rhs: Device6ColorModel.FloatComponents) -> Bool {
-    return lhs.component_0 != rhs.component_0 || lhs.component_1 != rhs.component_1 || lhs.component_2 != rhs.component_2
-        || lhs.component_3 != rhs.component_3 || lhs.component_4 != rhs.component_4 || lhs.component_5 != rhs.component_5
-}
 
 
 extension Device7ColorModel {
@@ -4154,15 +3788,6 @@ extension Device7ColorModel {
                 default: fatalError()
                 }
             }
-        }
-        
-        @_transparent
-        public var hashValue: Int {
-            return hash_combine(seed: 0,
-                                component_0, component_1, component_2,
-                                component_3, component_4, component_5,
-                                component_6
-            )
         }
     }
 }
@@ -4281,18 +3906,6 @@ public func -= (lhs: inout Device7ColorModel.FloatComponents, rhs: Device7ColorM
     lhs.component_5 -= rhs.component_5
     lhs.component_6 -= rhs.component_6
 }
-@_transparent
-public func ==(lhs: Device7ColorModel.FloatComponents, rhs: Device7ColorModel.FloatComponents) -> Bool {
-    return lhs.component_0 == rhs.component_0 && lhs.component_1 == rhs.component_1 && lhs.component_2 == rhs.component_2
-        && lhs.component_3 == rhs.component_3 && lhs.component_4 == rhs.component_4 && lhs.component_5 == rhs.component_5
-        && lhs.component_6 == rhs.component_6
-}
-@_transparent
-public func !=(lhs: Device7ColorModel.FloatComponents, rhs: Device7ColorModel.FloatComponents) -> Bool {
-    return lhs.component_0 != rhs.component_0 || lhs.component_1 != rhs.component_1 || lhs.component_2 != rhs.component_2
-        || lhs.component_3 != rhs.component_3 || lhs.component_4 != rhs.component_4 || lhs.component_5 != rhs.component_5
-        || lhs.component_6 != rhs.component_6
-}
 
 
 extension Device8ColorModel {
@@ -4402,15 +4015,6 @@ extension Device8ColorModel {
                 default: fatalError()
                 }
             }
-        }
-        
-        @_transparent
-        public var hashValue: Int {
-            return hash_combine(seed: 0,
-                                component_0, component_1, component_2,
-                                component_3, component_4, component_5,
-                                component_6, component_7
-            )
         }
     }
 }
@@ -4534,18 +4138,6 @@ public func -= (lhs: inout Device8ColorModel.FloatComponents, rhs: Device8ColorM
     lhs.component_6 -= rhs.component_6
     lhs.component_7 -= rhs.component_7
 }
-@_transparent
-public func ==(lhs: Device8ColorModel.FloatComponents, rhs: Device8ColorModel.FloatComponents) -> Bool {
-    return lhs.component_0 == rhs.component_0 && lhs.component_1 == rhs.component_1 && lhs.component_2 == rhs.component_2
-        && lhs.component_3 == rhs.component_3 && lhs.component_4 == rhs.component_4 && lhs.component_5 == rhs.component_5
-        && lhs.component_6 == rhs.component_6 && lhs.component_7 == rhs.component_7
-}
-@_transparent
-public func !=(lhs: Device8ColorModel.FloatComponents, rhs: Device8ColorModel.FloatComponents) -> Bool {
-    return lhs.component_0 != rhs.component_0 || lhs.component_1 != rhs.component_1 || lhs.component_2 != rhs.component_2
-        || lhs.component_3 != rhs.component_3 || lhs.component_4 != rhs.component_4 || lhs.component_5 != rhs.component_5
-        || lhs.component_6 != rhs.component_6 || lhs.component_7 != rhs.component_7
-}
 
 
 extension Device9ColorModel {
@@ -4662,15 +4254,6 @@ extension Device9ColorModel {
                 default: fatalError()
                 }
             }
-        }
-        
-        @_transparent
-        public var hashValue: Int {
-            return hash_combine(seed: 0,
-                                component_0, component_1, component_2,
-                                component_3, component_4, component_5,
-                                component_6, component_7, component_8
-            )
         }
     }
 }
@@ -4799,18 +4382,6 @@ public func -= (lhs: inout Device9ColorModel.FloatComponents, rhs: Device9ColorM
     lhs.component_7 -= rhs.component_7
     lhs.component_8 -= rhs.component_8
 }
-@_transparent
-public func ==(lhs: Device9ColorModel.FloatComponents, rhs: Device9ColorModel.FloatComponents) -> Bool {
-    return lhs.component_0 == rhs.component_0 && lhs.component_1 == rhs.component_1 && lhs.component_2 == rhs.component_2
-        && lhs.component_3 == rhs.component_3 && lhs.component_4 == rhs.component_4 && lhs.component_5 == rhs.component_5
-        && lhs.component_6 == rhs.component_6 && lhs.component_7 == rhs.component_7 && lhs.component_8 == rhs.component_8
-}
-@_transparent
-public func !=(lhs: Device9ColorModel.FloatComponents, rhs: Device9ColorModel.FloatComponents) -> Bool {
-    return lhs.component_0 != rhs.component_0 || lhs.component_1 != rhs.component_1 || lhs.component_2 != rhs.component_2
-        || lhs.component_3 != rhs.component_3 || lhs.component_4 != rhs.component_4 || lhs.component_5 != rhs.component_5
-        || lhs.component_6 != rhs.component_6 || lhs.component_7 != rhs.component_7 || lhs.component_8 != rhs.component_8
-}
 
 
 extension Device10ColorModel {
@@ -4936,16 +4507,6 @@ extension Device10ColorModel {
                 default: fatalError()
                 }
             }
-        }
-        
-        @_transparent
-        public var hashValue: Int {
-            return hash_combine(seed: 0,
-                                component_0, component_1, component_2,
-                                component_3, component_4, component_5,
-                                component_6, component_7, component_8,
-                                component_9
-            )
         }
     }
 }
@@ -5086,20 +4647,6 @@ public func -= (lhs: inout Device10ColorModel.FloatComponents, rhs: Device10Colo
     lhs.component_8 -= rhs.component_8
     lhs.component_9 -= rhs.component_9
 }
-@_transparent
-public func ==(lhs: Device10ColorModel.FloatComponents, rhs: Device10ColorModel.FloatComponents) -> Bool {
-    return lhs.component_0 == rhs.component_0 && lhs.component_1 == rhs.component_1 && lhs.component_2 == rhs.component_2
-        && lhs.component_3 == rhs.component_3 && lhs.component_4 == rhs.component_4 && lhs.component_5 == rhs.component_5
-        && lhs.component_6 == rhs.component_6 && lhs.component_7 == rhs.component_7 && lhs.component_8 == rhs.component_8
-        && lhs.component_9 == rhs.component_9
-}
-@_transparent
-public func !=(lhs: Device10ColorModel.FloatComponents, rhs: Device10ColorModel.FloatComponents) -> Bool {
-    return lhs.component_0 != rhs.component_0 || lhs.component_1 != rhs.component_1 || lhs.component_2 != rhs.component_2
-        || lhs.component_3 != rhs.component_3 || lhs.component_4 != rhs.component_4 || lhs.component_5 != rhs.component_5
-        || lhs.component_6 != rhs.component_6 || lhs.component_7 != rhs.component_7 || lhs.component_8 != rhs.component_8
-        || lhs.component_9 != rhs.component_9
-}
 
 
 extension Device11ColorModel {
@@ -5232,16 +4779,6 @@ extension Device11ColorModel {
                 default: fatalError()
                 }
             }
-        }
-        
-        @_transparent
-        public var hashValue: Int {
-            return hash_combine(seed: 0,
-                                component_0, component_1, component_2,
-                                component_3, component_4, component_5,
-                                component_6, component_7, component_8,
-                                component_9, component_10
-            )
         }
     }
 }
@@ -5387,20 +4924,6 @@ public func -= (lhs: inout Device11ColorModel.FloatComponents, rhs: Device11Colo
     lhs.component_9 -= rhs.component_9
     lhs.component_10 -= rhs.component_10
 }
-@_transparent
-public func ==(lhs: Device11ColorModel.FloatComponents, rhs: Device11ColorModel.FloatComponents) -> Bool {
-    return lhs.component_0 == rhs.component_0 && lhs.component_1 == rhs.component_1 && lhs.component_2 == rhs.component_2
-        && lhs.component_3 == rhs.component_3 && lhs.component_4 == rhs.component_4 && lhs.component_5 == rhs.component_5
-        && lhs.component_6 == rhs.component_6 && lhs.component_7 == rhs.component_7 && lhs.component_8 == rhs.component_8
-        && lhs.component_9 == rhs.component_9 && lhs.component_10 == rhs.component_10
-}
-@_transparent
-public func !=(lhs: Device11ColorModel.FloatComponents, rhs: Device11ColorModel.FloatComponents) -> Bool {
-    return lhs.component_0 != rhs.component_0 || lhs.component_1 != rhs.component_1 || lhs.component_2 != rhs.component_2
-        || lhs.component_3 != rhs.component_3 || lhs.component_4 != rhs.component_4 || lhs.component_5 != rhs.component_5
-        || lhs.component_6 != rhs.component_6 || lhs.component_7 != rhs.component_7 || lhs.component_8 != rhs.component_8
-        || lhs.component_9 != rhs.component_9 || lhs.component_10 != rhs.component_10
-}
 
 
 extension Device12ColorModel {
@@ -5540,16 +5063,6 @@ extension Device12ColorModel {
                 default: fatalError()
                 }
             }
-        }
-        
-        @_transparent
-        public var hashValue: Int {
-            return hash_combine(seed: 0,
-                                component_0, component_1, component_2,
-                                component_3, component_4, component_5,
-                                component_6, component_7, component_8,
-                                component_9, component_10, component_11
-            )
         }
     }
 }
@@ -5700,20 +5213,6 @@ public func -= (lhs: inout Device12ColorModel.FloatComponents, rhs: Device12Colo
     lhs.component_10 -= rhs.component_10
     lhs.component_11 -= rhs.component_11
 }
-@_transparent
-public func ==(lhs: Device12ColorModel.FloatComponents, rhs: Device12ColorModel.FloatComponents) -> Bool {
-    return lhs.component_0 == rhs.component_0 && lhs.component_1 == rhs.component_1 && lhs.component_2 == rhs.component_2
-        && lhs.component_3 == rhs.component_3 && lhs.component_4 == rhs.component_4 && lhs.component_5 == rhs.component_5
-        && lhs.component_6 == rhs.component_6 && lhs.component_7 == rhs.component_7 && lhs.component_8 == rhs.component_8
-        && lhs.component_9 == rhs.component_9 && lhs.component_10 == rhs.component_10 && lhs.component_11 == rhs.component_11
-}
-@_transparent
-public func !=(lhs: Device12ColorModel.FloatComponents, rhs: Device12ColorModel.FloatComponents) -> Bool {
-    return lhs.component_0 != rhs.component_0 || lhs.component_1 != rhs.component_1 || lhs.component_2 != rhs.component_2
-        || lhs.component_3 != rhs.component_3 || lhs.component_4 != rhs.component_4 || lhs.component_5 != rhs.component_5
-        || lhs.component_6 != rhs.component_6 || lhs.component_7 != rhs.component_7 || lhs.component_8 != rhs.component_8
-        || lhs.component_9 != rhs.component_9 || lhs.component_10 != rhs.component_10 || lhs.component_11 != rhs.component_11
-}
 
 
 extension Device13ColorModel {
@@ -5862,17 +5361,6 @@ extension Device13ColorModel {
                 default: fatalError()
                 }
             }
-        }
-        
-        @_transparent
-        public var hashValue: Int {
-            return hash_combine(seed: 0,
-                                component_0, component_1, component_2,
-                                component_3, component_4, component_5,
-                                component_6, component_7, component_8,
-                                component_9, component_10, component_11,
-                                component_12
-            )
         }
     }
 }
@@ -6035,22 +5523,6 @@ public func -= (lhs: inout Device13ColorModel.FloatComponents, rhs: Device13Colo
     lhs.component_11 -= rhs.component_11
     lhs.component_12 -= rhs.component_12
 }
-@_transparent
-public func ==(lhs: Device13ColorModel.FloatComponents, rhs: Device13ColorModel.FloatComponents) -> Bool {
-    return lhs.component_0 == rhs.component_0 && lhs.component_1 == rhs.component_1 && lhs.component_2 == rhs.component_2
-        && lhs.component_3 == rhs.component_3 && lhs.component_4 == rhs.component_4 && lhs.component_5 == rhs.component_5
-        && lhs.component_6 == rhs.component_6 && lhs.component_7 == rhs.component_7 && lhs.component_8 == rhs.component_8
-        && lhs.component_9 == rhs.component_9 && lhs.component_10 == rhs.component_10 && lhs.component_11 == rhs.component_11
-        && lhs.component_12 == rhs.component_12
-}
-@_transparent
-public func !=(lhs: Device13ColorModel.FloatComponents, rhs: Device13ColorModel.FloatComponents) -> Bool {
-    return lhs.component_0 != rhs.component_0 || lhs.component_1 != rhs.component_1 || lhs.component_2 != rhs.component_2
-        || lhs.component_3 != rhs.component_3 || lhs.component_4 != rhs.component_4 || lhs.component_5 != rhs.component_5
-        || lhs.component_6 != rhs.component_6 || lhs.component_7 != rhs.component_7 || lhs.component_8 != rhs.component_8
-        || lhs.component_9 != rhs.component_9 || lhs.component_10 != rhs.component_10 || lhs.component_11 != rhs.component_11
-        || lhs.component_12 != rhs.component_12
-}
 
 
 extension Device14ColorModel {
@@ -6206,17 +5678,6 @@ extension Device14ColorModel {
                 default: fatalError()
                 }
             }
-        }
-        
-        @_transparent
-        public var hashValue: Int {
-            return hash_combine(seed: 0,
-                                component_0, component_1, component_2,
-                                component_3, component_4, component_5,
-                                component_6, component_7, component_8,
-                                component_9, component_10, component_11,
-                                component_12, component_13
-            )
         }
     }
 }
@@ -6384,22 +5845,6 @@ public func -= (lhs: inout Device14ColorModel.FloatComponents, rhs: Device14Colo
     lhs.component_12 -= rhs.component_12
     lhs.component_13 -= rhs.component_13
 }
-@_transparent
-public func ==(lhs: Device14ColorModel.FloatComponents, rhs: Device14ColorModel.FloatComponents) -> Bool {
-    return lhs.component_0 == rhs.component_0 && lhs.component_1 == rhs.component_1 && lhs.component_2 == rhs.component_2
-        && lhs.component_3 == rhs.component_3 && lhs.component_4 == rhs.component_4 && lhs.component_5 == rhs.component_5
-        && lhs.component_6 == rhs.component_6 && lhs.component_7 == rhs.component_7 && lhs.component_8 == rhs.component_8
-        && lhs.component_9 == rhs.component_9 && lhs.component_10 == rhs.component_10 && lhs.component_11 == rhs.component_11
-        && lhs.component_12 == rhs.component_12 && lhs.component_13 == rhs.component_13
-}
-@_transparent
-public func !=(lhs: Device14ColorModel.FloatComponents, rhs: Device14ColorModel.FloatComponents) -> Bool {
-    return lhs.component_0 != rhs.component_0 || lhs.component_1 != rhs.component_1 || lhs.component_2 != rhs.component_2
-        || lhs.component_3 != rhs.component_3 || lhs.component_4 != rhs.component_4 || lhs.component_5 != rhs.component_5
-        || lhs.component_6 != rhs.component_6 || lhs.component_7 != rhs.component_7 || lhs.component_8 != rhs.component_8
-        || lhs.component_9 != rhs.component_9 || lhs.component_10 != rhs.component_10 || lhs.component_11 != rhs.component_11
-        || lhs.component_12 != rhs.component_12 || lhs.component_13 != rhs.component_13
-}
 
 
 extension Device15ColorModel {
@@ -6562,17 +6007,6 @@ extension Device15ColorModel {
                 default: fatalError()
                 }
             }
-        }
-        
-        @_transparent
-        public var hashValue: Int {
-            return hash_combine(seed: 0,
-                                component_0, component_1, component_2,
-                                component_3, component_4, component_5,
-                                component_6, component_7, component_8,
-                                component_9, component_10, component_11,
-                                component_12, component_13, component_14
-            )
         }
     }
 }
@@ -6744,21 +6178,5 @@ public func -= (lhs: inout Device15ColorModel.FloatComponents, rhs: Device15Colo
     lhs.component_12 -= rhs.component_12
     lhs.component_13 -= rhs.component_13
     lhs.component_14 -= rhs.component_14
-}
-@_transparent
-public func ==(lhs: Device15ColorModel.FloatComponents, rhs: Device15ColorModel.FloatComponents) -> Bool {
-    return lhs.component_0 == rhs.component_0 && lhs.component_1 == rhs.component_1 && lhs.component_2 == rhs.component_2
-        && lhs.component_3 == rhs.component_3 && lhs.component_4 == rhs.component_4 && lhs.component_5 == rhs.component_5
-        && lhs.component_6 == rhs.component_6 && lhs.component_7 == rhs.component_7 && lhs.component_8 == rhs.component_8
-        && lhs.component_9 == rhs.component_9 && lhs.component_10 == rhs.component_10 && lhs.component_11 == rhs.component_11
-        && lhs.component_12 == rhs.component_12 && lhs.component_13 == rhs.component_13 && lhs.component_14 == rhs.component_14
-}
-@_transparent
-public func !=(lhs: Device15ColorModel.FloatComponents, rhs: Device15ColorModel.FloatComponents) -> Bool {
-    return lhs.component_0 != rhs.component_0 || lhs.component_1 != rhs.component_1 || lhs.component_2 != rhs.component_2
-        || lhs.component_3 != rhs.component_3 || lhs.component_4 != rhs.component_4 || lhs.component_5 != rhs.component_5
-        || lhs.component_6 != rhs.component_6 || lhs.component_7 != rhs.component_7 || lhs.component_8 != rhs.component_8
-        || lhs.component_9 != rhs.component_9 || lhs.component_10 != rhs.component_10 || lhs.component_11 != rhs.component_11
-        || lhs.component_12 != rhs.component_12 || lhs.component_13 != rhs.component_13 || lhs.component_14 != rhs.component_14
 }
 

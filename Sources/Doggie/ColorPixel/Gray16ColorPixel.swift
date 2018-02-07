@@ -66,11 +66,6 @@ public struct Gray16ColorPixel : ColorPixelProtocol {
     }
     
     @_transparent
-    public var hashValue: Int {
-        return hash_combine(seed: 0, w, a)
-    }
-    
-    @_transparent
     public var isOpaque: Bool {
         return a == 255
     }
@@ -81,15 +76,5 @@ public struct Gray16ColorPixel : ColorPixelProtocol {
         c.opacity = opacity
         return c
     }
-}
-
-@_transparent
-public func ==(lhs: Gray16ColorPixel, rhs: Gray16ColorPixel) -> Bool {
-    return (lhs.w, lhs.a) == (rhs.w, rhs.a)
-}
-
-@_transparent
-public func !=(lhs: Gray16ColorPixel, rhs: Gray16ColorPixel) -> Bool {
-    return (lhs.w, lhs.a) != (rhs.w, rhs.a)
 }
 

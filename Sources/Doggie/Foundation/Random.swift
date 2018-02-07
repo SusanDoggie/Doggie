@@ -75,7 +75,7 @@ public extension ClosedRange where Bound : BinaryFloatingPoint, Bound.RawSignifi
     }
 }
 
-extension RandomAccessCollection where IndexDistance : FixedWidthInteger {
+extension RandomAccessCollection {
     
     /// Returns a random element in `self` or `nil` if the sequence is empty.
     ///
@@ -90,7 +90,7 @@ extension RandomAccessCollection where IndexDistance : FixedWidthInteger {
     }
 }
 
-extension MutableCollection where Self : RandomAccessCollection, IndexDistance : FixedWidthInteger {
+extension MutableCollection where Self : RandomAccessCollection {
     
     /// Shuffle `self` in-place.
     @_inlineable

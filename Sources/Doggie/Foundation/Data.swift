@@ -55,7 +55,7 @@ extension Data {
         let address = mmap(nil, buffer.count, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0)!
         guard address != UnsafeMutableRawPointer(bitPattern: -1) else { fatalError(String(cString: strerror(errno))) }
         
-        address.copyBytes(from: bytes, count: buffer.count)
+        address.copyMemory(from: bytes, byteCount: buffer.count)
         
         func deallocator(address: UnsafeMutableRawPointer, mapped_size: Int) {
             munmap(address, mapped_size)

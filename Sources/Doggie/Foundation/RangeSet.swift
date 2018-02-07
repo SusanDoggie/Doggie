@@ -24,7 +24,7 @@
 //
 
 @_fixed_layout
-public struct RangeSet<Bound : Comparable> {
+public struct RangeSet<Bound : Comparable> : Equatable {
     
     @_versioned
     let ranges: [Range<Bound>]
@@ -66,13 +66,12 @@ extension RangeSet : RandomAccessCollection {
     }
 }
 
-extension RangeSet : Equatable {
+extension RangeSet : Hashable where Bound : Hashable {
     
-}
-
-@_inlineable
-public func ==<Bound>(lhs: RangeSet<Bound>, rhs: RangeSet<Bound>) -> Bool {
-    return lhs.ranges == rhs.ranges
+    @_inlineable
+    public var hashValue: Int {
+        return ranges.reduce(0) { hash_combine(seed: $0, $1.lowerBound, $1.upperBound) }
+    }
 }
 
 extension RangeSet {
@@ -168,7 +167,7 @@ extension RangeSet where Bound : Strideable, Bound.Stride : SignedInteger {
     }
     
     @_inlineable
-    public var elements: LazyCollection<FlattenBidirectionalCollection<LazyMapBidirectionalCollection<[Range<Bound>], CountableRange<Bound>>>> {
+    public var elements: LazyCollection<FlattenCollection<LazyMapCollection<[Range<Bound>], CountableRange<Bound>>>> {
         return ranges.lazy.flatMap(CountableRange.init)
     }
 }

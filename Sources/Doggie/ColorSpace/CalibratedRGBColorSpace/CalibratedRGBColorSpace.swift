@@ -106,7 +106,7 @@ class CalibratedRGBColorSpace : ColorSpaceBaseProtocol {
     
     @_versioned
     @_inlineable
-    func _isEqualTo(_ other: CalibratedRGBColorSpace) -> Bool {
+    func __equalTo(_ other: CalibratedRGBColorSpace) -> Bool {
         guard type(of: other) == CalibratedRGBColorSpace.self else { return false }
         return self.cieXYZ == other.cieXYZ && self.transferMatrix == other.transferMatrix
     }
@@ -114,7 +114,7 @@ class CalibratedRGBColorSpace : ColorSpaceBaseProtocol {
     @_versioned
     @_inlineable
     static func ==(lhs: CalibratedRGBColorSpace, rhs: CalibratedRGBColorSpace) -> Bool {
-        return lhs._isEqualTo(rhs)
+        return lhs.__equalTo(rhs)
     }
 }
 
@@ -188,7 +188,7 @@ class CalibratedGammaRGBColorSpace: CalibratedRGBColorSpace {
     
     @_versioned
     @_inlineable
-    override func _isEqualTo(_ other: CalibratedRGBColorSpace) -> Bool {
+    override func __equalTo(_ other: CalibratedRGBColorSpace) -> Bool {
         guard type(of: other) == CalibratedGammaRGBColorSpace.self else { return false }
         guard let other = other as? CalibratedGammaRGBColorSpace else { return false }
         return self.cieXYZ == other.cieXYZ && self.transferMatrix == other.transferMatrix && self.gamma == other.gamma

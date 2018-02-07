@@ -25,7 +25,7 @@
 
 import Foundation
 
-public struct Point {
+public struct Point: Hashable {
     
     public var x: Double
     public var y: Double
@@ -80,14 +80,6 @@ extension Point: CustomStringConvertible {
     @_transparent
     public var description: String {
         return "Point(x: \(x), y: \(y))"
-    }
-}
-
-extension Point: Hashable {
-    
-    @_transparent
-    public var hashValue: Int {
-        return hash_combine(seed: 0, x, y)
     }
 }
 
@@ -181,11 +173,3 @@ public func -= (lhs: inout Point, rhs: Point) {
     lhs.y -= rhs.y
 }
 
-@_transparent
-public func == (lhs: Point, rhs: Point) -> Bool {
-    return lhs.x == rhs.x && lhs.y == rhs.y
-}
-@_transparent
-public func != (lhs: Point, rhs: Point) -> Bool {
-    return lhs.x != rhs.x || lhs.y != rhs.y
-}

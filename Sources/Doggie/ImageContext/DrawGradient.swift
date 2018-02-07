@@ -45,7 +45,7 @@ public struct GradientStop<Color: ColorProtocol> {
     }
 }
 
-extension GradientStop where Color : Equatable {
+extension GradientStop : Equatable where Color : Equatable {
     
     @_inlineable
     public static func ==(lhs: GradientStop, rhs: GradientStop) -> Bool {
@@ -53,7 +53,7 @@ extension GradientStop where Color : Equatable {
     }
 }
 
-extension GradientStop where Color : Hashable {
+extension GradientStop : Hashable where Color : Hashable {
     
     @_inlineable
     public var hashValue: Int {

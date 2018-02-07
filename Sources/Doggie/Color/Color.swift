@@ -50,19 +50,6 @@ public struct Color<Model : ColorModelProtocol> : ColorProtocol, Hashable {
     }
 }
 
-extension Color {
-    
-    @_inlineable
-    public var hashValue: Int {
-        return hash_combine(seed: 0, colorSpace.hashValue, color.hashValue, opacity.hashValue)
-    }
-    
-    @_inlineable
-    public static func ==(lhs: Color, rhs: Color) -> Bool {
-        return lhs.colorSpace == rhs.colorSpace && lhs.color == rhs.color && lhs.opacity == rhs.opacity
-    }
-}
-
 extension Color where Model == GrayColorModel {
     
     @_inlineable

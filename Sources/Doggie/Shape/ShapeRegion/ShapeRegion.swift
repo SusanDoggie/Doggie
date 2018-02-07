@@ -35,7 +35,7 @@ extension RandomAccessCollection where Index : SignedInteger {
             return endIndex
         }
         let count = self.count
-        let offset = IndexDistance(index - startIndex) % count
+        let offset = Int(index - startIndex) % count
         return self.index(startIndex, offsetBy: offset < 0 ? offset + count : offset)
     }
 }
@@ -212,7 +212,7 @@ extension ShapeRegion.Solid {
         }
     }
     
-    fileprivate func components(_ sign: FloatingPointSign) -> ConcatBidirectionalCollection<CollectionOfOne<Shape.Component>, [Shape.Component]> {
+    fileprivate func components(_ sign: FloatingPointSign) -> ConcatCollection<CollectionOfOne<Shape.Component>, [Shape.Component]> {
         return CollectionOfOne(solid.area.sign == sign ? solid : solid.reversed()).concat(holes.components(sign == .plus ? .minus : .plus))
     }
     
@@ -236,7 +236,7 @@ extension Shape.Component {
             case .none: return nil
             }
         case let .regions(left, right): return left.union(right)
-        case let .segments(forward, backward): return ShapeRegion(solids: forward.enumerated().flatMap { arg in forward.enumerated().contains { $0.0 != arg.0 && $0.1.solid._contains(arg.1.solid) } ? nil : ShapeRegion.Solid(solid: arg.1.solid, holes: ShapeRegion(solids: backward.filter { arg.1.solid._contains($0.solid) })) })
+        case let .segments(forward, backward): return ShapeRegion(solids: forward.enumerated().compactMap { arg in forward.enumerated().contains { $0.0 != arg.0 && $0.1.solid._contains(arg.1.solid) } ? nil : ShapeRegion.Solid(solid: arg.1.solid, holes: ShapeRegion(solids: backward.filter { arg.1.solid._contains($0.solid) })) })
         }
     }
     fileprivate func _intersection(_ other: Shape.Component) -> ShapeRegion {
@@ -249,7 +249,7 @@ extension Shape.Component {
             case .none: return ShapeRegion()
             }
         case let .regions(left, right): return left.intersection(right)
-        case let .segments(forward, _): return ShapeRegion(solids: forward.enumerated().flatMap { arg in forward.enumerated().contains { $0.0 != arg.0 && $0.1.solid._contains(arg.1.solid) } ? arg.1 : nil })
+        case let .segments(forward, _): return ShapeRegion(solids: forward.enumerated().compactMap { arg in forward.enumerated().contains { $0.0 != arg.0 && $0.1.solid._contains(arg.1.solid) } ? arg.1 : nil })
         }
     }
     fileprivate func _subtracting(_ other: Shape.Component) -> (ShapeRegion?, Bool) {

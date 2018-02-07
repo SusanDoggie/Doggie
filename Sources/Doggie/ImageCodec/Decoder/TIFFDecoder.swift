@@ -857,10 +857,6 @@ extension TIFFTag {
             self.rawValue = rawValue
         }
         
-        var hashValue: Int {
-            return rawValue.hashValue
-        }
-        
         init(integerLiteral value: UInt16.IntegerLiteralType) {
             self.init(rawValue: UInt16(integerLiteral: value))
         }

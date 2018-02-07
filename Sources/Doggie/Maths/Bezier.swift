@@ -26,7 +26,7 @@
 import Foundation
 
 @_fixed_layout
-public struct Bezier<Element : ScalarMultiplicative> where Element.Scalar == Double {
+public struct Bezier<Element : ScalarMultiplicative> : Equatable where Element.Scalar == Double {
     
     @_versioned
     var points: [Element]
@@ -67,8 +67,6 @@ extension Bezier : CustomStringConvertible {
 }
 
 extension Bezier : RandomAccessCollection, MutableCollection {
-    
-    public typealias SubSequence = MutableRandomAccessSlice<Bezier>
     
     @_inlineable
     public var degree: Int {
@@ -694,14 +692,6 @@ public func *= <Element>(lhs: inout Bezier<Element>, rhs: Double) {
 @_inlineable
 public func /= <Element>(lhs: inout Bezier<Element>, rhs: Double) {
     lhs = lhs / rhs
-}
-@_inlineable
-public func == <Element>(lhs: Bezier<Element>, rhs: Bezier<Element>) -> Bool {
-    return lhs.points == rhs.points
-}
-@_inlineable
-public func != <Element>(lhs: Bezier<Element>, rhs: Bezier<Element>) -> Bool {
-    return lhs.points != rhs.points
 }
 
 // MARK: Bezier Length

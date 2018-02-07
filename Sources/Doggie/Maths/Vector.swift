@@ -25,7 +25,7 @@
 
 import Foundation
 
-public struct Vector {
+public struct Vector : Hashable {
     
     public var x: Double
     public var y: Double
@@ -57,14 +57,6 @@ extension Vector: CustomStringConvertible {
     @_transparent
     public var description: String {
         return "Vector(x: \(x), y: \(y), z: \(z))"
-    }
-}
-
-extension Vector: Hashable {
-    
-    @_transparent
-    public var hashValue: Int {
-        return hash_combine(seed: 0, x, y, z)
     }
 }
 
@@ -169,12 +161,4 @@ public func -= (lhs: inout Vector, rhs: Vector) {
     lhs.x -= rhs.x
     lhs.y -= rhs.y
     lhs.z -= rhs.z
-}
-@_transparent
-public func ==(lhs: Vector, rhs: Vector) -> Bool {
-    return lhs.x == rhs.x && lhs.y == rhs.y && lhs.z == rhs.z
-}
-@_transparent
-public func !=(lhs: Vector, rhs: Vector) -> Bool {
-    return lhs.x != rhs.x || lhs.y != rhs.y || lhs.z != rhs.z
 }

@@ -68,11 +68,6 @@ public struct CMYColorModel : ColorModelProtocol {
             }
         }
     }
-    
-    @_transparent
-    public var hashValue: Int {
-        return hash_combine(seed: 0, cyan, magenta, yellow)
-    }
 }
 
 extension CMYColorModel {
@@ -228,11 +223,6 @@ extension CMYColorModel {
                 }
             }
         }
-        
-        @_transparent
-        public var hashValue: Int {
-            return hash_combine(seed: 0, cyan, magenta, yellow)
-        }
     }
 }
 
@@ -299,14 +289,6 @@ public func -= (lhs: inout CMYColorModel, rhs: CMYColorModel) {
     lhs.magenta -= rhs.magenta
     lhs.yellow -= rhs.yellow
 }
-@_transparent
-public func ==(lhs: CMYColorModel, rhs: CMYColorModel) -> Bool {
-    return lhs.cyan == rhs.cyan && lhs.magenta == rhs.magenta && lhs.yellow == rhs.yellow
-}
-@_transparent
-public func !=(lhs: CMYColorModel, rhs: CMYColorModel) -> Bool {
-    return lhs.cyan != rhs.cyan || lhs.magenta != rhs.magenta || lhs.yellow != rhs.yellow
-}
 
 @_transparent
 public prefix func +(val: CMYColorModel.FloatComponents) -> CMYColorModel.FloatComponents {
@@ -362,13 +344,5 @@ public func -= (lhs: inout CMYColorModel.FloatComponents, rhs: CMYColorModel.Flo
     lhs.cyan -= rhs.cyan
     lhs.magenta -= rhs.magenta
     lhs.yellow -= rhs.yellow
-}
-@_transparent
-public func ==(lhs: CMYColorModel.FloatComponents, rhs: CMYColorModel.FloatComponents) -> Bool {
-    return lhs.cyan == rhs.cyan && lhs.magenta == rhs.magenta && lhs.yellow == rhs.yellow
-}
-@_transparent
-public func !=(lhs: CMYColorModel.FloatComponents, rhs: CMYColorModel.FloatComponents) -> Bool {
-    return lhs.cyan != rhs.cyan || lhs.magenta != rhs.magenta || lhs.yellow != rhs.yellow
 }
 

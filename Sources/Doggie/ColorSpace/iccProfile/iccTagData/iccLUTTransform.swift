@@ -41,7 +41,7 @@ func _interpolate_index(_ x: Double, _ count: Int) -> (Int, Double) {
 
 @_versioned
 @_inlineable
-func interpolate<C : RandomAccessCollection>(_ x: Double, table: C) -> Double where C.Index == Int, C.IndexDistance == Int, C.Element == Double {
+func interpolate<C : RandomAccessCollection>(_ x: Double, table: C) -> Double where C.Index == Int, C.Element == Double {
     
     let (i, m) = _interpolate_index(x, table.count)
     

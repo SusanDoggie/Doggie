@@ -50,12 +50,12 @@ public struct Graph<Node : Hashable, Link> : Collection, ExpressibleByDictionary
     }
     
     @_inlineable
-    public init(dictionaryLiteral elements: ((Node, Node), Link)...) {
-        self.init(uniqueKeysWithValues: elements.lazy.map { ($0.0, $0.1, $1) })
+    public init(dictionaryLiteral elements: Iterator.Element...) {
+        self.init(uniqueKeysWithValues: elements)
     }
     
     @_inlineable
-    public init<S: Sequence>(uniqueKeysWithValues keysAndValues: S) where S.Element == (Node, Node, Link) {
+    public init<S: Sequence>(uniqueKeysWithValues keysAndValues: S) where S.Element == Iterator.Element {
         do {
             try self.init(keysAndValues, uniquingKeysWith: { _, _ in throw GraphError.keyCollision })
         } catch {
@@ -64,7 +64,7 @@ public struct Graph<Node : Hashable, Link> : Collection, ExpressibleByDictionary
     }
     
     @_inlineable
-    public init<S: Sequence>(_ keysAndValues: S, uniquingKeysWith combine: (Link, Link) throws -> Link) rethrows where S.Element == (Node, Node, Link) {
+    public init<S: Sequence>(_ keysAndValues: S, uniquingKeysWith combine: (Link, Link) throws -> Link) rethrows where S.Element == Iterator.Element {
         if let graph = keysAndValues as? Graph {
             self = graph
         } else {
@@ -289,12 +289,12 @@ public struct Graph<Node : Hashable, Link> : Collection, ExpressibleByDictionary
     /// A collection of nodes which connected to `toNode`.
     @_inlineable
     public func nodes(to toNode: Node) -> AnyCollection<(Node, Link)> {
-        return AnyCollection(table.lazy.flatMap { from, list in list[toNode].map { (from, $0) } })
+        return AnyCollection(table.lazy.compactMap { from, list in list[toNode].map { (from, $0) } })
     }
     
     @_inlineable
-    public func filter(_ isIncluded: (Element) throws -> Bool) rethrows -> Graph {
-        return try Graph(table: Dictionary(uniqueKeysWithValues: table.flatMap { from, list in
+    public func filter(_ isIncluded: (Iterator.Element) throws -> Bool) rethrows -> Graph {
+        return try Graph(table: Dictionary(uniqueKeysWithValues: table.compactMap { from, list in
             let list = try list.filter { try isIncluded((from, $0, $1)) }
             return list.count == 0 ? nil : (from, list)
         }))
@@ -415,7 +415,7 @@ extension Graph where Node == AnyHashable {
 }
 
 @_fixed_layout
-public struct GraphIndex<Node : Hashable, Link> : Comparable {
+public struct GraphIndex<Node : Hashable, Link> : Hashable, Comparable {
     
     @_versioned
     let index1: DictionaryIndex<Node, [Node:Link]>
@@ -432,10 +432,14 @@ public struct GraphIndex<Node : Hashable, Link> : Comparable {
     
 }
 
-@_inlineable
-public func == <Node, Link>(lhs: GraphIndex<Node, Link>, rhs: GraphIndex<Node, Link>) -> Bool {
-    return lhs.index1 == rhs.index1 && lhs.index2 == rhs.index2
+extension GraphIndex {
+    
+    @_inlineable
+    public var hashValue: Int {
+        return hash_combine(seed: hash_combine(seed: 0, index1), index2 == nil ? 0 : 1, index2?.hashValue ?? 0)
+    }
 }
+
 @_inlineable
 public func < <Node, Link>(lhs: GraphIndex<Node, Link>, rhs: GraphIndex<Node, Link>) -> Bool {
     if lhs.index1 < rhs.index1 {

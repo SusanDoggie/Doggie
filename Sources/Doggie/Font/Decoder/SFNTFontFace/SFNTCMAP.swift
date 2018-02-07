@@ -131,7 +131,7 @@ extension SFNTCMAP {
         }
         
         var coveredCharacterSet: CharacterSet {
-            return CharacterSet(data.enumerated().flatMap { $1 != 0 ? UnicodeScalar($0) : nil })
+            return CharacterSet(data.enumerated().compactMap { $1 != 0 ? UnicodeScalar($0) : nil })
         }
     }
     

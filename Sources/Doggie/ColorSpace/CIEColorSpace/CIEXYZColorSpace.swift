@@ -62,14 +62,6 @@ struct CIEXYZColorSpace : ColorSpaceBaseProtocol {
 
 extension CIEXYZColorSpace {
     
-    @_inlineable
-    public static func ==(lhs: CIEXYZColorSpace, rhs: CIEXYZColorSpace) -> Bool {
-        return lhs.white == rhs.white && lhs.black == rhs.black && lhs.luminance == rhs.luminance
-    }
-}
-
-extension CIEXYZColorSpace {
-    
     @_versioned
     @_inlineable
     init(white: Point) {

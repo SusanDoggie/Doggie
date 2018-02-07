@@ -46,19 +46,6 @@ public struct Resolution : Hashable {
 
 extension Resolution {
     
-    @_inlineable
-    public var hashValue: Int {
-        return hash_combine(seed: 0, horizontal.hashValue, vertical.hashValue, unit.hashValue)
-    }
-    
-    @_inlineable
-    public static func ==(lhs: Resolution, rhs: Resolution) -> Bool {
-        return lhs.horizontal == rhs.horizontal && lhs.vertical == rhs.vertical && lhs.unit == rhs.unit
-    }
-}
-
-extension Resolution {
-    
     public enum Unit {
         
         case point

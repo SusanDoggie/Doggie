@@ -97,11 +97,6 @@ public struct XYZColorModel : ColorModelProtocol {
             }
         }
     }
-    
-    @_transparent
-    public var hashValue: Int {
-        return hash_combine(seed: 0, x, y, z)
-    }
 }
 
 extension XYZColorModel {
@@ -210,11 +205,6 @@ extension XYZColorModel {
                 }
             }
         }
-        
-        @_transparent
-        public var hashValue: Int {
-            return hash_combine(seed: 0, x, y, z)
-        }
     }
 }
 
@@ -290,14 +280,6 @@ public func -= (lhs: inout XYZColorModel, rhs: XYZColorModel) {
     lhs.y -= rhs.y
     lhs.z -= rhs.z
 }
-@_transparent
-public func ==(lhs: XYZColorModel, rhs: XYZColorModel) -> Bool {
-    return lhs.x == rhs.x && lhs.y == rhs.y && lhs.z == rhs.z
-}
-@_transparent
-public func !=(lhs: XYZColorModel, rhs: XYZColorModel) -> Bool {
-    return lhs.x != rhs.x || lhs.y != rhs.y || lhs.z != rhs.z
-}
 
 @_transparent
 public prefix func +(val: XYZColorModel.FloatComponents) -> XYZColorModel.FloatComponents {
@@ -353,12 +335,4 @@ public func -= (lhs: inout XYZColorModel.FloatComponents, rhs: XYZColorModel.Flo
     lhs.x -= rhs.x
     lhs.y -= rhs.y
     lhs.z -= rhs.z
-}
-@_transparent
-public func ==(lhs: XYZColorModel.FloatComponents, rhs: XYZColorModel.FloatComponents) -> Bool {
-    return lhs.x == rhs.x && lhs.y == rhs.y && lhs.z == rhs.z
-}
-@_transparent
-public func !=(lhs: XYZColorModel.FloatComponents, rhs: XYZColorModel.FloatComponents) -> Bool {
-    return lhs.x != rhs.x || lhs.y != rhs.y || lhs.z != rhs.z
 }

@@ -154,11 +154,6 @@ extension BinaryFixedPoint {
     }
     
     @_transparent
-    public var hashValue: Int {
-        return bitPattern.hashValue
-    }
-    
-    @_transparent
     public var magnitude: RepresentingValue.Magnitude {
         return representingValue.magnitude
     }
@@ -249,14 +244,6 @@ extension BinaryFixedPoint {
     }
 }
 
-extension BinaryFixedPoint where BitPattern : SignedNumeric {
-    
-    @_transparent
-    public static prefix func -(x: Self) -> Self {
-        return Self(representingValue: -x.representingValue)
-    }
-}
-
 extension BinaryFixedPoint {
     
     @_transparent
@@ -302,16 +289,6 @@ extension BinaryFixedPoint {
     @_transparent
     public static func /=(lhs: inout Self, rhs: Self) {
         lhs.representingValue /= rhs.representingValue
-    }
-    
-    @_transparent
-    public static func ==(lhs: Self, rhs: Self) -> Bool {
-        return lhs.bitPattern == rhs.bitPattern
-    }
-    
-    @_transparent
-    public static func !=(lhs: Self, rhs: Self) -> Bool {
-        return lhs.bitPattern != rhs.bitPattern
     }
     
     @_transparent

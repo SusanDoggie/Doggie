@@ -33,7 +33,7 @@ extension Shape {
         case square
     }
     
-    public enum LineJoin {
+    public enum LineJoin : Hashable {
         case miter(limit: Double)
         case round
         case bevel
@@ -65,26 +65,6 @@ extension Shape {
             self.join = join
         }
         
-    }
-}
-
-extension Shape.LineJoin : Hashable {
-    
-    public var hashValue: Int {
-        switch self {
-        case let .miter(limit): return hash_combine(seed: 0, 0, limit.hashValue)
-        case .round: return hash_combine(seed: 0, 1, 0)
-        case .bevel: return hash_combine(seed: 0, 2, 0)
-        }
-    }
-}
-
-public func ==(lhs: Shape.LineJoin, rhs: Shape.LineJoin) -> Bool {
-    switch (lhs, rhs) {
-    case let (.miter(limit1), .miter(limit2)): return limit1 == limit2
-    case (.round, .round): return true
-    case (.bevel, .bevel): return true
-    default: return false
     }
 }
 

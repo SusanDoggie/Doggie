@@ -88,11 +88,6 @@ public struct LuvColorModel : ColorModelProtocol {
             }
         }
     }
-    
-    @_transparent
-    public var hashValue: Int {
-        return hash_combine(seed: 0, lightness, u, v)
-    }
 }
 
 extension LuvColorModel {
@@ -201,11 +196,6 @@ extension LuvColorModel {
                 }
             }
         }
-        
-        @_transparent
-        public var hashValue: Int {
-            return hash_combine(seed: 0, lightness, u, v)
-        }
     }
 }
 
@@ -272,14 +262,6 @@ public func -= (lhs: inout LuvColorModel, rhs: LuvColorModel) {
     lhs.u -= rhs.u
     lhs.v -= rhs.v
 }
-@_transparent
-public func ==(lhs: LuvColorModel, rhs: LuvColorModel) -> Bool {
-    return lhs.lightness == rhs.lightness && lhs.u == rhs.u && lhs.v == rhs.v
-}
-@_transparent
-public func !=(lhs: LuvColorModel, rhs: LuvColorModel) -> Bool {
-    return lhs.lightness != rhs.lightness || lhs.u != rhs.u || lhs.v != rhs.v
-}
 
 @_transparent
 public prefix func +(val: LuvColorModel.FloatComponents) -> LuvColorModel.FloatComponents {
@@ -335,12 +317,4 @@ public func -= (lhs: inout LuvColorModel.FloatComponents, rhs: LuvColorModel.Flo
     lhs.lightness -= rhs.lightness
     lhs.u -= rhs.u
     lhs.v -= rhs.v
-}
-@_transparent
-public func ==(lhs: LuvColorModel.FloatComponents, rhs: LuvColorModel.FloatComponents) -> Bool {
-    return lhs.lightness == rhs.lightness && lhs.u == rhs.u && lhs.v == rhs.v
-}
-@_transparent
-public func !=(lhs: LuvColorModel.FloatComponents, rhs: LuvColorModel.FloatComponents) -> Bool {
-    return lhs.lightness != rhs.lightness || lhs.u != rhs.u || lhs.v != rhs.v
 }

@@ -96,8 +96,8 @@
         }
         
         deinit {
-            self.callbacks_struct.deinitialize()
-            self.callbacks_struct.deallocate(capacity: 1)
+            self.callbacks_struct.deinitialize(count: 1)
+            self.callbacks_struct.deallocate()
         }
     }
     

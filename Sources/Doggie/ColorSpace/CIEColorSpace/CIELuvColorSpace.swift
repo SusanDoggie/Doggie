@@ -58,15 +58,6 @@ extension CIELuvColorSpace {
     
     @_versioned
     @_inlineable
-    static func ==(lhs: CIELuvColorSpace, rhs: CIELuvColorSpace) -> Bool {
-        return lhs.cieXYZ == rhs.cieXYZ
-    }
-}
-
-extension CIELuvColorSpace {
-    
-    @_versioned
-    @_inlineable
     var localizedName: String? {
         return "Doggie CIE Luv Color Space (white = \(cieXYZ.white.point))"
     }

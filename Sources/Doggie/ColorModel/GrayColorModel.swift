@@ -60,11 +60,6 @@ public struct GrayColorModel : ColorModelProtocol {
             }
         }
     }
-    
-    @_transparent
-    public var hashValue: Int {
-        return hash_combine(seed: 0, white)
-    }
 }
 
 extension GrayColorModel {
@@ -149,11 +144,6 @@ extension GrayColorModel {
                 }
             }
         }
-        
-        @_transparent
-        public var hashValue: Int {
-            return hash_combine(seed: 0, white)
-        }
     }
 }
 
@@ -212,14 +202,6 @@ public func += (lhs: inout GrayColorModel, rhs: GrayColorModel) {
 public func -= (lhs: inout GrayColorModel, rhs: GrayColorModel) {
     lhs.white -= rhs.white
 }
-@_transparent
-public func ==(lhs: GrayColorModel, rhs: GrayColorModel) -> Bool {
-    return lhs.white == rhs.white
-}
-@_transparent
-public func !=(lhs: GrayColorModel, rhs: GrayColorModel) -> Bool {
-    return lhs.white != rhs.white
-}
 
 @_transparent
 public prefix func +(val: GrayColorModel.FloatComponents) -> GrayColorModel.FloatComponents {
@@ -267,12 +249,4 @@ public func += (lhs: inout GrayColorModel.FloatComponents, rhs: GrayColorModel.F
 @_transparent
 public func -= (lhs: inout GrayColorModel.FloatComponents, rhs: GrayColorModel.FloatComponents) {
     lhs.white -= rhs.white
-}
-@_transparent
-public func ==(lhs: GrayColorModel.FloatComponents, rhs: GrayColorModel.FloatComponents) -> Bool {
-    return lhs.white == rhs.white
-}
-@_transparent
-public func !=(lhs: GrayColorModel.FloatComponents, rhs: GrayColorModel.FloatComponents) -> Bool {
-    return lhs.white != rhs.white
 }
