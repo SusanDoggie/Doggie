@@ -23,317 +23,7 @@
 //  THE SOFTWARE.
 //
 
-@_versioned
-protocol EndianInteger : FixedWidthInteger {
-    
-    associatedtype BitPattern : FixedWidthInteger
-    
-    associatedtype RepresentingValue : FixedWidthInteger
-    
-    var bitPattern: BitPattern { get }
-    
-    init(bitPattern: BitPattern)
-    
-    var representingValue : RepresentingValue { get set }
-    
-    init(representingValue: RepresentingValue)
-}
-
-extension EndianInteger {
-    
-    @_transparent
-    public init(integerLiteral value: RepresentingValue.IntegerLiteralType) {
-        self.init(representingValue: RepresentingValue(integerLiteral: value))
-    }
-    
-    @_transparent
-    public init?<T>(exactly source: T) where T : BinaryInteger {
-        guard let value = RepresentingValue(exactly: source) else { return nil }
-        self.init(representingValue: value)
-    }
-    
-    @_transparent
-    public init?<T>(exactly source: T) where T : BinaryFloatingPoint {
-        guard let value = RepresentingValue(exactly: source) else { return nil }
-        self.init(representingValue: value)
-    }
-    
-    @_transparent
-    public init(_ value: RepresentingValue) {
-        self.init(representingValue: value)
-    }
-    
-    @_transparent
-    public init<T>(_ source: T) where T : BinaryFloatingPoint {
-        self.init(representingValue: RepresentingValue(source))
-    }
-    
-    @_transparent
-    public init<T>(_ source: T) where T : BinaryInteger {
-        self.init(representingValue: RepresentingValue(source))
-    }
-    
-    @_transparent
-    public init<T>(truncatingIfNeeded source: T) where T : BinaryInteger {
-        self.init(representingValue: RepresentingValue(truncatingIfNeeded: source))
-    }
-    
-    @_transparent
-    public init<T>(clamping source: T) where T : BinaryInteger {
-        self.init(representingValue: RepresentingValue(clamping: source))
-    }
-    
-    @_transparent
-    public init(_truncatingBits bits: UInt) {
-        self.init(representingValue: RepresentingValue(_truncatingBits: bits))
-    }
-}
-
-extension EndianInteger {
-    
-    @_transparent
-    public static var isSigned: Bool {
-        return RepresentingValue.isSigned
-    }
-    
-    @_transparent
-    public static var bitWidth: Int {
-        return RepresentingValue.bitWidth
-    }
-    
-    @_transparent
-    public static var max: Self {
-        return Self(representingValue: RepresentingValue.max)
-    }
-    
-    @_transparent
-    public static var min: Self {
-        return Self(representingValue: RepresentingValue.min)
-    }
-}
-
-extension EndianInteger {
-    
-    @_transparent
-    public var description: String {
-        return representingValue.description
-    }
-    
-    @_transparent
-    public var bitWidth: Int {
-        return representingValue.bitWidth
-    }
-    
-    @_transparent
-    public var magnitude: RepresentingValue.Magnitude {
-        return representingValue.magnitude
-    }
-    
-    @_transparent
-    public var trailingZeroBitCount: Int {
-        return representingValue.trailingZeroBitCount
-    }
-    
-    @_transparent
-    public var nonzeroBitCount: Int {
-        return representingValue.nonzeroBitCount
-    }
-    
-    @_transparent
-    public var leadingZeroBitCount: Int {
-        return representingValue.leadingZeroBitCount
-    }
-    
-    @_transparent
-    public var byteSwapped: Self {
-        return Self(representingValue: representingValue.byteSwapped)
-    }
-}
-
-extension EndianInteger {
-    
-    @_transparent
-    public var words: RepresentingValue.Words {
-        return self.representingValue.words
-    }
-    
-    @_transparent
-    public func distance(to other: Self) -> RepresentingValue.Stride {
-        return self.representingValue.distance(to: other.representingValue)
-    }
-    
-    @_transparent
-    public func advanced(by n: RepresentingValue.Stride) -> Self {
-        return Self(representingValue: self.representingValue.advanced(by: n))
-    }
-    
-    @_transparent
-    public func addingReportingOverflow(_ rhs: Self) -> (partialValue: Self, overflow: Bool) {
-        let (partialValue, overflow) = representingValue.addingReportingOverflow(rhs.representingValue)
-        return (Self(representingValue: partialValue), overflow)
-    }
-    
-    @_transparent
-    public func subtractingReportingOverflow(_ rhs: Self) -> (partialValue: Self, overflow: Bool) {
-        let (partialValue, overflow) = representingValue.subtractingReportingOverflow(rhs.representingValue)
-        return (Self(representingValue: partialValue), overflow)
-    }
-    
-    @_transparent
-    public func multipliedReportingOverflow(by rhs: Self) -> (partialValue: Self, overflow: Bool) {
-        let (partialValue, overflow) = representingValue.multipliedReportingOverflow(by: rhs.representingValue)
-        return (Self(representingValue: partialValue), overflow)
-    }
-    
-    @_transparent
-    public func dividedReportingOverflow(by rhs: Self) -> (partialValue: Self, overflow: Bool) {
-        let (partialValue, overflow) = representingValue.dividedReportingOverflow(by: rhs.representingValue)
-        return (Self(representingValue: partialValue), overflow)
-    }
-    
-    @_transparent
-    public func remainderReportingOverflow(dividingBy rhs: Self) -> (partialValue: Self, overflow: Bool) {
-        let (partialValue, overflow) = representingValue.remainderReportingOverflow(dividingBy: rhs.representingValue)
-        return (Self(representingValue: partialValue), overflow)
-    }
-    
-    @_transparent
-    public func multipliedFullWidth(by other: Self) -> (high: Self, low: RepresentingValue.Magnitude) {
-        let (high, low) = representingValue.multipliedFullWidth(by: other.representingValue)
-        return (Self(representingValue: high), low)
-    }
-    
-    @_transparent
-    public func dividingFullWidth(_ dividend: (high: Self, low: RepresentingValue.Magnitude)) -> (quotient: Self, remainder: Self) {
-        let (quotient, remainder) = representingValue.dividingFullWidth((dividend.high.representingValue, dividend.low))
-        return (Self(representingValue: quotient), Self(representingValue: remainder))
-    }
-}
-
-extension EndianInteger {
-    
-    @_transparent
-    public static prefix func +(x: Self) -> Self {
-        return x
-    }
-    
-    @_transparent
-    public static func +(lhs: Self, rhs: Self) -> Self {
-        return Self(representingValue: lhs.representingValue + rhs.representingValue)
-    }
-    
-    @_transparent
-    public static func +=(lhs: inout Self, rhs: Self) {
-        lhs.representingValue += rhs.representingValue
-    }
-    
-    @_transparent
-    public static func -(lhs: Self, rhs: Self) -> Self {
-        return Self(representingValue: lhs.representingValue - rhs.representingValue)
-    }
-    
-    @_transparent
-    public static func -=(lhs: inout Self, rhs: Self) {
-        lhs.representingValue -= rhs.representingValue
-    }
-    
-    @_transparent
-    public static func *(lhs: Self, rhs: Self) -> Self {
-        return Self(representingValue: lhs.representingValue * rhs.representingValue)
-    }
-    
-    @_transparent
-    public static func *=(lhs: inout Self, rhs: Self) {
-        lhs.representingValue *= rhs.representingValue
-    }
-    
-    @_transparent
-    public static func /(lhs: Self, rhs: Self) -> Self {
-        return Self(representingValue: lhs.representingValue / rhs.representingValue)
-    }
-    
-    @_transparent
-    public static func /=(lhs: inout Self, rhs: Self) {
-        lhs.representingValue /= rhs.representingValue
-    }
-    
-    @_transparent
-    public static func %(lhs: Self, rhs: Self) -> Self {
-        return Self(representingValue: lhs.representingValue % rhs.representingValue)
-    }
-    
-    @_transparent
-    public static func %=(lhs: inout Self, rhs: Self) {
-        lhs.representingValue %= rhs.representingValue
-    }
-    
-    @_transparent
-    public static func &(lhs: Self, rhs: Self) -> Self {
-        return Self(representingValue: lhs.representingValue & rhs.representingValue)
-    }
-    
-    @_transparent
-    public static func &=(lhs: inout Self, rhs: Self) {
-        lhs.representingValue &= rhs.representingValue
-    }
-    
-    @_transparent
-    public static func |(lhs: Self, rhs: Self) -> Self {
-        return Self(representingValue: lhs.representingValue | rhs.representingValue)
-    }
-    
-    @_transparent
-    public static func |=(lhs: inout Self, rhs: Self) {
-        lhs.representingValue |= rhs.representingValue
-    }
-    
-    @_transparent
-    public static func ^(lhs: Self, rhs: Self) -> Self {
-        return Self(representingValue: lhs.representingValue ^ rhs.representingValue)
-    }
-    
-    @_transparent
-    public static func ^=(lhs: inout Self, rhs: Self) {
-        lhs.representingValue ^= rhs.representingValue
-    }
-    
-    @_transparent
-    prefix public static func ~(x: Self) -> Self {
-        return Self(representingValue: ~x.representingValue)
-    }
-    
-    @_transparent
-    public static func &>>(lhs: Self, rhs: Self) -> Self {
-        return Self(representingValue: lhs.representingValue &>> rhs.representingValue)
-    }
-    
-    @_transparent
-    public static func &<<(lhs: Self, rhs: Self) -> Self {
-        return Self(representingValue: lhs.representingValue &<< rhs.representingValue)
-    }
-    
-    @_transparent
-    public static func >(lhs: Self, rhs: Self) -> Bool {
-        return lhs.representingValue > rhs.representingValue
-    }
-    
-    @_transparent
-    public static func <(lhs: Self, rhs: Self) -> Bool {
-        return lhs.representingValue < rhs.representingValue
-    }
-    
-    @_transparent
-    public static func >=(lhs: Self, rhs: Self) -> Bool {
-        return lhs.representingValue >= rhs.representingValue
-    }
-    
-    @_transparent
-    public static func <=(lhs: Self, rhs: Self) -> Bool {
-        return lhs.representingValue <= rhs.representingValue
-    }
-}
-
-public struct BEInteger<Base : FixedWidthInteger> : FixedWidthInteger, EndianInteger {
+public struct BEInteger<Base : FixedWidthInteger> : FixedWidthInteger {
     
     public var bitPattern: Base
     
@@ -397,7 +87,180 @@ extension BEInteger: SignedInteger where Base : SignedInteger {
     
 }
 
-public struct LEInteger<Base : FixedWidthInteger> : FixedWidthInteger, EndianInteger {
+extension BEInteger {
+    
+    @_transparent
+    public init(integerLiteral value: Base.IntegerLiteralType) {
+        self.init(representingValue: Base(integerLiteral: value))
+    }
+    
+    @_transparent
+    public init?<T : BinaryInteger>(exactly source: T) {
+        guard let value = Base(exactly: source) else { return nil }
+        self.init(representingValue: value)
+    }
+    
+    @_transparent
+    public init?<T : BinaryFloatingPoint>(exactly source: T) {
+        guard let value = Base(exactly: source) else { return nil }
+        self.init(representingValue: value)
+    }
+    
+    @_transparent
+    public init(_ value: Base) {
+        self.init(representingValue: value)
+    }
+    
+    @_transparent
+    public init<T : BinaryInteger>(_ source: T) {
+        self.init(representingValue: Base(source))
+    }
+    
+    @_transparent
+    public init<T : BinaryFloatingPoint>(_ source: T) {
+        self.init(representingValue: Base(source))
+    }
+    
+    @_transparent
+    public init<T : BinaryInteger>(truncatingIfNeeded source: T) {
+        self.init(representingValue: Base(truncatingIfNeeded: source))
+    }
+    
+    @_transparent
+    public init<T : BinaryInteger>(clamping source: T) {
+        self.init(representingValue: Base(clamping: source))
+    }
+    
+    @_transparent
+    public init(_truncatingBits bits: UInt) {
+        self.init(representingValue: Base(_truncatingBits: bits))
+    }
+}
+
+extension BEInteger {
+    
+    @_transparent
+    public static var isSigned: Bool {
+        return Base.isSigned
+    }
+    
+    @_transparent
+    public static var bitWidth: Int {
+        return Base.bitWidth
+    }
+    
+    @_transparent
+    public static var max: BEInteger {
+        return BEInteger(representingValue: Base.max)
+    }
+    
+    @_transparent
+    public static var min: BEInteger {
+        return BEInteger(representingValue: Base.min)
+    }
+}
+
+extension BEInteger {
+    
+    @_transparent
+    public var description: String {
+        return representingValue.description
+    }
+    
+    @_transparent
+    public var bitWidth: Int {
+        return representingValue.bitWidth
+    }
+    
+    @_transparent
+    public var magnitude: Base.Magnitude {
+        return representingValue.magnitude
+    }
+    
+    @_transparent
+    public var trailingZeroBitCount: Int {
+        return representingValue.trailingZeroBitCount
+    }
+    
+    @_transparent
+    public var nonzeroBitCount: Int {
+        return representingValue.nonzeroBitCount
+    }
+    
+    @_transparent
+    public var leadingZeroBitCount: Int {
+        return representingValue.leadingZeroBitCount
+    }
+    
+    @_transparent
+    public var byteSwapped: BEInteger {
+        return BEInteger(representingValue: representingValue.byteSwapped)
+    }
+}
+
+extension BEInteger {
+    
+    @_transparent
+    public var words: Base.Words {
+        return self.representingValue.words
+    }
+    
+    @_transparent
+    public func distance(to other: BEInteger) -> Base.Stride {
+        return self.representingValue.distance(to: other.representingValue)
+    }
+    
+    @_transparent
+    public func advanced(by n: Base.Stride) -> BEInteger {
+        return BEInteger(representingValue: self.representingValue.advanced(by: n))
+    }
+    
+    @_transparent
+    public func addingReportingOverflow(_ rhs: BEInteger) -> (partialValue: BEInteger, overflow: Bool) {
+        let (partialValue, overflow) = representingValue.addingReportingOverflow(rhs.representingValue)
+        return (BEInteger(representingValue: partialValue), overflow)
+    }
+    
+    @_transparent
+    public func subtractingReportingOverflow(_ rhs: BEInteger) -> (partialValue: BEInteger, overflow: Bool) {
+        let (partialValue, overflow) = representingValue.subtractingReportingOverflow(rhs.representingValue)
+        return (BEInteger(representingValue: partialValue), overflow)
+    }
+    
+    @_transparent
+    public func multipliedReportingOverflow(by rhs: BEInteger) -> (partialValue: BEInteger, overflow: Bool) {
+        let (partialValue, overflow) = representingValue.multipliedReportingOverflow(by: rhs.representingValue)
+        return (BEInteger(representingValue: partialValue), overflow)
+    }
+    
+    @_transparent
+    public func dividedReportingOverflow(by rhs: BEInteger) -> (partialValue: BEInteger, overflow: Bool) {
+        let (partialValue, overflow) = representingValue.dividedReportingOverflow(by: rhs.representingValue)
+        return (BEInteger(representingValue: partialValue), overflow)
+    }
+    
+    @_transparent
+    public func remainderReportingOverflow(dividingBy rhs: BEInteger) -> (partialValue: BEInteger, overflow: Bool) {
+        let (partialValue, overflow) = representingValue.remainderReportingOverflow(dividingBy: rhs.representingValue)
+        return (BEInteger(representingValue: partialValue), overflow)
+    }
+    
+    @_transparent
+    public func multipliedFullWidth(by other: BEInteger) -> (high: BEInteger, low: Base.Magnitude) {
+        let (high, low) = representingValue.multipliedFullWidth(by: other.representingValue)
+        return (BEInteger(representingValue: high), low)
+    }
+    
+    @_transparent
+    public func dividingFullWidth(_ dividend: (high: BEInteger, low: Base.Magnitude)) -> (quotient: BEInteger, remainder: BEInteger) {
+        let (quotient, remainder) = representingValue.dividingFullWidth((dividend.high.representingValue, dividend.low))
+        return (BEInteger(representingValue: quotient), BEInteger(representingValue: remainder))
+    }
+}
+
+
+
+public struct LEInteger<Base : FixedWidthInteger> : FixedWidthInteger {
     
     public var bitPattern: Base
     
@@ -459,6 +322,371 @@ extension LEInteger: SignedNumeric where Base : SignedNumeric {
 
 extension LEInteger: SignedInteger where Base : SignedInteger {
     
+}
+
+extension LEInteger {
+    
+    @_transparent
+    public init(integerLiteral value: Base.IntegerLiteralType) {
+        self.init(representingValue: Base(integerLiteral: value))
+    }
+    
+    @_transparent
+    public init?<T : BinaryInteger>(exactly source: T) {
+        guard let value = Base(exactly: source) else { return nil }
+        self.init(representingValue: value)
+    }
+    
+    @_transparent
+    public init?<T : BinaryFloatingPoint>(exactly source: T) {
+        guard let value = Base(exactly: source) else { return nil }
+        self.init(representingValue: value)
+    }
+    
+    @_transparent
+    public init(_ value: Base) {
+        self.init(representingValue: value)
+    }
+    
+    @_transparent
+    public init<T : BinaryInteger>(_ source: T) {
+        self.init(representingValue: Base(source))
+    }
+    
+    @_transparent
+    public init<T : BinaryFloatingPoint>(_ source: T) {
+        self.init(representingValue: Base(source))
+    }
+    
+    @_transparent
+    public init<T : BinaryInteger>(truncatingIfNeeded source: T) {
+        self.init(representingValue: Base(truncatingIfNeeded: source))
+    }
+    
+    @_transparent
+    public init<T : BinaryInteger>(clamping source: T) {
+        self.init(representingValue: Base(clamping: source))
+    }
+    
+    @_transparent
+    public init(_truncatingBits bits: UInt) {
+        self.init(representingValue: Base(_truncatingBits: bits))
+    }
+}
+
+extension LEInteger {
+    
+    @_transparent
+    public static var isSigned: Bool {
+        return Base.isSigned
+    }
+    
+    @_transparent
+    public static var bitWidth: Int {
+        return Base.bitWidth
+    }
+    
+    @_transparent
+    public static var max: LEInteger {
+        return LEInteger(representingValue: Base.max)
+    }
+    
+    @_transparent
+    public static var min: LEInteger {
+        return LEInteger(representingValue: Base.min)
+    }
+}
+
+extension LEInteger {
+    
+    @_transparent
+    public var description: String {
+        return representingValue.description
+    }
+    
+    @_transparent
+    public var bitWidth: Int {
+        return representingValue.bitWidth
+    }
+    
+    @_transparent
+    public var magnitude: Base.Magnitude {
+        return representingValue.magnitude
+    }
+    
+    @_transparent
+    public var trailingZeroBitCount: Int {
+        return representingValue.trailingZeroBitCount
+    }
+    
+    @_transparent
+    public var nonzeroBitCount: Int {
+        return representingValue.nonzeroBitCount
+    }
+    
+    @_transparent
+    public var leadingZeroBitCount: Int {
+        return representingValue.leadingZeroBitCount
+    }
+    
+    @_transparent
+    public var byteSwapped: LEInteger {
+        return LEInteger(representingValue: representingValue.byteSwapped)
+    }
+}
+
+extension LEInteger {
+    
+    @_transparent
+    public var words: Base.Words {
+        return self.representingValue.words
+    }
+    
+    @_transparent
+    public func distance(to other: LEInteger) -> Base.Stride {
+        return self.representingValue.distance(to: other.representingValue)
+    }
+    
+    @_transparent
+    public func advanced(by n: Base.Stride) -> LEInteger {
+        return LEInteger(representingValue: self.representingValue.advanced(by: n))
+    }
+    
+    @_transparent
+    public func addingReportingOverflow(_ rhs: LEInteger) -> (partialValue: LEInteger, overflow: Bool) {
+        let (partialValue, overflow) = representingValue.addingReportingOverflow(rhs.representingValue)
+        return (LEInteger(representingValue: partialValue), overflow)
+    }
+    
+    @_transparent
+    public func subtractingReportingOverflow(_ rhs: LEInteger) -> (partialValue: LEInteger, overflow: Bool) {
+        let (partialValue, overflow) = representingValue.subtractingReportingOverflow(rhs.representingValue)
+        return (LEInteger(representingValue: partialValue), overflow)
+    }
+    
+    @_transparent
+    public func multipliedReportingOverflow(by rhs: LEInteger) -> (partialValue: LEInteger, overflow: Bool) {
+        let (partialValue, overflow) = representingValue.multipliedReportingOverflow(by: rhs.representingValue)
+        return (LEInteger(representingValue: partialValue), overflow)
+    }
+    
+    @_transparent
+    public func dividedReportingOverflow(by rhs: LEInteger) -> (partialValue: LEInteger, overflow: Bool) {
+        let (partialValue, overflow) = representingValue.dividedReportingOverflow(by: rhs.representingValue)
+        return (LEInteger(representingValue: partialValue), overflow)
+    }
+    
+    @_transparent
+    public func remainderReportingOverflow(dividingBy rhs: LEInteger) -> (partialValue: LEInteger, overflow: Bool) {
+        let (partialValue, overflow) = representingValue.remainderReportingOverflow(dividingBy: rhs.representingValue)
+        return (LEInteger(representingValue: partialValue), overflow)
+    }
+    
+    @_transparent
+    public func multipliedFullWidth(by other: LEInteger) -> (high: LEInteger, low: Base.Magnitude) {
+        let (high, low) = representingValue.multipliedFullWidth(by: other.representingValue)
+        return (LEInteger(representingValue: high), low)
+    }
+    
+    @_transparent
+    public func dividingFullWidth(_ dividend: (high: LEInteger, low: Base.Magnitude)) -> (quotient: LEInteger, remainder: LEInteger) {
+        let (quotient, remainder) = representingValue.dividingFullWidth((dividend.high.representingValue, dividend.low))
+        return (LEInteger(representingValue: quotient), LEInteger(representingValue: remainder))
+    }
+}
+
+@_transparent
+public prefix func + <Base>(x: BEInteger<Base>) -> BEInteger<Base> {
+    return x
+}
+@_transparent
+public func + <Base>(lhs: BEInteger<Base>, rhs: BEInteger<Base>) -> BEInteger<Base> {
+    return BEInteger(representingValue: lhs.representingValue + rhs.representingValue)
+}
+@_transparent
+public func += <Base>(lhs: inout BEInteger<Base>, rhs: BEInteger<Base>) {
+    lhs.representingValue += rhs.representingValue
+}
+@_transparent
+public func - <Base>(lhs: BEInteger<Base>, rhs: BEInteger<Base>) -> BEInteger<Base> {
+    return BEInteger(representingValue: lhs.representingValue - rhs.representingValue)
+}
+@_transparent
+public func -= <Base>(lhs: inout BEInteger<Base>, rhs: BEInteger<Base>) {
+    lhs.representingValue -= rhs.representingValue
+}
+@_transparent
+public func * <Base>(lhs: BEInteger<Base>, rhs: BEInteger<Base>) -> BEInteger<Base> {
+    return BEInteger(representingValue: lhs.representingValue * rhs.representingValue)
+}
+@_transparent
+public func *= <Base>(lhs: inout BEInteger<Base>, rhs: BEInteger<Base>) {
+    lhs.representingValue *= rhs.representingValue
+}
+@_transparent
+public func / <Base>(lhs: BEInteger<Base>, rhs: BEInteger<Base>) -> BEInteger<Base> {
+    return BEInteger(representingValue: lhs.representingValue / rhs.representingValue)
+}
+@_transparent
+public func /= <Base>(lhs: inout BEInteger<Base>, rhs: BEInteger<Base>) {
+    lhs.representingValue /= rhs.representingValue
+}
+@_transparent
+public func % <Base>(lhs: BEInteger<Base>, rhs: BEInteger<Base>) -> BEInteger<Base> {
+    return BEInteger(representingValue: lhs.representingValue % rhs.representingValue)
+}
+@_transparent
+public func %= <Base>(lhs: inout BEInteger<Base>, rhs: BEInteger<Base>) {
+    lhs.representingValue %= rhs.representingValue
+}
+@_transparent
+public func & <Base>(lhs: BEInteger<Base>, rhs: BEInteger<Base>) -> BEInteger<Base> {
+    return BEInteger(representingValue: lhs.representingValue & rhs.representingValue)
+}
+@_transparent
+public func &= <Base>(lhs: inout BEInteger<Base>, rhs: BEInteger<Base>) {
+    lhs.representingValue &= rhs.representingValue
+}
+@_transparent
+public func | <Base>(lhs: BEInteger<Base>, rhs: BEInteger<Base>) -> BEInteger<Base> {
+    return BEInteger(representingValue: lhs.representingValue | rhs.representingValue)
+}
+@_transparent
+public func |= <Base>(lhs: inout BEInteger<Base>, rhs: BEInteger<Base>) {
+    lhs.representingValue |= rhs.representingValue
+}
+@_transparent
+public func ^ <Base>(lhs: BEInteger<Base>, rhs: BEInteger<Base>) -> BEInteger<Base> {
+    return BEInteger(representingValue: lhs.representingValue ^ rhs.representingValue)
+}
+@_transparent
+public func ^= <Base>(lhs: inout BEInteger<Base>, rhs: BEInteger<Base>) {
+    lhs.representingValue ^= rhs.representingValue
+}
+@_transparent
+public prefix func ~ <Base>(x: BEInteger<Base>) -> BEInteger<Base> {
+    return BEInteger(representingValue: ~x.representingValue)
+}
+@_transparent
+public func &>> <Base>(lhs: BEInteger<Base>, rhs: BEInteger<Base>) -> BEInteger<Base> {
+    return BEInteger(representingValue: lhs.representingValue &>> rhs.representingValue)
+}
+@_transparent
+public func &<< <Base>(lhs: BEInteger<Base>, rhs: BEInteger<Base>) -> BEInteger<Base> {
+    return BEInteger(representingValue: lhs.representingValue &<< rhs.representingValue)
+}
+@_transparent
+public func > <Base>(lhs: BEInteger<Base>, rhs: BEInteger<Base>) -> Bool {
+    return lhs.representingValue > rhs.representingValue
+}
+@_transparent
+public func < <Base>(lhs: BEInteger<Base>, rhs: BEInteger<Base>) -> Bool {
+    return lhs.representingValue < rhs.representingValue
+}
+@_transparent
+public func >= <Base>(lhs: BEInteger<Base>, rhs: BEInteger<Base>) -> Bool {
+    return lhs.representingValue >= rhs.representingValue
+}
+@_transparent
+public func <= <Base>(lhs: BEInteger<Base>, rhs: BEInteger<Base>) -> Bool {
+    return lhs.representingValue <= rhs.representingValue
+}
+
+@_transparent
+public prefix func + <Base>(x: LEInteger<Base>) -> LEInteger<Base> {
+    return x
+}
+@_transparent
+public func + <Base>(lhs: LEInteger<Base>, rhs: LEInteger<Base>) -> LEInteger<Base> {
+    return LEInteger(representingValue: lhs.representingValue + rhs.representingValue)
+}
+@_transparent
+public func += <Base>(lhs: inout LEInteger<Base>, rhs: LEInteger<Base>) {
+    lhs.representingValue += rhs.representingValue
+}
+@_transparent
+public func - <Base>(lhs: LEInteger<Base>, rhs: LEInteger<Base>) -> LEInteger<Base> {
+    return LEInteger(representingValue: lhs.representingValue - rhs.representingValue)
+}
+@_transparent
+public func -= <Base>(lhs: inout LEInteger<Base>, rhs: LEInteger<Base>) {
+    lhs.representingValue -= rhs.representingValue
+}
+@_transparent
+public func * <Base>(lhs: LEInteger<Base>, rhs: LEInteger<Base>) -> LEInteger<Base> {
+    return LEInteger(representingValue: lhs.representingValue * rhs.representingValue)
+}
+@_transparent
+public func *= <Base>(lhs: inout LEInteger<Base>, rhs: LEInteger<Base>) {
+    lhs.representingValue *= rhs.representingValue
+}
+@_transparent
+public func / <Base>(lhs: LEInteger<Base>, rhs: LEInteger<Base>) -> LEInteger<Base> {
+    return LEInteger(representingValue: lhs.representingValue / rhs.representingValue)
+}
+@_transparent
+public func /= <Base>(lhs: inout LEInteger<Base>, rhs: LEInteger<Base>) {
+    lhs.representingValue /= rhs.representingValue
+}
+@_transparent
+public func % <Base>(lhs: LEInteger<Base>, rhs: LEInteger<Base>) -> LEInteger<Base> {
+    return LEInteger(representingValue: lhs.representingValue % rhs.representingValue)
+}
+@_transparent
+public func %= <Base>(lhs: inout LEInteger<Base>, rhs: LEInteger<Base>) {
+    lhs.representingValue %= rhs.representingValue
+}
+@_transparent
+public func & <Base>(lhs: LEInteger<Base>, rhs: LEInteger<Base>) -> LEInteger<Base> {
+    return LEInteger(representingValue: lhs.representingValue & rhs.representingValue)
+}
+@_transparent
+public func &= <Base>(lhs: inout LEInteger<Base>, rhs: LEInteger<Base>) {
+    lhs.representingValue &= rhs.representingValue
+}
+@_transparent
+public func | <Base>(lhs: LEInteger<Base>, rhs: LEInteger<Base>) -> LEInteger<Base> {
+    return LEInteger(representingValue: lhs.representingValue | rhs.representingValue)
+}
+@_transparent
+public func |= <Base>(lhs: inout LEInteger<Base>, rhs: LEInteger<Base>) {
+    lhs.representingValue |= rhs.representingValue
+}
+@_transparent
+public func ^ <Base>(lhs: LEInteger<Base>, rhs: LEInteger<Base>) -> LEInteger<Base> {
+    return LEInteger(representingValue: lhs.representingValue ^ rhs.representingValue)
+}
+@_transparent
+public func ^= <Base>(lhs: inout LEInteger<Base>, rhs: LEInteger<Base>) {
+    lhs.representingValue ^= rhs.representingValue
+}
+@_transparent
+public prefix func ~ <Base>(x: LEInteger<Base>) -> LEInteger<Base> {
+    return LEInteger(representingValue: ~x.representingValue)
+}
+@_transparent
+public func &>> <Base>(lhs: LEInteger<Base>, rhs: LEInteger<Base>) -> LEInteger<Base> {
+    return LEInteger(representingValue: lhs.representingValue &>> rhs.representingValue)
+}
+@_transparent
+public func &<< <Base>(lhs: LEInteger<Base>, rhs: LEInteger<Base>) -> LEInteger<Base> {
+    return LEInteger(representingValue: lhs.representingValue &<< rhs.representingValue)
+}
+@_transparent
+public func > <Base>(lhs: LEInteger<Base>, rhs: LEInteger<Base>) -> Bool {
+    return lhs.representingValue > rhs.representingValue
+}
+@_transparent
+public func < <Base>(lhs: LEInteger<Base>, rhs: LEInteger<Base>) -> Bool {
+    return lhs.representingValue < rhs.representingValue
+}
+@_transparent
+public func >= <Base>(lhs: LEInteger<Base>, rhs: LEInteger<Base>) -> Bool {
+    return lhs.representingValue >= rhs.representingValue
+}
+@_transparent
+public func <= <Base>(lhs: LEInteger<Base>, rhs: LEInteger<Base>) -> Bool {
+    return lhs.representingValue <= rhs.representingValue
 }
 
 extension FixedWidthInteger {
