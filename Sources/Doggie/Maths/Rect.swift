@@ -75,21 +75,23 @@ extension Size {
     
     @_inlineable
     public func aspectFit(_ bound: Size) -> Size {
-        let ratio = width / height
-        if ratio < bound.width / bound.height {
-            return Size(width: bound.height * ratio, height: bound.height)
+        let u = width * bound.height
+        let v = bound.width * height
+        if u < v {
+            return Size(width: u / height, height: bound.height)
         } else {
-            return Size(width: bound.width, height: bound.width / ratio)
+            return Size(width: bound.width, height: v / width)
         }
     }
     
     @_inlineable
     public func aspectFill(_ bound: Size) -> Size {
-        let ratio = width / height
-        if ratio < bound.width / bound.height {
-            return Size(width: bound.width, height: bound.width / ratio)
+        let u = width * bound.height
+        let v = bound.width * height
+        if u < v {
+            return Size(width: bound.width, height: v / width)
         } else {
-            return Size(width: bound.height * ratio, height: bound.height)
+            return Size(width: u / height, height: bound.height)
         }
     }
 }
