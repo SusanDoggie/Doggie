@@ -92,7 +92,7 @@ extension ShapeRegion {
 
 extension ShapeRegion : RandomAccessCollection {
     
-    public typealias Indices = CountableRange<Int>
+    public typealias Indices = Range<Int>
     
     public var startIndex : Int {
         return solids.startIndex

@@ -41,7 +41,7 @@ extension MappedBufferOption {
 
 public struct MappedBuffer<Element> : RandomAccessCollection, MutableCollection, ExpressibleByArrayLiteral {
     
-    public typealias Indices = CountableRange<Int>
+    public typealias Indices = Range<Int>
     
     public typealias Index = Int
     

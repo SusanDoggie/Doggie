@@ -59,9 +59,9 @@ extension RawBitmap {
         public var format: Format
         public var endianness: Endianness
         
-        public var bitRange: CountableRange<Int>
+        public var bitRange: Range<Int>
         
-        public init(index: Int, format: Format, endianness: Endianness, bitRange: CountableRange<Int>) {
+        public init(index: Int, format: Format, endianness: Endianness, bitRange: Range<Int>) {
             if format == .float {
                 precondition(bitRange.count == 32 || bitRange.count == 64, "Only supported Float32 or Float64.")
             }

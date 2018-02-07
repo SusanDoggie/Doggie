@@ -88,7 +88,7 @@ extension RasterizeBufferProtocol {
         }
         
         @inline(__always)
-        func intRange(_ min: Double, _ max: Double, _ bound: CountableRange<Int>) -> CountableRange<Int> {
+        func intRange(_ min: Double, _ max: Double, _ bound: Range<Int>) -> Range<Int> {
             
             let _min = min.rounded(.up)
             let _max = max.rounded(.down)
@@ -98,7 +98,7 @@ extension RasterizeBufferProtocol {
             
             guard __min <= __max else { return (__min..<__min).clamped(to: bound) }
             
-            return _max == max ? (__min..<__max).clamped(to: bound) : CountableRange(__min...__max).clamped(to: bound)
+            return _max == max ? (__min..<__max).clamped(to: bound) : Range(__min...__max).clamped(to: bound)
         }
         
         guard !cross(p1 - p0, p2 - p0).almostZero() else { return }

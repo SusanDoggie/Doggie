@@ -27,7 +27,7 @@ import Foundation
 
 public struct FileBuffer : RandomAccessCollection, MutableCollection, ExpressibleByArrayLiteral {
     
-    public typealias Indices = CountableRange<Int>
+    public typealias Indices = Range<Int>
     
     public typealias Index = Int
     

@@ -27,7 +27,7 @@ import Foundation
 
 public struct Shape : RandomAccessCollection, MutableCollection, ExpressibleByArrayLiteral {
     
-    public typealias Indices = CountableRange<Int>
+    public typealias Indices = Range<Int>
     
     public typealias Index = Int
     
@@ -389,7 +389,7 @@ extension Shape.Component {
 
 extension Shape.Component : RandomAccessCollection, MutableCollection {
     
-    public typealias Indices = CountableRange<Int>
+    public typealias Indices = Range<Int>
     
     public typealias Index = Int
     
@@ -464,7 +464,7 @@ extension Shape.Component {
     
     public struct BezierCollection: RandomAccessCollection, MutableCollection {
         
-        public typealias Indices = CountableRange<Int>
+        public typealias Indices = Range<Int>
         
         public typealias Index = Int
         

@@ -52,7 +52,7 @@ struct CFF2INDEX : ByteDecodable, RandomAccessCollection {
         }
     }
     
-    static func _offset(_ index: Int, _ offSize: UInt8, _ offset: Data) -> CountableRange<Int> {
+    static func _offset(_ index: Int, _ offSize: UInt8, _ offset: Data) -> Range<Int> {
         
         return offset.withUnsafeBytes { (offset: UnsafePointer<UInt8>) in
             

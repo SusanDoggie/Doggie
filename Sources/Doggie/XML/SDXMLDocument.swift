@@ -48,7 +48,7 @@ extension SDXMLDocument {
 
 extension SDXMLDocument : RandomAccessCollection, MutableCollection {
     
-    public typealias Indices = CountableRange<Int>
+    public typealias Indices = Range<Int>
     
     public typealias Index = Int
     

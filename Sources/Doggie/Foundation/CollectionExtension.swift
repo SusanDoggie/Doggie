@@ -371,11 +371,7 @@ extension Comparable {
 extension Strideable where Stride : SignedInteger {
     
     @_inlineable
-    public func clamped(to range: CountableRange<Self>) -> Self {
-        return self.clamped(to: ClosedRange(range))
-    }
-    @_inlineable
-    public func clamped(to range: CountableClosedRange<Self>) -> Self {
+    public func clamped(to range: Range<Self>) -> Self {
         return self.clamped(to: ClosedRange(range))
     }
 }
@@ -749,7 +745,7 @@ extension LazyCollectionProtocol {
 
 public struct OptionOneCollection<T> : RandomAccessCollection {
     
-    public typealias Indices = CountableRange<Int>
+    public typealias Indices = Range<Int>
     
     public let value: T?
     

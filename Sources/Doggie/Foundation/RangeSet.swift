@@ -158,17 +158,17 @@ extension RangeSet where Bound : Strideable, Bound.Stride : SignedInteger {
     
     @_inlineable
     public func min() -> Bound? {
-        return ranges.first.flatMap { CountableRange($0).min() }
+        return ranges.first.flatMap { Range($0).min() }
     }
     
     @_inlineable
     public func max() -> Bound? {
-        return ranges.last.flatMap { CountableRange($0).max() }
+        return ranges.last.flatMap { Range($0).max() }
     }
     
     @_inlineable
-    public var elements: LazyCollection<FlattenCollection<LazyMapCollection<[Range<Bound>], CountableRange<Bound>>>> {
-        return ranges.lazy.flatMap(CountableRange.init)
+    public var elements: LazyCollection<FlattenCollection<LazyMapCollection<[Range<Bound>], Range<Bound>>>> {
+        return ranges.lazy.flatMap(Range.init)
     }
 }
 
@@ -184,20 +184,11 @@ extension RangeSet where Bound : Strideable, Bound.Stride : SignedInteger {
     }
     
     @_inlineable
-    public init(_ ranges: CountableRange<Bound> ... ) {
+    public init(_ ranges: Range<Bound> ... ) {
         self.init(ranges)
     }
     @_inlineable
-    public init<S : Sequence>(_ s: S) where S.Element == CountableRange<Bound> {
-        self = s.reduce(RangeSet()) { $0.union($1) }
-    }
-    
-    @_inlineable
-    public init(_ ranges: CountableClosedRange<Bound> ... ) {
-        self.init(ranges)
-    }
-    @_inlineable
-    public init<S : Sequence>(_ s: S) where S.Element == CountableClosedRange<Bound> {
+    public init<S : Sequence>(_ s: S) where S.Element == Range<Bound> {
         self = s.reduce(RangeSet()) { $0.union($1) }
     }
 }
@@ -222,36 +213,19 @@ extension RangeSet where Bound : Strideable, Bound.Stride : SignedInteger {
     }
     
     @_inlineable
-    public func union(_ ranges: CountableRange<Bound>) -> RangeSet {
+    public func union(_ ranges: Range<Bound>) -> RangeSet {
         return self.union(Range(ranges))
     }
     @_inlineable
-    public func subtracting(_ ranges: CountableRange<Bound>) -> RangeSet {
+    public func subtracting(_ ranges: Range<Bound>) -> RangeSet {
         return self.subtracting(Range(ranges))
     }
     @_inlineable
-    public func intersection(_ ranges: CountableRange<Bound>) -> RangeSet {
+    public func intersection(_ ranges: Range<Bound>) -> RangeSet {
         return self.intersection(Range(ranges))
     }
     @_inlineable
-    public func symmetricDifference(_ ranges: CountableRange<Bound>) -> RangeSet {
-        return self.symmetricDifference(Range(ranges))
-    }
-    
-    @_inlineable
-    public func union(_ ranges: CountableClosedRange<Bound>) -> RangeSet {
-        return self.union(Range(ranges))
-    }
-    @_inlineable
-    public func subtracting(_ ranges: CountableClosedRange<Bound>) -> RangeSet {
-        return self.subtracting(Range(ranges))
-    }
-    @_inlineable
-    public func intersection(_ ranges: CountableClosedRange<Bound>) -> RangeSet {
-        return self.intersection(Range(ranges))
-    }
-    @_inlineable
-    public func symmetricDifference(_ ranges: CountableClosedRange<Bound>) -> RangeSet {
+    public func symmetricDifference(_ ranges: Range<Bound>) -> RangeSet {
         return self.symmetricDifference(Range(ranges))
     }
 }

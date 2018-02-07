@@ -180,7 +180,7 @@ extension SFNTCMAP {
             self.idRangeOffset = data.popFirst(ramainSize)
         }
         
-        func search(_ code: UInt32, _ startCode: UnsafePointer<BEUInt16>, _ endCode: UnsafePointer<BEUInt16>, _ range: CountableRange<Int>) -> Int? {
+        func search(_ code: UInt32, _ startCode: UnsafePointer<BEUInt16>, _ endCode: UnsafePointer<BEUInt16>, _ range: Range<Int>) -> Int? {
             
             var range = range
             
@@ -255,7 +255,7 @@ extension SFNTCMAP {
             self.groups = data.popFirst(Int(nGroups))
         }
         
-        func search(_ code: UInt32, _ groups: UnsafePointer<Group>, _ range: CountableRange<Int>) -> Int {
+        func search(_ code: UInt32, _ groups: UnsafePointer<Group>, _ range: Range<Int>) -> Int {
             
             var range = range
             

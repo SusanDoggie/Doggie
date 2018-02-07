@@ -152,7 +152,7 @@ extension CFFDICT {
         return nil
     }
     
-    var pDICTRange: CountableRange<Int>? {
+    var pDICTRange: Range<Int>? {
         if let operands = dict[18], operands.count == 2, case let .integer(size) = operands[0], case let .integer(offset) = operands[1], size != 0 && offset != 0 {
             return offset..<offset + size
         }

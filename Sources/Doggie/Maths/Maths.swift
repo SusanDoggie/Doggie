@@ -26,23 +26,23 @@
 import Foundation
 
 @_inlineable
-public func FactorialList<T: UnsignedInteger>(_ n: T) -> LazyScanSequence<Slice<CountableClosedRange<T>>, T> {
+public func FactorialList<T: UnsignedInteger>(_ n: T) -> LazyScanSequence<Slice<ClosedRange<T>>, T> {
     
     return (0...n).dropFirst().lazy.scan(1, *)
 }
 @_inlineable
-public func PermutationList<T: UnsignedInteger>(_ n: T) -> LazyScanSequence<ReversedCollection<Slice<CountableClosedRange<T>>>, T> {
+public func PermutationList<T: UnsignedInteger>(_ n: T) -> LazyScanSequence<ReversedCollection<Slice<ClosedRange<T>>>, T> {
     
     return (0...n).dropFirst().reversed().lazy.scan(1, *)
 }
 @_inlineable
-public func CombinationList<T: UnsignedInteger>(_ n: T) -> LazyMapSequence<Zip2Sequence<LazyScanSequence<ReversedCollection<Slice<CountableClosedRange<T>>>, T>, LazyScanSequence<Slice<CountableClosedRange<T>>, T>>, T> {
+public func CombinationList<T: UnsignedInteger>(_ n: T) -> LazyMapSequence<Zip2Sequence<LazyScanSequence<ReversedCollection<Slice<ClosedRange<T>>>, T>, LazyScanSequence<Slice<ClosedRange<T>>, T>>, T> {
     
     return zip(PermutationList(n), FactorialList(n)).lazy.map(/)
 }
 
 @_inlineable
-public func FibonacciList<T: UnsignedInteger>(_ n: T) -> LazyMapSequence<LazyScanSequence<CountableRange<T>, (T, T)>, T> {
+public func FibonacciList<T: UnsignedInteger>(_ n: T) -> LazyMapSequence<LazyScanSequence<Range<T>, (T, T)>, T> {
     
     return (0..<n).dropLast().lazy.scan((1, 1)) { x, _ in (x.1, x.0 + x.1) }.map { $0.0 }
 }
