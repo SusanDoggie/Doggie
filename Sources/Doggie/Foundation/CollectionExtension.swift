@@ -881,7 +881,7 @@ extension ConcatCollectionIndex : Hashable where I1 : Hashable, I2 : Hashable {
     
     @_inlineable
     public var hashValue: Int {
-        return hash_combine(seed: hash_combine(seed: 0, currect1), currect2)
+        return hash_combine(currect1, currect2)
     }
 }
 

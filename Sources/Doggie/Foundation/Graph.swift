@@ -436,7 +436,7 @@ extension GraphIndex {
     
     @_inlineable
     public var hashValue: Int {
-        return hash_combine(seed: hash_combine(seed: 0, index1), index2 == nil ? 0 : 1, index2?.hashValue ?? 0)
+        return hash_combine(index1, index2 == nil ? 0 : 1, index2?.hashValue ?? 0)
     }
 }
 

@@ -70,7 +70,7 @@ extension RangeSet : Hashable where Bound : Hashable {
     
     @_inlineable
     public var hashValue: Int {
-        return ranges.reduce(0) { hash_combine(seed: $0, $1.lowerBound, $1.upperBound) }
+        return ranges.reduce(0) { hash_combine($0, $1.lowerBound, $1.upperBound) }
     }
 }
 
