@@ -37,15 +37,13 @@ func _hash_combine(_ lhs: Int, _ rhs: Int) -> Int {
     return lhs ^ c
 }
 
-@_versioned
-@_transparent
-func hash_combine<S: Sequence>(_ values: S) -> Int where S.Element : Hashable {
+@_inlineable
+public func hash_combine<S: Sequence>(_ values: S) -> Int where S.Element : Hashable {
     return values.reduce(0) { _hash_combine($0, $1.hashValue) }
 }
 
-@_versioned
-@_transparent
-func hash_combine(_ firstValue: AnyHashable, _ secondValue: AnyHashable, _ remains: AnyHashable ...) -> Int {
+@_inlineable
+public func hash_combine(_ firstValue: AnyHashable, _ secondValue: AnyHashable, _ remains: AnyHashable ...) -> Int {
     return remains.reduce(_hash_combine(firstValue.hashValue, secondValue.hashValue)) { _hash_combine($0, $1.hashValue) }
 }
 
