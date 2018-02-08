@@ -132,7 +132,7 @@ extension Polynomial {
     
     @_inlineable
     public var hashValue: Int {
-        return hash_combine(seed: 0, coeffs)
+        return hash_combine(coeffs)
     }
 }
 

@@ -113,6 +113,12 @@ class CalibratedRGBColorSpace : ColorSpaceBaseProtocol {
     
     @_versioned
     @_inlineable
+    var hashValue: Int {
+        return hash_combine("CalibratedRGBColorSpace", cieXYZ.hashValue, transferMatrix)
+    }
+    
+    @_versioned
+    @_inlineable
     static func ==(lhs: CalibratedRGBColorSpace, rhs: CalibratedRGBColorSpace) -> Bool {
         return lhs.__equalTo(rhs)
     }
@@ -192,6 +198,12 @@ class CalibratedGammaRGBColorSpace: CalibratedRGBColorSpace {
         guard type(of: other) == CalibratedGammaRGBColorSpace.self else { return false }
         guard let other = other as? CalibratedGammaRGBColorSpace else { return false }
         return self.cieXYZ == other.cieXYZ && self.transferMatrix == other.transferMatrix && self.gamma == other.gamma
+    }
+    
+    @_versioned
+    @_inlineable
+    override var hashValue: Int {
+        return hash_combine(super.hashValue, gamma.0, gamma.1, gamma.2)
     }
 }
 

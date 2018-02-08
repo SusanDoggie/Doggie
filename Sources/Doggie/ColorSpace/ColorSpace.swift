@@ -34,6 +34,8 @@ protocol _ColorSpaceBaseProtocol {
     
     var cieXYZ: CIEXYZColorSpace { get }
     
+    var hashValue: Int { get }
+    
     func isEqualTo(_ other: _ColorSpaceBaseProtocol) -> Bool
     
     func _convertToLinear<Model : ColorModelProtocol>(_ color: Model) -> Model
@@ -183,7 +185,7 @@ extension ColorSpace {
     
     @_inlineable
     public var hashValue: Int {
-        return description.hashValue
+        return base.hashValue
     }
     
     @_inlineable

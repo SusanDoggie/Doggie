@@ -107,6 +107,12 @@ extension ICCColorSpace {
     
     @_versioned
     @_inlineable
+    var hashValue: Int {
+        return hash_combine("ICCColorSpace", _iccData)
+    }
+    
+    @_versioned
+    @_inlineable
     static func ==(lhs: ICCColorSpace, rhs: ICCColorSpace) -> Bool {
         return lhs._iccData == rhs._iccData
     }
