@@ -63,7 +63,7 @@ public struct GrayColorModel : ColorModelProtocol {
     
     @_transparent
     public var hashValue: Int {
-        return hash_combine(seed: 0, white)
+        return white.hashValue
     }
 }
 
@@ -152,7 +152,7 @@ extension GrayColorModel {
         
         @_transparent
         public var hashValue: Int {
-            return hash_combine(seed: 0, white)
+            return white.hashValue
         }
     }
 }

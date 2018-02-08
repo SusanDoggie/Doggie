@@ -72,9 +72,9 @@ extension Shape.LineJoin : Hashable {
     
     public var hashValue: Int {
         switch self {
-        case let .miter(limit): return hash_combine(seed: 0, 0, limit.hashValue)
-        case .round: return hash_combine(seed: 0, 1, 0)
-        case .bevel: return hash_combine(seed: 0, 2, 0)
+        case let .miter(limit): return hash_combine(0, limit)
+        case .round: return hash_combine(1, 0)
+        case .bevel: return hash_combine(2, 0)
         }
     }
 }

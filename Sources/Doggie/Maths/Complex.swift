@@ -122,7 +122,7 @@ extension Complex: Hashable {
     
     @_transparent
     public var hashValue: Int {
-        return hash_combine(seed: 0, real, imag)
+        return hash_combine(real, imag)
     }
 }
 

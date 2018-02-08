@@ -64,7 +64,7 @@ extension SDTransform : Hashable {
     
     @_transparent
     public var hashValue: Int {
-        return hash_combine(seed: 0, a, b, c, d, e, f)
+        return hash_combine(a, b, c, d, e, f)
     }
 }
 

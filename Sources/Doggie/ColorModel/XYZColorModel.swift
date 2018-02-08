@@ -100,7 +100,7 @@ public struct XYZColorModel : ColorModelProtocol {
     
     @_transparent
     public var hashValue: Int {
-        return hash_combine(seed: 0, x, y, z)
+        return hash_combine(x, y, z)
     }
 }
 
@@ -213,7 +213,7 @@ extension XYZColorModel {
         
         @_transparent
         public var hashValue: Int {
-            return hash_combine(seed: 0, x, y, z)
+            return hash_combine(x, y, z)
         }
     }
 }

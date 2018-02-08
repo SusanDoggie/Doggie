@@ -92,7 +92,7 @@ public struct LabColorModel : ColorModelProtocol {
     
     @_transparent
     public var hashValue: Int {
-        return hash_combine(seed: 0, lightness, a, b)
+        return hash_combine(lightness, a, b)
     }
 }
 
@@ -205,7 +205,7 @@ extension LabColorModel {
         
         @_transparent
         public var hashValue: Int {
-            return hash_combine(seed: 0, lightness, a, b)
+            return hash_combine(lightness, a, b)
         }
     }
 }

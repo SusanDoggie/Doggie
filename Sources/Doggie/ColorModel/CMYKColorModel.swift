@@ -75,7 +75,7 @@ public struct CMYKColorModel : ColorModelProtocol {
     
     @_transparent
     public var hashValue: Int {
-        return hash_combine(seed: 0, cyan, magenta, yellow, black)
+        return hash_combine(cyan, magenta, yellow, black)
     }
 }
 
@@ -249,7 +249,7 @@ extension CMYKColorModel {
         
         @_transparent
         public var hashValue: Int {
-            return hash_combine(seed: 0, cyan, magenta, yellow, black)
+            return hash_combine(cyan, magenta, yellow, black)
         }
     }
 }

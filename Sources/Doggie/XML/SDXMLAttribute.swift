@@ -49,7 +49,7 @@ public struct SDXMLAttribute {
 extension SDXMLAttribute : Hashable {
     
     public var hashValue: Int {
-        return hash_combine(seed: 0, attribute.hashValue, namespace.hashValue)
+        return hash_combine(attribute, namespace)
     }
 }
 

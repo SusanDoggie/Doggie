@@ -67,7 +67,7 @@ public struct Gray16ColorPixel : ColorPixelProtocol {
     
     @_transparent
     public var hashValue: Int {
-        return hash_combine(seed: 0, w, a)
+        return hash_combine(w, a)
     }
     
     @_transparent

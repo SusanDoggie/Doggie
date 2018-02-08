@@ -121,7 +121,7 @@ extension Rational: Hashable {
     
     @_transparent
     public var hashValue: Int {
-        return hash_combine(seed: 0, numerator, denominator)
+        return hash_combine(numerator, denominator)
     }
 }
 

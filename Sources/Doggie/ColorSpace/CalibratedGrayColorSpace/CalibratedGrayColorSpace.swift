@@ -80,6 +80,12 @@ extension CalibratedGrayColorSpace {
     
     @_versioned
     @_inlineable
+    var hashValue: Int {
+        return hash_combine("CalibratedGrayColorSpace", cieXYZ.hashValue, gamma)
+    }
+    
+    @_versioned
+    @_inlineable
     static func ==(lhs: CalibratedGrayColorSpace, rhs: CalibratedGrayColorSpace) -> Bool {
         return lhs.cieXYZ == rhs.cieXYZ && lhs.gamma == rhs.gamma
     }

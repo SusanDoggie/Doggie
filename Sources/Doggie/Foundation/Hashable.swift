@@ -26,23 +26,26 @@
 import Foundation
 
 @_versioned
-let _hash_phi = 0.6180339887498948482045868343656381177203091798057628
+let _hash_magic = Int(bitPattern: UInt(round(0.6180339887498948482045868343656381177203091798057628 * Double(UInt.max))))
 
 @_versioned
-let _hash_seed = Int(bitPattern: UInt(round(_hash_phi * Double(UInt.max))))
+@_transparent
+func _hash_combine(_ lhs: Int, _ rhs: Int) -> Int {
+    let a = lhs << 6
+    let b = lhs >> 2
+    let c = rhs &+ _hash_magic &+ a &+ b
+    return lhs ^ c
+}
 
-@_inlineable
-public func hash_combine<T: Hashable>(seed: Int, _ value: T) -> Int {
-    let a = seed << 6
-    let b = seed >> 2
-    let c = value.hashValue &+ _hash_seed &+ a &+ b
-    return seed ^ c
+@_versioned
+@_transparent
+func hash_combine<S: Sequence>(_ values: S) -> Int where S.Element : Hashable {
+    return values.reduce(0) { _hash_combine($0, $1.hashValue) }
 }
-@_inlineable
-public func hash_combine<S: Sequence>(seed: Int, _ values: S) -> Int where S.Element : Hashable {
-    return values.reduce(seed, hash_combine)
+
+@_versioned
+@_transparent
+func hash_combine(_ firstValue: AnyHashable, _ secondValue: AnyHashable, _ remains: AnyHashable ...) -> Int {
+    return remains.reduce(_hash_combine(firstValue.hashValue, secondValue.hashValue)) { _hash_combine($0, $1.hashValue) }
 }
-@_inlineable
-public func hash_combine<T: Hashable>(seed: Int, _ a: T, _ b: T, _ res: T ... ) -> Int {
-    return hash_combine(seed: hash_combine(seed: hash_combine(seed: seed, a), b), res)
-}
+

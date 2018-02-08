@@ -86,7 +86,15 @@ public struct Image<Pixel: ColorPixelProtocol> {
         self.height = image.height
         self.resolution = image.resolution
         self.colorSpace = colorSpace
-        self.pixels = image.colorSpace.convert(image.pixels, to: self.colorSpace, intent: intent, option: option)
+        if image.colorSpace as? ColorSpace<Pixel.Model> == colorSpace {
+            if let buffer = image.pixels as? MappedBuffer<Pixel> {
+                self.pixels = MappedBuffer(buffer, option: option)
+            } else {
+                self.pixels = MappedBuffer(image.pixels.lazy.map { Pixel(color: $0.color as! Pixel.Model, opacity: $0.opacity) }, option: option)
+            }
+        } else {
+            self.pixels = image.colorSpace.convert(image.pixels, to: self.colorSpace, intent: intent, option: option)
+        }
     }
 }
 

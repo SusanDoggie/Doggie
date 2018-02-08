@@ -75,8 +75,15 @@ struct LinearToneColorSpace<ColorSpace: ColorSpaceBaseProtocol> : ColorSpaceBase
 
 extension LinearToneColorSpace {
     
+    @_versioned
     @_inlineable
-    public static func ==(lhs: LinearToneColorSpace, rhs: LinearToneColorSpace) -> Bool {
+    var hashValue: Int {
+        return hash_combine("LinearToneColorSpace", base.hashValue)
+    }
+    
+    @_versioned
+    @_inlineable
+    static func ==(lhs: LinearToneColorSpace, rhs: LinearToneColorSpace) -> Bool {
         return lhs.base == rhs.base
     }
 }

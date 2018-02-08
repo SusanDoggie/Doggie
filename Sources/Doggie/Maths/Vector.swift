@@ -64,7 +64,7 @@ extension Vector: Hashable {
     
     @_transparent
     public var hashValue: Int {
-        return hash_combine(seed: 0, x, y, z)
+        return hash_combine(x, y, z)
     }
 }
 

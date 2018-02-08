@@ -78,6 +78,12 @@ class _displayP3: CalibratedRGBColorSpace {
     override func _isEqualTo(_ other: CalibratedRGBColorSpace) -> Bool {
         return type(of: other) == _displayP3.self
     }
+    
+    @_versioned
+    @_inlineable
+    override var hashValue: Int {
+        return hash_combine("CalibratedRGBColorSpace", ".displayP3")
+    }
 }
 
 extension ColorSpace where Model == RGBColorModel {

@@ -60,7 +60,7 @@ extension Radius: Hashable {
     
     @_transparent
     public var hashValue: Int {
-        return hash_combine(seed: 0, x, y)
+        return hash_combine(x, y)
     }
 }
 

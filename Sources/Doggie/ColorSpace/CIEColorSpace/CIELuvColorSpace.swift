@@ -58,6 +58,12 @@ extension CIELuvColorSpace {
     
     @_versioned
     @_inlineable
+    var hashValue: Int {
+        return hash_combine("CIELuvColorSpace", cieXYZ.hashValue)
+    }
+    
+    @_versioned
+    @_inlineable
     static func ==(lhs: CIELuvColorSpace, rhs: CIELuvColorSpace) -> Bool {
         return lhs.cieXYZ == rhs.cieXYZ
     }

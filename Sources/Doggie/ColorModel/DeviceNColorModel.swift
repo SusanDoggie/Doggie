@@ -73,7 +73,7 @@ public struct Device2ColorModel : ColorModelProtocol {
     
     @_transparent
     public var hashValue: Int {
-        return hash_combine(seed: 0, component_0, component_1)
+        return hash_combine(component_0, component_1)
     }
 }
 
@@ -203,7 +203,7 @@ public struct Device3ColorModel : ColorModelProtocol {
     
     @_transparent
     public var hashValue: Int {
-        return hash_combine(seed: 0, component_0, component_1, component_2)
+        return hash_combine(component_0, component_1, component_2)
     }
 }
 
@@ -343,7 +343,7 @@ public struct Device4ColorModel : ColorModelProtocol {
     
     @_transparent
     public var hashValue: Int {
-        return hash_combine(seed: 0, component_0, component_1, component_2, component_3)
+        return hash_combine(component_0, component_1, component_2, component_3)
     }
 }
 
@@ -494,8 +494,7 @@ public struct Device5ColorModel : ColorModelProtocol {
     
     @_transparent
     public var hashValue: Int {
-        return hash_combine(seed: 0,
-                            component_0, component_1, component_2,
+        return hash_combine(component_0, component_1, component_2,
                             component_3, component_4
         )
     }
@@ -681,8 +680,7 @@ public struct Device6ColorModel : ColorModelProtocol {
     
     @_transparent
     public var hashValue: Int {
-        return hash_combine(seed: 0,
-                            component_0, component_1, component_2,
+        return hash_combine(component_0, component_1, component_2,
                             component_3, component_4, component_5
         )
     }
@@ -879,8 +877,7 @@ public struct Device7ColorModel : ColorModelProtocol {
     
     @_transparent
     public var hashValue: Int {
-        return hash_combine(seed: 0,
-                            component_0, component_1, component_2,
+        return hash_combine(component_0, component_1, component_2,
                             component_3, component_4, component_5,
                             component_6
         )
@@ -1097,8 +1094,7 @@ public struct Device8ColorModel : ColorModelProtocol {
     
     @_transparent
     public var hashValue: Int {
-        return hash_combine(seed: 0,
-                            component_0, component_1, component_2,
+        return hash_combine(component_0, component_1, component_2,
                             component_3, component_4, component_5,
                             component_6, component_7
         )
@@ -1325,8 +1321,7 @@ public struct Device9ColorModel : ColorModelProtocol {
     
     @_transparent
     public var hashValue: Int {
-        return hash_combine(seed: 0,
-                            component_0, component_1, component_2,
+        return hash_combine(component_0, component_1, component_2,
                             component_3, component_4, component_5,
                             component_6, component_7, component_8
         )
@@ -1564,8 +1559,7 @@ public struct Device10ColorModel : ColorModelProtocol {
     
     @_transparent
     public var hashValue: Int {
-        return hash_combine(seed: 0,
-                            component_0, component_1, component_2,
+        return hash_combine(component_0, component_1, component_2,
                             component_3, component_4, component_5,
                             component_6, component_7, component_8,
                             component_9
@@ -1823,8 +1817,7 @@ public struct Device11ColorModel : ColorModelProtocol {
     
     @_transparent
     public var hashValue: Int {
-        return hash_combine(seed: 0,
-                            component_0, component_1, component_2,
+        return hash_combine(component_0, component_1, component_2,
                             component_3, component_4, component_5,
                             component_6, component_7, component_8,
                             component_9, component_10
@@ -2092,8 +2085,7 @@ public struct Device12ColorModel : ColorModelProtocol {
     
     @_transparent
     public var hashValue: Int {
-        return hash_combine(seed: 0,
-                            component_0, component_1, component_2,
+        return hash_combine(component_0, component_1, component_2,
                             component_3, component_4, component_5,
                             component_6, component_7, component_8,
                             component_9, component_10, component_11
@@ -2372,8 +2364,7 @@ public struct Device13ColorModel : ColorModelProtocol {
     
     @_transparent
     public var hashValue: Int {
-        return hash_combine(seed: 0,
-                            component_0, component_1, component_2,
+        return hash_combine(component_0, component_1, component_2,
                             component_3, component_4, component_5,
                             component_6, component_7, component_8,
                             component_9, component_10, component_11,
@@ -2672,8 +2663,7 @@ public struct Device14ColorModel : ColorModelProtocol {
     
     @_transparent
     public var hashValue: Int {
-        return hash_combine(seed: 0,
-                            component_0, component_1, component_2,
+        return hash_combine(component_0, component_1, component_2,
                             component_3, component_4, component_5,
                             component_6, component_7, component_8,
                             component_9, component_10, component_11,
@@ -2982,8 +2972,7 @@ public struct Device15ColorModel : ColorModelProtocol {
     
     @_transparent
     public var hashValue: Int {
-        return hash_combine(seed: 0,
-                            component_0, component_1, component_2,
+        return hash_combine(component_0, component_1, component_2,
                             component_3, component_4, component_5,
                             component_6, component_7, component_8,
                             component_9, component_10, component_11,
@@ -3242,7 +3231,7 @@ extension Device2ColorModel {
         
         @_transparent
         public var hashValue: Int {
-            return hash_combine(seed: 0, component_0, component_1)
+            return hash_combine(component_0, component_1)
         }
     }
 }
@@ -3388,7 +3377,7 @@ extension Device3ColorModel {
         
         @_transparent
         public var hashValue: Int {
-            return hash_combine(seed: 0, component_0, component_1, component_2)
+            return hash_combine(component_0, component_1, component_2)
         }
     }
 }
@@ -3546,7 +3535,7 @@ extension Device4ColorModel {
         
         @_transparent
         public var hashValue: Int {
-            return hash_combine(seed: 0, component_0, component_1, component_2, component_3)
+            return hash_combine(component_0, component_1, component_2, component_3)
         }
     }
 }
@@ -3720,8 +3709,7 @@ extension Device5ColorModel {
         
         @_transparent
         public var hashValue: Int {
-            return hash_combine(seed: 0,
-                                component_0, component_1, component_2,
+            return hash_combine(component_0, component_1, component_2,
                                 component_3, component_4
             )
         }
@@ -3932,8 +3920,7 @@ extension Device6ColorModel {
         
         @_transparent
         public var hashValue: Int {
-            return hash_combine(seed: 0,
-                                component_0, component_1, component_2,
+            return hash_combine(component_0, component_1, component_2,
                                 component_3, component_4, component_5
             )
         }
@@ -4158,8 +4145,7 @@ extension Device7ColorModel {
         
         @_transparent
         public var hashValue: Int {
-            return hash_combine(seed: 0,
-                                component_0, component_1, component_2,
+            return hash_combine(component_0, component_1, component_2,
                                 component_3, component_4, component_5,
                                 component_6
             )
@@ -4406,8 +4392,7 @@ extension Device8ColorModel {
         
         @_transparent
         public var hashValue: Int {
-            return hash_combine(seed: 0,
-                                component_0, component_1, component_2,
+            return hash_combine(component_0, component_1, component_2,
                                 component_3, component_4, component_5,
                                 component_6, component_7
             )
@@ -4666,8 +4651,7 @@ extension Device9ColorModel {
         
         @_transparent
         public var hashValue: Int {
-            return hash_combine(seed: 0,
-                                component_0, component_1, component_2,
+            return hash_combine(component_0, component_1, component_2,
                                 component_3, component_4, component_5,
                                 component_6, component_7, component_8
             )
@@ -4940,8 +4924,7 @@ extension Device10ColorModel {
         
         @_transparent
         public var hashValue: Int {
-            return hash_combine(seed: 0,
-                                component_0, component_1, component_2,
+            return hash_combine(component_0, component_1, component_2,
                                 component_3, component_4, component_5,
                                 component_6, component_7, component_8,
                                 component_9
@@ -5236,8 +5219,7 @@ extension Device11ColorModel {
         
         @_transparent
         public var hashValue: Int {
-            return hash_combine(seed: 0,
-                                component_0, component_1, component_2,
+            return hash_combine(component_0, component_1, component_2,
                                 component_3, component_4, component_5,
                                 component_6, component_7, component_8,
                                 component_9, component_10
@@ -5544,8 +5526,7 @@ extension Device12ColorModel {
         
         @_transparent
         public var hashValue: Int {
-            return hash_combine(seed: 0,
-                                component_0, component_1, component_2,
+            return hash_combine(component_0, component_1, component_2,
                                 component_3, component_4, component_5,
                                 component_6, component_7, component_8,
                                 component_9, component_10, component_11
@@ -5866,8 +5847,7 @@ extension Device13ColorModel {
         
         @_transparent
         public var hashValue: Int {
-            return hash_combine(seed: 0,
-                                component_0, component_1, component_2,
+            return hash_combine(component_0, component_1, component_2,
                                 component_3, component_4, component_5,
                                 component_6, component_7, component_8,
                                 component_9, component_10, component_11,
@@ -6210,8 +6190,7 @@ extension Device14ColorModel {
         
         @_transparent
         public var hashValue: Int {
-            return hash_combine(seed: 0,
-                                component_0, component_1, component_2,
+            return hash_combine(component_0, component_1, component_2,
                                 component_3, component_4, component_5,
                                 component_6, component_7, component_8,
                                 component_9, component_10, component_11,
@@ -6566,8 +6545,7 @@ extension Device15ColorModel {
         
         @_transparent
         public var hashValue: Int {
-            return hash_combine(seed: 0,
-                                component_0, component_1, component_2,
+            return hash_combine(component_0, component_1, component_2,
                                 component_3, component_4, component_5,
                                 component_6, component_7, component_8,
                                 component_9, component_10, component_11,

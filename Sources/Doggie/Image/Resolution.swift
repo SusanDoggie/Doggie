@@ -48,7 +48,7 @@ extension Resolution {
     
     @_inlineable
     public var hashValue: Int {
-        return hash_combine(seed: 0, horizontal.hashValue, vertical.hashValue, unit.hashValue)
+        return hash_combine(horizontal, vertical, unit)
     }
     
     @_inlineable

@@ -54,7 +54,7 @@ extension Color {
     
     @_inlineable
     public var hashValue: Int {
-        return hash_combine(seed: 0, colorSpace.hashValue, color.hashValue, opacity.hashValue)
+        return hash_combine(colorSpace, color, opacity)
     }
     
     @_inlineable

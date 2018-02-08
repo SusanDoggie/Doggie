@@ -210,7 +210,7 @@ extension JPEGHuffmanTable {
         var code: UInt16
         
         var hashValue: Int {
-            return hash_combine(seed: hash_combine(seed: 0, length), code)
+            return hash_combine(length, code)
         }
         
         static func ==(lhs: Key, rhs: Key) -> Bool {

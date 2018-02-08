@@ -91,7 +91,7 @@ public struct LuvColorModel : ColorModelProtocol {
     
     @_transparent
     public var hashValue: Int {
-        return hash_combine(seed: 0, lightness, u, v)
+        return hash_combine(lightness, u, v)
     }
 }
 
@@ -204,7 +204,7 @@ extension LuvColorModel {
         
         @_transparent
         public var hashValue: Int {
-            return hash_combine(seed: 0, lightness, u, v)
+            return hash_combine(lightness, u, v)
         }
     }
 }

@@ -78,7 +78,7 @@ public struct RGBColorModel : ColorModelProtocol {
     
     @_transparent
     public var hashValue: Int {
-        return hash_combine(seed: 0, red, green, blue)
+        return hash_combine(red, green, blue)
     }
 }
 
@@ -322,7 +322,7 @@ extension RGBColorModel {
         
         @_transparent
         public var hashValue: Int {
-            return hash_combine(seed: 0, red, green, blue)
+            return hash_combine(red, green, blue)
         }
     }
 }

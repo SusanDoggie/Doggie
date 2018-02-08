@@ -58,7 +58,7 @@ extension Size: Hashable {
     
     @_transparent
     public var hashValue: Int {
-        return hash_combine(seed: 0, width, height)
+        return hash_combine(width, height)
     }
 }
 
@@ -196,7 +196,7 @@ extension Rect: Hashable {
     
     @_transparent
     public var hashValue: Int {
-        return hash_combine(seed: 0, origin.hashValue, size.hashValue)
+        return hash_combine(origin, size)
     }
 }
 
