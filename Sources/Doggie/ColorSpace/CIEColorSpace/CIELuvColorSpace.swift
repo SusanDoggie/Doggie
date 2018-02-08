@@ -59,7 +59,7 @@ extension CIELuvColorSpace {
     @_versioned
     @_inlineable
     var hashValue: Int {
-        return hash_combine("CIELuvColorSpace", cieXYZ.hashValue)
+        return hash_combine("CIELuvColorSpace", cieXYZ)
     }
     
     @_versioned
