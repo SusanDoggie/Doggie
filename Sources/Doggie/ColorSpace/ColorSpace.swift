@@ -73,7 +73,7 @@ extension _ColorSpaceBaseProtocol where Self : Equatable {
 }
 
 @_versioned
-protocol ColorSpaceBaseProtocol : _ColorSpaceBaseProtocol, Equatable {
+protocol ColorSpaceBaseProtocol : _ColorSpaceBaseProtocol, Hashable {
     
     associatedtype Model : ColorModelProtocol
     

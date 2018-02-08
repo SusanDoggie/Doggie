@@ -78,7 +78,7 @@ extension LinearToneColorSpace {
     @_versioned
     @_inlineable
     var hashValue: Int {
-        return hash_combine("LinearToneColorSpace", base.hashValue)
+        return hash_combine("LinearToneColorSpace", base)
     }
 }
 

@@ -114,7 +114,7 @@ class CalibratedRGBColorSpace : ColorSpaceBaseProtocol {
     @_versioned
     @_inlineable
     var hashValue: Int {
-        return hash_combine("CalibratedRGBColorSpace", cieXYZ.hashValue, transferMatrix)
+        return hash_combine("CalibratedRGBColorSpace", cieXYZ, transferMatrix)
     }
     
     @_versioned
