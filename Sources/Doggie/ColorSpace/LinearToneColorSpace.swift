@@ -77,6 +77,15 @@ extension LinearToneColorSpace {
     
     @_versioned
     @_inlineable
+    var hashValue: Int {
+        return hash_combine("LinearToneColorSpace", base.hashValue)
+    }
+}
+
+extension LinearToneColorSpace {
+    
+    @_versioned
+    @_inlineable
     var localizedName: String? {
         return base.localizedName.map { "LinearToneColorSpace<\($0)>" }
     }

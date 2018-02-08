@@ -58,6 +58,15 @@ extension CIELuvColorSpace {
     
     @_versioned
     @_inlineable
+    var hashValue: Int {
+        return hash_combine("CIELuvColorSpace", cieXYZ.hashValue)
+    }
+}
+
+extension CIELuvColorSpace {
+    
+    @_versioned
+    @_inlineable
     var localizedName: String? {
         return "Doggie CIE Luv Color Space (white = \(cieXYZ.white.point))"
     }

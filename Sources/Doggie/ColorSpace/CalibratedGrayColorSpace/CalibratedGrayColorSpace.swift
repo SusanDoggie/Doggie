@@ -80,6 +80,15 @@ extension CalibratedGrayColorSpace {
     
     @_versioned
     @_inlineable
+    var hashValue: Int {
+        return hash_combine("CalibratedGrayColorSpace", cieXYZ.hashValue, gamma)
+    }
+}
+
+extension CalibratedGrayColorSpace {
+    
+    @_versioned
+    @_inlineable
     var linearTone: CalibratedGrayColorSpace {
         return CalibratedGrayColorSpace(cieXYZ, gamma: 1)
     }

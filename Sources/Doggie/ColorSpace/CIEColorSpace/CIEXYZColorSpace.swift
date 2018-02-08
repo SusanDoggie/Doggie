@@ -64,9 +64,12 @@ extension CIEXYZColorSpace {
     
     @_versioned
     @_inlineable
-    init(white: Point) {
-        self.init(white: XYZColorModel(luminance: 1, point: white))
+    var hashValue: Int {
+        return hash_combine("CIEXYZColorSpace", white, black, luminance)
     }
+}
+
+extension CIEXYZColorSpace {
     
     @_versioned
     @_inlineable

@@ -208,10 +208,6 @@ extension JPEGHuffmanTable {
         
         var length: UInt8
         var code: UInt16
-        
-        static func ==(lhs: Key, rhs: Key) -> Bool {
-            return lhs.length == rhs.length && lhs.code == rhs.code
-        }
     }
 }
 

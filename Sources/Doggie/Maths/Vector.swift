@@ -60,6 +60,14 @@ extension Vector: CustomStringConvertible {
     }
 }
 
+extension Vector: Hashable {
+    
+    @_transparent
+    public var hashValue: Int {
+        return hash_combine(x, y, z)
+    }
+}
+
 extension Vector {
     
     @_transparent
