@@ -357,6 +357,14 @@ extension MappedBuffer {
     }
 }
 
+extension MappedBuffer where Element : Equatable {
+    
+    @_inlineable
+    public static func ==(lhs: MappedBuffer, rhs: MappedBuffer) -> Bool {
+        return lhs.withUnsafeBufferPointer { lhs in rhs.withUnsafeBufferPointer { rhs in lhs.count == rhs.count && (lhs.baseAddress == rhs.baseAddress || lhs.elementsEqual(rhs)) } }
+    }
+}
+
 extension MappedBuffer {
     
     @_versioned

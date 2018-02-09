@@ -27,9 +27,9 @@ import Foundation
 
 struct PNGEncoder : ImageRepEncoder {
     
-    private static func encode(_ chunks: PNGChunk ... ) -> FileBuffer {
+    private static func encode(_ chunks: PNGChunk ... ) -> MappedBuffer<UInt8> {
         
-        var result = FileBuffer()
+        var result = MappedBuffer<UInt8>(option: .fileBacked)
         
         result.encode(0x89 as UInt8)
         result.encode(0x50 as UInt8)
@@ -136,7 +136,7 @@ struct PNGEncoder : ImageRepEncoder {
         
         guard let deflate = try? Deflate(windowBits: 15) else { return nil }
         
-        var compressed = FileBuffer(capacity: height * width * Int(bitsPerPixel >> 3))
+        var compressed = MappedBuffer<UInt8>(capacity: height * width * Int(bitsPerPixel >> 3), option: .fileBacked)
         
         do {
             
@@ -221,7 +221,7 @@ struct PNGEncoder : ImageRepEncoder {
         return PNGChunk(signature: "IDAT", data: compressed.data)
     }
     
-    private static func encodeRGB(image: Image<ARGB64ColorPixel>, interlace: Bool) -> FileBuffer? {
+    private static func encodeRGB(image: Image<ARGB64ColorPixel>, interlace: Bool) -> MappedBuffer<UInt8>? {
         
         let opaque = image.isOpaque
         
@@ -254,7 +254,7 @@ struct PNGEncoder : ImageRepEncoder {
         return encode(ihdr, phys, iccp, idat)
     }
     
-    private static func encodeRGB(image: Image<ARGB32ColorPixel>, interlace: Bool) -> FileBuffer? {
+    private static func encodeRGB(image: Image<ARGB32ColorPixel>, interlace: Bool) -> MappedBuffer<UInt8>? {
         
         let opaque = image.isOpaque
         
@@ -287,7 +287,7 @@ struct PNGEncoder : ImageRepEncoder {
         return encode(ihdr, phys, iccp, idat)
     }
     
-    private static func encodeGray(image: Image<Gray32ColorPixel>, interlace: Bool) -> FileBuffer? {
+    private static func encodeGray(image: Image<Gray32ColorPixel>, interlace: Bool) -> MappedBuffer<UInt8>? {
         
         let opaque = image.isOpaque
         
@@ -316,7 +316,7 @@ struct PNGEncoder : ImageRepEncoder {
         return encode(ihdr, phys, iccp, idat)
     }
     
-    private static func encodeGray(image: Image<Gray16ColorPixel>, interlace: Bool) -> FileBuffer? {
+    private static func encodeGray(image: Image<Gray16ColorPixel>, interlace: Bool) -> MappedBuffer<UInt8>? {
         
         let opaque = image.isOpaque
         

@@ -179,7 +179,6 @@
 		0AB2E23E1F17766C00B0CA84 /* zlib.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AB2E23C1F17766C00B0CA84 /* zlib.swift */; };
 		0ABDF1AA1F2B34E6007EC7B2 /* ChromaticAdaptationAlgorithm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ABDF1A81F2B34E6007EC7B2 /* ChromaticAdaptationAlgorithm.swift */; };
 		0ABDF1AD1F2B3520007EC7B2 /* RenderingIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ABDF1AB1F2B3520007EC7B2 /* RenderingIntent.swift */; };
-		0ABFA6C71FC67CA9009D42E2 /* FileBuffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ABFA6C61FC67CA8009D42E2 /* FileBuffer.swift */; };
 		0ABFA6C91FC67CB6009D42E2 /* ByteCodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ABFA6C81FC67CB6009D42E2 /* ByteCodable.swift */; };
 		0AC527E21EEFEFF900FB239A /* iccProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AC527E01EEFEFF900FB239A /* iccProfile.swift */; };
 		0ACD21331EEBA55000C5811F /* AtomicTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AFCA14F1D9E1F130034AB10 /* AtomicTest.swift */; };
@@ -390,7 +389,6 @@
 		0AB2E23C1F17766C00B0CA84 /* zlib.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = zlib.swift; sourceTree = "<group>"; };
 		0ABDF1A81F2B34E6007EC7B2 /* ChromaticAdaptationAlgorithm.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = ChromaticAdaptationAlgorithm.swift; sourceTree = "<group>"; };
 		0ABDF1AB1F2B3520007EC7B2 /* RenderingIntent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = RenderingIntent.swift; sourceTree = "<group>"; };
-		0ABFA6C61FC67CA8009D42E2 /* FileBuffer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = FileBuffer.swift; sourceTree = "<group>"; };
 		0ABFA6C81FC67CB6009D42E2 /* ByteCodable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = ByteCodable.swift; sourceTree = "<group>"; };
 		0AC527E01EEFEFF900FB239A /* iccProfile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = iccProfile.swift; sourceTree = "<group>"; };
 		0AD3E62E1F53D9FC003CC21A /* Font.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Font.swift; sourceTree = "<group>"; };
@@ -470,7 +468,6 @@
 				0A53E45B1E35AEF80060FB83 /* Random.swift */,
 				0A53E45C1E35AEF80060FB83 /* Regex.swift */,
 				0A7F5B661F79F13600685AA0 /* MappedBuffer.swift */,
-				0ABFA6C61FC67CA8009D42E2 /* FileBuffer.swift */,
 				0A792C9F1FDA9742003C0290 /* FileManager.swift */,
 				0A7C9D042022D01400927674 /* Cache.swift */,
 			);
@@ -1084,7 +1081,6 @@
 				0A7A1FAF1F04FBFC0016B3FB /* ColorPixel.swift in Sources */,
 				0A7E3E991F5FD8F80020A507 /* OTFFeatureList.swift in Sources */,
 				0A72EF1C1F55035200F0550A /* SFNTFontFace.swift in Sources */,
-				0ABFA6C71FC67CA9009D42E2 /* FileBuffer.swift in Sources */,
 				0A8EDDC01F19B1CD00C917CC /* iccCurve.swift in Sources */,
 				0AB2E23E1F17766C00B0CA84 /* zlib.swift in Sources */,
 				0A8EDDD41F19E74000C917CC /* iccTextDescription.swift in Sources */,

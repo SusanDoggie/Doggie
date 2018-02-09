@@ -27,19 +27,19 @@ import Foundation
 
 private protocol TIFFRawRepresentable {
     
-    func rawData(_ isOpaque: Bool) -> FileBuffer
+    func rawData(_ isOpaque: Bool) -> MappedBuffer<UInt8>
 }
 
 extension Image : TIFFRawRepresentable {
     
-    fileprivate func rawData(_ isOpaque: Bool) -> FileBuffer {
+    fileprivate func rawData(_ isOpaque: Bool) -> MappedBuffer<UInt8> {
         
         let samplesPerPixel = isOpaque ? Pixel.Model.numberOfComponents : Pixel.Model.numberOfComponents + 1
         let bytesPerSample = 2
         
         let count = self.width * self.height
         
-        var data = FileBuffer(capacity: count * samplesPerPixel * bytesPerSample)
+        var data = MappedBuffer<UInt8>(capacity: count * samplesPerPixel * bytesPerSample, option: .fileBacked)
         
         self.withUnsafeBufferPointer {
             
@@ -71,12 +71,12 @@ extension Image : TIFFRawRepresentable {
 
 struct TIFFEncoder : ImageRepEncoder {
     
-    private static func rawData(_ image: Image<ColorPixel<LabColorModel>>, _ isOpaque: Bool) -> FileBuffer {
+    private static func rawData(_ image: Image<ColorPixel<LabColorModel>>, _ isOpaque: Bool) -> MappedBuffer<UInt8> {
         
         let samplesPerPixel = isOpaque ? 3 : 4
         let bytesPerSample = 1
         
-        var data = FileBuffer(capacity: image.width * image.height * samplesPerPixel * bytesPerSample)
+        var data = MappedBuffer<UInt8>(capacity: image.width * image.height * samplesPerPixel * bytesPerSample, option: .fileBacked)
         
         image.withUnsafeBufferPointer {
             
@@ -104,12 +104,12 @@ struct TIFFEncoder : ImageRepEncoder {
         
         return data
     }
-    private static func rawData(_ image: Image<ARGB32ColorPixel>, _ isOpaque: Bool) -> FileBuffer {
+    private static func rawData(_ image: Image<ARGB32ColorPixel>, _ isOpaque: Bool) -> MappedBuffer<UInt8> {
         
         let samplesPerPixel = isOpaque ? 3 : 4
         let bytesPerSample = 1
         
-        var data = FileBuffer(capacity: image.width * image.height * samplesPerPixel * bytesPerSample)
+        var data = MappedBuffer<UInt8>(capacity: image.width * image.height * samplesPerPixel * bytesPerSample, option: .fileBacked)
         
         image.withUnsafeBufferPointer {
             
@@ -137,12 +137,12 @@ struct TIFFEncoder : ImageRepEncoder {
         
         return data
     }
-    private static func rawData(_ image: Image<ARGB64ColorPixel>, _ isOpaque: Bool) -> FileBuffer {
+    private static func rawData(_ image: Image<ARGB64ColorPixel>, _ isOpaque: Bool) -> MappedBuffer<UInt8> {
         
         let samplesPerPixel = isOpaque ? 3 : 4
         let bytesPerSample = 2
         
-        var data = FileBuffer(capacity: image.width * image.height * samplesPerPixel * bytesPerSample)
+        var data = MappedBuffer<UInt8>(capacity: image.width * image.height * samplesPerPixel * bytesPerSample, option: .fileBacked)
         
         image.withUnsafeBufferPointer {
             
@@ -170,12 +170,12 @@ struct TIFFEncoder : ImageRepEncoder {
         
         return data
     }
-    private static func rawData(_ image: Image<Gray16ColorPixel>, _ isOpaque: Bool) -> FileBuffer {
+    private static func rawData(_ image: Image<Gray16ColorPixel>, _ isOpaque: Bool) -> MappedBuffer<UInt8> {
         
         let samplesPerPixel = isOpaque ? 1 : 2
         let bytesPerSample = 1
         
-        var data = FileBuffer(capacity: image.width * image.height * samplesPerPixel * bytesPerSample)
+        var data = MappedBuffer<UInt8>(capacity: image.width * image.height * samplesPerPixel * bytesPerSample, option: .fileBacked)
         
         image.withUnsafeBufferPointer {
             
@@ -199,12 +199,12 @@ struct TIFFEncoder : ImageRepEncoder {
         
         return data
     }
-    private static func rawData(_ image: Image<Gray32ColorPixel>, _ isOpaque: Bool) -> FileBuffer {
+    private static func rawData(_ image: Image<Gray32ColorPixel>, _ isOpaque: Bool) -> MappedBuffer<UInt8> {
         
         let samplesPerPixel = isOpaque ? 1 : 2
         let bytesPerSample = 2
         
-        var data = FileBuffer(capacity: image.width * image.height * samplesPerPixel * bytesPerSample)
+        var data = MappedBuffer<UInt8>(capacity: image.width * image.height * samplesPerPixel * bytesPerSample, option: .fileBacked)
         
         image.withUnsafeBufferPointer {
             
@@ -229,7 +229,7 @@ struct TIFFEncoder : ImageRepEncoder {
         return data
     }
     
-    private static func encode(tag: TIFFTag.Tag, type: UInt16, value: [Int], _ data: inout FileBuffer) {
+    private static func encode(tag: TIFFTag.Tag, type: UInt16, value: [Int], _ data: inout MappedBuffer<UInt8>) {
         
         data.encode(tag.rawValue.bigEndian)
         data.encode(type.bigEndian)
@@ -261,7 +261,7 @@ struct TIFFEncoder : ImageRepEncoder {
     
     static func encode(image: AnyImage, properties: [ImageRep.PropertyKey : Any]) -> Data? {
         
-        var data = FileBuffer()
+        var data = MappedBuffer<UInt8>(option: .fileBacked)
         data.encode(TIFFHeader(endianness: .BIG, version: 42, IFD: 8))
         
         let isOpaque = image.isOpaque
@@ -269,7 +269,7 @@ struct TIFFEncoder : ImageRepEncoder {
         
         let bitsPerChannel: Int
         let photometric: Int
-        let pixelData: FileBuffer
+        let pixelData: MappedBuffer<UInt8>
         
         let resolutionUnit: Int
         let resolutionX: Double
@@ -365,7 +365,7 @@ struct TIFFEncoder : ImageRepEncoder {
             offset += 12
         }
         
-        var _data = FileBuffer()
+        var _data = MappedBuffer<UInt8>(option: .fileBacked)
         
         do {
             
