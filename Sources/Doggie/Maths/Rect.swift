@@ -222,39 +222,19 @@ extension Rect {
     
     @_transparent
     public var minX : Double {
-        get {
-            return x
-        }
-        set {
-            x = newValue
-        }
+        return width < 0 ? x + width : x
     }
     @_transparent
     public var minY : Double {
-        get {
-            return y
-        }
-        set {
-            y = newValue
-        }
+        return height < 0 ? y + height : y
     }
     @_transparent
     public var maxX : Double {
-        get {
-            return x + width
-        }
-        set {
-            x = newValue - width
-        }
+        return width < 0 ? x : x + width
     }
     @_transparent
     public var maxY : Double {
-        get {
-            return y + height
-        }
-        set {
-            y = newValue - height
-        }
+        return height < 0 ? y : y + height
     }
     @_transparent
     public var midX : Double {
@@ -283,6 +263,14 @@ extension Rect {
             midX = newValue.x
             midY = newValue.y
         }
+    }
+}
+
+extension Rect {
+    
+    @_transparent
+    public var standardized: Rect {
+        return Rect(x: minX, y: minY, width: abs(width), height: abs(height))
     }
 }
 
@@ -363,11 +351,13 @@ extension Rect {
     }
     @_inlineable
     public func inset(dx: Double, dy: Double) -> Rect {
-        return Rect(x: self.x + dx, y: self.y + dy, width: self.width - 2 * dx, height: self.height - 2 * dy)
+        let rect = self.standardized
+        return Rect(x: rect.x + dx, y: rect.y + dy, width: rect.width - 2 * dx, height: rect.height - 2 * dy)
     }
     @_inlineable
     public func inset(top: Double, left: Double, right: Double, bottom: Double) -> Rect {
-        return Rect(x: self.x + left, y: self.y + top, width: self.width - left - right, height: self.height - top - bottom)
+        let rect = self.standardized
+        return Rect(x: rect.x + left, y: rect.y + top, width: rect.width - left - right, height: rect.height - top - bottom)
     }
     @_inlineable
     public func offset(dx: Double, dy: Double) -> Rect {
