@@ -25,7 +25,7 @@
 
 import Foundation
 
-public struct FileBuffer : RandomAccessCollection, MutableCollection, ExpressibleByArrayLiteral {
+public struct FileBuffer : RandomAccessCollection, MutableCollection, ExpressibleByArrayLiteral, Hashable {
     
     public typealias SubSequence = MutableRangeReplaceableRandomAccessSlice<FileBuffer>
     
@@ -67,6 +67,17 @@ public struct FileBuffer : RandomAccessCollection, MutableCollection, Expressibl
             self = elements
         } else {
             self.buffer = MappedBuffer(elements, option: .fileBacked)
+        }
+    }
+}
+
+extension FileBuffer {
+    
+    @_inlineable
+    public var hashValue: Int {
+        return withUnsafeBufferPointer { bytes in
+            let max_count = Swift.min(10, bytes.count / MemoryLayout<Int>.stride)
+            return bytes.baseAddress!.withMemoryRebound(to: Int.self, capacity: max_count) { address in UnsafeBufferPointer(start: address, count: max_count).reduce(bytes.count) { _hash_combine($0, $1) } }
         }
     }
 }
@@ -173,4 +184,9 @@ extension FileBuffer {
     public var data: Data {
         return buffer.data
     }
+}
+
+@_inlineable
+public func ==(lhs: FileBuffer, rhs: FileBuffer) -> Bool {
+    return lhs.withUnsafeBytes { lhs in rhs.withUnsafeBytes { rhs in lhs.count == rhs.count && (lhs.baseAddress == rhs.baseAddress || memcmp(lhs.baseAddress, rhs.baseAddress, lhs.count) == 0) } }
 }
