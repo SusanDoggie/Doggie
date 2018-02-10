@@ -50,7 +50,7 @@ extension BinaryFloatingPoint where RawSignificand : FixedWidthInteger, RawSigni
     public static func random(includeOne: Bool = false) -> Self {
         let exponentBitPattern = RawSignificand((1 as Self).exponentBitPattern) << significandBitCount
         let maxsignificand: RawSignificand = 1 << significandBitCount
-        let rand = includeOne ? (0...maxsignificand).random()! : (0..<maxsignificand).random()!
+        let rand = includeOne ? random_uniform(maxsignificand + 1) : random_uniform(maxsignificand)
         let pattern = exponentBitPattern + rand
         let exponent = pattern >> significandBitCount
         let significand = pattern & (maxsignificand - 1)
@@ -82,6 +82,7 @@ extension RandomAccessCollection where IndexDistance : FixedWidthInteger {
     /// - complexity: O(1).
     @_inlineable
     public func random() -> Element? {
+        let count = self.count
         switch count {
         case 0: return nil
         case 1: return self[self.startIndex]
