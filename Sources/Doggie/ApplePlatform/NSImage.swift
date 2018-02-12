@@ -41,14 +41,11 @@ import Foundation
         }
         
         public var cgImage: CGImage? {
-            if let imageData = self.tiffRepresentation, let source = CGImageSourceCreateWithData(imageData as CFData, nil) {
-                return CGImageSourceCreateImageAtIndex(source, 0, nil)
-            }
-            return nil
+            return cgImage(forProposedRect: nil, context: nil, hints: nil)
         }
         public var ciImage: CIImage? {
-            if let imageData = self.tiffRepresentation {
-                return CoreImage.CIImage(data: imageData)
+            if let cgImage = self.cgImage {
+                return CoreImage.CIImage(cgImage: cgImage)
             }
             return nil
         }
