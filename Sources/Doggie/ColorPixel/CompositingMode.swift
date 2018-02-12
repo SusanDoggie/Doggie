@@ -98,7 +98,7 @@ extension ColorPixelProtocol {
             let _source = source.color
             let _destination = self.color
             let blended = (1 - d_alpha) * _source + d_alpha * _destination.blended(source: _source, blending: blending)
-            return Self(color: compositingMode.mix(s_alpha * blended, s_alpha, d_alpha * _destination, d_alpha) / r_alpha, opacity: r_alpha)
+            return Self(color: compositingMode.mix(s_alpha / r_alpha * blended, s_alpha, d_alpha / r_alpha * _destination, d_alpha), opacity: r_alpha)
         } else {
             return Self()
         }
@@ -116,7 +116,7 @@ extension ColorPixelProtocol {
             let _source = source.color
             let _destination = self.color
             let blended = blendMode == .normal ? _source : (1 - d_alpha) * _source + d_alpha * _destination.blended(source: _source, blendMode: blendMode)
-            return Self(color: compositingMode.mix(s_alpha * blended, s_alpha, d_alpha * _destination, d_alpha) / r_alpha, opacity: r_alpha)
+            return Self(color: compositingMode.mix(s_alpha / r_alpha * blended, s_alpha, d_alpha / r_alpha * _destination, d_alpha), opacity: r_alpha)
         } else {
             return Self()
         }
@@ -139,7 +139,7 @@ extension FloatColorPixel {
             let _source = source._color
             let _destination = self._color
             let blended = (1 - d_alpha) * _source + d_alpha * _destination.blended(source: _source, blending: blending)
-            return FloatColorPixel(color: compositingMode.mix(s_alpha * blended, s_alpha, d_alpha * _destination, d_alpha) / r_alpha, opacity: r_alpha)
+            return FloatColorPixel(color: compositingMode.mix(s_alpha / r_alpha * blended, s_alpha, d_alpha / r_alpha * _destination, d_alpha), opacity: r_alpha)
         } else {
             return FloatColorPixel()
         }
@@ -159,7 +159,7 @@ extension FloatColorPixel {
             let _source = source._color
             let _destination = self._color
             let blended = blendMode == .normal ? _source : (1 - d_alpha) * _source + d_alpha * _destination.blended(source: _source, blendMode: blendMode)
-            return FloatColorPixel(color: compositingMode.mix(s_alpha * blended, s_alpha, d_alpha * _destination, d_alpha) / r_alpha, opacity: r_alpha)
+            return FloatColorPixel(color: compositingMode.mix(s_alpha / r_alpha * blended, s_alpha, d_alpha / r_alpha * _destination, d_alpha), opacity: r_alpha)
         } else {
             return FloatColorPixel()
         }
