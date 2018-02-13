@@ -378,3 +378,28 @@ extension Rect {
         return self.minX < rect.maxX && self.maxX > rect.minX && self.minY < rect.maxY && self.maxY > rect.minY
     }
 }
+
+@_transparent
+public func *(lhs: Double, rhs: Rect) -> Rect {
+    return Rect(origin: lhs * rhs.origin, size: lhs * rhs.size)
+}
+@_transparent
+public func *(lhs: Rect, rhs: Double) -> Rect {
+    return Rect(origin: lhs.origin * rhs, size: lhs.size * rhs)
+}
+
+@_transparent
+public func /(lhs: Rect, rhs: Double) -> Rect {
+    return Rect(origin: lhs.origin / rhs, size: lhs.size / rhs)
+}
+
+@_transparent
+public func *= (lhs: inout Rect, rhs: Double) {
+    lhs.origin *= rhs
+    lhs.size *= rhs
+}
+@_transparent
+public func /= (lhs: inout Rect, rhs: Double) {
+    lhs.origin /= rhs
+    lhs.size /= rhs
+}

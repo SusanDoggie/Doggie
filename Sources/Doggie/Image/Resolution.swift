@@ -84,6 +84,26 @@ extension Resolution {
 extension Resolution.Unit {
     
     @_inlineable
+    public func convert(length: Double, from fromUnit: Resolution.Unit) -> Double {
+        return fromUnit.convert(length: length, to: self)
+    }
+    
+    @_inlineable
+    public func convert(point: Point, from fromUnit: Resolution.Unit) -> Point {
+        return fromUnit.convert(point: point, to: self)
+    }
+    
+    @_inlineable
+    public func convert(size: Size, from fromUnit: Resolution.Unit) -> Size {
+        return fromUnit.convert(size: size, to: self)
+    }
+    
+    @_inlineable
+    public func convert(rect: Rect, from fromUnit: Resolution.Unit) -> Rect {
+        return fromUnit.convert(rect: rect, to: self)
+    }
+    
+    @_inlineable
     public func convert(length: Double, to toUnit: Resolution.Unit) -> Double {
         let scale = toUnit.inchScale / self.inchScale
         return length * scale
@@ -104,7 +124,7 @@ extension Resolution.Unit {
     @_inlineable
     public func convert(rect: Rect, to toUnit: Resolution.Unit) -> Rect {
         let scale = toUnit.inchScale / self.inchScale
-        return Rect(origin: rect.origin * scale, size: rect.size * scale)
+        return rect * scale
     }
 }
 
