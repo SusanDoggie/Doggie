@@ -186,7 +186,7 @@ extension Font {
     public func boundary(forGlyph glyph: Int) -> Rect {
         let _pointScale = self._pointScale
         let bound = self._shape(glyph: glyph).reduce(nil) { $0?.union($1.boundary) ?? $1.boundary } ?? Rect()
-        return Rect(origin: bound.origin * _pointScale, size: bound.size * _pointScale)
+        return bound * _pointScale
     }
     
     public func shape(forGlyph glyph: Int) -> Shape {
@@ -282,7 +282,7 @@ extension Font {
     public var boundingRectForFont: Rect {
         let _pointScale = self._pointScale
         let bound = base.boundingRectForFont
-        return Rect(origin: bound.origin * _pointScale, size: bound.size * _pointScale)
+        return bound * _pointScale
     }
     
     public var italicAngle: Double {
