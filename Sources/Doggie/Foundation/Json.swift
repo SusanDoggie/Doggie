@@ -147,6 +147,19 @@ extension Json: CustomStringConvertible {
         }
         switch self.value {
         case let number as NSNumber: return number.description
+        case let number as Int: return number.description
+        case let number as Int64: return number.description
+        case let number as Int32: return number.description
+        case let number as Int16: return number.description
+        case let number as Int8: return number.description
+        case let number as UInt: return number.description
+        case let number as UInt64: return number.description
+        case let number as UInt32: return number.description
+        case let number as UInt16: return number.description
+        case let number as UInt8: return number.description
+        case let number as Double: return number.description
+        case let number as Float: return number.description
+        case let bool as Bool: return bool.description
         case let string as String: return string
         case let array as [Any]:
             var result = "["
@@ -203,7 +216,22 @@ extension Json {
     }
     
     public var isNumber : Bool {
-        return self.value is NSNumber
+        switch self.value {
+        case is NSNumber: return true
+        case is Int: return true
+        case is Int64: return true
+        case is Int32: return true
+        case is Int16: return true
+        case is Int8: return true
+        case is UInt: return true
+        case is UInt64: return true
+        case is UInt32: return true
+        case is UInt16: return true
+        case is UInt8: return true
+        case is Double: return true
+        case is Float: return true
+        default: return false
+        }
     }
     
     public var isString : Bool {
@@ -222,7 +250,22 @@ extension Json {
 extension Json {
     
     private var numberValue: NSNumber? {
-        return value as? NSNumber
+        switch value {
+        case let number as NSNumber: return number
+        case let number as Int: return NSNumber(value: number)
+        case let number as Int64: return NSNumber(value: number)
+        case let number as Int32: return NSNumber(value: number)
+        case let number as Int16: return NSNumber(value: number)
+        case let number as Int8: return NSNumber(value: number)
+        case let number as UInt: return NSNumber(value: number)
+        case let number as UInt64: return NSNumber(value: number)
+        case let number as UInt32: return NSNumber(value: number)
+        case let number as UInt16: return NSNumber(value: number)
+        case let number as UInt8: return NSNumber(value: number)
+        case let number as Double: return NSNumber(value: number)
+        case let number as Float: return NSNumber(value: number)
+        default: return nil
+        }
     }
     public var boolValue: Bool? {
         get {
