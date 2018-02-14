@@ -229,6 +229,28 @@ extension MappedBuffer : RangeReplaceableCollection {
     }
     
     @_inlineable
+    public mutating func removeAll(keepingCapacity keepCapacity: Bool = false) {
+        
+        if keepCapacity {
+            
+            guard base.count != 0 else { return }
+            
+            if _fastPath(isKnownUniquelyReferenced(&base)) {
+                
+                base.address.deinitialize(count: base.count)
+                base.count = 0
+                
+            } else {
+                
+                self.base = Base(capacity: base.capacity, option: option)
+            }
+        } else {
+            
+            self.base = Base(capacity: 0, option: option)
+        }
+    }
+    
+    @_inlineable
     public mutating func replaceSubrange<C : Collection>(_ subRange: Range<Int>, with newElements: C) where C.Element == Element {
         
         precondition(0 <= subRange.lowerBound, "Index out of range.")

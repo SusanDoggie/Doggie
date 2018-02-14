@@ -354,9 +354,9 @@ extension SDXMLElement {
         _elements.reserveCapacity(minimumCapacity)
     }
     
-    public mutating func removeAll(keepingCapacity: Bool = false) {
+    public mutating func removeAll(keepingCapacity keepCapacity: Bool = false) {
         guard kind == .node else { fatalError() }
-        _elements.removeAll(keepingCapacity: keepingCapacity)
+        _elements.removeAll(keepingCapacity: keepCapacity)
     }
     
     public mutating func replaceSubrange<C : Collection>(_ subRange: Range<Int>, with newElements: C) where C.Element == SDXMLElement {
