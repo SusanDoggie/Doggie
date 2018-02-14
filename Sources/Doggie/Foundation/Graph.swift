@@ -251,8 +251,8 @@ public struct Graph<Node : Hashable, Link> : Collection, ExpressibleByDictionary
     ///
     /// - complexity: O(`count of nodes`).
     @_inlineable
-    public mutating func removeAll(keepingCapacity: Bool = false) {
-        table.removeAll(keepingCapacity: keepingCapacity)
+    public mutating func removeAll(keepingCapacity keepCapacity: Bool = false) {
+        table.removeAll(keepingCapacity: keepCapacity)
     }
     
     /// A collection containing just the links of `self`.
