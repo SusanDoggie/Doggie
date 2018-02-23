@@ -190,6 +190,13 @@ extension ShapeRegion.Solid {
 
 extension ShapeRegion.Solid {
     
+    public var solidRegion: ShapeRegion {
+        return ShapeRegion(solid: ShapeRegion.Solid(solid: solid))
+    }
+}
+
+extension ShapeRegion.Solid {
+    
     fileprivate var _solid: ShapeRegion.Solid {
         return cache.lck.synchronized {
             if cache.solid == nil {
