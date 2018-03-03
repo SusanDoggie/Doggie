@@ -408,6 +408,14 @@ extension MappedBuffer {
     }
 }
 
+extension Data {
+    
+    @_inlineable
+    public init(bytes: MappedBuffer<UInt8>) {
+        self = bytes.data
+    }
+}
+
 extension MappedBuffer {
     
     @_versioned
