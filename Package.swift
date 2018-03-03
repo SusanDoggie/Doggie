@@ -26,6 +26,8 @@
 
 import PackageDescription
 
+#if os(macOS) || os(iOS) || os(tvOS) || os(watchOS)
+    
 let package = Package(
     name: "Doggie",
     products: [
@@ -37,11 +39,20 @@ let package = Package(
         .testTarget(name: "DoggieTests", dependencies: ["Doggie"]),
         ]
 )
-
-#if os(Linux)
     
-package.targets.append(contentsOf: [
-    .target(name: "zlib", dependencies: []),
-    ])
+#elseif os(Linux)
+    
+let package = Package(
+    name: "Doggie",
+    products: [
+        .library(name: "Doggie", targets: ["Doggie"]),
+        ],
+    targets: [
+        .target(name: "Doggie", dependencies: ["c11_atomic", "zlib"]),
+        .target(name: "c11_atomic", dependencies: []),
+        .target(name: "zlib", dependencies: []),
+        .testTarget(name: "DoggieTests", dependencies: ["Doggie"]),
+        ]
+)
     
 #endif
