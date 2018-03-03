@@ -416,6 +416,11 @@ extension Data {
     public init(bytes: MappedBuffer<UInt8>) {
         self = bytes.data
     }
+    
+    @_inlineable
+    public init(bytes: MappedBuffer<UInt8>.SubSequence) {
+        self = bytes.base.data[bytes.startIndex..<bytes.endIndex]
+    }
 }
 
 extension MappedBuffer {
