@@ -23,105 +23,105 @@
 //  THE SOFTWARE.
 //
 
-#if os(macOS) || os(iOS) || os(tvOS) || os(watchOS)
+#if canImport(CoreGraphics)
+
+import Foundation
+import CoreGraphics
+
+fileprivate let ColorSpaceCacheCGColorSpaceKey = "ColorSpaceCacheCGColorSpaceKey"
+
+extension ColorSpace {
     
-    import Foundation
-    import CoreGraphics
-    
-    fileprivate let ColorSpaceCacheCGColorSpaceKey = "ColorSpaceCacheCGColorSpaceKey"
-    
-    extension ColorSpace {
+    public var cgColorSpace : CGColorSpace? {
         
-        public var cgColorSpace : CGColorSpace? {
-            
-            return self.cache[ColorSpaceCacheCGColorSpaceKey] {
-                
-                if #available(OSX 10.12, iOS 10.0, tvOS 10.0, watchOS 3.0, *) {
-                    
-                    return iccData.map { CGColorSpace(iccData: $0 as CFData) }
-                    
-                } else {
-                    
-                    if Model.numberOfComponents != 1 && Model.numberOfComponents != 3 && Model.numberOfComponents != 4 {
-                        return nil
-                    }
-                    
-                    if let iccData = iccData.flatMap({ CGDataProvider(data: $0 as CFData) }) {
-                        
-                        var range: [CGFloat] = []
-                        
-                        for i in 0..<Model.numberOfComponents {
-                            let _range = Model.rangeOfComponent(i)
-                            range.append(CGFloat(_range.lowerBound))
-                            range.append(CGFloat(_range.upperBound))
-                        }
-                        
-                        return CGColorSpace(iccBasedNComponents: Model.numberOfComponents, range: range, profile: iccData, alternate: nil)
-                        
-                    } else {
-                        return nil
-                    }
-                }
-            }
-        }
-    }
-    
-    extension AnyColorSpace {
-        
-        public init?(cgColorSpace: CGColorSpace) {
+        return self.cache[ColorSpaceCacheCGColorSpaceKey] {
             
             if #available(OSX 10.12, iOS 10.0, tvOS 10.0, watchOS 3.0, *) {
                 
-                guard let iccData = cgColorSpace.copyICCData() as Data? else { return nil }
-                
-                try? self.init(iccData: iccData)
+                return iccData.map { CGColorSpace(iccData: $0 as CFData) }
                 
             } else {
                 
-                guard let iccData = cgColorSpace.iccData as Data? else { return nil }
+                if Model.numberOfComponents != 1 && Model.numberOfComponents != 3 && Model.numberOfComponents != 4 {
+                    return nil
+                }
                 
-                try? self.init(iccData: iccData)
-            }
-        }
-    }
-    
-    protocol CGColorSpaceConvertibleProtocol {
-        
-        var cgColorSpace: CGColorSpace? { get }
-    }
-    
-    extension ColorSpace : CGColorSpaceConvertibleProtocol {
-        
-    }
-    
-    extension AnyColorSpace {
-        
-        public var cgColorSpace: CGColorSpace? {
-            if let base = _base as? CGColorSpaceConvertibleProtocol {
-                return base.cgColorSpace
-            }
-            return nil
-        }
-    }
-    
-    extension AnyColorSpace {
-        
-        @available(OSX 10.11, iOS 9.0, *)
-        public static var availableColorSpaces: [AnyColorSpace] {
-            
-            var availableColorSpaces: [AnyColorSpace] = []
-            
-            for url in FileManager.default.fileUrls(FileManager.default.urls(for: .libraryDirectory, in: .allDomainsMask).map { URL(fileURLWithPath: "ColorSync/Profiles/", relativeTo: $0) }) {
-                
-                if let data = try? Data(contentsOf: url, options: .alwaysMapped), let colorSpace = try? AnyColorSpace(iccData: data) {
-                    availableColorSpaces.append(colorSpace)
+                if let iccData = iccData.flatMap({ CGDataProvider(data: $0 as CFData) }) {
+                    
+                    var range: [CGFloat] = []
+                    
+                    for i in 0..<Model.numberOfComponents {
+                        let _range = Model.rangeOfComponent(i)
+                        range.append(CGFloat(_range.lowerBound))
+                        range.append(CGFloat(_range.upperBound))
+                    }
+                    
+                    return CGColorSpace(iccBasedNComponents: Model.numberOfComponents, range: range, profile: iccData, alternate: nil)
+                    
+                } else {
+                    return nil
                 }
             }
+        }
+    }
+}
+
+extension AnyColorSpace {
+    
+    public init?(cgColorSpace: CGColorSpace) {
+        
+        if #available(OSX 10.12, iOS 10.0, tvOS 10.0, watchOS 3.0, *) {
             
-            return availableColorSpaces
+            guard let iccData = cgColorSpace.copyICCData() as Data? else { return nil }
+            
+            try? self.init(iccData: iccData)
+            
+        } else {
+            
+            guard let iccData = cgColorSpace.iccData as Data? else { return nil }
+            
+            try? self.init(iccData: iccData)
+        }
+    }
+}
+
+protocol CGColorSpaceConvertibleProtocol {
+    
+    var cgColorSpace: CGColorSpace? { get }
+}
+
+extension ColorSpace : CGColorSpaceConvertibleProtocol {
+    
+}
+
+extension AnyColorSpace {
+    
+    public var cgColorSpace: CGColorSpace? {
+        if let base = _base as? CGColorSpaceConvertibleProtocol {
+            return base.cgColorSpace
+        }
+        return nil
+    }
+}
+
+extension AnyColorSpace {
+    
+    @available(OSX 10.11, iOS 9.0, *)
+    public static var availableColorSpaces: [AnyColorSpace] {
+        
+        var availableColorSpaces: [AnyColorSpace] = []
+        
+        for url in FileManager.default.fileUrls(FileManager.default.urls(for: .libraryDirectory, in: .allDomainsMask).map { URL(fileURLWithPath: "ColorSync/Profiles/", relativeTo: $0) }) {
+            
+            if let data = try? Data(contentsOf: url, options: .alwaysMapped), let colorSpace = try? AnyColorSpace(iccData: data) {
+                availableColorSpaces.append(colorSpace)
+            }
         }
         
+        return availableColorSpaces
     }
     
+}
+
 #endif
 

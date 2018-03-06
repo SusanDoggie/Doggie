@@ -75,6 +75,25 @@ public struct ShapeRegion {
         self.boundary = solids.first.map { solids.dropFirst().reduce($0.boundary) { $0.union($1.boundary) } } ?? Rect()
         self.cache = Cache()
     }
+    
+    public struct Solid {
+        
+        public let solid: Shape.Component
+        public let holes: ShapeRegion
+        
+        fileprivate let cache: Cache
+        
+        public let boundary: Rect
+        public let area: Double
+        
+        fileprivate init(solid: Shape.Component, holes: ShapeRegion = ShapeRegion()) {
+            self.solid = solid
+            self.holes = holes
+            self.cache = Cache()
+            self.boundary = solid.boundary
+            self.area = holes.reduce(abs(solid.area)) { $0 - abs($1.area) }
+        }
+    }
 }
 
 extension ShapeRegion {
@@ -125,28 +144,6 @@ extension ShapeRegion {
         _path.cache[ShapeCacheNonZeroRegionKey] = self
         _path.cache[ShapeCacheEvenOddRegionKey] = self
         return _path
-    }
-}
-
-extension ShapeRegion {
-    
-    public struct Solid {
-        
-        public let solid: Shape.Component
-        public let holes: ShapeRegion
-        
-        fileprivate let cache: Cache
-        
-        public let boundary: Rect
-        public let area: Double
-        
-        fileprivate init(solid: Shape.Component, holes: ShapeRegion = ShapeRegion()) {
-            self.solid = solid
-            self.holes = holes
-            self.cache = Cache()
-            self.boundary = solid.boundary
-            self.area = holes.reduce(abs(solid.area)) { $0 - abs($1.area) }
-        }
     }
 }
 

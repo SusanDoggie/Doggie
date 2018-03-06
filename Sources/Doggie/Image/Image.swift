@@ -114,14 +114,6 @@ extension Image : CustomStringConvertible {
     }
 }
 
-extension Image : CustomPlaygroundDisplayConvertible {
-    
-    @_inlineable
-    public var playgroundDescription: Any {
-        return description
-    }
-}
-
 extension Image {
     
     @_inlineable

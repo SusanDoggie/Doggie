@@ -86,60 +86,60 @@ extension Rect {
 }
 
 #if os(macOS)
+
+public extension AffineTransform {
     
-    public extension AffineTransform {
-        
-        init(_ transform: SDTransform) {
-            self.m11 = CGFloat(transform.a)
-            self.m12 = CGFloat(transform.d)
-            self.m21 = CGFloat(transform.b)
-            self.m22 = CGFloat(transform.e)
-            self.tX = CGFloat(transform.c)
-            self.tY = CGFloat(transform.f)
-        }
+    init(_ transform: SDTransform) {
+        self.m11 = CGFloat(transform.a)
+        self.m12 = CGFloat(transform.d)
+        self.m21 = CGFloat(transform.b)
+        self.m22 = CGFloat(transform.e)
+        self.tX = CGFloat(transform.c)
+        self.tY = CGFloat(transform.f)
     }
+}
+
+extension SDTransform {
     
-    extension SDTransform {
-        
-        public init(_ m: AffineTransform) {
-            self.a = Double(m.m11)
-            self.b = Double(m.m21)
-            self.c = Double(m.tX)
-            self.d = Double(m.m12)
-            self.e = Double(m.m22)
-            self.f = Double(m.tY)
-        }
+    public init(_ m: AffineTransform) {
+        self.a = Double(m.m11)
+        self.b = Double(m.m21)
+        self.c = Double(m.tX)
+        self.d = Double(m.m12)
+        self.e = Double(m.m22)
+        self.f = Double(m.tY)
     }
-    
+}
+
 #endif
 
-#if os(macOS) || os(iOS) || os(tvOS) || os(watchOS)
+#if canImport(CoreGraphics)
+
+import CoreGraphics
+
+extension CGAffineTransform {
     
-    import CoreGraphics
-    
-    extension CGAffineTransform {
-        
-        public init(_ m: SDTransform) {
-            self.a = CGFloat(m.a)
-            self.b = CGFloat(m.d)
-            self.c = CGFloat(m.b)
-            self.d = CGFloat(m.e)
-            self.tx = CGFloat(m.c)
-            self.ty = CGFloat(m.f)
-        }
+    public init(_ m: SDTransform) {
+        self.a = CGFloat(m.a)
+        self.b = CGFloat(m.d)
+        self.c = CGFloat(m.b)
+        self.d = CGFloat(m.e)
+        self.tx = CGFloat(m.c)
+        self.ty = CGFloat(m.f)
     }
+}
+
+extension SDTransform {
     
-    extension SDTransform {
-        
-        public init(_ m: CGAffineTransform) {
-            self.a = Double(m.a)
-            self.b = Double(m.c)
-            self.c = Double(m.tx)
-            self.d = Double(m.b)
-            self.e = Double(m.d)
-            self.f = Double(m.ty)
-        }
+    public init(_ m: CGAffineTransform) {
+        self.a = Double(m.a)
+        self.b = Double(m.c)
+        self.c = Double(m.tx)
+        self.d = Double(m.b)
+        self.e = Double(m.d)
+        self.f = Double(m.ty)
     }
-    
+}
+
 #endif
 

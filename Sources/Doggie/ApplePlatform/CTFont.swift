@@ -26,14 +26,14 @@
 import Foundation
 
 #if os(macOS) || os(iOS) || os(tvOS) || os(watchOS)
+
+extension FontCollection {
     
-    extension FontCollection {
-        
-        @available(OSX 10.11, iOS 9.0, *)
-        public static var availableFonts: FontCollection {
-            return FontCollection(FileManager.default.urls(for: .libraryDirectory, in: .allDomainsMask).map { URL(fileURLWithPath: "Fonts", relativeTo: $0) })
-        }
-        
+    @available(OSX 10.11, iOS 9.0, *)
+    public static var availableFonts: FontCollection {
+        return FontCollection(FileManager.default.urls(for: .libraryDirectory, in: .allDomainsMask).map { URL(fileURLWithPath: "Fonts", relativeTo: $0) })
     }
     
+}
+
 #endif

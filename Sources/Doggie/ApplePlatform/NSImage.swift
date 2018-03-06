@@ -25,30 +25,30 @@
 
 import Foundation
 
-#if os(OSX)
+#if canImport(AppKit)
+
+import AppKit
+
+public extension NSImage {
     
-    import AppKit
-    
-    public extension NSImage {
-        
-        public convenience init(cgImage image: CGImage) {
-            self.init(cgImage: image, size: NSZeroSize)
-        }
-        
-        @available(OSX 10.11, *)
-        public convenience init(ciImage image: CoreImage.CIImage) {
-            self.init(cgImage: CIContext(options: nil).createCGImage(image, from: image.extent)!)
-        }
-        
-        public var cgImage: CGImage? {
-            return cgImage(forProposedRect: nil, context: nil, hints: nil)
-        }
-        public var ciImage: CIImage? {
-            if let cgImage = self.cgImage {
-                return CoreImage.CIImage(cgImage: cgImage)
-            }
-            return nil
-        }
+    public convenience init(cgImage image: CGImage) {
+        self.init(cgImage: image, size: NSZeroSize)
     }
     
+    @available(OSX 10.11, *)
+    public convenience init(ciImage image: CoreImage.CIImage) {
+        self.init(cgImage: CIContext(options: nil).createCGImage(image, from: image.extent)!)
+    }
+    
+    public var cgImage: CGImage? {
+        return cgImage(forProposedRect: nil, context: nil, hints: nil)
+    }
+    public var ciImage: CIImage? {
+        if let cgImage = self.cgImage {
+            return CoreImage.CIImage(cgImage: cgImage)
+        }
+        return nil
+    }
+}
+
 #endif

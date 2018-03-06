@@ -46,36 +46,36 @@ extension FileManager {
                 guard let url = url as? URL else { continue }
                 
                 #if os(macOS) || os(iOS) || os(tvOS) || os(watchOS)
+                
+                guard let resourceValues = try? url.resourceValues(forKeys: [.isRegularFileKey, .isSymbolicLinkKey, .isAliasFileKey]) else { continue }
+                
+                if resourceValues.isAliasFile == true {
                     
-                    guard let resourceValues = try? url.resourceValues(forKeys: [.isRegularFileKey, .isSymbolicLinkKey, .isAliasFileKey]) else { continue }
+                    guard let _url = try? URL(resolvingAliasFileAt: url) else { continue }
+                    searchPaths.append(_url)
                     
-                    if resourceValues.isAliasFile == true {
-                        
-                        guard let _url = try? URL(resolvingAliasFileAt: url) else { continue }
-                        searchPaths.append(_url)
-                        
-                    } else if resourceValues.isSymbolicLink == true {
-                        
-                        searchPaths.append(url)
-                        
-                    } else if resourceValues.isRegularFile == true {
-                        
-                        result.insert(url)
-                    }
+                } else if resourceValues.isSymbolicLink == true {
                     
+                    searchPaths.append(url)
+                    
+                } else if resourceValues.isRegularFile == true {
+                    
+                    result.insert(url)
+                }
+                
                 #else
+                
+                guard let resourceValues = try? url.resourceValues(forKeys: [.isRegularFileKey, .isSymbolicLinkKey]) else { continue }
+                
+                if resourceValues.isSymbolicLink == true {
                     
-                    guard let resourceValues = try? url.resourceValues(forKeys: [.isRegularFileKey, .isSymbolicLinkKey]) else { continue }
+                    searchPaths.append(url)
                     
-                    if resourceValues.isSymbolicLink == true {
-                        
-                        searchPaths.append(url)
-                        
-                    } else if resourceValues.isRegularFile == true {
-                        
-                        result.insert(url)
-                    }
+                } else if resourceValues.isRegularFile == true {
                     
+                    result.insert(url)
+                }
+                
                 #endif
             }
         }
