@@ -27,6 +27,10 @@ import Foundation
 
 struct SFNTNAME : ByteDecodable, RandomAccessCollection {
     
+    public typealias Indices = Range<Int>
+    
+    public typealias Index = Int
+    
     var format: BEUInt16
     var record: [Record]
     var data: Data

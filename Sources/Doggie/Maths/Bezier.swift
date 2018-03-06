@@ -68,6 +68,10 @@ extension Bezier : CustomStringConvertible {
 
 extension Bezier : RandomAccessCollection, MutableCollection {
     
+    public typealias Indices = Range<Int>
+    
+    public typealias Index = Int
+    
     @_inlineable
     public var degree: Int {
         return points.count - 1

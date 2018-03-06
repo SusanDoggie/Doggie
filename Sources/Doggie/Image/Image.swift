@@ -114,11 +114,11 @@ extension Image : CustomStringConvertible {
     }
 }
 
-extension Image : CustomPlaygroundQuickLookable {
+extension Image : CustomPlaygroundDisplayConvertible {
     
     @_inlineable
-    public var customPlaygroundQuickLook: PlaygroundQuickLook {
-        return PlaygroundQuickLook.text(description)
+    public var playgroundDescription: Any {
+        return description
     }
 }
 

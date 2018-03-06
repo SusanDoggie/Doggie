@@ -51,6 +51,10 @@ public struct RectCollection {
 
 extension RectCollection : RandomAccessCollection {
     
+    public typealias Indices = Range<Int>
+    
+    public typealias Index = Int
+    
     public var startIndex: Int {
         return bounds.startIndex
     }
@@ -66,7 +70,7 @@ extension RectCollection : RandomAccessCollection {
 
 extension RectCollection {
     
-    private func search(_ target: Double, _ elements: UnsafePointer<(Int, Double)>, _ indices: Range<Int>) -> Int {
+    private func search(_ target: Double, _ elements: UnsafePointer<(Int, Double)>, _ indices: CountableRange<Int>) -> Int {
         switch indices.count {
         case 0: return indices.lowerBound
         default:

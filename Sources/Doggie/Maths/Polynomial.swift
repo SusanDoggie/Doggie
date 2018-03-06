@@ -69,6 +69,10 @@ extension Polynomial : CustomStringConvertible {
 
 extension Polynomial : RandomAccessCollection, MutableCollection {
     
+    public typealias Indices = Range<Int>
+    
+    public typealias Index = Int
+    
     @_inlineable
     public var startIndex : Int {
         return coeffs.startIndex

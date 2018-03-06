@@ -27,6 +27,10 @@ import Foundation
 
 struct iccMultiLocalizedUnicode : RandomAccessCollection, ByteCodable {
     
+    public typealias Indices = Range<Int>
+    
+    public typealias Index = Int
+    
     var messages: [(LanguageCode, CountryCode, String)]
     
     init<S : Sequence>(_ messages: S) where S.Element == (LanguageCode, CountryCode, String) {

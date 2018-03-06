@@ -73,6 +73,12 @@ extension CIEXYZColorSpace {
     
     @_versioned
     @_inlineable
+    init(white: Point) {
+        self.init(white: XYZColorModel(luminance: 1, point: white))
+    }
+    
+    @_versioned
+    @_inlineable
     init(white: Point, luminance: Double, contrastRatio: Double) {
         self.init(white: XYZColorModel(luminance: 1, point: white), black: XYZColorModel(luminance: 1 / contrastRatio, point: white), luminance: luminance)
     }

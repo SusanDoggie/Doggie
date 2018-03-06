@@ -27,6 +27,10 @@ import Foundation
 
 struct CFFINDEX : ByteDecodable, RandomAccessCollection {
     
+    public typealias Indices = Range<Int>
+    
+    public typealias Index = Int
+    
     var _count: BEUInt16
     var offSize: UInt8
     var offset: Data

@@ -51,6 +51,10 @@ public struct RangeSet<Bound : Comparable> : Equatable {
 
 extension RangeSet : RandomAccessCollection {
     
+    public typealias Indices = Range<Int>
+    
+    public typealias Index = Int
+    
     @_inlineable
     public var startIndex: Int {
         return ranges.startIndex
