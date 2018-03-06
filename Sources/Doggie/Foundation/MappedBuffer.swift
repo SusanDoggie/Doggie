@@ -118,6 +118,14 @@ extension MappedBuffer : CustomStringConvertible {
     }
 }
 
+extension MappedBuffer : CustomReflectable {
+    
+    @_inlineable
+    public var customMirror: Mirror {
+        return Mirror(self, unlabeledChildren: self, displayStyle: .collection)
+    }
+}
+
 extension MappedBuffer {
     
     @_versioned
