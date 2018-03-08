@@ -133,7 +133,7 @@ extension XYZColorModel {
 extension XYZColorModel {
     
     @_transparent
-    public func blended(source: XYZColorModel, blending: @convention(c) (Double, Double) -> Double) -> XYZColorModel {
+    public func blended(source: XYZColorModel, blending: (Double, Double) -> Double) -> XYZColorModel {
         return XYZColorModel(x: blending(self.x, source.x), y: blending(self.y, source.y), z: blending(self.z, source.z))
     }
 }
@@ -211,7 +211,7 @@ extension XYZColorModel {
 extension XYZColorModel.FloatComponents {
     
     @_transparent
-    public func blended(source: XYZColorModel.FloatComponents, blending: @convention(c) (Float, Float) -> Float) -> XYZColorModel.FloatComponents {
+    public func blended(source: XYZColorModel.FloatComponents, blending: (Float, Float) -> Float) -> XYZColorModel.FloatComponents {
         return XYZColorModel.FloatComponents(x: blending(self.x, source.x), y: blending(self.y, source.y), z: blending(self.z, source.z))
     }
 }

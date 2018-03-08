@@ -162,7 +162,7 @@ extension CMYKColorModel {
 extension CMYKColorModel {
     
     @_transparent
-    public func blended(source: CMYKColorModel, blending: @convention(c) (Double, Double) -> Double) -> CMYKColorModel {
+    public func blended(source: CMYKColorModel, blending: (Double, Double) -> Double) -> CMYKColorModel {
         return CMYKColorModel(cyan: blending(self.cyan, source.cyan), magenta: blending(self.magenta, source.magenta), yellow: blending(self.yellow, source.yellow), black: blending(self.black, source.black))
     }
 }
@@ -247,7 +247,7 @@ extension CMYKColorModel {
 extension CMYKColorModel.FloatComponents {
     
     @_transparent
-    public func blended(source: CMYKColorModel.FloatComponents, blending: @convention(c) (Float, Float) -> Float) -> CMYKColorModel.FloatComponents {
+    public func blended(source: CMYKColorModel.FloatComponents, blending: (Float, Float) -> Float) -> CMYKColorModel.FloatComponents {
         return CMYKColorModel.FloatComponents(cyan: blending(self.cyan, source.cyan), magenta: blending(self.magenta, source.magenta), yellow: blending(self.yellow, source.yellow), black: blending(self.black, source.black))
     }
 }

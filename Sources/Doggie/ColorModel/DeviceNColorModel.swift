@@ -75,7 +75,7 @@ public struct Device2ColorModel : ColorModelProtocol {
 extension Device2ColorModel {
     
     @_transparent
-    public func blended(source: Device2ColorModel, blending: @convention(c) (Double, Double) -> Double) -> Device2ColorModel {
+    public func blended(source: Device2ColorModel, blending: (Double, Double) -> Double) -> Device2ColorModel {
         let component_0 = blending(self.component_0, source.component_0)
         let component_1 = blending(self.component_1, source.component_1)
         return Device2ColorModel(component_0, component_1)
@@ -192,7 +192,7 @@ public struct Device3ColorModel : ColorModelProtocol {
 extension Device3ColorModel {
     
     @_transparent
-    public func blended(source: Device3ColorModel, blending: @convention(c) (Double, Double) -> Double) -> Device3ColorModel {
+    public func blended(source: Device3ColorModel, blending: (Double, Double) -> Double) -> Device3ColorModel {
         let component_0 = blending(self.component_0, source.component_0)
         let component_1 = blending(self.component_1, source.component_1)
         let component_2 = blending(self.component_2, source.component_2)
@@ -319,7 +319,7 @@ public struct Device4ColorModel : ColorModelProtocol {
 extension Device4ColorModel {
     
     @_transparent
-    public func blended(source: Device4ColorModel, blending: @convention(c) (Double, Double) -> Double) -> Device4ColorModel {
+    public func blended(source: Device4ColorModel, blending: (Double, Double) -> Double) -> Device4ColorModel {
         let component_0 = blending(self.component_0, source.component_0)
         let component_1 = blending(self.component_1, source.component_1)
         let component_2 = blending(self.component_2, source.component_2)
@@ -457,7 +457,7 @@ public struct Device5ColorModel : ColorModelProtocol {
 extension Device5ColorModel {
     
     @_transparent
-    public func blended(source: Device5ColorModel, blending: @convention(c) (Double, Double) -> Double) -> Device5ColorModel {
+    public func blended(source: Device5ColorModel, blending: (Double, Double) -> Double) -> Device5ColorModel {
         let component_0 = blending(self.component_0, source.component_0)
         let component_1 = blending(self.component_1, source.component_1)
         let component_2 = blending(self.component_2, source.component_2)
@@ -626,7 +626,7 @@ public struct Device6ColorModel : ColorModelProtocol {
 extension Device6ColorModel {
     
     @_transparent
-    public func blended(source: Device6ColorModel, blending: @convention(c) (Double, Double) -> Double) -> Device6ColorModel {
+    public func blended(source: Device6ColorModel, blending: (Double, Double) -> Double) -> Device6ColorModel {
         let component_0 = blending(self.component_0, source.component_0)
         let component_1 = blending(self.component_1, source.component_1)
         let component_2 = blending(self.component_2, source.component_2)
@@ -806,7 +806,7 @@ public struct Device7ColorModel : ColorModelProtocol {
 extension Device7ColorModel {
     
     @_transparent
-    public func blended(source: Device7ColorModel, blending: @convention(c) (Double, Double) -> Double) -> Device7ColorModel {
+    public func blended(source: Device7ColorModel, blending: (Double, Double) -> Double) -> Device7ColorModel {
         let component_0 = blending(self.component_0, source.component_0)
         let component_1 = blending(self.component_1, source.component_1)
         let component_2 = blending(self.component_2, source.component_2)
@@ -1003,7 +1003,7 @@ public struct Device8ColorModel : ColorModelProtocol {
 extension Device8ColorModel {
     
     @_transparent
-    public func blended(source: Device8ColorModel, blending: @convention(c) (Double, Double) -> Double) -> Device8ColorModel {
+    public func blended(source: Device8ColorModel, blending: (Double, Double) -> Double) -> Device8ColorModel {
         let component_0 = blending(self.component_0, source.component_0)
         let component_1 = blending(self.component_1, source.component_1)
         let component_2 = blending(self.component_2, source.component_2)
@@ -1210,7 +1210,7 @@ public struct Device9ColorModel : ColorModelProtocol {
 extension Device9ColorModel {
     
     @_transparent
-    public func blended(source: Device9ColorModel, blending: @convention(c) (Double, Double) -> Double) -> Device9ColorModel {
+    public func blended(source: Device9ColorModel, blending: (Double, Double) -> Double) -> Device9ColorModel {
         let component_0 = blending(self.component_0, source.component_0)
         let component_1 = blending(self.component_1, source.component_1)
         let component_2 = blending(self.component_2, source.component_2)
@@ -1428,7 +1428,7 @@ public struct Device10ColorModel : ColorModelProtocol {
 extension Device10ColorModel {
     
     @_transparent
-    public func blended(source: Device10ColorModel, blending: @convention(c) (Double, Double) -> Double) -> Device10ColorModel {
+    public func blended(source: Device10ColorModel, blending: (Double, Double) -> Double) -> Device10ColorModel {
         let component_0 = blending(self.component_0, source.component_0)
         let component_1 = blending(self.component_1, source.component_1)
         let component_2 = blending(self.component_2, source.component_2)
@@ -1663,7 +1663,7 @@ public struct Device11ColorModel : ColorModelProtocol {
 extension Device11ColorModel {
     
     @_transparent
-    public func blended(source: Device11ColorModel, blending: @convention(c) (Double, Double) -> Double) -> Device11ColorModel {
+    public func blended(source: Device11ColorModel, blending: (Double, Double) -> Double) -> Device11ColorModel {
         let component_0 = blending(self.component_0, source.component_0)
         let component_1 = blending(self.component_1, source.component_1)
         let component_2 = blending(self.component_2, source.component_2)
@@ -1908,7 +1908,7 @@ public struct Device12ColorModel : ColorModelProtocol {
 extension Device12ColorModel {
     
     @_transparent
-    public func blended(source: Device12ColorModel, blending: @convention(c) (Double, Double) -> Double) -> Device12ColorModel {
+    public func blended(source: Device12ColorModel, blending: (Double, Double) -> Double) -> Device12ColorModel {
         let component_0 = blending(self.component_0, source.component_0)
         let component_1 = blending(self.component_1, source.component_1)
         let component_2 = blending(self.component_2, source.component_2)
@@ -2164,7 +2164,7 @@ public struct Device13ColorModel : ColorModelProtocol {
 extension Device13ColorModel {
     
     @_transparent
-    public func blended(source: Device13ColorModel, blending: @convention(c) (Double, Double) -> Double) -> Device13ColorModel {
+    public func blended(source: Device13ColorModel, blending: (Double, Double) -> Double) -> Device13ColorModel {
         let component_0 = blending(self.component_0, source.component_0)
         let component_1 = blending(self.component_1, source.component_1)
         let component_2 = blending(self.component_2, source.component_2)
@@ -2437,7 +2437,7 @@ public struct Device14ColorModel : ColorModelProtocol {
 extension Device14ColorModel {
     
     @_transparent
-    public func blended(source: Device14ColorModel, blending: @convention(c) (Double, Double) -> Double) -> Device14ColorModel {
+    public func blended(source: Device14ColorModel, blending: (Double, Double) -> Double) -> Device14ColorModel {
         let component_0 = blending(self.component_0, source.component_0)
         let component_1 = blending(self.component_1, source.component_1)
         let component_2 = blending(self.component_2, source.component_2)
@@ -2720,7 +2720,7 @@ public struct Device15ColorModel : ColorModelProtocol {
 extension Device15ColorModel {
     
     @_transparent
-    public func blended(source: Device15ColorModel, blending: @convention(c) (Double, Double) -> Double) -> Device15ColorModel {
+    public func blended(source: Device15ColorModel, blending: (Double, Double) -> Double) -> Device15ColorModel {
         let component_0 = blending(self.component_0, source.component_0)
         let component_1 = blending(self.component_1, source.component_1)
         let component_2 = blending(self.component_2, source.component_2)
@@ -2954,7 +2954,7 @@ extension Device2ColorModel {
 extension Device2ColorModel.FloatComponents {
     
     @_transparent
-    public func blended(source: Device2ColorModel.FloatComponents, blending: @convention(c) (Float, Float) -> Float) -> Device2ColorModel.FloatComponents {
+    public func blended(source: Device2ColorModel.FloatComponents, blending: (Float, Float) -> Float) -> Device2ColorModel.FloatComponents {
         let component_0 = blending(self.component_0, source.component_0)
         let component_1 = blending(self.component_1, source.component_1)
         return Device2ColorModel.FloatComponents(component_0, component_1)
@@ -3087,7 +3087,7 @@ extension Device3ColorModel {
 extension Device3ColorModel.FloatComponents {
     
     @_transparent
-    public func blended(source: Device3ColorModel.FloatComponents, blending: @convention(c) (Float, Float) -> Float) -> Device3ColorModel.FloatComponents {
+    public func blended(source: Device3ColorModel.FloatComponents, blending: (Float, Float) -> Float) -> Device3ColorModel.FloatComponents {
         let component_0 = blending(self.component_0, source.component_0)
         let component_1 = blending(self.component_1, source.component_1)
         let component_2 = blending(self.component_2, source.component_2)
@@ -3232,7 +3232,7 @@ extension Device4ColorModel {
 extension Device4ColorModel.FloatComponents {
     
     @_transparent
-    public func blended(source: Device4ColorModel.FloatComponents, blending: @convention(c) (Float, Float) -> Float) -> Device4ColorModel.FloatComponents {
+    public func blended(source: Device4ColorModel.FloatComponents, blending: (Float, Float) -> Float) -> Device4ColorModel.FloatComponents {
         let component_0 = blending(self.component_0, source.component_0)
         let component_1 = blending(self.component_1, source.component_1)
         let component_2 = blending(self.component_2, source.component_2)
@@ -3393,7 +3393,7 @@ extension Device5ColorModel {
 extension Device5ColorModel.FloatComponents {
     
     @_transparent
-    public func blended(source: Device5ColorModel.FloatComponents, blending: @convention(c) (Float, Float) -> Float) -> Device5ColorModel.FloatComponents {
+    public func blended(source: Device5ColorModel.FloatComponents, blending: (Float, Float) -> Float) -> Device5ColorModel.FloatComponents {
         let component_0 = blending(self.component_0, source.component_0)
         let component_1 = blending(self.component_1, source.component_1)
         let component_2 = blending(self.component_2, source.component_2)
@@ -3587,7 +3587,7 @@ extension Device6ColorModel {
 extension Device6ColorModel.FloatComponents {
     
     @_transparent
-    public func blended(source: Device6ColorModel.FloatComponents, blending: @convention(c) (Float, Float) -> Float) -> Device6ColorModel.FloatComponents {
+    public func blended(source: Device6ColorModel.FloatComponents, blending: (Float, Float) -> Float) -> Device6ColorModel.FloatComponents {
         let component_0 = blending(self.component_0, source.component_0)
         let component_1 = blending(self.component_1, source.component_1)
         let component_2 = blending(self.component_2, source.component_2)
@@ -3795,7 +3795,7 @@ extension Device7ColorModel {
 extension Device7ColorModel.FloatComponents {
     
     @_transparent
-    public func blended(source: Device7ColorModel.FloatComponents, blending: @convention(c) (Float, Float) -> Float) -> Device7ColorModel.FloatComponents {
+    public func blended(source: Device7ColorModel.FloatComponents, blending: (Float, Float) -> Float) -> Device7ColorModel.FloatComponents {
         let component_0 = blending(self.component_0, source.component_0)
         let component_1 = blending(self.component_1, source.component_1)
         let component_2 = blending(self.component_2, source.component_2)
@@ -4022,7 +4022,7 @@ extension Device8ColorModel {
 extension Device8ColorModel.FloatComponents {
     
     @_transparent
-    public func blended(source: Device8ColorModel.FloatComponents, blending: @convention(c) (Float, Float) -> Float) -> Device8ColorModel.FloatComponents {
+    public func blended(source: Device8ColorModel.FloatComponents, blending: (Float, Float) -> Float) -> Device8ColorModel.FloatComponents {
         let component_0 = blending(self.component_0, source.component_0)
         let component_1 = blending(self.component_1, source.component_1)
         let component_2 = blending(self.component_2, source.component_2)
@@ -4261,7 +4261,7 @@ extension Device9ColorModel {
 extension Device9ColorModel.FloatComponents {
     
     @_transparent
-    public func blended(source: Device9ColorModel.FloatComponents, blending: @convention(c) (Float, Float) -> Float) -> Device9ColorModel.FloatComponents {
+    public func blended(source: Device9ColorModel.FloatComponents, blending: (Float, Float) -> Float) -> Device9ColorModel.FloatComponents {
         let component_0 = blending(self.component_0, source.component_0)
         let component_1 = blending(self.component_1, source.component_1)
         let component_2 = blending(self.component_2, source.component_2)
@@ -4514,7 +4514,7 @@ extension Device10ColorModel {
 extension Device10ColorModel.FloatComponents {
     
     @_transparent
-    public func blended(source: Device10ColorModel.FloatComponents, blending: @convention(c) (Float, Float) -> Float) -> Device10ColorModel.FloatComponents {
+    public func blended(source: Device10ColorModel.FloatComponents, blending: (Float, Float) -> Float) -> Device10ColorModel.FloatComponents {
         let component_0 = blending(self.component_0, source.component_0)
         let component_1 = blending(self.component_1, source.component_1)
         let component_2 = blending(self.component_2, source.component_2)
@@ -4786,7 +4786,7 @@ extension Device11ColorModel {
 extension Device11ColorModel.FloatComponents {
     
     @_transparent
-    public func blended(source: Device11ColorModel.FloatComponents, blending: @convention(c) (Float, Float) -> Float) -> Device11ColorModel.FloatComponents {
+    public func blended(source: Device11ColorModel.FloatComponents, blending: (Float, Float) -> Float) -> Device11ColorModel.FloatComponents {
         let component_0 = blending(self.component_0, source.component_0)
         let component_1 = blending(self.component_1, source.component_1)
         let component_2 = blending(self.component_2, source.component_2)
@@ -5070,7 +5070,7 @@ extension Device12ColorModel {
 extension Device12ColorModel.FloatComponents {
     
     @_transparent
-    public func blended(source: Device12ColorModel.FloatComponents, blending: @convention(c) (Float, Float) -> Float) -> Device12ColorModel.FloatComponents {
+    public func blended(source: Device12ColorModel.FloatComponents, blending: (Float, Float) -> Float) -> Device12ColorModel.FloatComponents {
         let component_0 = blending(self.component_0, source.component_0)
         let component_1 = blending(self.component_1, source.component_1)
         let component_2 = blending(self.component_2, source.component_2)
@@ -5368,7 +5368,7 @@ extension Device13ColorModel {
 extension Device13ColorModel.FloatComponents {
     
     @_transparent
-    public func blended(source: Device13ColorModel.FloatComponents, blending: @convention(c) (Float, Float) -> Float) -> Device13ColorModel.FloatComponents {
+    public func blended(source: Device13ColorModel.FloatComponents, blending: (Float, Float) -> Float) -> Device13ColorModel.FloatComponents {
         let component_0 = blending(self.component_0, source.component_0)
         let component_1 = blending(self.component_1, source.component_1)
         let component_2 = blending(self.component_2, source.component_2)
@@ -5685,7 +5685,7 @@ extension Device14ColorModel {
 extension Device14ColorModel.FloatComponents {
     
     @_transparent
-    public func blended(source: Device14ColorModel.FloatComponents, blending: @convention(c) (Float, Float) -> Float) -> Device14ColorModel.FloatComponents {
+    public func blended(source: Device14ColorModel.FloatComponents, blending: (Float, Float) -> Float) -> Device14ColorModel.FloatComponents {
         let component_0 = blending(self.component_0, source.component_0)
         let component_1 = blending(self.component_1, source.component_1)
         let component_2 = blending(self.component_2, source.component_2)
@@ -6014,7 +6014,7 @@ extension Device15ColorModel {
 extension Device15ColorModel.FloatComponents {
     
     @_transparent
-    public func blended(source: Device15ColorModel.FloatComponents, blending: @convention(c) (Float, Float) -> Float) -> Device15ColorModel.FloatComponents {
+    public func blended(source: Device15ColorModel.FloatComponents, blending: (Float, Float) -> Float) -> Device15ColorModel.FloatComponents {
         let component_0 = blending(self.component_0, source.component_0)
         let component_1 = blending(self.component_1, source.component_1)
         let component_2 = blending(self.component_2, source.component_2)

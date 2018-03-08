@@ -51,6 +51,8 @@ public class ImageContext<Pixel: ColorPixelProtocol> {
     
     private var next: ImageContext?
     
+    private var isDirty: Bool = false
+    
     public init(image: Image<Pixel>) {
         self.image = image
         self.clip = MappedBuffer(repeating: 1, count: image.width * image.height, option: image.option)
@@ -77,6 +79,8 @@ extension ImageContext {
 extension ImageContext {
     
     public func withUnsafeMutableImageBufferPointer<R>(_ body: (inout UnsafeMutableBufferPointer<Pixel>) throws -> R) rethrows -> R {
+        
+        self.isDirty = true
         
         if let next = self.next {
             return try next.withUnsafeMutableImageBufferPointer(body)
@@ -375,6 +379,8 @@ extension ImageContext {
                     return
                 }
                 
+                guard next.isDirty else { return }
+                
                 next.image.withUnsafeBufferPointer { source in
                     
                     guard let source = source.baseAddress else { return }
@@ -429,7 +435,11 @@ extension ImageContext {
         
         try body(_clip)
         
-        self.clip = MappedBuffer(_clip.image.pixels.lazy.map { $0.color.white * $0.opacity }, option: image.option)
+        if _clip.isDirty {
+            self.clip = MappedBuffer(_clip.image.pixels.lazy.map { $0.color.white * $0.opacity }, option: image.option)
+        } else {
+            self.clearClipBuffer(with: 0)
+        }
     }
 }
 
