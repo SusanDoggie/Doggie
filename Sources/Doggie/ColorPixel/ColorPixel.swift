@@ -172,7 +172,7 @@ extension ColorPixelProtocol {
 extension ColorPixelProtocol {
     
     @_transparent
-    public mutating func blend<C : ColorPixelProtocol>(source: C, compositingMode: ColorCompositingMode = .default, blending: @convention(c) (Double, Double) -> Double) where C.Model == Model {
+    public mutating func blend<C : ColorPixelProtocol>(source: C, compositingMode: ColorCompositingMode = .default, blending: (Double, Double) -> Double) where C.Model == Model {
         self = self.blended(source: source, compositingMode: compositingMode, blending: blending)
     }
     @_transparent
