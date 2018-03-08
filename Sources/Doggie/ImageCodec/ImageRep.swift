@@ -37,9 +37,9 @@ protocol ImageRepBase {
     
     var numberOfPages: Int { get }
     
-    func image(option: MappedBufferOption) -> AnyImage
+    func page(_ index: Int) -> ImageRepBase
     
-    func image(page: Int, option: MappedBufferOption) -> AnyImage
+    func image(option: MappedBufferOption) -> AnyImage
 }
 
 extension ImageRepBase {
@@ -48,15 +48,19 @@ extension ImageRepBase {
         return 1
     }
     
-    func image(page: Int, option: MappedBufferOption) -> AnyImage {
-        guard page == 0 else { fatalError("Index out of range.") }
-        return self.image(option: option)
+    func page(_ index: Int) -> ImageRepBase {
+        guard index == 0 else { fatalError("Index out of range.") }
+        return self
     }
 }
 
 public struct ImageRep {
     
     fileprivate let base: ImageRepBase
+    
+    private init(base: ImageRepBase) {
+        self.base = base
+    }
 }
 
 extension ImageRep {
@@ -112,6 +116,13 @@ extension ImageRep {
     public var numberOfPages: Int {
         return base.numberOfPages
     }
+    
+    public func page(_ index: Int) -> ImageRep {
+        return ImageRep(base: base.page(index))
+    }
+}
+
+extension ImageRep {
     
     public var width: Int {
         return base.width
@@ -178,10 +189,6 @@ extension AnyImage {
     
     public init(imageRep: ImageRep, option: MappedBufferOption = .default) {
         self = imageRep.base.image(option: option)
-    }
-    
-    public init(imageRep: ImageRep, page: Int, option: MappedBufferOption = .default) {
-        self = imageRep.base.image(page: page, option: option)
     }
     
     public init(data: Data, option: MappedBufferOption = .default) throws {

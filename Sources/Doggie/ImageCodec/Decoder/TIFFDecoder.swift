@@ -128,12 +128,12 @@ struct TIFFDecoder : ImageRepDecoder {
         return pages.count
     }
     
-    func image(page: Int, option: MappedBufferOption) -> AnyImage {
-        return pages[page].image(option: option)
+    func page(_ index: Int) -> ImageRepBase {
+        return pages[index]
     }
 }
 
-struct TIFFPage {
+struct TIFFPage : ImageRepBase {
     
     var endianness: TIFFHeader.Endianness
     
