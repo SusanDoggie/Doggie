@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-public enum ChromaticAdaptationAlgorithm {
+public enum ChromaticAdaptationAlgorithm : Hashable {
     case xyzScaling
     case vonKries
     case bradford
@@ -35,20 +35,6 @@ extension ChromaticAdaptationAlgorithm {
     @_inlineable
     public static var `default` : ChromaticAdaptationAlgorithm {
         return .bradford
-    }
-}
-
-extension ChromaticAdaptationAlgorithm: Equatable {
-    
-    @_inlineable
-    public static func ==(lhs: ChromaticAdaptationAlgorithm, rhs: ChromaticAdaptationAlgorithm) -> Bool {
-        switch (lhs, rhs) {
-        case (.xyzScaling, .xyzScaling): return true
-        case (.vonKries, .vonKries): return true
-        case (.bradford, .bradford): return true
-        case let (.other(_lhs), .other(_rhs)): return _lhs == _rhs
-        default: return false
-        }
     }
 }
 
