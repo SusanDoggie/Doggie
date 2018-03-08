@@ -533,13 +533,13 @@ extension ShapeRegion {
     }
     
     @_inlineable
-    public func isStrictSuperset(of other: ShapeRegion) -> Bool {
+    public func isStrictSubset(of other: ShapeRegion) -> Bool {
         return self.subtracting(other).isEmpty && !other.subtracting(self).isEmpty
     }
     
     @_inlineable
-    public func isStrictSubset(of other: ShapeRegion) -> Bool {
-        return other.isStrictSuperset(of: self)
+    public func isStrictSuperset(of other: ShapeRegion) -> Bool {
+        return other.isStrictSubset(of: self)
     }
 }
 
