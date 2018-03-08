@@ -64,107 +64,204 @@ extension ColorBlendMode {
     }
 }
 
-extension ColorBlendMode {
+@_versioned
+@inline(__always)
+func ColorBlendMultiply(_ destination: Double, _ source: Double) -> Double {
+    return destination * source
+}
+
+@_versioned
+@inline(__always)
+func ColorBlendScreen(_ destination: Double, _ source: Double) -> Double {
+    return destination + source - destination * source
+}
+
+@_versioned
+@inline(__always)
+func ColorBlendOverlay(_ destination: Double, _ source: Double) -> Double {
     
-    @_versioned
-    @inline(__always)
-    static func Multiply<T: BinaryFloatingPoint>(_ destination: T, _ source: T) -> T {
-        return destination * source
+    if destination < 0.5 {
+        return 2 * destination * source
+    }
+    let u = 1 - destination
+    let v = 1 - source
+    return 1 - 2 * u * v
+}
+
+@_versioned
+@inline(__always)
+func ColorBlendDarken(_ destination: Double, _ source: Double) -> Double {
+    return min(destination, source)
+}
+
+@_versioned
+@inline(__always)
+func ColorBlendLighten(_ destination: Double, _ source: Double) -> Double {
+    return max(destination, source)
+}
+
+@_versioned
+@inline(__always)
+func ColorBlendColorDodge(_ destination: Double, _ source: Double) -> Double {
+    return source < 1 ? min(1, destination / (1 - source)) : 1
+}
+
+@_versioned
+@inline(__always)
+func ColorBlendColorBurn(_ destination: Double, _ source: Double) -> Double {
+    return source > 0 ? 1 - min(1, (1 - destination) / source) : 0
+}
+
+@_versioned
+@inline(__always)
+func ColorBlendSoftLight(_ destination: Double, _ source: Double) -> Double {
+    
+    let db: Double
+    
+    if destination < 0.25 {
+        let s = 16 * destination - 12
+        let t = s * destination + 4
+        db = t * destination
+    } else {
+        db = sqrt(destination)
     }
     
-    @_versioned
-    @inline(__always)
-    static func Screen<T: BinaryFloatingPoint>(_ destination: T, _ source: T) -> T {
-        return destination + source - destination * source
+    let u = 1 - 2 * source
+    
+    if source < 0.5 {
+        return destination - u * destination * (1 - destination)
+    }
+    return destination - u * (db - destination)
+}
+
+@_versioned
+@inline(__always)
+func ColorBlendHardLight(_ destination: Double, _ source: Double) -> Double {
+    return ColorBlendOverlay(source, destination)
+}
+
+@_versioned
+@inline(__always)
+func ColorBlendDifference(_ destination: Double, _ source: Double) -> Double {
+    return abs(destination - source)
+}
+
+@_versioned
+@inline(__always)
+func ColorBlendExclusion(_ destination: Double, _ source: Double) -> Double {
+    return destination + source - 2 * destination * source
+}
+
+@_versioned
+@inline(__always)
+func ColorBlendPlusDarker(_ destination: Double, _ source: Double) -> Double {
+    return max(0, 1 - ((1 - destination) + (1 - source)))
+}
+
+@_versioned
+@inline(__always)
+func ColorBlendPlusLighter(_ destination: Double, _ source: Double) -> Double {
+    return min(1, destination + source)
+}
+
+@_versioned
+@inline(__always)
+func ColorBlendMultiply(_ destination: Float, _ source: Float) -> Float {
+    return destination * source
+}
+
+@_versioned
+@inline(__always)
+func ColorBlendScreen(_ destination: Float, _ source: Float) -> Float {
+    return destination + source - destination * source
+}
+
+@_versioned
+@inline(__always)
+func ColorBlendOverlay(_ destination: Float, _ source: Float) -> Float {
+    
+    if destination < 0.5 {
+        return 2 * destination * source
+    }
+    let u = 1 - destination
+    let v = 1 - source
+    return 1 - 2 * u * v
+}
+
+@_versioned
+@inline(__always)
+func ColorBlendDarken(_ destination: Float, _ source: Float) -> Float {
+    return min(destination, source)
+}
+
+@_versioned
+@inline(__always)
+func ColorBlendLighten(_ destination: Float, _ source: Float) -> Float {
+    return max(destination, source)
+}
+
+@_versioned
+@inline(__always)
+func ColorBlendColorDodge(_ destination: Float, _ source: Float) -> Float {
+    return source < 1 ? min(1, destination / (1 - source)) : 1
+}
+
+@_versioned
+@inline(__always)
+func ColorBlendColorBurn(_ destination: Float, _ source: Float) -> Float {
+    return source > 0 ? 1 - min(1, (1 - destination) / source) : 0
+}
+
+@_versioned
+@inline(__always)
+func ColorBlendSoftLight(_ destination: Float, _ source: Float) -> Float {
+    
+    let db: Float
+    
+    if destination < 0.25 {
+        let s = 16 * destination - 12
+        let t = s * destination + 4
+        db = t * destination
+    } else {
+        db = sqrt(destination)
     }
     
-    @_versioned
-    @inline(__always)
-    static func Overlay<T: BinaryFloatingPoint>(_ destination: T, _ source: T) -> T {
-        
-        if destination < 0.5 {
-            return 2 * destination * source
-        }
-        let u = 1 - destination
-        let v = 1 - source
-        return 1 - 2 * u * v
-    }
+    let u = 1 - 2 * source
     
-    @_versioned
-    @inline(__always)
-    static func Darken<T: BinaryFloatingPoint>(_ destination: T, _ source: T) -> T {
-        return min(destination, source)
+    if source < 0.5 {
+        return destination - u * destination * (1 - destination)
     }
-    
-    @_versioned
-    @inline(__always)
-    static func Lighten<T: BinaryFloatingPoint>(_ destination: T, _ source: T) -> T {
-        return max(destination, source)
-    }
-    
-    @_versioned
-    @inline(__always)
-    static func ColorDodge<T: BinaryFloatingPoint>(_ destination: T, _ source: T) -> T {
-        return source < 1 ? min(1, destination / (1 - source)) : 1
-    }
-    
-    @_versioned
-    @inline(__always)
-    static func ColorBurn<T: BinaryFloatingPoint>(_ destination: T, _ source: T) -> T {
-        return source > 0 ? 1 - min(1, (1 - destination) / source) : 0
-    }
-    
-    @_versioned
-    @inline(__always)
-    static func SoftLight<T: BinaryFloatingPoint>(_ destination: T, _ source: T) -> T {
-        
-        let db: T
-        
-        if destination < 0.25 {
-            let s = 16 * destination - 12
-            let t = s * destination + 4
-            db = t * destination
-        } else {
-            db = sqrt(destination)
-        }
-        
-        let u = 1 - 2 * source
-        
-        if source < 0.5 {
-            return destination - u * destination * (1 - destination)
-        }
-        return destination - u * (db - destination)
-    }
-    
-    @_versioned
-    @inline(__always)
-    static func HardLight<T: BinaryFloatingPoint>(_ destination: T, _ source: T) -> T {
-        return Overlay(source, destination)
-    }
-    
-    @_versioned
-    @inline(__always)
-    static func Difference<T: BinaryFloatingPoint>(_ destination: T, _ source: T) -> T {
-        return abs(destination - source)
-    }
-    
-    @_versioned
-    @inline(__always)
-    static func Exclusion<T: BinaryFloatingPoint>(_ destination: T, _ source: T) -> T {
-        return destination + source - 2 * destination * source
-    }
-    
-    @_versioned
-    @inline(__always)
-    static func PlusDarker<T: BinaryFloatingPoint>(_ destination: T, _ source: T) -> T {
-        return max(0, 1 - ((1 - destination) + (1 - source)))
-    }
-    
-    @_versioned
-    @inline(__always)
-    static func PlusLighter<T: BinaryFloatingPoint>(_ destination: T, _ source: T) -> T {
-        return min(1, destination + source)
-    }
+    return destination - u * (db - destination)
+}
+
+@_versioned
+@inline(__always)
+func ColorBlendHardLight(_ destination: Float, _ source: Float) -> Float {
+    return ColorBlendOverlay(source, destination)
+}
+
+@_versioned
+@inline(__always)
+func ColorBlendDifference(_ destination: Float, _ source: Float) -> Float {
+    return abs(destination - source)
+}
+
+@_versioned
+@inline(__always)
+func ColorBlendExclusion(_ destination: Float, _ source: Float) -> Float {
+    return destination + source - 2 * destination * source
+}
+
+@_versioned
+@inline(__always)
+func ColorBlendPlusDarker(_ destination: Float, _ source: Float) -> Float {
+    return max(0, 1 - ((1 - destination) + (1 - source)))
+}
+
+@_versioned
+@inline(__always)
+func ColorBlendPlusLighter(_ destination: Float, _ source: Float) -> Float {
+    return min(1, destination + source)
 }
 
 extension ColorModelProtocol {
@@ -178,19 +275,19 @@ extension ColorModelProtocol {
     public func blended(source: Self, blendMode: ColorBlendMode) -> Self {
         switch blendMode {
         case .normal: return source
-        case .multiply: return self.blended(source: source, blending: ColorBlendMode.Multiply)
-        case .screen: return self.blended(source: source, blending: ColorBlendMode.Screen)
-        case .overlay: return self.blended(source: source, blending: ColorBlendMode.Overlay)
-        case .darken: return self.blended(source: source, blending: ColorBlendMode.Darken)
-        case .lighten: return self.blended(source: source, blending: ColorBlendMode.Lighten)
-        case .colorDodge: return self.blended(source: source, blending: ColorBlendMode.ColorDodge)
-        case .colorBurn: return self.blended(source: source, blending: ColorBlendMode.ColorBurn)
-        case .softLight: return self.blended(source: source, blending: ColorBlendMode.SoftLight)
-        case .hardLight: return self.blended(source: source, blending: ColorBlendMode.HardLight)
-        case .difference: return self.blended(source: source, blending: ColorBlendMode.Difference)
-        case .exclusion: return self.blended(source: source, blending: ColorBlendMode.Exclusion)
-        case .plusDarker: return self.blended(source: source, blending: ColorBlendMode.PlusDarker)
-        case .plusLighter: return self.blended(source: source, blending: ColorBlendMode.PlusLighter)
+        case .multiply: return self.blended(source: source, blending: ColorBlendMultiply)
+        case .screen: return self.blended(source: source, blending: ColorBlendScreen)
+        case .overlay: return self.blended(source: source, blending: ColorBlendOverlay)
+        case .darken: return self.blended(source: source, blending: ColorBlendDarken)
+        case .lighten: return self.blended(source: source, blending: ColorBlendLighten)
+        case .colorDodge: return self.blended(source: source, blending: ColorBlendColorDodge)
+        case .colorBurn: return self.blended(source: source, blending: ColorBlendColorBurn)
+        case .softLight: return self.blended(source: source, blending: ColorBlendSoftLight)
+        case .hardLight: return self.blended(source: source, blending: ColorBlendHardLight)
+        case .difference: return self.blended(source: source, blending: ColorBlendDifference)
+        case .exclusion: return self.blended(source: source, blending: ColorBlendExclusion)
+        case .plusDarker: return self.blended(source: source, blending: ColorBlendPlusDarker)
+        case .plusLighter: return self.blended(source: source, blending: ColorBlendPlusLighter)
         }
     }
 }
@@ -206,19 +303,19 @@ extension FloatColorComponents {
     public func blended(source: Self, blendMode: ColorBlendMode) -> Self {
         switch blendMode {
         case .normal: return source
-        case .multiply: return self.blended(source: source, blending: ColorBlendMode.Multiply)
-        case .screen: return self.blended(source: source, blending: ColorBlendMode.Screen)
-        case .overlay: return self.blended(source: source, blending: ColorBlendMode.Overlay)
-        case .darken: return self.blended(source: source, blending: ColorBlendMode.Darken)
-        case .lighten: return self.blended(source: source, blending: ColorBlendMode.Lighten)
-        case .colorDodge: return self.blended(source: source, blending: ColorBlendMode.ColorDodge)
-        case .colorBurn: return self.blended(source: source, blending: ColorBlendMode.ColorBurn)
-        case .softLight: return self.blended(source: source, blending: ColorBlendMode.SoftLight)
-        case .hardLight: return self.blended(source: source, blending: ColorBlendMode.HardLight)
-        case .difference: return self.blended(source: source, blending: ColorBlendMode.Difference)
-        case .exclusion: return self.blended(source: source, blending: ColorBlendMode.Exclusion)
-        case .plusDarker: return self.blended(source: source, blending: ColorBlendMode.PlusDarker)
-        case .plusLighter: return self.blended(source: source, blending: ColorBlendMode.PlusLighter)
+        case .multiply: return self.blended(source: source, blending: ColorBlendMultiply)
+        case .screen: return self.blended(source: source, blending: ColorBlendScreen)
+        case .overlay: return self.blended(source: source, blending: ColorBlendOverlay)
+        case .darken: return self.blended(source: source, blending: ColorBlendDarken)
+        case .lighten: return self.blended(source: source, blending: ColorBlendLighten)
+        case .colorDodge: return self.blended(source: source, blending: ColorBlendColorDodge)
+        case .colorBurn: return self.blended(source: source, blending: ColorBlendColorBurn)
+        case .softLight: return self.blended(source: source, blending: ColorBlendSoftLight)
+        case .hardLight: return self.blended(source: source, blending: ColorBlendHardLight)
+        case .difference: return self.blended(source: source, blending: ColorBlendDifference)
+        case .exclusion: return self.blended(source: source, blending: ColorBlendExclusion)
+        case .plusDarker: return self.blended(source: source, blending: ColorBlendPlusDarker)
+        case .plusLighter: return self.blended(source: source, blending: ColorBlendPlusLighter)
         }
     }
 }

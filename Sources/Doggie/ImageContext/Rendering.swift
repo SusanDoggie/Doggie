@@ -121,40 +121,37 @@ extension ImageContext {
                         
                         rasterizer.rasterize(_p0, _p1, _p2) { barycentric, position, buf in
                             
-                            buf.blender.draw { () -> P? in
+                            let b0 = barycentric.x * v0
+                            let b1 = barycentric.y * v1
+                            let b2 = barycentric.z * v2
+                            let b = b0 + b1 + b2
+                            
+                            if let _depth = depthFun?(b.position) {
                                 
-                                let b0 = barycentric.x * v0
-                                let b1 = barycentric.y * v1
-                                let b2 = barycentric.z * v2
-                                let b = b0 + b1 + b2
-                                
-                                if let _depth = depthFun?(b.position) {
+                                if 0...1 ~= _depth {
                                     
-                                    if 0...1 ~= _depth {
-                                        
-                                        let depthPass: Bool
-                                        
-                                        switch depthCompareMode {
-                                        case .always: depthPass = true
-                                        case .never: depthPass = false
-                                        case .equal: depthPass = _depth == buf.depth.pointee
-                                        case .notEqual: depthPass = _depth != buf.depth.pointee
-                                        case .less: depthPass = _depth < buf.depth.pointee
-                                        case .lessEqual: depthPass = _depth <= buf.depth.pointee
-                                        case .greater: depthPass = _depth > buf.depth.pointee
-                                        case .greaterEqual: depthPass = _depth >= buf.depth.pointee
-                                        }
-                                        
-                                        if depthPass {
-                                            buf.depth.pointee = _depth
-                                            return shader(b)
+                                    let depthPass: Bool
+                                    
+                                    switch depthCompareMode {
+                                    case .always: depthPass = true
+                                    case .never: depthPass = false
+                                    case .equal: depthPass = _depth == buf.depth.pointee
+                                    case .notEqual: depthPass = _depth != buf.depth.pointee
+                                    case .less: depthPass = _depth < buf.depth.pointee
+                                    case .lessEqual: depthPass = _depth <= buf.depth.pointee
+                                    case .greater: depthPass = _depth > buf.depth.pointee
+                                    case .greaterEqual: depthPass = _depth >= buf.depth.pointee
+                                    }
+                                    
+                                    if depthPass {
+                                        buf.depth.pointee = _depth
+                                        if let source = shader(b) {
+                                            buf.blender.draw(color: source)
                                         }
                                     }
-                                } else {
-                                    return shader(b)
                                 }
-                                
-                                return nil
+                            } else if let source = shader(b) {
+                                buf.blender.draw(color: source)
                             }
                         }
                     }

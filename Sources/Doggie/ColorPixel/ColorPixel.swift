@@ -43,7 +43,7 @@ public protocol ColorPixelProtocol : Hashable {
     
     func with(opacity: Double) -> Self
     
-    func blended<C : ColorPixelProtocol>(source: C, compositingMode: ColorCompositingMode, blending: (Double, Double) -> Double) -> Self where C.Model == Model
+    func blended<C : ColorPixelProtocol>(source: C, compositingMode: ColorCompositingMode, blending: @convention(c) (Double, Double) -> Double) -> Self where C.Model == Model
     
     func blended<C : ColorPixelProtocol>(source: C, blendMode: ColorBlendMode, compositingMode: ColorCompositingMode) -> Self where C.Model == Model
 }
