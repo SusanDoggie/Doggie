@@ -160,7 +160,7 @@ extension ImageRep {
     
     public func representation(using storageType: FileType, properties: [PropertyKey : Any]) -> Data? {
         
-        let image = base.image(option: .fileBacked)
+        let image = base as? AnyImage ?? base.image(option: .fileBacked)
         guard image.width > 0 && image.height > 0 else { return nil }
         
         let Encoder: ImageRepEncoder.Type
