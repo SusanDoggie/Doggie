@@ -156,7 +156,7 @@ extension CMYColorModel {
 extension CMYColorModel {
     
     @_transparent
-    public func blended(source: CMYColorModel, blending: (Double, Double) -> Double) -> CMYColorModel {
+    public func blended(source: CMYColorModel, blending: @convention(c) (Double, Double) -> Double) -> CMYColorModel {
         return CMYColorModel(cyan: blending(self.cyan, source.cyan), magenta: blending(self.magenta, source.magenta), yellow: blending(self.yellow, source.yellow))
     }
 }
@@ -239,7 +239,7 @@ extension CMYColorModel {
 extension CMYColorModel.FloatComponents {
     
     @_transparent
-    public func blended(source: CMYColorModel.FloatComponents, blending: (Float, Float) -> Float) -> CMYColorModel.FloatComponents {
+    public func blended(source: CMYColorModel.FloatComponents, blending: @convention(c) (Float, Float) -> Float) -> CMYColorModel.FloatComponents {
         return CMYColorModel.FloatComponents(cyan: blending(self.cyan, source.cyan), magenta: blending(self.magenta, source.magenta), yellow: blending(self.yellow, source.yellow))
     }
 }

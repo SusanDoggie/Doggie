@@ -247,7 +247,7 @@ extension ImageContext {
                                 }
                                 _q.y += 0.2
                             }
-                            blender.draw { pixel * 0.04 }
+                            blender.draw(color: pixel * 0.04)
                             blender += 1
                         }
                     }
@@ -263,7 +263,7 @@ extension ImageContext {
                     
                     for y in y1..<y2 {
                         for x in 0..<width {
-                            blender.draw { operation(Point(x: x, y: y) * transform) }
+                            blender.draw(color: operation(Point(x: x, y: y) * transform))
                             blender += 1
                         }
                     }

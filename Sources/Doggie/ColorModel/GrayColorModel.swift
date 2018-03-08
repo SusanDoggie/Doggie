@@ -91,7 +91,7 @@ extension GrayColorModel {
 extension GrayColorModel {
     
     @_transparent
-    public func blended(source: GrayColorModel, blending: (Double, Double) -> Double) -> GrayColorModel {
+    public func blended(source: GrayColorModel, blending: @convention(c) (Double, Double) -> Double) -> GrayColorModel {
         return GrayColorModel(white: blending(self.white, source.white))
     }
 }
@@ -160,7 +160,7 @@ extension GrayColorModel {
 extension GrayColorModel.FloatComponents {
     
     @_transparent
-    public func blended(source: GrayColorModel.FloatComponents, blending: (Float, Float) -> Float) -> GrayColorModel.FloatComponents {
+    public func blended(source: GrayColorModel.FloatComponents, blending: @convention(c) (Float, Float) -> Float) -> GrayColorModel.FloatComponents {
         return GrayColorModel.FloatComponents(white: blending(self.white, source.white))
     }
 }

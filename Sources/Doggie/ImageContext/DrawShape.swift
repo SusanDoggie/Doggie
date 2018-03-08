@@ -93,7 +93,7 @@ extension ImageContext {
                                     _s += width
                                 }
                                 
-                                _blender.draw(opacity: 0.04 * Double(_p)) { color }
+                                _blender.draw(opacity: 0.04 * Double(_p), color: color)
                                 
                                 _blender += 1
                                 __stencil += 1
@@ -140,7 +140,7 @@ extension ImageContext {
                             for _ in 0..<_width {
                                 
                                 if winding(__stencil.pointee) {
-                                    _blender.draw { color }
+                                    _blender.draw(color: color)
                                 }
                                 
                                 _blender += 1

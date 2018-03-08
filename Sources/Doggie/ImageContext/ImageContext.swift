@@ -393,7 +393,7 @@ extension ImageContext {
                             var _source = source + $0 * _count
                             
                             for _ in 0..<($0 != n ? _count : _remain) {
-                                _blender.draw { _source.pointee }
+                                _blender.draw(color: _source.pointee)
                                 _blender += 1
                                 _source += 1
                             }
