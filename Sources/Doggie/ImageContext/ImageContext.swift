@@ -383,26 +383,16 @@ extension ImageContext {
                 
                 next.image.withUnsafeBufferPointer { source in
                     
-                    guard let source = source.baseAddress else { return }
+                    guard var source = source.baseAddress else { return }
                     
                     self.withUnsafePixelBlender { blender in
                         
-                        let n = ProcessInfo.processInfo.activeProcessorCount
+                        var blender = blender
                         
-                        let count = width * height
-                        let _count = count / n
-                        let _remain = count % n
-                        
-                        DispatchQueue.concurrentPerform(iterations: _remain == 0 ? n : n + 1) {
-                            
-                            var _blender = blender + $0 * _count
-                            var _source = source + $0 * _count
-                            
-                            for _ in 0..<($0 != n ? _count : _remain) {
-                                _blender.draw(color: _source.pointee)
-                                _blender += 1
-                                _source += 1
-                            }
+                        for _ in 0..<width * height {
+                            blender.draw(color: source.pointee)
+                            blender += 1
+                            source += 1
                         }
                     }
                 }
