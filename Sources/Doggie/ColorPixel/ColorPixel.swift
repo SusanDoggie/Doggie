@@ -35,6 +35,18 @@ public protocol ColorPixelProtocol : Hashable {
     
     init<C : ColorPixelProtocol>(_ color: C) where Model == C.Model
     
+    var numberOfComponents: Int { get }
+    
+    func rangeOfComponent(_ i: Int) -> ClosedRange<Double>
+    
+    func component(_ index: Int) -> Double
+    
+    mutating func setComponent(_ index: Int, _ value: Double)
+    
+    func normalizedComponent(_ index: Int) -> Double
+    
+    mutating func setNormalizedComponent(_ index: Int, _ value: Double)
+    
     var color: Model { get set }
     
     var opacity: Double { get set }
@@ -358,6 +370,12 @@ public struct ColorPixel<Model : ColorModelProtocol> : ColorPixelProtocol, Scala
         self.color = color
         self.opacity = opacity
     }
+    
+    @_transparent
+    public init<C : ColorPixelProtocol>(_ color: C) where Model == C.Model {
+        self.color = color.color
+        self.opacity = color.opacity
+    }
 }
 
 @_transparent
@@ -458,6 +476,28 @@ public struct FloatColorPixel<Model : ColorModelProtocol> : ColorPixelProtocol, 
         }
         set {
             self._opacity = Float(newValue)
+        }
+    }
+    
+    @_transparent
+    public func component(_ index: Int) -> Double {
+        if index < Model.numberOfComponents {
+            return Double(_color[index])
+        } else if index == Model.numberOfComponents {
+            return Double(_opacity)
+        } else {
+            fatalError()
+        }
+    }
+    
+    @_transparent
+    public mutating func setComponent(_ index: Int, _ value: Double) {
+        if index < Model.numberOfComponents {
+            _color[index] = Float(value)
+        } else if index == Model.numberOfComponents {
+            _opacity = Float(value)
+        } else {
+            fatalError()
         }
     }
 }
