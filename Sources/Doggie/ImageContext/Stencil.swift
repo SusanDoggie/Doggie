@@ -132,7 +132,7 @@ extension Shape {
     
     @_versioned
     @inline(__always)
-    func raster(width: Int, height: Int, stencil: inout [Int16]) -> Rect {
+    func raster(width: Int, height: Int, stencil: inout MappedBuffer<Int16>) -> Rect {
         
         assert(stencil.count == width * height, "incorrect size of stencil.")
         
@@ -188,7 +188,7 @@ extension ImageContext {
     
     @_versioned
     @_inlineable
-    func _stencil(shape: Shape) -> (Rect, [Int16]) {
+    func _stencil(shape: Shape) -> (Rect, MappedBuffer<Int16>) {
         
         let transform = shape.transform * self.transform
         
@@ -198,7 +198,7 @@ extension ImageContext {
             
             shape.transform = transform * SDTransform.scale(5)
             
-            var stencil = [Int16](repeating: 0, count: width * height * 25)
+            var stencil = MappedBuffer<Int16>(repeating: 0, count: width * height * 25)
             
             var bound = shape.raster(width: width * 5, height: height * 5, stencil: &stencil)
             
@@ -211,7 +211,7 @@ extension ImageContext {
             
             shape.transform = transform
             
-            var stencil = [Int16](repeating: 0, count: width * height)
+            var stencil = MappedBuffer<Int16>(repeating: 0, count: width * height)
             
             let bound = shape.raster(width: width, height: height, stencil: &stencil)
             

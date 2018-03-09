@@ -69,6 +69,10 @@ public struct MappedBuffer<Element> : RandomAccessCollection, MutableCollection,
     public init(repeating repeatedValue: Element, count: Int, option: MappedBufferOption = .default) {
         self.base = Base(capacity: count, option: option)
         self.base.count = count
+        
+        var repeatedValue = repeatedValue
+        guard Swift.withUnsafeBytes(of: &repeatedValue, { !$0.all(0) }) else { return }
+        
         self.base.address.initialize(to: repeatedValue, count: count)
     }
     
