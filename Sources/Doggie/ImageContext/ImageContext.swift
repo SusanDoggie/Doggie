@@ -80,11 +80,10 @@ extension ImageContext {
     
     public func withUnsafeMutableImageBufferPointer<R>(_ body: (inout UnsafeMutableBufferPointer<Pixel>) throws -> R) rethrows -> R {
         
-        self.isDirty = true
-        
         if let next = self.next {
             return try next.withUnsafeMutableImageBufferPointer(body)
         } else {
+            self.isDirty = true
             return try image.withUnsafeMutableBufferPointer(body)
         }
     }
