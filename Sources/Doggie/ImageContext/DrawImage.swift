@@ -222,50 +222,35 @@ extension ImageContext {
         
         self.withUnsafePixelBlender { blender in
             
-            let n = ProcessInfo.processInfo.activeProcessorCount
-            
-            let _count = height / n
-            let _remain = height % n
-            
             if antialias {
                 
-                DispatchQueue.concurrentPerform(iterations: _remain == 0 ? n : n + 1) {
-                    
-                    let y1 = $0 * _count
-                    let y2 = y1 + ($0 != n ? _count : _remain)
-                    var blender = blender + $0 * _count * width
-                    
-                    for y in y1..<y2 {
-                        for x in 0..<width {
-                            var _q = Point(x: x, y: y)
-                            var pixel = ColorPixel<Pixel.Model>()
+                var blender = blender
+                
+                for y in 0..<height {
+                    for x in 0..<width {
+                        var _q = Point(x: x, y: y)
+                        var pixel = ColorPixel<Pixel.Model>()
+                        for _ in 0..<5 {
+                            var q = _q
                             for _ in 0..<5 {
-                                var q = _q
-                                for _ in 0..<5 {
-                                    pixel += operation(q * transform)
-                                    q.x += 0.2
-                                }
-                                _q.y += 0.2
+                                pixel += operation(q * transform)
+                                q.x += 0.2
                             }
-                            blender.draw(color: pixel * 0.04)
-                            blender += 1
+                            _q.y += 0.2
                         }
+                        blender.draw(color: pixel * 0.04)
+                        blender += 1
                     }
                 }
                 
             } else {
                 
-                DispatchQueue.concurrentPerform(iterations: _remain == 0 ? n : n + 1) {
-                    
-                    let y1 = $0 * _count
-                    let y2 = y1 + ($0 != n ? _count : _remain)
-                    var blender = blender + $0 * _count * width
-                    
-                    for y in y1..<y2 {
-                        for x in 0..<width {
-                            blender.draw(color: operation(Point(x: x, y: y) * transform))
-                            blender += 1
-                        }
+                var blender = blender
+                
+                for y in 0..<height {
+                    for x in 0..<width {
+                        blender.draw(color: operation(Point(x: x, y: y) * transform))
+                        blender += 1
                     }
                 }
             }
