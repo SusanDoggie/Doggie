@@ -93,7 +93,11 @@ extension ImageContext {
                                     _s += width
                                 }
                                 
-                                _blender.draw(opacity: 0.04 * Double(_p), color: color)
+                                if _p != 0 {
+                                    var color = color
+                                    color.opacity *= 0.04 * Double(_p)
+                                    _blender.draw(color: color)
+                                }
                                 
                                 _blender += 1
                                 __stencil += 1

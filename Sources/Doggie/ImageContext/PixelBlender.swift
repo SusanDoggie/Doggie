@@ -67,13 +67,13 @@ struct ImageContextPixelBlender<P : ColorPixelProtocol> {
     
     @_versioned
     @inline(__always)
-    func draw<C : ColorPixelProtocol>(opacity: Double = 1, color: C) where C.Model == P.Model {
+    func draw<C : ColorPixelProtocol>(color: C) where C.Model == P.Model {
         
-        let _alpha = clip.pointee * opacity
+        let _clip = clip.pointee
         
-        if _alpha > 0 {
+        if _clip > 0 {
             var source = color
-            source.opacity *= self.opacity * _alpha
+            source.opacity *= opacity * _clip
             destination.pointee.blend(source: source, blendMode: blendMode, compositingMode: compositingMode)
         }
     }
