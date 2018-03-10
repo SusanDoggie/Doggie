@@ -31,8 +31,8 @@ private struct ImageContextStyles {
     var opacity: Double = 1
     var antialias: Bool = true
     var transform: SDTransform = SDTransform.identity
-    var blendMode: ColorBlendMode = .default
     var compositingMode: ColorCompositingMode = .default
+    var blendMode: ColorBlendMode = .default
     var resamplingAlgorithm: ResamplingAlgorithm = .default
     var renderCullingMode: ImageContextRenderCullMode = .none
     var renderDepthCompareMode: ImageContextRenderDepthCompareMode = .always
@@ -173,19 +173,6 @@ extension ImageContext {
         }
     }
     
-    public var blendMode: ColorBlendMode {
-        get {
-            return next?.blendMode ?? styles.blendMode
-        }
-        set {
-            if let next = self.next {
-                next.blendMode = newValue
-            } else {
-                styles.blendMode = newValue
-            }
-        }
-    }
-    
     public var compositingMode: ColorCompositingMode {
         get {
             return next?.compositingMode ?? styles.compositingMode
@@ -195,6 +182,19 @@ extension ImageContext {
                 next.compositingMode = newValue
             } else {
                 styles.compositingMode = newValue
+            }
+        }
+    }
+    
+    public var blendMode: ColorBlendMode {
+        get {
+            return next?.blendMode ?? styles.blendMode
+        }
+        set {
+            if let next = self.next {
+                next.blendMode = newValue
+            } else {
+                styles.blendMode = newValue
             }
         }
     }

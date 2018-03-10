@@ -105,7 +105,7 @@ extension ColorPixelProtocol {
     }
     
     @_transparent
-    public func blended<C : ColorPixelProtocol>(source: C, blendMode: ColorBlendMode = .default, compositingMode: ColorCompositingMode = .default) -> Self where C.Model == Model {
+    public func blended<C : ColorPixelProtocol>(source: C, compositingMode: ColorCompositingMode = .default, blendMode: ColorBlendMode = .default) -> Self where C.Model == Model {
         
         let d_alpha = self.opacity
         let s_alpha = source.opacity
@@ -146,7 +146,7 @@ extension FloatColorPixel {
     }
     
     @_transparent
-    public func blended<C : ColorPixelProtocol>(source: C, blendMode: ColorBlendMode = .default, compositingMode: ColorCompositingMode = .default) -> FloatColorPixel where C.Model == Model {
+    public func blended<C : ColorPixelProtocol>(source: C, compositingMode: ColorCompositingMode = .default, blendMode: ColorBlendMode = .default) -> FloatColorPixel where C.Model == Model {
         
         let source = FloatColorPixel(source)
         

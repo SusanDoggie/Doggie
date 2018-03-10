@@ -57,7 +57,7 @@ public protocol ColorPixelProtocol : Hashable {
     
     func blended<C : ColorPixelProtocol>(source: C, compositingMode: ColorCompositingMode, blending: (Double, Double) -> Double) -> Self where C.Model == Model
     
-    func blended<C : ColorPixelProtocol>(source: C, blendMode: ColorBlendMode, compositingMode: ColorCompositingMode) -> Self where C.Model == Model
+    func blended<C : ColorPixelProtocol>(source: C, compositingMode: ColorCompositingMode, blendMode: ColorBlendMode) -> Self where C.Model == Model
 }
 
 extension ColorPixelProtocol {
@@ -196,8 +196,8 @@ extension ColorPixelProtocol {
         self = self.blended(source: source, compositingMode: compositingMode, blending: blending)
     }
     @_transparent
-    public mutating func blend<C : ColorPixelProtocol>(source: C, blendMode: ColorBlendMode = .default, compositingMode: ColorCompositingMode = .default) where C.Model == Model {
-        self = self.blended(source: source, blendMode: blendMode, compositingMode: compositingMode)
+    public mutating func blend<C : ColorPixelProtocol>(source: C, compositingMode: ColorCompositingMode = .default, blendMode: ColorBlendMode = .default) where C.Model == Model {
+        self = self.blended(source: source, compositingMode: compositingMode, blendMode: blendMode)
     }
 }
 
