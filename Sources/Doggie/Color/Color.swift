@@ -320,15 +320,15 @@ extension Color {
 extension Color {
     
     @_inlineable
-    public func blended<C: ColorProtocol>(source: C, blendMode: ColorBlendMode = .default, compositingMode: ColorCompositingMode = .default) -> Color {
+    public func blended<C: ColorProtocol>(source: C, compositingMode: ColorCompositingMode = .default, blendMode: ColorBlendMode = .default) -> Color {
         let source = source.convert(to: colorSpace, intent: .default)
-        let color = ColorPixel(color: self.color, opacity: self.opacity).blended(source: ColorPixel(color: source.color, opacity: source.opacity), blendMode: blendMode, compositingMode: compositingMode)
+        let color = ColorPixel(color: self.color, opacity: self.opacity).blended(source: ColorPixel(color: source.color, opacity: source.opacity), compositingMode: compositingMode, blendMode: blendMode)
         return Color(colorSpace: colorSpace, color: color.color, opacity: color.opacity)
     }
     
     @_inlineable
-    public mutating func blend<C: ColorProtocol>(source: C, blendMode: ColorBlendMode = .default, compositingMode: ColorCompositingMode = .default) {
-        self = self.blended(source: source, blendMode: blendMode, compositingMode: compositingMode)
+    public mutating func blend<C: ColorProtocol>(source: C, compositingMode: ColorCompositingMode = .default, blendMode: ColorBlendMode = .default) {
+        self = self.blended(source: source, compositingMode: compositingMode, blendMode: blendMode)
     }
 }
 

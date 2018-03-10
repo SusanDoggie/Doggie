@@ -37,25 +37,25 @@ struct ImageContextPixelBlender<P : ColorPixelProtocol> {
     let opacity: Double
     
     @_versioned
-    let blendMode: ColorBlendMode
-    
-    @_versioned
     let compositingMode: ColorCompositingMode
     
     @_versioned
+    let blendMode: ColorBlendMode
+    
+    @_versioned
     @inline(__always)
-    init(destination: UnsafeMutablePointer<P>, clip: UnsafePointer<Double>, opacity: Double, blendMode: ColorBlendMode, compositingMode: ColorCompositingMode) {
+    init(destination: UnsafeMutablePointer<P>, clip: UnsafePointer<Double>, opacity: Double, compositingMode: ColorCompositingMode, blendMode: ColorBlendMode) {
         self.destination = destination
         self.clip = clip
         self.opacity = opacity
-        self.blendMode = blendMode
         self.compositingMode = compositingMode
+        self.blendMode = blendMode
     }
     
     @_versioned
     @inline(__always)
     static func + (lhs: ImageContextPixelBlender, rhs: Int) -> ImageContextPixelBlender {
-        return ImageContextPixelBlender(destination: lhs.destination + rhs, clip: lhs.clip + rhs, opacity: lhs.opacity, blendMode: lhs.blendMode, compositingMode: lhs.compositingMode)
+        return ImageContextPixelBlender(destination: lhs.destination + rhs, clip: lhs.clip + rhs, opacity: lhs.opacity, compositingMode: lhs.compositingMode, blendMode: lhs.blendMode)
     }
     
     @_versioned
@@ -74,7 +74,7 @@ struct ImageContextPixelBlender<P : ColorPixelProtocol> {
         if _clip > 0 {
             var source = color
             source.opacity *= opacity * _clip
-            destination.pointee.blend(source: source, blendMode: blendMode, compositingMode: compositingMode)
+            destination.pointee.blend(source: source, compositingMode: compositingMode, blendMode: blendMode)
         }
     }
 }
@@ -99,7 +99,7 @@ extension ImageContext {
                 
                 guard let _clip = _clip.baseAddress else { return }
                 
-                body(ImageContextPixelBlender(destination: _destination, clip: _clip, opacity: opacity, blendMode: blendMode, compositingMode: compositingMode))
+                body(ImageContextPixelBlender(destination: _destination, clip: _clip, opacity: opacity, compositingMode: compositingMode, blendMode: blendMode))
             }
         }
     }

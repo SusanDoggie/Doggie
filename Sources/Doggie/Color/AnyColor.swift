@@ -56,7 +56,7 @@ protocol AnyColorBaseProtocol {
     
     func convert(to colorSpace: AnyColorSpace, intent: RenderingIntent) -> AnyColor
     
-    func _blended<C: ColorProtocol>(source: C, blendMode: ColorBlendMode, compositingMode: ColorCompositingMode) -> AnyColorBaseProtocol
+    func _blended<C: ColorProtocol>(source: C, compositingMode: ColorCompositingMode, blendMode: ColorBlendMode) -> AnyColorBaseProtocol
 }
 
 extension AnyColorBaseProtocol where Self : Equatable {
@@ -85,8 +85,8 @@ extension Color : AnyColorBaseProtocol {
     
     @_versioned
     @_inlineable
-    func _blended<C: ColorProtocol>(source: C, blendMode: ColorBlendMode, compositingMode: ColorCompositingMode) -> AnyColorBaseProtocol {
-        return self.blended(source: source, blendMode: blendMode, compositingMode: compositingMode)
+    func _blended<C: ColorProtocol>(source: C, compositingMode: ColorCompositingMode, blendMode: ColorBlendMode) -> AnyColorBaseProtocol {
+        return self.blended(source: source, compositingMode: compositingMode, blendMode: blendMode)
     }
 }
 
@@ -253,13 +253,13 @@ extension AnyColor {
 extension AnyColor {
     
     @_inlineable
-    public func blended<C: ColorProtocol>(source: C, blendMode: ColorBlendMode = .default, compositingMode: ColorCompositingMode = .default) -> AnyColor {
-        return AnyColor(base: _base._blended(source: source, blendMode: blendMode, compositingMode: compositingMode))
+    public func blended<C: ColorProtocol>(source: C, compositingMode: ColorCompositingMode = .default, blendMode: ColorBlendMode = .default) -> AnyColor {
+        return AnyColor(base: _base._blended(source: source, compositingMode: compositingMode, blendMode: blendMode))
     }
     
     @_inlineable
-    public mutating func blend<C: ColorProtocol>(source: C, blendMode: ColorBlendMode = .default, compositingMode: ColorCompositingMode = .default) {
-        self = self.blended(source: source, blendMode: blendMode, compositingMode: compositingMode)
+    public mutating func blend<C: ColorProtocol>(source: C, compositingMode: ColorCompositingMode = .default, blendMode: ColorBlendMode = .default) {
+        self = self.blended(source: source, compositingMode: compositingMode, blendMode: blendMode)
     }
 }
 
