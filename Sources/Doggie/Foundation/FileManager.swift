@@ -34,6 +34,42 @@ extension FileManager {
         var checked: Set<URL> = []
         var searchPaths = Array(urls)
         
+        func touching(url: URL) {
+            
+            #if os(macOS) || os(iOS) || os(tvOS) || os(watchOS)
+                
+                guard let resourceValues = try? url.resourceValues(forKeys: [.isRegularFileKey, .isSymbolicLinkKey, .isAliasFileKey]) else { return }
+                
+                if resourceValues.isAliasFile == true {
+                    
+                    guard let _url = try? URL(resolvingAliasFileAt: url) else { return }
+                    searchPaths.append(_url)
+                    
+                } else if resourceValues.isSymbolicLink == true {
+                    
+                    searchPaths.append(url)
+                    
+                } else if resourceValues.isRegularFile == true {
+                    
+                    result.insert(url)
+                }
+                
+            #else
+                
+                guard let resourceValues = try? url.resourceValues(forKeys: [.isRegularFileKey, .isSymbolicLinkKey]) else { return }
+                
+                if resourceValues.isSymbolicLink == true {
+                    
+                    searchPaths.append(url)
+                    
+                } else if resourceValues.isRegularFile == true {
+                    
+                    result.insert(url)
+                }
+                
+            #endif
+        }
+        
         while let url = searchPaths.popLast()?.standardized.resolvingSymlinksInPath() {
             
             guard !checked.contains(url) else { continue }
@@ -41,42 +77,13 @@ extension FileManager {
             
             checked.insert(url)
             
+            touching(url: url)
+            
             for url in enumerator {
                 
                 guard let url = url as? URL else { continue }
                 
-                #if os(macOS) || os(iOS) || os(tvOS) || os(watchOS)
-                    
-                    guard let resourceValues = try? url.resourceValues(forKeys: [.isRegularFileKey, .isSymbolicLinkKey, .isAliasFileKey]) else { continue }
-                    
-                    if resourceValues.isAliasFile == true {
-                        
-                        guard let _url = try? URL(resolvingAliasFileAt: url) else { continue }
-                        searchPaths.append(_url)
-                        
-                    } else if resourceValues.isSymbolicLink == true {
-                        
-                        searchPaths.append(url)
-                        
-                    } else if resourceValues.isRegularFile == true {
-                        
-                        result.insert(url)
-                    }
-                    
-                #else
-                    
-                    guard let resourceValues = try? url.resourceValues(forKeys: [.isRegularFileKey, .isSymbolicLinkKey]) else { continue }
-                    
-                    if resourceValues.isSymbolicLink == true {
-                        
-                        searchPaths.append(url)
-                        
-                    } else if resourceValues.isRegularFile == true {
-                        
-                        result.insert(url)
-                    }
-                    
-                #endif
+                touching(url: url)
             }
         }
         

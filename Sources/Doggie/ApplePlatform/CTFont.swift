@@ -31,7 +31,22 @@ import Foundation
         
         @available(OSX 10.11, iOS 9.0, *)
         public static var availableFonts: FontCollection {
-            return FontCollection(FileManager.default.urls(for: .libraryDirectory, in: .allDomainsMask).map { URL(fileURLWithPath: "Fonts", relativeTo: $0) })
+            
+            var files = FileManager.default.urls(for: .libraryDirectory, in: .allDomainsMask).map { URL(fileURLWithPath: "Fonts", relativeTo: $0) }
+            
+            #if os(iOS) || os(tvOS) || os(watchOS)
+                
+            if let fonts = Bundle.main.object(forInfoDictionaryKey: "UIAppFonts") as? [String] {
+                for font in fonts {
+                    if let url = Bundle.main.url(forResource: font, withExtension: nil) {
+                        files.append(url)
+                    }
+                }
+            }
+            
+            #endif
+
+            return FontCollection(files)
         }
         
     }
