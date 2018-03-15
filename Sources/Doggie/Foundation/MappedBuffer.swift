@@ -418,7 +418,8 @@ extension MappedBuffer {
     @_inlineable
     public var data: Data {
         var box = _Box(ref: base)
-        return Data(bytesNoCopy: base.address, count: base.count * MemoryLayout<Element>.stride, deallocator: .custom { _, _ in box.ref = nil })
+        let immutableReference = NSData(bytesNoCopy: base.address, length: base.count * MemoryLayout<Element>.stride, deallocator: { _, _ in box.ref = nil })
+        return Data(referencing: immutableReference)
     }
 }
 
