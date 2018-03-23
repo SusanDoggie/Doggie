@@ -333,11 +333,8 @@ extension Shape.Component {
     
     @_inlineable
     public func winding(_ position: Point) -> Int {
-        
         var counter = 0
-        
         self.render { counter += $0.winding(position) }
-        
         return counter
     }
 }
@@ -346,7 +343,9 @@ extension Shape {
     
     @_inlineable
     public func winding(_ position: Point) -> Int {
-        return self.identity.reduce(0) { $0 + $1.winding(position) }
+        guard !transform.determinant.almostZero() else { return 0 }
+        let position = position * transform.inverse
+        return self.reduce(0) { $0 + $1.winding(position) }
     }
 }
 
