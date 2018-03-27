@@ -569,7 +569,6 @@ extension ShapeRegion {
     
     public init(ellipseIn rect: Rect) {
         let rect = rect.standardized
-        let center = rect.center
         let transform = SDTransform.scale(x: 0.5 * rect.width, y: 0.5 * rect.height) * SDTransform.translate(x: rect.midX, y: rect.midY)
         let segments: [ShapeRegion.Solid.Segment] = [
             ShapeRegion.Solid.Segment(BezierCircle[0] * transform, BezierCircle[1] * transform, BezierCircle[2] * transform, BezierCircle[3] * transform),
