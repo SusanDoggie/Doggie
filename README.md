@@ -21,7 +21,7 @@ Doggie is a foundational library for Apple's swift. It includes mathematics, acc
 let shape = try Shape(code: "M100 0c0-100-236.60 36.60-150 86.60S36.60-136.60-50-86.60 100 100 100 0z")
 
 let region = ShapeRegion(shape, winding: .nonZero)
-let ellipse = ShapeRegion.Ellipse(shape.boundary)
+let ellipse = ShapeRegion(ellipseIn: shape.boundary)
 
 region.union(ellipse)
 
