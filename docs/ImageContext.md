@@ -20,7 +20,7 @@ let context = ImageContext<ARGB32ColorPixel>(width: 100, height: 100, colorSpace
 
 ```swift
 
-let ellipse = Shape.Ellipse(Rect(x: 10, y: 35, width: 55, height: 55))
+let ellipse = Shape(ellipseIn: Rect(x: 10, y: 35, width: 55, height: 55))
 
 context.draw(shape: ellipse, winding: .nonZero, color: RGBColorModel(red: 247/255, green: 217/255, blue: 12/255))
 

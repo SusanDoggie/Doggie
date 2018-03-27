@@ -59,8 +59,8 @@ if let font = collection.first?.with(size: 64) {
 
 let context = ImageContext<ARGB32ColorPixel>(width: 100, height: 100, colorSpace: ColorSpace.sRGB)
 
-let ellipse1 = Shape.Ellipse(Rect(x: 10, y: 35, width: 55, height: 55))
-let ellipse2 = Shape.Ellipse(Rect(x: 35, y: 10, width: 55, height: 55))
+let ellipse1 = Shape(ellipseIn: Rect(x: 10, y: 35, width: 55, height: 55))
+let ellipse2 = Shape(ellipseIn: Rect(x: 35, y: 10, width: 55, height: 55))
 
 context.draw(shape: ellipse1, winding: .nonZero, color: RGBColorModel(red: 247/255, green: 217/255, blue: 12/255))
 context.stroke(shape: ellipse1, width: 1, cap: .round, join: .round, color: RGBColorModel())
