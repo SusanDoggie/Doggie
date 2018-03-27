@@ -1268,7 +1268,7 @@ extension CubicBezierPatch {
 // MARK: Circle
 
 @_versioned
-var BezierCircle: [Point] {
+let BezierCircle: [Point] = {
     
     //
     // root of 18225 x^12 + 466560 x^11 - 28977264 x^10 + 63288000 x^9 + 96817248 x^8
@@ -1293,7 +1293,7 @@ var BezierCircle: [Point] {
         Point(x: 1, y: -c),
         Point(x: 1, y: 0)
     ]
-}
+}()
 
 @_inlineable
 public func BezierArc(_ angle: Double) -> [Point] {
