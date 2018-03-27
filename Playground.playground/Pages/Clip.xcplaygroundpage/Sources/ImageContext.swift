@@ -6,7 +6,7 @@ public func sampleImage(width: Int, height: Int) -> Image<ARGB32ColorPixel> {
     
     let context = ImageContext<ARGB32ColorPixel>(width: width, height: height, colorSpace: ColorSpace.sRGB)
     
-    context.setClip(shape: Shape.Ellipse(Rect(x: 20, y: 20, width: width - 40, height: height - 40)), winding: .nonZero)
+    context.setClip(shape: Shape(ellipseIn: Rect(x: 20, y: 20, width: width - 40, height: height - 40)), winding: .nonZero)
     
     context.transform = SDTransform.scale(x: Double(width) / 300, y: Double(height) / 300)
     
