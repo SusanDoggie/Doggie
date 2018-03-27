@@ -573,14 +573,12 @@ extension ShapeRegion {
     public init(ellipseIn rect: Rect) {
         let rect = rect.standardized
         let center = rect.center
-        let radius = Radius(x: 0.5 * rect.width, y: 0.5 * rect.height)
-        let scale = SDTransform.scale(x: radius.x, y: radius.y)
-        let point = BezierCircle.map { $0 * scale + center }
+        let transform = SDTransform.scale(x: 0.5 * rect.width, y: 0.5 * rect.height) * SDTransform.translate(x: rect.midX, y: rect.midY)
         let segments: [ShapeRegion.Solid.Segment] = [
-            ShapeRegion.Solid.Segment(point[0], point[1], point[2], point[3]),
-            ShapeRegion.Solid.Segment(point[3], point[4], point[5], point[6]),
-            ShapeRegion.Solid.Segment(point[6], point[7], point[8], point[9]),
-            ShapeRegion.Solid.Segment(point[9], point[10], point[11], point[12])
+            ShapeRegion.Solid.Segment(BezierCircle[0] * transform, BezierCircle[1] * transform, BezierCircle[2] * transform, BezierCircle[3] * transform),
+            ShapeRegion.Solid.Segment(BezierCircle[3] * transform, BezierCircle[4] * transform, BezierCircle[5] * transform, BezierCircle[6] * transform),
+            ShapeRegion.Solid.Segment(BezierCircle[6] * transform, BezierCircle[7] * transform, BezierCircle[8] * transform, BezierCircle[9] * transform),
+            ShapeRegion.Solid.Segment(BezierCircle[9] * transform, BezierCircle[10] * transform, BezierCircle[11] * transform, BezierCircle[12] * transform)
         ]
         if let solid = ShapeRegion.Solid(segments: segments) {
             self.init(solid: solid)

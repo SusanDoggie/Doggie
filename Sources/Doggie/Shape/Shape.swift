@@ -610,11 +610,13 @@ extension Shape {
     
     public init(ellipseIn rect: Rect) {
         let rect = rect.standardized
-        let center = rect.center
-        let radius = Radius(x: 0.5 * rect.width, y: 0.5 * rect.height)
-        let scale = SDTransform.scale(x: radius.x, y: radius.y)
-        let points = BezierCircle.lazy.map { $0 * scale + center }
-        let segments: [Shape.Segment] = [.cubic(points[1], points[2], points[3]), .cubic(points[4], points[5], points[6]), .cubic(points[7], points[8], points[9]), .cubic(points[10], points[11], points[12])]
+        let transform = SDTransform.scale(x: 0.5 * rect.width, y: 0.5 * rect.height) * SDTransform.translate(x: rect.midX, y: rect.midY)
+        let segments: [Shape.Segment] = [
+            .cubic(BezierCircle[1] * transform, BezierCircle[2] * transform, BezierCircle[3] * transform),
+            .cubic(BezierCircle[4] * transform, BezierCircle[5] * transform, BezierCircle[6] * transform),
+            .cubic(BezierCircle[7] * transform, BezierCircle[8] * transform, BezierCircle[9] * transform),
+            .cubic(BezierCircle[10] * transform, BezierCircle[11] * transform, BezierCircle[12] * transform)
+        ]
         self = [Component(start: points[0], closed: true, segments: segments)]
     }
 }
