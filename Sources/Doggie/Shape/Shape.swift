@@ -617,7 +617,7 @@ extension Shape {
             .cubic(BezierCircle[7] * transform, BezierCircle[8] * transform, BezierCircle[9] * transform),
             .cubic(BezierCircle[10] * transform, BezierCircle[11] * transform, BezierCircle[12] * transform)
         ]
-        self = [Component(start: points[0], closed: true, segments: segments)]
+        self = [Component(start: BezierCircle[0] * transform, closed: true, segments: segments)]
     }
 }
 
