@@ -90,6 +90,20 @@ extension Shape.Component.BezierCollection.Element {
         }
     }
     
+    public func points(_ t: [Double]) -> [Point] {
+        switch self.segment {
+        case let .line(p1):
+            let bezier = Bezier(start, p1)
+            return t.map { bezier.eval($0) }
+        case let .quad(p1, p2):
+            let bezier = Bezier(start, p1, p2)
+            return t.map { bezier.eval($0) }
+        case let .cubic(p1, p2, p3):
+            let bezier = Bezier(start, p1, p2, p3)
+            return t.map { bezier.eval($0) }
+        }
+    }
+    
     public func fromPoint(_ p: Point) -> Double? {
         switch self.segment {
         case let .line(p1):

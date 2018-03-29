@@ -245,18 +245,28 @@ extension Shape.Component {
             return false
         }
         
-        for index in hint {
-            return self.winding(other.bezier[index].point(0.5)) != 0
+        var hint = hint
+        
+        if hint.count == 0 {
+            
+            let self_spaces = self.spaces
+            let other_spaces = other.spaces
+            
+            for index in 0..<other.count {
+                let overlap = self_spaces.search(overlap: other_spaces[index].inset(dx: -1e-8, dy: -1e-8))
+                if overlap.all(where: { !self.bezier[$0].overlap(other.bezier[index]) }) {
+                    hint.insert(index)
+                }
+            }
         }
         
-        let self_spaces = self.spaces
-        let other_spaces = other.spaces
+        func _length(_ bezier: Shape.Component.BezierCollection.Element) -> Double {
+            let points = bezier.points([0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0])
+            return zip(points, points.dropFirst()).reduce(0) { $0 + $1.0.distance(to: $1.1) }
+        }
         
-        for index in 0..<other.count {
-            let overlap = self_spaces.search(overlap: other_spaces[index].inset(dx: -1e-8, dy: -1e-8))
-            if overlap.all(where: { !self.bezier[$0].overlap(other.bezier[index]) }) {
-                return self.winding(other.bezier[index].point(0.5)) != 0
-            }
+        if let index = hint.max(by: { _length(other.bezier[$0]) }) {
+            return self.winding(other.bezier[index].point(0.5)) != 0
         }
         
         return false
