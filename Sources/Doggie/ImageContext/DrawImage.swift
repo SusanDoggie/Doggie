@@ -276,7 +276,7 @@ extension ImageContext {
         
         for y in min_y..<max_y {
             for x in min_x..<max_x {
-                let k = kernel((point - Point(x: x, y: y)).magnitude)
+                let k = kernel(point.distance(to: Point(x: x, y: y)))
                 pixel += read_source(source, width, height, x, y) * k
                 t += k
             }

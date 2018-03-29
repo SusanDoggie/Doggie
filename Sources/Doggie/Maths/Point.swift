@@ -65,6 +65,16 @@ extension Point {
             self = Point(magnitude: magnitude, phase: newValue)
         }
     }
+    
+    @_transparent
+    public var magnitude: Double {
+        get {
+            return sqrt(x * x + y * y)
+        }
+        set {
+            self = Point(magnitude: newValue, phase: phase)
+        }
+    }
 }
 
 extension Point {

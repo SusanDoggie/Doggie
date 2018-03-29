@@ -915,8 +915,8 @@ public func CubicBezierFitting(_ p0: Point, _ p3: Point, _ m0: Point, _ m1: Poin
 }
 public func CubicBezierFitting(_ p0: Point, _ p3: Point, _ m0: Point, _ m1: Point, _ points: [Point]) -> (Double, Double)? {
     
-    let ds = zip(CollectionOfOne(p0).concat(points), points).map { ($0 - $1).magnitude }
-    let dt = zip(points, points.dropFirst().concat(CollectionOfOne(p3))).map { ($0 - $1).magnitude }
+    let ds = zip(CollectionOfOne(p0).concat(points), points).map { $0.distance(to: $1) }
+    let dt = zip(points, points.dropFirst().concat(CollectionOfOne(p3))).map { $0.distance(to: $1) }
     return CubicBezierFitting(p0, p3, m0, m1, Array(zip(zip(ds, dt).map { $0 / ($0 + $1) }, points)))
 }
 
