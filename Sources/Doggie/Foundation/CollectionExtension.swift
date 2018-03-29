@@ -150,7 +150,7 @@ extension BidirectionalCollection {
     }
 }
 
-extension RandomAccessCollection where Indices : RandomAccessCollection {
+extension RandomAccessCollection {
     
     /// Returns first range of `pattern` appear in `self`, or `nil` if not match.
     ///
@@ -185,7 +185,7 @@ extension RandomAccessCollection where Indices : RandomAccessCollection {
     }
 }
 
-extension RandomAccessCollection where Indices : RandomAccessCollection, Element : Equatable {
+extension RandomAccessCollection where Element : Equatable {
     
     /// Returns first range of `pattern` appear in `self`, or `nil` if not match.
     ///
@@ -397,7 +397,7 @@ extension BidirectionalCollection where Self : MutableCollection {
         }
     }
 }
-extension BidirectionalCollection where Self : MutableCollection, Indices : BidirectionalCollection {
+extension BidirectionalCollection where Self : MutableCollection {
     
     @_inlineable
     public func nextPermute(by areInIncreasingOrder: (Element, Element) throws -> Bool) rethrows -> Self {
@@ -414,7 +414,7 @@ extension BidirectionalCollection where Self : MutableCollection, Indices : Bidi
         return _self
     }
 }
-extension BidirectionalCollection where Self : MutableCollection, Indices : BidirectionalCollection, Element : Comparable {
+extension BidirectionalCollection where Self : MutableCollection, Element : Comparable {
     
     @_inlineable
     public func nextPermute() -> Self {
