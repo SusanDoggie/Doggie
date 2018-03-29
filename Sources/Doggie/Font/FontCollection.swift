@@ -144,15 +144,18 @@ extension FontCollection {
         return FontCollection(fonts: fonts.symmetricDifference(other.fonts))
     }
     
+    @discardableResult
     public mutating func insert(_ newMember: Font) -> (inserted: Bool, memberAfterInsert: Font) {
         let result = fonts.insert(_ElementWrapper(font: newMember))
         return (result.0, result.1.font)
     }
     
+    @discardableResult
     public mutating func remove(_ member: Font) -> Font? {
         return fonts.remove(_ElementWrapper(font: member))?.font
     }
     
+    @discardableResult
     public mutating func update(with newMember: Font) -> Font? {
         return fonts.update(with: _ElementWrapper(font: newMember))?.font
     }
