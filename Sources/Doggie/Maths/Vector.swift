@@ -52,6 +52,21 @@ public struct Vector {
     }
 }
 
+extension Vector {
+    
+    @_transparent
+    public var magnitude: Double {
+        get {
+            return sqrt(x * x + y * y + z * z)
+        }
+        set {
+            let m = self.magnitude
+            let scale = m == 0 ? 0 : newValue / m
+            self *= scale
+        }
+    }
+}
+
 extension Vector: CustomStringConvertible {
     
     @_transparent
