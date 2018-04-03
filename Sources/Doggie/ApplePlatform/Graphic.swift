@@ -87,7 +87,14 @@ extension Rect {
 public extension AffineTransform {
     
     init(_ transform: SDTransform) {
-        self.init(m11: CGFloat(transform.a), m12: CGFloat(transform.d), m21: CGFloat(transform.b), m22: CGFloat(transform.e), tX: CGFloat(transform.c), tY: CGFloat(transform.f))
+        self.init(
+            m11: CGFloat(transform.a),
+            m12: CGFloat(transform.d),
+            m21: CGFloat(transform.b),
+            m22: CGFloat(transform.e),
+            tX: CGFloat(transform.c),
+            tY: CGFloat(transform.f)
+        )
     }
 }
 
@@ -112,7 +119,14 @@ import CoreGraphics
 extension CGAffineTransform {
     
     public init(_ m: SDTransform) {
-        self.init(a: CGFloat(m.a), b: CGFloat(m.d), c: CGFloat(m.b), d: CGFloat(m.e), tx: CGFloat(m.c), ty: CGFloat(m.f))
+        self.init(
+            a: CGFloat(m.a),
+            b: CGFloat(m.d),
+            c: CGFloat(m.b),
+            d: CGFloat(m.e),
+            tx: CGFloat(m.c),
+            ty: CGFloat(m.f)
+        )
     }
 }
 
