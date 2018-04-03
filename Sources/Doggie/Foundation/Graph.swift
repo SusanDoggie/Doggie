@@ -30,7 +30,7 @@ enum GraphError : Error {
 }
 
 @_fixed_layout
-public struct Graph<Node : Hashable, Link> : Collection, ExpressibleByDictionaryLiteral {
+public struct Graph<Node : Hashable, Link> : Collection {
     
     public typealias Iterator = GraphIterator<Node, Link>
     
@@ -47,11 +47,6 @@ public struct Graph<Node : Hashable, Link> : Collection, ExpressibleByDictionary
     @_inlineable
     public init() {
         table = Dictionary()
-    }
-    
-    @_inlineable
-    public init(dictionaryLiteral elements: Iterator.Element...) {
-        self.init(uniqueKeysWithValues: elements)
     }
     
     @_inlineable

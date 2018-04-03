@@ -28,24 +28,21 @@ import Foundation
 extension CGPoint {
     
     public init(_ p: Point) {
-        self.x = CGFloat(p.x)
-        self.y = CGFloat(p.y)
+        self.init(x: CGFloat(p.x), y: CGFloat(p.y))
     }
 }
 
 extension CGSize {
     
     public init(_ s: Size) {
-        self.width = CGFloat(s.width)
-        self.height = CGFloat(s.height)
+        self.init(width: CGFloat(s.width), height: CGFloat(s.height))
     }
 }
 
 extension CGRect {
     
     public init(_ r: Rect) {
-        self.origin = CGPoint(r.origin)
-        self.size = CGSize(r.size)
+        self.init(origin: CGPoint(r.origin), size: CGSize(r.size))
     }
 }
 
@@ -90,12 +87,7 @@ extension Rect {
 public extension AffineTransform {
     
     init(_ transform: SDTransform) {
-        self.m11 = CGFloat(transform.a)
-        self.m12 = CGFloat(transform.d)
-        self.m21 = CGFloat(transform.b)
-        self.m22 = CGFloat(transform.e)
-        self.tX = CGFloat(transform.c)
-        self.tY = CGFloat(transform.f)
+        self.init(m11: CGFloat(transform.a), m12: CGFloat(transform.d), m21: CGFloat(transform.b), m22: CGFloat(transform.e), tX: CGFloat(transform.c), tY: CGFloat(transform.f))
     }
 }
 
@@ -120,12 +112,7 @@ import CoreGraphics
 extension CGAffineTransform {
     
     public init(_ m: SDTransform) {
-        self.a = CGFloat(m.a)
-        self.b = CGFloat(m.d)
-        self.c = CGFloat(m.b)
-        self.d = CGFloat(m.e)
-        self.tx = CGFloat(m.c)
-        self.ty = CGFloat(m.f)
+        self.init(a: CGFloat(m.a), b: CGFloat(m.d), c: CGFloat(m.b), d: CGFloat(m.e), tx: CGFloat(m.c), ty: CGFloat(m.f))
     }
 }
 
