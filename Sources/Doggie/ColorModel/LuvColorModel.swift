@@ -27,6 +27,8 @@ import Foundation
 
 public struct LuvColorModel : ColorModelProtocol {
     
+    public typealias Indices = Range<Int>
+    
     public typealias Scalar = Double
     
     @_transparent
@@ -151,6 +153,8 @@ extension LuvColorModel {
     }
     
     public struct FloatComponents : FloatColorComponents {
+        
+        public typealias Indices = Range<Int>
         
         public typealias Scalar = Float
         

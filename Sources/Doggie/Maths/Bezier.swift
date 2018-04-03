@@ -1225,14 +1225,22 @@ extension CubicBezierPatch {
         let v_v2 = 3 * _v2 * v
         let v2_v = 3 * _v * v2
         
-        let c0x = _u3 * m00.x + u_u2 * m01.x + u2_u * m02.x + u3 * m03.x
-        let c0y = _u3 * m00.y + u_u2 * m01.y + u2_u * m02.y + u3 * m03.y
-        let c1x = _u3 * m10.x + u_u2 * m11.x + u2_u * m12.x + u3 * m13.x
-        let c1y = _u3 * m10.y + u_u2 * m11.y + u2_u * m12.y + u3 * m13.y
-        let c2x = _u3 * m20.x + u_u2 * m21.x + u2_u * m22.x + u3 * m23.x
-        let c2y = _u3 * m20.y + u_u2 * m21.y + u2_u * m22.y + u3 * m23.y
-        let c3x = _u3 * m30.x + u_u2 * m31.x + u2_u * m32.x + u3 * m33.x
-        let c3y = _u3 * m30.y + u_u2 * m31.y + u2_u * m32.y + u3 * m33.y
+        var c0x = _u3 * m00.x + u_u2 * m01.x
+        c0x += u2_u * m02.x + u3 * m03.x
+        var c0y = _u3 * m00.y + u_u2 * m01.y
+        c0y += u2_u * m02.y + u3 * m03.y
+        var c1x = _u3 * m10.x + u_u2 * m11.x
+        c1x += u2_u * m12.x + u3 * m13.x
+        var c1y = _u3 * m10.y + u_u2 * m11.y
+        c1y += u2_u * m12.y + u3 * m13.y
+        var c2x = _u3 * m20.x + u_u2 * m21.x
+        c2x += u2_u * m22.x + u3 * m23.x
+        var c2y = _u3 * m20.y + u_u2 * m21.y
+        c2y += u2_u * m22.y + u3 * m23.y
+        var c3x = _u3 * m30.x + u_u2 * m31.x
+        c3x += u2_u * m32.x + u3 * m33.x
+        var c3y = _u3 * m30.y + u_u2 * m31.y
+        c3y += u2_u * m32.y + u3 * m33.y
         
         var _x = _v3 * c0x + v_v2 * c1x + v2_v * c2x + v3 * c3x
         var _y = _v3 * c0y + v_v2 * c1y + v2_v * c2y + v3 * c3y

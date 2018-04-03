@@ -36,10 +36,6 @@ public protocol Tensor : ScalarMultiplicative, RandomAccessCollection, MutableCo
 
 extension Tensor {
     
-    public typealias Indices = Range<Int>
-    
-    public typealias Index = Int
-    
     @_transparent
     public var numberOfComponents: Int {
         return Self.numberOfComponents

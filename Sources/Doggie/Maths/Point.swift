@@ -95,6 +95,8 @@ extension Point: CustomStringConvertible {
 
 extension Point : Tensor {
     
+    public typealias Indices = Range<Int>
+    
     public typealias Scalar = Double
     
     @_transparent

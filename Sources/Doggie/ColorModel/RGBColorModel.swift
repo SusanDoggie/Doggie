@@ -25,6 +25,8 @@
 
 public struct RGBColorModel : ColorModelProtocol {
     
+    public typealias Indices = Range<Int>
+    
     public typealias Scalar = Double
     
     @_transparent
@@ -269,6 +271,8 @@ extension RGBColorModel {
     }
     
     public struct FloatComponents : FloatColorComponents {
+        
+        public typealias Indices = Range<Int>
         
         public typealias Scalar = Float
         

@@ -85,6 +85,8 @@ extension Vector {
 
 extension Vector : Tensor {
     
+    public typealias Indices = Range<Int>
+    
     public typealias Scalar = Double
     
     @_transparent

@@ -25,6 +25,8 @@
 
 public struct CMYKColorModel : ColorModelProtocol {
     
+    public typealias Indices = Range<Int>
+    
     public typealias Scalar = Double
     
     @_transparent
@@ -191,6 +193,8 @@ extension CMYKColorModel {
     }
     
     public struct FloatComponents : FloatColorComponents {
+        
+        public typealias Indices = Range<Int>
         
         public typealias Scalar = Float
         

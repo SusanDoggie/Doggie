@@ -25,6 +25,8 @@
 
 public struct Device2ColorModel : ColorModelProtocol {
     
+    public typealias Indices = Range<Int>
+    
     public typealias Scalar = Double
     
     @_transparent
@@ -136,6 +138,8 @@ public func -= (lhs: inout Device2ColorModel, rhs: Device2ColorModel) {
 
 
 public struct Device3ColorModel : ColorModelProtocol {
+    
+    public typealias Indices = Range<Int>
     
     public typealias Scalar = Double
     
@@ -258,6 +262,8 @@ public func -= (lhs: inout Device3ColorModel, rhs: Device3ColorModel) {
 
 
 public struct Device4ColorModel : ColorModelProtocol {
+    
+    public typealias Indices = Range<Int>
     
     public typealias Scalar = Double
     
@@ -390,6 +396,8 @@ public func -= (lhs: inout Device4ColorModel, rhs: Device4ColorModel) {
 
 
 public struct Device5ColorModel : ColorModelProtocol {
+    
+    public typealias Indices = Range<Int>
     
     public typealias Scalar = Double
     
@@ -554,6 +562,8 @@ public func -= (lhs: inout Device5ColorModel, rhs: Device5ColorModel) {
 
 
 public struct Device6ColorModel : ColorModelProtocol {
+    
+    public typealias Indices = Range<Int>
     
     public typealias Scalar = Double
     
@@ -728,6 +738,8 @@ public func -= (lhs: inout Device6ColorModel, rhs: Device6ColorModel) {
 
 
 public struct Device7ColorModel : ColorModelProtocol {
+    
+    public typealias Indices = Range<Int>
     
     public typealias Scalar = Double
     
@@ -920,6 +932,8 @@ public func -= (lhs: inout Device7ColorModel, rhs: Device7ColorModel) {
 
 
 public struct Device8ColorModel : ColorModelProtocol {
+    
+    public typealias Indices = Range<Int>
     
     public typealias Scalar = Double
     
@@ -1122,6 +1136,8 @@ public func -= (lhs: inout Device8ColorModel, rhs: Device8ColorModel) {
 
 
 public struct Device9ColorModel : ColorModelProtocol {
+    
+    public typealias Indices = Range<Int>
     
     public typealias Scalar = Double
     
@@ -1334,6 +1350,8 @@ public func -= (lhs: inout Device9ColorModel, rhs: Device9ColorModel) {
 
 
 public struct Device10ColorModel : ColorModelProtocol {
+    
+    public typealias Indices = Range<Int>
     
     public typealias Scalar = Double
     
@@ -1564,6 +1582,8 @@ public func -= (lhs: inout Device10ColorModel, rhs: Device10ColorModel) {
 
 
 public struct Device11ColorModel : ColorModelProtocol {
+    
+    public typealias Indices = Range<Int>
     
     public typealias Scalar = Double
     
@@ -1804,6 +1824,8 @@ public func -= (lhs: inout Device11ColorModel, rhs: Device11ColorModel) {
 
 
 public struct Device12ColorModel : ColorModelProtocol {
+    
+    public typealias Indices = Range<Int>
     
     public typealias Scalar = Double
     
@@ -2054,6 +2076,8 @@ public func -= (lhs: inout Device12ColorModel, rhs: Device12ColorModel) {
 
 
 public struct Device13ColorModel : ColorModelProtocol {
+    
+    public typealias Indices = Range<Int>
     
     public typealias Scalar = Double
     
@@ -2322,6 +2346,8 @@ public func -= (lhs: inout Device13ColorModel, rhs: Device13ColorModel) {
 
 
 public struct Device14ColorModel : ColorModelProtocol {
+    
+    public typealias Indices = Range<Int>
     
     public typealias Scalar = Double
     
@@ -2600,6 +2626,8 @@ public func -= (lhs: inout Device14ColorModel, rhs: Device14ColorModel) {
 
 
 public struct Device15ColorModel : ColorModelProtocol {
+    
+    public typealias Indices = Range<Int>
     
     public typealias Scalar = Double
     
@@ -2909,6 +2937,8 @@ extension Device2ColorModel {
     
     public struct FloatComponents : FloatColorComponents {
         
+        public typealias Indices = Range<Int>
+        
         public typealias Scalar = Float
         
         @_transparent
@@ -3036,6 +3066,8 @@ extension Device3ColorModel {
     }
     
     public struct FloatComponents : FloatColorComponents {
+        
+        public typealias Indices = Range<Int>
         
         public typealias Scalar = Float
         
@@ -3176,6 +3208,8 @@ extension Device4ColorModel {
     }
     
     public struct FloatComponents : FloatColorComponents {
+        
+        public typealias Indices = Range<Int>
         
         public typealias Scalar = Float
         
@@ -3331,6 +3365,8 @@ extension Device5ColorModel {
     }
     
     public struct FloatComponents : FloatColorComponents {
+        
+        public typealias Indices = Range<Int>
         
         public typealias Scalar = Float
         
@@ -3520,6 +3556,8 @@ extension Device6ColorModel {
     }
     
     public struct FloatComponents : FloatColorComponents {
+        
+        public typealias Indices = Range<Int>
         
         public typealias Scalar = Float
         
@@ -3722,6 +3760,8 @@ extension Device7ColorModel {
     }
     
     public struct FloatComponents : FloatColorComponents {
+        
+        public typealias Indices = Range<Int>
         
         public typealias Scalar = Float
         
@@ -3944,6 +3984,8 @@ extension Device8ColorModel {
     }
     
     public struct FloatComponents : FloatColorComponents {
+        
+        public typealias Indices = Range<Int>
         
         public typealias Scalar = Float
         
@@ -4178,6 +4220,8 @@ extension Device9ColorModel {
     }
     
     public struct FloatComponents : FloatColorComponents {
+        
+        public typealias Indices = Range<Int>
         
         public typealias Scalar = Float
         
@@ -4425,6 +4469,8 @@ extension Device10ColorModel {
     }
     
     public struct FloatComponents : FloatColorComponents {
+        
+        public typealias Indices = Range<Int>
         
         public typealias Scalar = Float
         
@@ -4692,6 +4738,8 @@ extension Device11ColorModel {
     }
     
     public struct FloatComponents : FloatColorComponents {
+        
+        public typealias Indices = Range<Int>
         
         public typealias Scalar = Float
         
@@ -4971,6 +5019,8 @@ extension Device12ColorModel {
     }
     
     public struct FloatComponents : FloatColorComponents {
+        
+        public typealias Indices = Range<Int>
         
         public typealias Scalar = Float
         
@@ -5263,6 +5313,8 @@ extension Device13ColorModel {
     }
     
     public struct FloatComponents : FloatColorComponents {
+        
+        public typealias Indices = Range<Int>
         
         public typealias Scalar = Float
         
@@ -5575,6 +5627,8 @@ extension Device14ColorModel {
     }
     
     public struct FloatComponents : FloatColorComponents {
+        
+        public typealias Indices = Range<Int>
         
         public typealias Scalar = Float
         
@@ -5899,6 +5953,8 @@ extension Device15ColorModel {
     }
     
     public struct FloatComponents : FloatColorComponents {
+        
+        public typealias Indices = Range<Int>
         
         public typealias Scalar = Float
         
