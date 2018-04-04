@@ -186,15 +186,6 @@ extension RangeSet where Bound : Strideable, Bound.Stride : SignedInteger {
     public init<S : Sequence>(_ s: S) where S.Element == ClosedRange<Bound> {
         self = s.reduce(RangeSet()) { $0.union($1) }
     }
-    
-    @_inlineable
-    public init(_ ranges: Range<Bound> ... ) {
-        self.init(ranges)
-    }
-    @_inlineable
-    public init<S : Sequence>(_ s: S) where S.Element == Range<Bound> {
-        self = s.reduce(RangeSet()) { $0.union($1) }
-    }
 }
 
 extension RangeSet where Bound : Strideable, Bound.Stride : SignedInteger {
@@ -213,23 +204,6 @@ extension RangeSet where Bound : Strideable, Bound.Stride : SignedInteger {
     }
     @_inlineable
     public func symmetricDifference(_ ranges: ClosedRange<Bound>) -> RangeSet {
-        return self.symmetricDifference(Range(ranges))
-    }
-    
-    @_inlineable
-    public func union(_ ranges: Range<Bound>) -> RangeSet {
-        return self.union(Range(ranges))
-    }
-    @_inlineable
-    public func subtracting(_ ranges: Range<Bound>) -> RangeSet {
-        return self.subtracting(Range(ranges))
-    }
-    @_inlineable
-    public func intersection(_ ranges: Range<Bound>) -> RangeSet {
-        return self.intersection(Range(ranges))
-    }
-    @_inlineable
-    public func symmetricDifference(_ ranges: Range<Bound>) -> RangeSet {
         return self.symmetricDifference(Range(ranges))
     }
 }
