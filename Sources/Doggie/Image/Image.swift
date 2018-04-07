@@ -76,7 +76,7 @@ public struct Image<Pixel: ColorPixelProtocol> {
         if let buffer = image.pixels as? MappedBuffer<Pixel> {
             self.pixels = MappedBuffer(buffer, option: option)
         } else {
-            self.pixels = MappedBuffer(image.pixels.lazy.map(Pixel.init), option: option)
+            self.pixels = image.pixels.map(option: option, Pixel.init)
         }
     }
     
@@ -90,7 +90,7 @@ public struct Image<Pixel: ColorPixelProtocol> {
             if let buffer = image.pixels as? MappedBuffer<Pixel> {
                 self.pixels = MappedBuffer(buffer, option: option)
             } else {
-                self.pixels = MappedBuffer(image.pixels.lazy.map { Pixel(color: $0.color as! Pixel.Model, opacity: $0.opacity) }, option: option)
+                self.pixels = image.pixels.map(option: option) { Pixel(color: $0.color as! Pixel.Model, opacity: $0.opacity) }
             }
         } else {
             self.pixels = image.colorSpace.convert(image.pixels, to: self.colorSpace, intent: intent, option: option)
@@ -178,11 +178,7 @@ extension Image {
     
     @_inlineable
     public func map<P>(_ transform: (Pixel) throws -> P) rethrows -> Image<P> where P.Model == Pixel.Model {
-        var _pixels = MappedBuffer<P>(capacity: pixels.count, option: pixels.option)
-        for pixel in pixels {
-            _pixels.append(try transform(pixel))
-        }
-        return Image<P>(width: height, height: width, resolution: resolution, pixels: _pixels, colorSpace: colorSpace)
+        return try Image<P>(width: height, height: width, resolution: resolution, pixels: pixels.map(transform), colorSpace: colorSpace)
     }
 }
 

@@ -48,6 +48,12 @@ public struct MappedBuffer<Element> : RandomAccessCollection, MutableCollection,
     @_versioned
     var base: Base
     
+    @_versioned
+    @_inlineable
+    init(base: Base) {
+        self.base = base
+    }
+    
     @_inlineable
     public init() {
         self.base = Base(capacity: 0, option: .default)
@@ -418,6 +424,96 @@ extension MappedBuffer {
         var box = _Box(ref: base)
         let immutableReference = NSData(bytesNoCopy: base.address, length: base.count * MemoryLayout<Element>.stride, deallocator: { _, _ in box.ref = nil })
         return Data(referencing: immutableReference)
+    }
+}
+
+extension MappedBuffer {
+    
+    @_inlineable
+    public func map<T>(_ transform: (Element) throws -> T) rethrows -> MappedBuffer<T> {
+        return try self.map(option: option, transform)
+    }
+    
+    @_inlineable
+    public func map<T>(option: MappedBufferOption, _ transform: (Element) throws -> T) rethrows -> MappedBuffer<T> {
+        
+        let new_base = MappedBuffer<T>.Base(capacity: count, option: option)
+        new_base.count = 0
+        
+        try self.withUnsafeBufferPointer {
+            var ptr = new_base.address
+            for element in $0 {
+                try ptr.initialize(to: transform(element))
+                new_base.count += 1
+                ptr += 1
+            }
+        }
+        
+        return MappedBuffer<T>(base: new_base)
+    }
+    
+    @_inlineable
+    public func filter(_ isIncluded: (Element) throws -> Bool) rethrows -> MappedBuffer {
+        return try self.filter(option: option, isIncluded)
+    }
+    
+    @_inlineable
+    public func filter(option: MappedBufferOption, _ isIncluded: (Element) throws -> Bool) rethrows -> MappedBuffer {
+        
+        var result = MappedBuffer(option: option)
+        
+        try self.withUnsafeBufferPointer {
+            for element in $0 where try isIncluded(element) {
+                result.append(element)
+            }
+        }
+        
+        return result
+    }
+    
+    @_inlineable
+    public func flatMap<SegmentOfResult : Sequence>(_ transform: (Element) throws -> SegmentOfResult) rethrows -> MappedBuffer<SegmentOfResult.Element> {
+        return try self.flatMap(option: option, transform)
+    }
+    
+    @_inlineable
+    public func flatMap<SegmentOfResult : Sequence>(option: MappedBufferOption, _ transform: (Element) throws -> SegmentOfResult) rethrows -> MappedBuffer<SegmentOfResult.Element> {
+        
+        var result = MappedBuffer<SegmentOfResult.Element>(option: option)
+        
+        try self.withUnsafeBufferPointer {
+            for element in $0 {
+                try result.append(contentsOf: transform(element))
+            }
+        }
+        
+        return result
+    }
+    
+    @_inlineable
+    public func compactMap<ElementOfResult>(_ transform: (Element) throws -> ElementOfResult?) rethrows -> MappedBuffer<ElementOfResult> {
+        return try self.compactMap(option: option, transform)
+    }
+    
+    @_inlineable
+    public func compactMap<ElementOfResult>(option: MappedBufferOption, _ transform: (Element) throws -> ElementOfResult?) rethrows -> MappedBuffer<ElementOfResult> {
+        
+        var result = MappedBuffer<ElementOfResult>(option: option)
+        
+        try self.withUnsafeBufferPointer {
+            for element in $0 {
+                if let newElement = try transform(element) {
+                    result.append(newElement)
+                }
+            }
+        }
+        
+        return result
+    }
+    
+    @_inlineable
+    public func forEach(_ body: (Element) throws -> Void) rethrows {
+        try self.withUnsafeBufferPointer { try $0.forEach(body) }
     }
 }
 

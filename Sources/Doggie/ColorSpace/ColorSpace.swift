@@ -366,8 +366,9 @@ extension ColorSpace {
     
     @_versioned
     @inline(__always)
-    func convert<C : Collection, R>(_ color: C, to other: ColorSpace<R.Model>, intent: RenderingIntent = .default, option: MappedBufferOption = .default) -> MappedBuffer<R> where C.Element: ColorPixelProtocol, C.Element.Model == Model, R: ColorPixelProtocol {
-        return MappedBuffer<R>(self._convert(color, to: other, intent: intent), option: option)
+    func convert<S, R>(_ color: MappedBuffer<S>, to other: ColorSpace<R.Model>, intent: RenderingIntent = .default, option: MappedBufferOption = .default) -> MappedBuffer<R> where S: ColorPixelProtocol, S.Model == Model, R: ColorPixelProtocol {
+        let matrix = self.base.cieXYZ._intentMatrix(to: other.base.cieXYZ, chromaticAdaptationAlgorithm: chromaticAdaptationAlgorithm, intent: intent)
+        return color.map(option: option) { R(color: other.convertFromXYZ(self.convertToXYZ($0.color) * matrix), opacity: $0.opacity) }
     }
 }
 
