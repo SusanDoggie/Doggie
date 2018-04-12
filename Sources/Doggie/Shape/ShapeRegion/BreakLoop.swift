@@ -168,19 +168,25 @@ extension Shape {
                             if check_1 && check_4 {
                                 
                                 let split = segment.split(b)
-                                solids.append(ShapeRegion.Solid(segments: CollectionOfOne(split.0))!)
+                                if let loop = ShapeRegion.Solid(segments: CollectionOfOne(split.0)) {
+                                    solids.append(loop)
+                                }
                                 segment = split.1
                                 
                             } else if check_2 && check_3 {
                                 
                                 let split = segment.split(a)
-                                solids.append(ShapeRegion.Solid(segments: CollectionOfOne(split.1))!)
+                                if let loop = ShapeRegion.Solid(segments: CollectionOfOne(split.1)) {
+                                    solids.append(loop)
+                                }
                                 segment = split.0
                                 
                             } else if check_2 && check_4 {
                                 
                                 let split = segment.split([a, b])
-                                solids.append(ShapeRegion.Solid(segments: CollectionOfOne(split[1]))!)
+                                if let loop = ShapeRegion.Solid(segments: CollectionOfOne(split[1])) {
+                                    solids.append(loop)
+                                }
                                 path.append(split[0])
                                 segment = split[2]
                             }
