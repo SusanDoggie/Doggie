@@ -25,18 +25,65 @@
 
 import Foundation
 
-#if canImport(AppKit)
+extension Point : CustomPlaygroundDisplayConvertible {
+    
+    @_inlineable
+    public var playgroundDescription: Any {
+        return CGPoint(self)
+    }
+}
 
-import AppKit
+extension Size : CustomPlaygroundDisplayConvertible {
+    
+    @_inlineable
+    public var playgroundDescription: Any {
+        return CGSize(self)
+    }
+}
+
+extension Rect : CustomPlaygroundDisplayConvertible {
+    
+    @_inlineable
+    public var playgroundDescription: Any {
+        return CGRect(self)
+    }
+}
 
 extension Image : CustomPlaygroundDisplayConvertible {
     
     @_inlineable
     public var playgroundDescription: Any {
-        guard let cgImage = self.cgImage else { return description }
-        return NSImage(cgImage: cgImage)
+        return cgImage ?? description
     }
 }
+
+extension AnyImage : CustomPlaygroundDisplayConvertible {
+    
+    @_inlineable
+    public var playgroundDescription: Any {
+        return cgImage ?? "\(self)"
+    }
+}
+
+extension Color : CustomPlaygroundDisplayConvertible {
+    
+    @_inlineable
+    public var playgroundDescription: Any {
+        return cgColor ?? "\(self)"
+    }
+}
+
+extension AnyColor : CustomPlaygroundDisplayConvertible {
+    
+    @_inlineable
+    public var playgroundDescription: Any {
+        return cgColor ?? "\(self)"
+    }
+}
+
+#if canImport(AppKit)
+
+import AppKit
 
 extension Shape : CustomPlaygroundDisplayConvertible {
     
@@ -67,15 +114,6 @@ extension ShapeRegion.Solid : CustomPlaygroundDisplayConvertible {
 #if canImport(UIKit)
 
 import UIKit
-
-extension Image : CustomPlaygroundDisplayConvertible {
-    
-    @_inlineable
-    public var playgroundDescription: Any {
-        guard let cgImage = self.cgImage else { return description }
-        return UIImage(cgImage: cgImage)
-    }
-}
 
 extension Shape : CustomPlaygroundDisplayConvertible {
     
