@@ -62,47 +62,11 @@ public struct Shape : RandomAccessCollection, MutableCollection, ExpressibleByAr
     
     private var components: [Component]
     
-    public var baseTransform : SDTransform = SDTransform.identity {
+    public var transform : SDTransform = SDTransform.identity {
         willSet {
-            if baseTransform != newValue {
+            if transform != newValue {
                 cache = cache.lck.synchronized { Cache(originalBoundary: cache.originalBoundary, boundary: nil, table: cache.table) }
             }
-        }
-    }
-    
-    public var rotate: Double = 0 {
-        willSet {
-            if rotate != newValue {
-                cache = cache.lck.synchronized { Cache(originalBoundary: cache.originalBoundary, boundary: nil, table: cache.table) }
-            }
-        }
-    }
-    public var scale: Double = 1 {
-        didSet {
-            if scale != oldValue {
-                cache = cache.lck.synchronized {
-                    let boundary = cache.boundary
-                    let center = self.center
-                    let _scale = self.scale / oldValue
-                    return Cache(originalBoundary: cache.originalBoundary, boundary: boundary.map { Rect.bound($0.points.map { ($0 - center) * _scale + center }) }, table: cache.table)
-                }
-            }
-        }
-    }
-    public var transform : SDTransform {
-        get {
-            let center = self.center
-            let translate = SDTransform.translate(x: center.x, y: center.y)
-            let scale = SDTransform.scale(self.scale)
-            let rotate = SDTransform.rotate(self.rotate)
-            return baseTransform * translate.inverse * scale * rotate * translate
-        }
-        set {
-            let center = originalBoundary.center * newValue
-            let translate = SDTransform.translate(x: center.x, y: center.y)
-            let scale = SDTransform.scale(self.scale)
-            let rotate = SDTransform.rotate(self.rotate)
-            baseTransform = newValue * translate.inverse * rotate.inverse * scale.inverse * translate
         }
     }
     
@@ -122,7 +86,7 @@ public struct Shape : RandomAccessCollection, MutableCollection, ExpressibleByAr
     
     public var center : Point {
         get {
-            return originalBoundary.center * baseTransform
+            return originalBoundary.center * transform
         }
         set {
             let _center = center
@@ -131,7 +95,7 @@ public struct Shape : RandomAccessCollection, MutableCollection, ExpressibleByAr
                     var boundary = cache.boundary
                     let offset = newValue - _center
                     boundary?.origin += offset
-                    baseTransform *= SDTransform.translate(x: offset.x, y: offset.y)
+                    transform *= SDTransform.translate(x: offset.x, y: offset.y)
                     return Cache(originalBoundary: cache.originalBoundary, boundary: boundary, table: cache.table)
                 }
             }
@@ -172,6 +136,16 @@ public struct Shape : RandomAccessCollection, MutableCollection, ExpressibleByAr
             }
             return cache.originalBoundary!
         }
+    }
+    
+    public mutating func rotate(_ angle: Double) {
+        let center = self.center
+        self.transform *= SDTransform.translate(x: -center.x, y: -center.y) * SDTransform.rotate(angle) * SDTransform.translate(x: center.x, y: center.y)
+    }
+    
+    public mutating func scale(_ scale: Double) {
+        let center = self.center
+        self.transform *= SDTransform.translate(x: -center.x, y: -center.y) * SDTransform.scale(scale) * SDTransform.translate(x: center.x, y: center.y)
     }
     
     public var frame : [Point] {
@@ -656,12 +630,11 @@ extension Shape : RangeReplaceableCollection {
 extension Shape {
     
     public var identity : Shape {
-        if rotate == 0 && scale == 1 && baseTransform == SDTransform.identity {
+        if transform == SDTransform.identity {
             return self
         }
         return cache.lck.synchronized {
             if cache.identity == nil {
-                let transform = self.transform
                 if transform == SDTransform.identity {
                     let _path = Shape(self.components)
                     _path.cache.originalBoundary = cache.originalBoundary
