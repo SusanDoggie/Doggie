@@ -156,6 +156,14 @@ public struct Shape : RandomAccessCollection, MutableCollection, ExpressibleByAr
 
 extension Shape {
     
+    public var currentPoint: Point {
+        guard let last = self.components.last else { return Point() }
+        return last.isClosed ? last.start : last.end
+    }
+}
+
+extension Shape {
+    
     class Cache {
         
         let lck = SDLock()

@@ -30,6 +30,165 @@ import CoreGraphics
 
 fileprivate let ShapeCacheCGPathKey = "ShapeCacheCGPathKey"
 
+private protocol BezierPathConvertible {
+    
+    var _currentPoint: Point { get }
+    
+    mutating func _move(to p1: Point)
+    
+    mutating func _line(to p1: Point)
+    
+    mutating func _quad(to p2: Point, control p1: Point)
+    
+    mutating func _curve(to p3: Point, control1 p1: Point, control2 p2: Point)
+    
+    mutating func _close()
+    
+    func _copy<Other: BezierPathConvertible>(to path: inout Other)
+}
+
+extension BezierPathConvertible {
+    
+    mutating func _quad(to p2: Point, control p1: Point) {
+        let p0 = self._currentPoint
+        self._curve(to: p2, control1: (p1 - p0) * 2 / 3 + p0, control2: (p1 - p2) * 2 / 3 + p2)
+    }
+}
+
+extension Shape: BezierPathConvertible {
+    
+    fileprivate var _currentPoint: Point {
+        return self.currentPoint
+    }
+    
+    fileprivate mutating func _move(to p1: Point) {
+        
+        self.append(Shape.Component(start: p1, closed: false, segments: []))
+    }
+    
+    fileprivate mutating func _line(to p1: Point) {
+        
+        if self.count == 0 || self.last?.isClosed == true {
+            self.append(Shape.Component(start: self.last?.start ?? Point(), closed: false, segments: []))
+        }
+        self[self.count - 1].append(.line(p1))
+    }
+    
+    fileprivate mutating func _quad(to p2: Point, control p1: Point) {
+        
+        if self.count == 0 || self.last?.isClosed == true {
+            self.append(Shape.Component(start: self.last?.start ?? Point(), closed: false, segments: []))
+        }
+        self[self.count - 1].append(.quad(p1, p2))
+    }
+    
+    fileprivate mutating func _curve(to p3: Point, control1 p1: Point, control2 p2: Point) {
+        
+        if self.count == 0 || self.last?.isClosed == true {
+            self.append(Shape.Component(start: self.last?.start ?? Point(), closed: false, segments: []))
+        }
+        self[self.count - 1].append(.cubic(p1, p2, p3))
+    }
+    
+    fileprivate mutating func _close() {
+        
+        if self.count == 0 || self.last?.isClosed == true {
+            self.append(Shape.Component(start: self.last?.start ?? Point(), closed: false, segments: []))
+        }
+        self[self.count - 1].isClosed = true
+    }
+    
+    fileprivate func _copy<Other: BezierPathConvertible>(to path: inout Other) {
+        
+        for item in self {
+            path._move(to: item.start)
+            for segment in item {
+                switch segment {
+                case let .line(point): path._line(to: point)
+                case let .quad(p1, p2): path._quad(to: p2, control: p1)
+                case let .cubic(p1, p2, p3): path._curve(to: p3, control1: p1, control2: p2)
+                }
+            }
+            if item.isClosed {
+                path._close()
+            }
+        }
+    }
+}
+
+extension CGMutablePath: BezierPathConvertible {
+    
+    fileprivate var _currentPoint: Point {
+        return Point(currentPoint)
+    }
+    
+    fileprivate func _move(to p1: Point) {
+        self.move(to: CGPoint(p1))
+    }
+    
+    fileprivate func _line(to p1: Point) {
+        self.addLine(to: CGPoint(p1))
+    }
+    
+    fileprivate func _quad(to p2: Point, control p1: Point) {
+        self.addQuadCurve(to: CGPoint(p2), control: CGPoint(p1))
+    }
+    
+    fileprivate func _curve(to p3: Point, control1 p1: Point, control2 p2: Point) {
+        self.addCurve(to: CGPoint(p3), control1: CGPoint(p1), control2: CGPoint(p2))
+    }
+    
+    fileprivate func _close() {
+        self.closeSubpath()
+    }
+}
+
+extension CGPath {
+    
+    fileprivate func _copy<Other: BezierPathConvertible>(to path: inout Other) {
+        
+        if #available(OSX 10.13, iOS 11.0, tvOS 11.0, watchOS 4.0, *) {
+            
+            var _path = path
+            
+            self.applyWithBlock { element in
+                
+                let points = element.pointee.points
+                
+                switch element.pointee.type {
+                case .moveToPoint: _path._move(to: Point(points[0]))
+                case .addLineToPoint: _path._line(to: Point(points[0]))
+                case .addQuadCurveToPoint: _path._quad(to: Point(points[1]), control: Point(points[0]))
+                case .addCurveToPoint: _path._curve(to: Point(points[2]), control1: Point(points[0]), control2: Point(points[1]))
+                case .closeSubpath: _path._close()
+                }
+            }
+            
+            path = _path
+            
+        } else {
+            
+            var _path: BezierPathConvertible = path
+            
+            self.apply(info: &_path) { info, element in
+                
+                let path = info!.assumingMemoryBound(to: BezierPathConvertible.self)
+                let points = element.pointee.points
+                
+                switch element.pointee.type {
+                case .moveToPoint: path.pointee._move(to: Point(points[0]))
+                case .addLineToPoint: path.pointee._line(to: Point(points[0]))
+                case .addQuadCurveToPoint: path.pointee._quad(to: Point(points[1]), control: Point(points[0]))
+                case .addCurveToPoint: path.pointee._curve(to: Point(points[2]), control1: Point(points[0]), control2: Point(points[1]))
+                case .closeSubpath: path.pointee._close()
+                }
+            }
+            
+            path = _path as! Other
+        }
+    }
+}
+
 extension Shape {
     
     public var cgPath : CGPath {
@@ -37,21 +196,8 @@ extension Shape {
         return self.identity.cache[ShapeCacheCGPathKey] {
             
             let _path: CGPath = self.cache[ShapeCacheCGPathKey] {
-                
-                let path = CGMutablePath()
-                for item in self {
-                    path.move(to: CGPoint(item.start))
-                    for segment in item {
-                        switch segment {
-                        case let .line(point): path.addLine(to: CGPoint(point))
-                        case let .quad(p1, p2): path.addQuadCurve(to: CGPoint(p2), control: CGPoint(p1))
-                        case let .cubic(p1, p2, p3): path.addCurve(to: CGPoint(p3), control1: CGPoint(p1), control2: CGPoint(p2))
-                        }
-                    }
-                    if item.isClosed {
-                        path.closeSubpath()
-                    }
-                }
+                var path = CGMutablePath()
+                self._copy(to: &path)
                 return path
             }
             
@@ -65,33 +211,7 @@ extension Shape {
     
     public init(_ path: CGPath) {
         self.init()
-        path.apply(info: &self) { buf, element in
-            let path = buf!.assumingMemoryBound(to: Shape.self)
-            let points = element.pointee.points
-            switch element.pointee.type {
-            case .moveToPoint: path.pointee.append(Component(start: Point(points[0]), closed: false, segments: []))
-            case .addLineToPoint:
-                if path.pointee.count == 0 || path.pointee.last?.isClosed == true {
-                    path.pointee.append(Component(start: path.pointee.last?.start ?? Point(), closed: false, segments: []))
-                }
-                path.pointee[path.pointee.count - 1].append(.line(Point(points[0])))
-            case .addQuadCurveToPoint:
-                if path.pointee.count == 0 || path.pointee.last?.isClosed == true {
-                    path.pointee.append(Component(start: path.pointee.last?.start ?? Point(), closed: false, segments: []))
-                }
-                path.pointee[path.pointee.count - 1].append(.quad(Point(points[0]), Point(points[1])))
-            case .addCurveToPoint:
-                if path.pointee.count == 0 || path.pointee.last?.isClosed == true {
-                    path.pointee.append(Component(start: path.pointee.last?.start ?? Point(), closed: false, segments: []))
-                }
-                path.pointee[path.pointee.count - 1].append(.cubic(Point(points[0]), Point(points[1]), Point(points[2])))
-            case .closeSubpath:
-                if path.pointee.count == 0 || path.pointee.last?.isClosed == true {
-                    path.pointee.append(Component(start: path.pointee.last?.start ?? Point(), closed: false, segments: []))
-                }
-                path.pointee[path.pointee.count - 1].isClosed = true
-            }
-        }
+        path._copy(to: &self)
         self.cache[ShapeCacheCGPathKey] = path.copy()
     }
 }
@@ -102,10 +222,17 @@ extension Shape {
 
 import UIKit
 
-public extension UIBezierPath {
+extension UIBezierPath {
     
-    convenience init(_ shape: Shape) {
+    public convenience init(_ shape: Shape) {
         self.init(cgPath: shape.cgPath)
+    }
+}
+
+extension Shape {
+    
+    public init(_ path: UIBezierPath) {
+        self.init(shape.cgPath)
     }
 }
 
@@ -115,33 +242,68 @@ public extension UIBezierPath {
 
 import AppKit
 
-public extension NSBezierPath {
+extension NSBezierPath: BezierPathConvertible {
     
-    convenience init(_ shape: Shape) {
-        self.init()
-        for item in shape {
-            var last: Point = item.start
-            self.move(to: NSPoint(item.start))
-            for segment in item {
-                switch segment {
-                case let .line(point):
-                    self.line(to: NSPoint(x: point.x, y: point.y))
-                    last = point
-                case let .quad(p1, p2):
-                    self.curve(to: NSPoint(x: p2.x, y: p2.y),
-                               controlPoint1: NSPoint(x: (p1.x - last.x) * 2 / 3 + last.x, y: (p1.y - last.y) * 2 / 3 + last.y),
-                               controlPoint2: NSPoint(x: (p1.x - p2.x) * 2 / 3 + p2.x, y: (p1.y - p2.y) * 2 / 3 + p2.y))
-                    last = p2
-                case let .cubic(p1, p2, p3):
-                    self.curve(to: NSPoint(x: p3.x, y: p3.y), controlPoint1: NSPoint(x: p1.x, y: p1.y), controlPoint2: NSPoint(x: p2.x, y: p2.y))
-                    last = p3
-                }
-            }
-            if item.isClosed {
-                self.close()
+    fileprivate var _currentPoint: Point {
+        return Point(currentPoint)
+    }
+    
+    fileprivate func _move(to p1: Point) {
+        self.move(to: CGPoint(p1))
+    }
+    
+    fileprivate func _line(to p1: Point) {
+        self.line(to: CGPoint(p1))
+    }
+    
+    fileprivate func _curve(to p3: Point, control1 p1: Point, control2 p2: Point) {
+        self.curve(to: CGPoint(p3), controlPoint1: CGPoint(p1), controlPoint2: CGPoint(p2))
+    }
+    
+    fileprivate func _close() {
+        self.close()
+    }
+    
+    fileprivate func _copy<Other: BezierPathConvertible>(to path: inout Other) {
+        
+        var points = [CGPoint](repeating: CGPoint(), count: 3)
+        for i in 0..<self.elementCount {
+            let type = self.element(at: i, associatedPoints: &points)
+            switch type {
+            case .moveToBezierPathElement: path._move(to: Point(points[0]))
+            case .lineToBezierPathElement: path._line(to: Point(points[0]))
+            case .curveToBezierPathElement: path._curve(to: Point(points[2]), control1: Point(points[0]), control2: Point(points[1]))
+            case .closePathBezierPathElement: path._close()
             }
         }
-        self.transform(using: AffineTransform(shape.transform))
+    }
+}
+
+extension NSBezierPath {
+    
+    public var cgPath: CGPath {
+        var path = CGMutablePath()
+        self._copy(to: &path)
+        return path
+    }
+}
+
+extension NSBezierPath {
+    
+    public convenience init(cgPath: CGPath) {
+        self.init()
+        var path = self
+        cgPath._copy(to: &path)
+    }
+}
+
+extension NSBezierPath {
+    
+    public convenience init(_ shape: Shape) {
+        self.init()
+        var path = self
+        shape._copy(to: &path)
+        path.transform(using: AffineTransform(shape.transform))
     }
 }
 
@@ -149,27 +311,7 @@ extension Shape {
     
     public init(_ path: NSBezierPath) {
         self.init()
-        var points = [NSPoint](repeating: NSPoint(x: 0, y: 0), count: 3)
-        for idx in 0..<path.elementCount {
-            switch path.element(at: idx, associatedPoints: &points) {
-            case .moveToBezierPathElement: self.append(Component(start: Point(points[0]), closed: false, segments: []))
-            case .lineToBezierPathElement:
-                if self.count == 0 || self.last?.isClosed == true {
-                    self.append(Component(start: self.last?.start ?? Point(), closed: false, segments: []))
-                }
-                self[self.count - 1].append(.quad(Point(points[0]), Point(points[1])))
-            case .curveToBezierPathElement:
-                if self.count == 0 || self.last?.isClosed == true {
-                    self.append(Component(start: self.last?.start ?? Point(), closed: false, segments: []))
-                }
-                self[self.count - 1].append(.cubic(Point(points[0]), Point(points[1]), Point(points[2])))
-            case .closePathBezierPathElement:
-                if self.count == 0 || self.last?.isClosed == true {
-                    self.append(Component(start: self.last?.start ?? Point(), closed: false, segments: []))
-                }
-                self[self.count - 1].isClosed = true
-            }
-        }
+        path._copy(to: &self)
     }
 }
 
