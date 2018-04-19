@@ -23,17 +23,10 @@
 //  THE SOFTWARE.
 //
 
-#if canImport(CoreGraphics) && canImport(ImageIO)
+#if canImport(CoreGraphics)
 
 import Foundation
 import CoreGraphics
-import ImageIO
-
-#if canImport(MobileCoreServices)
-
-import MobileCoreServices
-
-#endif
 
 public extension CGImage {
     

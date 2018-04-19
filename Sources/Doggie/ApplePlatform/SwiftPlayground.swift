@@ -53,7 +53,16 @@ extension Image : CustomPlaygroundDisplayConvertible {
     
     @_inlineable
     public var playgroundDescription: Any {
+        
+        #if canImport(CoreGraphics)
+        
         return cgImage ?? description
+        
+        #else
+        
+        return description
+        
+        #endif
     }
 }
 
@@ -61,7 +70,16 @@ extension AnyImage : CustomPlaygroundDisplayConvertible {
     
     @_inlineable
     public var playgroundDescription: Any {
+        
+        #if canImport(CoreGraphics)
+        
         return cgImage ?? "\(self)"
+        
+        #else
+        
+        return "\(self)"
+        
+        #endif
     }
 }
 
@@ -69,7 +87,16 @@ extension Color : CustomPlaygroundDisplayConvertible {
     
     @_inlineable
     public var playgroundDescription: Any {
+        
+        #if canImport(CoreGraphics)
+        
         return cgColor ?? "\(self)"
+        
+        #else
+        
+        return "\(self)"
+        
+        #endif
     }
 }
 
@@ -77,7 +104,16 @@ extension AnyColor : CustomPlaygroundDisplayConvertible {
     
     @_inlineable
     public var playgroundDescription: Any {
+        
+        #if canImport(CoreGraphics)
+        
         return cgColor ?? "\(self)"
+        
+        #else
+        
+        return "\(self)"
+        
+        #endif
     }
 }
 
