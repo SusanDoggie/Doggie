@@ -232,7 +232,7 @@ extension UIBezierPath {
 extension Shape {
     
     public init(_ path: UIBezierPath) {
-        self.init(shape.cgPath)
+        self.init(path.cgPath)
     }
 }
 
