@@ -101,20 +101,20 @@ public protocol RegularExpressionMatchable {
     func isMatch(regex: Regex) -> Bool
 }
 
-public extension RegularExpressionMatchable {
+extension RegularExpressionMatchable {
     
     /// Returns the number of matches of the regular expression.
-    func count(regex: Regex) -> Int {
+    public func count(regex: Regex) -> Int {
         return self.match(regex: regex).count
     }
     
     /// Returns the first match of the regular expression.
-    func firstMatch(regex: Regex) -> Matching? {
+    public func firstMatch(regex: Regex) -> Matching? {
         return self.match(regex: regex).first
     }
     
     /// Returns true if any match of the regular expression.
-    func isMatch(regex: Regex) -> Bool {
+    public func isMatch(regex: Regex) -> Bool {
         return self.firstMatch(regex: regex) != nil
     }
 }

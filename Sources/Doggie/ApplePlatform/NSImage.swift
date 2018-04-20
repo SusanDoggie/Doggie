@@ -29,7 +29,7 @@ import Foundation
 
 import AppKit
 
-public extension NSImage {
+extension NSImage {
     
     public convenience init(cgImage image: CGImage) {
         self.init(cgImage: image, size: NSZeroSize)

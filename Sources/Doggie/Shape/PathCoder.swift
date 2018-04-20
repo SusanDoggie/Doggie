@@ -417,7 +417,7 @@ private func getPathDataString(_ command: Character?, _ x: Double ...) -> String
     return result
 }
 
-public extension Shape {
+extension Shape {
     
     public func encode() -> String {
         
@@ -433,9 +433,9 @@ public extension Shape {
     }
 }
 
-private extension Shape.Component {
+extension Shape.Component {
     
-    func serialize(_ currentState: inout Int, start: inout Point, relative: inout Point, lastControl: inout Point?, _ data: inout String) {
+    fileprivate func serialize(_ currentState: inout Int, start: inout Point, relative: inout Point, lastControl: inout Point?, _ data: inout String) {
         
         let move1 = getPathDataString("M", self.start.x, self.start.y)
         let move2 = getPathDataString("m", self.start.x - relative.x, self.start.y - relative.y)
@@ -475,10 +475,10 @@ private extension Shape.Component {
     
 }
 
-private extension Shape.Segment {
+extension Shape.Segment {
     
     @inline(__always)
-    func isSmooth(_ p: Point, _ relative: Point, _ lastControl: Point?) -> Bool {
+    fileprivate func isSmooth(_ p: Point, _ relative: Point, _ lastControl: Point?) -> Bool {
         
         if let lastControl = lastControl {
             let d = p + lastControl - 2 * relative
@@ -487,7 +487,7 @@ private extension Shape.Segment {
         return false
     }
     
-    func serialize1(_ currentState: Int, _ relative: Point, _ lastControl: Point?) -> (String, Int, Point, Point?) {
+    fileprivate func serialize1(_ currentState: Int, _ relative: Point, _ lastControl: Point?) -> (String, Int, Point, Point?) {
         
         switch self {
         case let .line(point):
@@ -532,7 +532,7 @@ private extension Shape.Segment {
         }
     }
     
-    func serialize2(_ currentState: Int, _ relative: Point, _ lastControl: Point?) -> (String, Int, Point, Point?) {
+    fileprivate func serialize2(_ currentState: Int, _ relative: Point, _ lastControl: Point?) -> (String, Int, Point, Point?) {
         
         switch self {
         case let .line(point):

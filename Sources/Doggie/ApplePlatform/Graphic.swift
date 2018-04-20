@@ -84,9 +84,9 @@ extension Rect {
 
 #if os(macOS)
 
-public extension AffineTransform {
+extension AffineTransform {
     
-    init(_ transform: SDTransform) {
+    public init(_ transform: SDTransform) {
         self.init(
             m11: CGFloat(transform.a),
             m12: CGFloat(transform.d),

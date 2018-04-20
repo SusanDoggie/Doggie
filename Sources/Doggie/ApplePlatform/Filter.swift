@@ -256,16 +256,16 @@ open class SDFilter {
     }
 }
 
-public extension CGImage {
+extension CGImage {
     
-    func applyingFilter(_ filterName: String, withInputParameters params: [String : Any]) -> CIImage {
+    public func applyingFilter(_ filterName: String, withInputParameters params: [String : Any]) -> CIImage {
         return CIImage(cgImage: self).applyingFilter(filterName, parameters: params)
     }
 }
 
-public extension CIImage {
+extension CIImage {
     
-    func apply(_ filter: SDFilter) -> CIImage {
+    public func apply(_ filter: SDFilter) -> CIImage {
         if filter.strength == 0 {
             return self
         }
@@ -275,7 +275,7 @@ public extension CIImage {
         return self.applyingFilter("CIDissolveTransition", parameters: ["inputTargetImage": self.applyingFilter(filter.name, parameters: filter.params), kCIAttributeTypeTime: filter.strength])
     }
     
-    func apply(_ filters: [SDFilter]) -> CIImage {
+    public func apply(_ filters: [SDFilter]) -> CIImage {
         return filters.reduce(self) { $0.apply($1) }
     }
 }
