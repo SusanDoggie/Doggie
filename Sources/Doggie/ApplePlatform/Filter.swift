@@ -223,74 +223,38 @@ extension CIFilter {
     }
 }
 
-open class SDFilter {
+extension CIImage {
     
-    open var strength: Double {
-        didSet {
-            strength = max(0, min(1, strength))
+    public func applying(_ filter: CIFilter) -> CIImage {
+        var parameters: [String: Any] = [:]
+        for key in filter.inputKeys {
+            parameters[key] = filter[key]
         }
-    }
-    
-    open let name: String
-    fileprivate var params: [String : Any]
-    
-    public init(name: String, withInputParameters params: [String : Any]) {
-        self.strength = 1
-        self.name = name
-        self.params = params
-    }
-    
-    public init(filter: CIFilter) {
-        self.strength = 0
-        self.name = filter.name
-        self.params = filter.attributes
-    }
-    
-    open subscript(key: String) -> Any? {
-        get {
-            return params[key]
-        }
-        set {
-            params[key] = newValue
-        }
+        return self.applyingFilter(filter.name, parameters: parameters)
     }
 }
 
 extension CGImage {
+    
+    public func applying(_ filter: CIFilter) -> CIImage {
+        return CIImage(cgImage: self).applying(filter)
+    }
     
     public func applyingFilter(_ filterName: String, withInputParameters params: [String : Any]) -> CIImage {
         return CIImage(cgImage: self).applyingFilter(filterName, parameters: params)
     }
 }
 
-extension CIImage {
-    
-    public func apply(_ filter: SDFilter) -> CIImage {
-        if filter.strength == 0 {
-            return self
-        }
-        if filter.strength == 1 {
-            return self.applyingFilter(filter.name, parameters: filter.params)
-        }
-        return self.applyingFilter("CIDissolveTransition", parameters: ["inputTargetImage": self.applyingFilter(filter.name, parameters: filter.params), kCIAttributeTypeTime: filter.strength])
-    }
-    
-    public func apply(_ filters: [SDFilter]) -> CIImage {
-        return filters.reduce(self) { $0.apply($1) }
-    }
-}
-
 // MARK: Barcode
 
-public func AztecCodeGenerator(_ string: String, correction level: Float = 23, compact: Bool = false, encoding: String.Encoding = String.Encoding.isoLatin1) -> CIImage! {
-    if let data = string.data(using: encoding), let code = CIFilter(name: "CIAztecCodeGenerator") {
-        code.setDefaults()
-        code["inputMessage"] = data
-        code["inputCorrectionLevel"] = level
-        code["inputCompactStyle"] = compact
-        return code.outputImage
-    }
-    return nil
+public func AztecCodeGenerator(_ string: String, correction level: Float = 23, compact: Bool = false, encoding: String.Encoding = String.Encoding.isoLatin1) -> CIImage? {
+    guard let data = string.data(using: encoding) else { return nil }
+    guard let code = CIFilter(name: "CIAztecCodeGenerator") else { return nil }
+    code.setDefaults()
+    code["inputMessage"] = data
+    code["inputCorrectionLevel"] = level
+    code["inputCompactStyle"] = compact
+    return code.outputImage
 }
 
 public enum QRCorrectionLevel {
@@ -300,32 +264,26 @@ public enum QRCorrectionLevel {
     case high
 }
 
-public func QRCodeGenerator(_ string: String, correction level: QRCorrectionLevel = .medium, encoding: String.Encoding = String.Encoding.utf8) -> CIImage! {
-    if let data = string.data(using: encoding), let code = CIFilter(name: "CIQRCodeGenerator") {
-        code.setDefaults()
-        code["inputMessage"] = data
-        switch level {
-        case .low:
-            code["inputCorrectionLevel"] = "L"
-        case .medium:
-            code["inputCorrectionLevel"] = "M"
-        case .quartile:
-            code["inputCorrectionLevel"] = "Q"
-        case .high:
-            code["inputCorrectionLevel"] = "H"
-        }
-        return code.outputImage
+public func QRCodeGenerator(_ string: String, correction level: QRCorrectionLevel = .medium, encoding: String.Encoding = String.Encoding.utf8) -> CIImage? {
+    guard let data = string.data(using: encoding) else { return nil }
+    guard let code = CIFilter(name: "CIQRCodeGenerator") else { return nil }
+    code.setDefaults()
+    code["inputMessage"] = data
+    switch level {
+    case .low: code["inputCorrectionLevel"] = "L"
+    case .medium: code["inputCorrectionLevel"] = "M"
+    case .quartile: code["inputCorrectionLevel"] = "Q"
+    case .high: code["inputCorrectionLevel"] = "H"
     }
-    return nil
+    return code.outputImage
 }
 
-public func Code128BarcodeGenerator(_ string: String) -> CIImage! {
-    if let data = string.data(using: String.Encoding.ascii), let code = CIFilter(name: "CICode128BarcodeGenerator") {
-        code.setDefaults()
-        code["inputMessage"] = data
-        return code.outputImage
-    }
-    return nil
+public func Code128BarcodeGenerator(_ string: String) -> CIImage? {
+    guard let data = string.data(using: String.Encoding.ascii) else { return nil }
+    guard let code = CIFilter(name: "CICode128BarcodeGenerator") else { return nil }
+    code.setDefaults()
+    code["inputMessage"] = data
+    return code.outputImage
 }
 
 #endif
