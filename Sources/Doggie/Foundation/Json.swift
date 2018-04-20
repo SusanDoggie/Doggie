@@ -33,11 +33,16 @@ public struct Json {
         self.value = value ?? NSNull()
     }
     
-    private static func unwrap(_ value: Any) -> Any {
-        if let json = value as? Json {
-            return json.value
+    private static func unwrap(_ value: Any) -> Any? {
+        switch value {
+        case is NSNull: return nil
+        case let json as Json: return json.value
+        case let array as [Json]: return array.map { Json.unwrap($0.value) ?? NSNull() }
+        case let array as [Any]: return array.map { Json.unwrap($0) ?? NSNull() }
+        case let dictionary as [String: Json]: return Dictionary(uniqueKeysWithValues: dictionary.lazy.compactMap { key, value in Json.unwrap(value.value).map { (key, $0) } })
+        case let dictionary as [String: Any]: return Dictionary(uniqueKeysWithValues: dictionary.lazy.compactMap { key, value in Json.unwrap(value).map { (key, $0) } })
+        default: return value
         }
-        return value
     }
 }
 
@@ -59,18 +64,10 @@ extension Json {
         self.value = value
     }
     public init(_ elements: [Any]) {
-        self.value = elements.map { Json.unwrap($0) }
+        self.value = elements.map { Json.unwrap($0) ?? NSNull() }
     }
     public init(_ elements: [String: Any]) {
-        var elements = elements
-        for (key, value) in elements {
-            if let json = value as? Json {
-                elements[key] = json.value
-            } else if value is NSNull {
-                elements[key] = nil
-            }
-        }
-        self.value = elements
+        self.value = Json.unwrap(elements)!
     }
 }
 
@@ -123,29 +120,22 @@ extension Json: ExpressibleByStringLiteral {
 extension Json: ExpressibleByArrayLiteral {
     
     public init(arrayLiteral elements: Json ...) {
-        self.init(value: elements.map { $0.value })
+        self.init(value: elements.map { Json.unwrap($0) })
     }
 }
 
 extension Json: ExpressibleByDictionaryLiteral {
     
     public init(dictionaryLiteral elements: (String, Json) ...) {
-        var dictionary = [String: Any](minimumCapacity: elements.count)
-        for (key, value) in elements {
-            let val = value.value
-            dictionary[key] = val is NSNull ? nil : val
-        }
-        self.init(value: dictionary)
+        self.init(value: Json.unwrap(Dictionary(uniqueKeysWithValues: elements)))
     }
 }
 
 extension Json: CustomStringConvertible {
     
     public var description: String {
-        if self.isNil {
-            return "nil"
-        }
         switch self.value {
+        case is NSNull: return "nil"
         case let number as NSNumber: return number.description
         case let number as Int: return number.description
         case let number as Int64: return number.description
@@ -407,30 +397,18 @@ extension Json {
             return nil
         }
         set {
-            self = Json(value: newValue?.map { $0.value })
+            self = Json(value: newValue?.map { Json.unwrap($0.value) ?? NSNull() })
         }
     }
     public var dictionary: [String: Json]? {
         get {
             if let elements = self.value as? [String: Any] {
-                var dictionary = [String: Json](minimumCapacity: elements.count)
-                for (key, value) in elements {
-                    dictionary[key] = Json(value: value)
-                }
-                return dictionary
+                return elements.mapValues { Json(value: $0) }
             }
             return nil
         }
         set {
-            if let elements = newValue {
-                var dictionary = [String: Any](minimumCapacity: elements.count)
-                for (key, value) in elements {
-                    dictionary[key] = value.value
-                }
-                self = Json(value: dictionary)
-            } else {
-                self = nil
-            }
+            self = Json(value: newValue.map { Json.unwrap($0)! })
         }
     }
 }
@@ -459,10 +437,9 @@ extension Json {
                 if index >= array.count {
                     array.append(contentsOf: repeatElement(NSNull() as Any, count: index - array.count + 1))
                 }
-                array[index] = newValue.value
+                array[index] = Json.unwrap(newValue.value) ?? NSNull()
                 self = Json(value: array)
-            default:
-                self = Json(value: [Any](repeating: NSNull(), count: index) + [newValue.value])
+            default: fatalError("Not an array.")
             }
         }
     }
@@ -487,11 +464,9 @@ extension Json {
         set {
             switch self.value {
             case var dictionary as [String: Any]:
-                let val = newValue.value
-                dictionary[key] = val is NSNull ? nil : val
+                dictionary[key] = Json.unwrap(newValue.value)
                 self = Json(value: dictionary)
-            default:
-                self = Json(value: [key: newValue.value])
+            default: fatalError("Not an object.")
             }
         }
     }
