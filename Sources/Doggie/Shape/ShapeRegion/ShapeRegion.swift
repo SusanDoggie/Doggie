@@ -654,7 +654,14 @@ extension ShapeRegion {
                 }
             }
         }
-        self = ShapeRegion(solids: OptionOneCollection(positive.first?.solids).concat(OptionOneCollection(negative.first?.solids)).joined())
+        var solids: [ShapeRegion.Solid] = []
+        if let positive = positive.first?.solids {
+            solids.append(contentsOf: positive)
+        }
+        if let negative = negative.first?.solids {
+            solids.append(contentsOf: negative)
+        }
+        self = ShapeRegion(solids: solids)
     }
     
     fileprivate mutating func addLoopWithEvenOddWinding(loops: [ShapeRegion.Solid]) {

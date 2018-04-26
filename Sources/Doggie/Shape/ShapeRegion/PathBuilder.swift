@@ -320,7 +320,9 @@ extension Shape.Component {
                 flag = !flag
             }
             
-            result.append(contentsOf: OptionOneCollection(ShapeRegion.Solid(segments: segments)))
+            if let solid = ShapeRegion.Solid(segments: segments) {
+                result.append(solid)
+            }
         }
         
         return result

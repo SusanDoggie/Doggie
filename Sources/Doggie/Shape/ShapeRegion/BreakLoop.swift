@@ -90,7 +90,7 @@ extension Shape.Component {
     func breakLoop(_ points: [(ConstructiveSolidResult.Split, ConstructiveSolidResult.Split)]) -> [ShapeRegion.Solid] {
         
         if points.count == 0 {
-            return Array(OptionOneCollection(ShapeRegion.Solid(segments: self.bezier)))
+            return ShapeRegion.Solid(segments: self.bezier).map { [$0] } ?? []
         }
         
         var result: [ShapeRegion.Solid] = []
@@ -101,7 +101,9 @@ extension Shape.Component {
         
         for (left, right) in _points.rotateZip() {
             if left.0 == right.0 {
-                result.append(contentsOf: OptionOneCollection(ShapeRegion.Solid(segments: self.splitPath(left.1, right.1))))
+                if let solid = ShapeRegion.Solid(segments: self.splitPath(left.1, right.1)) {
+                    result.append(solid)
+                }
             } else {
                 graph[from: left.0, to: right.0, default: []].append((left.1, right.1))
             }
@@ -123,7 +125,9 @@ extension Shape.Component {
                             }
                         }
                     }
-                    result.append(contentsOf: OptionOneCollection(ShapeRegion.Solid(segments: segments)))
+                    if let solid = ShapeRegion.Solid(segments: segments) {
+                        result.append(solid)
+                    }
                     if i == 0 {
                         break
                     }
@@ -198,7 +202,9 @@ extension Shape {
                 }
             }
             if path.count != 0 {
-                solids.append(contentsOf: OptionOneCollection(ShapeRegion.Solid(segments: path)))
+                if let solid = ShapeRegion.Solid(segments: path) {
+                    solids.append(solid)
+                }
             }
         }
         
