@@ -222,13 +222,13 @@ extension Shape.Component {
         } else if start.index < end.index {
             let a = CollectionOfOne(self.bezier[start.index].split(start.split).1)
             let b = self.bezier[start.index..<end.index]
-            let c = OptionOneCollection(self.bezier[end.index].split(end.split).0)
+            let c = CollectionOfOne(self.bezier[end.index].split(end.split).0)
             return Array(a.concat(b.dropFirst()).concat(c))
         } else {
             let a = CollectionOfOne(self.bezier[start.index].split(start.split).1)
             let b = self.bezier.suffix(from: start.index)
             let c = self.bezier.prefix(upTo: end.index)
-            let d = OptionOneCollection(self.bezier[end.index].split(end.split).0)
+            let d = CollectionOfOne(self.bezier[end.index].split(end.split).0)
             return Array(a.concat(b.concat(c).dropFirst()).concat(d))
         }
     }
