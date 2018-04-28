@@ -18,6 +18,10 @@ DerivedData
 *.ipa
 *.xcuserstate
 
+# Playgrounds
+#
+timeline.xctimeline
+
 # Swift Package Manager
 #
 .build/
