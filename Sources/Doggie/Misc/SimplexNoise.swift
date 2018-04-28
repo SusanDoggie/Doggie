@@ -42,7 +42,7 @@
 
 import Foundation
 
-public func octave_noise_2d(_ octaves: Int, _ persistence: Double, _ scale: Double, _ x: Double, _ y: Double) -> Double {
+public func SimplexNoise(_ octaves: Int, _ persistence: Double, _ scale: Double, _ x: Double, _ y: Double) -> Double {
     
     var total = 0.0
     var frequency = scale
@@ -51,16 +51,16 @@ public func octave_noise_2d(_ octaves: Int, _ persistence: Double, _ scale: Doub
     var maxAmplitude = 0.0
     
     for _ in 0..<octaves {
-        total += raw_noise_2d(x * frequency, y * frequency) * amplitude
+        total += raw_noise(x * frequency, y * frequency) * amplitude
         frequency *= 2
         maxAmplitude += amplitude
         amplitude *= persistence
     }
     
-    return total / maxAmplitude
+    return 0.5 * total / maxAmplitude + 0.5
 }
 
-public func octave_noise_3d(_ octaves: Int, _ persistence: Double, _ scale: Double, _ x: Double, _ y: Double, _ z: Double) -> Double {
+public func SimplexNoise(_ octaves: Int, _ persistence: Double, _ scale: Double, _ x: Double, _ y: Double, _ z: Double) -> Double {
     
     var total = 0.0
     var frequency = scale
@@ -69,16 +69,16 @@ public func octave_noise_3d(_ octaves: Int, _ persistence: Double, _ scale: Doub
     var maxAmplitude = 0.0
     
     for _ in 0..<octaves {
-        total += raw_noise_3d(x * frequency, y * frequency, z * frequency) * amplitude
+        total += raw_noise(x * frequency, y * frequency, z * frequency) * amplitude
         frequency *= 2
         maxAmplitude += amplitude
         amplitude *= persistence
     }
     
-    return total / maxAmplitude
+    return 0.5 * total / maxAmplitude + 0.5
 }
 
-public func octave_noise_4d(_ octaves: Int, _ persistence: Double, _ scale: Double, _ x: Double, _ y: Double, _ z: Double, _ w: Double) -> Double {
+public func SimplexNoise(_ octaves: Int, _ persistence: Double, _ scale: Double, _ x: Double, _ y: Double, _ z: Double, _ w: Double) -> Double {
     
     var total = 0.0
     var frequency = scale
@@ -87,38 +87,13 @@ public func octave_noise_4d(_ octaves: Int, _ persistence: Double, _ scale: Doub
     var maxAmplitude = 0.0
     
     for _ in 0..<octaves {
-        total += raw_noise_4d(x * frequency, y * frequency, z * frequency, w * frequency) * amplitude
+        total += raw_noise(x * frequency, y * frequency, z * frequency, w * frequency) * amplitude
         frequency *= 2
         maxAmplitude += amplitude
         amplitude *= persistence
     }
     
-    return total / maxAmplitude
-}
-
-public func scaled_octave_noise_2d(_ octaves: Int, _ persistence: Double, _ scale: Double, _ loBound: Double, _ hiBound: Double, _ x: Double, _ y: Double) -> Double {
-    return octave_noise_2d(octaves, persistence, scale, x, y) * (hiBound - loBound) / 2 + (hiBound + loBound) / 2
-}
-
-public func scaled_octave_noise_3d(_ octaves: Int, _ persistence: Double, _ scale: Double, _ loBound: Double, _ hiBound: Double, _ x: Double, _ y: Double, _ z: Double) -> Double {
-    return octave_noise_3d(octaves, persistence, scale, x, y, z) * (hiBound - loBound) / 2 + (hiBound + loBound) / 2
-}
-
-public func scaled_octave_noise_4d(_ octaves: Int, _ persistence: Double, _ scale: Double, _ loBound: Double, _ hiBound: Double, _ x: Double, _ y: Double, _ z: Double, _ w: Double) -> Double {
-    return octave_noise_4d(octaves, persistence, scale, x, y, z, w) * (hiBound - loBound) / 2 + (hiBound + loBound) / 2
-}
-
-public func scaled_raw_noise_2d(_ loBound: Double, _ hiBound: Double, _ x: Double, _ y: Double) -> Double {
-    return raw_noise_2d(x, y) * (hiBound - loBound) / 2 + (hiBound + loBound) / 2
-}
-
-
-public func scaled_raw_noise_3d(_ loBound: Double, _ hiBound: Double, _ x: Double, _ y: Double, _ z: Double) -> Double {
-    return raw_noise_3d(x, y, z) * (hiBound - loBound) / 2 + (hiBound + loBound) / 2
-}
-
-public func scaled_raw_noise_4d(_ loBound: Double, _ hiBound: Double, _ x: Double, _ y: Double, _ z: Double, _ w: Double) -> Double {
-    return raw_noise_4d(x, y, z, w) * (hiBound - loBound) / 2 + (hiBound + loBound) / 2
+    return 0.5 * total / maxAmplitude + 0.5
 }
 
 private let perm: [Int] = [
@@ -193,7 +168,7 @@ private func dot(_ g: [Int], _ x: Double, _ y: Double, _ z: Double, _ w: Double)
     return Double(g[0]) * x + Double(g[1]) * y + Double(g[2]) * z + Double(g[3]) * w
 }
 
-public func raw_noise_2d(_ x: Double, _ y: Double) -> Double {
+private func raw_noise(_ x: Double, _ y: Double) -> Double {
     
     let n0, n1, n2: Double
     
@@ -259,7 +234,7 @@ public func raw_noise_2d(_ x: Double, _ y: Double) -> Double {
     return 70.0 * (n0 + n1 + n2)
 }
 
-public func raw_noise_3d(_ x: Double, _ y: Double, _ z: Double) -> Double {
+private func raw_noise(_ x: Double, _ y: Double, _ z: Double) -> Double {
     
     let n0, n1, n2, n3: Double
     
@@ -358,7 +333,7 @@ public func raw_noise_3d(_ x: Double, _ y: Double, _ z: Double) -> Double {
     return 32.0 * (n0 + n1 + n2 + n3)
 }
 
-public func raw_noise_4d(_ x: Double, _ y: Double, _ z: Double, _ w: Double) -> Double {
+private func raw_noise(_ x: Double, _ y: Double, _ z: Double, _ w: Double) -> Double {
     
     let F4 = (sqrt(5.0) - 1.0) / 4.0
     let G4 = (5.0 - sqrt(5.0)) / 20.0

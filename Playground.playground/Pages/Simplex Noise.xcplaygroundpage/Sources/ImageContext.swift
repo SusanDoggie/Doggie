@@ -12,7 +12,7 @@ public func simplexNoise(width: Int, height: Int, octaves: Int, persistence: Dou
         
         for y in 0..<height {
             for x in 0..<width {
-                ptr.pointee.white = scaled_octave_noise_2d(octaves, persistence, scale, 0, 1, Double(x), Double(y))
+                ptr.pointee.white = SimplexNoise(octaves, persistence, scale, Double(x), Double(y))
                 ptr.pointee.opacity = 1
                 ptr += 1
             }
