@@ -23,6 +23,7 @@
         <page name='Region'/>
         <page name='Resampling'/>
         <page name='ShapeTweening'/>
+        <page name='Simplex Noise'/>
         <page name='Stroke'/>
         <page name='TensorPatchView'/>
         <page name='Textured Cube'/>
