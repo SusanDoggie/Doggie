@@ -120,7 +120,7 @@ extension ImageContext {
                     let _p1 = p1 * transform
                     let _p2 = p2 * transform
                     
-                    rasterizer.rasterize(_p0, _p1, _p2) { barycentric, position, buf in
+                    rasterizer.rasterize(_p0, _p1, _p2) { barycentric, _, buf in
                         
                         let b0 = barycentric.x * v0
                         let b1 = barycentric.y * v1
