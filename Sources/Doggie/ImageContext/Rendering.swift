@@ -83,14 +83,17 @@ public struct ImageContextRenderStageIn<Vertex : ImageContextRenderVertex> {
     
     public var barycentric: Vector
     
+    public var position: Point
+    
     public var depth: Double
     
     @_versioned
     @_inlineable
-    init(vertex: Vertex, triangle: (Vertex.Position, Vertex.Position, Vertex.Position), barycentric: Vector, depth: Double) {
+    init(vertex: Vertex, triangle: (Vertex.Position, Vertex.Position, Vertex.Position), barycentric: Vector, position: Point, depth: Double) {
         self.vertex = vertex
         self.triangle = triangle
         self.barycentric = barycentric
+        self.position = position
         self.depth = depth
     }
 }
@@ -148,7 +151,7 @@ extension ImageContext {
                     let _p1 = p1 * transform
                     let _p2 = p2 * transform
                     
-                    rasterizer.rasterize(_p0, _p1, _p2) { barycentric, _, buf in
+                    rasterizer.rasterize(_p0, _p1, _p2) { barycentric, position, buf in
                         
                         let b0 = barycentric.x * v0
                         let b1 = barycentric.y * v1
@@ -171,11 +174,11 @@ extension ImageContext {
                             }
                             
                             buf.depth.pointee = _depth
-                            if let source = shader(ImageContextRenderStageIn(vertex: b, triangle: (_v0, _v1, _v2), barycentric: barycentric, depth: _depth)) {
+                            if let source = shader(ImageContextRenderStageIn(vertex: b, triangle: (_v0, _v1, _v2), barycentric: barycentric, position: position, depth: _depth)) {
                                 buf.blender.draw(color: source)
                             }
                             
-                        } else if let source = shader(ImageContextRenderStageIn(vertex: b, triangle: (_v0, _v1, _v2), barycentric: barycentric, depth: 0)) {
+                        } else if let source = shader(ImageContextRenderStageIn(vertex: b, triangle: (_v0, _v1, _v2), barycentric: barycentric, position: position, depth: 0)) {
                             buf.blender.draw(color: source)
                         }
                     }
@@ -297,6 +300,7 @@ extension ImageContextRenderStageIn {
         self.vertex = stageIn.vertex.vertex
         self.triangle = stageIn.triangle
         self.barycentric = stageIn.barycentric
+        self.position = stageIn.position
         self.depth = stageIn.depth
     }
 }
