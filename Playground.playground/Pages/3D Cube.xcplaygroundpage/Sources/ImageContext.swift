@@ -65,9 +65,9 @@ public func sampleImage(width: Int, height: Int) -> Image<ARGB32ColorPixel> {
     let t10 = (v7, v3, v2)
     let t11 = (v7, v2, v6)
     
-    func shader(vertex: Vertex) -> ColorPixel<RGBColorModel> {
+    func shader(stageIn: ImageContextRenderStageIn<Vertex>) -> ColorPixel<RGBColorModel> {
         
-        return vertex.color
+        return stageIn.vertex.color
     }
     
     let triangles = [t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11]

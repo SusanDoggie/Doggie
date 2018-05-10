@@ -6,14 +6,12 @@ struct Vertex : ImageContextRenderVertex {
     
     var position: Vector
     
-    var normal: Vector
-    
     static func + (lhs: Vertex, rhs: Vertex) -> Vertex {
-        return Vertex(position: lhs.position + rhs.position, normal: lhs.normal)
+        return Vertex(position: lhs.position + rhs.position)
     }
     
     static func * (lhs: Double, rhs: Vertex) -> Vertex {
-        return Vertex(position: lhs * rhs.position, normal: rhs.normal)
+        return Vertex(position: lhs * rhs.position)
     }
 }
 
@@ -75,21 +73,21 @@ public func sampleImage(width: Int, height: Int) -> Image<ARGB32ColorPixel> {
         return [(v0, v3, v5), (v3, v1, v4), (v5, v4, v2), (v3, v4, v5)]
     }
     
-    func shader(vertex: Vertex) -> ColorPixel<RGBColorModel> {
+    func shader(stageIn: ImageContextRenderStageIn<Vertex>) -> ColorPixel<RGBColorModel> {
         
-        let p = vertex.position
+        let p = stageIn.vertex.position
         
         let c = SimplexNoise(4, 0.7, 0.025, p.x, p.y, p.z)
         
         let light = Vector(x: 100, y: -100, z: -10)
         
-        let d = light - p
+        let d = p - light
         
         let distance = d.magnitude
         
         let power = 60000 / (distance * distance)
         
-        let cos_theta = dot(vertex.normal, d / distance).clamped(to: 0...1)
+        let cos_theta = dot(stageIn.normal.unit, d / distance).clamped(to: 0...1)
         
         return ColorPixel(red: (c * cos_theta * power).clamped(to: 0...1), green: (c * cos_theta * power).clamped(to: 0...1), blue: (c * cos_theta * power).clamped(to: 0...1))
     }
@@ -99,9 +97,8 @@ public func sampleImage(width: Int, height: Int) -> Image<ARGB32ColorPixel> {
     triangles = triangles.flatMap(tessellation)
     triangles = triangles.flatMap(tessellation)
     triangles = triangles.flatMap(tessellation)
-    triangles = triangles.map { ($0 * matrix, $1 * matrix, $2 * matrix) }
     
-    let _triangles = triangles.map { (Vertex(position: $0, normal: -cross($1 - $0, $2 - $0).unit), Vertex(position: $1, normal: -cross($1 - $0, $2 - $0).unit), Vertex(position: $2, normal: -cross($1 - $0, $2 - $0).unit)) }
+    let _triangles = triangles.map { (Vertex(position: $0 * matrix), Vertex(position: $1 * matrix), Vertex(position: $2 * matrix)) }
     
     context.renderCullingMode = .back
     context.renderDepthCompareMode = .less

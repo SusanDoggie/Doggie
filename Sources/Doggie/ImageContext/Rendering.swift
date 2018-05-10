@@ -75,10 +75,38 @@ public protocol ImageContextRenderVertex {
     static func * (lhs: Double, rhs: Self) -> Self
 }
 
+public struct ImageContextRenderStageIn<Vertex : ImageContextRenderVertex> {
+    
+    public var vertex: Vertex
+    
+    public var triangle: (Vertex.Position, Vertex.Position, Vertex.Position)
+    
+    public var barycentric: Vector
+    
+    public var depth: Double
+    
+    @_versioned
+    @_inlineable
+    init(vertex: Vertex, triangle: (Vertex.Position, Vertex.Position, Vertex.Position), barycentric: Vector, depth: Double) {
+        self.vertex = vertex
+        self.triangle = triangle
+        self.barycentric = barycentric
+        self.depth = depth
+    }
+}
+
+extension ImageContextRenderStageIn where Vertex.Position == Vector {
+    
+    @_inlineable
+    public var normal: Vector {
+        return cross(triangle.1 - triangle.0, triangle.2 - triangle.0)
+    }
+}
+
 extension ImageContext {
     
     @_inlineable
-    public func render<S : Sequence, Vertex : ImageContextRenderVertex, P : ColorPixelProtocol>(_ triangles: S, position: (Vertex.Position) -> Point, depthFun: ((Vertex.Position) -> Double)?, shader: (Vertex) -> P?) where S.Element == (Vertex, Vertex, Vertex), Pixel.Model == P.Model {
+    public func render<S : Sequence, Vertex : ImageContextRenderVertex, P : ColorPixelProtocol>(_ triangles: S, position: (Vertex.Position) -> Point, depthFun: ((Vertex.Position) -> Double)?, shader: (ImageContextRenderStageIn<Vertex>) -> P?) where S.Element == (Vertex, Vertex, Vertex), Pixel.Model == P.Model {
         
         let transform = self.transform
         let cullingMode = self.renderCullingMode
@@ -143,11 +171,11 @@ extension ImageContext {
                             }
                             
                             buf.depth.pointee = _depth
-                            if let source = shader(b) {
+                            if let source = shader(ImageContextRenderStageIn(vertex: b, triangle: (_v0, _v1, _v2), barycentric: barycentric, depth: _depth)) {
                                 buf.blender.draw(color: source)
                             }
                             
-                        } else if let source = shader(b) {
+                        } else if let source = shader(ImageContextRenderStageIn(vertex: b, triangle: (_v0, _v1, _v2), barycentric: barycentric, depth: 0)) {
                             buf.blender.draw(color: source)
                         }
                     }
@@ -160,7 +188,7 @@ extension ImageContext {
 extension ImageContext {
     
     @_inlineable
-    public func render<S : Sequence, Vertex : ImageContextRenderVertex, P : ColorPixelProtocol>(_ triangles: S, shader: (Vertex) -> P?) where S.Element == (Vertex, Vertex, Vertex), Vertex.Position == Point, Pixel.Model == P.Model {
+    public func render<S : Sequence, Vertex : ImageContextRenderVertex, P : ColorPixelProtocol>(_ triangles: S, shader: (ImageContextRenderStageIn<Vertex>) -> P?) where S.Element == (Vertex, Vertex, Vertex), Vertex.Position == Point, Pixel.Model == P.Model {
         
         render(triangles, position: { $0 }, depthFun: nil, shader: shader)
     }
@@ -261,10 +289,22 @@ extension _PerspectiveProjectTriangleIterator {
     }
 }
 
+extension ImageContextRenderStageIn {
+    
+    @_versioned
+    @_inlineable
+    init<I>(_ stageIn: ImageContextRenderStageIn<_PerspectiveProjectTriangleIterator<I, Vertex>._Vertex>) {
+        self.vertex = stageIn.vertex.vertex
+        self.triangle = stageIn.triangle
+        self.barycentric = stageIn.barycentric
+        self.depth = stageIn.depth
+    }
+}
+
 extension ImageContext {
     
     @_inlineable
-    public func render<S : Sequence, Vertex : ImageContextRenderVertex, P : ColorPixelProtocol>(_ triangles: S, projection: PerspectiveProjectMatrix, shader: (Vertex) -> P?) where S.Element == (Vertex, Vertex, Vertex), Vertex.Position == Vector, Pixel.Model == P.Model {
+    public func render<S : Sequence, Vertex : ImageContextRenderVertex, P : ColorPixelProtocol>(_ triangles: S, projection: PerspectiveProjectMatrix, shader: (ImageContextRenderStageIn<Vertex>) -> P?) where S.Element == (Vertex, Vertex, Vertex), Vertex.Position == Vector, Pixel.Model == P.Model {
         
         let width = Double(self.width)
         let height = Double(self.height)
@@ -275,7 +315,7 @@ extension ImageContext {
             return Point(x: (0.5 + 0.5 * p.x) * width, y: (0.5 + 0.5 * p.y) * height)
         }
         
-        render(_PerspectiveProjectTriangleIterator(base: triangles.makeIterator()), position: _position, depthFun: { ($0.z - projection.nearZ) / (projection.farZ - projection.nearZ) }, shader: { shader($0.vertex) })
+        render(_PerspectiveProjectTriangleIterator(base: triangles.makeIterator()), position: _position, depthFun: { ($0.z - projection.nearZ) / (projection.farZ - projection.nearZ) }, shader: { shader(ImageContextRenderStageIn($0)) })
     }
 }
 

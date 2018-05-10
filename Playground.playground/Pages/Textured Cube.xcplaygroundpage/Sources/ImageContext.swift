@@ -64,9 +64,9 @@ public func sampleImage(width: Int, height: Int) -> Image<ARGB32ColorPixel> {
     let t10 = (Vertex(position: v7, uv: Point(x: 0, y: 0)), Vertex(position: v3, uv: Point(x: 1, y: 0)), Vertex(position: v2, uv: Point(x: 1, y: 1)))
     let t11 = (Vertex(position: v7, uv: Point(x: 0, y: 0)), Vertex(position: v2, uv: Point(x: 1, y: 1)), Vertex(position: v6, uv: Point(x: 0, y: 1)))
     
-    func shader(vertex: Vertex) -> ColorPixel<RGBColorModel> {
+    func shader(stageIn: ImageContextRenderStageIn<Vertex>) -> ColorPixel<RGBColorModel> {
         
-        let uv = vertex.uv
+        let uv = stageIn.vertex.uv
         
         let u = min(max(Int(uv.x * 16), 0), 15)
         let v = min(max(Int(uv.y * 16), 0), 15)

@@ -21,9 +21,9 @@ public func sampleImage(width: Int, height: Int) -> Image<ARGB32ColorPixel> {
     
     let context = ImageContext<ARGB32ColorPixel>(width: width, height: height, colorSpace: ColorSpace.sRGB)
     
-    func shader(vertex: Vertex) -> ColorPixel<RGBColorModel> {
+    func shader(stageIn: ImageContextRenderStageIn<Vertex>) -> ColorPixel<RGBColorModel> {
         
-        return vertex.color
+        return stageIn.vertex.color
     }
     
     let triangle = (Vertex(position: Point(x: 50, y: 50), color: ColorPixel(red: 1, green: 0, blue: 0, opacity: 1)),
