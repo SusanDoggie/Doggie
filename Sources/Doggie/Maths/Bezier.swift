@@ -1204,6 +1204,61 @@ public struct CubicBezierPatch {
 extension CubicBezierPatch {
     
     @_inlineable
+    public func split(_ u: Double, _ v: Double) -> (CubicBezierPatch, CubicBezierPatch, CubicBezierPatch, CubicBezierPatch) {
+        
+        @inline(__always)
+        func _split(_ t: Double, _ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point) -> ((Point, Point, Point, Point), (Point, Point, Point, Point)) {
+            let q0 = p0 + t * (p1 - p0)
+            let q1 = p1 + t * (p2 - p1)
+            let q2 = p2 + t * (p3 - p2)
+            let u0 = q0 + t * (q1 - q0)
+            let u1 = q1 + t * (q2 - q1)
+            let v0 = u0 + t * (u1 - u0)
+            return ((p0, q0, u0, v0), (v0, u1, q2, p3))
+        }
+        
+        let (m0, n0) = _split(u, m00, m01, m02, m03)
+        let (m1, n1) = _split(u, m10, m11, m12, m13)
+        let (m2, n2) = _split(u, m20, m21, m22, m23)
+        let (m3, n3) = _split(u, m30, m31, m32, m33)
+        
+        let (s0, t0) = _split(v, m0.0, m1.0, m2.0, m3.0)
+        let (s1, t1) = _split(v, m0.1, m1.1, m2.1, m3.1)
+        let (s2, t2) = _split(v, m0.2, m1.2, m2.2, m3.2)
+        let (s3, t3) = _split(v, m0.3, m1.3, m2.3, m3.3)
+        
+        let (u0, v0) = _split(v, n0.0, n1.0, n2.0, n3.0)
+        let (u1, v1) = _split(v, n0.1, n1.1, n2.1, n3.1)
+        let (u2, v2) = _split(v, n0.2, n1.2, n2.2, n3.2)
+        let (u3, v3) = _split(v, n0.3, n1.3, n2.3, n3.3)
+        
+        let p0 = CubicBezierPatch(s0.0, s1.0, s2.0, s3.0,
+                                  s0.1, s1.1, s2.1, s3.1,
+                                  s0.2, s1.2, s2.2, s3.2,
+                                  s0.3, s1.3, s2.3, s3.3)
+        
+        let p1 = CubicBezierPatch(t0.0, t1.0, t2.0, t3.0,
+                                  t0.1, t1.1, t2.1, t3.1,
+                                  t0.2, t1.2, t2.2, t3.2,
+                                  t0.3, t1.3, t2.3, t3.3)
+        
+        let p2 = CubicBezierPatch(u0.0, u1.0, u2.0, u3.0,
+                                  u0.1, u1.1, u2.1, u3.1,
+                                  u0.2, u1.2, u2.2, u3.2,
+                                  u0.3, u1.3, u2.3, u3.3)
+        
+        let p3 = CubicBezierPatch(v0.0, v1.0, v2.0, v3.0,
+                                  v0.1, v1.1, v2.1, v3.1,
+                                  v0.2, v1.2, v2.2, v3.2,
+                                  v0.3, v1.3, v2.3, v3.3)
+        
+        return (p0, p1, p2, p3)
+    }
+}
+
+extension CubicBezierPatch {
+    
+    @_inlineable
     public func warping(_ bezier: Bezier<Point>) -> [Bezier<Point>] {
         
         let u = Bezier(bezier.points.map { $0.x }).polynomial
