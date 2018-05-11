@@ -180,6 +180,7 @@
 		0AB0DA121F3AEF8B0004E43F /* ShapeRegion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AB0DA111F3AEF7B0004E43F /* ShapeRegion.swift */; };
 		0AB23E461F22E4980033462E /* RawBitmap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AB23E441F22E4980033462E /* RawBitmap.swift */; };
 		0AB2E23E1F17766C00B0CA84 /* zlib.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AB2E23C1F17766C00B0CA84 /* zlib.swift */; };
+		0AB380F320A5374A00A8CBD7 /* Texture.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AB380F220A5374A00A8CBD7 /* Texture.swift */; };
 		0ABDF1AA1F2B34E6007EC7B2 /* ChromaticAdaptationAlgorithm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ABDF1A81F2B34E6007EC7B2 /* ChromaticAdaptationAlgorithm.swift */; };
 		0ABDF1AD1F2B3520007EC7B2 /* RenderingIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ABDF1AB1F2B3520007EC7B2 /* RenderingIntent.swift */; };
 		0ABFA6C91FC67CB6009D42E2 /* ByteCodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ABFA6C81FC67CB6009D42E2 /* ByteCodable.swift */; };
@@ -393,6 +394,7 @@
 		0AB0DA111F3AEF7B0004E43F /* ShapeRegion.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = ShapeRegion.swift; sourceTree = "<group>"; };
 		0AB23E441F22E4980033462E /* RawBitmap.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = RawBitmap.swift; sourceTree = "<group>"; };
 		0AB2E23C1F17766C00B0CA84 /* zlib.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = zlib.swift; sourceTree = "<group>"; };
+		0AB380F220A5374A00A8CBD7 /* Texture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Texture.swift; sourceTree = "<group>"; };
 		0ABDF1A81F2B34E6007EC7B2 /* ChromaticAdaptationAlgorithm.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = ChromaticAdaptationAlgorithm.swift; sourceTree = "<group>"; };
 		0ABDF1AB1F2B3520007EC7B2 /* RenderingIntent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = RenderingIntent.swift; sourceTree = "<group>"; };
 		0ABFA6C81FC67CB6009D42E2 /* ByteCodable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = ByteCodable.swift; sourceTree = "<group>"; };
@@ -546,6 +548,7 @@
 				08B68A2F1ED07A2400F8D423 /* ColorSpace */,
 				08458ACE1E2E627600D01813 /* Image */,
 				0A94BE9E1F108E8100F1BCD2 /* ImageCodec */,
+				0AB380F120A5372F00A8CBD7 /* Texture */,
 				0A39A6B31ED9342C00804004 /* ImageContext */,
 				0A74D68620047B7000330C86 /* ImageFilter */,
 				0AA33B6120942BD600317F54 /* Misc */,
@@ -912,6 +915,14 @@
 			path = Compression;
 			sourceTree = "<group>";
 		};
+		0AB380F120A5372F00A8CBD7 /* Texture */ = {
+			isa = PBXGroup;
+			children = (
+				0AB380F220A5374A00A8CBD7 /* Texture.swift */,
+			);
+			path = Texture;
+			sourceTree = "<group>";
+		};
 		0AC527DF1EEFEFF900FB239A /* iccProfile */ = {
 			isa = PBXGroup;
 			children = (
@@ -1196,6 +1207,7 @@
 				0AFC4E331F7268AE00E5FD5A /* SDXMLParser.swift in Sources */,
 				0A2107161E5BEEBB00F1E00E /* Shape.swift in Sources */,
 				08458AF71E2E627600D01813 /* ComplexConversion.swift in Sources */,
+				0AB380F320A5374A00A8CBD7 /* Texture.swift in Sources */,
 				0A9CD5951EEB9A2A00094148 /* CalibratedGrayColorSpace.swift in Sources */,
 				08458B5F1E2E627600D01813 /* Lock.swift in Sources */,
 				08458B351E2E627600D01813 /* Ellipse.swift in Sources */,

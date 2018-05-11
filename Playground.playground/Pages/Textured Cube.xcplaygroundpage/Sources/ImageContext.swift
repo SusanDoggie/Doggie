@@ -19,13 +19,15 @@ struct Vertex : ImageContextRenderVertex {
 
 public func sampleImage(width: Int, height: Int) -> Image<ARGB32ColorPixel> {
     
-    var texture = Image<ARGB32ColorPixel>(width: 16, height: 16, colorSpace: ColorSpace.sRGB)
+    var texture_image = Image<ARGB32ColorPixel>(width: 16, height: 16, colorSpace: ColorSpace.sRGB)
     
-    for y in 0..<texture.height {
-        for x in 0..<texture.width {
-            texture[x, y] = y & 1 == 0 ? Color(colorSpace: ColorSpace.sRGB, red: 0.5, green: 0.25, blue: 0) : Color(colorSpace: ColorSpace.sRGB, red: 0.75, green: 0.5, blue: 0.25)
+    for y in 0..<texture_image.height {
+        for x in 0..<texture_image.width {
+            texture_image[x, y] = y & 1 == 0 ? Color(colorSpace: ColorSpace.sRGB, red: 0.5, green: 0.25, blue: 0) : Color(colorSpace: ColorSpace.sRGB, red: 0.75, green: 0.5, blue: 0.25)
         }
     }
+    
+    let texture = Texture(image: texture_image, resamplingAlgorithm: .none)
     
     let context = ImageContext<ARGB32ColorPixel>(width: width, height: height, colorSpace: ColorSpace.sRGB)
     
@@ -66,12 +68,7 @@ public func sampleImage(width: Int, height: Int) -> Image<ARGB32ColorPixel> {
     
     func shader(stageIn: ImageContextRenderStageIn<Vertex>) -> ColorPixel<RGBColorModel> {
         
-        let uv = stageIn.vertex.uv
-        
-        let u = min(max(Int(uv.x * 16), 0), 15)
-        let v = min(max(Int(uv.y * 16), 0), 15)
-        
-        return ColorPixel(texture[u, v])
+        return texture.pixel(stageIn.vertex.uv * 16)
     }
     
     let triangles = [t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11]
