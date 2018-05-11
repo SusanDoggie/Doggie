@@ -45,6 +45,8 @@ extension ImageContext {
             return
         }
         
+        let _transform = transform.inverse
+        
         self.withUnsafePixelBlender { blender in
             
             if antialias {
@@ -58,7 +60,7 @@ extension ImageContext {
                         for _ in 0..<5 {
                             var q = _q
                             for _ in 0..<5 {
-                                pixel += texture.pixel(q * transform)
+                                pixel += texture.pixel(q * _transform)
                                 q.x += 0.2
                             }
                             _q.y += 0.2
@@ -74,7 +76,7 @@ extension ImageContext {
                 
                 for y in 0..<height {
                     for x in 0..<width {
-                        blender.draw(color: texture.pixel(Point(x: x, y: y) * transform))
+                        blender.draw(color: texture.pixel(Point(x: x, y: y) * _transform))
                         blender += 1
                     }
                 }
