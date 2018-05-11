@@ -44,6 +44,22 @@ extension ResamplingAlgorithm {
     }
 }
 
+public enum WrappingMode {
+    
+    case none
+    case clamp
+    case `repeat`
+    case mirror
+}
+
+extension WrappingMode {
+    
+    @_inlineable
+    public static var `default` : WrappingMode {
+        return .none
+    }
+}
+
 public struct Texture<Pixel: ColorPixelProtocol> {
     
     public let width: Int
@@ -54,12 +70,15 @@ public struct Texture<Pixel: ColorPixelProtocol> {
     
     public var resamplingAlgorithm: ResamplingAlgorithm
     
+    public var wrappingMode: WrappingMode
+    
     @_inlineable
-    public init(image: Image<Pixel>, resamplingAlgorithm: ResamplingAlgorithm = .default) {
+    public init(image: Image<Pixel>, resamplingAlgorithm: ResamplingAlgorithm = .default, wrappingMode: WrappingMode = .default) {
         self.width = image.width
         self.height = image.height
         self.pixels = image.pixels
         self.resamplingAlgorithm = resamplingAlgorithm
+        self.wrappingMode = wrappingMode
     }
 }
 
@@ -68,7 +87,7 @@ extension Texture {
     @_inlineable
     public func pixel(_ point: Point) -> ColorPixel<Pixel.Model> {
         
-        switch self.resamplingAlgorithm {
+        switch resamplingAlgorithm {
         case .none: return read_source(Int(point.x), Int(point.y))
         case .linear: return sampling2(point: point, sampler: LinearInterpolate)
         case .cosine: return sampling2(point: point, sampler: CosineInterpolate)
@@ -148,17 +167,61 @@ extension Texture {
     @inline(__always)
     func read_source(_ x: Int, _ y: Int) -> ColorPixel<Pixel.Model> {
         
-        let x_range = 0..<width
-        let y_range = 0..<height
+        guard width != 0 && height != 0 else { return ColorPixel() }
         
-        if x_range ~= x && y_range ~= y {
-            return ColorPixel(pixels[y * width + x])
+        switch wrappingMode {
+        case .none:
+            
+            let x_range = 0..<width
+            let y_range = 0..<height
+            
+            if x_range ~= x && y_range ~= y {
+                return ColorPixel(pixels[y * width + x])
+            }
+            
+            let _x = x.clamped(to: x_range)
+            let _y = y.clamped(to: y_range)
+            
+            return ColorPixel(color: pixels[_y * width + _x].color, opacity: 0)
+            
+        case .clamp:
+            
+            let _x = x.clamped(to: 0..<width)
+            let _y = y.clamped(to: 0..<height)
+            
+            return ColorPixel(pixels[_y * width + _x])
+            
+        case .repeat:
+            
+            var _x = x % width
+            var _y = y % height
+            
+            if _x < 0 {
+                _x += width
+            }
+            if _y < 0 {
+                _y += height
+            }
+            
+            return ColorPixel(pixels[_y * width + _x])
+            
+        case .mirror:
+            
+            let ax = abs(x)
+            let ay = abs(y)
+            
+            var _x = ax % width
+            var _y = ay % height
+            
+            if (ax / width) & 1 == 1 {
+                _x = width - _x - 1
+            }
+            if (ay / height) & 1 == 1 {
+                _y = height - _y - 1
+            }
+            
+            return ColorPixel(pixels[_y * width + _x])
         }
-        
-        let _x = x.clamped(to: x_range)
-        let _y = y.clamped(to: y_range)
-        
-        return ColorPixel(color: pixels[_y * width + _x].color, opacity: 0)
     }
     
     @_versioned
