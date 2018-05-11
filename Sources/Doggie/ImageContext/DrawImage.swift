@@ -24,7 +24,6 @@
 //
 
 import Foundation
-import Dispatch
 
 public enum ResamplingAlgorithm {
     
