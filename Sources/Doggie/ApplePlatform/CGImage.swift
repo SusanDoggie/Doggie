@@ -61,6 +61,27 @@ extension CGImage {
     }
 }
 
+extension CGImage {
+    
+    public static func create(width: Int, height: Int, command: (CGContext) -> ()) -> CGImage? {
+        
+        let byteOrder = 42.bigEndian == 42 ? CGBitmapInfo.byteOrder32Big : CGBitmapInfo.byteOrder32Little
+        let bitmapInfo = byteOrder.rawValue | CGImageAlphaInfo.premultipliedFirst.rawValue
+        
+        return create(width: width, height: height, bitsPerComponent: 8, bytesPerRow: 0, space: CGColorSpaceCreateDeviceRGB(), bitmapInfo: bitmapInfo, command: command)
+    }
+    
+    public static func create(width: Int, height: Int, space: ColorSpace<RGBColorModel>, command: (CGContext) -> ()) -> CGImage? {
+        
+        let byteOrder = 42.bigEndian == 42 ? CGBitmapInfo.byteOrder32Big : CGBitmapInfo.byteOrder32Little
+        let bitmapInfo = byteOrder.rawValue | CGImageAlphaInfo.premultipliedFirst.rawValue
+        
+        guard let cgColorSpace = space.cgColorSpace else { return nil }
+        
+        return create(width: width, height: height, bitsPerComponent: 8, bytesPerRow: 0, space: cgColorSpace, bitmapInfo: bitmapInfo, command: command)
+    }
+}
+
 fileprivate final class CGPatternCallbackContainer {
     static var CGPatternCallbackList = [UInt: CGPatternCallbackContainer]()
     
