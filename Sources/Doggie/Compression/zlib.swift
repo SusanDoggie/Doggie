@@ -109,7 +109,7 @@ extension Deflate {
 
 extension Deflate {
     
-    private func _process<C : RangeReplaceableCollection>(_ flag: Int32, _ output: inout C) throws where C.Element == UInt8 {
+    private func _process(_ flag: Int32, _ callback: (UnsafeBufferPointer<UInt8>) -> Void) throws {
         
         var buffer = [UInt8](repeating: 0, count: 4096)
         
@@ -124,29 +124,26 @@ extension Deflate {
                 
                 guard status == Z_OK || status == Z_BUF_ERROR || status == Z_STREAM_END else { throw Error(code: status, msg: stream.msg) }
                 
-                output.append(contentsOf: buf.prefix(4096 - Int(stream.avail_out)))
+                callback(UnsafeBufferPointer(start: buf.baseAddress, count: 4096 - Int(stream.avail_out)))
                 
             } while stream.avail_in != 0 || stream.avail_out == 0
         }
     }
     
-    public func process<C : RangeReplaceableCollection>(_ source: Data, _ output: inout C) throws where C.Element == UInt8 {
+    public func process(_ source: UnsafeBufferPointer<UInt8>, _ callback: (UnsafeBufferPointer<UInt8>) -> Void) throws {
         
-        try source.withUnsafeBytes { (bytes: UnsafePointer<Bytef>) in
-            
-            stream.next_in = UnsafeMutablePointer<Bytef>(mutating: bytes)
-            stream.avail_in = uInt(source.count)
-            
-            try _process(Z_NO_FLUSH, &output)
-        }
+        stream.next_in = UnsafeMutablePointer<Bytef>(mutating: source.baseAddress)
+        stream.avail_in = uInt(source.count)
+        
+        try _process(Z_NO_FLUSH, callback)
     }
     
-    public func final<C : RangeReplaceableCollection>(_ output: inout C) throws where C.Element == UInt8 {
+    public func final(_ callback: (UnsafeBufferPointer<UInt8>) -> Void) throws {
         
         stream.next_in = nil
         stream.avail_in = 0
         
-        try _process(Z_FINISH, &output)
+        try _process(Z_FINISH, callback)
     }
 }
 
@@ -194,7 +191,7 @@ extension Inflate {
 
 extension Inflate {
     
-    private func _process<C : RangeReplaceableCollection>(_ flag: Int32, _ output: inout C) throws where C.Element == UInt8 {
+    private func _process(_ flag: Int32, _ callback: (UnsafeBufferPointer<UInt8>) -> Void) throws {
         
         var buffer = [UInt8](repeating: 0, count: 4096)
         
@@ -209,29 +206,26 @@ extension Inflate {
                 
                 guard status == Z_OK || status == Z_BUF_ERROR || status == Z_STREAM_END else { throw Error(code: status, msg: stream.msg) }
                 
-                output.append(contentsOf: buf.prefix(4096 - Int(stream.avail_out)))
+                callback(UnsafeBufferPointer(start: buf.baseAddress, count: 4096 - Int(stream.avail_out)))
                 
             } while stream.avail_in != 0 || stream.avail_out == 0
         }
     }
     
-    public func process<C : RangeReplaceableCollection>(_ source: Data, _ output: inout C) throws where C.Element == UInt8 {
+    public func process(_ source: UnsafeBufferPointer<UInt8>, _ callback: (UnsafeBufferPointer<UInt8>) -> Void) throws {
         
-        try source.withUnsafeBytes { (bytes: UnsafePointer<Bytef>) in
-            
-            stream.next_in = UnsafeMutablePointer<Bytef>(mutating: bytes)
-            stream.avail_in = uInt(source.count)
-            
-            try _process(Z_NO_FLUSH, &output)
-        }
+        stream.next_in = UnsafeMutablePointer<Bytef>(mutating: source.baseAddress)
+        stream.avail_in = uInt(source.count)
+        
+        try _process(Z_NO_FLUSH, callback)
     }
     
-    public func final<C : RangeReplaceableCollection>(_ output: inout C) throws where C.Element == UInt8 {
+    public func final(_ callback: (UnsafeBufferPointer<UInt8>) -> Void) throws {
         
         stream.next_in = nil
         stream.avail_in = 0
         
-        try _process(Z_FINISH, &output)
+        try _process(Z_FINISH, callback)
     }
 }
 
