@@ -2,30 +2,6 @@
 import Cocoa
 import Doggie
 
-public extension NSImage {
-    
-    static func create(size: CGSize, command: (CGContext!) -> ()) -> NSImage {
-        let offscreenRep = NSBitmapImageRep(
-            bitmapDataPlanes: nil,
-            pixelsWide: Int(size.width),
-            pixelsHigh: Int(size.height),
-            bitsPerSample: 8,
-            samplesPerPixel: 4,
-            hasAlpha: true,
-            isPlanar: false,
-            colorSpaceName: NSColorSpaceName.deviceRGB,
-            bitmapFormat: .alphaFirst,
-            bytesPerRow: 0, bitsPerPixel: 0)
-        let gctx = NSGraphicsContext(bitmapImageRep: offscreenRep!)
-        NSGraphicsContext.saveGraphicsState()
-        NSGraphicsContext.current = gctx
-        command(gctx!.cgContext)
-        NSGraphicsContext.restoreGraphicsState()
-        
-        return NSImage(cgImage: offscreenRep!.cgImage!, size: size)
-    }
-}
-
 public func doggie(blendMode: ColorBlendMode, compositingMode: ColorCompositingMode, opacity: Double) -> Image<ARGB32ColorPixel> {
     
     let context = ImageContext<ARGB32ColorPixel>(width: 500, height: 500, colorSpace: ColorSpace.sRGB)
@@ -49,9 +25,9 @@ public func doggie(blendMode: ColorBlendMode, compositingMode: ColorCompositingM
     return context.image
 }
 
-public func coregraphic(blendMode: CGBlendMode, opacity: Double) -> NSImage {
+public func coregraphic(blendMode: CGBlendMode, opacity: Double) -> CGImage? {
     
-    return NSImage.create(size: CGSize(width: 500, height: 500)) { context in
+    return CGImage.create(width: 500, height: 500) { context in
         
         context.scaleBy(x: 5, y: 5)
         
