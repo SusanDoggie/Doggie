@@ -159,7 +159,7 @@ extension png_filter0_encoder {
         if index != 0 {
             try buffer.withUnsafeBufferPointer { buf in
                 
-                let _b0 = buf.dropFirst(row_length << 1)
+                let _b0 = buf.dropFirst(row_length)
                 let _b1 = _b0.dropFirst(row_length + 1)
                 let _b2 = _b1.dropFirst(row_length + 1)
                 let _b3 = _b2.dropFirst(row_length + 1)
