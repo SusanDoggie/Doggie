@@ -124,7 +124,7 @@ extension Deflate {
                 
                 guard status == Z_OK || status == Z_BUF_ERROR || status == Z_STREAM_END else { throw Error(code: status, msg: stream.msg) }
                 
-                callback(UnsafeBufferPointer(start: buf.baseAddress, count: 4096 - Int(stream.avail_out)))
+                callback(UnsafeBufferPointer(rebasing: buf.prefix(4096 - Int(stream.avail_out))))
                 
             } while stream.avail_in != 0 || stream.avail_out == 0
         }
@@ -206,7 +206,7 @@ extension Inflate {
                 
                 guard status == Z_OK || status == Z_BUF_ERROR || status == Z_STREAM_END else { throw Error(code: status, msg: stream.msg) }
                 
-                callback(UnsafeBufferPointer(start: buf.baseAddress, count: 4096 - Int(stream.avail_out)))
+                callback(UnsafeBufferPointer(rebasing: buf.prefix(4096 - Int(stream.avail_out))))
                 
             } while stream.avail_in != 0 || stream.avail_out == 0
         }

@@ -178,6 +178,7 @@
 		0AA33B6020942B5900317F54 /* SimplexNoise.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA33B5F20942B5800317F54 /* SimplexNoise.swift */; };
 		0AA4D8451F63908200AFF16B /* CTFont.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA4D8441F63908200AFF16B /* CTFont.swift */; };
 		0AA8D463204E486700ED0175 /* SwiftPlayground.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA8D462204E486700ED0175 /* SwiftPlayground.swift */; };
+		0AADB89320ABC5B700F3BF17 /* PNGFilter0.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AADB89220ABC5B700F3BF17 /* PNGFilter0.swift */; };
 		0AB0DA121F3AEF8B0004E43F /* ShapeRegion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AB0DA111F3AEF7B0004E43F /* ShapeRegion.swift */; };
 		0AB23E461F22E4980033462E /* RawBitmap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AB23E441F22E4980033462E /* RawBitmap.swift */; };
 		0AB2E23E1F17766C00B0CA84 /* zlib.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AB2E23C1F17766C00B0CA84 /* zlib.swift */; };
@@ -393,6 +394,7 @@
 		0AA33B5F20942B5800317F54 /* SimplexNoise.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SimplexNoise.swift; sourceTree = "<group>"; };
 		0AA4D8441F63908200AFF16B /* CTFont.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = CTFont.swift; sourceTree = "<group>"; };
 		0AA8D462204E486700ED0175 /* SwiftPlayground.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftPlayground.swift; sourceTree = "<group>"; };
+		0AADB89220ABC5B700F3BF17 /* PNGFilter0.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PNGFilter0.swift; sourceTree = "<group>"; };
 		0AB0DA111F3AEF7B0004E43F /* ShapeRegion.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = ShapeRegion.swift; sourceTree = "<group>"; };
 		0AB23E441F22E4980033462E /* RawBitmap.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = RawBitmap.swift; sourceTree = "<group>"; };
 		0AB2E23C1F17766C00B0CA84 /* zlib.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = zlib.swift; sourceTree = "<group>"; };
@@ -812,6 +814,7 @@
 			isa = PBXGroup;
 			children = (
 				0A94BE9B1F1087EA00F1BCD2 /* ImageRep.swift */,
+				0AADB89120ABC59B00F3BF17 /* Algorithm */,
 				0A967E561F132EF4007E38E4 /* Decoder */,
 				0A967E571F132F02007E38E4 /* Encoder */,
 			);
@@ -907,6 +910,14 @@
 				0AA33B5F20942B5800317F54 /* SimplexNoise.swift */,
 			);
 			path = Misc;
+			sourceTree = "<group>";
+		};
+		0AADB89120ABC59B00F3BF17 /* Algorithm */ = {
+			isa = PBXGroup;
+			children = (
+				0AADB89220ABC5B700F3BF17 /* PNGFilter0.swift */,
+			);
+			path = Algorithm;
 			sourceTree = "<group>";
 		};
 		0AB2E23B1F17765900B0CA84 /* Compression */ = {
@@ -1108,6 +1119,7 @@
 				0A9CD5911EEB9A2700094148 /* CIEXYZColorSpace.swift in Sources */,
 				0A9ED9D41F5CF5B000205C1B /* SFNTOS2.swift in Sources */,
 				0A7E3E941F5FD3E40020A507 /* OTFGSUB.swift in Sources */,
+				0AADB89320ABC5B700F3BF17 /* PNGFilter0.swift in Sources */,
 				08B457E71EDD3223007AA4F0 /* Arithmetic.swift in Sources */,
 				0A7A1FAF1F04FBFC0016B3FB /* ColorPixel.swift in Sources */,
 				0A7E3E991F5FD8F80020A507 /* OTFFeatureList.swift in Sources */,

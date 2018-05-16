@@ -238,8 +238,16 @@ struct PNGDecoder : ImageRepDecoder {
     }
     
     func decompress(data: Data, compression: UInt8) -> Data? {
+        do {
+            return try self.decompressor(compression)?.process(data)
+        } catch {
+            return nil
+        }
+    }
+    
+    func decompressor(_ compression: UInt8) -> CompressionCodec? {
         switch compression {
-        case 0: return try? Inflate().process(data)
+        case 0: return try? Inflate()
         default: return nil
         }
     }
@@ -260,22 +268,25 @@ struct PNGDecoder : ImageRepDecoder {
         let width = Int(ihdr.width)
         let height = Int(ihdr.height)
         
+        guard let decompressor = self.decompressor(ihdr.compression) else { return nil }
+        
         if ihdr.interlace == 0 {
             switch ihdr.filter {
             case 0:
                 
                 let rowBits = Int(bitsPerPixel) * width
                 let row = (rowBits + 7) >> 3
-                
+                var decoder = png_filter0_decoder(row_length: row, bitsPerPixel: bitsPerPixel)
                 var result = Data(capacity: row * height)
-                var previous: Data?
                 
-                var data = data
-                
-                for _ in 0..<height {
-                    guard let type = data.popFirst(), data.count > 0 else { return result }
-                    PNGFilter0(type, data.popFirst(row), previous, bitsPerPixel, false, &result)
-                    previous = result.suffix(row)
+                do {
+                    
+                    try decompressor.process(data) { decoder.decode($0) { result.append(contentsOf: $0) } }
+                    try decompressor.final { decoder.decode($0) { result.append(contentsOf: $0) } }
+                    decoder.final { result.append(contentsOf: $0) }
+                    
+                } catch {
+                    return nil
                 }
                 
                 return result
@@ -296,6 +307,12 @@ struct PNGDecoder : ImageRepDecoder {
                 let block_width = [8, 4, 4, 2, 2, 1, 1]
                 
                 var data = data
+                
+                do {
+                    data = try decompressor.process(data)
+                } catch {
+                    return nil
+                }
                 
                 result.withUnsafeMutableBytes { (destination: UnsafeMutablePointer<UInt8>) in
                     
@@ -322,7 +339,7 @@ struct PNGDecoder : ImageRepDecoder {
                             var scanline = Data(capacity: scanline_size)
                             
                             guard let type = data.popFirst(), data.count > 0 else { return }
-                            PNGFilter0(type, data.popFirst(scanline_size), previous, bitsPerPixel, false, &scanline)
+                            PNGFilter0(type, data.popFirst(scanline_size), previous, bitsPerPixel, &scanline)
                             
                             previous = scanline
                             
@@ -442,8 +459,7 @@ struct PNGDecoder : ImageRepDecoder {
         
         let IDAT_data = Data(chunks.filter { $0.signature == "IDAT" }.flatMap { $0.data })
         
-        guard let data = decompress(data: IDAT_data, compression: ihdr.compression) else { return AnyImage(width: width, height: height, resolution: resolution, colorSpace: colorSpace, option: option) }
-        guard let pixels = filter(data, ihdr) else { return AnyImage(width: width, height: height, resolution: resolution, colorSpace: colorSpace, option: option) }
+        guard let pixels = filter(IDAT_data, ihdr) else { return AnyImage(width: width, height: height, resolution: resolution, colorSpace: colorSpace, option: option) }
         
         let bitsPerPixel: UInt8
         
@@ -818,7 +834,7 @@ extension PNGDecoder {
     }
 }
 
-func PNGFilter0(_ type: UInt8, _ pixel: Data, _ previous: Data?, _ bitsPerPixel: UInt8, _ encode: Bool, _ result: inout Data) {
+func PNGFilter0(_ type: UInt8, _ pixel: Data, _ previous: Data?, _ bitsPerPixel: UInt8, _ result: inout Data) {
     
     func average(_ a: UInt8, _ b: UInt8) -> UInt8 {
         return UInt8((UInt16(a) &+ UInt16(b)) >> 1)
@@ -856,30 +872,16 @@ func PNGFilter0(_ type: UInt8, _ pixel: Data, _ previous: Data?, _ bitsPerPixel:
             return
         }
         
-        if encode {
-            for _ in _min..<pixel_count {
-                switch type {
-                case 1: r.pointee = x.pointee &- a.pointee
-                case 3: r.pointee = x.pointee &- average(a.pointee, 0)
-                case 4: r.pointee = x.pointee &- paeth(a.pointee, 0, 0)
-                default: break
-                }
-                r += 1
-                x += 1
-                a += 1
+        for _ in _min..<pixel_count {
+            switch type {
+            case 1: r.pointee = x.pointee &+ a.pointee
+            case 3: r.pointee = x.pointee &+ average(a.pointee, 0)
+            case 4: r.pointee = x.pointee &+ paeth(a.pointee, 0, 0)
+            default: break
             }
-        } else {
-            for _ in _min..<pixel_count {
-                switch type {
-                case 1: r.pointee = x.pointee &+ a.pointee
-                case 3: r.pointee = x.pointee &+ average(a.pointee, 0)
-                case 4: r.pointee = x.pointee &+ paeth(a.pointee, 0, 0)
-                default: break
-                }
-                r += 1
-                x += 1
-                a += 1
-            }
+            r += 1
+            x += 1
+            a += 1
         }
     }
     
@@ -893,70 +895,18 @@ func PNGFilter0(_ type: UInt8, _ pixel: Data, _ previous: Data?, _ bitsPerPixel:
         var b = b
         var c = b - stride
         
-        if encode {
-            if type == 1 {
-                r += _min
-                x += _min
-                a += _min
-                b += _min
-                c += _min
-            } else {
-                for _ in 0..<_min {
-                    switch type {
-                    case 2: r.pointee = x.pointee &- b.pointee
-                    case 3: r.pointee = x.pointee &- average(0, b.pointee)
-                    case 4: r.pointee = x.pointee &- paeth(0, b.pointee, 0)
-                    default: break
-                    }
-                    r += 1
-                    x += 1
-                    a += 1
-                    b += 1
-                    c += 1
-                }
-            }
-            for _ in _min..<pixel_count {
-                switch type {
-                case 1: r.pointee = x.pointee &- a.pointee
-                case 2: r.pointee = x.pointee &- b.pointee
-                case 3: r.pointee = x.pointee &- average(a.pointee, b.pointee)
-                case 4: r.pointee = x.pointee &- paeth(a.pointee, b.pointee, c.pointee)
-                default: break
-                }
-                r += 1
-                x += 1
-                a += 1
-                b += 1
-                c += 1
-            }
+        if type == 1 {
+            r += _min
+            x += _min
+            a += _min
+            b += _min
+            c += _min
         } else {
-            if type == 1 {
-                r += _min
-                x += _min
-                a += _min
-                b += _min
-                c += _min
-            } else {
-                for _ in 0..<_min {
-                    switch type {
-                    case 2: r.pointee = x.pointee &+ b.pointee
-                    case 3: r.pointee = x.pointee &+ average(0, b.pointee)
-                    case 4: r.pointee = x.pointee &+ paeth(0, b.pointee, 0)
-                    default: break
-                    }
-                    r += 1
-                    x += 1
-                    a += 1
-                    b += 1
-                    c += 1
-                }
-            }
-            for _ in _min..<pixel_count {
+            for _ in 0..<_min {
                 switch type {
-                case 1: r.pointee = x.pointee &+ a.pointee
                 case 2: r.pointee = x.pointee &+ b.pointee
-                case 3: r.pointee = x.pointee &+ average(a.pointee, b.pointee)
-                case 4: r.pointee = x.pointee &+ paeth(a.pointee, b.pointee, c.pointee)
+                case 3: r.pointee = x.pointee &+ average(0, b.pointee)
+                case 4: r.pointee = x.pointee &+ paeth(0, b.pointee, 0)
                 default: break
                 }
                 r += 1
@@ -966,24 +916,30 @@ func PNGFilter0(_ type: UInt8, _ pixel: Data, _ previous: Data?, _ bitsPerPixel:
                 c += 1
             }
         }
+        for _ in _min..<pixel_count {
+            switch type {
+            case 1: r.pointee = x.pointee &+ a.pointee
+            case 2: r.pointee = x.pointee &+ b.pointee
+            case 3: r.pointee = x.pointee &+ average(a.pointee, b.pointee)
+            case 4: r.pointee = x.pointee &+ paeth(a.pointee, b.pointee, c.pointee)
+            default: break
+            }
+            r += 1
+            x += 1
+            a += 1
+            b += 1
+            c += 1
+        }
     }
     
     let offset = result.count
     result.append(Data(pixel))
     
     if type != 0 {
-        if encode {
-            if let previous = previous {
-                result.withUnsafeMutableBytes { _r in pixel.withUnsafeBytes { _x in previous.withUnsafeBytes { _b in proccess2(_r + offset, _x, _b) } } }
-            } else {
-                result.withUnsafeMutableBytes { _r in pixel.withUnsafeBytes { _x in proccess(_r + offset, _x) } }
-            }
+        if let previous = previous {
+            result.withUnsafeMutableBytes { _r in previous.withUnsafeBytes { _b in proccess2(_r + offset, _r + offset, _b) } }
         } else {
-            if let previous = previous {
-                result.withUnsafeMutableBytes { _r in previous.withUnsafeBytes { _b in proccess2(_r + offset, _r + offset, _b) } }
-            } else {
-                result.withUnsafeMutableBytes { _r in proccess(_r + offset, _r + offset) }
-            }
+            result.withUnsafeMutableBytes { _r in proccess(_r + offset, _r + offset) }
         }
     }
 }

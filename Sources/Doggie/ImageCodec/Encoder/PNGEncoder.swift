@@ -103,32 +103,6 @@ struct PNGEncoder : ImageRepEncoder {
         return PNGChunk(signature: "pHYs", data: phys)
     }
     
-    private static func filter0(_ pixel: Data, _ previous: Data?, _ bitsPerPixel: UInt8) -> Data {
-        
-        var s = pixel.reduce(0.0) { $0 + abs(Double(Int8(bitPattern: $1))) }
-        
-        var filtered = pixel
-        var type = 0
-        
-        for i in 1...4 {
-            var buffer = Data(capacity: pixel.count)
-            PNGFilter0(UInt8(i), pixel, previous, bitsPerPixel, true, &buffer)
-            let t = buffer.reduce(0.0) { $0 + abs(Double(Int8(bitPattern: $1))) }
-            if t < s {
-                s = t
-                filtered = buffer
-                type = i
-            }
-        }
-        
-        var result = Data(capacity: filtered.count + 1)
-        
-        result.encode(UInt8(type))
-        result.append(filtered)
-        
-        return result
-    }
-    
     private static func encodeIDAT<Pixel>(image: Image<Pixel>, bitsPerPixel: UInt8, interlace: Bool, _ body: (inout Data, Pixel) -> Void) -> PNGChunk? {
         
         let width = image.width
@@ -165,11 +139,13 @@ struct PNGEncoder : ImageRepEncoder {
                         let scanline_bitSize = Int(bitsPerPixel) * sample_count
                         let scanline_size = (scanline_bitSize + 7) >> 3
                         
-                        var previous: Data?
+                        var encoder = png_filter0_encoder(row_length: scanline_size, bitsPerPixel: bitsPerPixel)
+                        
+                        var scanline = Data(capacity: scanline_size)
                         
                         for row in stride(from: _starting_row, to: height, by: _row_increment) {
                             
-                            var scanline = Data(capacity: scanline_size)
+                            scanline.count = 0
                             
                             for col in stride(from: _starting_col, to: width, by: _col_increment) {
                                 
@@ -179,36 +155,39 @@ struct PNGEncoder : ImageRepEncoder {
                                 body(&scanline, destination.pointee)
                             }
                             
-                            try deflate.process(filter0(scanline, previous, bitsPerPixel), &compressed)
-                            
-                            previous = scanline
+                            try scanline.withUnsafeBytes { try encoder.encode(UnsafeBufferPointer(start: $0, count: scanline_size)) { try deflate.process($0) { compressed.append(contentsOf: $0) } } }
                         }
+                        
+                        try encoder.final { try deflate.process($0) { compressed.append(contentsOf: $0) } }
                     }
                 }
                 
             } else {
                 
-                let scanline_capacity = width * Int(bitsPerPixel >> 3)
+                let scanline_size = width * Int(bitsPerPixel >> 3)
                 
                 try image.withUnsafeBufferPointer {
                     
                     guard var buffer = $0.baseAddress else { return }
                     
-                    var previous: Data?
+                    var encoder = png_filter0_encoder(row_length: scanline_size, bitsPerPixel: bitsPerPixel)
+                    
+                    var scanline = Data(capacity: scanline_size)
                     
                     for _ in 0..<height {
                         
-                        var scanline = Data(capacity: scanline_capacity)
+                        scanline.count = 0
                         
                         for _ in 0..<width {
                             body(&scanline, buffer.pointee)
                             buffer += 1
                         }
                         
-                        try deflate.process(filter0(scanline, previous, bitsPerPixel), &compressed)
+                        try scanline.withUnsafeBytes { try encoder.encode(UnsafeBufferPointer(start: $0, count: scanline_size)) { try deflate.process($0) { compressed.append(contentsOf: $0) } } }
                         
-                        previous = scanline
                     }
+                    
+                    try encoder.final { try deflate.process($0) { compressed.append(contentsOf: $0) } }
                 }
             }
             
