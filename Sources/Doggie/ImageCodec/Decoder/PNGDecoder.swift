@@ -237,6 +237,10 @@ struct PNGDecoder : ImageRepDecoder {
         }
     }
     
+    var mediaType: ImageRep.MediaType {
+        return .png
+    }
+    
     func decompress(data: Data, compression: UInt8) -> Data? {
         do {
             return try self.decompressor(compression)?.process(data)

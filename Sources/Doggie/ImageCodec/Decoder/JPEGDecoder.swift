@@ -107,6 +107,10 @@ struct JPEGDecoder : ImageRepDecoder {
         return AnyColorSpace(ColorSpace.sRGB)
     }
     
+    var mediaType: ImageRep.MediaType {
+        return .jpeg
+    }
+    
     func image(option: MappedBufferOption) -> AnyImage {
         
         return AnyImage(Image<ARGB32ColorPixel>(width: 0, height: 0, colorSpace: ColorSpace.sRGB, option: option))

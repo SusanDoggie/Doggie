@@ -28,6 +28,8 @@ import Foundation
 protocol ImageRepDecoder : ImageRepBase {
     
     init?(data: Data) throws
+    
+    var mediaType: ImageRep.MediaType { get }
 }
 
 struct ImageRepDecoderBitStream : Sequence, IteratorProtocol {

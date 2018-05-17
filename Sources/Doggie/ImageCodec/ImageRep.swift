@@ -143,7 +143,7 @@ extension ImageRep {
 
 extension ImageRep {
     
-    public enum FileType {
+    public enum MediaType {
         case bmp
         case gif
         case jpeg
@@ -152,13 +152,21 @@ extension ImageRep {
         case tiff
     }
     
+    public var mediaType: MediaType? {
+        guard let decoder = base as? ImageRepDecoder else { return nil }
+        return decoder.mediaType
+    }
+}
+
+extension ImageRep {
+    
     public enum PropertyKey : Int {
         
         case compressionFactor
         case interlaced
     }
     
-    public func representation(using storageType: FileType, properties: [PropertyKey : Any]) -> Data? {
+    public func representation(using storageType: MediaType, properties: [PropertyKey : Any]) -> Data? {
         
         let image = base as? AnyImage ?? base.image(option: .fileBacked)
         guard image.width > 0 && image.height > 0 else { return nil }
@@ -198,14 +206,14 @@ extension AnyImage {
 
 extension Image {
     
-    public func representation(using storageType: ImageRep.FileType, properties: [ImageRep.PropertyKey : Any]) -> Data? {
+    public func representation(using storageType: ImageRep.MediaType, properties: [ImageRep.PropertyKey : Any]) -> Data? {
         return ImageRep(image: self).representation(using: storageType, properties: properties)
     }
 }
 
 extension AnyImage {
     
-    public func representation(using storageType: ImageRep.FileType, properties: [ImageRep.PropertyKey : Any]) -> Data? {
+    public func representation(using storageType: ImageRep.MediaType, properties: [ImageRep.PropertyKey : Any]) -> Data? {
         return ImageRep(image: self).representation(using: storageType, properties: properties)
     }
 }

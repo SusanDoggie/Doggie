@@ -78,6 +78,10 @@ struct BMPDecoder : ImageRepDecoder {
         return AnyColorSpace(_colorSpace)
     }
     
+    var mediaType: ImageRep.MediaType {
+        return .bmp
+    }
+    
     func image(option: MappedBufferOption) -> AnyImage {
         
         let pixels = data.dropFirst(Int(header.offset))
