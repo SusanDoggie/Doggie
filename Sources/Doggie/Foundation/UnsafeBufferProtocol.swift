@@ -48,3 +48,28 @@ extension ContiguousArray: UnsafeMutableBufferProtocol {
 extension MappedBuffer: UnsafeMutableBufferProtocol {
     
 }
+
+extension Data: UnsafeMutableBufferProtocol {
+    
+    @_inlineable
+    public func withUnsafeBufferPointer<R>(_ body: (UnsafeBufferPointer<UInt8>) throws -> R) rethrows -> R {
+        let count = self.count
+        return try self.withUnsafeBytes { try body(UnsafeBufferPointer(start: $0, count: count)) }
+    }
+    
+    @_inlineable
+    public mutating func withUnsafeMutableBufferPointer<R>(_ body: (inout UnsafeMutableBufferPointer<UInt8>) throws -> R) rethrows -> R {
+        
+        let count = self.count
+        
+        return try self.withUnsafeMutableBytes { (bytes: UnsafeMutablePointer<UInt8>) in
+            
+            var buf = UnsafeMutableBufferPointer(start: bytes, count: count)
+            
+            defer { precondition(buf.baseAddress == bytes) }
+            defer { precondition(buf.count == count) }
+            
+            return try body(&buf)
+        }
+    }
+}

@@ -25,11 +25,20 @@
 
 import Foundation
 
-public protocol CompressionCodec {
+public protocol CompressionCodec: AnyObject {
     
     func process(_ source: UnsafeBufferPointer<UInt8>, _ callback: (UnsafeBufferPointer<UInt8>) -> Void) throws
     
     func final(_ callback: (UnsafeBufferPointer<UInt8>) -> Void) throws
+}
+
+extension CompressionCodec {
+    
+    @_inlineable
+    public func process_final(_ source: UnsafeBufferPointer<UInt8>, _ callback: (UnsafeBufferPointer<UInt8>) -> Void) throws {
+        try process(source, callback)
+        try final(callback)
+    }
 }
 
 extension CompressionCodec {
@@ -40,21 +49,18 @@ extension CompressionCodec {
     }
     
     @_inlineable
+    public func process_final<S : UnsafeBufferProtocol, C : RangeReplaceableCollection>(_ source: S, _ output: inout C) throws where S.Element == UInt8, C.Element == UInt8 {
+        try process_final(source) { output.append(contentsOf: $0) }
+    }
+    
+    @_inlineable
     public func process<S : UnsafeBufferProtocol>(_ source: S, _ callback: (UnsafeBufferPointer<UInt8>) -> Void) throws where S.Element == UInt8 {
         try source.withUnsafeBufferPointer { try process($0, callback) }
     }
-}
-
-extension CompressionCodec {
     
     @_inlineable
-    public func process<C : RangeReplaceableCollection>(_ source: Data, _ output: inout C) throws where C.Element == UInt8 {
-        try process(source) { output.append(contentsOf: $0) }
-    }
-    
-    @_inlineable
-    public func process(_ source: Data, _ callback: (UnsafeBufferPointer<UInt8>) -> Void) throws {
-        try source.withUnsafeBytes { try process(UnsafeBufferPointer(start: $0, count: source.count), callback) }
+    public func process_final<S : UnsafeBufferProtocol>(_ source: S, _ callback: (UnsafeBufferPointer<UInt8>) -> Void) throws where S.Element == UInt8 {
+        try source.withUnsafeBufferPointer { try process_final($0, callback) }
     }
 }
 
@@ -70,12 +76,8 @@ extension CompressionCodec {
     
     @_inlineable
     public func process(_ source: Data) throws -> Data {
-        
         var result = Data(capacity: source.count)
-        
-        try self.process(source, &result)
-        try self.final(&result)
-        
+        try self.process_final(source, &result)
         return result
     }
 }

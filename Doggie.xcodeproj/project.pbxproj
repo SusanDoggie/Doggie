@@ -179,6 +179,7 @@
 		0AA4D8451F63908200AFF16B /* CTFont.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA4D8441F63908200AFF16B /* CTFont.swift */; };
 		0AA8D463204E486700ED0175 /* SwiftPlayground.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA8D462204E486700ED0175 /* SwiftPlayground.swift */; };
 		0AADB89320ABC5B700F3BF17 /* PNGFilter0.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AADB89220ABC5B700F3BF17 /* PNGFilter0.swift */; };
+		0AADB89620AC0BA400F3BF17 /* PNGInterlace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AADB89520AC0BA400F3BF17 /* PNGInterlace.swift */; };
 		0AB0DA121F3AEF8B0004E43F /* ShapeRegion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AB0DA111F3AEF7B0004E43F /* ShapeRegion.swift */; };
 		0AB23E461F22E4980033462E /* RawBitmap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AB23E441F22E4980033462E /* RawBitmap.swift */; };
 		0AB2E23E1F17766C00B0CA84 /* zlib.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AB2E23C1F17766C00B0CA84 /* zlib.swift */; };
@@ -395,6 +396,7 @@
 		0AA4D8441F63908200AFF16B /* CTFont.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = CTFont.swift; sourceTree = "<group>"; };
 		0AA8D462204E486700ED0175 /* SwiftPlayground.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftPlayground.swift; sourceTree = "<group>"; };
 		0AADB89220ABC5B700F3BF17 /* PNGFilter0.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PNGFilter0.swift; sourceTree = "<group>"; };
+		0AADB89520AC0BA400F3BF17 /* PNGInterlace.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PNGInterlace.swift; sourceTree = "<group>"; };
 		0AB0DA111F3AEF7B0004E43F /* ShapeRegion.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = ShapeRegion.swift; sourceTree = "<group>"; };
 		0AB23E441F22E4980033462E /* RawBitmap.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = RawBitmap.swift; sourceTree = "<group>"; };
 		0AB2E23C1F17766C00B0CA84 /* zlib.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = zlib.swift; sourceTree = "<group>"; };
@@ -916,6 +918,7 @@
 			isa = PBXGroup;
 			children = (
 				0AADB89220ABC5B700F3BF17 /* PNGFilter0.swift */,
+				0AADB89520AC0BA400F3BF17 /* PNGInterlace.swift */,
 			);
 			path = Algorithm;
 			sourceTree = "<group>";
@@ -1266,6 +1269,7 @@
 				0AD4D8D91EA6247200C99728 /* MathsExtension.swift in Sources */,
 				0A7E3E911F5FD3B40020A507 /* OTFGPOS.swift in Sources */,
 				0A53E4631E35AEF80060FB83 /* Date.swift in Sources */,
+				0AADB89620AC0BA400F3BF17 /* PNGInterlace.swift in Sources */,
 				0A9CD58B1EEB98E600094148 /* sRGB.swift in Sources */,
 				0A792C771FDA2996003C0290 /* BreakLoop.swift in Sources */,
 				0AD3E6321F53DA9B003CC21A /* FontDecoder.swift in Sources */,

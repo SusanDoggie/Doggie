@@ -120,34 +120,28 @@ struct PNGEncoder : ImageRepEncoder {
                     
                     guard let buffer = $0.baseAddress else { return }
                     
-                    let starting_row = [0, 0, 4, 0, 2, 0, 1]
-                    let starting_col = [0, 4, 0, 2, 0, 1, 0]
-                    let row_increment = [8, 8, 8, 4, 4, 2, 2]
-                    let col_increment = [8, 8, 4, 4, 2, 2, 1]
-                    
                     for pass in 0..<7 {
                         
-                        let _starting_row = starting_row[pass]
-                        let _starting_col = starting_col[pass]
-                        let _row_increment = row_increment[pass]
-                        let _col_increment = col_increment[pass]
+                        let starting_row = png_interlace_starting_row[pass]
+                        let starting_col = png_interlace_starting_col[pass]
+                        let row_increment = png_interlace_row_increment[pass]
+                        let col_increment = png_interlace_col_increment[pass]
                         
-                        guard width > _starting_col else { continue }
-                        guard height > _starting_row else { continue }
+                        guard width > starting_col else { continue }
+                        guard height > starting_row else { continue }
                         
-                        let sample_count = (width - _starting_col + (_col_increment - 1)) / _col_increment
-                        let scanline_bitSize = Int(bitsPerPixel) * sample_count
-                        let scanline_size = (scanline_bitSize + 7) >> 3
+                        let scanline_count = (width - starting_col + (col_increment - 1)) / col_increment
+                        let scanline_size = (Int(bitsPerPixel) * scanline_count + 7) >> 3
                         
                         var encoder = png_filter0_encoder(row_length: scanline_size, bitsPerPixel: bitsPerPixel)
                         
                         var scanline = Data(capacity: scanline_size)
                         
-                        for row in stride(from: _starting_row, to: height, by: _row_increment) {
+                        for row in stride(from: starting_row, to: height, by: row_increment) {
                             
                             scanline.count = 0
                             
-                            for col in stride(from: _starting_col, to: width, by: _col_increment) {
+                            for col in stride(from: starting_col, to: width, by: col_increment) {
                                 
                                 let position = row * width + col
                                 let destination = buffer + position

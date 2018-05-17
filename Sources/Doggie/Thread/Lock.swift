@@ -26,7 +26,7 @@
 import Foundation
 import Dispatch
 
-public protocol Lockable : class {
+public protocol Lockable : AnyObject {
     
     func lock()
     func unlock()

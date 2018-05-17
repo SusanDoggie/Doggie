@@ -71,7 +71,7 @@ extension png_filter0_encoder {
         let stride = self.stride
         var index = self.index
         
-        try self.buffer.withUnsafeMutableBufferPointer { buf in
+        try buffer.withUnsafeMutableBufferPointer { buf in
             
             let _b0 = buf.dropFirst(row_length)
             let _b1 = _b0.dropFirst(row_length + 1)
@@ -197,7 +197,7 @@ extension png_filter0_encoder {
                     p = b4
                 }
                 
-                try callback(UnsafeBufferPointer(rebasing: p.prefix(index + 2)))
+                try callback(UnsafeBufferPointer(rebasing: p.prefix(index + 1)))
             }
         }
         
@@ -234,17 +234,13 @@ extension png_filter0_decoder {
         var type = self.type
         var index = self.index
         
-        try self.buffer.withUnsafeMutableBufferPointer { buf in
+        try buffer.withUnsafeMutableBufferPointer { buf in
             
             let b0 = UnsafeMutableBufferPointer(rebasing: buf.prefix(row_length))
             let b1 = UnsafeMutableBufferPointer(rebasing: buf.suffix(row_length))
             
             for x in source {
-                if type == nil || index == row_length {
-                    if index == row_length {
-                        try callback(UnsafeBufferPointer(b1))
-                        memcpy(b0.baseAddress, b1.baseAddress, b0.count)
-                    }
+                if type == nil {
                     type = x
                     index = 0
                 } else {
@@ -267,7 +263,15 @@ extension png_filter0_decoder {
                         default: break
                         }
                     }
+                    
                     index += 1
+                    
+                    if index == row_length {
+                        try callback(UnsafeBufferPointer(b1))
+                        memcpy(b0.baseAddress, b1.baseAddress, b0.count)
+                        type = nil
+                        index = 0
+                    }
                 }
             }
         }
@@ -281,7 +285,7 @@ extension png_filter0_decoder {
         guard flag else { fatalError() }
         
         if index != 0 {
-            try buffer.withUnsafeBufferPointer { try callback(UnsafeBufferPointer(rebasing: $0.suffix(row_length).prefix(index + 1))) }
+            try buffer.withUnsafeBufferPointer { try callback(UnsafeBufferPointer(rebasing: $0.suffix(row_length).prefix(index))) }
         }
         
         flag = false
