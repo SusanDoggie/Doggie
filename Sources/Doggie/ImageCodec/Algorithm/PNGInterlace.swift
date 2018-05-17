@@ -55,7 +55,6 @@ struct png_interlace_state {
         self.height = height
         self.bitsPerPixel = bitsPerPixel
         self.current_row = height
-        print("bitsPerPixel:", bitsPerPixel)
     }
 }
 
@@ -97,12 +96,12 @@ extension png_interlace_state {
             }
             
             let _scanline_size = scanline_size + 1
-            let scanline_remain = _scanline_size - scanline_offset
+            let data = UnsafeBufferPointer(rebasing: source.prefix(_scanline_size - scanline_offset))
             
-            try callback(self, UnsafeBufferPointer(rebasing: source.prefix(scanline_remain)))
-            source = UnsafeBufferPointer(rebasing: source.dropFirst(scanline_remain))
+            source = UnsafeBufferPointer(rebasing: source.dropFirst(data.count))
             
-            scanline_offset += scanline_remain
+            try callback(self, data)
+            scanline_offset += data.count
             
             if scanline_offset >= _scanline_size {
                 scanline_offset = 0
