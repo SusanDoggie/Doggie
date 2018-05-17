@@ -125,7 +125,7 @@ extension png_filter0_encoder {
                     }
                     
                     try callback(UnsafeBufferPointer(p))
-                    memcpy(a0.baseAddress, b0.baseAddress! + 1, a0.count)
+                    memcpy(a0.baseAddress!, b0.baseAddress! + 1, a0.count)
                     index = 0
                 }
                 
@@ -270,7 +270,7 @@ extension png_filter0_decoder {
                     
                     if index == row_length {
                         try callback(UnsafeBufferPointer(b1))
-                        memcpy(b0.baseAddress, b1.baseAddress, b0.count)
+                        memcpy(b0.baseAddress!, b1.baseAddress!, b0.count)
                         type = nil
                         index = 0
                     }
