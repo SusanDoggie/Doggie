@@ -87,6 +87,10 @@ extension BEInteger: SignedInteger where Base : SignedInteger {
     
 }
 
+extension BEInteger: UnsignedInteger where Base : UnsignedInteger {
+    
+}
+
 extension BEInteger {
     
     @_transparent
@@ -321,6 +325,10 @@ extension LEInteger: SignedNumeric where Base : SignedNumeric {
 }
 
 extension LEInteger: SignedInteger where Base : SignedInteger {
+    
+}
+
+extension LEInteger: UnsignedInteger where Base : UnsignedInteger {
     
 }
 
