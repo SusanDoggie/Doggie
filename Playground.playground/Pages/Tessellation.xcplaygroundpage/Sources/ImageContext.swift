@@ -73,11 +73,28 @@ public func sampleImage(width: Int, height: Int) -> Image<ARGB32ColorPixel> {
         return [(v0, v3, v5), (v3, v1, v4), (v5, v4, v2), (v3, v4, v5)]
     }
     
+    func geometry_shader(_ face: (Vector, Vector, Vector)) -> (Vector, Vector, Vector) {
+        
+        var (v0, v1, v2) = face
+        
+        let m0 = v0 * matrix
+        let m1 = v1 * matrix
+        let m2 = v2 * matrix
+        
+        let c0 = SimplexNoise(4, 0.7, 0.025, m0.x, m0.y, m0.z) * 2 - 1
+        let c1 = SimplexNoise(4, 0.7, 0.025, m1.x, m1.y, m1.z) * 2 - 1
+        let c2 = SimplexNoise(4, 0.7, 0.025, m2.x, m2.y, m2.z) * 2 - 1
+        
+        v0.magnitude += c0 * 0.025
+        v1.magnitude += c1 * 0.025
+        v2.magnitude += c2 * 0.025
+        
+        return (v0, v1, v2)
+    }
+    
     func shader(stageIn: ImageContextRenderStageIn<Vertex>) -> ColorPixel<RGBColorModel> {
         
         let p = stageIn.vertex.position
-        
-        let c = SimplexNoise(4, 0.7, 0.025, p.x, p.y, p.z)
         
         let light = Vector(x: 100, y: -100, z: -10)
         
@@ -85,11 +102,11 @@ public func sampleImage(width: Int, height: Int) -> Image<ARGB32ColorPixel> {
         
         let distance = d.magnitude
         
-        let power = 60000 / (distance * distance)
+        let power = 40000 / (distance * distance)
         
         let cos_theta = dot(stageIn.normal.unit, d / distance).clamped(to: 0...1)
         
-        return ColorPixel(red: (c * cos_theta * power).clamped(to: 0...1), green: (c * cos_theta * power).clamped(to: 0...1), blue: (c * cos_theta * power).clamped(to: 0...1))
+        return ColorPixel(red: (cos_theta * power).clamped(to: 0...1), green: (cos_theta * power).clamped(to: 0...1), blue: (cos_theta * power).clamped(to: 0...1))
     }
     
     var triangles = [f0, f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15, f16, f17, f18, f19]
@@ -97,6 +114,9 @@ public func sampleImage(width: Int, height: Int) -> Image<ARGB32ColorPixel> {
     triangles = triangles.flatMap(tessellation)
     triangles = triangles.flatMap(tessellation)
     triangles = triangles.flatMap(tessellation)
+    triangles = triangles.flatMap(tessellation)
+    triangles = triangles.flatMap(tessellation)
+    triangles = triangles.map(geometry_shader)
     
     let _triangles = triangles.map { (Vertex(position: $0 * matrix), Vertex(position: $1 * matrix), Vertex(position: $2 * matrix)) }
     
