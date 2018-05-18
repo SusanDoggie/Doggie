@@ -56,6 +56,23 @@ extension Radius: CustomStringConvertible {
     }
 }
 
+extension Radius : Codable {
+    
+    @_transparent
+    public init(from decoder: Decoder) throws {
+        var container = try decoder.unkeyedContainer()
+        self.x = try container.decode(Double.self)
+        self.y = try container.decode(Double.self)
+    }
+    
+    @_transparent
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.unkeyedContainer()
+        try container.encode(x)
+        try container.encode(y)
+    }
+}
+
 @_inlineable
 public func Ellipse(_ t: Double, _ p: Point, _ r: Radius) -> Point {
     return Point(x: r.x * cos(t) + p.x, y: r.y * sin(t) + p.y)

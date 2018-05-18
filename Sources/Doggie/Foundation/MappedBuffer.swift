@@ -126,6 +126,36 @@ extension MappedBuffer : CustomStringConvertible {
     }
 }
 
+extension MappedBuffer : Decodable where Element : Decodable {
+    
+    @_inlineable
+    public init(from decoder: Decoder) throws {
+        
+        var container = try decoder.unkeyedContainer()
+        self.init()
+        
+        if let count = container.count {
+            self.reserveCapacity(count)
+            for _ in 0..<count {
+                self.append(try container.decode(Element.self))
+            }
+        }
+        
+        while !container.isAtEnd {
+            self.append(try container.decode(Element.self))
+        }
+    }
+}
+
+extension MappedBuffer : Encodable where Element : Encodable {
+    
+    @_inlineable
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.unkeyedContainer()
+        try container.encode(self)
+    }
+}
+
 extension MappedBuffer : CustomReflectable {
     
     @_inlineable

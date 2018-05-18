@@ -60,6 +60,31 @@ extension SDTransform : CustomStringConvertible {
     }
 }
 
+extension SDTransform : Codable {
+    
+    @_transparent
+    public init(from decoder: Decoder) throws {
+        var container = try decoder.unkeyedContainer()
+        self.a = try container.decode(Double.self)
+        self.d = try container.decode(Double.self)
+        self.b = try container.decode(Double.self)
+        self.e = try container.decode(Double.self)
+        self.c  = try container.decode(Double.self)
+        self.f  = try container.decode(Double.self)
+    }
+    
+    @_transparent
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.unkeyedContainer()
+        try container.encode(self.a)
+        try container.encode(self.d)
+        try container.encode(self.b)
+        try container.encode(self.e)
+        try container.encode(self.c)
+        try container.encode(self.f)
+    }
+}
+
 extension SDTransform {
     
     @_transparent

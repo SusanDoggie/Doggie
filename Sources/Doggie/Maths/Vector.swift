@@ -75,6 +75,25 @@ extension Vector: CustomStringConvertible {
     }
 }
 
+extension Vector : Codable {
+    
+    @_transparent
+    public init(from decoder: Decoder) throws {
+        var container = try decoder.unkeyedContainer()
+        self.x = try container.decode(Double.self)
+        self.y = try container.decode(Double.self)
+        self.z = try container.decode(Double.self)
+    }
+    
+    @_transparent
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.unkeyedContainer()
+        try container.encode(x)
+        try container.encode(y)
+        try container.encode(z)
+    }
+}
+
 extension Vector {
     
     @_transparent

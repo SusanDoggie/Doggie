@@ -54,6 +54,23 @@ extension Size: CustomStringConvertible {
     }
 }
 
+extension Size : Codable {
+    
+    @_transparent
+    public init(from decoder: Decoder) throws {
+        var container = try decoder.unkeyedContainer()
+        self.width = try container.decode(Double.self)
+        self.height = try container.decode(Double.self)
+    }
+    
+    @_transparent
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.unkeyedContainer()
+        try container.encode(width)
+        try container.encode(height)
+    }
+}
+
 extension Size {
     
     @_inlineable
@@ -172,6 +189,23 @@ extension Rect: CustomStringConvertible {
     @_transparent
     public var description: String {
         return "Rect(x: \(x), y: \(y), width: \(width), height: \(height))"
+    }
+}
+
+extension Rect : Codable {
+    
+    @_transparent
+    public init(from decoder: Decoder) throws {
+        var container = try decoder.unkeyedContainer()
+        self.origin = try container.decode(Point.self)
+        self.size = try container.decode(Size.self)
+    }
+    
+    @_transparent
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.unkeyedContainer()
+        try container.encode(origin)
+        try container.encode(size)
     }
 }
 

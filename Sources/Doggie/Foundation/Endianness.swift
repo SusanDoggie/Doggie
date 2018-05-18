@@ -70,6 +70,24 @@ public struct BEInteger<Base : FixedWidthInteger> : FixedWidthInteger {
     }
 }
 
+extension BEInteger: Decodable where Base : Decodable {
+    
+    @_transparent
+    public init(from decoder: Decoder) throws {
+        var container = try decoder.unkeyedContainer()
+        self.init(representingValue: try container.decode(Base.self))
+    }
+}
+
+extension BEInteger: Encodable where Base : Encodable {
+    
+    @_transparent
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.unkeyedContainer()
+        try container.encode(representingValue)
+    }
+}
+
 extension BEInteger: SignedNumeric where Base : SignedNumeric {
     
     @_transparent
@@ -262,8 +280,6 @@ extension BEInteger {
     }
 }
 
-
-
 public struct LEInteger<Base : FixedWidthInteger> : FixedWidthInteger {
     
     public var bitPattern: Base
@@ -308,6 +324,24 @@ public struct LEInteger<Base : FixedWidthInteger> : FixedWidthInteger {
     @_transparent
     public var littleEndian: LEInteger {
         return self
+    }
+}
+
+extension LEInteger: Decodable where Base : Decodable {
+    
+    @_transparent
+    public init(from decoder: Decoder) throws {
+        var container = try decoder.unkeyedContainer()
+        self.init(representingValue: try container.decode(Base.self))
+    }
+}
+
+extension LEInteger: Encodable where Base : Encodable {
+    
+    @_transparent
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.unkeyedContainer()
+        try container.encode(representingValue)
     }
 }
 

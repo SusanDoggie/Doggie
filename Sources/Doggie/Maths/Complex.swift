@@ -118,6 +118,23 @@ extension Complex: CustomStringConvertible {
     }
 }
 
+extension Complex : Codable {
+    
+    @_transparent
+    public init(from decoder: Decoder) throws {
+        var container = try decoder.unkeyedContainer()
+        self.real = try container.decode(Double.self)
+        self.imag = try container.decode(Double.self)
+    }
+    
+    @_transparent
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.unkeyedContainer()
+        try container.encode(real)
+        try container.encode(imag)
+    }
+}
+
 extension Complex : Divisive, ScalarMultiplicative {
     
     public typealias Scalar = Double

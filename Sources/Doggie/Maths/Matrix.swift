@@ -73,6 +73,43 @@ extension Matrix : CustomStringConvertible {
     }
 }
 
+extension Matrix : Codable {
+    
+    @_transparent
+    public init(from decoder: Decoder) throws {
+        var container = try decoder.unkeyedContainer()
+        self.a = try container.decode(Double.self)
+        self.e = try container.decode(Double.self)
+        self.i = try container.decode(Double.self)
+        self.b = try container.decode(Double.self)
+        self.f  = try container.decode(Double.self)
+        self.j  = try container.decode(Double.self)
+        self.c = try container.decode(Double.self)
+        self.g  = try container.decode(Double.self)
+        self.k  = try container.decode(Double.self)
+        self.d = try container.decode(Double.self)
+        self.h  = try container.decode(Double.self)
+        self.l  = try container.decode(Double.self)
+    }
+    
+    @_transparent
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.unkeyedContainer()
+        try container.encode(self.a)
+        try container.encode(self.e)
+        try container.encode(self.i)
+        try container.encode(self.b)
+        try container.encode(self.f)
+        try container.encode(self.j)
+        try container.encode(self.c)
+        try container.encode(self.g)
+        try container.encode(self.k)
+        try container.encode(self.d)
+        try container.encode(self.h)
+        try container.encode(self.l)
+    }
+}
+
 extension Matrix {
     
     @_transparent

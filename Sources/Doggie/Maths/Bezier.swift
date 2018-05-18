@@ -66,6 +66,38 @@ extension Bezier : CustomStringConvertible {
     }
 }
 
+extension Bezier: Decodable where Element : Decodable {
+    
+    @_inlineable
+    public init(from decoder: Decoder) throws {
+        
+        var container = try decoder.unkeyedContainer()
+        var points: [Element] = []
+        
+        if let count = container.count {
+            points.reserveCapacity(count)
+            for _ in 0..<count {
+                points.append(try container.decode(Element.self))
+            }
+        }
+        
+        while !container.isAtEnd {
+            points.append(try container.decode(Element.self))
+        }
+        
+        self.init(points)
+    }
+}
+
+extension Bezier: Encodable where Element : Encodable {
+    
+    @_inlineable
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.unkeyedContainer()
+        try container.encode(points)
+    }
+}
+
 extension Bezier : RandomAccessCollection, MutableCollection {
     
     public typealias Indices = Range<Int>

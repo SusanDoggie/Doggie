@@ -67,6 +67,35 @@ extension Polynomial : CustomStringConvertible {
     }
 }
 
+extension Polynomial : Codable {
+    
+    @_inlineable
+    public init(from decoder: Decoder) throws {
+        
+        var container = try decoder.unkeyedContainer()
+        var coeffs: [Double] = []
+        
+        if let count = container.count {
+            coeffs.reserveCapacity(count)
+            for _ in 0..<count {
+                coeffs.append(try container.decode(Double.self))
+            }
+        }
+        
+        while !container.isAtEnd {
+            coeffs.append(try container.decode(Double.self))
+        }
+        
+        self.init(coeffs)
+    }
+    
+    @_inlineable
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.unkeyedContainer()
+        try container.encode(coeffs)
+    }
+}
+
 extension Polynomial : RandomAccessCollection, MutableCollection {
     
     public typealias Indices = Range<Int>
