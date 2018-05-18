@@ -85,9 +85,9 @@ public func sampleImage(width: Int, height: Int) -> Image<ARGB32ColorPixel> {
         let c1 = SimplexNoise(4, 0.7, 0.025, m1.x, m1.y, m1.z) * 2 - 1
         let c2 = SimplexNoise(4, 0.7, 0.025, m2.x, m2.y, m2.z) * 2 - 1
         
-        v0.magnitude += c0 * 0.025
-        v1.magnitude += c1 * 0.025
-        v2.magnitude += c2 * 0.025
+        v0.magnitude += c0 * 0.1
+        v1.magnitude += c1 * 0.1
+        v2.magnitude += c2 * 0.1
         
         return (v0, v1, v2)
     }
