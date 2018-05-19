@@ -81,9 +81,9 @@ public func sampleImage(width: Int, height: Int) -> Image<ARGB32ColorPixel> {
         let m1 = v1 * matrix
         let m2 = v2 * matrix
         
-        let c0 = SimplexNoise(4, 0.7, 0.025, m0.x, m0.y, m0.z) * 2 - 1
-        let c1 = SimplexNoise(4, 0.7, 0.025, m1.x, m1.y, m1.z) * 2 - 1
-        let c2 = SimplexNoise(4, 0.7, 0.025, m2.x, m2.y, m2.z) * 2 - 1
+        let c0 = SimplexNoise(8, 0.7, 0.025, m0.x, m0.y, m0.z) * 2 - 1
+        let c1 = SimplexNoise(8, 0.7, 0.025, m1.x, m1.y, m1.z) * 2 - 1
+        let c2 = SimplexNoise(8, 0.7, 0.025, m2.x, m2.y, m2.z) * 2 - 1
         
         v0.magnitude += c0 * 0.1
         v1.magnitude += c1 * 0.1
@@ -94,19 +94,62 @@ public func sampleImage(width: Int, height: Int) -> Image<ARGB32ColorPixel> {
     
     func shader(stageIn: ImageContextRenderStageIn<Vertex>) -> ColorPixel<RGBColorModel> {
         
-        let p = stageIn.vertex.position
+        let position = stageIn.vertex.position
+        let normal = stageIn.normal.unit
         
-        let light = Vector(x: 100, y: -100, z: -10)
+        let obj_color = RGBColorModel(red: 0.8, green: 0.7, blue: 1)
+        var result = ColorPixel(color: RGBColorModel(red: 0, green: 0, blue: 0))
         
-        let d = p - light
+        do {
+            
+            let ambient_strength = 0.3
+            let light_color = RGBColorModel(red: 0.7, green: 0.9, blue: 0.4)
+            
+            result.red += obj_color.red * ambient_strength * light_color.red
+            result.green += obj_color.green * ambient_strength * light_color.green
+            result.blue += obj_color.blue * ambient_strength * light_color.blue
+            
+        }
         
-        let distance = d.magnitude
+        do {
+            
+            let light_position = Vector(x: 100, y: -100, z: -10)
+            let light_color = RGBColorModel(red: 1.0, green: 1.0, blue: 1.0)
+            
+            let d = position - light_position
+            let distance = d.magnitude
+            
+            let power = 40000 / (distance * distance)
+            let cos_theta = max(0, dot(normal, d / distance))
+            
+            let light_strength = cos_theta * power
+            
+            result.red += obj_color.red * light_strength * light_color.red
+            result.green += obj_color.green * light_strength * light_color.green
+            result.blue += obj_color.blue * light_strength * light_color.blue
+            
+        }
         
-        let power = 40000 / (distance * distance)
+        do {
+            
+            let light_position = Vector(x: -250, y: 200, z: 30)
+            let light_color = RGBColorModel(red: 0.9, green: 0.7, blue: 0.4)
+            
+            let d = position - light_position
+            let distance = d.magnitude
+            
+            let power = 60000 / (distance * distance)
+            let cos_theta = max(0, dot(normal, d / distance))
+            
+            let light_strength = cos_theta * power
+            
+            result.red += obj_color.red * light_strength * light_color.red
+            result.green += obj_color.green * light_strength * light_color.green
+            result.blue += obj_color.blue * light_strength * light_color.blue
+            
+        }
         
-        let cos_theta = dot(stageIn.normal.unit, d / distance).clamped(to: 0...1)
-        
-        return ColorPixel(red: (cos_theta * power).clamped(to: 0...1), green: (cos_theta * power).clamped(to: 0...1), blue: (cos_theta * power).clamped(to: 0...1))
+        return result
     }
     
     var triangles = [f0, f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15, f16, f17, f18, f19]
