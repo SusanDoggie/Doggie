@@ -197,6 +197,30 @@ extension ImageContext {
     }
 }
 
+public struct OrthographicProjectMatrix {
+    
+    public var nearZ: Double
+    public var farZ: Double
+    
+    @_inlineable
+    public init(nearZ: Double, farZ: Double) {
+        self.nearZ = nearZ
+        self.farZ = farZ
+    }
+}
+
+extension ImageContext {
+    
+    @_inlineable
+    public func render<S : Sequence, Vertex : ImageContextRenderVertex, P : ColorPixelProtocol>(_ triangles: S, projection: OrthographicProjectMatrix, shader: (ImageContextRenderStageIn<Vertex>) -> P?) where S.Element == (Vertex, Vertex, Vertex), Vertex.Position == Vector, Pixel.Model == P.Model {
+        
+        let width = Double(self.width)
+        let height = Double(self.height)
+        
+        render(triangles, position: { Point(x: (0.5 + 0.5 * $0.x) * width, y: (0.5 + 0.5 * $0.y) * height) }, depthFun: { ($0.z - projection.nearZ) / (projection.farZ - projection.nearZ) }, shader: { shader($0) })
+    }
+}
+
 public struct PerspectiveProjectMatrix {
     
     public var angle: Double
