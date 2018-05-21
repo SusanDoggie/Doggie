@@ -253,42 +253,48 @@ extension BinaryFixedPoint {
     
     @_transparent
     public static func +(lhs: Self, rhs: Self) -> Self {
-        return Self(representingValue: lhs.representingValue + rhs.representingValue)
+        let (value, overflow) = lhs.bitPattern.addingReportingOverflow(rhs.bitPattern)
+        return overflow ? .max : Self(bitPattern: value)
     }
     
     @_transparent
     public static func +=(lhs: inout Self, rhs: Self) {
-        lhs.representingValue += rhs.representingValue
+        lhs = lhs + rhs
     }
     
     @_transparent
     public static func -(lhs: Self, rhs: Self) -> Self {
-        return Self(representingValue: lhs.representingValue - rhs.representingValue)
+        let (value, overflow) = lhs.bitPattern.subtractingReportingOverflow(rhs.bitPattern)
+        return overflow ? .min : Self(bitPattern: value)
     }
     
     @_transparent
     public static func -=(lhs: inout Self, rhs: Self) {
-        lhs.representingValue -= rhs.representingValue
+        lhs = lhs - rhs
     }
     
     @_transparent
     public static func *(lhs: Self, rhs: Self) -> Self {
-        return Self(representingValue: lhs.representingValue * rhs.representingValue)
+        let base: BitPattern = 1 << Self.fractionBitCount
+        let value = base.dividingFullWidth(lhs.bitPattern.multipliedFullWidth(by: rhs.bitPattern)).quotient
+        return Self(bitPattern: value)
     }
     
     @_transparent
     public static func *=(lhs: inout Self, rhs: Self) {
-        lhs.representingValue *= rhs.representingValue
+        lhs = lhs * rhs
     }
     
     @_transparent
     public static func /(lhs: Self, rhs: Self) -> Self {
-        return Self(representingValue: lhs.representingValue / rhs.representingValue)
+        let base: BitPattern = 1 << Self.fractionBitCount
+        let value = rhs.bitPattern.dividingFullWidth(lhs.bitPattern.multipliedFullWidth(by: base)).quotient
+        return Self(bitPattern: value)
     }
     
     @_transparent
     public static func /=(lhs: inout Self, rhs: Self) {
-        lhs.representingValue /= rhs.representingValue
+        lhs = lhs / rhs
     }
     
     @_transparent

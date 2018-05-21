@@ -83,36 +83,6 @@ extension Fixed14Number : SignedNumeric where BitPattern : SignedNumeric {
     }
 }
 
-struct Fixed15Number<BitPattern : FixedWidthInteger & ByteCodable> : BinaryFixedPoint, ByteCodable {
-    
-    typealias RepresentingValue = Double
-    
-    var bitPattern: BitPattern
-    
-    @_transparent
-    init(bitPattern: BitPattern) {
-        self.bitPattern = bitPattern
-    }
-    
-    @_transparent
-    static var fractionBitCount: Int {
-        return 15
-    }
-}
-
-extension Fixed15Number : SignedNumeric where BitPattern : SignedNumeric {
-    
-    @_transparent
-    static prefix func -(x: Fixed15Number) -> Fixed15Number {
-        return Fixed15Number(representingValue: -x.representingValue)
-    }
-    
-    @_transparent
-    mutating func negate() {
-        self.representingValue.negate()
-    }
-}
-
 struct Fixed16Number<BitPattern : FixedWidthInteger & ByteCodable> : BinaryFixedPoint, ByteCodable {
     
     typealias RepresentingValue = Double
