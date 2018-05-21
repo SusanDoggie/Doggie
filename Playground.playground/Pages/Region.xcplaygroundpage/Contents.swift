@@ -6,7 +6,7 @@ import Doggie
 let path1 = try Shape(code: "M89.519,116.084c-11.976,31.189-38.601,41.458-53.065,25.444c-14.116-15.628-4.32-41.719,23.573-54.181c19.079-8.524,51.003-9.777,72.727,0.537c25.568,12.139,32.399,35.87,13.692,48.669c-15.201,10.401-30.093-2.211-39.784-19.466c-15.021-26.75-12.634-54.875,0.255-79.138c9.319-17.546,24.098-29.044,43.142-13.428c24.929,20.441,0.69,41.354-26.336,50.344c-18.069,6.01-36.383,11.018-63.603-5.588C39.18,56.502,22.589,37.476,35.094,23.825c13.085-14.286,36.227-11.396,49.794,10.99C99.513,58.943,99.079,91.187,89.519,116.084z")
 
 let region = ShapeRegion(path1, winding: .nonZero)
-let ellipse = Shape.Ellipse(path1.boundary)
+let ellipse = Shape(ellipseIn: path1.boundary)
 let region2 = ShapeRegion(ellipse, winding: .nonZero)
 
 path1 + ellipse
@@ -21,7 +21,7 @@ region.symmetricDifference(region2)
 let path2 = try Shape(code: "M141.102,150.83c100,90.476,85.715-36.055-4.762,76.871s112.763-105.442,36.994-76.871S141.102,150.83,141.102,150.83z")
 
 let region3 = ShapeRegion(path2, winding: .nonZero)
-let ellipse2 = Shape.Ellipse(path2.boundary)
+let ellipse2 = Shape(ellipseIn: path2.boundary)
 let region4 = ShapeRegion(ellipse2, winding: .nonZero)
 
 path2 + ellipse2
@@ -32,12 +32,12 @@ region3.subtracting(region4)
 region4.subtracting(region3)
 region3.symmetricDifference(region4)
 
-ShapeRegion(Shape.Ellipse(x: 100, y: 100, rx: 100, ry: 100) + Shape.Ellipse(x: 110, y: 100, rx: 100, ry: 100) + Shape.Ellipse(x: 120, y: 100, rx: 100, ry: 100), winding: .nonZero)
-ShapeRegion(Shape.Ellipse(x: 100, y: 100, rx: 100, ry: 100) + Shape.Ellipse(x: 110, y: 100, rx: 100, ry: 100) + Shape.Ellipse(x: 120, y: 100, rx: 100, ry: 100), winding: .evenOdd)
+ShapeRegion(Shape(ellipseIn: Rect(x: 100, y: 100, rx: 100, ry: 100)) + Shape(ellipseIn: Rect(x: 110, y: 100, rx: 100, ry: 100)) + Shape(ellipseIn: Rect(x: 120, y: 100, rx: 100, ry: 100)), winding: .nonZero)
+ShapeRegion(Shape(ellipseIn: Rect(x: 100, y: 100, rx: 100, ry: 100)) + Shape(ellipseIn: Rect(x: 110, y: 100, rx: 100, ry: 100)) + Shape(ellipseIn: Rect(x: 120, y: 100, rx: 100, ry: 100)), winding: .evenOdd)
 
-var square = Shape.Rectangle(x: 0, y: 0, width: 100, height: 100)
-var square2 = Shape.Rectangle(x:110, y: 0, width: 50, height: 100)
-let circle = Shape.Ellipse(x: 100, y: 100, rx: 100, ry: 100)
+var square = Shape(rect: Rect(x: 0, y: 0, width: 100, height: 100))
+var square2 = Shape(rect: Rect(x:110, y: 0, width: 50, height: 100))
+let circle = Shape(ellipseIn: Rect(x: 100, y: 100, rx: 100, ry: 100))
 
 square.transform = SDTransform.rotate(0.1)
 
@@ -52,8 +52,8 @@ r_square.subtracting(r_circle)
 r_circle.subtracting(r_square)
 r_square.symmetricDifference(r_circle)
 
-var square3 = Shape.Rectangle(x: 0, y: 0, width: 100, height: 100)
-var square4 = Shape.Rectangle(x:50, y: 10, width: 50, height: 80)
+var square3 = Shape(rect: Rect(x: 0, y: 0, width: 100, height: 100))
+var square4 = Shape(rect: Rect(x:50, y: 10, width: 50, height: 80))
 
 square3 + square4
 
@@ -63,12 +63,12 @@ ShapeRegion(square3, winding: .nonZero).subtracting(ShapeRegion(square4, winding
 ShapeRegion(square4, winding: .nonZero).subtracting(ShapeRegion(square3, winding: .nonZero))
 ShapeRegion(square3, winding: .nonZero).symmetricDifference(ShapeRegion(square4, winding: .nonZero))
 
-var square5 = ShapeRegion(square3, winding: .nonZero).union(ShapeRegion(Shape.Rectangle(x:50, y: 0, width: 100, height: 50), winding: .nonZero))
+var square5 = ShapeRegion(square3, winding: .nonZero).union(ShapeRegion(rect: Rect(x:50, y: 0, width: 100, height: 50), winding: .nonZero))
 
 square5.subtracting(ShapeRegion(square4, winding: .nonZero))
 
-let circle2 = Shape.Ellipse(x: 100, y: 100, rx: 100, ry: 100)
-let circle3 = Shape.Ellipse(x: 149, y: 100, rx: 80, ry: 80)
+let circle2 = Shape(ellipseIn: Rect(x: 100, y: 100, rx: 100, ry: 100))
+let circle3 = Shape(ellipseIn: Rect(x: 149, y: 100, rx: 80, ry: 80))
 let circle4 = ShapeRegion(circle2, winding: .nonZero).union(ShapeRegion(circle3, winding: .nonZero))
 ShapeRegion(circle2, winding: .nonZero).intersection(ShapeRegion(circle3, winding: .nonZero))
 
@@ -80,8 +80,8 @@ circle4.subtracting(ShapeRegion(circle3, winding: .nonZero))
 ShapeRegion(circle3, winding: .nonZero).subtracting(circle4)
 circle4.symmetricDifference(ShapeRegion(circle3, winding: .nonZero))
 
-let circle5 = Shape.Ellipse(x: 50, y: 50, radius: 100)
-var circle6 = Shape.Ellipse(x: 50, y: 50, radius: 70)
+let circle5 = Shape(ellipseIn: Rect(x: 50, y: 50, radius: 100))
+var circle6 = Shape(ellipseIn: Rect(x: 50, y: 50, radius: 70))
 circle6.transform *= SDTransform.reflectX(50)
 var circle7 = circle5 + circle6.identity
 circle7.transform *= SDTransform.translate(x: -50, y: -50) * SDTransform.scale(1 / 3) * SDTransform.translate(x: 50, y: 50)

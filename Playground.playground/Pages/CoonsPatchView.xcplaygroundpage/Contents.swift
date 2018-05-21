@@ -8,6 +8,6 @@ let view = CoonsPatchView(frame: CGRect(x: 0, y: 0, width: 500, height: 500))
 
 PlaygroundPage.current.liveView = view
 
-let ellipse = Shape.Ellipse(center: Point(x: 0.5, y: 0.5), radius: Radius(x: 0.4, y: 0.4))
+let ellipse = Shape(ellipseIn: Rect(x: 0.1, y: 0.1, width: 0.8, height: 0.8))
 
 view.shape = ellipse

@@ -63,7 +63,7 @@ extension ImageContext {
     
     @_versioned
     @_inlineable
-    func _drawGradient(_ blender: ImageContextPixelBlender<Pixel>, _ patch: CubicBezierPatch, _ c0: ColorPixel<Pixel.Model>, _ c1: ColorPixel<Pixel.Model>, _ c2: ColorPixel<Pixel.Model>, _ c3: ColorPixel<Pixel.Model>) {
+    func _drawGradient(_ blender: ImageContextPixelBlender<Pixel>, _ patch: CubicBezierPatch<Point>, _ c0: ColorPixel<Pixel.Model>, _ c1: ColorPixel<Pixel.Model>, _ c2: ColorPixel<Pixel.Model>, _ c3: ColorPixel<Pixel.Model>) {
         
         let (p0, p1, p2, p3) = patch.split(0.5, 0.5)
         
@@ -74,7 +74,7 @@ extension ImageContext {
         let c8 = 0.25 * (c0 + c1 + c2 + c3)
         
         @inline(__always)
-        func _draw(_ patch: CubicBezierPatch, _ c0: ColorPixel<Pixel.Model>, _ c1: ColorPixel<Pixel.Model>, _ c2: ColorPixel<Pixel.Model>, _ c3: ColorPixel<Pixel.Model>) {
+        func _draw(_ patch: CubicBezierPatch<Point>, _ c0: ColorPixel<Pixel.Model>, _ c1: ColorPixel<Pixel.Model>, _ c2: ColorPixel<Pixel.Model>, _ c3: ColorPixel<Pixel.Model>) {
             
             let d0 = patch.m00 - patch.m03
             let d1 = patch.m30 - patch.m33
@@ -104,7 +104,7 @@ extension ImageContext {
     }
     
     @_inlineable
-    public func drawGradient<C: ColorProtocol>(_ patch: CubicBezierPatch, color c0: C, _ c1: C, _ c2: C, _ c3: C) {
+    public func drawGradient<C: ColorProtocol>(_ patch: CubicBezierPatch<Point>, color c0: C, _ c1: C, _ c2: C, _ c3: C) {
         
         let width = self.width
         let height = self.height
@@ -116,7 +116,7 @@ extension ImageContext {
         
         self.withUnsafePixelBlender { blender in
             
-            _drawGradient(blender, CubicBezierPatch(patch.m00 * transform, patch.m01 * transform, patch.m02 * transform, patch.m03 * transform,
+            _drawGradient(blender, CubicBezierPatch<Point>(patch.m00 * transform, patch.m01 * transform, patch.m02 * transform, patch.m03 * transform,
                                                     patch.m10 * transform, patch.m11 * transform, patch.m12 * transform, patch.m13 * transform,
                                                     patch.m20 * transform, patch.m21 * transform, patch.m22 * transform, patch.m23 * transform,
                                                     patch.m30 * transform, patch.m31 * transform, patch.m32 * transform, patch.m33 * transform),

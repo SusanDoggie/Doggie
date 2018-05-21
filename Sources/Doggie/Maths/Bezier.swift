@@ -1158,32 +1158,32 @@ public func BezierTweening(start: [Point], end: [Point], _ t: Double) -> [Point]
 
 // MARK: Cubic Bezier Patch
 
-public struct CubicBezierPatch {
+public struct CubicBezierPatch<Element : ScalarMultiplicative> : Equatable where Element.Scalar == Double {
     
-    public var m00: Point
-    public var m01: Point
-    public var m02: Point
-    public var m03: Point
-    public var m10: Point
-    public var m11: Point
-    public var m12: Point
-    public var m13: Point
-    public var m20: Point
-    public var m21: Point
-    public var m22: Point
-    public var m23: Point
-    public var m30: Point
-    public var m31: Point
-    public var m32: Point
-    public var m33: Point
+    public var m00: Element
+    public var m01: Element
+    public var m02: Element
+    public var m03: Element
+    public var m10: Element
+    public var m11: Element
+    public var m12: Element
+    public var m13: Element
+    public var m20: Element
+    public var m21: Element
+    public var m22: Element
+    public var m23: Element
+    public var m30: Element
+    public var m31: Element
+    public var m32: Element
+    public var m33: Element
     
     @_inlineable
-    public init(coonsPatch m00: Point, _ m01: Point, _ m02: Point, _ m03: Point,
-                _ m10: Point, _ m13: Point, _ m20: Point, _ m23: Point,
-                _ m30: Point, _ m31: Point, _ m32: Point, _ m33: Point) {
+    public init(coonsPatch m00: Element, _ m01: Element, _ m02: Element, _ m03: Element,
+                _ m10: Element, _ m13: Element, _ m20: Element, _ m23: Element,
+                _ m30: Element, _ m31: Element, _ m32: Element, _ m33: Element) {
         
         @inline(__always)
-        func _eval(_ a: Point, _ b: Point, _ c: Point, _ d: Point, _ e: Point) -> Point {
+        func _eval(_ a: Element, _ b: Element, _ c: Element, _ d: Element, _ e: Element) -> Element {
             let _a = 6 * a
             let _b = 3 * b
             let _c = 2 * c
@@ -1210,10 +1210,10 @@ public struct CubicBezierPatch {
     }
     
     @_inlineable
-    public init(_ m00: Point, _ m01: Point, _ m02: Point, _ m03: Point,
-                _ m10: Point, _ m11: Point, _ m12: Point, _ m13: Point,
-                _ m20: Point, _ m21: Point, _ m22: Point, _ m23: Point,
-                _ m30: Point, _ m31: Point, _ m32: Point, _ m33: Point) {
+    public init(_ m00: Element, _ m01: Element, _ m02: Element, _ m03: Element,
+                _ m10: Element, _ m11: Element, _ m12: Element, _ m13: Element,
+                _ m20: Element, _ m21: Element, _ m22: Element, _ m23: Element,
+                _ m30: Element, _ m31: Element, _ m32: Element, _ m33: Element) {
         self.m00 = m00
         self.m01 = m01
         self.m02 = m02
@@ -1239,7 +1239,7 @@ extension CubicBezierPatch {
     public func split(_ u: Double, _ v: Double) -> (CubicBezierPatch, CubicBezierPatch, CubicBezierPatch, CubicBezierPatch) {
         
         @inline(__always)
-        func _split(_ t: Double, _ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point) -> ((Point, Point, Point, Point), (Point, Point, Point, Point)) {
+        func _split(_ t: Double, _ p0: Element, _ p1: Element, _ p2: Element, _ p3: Element) -> ((Element, Element, Element, Element), (Element, Element, Element, Element)) {
             let q0 = p0 + t * (p1 - p0)
             let q1 = p1 + t * (p2 - p1)
             let q2 = p2 + t * (p3 - p2)
@@ -1288,7 +1288,7 @@ extension CubicBezierPatch {
     }
 }
 
-extension CubicBezierPatch {
+extension CubicBezierPatch where Element == Point {
     
     @_inlineable
     public func warping(_ bezier: Bezier<Point>) -> [Bezier<Point>] {

@@ -24,8 +24,8 @@ func curves(_ shape: Shape) -> [[Point]] {
     return result
 }
 
-let square = Shape.Rectangle(x: 0, y: -50, width: 100, height: 100)
-let ellipse = Shape.Ellipse(center: Point(x: 700, y: 0), radius: 70.7)
+let square = Shape(rect: Rect(x: 0, y: -50, width: 100, height: 100))
+let ellipse = Shape(ellipseIn: Rect(x: 629.3, y: -70.7, width: 141.4, height: 141.4))
 
 func ShapeTween(_ t: Double) -> Shape {
     
