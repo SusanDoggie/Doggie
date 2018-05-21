@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0805A95620B2F85D001A5974 /* ShapeTweening.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0805A95520B2F85D001A5974 /* ShapeTweening.swift */; };
 		0821D6421EED58FC007E42F5 /* Rendering.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0821D6401EED58FC007E42F5 /* Rendering.swift */; };
 		08458AF11E2E627600D01813 /* AccelerateWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AB11E2E627600D01813 /* AccelerateWrapper.swift */; };
 		08458AF31E2E627600D01813 /* AccelerateArithmetic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AB21E2E627600D01813 /* AccelerateArithmetic.swift */; };
@@ -220,6 +221,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		0805A95520B2F85D001A5974 /* ShapeTweening.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShapeTweening.swift; sourceTree = "<group>"; };
 		0821D6401EED58FC007E42F5 /* Rendering.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Rendering.swift; sourceTree = "<group>"; };
 		08458AB11E2E627600D01813 /* AccelerateWrapper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = AccelerateWrapper.swift; sourceTree = "<group>"; };
 		08458AB21E2E627600D01813 /* AccelerateArithmetic.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = AccelerateArithmetic.swift; sourceTree = "<group>"; };
@@ -674,6 +676,7 @@
 				0A2107081E5BEEBB00F1E00E /* PathCoder.swift */,
 				0A21070A1E5BEEBB00F1E00E /* PathStroke.swift */,
 				0A21070C1E5BEEBB00F1E00E /* Shape.swift */,
+				0805A95520B2F85D001A5974 /* ShapeTweening.swift */,
 				0AD7FA2F1EBDA86A001C9B21 /* ShapeWinding.swift */,
 				0A7314BF1F3D7B720008461E /* ShapeSegment.swift */,
 				0A792C731FDA28BE003C0290 /* ShapeRegion */,
@@ -1160,6 +1163,7 @@
 				08458B311E2E627600D01813 /* Bezier.swift in Sources */,
 				0A8535371F59543E006FB85D /* CFFFDSelect.swift in Sources */,
 				08458B431E2E627600D01813 /* Vector.swift in Sources */,
+				0805A95620B2F85D001A5974 /* ShapeTweening.swift in Sources */,
 				0A8F4F681F622B020062FD11 /* Stencil.swift in Sources */,
 				0A32D9991F28825F0027F384 /* Tensor.swift in Sources */,
 				0A9CD5971EEB9A2D00094148 /* CalibratedRGBColorSpace.swift in Sources */,

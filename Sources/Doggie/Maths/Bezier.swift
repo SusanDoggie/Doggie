@@ -730,6 +730,23 @@ public func /= <Element>(lhs: inout Bezier<Element>, rhs: Double) {
     lhs = lhs / rhs
 }
 
+@_inlineable
+public func * (lhs: Bezier<Point>, rhs: SDTransform) -> Bezier<Point> {
+    return Bezier(lhs.points.map { $0 * rhs })
+}
+@_inlineable
+public func *= (lhs: inout Bezier<Point>, rhs: SDTransform) {
+    lhs = lhs * rhs
+}
+@_inlineable
+public func * (lhs: Bezier<Vector>, rhs: Matrix) -> Bezier<Vector> {
+    return Bezier(lhs.points.map { $0 * rhs })
+}
+@_inlineable
+public func *= (lhs: inout Bezier<Vector>, rhs: Matrix) {
+    lhs = lhs * rhs
+}
+
 // MARK: Bezier Length
 
 @inline(__always)
@@ -1127,33 +1144,6 @@ private func _BezierOffset(_ p0: Point, _ p1: Point, _ p2: Point, _ a: Double, _
     }
     
     return BezierOffset(p0, p2, a).map { [[$0, $1]] } ?? []
-}
-
-// MARK: Shape Tweening
-
-public func BezierTweening(start: [Point], end: [Point], _ t: Double) -> [Point] {
-    
-    let start_start = start.first!
-    let start_end = start.last!
-    let end_start = end.first!
-    let end_end = end.last!
-    let d1 = start_end - start_start
-    let d2 = end_end - end_start
-    
-    let transform1 = SDTransform.translate(x: -start_start.x, y: -start_start.y) * SDTransform.scale(1 / d1.magnitude) * SDTransform.rotate(-d1.phase)
-    let s = Bezier(start.map { $0 * transform1 })
-    
-    let transform2 = SDTransform.translate(x: -end_start.x, y: -end_start.y) * SDTransform.scale(1 / d2.magnitude) * SDTransform.rotate(-d2.phase)
-    let e = Bezier(end.map { $0 * transform2 })
-    
-    let m = (1 - t) * s + t * e
-    
-    let m_start = (1 - t) * start_start + t * end_start
-    let m_end = (1 - t) * start_end + t * end_end
-    let m_d = m_end - m_start
-    
-    let transform3 = SDTransform.rotate(m_d.phase) * SDTransform.scale(m_d.magnitude) * SDTransform.translate(x: m_start.x, y: m_start.y)
-    return m.points.map { $0 * transform3 }
 }
 
 // MARK: Cubic Bezier Patch
