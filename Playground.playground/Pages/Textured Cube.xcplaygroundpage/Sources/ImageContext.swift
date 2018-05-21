@@ -31,7 +31,7 @@ public func sampleImage(width: Int, height: Int) -> Image<ARGB32ColorPixel> {
     
     let context = ImageContext<ARGB32ColorPixel>(width: width, height: height, colorSpace: ColorSpace.sRGB)
     
-    let matrix = Matrix.rotateY(degreesToRad(30)) * Matrix.rotateX(degreesToRad(-30)) * Matrix.translate(x: 0, y: 0, z: 100)
+    let matrix = Matrix.rotateY(degreesToRad(30)) * Matrix.rotateX(degreesToRad(30)) * Matrix.translate(x: 0, y: 0, z: 100)
     
     let v0 = Vector(x: 25, y: 25, z: -25) * matrix
     let v1 = Vector(x: -25, y: 25, z: -25) * matrix

@@ -238,7 +238,7 @@ public struct PerspectiveProjectMatrix {
 @_inlineable
 public func *(lhs: Vector, rhs: PerspectiveProjectMatrix) -> Point {
     let cotan = 1.0 / tan(0.5 * rhs.angle)
-    let dz = rhs.nearZ - rhs.farZ
+    let dz = rhs.farZ - rhs.nearZ 
     let _z = lhs.z * (rhs.farZ + rhs.nearZ) + 2.0 * rhs.farZ * rhs.nearZ
     let _w = dz / _z
     return Point(x: lhs.x * cotan * _w, y: lhs.y * cotan * _w)

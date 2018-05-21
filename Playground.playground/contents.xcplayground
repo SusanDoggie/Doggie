@@ -29,6 +29,7 @@
         <page name='Textured Cube'/>
         <page name='Triangle'/>
         <page name='Bezier Intersection'/>
-        <page name='Moon'/>
+        <page name='Projection'/>
+        <page name='Tessellation'/>
     </pages>
 </playground>
