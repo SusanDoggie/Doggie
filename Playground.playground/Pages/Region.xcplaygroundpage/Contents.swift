@@ -32,12 +32,12 @@ region3.subtracting(region4)
 region4.subtracting(region3)
 region3.symmetricDifference(region4)
 
-ShapeRegion(Shape(ellipseIn: Rect(x: 100, y: 100, rx: 100, ry: 100)) + Shape(ellipseIn: Rect(x: 110, y: 100, rx: 100, ry: 100)) + Shape(ellipseIn: Rect(x: 120, y: 100, rx: 100, ry: 100)), winding: .nonZero)
-ShapeRegion(Shape(ellipseIn: Rect(x: 100, y: 100, rx: 100, ry: 100)) + Shape(ellipseIn: Rect(x: 110, y: 100, rx: 100, ry: 100)) + Shape(ellipseIn: Rect(x: 120, y: 100, rx: 100, ry: 100)), winding: .evenOdd)
+ShapeRegion(Shape(ellipseIn: Rect(x: 0, y: 0, width: 200, height: 200)) + Shape(ellipseIn: Rect(x: 10, y: 0, width: 200, height: 200)) + Shape(ellipseIn: Rect(x: 20, y: 0, width: 200, height: 200)), winding: .nonZero)
+ShapeRegion(Shape(ellipseIn: Rect(x: 0, y: 0, width: 200, height: 200)) + Shape(ellipseIn: Rect(x: 10, y: 0, width: 200, height: 200)) + Shape(ellipseIn: Rect(x: 20, y: 0, width: 200, height: 200)), winding: .evenOdd)
 
 var square = Shape(rect: Rect(x: 0, y: 0, width: 100, height: 100))
 var square2 = Shape(rect: Rect(x:110, y: 0, width: 50, height: 100))
-let circle = Shape(ellipseIn: Rect(x: 100, y: 100, rx: 100, ry: 100))
+let circle = Shape(ellipseIn: Rect(x: 0, y: 0, width: 200, height: 200))
 
 square.transform = SDTransform.rotate(0.1)
 
@@ -63,12 +63,12 @@ ShapeRegion(square3, winding: .nonZero).subtracting(ShapeRegion(square4, winding
 ShapeRegion(square4, winding: .nonZero).subtracting(ShapeRegion(square3, winding: .nonZero))
 ShapeRegion(square3, winding: .nonZero).symmetricDifference(ShapeRegion(square4, winding: .nonZero))
 
-var square5 = ShapeRegion(square3, winding: .nonZero).union(ShapeRegion(rect: Rect(x:50, y: 0, width: 100, height: 50), winding: .nonZero))
+var square5 = ShapeRegion(square3, winding: .nonZero).union(ShapeRegion(rect: Rect(x:50, y: 0, width: 100, height: 50)))
 
 square5.subtracting(ShapeRegion(square4, winding: .nonZero))
 
-let circle2 = Shape(ellipseIn: Rect(x: 100, y: 100, rx: 100, ry: 100))
-let circle3 = Shape(ellipseIn: Rect(x: 149, y: 100, rx: 80, ry: 80))
+let circle2 = Shape(ellipseIn: Rect(x: 0, y: 0, width: 200, height: 200))
+let circle3 = Shape(ellipseIn: Rect(x: 69, y: 20, width: 160, height: 160))
 let circle4 = ShapeRegion(circle2, winding: .nonZero).union(ShapeRegion(circle3, winding: .nonZero))
 ShapeRegion(circle2, winding: .nonZero).intersection(ShapeRegion(circle3, winding: .nonZero))
 
@@ -80,8 +80,8 @@ circle4.subtracting(ShapeRegion(circle3, winding: .nonZero))
 ShapeRegion(circle3, winding: .nonZero).subtracting(circle4)
 circle4.symmetricDifference(ShapeRegion(circle3, winding: .nonZero))
 
-let circle5 = Shape(ellipseIn: Rect(x: 50, y: 50, radius: 100))
-var circle6 = Shape(ellipseIn: Rect(x: 50, y: 50, radius: 70))
+let circle5 = Shape(ellipseIn: Rect(x: -50, y: -50, width: 200, height: 200))
+var circle6 = Shape(ellipseIn: Rect(x: -20, y: -20, width: 140, height: 140))
 circle6.transform *= SDTransform.reflectX(50)
 var circle7 = circle5 + circle6.identity
 circle7.transform *= SDTransform.translate(x: -50, y: -50) * SDTransform.scale(1 / 3) * SDTransform.translate(x: 50, y: 50)
