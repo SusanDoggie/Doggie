@@ -125,14 +125,13 @@ extension ImageContext {
         let option = self.image.option
         
         let n_width = width + filter.count - 1
-        let n_height = height + filter.count - 1
         
         guard width > 0 && height > 0 else { return ShadowTexture(width: width, height: height, pixels: map) }
         
         let length = FFTConvolveLength(width, filter.count)
         
-        var buffer = MappedBuffer<Double>(repeating: 0, count: length + length * height + n_width * length, option: option)
-        var result = ShadowTexture(width: n_width, height: n_height, option: option)
+        var buffer = MappedBuffer<Double>(repeating: 0, count: length + length * height, option: option)
+        var result = ShadowTexture(width: n_width, height: length, option: option)
         
         buffer.withUnsafeMutableBufferPointer {
             
@@ -151,7 +150,6 @@ extension ImageContext {
                     let _kreal = buffer
                     let _kimag = buffer + 1
                     let _temp1 = _kreal + length
-                    let _temp2 = _temp1 + length * height
                     
                     HalfRadix2CooleyTukey(level, filter, 1, filter.count, _kreal, _kimag, 2)
                     
@@ -159,17 +157,7 @@ extension ImageContext {
                     Div(length, _kreal, _kimag, 2, &_length, 0, _kreal, _kimag, 2)
                     
                     _Radix2FiniteImpulseFilter(level, height, source, 1, width, width, _kreal, _kimag, 2, 0, _temp1, 1, length)
-                    _Radix2FiniteImpulseFilter(level, n_width, _temp1, length, 1, height, _kreal, _kimag, 2, 0, _temp2, 1, length)
-                    
-                    do {
-                        var _temp2 = _temp2
-                        var output = output
-                        for _ in 0..<n_height {
-                            Move(n_width, _temp2, length, output, 1)
-                            _temp2 += 1
-                            output += n_width
-                        }
-                    }
+                    _Radix2FiniteImpulseFilter(level, n_width, _temp1, length, 1, height, _kreal, _kimag, 2, 0, output, n_width, 1)
                 }
             }
         }

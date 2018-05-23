@@ -55,8 +55,8 @@ func _ImageConvolution<Pixel, T: BinaryFloatingPoint>(_ image: Image<Pixel>, _ h
     let length1 = FFTConvolveLength(width, horizontal_filter.count)
     let length2 = FFTConvolveLength(height, vertical_filter.count)
     
-    var buffer = MappedBuffer<T>(repeating: 0, count: length1 + length2 + length1 * height + n_width * length2, option: image.option)
-    var result = Image<Pixel>(width: n_width, height: n_height, resolution: image.resolution, colorSpace: image.colorSpace, option: image.option)
+    var buffer = MappedBuffer<T>(repeating: 0, count: length1 + length2 + length1 * height, option: image.option)
+    var result = MappedBuffer<Pixel>(repeating: Pixel(), count: n_width * length2, option: image.option)
     
     buffer.withUnsafeMutableBufferPointer {
         
@@ -77,8 +77,7 @@ func _ImageConvolution<Pixel, T: BinaryFloatingPoint>(_ image: Image<Pixel>, _ h
                 let _kimag1 = buffer + 1
                 let _kreal2 = buffer + length1
                 let _kimag2 = _kreal2 + 1
-                let _temp1 = _kreal2 + length2
-                let _temp2 = _temp1 + length1 * height
+                let _temp = _kreal2 + length2
                 
                 HalfRadix2CooleyTukey(level1, horizontal_filter, 1, horizontal_filter.count, _kreal1, _kimag1, 2)
                 
@@ -92,19 +91,8 @@ func _ImageConvolution<Pixel, T: BinaryFloatingPoint>(_ image: Image<Pixel>, _ h
                 
                 for _ in 0..<numberOfComponents {
                     
-                    _Radix2FiniteImpulseFilter(level1, height, source, numberOfComponents, numberOfComponents * width, width, _kreal1, _kimag1, 2, 0, _temp1, 1, length1)
-                    _Radix2FiniteImpulseFilter(level2, n_width, _temp1, length1, 1, height, _kreal2, _kimag2, 2, 0, _temp2, 1, length2)
-                    
-                    do {
-                        var _temp2 = _temp2
-                        var output = output
-                        let out_stride = numberOfComponents * n_width
-                        for _ in 0..<n_height {
-                            Move(n_width, _temp2, length2, output, numberOfComponents)
-                            _temp2 += 1
-                            output += out_stride
-                        }
-                    }
+                    _Radix2FiniteImpulseFilter(level1, height, source, numberOfComponents, numberOfComponents * width, width, _kreal1, _kimag1, 2, 0, _temp, 1, length1)
+                    _Radix2FiniteImpulseFilter(level2, n_width, _temp, length1, 1, height, _kreal2, _kimag2, 2, 0, output, numberOfComponents * n_width, numberOfComponents)
                     
                     source += 1
                     output += 1
@@ -113,7 +101,9 @@ func _ImageConvolution<Pixel, T: BinaryFloatingPoint>(_ image: Image<Pixel>, _ h
         }
     }
     
-    return result
+    result.removeLast(result.count - n_width * n_height)
+    
+    return Image(width: n_width, height: n_height, resolution: image.resolution, pixels: result, colorSpace: image.colorSpace)
 }
 
 @_versioned
@@ -195,8 +185,8 @@ func _ImageConvolutionVertical<Pixel, T: BinaryFloatingPoint>(_ image: Image<Pix
     
     let length = FFTConvolveLength(height, filter.count)
     
-    var buffer = MappedBuffer<T>(repeating: 0, count: length + length * width, option: image.option)
-    var result = Image<Pixel>(width: width, height: n_height, resolution: image.resolution, colorSpace: image.colorSpace, option: image.option)
+    var buffer = MappedBuffer<T>(repeating: 0, count: length, option: image.option)
+    var result = MappedBuffer<Pixel>(repeating: Pixel(), count: width * length, option: image.option)
     
     buffer.withUnsafeMutableBufferPointer {
         
@@ -214,7 +204,6 @@ func _ImageConvolutionVertical<Pixel, T: BinaryFloatingPoint>(_ image: Image<Pix
                 
                 let _kreal = buffer
                 let _kimag = buffer + 1
-                let _temp = buffer + length
                 
                 HalfRadix2CooleyTukey(level, filter, 1, filter.count, _kreal, _kimag, 2)
                 
@@ -223,18 +212,7 @@ func _ImageConvolutionVertical<Pixel, T: BinaryFloatingPoint>(_ image: Image<Pix
                 
                 for _ in 0..<numberOfComponents {
                     
-                    _Radix2FiniteImpulseFilter(level, width, source, numberOfComponents * width, numberOfComponents, height, _kreal, _kimag, 2, 0, _temp, 1, length)
-                    
-                    do {
-                        var _temp = _temp
-                        var output = output
-                        let out_stride = numberOfComponents * width
-                        for _ in 0..<n_height {
-                            Move(width, _temp, length, output, numberOfComponents)
-                            _temp += 1
-                            output += out_stride
-                        }
-                    }
+                    _Radix2FiniteImpulseFilter(level, width, source, numberOfComponents * width, numberOfComponents, height, _kreal, _kimag, 2, 0, output, numberOfComponents * width, numberOfComponents)
                     
                     source += 1
                     output += 1
@@ -243,7 +221,9 @@ func _ImageConvolutionVertical<Pixel, T: BinaryFloatingPoint>(_ image: Image<Pix
         }
     }
     
-    return result
+    result.removeLast(result.count - width * n_height)
+    
+    return Image(width: width, height: n_height, resolution: image.resolution, pixels: result, colorSpace: image.colorSpace)
 }
 
 @_inlineable
