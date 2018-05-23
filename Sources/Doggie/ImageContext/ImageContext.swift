@@ -27,12 +27,21 @@ import Foundation
 
 private struct ImageContextStyles {
     
+    static let defaultShadowColor = AnyColor(colorSpace: .calibratedGray(from: .sRGB, gamma: 2.2), white: 0.0, opacity: 1.0 / 3.0)
+    
     var opacity: Double = 1
     var antialias: Bool = true
     var transform: SDTransform = SDTransform.identity
+    
+    var shadowColor: AnyColor = ImageContextStyles.defaultShadowColor
+    var shadowOffset: Size = Size()
+    var shadowBlur: Double = 0
+    
     var compositingMode: ColorCompositingMode = .default
     var blendMode: ColorBlendMode = .default
+    
     var resamplingAlgorithm: ResamplingAlgorithm = .default
+    
     var renderCullingMode: ImageContextRenderCullMode = .none
     var renderDepthCompareMode: ImageContextRenderDepthCompareMode = .always
     var renderingIntent: RenderingIntent = .default
@@ -71,6 +80,9 @@ extension ImageContext {
         self.init(width: context.width, height: context.height, colorSpace: colorSpace, option: context.image.option)
         self.styles = context.styles
         self.styles.opacity = 1
+        self.styles.shadowColor = ImageContextStyles.defaultShadowColor
+        self.styles.shadowOffset = Size()
+        self.styles.shadowBlur = 0
         self.image.colorSpace.chromaticAdaptationAlgorithm = context.colorSpace.chromaticAdaptationAlgorithm
     }
 }
@@ -168,6 +180,45 @@ extension ImageContext {
                 next.transform = newValue
             } else {
                 styles.transform = newValue
+            }
+        }
+    }
+    
+    public var shadowColor: AnyColor {
+        get {
+            return next?.shadowColor ?? styles.shadowColor
+        }
+        set {
+            if let next = self.next {
+                next.shadowColor = newValue
+            } else {
+                styles.shadowColor = newValue
+            }
+        }
+    }
+    
+    public var shadowOffset: Size {
+        get {
+            return next?.shadowOffset ?? styles.shadowOffset
+        }
+        set {
+            if let next = self.next {
+                next.shadowOffset = newValue
+            } else {
+                styles.shadowOffset = newValue
+            }
+        }
+    }
+    
+    public var shadowBlur: Double {
+        get {
+            return next?.shadowBlur ?? styles.shadowBlur
+        }
+        set {
+            if let next = self.next {
+                next.shadowBlur = newValue
+            } else {
+                styles.shadowBlur = newValue
             }
         }
     }

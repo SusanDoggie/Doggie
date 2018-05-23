@@ -66,19 +66,202 @@ public struct Texture<Pixel: ColorPixelProtocol> {
     
     public let height: Int
     
-    public let pixels: MappedBuffer<Pixel>
+    public private(set) var pixels: MappedBuffer<Pixel>
     
     public var resamplingAlgorithm: ResamplingAlgorithm
     
     public var wrappingMode: WrappingMode
     
+    @_versioned
     @_inlineable
-    public init(image: Image<Pixel>, resamplingAlgorithm: ResamplingAlgorithm = .default, wrappingMode: WrappingMode = .default) {
-        self.width = image.width
-        self.height = image.height
-        self.pixels = image.pixels
+    init(width: Int, height: Int, pixels: MappedBuffer<Pixel>, resamplingAlgorithm: ResamplingAlgorithm, wrappingMode: WrappingMode) {
+        precondition(width >= 0, "negative width is not allowed.")
+        precondition(height >= 0, "negative height is not allowed.")
+        precondition(width * height == pixels.count, "mismatch pixels count.")
+        self.width = width
+        self.height = height
+        self.pixels = pixels
         self.resamplingAlgorithm = resamplingAlgorithm
         self.wrappingMode = wrappingMode
+    }
+    
+    @_inlineable
+    public init(width: Int, height: Int, resamplingAlgorithm: ResamplingAlgorithm = .default, wrappingMode: WrappingMode = .default, pixel: Pixel = Pixel(), option: MappedBufferOption = .default) {
+        precondition(width >= 0, "negative width is not allowed.")
+        precondition(height >= 0, "negative height is not allowed.")
+        self.width = width
+        self.height = height
+        self.pixels = MappedBuffer(repeating: pixel, count: width * height, option: option)
+        self.resamplingAlgorithm = resamplingAlgorithm
+        self.wrappingMode = wrappingMode
+    }
+    
+    @_inlineable
+    public init(texture: Texture, option: MappedBufferOption) {
+        self.width = texture.width
+        self.height = texture.height
+        self.pixels = MappedBuffer(texture.pixels, option: option)
+        self.resamplingAlgorithm = texture.resamplingAlgorithm
+        self.wrappingMode = texture.wrappingMode
+    }
+    
+    @_inlineable
+    public init<P>(texture: Texture<P>, option: MappedBufferOption) where P.Model == Pixel.Model {
+        self.width = texture.width
+        self.height = texture.height
+        self.resamplingAlgorithm = texture.resamplingAlgorithm
+        self.wrappingMode = texture.wrappingMode
+        if let buffer = texture.pixels as? MappedBuffer<Pixel> {
+            self.pixels = MappedBuffer(buffer, option: option)
+        } else {
+            self.pixels = texture.pixels.map(option: option, Pixel.init)
+        }
+    }
+}
+
+extension Texture {
+    
+    @_inlineable
+    public init(image: Image<Pixel>, resamplingAlgorithm: ResamplingAlgorithm = .default, wrappingMode: WrappingMode = .default) {
+        self.init(width: image.width, height: image.height, pixels: image.pixels, resamplingAlgorithm: resamplingAlgorithm, wrappingMode: wrappingMode)
+    }
+}
+
+extension Image {
+    
+    @_inlineable
+    public init(texture: Texture<Pixel>, resolution: Resolution = Resolution(resolution: 1, unit: .point), colorSpace: ColorSpace<Pixel.Model>) {
+        self.init(width: texture.width, height: texture.height, resolution: resolution, pixels: texture.pixels, colorSpace: colorSpace)
+    }
+}
+
+extension Texture {
+    
+    @_inlineable
+    public init<P>(texture: Texture<P>) where P.Model == Pixel.Model {
+        self.init(texture: texture, option: texture.option)
+    }
+}
+
+extension Texture : CustomStringConvertible {
+    
+    @_inlineable
+    public var description: String {
+        return "Texture<\(Pixel.self)>(width: \(width), height: \(height))"
+    }
+}
+
+extension Texture {
+    
+    @_inlineable
+    public var option: MappedBufferOption {
+        return pixels.option
+    }
+}
+
+extension Texture {
+    
+    @_inlineable
+    public var isOpaque: Bool {
+        return pixels.all { $0.isOpaque }
+    }
+}
+
+extension Texture {
+    
+    @_inlineable
+    public func map<P>(_ transform: (Pixel) throws -> P) rethrows -> Texture<P> where P.Model == Pixel.Model {
+        return try Texture<P>(width: height, height: width, pixels: pixels.map(transform), resamplingAlgorithm: resamplingAlgorithm, wrappingMode: wrappingMode)
+    }
+}
+
+extension Texture {
+    
+    @_inlineable
+    public func transposed() -> Texture {
+        if pixels.count == 0 {
+            return Texture(width: height, height: width, pixels: [], resamplingAlgorithm: resamplingAlgorithm, wrappingMode: wrappingMode)
+        }
+        var copy = pixels
+        pixels.withUnsafeBufferPointer { source in copy.withUnsafeMutableBufferPointer { destination in Transpose(height, width, source.baseAddress!, 1, destination.baseAddress!, 1) } }
+        return Texture(width: height, height: width, pixels: copy, resamplingAlgorithm: resamplingAlgorithm, wrappingMode: wrappingMode)
+    }
+    
+    @_inlineable
+    public func verticalFlipped() -> Texture {
+        
+        var pixels = self.pixels
+        
+        if pixels.count != 0 {
+            
+            pixels.withUnsafeMutableBufferPointer {
+                
+                guard let buffer = $0.baseAddress else { return }
+                
+                var buf1 = buffer
+                var buf2 = buffer + width * (height - 1)
+                
+                for _ in 0..<height >> 1 {
+                    Swap(width, buf1, 1, buf2, 1)
+                    buf1 += width
+                    buf2 -= width
+                }
+            }
+        }
+        
+        return Texture(width: width, height: height, pixels: pixels, resamplingAlgorithm: resamplingAlgorithm, wrappingMode: wrappingMode)
+    }
+    
+    @_inlineable
+    public func horizontalFlipped() -> Texture {
+        
+        var pixels = self.pixels
+        
+        if pixels.count != 0 {
+            
+            pixels.withUnsafeMutableBufferPointer {
+                
+                guard let buffer = $0.baseAddress else { return }
+                
+                var buf1 = buffer
+                var buf2 = buffer + width - 1
+                
+                for _ in 0..<width >> 1 {
+                    Swap(height, buf1, width, buf2, width)
+                    buf1 += 1
+                    buf2 -= 1
+                }
+            }
+        }
+        
+        return Texture(width: width, height: height, pixels: pixels, resamplingAlgorithm: resamplingAlgorithm, wrappingMode: wrappingMode)
+    }
+}
+
+extension Texture {
+    
+    @_inlineable
+    public func withUnsafeBufferPointer<R>(_ body: (UnsafeBufferPointer<Pixel>) throws -> R) rethrows -> R {
+        
+        return try pixels.withUnsafeBufferPointer(body)
+    }
+    
+    @_inlineable
+    public mutating func withUnsafeMutableBufferPointer<R>(_ body: (inout UnsafeMutableBufferPointer<Pixel>) throws -> R) rethrows -> R {
+        
+        return try pixels.withUnsafeMutableBufferPointer(body)
+    }
+    
+    @_inlineable
+    public func withUnsafeBytes<R>(_ body: (UnsafeRawBufferPointer) throws -> R) rethrows -> R {
+        
+        return try pixels.withUnsafeBytes(body)
+    }
+    
+    @_inlineable
+    public mutating func withUnsafeMutableBytes<R>(_ body: (UnsafeMutableRawBufferPointer) throws -> R) rethrows -> R {
+        
+        return try pixels.withUnsafeMutableBytes(body)
     }
 }
 

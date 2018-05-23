@@ -91,15 +91,77 @@ extension ImageContext {
         
         guard opacity > 0 else { return }
         
-        self.withUnsafeMutableImageBufferPointer { _image in
+        let shadowColor = self.shadowColor
+        let shadowBlur = self.shadowBlur
+        
+        if shadowColor.opacity > 0 && shadowBlur > 0 {
             
-            guard let _destination = _image.baseAddress else { return }
+            let width = self.width
+            let height = self.height
+            let option = self.image.option
             
-            self.withUnsafeClipBufferPointer { _clip in
+            let filter = gaussianBlurFilter(0.5 * shadowBlur)
+            
+            let shadowColor = ColorPixel(shadowColor.convert(to: colorSpace, intent: renderingIntent))
+            let shadowOffset = self.shadowOffset
+            let _offset = Point(x: Double(filter.count >> 1) - shadowOffset.width, y: Double(filter.count >> 1) - shadowOffset.height)
+            
+            var layer = Texture<Pixel>(width: width, height: height, option: option)
+            
+            layer.withUnsafeMutableBufferPointer { _layer in
                 
-                guard let _clip = _clip.baseAddress else { return }
+                guard let _destination = _layer.baseAddress else { return }
                 
-                body(ImageContextPixelBlender(destination: _destination, clip: _clip, opacity: opacity, compositingMode: compositingMode, blendMode: blendMode))
+                self.withUnsafeClipBufferPointer { _clip in
+                    
+                    guard let _clip = _clip.baseAddress else { return }
+                    
+                    body(ImageContextPixelBlender(destination: _destination, clip: _clip, opacity: opacity, compositingMode: compositingMode, blendMode: blendMode))
+                }
+            }
+            
+            let shadow_layer = _shadow(layer.pixels.map { $0.opacity }, filter)
+            
+            layer.withUnsafeBufferPointer { source in
+                
+                guard var source = source.baseAddress else { return }
+                
+                self.withUnsafeMutableImageBufferPointer { _image in
+                    
+                    guard let _destination = _image.baseAddress else { return }
+                    
+                    self.withUnsafeClipBufferPointer { _clip in
+                        
+                        guard let _clip = _clip.baseAddress else { return }
+                        
+                        var blender = ImageContextPixelBlender(destination: _destination, clip: _clip, opacity: opacity, compositingMode: compositingMode, blendMode: blendMode)
+                        
+                        for y in 0..<height {
+                            for x in 0..<width {
+                                var shadowColor = shadowColor
+                                shadowColor.opacity *= shadow_layer.pixel(Point(x: x, y: y) + _offset)
+                                blender.draw(color: shadowColor)
+                                blender.draw(color: source.pointee)
+                                blender += 1
+                                source += 1
+                            }
+                        }
+                    }
+                }
+            }
+            
+        } else {
+            
+            self.withUnsafeMutableImageBufferPointer { _image in
+                
+                guard let _destination = _image.baseAddress else { return }
+                
+                self.withUnsafeClipBufferPointer { _clip in
+                    
+                    guard let _clip = _clip.baseAddress else { return }
+                    
+                    body(ImageContextPixelBlender(destination: _destination, clip: _clip, opacity: opacity, compositingMode: compositingMode, blendMode: blendMode))
+                }
             }
         }
     }

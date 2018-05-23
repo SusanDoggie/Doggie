@@ -39,7 +39,6 @@ func _Radix2FiniteImpulseFilter<T: BinaryFloatingPoint>(_ level: Int, _ row: Int
     }
 }
 
-
 @_versioned
 @_inlineable
 func _ImageConvolution<Pixel, T: BinaryFloatingPoint>(_ image: Image<Pixel>, _ horizontal_filter: [T], _ vertical_filter: [T]) -> Image<Pixel> where T : FloatingMathProtocol {
@@ -53,12 +52,11 @@ func _ImageConvolution<Pixel, T: BinaryFloatingPoint>(_ image: Image<Pixel>, _ h
     
     guard width > 0 && height > 0 else { return image }
     
-    var result = Image<Pixel>(width: n_width, height: n_height, resolution: image.resolution, colorSpace: image.colorSpace, option: image.option)
-    
     let length1 = FFTConvolveLength(width, horizontal_filter.count)
     let length2 = FFTConvolveLength(height, vertical_filter.count)
     
     var buffer = MappedBuffer<T>(repeating: 0, count: length1 + length2 + length1 * height + n_width * length2, option: image.option)
+    var result = Image<Pixel>(width: n_width, height: n_height, resolution: image.resolution, colorSpace: image.colorSpace, option: image.option)
     
     buffer.withUnsafeMutableBufferPointer {
         
@@ -130,11 +128,10 @@ func _ImageConvolutionHorizontal<Pixel, T: BinaryFloatingPoint>(_ image: Image<P
     
     guard width > 0 && height > 0 else { return image }
     
-    var result = Image<Pixel>(width: n_width, height: height, resolution: image.resolution, colorSpace: image.colorSpace, option: image.option)
-    
     let length = FFTConvolveLength(width, filter.count)
     
     var buffer = MappedBuffer<T>(repeating: 0, count: length + length * height, option: image.option)
+    var result = Image<Pixel>(width: n_width, height: height, resolution: image.resolution, colorSpace: image.colorSpace, option: image.option)
     
     buffer.withUnsafeMutableBufferPointer {
         
@@ -196,11 +193,10 @@ func _ImageConvolutionVertical<Pixel, T: BinaryFloatingPoint>(_ image: Image<Pix
     
     guard width > 0 && height > 0 else { return image }
     
-    var result = Image<Pixel>(width: width, height: n_height, resolution: image.resolution, colorSpace: image.colorSpace, option: image.option)
-    
     let length = FFTConvolveLength(height, filter.count)
     
     var buffer = MappedBuffer<T>(repeating: 0, count: length + length * width, option: image.option)
+    var result = Image<Pixel>(width: width, height: n_height, resolution: image.resolution, colorSpace: image.colorSpace, option: image.option)
     
     buffer.withUnsafeMutableBufferPointer {
         

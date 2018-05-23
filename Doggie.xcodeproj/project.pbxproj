@@ -181,6 +181,8 @@
 		0AA8D463204E486700ED0175 /* SwiftPlayground.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA8D462204E486700ED0175 /* SwiftPlayground.swift */; };
 		0AADB89320ABC5B700F3BF17 /* PNGFilter0.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AADB89220ABC5B700F3BF17 /* PNGFilter0.swift */; };
 		0AADB89620AC0BA400F3BF17 /* PNGInterlace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AADB89520AC0BA400F3BF17 /* PNGInterlace.swift */; };
+		0AAFBEED20B53B9300A392FE /* PredefinedColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AAFBEEC20B53B9300A392FE /* PredefinedColor.swift */; };
+		0AAFBEEF20B5687200A392FE /* DrawShadow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AAFBEEE20B5687200A392FE /* DrawShadow.swift */; };
 		0AB0DA121F3AEF8B0004E43F /* ShapeRegion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AB0DA111F3AEF7B0004E43F /* ShapeRegion.swift */; };
 		0AB23E461F22E4980033462E /* RawBitmap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AB23E441F22E4980033462E /* RawBitmap.swift */; };
 		0AB2E23E1F17766C00B0CA84 /* zlib.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AB2E23C1F17766C00B0CA84 /* zlib.swift */; };
@@ -399,6 +401,8 @@
 		0AA8D462204E486700ED0175 /* SwiftPlayground.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftPlayground.swift; sourceTree = "<group>"; };
 		0AADB89220ABC5B700F3BF17 /* PNGFilter0.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PNGFilter0.swift; sourceTree = "<group>"; };
 		0AADB89520AC0BA400F3BF17 /* PNGInterlace.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PNGInterlace.swift; sourceTree = "<group>"; };
+		0AAFBEEC20B53B9300A392FE /* PredefinedColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PredefinedColor.swift; sourceTree = "<group>"; };
+		0AAFBEEE20B5687200A392FE /* DrawShadow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawShadow.swift; sourceTree = "<group>"; };
 		0AB0DA111F3AEF7B0004E43F /* ShapeRegion.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = ShapeRegion.swift; sourceTree = "<group>"; };
 		0AB23E441F22E4980033462E /* RawBitmap.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = RawBitmap.swift; sourceTree = "<group>"; };
 		0AB2E23C1F17766C00B0CA84 /* zlib.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = zlib.swift; sourceTree = "<group>"; };
@@ -689,6 +693,7 @@
 			children = (
 				0A39A6B41ED9342C00804004 /* ImageContext.swift */,
 				0A21F0231F061AE2009C4490 /* PixelBlender.swift */,
+				0AAFBEEE20B5687200A392FE /* DrawShadow.swift */,
 				0A39A6B71ED9345100804004 /* DrawImage.swift */,
 				086F06481EDC623D00BA70C8 /* Rasterizer.swift */,
 				0821D6401EED58FC007E42F5 /* Rendering.swift */,
@@ -887,6 +892,7 @@
 				0A8D863E1F7DF13E00F9530E /* ColorProtocol.swift */,
 				0AE719F91EF50EEB0086923C /* AnyColor.swift */,
 				08458ACF1E2E627600D01813 /* Color.swift */,
+				0AAFBEEC20B53B9300A392FE /* PredefinedColor.swift */,
 			);
 			path = Color;
 			sourceTree = "<group>";
@@ -1125,6 +1131,7 @@
 				0A9CD5911EEB9A2700094148 /* CIEXYZColorSpace.swift in Sources */,
 				0A9ED9D41F5CF5B000205C1B /* SFNTOS2.swift in Sources */,
 				0A7E3E941F5FD3E40020A507 /* OTFGSUB.swift in Sources */,
+				0AAFBEEF20B5687200A392FE /* DrawShadow.swift in Sources */,
 				0AADB89320ABC5B700F3BF17 /* PNGFilter0.swift in Sources */,
 				08B457E71EDD3223007AA4F0 /* Arithmetic.swift in Sources */,
 				0A7A1FAF1F04FBFC0016B3FB /* ColorPixel.swift in Sources */,
@@ -1270,6 +1277,7 @@
 				0A92063B1F14C83A00AF5C49 /* PNGDecoder.swift in Sources */,
 				0A53E4691E35AEF80060FB83 /* Hashable.swift in Sources */,
 				0A9CD58F1EEB9A2700094148 /* CIELabColorSpace.swift in Sources */,
+				0AAFBEED20B53B9300A392FE /* PredefinedColor.swift in Sources */,
 				0AD4D8D91EA6247200C99728 /* MathsExtension.swift in Sources */,
 				0A7E3E911F5FD3B40020A507 /* OTFGPOS.swift in Sources */,
 				0A53E4631E35AEF80060FB83 /* Date.swift in Sources */,

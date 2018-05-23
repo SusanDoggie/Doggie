@@ -34,7 +34,10 @@ public func GaussianBlur<Model>(_ image: Image<ColorPixel<Model>>, _ blur: Doubl
     
     let s = Int(ceil(6 * blur)) >> 1
     
-    let filter = (-s...s).map { exp(Double($0 * $0) * _t) as Double * c }
+    let filter = (-s...s).map { (x: Int) -> Double in
+        let x = Double(x)
+        return exp(x * x * _t) * c
+    }
     
     return ImageConvolution(image, horizontal: filter, vertical: filter)
 }
@@ -48,7 +51,10 @@ public func GaussianBlur<Model>(_ image: Image<FloatColorPixel<Model>>, _ blur: 
     
     let s = Int(ceil(6 * blur)) >> 1
     
-    let filter = (-s...s).map { exp(Float($0 * $0) * _t) as Float * c }
+    let filter = (-s...s).map { (x: Int) -> Float in
+        let x = Float(x)
+        return exp(x * x * _t) * c
+    }
     
     return ImageConvolution(image, horizontal: filter, vertical: filter)
 }
