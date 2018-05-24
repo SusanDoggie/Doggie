@@ -48,18 +48,43 @@ private struct ImageContextStyles {
     
 }
 
+private struct GraphicState {
+    
+    var clip: MappedBuffer<Double>
+    var depth: MappedBuffer<Double>
+    
+    var styles: ImageContextStyles
+    var chromaticAdaptationAlgorithm: ChromaticAdaptationAlgorithm
+    
+    init<Pixel>(context: ImageContext<Pixel>) {
+        self.clip = context.clip
+        self.depth = context.depth
+        self.styles = context.styles
+        self.chromaticAdaptationAlgorithm = context.chromaticAdaptationAlgorithm
+    }
+    
+    func apply<Pixel>(to context: ImageContext<Pixel>) {
+        context.clip = self.clip
+        context.depth = self.depth
+        context.styles = self.styles
+        context.chromaticAdaptationAlgorithm = self.chromaticAdaptationAlgorithm
+    }
+}
+
 public class ImageContext<Pixel: ColorPixelProtocol> {
     
     public private(set) var image: Image<Pixel>
     
-    private var clip: MappedBuffer<Double>
-    private var depth: MappedBuffer<Double>
+    fileprivate var clip: MappedBuffer<Double>
+    fileprivate var depth: MappedBuffer<Double>
     
-    private var styles: ImageContextStyles = ImageContextStyles()
+    fileprivate var styles: ImageContextStyles = ImageContextStyles()
     
     private var next: ImageContext?
     
     private var isDirty: Bool = false
+    
+    private var graphicStateStack: [GraphicState] = []
     
     public init(image: Image<Pixel>) {
         self.image = image
@@ -139,6 +164,25 @@ extension ImageContext {
                 clip.pointee = value
                 clip += 1
             }
+        }
+    }
+}
+
+extension ImageContext {
+    
+    private var currentGraphicState: GraphicState {
+        return next?.currentGraphicState ?? GraphicState(context: self)
+    }
+    
+    public func saveGraphicState() {
+        graphicStateStack.append(currentGraphicState)
+    }
+    
+    public func restoreGraphicState() {
+        if let next = self.next {
+            graphicStateStack.popLast()?.apply(to: next)
+        } else {
+            graphicStateStack.popLast()?.apply(to: self)
         }
     }
 }
