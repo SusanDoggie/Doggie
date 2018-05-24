@@ -102,6 +102,96 @@ extension ImageContext {
     
     @_versioned
     @_inlineable
+    var isShadow: Bool {
+        return shadowColor.opacity > 0 && shadowBlur > 0
+    }
+    
+    @_versioned
+    @_inlineable
+    func _drawWithShadow(stencil: MappedBuffer<Double>, color: ColorPixel<Pixel.Model>) {
+        
+        let width = self.width
+        let height = self.height
+        
+        let shadowColor = ColorPixel(self.shadowColor.convert(to: colorSpace, intent: renderingIntent))
+        let shadowOffset = self.shadowOffset
+        let shadowBlur = self.shadowBlur
+        
+        let filter = gaussianBlurFilter(0.5 * shadowBlur)
+        let _offset = Point(x: Double(filter.count >> 1) - shadowOffset.width, y: Double(filter.count >> 1) - shadowOffset.height)
+        
+        let shadow_layer = _shadow(stencil, filter)
+        
+        stencil.withUnsafeBufferPointer { stencil in
+            
+            guard var stencil = stencil.baseAddress else { return }
+            
+            self._withUnsafePixelBlender { blender in
+                
+                var blender = blender
+                
+                for y in 0..<height {
+                    for x in 0..<width {
+                        
+                        var shadowColor = shadowColor
+                        shadowColor.opacity *= shadow_layer.pixel(Point(x: x, y: y) + _offset)
+                        blender.draw(color: shadowColor)
+                        
+                        var color = color
+                        color.opacity *= stencil.pointee
+                        blender.draw(color: color)
+                        
+                        blender += 1
+                        stencil += 1
+                    }
+                }
+            }
+        }
+    }
+    
+    @_versioned
+    @_inlineable
+    func _drawWithShadow(texture: Texture<Pixel>) {
+        
+        let width = self.width
+        let height = self.height
+        
+        let shadowColor = ColorPixel(self.shadowColor.convert(to: colorSpace, intent: renderingIntent))
+        let shadowOffset = self.shadowOffset
+        let shadowBlur = self.shadowBlur
+        
+        let filter = gaussianBlurFilter(0.5 * shadowBlur)
+        let _offset = Point(x: Double(filter.count >> 1) - shadowOffset.width, y: Double(filter.count >> 1) - shadowOffset.height)
+        
+        let shadow_layer = _shadow(texture.pixels.map { $0.opacity }, filter)
+        
+        texture.withUnsafeBufferPointer { source in
+            
+            guard var source = source.baseAddress else { return }
+            
+            self._withUnsafePixelBlender { blender in
+                
+                var blender = blender
+                
+                for y in 0..<height {
+                    for x in 0..<width {
+                        var shadowColor = shadowColor
+                        shadowColor.opacity *= shadow_layer.pixel(Point(x: x, y: y) + _offset)
+                        blender.draw(color: shadowColor)
+                        blender.draw(color: source.pointee)
+                        blender += 1
+                        source += 1
+                    }
+                }
+            }
+        }
+    }
+}
+
+extension ImageContext {
+    
+    @_versioned
+    @_inlineable
     func gaussianBlurFilter(_ blur: Double) -> [Double] {
         
         let t = 2 * blur * blur

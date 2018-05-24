@@ -430,18 +430,25 @@ extension ImageContext {
                 
                 guard next.isDirty else { return }
                 
-                next.image.withUnsafeBufferPointer { source in
+                if isShadow {
                     
-                    guard var source = source.baseAddress else { return }
+                    self._drawWithShadow(texture: Texture(image: next.image))
                     
-                    self.withUnsafePixelBlender { blender in
+                } else {
+                    
+                    next.image.withUnsafeBufferPointer { source in
                         
-                        var blender = blender
+                        guard var source = source.baseAddress else { return }
                         
-                        for _ in 0..<width * height {
-                            blender.draw(color: source.pointee)
-                            blender += 1
-                            source += 1
+                        self._withUnsafePixelBlender { blender in
+                            
+                            var blender = blender
+                            
+                            for _ in 0..<width * height {
+                                blender.draw(color: source.pointee)
+                                blender += 1
+                                source += 1
+                            }
                         }
                     }
                 }

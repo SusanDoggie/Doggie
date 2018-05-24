@@ -83,6 +83,29 @@ extension ImageContext {
     
     @_versioned
     @inline(__always)
+    func _withUnsafePixelBlender(_ body: (ImageContextPixelBlender<Pixel>) -> Void) {
+        
+        let opacity = self.opacity
+        let blendMode = self.blendMode
+        let compositingMode = self.compositingMode
+        
+        guard opacity > 0 else { return }
+        
+        self.withUnsafeMutableImageBufferPointer { _image in
+            
+            guard let _destination = _image.baseAddress else { return }
+            
+            self.withUnsafeClipBufferPointer { _clip in
+                
+                guard let _clip = _clip.baseAddress else { return }
+                
+                body(ImageContextPixelBlender(destination: _destination, clip: _clip, opacity: opacity, compositingMode: compositingMode, blendMode: blendMode))
+            }
+        }
+    }
+    
+    @_versioned
+    @inline(__always)
     func withUnsafePixelBlender(_ body: (ImageContextPixelBlender<Pixel>) -> Void) {
         
         let opacity = self.opacity
@@ -91,22 +114,9 @@ extension ImageContext {
         
         guard opacity > 0 else { return }
         
-        let shadowColor = self.shadowColor
-        let shadowBlur = self.shadowBlur
-        
-        if shadowColor.opacity > 0 && shadowBlur > 0 {
+        if self.isShadow {
             
-            let width = self.width
-            let height = self.height
-            let option = self.image.option
-            
-            let filter = gaussianBlurFilter(0.5 * shadowBlur)
-            
-            let shadowColor = ColorPixel(shadowColor.convert(to: colorSpace, intent: renderingIntent))
-            let shadowOffset = self.shadowOffset
-            let _offset = Point(x: Double(filter.count >> 1) - shadowOffset.width, y: Double(filter.count >> 1) - shadowOffset.height)
-            
-            var layer = Texture<Pixel>(width: width, height: height, option: option)
+            var layer = Texture<Pixel>(width: width, height: height, option: image.option)
             
             layer.withUnsafeMutableBufferPointer { _layer in
                 
@@ -120,49 +130,11 @@ extension ImageContext {
                 }
             }
             
-            let shadow_layer = _shadow(layer.pixels.map { $0.opacity }, filter)
-            
-            layer.withUnsafeBufferPointer { source in
-                
-                guard var source = source.baseAddress else { return }
-                
-                self.withUnsafeMutableImageBufferPointer { _image in
-                    
-                    guard let _destination = _image.baseAddress else { return }
-                    
-                    self.withUnsafeClipBufferPointer { _clip in
-                        
-                        guard let _clip = _clip.baseAddress else { return }
-                        
-                        var blender = ImageContextPixelBlender(destination: _destination, clip: _clip, opacity: opacity, compositingMode: compositingMode, blendMode: blendMode)
-                        
-                        for y in 0..<height {
-                            for x in 0..<width {
-                                var shadowColor = shadowColor
-                                shadowColor.opacity *= shadow_layer.pixel(Point(x: x, y: y) + _offset)
-                                blender.draw(color: shadowColor)
-                                blender.draw(color: source.pointee)
-                                blender += 1
-                                source += 1
-                            }
-                        }
-                    }
-                }
-            }
+            self._drawWithShadow(texture: layer)
             
         } else {
             
-            self.withUnsafeMutableImageBufferPointer { _image in
-                
-                guard let _destination = _image.baseAddress else { return }
-                
-                self.withUnsafeClipBufferPointer { _clip in
-                    
-                    guard let _clip = _clip.baseAddress else { return }
-                    
-                    body(ImageContextPixelBlender(destination: _destination, clip: _clip, opacity: opacity, compositingMode: compositingMode, blendMode: blendMode))
-                }
-            }
+            self._withUnsafePixelBlender(body)
         }
     }
 }

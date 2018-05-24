@@ -51,86 +51,149 @@ extension ImageContext {
                 
                 guard var _stencil = stencil.baseAddress?.assumingMemoryBound(to: (Int16, Int16, Int16, Int16, Int16).self) else { return }
                 
-                self.withUnsafePixelBlender { blender in
+                if isShadow {
                     
-                    let offset_x = max(0, min(width - 1, Int(floor(bound.x))))
-                    let offset_y = max(0, min(height - 1, Int(floor(bound.y))))
-                    let _width = min(width - offset_x, Int(ceil(bound.width + 1)))
-                    let _height = min(height - offset_y, Int(ceil(bound.height + 1)))
+                    var buf = MappedBuffer<Double>(repeating: 0, count: width * height, option: image.option)
                     
-                    var blender = blender + offset_x + offset_y * width
-                    _stencil += offset_x + 5 * offset_y * width
-                    
-                    for _ in 0..<_height {
+                    buf.withUnsafeMutableBufferPointer {
                         
-                        var _blender = blender
-                        var __stencil = _stencil
+                        guard var buf = $0.baseAddress else { return }
                         
-                        for _ in 0..<_width {
+                        let offset_x = max(0, min(width - 1, Int(floor(bound.x))))
+                        let offset_y = max(0, min(height - 1, Int(floor(bound.y))))
+                        let _width = min(width - offset_x, Int(ceil(bound.width + 1)))
+                        let _height = min(height - offset_y, Int(ceil(bound.height + 1)))
+                        
+                        buf += offset_x + offset_y * width
+                        _stencil += offset_x + 5 * offset_y * width
+                        
+                        for _ in 0..<_height {
                             
-                            var _p: UInt8 = 0
+                            var _buf = buf
+                            var __stencil = _stencil
                             
-                            var _s = __stencil
-                            
-                            for _ in 0..<5 {
-                                let (s0, s1, s2, s3, s4) = _s.pointee
-                                if winding(s0) { _p = _p &+ 1 }
-                                if winding(s1) { _p = _p &+ 1 }
-                                if winding(s2) { _p = _p &+ 1 }
-                                if winding(s3) { _p = _p &+ 1 }
-                                if winding(s4) { _p = _p &+ 1 }
-                                _s += width
+                            for _ in 0..<_width {
+                                
+                                var _p: UInt8 = 0
+                                
+                                var _s = __stencil
+                                
+                                for _ in 0..<5 {
+                                    let (s0, s1, s2, s3, s4) = _s.pointee
+                                    if winding(s0) { _p = _p &+ 1 }
+                                    if winding(s1) { _p = _p &+ 1 }
+                                    if winding(s2) { _p = _p &+ 1 }
+                                    if winding(s3) { _p = _p &+ 1 }
+                                    if winding(s4) { _p = _p &+ 1 }
+                                    _s += width
+                                }
+                                
+                                if _p != 0 {
+                                    _buf.pointee = 0.04 * Double(_p)
+                                }
+                                
+                                _buf += 1
+                                __stencil += 1
                             }
                             
-                            if _p != 0 {
-                                var color = color
-                                color.opacity *= 0.04 * Double(_p)
-                                _blender.draw(color: color)
-                            }
-                            
-                            _blender += 1
-                            __stencil += 1
+                            buf += width
+                            _stencil += 5 * width
                         }
+                    }
+                    
+                    self._drawWithShadow(stencil: buf, color: color)
+                    
+                } else {
+                    
+                    self._withUnsafePixelBlender { blender in
                         
-                        blender += width
-                        _stencil += 5 * width
+                        let offset_x = max(0, min(width - 1, Int(floor(bound.x))))
+                        let offset_y = max(0, min(height - 1, Int(floor(bound.y))))
+                        let _width = min(width - offset_x, Int(ceil(bound.width + 1)))
+                        let _height = min(height - offset_y, Int(ceil(bound.height + 1)))
+                        
+                        var blender = blender + offset_x + offset_y * width
+                        _stencil += offset_x + 5 * offset_y * width
+                        
+                        for _ in 0..<_height {
+                            
+                            var _blender = blender
+                            var __stencil = _stencil
+                            
+                            for _ in 0..<_width {
+                                
+                                var _p: UInt8 = 0
+                                
+                                var _s = __stencil
+                                
+                                for _ in 0..<5 {
+                                    let (s0, s1, s2, s3, s4) = _s.pointee
+                                    if winding(s0) { _p = _p &+ 1 }
+                                    if winding(s1) { _p = _p &+ 1 }
+                                    if winding(s2) { _p = _p &+ 1 }
+                                    if winding(s3) { _p = _p &+ 1 }
+                                    if winding(s4) { _p = _p &+ 1 }
+                                    _s += width
+                                }
+                                
+                                if _p != 0 {
+                                    var color = color
+                                    color.opacity *= 0.04 * Double(_p)
+                                    _blender.draw(color: color)
+                                }
+                                
+                                _blender += 1
+                                __stencil += 1
+                            }
+                            
+                            blender += width
+                            _stencil += 5 * width
+                        }
                     }
                 }
             }
             
         } else {
             
-            stencil.withUnsafeBufferPointer { stencil in
+            if isShadow {
                 
-                guard var _stencil = stencil.baseAddress else { return }
+                let _stencil = stencil.map { winding($0) ? 1.0 : 0.0 }
+                self._drawWithShadow(stencil: _stencil, color: color)
                 
-                self.withUnsafePixelBlender { blender in
+            } else {
+                
+                stencil.withUnsafeBufferPointer { stencil in
                     
-                    let offset_x = max(0, min(width - 1, Int(floor(bound.x))))
-                    let offset_y = max(0, min(height - 1, Int(floor(bound.y))))
-                    let _width = min(width - offset_x, Int(ceil(bound.width + 1)))
-                    let _height = min(height - offset_y, Int(ceil(bound.height + 1)))
+                    guard var _stencil = stencil.baseAddress else { return }
                     
-                    var blender = blender + offset_x + offset_y * width
-                    _stencil += offset_x + offset_y * width
-                    
-                    for _ in 0..<_height {
+                    self._withUnsafePixelBlender { blender in
                         
-                        var _blender = blender
-                        var __stencil = _stencil
+                        let offset_x = max(0, min(width - 1, Int(floor(bound.x))))
+                        let offset_y = max(0, min(height - 1, Int(floor(bound.y))))
+                        let _width = min(width - offset_x, Int(ceil(bound.width + 1)))
+                        let _height = min(height - offset_y, Int(ceil(bound.height + 1)))
                         
-                        for _ in 0..<_width {
+                        var blender = blender + offset_x + offset_y * width
+                        _stencil += offset_x + offset_y * width
+                        
+                        for _ in 0..<_height {
                             
-                            if winding(__stencil.pointee) {
-                                _blender.draw(color: color)
+                            var _blender = blender
+                            var __stencil = _stencil
+                            
+                            for _ in 0..<_width {
+                                
+                                if winding(__stencil.pointee) {
+                                    _blender.draw(color: color)
+                                }
+                                
+                                _blender += 1
+                                __stencil += 1
                             }
                             
-                            _blender += 1
-                            __stencil += 1
+                            blender += width
+                            _stencil += width
                         }
-                        
-                        blender += width
-                        _stencil += width
                     }
                 }
             }
