@@ -128,10 +128,11 @@ extension ImageContext {
         
         guard width > 0 && height > 0 else { return ShadowTexture(width: width, height: height, pixels: map) }
         
-        let length = FFTConvolveLength(width, filter.count)
+        let length1 = FFTConvolveLength(width, filter.count)
+        let length2 = FFTConvolveLength(height, filter.count)
         
-        var buffer = MappedBuffer<Double>(repeating: 0, count: length + length * height, option: option)
-        var result = ShadowTexture(width: n_width, height: length, option: option)
+        var buffer = MappedBuffer<Double>(repeating: 0, count: length1 + length2 + length1 * height, option: option)
+        var result = ShadowTexture(width: n_width, height: length2, option: option)
         
         buffer.withUnsafeMutableBufferPointer {
             
@@ -145,19 +146,27 @@ extension ImageContext {
                     
                     guard let output = $0.baseAddress else { return }
                     
-                    let level = log2(length)
+                    let level1 = log2(length1)
+                    let level2 = log2(length2)
                     
-                    let _kreal = buffer
-                    let _kimag = buffer + 1
-                    let _temp1 = _kreal + length
+                    let _kreal1 = buffer
+                    let _kimag1 = buffer + 1
+                    let _kreal2 = buffer + length1
+                    let _kimag2 = _kreal2 + 1
+                    let _temp = _kreal2 + length2
                     
-                    HalfRadix2CooleyTukey(level, filter, 1, filter.count, _kreal, _kimag, 2)
+                    HalfRadix2CooleyTukey(level1, filter, 1, filter.count, _kreal1, _kimag1, 2)
                     
-                    var _length = Double(length)
-                    Div(length, _kreal, _kimag, 2, &_length, 0, _kreal, _kimag, 2)
+                    var _length1 = Double(length1)
+                    Div(length1, _kreal1, _kimag1, 2, &_length1, 0, _kreal1, _kimag1, 2)
                     
-                    _Radix2FiniteImpulseFilter(level, height, source, 1, width, width, _kreal, _kimag, 2, 0, _temp1, 1, length)
-                    _Radix2FiniteImpulseFilter(level, n_width, _temp1, length, 1, height, _kreal, _kimag, 2, 0, output, n_width, 1)
+                    HalfRadix2CooleyTukey(level2, filter, 1, filter.count, _kreal2, _kimag2, 2)
+                    
+                    var _length2 = Double(length2)
+                    Div(length2, _kreal2, _kimag2, 2, &_length2, 0, _kreal2, _kimag2, 2)
+                    
+                    _Radix2FiniteImpulseFilter(level1, height, source, 1, width, width, _kreal1, _kimag1, 2, 0, _temp, 1, length1)
+                    _Radix2FiniteImpulseFilter(level2, n_width, _temp, length1, 1, height, _kreal2, _kimag2, 2, 0, output, n_width, 1)
                 }
             }
         }
