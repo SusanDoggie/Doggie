@@ -354,7 +354,7 @@ public func Radix2CooleyTukey<T: BinaryFloatingPoint>(_ level: Int, _ real: Unsa
             return
         }
         
-        let offset = Int.bitWidth - log2(count)
+        let offset = Int.bitWidth - level
         
         do {
             var real = real
@@ -579,7 +579,7 @@ public func Radix2CooleyTukey<T: BinaryFloatingPoint>(_ level: Int, _ real: Unsa
         let count = 1 << level
         
         do {
-            let offset = Int.bitWidth - log2(count)
+            let offset = Int.bitWidth - level
             var _real = real
             var _imag = imag
             for i in 1..<count - 1 {
