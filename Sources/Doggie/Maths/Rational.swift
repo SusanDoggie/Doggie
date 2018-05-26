@@ -151,7 +151,7 @@ extension Rational {
     }
 }
 
-extension Rational : Divisive, ScalarMultiplicative {
+extension Rational : Multiplicative, ScalarMultiplicative {
     
     public typealias Scalar = Rational
     

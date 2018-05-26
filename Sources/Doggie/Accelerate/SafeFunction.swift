@@ -112,7 +112,7 @@ public func mul<T: Multiplicative>(_ lhs: [T], _ rhs: [T]) -> [T] {
 }
 
 @_inlineable
-public func div<T: Divisive>(_ lhs: [T], _ rhs: [T]) -> [T] {
+public func div<T: FloatingPoint>(_ lhs: [T], _ rhs: [T]) -> [T] {
     var result = lhs
     assert(lhs.count == rhs.count, "mismatch count of inputs.")
     Div(lhs.count, lhs, 1, rhs, 1, &result, 1)
@@ -182,7 +182,7 @@ public func transpose<T>(_ row: Int, _ column: Int, _ data: [T]) -> [T] {
 }
 
 @_inlineable
-public func MatrixElimination<T: FloatingPoint & Subtractive & Divisive>(_ row: Int, _ matrix: inout [T]) -> Bool {
+public func MatrixElimination<T: FloatingPoint & Multiplicative & Subtractive>(_ row: Int, _ matrix: inout [T]) -> Bool {
     let column = matrix.count / row
     assert(matrix.count % row == 0, "count of matrix is not multiples of row.")
     assert(column > row, "count of column of matrix is less than or equal to row.")

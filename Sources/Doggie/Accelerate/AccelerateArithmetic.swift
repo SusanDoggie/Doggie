@@ -172,7 +172,7 @@ public func Mul<T: Multiplicative>(_ count: Int, _ left: UnsafePointer<T>, _ lef
 ///   - out_stride: Stride for `output`.
 /// - remark: `output[n] = left[n] / right[n], 0 <= n < count`
 @_inlineable
-public func Div<T: Divisive>(_ count: Int, _ left: UnsafePointer<T>, _ left_stride: Int, _ right: UnsafePointer<T>, _ right_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
+public func Div<T: FloatingPoint>(_ count: Int, _ left: UnsafePointer<T>, _ left_stride: Int, _ right: UnsafePointer<T>, _ right_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var left = left
     var right = right
@@ -972,7 +972,7 @@ public func Deconvolve<T: FloatingPoint>(_ signal_count: Int, _ signal: UnsafePo
 }
 
 @_inlineable
-public func MatrixElimination<T: FloatingPoint & Subtractive & Divisive>(_ row: Int, _ column: Int, _ matrix: UnsafeMutablePointer<T>, _ stride_row: Int, _ stride_col: Int) -> Bool {
+public func MatrixElimination<T: FloatingPoint & Multiplicative & Subtractive>(_ row: Int, _ column: Int, _ matrix: UnsafeMutablePointer<T>, _ stride_row: Int, _ stride_col: Int) -> Bool {
     
     let row_offset = stride_row * stride_col * column
     let endptr = matrix + row_offset * row

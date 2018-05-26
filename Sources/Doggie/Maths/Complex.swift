@@ -133,7 +133,7 @@ extension Complex : Codable {
     }
 }
 
-extension Complex : Divisive, ScalarMultiplicative {
+extension Complex : Multiplicative, ScalarMultiplicative {
     
     public typealias Scalar = Double
     

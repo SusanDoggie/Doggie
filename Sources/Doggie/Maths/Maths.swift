@@ -279,12 +279,8 @@ public func logScale(_ f: UInt, _ x: Double) -> UInt {
 }
 
 @_inlineable
-public func degreesToRad(_ alpha: Float) -> Float {
-    return alpha * Float.pi / 180
-}
-@_inlineable
-public func degreesToRad(_ alpha: Double) -> Double {
-    return alpha * Double.pi / 180
+public func degreesToRad<T: FloatingPoint>(_ alpha: T) -> T {
+    return alpha * T.pi / 180
 }
 
 @_inlineable
@@ -349,23 +345,23 @@ public func HermiteInterpolate<T: ScalarMultiplicative>(_ t: T.Scalar, _ a: T, _
 }
 
 @_inlineable
-public func Phase(_ x: Double, _ shift: Double, _ frequency: Double, _ maxFrequency: Double) -> Double {
+public func Phase<T: FloatingPoint>(_ x: T, _ shift: T, _ frequency: T, _ maxFrequency: T) -> T {
     return abs((x / maxFrequency + shift) * frequency).truncatingRemainder(dividingBy: 1)
 }
 @_inlineable
-public func SineWave(_ phase: Double) -> Double {
-    return sin(2 * Double.pi * phase)
+public func SineWave<T: FloatingMathProtocol>(_ phase: T) -> T {
+    return T.sin(2 * T.pi * phase)
 }
 @_inlineable
-public func SquareWave(_ phase: Double) -> Double {
+public func SquareWave<T: FloatingPoint & ExpressibleByFloatLiteral>(_ phase: T) -> T {
     return phase < 0.5 ? 1 : -1
 }
 @_inlineable
-public func SawtoothWave(_ phase: Double) -> Double {
+public func SawtoothWave<T: FloatingPoint>(_ phase: T) -> T {
     return phase * 2 - 1
 }
 @_inlineable
-public func TriangleWave(_ phase: Double) -> Double {
+public func TriangleWave<T: FloatingPoint & ExpressibleByFloatLiteral>(_ phase: T) -> T {
     return phase < 0.5 ? phase * 4 - 1 : 3 - phase * 4
 }
 

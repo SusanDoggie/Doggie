@@ -312,7 +312,7 @@ extension Polynomial {
     }
 }
 
-extension Polynomial : Divisive, ScalarMultiplicative {
+extension Polynomial : Multiplicative, ScalarMultiplicative {
     
     public typealias Scalar = Double
     

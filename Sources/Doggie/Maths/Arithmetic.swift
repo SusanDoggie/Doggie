@@ -65,40 +65,33 @@ public protocol Multiplicative : Equatable {
     static func *= (lhs: inout Self, rhs: Self)
 }
 
-public protocol Divisive : Multiplicative {
-    
-    static func / (lhs: Self, rhs: Self) -> Self
-    
-    static func /= (lhs: inout Self, rhs: Self)
-}
-
-extension Int8 : Subtractive, Divisive {
+extension Int8 : Subtractive, Multiplicative {
     
 }
 
-extension Int16 : Subtractive, Divisive {
+extension Int16 : Subtractive, Multiplicative {
     
 }
 
-extension Int32 : Subtractive, Divisive {
+extension Int32 : Subtractive, Multiplicative {
     
 }
 
-extension Int64 : Subtractive, Divisive {
+extension Int64 : Subtractive, Multiplicative {
     
 }
 
-extension Int : Subtractive, Divisive {
+extension Int : Subtractive, Multiplicative {
     
 }
 
-extension Float : Divisive, ScalarMultiplicative {
+extension Float : Multiplicative, ScalarMultiplicative {
     
     public typealias Scalar = Float
     
 }
 
-extension Double : Divisive, ScalarMultiplicative {
+extension Double : Multiplicative, ScalarMultiplicative {
     
     public typealias Scalar = Double
     
