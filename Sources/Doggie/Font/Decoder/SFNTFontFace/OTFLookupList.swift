@@ -23,8 +23,6 @@
 //  THE SOFTWARE.
 //
 
-import Foundation
-
 struct OTFLookupList : ByteDecodable {
     
     var lookupCount: BEUInt16

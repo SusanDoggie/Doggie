@@ -23,8 +23,6 @@
 //  THE SOFTWARE.
 //
 
-import Foundation
-
 public struct Shape : RandomAccessCollection, MutableCollection, ExpressibleByArrayLiteral {
     
     public typealias Indices = Range<Int>

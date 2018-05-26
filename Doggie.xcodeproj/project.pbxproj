@@ -177,8 +177,10 @@
 		0A9F99441F56734A0008D36D /* SFNTNAME.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9F99431F56734A0008D36D /* SFNTNAME.swift */; };
 		0A9F99471F568FD40008D36D /* SFNTPlatform.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9F99461F568FD40008D36D /* SFNTPlatform.swift */; };
 		0AA33B6020942B5900317F54 /* SimplexNoise.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA33B5F20942B5800317F54 /* SimplexNoise.swift */; };
-		0AA4D8451F63908200AFF16B /* CTFont.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA4D8441F63908200AFF16B /* CTFont.swift */; };
+		0AA4D8451F63908200AFF16B /* CGFont.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA4D8441F63908200AFF16B /* CGFont.swift */; };
 		0AA8D463204E486700ED0175 /* SwiftPlayground.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA8D462204E486700ED0175 /* SwiftPlayground.swift */; };
+		0AAA7CF220B8EC950080D1BE /* Exported.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AAA7CF120B8EC950080D1BE /* Exported.swift */; };
+		0AAA7CF420B8EDA30080D1BE /* AppleExported.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AAA7CF320B8EDA30080D1BE /* AppleExported.swift */; };
 		0AADB89320ABC5B700F3BF17 /* PNGFilter0.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AADB89220ABC5B700F3BF17 /* PNGFilter0.swift */; };
 		0AADB89620AC0BA400F3BF17 /* PNGInterlace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AADB89520AC0BA400F3BF17 /* PNGInterlace.swift */; };
 		0AAFBEED20B53B9300A392FE /* PredefinedColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AAFBEEC20B53B9300A392FE /* PredefinedColor.swift */; };
@@ -397,8 +399,10 @@
 		0A9F99431F56734A0008D36D /* SFNTNAME.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = SFNTNAME.swift; sourceTree = "<group>"; };
 		0A9F99461F568FD40008D36D /* SFNTPlatform.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = SFNTPlatform.swift; sourceTree = "<group>"; };
 		0AA33B5F20942B5800317F54 /* SimplexNoise.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SimplexNoise.swift; sourceTree = "<group>"; };
-		0AA4D8441F63908200AFF16B /* CTFont.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = CTFont.swift; sourceTree = "<group>"; };
+		0AA4D8441F63908200AFF16B /* CGFont.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = CGFont.swift; sourceTree = "<group>"; };
 		0AA8D462204E486700ED0175 /* SwiftPlayground.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftPlayground.swift; sourceTree = "<group>"; };
+		0AAA7CF120B8EC950080D1BE /* Exported.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Exported.swift; sourceTree = "<group>"; };
+		0AAA7CF320B8EDA30080D1BE /* AppleExported.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleExported.swift; sourceTree = "<group>"; };
 		0AADB89220ABC5B700F3BF17 /* PNGFilter0.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PNGFilter0.swift; sourceTree = "<group>"; };
 		0AADB89520AC0BA400F3BF17 /* PNGInterlace.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PNGInterlace.swift; sourceTree = "<group>"; };
 		0AAFBEEC20B53B9300A392FE /* PredefinedColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PredefinedColor.swift; sourceTree = "<group>"; };
@@ -469,6 +473,7 @@
 		08458ABA1E2E627600D01813 /* Foundation */ = {
 			isa = PBXGroup;
 			children = (
+				0AAA7CF120B8EC950080D1BE /* Exported.swift */,
 				08B085471E9A20720037DECE /* Algorithm.swift */,
 				0A9D27E31F0CF629003638D3 /* BinaryFixedPoint.swift */,
 				0A7F24AB1EF37CD500EAD9C7 /* Endianness.swift */,
@@ -661,10 +666,11 @@
 		0A0697561E4D6659005CF664 /* ApplePlatform */ = {
 			isa = PBXGroup;
 			children = (
+				0AAA7CF320B8EDA30080D1BE /* AppleExported.swift */,
 				0AA8D462204E486700ED0175 /* SwiftPlayground.swift */,
 				0A06975A1E4D66A3005CF664 /* Filter.swift */,
 				0A0697571E4D6659005CF664 /* Graphic.swift */,
-				0AA4D8441F63908200AFF16B /* CTFont.swift */,
+				0AA4D8441F63908200AFF16B /* CGFont.swift */,
 				0A36612A1EEA54AB00216A26 /* CGPath.swift */,
 				0AE762571EE9583400E926D5 /* CGImage.swift */,
 				0A06975D1E4D6732005CF664 /* NSImage.swift */,
@@ -1154,7 +1160,7 @@
 				0AE71A011EF517CA0086923C /* AnyImage.swift in Sources */,
 				0A7D3ADC1ECAD5890030DC26 /* BlendMode.swift in Sources */,
 				0A9F281F1EF0D9AA00E69976 /* CMYKColorModel.swift in Sources */,
-				0AA4D8451F63908200AFF16B /* CTFont.swift in Sources */,
+				0AA4D8451F63908200AFF16B /* CGFont.swift in Sources */,
 				0A831A8D1F1872770007932A /* Gray16ColorPixel.swift in Sources */,
 				0AE762561EE9475400E926D5 /* CGColorSpace.swift in Sources */,
 				0A39A6B91ED9345100804004 /* DrawImage.swift in Sources */,
@@ -1213,6 +1219,7 @@
 				0A53E4651E35AEF80060FB83 /* FloatingPoint.swift in Sources */,
 				0ABDF1AD1F2B3520007EC7B2 /* RenderingIntent.swift in Sources */,
 				0A53E47D1E35AEF80060FB83 /* Regex.swift in Sources */,
+				0AAA7CF220B8EC950080D1BE /* Exported.swift in Sources */,
 				0A8535301F5911CD006FB85D /* CFF2INDEX.swift in Sources */,
 				0A21070E1E5BEEBB00F1E00E /* PathCoder.swift in Sources */,
 				08458B591E2E627600D01813 /* Atomic.swift in Sources */,
@@ -1265,6 +1272,7 @@
 				08458B131E2E627600D01813 /* Fourier.swift in Sources */,
 				0AD3E6351F53DB6C003CC21A /* OpenTypeDecoder.swift in Sources */,
 				0A74D68A20047BF700330C86 /* GaussianBlur.swift in Sources */,
+				0AAA7CF420B8EDA30080D1BE /* AppleExported.swift in Sources */,
 				0A72EF181F54FED200F0550A /* SFNTCMAP.swift in Sources */,
 				08458B611E2E627600D01813 /* SDTask.swift in Sources */,
 				0AE71A041EF51DF80086923C /* AnyColorSpace.swift in Sources */,

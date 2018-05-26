@@ -23,8 +23,6 @@
 //  THE SOFTWARE.
 //
 
-import Foundation
-
 protocol SignatureProtocol: RawRepresentable, Hashable, ExpressibleByIntegerLiteral, ExpressibleByStringLiteral, CustomStringConvertible, ByteCodable {
     
     associatedtype Bytes : FixedWidthInteger

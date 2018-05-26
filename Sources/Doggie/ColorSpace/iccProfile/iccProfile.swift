@@ -23,8 +23,6 @@
 //  THE SOFTWARE.
 //
 
-import Foundation
-
 struct iccProfile {
     
     typealias TagList = (TagSignature, BEUInt32, BEUInt32)

@@ -23,8 +23,6 @@
 //  THE SOFTWARE.
 //
 
-import Foundation
-
 public protocol ColorSpaceProtocol {
     
     var iccData: Data? { get }

@@ -23,8 +23,6 @@
 //  THE SOFTWARE.
 //
 
-import Foundation
-
 extension Data : ExpressibleByArrayLiteral {
     
     public init(arrayLiteral elements: UInt8 ...) {

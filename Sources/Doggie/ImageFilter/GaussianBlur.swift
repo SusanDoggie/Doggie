@@ -23,8 +23,6 @@
 //  THE SOFTWARE.
 //
 
-import Foundation
-
 @_inlineable
 public func GaussianBlur<Model>(_ image: Image<ColorPixel<Model>>, _ blur: Double) -> Image<ColorPixel<Model>> {
     

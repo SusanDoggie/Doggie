@@ -23,8 +23,6 @@
 //  THE SOFTWARE.
 //
 
-import Foundation
-
 public protocol ByteEncodable {
     
     func encode<C : RangeReplaceableCollection>(to: inout C) where C.Element == UInt8

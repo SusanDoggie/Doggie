@@ -23,8 +23,6 @@
 //  THE SOFTWARE.
 //
 
-import Foundation
-
 extension FileManager {
     
     func fileUrls<S : Sequence>(_ urls: S) -> Set<URL> where S.Element == URL {

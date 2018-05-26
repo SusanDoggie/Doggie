@@ -23,8 +23,6 @@
 //  THE SOFTWARE.
 //
 
-import Foundation
-
 struct GIFEncoder : ImageRepEncoder {
     
     static func encode(image: AnyImage, properties: [ImageRep.PropertyKey : Any]) -> Data? {

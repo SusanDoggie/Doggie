@@ -23,8 +23,6 @@
 //  THE SOFTWARE.
 //
 
-import Foundation
-
 @_versioned
 let PCSXYZ = CIEXYZColorSpace(white: Point(x: 0.34567, y: 0.35850))
 

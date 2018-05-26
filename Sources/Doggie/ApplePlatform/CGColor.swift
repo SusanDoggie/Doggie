@@ -25,9 +25,6 @@
 
 #if canImport(CoreGraphics)
 
-import Foundation
-import CoreGraphics
-
 extension Color {
     
     public var cgColor: CGColor? {

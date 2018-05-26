@@ -23,8 +23,6 @@
 //  THE SOFTWARE.
 //
 
-import Foundation
-
 public protocol FloatingMathProtocol : FloatingPoint, ExpressibleByFloatLiteral {
     
     static func exp(_ x: Self) -> Self

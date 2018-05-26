@@ -25,9 +25,6 @@
 
 #if canImport(CoreGraphics)
 
-import Foundation
-import CoreGraphics
-
 extension CGImage {
     
     public static func create(width: Int, height: Int, bitsPerComponent: Int, bytesPerRow: Int, space: CGColorSpace, bitmapInfo: UInt32, command: (CGContext) -> ()) -> CGImage? {

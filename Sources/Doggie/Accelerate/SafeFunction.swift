@@ -23,8 +23,6 @@
 //  THE SOFTWARE.
 //
 
-import Foundation
-
 @_inlineable
 public func addmod<T: UnsignedInteger & FixedWidthInteger>(_ lhs: [T], _ rhs: [T], _ mod: T) -> [T] {
     var result = lhs

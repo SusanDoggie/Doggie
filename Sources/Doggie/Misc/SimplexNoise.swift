@@ -40,7 +40,6 @@
  *
  */
 
-import Foundation
 
 public func SimplexNoise(_ octaves: Int, _ persistence: Double, _ scale: Double, _ x: Double, _ y: Double) -> Double {
     

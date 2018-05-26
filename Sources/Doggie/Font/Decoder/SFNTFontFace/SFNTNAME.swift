@@ -23,8 +23,6 @@
 //  THE SOFTWARE.
 //
 
-import Foundation
-
 struct SFNTNAME : ByteDecodable, RandomAccessCollection {
     
     public typealias Indices = Range<Int>

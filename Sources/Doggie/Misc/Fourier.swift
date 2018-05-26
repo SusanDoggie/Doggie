@@ -23,8 +23,6 @@
 //  THE SOFTWARE.
 //
 
-import Foundation
-
 public func FFTConvolveLength(_ x: Int, _ y: Int) -> Int {
     return (x + y - 2).hibit << 1
 }

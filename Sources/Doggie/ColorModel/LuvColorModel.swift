@@ -23,8 +23,6 @@
 //  THE SOFTWARE.
 //
 
-import Foundation
-
 public struct LuvColorModel : ColorModelProtocol {
     
     public typealias Indices = Range<Int>

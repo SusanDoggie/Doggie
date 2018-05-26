@@ -23,8 +23,6 @@
 //  THE SOFTWARE.
 //
 
-import Foundation
-
 struct SFNTPlatform : ByteDecodable {
     
     var platform: BEUInt16

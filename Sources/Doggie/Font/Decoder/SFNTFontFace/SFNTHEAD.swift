@@ -23,8 +23,6 @@
 //  THE SOFTWARE.
 //
 
-import Foundation
-
 struct SFNTHEAD : ByteDecodable {
     
     var version: Fixed16Number<BEInt32>

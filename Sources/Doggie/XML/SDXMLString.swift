@@ -23,8 +23,6 @@
 //  THE SOFTWARE.
 //
 
-import Foundation
-
 extension SDXMLDocument {
     
     public func xmlString(prettyPrinted: Bool = false) -> String {

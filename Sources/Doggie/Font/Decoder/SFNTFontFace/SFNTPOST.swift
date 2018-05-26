@@ -23,8 +23,6 @@
 //  THE SOFTWARE.
 //
 
-import Foundation
-
 struct SFNTPOST : ByteDecodable {
     
     var format: Fixed16Number<BEInt32>

@@ -23,8 +23,6 @@
 //  THE SOFTWARE.
 //
 
-import Foundation
-
 public struct Radius : Hashable {
     
     public var x: Double

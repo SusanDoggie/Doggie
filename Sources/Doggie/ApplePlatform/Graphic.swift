@@ -23,8 +23,6 @@
 //  THE SOFTWARE.
 //
 
-import Foundation
-
 extension CGPoint {
     
     public init(_ p: Point) {
@@ -114,7 +112,6 @@ extension SDTransform {
 
 #if canImport(CoreGraphics)
 
-import CoreGraphics
 
 extension CGAffineTransform {
     

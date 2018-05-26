@@ -23,8 +23,6 @@
 //  THE SOFTWARE.
 //
 
-import Foundation
-
 extension CFFFontFace {
     
     func fontDICT(glyph: UInt16) -> CFFFontDICT? {

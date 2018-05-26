@@ -23,8 +23,6 @@
 //  THE SOFTWARE.
 //
 
-import Foundation
-
 struct iccMultiLocalizedUnicode : RandomAccessCollection, ByteCodable {
     
     public typealias Indices = Range<Int>

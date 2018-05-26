@@ -23,8 +23,6 @@
 //  THE SOFTWARE.
 //
 
-import Foundation
-
 struct PNGEncoder : ImageRepEncoder {
     
     private static func encode(_ chunks: PNGChunk ... ) -> MappedBuffer<UInt8> {

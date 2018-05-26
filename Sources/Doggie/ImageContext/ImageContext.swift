@@ -23,8 +23,6 @@
 //  THE SOFTWARE.
 //
 
-import Foundation
-
 private struct ImageContextStyles {
     
     static let defaultShadowColor = AnyColor(colorSpace: .calibratedGray(from: .sRGB, gamma: 2.2), white: 0.0, opacity: 1.0 / 3.0)

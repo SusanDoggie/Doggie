@@ -23,8 +23,6 @@
 //  THE SOFTWARE.
 //
 
-import Foundation
-
 public struct FontCollection : SetAlgebra, Hashable, Collection, ExpressibleByArrayLiteral {
     
     private var fonts: Set<_ElementWrapper>

@@ -23,9 +23,6 @@
 //  THE SOFTWARE.
 //
 
-import Foundation
-import Dispatch
-
 public protocol Lockable : AnyObject {
     
     func lock()

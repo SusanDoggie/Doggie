@@ -23,8 +23,6 @@
 //  THE SOFTWARE.
 //
 
-import Foundation
-
 struct iccXYZNumber : ByteCodable {
     
     var x: Fixed16Number<BEInt32>

@@ -23,8 +23,6 @@
 //  THE SOFTWARE.
 //
 
-import Foundation
-
 @_inlineable
 public func FactorialList<T: UnsignedInteger>(_ n: T) -> LazyScanSequence<Slice<ClosedRange<T>>, T> {
     

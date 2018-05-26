@@ -23,8 +23,6 @@
 //  THE SOFTWARE.
 //
 
-import Foundation
-
 struct iccMatrix3x3 : ByteCodable {
     
     var e00: Fixed16Number<BEInt32>

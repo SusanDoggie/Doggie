@@ -23,8 +23,6 @@
 //  THE SOFTWARE.
 //
 
-import Foundation
-
 struct TIFFDecoder : ImageRepDecoder {
     
     let header: TIFFHeader

@@ -23,8 +23,6 @@
 //  THE SOFTWARE.
 //
 
-import Foundation
-
 struct WOFFDecoder : FontDecoder {
     
     var header: WOFFHeader

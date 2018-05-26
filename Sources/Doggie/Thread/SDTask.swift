@@ -23,9 +23,6 @@
 //  THE SOFTWARE.
 //
 
-import Foundation
-import Dispatch
-
 @_versioned
 let SDDefaultDispatchQueue: DispatchQueue = {
     if #available(OSX 10.12, iOS 10.0, tvOS 10.0, watchOS 3.0, *) {

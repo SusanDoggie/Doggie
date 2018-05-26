@@ -23,8 +23,6 @@
 //  THE SOFTWARE.
 //
 
-import Foundation
-
 public enum MappedBufferOption {
     
     case inMemory

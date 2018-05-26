@@ -23,8 +23,6 @@
 //  THE SOFTWARE.
 //
 
-import Foundation
-
 public enum ColorCompositingMode {
     
     case clear /* R = 0 */

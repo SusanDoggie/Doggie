@@ -23,8 +23,6 @@
 //  THE SOFTWARE.
 //
 
-import Foundation
-
 public struct Regex : Equatable {
     
     fileprivate let matcher: NSRegularExpression

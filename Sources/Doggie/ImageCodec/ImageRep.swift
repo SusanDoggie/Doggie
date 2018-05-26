@@ -23,8 +23,6 @@
 //  THE SOFTWARE.
 //
 
-import Foundation
-
 protocol ImageRepBase {
     
     var width: Int { get }

@@ -23,8 +23,6 @@
 //  THE SOFTWARE.
 //
 
-import Foundation
-
 struct BMPDecoder : ImageRepDecoder {
     
     let data: Data

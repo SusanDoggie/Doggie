@@ -23,8 +23,6 @@
 //  THE SOFTWARE.
 //
 
-import Foundation
-
 struct OTFFeatureList : ByteDecodable {
     
     var featureCount: BEUInt16

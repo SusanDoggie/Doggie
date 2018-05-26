@@ -23,8 +23,6 @@
 //  THE SOFTWARE.
 //
 
-import Foundation
-
 struct TTCDecoder : FontDecoder {
     
     var header: TTCHeader

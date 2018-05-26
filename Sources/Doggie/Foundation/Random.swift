@@ -23,8 +23,6 @@
 //  THE SOFTWARE.
 //
 
-import Foundation
-
 public func random_uniform<T : FixedWidthInteger>(_ bound: T) -> T {
     let fd = open("/dev/urandom", O_RDONLY)
     defer { close(fd) }

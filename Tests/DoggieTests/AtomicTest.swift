@@ -23,8 +23,6 @@
 //  THE SOFTWARE.
 //
 
-import Foundation
-import Dispatch
 import Doggie
 import XCTest
 

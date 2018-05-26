@@ -23,8 +23,6 @@
 //  THE SOFTWARE.
 //
 
-import Foundation
-
 struct JPEGDecoder : ImageRepDecoder {
     
     var APP0: JPEGAPP0

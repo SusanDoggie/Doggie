@@ -23,8 +23,6 @@
 //  THE SOFTWARE.
 //
 
-import Foundation
-
 private func average(_ a: UInt8, _ b: UInt8) -> UInt8 {
     return UInt8((UInt16(a) &+ UInt16(b)) >> 1)
 }

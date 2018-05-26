@@ -1,5 +1,5 @@
 //
-//  Hashable.swift
+//  AppleExported.swift
 //
 //  The MIT License
 //  Copyright (c) 2015 - 2018 Susan Cheng. All rights reserved.
@@ -23,25 +23,8 @@
 //  THE SOFTWARE.
 //
 
-@_versioned
-let _hash_magic = Int(bitPattern: UInt(round(0.6180339887498948482045868343656381177203091798057628 * Double(UInt.max))))
+#if canImport(CoreGraphics)
 
-@_versioned
-@_transparent
-func _hash_combine(_ lhs: Int, _ rhs: Int) -> Int {
-    let a = lhs << 6
-    let b = lhs >> 2
-    let c = rhs &+ _hash_magic &+ a &+ b
-    return lhs ^ c
-}
+@_exported import CoreGraphics
 
-@_inlineable
-public func hash_combine<S: Sequence>(_ values: S) -> Int where S.Element : Hashable {
-    return values.reduce(0) { _hash_combine($0, $1.hashValue) }
-}
-
-@_inlineable
-public func hash_combine(_ firstValue: AnyHashable, _ secondValue: AnyHashable, _ remains: AnyHashable ...) -> Int {
-    return remains.reduce(_hash_combine(firstValue.hashValue, secondValue.hashValue)) { _hash_combine($0, $1.hashValue) }
-}
-
+#endif

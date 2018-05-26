@@ -23,8 +23,6 @@
 //  THE SOFTWARE.
 //
 
-import Foundation
-
 private struct PathDataScanner<I : IteratorProtocol> : IteratorProtocol, Sequence where I.Element == String {
     
     var iterator: I

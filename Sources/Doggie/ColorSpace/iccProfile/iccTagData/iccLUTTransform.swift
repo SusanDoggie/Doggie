@@ -23,8 +23,6 @@
 //  THE SOFTWARE.
 //
 
-import Foundation
-
 @_versioned
 @_inlineable
 func _interpolate_index(_ x: Double, _ count: Int) -> (Int, Double) {

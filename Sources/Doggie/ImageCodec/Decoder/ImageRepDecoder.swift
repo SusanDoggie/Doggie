@@ -23,8 +23,6 @@
 //  THE SOFTWARE.
 //
 
-import Foundation
-
 protocol ImageRepDecoder : ImageRepBase {
     
     init?(data: Data) throws

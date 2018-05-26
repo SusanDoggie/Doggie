@@ -23,8 +23,6 @@
 //  THE SOFTWARE.
 //
 
-import Foundation
-
 @_fixed_layout
 public struct Bezier<Element : ScalarMultiplicative> : Equatable where Element.Scalar == Double {
     

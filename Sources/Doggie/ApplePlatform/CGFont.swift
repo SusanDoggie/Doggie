@@ -1,5 +1,5 @@
 //
-//  CTFont.swift
+//  CGFont.swift
 //
 //  The MIT License
 //  Copyright (c) 2015 - 2018 Susan Cheng. All rights reserved.
@@ -22,8 +22,6 @@
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 //  THE SOFTWARE.
 //
-
-import Foundation
 
 #if os(macOS) || os(iOS) || os(tvOS) || os(watchOS)
 

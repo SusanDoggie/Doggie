@@ -23,8 +23,6 @@
 //  THE SOFTWARE.
 //
 
-import Foundation
-
 @_versioned
 @_fixed_layout
 class _displayP3: CalibratedRGBColorSpace {

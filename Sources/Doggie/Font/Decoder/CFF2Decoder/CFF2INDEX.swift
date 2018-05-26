@@ -23,8 +23,6 @@
 //  THE SOFTWARE.
 //
 
-import Foundation
-
 struct CFF2INDEX : ByteDecodable, RandomAccessCollection {
     
     public typealias Indices = Range<Int>

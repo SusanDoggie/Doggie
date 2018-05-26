@@ -23,8 +23,6 @@
 //  THE SOFTWARE.
 //
 
-import Foundation
-
 protocol FontFaceBase {
     
     func shape(glyph: Int) -> [Shape.Component]

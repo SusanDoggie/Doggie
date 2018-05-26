@@ -23,9 +23,6 @@
 //  THE SOFTWARE.
 //
 
-import Foundation
-import Dispatch
-
 extension RandomAccessCollection {
     
     /// Call `body` on each element in `self` in parallel

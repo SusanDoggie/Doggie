@@ -23,7 +23,6 @@
 //  THE SOFTWARE.
 //
 
-import Foundation
 import zlib
 
 public class Deflate : CompressionCodec {

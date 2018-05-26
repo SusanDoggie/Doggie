@@ -23,8 +23,6 @@
 //  THE SOFTWARE.
 //
 
-import Foundation
-
 struct OpenTypeDecoder : FontDecoder {
     
     var header: OTFHeader

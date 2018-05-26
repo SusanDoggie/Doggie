@@ -23,8 +23,6 @@
 //  THE SOFTWARE.
 //
 
-import Foundation
-
 private protocol TIFFRawRepresentable {
     
     func rawData(_ isOpaque: Bool) -> MappedBuffer<UInt8>

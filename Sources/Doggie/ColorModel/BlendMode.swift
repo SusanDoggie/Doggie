@@ -23,8 +23,6 @@
 //  THE SOFTWARE.
 //
 
-import Foundation
-
 public enum ColorBlendMode {
     
     case normal /* B(cb, cs) = cs */

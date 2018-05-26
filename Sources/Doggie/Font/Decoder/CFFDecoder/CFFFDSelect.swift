@@ -23,8 +23,6 @@
 //  THE SOFTWARE.
 //
 
-import Foundation
-
 struct CFFFDSelect {
     
     var nGlyphs: Int

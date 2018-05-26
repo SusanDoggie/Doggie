@@ -23,8 +23,6 @@
 //  THE SOFTWARE.
 //
 
-import Foundation
-
 #if canImport(CoreImage)
 
 import CoreImage

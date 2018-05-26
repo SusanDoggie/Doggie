@@ -23,8 +23,6 @@
 //  THE SOFTWARE.
 //
 
-import Foundation
-
 struct CFF2Decoder {
     
     var header: CFF2Header

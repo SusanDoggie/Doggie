@@ -23,8 +23,6 @@
 //  THE SOFTWARE.
 //
 
-import Foundation
-
 extension iccProfile {
     
     mutating func setMessage(_ tag: TagSignature, _ message: (iccMultiLocalizedUnicode.LanguageCode, iccMultiLocalizedUnicode.CountryCode, String) ...) {

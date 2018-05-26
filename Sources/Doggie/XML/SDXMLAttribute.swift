@@ -23,8 +23,6 @@
 //  THE SOFTWARE.
 //
 
-import Foundation
-
 public struct SDXMLAttribute : Hashable {
     
     public var attribute: String {

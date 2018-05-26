@@ -23,9 +23,6 @@
 //  THE SOFTWARE.
 //
 
-import Foundation
-import Dispatch
-
 open class Trigger {
     
     private let queue: DispatchQueue

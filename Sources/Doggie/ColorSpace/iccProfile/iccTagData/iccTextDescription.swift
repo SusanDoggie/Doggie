@@ -23,8 +23,6 @@
 //  THE SOFTWARE.
 //
 
-import Foundation
-
 struct iccTextDescription : ByteDecodable {
     
     var ascii: String?

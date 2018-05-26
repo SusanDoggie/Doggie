@@ -23,8 +23,6 @@
 //  THE SOFTWARE.
 //
 
-import Foundation
-
 struct iccDateTimeNumber : ByteCodable {
     
     var year: BEUInt16

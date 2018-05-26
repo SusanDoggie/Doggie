@@ -23,8 +23,6 @@
 //  THE SOFTWARE.
 //
 
-import Foundation
-
 extension DateFormatter {
     
     public static var rfc3339: DateFormatter {

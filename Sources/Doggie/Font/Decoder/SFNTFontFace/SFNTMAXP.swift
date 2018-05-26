@@ -23,8 +23,6 @@
 //  THE SOFTWARE.
 //
 
-import Foundation
-
 struct SFNTMAXP : ByteDecodable {
     
     var version: Fixed16Number<BEInt32>

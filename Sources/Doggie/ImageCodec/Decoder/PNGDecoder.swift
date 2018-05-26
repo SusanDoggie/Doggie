@@ -23,8 +23,6 @@
 //  THE SOFTWARE.
 //
 
-import Foundation
-
 struct PNGDecoder : ImageRepDecoder {
     
     let data: Data

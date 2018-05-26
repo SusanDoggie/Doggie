@@ -23,8 +23,6 @@
 //  THE SOFTWARE.
 //
 
-import Foundation
-
 public struct LabColorModel : ColorModelProtocol {
     
     public typealias Indices = Range<Int>

@@ -23,8 +23,6 @@
 //  THE SOFTWARE.
 //
 
-import Foundation
-
 #if canImport(AppKit)
 
 import AppKit

@@ -23,8 +23,6 @@
 //  THE SOFTWARE.
 //
 
-import Foundation
-
 protocol SFNTCMAPTableFormat : ByteDecodable {
     
     subscript(code: UInt32) -> Int { get }

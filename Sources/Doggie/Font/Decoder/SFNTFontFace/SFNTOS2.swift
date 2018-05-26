@@ -23,8 +23,6 @@
 //  THE SOFTWARE.
 //
 
-import Foundation
-
 struct SFNTOS2 : ByteDecodable {
     
     var version: BEUInt16

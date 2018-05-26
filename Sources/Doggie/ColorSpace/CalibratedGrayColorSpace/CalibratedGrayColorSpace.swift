@@ -23,8 +23,6 @@
 //  THE SOFTWARE.
 //
 
-import Foundation
-
 extension ColorSpace where Model == GrayColorModel {
     
     @_inlineable
