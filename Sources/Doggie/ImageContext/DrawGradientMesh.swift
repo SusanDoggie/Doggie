@@ -37,7 +37,7 @@ struct ImageContextGradientMeshRasterizeBuffer<P : ColorPixelProtocol> : Rasteri
     var height: Int
     
     @_versioned
-    @inline(__always)
+    @_inlineable
     init(blender: ImageContextPixelBlender<P>, width: Int, height: Int) {
         self.blender = blender
         self.width = width
@@ -45,13 +45,13 @@ struct ImageContextGradientMeshRasterizeBuffer<P : ColorPixelProtocol> : Rasteri
     }
     
     @_versioned
-    @inline(__always)
+    @_inlineable
     static func + (lhs: ImageContextGradientMeshRasterizeBuffer, rhs: Int) -> ImageContextGradientMeshRasterizeBuffer {
         return ImageContextGradientMeshRasterizeBuffer(blender: lhs.blender + rhs, width: lhs.width, height: lhs.height)
     }
     
     @_versioned
-    @inline(__always)
+    @_inlineable
     static func += (lhs: inout ImageContextGradientMeshRasterizeBuffer, rhs: Int) {
         lhs.blender += rhs
     }

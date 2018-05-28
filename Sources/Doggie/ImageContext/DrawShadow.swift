@@ -65,7 +65,7 @@ extension ShadowTexture {
 extension ShadowTexture {
     
     @_versioned
-    @inline(__always)
+    @_inlineable
     func read_source(_ x: Int, _ y: Int) -> Double {
         
         let x_range = 0..<width
@@ -76,7 +76,7 @@ extension ShadowTexture {
     }
     
     @_versioned
-    @inline(__always)
+    @_inlineable
     func sampling2(point: Point, sampler: (Double, Double, Double) -> Double) -> Double {
         
         let _x1 = Int(point.x)

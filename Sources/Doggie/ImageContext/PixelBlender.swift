@@ -43,7 +43,7 @@ struct ImageContextPixelBlender<P : ColorPixelProtocol> {
     let blendMode: ColorBlendMode
     
     @_versioned
-    @inline(__always)
+    @_inlineable
     init(destination: UnsafeMutablePointer<P>, clip: UnsafePointer<Double>, opacity: Double, compositingMode: ColorCompositingMode, blendMode: ColorBlendMode) {
         self.destination = destination
         self.clip = clip
@@ -53,20 +53,20 @@ struct ImageContextPixelBlender<P : ColorPixelProtocol> {
     }
     
     @_versioned
-    @inline(__always)
+    @_inlineable
     static func + (lhs: ImageContextPixelBlender, rhs: Int) -> ImageContextPixelBlender {
         return ImageContextPixelBlender(destination: lhs.destination + rhs, clip: lhs.clip + rhs, opacity: lhs.opacity, compositingMode: lhs.compositingMode, blendMode: lhs.blendMode)
     }
     
     @_versioned
-    @inline(__always)
+    @_inlineable
     static func += (lhs: inout ImageContextPixelBlender, rhs: Int) {
         lhs.destination += rhs
         lhs.clip += rhs
     }
     
     @_versioned
-    @inline(__always)
+    @_inlineable
     func draw<C : ColorPixelProtocol>(color: C) where C.Model == P.Model {
         
         let _clip = clip.pointee
@@ -82,7 +82,7 @@ struct ImageContextPixelBlender<P : ColorPixelProtocol> {
 extension ImageContext {
     
     @_versioned
-    @inline(__always)
+    @_inlineable
     func _withUnsafePixelBlender(_ body: (ImageContextPixelBlender<Pixel>) -> Void) {
         
         let opacity = self.opacity
@@ -105,7 +105,7 @@ extension ImageContext {
     }
     
     @_versioned
-    @inline(__always)
+    @_inlineable
     func withUnsafePixelBlender(_ body: (ImageContextPixelBlender<Pixel>) -> Void) {
         
         let opacity = self.opacity

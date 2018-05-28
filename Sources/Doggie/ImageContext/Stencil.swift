@@ -37,7 +37,7 @@ struct ShapeRasterizeBuffer : RasterizeBufferProtocol {
     var height: Int
     
     @_versioned
-    @inline(__always)
+    @_inlineable
     init(stencil: UnsafeMutablePointer<Int16>, width: Int, height: Int) {
         self.stencil = stencil
         self.width = width
@@ -45,13 +45,13 @@ struct ShapeRasterizeBuffer : RasterizeBufferProtocol {
     }
     
     @_versioned
-    @inline(__always)
+    @_inlineable
     static func + (lhs: ShapeRasterizeBuffer, rhs: Int) -> ShapeRasterizeBuffer {
         return ShapeRasterizeBuffer(stencil: lhs.stencil + rhs, width: lhs.width, height: lhs.height)
     }
     
     @_versioned
-    @inline(__always)
+    @_inlineable
     static func += (lhs: inout ShapeRasterizeBuffer, rhs: Int) {
         lhs.stencil += rhs
     }
@@ -131,7 +131,7 @@ func _render(_ op: Shape.RenderOperation, width: Int, height: Int, transform: SD
 extension Shape {
     
     @_versioned
-    @inline(__always)
+    @_inlineable
     func raster(width: Int, height: Int, stencil: inout MappedBuffer<Int16>) -> Rect {
         
         assert(stencil.count == width * height, "incorrect size of stencil.")
