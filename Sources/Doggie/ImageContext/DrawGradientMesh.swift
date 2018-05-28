@@ -113,11 +113,7 @@ extension ImageContext {
         }
         
         self.withUnsafePixelBlender { blender in
-            
-            _drawGradient(blender, CubicBezierPatch<Point>(patch.m00 * transform, patch.m01 * transform, patch.m02 * transform, patch.m03 * transform,
-                                                    patch.m10 * transform, patch.m11 * transform, patch.m12 * transform, patch.m13 * transform,
-                                                    patch.m20 * transform, patch.m21 * transform, patch.m22 * transform, patch.m23 * transform,
-                                                    patch.m30 * transform, patch.m31 * transform, patch.m32 * transform, patch.m33 * transform),
+            _drawGradient(blender, patch * transform,
                           ColorPixel(c0.convert(to: colorSpace, intent: renderingIntent)),
                           ColorPixel(c1.convert(to: colorSpace, intent: renderingIntent)),
                           ColorPixel(c2.convert(to: colorSpace, intent: renderingIntent)),

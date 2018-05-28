@@ -669,3 +669,12 @@ public func *= (lhs: inout Shape.Component, rhs: SDTransform) {
     lhs = lhs * rhs
 }
 
+public func * (lhs: Shape, rhs: SDTransform) -> Shape {
+    var result = lhs
+    result.transform *= rhs
+    return result
+}
+public func *= (lhs: inout Shape, rhs: SDTransform) {
+    lhs = lhs * rhs
+}
+

@@ -1224,6 +1224,27 @@ public struct CubicBezierPatch<Element : ScalarMultiplicative> : Equatable where
 extension CubicBezierPatch {
     
     @_inlineable
+    public func eval(_ u: Double, _ v: Double) -> Element {
+        
+        @inline(__always)
+        func _eval(_ t: Double, _ p0: Element, _ p1: Element, _ p2: Element, _ p3: Element) -> Element {
+            let t2 = t * t
+            let _t = 1 - t
+            let _t2 = _t * _t
+            let a = _t * _t2 * p0
+            let b = 3 * _t2 * t * p1
+            let c = 3 * _t * t2 * p2
+            let d = t * t2 * p3
+            return a + b + c + d
+        }
+        
+        return _eval(v, _eval(u, m00, m01, m02, m03), _eval(u, m10, m11, m12, m13), _eval(u, m20, m21, m22, m23), _eval(u, m30, m31, m32, m33))
+    }
+}
+
+extension CubicBezierPatch {
+    
+    @_inlineable
     public func split(_ u: Double, _ v: Double) -> (CubicBezierPatch, CubicBezierPatch, CubicBezierPatch, CubicBezierPatch) {
         
         @inline(__always)
@@ -1346,6 +1367,29 @@ extension CubicBezierPatch where Element == Point {
         default: return QuadBezierFitting(points).map(Bezier.init)
         }
     }
+}
+
+@_inlineable
+public func * (lhs: CubicBezierPatch<Point>, rhs: SDTransform) -> CubicBezierPatch<Point> {
+    return CubicBezierPatch(lhs.m00 * rhs, lhs.m01 * rhs, lhs.m02 * rhs, lhs.m03 * rhs,
+                            lhs.m10 * rhs, lhs.m11 * rhs, lhs.m12 * rhs, lhs.m13 * rhs,
+                            lhs.m20 * rhs, lhs.m21 * rhs, lhs.m22 * rhs, lhs.m23 * rhs,
+                            lhs.m30 * rhs, lhs.m31 * rhs, lhs.m32 * rhs, lhs.m33 * rhs)
+}
+@_inlineable
+public func *= (lhs: inout CubicBezierPatch<Point>, rhs: SDTransform) {
+    lhs = lhs * rhs
+}
+@_inlineable
+public func * (lhs: CubicBezierPatch<Vector>, rhs: Matrix) -> CubicBezierPatch<Vector> {
+    return CubicBezierPatch(lhs.m00 * rhs, lhs.m01 * rhs, lhs.m02 * rhs, lhs.m03 * rhs,
+                            lhs.m10 * rhs, lhs.m11 * rhs, lhs.m12 * rhs, lhs.m13 * rhs,
+                            lhs.m20 * rhs, lhs.m21 * rhs, lhs.m22 * rhs, lhs.m23 * rhs,
+                            lhs.m30 * rhs, lhs.m31 * rhs, lhs.m32 * rhs, lhs.m33 * rhs)
+}
+@_inlineable
+public func *= (lhs: inout CubicBezierPatch<Vector>, rhs: Matrix) {
+    lhs = lhs * rhs
 }
 
 // MARK: Circle
