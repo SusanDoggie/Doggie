@@ -25,22 +25,14 @@
 
 open class Actor<Message> : Trigger {
     
-    private enum Action {
-        case message(Message)
-        case request((Actor) -> Void)
-    }
-    
-    private let messages: AtomicQueue<Action>
+    private let messages: AtomicQueue<(Actor) -> Void>
     
     public init(queue: DispatchQueue = SDDefaultDispatchQueue, qos: DispatchQoS = .unspecified, flags: DispatchWorkItemFlags = []) {
         self.messages = AtomicQueue()
         super.init(queue: queue, qos: qos, flags: flags) {
             guard let actor = $0 as? Actor else { return }
             while let message = actor.messages.next() {
-                switch message {
-                case let .message(message): actor.callback(message)
-                case let .request(request): request(actor)
-                }
+                message(actor)
             }
         }
     }
@@ -53,11 +45,12 @@ open class Actor<Message> : Trigger {
 extension Actor {
     
     public func send(_ message: Message) {
-        messages.push(.message(message))
+        messages.push { $0.callback(message) }
         self.signal()
     }
     
-    public func request<OtherMessage>(from other: Actor<OtherMessage>, callback: @escaping (Actor<OtherMessage>) -> Message) {
-        other.messages.push(.request { self.send(callback($0)) })
+    public func send<OtherMessage>(to other: Actor<OtherMessage>, callback: @escaping (Actor<Message>) -> OtherMessage) {
+        messages.push { other.send(callback($0)) }
+        self.signal()
     }
 }
