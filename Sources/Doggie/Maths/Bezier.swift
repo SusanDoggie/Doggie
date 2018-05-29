@@ -1263,15 +1263,15 @@ extension CubicBezierPatch {
         let (m2, n2) = _split(u, m20, m21, m22, m23)
         let (m3, n3) = _split(u, m30, m31, m32, m33)
         
-        let (s0, t0) = _split(v, m0.0, m1.0, m2.0, m3.0)
-        let (s1, t1) = _split(v, m0.1, m1.1, m2.1, m3.1)
-        let (s2, t2) = _split(v, m0.2, m1.2, m2.2, m3.2)
-        let (s3, t3) = _split(v, m0.3, m1.3, m2.3, m3.3)
+        let (s0, u0) = _split(v, m0.0, m1.0, m2.0, m3.0)
+        let (s1, u1) = _split(v, m0.1, m1.1, m2.1, m3.1)
+        let (s2, u2) = _split(v, m0.2, m1.2, m2.2, m3.2)
+        let (s3, u3) = _split(v, m0.3, m1.3, m2.3, m3.3)
         
-        let (u0, v0) = _split(v, n0.0, n1.0, n2.0, n3.0)
-        let (u1, v1) = _split(v, n0.1, n1.1, n2.1, n3.1)
-        let (u2, v2) = _split(v, n0.2, n1.2, n2.2, n3.2)
-        let (u3, v3) = _split(v, n0.3, n1.3, n2.3, n3.3)
+        let (t0, v0) = _split(v, n0.0, n1.0, n2.0, n3.0)
+        let (t1, v1) = _split(v, n0.1, n1.1, n2.1, n3.1)
+        let (t2, v2) = _split(v, n0.2, n1.2, n2.2, n3.2)
+        let (t3, v3) = _split(v, n0.3, n1.3, n2.3, n3.3)
         
         let p0 = CubicBezierPatch(s0.0, s1.0, s2.0, s3.0,
                                   s0.1, s1.1, s2.1, s3.1,

@@ -49,6 +49,30 @@ extension MappedBuffer: UnsafeMutableBufferProtocol {
     
 }
 
+extension UnsafeBufferPointer: UnsafeBufferProtocol {
+    
+    @_inlineable
+    public func withUnsafeBufferPointer<R>(_ body: (UnsafeBufferPointer<Element>) throws -> R) rethrows -> R {
+        return try body(self)
+    }
+}
+
+extension UnsafeMutableBufferPointer: UnsafeMutableBufferProtocol {
+    
+    @_inlineable
+    public func withUnsafeBufferPointer<R>(_ body: (UnsafeBufferPointer<Element>) throws -> R) rethrows -> R {
+        return try body(UnsafeBufferPointer(self))
+    }
+    
+    @_inlineable
+    public mutating func withUnsafeMutableBufferPointer<R>(_ body: (inout UnsafeMutableBufferPointer<Element>) throws -> R) rethrows -> R {
+        var copy = self
+        defer { precondition(copy.baseAddress == baseAddress) }
+        defer { precondition(copy.count == count) }
+        return try body(&copy)
+    }
+}
+
 extension Data: UnsafeMutableBufferProtocol {
     
     @_inlineable

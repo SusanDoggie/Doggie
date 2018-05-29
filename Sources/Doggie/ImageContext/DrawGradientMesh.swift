@@ -95,8 +95,8 @@ extension ImageContext {
         }
         
         _draw(p0, c0, c4, c5, c8)
-        _draw(p1, c5, c8, c2, c7)
-        _draw(p2, c4, c1, c8, c6)
+        _draw(p1, c4, c1, c8, c6)
+        _draw(p2, c5, c8, c2, c7)
         _draw(p3, c8, c6, c7, c3)
         
     }
