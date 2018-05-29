@@ -1400,34 +1400,28 @@ public struct CubicBezierTriangularPatch<Element : ScalarMultiplicative> : Equat
     public var m210: Element
     public var m120: Element
     public var m030: Element
-    public var m021: Element
-    public var m012: Element
-    public var m003: Element
-    public var m102: Element
     public var m201: Element
     public var m111: Element
+    public var m021: Element
+    public var m102: Element
+    public var m012: Element
+    public var m003: Element
     
     @_inlineable
-    public init(_ m300: Element,
-                _ m210: Element,
-                _ m120: Element,
-                _ m030: Element,
-                _ m021: Element,
-                _ m012: Element,
-                _ m003: Element,
-                _ m102: Element,
-                _ m201: Element,
-                _ m111: Element) {
+    public init(_ m300: Element, _ m210: Element, _ m120: Element, _ m030: Element,
+                _ m201: Element, _ m111: Element, _ m021: Element,
+                _ m102: Element, _ m012: Element,
+                _ m003: Element) {
         self.m300 = m300
         self.m210 = m210
         self.m120 = m120
         self.m030 = m030
-        self.m021 = m021
-        self.m012 = m012
-        self.m003 = m003
-        self.m102 = m102
         self.m201 = m201
         self.m111 = m111
+        self.m021 = m021
+        self.m102 = m102
+        self.m012 = m012
+        self.m003 = m003
     }
 }
 
@@ -1461,45 +1455,67 @@ extension CubicBezierTriangularPatch {
         return ((p0, q0, u0, v0), (v0, u1, q2, p3))
     }
     
+    @_versioned
+    @_inlineable
+    func _halving(_ p0: Element, _ p1: Element, _ p2: Element, _ p3: Element,
+                  _ p4: Element, _ p5: Element, _ p6: Element,
+                  _ p7: Element, _ p8: Element,
+                  _ p9: Element) -> (CubicBezierTriangularPatch, CubicBezierTriangularPatch) {
+        let ((s0, s1, s2, s3), (t0, t1, t2, t3)) = _split(p0, p1, p2, p3)
+        let ((s4, s5, s6), (t4, t5, t6)) = _split(p4, p5, p6)
+        let ((s7, s8), (t7, t8)) = _split(p7, p8)
+        return (CubicBezierTriangularPatch(s0, s1, s2, s3,
+                                           s4, s5, s6,
+                                           s7, s8,
+                                           p9),
+                CubicBezierTriangularPatch(t0, t1, t2, t3,
+                                           t4, t5, t6,
+                                           t7, t8,
+                                           p9))
+    }
+    
     @_inlineable
     public func halving1() -> (CubicBezierTriangularPatch, CubicBezierTriangularPatch) {
         
-        let (l3, r3) = _split(m030, m021, m012, m003)
-        let (l2, r2) = _split(m120, m111, m102)
-        let (l1, r1) = _split(m210, m201)
-        
-        return (CubicBezierTriangularPatch(l3.0, l3.1, l3.2, l3.3, l2.2, l1.1, m300, l1.0, l2.0, l2.1), CubicBezierTriangularPatch(r3.0, r3.1, r3.2, r3.3, r2.2, r1.1, m300, r1.0, r2.0, r2.1))
+        return _halving(m030, m021, m012, m003,
+                        m120, m111, m102,
+                        m210, m201,
+                        m300)
     }
     
     @_inlineable
     public func halving2() -> (CubicBezierTriangularPatch, CubicBezierTriangularPatch) {
         
-        let (l3, r3) = _split(m003, m102, m201, m300)
-        let (l2, r2) = _split(m012, m111, m210)
-        let (l1, r1) = _split(m021, m120)
-        
-        return (CubicBezierTriangularPatch(l3.0, l3.1, l3.2, l3.3, l2.2, l1.1, m030, l1.0, l2.0, l2.1), CubicBezierTriangularPatch(r3.0, r3.1, r3.2, r3.3, r2.2, r1.1, m030, r1.0, r2.0, r2.1))
+        return _halving(m003, m102, m201, m300,
+                        m012, m111, m210,
+                        m021, m120,
+                        m030)
     }
     
     @_inlineable
     public func halving3() -> (CubicBezierTriangularPatch, CubicBezierTriangularPatch) {
         
-        let (l3, r3) = _split(m300, m210, m120, m030)
-        let (l2, r2) = _split(m201, m111, m021)
-        let (l1, r1) = _split(m102, m012)
-        
-        return (CubicBezierTriangularPatch(l3.0, l3.1, l3.2, l3.3, l2.2, l1.1, m003, l1.0, l2.0, l2.1), CubicBezierTriangularPatch(r3.0, r3.1, r3.2, r3.3, r2.2, r1.1, m003, r1.0, r2.0, r2.1))
+        return _halving(m300, m210, m120, m030,
+                        m201, m111, m021,
+                        m102, m012,
+                        m003)
     }
 }
 
 extension CubicBezierTriangularPatch where Element: Tensor {
     
+    @_versioned
+    @_inlineable
+    func _distance(_ p0: Element, _ p1: Element, _ p2: Element, _ p3: Element) -> Double {
+        return p0.distance(to: p1) + p1.distance(to: p2) + p2.distance(to: p3)
+    }
+    
     @_inlineable
     public func halving() -> (CubicBezierTriangularPatch, CubicBezierTriangularPatch) {
         
-        let d1 = m030.distance(to: m021) + m021.distance(to: m012) + m012.distance(to: m003)
-        let d2 = m003.distance(to: m102) + m102.distance(to: m201) + m201.distance(to: m300)
-        let d3 = m300.distance(to: m210) + m210.distance(to: m120) + m120.distance(to: m030)
+        let d1 = _distance(m030, m021, m012, m003)
+        let d2 = _distance(m003, m102, m201, m300)
+        let d3 = _distance(m300, m210, m120, m030)
         
         if d1 < d2 {
             if d2 < d3 {
@@ -1517,8 +1533,10 @@ extension CubicBezierTriangularPatch where Element: Tensor {
 
 @_inlineable
 public func * (lhs: CubicBezierTriangularPatch<Point>, rhs: SDTransform) -> CubicBezierTriangularPatch<Point> {
-    return CubicBezierTriangularPatch(lhs.m300 * rhs, lhs.m210 * rhs, lhs.m120 * rhs, lhs.m030 * rhs, lhs.m021 * rhs,
-                                      lhs.m012 * rhs, lhs.m003 * rhs, lhs.m102 * rhs, lhs.m201 * rhs, lhs.m111 * rhs)
+    return CubicBezierTriangularPatch(lhs.m300 * rhs, lhs.m210 * rhs, lhs.m120 * rhs, lhs.m030 * rhs,
+                                      lhs.m201 * rhs, lhs.m111 * rhs, lhs.m021 * rhs,
+                                      lhs.m102 * rhs, lhs.m012 * rhs,
+                                      lhs.m003 * rhs)
 }
 @_inlineable
 public func *= (lhs: inout CubicBezierTriangularPatch<Point>, rhs: SDTransform) {
@@ -1526,8 +1544,10 @@ public func *= (lhs: inout CubicBezierTriangularPatch<Point>, rhs: SDTransform) 
 }
 @_inlineable
 public func * (lhs: CubicBezierTriangularPatch<Vector>, rhs: Matrix) -> CubicBezierTriangularPatch<Vector> {
-    return CubicBezierTriangularPatch(lhs.m300 * rhs, lhs.m210 * rhs, lhs.m120 * rhs, lhs.m030 * rhs, lhs.m021 * rhs,
-                                      lhs.m012 * rhs, lhs.m003 * rhs, lhs.m102 * rhs, lhs.m201 * rhs, lhs.m111 * rhs)
+    return CubicBezierTriangularPatch(lhs.m300 * rhs, lhs.m210 * rhs, lhs.m120 * rhs, lhs.m030 * rhs,
+                                      lhs.m201 * rhs, lhs.m111 * rhs, lhs.m021 * rhs,
+                                      lhs.m102 * rhs, lhs.m012 * rhs,
+                                      lhs.m003 * rhs)
 }
 @_inlineable
 public func *= (lhs: inout CubicBezierTriangularPatch<Vector>, rhs: Matrix) {
