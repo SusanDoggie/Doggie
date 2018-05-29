@@ -111,7 +111,7 @@ public protocol ImageContextRenderTriangleGenerator {
     
     associatedtype Vertex : ImageContextRenderVertex
     
-    func render(_ body: (Vertex, Vertex, Vertex) -> Void)
+    func render(position: (Vertex.Position) -> Point, _ body: (Vertex, Vertex, Vertex) -> Void)
 }
 
 extension ImageContext {
@@ -135,7 +135,7 @@ extension ImageContext {
                 
                 let rasterizer = ImageContextRenderBuffer(blender: blender, depth: _depth, width: width, height: height)
                 
-                triangles.render { v0, v1, v2 in
+                triangles.render(position: position) { v0, v1, v2 in
                     
                     let _v0 = v0.position
                     let _v1 = v1.position
@@ -268,8 +268,8 @@ struct _PerspectiveProjectTriangleGenerator<Base : ImageContextRenderTriangleGen
     
     @_versioned
     @_inlineable
-    func render(_ body: (_Vertex, _Vertex, _Vertex) -> Void) {
-        base.render { body(_Vertex(vertex: $0), _Vertex(vertex: $1), _Vertex(vertex: $2)) }
+    func render(position: (_Vertex.Position) -> Point, _ body: (_Vertex, _Vertex, _Vertex) -> Void) {
+        base.render(position: position) { body(_Vertex(vertex: $0), _Vertex(vertex: $1), _Vertex(vertex: $2)) }
     }
 }
 
@@ -372,7 +372,7 @@ struct _RenderTriangleSequence<Base: Sequence, Vertex: ImageContextRenderVertex>
     
     @_versioned
     @_inlineable
-    func render(_ body: (Vertex, Vertex, Vertex) -> Void) {
+    func render(position: (Vertex.Position) -> Point, _ body: (Vertex, Vertex, Vertex) -> Void) {
         base.forEach(body)
     }
 }
