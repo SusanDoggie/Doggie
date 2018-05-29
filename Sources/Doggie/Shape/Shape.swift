@@ -360,7 +360,7 @@ extension Shape.Component {
                         lastPoint = p3
                     }
                 }
-                cache.area = _area
+                cache.area = _area + Bezier(lastPoint, start).area
             }
             return cache.area!
         }
