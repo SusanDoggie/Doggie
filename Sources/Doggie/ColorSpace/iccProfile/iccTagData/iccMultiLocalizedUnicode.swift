@@ -64,25 +64,25 @@ struct iccMultiLocalizedUnicode : RandomAccessCollection, ByteCodable {
         }
     }
     
-    func encode<C : RangeReplaceableCollection>(to data: inout C) where C.Element == UInt8 {
+    func encode(to stream: inout ByteOutputStream) {
         
-        data.encode(iccProfile.TagType.multiLocalizedUnicode)
-        data.encode(0 as BEUInt32)
-        data.encode(Header(count: BEUInt32(messages.count), size: BEUInt32(MemoryLayout<Entry>.stride)))
+        stream.write(iccProfile.TagType.multiLocalizedUnicode)
+        stream.write(0 as BEUInt32)
+        stream.write(Header(count: BEUInt32(messages.count), size: BEUInt32(MemoryLayout<Entry>.stride)))
         
         let entry_size = messages.count * MemoryLayout<Entry>.stride
         var strData = Data()
         
-        var offset = data.count + entry_size
+        var offset = entry_size + 16
         
         for (language, country, string) in messages {
             var str = string.data(using: .utf16BigEndian)!
             strData.append(str)
-            data.encode(Entry(language: language, country: country, length: BEUInt32(str.count), offset: BEUInt32(offset)))
+            stream.write(Entry(language: language, country: country, length: BEUInt32(str.count), offset: BEUInt32(offset)))
             offset += str.count
         }
         
-        data.append(contentsOf: strData)
+        stream.write(strData)
     }
     
     var startIndex: Int {
@@ -134,9 +134,9 @@ extension iccMultiLocalizedUnicode {
             self.size = try data.decode(BEUInt32.self)
         }
         
-        func encode<C : RangeReplaceableCollection>(to data: inout C) where C.Element == UInt8 {
-            data.encode(count)
-            data.encode(size)
+        func encode(to stream: inout ByteOutputStream) {
+            stream.write(count)
+            stream.write(size)
         }
     }
     
@@ -161,11 +161,11 @@ extension iccMultiLocalizedUnicode {
             self.offset = try data.decode(BEUInt32.self)
         }
         
-        func encode<C : RangeReplaceableCollection>(to data: inout C) where C.Element == UInt8 {
-            data.encode(language)
-            data.encode(country)
-            data.encode(length)
-            data.encode(offset)
+        func encode(to stream: inout ByteOutputStream) {
+            stream.write(language)
+            stream.write(country)
+            stream.write(length)
+            stream.write(offset)
         }
     }
 }

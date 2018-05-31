@@ -47,7 +47,7 @@ extension Image : TIFFRawRepresentable {
                 for _ in 0..<count {
                     let color = source.pointee.color
                     for i in 0..<Pixel.Model.numberOfComponents {
-                        data.encode(UInt16((color.normalizedComponent(i) * 65535).clamped(to: 0...65535).rounded()).bigEndian)
+                        data.write(UInt16((color.normalizedComponent(i) * 65535).clamped(to: 0...65535).rounded()).bigEndian)
                     }
                     source += 1
                 }
@@ -55,9 +55,9 @@ extension Image : TIFFRawRepresentable {
                 for _ in 0..<count {
                     let pixel = source.pointee
                     for i in 0..<Pixel.Model.numberOfComponents {
-                        data.encode(UInt16((pixel.color.normalizedComponent(i) * 65535).clamped(to: 0...65535).rounded()).bigEndian)
+                        data.write(UInt16((pixel.color.normalizedComponent(i) * 65535).clamped(to: 0...65535).rounded()).bigEndian)
                     }
-                    data.encode(UInt16((pixel.opacity * 65535).clamped(to: 0...65535).rounded()).bigEndian)
+                    data.write(UInt16((pixel.opacity * 65535).clamped(to: 0...65535).rounded()).bigEndian)
                     source += 1
                 }
             }
@@ -83,18 +83,18 @@ struct TIFFEncoder : ImageRepEncoder {
             if isOpaque {
                 for _ in 0..<image.width * image.height {
                     let color = source.pointee.color
-                    data.encode(UInt16((color.normalizedComponent(0) * 65535).clamped(to: 0...65535).rounded()).bigEndian)
-                    data.encode(Int16((color.normalizedComponent(1) * 65535 - 32768).clamped(to: -32768...32767).rounded()).bigEndian)
-                    data.encode(Int16((color.normalizedComponent(2) * 65535 - 32768).clamped(to: -32768...32767).rounded()).bigEndian)
+                    data.write(UInt16((color.normalizedComponent(0) * 65535).clamped(to: 0...65535).rounded()).bigEndian)
+                    data.write(Int16((color.normalizedComponent(1) * 65535 - 32768).clamped(to: -32768...32767).rounded()).bigEndian)
+                    data.write(Int16((color.normalizedComponent(2) * 65535 - 32768).clamped(to: -32768...32767).rounded()).bigEndian)
                     source += 1
                 }
             } else {
                 for _ in 0..<image.width * image.height {
                     let pixel = source.pointee
-                    data.encode(UInt16((pixel.color.normalizedComponent(0) * 65535).clamped(to: 0...65535).rounded()).bigEndian)
-                    data.encode(Int16((pixel.color.normalizedComponent(1) * 65535 - 32768).clamped(to: -32768...32767).rounded()).bigEndian)
-                    data.encode(Int16((pixel.color.normalizedComponent(2) * 65535 - 32768).clamped(to: -32768...32767).rounded()).bigEndian)
-                    data.encode(UInt16((pixel.opacity * 65535).clamped(to: 0...65535).rounded()).bigEndian)
+                    data.write(UInt16((pixel.color.normalizedComponent(0) * 65535).clamped(to: 0...65535).rounded()).bigEndian)
+                    data.write(Int16((pixel.color.normalizedComponent(1) * 65535 - 32768).clamped(to: -32768...32767).rounded()).bigEndian)
+                    data.write(Int16((pixel.color.normalizedComponent(2) * 65535 - 32768).clamped(to: -32768...32767).rounded()).bigEndian)
+                    data.write(UInt16((pixel.opacity * 65535).clamped(to: 0...65535).rounded()).bigEndian)
                     source += 1
                 }
             }
@@ -116,18 +116,18 @@ struct TIFFEncoder : ImageRepEncoder {
             if isOpaque {
                 for _ in 0..<image.width * image.height {
                     let pixel = source.pointee
-                    data.encode(pixel.r.bigEndian)
-                    data.encode(pixel.g.bigEndian)
-                    data.encode(pixel.b.bigEndian)
+                    data.write(pixel.r.bigEndian)
+                    data.write(pixel.g.bigEndian)
+                    data.write(pixel.b.bigEndian)
                     source += 1
                 }
             } else {
                 for _ in 0..<image.width * image.height {
                     let pixel = source.pointee
-                    data.encode(pixel.r.bigEndian)
-                    data.encode(pixel.g.bigEndian)
-                    data.encode(pixel.b.bigEndian)
-                    data.encode(pixel.a.bigEndian)
+                    data.write(pixel.r.bigEndian)
+                    data.write(pixel.g.bigEndian)
+                    data.write(pixel.b.bigEndian)
+                    data.write(pixel.a.bigEndian)
                     source += 1
                 }
             }
@@ -149,18 +149,18 @@ struct TIFFEncoder : ImageRepEncoder {
             if isOpaque {
                 for _ in 0..<image.width * image.height {
                     let pixel = source.pointee
-                    data.encode(pixel.r.bigEndian)
-                    data.encode(pixel.g.bigEndian)
-                    data.encode(pixel.b.bigEndian)
+                    data.write(pixel.r.bigEndian)
+                    data.write(pixel.g.bigEndian)
+                    data.write(pixel.b.bigEndian)
                     source += 1
                 }
             } else {
                 for _ in 0..<image.width * image.height {
                     let pixel = source.pointee
-                    data.encode(pixel.r.bigEndian)
-                    data.encode(pixel.g.bigEndian)
-                    data.encode(pixel.b.bigEndian)
-                    data.encode(pixel.a.bigEndian)
+                    data.write(pixel.r.bigEndian)
+                    data.write(pixel.g.bigEndian)
+                    data.write(pixel.b.bigEndian)
+                    data.write(pixel.a.bigEndian)
                     source += 1
                 }
             }
@@ -182,14 +182,14 @@ struct TIFFEncoder : ImageRepEncoder {
             if isOpaque {
                 for _ in 0..<image.width * image.height {
                     let pixel = source.pointee
-                    data.encode(pixel.w.bigEndian)
+                    data.write(pixel.w.bigEndian)
                     source += 1
                 }
             } else {
                 for _ in 0..<image.width * image.height {
                     let pixel = source.pointee
-                    data.encode(pixel.w.bigEndian)
-                    data.encode(pixel.a.bigEndian)
+                    data.write(pixel.w.bigEndian)
+                    data.write(pixel.a.bigEndian)
                     source += 1
                 }
             }
@@ -211,14 +211,14 @@ struct TIFFEncoder : ImageRepEncoder {
             if isOpaque {
                 for _ in 0..<image.width * image.height {
                     let pixel = source.pointee
-                    data.encode(pixel.w.bigEndian)
+                    data.write(pixel.w.bigEndian)
                     source += 1
                 }
             } else {
                 for _ in 0..<image.width * image.height {
                     let pixel = source.pointee
-                    data.encode(pixel.w.bigEndian)
-                    data.encode(pixel.a.bigEndian)
+                    data.write(pixel.w.bigEndian)
+                    data.write(pixel.a.bigEndian)
                     source += 1
                 }
             }
@@ -229,29 +229,29 @@ struct TIFFEncoder : ImageRepEncoder {
     
     private static func encode(tag: TIFFTag.Tag, type: UInt16, value: [Int], _ data: inout MappedBuffer<UInt8>) {
         
-        data.encode(tag.rawValue.bigEndian)
-        data.encode(type.bigEndian)
-        data.encode(UInt32(value.count).bigEndian)
+        data.write(tag.rawValue.bigEndian)
+        data.write(type.bigEndian)
+        data.write(UInt32(value.count).bigEndian)
         
         switch type {
         case 1:
             guard 1...4 ~= value.count else { fatalError() }
             for v in value {
-                data.encode(UInt8(v).bigEndian)
+                data.write(UInt8(v).bigEndian)
             }
             data.append(contentsOf: repeatElement(0 as UInt8, count: 4 - value.count))
         case 3:
             guard 1...2 ~= value.count else { fatalError() }
             for v in value {
-                data.encode(UInt16(v).bigEndian)
+                data.write(UInt16(v).bigEndian)
             }
             if value.count != 2 {
-                data.encode(0 as UInt16)
+                data.write(0 as UInt16)
             }
         case 4:
             guard value.count == 1 else { fatalError() }
             for v in value {
-                data.encode(UInt32(v).bigEndian)
+                data.write(UInt32(v).bigEndian)
             }
         default: fatalError()
         }
@@ -260,7 +260,7 @@ struct TIFFEncoder : ImageRepEncoder {
     static func encode(image: AnyImage, properties: [ImageRep.PropertyKey : Any]) -> Data? {
         
         var data = MappedBuffer<UInt8>(option: .fileBacked)
-        data.encode(TIFFHeader(endianness: .BIG, version: 42, IFD: 8))
+        data.write(TIFFHeader(endianness: .BIG, version: 42, IFD: 8))
         
         let isOpaque = image.isOpaque
         let samplesPerPixel = isOpaque ? image.colorSpace.numberOfComponents : image.colorSpace.numberOfComponents + 1
@@ -342,7 +342,7 @@ struct TIFFEncoder : ImageRepEncoder {
             tag_count += 1
         }
         
-        data.encode(tag_count.bigEndian)
+        data.write(tag_count.bigEndian)
         encode(tag: .SamplesPerPixel, type: 3, value: [samplesPerPixel], &data)
         encode(tag: .NewSubfileType, type: 4, value: [0], &data)
         encode(tag: .ImageWidth, type: 3, value: [image.width], &data)
@@ -367,37 +367,37 @@ struct TIFFEncoder : ImageRepEncoder {
         
         do {
             
-            data.encode(TIFFTag.Tag.ResolutionX.rawValue.bigEndian)
-            data.encode(UInt16(5).bigEndian)
-            data.encode(UInt32(1).bigEndian)
-            data.encode(UInt32(offset + _data.count).bigEndian)
+            data.write(TIFFTag.Tag.ResolutionX.rawValue.bigEndian)
+            data.write(UInt16(5).bigEndian)
+            data.write(UInt32(1).bigEndian)
+            data.write(UInt32(offset + _data.count).bigEndian)
             
             let m = pow(10, (9 - ceil(log10(resolutionX))).clamped(to: 0...9))
-            _data.encode(UInt32((resolutionX * m).clamped(to: 0...4294967295)).bigEndian)
-            _data.encode(UInt32(m).bigEndian)
+            _data.write(UInt32((resolutionX * m).clamped(to: 0...4294967295)).bigEndian)
+            _data.write(UInt32(m).bigEndian)
         }
         
         do {
             
-            data.encode(TIFFTag.Tag.ResolutionY.rawValue.bigEndian)
-            data.encode(UInt16(5).bigEndian)
-            data.encode(UInt32(1).bigEndian)
-            data.encode(UInt32(offset + _data.count).bigEndian)
+            data.write(TIFFTag.Tag.ResolutionY.rawValue.bigEndian)
+            data.write(UInt16(5).bigEndian)
+            data.write(UInt32(1).bigEndian)
+            data.write(UInt32(offset + _data.count).bigEndian)
             
             let m = pow(10, (9 - ceil(log10(resolutionY))).clamped(to: 0...9))
-            _data.encode(UInt32((resolutionY * m).clamped(to: 0...4294967295)).bigEndian)
-            _data.encode(UInt32(m).bigEndian)
+            _data.write(UInt32((resolutionY * m).clamped(to: 0...4294967295)).bigEndian)
+            _data.write(UInt32(m).bigEndian)
         }
         
         if samplesPerPixel > 2 {
             
-            data.encode(TIFFTag.Tag.BitsPerSample.rawValue.bigEndian)
-            data.encode(UInt16(3).bigEndian)
-            data.encode(UInt32(samplesPerPixel).bigEndian)
-            data.encode(UInt32(offset + _data.count).bigEndian)
+            data.write(TIFFTag.Tag.BitsPerSample.rawValue.bigEndian)
+            data.write(UInt16(3).bigEndian)
+            data.write(UInt32(samplesPerPixel).bigEndian)
+            data.write(UInt32(offset + _data.count).bigEndian)
             
             for _ in 0..<samplesPerPixel {
-                _data.encode(UInt16(bitsPerChannel).bigEndian)
+                _data.write(UInt16(bitsPerChannel).bigEndian)
             }
             
         } else {
@@ -408,10 +408,10 @@ struct TIFFEncoder : ImageRepEncoder {
             
             guard let iccData = image.colorSpace.iccData else { return nil }
             
-            data.encode(TIFFTag.Tag.IccProfile.rawValue.bigEndian)
-            data.encode(UInt16(7).bigEndian)
-            data.encode(UInt32(iccData.count).bigEndian)
-            data.encode(UInt32(offset + _data.count).bigEndian)
+            data.write(TIFFTag.Tag.IccProfile.rawValue.bigEndian)
+            data.write(UInt16(7).bigEndian)
+            data.write(UInt32(iccData.count).bigEndian)
+            data.write(UInt32(offset + _data.count).bigEndian)
             
             _data.append(contentsOf: iccData)
         }
@@ -421,7 +421,7 @@ struct TIFFEncoder : ImageRepEncoder {
             _data.append(contentsOf: pixelData)
         }
         
-        data.encode(0 as UInt32)
+        data.write(0 as UInt32)
         data.append(contentsOf: _data)
         
         return data.data

@@ -41,32 +41,32 @@ struct BMPEncoder : ImageRepEncoder {
             
             var buffer = MappedBuffer<UInt8>(capacity: 54 + pixel_size, option: .fileBacked)
             
-            buffer.encode("BM" as Signature<BEUInt16>)
-            buffer.encode(LEUInt32(54 + pixel_size))
-            buffer.encode(0 as LEUInt16)
-            buffer.encode(0 as LEUInt16)
-            buffer.encode(54 as LEUInt32)
+            buffer.write("BM" as Signature<BEUInt16>)
+            buffer.write(LEUInt32(54 + pixel_size))
+            buffer.write(0 as LEUInt16)
+            buffer.write(0 as LEUInt16)
+            buffer.write(54 as LEUInt32)
             
-            buffer.encode(40 as LEUInt32)
+            buffer.write(40 as LEUInt32)
             
-            buffer.encode(LEInt32(image.width))
-            buffer.encode(LEInt32(-image.height))
-            buffer.encode(1 as LEUInt16)
-            buffer.encode(24 as LEUInt16)
+            buffer.write(LEInt32(image.width))
+            buffer.write(LEInt32(-image.height))
+            buffer.write(1 as LEUInt16)
+            buffer.write(24 as LEUInt16)
             
-            buffer.encode(BITMAPINFOHEADER.CompressionType.BI_RGB)
-            buffer.encode(LEUInt32(pixel_size))
-            buffer.encode(LEUInt32(round(resolution.horizontal).clamped(to: 0...4294967295)))
-            buffer.encode(LEUInt32(round(resolution.vertical).clamped(to: 0...4294967295)))
-            buffer.encode(0 as LEUInt32)
-            buffer.encode(0 as LEUInt32)
+            buffer.write(BITMAPINFOHEADER.CompressionType.BI_RGB)
+            buffer.write(LEUInt32(pixel_size))
+            buffer.write(LEUInt32(round(resolution.horizontal).clamped(to: 0...4294967295)))
+            buffer.write(LEUInt32(round(resolution.vertical).clamped(to: 0...4294967295)))
+            buffer.write(0 as LEUInt32)
+            buffer.write(0 as LEUInt32)
             
             var counter = image.width
             
             for pixel in image.pixels {
-                buffer.encode(pixel.b)
-                buffer.encode(pixel.g)
-                buffer.encode(pixel.r)
+                buffer.write(pixel.b)
+                buffer.write(pixel.g)
+                buffer.write(pixel.r)
                 counter -= 1
                 if counter == 0 {
                     buffer.append(contentsOf: repeatElement(0, count: padding))
@@ -82,36 +82,36 @@ struct BMPEncoder : ImageRepEncoder {
             
             var buffer = MappedBuffer<UInt8>(capacity: 70 + pixel_size, option: .fileBacked)
             
-            buffer.encode("BM" as Signature<BEUInt16>)
-            buffer.encode(LEUInt32(70 + pixel_size))
-            buffer.encode(0 as LEUInt16)
-            buffer.encode(0 as LEUInt16)
-            buffer.encode(70 as LEUInt32)
+            buffer.write("BM" as Signature<BEUInt16>)
+            buffer.write(LEUInt32(70 + pixel_size))
+            buffer.write(0 as LEUInt16)
+            buffer.write(0 as LEUInt16)
+            buffer.write(70 as LEUInt32)
             
-            buffer.encode(56 as LEUInt32)
+            buffer.write(56 as LEUInt32)
             
-            buffer.encode(LEInt32(image.width))
-            buffer.encode(LEInt32(-image.height))
-            buffer.encode(1 as LEUInt16)
-            buffer.encode(32 as LEUInt16)
+            buffer.write(LEInt32(image.width))
+            buffer.write(LEInt32(-image.height))
+            buffer.write(1 as LEUInt16)
+            buffer.write(32 as LEUInt16)
             
-            buffer.encode(BITMAPINFOHEADER.CompressionType.BI_BITFIELDS)
-            buffer.encode(LEUInt32(pixel_size))
-            buffer.encode(LEUInt32(round(resolution.horizontal).clamped(to: 0...4294967295)))
-            buffer.encode(LEUInt32(round(resolution.vertical).clamped(to: 0...4294967295)))
-            buffer.encode(0 as LEUInt32)
-            buffer.encode(0 as LEUInt32)
+            buffer.write(BITMAPINFOHEADER.CompressionType.BI_BITFIELDS)
+            buffer.write(LEUInt32(pixel_size))
+            buffer.write(LEUInt32(round(resolution.horizontal).clamped(to: 0...4294967295)))
+            buffer.write(LEUInt32(round(resolution.vertical).clamped(to: 0...4294967295)))
+            buffer.write(0 as LEUInt32)
+            buffer.write(0 as LEUInt32)
             
-            buffer.encode(0x00FF0000 as LEUInt32)
-            buffer.encode(0x0000FF00 as LEUInt32)
-            buffer.encode(0x000000FF as LEUInt32)
-            buffer.encode(0xFF000000 as LEUInt32)
+            buffer.write(0x00FF0000 as LEUInt32)
+            buffer.write(0x0000FF00 as LEUInt32)
+            buffer.write(0x000000FF as LEUInt32)
+            buffer.write(0xFF000000 as LEUInt32)
             
             for pixel in image.pixels {
-                buffer.encode(pixel.b)
-                buffer.encode(pixel.g)
-                buffer.encode(pixel.r)
-                buffer.encode(pixel.a)
+                buffer.write(pixel.b)
+                buffer.write(pixel.g)
+                buffer.write(pixel.r)
+                buffer.write(pixel.a)
             }
             
             return buffer.data

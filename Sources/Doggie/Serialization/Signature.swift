@@ -55,8 +55,8 @@ extension SignatureProtocol {
 extension SignatureProtocol where Bytes : ByteEncodable {
     
     @_transparent
-    func encode<C : RangeReplaceableCollection>(to data: inout C) where C.Element == UInt8 {
-        self.rawValue.encode(to: &data)
+    func encode(to stream: inout ByteOutputStream) {
+        self.rawValue.encode(to: &stream)
     }
 }
 extension SignatureProtocol where Bytes : ByteDecodable {

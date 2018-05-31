@@ -144,9 +144,9 @@ struct JPEGHuffmanTable : ByteCodable {
         }
     }
     
-    func encode<C : RangeReplaceableCollection>(to data: inout C) where C.Element == UInt8 {
+    func encode(to stream: inout ByteOutputStream) {
         
-        data.encode(info)
+        stream.write(info)
         
         let group = Dictionary(grouping: table) { $0.key.length }
         
@@ -167,39 +167,39 @@ struct JPEGHuffmanTable : ByteCodable {
         let b15 = group[15]?.sorted(by: { $0.key.code }).map { $0.value } ?? []
         let b16 = group[16]?.sorted(by: { $0.key.code }).map { $0.value } ?? []
         
-        data.encode(UInt8(b1.count))
-        data.encode(UInt8(b2.count))
-        data.encode(UInt8(b3.count))
-        data.encode(UInt8(b4.count))
-        data.encode(UInt8(b5.count))
-        data.encode(UInt8(b6.count))
-        data.encode(UInt8(b7.count))
-        data.encode(UInt8(b8.count))
-        data.encode(UInt8(b9.count))
-        data.encode(UInt8(b10.count))
-        data.encode(UInt8(b11.count))
-        data.encode(UInt8(b12.count))
-        data.encode(UInt8(b13.count))
-        data.encode(UInt8(b14.count))
-        data.encode(UInt8(b15.count))
-        data.encode(UInt8(b16.count))
+        stream.write(UInt8(b1.count))
+        stream.write(UInt8(b2.count))
+        stream.write(UInt8(b3.count))
+        stream.write(UInt8(b4.count))
+        stream.write(UInt8(b5.count))
+        stream.write(UInt8(b6.count))
+        stream.write(UInt8(b7.count))
+        stream.write(UInt8(b8.count))
+        stream.write(UInt8(b9.count))
+        stream.write(UInt8(b10.count))
+        stream.write(UInt8(b11.count))
+        stream.write(UInt8(b12.count))
+        stream.write(UInt8(b13.count))
+        stream.write(UInt8(b14.count))
+        stream.write(UInt8(b15.count))
+        stream.write(UInt8(b16.count))
         
-        data.encode(b1)
-        data.encode(b2)
-        data.encode(b3)
-        data.encode(b4)
-        data.encode(b5)
-        data.encode(b6)
-        data.encode(b7)
-        data.encode(b8)
-        data.encode(b9)
-        data.encode(b10)
-        data.encode(b11)
-        data.encode(b12)
-        data.encode(b13)
-        data.encode(b14)
-        data.encode(b15)
-        data.encode(b16)
+        stream.write(b1)
+        stream.write(b2)
+        stream.write(b3)
+        stream.write(b4)
+        stream.write(b5)
+        stream.write(b6)
+        stream.write(b7)
+        stream.write(b8)
+        stream.write(b9)
+        stream.write(b10)
+        stream.write(b11)
+        stream.write(b12)
+        stream.write(b13)
+        stream.write(b14)
+        stream.write(b15)
+        stream.write(b16)
         
     }
 }
@@ -257,17 +257,17 @@ struct JPEGQuantizationTable : ByteCodable {
                       try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self))
     }
     
-    func encode<C : RangeReplaceableCollection>(to data: inout C) where C.Element == UInt8 {
+    func encode(to stream: inout ByteOutputStream) {
         
-        data.encode(destination)
-        data.encode(table.0, table.1, table.2, table.3, table.4, table.5, table.6, table.7)
-        data.encode(table.8, table.9, table.10, table.11, table.12, table.13, table.14, table.15)
-        data.encode(table.16, table.17, table.18, table.19, table.20, table.21, table.22, table.23)
-        data.encode(table.24, table.25, table.26, table.27, table.28, table.29, table.30, table.31)
-        data.encode(table.32, table.33, table.34, table.35, table.36, table.37, table.38, table.39)
-        data.encode(table.40, table.41, table.42, table.43, table.44, table.45, table.46, table.47)
-        data.encode(table.48, table.49, table.50, table.51, table.52, table.53, table.54, table.55)
-        data.encode(table.56, table.57, table.58, table.59, table.60, table.61, table.62, table.63)
+        stream.write(destination)
+        stream.write(table.0, table.1, table.2, table.3, table.4, table.5, table.6, table.7)
+        stream.write(table.8, table.9, table.10, table.11, table.12, table.13, table.14, table.15)
+        stream.write(table.16, table.17, table.18, table.19, table.20, table.21, table.22, table.23)
+        stream.write(table.24, table.25, table.26, table.27, table.28, table.29, table.30, table.31)
+        stream.write(table.32, table.33, table.34, table.35, table.36, table.37, table.38, table.39)
+        stream.write(table.40, table.41, table.42, table.43, table.44, table.45, table.46, table.47)
+        stream.write(table.48, table.49, table.50, table.51, table.52, table.53, table.54, table.55)
+        stream.write(table.56, table.57, table.58, table.59, table.60, table.61, table.62, table.63)
     }
 }
 
@@ -381,14 +381,14 @@ struct JPEGSegment : ByteCodable {
         }
     }
     
-    func encode<C : RangeReplaceableCollection>(to data: inout C) where C.Element == UInt8 {
-        data.encode(0xFF as UInt8)
-        data.encode(marker)
+    func encode(to stream: inout ByteOutputStream) {
+        stream.write(0xFF as UInt8)
+        stream.write(marker)
         switch marker {
         case 0xD0...0xD9: break
         default:
-            data.encode(BEUInt16(self.data.count + 2))
-            data.append(contentsOf: self.data)
+            stream.write(BEUInt16(data.count + 2))
+            stream.write(data)
         }
     }
 }

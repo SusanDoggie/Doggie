@@ -25,14 +25,14 @@
 
 extension SDXMLDocument {
     
-    public func xmlString(prettyPrinted: Bool = false) -> String {
+    public func xml(prettyPrinted: Bool = false) -> String {
         var result = "<?xml version=\"1.0\" encoding=\"utf-8\"?>"
         self._xml(prettyPrinted: prettyPrinted, &result)
         return result
     }
     
-    public func xmlData(prettyPrinted: Bool = false) -> Data {
-        let xml = self.xmlString(prettyPrinted: prettyPrinted)
+    public func data(prettyPrinted: Bool = false) -> Data {
+        let xml = self.xml(prettyPrinted: prettyPrinted)
         return xml.data(using: .utf8) ?? Data()
     }
     
@@ -46,7 +46,7 @@ extension SDXMLDocument {
 extension SDXMLDocument : CustomStringConvertible {
     
     public var description: String {
-        return xmlString()
+        return xml()
     }
 }
 

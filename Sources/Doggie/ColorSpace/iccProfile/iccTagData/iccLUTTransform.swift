@@ -309,15 +309,15 @@ extension iccLUTTransform : ByteDecodable {
             self.pad3 = try data.decode(UInt8.self)
         }
         
-        func encode<C : RangeReplaceableCollection>(to data: inout C) where C.Element == UInt8 {
-            data.encode(grids.0, grids.1, grids.2, grids.3,
+        func encode(to stream: inout ByteOutputStream) {
+            stream.write(grids.0, grids.1, grids.2, grids.3,
                         grids.4, grids.5, grids.6, grids.7,
                         grids.8, grids.9, grids.10, grids.11,
                         grids.12, grids.13, grids.14, grids.15)
-            data.encode(precision)
-            data.encode(pad1)
-            data.encode(pad2)
-            data.encode(pad3)
+            stream.write(precision)
+            stream.write(pad1)
+            stream.write(pad2)
+            stream.write(pad3)
         }
     }
 }
@@ -340,12 +340,12 @@ extension iccLUTTransform {
             self.matrix = try data.decode(iccMatrix3x3.self)
         }
         
-        func encode<C : RangeReplaceableCollection>(to data: inout C) where C.Element == UInt8 {
-            data.encode(inputChannels)
-            data.encode(outputChannels)
-            data.encode(grids)
-            data.encode(padding)
-            data.encode(matrix)
+        func encode(to stream: inout ByteOutputStream) {
+            stream.write(inputChannels)
+            stream.write(outputChannels)
+            stream.write(grids)
+            stream.write(padding)
+            stream.write(matrix)
         }
         
         var inputTableSize: Int {
@@ -379,14 +379,14 @@ extension iccLUTTransform {
             self.outputEntries = try data.decode(BEUInt16.self)
         }
         
-        func encode<C : RangeReplaceableCollection>(to data: inout C) where C.Element == UInt8 {
-            data.encode(inputChannels)
-            data.encode(outputChannels)
-            data.encode(grids)
-            data.encode(padding)
-            data.encode(matrix)
-            data.encode(inputEntries)
-            data.encode(outputEntries)
+        func encode(to stream: inout ByteOutputStream) {
+            stream.write(inputChannels)
+            stream.write(outputChannels)
+            stream.write(grids)
+            stream.write(padding)
+            stream.write(matrix)
+            stream.write(inputEntries)
+            stream.write(outputEntries)
         }
         
         var inputTableSize: Int {
@@ -437,16 +437,16 @@ extension iccLUTTransform {
             self.offsetA = try data.decode(BEUInt32.self)
         }
         
-        func encode<C : RangeReplaceableCollection>(to data: inout C) where C.Element == UInt8 {
-            data.encode(inputChannels)
-            data.encode(outputChannels)
-            data.encode(padding1)
-            data.encode(padding2)
-            data.encode(offsetB)
-            data.encode(offsetMatrix)
-            data.encode(offsetM)
-            data.encode(offsetCLUT)
-            data.encode(offsetA)
+        func encode(to stream: inout ByteOutputStream) {
+            stream.write(inputChannels)
+            stream.write(outputChannels)
+            stream.write(padding1)
+            stream.write(padding2)
+            stream.write(offsetB)
+            stream.write(offsetMatrix)
+            stream.write(offsetM)
+            stream.write(offsetCLUT)
+            stream.write(offsetA)
         }
     }
     
@@ -486,16 +486,16 @@ extension iccLUTTransform {
             self.offsetA = try data.decode(BEUInt32.self)
         }
         
-        func encode<C : RangeReplaceableCollection>(to data: inout C) where C.Element == UInt8 {
-            data.encode(inputChannels)
-            data.encode(outputChannels)
-            data.encode(padding1)
-            data.encode(padding2)
-            data.encode(offsetB)
-            data.encode(offsetMatrix)
-            data.encode(offsetM)
-            data.encode(offsetCLUT)
-            data.encode(offsetA)
+        func encode(to stream: inout ByteOutputStream) {
+            stream.write(inputChannels)
+            stream.write(outputChannels)
+            stream.write(padding1)
+            stream.write(padding2)
+            stream.write(offsetB)
+            stream.write(offsetMatrix)
+            stream.write(offsetM)
+            stream.write(offsetCLUT)
+            stream.write(offsetA)
         }
     }
 }

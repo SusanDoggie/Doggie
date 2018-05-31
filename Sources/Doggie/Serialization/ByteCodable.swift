@@ -23,9 +23,63 @@
 //  THE SOFTWARE.
 //
 
+@_fixed_layout
+public struct ByteOutputStream {
+    
+    @_versioned
+    let sink: (UnsafeRawBufferPointer) -> Void
+    
+    public private(set) var count: Int
+    
+    @_inlineable
+    public init(_ sink: @escaping (UnsafeRawBufferPointer) -> Void) {
+        self.sink = sink
+        self.count = 0
+    }
+}
+
+extension ByteOutputStream {
+    
+    @_inlineable
+    public mutating func write(_ bytes: UnsafeRawBufferPointer) {
+        sink(bytes)
+        count += bytes.count
+    }
+}
+
+extension ByteOutputStream {
+    
+    @_inlineable
+    public mutating func write<T: ByteEncodable>(_ value: T) {
+        value.encode(to: &self)
+    }
+    
+    @_inlineable
+    public mutating func write<Buffer: UnsafeBufferProtocol>(_ buffer: Buffer) where Buffer.Element == UInt8 {
+        buffer.withUnsafeBufferPointer { self.write(UnsafeRawBufferPointer($0)) }
+    }
+    
+    @_inlineable
+    public mutating func write<T: ByteEncodable>(_ first: T, _ second: T, _ remains: T...) {
+        first.encode(to: &self)
+        second.encode(to: &self)
+        for value in remains {
+            value.encode(to: &self)
+        }
+    }
+}
+
+extension RangeReplaceableCollection where Element == UInt8 {
+    
+    @_inlineable
+    public mutating func write<T: ByteEncodable>(_ value: T) {
+        value.encode(to: &self)
+    }
+}
+
 public protocol ByteEncodable {
     
-    func encode<C : RangeReplaceableCollection>(to: inout C) where C.Element == UInt8
+    func encode(to stream: inout ByteOutputStream)
 }
 
 public protocol ByteDecodable {
@@ -49,11 +103,17 @@ public enum ByteDecodeError : Error {
     case endOfData
 }
 
-extension RangeReplaceableCollection where Element == UInt8 {
+extension ByteEncodable {
     
     @_inlineable
-    public mutating func encode<T : ByteEncodable>(_ value: T) {
-        value.encode(to: &self)
+    public func serialize(_ body: (UnsafeRawBufferPointer) -> Void) {
+        var stream = withoutActuallyEscaping(body, do: ByteOutputStream.init)
+        self.encode(to: &stream)
+    }
+    
+    @_inlineable
+    public func encode<C : RangeReplaceableCollection>(to data: inout C) where C.Element == UInt8 {
+        self.serialize { data.append(contentsOf: $0) }
     }
 }
 
@@ -62,23 +122,6 @@ extension Data {
     @_inlineable
     public mutating func decode<T : ByteDecodable>(_ type: T.Type) throws -> T {
         return try T(from: &self)
-    }
-}
-
-extension RangeReplaceableCollection where Element == UInt8 {
-    
-    @_inlineable
-    public mutating func encode<T : ByteEncodable>(_ values: T ... ) {
-        for value in values {
-            value.encode(to: &self)
-        }
-    }
-    
-    @_inlineable
-    public mutating func encode<S : Sequence>(_ values: S) where S.Element : ByteEncodable {
-        for value in values {
-            value.encode(to: &self)
-        }
     }
 }
 
@@ -92,9 +135,9 @@ extension FixedWidthInteger {
     }
     
     @_inlineable
-    public func encode<C : RangeReplaceableCollection>(to data: inout C) where C.Element == UInt8 {
+    public func encode(to stream: inout ByteOutputStream) {
         var value = self
-        withUnsafeBytes(of: &value) { data.append(contentsOf: $0) }
+        withUnsafeBytes(of: &value) { stream.write($0) }
     }
 }
 
@@ -149,8 +192,8 @@ extension LEInteger : ByteCodable {
 extension BinaryFixedPoint where BitPattern : ByteEncodable {
     
     @_inlineable
-    public func encode<C : RangeReplaceableCollection>(to data: inout C) where C.Element == UInt8 {
-        self.bitPattern.encode(to: &data)
+    public func encode(to stream: inout ByteOutputStream) {
+        self.bitPattern.encode(to: &stream)
     }
 }
 

@@ -113,28 +113,28 @@ extension iccProfile {
                              try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self))
         }
         
-        func encode<C : RangeReplaceableCollection>(to data: inout C) where C.Element == UInt8 {
-            data.encode(size)
-            data.encode(cmmId)
-            data.encode(version)
-            data.encode(deviceClass)
-            data.encode(colorSpace)
-            data.encode(pcs)
-            data.encode(date)
-            data.encode(magic)
-            data.encode(platform)
-            data.encode(flags)
-            data.encode(manufacturer)
-            data.encode(model)
-            data.encode(attributes)
-            data.encode(renderingIntent)
-            data.encode(illuminant)
-            data.encode(creator)
-            data.encode(profileID.0, profileID.1, profileID.2, profileID.3,
+        func encode(to stream: inout ByteOutputStream) {
+            stream.write(size)
+            stream.write(cmmId)
+            stream.write(version)
+            stream.write(deviceClass)
+            stream.write(colorSpace)
+            stream.write(pcs)
+            stream.write(date)
+            stream.write(magic)
+            stream.write(platform)
+            stream.write(flags)
+            stream.write(manufacturer)
+            stream.write(model)
+            stream.write(attributes)
+            stream.write(renderingIntent)
+            stream.write(illuminant)
+            stream.write(creator)
+            stream.write(profileID.0, profileID.1, profileID.2, profileID.3,
                         profileID.4, profileID.5, profileID.6, profileID.7,
                         profileID.8, profileID.9, profileID.10, profileID.11,
                         profileID.12, profileID.13, profileID.14, profileID.15)
-            data.encode(reserved.0, reserved.1, reserved.2, reserved.3,
+            stream.write(reserved.0, reserved.1, reserved.2, reserved.3,
                         reserved.4, reserved.5, reserved.6, reserved.7,
                         reserved.8, reserved.9, reserved.10, reserved.11,
                         reserved.12, reserved.13, reserved.14, reserved.15,

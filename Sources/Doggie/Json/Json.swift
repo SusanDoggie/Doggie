@@ -478,7 +478,7 @@ extension Json {
         }
         return nil
     }
-    public var string: String? {
+    public var json: String? {
         if let _data = self.data {
             return String(data: _data, encoding: String.Encoding.utf8)
         }

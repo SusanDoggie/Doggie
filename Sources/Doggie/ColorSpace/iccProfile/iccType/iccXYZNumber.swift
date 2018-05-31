@@ -47,7 +47,7 @@ struct iccXYZNumber : ByteCodable {
         self.z = try data.decode(Fixed16Number.self)
     }
     
-    func encode<C : RangeReplaceableCollection>(to data: inout C) where C.Element == UInt8 {
-        data.encode(x, y, z)
+    func encode(to stream: inout ByteOutputStream) {
+        stream.write(x, y, z)
     }
 }

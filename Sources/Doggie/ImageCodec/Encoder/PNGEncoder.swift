@@ -29,20 +29,20 @@ struct PNGEncoder : ImageRepEncoder {
         
         var result = MappedBuffer<UInt8>(option: .fileBacked)
         
-        result.encode(0x89 as UInt8)
-        result.encode(0x50 as UInt8)
-        result.encode(0x4E as UInt8)
-        result.encode(0x47 as UInt8)
-        result.encode(0x0D as UInt8)
-        result.encode(0x0A as UInt8)
-        result.encode(0x1A as UInt8)
-        result.encode(0x0A as UInt8)
+        result.write(0x89 as UInt8)
+        result.write(0x50 as UInt8)
+        result.write(0x4E as UInt8)
+        result.write(0x47 as UInt8)
+        result.write(0x0D as UInt8)
+        result.write(0x0A as UInt8)
+        result.write(0x1A as UInt8)
+        result.write(0x0A as UInt8)
         
         for chunk in chunks.appended(PNGChunk(signature: "IEND", data: Data())) {
-            result.encode(BEUInt32(chunk.data.count))
-            result.encode(chunk.signature)
+            result.write(BEUInt32(chunk.data.count))
+            result.write(chunk.signature)
             result.append(contentsOf: chunk.data)
-            result.encode(chunk.calculateCRC())
+            result.write(chunk.calculateCRC())
         }
         
         return result
@@ -60,13 +60,13 @@ struct PNGEncoder : ImageRepEncoder {
         
         var ihdr = Data(capacity: 13)
         
-        ihdr.encode(width)
-        ihdr.encode(height)
-        ihdr.encode(bitDepth)
-        ihdr.encode(colour)
-        ihdr.encode(compression)
-        ihdr.encode(filter)
-        ihdr.encode(interlace)
+        ihdr.write(width)
+        ihdr.write(height)
+        ihdr.write(bitDepth)
+        ihdr.write(colour)
+        ihdr.write(compression)
+        ihdr.write(filter)
+        ihdr.write(interlace)
         
         return PNGChunk(signature: "IHDR", data: ihdr)
     }
@@ -78,8 +78,8 @@ struct PNGEncoder : ImageRepEncoder {
             var iccp = Data()
             
             iccp.append("Doggie ICC profile".data(using: .isoLatin1)!)
-            iccp.encode(0 as UInt8)
-            iccp.encode(0 as UInt8)
+            iccp.write(0 as UInt8)
+            iccp.write(0 as UInt8)
             iccp.append(data)
             
             return PNGChunk(signature: "iCCP", data: iccp)
@@ -94,9 +94,9 @@ struct PNGEncoder : ImageRepEncoder {
         
         let resolution = resolution.convert(to: .meter)
         
-        phys.encode(BEUInt32(round(resolution.horizontal).clamped(to: 0...4294967295)))
-        phys.encode(BEUInt32(round(resolution.vertical).clamped(to: 0...4294967295)))
-        phys.encode(0 as UInt8)
+        phys.write(BEUInt32(round(resolution.horizontal).clamped(to: 0...4294967295)))
+        phys.write(BEUInt32(round(resolution.vertical).clamped(to: 0...4294967295)))
+        phys.write(0 as UInt8)
         
         return PNGChunk(signature: "pHYs", data: phys)
     }
@@ -206,17 +206,17 @@ struct PNGEncoder : ImageRepEncoder {
         if opaque {
             
             _idat = encodeIDAT(image: image, bitsPerPixel: 48, interlace: interlace) {
-                $0.encode(BEUInt16($1.r))
-                $0.encode(BEUInt16($1.g))
-                $0.encode(BEUInt16($1.b))
+                $0.write(BEUInt16($1.r))
+                $0.write(BEUInt16($1.g))
+                $0.write(BEUInt16($1.b))
             }
         } else {
             
             _idat = encodeIDAT(image: image, bitsPerPixel: 64, interlace: interlace) {
-                $0.encode(BEUInt16($1.r))
-                $0.encode(BEUInt16($1.g))
-                $0.encode(BEUInt16($1.b))
-                $0.encode(BEUInt16($1.a))
+                $0.write(BEUInt16($1.r))
+                $0.write(BEUInt16($1.g))
+                $0.write(BEUInt16($1.b))
+                $0.write(BEUInt16($1.a))
             }
         }
         
@@ -239,17 +239,17 @@ struct PNGEncoder : ImageRepEncoder {
         if opaque {
             
             _idat = encodeIDAT(image: image, bitsPerPixel: 24, interlace: interlace) {
-                $0.encode($1.r)
-                $0.encode($1.g)
-                $0.encode($1.b)
+                $0.write($1.r)
+                $0.write($1.g)
+                $0.write($1.b)
             }
         } else {
             
             _idat = encodeIDAT(image: image, bitsPerPixel: 32, interlace: interlace) {
-                $0.encode($1.r)
-                $0.encode($1.g)
-                $0.encode($1.b)
-                $0.encode($1.a)
+                $0.write($1.r)
+                $0.write($1.g)
+                $0.write($1.b)
+                $0.write($1.a)
             }
         }
         
@@ -272,13 +272,13 @@ struct PNGEncoder : ImageRepEncoder {
         if opaque {
             
             _idat = encodeIDAT(image: image, bitsPerPixel: 16, interlace: interlace) {
-                $0.encode(BEUInt16($1.w))
+                $0.write(BEUInt16($1.w))
             }
         } else {
             
             _idat = encodeIDAT(image: image, bitsPerPixel: 32, interlace: interlace) {
-                $0.encode(BEUInt16($1.w))
-                $0.encode(BEUInt16($1.a))
+                $0.write(BEUInt16($1.w))
+                $0.write(BEUInt16($1.a))
             }
         }
         
@@ -301,13 +301,13 @@ struct PNGEncoder : ImageRepEncoder {
         if opaque {
             
             _idat = encodeIDAT(image: image, bitsPerPixel: 8, interlace: interlace) {
-                $0.encode($1.w)
+                $0.write($1.w)
             }
         } else {
             
             _idat = encodeIDAT(image: image, bitsPerPixel: 16, interlace: interlace) {
-                $0.encode($1.w)
-                $0.encode($1.a)
+                $0.write($1.w)
+                $0.write($1.a)
             }
         }
         

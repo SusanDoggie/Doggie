@@ -28,18 +28,20 @@ extension iccProfile {
     mutating func setMessage(_ tag: TagSignature, _ message: (iccMultiLocalizedUnicode.LanguageCode, iccMultiLocalizedUnicode.CountryCode, String) ...) {
         
         var data = Data()
-        data.encode(iccMultiLocalizedUnicode(message))
+        data.write(iccMultiLocalizedUnicode(message))
         
         self[tag] = TagData(rawData: data)
     }
     
-    mutating func setFloat(_ tag: TagSignature, _ value: Fixed16Number<BEInt32> ...) {
+    mutating func setFloat(_ tag: TagSignature, _ values: Fixed16Number<BEInt32> ...) {
         
         var data = Data(count: 8)
         
-        data.encode(iccProfile.TagType.s15Fixed16Array)
-        data.encode(0 as BEUInt32)
-        data.encode(value)
+        data.write(iccProfile.TagType.s15Fixed16Array)
+        data.write(0 as BEUInt32)
+        for value in values {
+            data.write(value)
+        }
         
         self[tag] = TagData(rawData: data)
     }
@@ -48,9 +50,11 @@ extension iccProfile {
         
         var data = Data()
         
-        data.encode(iccProfile.TagType.XYZArray)
-        data.encode(0 as BEUInt32)
-        data.encode(xyz)
+        data.write(iccProfile.TagType.XYZArray)
+        data.write(0 as BEUInt32)
+        for xyz in xyz {
+            data.write(xyz)
+        }
         
         self[tag] = TagData(rawData: data)
     }
@@ -60,7 +64,7 @@ extension iccProfile {
         var B_data = Data()
         
         for curve in B {
-            B_data.encode(curve)
+            B_data.write(curve)
             B_data.count = B_data.count.align(4)
         }
         
@@ -78,7 +82,7 @@ extension iccProfile {
         var B_data = Data()
         
         for curve in B {
-            B_data.encode(curve)
+            B_data.write(curve)
             B_data.count = B_data.count.align(4)
         }
         
@@ -96,7 +100,7 @@ extension iccProfile {
         var B_data = Data()
         
         for curve in B {
-            B_data.encode(curve)
+            B_data.write(curve)
             B_data.count = B_data.count.align(4)
         }
         
@@ -106,7 +110,7 @@ extension iccProfile {
         var M_data = Data()
         
         for curve in M {
-            M_data.encode(curve)
+            M_data.write(curve)
             M_data.count = M_data.count.align(4)
         }
         
@@ -124,7 +128,7 @@ extension iccProfile {
         var B_data = Data()
         
         for curve in B {
-            B_data.encode(curve)
+            B_data.write(curve)
             B_data.count = B_data.count.align(4)
         }
         
@@ -134,7 +138,7 @@ extension iccProfile {
         var M_data = Data()
         
         for curve in M {
-            M_data.encode(curve)
+            M_data.write(curve)
             M_data.count = M_data.count.align(4)
         }
         
@@ -150,7 +154,7 @@ extension iccProfile {
     mutating func setCurve(_ tag: TagSignature, curve: iccCurve) {
         
         var data = Data()
-        data.encode(curve)
+        data.write(curve)
         
         self[tag] = TagData(rawData: data)
     }

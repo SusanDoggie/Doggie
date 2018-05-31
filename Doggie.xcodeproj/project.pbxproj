@@ -475,19 +475,13 @@
 			children = (
 				0AAA7CF120B8EC950080D1BE /* Exported.swift */,
 				08B085471E9A20720037DECE /* Algorithm.swift */,
-				0A9D27E31F0CF629003638D3 /* BinaryFixedPoint.swift */,
-				0A7F24AB1EF37CD500EAD9C7 /* Endianness.swift */,
-				0889F2C71F18FF1D0020E750 /* FixedNumber.swift */,
-				0889F2CA1F1904EB0020E750 /* Signature.swift */,
 				0A53E44D1E35AEF80060FB83 /* CollectionExtension.swift */,
 				0A53E44F1E35AEF80060FB83 /* Date.swift */,
 				0A92C7C31E56AB9D0090EBFC /* Data.swift */,
-				0ABFA6C81FC67CB6009D42E2 /* ByteCodable.swift */,
 				0A53E4501E35AEF80060FB83 /* FloatingPoint.swift */,
 				0A53E4511E35AEF80060FB83 /* Graph.swift */,
 				0A53E4521E35AEF80060FB83 /* Hashable.swift */,
 				0A53E4541E35AEF80060FB83 /* Integer.swift */,
-				0A53E4551E35AEF80060FB83 /* Json.swift */,
 				0A6E007F204E371400B50F1D /* Range.swift */,
 				0A80D1461E66A7000003BB44 /* RangeSet.swift */,
 				0A53E45A1E35AEF80060FB83 /* Parallel.swift */,
@@ -556,6 +550,8 @@
 				0A776FC21D9A0BA5005FC88F /* c11_atomic */,
 				08458AB01E2E627600D01813 /* Accelerate */,
 				08458ABA1E2E627600D01813 /* Foundation */,
+				0A55AE2420BFE5C600FC951F /* Serialization */,
+				0A55AE2520BFE5D800FC951F /* Json */,
 				0AFC4E311F7268A200E5FD5A /* XML */,
 				0AD3E6301F53DA03003CC21A /* Font */,
 				0AB2E23B1F17765900B0CA84 /* Compression */,
@@ -710,6 +706,26 @@
 				086F064B1EDC65D600BA70C8 /* DrawGradientMesh.swift */,
 			);
 			path = ImageContext;
+			sourceTree = "<group>";
+		};
+		0A55AE2420BFE5C600FC951F /* Serialization */ = {
+			isa = PBXGroup;
+			children = (
+				0A9D27E31F0CF629003638D3 /* BinaryFixedPoint.swift */,
+				0A7F24AB1EF37CD500EAD9C7 /* Endianness.swift */,
+				0889F2C71F18FF1D0020E750 /* FixedNumber.swift */,
+				0889F2CA1F1904EB0020E750 /* Signature.swift */,
+				0ABFA6C81FC67CB6009D42E2 /* ByteCodable.swift */,
+			);
+			path = Serialization;
+			sourceTree = "<group>";
+		};
+		0A55AE2520BFE5D800FC951F /* Json */ = {
+			isa = PBXGroup;
+			children = (
+				0A53E4551E35AEF80060FB83 /* Json.swift */,
+			);
+			path = Json;
 			sourceTree = "<group>";
 		};
 		0A72EF161F54FD4300F0550A /* SFNTFontFace */ = {
