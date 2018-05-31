@@ -144,7 +144,7 @@ struct JPEGHuffmanTable : ByteCodable {
         }
     }
     
-    func encode(to stream: inout ByteOutputStream) {
+    func encode(to stream: ByteOutputStream) {
         
         stream.write(info)
         
@@ -257,7 +257,7 @@ struct JPEGQuantizationTable : ByteCodable {
                       try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self))
     }
     
-    func encode(to stream: inout ByteOutputStream) {
+    func encode(to stream: ByteOutputStream) {
         
         stream.write(destination)
         stream.write(table.0, table.1, table.2, table.3, table.4, table.5, table.6, table.7)
@@ -381,7 +381,7 @@ struct JPEGSegment : ByteCodable {
         }
     }
     
-    func encode(to stream: inout ByteOutputStream) {
+    func encode(to stream: ByteOutputStream) {
         stream.write(0xFF as UInt8)
         stream.write(marker)
         switch marker {

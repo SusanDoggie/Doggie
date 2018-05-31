@@ -47,7 +47,7 @@ struct iccXYZNumber : ByteCodable {
         self.z = try data.decode(Fixed16Number.self)
     }
     
-    func encode(to stream: inout ByteOutputStream) {
+    func encode(to stream: ByteOutputStream) {
         stream.write(x, y, z)
     }
 }

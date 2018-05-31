@@ -64,7 +64,7 @@ struct iccMultiLocalizedUnicode : RandomAccessCollection, ByteCodable {
         }
     }
     
-    func encode(to stream: inout ByteOutputStream) {
+    func encode(to stream: ByteOutputStream) {
         
         stream.write(iccProfile.TagType.multiLocalizedUnicode)
         stream.write(0 as BEUInt32)
@@ -134,7 +134,7 @@ extension iccMultiLocalizedUnicode {
             self.size = try data.decode(BEUInt32.self)
         }
         
-        func encode(to stream: inout ByteOutputStream) {
+        func encode(to stream: ByteOutputStream) {
             stream.write(count)
             stream.write(size)
         }
@@ -161,7 +161,7 @@ extension iccMultiLocalizedUnicode {
             self.offset = try data.decode(BEUInt32.self)
         }
         
-        func encode(to stream: inout ByteOutputStream) {
+        func encode(to stream: ByteOutputStream) {
             stream.write(language)
             stream.write(country)
             stream.write(length)

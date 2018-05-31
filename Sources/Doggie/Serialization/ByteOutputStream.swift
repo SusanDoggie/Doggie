@@ -1,5 +1,5 @@
 //
-//  iccDateTimeNumber.swift
+//  ByteOutputStream.swift
 //
 //  The MIT License
 //  Copyright (c) 2015 - 2018 Susan Cheng. All rights reserved.
@@ -23,34 +23,48 @@
 //  THE SOFTWARE.
 //
 
-struct iccDateTimeNumber : ByteCodable {
+@_fixed_layout
+public class ByteOutputStream {
     
-    var year: BEUInt16
-    var month: BEUInt16
-    var day: BEUInt16
-    var hours: BEUInt16
-    var minutes: BEUInt16
-    var seconds: BEUInt16
+    @_versioned
+    let sink: (UnsafeRawBufferPointer) -> Void
     
-    init(year: BEUInt16, month: BEUInt16, day: BEUInt16, hours: BEUInt16, minutes: BEUInt16, seconds: BEUInt16) {
-        self.year = year
-        self.month = month
-        self.day = day
-        self.hours = hours
-        self.minutes = minutes
-        self.seconds = seconds
+    public private(set) var count: Int
+    
+    @_inlineable
+    public init(_ sink: @escaping (UnsafeRawBufferPointer) -> Void) {
+        self.sink = sink
+        self.count = 0
+    }
+}
+
+extension ByteOutputStream {
+    
+    @_inlineable
+    public func write(_ bytes: UnsafeRawBufferPointer) {
+        sink(bytes)
+        count += bytes.count
+    }
+}
+
+extension ByteOutputStream {
+    
+    @_inlineable
+    public func write<T: ByteEncodable>(_ value: T) {
+        value.encode(to: self)
     }
     
-    init(from data: inout Data) throws {
-        self.year = try data.decode(BEUInt16.self)
-        self.month = try data.decode(BEUInt16.self)
-        self.day = try data.decode(BEUInt16.self)
-        self.hours = try data.decode(BEUInt16.self)
-        self.minutes = try data.decode(BEUInt16.self)
-        self.seconds = try data.decode(BEUInt16.self)
+    @_inlineable
+    public func write<Buffer: UnsafeBufferProtocol>(_ buffer: Buffer) where Buffer.Element == UInt8 {
+        buffer.withUnsafeBufferPointer { self.write(UnsafeRawBufferPointer($0)) }
     }
     
-    func encode(to stream: ByteOutputStream) {
-        stream.write(year, month, day, hours, minutes, seconds)
+    @_inlineable
+    public func write<T: ByteEncodable>(_ first: T, _ second: T, _ remains: T...) {
+        first.encode(to: self)
+        second.encode(to: self)
+        for value in remains {
+            value.encode(to: self)
+        }
     }
 }

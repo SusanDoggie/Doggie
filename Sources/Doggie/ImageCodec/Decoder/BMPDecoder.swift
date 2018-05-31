@@ -896,8 +896,8 @@ extension BITMAPINFOHEADER {
         static let BI_BITFIELDS: CompressionType                            = 0x00000003
         static let BI_ALPHABITFIELDS: CompressionType                       = 0x00000004
         
-        func encode(to stream: inout ByteOutputStream) {
-            self.rawValue.encode(to: &stream)
+        func encode(to stream: ByteOutputStream) {
+            self.rawValue.encode(to: stream)
         }
         
         init(from data: inout Data) throws {
@@ -937,8 +937,8 @@ extension BITMAPINFOHEADER {
         static let LCS_GM_GRAPHICS: IntentType                             = 0x00000002
         static let LCS_GM_IMAGES: IntentType                               = 0x00000004
         
-        func encode(to stream: inout ByteOutputStream) {
-            self.rawValue.encode(to: &stream)
+        func encode(to stream: ByteOutputStream) {
+            self.rawValue.encode(to: stream)
         }
         
         init(from data: inout Data) throws {

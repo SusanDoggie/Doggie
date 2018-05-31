@@ -685,7 +685,7 @@ struct TIFFHeader : ByteCodable {
         }
     }
     
-    func encode(to stream: inout ByteOutputStream) {
+    func encode(to stream: ByteOutputStream) {
         
         stream.write(endianness)
         

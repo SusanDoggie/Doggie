@@ -72,6 +72,22 @@ extension BinaryFixedPoint {
     }
 }
 
+extension BinaryFixedPoint where BitPattern : ByteEncodable {
+    
+    @_transparent
+    public func encode(to stream: ByteOutputStream) {
+        self.bitPattern.encode(to: stream)
+    }
+}
+
+extension BinaryFixedPoint where BitPattern : ByteDecodable {
+    
+    @_transparent
+    public init(from data: inout Data) throws {
+        self.init(bitPattern: try BitPattern(from: &data))
+    }
+}
+
 extension BinaryFixedPoint where RepresentingValue.RawSignificand : FixedWidthInteger {
     
     @_versioned
