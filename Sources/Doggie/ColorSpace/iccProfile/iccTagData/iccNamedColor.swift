@@ -79,14 +79,14 @@ struct iccNamedColor : ByteDecodable {
             
             named.append(String(bytes: _prefix, encoding: .ascii) ?? "")
             
-            let x = Double(try data.decode(BEUInt16.self).representingValue) / 65535
-            let y = Double(try data.decode(BEUInt16.self).representingValue) / 65535
-            let z = Double(try data.decode(BEUInt16.self).representingValue) / 65535
+            let x = Double(try data.decode(BEUInt16.self)) / 65535
+            let y = Double(try data.decode(BEUInt16.self)) / 65535
+            let z = Double(try data.decode(BEUInt16.self)) / 65535
             
             pcs.append((x, y, z))
             
             for _ in 0..<deviceCoords {
-                device.append(Double(try data.decode(BEUInt16.self).representingValue) / 65535)
+                device.append(Double(try data.decode(BEUInt16.self)) / 65535)
             }
         }
     }

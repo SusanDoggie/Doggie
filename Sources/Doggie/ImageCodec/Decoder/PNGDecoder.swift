@@ -104,7 +104,7 @@ struct PNGDecoder : ImageRepDecoder {
             let unit = phys.data.dropFirst(8).withUnsafeBytes { $0.pointee as UInt8 }
             
             switch unit {
-            case 1: return Resolution(horizontal: Double(horizontal.representingValue), vertical: Double(vertical.representingValue), unit: .meter)
+            case 1: return Resolution(horizontal: Double(horizontal), vertical: Double(vertical), unit: .meter)
             default: break
             }
         }
@@ -157,7 +157,7 @@ struct PNGDecoder : ImageRepDecoder {
         guard let gama = chunks.first(where: { $0.signature == "gAMA" }), gama.data.count >= 4 else { return 100000.0 / 45455.0 }
         
         let gamma = gama.data.withUnsafeBytes { $0.pointee as BEUInt32 }
-        return 100000.0 / Double(gamma.representingValue)
+        return 100000.0 / Double(gamma)
     }
     
     var cHRM: (Point, Point, Point, Point) {
@@ -175,10 +175,10 @@ struct PNGDecoder : ImageRepDecoder {
         let blueX = chrm.data.dropFirst(24).withUnsafeBytes { $0.pointee as BEUInt32 }
         let blueY = chrm.data.dropFirst(28).withUnsafeBytes { $0.pointee as BEUInt32 }
         
-        let white = Point(x: 0.00001 * Double(whiteX.representingValue), y: 0.00001 * Double(whiteY.representingValue))
-        let red = Point(x: 0.00001 * Double(redX.representingValue), y: 0.00001 * Double(redY.representingValue))
-        let green = Point(x: 0.00001 * Double(greenX.representingValue), y: 0.00001 * Double(greenY.representingValue))
-        let blue = Point(x: 0.00001 * Double(blueX.representingValue), y: 0.00001 * Double(blueY.representingValue))
+        let white = Point(x: 0.00001 * Double(whiteX), y: 0.00001 * Double(whiteY))
+        let red = Point(x: 0.00001 * Double(redX), y: 0.00001 * Double(redY))
+        let green = Point(x: 0.00001 * Double(greenX), y: 0.00001 * Double(greenY))
+        let blue = Point(x: 0.00001 * Double(blueX), y: 0.00001 * Double(blueY))
         
         return (white, red, green, blue)
     }

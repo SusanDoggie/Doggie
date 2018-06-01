@@ -119,13 +119,13 @@ extension iccLUTTransform : ByteDecodable {
             outputTable.reserveCapacity(header.outputTableSize)
             
             for _ in 0..<header.inputTableSize {
-                inputTable.append(Double(try data.decode(BEUInt16.self).representingValue) / 65535)
+                inputTable.append(Double(try data.decode(BEUInt16.self)) / 65535)
             }
             for _ in 0..<header.clutTableSize {
-                clutTable.append(Double(try data.decode(BEUInt16.self).representingValue) / 65535)
+                clutTable.append(Double(try data.decode(BEUInt16.self)) / 65535)
             }
             for _ in 0..<header.outputTableSize {
-                outputTable.append(Double(try data.decode(BEUInt16.self).representingValue) / 65535)
+                outputTable.append(Double(try data.decode(BEUInt16.self)) / 65535)
             }
             
             let input = OneDimensionalLUT(channels: Int(header.inputChannels), grid: Int(header.inputEntries), table: inputTable)
@@ -282,7 +282,7 @@ extension iccLUTTransform : ByteDecodable {
             }
         case 2:
             for _ in 0..<count {
-                table.append(Double(try data.decode(BEUInt16.self).representingValue) / 65535)
+                table.append(Double(try data.decode(BEUInt16.self)) / 65535)
             }
         default: throw AnyColorSpace.ICCError.invalidFormat(message: "Invalid clut precision.")
         }

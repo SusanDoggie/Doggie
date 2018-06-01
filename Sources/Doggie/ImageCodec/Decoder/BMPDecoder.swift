@@ -543,7 +543,7 @@ struct BMPHeader {
     }
     
     var resolution: Resolution {
-        return Resolution(horizontal: Double(DIB.hResolution.representingValue), vertical: Double(DIB.vResolution.representingValue), unit: .meter)
+        return Resolution(horizontal: Double(DIB.hResolution), vertical: Double(DIB.vResolution), unit: .meter)
     }
     
     var bitsPerPixel: Int {

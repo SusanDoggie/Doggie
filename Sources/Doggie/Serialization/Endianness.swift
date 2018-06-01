@@ -764,3 +764,87 @@ public typealias LEUInt8 = LEInteger<UInt8>
 public typealias LEUInt16 = LEInteger<UInt16>
 public typealias LEUInt32 = LEInteger<UInt32>
 public typealias LEUInt64 = LEInteger<UInt64>
+
+extension FloatingPoint {
+    
+    @_transparent
+    public init(_ value: BEUInt) {
+        self.init(value.representingValue)
+    }
+    @_transparent
+    public init(_ value: BEUInt8) {
+        self.init(value.representingValue)
+    }
+    @_transparent
+    public init(_ value: BEUInt16) {
+        self.init(value.representingValue)
+    }
+    @_transparent
+    public init(_ value: BEUInt32) {
+        self.init(value.representingValue)
+    }
+    @_transparent
+    public init(_ value: BEUInt64) {
+        self.init(value.representingValue)
+    }
+    @_transparent
+    public init(_ value: BEInt) {
+        self.init(value.representingValue)
+    }
+    @_transparent
+    public init(_ value: BEInt8) {
+        self.init(value.representingValue)
+    }
+    @_transparent
+    public init(_ value: BEInt16) {
+        self.init(value.representingValue)
+    }
+    @_transparent
+    public init(_ value: BEInt32) {
+        self.init(value.representingValue)
+    }
+    @_transparent
+    public init(_ value: BEInt64) {
+        self.init(value.representingValue)
+    }
+    @_transparent
+    public init(_ value: LEUInt) {
+        self.init(value.representingValue)
+    }
+    @_transparent
+    public init(_ value: LEUInt8) {
+        self.init(value.representingValue)
+    }
+    @_transparent
+    public init(_ value: LEUInt16) {
+        self.init(value.representingValue)
+    }
+    @_transparent
+    public init(_ value: LEUInt32) {
+        self.init(value.representingValue)
+    }
+    @_transparent
+    public init(_ value: LEUInt64) {
+        self.init(value.representingValue)
+    }
+    @_transparent
+    public init(_ value: LEInt) {
+        self.init(value.representingValue)
+    }
+    @_transparent
+    public init(_ value: LEInt8) {
+        self.init(value.representingValue)
+    }
+    @_transparent
+    public init(_ value: LEInt16) {
+        self.init(value.representingValue)
+    }
+    @_transparent
+    public init(_ value: LEInt32) {
+        self.init(value.representingValue)
+    }
+    @_transparent
+    public init(_ value: LEInt64) {
+        self.init(value.representingValue)
+    }
+}

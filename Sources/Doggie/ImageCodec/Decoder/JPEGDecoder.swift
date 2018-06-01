@@ -91,8 +91,8 @@ struct JPEGDecoder : ImageRepDecoder {
     }
     
     var resolution: Resolution {
-        let _x = APP0.Xdensity.representingValue == 0 ? 0 : 1 / Double(APP0.Xdensity.representingValue)
-        let _y = APP0.Ydensity.representingValue == 0 ? 0 : 1 / Double(APP0.Ydensity.representingValue)
+        let _x = APP0.Xdensity.representingValue == 0 ? 0 : 1 / Double(APP0.Xdensity)
+        let _y = APP0.Ydensity.representingValue == 0 ? 0 : 1 / Double(APP0.Ydensity)
         switch APP0.units {
         case 0: return Resolution(horizontal: _x, vertical: _y, unit: .point)
         case 1: return Resolution(horizontal: _x, vertical: _y, unit: .inch)

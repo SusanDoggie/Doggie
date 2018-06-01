@@ -39,7 +39,6 @@
 		08458B611E2E627600D01813 /* SDTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AEF1E2E627600D01813 /* SDTask.swift */; };
 		086F064A1EDC623D00BA70C8 /* Rasterizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 086F06481EDC623D00BA70C8 /* Rasterizer.swift */; };
 		086F064D1EDC65D600BA70C8 /* DrawGradientMesh.swift in Sources */ = {isa = PBXBuildFile; fileRef = 086F064B1EDC65D600BA70C8 /* DrawGradientMesh.swift */; };
-		087FE5BA1A372D97005A2E9E /* Doggie.h in Headers */ = {isa = PBXBuildFile; fileRef = 087FE5B91A372D97005A2E9E /* Doggie.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		087FE5C01A372D97005A2E9E /* Doggie.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 087FE5B51A372D97005A2E9E /* Doggie.framework */; settings = {ATTRIBUTES = (Required, ); }; };
 		0889F2C91F18FF1D0020E750 /* FixedNumber.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0889F2C71F18FF1D0020E750 /* FixedNumber.swift */; };
 		0889F2CC1F1904EB0020E750 /* Signature.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0889F2CA1F1904EB0020E750 /* Signature.swift */; };
@@ -259,10 +258,7 @@
 		086F06481EDC623D00BA70C8 /* Rasterizer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Rasterizer.swift; sourceTree = "<group>"; };
 		086F064B1EDC65D600BA70C8 /* DrawGradientMesh.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = DrawGradientMesh.swift; sourceTree = "<group>"; };
 		087FE5B51A372D97005A2E9E /* Doggie.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Doggie.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		087FE5B81A372D97005A2E9E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		087FE5B91A372D97005A2E9E /* Doggie.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = Doggie.h; sourceTree = "<group>"; };
 		087FE5BF1A372D97005A2E9E /* DoggieTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DoggieTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		087FE5C51A372D97005A2E9E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		0889F2C71F18FF1D0020E750 /* FixedNumber.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = FixedNumber.swift; sourceTree = "<group>"; };
 		0889F2CA1F1904EB0020E750 /* Signature.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Signature.swift; sourceTree = "<group>"; };
 		08B085471E9A20720037DECE /* Algorithm.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Algorithm.swift; sourceTree = "<group>"; };
@@ -581,8 +577,6 @@
 			children = (
 				0858DA401C0550B7007FA426 /* Doggie */,
 				08AF77AE1A3A10510042491F /* Tests */,
-				087FE5B61A372D97005A2E9E /* Doggie */,
-				087FE5C31A372D97005A2E9E /* DoggieTests */,
 				087FE5971A372D5B005A2E9E /* Products */,
 			);
 			sourceTree = "<group>";
@@ -594,39 +588,6 @@
 				087FE5BF1A372D97005A2E9E /* DoggieTests.xctest */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		087FE5B61A372D97005A2E9E /* Doggie */ = {
-			isa = PBXGroup;
-			children = (
-				087FE5B91A372D97005A2E9E /* Doggie.h */,
-				087FE5B71A372D97005A2E9E /* Supporting Files */,
-			);
-			path = Doggie;
-			sourceTree = "<group>";
-		};
-		087FE5B71A372D97005A2E9E /* Supporting Files */ = {
-			isa = PBXGroup;
-			children = (
-				087FE5B81A372D97005A2E9E /* Info.plist */,
-			);
-			name = "Supporting Files";
-			sourceTree = "<group>";
-		};
-		087FE5C31A372D97005A2E9E /* DoggieTests */ = {
-			isa = PBXGroup;
-			children = (
-				087FE5C41A372D97005A2E9E /* Supporting Files */,
-			);
-			path = DoggieTests;
-			sourceTree = "<group>";
-		};
-		087FE5C41A372D97005A2E9E /* Supporting Files */ = {
-			isa = PBXGroup;
-			children = (
-				087FE5C51A372D97005A2E9E /* Info.plist */,
-			);
-			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
 		08AF77AE1A3A10510042491F /* Tests */ = {
@@ -1027,7 +988,6 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				087FE5BA1A372D97005A2E9E /* Doggie.h in Headers */,
 				0A776FC61D9A0BA5005FC88F /* c11_atomic.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1406,7 +1366,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				INFOPLIST_FILE = "$(TARGET_NAME)/Info.plist";
+				INFOPLIST_FILE = "$(PROJECT_FILE_PATH)/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LLVM_LTO = YES_THIN;
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
@@ -1468,7 +1428,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				INFOPLIST_FILE = "$(TARGET_NAME)/Info.plist";
+				INFOPLIST_FILE = "$(PROJECT_FILE_PATH)/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LLVM_LTO = YES_THIN;
 				MACOSX_DEPLOYMENT_TARGET = 10.10;

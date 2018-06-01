@@ -146,7 +146,7 @@ extension SFNTFontFace {
         var bearing: BEInt16
         
         func _font_metric() -> Font.Metric {
-            return Font.Metric(advance: Double(advance.representingValue), bearing: Double(bearing.representingValue))
+            return Font.Metric(advance: Double(advance), bearing: Double(bearing))
         }
     }
     
@@ -171,34 +171,34 @@ extension SFNTFontFace {
     }
     
     var ascender: Double {
-        return Double(hhea.ascent.representingValue)
+        return Double(hhea.ascent)
     }
     var descender: Double {
-        return Double(hhea.descent.representingValue)
+        return Double(hhea.descent)
     }
     var lineGap: Double {
-        return Double(hhea.lineGap.representingValue)
+        return Double(hhea.lineGap)
     }
     
     var verticalAscender: Double? {
-        return (vhea?.vertTypoAscender.representingValue).map(Double.init)
+        return (vhea?.vertTypoAscender).map(Double.init)
     }
     var verticalDescender: Double? {
-        return (vhea?.vertTypoDescender.representingValue).map(Double.init)
+        return (vhea?.vertTypoDescender).map(Double.init)
     }
     var verticalLineGap: Double? {
-        return (vhea?.vertTypoLineGap.representingValue).map(Double.init)
+        return (vhea?.vertTypoLineGap).map(Double.init)
     }
     
     var unitsPerEm: Double {
-        return Double(head.unitsPerEm.representingValue)
+        return Double(head.unitsPerEm)
     }
     
     var boundingRectForFont: Rect {
-        let minX = Double(head.xMin.representingValue)
-        let minY = Double(head.yMin.representingValue)
-        let maxX = Double(head.xMax.representingValue)
-        let maxY = Double(head.yMax.representingValue)
+        let minX = Double(head.xMin)
+        let minY = Double(head.yMin)
+        let maxX = Double(head.xMax)
+        let maxY = Double(head.yMax)
         return Rect(x: minX, y: minY, width: maxX - minX, height: maxY - minY)
     }
     
@@ -212,10 +212,10 @@ extension SFNTFontFace {
         return (os2?.usWidthClass).map(Int.init)
     }
     var xHeight: Double? {
-        return (os2?.sxHeight?.representingValue).map(Double.init)
+        return (os2?.sxHeight).flatMap(Double.init)
     }
     var capHeight: Double? {
-        return (os2?.sCapHeight?.representingValue).map(Double.init)
+        return (os2?.sCapHeight).flatMap(Double.init)
     }
     
     var familyClass: Font.FamilyClass? {
@@ -251,17 +251,17 @@ extension SFNTFontFace {
     }
     
     var strikeoutPosition: Double? {
-        return (os2?.yStrikeoutPosition.representingValue).map(Double.init)
+        return (os2?.yStrikeoutPosition).map(Double.init)
     }
     var strikeoutThickness: Double? {
-        return (os2?.yStrikeoutSize.representingValue).map(Double.init)
+        return (os2?.yStrikeoutSize).map(Double.init)
     }
     
     var underlinePosition: Double {
-        return Double(post.underlinePosition.representingValue)
+        return Double(post.underlinePosition)
     }
     var underlineThickness: Double {
-        return Double(post.underlineThickness.representingValue)
+        return Double(post.underlineThickness)
     }
 }
 

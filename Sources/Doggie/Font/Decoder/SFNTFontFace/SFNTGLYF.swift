@@ -216,8 +216,8 @@ extension SFNTGLYF {
                         guard let dx = try? data.decode(BEInt16.self) else { return nil }
                         guard let dy = try? data.decode(BEInt16.self) else { return nil }
                         
-                        transform.c = Double(dx.representingValue)
-                        transform.f = Double(dy.representingValue)
+                        transform.c = Double(dx)
+                        transform.f = Double(dy)
                         
                     } else {
                         

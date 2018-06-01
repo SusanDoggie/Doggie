@@ -58,7 +58,7 @@ extension iccCurve : ByteCodable {
                 var table = [Double]()
                 table.reserveCapacity(count)
                 for _ in 0..<count {
-                    table.append(Double(try data.decode(BEUInt16.self).representingValue) / 65535)
+                    table.append(Double(try data.decode(BEUInt16.self)) / 65535)
                 }
                 self = .table(table)
             }

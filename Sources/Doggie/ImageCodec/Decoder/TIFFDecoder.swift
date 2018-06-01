@@ -820,12 +820,12 @@ extension TIFFTag {
             let offset = self.offset
             guard offset + 8 <= data.count else { throw ImageRep.Error.InvalidFormat("Invalid tag type: \(self)") }
             let (numerator, denominator) = data.dropFirst(offset).withUnsafeBytes { $0.pointee as (BEUInt32, BEUInt32) }
-            return Double(numerator.representingValue) / Double(denominator.representingValue)
+            return Double(numerator) / Double(denominator)
         case .LITTLE:
             let offset = self.offset
             guard offset + 8 <= data.count else { throw ImageRep.Error.InvalidFormat("Invalid tag type: \(self)") }
             let (numerator, denominator) = data.dropFirst(offset).withUnsafeBytes { $0.pointee as (LEUInt32, LEUInt32) }
-            return Double(numerator.representingValue) / Double(denominator.representingValue)
+            return Double(numerator) / Double(denominator)
         default: fatalError()
         }
     }
@@ -839,11 +839,11 @@ extension TIFFTag {
         case .BIG:
             let offset = self.offset
             guard offset + Int(self.count) << 3 <= data.count else { throw ImageRep.Error.InvalidFormat("Invalid tag type: \(self)") }
-            return data.dropFirst(offset).withUnsafeBytes { UnsafeBufferPointer(start: $0 as UnsafePointer<(BEUInt32, BEUInt32)>, count: Int(self.count)).map { Double($0.representingValue) / Double($1.representingValue) } }
+            return data.dropFirst(offset).withUnsafeBytes { UnsafeBufferPointer(start: $0 as UnsafePointer<(BEUInt32, BEUInt32)>, count: Int(self.count)).map { Double($0) / Double($1) } }
         case .LITTLE:
             let offset = self.offset
             guard offset + Int(self.count) << 3 <= data.count else { throw ImageRep.Error.InvalidFormat("Invalid tag type: \(self)") }
-            return data.dropFirst(offset).withUnsafeBytes { UnsafeBufferPointer(start: $0 as UnsafePointer<(LEUInt32, LEUInt32)>, count: Int(self.count)).map { Double($0.representingValue) / Double($1.representingValue) } }
+            return data.dropFirst(offset).withUnsafeBytes { UnsafeBufferPointer(start: $0 as UnsafePointer<(LEUInt32, LEUInt32)>, count: Int(self.count)).map { Double($0) / Double($1) } }
         default: fatalError()
         }
     }
