@@ -196,22 +196,22 @@ extension BinaryFixedPoint {
     
     @_transparent
     public func remainder(dividingBy other: Self) -> Self {
-        return Self(representingValue: self.representingValue.remainder(dividingBy: other.representingValue))
+        return self - other * (self / other).rounded(.toNearestOrEven)
     }
     
     @_transparent
     public mutating func formRemainder(dividingBy other: Self) {
-        self.representingValue.formRemainder(dividingBy: other.representingValue)
+        self = self.remainder(dividingBy: other)
     }
     
     @_transparent
     public func truncatingRemainder(dividingBy other: Self) -> Self {
-        return Self(representingValue: self.representingValue.truncatingRemainder(dividingBy: other.representingValue))
+        return self - other * (self / other).rounded(.towardZero)
     }
     
     @_transparent
     public mutating func formTruncatingRemainder(dividingBy other: Self) {
-        self.representingValue.formTruncatingRemainder(dividingBy: other.representingValue)
+        self = self.truncatingRemainder(dividingBy: other)
     }
     
     @_transparent
@@ -226,22 +226,45 @@ extension BinaryFixedPoint {
     
     @_transparent
     public func addingProduct(_ lhs: Self, _ rhs: Self) -> Self {
-        return Self(representingValue: self.representingValue.addingProduct(lhs.representingValue, rhs.representingValue))
+        return self + lhs * rhs
     }
     
     @_transparent
     public mutating func addProduct(_ lhs: Self, _ rhs: Self) {
-        self.representingValue.addProduct(lhs.representingValue, rhs.representingValue)
+        self += lhs * rhs
     }
     
     @_transparent
-    public func rounded(_ rule: FloatingPointRoundingRule) -> Self {
-        return Self(representingValue: self.representingValue.rounded(rule))
+    public func rounded(_ rule: FloatingPointRoundingRule = .toNearestOrAwayFromZero) -> Self {
+        
+        let mask = ((1 as BitPattern) << Self.fractionBitCount) - 1
+        let mask2 = (1 as BitPattern.Magnitude) << (Self.fractionBitCount - 1)
+        
+        let fractional = bitPattern.magnitude & BitPattern.Magnitude(mask)
+        
+        let floor = Self(bitPattern: bitPattern & ~mask)
+        let ceil = fractional == 0 ? floor : floor + 1
+        let trunc = bitPattern < 0 ? ceil : floor
+        let round = (fractional < mask2) == (bitPattern < 0) ? ceil : floor
+        
+        switch rule {
+        case .toNearestOrAwayFromZero: return round
+        case .toNearestOrEven:
+            if fractional == mask2 {
+                return (bitPattern.magnitude & (mask2 << 1) == 0) == (bitPattern < 0) ? ceil : floor
+            } else {
+                return round
+            }
+        case .towardZero: return trunc
+        case .awayFromZero: return bitPattern < 0 ? floor : ceil
+        case .up: return ceil
+        case .down: return floor
+        }
     }
     
     @_transparent
-    public mutating func round(_ rule: FloatingPointRoundingRule) {
-        self.representingValue.round(rule)
+    public mutating func round(_ rule: FloatingPointRoundingRule = .toNearestOrAwayFromZero) {
+        self = self.rounded(rule)
     }
     
     @_transparent
