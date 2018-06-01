@@ -23,9 +23,33 @@
 //  THE SOFTWARE.
 //
 
-public protocol ByteEncodable {
+public protocol ByteEncodable: ByteInputStream {
     
-    func encode(to stream: ByteOutputStream)
+}
+
+extension RangeReplaceableCollection where Element == UInt8 {
+    
+    @_inlineable
+    public mutating func encode<T: ByteEncodable>(_ value: T) {
+        value.write(to: &self)
+    }
+}
+
+extension ByteOutputStream {
+    
+    @_inlineable
+    public func encode<T: ByteEncodable>(_ value: T) {
+        value.write(to: self)
+    }
+    
+    @_inlineable
+    public func encode<T: ByteEncodable>(_ first: T, _ second: T, _ remains: T...) {
+        first.write(to: self)
+        second.write(to: self)
+        for value in remains {
+            value.write(to: self)
+        }
+    }
 }
 
 public protocol ByteDecodable {
@@ -49,27 +73,6 @@ public enum ByteDecodeError : Error {
     case endOfData
 }
 
-extension ByteEncodable {
-    
-    @_inlineable
-    public func serialize(_ body: (UnsafeRawBufferPointer) -> Void) {
-        self.encode(to: withoutActuallyEscaping(body, do: ByteOutputStream.init))
-    }
-    
-    @_inlineable
-    public func encode<C : RangeReplaceableCollection>(to data: inout C) where C.Element == UInt8 {
-        self.serialize { data.append(contentsOf: $0) }
-    }
-}
-
-extension RangeReplaceableCollection where Element == UInt8 {
-    
-    @_inlineable
-    public mutating func write<T: ByteEncodable>(_ value: T) {
-        value.encode(to: &self)
-    }
-}
-
 extension Data {
     
     @_inlineable
@@ -88,7 +91,7 @@ extension FixedWidthInteger {
     }
     
     @_inlineable
-    public func encode(to stream: ByteOutputStream) {
+    public func write(to stream: ByteOutputStream) {
         var value = self
         withUnsafeBytes(of: &value) { stream.write($0) }
     }

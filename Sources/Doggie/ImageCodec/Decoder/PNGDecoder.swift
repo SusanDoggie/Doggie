@@ -891,7 +891,7 @@ func PNGCRC32(_ signature: Signature<BEUInt32>, _ data: Data) -> UInt32 {
     var c: UInt32 = ~0
     
     var _signature = Data()
-    signature.encode(to: &_signature)
+    signature.write(to: &_signature)
     
     for byte in _signature {
         c = table[Int(UInt8(truncatingIfNeeded: c) ^ byte)] ^ (c >> 8)

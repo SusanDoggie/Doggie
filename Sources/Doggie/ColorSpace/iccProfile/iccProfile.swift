@@ -76,17 +76,17 @@ extension iccProfile {
         
         var buffer = Data(capacity: 128 + tag_list_size)
         
-        buffer.write(header)
-        buffer.write(BEUInt32(table.count))
+        buffer.encode(header)
+        buffer.encode(BEUInt32(table.count))
         
         var _data = Data()
         
         var offset = tag_list_size + 132
         
         for (tag, data) in table {
-            buffer.write(tag)
-            buffer.write(BEUInt32(offset))
-            buffer.write(BEUInt32(data.rawData.count))
+            buffer.encode(tag)
+            buffer.encode(BEUInt32(offset))
+            buffer.encode(BEUInt32(data.rawData.count))
             _data.append(data.rawData)
             offset += data.rawData.count
         }

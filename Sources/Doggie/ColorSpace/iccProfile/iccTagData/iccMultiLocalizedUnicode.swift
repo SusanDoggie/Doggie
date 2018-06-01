@@ -64,11 +64,11 @@ struct iccMultiLocalizedUnicode : RandomAccessCollection, ByteCodable {
         }
     }
     
-    func encode(to stream: ByteOutputStream) {
+    func write(to stream: ByteOutputStream) {
         
-        stream.write(iccProfile.TagType.multiLocalizedUnicode)
-        stream.write(0 as BEUInt32)
-        stream.write(Header(count: BEUInt32(messages.count), size: BEUInt32(MemoryLayout<Entry>.stride)))
+        stream.encode(iccProfile.TagType.multiLocalizedUnicode)
+        stream.encode(0 as BEUInt32)
+        stream.encode(Header(count: BEUInt32(messages.count), size: BEUInt32(MemoryLayout<Entry>.stride)))
         
         let entry_size = messages.count * MemoryLayout<Entry>.stride
         var strData = Data()
@@ -78,7 +78,7 @@ struct iccMultiLocalizedUnicode : RandomAccessCollection, ByteCodable {
         for (language, country, string) in messages {
             var str = string.data(using: .utf16BigEndian)!
             strData.append(str)
-            stream.write(Entry(language: language, country: country, length: BEUInt32(str.count), offset: BEUInt32(offset)))
+            stream.encode(Entry(language: language, country: country, length: BEUInt32(str.count), offset: BEUInt32(offset)))
             offset += str.count
         }
         
@@ -134,9 +134,9 @@ extension iccMultiLocalizedUnicode {
             self.size = try data.decode(BEUInt32.self)
         }
         
-        func encode(to stream: ByteOutputStream) {
-            stream.write(count)
-            stream.write(size)
+        func write(to stream: ByteOutputStream) {
+            stream.encode(count)
+            stream.encode(size)
         }
     }
     
@@ -161,11 +161,11 @@ extension iccMultiLocalizedUnicode {
             self.offset = try data.decode(BEUInt32.self)
         }
         
-        func encode(to stream: ByteOutputStream) {
-            stream.write(language)
-            stream.write(country)
-            stream.write(length)
-            stream.write(offset)
+        func write(to stream: ByteOutputStream) {
+            stream.encode(language)
+            stream.encode(country)
+            stream.encode(length)
+            stream.encode(offset)
         }
     }
 }

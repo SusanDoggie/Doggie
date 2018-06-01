@@ -55,8 +55,8 @@ extension SignatureProtocol {
 extension SignatureProtocol where Bytes : ByteEncodable {
     
     @_transparent
-    func encode(to stream: ByteOutputStream) {
-        self.rawValue.encode(to: stream)
+    func write(to stream: ByteOutputStream) {
+        self.rawValue.write(to: stream)
     }
 }
 extension SignatureProtocol where Bytes : ByteDecodable {

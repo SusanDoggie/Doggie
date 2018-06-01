@@ -685,17 +685,17 @@ struct TIFFHeader : ByteCodable {
         }
     }
     
-    func encode(to stream: ByteOutputStream) {
+    func write(to stream: ByteOutputStream) {
         
-        stream.write(endianness)
+        stream.encode(endianness)
         
         switch endianness {
         case .BIG:
-            stream.write(BEUInt16(version))
-            stream.write(BEUInt32(IFD))
+            stream.encode(BEUInt16(version))
+            stream.encode(BEUInt32(IFD))
         case .LITTLE:
-            stream.write(LEUInt16(version))
-            stream.write(LEUInt32(IFD))
+            stream.encode(LEUInt16(version))
+            stream.encode(LEUInt32(IFD))
         default: fatalError()
         }
     }

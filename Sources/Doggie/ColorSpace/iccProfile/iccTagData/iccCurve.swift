@@ -80,52 +80,52 @@ extension iccCurve : ByteCodable {
         }
     }
     
-    func encode(to stream: ByteOutputStream) {
+    func write(to stream: ByteOutputStream) {
         
         switch self {
         case .identity:
             
-            stream.write(iccProfile.TagType.curve)
-            stream.write(0 as BEUInt32)
-            stream.write(0 as BEUInt32)
+            stream.encode(iccProfile.TagType.curve)
+            stream.encode(0 as BEUInt32)
+            stream.encode(0 as BEUInt32)
             
         case let .gamma(gamma):
             
-            stream.write(iccProfile.TagType.parametricCurve)
-            stream.write(0 as BEUInt32)
-            stream.write(ParametricCurve(funcType: 0, gamma: Fixed16Number(gamma), a: 0, b: 0, c: 0, d: 0, e: 0, f: 0))
+            stream.encode(iccProfile.TagType.parametricCurve)
+            stream.encode(0 as BEUInt32)
+            stream.encode(ParametricCurve(funcType: 0, gamma: Fixed16Number(gamma), a: 0, b: 0, c: 0, d: 0, e: 0, f: 0))
             
         case let .parametric1(gamma, a, b):
             
-            stream.write(iccProfile.TagType.parametricCurve)
-            stream.write(0 as BEUInt32)
-            stream.write(ParametricCurve(funcType: 1, gamma: Fixed16Number(gamma), a: Fixed16Number(a), b: Fixed16Number(b), c: 0, d: 0, e: 0, f: 0))
+            stream.encode(iccProfile.TagType.parametricCurve)
+            stream.encode(0 as BEUInt32)
+            stream.encode(ParametricCurve(funcType: 1, gamma: Fixed16Number(gamma), a: Fixed16Number(a), b: Fixed16Number(b), c: 0, d: 0, e: 0, f: 0))
             
         case let .parametric2(gamma, a, b, c):
             
-            stream.write(iccProfile.TagType.parametricCurve)
-            stream.write(0 as BEUInt32)
-            stream.write(ParametricCurve(funcType: 2, gamma: Fixed16Number(gamma), a: Fixed16Number(a), b: Fixed16Number(b), c: Fixed16Number(c), d: 0, e: 0, f: 0))
+            stream.encode(iccProfile.TagType.parametricCurve)
+            stream.encode(0 as BEUInt32)
+            stream.encode(ParametricCurve(funcType: 2, gamma: Fixed16Number(gamma), a: Fixed16Number(a), b: Fixed16Number(b), c: Fixed16Number(c), d: 0, e: 0, f: 0))
             
         case let .parametric3(gamma, a, b, c, d):
             
-            stream.write(iccProfile.TagType.parametricCurve)
-            stream.write(0 as BEUInt32)
-            stream.write(ParametricCurve(funcType: 3, gamma: Fixed16Number(gamma), a: Fixed16Number(a), b: Fixed16Number(b), c: Fixed16Number(c), d: Fixed16Number(d), e: 0, f: 0))
+            stream.encode(iccProfile.TagType.parametricCurve)
+            stream.encode(0 as BEUInt32)
+            stream.encode(ParametricCurve(funcType: 3, gamma: Fixed16Number(gamma), a: Fixed16Number(a), b: Fixed16Number(b), c: Fixed16Number(c), d: Fixed16Number(d), e: 0, f: 0))
             
         case let .parametric4(gamma, a, b, c, d, e, f):
             
-            stream.write(iccProfile.TagType.parametricCurve)
-            stream.write(0 as BEUInt32)
-            stream.write(ParametricCurve(funcType: 4, gamma: Fixed16Number(gamma), a: Fixed16Number(a), b: Fixed16Number(b), c: Fixed16Number(c), d: Fixed16Number(d), e: Fixed16Number(e), f: Fixed16Number(f)))
+            stream.encode(iccProfile.TagType.parametricCurve)
+            stream.encode(0 as BEUInt32)
+            stream.encode(ParametricCurve(funcType: 4, gamma: Fixed16Number(gamma), a: Fixed16Number(a), b: Fixed16Number(b), c: Fixed16Number(c), d: Fixed16Number(d), e: Fixed16Number(e), f: Fixed16Number(f)))
             
         case let .table(points):
             
-            stream.write(iccProfile.TagType.curve)
-            stream.write(0 as BEUInt32)
-            stream.write(BEUInt32(points.count))
+            stream.encode(iccProfile.TagType.curve)
+            stream.encode(0 as BEUInt32)
+            stream.encode(BEUInt32(points.count))
             for point in points {
-                stream.write(BEUInt16((point * 65535).clamped(to: 0...65535)))
+                stream.encode(BEUInt16((point * 65535).clamped(to: 0...65535)))
             }
         }
     }
@@ -215,43 +215,43 @@ extension iccCurve {
             }
         }
         
-        func encode(to stream: ByteOutputStream) {
+        func write(to stream: ByteOutputStream) {
             switch funcType {
             case 0:
-                stream.write(funcType)
-                stream.write(padding)
-                stream.write(gamma)
+                stream.encode(funcType)
+                stream.encode(padding)
+                stream.encode(gamma)
             case 1:
-                stream.write(funcType)
-                stream.write(padding)
-                stream.write(gamma)
-                stream.write(a)
-                stream.write(b)
+                stream.encode(funcType)
+                stream.encode(padding)
+                stream.encode(gamma)
+                stream.encode(a)
+                stream.encode(b)
             case 2:
-                stream.write(funcType)
-                stream.write(padding)
-                stream.write(gamma)
-                stream.write(a)
-                stream.write(b)
-                stream.write(c)
+                stream.encode(funcType)
+                stream.encode(padding)
+                stream.encode(gamma)
+                stream.encode(a)
+                stream.encode(b)
+                stream.encode(c)
             case 3:
-                stream.write(funcType)
-                stream.write(padding)
-                stream.write(gamma)
-                stream.write(a)
-                stream.write(b)
-                stream.write(c)
-                stream.write(d)
+                stream.encode(funcType)
+                stream.encode(padding)
+                stream.encode(gamma)
+                stream.encode(a)
+                stream.encode(b)
+                stream.encode(c)
+                stream.encode(d)
             case 4:
-                stream.write(funcType)
-                stream.write(padding)
-                stream.write(gamma)
-                stream.write(a)
-                stream.write(b)
-                stream.write(c)
-                stream.write(d)
-                stream.write(e)
-                stream.write(f)
+                stream.encode(funcType)
+                stream.encode(padding)
+                stream.encode(gamma)
+                stream.encode(a)
+                stream.encode(b)
+                stream.encode(c)
+                stream.encode(d)
+                stream.encode(e)
+                stream.encode(f)
             default: break
             }
         }

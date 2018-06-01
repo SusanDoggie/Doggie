@@ -1,5 +1,5 @@
 //
-//  ByteOutputStream.swift
+//  ByteStream.swift
 //
 //  The MIT License
 //  Copyright (c) 2015 - 2018 Susan Cheng. All rights reserved.
@@ -23,18 +23,33 @@
 //  THE SOFTWARE.
 //
 
+public protocol ByteInputStream {
+    
+    func write(to stream: ByteOutputStream)
+}
+
+extension ByteInputStream {
+    
+    @_inlineable
+    public func serialize(_ body: (UnsafeRawBufferPointer) -> Void) {
+        withoutActuallyEscaping(body) { self.write(to: ByteOutputStream($0)) }
+    }
+    
+    @_inlineable
+    public func write<C : RangeReplaceableCollection>(to data: inout C) where C.Element == UInt8 {
+        self.serialize { data.append(contentsOf: $0) }
+    }
+}
+
 @_fixed_layout
-public class ByteOutputStream {
+public struct ByteOutputStream {
     
     @_versioned
     let sink: (UnsafeRawBufferPointer) -> Void
     
-    public private(set) var count: Int
-    
     @_inlineable
     public init(_ sink: @escaping (UnsafeRawBufferPointer) -> Void) {
         self.sink = sink
-        self.count = 0
     }
 }
 
@@ -42,29 +57,11 @@ extension ByteOutputStream {
     
     @_inlineable
     public func write(_ bytes: UnsafeRawBufferPointer) {
-        sink(bytes)
-        count += bytes.count
-    }
-}
-
-extension ByteOutputStream {
-    
-    @_inlineable
-    public func write<T: ByteEncodable>(_ value: T) {
-        value.encode(to: self)
+        self.sink(bytes)
     }
     
     @_inlineable
     public func write<Buffer: UnsafeBufferProtocol>(_ buffer: Buffer) where Buffer.Element == UInt8 {
         buffer.withUnsafeBufferPointer { self.write(UnsafeRawBufferPointer($0)) }
-    }
-    
-    @_inlineable
-    public func write<T: ByteEncodable>(_ first: T, _ second: T, _ remains: T...) {
-        first.encode(to: self)
-        second.encode(to: self)
-        for value in remains {
-            value.encode(to: self)
-        }
     }
 }
