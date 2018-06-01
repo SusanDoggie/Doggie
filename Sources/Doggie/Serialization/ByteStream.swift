@@ -31,13 +31,13 @@ public protocol ByteInputStream {
 extension ByteInputStream {
     
     @_inlineable
-    public func serialize(_ body: (UnsafeRawBufferPointer) -> Void) {
+    public func enumerateBytes(_ body: (UnsafeRawBufferPointer) -> Void) {
         withoutActuallyEscaping(body) { self.write(to: ByteOutputStream($0)) }
     }
     
     @_inlineable
     public func write<C : RangeReplaceableCollection>(to data: inout C) where C.Element == UInt8 {
-        self.serialize { data.append(contentsOf: $0) }
+        self.enumerateBytes { data.append(contentsOf: $0) }
     }
 }
 
