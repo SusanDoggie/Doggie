@@ -27,10 +27,9 @@
 
 extension FontCollection {
     
-    @available(OSX 10.11, iOS 9.0, *)
     public static var availableFonts: FontCollection {
         
-        var files = FileManager.default.urls(for: .libraryDirectory, in: .allDomainsMask).map { URL(fileURLWithPath: "Fonts", relativeTo: $0) }
+        var files = FileManager.default.urls(for: .libraryDirectory, in: .allDomainsMask).map { URL(fileURLWithFileSystemRepresentation: "Fonts/", isDirectory: true, relativeTo: $0) }
         
         #if os(iOS) || os(tvOS) || os(watchOS)
         

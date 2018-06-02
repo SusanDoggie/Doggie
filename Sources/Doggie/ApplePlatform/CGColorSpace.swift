@@ -103,12 +103,11 @@ extension AnyColorSpace {
 
 extension AnyColorSpace {
     
-    @available(OSX 10.11, iOS 9.0, *)
     public static var availableColorSpaces: [AnyColorSpace] {
         
         var availableColorSpaces: [AnyColorSpace] = []
         
-        for url in FileManager.default.fileUrls(FileManager.default.urls(for: .libraryDirectory, in: .allDomainsMask).map { URL(fileURLWithPath: "ColorSync/Profiles/", relativeTo: $0) }) {
+        for url in FileManager.default.fileUrls(FileManager.default.urls(for: .libraryDirectory, in: .allDomainsMask).map { URL(fileURLWithFileSystemRepresentation: "ColorSync/Profiles/", isDirectory: true, relativeTo: $0) }) {
             
             if let data = try? Data(contentsOf: url, options: .alwaysMapped), let colorSpace = try? AnyColorSpace(iccData: data) {
                 availableColorSpaces.append(colorSpace)
