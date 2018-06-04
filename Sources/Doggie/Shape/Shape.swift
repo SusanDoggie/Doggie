@@ -573,13 +573,33 @@ extension Shape {
         let segments: [Shape.Segment] = (1..<edges).map { .line(Point(x: center.x + radius * cos(_n * Double($0)), y: center.y + radius * sin(_n * Double($0)))) }
         return [Component(start: Point(x: center.x + radius, y: center.y), closed: true, segments: segments)]
     }
-}
-
-extension Shape {
     
     public init(rect: Rect) {
         let points = rect.standardized.points
         self = [Component(start: points[0], closed: true, segments: [.line(points[1]), .line(points[2]), .line(points[3])])]
+    }
+    
+    public init(roundedRect rect: Rect, radius: Radius) {
+        let rect = rect.standardized
+        let x_radius = Swift.min(0.5 * rect.width, abs(radius.x))
+        let y_radius = Swift.min(0.5 * rect.height, abs(radius.y))
+        let transform = SDTransform.scale(x: x_radius, y: y_radius) * SDTransform.translate(x: x_radius + rect.x, y: y_radius + rect.y)
+        
+        let x_padding = rect.width - 2 * x_radius
+        let y_padding = rect.height - 2 * y_radius
+        
+        let t1 = transform * SDTransform.translate(x: x_padding, y: y_padding)
+        let t2 = transform * SDTransform.translate(x: 0, y: y_padding)
+        let t3 = transform * SDTransform.translate(x: 0, y: 0)
+        let t4 = transform * SDTransform.translate(x: x_padding, y: 0)
+        
+        let segments: [Shape.Segment] = [
+            .cubic(BezierCircle[1] * t1, BezierCircle[2] * t1, BezierCircle[3] * t1), .line(BezierCircle[3] * t2),
+            .cubic(BezierCircle[4] * t2, BezierCircle[5] * t2, BezierCircle[6] * t2), .line(BezierCircle[6] * t3),
+            .cubic(BezierCircle[7] * t3, BezierCircle[8] * t3, BezierCircle[9] * t3), .line(BezierCircle[9] * t4),
+            .cubic(BezierCircle[10] * t4, BezierCircle[11] * t4, BezierCircle[12] * t4)
+        ]
+        self = [Component(start: BezierCircle[0] * t1, closed: true, segments: segments)]
     }
     
     public init(ellipseIn rect: Rect) {

@@ -541,24 +541,23 @@ extension ShapeRegion {
 extension ShapeRegion {
     
     public static func Polygon(center: Point, radius: Double, edges: Int) -> ShapeRegion {
-        precondition(edges >= 3, "Edges is less than 3")
-        let _n = 2 * Double.pi / Double(edges)
-        let points = (0..<edges).map { Point(x: center.x + radius * cos(_n * Double($0)), y: center.y + radius * sin(_n * Double($0))) }
-        return ShapeRegion(solid: ShapeRegion.Solid(segments: points.rotateZip().map { ShapeRegion.Solid.Segment($0, $1) })!)
+        if let solid = ShapeRegion.Solid(segments: Shape.Polygon(center: center, radius: radius, edges: edges)[0].bezier) {
+            return ShapeRegion(solid: solid)
+        } else {
+            return ShapeRegion()
+        }
     }
-}
-
-extension ShapeRegion {
     
     public init(rect: Rect) {
-        let points = rect.standardized.points
-        let segments: [ShapeRegion.Solid.Segment] = [
-            ShapeRegion.Solid.Segment(points[0], points[1]),
-            ShapeRegion.Solid.Segment(points[1], points[2]),
-            ShapeRegion.Solid.Segment(points[2], points[3]),
-            ShapeRegion.Solid.Segment(points[3], points[0])
-        ]
-        if let solid = ShapeRegion.Solid(segments: segments) {
+        if let solid = ShapeRegion.Solid(segments: Shape(rect: rect)[0].bezier) {
+            self.init(solid: solid)
+        } else {
+            self.init()
+        }
+    }
+    
+    public init(roundedRect rect: Rect, radius: Radius) {
+        if let solid = ShapeRegion.Solid(segments: Shape(roundedRect: rect, radius: radius)[0].bezier) {
             self.init(solid: solid)
         } else {
             self.init()
@@ -566,15 +565,7 @@ extension ShapeRegion {
     }
     
     public init(ellipseIn rect: Rect) {
-        let rect = rect.standardized
-        let transform = SDTransform.scale(x: 0.5 * rect.width, y: 0.5 * rect.height) * SDTransform.translate(x: rect.midX, y: rect.midY)
-        let segments: [ShapeRegion.Solid.Segment] = [
-            ShapeRegion.Solid.Segment(BezierCircle[0] * transform, BezierCircle[1] * transform, BezierCircle[2] * transform, BezierCircle[3] * transform),
-            ShapeRegion.Solid.Segment(BezierCircle[3] * transform, BezierCircle[4] * transform, BezierCircle[5] * transform, BezierCircle[6] * transform),
-            ShapeRegion.Solid.Segment(BezierCircle[6] * transform, BezierCircle[7] * transform, BezierCircle[8] * transform, BezierCircle[9] * transform),
-            ShapeRegion.Solid.Segment(BezierCircle[9] * transform, BezierCircle[10] * transform, BezierCircle[11] * transform, BezierCircle[12] * transform)
-        ]
-        if let solid = ShapeRegion.Solid(segments: segments) {
+        if let solid = ShapeRegion.Solid(segments: Shape(ellipseIn: rect)[0].bezier) {
             self.init(solid: solid)
         } else {
             self.init()
