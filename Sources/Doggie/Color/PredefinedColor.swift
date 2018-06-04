@@ -26,62 +26,62 @@
 extension AnyColor {
     
     public static var black: AnyColor  {
-        return AnyColor(colorSpace: .calibratedGray(from: .sRGB, gamma: 2.2), white: 0.0, opacity: 1.0)
+        return AnyColor(white: 0.0)
     }
     
     public static var blue: AnyColor  {
-        return AnyColor(colorSpace: .sRGB, red: 0.0, green: 0.0, blue: 1.0, opacity: 1.0)
+        return AnyColor(red: 0.0, green: 0.0, blue: 1.0)
     }
     
     public static var brown: AnyColor  {
-        return AnyColor(colorSpace: .sRGB, red: 0.6, green: 0.4, blue: 0.2, opacity: 1.0)
+        return AnyColor(red: 0.6, green: 0.4, blue: 0.2)
     }
     
     public static var clear: AnyColor  {
-        return AnyColor(colorSpace: .calibratedGray(from: .sRGB, gamma: 2.2), white: 0.0, opacity: 0.0)
+        return AnyColor(white: 0.0, opacity: 0.0)
     }
     
     public static var cyan: AnyColor  {
-        return AnyColor(colorSpace: .sRGB, red: 0.0, green: 1.0, blue: 1.0, opacity: 1.0)
+        return AnyColor(red: 0.0, green: 1.0, blue: 1.0)
     }
     
     public static var darkGray: AnyColor  {
-        return AnyColor(colorSpace: .calibratedGray(from: .sRGB, gamma: 2.2), white: 1.0 / 3.0, opacity: 1.0)
+        return AnyColor(white: 1.0 / 3.0)
     }
     
     public static var gray: AnyColor  {
-        return AnyColor(colorSpace: .calibratedGray(from: .sRGB, gamma: 2.2), white: 0.5, opacity: 1.0)
+        return AnyColor(white: 0.5)
     }
     
     public static var green: AnyColor  {
-        return AnyColor(colorSpace: .sRGB, red: 0.0, green: 1.0, blue: 0.0, opacity: 1.0)
+        return AnyColor(red: 0.0, green: 1.0, blue: 0.0)
     }
     
     public static var lightGray: AnyColor  {
-        return AnyColor(colorSpace: .calibratedGray(from: .sRGB, gamma: 2.2), white: 2.0 / 3.0, opacity: 1.0)
+        return AnyColor(white: 2.0 / 3.0)
     }
     
     public static var magenta: AnyColor  {
-        return AnyColor(colorSpace: .sRGB, red: 1.0, green: 0.0, blue: 1.0, opacity: 1.0)
+        return AnyColor(red: 1.0, green: 0.0, blue: 1.0)
     }
     
     public static var orange: AnyColor  {
-        return AnyColor(colorSpace: .sRGB, red: 1.0, green: 0.5, blue: 0.0, opacity: 1.0)
+        return AnyColor(red: 1.0, green: 0.5, blue: 0.0)
     }
     
     public static var purple: AnyColor  {
-        return AnyColor(colorSpace: .sRGB, red: 0.5, green: 0.0, blue: 0.5, opacity: 1.0)
+        return AnyColor(red: 0.5, green: 0.0, blue: 0.5)
     }
     
     public static var red: AnyColor  {
-        return AnyColor(colorSpace: .sRGB, red: 1.0, green: 0.0, blue: 0.0, opacity: 1.0)
+        return AnyColor(red: 1.0, green: 0.0, blue: 0.0)
     }
     
     public static var white: AnyColor  {
-        return AnyColor(colorSpace: .calibratedGray(from: .sRGB, gamma: 2.2), white: 1.0, opacity: 1.0)
+        return AnyColor(white: 1.0)
     }
     
     public static var yellow: AnyColor  {
-        return AnyColor(colorSpace: .sRGB, red: 1.0, green: 1.0, blue: 0.0, opacity: 1.0)
+        return AnyColor(red: 1.0, green: 1.0, blue: 0.0)
     }
 }

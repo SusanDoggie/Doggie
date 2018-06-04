@@ -25,7 +25,7 @@
 
 private struct ImageContextStyles {
     
-    static let defaultShadowColor = AnyColor(colorSpace: .calibratedGray(from: .sRGB, gamma: 2.2), white: 0.0, opacity: 1.0 / 3.0)
+    static let defaultShadowColor = AnyColor(colorSpace: .default, white: 0.0, opacity: 1.0 / 3.0)
     
     var opacity: Double = 1
     var antialias: Bool = true

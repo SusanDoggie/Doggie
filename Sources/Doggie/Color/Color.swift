@@ -50,10 +50,20 @@ public struct Color<Model : ColorModelProtocol> : ColorProtocol, Hashable {
     }
 }
 
+extension ColorSpace where Model == GrayColorModel {
+    
+    public static let `default`: ColorSpace = .calibratedGray(from: .sRGB, gamma: 2.2)
+}
+
+extension ColorSpace where Model == RGBColorModel {
+    
+    public static let `default`: ColorSpace = .sRGB
+}
+
 extension Color where Model == GrayColorModel {
     
     @_inlineable
-    public init(colorSpace: Doggie.ColorSpace<Model>, white: Double, opacity: Double = 1) {
+    public init(colorSpace: Doggie.ColorSpace<Model> = .default, white: Double, opacity: Double = 1) {
         self.init(colorSpace: colorSpace, color: GrayColorModel(white: white), opacity: opacity)
     }
 }
@@ -61,12 +71,12 @@ extension Color where Model == GrayColorModel {
 extension Color where Model == RGBColorModel {
     
     @_inlineable
-    public init(colorSpace: Doggie.ColorSpace<Model>, red: Double, green: Double, blue: Double, opacity: Double = 1) {
+    public init(colorSpace: Doggie.ColorSpace<Model> = .default, red: Double, green: Double, blue: Double, opacity: Double = 1) {
         self.init(colorSpace: colorSpace, color: RGBColorModel(red: red, green: green, blue: blue), opacity: opacity)
     }
     
     @_inlineable
-    public init(colorSpace: Doggie.ColorSpace<Model>, hue: Double, saturation: Double, brightness: Double, opacity: Double = 1) {
+    public init(colorSpace: Doggie.ColorSpace<Model> = .default, hue: Double, saturation: Double, brightness: Double, opacity: Double = 1) {
         self.init(colorSpace: colorSpace, color: RGBColorModel(hue: hue, saturation: saturation, brightness: brightness), opacity: opacity)
     }
 }

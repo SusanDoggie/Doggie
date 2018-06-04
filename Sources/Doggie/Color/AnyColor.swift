@@ -152,17 +152,17 @@ extension AnyColor {
 extension AnyColor {
     
     @_inlineable
-    public init(colorSpace: Doggie.ColorSpace<GrayColorModel>, white: Double, opacity: Double = 1) {
+    public init(colorSpace: Doggie.ColorSpace<GrayColorModel> = .default, white: Double, opacity: Double = 1) {
         self.init(colorSpace: colorSpace, color: GrayColorModel(white: white), opacity: opacity)
     }
     
     @_inlineable
-    public init(colorSpace: Doggie.ColorSpace<RGBColorModel>, red: Double, green: Double, blue: Double, opacity: Double = 1) {
+    public init(colorSpace: Doggie.ColorSpace<RGBColorModel> = .default, red: Double, green: Double, blue: Double, opacity: Double = 1) {
         self.init(colorSpace: colorSpace, color: RGBColorModel(red: red, green: green, blue: blue), opacity: opacity)
     }
     
     @_inlineable
-    public init(colorSpace: Doggie.ColorSpace<RGBColorModel>, hue: Double, saturation: Double, brightness: Double, opacity: Double = 1) {
+    public init(colorSpace: Doggie.ColorSpace<RGBColorModel> = .default, hue: Double, saturation: Double, brightness: Double, opacity: Double = 1) {
         self.init(colorSpace: colorSpace, color: RGBColorModel(hue: hue, saturation: saturation, brightness: brightness), opacity: opacity)
     }
     
