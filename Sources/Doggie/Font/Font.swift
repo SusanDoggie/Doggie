@@ -26,7 +26,9 @@
 protocol FontFaceBase {
     
     func shape(glyph: Int) -> [Shape.Component]
+    var isUVS: Bool { get }
     func glyph(unicode: UnicodeScalar) -> Int
+    func glyph(unicode: UnicodeScalar, _ uvs: UnicodeScalar) -> Int?
     func metric(glyph: Int) -> Font.Metric
     func verticalMetric(glyph: Int) -> Font.Metric
     
@@ -207,6 +209,39 @@ extension Font {
     public func glyph(with unicode: UnicodeScalar) -> Int {
         let glyph = base.glyph(unicode: unicode)
         return 0..<base.numberOfGlyphs ~= glyph ? glyph : 0
+    }
+    
+    public func glyphs<S: Sequence>(with unicodes: S) -> [Int] where S.Element == UnicodeScalar {
+        
+        if base.isUVS {
+            
+            var last: UnicodeScalar?
+            var result: [Int] = []
+            result.reserveCapacity(unicodes.underestimatedCount)
+            
+            for unicode in unicodes {
+                
+                if let _last = last {
+                    if let glyph = base.glyph(unicode: _last, unicode) {
+                        result.append(glyph)
+                        last = nil
+                    } else {
+                        result.append(self.glyph(with: _last))
+                        last = unicode
+                    }
+                } else {
+                    last = unicode
+                }
+            }
+            
+            if let last = last {
+                result.append(self.glyph(with: last))
+            }
+            
+            return result
+        }
+        
+        return unicodes.map { glyph(with: $0) }
     }
     
     public func metric(forGlyph glyph: Int) -> Metric {

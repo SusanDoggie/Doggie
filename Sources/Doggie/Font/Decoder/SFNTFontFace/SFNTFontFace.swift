@@ -133,8 +133,23 @@ extension SFNTFontFace {
 
 extension SFNTFontFace {
     
+    var isUVS: Bool {
+        return cmap.uvs != nil
+    }
+    
     func glyph(unicode: UnicodeScalar) -> Int {
         return cmap.table.format[unicode.value]
+    }
+    
+    func glyph(unicode: UnicodeScalar, _ uvs: UnicodeScalar) -> Int? {
+        if let result = cmap.uvs?.mapping(unicode.value, uvs.value) {
+            switch result {
+            case .none: return nil
+            case .default: return self.glyph(unicode: unicode)
+            case let .glyph(id): return Int(id)
+            }
+        }
+        return nil
     }
 }
 

@@ -35,6 +35,7 @@ struct SFNTCMAP : ByteDecodable {
     var version: BEUInt16
     var numTables: BEUInt16
     var table: Table
+    var uvs: Format14?
     
     init(from data: inout Data) throws {
         let copy = data
@@ -51,6 +52,7 @@ struct SFNTCMAP : ByteDecodable {
             case 0: tables.append(Table(platform: platform, format: try Format0(tableData)))
             case 4: tables.append(Table(platform: platform, format: try Format4(tableData)))
             case 12: tables.append(Table(platform: platform, format: try Format12(tableData)))
+            case 14: uvs = try Format14(tableData)
             default: break
             }
         }
@@ -294,12 +296,167 @@ extension SFNTCMAP {
             
             return result
         }
+        
+        struct Group {
+            
+            var startCharCode: BEUInt32
+            var endCharCode: BEUInt32
+            var startGlyphCode: BEUInt32
+        }
     }
     
-    struct Group {
+    struct Format14 {
         
-        var startCharCode: BEUInt32
-        var endCharCode: BEUInt32
-        var startGlyphCode: BEUInt32
+        var format: BEInt16
+        var length: BEUInt32
+        var numVarSelectorRecords: BEUInt32
+        var varSelectorRecords: Data
+        var data: Data
+        
+        init(_ data: Data) throws {
+            var data = data
+            let copy = data
+            self.format = try data.decode(BEInt16.self)
+            self.length = try data.decode(BEUInt32.self)
+            self.numVarSelectorRecords = try data.decode(BEUInt32.self)
+            guard data.count >= Int(numVarSelectorRecords) * MemoryLayout<VariationSelector>.stride else { throw ByteDecodeError.endOfData }
+            self.varSelectorRecords = data.popFirst(Int(numVarSelectorRecords) * MemoryLayout<VariationSelector>.stride)
+            self.data = copy.prefix(Int(length))
+        }
+        
+        struct VariationSelector {
+            
+            var _varSelector: (UInt8, UInt8, UInt8)
+            var _defaultUVSOffset: (UInt8, UInt8, UInt8, UInt8)
+            var _nonDefaultUVSOffset: (UInt8, UInt8, UInt8, UInt8)
+            
+            var varSelector: UInt32 {
+                return (UInt32(_varSelector.0) << 16) | (UInt32(_varSelector.1) << 8) | UInt32(_varSelector.2)
+            }
+            
+            var defaultUVSOffset: UInt32 {
+                return (UInt32(_defaultUVSOffset.0) << 24) | (UInt32(_defaultUVSOffset.1) << 16) | (UInt32(_defaultUVSOffset.2) << 8) | UInt32(_defaultUVSOffset.3)
+            }
+            var nonDefaultUVSOffset: UInt32 {
+                return (UInt32(_nonDefaultUVSOffset.0) << 24) | (UInt32(_nonDefaultUVSOffset.1) << 16) | (UInt32(_nonDefaultUVSOffset.2) << 8) | UInt32(_nonDefaultUVSOffset.3)
+            }
+        }
+        
+        func search(_ varSelector: UInt32, _ range: Range<Int>) -> VariationSelector? {
+            
+            return varSelectorRecords.withUnsafeBytes { (buf: UnsafePointer<VariationSelector>) -> VariationSelector? in
+                
+                var range = range
+                
+                while range.count != 0 {
+                    
+                    let mid = (range.lowerBound + range.upperBound) >> 1
+                    let _mid = buf[mid]
+                    if varSelector == _mid.varSelector {
+                        return _mid
+                    }
+                    range = varSelector < _mid.varSelector ? range.prefix(upTo: mid) : range.suffix(from: mid).dropFirst()
+                }
+                
+                return nil
+            }
+        }
+        
+        enum MappedValue {
+            
+            case none
+            case `default`
+            case glyph(UInt16)
+        }
+        
+        func mapping(_ code: UInt32, _ varSelector: UInt32) -> MappedValue {
+            
+            guard let varSelector = self.search(varSelector, 0..<Int(self.numVarSelectorRecords)) else { return .none }
+            
+            let defaultUVSOffset = Int(varSelector.defaultUVSOffset)
+            let nonDefaultUVSOffset = Int(varSelector.nonDefaultUVSOffset)
+            
+            if defaultUVSOffset != 0 {
+                var data = self.data.dropFirst(defaultUVSOffset)
+                
+                guard let count = try? data.decode(BEInt32.self) else { return .none }
+                
+                let result = data.withUnsafeBytes { (buf: UnsafePointer<UnicodeValueRange>) -> UnicodeValueRange? in
+                    
+                    var range = 0..<Int(count)
+                    
+                    while range.count != 0 {
+                        
+                        let mid = (range.lowerBound + range.upperBound) >> 1
+                        let _mid = buf[mid]
+                        let startUnicodeValue = _mid.startUnicodeValue
+                        let endUnicodeValue = startUnicodeValue + UInt32(_mid.additionalCount)
+                        if startUnicodeValue <= endUnicodeValue && startUnicodeValue...endUnicodeValue ~= code {
+                            return _mid
+                        }
+                        range = code < startUnicodeValue ? range.prefix(upTo: mid) : range.suffix(from: mid).dropFirst()
+                    }
+                    
+                    return nil
+                }
+                
+                if result != nil {
+                    return .default
+                }
+            }
+            
+            if nonDefaultUVSOffset != 0 {
+                var data = self.data.dropFirst(nonDefaultUVSOffset)
+                
+                guard let count = try? data.decode(BEInt32.self) else { return .none }
+                
+                let result = data.withUnsafeBytes { (buf: UnsafePointer<UVSMapping>) -> UVSMapping? in
+                    
+                    var range = 0..<Int(count)
+                    
+                    while range.count != 0 {
+                        
+                        let mid = (range.lowerBound + range.upperBound) >> 1
+                        let _mid = buf[mid]
+                        if code == _mid.unicodeValue {
+                            return _mid
+                        }
+                        range = code < _mid.unicodeValue ? range.prefix(upTo: mid) : range.suffix(from: mid).dropFirst()
+                    }
+                    
+                    return nil
+                }
+                
+                if let result = result {
+                    return .glyph(result.glyphID)
+                }
+            }
+            
+            return .none
+        }
+        
+        struct UnicodeValueRange {
+            
+            var _startUnicodeValue: (UInt8, UInt8, UInt8)
+            var additionalCount: UInt8
+            
+            var startUnicodeValue: UInt32 {
+                return (UInt32(_startUnicodeValue.0) << 16) | (UInt32(_startUnicodeValue.1) << 8) | UInt32(_startUnicodeValue.2)
+            }
+        }
+        
+        struct UVSMapping {
+            
+            var _unicodeValue: (UInt8, UInt8, UInt8)
+            var _glyphID: (UInt8, UInt8)
+            
+            var unicodeValue: UInt32 {
+                return (UInt32(_unicodeValue.0) << 16) | (UInt32(_unicodeValue.1) << 8) | UInt32(_unicodeValue.2)
+            }
+            
+            var glyphID: UInt16 {
+                return (UInt16(_glyphID.0) << 8) | UInt16(_glyphID.1)
+            }
+        }
     }
 }
