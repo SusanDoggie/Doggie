@@ -484,22 +484,22 @@ extension ShapeRegion {
 
 extension ShapeRegion {
     
-    @_inlineable
+    @inlinable
     public mutating func formUnion(_ other: ShapeRegion) {
         self = self.union(other)
     }
     
-    @_inlineable
+    @inlinable
     public mutating func formIntersection(_ other: ShapeRegion) {
         self = self.intersection(other)
     }
     
-    @_inlineable
+    @inlinable
     public mutating func subtract(_ other: ShapeRegion) {
         self = self.subtracting(other)
     }
     
-    @_inlineable
+    @inlinable
     public mutating func formSymmetricDifference(_ other: ShapeRegion) {
         self = self.symmetricDifference(other)
     }
@@ -507,32 +507,32 @@ extension ShapeRegion {
 
 extension ShapeRegion {
     
-    @_inlineable
+    @inlinable
     public func isEqual(to other: ShapeRegion) -> Bool {
         return self.symmetricDifference(other).isEmpty
     }
     
-    @_inlineable
+    @inlinable
     public func isSubset(of other: ShapeRegion) -> Bool {
         return self.subtracting(other).isEmpty
     }
     
-    @_inlineable
+    @inlinable
     public func isSuperset(of other: ShapeRegion) -> Bool {
         return other.isSubset(of: self)
     }
     
-    @_inlineable
+    @inlinable
     public func isDisjoint(with other: ShapeRegion) -> Bool {
         return self.intersection(other).isEmpty
     }
     
-    @_inlineable
+    @inlinable
     public func isStrictSubset(of other: ShapeRegion) -> Bool {
         return self.subtracting(other).isEmpty && !other.subtracting(self).isEmpty
     }
     
-    @_inlineable
+    @inlinable
     public func isStrictSuperset(of other: ShapeRegion) -> Bool {
         return other.isStrictSubset(of: self)
     }

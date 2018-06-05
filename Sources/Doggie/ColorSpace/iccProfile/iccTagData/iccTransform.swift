@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-@_versioned
+@usableFromInline
 protocol iccTransform {
     
     func normalize(_ xyz: XYZColorModel) -> XYZColorModel
@@ -39,14 +39,14 @@ protocol iccTransform {
     func convertLinearFromConnection<Model: ColorModelProtocol, PCSColor: PCSColorModel>(_ color: PCSColor) -> Model
 }
 
-@_versioned
 @_fixed_layout
+@usableFromInline
 struct iccMonochromeTransform : iccTransform {
     
-    @_versioned
+    @usableFromInline
     var curve: iccCurve
     
-    @_versioned
+    @usableFromInline
     @inline(__always)
     func normalize(_ xyz: XYZColorModel) -> XYZColorModel {
         
@@ -58,7 +58,7 @@ struct iccMonochromeTransform : iccTransform {
         return color
     }
     
-    @_versioned
+    @usableFromInline
     @inline(__always)
     func denormalize(_ xyz: XYZColorModel) -> XYZColorModel {
         
@@ -70,7 +70,7 @@ struct iccMonochromeTransform : iccTransform {
         return color
     }
     
-    @_versioned
+    @usableFromInline
     @inline(__always)
     func convertToLinear<Model: ColorModelProtocol>(_ color: Model) -> Model {
         
@@ -81,7 +81,7 @@ struct iccMonochromeTransform : iccTransform {
         return result
     }
     
-    @_versioned
+    @usableFromInline
     @inline(__always)
     func convertFromLinear<Model: ColorModelProtocol>(_ color: Model) -> Model {
         
@@ -92,7 +92,7 @@ struct iccMonochromeTransform : iccTransform {
         return result
     }
     
-    @_versioned
+    @usableFromInline
     @inline(__always)
     func convertLinearToConnection<Model: ColorModelProtocol, PCSColor: PCSColorModel>(_ color: Model) -> PCSColor {
         
@@ -103,7 +103,7 @@ struct iccMonochromeTransform : iccTransform {
         return result
     }
     
-    @_versioned
+    @usableFromInline
     @inline(__always)
     func convertLinearFromConnection<Model: ColorModelProtocol, PCSColor: PCSColorModel>(_ color: PCSColor) -> Model {
         
@@ -115,17 +115,17 @@ struct iccMonochromeTransform : iccTransform {
     }
 }
 
-@_versioned
 @_fixed_layout
+@usableFromInline
 struct iccMatrixTransform : iccTransform {
     
-    @_versioned
+    @usableFromInline
     var matrix: Matrix
     
-    @_versioned
+    @usableFromInline
     var curve: (iccCurve, iccCurve, iccCurve)
     
-    @_versioned
+    @usableFromInline
     @inline(__always)
     func normalize(_ xyz: XYZColorModel) -> XYZColorModel {
         
@@ -137,7 +137,7 @@ struct iccMatrixTransform : iccTransform {
         return color
     }
     
-    @_versioned
+    @usableFromInline
     @inline(__always)
     func denormalize(_ xyz: XYZColorModel) -> XYZColorModel {
         
@@ -149,7 +149,7 @@ struct iccMatrixTransform : iccTransform {
         return color
     }
     
-    @_versioned
+    @usableFromInline
     @inline(__always)
     func convertToLinear<Model: ColorModelProtocol>(_ color: Model) -> Model {
         
@@ -162,7 +162,7 @@ struct iccMatrixTransform : iccTransform {
         return result
     }
     
-    @_versioned
+    @usableFromInline
     @inline(__always)
     func convertFromLinear<Model: ColorModelProtocol>(_ color: Model) -> Model {
         
@@ -175,7 +175,7 @@ struct iccMatrixTransform : iccTransform {
         return result
     }
     
-    @_versioned
+    @usableFromInline
     @inline(__always)
     func convertLinearToConnection<Model: ColorModelProtocol, PCSColor: PCSColorModel>(_ color: Model) -> PCSColor {
         
@@ -190,7 +190,7 @@ struct iccMatrixTransform : iccTransform {
         return result
     }
     
-    @_versioned
+    @usableFromInline
     @inline(__always)
     func convertLinearFromConnection<Model: ColorModelProtocol, PCSColor: PCSColorModel>(_ color: PCSColor) -> Model {
         
@@ -207,23 +207,23 @@ struct iccMatrixTransform : iccTransform {
     }
 }
 
-@_versioned
 @_fixed_layout
+@usableFromInline
 struct iccLUT0Transform : iccTransform {
     
-    @_versioned
+    @usableFromInline
     var matrix: Matrix
     
-    @_versioned
+    @usableFromInline
     var input: OneDimensionalLUT
     
-    @_versioned
+    @usableFromInline
     var clut: MultiDimensionalLUT
     
-    @_versioned
+    @usableFromInline
     var output: OneDimensionalLUT
     
-    @_versioned
+    @usableFromInline
     @inline(__always)
     func normalize(_ xyz: XYZColorModel) -> XYZColorModel {
         
@@ -235,7 +235,7 @@ struct iccLUT0Transform : iccTransform {
         return color
     }
     
-    @_versioned
+    @usableFromInline
     @inline(__always)
     func denormalize(_ xyz: XYZColorModel) -> XYZColorModel {
         
@@ -247,7 +247,7 @@ struct iccLUT0Transform : iccTransform {
         return color
     }
     
-    @_versioned
+    @usableFromInline
     @inline(__always)
     func convertToLinear<Model: ColorModelProtocol>(_ color: Model) -> Model {
         
@@ -258,7 +258,7 @@ struct iccLUT0Transform : iccTransform {
         return result
     }
     
-    @_versioned
+    @usableFromInline
     @inline(__always)
     func convertFromLinear<Model: ColorModelProtocol>(_ color: Model) -> Model {
         
@@ -269,7 +269,7 @@ struct iccLUT0Transform : iccTransform {
         return result
     }
     
-    @_versioned
+    @usableFromInline
     @inline(__always)
     func convertLinearToConnection<Model: ColorModelProtocol, PCSColor: PCSColorModel>(_ color: Model) -> PCSColor {
         
@@ -286,7 +286,7 @@ struct iccLUT0Transform : iccTransform {
         return result
     }
     
-    @_versioned
+    @usableFromInline
     @inline(__always)
     func convertLinearFromConnection<Model: ColorModelProtocol, PCSColor: PCSColorModel>(_ color: PCSColor) -> Model {
         
@@ -305,14 +305,14 @@ struct iccLUT0Transform : iccTransform {
     }
 }
 
-@_versioned
 @_fixed_layout
+@usableFromInline
 struct iccLUT1Transform : iccTransform {
     
-    @_versioned
+    @usableFromInline
     var curve: (iccCurve, iccCurve, iccCurve)
     
-    @_versioned
+    @usableFromInline
     @inline(__always)
     func normalize(_ xyz: XYZColorModel) -> XYZColorModel {
         
@@ -323,7 +323,7 @@ struct iccLUT1Transform : iccTransform {
         return color
     }
     
-    @_versioned
+    @usableFromInline
     @inline(__always)
     func denormalize(_ xyz: XYZColorModel) -> XYZColorModel {
         
@@ -334,7 +334,7 @@ struct iccLUT1Transform : iccTransform {
         return color
     }
     
-    @_versioned
+    @usableFromInline
     @inline(__always)
     func convertToLinear<Model: ColorModelProtocol>(_ color: Model) -> Model {
         
@@ -347,7 +347,7 @@ struct iccLUT1Transform : iccTransform {
         return result
     }
     
-    @_versioned
+    @usableFromInline
     @inline(__always)
     func convertFromLinear<Model: ColorModelProtocol>(_ color: Model) -> Model {
         
@@ -360,7 +360,7 @@ struct iccLUT1Transform : iccTransform {
         return result
     }
     
-    @_versioned
+    @usableFromInline
     @inline(__always)
     func convertLinearToConnection<Model: ColorModelProtocol, PCSColor: PCSColorModel>(_ color: Model) -> PCSColor {
         
@@ -373,7 +373,7 @@ struct iccLUT1Transform : iccTransform {
         return result
     }
     
-    @_versioned
+    @usableFromInline
     @inline(__always)
     func convertLinearFromConnection<Model: ColorModelProtocol, PCSColor: PCSColorModel>(_ color: PCSColor) -> Model {
         
@@ -387,20 +387,20 @@ struct iccLUT1Transform : iccTransform {
     }
 }
 
-@_versioned
 @_fixed_layout
+@usableFromInline
 struct iccLUT2Transform : iccTransform {
     
-    @_versioned
+    @usableFromInline
     var B: (iccCurve, iccCurve, iccCurve)
     
-    @_versioned
+    @usableFromInline
     var matrix: Matrix
     
-    @_versioned
+    @usableFromInline
     var M: (iccCurve, iccCurve, iccCurve)
     
-    @_versioned
+    @usableFromInline
     @inline(__always)
     func normalize(_ xyz: XYZColorModel) -> XYZColorModel {
         
@@ -411,7 +411,7 @@ struct iccLUT2Transform : iccTransform {
         return color
     }
     
-    @_versioned
+    @usableFromInline
     @inline(__always)
     func denormalize(_ xyz: XYZColorModel) -> XYZColorModel {
         
@@ -422,7 +422,7 @@ struct iccLUT2Transform : iccTransform {
         return color
     }
     
-    @_versioned
+    @usableFromInline
     @inline(__always)
     func convertToLinear<Model: ColorModelProtocol>(_ color: Model) -> Model {
         
@@ -435,7 +435,7 @@ struct iccLUT2Transform : iccTransform {
         return result
     }
     
-    @_versioned
+    @usableFromInline
     @inline(__always)
     func convertFromLinear<Model: ColorModelProtocol>(_ color: Model) -> Model {
         
@@ -448,7 +448,7 @@ struct iccLUT2Transform : iccTransform {
         return result
     }
     
-    @_versioned
+    @usableFromInline
     @inline(__always)
     func convertLinearToConnection<Model: ColorModelProtocol, PCSColor: PCSColorModel>(_ color: Model) -> PCSColor {
         
@@ -467,7 +467,7 @@ struct iccLUT2Transform : iccTransform {
         return result
     }
     
-    @_versioned
+    @usableFromInline
     @inline(__always)
     func convertLinearFromConnection<Model: ColorModelProtocol, PCSColor: PCSColorModel>(_ color: PCSColor) -> Model {
         
@@ -488,20 +488,20 @@ struct iccLUT2Transform : iccTransform {
     }
 }
 
-@_versioned
 @_fixed_layout
+@usableFromInline
 struct iccLUT3Transform : iccTransform {
     
-    @_versioned
+    @usableFromInline
     var B: (iccCurve, iccCurve, iccCurve)
     
-    @_versioned
+    @usableFromInline
     var lut: MultiDimensionalLUT
     
-    @_versioned
+    @usableFromInline
     var A: [iccCurve]
     
-    @_versioned
+    @usableFromInline
     @inline(__always)
     func normalize(_ xyz: XYZColorModel) -> XYZColorModel {
         
@@ -512,7 +512,7 @@ struct iccLUT3Transform : iccTransform {
         return color
     }
     
-    @_versioned
+    @usableFromInline
     @inline(__always)
     func denormalize(_ xyz: XYZColorModel) -> XYZColorModel {
         
@@ -523,7 +523,7 @@ struct iccLUT3Transform : iccTransform {
         return color
     }
     
-    @_versioned
+    @usableFromInline
     @inline(__always)
     func convertToLinear<Model: ColorModelProtocol>(_ color: Model) -> Model {
         
@@ -536,7 +536,7 @@ struct iccLUT3Transform : iccTransform {
         return result
     }
     
-    @_versioned
+    @usableFromInline
     @inline(__always)
     func convertFromLinear<Model: ColorModelProtocol>(_ color: Model) -> Model {
         
@@ -549,7 +549,7 @@ struct iccLUT3Transform : iccTransform {
         return result
     }
     
-    @_versioned
+    @usableFromInline
     @inline(__always)
     func convertLinearToConnection<Model: ColorModelProtocol, PCSColor: PCSColorModel>(_ color: Model) -> PCSColor {
         
@@ -564,7 +564,7 @@ struct iccLUT3Transform : iccTransform {
         return result
     }
     
-    @_versioned
+    @usableFromInline
     @inline(__always)
     func convertLinearFromConnection<Model: ColorModelProtocol, PCSColor: PCSColorModel>(_ color: PCSColor) -> Model {
         
@@ -581,26 +581,26 @@ struct iccLUT3Transform : iccTransform {
     }
 }
 
-@_versioned
 @_fixed_layout
+@usableFromInline
 struct iccLUT4Transform : iccTransform {
     
-    @_versioned
+    @usableFromInline
     var B: (iccCurve, iccCurve, iccCurve)
     
-    @_versioned
+    @usableFromInline
     var matrix: Matrix
     
-    @_versioned
+    @usableFromInline
     var M: (iccCurve, iccCurve, iccCurve)
     
-    @_versioned
+    @usableFromInline
     var lut: MultiDimensionalLUT
     
-    @_versioned
+    @usableFromInline
     var A: [iccCurve]
     
-    @_versioned
+    @usableFromInline
     @inline(__always)
     func normalize(_ xyz: XYZColorModel) -> XYZColorModel {
         
@@ -611,7 +611,7 @@ struct iccLUT4Transform : iccTransform {
         return color
     }
     
-    @_versioned
+    @usableFromInline
     @inline(__always)
     func denormalize(_ xyz: XYZColorModel) -> XYZColorModel {
         
@@ -622,7 +622,7 @@ struct iccLUT4Transform : iccTransform {
         return color
     }
     
-    @_versioned
+    @usableFromInline
     @inline(__always)
     func convertToLinear<Model: ColorModelProtocol>(_ color: Model) -> Model {
         
@@ -635,7 +635,7 @@ struct iccLUT4Transform : iccTransform {
         return result
     }
     
-    @_versioned
+    @usableFromInline
     @inline(__always)
     func convertFromLinear<Model: ColorModelProtocol>(_ color: Model) -> Model {
         
@@ -648,7 +648,7 @@ struct iccLUT4Transform : iccTransform {
         return result
     }
     
-    @_versioned
+    @usableFromInline
     @inline(__always)
     func convertLinearToConnection<Model: ColorModelProtocol, PCSColor: PCSColorModel>(_ color: Model) -> PCSColor {
         
@@ -669,7 +669,7 @@ struct iccLUT4Transform : iccTransform {
         return result
     }
     
-    @_versioned
+    @usableFromInline
     @inline(__always)
     func convertLinearFromConnection<Model: ColorModelProtocol, PCSColor: PCSColorModel>(_ color: PCSColor) -> Model {
         

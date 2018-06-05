@@ -32,7 +32,7 @@ public protocol CompressionCodec: AnyObject {
 
 extension CompressionCodec {
     
-    @_inlineable
+    @inlinable
     public func process_final(_ source: UnsafeBufferPointer<UInt8>, _ callback: (UnsafeBufferPointer<UInt8>) -> Void) throws {
         try process(source, callback)
         try final(callback)
@@ -41,22 +41,22 @@ extension CompressionCodec {
 
 extension CompressionCodec {
     
-    @_inlineable
+    @inlinable
     public func process<S : UnsafeBufferProtocol, C : RangeReplaceableCollection>(_ source: S, _ output: inout C) throws where S.Element == UInt8, C.Element == UInt8 {
         try process(source) { output.append(contentsOf: $0) }
     }
     
-    @_inlineable
+    @inlinable
     public func process_final<S : UnsafeBufferProtocol, C : RangeReplaceableCollection>(_ source: S, _ output: inout C) throws where S.Element == UInt8, C.Element == UInt8 {
         try process_final(source) { output.append(contentsOf: $0) }
     }
     
-    @_inlineable
+    @inlinable
     public func process<S : UnsafeBufferProtocol>(_ source: S, _ callback: (UnsafeBufferPointer<UInt8>) -> Void) throws where S.Element == UInt8 {
         try source.withUnsafeBufferPointer { try process($0, callback) }
     }
     
-    @_inlineable
+    @inlinable
     public func process_final<S : UnsafeBufferProtocol>(_ source: S, _ callback: (UnsafeBufferPointer<UInt8>) -> Void) throws where S.Element == UInt8 {
         try source.withUnsafeBufferPointer { try process_final($0, callback) }
     }
@@ -64,7 +64,7 @@ extension CompressionCodec {
 
 extension CompressionCodec {
     
-    @_inlineable
+    @inlinable
     public func final<C : RangeReplaceableCollection>(_ output: inout C) throws where C.Element == UInt8 {
         try final { output.append(contentsOf: $0) }
     }
@@ -72,7 +72,7 @@ extension CompressionCodec {
 
 extension CompressionCodec {
     
-    @_inlineable
+    @inlinable
     public func process(_ source: Data) throws -> Data {
         var result = Data(capacity: source.count)
         try self.process_final(source, &result)

@@ -23,29 +23,27 @@
 //  THE SOFTWARE.
 //
 
-@_versioned
 @_fixed_layout
+@usableFromInline
 struct ShadowTexture {
     
-    @_versioned
+    @usableFromInline
     let width: Int
     
-    @_versioned
+    @usableFromInline
     let height: Int
     
-    @_versioned
+    @usableFromInline
     var pixels: MappedBuffer<Double>
     
-    @_versioned
-    @_inlineable
+    @inlinable
     init(width: Int, height: Int, option: MappedBufferOption) {
         self.width = width
         self.height = height
         self.pixels = MappedBuffer(repeating: 0, count: width * height, option: option)
     }
     
-    @_versioned
-    @_inlineable
+    @inlinable
     init(width: Int, height: Int, pixels: MappedBuffer<Double>) {
         self.width = width
         self.height = height
@@ -55,8 +53,7 @@ struct ShadowTexture {
 
 extension ShadowTexture {
     
-    @_versioned
-    @_inlineable
+    @inlinable
     func pixel(_ point: Point) -> Double {
         return sampling2(point: point, sampler: LinearInterpolate)
     }
@@ -64,8 +61,7 @@ extension ShadowTexture {
 
 extension ShadowTexture {
     
-    @_versioned
-    @_inlineable
+    @inlinable
     func read_source(_ x: Int, _ y: Int) -> Double {
         
         let x_range = 0..<width
@@ -75,8 +71,7 @@ extension ShadowTexture {
         
     }
     
-    @_versioned
-    @_inlineable
+    @inlinable
     func sampling2(point: Point, sampler: (Double, Double, Double) -> Double) -> Double {
         
         let _x1 = Int(point.x)
@@ -98,14 +93,12 @@ extension ShadowTexture {
 
 extension ImageContext {
     
-    @_versioned
-    @_inlineable
+    @inlinable
     var isShadow: Bool {
         return shadowColor.opacity > 0 && shadowBlur > 0
     }
     
-    @_versioned
-    @_inlineable
+    @inlinable
     func _drawWithShadow(stencil: MappedBuffer<Double>, color: ColorPixel<Pixel.Model>) {
         
         let width = self.width
@@ -147,8 +140,7 @@ extension ImageContext {
         }
     }
     
-    @_versioned
-    @_inlineable
+    @inlinable
     func _drawWithShadow(texture: Texture<Pixel>) {
         
         let width = self.width
@@ -188,8 +180,7 @@ extension ImageContext {
 
 extension ImageContext {
     
-    @_versioned
-    @_inlineable
+    @inlinable
     func gaussianBlurFilter(_ blur: Double) -> [Double] {
         
         let t = 2 * blur * blur
@@ -204,8 +195,7 @@ extension ImageContext {
         }
     }
     
-    @_versioned
-    @_inlineable
+    @inlinable
     func _shadow(_ map: MappedBuffer<Double>, _ filter: [Double]) -> ShadowTexture {
         
         let width = self.width

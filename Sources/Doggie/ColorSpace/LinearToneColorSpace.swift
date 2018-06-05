@@ -23,51 +23,44 @@
 //  THE SOFTWARE.
 //
 
-@_versioned
 @_fixed_layout
+@usableFromInline
 struct LinearToneColorSpace<ColorSpace: ColorSpaceBaseProtocol> : ColorSpaceBaseProtocol {
     
-    @_versioned
+    @usableFromInline
     let base: ColorSpace
     
-    @_versioned
-    @_inlineable
+    @inlinable
     init(_ base: ColorSpace) {
         self.base = base
     }
     
-    @_versioned
-    @_inlineable
+    @inlinable
     var cieXYZ: CIEXYZColorSpace {
         return base.cieXYZ
     }
     
-    @_versioned
-    @_inlineable
+    @inlinable
     func convertToLinear(_ color: ColorSpace.Model) -> ColorSpace.Model {
         return color
     }
     
-    @_versioned
-    @_inlineable
+    @inlinable
     func convertFromLinear(_ color: ColorSpace.Model) -> ColorSpace.Model {
         return color
     }
     
-    @_versioned
-    @_inlineable
+    @inlinable
     func convertLinearToXYZ(_ color: ColorSpace.Model) -> XYZColorModel {
         return base.convertLinearToXYZ(color)
     }
     
-    @_versioned
-    @_inlineable
+    @inlinable
     func convertLinearFromXYZ(_ color: XYZColorModel) -> ColorSpace.Model {
         return base.convertLinearFromXYZ(color)
     }
     
-    @_versioned
-    @_inlineable
+    @inlinable
     var linearTone: LinearToneColorSpace {
         return self
     }
@@ -75,17 +68,16 @@ struct LinearToneColorSpace<ColorSpace: ColorSpaceBaseProtocol> : ColorSpaceBase
 
 extension LinearToneColorSpace {
     
-    @_versioned
-    @_inlineable
-    var hashValue: Int {
-        return hash_combine("LinearToneColorSpace", base)
+    @inlinable
+    func hash(into hasher: inout Hasher) {
+        hasher.combine("LinearToneColorSpace")
+        hasher.combine(base)
     }
 }
 
 extension LinearToneColorSpace {
     
-    @_versioned
-    @_inlineable
+    @inlinable
     var localizedName: String? {
         return base.localizedName.map { "LinearToneColorSpace<\($0)>" }
     }
@@ -93,8 +85,7 @@ extension LinearToneColorSpace {
 
 extension ColorSpaceBaseProtocol where LinearTone == LinearToneColorSpace<Self> {
     
-    @_versioned
-    @_inlineable
+    @inlinable
     var linearTone: LinearToneColorSpace<Self> {
         return LinearToneColorSpace(self)
     }

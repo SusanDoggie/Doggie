@@ -36,7 +36,7 @@ public struct GradientStop<Color: ColorProtocol> {
     public var offset: Double
     public var color: Color
     
-    @_inlineable
+    @inlinable
     public init(offset: Double, color: Color) {
         self.offset = offset
         self.color = color
@@ -45,7 +45,7 @@ public struct GradientStop<Color: ColorProtocol> {
 
 extension GradientStop : Equatable where Color : Equatable {
     
-    @_inlineable
+    @inlinable
     public static func ==(lhs: GradientStop, rhs: GradientStop) -> Bool {
         return lhs.offset == rhs.offset && lhs.color == rhs.color
     }
@@ -53,15 +53,16 @@ extension GradientStop : Equatable where Color : Equatable {
 
 extension GradientStop : Hashable where Color : Hashable {
     
-    @_inlineable
-    public var hashValue: Int {
-        return hash_combine(offset, color)
+    @inlinable
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(offset)
+        hasher.combine(color)
     }
 }
 
 extension GradientStop where Color == AnyColor {
     
-    @_inlineable
+    @inlinable
     public init<M>(offset: Double, color: Doggie.Color<M>) {
         self.init(offset: offset, color: AnyColor(color))
     }
@@ -69,8 +70,7 @@ extension GradientStop where Color == AnyColor {
 
 extension ImageContext {
     
-    @_versioned
-    @_inlineable
+    @inlinable
     func _shading<P : ColorPixelProtocol>(_ shader: (Point) -> P) where Pixel.Model == P.Model {
         
         let width = self.width
@@ -99,7 +99,7 @@ extension ImageContext {
 
 extension ImageContext {
     
-    @_inlineable
+    @inlinable
     public func axialShading<P : ColorPixelProtocol>(start: Point, end: Point, startSpread: GradientSpreadMode, endSpread: GradientSpreadMode, shading: (Double) -> P) where Pixel.Model == P.Model {
         
         if start.almostEqual(end) {
@@ -158,7 +158,7 @@ extension ImageContext {
 
 extension ImageContext {
     
-    @_inlineable
+    @inlinable
     public func radialShading<P : ColorPixelProtocol>(start: Point, startRadius: Double, end: Point, endRadius: Double, startSpread: GradientSpreadMode, endSpread: GradientSpreadMode, shading: (Double) -> P) where Pixel.Model == P.Model {
         
         if start.almostEqual(end) && startRadius.almostEqual(endRadius) {
@@ -245,7 +245,7 @@ extension ImageContext {
 
 extension ImageContext {
     
-    @_inlineable
+    @inlinable
     public func drawLinearGradient<C>(stops: [GradientStop<C>], start: Point, end: Point, startSpread: GradientSpreadMode, endSpread: GradientSpreadMode) {
         
         let colorSpace = self.colorSpace
@@ -279,7 +279,7 @@ extension ImageContext {
 
 extension ImageContext {
     
-    @_inlineable
+    @inlinable
     public func drawRadialGradient<C>(stops: [GradientStop<C>], start: Point, startRadius: Double, end: Point, endRadius: Double, startSpread: GradientSpreadMode, endSpread: GradientSpreadMode) {
         
         let colorSpace = self.colorSpace

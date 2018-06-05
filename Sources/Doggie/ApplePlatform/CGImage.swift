@@ -135,7 +135,7 @@ public func CGContextClipToDrawing(_ context : CGContext, fillBackground: CGFloa
 
 extension Image {
     
-    @_inlineable
+    @inlinable
     public var cgImage: CGImage? {
         
         guard let colorSpace = self.colorSpace.cgColorSpace else { return nil }

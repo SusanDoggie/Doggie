@@ -26,20 +26,20 @@
 @_fixed_layout
 public struct Bezier<Element : ScalarMultiplicative> : Equatable where Element.Scalar == Double {
     
-    @_versioned
+    @usableFromInline
     var points: [Element]
     
-    @_inlineable
+    @inlinable
     public init() {
         self.init(Element(), Element())
     }
     
-    @_inlineable
+    @inlinable
     public init(_ p: Element ... ) {
         self.init(p)
     }
     
-    @_inlineable
+    @inlinable
     public init<S : Sequence>(_ s: S) where S.Element == Element {
         self.points = Array(s)
         while points.count < 2 {
@@ -50,7 +50,7 @@ public struct Bezier<Element : ScalarMultiplicative> : Equatable where Element.S
 
 extension Bezier : ExpressibleByArrayLiteral {
     
-    @_inlineable
+    @inlinable
     public init(arrayLiteral elements: Element ... ) {
         self.init(elements)
     }
@@ -58,7 +58,7 @@ extension Bezier : ExpressibleByArrayLiteral {
 
 extension Bezier : CustomStringConvertible {
     
-    @_inlineable
+    @inlinable
     public var description: String {
         return "\(points)"
     }
@@ -66,7 +66,7 @@ extension Bezier : CustomStringConvertible {
 
 extension Bezier: Decodable where Element : Decodable {
     
-    @_inlineable
+    @inlinable
     public init(from decoder: Decoder) throws {
         
         var container = try decoder.unkeyedContainer()
@@ -89,7 +89,7 @@ extension Bezier: Decodable where Element : Decodable {
 
 extension Bezier: Encodable where Element : Encodable {
     
-    @_inlineable
+    @inlinable
     public func encode(to encoder: Encoder) throws {
         var container = encoder.unkeyedContainer()
         try container.encode(points)
@@ -102,21 +102,21 @@ extension Bezier : RandomAccessCollection, MutableCollection {
     
     public typealias Index = Int
     
-    @_inlineable
+    @inlinable
     public var degree: Int {
         return points.count - 1
     }
     
-    @_inlineable
+    @inlinable
     public var startIndex: Int {
         return points.startIndex
     }
-    @_inlineable
+    @inlinable
     public var endIndex: Int {
         return points.endIndex
     }
     
-    @_inlineable
+    @inlinable
     public subscript(position: Int) -> Element {
         get {
             return points[position]
@@ -129,7 +129,7 @@ extension Bezier : RandomAccessCollection, MutableCollection {
 
 extension Bezier {
     
-    @_inlineable
+    @inlinable
     public func eval(_ t: Double) -> Element {
         switch points.count {
         case 2:
@@ -177,7 +177,7 @@ extension Bezier {
 
 extension Bezier where Element == Double {
     
-    @_inlineable
+    @inlinable
     public var polynomial: Polynomial {
         switch points.count {
         case 2:
@@ -222,7 +222,7 @@ extension Bezier where Element == Double {
         }
     }
     
-    @_inlineable
+    @inlinable
     public init(_ polynomial: Polynomial) {
         let de = (0..<Swift.max(1, polynomial.degree)).scan(polynomial) { p, _ in p.derivative / Double(p.degree) }
         var points: [Double] = []
@@ -236,7 +236,7 @@ extension Bezier where Element == Double {
 
 extension Bezier {
     
-    @_inlineable
+    @inlinable
     public func elevated() -> Bezier {
         let p = self.points
         let n = Double(p.count)
@@ -253,8 +253,7 @@ extension Bezier {
 
 extension Bezier {
     
-    @_versioned
-    @_inlineable
+    @inlinable
     static func split(_ t: Double, _ p: [Element]) -> ([Element], [Element]) {
         switch p.count {
         case 2:
@@ -288,7 +287,7 @@ extension Bezier {
         }
     }
     
-    @_inlineable
+    @inlinable
     public func split(_ t: Double) -> (Bezier, Bezier) {
         let points = self.points
         if t.almostZero() {
@@ -301,7 +300,7 @@ extension Bezier {
         return (Bezier(split.0), Bezier(split.1))
     }
     
-    @_inlineable
+    @inlinable
     public func split(_ t: [Double]) -> [Bezier] {
         var result: [Bezier] = []
         result.reserveCapacity(t.count + 1)
@@ -320,7 +319,7 @@ extension Bezier {
 
 extension Bezier {
     
-    @_inlineable
+    @inlinable
     public func derivative() -> Bezier {
         let n = Double(points.count - 1)
         return Bezier(zip(points, points.dropFirst()).map { n * ($1 - $0) })
@@ -329,7 +328,7 @@ extension Bezier {
 
 extension Bezier where Element == Point {
     
-    @_inlineable
+    @inlinable
     public func closest(_ point: Point) -> [Double] {
         switch points.count {
         case 2:
@@ -373,7 +372,7 @@ extension Bezier where Element == Point {
 
 extension Bezier where Element == Point {
     
-    @_inlineable
+    @inlinable
     public var area: Double {
         switch points.count {
         case 2:
@@ -416,7 +415,7 @@ extension Bezier where Element == Point {
 
 extension Bezier where Element == Point {
     
-    @_inlineable
+    @inlinable
     public var inflection: [Double] {
         switch points.count {
         case 2, 3: return []
@@ -450,7 +449,7 @@ extension Bezier where Element == Point {
 
 extension Bezier where Element == Double {
     
-    @_inlineable
+    @inlinable
     public var stationary: [Double] {
         switch points.count {
         case 2: return []
@@ -498,14 +497,14 @@ extension Bezier where Element == Double {
 
 extension Bezier where Element == Point {
     
-    @_inlineable
+    @inlinable
     public var stationary: [Double] {
         let bx = Bezier<Double>(points.map { $0.x }).stationary.lazy.map { $0.clamped(to: 0...1) }
         let by = Bezier<Double>(points.map { $0.y }).stationary.lazy.map { $0.clamped(to: 0...1) }
         return [0.0, 1.0] + bx + by
     }
     
-    @_inlineable
+    @inlinable
     public var boundary: Rect {
         let points = self.points
         
@@ -650,12 +649,12 @@ extension Bezier where Element == Point {
     }
     
     public func overlap(_ other: Bezier) -> Bool {
-        return _resultant(other).all(where: { $0.almostZero() })
+        return _resultant(other).allSatisfy { $0.almostZero() }
     }
     
     public func intersect(_ other: Bezier) -> [Double]? {
         let resultant = _resultant(other)
-        return resultant.all(where: { $0.almostZero() }) ? nil : resultant.roots
+        return resultant.allSatisfy { $0.almostZero() } ? nil : resultant.roots
     }
 }
 
@@ -665,15 +664,15 @@ extension Bezier : ScalarMultiplicative {
     
 }
 
-@_inlineable
+@inlinable
 public prefix func + <Element>(x: Bezier<Element>) -> Bezier<Element> {
     return x
 }
-@_inlineable
+@inlinable
 public prefix func - <Element>(x: Bezier<Element>) -> Bezier<Element> {
     return Bezier(x.points.map { -$0 })
 }
-@_inlineable
+@inlinable
 public func + <Element>(lhs: Bezier<Element>, rhs: Bezier<Element>) -> Bezier<Element> {
     var lhs = lhs
     var rhs = rhs
@@ -686,7 +685,7 @@ public func + <Element>(lhs: Bezier<Element>, rhs: Bezier<Element>) -> Bezier<El
     }
     return Bezier(zip(lhs.points, rhs.points).map(+))
 }
-@_inlineable
+@inlinable
 public func - <Element>(lhs: Bezier<Element>, rhs: Bezier<Element>) -> Bezier<Element> {
     var lhs = lhs
     var rhs = rhs
@@ -699,48 +698,48 @@ public func - <Element>(lhs: Bezier<Element>, rhs: Bezier<Element>) -> Bezier<El
     }
     return Bezier(zip(lhs.points, rhs.points).map(-))
 }
-@_inlineable
+@inlinable
 public func * <Element>(lhs: Double, rhs: Bezier<Element>) -> Bezier<Element> {
     return Bezier(rhs.points.map { lhs * $0 })
 }
-@_inlineable
+@inlinable
 public func * <Element>(lhs: Bezier<Element>, rhs: Double) -> Bezier<Element> {
     return Bezier(lhs.points.map { $0 * rhs })
 }
-@_inlineable
+@inlinable
 public func / <Element>(lhs: Bezier<Element>, rhs: Double) -> Bezier<Element> {
     return Bezier(lhs.points.map { $0 / rhs })
 }
-@_inlineable
+@inlinable
 public func += <Element>(lhs: inout Bezier<Element>, rhs: Bezier<Element>) {
     lhs = lhs + rhs
 }
-@_inlineable
+@inlinable
 public func -= <Element>(lhs: inout Bezier<Element>, rhs: Bezier<Element>) {
     lhs = lhs - rhs
 }
-@_inlineable
+@inlinable
 public func *= <Element>(lhs: inout Bezier<Element>, rhs: Double) {
     lhs = lhs * rhs
 }
-@_inlineable
+@inlinable
 public func /= <Element>(lhs: inout Bezier<Element>, rhs: Double) {
     lhs = lhs / rhs
 }
 
-@_inlineable
+@inlinable
 public func * (lhs: Bezier<Point>, rhs: SDTransform) -> Bezier<Point> {
     return Bezier(lhs.points.map { $0 * rhs })
 }
-@_inlineable
+@inlinable
 public func *= (lhs: inout Bezier<Point>, rhs: SDTransform) {
     lhs = lhs * rhs
 }
-@_inlineable
+@inlinable
 public func * (lhs: Bezier<Vector>, rhs: Matrix) -> Bezier<Vector> {
     return Bezier(lhs.points.map { $0 * rhs })
 }
-@_inlineable
+@inlinable
 public func *= (lhs: inout Bezier<Vector>, rhs: Matrix) {
     lhs = lhs * rhs
 }
@@ -1165,7 +1164,7 @@ public struct CubicBezierPatch<Element : ScalarMultiplicative> : Equatable where
     public var m32: Element
     public var m33: Element
     
-    @_inlineable
+    @inlinable
     public init(coonsPatch m00: Element, _ m01: Element, _ m02: Element, _ m03: Element,
                 _ m10: Element, _ m13: Element, _ m20: Element, _ m23: Element,
                 _ m30: Element, _ m31: Element, _ m32: Element, _ m33: Element) {
@@ -1197,7 +1196,7 @@ public struct CubicBezierPatch<Element : ScalarMultiplicative> : Equatable where
         self.m33 = m33
     }
     
-    @_inlineable
+    @inlinable
     public init(_ m00: Element, _ m01: Element, _ m02: Element, _ m03: Element,
                 _ m10: Element, _ m11: Element, _ m12: Element, _ m13: Element,
                 _ m20: Element, _ m21: Element, _ m22: Element, _ m23: Element,
@@ -1223,8 +1222,7 @@ public struct CubicBezierPatch<Element : ScalarMultiplicative> : Equatable where
 
 extension CubicBezierPatch {
     
-    @_versioned
-    @_inlineable
+    @inlinable
     func _eval(_ t: Double, _ p0: Element, _ p1: Element, _ p2: Element, _ p3: Element) -> Element {
         let t2 = t * t
         let _t = 1 - t
@@ -1236,7 +1234,7 @@ extension CubicBezierPatch {
         return a + b + c + d
     }
     
-    @_inlineable
+    @inlinable
     public func eval(_ u: Double, _ v: Double) -> Element {
         return _eval(v, _eval(u, m00, m01, m02, m03), _eval(u, m10, m11, m12, m13), _eval(u, m20, m21, m22, m23), _eval(u, m30, m31, m32, m33))
     }
@@ -1244,7 +1242,7 @@ extension CubicBezierPatch {
 
 extension CubicBezierPatch where Element == Vector {
     
-    @_inlineable
+    @inlinable
     public func normal(_ u: Double, _ v: Double) -> Element {
         
         @inline(__always)
@@ -1274,7 +1272,7 @@ extension CubicBezierPatch where Element == Vector {
 
 extension CubicBezierPatch {
     
-    @_inlineable
+    @inlinable
     public func split(_ u: Double, _ v: Double) -> (CubicBezierPatch, CubicBezierPatch, CubicBezierPatch, CubicBezierPatch) {
         
         @inline(__always)
@@ -1329,7 +1327,7 @@ extension CubicBezierPatch {
 
 extension CubicBezierPatch where Element == Point {
     
-    @_inlineable
+    @inlinable
     public func warping(_ bezier: Bezier<Point>) -> [Bezier<Point>] {
         
         let u = Bezier(bezier.points.map { $0.x }).polynomial
@@ -1399,25 +1397,25 @@ extension CubicBezierPatch where Element == Point {
     }
 }
 
-@_inlineable
+@inlinable
 public func * (lhs: CubicBezierPatch<Point>, rhs: SDTransform) -> CubicBezierPatch<Point> {
     return CubicBezierPatch(lhs.m00 * rhs, lhs.m01 * rhs, lhs.m02 * rhs, lhs.m03 * rhs,
                             lhs.m10 * rhs, lhs.m11 * rhs, lhs.m12 * rhs, lhs.m13 * rhs,
                             lhs.m20 * rhs, lhs.m21 * rhs, lhs.m22 * rhs, lhs.m23 * rhs,
                             lhs.m30 * rhs, lhs.m31 * rhs, lhs.m32 * rhs, lhs.m33 * rhs)
 }
-@_inlineable
+@inlinable
 public func *= (lhs: inout CubicBezierPatch<Point>, rhs: SDTransform) {
     lhs = lhs * rhs
 }
-@_inlineable
+@inlinable
 public func * (lhs: CubicBezierPatch<Vector>, rhs: Matrix) -> CubicBezierPatch<Vector> {
     return CubicBezierPatch(lhs.m00 * rhs, lhs.m01 * rhs, lhs.m02 * rhs, lhs.m03 * rhs,
                             lhs.m10 * rhs, lhs.m11 * rhs, lhs.m12 * rhs, lhs.m13 * rhs,
                             lhs.m20 * rhs, lhs.m21 * rhs, lhs.m22 * rhs, lhs.m23 * rhs,
                             lhs.m30 * rhs, lhs.m31 * rhs, lhs.m32 * rhs, lhs.m33 * rhs)
 }
-@_inlineable
+@inlinable
 public func *= (lhs: inout CubicBezierPatch<Vector>, rhs: Matrix) {
     lhs = lhs * rhs
 }
@@ -1437,7 +1435,7 @@ public struct CubicBezierTriangularPatch<Element : ScalarMultiplicative> : Equat
     public var m012: Element
     public var m003: Element
     
-    @_inlineable
+    @inlinable
     public init(_ m300: Element, _ m210: Element, _ m120: Element, _ m030: Element,
                 _ m201: Element, _ m111: Element, _ m021: Element,
                 _ m102: Element, _ m012: Element,
@@ -1457,7 +1455,7 @@ public struct CubicBezierTriangularPatch<Element : ScalarMultiplicative> : Equat
 
 extension CubicBezierTriangularPatch {
     
-    @_inlineable
+    @inlinable
     public func eval(_ u: Double, _ v: Double) -> Element {
         
         let w = 1 - u - v
@@ -1486,7 +1484,7 @@ extension CubicBezierTriangularPatch {
 
 extension CubicBezierTriangularPatch where Element == Vector {
     
-    @_inlineable
+    @inlinable
     public func normal(_ u: Double, _ v: Double) -> Element {
         
         let w = 1 - u - v
@@ -1521,15 +1519,13 @@ extension CubicBezierTriangularPatch where Element == Vector {
 
 extension CubicBezierTriangularPatch {
     
-    @_versioned
-    @_inlineable
+    @inlinable
     func _split(_ p0: Element, _ p1: Element) -> ((Element, Element), (Element, Element)) {
         let q0 = 0.5 * (p0 + p1)
         return ((p0, q0), (q0, p1))
     }
     
-    @_versioned
-    @_inlineable
+    @inlinable
     func _split(_ p0: Element, _ p1: Element, _ p2: Element) -> ((Element, Element, Element), (Element, Element, Element)) {
         let q0 = 0.5 * (p0 + p1)
         let q1 = 0.5 * (p1 + p2)
@@ -1537,8 +1533,7 @@ extension CubicBezierTriangularPatch {
         return ((p0, q0, u0), (u0, q1, p2))
     }
     
-    @_versioned
-    @_inlineable
+    @inlinable
     func _split(_ p0: Element, _ p1: Element, _ p2: Element, _ p3: Element) -> ((Element, Element, Element, Element), (Element, Element, Element, Element)) {
         let q0 = 0.5 * (p0 + p1)
         let q1 = 0.5 * (p1 + p2)
@@ -1549,8 +1544,7 @@ extension CubicBezierTriangularPatch {
         return ((p0, q0, u0, v0), (v0, u1, q2, p3))
     }
     
-    @_versioned
-    @_inlineable
+    @inlinable
     func _halving(_ p0: Element, _ p1: Element, _ p2: Element, _ p3: Element,
                   _ p4: Element, _ p5: Element, _ p6: Element,
                   _ p7: Element, _ p8: Element,
@@ -1568,7 +1562,7 @@ extension CubicBezierTriangularPatch {
                                            p9))
     }
     
-    @_inlineable
+    @inlinable
     public func halving1() -> (CubicBezierTriangularPatch, CubicBezierTriangularPatch) {
         
         return _halving(m030, m021, m012, m003,
@@ -1577,7 +1571,7 @@ extension CubicBezierTriangularPatch {
                         m300)
     }
     
-    @_inlineable
+    @inlinable
     public func halving2() -> (CubicBezierTriangularPatch, CubicBezierTriangularPatch) {
         
         return _halving(m003, m102, m201, m300,
@@ -1586,7 +1580,7 @@ extension CubicBezierTriangularPatch {
                         m030)
     }
     
-    @_inlineable
+    @inlinable
     public func halving3() -> (CubicBezierTriangularPatch, CubicBezierTriangularPatch) {
         
         return _halving(m300, m210, m120, m030,
@@ -1598,13 +1592,12 @@ extension CubicBezierTriangularPatch {
 
 extension CubicBezierTriangularPatch where Element: Tensor {
     
-    @_versioned
-    @_inlineable
+    @inlinable
     func _distance(_ p0: Element, _ p1: Element, _ p2: Element, _ p3: Element) -> Double {
         return p0.distance(to: p1) + p1.distance(to: p2) + p2.distance(to: p3)
     }
     
-    @_inlineable
+    @inlinable
     public func halving() -> (CubicBezierTriangularPatch, CubicBezierTriangularPatch) {
         
         let d1 = _distance(m030, m021, m012, m003)
@@ -1625,32 +1618,32 @@ extension CubicBezierTriangularPatch where Element: Tensor {
     }
 }
 
-@_inlineable
+@inlinable
 public func * (lhs: CubicBezierTriangularPatch<Point>, rhs: SDTransform) -> CubicBezierTriangularPatch<Point> {
     return CubicBezierTriangularPatch(lhs.m300 * rhs, lhs.m210 * rhs, lhs.m120 * rhs, lhs.m030 * rhs,
                                       lhs.m201 * rhs, lhs.m111 * rhs, lhs.m021 * rhs,
                                       lhs.m102 * rhs, lhs.m012 * rhs,
                                       lhs.m003 * rhs)
 }
-@_inlineable
+@inlinable
 public func *= (lhs: inout CubicBezierTriangularPatch<Point>, rhs: SDTransform) {
     lhs = lhs * rhs
 }
-@_inlineable
+@inlinable
 public func * (lhs: CubicBezierTriangularPatch<Vector>, rhs: Matrix) -> CubicBezierTriangularPatch<Vector> {
     return CubicBezierTriangularPatch(lhs.m300 * rhs, lhs.m210 * rhs, lhs.m120 * rhs, lhs.m030 * rhs,
                                       lhs.m201 * rhs, lhs.m111 * rhs, lhs.m021 * rhs,
                                       lhs.m102 * rhs, lhs.m012 * rhs,
                                       lhs.m003 * rhs)
 }
-@_inlineable
+@inlinable
 public func *= (lhs: inout CubicBezierTriangularPatch<Vector>, rhs: Matrix) {
     lhs = lhs * rhs
 }
 
 // MARK: Circle
 
-@_versioned
+@usableFromInline
 let BezierCircle: [Point] = {
     
     //
@@ -1678,7 +1671,7 @@ let BezierCircle: [Point] = {
     ]
 }()
 
-@_inlineable
+@inlinable
 public func BezierArc(_ angle: Double) -> [Point] {
     
     //
@@ -1735,7 +1728,7 @@ public func BezierArc(_ angle: Double) -> [Point] {
 
 // MARK: Self Intersection
 
-@_inlineable
+@inlinable
 public func CubicBezierSelfIntersect(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point) -> (Double, Double)? {
     
     let q1 = 3 * (p1 - p0)
@@ -1762,7 +1755,7 @@ public func CubicBezierSelfIntersect(_ p0: Point, _ p1: Point, _ p2: Point, _ p3
     return nil
 }
 
-@_inlineable
+@inlinable
 public func LinesIntersect(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point) -> Point? {
     
     let d = (p0.x - p1.x) * (p2.y - p3.y) - (p0.y - p1.y) * (p2.x - p3.x)
@@ -1774,7 +1767,7 @@ public func LinesIntersect(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point) -
     return Point(x: (p2.x - p3.x) * a - (p0.x - p1.x) * b, y: (p2.y - p3.y) * a - (p0.y - p1.y) * b)
 }
 
-@_inlineable
+@inlinable
 public func QuadBezierLineOverlap(_ b0: Point, _ b1: Point, _ b2: Point, _ l0: Point, _ l1: Point) -> Bool {
     
     let a = b0 - l0
@@ -1788,10 +1781,10 @@ public func QuadBezierLineOverlap(_ b0: Point, _ b1: Point, _ b2: Point, _ l0: P
     let v1 = l0.y - l1.y
     
     let poly = u1 * v0 - u0 * v1
-    return poly.all(where: { $0.almostZero() })
+    return poly.allSatisfy { $0.almostZero() }
 }
 
-@_inlineable
+@inlinable
 public func CubicBezierLineOverlap(_ b0: Point, _ b1: Point, _ b2: Point, _ b3: Point, _ l0: Point, _ l1: Point) -> Bool {
     
     let a = b0 - l0
@@ -1806,10 +1799,10 @@ public func CubicBezierLineOverlap(_ b0: Point, _ b1: Point, _ b2: Point, _ b3: 
     let v1 = l0.y - l1.y
     
     let poly = u1 * v0 - u0 * v1
-    return poly.all(where: { $0.almostZero() })
+    return poly.allSatisfy { $0.almostZero() }
 }
 
-@_inlineable
+@inlinable
 public func QuadBeziersOverlap(_ b0: Point, _ b1: Point, _ b2: Point, _ b3: Point, _ b4: Point, _ b5: Point) -> Bool {
     
     let a = b0 - b3
@@ -1831,10 +1824,10 @@ public func QuadBeziersOverlap(_ b0: Point, _ b1: Point, _ b2: Point, _ b3: Poin
     let m11 = u1 * v0 - u0 * v1
     
     let det = m00 * m11 - m01 * m10
-    return det.all(where: { $0.almostZero() })
+    return det.allSatisfy { $0.almostZero() }
 }
 
-@_inlineable
+@inlinable
 public func CubicQuadBezierOverlap(_ c0: Point, _ c1: Point, _ c2: Point, _ c3: Point, _ q0: Point, _ q1: Point, _ q2: Point) -> Bool {
     
     let a = c0 - q0
@@ -1857,10 +1850,10 @@ public func CubicQuadBezierOverlap(_ c0: Point, _ c1: Point, _ c2: Point, _ c3: 
     let m11 = u1 * v0 - u0 * v1
     
     let det = m00 * m11 - m01 * m10
-    return det.all(where: { $0.almostZero() })
+    return det.allSatisfy { $0.almostZero() }
 }
 
-@_inlineable
+@inlinable
 public func CubicBeziersOverlap(_ c0: Point, _ c1: Point, _ c2: Point, _ c3: Point, _ c4: Point, _ c5: Point, _ c6: Point, _ c7: Point) -> Bool {
     
     let a = c0 - c4
@@ -1896,10 +1889,10 @@ public func CubicBeziersOverlap(_ c0: Point, _ c1: Point, _ c2: Point, _ c3: Poi
     let _e = m01 * _b
     let _f = m02 * _c
     let det = _d + _e + _f
-    return det.all(where: { $0.almostZero() })
+    return det.allSatisfy { $0.almostZero() }
 }
 
-@_inlineable
+@inlinable
 public func QuadBezierLineIntersect(_ b0: Point, _ b1: Point, _ b2: Point, _ l0: Point, _ l1: Point) -> [Double]? {
     
     let a = b0 - l0
@@ -1913,10 +1906,10 @@ public func QuadBezierLineIntersect(_ b0: Point, _ b1: Point, _ b2: Point, _ l0:
     let v1 = l0.y - l1.y
     
     let poly = u1 * v0 - u0 * v1
-    return poly.all(where: { $0.almostZero() }) ? nil : poly.roots
+    return poly.allSatisfy { $0.almostZero() } ? nil : poly.roots
 }
 
-@_inlineable
+@inlinable
 public func CubicBezierLineIntersect(_ b0: Point, _ b1: Point, _ b2: Point, _ b3: Point, _ l0: Point, _ l1: Point) -> [Double]? {
     
     let a = b0 - l0
@@ -1931,10 +1924,10 @@ public func CubicBezierLineIntersect(_ b0: Point, _ b1: Point, _ b2: Point, _ b3
     let v1 = l0.y - l1.y
     
     let poly = u1 * v0 - u0 * v1
-    return poly.all(where: { $0.almostZero() }) ? nil : poly.roots
+    return poly.allSatisfy { $0.almostZero() } ? nil : poly.roots
 }
 
-@_inlineable
+@inlinable
 public func QuadBeziersIntersect(_ b0: Point, _ b1: Point, _ b2: Point, _ b3: Point, _ b4: Point, _ b5: Point) -> [Double]? {
     
     let a = b0 - b3
@@ -1956,10 +1949,10 @@ public func QuadBeziersIntersect(_ b0: Point, _ b1: Point, _ b2: Point, _ b3: Po
     let m11 = u1 * v0 - u0 * v1
     
     let det = m00 * m11 - m01 * m10
-    return det.all(where: { $0.almostZero() }) ? nil : det.roots
+    return det.allSatisfy { $0.almostZero() } ? nil : det.roots
 }
 
-@_inlineable
+@inlinable
 public func CubicQuadBezierIntersect(_ c0: Point, _ c1: Point, _ c2: Point, _ c3: Point, _ q0: Point, _ q1: Point, _ q2: Point) -> [Double]? {
     
     let a = c0 - q0
@@ -1982,10 +1975,10 @@ public func CubicQuadBezierIntersect(_ c0: Point, _ c1: Point, _ c2: Point, _ c3
     let m11 = u1 * v0 - u0 * v1
     
     let det = m00 * m11 - m01 * m10
-    return det.all(where: { $0.almostZero() }) ? nil : det.roots
+    return det.allSatisfy { $0.almostZero() } ? nil : det.roots
 }
 
-@_inlineable
+@inlinable
 public func CubicBeziersIntersect(_ c0: Point, _ c1: Point, _ c2: Point, _ c3: Point, _ c4: Point, _ c5: Point, _ c6: Point, _ c7: Point) -> [Double]? {
     
     let a = c0 - c4
@@ -2021,6 +2014,6 @@ public func CubicBeziersIntersect(_ c0: Point, _ c1: Point, _ c2: Point, _ c3: P
     let _e = m01 * _b
     let _f = m02 * _c
     let det = _d + _e + _f
-    return det.all(where: { $0.almostZero() }) ? nil : det.roots
+    return det.allSatisfy { $0.almostZero() } ? nil : det.roots
 }
 

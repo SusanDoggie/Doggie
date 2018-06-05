@@ -23,10 +23,10 @@
 //  THE SOFTWARE.
 //
 
-@_versioned
+@usableFromInline
 let PCSXYZ = CIEXYZColorSpace(white: Point(x: 0.34567, y: 0.35850))
 
-@_versioned
+@usableFromInline
 protocol PCSColorModel : ColorModelProtocol {
     
     var luminance: Double { get set }
@@ -42,8 +42,7 @@ extension XYZColorModel : PCSColorModel {
 
 extension LabColorModel : PCSColorModel {
     
-    @_versioned
-    @_inlineable
+    @inlinable
     var luminance: Double {
         get {
             return lightness
@@ -53,41 +52,39 @@ extension LabColorModel : PCSColorModel {
         }
     }
     
-    @_versioned
-    @_inlineable
+    @inlinable
     static func * (lhs: LabColorModel, rhs: Matrix) -> LabColorModel {
         return LabColorModel(lightness: lhs.lightness * rhs.a + lhs.a * rhs.b + lhs.b * rhs.c + rhs.d, a: lhs.lightness * rhs.e + lhs.a * rhs.f + lhs.b * rhs.g + rhs.h, b: lhs.lightness * rhs.i + lhs.a * rhs.j + lhs.b * rhs.k + rhs.l)
     }
     
-    @_versioned
-    @_inlineable
+    @inlinable
     static func *= (lhs: inout LabColorModel, rhs: Matrix) {
         lhs = lhs * rhs
     }
 }
 
-@_versioned
 @_fixed_layout
+@usableFromInline
 struct ICCColorSpace<Model : ColorModelProtocol, Connection : ColorSpaceBaseProtocol, A2BTransform: iccTransform, B2ATransform: iccTransform> : ColorSpaceBaseProtocol where Connection.Model : PCSColorModel {
     
-    @_versioned
+    @usableFromInline
     let _iccData: Data
     
     let profile: iccProfile
     
-    @_versioned
+    @usableFromInline
     let connection : Connection
     
-    @_versioned
+    @usableFromInline
     let cieXYZ : CIEXYZColorSpace
     
-    @_versioned
+    @usableFromInline
     let a2b: A2BTransform
     
-    @_versioned
+    @usableFromInline
     let b2a: B2ATransform
     
-    @_versioned
+    @usableFromInline
     let chromaticAdaptationMatrix: Matrix
     
     init(iccData: Data, profile: iccProfile, model: Model.Type, connection : Connection, cieXYZ : CIEXYZColorSpace, a2b: A2BTransform, b2a: B2ATransform, chromaticAdaptationMatrix: Matrix) {
@@ -103,14 +100,13 @@ struct ICCColorSpace<Model : ColorModelProtocol, Connection : ColorSpaceBaseProt
 
 extension ICCColorSpace {
     
-    @_versioned
-    @_inlineable
-    var hashValue: Int {
-        return hash_combine("ICCColorSpace", _iccData)
+    @inlinable
+    func hash(into hasher: inout Hasher) {
+        hasher.combine("ICCColorSpace")
+        hasher.combine(_iccData)
     }
     
-    @_versioned
-    @_inlineable
+    @inlinable
     static func ==(lhs: ICCColorSpace, rhs: ICCColorSpace) -> Bool {
         return lhs._iccData == rhs._iccData
     }
@@ -118,7 +114,7 @@ extension ICCColorSpace {
 
 extension ICCColorSpace {
     
-    @_versioned
+    @usableFromInline
     var iccData: Data? {
         return _iccData
     }
@@ -126,7 +122,7 @@ extension ICCColorSpace {
 
 extension ICCColorSpace {
     
-    @_versioned
+    @usableFromInline
     var localizedName: String? {
         
         if let description = profile[.ProfileDescription] {
@@ -482,19 +478,19 @@ extension ColorSpace {
 
 extension ICCColorSpace {
     
-    @_versioned
+    @usableFromInline
     @inline(__always)
     func _convertToLinear(_ color: Model) -> Model {
         return a2b.convertToLinear(color)
     }
     
-    @_versioned
+    @usableFromInline
     @inline(__always)
     func _convertFromLinear(_ color: Model) -> Model {
         return b2a.convertFromLinear(color)
     }
     
-    @_versioned
+    @usableFromInline
     @inline(__always)
     func _convertLinearToConnection(_ color: Model) -> Connection.Model {
         
@@ -513,13 +509,13 @@ extension ICCColorSpace {
         }
     }
     
-    @_versioned
+    @usableFromInline
     @inline(__always)
     func _convertLinearFromConnection(_ color: Connection.Model) -> Model {
         return b2a.convertLinearFromConnection(color)
     }
     
-    @_versioned
+    @usableFromInline
     @inline(__always)
     func convertToLinear(_ color: Model) -> Model {
         
@@ -546,7 +542,7 @@ extension ICCColorSpace {
         return result
     }
     
-    @_versioned
+    @usableFromInline
     @inline(__always)
     func convertFromLinear(_ color: Model) -> Model {
         
@@ -573,7 +569,7 @@ extension ICCColorSpace {
         return result
     }
     
-    @_versioned
+    @usableFromInline
     @inline(__always)
     func convertLinearToXYZ(_ color: Model) -> XYZColorModel {
         
@@ -600,7 +596,7 @@ extension ICCColorSpace {
         return self.connection.convertToXYZ(result) * chromaticAdaptationMatrix.inverse
     }
     
-    @_versioned
+    @usableFromInline
     @inline(__always)
     func convertLinearFromXYZ(_ color: XYZColorModel) -> Model {
         
@@ -627,7 +623,7 @@ extension ICCColorSpace {
         return result
     }
     
-    @_versioned
+    @usableFromInline
     @inline(__always)
     func convertToXYZ(_ color: Model) -> XYZColorModel {
         
@@ -654,7 +650,7 @@ extension ICCColorSpace {
         return self.connection.convertToXYZ(result) * chromaticAdaptationMatrix.inverse
     }
     
-    @_versioned
+    @usableFromInline
     @inline(__always)
     func convertFromXYZ(_ color: XYZColorModel) -> Model {
         

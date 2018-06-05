@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-@_inlineable
+@inlinable
 public func ToRect<T: FloatingMathProtocol>(_ count: Int, _ rho: UnsafePointer<T>, _ theta: UnsafePointer<T>, _ in_stride: Int, _ real: UnsafeMutablePointer<T>, _ imag: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var rho = rho
@@ -42,7 +42,7 @@ public func ToRect<T: FloatingMathProtocol>(_ count: Int, _ rho: UnsafePointer<T
         imag += out_stride
     }
 }
-@_inlineable
+@inlinable
 public func ToPolar<T: FloatingMathProtocol>(_ count: Int, _ real: UnsafePointer<T>, _ imag: UnsafePointer<T>, _ in_stride: Int, _ rho: UnsafeMutablePointer<T>, _ theta: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var real = real

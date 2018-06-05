@@ -32,14 +32,14 @@ public struct BEInteger<Base : FixedWidthInteger> : FixedWidthInteger {
         self.bitPattern = bitPattern
     }
     
-    @_versioned
     @_transparent
+    @usableFromInline
     init(representingValue: Base) {
         self.bitPattern = representingValue.bigEndian
     }
     
-    @_versioned
     @_transparent
+    @usableFromInline
     var representingValue: Base {
         get {
             return Base(bigEndian: bitPattern)
@@ -280,6 +280,106 @@ extension BEInteger {
     }
 }
 
+extension BEInteger {
+    
+    @_transparent
+    public static prefix func + (x: BEInteger) -> BEInteger {
+        return x
+    }
+    @_transparent
+    public static func + (lhs: BEInteger, rhs: BEInteger) -> BEInteger {
+        return BEInteger(representingValue: lhs.representingValue + rhs.representingValue)
+    }
+    @_transparent
+    public static func += (lhs: inout BEInteger, rhs: BEInteger) {
+        lhs.representingValue += rhs.representingValue
+    }
+    @_transparent
+    public static func - (lhs: BEInteger, rhs: BEInteger) -> BEInteger {
+        return BEInteger(representingValue: lhs.representingValue - rhs.representingValue)
+    }
+    @_transparent
+    public static func -= (lhs: inout BEInteger, rhs: BEInteger) {
+        lhs.representingValue -= rhs.representingValue
+    }
+    @_transparent
+    public static func * (lhs: BEInteger, rhs: BEInteger) -> BEInteger {
+        return BEInteger(representingValue: lhs.representingValue * rhs.representingValue)
+    }
+    @_transparent
+    public static func *= (lhs: inout BEInteger, rhs: BEInteger) {
+        lhs.representingValue *= rhs.representingValue
+    }
+    @_transparent
+    public static func / (lhs: BEInteger, rhs: BEInteger) -> BEInteger {
+        return BEInteger(representingValue: lhs.representingValue / rhs.representingValue)
+    }
+    @_transparent
+    public static func /= (lhs: inout BEInteger, rhs: BEInteger) {
+        lhs.representingValue /= rhs.representingValue
+    }
+    @_transparent
+    public static func % (lhs: BEInteger, rhs: BEInteger) -> BEInteger {
+        return BEInteger(representingValue: lhs.representingValue % rhs.representingValue)
+    }
+    @_transparent
+    public static func %= (lhs: inout BEInteger, rhs: BEInteger) {
+        lhs.representingValue %= rhs.representingValue
+    }
+    @_transparent
+    public static func & (lhs: BEInteger, rhs: BEInteger) -> BEInteger {
+        return BEInteger(representingValue: lhs.representingValue & rhs.representingValue)
+    }
+    @_transparent
+    public static func &= (lhs: inout BEInteger, rhs: BEInteger) {
+        lhs.representingValue &= rhs.representingValue
+    }
+    @_transparent
+    public static func | (lhs: BEInteger, rhs: BEInteger) -> BEInteger {
+        return BEInteger(representingValue: lhs.representingValue | rhs.representingValue)
+    }
+    @_transparent
+    public static func |= (lhs: inout BEInteger, rhs: BEInteger) {
+        lhs.representingValue |= rhs.representingValue
+    }
+    @_transparent
+    public static func ^ (lhs: BEInteger, rhs: BEInteger) -> BEInteger {
+        return BEInteger(representingValue: lhs.representingValue ^ rhs.representingValue)
+    }
+    @_transparent
+    public static func ^= (lhs: inout BEInteger, rhs: BEInteger) {
+        lhs.representingValue ^= rhs.representingValue
+    }
+    @_transparent
+    public static prefix func ~ (x: BEInteger) -> BEInteger {
+        return BEInteger(representingValue: ~x.representingValue)
+    }
+    @_transparent
+    public static func &>> (lhs: BEInteger, rhs: BEInteger) -> BEInteger {
+        return BEInteger(representingValue: lhs.representingValue &>> rhs.representingValue)
+    }
+    @_transparent
+    public static func &<< (lhs: BEInteger, rhs: BEInteger) -> BEInteger {
+        return BEInteger(representingValue: lhs.representingValue &<< rhs.representingValue)
+    }
+    @_transparent
+    public static func > (lhs: BEInteger, rhs: BEInteger) -> Bool {
+        return lhs.representingValue > rhs.representingValue
+    }
+    @_transparent
+    public static func < (lhs: BEInteger, rhs: BEInteger) -> Bool {
+        return lhs.representingValue < rhs.representingValue
+    }
+    @_transparent
+    public static func >= (lhs: BEInteger, rhs: BEInteger) -> Bool {
+        return lhs.representingValue >= rhs.representingValue
+    }
+    @_transparent
+    public static func <= (lhs: BEInteger, rhs: BEInteger) -> Bool {
+        return lhs.representingValue <= rhs.representingValue
+    }
+}
+
 public struct LEInteger<Base : FixedWidthInteger> : FixedWidthInteger {
     
     public var bitPattern: Base
@@ -289,14 +389,14 @@ public struct LEInteger<Base : FixedWidthInteger> : FixedWidthInteger {
         self.bitPattern = bitPattern
     }
     
-    @_versioned
     @_transparent
+    @usableFromInline
     init(representingValue: Base) {
         self.bitPattern = representingValue.littleEndian
     }
     
-    @_versioned
     @_transparent
+    @usableFromInline
     var representingValue: Base {
         get {
             return Base(littleEndian: bitPattern)
@@ -537,198 +637,104 @@ extension LEInteger {
     }
 }
 
-@_transparent
-public prefix func + <Base>(x: BEInteger<Base>) -> BEInteger<Base> {
-    return x
-}
-@_transparent
-public func + <Base>(lhs: BEInteger<Base>, rhs: BEInteger<Base>) -> BEInteger<Base> {
-    return BEInteger(representingValue: lhs.representingValue + rhs.representingValue)
-}
-@_transparent
-public func += <Base>(lhs: inout BEInteger<Base>, rhs: BEInteger<Base>) {
-    lhs.representingValue += rhs.representingValue
-}
-@_transparent
-public func - <Base>(lhs: BEInteger<Base>, rhs: BEInteger<Base>) -> BEInteger<Base> {
-    return BEInteger(representingValue: lhs.representingValue - rhs.representingValue)
-}
-@_transparent
-public func -= <Base>(lhs: inout BEInteger<Base>, rhs: BEInteger<Base>) {
-    lhs.representingValue -= rhs.representingValue
-}
-@_transparent
-public func * <Base>(lhs: BEInteger<Base>, rhs: BEInteger<Base>) -> BEInteger<Base> {
-    return BEInteger(representingValue: lhs.representingValue * rhs.representingValue)
-}
-@_transparent
-public func *= <Base>(lhs: inout BEInteger<Base>, rhs: BEInteger<Base>) {
-    lhs.representingValue *= rhs.representingValue
-}
-@_transparent
-public func / <Base>(lhs: BEInteger<Base>, rhs: BEInteger<Base>) -> BEInteger<Base> {
-    return BEInteger(representingValue: lhs.representingValue / rhs.representingValue)
-}
-@_transparent
-public func /= <Base>(lhs: inout BEInteger<Base>, rhs: BEInteger<Base>) {
-    lhs.representingValue /= rhs.representingValue
-}
-@_transparent
-public func % <Base>(lhs: BEInteger<Base>, rhs: BEInteger<Base>) -> BEInteger<Base> {
-    return BEInteger(representingValue: lhs.representingValue % rhs.representingValue)
-}
-@_transparent
-public func %= <Base>(lhs: inout BEInteger<Base>, rhs: BEInteger<Base>) {
-    lhs.representingValue %= rhs.representingValue
-}
-@_transparent
-public func & <Base>(lhs: BEInteger<Base>, rhs: BEInteger<Base>) -> BEInteger<Base> {
-    return BEInteger(representingValue: lhs.representingValue & rhs.representingValue)
-}
-@_transparent
-public func &= <Base>(lhs: inout BEInteger<Base>, rhs: BEInteger<Base>) {
-    lhs.representingValue &= rhs.representingValue
-}
-@_transparent
-public func | <Base>(lhs: BEInteger<Base>, rhs: BEInteger<Base>) -> BEInteger<Base> {
-    return BEInteger(representingValue: lhs.representingValue | rhs.representingValue)
-}
-@_transparent
-public func |= <Base>(lhs: inout BEInteger<Base>, rhs: BEInteger<Base>) {
-    lhs.representingValue |= rhs.representingValue
-}
-@_transparent
-public func ^ <Base>(lhs: BEInteger<Base>, rhs: BEInteger<Base>) -> BEInteger<Base> {
-    return BEInteger(representingValue: lhs.representingValue ^ rhs.representingValue)
-}
-@_transparent
-public func ^= <Base>(lhs: inout BEInteger<Base>, rhs: BEInteger<Base>) {
-    lhs.representingValue ^= rhs.representingValue
-}
-@_transparent
-public prefix func ~ <Base>(x: BEInteger<Base>) -> BEInteger<Base> {
-    return BEInteger(representingValue: ~x.representingValue)
-}
-@_transparent
-public func &>> <Base>(lhs: BEInteger<Base>, rhs: BEInteger<Base>) -> BEInteger<Base> {
-    return BEInteger(representingValue: lhs.representingValue &>> rhs.representingValue)
-}
-@_transparent
-public func &<< <Base>(lhs: BEInteger<Base>, rhs: BEInteger<Base>) -> BEInteger<Base> {
-    return BEInteger(representingValue: lhs.representingValue &<< rhs.representingValue)
-}
-@_transparent
-public func > <Base>(lhs: BEInteger<Base>, rhs: BEInteger<Base>) -> Bool {
-    return lhs.representingValue > rhs.representingValue
-}
-@_transparent
-public func < <Base>(lhs: BEInteger<Base>, rhs: BEInteger<Base>) -> Bool {
-    return lhs.representingValue < rhs.representingValue
-}
-@_transparent
-public func >= <Base>(lhs: BEInteger<Base>, rhs: BEInteger<Base>) -> Bool {
-    return lhs.representingValue >= rhs.representingValue
-}
-@_transparent
-public func <= <Base>(lhs: BEInteger<Base>, rhs: BEInteger<Base>) -> Bool {
-    return lhs.representingValue <= rhs.representingValue
-}
-
-@_transparent
-public prefix func + <Base>(x: LEInteger<Base>) -> LEInteger<Base> {
-    return x
-}
-@_transparent
-public func + <Base>(lhs: LEInteger<Base>, rhs: LEInteger<Base>) -> LEInteger<Base> {
-    return LEInteger(representingValue: lhs.representingValue + rhs.representingValue)
-}
-@_transparent
-public func += <Base>(lhs: inout LEInteger<Base>, rhs: LEInteger<Base>) {
-    lhs.representingValue += rhs.representingValue
-}
-@_transparent
-public func - <Base>(lhs: LEInteger<Base>, rhs: LEInteger<Base>) -> LEInteger<Base> {
-    return LEInteger(representingValue: lhs.representingValue - rhs.representingValue)
-}
-@_transparent
-public func -= <Base>(lhs: inout LEInteger<Base>, rhs: LEInteger<Base>) {
-    lhs.representingValue -= rhs.representingValue
-}
-@_transparent
-public func * <Base>(lhs: LEInteger<Base>, rhs: LEInteger<Base>) -> LEInteger<Base> {
-    return LEInteger(representingValue: lhs.representingValue * rhs.representingValue)
-}
-@_transparent
-public func *= <Base>(lhs: inout LEInteger<Base>, rhs: LEInteger<Base>) {
-    lhs.representingValue *= rhs.representingValue
-}
-@_transparent
-public func / <Base>(lhs: LEInteger<Base>, rhs: LEInteger<Base>) -> LEInteger<Base> {
-    return LEInteger(representingValue: lhs.representingValue / rhs.representingValue)
-}
-@_transparent
-public func /= <Base>(lhs: inout LEInteger<Base>, rhs: LEInteger<Base>) {
-    lhs.representingValue /= rhs.representingValue
-}
-@_transparent
-public func % <Base>(lhs: LEInteger<Base>, rhs: LEInteger<Base>) -> LEInteger<Base> {
-    return LEInteger(representingValue: lhs.representingValue % rhs.representingValue)
-}
-@_transparent
-public func %= <Base>(lhs: inout LEInteger<Base>, rhs: LEInteger<Base>) {
-    lhs.representingValue %= rhs.representingValue
-}
-@_transparent
-public func & <Base>(lhs: LEInteger<Base>, rhs: LEInteger<Base>) -> LEInteger<Base> {
-    return LEInteger(representingValue: lhs.representingValue & rhs.representingValue)
-}
-@_transparent
-public func &= <Base>(lhs: inout LEInteger<Base>, rhs: LEInteger<Base>) {
-    lhs.representingValue &= rhs.representingValue
-}
-@_transparent
-public func | <Base>(lhs: LEInteger<Base>, rhs: LEInteger<Base>) -> LEInteger<Base> {
-    return LEInteger(representingValue: lhs.representingValue | rhs.representingValue)
-}
-@_transparent
-public func |= <Base>(lhs: inout LEInteger<Base>, rhs: LEInteger<Base>) {
-    lhs.representingValue |= rhs.representingValue
-}
-@_transparent
-public func ^ <Base>(lhs: LEInteger<Base>, rhs: LEInteger<Base>) -> LEInteger<Base> {
-    return LEInteger(representingValue: lhs.representingValue ^ rhs.representingValue)
-}
-@_transparent
-public func ^= <Base>(lhs: inout LEInteger<Base>, rhs: LEInteger<Base>) {
-    lhs.representingValue ^= rhs.representingValue
-}
-@_transparent
-public prefix func ~ <Base>(x: LEInteger<Base>) -> LEInteger<Base> {
-    return LEInteger(representingValue: ~x.representingValue)
-}
-@_transparent
-public func &>> <Base>(lhs: LEInteger<Base>, rhs: LEInteger<Base>) -> LEInteger<Base> {
-    return LEInteger(representingValue: lhs.representingValue &>> rhs.representingValue)
-}
-@_transparent
-public func &<< <Base>(lhs: LEInteger<Base>, rhs: LEInteger<Base>) -> LEInteger<Base> {
-    return LEInteger(representingValue: lhs.representingValue &<< rhs.representingValue)
-}
-@_transparent
-public func > <Base>(lhs: LEInteger<Base>, rhs: LEInteger<Base>) -> Bool {
-    return lhs.representingValue > rhs.representingValue
-}
-@_transparent
-public func < <Base>(lhs: LEInteger<Base>, rhs: LEInteger<Base>) -> Bool {
-    return lhs.representingValue < rhs.representingValue
-}
-@_transparent
-public func >= <Base>(lhs: LEInteger<Base>, rhs: LEInteger<Base>) -> Bool {
-    return lhs.representingValue >= rhs.representingValue
-}
-@_transparent
-public func <= <Base>(lhs: LEInteger<Base>, rhs: LEInteger<Base>) -> Bool {
-    return lhs.representingValue <= rhs.representingValue
+extension LEInteger {
+    
+    @_transparent
+    public static prefix func + (x: LEInteger) -> LEInteger {
+        return x
+    }
+    @_transparent
+    public static func + (lhs: LEInteger, rhs: LEInteger) -> LEInteger {
+        return LEInteger(representingValue: lhs.representingValue + rhs.representingValue)
+    }
+    @_transparent
+    public static func += (lhs: inout LEInteger, rhs: LEInteger) {
+        lhs.representingValue += rhs.representingValue
+    }
+    @_transparent
+    public static func - (lhs: LEInteger, rhs: LEInteger) -> LEInteger {
+        return LEInteger(representingValue: lhs.representingValue - rhs.representingValue)
+    }
+    @_transparent
+    public static func -= (lhs: inout LEInteger, rhs: LEInteger) {
+        lhs.representingValue -= rhs.representingValue
+    }
+    @_transparent
+    public static func * (lhs: LEInteger, rhs: LEInteger) -> LEInteger {
+        return LEInteger(representingValue: lhs.representingValue * rhs.representingValue)
+    }
+    @_transparent
+    public static func *= (lhs: inout LEInteger, rhs: LEInteger) {
+        lhs.representingValue *= rhs.representingValue
+    }
+    @_transparent
+    public static func / (lhs: LEInteger, rhs: LEInteger) -> LEInteger {
+        return LEInteger(representingValue: lhs.representingValue / rhs.representingValue)
+    }
+    @_transparent
+    public static func /= (lhs: inout LEInteger, rhs: LEInteger) {
+        lhs.representingValue /= rhs.representingValue
+    }
+    @_transparent
+    public static func % (lhs: LEInteger, rhs: LEInteger) -> LEInteger {
+        return LEInteger(representingValue: lhs.representingValue % rhs.representingValue)
+    }
+    @_transparent
+    public static func %= (lhs: inout LEInteger, rhs: LEInteger) {
+        lhs.representingValue %= rhs.representingValue
+    }
+    @_transparent
+    public static func & (lhs: LEInteger, rhs: LEInteger) -> LEInteger {
+        return LEInteger(representingValue: lhs.representingValue & rhs.representingValue)
+    }
+    @_transparent
+    public static func &= (lhs: inout LEInteger, rhs: LEInteger) {
+        lhs.representingValue &= rhs.representingValue
+    }
+    @_transparent
+    public static func | (lhs: LEInteger, rhs: LEInteger) -> LEInteger {
+        return LEInteger(representingValue: lhs.representingValue | rhs.representingValue)
+    }
+    @_transparent
+    public static func |= (lhs: inout LEInteger, rhs: LEInteger) {
+        lhs.representingValue |= rhs.representingValue
+    }
+    @_transparent
+    public static func ^ (lhs: LEInteger, rhs: LEInteger) -> LEInteger {
+        return LEInteger(representingValue: lhs.representingValue ^ rhs.representingValue)
+    }
+    @_transparent
+    public static func ^= (lhs: inout LEInteger, rhs: LEInteger) {
+        lhs.representingValue ^= rhs.representingValue
+    }
+    @_transparent
+    public static prefix func ~ (x: LEInteger) -> LEInteger {
+        return LEInteger(representingValue: ~x.representingValue)
+    }
+    @_transparent
+    public static func &>> (lhs: LEInteger, rhs: LEInteger) -> LEInteger {
+        return LEInteger(representingValue: lhs.representingValue &>> rhs.representingValue)
+    }
+    @_transparent
+    public static func &<< (lhs: LEInteger, rhs: LEInteger) -> LEInteger {
+        return LEInteger(representingValue: lhs.representingValue &<< rhs.representingValue)
+    }
+    @_transparent
+    public static func > (lhs: LEInteger, rhs: LEInteger) -> Bool {
+        return lhs.representingValue > rhs.representingValue
+    }
+    @_transparent
+    public static func < (lhs: LEInteger, rhs: LEInteger) -> Bool {
+        return lhs.representingValue < rhs.representingValue
+    }
+    @_transparent
+    public static func >= (lhs: LEInteger, rhs: LEInteger) -> Bool {
+        return lhs.representingValue >= rhs.representingValue
+    }
+    @_transparent
+    public static func <= (lhs: LEInteger, rhs: LEInteger) -> Bool {
+        return lhs.representingValue <= rhs.representingValue
+    }
 }
 
 extension FixedWidthInteger {

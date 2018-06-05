@@ -23,18 +23,16 @@
 //  THE SOFTWARE.
 //
 
-@_versioned
 @_fixed_layout
+@usableFromInline
 class _displayP3: CalibratedRGBColorSpace {
     
-    @_versioned
-    @_inlineable
+    @inlinable
     init() {
         super.init(CIEXYZColorSpace(white: Point(x: 0.3127, y: 0.3290)), red: Point(x: 0.6800, y: 0.3200), green: Point(x: 0.2650, y: 0.6900), blue: Point(x: 0.1500, y: 0.0600))
     }
     
-    @_versioned
-    @_inlineable
+    @inlinable
     override func convertToLinear(_ color: RGBColorModel) -> RGBColorModel {
         
         func toLinear(_ x: Double) -> Double {
@@ -46,8 +44,7 @@ class _displayP3: CalibratedRGBColorSpace {
         return RGBColorModel(red: exteneded(color.red, toLinear), green: exteneded(color.green, toLinear), blue: exteneded(color.blue, toLinear))
     }
     
-    @_versioned
-    @_inlineable
+    @inlinable
     override func convertFromLinear(_ color: RGBColorModel) -> RGBColorModel {
         
         func toGamma(_ x: Double) -> Double {
@@ -59,28 +56,25 @@ class _displayP3: CalibratedRGBColorSpace {
         return RGBColorModel(red: exteneded(color.red, toGamma), green: exteneded(color.green, toGamma), blue: exteneded(color.blue, toGamma))
     }
     
-    @_versioned
-    @_inlineable
+    @inlinable
     override func iccCurve(_ index: Int) -> iccCurve {
         return .parametric3(2.4, 1 / 1.055, 0.055 / 1.055, 1 / 12.92, 0.04045)
     }
     
-    @_versioned
-    @_inlineable
+    @inlinable
     override var localizedName: String? {
         return "Doggie Calibrated RGB Color Space (DisplayP3)"
     }
     
-    @_versioned
-    @_inlineable
+    @inlinable
     override func __equalTo(_ other: CalibratedRGBColorSpace) -> Bool {
         return type(of: other) == _displayP3.self
     }
     
-    @_versioned
-    @_inlineable
-    override var hashValue: Int {
-        return hash_combine("CalibratedRGBColorSpace", ".displayP3")
+    @inlinable
+    override func hash(into hasher: inout Hasher) {
+        hasher.combine("CalibratedRGBColorSpace")
+        hasher.combine(".displayP3")
     }
 }
 

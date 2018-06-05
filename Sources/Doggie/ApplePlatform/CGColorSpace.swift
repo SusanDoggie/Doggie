@@ -35,7 +35,7 @@ extension ColorSpace {
             
             if #available(OSX 10.12, iOS 10.0, tvOS 10.0, watchOS 3.0, *) {
                 
-                return iccData.map { CGColorSpace(iccData: $0 as CFData) }
+                return self.iccData.map { CGColorSpace(iccData: $0 as CFData) }
                 
             } else {
                 
@@ -43,7 +43,7 @@ extension ColorSpace {
                     return nil
                 }
                 
-                if let iccData = iccData.flatMap({ CGDataProvider(data: $0 as CFData) }) {
+                if let iccData = self.iccData.flatMap({ CGDataProvider(data: $0 as CFData) }) {
                     
                     var range: [CGFloat] = []
                     

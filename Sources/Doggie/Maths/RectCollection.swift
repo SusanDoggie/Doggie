@@ -70,7 +70,7 @@ extension RectCollection : RandomAccessCollection {
 
 extension RectCollection {
     
-    private func search(_ target: Double, _ elements: UnsafePointer<(Int, Double)>, _ indices: CountableRange<Int>) -> Int {
+    private func search(_ target: Double, _ elements: UnsafePointer<(Int, Double)>, _ indices: Range<Int>) -> Int {
         switch indices.count {
         case 0: return indices.lowerBound
         default:

@@ -25,12 +25,12 @@
 
 extension ImageContext {
     
-    @_inlineable
+    @inlinable
     public func draw<Image: ImageProtocol>(image: Image, transform: SDTransform) {
         self.draw(texture: Texture(image: image.convert(to: colorSpace, intent: renderingIntent), resamplingAlgorithm: resamplingAlgorithm), transform: transform)
     }
     
-    @_inlineable
+    @inlinable
     public func draw(texture: Texture<ColorPixel<Pixel.Model>>, transform: SDTransform) {
         
         let width = self.width

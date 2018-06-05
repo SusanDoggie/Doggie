@@ -107,11 +107,11 @@ extension Shape.Component.BezierCollection.Element {
     public func fromPoint(_ p: Point) -> Double? {
         switch self.segment {
         case let .line(p1):
-            return Bezier(start, p1).closest(p).lazy.flatMap(split_check).first { p.almostEqual(self.point($0)) }
+            return Bezier(start, p1).closest(p).lazy.compactMap(split_check).first { p.almostEqual(self.point($0)) }
         case let .quad(p1, p2):
-            return Bezier(start, p1, p2).closest(p).lazy.flatMap(split_check).first { p.almostEqual(self.point($0)) }
+            return Bezier(start, p1, p2).closest(p).lazy.compactMap(split_check).first { p.almostEqual(self.point($0)) }
         case let .cubic(p1, p2, p3):
-            return Bezier(start, p1, p2, p3).closest(p).lazy.flatMap(split_check).first { p.almostEqual(self.point($0)) }
+            return Bezier(start, p1, p2, p3).closest(p).lazy.compactMap(split_check).first { p.almostEqual(self.point($0)) }
         }
     }
     

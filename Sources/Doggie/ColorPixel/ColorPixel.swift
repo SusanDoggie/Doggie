@@ -435,10 +435,10 @@ public struct FloatColorPixel<Model : ColorModelProtocol> : ColorPixelProtocol, 
     
     public typealias Scalar = Float
     
-    @_versioned
+    @usableFromInline
     var _color: Model.FloatComponents
     
-    @_versioned
+    @usableFromInline
     var _opacity: Float
     
     @_transparent

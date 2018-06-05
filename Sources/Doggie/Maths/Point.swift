@@ -119,7 +119,7 @@ extension Point : Tensor {
         return 2
     }
     
-    @_inlineable
+    @inlinable
     public subscript(position: Int) -> Double {
         get {
             switch position {

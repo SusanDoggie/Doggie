@@ -23,27 +23,26 @@
 //  THE SOFTWARE.
 //
 
-@_versioned
 @_fixed_layout
+@usableFromInline
 struct ImageContextPixelBlender<P : ColorPixelProtocol> {
     
-    @_versioned
+    @usableFromInline
     var destination: UnsafeMutablePointer<P>
     
-    @_versioned
+    @usableFromInline
     var clip: UnsafePointer<Double>
     
-    @_versioned
+    @usableFromInline
     let opacity: Double
     
-    @_versioned
+    @usableFromInline
     let compositingMode: ColorCompositingMode
     
-    @_versioned
+    @usableFromInline
     let blendMode: ColorBlendMode
     
-    @_versioned
-    @_inlineable
+    @inlinable
     init(destination: UnsafeMutablePointer<P>, clip: UnsafePointer<Double>, opacity: Double, compositingMode: ColorCompositingMode, blendMode: ColorBlendMode) {
         self.destination = destination
         self.clip = clip
@@ -52,21 +51,18 @@ struct ImageContextPixelBlender<P : ColorPixelProtocol> {
         self.blendMode = blendMode
     }
     
-    @_versioned
-    @_inlineable
+    @inlinable
     static func + (lhs: ImageContextPixelBlender, rhs: Int) -> ImageContextPixelBlender {
         return ImageContextPixelBlender(destination: lhs.destination + rhs, clip: lhs.clip + rhs, opacity: lhs.opacity, compositingMode: lhs.compositingMode, blendMode: lhs.blendMode)
     }
     
-    @_versioned
-    @_inlineable
+    @inlinable
     static func += (lhs: inout ImageContextPixelBlender, rhs: Int) {
         lhs.destination += rhs
         lhs.clip += rhs
     }
     
-    @_versioned
-    @_inlineable
+    @inlinable
     func draw<C : ColorPixelProtocol>(color: C) where C.Model == P.Model {
         
         let _clip = clip.pointee
@@ -81,8 +77,7 @@ struct ImageContextPixelBlender<P : ColorPixelProtocol> {
 
 extension ImageContext {
     
-    @_versioned
-    @_inlineable
+    @inlinable
     func _withUnsafePixelBlender(_ body: (ImageContextPixelBlender<Pixel>) -> Void) {
         
         let opacity = self.opacity
@@ -104,8 +99,7 @@ extension ImageContext {
         }
     }
     
-    @_versioned
-    @_inlineable
+    @inlinable
     func withUnsafePixelBlender(_ body: (ImageContextPixelBlender<Pixel>) -> Void) {
         
         let opacity = self.opacity

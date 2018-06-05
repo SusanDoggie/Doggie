@@ -90,14 +90,14 @@ extension BinaryFixedPoint where BitPattern : ByteDecodable {
 
 extension BinaryFixedPoint where RepresentingValue.RawSignificand : FixedWidthInteger {
     
-    @_versioned
     @_transparent
+    @usableFromInline
     static var _fractionOffset: Int {
         return Self.fractionBitCount - RepresentingValue.significandBitCount
     }
     
-    @_versioned
     @_transparent
+    @usableFromInline
     static var _exponentBias: Int {
         let s = RepresentingValue.exponentBitCount - 1
         return (1 << s) - 1

@@ -131,7 +131,7 @@ extension ConstructiveSolidResult.Table {
             }
         }
         
-        guard let check = _winding.lazy.flatMap({ $0.2 }).first, _winding.contains(where: { $2 == nil ? $3 == false : $2 != check }) else {
+        guard let check = _winding.lazy.compactMap({ $0.2 }).first, _winding.contains(where: { $2 == nil ? $3 == false : $2 != check }) else {
             
             if left._contains(right, hint: Set(0..<right.count).subtracting(overlap_r_index)) {
                 overlap = .superset
@@ -143,7 +143,7 @@ extension ConstructiveSolidResult.Table {
         
         for (i, t0) in _winding.enumerated() {
             if t0.2 == nil && t0.3 == true {
-                _winding[i].2 = _winding.rotated(i).lazy.flatMap({ $0.2 }).first
+                _winding[i].2 = _winding.rotated(i).lazy.compactMap({ $0.2 }).first
             }
         }
         
@@ -254,7 +254,7 @@ extension Shape.Component {
             
             for index in 0..<other.count {
                 let overlap = self_spaces.search(overlap: other_spaces[index].inset(dx: -1e-8, dy: -1e-8))
-                if overlap.all(where: { !self.bezier[$0].overlap(other.bezier[index]) }) {
+                if overlap.allSatisfy({ !self.bezier[$0].overlap(other.bezier[index]) }) {
                     hint.insert(index)
                 }
             }

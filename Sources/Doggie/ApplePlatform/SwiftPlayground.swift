@@ -25,7 +25,7 @@
 
 extension Point : CustomPlaygroundDisplayConvertible {
     
-    @_inlineable
+    @inlinable
     public var playgroundDescription: Any {
         return CGPoint(self)
     }
@@ -33,7 +33,7 @@ extension Point : CustomPlaygroundDisplayConvertible {
 
 extension Size : CustomPlaygroundDisplayConvertible {
     
-    @_inlineable
+    @inlinable
     public var playgroundDescription: Any {
         return CGSize(self)
     }
@@ -41,7 +41,7 @@ extension Size : CustomPlaygroundDisplayConvertible {
 
 extension Rect : CustomPlaygroundDisplayConvertible {
     
-    @_inlineable
+    @inlinable
     public var playgroundDescription: Any {
         return CGRect(self)
     }
@@ -49,7 +49,7 @@ extension Rect : CustomPlaygroundDisplayConvertible {
 
 extension Image : CustomPlaygroundDisplayConvertible {
     
-    @_inlineable
+    @inlinable
     public var playgroundDescription: Any {
         
         #if canImport(CoreGraphics)
@@ -66,7 +66,7 @@ extension Image : CustomPlaygroundDisplayConvertible {
 
 extension AnyImage : CustomPlaygroundDisplayConvertible {
     
-    @_inlineable
+    @inlinable
     public var playgroundDescription: Any {
         
         #if canImport(CoreGraphics)
@@ -83,7 +83,7 @@ extension AnyImage : CustomPlaygroundDisplayConvertible {
 
 extension Color : CustomPlaygroundDisplayConvertible {
     
-    @_inlineable
+    @inlinable
     public var playgroundDescription: Any {
         
         #if canImport(CoreGraphics)
@@ -100,7 +100,7 @@ extension Color : CustomPlaygroundDisplayConvertible {
 
 extension AnyColor : CustomPlaygroundDisplayConvertible {
     
-    @_inlineable
+    @inlinable
     public var playgroundDescription: Any {
         
         #if canImport(CoreGraphics)
@@ -121,7 +121,7 @@ import AppKit
 
 extension Shape : CustomPlaygroundDisplayConvertible {
     
-    @_inlineable
+    @inlinable
     public var playgroundDescription: Any {
         return NSBezierPath(self)
     }
@@ -129,7 +129,7 @@ extension Shape : CustomPlaygroundDisplayConvertible {
 
 extension ShapeRegion : CustomPlaygroundDisplayConvertible {
     
-    @_inlineable
+    @inlinable
     public var playgroundDescription: Any {
         return NSBezierPath(self.shape)
     }
@@ -137,7 +137,7 @@ extension ShapeRegion : CustomPlaygroundDisplayConvertible {
 
 extension ShapeRegion.Solid : CustomPlaygroundDisplayConvertible {
     
-    @_inlineable
+    @inlinable
     public var playgroundDescription: Any {
         return NSBezierPath(self.shape)
     }
@@ -151,7 +151,7 @@ import UIKit
 
 extension Shape : CustomPlaygroundDisplayConvertible {
     
-    @_inlineable
+    @inlinable
     public var playgroundDescription: Any {
         return UIBezierPath(self)
     }
@@ -159,7 +159,7 @@ extension Shape : CustomPlaygroundDisplayConvertible {
 
 extension ShapeRegion : CustomPlaygroundDisplayConvertible {
     
-    @_inlineable
+    @inlinable
     public var playgroundDescription: Any {
         return UIBezierPath(self.shape)
     }
@@ -167,7 +167,7 @@ extension ShapeRegion : CustomPlaygroundDisplayConvertible {
 
 extension ShapeRegion.Solid : CustomPlaygroundDisplayConvertible {
     
-    @_inlineable
+    @inlinable
     public var playgroundDescription: Any {
         return UIBezierPath(self.shape)
     }

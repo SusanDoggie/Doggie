@@ -74,12 +74,12 @@ public protocol ImageProtocol {
 
 extension ImageProtocol {
     
-    @_inlineable
+    @inlinable
     public func convert<P>(to colorSpace: Doggie.ColorSpace<P.Model>, intent: RenderingIntent = .default) -> Image<P> {
         return self.convert(to: colorSpace, intent: intent, option: self.option)
     }
     
-    @_inlineable
+    @inlinable
     public func convert(to colorSpace: AnyColorSpace, intent: RenderingIntent = .default) -> AnyImage {
         return self.convert(to: colorSpace, intent: intent, option: self.option)
     }
@@ -87,12 +87,12 @@ extension ImageProtocol {
 
 extension Image {
     
-    @_inlineable
+    @inlinable
     public func convert<P>(to colorSpace: Doggie.ColorSpace<P.Model>, intent: RenderingIntent = .default, option: MappedBufferOption) -> Image<P> {
         return Image<P>(image: self, colorSpace: colorSpace, intent: intent, option: option)
     }
     
-    @_inlineable
+    @inlinable
     public func convert(to colorSpace: AnyColorSpace, intent: RenderingIntent = .default, option: MappedBufferOption) -> AnyImage {
         return AnyImage(image: self, colorSpace: colorSpace, intent: intent, option: option)
     }
@@ -100,12 +100,12 @@ extension Image {
 
 extension AnyImage {
     
-    @_inlineable
+    @inlinable
     public func convert<P>(to colorSpace: Doggie.ColorSpace<P.Model>, intent: RenderingIntent = .default, option: MappedBufferOption) -> Image<P> {
         return Image<P>(image: self, colorSpace: colorSpace, intent: intent, option: option)
     }
     
-    @_inlineable
+    @inlinable
     public func convert(to colorSpace: AnyColorSpace, intent: RenderingIntent = .default, option: MappedBufferOption) -> AnyImage {
         return AnyImage(image: self, colorSpace: colorSpace, intent: intent, option: option)
     }
@@ -113,12 +113,12 @@ extension AnyImage {
 
 extension ImageProtocol {
     
-    @_inlineable
+    @inlinable
     public init<P>(image: Image<P>, colorSpace: ColorSpace, intent: RenderingIntent = .default) {
         self.init(image: image, colorSpace: colorSpace, intent: intent, option: image.option)
     }
     
-    @_inlineable
+    @inlinable
     public init(image: AnyImage, colorSpace: ColorSpace, intent: RenderingIntent = .default) {
         self.init(image: image, colorSpace: colorSpace, intent: intent, option: image.option)
     }

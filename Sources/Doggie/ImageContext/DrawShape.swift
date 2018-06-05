@@ -25,8 +25,7 @@
 
 extension ImageContext {
     
-    @_versioned
-    @_inlineable
+    @inlinable
     func draw(shape: Shape, color: ColorPixel<Pixel.Model>, winding: (Int16) -> Bool) {
         
         if shape.reduce(0, { $0 + $1.count }) == 0 {
@@ -201,7 +200,7 @@ extension ImageContext {
 
 extension ImageContext {
     
-    @_inlineable
+    @inlinable
     public func draw(shape: Shape, winding: Shape.WindingRule, color: Pixel.Model, opacity: Double = 1) {
         switch winding {
         case .nonZero: self.draw(shape: shape, color: ColorPixel(color: color, opacity: opacity)) { $0 != 0 }
@@ -209,7 +208,7 @@ extension ImageContext {
         }
     }
     
-    @_inlineable
+    @inlinable
     public func draw<C: ColorProtocol>(shape: Shape, winding: Shape.WindingRule, color: C) {
         let color = color.convert(to: colorSpace, intent: renderingIntent)
         self.draw(shape: shape, winding: winding, color: color.color, opacity: color.opacity)
@@ -218,12 +217,12 @@ extension ImageContext {
 
 extension ImageContext {
     
-    @_inlineable
+    @inlinable
     public func stroke(shape: Shape, width: Double, cap: Shape.LineCap, join: Shape.LineJoin, color: Pixel.Model, opacity: Double = 1) {
         self.draw(shape: shape.strokePath(width: width, cap: cap, join: join), winding: .nonZero, color: color, opacity: opacity)
     }
     
-    @_inlineable
+    @inlinable
     public func stroke<C: ColorProtocol>(shape: Shape, width: Double, cap: Shape.LineCap, join: Shape.LineJoin, color: C) {
         let color = color.convert(to: colorSpace, intent: renderingIntent)
         self.stroke(shape: shape, width: width, cap: cap, join: join, color: color.color, opacity: color.opacity)

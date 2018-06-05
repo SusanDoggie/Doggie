@@ -23,39 +23,39 @@
 //  THE SOFTWARE.
 //
 
-@_inlineable
+@inlinable
 public func FactorialList<T: UnsignedInteger>(_ n: T) -> LazyScanSequence<Slice<ClosedRange<T>>, T> {
     
     return (0...n).dropFirst().lazy.scan(1, *)
 }
-@_inlineable
+@inlinable
 public func PermutationList<T: UnsignedInteger>(_ n: T) -> LazyScanSequence<ReversedCollection<Slice<ClosedRange<T>>>, T> {
     
     return (0...n).dropFirst().reversed().lazy.scan(1, *)
 }
-@_inlineable
+@inlinable
 public func CombinationList<T: UnsignedInteger>(_ n: T) -> LazyMapSequence<Zip2Sequence<LazyScanSequence<ReversedCollection<Slice<ClosedRange<T>>>, T>, LazyScanSequence<Slice<ClosedRange<T>>, T>>, T> {
     
     return zip(PermutationList(n), FactorialList(n)).lazy.map(/)
 }
 
-@_inlineable
-public func FibonacciList<T: UnsignedInteger>(_ n: T) -> LazyMapSequence<LazyScanSequence<Range<T>, (T, T)>, T> {
+@inlinable
+public func FibonacciList<T: UnsignedInteger>(_ n: T) -> LazyMapSequence<LazyScanSequence<Range<T>, (Int, Int)>, Int> {
     
     return (0..<n).dropLast().lazy.scan((1, 1)) { x, _ in (x.1, x.0 + x.1) }.map { $0.0 }
 }
 
 // MARK: Prime
 
-@_inlineable
+@inlinable
 public func isPrime(_ n: UInt8) -> Bool {
     return isPrime(UInt32(n))
 }
-@_inlineable
+@inlinable
 public func isPrime(_ n: UInt16) -> Bool {
     return isPrime(UInt32(n))
 }
-@_inlineable
+@inlinable
 public func isPrime(_ n: UInt32) -> Bool {
     let list: [UInt32] = n < 2047 ? [2] : n < 1373653 ? [2, 3] : [2, 7, 61]
     let _n = n - 1
@@ -72,7 +72,7 @@ public func isPrime(_ n: UInt32) -> Bool {
     }
     return true
 }
-@_inlineable
+@inlinable
 public func isPrime(_ n: UInt64) -> Bool {
     let list: [UInt64] = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37]
     let _n = n - 1
@@ -89,7 +89,7 @@ public func isPrime(_ n: UInt64) -> Bool {
     }
     return true
 }
-@_inlineable
+@inlinable
 public func isPrime(_ n: UInt) -> Bool {
     let list: [UInt] = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37]
     let _n = n - 1
@@ -109,7 +109,7 @@ public func isPrime(_ n: UInt) -> Bool {
 
 // MARK: Polynomial
 
-@_inlineable
+@inlinable
 public func degree2roots(_ b: Double, _ c: Double) -> [Double] {
     if b.almostZero() {
         if c < 0 {
@@ -132,7 +132,7 @@ public func degree2roots(_ b: Double, _ c: Double) -> [Double] {
     return []
 }
 
-@_inlineable
+@inlinable
 public func degree3decompose(_ b: Double, _ c: Double, _ d: Double) -> (Double, (Double, Double)) {
     if d.almostZero() {
         return (0, (b, c))
@@ -167,7 +167,7 @@ public func degree3decompose(_ b: Double, _ c: Double, _ d: Double) -> (Double, 
     return ((-b - c3) / 3, ((2 * b - c3) / 3, (b2 - b * c3 + c3 * c3 - 3 * c1 * c2) / 9))
 }
 
-@_inlineable
+@inlinable
 public func degree4decompose(_ b: Double, _ c: Double, _ d: Double, _ e: Double) -> ((Double, Double), (Double, Double)) {
     if e.almostZero() {
         let z = degree3decompose(b, c, d)
@@ -213,7 +213,7 @@ public func degree4decompose(_ b: Double, _ c: Double, _ d: Double, _ e: Double)
     return ((2 * k1, k1 * k1 - 0.25 * t1), (2 * k2, k2 * k2 - 0.25 * t2))
 }
 
-@_inlineable
+@inlinable
 public func degree3roots(_ b: Double, _ c: Double, _ d: Double) -> [Double] {
     if d.almostZero() {
         let z = degree2roots(b, c)
@@ -244,7 +244,7 @@ public func degree3roots(_ b: Double, _ c: Double, _ d: Double) -> [Double] {
     return Array(Set(_d2))
 }
 
-@_inlineable
+@inlinable
 public func degree4roots(_ b: Double, _ c: Double, _ d: Double, _ e: Double) -> [Double] {
     if e.almostZero() {
         let z = degree3roots(b, c, d)
@@ -269,21 +269,21 @@ public func degree4roots(_ b: Double, _ c: Double, _ d: Double, _ e: Double) -> 
 
 // MARK: Others
 
-@_inlineable
+@inlinable
 public func linearScale(_ f: UInt, _ x: UInt) -> Double {
     return log(Double(x + 1)) / log(Double(f))
 }
-@_inlineable
+@inlinable
 public func logScale(_ f: UInt, _ x: Double) -> UInt {
     return UInt(lround(pow(Double(f), x))) - 1
 }
 
-@_inlineable
+@inlinable
 public func degreesToRad<T: FloatingPoint>(_ alpha: T) -> T {
     return alpha * T.pi / 180
 }
 
-@_inlineable
+@inlinable
 public func LogarithmicDynamicRangeCompression(_ x: Double, _ m: Double) -> Double {
     let alpha = 2.5128624172523393539654752332184326538328336634026474
     let alpha_2 = 0.7959050946318330895721191440438390881317432367303995
@@ -291,19 +291,19 @@ public func LogarithmicDynamicRangeCompression(_ x: Double, _ m: Double) -> Doub
     return x.sign == .minus ? -re : re
 }
 
-@_inlineable
+@inlinable
 public func LinearInterpolate<T: ScalarMultiplicative>(_ t: T.Scalar, _ a: T, _ b: T) -> T {
     return a + t * (b - a)
 }
 
-@_inlineable
+@inlinable
 public func CosineInterpolate<T: ScalarMultiplicative>(_ t: T.Scalar, _ a: T, _ b: T) -> T where T.Scalar : FloatingMathProtocol {
     let u = 1 - T.Scalar.cos(t * T.Scalar.pi)
     let v = 0.5 * u
     return LinearInterpolate(v, a, b)
 }
 
-@_inlineable
+@inlinable
 public func CubicInterpolate<T: ScalarMultiplicative>(_ t: T.Scalar, _ a: T, _ b: T, _ c: T, _ d: T) -> T {
     let t2 = t * t
     let m0 = d - c - a + b
@@ -316,7 +316,7 @@ public func CubicInterpolate<T: ScalarMultiplicative>(_ t: T.Scalar, _ a: T, _ b
     return n0 + n1 + n2 + m3
 }
 
-@_inlineable
+@inlinable
 public func HermiteInterpolate<T: ScalarMultiplicative>(_ t: T.Scalar, _ a: T, _ b: T, _ c: T, _ d: T, _ s: T.Scalar, _ e: T.Scalar) -> T {
     let t2 = t * t
     let t3 = t2 * t
@@ -344,23 +344,23 @@ public func HermiteInterpolate<T: ScalarMultiplicative>(_ t: T.Scalar, _ a: T, _
     return b0 + b1 + b2 + b3
 }
 
-@_inlineable
+@inlinable
 public func Phase<T: FloatingPoint>(_ x: T, _ shift: T, _ frequency: T, _ maxFrequency: T) -> T {
     return abs((x / maxFrequency + shift) * frequency).truncatingRemainder(dividingBy: 1)
 }
-@_inlineable
+@inlinable
 public func SineWave<T: FloatingMathProtocol>(_ phase: T) -> T {
     return T.sin(2 * T.pi * phase)
 }
-@_inlineable
+@inlinable
 public func SquareWave<T: FloatingPoint & ExpressibleByFloatLiteral>(_ phase: T) -> T {
     return phase < 0.5 ? 1 : -1
 }
-@_inlineable
+@inlinable
 public func SawtoothWave<T: FloatingPoint>(_ phase: T) -> T {
     return phase * 2 - 1
 }
-@_inlineable
+@inlinable
 public func TriangleWave<T: FloatingPoint & ExpressibleByFloatLiteral>(_ phase: T) -> T {
     return phase < 0.5 ? phase * 4 - 1 : 3 - phase * 4
 }

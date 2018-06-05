@@ -111,7 +111,7 @@ extension Vector : Tensor {
         return 3
     }
     
-    @_inlineable
+    @inlinable
     public subscript(position: Int) -> Double {
         get {
             switch position {

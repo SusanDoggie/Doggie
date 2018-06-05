@@ -198,7 +198,7 @@ extension Shape {
                 return path
             }
             
-            var _transform = CGAffineTransform(transform)
+            var _transform = CGAffineTransform(self.transform)
             return _path.copy(using: &_transform) ?? _path
         }
     }
@@ -267,10 +267,10 @@ extension NSBezierPath: BezierPathConvertible {
         for i in 0..<self.elementCount {
             let type = self.element(at: i, associatedPoints: &points)
             switch type {
-            case .moveToBezierPathElement: path._move(to: Point(points[0]))
-            case .lineToBezierPathElement: path._line(to: Point(points[0]))
-            case .curveToBezierPathElement: path._curve(to: Point(points[2]), control1: Point(points[0]), control2: Point(points[1]))
-            case .closePathBezierPathElement: path._close()
+            case .moveTo: path._move(to: Point(points[0]))
+            case .lineTo: path._line(to: Point(points[0]))
+            case .curveTo: path._curve(to: Point(points[2]), control1: Point(points[0]), control2: Point(points[1]))
+            case .closePath: path._close()
             }
         }
     }

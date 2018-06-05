@@ -51,7 +51,7 @@ public enum ColorCompositingMode {
 
 extension ColorCompositingMode {
     
-    @_inlineable
+    @inlinable
     public static var `default` : ColorCompositingMode {
         return .sourceOver
     }
@@ -59,7 +59,7 @@ extension ColorCompositingMode {
 
 extension ColorCompositingMode {
     
-    @_versioned
+    @usableFromInline
     @inline(__always)
     func mix<T : ScalarMultiplicative>(_ source: T, _ source_alpha: T.Scalar, _ destination: T, _ destination_alpha: T.Scalar) -> T {
         

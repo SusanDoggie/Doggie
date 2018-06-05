@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-@_versioned
+@usableFromInline
 protocol AnyColorSpaceBaseProtocol {
     
     var iccData: Data? { get }
@@ -46,7 +46,7 @@ protocol AnyColorSpaceBaseProtocol {
     
     var luminance: Double { get }
     
-    var hashValue: Int { get }
+    func hash(into hasher: inout Hasher)
     
     func isEqualTo(_ other: AnyColorSpaceBaseProtocol) -> Bool
     
@@ -65,8 +65,7 @@ protocol AnyColorSpaceBaseProtocol {
 
 extension AnyColorSpaceBaseProtocol where Self : Equatable {
     
-    @_versioned
-    @_inlineable
+    @inlinable
     func isEqualTo(_ other: AnyColorSpaceBaseProtocol) -> Bool {
         guard let other = other as? Self else { return false }
         return self == other
@@ -75,14 +74,12 @@ extension AnyColorSpaceBaseProtocol where Self : Equatable {
 
 extension ColorSpace : AnyColorSpaceBaseProtocol {
     
-    @_versioned
-    @_inlineable
+    @inlinable
     var _linearTone: AnyColorSpaceBaseProtocol {
         return self
     }
     
-    @_versioned
-    @_inlineable
+    @inlinable
     func _create_color<S>(components: S, opacity: Double) -> AnyColorBaseProtocol where S : Sequence, S.Element == Double {
         var color = Model()
         var counter = 0
@@ -95,32 +92,27 @@ extension ColorSpace : AnyColorSpaceBaseProtocol {
         return Color(colorSpace: self, color: color, opacity: opacity)
     }
     
-    @_versioned
-    @_inlineable
+    @inlinable
     func _create_image(width: Int, height: Int, resolution: Resolution, option: MappedBufferOption) -> AnyImageBaseProtocol {
         return Image<ColorPixel<Model>>(width: width, height: height, resolution: resolution, colorSpace: self, option: option)
     }
     
-    @_versioned
-    @_inlineable
+    @inlinable
     func _create_image<P>(image: Image<P>, intent: RenderingIntent, option: MappedBufferOption) -> AnyImageBaseProtocol {
         return Image<ColorPixel<Model>>(image: image, colorSpace: self, intent: intent, option: option)
     }
     
-    @_versioned
-    @_inlineable
+    @inlinable
     func _create_image(width: Int, height: Int, resolution: Resolution, bitmaps: [RawBitmap], premultiplied: Bool, option: MappedBufferOption) -> AnyImageBaseProtocol {
         return Image<ColorPixel<Model>>(width: width, height: height, resolution: resolution, colorSpace: self, bitmaps: bitmaps, premultiplied: premultiplied, option: option)
     }
     
-    @_versioned
-    @_inlineable
+    @inlinable
     func _create_image(image: AnyImage, intent: RenderingIntent, option: MappedBufferOption) -> AnyImageBaseProtocol {
         return Image<ColorPixel<Model>>(image: image, colorSpace: self, intent: intent, option: option)
     }
     
-    @_versioned
-    @_inlineable
+    @inlinable
     func _convert<Model>(color: Color<Model>, intent: RenderingIntent) -> AnyColorBaseProtocol {
         return color.convert(to: self, intent: intent)
     }
@@ -129,16 +121,15 @@ extension ColorSpace : AnyColorSpaceBaseProtocol {
 @_fixed_layout
 public struct AnyColorSpace : ColorSpaceProtocol, Hashable {
 
-    @_versioned
+    @usableFromInline
     var _base: AnyColorSpaceBaseProtocol
     
-    @_versioned
-    @_inlineable
+    @inlinable
     init(base: AnyColorSpaceBaseProtocol) {
         self._base = base
     }
     
-    @_inlineable
+    @inlinable
     public var base: Any {
         return _base
     }
@@ -146,12 +137,12 @@ public struct AnyColorSpace : ColorSpaceProtocol, Hashable {
 
 extension AnyColorSpace {
     
-    @_inlineable
-    public var hashValue: Int {
-        return _base.hashValue
+    @inlinable
+    public func hash(into hasher: inout Hasher) {
+        _base.hash(into: &hasher)
     }
     
-    @_inlineable
+    @inlinable
     public static func ==(lhs: AnyColorSpace, rhs: AnyColorSpace) -> Bool {
         return lhs._base.isEqualTo(rhs._base)
     }
@@ -159,12 +150,12 @@ extension AnyColorSpace {
 
 extension AnyColorSpace {
     
-    @_inlineable
+    @inlinable
     public init<Model>(_ colorSpace: ColorSpace<Model>) {
         self._base = colorSpace
     }
     
-    @_inlineable
+    @inlinable
     public init(_ colorSpace: AnyColorSpace) {
         self = colorSpace
     }
@@ -172,17 +163,17 @@ extension AnyColorSpace {
 
 extension AnyColorSpace {
     
-    @_inlineable
+    @inlinable
     public var iccData: Data? {
         return _base.iccData
     }
     
-    @_inlineable
+    @inlinable
     public var localizedName: String? {
         return _base.localizedName
     }
     
-    @_inlineable
+    @inlinable
     public var chromaticAdaptationAlgorithm: ChromaticAdaptationAlgorithm {
         get {
             return _base.chromaticAdaptationAlgorithm
@@ -192,37 +183,37 @@ extension AnyColorSpace {
         }
     }
     
-    @_inlineable
+    @inlinable
     public var numberOfComponents: Int {
         return _base.numberOfComponents
     }
     
-    @_inlineable
+    @inlinable
     public func rangeOfComponent(_ i: Int) -> ClosedRange<Double> {
         return _base.rangeOfComponent(i)
     }
     
-    @_inlineable
+    @inlinable
     public var cieXYZ: ColorSpace<XYZColorModel> {
         return _base.cieXYZ
     }
     
-    @_inlineable
+    @inlinable
     public var linearTone: AnyColorSpace {
         return AnyColorSpace(base: _base._linearTone)
     }
     
-    @_inlineable
+    @inlinable
     public var referenceWhite: XYZColorModel {
         return _base.referenceWhite
     }
     
-    @_inlineable
+    @inlinable
     public var referenceBlack: XYZColorModel {
         return _base.referenceBlack
     }
     
-    @_inlineable
+    @inlinable
     public var luminance: Double {
         return _base.luminance
     }
@@ -230,7 +221,7 @@ extension AnyColorSpace {
 
 extension AnyColorSpace : CustomStringConvertible {
     
-    @_inlineable
+    @inlinable
     public var description: String {
         return "\(_base)"
     }

@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-@_inlineable
+@inlinable
 public func GaussianBlur<Model>(_ image: Image<ColorPixel<Model>>, _ blur: Double) -> Image<ColorPixel<Model>> {
     
     let t = 2 * blur * blur
@@ -40,7 +40,7 @@ public func GaussianBlur<Model>(_ image: Image<ColorPixel<Model>>, _ blur: Doubl
     return ImageConvolution(image, horizontal: filter, vertical: filter)
 }
 
-@_inlineable
+@inlinable
 public func GaussianBlur<Model>(_ image: Image<FloatColorPixel<Model>>, _ blur: Float) -> Image<FloatColorPixel<Model>> {
     
     let t = 2 * blur * blur

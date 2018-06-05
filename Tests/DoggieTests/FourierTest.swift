@@ -78,7 +78,7 @@ class FourierTest: XCTestCase {
             
             var sample = [Double](repeating: 0, count: n)
             for i in sample.indices {
-                sample[i] = (0.0..<1.0).random()
+                sample[i] = Double.random(in: 0..<1)
             }
             
             var answer = [Complex]()
@@ -100,7 +100,7 @@ class FourierTest: XCTestCase {
             
             var sample = [Complex](repeating: Complex(0), count: n)
             for i in sample.indices {
-                sample[i] = Complex(real: (0.0..<1.0).random(), imag: (0.0..<1.0).random())
+                sample[i] = Complex(real: Double.random(in: 0..<1), imag: Double.random(in: 0..<1))
             }
             
             var answer = [Complex]()
@@ -121,7 +121,7 @@ class FourierTest: XCTestCase {
             
             var sample = [Double](repeating: 0, count: n)
             for i in sample.indices {
-                sample[i] = (0.0..<1.0).random()
+                sample[i] = Double.random(in: 0..<1)
             }
             
             var answer = [Complex]()
@@ -143,7 +143,7 @@ class FourierTest: XCTestCase {
             
             var sample = [Complex](repeating: Complex(0), count: n)
             for i in sample.indices {
-                sample[i] = Complex(real: (0.0..<1.0).random(), imag: (0.0..<1.0).random())
+                sample[i] = Complex(real: Double.random(in: 0..<1), imag: Double.random(in: 0..<1))
             }
             
             var answer = [Complex]()
@@ -162,7 +162,7 @@ class FourierTest: XCTestCase {
         for n in 2...11 {
             var sample = [Double](repeating: 0, count: n)
             for i in sample.indices {
-                sample[i] = (0.0..<1.0).random()
+                sample[i] = Double.random(in: 0..<1)
             }
             
             var answer = [Complex]()
@@ -182,7 +182,7 @@ class FourierTest: XCTestCase {
         for n in 2...11 {
             var sample = [Complex](repeating: Complex(0), count: n)
             for i in sample.indices {
-                sample[i] = Complex(real: (0.0..<1.0).random(), imag: (0.0..<1.0).random())
+                sample[i] = Complex(real: Double.random(in: 0..<1), imag: Double.random(in: 0..<1))
             }
             
             var answer = [Complex]()
@@ -202,7 +202,7 @@ class FourierTest: XCTestCase {
         for n in 2...11 {
             var sample = [Double](repeating: 0, count: n)
             for i in sample.indices {
-                sample[i] = (0.0..<1.0).random()
+                sample[i] = Double.random(in: 0..<1)
             }
             
             var answer = [Complex]()
@@ -222,7 +222,7 @@ class FourierTest: XCTestCase {
         for n in 2...11 {
             var sample = [Complex](repeating: Complex(0), count: n)
             for i in sample.indices {
-                sample[i] = Complex(real: (0.0..<1.0).random(), imag: (0.0..<1.0).random())
+                sample[i] = Complex(real: Double.random(in: 0..<1), imag: Double.random(in: 0..<1))
             }
             
             var answer = [Complex]()
@@ -243,10 +243,10 @@ class FourierTest: XCTestCase {
             var a = [Double](repeating: 0, count: n)
             var b = [Double](repeating: 0, count: n)
             for i in 0..<a.count {
-                a[i] = (0.0..<1.0).random()
+                a[i] = Double.random(in: 0..<1)
             }
             for i in 0..<a.count {
-                b[i] = (0.0..<1.0).random()
+                b[i] = Double.random(in: 0..<1)
             }
             
             var answer = [Double]()
@@ -266,10 +266,10 @@ class FourierTest: XCTestCase {
             var a = [Complex](repeating: Complex(0), count: n)
             var b = [Complex](repeating: Complex(0), count: n)
             for i in 0..<a.count {
-                a[i] = Complex(real: (0.0..<1.0).random(), imag: (0.0..<1.0).random())
+                a[i] = Complex(real: Double.random(in: 0..<1), imag: Double.random(in: 0..<1))
             }
             for i in 0..<a.count {
-                b[i] = Complex(real: (0.0..<1.0).random(), imag: (0.0..<1.0).random())
+                b[i] = Complex(real: Double.random(in: 0..<1), imag: Double.random(in: 0..<1))
             }
             
             var answer = [Complex]()
@@ -290,10 +290,10 @@ class FourierTest: XCTestCase {
             var a = [Double](repeating: 0, count: n)
             var b = [Double](repeating: 0, count: n)
             for i in 0..<a.count {
-                a[i] = (0.0..<1.0).random()
+                a[i] = Double.random(in: 0..<1)
             }
             for i in 0..<a.count {
-                b[i] = (0.0..<1.0).random()
+                b[i] = Double.random(in: 0..<1)
             }
             
             var answer = [Double]()
@@ -318,10 +318,10 @@ class FourierTest: XCTestCase {
             var a = [Complex](repeating: Complex(0), count: n)
             var b = [Complex](repeating: Complex(0), count: n)
             for i in 0..<a.count {
-                a[i] = Complex(real: (0.0..<1.0).random(), imag: (0.0..<1.0).random())
+                a[i] = Complex(real: Double.random(in: 0..<1), imag: Double.random(in: 0..<1))
             }
             for i in 0..<a.count {
-                b[i] = Complex(real: (0.0..<1.0).random(), imag: (0.0..<1.0).random())
+                b[i] = Complex(real: Double.random(in: 0..<1), imag: Double.random(in: 0..<1))
             }
             
             var answer = [Complex]()
@@ -347,10 +347,10 @@ class FourierTest: XCTestCase {
             var a = [Double](repeating: 0, count: n)
             var b = [Double](repeating: 0, count: n)
             for i in 0..<a.count {
-                a[i] = (0.0..<1.0).random()
+                a[i] = Double.random(in: 0..<1)
             }
             for i in 0..<a.count {
-                b[i] = (0.0..<1.0).random()
+                b[i] = Double.random(in: 0..<1)
             }
             
             var answer = [Double]()
@@ -375,10 +375,10 @@ class FourierTest: XCTestCase {
             var a = [Complex](repeating: Complex(0), count: n)
             var b = [Complex](repeating: Complex(0), count: n)
             for i in 0..<a.count {
-                a[i] = Complex(real: (0.0..<1.0).random(), imag: (0.0..<1.0).random())
+                a[i] = Complex(real: Double.random(in: 0..<1), imag: Double.random(in: 0..<1))
             }
             for i in 0..<a.count {
-                b[i] = Complex(real: (0.0..<1.0).random(), imag: (0.0..<1.0).random())
+                b[i] = Complex(real: Double.random(in: 0..<1), imag: Double.random(in: 0..<1))
             }
             
             var answer = [Complex]()
@@ -404,7 +404,7 @@ class FourierTest: XCTestCase {
         for n in 2...11 {
             var sample = [Double](repeating: 0, count: n)
             for i in sample.indices {
-                sample[i] = (0.0..<1.0).random()
+                sample[i] = Double.random(in: 0..<1)
             }
             
             var answer = [Double]()
@@ -423,7 +423,7 @@ class FourierTest: XCTestCase {
         for n in 2...11 {
             var sample = [Double](repeating: 0, count: n)
             for i in sample.indices {
-                sample[i] = (0.0..<1.0).random()
+                sample[i] = Double.random(in: 0..<1)
             }
             
             var answer = [Double]()
@@ -442,7 +442,7 @@ class FourierTest: XCTestCase {
         for n in 2...11 {
             var sample = [Double](repeating: 0, count: n)
             for i in sample.indices {
-                sample[i] = (0.0..<1.0).random()
+                sample[i] = Double.random(in: 0..<1)
             }
             
             var answer = [Double]()
@@ -461,7 +461,7 @@ class FourierTest: XCTestCase {
         for n in 2...11 {
             var sample = [Double](repeating: 0, count: n)
             for i in sample.indices {
-                sample[i] = (0.0..<1.0).random()
+                sample[i] = Double.random(in: 0..<1)
             }
             
             var answer = [Double]()
@@ -480,7 +480,7 @@ class FourierTest: XCTestCase {
         for n in 2...11 {
             var sample = [Double](repeating: 0, count: n)
             for i in sample.indices {
-                sample[i] = (0.0..<1.0).random()
+                sample[i] = Double.random(in: 0..<1)
             }
             
             var answer = [Double]()
@@ -499,7 +499,7 @@ class FourierTest: XCTestCase {
         for n in 2...11 {
             var sample = [Double](repeating: 0, count: n)
             for i in sample.indices {
-                sample[i] = (0.0..<1.0).random()
+                sample[i] = Double.random(in: 0..<1)
             }
             
             var answer = [Double]()

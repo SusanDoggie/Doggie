@@ -30,12 +30,12 @@ public protocol ByteInputStream {
 
 extension ByteInputStream {
     
-    @_inlineable
+    @inlinable
     public func enumerateBytes(_ body: (UnsafeRawBufferPointer) -> Void) {
         withoutActuallyEscaping(body) { self.write(to: ByteOutputStream($0)) }
     }
     
-    @_inlineable
+    @inlinable
     public func write<C : RangeReplaceableCollection>(to data: inout C) where C.Element == UInt8 {
         self.enumerateBytes { data.append(contentsOf: $0) }
     }
@@ -44,10 +44,10 @@ extension ByteInputStream {
 @_fixed_layout
 public struct ByteOutputStream {
     
-    @_versioned
+    @usableFromInline
     let sink: (UnsafeRawBufferPointer) -> Void
     
-    @_inlineable
+    @inlinable
     public init(_ sink: @escaping (UnsafeRawBufferPointer) -> Void) {
         self.sink = sink
     }
@@ -55,12 +55,12 @@ public struct ByteOutputStream {
 
 extension ByteOutputStream {
     
-    @_inlineable
+    @inlinable
     public func write(_ bytes: UnsafeRawBufferPointer) {
         self.sink(bytes)
     }
     
-    @_inlineable
+    @inlinable
     public func write<Buffer: UnsafeBufferProtocol>(_ buffer: Buffer) where Buffer.Element == UInt8 {
         buffer.withUnsafeBufferPointer { self.write(UnsafeRawBufferPointer($0)) }
     }

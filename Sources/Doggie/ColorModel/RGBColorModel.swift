@@ -58,7 +58,7 @@ public struct RGBColorModel : ColorModelProtocol {
         self.blue = blue
     }
     
-    @_inlineable
+    @inlinable
     public subscript(position: Int) -> Double {
         get {
             switch position {
@@ -134,21 +134,21 @@ extension RGBColorModel {
 
 extension RGBColorModel {
     
-    @_inlineable
+    @inlinable
     public init(_ gray: GrayColorModel) {
         self.red = gray.white
         self.green = gray.white
         self.blue = gray.white
     }
     
-    @_inlineable
+    @inlinable
     public init(_ cmy: CMYColorModel) {
         self.red = 1 - cmy.cyan
         self.green = 1 - cmy.magenta
         self.blue = 1 - cmy.yellow
     }
     
-    @_inlineable
+    @inlinable
     public init(_ cmyk: CMYKColorModel) {
         self.init(CMYColorModel(cmyk))
     }
@@ -299,7 +299,7 @@ extension RGBColorModel {
             self.blue = blue
         }
         
-        @_inlineable
+        @inlinable
         public subscript(position: Int) -> Float {
             get {
                 switch position {

@@ -252,7 +252,7 @@ extension Shape.Component {
 
 extension Shape {
     
-    @_inlineable
+    @inlinable
     public func render(_ operation: (Shape.RenderOperation) throws -> Void) rethrows {
         for component in self {
             try component.render(operation)
@@ -267,7 +267,7 @@ extension Shape {
         case evenOdd
     }
     
-    @_inlineable
+    @inlinable
     public func contains(_ p: Point, winding: WindingRule) -> Bool {
         switch winding {
         case .nonZero: return self.winding(p) != 0
@@ -278,7 +278,7 @@ extension Shape {
 
 extension Shape.RenderOperation {
     
-    @_inlineable
+    @inlinable
     public func winding(_ position: Point) -> Int {
         
         switch self {
@@ -329,7 +329,7 @@ extension Shape.RenderOperation {
 
 extension Shape.Component {
     
-    @_inlineable
+    @inlinable
     public func winding(_ position: Point) -> Int {
         var counter = 0
         self.render { counter += $0.winding(position) }
@@ -339,7 +339,7 @@ extension Shape.Component {
 
 extension Shape {
     
-    @_inlineable
+    @inlinable
     public func winding(_ position: Point) -> Int {
         guard !transform.determinant.almostZero() else { return 0 }
         let position = position * transform.inverse

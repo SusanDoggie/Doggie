@@ -53,7 +53,7 @@ public struct CMYKColorModel : ColorModelProtocol {
         self.black = black
     }
     
-    @_inlineable
+    @inlinable
     public subscript(position: Int) -> Double {
         get {
             switch position {
@@ -89,7 +89,7 @@ extension CMYKColorModel {
 
 extension CMYKColorModel {
     
-    @_inlineable
+    @inlinable
     public init(_ gray: GrayColorModel) {
         self.cyan = 0
         self.magenta = 0
@@ -97,12 +97,12 @@ extension CMYKColorModel {
         self.black = 1 - gray.white
     }
     
-    @_inlineable
+    @inlinable
     public init(_ rgb: RGBColorModel) {
         self.init(CMYColorModel(rgb))
     }
     
-    @_inlineable
+    @inlinable
     public init(_ cmy: CMYColorModel) {
         self.black = Swift.min(cmy.cyan, cmy.magenta, cmy.yellow)
         if black == 1 {
@@ -224,7 +224,7 @@ extension CMYKColorModel {
             self.black = black
         }
         
-        @_inlineable
+        @inlinable
         public subscript(position: Int) -> Float {
             get {
                 switch position {

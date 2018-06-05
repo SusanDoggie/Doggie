@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-@_inlineable
+@inlinable
 public func addmod<T: UnsignedInteger & FixedWidthInteger>(_ lhs: [T], _ rhs: [T], _ mod: T) -> [T] {
     var result = lhs
     assert(lhs.count == rhs.count, "mismatch count of inputs.")
@@ -31,7 +31,7 @@ public func addmod<T: UnsignedInteger & FixedWidthInteger>(_ lhs: [T], _ rhs: [T
     return result
 }
 
-@_inlineable
+@inlinable
 public func addmod<T: UnsignedInteger & FixedWidthInteger>(_ lhs: [T], _ rhs: [T], _ mod: [T]) -> [T] {
     var result = lhs
     assert(lhs.count == rhs.count, "mismatch count of inputs.")
@@ -39,21 +39,21 @@ public func addmod<T: UnsignedInteger & FixedWidthInteger>(_ lhs: [T], _ rhs: [T
     AddMod(lhs.count, lhs, 1, rhs, 1, mod, 1, &result, 1)
     return result
 }
-@_inlineable
+@inlinable
 public func negmod<T: UnsignedInteger & FixedWidthInteger>(_ a: [T], _ mod: T) -> [T] {
     var result = a
     NegMod(a.count, a, 1, [mod], 0, &result, 1)
     return result
 }
 
-@_inlineable
+@inlinable
 public func negmod<T: UnsignedInteger & FixedWidthInteger>(_ a: [T], _ mod: [T]) -> [T] {
     var result = a
     assert(a.count == mod.count, "mismatch count of inputs.")
     NegMod(a.count, a, 1, mod, 1, &result, 1)
     return result
 }
-@_inlineable
+@inlinable
 public func submod<T: UnsignedInteger & FixedWidthInteger>(_ lhs: [T], _ rhs: [T], _ mod: T) -> [T] {
     var result = lhs
     assert(lhs.count == rhs.count, "mismatch count of inputs.")
@@ -61,7 +61,7 @@ public func submod<T: UnsignedInteger & FixedWidthInteger>(_ lhs: [T], _ rhs: [T
     return result
 }
 
-@_inlineable
+@inlinable
 public func submod<T: UnsignedInteger & FixedWidthInteger>(_ lhs: [T], _ rhs: [T], _ mod: [T]) -> [T] {
     var result = lhs
     assert(lhs.count == rhs.count, "mismatch count of inputs.")
@@ -70,7 +70,7 @@ public func submod<T: UnsignedInteger & FixedWidthInteger>(_ lhs: [T], _ rhs: [T
     return result
 }
 
-@_inlineable
+@inlinable
 public func mulmod<T: UnsignedInteger & FixedWidthInteger>(_ lhs: [T], _ rhs: [T], _ mod: T) -> [T] {
     var result = lhs
     assert(lhs.count == rhs.count, "mismatch count of inputs.")
@@ -78,7 +78,7 @@ public func mulmod<T: UnsignedInteger & FixedWidthInteger>(_ lhs: [T], _ rhs: [T
     return result
 }
 
-@_inlineable
+@inlinable
 public func mulmod<T: UnsignedInteger & FixedWidthInteger>(_ lhs: [T], _ rhs: [T], _ mod: [T]) -> [T] {
     var result = lhs
     assert(lhs.count == rhs.count, "mismatch count of inputs.")
@@ -87,7 +87,7 @@ public func mulmod<T: UnsignedInteger & FixedWidthInteger>(_ lhs: [T], _ rhs: [T
     return result
 }
 
-@_inlineable
+@inlinable
 public func add<T: Additive>(_ lhs: [T], _ rhs: [T]) -> [T] {
     var result = lhs
     assert(lhs.count == rhs.count, "mismatch count of inputs.")
@@ -95,7 +95,7 @@ public func add<T: Additive>(_ lhs: [T], _ rhs: [T]) -> [T] {
     return result
 }
 
-@_inlineable
+@inlinable
 public func sub<T: Subtractive>(_ lhs: [T], _ rhs: [T]) -> [T] {
     var result = lhs
     assert(lhs.count == rhs.count, "mismatch count of inputs.")
@@ -103,7 +103,7 @@ public func sub<T: Subtractive>(_ lhs: [T], _ rhs: [T]) -> [T] {
     return result
 }
 
-@_inlineable
+@inlinable
 public func mul<T: Multiplicative>(_ lhs: [T], _ rhs: [T]) -> [T] {
     var result = lhs
     assert(lhs.count == rhs.count, "mismatch count of inputs.")
@@ -111,7 +111,7 @@ public func mul<T: Multiplicative>(_ lhs: [T], _ rhs: [T]) -> [T] {
     return result
 }
 
-@_inlineable
+@inlinable
 public func div<T: FloatingPoint>(_ lhs: [T], _ rhs: [T]) -> [T] {
     var result = lhs
     assert(lhs.count == rhs.count, "mismatch count of inputs.")
@@ -119,7 +119,7 @@ public func div<T: FloatingPoint>(_ lhs: [T], _ rhs: [T]) -> [T] {
     return result
 }
 
-@_inlineable
+@inlinable
 public func mod<T: BinaryInteger>(_ lhs: [T], _ rhs: [T]) -> [T] {
     var result = lhs
     assert(lhs.count == rhs.count, "mismatch count of inputs.")
@@ -127,7 +127,7 @@ public func mod<T: BinaryInteger>(_ lhs: [T], _ rhs: [T]) -> [T] {
     return result
 }
 
-@_inlineable
+@inlinable
 public func mod<T: FloatingPoint>(_ lhs: [T], _ rhs: [T]) -> [T] {
     var result = lhs
     assert(lhs.count == rhs.count, "mismatch count of inputs.")
@@ -135,7 +135,7 @@ public func mod<T: FloatingPoint>(_ lhs: [T], _ rhs: [T]) -> [T] {
     return result
 }
 
-@_inlineable
+@inlinable
 public func mulAdd<T: Multiplicative & Additive>(_ a: [T], _ b: [T], _ c: [T]) -> [T] {
     var result = a
     assert(a.count == b.count && a.count == c.count, "mismatch count of inputs.")
@@ -143,7 +143,7 @@ public func mulAdd<T: Multiplicative & Additive>(_ a: [T], _ b: [T], _ c: [T]) -
     return result
 }
 
-@_inlineable
+@inlinable
 public func mulSub<T: Multiplicative & Subtractive>(_ a: [T], _ b: [T], _ c: [T]) -> [T] {
     var result = a
     assert(a.count == b.count && a.count == c.count, "mismatch count of inputs.")
@@ -151,7 +151,7 @@ public func mulSub<T: Multiplicative & Subtractive>(_ a: [T], _ b: [T], _ c: [T]
     return result
 }
 
-@_inlineable
+@inlinable
 public func subMul<T: Multiplicative & Subtractive>(_ a: [T], _ b: [T], _ c: [T]) -> [T] {
     var result = a
     assert(a.count == b.count && a.count == c.count, "mismatch count of inputs.")
@@ -159,13 +159,13 @@ public func subMul<T: Multiplicative & Subtractive>(_ a: [T], _ b: [T], _ c: [T]
     return result
 }
 
-@_inlineable
+@inlinable
 public func dot<T: FloatingPoint>(_ a: [T], _ b: [T]) -> T {
     assert(a.count == b.count, "mismatch count of inputs.")
     return Dot(a.count, a, 1, b, 1)
 }
 
-@_inlineable
+@inlinable
 public func mulConj(_ lhs: [Complex], _ rhs: [Complex]) -> [Complex] {
     var result = lhs
     assert(lhs.count == rhs.count, "mismatch count of inputs.")
@@ -173,7 +173,7 @@ public func mulConj(_ lhs: [Complex], _ rhs: [Complex]) -> [Complex] {
     return result
 }
 
-@_inlineable
+@inlinable
 public func transpose<T>(_ row: Int, _ column: Int, _ data: [T]) -> [T] {
     var result = data
     assert(data.count == row * column, "mismatch count of input.")
@@ -181,7 +181,7 @@ public func transpose<T>(_ row: Int, _ column: Int, _ data: [T]) -> [T] {
     return result
 }
 
-@_inlineable
+@inlinable
 public func MatrixElimination<T: FloatingPoint & Multiplicative & Subtractive>(_ row: Int, _ matrix: inout [T]) -> Bool {
     let column = matrix.count / row
     assert(matrix.count % row == 0, "count of matrix is not multiples of row.")
@@ -189,7 +189,7 @@ public func MatrixElimination<T: FloatingPoint & Multiplicative & Subtractive>(_
     return MatrixElimination(row, column, &matrix, 1, 1)
 }
 
-@_inlineable
+@inlinable
 public func Radix2CooleyTukey(_ buffer: [Complex]) -> [Complex] {
     assert(buffer.count.isPower2, "size of buffer must be power of 2.")
     let _sqrt = sqrt(Double(buffer.count))
@@ -200,7 +200,7 @@ public func Radix2CooleyTukey(_ buffer: [Complex]) -> [Complex] {
     Radix2CooleyTukey(log2(buffer.count), &result, 1)
     return result
 }
-@_inlineable
+@inlinable
 public func InverseRadix2CooleyTukey(_ buffer: [Complex]) -> [Complex] {
     assert(buffer.count.isPower2, "size of buffer must be power of 2.")
     let _sqrt = sqrt(Double(buffer.count))
@@ -212,7 +212,7 @@ public func InverseRadix2CooleyTukey(_ buffer: [Complex]) -> [Complex] {
     return result
 }
 
-@_inlineable
+@inlinable
 public func Radix2FiniteImpulseFilter(_ signal: [Complex], _ kernel: [Complex]) -> [Complex] {
     var result = signal
     assert(signal.count.isPower2, "size of signal must be power of 2.")
@@ -221,7 +221,7 @@ public func Radix2FiniteImpulseFilter(_ signal: [Complex], _ kernel: [Complex]) 
     return result
 }
 
-@_inlineable
+@inlinable
 public func Radix2CircularConvolve<T: BinaryFloatingPoint>(_ signal: [T], _ kernel: [T]) -> [T] where T : FloatingMathProtocol {
     assert(signal.count.isPower2, "size of signal must be power of 2.")
     assert(signal.count == kernel.count, "mismatch count of inputs.")
@@ -234,7 +234,7 @@ public func Radix2CircularConvolve<T: BinaryFloatingPoint>(_ signal: [T], _ kern
     return result
 }
 
-@_inlineable
+@inlinable
 public func Radix2CircularConvolve(_ signal: [Complex], _ kernel: [Complex]) -> [Complex] {
     assert(signal.count.isPower2, "size of signal must be power of 2.")
     assert(signal.count == kernel.count, "mismatch count of inputs.")
@@ -247,7 +247,7 @@ public func Radix2CircularConvolve(_ signal: [Complex], _ kernel: [Complex]) -> 
     return result
 }
 
-@_inlineable
+@inlinable
 public func Radix2PowerCircularConvolve<T: BinaryFloatingPoint>(_ signal: [T], _ n: T) -> [T] where T : FloatingMathProtocol {
     assert(signal.count.isPower2, "size of signal must be power of 2.")
     if signal.count == 1 {
@@ -258,7 +258,7 @@ public func Radix2PowerCircularConvolve<T: BinaryFloatingPoint>(_ signal: [T], _
     return result
 }
 
-@_inlineable
+@inlinable
 public func Radix2PowerCircularConvolve(_ signal: [Complex], _ n: Double) -> [Complex] {
     assert(signal.count.isPower2, "size of signal must be power of 2.")
     if signal.count == 1 {

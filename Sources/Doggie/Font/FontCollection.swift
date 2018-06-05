@@ -54,8 +54,8 @@ extension FontCollection {
             self.font = font.with(size: 0)
         }
         
-        var hashValue: Int {
-            return font.fontName.hashValue
+        func hash(into hasher: inout Hasher) {
+            hasher.combine(font.fontName)
         }
         
         static func ==(lhs: _ElementWrapper, rhs: _ElementWrapper) -> Bool {

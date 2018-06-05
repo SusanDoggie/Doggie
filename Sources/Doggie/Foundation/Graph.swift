@@ -23,8 +23,7 @@
 //  THE SOFTWARE.
 //
 
-@_versioned
-@_fixed_layout
+@usableFromInline
 enum GraphError : Error {
     case keyCollision
 }
@@ -34,22 +33,21 @@ public struct Graph<Node : Hashable, Link> : Collection {
     
     public typealias Iterator = GraphIterator<Node, Link>
     
-    @_versioned
+    @usableFromInline
     var table: [Node:[Node:Link]]
     
-    @_versioned
-    @_inlineable
+    @inlinable
     init(table: [Node:[Node:Link]]) {
         self.table = table
     }
     
     /// Create an empty graph.
-    @_inlineable
+    @inlinable
     public init() {
         table = Dictionary()
     }
     
-    @_inlineable
+    @inlinable
     public init<S: Sequence>(uniqueKeysWithValues keysAndValues: S) where S.Element == Iterator.Element {
         do {
             try self.init(keysAndValues, uniquingKeysWith: { _, _ in throw GraphError.keyCollision })
@@ -58,7 +56,7 @@ public struct Graph<Node : Hashable, Link> : Collection {
         }
     }
     
-    @_inlineable
+    @inlinable
     public init<S: Sequence>(_ keysAndValues: S, uniquingKeysWith combine: (Link, Link) throws -> Link) rethrows where S.Element == Iterator.Element {
         if let graph = keysAndValues as? Graph {
             self = graph
@@ -67,27 +65,27 @@ public struct Graph<Node : Hashable, Link> : Collection {
         }
     }
     
-    @_inlineable
+    @inlinable
     public var count: Int {
         return table.reduce(0) { $0 + $1.1.count }
     }
     
-    @_inlineable
+    @inlinable
     public func makeIterator() -> Iterator {
         return Iterator(base: table.lazy.flatMap { from, to in to.lazy.map { (from, $0, $1) } }.makeIterator())
     }
     
-    @_inlineable
+    @inlinable
     public var startIndex: GraphIndex<Node, Link> {
         return GraphIndex(index1: table.startIndex, index2: table.first?.value.startIndex)
     }
     
-    @_inlineable
+    @inlinable
     public var endIndex: GraphIndex<Node, Link> {
         return GraphIndex(index1: table.endIndex, index2: nil)
     }
     
-    @_inlineable
+    @inlinable
     public func index(after i: GraphIndex<Node, Link>) -> GraphIndex<Node, Link> {
         if i.index2 != nil {
             let _to = table[i.index1].value
@@ -103,7 +101,7 @@ public struct Graph<Node : Hashable, Link> : Collection {
         }
     }
     
-    @_inlineable
+    @inlinable
     public subscript(position: GraphIndex<Node, Link>) -> Iterator.Element {
         let (from, to_val) = table[position.index1]
         let (to, val) = to_val[position.index2!]
@@ -111,7 +109,7 @@ public struct Graph<Node : Hashable, Link> : Collection {
     }
     
     /// - complexity: Amortized O(1)
-    @_inlineable
+    @inlinable
     public subscript(from fromNode: Node, to toNode: Node) -> Link? {
         get {
             return linkValue(from: fromNode, to: toNode)
@@ -125,7 +123,7 @@ public struct Graph<Node : Hashable, Link> : Collection {
         }
     }
     
-    @_inlineable
+    @inlinable
     public subscript(from fromNode: Node, to toNode: Node, default defaultValue: @autoclosure () -> Link) -> Link {
         get {
             return self[from: fromNode, to: toNode] ?? defaultValue()
@@ -138,7 +136,7 @@ public struct Graph<Node : Hashable, Link> : Collection {
     /// Return `true` iff it has link from `fromNode` to `toNode`.
     ///
     /// - complexity: Amortized O(1)
-    @_inlineable
+    @inlinable
     public func isLinked(from fromNode: Node, to toNode: Node) -> Bool {
         return linkValue(from: fromNode, to: toNode) != nil
     }
@@ -146,7 +144,7 @@ public struct Graph<Node : Hashable, Link> : Collection {
     /// Return `true` iff it has link between two nodes.
     ///
     /// - complexity: Amortized O(1)
-    @_inlineable
+    @inlinable
     public func isLinked(between lhs: Node, _ rhs: Node) -> Bool {
         if lhs == rhs {
             return isLinked(from: lhs, to: rhs)
@@ -155,13 +153,13 @@ public struct Graph<Node : Hashable, Link> : Collection {
     }
     
     /// - complexity: Amortized O(1)
-    @_inlineable
+    @inlinable
     public func linkValue(from fromNode: Node, to toNode: Node) -> Link? {
         return table[fromNode]?[toNode]
     }
     
     /// - complexity: Amortized O(1)
-    @_inlineable
+    @inlinable
     public func linkValues(between lhs: Node, _ rhs: Node) -> (Link?, Link?) {
         if lhs == rhs {
             let value = linkValue(from: lhs, to: rhs)
@@ -172,14 +170,14 @@ public struct Graph<Node : Hashable, Link> : Collection {
     
     /// - complexity: Amortized O(1)
     @discardableResult
-    @_inlineable
+    @inlinable
     public mutating func updateLink(from fromNode: Node, to toNode: Node, with link: Link) -> Link? {
         return table[fromNode, default: [:]].updateValue(link, forKey: toNode)
     }
     
     /// - complexity: Amortized O(1)
     @discardableResult
-    @_inlineable
+    @inlinable
     public mutating func removeLink(from fromNode: Node, to toNode: Node) -> Link? {
         if var list = table[fromNode], let result = list[toNode] {
             list.removeValue(forKey: toNode)
@@ -195,7 +193,7 @@ public struct Graph<Node : Hashable, Link> : Collection {
     
     /// - complexity: Amortized O(1)
     @discardableResult
-    @_inlineable
+    @inlinable
     public mutating func removeLinks(between lhs: Node, _ rhs: Node) -> (Link?, Link?) {
         if lhs == rhs {
             let value = removeLink(from: lhs, to: rhs)
@@ -207,7 +205,7 @@ public struct Graph<Node : Hashable, Link> : Collection {
     /// `true` iff `self` contains `node`.
     ///
     /// - complexity: O(`count of nodes`).
-    @_inlineable
+    @inlinable
     public func contains(_ node: Node) -> Bool {
         if table[node] != nil {
             return true
@@ -218,7 +216,7 @@ public struct Graph<Node : Hashable, Link> : Collection {
         return false
     }
     
-    @_inlineable
+    @inlinable
     public var isEmpty: Bool {
         return table.isEmpty
     }
@@ -226,7 +224,7 @@ public struct Graph<Node : Hashable, Link> : Collection {
     /// Remove a node with all connections with it.
     ///
     /// - complexity: O(`count of nodes`).
-    @_inlineable
+    @inlinable
     public mutating func removeNode(_ node: Node) {
         table[node] = nil
         for (fromNode, var list) in table where list.removeValue(forKey: node) != nil {
@@ -245,13 +243,13 @@ public struct Graph<Node : Hashable, Link> : Collection {
     ///   storage is released.  The default is `false`.
     ///
     /// - complexity: O(`count of nodes`).
-    @_inlineable
+    @inlinable
     public mutating func removeAll(keepingCapacity keepCapacity: Bool = false) {
         table.removeAll(keepingCapacity: keepCapacity)
     }
     
     /// A collection containing just the links of `self`.
-    @_inlineable
+    @inlinable
     public var links: LazyMapCollection<Graph<Node, Link>, Link> {
         return self.lazy.map { $0.2 }
     }
@@ -259,7 +257,7 @@ public struct Graph<Node : Hashable, Link> : Collection {
     /// A set containing just the nodes of `self`.
     ///
     /// - complexity: O(`count of nodes`).
-    @_inlineable
+    @inlinable
     public var nodes: Set<Node> {
         var _nodes = Set<Node>()
         for (_node, list) in table {
@@ -270,24 +268,24 @@ public struct Graph<Node : Hashable, Link> : Collection {
     }
     
     /// A set of nodes which has connection with `nearNode`.
-    @_inlineable
+    @inlinable
     public func nodes(near nearNode: Node) -> Set<Node> {
         return Set(self.nodes(from: nearNode).concat(self.nodes(to: nearNode)).lazy.map { $0.0 })
     }
     
     /// A collection of nodes which connected from `fromNode`.
-    @_inlineable
+    @inlinable
     public func nodes(from fromNode: Node) -> AnyCollection<(Node, Link)> {
         return (table[fromNode]?.lazy.map { ($0.key, $0.value) }).map(AnyCollection.init) ?? AnyCollection(EmptyCollection())
     }
     
     /// A collection of nodes which connected to `toNode`.
-    @_inlineable
+    @inlinable
     public func nodes(to toNode: Node) -> AnyCollection<(Node, Link)> {
         return AnyCollection(table.lazy.compactMap { from, list in list[toNode].map { (from, $0) } })
     }
     
-    @_inlineable
+    @inlinable
     public func filter(_ isIncluded: (Iterator.Element) throws -> Bool) rethrows -> Graph {
         return try Graph(table: Dictionary(uniqueKeysWithValues: table.compactMap { from, list in
             let list = try list.filter { try isIncluded((from, $0, $1)) }
@@ -295,19 +293,19 @@ public struct Graph<Node : Hashable, Link> : Collection {
         }))
     }
     
-    @_inlineable
+    @inlinable
     public func mapValues<T>(_ transform: (Link) throws -> T) rethrows -> Graph<Node, T> {
         return try Graph<Node, T>(table: table.mapValues { try $0.mapValues(transform) })
     }
     
-    @_inlineable
+    @inlinable
     public mutating func merge<S: Sequence>(_ keysAndValues: S, uniquingKeysWith combine: (Link, Link) throws -> Link) rethrows where S.Element == (Node, Node, Link) {
         for (key, list) in Dictionary(grouping: keysAndValues, by: { $0.0 }) {
             try table[key, default: [:]].merge(list.lazy.map { ($0.1, $0.2) }, uniquingKeysWith: combine)
         }
     }
     
-    @_inlineable
+    @inlinable
     public func merging<S: Sequence>(_ keysAndValues: S, uniquingKeysWith combine: (Link, Link) throws -> Link) rethrows -> Graph where S.Element == (Node, Node, Link) {
         var result = self
         try result.merge(keysAndValues, uniquingKeysWith: combine)
@@ -317,7 +315,7 @@ public struct Graph<Node : Hashable, Link> : Collection {
 
 extension Graph: CustomStringConvertible {
     
-    @_inlineable
+    @inlinable
     public var description: String {
         return "[\(self.map { "(from: \($0.from), to: \($0.to)): \($0.2)" }.joined(separator: ", "))]"
     }
@@ -328,7 +326,7 @@ extension Graph where Node == AnyHashable {
     /// Return `true` iff it has link from `fromNode` to `toNode`.
     ///
     /// - complexity: Amortized O(1)
-    @_inlineable
+    @inlinable
     public func isLinked<ConcreteElement : Hashable>(from fromNode: ConcreteElement, to toNode: ConcreteElement) -> Bool {
         return self.isLinked(from: AnyHashable(fromNode), to: AnyHashable(toNode))
     }
@@ -336,40 +334,40 @@ extension Graph where Node == AnyHashable {
     /// Return `true` iff it has link between two nodes.
     ///
     /// - complexity: Amortized O(1)
-    @_inlineable
+    @inlinable
     public func isLinked<ConcreteElement : Hashable>(between node1: ConcreteElement, _ node2: ConcreteElement) -> Bool {
         return self.isLinked(between: AnyHashable(node1), AnyHashable(node2))
     }
     
     /// - complexity: Amortized O(1)
-    @_inlineable
+    @inlinable
     public func linkValue<ConcreteElement : Hashable>(from fromNode: ConcreteElement, to toNode: ConcreteElement) -> Link? {
         return self.linkValue(from: AnyHashable(fromNode), to: AnyHashable(toNode))
     }
     
     /// - complexity: Amortized O(1)
-    @_inlineable
+    @inlinable
     public func linkValues<ConcreteElement : Hashable>(between node1: ConcreteElement, _ node2: ConcreteElement) -> (Link?, Link?) {
         return self.linkValues(between: AnyHashable(node1), AnyHashable(node2))
     }
     
     /// - complexity: Amortized O(1)
     @discardableResult
-    @_inlineable
+    @inlinable
     public mutating func updateLink<ConcreteElement : Hashable>(from fromNode: ConcreteElement, to toNode: ConcreteElement, with link: Link) -> Link? {
         return self.updateLink(from: AnyHashable(fromNode), to: AnyHashable(toNode), with: link)
     }
     
     /// - complexity: Amortized O(1)
     @discardableResult
-    @_inlineable
+    @inlinable
     public mutating func removeLink<ConcreteElement : Hashable>(from fromNode: ConcreteElement, to toNode: ConcreteElement) -> Link? {
         return self.removeLink(from: AnyHashable(fromNode), to: AnyHashable(toNode))
     }
     
     /// - complexity: Amortized O(1)
     @discardableResult
-    @_inlineable
+    @inlinable
     public mutating func removeLinks<ConcreteElement : Hashable>(between node1: ConcreteElement, _ node2: ConcreteElement) -> (Link?, Link?) {
         return self.removeLinks(between: AnyHashable(node1), AnyHashable(node2))
     }
@@ -377,7 +375,7 @@ extension Graph where Node == AnyHashable {
     /// `true` iff `self` contains `node`.
     ///
     /// - complexity: O(`count of nodes`).
-    @_inlineable
+    @inlinable
     public func contains<ConcreteElement : Hashable>(_ node: ConcreteElement) -> Bool {
         return self.contains(AnyHashable(node))
     }
@@ -385,25 +383,25 @@ extension Graph where Node == AnyHashable {
     /// Remove a node with all connections with it.
     ///
     /// - complexity: O(`count of nodes`).
-    @_inlineable
+    @inlinable
     public mutating func removeNode<ConcreteElement : Hashable>(_ node: ConcreteElement) {
         self.removeNode(AnyHashable(node))
     }
     /// A set of nodes which has connection with `nearNode`.
 
-    @_inlineable
+    @inlinable
     public func nodes<ConcreteElement : Hashable>(near nearNode: ConcreteElement) -> Set<Node> {
         return self.nodes(near: AnyHashable(nearNode))
     }
     
     /// A collection of nodes which connected from `fromNode`.
-    @_inlineable
+    @inlinable
     public func nodes<ConcreteElement : Hashable>(from fromNode: ConcreteElement) -> AnyCollection<(Node, Link)> {
         return self.nodes(from: AnyHashable(fromNode))
     }
     
     /// A collection of nodes which connected to `toNode`.
-    @_inlineable
+    @inlinable
     public func nodes<ConcreteElement : Hashable>(to toNode: ConcreteElement) -> AnyCollection<(Node, Link)> {
         return self.nodes(to: AnyHashable(toNode))
     }
@@ -412,14 +410,13 @@ extension Graph where Node == AnyHashable {
 @_fixed_layout
 public struct GraphIndex<Node : Hashable, Link> : Hashable, Comparable {
     
-    @_versioned
+    @usableFromInline
     let index1: DictionaryIndex<Node, [Node:Link]>
     
-    @_versioned
+    @usableFromInline
     let index2: DictionaryIndex<Node, Link>?
     
-    @_versioned
-    @_inlineable
+    @inlinable
     init(index1: DictionaryIndex<Node, [Node:Link]>, index2: DictionaryIndex<Node, Link>?) {
         self.index1 = index1
         self.index2 = index2
@@ -429,13 +426,14 @@ public struct GraphIndex<Node : Hashable, Link> : Hashable, Comparable {
 
 extension GraphIndex {
     
-    @_inlineable
-    public var hashValue: Int {
-        return hash_combine(index1, index2 == nil ? 0 : 1, index2?.hashValue ?? 0)
+    @inlinable
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(index1)
+        hasher.combine(index2)
     }
 }
 
-@_inlineable
+@inlinable
 public func < <Node, Link>(lhs: GraphIndex<Node, Link>, rhs: GraphIndex<Node, Link>) -> Bool {
     if lhs.index1 < rhs.index1 {
         return true
@@ -450,16 +448,15 @@ public struct GraphIterator<Node : Hashable, Link> : IteratorProtocol, Sequence 
     
     public typealias Element = (from: Node, to: Node, value: Link)
     
-    @_versioned
-    var base: FlattenIterator<LazyMapIterator<DictionaryIterator<Node, [Node : Link]>, LazyMapCollection<[Node : Link], (Node, Node, Link)>>>
+    @usableFromInline
+    var base: FlattenSequence<LazyMapCollection<[Node : [Node : Link]], LazyMapCollection<[Node : Link], (Node, Node, Link)>>>.Iterator
     
-    @_versioned
-    @_inlineable
-    init(base: FlattenIterator<LazyMapIterator<DictionaryIterator<Node, [Node : Link]>, LazyMapCollection<[Node : Link], (Node, Node, Link)>>>) {
+    @inlinable
+    init(base: FlattenSequence<LazyMapCollection<[Node : [Node : Link]], LazyMapCollection<[Node : Link], (Node, Node, Link)>>>.Iterator) {
         self.base = base
     }
     
-    @_inlineable
+    @inlinable
     public mutating func next() -> Element? {
         return base.next()
     }
@@ -467,7 +464,7 @@ public struct GraphIterator<Node : Hashable, Link> : IteratorProtocol, Sequence 
 
 extension GraphIterator: CustomStringConvertible {
     
-    @_inlineable
+    @inlinable
     public var description: String {
         return "GraphIterator"
     }

@@ -720,11 +720,11 @@ extension UInt : SDAtomicProtocol {
 @_fixed_layout
 public struct Atomic<Instance> {
     
-    @_versioned
+    @usableFromInline
     var base: Base
     
-    @_versioned
     @_transparent
+    @usableFromInline
     init(base: Base) {
         self.base = base
     }
@@ -747,14 +747,14 @@ public struct Atomic<Instance> {
 
 extension Atomic {
     
-    @_versioned
+    @usableFromInline
     @_fixed_layout
     class Base {
         
-        @_versioned
+        @usableFromInline
         var value: Instance
         
-        @_versioned
+        @usableFromInline
         init(value: Instance) {
             self.value = value
         }
@@ -763,8 +763,8 @@ extension Atomic {
 
 extension Atomic : SDAtomicProtocol {
     
-    @_versioned
     @_transparent
+    @usableFromInline
     mutating func withBasePointer<Result, Raw>(_ body: (UnsafeMutablePointer<Raw>) -> Result) -> Result {
         return withUnsafeMutablePointer(to: &base) { $0.withMemoryRebound(to: Raw.self, capacity: 1) { body($0) } }
     }
@@ -801,8 +801,8 @@ extension Atomic : SDAtomicProtocol {
         return result
     }
     
-    @_versioned
     @_transparent
+    @usableFromInline
     mutating func _compareSetWeak(old: Base, new: Base) -> Bool {
         let _old = Unmanaged.passUnretained(old)
         let _new = Unmanaged.passRetained(new)

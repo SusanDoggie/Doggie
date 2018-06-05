@@ -34,8 +34,7 @@ public struct Image<Pixel: ColorPixelProtocol> {
     
     public var colorSpace: ColorSpace<Pixel.Model>
     
-    @_versioned
-    @_inlineable
+    @inlinable
     init(width: Int, height: Int, resolution: Resolution, pixels: MappedBuffer<Pixel>, colorSpace: ColorSpace<Pixel.Model>) {
         precondition(width >= 0, "negative width is not allowed.")
         precondition(height >= 0, "negative height is not allowed.")
@@ -47,7 +46,7 @@ public struct Image<Pixel: ColorPixelProtocol> {
         self.colorSpace = colorSpace
     }
     
-    @_inlineable
+    @inlinable
     public init(width: Int, height: Int, resolution: Resolution = Resolution(resolution: 1, unit: .point), colorSpace: ColorSpace<Pixel.Model>, pixel: Pixel = Pixel(), option: MappedBufferOption = .default) {
         precondition(width >= 0, "negative width is not allowed.")
         precondition(height >= 0, "negative height is not allowed.")
@@ -58,7 +57,7 @@ public struct Image<Pixel: ColorPixelProtocol> {
         self.pixels = MappedBuffer(repeating: pixel, count: width * height, option: option)
     }
     
-    @_inlineable
+    @inlinable
     public init(image: Image, option: MappedBufferOption) {
         self.width = image.width
         self.height = image.height
@@ -67,7 +66,7 @@ public struct Image<Pixel: ColorPixelProtocol> {
         self.pixels = MappedBuffer(image.pixels, option: option)
     }
     
-    @_inlineable
+    @inlinable
     public init<P>(image: Image<P>, option: MappedBufferOption) where P.Model == Pixel.Model {
         self.width = image.width
         self.height = image.height
@@ -80,7 +79,7 @@ public struct Image<Pixel: ColorPixelProtocol> {
         }
     }
     
-    @_inlineable
+    @inlinable
     public init<P>(image: Image<P>, colorSpace: ColorSpace<Pixel.Model>, intent: RenderingIntent = .default, option: MappedBufferOption) {
         self.width = image.width
         self.height = image.height
@@ -100,7 +99,7 @@ public struct Image<Pixel: ColorPixelProtocol> {
 
 extension Image {
     
-    @_inlineable
+    @inlinable
     public init<P>(image: Image<P>) where P.Model == Pixel.Model {
         self.init(image: image, option: image.option)
     }
@@ -108,7 +107,7 @@ extension Image {
 
 extension Image : CustomStringConvertible {
     
-    @_inlineable
+    @inlinable
     public var description: String {
         return "Image<\(Pixel.self)>(width: \(width), height: \(height), colorSpace: \(colorSpace), resolution: \(resolution))"
     }
@@ -116,7 +115,7 @@ extension Image : CustomStringConvertible {
 
 extension Image {
     
-    @_inlineable
+    @inlinable
     public var option: MappedBufferOption {
         return pixels.option
     }
@@ -124,7 +123,7 @@ extension Image {
 
 extension Image {
     
-    @_inlineable
+    @inlinable
     public subscript(x: Int, y: Int) -> Color<Pixel.Model> {
         get {
             precondition(0..<width ~= x && 0..<height ~= y)
@@ -139,12 +138,12 @@ extension Image {
 
 extension Image {
     
-    @_inlineable
+    @inlinable
     public func linearTone() -> Image {
         return Image(width: height, height: width, resolution: resolution, pixels: colorSpace.convertToLinear(pixels), colorSpace: colorSpace.linearTone)
     }
     
-    @_inlineable
+    @inlinable
     public mutating func setWhiteBalance(_ white: Point) {
         
         let colorSpace = self.colorSpace
@@ -168,15 +167,15 @@ extension Image {
 
 extension Image {
     
-    @_inlineable
+    @inlinable
     public var isOpaque: Bool {
-        return pixels.all { $0.isOpaque }
+        return pixels.allSatisfy { $0.isOpaque }
     }
 }
 
 extension Image {
     
-    @_inlineable
+    @inlinable
     public func map<P>(_ transform: (Pixel) throws -> P) rethrows -> Image<P> where P.Model == Pixel.Model {
         return try Image<P>(width: height, height: width, resolution: resolution, pixels: pixels.map(transform), colorSpace: colorSpace)
     }
@@ -184,7 +183,7 @@ extension Image {
 
 extension Image {
     
-    @_inlineable
+    @inlinable
     public func transposed() -> Image {
         if pixels.count == 0 {
             return Image(width: height, height: width, resolution: Resolution(horizontal: resolution.vertical, vertical: resolution.horizontal, unit: resolution.unit), pixels: [], colorSpace: colorSpace)
@@ -194,7 +193,7 @@ extension Image {
         return Image(width: height, height: width, resolution: Resolution(horizontal: resolution.vertical, vertical: resolution.horizontal, unit: resolution.unit), pixels: copy, colorSpace: colorSpace)
     }
     
-    @_inlineable
+    @inlinable
     public func verticalFlipped() -> Image {
         
         var pixels = self.pixels
@@ -219,7 +218,7 @@ extension Image {
         return Image(width: width, height: height, resolution: resolution, pixels: pixels, colorSpace: colorSpace)
     }
     
-    @_inlineable
+    @inlinable
     public func horizontalFlipped() -> Image {
         
         var pixels = self.pixels
@@ -247,25 +246,25 @@ extension Image {
 
 extension Image {
     
-    @_inlineable
+    @inlinable
     public func withUnsafeBufferPointer<R>(_ body: (UnsafeBufferPointer<Pixel>) throws -> R) rethrows -> R {
         
         return try pixels.withUnsafeBufferPointer(body)
     }
     
-    @_inlineable
+    @inlinable
     public mutating func withUnsafeMutableBufferPointer<R>(_ body: (inout UnsafeMutableBufferPointer<Pixel>) throws -> R) rethrows -> R {
         
         return try pixels.withUnsafeMutableBufferPointer(body)
     }
     
-    @_inlineable
+    @inlinable
     public func withUnsafeBytes<R>(_ body: (UnsafeRawBufferPointer) throws -> R) rethrows -> R {
         
         return try pixels.withUnsafeBytes(body)
     }
     
-    @_inlineable
+    @inlinable
     public mutating func withUnsafeMutableBytes<R>(_ body: (UnsafeMutableRawBufferPointer) throws -> R) rethrows -> R {
         
         return try pixels.withUnsafeMutableBytes(body)

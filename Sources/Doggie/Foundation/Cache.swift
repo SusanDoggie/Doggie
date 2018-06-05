@@ -29,30 +29,30 @@ public struct Cache<Key: Hashable> : Collection, ExpressibleByDictionaryLiteral 
     public typealias Index = Dictionary<Key, Any>.Index
     public typealias Element = (Key, Any)
     
-    @_versioned
+    @usableFromInline
     var base: Base
     
-    @_inlineable
+    @inlinable
     public init() {
         self.base = Base(table: Dictionary())
     }
     
-    @_inlineable
+    @inlinable
     public init(minimumCapacity: Int) {
         self.base = Base(table: Dictionary(minimumCapacity: minimumCapacity))
     }
     
-    @_inlineable
+    @inlinable
     public init<S : Sequence>(uniqueKeysWithValues keysAndValues: S) where S.Element == Element {
         self.base = Base(table: Dictionary(uniqueKeysWithValues: keysAndValues))
     }
     
-    @_inlineable
+    @inlinable
     public init<S : Sequence>(_ keysAndValues: S, uniquingKeysWith combine: (Any, Any) throws -> Any) rethrows where S.Element == Element {
         self.base = Base(table: try Dictionary(keysAndValues, uniquingKeysWith: combine))
     }
     
-    @_inlineable
+    @inlinable
     public init(dictionaryLiteral elements: (Key, Any)...) {
         self.base = Base(table: Dictionary(uniqueKeysWithValues: elements))
     }
@@ -60,24 +60,23 @@ public struct Cache<Key: Hashable> : Collection, ExpressibleByDictionaryLiteral 
 
 extension Cache {
     
-    @_versioned
+    @usableFromInline
     @_fixed_layout
     class Base {
         
-        @_versioned
+        @usableFromInline
         let lck = SDLock()
         
-        @_versioned
+        @usableFromInline
         var table: [Key: Any]
         
-        @_versioned
-        @_inlineable
+        @inlinable
         init(table: [Key: Any]) {
             self.table = table
         }
     }
     
-    @_inlineable
+    @inlinable
     public var identifier: ObjectIdentifier {
         return ObjectIdentifier(base)
     }
@@ -85,32 +84,32 @@ extension Cache {
 
 extension Cache {
     
-    @_inlineable
+    @inlinable
     public var startIndex: Index {
         return base.lck.synchronized { base.table.startIndex }
     }
     
-    @_inlineable
+    @inlinable
     public var endIndex: Index {
         return base.lck.synchronized { base.table.endIndex }
     }
     
-    @_inlineable
+    @inlinable
     public var count: Int {
         return base.lck.synchronized { base.table.count }
     }
     
-    @_inlineable
+    @inlinable
     public var isEmpty: Bool {
         return base.lck.synchronized { base.table.isEmpty }
     }
     
-    @_inlineable
+    @inlinable
     public func index(after i: Index) -> Index {
         return base.lck.synchronized { base.table.index(after: i) }
     }
     
-    @_inlineable
+    @inlinable
     public subscript(position: Index) -> Element {
         return base.lck.synchronized { base.table[position] }
     }
@@ -118,12 +117,12 @@ extension Cache {
 
 extension Cache {
     
-    @_inlineable
+    @inlinable
     public var keys: Dictionary<Key, Any>.Keys {
         return base.lck.synchronized { base.table.keys }
     }
     
-    @_inlineable
+    @inlinable
     public var values: Dictionary<Key, Any>.Values {
         get {
             return base.lck.synchronized { base.table.values }
@@ -142,7 +141,7 @@ extension Cache {
 
 extension Cache {
     
-    @_inlineable
+    @inlinable
     public mutating func removeAll(keepingCapacity keepCapacity: Bool = false) {
         if _fastPath(isKnownUniquelyReferenced(&base)) {
             base.lck.synchronized { base.table.removeAll(keepingCapacity: keepCapacity) }
@@ -157,7 +156,7 @@ extension Cache {
         }
     }
     
-    @_inlineable
+    @inlinable
     public subscript<Value>(key: Key) -> Value? {
         get {
             return base.lck.synchronized { base.table[key] as? Value }
@@ -173,7 +172,7 @@ extension Cache {
         }
     }
     
-    @_inlineable
+    @inlinable
     public subscript<Value>(key: Key, default defaultValue: @autoclosure () -> Value) -> Value {
         get {
             return self[key] ?? defaultValue()
@@ -183,7 +182,7 @@ extension Cache {
         }
     }
     
-    @_inlineable
+    @inlinable
     public subscript<Value>(key: Key, body: () -> Value) -> Value {
         
         return base.lck.synchronized {

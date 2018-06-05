@@ -289,9 +289,8 @@ public func positive_mod<T: FloatingPoint>(_ x: T, _ m: T) -> T {
 
 extension FloatingPoint {
     
-    @_versioned
     @_transparent
-    static var defaultAlmostEqualEpsilon: Self {
+    public static var defaultAlmostEqualEpsilon: Self {
         return Self(sign: .plus, exponent: Self.ulpOfOne.exponent / 2, significand: 1)
     }
     

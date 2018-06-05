@@ -31,7 +31,7 @@ public enum MappedBufferOption {
 
 extension MappedBufferOption {
     
-    @_inlineable
+    @inlinable
     public static var `default` : MappedBufferOption {
         return .inMemory
     }
@@ -43,49 +43,46 @@ public struct MappedBuffer<Element> : RandomAccessCollection, MutableCollection,
     
     public typealias Index = Int
     
-    @_versioned
+    @usableFromInline
     var base: Base
     
-    @_versioned
-    @_inlineable
+    @inlinable
     init(base: Base) {
         self.base = base
     }
     
-    @_inlineable
+    @inlinable
     public init() {
         self.base = Base(capacity: 0, option: .default)
     }
     
-    @_inlineable
+    @inlinable
     public init(option: MappedBufferOption) {
         self.base = Base(capacity: 0, option: option)
     }
     
-    @_inlineable
+    @inlinable
     public init(capacity: Int, option: MappedBufferOption = .default) {
         self.base = Base(capacity: capacity, option: option)
     }
     
-    @_inlineable
+    @inlinable
     public init(repeating repeatedValue: Element, count: Int, option: MappedBufferOption = .default) {
         self.base = Base(capacity: count, option: option)
         self.base.count = count
         
-        var repeatedValue = repeatedValue
-        guard Swift.withUnsafeBytes(of: &repeatedValue, { !$0.all(0) }) else { return }
-        
+        guard Swift.withUnsafeBytes(of: repeatedValue, { $0.contains { $0 != 0 } }) else { return }
         self.base.address.initialize(repeating: repeatedValue, count: count)
     }
     
-    @_inlineable
+    @inlinable
     public init(arrayLiteral elements: Element ...) {
         self.base = Base(capacity: elements.count, option: .default)
         self.base.count = elements.count
         self.base.address.initialize(from: elements, count: elements.count)
     }
     
-    @_inlineable
+    @inlinable
     public init<S : Sequence>(_ elements: S, option: MappedBufferOption = .default) where S.Element == Element {
         if let elements = elements as? MappedBuffer {
             if elements.option == option {
@@ -105,12 +102,12 @@ public struct MappedBuffer<Element> : RandomAccessCollection, MutableCollection,
 
 extension MappedBuffer {
     
-    @_inlineable
+    @inlinable
     public var option: MappedBufferOption {
         return base.fd == -1 ? .inMemory : .fileBacked
     }
     
-    @_inlineable
+    @inlinable
     public var capacity: Int {
         return base.capacity
     }
@@ -118,7 +115,7 @@ extension MappedBuffer {
 
 extension MappedBuffer : CustomStringConvertible {
     
-    @_inlineable
+    @inlinable
     public var description: String {
         return self.withUnsafeBufferPointer { "[\($0.lazy.map { "\($0)" }.joined(separator: ", "))]" }
     }
@@ -126,7 +123,7 @@ extension MappedBuffer : CustomStringConvertible {
 
 extension MappedBuffer : Decodable where Element : Decodable {
     
-    @_inlineable
+    @inlinable
     public init(from decoder: Decoder) throws {
         
         var container = try decoder.unkeyedContainer()
@@ -147,7 +144,7 @@ extension MappedBuffer : Decodable where Element : Decodable {
 
 extension MappedBuffer : Encodable where Element : Encodable {
     
-    @_inlineable
+    @inlinable
     public func encode(to encoder: Encoder) throws {
         var container = encoder.unkeyedContainer()
         try container.encode(self)
@@ -156,7 +153,7 @@ extension MappedBuffer : Encodable where Element : Encodable {
 
 extension MappedBuffer : CustomReflectable {
     
-    @_inlineable
+    @inlinable
     public var customMirror: Mirror {
         return Mirror(self, unlabeledChildren: self, displayStyle: .collection)
     }
@@ -164,8 +161,7 @@ extension MappedBuffer : CustomReflectable {
 
 extension MappedBuffer {
     
-    @_versioned
-    @_inlineable
+    @inlinable
     mutating func make_unique_if_need() {
         
         if _fastPath(isKnownUniquelyReferenced(&base)) {
@@ -180,17 +176,17 @@ extension MappedBuffer {
         self.base = new_base
     }
     
-    @_inlineable
+    @inlinable
     public var startIndex: Int {
         return 0
     }
     
-    @_inlineable
+    @inlinable
     public var endIndex: Int {
         return base.count
     }
     
-    @_inlineable
+    @inlinable
     public subscript(position: Int) -> Element {
         get {
             precondition(self.indices ~= position, "Index out of range.")
@@ -205,7 +201,7 @@ extension MappedBuffer {
 
 extension MappedBuffer : RangeReplaceableCollection {
     
-    @_inlineable
+    @inlinable
     public mutating func append(_ newElement: Element) {
         
         let old_count = base.count
@@ -228,7 +224,7 @@ extension MappedBuffer : RangeReplaceableCollection {
         base.count = new_count
     }
     
-    @_inlineable
+    @inlinable
     public mutating func append<S : Sequence>(contentsOf newElements: S) where S.Element == Element {
         
         let old_count = base.count
@@ -254,7 +250,7 @@ extension MappedBuffer : RangeReplaceableCollection {
         }
     }
     
-    @_inlineable
+    @inlinable
     public mutating func reserveCapacity(_ minimumCapacity: Int) {
         
         guard base.capacity < minimumCapacity else { return }
@@ -274,7 +270,7 @@ extension MappedBuffer : RangeReplaceableCollection {
         }
     }
     
-    @_inlineable
+    @inlinable
     public mutating func removeAll(keepingCapacity keepCapacity: Bool = false) {
         
         if keepCapacity {
@@ -296,7 +292,7 @@ extension MappedBuffer : RangeReplaceableCollection {
         }
     }
     
-    @_inlineable
+    @inlinable
     public mutating func replaceSubrange<C : Collection>(_ subRange: Range<Int>, with newElements: C) where C.Element == Element {
         
         precondition(0 <= subRange.lowerBound, "Index out of range.")
@@ -364,18 +360,18 @@ extension MappedBuffer : RangeReplaceableCollection {
 
 extension MappedBuffer {
     
-    @_inlineable
+    @inlinable
     public var underestimatedCount: Int {
         return self.count
     }
     
-    @_inlineable
+    @inlinable
     public func _copyContents(initializing buffer: UnsafeMutableBufferPointer<Element>) -> (IndexingIterator<MappedBuffer>, UnsafeMutableBufferPointer<Element>.Index) {
         let written = self.withUnsafeBufferPointer { source in source._copyContents(initializing: buffer).1 }
         return (Iterator(_elements: self, _position: written), written)
     }
     
-    @_inlineable
+    @inlinable
     public func _copyToContiguousArray() -> ContiguousArray<Element> {
         
         var result = ContiguousArray<Element>()
@@ -389,13 +385,13 @@ extension MappedBuffer {
 
 extension MappedBuffer {
     
-    @_inlineable
+    @inlinable
     public func withUnsafeBufferPointer<R>(_ body: (UnsafeBufferPointer<Element>) throws -> R) rethrows -> R {
         
         return try body(UnsafeBufferPointer(start: base.address, count: base.count))
     }
     
-    @_inlineable
+    @inlinable
     public mutating func withUnsafeMutableBufferPointer<R>(_ body: (inout UnsafeMutableBufferPointer<Element>) throws -> R) rethrows -> R {
         
         self.make_unique_if_need()
@@ -408,13 +404,13 @@ extension MappedBuffer {
         return try body(&buf)
     }
     
-    @_inlineable
+    @inlinable
     public func withUnsafeBytes<R>(_ body: (UnsafeRawBufferPointer) throws -> R) rethrows -> R {
         
         return try body(UnsafeRawBufferPointer(start: base.address, count: base.count * MemoryLayout<Element>.stride))
     }
     
-    @_inlineable
+    @inlinable
     public mutating func withUnsafeMutableBytes<R>(_ body: (UnsafeMutableRawBufferPointer) throws -> R) rethrows -> R {
         
         self.make_unique_if_need()
@@ -425,7 +421,7 @@ extension MappedBuffer {
 
 extension MappedBuffer : Equatable where Element : Equatable {
     
-    @_inlineable
+    @inlinable
     public static func ==(lhs: MappedBuffer, rhs: MappedBuffer) -> Bool {
         return lhs.withUnsafeBufferPointer { lhs in rhs.withUnsafeBufferPointer { rhs in lhs.count == rhs.count && (lhs.baseAddress == rhs.baseAddress || lhs.elementsEqual(rhs)) } }
     }
@@ -433,21 +429,20 @@ extension MappedBuffer : Equatable where Element : Equatable {
 
 extension MappedBuffer {
     
-    @_versioned
+    @usableFromInline
     @_fixed_layout
     struct _Box {
         
-        @_versioned
+        @usableFromInline
         var ref: Base?
         
-        @_versioned
-        @_inlineable
+        @inlinable
         init(ref: Base) {
             self.ref = ref
         }
     }
     
-    @_inlineable
+    @inlinable
     public var data: Data {
         var box = _Box(ref: base)
         let immutableReference = NSData(bytesNoCopy: base.address, length: base.count * MemoryLayout<Element>.stride, deallocator: { _, _ in box.ref = nil })
@@ -457,12 +452,12 @@ extension MappedBuffer {
 
 extension MappedBuffer {
     
-    @_inlineable
+    @inlinable
     public func map<T>(_ transform: (Element) throws -> T) rethrows -> MappedBuffer<T> {
         return try self.map(option: option, transform)
     }
     
-    @_inlineable
+    @inlinable
     public func map<T>(option: MappedBufferOption, _ transform: (Element) throws -> T) rethrows -> MappedBuffer<T> {
         
         let new_base = MappedBuffer<T>.Base(capacity: count, option: option)
@@ -480,12 +475,12 @@ extension MappedBuffer {
         return MappedBuffer<T>(base: new_base)
     }
     
-    @_inlineable
+    @inlinable
     public func filter(_ isIncluded: (Element) throws -> Bool) rethrows -> MappedBuffer {
         return try self.filter(option: option, isIncluded)
     }
     
-    @_inlineable
+    @inlinable
     public func filter(option: MappedBufferOption, _ isIncluded: (Element) throws -> Bool) rethrows -> MappedBuffer {
         
         var result = MappedBuffer(option: option)
@@ -499,12 +494,12 @@ extension MappedBuffer {
         return result
     }
     
-    @_inlineable
+    @inlinable
     public func flatMap<SegmentOfResult : Sequence>(_ transform: (Element) throws -> SegmentOfResult) rethrows -> MappedBuffer<SegmentOfResult.Element> {
         return try self.flatMap(option: option, transform)
     }
     
-    @_inlineable
+    @inlinable
     public func flatMap<SegmentOfResult : Sequence>(option: MappedBufferOption, _ transform: (Element) throws -> SegmentOfResult) rethrows -> MappedBuffer<SegmentOfResult.Element> {
         
         var result = MappedBuffer<SegmentOfResult.Element>(option: option)
@@ -518,12 +513,12 @@ extension MappedBuffer {
         return result
     }
     
-    @_inlineable
+    @inlinable
     public func compactMap<ElementOfResult>(_ transform: (Element) throws -> ElementOfResult?) rethrows -> MappedBuffer<ElementOfResult> {
         return try self.compactMap(option: option, transform)
     }
     
-    @_inlineable
+    @inlinable
     public func compactMap<ElementOfResult>(option: MappedBufferOption, _ transform: (Element) throws -> ElementOfResult?) rethrows -> MappedBuffer<ElementOfResult> {
         
         var result = MappedBuffer<ElementOfResult>(option: option)
@@ -539,7 +534,7 @@ extension MappedBuffer {
         return result
     }
     
-    @_inlineable
+    @inlinable
     public func forEach(_ body: (Element) throws -> Void) rethrows {
         try self.withUnsafeBufferPointer { try $0.forEach(body) }
     }
@@ -547,12 +542,12 @@ extension MappedBuffer {
 
 extension Data {
     
-    @_inlineable
+    @inlinable
     public init(bytes: MappedBuffer<UInt8>) {
         self = bytes.data
     }
     
-    @_inlineable
+    @inlinable
     public init(bytes: MappedBuffer<UInt8>.SubSequence) {
         self = bytes.base.data[bytes.startIndex..<bytes.endIndex]
     }
@@ -560,29 +555,29 @@ extension Data {
 
 extension MappedBuffer {
     
-    @_versioned
+    @usableFromInline
     @_fixed_layout
     class Base {
         
-        @_versioned
+        @usableFromInline
         let fd: Int32
         
         let path: String
         
-        @_versioned
+        @usableFromInline
         var address: UnsafeMutablePointer<Element>
         
         var mapped_size: Int
         
-        @_versioned
+        @usableFromInline
         var count: Int = 0
         
-        @_versioned
+        @usableFromInline
         var capacity: Int {
             return self.mapped_size / MemoryLayout<Element>.stride
         }
         
-        @_versioned
+        @usableFromInline
         init(capacity: Int, option: MappedBufferOption) {
             
             let mapped_size = (Swift.max(capacity, 1) * MemoryLayout<Element>.stride).align(Int(getpagesize()))
@@ -643,7 +638,7 @@ extension MappedBuffer {
             }
         }
         
-        @_versioned
+        @usableFromInline
         func extend_capacity(capacity: Int) {
             
             guard self.capacity < capacity else { return }

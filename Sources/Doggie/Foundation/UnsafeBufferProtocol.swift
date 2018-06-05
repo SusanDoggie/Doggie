@@ -51,7 +51,7 @@ extension MappedBuffer: UnsafeMutableBufferProtocol {
 
 extension UnsafeBufferPointer: UnsafeBufferProtocol {
     
-    @_inlineable
+    @inlinable
     public func withUnsafeBufferPointer<R>(_ body: (UnsafeBufferPointer<Element>) throws -> R) rethrows -> R {
         return try body(self)
     }
@@ -59,12 +59,12 @@ extension UnsafeBufferPointer: UnsafeBufferProtocol {
 
 extension UnsafeMutableBufferPointer: UnsafeMutableBufferProtocol {
     
-    @_inlineable
+    @inlinable
     public func withUnsafeBufferPointer<R>(_ body: (UnsafeBufferPointer<Element>) throws -> R) rethrows -> R {
         return try body(UnsafeBufferPointer(self))
     }
     
-    @_inlineable
+    @inlinable
     public mutating func withUnsafeMutableBufferPointer<R>(_ body: (inout UnsafeMutableBufferPointer<Element>) throws -> R) rethrows -> R {
         var copy = self
         defer { precondition(copy.baseAddress == baseAddress) }
@@ -75,13 +75,13 @@ extension UnsafeMutableBufferPointer: UnsafeMutableBufferProtocol {
 
 extension Data: UnsafeMutableBufferProtocol {
     
-    @_inlineable
+    @inlinable
     public func withUnsafeBufferPointer<R>(_ body: (UnsafeBufferPointer<UInt8>) throws -> R) rethrows -> R {
         let count = self.count
         return try self.withUnsafeBytes { try body(UnsafeBufferPointer(start: $0, count: count)) }
     }
     
-    @_inlineable
+    @inlinable
     public mutating func withUnsafeMutableBufferPointer<R>(_ body: (inout UnsafeMutableBufferPointer<UInt8>) throws -> R) rethrows -> R {
         
         let count = self.count

@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-@_inlineable
+@inlinable
 public func DiscreteConvolve<T: FloatingPoint>(_ signal_count: Int, _ signal: UnsafePointer<T>, _ signal_stride: Int, _ kernel_count: Int, _ kernel: UnsafePointer<T>, _ kernel_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var output = output
@@ -47,7 +47,7 @@ public func DiscreteConvolve<T: FloatingPoint>(_ signal_count: Int, _ signal: Un
     }
 }
 
-@_inlineable
+@inlinable
 public func DiscreteConvolve(_ signal_count: Int, _ signal: UnsafePointer<Complex>, _ signal_stride: Int, _ kernel_count: Int, _ kernel: UnsafePointer<Complex>, _ kernel_stride: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int) {
     
     var output = output

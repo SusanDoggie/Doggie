@@ -56,7 +56,7 @@ public enum ColorBlendMode {
 
 extension ColorBlendMode {
     
-    @_inlineable
+    @inlinable
     public static var `default` : ColorBlendMode {
         return .normal
     }
@@ -64,19 +64,19 @@ extension ColorBlendMode {
 
 extension ColorBlendMode {
     
-    @_versioned
+    @usableFromInline
     @inline(__always)
     static func Multiply<T: BinaryFloatingPoint>(_ destination: T, _ source: T) -> T {
         return destination * source
     }
     
-    @_versioned
+    @usableFromInline
     @inline(__always)
     static func Screen<T: BinaryFloatingPoint>(_ destination: T, _ source: T) -> T {
         return destination + source - destination * source
     }
     
-    @_versioned
+    @usableFromInline
     @inline(__always)
     static func Overlay<T: BinaryFloatingPoint>(_ destination: T, _ source: T) -> T {
         
@@ -88,31 +88,31 @@ extension ColorBlendMode {
         return 1 - 2 * u * v
     }
     
-    @_versioned
+    @usableFromInline
     @inline(__always)
     static func Darken<T: BinaryFloatingPoint>(_ destination: T, _ source: T) -> T {
         return min(destination, source)
     }
     
-    @_versioned
+    @usableFromInline
     @inline(__always)
     static func Lighten<T: BinaryFloatingPoint>(_ destination: T, _ source: T) -> T {
         return max(destination, source)
     }
     
-    @_versioned
+    @usableFromInline
     @inline(__always)
     static func ColorDodge<T: BinaryFloatingPoint>(_ destination: T, _ source: T) -> T {
         return source < 1 ? min(1, destination / (1 - source)) : 1
     }
     
-    @_versioned
+    @usableFromInline
     @inline(__always)
     static func ColorBurn<T: BinaryFloatingPoint>(_ destination: T, _ source: T) -> T {
         return source > 0 ? 1 - min(1, (1 - destination) / source) : 0
     }
     
-    @_versioned
+    @usableFromInline
     @inline(__always)
     static func SoftLight<T: BinaryFloatingPoint>(_ destination: T, _ source: T) -> T {
         
@@ -134,31 +134,31 @@ extension ColorBlendMode {
         return destination - u * (db - destination)
     }
     
-    @_versioned
+    @usableFromInline
     @inline(__always)
     static func HardLight<T: BinaryFloatingPoint>(_ destination: T, _ source: T) -> T {
         return Overlay(source, destination)
     }
     
-    @_versioned
+    @usableFromInline
     @inline(__always)
     static func Difference<T: BinaryFloatingPoint>(_ destination: T, _ source: T) -> T {
         return abs(destination - source)
     }
     
-    @_versioned
+    @usableFromInline
     @inline(__always)
     static func Exclusion<T: BinaryFloatingPoint>(_ destination: T, _ source: T) -> T {
         return destination + source - 2 * destination * source
     }
     
-    @_versioned
+    @usableFromInline
     @inline(__always)
     static func PlusDarker<T: BinaryFloatingPoint>(_ destination: T, _ source: T) -> T {
         return max(0, 1 - ((1 - destination) + (1 - source)))
     }
     
-    @_versioned
+    @usableFromInline
     @inline(__always)
     static func PlusLighter<T: BinaryFloatingPoint>(_ destination: T, _ source: T) -> T {
         return min(1, destination + source)

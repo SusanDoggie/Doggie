@@ -166,12 +166,12 @@ extension String: RegularExpressionMatchable {
     }
 }
 
-@_inlineable
+@inlinable
 public func ~=<T: RegularExpressionMatchable> (lhs: Regex, rhs: T) -> Bool {
     return rhs.isMatch(regex: lhs)
 }
 
-@_inlineable
+@inlinable
 public func ==(lhs: Regex, rhs: Regex) -> Bool {
     return lhs.pattern == rhs.pattern && lhs.options == rhs.options
 }

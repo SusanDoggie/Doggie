@@ -47,7 +47,7 @@ public struct GrayColorModel : ColorModelProtocol {
         self.white = white
     }
     
-    @_inlineable
+    @inlinable
     public subscript(position: Int) -> Double {
         get {
             switch position {
@@ -133,7 +133,7 @@ extension GrayColorModel {
             self.white = white
         }
         
-        @_inlineable
+        @inlinable
         public subscript(position: Int) -> Float {
             get {
                 switch position {

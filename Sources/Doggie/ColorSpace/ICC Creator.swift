@@ -213,7 +213,7 @@ extension CIEXYZColorSpace {
 
 extension CIEXYZColorSpace {
     
-    @_versioned
+    @usableFromInline
     var iccData: Data? {
         
         var profile = cieXYZ._iccProfile(deviceClass: .colorSpace, colorSpace: .XYZ, pcs: .XYZ)
@@ -229,7 +229,7 @@ extension CIEXYZColorSpace {
 
 extension CIELabColorSpace {
     
-    @_versioned
+    @usableFromInline
     var iccData: Data? {
         
         var profile = cieXYZ._iccProfile(deviceClass: .colorSpace, colorSpace: .Lab, pcs: .Lab)
@@ -245,7 +245,7 @@ extension CIELabColorSpace {
 
 extension CalibratedGrayColorSpace {
     
-    @_versioned
+    @usableFromInline
     var iccData: Data? {
         
         var profile = cieXYZ._iccProfile(deviceClass: .display, colorSpace: .Gray, pcs: .XYZ)
@@ -260,7 +260,7 @@ extension CalibratedGrayColorSpace {
 
 extension CalibratedRGBColorSpace {
     
-    @_versioned
+    @usableFromInline
     var iccData: Data? {
         
         var profile = cieXYZ._iccProfile(deviceClass: .display, colorSpace: .Rgb, pcs: .XYZ)

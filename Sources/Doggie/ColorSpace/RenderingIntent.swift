@@ -32,7 +32,7 @@ public enum RenderingIntent {
 
 extension RenderingIntent {
     
-    @_inlineable
+    @inlinable
     public static var `default` : RenderingIntent {
         return .perceptual
     }

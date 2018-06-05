@@ -70,7 +70,7 @@ public struct LabColorModel : ColorModelProtocol {
         self.b = chroma * sin(2 * Double.pi * hue)
     }
     
-    @_inlineable
+    @inlinable
     public subscript(position: Int) -> Double {
         get {
             switch position {
@@ -180,7 +180,7 @@ extension LabColorModel {
             self.b = b
         }
         
-        @_inlineable
+        @inlinable
         public subscript(position: Int) -> Float {
             get {
                 switch position {

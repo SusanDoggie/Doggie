@@ -25,43 +25,41 @@
 
 extension ColorSpace where Model == RGBColorModel {
     
-    @_inlineable
+    @inlinable
     public static func calibratedRGB(white: Point, red: Point, green: Point, blue: Point) -> ColorSpace {
         return ColorSpace(base: CalibratedRGBColorSpace(CIEXYZColorSpace(white: white), red: red, green: green, blue: blue))
     }
     
-    @_inlineable
+    @inlinable
     public static func calibratedRGB(white: Point, red: Point, green: Point, blue: Point, gamma: Double) -> ColorSpace {
         return ColorSpace(base: CalibratedGammaRGBColorSpace(CIEXYZColorSpace(white: white), red: red, green: green, blue: blue, gamma: (gamma, gamma, gamma)))
     }
     
-    @_inlineable
+    @inlinable
     public static func calibratedRGB(white: Point, red: Point, green: Point, blue: Point, gamma: (Double, Double, Double)) -> ColorSpace {
         return ColorSpace(base: CalibratedGammaRGBColorSpace(CIEXYZColorSpace(white: white), red: red, green: green, blue: blue, gamma: gamma))
     }
 }
 
-@_versioned
 @_fixed_layout
+@usableFromInline
 class CalibratedRGBColorSpace : ColorSpaceBaseProtocol {
     
     typealias Model = RGBColorModel
     
-    @_versioned
+    @usableFromInline
     let cieXYZ: CIEXYZColorSpace
     
-    @_versioned
+    @usableFromInline
     let transferMatrix: Matrix
     
-    @_versioned
-    @_inlineable
+    @inlinable
     init(cieXYZ: CIEXYZColorSpace, transferMatrix: Matrix) {
         self.cieXYZ = cieXYZ
         self.transferMatrix = transferMatrix
     }
     
-    @_versioned
-    @_inlineable
+    @inlinable
     init(_ cieXYZ: CIEXYZColorSpace, red: Point, green: Point, blue: Point) {
         
         self.cieXYZ = cieXYZ
@@ -78,45 +76,40 @@ class CalibratedRGBColorSpace : ColorSpaceBaseProtocol {
         self.transferMatrix = Matrix.scale(x: c.x, y: c.y, z: c.z) * p * normalizeMatrix.inverse
     }
     
-    @_versioned
-    @_inlineable
+    @inlinable
     func convertToLinear(_ color: Model) -> Model {
         return color
     }
     
-    @_versioned
-    @_inlineable
+    @inlinable
     func convertFromLinear(_ color: Model) -> Model {
         return color
     }
     
-    @_versioned
-    @_inlineable
+    @inlinable
     func iccCurve(_ index: Int) -> iccCurve {
         return .identity
     }
     
-    @_versioned
-    @_inlineable
+    @inlinable
     var localizedName: String? {
         return "Doggie Calibrated RGB Color Space (white = \(cieXYZ.white.point))"
     }
     
-    @_versioned
-    @_inlineable
+    @inlinable
     func __equalTo(_ other: CalibratedRGBColorSpace) -> Bool {
         guard type(of: other) == CalibratedRGBColorSpace.self else { return false }
         return self.cieXYZ == other.cieXYZ && self.transferMatrix == other.transferMatrix
     }
     
-    @_versioned
-    @_inlineable
-    var hashValue: Int {
-        return hash_combine("CalibratedRGBColorSpace", cieXYZ, transferMatrix)
+    @inlinable
+    func hash(into hasher: inout Hasher) {
+        hasher.combine("CalibratedRGBColorSpace")
+        hasher.combine(cieXYZ)
+        hasher.combine(transferMatrix)
     }
     
-    @_versioned
-    @_inlineable
+    @inlinable
     static func ==(lhs: CalibratedRGBColorSpace, rhs: CalibratedRGBColorSpace) -> Bool {
         return lhs.__equalTo(rhs)
     }
@@ -124,8 +117,7 @@ class CalibratedRGBColorSpace : ColorSpaceBaseProtocol {
 
 extension CalibratedRGBColorSpace {
     
-    @_versioned
-    @_inlineable
+    @inlinable
     var linearTone: CalibratedRGBColorSpace {
         return CalibratedRGBColorSpace(cieXYZ: cieXYZ, transferMatrix: transferMatrix)
     }
@@ -133,48 +125,42 @@ extension CalibratedRGBColorSpace {
 
 extension CalibratedRGBColorSpace {
     
-    @_versioned
-    @_inlineable
+    @inlinable
     func convertLinearToXYZ(_ color: Model) -> XYZColorModel {
         return XYZColorModel(x: color.red, y: color.green, z: color.blue) * transferMatrix
     }
     
-    @_versioned
-    @_inlineable
+    @inlinable
     func convertLinearFromXYZ(_ color: XYZColorModel) -> Model {
         let c = color * transferMatrix.inverse
         return Model(red: c.x, green: c.y, blue: c.z)
     }
 }
 
-@_versioned
 @_fixed_layout
+@usableFromInline
 class CalibratedGammaRGBColorSpace: CalibratedRGBColorSpace {
     
-    @_versioned
+    @usableFromInline
     let gamma: (Double, Double, Double)
     
-    @_versioned
-    @_inlineable
+    @inlinable
     init(_ cieXYZ: CIEXYZColorSpace, red: Point, green: Point, blue: Point, gamma: (Double, Double, Double)) {
         self.gamma = gamma
         super.init(cieXYZ, red: red, green: green, blue: blue)
     }
     
-    @_versioned
-    @_inlineable
+    @inlinable
     override func convertToLinear(_ color: RGBColorModel) -> RGBColorModel {
         return RGBColorModel(red: exteneded(color.red) { pow($0, gamma.0) }, green: exteneded(color.green) { pow($0, gamma.1) }, blue: exteneded(color.blue) { pow($0, gamma.2) })
     }
     
-    @_versioned
-    @_inlineable
+    @inlinable
     override func convertFromLinear(_ color: RGBColorModel) -> RGBColorModel {
         return RGBColorModel(red: exteneded(color.red) { pow($0, 1 / gamma.0) }, green: exteneded(color.green) { pow($0, 1 / gamma.1) }, blue: exteneded(color.blue) { pow($0, 1 / gamma.2) })
     }
     
-    @_versioned
-    @_inlineable
+    @inlinable
     override func iccCurve(_ index: Int) -> iccCurve {
         switch index {
         case 0: return .gamma(gamma.0)
@@ -184,24 +170,24 @@ class CalibratedGammaRGBColorSpace: CalibratedRGBColorSpace {
         }
     }
     
-    @_versioned
-    @_inlineable
+    @inlinable
     override var localizedName: String? {
         return "Doggie Calibrated RGB Color Space (white = \(cieXYZ.white.point), gamma = \(gamma))"
     }
     
-    @_versioned
-    @_inlineable
+    @inlinable
     override func __equalTo(_ other: CalibratedRGBColorSpace) -> Bool {
         guard type(of: other) == CalibratedGammaRGBColorSpace.self else { return false }
         guard let other = other as? CalibratedGammaRGBColorSpace else { return false }
         return self.cieXYZ == other.cieXYZ && self.transferMatrix == other.transferMatrix && self.gamma == other.gamma
     }
     
-    @_versioned
-    @_inlineable
-    override var hashValue: Int {
-        return hash_combine(super.hashValue, gamma.0, gamma.1, gamma.2)
+    @inlinable
+    override func hash(into hasher: inout Hasher) {
+        super.hash(into: &hasher)
+        hasher.combine(gamma.0)
+        hasher.combine(gamma.1)
+        hasher.combine(gamma.2)
     }
 }
 

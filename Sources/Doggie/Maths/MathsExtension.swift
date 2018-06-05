@@ -174,12 +174,12 @@ extension Polynomial {
     @_transparent
     public func almostZero(epsilon: Double = Double.defaultAlmostEqualEpsilon, reference: Double = 0) -> Bool {
         
-        return self.all { $0.almostZero(epsilon: epsilon, reference: reference) }
+        return self.allSatisfy { $0.almostZero(epsilon: epsilon, reference: reference) }
     }
     
     @_transparent
     public func almostEqual(_ other: Polynomial, epsilon: Double = Double.defaultAlmostEqualEpsilon) -> Bool {
         
-        return (0..<Swift.max(self.count, other.count)).all { self[$0].almostEqual(other[$0], epsilon: epsilon) }
+        return (0..<Swift.max(self.count, other.count)).allSatisfy { self[$0].almostEqual(other[$0], epsilon: epsilon) }
     }
 }

@@ -55,7 +55,7 @@ public struct Device2ColorModel : ColorModelProtocol {
         self.component_1 = component_1
     }
     
-    @_inlineable
+    @inlinable
     public subscript(position: Int) -> Double {
         get {
             switch position {
@@ -172,7 +172,7 @@ public struct Device3ColorModel : ColorModelProtocol {
         self.component_2 = component_2
     }
     
-    @_inlineable
+    @inlinable
     public subscript(position: Int) -> Double {
         get {
             switch position {
@@ -299,7 +299,7 @@ public struct Device4ColorModel : ColorModelProtocol {
         self.component_3 = component_3
     }
     
-    @_inlineable
+    @inlinable
     public subscript(position: Int) -> Double {
         get {
             switch position {
@@ -437,7 +437,7 @@ public struct Device5ColorModel : ColorModelProtocol {
         self.component_4 = component_4
     }
     
-    @_inlineable
+    @inlinable
     public subscript(position: Int) -> Double {
         get {
             switch position {
@@ -606,7 +606,7 @@ public struct Device6ColorModel : ColorModelProtocol {
         self.component_5 = component_5
     }
     
-    @_inlineable
+    @inlinable
     public subscript(position: Int) -> Double {
         get {
             switch position {
@@ -786,7 +786,7 @@ public struct Device7ColorModel : ColorModelProtocol {
         self.component_6 = component_6
     }
     
-    @_inlineable
+    @inlinable
     public subscript(position: Int) -> Double {
         get {
             switch position {
@@ -983,7 +983,7 @@ public struct Device8ColorModel : ColorModelProtocol {
         self.component_7 = component_7
     }
     
-    @_inlineable
+    @inlinable
     public subscript(position: Int) -> Double {
         get {
             switch position {
@@ -1190,7 +1190,7 @@ public struct Device9ColorModel : ColorModelProtocol {
         self.component_8 = component_8
     }
     
-    @_inlineable
+    @inlinable
     public subscript(position: Int) -> Double {
         get {
             switch position {
@@ -1408,7 +1408,7 @@ public struct Device10ColorModel : ColorModelProtocol {
         self.component_9 = component_9
     }
     
-    @_inlineable
+    @inlinable
     public subscript(position: Int) -> Double {
         get {
             switch position {
@@ -1643,7 +1643,7 @@ public struct Device11ColorModel : ColorModelProtocol {
         self.component_10 = component_10
     }
     
-    @_inlineable
+    @inlinable
     public subscript(position: Int) -> Double {
         get {
             switch position {
@@ -1888,7 +1888,7 @@ public struct Device12ColorModel : ColorModelProtocol {
         self.component_11 = component_11
     }
     
-    @_inlineable
+    @inlinable
     public subscript(position: Int) -> Double {
         get {
             switch position {
@@ -2144,7 +2144,7 @@ public struct Device13ColorModel : ColorModelProtocol {
         self.component_12 = component_12
     }
     
-    @_inlineable
+    @inlinable
     public subscript(position: Int) -> Double {
         get {
             switch position {
@@ -2417,7 +2417,7 @@ public struct Device14ColorModel : ColorModelProtocol {
         self.component_13 = component_13
     }
     
-    @_inlineable
+    @inlinable
     public subscript(position: Int) -> Double {
         get {
             switch position {
@@ -2700,7 +2700,7 @@ public struct Device15ColorModel : ColorModelProtocol {
         self.component_14 = component_14
     }
     
-    @_inlineable
+    @inlinable
     public subscript(position: Int) -> Double {
         get {
             switch position {
@@ -2961,7 +2961,7 @@ extension Device2ColorModel {
             self.component_1 = component_1
         }
         
-        @_inlineable
+        @inlinable
         public subscript(position: Int) -> Float {
             get {
                 switch position {
@@ -3094,7 +3094,7 @@ extension Device3ColorModel {
             self.component_2 = component_2
         }
         
-        @_inlineable
+        @inlinable
         public subscript(position: Int) -> Float {
             get {
                 switch position {
@@ -3239,7 +3239,7 @@ extension Device4ColorModel {
             self.component_3 = component_3
         }
         
-        @_inlineable
+        @inlinable
         public subscript(position: Int) -> Float {
             get {
                 switch position {
@@ -3400,7 +3400,7 @@ extension Device5ColorModel {
             self.component_4 = component_4
         }
         
-        @_inlineable
+        @inlinable
         public subscript(position: Int) -> Float {
             get {
                 switch position {
@@ -3594,7 +3594,7 @@ extension Device6ColorModel {
             self.component_5 = component_5
         }
         
-        @_inlineable
+        @inlinable
         public subscript(position: Int) -> Float {
             get {
                 switch position {
@@ -3802,7 +3802,7 @@ extension Device7ColorModel {
             self.component_6 = component_6
         }
         
-        @_inlineable
+        @inlinable
         public subscript(position: Int) -> Float {
             get {
                 switch position {
@@ -4029,7 +4029,7 @@ extension Device8ColorModel {
             self.component_7 = component_7
         }
         
-        @_inlineable
+        @inlinable
         public subscript(position: Int) -> Float {
             get {
                 switch position {
@@ -4268,7 +4268,7 @@ extension Device9ColorModel {
             self.component_8 = component_8
         }
         
-        @_inlineable
+        @inlinable
         public subscript(position: Int) -> Float {
             get {
                 switch position {
@@ -4521,7 +4521,7 @@ extension Device10ColorModel {
             self.component_9 = component_9
         }
         
-        @_inlineable
+        @inlinable
         public subscript(position: Int) -> Float {
             get {
                 switch position {
@@ -4793,7 +4793,7 @@ extension Device11ColorModel {
             self.component_10 = component_10
         }
         
-        @_inlineable
+        @inlinable
         public subscript(position: Int) -> Float {
             get {
                 switch position {
@@ -5077,7 +5077,7 @@ extension Device12ColorModel {
             self.component_11 = component_11
         }
         
-        @_inlineable
+        @inlinable
         public subscript(position: Int) -> Float {
             get {
                 switch position {
@@ -5375,7 +5375,7 @@ extension Device13ColorModel {
             self.component_12 = component_12
         }
         
-        @_inlineable
+        @inlinable
         public subscript(position: Int) -> Float {
             get {
                 switch position {
@@ -5692,7 +5692,7 @@ extension Device14ColorModel {
             self.component_13 = component_13
         }
         
-        @_inlineable
+        @inlinable
         public subscript(position: Int) -> Float {
             get {
                 switch position {
@@ -6021,7 +6021,7 @@ extension Device15ColorModel {
             self.component_14 = component_14
         }
         
-        @_inlineable
+        @inlinable
         public subscript(position: Int) -> Float {
             get {
                 switch position {

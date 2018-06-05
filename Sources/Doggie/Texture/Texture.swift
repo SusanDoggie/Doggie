@@ -36,7 +36,7 @@ public enum ResamplingAlgorithm {
 
 extension ResamplingAlgorithm {
     
-    @_inlineable
+    @inlinable
     public static var `default` : ResamplingAlgorithm {
         return .linear
     }
@@ -52,7 +52,7 @@ public enum WrappingMode {
 
 extension WrappingMode {
     
-    @_inlineable
+    @inlinable
     public static var `default` : WrappingMode {
         return .none
     }
@@ -70,8 +70,7 @@ public struct Texture<Pixel: ColorPixelProtocol> {
     
     public var wrappingMode: WrappingMode
     
-    @_versioned
-    @_inlineable
+    @inlinable
     init(width: Int, height: Int, pixels: MappedBuffer<Pixel>, resamplingAlgorithm: ResamplingAlgorithm, wrappingMode: WrappingMode) {
         precondition(width >= 0, "negative width is not allowed.")
         precondition(height >= 0, "negative height is not allowed.")
@@ -83,7 +82,7 @@ public struct Texture<Pixel: ColorPixelProtocol> {
         self.wrappingMode = wrappingMode
     }
     
-    @_inlineable
+    @inlinable
     public init(width: Int, height: Int, resamplingAlgorithm: ResamplingAlgorithm = .default, wrappingMode: WrappingMode = .default, pixel: Pixel = Pixel(), option: MappedBufferOption = .default) {
         precondition(width >= 0, "negative width is not allowed.")
         precondition(height >= 0, "negative height is not allowed.")
@@ -94,7 +93,7 @@ public struct Texture<Pixel: ColorPixelProtocol> {
         self.wrappingMode = wrappingMode
     }
     
-    @_inlineable
+    @inlinable
     public init(texture: Texture, option: MappedBufferOption) {
         self.width = texture.width
         self.height = texture.height
@@ -103,7 +102,7 @@ public struct Texture<Pixel: ColorPixelProtocol> {
         self.wrappingMode = texture.wrappingMode
     }
     
-    @_inlineable
+    @inlinable
     public init<P>(texture: Texture<P>, option: MappedBufferOption) where P.Model == Pixel.Model {
         self.width = texture.width
         self.height = texture.height
@@ -119,7 +118,7 @@ public struct Texture<Pixel: ColorPixelProtocol> {
 
 extension Texture {
     
-    @_inlineable
+    @inlinable
     public init(image: Image<Pixel>, resamplingAlgorithm: ResamplingAlgorithm = .default, wrappingMode: WrappingMode = .default) {
         self.init(width: image.width, height: image.height, pixels: image.pixels, resamplingAlgorithm: resamplingAlgorithm, wrappingMode: wrappingMode)
     }
@@ -127,7 +126,7 @@ extension Texture {
 
 extension Image {
     
-    @_inlineable
+    @inlinable
     public init(texture: Texture<Pixel>, resolution: Resolution = Resolution(resolution: 1, unit: .point), colorSpace: ColorSpace<Pixel.Model>) {
         self.init(width: texture.width, height: texture.height, resolution: resolution, pixels: texture.pixels, colorSpace: colorSpace)
     }
@@ -135,7 +134,7 @@ extension Image {
 
 extension Texture {
     
-    @_inlineable
+    @inlinable
     public init<P>(texture: Texture<P>) where P.Model == Pixel.Model {
         self.init(texture: texture, option: texture.option)
     }
@@ -143,7 +142,7 @@ extension Texture {
 
 extension Texture : CustomStringConvertible {
     
-    @_inlineable
+    @inlinable
     public var description: String {
         return "Texture<\(Pixel.self)>(width: \(width), height: \(height))"
     }
@@ -151,7 +150,7 @@ extension Texture : CustomStringConvertible {
 
 extension Texture {
     
-    @_inlineable
+    @inlinable
     public var option: MappedBufferOption {
         return pixels.option
     }
@@ -159,15 +158,15 @@ extension Texture {
 
 extension Texture {
     
-    @_inlineable
+    @inlinable
     public var isOpaque: Bool {
-        return pixels.all { $0.isOpaque }
+        return pixels.allSatisfy { $0.isOpaque }
     }
 }
 
 extension Texture {
     
-    @_inlineable
+    @inlinable
     public func map<P>(_ transform: (Pixel) throws -> P) rethrows -> Texture<P> where P.Model == Pixel.Model {
         return try Texture<P>(width: height, height: width, pixels: pixels.map(transform), resamplingAlgorithm: resamplingAlgorithm, wrappingMode: wrappingMode)
     }
@@ -175,7 +174,7 @@ extension Texture {
 
 extension Texture {
     
-    @_inlineable
+    @inlinable
     public func transposed() -> Texture {
         if pixels.count == 0 {
             return Texture(width: height, height: width, pixels: [], resamplingAlgorithm: resamplingAlgorithm, wrappingMode: wrappingMode)
@@ -185,7 +184,7 @@ extension Texture {
         return Texture(width: height, height: width, pixels: copy, resamplingAlgorithm: resamplingAlgorithm, wrappingMode: wrappingMode)
     }
     
-    @_inlineable
+    @inlinable
     public func verticalFlipped() -> Texture {
         
         var pixels = self.pixels
@@ -210,7 +209,7 @@ extension Texture {
         return Texture(width: width, height: height, pixels: pixels, resamplingAlgorithm: resamplingAlgorithm, wrappingMode: wrappingMode)
     }
     
-    @_inlineable
+    @inlinable
     public func horizontalFlipped() -> Texture {
         
         var pixels = self.pixels
@@ -238,25 +237,25 @@ extension Texture {
 
 extension Texture {
     
-    @_inlineable
+    @inlinable
     public func withUnsafeBufferPointer<R>(_ body: (UnsafeBufferPointer<Pixel>) throws -> R) rethrows -> R {
         
         return try pixels.withUnsafeBufferPointer(body)
     }
     
-    @_inlineable
+    @inlinable
     public mutating func withUnsafeMutableBufferPointer<R>(_ body: (inout UnsafeMutableBufferPointer<Pixel>) throws -> R) rethrows -> R {
         
         return try pixels.withUnsafeMutableBufferPointer(body)
     }
     
-    @_inlineable
+    @inlinable
     public func withUnsafeBytes<R>(_ body: (UnsafeRawBufferPointer) throws -> R) rethrows -> R {
         
         return try pixels.withUnsafeBytes(body)
     }
     
-    @_inlineable
+    @inlinable
     public mutating func withUnsafeMutableBytes<R>(_ body: (UnsafeMutableRawBufferPointer) throws -> R) rethrows -> R {
         
         return try pixels.withUnsafeMutableBytes(body)
@@ -265,7 +264,7 @@ extension Texture {
 
 extension Texture {
     
-    @_inlineable
+    @inlinable
     public func pixel(_ point: Point) -> ColorPixel<Pixel.Model> {
         
         switch resamplingAlgorithm {
@@ -344,7 +343,7 @@ extension Texture {
 
 extension Texture {
     
-    @_versioned
+    @usableFromInline
     @inline(__always)
     func read_source(_ x: Int, _ y: Int) -> ColorPixel<Pixel.Model> {
         
@@ -405,7 +404,7 @@ extension Texture {
         }
     }
     
-    @_versioned
+    @usableFromInline
     @inline(__always)
     func convolve(point: Point, kernel_size: Int, kernel: (Double) -> Double) -> ColorPixel<Pixel.Model> {
         
@@ -432,7 +431,7 @@ extension Texture {
         return t == 0 ? ColorPixel<Pixel.Model>() : pixel / t
     }
     
-    @_versioned
+    @usableFromInline
     @inline(__always)
     func sampling2(point: Point, sampler: (Double, ColorPixel<Pixel.Model>, ColorPixel<Pixel.Model>) -> ColorPixel<Pixel.Model>) -> ColorPixel<Pixel.Model> {
         
@@ -452,7 +451,7 @@ extension Texture {
         return sampler(_ty, sampler(_tx, _s1, _s2), sampler(_tx, _s3, _s4))
     }
     
-    @_versioned
+    @usableFromInline
     @inline(__always)
     func sampling4(point: Point, sampler: (Double, ColorPixel<Pixel.Model>, ColorPixel<Pixel.Model>, ColorPixel<Pixel.Model>, ColorPixel<Pixel.Model>) -> ColorPixel<Pixel.Model>) -> ColorPixel<Pixel.Model> {
         

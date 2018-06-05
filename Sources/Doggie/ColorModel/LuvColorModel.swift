@@ -69,7 +69,7 @@ public struct LuvColorModel : ColorModelProtocol {
         self.v = chroma * sin(2 * Double.pi * hue)
     }
     
-    @_inlineable
+    @inlinable
     public subscript(position: Int) -> Double {
         get {
             switch position {
@@ -179,7 +179,7 @@ extension LuvColorModel {
             self.v = v
         }
         
-        @_inlineable
+        @inlinable
         public subscript(position: Int) -> Float {
             get {
                 switch position {

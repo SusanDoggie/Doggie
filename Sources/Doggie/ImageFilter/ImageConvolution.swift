@@ -23,8 +23,7 @@
 //  THE SOFTWARE.
 //
 
-@_versioned
-@_inlineable
+@inlinable
 func _Radix2FiniteImpulseFilter<T: BinaryFloatingPoint>(_ level: Int, _ row: Int, _ signal: UnsafePointer<T>, _ signal_stride: Int, _ signal_row_stride: Int, _ signal_count: Int, _ kreal: UnsafePointer<T>, _ kimag: UnsafePointer<T>, _ kernel_stride: Int, _ kernel_row_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int, _ out_row_stride: Int) where T : FloatingMathProtocol {
     var signal = signal
     var kreal = kreal
@@ -39,8 +38,7 @@ func _Radix2FiniteImpulseFilter<T: BinaryFloatingPoint>(_ level: Int, _ row: Int
     }
 }
 
-@_versioned
-@_inlineable
+@inlinable
 func _ImageConvolution<Pixel, T: BinaryFloatingPoint>(_ image: Image<Pixel>, _ horizontal_filter: [T], _ vertical_filter: [T]) -> Image<Pixel> where T : FloatingMathProtocol {
     
     let width = image.width
@@ -106,8 +104,7 @@ func _ImageConvolution<Pixel, T: BinaryFloatingPoint>(_ image: Image<Pixel>, _ h
     return Image(width: n_width, height: n_height, resolution: image.resolution, pixels: result, colorSpace: image.colorSpace)
 }
 
-@_versioned
-@_inlineable
+@inlinable
 func _ImageConvolutionHorizontal<Pixel, T: BinaryFloatingPoint>(_ image: Image<Pixel>, _ filter: [T]) -> Image<Pixel> where T : FloatingMathProtocol {
     
     let width = image.width
@@ -171,8 +168,7 @@ func _ImageConvolutionHorizontal<Pixel, T: BinaryFloatingPoint>(_ image: Image<P
     return result
 }
 
-@_versioned
-@_inlineable
+@inlinable
 func _ImageConvolutionVertical<Pixel, T: BinaryFloatingPoint>(_ image: Image<Pixel>, _ filter: [T]) -> Image<Pixel> where T : FloatingMathProtocol {
     
     let width = image.width
@@ -226,27 +222,27 @@ func _ImageConvolutionVertical<Pixel, T: BinaryFloatingPoint>(_ image: Image<Pix
     return Image(width: width, height: n_height, resolution: image.resolution, pixels: result, colorSpace: image.colorSpace)
 }
 
-@_inlineable
+@inlinable
 public func ImageConvolution<Model>(_ image: Image<ColorPixel<Model>>, horizontal horizontal_filter: [Double], vertical vertical_filter: [Double]) -> Image<ColorPixel<Model>> {
     return _ImageConvolution(image, horizontal_filter, vertical_filter)
 }
-@_inlineable
+@inlinable
 public func ImageConvolution<Model>(_ image: Image<FloatColorPixel<Model>>, horizontal horizontal_filter: [Float], vertical vertical_filter: [Float]) -> Image<FloatColorPixel<Model>> {
     return _ImageConvolution(image, horizontal_filter, vertical_filter)
 }
-@_inlineable
+@inlinable
 public func ImageConvolutionHorizontal<Model>(_ image: Image<ColorPixel<Model>>, _ filter: [Double]) -> Image<ColorPixel<Model>> {
     return _ImageConvolutionHorizontal(image, filter)
 }
-@_inlineable
+@inlinable
 public func ImageConvolutionHorizontal<Model>(_ image: Image<FloatColorPixel<Model>>, _ filter: [Float]) -> Image<FloatColorPixel<Model>> {
     return _ImageConvolutionHorizontal(image, filter)
 }
-@_inlineable
+@inlinable
 public func ImageConvolutionVertical<Model>(_ image: Image<ColorPixel<Model>>, _ filter: [Double]) -> Image<ColorPixel<Model>> {
     return _ImageConvolutionVertical(image, filter)
 }
-@_inlineable
+@inlinable
 public func ImageConvolutionVertical<Model>(_ image: Image<FloatColorPixel<Model>>, _ filter: [Float]) -> Image<FloatColorPixel<Model>> {
     return _ImageConvolutionVertical(image, filter)
 }

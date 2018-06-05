@@ -29,7 +29,7 @@ public protocol ByteEncodable: ByteInputStream {
 
 extension RangeReplaceableCollection where Element == UInt8 {
     
-    @_inlineable
+    @inlinable
     public mutating func encode<T: ByteEncodable>(_ value: T) {
         value.write(to: &self)
     }
@@ -37,12 +37,12 @@ extension RangeReplaceableCollection where Element == UInt8 {
 
 extension ByteOutputStream {
     
-    @_inlineable
+    @inlinable
     public func encode<T: ByteEncodable>(_ value: T) {
         value.write(to: self)
     }
     
-    @_inlineable
+    @inlinable
     public func encode<T: ByteEncodable>(_ first: T, _ second: T, _ remains: T...) {
         first.write(to: self)
         second.write(to: self)
@@ -59,7 +59,7 @@ public protocol ByteDecodable {
 
 extension ByteDecodable {
     
-    @_inlineable
+    @inlinable
     public init(_ data: Data) throws {
         var data = data
         try self.init(from: &data)
@@ -75,7 +75,7 @@ public enum ByteDecodeError : Error {
 
 extension Data {
     
-    @_inlineable
+    @inlinable
     public mutating func decode<T : ByteDecodable>(_ type: T.Type) throws -> T {
         return try T(from: &self)
     }
@@ -83,17 +83,16 @@ extension Data {
 
 extension FixedWidthInteger {
     
-    @_inlineable
+    @inlinable
     public init(from data: inout Data) throws {
         let size = Self.bitWidth >> 3
         guard data.count >= size else { throw ByteDecodeError.endOfData }
         self = data.popFirst(size).withUnsafeBytes { $0.pointee }
     }
     
-    @_inlineable
+    @inlinable
     public func write(to stream: ByteOutputStream) {
-        var value = self
-        withUnsafeBytes(of: &value) { stream.write($0) }
+        withUnsafeBytes(of: self) { stream.write($0) }
     }
 }
 

@@ -56,7 +56,7 @@ public protocol ColorProtocol {
 
 extension ColorProtocol {
     
-    @_inlineable
+    @inlinable
     public func almostEqual<C: ColorProtocol>(_ other: C, intent: RenderingIntent = .default, epsilon: Double = 0.0001) -> Bool {
         let _cieXYZ = self.colorSpace.cieXYZ
         let _self = self.convert(to: _cieXYZ, intent: intent)

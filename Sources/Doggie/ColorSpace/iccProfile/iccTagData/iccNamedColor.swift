@@ -23,26 +23,26 @@
 //  THE SOFTWARE.
 //
 
-@_versioned
 @_fixed_layout
+@usableFromInline
 struct iccNamedColor : ByteDecodable {
     
-    @_versioned
+    @usableFromInline
     var flag: BEUInt32
     
-    @_versioned
+    @usableFromInline
     var prefix: String
     
-    @_versioned
+    @usableFromInline
     var suffix: String
     
-    @_versioned
+    @usableFromInline
     var named: [String] = []
     
-    @_versioned
+    @usableFromInline
     var pcs: [(Double, Double, Double)] = []
     
-    @_versioned
+    @usableFromInline
     var device: [Double] = []
     
     init(from data: inout Data) throws {

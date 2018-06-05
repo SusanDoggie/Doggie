@@ -51,7 +51,7 @@ public struct CMYColorModel : ColorModelProtocol {
         self.yellow = yellow
     }
     
-    @_inlineable
+    @inlinable
     public subscript(position: Int) -> Double {
         get {
             switch position {
@@ -84,21 +84,21 @@ extension CMYColorModel {
 
 extension CMYColorModel {
     
-    @_inlineable
+    @inlinable
     public init(_ gray: GrayColorModel) {
         self.cyan = 1 - gray.white
         self.magenta = 1 - gray.white
         self.yellow = 1 - gray.white
     }
     
-    @_inlineable
+    @inlinable
     public init(_ rgb: RGBColorModel) {
         self.cyan = 1 - rgb.red
         self.magenta = 1 - rgb.green
         self.yellow = 1 - rgb.blue
     }
     
-    @_inlineable
+    @inlinable
     public init(_ cmyk: CMYKColorModel) {
         let _k = 1 - cmyk.black
         self.cyan = cmyk.cyan * _k + cmyk.black
@@ -208,7 +208,7 @@ extension CMYColorModel {
             self.yellow = yellow
         }
         
-        @_inlineable
+        @inlinable
         public subscript(position: Int) -> Float {
             get {
                 switch position {

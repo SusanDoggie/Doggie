@@ -23,8 +23,7 @@
 //  THE SOFTWARE.
 //
 
-@_versioned
-@_inlineable
+@inlinable
 func _interpolate_index(_ x: Double, _ count: Int) -> (Int, Double) {
     var _i = 0.0
     let _count = count - 1
@@ -37,8 +36,7 @@ func _interpolate_index(_ x: Double, _ count: Int) -> (Int, Double) {
     }
 }
 
-@_versioned
-@_inlineable
+@inlinable
 func interpolate<C : RandomAccessCollection>(_ x: Double, table: C) -> Double where C.Index == Int, C.Element == Double {
     
     let (i, m) = _interpolate_index(x, table.count)
@@ -54,8 +52,7 @@ func interpolate<C : RandomAccessCollection>(_ x: Double, table: C) -> Double wh
     }
 }
 
-@_versioned
-@_fixed_layout
+@usableFromInline
 enum iccLUTTransform {
     
     case LUT0(iccLUT0Transform)
@@ -266,9 +263,9 @@ extension iccLUTTransform : ByteDecodable {
     
     static func readCLUT(_ data: inout Data, inputChannels: Int, outputChannels: Int) throws -> MultiDimensionalLUT {
         
-        var header = try data.decode(iccCLUT.self)
+        let header = try data.decode(iccCLUT.self)
         
-        let grids = withUnsafeBytes(of: &header.grids) { $0.prefix(inputChannels).map(Int.init) }
+        let grids = withUnsafeBytes(of: header.grids) { $0.prefix(inputChannels).map(Int.init) }
         
         let count = grids.reduce(outputChannels, *)
         
@@ -500,17 +497,17 @@ extension iccLUTTransform {
     }
 }
 
-@_versioned
 @_fixed_layout
+@usableFromInline
 struct OneDimensionalLUT {
     
-    @_versioned
+    @usableFromInline
     let channels: Int
     
-    @_versioned
+    @usableFromInline
     let grid: Int
     
-    @_versioned
+    @usableFromInline
     let table: [Double]
     
     init(channels: Int, grid: Int, table: [Double]) {
@@ -519,8 +516,7 @@ struct OneDimensionalLUT {
         self.table = table
     }
     
-    @_versioned
-    @_inlineable
+    @inlinable
     func eval<Model: ColorModelProtocol>(_ color: Model) -> Model {
         
         precondition(Model.numberOfComponents == channels)
@@ -539,20 +535,20 @@ struct OneDimensionalLUT {
     }
 }
 
-@_versioned
 @_fixed_layout
+@usableFromInline
 struct MultiDimensionalLUT {
     
-    @_versioned
+    @usableFromInline
     let inputChannels: Int
     
-    @_versioned
+    @usableFromInline
     let outputChannels: Int
     
-    @_versioned
+    @usableFromInline
     let grids: [Int]
     
-    @_versioned
+    @usableFromInline
     let table: [Double]
     
     init(inputChannels: Int, outputChannels: Int, grids: [Int], table: [Double]) {
@@ -562,8 +558,7 @@ struct MultiDimensionalLUT {
         self.table = table
     }
     
-    @_versioned
-    @_inlineable
+    @inlinable
     func eval<Source: ColorModelProtocol, Destination: ColorModelProtocol>(_ source: Source) -> Destination {
         
         return table.withUnsafeBufferPointer { table in

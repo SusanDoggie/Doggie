@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-@_inlineable
+@inlinable
 public func Move<T>(_ count: Int, _ input: UnsafePointer<T>, _ in_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var input = input
@@ -35,7 +35,7 @@ public func Move<T>(_ count: Int, _ input: UnsafePointer<T>, _ in_stride: Int, _
         output += out_stride
     }
 }
-@_inlineable
+@inlinable
 public func Move<T: FloatingPoint>(_ count: Int, _ real: UnsafePointer<T>, _ imag: UnsafePointer<T>, _ in_stride: Int, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var real = real
@@ -53,7 +53,7 @@ public func Move<T: FloatingPoint>(_ count: Int, _ real: UnsafePointer<T>, _ ima
     }
 }
 
-@_inlineable
+@inlinable
 public func Swap<T>(_ count: Int, _ left: UnsafeMutablePointer<T>, _ l_stride: Int, _ right: UnsafeMutablePointer<T>, _ r_stride: Int) {
     
     var left = left
@@ -65,7 +65,7 @@ public func Swap<T>(_ count: Int, _ left: UnsafeMutablePointer<T>, _ l_stride: I
         right += r_stride
     }
 }
-@_inlineable
+@inlinable
 public func Swap<T: FloatingPoint>(_ count: Int, _ lreal: UnsafeMutablePointer<T>, _ limag: UnsafeMutablePointer<T>, _ l_stride: Int, _ rreal: UnsafeMutablePointer<T>, _ rimag: UnsafeMutablePointer<T>, _ r_stride: Int) {
     
     var lreal = lreal
@@ -83,7 +83,7 @@ public func Swap<T: FloatingPoint>(_ count: Int, _ lreal: UnsafeMutablePointer<T
     }
 }
 
-@_inlineable
+@inlinable
 public func Transpose<T>(_ row: Int, _ column: Int, _ input: UnsafePointer<T>, _ in_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var input = input
@@ -98,7 +98,7 @@ public func Transpose<T>(_ row: Int, _ column: Int, _ input: UnsafePointer<T>, _
     }
 }
 
-@_inlineable
+@inlinable
 public func Transpose<T: FloatingPoint>(_ row: Int, _ column: Int, _ real: UnsafePointer<T>, _ imag: UnsafePointer<T>, _ in_stride: Int, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var real = real

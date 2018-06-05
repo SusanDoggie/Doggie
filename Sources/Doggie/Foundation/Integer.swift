@@ -25,7 +25,7 @@
 
 extension FixedWidthInteger {
     
-    @_inlineable
+    @inlinable
     public var reverse: Self {
         
         var m1: Self = 0
@@ -56,14 +56,14 @@ extension FixedWidthInteger {
     }
 }
 
-@_inlineable
+@inlinable
 public func log2<T: FixedWidthInteger>(_ x: T) -> T {
     return x == 0 ? 0 : T(x.bitWidth - x.leadingZeroBitCount - 1)
 }
 
 extension FixedWidthInteger {
     
-    @_inlineable
+    @inlinable
     public var hibit: Self {
         return 1 << log2(self)
     }
@@ -71,7 +71,7 @@ extension FixedWidthInteger {
 
 extension FixedWidthInteger {
     
-    @_inlineable
+    @inlinable
     public var lowbit: Self {
         return 1 << self.trailingZeroBitCount
     }
@@ -79,7 +79,7 @@ extension FixedWidthInteger {
 
 extension BinaryInteger {
     
-    @_inlineable
+    @inlinable
     public var isPower2 : Bool {
         return 0 < self && self & (self - 1) == 0
     }
@@ -87,7 +87,7 @@ extension BinaryInteger {
 
 extension BinaryInteger {
     
-    @_inlineable
+    @inlinable
     public func align(_ s: Self) -> Self {
         assert(s.isPower2, "alignment is not power of 2.")
         let MASK = s - 1
@@ -95,7 +95,7 @@ extension BinaryInteger {
     }
 }
 
-@_inlineable
+@inlinable
 public func addmod<T: FixedWidthInteger & UnsignedInteger>(_ a: T, _ b: T, _ m: T) -> T {
     assert(m != 0, "divide by zero")
     let a = a % m
@@ -103,13 +103,13 @@ public func addmod<T: FixedWidthInteger & UnsignedInteger>(_ a: T, _ b: T, _ m: 
     let c = m &- b
     return a < c ? a &+ b : a &- c
 }
-@_inlineable
+@inlinable
 public func negmod<T: FixedWidthInteger & UnsignedInteger>(_ a: T, _ m: T) -> T {
     assert(m != 0, "divide by zero")
     let a = a % m
     return m &- a
 }
-@_inlineable
+@inlinable
 public func submod<T: FixedWidthInteger & UnsignedInteger>(_ a: T, _ b: T, _ m: T) -> T {
     assert(m != 0, "divide by zero")
     let a = a % m
@@ -118,7 +118,7 @@ public func submod<T: FixedWidthInteger & UnsignedInteger>(_ a: T, _ b: T, _ m: 
     return a < b ? a &+ c : a &- b
 }
 
-@_inlineable
+@inlinable
 public func mulmod<T: FixedWidthInteger & UnsignedInteger>(_ a: T, _ b: T, _ m: T) -> T {
     assert(m != 0, "divide by zero")
     let a = a % m
@@ -132,7 +132,7 @@ public func mulmod<T: FixedWidthInteger & UnsignedInteger>(_ a: T, _ b: T, _ m: 
     return m.dividingFullWidth(a.multipliedFullWidth(by: b)).remainder
 }
 
-@_inlineable
+@inlinable
 public func pow<T: FixedWidthInteger & UnsignedInteger>(_ x: T, _ n: T, _ m: T = T.max) -> T {
     assert(m != 0, "divide by zero")
     let x = x % m
@@ -146,7 +146,7 @@ public func pow<T: FixedWidthInteger & UnsignedInteger>(_ x: T, _ n: T, _ m: T =
     return n & 1 == 1 ? mulmod(x, p, m) : p
 }
 
-@_inlineable
+@inlinable
 public func gcd<U: UnsignedInteger>(_ a: U, _ b: U) -> U {
     var a = a
     var b = b
@@ -155,7 +155,7 @@ public func gcd<U: UnsignedInteger>(_ a: U, _ b: U) -> U {
     }
     return a
 }
-@_inlineable
+@inlinable
 public func gcd<S: SignedInteger>(_ a: S, _ b: S) -> S {
     var a = a
     var b = b
@@ -166,7 +166,7 @@ public func gcd<S: SignedInteger>(_ a: S, _ b: S) -> S {
     return sign ? abs(a) : -abs(a)
 }
 
-@_inlineable
+@inlinable
 public func exgcd<S: SignedInteger>(_ a: S, _ b: S) -> (gcd: S, x: S, y: S) {
     var a = a
     var b = b
@@ -189,7 +189,7 @@ public func exgcd<S: SignedInteger>(_ a: S, _ b: S) -> (gcd: S, x: S, y: S) {
     }
 }
 
-@_inlineable
+@inlinable
 public func modinv<U: UnsignedInteger>(_ a: U, _ b: U) -> U {
     var a = a
     var b = b
@@ -212,16 +212,16 @@ public func modinv<U: UnsignedInteger>(_ a: U, _ b: U) -> U {
     }
 }
 
-@_inlineable
+@inlinable
 public func lcm<T: UnsignedInteger>(_ a: T, _ b: T) -> T {
     return a * b / gcd(a, b)
 }
-@_inlineable
+@inlinable
 public func lcm<T: SignedInteger>(_ a: T, _ b: T) -> T {
     return a * b / gcd(a, b)
 }
 
-@_inlineable
+@inlinable
 public func factorial<T: UnsignedInteger>(_ x: T) -> T where T.Stride : SignedInteger {
     if x == 0 || x == 1 {
         return 1
@@ -233,7 +233,7 @@ public func factorial<T: UnsignedInteger>(_ x: T) -> T where T.Stride : SignedIn
     return _a
 }
 
-@_inlineable
+@inlinable
 public func permutation<T: UnsignedInteger>(_ n: T, _ k: T) -> T where T.Stride : SignedInteger {
     if k == 0 {
         return 1
@@ -247,12 +247,12 @@ public func permutation<T: UnsignedInteger>(_ n: T, _ k: T) -> T where T.Stride 
     }
     return _a
 }
-@_inlineable
+@inlinable
 public func combination<T: UnsignedInteger>(_ n: T, _ k: T) -> T where T.Stride : SignedInteger {
     return permutation(n, k) / factorial(k)
 }
 
-@_inlineable
+@inlinable
 public func fibonacci<T: FixedWidthInteger & UnsignedInteger>(_ n: T) -> T {
     func fib(_ n: T) -> (T, T) {
         switch n {

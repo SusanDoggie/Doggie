@@ -80,7 +80,7 @@ public struct XYZColorModel : ColorModelProtocol {
         }
     }
     
-    @_inlineable
+    @inlinable
     public subscript(position: Int) -> Double {
         get {
             switch position {
@@ -190,7 +190,7 @@ extension XYZColorModel {
             self.z = z
         }
         
-        @_inlineable
+        @inlinable
         public subscript(position: Int) -> Float {
             get {
                 switch position {

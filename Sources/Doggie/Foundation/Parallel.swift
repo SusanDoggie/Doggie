@@ -32,7 +32,7 @@ extension RandomAccessCollection {
     /// - Note: Using the `return` statement in the `body` closure will only
     ///   exit from the current call to `body`, not any outer scope, and won't
     ///   skip subsequent calls.
-    @_inlineable
+    @inlinable
     public func parallelEach(body: (Element) -> ()) {
         DispatchQueue.concurrentPerform(iterations: self.count) {
             body(self[self.index(startIndex, offsetBy: $0)])
@@ -57,7 +57,7 @@ extension RandomAccessCollection {
     ///   value of the same or of a different type.
     /// - Returns: An array containing the transformed elements of this
     ///   sequence.
-    @_inlineable
+    @inlinable
     public func parallelMap<T>(_ transform: (Element) -> T) -> [T] {
         let count = self.count
         let buffer = UnsafeMutablePointer<T>.allocate(capacity: count)

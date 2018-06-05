@@ -23,8 +23,7 @@
 //  THE SOFTWARE.
 //
 
-@_versioned
-@_fixed_layout
+@usableFromInline
 enum iccCurve {
     
     case identity
@@ -260,8 +259,7 @@ extension iccCurve {
 
 extension iccCurve {
     
-    @_versioned
-    @_inlineable
+    @inlinable
     var inverse: iccCurve {
         switch self {
         case .identity: return .identity
@@ -353,8 +351,7 @@ extension iccCurve {
 
 extension iccCurve {
     
-    @_versioned
-    @_inlineable
+    @inlinable
     func eval(_ x: Double) -> Double {
         
         @inline(__always)

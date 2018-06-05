@@ -25,28 +25,27 @@
 
 extension ColorSpace where Model == LabColorModel {
     
-    @_inlineable
+    @inlinable
     public static func cieLab<C>(from colorSpace: ColorSpace<C>) -> ColorSpace {
         return ColorSpace(base: CIELabColorSpace(colorSpace.base.cieXYZ))
     }
     
-    @_inlineable
+    @inlinable
     public static func cieLab(white: Point) -> ColorSpace {
         return ColorSpace(base: CIELabColorSpace(CIEXYZColorSpace(white: white)))
     }
 }
 
-@_versioned
 @_fixed_layout
+@usableFromInline
 struct CIELabColorSpace : ColorSpaceBaseProtocol {
     
     typealias Model = LabColorModel
     
-    @_versioned
+    @usableFromInline
     let cieXYZ: CIEXYZColorSpace
     
-    @_versioned
-    @_inlineable
+    @inlinable
     init(_ cieXYZ: CIEXYZColorSpace) {
         self.cieXYZ = cieXYZ
     }
@@ -54,17 +53,16 @@ struct CIELabColorSpace : ColorSpaceBaseProtocol {
 
 extension CIELabColorSpace {
     
-    @_versioned
-    @_inlineable
-    var hashValue: Int {
-        return hash_combine("CIELabColorSpace", cieXYZ)
+    @inlinable
+    func hash(into hasher: inout Hasher) {
+        hasher.combine("CIELabColorSpace")
+        hasher.combine(cieXYZ)
     }
 }
 
 extension CIELabColorSpace {
     
-    @_versioned
-    @_inlineable
+    @inlinable
     var localizedName: String? {
         return "Doggie CIE Lab Color Space (white = \(cieXYZ.white.point))"
     }
@@ -72,8 +70,7 @@ extension CIELabColorSpace {
 
 extension CIELabColorSpace {
     
-    @_versioned
-    @_inlineable
+    @inlinable
     var linearTone: CIELabColorSpace {
         return self
     }
@@ -81,20 +78,17 @@ extension CIELabColorSpace {
 
 extension CIELabColorSpace {
     
-    @_versioned
-    @_inlineable
+    @inlinable
     func convertToLinear(_ color: Model) -> Model {
         return color
     }
     
-    @_versioned
-    @_inlineable
+    @inlinable
     func convertFromLinear(_ color: Model) -> Model {
         return color
     }
     
-    @_versioned
-    @_inlineable
+    @inlinable
     func convertLinearToXYZ(_ color: Model) -> XYZColorModel {
         let normalizeMatrix = cieXYZ.normalizeMatrix
         let _white = cieXYZ.white * normalizeMatrix
@@ -112,8 +106,7 @@ extension CIELabColorSpace {
         return XYZColorModel(x: x * _white.x, y: y * _white.y, z: z * _white.z) * normalizeMatrix.inverse
     }
     
-    @_versioned
-    @_inlineable
+    @inlinable
     func convertLinearFromXYZ(_ color: XYZColorModel) -> Model {
         let normalizeMatrix = cieXYZ.normalizeMatrix
         let _white = cieXYZ.white * normalizeMatrix
