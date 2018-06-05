@@ -39,25 +39,7 @@ extension ColorSpace {
                 
             } else {
                 
-                if Model.numberOfComponents != 1 && Model.numberOfComponents != 3 && Model.numberOfComponents != 4 {
-                    return nil
-                }
-                
-                if let iccData = iccData.flatMap({ CGDataProvider(data: $0 as CFData) }) {
-                    
-                    var range: [CGFloat] = []
-                    
-                    for i in 0..<Model.numberOfComponents {
-                        let _range = Model.rangeOfComponent(i)
-                        range.append(CGFloat(_range.lowerBound))
-                        range.append(CGFloat(_range.upperBound))
-                    }
-                    
-                    return CGColorSpace(iccBasedNComponents: Model.numberOfComponents, range: range, profile: iccData, alternate: nil)
-                    
-                } else {
-                    return nil
-                }
+                return iccData.flatMap { CGColorSpace(iccProfileData: $0 as CFData) }
             }
         }
     }
