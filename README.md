@@ -41,7 +41,7 @@ if let font = collection.first?.with(size: 64) {
 
     let string = "Doggie\u{0301}".precomposedStringWithCanonicalMapping
 
-    let glyphs = string.unicodeScalars.map { font.glyph(with: $0) }
+    let glyphs = font.glyphs(with: string.unicodeScalars)
     let advances = glyphs.map { font.advanceWidth(forGlyph: $0) }.scan(0, +)
 
     var shape = Shape()
@@ -154,6 +154,7 @@ platform | specific | Description
 - [x] Format 0
 - [x] Format 4
 - [x] Format 12
+- [x] Format 14 (Unicode Variation Selectors)
 
 ## How To Contribute
 

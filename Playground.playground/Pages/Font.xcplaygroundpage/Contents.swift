@@ -17,7 +17,7 @@ for font in Arial {
     
     let string = "Doggie\u{0301}".precomposedStringWithCanonicalMapping
     
-    let glyphs = string.unicodeScalars.map { font.glyph(with: $0) }
+    let glyphs = font.glyphs(with: string.unicodeScalars)
     let advances = glyphs.map { font.advance(forGlyph: $0) }.scan(0, +)
     
     var shape = Shape()
@@ -39,7 +39,7 @@ for font in PingFang {
     
     let string = "Doggie\u{0301}".precomposedStringWithCompatibilityMapping
     
-    let glyphs = string.unicodeScalars.map { font.glyph(with: $0) }
+    let glyphs = font.glyphs(with: string.unicodeScalars)
     let advances = glyphs.map { font.advance(forGlyph: $0) }.scan(0, +)
     
     var shape = Shape()
