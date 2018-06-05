@@ -70,25 +70,25 @@ extension Image : AnyImageBaseProtocol {
     @_versioned
     @_inlineable
     func _linearTone() -> AnyImageBaseProtocol {
-        return self._linearTone()
+        return self.linearTone()
     }
     
     @_versioned
     @_inlineable
     func _transposed() -> AnyImageBaseProtocol {
-        return self._transposed()
+        return self.transposed()
     }
     
     @_versioned
     @_inlineable
     func _verticalFlipped() -> AnyImageBaseProtocol {
-        return self._verticalFlipped()
+        return self.verticalFlipped()
     }
     
     @_versioned
     @_inlineable
     func _horizontalFlipped() -> AnyImageBaseProtocol {
-        return self._horizontalFlipped()
+        return self.horizontalFlipped()
     }
     
     @_versioned
