@@ -40,23 +40,21 @@ struct JPEGDecoder : ImageRepDecoder {
         
         self.APP0 = APP0
         
-        var quantization = [JPEGQuantizationTable]()
-        var huffman = [JPEGHuffmanTable]()
+        var tables: [JPEGSegment.Marker: JPEGSegment] = [:]
         
         while let segment = try? data.decode(JPEGSegment.self) {
             
             switch segment.marker {
             case .SOF0 ... .SOF3, .SOF5 ... .SOF7, .SOF9 ... .SOF11, .SOF13 ... .SOF15: // Start Of Frame
                 
-                self.frame.append(JPEGFrame(SOF: try JPEGSOF(segment), quantization: quantization, scan: []))
-                quantization.removeAll(keepingCapacity: true)
+                self.frame.append(JPEGFrame(SOF: try JPEGSOF(segment), tables: tables, scan: []))
                 
             case .SOS: // Start Of Scan
                 
                 guard self.frame.count != 0 else { return nil }
                 
-                self.frame.mutableLast.scan.append(JPEGScan(SOS: try JPEGSOS(segment), huffman: huffman, ECS: []))
-                huffman.removeAll(keepingCapacity: true)
+                self.frame.mutableLast.scan.append(JPEGScan(SOS: try JPEGSOS(segment), tables: tables, ECS: []))
+                tables = self.frame.last!.tables
                 
                 fallthrough
                 
@@ -67,15 +65,9 @@ struct JPEGDecoder : ImageRepDecoder {
                 
                 self.frame.mutableLast.scan.mutableLast.ECS.append(data.popFirst(count))
                 
-            case .DHT: // Huffman Table
+            case .DHT, .DQT:
                 
-                var table = segment.data
-                huffman.append(try table.decode(JPEGHuffmanTable.self))
-                
-            case .DQT: // Quantization Table
-                
-                var table = segment.data
-                quantization.append(try table.decode(JPEGQuantizationTable.self))
+                tables[segment.marker] = segment
                 
             default: break
             }
@@ -231,49 +223,6 @@ extension JPEGHuffmanTable : CustomStringConvertible {
     }
 }
 
-struct JPEGQuantizationTable : ByteCodable {
-    
-    var destination: UInt8
-    
-    var table: (
-    UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8,
-    UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8,
-    UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8,
-    UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8,
-    UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8,
-    UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8,
-    UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8,
-    UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8
-    )
-    
-    init(from data: inout Data) throws {
-        
-        self.destination = try data.decode(UInt8.self)
-        
-        self.table = (try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self),
-                      try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self),
-                      try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self),
-                      try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self),
-                      try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self),
-                      try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self),
-                      try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self),
-                      try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self))
-    }
-    
-    func write(to stream: ByteOutputStream) {
-        
-        stream.encode(destination)
-        stream.encode(table.0, table.1, table.2, table.3, table.4, table.5, table.6, table.7)
-        stream.encode(table.8, table.9, table.10, table.11, table.12, table.13, table.14, table.15)
-        stream.encode(table.16, table.17, table.18, table.19, table.20, table.21, table.22, table.23)
-        stream.encode(table.24, table.25, table.26, table.27, table.28, table.29, table.30, table.31)
-        stream.encode(table.32, table.33, table.34, table.35, table.36, table.37, table.38, table.39)
-        stream.encode(table.40, table.41, table.42, table.43, table.44, table.45, table.46, table.47)
-        stream.encode(table.48, table.49, table.50, table.51, table.52, table.53, table.54, table.55)
-        stream.encode(table.56, table.57, table.58, table.59, table.60, table.61, table.62, table.63)
-    }
-}
-
 struct JPEGAPP0 {
     
     var version: (UInt8, UInt8)
@@ -308,14 +257,14 @@ struct JPEGAPP0 {
 struct JPEGFrame {
     
     var SOF: JPEGSOF
-    var quantization: [JPEGQuantizationTable]
+    var tables: [JPEGSegment.Marker: JPEGSegment]
     var scan: [JPEGScan]
 }
 
 struct JPEGScan {
     
     var SOS: JPEGSOS
-    var huffman: [JPEGHuffmanTable]
+    var tables: [JPEGSegment.Marker: JPEGSegment]
     var ECS: [Data]
 }
 
