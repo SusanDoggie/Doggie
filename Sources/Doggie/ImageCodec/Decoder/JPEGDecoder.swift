@@ -73,7 +73,8 @@ struct JPEGDecoder : ImageRepDecoder {
             }
         }
         
-        guard frame.count != 0 else { return nil }
+        guard frame.count == 1 else { return nil }
+        // guard frame.count != 0 else { return nil }
         
     }
     
