@@ -53,7 +53,7 @@ public func ToPolar<T: FloatingMathProtocol>(_ count: Int, _ real: UnsafePointer
     for _ in 0..<count {
         let _real = real.pointee
         let _imag = imag.pointee
-        rho.pointee = T.sqrt(_real * _real + _imag * _imag)
+        rho.pointee = sqrt(_real * _real + _imag * _imag)
         theta.pointee = T.atan2(_imag, _real)
         real += in_stride
         imag += in_stride
