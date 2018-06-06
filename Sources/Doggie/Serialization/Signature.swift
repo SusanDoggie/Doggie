@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-protocol SignatureProtocol: RawRepresentable, Hashable, ExpressibleByIntegerLiteral, ExpressibleByStringLiteral, CustomStringConvertible, ByteCodable {
+public protocol SignatureProtocol: RawRepresentable, Hashable, ExpressibleByIntegerLiteral, ExpressibleByStringLiteral, CustomStringConvertible, ByteCodable {
     
     associatedtype Bytes : FixedWidthInteger
     
@@ -35,18 +35,18 @@ protocol SignatureProtocol: RawRepresentable, Hashable, ExpressibleByIntegerLite
 extension SignatureProtocol {
     
     @_transparent
-    init(integerLiteral value: Bytes.IntegerLiteralType) {
+    public init(integerLiteral value: Bytes.IntegerLiteralType) {
         self.init(rawValue: Bytes(integerLiteral: value))
     }
     
     @_transparent
-    init(stringLiteral value: StaticString) {
+    public init(stringLiteral value: StaticString) {
         precondition(value.utf8CodeUnitCount == Bytes.bitWidth >> 3)
         self.init(rawValue: value.utf8Start.withMemoryRebound(to: Bytes.self, capacity: 1) { Bytes(bigEndian: $0.pointee) })
     }
     
     @_transparent
-    var description: String {
+    public var description: String {
         var code = self.rawValue.bigEndian
         return String(bytes: UnsafeRawBufferPointer(start: &code, count: Bytes.bitWidth >> 3), encoding: .ascii) ?? ""
     }
@@ -55,25 +55,30 @@ extension SignatureProtocol {
 extension SignatureProtocol where Bytes : ByteEncodable {
     
     @_transparent
-    func write(to stream: ByteOutputStream) {
+    public func write(to stream: ByteOutputStream) {
         self.rawValue.write(to: stream)
     }
 }
+
 extension SignatureProtocol where Bytes : ByteDecodable {
     
     @_transparent
-    init(from data: inout Data) throws {
+    public init(from data: inout Data) throws {
         self.init(rawValue: try Bytes(from: &data))
     }
 }
 
-struct Signature<Bytes : FixedWidthInteger & ByteCodable> : SignatureProtocol {
+public struct Signature<Bytes : FixedWidthInteger & ByteCodable> : SignatureProtocol {
     
-    var rawValue: Bytes
+    public var rawValue: Bytes
     
     @_transparent
-    init(rawValue: Bytes) {
+    public init(rawValue: Bytes) {
         self.rawValue = rawValue
     }
+}
+
+extension Signature : ByteDecodable where Bytes : ByteDecodable {
+    
 }
 
