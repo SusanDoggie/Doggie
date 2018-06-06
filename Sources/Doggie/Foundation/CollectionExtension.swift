@@ -23,6 +23,32 @@
 //  THE SOFTWARE.
 //
 
+extension MutableCollection {
+    
+    @inlinable
+    public var mutableFirst: Element {
+        get {
+            return self[self.startIndex]
+        }
+        set {
+            self[self.startIndex] = newValue
+        }
+    }
+}
+
+extension MutableCollection where Self : BidirectionalCollection {
+    
+    @inlinable
+    public var mutableLast: Element {
+        get {
+            return self[self.index(before: self.endIndex)]
+        }
+        set {
+            self[self.index(before: self.endIndex)] = newValue
+        }
+    }
+}
+
 extension Collection {
     
     @inlinable

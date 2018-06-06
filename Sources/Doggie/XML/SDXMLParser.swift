@@ -113,7 +113,7 @@ class SDXMLParser : XMLParser, XMLParserDelegate {
             if stack.count == 0 {
                 document.append(last.0)
             } else {
-                stack[stack.count - 1].0.append(last.0)
+                stack.mutableLast.0.append(last.0)
             }
         }
     }
@@ -126,7 +126,7 @@ class SDXMLParser : XMLParser, XMLParserDelegate {
             if stack.count == 0 {
                 document.append(SDXMLElement(characters: string))
             } else {
-                stack[stack.count - 1].0.append(SDXMLElement(characters: string))
+                stack.mutableLast.0.append(SDXMLElement(characters: string))
             }
         }
     }
@@ -135,7 +135,7 @@ class SDXMLParser : XMLParser, XMLParserDelegate {
         if stack.count == 0 {
             document.append(SDXMLElement(comment: comment))
         } else {
-            stack[stack.count - 1].0.append(SDXMLElement(comment: comment))
+            stack.mutableLast.0.append(SDXMLElement(comment: comment))
         }
     }
     
@@ -143,7 +143,7 @@ class SDXMLParser : XMLParser, XMLParserDelegate {
         if stack.count == 0 {
             document.append(SDXMLElement(CDATA: String(data: CDATABlock, encoding: .utf8) ?? ""))
         } else {
-            stack[stack.count - 1].0.append(SDXMLElement(CDATA: String(data: CDATABlock, encoding: .utf8) ?? ""))
+            stack.mutableLast.0.append(SDXMLElement(CDATA: String(data: CDATABlock, encoding: .utf8) ?? ""))
         }
     }
 }
