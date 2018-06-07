@@ -83,6 +83,44 @@ extension CubicBezier: Encodable where Element : Encodable {
 
 extension CubicBezier {
     
+    public typealias Indices = Range<Int>
+    
+    public typealias Index = Int
+    
+    @inlinable
+    public var startIndex: Int {
+        return 0
+    }
+    @inlinable
+    public var endIndex: Int {
+        return 4
+    }
+    
+    @inlinable
+    public subscript(position: Int) -> Element {
+        get {
+            switch position {
+            case 0: return p0
+            case 1: return p1
+            case 2: return p2
+            case 3: return p3
+            default: fatalError()
+            }
+        }
+        set {
+            switch position {
+            case 0: p0 = newValue
+            case 1: p1 = newValue
+            case 2: p2 = newValue
+            case 3: p3 = newValue
+            default: fatalError()
+            }
+        }
+    }
+}
+
+extension CubicBezier {
+    
     @inlinable
     public func eval(_ t: Double) -> Element {
         let t2 = t * t

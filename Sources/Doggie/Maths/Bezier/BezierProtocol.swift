@@ -23,16 +23,24 @@
 //  THE SOFTWARE.
 //
 
-public protocol BezierProtocol : ScalarMultiplicative {
+public protocol BezierProtocol : ScalarMultiplicative, RandomAccessCollection, MutableCollection where Element : ScalarMultiplicative, Element.Scalar == Scalar {
     
-    associatedtype Element : ScalarMultiplicative where Element.Scalar == Scalar
+    var degree: Int { get }
     
     func split(_ t: Scalar) -> (Self, Self)
     
     func eval(_ t: Scalar) -> Element
 }
 
-extension BezierProtocol where Scalar : FloatingPoint {
+extension BezierProtocol {
+    
+    @inlinable
+    public var degree: Int {
+        return count - 1
+    }
+}
+
+extension BezierProtocol where Scalar : ScalarMultiplicative, Scalar.Scalar == Scalar {
     
     @inlinable
     public func split(_ t: [Scalar]) -> [Self] {

@@ -151,7 +151,20 @@ extension Rational {
     }
 }
 
-extension Rational : Multiplicative, ScalarMultiplicative {
+extension Rational {
+    
+    @_transparent
+    public func distance(to other: Rational) -> Rational {
+        return other - self
+    }
+    
+    @_transparent
+    public func advanced(by n: Rational) -> Rational {
+        return self + n
+    }
+}
+
+extension Rational : ScalarProtocol {
     
     public typealias Scalar = Rational
     

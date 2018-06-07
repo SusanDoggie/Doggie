@@ -72,6 +72,40 @@ extension LineSegment: Encodable where Element : Encodable {
 
 extension LineSegment {
     
+    public typealias Indices = Range<Int>
+    
+    public typealias Index = Int
+    
+    @inlinable
+    public var startIndex: Int {
+        return 0
+    }
+    @inlinable
+    public var endIndex: Int {
+        return 2
+    }
+    
+    @inlinable
+    public subscript(position: Int) -> Element {
+        get {
+            switch position {
+            case 0: return p0
+            case 1: return p1
+            default: fatalError()
+            }
+        }
+        set {
+            switch position {
+            case 0: p0 = newValue
+            case 1: p1 = newValue
+            default: fatalError()
+            }
+        }
+    }
+}
+
+extension LineSegment {
+    
     @inlinable
     public func eval(_ t: Double) -> Element {
         return p0 + t * (p1 - p0)
@@ -127,10 +161,10 @@ extension LineSegment where Element == Point {
     
     @inlinable
     public var boundary: Rect {
-        let minX = min(p0.x, p1.x)
-        let minY = min(p0.y, p1.y)
-        let maxX = max(p0.x, p1.x)
-        let maxY = max(p0.y, p1.y)
+        let minX = Swift.min(p0.x, p1.x)
+        let minY = Swift.min(p0.y, p1.y)
+        let maxX = Swift.max(p0.x, p1.x)
+        let maxY = Swift.max(p0.y, p1.y)
         return Rect(x: minX, y: minY, width: maxX - minX, height: maxY - minY)
     }
 }

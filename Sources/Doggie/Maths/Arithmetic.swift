@@ -29,21 +29,25 @@ public protocol Additive : Equatable {
     
     static func += (lhs: inout Self, rhs: Self)
     
-    static prefix func + (x: Self) -> Self
-}
-
-public protocol Subtractive : Additive {
-    
     static func - (lhs: Self, rhs: Self) -> Self
     
     static func -= (lhs: inout Self, rhs: Self)
     
+    static prefix func + (x: Self) -> Self
+    
     static prefix func - (x: Self) -> Self
 }
 
-public protocol ScalarMultiplicative : Subtractive {
+public protocol ScalarProtocol: SignedNumeric, Strideable, ExpressibleByFloatLiteral, Multiplicative, ScalarMultiplicative where Scalar == Self {
     
-    associatedtype Scalar : SignedNumeric, ExpressibleByFloatLiteral
+    static func * (lhs: Self, rhs: Self) -> Self
+    
+    static func *= (lhs: inout Self, rhs: Self)
+}
+
+public protocol ScalarMultiplicative : Additive {
+    
+    associatedtype Scalar : ScalarProtocol
     
     init()
     
@@ -63,36 +67,4 @@ public protocol Multiplicative : Equatable {
     static func * (lhs: Self, rhs: Self) -> Self
     
     static func *= (lhs: inout Self, rhs: Self)
-}
-
-extension Int8 : Subtractive, Multiplicative {
-    
-}
-
-extension Int16 : Subtractive, Multiplicative {
-    
-}
-
-extension Int32 : Subtractive, Multiplicative {
-    
-}
-
-extension Int64 : Subtractive, Multiplicative {
-    
-}
-
-extension Int : Subtractive, Multiplicative {
-    
-}
-
-extension Float : Multiplicative, ScalarMultiplicative {
-    
-    public typealias Scalar = Float
-    
-}
-
-extension Double : Multiplicative, ScalarMultiplicative {
-    
-    public typealias Scalar = Double
-    
 }

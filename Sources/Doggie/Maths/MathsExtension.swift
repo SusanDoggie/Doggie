@@ -23,6 +23,44 @@
 //  THE SOFTWARE.
 //
 
+extension Int8 : Additive, Multiplicative {
+    
+}
+
+extension Int16 : Additive, Multiplicative {
+    
+}
+
+extension Int32 : Additive, Multiplicative {
+    
+}
+
+extension Int64 : Additive, Multiplicative {
+    
+}
+
+extension Int : Additive, Multiplicative {
+    
+}
+
+extension Float : ScalarProtocol {
+    
+    public typealias Scalar = Float
+    
+}
+
+extension Double : ScalarProtocol {
+    
+    public typealias Scalar = Double
+    
+}
+
+extension CGFloat : ScalarProtocol {
+    
+    public typealias Scalar = CGFloat
+    
+}
+
 extension Complex {
     
     @_transparent

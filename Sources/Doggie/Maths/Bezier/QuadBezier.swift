@@ -78,6 +78,42 @@ extension QuadBezier: Encodable where Element : Encodable {
 
 extension QuadBezier {
     
+    public typealias Indices = Range<Int>
+    
+    public typealias Index = Int
+    
+    @inlinable
+    public var startIndex: Int {
+        return 0
+    }
+    @inlinable
+    public var endIndex: Int {
+        return 3
+    }
+    
+    @inlinable
+    public subscript(position: Int) -> Element {
+        get {
+            switch position {
+            case 0: return p0
+            case 1: return p1
+            case 2: return p2
+            default: fatalError()
+            }
+        }
+        set {
+            switch position {
+            case 0: p0 = newValue
+            case 1: p1 = newValue
+            case 2: p2 = newValue
+            default: fatalError()
+            }
+        }
+    }
+}
+
+extension QuadBezier {
+    
     @inlinable
     public func eval(_ t: Double) -> Element {
         let _t = 1 - t
@@ -263,10 +299,10 @@ extension QuadBezier where Element == Point {
         let bx = QuadBezier<Double>(p0.x, p1.x, p2.x).stationary.value
         let by = QuadBezier<Double>(p0.y, p1.y, p2.y).stationary.value
         
-        let minX = bx.map { min(p0.x, p2.x, $0) } ?? min(p0.x, p2.x)
-        let minY = by.map { min(p0.y, p2.y, $0) } ?? min(p0.y, p2.y)
-        let maxX = bx.map { max(p0.x, p2.x, $0) } ?? max(p0.x, p2.x)
-        let maxY = by.map { max(p0.y, p2.y, $0) } ?? max(p0.y, p2.y)
+        let minX = bx.map { Swift.min(p0.x, p2.x, $0) } ?? Swift.min(p0.x, p2.x)
+        let minY = by.map { Swift.min(p0.y, p2.y, $0) } ?? Swift.min(p0.y, p2.y)
+        let maxX = bx.map { Swift.max(p0.x, p2.x, $0) } ?? Swift.max(p0.x, p2.x)
+        let maxY = by.map { Swift.max(p0.y, p2.y, $0) } ?? Swift.max(p0.y, p2.y)
         
         return Rect(x: minX, y: minY, width: maxX - minX, height: maxY - minY)
     }

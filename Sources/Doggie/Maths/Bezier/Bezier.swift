@@ -98,16 +98,11 @@ extension Bezier: Encodable where Element : Encodable {
     }
 }
 
-extension Bezier : RandomAccessCollection, MutableCollection {
+extension Bezier {
     
     public typealias Indices = Range<Int>
     
     public typealias Index = Int
-    
-    @inlinable
-    public var degree: Int {
-        return points.count - 1
-    }
     
     @inlinable
     public var startIndex: Int {
