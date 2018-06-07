@@ -70,6 +70,14 @@ public struct BEInteger<Base : FixedWidthInteger> : FixedWidthInteger {
     }
 }
 
+extension BEInteger : CustomStringConvertible {
+    
+    @_transparent
+    public var description: String {
+        return representingValue.description
+    }
+}
+
 extension BEInteger: Decodable where Base : Decodable {
     
     @_transparent
@@ -183,11 +191,6 @@ extension BEInteger {
 }
 
 extension BEInteger {
-    
-    @_transparent
-    public var description: String {
-        return representingValue.description
-    }
     
     @_transparent
     public var bitWidth: Int {
@@ -427,6 +430,14 @@ public struct LEInteger<Base : FixedWidthInteger> : FixedWidthInteger {
     }
 }
 
+extension LEInteger : CustomStringConvertible {
+    
+    @_transparent
+    public var description: String {
+        return representingValue.description
+    }
+}
+
 extension LEInteger: Decodable where Base : Decodable {
     
     @_transparent
@@ -540,11 +551,6 @@ extension LEInteger {
 }
 
 extension LEInteger {
-    
-    @_transparent
-    public var description: String {
-        return representingValue.description
-    }
     
     @_transparent
     public var bitWidth: Int {

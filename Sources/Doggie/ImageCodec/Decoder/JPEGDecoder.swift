@@ -41,33 +41,50 @@ struct JPEGDecoder : ImageRepDecoder {
         self.APP0 = APP0
         
         var tables: [JPEGSegment.Marker: JPEGSegment] = [:]
+        var DNL: UInt16?
         
-        while let segment = try? data.decode(JPEGSegment.self) {
+        loop: while let segment = try? data.decode(JPEGSegment.self) {
             
             switch segment.marker {
             case .SOF0 ... .SOF3, .SOF5 ... .SOF7, .SOF9 ... .SOF11, .SOF13 ... .SOF15: // Start Of Frame
                 
-                self.frame.append(JPEGFrame(SOF: try JPEGSOF(segment), tables: tables, scan: []))
+                self.frame.append(JPEGFrame(SOF: try JPEGSOF(segment), DNL: DNL, tables: tables, scan: []))
+                DNL = nil
                 
             case .SOS: // Start Of Scan
                 
                 guard self.frame.count != 0 else { return nil }
                 
-                self.frame.mutableLast.scan.append(JPEGScan(SOS: try JPEGSOS(segment), tables: tables, ECS: []))
+                self.frame.mutableLast.scan.append(JPEGScan(SOS: try JPEGSOS(segment), DNL: DNL, tables: tables, ECS: []))
                 tables = self.frame.last!.tables
+                DNL = nil
                 
                 fallthrough
                 
             case .RST0 ... .RST7: // Restart
                 
                 guard self.frame.count != 0 && self.frame.mutableLast.scan.count != 0 else { return nil }
-                guard let count = zip(data, data.dropFirst()).enumerated().first(where: { $0.1.0 == 0xFF && $0.1.1 != 0x00 })?.offset else { return nil }
                 
-                self.frame.mutableLast.scan.mutableLast.ECS.append(data.popFirst(count))
+                let offset = zip(data, data.dropFirst()).enumerated().first { $0.1.0 == 0xFF && $0.1.1 != 0x00 }?.offset
                 
-            case .DHT, .DQT:
+                if let offset = offset {
+                    self.frame.mutableLast.scan.mutableLast.ECS.append(data.popFirst(offset))
+                } else {
+                    self.frame.mutableLast.scan.mutableLast.ECS.append(data)
+                    break loop
+                }
+                
+            case .DHT, .DAC, .DQT:
                 
                 tables[segment.marker] = segment
+                
+            case .DNL: // Define Number of Lines
+                
+                DNL = segment.data.withUnsafeBytes { UInt16($0.pointee as BEUInt16) }
+                
+            case .EOI:
+                
+                break loop
                 
             default: break
             }
@@ -83,6 +100,9 @@ struct JPEGDecoder : ImageRepDecoder {
     }
     
     var height: Int {
+        if let DNL = self.frame[0].DNL {
+            return Int(DNL)
+        }
         return Int(self.frame[0].SOF.lines)
     }
     
@@ -97,8 +117,12 @@ struct JPEGDecoder : ImageRepDecoder {
         }
     }
     
+    var _colorSpace: ColorSpace<RGBColorModel> {
+        return ColorSpace.sRGB
+    }
+    
     var colorSpace: AnyColorSpace {
-        return AnyColorSpace(ColorSpace.sRGB)
+        return AnyColorSpace(_colorSpace)
     }
     
     var mediaType: ImageRep.MediaType {
@@ -107,96 +131,271 @@ struct JPEGDecoder : ImageRepDecoder {
     
     func image(option: MappedBufferOption) -> AnyImage {
         
-        return AnyImage(Image<ARGB32ColorPixel>(width: 0, height: 0, colorSpace: ColorSpace.sRGB, option: option))
+        var image = Image<ARGB32ColorPixel>(width: width, height: height, colorSpace: _colorSpace, option: option)
+        
+        let frame = self.frame[0]
+        
+        for scan in frame.scan {
+            
+            var tables = frame.tables
+            for (key, value) in scan.tables {
+                tables[key] = value
+            }
+            
+            if let huffman = tables[.DHT].flatMap({ try? JPEGHuffmanTable($0.data) }) {
+                print(huffman)
+            }
+            
+            if let quantization = tables[.DQT].flatMap({ try? JPEGQuantizationTable($0.data) }) {
+                print(quantization)
+            }
+        }
+        
+        return AnyImage(image)
+    }
+}
+
+struct JPEGQuantizationTable : ByteCodable {
+    
+    var tables: [(UInt8, Table)]
+    
+    init(from data: inout Data) throws {
+        self.tables = []
+        while data.count != 0 {
+            let byte = try data.decode(UInt8.self)
+            if byte & 0xF0 == 0 {
+                tables.append((byte, .table8(try data.decode(Table8.self))))
+            } else {
+                tables.append((byte, .table16(try data.decode(Table16.self))))
+            }
+        }
+    }
+    
+    func write(to stream: ByteOutputStream) {
+        for table in tables {
+            stream.encode(table.0)
+            switch table.1 {
+            case let .table8(table): stream.encode(table)
+            case let .table16(table): stream.encode(table)
+            }
+        }
+    }
+    
+    enum Table {
+        case table8(Table8)
+        case table16(Table16)
+    }
+}
+
+extension JPEGQuantizationTable {
+    
+    struct Table8 : ByteCodable {
+        
+        var table: (
+        UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8,
+        UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8,
+        UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8,
+        UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8,
+        UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8,
+        UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8,
+        UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8,
+        UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8
+        )
+        
+        init(from data: inout Data) throws {
+            self.table = (
+                try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self),
+                try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self),
+                try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self),
+                try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self),
+                try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self),
+                try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self),
+                try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self),
+                try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self),
+                try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self),
+                try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self),
+                try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self),
+                try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self),
+                try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self),
+                try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self),
+                try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self),
+                try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self)
+            )
+        }
+        
+        func write(to stream: ByteOutputStream) {
+            stream.encode(table.0, table.1, table.2, table.3, table.4, table.5, table.6, table.7)
+            stream.encode(table.8, table.9, table.10, table.11, table.12, table.13, table.14, table.15)
+            stream.encode(table.16, table.17, table.18, table.19, table.20, table.21, table.22, table.23)
+            stream.encode(table.24, table.25, table.26, table.27, table.28, table.29, table.30, table.31)
+            stream.encode(table.32, table.33, table.34, table.35, table.36, table.37, table.38, table.39)
+            stream.encode(table.40, table.41, table.42, table.43, table.44, table.45, table.46, table.47)
+            stream.encode(table.48, table.49, table.50, table.51, table.52, table.53, table.54, table.55)
+            stream.encode(table.56, table.57, table.58, table.59, table.60, table.61, table.62, table.63)
+        }
+    }
+}
+
+extension JPEGQuantizationTable {
+    
+    struct Table16 : ByteCodable {
+        
+        var table: (
+        UInt16, UInt16, UInt16, UInt16, UInt16, UInt16, UInt16, UInt16,
+        UInt16, UInt16, UInt16, UInt16, UInt16, UInt16, UInt16, UInt16,
+        UInt16, UInt16, UInt16, UInt16, UInt16, UInt16, UInt16, UInt16,
+        UInt16, UInt16, UInt16, UInt16, UInt16, UInt16, UInt16, UInt16,
+        UInt16, UInt16, UInt16, UInt16, UInt16, UInt16, UInt16, UInt16,
+        UInt16, UInt16, UInt16, UInt16, UInt16, UInt16, UInt16, UInt16,
+        UInt16, UInt16, UInt16, UInt16, UInt16, UInt16, UInt16, UInt16,
+        UInt16, UInt16, UInt16, UInt16, UInt16, UInt16, UInt16, UInt16
+        )
+        
+        init(from data: inout Data) throws {
+            self.table = (
+                UInt16(try data.decode(BEUInt16.self)), UInt16(try data.decode(BEUInt16.self)), UInt16(try data.decode(BEUInt16.self)), UInt16(try data.decode(BEUInt16.self)),
+                UInt16(try data.decode(BEUInt16.self)), UInt16(try data.decode(BEUInt16.self)), UInt16(try data.decode(BEUInt16.self)), UInt16(try data.decode(BEUInt16.self)),
+                UInt16(try data.decode(BEUInt16.self)), UInt16(try data.decode(BEUInt16.self)), UInt16(try data.decode(BEUInt16.self)), UInt16(try data.decode(BEUInt16.self)),
+                UInt16(try data.decode(BEUInt16.self)), UInt16(try data.decode(BEUInt16.self)), UInt16(try data.decode(BEUInt16.self)), UInt16(try data.decode(BEUInt16.self)),
+                UInt16(try data.decode(BEUInt16.self)), UInt16(try data.decode(BEUInt16.self)), UInt16(try data.decode(BEUInt16.self)), UInt16(try data.decode(BEUInt16.self)),
+                UInt16(try data.decode(BEUInt16.self)), UInt16(try data.decode(BEUInt16.self)), UInt16(try data.decode(BEUInt16.self)), UInt16(try data.decode(BEUInt16.self)),
+                UInt16(try data.decode(BEUInt16.self)), UInt16(try data.decode(BEUInt16.self)), UInt16(try data.decode(BEUInt16.self)), UInt16(try data.decode(BEUInt16.self)),
+                UInt16(try data.decode(BEUInt16.self)), UInt16(try data.decode(BEUInt16.self)), UInt16(try data.decode(BEUInt16.self)), UInt16(try data.decode(BEUInt16.self)),
+                UInt16(try data.decode(BEUInt16.self)), UInt16(try data.decode(BEUInt16.self)), UInt16(try data.decode(BEUInt16.self)), UInt16(try data.decode(BEUInt16.self)),
+                UInt16(try data.decode(BEUInt16.self)), UInt16(try data.decode(BEUInt16.self)), UInt16(try data.decode(BEUInt16.self)), UInt16(try data.decode(BEUInt16.self)),
+                UInt16(try data.decode(BEUInt16.self)), UInt16(try data.decode(BEUInt16.self)), UInt16(try data.decode(BEUInt16.self)), UInt16(try data.decode(BEUInt16.self)),
+                UInt16(try data.decode(BEUInt16.self)), UInt16(try data.decode(BEUInt16.self)), UInt16(try data.decode(BEUInt16.self)), UInt16(try data.decode(BEUInt16.self)),
+                UInt16(try data.decode(BEUInt16.self)), UInt16(try data.decode(BEUInt16.self)), UInt16(try data.decode(BEUInt16.self)), UInt16(try data.decode(BEUInt16.self)),
+                UInt16(try data.decode(BEUInt16.self)), UInt16(try data.decode(BEUInt16.self)), UInt16(try data.decode(BEUInt16.self)), UInt16(try data.decode(BEUInt16.self)),
+                UInt16(try data.decode(BEUInt16.self)), UInt16(try data.decode(BEUInt16.self)), UInt16(try data.decode(BEUInt16.self)), UInt16(try data.decode(BEUInt16.self)),
+                UInt16(try data.decode(BEUInt16.self)), UInt16(try data.decode(BEUInt16.self)), UInt16(try data.decode(BEUInt16.self)), UInt16(try data.decode(BEUInt16.self))
+            )
+        }
+        
+        func write(to stream: ByteOutputStream) {
+            stream.encode(table.0, table.1, table.2, table.3, table.4, table.5, table.6, table.7)
+            stream.encode(table.8, table.9, table.10, table.11, table.12, table.13, table.14, table.15)
+            stream.encode(table.16, table.17, table.18, table.19, table.20, table.21, table.22, table.23)
+            stream.encode(table.24, table.25, table.26, table.27, table.28, table.29, table.30, table.31)
+            stream.encode(table.32, table.33, table.34, table.35, table.36, table.37, table.38, table.39)
+            stream.encode(table.40, table.41, table.42, table.43, table.44, table.45, table.46, table.47)
+            stream.encode(table.48, table.49, table.50, table.51, table.52, table.53, table.54, table.55)
+            stream.encode(table.56, table.57, table.58, table.59, table.60, table.61, table.62, table.63)
+        }
     }
 }
 
 struct JPEGHuffmanTable : ByteCodable {
     
-    var info: UInt8
-    
-    var table: [Key: UInt8] = [:]
+    var tables: [Table]
     
     init(from data: inout Data) throws {
-        
-        self.info = try data.decode(UInt8.self)
-        
-        var _b: [Int] = []
-        
-        for _ in 0..<16 {
-            _b.append(Int(try data.decode(UInt8.self)))
-        }
-        
-        guard _b.reduce(0, +) <= 256 else { throw ImageRep.Error.InvalidFormat("Invalid Huffman table.") }
-        
-        var code: UInt16 = 0
-        
-        for (i, _count) in _b.enumerated() {
-            for _ in 0..<_count {
-                table[Key(length: UInt8(i + 1), code: code)] = try data.decode(UInt8.self)
-                code += 1
-            }
-            code <<= 1
+        self.tables = []
+        while data.count != 0 {
+            tables.append(try data.decode(Table.self))
         }
     }
     
     func write(to stream: ByteOutputStream) {
+        for table in tables {
+            stream.encode(table)
+        }
+    }
+}
+
+extension JPEGHuffmanTable {
+    
+    struct Table : ByteCodable {
         
-        stream.encode(info)
+        var info: UInt8
         
-        let group = Dictionary(grouping: table) { $0.key.length }
+        var table: [Key: UInt8] = [:]
         
-        let b1 = group[1]?.sorted(by: { $0.key.code }).map { $0.value } ?? []
-        let b2 = group[2]?.sorted(by: { $0.key.code }).map { $0.value } ?? []
-        let b3 = group[3]?.sorted(by: { $0.key.code }).map { $0.value } ?? []
-        let b4 = group[4]?.sorted(by: { $0.key.code }).map { $0.value } ?? []
-        let b5 = group[5]?.sorted(by: { $0.key.code }).map { $0.value } ?? []
-        let b6 = group[6]?.sorted(by: { $0.key.code }).map { $0.value } ?? []
-        let b7 = group[7]?.sorted(by: { $0.key.code }).map { $0.value } ?? []
-        let b8 = group[8]?.sorted(by: { $0.key.code }).map { $0.value } ?? []
-        let b9 = group[9]?.sorted(by: { $0.key.code }).map { $0.value } ?? []
-        let b10 = group[10]?.sorted(by: { $0.key.code }).map { $0.value } ?? []
-        let b11 = group[11]?.sorted(by: { $0.key.code }).map { $0.value } ?? []
-        let b12 = group[12]?.sorted(by: { $0.key.code }).map { $0.value } ?? []
-        let b13 = group[13]?.sorted(by: { $0.key.code }).map { $0.value } ?? []
-        let b14 = group[14]?.sorted(by: { $0.key.code }).map { $0.value } ?? []
-        let b15 = group[15]?.sorted(by: { $0.key.code }).map { $0.value } ?? []
-        let b16 = group[16]?.sorted(by: { $0.key.code }).map { $0.value } ?? []
+        init(from data: inout Data) throws {
+            
+            self.info = try data.decode(UInt8.self)
+            
+            let count = (
+                try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self),
+                try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self),
+                try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self),
+                try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self)
+            )
+            
+            try withUnsafeBytes(of: count) { count in
+                
+                guard count.reduce(0, { $0 + Int($1) }) <= 256 else { throw ImageRep.Error.InvalidFormat("Invalid Huffman table.") }
+                
+                var code: UInt16 = 0
+                
+                for (i, _count) in count.enumerated() {
+                    for _ in 0..<_count {
+                        table[Key(length: UInt8(i + 1), code: code)] = try data.decode(UInt8.self)
+                        code += 1
+                    }
+                    code <<= 1
+                }
+            }
+        }
         
-        stream.encode(UInt8(b1.count))
-        stream.encode(UInt8(b2.count))
-        stream.encode(UInt8(b3.count))
-        stream.encode(UInt8(b4.count))
-        stream.encode(UInt8(b5.count))
-        stream.encode(UInt8(b6.count))
-        stream.encode(UInt8(b7.count))
-        stream.encode(UInt8(b8.count))
-        stream.encode(UInt8(b9.count))
-        stream.encode(UInt8(b10.count))
-        stream.encode(UInt8(b11.count))
-        stream.encode(UInt8(b12.count))
-        stream.encode(UInt8(b13.count))
-        stream.encode(UInt8(b14.count))
-        stream.encode(UInt8(b15.count))
-        stream.encode(UInt8(b16.count))
-        
-        stream.write(b1)
-        stream.write(b2)
-        stream.write(b3)
-        stream.write(b4)
-        stream.write(b5)
-        stream.write(b6)
-        stream.write(b7)
-        stream.write(b8)
-        stream.write(b9)
-        stream.write(b10)
-        stream.write(b11)
-        stream.write(b12)
-        stream.write(b13)
-        stream.write(b14)
-        stream.write(b15)
-        stream.write(b16)
-        
+        func write(to stream: ByteOutputStream) {
+            
+            stream.encode(info)
+            
+            let group = Dictionary(grouping: table) { $0.key.length }
+            
+            let b1 = group[1]?.sorted(by: { $0.key.code }).map { $0.value } ?? []
+            let b2 = group[2]?.sorted(by: { $0.key.code }).map { $0.value } ?? []
+            let b3 = group[3]?.sorted(by: { $0.key.code }).map { $0.value } ?? []
+            let b4 = group[4]?.sorted(by: { $0.key.code }).map { $0.value } ?? []
+            let b5 = group[5]?.sorted(by: { $0.key.code }).map { $0.value } ?? []
+            let b6 = group[6]?.sorted(by: { $0.key.code }).map { $0.value } ?? []
+            let b7 = group[7]?.sorted(by: { $0.key.code }).map { $0.value } ?? []
+            let b8 = group[8]?.sorted(by: { $0.key.code }).map { $0.value } ?? []
+            let b9 = group[9]?.sorted(by: { $0.key.code }).map { $0.value } ?? []
+            let b10 = group[10]?.sorted(by: { $0.key.code }).map { $0.value } ?? []
+            let b11 = group[11]?.sorted(by: { $0.key.code }).map { $0.value } ?? []
+            let b12 = group[12]?.sorted(by: { $0.key.code }).map { $0.value } ?? []
+            let b13 = group[13]?.sorted(by: { $0.key.code }).map { $0.value } ?? []
+            let b14 = group[14]?.sorted(by: { $0.key.code }).map { $0.value } ?? []
+            let b15 = group[15]?.sorted(by: { $0.key.code }).map { $0.value } ?? []
+            let b16 = group[16]?.sorted(by: { $0.key.code }).map { $0.value } ?? []
+            
+            stream.encode(UInt8(b1.count))
+            stream.encode(UInt8(b2.count))
+            stream.encode(UInt8(b3.count))
+            stream.encode(UInt8(b4.count))
+            stream.encode(UInt8(b5.count))
+            stream.encode(UInt8(b6.count))
+            stream.encode(UInt8(b7.count))
+            stream.encode(UInt8(b8.count))
+            stream.encode(UInt8(b9.count))
+            stream.encode(UInt8(b10.count))
+            stream.encode(UInt8(b11.count))
+            stream.encode(UInt8(b12.count))
+            stream.encode(UInt8(b13.count))
+            stream.encode(UInt8(b14.count))
+            stream.encode(UInt8(b15.count))
+            stream.encode(UInt8(b16.count))
+            
+            stream.write(b1)
+            stream.write(b2)
+            stream.write(b3)
+            stream.write(b4)
+            stream.write(b5)
+            stream.write(b6)
+            stream.write(b7)
+            stream.write(b8)
+            stream.write(b9)
+            stream.write(b10)
+            stream.write(b11)
+            stream.write(b12)
+            stream.write(b13)
+            stream.write(b14)
+            stream.write(b15)
+            stream.write(b16)
+            
+        }
     }
 }
 
@@ -217,7 +416,7 @@ extension JPEGHuffmanTable.Key : CustomStringConvertible {
     }
 }
 
-extension JPEGHuffmanTable : CustomStringConvertible {
+extension JPEGHuffmanTable.Table : CustomStringConvertible {
     
     var description: String {
         return "JPEGHuffmanTable(info: \(info), table: [\(table.map { "\($0): \(String($1, radix: 16))" }.joined(separator: ", "))])"
@@ -258,6 +457,7 @@ struct JPEGAPP0 {
 struct JPEGFrame {
     
     var SOF: JPEGSOF
+    var DNL: UInt16?
     var tables: [JPEGSegment.Marker: JPEGSegment]
     var scan: [JPEGScan]
 }
@@ -265,6 +465,7 @@ struct JPEGFrame {
 struct JPEGScan {
     
     var SOS: JPEGSOS
+    var DNL: UInt16?
     var tables: [JPEGSegment.Marker: JPEGSegment]
     var ECS: [Data]
 }
@@ -441,9 +642,9 @@ extension JPEGSegment.Marker: ByteCodable {
     }
 }
 
-extension JPEGSegment : CustomStringConvertible {
+extension JPEGSegment.Marker : CustomStringConvertible {
     
     var description: String {
-        return "JPEGSegment(marker: \(String(marker.rawValue, radix: 16)), data: \(data))"
+        return "0x\(String(rawValue, radix: 16).uppercased())"
     }
 }
