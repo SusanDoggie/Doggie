@@ -299,13 +299,13 @@ extension Shape.Component {
                 for segment in segments {
                     switch segment {
                     case let .line(p1):
-                        bounds.append(Rect.bound([lastPoint, p1]))
+                        bounds.append(LineSegment(lastPoint, p1).boundary)
                         lastPoint = p1
                     case let .quad(p1, p2):
-                        bounds.append(Bezier(lastPoint, p1, p2).boundary)
+                        bounds.append(QuadBezier(lastPoint, p1, p2).boundary)
                         lastPoint = p2
                     case let .cubic(p1, p2, p3):
-                        bounds.append(Bezier(lastPoint, p1, p2, p3).boundary)
+                        bounds.append(CubicBezier(lastPoint, p1, p2, p3).boundary)
                         lastPoint = p3
                     }
                 }
@@ -323,13 +323,13 @@ extension Shape.Component {
                 for segment in segments {
                     switch segment {
                     case let .line(p1):
-                        bound = bound?.union(Rect.bound([lastPoint, p1])) ?? Rect.bound([lastPoint, p1])
+                        bound = bound?.union(LineSegment(lastPoint, p1).boundary) ?? LineSegment(lastPoint, p1).boundary
                         lastPoint = p1
                     case let .quad(p1, p2):
-                        bound = bound?.union(Bezier(lastPoint, p1, p2).boundary) ?? Bezier(lastPoint, p1, p2).boundary
+                        bound = bound?.union(QuadBezier(lastPoint, p1, p2).boundary) ?? QuadBezier(lastPoint, p1, p2).boundary
                         lastPoint = p2
                     case let .cubic(p1, p2, p3):
-                        bound = bound?.union(Bezier(lastPoint, p1, p2, p3).boundary) ?? Bezier(lastPoint, p1, p2, p3).boundary
+                        bound = bound?.union(CubicBezier(lastPoint, p1, p2, p3).boundary) ?? CubicBezier(lastPoint, p1, p2, p3).boundary
                         lastPoint = p3
                     }
                 }
@@ -350,17 +350,17 @@ extension Shape.Component {
                 for segment in segments {
                     switch segment {
                     case let .line(p1):
-                        _area += Bezier(lastPoint, p1).area
+                        _area += LineSegment(lastPoint, p1).area
                         lastPoint = p1
                     case let .quad(p1, p2):
-                        _area += Bezier(lastPoint, p1, p2).area
+                        _area += QuadBezier(lastPoint, p1, p2).area
                         lastPoint = p2
                     case let .cubic(p1, p2, p3):
-                        _area += Bezier(lastPoint, p1, p2, p3).area
+                        _area += CubicBezier(lastPoint, p1, p2, p3).area
                         lastPoint = p3
                     }
                 }
-                cache.area = _area + Bezier(lastPoint, start).area
+                cache.area = _area + LineSegment(lastPoint, start).area
             }
             return cache.area!
         }
@@ -507,9 +507,9 @@ extension Shape.Component.BezierCollection.Element {
     
     public var boundary: Rect {
         switch self.segment {
-        case let .line(p1): return Rect.bound([self.start, p1])
-        case let .quad(p1, p2): return Bezier(self.start, p1, p2).boundary
-        case let .cubic(p1, p2, p3): return Bezier(self.start, p1, p2, p3).boundary
+        case let .line(p1): return LineSegment(self.start, p1).boundary
+        case let .quad(p1, p2): return QuadBezier(self.start, p1, p2).boundary
+        case let .cubic(p1, p2, p3): return CubicBezier(self.start, p1, p2, p3).boundary
         }
     }
 }

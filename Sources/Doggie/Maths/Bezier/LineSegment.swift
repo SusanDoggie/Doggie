@@ -1,0 +1,236 @@
+//
+//  LineSegment.swift
+//
+//  The MIT License
+//  Copyright (c) 2015 - 2018 Susan Cheng. All rights reserved.
+//
+//  Permission is hereby granted, free of charge, to any person obtaining a copy
+//  of this software and associated documentation files (the "Software"), to deal
+//  in the Software without restriction, including without limitation the rights
+//  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+//  copies of the Software, and to permit persons to whom the Software is
+//  furnished to do so, subject to the following conditions:
+//
+//  The above copyright notice and this permission notice shall be included in
+//  all copies or substantial portions of the Software.
+//
+//  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+//  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+//  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
+//  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+//  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+//  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+//  THE SOFTWARE.
+//
+
+public struct LineSegment<Element : ScalarMultiplicative> : Equatable where Element.Scalar == Double {
+    
+    public var p0: Element
+    public var p1: Element
+    
+    @inlinable
+    public init() {
+        self.p0 = Element()
+        self.p1 = Element()
+    }
+    
+    @inlinable
+    public init(_ p0: Element, _ p1: Element) {
+        self.p0 = p0
+        self.p1 = p1
+    }
+}
+
+extension LineSegment {
+    
+    @inlinable
+    public init(_ bezier: LineSegment<Element>) {
+        self.init(bezier.p0, bezier.p1)
+    }
+}
+
+extension LineSegment: Decodable where Element : Decodable {
+    
+    @inlinable
+    public init(from decoder: Decoder) throws {
+        var container = try decoder.unkeyedContainer()
+        self.init(try container.decode(Element.self), try container.decode(Element.self))
+    }
+}
+
+extension LineSegment: Encodable where Element : Encodable {
+    
+    @inlinable
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.unkeyedContainer()
+        try container.encode(p0)
+        try container.encode(p1)
+    }
+}
+
+extension LineSegment {
+    
+    @inlinable
+    public func eval(_ t: Double) -> Element {
+        return p0 + t * (p1 - p0)
+    }
+}
+
+extension LineSegment where Element == Double {
+    
+    @inlinable
+    public var polynomial: Polynomial {
+        let a = p0
+        let b = p1 - p0
+        return [a, b]
+    }
+}
+
+extension LineSegment {
+    
+    @inlinable
+    public func split(_ t: Double) -> (LineSegment, LineSegment) {
+        let q0 = p0 + t * (p1 - p0)
+        return (LineSegment(p0, q0), LineSegment(q0, p1))
+    }
+    
+    @inlinable
+    public func split(_ t: [Double]) -> [LineSegment] {
+        var result: [LineSegment] = []
+        result.reserveCapacity(t.count + 1)
+        var remain = self
+        var last_t = 0.0
+        for _t in t.sorted() {
+            let split = remain.split((_t - last_t) / (1 - last_t))
+            result.append(split.0)
+            remain = split.1
+            last_t = _t
+        }
+        result.append(remain)
+        return result
+    }
+}
+
+extension LineSegment where Element == Point {
+    
+    @inlinable
+    public func closest(_ point: Point) -> [Double] {
+        let a = p0 - point
+        let b = p1 - p0
+        return Polynomial(b.x * a.x + b.y * a.y, b.x * b.x + b.y * b.y).roots
+    }
+}
+
+extension LineSegment where Element == Point {
+    
+    @inlinable
+    public var area: Double {
+        return 0.5 * (p0.x * p1.y - p0.y * p1.x)
+    }
+}
+
+extension LineSegment where Element: Tensor {
+    
+    @inlinable
+    public func length(_ t: Double) -> Double {
+        return p0.distance(to: eval(t))
+    }
+}
+
+extension LineSegment where Element == Point {
+    
+    @inlinable
+    public var boundary: Rect {
+        let minX = min(p0.x, p1.x)
+        let minY = min(p0.y, p1.y)
+        let maxX = max(p0.x, p1.x)
+        let maxY = max(p0.y, p1.y)
+        return Rect(x: minX, y: minY, width: maxX - minX, height: maxY - minY)
+    }
+}
+
+extension LineSegment where Element == Point {
+    
+    @inlinable
+    public func intersect(_ other: LineSegment) -> Point? {
+        
+        let q0 = p0 - p1
+        let q1 = other.p0 - other.p1
+        
+        let d = q0.x * q1.y - q0.y * q1.x
+        if d.almostZero() {
+            return nil
+        }
+        let a = (p0.x * p1.y - p0.y * p1.x) / d
+        let b = (other.p0.x * other.p1.y - other.p0.y * other.p1.x) / d
+        return Point(x: q1.x * a - q0.x * b, y: q1.y * a - q0.y * b)
+    }
+}
+
+extension LineSegment : ScalarMultiplicative {
+    
+    public typealias Scalar = Double
+    
+}
+
+@inlinable
+public prefix func + <Element>(x: LineSegment<Element>) -> LineSegment<Element> {
+    return x
+}
+@inlinable
+public prefix func - <Element>(x: LineSegment<Element>) -> LineSegment<Element> {
+    return LineSegment(-x.p0, -x.p1)
+}
+@inlinable
+public func + <Element>(lhs: LineSegment<Element>, rhs: LineSegment<Element>) -> LineSegment<Element> {
+    return LineSegment(lhs.p0 + rhs.p0, lhs.p1 + rhs.p1)
+}
+@inlinable
+public func - <Element>(lhs: LineSegment<Element>, rhs: LineSegment<Element>) -> LineSegment<Element> {
+    return LineSegment(lhs.p0 - rhs.p0, lhs.p1 - rhs.p1)
+}
+@inlinable
+public func * <Element>(lhs: Double, rhs: LineSegment<Element>) -> LineSegment<Element> {
+    return LineSegment(lhs * rhs.p0, lhs * rhs.p1)
+}
+@inlinable
+public func * <Element>(lhs: LineSegment<Element>, rhs: Double) -> LineSegment<Element> {
+    return LineSegment(lhs.p0 * rhs, lhs.p1 * rhs)
+}
+@inlinable
+public func / <Element>(lhs: LineSegment<Element>, rhs: Double) -> LineSegment<Element> {
+    return LineSegment(lhs.p0 / rhs, lhs.p1 / rhs)
+}
+@inlinable
+public func += <Element>(lhs: inout LineSegment<Element>, rhs: LineSegment<Element>) {
+    lhs = lhs + rhs
+}
+@inlinable
+public func -= <Element>(lhs: inout LineSegment<Element>, rhs: LineSegment<Element>) {
+    lhs = lhs - rhs
+}
+@inlinable
+public func *= <Element>(lhs: inout LineSegment<Element>, rhs: Double) {
+    lhs = lhs * rhs
+}
+@inlinable
+public func /= <Element>(lhs: inout LineSegment<Element>, rhs: Double) {
+    lhs = lhs / rhs
+}
+
+@inlinable
+public func * (lhs: LineSegment<Point>, rhs: SDTransform) -> LineSegment<Point> {
+    return LineSegment(lhs.p0 * rhs, lhs.p1 * rhs)
+}
+@inlinable
+public func *= (lhs: inout LineSegment<Point>, rhs: SDTransform) {
+    lhs = lhs * rhs
+}
+@inlinable
+public func * (lhs: LineSegment<Vector>, rhs: Matrix) -> LineSegment<Vector> {
+    return LineSegment(lhs.p0 * rhs, lhs.p1 * rhs)
+}
+@inlinable
+public func *= (lhs: inout LineSegment<Vector>, rhs: Matrix) {
+    lhs = lhs * rhs
+}

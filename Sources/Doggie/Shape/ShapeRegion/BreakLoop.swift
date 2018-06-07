@@ -159,7 +159,7 @@ extension Shape {
                     } else {
                         
                         var segment = segment
-                        if let (_a, _b) = CubicBezierSelfIntersect(segment.start, p1, p2, p3) {
+                        if let (_a, _b) = CubicBezier(segment.start, p1, p2, p3).selfIntersect() {
                             
                             let a = Swift.min(_a, _b)
                             let b = Swift.max(_a, _b)

@@ -45,7 +45,7 @@ private func _cubic(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point, operatio
     
     let discr = 3 * d2 * d2 - 4 * d1 * d3
     
-    let area = Bezier(p0, p1, p2, p3).area + Bezier(p3, p0).area
+    let area = CubicBezier(p0, p1, p2, p3).area + LineSegment(p3, p0).area
     
     @inline(__always)
     func draw(_ k0: Vector, _ k1: Vector, _ k2: Vector, _ k3: Vector, operation: (Shape.RenderOperation) throws -> Void) rethrows {
@@ -74,7 +74,7 @@ private func _cubic(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point, operatio
         
         if d2.almostZero() {
             
-            if !d3.almostZero(), let intersect = LinesIntersect(p0, p1, p2, p3) {
+            if !d3.almostZero(), let intersect = LineSegment(p0, p1).intersect(LineSegment(p2, p3)) {
                 try operation(.quadratic(p0, intersect, p3))
             }
         } else {
@@ -176,9 +176,9 @@ extension Shape.Component {
         @inline(__always)
         func drawCubic(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point, operation: (Shape.RenderOperation) throws -> Void) rethrows {
             
-            let bezier = Bezier(p0, p1, p2, p3)
+            let bezier = CubicBezier(p0, p1, p2, p3)
             
-            if let (t1, t2) = CubicBezierSelfIntersect(p0, p1, p2, p3) {
+            if let (t1, t2) = bezier.selfIntersect() {
                 
                 let split_t = [t1, t2].filter { !$0.almostZero() && !$0.almostEqual(1) && 0...1 ~= $0 }
                 
@@ -190,9 +190,9 @@ extension Shape.Component {
                     
                     let beziers = bezier.split(split_t)
                     
-                    try operation(.triangle(p0, beziers.last![0], beziers.last![3]))
+                    try operation(.triangle(p0, beziers.last!.p0, beziers.last!.p3))
                     
-                    try beziers.forEach { try _cubic($0[0], $0[1], $0[2], $0[3], operation: operation) }
+                    try beziers.forEach { try _cubic($0.p0, $0.p1, $0.p2, $0.p3, operation: operation) }
                 }
                 
             } else {
@@ -209,10 +209,10 @@ extension Shape.Component {
                     
                     for b in bezier.split(inflection) {
                         if let last = last {
-                            try operation(.triangle(p0, last, b[3]))
+                            try operation(.triangle(p0, last, b.p3))
                         }
-                        try _cubic(b[0], b[1], b[2], b[3], operation: operation)
-                        last = b[3]
+                        try _cubic(b.p0, b.p1, b.p2, b.p3, operation: operation)
+                        last = b.p3
                     }
                 }
             }
