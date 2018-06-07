@@ -24,7 +24,9 @@
 //
 
 @_fixed_layout
-public struct Bezier<Element : ScalarMultiplicative> : Equatable where Element.Scalar == Double {
+public struct Bezier<Element : ScalarMultiplicative> : Equatable, BezierProtocol where Element.Scalar == Double {
+    
+    public typealias Scalar = Double
     
     @usableFromInline
     var points: [Element]
@@ -254,22 +256,6 @@ extension Bezier {
         }
         let split = Bezier.split(t, points)
         return (Bezier(split.0), Bezier(split.1))
-    }
-    
-    @inlinable
-    public func split(_ t: [Double]) -> [Bezier] {
-        var result: [Bezier] = []
-        result.reserveCapacity(t.count + 1)
-        var remain = self
-        var last_t = 0.0
-        for _t in t.sorted() {
-            let split = remain.split((_t - last_t) / (1 - last_t))
-            result.append(split.0)
-            remain = split.1
-            last_t = _t
-        }
-        result.append(remain)
-        return result
     }
 }
 
@@ -540,12 +526,6 @@ extension Bezier where Element == Point {
         let resultant = _resultant(other)
         return resultant.allSatisfy { $0.almostZero() } ? nil : resultant.roots
     }
-}
-
-extension Bezier : ScalarMultiplicative {
-    
-    public typealias Scalar = Double
-    
 }
 
 @inlinable

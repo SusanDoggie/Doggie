@@ -23,7 +23,9 @@
 //  THE SOFTWARE.
 //
 
-public struct CubicBezier<Element : ScalarMultiplicative> : Equatable where Element.Scalar == Double {
+public struct CubicBezier<Element : ScalarMultiplicative> : Equatable, BezierProtocol where Element.Scalar == Double {
+    
+    public typealias Scalar = Double
     
     public var p0: Element
     public var p1: Element
@@ -117,22 +119,6 @@ extension CubicBezier {
         let u1 = q1 + t * (q2 - q1)
         let v0 = u0 + t * (u1 - u0)
         return (CubicBezier(p0, q0, u0, v0), CubicBezier(v0, u1, q2, p3))
-    }
-    
-    @inlinable
-    public func split(_ t: [Double]) -> [CubicBezier] {
-        var result: [CubicBezier] = []
-        result.reserveCapacity(t.count + 1)
-        var remain = self
-        var last_t = 0.0
-        for _t in t.sorted() {
-            let split = remain.split((_t - last_t) / (1 - last_t))
-            result.append(split.0)
-            remain = split.1
-            last_t = _t
-        }
-        result.append(remain)
-        return result
     }
 }
 
@@ -228,13 +214,6 @@ extension CubicBezier where Element == Double {
 }
 
 extension CubicBezier where Element == Point {
-    
-    @inlinable
-    public var stationary: [Double] {
-        let bx = CubicBezier<Double>(p0.x, p1.x, p2.x, p3.x).stationary.lazy.map { $0.clamped(to: 0...1) }
-        let by = CubicBezier<Double>(p0.y, p1.y, p2.y, p3.y).stationary.lazy.map { $0.clamped(to: 0...1) }
-        return [0.0, 1.0] + bx + by
-    }
     
     @inlinable
     public var boundary: Rect {
@@ -451,12 +430,6 @@ extension CubicBezier where Element == Point {
         let det = _d + _e + _f
         return det.allSatisfy { $0.almostZero() } ? nil : det.roots
     }
-}
-
-extension CubicBezier : ScalarMultiplicative {
-    
-    public typealias Scalar = Double
-    
 }
 
 @inlinable

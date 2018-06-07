@@ -23,7 +23,9 @@
 //  THE SOFTWARE.
 //
 
-public struct LineSegment<Element : ScalarMultiplicative> : Equatable where Element.Scalar == Double {
+public struct LineSegment<Element : ScalarMultiplicative> : Equatable, BezierProtocol where Element.Scalar == Double {
+    
+    public typealias Scalar = Double
     
     public var p0: Element
     public var p1: Element
@@ -93,22 +95,6 @@ extension LineSegment {
         let q0 = p0 + t * (p1 - p0)
         return (LineSegment(p0, q0), LineSegment(q0, p1))
     }
-    
-    @inlinable
-    public func split(_ t: [Double]) -> [LineSegment] {
-        var result: [LineSegment] = []
-        result.reserveCapacity(t.count + 1)
-        var remain = self
-        var last_t = 0.0
-        for _t in t.sorted() {
-            let split = remain.split((_t - last_t) / (1 - last_t))
-            result.append(split.0)
-            remain = split.1
-            last_t = _t
-        }
-        result.append(remain)
-        return result
-    }
 }
 
 extension LineSegment where Element == Point {
@@ -165,12 +151,6 @@ extension LineSegment where Element == Point {
         let b = (other.p0.x * other.p1.y - other.p0.y * other.p1.x) / d
         return Point(x: q1.x * a - q0.x * b, y: q1.y * a - q0.y * b)
     }
-}
-
-extension LineSegment : ScalarMultiplicative {
-    
-    public typealias Scalar = Double
-    
 }
 
 @inlinable

@@ -23,7 +23,9 @@
 //  THE SOFTWARE.
 //
 
-public struct QuadBezier<Element : ScalarMultiplicative> : Equatable where Element.Scalar == Double {
+public struct QuadBezier<Element : ScalarMultiplicative> : Equatable, BezierProtocol where Element.Scalar == Double {
+    
+    public typealias Scalar = Double
     
     public var p0: Element
     public var p1: Element
@@ -105,22 +107,6 @@ extension QuadBezier {
         let q1 = p1 + t * (p2 - p1)
         let u0 = q0 + t * (q1 - q0)
         return (QuadBezier(p0, q0, u0), QuadBezier(u0, q1, p2))
-    }
-    
-    @inlinable
-    public func split(_ t: [Double]) -> [QuadBezier] {
-        var result: [QuadBezier] = []
-        result.reserveCapacity(t.count + 1)
-        var remain = self
-        var last_t = 0.0
-        for _t in t.sorted() {
-            let split = remain.split((_t - last_t) / (1 - last_t))
-            result.append(split.0)
-            remain = split.1
-            last_t = _t
-        }
-        result.append(remain)
-        return result
     }
 }
 
@@ -272,13 +258,6 @@ extension QuadBezier where Element == Double {
 extension QuadBezier where Element == Point {
     
     @inlinable
-    public var stationary: [Double] {
-        let bx = QuadBezier<Double>(p0.x, p1.x, p2.x).stationary.lazy.map { $0.clamped(to: 0...1) }
-        let by = QuadBezier<Double>(p0.y, p1.y, p2.y).stationary.lazy.map { $0.clamped(to: 0...1) }
-        return [0.0, 1.0] + bx + by
-    }
-    
-    @inlinable
     public var boundary: Rect {
         
         let bx = QuadBezier<Double>(p0.x, p1.x, p2.x).stationary.value
@@ -378,12 +357,6 @@ extension QuadBezier where Element == Point {
         let det = m00 * m11 - m01 * m10
         return det.allSatisfy { $0.almostZero() } ? nil : det.roots
     }
-}
-
-extension QuadBezier : ScalarMultiplicative {
-    
-    public typealias Scalar = Double
-    
 }
 
 @inlinable
