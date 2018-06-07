@@ -80,6 +80,7 @@ struct JPEGDecoder : ImageRepDecoder {
                 
             case .DNL: // Define Number of Lines
                 
+                guard segment.data.count == 2 else { return nil }
                 DNL = segment.data.withUnsafeBytes { UInt16($0.pointee as BEUInt16) }
                 
             case .EOI:
@@ -129,9 +130,52 @@ struct JPEGDecoder : ImageRepDecoder {
         return .jpeg
     }
     
+    var differential: Bool {
+        switch self.frame[0].SOF.marker {
+        case .SOF0 ... .SOF3, .SOF9 ... .SOF11: return false
+        case .SOF5 ... .SOF7, .SOF13 ... .SOF15: return true
+        default: fatalError()
+        }
+    }
+    
+    enum Encoding {
+        case baseline
+        case extended
+        case progressive
+        case lossless
+    }
+    
+    var encoding: Encoding {
+        
+        switch self.frame[0].SOF.marker {
+        case .SOF0: return .baseline
+        case .SOF1, .SOF5, .SOF9, .SOF13: return .extended
+        case .SOF2, .SOF6, .SOF10, .SOF14: return .progressive
+        case .SOF3, .SOF7, .SOF11, .SOF15: return .lossless
+        default: fatalError()
+        }
+    }
+    
+    enum Compression {
+        case huffman
+        case arithmetic
+    }
+    
+    var compression: Compression {
+        switch self.frame[0].SOF.marker {
+        case .SOF0 ... .SOF3, .SOF5 ... .SOF7: return .huffman
+        case .SOF9 ... .SOF11, .SOF13 ... .SOF15: return .arithmetic
+        default: fatalError()
+        }
+    }
+    
     func image(option: MappedBufferOption) -> AnyImage {
         
-        var image = Image<ARGB32ColorPixel>(width: width, height: height, colorSpace: _colorSpace, option: option)
+//        let differential = self.differential
+//        let encoding = self.encoding
+//        let compression = self.compression
+        
+        let image = Image<ARGB32ColorPixel>(width: width, height: height, colorSpace: _colorSpace, option: option)
         
         let frame = self.frame[0]
         
@@ -472,6 +516,7 @@ struct JPEGScan {
 
 struct JPEGSOF {
     
+    var marker: JPEGSegment.Marker
     var precision: UInt8
     var lines: BEUInt16
     var samplesPerLine: BEUInt16
@@ -480,6 +525,7 @@ struct JPEGSOF {
     
     init(_ segment: JPEGSegment) throws {
         
+        self.marker = segment.marker
         var data = segment.data
         
         self.precision = try data.decode(UInt8.self)
