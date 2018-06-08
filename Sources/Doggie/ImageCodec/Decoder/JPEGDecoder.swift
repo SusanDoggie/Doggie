@@ -25,9 +25,15 @@
 
 struct JPEGDecoder : ImageRepDecoder {
     
+    static var defaultColorSpace: ColorSpace<RGBColorModel> {
+        return ColorSpace.sRGB
+    }
+    
     var APP0: JPEGAPP0
     
     var frame: [JPEGFrame] = []
+    
+    var _colorSpace: ColorSpace<RGBColorModel> = JPEGDecoder.defaultColorSpace
     
     init?(data: Data) throws {
         
@@ -45,13 +51,22 @@ struct JPEGDecoder : ImageRepDecoder {
         loop: while let segment = try? data.decode(JPEGSegment.self) {
             
             switch segment.marker {
+                
+            case .APP2:
+                
+                guard segment.data.prefix(12).elementsEqual("ICC_PROFILE".utf8CString.lazy.map { UInt8(bitPattern: $0) }) else { continue }
+                guard let colorSpace = try? AnyColorSpace(iccData: segment.data.dropFirst(12)) else { continue }
+                guard let rgb = colorSpace.base as? ColorSpace<RGBColorModel> else { continue }
+                
+                _colorSpace = rgb
+                
             case .SOF0 ... .SOF3, .SOF5 ... .SOF7, .SOF9 ... .SOF11, .SOF13 ... .SOF15: // Start Of Frame
                 
                 self.frame.append(JPEGFrame(SOF: try JPEGSOF(segment), tables: tables, scan: []))
                 
             case .SOS: // Start Of Scan
                 
-                guard self.frame.count != 0 else { return nil }
+                guard self.frame.count != 0 else { throw ImageRep.Error.InvalidFormat("Invalid SOS.") }
                 
                 self.frame.mutableLast.scan.append(JPEGScan(SOS: try JPEGSOS(segment), tables: tables, ECS: []))
                 tables = self.frame.last!.tables
@@ -60,7 +75,7 @@ struct JPEGDecoder : ImageRepDecoder {
                 
             case .RST0 ... .RST7: // Restart
                 
-                guard self.frame.count != 0 && self.frame.mutableLast.scan.count != 0 else { return nil }
+                guard self.frame.count != 0 && self.frame.mutableLast.scan.count != 0 else { throw ImageRep.Error.InvalidFormat("Invalid RST.") }
                 
                 let offset = zip(data, data.dropFirst()).enumerated().first { $0.1.0 == 0xFF && $0.1.1 != 0x00 }?.offset
                 
@@ -77,8 +92,8 @@ struct JPEGDecoder : ImageRepDecoder {
                 
             case .DNL: // Define Number of Lines
                 
-                guard segment.data.count == 2 else { return nil }
-                guard self.frame.count != 0 && self.frame.mutableLast.scan.count != 0 else { return nil }
+                guard segment.data.count == 2 else { throw ImageRep.Error.InvalidFormat("Invalid DNL.") }
+                guard self.frame.count != 0 && self.frame.mutableLast.scan.count != 0 else { throw ImageRep.Error.InvalidFormat("Invalid DNL.") }
                 
                 self.frame.mutableLast.SOF.lines = segment.data.withUnsafeBytes { $0.pointee as BEUInt16 }
                 
@@ -112,10 +127,6 @@ struct JPEGDecoder : ImageRepDecoder {
         case 2: return Resolution(horizontal: _x, vertical: _y, unit: .centimeter)
         default: return Resolution(resolution: 1, unit: .point)
         }
-    }
-    
-    var _colorSpace: ColorSpace<RGBColorModel> {
-        return ColorSpace.sRGB
     }
     
     var colorSpace: AnyColorSpace {
