@@ -164,7 +164,7 @@ extension AnyColorSpace {
         case .XYZ: self._base = try ColorSpace<XYZColorModel>(iccData: iccData, profile: profile)
         case .Lab: self._base = try ColorSpace<LabColorModel>(iccData: iccData, profile: profile)
         case .Luv: self._base = try ColorSpace<LuvColorModel>(iccData: iccData, profile: profile)
-        case .YCbCr: self._base = try ColorSpace<Device3ColorModel>(iccData: iccData, profile: profile)
+        case .YCbCr: self._base = try ColorSpace<YCbCrColorModel>(iccData: iccData, profile: profile)
         case .Yxy: self._base = try ColorSpace<Device3ColorModel>(iccData: iccData, profile: profile)
         case .Rgb: self._base = try ColorSpace<RGBColorModel>(iccData: iccData, profile: profile)
         case .Gray: self._base = try ColorSpace<GrayColorModel>(iccData: iccData, profile: profile)
