@@ -307,10 +307,22 @@ extension iccLUTTransform : ByteDecodable {
         }
         
         func write<Target: ByteOutputStream>(to stream: inout Target) {
-            stream.encode(grids.0, grids.1, grids.2, grids.3,
-                        grids.4, grids.5, grids.6, grids.7,
-                        grids.8, grids.9, grids.10, grids.11,
-                        grids.12, grids.13, grids.14, grids.15)
+            stream.encode(grids.0)
+            stream.encode(grids.1)
+            stream.encode(grids.2)
+            stream.encode(grids.3)
+            stream.encode(grids.4)
+            stream.encode(grids.5)
+            stream.encode(grids.6)
+            stream.encode(grids.7)
+            stream.encode(grids.8)
+            stream.encode(grids.9)
+            stream.encode(grids.10)
+            stream.encode(grids.11)
+            stream.encode(grids.12)
+            stream.encode(grids.13)
+            stream.encode(grids.14)
+            stream.encode(grids.15)
             stream.encode(precision)
             stream.encode(pad1)
             stream.encode(pad2)

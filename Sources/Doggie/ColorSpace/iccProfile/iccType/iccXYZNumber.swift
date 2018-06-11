@@ -48,6 +48,8 @@ struct iccXYZNumber : ByteCodable {
     }
     
     func write<Target: ByteOutputStream>(to stream: inout Target) {
-        stream.encode(x, y, z)
+        stream.encode(x)
+        stream.encode(y)
+        stream.encode(z)
     }
 }

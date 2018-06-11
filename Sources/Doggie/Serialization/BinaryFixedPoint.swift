@@ -72,7 +72,7 @@ extension BinaryFixedPoint {
     }
 }
 
-extension BinaryFixedPoint where BitPattern : ByteEncodable {
+extension BinaryFixedPoint where BitPattern : ByteOutputStreamable {
     
     @_transparent
     public func write<Target: ByteOutputStream>(to stream: inout Target) {

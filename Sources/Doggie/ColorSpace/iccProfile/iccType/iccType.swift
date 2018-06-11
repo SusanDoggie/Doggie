@@ -130,17 +130,50 @@ extension iccProfile {
             stream.encode(renderingIntent)
             stream.encode(illuminant)
             stream.encode(creator)
-            stream.encode(profileID.0, profileID.1, profileID.2, profileID.3,
-                        profileID.4, profileID.5, profileID.6, profileID.7,
-                        profileID.8, profileID.9, profileID.10, profileID.11,
-                        profileID.12, profileID.13, profileID.14, profileID.15)
-            stream.encode(reserved.0, reserved.1, reserved.2, reserved.3,
-                        reserved.4, reserved.5, reserved.6, reserved.7,
-                        reserved.8, reserved.9, reserved.10, reserved.11,
-                        reserved.12, reserved.13, reserved.14, reserved.15,
-                        reserved.16, reserved.17, reserved.18, reserved.19,
-                        reserved.20, reserved.21, reserved.22, reserved.23,
-                        reserved.24, reserved.25, reserved.26, reserved.27)
+            stream.encode(profileID.0)
+            stream.encode(profileID.1)
+            stream.encode(profileID.2)
+            stream.encode(profileID.3)
+            stream.encode(profileID.4)
+            stream.encode(profileID.5)
+            stream.encode(profileID.6)
+            stream.encode(profileID.7)
+            stream.encode(profileID.8)
+            stream.encode(profileID.9)
+            stream.encode(profileID.10)
+            stream.encode(profileID.11)
+            stream.encode(profileID.12)
+            stream.encode(profileID.13)
+            stream.encode(profileID.14)
+            stream.encode(profileID.15)
+            stream.encode(reserved.0)
+            stream.encode(reserved.1)
+            stream.encode(reserved.2)
+            stream.encode(reserved.3)
+            stream.encode(reserved.4)
+            stream.encode(reserved.5)
+            stream.encode(reserved.6)
+            stream.encode(reserved.7)
+            stream.encode(reserved.8)
+            stream.encode(reserved.9)
+            stream.encode(reserved.10)
+            stream.encode(reserved.11)
+            stream.encode(reserved.12)
+            stream.encode(reserved.13)
+            stream.encode(reserved.14)
+            stream.encode(reserved.15)
+            stream.encode(reserved.16)
+            stream.encode(reserved.17)
+            stream.encode(reserved.18)
+            stream.encode(reserved.19)
+            stream.encode(reserved.20)
+            stream.encode(reserved.21)
+            stream.encode(reserved.22)
+            stream.encode(reserved.23)
+            stream.encode(reserved.24)
+            stream.encode(reserved.25)
+            stream.encode(reserved.26)
+            stream.encode(reserved.27)
         }
     }
 }

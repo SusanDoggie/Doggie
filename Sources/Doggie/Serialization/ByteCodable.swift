@@ -23,35 +23,6 @@
 //  THE SOFTWARE.
 //
 
-public protocol ByteEncodable: ByteOutputStreamable {
-    
-}
-
-extension RangeReplaceableCollection where Element == UInt8 {
-    
-    @inlinable
-    public mutating func encode<T: ByteEncodable>(_ value: T) {
-        value.write(to: &self)
-    }
-}
-
-extension ByteOutputStream {
-    
-    @inlinable
-    public mutating func encode<T: ByteEncodable>(_ value: T) {
-        value.write(to: &self)
-    }
-    
-    @inlinable
-    public mutating func encode<T: ByteEncodable>(_ first: T, _ second: T, _ remains: T...) {
-        first.write(to: &self)
-        second.write(to: &self)
-        for value in remains {
-            value.write(to: &self)
-        }
-    }
-}
-
 public protocol ByteDecodable {
     
     init(from: inout Data) throws
@@ -66,7 +37,7 @@ extension ByteDecodable {
     }
 }
 
-public typealias ByteCodable = ByteEncodable & ByteDecodable
+public typealias ByteCodable = ByteOutputStreamable & ByteDecodable
 
 public enum ByteDecodeError : Error {
     

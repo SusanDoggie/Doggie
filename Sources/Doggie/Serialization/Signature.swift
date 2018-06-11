@@ -52,7 +52,7 @@ extension SignatureProtocol {
     }
 }
 
-extension SignatureProtocol where Bytes : ByteEncodable {
+extension SignatureProtocol where Bytes : ByteOutputStreamable {
     
     @_transparent
     public func write<Target: ByteOutputStream>(to stream: inout Target) {

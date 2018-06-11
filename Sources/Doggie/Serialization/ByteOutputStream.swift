@@ -73,3 +73,19 @@ extension ByteOutputStreamable {
         self.enumerateBytes { data.append(contentsOf: $0) }
     }
 }
+
+extension RangeReplaceableCollection where Element == UInt8 {
+    
+    @inlinable
+    public mutating func encode<T: ByteOutputStreamable>(_ value: T) {
+        value.write(to: &self)
+    }
+}
+
+extension ByteOutputStream {
+    
+    @inlinable
+    public mutating func encode<T: ByteOutputStreamable>(_ value: T) {
+        value.write(to: &self)
+    }
+}
