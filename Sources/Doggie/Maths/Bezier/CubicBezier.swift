@@ -259,16 +259,13 @@ extension CubicBezier where Element == Point {
         let bx = CubicBezier<Double>(p0.x, p1.x, p2.x, p3.x)
         let by = CubicBezier<Double>(p0.y, p1.y, p2.y, p3.y)
         
-        let tx = [0.0, 1.0] + bx.stationary.lazy.map { $0.clamped(to: 0...1) }
-        let ty = [0.0, 1.0] + by.stationary.lazy.map { $0.clamped(to: 0...1) }
+        let _x = bx.stationary.lazy.map { bx.eval($0.clamped(to: 0...1)) }
+        let _y = by.stationary.lazy.map { by.eval($0.clamped(to: 0...1)) }
         
-        let _x = tx.map { bx.eval($0) }
-        let _y = ty.map { by.eval($0) }
-        
-        let minX = _x.min()!
-        let minY = _y.min()!
-        let maxX = _x.max()!
-        let maxY = _y.max()!
+        let minX = _x.min().map { Swift.min(p0.x, p3.x, $0) } ?? Swift.min(p0.x, p3.x)
+        let minY = _y.min().map { Swift.min(p0.y, p3.y, $0) } ?? Swift.min(p0.y, p3.y)
+        let maxX = _x.min().map { Swift.max(p0.x, p3.x, $0) } ?? Swift.max(p0.x, p3.x)
+        let maxY = _y.min().map { Swift.max(p0.y, p3.y, $0) } ?? Swift.max(p0.y, p3.y)
         
         return Rect(x: minX, y: minY, width: maxX - minX, height: maxY - minY)
     }

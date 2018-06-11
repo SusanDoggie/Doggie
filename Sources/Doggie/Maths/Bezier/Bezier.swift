@@ -376,16 +376,16 @@ extension Bezier where Element == Point {
         let bx = Bezier<Double>(points.map { $0.x })
         let by = Bezier<Double>(points.map { $0.y })
         
-        let tx = [0.0, 1.0] + bx.stationary.lazy.map { $0.clamped(to: 0...1) }
-        let ty = [0.0, 1.0] + by.stationary.lazy.map { $0.clamped(to: 0...1) }
+        let _x = bx.stationary.lazy.map { bx.eval($0.clamped(to: 0...1)) }
+        let _y = by.stationary.lazy.map { by.eval($0.clamped(to: 0...1)) }
         
-        let _x = tx.map { bx.eval($0) }
-        let _y = ty.map { by.eval($0) }
+        let first = points[0]
+        let last = points[points.count - 1]
         
-        let minX = _x.min()!
-        let minY = _y.min()!
-        let maxX = _x.max()!
-        let maxY = _y.max()!
+        let minX = _x.min().map { Swift.min(first.x, last.x, $0) } ?? Swift.min(first.x, last.x)
+        let minY = _y.min().map { Swift.min(first.y, last.y, $0) } ?? Swift.min(first.y, last.y)
+        let maxX = _x.min().map { Swift.max(first.x, last.x, $0) } ?? Swift.max(first.x, last.x)
+        let maxY = _y.min().map { Swift.max(first.y, last.y, $0) } ?? Swift.max(first.y, last.y)
         
         return Rect(x: minX, y: minY, width: maxX - minX, height: maxY - minY)
     }
