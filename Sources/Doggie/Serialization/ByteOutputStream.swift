@@ -1,5 +1,5 @@
 //
-//  ByteStream.swift
+//  ByteOutputStream.swift
 //
 //  The MIT License
 //  Copyright (c) 2015 - 2018 Susan Cheng. All rights reserved.
@@ -23,45 +23,53 @@
 //  THE SOFTWARE.
 //
 
-public protocol ByteInputStream {
+public protocol ByteOutputStream {
     
-    func write(to stream: ByteOutputStream)
-}
-
-extension ByteInputStream {
-    
-    @inlinable
-    public func enumerateBytes(_ body: (UnsafeRawBufferPointer) -> Void) {
-        withoutActuallyEscaping(body) { self.write(to: ByteOutputStream($0)) }
-    }
-    
-    @inlinable
-    public func write<C : RangeReplaceableCollection>(to data: inout C) where C.Element == UInt8 {
-        self.enumerateBytes { data.append(contentsOf: $0) }
-    }
-}
-
-@_fixed_layout
-public struct ByteOutputStream {
-    
-    @usableFromInline
-    let sink: (UnsafeRawBufferPointer) -> Void
-    
-    @inlinable
-    public init(_ sink: @escaping (UnsafeRawBufferPointer) -> Void) {
-        self.sink = sink
-    }
+    mutating func write(_ bytes: UnsafeRawBufferPointer)
 }
 
 extension ByteOutputStream {
     
     @inlinable
-    public func write(_ bytes: UnsafeRawBufferPointer) {
-        self.sink(bytes)
+    mutating func write<Buffer: UnsafeBufferProtocol>(_ buffer: Buffer) where Buffer.Element == UInt8 {
+        buffer.withUnsafeBufferPointer { self.write(UnsafeRawBufferPointer($0)) }
+    }
+}
+
+public protocol ByteOutputStreamable {
+    
+    func write<Target: ByteOutputStream>(to stream: inout Target)
+}
+
+@usableFromInline
+struct _ByteOutputStream: ByteOutputStream {
+    
+    @usableFromInline
+    let sink: (UnsafeRawBufferPointer) -> Void
+    
+    @inlinable
+    init(sink: @escaping (UnsafeRawBufferPointer) -> Void) {
+        self.sink = sink
     }
     
     @inlinable
-    public func write<Buffer: UnsafeBufferProtocol>(_ buffer: Buffer) where Buffer.Element == UInt8 {
-        buffer.withUnsafeBufferPointer { self.write(UnsafeRawBufferPointer($0)) }
+    func write(_ bytes: UnsafeRawBufferPointer) {
+        sink(bytes)
+    }
+}
+
+extension ByteOutputStreamable {
+    
+    @inlinable
+    public func enumerateBytes(_ body: (UnsafeRawBufferPointer) -> Void) {
+        withoutActuallyEscaping(body) {
+            var stream = _ByteOutputStream(sink: $0)
+            self.write(to: &stream)
+        }
+    }
+    
+    @inlinable
+    public func write<C : RangeReplaceableCollection>(to data: inout C) where C.Element == UInt8 {
+        self.enumerateBytes { data.append(contentsOf: $0) }
     }
 }

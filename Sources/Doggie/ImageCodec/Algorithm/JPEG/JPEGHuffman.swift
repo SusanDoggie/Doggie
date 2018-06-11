@@ -34,7 +34,7 @@ struct JPEGHuffmanTable : ByteCodable {
         }
     }
     
-    func write(to stream: ByteOutputStream) {
+    func write<Target: ByteOutputStream>(to stream: inout Target) {
         for table in tables {
             stream.encode(table)
         }
@@ -76,7 +76,7 @@ extension JPEGHuffmanTable {
             }
         }
         
-        func write(to stream: ByteOutputStream) {
+        func write<Target: ByteOutputStream>(to stream: inout Target) {
             
             stream.encode(info)
             

@@ -39,7 +39,7 @@ struct JPEGQuantizationTable : ByteCodable {
         }
     }
     
-    func write(to stream: ByteOutputStream) {
+    func write<Target: ByteOutputStream>(to stream: inout Target) {
         for table in tables {
             stream.encode(table.0)
             switch table.1 {
@@ -91,7 +91,7 @@ extension JPEGQuantizationTable {
             )
         }
         
-        func write(to stream: ByteOutputStream) {
+        func write<Target: ByteOutputStream>(to stream: inout Target) {
             stream.encode(table.0, table.1, table.2, table.3, table.4, table.5, table.6, table.7)
             stream.encode(table.8, table.9, table.10, table.11, table.12, table.13, table.14, table.15)
             stream.encode(table.16, table.17, table.18, table.19, table.20, table.21, table.22, table.23)
@@ -140,7 +140,7 @@ extension JPEGQuantizationTable {
             )
         }
         
-        func write(to stream: ByteOutputStream) {
+        func write<Target: ByteOutputStream>(to stream: inout Target) {
             stream.encode(table.0, table.1, table.2, table.3, table.4, table.5, table.6, table.7)
             stream.encode(table.8, table.9, table.10, table.11, table.12, table.13, table.14, table.15)
             stream.encode(table.16, table.17, table.18, table.19, table.20, table.21, table.22, table.23)

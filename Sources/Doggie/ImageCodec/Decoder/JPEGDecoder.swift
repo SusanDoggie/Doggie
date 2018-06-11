@@ -352,7 +352,7 @@ struct JPEGSegment : ByteCodable {
         }
     }
     
-    func write(to stream: ByteOutputStream) {
+    func write<Target: ByteOutputStream>(to stream: inout Target) {
         stream.encode(0xFF as UInt8)
         stream.encode(marker)
         switch marker.rawValue {
@@ -453,7 +453,7 @@ extension JPEGSegment.Marker: ByteCodable {
         self.init(rawValue: try data.decode(UInt8.self))
     }
     
-    func write(to stream: ByteOutputStream) {
+    func write<Target: ByteOutputStream>(to stream: inout Target) {
         stream.encode(rawValue)
     }
 }

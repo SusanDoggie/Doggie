@@ -50,7 +50,7 @@ struct iccDateTimeNumber : ByteCodable {
         self.seconds = try data.decode(BEUInt16.self)
     }
     
-    func write(to stream: ByteOutputStream) {
+    func write<Target: ByteOutputStream>(to stream: inout Target) {
         stream.encode(year, month, day, hours, minutes, seconds)
     }
 }

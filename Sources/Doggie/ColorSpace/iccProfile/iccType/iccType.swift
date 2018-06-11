@@ -113,7 +113,7 @@ extension iccProfile {
                              try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self))
         }
         
-        func write(to stream: ByteOutputStream) {
+        func write<Target: ByteOutputStream>(to stream: inout Target) {
             stream.encode(size)
             stream.encode(cmmId)
             stream.encode(version)

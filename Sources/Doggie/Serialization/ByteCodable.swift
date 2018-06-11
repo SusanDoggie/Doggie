@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-public protocol ByteEncodable: ByteInputStream {
+public protocol ByteEncodable: ByteOutputStreamable {
     
 }
 
@@ -38,16 +38,16 @@ extension RangeReplaceableCollection where Element == UInt8 {
 extension ByteOutputStream {
     
     @inlinable
-    public func encode<T: ByteEncodable>(_ value: T) {
-        value.write(to: self)
+    public mutating func encode<T: ByteEncodable>(_ value: T) {
+        value.write(to: &self)
     }
     
     @inlinable
-    public func encode<T: ByteEncodable>(_ first: T, _ second: T, _ remains: T...) {
-        first.write(to: self)
-        second.write(to: self)
+    public mutating func encode<T: ByteEncodable>(_ first: T, _ second: T, _ remains: T...) {
+        first.write(to: &self)
+        second.write(to: &self)
         for value in remains {
-            value.write(to: self)
+            value.write(to: &self)
         }
     }
 }
@@ -91,7 +91,7 @@ extension FixedWidthInteger {
     }
     
     @inlinable
-    public func write(to stream: ByteOutputStream) {
+    public func write<Target: ByteOutputStream>(to stream: inout Target) {
         withUnsafeBytes(of: self) { stream.write($0) }
     }
 }

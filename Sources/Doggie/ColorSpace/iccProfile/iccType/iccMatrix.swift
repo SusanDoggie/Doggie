@@ -65,7 +65,7 @@ struct iccMatrix3x3 : ByteCodable {
         self.e22 = try data.decode(Fixed16Number.self)
     }
     
-    func write(to stream: ByteOutputStream) {
+    func write<Target: ByteOutputStream>(to stream: inout Target) {
         stream.encode(e00, e01, e02,
                     e10, e11, e12,
                     e20, e21, e22)
@@ -100,7 +100,7 @@ struct iccMatrix3x4 : ByteCodable {
         self.e23 = try data.decode(Fixed16Number.self)
     }
     
-    func write(to stream: ByteOutputStream) {
+    func write<Target: ByteOutputStream>(to stream: inout Target) {
         stream.encode(m)
         stream.encode(e03, e13, e23)
     }

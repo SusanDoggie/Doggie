@@ -75,8 +75,8 @@ extension BinaryFixedPoint {
 extension BinaryFixedPoint where BitPattern : ByteEncodable {
     
     @_transparent
-    public func write(to stream: ByteOutputStream) {
-        self.bitPattern.write(to: stream)
+    public func write<Target: ByteOutputStream>(to stream: inout Target) {
+        stream.encode(bitPattern)
     }
 }
 

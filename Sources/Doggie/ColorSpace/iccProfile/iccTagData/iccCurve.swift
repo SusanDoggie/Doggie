@@ -79,7 +79,7 @@ extension iccCurve : ByteCodable {
         }
     }
     
-    func write(to stream: ByteOutputStream) {
+    func write<Target: ByteOutputStream>(to stream: inout Target) {
         
         switch self {
         case .identity:
@@ -214,7 +214,7 @@ extension iccCurve {
             }
         }
         
-        func write(to stream: ByteOutputStream) {
+        func write<Target: ByteOutputStream>(to stream: inout Target) {
             switch funcType {
             case 0:
                 stream.encode(funcType)
