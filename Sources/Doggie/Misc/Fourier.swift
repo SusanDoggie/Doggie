@@ -23,10 +23,6 @@
 //  THE SOFTWARE.
 //
 
-public func FFTConvolveLength(_ x: Int, _ y: Int) -> Int {
-    return (x + y - 2).hibit << 1
-}
-
 // MARK: Fourier
 
 public func Fourier(_ buffer: [Double], _ result: inout [Complex]) {
@@ -348,7 +344,7 @@ public func NegacyclicConvolve(_ signal: [Complex], _ kernel: [Complex], _ resul
 public func FFTConvolve(_ signal: [Double], _ kernel: [Double], _ result: inout [Double]) {
     
     let convolve_length = signal.count + kernel.count - 1
-    let fft_length = FFTConvolveLength(signal.count, kernel.count)
+    let fft_length = Radix2CircularConvolveLength(signal.count, kernel.count)
     let lv = log2(fft_length)
     
     var buffer = [Double](repeating: 0, count: fft_length << 1)
@@ -363,7 +359,7 @@ public func FFTConvolve(_ signal: [Double], _ kernel: [Double], _ result: inout 
 public func FFTConvolve(_ signal: [Complex], _ kernel: [Complex], _ result: inout [Complex]) {
     
     let convolve_length = signal.count + kernel.count - 1
-    let fft_length = FFTConvolveLength(signal.count, kernel.count)
+    let fft_length = Radix2CircularConvolveLength(signal.count, kernel.count)
     let lv = log2(fft_length)
     
     var buffer = [Complex](repeating: Complex(0), count: fft_length << 1)

@@ -206,8 +206,8 @@ extension ImageContext {
         
         guard width > 0 && height > 0 else { return ShadowTexture(width: width, height: height, pixels: map) }
         
-        let length1 = FFTConvolveLength(width, filter.count)
-        let length2 = FFTConvolveLength(height, filter.count)
+        let length1 = Radix2CircularConvolveLength(width, filter.count)
+        let length2 = Radix2CircularConvolveLength(height, filter.count)
         
         var buffer = MappedBuffer<Double>(repeating: 0, count: length1 + length2 + length1 * height, option: option)
         var result = ShadowTexture(width: n_width, height: length2, option: option)

@@ -325,8 +325,82 @@ public func Radix2CooleyTukey<T: BinaryFloatingPoint>(_ level: Int, _ real: Unsa
     _Radix2CooleyTukey(level, real, imag, in_stride, (in_count, in_count), _real, _imag, out_stride)
 }
 
-@_versioned
-@_inlineable
+@inlinable
+func _Radix2CooleyTukey_Orderd<T: BinaryFloatingPoint>(_ level: Int, _ real: UnsafeMutablePointer<T>, _ imag: UnsafeMutablePointer<T>, _ stride: Int) where T : FloatingMathProtocol {
+    
+    let count = 1 << level
+    
+    do {
+        var _r = real
+        var _i = imag
+        let m_stride = stride << 4
+        for _ in Swift.stride(from: 0, to: count, by: 16) {
+            Radix2CooleyTukey_Orderd_16(_r, _i, stride)
+            _r += m_stride
+            _i += m_stride
+        }
+    }
+    
+    for s in 4..<level {
+        
+        let m = 2 << s
+        let n = 1 << s
+        
+        let angle = -T.pi / T(n)
+        let _cos = T.cos(angle)
+        let _sin = T.sin(angle)
+        
+        let m_stride = m * stride
+        let n_stride = n * stride
+        
+        var r1 = real
+        var i1 = imag
+        
+        for _ in Swift.stride(from: 0, to: count, by: m) {
+            
+            var _cos1 = 1 as T
+            var _sin1 = 0 as T
+            
+            var _r1 = r1
+            var _i1 = i1
+            var _r2 = r1 + n_stride
+            var _i2 = i1 + n_stride
+            
+            for _ in 0..<n {
+                
+                let ur = _r1.pointee
+                let ui = _i1.pointee
+                let vr = _r2.pointee
+                let vi = _i2.pointee
+                
+                let vrc = vr * _cos1
+                let vic = vi * _cos1
+                let vrs = vr * _sin1
+                let vis = vi * _sin1
+                
+                let _c = _cos * _cos1 - _sin * _sin1
+                let _s = _cos * _sin1 + _sin * _cos1
+                _cos1 = _c
+                _sin1 = _s
+                
+                _r1.pointee = ur + vrc - vis
+                _i1.pointee = ui + vrs + vic
+                _r2.pointee = ur - vrc + vis
+                _i2.pointee = ui - vrs - vic
+                
+                _r1 += stride
+                _i1 += stride
+                _r2 += stride
+                _i2 += stride
+            }
+            
+            r1 += m_stride
+            i1 += m_stride
+        }
+    }
+}
+
+@inlinable
 func _Radix2CooleyTukey<T: BinaryFloatingPoint>(_ level: Int, _ real: UnsafePointer<T>, _ imag: UnsafePointer<T>, _ in_stride: Int, _ in_count: (Int, Int), _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int) where T : FloatingMathProtocol {
     
     switch level {
@@ -373,74 +447,7 @@ func _Radix2CooleyTukey<T: BinaryFloatingPoint>(_ level: Int, _ real: UnsafePoin
             }
         }
         
-        do {
-            var _r = _real
-            var _i = _imag
-            let m_stride = out_stride << 4
-            for _ in Swift.stride(from: 0, to: count, by: 16) {
-                Radix2CooleyTukey_Orderd_16(_r, _i, out_stride)
-                _r += m_stride
-                _i += m_stride
-            }
-        }
-        
-        for s in 4..<level {
-            
-            let m = 2 << s
-            let n = 1 << s
-            
-            let angle = -T.pi / T(n)
-            let _cos = T.cos(angle)
-            let _sin = T.sin(angle)
-            
-            let m_stride = m * out_stride
-            let n_stride = n * out_stride
-            
-            var r1 = _real
-            var i1 = _imag
-            
-            for _ in Swift.stride(from: 0, to: count, by: m) {
-                
-                var _cos1 = 1 as T
-                var _sin1 = 0 as T
-                
-                var _r1 = r1
-                var _i1 = i1
-                var _r2 = r1 + n_stride
-                var _i2 = i1 + n_stride
-                
-                for _ in 0..<n {
-                    
-                    let ur = _r1.pointee
-                    let ui = _i1.pointee
-                    let vr = _r2.pointee
-                    let vi = _i2.pointee
-                    
-                    let vrc = vr * _cos1
-                    let vic = vi * _cos1
-                    let vrs = vr * _sin1
-                    let vis = vi * _sin1
-                    
-                    let _c = _cos * _cos1 - _sin * _sin1
-                    let _s = _cos * _sin1 + _sin * _cos1
-                    _cos1 = _c
-                    _sin1 = _s
-                    
-                    _r1.pointee = ur + vrc - vis
-                    _i1.pointee = ui + vrs + vic
-                    _r2.pointee = ur - vrc + vis
-                    _i2.pointee = ui - vrs - vic
-                    
-                    _r1 += out_stride
-                    _i1 += out_stride
-                    _r2 += out_stride
-                    _i2 += out_stride
-                }
-                
-                r1 += m_stride
-                i1 += m_stride
-            }
-        }
+        _Radix2CooleyTukey_Orderd(level, _real, _imag, out_stride)
     }
 }
 
@@ -557,14 +564,14 @@ public func InverseRadix2CooleyTukey<T: BinaryFloatingPoint>(_ level: Int, _ inp
     }
 }
 
-@_versioned
 @inline(__always)
+@usableFromInline
 func _InverseRadix2CooleyTukey<T: BinaryFloatingPoint>(_ level: Int, _ real: UnsafePointer<T>, _ imag: UnsafePointer<T>, _ in_stride: Int, _ in_count: (Int, Int), _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int) where T : FloatingMathProtocol {
     
     _Radix2CooleyTukey(level, imag, real, in_stride, (in_count.1, in_count.0), _imag, _real, out_stride)
 }
 
-@_inlineable
+@inlinable
 public func InverseRadix2CooleyTukey<T: BinaryFloatingPoint>(_ level: Int, _ real: UnsafePointer<T>, _ imag: UnsafePointer<T>, _ in_stride: Int, _ in_count: Int, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int) where T : FloatingMathProtocol {
     
     Radix2CooleyTukey(level, imag, real, in_stride, in_count, _imag, _real, out_stride)
@@ -604,74 +611,7 @@ public func Radix2CooleyTukey<T: BinaryFloatingPoint>(_ level: Int, _ real: Unsa
             }
         }
         
-        do {
-            var _r = real
-            var _i = imag
-            let m_stride = stride << 4
-            for _ in Swift.stride(from: 0, to: count, by: 16) {
-                Radix2CooleyTukey_Orderd_16(_r, _i, stride)
-                _r += m_stride
-                _i += m_stride
-            }
-        }
-        
-        for s in 4..<level {
-            
-            let m = 2 << s
-            let n = 1 << s
-            
-            let angle = -T.pi / T(n)
-            let _cos = T.cos(angle)
-            let _sin = T.sin(angle)
-            
-            let m_stride = m * stride
-            let n_stride = n * stride
-            
-            var r1 = real
-            var i1 = imag
-            
-            for _ in Swift.stride(from: 0, to: count, by: m) {
-                
-                var _cos1 = 1 as T
-                var _sin1 = 0 as T
-                
-                var _r1 = r1
-                var _i1 = i1
-                var _r2 = r1 + n_stride
-                var _i2 = i1 + n_stride
-                
-                for _ in 0..<n {
-                    
-                    let ur = _r1.pointee
-                    let ui = _i1.pointee
-                    let vr = _r2.pointee
-                    let vi = _i2.pointee
-                    
-                    let vrc = vr * _cos1
-                    let vic = vi * _cos1
-                    let vrs = vr * _sin1
-                    let vis = vi * _sin1
-                    
-                    let _c = _cos * _cos1 - _sin * _sin1
-                    let _s = _cos * _sin1 + _sin * _cos1
-                    _cos1 = _c
-                    _sin1 = _s
-                    
-                    _r1.pointee = ur + vrc - vis
-                    _i1.pointee = ui + vrs + vic
-                    _r2.pointee = ur - vrc + vis
-                    _i2.pointee = ui - vrs - vic
-                    
-                    _r1 += stride
-                    _i1 += stride
-                    _r2 += stride
-                    _i2 += stride
-                }
-                
-                r1 += m_stride
-                i1 += m_stride
-            }
-        }
+        _Radix2CooleyTukey_Orderd(level, real, imag, stride)
     }
 }
 
@@ -1440,8 +1380,8 @@ func Radix2CooleyTukey_2<T: FloatingPoint>(_ real: UnsafePointer<T>, _ imag: Uns
     
     _Radix2CooleyTukey_2(real, imag, in_stride, (in_count, in_count), _real, _imag, out_stride)
 }
-@_versioned
 @inline(__always)
+@usableFromInline
 func _Radix2CooleyTukey_2<T: FloatingPoint>(_ real: UnsafePointer<T>, _ imag: UnsafePointer<T>, _ in_stride: Int, _ in_count: (Int, Int), _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var real = real
@@ -1543,8 +1483,8 @@ func Radix2CooleyTukey_4<T: FloatingPoint>(_ real: UnsafePointer<T>, _ imag: Uns
     
     _Radix2CooleyTukey_4(real, imag, in_stride, (in_count, in_count), _real, _imag, out_stride)
 }
-@_versioned
 @inline(__always)
+@usableFromInline
 func _Radix2CooleyTukey_4<T: FloatingPoint>(_ real: UnsafePointer<T>, _ imag: UnsafePointer<T>, _ in_stride: Int, _ in_count: (Int, Int), _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var real = real
@@ -1745,8 +1685,8 @@ func Radix2CooleyTukey_8<T: BinaryFloatingPoint>(_ real: UnsafePointer<T>, _ ima
     
     _Radix2CooleyTukey_8(real, imag, in_stride, (in_count, in_count), _real, _imag, out_stride)
 }
-@_versioned
 @inline(__always)
+@usableFromInline
 func _Radix2CooleyTukey_8<T: BinaryFloatingPoint>(_ real: UnsafePointer<T>, _ imag: UnsafePointer<T>, _ in_stride: Int, _ in_count: (Int, Int), _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var real = real
@@ -2166,8 +2106,8 @@ func Radix2CooleyTukey_16<T: BinaryFloatingPoint>(_ real: UnsafePointer<T>, _ im
     
     _Radix2CooleyTukey_16(real, imag, in_stride, (in_count, in_count), _real, _imag, out_stride)
 }
-@_versioned
 @inline(__always)
+@usableFromInline
 func _Radix2CooleyTukey_16<T: BinaryFloatingPoint>(_ real: UnsafePointer<T>, _ imag: UnsafePointer<T>, _ in_stride: Int, _ in_count: (Int, Int), _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var real = real

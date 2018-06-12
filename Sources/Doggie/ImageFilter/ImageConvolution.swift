@@ -50,8 +50,8 @@ func _ImageConvolution<Pixel, T: BinaryFloatingPoint>(_ image: Image<Pixel>, _ h
     
     guard width > 0 && height > 0 else { return image }
     
-    let length1 = FFTConvolveLength(width, horizontal_filter.count)
-    let length2 = FFTConvolveLength(height, vertical_filter.count)
+    let length1 = Radix2CircularConvolveLength(width, horizontal_filter.count)
+    let length2 = Radix2CircularConvolveLength(height, vertical_filter.count)
     
     var buffer = MappedBuffer<T>(repeating: 0, count: length1 + length2 + length1 * height, option: image.option)
     var result = MappedBuffer<Pixel>(repeating: Pixel(), count: n_width * length2, option: image.option)
@@ -115,7 +115,7 @@ func _ImageConvolutionHorizontal<Pixel, T: BinaryFloatingPoint>(_ image: Image<P
     
     guard width > 0 && height > 0 else { return image }
     
-    let length = FFTConvolveLength(width, filter.count)
+    let length = Radix2CircularConvolveLength(width, filter.count)
     
     var buffer = MappedBuffer<T>(repeating: 0, count: length + length * height, option: image.option)
     var result = Image<Pixel>(width: n_width, height: height, resolution: image.resolution, colorSpace: image.colorSpace, option: image.option)
@@ -179,7 +179,7 @@ func _ImageConvolutionVertical<Pixel, T: BinaryFloatingPoint>(_ image: Image<Pix
     
     guard width > 0 && height > 0 else { return image }
     
-    let length = FFTConvolveLength(height, filter.count)
+    let length = Radix2CircularConvolveLength(height, filter.count)
     
     var buffer = MappedBuffer<T>(repeating: 0, count: length, option: image.option)
     var result = MappedBuffer<Pixel>(repeating: Pixel(), count: width * length, option: image.option)

@@ -24,6 +24,11 @@
 //
 
 @inlinable
+public func Radix2CircularConvolveLength<T: FixedWidthInteger>(_ x: T, _ y: T) -> T {
+    return (x + y - 2).hibit << 1
+}
+
+@inlinable
 public func Radix2CircularConvolve<T: BinaryFloatingPoint>(_ level: Int, _ signal: UnsafePointer<T>, _ signal_stride: Int, _ signal_count: Int, _ kernel: UnsafePointer<T>, _ kernel_stride: Int, _ kernel_count: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int, _ temp: UnsafeMutablePointer<T>, _ temp_stride: Int) where T : FloatingMathProtocol {
     
     let length = 1 << level
