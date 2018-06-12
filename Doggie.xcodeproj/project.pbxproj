@@ -203,7 +203,7 @@
 		0ABDF1AD1F2B3520007EC7B2 /* RenderingIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ABDF1AB1F2B3520007EC7B2 /* RenderingIntent.swift */; };
 		0ABFA6C91FC67CB6009D42E2 /* ByteCodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ABFA6C81FC67CB6009D42E2 /* ByteCodable.swift */; };
 		0AC527E21EEFEFF900FB239A /* iccProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AC527E01EEFEFF900FB239A /* iccProfile.swift */; };
-		0AC588A920CF69AD00C326FF /* OverLapAddConvolve.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AC588A820CF69AD00C326FF /* OverLapAddConvolve.swift */; };
+		0AC588A920CF69AD00C326FF /* OverlapAddConvolve.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AC588A820CF69AD00C326FF /* OverlapAddConvolve.swift */; };
 		0ACD21331EEBA55000C5811F /* AtomicTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AFCA14F1D9E1F130034AB10 /* AtomicTest.swift */; };
 		0AD3E62F1F53D9FC003CC21A /* Font.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD3E62E1F53D9FC003CC21A /* Font.swift */; };
 		0AD3E6321F53DA9B003CC21A /* FontDecoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD3E6311F53DA9B003CC21A /* FontDecoder.swift */; };
@@ -441,7 +441,7 @@
 		0ABDF1AB1F2B3520007EC7B2 /* RenderingIntent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = RenderingIntent.swift; sourceTree = "<group>"; };
 		0ABFA6C81FC67CB6009D42E2 /* ByteCodable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = ByteCodable.swift; sourceTree = "<group>"; };
 		0AC527E01EEFEFF900FB239A /* iccProfile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = iccProfile.swift; sourceTree = "<group>"; };
-		0AC588A820CF69AD00C326FF /* OverLapAddConvolve.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverLapAddConvolve.swift; sourceTree = "<group>"; };
+		0AC588A820CF69AD00C326FF /* OverlapAddConvolve.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverlapAddConvolve.swift; sourceTree = "<group>"; };
 		0AD3E62E1F53D9FC003CC21A /* Font.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Font.swift; sourceTree = "<group>"; };
 		0AD3E6311F53DA9B003CC21A /* FontDecoder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = FontDecoder.swift; sourceTree = "<group>"; };
 		0AD3E6341F53DB6C003CC21A /* OpenTypeDecoder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = OpenTypeDecoder.swift; sourceTree = "<group>"; };
@@ -495,7 +495,7 @@
 				08458AB11E2E627600D01813 /* AccelerateWrapper.swift */,
 				08458AB21E2E627600D01813 /* AccelerateArithmetic.swift */,
 				08458AB31E2E627600D01813 /* CircularConvolve.swift */,
-				0AC588A820CF69AD00C326FF /* OverLapAddConvolve.swift */,
+				0AC588A820CF69AD00C326FF /* OverlapAddConvolve.swift */,
 				08458AB41E2E627600D01813 /* ComplexConversion.swift */,
 				08458AB51E2E627600D01813 /* CooleyTukey.swift */,
 				08458AB61E2E627600D01813 /* DiscreteConvolve.swift */,
@@ -1317,7 +1317,7 @@
 				0A9F28381EF1174600E69976 /* iccType.swift in Sources */,
 				0A8F4F6A1F622C850062FD11 /* SetClip.swift in Sources */,
 				08458B331E2E627600D01813 /* Complex.swift in Sources */,
-				0AC588A920CF69AD00C326FF /* OverLapAddConvolve.swift in Sources */,
+				0AC588A920CF69AD00C326FF /* OverlapAddConvolve.swift in Sources */,
 				0AFC4E331F7268AE00E5FD5A /* SDXMLParser.swift in Sources */,
 				0ADAA3B620CB6FFF006682EA /* ConcatCollection.swift in Sources */,
 				0A2107161E5BEEBB00F1E00E /* Shape.swift in Sources */,
