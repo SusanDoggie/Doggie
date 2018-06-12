@@ -30,7 +30,7 @@ public struct Radix2OverlapAddConvolve<T: BinaryFloatingPoint & Additive & Float
     let fft_length: Int
     
     @usableFromInline
-    let final_length: Int
+    let overlap_length: Int
     
     @usableFromInline
     var buffer: [T]
@@ -44,8 +44,8 @@ public struct Radix2OverlapAddConvolve<T: BinaryFloatingPoint & Additive & Float
         let kernel = kernel.map { $0 / T(fft_length) }
         
         self.fft_length = fft_length
-        self.final_length = kernel.count - 1
-        self.buffer = Array(repeating: 0, count: fft_length << 1 + half)
+        self.overlap_length = kernel.count - 1
+        self.buffer = Array(repeating: 0, count: fft_length << 1 + overlap_length)
         
         buffer.withUnsafeMutableBufferPointer {
             
@@ -62,6 +62,7 @@ public struct Radix2OverlapAddConvolve<T: BinaryFloatingPoint & Additive & Float
     public mutating func filter(_ source: UnsafeBufferPointer<T>, callback: (UnsafeBufferPointer<T>) -> Void) {
         
         let fft_length = self.fft_length
+        let overlap_length = self.overlap_length
         let half = fft_length >> 1
         var source = source
         
@@ -83,8 +84,8 @@ public struct Radix2OverlapAddConvolve<T: BinaryFloatingPoint & Additive & Float
                 
                 Radix2FiniteImpulseFilter(level, source.baseAddress!, 1, count, kreal, kimag, 1, temp, 1)
                 
-                Add(half, temp, 1, overlap, 1, temp, 1)
-                Move(half, temp + count, 1, overlap, 1)
+                Add(overlap_length, temp, 1, overlap, 1, temp, 1)
+                Move(overlap_length, temp + count, 1, overlap, 1)
                 
                 callback(UnsafeBufferPointer(start: temp, count: count))
                 
@@ -97,6 +98,7 @@ public struct Radix2OverlapAddConvolve<T: BinaryFloatingPoint & Additive & Float
     public func final(callback: (UnsafeBufferPointer<T>) -> Void) {
         
         let fft_length = self.fft_length
+        let overlap_length = self.overlap_length
         
         buffer.withUnsafeBufferPointer {
             
@@ -104,7 +106,7 @@ public struct Radix2OverlapAddConvolve<T: BinaryFloatingPoint & Additive & Float
             
             let overlap = baseAddress + fft_length << 1
             
-            callback(UnsafeBufferPointer(start: overlap, count: final_length))
+            callback(UnsafeBufferPointer(start: overlap, count: overlap_length))
         }
     }
 }
