@@ -50,14 +50,6 @@ public enum WrappingMode {
     case mirror
 }
 
-extension WrappingMode {
-    
-    @inlinable
-    public static var `default` : WrappingMode {
-        return .none
-    }
-}
-
 public struct Texture<Pixel: ColorPixelProtocol> {
     
     public let width: Int
@@ -68,10 +60,11 @@ public struct Texture<Pixel: ColorPixelProtocol> {
     
     public var resamplingAlgorithm: ResamplingAlgorithm
     
-    public var wrappingMode: WrappingMode
+    public var horizontalWrappingMode: WrappingMode = .none
+    public var verticalWrappingMode: WrappingMode = .none
     
     @inlinable
-    init(width: Int, height: Int, pixels: MappedBuffer<Pixel>, resamplingAlgorithm: ResamplingAlgorithm, wrappingMode: WrappingMode) {
+    init(width: Int, height: Int, pixels: MappedBuffer<Pixel>, resamplingAlgorithm: ResamplingAlgorithm) {
         precondition(width >= 0, "negative width is not allowed.")
         precondition(height >= 0, "negative height is not allowed.")
         precondition(width * height == pixels.count, "mismatch pixels count.")
@@ -79,18 +72,16 @@ public struct Texture<Pixel: ColorPixelProtocol> {
         self.height = height
         self.pixels = pixels
         self.resamplingAlgorithm = resamplingAlgorithm
-        self.wrappingMode = wrappingMode
     }
     
     @inlinable
-    public init(width: Int, height: Int, resamplingAlgorithm: ResamplingAlgorithm = .default, wrappingMode: WrappingMode = .default, pixel: Pixel = Pixel(), option: MappedBufferOption = .default) {
+    public init(width: Int, height: Int, resamplingAlgorithm: ResamplingAlgorithm = .default, pixel: Pixel = Pixel(), option: MappedBufferOption = .default) {
         precondition(width >= 0, "negative width is not allowed.")
         precondition(height >= 0, "negative height is not allowed.")
         self.width = width
         self.height = height
         self.pixels = MappedBuffer(repeating: pixel, count: width * height, option: option)
         self.resamplingAlgorithm = resamplingAlgorithm
-        self.wrappingMode = wrappingMode
     }
     
     @inlinable
@@ -99,7 +90,8 @@ public struct Texture<Pixel: ColorPixelProtocol> {
         self.height = texture.height
         self.pixels = MappedBuffer(texture.pixels, option: option)
         self.resamplingAlgorithm = texture.resamplingAlgorithm
-        self.wrappingMode = texture.wrappingMode
+        self.horizontalWrappingMode = texture.horizontalWrappingMode
+        self.verticalWrappingMode = texture.verticalWrappingMode
     }
     
     @inlinable
@@ -107,7 +99,8 @@ public struct Texture<Pixel: ColorPixelProtocol> {
         self.width = texture.width
         self.height = texture.height
         self.resamplingAlgorithm = texture.resamplingAlgorithm
-        self.wrappingMode = texture.wrappingMode
+        self.horizontalWrappingMode = texture.horizontalWrappingMode
+        self.verticalWrappingMode = texture.verticalWrappingMode
         if let buffer = texture.pixels as? MappedBuffer<Pixel> {
             self.pixels = MappedBuffer(buffer, option: option)
         } else {
@@ -119,8 +112,8 @@ public struct Texture<Pixel: ColorPixelProtocol> {
 extension Texture {
     
     @inlinable
-    public init(image: Image<Pixel>, resamplingAlgorithm: ResamplingAlgorithm = .default, wrappingMode: WrappingMode = .default) {
-        self.init(width: image.width, height: image.height, pixels: image.pixels, resamplingAlgorithm: resamplingAlgorithm, wrappingMode: wrappingMode)
+    public init(image: Image<Pixel>, resamplingAlgorithm: ResamplingAlgorithm = .default) {
+        self.init(width: image.width, height: image.height, pixels: image.pixels, resamplingAlgorithm: resamplingAlgorithm)
     }
 }
 
@@ -168,7 +161,13 @@ extension Texture {
     
     @inlinable
     public func map<P>(_ transform: (Pixel) throws -> P) rethrows -> Texture<P> where P.Model == Pixel.Model {
-        return try Texture<P>(width: height, height: width, pixels: pixels.map(transform), resamplingAlgorithm: resamplingAlgorithm, wrappingMode: wrappingMode)
+        
+        var texture = try Texture<P>(width: height, height: width, pixels: pixels.map(transform), resamplingAlgorithm: resamplingAlgorithm)
+        
+        texture.horizontalWrappingMode = self.horizontalWrappingMode
+        texture.verticalWrappingMode = self.verticalWrappingMode
+        
+        return texture
     }
 }
 
@@ -176,12 +175,26 @@ extension Texture {
     
     @inlinable
     public func transposed() -> Texture {
+        
         if pixels.count == 0 {
-            return Texture(width: height, height: width, pixels: [], resamplingAlgorithm: resamplingAlgorithm, wrappingMode: wrappingMode)
+            
+            var texture = Texture(width: height, height: width, pixels: [], resamplingAlgorithm: resamplingAlgorithm)
+            
+            texture.horizontalWrappingMode = self.horizontalWrappingMode
+            texture.verticalWrappingMode = self.verticalWrappingMode
+            
+            return texture
         }
+        
         var copy = pixels
         pixels.withUnsafeBufferPointer { source in copy.withUnsafeMutableBufferPointer { destination in Transpose(height, width, source.baseAddress!, 1, destination.baseAddress!, 1) } }
-        return Texture(width: height, height: width, pixels: copy, resamplingAlgorithm: resamplingAlgorithm, wrappingMode: wrappingMode)
+        
+        var texture = Texture(width: height, height: width, pixels: copy, resamplingAlgorithm: resamplingAlgorithm)
+        
+        texture.horizontalWrappingMode = self.horizontalWrappingMode
+        texture.verticalWrappingMode = self.verticalWrappingMode
+        
+        return texture
     }
     
     @inlinable
@@ -206,7 +219,12 @@ extension Texture {
             }
         }
         
-        return Texture(width: width, height: height, pixels: pixels, resamplingAlgorithm: resamplingAlgorithm, wrappingMode: wrappingMode)
+        var texture = Texture(width: width, height: height, pixels: pixels, resamplingAlgorithm: resamplingAlgorithm)
+        
+        texture.horizontalWrappingMode = self.horizontalWrappingMode
+        texture.verticalWrappingMode = self.verticalWrappingMode
+        
+        return texture
     }
     
     @inlinable
@@ -231,7 +249,12 @@ extension Texture {
             }
         }
         
-        return Texture(width: width, height: height, pixels: pixels, resamplingAlgorithm: resamplingAlgorithm, wrappingMode: wrappingMode)
+        var texture = Texture(width: width, height: height, pixels: pixels, resamplingAlgorithm: resamplingAlgorithm)
+        
+        texture.horizontalWrappingMode = self.horizontalWrappingMode
+        texture.verticalWrappingMode = self.verticalWrappingMode
+        
+        return texture
     }
 }
 
@@ -341,6 +364,25 @@ extension Texture {
     }
 }
 
+extension WrappingMode {
+    
+    @usableFromInline
+    @inline(__always)
+    func addressing(_ x: Int, _ upperbound: Int) -> (Bool, Int) {
+        switch self {
+        case .none: return 0..<upperbound ~= x ? (true, x) : (false, x.clamped(to: 0..<upperbound))
+        case .clamp: return (true, x.clamped(to: 0..<upperbound))
+        case .repeat:
+            let _x = x % upperbound
+            return _x < 0 ? (true, _x + upperbound) : (true, _x)
+        case .mirror:
+            let ax = abs(x)
+            let _x = ax % upperbound
+            return (ax / upperbound) & 1 == 1 ? (true, upperbound - _x - 1) : (true, _x)
+        }
+    }
+}
+
 extension Texture {
     
     @usableFromInline
@@ -349,59 +391,11 @@ extension Texture {
         
         guard width != 0 && height != 0 else { return ColorPixel() }
         
-        switch wrappingMode {
-        case .none:
-            
-            let x_range = 0..<width
-            let y_range = 0..<height
-            
-            if x_range ~= x && y_range ~= y {
-                return ColorPixel(pixels[y * width + x])
-            }
-            
-            let _x = x.clamped(to: x_range)
-            let _y = y.clamped(to: y_range)
-            
-            return ColorPixel(color: pixels[_y * width + _x].color, opacity: 0)
-            
-        case .clamp:
-            
-            let _x = x.clamped(to: 0..<width)
-            let _y = y.clamped(to: 0..<height)
-            
-            return ColorPixel(pixels[_y * width + _x])
-            
-        case .repeat:
-            
-            var _x = x % width
-            var _y = y % height
-            
-            if _x < 0 {
-                _x += width
-            }
-            if _y < 0 {
-                _y += height
-            }
-            
-            return ColorPixel(pixels[_y * width + _x])
-            
-        case .mirror:
-            
-            let ax = abs(x)
-            let ay = abs(y)
-            
-            var _x = ax % width
-            var _y = ay % height
-            
-            if (ax / width) & 1 == 1 {
-                _x = width - _x - 1
-            }
-            if (ay / height) & 1 == 1 {
-                _y = height - _y - 1
-            }
-            
-            return ColorPixel(pixels[_y * width + _x])
-        }
+        let (x_flag, _x) = horizontalWrappingMode.addressing(x, width)
+        let (y_flag, _y) = verticalWrappingMode.addressing(y, height)
+        
+        let pixel = pixels[_y * width + _x]
+        return x_flag && y_flag ? ColorPixel(pixel) : ColorPixel(color: pixel.color, opacity: 0)
     }
     
     @usableFromInline
