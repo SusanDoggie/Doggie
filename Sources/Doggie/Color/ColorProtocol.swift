@@ -33,6 +33,8 @@ public protocol ColorProtocol {
     
     var cieXYZ: Color<XYZColorModel> { get }
     
+    func with(opacity: Double) -> Self
+    
     var numberOfComponents: Int { get }
     
     func rangeOfComponent(_ i: Int) -> ClosedRange<Double>

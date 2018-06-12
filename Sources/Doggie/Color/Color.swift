@@ -222,6 +222,14 @@ extension Color where Model == CMYKColorModel {
 extension Color {
     
     @inlinable
+    public func with(opacity: Double) -> Color {
+        return Color(colorSpace: colorSpace, color: color, opacity: opacity)
+    }
+}
+
+extension Color {
+    
+    @inlinable
     public static var numberOfComponents: Int {
         return Model.numberOfComponents + 1
     }

@@ -36,6 +36,8 @@ protocol AnyColorBaseProtocol {
     
     func isEqualTo(_ other: AnyColorBaseProtocol) -> Bool
     
+    func _with(opacity: Double) -> AnyColorBaseProtocol
+    
     var numberOfComponents: Int { get }
     
     func rangeOfComponent(_ i: Int) -> ClosedRange<Double>
@@ -78,6 +80,11 @@ extension Color : AnyColorBaseProtocol {
     @inlinable
     func _linearTone() -> AnyColorBaseProtocol {
         return self.linearTone()
+    }
+    
+    @inlinable
+    func _with(opacity: Double) -> AnyColorBaseProtocol {
+        return self.with(opacity: opacity)
     }
     
     @inlinable
@@ -187,6 +194,11 @@ extension AnyColor {
     @inlinable
     public var cieXYZ: Color<XYZColorModel> {
         return _base.cieXYZ
+    }
+    
+    @inlinable
+    public func with(opacity: Double) -> AnyColor {
+        return AnyColor(base: _base._with(opacity: opacity))
     }
     
     @inlinable
