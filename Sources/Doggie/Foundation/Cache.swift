@@ -187,7 +187,7 @@ extension Cache {
         
         return base.lck.synchronized {
             
-            if let value = base.table[key] as? Value {
+            if let object = base.table[key], let value = object as? Value {
                 return value
             }
             let value = body()

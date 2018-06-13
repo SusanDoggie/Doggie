@@ -219,7 +219,7 @@ extension Shape.Cache {
         
         return lck.synchronized {
             
-            if let value = table[key] as? Value {
+            if let object = table[key], let value = object as? Value {
                 return value
             }
             let value = body()
@@ -278,7 +278,7 @@ extension Shape.Component.Cache {
         
         return lck.synchronized {
             
-            if let value = table[key] as? Value {
+            if let object = table[key], let value = object as? Value {
                 return value
             }
             let value = body()
