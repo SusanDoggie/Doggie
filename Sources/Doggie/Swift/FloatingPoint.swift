@@ -274,6 +274,115 @@ extension Double : FloatingMathProtocol {
 
 extension CGFloat : FloatingMathProtocol {
     
+    #if canImport(CoreGraphics)
+    
+    @_transparent
+    public static func exp(_ x: CGFloat) -> CGFloat {
+        return CoreGraphics.exp(x)
+    }
+    @_transparent
+    public static func exp2(_ x: CGFloat) -> CGFloat {
+        return CoreGraphics.exp2(x)
+    }
+    @_transparent
+    public static func expm1(_ x: CGFloat) -> CGFloat {
+        return CoreGraphics.expm1(x)
+    }
+    @_transparent
+    public static func log(_ x: CGFloat) -> CGFloat {
+        return CoreGraphics.log(x)
+    }
+    @_transparent
+    public static func log10(_ x: CGFloat) -> CGFloat {
+        return CoreGraphics.log10(x)
+    }
+    @_transparent
+    public static func log2(_ x: CGFloat) -> CGFloat {
+        return CoreGraphics.log2(x)
+    }
+    @_transparent
+    public static func log1p(_ x: CGFloat) -> CGFloat {
+        return CoreGraphics.log1p(x)
+    }
+    @_transparent
+    public static func pow(_ x: CGFloat, _ y: CGFloat) -> CGFloat {
+        return CoreGraphics.pow(x, y)
+    }
+    @_transparent
+    public static func cbrt(_ x: CGFloat) -> CGFloat {
+        return CoreGraphics.cbrt(x)
+    }
+    @_transparent
+    public static func hypot(_ x: CGFloat, _ y: CGFloat) -> CGFloat {
+        return CoreGraphics.hypot(x, y)
+    }
+    @_transparent
+    public static func sin(_ x: CGFloat) -> CGFloat {
+        return CoreGraphics.sin(x)
+    }
+    @_transparent
+    public static func cos(_ x: CGFloat) -> CGFloat {
+        return CoreGraphics.cos(x)
+    }
+    @_transparent
+    public static func tan(_ x: CGFloat) -> CGFloat {
+        return CoreGraphics.tan(x)
+    }
+    @_transparent
+    public static func asin(_ x: CGFloat) -> CGFloat {
+        return CoreGraphics.asin(x)
+    }
+    @_transparent
+    public static func acos(_ x: CGFloat) -> CGFloat {
+        return CoreGraphics.acos(x)
+    }
+    @_transparent
+    public static func atan(_ x: CGFloat) -> CGFloat {
+        return CoreGraphics.atan(x)
+    }
+    @_transparent
+    public static func atan2(_ y: CGFloat, _ x: CGFloat) -> CGFloat {
+        return CoreGraphics.atan2(y, x)
+    }
+    @_transparent
+    public static func sinh(_ x: CGFloat) -> CGFloat {
+        return CoreGraphics.sinh(x)
+    }
+    @_transparent
+    public static func cosh(_ x: CGFloat) -> CGFloat {
+        return CoreGraphics.cosh(x)
+    }
+    @_transparent
+    public static func tanh(_ x: CGFloat) -> CGFloat {
+        return CoreGraphics.tanh(x)
+    }
+    @_transparent
+    public static func asinh(_ x: CGFloat) -> CGFloat {
+        return CoreGraphics.asinh(x)
+    }
+    @_transparent
+    public static func acosh(_ x: CGFloat) -> CGFloat {
+        return CoreGraphics.acosh(x)
+    }
+    @_transparent
+    public static func atanh(_ x: CGFloat) -> CGFloat {
+        return CoreGraphics.atanh(x)
+    }
+    @_transparent
+    public static func erf(_ x: CGFloat) -> CGFloat {
+        return CoreGraphics.erf(x)
+    }
+    @_transparent
+    public static func erfc(_ x: CGFloat) -> CGFloat {
+        return CoreGraphics.erfc(x)
+    }
+    @_transparent
+    public static func tgamma(_ x: CGFloat) -> CGFloat {
+        return CoreGraphics.tgamma(x)
+    }
+    
+    #else
+    
     @_transparent
     public static func exp(_ x: CGFloat) -> CGFloat {
         return Foundation.exp(x)
@@ -378,6 +487,8 @@ extension CGFloat : FloatingMathProtocol {
     public static func tgamma(_ x: CGFloat) -> CGFloat {
         return Foundation.tgamma(x)
     }
+    
+    #endif
     
 }
 
