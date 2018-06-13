@@ -3,6 +3,16 @@
 import Cocoa
 import Doggie
 
+let size = 500
+
+let range: Double = 128
+
+showLab(size: size, x: -range...range, y: -range...range, z: 50, colorSpace: ColorSpace.sRGB)
+
+showLab(size: size, x: -range...range, y: -range...range, z: 50, colorSpace: ColorSpace.adobeRGB)
+
+showLab(size: size, x: -range...range, y: -range...range, z: 50, colorSpace: ColorSpace.displayP3)
+
 let D50 = ColorSpace.cieXYZ(white: Point(x: 0.34567, y: 0.35850))
 
 ColorSpace.adobeRGB.convert(RGBColorModel(red: 0.5, green: 0, blue: 0), to: D50)

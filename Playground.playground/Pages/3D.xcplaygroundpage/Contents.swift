@@ -6,3 +6,7 @@ import Doggie
 orthographicProject(width: 500, height: 500)
 
 perspectiveProject(width: 500, height: 500)
+
+texturedCube(width: 500, height: 500)
+
+tessellation(width: 500, height: 500)

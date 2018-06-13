@@ -6,30 +6,20 @@
         <page name='Doggie'/>
         <page name='Path'/>
         <page name='MappedBuffer'/>
-        <page name='Random'/>
         <page name='Font'/>
         <page name='Polynomial'/>
-        <page name='3D Cube'/>
         <page name='Blending'/>
         <page name='Clip'/>
         <page name='Circle'/>
         <page name='Color'/>
         <page name='CoonsPatchView'/>
         <page name='Drum'/>
-        <page name='Lab Color Space'/>
-        <page name='Linear Gradient'/>
-        <page name='Mesh Gradient'/>
-        <page name='Radial Gradient'/>
         <page name='Region'/>
         <page name='Resampling'/>
         <page name='ShapeTweening'/>
         <page name='Simplex Noise'/>
         <page name='Stroke'/>
         <page name='TensorPatchView'/>
-        <page name='Textured Cube'/>
-        <page name='Triangle'/>
-        <page name='Bezier Intersection'/>
-        <page name='Projection'/>
-        <page name='Tessellation'/>
+        <page name='3D'/>
     </pages>
 </playground>
