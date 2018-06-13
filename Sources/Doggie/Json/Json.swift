@@ -472,14 +472,14 @@ extension Json {
 
 extension Json {
     
-    public var data: Data? {
+    public func data(prettyPrinted: Bool = false) -> Data? {
         if JSONSerialization.isValidJSONObject(self.value) {
-            return try? JSONSerialization.data(withJSONObject: self.value, options: [])
+            return try? JSONSerialization.data(withJSONObject: self.value, options: prettyPrinted ? [.prettyPrinted] : [])
         }
         return nil
     }
-    public var json: String? {
-        if let _data = self.data {
+    public func json(prettyPrinted: Bool = false) -> String? {
+        if let _data = self.data(prettyPrinted: prettyPrinted) {
             return String(data: _data, encoding: String.Encoding.utf8)
         }
         return nil
