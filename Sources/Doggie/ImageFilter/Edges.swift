@@ -29,29 +29,51 @@ public func Edges<Model>(_ image: Image<ColorPixel<Model>>, _ intensity: Double)
     let width = image.width
     let height = image.height
     
-    var edges = Image<ColorPixel<RGBColorModel>>(width: width + 2, height: height + 2, colorSpace: .default)
+    var result = Image<ColorPixel<RGBColorModel>>(width: width, height: height, colorSpace: .default)
     
-    guard width > 0 && height > 0 else { return edges }
+    guard width > 0 && height > 0 else { return result }
     
-    let horizontal = ImageConvolution(image, horizontal: [1, 0, -1], vertical: [0.25, 0.5, 0.25])
-    let vertical = ImageConvolution(image, horizontal: [0.25, 0.5, 0.25], vertical: [1, 0, -1])
-    
-    horizontal.withUnsafeBufferPointer { horizontal in
+    image.withUnsafeBufferPointer { source in
         
-        guard var horizontal = horizontal.baseAddress else { return }
+        guard let source = source.baseAddress else { return }
         
-        vertical.withUnsafeBufferPointer { vertical in
+        result.withUnsafeMutableBufferPointer { destination in
             
-            guard var vertical = vertical.baseAddress else { return }
+            guard var destination = destination.baseAddress else { return }
             
-            edges.withUnsafeMutableBufferPointer { destination in
+            let r0 = 0..<width
+            let r1 = 0..<height
+            
+            var s0 = source
+            var s1 = source
+            var s2 = r1.count == 1 ? source : source + width
+            
+            for j in r1 {
                 
-                guard var _destination = destination.baseAddress else { return }
+                var s00 = s0
+                var s01 = s0
+                var s02 = r0.count == 1 ? s0 : s0 + 1
+                var s10 = s1
+                var s12 = r0.count == 1 ? s1 : s1 + 1
+                var s20 = s2
+                var s21 = s2
+                var s22 = r0.count == 1 ? s2 : s2 + 1
                 
-                for _ in 0..<destination.count {
+                for i in r0 {
                     
-                    let c0 = horizontal.pointee
-                    let c1 = vertical.pointee
+                    let h0 = s02.pointee - s00.pointee
+                    let h1 = s12.pointee - s10.pointee
+                    let h2 = s22.pointee - s20.pointee
+                    
+                    let v0 = s20.pointee - s00.pointee
+                    let v1 = s21.pointee - s01.pointee
+                    let v2 = s22.pointee - s02.pointee
+                    
+                    var c0 = 0.25 * (h0 + h2)
+                    c0 += 0.5 * h1
+                    
+                    var c1 = 0.25 * (v0 + v2)
+                    c1 += 0.5 * v1
                     
                     let x_max = max(c0.opacity, c0.color.max())
                     let x_min = min(c0.opacity, c0.color.min())
@@ -64,17 +86,60 @@ public func Edges<Model>(_ image: Image<ColorPixel<Model>>, _ intensity: Double)
                     let magnitude = sqrt(x * x + y * y)
                     let phase = atan2(y, x)
                     
-                    _destination.pointee = ColorPixel(hue: phase * 0.5 / .pi, saturation: magnitude, brightness: magnitude * intensity)
+                    destination.pointee = ColorPixel(hue: phase * 0.5 / .pi, saturation: magnitude, brightness: magnitude * intensity)
                     
-                    horizontal += 1
-                    vertical += 1
-                    _destination += 1
+                    destination += 1
+                    
+                    if i == r0.first {
+                        
+                        s01 += 1
+                        s02 += 1
+                        s12 += 1
+                        s21 += 1
+                        s22 += 1
+                        
+                    } else if i == r0.last {
+                        
+                        s00 += 1
+                        s01 += 1
+                        s10 += 1
+                        s20 += 1
+                        s21 += 1
+                        
+                    } else {
+                        
+                        s00 += 1
+                        s01 += 1
+                        s02 += 1
+                        s10 += 1
+                        s12 += 1
+                        s20 += 1
+                        s21 += 1
+                        s22 += 1
+                    }
+                }
+                
+                if j == r1.first {
+                    
+                    s1 += width
+                    s2 += width
+                    
+                } else if j == r1.last {
+                    
+                    s0 += width
+                    s1 += width
+                    
+                } else {
+                    
+                    s0 += width
+                    s1 += width
+                    s2 += width
                 }
             }
         }
     }
     
-    return edges
+    return result
 }
 
 @inlinable
@@ -85,29 +150,51 @@ public func Edges<Model>(_ image: Image<FloatColorPixel<Model>>, _ intensity: Fl
     
     let intensity = Double(intensity)
     
-    var edges = Image<FloatColorPixel<RGBColorModel>>(width: width + 2, height: height + 2, colorSpace: .default)
+    var result = Image<FloatColorPixel<RGBColorModel>>(width: width, height: height, colorSpace: .default)
     
-    guard width > 0 && height > 0 else { return edges }
+    guard width > 0 && height > 0 else { return result }
     
-    let horizontal = ImageConvolution(image, horizontal: [1, 0, -1], vertical: [0.25, 0.5, 0.25])
-    let vertical = ImageConvolution(image, horizontal: [0.25, 0.5, 0.25], vertical: [1, 0, -1])
-    
-    horizontal.withUnsafeBufferPointer { horizontal in
+    image.withUnsafeBufferPointer { source in
         
-        guard var horizontal = horizontal.baseAddress else { return }
+        guard let source = source.baseAddress else { return }
         
-        vertical.withUnsafeBufferPointer { vertical in
+        result.withUnsafeMutableBufferPointer { destination in
             
-            guard var vertical = vertical.baseAddress else { return }
+            guard var destination = destination.baseAddress else { return }
             
-            edges.withUnsafeMutableBufferPointer { destination in
+            let r0 = 0..<width
+            let r1 = 0..<height
+            
+            var s0 = source
+            var s1 = source
+            var s2 = r1.count == 1 ? source : source + width
+            
+            for j in r1 {
                 
-                guard var _destination = destination.baseAddress else { return }
+                var s00 = s0
+                var s01 = s0
+                var s02 = r0.count == 1 ? s0 : s0 + 1
+                var s10 = s1
+                var s12 = r0.count == 1 ? s1 : s1 + 1
+                var s20 = s2
+                var s21 = s2
+                var s22 = r0.count == 1 ? s2 : s2 + 1
                 
-                for _ in 0..<destination.count {
+                for i in r0 {
                     
-                    let c0 = horizontal.pointee
-                    let c1 = vertical.pointee
+                    let h0 = s02.pointee - s00.pointee
+                    let h1 = s12.pointee - s10.pointee
+                    let h2 = s22.pointee - s20.pointee
+                    
+                    let v0 = s20.pointee - s00.pointee
+                    let v1 = s21.pointee - s01.pointee
+                    let v2 = s22.pointee - s02.pointee
+                    
+                    var c0 = 0.25 * (h0 + h2)
+                    c0 += 0.5 * h1
+                    
+                    var c1 = 0.25 * (v0 + v2)
+                    c1 += 0.5 * v1
                     
                     let x_max = max(c0.opacity, c0.color.max())
                     let x_min = min(c0.opacity, c0.color.min())
@@ -120,15 +207,58 @@ public func Edges<Model>(_ image: Image<FloatColorPixel<Model>>, _ intensity: Fl
                     let magnitude = sqrt(x * x + y * y)
                     let phase = atan2(y, x)
                     
-                    _destination.pointee = FloatColorPixel(hue: phase * 0.5 / .pi, saturation: magnitude, brightness: magnitude * intensity)
+                    destination.pointee = FloatColorPixel(hue: phase * 0.5 / .pi, saturation: magnitude, brightness: magnitude * intensity)
                     
-                    horizontal += 1
-                    vertical += 1
-                    _destination += 1
+                    destination += 1
+                    
+                    if i == r0.first {
+                        
+                        s01 += 1
+                        s02 += 1
+                        s12 += 1
+                        s21 += 1
+                        s22 += 1
+                        
+                    } else if i == r0.last {
+                        
+                        s00 += 1
+                        s01 += 1
+                        s10 += 1
+                        s20 += 1
+                        s21 += 1
+                        
+                    } else {
+                        
+                        s00 += 1
+                        s01 += 1
+                        s02 += 1
+                        s10 += 1
+                        s12 += 1
+                        s20 += 1
+                        s21 += 1
+                        s22 += 1
+                    }
+                }
+                
+                if j == r1.first {
+                    
+                    s1 += width
+                    s2 += width
+                    
+                } else if j == r1.last {
+                    
+                    s0 += width
+                    s1 += width
+                    
+                } else {
+                    
+                    s0 += width
+                    s1 += width
+                    s2 += width
                 }
             }
         }
     }
     
-    return edges
+    return result
 }
