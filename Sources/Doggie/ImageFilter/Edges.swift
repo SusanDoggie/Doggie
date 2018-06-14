@@ -80,8 +80,8 @@ public func Edges<Model>(_ image: Image<ColorPixel<Model>>, _ intensity: Double)
                     let y_max = max(c1.opacity, c1.color.max())
                     let y_min = min(c1.opacity, c1.color.min())
                     
-                    let x = x_min < 0 && -x_min > x_max ? x_min : x_max
-                    let y = y_min < 0 && -y_min > y_max ? y_min : y_max
+                    let x = -x_min > x_max ? x_min : x_max
+                    let y = -y_min > y_max ? y_min : y_max
                     
                     let magnitude = sqrt(x * x + y * y)
                     let phase = atan2(y, x)
@@ -157,8 +157,8 @@ public func Edges<Model>(_ image: Image<FloatColorPixel<Model>>, _ intensity: Fl
                     let y_max = max(c1.opacity, c1.color.max())
                     let y_min = min(c1.opacity, c1.color.min())
                     
-                    let x = x_min < 0 && -x_min > x_max ? x_min : x_max
-                    let y = y_min < 0 && -y_min > y_max ? y_min : y_max
+                    let x = -x_min > x_max ? x_min : x_max
+                    let y = -y_min > y_max ? y_min : y_max
                     
                     let magnitude = sqrt(x * x + y * y)
                     let phase = atan2(y, x)
