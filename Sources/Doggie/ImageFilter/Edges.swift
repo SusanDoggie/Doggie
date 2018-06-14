@@ -29,6 +29,8 @@ public func Edges<Model>(_ image: Image<ColorPixel<Model>>, _ intensity: Double)
     let width = image.width
     let height = image.height
     
+    let _intensity = 1 / intensity
+    
     var result = Image<ColorPixel<RGBColorModel>>(width: width, height: height, colorSpace: .default)
     
     guard width > 0 && height > 0 else { return result }
@@ -86,7 +88,7 @@ public func Edges<Model>(_ image: Image<ColorPixel<Model>>, _ intensity: Double)
                     let magnitude = sqrt(x * x + y * y)
                     let phase = atan2(y, x)
                     
-                    destination.pointee = ColorPixel(hue: phase * 0.5 / .pi, saturation: magnitude, brightness: magnitude * intensity)
+                    destination.pointee = ColorPixel(hue: phase * 0.5 / .pi, saturation: 1, brightness: pow(magnitude, _intensity))
                     
                     destination += 1
                     
@@ -148,7 +150,7 @@ public func Edges<Model>(_ image: Image<FloatColorPixel<Model>>, _ intensity: Fl
     let width = image.width
     let height = image.height
     
-    let intensity = Double(intensity)
+    let _intensity = Double(1 / intensity)
     
     var result = Image<FloatColorPixel<RGBColorModel>>(width: width, height: height, colorSpace: .default)
     
@@ -207,7 +209,7 @@ public func Edges<Model>(_ image: Image<FloatColorPixel<Model>>, _ intensity: Fl
                     let magnitude = sqrt(x * x + y * y)
                     let phase = atan2(y, x)
                     
-                    destination.pointee = FloatColorPixel(hue: phase * 0.5 / .pi, saturation: magnitude, brightness: magnitude * intensity)
+                    destination.pointee = FloatColorPixel(hue: phase * 0.5 / .pi, saturation: 1, brightness: pow(magnitude, _intensity))
                     
                     destination += 1
                     
