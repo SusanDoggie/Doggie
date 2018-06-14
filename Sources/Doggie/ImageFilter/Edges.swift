@@ -37,7 +37,7 @@ public func Edges<Model>(_ image: Image<ColorPixel<Model>>, _ intensity: Double)
     
     image.withUnsafeBufferPointer { source in
         
-        guard let source = source.baseAddress else { return }
+        guard var source = source.baseAddress else { return }
         
         result.withUnsafeMutableBufferPointer { destination in
             
@@ -46,22 +46,20 @@ public func Edges<Model>(_ image: Image<ColorPixel<Model>>, _ intensity: Double)
             let r0 = 0..<width
             let r1 = 0..<height
             
-            var s0 = source
-            var s1 = source
-            var s2 = r1.count == 1 ? source : source + width
-            
             for j in r1 {
                 
-                var s00 = s0
-                var s01 = s0
-                var s02 = r0.count == 1 ? s0 : s0 + 1
-                var s10 = s1
-                var s12 = r0.count == 1 ? s1 : s1 + 1
-                var s20 = s2
-                var s21 = s2
-                var s22 = r0.count == 1 ? s2 : s2 + 1
+                var _source = source
                 
                 for i in r0 {
+                    
+                    let s01 = r1 ~= j - 1 ? _source - width : _source
+                    let s21 = r1 ~= j + 1 ? _source + width : _source
+                    let s10 = r0 ~= i - 1 ? _source - 1 : _source
+                    let s12 = r0 ~= i + 1 ? _source + 1 : _source
+                    let s00 = r0 ~= i - 1 ? s01 - 1 : s01
+                    let s02 = r0 ~= i + 1 ? s01 + 1 : s01
+                    let s20 = r0 ~= i - 1 ? s21 - 1 : s21
+                    let s22 = r0 ~= i + 1 ? s21 + 1 : s21
                     
                     let h0 = s02.pointee - s00.pointee
                     let h1 = s12.pointee - s10.pointee
@@ -91,52 +89,10 @@ public func Edges<Model>(_ image: Image<ColorPixel<Model>>, _ intensity: Double)
                     destination.pointee = ColorPixel(hue: phase * 0.5 / .pi, saturation: 1, brightness: pow(magnitude, _intensity))
                     
                     destination += 1
-                    
-                    if i == r0.first {
-                        
-                        s01 += 1
-                        s02 += 1
-                        s12 += 1
-                        s21 += 1
-                        s22 += 1
-                        
-                    } else if i == r0.last {
-                        
-                        s00 += 1
-                        s01 += 1
-                        s10 += 1
-                        s20 += 1
-                        s21 += 1
-                        
-                    } else {
-                        
-                        s00 += 1
-                        s01 += 1
-                        s02 += 1
-                        s10 += 1
-                        s12 += 1
-                        s20 += 1
-                        s21 += 1
-                        s22 += 1
-                    }
+                    _source += 1
                 }
                 
-                if j == r1.first {
-                    
-                    s1 += width
-                    s2 += width
-                    
-                } else if j == r1.last {
-                    
-                    s0 += width
-                    s1 += width
-                    
-                } else {
-                    
-                    s0 += width
-                    s1 += width
-                    s2 += width
-                }
+                source += width
             }
         }
     }
@@ -158,7 +114,7 @@ public func Edges<Model>(_ image: Image<FloatColorPixel<Model>>, _ intensity: Fl
     
     image.withUnsafeBufferPointer { source in
         
-        guard let source = source.baseAddress else { return }
+        guard var source = source.baseAddress else { return }
         
         result.withUnsafeMutableBufferPointer { destination in
             
@@ -167,22 +123,20 @@ public func Edges<Model>(_ image: Image<FloatColorPixel<Model>>, _ intensity: Fl
             let r0 = 0..<width
             let r1 = 0..<height
             
-            var s0 = source
-            var s1 = source
-            var s2 = r1.count == 1 ? source : source + width
-            
             for j in r1 {
                 
-                var s00 = s0
-                var s01 = s0
-                var s02 = r0.count == 1 ? s0 : s0 + 1
-                var s10 = s1
-                var s12 = r0.count == 1 ? s1 : s1 + 1
-                var s20 = s2
-                var s21 = s2
-                var s22 = r0.count == 1 ? s2 : s2 + 1
+                var _source = source
                 
                 for i in r0 {
+                    
+                    let s01 = r1 ~= j - 1 ? _source - width : _source
+                    let s21 = r1 ~= j + 1 ? _source + width : _source
+                    let s10 = r0 ~= i - 1 ? _source - 1 : _source
+                    let s12 = r0 ~= i + 1 ? _source + 1 : _source
+                    let s00 = r0 ~= i - 1 ? s01 - 1 : s01
+                    let s02 = r0 ~= i + 1 ? s01 + 1 : s01
+                    let s20 = r0 ~= i - 1 ? s21 - 1 : s21
+                    let s22 = r0 ~= i + 1 ? s21 + 1 : s21
                     
                     let h0 = s02.pointee - s00.pointee
                     let h1 = s12.pointee - s10.pointee
@@ -212,52 +166,10 @@ public func Edges<Model>(_ image: Image<FloatColorPixel<Model>>, _ intensity: Fl
                     destination.pointee = FloatColorPixel(hue: phase * 0.5 / .pi, saturation: 1, brightness: pow(magnitude, _intensity))
                     
                     destination += 1
-                    
-                    if i == r0.first {
-                        
-                        s01 += 1
-                        s02 += 1
-                        s12 += 1
-                        s21 += 1
-                        s22 += 1
-                        
-                    } else if i == r0.last {
-                        
-                        s00 += 1
-                        s01 += 1
-                        s10 += 1
-                        s20 += 1
-                        s21 += 1
-                        
-                    } else {
-                        
-                        s00 += 1
-                        s01 += 1
-                        s02 += 1
-                        s10 += 1
-                        s12 += 1
-                        s20 += 1
-                        s21 += 1
-                        s22 += 1
-                    }
+                    _source += 1
                 }
                 
-                if j == r1.first {
-                    
-                    s1 += width
-                    s2 += width
-                    
-                } else if j == r1.last {
-                    
-                    s0 += width
-                    s1 += width
-                    
-                } else {
-                    
-                    s0 += width
-                    s1 += width
-                    s2 += width
-                }
+                source += width
             }
         }
     }
