@@ -144,8 +144,8 @@ extension YxyColorModel {
     }
     
     @_transparent
-    public func blended(source: YxyColorModel, blending: (Double, Double) throws -> Double) rethrows -> YxyColorModel {
-        return try YxyColorModel(luminance: blending(self.luminance, source.luminance), x: blending(self.x, source.x), y: blending(self.y, source.y))
+    public func combined(_ other: YxyColorModel, _ transform: (Double, Double) throws -> Double) rethrows -> YxyColorModel {
+        return try YxyColorModel(luminance: transform(self.luminance, other.luminance), x: transform(self.x, other.x), y: transform(self.y, other.y))
     }
 }
 
@@ -248,128 +248,7 @@ extension YxyColorModel.FloatComponents {
     }
     
     @_transparent
-    public func blended(source: YxyColorModel.FloatComponents, blending: (Float, Float) throws -> Float) rethrows -> YxyColorModel.FloatComponents {
-        return try YxyColorModel.FloatComponents(luminance: blending(self.luminance, source.luminance), x: blending(self.x, source.x), y: blending(self.y, source.y))
+    public func combined(_ other: YxyColorModel.FloatComponents, _ transform: (Float, Float) throws -> Float) rethrows -> YxyColorModel.FloatComponents {
+        return try YxyColorModel.FloatComponents(luminance: transform(self.luminance, other.luminance), x: transform(self.x, other.x), y: transform(self.y, other.y))
     }
-}
-
-@_transparent
-public func * (lhs: YxyColorModel, rhs: Matrix) -> YxyColorModel {
-    return YxyColorModel(luminance: lhs.luminance * rhs.a + lhs.x * rhs.b + lhs.y * rhs.c + rhs.d, x: lhs.luminance * rhs.e + lhs.x * rhs.f + lhs.y * rhs.g + rhs.h, y: lhs.luminance * rhs.i + lhs.x * rhs.j + lhs.y * rhs.k + rhs.l)
-}
-@_transparent
-public func *= (lhs: inout YxyColorModel, rhs: Matrix) {
-    lhs = lhs * rhs
-}
-
-@_transparent
-public prefix func +(val: YxyColorModel) -> YxyColorModel {
-    return val
-}
-@_transparent
-public prefix func -(val: YxyColorModel) -> YxyColorModel {
-    return YxyColorModel(luminance: -val.luminance, x: -val.x, y: -val.y)
-}
-@_transparent
-public func +(lhs: YxyColorModel, rhs: YxyColorModel) -> YxyColorModel {
-    return YxyColorModel(luminance: lhs.luminance + rhs.luminance, x: lhs.x + rhs.x, y: lhs.y + rhs.y)
-}
-@_transparent
-public func -(lhs: YxyColorModel, rhs: YxyColorModel) -> YxyColorModel {
-    return YxyColorModel(luminance: lhs.luminance - rhs.luminance, x: lhs.x - rhs.x, y: lhs.y - rhs.y)
-}
-
-@_transparent
-public func *(lhs: Double, rhs: YxyColorModel) -> YxyColorModel {
-    return YxyColorModel(luminance: lhs * rhs.luminance, x: lhs * rhs.x, y: lhs * rhs.y)
-}
-@_transparent
-public func *(lhs: YxyColorModel, rhs: Double) -> YxyColorModel {
-    return YxyColorModel(luminance: lhs.luminance * rhs, x: lhs.x * rhs, y: lhs.y * rhs)
-}
-
-@_transparent
-public func /(lhs: YxyColorModel, rhs: Double) -> YxyColorModel {
-    return YxyColorModel(luminance: lhs.luminance / rhs, x: lhs.x / rhs, y: lhs.y / rhs)
-}
-
-@_transparent
-public func *= (lhs: inout YxyColorModel, rhs: Double) {
-    lhs.luminance *= rhs
-    lhs.x *= rhs
-    lhs.y *= rhs
-}
-@_transparent
-public func /= (lhs: inout YxyColorModel, rhs: Double) {
-    lhs.luminance /= rhs
-    lhs.x /= rhs
-    lhs.y /= rhs
-}
-@_transparent
-public func += (lhs: inout YxyColorModel, rhs: YxyColorModel) {
-    lhs.luminance += rhs.luminance
-    lhs.x += rhs.x
-    lhs.y += rhs.y
-}
-@_transparent
-public func -= (lhs: inout YxyColorModel, rhs: YxyColorModel) {
-    lhs.luminance -= rhs.luminance
-    lhs.x -= rhs.x
-    lhs.y -= rhs.y
-}
-
-@_transparent
-public prefix func +(val: YxyColorModel.FloatComponents) -> YxyColorModel.FloatComponents {
-    return val
-}
-@_transparent
-public prefix func -(val: YxyColorModel.FloatComponents) -> YxyColorModel.FloatComponents {
-    return YxyColorModel.FloatComponents(luminance: -val.luminance, x: -val.x, y: -val.y)
-}
-@_transparent
-public func +(lhs: YxyColorModel.FloatComponents, rhs: YxyColorModel.FloatComponents) -> YxyColorModel.FloatComponents {
-    return YxyColorModel.FloatComponents(luminance: lhs.luminance + rhs.luminance, x: lhs.x + rhs.x, y: lhs.y + rhs.y)
-}
-@_transparent
-public func -(lhs: YxyColorModel.FloatComponents, rhs: YxyColorModel.FloatComponents) -> YxyColorModel.FloatComponents {
-    return YxyColorModel.FloatComponents(luminance: lhs.luminance - rhs.luminance, x: lhs.x - rhs.x, y: lhs.y - rhs.y)
-}
-
-@_transparent
-public func *(lhs: Float, rhs: YxyColorModel.FloatComponents) -> YxyColorModel.FloatComponents {
-    return YxyColorModel.FloatComponents(luminance: lhs * rhs.luminance, x: lhs * rhs.x, y: lhs * rhs.y)
-}
-@_transparent
-public func *(lhs: YxyColorModel.FloatComponents, rhs: Float) -> YxyColorModel.FloatComponents {
-    return YxyColorModel.FloatComponents(luminance: lhs.luminance * rhs, x: lhs.x * rhs, y: lhs.y * rhs)
-}
-
-@_transparent
-public func /(lhs: YxyColorModel.FloatComponents, rhs: Float) -> YxyColorModel.FloatComponents {
-    return YxyColorModel.FloatComponents(luminance: lhs.luminance / rhs, x: lhs.x / rhs, y: lhs.y / rhs)
-}
-
-@_transparent
-public func *= (lhs: inout YxyColorModel.FloatComponents, rhs: Float) {
-    lhs.luminance *= rhs
-    lhs.x *= rhs
-    lhs.y *= rhs
-}
-@_transparent
-public func /= (lhs: inout YxyColorModel.FloatComponents, rhs: Float) {
-    lhs.luminance /= rhs
-    lhs.x /= rhs
-    lhs.y /= rhs
-}
-@_transparent
-public func += (lhs: inout YxyColorModel.FloatComponents, rhs: YxyColorModel.FloatComponents) {
-    lhs.luminance += rhs.luminance
-    lhs.x += rhs.x
-    lhs.y += rhs.y
-}
-@_transparent
-public func -= (lhs: inout YxyColorModel.FloatComponents, rhs: YxyColorModel.FloatComponents) {
-    lhs.luminance -= rhs.luminance
-    lhs.x -= rhs.x
-    lhs.y -= rhs.y
 }

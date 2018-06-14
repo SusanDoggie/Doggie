@@ -148,8 +148,8 @@ extension LuvColorModel {
     }
     
     @_transparent
-    public func blended(source: LuvColorModel, blending: (Double, Double) throws -> Double) rethrows -> LuvColorModel {
-        return try LuvColorModel(lightness: blending(self.lightness, source.lightness), u: blending(self.u, source.u), v: blending(self.v, source.v))
+    public func combined(_ other: LuvColorModel, _ transform: (Double, Double) throws -> Double) rethrows -> LuvColorModel {
+        return try LuvColorModel(lightness: transform(self.lightness, other.lightness), u: transform(self.u, other.u), v: transform(self.v, other.v))
     }
 }
 
@@ -252,119 +252,7 @@ extension LuvColorModel.FloatComponents {
     }
     
     @_transparent
-    public func blended(source: LuvColorModel.FloatComponents, blending: (Float, Float) throws -> Float) rethrows -> LuvColorModel.FloatComponents {
-        return try LuvColorModel.FloatComponents(lightness: blending(self.lightness, source.lightness), u: blending(self.u, source.u), v: blending(self.v, source.v))
+    public func combined(_ other: LuvColorModel.FloatComponents, _ transform: (Float, Float) throws -> Float) rethrows -> LuvColorModel.FloatComponents {
+        return try LuvColorModel.FloatComponents(lightness: transform(self.lightness, other.lightness), u: transform(self.u, other.u), v: transform(self.v, other.v))
     }
-}
-
-@_transparent
-public prefix func +(val: LuvColorModel) -> LuvColorModel {
-    return val
-}
-@_transparent
-public prefix func -(val: LuvColorModel) -> LuvColorModel {
-    return LuvColorModel(lightness: -val.lightness, u: -val.u, v: -val.v)
-}
-@_transparent
-public func +(lhs: LuvColorModel, rhs: LuvColorModel) -> LuvColorModel {
-    return LuvColorModel(lightness: lhs.lightness + rhs.lightness, u: lhs.u + rhs.u, v: lhs.v + rhs.v)
-}
-@_transparent
-public func -(lhs: LuvColorModel, rhs: LuvColorModel) -> LuvColorModel {
-    return LuvColorModel(lightness: lhs.lightness - rhs.lightness, u: lhs.u - rhs.u, v: lhs.v - rhs.v)
-}
-
-@_transparent
-public func *(lhs: Double, rhs: LuvColorModel) -> LuvColorModel {
-    return LuvColorModel(lightness: lhs * rhs.lightness, u: lhs * rhs.u, v: lhs * rhs.v)
-}
-@_transparent
-public func *(lhs: LuvColorModel, rhs: Double) -> LuvColorModel {
-    return LuvColorModel(lightness: lhs.lightness * rhs, u: lhs.u * rhs, v: lhs.v * rhs)
-}
-
-@_transparent
-public func /(lhs: LuvColorModel, rhs: Double) -> LuvColorModel {
-    return LuvColorModel(lightness: lhs.lightness / rhs, u: lhs.u / rhs, v: lhs.v / rhs)
-}
-
-@_transparent
-public func *= (lhs: inout LuvColorModel, rhs: Double) {
-    lhs.lightness *= rhs
-    lhs.u *= rhs
-    lhs.v *= rhs
-}
-@_transparent
-public func /= (lhs: inout LuvColorModel, rhs: Double) {
-    lhs.lightness /= rhs
-    lhs.u /= rhs
-    lhs.v /= rhs
-}
-@_transparent
-public func += (lhs: inout LuvColorModel, rhs: LuvColorModel) {
-    lhs.lightness += rhs.lightness
-    lhs.u += rhs.u
-    lhs.v += rhs.v
-}
-@_transparent
-public func -= (lhs: inout LuvColorModel, rhs: LuvColorModel) {
-    lhs.lightness -= rhs.lightness
-    lhs.u -= rhs.u
-    lhs.v -= rhs.v
-}
-
-@_transparent
-public prefix func +(val: LuvColorModel.FloatComponents) -> LuvColorModel.FloatComponents {
-    return val
-}
-@_transparent
-public prefix func -(val: LuvColorModel.FloatComponents) -> LuvColorModel.FloatComponents {
-    return LuvColorModel.FloatComponents(lightness: -val.lightness, u: -val.u, v: -val.v)
-}
-@_transparent
-public func +(lhs: LuvColorModel.FloatComponents, rhs: LuvColorModel.FloatComponents) -> LuvColorModel.FloatComponents {
-    return LuvColorModel.FloatComponents(lightness: lhs.lightness + rhs.lightness, u: lhs.u + rhs.u, v: lhs.v + rhs.v)
-}
-@_transparent
-public func -(lhs: LuvColorModel.FloatComponents, rhs: LuvColorModel.FloatComponents) -> LuvColorModel.FloatComponents {
-    return LuvColorModel.FloatComponents(lightness: lhs.lightness - rhs.lightness, u: lhs.u - rhs.u, v: lhs.v - rhs.v)
-}
-
-@_transparent
-public func *(lhs: Float, rhs: LuvColorModel.FloatComponents) -> LuvColorModel.FloatComponents {
-    return LuvColorModel.FloatComponents(lightness: lhs * rhs.lightness, u: lhs * rhs.u, v: lhs * rhs.v)
-}
-@_transparent
-public func *(lhs: LuvColorModel.FloatComponents, rhs: Float) -> LuvColorModel.FloatComponents {
-    return LuvColorModel.FloatComponents(lightness: lhs.lightness * rhs, u: lhs.u * rhs, v: lhs.v * rhs)
-}
-
-@_transparent
-public func /(lhs: LuvColorModel.FloatComponents, rhs: Float) -> LuvColorModel.FloatComponents {
-    return LuvColorModel.FloatComponents(lightness: lhs.lightness / rhs, u: lhs.u / rhs, v: lhs.v / rhs)
-}
-
-@_transparent
-public func *= (lhs: inout LuvColorModel.FloatComponents, rhs: Float) {
-    lhs.lightness *= rhs
-    lhs.u *= rhs
-    lhs.v *= rhs
-}
-@_transparent
-public func /= (lhs: inout LuvColorModel.FloatComponents, rhs: Float) {
-    lhs.lightness /= rhs
-    lhs.u /= rhs
-    lhs.v /= rhs
-}
-@_transparent
-public func += (lhs: inout LuvColorModel.FloatComponents, rhs: LuvColorModel.FloatComponents) {
-    lhs.lightness += rhs.lightness
-    lhs.u += rhs.u
-    lhs.v += rhs.v
-}
-@_transparent
-public func -= (lhs: inout LuvColorModel.FloatComponents, rhs: LuvColorModel.FloatComponents) {
-    lhs.lightness -= rhs.lightness
-    lhs.u -= rhs.u
-    lhs.v -= rhs.v
 }

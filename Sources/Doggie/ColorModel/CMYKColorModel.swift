@@ -189,8 +189,8 @@ extension CMYKColorModel {
     }
     
     @_transparent
-    public func blended(source: CMYKColorModel, blending: (Double, Double) throws -> Double) rethrows -> CMYKColorModel {
-        return try CMYKColorModel(cyan: blending(self.cyan, source.cyan), magenta: blending(self.magenta, source.magenta), yellow: blending(self.yellow, source.yellow), black: blending(self.black, source.black))
+    public func combined(_ other: CMYKColorModel, _ transform: (Double, Double) throws -> Double) rethrows -> CMYKColorModel {
+        return try CMYKColorModel(cyan: transform(self.cyan, other.cyan), magenta: transform(self.magenta, other.magenta), yellow: transform(self.yellow, other.yellow), black: transform(self.black, other.black))
     }
 }
 
@@ -301,127 +301,7 @@ extension CMYKColorModel.FloatComponents {
     }
     
     @_transparent
-    public func blended(source: CMYKColorModel.FloatComponents, blending: (Float, Float) throws -> Float) rethrows -> CMYKColorModel.FloatComponents {
-        return try CMYKColorModel.FloatComponents(cyan: blending(self.cyan, source.cyan), magenta: blending(self.magenta, source.magenta), yellow: blending(self.yellow, source.yellow), black: blending(self.black, source.black))
+    public func combined(_ other: CMYKColorModel.FloatComponents, _ transform: (Float, Float) throws -> Float) rethrows -> CMYKColorModel.FloatComponents {
+        return try CMYKColorModel.FloatComponents(cyan: transform(self.cyan, other.cyan), magenta: transform(self.magenta, other.magenta), yellow: transform(self.yellow, other.yellow), black: transform(self.black, other.black))
     }
-}
-
-@_transparent
-public prefix func +(val: CMYKColorModel) -> CMYKColorModel {
-    return val
-}
-@_transparent
-public prefix func -(val: CMYKColorModel) -> CMYKColorModel {
-    return CMYKColorModel(cyan: -val.cyan, magenta: -val.magenta, yellow: -val.yellow, black: -val.black)
-}
-@_transparent
-public func +(lhs: CMYKColorModel, rhs: CMYKColorModel) -> CMYKColorModel {
-    return CMYKColorModel(cyan: lhs.cyan + rhs.cyan, magenta: lhs.magenta + rhs.magenta, yellow: lhs.yellow + rhs.yellow, black: lhs.black + rhs.black)
-}
-@_transparent
-public func -(lhs: CMYKColorModel, rhs: CMYKColorModel) -> CMYKColorModel {
-    return CMYKColorModel(cyan: lhs.cyan - rhs.cyan, magenta: lhs.magenta - rhs.magenta, yellow: lhs.yellow - rhs.yellow, black: lhs.black - rhs.black)
-}
-
-@_transparent
-public func *(lhs: Double, rhs: CMYKColorModel) -> CMYKColorModel {
-    return CMYKColorModel(cyan: lhs * rhs.cyan, magenta: lhs * rhs.magenta, yellow: lhs * rhs.yellow, black: lhs * rhs.black)
-}
-@_transparent
-public func *(lhs: CMYKColorModel, rhs: Double) -> CMYKColorModel {
-    return CMYKColorModel(cyan: lhs.cyan * rhs, magenta: lhs.magenta * rhs, yellow: lhs.yellow * rhs, black: lhs.black * rhs)
-}
-
-@_transparent
-public func /(lhs: CMYKColorModel, rhs: Double) -> CMYKColorModel {
-    return CMYKColorModel(cyan: lhs.cyan / rhs, magenta: lhs.magenta / rhs, yellow: lhs.yellow / rhs, black: lhs.black / rhs)
-}
-
-@_transparent
-public func *= (lhs: inout CMYKColorModel, rhs: Double) {
-    lhs.cyan *= rhs
-    lhs.magenta *= rhs
-    lhs.yellow *= rhs
-    lhs.black *= rhs
-}
-@_transparent
-public func /= (lhs: inout CMYKColorModel, rhs: Double) {
-    lhs.cyan /= rhs
-    lhs.magenta /= rhs
-    lhs.yellow /= rhs
-    lhs.black /= rhs
-}
-@_transparent
-public func += (lhs: inout CMYKColorModel, rhs: CMYKColorModel) {
-    lhs.cyan += rhs.cyan
-    lhs.magenta += rhs.magenta
-    lhs.yellow += rhs.yellow
-    lhs.black += rhs.black
-}
-@_transparent
-public func -= (lhs: inout CMYKColorModel, rhs: CMYKColorModel) {
-    lhs.cyan -= rhs.cyan
-    lhs.magenta -= rhs.magenta
-    lhs.yellow -= rhs.yellow
-    lhs.black -= rhs.black
-}
-
-@_transparent
-public prefix func +(val: CMYKColorModel.FloatComponents) -> CMYKColorModel.FloatComponents {
-    return val
-}
-@_transparent
-public prefix func -(val: CMYKColorModel.FloatComponents) -> CMYKColorModel.FloatComponents {
-    return CMYKColorModel.FloatComponents(cyan: -val.cyan, magenta: -val.magenta, yellow: -val.yellow, black: -val.black)
-}
-@_transparent
-public func +(lhs: CMYKColorModel.FloatComponents, rhs: CMYKColorModel.FloatComponents) -> CMYKColorModel.FloatComponents {
-    return CMYKColorModel.FloatComponents(cyan: lhs.cyan + rhs.cyan, magenta: lhs.magenta + rhs.magenta, yellow: lhs.yellow + rhs.yellow, black: lhs.black + rhs.black)
-}
-@_transparent
-public func -(lhs: CMYKColorModel.FloatComponents, rhs: CMYKColorModel.FloatComponents) -> CMYKColorModel.FloatComponents {
-    return CMYKColorModel.FloatComponents(cyan: lhs.cyan - rhs.cyan, magenta: lhs.magenta - rhs.magenta, yellow: lhs.yellow - rhs.yellow, black: lhs.black - rhs.black)
-}
-
-@_transparent
-public func *(lhs: Float, rhs: CMYKColorModel.FloatComponents) -> CMYKColorModel.FloatComponents {
-    return CMYKColorModel.FloatComponents(cyan: lhs * rhs.cyan, magenta: lhs * rhs.magenta, yellow: lhs * rhs.yellow, black: lhs * rhs.black)
-}
-@_transparent
-public func *(lhs: CMYKColorModel.FloatComponents, rhs: Float) -> CMYKColorModel.FloatComponents {
-    return CMYKColorModel.FloatComponents(cyan: lhs.cyan * rhs, magenta: lhs.magenta * rhs, yellow: lhs.yellow * rhs, black: lhs.black * rhs)
-}
-
-@_transparent
-public func /(lhs: CMYKColorModel.FloatComponents, rhs: Float) -> CMYKColorModel.FloatComponents {
-    return CMYKColorModel.FloatComponents(cyan: lhs.cyan / rhs, magenta: lhs.magenta / rhs, yellow: lhs.yellow / rhs, black: lhs.black / rhs)
-}
-
-@_transparent
-public func *= (lhs: inout CMYKColorModel.FloatComponents, rhs: Float) {
-    lhs.cyan *= rhs
-    lhs.magenta *= rhs
-    lhs.yellow *= rhs
-    lhs.black *= rhs
-}
-@_transparent
-public func /= (lhs: inout CMYKColorModel.FloatComponents, rhs: Float) {
-    lhs.cyan /= rhs
-    lhs.magenta /= rhs
-    lhs.yellow /= rhs
-    lhs.black /= rhs
-}
-@_transparent
-public func += (lhs: inout CMYKColorModel.FloatComponents, rhs: CMYKColorModel.FloatComponents) {
-    lhs.cyan += rhs.cyan
-    lhs.magenta += rhs.magenta
-    lhs.yellow += rhs.yellow
-    lhs.black += rhs.black
-}
-@_transparent
-public func -= (lhs: inout CMYKColorModel.FloatComponents, rhs: CMYKColorModel.FloatComponents) {
-    lhs.cyan -= rhs.cyan
-    lhs.magenta -= rhs.magenta
-    lhs.yellow -= rhs.yellow
-    lhs.black -= rhs.black
 }

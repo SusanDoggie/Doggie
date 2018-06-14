@@ -32,6 +32,14 @@ public protocol Tensor : ScalarMultiplicative, RandomAccessCollection, MutableCo
     var unit: Self { get }
     
     func distance(to: Self) -> Scalar
+    
+    func map(_ transform: (Scalar) throws -> Scalar) rethrows -> Self
+    
+    func combined(_ other: Self, _ transform: (Scalar, Scalar) throws -> Scalar) rethrows -> Self
+    
+    func reduce<Result>(_ initialResult: Result, _ nextPartialResult: (Result, Scalar) throws -> Result) rethrows -> Result
+    
+    func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Scalar) throws -> ()) rethrows -> Result
 }
 
 extension Tensor {
@@ -57,15 +65,23 @@ extension Tensor {
     }
 }
 
+extension Tensor {
+    
+    @_transparent
+    public func reduce<Result>(_ initialResult: Result, _ nextPartialResult: (Result, Scalar) throws -> Result) rethrows -> Result {
+        return try self.reduce(into: initialResult) { $0 = try nextPartialResult($0, $1) }
+    }
+}
+
 extension Tensor where Scalar : FloatingPoint {
     
     @_transparent
     public var magnitude: Scalar {
         get {
-            return dot(self, self).squareRoot()
+            return abs(self)
         }
         set {
-            let m = self.magnitude
+            let m = abs(self)
             let scale = m == 0 ? 0 : newValue / m
             self *= scale
         }
@@ -73,22 +89,67 @@ extension Tensor where Scalar : FloatingPoint {
     
     @_transparent
     public var unit: Self {
-        let m = self.magnitude
+        let m = abs(self)
         return m == 0 ? Self() : self / m
     }
     
     @_transparent
     public func distance(to: Self) -> Scalar {
-        return (to - self).magnitude
+        return abs(to - self)
     }
 }
 
 @_transparent
-public func dot<T : Tensor>(_ lhs: T, _ rhs: T) -> T.Scalar {
-    var result: T.Scalar = 0
-    for i in 0..<T.numberOfComponents {
-        result += lhs[i] * rhs[i]
-    }
-    return result
+public func abs<T : Tensor>(_ x: T) -> T.Scalar where T.Scalar : FloatingPoint {
+    return x.reduce(0) { $0 + $1 * $1 }.squareRoot()
 }
 
+@_transparent
+public func dot<T : Tensor>(_ lhs: T, _ rhs: T) -> T.Scalar {
+    return lhs.combined(rhs) { $0 * $1 }.reduce(0) { $0 + $1 }
+}
+
+@_transparent
+public prefix func +<T: Tensor>(val: T) -> T {
+    return val
+}
+@_transparent
+public prefix func -<T: Tensor>(val: T) -> T {
+    return val.map { -$0 }
+}
+@_transparent
+public func +<T: Tensor>(lhs: T, rhs: T) -> T {
+    return lhs.combined(rhs) { $0 + $1 }
+}
+@_transparent
+public func -<T: Tensor>(lhs: T, rhs: T) -> T {
+    return lhs.combined(rhs) { $0 - $1 }
+}
+@_transparent
+public func *<T: Tensor>(lhs: T.Scalar, rhs: T) -> T {
+    return rhs.map { lhs * $0 }
+}
+@_transparent
+public func *<T: Tensor>(lhs: T, rhs: T.Scalar) -> T {
+    return lhs.map { $0 * rhs }
+}
+@_transparent
+public func /<T: Tensor>(lhs: T, rhs: T.Scalar) -> T {
+    return lhs.map { $0 / rhs }
+}
+@_transparent
+public func += <T: Tensor>(lhs: inout T, rhs: T) {
+    lhs = lhs + rhs
+}
+@_transparent
+public func -= <T: Tensor>(lhs: inout T, rhs: T) {
+    lhs = lhs - rhs
+}
+@_transparent
+public func *= <T: Tensor>(lhs: inout T, rhs: T.Scalar) {
+    lhs = lhs * rhs
+}
+@_transparent
+public func /= <T: Tensor>(lhs: inout T, rhs: T.Scalar) {
+    lhs = lhs / rhs
+}

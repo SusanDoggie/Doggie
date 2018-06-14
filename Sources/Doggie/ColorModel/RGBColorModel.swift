@@ -268,8 +268,8 @@ extension RGBColorModel {
     }
     
     @_transparent
-    public func blended(source: RGBColorModel, blending: (Double, Double) throws -> Double) rethrows -> RGBColorModel {
-        return try RGBColorModel(red: blending(self.red, source.red), green: blending(self.green, source.green), blue: blending(self.blue, source.blue))
+    public func combined(_ other: RGBColorModel, _ transform: (Double, Double) throws -> Double) rethrows -> RGBColorModel {
+        return try RGBColorModel(red: transform(self.red, other.red), green: transform(self.green, other.green), blue: transform(self.blue, other.blue))
     }
 }
 
@@ -372,120 +372,7 @@ extension RGBColorModel.FloatComponents {
     }
     
     @_transparent
-    public func blended(source: RGBColorModel.FloatComponents, blending: (Float, Float) throws -> Float) rethrows -> RGBColorModel.FloatComponents {
-        return try RGBColorModel.FloatComponents(red: blending(self.red, source.red), green: blending(self.green, source.green), blue: blending(self.blue, source.blue))
+    public func combined(_ other: RGBColorModel.FloatComponents, _ transform: (Float, Float) throws -> Float) rethrows -> RGBColorModel.FloatComponents {
+        return try RGBColorModel.FloatComponents(red: transform(self.red, other.red), green: transform(self.green, other.green), blue: transform(self.blue, other.blue))
     }
 }
-
-@_transparent
-public prefix func +(val: RGBColorModel) -> RGBColorModel {
-    return val
-}
-@_transparent
-public prefix func -(val: RGBColorModel) -> RGBColorModel {
-    return RGBColorModel(red: -val.red, green: -val.green, blue: -val.blue)
-}
-@_transparent
-public func +(lhs: RGBColorModel, rhs: RGBColorModel) -> RGBColorModel {
-    return RGBColorModel(red: lhs.red + rhs.red, green: lhs.green + rhs.green, blue: lhs.blue + rhs.blue)
-}
-@_transparent
-public func -(lhs: RGBColorModel, rhs: RGBColorModel) -> RGBColorModel {
-    return RGBColorModel(red: lhs.red - rhs.red, green: lhs.green - rhs.green, blue: lhs.blue - rhs.blue)
-}
-
-@_transparent
-public func *(lhs: Double, rhs: RGBColorModel) -> RGBColorModel {
-    return RGBColorModel(red: lhs * rhs.red, green: lhs * rhs.green, blue: lhs * rhs.blue)
-}
-@_transparent
-public func *(lhs: RGBColorModel, rhs: Double) -> RGBColorModel {
-    return RGBColorModel(red: lhs.red * rhs, green: lhs.green * rhs, blue: lhs.blue * rhs)
-}
-
-@_transparent
-public func /(lhs: RGBColorModel, rhs: Double) -> RGBColorModel {
-    return RGBColorModel(red: lhs.red / rhs, green: lhs.green / rhs, blue: lhs.blue / rhs)
-}
-
-@_transparent
-public func *= (lhs: inout RGBColorModel, rhs: Double) {
-    lhs.red *= rhs
-    lhs.green *= rhs
-    lhs.blue *= rhs
-}
-@_transparent
-public func /= (lhs: inout RGBColorModel, rhs: Double) {
-    lhs.red /= rhs
-    lhs.green /= rhs
-    lhs.blue /= rhs
-}
-@_transparent
-public func += (lhs: inout RGBColorModel, rhs: RGBColorModel) {
-    lhs.red += rhs.red
-    lhs.green += rhs.green
-    lhs.blue += rhs.blue
-}
-@_transparent
-public func -= (lhs: inout RGBColorModel, rhs: RGBColorModel) {
-    lhs.red -= rhs.red
-    lhs.green -= rhs.green
-    lhs.blue -= rhs.blue
-}
-
-@_transparent
-public prefix func +(val: RGBColorModel.FloatComponents) -> RGBColorModel.FloatComponents {
-    return val
-}
-@_transparent
-public prefix func -(val: RGBColorModel.FloatComponents) -> RGBColorModel.FloatComponents {
-    return RGBColorModel.FloatComponents(red: -val.red, green: -val.green, blue: -val.blue)
-}
-@_transparent
-public func +(lhs: RGBColorModel.FloatComponents, rhs: RGBColorModel.FloatComponents) -> RGBColorModel.FloatComponents {
-    return RGBColorModel.FloatComponents(red: lhs.red + rhs.red, green: lhs.green + rhs.green, blue: lhs.blue + rhs.blue)
-}
-@_transparent
-public func -(lhs: RGBColorModel.FloatComponents, rhs: RGBColorModel.FloatComponents) -> RGBColorModel.FloatComponents {
-    return RGBColorModel.FloatComponents(red: lhs.red - rhs.red, green: lhs.green - rhs.green, blue: lhs.blue - rhs.blue)
-}
-
-@_transparent
-public func *(lhs: Float, rhs: RGBColorModel.FloatComponents) -> RGBColorModel.FloatComponents {
-    return RGBColorModel.FloatComponents(red: lhs * rhs.red, green: lhs * rhs.green, blue: lhs * rhs.blue)
-}
-@_transparent
-public func *(lhs: RGBColorModel.FloatComponents, rhs: Float) -> RGBColorModel.FloatComponents {
-    return RGBColorModel.FloatComponents(red: lhs.red * rhs, green: lhs.green * rhs, blue: lhs.blue * rhs)
-}
-
-@_transparent
-public func /(lhs: RGBColorModel.FloatComponents, rhs: Float) -> RGBColorModel.FloatComponents {
-    return RGBColorModel.FloatComponents(red: lhs.red / rhs, green: lhs.green / rhs, blue: lhs.blue / rhs)
-}
-
-@_transparent
-public func *= (lhs: inout RGBColorModel.FloatComponents, rhs: Float) {
-    lhs.red *= rhs
-    lhs.green *= rhs
-    lhs.blue *= rhs
-}
-@_transparent
-public func /= (lhs: inout RGBColorModel.FloatComponents, rhs: Float) {
-    lhs.red /= rhs
-    lhs.green /= rhs
-    lhs.blue /= rhs
-}
-@_transparent
-public func += (lhs: inout RGBColorModel.FloatComponents, rhs: RGBColorModel.FloatComponents) {
-    lhs.red += rhs.red
-    lhs.green += rhs.green
-    lhs.blue += rhs.blue
-}
-@_transparent
-public func -= (lhs: inout RGBColorModel.FloatComponents, rhs: RGBColorModel.FloatComponents) {
-    lhs.red -= rhs.red
-    lhs.green -= rhs.green
-    lhs.blue -= rhs.blue
-}
-

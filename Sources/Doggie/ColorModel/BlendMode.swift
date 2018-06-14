@@ -173,22 +173,22 @@ extension ColorModelProtocol {
     }
     
     @_transparent
-    public func blended(source: Self, blendMode: ColorBlendMode) -> Self {
+    public func blended(source: Self, blendMode: ColorBlendMode = .default) -> Self {
         switch blendMode {
         case .normal: return source
-        case .multiply: return self.blended(source: source, blending: ColorBlendMode.Multiply)
-        case .screen: return self.blended(source: source, blending: ColorBlendMode.Screen)
-        case .overlay: return self.blended(source: source, blending: ColorBlendMode.Overlay)
-        case .darken: return self.blended(source: source, blending: ColorBlendMode.Darken)
-        case .lighten: return self.blended(source: source, blending: ColorBlendMode.Lighten)
-        case .colorDodge: return self.blended(source: source, blending: ColorBlendMode.ColorDodge)
-        case .colorBurn: return self.blended(source: source, blending: ColorBlendMode.ColorBurn)
-        case .softLight: return self.blended(source: source, blending: ColorBlendMode.SoftLight)
-        case .hardLight: return self.blended(source: source, blending: ColorBlendMode.HardLight)
-        case .difference: return self.blended(source: source, blending: ColorBlendMode.Difference)
-        case .exclusion: return self.blended(source: source, blending: ColorBlendMode.Exclusion)
-        case .plusDarker: return self.blended(source: source, blending: ColorBlendMode.PlusDarker)
-        case .plusLighter: return self.blended(source: source, blending: ColorBlendMode.PlusLighter)
+        case .multiply: return self.combined(source, ColorBlendMode.Multiply)
+        case .screen: return self.combined(source, ColorBlendMode.Screen)
+        case .overlay: return self.combined(source, ColorBlendMode.Overlay)
+        case .darken: return self.combined(source, ColorBlendMode.Darken)
+        case .lighten: return self.combined(source, ColorBlendMode.Lighten)
+        case .colorDodge: return self.combined(source, ColorBlendMode.ColorDodge)
+        case .colorBurn: return self.combined(source, ColorBlendMode.ColorBurn)
+        case .softLight: return self.combined(source, ColorBlendMode.SoftLight)
+        case .hardLight: return self.combined(source, ColorBlendMode.HardLight)
+        case .difference: return self.combined(source, ColorBlendMode.Difference)
+        case .exclusion: return self.combined(source, ColorBlendMode.Exclusion)
+        case .plusDarker: return self.combined(source, ColorBlendMode.PlusDarker)
+        case .plusLighter: return self.combined(source, ColorBlendMode.PlusLighter)
         }
     }
 }
@@ -201,22 +201,22 @@ extension FloatColorComponents {
     }
     
     @_transparent
-    public func blended(source: Self, blendMode: ColorBlendMode) -> Self {
+    public func blended(source: Self, blendMode: ColorBlendMode = .default) -> Self {
         switch blendMode {
         case .normal: return source
-        case .multiply: return self.blended(source: source, blending: ColorBlendMode.Multiply)
-        case .screen: return self.blended(source: source, blending: ColorBlendMode.Screen)
-        case .overlay: return self.blended(source: source, blending: ColorBlendMode.Overlay)
-        case .darken: return self.blended(source: source, blending: ColorBlendMode.Darken)
-        case .lighten: return self.blended(source: source, blending: ColorBlendMode.Lighten)
-        case .colorDodge: return self.blended(source: source, blending: ColorBlendMode.ColorDodge)
-        case .colorBurn: return self.blended(source: source, blending: ColorBlendMode.ColorBurn)
-        case .softLight: return self.blended(source: source, blending: ColorBlendMode.SoftLight)
-        case .hardLight: return self.blended(source: source, blending: ColorBlendMode.HardLight)
-        case .difference: return self.blended(source: source, blending: ColorBlendMode.Difference)
-        case .exclusion: return self.blended(source: source, blending: ColorBlendMode.Exclusion)
-        case .plusDarker: return self.blended(source: source, blending: ColorBlendMode.PlusDarker)
-        case .plusLighter: return self.blended(source: source, blending: ColorBlendMode.PlusLighter)
+        case .multiply: return self.combined(source, ColorBlendMode.Multiply)
+        case .screen: return self.combined(source, ColorBlendMode.Screen)
+        case .overlay: return self.combined(source, ColorBlendMode.Overlay)
+        case .darken: return self.combined(source, ColorBlendMode.Darken)
+        case .lighten: return self.combined(source, ColorBlendMode.Lighten)
+        case .colorDodge: return self.combined(source, ColorBlendMode.ColorDodge)
+        case .colorBurn: return self.combined(source, ColorBlendMode.ColorBurn)
+        case .softLight: return self.combined(source, ColorBlendMode.SoftLight)
+        case .hardLight: return self.combined(source, ColorBlendMode.HardLight)
+        case .difference: return self.combined(source, ColorBlendMode.Difference)
+        case .exclusion: return self.combined(source, ColorBlendMode.Exclusion)
+        case .plusDarker: return self.combined(source, ColorBlendMode.PlusDarker)
+        case .plusLighter: return self.combined(source, ColorBlendMode.PlusLighter)
         }
     }
 }

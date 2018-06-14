@@ -110,8 +110,8 @@ extension GrayColorModel {
     }
     
     @_transparent
-    public func blended(source: GrayColorModel, blending: (Double, Double) throws -> Double) rethrows ->GrayColorModel {
-        return try GrayColorModel(white: blending(self.white, source.white))
+    public func combined(_ other: GrayColorModel, _ transform: (Double, Double) throws -> Double) rethrows -> GrayColorModel {
+        return try GrayColorModel(white: transform(self.white, other.white))
     }
 }
 
@@ -198,103 +198,7 @@ extension GrayColorModel.FloatComponents {
     }
     
     @_transparent
-    public func blended(source: GrayColorModel.FloatComponents, blending: (Float, Float) throws -> Float) rethrows ->GrayColorModel.FloatComponents {
-        return try GrayColorModel.FloatComponents(white: blending(self.white, source.white))
+    public func combined(_ other: GrayColorModel.FloatComponents, _ transform: (Float, Float) throws -> Float) rethrows -> GrayColorModel.FloatComponents {
+        return try GrayColorModel.FloatComponents(white: transform(self.white, other.white))
     }
-}
-
-@_transparent
-public prefix func +(val: GrayColorModel) -> GrayColorModel {
-    return val
-}
-@_transparent
-public prefix func -(val: GrayColorModel) -> GrayColorModel {
-    return GrayColorModel(white: -val.white)
-}
-@_transparent
-public func +(lhs: GrayColorModel, rhs: GrayColorModel) -> GrayColorModel {
-    return GrayColorModel(white: lhs.white + rhs.white)
-}
-@_transparent
-public func -(lhs: GrayColorModel, rhs: GrayColorModel) -> GrayColorModel {
-    return GrayColorModel(white: lhs.white - rhs.white)
-}
-
-@_transparent
-public func *(lhs: Double, rhs: GrayColorModel) -> GrayColorModel {
-    return GrayColorModel(white: lhs * rhs.white)
-}
-@_transparent
-public func *(lhs: GrayColorModel, rhs: Double) -> GrayColorModel {
-    return GrayColorModel(white: lhs.white * rhs)
-}
-
-@_transparent
-public func /(lhs: GrayColorModel, rhs: Double) -> GrayColorModel {
-    return GrayColorModel(white: lhs.white / rhs)
-}
-
-@_transparent
-public func *= (lhs: inout GrayColorModel, rhs: Double) {
-    lhs.white *= rhs
-}
-@_transparent
-public func /= (lhs: inout GrayColorModel, rhs: Double) {
-    lhs.white /= rhs
-}
-@_transparent
-public func += (lhs: inout GrayColorModel, rhs: GrayColorModel) {
-    lhs.white += rhs.white
-}
-@_transparent
-public func -= (lhs: inout GrayColorModel, rhs: GrayColorModel) {
-    lhs.white -= rhs.white
-}
-
-@_transparent
-public prefix func +(val: GrayColorModel.FloatComponents) -> GrayColorModel.FloatComponents {
-    return val
-}
-@_transparent
-public prefix func -(val: GrayColorModel.FloatComponents) -> GrayColorModel.FloatComponents {
-    return GrayColorModel.FloatComponents(white: -val.white)
-}
-@_transparent
-public func +(lhs: GrayColorModel.FloatComponents, rhs: GrayColorModel.FloatComponents) -> GrayColorModel.FloatComponents {
-    return GrayColorModel.FloatComponents(white: lhs.white + rhs.white)
-}
-@_transparent
-public func -(lhs: GrayColorModel.FloatComponents, rhs: GrayColorModel.FloatComponents) -> GrayColorModel.FloatComponents {
-    return GrayColorModel.FloatComponents(white: lhs.white - rhs.white)
-}
-
-@_transparent
-public func *(lhs: Float, rhs: GrayColorModel.FloatComponents) -> GrayColorModel.FloatComponents {
-    return GrayColorModel.FloatComponents(white: lhs * rhs.white)
-}
-@_transparent
-public func *(lhs: GrayColorModel.FloatComponents, rhs: Float) -> GrayColorModel.FloatComponents {
-    return GrayColorModel.FloatComponents(white: lhs.white * rhs)
-}
-
-@_transparent
-public func /(lhs: GrayColorModel.FloatComponents, rhs: Float) -> GrayColorModel.FloatComponents {
-    return GrayColorModel.FloatComponents(white: lhs.white / rhs)
-}
-
-@_transparent
-public func *= (lhs: inout GrayColorModel.FloatComponents, rhs: Float) {
-    lhs.white *= rhs
-}
-@_transparent
-public func /= (lhs: inout GrayColorModel.FloatComponents, rhs: Float) {
-    lhs.white /= rhs
-}
-@_transparent
-public func += (lhs: inout GrayColorModel.FloatComponents, rhs: GrayColorModel.FloatComponents) {
-    lhs.white += rhs.white
-}
-@_transparent
-public func -= (lhs: inout GrayColorModel.FloatComponents, rhs: GrayColorModel.FloatComponents) {
-    lhs.white -= rhs.white
 }

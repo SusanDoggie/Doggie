@@ -130,6 +130,25 @@ extension Vector : Tensor {
             }
         }
     }
+    
+    @_transparent
+    public func map(_ transform: (Double) throws -> Double) rethrows -> Vector {
+        return try Vector(x: transform(x), y: transform(y), z: transform(z))
+    }
+    
+    @_transparent
+    public func combined(_ other: Vector, _ transform: (Double, Double) throws -> Double) rethrows -> Vector {
+        return try Vector(x: transform(self.x, other.x), y: transform(self.y, other.y), z: transform(self.z, other.z))
+    }
+    
+    @_transparent
+    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Double) throws -> ()) rethrows -> Result {
+        var accumulator = initialResult
+        try updateAccumulatingResult(&accumulator, x)
+        try updateAccumulatingResult(&accumulator, y)
+        try updateAccumulatingResult(&accumulator, z)
+        return accumulator
+    }
 }
 
 @_transparent

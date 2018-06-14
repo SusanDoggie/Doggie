@@ -149,8 +149,8 @@ extension LabColorModel {
     }
     
     @_transparent
-    public func blended(source: LabColorModel, blending: (Double, Double) throws -> Double) rethrows -> LabColorModel {
-        return try LabColorModel(lightness: blending(self.lightness, source.lightness), a: blending(self.a, source.a), b: blending(self.b, source.b))
+    public func combined(_ other: LabColorModel, _ transform: (Double, Double) throws -> Double) rethrows -> LabColorModel {
+        return try LabColorModel(lightness: transform(self.lightness, other.lightness), a: transform(self.a, other.a), b: transform(self.b, other.b))
     }
 }
 
@@ -253,119 +253,7 @@ extension LabColorModel.FloatComponents {
     }
     
     @_transparent
-    public func blended(source: LabColorModel.FloatComponents, blending: (Float, Float) throws -> Float) rethrows -> LabColorModel.FloatComponents {
-        return try LabColorModel.FloatComponents(lightness: blending(self.lightness, source.lightness), a: blending(self.a, source.a), b: blending(self.b, source.b))
+    public func combined(_ other: LabColorModel.FloatComponents, _ transform: (Float, Float) throws -> Float) rethrows -> LabColorModel.FloatComponents {
+        return try LabColorModel.FloatComponents(lightness: transform(self.lightness, other.lightness), a: transform(self.a, other.a), b: transform(self.b, other.b))
     }
-}
-
-@_transparent
-public prefix func +(val: LabColorModel) -> LabColorModel {
-    return val
-}
-@_transparent
-public prefix func -(val: LabColorModel) -> LabColorModel {
-    return LabColorModel(lightness: -val.lightness, a: -val.a, b: -val.b)
-}
-@_transparent
-public func +(lhs: LabColorModel, rhs: LabColorModel) -> LabColorModel {
-    return LabColorModel(lightness: lhs.lightness + rhs.lightness, a: lhs.a + rhs.a, b: lhs.b + rhs.b)
-}
-@_transparent
-public func -(lhs: LabColorModel, rhs: LabColorModel) -> LabColorModel {
-    return LabColorModel(lightness: lhs.lightness - rhs.lightness, a: lhs.a - rhs.a, b: lhs.b - rhs.b)
-}
-
-@_transparent
-public func *(lhs: Double, rhs: LabColorModel) -> LabColorModel {
-    return LabColorModel(lightness: lhs * rhs.lightness, a: lhs * rhs.a, b: lhs * rhs.b)
-}
-@_transparent
-public func *(lhs: LabColorModel, rhs: Double) -> LabColorModel {
-    return LabColorModel(lightness: lhs.lightness * rhs, a: lhs.a * rhs, b: lhs.b * rhs)
-}
-
-@_transparent
-public func /(lhs: LabColorModel, rhs: Double) -> LabColorModel {
-    return LabColorModel(lightness: lhs.lightness / rhs, a: lhs.a / rhs, b: lhs.b / rhs)
-}
-
-@_transparent
-public func *= (lhs: inout LabColorModel, rhs: Double) {
-    lhs.lightness *= rhs
-    lhs.a *= rhs
-    lhs.b *= rhs
-}
-@_transparent
-public func /= (lhs: inout LabColorModel, rhs: Double) {
-    lhs.lightness /= rhs
-    lhs.a /= rhs
-    lhs.b /= rhs
-}
-@_transparent
-public func += (lhs: inout LabColorModel, rhs: LabColorModel) {
-    lhs.lightness += rhs.lightness
-    lhs.a += rhs.a
-    lhs.b += rhs.b
-}
-@_transparent
-public func -= (lhs: inout LabColorModel, rhs: LabColorModel) {
-    lhs.lightness -= rhs.lightness
-    lhs.a -= rhs.a
-    lhs.b -= rhs.b
-}
-
-@_transparent
-public prefix func +(val: LabColorModel.FloatComponents) -> LabColorModel.FloatComponents {
-    return val
-}
-@_transparent
-public prefix func -(val: LabColorModel.FloatComponents) -> LabColorModel.FloatComponents {
-    return LabColorModel.FloatComponents(lightness: -val.lightness, a: -val.a, b: -val.b)
-}
-@_transparent
-public func +(lhs: LabColorModel.FloatComponents, rhs: LabColorModel.FloatComponents) -> LabColorModel.FloatComponents {
-    return LabColorModel.FloatComponents(lightness: lhs.lightness + rhs.lightness, a: lhs.a + rhs.a, b: lhs.b + rhs.b)
-}
-@_transparent
-public func -(lhs: LabColorModel.FloatComponents, rhs: LabColorModel.FloatComponents) -> LabColorModel.FloatComponents {
-    return LabColorModel.FloatComponents(lightness: lhs.lightness - rhs.lightness, a: lhs.a - rhs.a, b: lhs.b - rhs.b)
-}
-
-@_transparent
-public func *(lhs: Float, rhs: LabColorModel.FloatComponents) -> LabColorModel.FloatComponents {
-    return LabColorModel.FloatComponents(lightness: lhs * rhs.lightness, a: lhs * rhs.a, b: lhs * rhs.b)
-}
-@_transparent
-public func *(lhs: LabColorModel.FloatComponents, rhs: Float) -> LabColorModel.FloatComponents {
-    return LabColorModel.FloatComponents(lightness: lhs.lightness * rhs, a: lhs.a * rhs, b: lhs.b * rhs)
-}
-
-@_transparent
-public func /(lhs: LabColorModel.FloatComponents, rhs: Float) -> LabColorModel.FloatComponents {
-    return LabColorModel.FloatComponents(lightness: lhs.lightness / rhs, a: lhs.a / rhs, b: lhs.b / rhs)
-}
-
-@_transparent
-public func *= (lhs: inout LabColorModel.FloatComponents, rhs: Float) {
-    lhs.lightness *= rhs
-    lhs.a *= rhs
-    lhs.b *= rhs
-}
-@_transparent
-public func /= (lhs: inout LabColorModel.FloatComponents, rhs: Float) {
-    lhs.lightness /= rhs
-    lhs.a /= rhs
-    lhs.b /= rhs
-}
-@_transparent
-public func += (lhs: inout LabColorModel.FloatComponents, rhs: LabColorModel.FloatComponents) {
-    lhs.lightness += rhs.lightness
-    lhs.a += rhs.a
-    lhs.b += rhs.b
-}
-@_transparent
-public func -= (lhs: inout LabColorModel.FloatComponents, rhs: LabColorModel.FloatComponents) {
-    lhs.lightness -= rhs.lightness
-    lhs.a -= rhs.a
-    lhs.b -= rhs.b
 }

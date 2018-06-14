@@ -177,8 +177,8 @@ extension CMYColorModel {
     }
     
     @_transparent
-    public func blended(source: CMYColorModel, blending: (Double, Double) throws -> Double) rethrows -> CMYColorModel {
-        return try CMYColorModel(cyan: blending(self.cyan, source.cyan), magenta: blending(self.magenta, source.magenta), yellow: blending(self.yellow, source.yellow))
+    public func combined(_ other: CMYColorModel, _ transform: (Double, Double) throws -> Double) rethrows -> CMYColorModel {
+        return try CMYColorModel(cyan: transform(self.cyan, other.cyan), magenta: transform(self.magenta, other.magenta), yellow: transform(self.yellow, other.yellow))
     }
 }
 
@@ -281,120 +281,7 @@ extension CMYColorModel.FloatComponents {
     }
     
     @_transparent
-    public func blended(source: CMYColorModel.FloatComponents, blending: (Float, Float) throws -> Float) rethrows -> CMYColorModel.FloatComponents {
-        return try CMYColorModel.FloatComponents(cyan: blending(self.cyan, source.cyan), magenta: blending(self.magenta, source.magenta), yellow: blending(self.yellow, source.yellow))
+    public func combined(_ other: CMYColorModel.FloatComponents, _ transform: (Float, Float) throws -> Float) rethrows -> CMYColorModel.FloatComponents {
+        return try CMYColorModel.FloatComponents(cyan: transform(self.cyan, other.cyan), magenta: transform(self.magenta, other.magenta), yellow: transform(self.yellow, other.yellow))
     }
 }
-
-@_transparent
-public prefix func +(val: CMYColorModel) -> CMYColorModel {
-    return val
-}
-@_transparent
-public prefix func -(val: CMYColorModel) -> CMYColorModel {
-    return CMYColorModel(cyan: -val.cyan, magenta: -val.magenta, yellow: -val.yellow)
-}
-@_transparent
-public func +(lhs: CMYColorModel, rhs: CMYColorModel) -> CMYColorModel {
-    return CMYColorModel(cyan: lhs.cyan + rhs.cyan, magenta: lhs.magenta + rhs.magenta, yellow: lhs.yellow + rhs.yellow)
-}
-@_transparent
-public func -(lhs: CMYColorModel, rhs: CMYColorModel) -> CMYColorModel {
-    return CMYColorModel(cyan: lhs.cyan - rhs.cyan, magenta: lhs.magenta - rhs.magenta, yellow: lhs.yellow - rhs.yellow)
-}
-
-@_transparent
-public func *(lhs: Double, rhs: CMYColorModel) -> CMYColorModel {
-    return CMYColorModel(cyan: lhs * rhs.cyan, magenta: lhs * rhs.magenta, yellow: lhs * rhs.yellow)
-}
-@_transparent
-public func *(lhs: CMYColorModel, rhs: Double) -> CMYColorModel {
-    return CMYColorModel(cyan: lhs.cyan * rhs, magenta: lhs.magenta * rhs, yellow: lhs.yellow * rhs)
-}
-
-@_transparent
-public func /(lhs: CMYColorModel, rhs: Double) -> CMYColorModel {
-    return CMYColorModel(cyan: lhs.cyan / rhs, magenta: lhs.magenta / rhs, yellow: lhs.yellow / rhs)
-}
-
-@_transparent
-public func *= (lhs: inout CMYColorModel, rhs: Double) {
-    lhs.cyan *= rhs
-    lhs.magenta *= rhs
-    lhs.yellow *= rhs
-}
-@_transparent
-public func /= (lhs: inout CMYColorModel, rhs: Double) {
-    lhs.cyan /= rhs
-    lhs.magenta /= rhs
-    lhs.yellow /= rhs
-}
-@_transparent
-public func += (lhs: inout CMYColorModel, rhs: CMYColorModel) {
-    lhs.cyan += rhs.cyan
-    lhs.magenta += rhs.magenta
-    lhs.yellow += rhs.yellow
-}
-@_transparent
-public func -= (lhs: inout CMYColorModel, rhs: CMYColorModel) {
-    lhs.cyan -= rhs.cyan
-    lhs.magenta -= rhs.magenta
-    lhs.yellow -= rhs.yellow
-}
-
-@_transparent
-public prefix func +(val: CMYColorModel.FloatComponents) -> CMYColorModel.FloatComponents {
-    return val
-}
-@_transparent
-public prefix func -(val: CMYColorModel.FloatComponents) -> CMYColorModel.FloatComponents {
-    return CMYColorModel.FloatComponents(cyan: -val.cyan, magenta: -val.magenta, yellow: -val.yellow)
-}
-@_transparent
-public func +(lhs: CMYColorModel.FloatComponents, rhs: CMYColorModel.FloatComponents) -> CMYColorModel.FloatComponents {
-    return CMYColorModel.FloatComponents(cyan: lhs.cyan + rhs.cyan, magenta: lhs.magenta + rhs.magenta, yellow: lhs.yellow + rhs.yellow)
-}
-@_transparent
-public func -(lhs: CMYColorModel.FloatComponents, rhs: CMYColorModel.FloatComponents) -> CMYColorModel.FloatComponents {
-    return CMYColorModel.FloatComponents(cyan: lhs.cyan - rhs.cyan, magenta: lhs.magenta - rhs.magenta, yellow: lhs.yellow - rhs.yellow)
-}
-
-@_transparent
-public func *(lhs: Float, rhs: CMYColorModel.FloatComponents) -> CMYColorModel.FloatComponents {
-    return CMYColorModel.FloatComponents(cyan: lhs * rhs.cyan, magenta: lhs * rhs.magenta, yellow: lhs * rhs.yellow)
-}
-@_transparent
-public func *(lhs: CMYColorModel.FloatComponents, rhs: Float) -> CMYColorModel.FloatComponents {
-    return CMYColorModel.FloatComponents(cyan: lhs.cyan * rhs, magenta: lhs.magenta * rhs, yellow: lhs.yellow * rhs)
-}
-
-@_transparent
-public func /(lhs: CMYColorModel.FloatComponents, rhs: Float) -> CMYColorModel.FloatComponents {
-    return CMYColorModel.FloatComponents(cyan: lhs.cyan / rhs, magenta: lhs.magenta / rhs, yellow: lhs.yellow / rhs)
-}
-
-@_transparent
-public func *= (lhs: inout CMYColorModel.FloatComponents, rhs: Float) {
-    lhs.cyan *= rhs
-    lhs.magenta *= rhs
-    lhs.yellow *= rhs
-}
-@_transparent
-public func /= (lhs: inout CMYColorModel.FloatComponents, rhs: Float) {
-    lhs.cyan /= rhs
-    lhs.magenta /= rhs
-    lhs.yellow /= rhs
-}
-@_transparent
-public func += (lhs: inout CMYColorModel.FloatComponents, rhs: CMYColorModel.FloatComponents) {
-    lhs.cyan += rhs.cyan
-    lhs.magenta += rhs.magenta
-    lhs.yellow += rhs.yellow
-}
-@_transparent
-public func -= (lhs: inout CMYColorModel.FloatComponents, rhs: CMYColorModel.FloatComponents) {
-    lhs.cyan -= rhs.cyan
-    lhs.magenta -= rhs.magenta
-    lhs.yellow -= rhs.yellow
-}
-

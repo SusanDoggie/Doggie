@@ -106,8 +106,8 @@ extension YCbCrColorModel {
     }
     
     @_transparent
-    public func blended(source: YCbCrColorModel, blending: (Double, Double) throws -> Double) rethrows -> YCbCrColorModel {
-        return try YCbCrColorModel(y: blending(self.y, source.y), cb: blending(self.cb, source.cb), cr: blending(self.cr, source.cr))
+    public func combined(_ other: YCbCrColorModel, _ transform: (Double, Double) throws -> Double) rethrows -> YCbCrColorModel {
+        return try YCbCrColorModel(y: transform(self.y, other.y), cb: transform(self.cb, other.cb), cr: transform(self.cr, other.cr))
     }
 }
 
@@ -210,120 +210,7 @@ extension YCbCrColorModel.FloatComponents {
     }
     
     @_transparent
-    public func blended(source: YCbCrColorModel.FloatComponents, blending: (Float, Float) throws -> Float) rethrows -> YCbCrColorModel.FloatComponents {
-        return try YCbCrColorModel.FloatComponents(y: blending(self.y, source.y), cb: blending(self.cb, source.cb), cr: blending(self.cr, source.cr))
+    public func combined(_ other: YCbCrColorModel.FloatComponents, _ transform: (Float, Float) throws -> Float) rethrows -> YCbCrColorModel.FloatComponents {
+        return try YCbCrColorModel.FloatComponents(y: transform(self.y, other.y), cb: transform(self.cb, other.cb), cr: transform(self.cr, other.cr))
     }
 }
-
-@_transparent
-public prefix func +(val: YCbCrColorModel) -> YCbCrColorModel {
-    return val
-}
-@_transparent
-public prefix func -(val: YCbCrColorModel) -> YCbCrColorModel {
-    return YCbCrColorModel(y: -val.y, cb: -val.cb, cr: -val.cr)
-}
-@_transparent
-public func +(lhs: YCbCrColorModel, rhs: YCbCrColorModel) -> YCbCrColorModel {
-    return YCbCrColorModel(y: lhs.y + rhs.y, cb: lhs.cb + rhs.cb, cr: lhs.cr + rhs.cr)
-}
-@_transparent
-public func -(lhs: YCbCrColorModel, rhs: YCbCrColorModel) -> YCbCrColorModel {
-    return YCbCrColorModel(y: lhs.y - rhs.y, cb: lhs.cb - rhs.cb, cr: lhs.cr - rhs.cr)
-}
-
-@_transparent
-public func *(lhs: Double, rhs: YCbCrColorModel) -> YCbCrColorModel {
-    return YCbCrColorModel(y: lhs * rhs.y, cb: lhs * rhs.cb, cr: lhs * rhs.cr)
-}
-@_transparent
-public func *(lhs: YCbCrColorModel, rhs: Double) -> YCbCrColorModel {
-    return YCbCrColorModel(y: lhs.y * rhs, cb: lhs.cb * rhs, cr: lhs.cr * rhs)
-}
-
-@_transparent
-public func /(lhs: YCbCrColorModel, rhs: Double) -> YCbCrColorModel {
-    return YCbCrColorModel(y: lhs.y / rhs, cb: lhs.cb / rhs, cr: lhs.cr / rhs)
-}
-
-@_transparent
-public func *= (lhs: inout YCbCrColorModel, rhs: Double) {
-    lhs.y *= rhs
-    lhs.cb *= rhs
-    lhs.cr *= rhs
-}
-@_transparent
-public func /= (lhs: inout YCbCrColorModel, rhs: Double) {
-    lhs.y /= rhs
-    lhs.cb /= rhs
-    lhs.cr /= rhs
-}
-@_transparent
-public func += (lhs: inout YCbCrColorModel, rhs: YCbCrColorModel) {
-    lhs.y += rhs.y
-    lhs.cb += rhs.cb
-    lhs.cr += rhs.cr
-}
-@_transparent
-public func -= (lhs: inout YCbCrColorModel, rhs: YCbCrColorModel) {
-    lhs.y -= rhs.y
-    lhs.cb -= rhs.cb
-    lhs.cr -= rhs.cr
-}
-
-@_transparent
-public prefix func +(val: YCbCrColorModel.FloatComponents) -> YCbCrColorModel.FloatComponents {
-    return val
-}
-@_transparent
-public prefix func -(val: YCbCrColorModel.FloatComponents) -> YCbCrColorModel.FloatComponents {
-    return YCbCrColorModel.FloatComponents(y: -val.y, cb: -val.cb, cr: -val.cr)
-}
-@_transparent
-public func +(lhs: YCbCrColorModel.FloatComponents, rhs: YCbCrColorModel.FloatComponents) -> YCbCrColorModel.FloatComponents {
-    return YCbCrColorModel.FloatComponents(y: lhs.y + rhs.y, cb: lhs.cb + rhs.cb, cr: lhs.cr + rhs.cr)
-}
-@_transparent
-public func -(lhs: YCbCrColorModel.FloatComponents, rhs: YCbCrColorModel.FloatComponents) -> YCbCrColorModel.FloatComponents {
-    return YCbCrColorModel.FloatComponents(y: lhs.y - rhs.y, cb: lhs.cb - rhs.cb, cr: lhs.cr - rhs.cr)
-}
-
-@_transparent
-public func *(lhs: Float, rhs: YCbCrColorModel.FloatComponents) -> YCbCrColorModel.FloatComponents {
-    return YCbCrColorModel.FloatComponents(y: lhs * rhs.y, cb: lhs * rhs.cb, cr: lhs * rhs.cr)
-}
-@_transparent
-public func *(lhs: YCbCrColorModel.FloatComponents, rhs: Float) -> YCbCrColorModel.FloatComponents {
-    return YCbCrColorModel.FloatComponents(y: lhs.y * rhs, cb: lhs.cb * rhs, cr: lhs.cr * rhs)
-}
-
-@_transparent
-public func /(lhs: YCbCrColorModel.FloatComponents, rhs: Float) -> YCbCrColorModel.FloatComponents {
-    return YCbCrColorModel.FloatComponents(y: lhs.y / rhs, cb: lhs.cb / rhs, cr: lhs.cr / rhs)
-}
-
-@_transparent
-public func *= (lhs: inout YCbCrColorModel.FloatComponents, rhs: Float) {
-    lhs.y *= rhs
-    lhs.cb *= rhs
-    lhs.cr *= rhs
-}
-@_transparent
-public func /= (lhs: inout YCbCrColorModel.FloatComponents, rhs: Float) {
-    lhs.y /= rhs
-    lhs.cb /= rhs
-    lhs.cr /= rhs
-}
-@_transparent
-public func += (lhs: inout YCbCrColorModel.FloatComponents, rhs: YCbCrColorModel.FloatComponents) {
-    lhs.y += rhs.y
-    lhs.cb += rhs.cb
-    lhs.cr += rhs.cr
-}
-@_transparent
-public func -= (lhs: inout YCbCrColorModel.FloatComponents, rhs: YCbCrColorModel.FloatComponents) {
-    lhs.y -= rhs.y
-    lhs.cb -= rhs.cb
-    lhs.cr -= rhs.cr
-}
-

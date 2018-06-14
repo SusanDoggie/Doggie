@@ -95,7 +95,7 @@ extension ColorPixelProtocol {
         if r_alpha > 0 {
             let _source = source.color
             let _destination = self.color
-            let blended = try (1 - d_alpha) * _source + d_alpha * _destination.blended(source: _source, blending: blending)
+            let blended = try (1 - d_alpha) * _source + d_alpha * _destination.combined(_source, blending)
             return Self(color: compositingMode.mix(s_alpha / r_alpha * blended, s_alpha, d_alpha / r_alpha * _destination, d_alpha), opacity: r_alpha)
         } else {
             return Self()
@@ -136,7 +136,7 @@ extension FloatColorPixel {
         if r_alpha > 0 {
             let _source = source._color
             let _destination = self._color
-            let blended = try (1 - d_alpha) * _source + d_alpha * _destination.blended(source: _source, blending: blending)
+            let blended = try (1 - d_alpha) * _source + d_alpha * _destination.combined(_source, blending)
             return FloatColorPixel(color: compositingMode.mix(s_alpha / r_alpha * blended, s_alpha, d_alpha / r_alpha * _destination, d_alpha), opacity: r_alpha)
         } else {
             return FloatColorPixel()
