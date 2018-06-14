@@ -103,6 +103,14 @@ public struct XYZColorModel : ColorModelProtocol {
 
 extension XYZColorModel {
     
+    @inlinable
+    public init(_ Yxy: YxyColorModel) {
+        self.init(luminance: Yxy.luminance, x: Yxy.x, y: Yxy.y)
+    }
+}
+
+extension XYZColorModel {
+    
     @_transparent
     public var luminance: Double {
         get {
