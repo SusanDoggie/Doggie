@@ -77,9 +77,34 @@ public struct Device2ColorModel : ColorModelProtocol {
 extension Device2ColorModel {
     
     @_transparent
-    public func blended(source: Device2ColorModel, blending: (Double, Double) -> Double) -> Device2ColorModel {
-        let component_0 = blending(self.component_0, source.component_0)
-        let component_1 = blending(self.component_1, source.component_1)
+    public func min() -> Double {
+        return Swift.min(component_0, component_1)
+    }
+    
+    @_transparent
+    public func max() -> Double {
+        return Swift.max(component_0, component_1)
+    }
+    
+    @_transparent
+    public func map(_ transform: (Double) throws -> Double) rethrows -> Device2ColorModel {
+        let component_0 = try transform(self.component_0)
+        let component_1 = try transform(self.component_1)
+        return Device2ColorModel(component_0, component_1)
+    }
+    
+    @_transparent
+    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Double) throws -> ()) rethrows -> Result {
+        var accumulator = initialResult
+        try updateAccumulatingResult(&accumulator, component_0)
+        try updateAccumulatingResult(&accumulator, component_1)
+        return accumulator
+    }
+    
+    @_transparent
+    public func blended(source: Device2ColorModel, blending: (Double, Double) throws -> Double) rethrows -> Device2ColorModel {
+        let component_0 = try blending(self.component_0, source.component_0)
+        let component_1 = try blending(self.component_1, source.component_1)
         return Device2ColorModel(component_0, component_1)
     }
 }
@@ -196,10 +221,37 @@ public struct Device3ColorModel : ColorModelProtocol {
 extension Device3ColorModel {
     
     @_transparent
-    public func blended(source: Device3ColorModel, blending: (Double, Double) -> Double) -> Device3ColorModel {
-        let component_0 = blending(self.component_0, source.component_0)
-        let component_1 = blending(self.component_1, source.component_1)
-        let component_2 = blending(self.component_2, source.component_2)
+    public func min() -> Double {
+        return Swift.min(component_0, component_1, component_2)
+    }
+    
+    @_transparent
+    public func max() -> Double {
+        return Swift.max(component_0, component_1, component_2)
+    }
+    
+    @_transparent
+    public func map(_ transform: (Double) throws -> Double) rethrows -> Device3ColorModel {
+        let component_0 = try transform(self.component_0)
+        let component_1 = try transform(self.component_1)
+        let component_2 = try transform(self.component_2)
+        return Device3ColorModel(component_0, component_1, component_2)
+    }
+    
+    @_transparent
+    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Double) throws -> ()) rethrows -> Result {
+        var accumulator = initialResult
+        try updateAccumulatingResult(&accumulator, component_0)
+        try updateAccumulatingResult(&accumulator, component_1)
+        try updateAccumulatingResult(&accumulator, component_2)
+        return accumulator
+    }
+    
+    @_transparent
+    public func blended(source: Device3ColorModel, blending: (Double, Double) throws -> Double) rethrows -> Device3ColorModel {
+        let component_0 = try blending(self.component_0, source.component_0)
+        let component_1 = try blending(self.component_1, source.component_1)
+        let component_2 = try blending(self.component_2, source.component_2)
         return Device3ColorModel(component_0, component_1, component_2)
     }
 }
@@ -325,11 +377,40 @@ public struct Device4ColorModel : ColorModelProtocol {
 extension Device4ColorModel {
     
     @_transparent
-    public func blended(source: Device4ColorModel, blending: (Double, Double) -> Double) -> Device4ColorModel {
-        let component_0 = blending(self.component_0, source.component_0)
-        let component_1 = blending(self.component_1, source.component_1)
-        let component_2 = blending(self.component_2, source.component_2)
-        let component_3 = blending(self.component_3, source.component_3)
+    public func min() -> Double {
+        return Swift.min(component_0, component_1, component_2, component_3)
+    }
+    
+    @_transparent
+    public func max() -> Double {
+        return Swift.max(component_0, component_1, component_2, component_3)
+    }
+    
+    @_transparent
+    public func map(_ transform: (Double) throws -> Double) rethrows -> Device4ColorModel {
+        let component_0 = try transform(self.component_0)
+        let component_1 = try transform(self.component_1)
+        let component_2 = try transform(self.component_2)
+        let component_3 = try transform(self.component_3)
+        return Device4ColorModel(component_0, component_1, component_2, component_3)
+    }
+    
+    @_transparent
+    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Double) throws -> ()) rethrows -> Result {
+        var accumulator = initialResult
+        try updateAccumulatingResult(&accumulator, component_0)
+        try updateAccumulatingResult(&accumulator, component_1)
+        try updateAccumulatingResult(&accumulator, component_2)
+        try updateAccumulatingResult(&accumulator, component_3)
+        return accumulator
+    }
+    
+    @_transparent
+    public func blended(source: Device4ColorModel, blending: (Double, Double) throws -> Double) rethrows -> Device4ColorModel {
+        let component_0 = try blending(self.component_0, source.component_0)
+        let component_1 = try blending(self.component_1, source.component_1)
+        let component_2 = try blending(self.component_2, source.component_2)
+        let component_3 = try blending(self.component_3, source.component_3)
         return Device4ColorModel(component_0, component_1, component_2, component_3)
     }
 }
@@ -465,12 +546,52 @@ public struct Device5ColorModel : ColorModelProtocol {
 extension Device5ColorModel {
     
     @_transparent
-    public func blended(source: Device5ColorModel, blending: (Double, Double) -> Double) -> Device5ColorModel {
-        let component_0 = blending(self.component_0, source.component_0)
-        let component_1 = blending(self.component_1, source.component_1)
-        let component_2 = blending(self.component_2, source.component_2)
-        let component_3 = blending(self.component_3, source.component_3)
-        let component_4 = blending(self.component_4, source.component_4)
+    public func min() -> Double {
+        return Swift.min(
+            component_0, component_1, component_2,
+            component_3, component_4
+        )
+    }
+    
+    @_transparent
+    public func max() -> Double {
+        return Swift.max(
+            component_0, component_1, component_2,
+            component_3, component_4
+        )
+    }
+    
+    @_transparent
+    public func map(_ transform: (Double) throws -> Double) rethrows -> Device5ColorModel {
+        let component_0 = try transform(self.component_0)
+        let component_1 = try transform(self.component_1)
+        let component_2 = try transform(self.component_2)
+        let component_3 = try transform(self.component_3)
+        let component_4 = try transform(self.component_4)
+        return Device5ColorModel(
+            component_0, component_1, component_2,
+            component_3, component_4
+        )
+    }
+    
+    @_transparent
+    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Double) throws -> ()) rethrows -> Result {
+        var accumulator = initialResult
+        try updateAccumulatingResult(&accumulator, component_0)
+        try updateAccumulatingResult(&accumulator, component_1)
+        try updateAccumulatingResult(&accumulator, component_2)
+        try updateAccumulatingResult(&accumulator, component_3)
+        try updateAccumulatingResult(&accumulator, component_4)
+        return accumulator
+    }
+    
+    @_transparent
+    public func blended(source: Device5ColorModel, blending: (Double, Double) throws -> Double) rethrows -> Device5ColorModel {
+        let component_0 = try blending(self.component_0, source.component_0)
+        let component_1 = try blending(self.component_1, source.component_1)
+        let component_2 = try blending(self.component_2, source.component_2)
+        let component_3 = try blending(self.component_3, source.component_3)
+        let component_4 = try blending(self.component_4, source.component_4)
         return Device5ColorModel(
             component_0, component_1, component_2,
             component_3, component_4
@@ -636,13 +757,55 @@ public struct Device6ColorModel : ColorModelProtocol {
 extension Device6ColorModel {
     
     @_transparent
-    public func blended(source: Device6ColorModel, blending: (Double, Double) -> Double) -> Device6ColorModel {
-        let component_0 = blending(self.component_0, source.component_0)
-        let component_1 = blending(self.component_1, source.component_1)
-        let component_2 = blending(self.component_2, source.component_2)
-        let component_3 = blending(self.component_3, source.component_3)
-        let component_4 = blending(self.component_4, source.component_4)
-        let component_5 = blending(self.component_5, source.component_5)
+    public func min() -> Double {
+        return Swift.min(
+            component_0, component_1, component_2,
+            component_3, component_4, component_5
+        )
+    }
+    
+    @_transparent
+    public func max() -> Double {
+        return Swift.max(
+            component_0, component_1, component_2,
+            component_3, component_4, component_5
+        )
+    }
+    
+    @_transparent
+    public func map(_ transform: (Double) throws -> Double) rethrows -> Device6ColorModel {
+        let component_0 = try transform(self.component_0)
+        let component_1 = try transform(self.component_1)
+        let component_2 = try transform(self.component_2)
+        let component_3 = try transform(self.component_3)
+        let component_4 = try transform(self.component_4)
+        let component_5 = try transform(self.component_5)
+        return Device6ColorModel(
+            component_0, component_1, component_2,
+            component_3, component_4, component_5
+        )
+    }
+    
+    @_transparent
+    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Double) throws -> ()) rethrows -> Result {
+        var accumulator = initialResult
+        try updateAccumulatingResult(&accumulator, component_0)
+        try updateAccumulatingResult(&accumulator, component_1)
+        try updateAccumulatingResult(&accumulator, component_2)
+        try updateAccumulatingResult(&accumulator, component_3)
+        try updateAccumulatingResult(&accumulator, component_4)
+        try updateAccumulatingResult(&accumulator, component_5)
+        return accumulator
+    }
+    
+    @_transparent
+    public func blended(source: Device6ColorModel, blending: (Double, Double) throws -> Double) rethrows -> Device6ColorModel {
+        let component_0 = try blending(self.component_0, source.component_0)
+        let component_1 = try blending(self.component_1, source.component_1)
+        let component_2 = try blending(self.component_2, source.component_2)
+        let component_3 = try blending(self.component_3, source.component_3)
+        let component_4 = try blending(self.component_4, source.component_4)
+        let component_5 = try blending(self.component_5, source.component_5)
         return Device6ColorModel(
             component_0, component_1, component_2,
             component_3, component_4, component_5
@@ -818,14 +981,61 @@ public struct Device7ColorModel : ColorModelProtocol {
 extension Device7ColorModel {
     
     @_transparent
-    public func blended(source: Device7ColorModel, blending: (Double, Double) -> Double) -> Device7ColorModel {
-        let component_0 = blending(self.component_0, source.component_0)
-        let component_1 = blending(self.component_1, source.component_1)
-        let component_2 = blending(self.component_2, source.component_2)
-        let component_3 = blending(self.component_3, source.component_3)
-        let component_4 = blending(self.component_4, source.component_4)
-        let component_5 = blending(self.component_5, source.component_5)
-        let component_6 = blending(self.component_6, source.component_6)
+    public func min() -> Double {
+        return Swift.min(
+            component_0, component_1, component_2,
+            component_3, component_4, component_5,
+            component_6
+        )
+    }
+    
+    @_transparent
+    public func max() -> Double {
+        return Swift.max(
+            component_0, component_1, component_2,
+            component_3, component_4, component_5,
+            component_6
+        )
+    }
+    
+    @_transparent
+    public func map(_ transform: (Double) throws -> Double) rethrows -> Device7ColorModel {
+        let component_0 = try transform(self.component_0)
+        let component_1 = try transform(self.component_1)
+        let component_2 = try transform(self.component_2)
+        let component_3 = try transform(self.component_3)
+        let component_4 = try transform(self.component_4)
+        let component_5 = try transform(self.component_5)
+        let component_6 = try transform(self.component_6)
+        return Device7ColorModel(
+            component_0, component_1, component_2,
+            component_3, component_4, component_5,
+            component_6
+        )
+    }
+    
+    @_transparent
+    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Double) throws -> ()) rethrows -> Result {
+        var accumulator = initialResult
+        try updateAccumulatingResult(&accumulator, component_0)
+        try updateAccumulatingResult(&accumulator, component_1)
+        try updateAccumulatingResult(&accumulator, component_2)
+        try updateAccumulatingResult(&accumulator, component_3)
+        try updateAccumulatingResult(&accumulator, component_4)
+        try updateAccumulatingResult(&accumulator, component_5)
+        try updateAccumulatingResult(&accumulator, component_6)
+        return accumulator
+    }
+    
+    @_transparent
+    public func blended(source: Device7ColorModel, blending: (Double, Double) throws -> Double) rethrows -> Device7ColorModel {
+        let component_0 = try blending(self.component_0, source.component_0)
+        let component_1 = try blending(self.component_1, source.component_1)
+        let component_2 = try blending(self.component_2, source.component_2)
+        let component_3 = try blending(self.component_3, source.component_3)
+        let component_4 = try blending(self.component_4, source.component_4)
+        let component_5 = try blending(self.component_5, source.component_5)
+        let component_6 = try blending(self.component_6, source.component_6)
         return Device7ColorModel(
             component_0, component_1, component_2,
             component_3, component_4, component_5,
@@ -1017,15 +1227,64 @@ public struct Device8ColorModel : ColorModelProtocol {
 extension Device8ColorModel {
     
     @_transparent
-    public func blended(source: Device8ColorModel, blending: (Double, Double) -> Double) -> Device8ColorModel {
-        let component_0 = blending(self.component_0, source.component_0)
-        let component_1 = blending(self.component_1, source.component_1)
-        let component_2 = blending(self.component_2, source.component_2)
-        let component_3 = blending(self.component_3, source.component_3)
-        let component_4 = blending(self.component_4, source.component_4)
-        let component_5 = blending(self.component_5, source.component_5)
-        let component_6 = blending(self.component_6, source.component_6)
-        let component_7 = blending(self.component_7, source.component_7)
+    public func min() -> Double {
+        return Swift.min(
+            component_0, component_1, component_2,
+            component_3, component_4, component_5,
+            component_6, component_7
+        )
+    }
+    
+    @_transparent
+    public func max() -> Double {
+        return Swift.max(
+            component_0, component_1, component_2,
+            component_3, component_4, component_5,
+            component_6, component_7
+        )
+    }
+    
+    @_transparent
+    public func map(_ transform: (Double) throws -> Double) rethrows -> Device8ColorModel {
+        let component_0 = try transform(self.component_0)
+        let component_1 = try transform(self.component_1)
+        let component_2 = try transform(self.component_2)
+        let component_3 = try transform(self.component_3)
+        let component_4 = try transform(self.component_4)
+        let component_5 = try transform(self.component_5)
+        let component_6 = try transform(self.component_6)
+        let component_7 = try transform(self.component_7)
+        return Device8ColorModel(
+            component_0, component_1, component_2,
+            component_3, component_4, component_5,
+            component_6, component_7
+        )
+    }
+    
+    @_transparent
+    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Double) throws -> ()) rethrows -> Result {
+        var accumulator = initialResult
+        try updateAccumulatingResult(&accumulator, component_0)
+        try updateAccumulatingResult(&accumulator, component_1)
+        try updateAccumulatingResult(&accumulator, component_2)
+        try updateAccumulatingResult(&accumulator, component_3)
+        try updateAccumulatingResult(&accumulator, component_4)
+        try updateAccumulatingResult(&accumulator, component_5)
+        try updateAccumulatingResult(&accumulator, component_6)
+        try updateAccumulatingResult(&accumulator, component_7)
+        return accumulator
+    }
+    
+    @_transparent
+    public func blended(source: Device8ColorModel, blending: (Double, Double) throws -> Double) rethrows -> Device8ColorModel {
+        let component_0 = try blending(self.component_0, source.component_0)
+        let component_1 = try blending(self.component_1, source.component_1)
+        let component_2 = try blending(self.component_2, source.component_2)
+        let component_3 = try blending(self.component_3, source.component_3)
+        let component_4 = try blending(self.component_4, source.component_4)
+        let component_5 = try blending(self.component_5, source.component_5)
+        let component_6 = try blending(self.component_6, source.component_6)
+        let component_7 = try blending(self.component_7, source.component_7)
         return Device8ColorModel(
             component_0, component_1, component_2,
             component_3, component_4, component_5,
@@ -1226,16 +1485,67 @@ public struct Device9ColorModel : ColorModelProtocol {
 extension Device9ColorModel {
     
     @_transparent
-    public func blended(source: Device9ColorModel, blending: (Double, Double) -> Double) -> Device9ColorModel {
-        let component_0 = blending(self.component_0, source.component_0)
-        let component_1 = blending(self.component_1, source.component_1)
-        let component_2 = blending(self.component_2, source.component_2)
-        let component_3 = blending(self.component_3, source.component_3)
-        let component_4 = blending(self.component_4, source.component_4)
-        let component_5 = blending(self.component_5, source.component_5)
-        let component_6 = blending(self.component_6, source.component_6)
-        let component_7 = blending(self.component_7, source.component_7)
-        let component_8 = blending(self.component_8, source.component_8)
+    public func min() -> Double {
+        return Swift.min(
+            component_0, component_1, component_2,
+            component_3, component_4, component_5,
+            component_6, component_7, component_8
+        )
+    }
+    
+    @_transparent
+    public func max() -> Double {
+        return Swift.max(
+            component_0, component_1, component_2,
+            component_3, component_4, component_5,
+            component_6, component_7, component_8
+        )
+    }
+    
+    @_transparent
+    public func map(_ transform: (Double) throws -> Double) rethrows -> Device9ColorModel {
+        let component_0 = try transform(self.component_0)
+        let component_1 = try transform(self.component_1)
+        let component_2 = try transform(self.component_2)
+        let component_3 = try transform(self.component_3)
+        let component_4 = try transform(self.component_4)
+        let component_5 = try transform(self.component_5)
+        let component_6 = try transform(self.component_6)
+        let component_7 = try transform(self.component_7)
+        let component_8 = try transform(self.component_8)
+        return Device9ColorModel(
+            component_0, component_1, component_2,
+            component_3, component_4, component_5,
+            component_6, component_7, component_8
+        )
+    }
+    
+    @_transparent
+    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Double) throws -> ()) rethrows -> Result {
+        var accumulator = initialResult
+        try updateAccumulatingResult(&accumulator, component_0)
+        try updateAccumulatingResult(&accumulator, component_1)
+        try updateAccumulatingResult(&accumulator, component_2)
+        try updateAccumulatingResult(&accumulator, component_3)
+        try updateAccumulatingResult(&accumulator, component_4)
+        try updateAccumulatingResult(&accumulator, component_5)
+        try updateAccumulatingResult(&accumulator, component_6)
+        try updateAccumulatingResult(&accumulator, component_7)
+        try updateAccumulatingResult(&accumulator, component_8)
+        return accumulator
+    }
+    
+    @_transparent
+    public func blended(source: Device9ColorModel, blending: (Double, Double) throws -> Double) rethrows -> Device9ColorModel {
+        let component_0 = try blending(self.component_0, source.component_0)
+        let component_1 = try blending(self.component_1, source.component_1)
+        let component_2 = try blending(self.component_2, source.component_2)
+        let component_3 = try blending(self.component_3, source.component_3)
+        let component_4 = try blending(self.component_4, source.component_4)
+        let component_5 = try blending(self.component_5, source.component_5)
+        let component_6 = try blending(self.component_6, source.component_6)
+        let component_7 = try blending(self.component_7, source.component_7)
+        let component_8 = try blending(self.component_8, source.component_8)
         return Device9ColorModel(
             component_0, component_1, component_2,
             component_3, component_4, component_5,
@@ -1446,17 +1756,73 @@ public struct Device10ColorModel : ColorModelProtocol {
 extension Device10ColorModel {
     
     @_transparent
-    public func blended(source: Device10ColorModel, blending: (Double, Double) -> Double) -> Device10ColorModel {
-        let component_0 = blending(self.component_0, source.component_0)
-        let component_1 = blending(self.component_1, source.component_1)
-        let component_2 = blending(self.component_2, source.component_2)
-        let component_3 = blending(self.component_3, source.component_3)
-        let component_4 = blending(self.component_4, source.component_4)
-        let component_5 = blending(self.component_5, source.component_5)
-        let component_6 = blending(self.component_6, source.component_6)
-        let component_7 = blending(self.component_7, source.component_7)
-        let component_8 = blending(self.component_8, source.component_8)
-        let component_9 = blending(self.component_9, source.component_9)
+    public func min() -> Double {
+        return Swift.min(
+            component_0, component_1, component_2,
+            component_3, component_4, component_5,
+            component_6, component_7, component_8,
+            component_9
+        )
+    }
+    
+    @_transparent
+    public func max() -> Double {
+        return Swift.max(
+            component_0, component_1, component_2,
+            component_3, component_4, component_5,
+            component_6, component_7, component_8,
+            component_9
+        )
+    }
+    
+    @_transparent
+    public func map(_ transform: (Double) throws -> Double) rethrows -> Device10ColorModel {
+        let component_0 = try transform(self.component_0)
+        let component_1 = try transform(self.component_1)
+        let component_2 = try transform(self.component_2)
+        let component_3 = try transform(self.component_3)
+        let component_4 = try transform(self.component_4)
+        let component_5 = try transform(self.component_5)
+        let component_6 = try transform(self.component_6)
+        let component_7 = try transform(self.component_7)
+        let component_8 = try transform(self.component_8)
+        let component_9 = try transform(self.component_9)
+        return Device10ColorModel(
+            component_0, component_1, component_2,
+            component_3, component_4, component_5,
+            component_6, component_7, component_8,
+            component_9
+        )
+    }
+    
+    @_transparent
+    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Double) throws -> ()) rethrows -> Result {
+        var accumulator = initialResult
+        try updateAccumulatingResult(&accumulator, component_0)
+        try updateAccumulatingResult(&accumulator, component_1)
+        try updateAccumulatingResult(&accumulator, component_2)
+        try updateAccumulatingResult(&accumulator, component_3)
+        try updateAccumulatingResult(&accumulator, component_4)
+        try updateAccumulatingResult(&accumulator, component_5)
+        try updateAccumulatingResult(&accumulator, component_6)
+        try updateAccumulatingResult(&accumulator, component_7)
+        try updateAccumulatingResult(&accumulator, component_8)
+        try updateAccumulatingResult(&accumulator, component_9)
+        return accumulator
+    }
+    
+    @_transparent
+    public func blended(source: Device10ColorModel, blending: (Double, Double) throws -> Double) rethrows -> Device10ColorModel {
+        let component_0 = try blending(self.component_0, source.component_0)
+        let component_1 = try blending(self.component_1, source.component_1)
+        let component_2 = try blending(self.component_2, source.component_2)
+        let component_3 = try blending(self.component_3, source.component_3)
+        let component_4 = try blending(self.component_4, source.component_4)
+        let component_5 = try blending(self.component_5, source.component_5)
+        let component_6 = try blending(self.component_6, source.component_6)
+        let component_7 = try blending(self.component_7, source.component_7)
+        let component_8 = try blending(self.component_8, source.component_8)
+        let component_9 = try blending(self.component_9, source.component_9)
         return Device10ColorModel(
             component_0, component_1, component_2,
             component_3, component_4, component_5,
@@ -1683,18 +2049,76 @@ public struct Device11ColorModel : ColorModelProtocol {
 extension Device11ColorModel {
     
     @_transparent
-    public func blended(source: Device11ColorModel, blending: (Double, Double) -> Double) -> Device11ColorModel {
-        let component_0 = blending(self.component_0, source.component_0)
-        let component_1 = blending(self.component_1, source.component_1)
-        let component_2 = blending(self.component_2, source.component_2)
-        let component_3 = blending(self.component_3, source.component_3)
-        let component_4 = blending(self.component_4, source.component_4)
-        let component_5 = blending(self.component_5, source.component_5)
-        let component_6 = blending(self.component_6, source.component_6)
-        let component_7 = blending(self.component_7, source.component_7)
-        let component_8 = blending(self.component_8, source.component_8)
-        let component_9 = blending(self.component_9, source.component_9)
-        let component_10 = blending(self.component_10, source.component_10)
+    public func min() -> Double {
+        return Swift.min(
+            component_0, component_1, component_2,
+            component_3, component_4, component_5,
+            component_6, component_7, component_8,
+            component_9, component_10
+        )
+    }
+    
+    @_transparent
+    public func max() -> Double {
+        return Swift.max(
+            component_0, component_1, component_2,
+            component_3, component_4, component_5,
+            component_6, component_7, component_8,
+            component_9, component_10
+        )
+    }
+    
+    @_transparent
+    public func map(_ transform: (Double) throws -> Double) rethrows -> Device11ColorModel {
+        let component_0 = try transform(self.component_0)
+        let component_1 = try transform(self.component_1)
+        let component_2 = try transform(self.component_2)
+        let component_3 = try transform(self.component_3)
+        let component_4 = try transform(self.component_4)
+        let component_5 = try transform(self.component_5)
+        let component_6 = try transform(self.component_6)
+        let component_7 = try transform(self.component_7)
+        let component_8 = try transform(self.component_8)
+        let component_9 = try transform(self.component_9)
+        let component_10 = try transform(self.component_10)
+        return Device11ColorModel(
+            component_0, component_1, component_2,
+            component_3, component_4, component_5,
+            component_6, component_7, component_8,
+            component_9, component_10
+        )
+    }
+    
+    @_transparent
+    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Double) throws -> ()) rethrows -> Result {
+        var accumulator = initialResult
+        try updateAccumulatingResult(&accumulator, component_0)
+        try updateAccumulatingResult(&accumulator, component_1)
+        try updateAccumulatingResult(&accumulator, component_2)
+        try updateAccumulatingResult(&accumulator, component_3)
+        try updateAccumulatingResult(&accumulator, component_4)
+        try updateAccumulatingResult(&accumulator, component_5)
+        try updateAccumulatingResult(&accumulator, component_6)
+        try updateAccumulatingResult(&accumulator, component_7)
+        try updateAccumulatingResult(&accumulator, component_8)
+        try updateAccumulatingResult(&accumulator, component_9)
+        try updateAccumulatingResult(&accumulator, component_10)
+        return accumulator
+    }
+    
+    @_transparent
+    public func blended(source: Device11ColorModel, blending: (Double, Double) throws -> Double) rethrows -> Device11ColorModel {
+        let component_0 = try blending(self.component_0, source.component_0)
+        let component_1 = try blending(self.component_1, source.component_1)
+        let component_2 = try blending(self.component_2, source.component_2)
+        let component_3 = try blending(self.component_3, source.component_3)
+        let component_4 = try blending(self.component_4, source.component_4)
+        let component_5 = try blending(self.component_5, source.component_5)
+        let component_6 = try blending(self.component_6, source.component_6)
+        let component_7 = try blending(self.component_7, source.component_7)
+        let component_8 = try blending(self.component_8, source.component_8)
+        let component_9 = try blending(self.component_9, source.component_9)
+        let component_10 = try blending(self.component_10, source.component_10)
         return Device11ColorModel(
             component_0, component_1, component_2,
             component_3, component_4, component_5,
@@ -1930,19 +2354,79 @@ public struct Device12ColorModel : ColorModelProtocol {
 extension Device12ColorModel {
     
     @_transparent
-    public func blended(source: Device12ColorModel, blending: (Double, Double) -> Double) -> Device12ColorModel {
-        let component_0 = blending(self.component_0, source.component_0)
-        let component_1 = blending(self.component_1, source.component_1)
-        let component_2 = blending(self.component_2, source.component_2)
-        let component_3 = blending(self.component_3, source.component_3)
-        let component_4 = blending(self.component_4, source.component_4)
-        let component_5 = blending(self.component_5, source.component_5)
-        let component_6 = blending(self.component_6, source.component_6)
-        let component_7 = blending(self.component_7, source.component_7)
-        let component_8 = blending(self.component_8, source.component_8)
-        let component_9 = blending(self.component_9, source.component_9)
-        let component_10 = blending(self.component_10, source.component_10)
-        let component_11 = blending(self.component_11, source.component_11)
+    public func min() -> Double {
+        return Swift.min(
+            component_0, component_1, component_2,
+            component_3, component_4, component_5,
+            component_6, component_7, component_8,
+            component_9, component_10, component_11
+        )
+    }
+    
+    @_transparent
+    public func max() -> Double {
+        return Swift.max(
+            component_0, component_1, component_2,
+            component_3, component_4, component_5,
+            component_6, component_7, component_8,
+            component_9, component_10, component_11
+        )
+    }
+    
+    @_transparent
+    public func map(_ transform: (Double) throws -> Double) rethrows -> Device12ColorModel {
+        let component_0 = try transform(self.component_0)
+        let component_1 = try transform(self.component_1)
+        let component_2 = try transform(self.component_2)
+        let component_3 = try transform(self.component_3)
+        let component_4 = try transform(self.component_4)
+        let component_5 = try transform(self.component_5)
+        let component_6 = try transform(self.component_6)
+        let component_7 = try transform(self.component_7)
+        let component_8 = try transform(self.component_8)
+        let component_9 = try transform(self.component_9)
+        let component_10 = try transform(self.component_10)
+        let component_11 = try transform(self.component_11)
+        return Device12ColorModel(
+            component_0, component_1, component_2,
+            component_3, component_4, component_5,
+            component_6, component_7, component_8,
+            component_9, component_10, component_11
+        )
+    }
+    
+    @_transparent
+    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Double) throws -> ()) rethrows -> Result {
+        var accumulator = initialResult
+        try updateAccumulatingResult(&accumulator, component_0)
+        try updateAccumulatingResult(&accumulator, component_1)
+        try updateAccumulatingResult(&accumulator, component_2)
+        try updateAccumulatingResult(&accumulator, component_3)
+        try updateAccumulatingResult(&accumulator, component_4)
+        try updateAccumulatingResult(&accumulator, component_5)
+        try updateAccumulatingResult(&accumulator, component_6)
+        try updateAccumulatingResult(&accumulator, component_7)
+        try updateAccumulatingResult(&accumulator, component_8)
+        try updateAccumulatingResult(&accumulator, component_9)
+        try updateAccumulatingResult(&accumulator, component_10)
+        try updateAccumulatingResult(&accumulator, component_11)
+        return accumulator
+    }
+    
+    @_transparent
+    public func blended(source: Device12ColorModel, blending: (Double, Double) throws -> Double) rethrows -> Device12ColorModel {
+        let component_0 = try blending(self.component_0, source.component_0)
+        let component_1 = try blending(self.component_1, source.component_1)
+        let component_2 = try blending(self.component_2, source.component_2)
+        let component_3 = try blending(self.component_3, source.component_3)
+        let component_4 = try blending(self.component_4, source.component_4)
+        let component_5 = try blending(self.component_5, source.component_5)
+        let component_6 = try blending(self.component_6, source.component_6)
+        let component_7 = try blending(self.component_7, source.component_7)
+        let component_8 = try blending(self.component_8, source.component_8)
+        let component_9 = try blending(self.component_9, source.component_9)
+        let component_10 = try blending(self.component_10, source.component_10)
+        let component_11 = try blending(self.component_11, source.component_11)
         return Device12ColorModel(
             component_0, component_1, component_2,
             component_3, component_4, component_5,
@@ -2188,20 +2672,85 @@ public struct Device13ColorModel : ColorModelProtocol {
 extension Device13ColorModel {
     
     @_transparent
-    public func blended(source: Device13ColorModel, blending: (Double, Double) -> Double) -> Device13ColorModel {
-        let component_0 = blending(self.component_0, source.component_0)
-        let component_1 = blending(self.component_1, source.component_1)
-        let component_2 = blending(self.component_2, source.component_2)
-        let component_3 = blending(self.component_3, source.component_3)
-        let component_4 = blending(self.component_4, source.component_4)
-        let component_5 = blending(self.component_5, source.component_5)
-        let component_6 = blending(self.component_6, source.component_6)
-        let component_7 = blending(self.component_7, source.component_7)
-        let component_8 = blending(self.component_8, source.component_8)
-        let component_9 = blending(self.component_9, source.component_9)
-        let component_10 = blending(self.component_10, source.component_10)
-        let component_11 = blending(self.component_11, source.component_11)
-        let component_12 = blending(self.component_12, source.component_12)
+    public func min() -> Double {
+        return Swift.min(
+            component_0, component_1, component_2,
+            component_3, component_4, component_5,
+            component_6, component_7, component_8,
+            component_9, component_10, component_11,
+            component_12
+        )
+    }
+    
+    @_transparent
+    public func max() -> Double {
+        return Swift.max(
+            component_0, component_1, component_2,
+            component_3, component_4, component_5,
+            component_6, component_7, component_8,
+            component_9, component_10, component_11,
+            component_12
+        )
+    }
+    
+    @_transparent
+    public func map(_ transform: (Double) throws -> Double) rethrows -> Device13ColorModel {
+        let component_0 = try transform(self.component_0)
+        let component_1 = try transform(self.component_1)
+        let component_2 = try transform(self.component_2)
+        let component_3 = try transform(self.component_3)
+        let component_4 = try transform(self.component_4)
+        let component_5 = try transform(self.component_5)
+        let component_6 = try transform(self.component_6)
+        let component_7 = try transform(self.component_7)
+        let component_8 = try transform(self.component_8)
+        let component_9 = try transform(self.component_9)
+        let component_10 = try transform(self.component_10)
+        let component_11 = try transform(self.component_11)
+        let component_12 = try transform(self.component_12)
+        return Device13ColorModel(
+            component_0, component_1, component_2,
+            component_3, component_4, component_5,
+            component_6, component_7, component_8,
+            component_9, component_10, component_11,
+            component_12
+        )
+    }
+    
+    @_transparent
+    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Double) throws -> ()) rethrows -> Result {
+        var accumulator = initialResult
+        try updateAccumulatingResult(&accumulator, component_0)
+        try updateAccumulatingResult(&accumulator, component_1)
+        try updateAccumulatingResult(&accumulator, component_2)
+        try updateAccumulatingResult(&accumulator, component_3)
+        try updateAccumulatingResult(&accumulator, component_4)
+        try updateAccumulatingResult(&accumulator, component_5)
+        try updateAccumulatingResult(&accumulator, component_6)
+        try updateAccumulatingResult(&accumulator, component_7)
+        try updateAccumulatingResult(&accumulator, component_8)
+        try updateAccumulatingResult(&accumulator, component_9)
+        try updateAccumulatingResult(&accumulator, component_10)
+        try updateAccumulatingResult(&accumulator, component_11)
+        try updateAccumulatingResult(&accumulator, component_12)
+        return accumulator
+    }
+    
+    @_transparent
+    public func blended(source: Device13ColorModel, blending: (Double, Double) throws -> Double) rethrows -> Device13ColorModel {
+        let component_0 = try blending(self.component_0, source.component_0)
+        let component_1 = try blending(self.component_1, source.component_1)
+        let component_2 = try blending(self.component_2, source.component_2)
+        let component_3 = try blending(self.component_3, source.component_3)
+        let component_4 = try blending(self.component_4, source.component_4)
+        let component_5 = try blending(self.component_5, source.component_5)
+        let component_6 = try blending(self.component_6, source.component_6)
+        let component_7 = try blending(self.component_7, source.component_7)
+        let component_8 = try blending(self.component_8, source.component_8)
+        let component_9 = try blending(self.component_9, source.component_9)
+        let component_10 = try blending(self.component_10, source.component_10)
+        let component_11 = try blending(self.component_11, source.component_11)
+        let component_12 = try blending(self.component_12, source.component_12)
         return Device13ColorModel(
             component_0, component_1, component_2,
             component_3, component_4, component_5,
@@ -2463,21 +3012,88 @@ public struct Device14ColorModel : ColorModelProtocol {
 extension Device14ColorModel {
     
     @_transparent
-    public func blended(source: Device14ColorModel, blending: (Double, Double) -> Double) -> Device14ColorModel {
-        let component_0 = blending(self.component_0, source.component_0)
-        let component_1 = blending(self.component_1, source.component_1)
-        let component_2 = blending(self.component_2, source.component_2)
-        let component_3 = blending(self.component_3, source.component_3)
-        let component_4 = blending(self.component_4, source.component_4)
-        let component_5 = blending(self.component_5, source.component_5)
-        let component_6 = blending(self.component_6, source.component_6)
-        let component_7 = blending(self.component_7, source.component_7)
-        let component_8 = blending(self.component_8, source.component_8)
-        let component_9 = blending(self.component_9, source.component_9)
-        let component_10 = blending(self.component_10, source.component_10)
-        let component_11 = blending(self.component_11, source.component_11)
-        let component_12 = blending(self.component_12, source.component_12)
-        let component_13 = blending(self.component_13, source.component_13)
+    public func min() -> Double {
+        return Swift.min(
+            component_0, component_1, component_2,
+            component_3, component_4, component_5,
+            component_6, component_7, component_8,
+            component_9, component_10, component_11,
+            component_12, component_13
+        )
+    }
+    
+    @_transparent
+    public func max() -> Double {
+        return Swift.max(
+            component_0, component_1, component_2,
+            component_3, component_4, component_5,
+            component_6, component_7, component_8,
+            component_9, component_10, component_11,
+            component_12, component_13
+        )
+    }
+    
+    @_transparent
+    public func map(_ transform: (Double) throws -> Double) rethrows -> Device14ColorModel {
+        let component_0 = try transform(self.component_0)
+        let component_1 = try transform(self.component_1)
+        let component_2 = try transform(self.component_2)
+        let component_3 = try transform(self.component_3)
+        let component_4 = try transform(self.component_4)
+        let component_5 = try transform(self.component_5)
+        let component_6 = try transform(self.component_6)
+        let component_7 = try transform(self.component_7)
+        let component_8 = try transform(self.component_8)
+        let component_9 = try transform(self.component_9)
+        let component_10 = try transform(self.component_10)
+        let component_11 = try transform(self.component_11)
+        let component_12 = try transform(self.component_12)
+        let component_13 = try transform(self.component_13)
+        return Device14ColorModel(
+            component_0, component_1, component_2,
+            component_3, component_4, component_5,
+            component_6, component_7, component_8,
+            component_9, component_10, component_11,
+            component_12, component_13
+        )
+    }
+    
+    @_transparent
+    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Double) throws -> ()) rethrows -> Result {
+        var accumulator = initialResult
+        try updateAccumulatingResult(&accumulator, component_0)
+        try updateAccumulatingResult(&accumulator, component_1)
+        try updateAccumulatingResult(&accumulator, component_2)
+        try updateAccumulatingResult(&accumulator, component_3)
+        try updateAccumulatingResult(&accumulator, component_4)
+        try updateAccumulatingResult(&accumulator, component_5)
+        try updateAccumulatingResult(&accumulator, component_6)
+        try updateAccumulatingResult(&accumulator, component_7)
+        try updateAccumulatingResult(&accumulator, component_8)
+        try updateAccumulatingResult(&accumulator, component_9)
+        try updateAccumulatingResult(&accumulator, component_10)
+        try updateAccumulatingResult(&accumulator, component_11)
+        try updateAccumulatingResult(&accumulator, component_12)
+        try updateAccumulatingResult(&accumulator, component_13)
+        return accumulator
+    }
+    
+    @_transparent
+    public func blended(source: Device14ColorModel, blending: (Double, Double) throws -> Double) rethrows -> Device14ColorModel {
+        let component_0 = try blending(self.component_0, source.component_0)
+        let component_1 = try blending(self.component_1, source.component_1)
+        let component_2 = try blending(self.component_2, source.component_2)
+        let component_3 = try blending(self.component_3, source.component_3)
+        let component_4 = try blending(self.component_4, source.component_4)
+        let component_5 = try blending(self.component_5, source.component_5)
+        let component_6 = try blending(self.component_6, source.component_6)
+        let component_7 = try blending(self.component_7, source.component_7)
+        let component_8 = try blending(self.component_8, source.component_8)
+        let component_9 = try blending(self.component_9, source.component_9)
+        let component_10 = try blending(self.component_10, source.component_10)
+        let component_11 = try blending(self.component_11, source.component_11)
+        let component_12 = try blending(self.component_12, source.component_12)
+        let component_13 = try blending(self.component_13, source.component_13)
         return Device14ColorModel(
             component_0, component_1, component_2,
             component_3, component_4, component_5,
@@ -2748,22 +3364,91 @@ public struct Device15ColorModel : ColorModelProtocol {
 extension Device15ColorModel {
     
     @_transparent
-    public func blended(source: Device15ColorModel, blending: (Double, Double) -> Double) -> Device15ColorModel {
-        let component_0 = blending(self.component_0, source.component_0)
-        let component_1 = blending(self.component_1, source.component_1)
-        let component_2 = blending(self.component_2, source.component_2)
-        let component_3 = blending(self.component_3, source.component_3)
-        let component_4 = blending(self.component_4, source.component_4)
-        let component_5 = blending(self.component_5, source.component_5)
-        let component_6 = blending(self.component_6, source.component_6)
-        let component_7 = blending(self.component_7, source.component_7)
-        let component_8 = blending(self.component_8, source.component_8)
-        let component_9 = blending(self.component_9, source.component_9)
-        let component_10 = blending(self.component_10, source.component_10)
-        let component_11 = blending(self.component_11, source.component_11)
-        let component_12 = blending(self.component_12, source.component_12)
-        let component_13 = blending(self.component_13, source.component_13)
-        let component_14 = blending(self.component_14, source.component_14)
+    public func min() -> Double {
+        return Swift.min(
+            component_0, component_1, component_2,
+            component_3, component_4, component_5,
+            component_6, component_7, component_8,
+            component_9, component_10, component_11,
+            component_12, component_13, component_14
+        )
+    }
+    
+    @_transparent
+    public func max() -> Double {
+        return Swift.max(
+            component_0, component_1, component_2,
+            component_3, component_4, component_5,
+            component_6, component_7, component_8,
+            component_9, component_10, component_11,
+            component_12, component_13, component_14
+        )
+    }
+    
+    @_transparent
+    public func map(_ transform: (Double) throws -> Double) rethrows -> Device15ColorModel {
+        let component_0 = try transform(self.component_0)
+        let component_1 = try transform(self.component_1)
+        let component_2 = try transform(self.component_2)
+        let component_3 = try transform(self.component_3)
+        let component_4 = try transform(self.component_4)
+        let component_5 = try transform(self.component_5)
+        let component_6 = try transform(self.component_6)
+        let component_7 = try transform(self.component_7)
+        let component_8 = try transform(self.component_8)
+        let component_9 = try transform(self.component_9)
+        let component_10 = try transform(self.component_10)
+        let component_11 = try transform(self.component_11)
+        let component_12 = try transform(self.component_12)
+        let component_13 = try transform(self.component_13)
+        let component_14 = try transform(self.component_14)
+        return Device15ColorModel(
+            component_0, component_1, component_2,
+            component_3, component_4, component_5,
+            component_6, component_7, component_8,
+            component_9, component_10, component_11,
+            component_12, component_13, component_14
+        )
+    }
+    
+    @_transparent
+    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Double) throws -> ()) rethrows -> Result {
+        var accumulator = initialResult
+        try updateAccumulatingResult(&accumulator, component_0)
+        try updateAccumulatingResult(&accumulator, component_1)
+        try updateAccumulatingResult(&accumulator, component_2)
+        try updateAccumulatingResult(&accumulator, component_3)
+        try updateAccumulatingResult(&accumulator, component_4)
+        try updateAccumulatingResult(&accumulator, component_5)
+        try updateAccumulatingResult(&accumulator, component_6)
+        try updateAccumulatingResult(&accumulator, component_7)
+        try updateAccumulatingResult(&accumulator, component_8)
+        try updateAccumulatingResult(&accumulator, component_9)
+        try updateAccumulatingResult(&accumulator, component_10)
+        try updateAccumulatingResult(&accumulator, component_11)
+        try updateAccumulatingResult(&accumulator, component_12)
+        try updateAccumulatingResult(&accumulator, component_13)
+        try updateAccumulatingResult(&accumulator, component_14)
+        return accumulator
+    }
+    
+    @_transparent
+    public func blended(source: Device15ColorModel, blending: (Double, Double) throws -> Double) rethrows -> Device15ColorModel {
+        let component_0 = try blending(self.component_0, source.component_0)
+        let component_1 = try blending(self.component_1, source.component_1)
+        let component_2 = try blending(self.component_2, source.component_2)
+        let component_3 = try blending(self.component_3, source.component_3)
+        let component_4 = try blending(self.component_4, source.component_4)
+        let component_5 = try blending(self.component_5, source.component_5)
+        let component_6 = try blending(self.component_6, source.component_6)
+        let component_7 = try blending(self.component_7, source.component_7)
+        let component_8 = try blending(self.component_8, source.component_8)
+        let component_9 = try blending(self.component_9, source.component_9)
+        let component_10 = try blending(self.component_10, source.component_10)
+        let component_11 = try blending(self.component_11, source.component_11)
+        let component_12 = try blending(self.component_12, source.component_12)
+        let component_13 = try blending(self.component_13, source.component_13)
+        let component_14 = try blending(self.component_14, source.component_14)
         return Device15ColorModel(
             component_0, component_1, component_2,
             component_3, component_4, component_5,
@@ -2984,9 +3669,34 @@ extension Device2ColorModel {
 extension Device2ColorModel.FloatComponents {
     
     @_transparent
-    public func blended(source: Device2ColorModel.FloatComponents, blending: (Float, Float) -> Float) -> Device2ColorModel.FloatComponents {
-        let component_0 = blending(self.component_0, source.component_0)
-        let component_1 = blending(self.component_1, source.component_1)
+    public func min() -> Float {
+        return Swift.min(component_0, component_1)
+    }
+    
+    @_transparent
+    public func max() -> Float {
+        return Swift.max(component_0, component_1)
+    }
+    
+    @_transparent
+    public func map(_ transform: (Float) throws -> Float) rethrows -> Device2ColorModel.FloatComponents {
+        let component_0 = try transform(self.component_0)
+        let component_1 = try transform(self.component_1)
+        return Device2ColorModel.FloatComponents(component_0, component_1)
+    }
+    
+    @_transparent
+    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Float) throws -> ()) rethrows -> Result {
+        var accumulator = initialResult
+        try updateAccumulatingResult(&accumulator, component_0)
+        try updateAccumulatingResult(&accumulator, component_1)
+        return accumulator
+    }
+    
+    @_transparent
+    public func blended(source: Device2ColorModel.FloatComponents, blending: (Float, Float) throws -> Float) rethrows -> Device2ColorModel.FloatComponents {
+        let component_0 = try blending(self.component_0, source.component_0)
+        let component_1 = try blending(self.component_1, source.component_1)
         return Device2ColorModel.FloatComponents(component_0, component_1)
     }
 }
@@ -3119,10 +3829,37 @@ extension Device3ColorModel {
 extension Device3ColorModel.FloatComponents {
     
     @_transparent
-    public func blended(source: Device3ColorModel.FloatComponents, blending: (Float, Float) -> Float) -> Device3ColorModel.FloatComponents {
-        let component_0 = blending(self.component_0, source.component_0)
-        let component_1 = blending(self.component_1, source.component_1)
-        let component_2 = blending(self.component_2, source.component_2)
+    public func min() -> Float {
+        return Swift.min(component_0, component_1, component_2)
+    }
+    
+    @_transparent
+    public func max() -> Float {
+        return Swift.max(component_0, component_1, component_2)
+    }
+    
+    @_transparent
+    public func map(_ transform: (Float) throws -> Float) rethrows -> Device3ColorModel.FloatComponents {
+        let component_0 = try transform(self.component_0)
+        let component_1 = try transform(self.component_1)
+        let component_2 = try transform(self.component_2)
+        return Device3ColorModel.FloatComponents(component_0, component_1, component_2)
+    }
+    
+    @_transparent
+    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Float) throws -> ()) rethrows -> Result {
+        var accumulator = initialResult
+        try updateAccumulatingResult(&accumulator, component_0)
+        try updateAccumulatingResult(&accumulator, component_1)
+        try updateAccumulatingResult(&accumulator, component_2)
+        return accumulator
+    }
+    
+    @_transparent
+    public func blended(source: Device3ColorModel.FloatComponents, blending: (Float, Float) throws -> Float) rethrows -> Device3ColorModel.FloatComponents {
+        let component_0 = try blending(self.component_0, source.component_0)
+        let component_1 = try blending(self.component_1, source.component_1)
+        let component_2 = try blending(self.component_2, source.component_2)
         return Device3ColorModel.FloatComponents(component_0, component_1, component_2)
     }
 }
@@ -3266,11 +4003,40 @@ extension Device4ColorModel {
 extension Device4ColorModel.FloatComponents {
     
     @_transparent
-    public func blended(source: Device4ColorModel.FloatComponents, blending: (Float, Float) -> Float) -> Device4ColorModel.FloatComponents {
-        let component_0 = blending(self.component_0, source.component_0)
-        let component_1 = blending(self.component_1, source.component_1)
-        let component_2 = blending(self.component_2, source.component_2)
-        let component_3 = blending(self.component_3, source.component_3)
+    public func min() -> Float {
+        return Swift.min(component_0, component_1, component_2, component_3)
+    }
+    
+    @_transparent
+    public func max() -> Float {
+        return Swift.max(component_0, component_1, component_2, component_3)
+    }
+    
+    @_transparent
+    public func map(_ transform: (Float) throws -> Float) rethrows -> Device4ColorModel.FloatComponents {
+        let component_0 = try transform(self.component_0)
+        let component_1 = try transform(self.component_1)
+        let component_2 = try transform(self.component_2)
+        let component_3 = try transform(self.component_3)
+        return Device4ColorModel.FloatComponents(component_0, component_1, component_2, component_3)
+    }
+    
+    @_transparent
+    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Float) throws -> ()) rethrows -> Result {
+        var accumulator = initialResult
+        try updateAccumulatingResult(&accumulator, component_0)
+        try updateAccumulatingResult(&accumulator, component_1)
+        try updateAccumulatingResult(&accumulator, component_2)
+        try updateAccumulatingResult(&accumulator, component_3)
+        return accumulator
+    }
+    
+    @_transparent
+    public func blended(source: Device4ColorModel.FloatComponents, blending: (Float, Float) throws -> Float) rethrows -> Device4ColorModel.FloatComponents {
+        let component_0 = try blending(self.component_0, source.component_0)
+        let component_1 = try blending(self.component_1, source.component_1)
+        let component_2 = try blending(self.component_2, source.component_2)
+        let component_3 = try blending(self.component_3, source.component_3)
         return Device4ColorModel.FloatComponents(component_0, component_1, component_2, component_3)
     }
 }
@@ -3429,12 +4195,52 @@ extension Device5ColorModel {
 extension Device5ColorModel.FloatComponents {
     
     @_transparent
-    public func blended(source: Device5ColorModel.FloatComponents, blending: (Float, Float) -> Float) -> Device5ColorModel.FloatComponents {
-        let component_0 = blending(self.component_0, source.component_0)
-        let component_1 = blending(self.component_1, source.component_1)
-        let component_2 = blending(self.component_2, source.component_2)
-        let component_3 = blending(self.component_3, source.component_3)
-        let component_4 = blending(self.component_4, source.component_4)
+    public func min() -> Float {
+        return Swift.min(
+            component_0, component_1, component_2,
+            component_3, component_4
+        )
+    }
+    
+    @_transparent
+    public func max() -> Float {
+        return Swift.max(
+            component_0, component_1, component_2,
+            component_3, component_4
+        )
+    }
+    
+    @_transparent
+    public func map(_ transform: (Float) throws -> Float) rethrows -> Device5ColorModel.FloatComponents {
+        let component_0 = try transform(self.component_0)
+        let component_1 = try transform(self.component_1)
+        let component_2 = try transform(self.component_2)
+        let component_3 = try transform(self.component_3)
+        let component_4 = try transform(self.component_4)
+        return Device5ColorModel.FloatComponents(
+            component_0, component_1, component_2,
+            component_3, component_4
+        )
+    }
+    
+    @_transparent
+    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Float) throws -> ()) rethrows -> Result {
+        var accumulator = initialResult
+        try updateAccumulatingResult(&accumulator, component_0)
+        try updateAccumulatingResult(&accumulator, component_1)
+        try updateAccumulatingResult(&accumulator, component_2)
+        try updateAccumulatingResult(&accumulator, component_3)
+        try updateAccumulatingResult(&accumulator, component_4)
+        return accumulator
+    }
+    
+    @_transparent
+    public func blended(source: Device5ColorModel.FloatComponents, blending: (Float, Float) throws -> Float) rethrows -> Device5ColorModel.FloatComponents {
+        let component_0 = try blending(self.component_0, source.component_0)
+        let component_1 = try blending(self.component_1, source.component_1)
+        let component_2 = try blending(self.component_2, source.component_2)
+        let component_3 = try blending(self.component_3, source.component_3)
+        let component_4 = try blending(self.component_4, source.component_4)
         return Device5ColorModel.FloatComponents(
             component_0, component_1, component_2,
             component_3, component_4
@@ -3625,13 +4431,55 @@ extension Device6ColorModel {
 extension Device6ColorModel.FloatComponents {
     
     @_transparent
-    public func blended(source: Device6ColorModel.FloatComponents, blending: (Float, Float) -> Float) -> Device6ColorModel.FloatComponents {
-        let component_0 = blending(self.component_0, source.component_0)
-        let component_1 = blending(self.component_1, source.component_1)
-        let component_2 = blending(self.component_2, source.component_2)
-        let component_3 = blending(self.component_3, source.component_3)
-        let component_4 = blending(self.component_4, source.component_4)
-        let component_5 = blending(self.component_5, source.component_5)
+    public func min() -> Float {
+        return Swift.min(
+            component_0, component_1, component_2,
+            component_3, component_4, component_5
+        )
+    }
+    
+    @_transparent
+    public func max() -> Float {
+        return Swift.max(
+            component_0, component_1, component_2,
+            component_3, component_4, component_5
+        )
+    }
+    
+    @_transparent
+    public func map(_ transform: (Float) throws -> Float) rethrows -> Device6ColorModel.FloatComponents {
+        let component_0 = try transform(self.component_0)
+        let component_1 = try transform(self.component_1)
+        let component_2 = try transform(self.component_2)
+        let component_3 = try transform(self.component_3)
+        let component_4 = try transform(self.component_4)
+        let component_5 = try transform(self.component_5)
+        return Device6ColorModel.FloatComponents(
+            component_0, component_1, component_2,
+            component_3, component_4, component_5
+        )
+    }
+    
+    @_transparent
+    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Float) throws -> ()) rethrows -> Result {
+        var accumulator = initialResult
+        try updateAccumulatingResult(&accumulator, component_0)
+        try updateAccumulatingResult(&accumulator, component_1)
+        try updateAccumulatingResult(&accumulator, component_2)
+        try updateAccumulatingResult(&accumulator, component_3)
+        try updateAccumulatingResult(&accumulator, component_4)
+        try updateAccumulatingResult(&accumulator, component_5)
+        return accumulator
+    }
+    
+    @_transparent
+    public func blended(source: Device6ColorModel.FloatComponents, blending: (Float, Float) throws -> Float) rethrows -> Device6ColorModel.FloatComponents {
+        let component_0 = try blending(self.component_0, source.component_0)
+        let component_1 = try blending(self.component_1, source.component_1)
+        let component_2 = try blending(self.component_2, source.component_2)
+        let component_3 = try blending(self.component_3, source.component_3)
+        let component_4 = try blending(self.component_4, source.component_4)
+        let component_5 = try blending(self.component_5, source.component_5)
         return Device6ColorModel.FloatComponents(
             component_0, component_1, component_2,
             component_3, component_4, component_5
@@ -3835,14 +4683,61 @@ extension Device7ColorModel {
 extension Device7ColorModel.FloatComponents {
     
     @_transparent
-    public func blended(source: Device7ColorModel.FloatComponents, blending: (Float, Float) -> Float) -> Device7ColorModel.FloatComponents {
-        let component_0 = blending(self.component_0, source.component_0)
-        let component_1 = blending(self.component_1, source.component_1)
-        let component_2 = blending(self.component_2, source.component_2)
-        let component_3 = blending(self.component_3, source.component_3)
-        let component_4 = blending(self.component_4, source.component_4)
-        let component_5 = blending(self.component_5, source.component_5)
-        let component_6 = blending(self.component_6, source.component_6)
+    public func min() -> Float {
+        return Swift.min(
+            component_0, component_1, component_2,
+            component_3, component_4, component_5,
+            component_6
+        )
+    }
+    
+    @_transparent
+    public func max() -> Float {
+        return Swift.max(
+            component_0, component_1, component_2,
+            component_3, component_4, component_5,
+            component_6
+        )
+    }
+    
+    @_transparent
+    public func map(_ transform: (Float) throws -> Float) rethrows -> Device7ColorModel.FloatComponents {
+        let component_0 = try transform(self.component_0)
+        let component_1 = try transform(self.component_1)
+        let component_2 = try transform(self.component_2)
+        let component_3 = try transform(self.component_3)
+        let component_4 = try transform(self.component_4)
+        let component_5 = try transform(self.component_5)
+        let component_6 = try transform(self.component_6)
+        return Device7ColorModel.FloatComponents(
+            component_0, component_1, component_2,
+            component_3, component_4, component_5,
+            component_6
+        )
+    }
+    
+    @_transparent
+    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Float) throws -> ()) rethrows -> Result {
+        var accumulator = initialResult
+        try updateAccumulatingResult(&accumulator, component_0)
+        try updateAccumulatingResult(&accumulator, component_1)
+        try updateAccumulatingResult(&accumulator, component_2)
+        try updateAccumulatingResult(&accumulator, component_3)
+        try updateAccumulatingResult(&accumulator, component_4)
+        try updateAccumulatingResult(&accumulator, component_5)
+        try updateAccumulatingResult(&accumulator, component_6)
+        return accumulator
+    }
+    
+    @_transparent
+    public func blended(source: Device7ColorModel.FloatComponents, blending: (Float, Float) throws -> Float) rethrows -> Device7ColorModel.FloatComponents {
+        let component_0 = try blending(self.component_0, source.component_0)
+        let component_1 = try blending(self.component_1, source.component_1)
+        let component_2 = try blending(self.component_2, source.component_2)
+        let component_3 = try blending(self.component_3, source.component_3)
+        let component_4 = try blending(self.component_4, source.component_4)
+        let component_5 = try blending(self.component_5, source.component_5)
+        let component_6 = try blending(self.component_6, source.component_6)
         return Device7ColorModel.FloatComponents(
             component_0, component_1, component_2,
             component_3, component_4, component_5,
@@ -4064,15 +4959,64 @@ extension Device8ColorModel {
 extension Device8ColorModel.FloatComponents {
     
     @_transparent
-    public func blended(source: Device8ColorModel.FloatComponents, blending: (Float, Float) -> Float) -> Device8ColorModel.FloatComponents {
-        let component_0 = blending(self.component_0, source.component_0)
-        let component_1 = blending(self.component_1, source.component_1)
-        let component_2 = blending(self.component_2, source.component_2)
-        let component_3 = blending(self.component_3, source.component_3)
-        let component_4 = blending(self.component_4, source.component_4)
-        let component_5 = blending(self.component_5, source.component_5)
-        let component_6 = blending(self.component_6, source.component_6)
-        let component_7 = blending(self.component_7, source.component_7)
+    public func min() -> Float {
+        return Swift.min(
+            component_0, component_1, component_2,
+            component_3, component_4, component_5,
+            component_6, component_7
+        )
+    }
+    
+    @_transparent
+    public func max() -> Float {
+        return Swift.max(
+            component_0, component_1, component_2,
+            component_3, component_4, component_5,
+            component_6, component_7
+        )
+    }
+    
+    @_transparent
+    public func map(_ transform: (Float) throws -> Float) rethrows -> Device8ColorModel.FloatComponents {
+        let component_0 = try transform(self.component_0)
+        let component_1 = try transform(self.component_1)
+        let component_2 = try transform(self.component_2)
+        let component_3 = try transform(self.component_3)
+        let component_4 = try transform(self.component_4)
+        let component_5 = try transform(self.component_5)
+        let component_6 = try transform(self.component_6)
+        let component_7 = try transform(self.component_7)
+        return Device8ColorModel.FloatComponents(
+            component_0, component_1, component_2,
+            component_3, component_4, component_5,
+            component_6, component_7
+        )
+    }
+    
+    @_transparent
+    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Float) throws -> ()) rethrows -> Result {
+        var accumulator = initialResult
+        try updateAccumulatingResult(&accumulator, component_0)
+        try updateAccumulatingResult(&accumulator, component_1)
+        try updateAccumulatingResult(&accumulator, component_2)
+        try updateAccumulatingResult(&accumulator, component_3)
+        try updateAccumulatingResult(&accumulator, component_4)
+        try updateAccumulatingResult(&accumulator, component_5)
+        try updateAccumulatingResult(&accumulator, component_6)
+        try updateAccumulatingResult(&accumulator, component_7)
+        return accumulator
+    }
+    
+    @_transparent
+    public func blended(source: Device8ColorModel.FloatComponents, blending: (Float, Float) throws -> Float) rethrows -> Device8ColorModel.FloatComponents {
+        let component_0 = try blending(self.component_0, source.component_0)
+        let component_1 = try blending(self.component_1, source.component_1)
+        let component_2 = try blending(self.component_2, source.component_2)
+        let component_3 = try blending(self.component_3, source.component_3)
+        let component_4 = try blending(self.component_4, source.component_4)
+        let component_5 = try blending(self.component_5, source.component_5)
+        let component_6 = try blending(self.component_6, source.component_6)
+        let component_7 = try blending(self.component_7, source.component_7)
         return Device8ColorModel.FloatComponents(
             component_0, component_1, component_2,
             component_3, component_4, component_5,
@@ -4305,16 +5249,67 @@ extension Device9ColorModel {
 extension Device9ColorModel.FloatComponents {
     
     @_transparent
-    public func blended(source: Device9ColorModel.FloatComponents, blending: (Float, Float) -> Float) -> Device9ColorModel.FloatComponents {
-        let component_0 = blending(self.component_0, source.component_0)
-        let component_1 = blending(self.component_1, source.component_1)
-        let component_2 = blending(self.component_2, source.component_2)
-        let component_3 = blending(self.component_3, source.component_3)
-        let component_4 = blending(self.component_4, source.component_4)
-        let component_5 = blending(self.component_5, source.component_5)
-        let component_6 = blending(self.component_6, source.component_6)
-        let component_7 = blending(self.component_7, source.component_7)
-        let component_8 = blending(self.component_8, source.component_8)
+    public func min() -> Float {
+        return Swift.min(
+            component_0, component_1, component_2,
+            component_3, component_4, component_5,
+            component_6, component_7, component_8
+        )
+    }
+    
+    @_transparent
+    public func max() -> Float {
+        return Swift.max(
+            component_0, component_1, component_2,
+            component_3, component_4, component_5,
+            component_6, component_7, component_8
+        )
+    }
+    
+    @_transparent
+    public func map(_ transform: (Float) throws -> Float) rethrows -> Device9ColorModel.FloatComponents {
+        let component_0 = try transform(self.component_0)
+        let component_1 = try transform(self.component_1)
+        let component_2 = try transform(self.component_2)
+        let component_3 = try transform(self.component_3)
+        let component_4 = try transform(self.component_4)
+        let component_5 = try transform(self.component_5)
+        let component_6 = try transform(self.component_6)
+        let component_7 = try transform(self.component_7)
+        let component_8 = try transform(self.component_8)
+        return Device9ColorModel.FloatComponents(
+            component_0, component_1, component_2,
+            component_3, component_4, component_5,
+            component_6, component_7, component_8
+        )
+    }
+    
+    @_transparent
+    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Float) throws -> ()) rethrows -> Result {
+        var accumulator = initialResult
+        try updateAccumulatingResult(&accumulator, component_0)
+        try updateAccumulatingResult(&accumulator, component_1)
+        try updateAccumulatingResult(&accumulator, component_2)
+        try updateAccumulatingResult(&accumulator, component_3)
+        try updateAccumulatingResult(&accumulator, component_4)
+        try updateAccumulatingResult(&accumulator, component_5)
+        try updateAccumulatingResult(&accumulator, component_6)
+        try updateAccumulatingResult(&accumulator, component_7)
+        try updateAccumulatingResult(&accumulator, component_8)
+        return accumulator
+    }
+    
+    @_transparent
+    public func blended(source: Device9ColorModel.FloatComponents, blending: (Float, Float) throws -> Float) rethrows -> Device9ColorModel.FloatComponents {
+        let component_0 = try blending(self.component_0, source.component_0)
+        let component_1 = try blending(self.component_1, source.component_1)
+        let component_2 = try blending(self.component_2, source.component_2)
+        let component_3 = try blending(self.component_3, source.component_3)
+        let component_4 = try blending(self.component_4, source.component_4)
+        let component_5 = try blending(self.component_5, source.component_5)
+        let component_6 = try blending(self.component_6, source.component_6)
+        let component_7 = try blending(self.component_7, source.component_7)
+        let component_8 = try blending(self.component_8, source.component_8)
         return Device9ColorModel.FloatComponents(
             component_0, component_1, component_2,
             component_3, component_4, component_5,
@@ -4560,17 +5555,73 @@ extension Device10ColorModel {
 extension Device10ColorModel.FloatComponents {
     
     @_transparent
-    public func blended(source: Device10ColorModel.FloatComponents, blending: (Float, Float) -> Float) -> Device10ColorModel.FloatComponents {
-        let component_0 = blending(self.component_0, source.component_0)
-        let component_1 = blending(self.component_1, source.component_1)
-        let component_2 = blending(self.component_2, source.component_2)
-        let component_3 = blending(self.component_3, source.component_3)
-        let component_4 = blending(self.component_4, source.component_4)
-        let component_5 = blending(self.component_5, source.component_5)
-        let component_6 = blending(self.component_6, source.component_6)
-        let component_7 = blending(self.component_7, source.component_7)
-        let component_8 = blending(self.component_8, source.component_8)
-        let component_9 = blending(self.component_9, source.component_9)
+    public func min() -> Float {
+        return Swift.min(
+            component_0, component_1, component_2,
+            component_3, component_4, component_5,
+            component_6, component_7, component_8,
+            component_9
+        )
+    }
+    
+    @_transparent
+    public func max() -> Float {
+        return Swift.max(
+            component_0, component_1, component_2,
+            component_3, component_4, component_5,
+            component_6, component_7, component_8,
+            component_9
+        )
+    }
+    
+    @_transparent
+    public func map(_ transform: (Float) throws -> Float) rethrows -> Device10ColorModel.FloatComponents {
+        let component_0 = try transform(self.component_0)
+        let component_1 = try transform(self.component_1)
+        let component_2 = try transform(self.component_2)
+        let component_3 = try transform(self.component_3)
+        let component_4 = try transform(self.component_4)
+        let component_5 = try transform(self.component_5)
+        let component_6 = try transform(self.component_6)
+        let component_7 = try transform(self.component_7)
+        let component_8 = try transform(self.component_8)
+        let component_9 = try transform(self.component_9)
+        return Device10ColorModel.FloatComponents(
+            component_0, component_1, component_2,
+            component_3, component_4, component_5,
+            component_6, component_7, component_8,
+            component_9
+        )
+    }
+    
+    @_transparent
+    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Float) throws -> ()) rethrows -> Result {
+        var accumulator = initialResult
+        try updateAccumulatingResult(&accumulator, component_0)
+        try updateAccumulatingResult(&accumulator, component_1)
+        try updateAccumulatingResult(&accumulator, component_2)
+        try updateAccumulatingResult(&accumulator, component_3)
+        try updateAccumulatingResult(&accumulator, component_4)
+        try updateAccumulatingResult(&accumulator, component_5)
+        try updateAccumulatingResult(&accumulator, component_6)
+        try updateAccumulatingResult(&accumulator, component_7)
+        try updateAccumulatingResult(&accumulator, component_8)
+        try updateAccumulatingResult(&accumulator, component_9)
+        return accumulator
+    }
+    
+    @_transparent
+    public func blended(source: Device10ColorModel.FloatComponents, blending: (Float, Float) throws -> Float) rethrows -> Device10ColorModel.FloatComponents {
+        let component_0 = try blending(self.component_0, source.component_0)
+        let component_1 = try blending(self.component_1, source.component_1)
+        let component_2 = try blending(self.component_2, source.component_2)
+        let component_3 = try blending(self.component_3, source.component_3)
+        let component_4 = try blending(self.component_4, source.component_4)
+        let component_5 = try blending(self.component_5, source.component_5)
+        let component_6 = try blending(self.component_6, source.component_6)
+        let component_7 = try blending(self.component_7, source.component_7)
+        let component_8 = try blending(self.component_8, source.component_8)
+        let component_9 = try blending(self.component_9, source.component_9)
         return Device10ColorModel.FloatComponents(
             component_0, component_1, component_2,
             component_3, component_4, component_5,
@@ -4834,18 +5885,76 @@ extension Device11ColorModel {
 extension Device11ColorModel.FloatComponents {
     
     @_transparent
-    public func blended(source: Device11ColorModel.FloatComponents, blending: (Float, Float) -> Float) -> Device11ColorModel.FloatComponents {
-        let component_0 = blending(self.component_0, source.component_0)
-        let component_1 = blending(self.component_1, source.component_1)
-        let component_2 = blending(self.component_2, source.component_2)
-        let component_3 = blending(self.component_3, source.component_3)
-        let component_4 = blending(self.component_4, source.component_4)
-        let component_5 = blending(self.component_5, source.component_5)
-        let component_6 = blending(self.component_6, source.component_6)
-        let component_7 = blending(self.component_7, source.component_7)
-        let component_8 = blending(self.component_8, source.component_8)
-        let component_9 = blending(self.component_9, source.component_9)
-        let component_10 = blending(self.component_10, source.component_10)
+    public func min() -> Float {
+        return Swift.min(
+            component_0, component_1, component_2,
+            component_3, component_4, component_5,
+            component_6, component_7, component_8,
+            component_9, component_10
+        )
+    }
+    
+    @_transparent
+    public func max() -> Float {
+        return Swift.max(
+            component_0, component_1, component_2,
+            component_3, component_4, component_5,
+            component_6, component_7, component_8,
+            component_9, component_10
+        )
+    }
+    
+    @_transparent
+    public func map(_ transform: (Float) throws -> Float) rethrows -> Device11ColorModel.FloatComponents {
+        let component_0 = try transform(self.component_0)
+        let component_1 = try transform(self.component_1)
+        let component_2 = try transform(self.component_2)
+        let component_3 = try transform(self.component_3)
+        let component_4 = try transform(self.component_4)
+        let component_5 = try transform(self.component_5)
+        let component_6 = try transform(self.component_6)
+        let component_7 = try transform(self.component_7)
+        let component_8 = try transform(self.component_8)
+        let component_9 = try transform(self.component_9)
+        let component_10 = try transform(self.component_10)
+        return Device11ColorModel.FloatComponents(
+            component_0, component_1, component_2,
+            component_3, component_4, component_5,
+            component_6, component_7, component_8,
+            component_9, component_10
+        )
+    }
+    
+    @_transparent
+    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Float) throws -> ()) rethrows -> Result {
+        var accumulator = initialResult
+        try updateAccumulatingResult(&accumulator, component_0)
+        try updateAccumulatingResult(&accumulator, component_1)
+        try updateAccumulatingResult(&accumulator, component_2)
+        try updateAccumulatingResult(&accumulator, component_3)
+        try updateAccumulatingResult(&accumulator, component_4)
+        try updateAccumulatingResult(&accumulator, component_5)
+        try updateAccumulatingResult(&accumulator, component_6)
+        try updateAccumulatingResult(&accumulator, component_7)
+        try updateAccumulatingResult(&accumulator, component_8)
+        try updateAccumulatingResult(&accumulator, component_9)
+        try updateAccumulatingResult(&accumulator, component_10)
+        return accumulator
+    }
+    
+    @_transparent
+    public func blended(source: Device11ColorModel.FloatComponents, blending: (Float, Float) throws -> Float) rethrows -> Device11ColorModel.FloatComponents {
+        let component_0 = try blending(self.component_0, source.component_0)
+        let component_1 = try blending(self.component_1, source.component_1)
+        let component_2 = try blending(self.component_2, source.component_2)
+        let component_3 = try blending(self.component_3, source.component_3)
+        let component_4 = try blending(self.component_4, source.component_4)
+        let component_5 = try blending(self.component_5, source.component_5)
+        let component_6 = try blending(self.component_6, source.component_6)
+        let component_7 = try blending(self.component_7, source.component_7)
+        let component_8 = try blending(self.component_8, source.component_8)
+        let component_9 = try blending(self.component_9, source.component_9)
+        let component_10 = try blending(self.component_10, source.component_10)
         return Device11ColorModel.FloatComponents(
             component_0, component_1, component_2,
             component_3, component_4, component_5,
@@ -5120,19 +6229,79 @@ extension Device12ColorModel {
 extension Device12ColorModel.FloatComponents {
     
     @_transparent
-    public func blended(source: Device12ColorModel.FloatComponents, blending: (Float, Float) -> Float) -> Device12ColorModel.FloatComponents {
-        let component_0 = blending(self.component_0, source.component_0)
-        let component_1 = blending(self.component_1, source.component_1)
-        let component_2 = blending(self.component_2, source.component_2)
-        let component_3 = blending(self.component_3, source.component_3)
-        let component_4 = blending(self.component_4, source.component_4)
-        let component_5 = blending(self.component_5, source.component_5)
-        let component_6 = blending(self.component_6, source.component_6)
-        let component_7 = blending(self.component_7, source.component_7)
-        let component_8 = blending(self.component_8, source.component_8)
-        let component_9 = blending(self.component_9, source.component_9)
-        let component_10 = blending(self.component_10, source.component_10)
-        let component_11 = blending(self.component_11, source.component_11)
+    public func min() -> Float {
+        return Swift.min(
+            component_0, component_1, component_2,
+            component_3, component_4, component_5,
+            component_6, component_7, component_8,
+            component_9, component_10, component_11
+        )
+    }
+    
+    @_transparent
+    public func max() -> Float {
+        return Swift.max(
+            component_0, component_1, component_2,
+            component_3, component_4, component_5,
+            component_6, component_7, component_8,
+            component_9, component_10, component_11
+        )
+    }
+    
+    @_transparent
+    public func map(_ transform: (Float) throws -> Float) rethrows -> Device12ColorModel.FloatComponents {
+        let component_0 = try transform(self.component_0)
+        let component_1 = try transform(self.component_1)
+        let component_2 = try transform(self.component_2)
+        let component_3 = try transform(self.component_3)
+        let component_4 = try transform(self.component_4)
+        let component_5 = try transform(self.component_5)
+        let component_6 = try transform(self.component_6)
+        let component_7 = try transform(self.component_7)
+        let component_8 = try transform(self.component_8)
+        let component_9 = try transform(self.component_9)
+        let component_10 = try transform(self.component_10)
+        let component_11 = try transform(self.component_11)
+        return Device12ColorModel.FloatComponents(
+            component_0, component_1, component_2,
+            component_3, component_4, component_5,
+            component_6, component_7, component_8,
+            component_9, component_10, component_11
+        )
+    }
+    
+    @_transparent
+    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Float) throws -> ()) rethrows -> Result {
+        var accumulator = initialResult
+        try updateAccumulatingResult(&accumulator, component_0)
+        try updateAccumulatingResult(&accumulator, component_1)
+        try updateAccumulatingResult(&accumulator, component_2)
+        try updateAccumulatingResult(&accumulator, component_3)
+        try updateAccumulatingResult(&accumulator, component_4)
+        try updateAccumulatingResult(&accumulator, component_5)
+        try updateAccumulatingResult(&accumulator, component_6)
+        try updateAccumulatingResult(&accumulator, component_7)
+        try updateAccumulatingResult(&accumulator, component_8)
+        try updateAccumulatingResult(&accumulator, component_9)
+        try updateAccumulatingResult(&accumulator, component_10)
+        try updateAccumulatingResult(&accumulator, component_11)
+        return accumulator
+    }
+    
+    @_transparent
+    public func blended(source: Device12ColorModel.FloatComponents, blending: (Float, Float) throws -> Float) rethrows -> Device12ColorModel.FloatComponents {
+        let component_0 = try blending(self.component_0, source.component_0)
+        let component_1 = try blending(self.component_1, source.component_1)
+        let component_2 = try blending(self.component_2, source.component_2)
+        let component_3 = try blending(self.component_3, source.component_3)
+        let component_4 = try blending(self.component_4, source.component_4)
+        let component_5 = try blending(self.component_5, source.component_5)
+        let component_6 = try blending(self.component_6, source.component_6)
+        let component_7 = try blending(self.component_7, source.component_7)
+        let component_8 = try blending(self.component_8, source.component_8)
+        let component_9 = try blending(self.component_9, source.component_9)
+        let component_10 = try blending(self.component_10, source.component_10)
+        let component_11 = try blending(self.component_11, source.component_11)
         return Device12ColorModel.FloatComponents(
             component_0, component_1, component_2,
             component_3, component_4, component_5,
@@ -5420,20 +6589,85 @@ extension Device13ColorModel {
 extension Device13ColorModel.FloatComponents {
     
     @_transparent
-    public func blended(source: Device13ColorModel.FloatComponents, blending: (Float, Float) -> Float) -> Device13ColorModel.FloatComponents {
-        let component_0 = blending(self.component_0, source.component_0)
-        let component_1 = blending(self.component_1, source.component_1)
-        let component_2 = blending(self.component_2, source.component_2)
-        let component_3 = blending(self.component_3, source.component_3)
-        let component_4 = blending(self.component_4, source.component_4)
-        let component_5 = blending(self.component_5, source.component_5)
-        let component_6 = blending(self.component_6, source.component_6)
-        let component_7 = blending(self.component_7, source.component_7)
-        let component_8 = blending(self.component_8, source.component_8)
-        let component_9 = blending(self.component_9, source.component_9)
-        let component_10 = blending(self.component_10, source.component_10)
-        let component_11 = blending(self.component_11, source.component_11)
-        let component_12 = blending(self.component_12, source.component_12)
+    public func min() -> Float {
+        return Swift.min(
+            component_0, component_1, component_2,
+            component_3, component_4, component_5,
+            component_6, component_7, component_8,
+            component_9, component_10, component_11,
+            component_12
+        )
+    }
+    
+    @_transparent
+    public func max() -> Float {
+        return Swift.max(
+            component_0, component_1, component_2,
+            component_3, component_4, component_5,
+            component_6, component_7, component_8,
+            component_9, component_10, component_11,
+            component_12
+        )
+    }
+    
+    @_transparent
+    public func map(_ transform: (Float) throws -> Float) rethrows -> Device13ColorModel.FloatComponents {
+        let component_0 = try transform(self.component_0)
+        let component_1 = try transform(self.component_1)
+        let component_2 = try transform(self.component_2)
+        let component_3 = try transform(self.component_3)
+        let component_4 = try transform(self.component_4)
+        let component_5 = try transform(self.component_5)
+        let component_6 = try transform(self.component_6)
+        let component_7 = try transform(self.component_7)
+        let component_8 = try transform(self.component_8)
+        let component_9 = try transform(self.component_9)
+        let component_10 = try transform(self.component_10)
+        let component_11 = try transform(self.component_11)
+        let component_12 = try transform(self.component_12)
+        return Device13ColorModel.FloatComponents(
+            component_0, component_1, component_2,
+            component_3, component_4, component_5,
+            component_6, component_7, component_8,
+            component_9, component_10, component_11,
+            component_12
+        )
+    }
+    
+    @_transparent
+    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Float) throws -> ()) rethrows -> Result {
+        var accumulator = initialResult
+        try updateAccumulatingResult(&accumulator, component_0)
+        try updateAccumulatingResult(&accumulator, component_1)
+        try updateAccumulatingResult(&accumulator, component_2)
+        try updateAccumulatingResult(&accumulator, component_3)
+        try updateAccumulatingResult(&accumulator, component_4)
+        try updateAccumulatingResult(&accumulator, component_5)
+        try updateAccumulatingResult(&accumulator, component_6)
+        try updateAccumulatingResult(&accumulator, component_7)
+        try updateAccumulatingResult(&accumulator, component_8)
+        try updateAccumulatingResult(&accumulator, component_9)
+        try updateAccumulatingResult(&accumulator, component_10)
+        try updateAccumulatingResult(&accumulator, component_11)
+        try updateAccumulatingResult(&accumulator, component_12)
+        return accumulator
+    }
+    
+    @_transparent
+    public func blended(source: Device13ColorModel.FloatComponents, blending: (Float, Float) throws -> Float) rethrows -> Device13ColorModel.FloatComponents {
+        let component_0 = try blending(self.component_0, source.component_0)
+        let component_1 = try blending(self.component_1, source.component_1)
+        let component_2 = try blending(self.component_2, source.component_2)
+        let component_3 = try blending(self.component_3, source.component_3)
+        let component_4 = try blending(self.component_4, source.component_4)
+        let component_5 = try blending(self.component_5, source.component_5)
+        let component_6 = try blending(self.component_6, source.component_6)
+        let component_7 = try blending(self.component_7, source.component_7)
+        let component_8 = try blending(self.component_8, source.component_8)
+        let component_9 = try blending(self.component_9, source.component_9)
+        let component_10 = try blending(self.component_10, source.component_10)
+        let component_11 = try blending(self.component_11, source.component_11)
+        let component_12 = try blending(self.component_12, source.component_12)
         return Device13ColorModel.FloatComponents(
             component_0, component_1, component_2,
             component_3, component_4, component_5,
@@ -5739,21 +6973,88 @@ extension Device14ColorModel {
 extension Device14ColorModel.FloatComponents {
     
     @_transparent
-    public func blended(source: Device14ColorModel.FloatComponents, blending: (Float, Float) -> Float) -> Device14ColorModel.FloatComponents {
-        let component_0 = blending(self.component_0, source.component_0)
-        let component_1 = blending(self.component_1, source.component_1)
-        let component_2 = blending(self.component_2, source.component_2)
-        let component_3 = blending(self.component_3, source.component_3)
-        let component_4 = blending(self.component_4, source.component_4)
-        let component_5 = blending(self.component_5, source.component_5)
-        let component_6 = blending(self.component_6, source.component_6)
-        let component_7 = blending(self.component_7, source.component_7)
-        let component_8 = blending(self.component_8, source.component_8)
-        let component_9 = blending(self.component_9, source.component_9)
-        let component_10 = blending(self.component_10, source.component_10)
-        let component_11 = blending(self.component_11, source.component_11)
-        let component_12 = blending(self.component_12, source.component_12)
-        let component_13 = blending(self.component_13, source.component_13)
+    public func min() -> Float {
+        return Swift.min(
+            component_0, component_1, component_2,
+            component_3, component_4, component_5,
+            component_6, component_7, component_8,
+            component_9, component_10, component_11,
+            component_12, component_13
+        )
+    }
+    
+    @_transparent
+    public func max() -> Float {
+        return Swift.max(
+            component_0, component_1, component_2,
+            component_3, component_4, component_5,
+            component_6, component_7, component_8,
+            component_9, component_10, component_11,
+            component_12, component_13
+        )
+    }
+    
+    @_transparent
+    public func map(_ transform: (Float) throws -> Float) rethrows -> Device14ColorModel.FloatComponents {
+        let component_0 = try transform(self.component_0)
+        let component_1 = try transform(self.component_1)
+        let component_2 = try transform(self.component_2)
+        let component_3 = try transform(self.component_3)
+        let component_4 = try transform(self.component_4)
+        let component_5 = try transform(self.component_5)
+        let component_6 = try transform(self.component_6)
+        let component_7 = try transform(self.component_7)
+        let component_8 = try transform(self.component_8)
+        let component_9 = try transform(self.component_9)
+        let component_10 = try transform(self.component_10)
+        let component_11 = try transform(self.component_11)
+        let component_12 = try transform(self.component_12)
+        let component_13 = try transform(self.component_13)
+        return Device14ColorModel.FloatComponents(
+            component_0, component_1, component_2,
+            component_3, component_4, component_5,
+            component_6, component_7, component_8,
+            component_9, component_10, component_11,
+            component_12, component_13
+        )
+    }
+    
+    @_transparent
+    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Float) throws -> ()) rethrows -> Result {
+        var accumulator = initialResult
+        try updateAccumulatingResult(&accumulator, component_0)
+        try updateAccumulatingResult(&accumulator, component_1)
+        try updateAccumulatingResult(&accumulator, component_2)
+        try updateAccumulatingResult(&accumulator, component_3)
+        try updateAccumulatingResult(&accumulator, component_4)
+        try updateAccumulatingResult(&accumulator, component_5)
+        try updateAccumulatingResult(&accumulator, component_6)
+        try updateAccumulatingResult(&accumulator, component_7)
+        try updateAccumulatingResult(&accumulator, component_8)
+        try updateAccumulatingResult(&accumulator, component_9)
+        try updateAccumulatingResult(&accumulator, component_10)
+        try updateAccumulatingResult(&accumulator, component_11)
+        try updateAccumulatingResult(&accumulator, component_12)
+        try updateAccumulatingResult(&accumulator, component_13)
+        return accumulator
+    }
+    
+    @_transparent
+    public func blended(source: Device14ColorModel.FloatComponents, blending: (Float, Float) throws -> Float) rethrows -> Device14ColorModel.FloatComponents {
+        let component_0 = try blending(self.component_0, source.component_0)
+        let component_1 = try blending(self.component_1, source.component_1)
+        let component_2 = try blending(self.component_2, source.component_2)
+        let component_3 = try blending(self.component_3, source.component_3)
+        let component_4 = try blending(self.component_4, source.component_4)
+        let component_5 = try blending(self.component_5, source.component_5)
+        let component_6 = try blending(self.component_6, source.component_6)
+        let component_7 = try blending(self.component_7, source.component_7)
+        let component_8 = try blending(self.component_8, source.component_8)
+        let component_9 = try blending(self.component_9, source.component_9)
+        let component_10 = try blending(self.component_10, source.component_10)
+        let component_11 = try blending(self.component_11, source.component_11)
+        let component_12 = try blending(self.component_12, source.component_12)
+        let component_13 = try blending(self.component_13, source.component_13)
         return Device14ColorModel.FloatComponents(
             component_0, component_1, component_2,
             component_3, component_4, component_5,
@@ -6070,22 +7371,91 @@ extension Device15ColorModel {
 extension Device15ColorModel.FloatComponents {
     
     @_transparent
-    public func blended(source: Device15ColorModel.FloatComponents, blending: (Float, Float) -> Float) -> Device15ColorModel.FloatComponents {
-        let component_0 = blending(self.component_0, source.component_0)
-        let component_1 = blending(self.component_1, source.component_1)
-        let component_2 = blending(self.component_2, source.component_2)
-        let component_3 = blending(self.component_3, source.component_3)
-        let component_4 = blending(self.component_4, source.component_4)
-        let component_5 = blending(self.component_5, source.component_5)
-        let component_6 = blending(self.component_6, source.component_6)
-        let component_7 = blending(self.component_7, source.component_7)
-        let component_8 = blending(self.component_8, source.component_8)
-        let component_9 = blending(self.component_9, source.component_9)
-        let component_10 = blending(self.component_10, source.component_10)
-        let component_11 = blending(self.component_11, source.component_11)
-        let component_12 = blending(self.component_12, source.component_12)
-        let component_13 = blending(self.component_13, source.component_13)
-        let component_14 = blending(self.component_14, source.component_14)
+    public func min() -> Float {
+        return Swift.min(
+            component_0, component_1, component_2,
+            component_3, component_4, component_5,
+            component_6, component_7, component_8,
+            component_9, component_10, component_11,
+            component_12, component_13, component_14
+        )
+    }
+    
+    @_transparent
+    public func max() -> Float {
+        return Swift.max(
+            component_0, component_1, component_2,
+            component_3, component_4, component_5,
+            component_6, component_7, component_8,
+            component_9, component_10, component_11,
+            component_12, component_13, component_14
+        )
+    }
+    
+    @_transparent
+    public func map(_ transform: (Float) throws -> Float) rethrows -> Device15ColorModel.FloatComponents {
+        let component_0 = try transform(self.component_0)
+        let component_1 = try transform(self.component_1)
+        let component_2 = try transform(self.component_2)
+        let component_3 = try transform(self.component_3)
+        let component_4 = try transform(self.component_4)
+        let component_5 = try transform(self.component_5)
+        let component_6 = try transform(self.component_6)
+        let component_7 = try transform(self.component_7)
+        let component_8 = try transform(self.component_8)
+        let component_9 = try transform(self.component_9)
+        let component_10 = try transform(self.component_10)
+        let component_11 = try transform(self.component_11)
+        let component_12 = try transform(self.component_12)
+        let component_13 = try transform(self.component_13)
+        let component_14 = try transform(self.component_14)
+        return Device15ColorModel.FloatComponents(
+            component_0, component_1, component_2,
+            component_3, component_4, component_5,
+            component_6, component_7, component_8,
+            component_9, component_10, component_11,
+            component_12, component_13, component_14
+        )
+    }
+    
+    @_transparent
+    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Float) throws -> ()) rethrows -> Result {
+        var accumulator = initialResult
+        try updateAccumulatingResult(&accumulator, component_0)
+        try updateAccumulatingResult(&accumulator, component_1)
+        try updateAccumulatingResult(&accumulator, component_2)
+        try updateAccumulatingResult(&accumulator, component_3)
+        try updateAccumulatingResult(&accumulator, component_4)
+        try updateAccumulatingResult(&accumulator, component_5)
+        try updateAccumulatingResult(&accumulator, component_6)
+        try updateAccumulatingResult(&accumulator, component_7)
+        try updateAccumulatingResult(&accumulator, component_8)
+        try updateAccumulatingResult(&accumulator, component_9)
+        try updateAccumulatingResult(&accumulator, component_10)
+        try updateAccumulatingResult(&accumulator, component_11)
+        try updateAccumulatingResult(&accumulator, component_12)
+        try updateAccumulatingResult(&accumulator, component_13)
+        try updateAccumulatingResult(&accumulator, component_14)
+        return accumulator
+    }
+    
+    @_transparent
+    public func blended(source: Device15ColorModel.FloatComponents, blending: (Float, Float) throws -> Float) rethrows -> Device15ColorModel.FloatComponents {
+        let component_0 = try blending(self.component_0, source.component_0)
+        let component_1 = try blending(self.component_1, source.component_1)
+        let component_2 = try blending(self.component_2, source.component_2)
+        let component_3 = try blending(self.component_3, source.component_3)
+        let component_4 = try blending(self.component_4, source.component_4)
+        let component_5 = try blending(self.component_5, source.component_5)
+        let component_6 = try blending(self.component_6, source.component_6)
+        let component_7 = try blending(self.component_7, source.component_7)
+        let component_8 = try blending(self.component_8, source.component_8)
+        let component_9 = try blending(self.component_9, source.component_9)
+        let component_10 = try blending(self.component_10, source.component_10)
+        let component_11 = try blending(self.component_11, source.component_11)
+        let component_12 = try blending(self.component_12, source.component_12)
+        let component_13 = try blending(self.component_13, source.component_13)
+        let component_14 = try blending(self.component_14, source.component_14)
         return Device15ColorModel.FloatComponents(
             component_0, component_1, component_2,
             component_3, component_4, component_5,

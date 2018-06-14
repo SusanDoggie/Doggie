@@ -244,8 +244,32 @@ extension RGBColorModel {
 extension RGBColorModel {
     
     @_transparent
-    public func blended(source: RGBColorModel, blending: (Double, Double) -> Double) -> RGBColorModel {
-        return RGBColorModel(red: blending(self.red, source.red), green: blending(self.green, source.green), blue: blending(self.blue, source.blue))
+    public func min() -> Double {
+        return Swift.min(red, green, blue)
+    }
+    
+    @_transparent
+    public func max() -> Double {
+        return Swift.max(red, green, blue)
+    }
+    
+    @_transparent
+    public func map(_ transform: (Double) throws -> Double) rethrows -> RGBColorModel {
+        return try RGBColorModel(red: transform(red), green: transform(green), blue: transform(blue))
+    }
+    
+    @_transparent
+    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Double) throws -> ()) rethrows -> Result {
+        var accumulator = initialResult
+        try updateAccumulatingResult(&accumulator, red)
+        try updateAccumulatingResult(&accumulator, green)
+        try updateAccumulatingResult(&accumulator, blue)
+        return accumulator
+    }
+    
+    @_transparent
+    public func blended(source: RGBColorModel, blending: (Double, Double) throws -> Double) rethrows -> RGBColorModel {
+        return try RGBColorModel(red: blending(self.red, source.red), green: blending(self.green, source.green), blue: blending(self.blue, source.blue))
     }
 }
 
@@ -324,8 +348,32 @@ extension RGBColorModel {
 extension RGBColorModel.FloatComponents {
     
     @_transparent
-    public func blended(source: RGBColorModel.FloatComponents, blending: (Float, Float) -> Float) -> RGBColorModel.FloatComponents {
-        return RGBColorModel.FloatComponents(red: blending(self.red, source.red), green: blending(self.green, source.green), blue: blending(self.blue, source.blue))
+    public func min() -> Float {
+        return Swift.min(red, green, blue)
+    }
+    
+    @_transparent
+    public func max() -> Float {
+        return Swift.max(red, green, blue)
+    }
+    
+    @_transparent
+    public func map(_ transform: (Float) throws -> Float) rethrows -> RGBColorModel.FloatComponents {
+        return try RGBColorModel.FloatComponents(red: transform(red), green: transform(green), blue: transform(blue))
+    }
+    
+    @_transparent
+    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Float) throws -> ()) rethrows -> Result {
+        var accumulator = initialResult
+        try updateAccumulatingResult(&accumulator, red)
+        try updateAccumulatingResult(&accumulator, green)
+        try updateAccumulatingResult(&accumulator, blue)
+        return accumulator
+    }
+    
+    @_transparent
+    public func blended(source: RGBColorModel.FloatComponents, blending: (Float, Float) throws -> Float) rethrows -> RGBColorModel.FloatComponents {
+        return try RGBColorModel.FloatComponents(red: blending(self.red, source.red), green: blending(self.green, source.green), blue: blending(self.blue, source.blue))
     }
 }
 

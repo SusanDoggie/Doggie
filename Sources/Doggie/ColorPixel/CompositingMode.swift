@@ -85,7 +85,7 @@ extension ColorCompositingMode {
 extension ColorPixelProtocol {
     
     @_transparent
-    public func blended<C : ColorPixelProtocol>(source: C, compositingMode: ColorCompositingMode, blending: (Double, Double) -> Double) -> Self where C.Model == Model {
+    public func blended<C : ColorPixelProtocol>(source: C, compositingMode: ColorCompositingMode, blending: (Double, Double) throws -> Double) rethrows -> Self where C.Model == Model {
         
         let d_alpha = self.opacity
         let s_alpha = source.opacity
@@ -95,7 +95,7 @@ extension ColorPixelProtocol {
         if r_alpha > 0 {
             let _source = source.color
             let _destination = self.color
-            let blended = (1 - d_alpha) * _source + d_alpha * _destination.blended(source: _source, blending: blending)
+            let blended = try (1 - d_alpha) * _source + d_alpha * _destination.blended(source: _source, blending: blending)
             return Self(color: compositingMode.mix(s_alpha / r_alpha * blended, s_alpha, d_alpha / r_alpha * _destination, d_alpha), opacity: r_alpha)
         } else {
             return Self()
@@ -124,7 +124,7 @@ extension ColorPixelProtocol {
 extension FloatColorPixel {
     
     @_transparent
-    public func blended<C : ColorPixelProtocol>(source: C, compositingMode: ColorCompositingMode, blending: (Float, Float) -> Float) -> FloatColorPixel where C.Model == Model {
+    public func blended<C : ColorPixelProtocol>(source: C, compositingMode: ColorCompositingMode, blending: (Float, Float) throws -> Float) rethrows -> FloatColorPixel where C.Model == Model {
         
         let source = FloatColorPixel(source)
         
@@ -136,7 +136,7 @@ extension FloatColorPixel {
         if r_alpha > 0 {
             let _source = source._color
             let _destination = self._color
-            let blended = (1 - d_alpha) * _source + d_alpha * _destination.blended(source: _source, blending: blending)
+            let blended = try (1 - d_alpha) * _source + d_alpha * _destination.blended(source: _source, blending: blending)
             return FloatColorPixel(color: compositingMode.mix(s_alpha / r_alpha * blended, s_alpha, d_alpha / r_alpha * _destination, d_alpha), opacity: r_alpha)
         } else {
             return FloatColorPixel()

@@ -153,8 +153,32 @@ extension CMYColorModel {
 extension CMYColorModel {
     
     @_transparent
-    public func blended(source: CMYColorModel, blending: (Double, Double) -> Double) -> CMYColorModel {
-        return CMYColorModel(cyan: blending(self.cyan, source.cyan), magenta: blending(self.magenta, source.magenta), yellow: blending(self.yellow, source.yellow))
+    public func min() -> Double {
+        return Swift.min(cyan, magenta, yellow)
+    }
+    
+    @_transparent
+    public func max() -> Double {
+        return Swift.max(cyan, magenta, yellow)
+    }
+    
+    @_transparent
+    public func map(_ transform: (Double) throws -> Double) rethrows -> CMYColorModel {
+        return try CMYColorModel(cyan: transform(cyan), magenta: transform(magenta), yellow: transform(yellow))
+    }
+    
+    @_transparent
+    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Double) throws -> ()) rethrows -> Result {
+        var accumulator = initialResult
+        try updateAccumulatingResult(&accumulator, cyan)
+        try updateAccumulatingResult(&accumulator, magenta)
+        try updateAccumulatingResult(&accumulator, yellow)
+        return accumulator
+    }
+    
+    @_transparent
+    public func blended(source: CMYColorModel, blending: (Double, Double) throws -> Double) rethrows -> CMYColorModel {
+        return try CMYColorModel(cyan: blending(self.cyan, source.cyan), magenta: blending(self.magenta, source.magenta), yellow: blending(self.yellow, source.yellow))
     }
 }
 
@@ -233,8 +257,32 @@ extension CMYColorModel {
 extension CMYColorModel.FloatComponents {
     
     @_transparent
-    public func blended(source: CMYColorModel.FloatComponents, blending: (Float, Float) -> Float) -> CMYColorModel.FloatComponents {
-        return CMYColorModel.FloatComponents(cyan: blending(self.cyan, source.cyan), magenta: blending(self.magenta, source.magenta), yellow: blending(self.yellow, source.yellow))
+    public func min() -> Float {
+        return Swift.min(cyan, magenta, yellow)
+    }
+    
+    @_transparent
+    public func max() -> Float {
+        return Swift.max(cyan, magenta, yellow)
+    }
+    
+    @_transparent
+    public func map(_ transform: (Float) throws -> Float) rethrows -> CMYColorModel.FloatComponents {
+        return try CMYColorModel.FloatComponents(cyan: transform(cyan), magenta: transform(magenta), yellow: transform(yellow))
+    }
+    
+    @_transparent
+    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Float) throws -> ()) rethrows -> Result {
+        var accumulator = initialResult
+        try updateAccumulatingResult(&accumulator, cyan)
+        try updateAccumulatingResult(&accumulator, magenta)
+        try updateAccumulatingResult(&accumulator, yellow)
+        return accumulator
+    }
+    
+    @_transparent
+    public func blended(source: CMYColorModel.FloatComponents, blending: (Float, Float) throws -> Float) rethrows -> CMYColorModel.FloatComponents {
+        return try CMYColorModel.FloatComponents(cyan: blending(self.cyan, source.cyan), magenta: blending(self.magenta, source.magenta), yellow: blending(self.yellow, source.yellow))
     }
 }
 

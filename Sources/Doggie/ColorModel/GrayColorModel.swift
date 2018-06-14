@@ -88,8 +88,30 @@ extension GrayColorModel {
 extension GrayColorModel {
     
     @_transparent
-    public func blended(source: GrayColorModel, blending: (Double, Double) -> Double) -> GrayColorModel {
-        return GrayColorModel(white: blending(self.white, source.white))
+    public func min() -> Double {
+        return white
+    }
+    
+    @_transparent
+    public func max() -> Double {
+        return white
+    }
+    
+    @_transparent
+    public func map(_ transform: (Double) throws -> Double) rethrows -> GrayColorModel {
+        return try GrayColorModel(white: transform(white))
+    }
+    
+    @_transparent
+    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Double) throws -> ()) rethrows -> Result {
+        var accumulator = initialResult
+        try updateAccumulatingResult(&accumulator, white)
+        return accumulator
+    }
+    
+    @_transparent
+    public func blended(source: GrayColorModel, blending: (Double, Double) throws -> Double) rethrows ->GrayColorModel {
+        return try GrayColorModel(white: blending(self.white, source.white))
     }
 }
 
@@ -154,8 +176,30 @@ extension GrayColorModel {
 extension GrayColorModel.FloatComponents {
     
     @_transparent
-    public func blended(source: GrayColorModel.FloatComponents, blending: (Float, Float) -> Float) -> GrayColorModel.FloatComponents {
-        return GrayColorModel.FloatComponents(white: blending(self.white, source.white))
+    public func min() -> Float {
+        return white
+    }
+    
+    @_transparent
+    public func max() -> Float {
+        return white
+    }
+    
+    @_transparent
+    public func map(_ transform: (Float) throws -> Float) rethrows -> GrayColorModel.FloatComponents {
+        return try GrayColorModel.FloatComponents(white: transform(white))
+    }
+    
+    @_transparent
+    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Float) throws -> ()) rethrows -> Result {
+        var accumulator = initialResult
+        try updateAccumulatingResult(&accumulator, white)
+        return accumulator
+    }
+    
+    @_transparent
+    public func blended(source: GrayColorModel.FloatComponents, blending: (Float, Float) throws -> Float) rethrows ->GrayColorModel.FloatComponents {
+        return try GrayColorModel.FloatComponents(white: blending(self.white, source.white))
     }
 }
 

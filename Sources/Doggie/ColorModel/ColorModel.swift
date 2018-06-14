@@ -33,27 +33,57 @@ public protocol ColorModelProtocol : Hashable, Tensor where Scalar == Double {
     
     var floatComponents: FloatComponents { get set }
     
-    func blended(source: Self, blending: (Double, Double) -> Double) -> Self
+    func min() -> Double
+    
+    func max() -> Double
+    
+    func map(_ transform: (Double) throws -> Double) rethrows -> Self
+    
+    func reduce<Result>(_ initialResult: Result, _ nextPartialResult: (Result, Double) throws -> Result) rethrows -> Result
+    
+    func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Double) throws -> ()) rethrows -> Result
+    
+    func blended(source: Self, blending: (Double, Double) throws -> Double) rethrows -> Self
 }
 
 public protocol FloatColorComponents : Hashable, Tensor where Scalar == Float {
     
-    func blended(source: Self, blending: (Float, Float) -> Float) -> Self
+    func min() -> Float
+    
+    func max() -> Float
+    
+    func map(_ transform: (Float) throws -> Float) rethrows -> Self
+    
+    func reduce<Result>(_ initialResult: Result, _ nextPartialResult: (Result, Float) throws -> Result) rethrows -> Result
+    
+    func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Float) throws -> ()) rethrows -> Result
+    
+    func blended(source: Self, blending: (Float, Float) throws -> Float) rethrows -> Self
 }
 
 extension ColorModelProtocol {
     
     @_transparent
-    public mutating func blend(source: Self, blending: (Double, Double) -> Double) {
-        self = self.blended(source: source, blending: blending)
+    public func reduce<Result>(_ initialResult: Result, _ nextPartialResult: (Result, Double) throws -> Result) rethrows -> Result {
+        return try self.reduce(into: initialResult) { $0 = try nextPartialResult($0, $1) }
+    }
+    
+    @_transparent
+    public mutating func blend(source: Self, blending: (Double, Double) throws -> Double) rethrows {
+        self = try self.blended(source: source, blending: blending)
     }
 }
 
 extension FloatColorComponents {
     
     @_transparent
-    public mutating func blend(source: Self, blending: (Float, Float) -> Float) {
-        self = self.blended(source: source, blending: blending)
+    public func reduce<Result>(_ initialResult: Result, _ nextPartialResult: (Result, Float) throws -> Result) rethrows -> Result {
+        return try self.reduce(into: initialResult) { $0 = try nextPartialResult($0, $1) }
+    }
+    
+    @_transparent
+    public mutating func blend(source: Self, blending: (Float, Float) throws -> Float) rethrows {
+        self = try self.blended(source: source, blending: blending)
     }
 }
 

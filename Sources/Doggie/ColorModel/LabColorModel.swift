@@ -125,8 +125,32 @@ extension LabColorModel {
 extension LabColorModel {
     
     @_transparent
-    public func blended(source: LabColorModel, blending: (Double, Double) -> Double) -> LabColorModel {
-        return LabColorModel(lightness: blending(self.lightness, source.lightness), a: blending(self.a, source.a), b: blending(self.b, source.b))
+    public func min() -> Double {
+        return Swift.min(lightness, a, b)
+    }
+    
+    @_transparent
+    public func max() -> Double {
+        return Swift.max(lightness, a, b)
+    }
+    
+    @_transparent
+    public func map(_ transform: (Double) throws -> Double) rethrows -> LabColorModel {
+        return try LabColorModel(lightness: transform(lightness), a: transform(a), b: transform(b))
+    }
+    
+    @_transparent
+    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Double) throws -> ()) rethrows -> Result {
+        var accumulator = initialResult
+        try updateAccumulatingResult(&accumulator, lightness)
+        try updateAccumulatingResult(&accumulator, a)
+        try updateAccumulatingResult(&accumulator, b)
+        return accumulator
+    }
+    
+    @_transparent
+    public func blended(source: LabColorModel, blending: (Double, Double) throws -> Double) rethrows -> LabColorModel {
+        return try LabColorModel(lightness: blending(self.lightness, source.lightness), a: blending(self.a, source.a), b: blending(self.b, source.b))
     }
 }
 
@@ -205,8 +229,32 @@ extension LabColorModel {
 extension LabColorModel.FloatComponents {
     
     @_transparent
-    public func blended(source: LabColorModel.FloatComponents, blending: (Float, Float) -> Float) -> LabColorModel.FloatComponents {
-        return LabColorModel.FloatComponents(lightness: blending(self.lightness, source.lightness), a: blending(self.a, source.a), b: blending(self.b, source.b))
+    public func min() -> Float {
+        return Swift.min(lightness, a, b)
+    }
+    
+    @_transparent
+    public func max() -> Float {
+        return Swift.max(lightness, a, b)
+    }
+    
+    @_transparent
+    public func map(_ transform: (Float) throws -> Float) rethrows -> LabColorModel.FloatComponents {
+        return try LabColorModel.FloatComponents(lightness: transform(lightness), a: transform(a), b: transform(b))
+    }
+    
+    @_transparent
+    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Float) throws -> ()) rethrows -> Result {
+        var accumulator = initialResult
+        try updateAccumulatingResult(&accumulator, lightness)
+        try updateAccumulatingResult(&accumulator, a)
+        try updateAccumulatingResult(&accumulator, b)
+        return accumulator
+    }
+    
+    @_transparent
+    public func blended(source: LabColorModel.FloatComponents, blending: (Float, Float) throws -> Float) rethrows -> LabColorModel.FloatComponents {
+        return try LabColorModel.FloatComponents(lightness: blending(self.lightness, source.lightness), a: blending(self.a, source.a), b: blending(self.b, source.b))
     }
 }
 

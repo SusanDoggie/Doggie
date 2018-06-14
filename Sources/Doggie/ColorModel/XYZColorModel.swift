@@ -135,8 +135,32 @@ extension XYZColorModel {
 extension XYZColorModel {
     
     @_transparent
-    public func blended(source: XYZColorModel, blending: (Double, Double) -> Double) -> XYZColorModel {
-        return XYZColorModel(x: blending(self.x, source.x), y: blending(self.y, source.y), z: blending(self.z, source.z))
+    public func min() -> Double {
+        return Swift.min(x, y, z)
+    }
+    
+    @_transparent
+    public func max() -> Double {
+        return Swift.max(x, y, z)
+    }
+    
+    @_transparent
+    public func map(_ transform: (Double) throws -> Double) rethrows -> XYZColorModel {
+        return try XYZColorModel(x: transform(x), y: transform(y), z: transform(z))
+    }
+    
+    @_transparent
+    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Double) throws -> ()) rethrows -> Result {
+        var accumulator = initialResult
+        try updateAccumulatingResult(&accumulator, x)
+        try updateAccumulatingResult(&accumulator, y)
+        try updateAccumulatingResult(&accumulator, z)
+        return accumulator
+    }
+    
+    @_transparent
+    public func blended(source: XYZColorModel, blending: (Double, Double) throws -> Double) rethrows -> XYZColorModel {
+        return try XYZColorModel(x: blending(self.x, source.x), y: blending(self.y, source.y), z: blending(self.z, source.z))
     }
 }
 
@@ -215,8 +239,32 @@ extension XYZColorModel {
 extension XYZColorModel.FloatComponents {
     
     @_transparent
-    public func blended(source: XYZColorModel.FloatComponents, blending: (Float, Float) -> Float) -> XYZColorModel.FloatComponents {
-        return XYZColorModel.FloatComponents(x: blending(self.x, source.x), y: blending(self.y, source.y), z: blending(self.z, source.z))
+    public func min() -> Float {
+        return Swift.min(x, y, z)
+    }
+    
+    @_transparent
+    public func max() -> Float {
+        return Swift.max(x, y, z)
+    }
+    
+    @_transparent
+    public func map(_ transform: (Float) throws -> Float) rethrows -> XYZColorModel.FloatComponents {
+        return try XYZColorModel.FloatComponents(x: transform(x), y: transform(y), z: transform(z))
+    }
+    
+    @_transparent
+    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Float) throws -> ()) rethrows -> Result {
+        var accumulator = initialResult
+        try updateAccumulatingResult(&accumulator, x)
+        try updateAccumulatingResult(&accumulator, y)
+        try updateAccumulatingResult(&accumulator, z)
+        return accumulator
+    }
+    
+    @_transparent
+    public func blended(source: XYZColorModel.FloatComponents, blending: (Float, Float) throws -> Float) rethrows -> XYZColorModel.FloatComponents {
+        return try XYZColorModel.FloatComponents(x: blending(self.x, source.x), y: blending(self.y, source.y), z: blending(self.z, source.z))
     }
 }
 

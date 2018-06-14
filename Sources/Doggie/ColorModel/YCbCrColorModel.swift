@@ -82,8 +82,32 @@ public struct YCbCrColorModel : ColorModelProtocol {
 extension YCbCrColorModel {
     
     @_transparent
-    public func blended(source: YCbCrColorModel, blending: (Double, Double) -> Double) -> YCbCrColorModel {
-        return YCbCrColorModel(y: blending(self.y, source.y), cb: blending(self.cb, source.cb), cr: blending(self.cr, source.cr))
+    public func min() -> Double {
+        return Swift.min(y, cb, cr)
+    }
+    
+    @_transparent
+    public func max() -> Double {
+        return Swift.max(y, cb, cr)
+    }
+    
+    @_transparent
+    public func map(_ transform: (Double) throws -> Double) rethrows -> YCbCrColorModel {
+        return try YCbCrColorModel(y: transform(y), cb: transform(cb), cr: transform(cr))
+    }
+    
+    @_transparent
+    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Double) throws -> ()) rethrows -> Result {
+        var accumulator = initialResult
+        try updateAccumulatingResult(&accumulator, y)
+        try updateAccumulatingResult(&accumulator, cb)
+        try updateAccumulatingResult(&accumulator, cr)
+        return accumulator
+    }
+    
+    @_transparent
+    public func blended(source: YCbCrColorModel, blending: (Double, Double) throws -> Double) rethrows -> YCbCrColorModel {
+        return try YCbCrColorModel(y: blending(self.y, source.y), cb: blending(self.cb, source.cb), cr: blending(self.cr, source.cr))
     }
 }
 
@@ -162,8 +186,32 @@ extension YCbCrColorModel {
 extension YCbCrColorModel.FloatComponents {
     
     @_transparent
-    public func blended(source: YCbCrColorModel.FloatComponents, blending: (Float, Float) -> Float) -> YCbCrColorModel.FloatComponents {
-        return YCbCrColorModel.FloatComponents(y: blending(self.y, source.y), cb: blending(self.cb, source.cb), cr: blending(self.cr, source.cr))
+    public func min() -> Float {
+        return Swift.min(y, cb, cr)
+    }
+    
+    @_transparent
+    public func max() -> Float {
+        return Swift.max(y, cb, cr)
+    }
+    
+    @_transparent
+    public func map(_ transform: (Float) throws -> Float) rethrows -> YCbCrColorModel.FloatComponents {
+        return try YCbCrColorModel.FloatComponents(y: transform(y), cb: transform(cb), cr: transform(cr))
+    }
+    
+    @_transparent
+    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Float) throws -> ()) rethrows -> Result {
+        var accumulator = initialResult
+        try updateAccumulatingResult(&accumulator, y)
+        try updateAccumulatingResult(&accumulator, cb)
+        try updateAccumulatingResult(&accumulator, cr)
+        return accumulator
+    }
+    
+    @_transparent
+    public func blended(source: YCbCrColorModel.FloatComponents, blending: (Float, Float) throws -> Float) rethrows -> YCbCrColorModel.FloatComponents {
+        return try YCbCrColorModel.FloatComponents(y: blending(self.y, source.y), cb: blending(self.cb, source.cb), cr: blending(self.cr, source.cr))
     }
 }
 
