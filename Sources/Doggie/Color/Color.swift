@@ -52,12 +52,18 @@ public struct Color<Model : ColorModelProtocol> : ColorProtocol, Hashable {
 
 extension ColorSpace where Model == GrayColorModel {
     
-    public static let `default`: ColorSpace = .calibratedGray(from: .sRGB, gamma: 2.2)
+    @inlinable
+    public static var `default`: ColorSpace {
+        return .genericGamma22Gray
+    }
 }
 
 extension ColorSpace where Model == RGBColorModel {
     
-    public static let `default`: ColorSpace = .sRGB
+    @inlinable
+    public static var `default`: ColorSpace {
+        return .sRGB
+    }
 }
 
 extension Color where Model == GrayColorModel {

@@ -36,6 +36,14 @@ extension ColorSpace where Model == GrayColorModel {
     }
 }
 
+extension ColorSpace where Model == GrayColorModel {
+    
+    @inlinable
+    public static var genericGamma22Gray: ColorSpace {
+        return .calibratedGray(white: Point(x: 0.3127, y: 0.3290), gamma: 2.2)
+    }
+}
+
 @_fixed_layout
 @usableFromInline
 struct CalibratedGrayColorSpace : ColorSpaceBaseProtocol {
