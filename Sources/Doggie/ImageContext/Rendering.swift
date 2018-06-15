@@ -31,7 +31,7 @@ struct ImageContextRenderBuffer<P : ColorPixelProtocol> : RasterizeBufferProtoco
     var blender: ImageContextPixelBlender<P>
     
     @usableFromInline
-    var depth: UnsafeMutablePointer<Double>
+    var depth: UnsafeMutablePointer<Double>?
     
     @usableFromInline
     var width: Int
@@ -40,7 +40,7 @@ struct ImageContextRenderBuffer<P : ColorPixelProtocol> : RasterizeBufferProtoco
     var height: Int
     
     @inlinable
-    init(blender: ImageContextPixelBlender<P>, depth: UnsafeMutablePointer<Double>, width: Int, height: Int) {
+    init(blender: ImageContextPixelBlender<P>, depth: UnsafeMutablePointer<Double>?, width: Int, height: Int) {
         self.blender = blender
         self.depth = depth
         self.width = width
@@ -49,13 +49,13 @@ struct ImageContextRenderBuffer<P : ColorPixelProtocol> : RasterizeBufferProtoco
     
     @inlinable
     static func + (lhs: ImageContextRenderBuffer, rhs: Int) -> ImageContextRenderBuffer {
-        return ImageContextRenderBuffer(blender: lhs.blender + rhs, depth: lhs.depth + rhs, width: lhs.width, height: lhs.height)
+        return ImageContextRenderBuffer(blender: lhs.blender + rhs, depth: lhs.depth.map { $0 + rhs }, width: lhs.width, height: lhs.height)
     }
     
     @inlinable
     static func += (lhs: inout ImageContextRenderBuffer, rhs: Int) {
         lhs.blender += rhs
-        lhs.depth += rhs
+        lhs.depth = lhs.depth.map { $0 + rhs }
     }
 }
 
@@ -123,72 +123,86 @@ extension ImageContext {
             return
         }
         
-        self.withUnsafePixelBlender { blender in
+        func _render(rasterizer: ImageContextRenderBuffer<Pixel>, position: (G.Vertex.Position) -> Point, depthFun: ((G.Vertex.Position) -> Double)?, shader: (ImageContextRenderStageIn<G.Vertex>) -> P?) {
             
-            self.withUnsafeMutableDepthBufferPointer { _depth in
+            triangles.render(position: position) { v0, v1, v2 in
                 
-                guard let _depth = _depth.baseAddress else { return }
+                let _v0 = v0.position
+                let _v1 = v1.position
+                let _v2 = v2.position
                 
-                let rasterizer = ImageContextRenderBuffer(blender: blender, depth: _depth, width: width, height: height)
+                if let depthFun = depthFun {
+                    guard 0...1 ~= depthFun(_v0) || 0...1 ~= depthFun(_v1) || 0...1 ~= depthFun(_v2) else { return }
+                }
                 
-                triangles.render(position: position) { v0, v1, v2 in
+                let p0 = position(_v0)
+                let p1 = position(_v1)
+                let p2 = position(_v2)
+                
+                let facing = cross(p1 - p0, p2 - p0)
+                
+                switch cullingMode {
+                case .none: break
+                case .front: guard facing < 0 else { return }
+                case .back: guard facing > 0 else { return }
+                }
+                
+                let _p0 = p0 * transform
+                let _p1 = p1 * transform
+                let _p2 = p2 * transform
+                
+                rasterizer.rasterize(_p0, _p1, _p2) { barycentric, position, buf in
                     
-                    let _v0 = v0.position
-                    let _v1 = v1.position
-                    let _v2 = v2.position
+                    let b0 = barycentric.x * v0
+                    let b1 = barycentric.y * v1
+                    let b2 = barycentric.z * v2
+                    let b = b0 + b1 + b2
                     
-                    if let depthFun = depthFun {
-                        guard 0...1 ~= depthFun(_v0) || 0...1 ~= depthFun(_v1) || 0...1 ~= depthFun(_v2) else { return }
-                    }
-                    
-                    let p0 = position(_v0)
-                    let p1 = position(_v1)
-                    let p2 = position(_v2)
-                    
-                    let facing = cross(p1 - p0, p2 - p0)
-                    
-                    switch cullingMode {
-                    case .none: break
-                    case .front: guard facing < 0 else { return }
-                    case .back: guard facing > 0 else { return }
-                    }
-                    
-                    let _p0 = p0 * transform
-                    let _p1 = p1 * transform
-                    let _p2 = p2 * transform
-                    
-                    rasterizer.rasterize(_p0, _p1, _p2) { barycentric, position, buf in
+                    if let _depth = depthFun?(b.position) {
                         
-                        let b0 = barycentric.x * v0
-                        let b1 = barycentric.y * v1
-                        let b2 = barycentric.z * v2
-                        let b = b0 + b1 + b2
+                        guard 0...1 ~= _depth else { return }
+                        guard let depth_ptr = buf.depth else { return }
                         
-                        if let _depth = depthFun?(b.position) {
-                            
-                            guard 0...1 ~= _depth else { return }
-                            
-                            switch depthCompareMode {
-                            case .always: break
-                            case .never: return
-                            case .equal: guard _depth == buf.depth.pointee else { return }
-                            case .notEqual: guard _depth != buf.depth.pointee else { return }
-                            case .less: guard _depth < buf.depth.pointee else { return }
-                            case .lessEqual: guard _depth <= buf.depth.pointee else { return }
-                            case .greater: guard _depth > buf.depth.pointee else { return }
-                            case .greaterEqual: guard _depth >= buf.depth.pointee else { return }
-                            }
-                            
-                            buf.depth.pointee = _depth
-                            if let source = shader(ImageContextRenderStageIn(vertex: b, triangle: (_v0, _v1, _v2), barycentric: barycentric, position: position, facing: facing, depth: _depth)) {
-                                buf.blender.draw(color: source)
-                            }
-                            
-                        } else if let source = shader(ImageContextRenderStageIn(vertex: b, triangle: (_v0, _v1, _v2), barycentric: barycentric, position: position, facing: facing, depth: 0)) {
+                        switch depthCompareMode {
+                        case .always: break
+                        case .never: return
+                        case .equal: guard _depth == depth_ptr.pointee else { return }
+                        case .notEqual: guard _depth != depth_ptr.pointee else { return }
+                        case .less: guard _depth < depth_ptr.pointee else { return }
+                        case .lessEqual: guard _depth <= depth_ptr.pointee else { return }
+                        case .greater: guard _depth > depth_ptr.pointee else { return }
+                        case .greaterEqual: guard _depth >= depth_ptr.pointee else { return }
+                        }
+                        
+                        depth_ptr.pointee = _depth
+                        if let source = shader(ImageContextRenderStageIn(vertex: b, triangle: (_v0, _v1, _v2), barycentric: barycentric, position: position, facing: facing, depth: _depth)) {
                             buf.blender.draw(color: source)
                         }
+                        
+                    } else if let source = shader(ImageContextRenderStageIn(vertex: b, triangle: (_v0, _v1, _v2), barycentric: barycentric, position: position, facing: facing, depth: 0)) {
+                        buf.blender.draw(color: source)
                     }
                 }
+            }
+        }
+        
+        self.withUnsafePixelBlender { blender in
+            
+            if let depthFun = depthFun {
+                
+                self.withUnsafeMutableDepthBufferPointer { _depth in
+                    
+                    guard let _depth = _depth.baseAddress else { return }
+                    
+                    let rasterizer = ImageContextRenderBuffer(blender: blender, depth: _depth, width: width, height: height)
+                    
+                    _render(rasterizer: rasterizer, position: position, depthFun: depthFun, shader: shader)
+                }
+            } else {
+                
+                let rasterizer = ImageContextRenderBuffer(blender: blender, depth: nil, width: width, height: height)
+                
+                _render(rasterizer: rasterizer, position: position, depthFun: nil, shader: shader)
             }
         }
     }

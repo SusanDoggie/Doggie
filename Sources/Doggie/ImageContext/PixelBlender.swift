@@ -31,7 +31,7 @@ struct ImageContextPixelBlender<P : ColorPixelProtocol> {
     var destination: UnsafeMutablePointer<P>
     
     @usableFromInline
-    var clip: UnsafePointer<Double>
+    var clip: UnsafePointer<Double>?
     
     @usableFromInline
     let opacity: Double
@@ -43,7 +43,7 @@ struct ImageContextPixelBlender<P : ColorPixelProtocol> {
     let blendMode: ColorBlendMode
     
     @inlinable
-    init(destination: UnsafeMutablePointer<P>, clip: UnsafePointer<Double>, opacity: Double, compositingMode: ColorCompositingMode, blendMode: ColorBlendMode) {
+    init(destination: UnsafeMutablePointer<P>, clip: UnsafePointer<Double>?, opacity: Double, compositingMode: ColorCompositingMode, blendMode: ColorBlendMode) {
         self.destination = destination
         self.clip = clip
         self.opacity = opacity
@@ -53,23 +53,27 @@ struct ImageContextPixelBlender<P : ColorPixelProtocol> {
     
     @inlinable
     static func + (lhs: ImageContextPixelBlender, rhs: Int) -> ImageContextPixelBlender {
-        return ImageContextPixelBlender(destination: lhs.destination + rhs, clip: lhs.clip + rhs, opacity: lhs.opacity, compositingMode: lhs.compositingMode, blendMode: lhs.blendMode)
+        return ImageContextPixelBlender(destination: lhs.destination + rhs, clip: lhs.clip.map { $0 + rhs }, opacity: lhs.opacity, compositingMode: lhs.compositingMode, blendMode: lhs.blendMode)
     }
     
     @inlinable
     static func += (lhs: inout ImageContextPixelBlender, rhs: Int) {
         lhs.destination += rhs
-        lhs.clip += rhs
+        lhs.clip = lhs.clip.map { $0 + rhs }
     }
     
     @inlinable
     func draw<C : ColorPixelProtocol>(color: C) where C.Model == P.Model {
         
-        let _clip = clip.pointee
-        
-        if _clip > 0 {
+        if let _clip = clip?.pointee {
+            if _clip > 0 {
+                var source = color
+                source.opacity *= opacity * _clip
+                destination.pointee.blend(source: source, compositingMode: compositingMode, blendMode: blendMode)
+            }
+        } else {
             var source = color
-            source.opacity *= opacity * _clip
+            source.opacity *= opacity
             destination.pointee.blend(source: source, compositingMode: compositingMode, blendMode: blendMode)
         }
     }
@@ -90,11 +94,9 @@ extension ImageContext {
             
             guard let _destination = _image.baseAddress else { return }
             
-            self.withUnsafeClipBufferPointer { _clip in
+            self.withOptionalUnsafeClipBufferPointer { _clip in
                 
-                guard let _clip = _clip.baseAddress else { return }
-                
-                body(ImageContextPixelBlender(destination: _destination, clip: _clip, opacity: opacity, compositingMode: compositingMode, blendMode: blendMode))
+                body(ImageContextPixelBlender(destination: _destination, clip: _clip?.baseAddress, opacity: opacity, compositingMode: compositingMode, blendMode: blendMode))
             }
         }
     }
@@ -116,11 +118,9 @@ extension ImageContext {
                 
                 guard let _destination = _layer.baseAddress else { return }
                 
-                self.withUnsafeClipBufferPointer { _clip in
+                self.withOptionalUnsafeClipBufferPointer { _clip in
                     
-                    guard let _clip = _clip.baseAddress else { return }
-                    
-                    body(ImageContextPixelBlender(destination: _destination, clip: _clip, opacity: opacity, compositingMode: compositingMode, blendMode: blendMode))
+                    body(ImageContextPixelBlender(destination: _destination, clip: _clip?.baseAddress, opacity: opacity, compositingMode: compositingMode, blendMode: blendMode))
                 }
             }
             

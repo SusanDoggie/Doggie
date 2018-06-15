@@ -48,8 +48,8 @@ private struct ImageContextStyles {
 
 private struct GraphicState {
     
-    var clip: MappedBuffer<Double>
-    var depth: MappedBuffer<Double>
+    var clip: MappedBuffer<Double>?
+    var depth: MappedBuffer<Double>?
     
     var styles: ImageContextStyles
     var chromaticAdaptationAlgorithm: ChromaticAdaptationAlgorithm
@@ -73,8 +73,8 @@ public class ImageContext<Pixel: ColorPixelProtocol> {
     
     public private(set) var image: Image<Pixel>
     
-    fileprivate var clip: MappedBuffer<Double>
-    fileprivate var depth: MappedBuffer<Double>
+    fileprivate var clip: MappedBuffer<Double>?
+    fileprivate var depth: MappedBuffer<Double>?
     
     fileprivate var styles: ImageContextStyles = ImageContextStyles()
     
@@ -86,14 +86,10 @@ public class ImageContext<Pixel: ColorPixelProtocol> {
     
     public init(image: Image<Pixel>) {
         self.image = image
-        self.clip = MappedBuffer(repeating: 1, count: image.width * image.height, option: image.option)
-        self.depth = MappedBuffer(repeating: 1, count: image.width * image.height, option: image.option)
     }
     
     public init(width: Int, height: Int, resolution: Resolution = Resolution(resolution: 1, unit: .point), colorSpace: ColorSpace<Pixel.Model>, option: MappedBufferOption = .default) {
         self.image = Image(width: width, height: height, resolution: resolution, colorSpace: colorSpace, option: option)
-        self.clip = MappedBuffer(repeating: 1, count: width * height, option: option)
-        self.depth = MappedBuffer(repeating: 1, count: width * height, option: option)
     }
 }
 
@@ -112,23 +108,21 @@ extension ImageContext {
 
 extension ImageContext {
     
+    private var current: ImageContext {
+        return next ?? self
+    }
+}
+
+extension ImageContext {
+    
     public func withUnsafeMutableImageBufferPointer<R>(_ body: (inout UnsafeMutableBufferPointer<Pixel>) throws -> R) rethrows -> R {
-        
-        if let next = self.next {
-            return try next.withUnsafeMutableImageBufferPointer(body)
-        } else {
-            self.isDirty = true
-            return try image.withUnsafeMutableBufferPointer(body)
-        }
+        let current = self.current
+        current.isDirty = true
+        return try current.image.withUnsafeMutableBufferPointer(body)
     }
     
     public func withUnsafeImageBufferPointer<R>(_ body: (UnsafeBufferPointer<Pixel>) throws -> R) rethrows -> R {
-        
-        if let next = self.next {
-            return try next.withUnsafeImageBufferPointer(body)
-        } else {
-            return try image.withUnsafeBufferPointer(body)
-        }
+        return try current.image.withUnsafeBufferPointer(body)
     }
 }
 
@@ -136,32 +130,46 @@ extension ImageContext {
     
     public func withUnsafeMutableClipBufferPointer<R>(_ body: (inout UnsafeMutableBufferPointer<Double>) throws -> R) rethrows -> R {
         
-        if let next = self.next {
-            return try next.withUnsafeMutableClipBufferPointer(body)
-        } else {
-            return try clip.withUnsafeMutableBufferPointer(body)
+        let current = self.current
+        
+        if current.clip == nil {
+            current.clip = MappedBuffer(repeating: 1, count: image.width * image.height, option: image.option)
         }
+        
+        return try current.clip!.withUnsafeMutableBufferPointer(body)
     }
     
     public func withUnsafeClipBufferPointer<R>(_ body: (UnsafeBufferPointer<Double>) throws -> R) rethrows -> R {
         
-        if let next = self.next {
-            return try next.withUnsafeClipBufferPointer(body)
-        } else {
-            return try clip.withUnsafeBufferPointer(body)
+        let current = self.current
+        
+        if current.clip == nil {
+            current.clip = MappedBuffer(repeating: 1, count: image.width * image.height, option: image.option)
         }
+        
+        return try current.clip!.withUnsafeBufferPointer(body)
+    }
+    
+    @usableFromInline
+    func withOptionalUnsafeClipBufferPointer<R>(_ body: (UnsafeBufferPointer<Double>?) throws -> R) rethrows -> R {
+        return try current.clip?.withUnsafeBufferPointer(body) ?? body(nil)
     }
     
     public func clearClipBuffer(with value: Double = 1) {
         
-        withUnsafeMutableClipBufferPointer { buf in
+        if current.clip != nil {
             
-            guard var clip = buf.baseAddress else { return }
-            
-            for _ in 0..<buf.count {
-                clip.pointee = value
-                clip += 1
+            withUnsafeMutableClipBufferPointer { buf in
+                
+                guard var clip = buf.baseAddress else { return }
+                
+                for _ in 0..<buf.count {
+                    clip.pointee = value
+                    clip += 1
+                }
             }
+        } else {
+            current.clip = MappedBuffer(repeating: value, count: image.width * image.height, option: image.option)
         }
     }
 }
@@ -189,144 +197,100 @@ extension ImageContext {
     
     public var opacity: Double {
         get {
-            return next?.opacity ?? styles.opacity
+            return current.styles.opacity
         }
         set {
-            if let next = self.next {
-                next.opacity = newValue
-            } else {
-                styles.opacity = newValue
-            }
+            current.styles.opacity = newValue
         }
     }
     
     public var antialias: Bool {
         get {
-            return next?.antialias ?? styles.antialias
+            return current.styles.antialias
         }
         set {
-            if let next = self.next {
-                next.antialias = newValue
-            } else {
-                styles.antialias = newValue
-            }
+            current.styles.antialias = newValue
         }
     }
     
     public var transform: SDTransform {
         get {
-            return next?.transform ?? styles.transform
+            return current.styles.transform
         }
         set {
-            if let next = self.next {
-                next.transform = newValue
-            } else {
-                styles.transform = newValue
-            }
+            current.styles.transform = newValue
         }
     }
     
     public var shadowColor: AnyColor {
         get {
-            return next?.shadowColor ?? styles.shadowColor
+            return current.styles.shadowColor
         }
         set {
-            if let next = self.next {
-                next.shadowColor = newValue
-            } else {
-                styles.shadowColor = newValue
-            }
+            current.styles.shadowColor = newValue
         }
     }
     
     public var shadowOffset: Size {
         get {
-            return next?.shadowOffset ?? styles.shadowOffset
+            return current.styles.shadowOffset
         }
         set {
-            if let next = self.next {
-                next.shadowOffset = newValue
-            } else {
-                styles.shadowOffset = newValue
-            }
+            current.styles.shadowOffset = newValue
         }
     }
     
     public var shadowBlur: Double {
         get {
-            return next?.shadowBlur ?? styles.shadowBlur
+            return current.styles.shadowBlur
         }
         set {
-            if let next = self.next {
-                next.shadowBlur = newValue
-            } else {
-                styles.shadowBlur = newValue
-            }
+            current.styles.shadowBlur = newValue
         }
     }
     
     public var compositingMode: ColorCompositingMode {
         get {
-            return next?.compositingMode ?? styles.compositingMode
+            return current.styles.compositingMode
         }
         set {
-            if let next = self.next {
-                next.compositingMode = newValue
-            } else {
-                styles.compositingMode = newValue
-            }
+            current.styles.compositingMode = newValue
         }
     }
     
     public var blendMode: ColorBlendMode {
         get {
-            return next?.blendMode ?? styles.blendMode
+            return current.styles.blendMode
         }
         set {
-            if let next = self.next {
-                next.blendMode = newValue
-            } else {
-                styles.blendMode = newValue
-            }
+            current.styles.blendMode = newValue
         }
     }
     
     public var resamplingAlgorithm: ResamplingAlgorithm {
         get {
-            return next?.resamplingAlgorithm ?? styles.resamplingAlgorithm
+            return current.styles.resamplingAlgorithm
         }
         set {
-            if let next = self.next {
-                next.resamplingAlgorithm = newValue
-            } else {
-                styles.resamplingAlgorithm = newValue
-            }
+            current.styles.resamplingAlgorithm = newValue
         }
     }
     
     public var renderingIntent: RenderingIntent {
         get {
-            return next?.renderingIntent ?? styles.renderingIntent
+            return current.styles.renderingIntent
         }
         set {
-            if let next = self.next {
-                next.renderingIntent = newValue
-            } else {
-                styles.renderingIntent = newValue
-            }
+            current.styles.renderingIntent = newValue
         }
     }
     
     public var chromaticAdaptationAlgorithm: ChromaticAdaptationAlgorithm {
         get {
-            return next?.chromaticAdaptationAlgorithm ?? image.colorSpace.chromaticAdaptationAlgorithm
+            return current.image.colorSpace.chromaticAdaptationAlgorithm
         }
         set {
-            if let next = self.next {
-                next.chromaticAdaptationAlgorithm = newValue
-            } else {
-                image.colorSpace.chromaticAdaptationAlgorithm = newValue
-            }
+            current.image.colorSpace.chromaticAdaptationAlgorithm = newValue
         }
     }
 }
@@ -354,20 +318,24 @@ extension ImageContext {
     
     public func withUnsafeMutableDepthBufferPointer<R>(_ body: (inout UnsafeMutableBufferPointer<Double>) throws -> R) rethrows -> R {
         
-        if let next = self.next {
-            return try next.withUnsafeMutableDepthBufferPointer(body)
-        } else {
-            return try depth.withUnsafeMutableBufferPointer(body)
+        let current = self.current
+        
+        if current.depth == nil {
+            current.depth = MappedBuffer(repeating: 1, count: image.width * image.height, option: image.option)
         }
+        
+        return try current.depth!.withUnsafeMutableBufferPointer(body)
     }
     
     public func withUnsafeDepthBufferPointer<R>(_ body: (UnsafeBufferPointer<Double>) throws -> R) rethrows -> R {
         
-        if let next = self.next {
-            return try next.withUnsafeDepthBufferPointer(body)
-        } else {
-            return try depth.withUnsafeBufferPointer(body)
+        let current = self.current
+        
+        if current.depth == nil {
+            current.depth = MappedBuffer(repeating: 1, count: image.width * image.height, option: image.option)
         }
+        
+        return try current.depth!.withUnsafeBufferPointer(body)
     }
 }
 
@@ -375,40 +343,37 @@ extension ImageContext {
     
     public var renderCullingMode: ImageContextRenderCullMode {
         get {
-            return next?.renderCullingMode ?? styles.renderCullingMode
+            return current.styles.renderCullingMode
         }
         set {
-            if let next = self.next {
-                next.renderCullingMode = newValue
-            } else {
-                styles.renderCullingMode = newValue
-            }
+            current.styles.renderCullingMode = newValue
         }
     }
     
     public var renderDepthCompareMode: ImageContextRenderDepthCompareMode {
         get {
-            return next?.renderDepthCompareMode ?? styles.renderDepthCompareMode
+            return current.styles.renderDepthCompareMode
         }
         set {
-            if let next = self.next {
-                next.renderDepthCompareMode = newValue
-            } else {
-                styles.renderDepthCompareMode = newValue
-            }
+            current.styles.renderDepthCompareMode = newValue
         }
     }
     
     public func clearRenderDepthBuffer(with value: Double = 1) {
         
-        withUnsafeMutableDepthBufferPointer { buf in
+        if current.depth != nil {
             
-            guard var depth = buf.baseAddress else { return }
-            
-            for _ in 0..<buf.count {
-                depth.pointee = value
-                depth += 1
+            withUnsafeMutableDepthBufferPointer { buf in
+                
+                guard var depth = buf.baseAddress else { return }
+                
+                for _ in 0..<buf.count {
+                    depth.pointee = value
+                    depth += 1
+                }
             }
+        } else {
+            current.depth = MappedBuffer(repeating: value, count: image.width * image.height, option: image.option)
         }
     }
 }
@@ -416,7 +381,7 @@ extension ImageContext {
 extension ImageContext {
     
     public var colorSpace: ColorSpace<Pixel.Model> {
-        return next?.colorSpace ?? image.colorSpace
+        return current.image.colorSpace
     }
     
     public var width: Int {
