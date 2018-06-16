@@ -123,6 +123,7 @@ extension ImageContext {
             return
         }
         
+        @inline(__always)
         func _render(rasterizer: ImageContextRenderBuffer<Pixel>, position: (G.Vertex.Position) -> Point, depthFun: ((G.Vertex.Position) -> Double)?, shader: (ImageContextRenderStageIn<G.Vertex>) -> P?) {
             
             triangles.render(position: position) { v0, v1, v2 in
