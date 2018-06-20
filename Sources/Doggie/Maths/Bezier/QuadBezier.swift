@@ -296,13 +296,16 @@ extension QuadBezier where Element == Point {
     @inlinable
     public var boundary: Rect {
         
-        let bx = QuadBezier<Double>(p0.x, p1.x, p2.x).stationary.value
-        let by = QuadBezier<Double>(p0.y, p1.y, p2.y).stationary.value
+        let bx = QuadBezier<Double>(p0.x, p1.x, p2.x)
+        let by = QuadBezier<Double>(p0.y, p1.y, p2.y)
         
-        let minX = bx.map { Swift.min(p0.x, p2.x, $0) } ?? Swift.min(p0.x, p2.x)
-        let minY = by.map { Swift.min(p0.y, p2.y, $0) } ?? Swift.min(p0.y, p2.y)
-        let maxX = bx.map { Swift.max(p0.x, p2.x, $0) } ?? Swift.max(p0.x, p2.x)
-        let maxY = by.map { Swift.max(p0.y, p2.y, $0) } ?? Swift.max(p0.y, p2.y)
+        let _x = bx.stationary.value.map { bx.eval($0.clamped(to: 0...1)) }
+        let _y = by.stationary.value.map { by.eval($0.clamped(to: 0...1)) }
+        
+        let minX = _x.map { Swift.min(p0.x, p2.x, $0) } ?? Swift.min(p0.x, p2.x)
+        let minY = _y.map { Swift.min(p0.y, p2.y, $0) } ?? Swift.min(p0.y, p2.y)
+        let maxX = _x.map { Swift.max(p0.x, p2.x, $0) } ?? Swift.max(p0.x, p2.x)
+        let maxY = _y.map { Swift.max(p0.y, p2.y, $0) } ?? Swift.max(p0.y, p2.y)
         
         return Rect(x: minX, y: minY, width: maxX - minX, height: maxY - minY)
     }

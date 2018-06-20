@@ -63,7 +63,7 @@ public struct Shape : RandomAccessCollection, MutableCollection, ExpressibleByAr
     public var transform : SDTransform = SDTransform.identity {
         willSet {
             if transform != newValue {
-                cache = cache.lck.synchronized { Cache(originalBoundary: cache.originalBoundary, table: cache.table) }
+                cache = cache.lck.synchronized { Cache(originalBoundary: cache.originalBoundary, originalArea: cache.originalArea, table: cache.table) }
             }
         }
     }
@@ -154,22 +154,21 @@ extension Shape {
         let lck = SDLock()
         
         var originalBoundary: Rect?
+        var originalArea: Double?
         var identity : Shape?
-        
-        var area: Double?
         
         var table: [String : Any]
         
         init() {
             self.originalBoundary = nil
+            self.originalArea = nil
             self.identity = nil
-            self.area = nil
             self.table = [:]
         }
-        init(originalBoundary: Rect?, table: [String : Any]) {
+        init(originalBoundary: Rect?, originalArea: Double?, table: [String : Any]) {
             self.originalBoundary = originalBoundary
+            self.originalArea = originalArea
             self.identity = nil
-            self.area = nil
             self.table = table
         }
     }
@@ -603,10 +602,10 @@ extension Shape {
     
     public var originalArea : Double {
         return cache.lck.synchronized {
-            if cache.area == nil {
-                cache.area = self.components.reduce(0) { $0 + $1.area }
+            if cache.originalArea == nil {
+                cache.originalArea = self.components.reduce(0) { $0 + $1.area }
             }
-            return cache.area!
+            return cache.originalArea!
         }
     }
     
