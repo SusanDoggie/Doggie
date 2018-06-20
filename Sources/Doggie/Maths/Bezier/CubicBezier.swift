@@ -264,8 +264,8 @@ extension CubicBezier where Element == Point {
         
         let minX = _x.min().map { Swift.min(p0.x, p3.x, $0) } ?? Swift.min(p0.x, p3.x)
         let minY = _y.min().map { Swift.min(p0.y, p3.y, $0) } ?? Swift.min(p0.y, p3.y)
-        let maxX = _x.min().map { Swift.max(p0.x, p3.x, $0) } ?? Swift.max(p0.x, p3.x)
-        let maxY = _y.min().map { Swift.max(p0.y, p3.y, $0) } ?? Swift.max(p0.y, p3.y)
+        let maxX = _x.max().map { Swift.max(p0.x, p3.x, $0) } ?? Swift.max(p0.x, p3.x)
+        let maxY = _y.max().map { Swift.max(p0.y, p3.y, $0) } ?? Swift.max(p0.y, p3.y)
         
         return Rect(x: minX, y: minY, width: maxX - minX, height: maxY - minY)
     }

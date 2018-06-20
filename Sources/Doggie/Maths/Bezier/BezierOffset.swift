@@ -276,18 +276,6 @@ private func _BezierOffset(_ p0: Point, _ p1: Point, _ p2: Point, _ a: Double, _
     if ph0.almostEqual(ph1) || ph0.almostEqual(ph1 + 2 * Double.pi) || ph0.almostEqual(ph1 - 2 * Double.pi) {
         return BezierOffset(p0, p2, a).map { [[$0, $1]] } ?? []
     }
-    if ph0.almostEqual(ph1 + Double.pi) || ph0.almostEqual(ph1 - Double.pi) {
-        if let w = Bezier(p0, p1, p2).stationary.first, !w.almostZero() && !w.almostEqual(1) && 0...1 ~= w {
-            let g = Bezier(p0, p1, p2).eval(w)
-            let angle = ph0 - 0.5 * Double.pi
-            let bezierCircle = BezierCircle.lazy.map { $0 * SDTransform.rotate(angle) * a + g }
-            let v0 = OptionOneCollection(BezierOffset(p0, g, a).map { [$0, $1] })
-            let v1 = OptionOneCollection([bezierCircle[0], bezierCircle[1], bezierCircle[2], bezierCircle[3]])
-            let v2 = OptionOneCollection([bezierCircle[3], bezierCircle[4], bezierCircle[5], bezierCircle[6]])
-            let v3 = OptionOneCollection(BezierOffset(g, p2, a).map { [$0, $1] })
-            return Array([v0, v1, v2, v3].joined())
-        }
-    }
     
     func split(_ t: Double) -> [[Point]] {
         let (left, right) = Bezier(p0, p1, p2).split(t)

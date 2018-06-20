@@ -73,7 +73,7 @@ extension Size : Codable {
 
 extension Size {
     
-    @inlinable
+    @_transparent
     public func aspectFit(_ bound: Size) -> Size {
         let u = width * bound.height
         let v = bound.width * height
@@ -84,7 +84,7 @@ extension Size {
         }
     }
     
-    @inlinable
+    @_transparent
     public func aspectFill(_ bound: Size) -> Size {
         let u = width * bound.height
         let v = bound.width * height
@@ -310,14 +310,14 @@ extension Rect {
 
 extension Rect {
     
-    @inlinable
+    @_transparent
     public func aspectFit(bound: Rect) -> Rect {
         var rect = Rect(origin: Point(), size: self.size.aspectFit(bound.size))
         rect.center = bound.center
         return rect
     }
     
-    @inlinable
+    @_transparent
     public func aspectFill(bound: Rect) -> Rect {
         var rect = Rect(origin: Point(), size: self.size.aspectFill(bound.size))
         rect.center = bound.center
@@ -327,7 +327,7 @@ extension Rect {
 
 extension Rect {
     
-    @inlinable
+    @_transparent
     public var points : [Point] {
         let minX = self.minX
         let maxX = self.maxX
@@ -340,7 +340,7 @@ extension Rect {
         return [a, b, c, d]
     }
     
-    @inlinable
+    @_transparent
     public static func bound<S : Sequence>(_ points: S) -> Rect where S.Element == Point {
         
         var minX = 0.0
@@ -367,7 +367,7 @@ extension Rect {
 
 extension Rect {
     
-    @inlinable
+    @_transparent
     public func union(_ other : Rect) -> Rect {
         let minX = min(self.minX, other.minX)
         let minY = min(self.minY, other.minY)
@@ -375,7 +375,7 @@ extension Rect {
         let maxY = max(self.maxY, other.maxY)
         return Rect(x: minX, y: minY, width: maxX - minX, height: maxY - minY)
     }
-    @inlinable
+    @_transparent
     public func intersect(_ other : Rect) -> Rect {
         let minX = max(self.minX, other.minX)
         let minY = max(self.minY, other.minY)
@@ -383,33 +383,72 @@ extension Rect {
         let _height = max(0, min(self.maxY, other.maxY) - minY)
         return Rect(x: minX, y: minY, width: _width, height: _height)
     }
-    @inlinable
+    @_transparent
     public func inset(dx: Double, dy: Double) -> Rect {
         let rect = self.standardized
         return Rect(x: rect.x + dx, y: rect.y + dy, width: rect.width - 2 * dx, height: rect.height - 2 * dy)
     }
-    @inlinable
+    @_transparent
     public func inset(top: Double, left: Double, right: Double, bottom: Double) -> Rect {
         let rect = self.standardized
         return Rect(x: rect.x + left, y: rect.y + top, width: rect.width - left - right, height: rect.height - top - bottom)
     }
-    @inlinable
+    @_transparent
     public func offset(dx: Double, dy: Double) -> Rect {
         return Rect(x: self.x + dx, y: self.y + dy, width: self.width, height: self.height)
     }
-    @inlinable
+    @_transparent
     public func contains(_ point: Point) -> Bool {
         return minX...maxX ~= point.x && minY...maxY ~= point.y
     }
-    @inlinable
+    @_transparent
     public func contains(_ rect: Rect) -> Bool {
         let a = Point(x: rect.minX, y: rect.minY)
         let b = Point(x: rect.maxX, y: rect.maxY)
         return self.contains(a) && self.contains(b)
     }
-    @inlinable
+    @_transparent
     public func isIntersect(_ rect: Rect) -> Bool {
         return self.minX < rect.maxX && self.maxX > rect.minX && self.minY < rect.maxY && self.maxY > rect.minY
+    }
+}
+
+extension Rect {
+    
+    @_transparent
+    public func apply(_ transform: SDTransform) -> Rect? {
+        
+        let minX = self.minX
+        let maxX = self.maxX
+        let minY = self.minY
+        let maxY = self.maxY
+        
+        let a = Point(x: maxX, y: minY) * transform
+        let b = Point(x: maxX, y: maxY) * transform
+        let c = Point(x: minX, y: maxY) * transform
+        let d = Point(x: minX, y: minY) * transform
+        
+        if a.x == b.x && c.x == d.x && b.y == c.y && d.y == a.y {
+            
+            let minX = min(a.x, c.x)
+            let maxX = max(a.x, c.x)
+            let minY = min(a.y, c.y)
+            let maxY = max(a.y, c.y)
+            
+            return Rect(x: minX, y: minY, width: maxX - minX, height: maxY - minY)
+        }
+        
+        if b.x == c.x && d.x == a.x && a.y == b.y && c.y == d.y {
+            
+            let minX = min(a.x, c.x)
+            let maxX = max(a.x, c.x)
+            let minY = min(a.y, c.y)
+            let maxY = max(a.y, c.y)
+            
+            return Rect(x: minX, y: minY, width: maxX - minX, height: maxY - minY)
+        }
+        
+        return nil
     }
 }
 

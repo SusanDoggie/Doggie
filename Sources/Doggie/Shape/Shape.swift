@@ -63,7 +63,7 @@ public struct Shape : RandomAccessCollection, MutableCollection, ExpressibleByAr
     public var transform : SDTransform = SDTransform.identity {
         willSet {
             if transform != newValue {
-                cache = cache.lck.synchronized { Cache(originalBoundary: cache.originalBoundary, boundary: nil, table: cache.table) }
+                cache = cache.lck.synchronized { Cache(originalBoundary: cache.originalBoundary, table: cache.table) }
             }
         }
     }
@@ -87,16 +87,8 @@ public struct Shape : RandomAccessCollection, MutableCollection, ExpressibleByAr
             return originalBoundary.center * transform
         }
         set {
-            let _center = center
-            if _center != newValue {
-                cache = cache.lck.synchronized {
-                    var boundary = cache.boundary
-                    let offset = newValue - _center
-                    boundary?.origin += offset
-                    transform *= SDTransform.translate(x: offset.x, y: offset.y)
-                    return Cache(originalBoundary: cache.originalBoundary, boundary: boundary, table: cache.table)
-                }
-            }
+            let offset = newValue - center
+            transform *= SDTransform.translate(x: offset.x, y: offset.y)
         }
     }
     
@@ -119,12 +111,7 @@ public struct Shape : RandomAccessCollection, MutableCollection, ExpressibleByAr
     }
     
     public var boundary : Rect {
-        return cache.lck.synchronized {
-            if cache.boundary == nil {
-                cache.boundary = identity.originalBoundary
-            }
-            return cache.boundary!
-        }
+        return self.originalBoundary.apply(transform) ?? identity.originalBoundary
     }
     
     public var originalBoundary : Rect {
@@ -167,7 +154,6 @@ extension Shape {
         let lck = SDLock()
         
         var originalBoundary: Rect?
-        var boundary: Rect?
         var identity : Shape?
         
         var area: Double?
@@ -176,14 +162,12 @@ extension Shape {
         
         init() {
             self.originalBoundary = nil
-            self.boundary = nil
             self.identity = nil
             self.area = nil
             self.table = [:]
         }
-        init(originalBoundary: Rect?, boundary: Rect?, table: [String : Any]) {
+        init(originalBoundary: Rect?, table: [String : Any]) {
             self.originalBoundary = originalBoundary
-            self.boundary = boundary
             self.identity = nil
             self.area = nil
             self.table = table
@@ -319,21 +303,21 @@ extension Shape.Component {
         return cache.lck.synchronized {
             if cache.boundary == nil {
                 var lastPoint = start
-                var bound: Rect? = nil
+                var bound = Rect(origin: start, size: Size())
                 for segment in segments {
                     switch segment {
                     case let .line(p1):
-                        bound = bound?.union(LineSegment(lastPoint, p1).boundary) ?? LineSegment(lastPoint, p1).boundary
+                        bound = bound.union(LineSegment(lastPoint, p1).boundary)
                         lastPoint = p1
                     case let .quad(p1, p2):
-                        bound = bound?.union(QuadBezier(lastPoint, p1, p2).boundary) ?? QuadBezier(lastPoint, p1, p2).boundary
+                        bound = bound.union(QuadBezier(lastPoint, p1, p2).boundary)
                         lastPoint = p2
                     case let .cubic(p1, p2, p3):
-                        bound = bound?.union(CubicBezier(lastPoint, p1, p2, p3).boundary) ?? CubicBezier(lastPoint, p1, p2, p3).boundary
+                        bound = bound.union(CubicBezier(lastPoint, p1, p2, p3).boundary)
                         lastPoint = p3
                     }
                 }
-                cache.boundary = bound ?? Rect(origin: start, size: Size())
+                cache.boundary = bound
             }
             return cache.boundary!
         }
@@ -661,15 +645,7 @@ extension Shape {
         }
         return cache.lck.synchronized {
             if cache.identity == nil {
-                if transform == SDTransform.identity {
-                    let _path = Shape(self.components)
-                    _path.cache.originalBoundary = cache.originalBoundary
-                    _path.cache.boundary = cache.boundary
-                    _path.cache.area = cache.area
-                    cache.identity = _path
-                } else {
-                    cache.identity = Shape(self.components.map { $0 * transform })
-                }
+                cache.identity = Shape(self.components.map { $0 * transform })
             }
             return cache.identity!
         }
