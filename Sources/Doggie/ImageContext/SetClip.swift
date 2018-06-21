@@ -67,7 +67,8 @@ extension ImageContext {
                     clip += offset_x + offset_y * width
                     _stencil += antialias * offset_x + offset_y * _stencil_width2
                     
-                    let div = 1 / Double(antialias * antialias)
+                    let _antialias2 = antialias * antialias
+                    let div = 1 / Double(_antialias2)
                     
                     for _ in 0..<_height {
                         
@@ -92,7 +93,7 @@ extension ImageContext {
                             }
                             
                             if _p != 0 {
-                                _clip.pointee = div * Double(_p)
+                                _clip.pointee = _p == _antialias2 ? 1 : div * Double(_p)
                             }
                             
                             _clip += 1

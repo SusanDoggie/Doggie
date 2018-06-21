@@ -69,7 +69,8 @@ extension ImageContext {
                         buf += offset_x + offset_y * width
                         _stencil += antialias * offset_x + offset_y * _stencil_width2
                         
-                        let div = 1 / Double(antialias * antialias)
+                        let _antialias2 = antialias * antialias
+                        let div = 1 / Double(_antialias2)
                         
                         for _ in 0..<_height {
                             
@@ -94,7 +95,7 @@ extension ImageContext {
                                 }
                                 
                                 if _p != 0 {
-                                    _buf.pointee = div * Double(_p)
+                                    _buf.pointee = _p == _antialias2 ? 1 : div * Double(_p)
                                 }
                                 
                                 _buf += 1
@@ -123,7 +124,8 @@ extension ImageContext {
                         var blender = blender + offset_x + offset_y * width
                         _stencil += antialias * offset_x + offset_y * _stencil_width2
                         
-                        let div = 1 / Double(antialias * antialias)
+                        let _antialias2 = antialias * antialias
+                        let div = 1 / Double(_antialias2)
                         
                         for _ in 0..<_height {
                             
@@ -149,7 +151,9 @@ extension ImageContext {
                                 
                                 if _p != 0 {
                                     var color = color
-                                    color.opacity *= div * Double(_p)
+                                    if _p != _antialias2 {
+                                        color.opacity *= div * Double(_p)
+                                    }
                                     _blender.draw(color: color)
                                 }
                                 
