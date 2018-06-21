@@ -186,21 +186,20 @@ extension ImageContext {
     func _stencil(shape: Shape) -> (Rect, MappedBuffer<Int16>) {
         
         let transform = shape.transform * self.transform
+        let shouldAntialias = self.shouldAntialias
+        let antialias = self.antialias
         
         var shape = shape
         
-        if antialias {
+        if shouldAntialias && antialias > 1 {
             
-            shape.transform = transform * SDTransform.scale(5)
+            shape.transform = transform * SDTransform.scale(Double(antialias))
             
-            var stencil = MappedBuffer<Int16>(repeating: 0, count: width * height * 25)
+            var stencil = MappedBuffer<Int16>(repeating: 0, count: width * height * antialias * antialias)
             
-            var bound = shape.raster(width: width * 5, height: height * 5, stencil: &stencil)
+            let bound = shape.raster(width: width * antialias, height: height * antialias, stencil: &stencil)
             
-            bound.origin /= 5
-            bound.size /= 5
-            
-            return (bound, stencil)
+            return (bound / Double(antialias), stencil)
             
         } else {
             

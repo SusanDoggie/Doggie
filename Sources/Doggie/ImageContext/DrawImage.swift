@@ -38,6 +38,8 @@ extension ImageContext {
         let s_width = texture.width
         let s_height = texture.height
         let transform = transform * self.transform
+        let shouldAntialias = self.shouldAntialias
+        let antialias = self.antialias
         
         if width == 0 || height == 0 || s_width == 0 || s_height == 0 || transform.determinant.almostZero() {
             return
@@ -47,23 +49,26 @@ extension ImageContext {
         
         self.withUnsafePixelBlender { blender in
             
-            if antialias {
+            if shouldAntialias && antialias > 1 {
                 
                 var blender = blender
+                
+                let stride = 1 / Double(antialias)
+                let div = 1 / Double(antialias * antialias)
                 
                 for y in 0..<height {
                     for x in 0..<width {
                         var _q = Point(x: x, y: y)
                         var pixel = ColorPixel<Pixel.Model>()
-                        for _ in 0..<5 {
+                        for _ in 0..<antialias {
                             var q = _q
-                            for _ in 0..<5 {
+                            for _ in 0..<antialias {
                                 pixel += texture.pixel(q * _transform)
-                                q.x += 0.2
+                                q.x += stride
                             }
-                            _q.y += 0.2
+                            _q.y += stride
                         }
-                        blender.draw(color: pixel * 0.04)
+                        blender.draw(color: pixel * div)
                         blender += 1
                     }
                 }

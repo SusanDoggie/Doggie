@@ -37,6 +37,8 @@ extension ImageContext {
         let width = self.width
         let height = self.height
         let transform = shape.transform * self.transform
+        let shouldAntialias = self.shouldAntialias
+        let antialias = self.antialias
         
         if width == 0 || height == 0 || transform.determinant.almostZero() {
             return
@@ -44,11 +46,11 @@ extension ImageContext {
         
         let (bound, stencil) = self._stencil(shape: shape)
         
-        if antialias {
+        if shouldAntialias && antialias > 1 {
             
-            stencil.withUnsafeBytes { stencil in
+            stencil.withUnsafeBufferPointer { stencil in
                 
-                guard var _stencil = stencil.baseAddress?.assumingMemoryBound(to: (Int16, Int16, Int16, Int16, Int16).self) else { return }
+                guard var _stencil = stencil.baseAddress else { return }
                 
                 self.withUnsafeMutableClipBufferPointer { buffer in
                     
@@ -59,8 +61,13 @@ extension ImageContext {
                     let _width = min(width - offset_x, Int(ceil(bound.width + 1)))
                     let _height = min(height - offset_y, Int(ceil(bound.height + 1)))
                     
+                    let _stencil_width = antialias * width
+                    let _stencil_width2 = antialias * _stencil_width
+                    
                     clip += offset_x + offset_y * width
-                    _stencil += offset_x + 5 * offset_y * width
+                    _stencil += antialias * offset_x + offset_y * _stencil_width2
+                    
+                    let div = 1 / Double(antialias * antialias)
                     
                     for _ in 0..<_height {
                         
@@ -73,24 +80,27 @@ extension ImageContext {
                             
                             var _s = __stencil
                             
-                            for _ in 0..<5 {
-                                let (s0, s1, s2, s3, s4) = _s.pointee
-                                if winding(s0) { _p = _p &+ 1 }
-                                if winding(s1) { _p = _p &+ 1 }
-                                if winding(s2) { _p = _p &+ 1 }
-                                if winding(s3) { _p = _p &+ 1 }
-                                if winding(s4) { _p = _p &+ 1 }
-                                _s += width
+                            for _ in 0..<antialias {
+                                var __s = _s
+                                for _ in 0..<antialias {
+                                    if winding(__s.pointee) {
+                                        _p = _p &+ 1
+                                    }
+                                    __s += 1
+                                }
+                                _s += _stencil_width
                             }
                             
-                            _clip.pointee = 0.04 * Double(_p)
+                            if _p != 0 {
+                                _clip.pointee = div * Double(_p)
+                            }
                             
                             _clip += 1
-                            __stencil += 1
+                            __stencil += antialias
                         }
                         
                         clip += width
-                        _stencil += 5 * width
+                        _stencil += _stencil_width2
                     }
                 }
             }

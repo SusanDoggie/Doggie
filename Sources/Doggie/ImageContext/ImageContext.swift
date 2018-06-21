@@ -28,8 +28,10 @@ private struct ImageContextStyles {
     static let defaultShadowColor = AnyColor(colorSpace: .default, white: 0.0, opacity: 1.0 / 3.0)
     
     var opacity: Double = 1
-    var antialias: Bool = true
     var transform: SDTransform = SDTransform.identity
+    
+    var shouldAntialias: Bool = true
+    var antialias: Int = 5
     
     var shadowColor: AnyColor = ImageContextStyles.defaultShadowColor
     var shadowOffset: Size = Size()
@@ -204,21 +206,29 @@ extension ImageContext {
         }
     }
     
-    public var antialias: Bool {
-        get {
-            return current.styles.antialias
-        }
-        set {
-            current.styles.antialias = newValue
-        }
-    }
-    
     public var transform: SDTransform {
         get {
             return current.styles.transform
         }
         set {
             current.styles.transform = newValue
+        }
+    }
+    
+    public var shouldAntialias: Bool {
+        get {
+            return current.styles.shouldAntialias
+        }
+        set {
+            current.styles.shouldAntialias = newValue
+        }
+    }
+    public var antialias: Int {
+        get {
+            return current.styles.antialias
+        }
+        set {
+            current.styles.antialias = max(1, newValue)
         }
     }
     
