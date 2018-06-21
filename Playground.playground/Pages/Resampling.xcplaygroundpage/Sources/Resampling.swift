@@ -21,7 +21,7 @@ public func resampling<Pixel>(image: Image<Pixel>, width: Int, height: Int, resa
     
     let context = ImageContext<Pixel>(width: width, height: height, colorSpace: image.colorSpace)
     
-    context.antialias = false
+    context.shouldAntialias = false
     context.resamplingAlgorithm = algorithm
     
     context.draw(image: image, transform: SDTransform.scale(x: Double(width) / Double(image.width), y: Double(height) / Double(image.height)))

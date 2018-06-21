@@ -77,7 +77,7 @@ class ImageTest: XCTestCase {
         
         let context = ImageContext<ARGB32ColorPixel>(width: 20, height: 20, colorSpace: sampleA.colorSpace)
         
-        context.antialias = false
+        context.shouldAntialias = false
         context.resamplingAlgorithm = .none
         
         context.draw(image: sampleA, transform: SDTransform.scale(x: Double(context.width) / Double(sampleA.width), y: Double(context.height) / Double(sampleA.height)))
@@ -96,7 +96,7 @@ class ImageTest: XCTestCase {
         
         let context = ImageContext<ARGB32ColorPixel>(width: 20, height: 20, colorSpace: sample.colorSpace)
         
-        context.antialias = false
+        context.shouldAntialias = false
         context.resamplingAlgorithm = .none
         
         self.measure() {
@@ -111,7 +111,7 @@ class ImageTest: XCTestCase {
         
         let context = ImageContext<ARGB32ColorPixel>(width: 20, height: 20, colorSpace: sample.colorSpace)
         
-        context.antialias = false
+        context.shouldAntialias = false
         context.resamplingAlgorithm = .linear
         
         self.measure() {
@@ -126,7 +126,7 @@ class ImageTest: XCTestCase {
         
         let context = ImageContext<ARGB32ColorPixel>(width: 20, height: 20, colorSpace: sample.colorSpace)
         
-        context.antialias = false
+        context.shouldAntialias = false
         context.resamplingAlgorithm = .cosine
         
         self.measure() {
@@ -141,7 +141,7 @@ class ImageTest: XCTestCase {
         
         let context = ImageContext<ARGB32ColorPixel>(width: 20, height: 20, colorSpace: sample.colorSpace)
         
-        context.antialias = false
+        context.shouldAntialias = false
         context.resamplingAlgorithm = .cubic
         
         self.measure() {
@@ -156,7 +156,7 @@ class ImageTest: XCTestCase {
         
         let context = ImageContext<ARGB32ColorPixel>(width: 20, height: 20, colorSpace: sample.colorSpace)
         
-        context.antialias = false
+        context.shouldAntialias = false
         context.resamplingAlgorithm = .hermite(0.5, 0)
         
         self.measure() {
@@ -171,7 +171,7 @@ class ImageTest: XCTestCase {
         
         let context = ImageContext<ARGB32ColorPixel>(width: 20, height: 20, colorSpace: sample.colorSpace)
         
-        context.antialias = false
+        context.shouldAntialias = false
         context.resamplingAlgorithm = .mitchell(1/3, 1/3)
         
         self.measure() {
@@ -186,7 +186,7 @@ class ImageTest: XCTestCase {
         
         let context = ImageContext<ARGB32ColorPixel>(width: 20, height: 20, colorSpace: sample.colorSpace)
         
-        context.antialias = false
+        context.shouldAntialias = false
         context.resamplingAlgorithm = .lanczos(3)
         
         self.measure() {
