@@ -427,6 +427,19 @@ extension MappedBuffer : Equatable where Element : Equatable {
     }
 }
 
+extension MappedBuffer : Hashable where Element : Hashable {
+    
+    @inlinable
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(count)
+        withUnsafeBufferPointer {
+            for element in $0 {
+                hasher.combine(element)
+            }
+        }
+    }
+}
+
 extension MappedBuffer {
     
     @usableFromInline
