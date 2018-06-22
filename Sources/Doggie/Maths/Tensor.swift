@@ -109,47 +109,50 @@ public func dot<T : Tensor>(_ lhs: T, _ rhs: T) -> T.Scalar {
     return lhs.combined(rhs) { $0 * $1 }.reduce(0) { $0 + $1 }
 }
 
-@_transparent
-public prefix func +<T: Tensor>(val: T) -> T {
-    return val
-}
-@_transparent
-public prefix func -<T: Tensor>(val: T) -> T {
-    return val.map { -$0 }
-}
-@_transparent
-public func +<T: Tensor>(lhs: T, rhs: T) -> T {
-    return lhs.combined(rhs) { $0 + $1 }
-}
-@_transparent
-public func -<T: Tensor>(lhs: T, rhs: T) -> T {
-    return lhs.combined(rhs) { $0 - $1 }
-}
-@_transparent
-public func *<T: Tensor>(lhs: T.Scalar, rhs: T) -> T {
-    return rhs.map { lhs * $0 }
-}
-@_transparent
-public func *<T: Tensor>(lhs: T, rhs: T.Scalar) -> T {
-    return lhs.map { $0 * rhs }
-}
-@_transparent
-public func /<T: Tensor>(lhs: T, rhs: T.Scalar) -> T {
-    return lhs.map { $0 / rhs }
-}
-@_transparent
-public func += <T: Tensor>(lhs: inout T, rhs: T) {
-    lhs = lhs + rhs
-}
-@_transparent
-public func -= <T: Tensor>(lhs: inout T, rhs: T) {
-    lhs = lhs - rhs
-}
-@_transparent
-public func *= <T: Tensor>(lhs: inout T, rhs: T.Scalar) {
-    lhs = lhs * rhs
-}
-@_transparent
-public func /= <T: Tensor>(lhs: inout T, rhs: T.Scalar) {
-    lhs = lhs / rhs
+extension Tensor {
+    
+    @_transparent
+    public static prefix func + (val: Self) -> Self {
+        return val
+    }
+    @_transparent
+    public static prefix func - (val: Self) -> Self {
+        return val.map { -$0 }
+    }
+    @_transparent
+    public static func + (lhs: Self, rhs: Self) -> Self {
+        return lhs.combined(rhs) { $0 + $1 }
+    }
+    @_transparent
+    public static func - (lhs: Self, rhs: Self) -> Self {
+        return lhs.combined(rhs) { $0 - $1 }
+    }
+    @_transparent
+    public static func * (lhs: Scalar, rhs: Self) -> Self {
+        return rhs.map { lhs * $0 }
+    }
+    @_transparent
+    public static func * (lhs: Self, rhs: Scalar) -> Self {
+        return lhs.map { $0 * rhs }
+    }
+    @_transparent
+    public static func / (lhs: Self, rhs: Scalar) -> Self {
+        return lhs.map { $0 / rhs }
+    }
+    @_transparent
+    public static func += (lhs: inout Self, rhs: Self) {
+        lhs = lhs + rhs
+    }
+    @_transparent
+    public static func -= (lhs: inout Self, rhs: Self) {
+        lhs = lhs - rhs
+    }
+    @_transparent
+    public static func *= (lhs: inout Self, rhs: Scalar) {
+        lhs = lhs * rhs
+    }
+    @_transparent
+    public static func /= (lhs: inout Self, rhs: Scalar) {
+        lhs = lhs / rhs
+    }
 }

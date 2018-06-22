@@ -70,6 +70,46 @@ public protocol ImageContextRenderVertex {
     static func * (lhs: Double, rhs: Self) -> Self
 }
 
+extension ScalarMultiplicative where Self : ImageContextRenderVertex {
+    
+    @_transparent
+    public static prefix func + (x: Self) -> Self {
+        return x
+    }
+    @_transparent
+    public static prefix func - (x: Self) -> Self {
+        return -1 * x
+    }
+    @_transparent
+    public static func - (lhs: Self, rhs: Self) -> Self {
+        return lhs + (-rhs)
+    }
+    @_transparent
+    public static func * (lhs: Self, rhs: Scalar) -> Self {
+        return rhs * lhs
+    }
+    @_transparent
+    public static func / (lhs: Self, rhs: Scalar) -> Self {
+        return lhs * (1 / rhs)
+    }
+    @_transparent
+    public static func += (lhs: inout Self, rhs: Self) {
+        lhs = lhs + rhs
+    }
+    @_transparent
+    public static func -= (lhs: inout Self, rhs: Self) {
+        lhs = lhs - rhs
+    }
+    @_transparent
+    public static func *= (lhs: inout Self, rhs: Scalar) {
+        lhs = lhs * rhs
+    }
+    @_transparent
+    public static func /= (lhs: inout Self, rhs: Scalar) {
+        lhs = lhs / rhs
+    }
+}
+
 public struct ImageContextRenderStageIn<Vertex : ImageContextRenderVertex> {
     
     public var vertex: Vertex

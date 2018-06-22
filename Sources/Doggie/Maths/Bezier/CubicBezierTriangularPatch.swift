@@ -219,6 +219,34 @@ extension CubicBezierTriangularPatch where Element: Tensor {
     }
 }
 
+extension CubicBezierTriangularPatch where Element: ImageContextRenderVertex {
+    
+    @inlinable
+    func _distance(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point) -> Double {
+        return p0.distance(to: p1) + p1.distance(to: p2) + p2.distance(to: p3)
+    }
+    
+    @inlinable
+    public func halving(position: (Element.Position) -> Point) -> (CubicBezierTriangularPatch, CubicBezierTriangularPatch) {
+        
+        let d1 = _distance(position(m030.position), position(m021.position), position(m012.position), position(m003.position))
+        let d2 = _distance(position(m003.position), position(m102.position), position(m201.position), position(m300.position))
+        let d3 = _distance(position(m300.position), position(m210.position), position(m120.position), position(m030.position))
+        
+        if d1 < d2 {
+            if d2 < d3 {
+                return halving3()
+            } else {
+                return halving2()
+            }
+        } else if d1 < d3 {
+            return halving3()
+        } else {
+            return halving1()
+        }
+    }
+}
+
 @inlinable
 public func * (lhs: CubicBezierTriangularPatch<Point>, rhs: SDTransform) -> CubicBezierTriangularPatch<Point> {
     return CubicBezierTriangularPatch(lhs.m300 * rhs, lhs.m210 * rhs, lhs.m120 * rhs, lhs.m030 * rhs,
