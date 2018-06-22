@@ -150,6 +150,50 @@ public protocol ImageContextRenderTriangleGenerator {
     func render(position: (Vertex.Position) -> Point, _ body: (Vertex, Vertex, Vertex) -> Void)
 }
 
+extension Sequence where Self : ImageContextRenderTriangleGenerator, Element : ImageContextRenderTriangleGenerator, Element.Vertex == Self.Vertex {
+    
+    @inlinable
+    public func render(position: (Vertex.Position) -> Point, _ body: (Vertex, Vertex, Vertex) -> Void) {
+        self.forEach { $0.render(position: position, body) }
+    }
+}
+
+extension Array : ImageContextRenderTriangleGenerator where Element : ImageContextRenderTriangleGenerator {
+    
+    public typealias Vertex = Element.Vertex
+    
+}
+
+extension ArraySlice : ImageContextRenderTriangleGenerator where Element : ImageContextRenderTriangleGenerator {
+    
+    public typealias Vertex = Element.Vertex
+    
+}
+
+extension ContiguousArray : ImageContextRenderTriangleGenerator where Element : ImageContextRenderTriangleGenerator {
+    
+    public typealias Vertex = Element.Vertex
+    
+}
+
+extension MappedBuffer : ImageContextRenderTriangleGenerator where Element : ImageContextRenderTriangleGenerator {
+    
+    public typealias Vertex = Element.Vertex
+    
+}
+
+extension UnsafeBufferPointer : ImageContextRenderTriangleGenerator where Element : ImageContextRenderTriangleGenerator {
+    
+    public typealias Vertex = Element.Vertex
+    
+}
+
+extension UnsafeMutableBufferPointer : ImageContextRenderTriangleGenerator where Element : ImageContextRenderTriangleGenerator {
+    
+    public typealias Vertex = Element.Vertex
+    
+}
+
 extension ImageContext {
     
     @inlinable
