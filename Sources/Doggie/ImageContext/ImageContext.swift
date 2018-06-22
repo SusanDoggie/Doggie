@@ -159,9 +159,17 @@ extension ImageContext {
     
     public func clearClipBuffer(with value: Double = 1) {
         
-        if current.clip != nil {
+        if value == 1 {
             
-            withUnsafeMutableClipBufferPointer { buf in
+            current.clip = nil
+            
+        } else if current.clip == nil || value == 0 {
+            
+            current.clip = MappedBuffer(repeating: value, count: image.width * image.height, option: image.option)
+            
+        } else {
+            
+            withUnsafeMutableDepthBufferPointer { buf in
                 
                 guard var clip = buf.baseAddress else { return }
                 
@@ -170,8 +178,6 @@ extension ImageContext {
                     clip += 1
                 }
             }
-        } else {
-            current.clip = MappedBuffer(repeating: value, count: image.width * image.height, option: image.option)
         }
     }
 }
@@ -371,7 +377,15 @@ extension ImageContext {
     
     public func clearRenderDepthBuffer(with value: Double = 1) {
         
-        if current.depth != nil {
+        if value == 1 {
+            
+            current.depth = nil
+            
+        } else if current.depth == nil || value == 0 {
+            
+            current.depth = MappedBuffer(repeating: value, count: image.width * image.height, option: image.option)
+            
+        } else {
             
             withUnsafeMutableDepthBufferPointer { buf in
                 
@@ -382,8 +396,6 @@ extension ImageContext {
                     depth += 1
                 }
             }
-        } else {
-            current.depth = MappedBuffer(repeating: value, count: image.width * image.height, option: image.option)
         }
     }
 }
