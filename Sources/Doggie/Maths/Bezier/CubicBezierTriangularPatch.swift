@@ -227,11 +227,11 @@ extension CubicBezierTriangularPatch where Element: ImageContextRenderVertex {
     }
     
     @inlinable
-    public func halving(position: (Element.Position) -> Point) -> (CubicBezierTriangularPatch, CubicBezierTriangularPatch) {
+    public func halving(projection: (Element.Position) -> Point) -> (CubicBezierTriangularPatch, CubicBezierTriangularPatch) {
         
-        let d1 = _distance(position(m030.position), position(m021.position), position(m012.position), position(m003.position))
-        let d2 = _distance(position(m003.position), position(m102.position), position(m201.position), position(m300.position))
-        let d3 = _distance(position(m300.position), position(m210.position), position(m120.position), position(m030.position))
+        let d1 = _distance(projection(m030.position), projection(m021.position), projection(m012.position), projection(m003.position))
+        let d2 = _distance(projection(m003.position), projection(m102.position), projection(m201.position), projection(m300.position))
+        let d3 = _distance(projection(m300.position), projection(m210.position), projection(m120.position), projection(m030.position))
         
         if d1 < d2 {
             if d2 < d3 {
