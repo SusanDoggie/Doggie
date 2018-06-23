@@ -118,20 +118,28 @@ public struct ImageContextRenderStageIn<Vertex : ImageContextRenderVertex> {
     
     public var barycentric: Vector
     
-    public var position: Point
+    public var projection: Point
     
     public var facing: Double
     
     public var depth: Double
     
     @inlinable
-    init(vertex: Vertex, triangle: (Vertex.Position, Vertex.Position, Vertex.Position), barycentric: Vector, position: Point, facing: Double, depth: Double) {
+    init(vertex: Vertex, triangle: (Vertex.Position, Vertex.Position, Vertex.Position), barycentric: Vector, projection: Point, facing: Double, depth: Double) {
         self.vertex = vertex
         self.triangle = triangle
         self.barycentric = barycentric
-        self.position = position
+        self.projection = projection
         self.facing = facing
         self.depth = depth
+    }
+}
+
+extension ImageContextRenderStageIn {
+    
+    @inlinable
+    public var position: Vertex.Position {
+        return vertex.position
     }
 }
 
@@ -147,37 +155,34 @@ public protocol ImageContextRenderTriangleGenerator {
     
     associatedtype Vertex : ImageContextRenderVertex
     
-    func render(position: (Vertex.Position) -> Point, _ body: (Vertex, Vertex, Vertex) -> Void)
+    func render(projection: (Vertex.Position) -> Point, _ body: (Vertex, Vertex, Vertex) -> Void)
 }
 
 public protocol ImageContextRenderPipelineShader {
     
-    associatedtype StageIn : ImageContextRenderVertex
+    associatedtype StageIn : ImageContextRenderVertex where StageIn.Position == StageOut.Position
     
-    associatedtype StageOut : ImageContextRenderVertex where StageOut.Position == StageIn.Position
+    associatedtype StageOut : ImageContextRenderVertex
     
-    func render(position: (StageIn.Position) -> Point, stageIn: (StageIn, StageIn, StageIn)) -> (StageOut, StageOut, StageOut)
+    func render(projection: (StageIn.Position) -> Point, stageIn: (StageIn, StageIn, StageIn), stageOut: (StageOut, StageOut, StageOut) -> Void)
 }
 
-public struct ImageContextRenderPipeline<Intput: ImageContextRenderTriangleGenerator, Shader: ImageContextRenderPipelineShader> : ImageContextRenderTriangleGenerator where Intput.Vertex == Shader.StageIn {
+public struct ImageContextRenderPipeline<Generator: ImageContextRenderTriangleGenerator, Shader: ImageContextRenderPipelineShader> : ImageContextRenderTriangleGenerator where Generator.Vertex == Shader.StageIn {
     
     public typealias Vertex = Shader.StageOut
     
-    public let input: Intput
+    public let generator: Generator
     public let shader: Shader
     
     @inlinable
-    init(input: Intput, shader: Shader) {
-        self.input = input
+    init(generator: Generator, shader: Shader) {
+        self.generator = generator
         self.shader = shader
     }
     
     @inlinable
-    public func render(position: (Vertex.Position) -> Point, _ body: (Vertex, Vertex, Vertex) -> Void) {
-        input.render(position: position) {
-            let stageOut = shader.render(position: position, stageIn: ($0, $1, $2))
-            body(stageOut.0, stageOut.1, stageOut.2)
-        }
+    public func render(projection: (Vertex.Position) -> Point, _ body: (Vertex, Vertex, Vertex) -> Void) {
+        generator.render(projection: projection) { shader.render(projection: projection, stageIn: ($0, $1, $2), stageOut: body) }
     }
 }
 
@@ -185,15 +190,15 @@ extension ImageContextRenderTriangleGenerator {
     
     @inlinable
     public func bind<S>(_ shader: S) -> ImageContextRenderPipeline<Self, S> {
-        return ImageContextRenderPipeline(input: self, shader: shader)
+        return ImageContextRenderPipeline(generator: self, shader: shader)
     }
 }
 
 extension Sequence where Self : ImageContextRenderTriangleGenerator, Element : ImageContextRenderTriangleGenerator, Element.Vertex == Self.Vertex {
     
     @inlinable
-    public func render(position: (Vertex.Position) -> Point, _ body: (Vertex, Vertex, Vertex) -> Void) {
-        self.forEach { $0.render(position: position, body) }
+    public func render(projection: (Vertex.Position) -> Point, _ body: (Vertex, Vertex, Vertex) -> Void) {
+        self.forEach { $0.render(projection: projection, body) }
     }
 }
 
@@ -236,7 +241,7 @@ extension UnsafeMutableBufferPointer : ImageContextRenderTriangleGenerator where
 extension ImageContext {
     
     @inlinable
-    public func render<G : ImageContextRenderTriangleGenerator, P : ColorPixelProtocol>(_ triangles: G, position: (G.Vertex.Position) -> Point, depthFun: ((G.Vertex.Position) -> Double)?, shader: (ImageContextRenderStageIn<G.Vertex>) -> P?) where Pixel.Model == P.Model {
+    public func render<G : ImageContextRenderTriangleGenerator, P : ColorPixelProtocol>(_ triangles: G, projection: (G.Vertex.Position) -> Point, depthFun: ((G.Vertex.Position) -> Double)?, shader: (ImageContextRenderStageIn<G.Vertex>) -> P?) where Pixel.Model == P.Model {
         
         let transform = self.transform
         let cullingMode = self.renderCullingMode
@@ -247,9 +252,9 @@ extension ImageContext {
         }
         
         @inline(__always)
-        func _render(rasterizer: ImageContextRenderBuffer<Pixel>, position: (G.Vertex.Position) -> Point, depthFun: ((G.Vertex.Position) -> Double)?, shader: (ImageContextRenderStageIn<G.Vertex>) -> P?) {
+        func _render(rasterizer: ImageContextRenderBuffer<Pixel>, projection: (G.Vertex.Position) -> Point, depthFun: ((G.Vertex.Position) -> Double)?, shader: (ImageContextRenderStageIn<G.Vertex>) -> P?) {
             
-            triangles.render(position: position) { v0, v1, v2 in
+            triangles.render(projection: projection) { v0, v1, v2 in
                 
                 let _v0 = v0.position
                 let _v1 = v1.position
@@ -259,9 +264,9 @@ extension ImageContext {
                     guard 0...1 ~= depthFun(_v0) || 0...1 ~= depthFun(_v1) || 0...1 ~= depthFun(_v2) else { return }
                 }
                 
-                let p0 = position(_v0)
-                let p1 = position(_v1)
-                let p2 = position(_v2)
+                let p0 = projection(_v0)
+                let p1 = projection(_v1)
+                let p2 = projection(_v2)
                 
                 let facing = cross(p1 - p0, p2 - p0)
                 
@@ -299,11 +304,11 @@ extension ImageContext {
                         }
                         
                         depth_ptr.pointee = _depth
-                        if let source = shader(ImageContextRenderStageIn(vertex: b, triangle: (_v0, _v1, _v2), barycentric: barycentric, position: position, facing: facing, depth: _depth)) {
+                        if let source = shader(ImageContextRenderStageIn(vertex: b, triangle: (_v0, _v1, _v2), barycentric: barycentric, projection: position, facing: facing, depth: _depth)) {
                             buf.blender.draw(color: source)
                         }
                         
-                    } else if let source = shader(ImageContextRenderStageIn(vertex: b, triangle: (_v0, _v1, _v2), barycentric: barycentric, position: position, facing: facing, depth: 0)) {
+                    } else if let source = shader(ImageContextRenderStageIn(vertex: b, triangle: (_v0, _v1, _v2), barycentric: barycentric, projection: position, facing: facing, depth: 0)) {
                         buf.blender.draw(color: source)
                     }
                 }
@@ -320,13 +325,13 @@ extension ImageContext {
                     
                     let rasterizer = ImageContextRenderBuffer(blender: blender, depth: _depth, width: width, height: height)
                     
-                    _render(rasterizer: rasterizer, position: position, depthFun: depthFun, shader: shader)
+                    _render(rasterizer: rasterizer, projection: projection, depthFun: depthFun, shader: shader)
                 }
             } else {
                 
                 let rasterizer = ImageContextRenderBuffer(blender: blender, depth: nil, width: width, height: height)
                 
-                _render(rasterizer: rasterizer, position: position, depthFun: nil, shader: shader)
+                _render(rasterizer: rasterizer, projection: projection, depthFun: nil, shader: shader)
             }
         }
     }
@@ -336,7 +341,7 @@ extension ImageContext {
     
     @inlinable
     public func render<G : ImageContextRenderTriangleGenerator, P : ColorPixelProtocol>(_ triangles: G, shader: (ImageContextRenderStageIn<G.Vertex>) -> P?) where G.Vertex.Position == Point, Pixel.Model == P.Model {
-        render(triangles, position: { $0 }, depthFun: nil, shader: shader)
+        render(triangles, projection: { $0 }, depthFun: nil, shader: shader)
     }
 }
 
@@ -360,7 +365,7 @@ extension ImageContext {
         let width = Double(self.width)
         let height = Double(self.height)
         
-        render(triangles, position: { Point(x: (0.5 + 0.5 * $0.x) * width, y: (0.5 + 0.5 * $0.y) * height) }, depthFun: { ($0.z - projection.nearZ) / (projection.farZ - projection.nearZ) }, shader: { shader($0) })
+        render(triangles, projection: { Point(x: (0.5 + 0.5 * $0.x) * width, y: (0.5 + 0.5 * $0.y) * height) }, depthFun: { ($0.z - projection.nearZ) / (projection.farZ - projection.nearZ) }, shader: { shader($0) })
     }
 }
 
@@ -400,8 +405,8 @@ struct _PerspectiveProjectTriangleGenerator<Base : ImageContextRenderTriangleGen
     }
     
     @inlinable
-    func render(position: (_Vertex.Position) -> Point, _ body: (_Vertex, _Vertex, _Vertex) -> Void) {
-        base.render(position: position) { body(_Vertex(vertex: $0), _Vertex(vertex: $1), _Vertex(vertex: $2)) }
+    func render(projection: (_Vertex.Position) -> Point, _ body: (_Vertex, _Vertex, _Vertex) -> Void) {
+        base.render(projection: projection) { body(_Vertex(vertex: $0), _Vertex(vertex: $1), _Vertex(vertex: $2)) }
     }
 }
 
@@ -458,7 +463,7 @@ extension ImageContextRenderStageIn {
         self.vertex = stageIn.vertex.vertex
         self.triangle = stageIn.triangle
         self.barycentric = stageIn.barycentric
-        self.position = stageIn.position
+        self.projection = stageIn.projection
         self.facing = stageIn.facing
         self.depth = stageIn.depth
     }
@@ -473,12 +478,12 @@ extension ImageContext {
         let height = Double(self.height)
         
         @inline(__always)
-        func _position(_ v: Vector) -> Point {
+        func _projection(_ v: Vector) -> Point {
             let p = v * projection
             return Point(x: (0.5 + 0.5 * p.x) * width, y: (0.5 + 0.5 * p.y) * height)
         }
         
-        render(_PerspectiveProjectTriangleGenerator(base: triangles), position: _position, depthFun: { ($0.z - projection.nearZ) / (projection.farZ - projection.nearZ) }, shader: { shader(ImageContextRenderStageIn($0)) })
+        render(_PerspectiveProjectTriangleGenerator(base: triangles), projection: _projection, depthFun: { ($0.z - projection.nearZ) / (projection.farZ - projection.nearZ) }, shader: { shader(ImageContextRenderStageIn($0)) })
     }
 }
 
@@ -495,7 +500,7 @@ struct _RenderTriangleSequence<Base: Sequence, Vertex: ImageContextRenderVertex>
     }
     
     @inlinable
-    func render(position: (Vertex.Position) -> Point, _ body: (Vertex, Vertex, Vertex) -> Void) {
+    func render(projection: (Vertex.Position) -> Point, _ body: (Vertex, Vertex, Vertex) -> Void) {
         base.forEach(body)
     }
 }
@@ -503,8 +508,8 @@ struct _RenderTriangleSequence<Base: Sequence, Vertex: ImageContextRenderVertex>
 extension ImageContext {
     
     @inlinable
-    public func render<S : Sequence, Vertex : ImageContextRenderVertex, P : ColorPixelProtocol>(_ triangles: S, position: (Vertex.Position) -> Point, depthFun: ((Vertex.Position) -> Double)?, shader: (ImageContextRenderStageIn<Vertex>) -> P?) where S.Element == (Vertex, Vertex, Vertex), Pixel.Model == P.Model {
-        self.render(_RenderTriangleSequence(base: triangles), position: position, depthFun: depthFun, shader: shader)
+    public func render<S : Sequence, Vertex : ImageContextRenderVertex, P : ColorPixelProtocol>(_ triangles: S, projection: (Vertex.Position) -> Point, depthFun: ((Vertex.Position) -> Double)?, shader: (ImageContextRenderStageIn<Vertex>) -> P?) where S.Element == (Vertex, Vertex, Vertex), Pixel.Model == P.Model {
+        self.render(_RenderTriangleSequence(base: triangles), projection: projection, depthFun: depthFun, shader: shader)
     }
     
     @inlinable
