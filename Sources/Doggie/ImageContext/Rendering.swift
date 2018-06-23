@@ -150,6 +150,45 @@ public protocol ImageContextRenderTriangleGenerator {
     func render(position: (Vertex.Position) -> Point, _ body: (Vertex, Vertex, Vertex) -> Void)
 }
 
+public protocol ImageContextRenderPipelineShader {
+    
+    associatedtype StageIn : ImageContextRenderVertex
+    
+    associatedtype StageOut : ImageContextRenderVertex where StageOut.Position == StageIn.Position
+    
+    func render(position: (StageIn.Position) -> Point, stageIn: (StageIn, StageIn, StageIn)) -> (StageOut, StageOut, StageOut)
+}
+
+public struct ImageContextRenderPipeline<Intput: ImageContextRenderTriangleGenerator, Shader: ImageContextRenderPipelineShader> : ImageContextRenderTriangleGenerator where Intput.Vertex == Shader.StageIn {
+    
+    public typealias Vertex = Shader.StageOut
+    
+    public let input: Intput
+    public let shader: Shader
+    
+    @inlinable
+    init(input: Intput, shader: Shader) {
+        self.input = input
+        self.shader = shader
+    }
+    
+    @inlinable
+    public func render(position: (Vertex.Position) -> Point, _ body: (Vertex, Vertex, Vertex) -> Void) {
+        input.render(position: position) {
+            let stageOut = shader.render(position: position, stageIn: ($0, $1, $2))
+            body(stageOut.0, stageOut.1, stageOut.2)
+        }
+    }
+}
+
+extension ImageContextRenderTriangleGenerator {
+    
+    @inlinable
+    public func bind<S>(_ shader: S) -> ImageContextRenderPipeline<Self, S> {
+        return ImageContextRenderPipeline(input: self, shader: shader)
+    }
+}
+
 extension Sequence where Self : ImageContextRenderTriangleGenerator, Element : ImageContextRenderTriangleGenerator, Element.Vertex == Self.Vertex {
     
     @inlinable
