@@ -67,7 +67,7 @@ extension SDTask {
     }
     
     @discardableResult
-    public static func capture(queue: DispatchQueue = SDDefaultDispatchQueue, qos: DispatchQoS = .unspecified, flags: DispatchWorkItemFlags = [], completeHandler: ((Result) -> Void) -> Void) -> SDTask {
+    public static func capture(queue: DispatchQueue = SDDefaultDispatchQueue, qos: DispatchQoS = .unspecified, flags: DispatchWorkItemFlags = [], completeHandler: (@escaping (Result) -> Void) -> Void) -> SDTask {
         var storage: Result?
         let task = SDTask(queue: queue)
         task.worker = task.createWorker(qos: qos, flags: flags) { storage! }
@@ -82,7 +82,7 @@ extension SDTask {
 extension SDTask where Result == Void {
     
     @discardableResult
-    public static func capture(queue: DispatchQueue = SDDefaultDispatchQueue, qos: DispatchQoS = .unspecified, flags: DispatchWorkItemFlags = [], completeHandler: (() -> Void) -> Void) -> SDTask {
+    public static func capture(queue: DispatchQueue = SDDefaultDispatchQueue, qos: DispatchQoS = .unspecified, flags: DispatchWorkItemFlags = [], completeHandler: (@escaping () -> Void) -> Void) -> SDTask {
         let task = SDTask(queue: queue)
         task.worker = task.createWorker(qos: qos, flags: flags) { return }
         completeHandler { task.queue.async(execute: task.worker) }
