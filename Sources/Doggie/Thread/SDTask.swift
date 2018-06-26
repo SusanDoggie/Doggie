@@ -79,6 +79,17 @@ extension SDTask {
     }
 }
 
+extension SDTask where Result == Void {
+    
+    @discardableResult
+    public static func capture(queue: DispatchQueue = SDDefaultDispatchQueue, qos: DispatchQoS = .unspecified, flags: DispatchWorkItemFlags = [], completeHandler: (() -> Void) -> Void) -> SDTask {
+        let task = SDTask(queue: queue)
+        task.worker = task.createWorker(qos: qos, flags: flags) { return }
+        completeHandler { task.queue.async(execute: task.worker) }
+        return task
+    }
+}
+
 extension SDTask {
     
     /// Return `true` iff task is completed.
