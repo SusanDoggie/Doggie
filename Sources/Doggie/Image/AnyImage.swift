@@ -162,7 +162,7 @@ extension AnyImage {
     }
     
     @inlinable
-    public init<P>(image: Image<P>, colorSpace: AnyColorSpace, intent: RenderingIntent = .default, option: MappedBufferOption = .default) {
+    public init<P>(image: Image<P>, colorSpace: AnyColorSpace, intent: RenderingIntent = .default, option: MappedBufferOption) {
         self.init(base: colorSpace._base._create_image(image: image, intent: intent, option: option))
     }
     
@@ -251,11 +251,16 @@ extension Image {
     
     @inlinable
     public init?(image: AnyImage) {
+        self.init(image: image, option: image.option)
+    }
+    
+    @inlinable
+    public init?(image: AnyImage, option: MappedBufferOption) {
         if let image = image._base as? Image {
-            self.init(image: image, option: image.option)
+            self.init(image: image, option: option)
         } else {
             guard let image: Image<ColorPixel<Pixel.Model>> = image._base._copy() else { return nil }
-            self.init(image: image, option: image.option)
+            self.init(image: image, option: option)
         }
     }
 }

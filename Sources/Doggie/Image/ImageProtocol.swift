@@ -29,6 +29,8 @@ public protocol ImageProtocol {
     
     typealias ColorSpace = Color.ColorSpace
     
+    init(image: Self)
+    
     init(image: Self, option: MappedBufferOption)
     
     init<P>(image: Image<P>, colorSpace: ColorSpace, intent: RenderingIntent)
@@ -114,6 +116,11 @@ extension AnyImage {
 extension ImageProtocol {
     
     @inlinable
+    public init(image: Self) {
+        self.init(image: image, option: image.option)
+    }
+    
+    @inlinable
     public init<P>(image: Image<P>, colorSpace: ColorSpace, intent: RenderingIntent = .default) {
         self.init(image: image, colorSpace: colorSpace, intent: intent, option: image.option)
     }
@@ -122,8 +129,4 @@ extension ImageProtocol {
     public init(image: AnyImage, colorSpace: ColorSpace, intent: RenderingIntent = .default) {
         self.init(image: image, colorSpace: colorSpace, intent: intent, option: image.option)
     }
-}
-
-extension Image : ImageProtocol {
-    
 }

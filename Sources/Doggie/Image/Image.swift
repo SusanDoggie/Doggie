@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-public struct Image<Pixel: ColorPixelProtocol> {
+public struct Image<Pixel: ColorPixelProtocol> : ImageProtocol {
     
     public let width: Int
     public let height: Int
