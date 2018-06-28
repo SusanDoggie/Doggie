@@ -123,19 +123,67 @@ public struct Shape : RandomAccessCollection, MutableCollection, ExpressibleByAr
         }
     }
     
+    public var frame : [Point] {
+        let _transform = self.transform
+        return originalBoundary.points.map { $0 * _transform }
+    }
+}
+
+extension Shape {
+    
+    @inlinable
     public mutating func rotate(_ angle: Double) {
         let center = self.center
         self.transform *= SDTransform.translate(x: -center.x, y: -center.y) * SDTransform.rotate(angle) * SDTransform.translate(x: center.x, y: center.y)
     }
     
+    @inlinable
+    public mutating func skewX(_ angle: Double) {
+        let center = self.center
+        self.transform *= SDTransform.translate(x: -center.x, y: -center.y) * SDTransform.skewX(angle) * SDTransform.translate(x: center.x, y: center.y)
+    }
+    
+    @inlinable
+    public mutating func skewY(_ angle: Double) {
+        let center = self.center
+        self.transform *= SDTransform.translate(x: -center.x, y: -center.y) * SDTransform.skewY(angle) * SDTransform.translate(x: center.x, y: center.y)
+    }
+    
+    @inlinable
     public mutating func scale(_ scale: Double) {
         let center = self.center
         self.transform *= SDTransform.translate(x: -center.x, y: -center.y) * SDTransform.scale(scale) * SDTransform.translate(x: center.x, y: center.y)
     }
     
-    public var frame : [Point] {
-        let _transform = self.transform
-        return originalBoundary.points.map { $0 * _transform }
+    @inlinable
+    public mutating func scale(x: Double = 1, y: Double = 1) {
+        let center = self.center
+        self.transform *= SDTransform.translate(x: -center.x, y: -center.y) * SDTransform.scale(x: x, y: y) * SDTransform.translate(x: center.x, y: center.y)
+    }
+    
+    @inlinable
+    public mutating func translate(x: Double = 0, y: Double = 0) {
+        self.transform *= SDTransform.translate(x: x, y: y)
+    }
+    
+    @inlinable
+    public mutating func reflectX() {
+        self.transform *= SDTransform.reflectX(self.center.x)
+    }
+    
+    @inlinable
+    public mutating func reflectY() {
+        self.transform *= SDTransform.reflectY(self.center.y)
+    }
+    
+    @inlinable
+    public mutating func reflectX(_ x: Double) {
+        self.transform *= SDTransform.reflectX(x)
+    }
+    
+    @inlinable
+    public mutating func reflectY(_ y: Double) {
+        self.transform *= SDTransform.reflectY(y)
     }
 }
 

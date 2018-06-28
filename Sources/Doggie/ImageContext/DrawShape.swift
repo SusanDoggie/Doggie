@@ -246,3 +246,60 @@ extension ImageContext {
         self.stroke(shape: shape, width: width, cap: cap, join: join, color: color.color, opacity: color.opacity)
     }
 }
+
+extension ImageContext {
+    
+    @inlinable
+    public func draw(rect: Rect, color: Pixel.Model, opacity: Double = 1) {
+        self.draw(shape: Shape(rect: rect), winding: .nonZero, color: color, opacity: opacity)
+    }
+    @inlinable
+    public func draw<C: ColorProtocol>(rect: Rect, color: C) {
+        self.draw(shape: Shape(rect: rect), winding: .nonZero, color: color)
+    }
+    
+    @inlinable
+    public func draw(roundedRect rect: Rect, radius: Radius, color: Pixel.Model, opacity: Double = 1) {
+        self.draw(shape: Shape(roundedRect: rect, radius: radius), winding: .nonZero, color: color, opacity: opacity)
+    }
+    @inlinable
+    public func draw<C: ColorProtocol>(roundedRect rect: Rect, radius: Radius, color: C) {
+        self.draw(shape: Shape(roundedRect: rect, radius: radius), winding: .nonZero, color: color)
+    }
+    
+    @inlinable
+    public func draw(ellipseIn rect: Rect, color: Pixel.Model, opacity: Double = 1) {
+        self.draw(shape: Shape(ellipseIn: rect), winding: .nonZero, color: color, opacity: opacity)
+    }
+    @inlinable
+    public func draw<C: ColorProtocol>(ellipseIn rect: Rect, color: C) {
+        self.draw(shape: Shape(ellipseIn: rect), winding: .nonZero, color: color)
+    }
+    
+    @inlinable
+    public func stroke(rect: Rect, width: Double, cap: Shape.LineCap, join: Shape.LineJoin, color: Pixel.Model, opacity: Double = 1) {
+        self.stroke(shape: Shape(rect: rect), width: width, cap: cap, join: join, color: color, opacity: opacity)
+    }
+    @inlinable
+    public func stroke<C: ColorProtocol>(rect: Rect, width: Double, cap: Shape.LineCap, join: Shape.LineJoin, color: C) {
+        self.stroke(shape: Shape(rect: rect), width: width, cap: cap, join: join, color: color)
+    }
+    
+    @inlinable
+    public func stroke(roundedRect rect: Rect, radius: Radius, width: Double, cap: Shape.LineCap, join: Shape.LineJoin, color: Pixel.Model, opacity: Double = 1) {
+        self.stroke(shape: Shape(roundedRect: rect, radius: radius), width: width, cap: cap, join: join, color: color, opacity: opacity)
+    }
+    @inlinable
+    public func stroke<C: ColorProtocol>(roundedRect rect: Rect, radius: Radius, width: Double, cap: Shape.LineCap, join: Shape.LineJoin, color: C) {
+        self.stroke(shape: Shape(roundedRect: rect, radius: radius), width: width, cap: cap, join: join, color: color)
+    }
+    
+    @inlinable
+    public func stroke(ellipseIn rect: Rect, width: Double, cap: Shape.LineCap, join: Shape.LineJoin, color: Pixel.Model, opacity: Double = 1) {
+        self.stroke(shape: Shape(ellipseIn: rect), width: width, cap: cap, join: join, color: color, opacity: opacity)
+    }
+    @inlinable
+    public func stroke<C: ColorProtocol>(ellipseIn rect: Rect, width: Double, cap: Shape.LineCap, join: Shape.LineJoin, color: C) {
+        self.stroke(shape: Shape(ellipseIn: rect), width: width, cap: cap, join: join, color: color)
+    }
+}
