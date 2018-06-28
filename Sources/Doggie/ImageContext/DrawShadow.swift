@@ -40,7 +40,7 @@ extension ImageContext {
         let shadowOffset = self.shadowOffset
         let shadowBlur = self.shadowBlur
         
-        let filter = gaussianBlurFilter(0.5 * shadowBlur)
+        let filter = GaussianBlurFilter(0.5 * shadowBlur)
         let _offset = Point(x: Double(filter.count >> 1) - shadowOffset.width, y: Double(filter.count >> 1) - shadowOffset.height)
         
         let shadow_layer = _shadow(stencil, filter)
@@ -82,7 +82,7 @@ extension ImageContext {
         let shadowOffset = self.shadowOffset
         let shadowBlur = self.shadowBlur
         
-        let filter = gaussianBlurFilter(0.5 * shadowBlur)
+        let filter = GaussianBlurFilter(0.5 * shadowBlur)
         let _offset = Point(x: Double(filter.count >> 1) - shadowOffset.width, y: Double(filter.count >> 1) - shadowOffset.height)
         
         let shadow_layer = _shadow(texture.pixels.map { $0.opacity }, filter)
@@ -111,21 +111,6 @@ extension ImageContext {
 }
 
 extension ImageContext {
-    
-    @inlinable
-    func gaussianBlurFilter(_ blur: Double) -> [Double] {
-        
-        let t = 2 * blur * blur
-        let c = 1 / sqrt(.pi * t)
-        let _t = -1 / t
-        
-        let s = Int(ceil(6 * blur)) >> 1
-        
-        return (-s...s).map {
-            let x = Double($0)
-            return exp(x * x * _t) * c
-        }
-    }
     
     @inlinable
     func _shadow(_ map: MappedBuffer<Double>, _ filter: [Double]) -> AlphaTexture {

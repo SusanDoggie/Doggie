@@ -24,7 +24,7 @@
 //
 
 @inlinable
-public func GaussianBlur<Model>(_ image: Image<ColorPixel<Model>>, _ blur: Double) -> Image<ColorPixel<Model>> {
+public func GaussianBlurFilter<T: BinaryFloatingPoint>(_ blur: T) -> [T] where T: FloatingMathProtocol {
     
     let t = 2 * blur * blur
     let c = 1 / sqrt(.pi * t)
@@ -32,27 +32,20 @@ public func GaussianBlur<Model>(_ image: Image<ColorPixel<Model>>, _ blur: Doubl
     
     let s = Int(ceil(6 * blur)) >> 1
     
-    let filter = (-s...s).map { (x: Int) -> Double in
-        let x = Double(x)
-        return exp(x * x * _t) * c
+    return (-s...s).map {
+        let x = T($0)
+        return T.exp(x * x * _t) * c
     }
-    
+}
+
+@inlinable
+public func GaussianBlur<Model>(_ image: Image<ColorPixel<Model>>, _ blur: Double) -> Image<ColorPixel<Model>> {
+    let filter = GaussianBlurFilter(blur)
     return ImageConvolution(image, horizontal: filter, vertical: filter)
 }
 
 @inlinable
 public func GaussianBlur<Model>(_ image: Image<FloatColorPixel<Model>>, _ blur: Float) -> Image<FloatColorPixel<Model>> {
-    
-    let t = 2 * blur * blur
-    let c = 1 / sqrt(.pi * t)
-    let _t = -1 / t
-    
-    let s = Int(ceil(6 * blur)) >> 1
-    
-    let filter = (-s...s).map { (x: Int) -> Float in
-        let x = Float(x)
-        return exp(x * x * _t) * c
-    }
-    
+    let filter = GaussianBlurFilter(blur)
     return ImageConvolution(image, horizontal: filter, vertical: filter)
 }
