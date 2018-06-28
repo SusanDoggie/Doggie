@@ -126,7 +126,7 @@
 		0A8535351F5937DA006FB85D /* CFFFontFace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A8535341F5937DA006FB85D /* CFFFontFace.swift */; };
 		0A8535371F59543E006FB85D /* CFFFDSelect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A8535361F59543E006FB85D /* CFFFDSelect.swift */; };
 		0A89938E1EFA488900E9CDD9 /* ICC Creator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A89938C1EFA488900E9CDD9 /* ICC Creator.swift */; };
-		0A8ABC1020E4852B00A2634A /* AlphaTexture.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A8ABC0F20E4852B00A2634A /* AlphaTexture.swift */; };
+		0A8ABC1020E4852B00A2634A /* StencilTexture.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A8ABC0F20E4852B00A2634A /* StencilTexture.swift */; };
 		0A8ABC1420E48BA600A2634A /* TextureProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A8ABC1320E48BA600A2634A /* TextureProtocol.swift */; };
 		0A8ABC1720E4A0EF00A2634A /* Underpainting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A8ABC1620E4A0EF00A2634A /* Underpainting.swift */; };
 		0A8B10511F1DE69B00D93CF9 /* JPEGDecoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A8B104F1F1DE69B00D93CF9 /* JPEGDecoder.swift */; };
@@ -370,7 +370,7 @@
 		0A8535341F5937DA006FB85D /* CFFFontFace.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = CFFFontFace.swift; sourceTree = "<group>"; };
 		0A8535361F59543E006FB85D /* CFFFDSelect.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = CFFFDSelect.swift; sourceTree = "<group>"; };
 		0A89938C1EFA488900E9CDD9 /* ICC Creator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = "ICC Creator.swift"; sourceTree = "<group>"; };
-		0A8ABC0F20E4852B00A2634A /* AlphaTexture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlphaTexture.swift; sourceTree = "<group>"; };
+		0A8ABC0F20E4852B00A2634A /* StencilTexture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StencilTexture.swift; sourceTree = "<group>"; };
 		0A8ABC1320E48BA600A2634A /* TextureProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextureProtocol.swift; sourceTree = "<group>"; };
 		0A8ABC1620E4A0EF00A2634A /* Underpainting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Underpainting.swift; sourceTree = "<group>"; };
 		0A8B104F1F1DE69B00D93CF9 /* JPEGDecoder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = JPEGDecoder.swift; sourceTree = "<group>"; };
@@ -1014,7 +1014,7 @@
 			children = (
 				0A8ABC1320E48BA600A2634A /* TextureProtocol.swift */,
 				0AB380F220A5374A00A8CBD7 /* Texture.swift */,
-				0A8ABC0F20E4852B00A2634A /* AlphaTexture.swift */,
+				0A8ABC0F20E4852B00A2634A /* StencilTexture.swift */,
 			);
 			path = Texture;
 			sourceTree = "<group>";
@@ -1352,7 +1352,7 @@
 				0A7C9D052022D01400927674 /* Cache.swift in Sources */,
 				0A8ABC1720E4A0EF00A2634A /* Underpainting.swift in Sources */,
 				0A74D68820047BA600330C86 /* ImageConvolution.swift in Sources */,
-				0A8ABC1020E4852B00A2634A /* AlphaTexture.swift in Sources */,
+				0A8ABC1020E4852B00A2634A /* StencilTexture.swift in Sources */,
 				0A39A6C51ED937C700804004 /* DrawGradient.swift in Sources */,
 				0A56E9111E35F02E00D93786 /* RectCollection.swift in Sources */,
 				0A7F24AD1EF37CD500EAD9C7 /* Endianness.swift in Sources */,

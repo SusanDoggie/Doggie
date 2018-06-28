@@ -1,5 +1,5 @@
 //
-//  AlphaTexture.swift
+//  StencilTexture.swift
 //
 //  The MIT License
 //  Copyright (c) 2015 - 2018 Susan Cheng. All rights reserved.
@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-public struct AlphaTexture: TextureProtocol {
+public struct StencilTexture: TextureProtocol {
     
     public typealias Pixel = Double
     
@@ -82,7 +82,7 @@ public struct AlphaTexture: TextureProtocol {
     }
 }
 
-extension AlphaTexture {
+extension StencilTexture {
     
     @inlinable
     public init<Pixel>(image: Image<Pixel>, resamplingAlgorithm: ResamplingAlgorithm = .default) {
@@ -95,20 +95,20 @@ extension AlphaTexture {
     }
 }
 
-extension AlphaTexture : CustomStringConvertible {
+extension StencilTexture : CustomStringConvertible {
     
     @inlinable
     public var description: String {
-        return "AlphaTexture(width: \(width), height: \(height))"
+        return "StencilTexture(width: \(width), height: \(height))"
     }
 }
 
-extension AlphaTexture {
+extension StencilTexture {
     
     @inlinable
-    public func map(_ transform: (Double) throws -> Double) rethrows -> AlphaTexture {
+    public func map(_ transform: (Double) throws -> Double) rethrows -> StencilTexture {
         
-        var texture = try AlphaTexture(width: width, height: height, pixels: pixels.map(transform), resamplingAlgorithm: resamplingAlgorithm)
+        var texture = try StencilTexture(width: width, height: height, pixels: pixels.map(transform), resamplingAlgorithm: resamplingAlgorithm)
         
         texture.horizontalWrappingMode = self.horizontalWrappingMode
         texture.verticalWrappingMode = self.verticalWrappingMode
@@ -117,7 +117,7 @@ extension AlphaTexture {
     }
 }
 
-extension AlphaTexture {
+extension StencilTexture {
     
     @inlinable
     public func withUnsafeBufferPointer<R>(_ body: (UnsafeBufferPointer<Double>) throws -> R) rethrows -> R {
@@ -144,7 +144,7 @@ extension AlphaTexture {
     }
 }
 
-extension AlphaTexture: _TextureProtocolImplement {
+extension StencilTexture: _TextureProtocolImplement {
     
     @usableFromInline
     @inline(__always)

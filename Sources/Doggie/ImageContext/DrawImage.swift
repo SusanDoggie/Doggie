@@ -31,6 +31,63 @@ extension ImageContext {
     }
     
     @inlinable
+    public func draw(stencil: StencilTexture, transform: SDTransform, color: Pixel.Model) {
+        
+        let width = self.width
+        let height = self.height
+        let s_width = stencil.width
+        let s_height = stencil.height
+        let transform = transform * self.transform
+        let shouldAntialias = self.shouldAntialias
+        let antialias = self.antialias
+        
+        if width == 0 || height == 0 || s_width == 0 || s_height == 0 || transform.determinant.almostZero() {
+            return
+        }
+        
+        let _transform = transform.inverse
+        
+        self.withUnsafePixelBlender { blender in
+            
+            if shouldAntialias && antialias > 1 {
+                
+                var blender = blender
+                
+                let stride = 1 / Double(antialias)
+                let div = 1 / Double(antialias * antialias)
+                
+                for y in 0..<height {
+                    for x in 0..<width {
+                        var _q = Point(x: x, y: y)
+                        var pixel = 0.0
+                        for _ in 0..<antialias {
+                            var q = _q
+                            for _ in 0..<antialias {
+                                pixel += stencil.pixel(q * _transform)
+                                q.x += stride
+                            }
+                            _q.y += stride
+                        }
+                        blender.draw(color: ColorPixel(color: color, opacity: pixel * div))
+                        blender += 1
+                    }
+                }
+                
+            } else {
+                
+                var blender = blender
+                
+                for y in 0..<height {
+                    for x in 0..<width {
+                        blender.draw(color: ColorPixel(color: color, opacity: stencil.pixel(Point(x: x, y: y) * _transform)))
+                        blender += 1
+                    }
+                }
+            }
+        }
+    }
+    
+    @inlinable
     public func draw(texture: Texture<ColorPixel<Pixel.Model>>, transform: SDTransform) {
         
         let width = self.width
