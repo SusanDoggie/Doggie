@@ -210,7 +210,7 @@ extension _TextureProtocolImplement {
     public func pixel(_ point: Point) -> SourcePixel {
         
         switch resamplingAlgorithm {
-        case .none: return read_source(Int(point.x), Int(point.y))
+        case .none: return read_source(Int(floor(point.x)), Int(floor(point.y)))
         case .linear: return sampling2(point: point, sampler: LinearInterpolate)
         case .cosine: return sampling2(point: point, sampler: CosineInterpolate)
         case .cubic: return sampling4(point: point, sampler: CubicInterpolate)
@@ -311,8 +311,8 @@ extension _TextureProtocolImplement {
         var pixel = SourcePixel()
         var t: Double = 0
         
-        let _x = Int(point.x)
-        let _y = Int(point.y)
+        let _x = Int(floor(point.x))
+        let _y = Int(floor(point.y))
         
         let a = kernel_size >> 1
         let b = 1 - kernel_size & 1
@@ -335,13 +335,15 @@ extension _TextureProtocolImplement {
     @inline(__always)
     func sampling2(point: Point, sampler: (Double, SourcePixel, SourcePixel) -> SourcePixel) -> SourcePixel {
         
-        let _x1 = Int(point.x)
-        let _y1 = Int(point.y)
+        let _i = floor(point.x)
+        let _j = floor(point.y)
+        let _tx = point.x - _i
+        let _ty = point.y - _j
+        
+        let _x1 = Int(_i)
+        let _y1 = Int(_j)
         let _x2 = _x1 + 1
         let _y2 = _y1 + 1
-        
-        let _tx = point.x - Double(_x1)
-        let _ty = point.y - Double(_y1)
         
         let _s1 = read_source(_x1, _y1)
         let _s2 = read_source(_x2, _y1)
@@ -355,17 +357,19 @@ extension _TextureProtocolImplement {
     @inline(__always)
     func sampling4(point: Point, sampler: (Double, SourcePixel, SourcePixel, SourcePixel, SourcePixel) -> SourcePixel) -> SourcePixel {
         
-        let _x2 = Int(point.x)
-        let _y2 = Int(point.y)
+        let _i = floor(point.x)
+        let _j = floor(point.y)
+        let _tx = point.x - _i
+        let _ty = point.y - _j
+        
+        let _x2 = Int(_i)
+        let _y2 = Int(_j)
         let _x3 = _x2 + 1
         let _y3 = _y2 + 1
         let _x1 = _x2 - 1
         let _y1 = _y2 - 1
         let _x4 = _x2 + 2
         let _y4 = _y2 + 2
-        
-        let _tx = point.x - Double(_x2)
-        let _ty = point.y - Double(_y2)
         
         let _s1 = read_source(_x1, _y1)
         let _s2 = read_source(_x2, _y1)

@@ -48,7 +48,8 @@ public func Underpainting<Pixel>(_ image: Image<Pixel>, _ expand: Double, _ back
     }
     
     let filter = _filter(expand * 0.5)
-    let stencil = AlphaTexture(image: image).map { $0.almostZero() ? $0 : 1 }._apply(filter).map { $0 < 0.6854015858994297386824412701652185185921339959326058 ? 0 : 1 }
+    var stencil = AlphaTexture(image: image).map { $0.almostZero() ? $0 : 1 }._apply(filter).map { $0 < 0.6854015858994297386824412701652185185921339959326058 ? 0 : 1 }
+    stencil.resamplingAlgorithm = .none
     
     let half = filter.count >> 1
     
