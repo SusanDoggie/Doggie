@@ -126,6 +126,8 @@
 		0A8535351F5937DA006FB85D /* CFFFontFace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A8535341F5937DA006FB85D /* CFFFontFace.swift */; };
 		0A8535371F59543E006FB85D /* CFFFDSelect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A8535361F59543E006FB85D /* CFFFDSelect.swift */; };
 		0A89938E1EFA488900E9CDD9 /* ICC Creator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A89938C1EFA488900E9CDD9 /* ICC Creator.swift */; };
+		0A8ABC1020E4852B00A2634A /* AlphaTexture.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A8ABC0F20E4852B00A2634A /* AlphaTexture.swift */; };
+		0A8ABC1420E48BA600A2634A /* TextureProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A8ABC1320E48BA600A2634A /* TextureProtocol.swift */; };
 		0A8B10511F1DE69B00D93CF9 /* JPEGDecoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A8B104F1F1DE69B00D93CF9 /* JPEGDecoder.swift */; };
 		0A8BBFD51FCC19D100BBD273 /* SDXMLAttribute.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A8BBFD41FCC19D100BBD273 /* SDXMLAttribute.swift */; };
 		0A8D4F1E20C8FD8400921F91 /* CubicBezier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A8D4F1D20C8FD8400921F91 /* CubicBezier.swift */; };
@@ -367,6 +369,8 @@
 		0A8535341F5937DA006FB85D /* CFFFontFace.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = CFFFontFace.swift; sourceTree = "<group>"; };
 		0A8535361F59543E006FB85D /* CFFFDSelect.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = CFFFDSelect.swift; sourceTree = "<group>"; };
 		0A89938C1EFA488900E9CDD9 /* ICC Creator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = "ICC Creator.swift"; sourceTree = "<group>"; };
+		0A8ABC0F20E4852B00A2634A /* AlphaTexture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlphaTexture.swift; sourceTree = "<group>"; };
+		0A8ABC1320E48BA600A2634A /* TextureProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextureProtocol.swift; sourceTree = "<group>"; };
 		0A8B104F1F1DE69B00D93CF9 /* JPEGDecoder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = JPEGDecoder.swift; sourceTree = "<group>"; };
 		0A8BBFD41FCC19D100BBD273 /* SDXMLAttribute.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = SDXMLAttribute.swift; sourceTree = "<group>"; };
 		0A8D4F1D20C8FD8400921F91 /* CubicBezier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CubicBezier.swift; sourceTree = "<group>"; };
@@ -1005,7 +1009,9 @@
 		0AB380F120A5372F00A8CBD7 /* Texture */ = {
 			isa = PBXGroup;
 			children = (
+				0A8ABC1320E48BA600A2634A /* TextureProtocol.swift */,
 				0AB380F220A5374A00A8CBD7 /* Texture.swift */,
+				0A8ABC0F20E4852B00A2634A /* AlphaTexture.swift */,
 			);
 			path = Texture;
 			sourceTree = "<group>";
@@ -1223,6 +1229,7 @@
 				0A8D4F2020C8FD9200921F91 /* QuadBezier.swift in Sources */,
 				0A8EDDC01F19B1CD00C917CC /* iccCurve.swift in Sources */,
 				0AB2E23E1F17766C00B0CA84 /* zlib.swift in Sources */,
+				0A8ABC1420E48BA600A2634A /* TextureProtocol.swift in Sources */,
 				0A8EDDD41F19E74000C917CC /* iccTextDescription.swift in Sources */,
 				08458B3F1E2E627600D01813 /* Rect.swift in Sources */,
 				0AD3E63B1F53DBEE003CC21A /* WOFFDecoder.swift in Sources */,
@@ -1341,6 +1348,7 @@
 				08B68A321ED07A2400F8D423 /* ColorSpace.swift in Sources */,
 				0A7C9D052022D01400927674 /* Cache.swift in Sources */,
 				0A74D68820047BA600330C86 /* ImageConvolution.swift in Sources */,
+				0A8ABC1020E4852B00A2634A /* AlphaTexture.swift in Sources */,
 				0A39A6C51ED937C700804004 /* DrawGradient.swift in Sources */,
 				0A56E9111E35F02E00D93786 /* RectCollection.swift in Sources */,
 				0A7F24AD1EF37CD500EAD9C7 /* Endianness.swift in Sources */,

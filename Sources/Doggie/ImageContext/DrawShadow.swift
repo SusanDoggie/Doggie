@@ -23,74 +23,6 @@
 //  THE SOFTWARE.
 //
 
-@_fixed_layout
-@usableFromInline
-struct ShadowTexture {
-    
-    @usableFromInline
-    let width: Int
-    
-    @usableFromInline
-    let height: Int
-    
-    @usableFromInline
-    var pixels: MappedBuffer<Double>
-    
-    @inlinable
-    init(width: Int, height: Int, option: MappedBufferOption) {
-        self.width = width
-        self.height = height
-        self.pixels = MappedBuffer(repeating: 0, count: width * height, option: option)
-    }
-    
-    @inlinable
-    init(width: Int, height: Int, pixels: MappedBuffer<Double>) {
-        self.width = width
-        self.height = height
-        self.pixels = pixels
-    }
-}
-
-extension ShadowTexture {
-    
-    @inlinable
-    func pixel(_ point: Point) -> Double {
-        return sampling2(point: point, sampler: LinearInterpolate)
-    }
-}
-
-extension ShadowTexture {
-    
-    @inlinable
-    func read_source(_ x: Int, _ y: Int) -> Double {
-        
-        let x_range = 0..<width
-        let y_range = 0..<height
-        
-        return x_range ~= x && y_range ~= y ? pixels[y * width + x] : 0
-        
-    }
-    
-    @inlinable
-    func sampling2(point: Point, sampler: (Double, Double, Double) -> Double) -> Double {
-        
-        let _x1 = Int(point.x)
-        let _y1 = Int(point.y)
-        let _x2 = _x1 + 1
-        let _y2 = _y1 + 1
-        
-        let _tx = point.x - Double(_x1)
-        let _ty = point.y - Double(_y1)
-        
-        let _s1 = read_source(_x1, _y1)
-        let _s2 = read_source(_x2, _y1)
-        let _s3 = read_source(_x1, _y2)
-        let _s4 = read_source(_x2, _y2)
-        
-        return sampler(_ty, sampler(_tx, _s1, _s2), sampler(_tx, _s3, _s4))
-    }
-}
-
 extension ImageContext {
     
     @inlinable
@@ -196,7 +128,7 @@ extension ImageContext {
     }
     
     @inlinable
-    func _shadow(_ map: MappedBuffer<Double>, _ filter: [Double]) -> ShadowTexture {
+    func _shadow(_ map: MappedBuffer<Double>, _ filter: [Double]) -> AlphaTexture {
         
         let width = self.width
         let height = self.height
@@ -204,13 +136,13 @@ extension ImageContext {
         
         let n_width = width + filter.count - 1
         
-        guard width > 0 && height > 0 else { return ShadowTexture(width: width, height: height, pixels: map) }
+        guard width > 0 && height > 0 else { return AlphaTexture(width: width, height: height, pixels: map, resamplingAlgorithm: .linear) }
         
         let length1 = Radix2CircularConvolveLength(width, filter.count)
         let length2 = Radix2CircularConvolveLength(height, filter.count)
         
         var buffer = MappedBuffer<Double>(repeating: 0, count: length1 + length2 + length1 * height, option: option)
-        var result = ShadowTexture(width: n_width, height: length2, option: option)
+        var result = AlphaTexture(width: n_width, height: length2, resamplingAlgorithm: .linear, option: option)
         
         buffer.withUnsafeMutableBufferPointer {
             
@@ -220,7 +152,7 @@ extension ImageContext {
                 
                 guard let source = $0.baseAddress else { return }
                 
-                result.pixels.withUnsafeMutableBufferPointer {
+                result.withUnsafeMutableBufferPointer {
                     
                     guard let output = $0.baseAddress else { return }
                     

@@ -1,5 +1,5 @@
 //
-//  Texture.swift
+//  AlphaTexture.swift
 //
 //  The MIT License
 //  Copyright (c) 2015 - 2018 Susan Cheng. All rights reserved.
@@ -23,15 +23,17 @@
 //  THE SOFTWARE.
 //
 
-public struct Texture<Pixel: ColorPixelProtocol>: TextureProtocol {
+public struct AlphaTexture: TextureProtocol {
     
-    public typealias SourcePixel = ColorPixel<Pixel.Model>
+    public typealias Pixel = Double
+    
+    public typealias SourcePixel = Double
     
     public let width: Int
     
     public let height: Int
     
-    public private(set) var pixels: MappedBuffer<Pixel>
+    public private(set) var pixels: MappedBuffer<Double>
     
     public var resamplingAlgorithm: ResamplingAlgorithm
     
@@ -39,7 +41,7 @@ public struct Texture<Pixel: ColorPixelProtocol>: TextureProtocol {
     public var verticalWrappingMode: WrappingMode = .none
     
     @inlinable
-    init(width: Int, height: Int, pixels: MappedBuffer<Pixel>, resamplingAlgorithm: ResamplingAlgorithm) {
+    init(width: Int, height: Int, pixels: MappedBuffer<Double>, resamplingAlgorithm: ResamplingAlgorithm) {
         precondition(width >= 0, "negative width is not allowed.")
         precondition(height >= 0, "negative height is not allowed.")
         precondition(width * height == pixels.count, "mismatch pixels count.")
@@ -50,7 +52,7 @@ public struct Texture<Pixel: ColorPixelProtocol>: TextureProtocol {
     }
     
     @inlinable
-    public init(width: Int, height: Int, resamplingAlgorithm: ResamplingAlgorithm = .default, pixel: Pixel = Pixel(), option: MappedBufferOption = .default) {
+    public init(width: Int, height: Int, resamplingAlgorithm: ResamplingAlgorithm = .default, pixel: Double = 0, option: MappedBufferOption = .default) {
         precondition(width >= 0, "negative width is not allowed.")
         precondition(height >= 0, "negative height is not allowed.")
         self.width = width
@@ -60,80 +62,71 @@ public struct Texture<Pixel: ColorPixelProtocol>: TextureProtocol {
     }
     
     @inlinable
-    public init(texture: Texture, option: MappedBufferOption) {
-        self.width = texture.width
-        self.height = texture.height
-        self.pixels = MappedBuffer(texture.pixels, option: option)
-        self.resamplingAlgorithm = texture.resamplingAlgorithm
-        self.horizontalWrappingMode = texture.horizontalWrappingMode
-        self.verticalWrappingMode = texture.verticalWrappingMode
-    }
-    
-    @inlinable
-    public init<P>(texture: Texture<P>, option: MappedBufferOption) where P.Model == Pixel.Model {
+    public init<P>(texture: Texture<P>) {
         self.width = texture.width
         self.height = texture.height
         self.resamplingAlgorithm = texture.resamplingAlgorithm
         self.horizontalWrappingMode = texture.horizontalWrappingMode
         self.verticalWrappingMode = texture.verticalWrappingMode
-        if let buffer = texture.pixels as? MappedBuffer<Pixel> {
-            self.pixels = MappedBuffer(buffer, option: option)
-        } else {
-            self.pixels = texture.pixels.map(option: option, Pixel.init)
-        }
+        self.pixels = texture.pixels.map { $0.opacity }
     }
-}
-
-extension Texture {
     
     @inlinable
-    public init(image: Image<Pixel>, resamplingAlgorithm: ResamplingAlgorithm = .default) {
-        self.init(width: image.width, height: image.height, pixels: image.pixels, resamplingAlgorithm: resamplingAlgorithm)
+    public init<P>(texture: Texture<P>, option: MappedBufferOption) {
+        self.width = texture.width
+        self.height = texture.height
+        self.resamplingAlgorithm = texture.resamplingAlgorithm
+        self.horizontalWrappingMode = texture.horizontalWrappingMode
+        self.verticalWrappingMode = texture.verticalWrappingMode
+        self.pixels = texture.pixels.map(option: option) { $0.opacity }
     }
 }
 
-extension Image {
+extension AlphaTexture {
     
     @inlinable
-    public init(texture: Texture<Pixel>, resolution: Resolution = Resolution(resolution: 1, unit: .point), colorSpace: ColorSpace<Pixel.Model>) {
-        self.init(width: texture.width, height: texture.height, resolution: resolution, pixels: texture.pixels, colorSpace: colorSpace)
+    public init<Pixel>(image: Image<Pixel>, resamplingAlgorithm: ResamplingAlgorithm = .default) {
+        self.init(width: image.width, height: image.height, pixels: image.pixels.map { $0.opacity }, resamplingAlgorithm: resamplingAlgorithm)
     }
-}
-
-extension Texture {
     
     @inlinable
-    public init<P>(texture: Texture<P>) where P.Model == Pixel.Model {
-        self.init(texture: texture, option: texture.option)
+    public init<Pixel>(image: Image<Pixel>, resamplingAlgorithm: ResamplingAlgorithm = .default, option: MappedBufferOption) {
+        self.init(width: image.width, height: image.height, pixels: image.pixels.map(option: option) { $0.opacity }, resamplingAlgorithm: resamplingAlgorithm)
     }
 }
 
-extension Texture : CustomStringConvertible {
+extension AlphaTexture : CustomStringConvertible {
     
     @inlinable
     public var description: String {
-        return "Texture<\(Pixel.self)>(width: \(width), height: \(height))"
+        return "AlphaTexture(width: \(width), height: \(height))"
     }
 }
 
-extension Texture {
+extension AlphaTexture {
     
     @inlinable
-    public var isOpaque: Bool {
-        return pixels.allSatisfy { $0.isOpaque }
+    public func map(_ transform: (Double) throws -> Double) rethrows -> AlphaTexture {
+        
+        var texture = try AlphaTexture(width: height, height: width, pixels: pixels.map(transform), resamplingAlgorithm: resamplingAlgorithm)
+        
+        texture.horizontalWrappingMode = self.horizontalWrappingMode
+        texture.verticalWrappingMode = self.verticalWrappingMode
+        
+        return texture
     }
 }
 
-extension Texture {
+extension AlphaTexture {
     
     @inlinable
-    public func withUnsafeBufferPointer<R>(_ body: (UnsafeBufferPointer<Pixel>) throws -> R) rethrows -> R {
+    public func withUnsafeBufferPointer<R>(_ body: (UnsafeBufferPointer<Double>) throws -> R) rethrows -> R {
         
         return try pixels.withUnsafeBufferPointer(body)
     }
     
     @inlinable
-    public mutating func withUnsafeMutableBufferPointer<R>(_ body: (inout UnsafeMutableBufferPointer<Pixel>) throws -> R) rethrows -> R {
+    public mutating func withUnsafeMutableBufferPointer<R>(_ body: (inout UnsafeMutableBufferPointer<Double>) throws -> R) rethrows -> R {
         
         return try pixels.withUnsafeMutableBufferPointer(body)
     }
@@ -151,19 +144,19 @@ extension Texture {
     }
 }
 
-extension Texture: _TextureProtocolImplement {
+extension AlphaTexture: _TextureProtocolImplement {
     
     @usableFromInline
     @inline(__always)
-    func read_source(_ x: Int, _ y: Int) -> ColorPixel<Pixel.Model> {
+    func read_source(_ x: Int, _ y: Int) -> Double {
         
-        guard width != 0 && height != 0 else { return ColorPixel() }
+        guard width != 0 && height != 0 else { return 0 }
         
         let (x_flag, _x) = horizontalWrappingMode.addressing(x, width)
         let (y_flag, _y) = verticalWrappingMode.addressing(y, height)
         
         let pixel = pixels[_y * width + _x]
-        return x_flag && y_flag ? ColorPixel(pixel) : ColorPixel(color: pixel.color, opacity: 0)
+        return x_flag && y_flag ? pixel : 0
     }
 }
 
