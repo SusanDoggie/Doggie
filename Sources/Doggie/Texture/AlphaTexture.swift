@@ -108,7 +108,7 @@ extension AlphaTexture {
     @inlinable
     public func map(_ transform: (Double) throws -> Double) rethrows -> AlphaTexture {
         
-        var texture = try AlphaTexture(width: height, height: width, pixels: pixels.map(transform), resamplingAlgorithm: resamplingAlgorithm)
+        var texture = try AlphaTexture(width: width, height: height, pixels: pixels.map(transform), resamplingAlgorithm: resamplingAlgorithm)
         
         texture.horizontalWrappingMode = self.horizontalWrappingMode
         texture.verticalWrappingMode = self.verticalWrappingMode

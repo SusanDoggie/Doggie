@@ -177,7 +177,7 @@ extension Image {
     
     @inlinable
     public func map<P>(_ transform: (Pixel) throws -> P) rethrows -> Image<P> where P.Model == Pixel.Model {
-        return try Image<P>(width: height, height: width, resolution: resolution, pixels: pixels.map(transform), colorSpace: colorSpace)
+        return try Image<P>(width: width, height: height, resolution: resolution, pixels: pixels.map(transform), colorSpace: colorSpace)
     }
 }
 

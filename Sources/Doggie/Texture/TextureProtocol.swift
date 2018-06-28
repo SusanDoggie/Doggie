@@ -108,7 +108,7 @@ extension _TextureProtocolImplement {
     @inlinable
     public func map<P>(_ transform: (Pixel) throws -> P) rethrows -> Texture<P> {
         
-        var texture = try Texture<P>(width: height, height: width, pixels: pixels.map(transform), resamplingAlgorithm: resamplingAlgorithm)
+        var texture = try Texture<P>(width: width, height: height, pixels: pixels.map(transform), resamplingAlgorithm: resamplingAlgorithm)
         
         texture.horizontalWrappingMode = self.horizontalWrappingMode
         texture.verticalWrappingMode = self.verticalWrappingMode
