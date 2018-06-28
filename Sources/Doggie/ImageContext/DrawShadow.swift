@@ -43,7 +43,7 @@ extension ImageContext {
         let filter = GaussianBlurFilter(0.5 * shadowBlur)
         let _offset = Point(x: Double(filter.count >> 1) - shadowOffset.width, y: Double(filter.count >> 1) - shadowOffset.height)
         
-        let shadow_layer = _shadow(stencil, filter)
+        let shadow_layer = AlphaTexture(width: width, height: height, pixels: stencil, resamplingAlgorithm: .linear)._apply(filter)
         
         stencil.withUnsafeBufferPointer { stencil in
             
@@ -85,7 +85,8 @@ extension ImageContext {
         let filter = GaussianBlurFilter(0.5 * shadowBlur)
         let _offset = Point(x: Double(filter.count >> 1) - shadowOffset.width, y: Double(filter.count >> 1) - shadowOffset.height)
         
-        let shadow_layer = _shadow(texture.pixels.map { $0.opacity }, filter)
+        var shadow_layer = AlphaTexture(texture: texture)._apply(filter)
+        shadow_layer.resamplingAlgorithm = .linear
         
         texture.withUnsafeBufferPointer { source in
             
@@ -110,30 +111,31 @@ extension ImageContext {
     }
 }
 
-extension ImageContext {
+extension AlphaTexture {
     
     @inlinable
-    func _shadow(_ map: MappedBuffer<Double>, _ filter: [Double]) -> AlphaTexture {
+    func _apply(_ filter: [Double]) -> AlphaTexture {
         
         let width = self.width
         let height = self.height
-        let option = self.image.option
+        let option = self.option
+        let resamplingAlgorithm = self.resamplingAlgorithm
         
         let n_width = width + filter.count - 1
         
-        guard width > 0 && height > 0 else { return AlphaTexture(width: width, height: height, pixels: map, resamplingAlgorithm: .linear) }
+        guard width > 0 && height > 0 else { return self }
         
         let length1 = Radix2CircularConvolveLength(width, filter.count)
         let length2 = Radix2CircularConvolveLength(height, filter.count)
         
         var buffer = MappedBuffer<Double>(repeating: 0, count: length1 + length2 + length1 * height, option: option)
-        var result = AlphaTexture(width: n_width, height: length2, resamplingAlgorithm: .linear, option: option)
+        var result = AlphaTexture(width: n_width, height: length2, resamplingAlgorithm: resamplingAlgorithm, option: option)
         
         buffer.withUnsafeMutableBufferPointer {
             
             guard let buffer = $0.baseAddress else { return }
             
-            map.withUnsafeBufferPointer {
+            self.withUnsafeBufferPointer {
                 
                 guard let source = $0.baseAddress else { return }
                 
