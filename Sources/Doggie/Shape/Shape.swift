@@ -41,16 +41,20 @@ public struct Shape : RandomAccessCollection, MutableCollection, ExpressibleByAr
         public var start: Point
         public var isClosed: Bool
         
-        fileprivate var segments: [Segment]
+        @usableFromInline
+        var segments: [Segment]
         
+        @usableFromInline
         var cache = Shape.Component.Cache()
         
+        @inlinable
         public init() {
             self.start = Point()
             self.isClosed = false
             self.segments = []
         }
         
+        @inlinable
         public init<S : Sequence>(start: Point, closed: Bool = false, segments: S) where S.Element == Segment {
             self.start = start
             self.isClosed = closed
@@ -58,7 +62,8 @@ public struct Shape : RandomAccessCollection, MutableCollection, ExpressibleByAr
         }
     }
     
-    private var components: [Component]
+    @usableFromInline
+    var components: [Component]
     
     public var transform : SDTransform = SDTransform.identity {
         willSet {
@@ -68,20 +73,25 @@ public struct Shape : RandomAccessCollection, MutableCollection, ExpressibleByAr
         }
     }
     
+    @usableFromInline
     var cache = Cache()
     
+    @inlinable
     public init() {
         self.components = []
     }
     
+    @inlinable
     public init(arrayLiteral elements: Component ...) {
         self.components = elements
     }
     
+    @inlinable
     public init<S : Sequence>(_ components: S) where S.Element == Component {
         self.components = Array(components)
     }
     
+    @inlinable
     public var center : Point {
         get {
             return originalBoundary.center * transform
@@ -92,6 +102,7 @@ public struct Shape : RandomAccessCollection, MutableCollection, ExpressibleByAr
         }
     }
     
+    @inlinable
     public subscript(position : Int) -> Component {
         get {
             return components[position]
@@ -102,14 +113,17 @@ public struct Shape : RandomAccessCollection, MutableCollection, ExpressibleByAr
         }
     }
     
+    @inlinable
     public var startIndex: Int {
         return components.startIndex
     }
     
+    @inlinable
     public var endIndex: Int {
         return components.endIndex
     }
     
+    @inlinable
     public var boundary : Rect {
         return self.originalBoundary.apply(transform) ?? identity.originalBoundary
     }
@@ -123,6 +137,7 @@ public struct Shape : RandomAccessCollection, MutableCollection, ExpressibleByAr
         }
     }
     
+    @inlinable
     public var frame : [Point] {
         let _transform = self.transform
         return originalBoundary.points.map { $0 * _transform }
@@ -189,6 +204,7 @@ extension Shape {
 
 extension Shape {
     
+    @inlinable
     public var currentPoint: Point {
         guard let last = self.components.last else { return Point() }
         return last.isClosed ? last.start : last.end
@@ -197,6 +213,7 @@ extension Shape {
 
 extension Shape {
     
+    @usableFromInline
     class Cache {
         
         let lck = SDLock()
@@ -207,6 +224,7 @@ extension Shape {
         
         var table: [String : Any]
         
+        @usableFromInline
         init() {
             self.originalBoundary = nil
             self.originalArea = nil
@@ -262,6 +280,7 @@ extension Shape.Cache {
 
 extension Shape.Component {
     
+    @usableFromInline
     class Cache {
         
         let lck = SDLock()
@@ -272,6 +291,7 @@ extension Shape.Component {
         
         var table: [String : Any]
         
+        @usableFromInline
         init() {
             self.spaces = nil
             self.boundary = nil
@@ -404,14 +424,17 @@ extension Shape.Component : RandomAccessCollection, MutableCollection {
     
     public typealias Index = Int
     
+    @inlinable
     public var startIndex: Int {
         return segments.startIndex
     }
     
+    @inlinable
     public var endIndex: Int {
         return segments.endIndex
     }
     
+    @inlinable
     public subscript(position : Int) -> Shape.Segment {
         get {
             return segments[position]
@@ -425,6 +448,7 @@ extension Shape.Component : RandomAccessCollection, MutableCollection {
 
 extension Shape.Segment {
     
+    @inlinable
     public var end: Point {
         get {
             switch self {
@@ -444,6 +468,7 @@ extension Shape.Segment {
 }
 extension Shape.Component {
     
+    @inlinable
     public var end: Point {
         return segments.last?.end ?? start
     }
@@ -451,20 +476,24 @@ extension Shape.Component {
 
 extension Shape.Component : RangeReplaceableCollection {
     
+    @inlinable
     public mutating func append(_ newElement: Shape.Segment) {
         cache = Cache()
         segments.append(newElement)
     }
     
+    @inlinable
     public mutating func append<S : Sequence>(contentsOf newElements: S) where S.Element == Shape.Segment {
         cache = Cache()
         segments.append(contentsOf: newElements)
     }
     
+    @inlinable
     public mutating func reserveCapacity(_ minimumCapacity: Int) {
         segments.reserveCapacity(minimumCapacity)
     }
     
+    @inlinable
     public mutating func replaceSubrange<C : Collection>(_ subRange: Range<Int>, with newElements: C) where C.Element == Shape.Segment {
         cache = Cache()
         segments.replaceSubrange(subRange, with: newElements)
@@ -473,92 +502,7 @@ extension Shape.Component : RangeReplaceableCollection {
 
 extension Shape.Component {
     
-    public struct BezierCollection: RandomAccessCollection, MutableCollection {
-        
-        public typealias Indices = Range<Int>
-        
-        public typealias Index = Int
-        
-        fileprivate var component: Shape.Component
-        
-        public var startIndex: Int {
-            return component.startIndex
-        }
-        public var endIndex: Int {
-            return component.endIndex
-        }
-        public subscript(position: Int) -> Element {
-            get {
-                return Element(start: position == 0 ? component.start : component[position - 1].end, segment: component[position])
-            }
-            set {
-                if position == 0 {
-                    component.start = newValue.start
-                } else {
-                    component[position - 1].end = newValue.start
-                }
-                component[position] = newValue.segment
-            }
-        }
-        
-        public struct Element {
-            
-            public var start: Point
-            public var segment: Shape.Segment
-            
-            public init(start: Point, segment: Shape.Segment) {
-                self.start = start
-                self.segment = segment
-            }
-        }
-    }
-    
-    public var bezier: BezierCollection {
-        get {
-            return BezierCollection(component: self)
-        }
-        set {
-            self = newValue.component
-        }
-    }
-}
-
-extension Bezier where Element == Point {
-    
-    public init(_ bezier: Shape.Component.BezierCollection.Element) {
-        switch bezier.segment {
-        case let .line(p1): self.init(bezier.start, p1)
-        case let .quad(p1, p2): self.init(bezier.start, p1, p2)
-        case let .cubic(p1, p2, p3): self.init(bezier.start, p1, p2, p3)
-        }
-    }
-}
-
-extension Shape.Component.BezierCollection.Element {
-    
-    public var boundary: Rect {
-        switch self.segment {
-        case let .line(p1): return LineSegment(self.start, p1).boundary
-        case let .quad(p1, p2): return QuadBezier(self.start, p1, p2).boundary
-        case let .cubic(p1, p2, p3): return CubicBezier(self.start, p1, p2, p3).boundary
-        }
-    }
-}
-
-extension Shape.Component.BezierCollection.Element {
-    
-    public var end: Point {
-        get {
-            return segment.end
-        }
-        set {
-            segment.end = newValue
-        }
-    }
-}
-
-extension Shape.Component {
-    
+    @inlinable
     public mutating func reverse() {
         self = self.reversed()
     }
@@ -598,6 +542,7 @@ extension Shape.Component {
 
 extension Shape {
     
+    @inlinable
     public static func Polygon(center: Point, radius: Double, edges: Int) -> Shape {
         precondition(edges >= 3, "Edges is less than 3")
         let _n = 2 * Double.pi / Double(edges)
@@ -605,11 +550,13 @@ extension Shape {
         return [Component(start: Point(x: center.x + radius, y: center.y), closed: true, segments: segments)]
     }
     
+    @inlinable
     public init(rect: Rect) {
         let points = rect.standardized.points
         self = [Component(start: points[0], closed: true, segments: [.line(points[1]), .line(points[2]), .line(points[3])])]
     }
     
+    @inlinable
     public init(roundedRect rect: Rect, radius: Radius) {
         let rect = rect.standardized
         let x_radius = Swift.min(0.5 * rect.width, abs(radius.x))
@@ -633,6 +580,7 @@ extension Shape {
         self = [Component(start: BezierCircle[0] * t1, closed: true, segments: segments)]
     }
     
+    @inlinable
     public init(ellipseIn rect: Rect) {
         let rect = rect.standardized
         let transform = SDTransform.scale(x: 0.5 * rect.width, y: 0.5 * rect.height) * SDTransform.translate(x: rect.midX, y: rect.midY)
@@ -657,6 +605,7 @@ extension Shape {
         }
     }
     
+    @inlinable
     public var area: Double {
         return identity.originalArea
     }
@@ -664,20 +613,24 @@ extension Shape {
 
 extension Shape : RangeReplaceableCollection {
     
+    @inlinable
     public mutating func append(_ newElement: Component) {
         cache = Cache()
         components.append(newElement)
     }
     
+    @inlinable
     public mutating func append<S : Sequence>(contentsOf newElements: S) where S.Element == Component {
         cache = Cache()
         components.append(contentsOf: newElements)
     }
     
+    @inlinable
     public mutating func reserveCapacity(_ minimumCapacity: Int) {
         components.reserveCapacity(minimumCapacity)
     }
     
+    @inlinable
     public mutating func replaceSubrange<C : Collection>(_ subRange: Range<Int>, with newElements: C) where C.Element == Component {
         cache = Cache()
         components.replaceSubrange(subRange, with: newElements)
@@ -699,6 +652,7 @@ extension Shape {
     }
 }
 
+@inlinable
 public func * (lhs: Shape.Component, rhs: SDTransform) -> Shape.Component {
     return Shape.Component(start: lhs.start * rhs, closed: lhs.isClosed, segments: lhs.segments.map {
         switch $0 {
@@ -708,15 +662,19 @@ public func * (lhs: Shape.Component, rhs: SDTransform) -> Shape.Component {
         }
     })
 }
+
+@inlinable
 public func *= (lhs: inout Shape.Component, rhs: SDTransform) {
     lhs = lhs * rhs
 }
 
+@inlinable
 public func * (lhs: Shape, rhs: SDTransform) -> Shape {
     var result = lhs
     result.transform *= rhs
     return result
 }
+@inlinable
 public func *= (lhs: inout Shape, rhs: SDTransform) {
     lhs = lhs * rhs
 }
