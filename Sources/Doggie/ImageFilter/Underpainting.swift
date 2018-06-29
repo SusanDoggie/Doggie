@@ -34,7 +34,7 @@ public func Underpainting<Pixel>(_ image: Image<Pixel>, _ expand: Double, _ back
     
     guard width > 0 && height > 0 else { return result }
     
-    func _filter(_ blur: Double) -> [Double] {
+    func _filter(_ blur: Float) -> [Float] {
         
         let t = 2 * blur * blur
         let _t = -1 / t
@@ -42,13 +42,13 @@ public func Underpainting<Pixel>(_ image: Image<Pixel>, _ expand: Double, _ back
         let s = Int(ceil(6 * blur)) >> 1
         
         return (-s...s).map {
-            let x = Double($0)
+            let x = Float($0)
             return exp(x * x * _t)
         }
     }
     
-    let filter = _filter(expand * 0.5)
-    var stencil = StencilTexture(image: image).map { $0.almostZero() ? $0 : 1 }._apply(filter).map { $0 < 0.6854015858994297386824412701652185185921339959326058 ? 0 : 1 }
+    let filter = _filter(Float(expand * 0.5))
+    var stencil = StencilTexture<Float>(image: image).map { $0.almostZero() ? $0 : 1 }._apply(filter).map { $0 < 0.6854015858994297386824412701652185185921339959326058 ? 0 : 1 }
     stencil.resamplingAlgorithm = .none
     
     let half = filter.count >> 1

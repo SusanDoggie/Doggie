@@ -23,17 +23,17 @@
 //  THE SOFTWARE.
 //
 
-public struct StencilTexture: TextureProtocol {
+public struct StencilTexture<T: BinaryFloatingPoint>: TextureProtocol where T: ScalarProtocol, T.Scalar: FloatingMathProtocol {
     
-    public typealias Pixel = Double
+    public typealias RawPixel = T
     
-    public typealias SourcePixel = Double
+    public typealias Pixel = T
     
     public let width: Int
     
     public let height: Int
     
-    public private(set) var pixels: MappedBuffer<Double>
+    public private(set) var pixels: MappedBuffer<T>
     
     public var resamplingAlgorithm: ResamplingAlgorithm
     
@@ -41,7 +41,7 @@ public struct StencilTexture: TextureProtocol {
     public var verticalWrappingMode: WrappingMode = .none
     
     @inlinable
-    init(width: Int, height: Int, pixels: MappedBuffer<Double>, resamplingAlgorithm: ResamplingAlgorithm) {
+    init(width: Int, height: Int, pixels: MappedBuffer<T>, resamplingAlgorithm: ResamplingAlgorithm) {
         precondition(width >= 0, "negative width is not allowed.")
         precondition(height >= 0, "negative height is not allowed.")
         precondition(width * height == pixels.count, "mismatch pixels count.")
@@ -52,7 +52,7 @@ public struct StencilTexture: TextureProtocol {
     }
     
     @inlinable
-    public init(width: Int, height: Int, resamplingAlgorithm: ResamplingAlgorithm = .default, pixel: Double = 0, option: MappedBufferOption = .default) {
+    public init(width: Int, height: Int, resamplingAlgorithm: ResamplingAlgorithm = .default, pixel: T = 0, option: MappedBufferOption = .default) {
         precondition(width >= 0, "negative width is not allowed.")
         precondition(height >= 0, "negative height is not allowed.")
         self.width = width
@@ -68,7 +68,7 @@ public struct StencilTexture: TextureProtocol {
         self.resamplingAlgorithm = texture.resamplingAlgorithm
         self.horizontalWrappingMode = texture.horizontalWrappingMode
         self.verticalWrappingMode = texture.verticalWrappingMode
-        self.pixels = texture.pixels.map { $0.opacity }
+        self.pixels = texture.pixels.map { T($0.opacity) }
     }
     
     @inlinable
@@ -78,20 +78,20 @@ public struct StencilTexture: TextureProtocol {
         self.resamplingAlgorithm = texture.resamplingAlgorithm
         self.horizontalWrappingMode = texture.horizontalWrappingMode
         self.verticalWrappingMode = texture.verticalWrappingMode
-        self.pixels = texture.pixels.map(option: option) { $0.opacity }
+        self.pixels = texture.pixels.map(option: option) { T($0.opacity) }
     }
 }
 
 extension StencilTexture {
     
     @inlinable
-    public init<Pixel>(image: Image<Pixel>, resamplingAlgorithm: ResamplingAlgorithm = .default) {
-        self.init(width: image.width, height: image.height, pixels: image.pixels.map { $0.opacity }, resamplingAlgorithm: resamplingAlgorithm)
+    public init<P>(image: Image<P>, resamplingAlgorithm: ResamplingAlgorithm = .default) {
+        self.init(width: image.width, height: image.height, pixels: image.pixels.map { T($0.opacity) }, resamplingAlgorithm: resamplingAlgorithm)
     }
     
     @inlinable
-    public init<Pixel>(image: Image<Pixel>, resamplingAlgorithm: ResamplingAlgorithm = .default, option: MappedBufferOption) {
-        self.init(width: image.width, height: image.height, pixels: image.pixels.map(option: option) { $0.opacity }, resamplingAlgorithm: resamplingAlgorithm)
+    public init<P>(image: Image<P>, resamplingAlgorithm: ResamplingAlgorithm = .default, option: MappedBufferOption) {
+        self.init(width: image.width, height: image.height, pixels: image.pixels.map(option: option) { T($0.opacity) }, resamplingAlgorithm: resamplingAlgorithm)
     }
 }
 
@@ -106,9 +106,9 @@ extension StencilTexture : CustomStringConvertible {
 extension StencilTexture {
     
     @inlinable
-    public func map(_ transform: (Double) throws -> Double) rethrows -> StencilTexture {
+    public func map<R>(_ transform: (T) throws -> R) rethrows -> StencilTexture<R> {
         
-        var texture = try StencilTexture(width: width, height: height, pixels: pixels.map(transform), resamplingAlgorithm: resamplingAlgorithm)
+        var texture = try StencilTexture<R>(width: width, height: height, pixels: pixels.map(transform), resamplingAlgorithm: resamplingAlgorithm)
         
         texture.horizontalWrappingMode = self.horizontalWrappingMode
         texture.verticalWrappingMode = self.verticalWrappingMode
@@ -120,13 +120,13 @@ extension StencilTexture {
 extension StencilTexture {
     
     @inlinable
-    public func withUnsafeBufferPointer<R>(_ body: (UnsafeBufferPointer<Double>) throws -> R) rethrows -> R {
+    public func withUnsafeBufferPointer<R>(_ body: (UnsafeBufferPointer<T>) throws -> R) rethrows -> R {
         
         return try pixels.withUnsafeBufferPointer(body)
     }
     
     @inlinable
-    public mutating func withUnsafeMutableBufferPointer<R>(_ body: (inout UnsafeMutableBufferPointer<Double>) throws -> R) rethrows -> R {
+    public mutating func withUnsafeMutableBufferPointer<R>(_ body: (inout UnsafeMutableBufferPointer<T>) throws -> R) rethrows -> R {
         
         return try pixels.withUnsafeMutableBufferPointer(body)
     }
@@ -148,7 +148,7 @@ extension StencilTexture: _TextureProtocolImplement {
     
     @usableFromInline
     @inline(__always)
-    func read_source(_ x: Int, _ y: Int) -> Double {
+    func read_source(_ x: Int, _ y: Int) -> T {
         
         guard width != 0 && height != 0 else { return 0 }
         

@@ -31,7 +31,7 @@ extension ImageContext {
     }
     
     @inlinable
-    public func draw(stencil: StencilTexture, transform: SDTransform, color: Pixel.Model) {
+    public func draw<T>(stencil: StencilTexture<T>, transform: SDTransform, color: Pixel.Model) {
         
         let width = self.width
         let height = self.height
@@ -59,7 +59,7 @@ extension ImageContext {
                 for y in 0..<height {
                     for x in 0..<width {
                         var _q = Point(x: x, y: y)
-                        var pixel = 0.0
+                        var pixel: T = 0
                         for _ in 0..<antialias {
                             var q = _q
                             for _ in 0..<antialias {
@@ -68,7 +68,7 @@ extension ImageContext {
                             }
                             _q.y += stride
                         }
-                        blender.draw(color: ColorPixel(color: color, opacity: pixel * div))
+                        blender.draw(color: ColorPixel(color: color, opacity: Double(pixel) * div))
                         blender += 1
                     }
                 }
@@ -79,7 +79,7 @@ extension ImageContext {
                 
                 for y in 0..<height {
                     for x in 0..<width {
-                        blender.draw(color: ColorPixel(color: color, opacity: stencil.pixel(Point(x: x, y: y) * _transform)))
+                        blender.draw(color: ColorPixel(color: color, opacity: Double(stencil.pixel(Point(x: x, y: y) * _transform))))
                         blender += 1
                     }
                 }

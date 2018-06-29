@@ -52,15 +52,15 @@ public enum WrappingMode {
 
 public protocol TextureProtocol {
     
-    associatedtype Pixel
+    associatedtype RawPixel
     
-    associatedtype SourcePixel : ScalarMultiplicative where SourcePixel.Scalar == Double
+    associatedtype Pixel : ScalarMultiplicative where Pixel.Scalar: BinaryFloatingPoint & FloatingMathProtocol
     
     var width: Int { get }
     
     var height: Int { get }
     
-    var pixels: MappedBuffer<Pixel> { get }
+    var pixels: MappedBuffer<RawPixel> { get }
     
     var resamplingAlgorithm: ResamplingAlgorithm { get set }
     
@@ -74,13 +74,13 @@ public protocol TextureProtocol {
     
     func horizontalFlipped() -> Self
     
-    func map<P>(_ transform: (Pixel) throws -> P) rethrows -> Texture<P>
+    func map<P>(_ transform: (RawPixel) throws -> P) rethrows -> Texture<P>
     
-    func pixel(_ point: Point) -> SourcePixel
+    func pixel(_ point: Point) -> Pixel
     
-    func withUnsafeBufferPointer<R>(_ body: (UnsafeBufferPointer<Pixel>) throws -> R) rethrows -> R
+    func withUnsafeBufferPointer<R>(_ body: (UnsafeBufferPointer<RawPixel>) throws -> R) rethrows -> R
     
-    mutating func withUnsafeMutableBufferPointer<R>(_ body: (inout UnsafeMutableBufferPointer<Pixel>) throws -> R) rethrows -> R
+    mutating func withUnsafeMutableBufferPointer<R>(_ body: (inout UnsafeMutableBufferPointer<RawPixel>) throws -> R) rethrows -> R
     
     func withUnsafeBytes<R>(_ body: (UnsafeRawBufferPointer) throws -> R) rethrows -> R
     
@@ -98,15 +98,15 @@ extension TextureProtocol {
 @usableFromInline
 protocol _TextureProtocolImplement: TextureProtocol {
     
-    init(width: Int, height: Int, pixels: MappedBuffer<Pixel>, resamplingAlgorithm: ResamplingAlgorithm)
+    init(width: Int, height: Int, pixels: MappedBuffer<RawPixel>, resamplingAlgorithm: ResamplingAlgorithm)
     
-    func read_source(_ x: Int, _ y: Int) -> SourcePixel
+    func read_source(_ x: Int, _ y: Int) -> Pixel
 }
 
 extension _TextureProtocolImplement {
     
     @inlinable
-    public func map<P>(_ transform: (Pixel) throws -> P) rethrows -> Texture<P> {
+    public func map<P>(_ transform: (RawPixel) throws -> P) rethrows -> Texture<P> {
         
         var texture = try Texture<P>(width: width, height: height, pixels: pixels.map(transform), resamplingAlgorithm: resamplingAlgorithm)
         
@@ -207,7 +207,7 @@ extension _TextureProtocolImplement {
 extension _TextureProtocolImplement {
     
     @inlinable
-    public func pixel(_ point: Point) -> SourcePixel {
+    public func pixel(_ point: Point) -> Pixel {
         
         switch resamplingAlgorithm {
         case .none: return read_source(Int(floor(point.x)), Int(floor(point.y)))
@@ -216,8 +216,11 @@ extension _TextureProtocolImplement {
         case .cubic: return sampling4(point: point, sampler: CubicInterpolate)
         case let .hermite(s, e):
             
+            let s = Pixel.Scalar(s)
+            let e = Pixel.Scalar(e)
+            
             @inline(__always)
-            func _kernel(_ t: Double, _ a: SourcePixel, _ b: SourcePixel, _ c: SourcePixel, _ d: SourcePixel) -> SourcePixel {
+            func _kernel(_ t: Pixel.Scalar, _ a: Pixel, _ b: Pixel, _ c: Pixel, _ d: Pixel) -> Pixel {
                 return HermiteInterpolate(t, a, b, c, d, s, e)
             }
             
@@ -225,37 +228,49 @@ extension _TextureProtocolImplement {
             
         case let .mitchell(B, C):
             
-            let a1 = 12 - 9 * B - 6 * C
-            let b1 = -18 + 12 * B + 6 * C
-            let c1 = 6 - 2 * B
-            let a2 = -B - 6 * C
-            let b2 = 6 * B + 30 * C
-            let c2 = -12 * B - 48 * C
-            let d2 = 8 * B + 24 * C
+            let _a1 = 12 - 9 * B - 6 * C
+            let _b1 = -18 + 12 * B + 6 * C
+            let _c1 = 6 - 2 * B
+            let _a2 = -B - 6 * C
+            let _b2 = 6 * B + 30 * C
+            let _c2 = -12 * B - 48 * C
+            let _d2 = 8 * B + 24 * C
+            
+            let a1 = Pixel.Scalar(_a1)
+            let b1 = Pixel.Scalar(_b1)
+            let c1 = Pixel.Scalar(_c1)
+            let a2 = Pixel.Scalar(_a2)
+            let b2 = Pixel.Scalar(_b2)
+            let c2 = Pixel.Scalar(_c2)
+            let d2 = Pixel.Scalar(_d2)
             
             @inline(__always)
-            func _kernel(_ x: Double) -> Double {
+            func _kernel(_ x: Pixel.Scalar) -> Pixel.Scalar {
                 if x < 1 {
-                    return (a1 * x + b1) * x * x + c1
+                    let u = a1 * x + b1
+                    return u * x * x + c1
                 }
                 if x < 2 {
-                    return ((a2 * x + b2) * x + c2) * x + d2
+                    let u = a2 * x + b2
+                    let v = u * x + c2
+                    return v * x + d2
                 }
                 return 0
             }
             
             return convolve(point: point, kernel_size: 5, kernel: _kernel)
             
+        case .lanczos(0): return read_source(Int(floor(point.x)), Int(floor(point.y)))
         case .lanczos(1):
             
             @inline(__always)
-            func _kernel(_ x: Double) -> Double {
+            func _kernel(_ x: Pixel.Scalar) -> Pixel.Scalar {
                 if x == 0 {
                     return 1
                 }
                 if x < 1 {
-                    let _x = Double.pi * x
-                    let _sinc = sin(_x) / _x
+                    let _x = .pi * x
+                    let _sinc = .sin(_x) / _x
                     return _sinc * _sinc
                 }
                 return 0
@@ -265,15 +280,19 @@ extension _TextureProtocolImplement {
             
         case let .lanczos(a):
             
+            let a = Pixel.Scalar(a)
+            let _a = 1 / a
+            
             @inline(__always)
-            func _kernel(_ x: Double) -> Double {
-                let a = Double(a)
+            func _kernel(_ x: Pixel.Scalar) -> Pixel.Scalar {
                 if x == 0 {
                     return 1
                 }
                 if x < a {
-                    let _x = Double.pi * x
-                    return a * sin(_x) * sin(_x / a) / (_x * _x)
+                    let _x = .pi * x
+                    let u = .sin(_x) * .sin(_x * _a)
+                    let v = _x * _x
+                    return a * u / v
                 }
                 return 0
             }
@@ -306,10 +325,10 @@ extension _TextureProtocolImplement {
     
     @usableFromInline
     @inline(__always)
-    func convolve(point: Point, kernel_size: Int, kernel: (Double) -> Double) -> SourcePixel {
+    func convolve(point: Point, kernel_size: Int, kernel: (Pixel.Scalar) -> Pixel.Scalar) -> Pixel {
         
-        var pixel = SourcePixel()
-        var t: Double = 0
+        var pixel = Pixel()
+        var t: Pixel.Scalar = 0
         
         let _x = Int(floor(point.x))
         let _y = Int(floor(point.y))
@@ -323,22 +342,22 @@ extension _TextureProtocolImplement {
         
         for y in min_y..<max_y {
             for x in min_x..<max_x {
-                let k = kernel(point.distance(to: Point(x: x, y: y)))
+                let k = kernel(Pixel.Scalar(point.distance(to: Point(x: x, y: y))))
                 pixel += read_source(x, y) * k
                 t += k
             }
         }
-        return t == 0 ? SourcePixel() : pixel / t
+        return t == 0 ? Pixel() : pixel / t
     }
     
     @usableFromInline
     @inline(__always)
-    func sampling2(point: Point, sampler: (Double, SourcePixel, SourcePixel) -> SourcePixel) -> SourcePixel {
+    func sampling2(point: Point, sampler: (Pixel.Scalar, Pixel, Pixel) -> Pixel) -> Pixel {
         
         let _i = floor(point.x)
         let _j = floor(point.y)
-        let _tx = point.x - _i
-        let _ty = point.y - _j
+        let _tx = Pixel.Scalar(point.x - _i)
+        let _ty = Pixel.Scalar(point.y - _j)
         
         let _x1 = Int(_i)
         let _y1 = Int(_j)
@@ -355,12 +374,12 @@ extension _TextureProtocolImplement {
     
     @usableFromInline
     @inline(__always)
-    func sampling4(point: Point, sampler: (Double, SourcePixel, SourcePixel, SourcePixel, SourcePixel) -> SourcePixel) -> SourcePixel {
+    func sampling4(point: Point, sampler: (Pixel.Scalar, Pixel, Pixel, Pixel, Pixel) -> Pixel) -> Pixel {
         
         let _i = floor(point.x)
         let _j = floor(point.y)
-        let _tx = point.x - _i
-        let _ty = point.y - _j
+        let _tx = Pixel.Scalar(point.x - _i)
+        let _ty = Pixel.Scalar(point.y - _j)
         
         let _x2 = Int(_i)
         let _y2 = Int(_j)

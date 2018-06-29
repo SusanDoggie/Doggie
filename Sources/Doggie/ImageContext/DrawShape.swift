@@ -52,7 +52,7 @@ extension ImageContext {
                 
                 if isShadow {
                     
-                    var buf = MappedBuffer<Double>(repeating: 0, count: width * height, option: image.option)
+                    var buf = MappedBuffer<Float>(repeating: 0, count: width * height, option: image.option)
                     
                     buf.withUnsafeMutableBufferPointer {
                         
@@ -70,7 +70,7 @@ extension ImageContext {
                         _stencil += antialias * offset_x + offset_y * _stencil_width2
                         
                         let _antialias2 = antialias * antialias
-                        let div = 1 / Double(_antialias2)
+                        let div = 1 / Float(_antialias2)
                         
                         for _ in 0..<_height {
                             
@@ -95,7 +95,7 @@ extension ImageContext {
                                 }
                                 
                                 if _p != 0 {
-                                    _buf.pointee = _p == _antialias2 ? 1 : div * Double(_p)
+                                    _buf.pointee = _p == _antialias2 ? 1 : div * Float(_p)
                                 }
                                 
                                 _buf += 1
@@ -172,8 +172,7 @@ extension ImageContext {
             
             if isShadow {
                 
-                let _stencil = stencil.map { winding($0) ? 1.0 : 0.0 }
-                self._drawWithShadow(stencil: _stencil, color: color)
+                self._drawWithShadow(stencil: stencil.map { winding($0) ? 1.0 : 0.0 }, color: color)
                 
             } else {
                 

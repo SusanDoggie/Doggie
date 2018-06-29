@@ -31,7 +31,7 @@ extension ImageContext {
     }
     
     @inlinable
-    func _drawWithShadow(stencil: MappedBuffer<Double>, color: ColorPixel<Pixel.Model>) {
+    func _drawWithShadow(stencil: MappedBuffer<Float>, color: ColorPixel<Pixel.Model>) {
         
         let width = self.width
         let height = self.height
@@ -40,7 +40,7 @@ extension ImageContext {
         let shadowOffset = self.shadowOffset
         let shadowBlur = self.shadowBlur
         
-        let filter = GaussianBlurFilter(0.5 * shadowBlur)
+        let filter = GaussianBlurFilter(Float(0.5 * shadowBlur))
         let _offset = Point(x: Double(filter.count >> 1) - shadowOffset.width, y: Double(filter.count >> 1) - shadowOffset.height)
         
         let shadow_layer = StencilTexture(width: width, height: height, pixels: stencil, resamplingAlgorithm: .linear)._apply(filter)
@@ -57,11 +57,11 @@ extension ImageContext {
                     for x in 0..<width {
                         
                         var shadowColor = shadowColor
-                        shadowColor.opacity *= shadow_layer.pixel(Point(x: x, y: y) + _offset)
+                        shadowColor.opacity *= Double(shadow_layer.pixel(Point(x: x, y: y) + _offset))
                         blender.draw(color: shadowColor)
                         
                         var color = color
-                        color.opacity *= stencil.pointee
+                        color.opacity *= Double(stencil.pointee)
                         blender.draw(color: color)
                         
                         blender += 1
@@ -82,10 +82,10 @@ extension ImageContext {
         let shadowOffset = self.shadowOffset
         let shadowBlur = self.shadowBlur
         
-        let filter = GaussianBlurFilter(0.5 * shadowBlur)
+        let filter = GaussianBlurFilter(Float(0.5 * shadowBlur))
         let _offset = Point(x: Double(filter.count >> 1) - shadowOffset.width, y: Double(filter.count >> 1) - shadowOffset.height)
         
-        var shadow_layer = StencilTexture(texture: texture)._apply(filter)
+        var shadow_layer = StencilTexture<Float>(texture: texture)._apply(filter)
         shadow_layer.resamplingAlgorithm = .linear
         
         texture.withUnsafeBufferPointer { source in
@@ -99,7 +99,7 @@ extension ImageContext {
                 for y in 0..<height {
                     for x in 0..<width {
                         var shadowColor = shadowColor
-                        shadowColor.opacity *= shadow_layer.pixel(Point(x: x, y: y) + _offset)
+                        shadowColor.opacity *= Double(shadow_layer.pixel(Point(x: x, y: y) + _offset))
                         blender.draw(color: shadowColor)
                         blender.draw(color: source.pointee)
                         blender += 1
@@ -114,7 +114,7 @@ extension ImageContext {
 extension StencilTexture {
     
     @inlinable
-    func _apply(_ filter: [Double]) -> StencilTexture {
+    func _apply(_ filter: [T]) -> StencilTexture {
         
         let width = self.width
         let height = self.height
@@ -128,8 +128,8 @@ extension StencilTexture {
         let length1 = Radix2CircularConvolveLength(width, filter.count)
         let length2 = Radix2CircularConvolveLength(height, filter.count)
         
-        var buffer = MappedBuffer<Double>(repeating: 0, count: length1 + length2 + length1 * height, option: option)
-        var result = StencilTexture(width: n_width, height: length2, resamplingAlgorithm: resamplingAlgorithm, option: option)
+        var buffer = MappedBuffer<T>(repeating: 0, count: length1 + length2 + length1 * height, option: option)
+        var result = StencilTexture<T>(width: n_width, height: length2, resamplingAlgorithm: resamplingAlgorithm, option: option)
         
         buffer.withUnsafeMutableBufferPointer {
             
@@ -154,12 +154,12 @@ extension StencilTexture {
                     
                     HalfRadix2CooleyTukey(level1, filter, 1, filter.count, _kreal1, _kimag1, 2)
                     
-                    var _length1 = Double(length1)
+                    var _length1 = T(length1)
                     Div(length1, _kreal1, _kimag1, 2, &_length1, 0, _kreal1, _kimag1, 2)
                     
                     HalfRadix2CooleyTukey(level2, filter, 1, filter.count, _kreal2, _kimag2, 2)
                     
-                    var _length2 = Double(length2)
+                    var _length2 = T(length2)
                     Div(length2, _kreal2, _kimag2, 2, &_length2, 0, _kreal2, _kimag2, 2)
                     
                     _Radix2FiniteImpulseFilter(level1, height, source, 1, width, width, _kreal1, _kimag1, 2, 0, _temp, 1, length1)
