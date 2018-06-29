@@ -191,6 +191,8 @@
 		0A9F99471F568FD40008D36D /* SFNTPlatform.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9F99461F568FD40008D36D /* SFNTPlatform.swift */; };
 		0AA33B6020942B5900317F54 /* SimplexNoise.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA33B5F20942B5800317F54 /* SimplexNoise.swift */; };
 		0AA4D8451F63908200AFF16B /* CGFont.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA4D8441F63908200AFF16B /* CGFont.swift */; };
+		0AA6C73C20E6190400682EFA /* RGBA32ColorPixel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA6C73A20E6190400682EFA /* RGBA32ColorPixel.swift */; };
+		0AA6C73D20E6190400682EFA /* RGBA64ColorPixel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA6C73B20E6190400682EFA /* RGBA64ColorPixel.swift */; };
 		0AA8D463204E486700ED0175 /* SwiftPlayground.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA8D462204E486700ED0175 /* SwiftPlayground.swift */; };
 		0AAA7CF220B8EC950080D1BE /* Exported.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AAA7CF120B8EC950080D1BE /* Exported.swift */; };
 		0AAA7CF420B8EDA30080D1BE /* AppleExported.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AAA7CF320B8EDA30080D1BE /* AppleExported.swift */; };
@@ -435,6 +437,8 @@
 		0A9F99461F568FD40008D36D /* SFNTPlatform.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = SFNTPlatform.swift; sourceTree = "<group>"; };
 		0AA33B5F20942B5800317F54 /* SimplexNoise.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SimplexNoise.swift; sourceTree = "<group>"; };
 		0AA4D8441F63908200AFF16B /* CGFont.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = CGFont.swift; sourceTree = "<group>"; };
+		0AA6C73A20E6190400682EFA /* RGBA32ColorPixel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RGBA32ColorPixel.swift; sourceTree = "<group>"; };
+		0AA6C73B20E6190400682EFA /* RGBA64ColorPixel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RGBA64ColorPixel.swift; sourceTree = "<group>"; };
 		0AA8D462204E486700ED0175 /* SwiftPlayground.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftPlayground.swift; sourceTree = "<group>"; };
 		0AAA7CF120B8EC950080D1BE /* Exported.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Exported.swift; sourceTree = "<group>"; };
 		0AAA7CF320B8EDA30080D1BE /* AppleExported.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleExported.swift; sourceTree = "<group>"; };
@@ -814,6 +818,8 @@
 				0A7CC3D11FFDBE1200DEAC6D /* CompositingMode.swift */,
 				0A7A1FB01F04FC230016B3FB /* ARGB32ColorPixel.swift */,
 				0A831A851F186E6F0007932A /* ARGB64ColorPixel.swift */,
+				0AA6C73A20E6190400682EFA /* RGBA32ColorPixel.swift */,
+				0AA6C73B20E6190400682EFA /* RGBA64ColorPixel.swift */,
 				0A831A891F1872760007932A /* Gray16ColorPixel.swift */,
 				0A831A881F1872760007932A /* Gray32ColorPixel.swift */,
 				0A21119420CA644F003CA6BC /* YCbCrColorPixel.swift */,
@@ -1222,6 +1228,7 @@
 				0A9ED9D41F5CF5B000205C1B /* SFNTOS2.swift in Sources */,
 				0A8D4F2620C9073F00921F91 /* CubicBezierTriangularPatch.swift in Sources */,
 				0A7E3E941F5FD3E40020A507 /* OTFGSUB.swift in Sources */,
+				0AA6C73D20E6190400682EFA /* RGBA64ColorPixel.swift in Sources */,
 				0AAFBEEF20B5687200A392FE /* DrawShadow.swift in Sources */,
 				0AADB89320ABC5B700F3BF17 /* PNGFilter0.swift in Sources */,
 				08B457E71EDD3223007AA4F0 /* Arithmetic.swift in Sources */,
@@ -1389,6 +1396,7 @@
 				08458B391E2E627600D01813 /* Matrix.swift in Sources */,
 				0A92063B1F14C83A00AF5C49 /* PNGDecoder.swift in Sources */,
 				0A8D4F1E20C8FD8400921F91 /* CubicBezier.swift in Sources */,
+				0AA6C73C20E6190400682EFA /* RGBA32ColorPixel.swift in Sources */,
 				0A9CD58F1EEB9A2700094148 /* CIELabColorSpace.swift in Sources */,
 				0AAFBEED20B53B9300A392FE /* PredefinedColor.swift in Sources */,
 				0AD4D8D91EA6247200C99728 /* MathsExtension.swift in Sources */,

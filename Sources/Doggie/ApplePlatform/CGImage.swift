@@ -140,22 +140,69 @@ extension Image {
     @inlinable
     public var cgImage: CGImage? {
         
+        let bitsPerComponent: Int
+        let bitmapInfo: UInt32
+        
+        switch self {
+            
+        case is Image<Gray16ColorPixel>:
+            
+            bitsPerComponent = 8
+            
+            let byteOrder = CGBitmapInfo.byteOrder16Big
+            bitmapInfo = byteOrder.rawValue | CGImageAlphaInfo.last.rawValue
+            
+        case is Image<Gray32ColorPixel>:
+            
+            bitsPerComponent = 16
+            
+            let byteOrder = bitsPerComponent.bigEndian == bitsPerComponent ? CGBitmapInfo.byteOrder16Big : CGBitmapInfo.byteOrder16Little
+            bitmapInfo = byteOrder.rawValue | CGImageAlphaInfo.last.rawValue
+            
+        case is Image<ARGB32ColorPixel>:
+            
+            bitsPerComponent = 8
+            
+            let byteOrder = CGBitmapInfo.byteOrder32Big
+            bitmapInfo = byteOrder.rawValue | CGImageAlphaInfo.first.rawValue
+            
+        case is Image<RGBA32ColorPixel>:
+            
+            bitsPerComponent = 8
+            
+            let byteOrder = CGBitmapInfo.byteOrder32Big
+            bitmapInfo = byteOrder.rawValue | CGImageAlphaInfo.last.rawValue
+            
+        case is Image<ARGB64ColorPixel>:
+            
+            bitsPerComponent = 16
+            
+            let byteOrder = bitsPerComponent.bigEndian == bitsPerComponent ? CGBitmapInfo.byteOrder16Big : CGBitmapInfo.byteOrder16Little
+            bitmapInfo = byteOrder.rawValue | CGImageAlphaInfo.first.rawValue
+            
+        case is Image<RGBA64ColorPixel>:
+            
+            bitsPerComponent = 16
+            
+            let byteOrder = bitsPerComponent.bigEndian == bitsPerComponent ? CGBitmapInfo.byteOrder16Big : CGBitmapInfo.byteOrder16Little
+            bitmapInfo = byteOrder.rawValue | CGImageAlphaInfo.last.rawValue
+            
+        case is Image<FloatColorPixel<Pixel.Model>>:
+            
+            bitsPerComponent = 32
+            
+            let byteOrder = bitsPerComponent.bigEndian == bitsPerComponent ? CGBitmapInfo.byteOrder32Big : CGBitmapInfo.byteOrder32Little
+            bitmapInfo = byteOrder.rawValue | CGBitmapInfo.floatComponents.rawValue | CGImageAlphaInfo.last.rawValue
+            
+        default: return Image<FloatColorPixel<Pixel.Model>>(image: self).cgImage
+        }
+        
         guard let colorSpace = self.colorSpace.cgColorSpace else { return nil }
+        guard let providerRef = CGDataProvider(data: self.pixels.data as CFData) else { return nil }
         
-        let _image = Image<FloatColorPixel<Pixel.Model>>(image: self)
-        guard let providerRef = CGDataProvider(data: _image.pixels.data as CFData) else { return nil }
-        
-        let components = Pixel.numberOfComponents
-        
-        let bitsPerComponent = 32
-        let bytesPerPixel = 4 * components
-        let bitsPerPixel = 32 * components
-        
+        let bytesPerPixel = MemoryLayout<Pixel>.stride
+        let bitsPerPixel = bytesPerPixel << 3
         let bytesPerRow = bytesPerPixel * width
-        
-        let byteOrder = bitsPerComponent.bigEndian == bitsPerComponent ? CGBitmapInfo.byteOrder32Big : CGBitmapInfo.byteOrder32Little
-        
-        let bitmapInfo = byteOrder.rawValue | CGBitmapInfo.floatComponents.rawValue | CGImageAlphaInfo.last.rawValue
         
         return CGImage(width: width, height: height, bitsPerComponent: bitsPerComponent, bitsPerPixel: bitsPerPixel, bytesPerRow: bytesPerRow, space: colorSpace, bitmapInfo: CGBitmapInfo(rawValue: bitmapInfo), provider: providerRef, decode: nil, shouldInterpolate: true, intent: .defaultIntent)
     }

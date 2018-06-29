@@ -112,13 +112,13 @@ struct PNGDecoder : ImageRepDecoder {
         return Resolution(horizontal: 1, vertical: 1, unit: .point)
     }
     
-    var palette : [ARGB32ColorPixel]? {
+    var palette : [RGBA32ColorPixel]? {
         
         guard let plte = chunks.first(where: { $0.signature == "PLTE" }), plte.data.count % 3 == 0 else { return nil }
         
         let count = plte.data.count / 3
         
-        var palette = [ARGB32ColorPixel]()
+        var palette = [RGBA32ColorPixel]()
         palette.reserveCapacity(count)
         
         plte.data.withUnsafeBytes { (ptr: UnsafePointer<(UInt8, UInt8, UInt8)>) in
@@ -132,7 +132,7 @@ struct PNGDecoder : ImageRepDecoder {
                     var ptr2 = ptr2
                     for _ in 0..<count {
                         let (r, g, b) = ptr.pointee
-                        palette.append(ARGB32ColorPixel(red: r, green: g, blue: b, opacity: counter > 0 ? ptr2.pointee : 255))
+                        palette.append(RGBA32ColorPixel(red: r, green: g, blue: b, opacity: counter > 0 ? ptr2.pointee : 255))
                         ptr += 1
                         ptr2 += 1
                         counter -= 1
@@ -143,7 +143,7 @@ struct PNGDecoder : ImageRepDecoder {
                 var ptr = ptr
                 for _ in 0..<count {
                     let (r, g, b) = ptr.pointee
-                    palette.append(ARGB32ColorPixel(red: r, green: g, blue: b))
+                    palette.append(RGBA32ColorPixel(red: r, green: g, blue: b))
                     ptr += 1
                 }
             }
@@ -584,7 +584,7 @@ struct PNGDecoder : ImageRepDecoder {
             
             switch ihdr.bitDepth {
             case 8:
-                var image = Image<ARGB32ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: _RGBColorSpace, option: option)
+                var image = Image<RGBA32ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: _RGBColorSpace, option: option)
                 
                 pixels.withUnsafeBytes { (source: UnsafePointer<(UInt8, UInt8, UInt8)>) in
                     
@@ -596,7 +596,7 @@ struct PNGDecoder : ImageRepDecoder {
                         
                         for _ in 0..<pixels_count {
                             let (r, g, b) = source.pointee
-                            destination.pointee = ARGB32ColorPixel(red: r, green: g, blue: b)
+                            destination.pointee = RGBA32ColorPixel(red: r, green: g, blue: b)
                             source += 1
                             destination += 1
                         }
@@ -606,7 +606,7 @@ struct PNGDecoder : ImageRepDecoder {
                 return AnyImage(image)
                 
             case 16:
-                var image = Image<ARGB64ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: _RGBColorSpace, option: option)
+                var image = Image<RGBA64ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: _RGBColorSpace, option: option)
                 
                 pixels.withUnsafeBytes { (source: UnsafePointer<(BEUInt16, BEUInt16, BEUInt16)>) in
                     
@@ -618,7 +618,7 @@ struct PNGDecoder : ImageRepDecoder {
                         
                         for _ in 0..<pixels_count {
                             let (r, g, b) = source.pointee
-                            destination.pointee = ARGB64ColorPixel(red: r.representingValue, green: g.representingValue, blue: b.representingValue)
+                            destination.pointee = RGBA64ColorPixel(red: r.representingValue, green: g.representingValue, blue: b.representingValue)
                             source += 1
                             destination += 1
                         }
@@ -632,7 +632,7 @@ struct PNGDecoder : ImageRepDecoder {
             
         case 3:
             
-            var image = Image<ARGB32ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: _RGBColorSpace, option: option)
+            var image = Image<RGBA32ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: _RGBColorSpace, option: option)
             
             guard let palette = self.palette else { return AnyImage(image) }
             
@@ -670,7 +670,7 @@ struct PNGDecoder : ImageRepDecoder {
                                 
                                 for index in ImageRepDecoderBitStream(buffer: source, count: count, bitWidth: Int(bitsPerPixel)) {
                                     
-                                    _destination.pointee = index < palette.count ? palette[Int(index)] : ARGB32ColorPixel()
+                                    _destination.pointee = index < palette.count ? palette[Int(index)] : RGBA32ColorPixel()
                                     _destination += 1
                                 }
                                 
@@ -681,7 +681,7 @@ struct PNGDecoder : ImageRepDecoder {
                         } else {
                             for _ in 0..<pixels_count {
                                 let index = source.pointee
-                                destination.pointee = index < palette.count ? palette[Int(index)] : ARGB32ColorPixel()
+                                destination.pointee = index < palette.count ? palette[Int(index)] : RGBA32ColorPixel()
                                 source += 1
                                 destination += 1
                             }
@@ -745,7 +745,7 @@ struct PNGDecoder : ImageRepDecoder {
             
             switch ihdr.bitDepth {
             case 8:
-                var image = Image<ARGB32ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: _RGBColorSpace, option: option)
+                var image = Image<RGBA32ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: _RGBColorSpace, option: option)
                 
                 pixels.withUnsafeBytes { (source: UnsafePointer<(UInt8, UInt8, UInt8, UInt8)>) in
                     
@@ -757,7 +757,7 @@ struct PNGDecoder : ImageRepDecoder {
                         
                         for _ in 0..<pixels_count {
                             let (r, g, b, a) = source.pointee
-                            destination.pointee = ARGB32ColorPixel(red: r, green: g, blue: b, opacity: a)
+                            destination.pointee = RGBA32ColorPixel(red: r, green: g, blue: b, opacity: a)
                             source += 1
                             destination += 1
                         }
@@ -767,7 +767,7 @@ struct PNGDecoder : ImageRepDecoder {
                 return AnyImage(image)
                 
             case 16:
-                var image = Image<ARGB64ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: _RGBColorSpace, option: option)
+                var image = Image<RGBA64ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: _RGBColorSpace, option: option)
                 
                 pixels.withUnsafeBytes { (source: UnsafePointer<(BEUInt16, BEUInt16, BEUInt16, BEUInt16)>) in
                     
@@ -779,7 +779,7 @@ struct PNGDecoder : ImageRepDecoder {
                         
                         for _ in 0..<pixels_count {
                             let (r, g, b, a) = source.pointee
-                            destination.pointee = ARGB64ColorPixel(red: r.representingValue, green: g.representingValue, blue: b.representingValue, opacity: a.representingValue)
+                            destination.pointee = RGBA64ColorPixel(red: r.representingValue, green: g.representingValue, blue: b.representingValue, opacity: a.representingValue)
                             source += 1
                             destination += 1
                         }

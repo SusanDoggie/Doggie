@@ -168,6 +168,72 @@ struct TIFFEncoder : ImageRepEncoder {
         
         return data
     }
+    private static func rawData(_ image: Image<RGBA32ColorPixel>, _ isOpaque: Bool) -> MappedBuffer<UInt8> {
+        
+        let samplesPerPixel = isOpaque ? 3 : 4
+        let bytesPerSample = 1
+        
+        var data = MappedBuffer<UInt8>(capacity: image.width * image.height * samplesPerPixel * bytesPerSample, option: .fileBacked)
+        
+        image.withUnsafeBufferPointer {
+            
+            guard var source = $0.baseAddress else { return }
+            
+            if isOpaque {
+                for _ in 0..<image.width * image.height {
+                    let pixel = source.pointee
+                    data.encode(pixel.r.bigEndian)
+                    data.encode(pixel.g.bigEndian)
+                    data.encode(pixel.b.bigEndian)
+                    source += 1
+                }
+            } else {
+                for _ in 0..<image.width * image.height {
+                    let pixel = source.pointee
+                    data.encode(pixel.r.bigEndian)
+                    data.encode(pixel.g.bigEndian)
+                    data.encode(pixel.b.bigEndian)
+                    data.encode(pixel.a.bigEndian)
+                    source += 1
+                }
+            }
+        }
+        
+        return data
+    }
+    private static func rawData(_ image: Image<RGBA64ColorPixel>, _ isOpaque: Bool) -> MappedBuffer<UInt8> {
+        
+        let samplesPerPixel = isOpaque ? 3 : 4
+        let bytesPerSample = 2
+        
+        var data = MappedBuffer<UInt8>(capacity: image.width * image.height * samplesPerPixel * bytesPerSample, option: .fileBacked)
+        
+        image.withUnsafeBufferPointer {
+            
+            guard var source = $0.baseAddress else { return }
+            
+            if isOpaque {
+                for _ in 0..<image.width * image.height {
+                    let pixel = source.pointee
+                    data.encode(pixel.r.bigEndian)
+                    data.encode(pixel.g.bigEndian)
+                    data.encode(pixel.b.bigEndian)
+                    source += 1
+                }
+            } else {
+                for _ in 0..<image.width * image.height {
+                    let pixel = source.pointee
+                    data.encode(pixel.r.bigEndian)
+                    data.encode(pixel.g.bigEndian)
+                    data.encode(pixel.b.bigEndian)
+                    data.encode(pixel.a.bigEndian)
+                    source += 1
+                }
+            }
+        }
+        
+        return data
+    }
     private static func rawData(_ image: Image<Gray16ColorPixel>, _ isOpaque: Bool) -> MappedBuffer<UInt8> {
         
         let samplesPerPixel = isOpaque ? 1 : 2
@@ -304,6 +370,18 @@ struct TIFFEncoder : ImageRepEncoder {
             pixelData = rawData(image, isOpaque)
             
         case let image as Image<ARGB64ColorPixel>:
+            
+            bitsPerChannel = 16
+            
+            pixelData = rawData(image, isOpaque)
+            
+        case let image as Image<RGBA32ColorPixel>:
+            
+            bitsPerChannel = 8
+            
+            pixelData = rawData(image, isOpaque)
+            
+        case let image as Image<RGBA64ColorPixel>:
             
             bitsPerChannel = 16
             
