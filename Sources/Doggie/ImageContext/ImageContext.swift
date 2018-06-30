@@ -554,7 +554,7 @@ extension ImageContext {
         try body(_clip)
         
         if _clip.isDirty {
-            self.clip = MappedBuffer(_clip.image.pixels.lazy.map { $0.color.white * $0.opacity }, option: image.option)
+            self.clip = _clip.image.pixels.map { $0.color.white * $0.opacity }
         } else {
             self.clearClipBuffer(with: 0)
         }
