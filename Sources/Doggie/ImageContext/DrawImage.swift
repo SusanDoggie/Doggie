@@ -27,7 +27,7 @@ extension ImageContext {
     
     @inlinable
     public func draw<Image: ImageProtocol>(image: Image, transform: SDTransform) {
-        self.draw(texture: Texture(image: image.convert(to: colorSpace, intent: renderingIntent), resamplingAlgorithm: resamplingAlgorithm), transform: transform)
+        self.draw(texture: Texture<ColorPixel<Pixel.Model>>(image: image.convert(to: colorSpace, intent: renderingIntent), resamplingAlgorithm: resamplingAlgorithm), transform: transform)
     }
     
     @inlinable
@@ -88,7 +88,7 @@ extension ImageContext {
     }
     
     @inlinable
-    public func draw(texture: Texture<ColorPixel<Pixel.Model>>, transform: SDTransform) {
+    public func draw<P>(texture: Texture<P>, transform: SDTransform) where P.Model == Pixel.Model {
         
         let width = self.width
         let height = self.height

@@ -140,7 +140,7 @@ extension Image {
     
     @inlinable
     public func linearTone() -> Image {
-        return Image(width: height, height: width, resolution: resolution, pixels: colorSpace.convertToLinear(pixels), colorSpace: colorSpace.linearTone)
+        return Image(width: height, height: width, resolution: resolution, pixels: pixels.map(colorSpace.convertToLinear), colorSpace: colorSpace.linearTone)
     }
     
     @inlinable

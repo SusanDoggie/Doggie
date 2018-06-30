@@ -274,32 +274,6 @@ extension ColorSpace {
     }
 }
 
-extension ColorSpace {
-    
-    @inlinable
-    public func convertToLinear<C : Collection, R : RangeReplaceableCollection>(_ color: C) -> R where C.Element == Model, C.Element == R.Element {
-        return R(color.lazy.map(self.convertToLinear))
-    }
-    
-    @inlinable
-    public func convertToLinear<C : Collection, R : RangeReplaceableCollection>(_ color: C) -> R where C.Element: ColorPixelProtocol, C.Element.Model == Model, C.Element == R.Element {
-        return R(color.lazy.map(self.convertToLinear))
-    }
-}
-
-extension ColorSpace {
-    
-    @inlinable
-    public func convertFromLinear<C : Collection, R : RangeReplaceableCollection>(_ color: C) -> R where C.Element == Model, C.Element == R.Element {
-        return R(color.lazy.map(self.convertFromLinear))
-    }
-    
-    @inlinable
-    public func convertFromLinear<C : Collection, R : RangeReplaceableCollection>(_ color: C) -> R where C.Element: ColorPixelProtocol, C.Element.Model == Model, C.Element == R.Element {
-        return R(color.lazy.map(self.convertFromLinear))
-    }
-}
-
 extension CIEXYZColorSpace {
     
     @usableFromInline
@@ -315,43 +289,23 @@ extension CIEXYZColorSpace {
 
 extension ColorSpace {
     
-    @usableFromInline
-    @inline(__always)
-    func _convert<C : Collection, R>(_ color: C, to other: ColorSpace<R>, intent: RenderingIntent) -> LazyMapCollection<C, R> where C.Element == Model {
-        let matrix = self.base.cieXYZ._intentMatrix(to: other.base.cieXYZ, chromaticAdaptationAlgorithm: chromaticAdaptationAlgorithm, intent: intent)
-        return color.lazy.map { other.convertFromXYZ(self.convertToXYZ($0) * matrix) }
-    }
-    
-    @usableFromInline
-    @inline(__always)
-    func _convert<C : Collection, R: ColorPixelProtocol>(_ color: C, to other: ColorSpace<R.Model>, intent: RenderingIntent) -> LazyMapCollection<C, R> where C.Element: ColorPixelProtocol, C.Element.Model == Model {
-        let matrix = self.base.cieXYZ._intentMatrix(to: other.base.cieXYZ, chromaticAdaptationAlgorithm: chromaticAdaptationAlgorithm, intent: intent)
-        return color.lazy.map { R(color: other.convertFromXYZ(self.convertToXYZ($0.color) * matrix), opacity: $0.opacity) }
-    }
-    
     @inlinable
     public func convert<R>(_ color: Model, to other: ColorSpace<R>, intent: RenderingIntent = .default) -> R {
-        return self._convert(CollectionOfOne(color), to: other, intent: intent)[0]
+        let matrix = self.base.cieXYZ._intentMatrix(to: other.base.cieXYZ, chromaticAdaptationAlgorithm: chromaticAdaptationAlgorithm, intent: intent)
+        return other.convertFromXYZ(self.convertToXYZ(color) * matrix)
     }
     
     @inlinable
     public func convert<S: ColorPixelProtocol, R: ColorPixelProtocol>(_ color: S, to other: ColorSpace<R.Model>, intent: RenderingIntent = .default) -> R where S.Model == Model {
-        return self._convert(CollectionOfOne(color), to: other, intent: intent)[0]
+        return R(color: self.convert(color.color, to: other, intent: intent), opacity: color.opacity)
     }
-    
-    @inlinable
-    public func convert<C : Collection, R : RangeReplaceableCollection>(_ color: C, to other: ColorSpace<R.Element>, intent: RenderingIntent = .default) -> R where C.Element == Model {
-        return R(self._convert(color, to: other, intent: intent))
-    }
-    
-    @inlinable
-    public func convert<C : Collection, R : RangeReplaceableCollection>(_ color: C, to other: ColorSpace<R.Element.Model>, intent: RenderingIntent = .default) -> R where C.Element: ColorPixelProtocol, C.Element.Model == Model, R.Element: ColorPixelProtocol {
-        return R(self._convert(color, to: other, intent: intent))
-    }
+}
+
+extension ColorSpace {
     
     @usableFromInline
     @inline(__always)
-    func convert<S, R>(_ color: MappedBuffer<S>, to other: ColorSpace<R.Model>, intent: RenderingIntent = .default, option: MappedBufferOption = .default) -> MappedBuffer<R> where S: ColorPixelProtocol, S.Model == Model, R: ColorPixelProtocol {
+    func convert<S, R>(_ color: MappedBuffer<S>, to other: ColorSpace<R.Model>, intent: RenderingIntent, option: MappedBufferOption) -> MappedBuffer<R> where S: ColorPixelProtocol, S.Model == Model, R: ColorPixelProtocol {
         let matrix = self.base.cieXYZ._intentMatrix(to: other.base.cieXYZ, chromaticAdaptationAlgorithm: chromaticAdaptationAlgorithm, intent: intent)
         return color.map(option: option) { R(color: other.convertFromXYZ(self.convertToXYZ($0.color) * matrix), opacity: $0.opacity) }
     }
