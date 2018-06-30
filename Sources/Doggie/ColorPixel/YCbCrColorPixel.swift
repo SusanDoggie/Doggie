@@ -25,8 +25,6 @@
 
 public struct YCbCrColorPixel : ColorPixelProtocol {
     
-    public typealias Scalar = Double
-    
     public var a: UInt8
     public var y: UInt8
     public var cb: UInt8

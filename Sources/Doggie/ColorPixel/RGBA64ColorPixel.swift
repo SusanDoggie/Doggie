@@ -25,8 +25,6 @@
 
 public struct RGBA64ColorPixel : ColorPixelProtocol {
     
-    public typealias Scalar = Double
-    
     public var r: UInt16
     public var g: UInt16
     public var b: UInt16

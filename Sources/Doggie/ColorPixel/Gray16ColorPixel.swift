@@ -25,8 +25,6 @@
 
 public struct Gray16ColorPixel : ColorPixelProtocol {
     
-    public typealias Scalar = Double
-    
     public var w: UInt8
     public var a: UInt8
     
