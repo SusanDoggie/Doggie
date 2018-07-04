@@ -23,16 +23,20 @@
 //  THE SOFTWARE.
 //
 
-public struct Image<Pixel: ColorPixelProtocol> : ImageProtocol {
+@_fixed_layout
+public struct Image<Pixel: ColorPixelProtocol> : ImageProtocol, Hashable {
     
     public let width: Int
     public let height: Int
     
     public var resolution: Resolution
     
-    public internal(set) var pixels: MappedBuffer<Pixel>
+    public private(set) var pixels: MappedBuffer<Pixel>
     
     public var colorSpace: ColorSpace<Pixel.Model>
+    
+    @usableFromInline
+    var cache = Cache<String>()
     
     @inlinable
     init(width: Int, height: Int, resolution: Resolution, pixels: MappedBuffer<Pixel>, colorSpace: ColorSpace<Pixel.Model>) {
@@ -105,6 +109,27 @@ extension Image {
     }
 }
 
+extension Image {
+    
+    @inlinable
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(width)
+        hasher.combine(height)
+        hasher.combine(resolution)
+        hasher.combine(colorSpace)
+        withUnsafeBufferPointer {
+            for element in $0.prefix(16) {
+                hasher.combine(element)
+            }
+        }
+    }
+    
+    @inlinable
+    public static func ==(lhs: Image, rhs: Image) -> Bool {
+        return lhs.width == rhs.width && lhs.height == rhs.height && lhs.resolution == rhs.resolution && lhs.colorSpace == rhs.colorSpace && (lhs.cache.identifier == rhs.cache.identifier || lhs.pixels == rhs.pixels)
+    }
+}
+
 extension Image : CustomStringConvertible {
     
     @inlinable
@@ -124,14 +149,34 @@ extension Image {
 extension Image {
     
     @inlinable
-    public subscript(x: Int, y: Int) -> Color<Pixel.Model> {
+    public func color(x: Int, y: Int) -> Doggie.Color<Pixel.Model> {
+        precondition(0..<width ~= x && 0..<height ~= y)
+        return Color(colorSpace: colorSpace, color: pixels[width * y + x])
+    }
+    
+    @inlinable
+    public func color(x: Int, y: Int) -> AnyColor {
+        precondition(0..<width ~= x && 0..<height ~= y)
+        return AnyColor(colorSpace: colorSpace, color: pixels[width * y + x])
+    }
+    
+    @inlinable
+    public mutating func setColor<C: ColorProtocol>(x: Int, y: Int, color: C) {
+        cache = Cache()
+        precondition(0..<width ~= x && 0..<height ~= y)
+        pixels[width * y + x] = Pixel(color.convert(to: colorSpace, intent: .default))
+    }
+}
+
+extension Image {
+    
+    @inlinable
+    public subscript(x: Int, y: Int) -> Doggie.Color<Pixel.Model> {
         get {
-            precondition(0..<width ~= x && 0..<height ~= y)
-            return Color(colorSpace: colorSpace, color: pixels[width * y + x])
+            return self.color(x: x, y: y)
         }
         set {
-            precondition(0..<width ~= x && 0..<height ~= y)
-            pixels[width * y + x] = Pixel(newValue.convert(to: colorSpace))
+            self.setColor(x: x, y: y, color: newValue)
         }
     }
 }
@@ -145,6 +190,8 @@ extension Image {
     
     @inlinable
     public mutating func setWhiteBalance(_ white: Point) {
+        
+        cache = Cache()
         
         let colorSpace = self.colorSpace
         
@@ -248,25 +295,23 @@ extension Image {
     
     @inlinable
     public func withUnsafeBufferPointer<R>(_ body: (UnsafeBufferPointer<Pixel>) throws -> R) rethrows -> R {
-        
         return try pixels.withUnsafeBufferPointer(body)
     }
     
     @inlinable
     public mutating func withUnsafeMutableBufferPointer<R>(_ body: (inout UnsafeMutableBufferPointer<Pixel>) throws -> R) rethrows -> R {
-        
+        cache = Cache()
         return try pixels.withUnsafeMutableBufferPointer(body)
     }
     
     @inlinable
     public func withUnsafeBytes<R>(_ body: (UnsafeRawBufferPointer) throws -> R) rethrows -> R {
-        
         return try pixels.withUnsafeBytes(body)
     }
     
     @inlinable
     public mutating func withUnsafeMutableBytes<R>(_ body: (UnsafeMutableRawBufferPointer) throws -> R) rethrows -> R {
-        
+        cache = Cache()
         return try pixels.withUnsafeMutableBytes(body)
     }
 }

@@ -170,6 +170,7 @@ extension ColorSpace {
     
     @inlinable
     public func hash(into hasher: inout Hasher) {
+        hasher.combine(chromaticAdaptationAlgorithm)
         base.hash(into: &hasher)
     }
     

@@ -38,9 +38,13 @@ protocol AnyImageBaseProtocol {
     
     var option: MappedBufferOption { get }
     
-    func _color(x: Int, y: Int) -> AnyColorBaseProtocol
+    func hash(into hasher: inout Hasher)
     
-    mutating func _setColor(x: Int, y: Int, color: AnyColor)
+    func isEqualTo(_ other: AnyImageBaseProtocol) -> Bool
+    
+    func color(x: Int, y: Int) -> AnyColor
+    
+    mutating func setColor<C: ColorProtocol>(x: Int, y: Int, color: C)
     
     mutating func setWhiteBalance(_ white: Point)
     
@@ -57,6 +61,15 @@ protocol AnyImageBaseProtocol {
     func _copy(option: MappedBufferOption) -> AnyImageBaseProtocol
     
     func _copy<Model>() -> Image<ColorPixel<Model>>?
+}
+
+extension AnyImageBaseProtocol where Self : Equatable {
+    
+    @inlinable
+    func isEqualTo(_ other: AnyImageBaseProtocol) -> Bool {
+        guard let other = other as? Self else { return false }
+        return self == other
+    }
 }
 
 extension Image : AnyImageBaseProtocol {
@@ -87,17 +100,6 @@ extension Image : AnyImageBaseProtocol {
     }
     
     @inlinable
-    func _color(x: Int, y: Int) -> AnyColorBaseProtocol {
-        return self[x, y]
-    }
-    
-    @inlinable
-    mutating func _setColor(x: Int, y: Int, color: AnyColor) {
-        precondition(0..<width ~= x && 0..<height ~= y)
-        pixels[width * y + x] = Pixel(color.convert(to: colorSpace))
-    }
-    
-    @inlinable
     func _convert<Pixel>(colorSpace: Image<Pixel>.ColorSpace, intent: RenderingIntent, option: MappedBufferOption) -> Image<Pixel> {
         return Image<Pixel>(image: self, colorSpace: colorSpace, intent: intent, option: option)
     }
@@ -115,7 +117,7 @@ extension Image : AnyImageBaseProtocol {
 }
 
 @_fixed_layout
-public struct AnyImage : ImageProtocol {
+public struct AnyImage : ImageProtocol, Hashable {
     
     @usableFromInline
     var _base: AnyImageBaseProtocol
@@ -128,6 +130,19 @@ public struct AnyImage : ImageProtocol {
     @inlinable
     public var base: Any {
         return _base
+    }
+}
+
+extension AnyImage {
+    
+    @inlinable
+    public func hash(into hasher: inout Hasher) {
+        _base.hash(into: &hasher)
+    }
+    
+    @inlinable
+    public static func ==(lhs: AnyImage, rhs: AnyImage) -> Bool {
+        return lhs._base.isEqualTo(rhs._base)
     }
 }
 
@@ -189,10 +204,10 @@ extension AnyImage {
     @inlinable
     public subscript(x: Int, y: Int) -> AnyColor {
         get {
-            return AnyColor(base: _base._color(x: x, y: y))
+            return _base.color(x: x, y: y)
         }
         set {
-            _base._setColor(x: x, y: y, color: newValue)
+            _base.setColor(x: x, y: y, color: newValue)
         }
     }
     
