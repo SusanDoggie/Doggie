@@ -23,51 +23,6 @@
 //  THE SOFTWARE.
 //
 
-public enum GradientSpreadMode {
-    
-    case none
-    case pad
-    case reflect
-    case `repeat`
-}
-
-public struct GradientStop<Color: ColorProtocol> {
-    
-    public var offset: Double
-    public var color: Color
-    
-    @inlinable
-    public init(offset: Double, color: Color) {
-        self.offset = offset
-        self.color = color
-    }
-}
-
-extension GradientStop : Equatable where Color : Equatable {
-    
-    @inlinable
-    public static func ==(lhs: GradientStop, rhs: GradientStop) -> Bool {
-        return lhs.offset == rhs.offset && lhs.color == rhs.color
-    }
-}
-
-extension GradientStop : Hashable where Color : Hashable {
-    
-    @inlinable
-    public func hash(into hasher: inout Hasher) {
-        hasher.combine(offset)
-        hasher.combine(color)
-    }
-}
-
-extension GradientStop where Color == AnyColor {
-    
-    @inlinable
-    public init<M>(offset: Double, color: Doggie.Color<M>) {
-        self.init(offset: offset, color: AnyColor(color))
-    }
-}
-
 extension ImageContext {
     
     @inlinable
