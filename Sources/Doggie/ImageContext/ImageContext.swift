@@ -71,7 +71,7 @@ private struct GraphicState {
     }
 }
 
-public class ImageContext<Pixel: ColorPixelProtocol> {
+public class ImageContext<Pixel: ColorPixelProtocol> : TypedDrawableContext {
     
     public private(set) var image: Image<Pixel>
     
@@ -90,14 +90,14 @@ public class ImageContext<Pixel: ColorPixelProtocol> {
         self.image = image
     }
     
-    public init(width: Int, height: Int, resolution: Resolution = Resolution(resolution: 1, unit: .point), colorSpace: ColorSpace<Pixel.Model>, option: MappedBufferOption = .default) {
+    public init(width: Int, height: Int, resolution: Resolution = Resolution(resolution: 1, unit: .point), colorSpace: Doggie.ColorSpace<Pixel.Model>, option: MappedBufferOption = .default) {
         self.image = Image(width: width, height: height, resolution: resolution, colorSpace: colorSpace, option: option)
     }
 }
 
 extension ImageContext {
     
-    private convenience init<P>(copyStates context: ImageContext<P>, colorSpace: ColorSpace<Pixel.Model>) {
+    private convenience init<P>(copyStates context: ImageContext<P>, colorSpace: Doggie.ColorSpace<Pixel.Model>) {
         self.init(width: context.width, height: context.height, colorSpace: colorSpace, option: context.image.option)
         self.styles = context.styles
         self.styles.opacity = 1
@@ -311,49 +311,6 @@ extension ImageContext {
     }
 }
 
-extension ImageContext {
-    
-    @inlinable
-    public func rotate(_ angle: Double) {
-        self.transform *= SDTransform.rotate(angle)
-    }
-    
-    @inlinable
-    public func skewX(_ angle: Double) {
-        self.transform *= SDTransform.skewX(angle)
-    }
-    
-    @inlinable
-    public func skewY(_ angle: Double) {
-        self.transform *= SDTransform.skewY(angle)
-    }
-    
-    @inlinable
-    public func scale(_ scale: Double) {
-        self.transform *= SDTransform.scale(scale)
-    }
-    
-    @inlinable
-    public func scale(x: Double = 1, y: Double = 1) {
-        self.transform *= SDTransform.scale(x: x, y: y)
-    }
-    
-    @inlinable
-    public func translate(x: Double = 0, y: Double = 0) {
-        self.transform *= SDTransform.translate(x: x, y: y)
-    }
-    
-    @inlinable
-    public func reflectX(_ x: Double = 0) {
-        self.transform *= SDTransform.reflectX(x)
-    }
-    
-    @inlinable
-    public func reflectY(_ y: Double = 0) {
-        self.transform *= SDTransform.reflectY(y)
-    }
-}
-
 public enum ImageContextRenderCullMode {
     
     case none
@@ -532,10 +489,10 @@ extension ImageContext {
 extension ImageContext {
     
     public func drawClip<P>(body: (ImageContext<P>) throws -> Void) rethrows where P.Model == GrayColorModel {
-        try self.drawClip(colorSpace: ColorSpace.calibratedGray(from: colorSpace, gamma: 2.2), body: body)
+        try self.drawClip(colorSpace: Doggie.ColorSpace.calibratedGray(from: colorSpace, gamma: 2.2), body: body)
     }
     
-    public func drawClip<P>(colorSpace: ColorSpace<GrayColorModel>, body: (ImageContext<P>) throws -> Void) rethrows where P.Model == GrayColorModel {
+    public func drawClip<P>(colorSpace: Doggie.ColorSpace<GrayColorModel>, body: (ImageContext<P>) throws -> Void) rethrows where P.Model == GrayColorModel {
         
         if let next = self.next {
             try next.drawClip(body: body)

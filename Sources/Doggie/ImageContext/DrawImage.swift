@@ -26,11 +26,6 @@
 extension ImageContext {
     
     @inlinable
-    public func draw<Image: ImageProtocol>(image: Image, transform: SDTransform) {
-        self.draw(texture: Texture<ColorPixel<Pixel.Model>>(image: image.convert(to: colorSpace, intent: renderingIntent), resamplingAlgorithm: resamplingAlgorithm), transform: transform)
-    }
-    
-    @inlinable
     public func draw<T>(stencil: StencilTexture<T>, transform: SDTransform, color: Pixel.Model) {
         
         let width = self.width

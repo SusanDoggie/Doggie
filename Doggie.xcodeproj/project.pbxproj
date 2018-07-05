@@ -210,6 +210,7 @@
 		0ABFA6C91FC67CB6009D42E2 /* ByteCodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ABFA6C81FC67CB6009D42E2 /* ByteCodable.swift */; };
 		0AC527E21EEFEFF900FB239A /* iccProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AC527E01EEFEFF900FB239A /* iccProfile.swift */; };
 		0AC588A920CF69AD00C326FF /* OverlapAddConvolve.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AC588A820CF69AD00C326FF /* OverlapAddConvolve.swift */; };
+		0AC621C220EDF07100E5FF15 /* DrawableContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AC621C120EDF07100E5FF15 /* DrawableContext.swift */; };
 		0ACD21331EEBA55000C5811F /* AtomicTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AFCA14F1D9E1F130034AB10 /* AtomicTest.swift */; };
 		0AD3E62F1F53D9FC003CC21A /* Font.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD3E62E1F53D9FC003CC21A /* Font.swift */; };
 		0AD3E6321F53DA9B003CC21A /* FontDecoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD3E6311F53DA9B003CC21A /* FontDecoder.swift */; };
@@ -457,6 +458,7 @@
 		0ABFA6C81FC67CB6009D42E2 /* ByteCodable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = ByteCodable.swift; sourceTree = "<group>"; };
 		0AC527E01EEFEFF900FB239A /* iccProfile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = iccProfile.swift; sourceTree = "<group>"; };
 		0AC588A820CF69AD00C326FF /* OverlapAddConvolve.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverlapAddConvolve.swift; sourceTree = "<group>"; };
+		0AC621C120EDF07100E5FF15 /* DrawableContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawableContext.swift; sourceTree = "<group>"; };
 		0AD3E62E1F53D9FC003CC21A /* Font.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Font.swift; sourceTree = "<group>"; };
 		0AD3E6311F53DA9B003CC21A /* FontDecoder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = FontDecoder.swift; sourceTree = "<group>"; };
 		0AD3E6341F53DB6C003CC21A /* OpenTypeDecoder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = OpenTypeDecoder.swift; sourceTree = "<group>"; };
@@ -722,6 +724,7 @@
 		0A39A6B31ED9342C00804004 /* ImageContext */ = {
 			isa = PBXGroup;
 			children = (
+				0AC621C120EDF07100E5FF15 /* DrawableContext.swift */,
 				0A39A6B41ED9342C00804004 /* ImageContext.swift */,
 				0A21F0231F061AE2009C4490 /* PixelBlender.swift */,
 				0AAFBEEE20B5687200A392FE /* DrawShadow.swift */,
@@ -1255,6 +1258,7 @@
 				0AC527E21EEFEFF900FB239A /* iccProfile.swift in Sources */,
 				0A94BE961F1087B600F1BCD2 /* BMPDecoder.swift in Sources */,
 				0A967E511F132DC0007E38E4 /* JPEGEncoder.swift in Sources */,
+				0AC621C220EDF07100E5FF15 /* DrawableContext.swift in Sources */,
 				0A39A6B61ED9342C00804004 /* ImageContext.swift in Sources */,
 				0AE762591EE9583400E926D5 /* CGImage.swift in Sources */,
 				0AE71A011EF517CA0086923C /* AnyImage.swift in Sources */,

@@ -158,22 +158,3 @@ extension ImageContext {
         }
     }
 }
-
-extension ImageContext {
-    
-    @inlinable
-    public func setClip(rect: Rect) {
-        self.setClip(shape: Shape(rect: rect), winding: .nonZero)
-    }
-    
-    @inlinable
-    public func setClip(roundedRect rect: Rect, radius: Radius) {
-        self.setClip(shape: Shape(roundedRect: rect, radius: radius), winding: .nonZero)
-    }
-    
-    @inlinable
-    public func setClip(ellipseIn rect: Rect) {
-        self.setClip(shape: Shape(ellipseIn: rect), winding: .nonZero)
-    }
-}
-
