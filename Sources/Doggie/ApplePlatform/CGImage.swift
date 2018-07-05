@@ -143,6 +143,9 @@ extension Image {
         
         return self.cache[ImageCacheCGImageKey] {
             
+            let width = self.width
+            let height = self.height
+            
             let bitsPerComponent: Int
             let bitmapInfo: UInt32
             
