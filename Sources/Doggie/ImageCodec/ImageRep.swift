@@ -54,10 +54,30 @@ extension ImageRepBase {
 
 public struct ImageRep {
     
-    fileprivate let base: ImageRepBase
+    private let base: ImageRepBase
+    
+    private let cache = Cache()
     
     private init(base: ImageRepBase) {
         self.base = base
+    }
+}
+
+extension ImageRep {
+    
+    @usableFromInline
+    class Cache {
+        
+        let lck = SDLock()
+        
+        var images: [MappedBufferOption: AnyImage]
+        var pages: [Int: ImageRep]
+        
+        @usableFromInline
+        init() {
+            self.images = [:]
+            self.pages = [:]
+        }
     }
 }
 
@@ -116,7 +136,21 @@ extension ImageRep {
     }
     
     public func page(_ index: Int) -> ImageRep {
-        return ImageRep(base: base.page(index))
+        return cache.lck.synchronized {
+            if cache.pages[index] == nil {
+                cache.pages[index] = ImageRep(base: base.page(index))
+            }
+            return cache.pages[index]!
+        }
+    }
+    
+    fileprivate func image(option: MappedBufferOption) -> AnyImage {
+        return cache.lck.synchronized {
+            if cache.images[option] == nil {
+                cache.images[option] = base.image(option: option)
+            }
+            return cache.images[option]!
+        }
     }
 }
 
@@ -166,7 +200,7 @@ extension ImageRep {
     
     public func representation(using storageType: MediaType, properties: [PropertyKey : Any]) -> Data? {
         
-        let image = base as? AnyImage ?? base.image(option: .fileBacked)
+        let image = base as? AnyImage ?? self.image(option: .fileBacked)
         guard image.width > 0 && image.height > 0 else { return nil }
         
         let Encoder: ImageRepEncoder.Type
@@ -194,11 +228,11 @@ extension ImageRep : CustomStringConvertible {
 extension AnyImage {
     
     public init(imageRep: ImageRep, option: MappedBufferOption = .default) {
-        self = imageRep.base.image(option: option)
+        self = imageRep.image(option: option)
     }
     
     public init(data: Data, option: MappedBufferOption = .default) throws {
-        self = try ImageRep(data: data).base.image(option: option)
+        self = try ImageRep(data: data).image(option: option)
     }
 }
 
