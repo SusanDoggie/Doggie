@@ -24,17 +24,13 @@
 //
 
 @usableFromInline
-protocol AnyColorBaseProtocol {
+protocol AnyColorBaseProtocol: PolymorphicHashable {
     
     var _colorSpace: AnyColorSpaceBaseProtocol { get }
     
     func _linearTone() -> AnyColorBaseProtocol
     
     var cieXYZ: Color<XYZColorModel> { get }
-    
-    func hash(into hasher: inout Hasher)
-    
-    func isEqualTo(_ other: AnyColorBaseProtocol) -> Bool
     
     func _with(opacity: Double) -> AnyColorBaseProtocol
     
@@ -59,15 +55,6 @@ protocol AnyColorBaseProtocol {
     func convert(to colorSpace: AnyColorSpace, intent: RenderingIntent) -> AnyColor
     
     func _blended<C: ColorProtocol>(source: C, compositingMode: ColorCompositingMode, blendMode: ColorBlendMode) -> AnyColorBaseProtocol
-}
-
-extension AnyColorBaseProtocol where Self : Equatable {
-    
-    @inlinable
-    func isEqualTo(_ other: AnyColorBaseProtocol) -> Bool {
-        guard let other = other as? Self else { return false }
-        return self == other
-    }
 }
 
 extension Color : AnyColorBaseProtocol {
@@ -119,7 +106,7 @@ extension AnyColor {
     
     @inlinable
     public static func ==(lhs: AnyColor, rhs: AnyColor) -> Bool {
-        return lhs._base.isEqualTo(rhs._base)
+        return lhs._base.isEqual(rhs._base)
     }
 }
 

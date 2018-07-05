@@ -24,7 +24,7 @@
 //
 
 @usableFromInline
-protocol AnyImageBaseProtocol {
+protocol AnyImageBaseProtocol: PolymorphicHashable {
     
     var _colorSpace: AnyColorSpaceBaseProtocol { get }
     
@@ -37,10 +37,6 @@ protocol AnyImageBaseProtocol {
     var isOpaque: Bool { get }
     
     var option: MappedBufferOption { get }
-    
-    func hash(into hasher: inout Hasher)
-    
-    func isEqualTo(_ other: AnyImageBaseProtocol) -> Bool
     
     func color(x: Int, y: Int) -> AnyColor
     
@@ -61,15 +57,6 @@ protocol AnyImageBaseProtocol {
     func _copy(option: MappedBufferOption) -> AnyImageBaseProtocol
     
     func _copy<Model>() -> Image<ColorPixel<Model>>?
-}
-
-extension AnyImageBaseProtocol where Self : Equatable {
-    
-    @inlinable
-    func isEqualTo(_ other: AnyImageBaseProtocol) -> Bool {
-        guard let other = other as? Self else { return false }
-        return self == other
-    }
 }
 
 extension Image : AnyImageBaseProtocol {
@@ -142,7 +129,7 @@ extension AnyImage {
     
     @inlinable
     public static func ==(lhs: AnyImage, rhs: AnyImage) -> Bool {
-        return lhs._base.isEqualTo(rhs._base)
+        return lhs._base.isEqual(rhs._base)
     }
 }
 

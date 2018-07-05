@@ -24,17 +24,13 @@
 //
 
 @usableFromInline
-protocol _ColorSpaceBaseProtocol {
+protocol _ColorSpaceBaseProtocol: PolymorphicHashable {
     
     var iccData: Data? { get }
     
     var localizedName: String? { get }
     
     var cieXYZ: CIEXYZColorSpace { get }
-    
-    func hash(into hasher: inout Hasher)
-    
-    func isEqualTo(_ other: _ColorSpaceBaseProtocol) -> Bool
     
     func _convertToLinear<Model : ColorModelProtocol>(_ color: Model) -> Model
     
@@ -56,15 +52,6 @@ extension _ColorSpaceBaseProtocol {
     @inlinable
     var iccData: Data? {
         return nil
-    }
-}
-
-extension _ColorSpaceBaseProtocol where Self : Equatable {
-    
-    @inlinable
-    func isEqualTo(_ other: _ColorSpaceBaseProtocol) -> Bool {
-        guard let other = other as? Self else { return false }
-        return self == other
     }
 }
 
@@ -176,7 +163,7 @@ extension ColorSpace {
     
     @inlinable
     public static func ==(lhs: ColorSpace<Model>, rhs: ColorSpace<Model>) -> Bool {
-        return lhs.chromaticAdaptationAlgorithm == rhs.chromaticAdaptationAlgorithm && (lhs.cache.identifier == rhs.cache.identifier || lhs.base.isEqualTo(rhs.base))
+        return lhs.chromaticAdaptationAlgorithm == rhs.chromaticAdaptationAlgorithm && (lhs.cache.identifier == rhs.cache.identifier || lhs.base.isEqual(rhs.base))
     }
 }
 

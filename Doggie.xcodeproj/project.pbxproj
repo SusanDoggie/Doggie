@@ -110,6 +110,7 @@
 		0A7E3E971F5FD8C90020A507 /* OTFScriptList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7E3E961F5FD8C90020A507 /* OTFScriptList.swift */; };
 		0A7E3E991F5FD8F80020A507 /* OTFFeatureList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7E3E981F5FD8F80020A507 /* OTFFeatureList.swift */; };
 		0A7E3E9B1F5FD9090020A507 /* OTFLookupList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7E3E9A1F5FD9090020A507 /* OTFLookupList.swift */; };
+		0A7E6A6620EDBD7F0075DC15 /* Polymorphic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7E6A6520EDBD7F0075DC15 /* Polymorphic.swift */; };
 		0A7F24AD1EF37CD500EAD9C7 /* Endianness.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7F24AB1EF37CD500EAD9C7 /* Endianness.swift */; };
 		0A7F5B671F79F13600685AA0 /* MappedBuffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7F5B661F79F13600685AA0 /* MappedBuffer.swift */; };
 		0A80D1481E66A7000003BB44 /* RangeSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A80D1461E66A7000003BB44 /* RangeSet.swift */; };
@@ -356,6 +357,7 @@
 		0A7E3E961F5FD8C90020A507 /* OTFScriptList.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = OTFScriptList.swift; sourceTree = "<group>"; };
 		0A7E3E981F5FD8F80020A507 /* OTFFeatureList.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = OTFFeatureList.swift; sourceTree = "<group>"; };
 		0A7E3E9A1F5FD9090020A507 /* OTFLookupList.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = OTFLookupList.swift; sourceTree = "<group>"; };
+		0A7E6A6520EDBD7F0075DC15 /* Polymorphic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Polymorphic.swift; sourceTree = "<group>"; };
 		0A7F24AB1EF37CD500EAD9C7 /* Endianness.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Endianness.swift; sourceTree = "<group>"; };
 		0A7F5B661F79F13600685AA0 /* MappedBuffer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = MappedBuffer.swift; sourceTree = "<group>"; };
 		0A80D1461E66A7000003BB44 /* RangeSet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = RangeSet.swift; sourceTree = "<group>"; };
@@ -1075,6 +1077,7 @@
 				0A53E4541E35AEF80060FB83 /* Integer.swift */,
 				0A53E4501E35AEF80060FB83 /* FloatingPoint.swift */,
 				0A53E4511E35AEF80060FB83 /* Graph.swift */,
+				0A7E6A6520EDBD7F0075DC15 /* Polymorphic.swift */,
 			);
 			path = Swift;
 			sourceTree = "<group>";
@@ -1229,6 +1232,7 @@
 				0A8D4F2620C9073F00921F91 /* CubicBezierTriangularPatch.swift in Sources */,
 				0A7E3E941F5FD3E40020A507 /* OTFGSUB.swift in Sources */,
 				0AA6C73D20E6190400682EFA /* RGBA64ColorPixel.swift in Sources */,
+				0A7E6A6620EDBD7F0075DC15 /* Polymorphic.swift in Sources */,
 				0AAFBEEF20B5687200A392FE /* DrawShadow.swift in Sources */,
 				0AADB89320ABC5B700F3BF17 /* PNGFilter0.swift in Sources */,
 				08B457E71EDD3223007AA4F0 /* Arithmetic.swift in Sources */,
