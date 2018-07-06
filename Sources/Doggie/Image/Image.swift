@@ -234,7 +234,7 @@ extension Image {
     public mutating func setOrientation(_ orientation: ImageOrientation) {
         
         switch orientation {
-        case .up, .upMirrored, .down, .downMirrored: break
+        case .up, .upMirrored, .down, .downMirrored: cache = Cache()
         case .leftMirrored, .left, .rightMirrored, .right: self = self.transposed()
         }
         
