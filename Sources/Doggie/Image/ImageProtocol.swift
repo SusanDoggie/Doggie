@@ -55,6 +55,8 @@ public protocol ImageProtocol {
     
     var option: MappedBufferOption { get }
     
+    mutating func setOrientation(_ orientation: ImageOrientation)
+    
     func linearTone() -> Self
     
     func transposed() -> Self

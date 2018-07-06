@@ -231,46 +231,21 @@ extension Image {
 extension Image {
     
     @inlinable
-    public func transposed() -> Image {
-        if pixels.count == 0 {
-            return Image(width: height, height: width, resolution: Resolution(horizontal: resolution.vertical, vertical: resolution.horizontal, unit: resolution.unit), pixels: [], colorSpace: colorSpace)
-        }
-        var copy = pixels
-        pixels.withUnsafeBufferPointer { source in copy.withUnsafeMutableBufferPointer { destination in Transpose(height, width, source.baseAddress!, 1, destination.baseAddress!, 1) } }
-        return Image(width: height, height: width, resolution: Resolution(horizontal: resolution.vertical, vertical: resolution.horizontal, unit: resolution.unit), pixels: copy, colorSpace: colorSpace)
-    }
-    
-    @inlinable
-    public func verticalFlipped() -> Image {
+    public mutating func setOrientation(_ orientation: ImageOrientation) {
         
-        var pixels = self.pixels
-        
-        if pixels.count != 0 {
-            
-            pixels.withUnsafeMutableBufferPointer {
-                
-                guard let buffer = $0.baseAddress else { return }
-                
-                var buf1 = buffer
-                var buf2 = buffer + width * (height - 1)
-                
-                for _ in 0..<height >> 1 {
-                    Swap(width, buf1, 1, buf2, 1)
-                    buf1 += width
-                    buf2 -= width
-                }
-            }
+        switch orientation {
+        case .up, .upMirrored, .down, .downMirrored: break
+        case .leftMirrored, .left, .rightMirrored, .right: self = self.transposed()
         }
         
-        return Image(width: width, height: height, resolution: resolution, pixels: pixels, colorSpace: colorSpace)
-    }
-    
-    @inlinable
-    public func horizontalFlipped() -> Image {
+        guard pixels.count != 0 else { return }
         
-        var pixels = self.pixels
+        let width = self.width
+        let height = self.height
         
-        if pixels.count != 0 {
+        switch orientation {
+        case .up, .leftMirrored: break
+        case .right, .upMirrored:
             
             pixels.withUnsafeMutableBufferPointer {
                 
@@ -285,9 +260,57 @@ extension Image {
                     buf2 -= 1
                 }
             }
+            
+        case .left, .downMirrored:
+            
+            pixels.withUnsafeMutableBufferPointer {
+                
+                guard let buffer = $0.baseAddress else { return }
+                
+                var buf1 = buffer
+                var buf2 = buffer + width * (height - 1)
+                
+                for _ in 0..<height >> 1 {
+                    Swap(width, buf1, 1, buf2, 1)
+                    buf1 += width
+                    buf2 -= width
+                }
+            }
+            
+        case .down, .rightMirrored:
+            
+            pixels.withUnsafeMutableBufferPointer {
+                guard let buffer = $0.baseAddress else { return }
+                Swap($0.count >> 1, buffer, 1, buffer + $0.count - 1, -1)
+            }
         }
-        
-        return Image(width: width, height: height, resolution: resolution, pixels: pixels, colorSpace: colorSpace)
+    }
+}
+
+extension Image {
+    
+    @inlinable
+    public func transposed() -> Image {
+        if pixels.count == 0 {
+            return Image(width: height, height: width, resolution: Resolution(horizontal: resolution.vertical, vertical: resolution.horizontal, unit: resolution.unit), pixels: [], colorSpace: colorSpace)
+        }
+        var copy = pixels
+        pixels.withUnsafeBufferPointer { source in copy.withUnsafeMutableBufferPointer { destination in Transpose(height, width, source.baseAddress!, 1, destination.baseAddress!, 1) } }
+        return Image(width: height, height: width, resolution: Resolution(horizontal: resolution.vertical, vertical: resolution.horizontal, unit: resolution.unit), pixels: copy, colorSpace: colorSpace)
+    }
+    
+    @inlinable
+    public func verticalFlipped() -> Image {
+        var copy = self
+        copy.setOrientation(.downMirrored)
+        return copy
+    }
+    
+    @inlinable
+    public func horizontalFlipped() -> Image {
+        var copy = self
+        copy.setOrientation(.upMirrored)
+        return copy
     }
 }
 

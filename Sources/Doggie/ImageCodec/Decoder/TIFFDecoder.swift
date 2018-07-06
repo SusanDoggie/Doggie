@@ -436,14 +436,14 @@ struct TIFFPage : ImageRepBase {
     
     var flipX: Bool {
         switch orientation {
-        case 2, 3, 6, 7: return true
+        case 2, 3, 8, 7: return true
         default: return false
         }
     }
     
     var flipY: Bool {
         switch orientation {
-        case 3, 4, 7, 8: return true
+        case 3, 4, 7, 6: return true
         default: return false
         }
     }
@@ -539,17 +539,19 @@ struct TIFFPage : ImageRepBase {
                 default: fatalError()
                 }
                 
-                if !columnX {
-                    image = image.transposed()
+                switch orientation {
+                case 1: image.setOrientation(.up)
+                case 2: image.setOrientation(.upMirrored)
+                case 3: image.setOrientation(.down)
+                case 4: image.setOrientation(.downMirrored)
+                case 5: image.setOrientation(.leftMirrored)
+                case 6: image.setOrientation(.right)
+                case 7: image.setOrientation(.rightMirrored)
+                case 8: image.setOrientation(.left)
+                default: fatalError()
                 }
-                if flipX {
-                    image = image.horizontalFlipped()
-                }
-                if flipY {
-                    image = image.verticalFlipped()
-                }
-                return image
                 
+                return image
             }
         default: fatalError()
         }
