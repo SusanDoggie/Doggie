@@ -65,6 +65,10 @@ extension Data {
         
         return Data(bytesNoCopy: address, count: buffer.count, deallocator: .custom(deallocator))
     }
+    
+    public func fileBacked() -> Data {
+        return self.withUnsafeBufferPointer { Data.fileBacked(UnsafeRawBufferPointer($0)) }
+    }
 }
 
 extension Data {
