@@ -80,8 +80,5 @@ class _sRGB: CalibratedRGBColorSpace {
 
 extension ColorSpace where Model == RGBColorModel {
     
-    public static var sRGB: ColorSpace {
-        
-        return ColorSpace(base: _sRGB())
-    }
+    public static let sRGB = ColorSpace(base: _sRGB())
 }

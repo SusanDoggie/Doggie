@@ -80,8 +80,5 @@ class _displayP3: CalibratedRGBColorSpace {
 
 extension ColorSpace where Model == RGBColorModel {
     
-    public static var displayP3: ColorSpace {
-        
-        return ColorSpace(base: _displayP3())
-    }
+    public static let displayP3 = ColorSpace(base: _displayP3())
 }
