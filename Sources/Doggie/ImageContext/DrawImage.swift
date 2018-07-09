@@ -53,17 +53,19 @@ extension ImageContext {
                 
                 for y in 0..<height {
                     for x in 0..<width {
-                        var _q = Point(x: x, y: y)
-                        var pixel: T = 0
-                        for _ in 0..<antialias {
-                            var q = _q
+                        blender.draw { () -> ColorPixel<Pixel.Model> in
+                            var _q = Point(x: x, y: y)
+                            var pixel: T = 0
                             for _ in 0..<antialias {
-                                pixel += stencil.pixel(q * _transform)
-                                q.x += stride
+                                var q = _q
+                                for _ in 0..<antialias {
+                                    pixel += stencil.pixel(q * _transform)
+                                    q.x += stride
+                                }
+                                _q.y += stride
                             }
-                            _q.y += stride
+                            return ColorPixel(color: color, opacity: Double(pixel) * div)
                         }
-                        blender.draw(color: ColorPixel(color: color, opacity: Double(pixel) * div))
                         blender += 1
                     }
                 }
@@ -74,7 +76,7 @@ extension ImageContext {
                 
                 for y in 0..<height {
                     for x in 0..<width {
-                        blender.draw(color: ColorPixel(color: color, opacity: Double(stencil.pixel(Point(x: x, y: y) * _transform))))
+                        blender.draw { ColorPixel(color: color, opacity: Double(stencil.pixel(Point(x: x, y: y) * _transform))) }
                         blender += 1
                     }
                 }
@@ -110,17 +112,19 @@ extension ImageContext {
                 
                 for y in 0..<height {
                     for x in 0..<width {
-                        var _q = Point(x: x, y: y)
-                        var pixel = ColorPixel<Pixel.Model>()
-                        for _ in 0..<antialias {
-                            var q = _q
+                        blender.draw { () -> ColorPixel<Pixel.Model> in
+                            var _q = Point(x: x, y: y)
+                            var pixel = ColorPixel<Pixel.Model>()
                             for _ in 0..<antialias {
-                                pixel += texture.pixel(q * _transform)
-                                q.x += stride
+                                var q = _q
+                                for _ in 0..<antialias {
+                                    pixel += texture.pixel(q * _transform)
+                                    q.x += stride
+                                }
+                                _q.y += stride
                             }
-                            _q.y += stride
+                            return pixel * div
                         }
-                        blender.draw(color: pixel * div)
                         blender += 1
                     }
                 }
@@ -131,7 +135,7 @@ extension ImageContext {
                 
                 for y in 0..<height {
                     for x in 0..<width {
-                        blender.draw(color: texture.pixel(Point(x: x, y: y) * _transform))
+                        blender.draw { texture.pixel(Point(x: x, y: y) * _transform) }
                         blender += 1
                     }
                 }

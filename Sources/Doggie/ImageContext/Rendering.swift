@@ -282,34 +282,39 @@ extension ImageContext {
                 
                 rasterizer.rasterize(_p0, _p1, _p2) { barycentric, position, buf in
                     
-                    let b0 = barycentric.x * v0
-                    let b1 = barycentric.y * v1
-                    let b2 = barycentric.z * v2
-                    let b = b0 + b1 + b2
-                    
-                    if let _depth = depthFun?(b.position) {
+                    buf.blender.draw { () -> P? in
                         
-                        guard 0...1 ~= _depth else { return }
-                        guard let depth_ptr = buf.depth else { return }
+                        let b0 = barycentric.x * v0
+                        let b1 = barycentric.y * v1
+                        let b2 = barycentric.z * v2
+                        let b = b0 + b1 + b2
                         
-                        switch depthCompareMode {
-                        case .always: break
-                        case .never: return
-                        case .equal: guard _depth == depth_ptr.pointee else { return }
-                        case .notEqual: guard _depth != depth_ptr.pointee else { return }
-                        case .less: guard _depth < depth_ptr.pointee else { return }
-                        case .lessEqual: guard _depth <= depth_ptr.pointee else { return }
-                        case .greater: guard _depth > depth_ptr.pointee else { return }
-                        case .greaterEqual: guard _depth >= depth_ptr.pointee else { return }
+                        if let _depth = depthFun?(b.position) {
+                            
+                            guard 0...1 ~= _depth else { return nil }
+                            guard let depth_ptr = buf.depth else { return nil }
+                            
+                            switch depthCompareMode {
+                            case .always: break
+                            case .never: return nil
+                            case .equal: guard _depth == depth_ptr.pointee else { return nil }
+                            case .notEqual: guard _depth != depth_ptr.pointee else { return nil }
+                            case .less: guard _depth < depth_ptr.pointee else { return nil }
+                            case .lessEqual: guard _depth <= depth_ptr.pointee else { return nil }
+                            case .greater: guard _depth > depth_ptr.pointee else { return nil }
+                            case .greaterEqual: guard _depth >= depth_ptr.pointee else { return nil }
+                            }
+                            
+                            depth_ptr.pointee = _depth
+                            if let source = shader(ImageContextRenderStageIn(vertex: b, triangle: (_v0, _v1, _v2), barycentric: barycentric, projection: position, facing: facing, depth: _depth)) {
+                                return source
+                            }
+                            
+                        } else if let source = shader(ImageContextRenderStageIn(vertex: b, triangle: (_v0, _v1, _v2), barycentric: barycentric, projection: position, facing: facing, depth: 0)) {
+                            return source
                         }
                         
-                        depth_ptr.pointee = _depth
-                        if let source = shader(ImageContextRenderStageIn(vertex: b, triangle: (_v0, _v1, _v2), barycentric: barycentric, projection: position, facing: facing, depth: _depth)) {
-                            buf.blender.draw(color: source)
-                        }
-                        
-                    } else if let source = shader(ImageContextRenderStageIn(vertex: b, triangle: (_v0, _v1, _v2), barycentric: barycentric, projection: position, facing: facing, depth: 0)) {
-                        buf.blender.draw(color: source)
+                        return nil
                     }
                 }
             }

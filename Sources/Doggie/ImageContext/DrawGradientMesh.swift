@@ -82,8 +82,8 @@ extension ImageContext {
                 
                 let rasterizer = ImageContextGradientMeshRasterizeBuffer(blender: blender, width: width, height: height)
                 
-                rasterizer.rasterize(patch.m00, patch.m03, patch.m30) { _, buf in buf.blender.draw(color: c8) }
-                rasterizer.rasterize(patch.m03, patch.m33, patch.m30) { _, buf in buf.blender.draw(color: c8) }
+                rasterizer.rasterize(patch.m00, patch.m03, patch.m30) { _, buf in buf.blender.draw { c8 } }
+                rasterizer.rasterize(patch.m03, patch.m33, patch.m30) { _, buf in buf.blender.draw { c8 } }
                 
             } else {
                 _drawGradient(blender, patch, c0, c1, c2, c3)

@@ -63,16 +63,24 @@ struct ImageContextPixelBlender<P : ColorPixelProtocol> {
     }
     
     @inlinable
-    func draw<C : ColorPixelProtocol>(color: C) where C.Model == P.Model {
+    func draw<C : ColorPixelProtocol>(color: () -> C) where C.Model == P.Model {
+        self._draw { color() }
+    }
+    
+    @inlinable
+    func draw<C : ColorPixelProtocol>(color: () -> C?) where C.Model == P.Model {
+        self._draw { color() }
+    }
+    
+    @inlinable
+    func _draw<C : ColorPixelProtocol>(color: () -> C?) where C.Model == P.Model {
         
         if let _clip = clip?.pointee {
-            if _clip > 0 {
-                var source = color
+            if _clip > 0, var source = color() {
                 source.opacity *= opacity * _clip
                 destination.pointee.blend(source: source, compositingMode: compositingMode, blendMode: blendMode)
             }
-        } else {
-            var source = color
+        } else if var source = color() {
             source.opacity *= opacity
             destination.pointee.blend(source: source, compositingMode: compositingMode, blendMode: blendMode)
         }

@@ -134,27 +134,32 @@ extension ImageContext {
                             
                             for _ in 0..<_width {
                                 
-                                var _p: UInt8 = 0
-                                
-                                var _s = __stencil
-                                
-                                for _ in 0..<antialias {
-                                    var __s = _s
+                                _blender.draw { () -> ColorPixel<Pixel.Model>? in
+                                    
+                                    var _p: UInt8 = 0
+                                    
+                                    var _s = __stencil
+                                    
                                     for _ in 0..<antialias {
-                                        if winding(__s.pointee) {
-                                            _p = _p &+ 1
+                                        var __s = _s
+                                        for _ in 0..<antialias {
+                                            if winding(__s.pointee) {
+                                                _p = _p &+ 1
+                                            }
+                                            __s += 1
                                         }
-                                        __s += 1
+                                        _s += _stencil_width
                                     }
-                                    _s += _stencil_width
-                                }
-                                
-                                if _p != 0 {
-                                    var color = color
-                                    if _p != _antialias2 {
-                                        color.opacity *= div * Double(_p)
+                                    
+                                    if _p != 0 {
+                                        var color = color
+                                        if _p != _antialias2 {
+                                            color.opacity *= div * Double(_p)
+                                        }
+                                        return color
                                     }
-                                    _blender.draw(color: color)
+                                    
+                                    return nil
                                 }
                                 
                                 _blender += 1
@@ -198,7 +203,7 @@ extension ImageContext {
                             for _ in 0..<_width {
                                 
                                 if winding(__stencil.pointee) {
-                                    _blender.draw(color: color)
+                                    _blender.draw { color }
                                 }
                                 
                                 _blender += 1

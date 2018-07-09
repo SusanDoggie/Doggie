@@ -43,7 +43,7 @@ extension ImageContext {
             
             for y in 0..<height {
                 for x in 0..<width {
-                    blender.draw(color: shader(Point(x: x, y: y) * transform))
+                    blender.draw { shader(Point(x: x, y: y) * transform) }
                     blender += 1
                 }
             }

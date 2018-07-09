@@ -474,7 +474,7 @@ extension ImageContext {
                             var blender = blender
                             
                             for _ in 0..<width * height {
-                                blender.draw(color: source.pointee)
+                                blender.draw { source.pointee }
                                 blender += 1
                                 source += 1
                             }

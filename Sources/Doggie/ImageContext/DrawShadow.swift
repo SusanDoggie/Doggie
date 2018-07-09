@@ -55,15 +55,16 @@ extension ImageContext {
                 
                 for y in 0..<height {
                     for x in 0..<width {
-                        
-                        var shadowColor = shadowColor
-                        shadowColor.opacity *= Double(shadow_layer.pixel(Point(x: x, y: y) + _offset))
-                        blender.draw(color: shadowColor)
-                        
-                        var color = color
-                        color.opacity *= Double(stencil.pointee)
-                        blender.draw(color: color)
-                        
+                        blender.draw { () -> ColorPixel<Pixel.Model> in
+                            var shadowColor = shadowColor
+                            shadowColor.opacity *= Double(shadow_layer.pixel(Point(x: x, y: y) + _offset))
+                            return shadowColor
+                        }
+                        blender.draw { () -> ColorPixel<Pixel.Model> in
+                            var color = color
+                            color.opacity *= Double(stencil.pointee)
+                            return color
+                        }
                         blender += 1
                         stencil += 1
                     }
@@ -98,10 +99,12 @@ extension ImageContext {
                 
                 for y in 0..<height {
                     for x in 0..<width {
-                        var shadowColor = shadowColor
-                        shadowColor.opacity *= Double(shadow_layer.pixel(Point(x: x, y: y) + _offset))
-                        blender.draw(color: shadowColor)
-                        blender.draw(color: source.pointee)
+                        blender.draw { () -> ColorPixel<Pixel.Model> in
+                            var shadowColor = shadowColor
+                            shadowColor.opacity *= Double(shadow_layer.pixel(Point(x: x, y: y) + _offset))
+                            return shadowColor
+                        }
+                        blender.draw { source.pointee }
                         blender += 1
                         source += 1
                     }
