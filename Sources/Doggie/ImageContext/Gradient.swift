@@ -192,7 +192,7 @@ extension DrawableContext {
         let boundary = shape.originalBoundary
         let transform = gradient.transform * SDTransform.scale(x: boundary.width, y: boundary.height) * SDTransform.translate(x: boundary.x, y: boundary.y) * shape.transform
         
-        self.transform = transform * self.transform
+        self.concatenate(transform)
         
         switch gradient.type {
         case .linear: self.drawLinearGradient(stops: gradient.stops, start: gradient.start, end: gradient.end, startSpread: .pad, endSpread: .pad)

@@ -55,6 +55,8 @@ public protocol DrawableContext : AnyObject {
     
     func resetClip()
     
+    func concatenate(_ transform: SDTransform)
+    
     func setClip(shape: Shape, winding: Shape.WindingRule)
     
     func setClip<Image: ImageProtocol>(image: Image, transform: SDTransform)
@@ -90,43 +92,48 @@ public protocol TypedDrawableContext: DrawableContext where ColorSpace == Doggie
 extension DrawableContext {
     
     @inlinable
+    public func concatenate(_ transform: SDTransform) {
+        self.transform = transform * self.transform
+    }
+    
+    @inlinable
     public func rotate(_ angle: Double) {
-        self.transform *= SDTransform.rotate(angle)
+        self.concatenate(SDTransform.rotate(angle))
     }
     
     @inlinable
     public func skewX(_ angle: Double) {
-        self.transform *= SDTransform.skewX(angle)
+        self.concatenate(SDTransform.skewX(angle))
     }
     
     @inlinable
     public func skewY(_ angle: Double) {
-        self.transform *= SDTransform.skewY(angle)
+        self.concatenate(SDTransform.skewY(angle))
     }
     
     @inlinable
     public func scale(_ scale: Double) {
-        self.transform *= SDTransform.scale(scale)
+        self.concatenate(SDTransform.scale(scale))
     }
     
     @inlinable
     public func scale(x: Double = 1, y: Double = 1) {
-        self.transform *= SDTransform.scale(x: x, y: y)
+        self.concatenate(SDTransform.scale(x: x, y: y))
     }
     
     @inlinable
     public func translate(x: Double = 0, y: Double = 0) {
-        self.transform *= SDTransform.translate(x: x, y: y)
+        self.concatenate(SDTransform.translate(x: x, y: y))
     }
     
     @inlinable
     public func reflectX(_ x: Double = 0) {
-        self.transform *= SDTransform.reflectX(x)
+        self.concatenate(SDTransform.reflectX(x))
     }
     
     @inlinable
     public func reflectY(_ y: Double = 0) {
-        self.transform *= SDTransform.reflectY(y)
+        self.concatenate(SDTransform.reflectY(y))
     }
 }
 
