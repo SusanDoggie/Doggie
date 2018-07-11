@@ -68,9 +68,9 @@ func _render(_ op: Shape.RenderOperation, width: Int, height: Int, transform: SD
         let q2 = p2 * transform
         
         if cross(q1 - q0, q2 - q0).sign == .plus {
-            rasterizer.rasterize(q0, q1, q2) { _, pixel in pixel.stencil.pointee += 1 }
+            rasterizer.rasterize(q0, q1, q2) { pixel in pixel.stencil.pointee += 1 }
         } else {
-            rasterizer.rasterize(q0, q1, q2) { _, pixel in pixel.stencil.pointee -= 1 }
+            rasterizer.rasterize(q0, q1, q2) { pixel in pixel.stencil.pointee -= 1 }
         }
         
     case let .quadratic(p0, p1, p2):
@@ -80,14 +80,14 @@ func _render(_ op: Shape.RenderOperation, width: Int, height: Int, transform: SD
         let q2 = p2 * transform
         
         if cross(q1 - q0, q2 - q0).sign == .plus {
-            rasterizer.rasterize(q0, q1, q2) { barycentric, point, pixel in
+            rasterizer.rasterize(q0, q1, q2) { barycentric, _, pixel in
                 let s = 0.5 * barycentric.y + barycentric.z
                 if s * s < barycentric.z {
                     pixel.stencil.pointee += 1
                 }
             }
         } else {
-            rasterizer.rasterize(q0, q1, q2) { barycentric, point, pixel in
+            rasterizer.rasterize(q0, q1, q2) { barycentric, _, pixel in
                 let s = 0.5 * barycentric.y + barycentric.z
                 if s * s < barycentric.z {
                     pixel.stencil.pointee -= 1
@@ -102,7 +102,7 @@ func _render(_ op: Shape.RenderOperation, width: Int, height: Int, transform: SD
         let q2 = p2 * transform
         
         if cross(q1 - q0, q2 - q0).sign == .plus {
-            rasterizer.rasterize(q0, q1, q2) { barycentric, point, pixel in
+            rasterizer.rasterize(q0, q1, q2) { barycentric, _, pixel in
                 let u0 = barycentric.x * v0
                 let u1 = barycentric.y * v1
                 let u2 = barycentric.z * v2
@@ -112,7 +112,7 @@ func _render(_ op: Shape.RenderOperation, width: Int, height: Int, transform: SD
                 }
             }
         } else {
-            rasterizer.rasterize(q0, q1, q2) { barycentric, point, pixel in
+            rasterizer.rasterize(q0, q1, q2) { barycentric, _, pixel in
                 let u0 = barycentric.x * v0
                 let u1 = barycentric.y * v1
                 let u2 = barycentric.z * v2

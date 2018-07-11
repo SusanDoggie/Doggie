@@ -68,6 +68,16 @@ extension RasterizeBufferProtocol {
     
     @inlinable
     func rasterize(_ p0: Point, _ p1: Point, _ p2: Point, operation: (Point, Self) -> Void) {
+        self._rasterize(p0, p1, p2) { x, y, buf in operation(Point(x: x, y: y), buf) }
+    }
+    
+    @inlinable
+    func rasterize(_ p0: Point, _ p1: Point, _ p2: Point, operation: (Self) -> Void) {
+        self._rasterize(p0, p1, p2) { _, _, buf in operation(buf) }
+    }
+    
+    @inlinable
+    func _rasterize(_ p0: Point, _ p1: Point, _ p2: Point, operation: (Int, Int, Self) -> Void) {
         
         if !Rect.bound([p0, p1, p2]).isIntersect(Rect(x: 0, y: 0, width: Double(width), height: Double(height))) {
             return
@@ -110,7 +120,7 @@ extension RasterizeBufferProtocol {
         guard let (mid_x, _) = scan(q0, q2, q1.y) else { return }
         
         @inline(__always)
-        func _drawLoop(_ s0: Point, _ s1: Point, operation: (Point, Self) -> Void) {
+        func _drawLoop(_ s0: Point, _ s1: Point, operation: (Int, Int, Self) -> Void) {
             
             let y_range = intRange(s0.y, s1.y, 0..<height)
             
@@ -129,7 +139,7 @@ extension RasterizeBufferProtocol {
                     let x_range = intRange(_min_x, _max_x, 0..<width)
                     var pixel = buf + x_range.lowerBound
                     for x in x_range {
-                        operation(Point(x: x, y: y), pixel)
+                        operation(x, y, pixel)
                         pixel += 1
                     }
                 }
