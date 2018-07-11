@@ -53,13 +53,17 @@ public protocol DrawableContext : AnyObject {
     
     func endTransparencyLayer()
     
+    func resetClip()
+    
     func setClip(shape: Shape, winding: Shape.WindingRule)
+    
+    func setClip<Image: ImageProtocol>(image: Image, transform: SDTransform)
+    
+    func draw<Image: ImageProtocol>(image: Image, transform: SDTransform)
     
     func draw<C: ColorProtocol>(shape: Shape, winding: Shape.WindingRule, color: C)
     
     func stroke<C: ColorProtocol>(shape: Shape, width: Double, cap: Shape.LineCap, join: Shape.LineJoin, color: C)
-    
-    func draw<Image: ImageProtocol>(image: Image, transform: SDTransform)
     
     func drawLinearGradient<C>(stops: [GradientStop<C>], start: Point, end: Point, startSpread: GradientSpreadMode, endSpread: GradientSpreadMode)
     
@@ -74,11 +78,13 @@ public protocol TypedDrawableContext: DrawableContext where ColorSpace == Doggie
     
     var chromaticAdaptationAlgorithm: ChromaticAdaptationAlgorithm { get set }
     
+    func setClip<P>(texture: Texture<P>, transform: SDTransform) where P.Model == GrayColorModel
+    
+    func draw<P>(texture: Texture<P>, transform: SDTransform) where P.Model == Pixel.Model
+    
     func draw(shape: Shape, winding: Shape.WindingRule, color: Pixel.Model, opacity: Double)
     
     func stroke(shape: Shape, width: Double, cap: Shape.LineCap, join: Shape.LineJoin, color: Pixel.Model, opacity: Double)
-    
-    func draw<P>(texture: Texture<P>, transform: SDTransform) where P.Model == Pixel.Model
 }
 
 extension DrawableContext {
@@ -218,6 +224,14 @@ extension TypedDrawableContext {
     @inlinable
     public func stroke(ellipseIn rect: Rect, width: Double, cap: Shape.LineCap, join: Shape.LineJoin, color: Pixel.Model, opacity: Double = 1) {
         self.stroke(shape: Shape(ellipseIn: rect), width: width, cap: cap, join: join, color: color, opacity: opacity)
+    }
+}
+
+extension TypedDrawableContext {
+    
+    @inlinable
+    public func setClip<Image: ImageProtocol>(image: Image, transform: SDTransform) {
+        self.setClip(texture: Texture<ColorPixel<GrayColorModel>>(image: image.convert(to: Doggie.ColorSpace.calibratedGray(from: colorSpace, gamma: 2.2), intent: renderingIntent), resamplingAlgorithm: resamplingAlgorithm), transform: transform)
     }
 }
 

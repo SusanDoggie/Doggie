@@ -180,6 +180,10 @@ extension ImageContext {
             }
         }
     }
+    
+    public func resetClip() {
+        self.clearClipBuffer(with: 1)
+    }
 }
 
 extension ImageContext {
@@ -398,6 +402,10 @@ extension ImageContext {
             }
         }
     }
+    
+    public func resetRenderDepth() {
+        self.clearRenderDepthBuffer(with: 1)
+    }
 }
 
 extension ImageContext {
@@ -518,3 +526,9 @@ extension ImageContext {
     }
 }
 
+extension ImageContext {
+    
+    public func setClip<P>(texture: Texture<P>, transform: SDTransform) where P.Model == GrayColorModel {
+        self.drawClip { (context: ImageContext<ColorPixel<GrayColorModel>>) in context.draw(texture: texture, transform: transform) }
+    }
+}
