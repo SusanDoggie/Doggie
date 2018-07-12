@@ -272,11 +272,10 @@ extension Shape {
                     }
                     let x = try toDouble(g.next())
                     let y = try toDouble(g.next())
-                    let arc = bezierArc(relative, Point(x: x, y: y), Radius(x: rx, y: ry), Double.pi * rotate / 180, largeArc, sweep)
                     relative = Point(x: x, y: y)
                     lastcontrol = Point(x: x, y: y)
                     lastbezier = 0
-                    component.append(contentsOf: arc)
+                    component.arc(to: Point(x: x, y: y), radius: Radius(x: rx, y: ry), rotate: .pi * rotate / 180, largeArc: largeArc, sweep: sweep)
                 } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
             case "a":
                 repeat {
@@ -312,11 +311,10 @@ extension Shape {
                     }
                     let x = try toDouble(g.next()) + relative.x
                     let y = try toDouble(g.next()) + relative.y
-                    let arc = bezierArc(relative, Point(x: x, y: y), Radius(x: rx, y: ry), Double.pi * rotate / 180, largeArc, sweep)
                     relative = Point(x: x, y: y)
                     lastcontrol = Point(x: x, y: y)
                     lastbezier = 0
-                    component.append(contentsOf: arc)
+                    component.arc(to: Point(x: x, y: y), radius: Radius(x: rx, y: ry), rotate: .pi * rotate / 180, largeArc: largeArc, sweep: sweep)
                 } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
             case "Z", "z":
                 if component.count != 0 {
@@ -336,47 +334,6 @@ extension Shape {
             self.append(component)
         }
     }
-}
-
-@inline(__always)
-private func arcDetails(_ start: Point, _ end: Point, _ radius: Radius, _ rotate: Double, _ largeArc: Bool, _ sweep: Bool) -> (Point, Radius) {
-    let centers = EllipseCenter(radius, rotate, start, end)
-    if centers.count == 0 {
-        return (0.5 * (start + end), EllipseRadius(start, end, radius, rotate))
-    } else if centers.count == 1 || (cross(centers[0] - start, end - start).sign == (sweep ? .plus : .minus) ? largeArc : !largeArc) {
-        return (centers[0], radius)
-    } else {
-        return (centers[1], radius)
-    }
-}
-@inline(__always)
-private func bezierArc(_ start: Point, _ end: Point, _ radius: Radius, _ rotate: Double, _ largeArc: Bool, _ sweep: Bool) -> [Shape.Segment] {
-    let (center, radius) = arcDetails(start, end, radius, rotate, largeArc, sweep)
-    let _arc_transform = SDTransform.scale(x: radius.x, y: radius.y) * SDTransform.rotate(rotate)
-    let _arc_transform_inverse = _arc_transform.inverse
-    let _begin = (start - center) * _arc_transform_inverse
-    let _end = (end - center) * _arc_transform_inverse
-    let startAngle = atan2(_begin.y, _begin.x)
-    var endAngle = atan2(_end.y, _end.x)
-    if sweep {
-        while endAngle < startAngle {
-            endAngle += 2 * Double.pi
-        }
-    } else {
-        while endAngle > startAngle {
-            endAngle -= 2 * Double.pi
-        }
-    }
-    let _transform = SDTransform.rotate(startAngle) * _arc_transform
-    let point = BezierArc(endAngle - startAngle).lazy.map { $0 * _transform + center }
-    var result: [Shape.Segment] = []
-    if point.count > 1 {
-        result.reserveCapacity(point.count / 3)
-        for i in 0..<point.count / 3 {
-            result.append(.cubic(point[i * 3 + 1], point[i * 3 + 2], point[i * 3 + 3]))
-        }
-    }
-    return result
 }
 
 private let dataFormatter: NumberFormatter = {

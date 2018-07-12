@@ -652,6 +652,118 @@ extension Shape {
     }
 }
 
+extension Shape.Component {
+    
+    @inlinable
+    public mutating func line(to p1: Point) {
+        self.append(.line(p1))
+    }
+    
+    @inlinable
+    public mutating func quad(to p2: Point, control p1: Point) {
+        self.append(.quad(p1, p2))
+    }
+    
+    @inlinable
+    public mutating func curve(to p3: Point, control1 p1: Point, control2 p2: Point) {
+        self.append(.cubic(p1, p2, p3))
+    }
+    
+    @inlinable
+    public mutating func arc(to p1: Point, radius: Radius, rotate: Double, largeArc: Bool, sweep: Bool) {
+        
+        let start = self.end
+        let end = p1
+        
+        @inline(__always)
+        func arcDetails() -> (Point, Radius) {
+            let centers = EllipseCenter(radius, rotate, start, end)
+            if centers.count == 0 {
+                return (0.5 * (start + end), EllipseRadius(start, end, radius, rotate))
+            } else if centers.count == 1 || (cross(centers[0] - start, end - start).sign == (sweep ? .plus : .minus) ? largeArc : !largeArc) {
+                return (centers[0], radius)
+            } else {
+                return (centers[1], radius)
+            }
+        }
+        
+        let (center, radius) = arcDetails()
+        let _arc_transform = SDTransform.scale(x: radius.x, y: radius.y) * SDTransform.rotate(rotate)
+        let _arc_transform_inverse = _arc_transform.inverse
+        let _begin = (start - center) * _arc_transform_inverse
+        let _end = (end - center) * _arc_transform_inverse
+        let startAngle = atan2(_begin.y, _begin.x)
+        var endAngle = atan2(_end.y, _end.x)
+        
+        if sweep {
+            while endAngle < startAngle {
+                endAngle += 2 * Double.pi
+            }
+        } else {
+            while endAngle > startAngle {
+                endAngle -= 2 * Double.pi
+            }
+        }
+        
+        let _transform = SDTransform.rotate(startAngle) * _arc_transform
+        let point = BezierArc(endAngle - startAngle).lazy.map { $0 * _transform + center }
+        
+        if point.count > 1 {
+            for i in 0..<point.count / 3 {
+                self.append(.cubic(point[i * 3 + 1], point[i * 3 + 2], point[i * 3 + 3]))
+            }
+        }
+    }
+}
+
+extension Shape {
+    
+    @inlinable
+    public mutating func move(to p1: Point) {
+        self.append(Shape.Component(start: p1, closed: false, segments: []))
+    }
+    
+    @inlinable
+    public mutating func line(to p1: Point) {
+        if self.count == 0 || self.last?.isClosed == true {
+            self.append(Shape.Component(start: self.last?.start ?? Point(), closed: false, segments: []))
+        }
+        self.mutableLast.line(to: p1)
+    }
+    
+    @inlinable
+    public mutating func quad(to p2: Point, control p1: Point) {
+        if self.count == 0 || self.last?.isClosed == true {
+            self.append(Shape.Component(start: self.last?.start ?? Point(), closed: false, segments: []))
+        }
+        self.mutableLast.quad(to: p2, control: p1)
+    }
+    
+    @inlinable
+    public mutating func curve(to p3: Point, control1 p1: Point, control2 p2: Point) {
+        if self.count == 0 || self.last?.isClosed == true {
+            self.append(Shape.Component(start: self.last?.start ?? Point(), closed: false, segments: []))
+        }
+        self.mutableLast.curve(to: p3, control1: p1, control2: p2)
+    }
+    
+    @inlinable
+    public mutating func arc(to p1: Point, radius: Radius, rotate: Double, largeArc: Bool, sweep: Bool) {
+        if self.count == 0 || self.last?.isClosed == true {
+            self.append(Shape.Component(start: self.last?.start ?? Point(), closed: false, segments: []))
+        }
+        self.mutableLast.arc(to: p1, radius: radius, rotate: rotate, largeArc: largeArc, sweep: sweep)
+    }
+    
+    @inlinable
+    public mutating func close() {
+        if self.count == 0 || self.last?.isClosed == true {
+            self.append(Shape.Component(start: self.last?.start ?? Point(), closed: false, segments: []))
+        }
+        self.mutableLast.isClosed = true
+    }
+}
+
 @inlinable
 public func * (lhs: Shape.Component, rhs: SDTransform) -> Shape.Component {
     return Shape.Component(start: lhs.start * rhs, closed: lhs.isClosed, segments: lhs.segments.map {

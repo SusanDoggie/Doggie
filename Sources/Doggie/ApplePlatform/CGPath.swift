@@ -59,40 +59,23 @@ extension Shape: BezierPathConvertible {
     }
     
     fileprivate mutating func _move(to p1: Point) {
-        
-        self.append(Shape.Component(start: p1, closed: false, segments: []))
+        self.move(to: p1)
     }
     
     fileprivate mutating func _line(to p1: Point) {
-        
-        if self.count == 0 || self.last?.isClosed == true {
-            self.append(Shape.Component(start: self.last?.start ?? Point(), closed: false, segments: []))
-        }
-        self.mutableLast.append(.line(p1))
+        self.line(to: p1)
     }
     
     fileprivate mutating func _quad(to p2: Point, control p1: Point) {
-        
-        if self.count == 0 || self.last?.isClosed == true {
-            self.append(Shape.Component(start: self.last?.start ?? Point(), closed: false, segments: []))
-        }
-        self.mutableLast.append(.quad(p1, p2))
+        self.quad(to: p2, control: p1)
     }
     
     fileprivate mutating func _curve(to p3: Point, control1 p1: Point, control2 p2: Point) {
-        
-        if self.count == 0 || self.last?.isClosed == true {
-            self.append(Shape.Component(start: self.last?.start ?? Point(), closed: false, segments: []))
-        }
-        self.mutableLast.append(.cubic(p1, p2, p3))
+        self.curve(to: p3, control1: p1, control2: p2)
     }
     
     fileprivate mutating func _close() {
-        
-        if self.count == 0 || self.last?.isClosed == true {
-            self.append(Shape.Component(start: self.last?.start ?? Point(), closed: false, segments: []))
-        }
-        self.mutableLast.isClosed = true
+        self.close()
     }
     
     fileprivate func _copy<Other: BezierPathConvertible>(to path: inout Other) {
