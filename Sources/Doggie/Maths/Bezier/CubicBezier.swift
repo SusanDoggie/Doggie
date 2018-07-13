@@ -83,6 +83,24 @@ extension CubicBezier: Encodable where Element : Encodable {
 
 extension CubicBezier {
     
+    @inlinable
+    public func map(_ transform: (Element) throws -> Element) rethrows -> CubicBezier {
+        return try CubicBezier(transform(p0), transform(p1), transform(p2), transform(p3))
+    }
+    
+    @inlinable
+    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Element) throws -> ()) rethrows -> Result {
+        var accumulator = initialResult
+        try updateAccumulatingResult(&accumulator, p0)
+        try updateAccumulatingResult(&accumulator, p1)
+        try updateAccumulatingResult(&accumulator, p2)
+        try updateAccumulatingResult(&accumulator, p3)
+        return accumulator
+    }
+}
+
+extension CubicBezier {
+    
     public typealias Indices = Range<Int>
     
     public typealias Index = Int
@@ -143,6 +161,14 @@ extension CubicBezier where Element == Double {
         let c = 3 * (p2 + p0) - 6 * p1
         let d = p3 - p0 + 3 * (p1 - p2)
         return [a, b, c, d]
+    }
+}
+
+extension CubicBezier {
+    
+    @inlinable
+    public func elevated() -> Bezier<Element> {
+        return Bezier(self).elevated()
     }
 }
 
@@ -468,63 +494,10 @@ extension CubicBezier where Element == Point {
 }
 
 @inlinable
-public prefix func + <Element>(x: CubicBezier<Element>) -> CubicBezier<Element> {
-    return x
-}
-@inlinable
-public prefix func - <Element>(x: CubicBezier<Element>) -> CubicBezier<Element> {
-    return CubicBezier(-x.p0, -x.p1, -x.p2, -x.p3)
-}
-@inlinable
 public func + <Element>(lhs: CubicBezier<Element>, rhs: CubicBezier<Element>) -> CubicBezier<Element> {
     return CubicBezier(lhs.p0 + rhs.p0, lhs.p1 + rhs.p1, lhs.p2 + rhs.p2, lhs.p3 + rhs.p3)
 }
 @inlinable
 public func - <Element>(lhs: CubicBezier<Element>, rhs: CubicBezier<Element>) -> CubicBezier<Element> {
     return CubicBezier(lhs.p0 - rhs.p0, lhs.p1 - rhs.p1, lhs.p2 - rhs.p2, lhs.p3 - rhs.p3)
-}
-@inlinable
-public func * <Element>(lhs: Double, rhs: CubicBezier<Element>) -> CubicBezier<Element> {
-    return CubicBezier(lhs * rhs.p0, lhs * rhs.p1, lhs * rhs.p2, lhs * rhs.p3)
-}
-@inlinable
-public func * <Element>(lhs: CubicBezier<Element>, rhs: Double) -> CubicBezier<Element> {
-    return CubicBezier(lhs.p0 * rhs, lhs.p1 * rhs, lhs.p2 * rhs, lhs.p3 * rhs)
-}
-@inlinable
-public func / <Element>(lhs: CubicBezier<Element>, rhs: Double) -> CubicBezier<Element> {
-    return CubicBezier(lhs.p0 / rhs, lhs.p1 / rhs, lhs.p2 / rhs, lhs.p3 / rhs)
-}
-@inlinable
-public func += <Element>(lhs: inout CubicBezier<Element>, rhs: CubicBezier<Element>) {
-    lhs = lhs + rhs
-}
-@inlinable
-public func -= <Element>(lhs: inout CubicBezier<Element>, rhs: CubicBezier<Element>) {
-    lhs = lhs - rhs
-}
-@inlinable
-public func *= <Element>(lhs: inout CubicBezier<Element>, rhs: Double) {
-    lhs = lhs * rhs
-}
-@inlinable
-public func /= <Element>(lhs: inout CubicBezier<Element>, rhs: Double) {
-    lhs = lhs / rhs
-}
-
-@inlinable
-public func * (lhs: CubicBezier<Point>, rhs: SDTransform) -> CubicBezier<Point> {
-    return CubicBezier(lhs.p0 * rhs, lhs.p1 * rhs, lhs.p2 * rhs, lhs.p3 * rhs)
-}
-@inlinable
-public func *= (lhs: inout CubicBezier<Point>, rhs: SDTransform) {
-    lhs = lhs * rhs
-}
-@inlinable
-public func * (lhs: CubicBezier<Vector>, rhs: Matrix) -> CubicBezier<Vector> {
-    return CubicBezier(lhs.p0 * rhs, lhs.p1 * rhs, lhs.p2 * rhs, lhs.p3 * rhs)
-}
-@inlinable
-public func *= (lhs: inout CubicBezier<Vector>, rhs: Matrix) {
-    lhs = lhs * rhs
 }

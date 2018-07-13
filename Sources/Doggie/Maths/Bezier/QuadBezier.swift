@@ -78,6 +78,23 @@ extension QuadBezier: Encodable where Element : Encodable {
 
 extension QuadBezier {
     
+    @inlinable
+    public func map(_ transform: (Element) throws -> Element) rethrows -> QuadBezier {
+        return try QuadBezier(transform(p0), transform(p1), transform(p2))
+    }
+    
+    @inlinable
+    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Element) throws -> ()) rethrows -> Result {
+        var accumulator = initialResult
+        try updateAccumulatingResult(&accumulator, p0)
+        try updateAccumulatingResult(&accumulator, p1)
+        try updateAccumulatingResult(&accumulator, p2)
+        return accumulator
+    }
+}
+
+extension QuadBezier {
+    
     public typealias Indices = Range<Int>
     
     public typealias Index = Int
@@ -132,6 +149,17 @@ extension QuadBezier where Element == Double {
         let b = 2 * (p1 - p0)
         let c = p0 + p2 - 2 * p1
         return [a, b, c]
+    }
+}
+
+extension QuadBezier {
+    
+    @inlinable
+    public func elevated() -> CubicBezier<Element> {
+        let q1 = 2 * p1
+        let c1 = (q1 + p0) / 3
+        let c2 = (q1 + p2) / 3
+        return CubicBezier(p0, c1, c2, p2)
     }
 }
 
@@ -399,63 +427,10 @@ extension QuadBezier where Element == Point {
 }
 
 @inlinable
-public prefix func + <Element>(x: QuadBezier<Element>) -> QuadBezier<Element> {
-    return x
-}
-@inlinable
-public prefix func - <Element>(x: QuadBezier<Element>) -> QuadBezier<Element> {
-    return QuadBezier(-x.p0, -x.p1, -x.p2)
-}
-@inlinable
 public func + <Element>(lhs: QuadBezier<Element>, rhs: QuadBezier<Element>) -> QuadBezier<Element> {
     return QuadBezier(lhs.p0 + rhs.p0, lhs.p1 + rhs.p1, lhs.p2 + rhs.p2)
 }
 @inlinable
 public func - <Element>(lhs: QuadBezier<Element>, rhs: QuadBezier<Element>) -> QuadBezier<Element> {
     return QuadBezier(lhs.p0 - rhs.p0, lhs.p1 - rhs.p1, lhs.p2 - rhs.p2)
-}
-@inlinable
-public func * <Element>(lhs: Double, rhs: QuadBezier<Element>) -> QuadBezier<Element> {
-    return QuadBezier(lhs * rhs.p0, lhs * rhs.p1, lhs * rhs.p2)
-}
-@inlinable
-public func * <Element>(lhs: QuadBezier<Element>, rhs: Double) -> QuadBezier<Element> {
-    return QuadBezier(lhs.p0 * rhs, lhs.p1 * rhs, lhs.p2 * rhs)
-}
-@inlinable
-public func / <Element>(lhs: QuadBezier<Element>, rhs: Double) -> QuadBezier<Element> {
-    return QuadBezier(lhs.p0 / rhs, lhs.p1 / rhs, lhs.p2 / rhs)
-}
-@inlinable
-public func += <Element>(lhs: inout QuadBezier<Element>, rhs: QuadBezier<Element>) {
-    lhs = lhs + rhs
-}
-@inlinable
-public func -= <Element>(lhs: inout QuadBezier<Element>, rhs: QuadBezier<Element>) {
-    lhs = lhs - rhs
-}
-@inlinable
-public func *= <Element>(lhs: inout QuadBezier<Element>, rhs: Double) {
-    lhs = lhs * rhs
-}
-@inlinable
-public func /= <Element>(lhs: inout QuadBezier<Element>, rhs: Double) {
-    lhs = lhs / rhs
-}
-
-@inlinable
-public func * (lhs: QuadBezier<Point>, rhs: SDTransform) -> QuadBezier<Point> {
-    return QuadBezier(lhs.p0 * rhs, lhs.p1 * rhs, lhs.p2 * rhs)
-}
-@inlinable
-public func *= (lhs: inout QuadBezier<Point>, rhs: SDTransform) {
-    lhs = lhs * rhs
-}
-@inlinable
-public func * (lhs: QuadBezier<Vector>, rhs: Matrix) -> QuadBezier<Vector> {
-    return QuadBezier(lhs.p0 * rhs, lhs.p1 * rhs, lhs.p2 * rhs)
-}
-@inlinable
-public func *= (lhs: inout QuadBezier<Vector>, rhs: Matrix) {
-    lhs = lhs * rhs
 }

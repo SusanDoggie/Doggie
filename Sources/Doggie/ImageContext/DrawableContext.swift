@@ -25,10 +25,6 @@
 
 public protocol DrawableContext : AnyObject {
     
-    associatedtype ColorSpace
-    
-    var colorSpace: ColorSpace { get }
-    
     var opacity: Double { get set }
     
     var transform: SDTransform { get set }
@@ -72,9 +68,11 @@ public protocol DrawableContext : AnyObject {
     func drawRadialGradient<C>(stops: [GradientStop<C>], start: Point, startRadius: Double, end: Point, endRadius: Double, startSpread: GradientSpreadMode, endSpread: GradientSpreadMode)
 }
 
-public protocol TypedDrawableContext: DrawableContext where ColorSpace == Doggie.ColorSpace<Pixel.Model> {
+public protocol TypedDrawableContext: DrawableContext {
     
-    associatedtype Pixel: ColorPixelProtocol
+    associatedtype Model: ColorModelProtocol
+    
+    var colorSpace: ColorSpace<Model> { get }
     
     var renderingIntent: RenderingIntent { get set }
     
@@ -82,11 +80,11 @@ public protocol TypedDrawableContext: DrawableContext where ColorSpace == Doggie
     
     func setClip<P>(texture: Texture<P>, transform: SDTransform) where P.Model == GrayColorModel
     
-    func draw<P>(texture: Texture<P>, transform: SDTransform) where P.Model == Pixel.Model
+    func draw<P>(texture: Texture<P>, transform: SDTransform) where P.Model == Model
     
-    func draw(shape: Shape, winding: Shape.WindingRule, color: Pixel.Model, opacity: Double)
+    func draw(shape: Shape, winding: Shape.WindingRule, color: Model, opacity: Double)
     
-    func stroke(shape: Shape, width: Double, cap: Shape.LineCap, join: Shape.LineJoin, color: Pixel.Model, opacity: Double)
+    func stroke(shape: Shape, width: Double, cap: Shape.LineCap, join: Shape.LineJoin, color: Model, opacity: Double)
 }
 
 extension DrawableContext {
@@ -167,7 +165,7 @@ extension TypedDrawableContext {
 extension TypedDrawableContext {
     
     @inlinable
-    public func stroke(shape: Shape, width: Double, cap: Shape.LineCap, join: Shape.LineJoin, color: Pixel.Model, opacity: Double = 1) {
+    public func stroke(shape: Shape, width: Double, cap: Shape.LineCap, join: Shape.LineJoin, color: Model, opacity: Double = 1) {
         self.draw(shape: shape.strokePath(width: width, cap: cap, join: join), winding: .nonZero, color: color, opacity: opacity)
     }
     
@@ -209,27 +207,27 @@ extension DrawableContext {
 extension TypedDrawableContext {
     
     @inlinable
-    public func draw(rect: Rect, color: Pixel.Model, opacity: Double = 1) {
+    public func draw(rect: Rect, color: Model, opacity: Double = 1) {
         self.draw(shape: Shape(rect: rect), winding: .nonZero, color: color, opacity: opacity)
     }
     @inlinable
-    public func draw(roundedRect rect: Rect, radius: Radius, color: Pixel.Model, opacity: Double = 1) {
+    public func draw(roundedRect rect: Rect, radius: Radius, color: Model, opacity: Double = 1) {
         self.draw(shape: Shape(roundedRect: rect, radius: radius), winding: .nonZero, color: color, opacity: opacity)
     }
     @inlinable
-    public func draw(ellipseIn rect: Rect, color: Pixel.Model, opacity: Double = 1) {
+    public func draw(ellipseIn rect: Rect, color: Model, opacity: Double = 1) {
         self.draw(shape: Shape(ellipseIn: rect), winding: .nonZero, color: color, opacity: opacity)
     }
     @inlinable
-    public func stroke(rect: Rect, width: Double, cap: Shape.LineCap, join: Shape.LineJoin, color: Pixel.Model, opacity: Double = 1) {
+    public func stroke(rect: Rect, width: Double, cap: Shape.LineCap, join: Shape.LineJoin, color: Model, opacity: Double = 1) {
         self.stroke(shape: Shape(rect: rect), width: width, cap: cap, join: join, color: color, opacity: opacity)
     }
     @inlinable
-    public func stroke(roundedRect rect: Rect, radius: Radius, width: Double, cap: Shape.LineCap, join: Shape.LineJoin, color: Pixel.Model, opacity: Double = 1) {
+    public func stroke(roundedRect rect: Rect, radius: Radius, width: Double, cap: Shape.LineCap, join: Shape.LineJoin, color: Model, opacity: Double = 1) {
         self.stroke(shape: Shape(roundedRect: rect, radius: radius), width: width, cap: cap, join: join, color: color, opacity: opacity)
     }
     @inlinable
-    public func stroke(ellipseIn rect: Rect, width: Double, cap: Shape.LineCap, join: Shape.LineJoin, color: Pixel.Model, opacity: Double = 1) {
+    public func stroke(ellipseIn rect: Rect, width: Double, cap: Shape.LineCap, join: Shape.LineJoin, color: Model, opacity: Double = 1) {
         self.stroke(shape: Shape(ellipseIn: rect), width: width, cap: cap, join: join, color: color, opacity: opacity)
     }
 }
@@ -238,7 +236,7 @@ extension TypedDrawableContext {
     
     @inlinable
     public func setClip<Image: ImageProtocol>(image: Image, transform: SDTransform) {
-        self.setClip(texture: Texture<ColorPixel<GrayColorModel>>(image: image.convert(to: Doggie.ColorSpace.calibratedGray(from: colorSpace, gamma: 2.2), intent: renderingIntent), resamplingAlgorithm: resamplingAlgorithm), transform: transform)
+        self.setClip(texture: Texture<ColorPixel<GrayColorModel>>(image: image.convert(to: ColorSpace.calibratedGray(from: colorSpace, gamma: 2.2), intent: renderingIntent), resamplingAlgorithm: resamplingAlgorithm), transform: transform)
     }
 }
 
@@ -246,6 +244,6 @@ extension TypedDrawableContext {
     
     @inlinable
     public func draw<Image: ImageProtocol>(image: Image, transform: SDTransform) {
-        self.draw(texture: Texture<ColorPixel<Pixel.Model>>(image: image.convert(to: colorSpace, intent: renderingIntent), resamplingAlgorithm: resamplingAlgorithm), transform: transform)
+        self.draw(texture: Texture<ColorPixel<Model>>(image: image.convert(to: colorSpace, intent: renderingIntent), resamplingAlgorithm: resamplingAlgorithm), transform: transform)
     }
 }

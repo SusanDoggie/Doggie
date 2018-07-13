@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-public protocol Tensor : ScalarMultiplicative, RandomAccessCollection, MutableCollection where Element == Scalar, Index == Int {
+public protocol Tensor : ScalarMultiplicative, Homomorphism, RandomAccessCollection, MutableCollection where Element == Scalar, Index == Int {
     
     static var numberOfComponents: Int { get }
     
@@ -32,8 +32,6 @@ public protocol Tensor : ScalarMultiplicative, RandomAccessCollection, MutableCo
     var unit: Self { get }
     
     func distance(to: Self) -> Scalar
-    
-    func map(_ transform: (Scalar) throws -> Scalar) rethrows -> Self
     
     func combined(_ other: Self, _ transform: (Scalar, Scalar) throws -> Scalar) rethrows -> Self
     
@@ -112,14 +110,6 @@ public func dot<T : Tensor>(_ lhs: T, _ rhs: T) -> T.Scalar {
 extension Tensor {
     
     @_transparent
-    public static prefix func + (val: Self) -> Self {
-        return val
-    }
-    @_transparent
-    public static prefix func - (val: Self) -> Self {
-        return val.map { -$0 }
-    }
-    @_transparent
     public static func + (lhs: Self, rhs: Self) -> Self {
         return lhs.combined(rhs) { $0 + $1 }
     }
@@ -128,31 +118,11 @@ extension Tensor {
         return lhs.combined(rhs) { $0 - $1 }
     }
     @_transparent
-    public static func * (lhs: Scalar, rhs: Self) -> Self {
-        return rhs.map { lhs * $0 }
-    }
-    @_transparent
-    public static func * (lhs: Self, rhs: Scalar) -> Self {
-        return lhs.map { $0 * rhs }
-    }
-    @_transparent
-    public static func / (lhs: Self, rhs: Scalar) -> Self {
-        return lhs.map { $0 / rhs }
-    }
-    @_transparent
     public static func += (lhs: inout Self, rhs: Self) {
         lhs = lhs + rhs
     }
     @_transparent
     public static func -= (lhs: inout Self, rhs: Self) {
         lhs = lhs - rhs
-    }
-    @_transparent
-    public static func *= (lhs: inout Self, rhs: Scalar) {
-        lhs = lhs * rhs
-    }
-    @_transparent
-    public static func /= (lhs: inout Self, rhs: Scalar) {
-        lhs = lhs / rhs
     }
 }

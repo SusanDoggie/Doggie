@@ -72,6 +72,22 @@ extension LineSegment: Encodable where Element : Encodable {
 
 extension LineSegment {
     
+    @inlinable
+    public func map(_ transform: (Element) throws -> Element) rethrows -> LineSegment {
+        return try LineSegment(transform(p0), transform(p1))
+    }
+    
+    @inlinable
+    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Element) throws -> ()) rethrows -> Result {
+        var accumulator = initialResult
+        try updateAccumulatingResult(&accumulator, p0)
+        try updateAccumulatingResult(&accumulator, p1)
+        return accumulator
+    }
+}
+
+extension LineSegment {
+    
     public typealias Indices = Range<Int>
     
     public typealias Index = Int
@@ -119,6 +135,14 @@ extension LineSegment where Element == Double {
         let a = p0
         let b = p1 - p0
         return [a, b]
+    }
+}
+
+extension LineSegment {
+    
+    @inlinable
+    public func elevated() -> QuadBezier<Element> {
+        return QuadBezier(p0, eval(0.5), p1)
     }
 }
 
@@ -188,63 +212,10 @@ extension LineSegment where Element == Point {
 }
 
 @inlinable
-public prefix func + <Element>(x: LineSegment<Element>) -> LineSegment<Element> {
-    return x
-}
-@inlinable
-public prefix func - <Element>(x: LineSegment<Element>) -> LineSegment<Element> {
-    return LineSegment(-x.p0, -x.p1)
-}
-@inlinable
 public func + <Element>(lhs: LineSegment<Element>, rhs: LineSegment<Element>) -> LineSegment<Element> {
     return LineSegment(lhs.p0 + rhs.p0, lhs.p1 + rhs.p1)
 }
 @inlinable
 public func - <Element>(lhs: LineSegment<Element>, rhs: LineSegment<Element>) -> LineSegment<Element> {
     return LineSegment(lhs.p0 - rhs.p0, lhs.p1 - rhs.p1)
-}
-@inlinable
-public func * <Element>(lhs: Double, rhs: LineSegment<Element>) -> LineSegment<Element> {
-    return LineSegment(lhs * rhs.p0, lhs * rhs.p1)
-}
-@inlinable
-public func * <Element>(lhs: LineSegment<Element>, rhs: Double) -> LineSegment<Element> {
-    return LineSegment(lhs.p0 * rhs, lhs.p1 * rhs)
-}
-@inlinable
-public func / <Element>(lhs: LineSegment<Element>, rhs: Double) -> LineSegment<Element> {
-    return LineSegment(lhs.p0 / rhs, lhs.p1 / rhs)
-}
-@inlinable
-public func += <Element>(lhs: inout LineSegment<Element>, rhs: LineSegment<Element>) {
-    lhs = lhs + rhs
-}
-@inlinable
-public func -= <Element>(lhs: inout LineSegment<Element>, rhs: LineSegment<Element>) {
-    lhs = lhs - rhs
-}
-@inlinable
-public func *= <Element>(lhs: inout LineSegment<Element>, rhs: Double) {
-    lhs = lhs * rhs
-}
-@inlinable
-public func /= <Element>(lhs: inout LineSegment<Element>, rhs: Double) {
-    lhs = lhs / rhs
-}
-
-@inlinable
-public func * (lhs: LineSegment<Point>, rhs: SDTransform) -> LineSegment<Point> {
-    return LineSegment(lhs.p0 * rhs, lhs.p1 * rhs)
-}
-@inlinable
-public func *= (lhs: inout LineSegment<Point>, rhs: SDTransform) {
-    lhs = lhs * rhs
-}
-@inlinable
-public func * (lhs: LineSegment<Vector>, rhs: Matrix) -> LineSegment<Vector> {
-    return LineSegment(lhs.p0 * rhs, lhs.p1 * rhs)
-}
-@inlinable
-public func *= (lhs: inout LineSegment<Vector>, rhs: Matrix) {
-    lhs = lhs * rhs
 }

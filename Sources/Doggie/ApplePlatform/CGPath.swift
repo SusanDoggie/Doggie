@@ -47,8 +47,8 @@ private protocol BezierPathConvertible {
 extension BezierPathConvertible {
     
     mutating func _quad(to p2: Point, control p1: Point) {
-        let p0 = self._currentPoint
-        self._curve(to: p2, control1: (p1 - p0) * 2 / 3 + p0, control2: (p1 - p2) * 2 / 3 + p2)
+        let cubic = QuadBezier(self._currentPoint, p1, p2).elevated()
+        self._curve(to: cubic.p3, control1: cubic.p1, control2: cubic.p2)
     }
 }
 

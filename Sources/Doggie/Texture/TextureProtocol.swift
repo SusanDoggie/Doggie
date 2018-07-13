@@ -68,6 +68,8 @@ public protocol TextureProtocol {
     
     var verticalWrappingMode: WrappingMode { get set }
     
+    mutating func setOrientation(_ orientation: ImageOrientation)
+    
     func transposed() -> Self
     
     func verticalFlipped() -> Self
@@ -120,6 +122,65 @@ extension _TextureProtocolImplement {
 extension _TextureProtocolImplement {
     
     @inlinable
+    public mutating func setOrientation(_ orientation: ImageOrientation) {
+        
+        switch orientation {
+        case .up, .upMirrored, .down, .downMirrored: break
+        case .leftMirrored, .left, .rightMirrored, .right: self = self.transposed()
+        }
+        
+        guard pixels.count != 0 else { return }
+        
+        let width = self.width
+        let height = self.height
+        
+        switch orientation {
+        case .up, .leftMirrored: break
+        case .right, .upMirrored:
+            
+            self.withUnsafeMutableBufferPointer {
+                
+                guard let buffer = $0.baseAddress else { return }
+                
+                var buf1 = buffer
+                var buf2 = buffer + width - 1
+                
+                for _ in 0..<width >> 1 {
+                    Swap(height, buf1, width, buf2, width)
+                    buf1 += 1
+                    buf2 -= 1
+                }
+            }
+            
+        case .left, .downMirrored:
+            
+            self.withUnsafeMutableBufferPointer {
+                
+                guard let buffer = $0.baseAddress else { return }
+                
+                var buf1 = buffer
+                var buf2 = buffer + width * (height - 1)
+                
+                for _ in 0..<height >> 1 {
+                    Swap(width, buf1, 1, buf2, 1)
+                    buf1 += width
+                    buf2 -= width
+                }
+            }
+            
+        case .down, .rightMirrored:
+            
+            self.withUnsafeMutableBufferPointer {
+                guard let buffer = $0.baseAddress else { return }
+                Swap($0.count >> 1, buffer, 1, buffer + $0.count - 1, -1)
+            }
+        }
+    }
+}
+
+extension _TextureProtocolImplement {
+    
+    @inlinable
     public func transposed() -> Self {
         
         if pixels.count == 0 {
@@ -145,62 +206,16 @@ extension _TextureProtocolImplement {
     
     @inlinable
     public func verticalFlipped() -> Self {
-        
-        var pixels = self.pixels
-        
-        if pixels.count != 0 {
-            
-            pixels.withUnsafeMutableBufferPointer {
-                
-                guard let buffer = $0.baseAddress else { return }
-                
-                var buf1 = buffer
-                var buf2 = buffer + width * (height - 1)
-                
-                for _ in 0..<height >> 1 {
-                    Swap(width, buf1, 1, buf2, 1)
-                    buf1 += width
-                    buf2 -= width
-                }
-            }
-        }
-        
-        var texture = Self(width: width, height: height, pixels: pixels, resamplingAlgorithm: resamplingAlgorithm)
-        
-        texture.horizontalWrappingMode = self.horizontalWrappingMode
-        texture.verticalWrappingMode = self.verticalWrappingMode
-        
-        return texture
+        var copy = self
+        copy.setOrientation(.downMirrored)
+        return copy
     }
     
     @inlinable
     public func horizontalFlipped() -> Self {
-        
-        var pixels = self.pixels
-        
-        if pixels.count != 0 {
-            
-            pixels.withUnsafeMutableBufferPointer {
-                
-                guard let buffer = $0.baseAddress else { return }
-                
-                var buf1 = buffer
-                var buf2 = buffer + width - 1
-                
-                for _ in 0..<width >> 1 {
-                    Swap(height, buf1, width, buf2, width)
-                    buf1 += 1
-                    buf2 -= 1
-                }
-            }
-        }
-        
-        var texture = Self(width: width, height: height, pixels: pixels, resamplingAlgorithm: resamplingAlgorithm)
-        
-        texture.horizontalWrappingMode = self.horizontalWrappingMode
-        texture.verticalWrappingMode = self.verticalWrappingMode
-        
-        return texture
+        var copy = self
+        copy.setOrientation(.upMirrored)
+        return copy
     }
 }
 

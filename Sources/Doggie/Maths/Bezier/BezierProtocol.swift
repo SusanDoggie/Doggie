@@ -23,13 +23,17 @@
 //  THE SOFTWARE.
 //
 
-public protocol BezierProtocol : ScalarMultiplicative, RandomAccessCollection, MutableCollection where Element : ScalarMultiplicative, Scalar == Element.Scalar {
+public protocol BezierProtocol : ScalarMultiplicative, Homomorphism, RandomAccessCollection, MutableCollection where Element : ScalarMultiplicative, Scalar == Element.Scalar {
     
     var degree: Int { get }
     
     func split(_ t: Scalar) -> (Self, Self)
     
     func eval(_ t: Scalar) -> Element
+    
+    func reduce<Result>(_ initialResult: Result, _ nextPartialResult: (Result, Element) throws -> Result) rethrows -> Result
+    
+    func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Element) throws -> ()) rethrows -> Result
 }
 
 extension BezierProtocol {
@@ -56,5 +60,49 @@ extension BezierProtocol {
         }
         result.append(remain)
         return result
+    }
+}
+
+extension BezierProtocol {
+    
+    @_transparent
+    public func reduce<Result>(_ initialResult: Result, _ nextPartialResult: (Result, Element) throws -> Result) rethrows -> Result {
+        return try self.reduce(into: initialResult) { $0 = try nextPartialResult($0, $1) }
+    }
+}
+
+extension BezierProtocol {
+    
+    @_transparent
+    public static func += (lhs: inout Self, rhs: Self) {
+        lhs = lhs + rhs
+    }
+    @_transparent
+    public static func -= (lhs: inout Self, rhs: Self) {
+        lhs = lhs - rhs
+    }
+}
+
+extension BezierProtocol where Element == Point {
+    
+    @_transparent
+    public static func * (lhs: Self, rhs: SDTransform) -> Self {
+        return lhs.map { $0 * rhs }
+    }
+    @_transparent
+    public static func *= (lhs: inout Self, rhs: SDTransform) {
+        lhs = lhs * rhs
+    }
+}
+
+extension BezierProtocol where Element == Vector {
+    
+    @_transparent
+    public static func * (lhs: Self, rhs: Matrix) -> Self {
+        return lhs.map { $0 * rhs }
+    }
+    @_transparent
+    public static func *= (lhs: inout Self, rhs: Matrix) {
+        lhs = lhs * rhs
     }
 }

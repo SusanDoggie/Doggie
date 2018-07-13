@@ -68,3 +68,42 @@ public protocol Multiplicative : Equatable {
     
     static func *= (lhs: inout Self, rhs: Self)
 }
+
+public protocol Homomorphism {
+    
+    associatedtype Element
+    
+    func map(_ transform: (Element) throws -> Element) rethrows -> Self
+}
+
+extension Homomorphism where Self : ScalarMultiplicative, Element : ScalarMultiplicative, Self.Scalar == Element.Scalar {
+    
+    @_transparent
+    public static prefix func + (val: Self) -> Self {
+        return val
+    }
+    @_transparent
+    public static prefix func - (val: Self) -> Self {
+        return val.map { -$0 }
+    }
+    @_transparent
+    public static func * (lhs: Scalar, rhs: Self) -> Self {
+        return rhs.map { lhs * $0 }
+    }
+    @_transparent
+    public static func * (lhs: Self, rhs: Scalar) -> Self {
+        return lhs.map { $0 * rhs }
+    }
+    @_transparent
+    public static func / (lhs: Self, rhs: Scalar) -> Self {
+        return lhs.map { $0 / rhs }
+    }
+    @_transparent
+    public static func *= (lhs: inout Self, rhs: Scalar) {
+        lhs = lhs * rhs
+    }
+    @_transparent
+    public static func /= (lhs: inout Self, rhs: Scalar) {
+        lhs = lhs / rhs
+    }
+}

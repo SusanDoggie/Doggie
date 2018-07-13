@@ -100,6 +100,24 @@ extension Bezier: Encodable where Element : Encodable {
 
 extension Bezier {
     
+    @inlinable
+    public func map(_ transform: (Element) throws -> Element) rethrows -> Bezier {
+        return try Bezier(points.map(transform))
+    }
+    
+    @inlinable
+    public func reduce<Result>(_ initialResult: Result, _ nextPartialResult: (Result, Element) throws -> Result) rethrows -> Result {
+        return try points.reduce(initialResult, nextPartialResult)
+    }
+    
+    @inlinable
+    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Element) throws -> ()) rethrows -> Result {
+        return try points.reduce(into: initialResult, updateAccumulatingResult)
+    }
+}
+
+extension Bezier {
+    
     public typealias Indices = Range<Int>
     
     public typealias Index = Int
@@ -517,14 +535,6 @@ extension Bezier where Element == Point {
 }
 
 @inlinable
-public prefix func + <Element>(x: Bezier<Element>) -> Bezier<Element> {
-    return x
-}
-@inlinable
-public prefix func - <Element>(x: Bezier<Element>) -> Bezier<Element> {
-    return Bezier(x.points.map { -$0 })
-}
-@inlinable
 public func + <Element>(lhs: Bezier<Element>, rhs: Bezier<Element>) -> Bezier<Element> {
     var lhs = lhs
     var rhs = rhs
@@ -549,49 +559,4 @@ public func - <Element>(lhs: Bezier<Element>, rhs: Bezier<Element>) -> Bezier<El
         rhs = rhs.elevated()
     }
     return Bezier(zip(lhs.points, rhs.points).map(-))
-}
-@inlinable
-public func * <Element>(lhs: Double, rhs: Bezier<Element>) -> Bezier<Element> {
-    return Bezier(rhs.points.map { lhs * $0 })
-}
-@inlinable
-public func * <Element>(lhs: Bezier<Element>, rhs: Double) -> Bezier<Element> {
-    return Bezier(lhs.points.map { $0 * rhs })
-}
-@inlinable
-public func / <Element>(lhs: Bezier<Element>, rhs: Double) -> Bezier<Element> {
-    return Bezier(lhs.points.map { $0 / rhs })
-}
-@inlinable
-public func += <Element>(lhs: inout Bezier<Element>, rhs: Bezier<Element>) {
-    lhs = lhs + rhs
-}
-@inlinable
-public func -= <Element>(lhs: inout Bezier<Element>, rhs: Bezier<Element>) {
-    lhs = lhs - rhs
-}
-@inlinable
-public func *= <Element>(lhs: inout Bezier<Element>, rhs: Double) {
-    lhs = lhs * rhs
-}
-@inlinable
-public func /= <Element>(lhs: inout Bezier<Element>, rhs: Double) {
-    lhs = lhs / rhs
-}
-
-@inlinable
-public func * (lhs: Bezier<Point>, rhs: SDTransform) -> Bezier<Point> {
-    return Bezier(lhs.points.map { $0 * rhs })
-}
-@inlinable
-public func *= (lhs: inout Bezier<Point>, rhs: SDTransform) {
-    lhs = lhs * rhs
-}
-@inlinable
-public func * (lhs: Bezier<Vector>, rhs: Matrix) -> Bezier<Vector> {
-    return Bezier(lhs.points.map { $0 * rhs })
-}
-@inlinable
-public func *= (lhs: inout Bezier<Vector>, rhs: Matrix) {
-    lhs = lhs * rhs
 }

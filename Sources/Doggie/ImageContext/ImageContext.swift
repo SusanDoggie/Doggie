@@ -90,14 +90,14 @@ public class ImageContext<Pixel: ColorPixelProtocol> : TypedDrawableContext {
         self.image = image
     }
     
-    public init(width: Int, height: Int, resolution: Resolution = Resolution(resolution: 1, unit: .point), colorSpace: Doggie.ColorSpace<Pixel.Model>, option: MappedBufferOption = .default) {
+    public init(width: Int, height: Int, resolution: Resolution = Resolution(resolution: 1, unit: .point), colorSpace: ColorSpace<Pixel.Model>, option: MappedBufferOption = .default) {
         self.image = Image(width: width, height: height, resolution: resolution, colorSpace: colorSpace, option: option)
     }
 }
 
 extension ImageContext {
     
-    private convenience init<P>(copyStates context: ImageContext<P>, colorSpace: Doggie.ColorSpace<Pixel.Model>) {
+    private convenience init<P>(copyStates context: ImageContext<P>, colorSpace: ColorSpace<Pixel.Model>) {
         self.init(width: context.width, height: context.height, colorSpace: colorSpace, option: context.image.option)
         self.styles = context.styles
         self.styles.opacity = 1
@@ -497,10 +497,10 @@ extension ImageContext {
 extension ImageContext {
     
     public func drawClip<P>(body: (ImageContext<P>) throws -> Void) rethrows where P.Model == GrayColorModel {
-        try self.drawClip(colorSpace: Doggie.ColorSpace.calibratedGray(from: colorSpace, gamma: 2.2), body: body)
+        try self.drawClip(colorSpace: ColorSpace.calibratedGray(from: colorSpace, gamma: 2.2), body: body)
     }
     
-    public func drawClip<P>(colorSpace: Doggie.ColorSpace<GrayColorModel>, body: (ImageContext<P>) throws -> Void) rethrows where P.Model == GrayColorModel {
+    public func drawClip<P>(colorSpace: ColorSpace<GrayColorModel>, body: (ImageContext<P>) throws -> Void) rethrows where P.Model == GrayColorModel {
         
         if let next = self.next {
             try next.drawClip(body: body)
