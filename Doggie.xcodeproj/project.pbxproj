@@ -197,6 +197,7 @@
 		0AA8D463204E486700ED0175 /* SwiftPlayground.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA8D462204E486700ED0175 /* SwiftPlayground.swift */; };
 		0AAA7CF220B8EC950080D1BE /* Exported.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AAA7CF120B8EC950080D1BE /* Exported.swift */; };
 		0AAA7CF420B8EDA30080D1BE /* AppleExported.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AAA7CF320B8EDA30080D1BE /* AppleExported.swift */; };
+		0AABCC6320F9982F00D7BD78 /* ImageIO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AABCC6220F9982F00D7BD78 /* ImageIO.swift */; };
 		0AADB89320ABC5B700F3BF17 /* PNGFilter0.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AADB89220ABC5B700F3BF17 /* PNGFilter0.swift */; };
 		0AADB89620AC0BA400F3BF17 /* PNGInterlace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AADB89520AC0BA400F3BF17 /* PNGInterlace.swift */; };
 		0AAF447720EF0F1300178EA2 /* ImageOrientation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AAF447620EF0F1300178EA2 /* ImageOrientation.swift */; };
@@ -447,6 +448,7 @@
 		0AA8D462204E486700ED0175 /* SwiftPlayground.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftPlayground.swift; sourceTree = "<group>"; };
 		0AAA7CF120B8EC950080D1BE /* Exported.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Exported.swift; sourceTree = "<group>"; };
 		0AAA7CF320B8EDA30080D1BE /* AppleExported.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleExported.swift; sourceTree = "<group>"; };
+		0AABCC6220F9982F00D7BD78 /* ImageIO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageIO.swift; sourceTree = "<group>"; };
 		0AADB89220ABC5B700F3BF17 /* PNGFilter0.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PNGFilter0.swift; sourceTree = "<group>"; };
 		0AADB89520AC0BA400F3BF17 /* PNGInterlace.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PNGInterlace.swift; sourceTree = "<group>"; };
 		0AAF447620EF0F1300178EA2 /* ImageOrientation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageOrientation.swift; sourceTree = "<group>"; };
@@ -686,6 +688,7 @@
 				0AA4D8441F63908200AFF16B /* CGFont.swift */,
 				0A36612A1EEA54AB00216A26 /* CGPath.swift */,
 				0AE762571EE9583400E926D5 /* CGImage.swift */,
+				0AABCC6220F9982F00D7BD78 /* ImageIO.swift */,
 				0A06975D1E4D6732005CF664 /* NSImage.swift */,
 				0AE762541EE9475400E926D5 /* CGColorSpace.swift */,
 				0A3D5C621EEA498E00A9CDEA /* CGColor.swift */,
@@ -1410,6 +1413,7 @@
 				0A89938E1EFA488900E9CDD9 /* ICC Creator.swift in Sources */,
 				0AC621CB20EDFBA500E5FF15 /* Gradient.swift in Sources */,
 				08458B391E2E627600D01813 /* Matrix.swift in Sources */,
+				0AABCC6320F9982F00D7BD78 /* ImageIO.swift in Sources */,
 				0A92063B1F14C83A00AF5C49 /* PNGDecoder.swift in Sources */,
 				0A8D4F1E20C8FD8400921F91 /* CubicBezier.swift in Sources */,
 				0AA6C73C20E6190400682EFA /* RGBA32ColorPixel.swift in Sources */,

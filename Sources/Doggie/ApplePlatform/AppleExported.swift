@@ -28,3 +28,9 @@
 @_exported import CoreGraphics
 
 #endif
+
+#if canImport(MobileCoreServices)
+
+@_exported import MobileCoreServices
+
+#endif

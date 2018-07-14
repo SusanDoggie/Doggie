@@ -194,7 +194,7 @@ extension ImageRep {
     
     public enum PropertyKey : Int {
         
-        case compressionFactor
+        case compressionQuality
         case interlaced
     }
     
@@ -247,6 +247,28 @@ extension AnyImage {
     
     public func representation(using storageType: ImageRep.MediaType, properties: [ImageRep.PropertyKey : Any]) -> Data? {
         return ImageRep(image: self).representation(using: storageType, properties: properties)
+    }
+}
+
+extension Image {
+    
+    public var tiffRepresentation: Data? {
+        return self.representation(using: .tiff, properties: [:])
+    }
+    
+    public var pngRepresentation: Data? {
+        return self.representation(using: .png, properties: [:])
+    }
+}
+
+extension AnyImage {
+    
+    public var tiffRepresentation: Data? {
+        return self.representation(using: .tiff, properties: [:])
+    }
+    
+    public var pngRepresentation: Data? {
+        return self.representation(using: .png, properties: [:])
     }
 }
 
