@@ -86,6 +86,7 @@
 		0A5E8D461F57BE5C000D51E3 /* SFNTHHEA.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A5E8D451F57BE5C000D51E3 /* SFNTHHEA.swift */; };
 		0A5E8D4C1F57BF28000D51E3 /* SFNTVHEA.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A5E8D4A1F57BF28000D51E3 /* SFNTVHEA.swift */; };
 		0A5E8D4E1F57CC07000D51E3 /* SFNTMAXP.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A5E8D4D1F57CC07000D51E3 /* SFNTMAXP.swift */; };
+		0A71434420FC404D009DFFB5 /* DisplacementMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A71434320FC404D009DFFB5 /* DisplacementMap.swift */; };
 		0A72EF151F54FD2C00F0550A /* SFNTHEAD.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A72EF141F54FD2C00F0550A /* SFNTHEAD.swift */; };
 		0A72EF181F54FED200F0550A /* SFNTCMAP.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A72EF171F54FED200F0550A /* SFNTCMAP.swift */; };
 		0A72EF1C1F55035200F0550A /* SFNTFontFace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A72EF1B1F55035200F0550A /* SFNTFontFace.swift */; };
@@ -336,6 +337,7 @@
 		0A5E8D451F57BE5C000D51E3 /* SFNTHHEA.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = SFNTHHEA.swift; sourceTree = "<group>"; };
 		0A5E8D4A1F57BF28000D51E3 /* SFNTVHEA.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = SFNTVHEA.swift; sourceTree = "<group>"; };
 		0A5E8D4D1F57CC07000D51E3 /* SFNTMAXP.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = SFNTMAXP.swift; sourceTree = "<group>"; };
+		0A71434320FC404D009DFFB5 /* DisplacementMap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplacementMap.swift; sourceTree = "<group>"; };
 		0A72EF141F54FD2C00F0550A /* SFNTHEAD.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = SFNTHEAD.swift; sourceTree = "<group>"; };
 		0A72EF171F54FED200F0550A /* SFNTCMAP.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = SFNTCMAP.swift; sourceTree = "<group>"; };
 		0A72EF1B1F55035200F0550A /* SFNTFontFace.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = SFNTFontFace.swift; sourceTree = "<group>"; };
@@ -801,6 +803,7 @@
 				0A74D68920047BF700330C86 /* GaussianBlur.swift */,
 				0AF566F720D21958003B243B /* Edges.swift */,
 				0A8ABC1620E4A0EF00A2634A /* Underpainting.swift */,
+				0A71434320FC404D009DFFB5 /* DisplacementMap.swift */,
 			);
 			path = ImageFilter;
 			sourceTree = "<group>";
@@ -1382,6 +1385,7 @@
 				0A56E9111E35F02E00D93786 /* RectCollection.swift in Sources */,
 				0A7F24AD1EF37CD500EAD9C7 /* Endianness.swift in Sources */,
 				0ADAA3B820CB7019006682EA /* IndexedCollection.swift in Sources */,
+				0A71434420FC404D009DFFB5 /* DisplacementMap.swift in Sources */,
 				0A5DEDD71F7B60D600A45B4B /* Resolution.swift in Sources */,
 				0A21119720CA7084003CA6BC /* YCbCrColorModel.swift in Sources */,
 				08458AFF1E2E627600D01813 /* SafeFunction.swift in Sources */,
