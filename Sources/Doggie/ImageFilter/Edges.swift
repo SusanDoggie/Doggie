@@ -25,17 +25,29 @@
 
 @inlinable
 public func Edges<Pixel>(_ image: Image<Pixel>, _ intensity: Double) -> Image<ColorPixel<RGBColorModel>> {
+    return Image(texture: Edges(Texture(image: image), intensity), resolution: image.resolution, colorSpace: .default)
+}
+
+@inlinable
+public func Edges<Pixel>(_ image: Image<Pixel>, _ intensity: Float) -> Image<FloatColorPixel<RGBColorModel>> {
+    return Image(texture: Edges(Texture(image: image), intensity), resolution: image.resolution, colorSpace: .default)
+}
+
+@inlinable
+public func Edges<Pixel>(_ texture: Texture<Pixel>, _ intensity: Double) -> Texture<ColorPixel<RGBColorModel>> {
     
-    let width = image.width
-    let height = image.height
+    let width = texture.width
+    let height = texture.height
+    let resamplingAlgorithm = texture.resamplingAlgorithm
+    let option = texture.option
     
     let _intensity = 1 / intensity
     
-    var result = Image<ColorPixel<RGBColorModel>>(width: width, height: height, colorSpace: .default)
+    var result = Texture<ColorPixel<RGBColorModel>>(width: width, height: height, resamplingAlgorithm: resamplingAlgorithm, option: option)
     
     guard width > 0 && height > 0 else { return result }
     
-    image.withUnsafeBufferPointer { source in
+    texture.withUnsafeBufferPointer { source in
         
         guard var source = source.baseAddress else { return }
         
@@ -110,18 +122,20 @@ public func Edges<Pixel>(_ image: Image<Pixel>, _ intensity: Double) -> Image<Co
 }
 
 @inlinable
-public func Edges<Pixel>(_ image: Image<Pixel>, _ intensity: Float) -> Image<FloatColorPixel<RGBColorModel>> {
+public func Edges<Pixel>(_ texture: Texture<Pixel>, _ intensity: Float) -> Texture<FloatColorPixel<RGBColorModel>> {
     
-    let width = image.width
-    let height = image.height
+    let width = texture.width
+    let height = texture.height
+    let resamplingAlgorithm = texture.resamplingAlgorithm
+    let option = texture.option
     
     let _intensity = Double(1 / intensity)
     
-    var result = Image<FloatColorPixel<RGBColorModel>>(width: width, height: height, colorSpace: .default)
+    var result = Texture<FloatColorPixel<RGBColorModel>>(width: width, height: height, resamplingAlgorithm: resamplingAlgorithm, option: option)
     
     guard width > 0 && height > 0 else { return result }
     
-    image.withUnsafeBufferPointer { source in
+    texture.withUnsafeBufferPointer { source in
         
         guard var source = source.baseAddress else { return }
         
