@@ -24,7 +24,7 @@
 //
 
 @inlinable
-public func Edges<Model>(_ image: Image<ColorPixel<Model>>, _ intensity: Double) -> Image<ColorPixel<RGBColorModel>> {
+public func Edges<Pixel>(_ image: Image<Pixel>, _ intensity: Double) -> Image<ColorPixel<RGBColorModel>> {
     
     let width = image.width
     let height = image.height
@@ -61,13 +61,22 @@ public func Edges<Model>(_ image: Image<ColorPixel<Model>>, _ intensity: Double)
                     let s20 = r0 ~= i - 1 ? s21 - 1 : s21
                     let s22 = r0 ~= i + 1 ? s21 + 1 : s21
                     
-                    let h0 = s02.pointee - s00.pointee
-                    let h1 = s12.pointee - s10.pointee
-                    let h2 = s22.pointee - s20.pointee
+                    let t00 = ColorPixel(s00.pointee)
+                    let t01 = ColorPixel(s01.pointee)
+                    let t02 = ColorPixel(s02.pointee)
+                    let t10 = ColorPixel(s10.pointee)
+                    let t12 = ColorPixel(s12.pointee)
+                    let t20 = ColorPixel(s20.pointee)
+                    let t21 = ColorPixel(s21.pointee)
+                    let t22 = ColorPixel(s22.pointee)
                     
-                    let v0 = s20.pointee - s00.pointee
-                    let v1 = s21.pointee - s01.pointee
-                    let v2 = s22.pointee - s02.pointee
+                    let h0 = t02 - t00
+                    let h1 = t12 - t10
+                    let h2 = t22 - t20
+                    
+                    let v0 = t20 - t00
+                    let v1 = t21 - t01
+                    let v2 = t22 - t02
                     
                     var c0 = 0.25 * (h0 + h2)
                     c0 += 0.5 * h1
@@ -101,7 +110,7 @@ public func Edges<Model>(_ image: Image<ColorPixel<Model>>, _ intensity: Double)
 }
 
 @inlinable
-public func Edges<Model>(_ image: Image<FloatColorPixel<Model>>, _ intensity: Float) -> Image<FloatColorPixel<RGBColorModel>> {
+public func Edges<Pixel>(_ image: Image<Pixel>, _ intensity: Float) -> Image<FloatColorPixel<RGBColorModel>> {
     
     let width = image.width
     let height = image.height
@@ -138,13 +147,22 @@ public func Edges<Model>(_ image: Image<FloatColorPixel<Model>>, _ intensity: Fl
                     let s20 = r0 ~= i - 1 ? s21 - 1 : s21
                     let s22 = r0 ~= i + 1 ? s21 + 1 : s21
                     
-                    let h0 = s02.pointee - s00.pointee
-                    let h1 = s12.pointee - s10.pointee
-                    let h2 = s22.pointee - s20.pointee
+                    let t00 = FloatColorPixel(s00.pointee)
+                    let t01 = FloatColorPixel(s01.pointee)
+                    let t02 = FloatColorPixel(s02.pointee)
+                    let t10 = FloatColorPixel(s10.pointee)
+                    let t12 = FloatColorPixel(s12.pointee)
+                    let t20 = FloatColorPixel(s20.pointee)
+                    let t21 = FloatColorPixel(s21.pointee)
+                    let t22 = FloatColorPixel(s22.pointee)
                     
-                    let v0 = s20.pointee - s00.pointee
-                    let v1 = s21.pointee - s01.pointee
-                    let v2 = s22.pointee - s02.pointee
+                    let h0 = t02 - t00
+                    let h1 = t12 - t10
+                    let h2 = t22 - t20
+                    
+                    let v0 = t20 - t00
+                    let v1 = t21 - t01
+                    let v2 = t22 - t02
                     
                     var c0 = 0.25 * (h0 + h2)
                     c0 += 0.5 * h1

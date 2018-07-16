@@ -25,12 +25,17 @@
 
 @inlinable
 public func Underpainting<Pixel>(_ image: Image<Pixel>, _ expand: Double, _ background_color: Pixel.Model) -> Image<Pixel> {
+    return Image(texture: Underpainting(Texture(image: image), expand, background_color), resolution: image.resolution, colorSpace: image.colorSpace)
+}
+
+@inlinable
+public func Underpainting<Pixel>(_ texture: Texture<Pixel>, _ expand: Double, _ background_color: Pixel.Model) -> Texture<Pixel> {
     
-    let width = image.width
-    let height = image.height
-    let option = image.option
+    let width = texture.width
+    let height = texture.height
+    let option = texture.option
     
-    var result = image
+    var result = texture
     
     guard width > 0 && height > 0 else { return result }
     
@@ -48,7 +53,7 @@ public func Underpainting<Pixel>(_ image: Image<Pixel>, _ expand: Double, _ back
     }
     
     let filter = _filter(Float(expand * 0.5))
-    var stencil = StencilTexture<Float>(image: image).map { $0.almostZero() ? $0 : 1 }._apply(filter).map { $0 < 0.6854015858994297386824412701652185185921339959326058 ? 0 : 1 }
+    var stencil = StencilTexture<Float>(texture: texture).map { $0.almostZero() ? $0 : 1 }._apply(filter).map { $0 < 0.6854015858994297386824412701652185185921339959326058 ? 0 : 1 }
     stencil.resamplingAlgorithm = .none
     
     let half = filter.count >> 1

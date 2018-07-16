@@ -25,8 +25,7 @@
 
 @inlinable
 public func DisplacementMap<S, T>(_ source: Image<S>, _ displacement: Image<T>, _ xChannelSelector: Int, _ yChannelSelector: Int, _ scale: Double) -> Image<S> {
-    let result = DisplacementMap(Texture(image: source), Texture(image: displacement), xChannelSelector, yChannelSelector, scale)
-    return Image(texture: result, resolution: displacement.resolution, colorSpace: source.colorSpace)
+    return Image(texture: DisplacementMap(Texture(image: source), Texture(image: displacement), xChannelSelector, yChannelSelector, scale), resolution: displacement.resolution, colorSpace: source.colorSpace)
 }
 
 @inlinable
