@@ -48,6 +48,7 @@ extension ColorSpace where Model == GrayColorModel {
 @usableFromInline
 struct CalibratedGrayColorSpace : ColorSpaceBaseProtocol {
     
+    @usableFromInline
     typealias Model = GrayColorModel
     
     @usableFromInline

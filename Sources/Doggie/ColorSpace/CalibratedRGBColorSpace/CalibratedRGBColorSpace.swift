@@ -45,6 +45,7 @@ extension ColorSpace where Model == RGBColorModel {
 @usableFromInline
 class CalibratedRGBColorSpace : ColorSpaceBaseProtocol {
     
+    @usableFromInline
     typealias Model = RGBColorModel
     
     @usableFromInline

@@ -40,6 +40,7 @@ extension ColorSpace where Model == LuvColorModel {
 @usableFromInline
 struct CIELuvColorSpace : ColorSpaceBaseProtocol {
     
+    @usableFromInline
     typealias Model = LuvColorModel
     
     @usableFromInline

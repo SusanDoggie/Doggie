@@ -40,6 +40,7 @@ extension ColorSpace where Model == LabColorModel {
 @usableFromInline
 struct CIELabColorSpace : ColorSpaceBaseProtocol {
     
+    @usableFromInline
     typealias Model = LabColorModel
     
     @usableFromInline
