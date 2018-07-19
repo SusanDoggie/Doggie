@@ -195,25 +195,3 @@ extension Gradient : Equatable where Color : Equatable {
 extension Gradient : Hashable where Color : Hashable {
     
 }
-
-extension DrawableContext {
-    
-    public func draw<C>(shape: Shape, winding: Shape.WindingRule, gradient: Gradient<C>) {
-        
-        self.beginTransparencyLayer()
-        
-        self.setClip(shape: shape, winding: winding)
-        
-        let boundary = shape.originalBoundary
-        let transform = gradient.transform * SDTransform.scale(x: boundary.width, y: boundary.height) * SDTransform.translate(x: boundary.x, y: boundary.y) * shape.transform
-        
-        self.concatenate(transform)
-        
-        switch gradient.type {
-        case .linear: self.drawLinearGradient(stops: gradient.stops, start: gradient.start, end: gradient.end, startSpread: .pad, endSpread: .pad)
-        case .radial: self.drawRadialGradient(stops: gradient.stops, start: gradient.start, startRadius: 0, end: gradient.end, endRadius: 0.5, startSpread: .pad, endSpread: .pad)
-        }
-        
-        self.endTransparencyLayer()
-    }
-}

@@ -63,6 +63,10 @@ public protocol DrawableContext : AnyObject {
     
     func stroke<C: ColorProtocol>(shape: Shape, width: Double, cap: Shape.LineCap, join: Shape.LineJoin, color: C)
     
+    func draw<C>(shape: Shape, winding: Shape.WindingRule, gradient: Gradient<C>)
+    
+    func stroke<C>(shape: Shape, width: Double, cap: Shape.LineCap, join: Shape.LineJoin, gradient: Gradient<C>)
+    
     func drawLinearGradient<C>(stops: [GradientStop<C>], start: Point, end: Point, startSpread: GradientSpreadMode, endSpread: GradientSpreadMode)
     
     func drawRadialGradient<C>(stops: [GradientStop<C>], start: Point, startRadius: Double, end: Point, endRadius: Double, startSpread: GradientSpreadMode, endSpread: GradientSpreadMode)
@@ -153,6 +157,14 @@ extension DrawableContext {
     }
 }
 
+extension DrawableContext {
+    
+    @inlinable
+    public func stroke<C: ColorProtocol>(shape: Shape, width: Double, cap: Shape.LineCap, join: Shape.LineJoin, color: C) {
+        self.draw(shape: shape.strokePath(width: width, cap: cap, join: join), winding: .nonZero, color: color)
+    }
+}
+
 extension TypedDrawableContext {
     
     @inlinable
@@ -160,19 +172,10 @@ extension TypedDrawableContext {
         let color = color.convert(to: colorSpace, intent: renderingIntent)
         self.draw(shape: shape, winding: winding, color: color.color, opacity: color.opacity)
     }
-}
-
-extension TypedDrawableContext {
     
     @inlinable
     public func stroke(shape: Shape, width: Double, cap: Shape.LineCap, join: Shape.LineJoin, color: Model, opacity: Double = 1) {
         self.draw(shape: shape.strokePath(width: width, cap: cap, join: join), winding: .nonZero, color: color, opacity: opacity)
-    }
-    
-    @inlinable
-    public func stroke<C: ColorProtocol>(shape: Shape, width: Double, cap: Shape.LineCap, join: Shape.LineJoin, color: C) {
-        let color = color.convert(to: colorSpace, intent: renderingIntent)
-        self.stroke(shape: shape, width: width, cap: cap, join: join, color: color.color, opacity: color.opacity)
     }
 }
 
@@ -245,5 +248,60 @@ extension TypedDrawableContext {
     @inlinable
     public func draw<Image: ImageProtocol>(image: Image, transform: SDTransform) {
         self.draw(texture: Texture<ColorPixel<Model>>(image: image.convert(to: colorSpace, intent: renderingIntent), resamplingAlgorithm: resamplingAlgorithm), transform: transform)
+    }
+}
+
+extension DrawableContext {
+    
+    public func draw<C>(shape: Shape, winding: Shape.WindingRule, gradient: Gradient<C>) {
+        
+        self.beginTransparencyLayer()
+        
+        self.setClip(shape: shape, winding: winding)
+        
+        let boundary = shape.originalBoundary
+        let transform = gradient.transform * SDTransform.scale(x: boundary.width, y: boundary.height) * SDTransform.translate(x: boundary.x, y: boundary.y) * shape.transform
+        
+        self.concatenate(transform)
+        
+        switch gradient.type {
+        case .linear: self.drawLinearGradient(stops: gradient.stops, start: gradient.start, end: gradient.end, startSpread: .pad, endSpread: .pad)
+        case .radial: self.drawRadialGradient(stops: gradient.stops, start: gradient.start, startRadius: 0, end: gradient.end, endRadius: 0.5, startSpread: .pad, endSpread: .pad)
+        }
+        
+        self.endTransparencyLayer()
+    }
+    
+    @inlinable
+    public func stroke<C>(shape: Shape, width: Double, cap: Shape.LineCap, join: Shape.LineJoin, gradient: Gradient<C>) {
+        self.draw(shape: shape.strokePath(width: width, cap: cap, join: join), winding: .nonZero, gradient: gradient)
+    }
+}
+
+extension DrawableContext {
+    
+    @inlinable
+    public func draw<C>(rect: Rect, gradient: Gradient<C>) {
+        self.draw(shape: Shape(rect: rect), winding: .nonZero, gradient: gradient)
+    }
+    @inlinable
+    public func draw<C>(roundedRect rect: Rect, radius: Radius, gradient: Gradient<C>) {
+        self.draw(shape: Shape(roundedRect: rect, radius: radius), winding: .nonZero, gradient: gradient)
+    }
+    @inlinable
+    public func draw<C>(ellipseIn rect: Rect, gradient: Gradient<C>) {
+        self.draw(shape: Shape(ellipseIn: rect), winding: .nonZero, gradient: gradient)
+    }
+    @inlinable
+    public func stroke<C>(rect: Rect, width: Double, cap: Shape.LineCap, join: Shape.LineJoin, gradient: Gradient<C>) {
+        self.stroke(shape: Shape(rect: rect), width: width, cap: cap, join: join, gradient: gradient)
+    }
+    @inlinable
+    public func stroke<C>(roundedRect rect: Rect, radius: Radius, width: Double, cap: Shape.LineCap, join: Shape.LineJoin, gradient: Gradient<C>) {
+        self.stroke(shape: Shape(roundedRect: rect, radius: radius), width: width, cap: cap, join: join, gradient: gradient)
+    }
+    @inlinable
+    public func stroke<C>(ellipseIn rect: Rect, width: Double, cap: Shape.LineCap, join: Shape.LineJoin, gradient: Gradient<C>) {
+        self.stroke(shape: Shape(ellipseIn: rect), width: width, cap: cap, join: join, gradient: gradient)
     }
 }
