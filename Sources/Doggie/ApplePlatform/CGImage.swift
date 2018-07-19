@@ -79,62 +79,6 @@ extension CGImage {
     }
 }
 
-fileprivate final class CGPatternCallbackContainer {
-    
-    static var CGPatternCallbackList = [UInt: CGPatternCallbackContainer]()
-    
-    let callback: (CGContext) -> Void
-    
-    let callbacks_struct: UnsafeMutablePointer<CGPatternCallbacks>
-    
-    init(callback: @escaping (CGContext) -> Void) {
-        
-        self.callback = callback
-        self.callbacks_struct = UnsafeMutablePointer.allocate(capacity: 1)
-        
-        let id = UInt(bitPattern: ObjectIdentifier(self))
-        CGPatternCallbackContainer.CGPatternCallbackList[id] = self
-        
-        self.callbacks_struct.initialize(to: CGPatternCallbacks(version: 0, drawPattern: {
-            let id = unsafeBitCast($0, to: UInt.self)
-            CGPatternCallbackContainer.CGPatternCallbackList[id]?.callback($1)
-        }, releaseInfo: {
-            let id = unsafeBitCast($0, to: UInt.self)
-            CGPatternCallbackContainer.CGPatternCallbackList[id] = nil
-        }))
-    }
-    
-    deinit {
-        self.callbacks_struct.deinitialize(count: 1)
-        self.callbacks_struct.deallocate()
-    }
-}
-
-public func CGPatternCreate(_ bounds: CGRect, _ matrix: CGAffineTransform, _ xStep: CGFloat, _ yStep: CGFloat, _ tiling: CGPatternTiling, _ isColored: Bool, _ callback: @escaping (CGContext) -> Void) -> CGPattern? {
-    let callbackContainer = CGPatternCallbackContainer(callback: callback)
-    let id = UInt(bitPattern: ObjectIdentifier(callbackContainer))
-    return CGPattern(info: UnsafeMutableRawPointer(bitPattern: id), bounds: bounds, matrix: matrix, xStep: xStep, yStep: yStep, tiling: tiling, isColored: isColored, callbacks: callbackContainer.callbacks_struct)
-}
-
-public func CGContextClipToDrawing(_ context : CGContext, fillBackground: CGFloat = 0, command: (CGContext) -> Void) {
-    
-    let width = context.width
-    let height = context.height
-    
-    if let maskContext = CGContext(data: nil, width: width, height: height, bitsPerComponent: 8, bytesPerRow: width, space: CGColorSpaceCreateDeviceGray(), bitmapInfo: 0) {
-        maskContext.setFillColor(gray: fillBackground, alpha: 1)
-        maskContext.fill(CGRect(x: 0, y: 0, width: width, height: height))
-        maskContext.setFillColor(gray: 1, alpha: 1)
-        let transform = context.ctm
-        maskContext.concatenate(transform)
-        command(maskContext)
-        let alphaMask = maskContext.makeImage()
-        context.concatenate(transform.inverted())
-        context.clip(to: CGRect(x: 0, y: 0, width: width, height: height), mask: alphaMask!)
-        context.concatenate(transform)
-    }
-}
-
 fileprivate let ImageCacheCGImageKey = "ImageCacheCGImageKey"
 
 extension Image {
