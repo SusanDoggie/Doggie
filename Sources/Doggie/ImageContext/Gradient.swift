@@ -63,6 +63,11 @@ extension GradientStop : Hashable where Color : Hashable {
 extension GradientStop where Color == AnyColor {
     
     @inlinable
+    public init<M>(_ stop: GradientStop<Doggie.Color<M>>) {
+        self.init(offset: stop.offset, color: AnyColor(stop.color))
+    }
+    
+    @inlinable
     public init<M>(offset: Double, color: Doggie.Color<M>) {
         self.init(offset: offset, color: AnyColor(color))
     }
@@ -112,6 +117,16 @@ public struct Gradient<Color: ColorProtocol> {
         self.start = start
         self.end = end
         self.stops = stops
+    }
+}
+
+extension Gradient where Color == AnyColor {
+    
+    @inlinable
+    public init<M>(_ gradient: Gradient<Doggie.Color<M>>) {
+        self.init(type: gradient.type, start: gradient.start, end: gradient.end, stops: gradient.stops.map(GradientStop<AnyColor>.init))
+        self.transform = gradient.transform
+        self.opacity = gradient.opacity
     }
 }
 
