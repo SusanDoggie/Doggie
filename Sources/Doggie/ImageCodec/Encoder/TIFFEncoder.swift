@@ -69,6 +69,39 @@ extension Image : TIFFRawRepresentable {
 
 struct TIFFEncoder : ImageRepEncoder {
     
+    private static func rawData(_ image: Image<FloatColorPixel<LabColorModel>>, _ isOpaque: Bool) -> MappedBuffer<UInt8> {
+        
+        let samplesPerPixel = isOpaque ? 3 : 4
+        let bytesPerSample = 1
+        
+        var data = MappedBuffer<UInt8>(capacity: image.width * image.height * samplesPerPixel * bytesPerSample, option: .fileBacked)
+        
+        image.withUnsafeBufferPointer {
+            
+            guard var source = $0.baseAddress else { return }
+            
+            if isOpaque {
+                for _ in 0..<image.width * image.height {
+                    let color = source.pointee.color
+                    data.encode(UInt16((color.normalizedComponent(0) * 65535).clamped(to: 0...65535).rounded()).bigEndian)
+                    data.encode(Int16((color.normalizedComponent(1) * 65535 - 32768).clamped(to: -32768...32767).rounded()).bigEndian)
+                    data.encode(Int16((color.normalizedComponent(2) * 65535 - 32768).clamped(to: -32768...32767).rounded()).bigEndian)
+                    source += 1
+                }
+            } else {
+                for _ in 0..<image.width * image.height {
+                    let pixel = source.pointee
+                    data.encode(UInt16((pixel.color.normalizedComponent(0) * 65535).clamped(to: 0...65535).rounded()).bigEndian)
+                    data.encode(Int16((pixel.color.normalizedComponent(1) * 65535 - 32768).clamped(to: -32768...32767).rounded()).bigEndian)
+                    data.encode(Int16((pixel.color.normalizedComponent(2) * 65535 - 32768).clamped(to: -32768...32767).rounded()).bigEndian)
+                    data.encode(UInt16((pixel.opacity * 65535).clamped(to: 0...65535).rounded()).bigEndian)
+                    source += 1
+                }
+            }
+        }
+        
+        return data
+    }
     private static func rawData(_ image: Image<ColorPixel<LabColorModel>>, _ isOpaque: Bool) -> MappedBuffer<UInt8> {
         
         let samplesPerPixel = isOpaque ? 3 : 4
@@ -403,20 +436,21 @@ struct TIFFEncoder : ImageRepEncoder {
             
             bitsPerChannel = 16
             
-            if photometric == 8  {
-                pixelData = rawData(Image<ColorPixel<LabColorModel>>(image: image, colorSpace: ColorSpace.cieLab(white: Point(x: 0.34567, y: 0.35850))), isOpaque)
+            if photometric == 8 {
+                if image.base is Image<FloatColorPixel<LabColorModel>> {
+                    pixelData = rawData(Image<FloatColorPixel<LabColorModel>>(image: image, colorSpace: .cieLab(white: Point(x: 0.34567, y: 0.35850))), isOpaque)
+                } else {
+                    pixelData = rawData(Image<ColorPixel<LabColorModel>>(image: image, colorSpace: .cieLab(white: Point(x: 0.34567, y: 0.35850))), isOpaque)
+                }
             } else {
                 let image = image.base as! TIFFRawRepresentable
                 pixelData = image.rawData(isOpaque)
             }
         }
         
-        var tag_count: UInt16 = 13
+        var tag_count: UInt16 = 14
         
         if !isOpaque {
-            tag_count += 1
-        }
-        if photometric != 8 {
             tag_count += 1
         }
         
@@ -435,11 +469,7 @@ struct TIFFEncoder : ImageRepEncoder {
             encode(tag: .ExtraSamples, type: 3, value: [2], &data)
         }
         
-        var offset = data.count + 52
-        
-        if photometric != 8 {
-            offset += 12
-        }
+        let offset = data.count + 64
         
         var _data = MappedBuffer<UInt8>(option: .fileBacked)
         
@@ -482,9 +512,10 @@ struct TIFFEncoder : ImageRepEncoder {
             encode(tag: .BitsPerSample, type: 3, value: Array(repeating: bitsPerChannel, count: samplesPerPixel), &data)
         }
         
-        if photometric != 8 {
+        do {
             
-            guard let iccData = image.colorSpace.iccData else { return nil }
+            let colorSpace = photometric == 8 ? AnyColorSpace(.cieLab(white: Point(x: 0.34567, y: 0.35850))) : image.colorSpace
+            guard let iccData = colorSpace.iccData else { return nil }
             
             data.encode(TIFFTag.Tag.IccProfile.rawValue.bigEndian)
             data.encode(UInt16(7).bigEndian)
