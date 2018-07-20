@@ -256,158 +256,73 @@ extension Json {
         }
     }
     public var boolValue: Bool? {
-        get {
-            return value as? Bool
-        }
-        set {
-            self = Json(value: newValue)
-        }
+        return value as? Bool
     }
     
     public var int8Value: Int8? {
-        get {
-            return self.numberValue?.int8Value
-        }
-        set {
-            self = Json(value: newValue.map(NSNumber.init))
-        }
+        return self.numberValue?.int8Value
     }
     
     public var uint8Value: UInt8? {
-        get {
-            return self.numberValue?.uint8Value
-        }
-        set {
-            self = Json(value: newValue.map(NSNumber.init))
-        }
+        return self.numberValue?.uint8Value
     }
     
     public var int16Value: Int16? {
-        get {
-            return self.numberValue?.int16Value
-        }
-        set {
-            self = Json(value: newValue.map(NSNumber.init))
-        }
+        return self.numberValue?.int16Value
     }
     
     public var uint16Value: UInt16? {
-        get {
-            return self.numberValue?.uint16Value
-        }
-        set {
-            self = Json(value: newValue.map(NSNumber.init))
-        }
+        return self.numberValue?.uint16Value
     }
     
     public var int32Value: Int32? {
-        get {
-            return self.numberValue?.int32Value
-        }
-        set {
-            self = Json(value: newValue.map(NSNumber.init))
-        }
+        return self.numberValue?.int32Value
     }
     
     public var uint32Value: UInt32? {
-        get {
-            return self.numberValue?.uint32Value
-        }
-        set {
-            self = Json(value: newValue.map(NSNumber.init))
-        }
+        return self.numberValue?.uint32Value
     }
     
     public var int64Value: Int64? {
-        get {
-            return self.numberValue?.int64Value
-        }
-        set {
-            self = Json(value: newValue.map(NSNumber.init))
-        }
+        return self.numberValue?.int64Value
     }
     
     public var uint64Value: UInt64? {
-        get {
-            return self.numberValue?.uint64Value
-        }
-        set {
-            self = Json(value: newValue.map(NSNumber.init))
-        }
+        return self.numberValue?.uint64Value
     }
     
     public var floatValue: Float? {
-        get {
-            return self.numberValue?.floatValue
-        }
-        set {
-            self = Json(value: newValue)
-        }
+        return self.numberValue?.floatValue
     }
     
     public var doubleValue: Double? {
-        get {
-            return self.numberValue?.doubleValue
-        }
-        set {
-            self = Json(value: newValue)
-        }
+        return self.numberValue?.doubleValue
     }
     
     public var intValue: Int? {
-        get {
-            return self.numberValue?.intValue
-        }
-        set {
-            self = Json(value: newValue)
-        }
+        return self.numberValue?.intValue
     }
     
     public var uintValue: UInt? {
-        get {
-            return self.numberValue?.uintValue
-        }
-        set {
-            self = Json(value: newValue)
-        }
+        return self.numberValue?.uintValue
     }
     public var decimalValue: Decimal? {
-        get {
-            return self.numberValue?.decimalValue
-        }
-        set {
-            self = Json(value: newValue)
-        }
+        return self.numberValue?.decimalValue
     }
     public var stringValue: String? {
-        get {
-            return value as? String
-        }
-        set {
-            self = Json(value: newValue)
-        }
+        return value as? String
     }
     public var array: [Json]? {
-        get {
-            if let array = self.value as? [Any] {
-                return array.map { Json(value: $0) }
-            }
-            return nil
+        if let array = self.value as? [Any] {
+            return array.map { Json(value: $0) }
         }
-        set {
-            self = Json(value: newValue?.map { Json.unwrap($0.value) ?? NSNull() })
-        }
+        return nil
     }
     public var dictionary: [String: Json]? {
-        get {
-            if let elements = self.value as? [String: Any] {
-                return elements.mapValues { Json(value: $0) }
-            }
-            return nil
+        if let elements = self.value as? [String: Any] {
+            return elements.mapValues { Json(value: $0) }
         }
-        set {
-            self = Json(value: newValue.map { Json.unwrap($0)! })
-        }
+        return nil
     }
 }
 

@@ -61,6 +61,7 @@
 		0A21119720CA7084003CA6BC /* YCbCrColorModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A21119620CA7083003CA6BC /* YCbCrColorModel.swift */; };
 		0A21F0251F061AE2009C4490 /* PixelBlender.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A21F0231F061AE2009C4490 /* PixelBlender.swift */; };
 		0A2406741F38109900B0EC28 /* iccNamedColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2406731F38109900B0EC28 /* iccNamedColor.swift */; };
+		0A251C632101849A00E31473 /* SDObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A251C622101849A00E31473 /* SDObject.swift */; };
 		0A26A0921FA98A1B008BEADB /* CompressionTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A26A0901FA98994008BEADB /* CompressionTest.swift */; };
 		0A32D9991F28825F0027F384 /* Tensor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A32D9971F28825F0027F384 /* Tensor.swift */; };
 		0A34FBEA20AAE683001CE2F3 /* UnsafeBufferProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A34FBE920AAE683001CE2F3 /* UnsafeBufferProtocol.swift */; };
@@ -313,6 +314,7 @@
 		0A21119620CA7083003CA6BC /* YCbCrColorModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = YCbCrColorModel.swift; sourceTree = "<group>"; };
 		0A21F0231F061AE2009C4490 /* PixelBlender.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = PixelBlender.swift; sourceTree = "<group>"; };
 		0A2406731F38109900B0EC28 /* iccNamedColor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = iccNamedColor.swift; sourceTree = "<group>"; };
+		0A251C622101849A00E31473 /* SDObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SDObject.swift; sourceTree = "<group>"; };
 		0A26A0901FA98994008BEADB /* CompressionTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = CompressionTest.swift; sourceTree = "<group>"; };
 		0A32D9971F28825F0027F384 /* Tensor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Tensor.swift; sourceTree = "<group>"; };
 		0A34FBE920AAE683001CE2F3 /* UnsafeBufferProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnsafeBufferProtocol.swift; sourceTree = "<group>"; };
@@ -609,6 +611,7 @@
 				0ADAA3BB20CB72F4006682EA /* Swift */,
 				08458ABA1E2E627600D01813 /* Foundation */,
 				0A55AE2420BFE5C600FC951F /* Serialization */,
+				0A251C612101848400E31473 /* SDObject */,
 				0A55AE2520BFE5D800FC951F /* Json */,
 				0AFC4E311F7268A200E5FD5A /* XML */,
 				0AD3E6301F53DA03003CC21A /* Font */,
@@ -732,6 +735,14 @@
 				0A21119020CA5911003CA6BC /* JPEGHuffman.swift */,
 			);
 			path = JPEG;
+			sourceTree = "<group>";
+		};
+		0A251C612101848400E31473 /* SDObject */ = {
+			isa = PBXGroup;
+			children = (
+				0A251C622101849A00E31473 /* SDObject.swift */,
+			);
+			path = SDObject;
 			sourceTree = "<group>";
 		};
 		0A39A6B31ED9342C00804004 /* ImageContext */ = {
@@ -1285,6 +1296,7 @@
 				0A39A6B91ED9345100804004 /* DrawImage.swift in Sources */,
 				0ADAA3AE20CB6FAB006682EA /* LazySliceSequence.swift in Sources */,
 				0A8535331F591C57006FB85D /* CFFDICT.swift in Sources */,
+				0A251C632101849A00E31473 /* SDObject.swift in Sources */,
 				08458B411E2E627600D01813 /* SDTransform.swift in Sources */,
 				08458B451E2E627600D01813 /* Actor.swift in Sources */,
 				0A8D863F1F7DF13E00F9530E /* ColorProtocol.swift in Sources */,
