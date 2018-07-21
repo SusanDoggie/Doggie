@@ -756,7 +756,7 @@ struct SDUndecodedObject {
         return data.prefix(table_size).withUnsafeBytes { (offsets: UnsafePointer<UInt64>) in
             let from = Int(UInt64(bigEndian: offsets[index]))
             let to = Int(UInt64(bigEndian: offsets[index + 1]))
-            guard to > from else { return nil }
+            guard to > from && data.count >= table_size + to else { return nil }
             return SDObject(decode: data.dropFirst(table_size).dropFirst(from).prefix(to - from))
         }
     }
@@ -779,7 +779,7 @@ struct SDUndecodedObject {
             let offset_0 = Int(UInt64(bigEndian: offsets[index + 1].0))
             let offset_1 = Int(UInt64(bigEndian: offsets[index + 1].1))
             
-            guard offset_0 > from && offset_1 > offset_0 else { return nil }
+            guard offset_0 > from && offset_1 > offset_0 && data.count >= table_size + offset_1 else { return nil }
             
             let _key = data.dropFirst(table_size).dropFirst(from).prefix(offset_0 - from)
             let _value = data.dropFirst(table_size).dropFirst(offset_0).prefix(offset_1 - offset_0)
