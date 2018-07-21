@@ -193,9 +193,9 @@ extension SDObject {
     
     @inlinable
     public func encode() -> Data {
-        var result = Data()
+        var result = MappedBuffer<UInt8>()
         base.encode(to: &result)
-        return result
+        return result.data
     }
 }
 
@@ -394,7 +394,7 @@ extension SDObject.Base {
     }
     
     @inlinable
-    func encode(to data: inout Data) {
+    func encode(to data: inout MappedBuffer<UInt8>) {
         switch self {
         case .null: data.append(0x3F)
         case let .boolean(value):
@@ -409,7 +409,7 @@ extension SDObject.Base {
             
             data.append(0x73)
             if let utf8 = value.data(using: .utf8) {
-                data.append(utf8)
+                data.append(contentsOf: utf8)
             }
             
         case let .signed(value):
@@ -430,24 +430,24 @@ extension SDObject.Base {
         case let .binary(value):
             
             data.append(0x62)
-            data.append(value)
+            data.append(contentsOf: value)
             
         case let .uuid(value):
             
             data.append(0x67)
-            withUnsafeBytes(of: value.uuid) { data.append($0.baseAddress!.assumingMemoryBound(to: UInt8.self), count: $0.count) }
+            withUnsafeBytes(of: value.uuid) { data.append(contentsOf: $0) }
             
         case let .array(array):
             
             data.append(0x61)
             data.encode(BEUInt64(array.count))
             data.encode(0 as BEUInt64)
-            var body = Data()
+            var body = MappedBuffer<UInt8>()
             for item in array {
                 item.base.encode(to: &body)
                 data.encode(BEUInt64(body.count))
             }
-            data.append(body)
+            data.append(contentsOf: body)
             
         case let .dictionary(dictionary):
             
@@ -455,14 +455,14 @@ extension SDObject.Base {
             data.encode(BEUInt64(dictionary.count))
             data.encode(0 as BEUInt64)
             data.encode(0 as BEUInt64)
-            var body = Data()
+            var body = MappedBuffer<UInt8>()
             for (key, value) in dictionary {
-                body.append(key.data(using: .utf8)!)
+                body.append(contentsOf: key.data(using: .utf8)!)
                 data.encode(BEUInt64(body.count))
                 value.base.encode(to: &body)
                 data.encode(BEUInt64(body.count))
             }
-            data.append(body)
+            data.append(contentsOf: body)
             
         case let .undecoded(value): value.encode(to: &data)
         }
@@ -791,7 +791,7 @@ struct SDUndecodedObject {
     }
     
     @inlinable
-    func encode(to data: inout Data) {
+    func encode(to data: inout MappedBuffer<UInt8>) {
         switch type {
         case .null: data.append(0x3F)
         case .boolean: break
@@ -804,7 +804,7 @@ struct SDUndecodedObject {
         case .array: data.append(0x61)
         default: return
         }
-        data.append(self.data)
+        data.append(contentsOf: self.data)
     }
 }
 
