@@ -46,7 +46,7 @@ public struct SDObject {
     
     @inlinable
     init(_ base: Base) {
-        self.base = base
+        self.base = base.dictionary.map { .dictionary($0) } ?? base
     }
     
     @inlinable
@@ -95,8 +95,8 @@ public struct SDObject {
     }
     
     @inlinable
-    public init(_ dict: [String: SDObject]) {
-        self.base = .dictionary(dict)
+    public init(_ elements: [String: SDObject]) {
+        self.base = .dictionary(elements)
     }
 }
 
@@ -176,7 +176,7 @@ extension SDObject: CustomStringConvertible {
         switch type {
         case .null: return "nil"
         case .boolean: return "\(boolValue!)"
-        case .string: return "\"\(stringValue!)\""
+        case .string: return "\"\(string!)\""
         case .signed: return "\(int64Value!)"
         case .unsigned: return "\(uint64Value!)"
         case .number: return "\(doubleValue!)"
@@ -349,46 +349,46 @@ extension SDObject.Base {
     }
     
     @inlinable
-    var stringValue: String? {
+    var string: String? {
         switch self {
         case let .string(value): return value
-        case let .undecoded(value): return value.stringValue
+        case let .undecoded(value): return value.string
         default: return nil
         }
     }
     
     @inlinable
-    var binaryValue: Data? {
+    var binary: Data? {
         switch self {
         case let .binary(value): return value
-        case let .undecoded(value): return value.binaryValue
+        case let .undecoded(value): return value.binary
         default: return nil
         }
     }
     
     @inlinable
-    var uuidValue: UUID? {
+    var uuid: UUID? {
         switch self {
         case let .uuid(value): return value
-        case let .undecoded(value): return value.uuidValue
+        case let .undecoded(value): return value.uuid
         default: return nil
         }
     }
     
     @inlinable
-    var arrayValue: [SDObject]? {
+    var array: [SDObject]? {
         switch self {
         case let .array(value): return value
-        case let .undecoded(value): return value.arrayValue
+        case let .undecoded(value): return value.array
         default: return nil
         }
     }
     
     @inlinable
-    var dictionaryValue: [String: SDObject]? {
+    var dictionary: [String: SDObject]? {
         switch self {
         case let .dictionary(value): return value
-        case let .undecoded(value): return value.dictionaryValue
+        case let .undecoded(value): return value.dictionary
         default: return nil
         }
     }
@@ -606,28 +606,28 @@ extension SDObject {
     }
     
     @inlinable
-    public var stringValue: String? {
-        return base.stringValue
+    public var string: String? {
+        return base.string
     }
     
     @inlinable
     public var binary: Data? {
-        return base.binaryValue
+        return base.binary
     }
     
     @inlinable
     public var uuid: UUID? {
-        return base.uuidValue
+        return base.uuid
     }
     
     @inlinable
     public var array: [SDObject]? {
-        return base.arrayValue
+        return base.array
     }
     
     @inlinable
     public var dictionary: [String: SDObject]? {
-        return base.dictionaryValue
+        return base.dictionary
     }
 }
 
@@ -704,13 +704,13 @@ struct SDUndecodedObject {
     }
     
     @inlinable
-    var stringValue: String? {
+    var string: String? {
         guard type == .string else { return nil }
         return String(bytes: data, encoding: .utf8)
     }
     
     @inlinable
-    var binaryValue: Data? {
+    var binary: Data? {
         switch type {
         case .binary: return data
         case .unknown(_): return data
@@ -719,19 +719,19 @@ struct SDUndecodedObject {
     }
     
     @inlinable
-    var uuidValue: UUID? {
+    var uuid: UUID? {
         guard data.count == 16 && type == .uuid else { return nil }
         return UUID(uuid: data.withUnsafeBytes { $0.pointee as uuid_t })
     }
     
     @inlinable
-    var arrayValue: [SDObject]? {
+    var array: [SDObject]? {
         guard type == .array else { return nil }
         return (0..<count).map { self[$0] }
     }
     
     @inlinable
-    var dictionaryValue: [String: SDObject]? {
+    var dictionary: [String: SDObject]? {
         guard type == .dictionary else { return nil }
         return Dictionary((0..<count).lazy.compactMap { self[keyValuePairs: $0] }) { lhs, _ in lhs }
     }
@@ -759,11 +759,6 @@ struct SDUndecodedObject {
             guard to > from else { return nil }
             return SDObject(decode: data.dropFirst(table_size).dropFirst(from).prefix(to - from))
         }
-    }
-    
-    @inlinable
-    var keys: AnyCollection<String> {
-        return AnyCollection((0..<count).lazy.compactMap { self[keyValuePairs: $0]?.0 })
     }
     
     @inlinable
@@ -796,17 +791,6 @@ struct SDUndecodedObject {
     }
     
     @inlinable
-    subscript(key: String) -> SDObject {
-        guard type == .dictionary else { return nil }
-        for i in 0..<count {
-            if let (_key, value) = self[keyValuePairs: i], key == _key {
-                return value
-            }
-        }
-        return nil
-    }
-    
-    @inlinable
     func encode(to data: inout Data) {
         switch type {
         case .null: data.append(0x3F)
@@ -818,8 +802,7 @@ struct SDUndecodedObject {
         case .binary: data.append(0x62)
         case .uuid: data.append(0x67)
         case .array: data.append(0x61)
-        case .dictionary: data.append(0x64)
-        case let .unknown(type): data.append(type)
+        default: return
         }
         data.append(self.data)
     }
@@ -851,7 +834,7 @@ extension SDObject {
             switch base {
             case let .undecoded(value):
                 
-                guard var array = value.arrayValue else { fatalError("Not an array.") }
+                guard var array = value.array else { fatalError("Not an array.") }
                 if index >= array.count {
                     array.append(contentsOf: repeatElement(nil, count: index - array.count + 1))
                 }
@@ -872,38 +855,21 @@ extension SDObject {
     }
     
     @inlinable
-    public var keys: AnyCollection<String> {
-        switch base {
-        case let .undecoded(value): return value.keys
-        case let .dictionary(value): return AnyCollection(value.keys)
-        default: return AnyCollection(EmptyCollection())
-        }
+    public var keys: Dictionary<String, SDObject>.Keys {
+        guard case let .dictionary(value) = base else { return [:].keys }
+        return value.keys
     }
     
     @inlinable
     public subscript(key: String) -> SDObject {
         get {
-            switch base {
-            case let .undecoded(value): return value[key]
-            case let .dictionary(value): return value[key] ?? nil
-            default: return nil
-            }
+            guard case let .dictionary(value) = base else { return nil }
+            return value[key] ?? nil
         }
         set {
-            switch base {
-            case let .undecoded(value):
-                
-                guard var dictionary = value.dictionaryValue else { fatalError("Not an array.") }
-                dictionary[key] = newValue.isNil ? nil : newValue
-                self = SDObject(dictionary)
-                
-            case var .dictionary(value):
-                
-                value[key] = newValue.isNil ? nil : newValue
-                self = SDObject(value)
-                
-            default: fatalError("Not an array.")
-            }
+            guard case var .dictionary(value) = base else { fatalError("Not an object.") }
+            value[key] = newValue.isNil ? nil : newValue
+            self = SDObject(value)
         }
     }
 }
