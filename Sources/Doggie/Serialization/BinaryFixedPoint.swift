@@ -170,8 +170,8 @@ extension BinaryFixedPoint {
     }
     
     @_transparent
-    public var magnitude: RepresentingValue.Magnitude {
-        return representingValue.magnitude
+    public var magnitude: Self {
+        return Self(bitPattern: BitPattern(exactly: bitPattern.magnitude) ?? .max)
     }
     
     @_transparent
@@ -293,7 +293,7 @@ extension BinaryFixedPoint {
     @_transparent
     public static func +(lhs: Self, rhs: Self) -> Self {
         let (value, overflow) = lhs.bitPattern.addingReportingOverflow(rhs.bitPattern)
-        return overflow ? .max : Self(bitPattern: value)
+        return overflow ? (rhs < 0 ? .min : .max) : Self(bitPattern: value)
     }
     
     @_transparent
@@ -304,7 +304,7 @@ extension BinaryFixedPoint {
     @_transparent
     public static func -(lhs: Self, rhs: Self) -> Self {
         let (value, overflow) = lhs.bitPattern.subtractingReportingOverflow(rhs.bitPattern)
-        return overflow ? .min : Self(bitPattern: value)
+        return overflow ? (rhs < 0 ? .max : .min) : Self(bitPattern: value)
     }
     
     @_transparent
