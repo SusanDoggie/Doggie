@@ -356,3 +356,20 @@ extension BinaryFixedPoint {
         return lhs.bitPattern >= rhs.bitPattern
     }
 }
+
+extension BinaryFixedPoint where Self : SignedNumeric, BitPattern : SignedNumeric {
+    
+    @_transparent
+    public static prefix func -(x: Self) -> Self {
+        if x < 0 {
+            return x.magnitude
+        } else {
+            return Self(bitPattern: -x.bitPattern)
+        }
+    }
+    
+    @_transparent
+    public mutating func negate() {
+        self = -self
+    }
+}
