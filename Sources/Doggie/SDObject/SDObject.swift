@@ -189,6 +189,43 @@ extension SDObject: CustomStringConvertible {
     }
 }
 
+extension SDObject : Hashable {
+    
+    @inlinable
+    public static func == (lhs: SDObject, rhs: SDObject) -> Bool {
+        switch (lhs.type, rhs.type) {
+        case (.null, .null): return true
+        case (.boolean, .boolean): return lhs.boolValue == rhs.boolValue
+        case (.string, .string): return lhs.string == rhs.string
+        case (.signed, .signed): return lhs.int64Value == rhs.int64Value
+        case (.unsigned, .unsigned): return lhs.uint64Value == rhs.uint64Value
+        case (.number, .number): return lhs.doubleValue == rhs.doubleValue
+        case (.binary, .binary): return lhs.binary == rhs.binary
+        case (.uuid, .uuid): return lhs.uuid == rhs.uuid
+        case (.array, .array): return lhs.array == rhs.array
+        case (.dictionary, .dictionary): return lhs.dictionary == rhs.dictionary
+        default: return false
+        }
+    }
+    
+    @inlinable
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(type)
+        switch type {
+        case .boolean: hasher.combine(boolValue!)
+        case .string: hasher.combine(string!)
+        case .signed: hasher.combine(int64Value!)
+        case .unsigned: hasher.combine(uint64Value!)
+        case .number: hasher.combine(doubleValue!)
+        case .binary: hasher.combine(binary!)
+        case .uuid: hasher.combine(uuid!)
+        case .array: hasher.combine(array!)
+        case .dictionary: hasher.combine(dictionary!)
+        default: break
+        }
+    }
+}
+
 extension SDObject {
     
     @inlinable
@@ -415,17 +452,44 @@ extension SDObject.Base {
         case let .signed(value):
             
             data.append(0x69)
-            data.encode(BEInt64(value))
+            if let value = Int8(exactly: value) {
+                data.encode(value)
+            } else if let value = Int16(exactly: value) {
+                data.encode(BEInt16(value))
+            } else if let value = Int32(exactly: value) {
+                data.encode(BEInt32(value))
+            } else {
+                data.encode(BEInt64(value))
+            }
             
         case let .unsigned(value):
             
             data.append(0x75)
-            data.encode(BEUInt64(value))
+            if let value = UInt8(exactly: value) {
+                data.encode(value)
+            } else if let value = UInt16(exactly: value) {
+                data.encode(BEUInt16(value))
+            } else if let value = UInt32(exactly: value) {
+                data.encode(BEUInt32(value))
+            } else {
+                data.encode(BEUInt64(value))
+            }
             
         case let .number(value):
             
-            data.append(0x6E)
-            data.encode(BEUInt64(value.bitPattern))
+            if let value = Int8(exactly: value) {
+                data.append(0x69)
+                data.encode(value)
+            } else if let value = Int16(exactly: value) {
+                data.append(0x69)
+                data.encode(BEInt16(value))
+            } else if let value = Int32(exactly: value) {
+                data.append(0x69)
+                data.encode(BEInt32(value))
+            } else {
+                data.append(0x6E)
+                data.encode(BEUInt64(value.bitPattern))
+            }
             
         case let .binary(value):
             
@@ -601,6 +665,7 @@ extension SDObject {
         switch type {
         case .signed: return base.int64Value.map { Decimal($0) }
         case .unsigned: return base.uint64Value.map { Decimal($0) }
+        case .number: return base.doubleValue.flatMap { Int64(exactly: $0) }.map { Decimal($0) }
         default: return nil
         }
     }
@@ -733,7 +798,7 @@ struct SDUndecodedObject {
     @inlinable
     var dictionary: [String: SDObject]? {
         guard type == .dictionary else { return nil }
-        return Dictionary((0..<count).lazy.compactMap { self[keyValuePairs: $0] }) { lhs, _ in lhs }
+        return Dictionary((0..<count).lazy.compactMap { self[keyValuePairs: $0] }.filter { !$0.1.isNil }) { lhs, _ in lhs }
     }
     
     @inlinable

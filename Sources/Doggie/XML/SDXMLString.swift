@@ -61,7 +61,7 @@ extension SDXMLElement : CustomStringConvertible {
 
 extension SDXMLElement {
     
-    fileprivate func _xml(_ terminator: String, prefixMap: [String: Substring], _ output: inout String) {
+    fileprivate func _xml(_ indent: String, prefixMap: [String: Substring], _ output: inout String) {
         
         switch kind {
         case .node:
@@ -79,24 +79,24 @@ extension SDXMLElement {
             let attributes = self._attributes.map { attribute, value in " \(prefixMap[attribute.namespace].map { "\($0):\(attribute.attribute)" } ?? attribute.attribute)=\"\(value)\"" }.joined()
             
             if self.count == 0 {
-                "\(terminator)<\(name)\(attributes) />".write(to: &output)
+                "\(indent)<\(name)\(attributes) />".write(to: &output)
             } else {
-                "\(terminator)<\(name)\(attributes)>".write(to: &output)
+                "\(indent)<\(name)\(attributes)>".write(to: &output)
                 var flag = false
                 for element in self._elements {
                     flag = element.isNode || flag
-                    element._xml(terminator == "" ? terminator : "\(terminator)  ", prefixMap: prefixMap, &output)
+                    element._xml(indent == "" ? indent : "\(indent)  ", prefixMap: prefixMap, &output)
                 }
                 if flag {
-                    "\(terminator)</\(name)>".write(to: &output)
+                    "\(indent)</\(name)>".write(to: &output)
                 } else {
                     "</\(name)>".write(to: &output)
                 }
             }
             
         case .characters: _string.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).write(to: &output)
-        case .comment: "\(terminator)<!--\(_string)-->".write(to: &output)
-        case .CDATA: "\(terminator)<![CDATA[\(_string)]]>".write(to: &output)
+        case .comment: "\(indent)<!--\(_string)-->".write(to: &output)
+        case .CDATA: "\(indent)<![CDATA[\(_string)]]>".write(to: &output)
         }
     }
 }
