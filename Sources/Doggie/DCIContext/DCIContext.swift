@@ -261,6 +261,14 @@ extension DCIContext {
     }
     
     private func _blend(_ source: CIImage) {
+        
+        var source = source
+        
+        let opacity = self.opacity
+        if opacity < 1 {
+            source = source.applyingFilter("CIBlendWithMask", parameters: ["inputBackgroundImage": CIImage.empty(), "inputMaskImage": CIImage(color: CIColor(cgColor: AnyColor(white: opacity).cgColor!))])
+        }
+        
         switch blendMode {
         case .normal: self.image = CIBlendKernel.sourceOver.apply(foreground: source, background: image)!.cropped(to: bound)
         case .multiply: self.image = CIBlendKernel.multiply.apply(foreground: source, background: image)!.cropped(to: bound)
