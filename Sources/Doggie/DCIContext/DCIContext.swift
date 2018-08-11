@@ -45,9 +45,6 @@ private struct DCIContextStyles {
     var opacity: Double = 1
     var transform: SDTransform = SDTransform.identity
     
-    var shouldAntialias: Bool = true
-    var antialias: Int = 5
-    
     var shadowColor: AnyColor = DCIContextStyles.defaultShadowColor
     var shadowOffset: Size = Size()
     var shadowBlur: Double = 0
@@ -170,23 +167,6 @@ extension DCIContext {
         }
         set {
             current.styles.transform = newValue
-        }
-    }
-    
-    public var shouldAntialias: Bool {
-        get {
-            return current.styles.shouldAntialias
-        }
-        set {
-            current.styles.shouldAntialias = newValue
-        }
-    }
-    public var antialias: Int {
-        get {
-            return current.styles.antialias
-        }
-        set {
-            current.styles.antialias = max(1, newValue)
         }
     }
     
