@@ -124,7 +124,7 @@ extension DCIContext {
 extension DCIContext {
     
     public func clearClipBuffer(with value: Double = 1) {
-        current.clip = value == 1 ? nil : CIImage(color: CIColor(cgColor: CGColor(gray: CGFloat(value), alpha: 1))).cropped(to: bound)
+        current.clip = value == 1 ? nil : CIImage(color: CIColor(cgColor: AnyColor(white: value).cgColor!)).cropped(to: bound)
     }
     
     public func resetClip() {
