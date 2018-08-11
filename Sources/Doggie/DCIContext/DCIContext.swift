@@ -237,7 +237,7 @@ extension DCIContext {
     private func create_shadow(_ image: CIImage) -> CIImage? {
         guard isShadow, let color = shadowColor.cgColor else { return nil }
         var shadow = CIImage(color: CIColor(cgColor: color))
-        shadow = shadow.applyingFilter("CIBlendWithMask", parameters: ["inputBackgroundImage": CIImage.empty(), "inputMaskImage": image])
+        shadow = shadow.applyingFilter("CIBlendWithAlphaMask", parameters: ["inputBackgroundImage": CIImage.empty(), "inputMaskImage": image])
         shadow = shadow.cropped(to: bound)
         shadow = shadow.applyingGaussianBlur(sigma: shadowBlur)
         shadow = shadow.transformed(by: CGAffineTransform(translationX: CGFloat(shadowOffset.width), y: CGFloat(shadowOffset.height)))
