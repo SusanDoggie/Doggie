@@ -241,8 +241,13 @@ extension DCIContext {
 extension DCIContext {
     
     @available(OSX 10.14, iOS 12.0, tvOS 12.0, *)
+    public func insertingIntermediate() {
+        current.image = current.image.insertingIntermediate()
+    }
+    
+    @available(OSX 10.14, iOS 12.0, tvOS 12.0, *)
     public func insertingIntermediate(cache: Bool) {
-        self.image = self.image.insertingIntermediate(cache: cache)
+        current.image = current.image.insertingIntermediate(cache: cache)
     }
     
     private var isShadow: Bool {
@@ -263,16 +268,16 @@ extension DCIContext {
         
         var source = source.cropped(to: bound)
         
-        if let clip = self.clip {
+        if let clip = current.clip {
             source = source.applyingFilter("CIBlendWithMask", parameters: ["inputBackgroundImage": CIImage.empty(), "inputMaskImage": clip])
             source = source.cropped(to: bound)
         }
         
         if let shadow = create_shadow(source) {
-            self._blend(shadow)
+            current._blend(shadow)
         }
         
-        self._blend(source)
+        current._blend(source)
     }
     
     private func _blend(_ source: CIImage) {
@@ -371,7 +376,7 @@ extension DCIContext {
     }
     
     public func setClip(image: CIImage, transform: SDTransform) {
-        self.clip = image.transformed(by: CGAffineTransform(transform * self.transform)).composited(over: CIImage(color: .black)).cropped(to: bound)
+        current.clip = image.transformed(by: CGAffineTransform(transform * self.transform)).composited(over: CIImage(color: .black)).cropped(to: bound)
     }
 }
 
