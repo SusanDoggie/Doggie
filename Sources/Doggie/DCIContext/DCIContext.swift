@@ -217,18 +217,20 @@ extension DCIContext {
     }
 }
 
-@available(OSX 10.13, iOS 11.0, tvOS 11.0, *)
+@available(OSX 10.14, iOS 12.0, tvOS 12.0, *)
 extension DCIContext {
     
-    @available(OSX 10.14, iOS 12.0, tvOS 12.0, *)
     public func insertingIntermediate() {
         current.image = current.image.insertingIntermediate()
     }
     
-    @available(OSX 10.14, iOS 12.0, tvOS 12.0, *)
     public func insertingIntermediate(cache: Bool) {
         current.image = current.image.insertingIntermediate(cache: cache)
     }
+}
+
+@available(OSX 10.13, iOS 11.0, tvOS 11.0, *)
+extension DCIContext {
     
     private var isShadow: Bool {
         return shadowColor.opacity > 0 && shadowBlur > 0
