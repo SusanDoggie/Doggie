@@ -370,4 +370,42 @@ extension DCIContext {
     }
 }
 
+@available(OSX 10.13, iOS 11.0, tvOS 11.0, *)
+extension DCIContext {
+    
+    public func setClip(shape: Shape, winding: Shape.WindingRule) {
+        
+        guard let image = CGImage.create(width: width, height: height, command: { context in
+            context.concatenate(self.transform)
+            context.setFillColor(AnyColor.white)
+            context.addPath(shape)
+            switch winding {
+            case .nonZero: context.fillPath(using: .winding)
+            case .evenOdd: context.fillPath(using: .evenOdd)
+            }
+        }) else { return }
+        
+        current.clip = CIImage(cgImage: image).composited(over: CIImage(color: .black)).cropped(to: bound)
+    }
+}
+
+@available(OSX 10.13, iOS 11.0, tvOS 11.0, *)
+extension DCIContext {
+    
+    public func draw(shape: Shape, winding: Shape.WindingRule, color: AnyColor) {
+        
+        guard let image = CGImage.create(width: width, height: height, command: { context in
+            context.concatenate(self.transform)
+            context.setFillColor(color)
+            context.addPath(shape)
+            switch winding {
+            case .nonZero: context.fillPath(using: .winding)
+            case .evenOdd: context.fillPath(using: .evenOdd)
+            }
+        }) else { return }
+        
+        self.blend(CIImage(cgImage: image))
+    }
+}
+
 #endif

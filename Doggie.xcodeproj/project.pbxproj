@@ -62,6 +62,7 @@
 		0A21F0251F061AE2009C4490 /* PixelBlender.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A21F0231F061AE2009C4490 /* PixelBlender.swift */; };
 		0A2406741F38109900B0EC28 /* iccNamedColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2406731F38109900B0EC28 /* iccNamedColor.swift */; };
 		0A251C632101849A00E31473 /* SDObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A251C622101849A00E31473 /* SDObject.swift */; };
+		0A260FE32121688400745E3E /* DCIContextExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A260FE22121688400745E3E /* DCIContextExtension.swift */; };
 		0A26A0921FA98A1B008BEADB /* CompressionTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A26A0901FA98994008BEADB /* CompressionTest.swift */; };
 		0A32D9991F28825F0027F384 /* Tensor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A32D9971F28825F0027F384 /* Tensor.swift */; };
 		0A34FBEA20AAE683001CE2F3 /* UnsafeBufferProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A34FBE920AAE683001CE2F3 /* UnsafeBufferProtocol.swift */; };
@@ -316,6 +317,7 @@
 		0A21F0231F061AE2009C4490 /* PixelBlender.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = PixelBlender.swift; sourceTree = "<group>"; };
 		0A2406731F38109900B0EC28 /* iccNamedColor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = iccNamedColor.swift; sourceTree = "<group>"; };
 		0A251C622101849A00E31473 /* SDObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SDObject.swift; sourceTree = "<group>"; };
+		0A260FE22121688400745E3E /* DCIContextExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DCIContextExtension.swift; sourceTree = "<group>"; };
 		0A26A0901FA98994008BEADB /* CompressionTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = CompressionTest.swift; sourceTree = "<group>"; };
 		0A32D9971F28825F0027F384 /* Tensor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Tensor.swift; sourceTree = "<group>"; };
 		0A34FBE920AAE683001CE2F3 /* UnsafeBufferProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnsafeBufferProtocol.swift; sourceTree = "<group>"; };
@@ -996,6 +998,7 @@
 			isa = PBXGroup;
 			children = (
 				0A9EB254211E996C00DD591D /* DCIContext.swift */,
+				0A260FE22121688400745E3E /* DCIContextExtension.swift */,
 			);
 			path = DCIContext;
 			sourceTree = "<group>";
@@ -1397,6 +1400,7 @@
 				0AC588A920CF69AD00C326FF /* OverlapAddConvolve.swift in Sources */,
 				0AFC4E331F7268AE00E5FD5A /* SDXMLParser.swift in Sources */,
 				0ADAA3B620CB6FFF006682EA /* ConcatCollection.swift in Sources */,
+				0A260FE32121688400745E3E /* DCIContextExtension.swift in Sources */,
 				0A2107161E5BEEBB00F1E00E /* Shape.swift in Sources */,
 				08458AF71E2E627600D01813 /* ComplexConversion.swift in Sources */,
 				0AB380F320A5374A00A8CBD7 /* Texture.swift in Sources */,
