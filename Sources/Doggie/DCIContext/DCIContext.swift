@@ -241,7 +241,7 @@ extension DCIContext {
         var shadow = CIImage(color: CIColor(cgColor: color))
         shadow = shadow.applyingFilter("CIBlendWithAlphaMask", parameters: ["inputBackgroundImage": CIImage.empty(), "inputMaskImage": image])
         shadow = shadow.cropped(to: bound)
-        shadow = shadow.applyingGaussianBlur(sigma: shadowBlur)
+        shadow = shadow.applyingGaussianBlur(sigma: 0.5 * shadowBlur)
         shadow = shadow.transformed(by: CGAffineTransform(translationX: CGFloat(shadowOffset.width), y: CGFloat(shadowOffset.height)))
         return shadow
     }
