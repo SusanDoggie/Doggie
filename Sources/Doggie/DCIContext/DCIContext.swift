@@ -367,6 +367,9 @@ extension DCIContext {
     
     public func setClip(image: CIImage, transform: SDTransform) {
         current.clip = image.transformed(by: CGAffineTransform(transform * self.transform)).composited(over: CIImage(color: .black)).cropped(to: bound)
+        if #available(OSX 10.14, iOS 12.0, tvOS 12.0, *) {
+            current.clip = current.clip?.insertingIntermediate()
+        }
     }
 }
 
@@ -386,6 +389,9 @@ extension DCIContext {
         }) else { return }
         
         current.clip = CIImage(cgImage: image).composited(over: CIImage(color: .black)).cropped(to: bound)
+        if #available(OSX 10.14, iOS 12.0, tvOS 12.0, *) {
+            current.clip = current.clip?.insertingIntermediate()
+        }
     }
 }
 
