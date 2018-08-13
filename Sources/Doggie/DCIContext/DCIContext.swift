@@ -296,7 +296,7 @@ extension DCIContext {
         case .destinationIn: self.image = CIBlendKernel.destinationIn.apply(foreground: source, background: image)!.cropped(to: bound)
         case .destinationOut: self.image = CIBlendKernel.destinationOut.apply(foreground: source, background: image)!.cropped(to: bound)
         case .destinationAtop: self.image = CIBlendKernel.destinationAtop.apply(foreground: source, background: image)!.cropped(to: bound)
-        default: break
+        default: self.image = CIBlendKernel.sourceOver.apply(foreground: source, background: image)!.cropped(to: bound)
         }
     }
 }
