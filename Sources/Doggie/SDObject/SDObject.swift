@@ -477,18 +477,34 @@ extension SDObject.Base {
             
         case let .number(value):
             
-            if let value = Int8(exactly: value) {
-                data.append(0x69)
-                data.encode(value)
-            } else if let value = Int16(exactly: value) {
-                data.append(0x69)
-                data.encode(BEInt16(value))
-            } else if let value = Int32(exactly: value) {
-                data.append(0x69)
-                data.encode(BEInt32(value))
+            if value < 0 {
+                if let value = Int8(exactly: value) {
+                    data.append(0x69)
+                    data.encode(value)
+                } else if let value = Int16(exactly: value) {
+                    data.append(0x69)
+                    data.encode(BEInt16(value))
+                } else if let value = Int32(exactly: value) {
+                    data.append(0x69)
+                    data.encode(BEInt32(value))
+                } else {
+                    data.append(0x6E)
+                    data.encode(BEUInt64(value.bitPattern))
+                }
             } else {
-                data.append(0x6E)
-                data.encode(BEUInt64(value.bitPattern))
+                if let value = UInt8(exactly: value) {
+                    data.append(0x75)
+                    data.encode(value)
+                } else if let value = UInt16(exactly: value) {
+                    data.append(0x75)
+                    data.encode(BEUInt16(value))
+                } else if let value = UInt32(exactly: value) {
+                    data.append(0x75)
+                    data.encode(BEUInt32(value))
+                } else {
+                    data.append(0x6E)
+                    data.encode(BEUInt64(value.bitPattern))
+                }
             }
             
         case let .binary(value):
@@ -743,9 +759,9 @@ struct SDUndecodedObject {
         guard type == .signed else { return nil }
         switch data.count {
         case 1: return data.withUnsafeBytes { Int64($0.pointee as Int8) }
-        case 2: return data.withUnsafeBytes { Int64(Int16(bigEndian: $0.pointee as Int16)) }
-        case 4: return data.withUnsafeBytes { Int64(Int32(bigEndian: $0.pointee as Int32)) }
-        case 8: return data.withUnsafeBytes { Int64(bigEndian: $0.pointee as Int64) }
+        case 2: return data.withUnsafeBytes { Int64(Int16(bigEndian: $0.pointee)) }
+        case 4: return data.withUnsafeBytes { Int64(Int32(bigEndian: $0.pointee)) }
+        case 8: return data.withUnsafeBytes { Int64(bigEndian: $0.pointee) }
         default: return nil
         }
     }
@@ -755,9 +771,9 @@ struct SDUndecodedObject {
         guard type == .unsigned else { return nil }
         switch data.count {
         case 1: return data.withUnsafeBytes { UInt64($0.pointee as UInt8) }
-        case 2: return data.withUnsafeBytes { UInt64(UInt16(bigEndian: $0.pointee as UInt16)) }
-        case 4: return data.withUnsafeBytes { UInt64(UInt32(bigEndian: $0.pointee as UInt32)) }
-        case 8: return data.withUnsafeBytes { UInt64(bigEndian: $0.pointee as UInt64) }
+        case 2: return data.withUnsafeBytes { UInt64(UInt16(bigEndian: $0.pointee)) }
+        case 4: return data.withUnsafeBytes { UInt64(UInt32(bigEndian: $0.pointee)) }
+        case 8: return data.withUnsafeBytes { UInt64(bigEndian: $0.pointee) }
         default: return nil
         }
     }
@@ -765,7 +781,7 @@ struct SDUndecodedObject {
     @inlinable
     var doubleValue: Double? {
         guard data.count == 8 && type == .number else { return nil }
-        return data.withUnsafeBytes { Double(bitPattern: UInt64(bigEndian: $0.pointee as UInt64)) }
+        return data.withUnsafeBytes { Double(bitPattern: UInt64(bigEndian: $0.pointee)) }
     }
     
     @inlinable
@@ -804,7 +820,7 @@ struct SDUndecodedObject {
     @inlinable
     var count: Int {
         guard data.count >= 8 && (type == .array || type == .dictionary) else { return 0 }
-        return data.prefix(8).withUnsafeBytes { Int(UInt64(bigEndian: $0.pointee as UInt64)) }
+        return data.prefix(8).withUnsafeBytes { Int(UInt64(bigEndian: $0.pointee)) }
     }
     
     @inlinable
