@@ -19,3 +19,20 @@ public func sampleImage(width: Int, height: Int) -> Image<ARGB32ColorPixel> {
     return context.image
 }
 
+public func sampleImage2(width: Int, height: Int) -> CGImage? {
+    
+    let context = DCIContext(width: width, height: height)
+    
+    context.transform = SDTransform.scale(5)
+    
+    context.draw(shape: Shape(ellipseIn: Rect(x: 10, y: 35, width: 55, height: 55)), winding: .nonZero, color: AnyColor(red: 247/255, green: 217/255, blue: 12/255))
+    
+    context.stroke(shape: Shape(ellipseIn: Rect(x: 10, y: 35, width: 55, height: 55)), width: 1, cap: .round, join: .round, color: .black)
+    
+    context.draw(shape: Shape(ellipseIn: Rect(x: 35, y: 10, width: 55, height: 55)), winding: .nonZero, color: AnyColor(red: 234/255, green: 24/255, blue: 71/255))
+    
+    context.stroke(shape: Shape(ellipseIn: Rect(x: 35, y: 10, width: 55, height: 55)), width: 1, cap: .round, join: .round, color: .black)
+    
+    return context.cgImage
+}
+

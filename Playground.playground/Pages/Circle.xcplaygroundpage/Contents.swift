@@ -3,8 +3,6 @@
 import Cocoa
 import Doggie
 
-let t = Date()
-
 sampleImage(width: 500, height: 500)
 
-t.timeIntervalSinceNow
+sampleImage2(width: 500, height: 500)
