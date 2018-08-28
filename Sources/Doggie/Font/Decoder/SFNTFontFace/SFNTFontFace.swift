@@ -227,10 +227,10 @@ extension SFNTFontFace {
         return (os2?.usWidthClass).map(Int.init)
     }
     var xHeight: Double? {
-        return (os2?.sxHeight).flatMap(Double.init)
+        return (os2?.sxHeight).map(Double.init)
     }
     var capHeight: Double? {
-        return (os2?.sCapHeight).flatMap(Double.init)
+        return (os2?.sCapHeight).map(Double.init)
     }
     
     var familyClass: Font.FamilyClass? {
