@@ -227,12 +227,12 @@ extension iccProfile.Header {
         static let color7: ColorSpaceSignature                     = "7CLR"
         static let color8: ColorSpaceSignature                     = "8CLR"
         static let color9: ColorSpaceSignature                     = "9CLR"
-        static let color10: ColorSpaceSignature                    = "ACLR"
-        static let color11: ColorSpaceSignature                    = "BCLR"
-        static let color12: ColorSpaceSignature                    = "CCLR"
-        static let color13: ColorSpaceSignature                    = "DCLR"
-        static let color14: ColorSpaceSignature                    = "ECLR"
-        static let color15: ColorSpaceSignature                    = "FCLR"
+        static let colorA: ColorSpaceSignature                    = "ACLR"
+        static let colorB: ColorSpaceSignature                    = "BCLR"
+        static let colorC: ColorSpaceSignature                    = "CCLR"
+        static let colorD: ColorSpaceSignature                    = "DCLR"
+        static let colorE: ColorSpaceSignature                    = "ECLR"
+        static let colorF: ColorSpaceSignature                    = "FCLR"
     }
 }
 

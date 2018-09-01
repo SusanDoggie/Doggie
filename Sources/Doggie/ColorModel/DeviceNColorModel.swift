@@ -1015,7 +1015,7 @@ extension Device9ColorModel {
     }
 }
 
-public struct Device10ColorModel : ColorModelProtocol {
+public struct DeviceAColorModel : ColorModelProtocol {
     
     public typealias Indices = Range<Int>
     
@@ -1109,7 +1109,7 @@ public struct Device10ColorModel : ColorModelProtocol {
     }
 }
 
-extension Device10ColorModel {
+extension DeviceAColorModel {
     
     @_transparent
     public func min() -> Double {
@@ -1132,7 +1132,7 @@ extension Device10ColorModel {
     }
     
     @_transparent
-    public func map(_ transform: (Double) throws -> Double) rethrows -> Device10ColorModel {
+    public func map(_ transform: (Double) throws -> Double) rethrows -> DeviceAColorModel {
         let component_0 = try transform(self.component_0)
         let component_1 = try transform(self.component_1)
         let component_2 = try transform(self.component_2)
@@ -1143,7 +1143,7 @@ extension Device10ColorModel {
         let component_7 = try transform(self.component_7)
         let component_8 = try transform(self.component_8)
         let component_9 = try transform(self.component_9)
-        return Device10ColorModel(
+        return DeviceAColorModel(
             component_0, component_1, component_2,
             component_3, component_4, component_5,
             component_6, component_7, component_8,
@@ -1168,7 +1168,7 @@ extension Device10ColorModel {
     }
     
     @_transparent
-    public func combined(_ other: Device10ColorModel, _ transform: (Double, Double) throws -> Double) rethrows -> Device10ColorModel {
+    public func combined(_ other: DeviceAColorModel, _ transform: (Double, Double) throws -> Double) rethrows -> DeviceAColorModel {
         let component_0 = try transform(self.component_0, other.component_0)
         let component_1 = try transform(self.component_1, other.component_1)
         let component_2 = try transform(self.component_2, other.component_2)
@@ -1179,7 +1179,7 @@ extension Device10ColorModel {
         let component_7 = try transform(self.component_7, other.component_7)
         let component_8 = try transform(self.component_8, other.component_8)
         let component_9 = try transform(self.component_9, other.component_9)
-        return Device10ColorModel(
+        return DeviceAColorModel(
             component_0, component_1, component_2,
             component_3, component_4, component_5,
             component_6, component_7, component_8,
@@ -1188,7 +1188,7 @@ extension Device10ColorModel {
     }
 }
 
-public struct Device11ColorModel : ColorModelProtocol {
+public struct DeviceBColorModel : ColorModelProtocol {
     
     public typealias Indices = Range<Int>
     
@@ -1287,7 +1287,7 @@ public struct Device11ColorModel : ColorModelProtocol {
     }
 }
 
-extension Device11ColorModel {
+extension DeviceBColorModel {
     
     @_transparent
     public func min() -> Double {
@@ -1310,7 +1310,7 @@ extension Device11ColorModel {
     }
     
     @_transparent
-    public func map(_ transform: (Double) throws -> Double) rethrows -> Device11ColorModel {
+    public func map(_ transform: (Double) throws -> Double) rethrows -> DeviceBColorModel {
         let component_0 = try transform(self.component_0)
         let component_1 = try transform(self.component_1)
         let component_2 = try transform(self.component_2)
@@ -1322,7 +1322,7 @@ extension Device11ColorModel {
         let component_8 = try transform(self.component_8)
         let component_9 = try transform(self.component_9)
         let component_10 = try transform(self.component_10)
-        return Device11ColorModel(
+        return DeviceBColorModel(
             component_0, component_1, component_2,
             component_3, component_4, component_5,
             component_6, component_7, component_8,
@@ -1348,7 +1348,7 @@ extension Device11ColorModel {
     }
     
     @_transparent
-    public func combined(_ other: Device11ColorModel, _ transform: (Double, Double) throws -> Double) rethrows -> Device11ColorModel {
+    public func combined(_ other: DeviceBColorModel, _ transform: (Double, Double) throws -> Double) rethrows -> DeviceBColorModel {
         let component_0 = try transform(self.component_0, other.component_0)
         let component_1 = try transform(self.component_1, other.component_1)
         let component_2 = try transform(self.component_2, other.component_2)
@@ -1360,7 +1360,7 @@ extension Device11ColorModel {
         let component_8 = try transform(self.component_8, other.component_8)
         let component_9 = try transform(self.component_9, other.component_9)
         let component_10 = try transform(self.component_10, other.component_10)
-        return Device11ColorModel(
+        return DeviceBColorModel(
             component_0, component_1, component_2,
             component_3, component_4, component_5,
             component_6, component_7, component_8,
@@ -1369,7 +1369,7 @@ extension Device11ColorModel {
     }
 }
 
-public struct Device12ColorModel : ColorModelProtocol {
+public struct DeviceCColorModel : ColorModelProtocol {
     
     public typealias Indices = Range<Int>
     
@@ -1473,7 +1473,7 @@ public struct Device12ColorModel : ColorModelProtocol {
     }
 }
 
-extension Device12ColorModel {
+extension DeviceCColorModel {
     
     @_transparent
     public func min() -> Double {
@@ -1496,7 +1496,7 @@ extension Device12ColorModel {
     }
     
     @_transparent
-    public func map(_ transform: (Double) throws -> Double) rethrows -> Device12ColorModel {
+    public func map(_ transform: (Double) throws -> Double) rethrows -> DeviceCColorModel {
         let component_0 = try transform(self.component_0)
         let component_1 = try transform(self.component_1)
         let component_2 = try transform(self.component_2)
@@ -1509,7 +1509,7 @@ extension Device12ColorModel {
         let component_9 = try transform(self.component_9)
         let component_10 = try transform(self.component_10)
         let component_11 = try transform(self.component_11)
-        return Device12ColorModel(
+        return DeviceCColorModel(
             component_0, component_1, component_2,
             component_3, component_4, component_5,
             component_6, component_7, component_8,
@@ -1536,7 +1536,7 @@ extension Device12ColorModel {
     }
     
     @_transparent
-    public func combined(_ other: Device12ColorModel, _ transform: (Double, Double) throws -> Double) rethrows -> Device12ColorModel {
+    public func combined(_ other: DeviceCColorModel, _ transform: (Double, Double) throws -> Double) rethrows -> DeviceCColorModel {
         let component_0 = try transform(self.component_0, other.component_0)
         let component_1 = try transform(self.component_1, other.component_1)
         let component_2 = try transform(self.component_2, other.component_2)
@@ -1549,7 +1549,7 @@ extension Device12ColorModel {
         let component_9 = try transform(self.component_9, other.component_9)
         let component_10 = try transform(self.component_10, other.component_10)
         let component_11 = try transform(self.component_11, other.component_11)
-        return Device12ColorModel(
+        return DeviceCColorModel(
             component_0, component_1, component_2,
             component_3, component_4, component_5,
             component_6, component_7, component_8,
@@ -1558,7 +1558,7 @@ extension Device12ColorModel {
     }
 }
 
-public struct Device13ColorModel : ColorModelProtocol {
+public struct DeviceDColorModel : ColorModelProtocol {
     
     public typealias Indices = Range<Int>
     
@@ -1668,7 +1668,7 @@ public struct Device13ColorModel : ColorModelProtocol {
     }
 }
 
-extension Device13ColorModel {
+extension DeviceDColorModel {
     
     @_transparent
     public func min() -> Double {
@@ -1693,7 +1693,7 @@ extension Device13ColorModel {
     }
     
     @_transparent
-    public func map(_ transform: (Double) throws -> Double) rethrows -> Device13ColorModel {
+    public func map(_ transform: (Double) throws -> Double) rethrows -> DeviceDColorModel {
         let component_0 = try transform(self.component_0)
         let component_1 = try transform(self.component_1)
         let component_2 = try transform(self.component_2)
@@ -1707,7 +1707,7 @@ extension Device13ColorModel {
         let component_10 = try transform(self.component_10)
         let component_11 = try transform(self.component_11)
         let component_12 = try transform(self.component_12)
-        return Device13ColorModel(
+        return DeviceDColorModel(
             component_0, component_1, component_2,
             component_3, component_4, component_5,
             component_6, component_7, component_8,
@@ -1736,7 +1736,7 @@ extension Device13ColorModel {
     }
     
     @_transparent
-    public func combined(_ other: Device13ColorModel, _ transform: (Double, Double) throws -> Double) rethrows -> Device13ColorModel {
+    public func combined(_ other: DeviceDColorModel, _ transform: (Double, Double) throws -> Double) rethrows -> DeviceDColorModel {
         let component_0 = try transform(self.component_0, other.component_0)
         let component_1 = try transform(self.component_1, other.component_1)
         let component_2 = try transform(self.component_2, other.component_2)
@@ -1750,7 +1750,7 @@ extension Device13ColorModel {
         let component_10 = try transform(self.component_10, other.component_10)
         let component_11 = try transform(self.component_11, other.component_11)
         let component_12 = try transform(self.component_12, other.component_12)
-        return Device13ColorModel(
+        return DeviceDColorModel(
             component_0, component_1, component_2,
             component_3, component_4, component_5,
             component_6, component_7, component_8,
@@ -1760,7 +1760,7 @@ extension Device13ColorModel {
     }
 }
 
-public struct Device14ColorModel : ColorModelProtocol {
+public struct DeviceEColorModel : ColorModelProtocol {
     
     public typealias Indices = Range<Int>
     
@@ -1875,7 +1875,7 @@ public struct Device14ColorModel : ColorModelProtocol {
     }
 }
 
-extension Device14ColorModel {
+extension DeviceEColorModel {
     
     @_transparent
     public func min() -> Double {
@@ -1900,7 +1900,7 @@ extension Device14ColorModel {
     }
     
     @_transparent
-    public func map(_ transform: (Double) throws -> Double) rethrows -> Device14ColorModel {
+    public func map(_ transform: (Double) throws -> Double) rethrows -> DeviceEColorModel {
         let component_0 = try transform(self.component_0)
         let component_1 = try transform(self.component_1)
         let component_2 = try transform(self.component_2)
@@ -1915,7 +1915,7 @@ extension Device14ColorModel {
         let component_11 = try transform(self.component_11)
         let component_12 = try transform(self.component_12)
         let component_13 = try transform(self.component_13)
-        return Device14ColorModel(
+        return DeviceEColorModel(
             component_0, component_1, component_2,
             component_3, component_4, component_5,
             component_6, component_7, component_8,
@@ -1945,7 +1945,7 @@ extension Device14ColorModel {
     }
     
     @_transparent
-    public func combined(_ other: Device14ColorModel, _ transform: (Double, Double) throws -> Double) rethrows -> Device14ColorModel {
+    public func combined(_ other: DeviceEColorModel, _ transform: (Double, Double) throws -> Double) rethrows -> DeviceEColorModel {
         let component_0 = try transform(self.component_0, other.component_0)
         let component_1 = try transform(self.component_1, other.component_1)
         let component_2 = try transform(self.component_2, other.component_2)
@@ -1960,7 +1960,7 @@ extension Device14ColorModel {
         let component_11 = try transform(self.component_11, other.component_11)
         let component_12 = try transform(self.component_12, other.component_12)
         let component_13 = try transform(self.component_13, other.component_13)
-        return Device14ColorModel(
+        return DeviceEColorModel(
             component_0, component_1, component_2,
             component_3, component_4, component_5,
             component_6, component_7, component_8,
@@ -1970,7 +1970,7 @@ extension Device14ColorModel {
     }
 }
 
-public struct Device15ColorModel : ColorModelProtocol {
+public struct DeviceFColorModel : ColorModelProtocol {
     
     public typealias Indices = Range<Int>
     
@@ -2090,7 +2090,7 @@ public struct Device15ColorModel : ColorModelProtocol {
     }
 }
 
-extension Device15ColorModel {
+extension DeviceFColorModel {
     
     @_transparent
     public func min() -> Double {
@@ -2115,7 +2115,7 @@ extension Device15ColorModel {
     }
     
     @_transparent
-    public func map(_ transform: (Double) throws -> Double) rethrows -> Device15ColorModel {
+    public func map(_ transform: (Double) throws -> Double) rethrows -> DeviceFColorModel {
         let component_0 = try transform(self.component_0)
         let component_1 = try transform(self.component_1)
         let component_2 = try transform(self.component_2)
@@ -2131,7 +2131,7 @@ extension Device15ColorModel {
         let component_12 = try transform(self.component_12)
         let component_13 = try transform(self.component_13)
         let component_14 = try transform(self.component_14)
-        return Device15ColorModel(
+        return DeviceFColorModel(
             component_0, component_1, component_2,
             component_3, component_4, component_5,
             component_6, component_7, component_8,
@@ -2162,7 +2162,7 @@ extension Device15ColorModel {
     }
     
     @_transparent
-    public func combined(_ other: Device15ColorModel, _ transform: (Double, Double) throws -> Double) rethrows -> Device15ColorModel {
+    public func combined(_ other: DeviceFColorModel, _ transform: (Double, Double) throws -> Double) rethrows -> DeviceFColorModel {
         let component_0 = try transform(self.component_0, other.component_0)
         let component_1 = try transform(self.component_1, other.component_1)
         let component_2 = try transform(self.component_2, other.component_2)
@@ -2178,7 +2178,7 @@ extension Device15ColorModel {
         let component_12 = try transform(self.component_12, other.component_12)
         let component_13 = try transform(self.component_13, other.component_13)
         let component_14 = try transform(self.component_14, other.component_14)
-        return Device15ColorModel(
+        return DeviceFColorModel(
             component_0, component_1, component_2,
             component_3, component_4, component_5,
             component_6, component_7, component_8,
@@ -3368,7 +3368,7 @@ extension Device9ColorModel.FloatComponents {
     }
 }
 
-extension Device10ColorModel {
+extension DeviceAColorModel {
     
     @_transparent
     public init(floatComponents: FloatComponents) {
@@ -3497,7 +3497,7 @@ extension Device10ColorModel {
     }
 }
 
-extension Device10ColorModel.FloatComponents {
+extension DeviceAColorModel.FloatComponents {
     
     @_transparent
     public func min() -> Float {
@@ -3520,7 +3520,7 @@ extension Device10ColorModel.FloatComponents {
     }
     
     @_transparent
-    public func map(_ transform: (Float) throws -> Float) rethrows -> Device10ColorModel.FloatComponents {
+    public func map(_ transform: (Float) throws -> Float) rethrows -> DeviceAColorModel.FloatComponents {
         let component_0 = try transform(self.component_0)
         let component_1 = try transform(self.component_1)
         let component_2 = try transform(self.component_2)
@@ -3531,7 +3531,7 @@ extension Device10ColorModel.FloatComponents {
         let component_7 = try transform(self.component_7)
         let component_8 = try transform(self.component_8)
         let component_9 = try transform(self.component_9)
-        return Device10ColorModel.FloatComponents(
+        return DeviceAColorModel.FloatComponents(
             component_0, component_1, component_2,
             component_3, component_4, component_5,
             component_6, component_7, component_8,
@@ -3556,7 +3556,7 @@ extension Device10ColorModel.FloatComponents {
     }
     
     @_transparent
-    public func combined(_ other: Device10ColorModel.FloatComponents, _ transform: (Float, Float) throws -> Float) rethrows -> Device10ColorModel.FloatComponents {
+    public func combined(_ other: DeviceAColorModel.FloatComponents, _ transform: (Float, Float) throws -> Float) rethrows -> DeviceAColorModel.FloatComponents {
         let component_0 = try transform(self.component_0, other.component_0)
         let component_1 = try transform(self.component_1, other.component_1)
         let component_2 = try transform(self.component_2, other.component_2)
@@ -3567,7 +3567,7 @@ extension Device10ColorModel.FloatComponents {
         let component_7 = try transform(self.component_7, other.component_7)
         let component_8 = try transform(self.component_8, other.component_8)
         let component_9 = try transform(self.component_9, other.component_9)
-        return Device10ColorModel.FloatComponents(
+        return DeviceAColorModel.FloatComponents(
             component_0, component_1, component_2,
             component_3, component_4, component_5,
             component_6, component_7, component_8,
@@ -3576,7 +3576,7 @@ extension Device10ColorModel.FloatComponents {
     }
 }
 
-extension Device11ColorModel {
+extension DeviceBColorModel {
     
     @_transparent
     public init(floatComponents: FloatComponents) {
@@ -3712,7 +3712,7 @@ extension Device11ColorModel {
     }
 }
 
-extension Device11ColorModel.FloatComponents {
+extension DeviceBColorModel.FloatComponents {
     
     @_transparent
     public func min() -> Float {
@@ -3735,7 +3735,7 @@ extension Device11ColorModel.FloatComponents {
     }
     
     @_transparent
-    public func map(_ transform: (Float) throws -> Float) rethrows -> Device11ColorModel.FloatComponents {
+    public func map(_ transform: (Float) throws -> Float) rethrows -> DeviceBColorModel.FloatComponents {
         let component_0 = try transform(self.component_0)
         let component_1 = try transform(self.component_1)
         let component_2 = try transform(self.component_2)
@@ -3747,7 +3747,7 @@ extension Device11ColorModel.FloatComponents {
         let component_8 = try transform(self.component_8)
         let component_9 = try transform(self.component_9)
         let component_10 = try transform(self.component_10)
-        return Device11ColorModel.FloatComponents(
+        return DeviceBColorModel.FloatComponents(
             component_0, component_1, component_2,
             component_3, component_4, component_5,
             component_6, component_7, component_8,
@@ -3773,7 +3773,7 @@ extension Device11ColorModel.FloatComponents {
     }
     
     @_transparent
-    public func combined(_ other: Device11ColorModel.FloatComponents, _ transform: (Float, Float) throws -> Float) rethrows -> Device11ColorModel.FloatComponents {
+    public func combined(_ other: DeviceBColorModel.FloatComponents, _ transform: (Float, Float) throws -> Float) rethrows -> DeviceBColorModel.FloatComponents {
         let component_0 = try transform(self.component_0, other.component_0)
         let component_1 = try transform(self.component_1, other.component_1)
         let component_2 = try transform(self.component_2, other.component_2)
@@ -3785,7 +3785,7 @@ extension Device11ColorModel.FloatComponents {
         let component_8 = try transform(self.component_8, other.component_8)
         let component_9 = try transform(self.component_9, other.component_9)
         let component_10 = try transform(self.component_10, other.component_10)
-        return Device11ColorModel.FloatComponents(
+        return DeviceBColorModel.FloatComponents(
             component_0, component_1, component_2,
             component_3, component_4, component_5,
             component_6, component_7, component_8,
@@ -3794,7 +3794,7 @@ extension Device11ColorModel.FloatComponents {
     }
 }
 
-extension Device12ColorModel {
+extension DeviceCColorModel {
     
     @_transparent
     public init(floatComponents: FloatComponents) {
@@ -3937,7 +3937,7 @@ extension Device12ColorModel {
     }
 }
 
-extension Device12ColorModel.FloatComponents {
+extension DeviceCColorModel.FloatComponents {
     
     @_transparent
     public func min() -> Float {
@@ -3960,7 +3960,7 @@ extension Device12ColorModel.FloatComponents {
     }
     
     @_transparent
-    public func map(_ transform: (Float) throws -> Float) rethrows -> Device12ColorModel.FloatComponents {
+    public func map(_ transform: (Float) throws -> Float) rethrows -> DeviceCColorModel.FloatComponents {
         let component_0 = try transform(self.component_0)
         let component_1 = try transform(self.component_1)
         let component_2 = try transform(self.component_2)
@@ -3973,7 +3973,7 @@ extension Device12ColorModel.FloatComponents {
         let component_9 = try transform(self.component_9)
         let component_10 = try transform(self.component_10)
         let component_11 = try transform(self.component_11)
-        return Device12ColorModel.FloatComponents(
+        return DeviceCColorModel.FloatComponents(
             component_0, component_1, component_2,
             component_3, component_4, component_5,
             component_6, component_7, component_8,
@@ -4000,7 +4000,7 @@ extension Device12ColorModel.FloatComponents {
     }
     
     @_transparent
-    public func combined(_ other: Device12ColorModel.FloatComponents, _ transform: (Float, Float) throws -> Float) rethrows -> Device12ColorModel.FloatComponents {
+    public func combined(_ other: DeviceCColorModel.FloatComponents, _ transform: (Float, Float) throws -> Float) rethrows -> DeviceCColorModel.FloatComponents {
         let component_0 = try transform(self.component_0, other.component_0)
         let component_1 = try transform(self.component_1, other.component_1)
         let component_2 = try transform(self.component_2, other.component_2)
@@ -4013,7 +4013,7 @@ extension Device12ColorModel.FloatComponents {
         let component_9 = try transform(self.component_9, other.component_9)
         let component_10 = try transform(self.component_10, other.component_10)
         let component_11 = try transform(self.component_11, other.component_11)
-        return Device12ColorModel.FloatComponents(
+        return DeviceCColorModel.FloatComponents(
             component_0, component_1, component_2,
             component_3, component_4, component_5,
             component_6, component_7, component_8,
@@ -4022,7 +4022,7 @@ extension Device12ColorModel.FloatComponents {
     }
 }
 
-extension Device13ColorModel {
+extension DeviceDColorModel {
     
     @_transparent
     public init(floatComponents: FloatComponents) {
@@ -4174,7 +4174,7 @@ extension Device13ColorModel {
     }
 }
 
-extension Device13ColorModel.FloatComponents {
+extension DeviceDColorModel.FloatComponents {
     
     @_transparent
     public func min() -> Float {
@@ -4199,7 +4199,7 @@ extension Device13ColorModel.FloatComponents {
     }
     
     @_transparent
-    public func map(_ transform: (Float) throws -> Float) rethrows -> Device13ColorModel.FloatComponents {
+    public func map(_ transform: (Float) throws -> Float) rethrows -> DeviceDColorModel.FloatComponents {
         let component_0 = try transform(self.component_0)
         let component_1 = try transform(self.component_1)
         let component_2 = try transform(self.component_2)
@@ -4213,7 +4213,7 @@ extension Device13ColorModel.FloatComponents {
         let component_10 = try transform(self.component_10)
         let component_11 = try transform(self.component_11)
         let component_12 = try transform(self.component_12)
-        return Device13ColorModel.FloatComponents(
+        return DeviceDColorModel.FloatComponents(
             component_0, component_1, component_2,
             component_3, component_4, component_5,
             component_6, component_7, component_8,
@@ -4242,7 +4242,7 @@ extension Device13ColorModel.FloatComponents {
     }
     
     @_transparent
-    public func combined(_ other: Device13ColorModel.FloatComponents, _ transform: (Float, Float) throws -> Float) rethrows -> Device13ColorModel.FloatComponents {
+    public func combined(_ other: DeviceDColorModel.FloatComponents, _ transform: (Float, Float) throws -> Float) rethrows -> DeviceDColorModel.FloatComponents {
         let component_0 = try transform(self.component_0, other.component_0)
         let component_1 = try transform(self.component_1, other.component_1)
         let component_2 = try transform(self.component_2, other.component_2)
@@ -4256,7 +4256,7 @@ extension Device13ColorModel.FloatComponents {
         let component_10 = try transform(self.component_10, other.component_10)
         let component_11 = try transform(self.component_11, other.component_11)
         let component_12 = try transform(self.component_12, other.component_12)
-        return Device13ColorModel.FloatComponents(
+        return DeviceDColorModel.FloatComponents(
             component_0, component_1, component_2,
             component_3, component_4, component_5,
             component_6, component_7, component_8,
@@ -4266,7 +4266,7 @@ extension Device13ColorModel.FloatComponents {
     }
 }
 
-extension Device14ColorModel {
+extension DeviceEColorModel {
     
     @_transparent
     public init(floatComponents: FloatComponents) {
@@ -4425,7 +4425,7 @@ extension Device14ColorModel {
     }
 }
 
-extension Device14ColorModel.FloatComponents {
+extension DeviceEColorModel.FloatComponents {
     
     @_transparent
     public func min() -> Float {
@@ -4450,7 +4450,7 @@ extension Device14ColorModel.FloatComponents {
     }
     
     @_transparent
-    public func map(_ transform: (Float) throws -> Float) rethrows -> Device14ColorModel.FloatComponents {
+    public func map(_ transform: (Float) throws -> Float) rethrows -> DeviceEColorModel.FloatComponents {
         let component_0 = try transform(self.component_0)
         let component_1 = try transform(self.component_1)
         let component_2 = try transform(self.component_2)
@@ -4465,7 +4465,7 @@ extension Device14ColorModel.FloatComponents {
         let component_11 = try transform(self.component_11)
         let component_12 = try transform(self.component_12)
         let component_13 = try transform(self.component_13)
-        return Device14ColorModel.FloatComponents(
+        return DeviceEColorModel.FloatComponents(
             component_0, component_1, component_2,
             component_3, component_4, component_5,
             component_6, component_7, component_8,
@@ -4495,7 +4495,7 @@ extension Device14ColorModel.FloatComponents {
     }
     
     @_transparent
-    public func combined(_ other: Device14ColorModel.FloatComponents, _ transform: (Float, Float) throws -> Float) rethrows -> Device14ColorModel.FloatComponents {
+    public func combined(_ other: DeviceEColorModel.FloatComponents, _ transform: (Float, Float) throws -> Float) rethrows -> DeviceEColorModel.FloatComponents {
         let component_0 = try transform(self.component_0, other.component_0)
         let component_1 = try transform(self.component_1, other.component_1)
         let component_2 = try transform(self.component_2, other.component_2)
@@ -4510,7 +4510,7 @@ extension Device14ColorModel.FloatComponents {
         let component_11 = try transform(self.component_11, other.component_11)
         let component_12 = try transform(self.component_12, other.component_12)
         let component_13 = try transform(self.component_13, other.component_13)
-        return Device14ColorModel.FloatComponents(
+        return DeviceEColorModel.FloatComponents(
             component_0, component_1, component_2,
             component_3, component_4, component_5,
             component_6, component_7, component_8,
@@ -4520,7 +4520,7 @@ extension Device14ColorModel.FloatComponents {
     }
 }
 
-extension Device15ColorModel {
+extension DeviceFColorModel {
     
     @_transparent
     public init(floatComponents: FloatComponents) {
@@ -4686,7 +4686,7 @@ extension Device15ColorModel {
     }
 }
 
-extension Device15ColorModel.FloatComponents {
+extension DeviceFColorModel.FloatComponents {
     
     @_transparent
     public func min() -> Float {
@@ -4711,7 +4711,7 @@ extension Device15ColorModel.FloatComponents {
     }
     
     @_transparent
-    public func map(_ transform: (Float) throws -> Float) rethrows -> Device15ColorModel.FloatComponents {
+    public func map(_ transform: (Float) throws -> Float) rethrows -> DeviceFColorModel.FloatComponents {
         let component_0 = try transform(self.component_0)
         let component_1 = try transform(self.component_1)
         let component_2 = try transform(self.component_2)
@@ -4727,7 +4727,7 @@ extension Device15ColorModel.FloatComponents {
         let component_12 = try transform(self.component_12)
         let component_13 = try transform(self.component_13)
         let component_14 = try transform(self.component_14)
-        return Device15ColorModel.FloatComponents(
+        return DeviceFColorModel.FloatComponents(
             component_0, component_1, component_2,
             component_3, component_4, component_5,
             component_6, component_7, component_8,
@@ -4758,7 +4758,7 @@ extension Device15ColorModel.FloatComponents {
     }
     
     @_transparent
-    public func combined(_ other: Device15ColorModel.FloatComponents, _ transform: (Float, Float) throws -> Float) rethrows -> Device15ColorModel.FloatComponents {
+    public func combined(_ other: DeviceFColorModel.FloatComponents, _ transform: (Float, Float) throws -> Float) rethrows -> DeviceFColorModel.FloatComponents {
         let component_0 = try transform(self.component_0, other.component_0)
         let component_1 = try transform(self.component_1, other.component_1)
         let component_2 = try transform(self.component_2, other.component_2)
@@ -4774,7 +4774,7 @@ extension Device15ColorModel.FloatComponents {
         let component_12 = try transform(self.component_12, other.component_12)
         let component_13 = try transform(self.component_13, other.component_13)
         let component_14 = try transform(self.component_14, other.component_14)
-        return Device15ColorModel.FloatComponents(
+        return DeviceFColorModel.FloatComponents(
             component_0, component_1, component_2,
             component_3, component_4, component_5,
             component_6, component_7, component_8,

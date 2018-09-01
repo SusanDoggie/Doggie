@@ -183,12 +183,12 @@ extension AnyColorSpace {
         case .color7: self._base = try ColorSpace<Device7ColorModel>(iccData: iccData, profile: profile)
         case .color8: self._base = try ColorSpace<Device8ColorModel>(iccData: iccData, profile: profile)
         case .color9: self._base = try ColorSpace<Device9ColorModel>(iccData: iccData, profile: profile)
-        case .color10: self._base = try ColorSpace<Device10ColorModel>(iccData: iccData, profile: profile)
-        case .color11: self._base = try ColorSpace<Device11ColorModel>(iccData: iccData, profile: profile)
-        case .color12: self._base = try ColorSpace<Device12ColorModel>(iccData: iccData, profile: profile)
-        case .color13: self._base = try ColorSpace<Device13ColorModel>(iccData: iccData, profile: profile)
-        case .color14: self._base = try ColorSpace<Device14ColorModel>(iccData: iccData, profile: profile)
-        case .color15: self._base = try ColorSpace<Device15ColorModel>(iccData: iccData, profile: profile)
+        case .colorA: self._base = try ColorSpace<DeviceAColorModel>(iccData: iccData, profile: profile)
+        case .colorB: self._base = try ColorSpace<DeviceBColorModel>(iccData: iccData, profile: profile)
+        case .colorC: self._base = try ColorSpace<DeviceCColorModel>(iccData: iccData, profile: profile)
+        case .colorD: self._base = try ColorSpace<DeviceDColorModel>(iccData: iccData, profile: profile)
+        case .colorE: self._base = try ColorSpace<DeviceEColorModel>(iccData: iccData, profile: profile)
+        case .colorF: self._base = try ColorSpace<DeviceFColorModel>(iccData: iccData, profile: profile)
         default: throw AnyColorSpace.ICCError.unsupported(message: "ColorSpace: \(profile.header.colorSpace)")
         }
     }
