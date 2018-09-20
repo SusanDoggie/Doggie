@@ -477,35 +477,8 @@ extension SDObject.Base {
             
         case let .number(value):
             
-            if value < 0 {
-                if let value = Int8(exactly: value) {
-                    data.append(0x69)
-                    data.encode(value)
-                } else if let value = Int16(exactly: value) {
-                    data.append(0x69)
-                    data.encode(BEInt16(value))
-                } else if let value = Int32(exactly: value) {
-                    data.append(0x69)
-                    data.encode(BEInt32(value))
-                } else {
-                    data.append(0x6E)
-                    data.encode(BEUInt64(value.bitPattern))
-                }
-            } else {
-                if let value = UInt8(exactly: value) {
-                    data.append(0x75)
-                    data.encode(value)
-                } else if let value = UInt16(exactly: value) {
-                    data.append(0x75)
-                    data.encode(BEUInt16(value))
-                } else if let value = UInt32(exactly: value) {
-                    data.append(0x75)
-                    data.encode(BEUInt32(value))
-                } else {
-                    data.append(0x6E)
-                    data.encode(BEUInt64(value.bitPattern))
-                }
-            }
+            data.append(0x6E)
+            data.encode(BEUInt64(value.bitPattern))
             
         case let .binary(value):
             
