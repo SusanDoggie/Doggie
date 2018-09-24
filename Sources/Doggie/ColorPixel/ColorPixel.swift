@@ -193,6 +193,63 @@ extension ColorPixelProtocol {
     }
 }
 
+extension ColorPixelProtocol where Model == XYZColorModel {
+    
+    @_transparent
+    public init(x: Double, y: Double, z: Double, opacity: Double = 1) {
+        self.init(color: XYZColorModel(x: x, y: y, z: z), opacity: opacity)
+    }
+    
+    @_transparent
+    public init(luminance: Double, point: Point, opacity: Double = 1) {
+        self.init(color: XYZColorModel(luminance: luminance, point: point), opacity: opacity)
+    }
+    
+    @_transparent
+    public init(luminance: Double, x: Double, y: Double, opacity: Double = 1) {
+        self.init(color: XYZColorModel(luminance: luminance, x: x, y: y), opacity: opacity)
+    }
+}
+
+extension ColorPixelProtocol where Model == YxyColorModel {
+    
+    @_transparent
+    public init(luminance: Double, point: Point, opacity: Double = 1) {
+        self.init(color: YxyColorModel(luminance: luminance, point: point), opacity: opacity)
+    }
+    
+    @_transparent
+    public init(luminance: Double, x: Double, y: Double, opacity: Double = 1) {
+        self.init(color: YxyColorModel(luminance: luminance, x: x, y: y), opacity: opacity)
+    }
+}
+
+extension ColorPixelProtocol where Model == LabColorModel {
+    
+    @_transparent
+    public init(lightness: Double, a: Double, b: Double, opacity: Double = 1) {
+        self.init(color: LabColorModel(lightness: lightness, a: a, b: b), opacity: opacity)
+    }
+    
+    @_transparent
+    public init(lightness: Double, chroma: Double, hue: Double, opacity: Double = 1) {
+        self.init(color: LabColorModel(lightness: lightness, chroma: chroma, hue: hue), opacity: opacity)
+    }
+}
+
+extension ColorPixelProtocol where Model == LuvColorModel {
+    
+    @_transparent
+    public init(lightness: Double, u: Double, v: Double, opacity: Double = 1) {
+        self.init(color: LuvColorModel(lightness: lightness, u: u, v: v), opacity: opacity)
+    }
+    
+    @_transparent
+    public init(lightness: Double, chroma: Double, hue: Double, opacity: Double = 1) {
+        self.init(color: LuvColorModel(lightness: lightness, chroma: chroma, hue: hue), opacity: opacity)
+    }
+}
+
 extension ColorPixelProtocol where Model == GrayColorModel {
     
     @_transparent
@@ -305,6 +362,39 @@ extension ColorPixelProtocol where Model == RGBColorModel {
         }
         set {
             color.brightness = newValue
+        }
+    }
+}
+
+extension ColorPixelProtocol where Model == CMYColorModel {
+    
+    @_transparent
+    public var cyan: Double {
+        get {
+            return color.cyan
+        }
+        set {
+            color.cyan = newValue
+        }
+    }
+    
+    @_transparent
+    public var magenta: Double {
+        get {
+            return color.magenta
+        }
+        set {
+            color.magenta = newValue
+        }
+    }
+    
+    @_transparent
+    public var yellow: Double {
+        get {
+            return color.yellow
+        }
+        set {
+            color.yellow = newValue
         }
     }
 }

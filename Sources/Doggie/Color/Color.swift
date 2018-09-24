@@ -50,19 +50,60 @@ public struct Color<Model : ColorModelProtocol> : ColorProtocol, Hashable {
     }
 }
 
-extension ColorSpace where Model == GrayColorModel {
+extension Color where Model == XYZColorModel {
     
     @inlinable
-    public static var `default`: ColorSpace {
-        return .genericGamma22Gray
+    public init(colorSpace: Doggie.ColorSpace<Model> = .default, x: Double, y: Double, z: Double, opacity: Double = 1) {
+        self.init(colorSpace: colorSpace, color: XYZColorModel(x: x, y: y, z: z), opacity: opacity)
+    }
+    
+    @inlinable
+    public init(colorSpace: Doggie.ColorSpace<Model> = .default, luminance: Double, point: Point, opacity: Double = 1) {
+        self.init(colorSpace: colorSpace, color: XYZColorModel(luminance: luminance, point: point), opacity: opacity)
+    }
+    
+    @inlinable
+    public init(colorSpace: Doggie.ColorSpace<Model> = .default, luminance: Double, x: Double, y: Double, opacity: Double = 1) {
+        self.init(colorSpace: colorSpace, color: XYZColorModel(luminance: luminance, x: x, y: y), opacity: opacity)
     }
 }
 
-extension ColorSpace where Model == RGBColorModel {
+extension Color where Model == YxyColorModel {
     
     @inlinable
-    public static var `default`: ColorSpace {
-        return .sRGB
+    public init(colorSpace: Doggie.ColorSpace<Model> = .default, luminance: Double, point: Point, opacity: Double = 1) {
+        self.init(colorSpace: colorSpace, color: YxyColorModel(luminance: luminance, point: point), opacity: opacity)
+    }
+    
+    @inlinable
+    public init(colorSpace: Doggie.ColorSpace<Model> = .default, luminance: Double, x: Double, y: Double, opacity: Double = 1) {
+        self.init(colorSpace: colorSpace, color: YxyColorModel(luminance: luminance, x: x, y: y), opacity: opacity)
+    }
+}
+
+extension Color where Model == LabColorModel {
+    
+    @inlinable
+    public init(colorSpace: Doggie.ColorSpace<Model> = .default, lightness: Double, a: Double, b: Double, opacity: Double = 1) {
+        self.init(colorSpace: colorSpace, color: LabColorModel(lightness: lightness, a: a, b: b), opacity: opacity)
+    }
+    
+    @inlinable
+    public init(colorSpace: Doggie.ColorSpace<Model> = .default, lightness: Double, chroma: Double, hue: Double, opacity: Double = 1) {
+        self.init(colorSpace: colorSpace, color: LabColorModel(lightness: lightness, chroma: chroma, hue: hue), opacity: opacity)
+    }
+}
+
+extension Color where Model == LuvColorModel {
+    
+    @inlinable
+    public init(colorSpace: Doggie.ColorSpace<Model> = .default, lightness: Double, u: Double, v: Double, opacity: Double = 1) {
+        self.init(colorSpace: colorSpace, color: LuvColorModel(lightness: lightness, u: u, v: v), opacity: opacity)
+    }
+    
+    @inlinable
+    public init(colorSpace: Doggie.ColorSpace<Model> = .default, lightness: Double, chroma: Double, hue: Double, opacity: Double = 1) {
+        self.init(colorSpace: colorSpace, color: LuvColorModel(lightness: lightness, chroma: chroma, hue: hue), opacity: opacity)
     }
 }
 
@@ -178,6 +219,39 @@ extension Color where Model == RGBColorModel {
         }
         set {
             color.brightness = newValue
+        }
+    }
+}
+
+extension Color where Model == CMYColorModel {
+    
+    @inlinable
+    public var cyan: Double {
+        get {
+            return color.cyan
+        }
+        set {
+            color.cyan = newValue
+        }
+    }
+    
+    @inlinable
+    public var magenta: Double {
+        get {
+            return color.magenta
+        }
+        set {
+            color.magenta = newValue
+        }
+    }
+    
+    @inlinable
+    public var yellow: Double {
+        get {
+            return color.yellow
+        }
+        set {
+            color.yellow = newValue
         }
     }
 }
