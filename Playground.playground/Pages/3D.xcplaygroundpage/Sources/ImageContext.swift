@@ -222,16 +222,78 @@ public func texturedCube(width: Int, height: Int) -> Image<ARGB32ColorPixel> {
     return context.image
 }
 
-struct Vertex : ImageContextRenderVertex {
+extension Vector : ImageContextRenderVertex {
     
-    var position: Vector
+    public var position: Vector {
+        return self
+    }
+}
+
+public struct TriangularPatchTessellator : ImageContextRenderTriangleGenerator {
     
-    static func + (lhs: Vertex, rhs: Vertex) -> Vertex {
-        return Vertex(position: lhs.position + rhs.position)
+    public let patch: CubicBezierTriangularPatch<Vector>
+    
+    private let q0: Point
+    private let q1: Point
+    private let q2: Point
+    
+    private init(patch: CubicBezierTriangularPatch<Vector>, _ q0: Point, _ q1: Point, _ q2: Point) {
+        self.patch = patch
+        self.q0 = q0
+        self.q1 = q1
+        self.q2 = q2
     }
     
-    static func * (lhs: Double, rhs: Vertex) -> Vertex {
-        return Vertex(position: lhs * rhs.position)
+    public init(patch: CubicBezierTriangularPatch<Vector>) {
+        self.patch = patch
+        self.q0 = Point(x: 1, y: 0)
+        self.q1 = Point(x: 0, y: 1)
+        self.q2 = Point(x: 0, y: 0)
+    }
+    
+    public func render(projection: (Vector) -> Point, _ body: (Vector, Vector, Vector) -> Void) {
+        
+        let m300 = patch.eval(q0.x, q0.y)
+        let m030 = patch.eval(q1.x, q1.y)
+        let m003 = patch.eval(q2.x, q2.y)
+        
+        let p0 = projection(m300.position)
+        let p1 = projection(m030.position)
+        let p2 = projection(m003.position)
+        
+        let d0 = p0 - p1
+        let d1 = p1 - p2
+        let d2 = p2 - p0
+        
+        let epsilon = 5.0
+        
+        if abs(d0.x) < epsilon && abs(d0.y) < epsilon && abs(d1.x) < epsilon && abs(d1.y) < epsilon && abs(d2.x) < epsilon && abs(d2.y) < epsilon {
+            
+            var v0 = m300
+            var v1 = m030
+            var v2 = m003
+            
+            let c0 = SimplexNoise(8, 0.7, 0.025, v0.x, v0.y, v0.z) * 2 - 1
+            let c1 = SimplexNoise(8, 0.7, 0.025, v1.x, v1.y, v1.z) * 2 - 1
+            let c2 = SimplexNoise(8, 0.7, 0.025, v2.x, v2.y, v2.z) * 2 - 1
+            
+            v0 += c0 * 2.5 * patch.normal(q0.x, q0.y).unit
+            v1 += c1 * 2.5 * patch.normal(q1.x, q1.y).unit
+            v2 += c2 * 2.5 * patch.normal(q2.x, q2.y).unit
+            
+            body(v0, v1, v2)
+            
+        } else {
+            
+            let s0 = 0.5 * (q0 + q1)
+            let s1 = 0.5 * (q1 + q2)
+            let s2 = 0.5 * (q2 + q0)
+            
+            TriangularPatchTessellator(patch: patch, q0, s0, s2).render(projection: projection, body)
+            TriangularPatchTessellator(patch: patch, s0, q1, s1).render(projection: projection, body)
+            TriangularPatchTessellator(patch: patch, s2, s1, q2).render(projection: projection, body)
+            TriangularPatchTessellator(patch: patch, s0, s1, s2).render(projection: projection, body)
+        }
     }
 }
 
@@ -239,80 +301,33 @@ public func tessellation(width: Int, height: Int) -> Image<ARGB32ColorPixel> {
     
     let context = ImageContext<ARGB32ColorPixel>(width: width, height: height, colorSpace: ColorSpace.sRGB)
     
+    let c = 0.5519150244935105707435627227925666423361803947243089
+    
+    let v0 = Vector(x: 1, y: 0, z: 0)
+    let v1 = Vector(x: 1, y: c, z: 0)
+    let v2 = Vector(x: c, y: 1, z: 0)
+    let v3 = Vector(x: 0, y: 1, z: 0)
+    let v4 = Vector(x: 0, y: 1, z: c)
+    let v5 = Vector(x: 0, y: c, z: 1)
+    let v6 = Vector(x: 0, y: 0, z: 1)
+    let v7 = Vector(x: c, y: 0, z: 1)
+    let v8 = Vector(x: 1, y: 0, z: c)
+    let v9 = Vector(x: 0.9, y: 0.9, z: 0.9)
+    
     let matrix = Matrix.scale(25) * Matrix.rotateY(degreesToRad(30)) * Matrix.rotateX(degreesToRad(30)) * Matrix.translate(x: 0, y: 0, z: 100)
     
-    let t = 0.5 + 0.5 * sqrt(5.0)
+    let p0 = CubicBezierTriangularPatch(v0, v1, v2, v3, v8, v9, v4, v7, v5, v6)
+    let p1 = p0 * Matrix.rotateX(degreesToRad(90))
+    let p2 = p1 * Matrix.rotateX(degreesToRad(90))
+    let p3 = p2 * Matrix.rotateX(degreesToRad(90))
+    let p4 = p0 * Matrix.rotateY(degreesToRad(180))
+    let p5 = p1 * Matrix.rotateY(degreesToRad(180))
+    let p6 = p2 * Matrix.rotateY(degreesToRad(180))
+    let p7 = p3 * Matrix.rotateY(degreesToRad(180))
     
-    let v0 = Vector(x: -1, y: t, z: 0).unit
-    let v1 = Vector(x: 1, y: t, z: 0).unit
-    let v2 = Vector(x: -1, y: -t, z: 0).unit
-    let v3 = Vector(x: 1, y: -t, z: 0).unit
+    let list = [p0, p1, p2, p3, p4, p5, p6, p7]
     
-    let v4 = Vector(x: 0, y: -1, z: t).unit
-    let v5 = Vector(x: 0, y: 1, z: t).unit
-    let v6 = Vector(x: 0, y: -1, z: -t).unit
-    let v7 = Vector(x: 0, y: 1, z: -t).unit
-    
-    let v8 = Vector(x: t, y: 0, z: -1).unit
-    let v9 = Vector(x: t, y: 0, z: 1).unit
-    let v10 = Vector(x: -t, y: 0, z: -1).unit
-    let v11 = Vector(x: -t, y: 0, z: 1).unit
-    
-    let f0 = (v0, v11, v5)
-    let f1 = (v0, v5, v1)
-    let f2 = (v0, v1, v7)
-    let f3 = (v0, v7, v10)
-    let f4 = (v0, v10, v11)
-    
-    let f5 = (v1, v5, v9)
-    let f6 = (v5, v11, v4)
-    let f7 = (v11, v10, v2)
-    let f8 = (v10, v7, v6)
-    let f9 = (v7, v1, v8)
-    
-    let f10 = (v3, v9, v4)
-    let f11 = (v3, v4, v2)
-    let f12 = (v3, v2, v6)
-    let f13 = (v3, v6, v8)
-    let f14 = (v3, v8, v9)
-    
-    let f15 = (v4, v9, v5)
-    let f16 = (v2, v4, v11)
-    let f17 = (v6, v2, v10)
-    let f18 = (v8, v6, v7)
-    let f19 = (v9, v8, v1)
-    
-    func tessellation(_ face: (Vector, Vector, Vector)) -> [(Vector, Vector, Vector)] {
-        
-        let (v0, v1, v2) = face
-        
-        let v3 = (v0 + v1).unit
-        let v4 = (v1 + v2).unit
-        let v5 = (v2 + v0).unit
-        
-        return [(v0, v3, v5), (v3, v1, v4), (v5, v4, v2), (v3, v4, v5)]
-    }
-    
-    func geometry_shader(_ face: (Vector, Vector, Vector)) -> (Vector, Vector, Vector) {
-        
-        var (v0, v1, v2) = face
-        
-        let m0 = v0 * matrix
-        let m1 = v1 * matrix
-        let m2 = v2 * matrix
-        
-        let c0 = SimplexNoise(8, 0.7, 0.025, m0.x, m0.y, m0.z) * 2 - 1
-        let c1 = SimplexNoise(8, 0.7, 0.025, m1.x, m1.y, m1.z) * 2 - 1
-        let c2 = SimplexNoise(8, 0.7, 0.025, m2.x, m2.y, m2.z) * 2 - 1
-        
-        v0.magnitude += c0 * 0.1
-        v1.magnitude += c1 * 0.1
-        v2.magnitude += c2 * 0.1
-        
-        return (v0, v1, v2)
-    }
-    
-    func shader(stageIn: ImageContextRenderStageIn<Vertex>) -> ColorPixel<RGBColorModel> {
+    func shader(stageIn: ImageContextRenderStageIn<Vector>) -> ColorPixel<RGBColorModel> {
         
         let position = stageIn.vertex.position
         let normal = stageIn.normal.unit
@@ -372,21 +387,10 @@ public func tessellation(width: Int, height: Int) -> Image<ARGB32ColorPixel> {
         return result
     }
     
-    var triangles = [f0, f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15, f16, f17, f18, f19]
-    triangles = triangles.flatMap(tessellation)
-    triangles = triangles.flatMap(tessellation)
-    triangles = triangles.flatMap(tessellation)
-    triangles = triangles.flatMap(tessellation)
-    triangles = triangles.flatMap(tessellation)
-    triangles = triangles.flatMap(tessellation)
-    triangles = triangles.map(geometry_shader)
-    
-    let _triangles = triangles.map { (Vertex(position: $0 * matrix), Vertex(position: $1 * matrix), Vertex(position: $2 * matrix)) }
-    
     context.renderCullingMode = .back
     context.renderDepthCompareMode = .less
     
-    context.render(_triangles, projection: PerspectiveProjectMatrix(angle: degreesToRad(50), nearZ: 1, farZ: 500), shader: shader)
+    context.render(list.map { TriangularPatchTessellator(patch: $0 * matrix) }, projection: PerspectiveProjectMatrix(angle: degreesToRad(50), nearZ: 1, farZ: 500), shader: shader)
     
     return context.image
 }
