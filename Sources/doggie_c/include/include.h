@@ -1,4 +1,6 @@
 //
+//  include.h
+//
 //  The MIT License
 //  Copyright (c) 2015 - 2018 Susan Cheng. All rights reserved.
 //
@@ -21,8 +23,10 @@
 //  THE SOFTWARE.
 //
 
-module zlib [system][extern_c] {
-    header "zlib_include.h"
-    link "z"
-    export *
-}
+#ifndef include_h
+#define include_h
+
+#include "c11_atomic.h"
+#include <zlib.h>
+
+#endif /* include_h */

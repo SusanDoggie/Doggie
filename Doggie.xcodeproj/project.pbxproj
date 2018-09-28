@@ -212,6 +212,7 @@
 		0AB0DA121F3AEF8B0004E43F /* ShapeRegion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AB0DA111F3AEF7B0004E43F /* ShapeRegion.swift */; };
 		0AB23E461F22E4980033462E /* RawBitmap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AB23E441F22E4980033462E /* RawBitmap.swift */; };
 		0AB2E23E1F17766C00B0CA84 /* zlib.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AB2E23C1F17766C00B0CA84 /* zlib.swift */; };
+		0AB36AB4215DCA020096FF3E /* include.h in Headers */ = {isa = PBXBuildFile; fileRef = 0AB36AB3215DCA010096FF3E /* include.h */; };
 		0AB380F320A5374A00A8CBD7 /* Texture.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AB380F220A5374A00A8CBD7 /* Texture.swift */; };
 		0ABDF1AA1F2B34E6007EC7B2 /* ChromaticAdaptationAlgorithm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ABDF1A81F2B34E6007EC7B2 /* ChromaticAdaptationAlgorithm.swift */; };
 		0ABDF1AD1F2B3520007EC7B2 /* RenderingIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ABDF1AB1F2B3520007EC7B2 /* RenderingIntent.swift */; };
@@ -469,6 +470,7 @@
 		0AB0DA111F3AEF7B0004E43F /* ShapeRegion.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = ShapeRegion.swift; sourceTree = "<group>"; };
 		0AB23E441F22E4980033462E /* RawBitmap.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = RawBitmap.swift; sourceTree = "<group>"; };
 		0AB2E23C1F17766C00B0CA84 /* zlib.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = zlib.swift; sourceTree = "<group>"; };
+		0AB36AB3215DCA010096FF3E /* include.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = include.h; sourceTree = "<group>"; };
 		0AB380F220A5374A00A8CBD7 /* Texture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Texture.swift; sourceTree = "<group>"; };
 		0ABDF1A81F2B34E6007EC7B2 /* ChromaticAdaptationAlgorithm.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = ChromaticAdaptationAlgorithm.swift; sourceTree = "<group>"; };
 		0ABDF1AB1F2B3520007EC7B2 /* RenderingIntent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = RenderingIntent.swift; sourceTree = "<group>"; };
@@ -612,7 +614,7 @@
 		0858DA401C0550B7007FA426 /* Doggie */ = {
 			isa = PBXGroup;
 			children = (
-				0A776FC21D9A0BA5005FC88F /* c11_atomic */,
+				0A776FC21D9A0BA5005FC88F /* doggie_c */,
 				08458AB01E2E627600D01813 /* Accelerate */,
 				0ADAA3BB20CB72F4006682EA /* Swift */,
 				08458ABA1E2E627600D01813 /* Foundation */,
@@ -830,14 +832,15 @@
 			path = ImageFilter;
 			sourceTree = "<group>";
 		};
-		0A776FC21D9A0BA5005FC88F /* c11_atomic */ = {
+		0A776FC21D9A0BA5005FC88F /* doggie_c */ = {
 			isa = PBXGroup;
 			children = (
+				0AB36AB3215DCA010096FF3E /* include.h */,
 				0A776FC31D9A0BA5005FC88F /* c11_atomic.h */,
 				0A776FC41D9A0BA5005FC88F /* module.modulemap */,
 			);
-			name = c11_atomic;
-			path = Sources/c11_atomic/include;
+			name = doggie_c;
+			path = Sources/doggie_c/include;
 			sourceTree = SOURCE_ROOT;
 		};
 		0A792C731FDA28BE003C0290 /* ShapeRegion */ = {
@@ -1148,6 +1151,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				0A776FC61D9A0BA5005FC88F /* c11_atomic.h in Headers */,
+				0AB36AB4215DCA020096FF3E /* include.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1573,7 +1577,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SUPPORTED_PLATFORMS = "$(AVAILABLE_PLATFORMS)";
-				SWIFT_INCLUDE_PATHS = "${SRCROOT}/Sources/c11_atomic/include/**";
+				SWIFT_INCLUDE_PATHS = "${SRCROOT}/Sources/doggie_c/include/**";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				TVOS_DEPLOYMENT_TARGET = 9.0;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -1635,7 +1639,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SUPPORTED_PLATFORMS = "$(AVAILABLE_PLATFORMS)";
-				SWIFT_INCLUDE_PATHS = "${SRCROOT}/Sources/c11_atomic/include/**";
+				SWIFT_INCLUDE_PATHS = "${SRCROOT}/Sources/doggie_c/include/**";
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				TVOS_DEPLOYMENT_TARGET = 9.0;
 				VALIDATE_PRODUCT = YES;

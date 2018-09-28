@@ -23,8 +23,6 @@
 //  THE SOFTWARE.
 //
 
-import zlib
-
 public class Deflate : CompressionCodec {
     
     private var stream: z_stream

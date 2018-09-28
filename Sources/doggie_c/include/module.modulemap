@@ -1,6 +1,4 @@
 //
-//  zlib_include.h
-//
 //  The MIT License
 //  Copyright (c) 2015 - 2018 Susan Cheng. All rights reserved.
 //
@@ -23,9 +21,8 @@
 //  THE SOFTWARE.
 //
 
-#ifndef zlib_include_h
-#define zlib_include_h
-
-#include <zlib.h>
-
-#endif /* zlib_include_h */
+module doggie_c [system][extern_c] {
+    header "include.h"
+    link "z"
+    export *
+}

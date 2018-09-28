@@ -26,33 +26,14 @@
 
 import PackageDescription
 
-#if os(macOS) || os(iOS) || os(tvOS) || os(watchOS)
-    
 let package = Package(
     name: "Doggie",
     products: [
         .library(name: "Doggie", targets: ["Doggie"]),
         ],
     targets: [
-        .target(name: "Doggie", dependencies: ["c11_atomic"]),
-        .target(name: "c11_atomic", dependencies: []),
+        .target(name: "Doggie", dependencies: ["doggie_c"]),
+        .target(name: "doggie_c", dependencies: []),
         .testTarget(name: "DoggieTests", dependencies: ["Doggie"]),
         ]
 )
-    
-#elseif os(Linux)
-    
-let package = Package(
-    name: "Doggie",
-    products: [
-        .library(name: "Doggie", targets: ["Doggie"]),
-        ],
-    targets: [
-        .target(name: "Doggie", dependencies: ["c11_atomic", "zlib"]),
-        .target(name: "c11_atomic", dependencies: []),
-        .target(name: "zlib", dependencies: []),
-        .testTarget(name: "DoggieTests", dependencies: ["Doggie"]),
-        ]
-)
-    
-#endif

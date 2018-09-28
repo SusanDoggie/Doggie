@@ -23,8 +23,6 @@
 //  THE SOFTWARE.
 //
 
-import c11_atomic
-
 public protocol SDAtomicProtocol {
     
     associatedtype Atom
