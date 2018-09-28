@@ -338,27 +338,32 @@ extension BidirectionalCollection where Self : MutableCollection {
         }
     }
 }
+
 extension BidirectionalCollection where Self : MutableCollection {
     
     @inlinable
-    public func nextPermute(by areInIncreasingOrder: (Element, Element) throws -> Bool) rethrows -> Self {
-        var _self = self
-        if !_self.isEmpty {
-            if let k = try _self.indices.dropLast().last(where: { try areInIncreasingOrder(_self[$0], _self[_self.index(after: $0)]) }) {
-                let range = _self.indices.suffix(from: _self.index(after: k))
-                _self.swapAt(k, try range.last { try areInIncreasingOrder(_self[k], _self[$0]) }!)
-                _self.reverseSubrange(range)
+    public mutating func nextPermute(by areInIncreasingOrder: (Element, Element) -> Bool) {
+        if !self.isEmpty {
+            if let k = self.indices.dropLast().last(where: { areInIncreasingOrder(self[$0], self[self.index(after: $0)]) }) {
+                let range = self.indices.suffix(from: self.index(after: k))
+                self.swapAt(k, range.last { areInIncreasingOrder(self[k], self[$0]) }!)
+                self.reverseSubrange(range)
             } else {
-                _self.reverse()
+                self.reverse()
             }
         }
-        return _self
+    }
+    
+    @inlinable
+    public mutating func nextPermute<R : Comparable>(by: (Element) -> R) {
+        self.nextPermute { by($0) < by($1) }
     }
 }
+
 extension BidirectionalCollection where Self : MutableCollection, Element : Comparable {
     
     @inlinable
-    public func nextPermute() -> Self {
-        return nextPermute(by: <)
+    public mutating func nextPermute() {
+        self.nextPermute(by: <)
     }
 }
