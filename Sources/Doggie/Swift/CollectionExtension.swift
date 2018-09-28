@@ -83,27 +83,6 @@ extension BidirectionalCollection where SubSequence == Self {
     }
 }
 
-extension Collection where Element : Equatable {
-    
-    @inlinable
-    public func drop(until element: Element) -> SubSequence {
-        return self.drop(while: { $0 != element })
-    }
-    
-    @inlinable
-    public func prefix(until element: Element) -> SubSequence {
-        return self.prefix(while: { $0 != element })
-    }
-}
-
-extension BidirectionalCollection where Element : Equatable {
-    
-    @inlinable
-    public func suffix(until element: Element) -> SubSequence {
-        return self.suffix(while: { $0 != element })
-    }
-}
-
 extension BidirectionalCollection {
     
     @inlinable
