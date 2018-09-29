@@ -24,6 +24,12 @@ matrix:
 
 before_install:
   - git clone https://github.com/IBM-Swift/Package-Builder.git
+  - cat >./.swift-test-linux <<EOF
+  - swift test -c release
+  - EOF
+  - cat >./.swift-test-macOS <<EOF
+  - swift test -c release
+  - EOF
 
 script:
   - while true; do echo "..."; sleep 60; done &
