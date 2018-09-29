@@ -28,37 +28,6 @@ import XCTest
 
 class FourierTest: XCTestCase {
     
-    static let allTests = [
-        ("testRadix2CooleyTukeyA", testRadix2CooleyTukeyA),
-        ("testRadix2CooleyTukeyB", testRadix2CooleyTukeyB),
-        ("testRadix2CooleyTukeyComplexA", testRadix2CooleyTukeyComplexA),
-        ("testRadix2CooleyTukeyComplexB", testRadix2CooleyTukeyComplexB),
-        ("testInverseRadix2CooleyTukeyA", testInverseRadix2CooleyTukeyA),
-        ("testInverseRadix2CooleyTukeyB", testInverseRadix2CooleyTukeyB),
-        ("testInverseRadix2CooleyTukeyComplexA", testInverseRadix2CooleyTukeyComplexA),
-        ("testInverseRadix2CooleyTukeyComplexB", testInverseRadix2CooleyTukeyComplexB),
-        ("testConvolve", testConvolve),
-        ("testConvolveComplex", testConvolveComplex),
-        ("testCircularConvolve", testCircularConvolve),
-        ("testCircularConvolveComplex", testCircularConvolveComplex),
-        ("testNegacyclicConvolve", testNegacyclicConvolve),
-        ("testNegacyclicConvolveComplex", testNegacyclicConvolveComplex),
-        ("testDCTII", testDCTII),
-        ("testDCTIII", testDCTIII),
-        ("testDCTIV", testDCTIV),
-        ("testDSTII", testDSTII),
-        ("testDSTIII", testDSTIII),
-        ("testDSTIV", testDSTIV),
-        ("testFourierBPerformance", testFourierBPerformance),
-        ("testFourierCPerformance", testFourierCPerformance),
-        ("testFourierBPerformanceX2", testFourierBPerformanceX2),
-        ("testFourierCPerformanceX2", testFourierCPerformanceX2),
-        ("testFourierCPerformanceX3", testFourierCPerformanceX3),
-        ("testCircularConvolvePerformance", testCircularConvolvePerformance),
-        ("testCircularConvolvePerformanceX2", testCircularConvolvePerformanceX2),
-        ("testCircularConvolvePerformanceX3", testCircularConvolvePerformanceX3),
-        ]
-    
     let accuracy = 0.00000001
     
     override func setUp() {

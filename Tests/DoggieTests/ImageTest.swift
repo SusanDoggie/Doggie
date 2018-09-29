@@ -28,24 +28,6 @@ import XCTest
 
 class ImageTest: XCTestCase {
     
-    static let allTests = [
-        ("testColorSpaceConversionPerformance", testColorSpaceConversionPerformance),
-        ("testResamplingNonePerformance", testResamplingNonePerformance),
-        ("testResamplingLinearPerformance", testResamplingLinearPerformance),
-        ("testResamplingCosinePerformance", testResamplingCosinePerformance),
-        ("testResamplingCubicPerformance", testResamplingCubicPerformance),
-        ("testResamplingHermitePerformance", testResamplingHermitePerformance),
-        ("testResamplingMitchellPerformance", testResamplingMitchellPerformance),
-        ("testResamplingLanczosPerformance", testResamplingLanczosPerformance),
-        ("testResamplingNoneAntialiasPerformance", testResamplingNoneAntialiasPerformance),
-        ("testResamplingLinearAntialiasPerformance", testResamplingLinearAntialiasPerformance),
-        ("testResamplingCosineAntialiasPerformance", testResamplingCosineAntialiasPerformance),
-        ("testResamplingCubicAntialiasPerformance", testResamplingCubicAntialiasPerformance),
-        ("testResamplingHermiteAntialiasPerformance", testResamplingHermiteAntialiasPerformance),
-        ("testResamplingMitchellAntialiasPerformance", testResamplingMitchellAntialiasPerformance),
-        ("testResamplingLanczosAntialiasPerformance", testResamplingLanczosAntialiasPerformance),
-        ]
-    
     var sample: Image<ARGB32ColorPixel> = {
         
         let context = ImageContext<ARGB32ColorPixel>(width: 100, height: 100, colorSpace: ColorSpace.sRGB)

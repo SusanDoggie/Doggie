@@ -28,13 +28,6 @@ import XCTest
 
 class CompressionTest: XCTestCase {
     
-    static let allTests = [
-        ("testZlib", testZlib),
-        ("testGzip", testGzip),
-        ("testDeflatePerformance", testDeflatePerformance),
-        ("testInflatePerformance", testInflatePerformance),
-        ]
-    
     let sample = ColorSpace.adobeRGB.iccData!
     
     override func setUp() {

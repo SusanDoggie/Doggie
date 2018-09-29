@@ -28,14 +28,6 @@ import XCTest
 
 class AtomicTest: XCTestCase {
     
-    static let allTests = [
-        ("testAtomicA", testAtomicA),
-        ("testAtomicQueueA", testAtomicQueueA),
-        ("testAtomicStackA", testAtomicStackA),
-        ("testAtomicQueueB", testAtomicQueueB),
-        ("testAtomicStackB", testAtomicStackB),
-        ]
-    
     override func setUp() {
         super.setUp()
         

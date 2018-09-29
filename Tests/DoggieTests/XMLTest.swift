@@ -28,10 +28,6 @@ import XCTest
 
 class XMLTest: XCTestCase {
     
-    static let allTests = [
-        ("testXMLA", testXMLA),
-        ]
-    
     override func setUp() {
         super.setUp()
         
