@@ -24,6 +24,8 @@ matrix:
 
 before_install:
   - git clone https://github.com/IBM-Swift/Package-Builder.git
+  - echo "swift build -c release" | cat >./.swift-build-linux
+  - echo "swift build -c release" | cat >./.swift-build-macOS
   - echo "swift test -c release" | cat >./.swift-test-linux
   - echo "swift test -c release" | cat >./.swift-test-macOS
 
