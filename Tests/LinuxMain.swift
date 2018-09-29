@@ -33,8 +33,6 @@
         testCase(AtomicTest.allTests),
         testCase(FourierTest.allTests),
         testCase(ImageTest.allTests),
-        testCase(ColorTest.allTests),
-        testCase(FontTest.allTests),
         testCase(XMLTest.allTests),
     ])
     
