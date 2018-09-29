@@ -26,9 +26,9 @@ before_install:
   - git clone https://github.com/IBM-Swift/Package-Builder.git
   - echo "swift build -c release" | cat >./.swift-build-macOS
   - echo "swift test -c release" | cat >./.swift-test-macOS
-  - echo "swift build -c release" | cat >./.swift-build-linux
-  - echo "swift test --generate-linuxmain" | cat >./.swift-test-linux
-  - echo "swift test -c release" >> ./.swift-test-linux
+  - echo "swift test --generate-linuxmain" | cat >./.swift-build-linux
+  - echo "swift build -c release" >> ./.swift-build-linux
+  - echo "swift test -c release" | cat >./.swift-test-linux
 
 script:
   - while true; do echo "..."; sleep 60; done &
