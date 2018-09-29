@@ -4,7 +4,7 @@ sudo: required
 notifications: never
 env:
   global:
-    - SWIFT_SNAPSHOT="4.2" CODECOV_ELIGIBLE=true
+    - SWIFT_SNAPSHOT="4.2"
 
 matrix:
   include:
@@ -17,6 +17,7 @@ matrix:
       env: DOCKER_IMAGE=ubuntu:16.10
     - os: osx
       osx_image: xcode10
+      env: CODECOV_ELIGIBLE=true
 
 before_install:
   - git clone https://github.com/IBM-Swift/Package-Builder.git
