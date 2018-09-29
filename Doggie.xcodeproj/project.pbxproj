@@ -85,6 +85,8 @@
 		0A53E47D1E35AEF80060FB83 /* Regex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A53E45C1E35AEF80060FB83 /* Regex.swift */; };
 		0A55AE6E20BFF98400FC951F /* ByteOutputStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A55AE6D20BFF98400FC951F /* ByteOutputStream.swift */; };
 		0A56E9111E35F02E00D93786 /* RectCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A56E90F1E35F02E00D93786 /* RectCollection.swift */; };
+		0A59BA8E215F2E560073B5CA /* ColorTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A59BA8A215F2E500073B5CA /* ColorTest.swift */; };
+		0A59BA8F215F2E560073B5CA /* FontTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A59BA8B215F2E500073B5CA /* FontTest.swift */; };
 		0A5DEDD71F7B60D600A45B4B /* Resolution.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A5DEDD61F7B60D600A45B4B /* Resolution.swift */; };
 		0A5E8D421F56B428000D51E3 /* FontCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A5E8D411F56B428000D51E3 /* FontCollection.swift */; };
 		0A5E8D461F57BE5C000D51E3 /* SFNTHHEA.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A5E8D451F57BE5C000D51E3 /* SFNTHHEA.swift */; };
@@ -342,6 +344,8 @@
 		0A53E45C1E35AEF80060FB83 /* Regex.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Regex.swift; sourceTree = "<group>"; };
 		0A55AE6D20BFF98400FC951F /* ByteOutputStream.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ByteOutputStream.swift; sourceTree = "<group>"; };
 		0A56E90F1E35F02E00D93786 /* RectCollection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = RectCollection.swift; sourceTree = "<group>"; };
+		0A59BA8A215F2E500073B5CA /* ColorTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ColorTest.swift; sourceTree = "<group>"; };
+		0A59BA8B215F2E500073B5CA /* FontTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FontTest.swift; sourceTree = "<group>"; };
 		0A5DEDD61F7B60D600A45B4B /* Resolution.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Resolution.swift; sourceTree = "<group>"; };
 		0A5E8D411F56B428000D51E3 /* FontCollection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = FontCollection.swift; sourceTree = "<group>"; };
 		0A5E8D451F57BE5C000D51E3 /* SFNTHHEA.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = SFNTHHEA.swift; sourceTree = "<group>"; };
@@ -669,6 +673,8 @@
 				0A26A0901FA98994008BEADB /* CompressionTest.swift */,
 				08BFF9B91B0715ED00EC88CB /* FourierTest.swift */,
 				0A8D98A21E53ED0F0050E112 /* ImageTest.swift */,
+				0A59BA8A215F2E500073B5CA /* ColorTest.swift */,
+				0A59BA8B215F2E500073B5CA /* FontTest.swift */,
 				0A7A4BFF1F738D18005F44CD /* XMLTest.swift */,
 			);
 			name = Tests;
@@ -1500,8 +1506,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				0A26A0921FA98A1B008BEADB /* CompressionTest.swift in Sources */,
+				0A59BA8E215F2E560073B5CA /* ColorTest.swift in Sources */,
 				0A92062D1F14A29E00AF5C49 /* ImageTest.swift in Sources */,
 				0A7A4C001F738D18005F44CD /* XMLTest.swift in Sources */,
+				0A59BA8F215F2E560073B5CA /* FontTest.swift in Sources */,
 				0ACD21331EEBA55000C5811F /* AtomicTest.swift in Sources */,
 				0A92062C1F14A1FA00AF5C49 /* FourierTest.swift in Sources */,
 			);

@@ -1,5 +1,5 @@
 //
-//  LinuxMain.swift
+//  FontTest.swift
 //
 //  The MIT License
 //  Copyright (c) 2015 - 2018 Susan Cheng. All rights reserved.
@@ -23,19 +23,36 @@
 //  THE SOFTWARE.
 //
 
-#if os(Linux)
+import Doggie
+import XCTest
+
+class FontTest: XCTestCase {
     
-    import XCTest
-    @testable import DoggieTests
+    static let allTests = [
+        ("testFontLoadingPerformance", testFontLoadingPerformance),
+        ]
     
-    XCTMain([
-        testCase(CompressionTest.allTests),
-        testCase(AtomicTest.allTests),
-        testCase(FourierTest.allTests),
-        testCase(ImageTest.allTests),
-        testCase(ColorTest.allTests),
-        testCase(FontTest.allTests),
-        testCase(XMLTest.allTests),
-    ])
+    override func setUp() {
+        super.setUp()
+        
+    }
     
-#endif
+    override func tearDown() {
+        
+        super.tearDown()
+    }
+    
+    func testFontLoadingPerformance() {
+        
+        var availableFonts: FontCollection = FontCollection()
+        
+        self.measure() {
+            
+            availableFonts = FontCollection.availableFonts
+        }
+        
+        print("dump 50 fonts:")
+        availableFonts.prefix(50).forEach { print($0.fontName) }
+    }
+    
+}

@@ -1,5 +1,5 @@
 //
-//  LinuxMain.swift
+//  ColorTest.swift
 //
 //  The MIT License
 //  Copyright (c) 2015 - 2018 Susan Cheng. All rights reserved.
@@ -23,19 +23,36 @@
 //  THE SOFTWARE.
 //
 
-#if os(Linux)
+import Doggie
+import XCTest
+
+class ColorTest: XCTestCase {
     
-    import XCTest
-    @testable import DoggieTests
+    static let allTests = [
+        ("testColorSpaceLoadingPerformance", testColorSpaceLoadingPerformance),
+        ]
     
-    XCTMain([
-        testCase(CompressionTest.allTests),
-        testCase(AtomicTest.allTests),
-        testCase(FourierTest.allTests),
-        testCase(ImageTest.allTests),
-        testCase(ColorTest.allTests),
-        testCase(FontTest.allTests),
-        testCase(XMLTest.allTests),
-    ])
+    override func setUp() {
+        super.setUp()
+        
+    }
     
-#endif
+    override func tearDown() {
+        
+        super.tearDown()
+    }
+    
+    func testColorSpaceLoadingPerformance() {
+        
+        var availableColorSpaces: [AnyColorSpace] = []
+        
+        self.measure() {
+            
+            availableColorSpaces = AnyColorSpace.availableColorSpaces
+        }
+        
+        print("dump 50 icc:")
+        availableColorSpaces.prefix(50).forEach { print($0.localizedName ?? "unknown color space") }
+    }
+    
+}
