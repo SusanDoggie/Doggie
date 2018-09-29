@@ -15,6 +15,9 @@ matrix:
     - os: linux
       services: docker
       env: DOCKER_IMAGE=ubuntu:16.10
+    - os: linux
+      services: docker
+      env: DOCKER_IMAGE=ubuntu:18.04
     - os: osx
       osx_image: xcode10
       env: CODECOV_ELIGIBLE=true
