@@ -98,8 +98,33 @@ extension AnyColorSpace {
         
         return availableColorSpaces
     }
-    
 }
 
 #endif
 
+#if !canImport(CoreGraphics) && os(Linux)
+
+extension AnyColorSpace {
+    
+    public static var availableColorSpaces: [AnyColorSpace] {
+        
+        let urls = [
+            URL(fileURLWithPath: "/usr/share/color/icc", isDirectory: true),
+            URL(fileURLWithPath: "/usr/local/share/color/icc", isDirectory: true),
+            URL(fileURLWithFileSystemRepresentation: ".color/icc/", isDirectory: true, relativeTo: FileManager.default.homeDirectoryForCurrentUser),
+            ]
+        
+        var availableColorSpaces: [AnyColorSpace] = []
+        
+        for url in FileManager.default.fileUrls(urls) {
+            
+            if let data = try? Data(contentsOf: url, options: .alwaysMapped), let colorSpace = try? AnyColorSpace(iccData: data) {
+                availableColorSpaces.append(colorSpace)
+            }
+        }
+        
+        return availableColorSpaces
+    }
+}
+
+#endif

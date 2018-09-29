@@ -49,3 +49,21 @@ extension FontCollection {
 }
 
 #endif
+
+#if os(Linux)
+
+extension FontCollection {
+    
+    public static var availableFonts: FontCollection {
+        
+        let urls = [
+            URL(fileURLWithPath: "/usr/share/fonts", isDirectory: true),
+            URL(fileURLWithPath: "/usr/local/share/fonts", isDirectory: true),
+            URL(fileURLWithFileSystemRepresentation: ".fonts/", isDirectory: true, relativeTo: FileManager.default.homeDirectoryForCurrentUser),
+            ]
+        
+        return FontCollection(urls: urls)
+    }
+}
+
+#endif
