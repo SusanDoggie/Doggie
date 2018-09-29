@@ -251,7 +251,7 @@ public struct TriangularPatchTessellator : ImageContextRenderTriangleGenerator {
         self.q2 = Point(x: 0, y: 0)
     }
     
-    public func render(projection: (Vector) -> Point, _ body: (Vector, Vector, Vector) -> Void) {
+    private func _render(projection: (Vector) -> Point, _ body: (Vector, Vector, Vector) -> Void) {
         
         let m300 = patch.eval(q0.x, q0.y)
         let m030 = patch.eval(q1.x, q1.y)
@@ -285,15 +285,20 @@ public struct TriangularPatchTessellator : ImageContextRenderTriangleGenerator {
             
         } else {
             
-            let s0 = 0.5 * (q0 + q1)
-            let s1 = 0.5 * (q1 + q2)
-            let s2 = 0.5 * (q2 + q0)
-            
-            TriangularPatchTessellator(patch: patch, q0, s0, s2).render(projection: projection, body)
-            TriangularPatchTessellator(patch: patch, s0, q1, s1).render(projection: projection, body)
-            TriangularPatchTessellator(patch: patch, s2, s1, q2).render(projection: projection, body)
-            TriangularPatchTessellator(patch: patch, s0, s1, s2).render(projection: projection, body)
+            self.render(projection: projection, body)
         }
+    }
+    
+    public func render(projection: (Vector) -> Point, _ body: (Vector, Vector, Vector) -> Void) {
+        
+        let s0 = 0.5 * (q0 + q1)
+        let s1 = 0.5 * (q1 + q2)
+        let s2 = 0.5 * (q2 + q0)
+        
+        TriangularPatchTessellator(patch: patch, q0, s0, s2)._render(projection: projection, body)
+        TriangularPatchTessellator(patch: patch, s0, q1, s1)._render(projection: projection, body)
+        TriangularPatchTessellator(patch: patch, s2, s1, q2)._render(projection: projection, body)
+        TriangularPatchTessellator(patch: patch, s0, s1, s2)._render(projection: projection, body)
     }
 }
 
