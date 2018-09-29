@@ -214,7 +214,7 @@ extension FontCollection {
 
 extension FontCollection {
     
-    public init<S : Sequence>(_ urls: S) where S.Element == URL {
+    public init<S : Sequence>(urls: S) where S.Element == URL {
         
         self.init()
         
@@ -225,9 +225,9 @@ extension FontCollection {
             }
         }
     }
-        
-    public init(_ url: URL) {
-        self.init([url])
+    
+    public init(url: URL) {
+        self.init(urls: CollectionOfOne(url))
     }
 }
 

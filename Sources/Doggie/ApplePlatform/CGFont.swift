@@ -43,7 +43,7 @@ extension FontCollection {
         
         #endif
         
-        return FontCollection(files)
+        return FontCollection(urls: files)
     }
     
 }
