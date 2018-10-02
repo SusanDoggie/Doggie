@@ -23,9 +23,7 @@
 //  THE SOFTWARE.
 //
 
-#if canImport(CoreGraphics) && canImport(ImageIO)
-
-@_exported import ImageIO
+#if canImport(CoreGraphics) && canImport(ImageIO) && canImport(AVFoundation)
 
 public struct CGImageAnimationFrame {
     
@@ -56,7 +54,30 @@ extension CGImage {
 
 extension CGImage {
     
-    public func representation(using storageType: ImageRep.MediaType, properties: [ImageRep.PropertyKey : Any]) -> Data? {
+    public enum MediaType {
+        
+        case bmp
+        
+        case gif
+        
+        case jpeg
+        
+        case jpeg2000
+        
+        case png
+        
+        case tiff
+        
+        @available(OSX 10.13, iOS 11.0, tvOS 11.0, *)
+        case heic
+    }
+    
+    public enum PropertyKey : Int {
+        
+        case compressionQuality
+    }
+    
+    public func representation(using storageType: MediaType, properties: [PropertyKey : Any]) -> Data? {
         
         let type: CFString
         var _properties: [CFString: Any] = [:]
@@ -68,6 +89,9 @@ extension CGImage {
         case .jpeg2000: type = kUTTypeJPEG2000
         case .png: type = kUTTypePNG
         case .tiff: type = kUTTypeTIFF
+        case .heic:
+            guard #available(OSX 10.13, iOS 11.0, tvOS 11.0, *) else { return nil }
+            type = AVFileType.heic as CFString
         }
         
         if let compressionQuality = properties[.compressionQuality] as? NSNumber {

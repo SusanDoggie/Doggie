@@ -267,29 +267,7 @@ public func degree4roots(_ b: Double, _ c: Double, _ d: Double, _ e: Double) -> 
     return Array(Set(degree2roots(_d2.0.0, _d2.0.1).concat(degree2roots(_d2.1.0, _d2.1.1))))
 }
 
-// MARK: Others
-
-@inlinable
-public func linearScale(_ f: UInt, _ x: UInt) -> Double {
-    return log(Double(x + 1)) / log(Double(f))
-}
-@inlinable
-public func logScale(_ f: UInt, _ x: Double) -> UInt {
-    return UInt(lround(pow(Double(f), x))) - 1
-}
-
-@inlinable
-public func degreesToRad<T: FloatingPoint>(_ alpha: T) -> T {
-    return alpha * T.pi / 180
-}
-
-@inlinable
-public func LogarithmicDynamicRangeCompression(_ x: Double, _ m: Double) -> Double {
-    let alpha = 2.5128624172523393539654752332184326538328336634026474
-    let alpha_2 = 0.7959050946318330895721191440438390881317432367303995
-    let re = log(1.0 + alpha * abs(x) / m) * alpha_2
-    return x.sign == .minus ? -re : re
-}
+// MARK: Interpolation
 
 @inlinable
 public func LinearInterpolate<T: ScalarMultiplicative>(_ t: T.Scalar, _ a: T, _ b: T) -> T {
@@ -343,25 +321,3 @@ public func HermiteInterpolate<T: ScalarMultiplicative>(_ t: T.Scalar, _ a: T, _
     let b3 = a3 * c
     return b0 + b1 + b2 + b3
 }
-
-@inlinable
-public func Phase<T: FloatingPoint>(_ x: T, _ shift: T, _ frequency: T, _ maxFrequency: T) -> T {
-    return abs((x / maxFrequency + shift) * frequency).truncatingRemainder(dividingBy: 1)
-}
-@inlinable
-public func SineWave<T: FloatingMathProtocol>(_ phase: T) -> T {
-    return T.sin(2 * T.pi * phase)
-}
-@inlinable
-public func SquareWave<T: FloatingPoint & ExpressibleByFloatLiteral>(_ phase: T) -> T {
-    return phase < 0.5 ? 1 : -1
-}
-@inlinable
-public func SawtoothWave<T: FloatingPoint>(_ phase: T) -> T {
-    return phase * 2 - 1
-}
-@inlinable
-public func TriangleWave<T: FloatingPoint & ExpressibleByFloatLiteral>(_ phase: T) -> T {
-    return phase < 0.5 ? phase * 4 - 1 : 3 - phase * 4
-}
-

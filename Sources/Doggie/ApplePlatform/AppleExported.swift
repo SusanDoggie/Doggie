@@ -34,3 +34,15 @@
 @_exported import MobileCoreServices
 
 #endif
+
+#if canImport(ImageIO)
+
+@_exported import ImageIO
+
+#endif
+
+#if canImport(AVFoundation)
+
+@_exported import AVFoundation
+
+#endif

@@ -176,11 +176,17 @@ extension ImageRep {
 extension ImageRep {
     
     public enum MediaType {
+        
         case bmp
+        
         case gif
+        
         case jpeg
+        
         case jpeg2000
+        
         case png
+        
         case tiff
     }
     
@@ -192,9 +198,10 @@ extension ImageRep {
 
 extension ImageRep {
     
-    public enum PropertyKey : Int {
+    public enum PropertyKey {
         
         case compressionQuality
+        
         case interlaced
     }
     
