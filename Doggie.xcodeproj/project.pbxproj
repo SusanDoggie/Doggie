@@ -68,6 +68,7 @@
 		0A32D9991F28825F0027F384 /* Tensor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A32D9971F28825F0027F384 /* Tensor.swift */; };
 		0A34FBEA20AAE683001CE2F3 /* UnsafeBufferProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A34FBE920AAE683001CE2F3 /* UnsafeBufferProtocol.swift */; };
 		0A36612C1EEA54AB00216A26 /* CGPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A36612A1EEA54AB00216A26 /* CGPath.swift */; };
+		0A3674B421634DC800175580 /* CGImageRep.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3674B321634DC800175580 /* CGImageRep.swift */; };
 		0A39436A1F4A77A700573372 /* Trigger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3943691F4A77A700573372 /* Trigger.swift */; };
 		0A39A6B61ED9342C00804004 /* ImageContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A39A6B41ED9342C00804004 /* ImageContext.swift */; };
 		0A39A6B91ED9345100804004 /* DrawImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A39A6B71ED9345100804004 /* DrawImage.swift */; };
@@ -325,6 +326,7 @@
 		0A32D9971F28825F0027F384 /* Tensor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Tensor.swift; sourceTree = "<group>"; };
 		0A34FBE920AAE683001CE2F3 /* UnsafeBufferProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnsafeBufferProtocol.swift; sourceTree = "<group>"; };
 		0A36612A1EEA54AB00216A26 /* CGPath.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = CGPath.swift; sourceTree = "<group>"; };
+		0A3674B321634DC800175580 /* CGImageRep.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CGImageRep.swift; sourceTree = "<group>"; };
 		0A3943691F4A77A700573372 /* Trigger.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Trigger.swift; sourceTree = "<group>"; };
 		0A39A6B41ED9342C00804004 /* ImageContext.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = ImageContext.swift; sourceTree = "<group>"; };
 		0A39A6B71ED9345100804004 /* DrawImage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = DrawImage.swift; sourceTree = "<group>"; };
@@ -706,6 +708,7 @@
 				0AE762571EE9583400E926D5 /* CGImage.swift */,
 				0A3FD861210079BC006D4737 /* CGContext.swift */,
 				0AABCC6220F9982F00D7BD78 /* ImageIO.swift */,
+				0A3674B321634DC800175580 /* CGImageRep.swift */,
 				0A06975D1E4D6732005CF664 /* NSImage.swift */,
 				0AE762541EE9475400E926D5 /* CGColorSpace.swift */,
 				0A3D5C621EEA498E00A9CDEA /* CGColor.swift */,
@@ -1336,6 +1339,7 @@
 				0A8F4F681F622B020062FD11 /* Stencil.swift in Sources */,
 				0A32D9991F28825F0027F384 /* Tensor.swift in Sources */,
 				0A9CD5971EEB9A2D00094148 /* CalibratedRGBColorSpace.swift in Sources */,
+				0A3674B421634DC800175580 /* CGImageRep.swift in Sources */,
 				0AD3E6401F54018B003CC21A /* TTCDecoder.swift in Sources */,
 				0A2107121E5BEEBB00F1E00E /* PathStroke.swift in Sources */,
 				08458B371E2E627600D01813 /* Maths.swift in Sources */,
