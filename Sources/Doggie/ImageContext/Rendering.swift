@@ -377,8 +377,8 @@ struct _PerspectiveProjectTriangleGenerator<Base : ImageContextRenderTriangleGen
 
 extension _PerspectiveProjectTriangleGenerator {
     
-    @usableFromInline
     @_fixed_layout
+    @usableFromInline
     struct _Vertex : ImageContextRenderVertex {
         
         @usableFromInline

@@ -442,8 +442,8 @@ extension MappedBuffer : Hashable where Element : Hashable {
 
 extension MappedBuffer {
     
-    @usableFromInline
     @_fixed_layout
+    @usableFromInline
     struct _Box {
         
         @usableFromInline
@@ -568,8 +568,8 @@ extension Data {
 
 extension MappedBuffer {
     
-    @usableFromInline
     @_fixed_layout
+    @usableFromInline
     class Base {
         
         @usableFromInline

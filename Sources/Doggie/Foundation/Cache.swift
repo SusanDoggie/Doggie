@@ -60,8 +60,8 @@ public struct Cache<Key: Hashable> : Collection, ExpressibleByDictionaryLiteral 
 
 extension Cache {
     
-    @usableFromInline
     @_fixed_layout
+    @usableFromInline
     class Base {
         
         @usableFromInline

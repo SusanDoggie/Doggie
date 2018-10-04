@@ -745,8 +745,8 @@ public struct Atomic<Instance> {
 
 extension Atomic {
     
-    @usableFromInline
     @_fixed_layout
+    @usableFromInline
     class Base {
         
         @usableFromInline
