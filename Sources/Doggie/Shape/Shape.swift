@@ -153,13 +153,13 @@ extension Shape {
         
         let components = self.components
         var segments = ArraySlice(components.flatMap { $0.segments })
-        let list = Shape.Component.CacheArray(cache: components.map { component in component.cache.lck.synchronized { component.cache._values } })
+        let cache = Shape.Component.CacheArray(components.map { component in component.cache.lck.synchronized { component.cache._values } })
         
         self.components.removeAll(keepingCapacity: true)
         
         for (index, var component) in components.enumerated() {
             component.segments = segments.popFirst(component.count)
-            component.cache = Shape.Component.Cache(index: index, list: list)
+            component.cache = Shape.Component.Cache(index: index, list: cache)
             self.components.append(component)
         }
     }
@@ -310,7 +310,7 @@ extension Shape.Component {
         @usableFromInline
         init() {
             self.index = 0
-            self.list = CacheArray(cache: [CacheArray.Element()])
+            self.list = CacheArray([CacheArray.Element()])
         }
         
         @usableFromInline
@@ -339,11 +339,11 @@ extension Shape.Component {
     class CacheArray {
         
         let lck = SDLock()
-        var cache: [Element]
+        var storage: [Element]
         
         @usableFromInline
-        init(cache: [Element]) {
-            self.cache = cache
+        init(_ storage: [Element]) {
+            self.storage = storage
         }
     }
 }
@@ -378,10 +378,10 @@ extension Shape.Component.Cache {
     @usableFromInline
     var _values: Shape.Component.CacheArray.Element {
         get {
-            return list.cache[index]
+            return list.storage[index]
         }
         nonmutating set {
-            list.cache[index] = newValue
+            list.storage[index] = newValue
         }
     }
     
