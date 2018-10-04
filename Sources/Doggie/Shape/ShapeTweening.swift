@@ -83,6 +83,7 @@ extension Shape {
             }
         }
         
+        components.makeContiguousBuffer()
         return components
     }
 }

@@ -275,7 +275,7 @@ extension Shape.Component {
 
 extension Shape.Component {
     
-    private var constructiveSolidResultCache: [ObjectIdentifier: ConstructiveSolidResult] {
+    private var constructiveSolidResultCache: [Shape.Component.CacheIdentifier: ConstructiveSolidResult] {
         get {
             return cache[ShapeCacheConstructiveSolidResultKey, default: [:]]
         }

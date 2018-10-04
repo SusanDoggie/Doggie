@@ -42,7 +42,7 @@ public struct Shape : RandomAccessCollection, MutableCollection, ExpressibleByAr
         public var isClosed: Bool
         
         @usableFromInline
-        var segments: [Segment]
+        var segments: ArraySlice<Segment>
         
         @usableFromInline
         var cache = Shape.Component.Cache()
@@ -58,7 +58,7 @@ public struct Shape : RandomAccessCollection, MutableCollection, ExpressibleByAr
         public init<S : Sequence>(start: Point, closed: Bool = false, segments: S) where S.Element == Segment {
             self.start = start
             self.isClosed = closed
-            self.segments = Array(segments)
+            self.segments = segments as? ArraySlice ?? ArraySlice(segments)
         }
     }
     
@@ -84,11 +84,13 @@ public struct Shape : RandomAccessCollection, MutableCollection, ExpressibleByAr
     @inlinable
     public init(arrayLiteral elements: Component ...) {
         self.components = elements
+        self.makeContiguousBuffer()
     }
     
     @inlinable
     public init<S : Sequence>(_ components: S) where S.Element == Component {
         self.components = Array(components)
+        self.makeContiguousBuffer()
     }
     
     @inlinable
@@ -141,6 +143,25 @@ public struct Shape : RandomAccessCollection, MutableCollection, ExpressibleByAr
     public var frame : [Point] {
         let _transform = self.transform
         return originalBoundary.points.map { $0 * _transform }
+    }
+}
+
+extension Shape {
+    
+    @inlinable
+    public mutating func makeContiguousBuffer() {
+        
+        let components = self.components
+        var segments = ArraySlice(components.flatMap { $0.segments })
+        let list = Shape.Component.CacheArray(cache: components.map { component in component.cache.lck.synchronized { component.cache._values } })
+        
+        self.components.removeAll(keepingCapacity: true)
+        
+        for (index, var component) in components.enumerated() {
+            component.segments = segments.popFirst(component.count)
+            component.cache = Shape.Component.Cache(index: index, list: list)
+            self.components.append(component)
+        }
     }
 }
 
@@ -281,27 +302,121 @@ extension Shape.Cache {
 extension Shape.Component {
     
     @usableFromInline
-    class Cache {
+    struct Cache {
+        
+        let index: Int
+        let list: CacheArray
+        
+        @usableFromInline
+        init() {
+            self.index = 0
+            self.list = CacheArray(cache: [CacheArray.Element()])
+        }
+        
+        @usableFromInline
+        init(index: Int, list: CacheArray) {
+            self.index = index
+            self.list = list
+        }
+    }
+    
+    @usableFromInline
+    struct CacheIdentifier: Hashable {
+        
+        let index: Int
+        let list: ObjectIdentifier
+    }
+    
+    var cacheId: CacheIdentifier {
+        let cache = self.cache
+        return CacheIdentifier(index: cache.index, list: ObjectIdentifier(cache.list))
+    }
+}
+
+extension Shape.Component {
+    
+    @usableFromInline
+    class CacheArray {
         
         let lck = SDLock()
+        var cache: [Element]
+        
+        @usableFromInline
+        init(cache: [Element]) {
+            self.cache = cache
+        }
+    }
+}
+
+extension Shape.Component.CacheArray {
+    
+    @usableFromInline
+    struct Element {
         
         var spaces: RectCollection?
         var boundary: Rect?
         var area: Double?
         
-        var table: [String : Any]
+        var table: [String : Any]?
         
-        @usableFromInline
         init() {
             self.spaces = nil
             self.boundary = nil
             self.area = nil
-            self.table = [:]
+            self.table = nil
+        }
+    }
+}
+
+extension Shape.Component.Cache {
+    
+    @usableFromInline
+    var lck: SDLock {
+        return list.lck
+    }
+    
+    @usableFromInline
+    var _values: Shape.Component.CacheArray.Element {
+        get {
+            return list.cache[index]
+        }
+        nonmutating set {
+            list.cache[index] = newValue
         }
     }
     
-    var cacheId: ObjectIdentifier {
-        return ObjectIdentifier(cache)
+    var spaces: RectCollection? {
+        get {
+            return _values.spaces
+        }
+        nonmutating set {
+            _values.spaces = newValue
+        }
+    }
+    var boundary: Rect? {
+        get {
+            return _values.boundary
+        }
+        nonmutating set {
+            _values.boundary = newValue
+        }
+    }
+    var area: Double? {
+        get {
+            return _values.area
+        }
+        nonmutating set {
+            _values.area = newValue
+        }
+    }
+    
+    var table: [String : Any] {
+        get {
+            return _values.table ?? [:]
+        }
+        nonmutating set {
+            _values.table = newValue
+        }
     }
 }
 
@@ -311,7 +426,7 @@ extension Shape.Component.Cache {
         get {
             return lck.synchronized { table[key] as? Value }
         }
-        set {
+        nonmutating set {
             lck.synchronized { table[key] = newValue }
         }
     }
@@ -320,7 +435,7 @@ extension Shape.Component.Cache {
         get {
             return self[key] ?? defaultValue()
         }
-        set {
+        nonmutating set {
             self[key] = newValue
         }
     }
@@ -426,22 +541,22 @@ extension Shape.Component : RandomAccessCollection, MutableCollection {
     
     @inlinable
     public var startIndex: Int {
-        return segments.startIndex
+        return 0
     }
     
     @inlinable
     public var endIndex: Int {
-        return segments.endIndex
+        return segments.count
     }
     
     @inlinable
     public subscript(position : Int) -> Shape.Segment {
         get {
-            return segments[position]
+            return segments[position + segments.startIndex]
         }
         set {
             cache = Cache()
-            segments[position] = newValue
+            segments[position + segments.startIndex] = newValue
         }
     }
 }

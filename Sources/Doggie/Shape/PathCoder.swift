@@ -330,9 +330,12 @@ extension Shape {
                 throw ParserError(command: command)
             }
         }
+        
         if component.count != 0 {
             self.append(component)
         }
+        
+        self.makeContiguousBuffer()
     }
 }
 
