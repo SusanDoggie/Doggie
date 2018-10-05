@@ -146,22 +146,28 @@ public struct Shape : RandomAccessCollection, MutableCollection, ExpressibleByAr
     }
 }
 
+extension MutableCollection where Element == Shape.Component {
+    
+    @inlinable
+    mutating func makeContiguousBuffer() {
+        
+        var segments = ArraySlice(self.flatMap { $0.segments })
+        let cache = Shape.Component.CacheArray(self.map { component in component.cache.lck.synchronized { component.cache._values } })
+        
+        for (cache_index, index) in self.indices.enumerated() {
+            var component = self[index]
+            component.segments = segments.popFirst(component.count)
+            component.cache = Shape.Component.Cache(index: cache_index, list: cache)
+            self[index] = component
+        }
+    }
+}
+
 extension Shape {
     
     @inlinable
     public mutating func makeContiguousBuffer() {
-        
-        let components = self.components
-        var segments = ArraySlice(components.flatMap { $0.segments })
-        let cache = Shape.Component.CacheArray(components.map { component in component.cache.lck.synchronized { component.cache._values } })
-        
-        self.components.removeAll(keepingCapacity: true)
-        
-        for (index, var component) in components.enumerated() {
-            component.segments = segments.popFirst(component.count)
-            component.cache = Shape.Component.Cache(index: index, list: cache)
-            self.components.append(component)
-        }
+        self.components.makeContiguousBuffer()
     }
 }
 
