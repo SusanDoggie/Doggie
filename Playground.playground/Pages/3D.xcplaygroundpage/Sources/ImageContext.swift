@@ -21,7 +21,7 @@ public func orthographicProject(width: Int, height: Int) -> Image<ARGB32ColorPix
     
     let context = ImageContext<ARGB32ColorPixel>(width: width, height: height, colorSpace: ColorSpace.sRGB)
     
-    let matrix = Matrix.scale(0.4) * Matrix.rotateY(degreesToRad(30)) * Matrix.rotateX(degreesToRad(30)) * Matrix.translate(x: 0, y: 0, z: 100)
+    let matrix = Matrix.scale(0.4) * Matrix.rotateY(.pi / 6) * Matrix.rotateX(.pi / 6) * Matrix.translate(x: 0, y: 0, z: 100)
     
     let c0 = ColorPixel(red: 0, green: 0, blue: 0, opacity: 1)
     let c1 = ColorPixel(red: 1, green: 0, blue: 0, opacity: 1)
@@ -84,7 +84,7 @@ public func perspectiveProject(width: Int, height: Int) -> Image<ARGB32ColorPixe
     
     let context = ImageContext<ARGB32ColorPixel>(width: width, height: height, colorSpace: ColorSpace.sRGB)
     
-    let matrix = Matrix.rotateY(degreesToRad(30)) * Matrix.rotateX(degreesToRad(30)) * Matrix.translate(x: 0, y: 0, z: 100)
+    let matrix = Matrix.rotateY(.pi / 6) * Matrix.rotateX(.pi / 6) * Matrix.translate(x: 0, y: 0, z: 100)
     
     let c0 = ColorPixel(red: 0, green: 0, blue: 0, opacity: 1)
     let c1 = ColorPixel(red: 1, green: 0, blue: 0, opacity: 1)
@@ -138,7 +138,7 @@ public func perspectiveProject(width: Int, height: Int) -> Image<ARGB32ColorPixe
     context.renderCullingMode = .back
     context.renderDepthCompareMode = .less
     
-    context.render(triangles, projection: PerspectiveProjectMatrix(angle: degreesToRad(50), nearZ: 1, farZ: 500), shader: shader)
+    context.render(triangles, projection: PerspectiveProjectMatrix(angle: 5 * .pi / 18, nearZ: 1, farZ: 500), shader: shader)
     
     return context.image
 }
@@ -172,7 +172,7 @@ public func texturedCube(width: Int, height: Int) -> Image<ARGB32ColorPixel> {
     
     let context = ImageContext<ARGB32ColorPixel>(width: width, height: height, colorSpace: ColorSpace.sRGB)
     
-    let matrix = Matrix.rotateY(degreesToRad(30)) * Matrix.rotateX(degreesToRad(30)) * Matrix.translate(x: 0, y: 0, z: 100)
+    let matrix = Matrix.rotateY(.pi / 6) * Matrix.rotateX(.pi / 6) * Matrix.translate(x: 0, y: 0, z: 100)
     
     let v0 = Vector(x: 25, y: 25, z: -25) * matrix
     let v1 = Vector(x: -25, y: 25, z: -25) * matrix
@@ -217,7 +217,7 @@ public func texturedCube(width: Int, height: Int) -> Image<ARGB32ColorPixel> {
     context.renderCullingMode = .back
     context.renderDepthCompareMode = .less
     
-    context.render(triangles, projection: PerspectiveProjectMatrix(angle: degreesToRad(50), nearZ: 1, farZ: 500), shader: shader)
+    context.render(triangles, projection: PerspectiveProjectMatrix(angle: 5 * .pi / 18, nearZ: 1, farZ: 500), shader: shader)
     
     return context.image
 }
@@ -319,16 +319,16 @@ public func tessellation(width: Int, height: Int) -> Image<ARGB32ColorPixel> {
     let v8 = Vector(x: 1, y: 0, z: c)
     let v9 = Vector(x: 0.9, y: 0.9, z: 0.9)
     
-    let matrix = Matrix.scale(25) * Matrix.rotateY(degreesToRad(30)) * Matrix.rotateX(degreesToRad(30)) * Matrix.translate(x: 0, y: 0, z: 100)
+    let matrix = Matrix.scale(25) * Matrix.rotateY(.pi / 6) * Matrix.rotateX(.pi / 6) * Matrix.translate(x: 0, y: 0, z: 100)
     
     let p0 = CubicBezierTriangularPatch(v0, v1, v2, v3, v8, v9, v4, v7, v5, v6)
-    let p1 = p0 * Matrix.rotateX(degreesToRad(90))
-    let p2 = p1 * Matrix.rotateX(degreesToRad(90))
-    let p3 = p2 * Matrix.rotateX(degreesToRad(90))
-    let p4 = p0 * Matrix.rotateY(degreesToRad(180))
-    let p5 = p1 * Matrix.rotateY(degreesToRad(180))
-    let p6 = p2 * Matrix.rotateY(degreesToRad(180))
-    let p7 = p3 * Matrix.rotateY(degreesToRad(180))
+    let p1 = p0 * Matrix.rotateX(0.5 * .pi)
+    let p2 = p1 * Matrix.rotateX(0.5 * .pi)
+    let p3 = p2 * Matrix.rotateX(0.5 * .pi)
+    let p4 = p0 * Matrix.rotateY(.pi)
+    let p5 = p1 * Matrix.rotateY(.pi)
+    let p6 = p2 * Matrix.rotateY(.pi)
+    let p7 = p3 * Matrix.rotateY(.pi)
     
     let list = [p0, p1, p2, p3, p4, p5, p6, p7]
     
@@ -395,7 +395,7 @@ public func tessellation(width: Int, height: Int) -> Image<ARGB32ColorPixel> {
     context.renderCullingMode = .back
     context.renderDepthCompareMode = .less
     
-    context.render(list.map { TriangularPatchTessellator(patch: $0 * matrix) }, projection: PerspectiveProjectMatrix(angle: degreesToRad(50), nearZ: 1, farZ: 500), shader: shader)
+    context.render(list.map { TriangularPatchTessellator(patch: $0 * matrix) }, projection: PerspectiveProjectMatrix(angle: 5 * .pi / 18, nearZ: 1, farZ: 500), shader: shader)
     
     return context.image
 }

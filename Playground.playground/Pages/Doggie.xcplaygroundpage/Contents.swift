@@ -39,5 +39,16 @@ task2.result  // 6
 task.wait(until: .now() + 1)
 
 
-let path = try Shape(code: "M100 0c0-100-236.60 36.60-150 86.60S36.60-136.60-50-86.60 100 100 100 0z")
+let shape = try Shape(code: "M100 0c0-100-236.60 36.60-150 86.60S36.60-136.60-50-86.60 100 100 100 0z")
 
+let region = ShapeRegion(shape, winding: .nonZero)
+let ellipse = ShapeRegion(ellipseIn: shape.boundary)
+
+region.union(ellipse)
+
+region.intersection(ellipse)
+
+region.subtracting(ellipse)
+ellipse.subtracting(region)
+
+region.symmetricDifference(ellipse)
