@@ -11,6 +11,9 @@ matrix:
     - os: linux
     - os: linux
       services: docker
+      env: DOCKER_IMAGE=ubuntu:14.04
+    - os: linux
+      services: docker
       env: DOCKER_IMAGE=ubuntu:16.04
     - os: linux
       services: docker
@@ -27,7 +30,6 @@ before_install:
   - echo "swift test -c release" | cat >./.swift-test-linux
   - |
     cat <<"EOF" > build.sh
-    set -o verbose
     if [ -n "${DOCKER_IMAGE}" ]; then
         docker pull ${DOCKER_IMAGE}
         docker run --env SWIFT_SNAPSHOT -v ${TRAVIS_BUILD_DIR}:${TRAVIS_BUILD_DIR} ${DOCKER_IMAGE} /bin/bash -c "apt-get update && apt-get install -y git sudo lsb-release wget libxml2 && cd $TRAVIS_BUILD_DIR && ./build.sh"
