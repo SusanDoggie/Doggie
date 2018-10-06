@@ -24,8 +24,8 @@ matrix:
 
 before_install:
   - |
-    cat <<EOF > build.sh
-    #!/bin/bash
+    cat <<"EOF" > build.sh
+    \#!/bin/bash
     set -o verbose
     if [ -n "${DOCKER_IMAGE}" ]; then
         docker pull ${DOCKER_IMAGE}
