@@ -41,6 +41,7 @@ before_install:
         kill %1
     fi
     EOF
+  - chmod +x build.sh
+
 script:
   - ./build.sh
-  
