@@ -20,6 +20,11 @@ matrix:
       env: CODECOV_ELIGIBLE=true
 
 before_install:
+  - git clone https://github.com/IBM-Swift/Package-Builder.git
+  - echo "swift build -c release" | cat >./.swift-build-macOS
+  - echo "swift test -c release" | cat >./.swift-test-macOS
+  - echo "swift build -c release" | cat >./.swift-build-linux
+  - echo "swift test -c release" | cat >./.swift-test-linux
   - |
     cat <<"EOF" > build.sh
     \#!/bin/bash
@@ -33,11 +38,6 @@ before_install:
         kill %1
     fi
     EOF
-  - git clone https://github.com/IBM-Swift/Package-Builder.git
-  - echo "swift build -c release" | cat >./.swift-build-macOS
-  - echo "swift test -c release" | cat >./.swift-test-macOS
-  - echo "swift build -c release" | cat >./.swift-build-linux
-  - echo "swift test -c release" | cat >./.swift-test-linux
   - chmod +x build.sh
 
 script:
