@@ -27,7 +27,6 @@ before_install:
   - echo "swift test -c release" | cat >./.swift-test-linux
   - |
     cat <<"EOF" > build.sh
-    \#!/bin/bash
     set -o verbose
     if [ -n "${DOCKER_IMAGE}" ]; then
         docker pull ${DOCKER_IMAGE}
@@ -37,7 +36,6 @@ before_install:
         ./Package-Builder/build-package.sh -projectDir $(pwd)
         kill %1
     fi
-    EOF
   - chmod +x build.sh
 
 script:
